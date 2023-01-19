@@ -16,6 +16,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/system/message_center/message_center_test_util.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
@@ -149,20 +150,10 @@ class AshMessagePopupCollectionTest : public AshTestBase,
 
   gfx::Rect GetWorkArea() { return popup_collection_->work_area_; }
 
-  std::unique_ptr<message_center::Notification> CreateNotification(
-      const std::string& id) {
-    return std::make_unique<message_center::Notification>(
-        message_center::NOTIFICATION_TYPE_SIMPLE, id, u"test_title",
-        u"test message", ui::ImageModel(),
-        std::u16string() /* display_source */, GURL(),
-        message_center::NotifierId(), message_center::RichNotificationData(),
-        new message_center::NotificationDelegate());
-  }
-
   std::string AddNotification() {
     std::string id = base::NumberToString(notification_id_++);
     message_center::MessageCenter::Get()->AddNotification(
-        CreateNotification(id));
+        CreateSimpleNotification(id));
     return id;
   }
 

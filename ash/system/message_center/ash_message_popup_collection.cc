@@ -202,10 +202,16 @@ void AshMessagePopupCollection::AnimationStarted() {
 
 void AshMessagePopupCollection::AnimationFinished() {
   --popups_animating_;
-  // Stop when all animations are finished.
-  if (animation_tracker_ && popups_animating_ == 0) {
-    animation_tracker_->Stop();
-    animation_tracker_.reset();
+  if (!popups_animating_) {
+    // Stop tracking when all animations are finished.
+    if (animation_tracker_) {
+      animation_tracker_->Stop();
+      animation_tracker_.reset();
+    }
+
+    if (animation_idle_closure_) {
+      std::move(animation_idle_closure_).Run();
+    }
   }
 }
 
@@ -228,6 +234,13 @@ void AshMessagePopupCollection::OnTabletModeStarted() {
 void AshMessagePopupCollection::OnTabletModeEnded() {
   // Reset bounds so pop-up baseline is updated.
   ResetBounds();
+}
+
+void AshMessagePopupCollection::SetAnimationIdleClosureForTest(
+    base::OnceClosure closure) {
+  DCHECK(closure);
+  DCHECK(!animation_idle_closure_);
+  animation_idle_closure_ = std::move(closure);
 }
 
 void AshMessagePopupCollection::OnSlideOut(const std::string& notification_id) {

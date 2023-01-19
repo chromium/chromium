@@ -12,6 +12,7 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/shell_observer.h"
+#include "base/functional/callback_forward.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/rect.h"
@@ -82,8 +83,13 @@ class ASH_EXPORT AshMessagePopupCollection
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
 
+  // Sets `animation_idle_closure_`.
+  void SetAnimationIdleClosureForTest(base::OnceClosure closure);
+
   // Returns the current tray bubble height or 0 if there is no bubble.
   int tray_bubble_height_for_test() const { return tray_bubble_height_; }
+
+  int popups_animating_for_test() const { return popups_animating_; }
 
  private:
   friend class AshMessagePopupCollectionTest;
@@ -134,6 +140,9 @@ class ASH_EXPORT AshMessagePopupCollection
   // performed at the same time (fade in, move up, etc.), making sure that we
   // stop the throughput tracker only when all of these animations are finished.
   int popups_animating_ = 0;
+
+  // A closure called when all item animations complete. Used for tests only.
+  base::OnceClosure animation_idle_closure_;
 
   // Keeps track the last pop up added, used by throughout tracker. We only
   // record smoothness when this variable is in scope.
