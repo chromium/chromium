@@ -309,9 +309,7 @@ class SubmitFeedbackButton : public IconButton {
                          ->client()
                          ->ShowChannelInfoGiveFeedback();
                    }),
-                   features::IsQsRevampEnabled()
-                       ? IconButton::Type::kMediumFloating
-                       : IconButton::Type::kMedium,
+                   IconButton::Type::kMediumFloating,
                    &kRequestFeedbackIcon,
                    IDS_ASH_STATUS_TRAY_REPORT_FEEDBACK),
         channel_(channel) {
@@ -371,7 +369,6 @@ class SubmitFeedbackButton : public IconButton {
       views::InkDrop::Get(this)->SetBaseColor(ink_drop_base_color);
     } else {
       SetIconColor(channel_indicator_utils::GetFgColor(channel_));
-      SetBackgroundColor(channel_indicator_utils::GetBgColor(channel_));
       views::InkDrop::Get(this)->SetBaseColor(color_provider->GetColor(
           channel_indicator_utils::GetBgColor(channel_)));
     }
