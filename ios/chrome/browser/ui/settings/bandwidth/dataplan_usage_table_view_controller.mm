@@ -9,6 +9,7 @@
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/prerender/prerender_pref.h"
+#import "ios/chrome/browser/ui/settings/bandwidth/dataplan_usage_table_view_controller+private.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"

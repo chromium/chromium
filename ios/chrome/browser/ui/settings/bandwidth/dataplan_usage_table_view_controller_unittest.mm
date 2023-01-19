@@ -14,6 +14,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "ios/chrome/browser/prerender/prerender_pref.h"
+#import "ios/chrome/browser/ui/settings/bandwidth/dataplan_usage_table_view_controller+private.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -25,10 +26,6 @@
 #endif
 
 using prerender_prefs::NetworkPredictionSetting;
-
-@interface DataplanUsageTableViewController (ExposedForTesting)
-- (void)updateSetting:(prerender_prefs::NetworkPredictionSetting)newSetting;
-@end
 
 namespace {
 

@@ -7,6 +7,7 @@ source_set("bandwidth") {
   sources = [
     "bandwidth_management_table_view_controller.h",
     "bandwidth_management_table_view_controller.mm",
+    "dataplan_usage_table_view_controller+private.h",
     "dataplan_usage_table_view_controller.h",
     "dataplan_usage_table_view_controller.mm",
   ]
