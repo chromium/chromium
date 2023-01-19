@@ -15,6 +15,10 @@ class BuildPropsCodeSignConfig(CodeSignConfig):
     def is_chrome_branded():
         return @IS_CHROME_BRANDED@
 
+    @staticmethod
+    def enable_updater():
+        return @ENABLE_UPDATER@
+
     @property
     def app_product(self):
         return '@PRODUCT_FULLNAME@'

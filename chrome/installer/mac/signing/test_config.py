@@ -22,6 +22,10 @@ class TestConfig(config.CodeSignConfig):
     def is_chrome_branded():
         return True
 
+    @staticmethod
+    def enable_updater():
+        return True
+
     @property
     def app_product(self):
         return 'App Product'
@@ -51,6 +55,10 @@ class TestConfigNonChromeBranded(TestConfig):
 
     @staticmethod
     def is_chrome_branded():
+        return False
+
+    @staticmethod
+    def enable_updater():
         return False
 
 

@@ -90,6 +90,15 @@ class CodeSignConfig(object):
         """
         raise ConfigError('is_chrome_branded')
 
+    @staticmethod
+    def enable_updater():
+        """Returns True if the build should use updater-related resources.
+
+        This is a @staticmethod and not a @property so that it can be tested
+        during the process of creating a CodeSignConfig object.
+        """
+        raise ConfigError('enable_updater')
+
     @property
     def identity(self):
         """Returns the code signing identity that will be used to sign the
