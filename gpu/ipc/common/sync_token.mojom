@@ -11,9 +11,7 @@ enum CommandBufferNamespace {
   GPU_IO,
   IN_PROCESS,
   MOJO,
-  MOJO_LOCAL,
-
-  NUM_COMMAND_BUFFER_NAMESPACES
+  MOJO_LOCAL
 };
 
 // See gpu/command_buffer/common/sync_token.h
