@@ -110,7 +110,6 @@ external/wpt/css/compositing/root-element-background-transparency.html [ Failure
 crbug.com/1254932 http/tests/preload/meta-csp.html [ Failure ]
 
 # Extra box in the output:
-crbug.com/1254933 [ Fuchsia ] css3/filters/filterRegions.html [ Failure ]
 crbug.com/1254933 [ Linux ] css3/filters/filterRegions.html [ Failure ]
 crbug.com/1254933 [ Win ] css3/filters/filterRegions.html [ Failure ]
 # It also flakily timeouts on Mac.
@@ -2993,7 +2992,6 @@ crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protoc
 # Disable temporarily while updating WebRTC
 crbug.com/webrtc/10567 external/wpt/webrtc-extensions/RTCRtpParameters-maxFramerate.html [ Failure Pass ]
 crbug.com/webrtc/10567 external/wpt/webrtc/RTCRtpParameters-encodings.html [ Failure Pass ]
-crbug.com/webrtc/10567 external/wpt/webrtc/simulcast/setParameters-encodings.https.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/css/css-values/ch-unit-018.html [ Failure ]
@@ -3004,9 +3002,8 @@ crbug.com/626703 external/wpt/css/mediaqueries/negation-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/selectors/invalidation/lang-pseudo-class-in-has-xhtml.xhtml [ Failure ]
 crbug.com/626703 external/wpt/css/selectors/invalidation/lang-pseudo-class-in-has.html [ Failure ]
 crbug.com/626703 external/wpt/css/selectors/invalidation/media-loading-pseudo-classes-in-has.html [ Skip Timeout ]
-crbug.com/626703 [ Win11 ] external/wpt/preload/prefetch-document.html [ Failure Timeout ]
 crbug.com/626703 virtual/backface-visibility-interop/external/wpt/css/css-transforms/animation/translate-animation-on-svg.html [ Failure ]
-crbug.com/626703 virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/dedicated-worker/mediasource-worker-detach-element.html [ Timeout ]
+crbug.com/626703 [ Win10.20h2 ] virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/dedicated-worker/mediasource-worker-detach-element.html [ Timeout ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-transforms/animation/translate-animation-on-svg.html [ Failure ]
 crbug.com/626703 [ Mac11 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/csp-urn.https.html [ Timeout ]
 crbug.com/626703 external/wpt/webcodecs/videoFrame-serialization.crossAgentCluster.https.html [ Timeout ]
@@ -4620,7 +4617,8 @@ crbug.com/1112508 fast/forms/number/number-wheel-event.html [ Failure ]
 # Sheriff 2020-07-20
 crbug.com/1107572 [ Debug Mac12 ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidations.js [ Failure Pass ]
 crbug.com/1107572 [ Mac11-arm64 Release ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidations.js [ Failure Pass ]
-crbug.com/1107572 [ Mac ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidator-invalidations.js [ Failure Pass ]
+crbug.com/1107572 [ Debug Mac12 ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidator-invalidations.js [ Failure Pass ]
+crbug.com/1107572 [ Mac11-arm64 Release ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidator-invalidations.js [ Failure Pass ]
 
 # Sheriff 2020-07-22
 
