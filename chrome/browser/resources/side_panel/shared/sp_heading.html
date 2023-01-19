@@ -1,0 +1,81 @@
+<style include="cr-hidden-style">
+  :host {
+    align-items: center;
+    display: flex;
+    gap: 4px;
+    height: 36px;
+  }
+
+  :host([compact]) {
+    height: 28px;
+  }
+
+  #backButton,
+  ::slotted(cr-icon-button[slot=buttons]) {
+    --cr-icon-button-margin-start: -2px;
+    --cr-icon-button-margin-end: -2px;
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-size: 20px;
+  }
+
+  ::slotted([slot=heading]:is(h1, h2, h3, h4, h5, h6)) {
+    color: var(--cr-primary-text-color);
+    flex: 1;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :host([compact]) ::slotted([slot=heading]:is(h1, h2, h3, h4, h5, h6)) {
+    color: var(--cr-secondary-text-color);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    text-transform: uppercase;
+  }
+
+  ::slotted([slot=metadata]) {
+    color: var(--cr-secondary-text-color);
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #suffixButtons {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+  }
+
+  ::slotted(cr-button[slot=buttons]) {
+    --hover-bg-color: var(--cr-hover-background-color);
+    --ripple-opacity: 0;
+    border: none;
+    color: var(--cr-secondary-text-color);
+    font-weight: 400;
+    gap: 4px;
+    height: 20px;
+    padding: 0;
+  }
+
+  ::slotted(cr-button[slot=buttons]:active) {
+    background-color: var(--cr-active-background-color);
+    box-shadow: none;
+  }
+</style>
+
+<cr-icon-button id="backButton" iron-icon="cr:arrow-back"
+    hidden$="[[hideBackButton]]" disabled$="[[disableBackButton]]"
+    on-click="onBackButtonClick_">
+</cr-icon-button>
+
+<slot name="heading"></slot>
+<slot name="metadata"></slot>
+<div id="suffixButtons"><slot name="buttons"></slot></div>
