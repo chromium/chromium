@@ -271,7 +271,12 @@ void SamplingHeapProfiler::SampleAdded(void* address,
     return;
   }
   RecordString(sample.context);
-  samples_.emplace(address, std::move(sample));
+
+  // If a sample is already present with the same address, then that means that
+  // the sampling heap profiler failed to observe the destruction -- possibly
+  // because the sampling heap profiler was temporarily disabled. We should
+  // override the old entry.
+  samples_.insert_or_assign(address, std::move(sample));
 }
 
 void SamplingHeapProfiler::CaptureNativeStack(const char* context,
