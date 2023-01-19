@@ -83,15 +83,14 @@ export class RecentlyUsedStore {
     // Note, this explicitly allows for multiple recent item entries for the
     // same "base" emoji just with a different variant.
     let oldIndex;
-
-    // TODO(b/264931830): Change x.base.name to x.base.visualContent.id after id
-    // property is added to the visualContent interface.
     if (category === CategoryEnum.GIF) {
-      oldIndex =
-          this.data.history.findIndex(x => x.base.name === newItem.base.name);
+      oldIndex = this.data.history.findIndex(
+          x =>
+              (x.base.visualContent &&
+               x.base.visualContent.id === newItem.base.visualContent?.id));
     } else {
       oldIndex = this.data.history.findIndex(
-          x => x.base.string === newItem.base.string);
+          x => (x.base.string && x.base.string === newItem.base.string));
     }
 
     const MAX_RECENTS =
