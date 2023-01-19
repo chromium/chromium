@@ -79,6 +79,12 @@ void InitFeatures() {
   Core::set_avoid_random_pipe_id(
       base::FeatureList::IsEnabled(kMojoAvoidRandomPipeId));
 
+  if (base::FeatureList::IsEnabled(kMojoIpcz)) {
+    EnableMojoIpczIfSupported();
+  }
+}
+
+void EnableMojoIpczIfSupported() {
 #if BUILDFLAG(IS_WIN)
   // TODO(https://crbug.com/1299283): Sandboxed processes on Windows versions
   // older than 8.1 require some extra (not yet implemented) setup for ipcz to
@@ -88,7 +94,7 @@ void InitFeatures() {
 #else
   const bool kIsIpczSupported = true;
 #endif
-  if (base::FeatureList::IsEnabled(kMojoIpcz) && kIsIpczSupported) {
+  if (kIsIpczSupported) {
     g_mojo_ipcz_enabled.store(true, std::memory_order_release);
   }
 }

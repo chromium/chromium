@@ -51,6 +51,15 @@ scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner();
 // base::Features inside of Mojo.
 COMPONENT_EXPORT(MOJO_CORE_EMBEDDER) void InitFeatures();
 
+// Enables MojoIpcz if it is supported on the current platform. Called before
+// Init() is called. Only call this if the current program doesn't have
+// base::FeatureList integration, since otherwise InitFeatures() will do the
+// work.
+//
+// TODO(crbug.com/1299283): Remove once MojoIpcz becomes the default
+// implementation.
+COMPONENT_EXPORT(MOJO_CORE_EMBEDDER) void EnableMojoIpczIfSupported();
+
 // Indicates whether the ipcz-based Mojo implementation is enabled. This can be
 // done by enabling the MojoIpcz feature.
 COMPONENT_EXPORT(MOJO_CORE_EMBEDDER) bool IsMojoIpczEnabled();
