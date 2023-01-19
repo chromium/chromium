@@ -451,8 +451,6 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
 
     phishing_detector_.reset();
     rfh->GetRemoteAssociatedInterfaces()->GetInterface(&phishing_detector_);
-    base::UmaHistogramBoolean("SBClientPhishing.MainFrameRemoteConnected",
-                              phishing_detector_.is_bound());
 
     if (phishing_detector_.is_bound()) {
       phishing_detection_start_time_ = tick_clock_->NowTicks();

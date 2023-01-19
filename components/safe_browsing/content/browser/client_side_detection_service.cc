@@ -246,8 +246,6 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
             }
           })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  base::UmaHistogramBoolean("SBClientPhishing.RequestWithToken",
-                            !access_token.empty());
   if (!access_token.empty()) {
     SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
                                                   access_token);

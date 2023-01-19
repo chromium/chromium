@@ -31,11 +31,6 @@ namespace safe_browsing {
 
 namespace {
 
-void RecordScorerCreationStatus(ScorerCreationStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("SBClientPhishing.ProtobufScorer.CreationStatus",
-                            status, SCORER_STATUS_MAX);
-}
-
 }  // namespace
 
 ProtobufModelScorer::ProtobufModelScorer() = default;
@@ -50,13 +45,11 @@ std::unique_ptr<ProtobufModelScorer> ProtobufModelScorer::Create(
   // Parse the phishing model.
   if (!model_str.empty() &&
       !model.ParseFromArray(model_str.data(), model_str.size())) {
-    RecordScorerCreationStatus(SCORER_FAIL_MODEL_PARSE_ERROR);
     return nullptr;
   }
 
   if (!model_str.empty() && !model.IsInitialized()) {
     // The model may be missing some required fields.
-    RecordScorerCreationStatus(SCORER_FAIL_MODEL_MISSING_FIELDS);
     return nullptr;
   }
 
@@ -82,11 +75,9 @@ std::unique_ptr<ProtobufModelScorer> ProtobufModelScorer::Create(
   // Only do this part if the visual model file exists
   if (visual_tflite_model.IsValid() && !scorer->visual_tflite_model_.Initialize(
                                            std::move(visual_tflite_model))) {
-    RecordScorerCreationStatus(SCORER_FAIL_MAP_VISUAL_TFLITE_MODEL);
     return nullptr;
   }
 
-  RecordScorerCreationStatus(SCORER_SUCCESS);
   return scorer;
 }
 

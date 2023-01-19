@@ -608,8 +608,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.BrowserReadyOnClassifierNotReady"
-    enum="BooleanReady" expires_after="2023-01-24">
-  <owner>drubery@chromium.org</owner>
+    enum="BooleanReady" expires_after="2023-07-24">
+  <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     When a renderer-side classification returns the error
@@ -708,18 +708,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.MainFrameRemoteConnected"
-    enum="BooleanConnected" expires_after="2023-02-12">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether we the mojo::Remote for the main frame's PhishingDetector is
-    connected. This is recorded on every classification (a large fraction of
-    navigations) where the mojo::Remote exists (see
-    SBClientPhishing.MainFrameRemoteExists).
-  </summary>
-</histogram>
-
 <histogram name="SBClientPhishing.MainFrameRemoteExists" enum="BooleanExists"
     expires_after="2022-08-29">
   <obsolete>
@@ -742,16 +730,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether a dynamic update is successful or not. This is logged when a
     new model is pushed (rare), or on each startup.
-  </summary>
-</histogram>
-
-<histogram name="SBClientPhishing.ModelDynamicUpdateVersion"
-    units="client phishing model version" expires_after="2023-01-15">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the model version on a successful dynamic update. This is logged
-    when a new model is pushed (rare), or on each startup.
   </summary>
 </histogram>
 
@@ -811,16 +789,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.ProtobufScorer.CreationStatus"
-    enum="SBClientPhishingScorerCreationStatus" expires_after="2023-02-12">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the status when we create a Protobuf scorer object for the
-    client-side phishing detection classifier.
-  </summary>
-</histogram>
-
 <histogram name="SBClientPhishing.RequestSatisfiedFromCache" enum="BooleanHit"
     expires_after="2022-08-03">
   <obsolete>
@@ -831,16 +799,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of times that a cached phishing classification result was used,
     rather than pinging the server.
-  </summary>
-</histogram>
-
-<histogram name="SBClientPhishing.RequestWithToken" enum="BooleanSent"
-    expires_after="2023-02-12">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records if the phishing request was sent with a GAIA-tied OAuth2 token. This
-    token is sent only for signed-in Enhanced Safe Browsing users.
   </summary>
 </histogram>
 
