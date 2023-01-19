@@ -93,6 +93,18 @@ void HistoryClustersServiceTaskGetMostRecentClustersForUI::
                                  .annotated_visit.visit_row.visit_time,
                              true, false, true, false};
 
+  // Prune out synced clusters if feature not enabled.
+  if (!GetConfig().include_synced_visits) {
+    auto it = clusters.begin();
+    while (it != clusters.end()) {
+      if (it->originator_cache_guid.empty()) {
+        it++;
+      } else {
+        it = clusters.erase(it);
+      }
+    }
+  }
+
   backend_->GetClustersForUI(
       base::BindOnce(&HistoryClustersServiceTaskGetMostRecentClustersForUI::
                          OnGotModelClusters,

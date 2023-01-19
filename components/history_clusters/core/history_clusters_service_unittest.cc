@@ -220,10 +220,16 @@ class HistoryClustersServiceTestBase : public testing::Test {
     next_navigation_id_++;
   }
 
-  void AddCluster(std::vector<history::VisitID> visit_ids) {
+  void AddCluster(std::vector<history::VisitID> visit_ids,
+                  bool is_remote_cluster = false) {
+    history::Cluster cluster = history::CreateCluster(visit_ids);
+    if (is_remote_cluster) {
+      cluster.originator_cache_guid = "otherdevice";
+      cluster.originator_cluster_id = 1001 + visit_ids.front();
+    }
     base::CancelableTaskTracker task_tracker;
-    history_service_->ReplaceClusters({}, {history::CreateCluster(visit_ids)},
-                                      base::DoNothing(), &task_tracker);
+    history_service_->ReplaceClusters({}, {cluster}, base::DoNothing(),
+                                      &task_tracker);
     history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
   }
 
@@ -602,10 +608,16 @@ TEST_P(HistoryClustersServiceTest,
   AddCompleteVisit(3, DaysAgo(1));
   AddCluster({3});
 
+  // Another cluster but it's remote. Should still be clustered with the others
+  // if sync is enabled.
+  AddCompleteVisit(4, DaysAgo(1));
+  AddCluster({4}, /*is_remote_cluster=*/true);
+
   // Update config so that the new context clusters are used.
   Config new_config;
   new_config.persist_clusters_in_history_db = true;
   new_config.use_navigation_context_clusters = true;
+  new_config.include_synced_visits = ExpectSyncedVisits();
   SetConfigForTesting(new_config);
 
   QueryClustersContinuationParams continuation_params = {};
@@ -613,10 +625,18 @@ TEST_P(HistoryClustersServiceTest,
   {
     const auto [clusters, visits] =
         NextQueryClusters(continuation_params, true);
-    ASSERT_THAT(GetClusterIds(clusters), testing::ElementsAre(1, 2, 3));
+    std::vector<int64_t> expected_cluster_ids = {1, 2, 3};
+    if (ExpectSyncedVisits()) {
+      expected_cluster_ids.push_back(4);
+    }
+    ASSERT_THAT(GetClusterIds(clusters),
+                testing::ElementsAreArray(expected_cluster_ids));
     EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(1));
     EXPECT_THAT(GetVisitIds(clusters[1].visits), testing::ElementsAre(2));
     EXPECT_THAT(GetVisitIds(clusters[2].visits), testing::ElementsAre(3));
+    if (ExpectSyncedVisits()) {
+      EXPECT_THAT(GetVisitIds(clusters[3].visits), testing::ElementsAre(4));
+    }
     EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
     EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
     EXPECT_FALSE(continuation_params.exhausted_all_visits);
@@ -1245,6 +1265,7 @@ TEST_P(HistoryClustersServiceTest,
   Config config;
   config.persist_clusters_in_history_db = true;
   config.use_navigation_context_clusters = true;
+  config.include_synced_visits = ExpectSyncedVisits();
   SetConfigForTesting(config);
 
   // Seed some visits and clusters.
@@ -1253,13 +1274,23 @@ TEST_P(HistoryClustersServiceTest,
   AddCompleteVisit(1, today);
   AddCompleteVisit(2, today);
 
+  AddCompleteVisit(3, today - base::Minutes(10));
+  AddCompleteVisit(4, today - base::Minutes(11));
+
   base::CancelableTaskTracker task_tracker;
   history::Cluster cluster = history::CreateCluster({1, 2});
   cluster.cluster_id = 1;
   cluster.keyword_to_data_map = {{u"peach", history::ClusterKeywordData()},
                                  {u"", history::ClusterKeywordData()}};
   cluster.should_show_on_prominent_ui_surfaces = true;
-  history_service_->ReplaceClusters({}, {cluster}, base::DoNothing(),
+
+  history::Cluster cluster2 = history::CreateCluster({3, 4});
+  cluster2.cluster_id = 2;
+  cluster2.originator_cache_guid = "remotedevice";
+  cluster2.originator_cluster_id = 1000;
+  cluster2.keyword_to_data_map = {{u"remote", history::ClusterKeywordData()}};
+  cluster2.should_show_on_prominent_ui_surfaces = true;
+  history_service_->ReplaceClusters({}, {cluster, cluster2}, base::DoNothing(),
                                     &task_tracker);
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
 
@@ -1275,6 +1306,7 @@ TEST_P(HistoryClustersServiceTest,
 
   // Kick off cluster request and verify the correct visits are sent.
   EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("peach"));
+  EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("remote"));
 
   // Wait for clusters to come back and verify the keyword was cached. Call this
   // twice: once for retrieving initial cluster, once for verifying it's done.
@@ -1282,6 +1314,9 @@ TEST_P(HistoryClustersServiceTest,
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
 
   EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("peach"));
+  EXPECT_EQ(
+      history_clusters_service_->DoesQueryMatchAnyCluster("remote").has_value(),
+      ExpectSyncedVisits());
 }
 
 TEST_P(HistoryClustersServiceTest, DoesURLMatchAnyClusterWithNoisyURLs) {
