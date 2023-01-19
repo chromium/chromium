@@ -5,6 +5,7 @@
 #import "ios/web/test/web_int_test.h"
 
 #import "base/ios/block_types.h"
+#import "base/mac/foundation_util.h"
 #import "base/memory/ptr_util.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
@@ -15,6 +16,7 @@
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/web_state_observer.h"
+#import "ios/web/web_state/web_state_impl.h"
 
 #if DCHECK_IS_ON()
 #import "ui/display/screen_base.h"
@@ -82,6 +84,18 @@ void WebIntTest::SetUp() {
 }
 
 void WebIntTest::TearDown() {
+  // Tests can create an unresponsive WebProcess. WebIntTest::TearDown will
+  // call ClearBrowingData, which can take a very long time with an unresponsive
+  // WebProcess. Work around this problem by force closing WKWebView via a
+  // private API.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+  WKWebView* web_view = base::mac::ObjCCast<WKWebView>(
+      web::WebStateImpl::FromWebState(web_state())
+          ->GetWebViewNavigationProxy());
+  [web_view performSelector:@selector(_close)];
+#pragma clang diagnostic pop
+
   RemoveWKWebViewCreatedData([WKWebsiteDataStore defaultDataStore],
                              [WKWebsiteDataStore allWebsiteDataTypes]);
 
