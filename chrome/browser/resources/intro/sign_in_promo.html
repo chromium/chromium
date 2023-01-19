@@ -179,25 +179,33 @@
     line-height: 20px;
   }
 
-  #buttonContainer {
+  #buttonRow {
     bottom: 0;
     display: flex;
-    flex-direction: row;
-    gap: 12px;
     height: var(--btn-container-height);
     justify-content: flex-end;
     position: fixed;
     width: 100vw;
   }
 
+  #buttonContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    justify-content: flex-end;
+    padding: 0 var(--btn-margin);
+  }
+
+  <if expr="is_win">
+  #buttonContainer {
+    flex-flow: row-reverse;
+  }
+  </if>
+
   #buttonContainer > cr-button {
     font-size: 0.75rem;
     margin-top: var(--btn-margin);
     min-width: 133px;
-  }
-
-  #buttonContainer > cr-button:last-child {
-    margin-inline-end: var(--btn-margin);
   }
 
   #subtitle {
@@ -257,7 +265,7 @@
     width: 100vw;
   }
 
-  #buttonContainer.division-line {
+  #buttonRow.division-line {
     border-top: var(--cr-separator-line);
   }
 
@@ -329,8 +337,12 @@
   </div>
 </div>
 
-<div class="fade-in" id="buttonContainer">
-  <cr-button id="declineSignInButton" on-click="onContinueWithoutAccountClick_">$i18n{declineSignInButtonTitle}</cr-button>
-  <cr-button class="action-button" id="acceptSignInButton" on-click="onContinueWithAccountClick_">$i18n{acceptSignInButtonTitle}
+<div class="fade-in" id="buttonRow">
+  <div id="buttonContainer">
+    <cr-button id="declineSignInButton"
+    on-click="onContinueWithoutAccountClick_">$i18n{declineSignInButtonTitle}</cr-button>
   </cr-button>
+    <cr-button class="action-button" id="acceptSignInButton"
+      on-click="onContinueWithAccountClick_">$i18n{acceptSignInButtonTitle}</cr-button>
+  </div>
 </div>

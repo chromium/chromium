@@ -20,7 +20,7 @@ import {getTemplate} from './sign_in_promo.html.js';
 export interface SignInPromoElement {
   $: {
     acceptSignInButton: CrButtonElement,
-    buttonContainer: HTMLElement,
+    buttonRow: HTMLElement,
     contentArea: HTMLElement,
     declineSignInButton: CrButtonElement,
     safeZone: HTMLElement,
@@ -112,7 +112,7 @@ export class SignInPromoElement extends SignInPromoElementBase {
     const safeZone = this.$.safeZone;
 
     this.divisionLineResizeObserver_ = new ResizeObserver(() => {
-      this.$.buttonContainer.classList.toggle(
+      this.$.buttonRow.classList.toggle(
           'division-line', safeZone.scrollHeight > safeZone.clientHeight);
     });
     this.divisionLineResizeObserver_.observe(safeZone);
