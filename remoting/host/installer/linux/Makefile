@@ -120,15 +120,9 @@ install:
 	    "$(INSTALL_DIR)/remoting_locales/$$locale"; \
 	done
 
-ifdef REMOTING_USE_WAYLAND
-	install -m 0644 \
-	  "$(SRC_DIR)/remoting/host/installer/linux/chrome-remote-desktop-wayland@.service" \
-	  "$(SYSTEMD_UNIT_DIR)/chrome-remote-desktop@.service"
-else
 	install -m 0644 \
 	  "$(SRC_DIR)/remoting/host/installer/linux/chrome-remote-desktop@.service" \
 	  "$(SYSTEMD_UNIT_DIR)/chrome-remote-desktop@.service"
-endif
 
 	# Mask the SysV-style init script under systemd so both don't end up enabled.
 	ln -s /dev/null "$(SYSTEMD_UNIT_DIR)/chrome-remote-desktop.service"

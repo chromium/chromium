@@ -95,15 +95,7 @@ action("remoting_me2me_host_deb_installer") {
     "-o",
     ".",
   ]
-  if (remoting_use_wayland) {
-    inputs += [
-      "//remoting/host/installer/linux/chrome-remote-desktop-wayland@.service",
-    ]
-    args += [ "--remoting_use_wayland" ]
-  } else {
-    inputs +=
-        [ "//remoting/host/installer/linux/chrome-remote-desktop@.service" ]
-  }
+  inputs += [ "//remoting/host/installer/linux/chrome-remote-desktop@.service" ]
 
   deps = [
     "//remoting/host:remoting_core",
