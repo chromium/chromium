@@ -53,6 +53,10 @@ export class HelpBubbleController {
     return this.nativeId_;
   }
 
+  getPadding() {
+    return this.padding_;
+  }
+
   track(trackable: Trackable, padding: InsetsF): boolean {
     assert(!this.anchor_);
 

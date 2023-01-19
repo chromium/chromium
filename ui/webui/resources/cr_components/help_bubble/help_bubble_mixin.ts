@@ -345,6 +345,15 @@ export const HelpBubbleMixin = dedupingMixin(
             rect.y = bounds.y;
             rect.width = bounds.width;
             rect.height = bounds.height;
+
+            const bubble = this.helpBubbleControllerById_.get(nativeId);
+            if (bubble) {
+              const padding = bubble.getPadding();
+              rect.x -= padding.left;
+              rect.y -= padding.top;
+              rect.width += padding.left + padding.right;
+              rect.height += padding.top + padding.bottom;
+            }
           }
           this.helpBubbleHandler_.helpBubbleAnchorVisibilityChanged(
               nativeId, isVisible, rect);
