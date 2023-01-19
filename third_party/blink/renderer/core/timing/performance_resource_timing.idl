@@ -68,5 +68,9 @@ interface PerformanceResourceTiming : PerformanceEntry {
     // See: https://github.com/abinpaul1/resource-timing/blob/explainer-content-type/Explainers/Content-Type.md
     [RuntimeEnabled=ResourceTimingContentType]
         readonly attribute DOMString contentType;
+
+    [RuntimeEnabled=ResourceTimingInterimResponseTimes]
+        readonly attribute DOMHighResTimeStamp firstInterimResponseStart;
+
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

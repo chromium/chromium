@@ -433,6 +433,8 @@ TEST_P(URLRequestQuicTest, DelayedResponseStart) {
   EXPECT_EQ(OK, delegate.request_status());
   EXPECT_GE((timing_info.receive_headers_start - timing_info.request_start),
             delay);
+  EXPECT_GE(timing_info.receive_non_informational_headers_start,
+            timing_info.receive_headers_start);
 }
 
 }  // namespace net

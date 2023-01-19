@@ -414,7 +414,46 @@ DOMHighResTimeStamp PerformanceResourceTiming::requestStart() const {
       Info()->AllowNegativeValue(), CrossOriginIsolatedCapability());
 }
 
+DOMHighResTimeStamp PerformanceResourceTiming::firstInterimResponseStart()
+    const {
+  DCHECK(RuntimeEnabledFeatures::ResourceTimingInterimResponseTimesEnabled());
+  if (!Info()->AllowTimingDetails() || !resource_load_timing_) {
+    return 0;
+  }
+
+  base::TimeTicks response_start =
+      resource_load_timing_->ReceiveEarlyHintsStart();
+  if (response_start.is_null()) {
+    return 0;
+  }
+
+  return Performance::MonotonicTimeToDOMHighResTimeStamp(
+      TimeOrigin(), response_start, Info()->AllowNegativeValue(),
+      CrossOriginIsolatedCapability());
+}
+
 DOMHighResTimeStamp PerformanceResourceTiming::responseStart() const {
+  if (!RuntimeEnabledFeatures::ResourceTimingInterimResponseTimesEnabled()) {
+    return GetAnyFirstResponseStart();
+  }
+
+  if (!Info()->AllowTimingDetails() || !resource_load_timing_) {
+    return GetAnyFirstResponseStart();
+  }
+
+  base::TimeTicks response_start =
+      resource_load_timing_->ReceiveNonInformationalHeadersStart();
+  if (response_start.is_null()) {
+    return GetAnyFirstResponseStart();
+  }
+
+  return Performance::MonotonicTimeToDOMHighResTimeStamp(
+      TimeOrigin(), response_start, Info()->AllowNegativeValue(),
+      CrossOriginIsolatedCapability());
+}
+
+DOMHighResTimeStamp PerformanceResourceTiming::GetAnyFirstResponseStart()
+    const {
   if (!Info()->AllowTimingDetails()) {
     return 0.0;
   }
@@ -490,6 +529,11 @@ void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddNumber("connectEnd", connectEnd());
   builder.AddNumber("requestStart", requestStart());
   builder.AddNumber("responseStart", responseStart());
+
+  if (RuntimeEnabledFeatures::ResourceTimingInterimResponseTimesEnabled()) {
+    builder.AddNumber("firstInterimResponseStart", firstInterimResponseStart());
+  }
+
   builder.AddNumber("responseEnd", responseEnd());
   builder.AddNumber("transferSize", transferSize());
   builder.AddNumber("encodedBodySize", encodedBodySize());

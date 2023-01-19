@@ -26,6 +26,8 @@ ResourceLoadTiming::ResourceLoadTiming(
     base::TimeTicks send_end,
     base::TimeTicks receive_headers_start,
     base::TimeTicks receive_headers_end,
+    base::TimeTicks receive_non_informational_headers_start,
+    base::TimeTicks receive_early_hints_start,
     base::TimeTicks ssl_start,
     base::TimeTicks ssl_end,
     base::TimeTicks push_start,
@@ -45,6 +47,9 @@ ResourceLoadTiming::ResourceLoadTiming(
       send_end_(send_end),
       receive_headers_start_(receive_headers_start),
       receive_headers_end_(receive_headers_end),
+      receive_non_informational_headers_start_(
+          receive_non_informational_headers_start),
+      receive_early_hints_start_(receive_early_hints_start),
       ssl_start_(ssl_start),
       ssl_end_(ssl_end),
       push_start_(push_start),
@@ -70,7 +75,11 @@ scoped_refptr<ResourceLoadTiming> ResourceLoadTiming::FromMojo(
       mojo_timing->service_worker_fetch_start,
       mojo_timing->service_worker_respond_with_settled, mojo_timing->send_start,
       mojo_timing->send_end, mojo_timing->receive_headers_start,
-      mojo_timing->receive_headers_end, mojo_timing->connect_timing->ssl_start,
+      mojo_timing->receive_headers_end,
+      mojo_timing->receive_non_informational_headers_start,
+      mojo_timing->first_early_hints_time,
+
+      mojo_timing->connect_timing->ssl_start,
       mojo_timing->connect_timing->ssl_end, mojo_timing->push_start,
       mojo_timing->push_end));
 }
@@ -83,10 +92,9 @@ network::mojom::blink::LoadTimingInfoPtr ResourceLoadTiming::ToMojo() const {
               domain_lookup_start_, domain_lookup_end_, connect_start_,
               connect_end_, ssl_start_, ssl_end_),
           send_start_, send_end_, receive_headers_start_, receive_headers_end_,
-          /*receive_non_informational_headers_start=*/base::TimeTicks::Now(),
-          /*first_early_hints_time=*/base::TimeTicks::Now(), push_start_,
-          push_end_, worker_start_, worker_ready_, worker_fetch_start_,
-          worker_respond_with_settled_);
+          receive_non_informational_headers_start_, receive_early_hints_start_,
+          push_start_, push_end_, worker_start_, worker_ready_,
+          worker_fetch_start_, worker_respond_with_settled_);
   return timing;
 }
 
@@ -148,6 +156,14 @@ void ResourceLoadTiming::SetSendEnd(base::TimeTicks send_end) {
 void ResourceLoadTiming::SetReceiveHeadersStart(
     base::TimeTicks receive_headers_start) {
   receive_headers_start_ = receive_headers_start;
+}
+
+void ResourceLoadTiming::SetReceiveNonInformationalHeaderStart(
+    base::TimeTicks time) {
+  receive_non_informational_headers_start_ = time;
+}
+void ResourceLoadTiming::SetReceiveEarlyHintsStart(base::TimeTicks time) {
+  receive_early_hints_start_ = time;
 }
 
 void ResourceLoadTiming::SetReceiveHeadersEnd(

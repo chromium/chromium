@@ -330,6 +330,9 @@ void WebURLResponse::SetLoadTiming(
   timing->SetSendEnd(mojo_timing.send_end);
   timing->SetReceiveHeadersStart(mojo_timing.receive_headers_start);
   timing->SetReceiveHeadersEnd(mojo_timing.receive_headers_end);
+  timing->SetReceiveNonInformationalHeaderStart(
+      mojo_timing.receive_non_informational_headers_start);
+  timing->SetReceiveEarlyHintsStart(mojo_timing.first_early_hints_time);
   timing->SetSslStart(mojo_timing.connect_timing.ssl_start);
   timing->SetSslEnd(mojo_timing.connect_timing.ssl_end);
   timing->SetPushStart(mojo_timing.push_start);

@@ -83,6 +83,7 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   DOMHighResTimeStamp secureConnectionStart() const;
   DOMHighResTimeStamp requestStart() const;
   DOMHighResTimeStamp responseStart() const;
+  DOMHighResTimeStamp firstInterimResponseStart() const;
   virtual DOMHighResTimeStamp responseEnd() const;
   uint64_t transferSize() const;
   uint64_t encodedBodySize() const;
@@ -121,6 +122,7 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   AtomicString GetNextHopProtocol(const AtomicString& alpn_negotiated_protocol,
                                   const AtomicString& connection_info) const;
 
+  DOMHighResTimeStamp GetAnyFirstResponseStart() const;
   double WorkerReady() const;
 
   // Do not access private fields directly. Use getter methods.

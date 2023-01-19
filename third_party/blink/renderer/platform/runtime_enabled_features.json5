@@ -2356,6 +2356,10 @@
       status: "experimental",
     },
     {
+      name: "ResourceTimingInterimResponseTimes",
+      status: "test"
+    },
+    {
       name: "ResourceTimingResponseStatus",
       status: "stable",
     },

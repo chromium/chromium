@@ -58,6 +58,8 @@ class PLATFORM_EXPORT ResourceLoadTiming
   void SetSendEnd(base::TimeTicks);
   void SetReceiveHeadersStart(base::TimeTicks);
   void SetReceiveHeadersEnd(base::TimeTicks);
+  void SetReceiveNonInformationalHeaderStart(base::TimeTicks);
+  void SetReceiveEarlyHintsStart(base::TimeTicks);
   void SetSslStart(base::TimeTicks);
   void SetSslEnd(base::TimeTicks);
   void SetPushStart(base::TimeTicks);
@@ -80,6 +82,12 @@ class PLATFORM_EXPORT ResourceLoadTiming
   base::TimeTicks SendEnd() const { return send_end_; }
   base::TimeTicks ReceiveHeadersStart() const { return receive_headers_start_; }
   base::TimeTicks ReceiveHeadersEnd() const { return receive_headers_end_; }
+  base::TimeTicks ReceiveNonInformationalHeadersStart() const {
+    return receive_non_informational_headers_start_;
+  }
+  base::TimeTicks ReceiveEarlyHintsStart() const {
+    return receive_early_hints_start_;
+  }
   base::TimeTicks SslStart() const { return ssl_start_; }
   base::TimeTicks SslEnd() const { return ssl_end_; }
   base::TimeTicks PushStart() const { return push_start_; }
@@ -104,6 +112,8 @@ class PLATFORM_EXPORT ResourceLoadTiming
                      base::TimeTicks send_end,
                      base::TimeTicks receive_headers_start,
                      base::TimeTicks receive_headers_end,
+                     base::TimeTicks receive_non_informational_headers_start,
+                     base::TimeTicks receive_early_hints_starts,
                      base::TimeTicks ssl_start,
                      base::TimeTicks ssl_end,
                      base::TimeTicks push_start,
@@ -135,6 +145,8 @@ class PLATFORM_EXPORT ResourceLoadTiming
   base::TimeTicks send_end_;
   base::TimeTicks receive_headers_start_;
   base::TimeTicks receive_headers_end_;
+  base::TimeTicks receive_non_informational_headers_start_;
+  base::TimeTicks receive_early_hints_start_;
   base::TimeTicks ssl_start_;
   base::TimeTicks ssl_end_;
   base::TimeTicks push_start_;
