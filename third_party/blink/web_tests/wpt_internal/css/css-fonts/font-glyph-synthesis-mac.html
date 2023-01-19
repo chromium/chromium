@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8" />
+<title>CSS Test: MacOS synthesizing glyphs</title>
+<link rel="match" href="font-glyph-synthesis-mac-expected.html">
+<meta name="assert"
+  content="This test is Mac specific, it checks cases when hyphen character is being synthesized in Arial font on Mac">
+
+<body>
+  <p style="font-family: Arial;">&#x002D</p>
+  <p style="font-family: Arial;">&#x2010</p>
+  <p style="font-family: Arial;">&#x2011</p>
+</body>
