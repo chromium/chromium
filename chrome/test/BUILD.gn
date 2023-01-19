@@ -102,6 +102,55 @@ if (is_android) {
   }
 }
 
+if (is_fuchsia) {
+  # TODO(crbug.com/931218): Ninja cannot handle certain characters appearing
+  # in filenames in depfiles, so temporarily exclude affected files.
+  fuchsia_package_exclusions = [ "chrome/test/data/ie@cookie[[]1[]].txt" ]
+
+  # The chrome/test/data directory is a bit of a mess.
+  # There are a lot of files that are included in the data list which serve
+  # no productive purpose.
+  #
+  # Until chrome/test/data can be refactored into finer-grained source lists
+  # which can be added or redacted, this excises major contributors to
+  # test archive size (which slows down test runtime on Fuchsia.)
+  fuchsia_package_exclusions += [
+    # Typescript sources. Given that they require compilation to be usable,
+    # there is no point in deploying them alongside tests.
+    "*.ts",
+
+    # Markdown documentation.
+    "*.md",
+
+    # Test data for unsupported features.
+    "chrome/test/data/android/*",
+    "chrome/test/data/chromeos/*",
+    "chrome/test/data/gpu/*",
+    "chrome/test/data/import/firefox/*",
+    "chrome/test/data/import/safari/*",
+    "chrome/test/data/nacl/*",
+    "chrome/test/data/pdf/*",
+    "chrome/test/data/perf/*",
+    "chrome/test/data/xr/*",
+
+    # Not used by `unit_tests` or `browser_tests`.
+    "chrome/test/data/dromaeo/*",
+    "chrome/test/data/optimization_guide/*",
+    "chrome/test/data/page_cycler/*",
+    "chrome/test/data/sunspider/*",
+    "chrome/test/data/third_party/kraken/*",
+    "content/test/data/gpu/*",
+
+    # WebUI test assets are accessed from PAK files and should not be used
+    # as standalone files.
+    "chrome/test/data/webui/*",
+  ]
+
+  if (enable_library_cdms) {
+    fuchsia_package_exclusions += [ "lib.unstripped/libclearkeycdm.so" ]
+  }
+}
+
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
 static_library("test_support") {
@@ -3029,7 +3078,6 @@ if (!is_android) {
         "../browser/extensions/content_verifier_browsertest.cc",
         "../browser/extensions/content_verifier_hash_fetch_behavior_browsertest.cc",
         "../browser/extensions/content_verifier_test_utils.cc",
-        "../browser/extensions/content_verifier_test_utils.h",
         "../browser/extensions/corb_and_cors_extension_browsertest.cc",
         "../browser/extensions/cross_origin_isolation_browsertest.cc",
         "../browser/extensions/cross_origin_xhr_apitest.cc",
@@ -4624,6 +4672,7 @@ if (!is_android) {
       use_test_server = true
 
       test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
+      excluded_paths = fuchsia_package_exclusions
       additional_manifest_fragments = [
         "//build/config/fuchsia/test/audio_output.shard.test-cml",
         "//build/config/fuchsia/test/fonts.shard.test-cml",
@@ -4631,18 +4680,6 @@ if (!is_android) {
         "//build/config/fuchsia/test/present_view.shard.test-cml",
         "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
       ]
-
-      # TODO(crbug.com/931218): Ninja cannot handle certain characters appearing
-      # in filenames in depfiles, so temporarily exclude affected files.
-      excluded_files = [
-        "chrome/test/data/ie@cookie[1].txt",
-        "chrome/test/data/android/download/[large]wallpaper.dm",
-        "chrome/test/data/perf/frame_rate/content/googleblog/images/bse%e2%80%99s+solar+energy+development+center..jpg",
-      ]
-
-      if (enable_library_cdms) {
-        excluded_files += [ "lib.unstripped/libclearkeycdm.so" ]
-      }
 
       # Tests depend on having a Python interpreter present on-device.
       # TODO(crbug.com/1292144): Determine whether a solution can be devised
@@ -6387,14 +6424,8 @@ test("unit_tests") {
     deps += [ "//chrome/browser/paint_preview:services" ]
   }
 
-  # TODO(crbug.com/931218): Ninja cannot handle certain characters appearing
-  # in filenames in depfiles, so temporarily exclude affected files.
   if (is_fuchsia) {
-    excluded_files = [
-      "chrome/test/data/ie@cookie[1].txt",
-      "chrome/test/data/android/download/[large]wallpaper.dm",
-      "chrome/test/data/perf/frame_rate/content/googleblog/images/bse%e2%80%99s+solar+energy+development+center..jpg",
-    ]
+    excluded_paths = fuchsia_package_exclusions
   }
 
   if (is_win || is_chromeos || is_mac) {
