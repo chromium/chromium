@@ -77,9 +77,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   // Tracks if a drag action is in progress.
   BOOL _dragActionInProgress;
-
-  //  Tracks if a drop animation is in progress.
-  BOOL _dropAnimationInProgress;
 }
 
 - (instancetype)init {
@@ -164,6 +161,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       completion:^(BOOL finished) {
         [weakSelf updatePinnedTabsVisibilityAfterAnimation:visible];
       }];
+}
+
+- (void)dropAnimationDidEnd {
+  _dropAnimationInProgress = NO;
+  [self dragSessionEnabled:NO];
 }
 
 #pragma mark - TabCollectionConsumer
@@ -450,7 +452,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       _dropAnimationInProgress = YES;
       [[coordinator dropItem:item.dragItem toItemAtIndexPath:dropIndexPath]
           addCompletion:^(UIViewAnimatingPosition finalPosition) {
-            [weakSelf collectionViewDropAnimationDidEnd];
+            [weakSelf dropAnimationDidEnd];
           }];
 
       // The sourceIndexPath is non-nil if the drop item is from this same
@@ -723,12 +725,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)resetCollectionViewBackground {
   self.collectionView.backgroundColor = _backgroundColor;
   self.collectionView.backgroundView.hidden = NO;
-}
-
-// Updates the view when the drop animation did end.
-- (void)collectionViewDropAnimationDidEnd {
-  _dropAnimationInProgress = NO;
-  [self dragSessionEnabled:NO];
 }
 
 @end

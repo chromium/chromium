@@ -913,7 +913,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     NSIndexPath* dropIndexPath = CreateIndexPath(destinationIndex);
     // Drop synchronously if local object is available.
     if (item.dragItem.localObject) {
-      [coordinator dropItem:item.dragItem toItemAtIndexPath:dropIndexPath];
+      __weak __typeof(self) weakSelf = self;
+      [self.delegate gridViewControllerDropAnimationWillBegin:weakSelf];
+      [[coordinator dropItem:item.dragItem toItemAtIndexPath:dropIndexPath]
+          addCompletion:^(UIViewAnimatingPosition finalPosition) {
+            [weakSelf.delegate gridViewControllerDropAnimationDidEnd:weakSelf];
+          }];
       // The sourceIndexPath is non-nil if the drop item is from this same
       // collection view.
       [self.dragDropHandler dropItem:item.dragItem

@@ -2498,6 +2498,20 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self updateToolbarsAppearance];
 }
 
+- (void)gridViewControllerDropAnimationWillBegin:
+    (GridViewController*)gridViewController {
+  if (IsPinnedTabsEnabled()) {
+    self.pinnedTabsViewController.dropAnimationInProgress = YES;
+  }
+}
+
+- (void)gridViewControllerDropAnimationDidEnd:
+    (GridViewController*)gridViewController {
+  if (IsPinnedTabsEnabled()) {
+    [self.pinnedTabsViewController dropAnimationDidEnd];
+  }
+}
+
 #pragma mark - Control actions
 
 - (void)doneButtonTapped:(id)sender {

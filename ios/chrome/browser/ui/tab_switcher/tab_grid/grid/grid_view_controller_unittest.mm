@@ -77,6 +77,16 @@
   // No-op for unittests.
 }
 
+- (void)gridViewControllerDropAnimationWillBegin:
+    (GridViewController*)gridViewController {
+  // No-op for unittests.
+}
+
+- (void)gridViewControllerDropAnimationDidEnd:
+    (GridViewController*)gridViewController {
+  // No-op for unittests.
+}
+
 @end
 
 class GridViewControllerTest : public RootViewControllerTest {

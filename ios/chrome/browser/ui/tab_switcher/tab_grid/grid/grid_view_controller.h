@@ -90,6 +90,13 @@ enum class DragDropTabs {
 - (void)gridViewControllerScrollViewDidScroll:
     (GridViewController*)gridViewController;
 
+// Tells the delegate that a drop animation will begin.
+- (void)gridViewControllerDropAnimationWillBegin:
+    (GridViewController*)gridViewController;
+// Tells the delegate that a drop animation did end.
+- (void)gridViewControllerDropAnimationDidEnd:
+    (GridViewController*)gridViewController;
+
 @end
 
 // A view controller that contains a grid of items.

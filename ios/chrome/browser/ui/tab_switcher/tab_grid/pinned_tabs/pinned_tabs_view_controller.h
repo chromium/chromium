@@ -51,12 +51,18 @@
 // Handles drag and drop interactions that involved the model layer.
 @property(nonatomic, weak) id<TabCollectionDragDropHandler> dragDropHandler;
 
+// Tracks if a drop animation is in progress.
+@property(nonatomic, assign) BOOL dropAnimationInProgress;
+
 // Updates the view when starting or ending a drag action.
 - (void)dragSessionEnabled:(BOOL)enabled;
 
 // Makes the pinned tabs view available. The pinned view should only be
 // available when the regular tabs grid is displayed.
 - (void)pinnedTabsAvailable:(BOOL)available;
+
+// Updates the view when the drop animation did end.
+- (void)dropAnimationDidEnd;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
