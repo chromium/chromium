@@ -44,6 +44,11 @@ class FetchJobManager {
     std::vector<Request> requests;
     for (auto& cluster : clusters_) {
       for (auto& visit : cluster.visits) {
+        // Only fetch URL-keyed metadata for visits known to sync.
+        if (!visit.annotated_visit.visit_row.is_known_to_sync) {
+          continue;
+        }
+
         // Only tag search visits for now.
         const auto& search_terms =
             visit.annotated_visit.content_annotations.search_terms;
