@@ -512,7 +512,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // Tests clear browsing history.
-- (void)testClearBrowsingHistory {
+// TODO(crbug.com/1408647): Fix flakiness.
+- (void)DISABLED_testClearBrowsingHistory {
   [self loadTestURLs];
   [self openHistoryPanel];
 
