@@ -122,8 +122,11 @@ void WebGPUSwapBufferProvider::ReleaseWGPUTextureAccessIfNeeded() {
     return;
   }
 
-  DCHECK(client_);
-  client_->OnTextureTransferred();
+  // The client's lifetime is independent of the swap buffers that can be kept
+  // alive longer due to pending shared image callbacks.
+  if (client_) {
+    client_->OnTextureTransferred();
+  }
 
   current_swap_buffer_->mailbox_texture->Dissociate();
   current_swap_buffer_->mailbox_texture = nullptr;

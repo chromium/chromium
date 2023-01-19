@@ -51,6 +51,8 @@ class GPUCanvasContext : public CanvasRenderingContext,
   GPUCanvasContext(const GPUCanvasContext&) = delete;
   GPUCanvasContext& operator=(const GPUCanvasContext&) = delete;
 
+  ~GPUCanvasContext() override;
+
   void Trace(Visitor*) const override;
 
   // CanvasRenderingContext implementation
