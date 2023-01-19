@@ -17,10 +17,21 @@ getRequiredElement('copy-button').addEventListener('click', async () => {
 });
 
 getRequiredElement('download-button').addEventListener('click', async () => {
+  const url = URL.createObjectURL(new Blob([await debugInfoAsJsonString], {
+    type: 'application/json',
+  }));
+
   const a = document.createElement('a');
-  a.href = `data:application/json,${encodeURI(await debugInfoAsJsonString)}`;
+  a.href = url;
   a.download = 'web_app_internals.json';
   a.click();
+
+  // Downloading succeeds even if the URL was revoked during downloading. See
+  // the spec for details (https://w3c.github.io/FileAPI/#dfn-revokeObjectURL):
+  //
+  // "Note: ... Requests that were started before the url was revoked should
+  // still succeed."
+  URL.revokeObjectURL(url);
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
