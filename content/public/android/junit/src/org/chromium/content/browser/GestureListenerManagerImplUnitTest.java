@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.graphics.Point;
@@ -20,8 +19,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -55,8 +52,6 @@ public class GestureListenerManagerImplUnitTest {
     GestureListenerManagerImpl.Natives mMockJniGestureListenerManager;
     @Mock
     GestureStateListenerWithScroll mGestureStateListener;
-    @Captor
-    ArgumentCaptor<Point> mPointCaptor;
 
     private GestureListenerManagerImpl mGestureManager;
 
@@ -96,17 +91,11 @@ public class GestureListenerManagerImplUnitTest {
 
         mGestureManager.onEventAck(EventType.GESTURE_SCROLL_UPDATE, /*consumed*/ true,
                 /*scrollOffsetX*/ 0.f, /*scrollOffsetY*/ 1.f);
+        verify(mGestureStateListener).onScrollUpdateGestureConsumed(eq(new Point(0, 1)));
+        Mockito.reset(mGestureStateListener);
         mGestureManager.onEventAck(EventType.GESTURE_SCROLL_UPDATE, /*consumed*/ true,
                 /*scrollOffsetX*/ 1.f, /*scrollOffsetY*/ 0.f);
-        verify(mGestureStateListener, times(2))
-                .onScrollUpdateGestureConsumed(mPointCaptor.capture());
-
-        Assert.assertEquals(
-                "Number of points captured is different.", 2, mPointCaptor.getAllValues().size());
-        Assert.assertEquals(
-                "Points doesn't match.", new Point(0, 1), mPointCaptor.getAllValues().get(0));
-        Assert.assertEquals(
-                "Points doesn't match.", new Point(1, 0), mPointCaptor.getAllValues().get(1));
+        verify(mGestureStateListener).onScrollUpdateGestureConsumed(eq(new Point(1, 0)));
 
         mGestureManager.onEventAck(EventType.GESTURE_SCROLL_END, /*consumed*/ true,
                 /*scrollOffsetX*/ 0.f, /*scrollOffsetY*/ 0.f);

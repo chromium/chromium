@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.contextualsearch;
 
 import android.app.Activity;
-import android.graphics.Point;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
@@ -95,9 +94,6 @@ public class ContextualSearchSelectionController {
     private float mX;
     private float mY;
 
-    // The time of the most last scroll activity, or 0 if none.
-    private long mLastScrollTimeNs;
-
     // When the last tap gesture happened.
     private long mTapTimeNanoseconds;
 
@@ -128,15 +124,7 @@ public class ContextualSearchSelectionController {
 
         @Override
         public void onScrollEnded(int scrollOffsetY, int scrollExtentY) {
-            mLastScrollTimeNs = System.nanoTime();
             mHandler.handleScrollEnd();
-        }
-
-        @Override
-        public void onScrollUpdateGestureConsumed(Point rootScrollOffset) {
-            // The onScrollEnded notification is unreliable, so mark time during scroll updates too.
-            // See crbug.com/600863.
-            mLastScrollTimeNs = System.nanoTime();
         }
 
         @Override
@@ -242,13 +230,6 @@ public class ContextualSearchSelectionController {
      */
     float getPxToDp() {
         return mPxToDp;
-    }
-
-    /**
-     * @return The time of the most recent scroll, or 0 if none.
-     */
-    long getLastScrollTime() {
-        return mLastScrollTimeNs;
     }
 
     /**
@@ -390,7 +371,6 @@ public class ContextualSearchSelectionController {
     private void resetAllStates() {
         resetSelectionStates();
         mLastTapState = null;
-        mLastScrollTimeNs = 0;
         mTapTimeNanoseconds = 0;
         mDidExpandSelection = false;
     }

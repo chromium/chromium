@@ -54,6 +54,7 @@ public class GestureListenerManagerImpl
     private final SelectionPopupControllerImpl mSelectionPopupController;
     private ViewAndroidDelegate mViewDelegate;
     private InternalAccessDelegate mScrollDelegate;
+    private final Point mRootScrollOffsetStruct = new Point();
 
     private long mNativeGestureListenerManager;
 
@@ -302,11 +303,11 @@ public class GestureListenerManagerImpl
      * @param scrollOffsetX Horizontal scroll offset in pixels.
      * @param scrollOffsetY Vertical scroll offset in pixels.
      */
-    private static @Nullable Point getRootScrollOffsetStruct(
-            float scrollOffsetX, float scrollOffsetY) {
+    private @Nullable Point getRootScrollOffsetStruct(float scrollOffsetX, float scrollOffsetY) {
         if (scrollOffsetX < 0 || scrollOffsetY < 0) return null;
 
-        return new Point((int) scrollOffsetX, (int) scrollOffsetY);
+        mRootScrollOffsetStruct.set((int) scrollOffsetX, (int) scrollOffsetY);
+        return mRootScrollOffsetStruct;
     }
 
     /**
