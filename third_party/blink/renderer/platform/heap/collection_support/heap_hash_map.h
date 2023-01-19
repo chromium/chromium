@@ -15,27 +15,23 @@ namespace blink {
 
 template <typename KeyArg,
           typename MappedArg,
-          typename HashArg = DefaultHash<KeyArg>,
-          typename KeyTraitsArg = HashTraits<KeyArg>,
+          typename KeyTraitsArg = DefaultHashAndTraits<KeyArg>,
           typename MappedTraitsArg = HashTraits<MappedArg>>
-class HeapHashMap final : public GarbageCollected<HeapHashMap<KeyArg,
-                                                              MappedArg,
-                                                              HashArg,
-                                                              KeyTraitsArg,
-                                                              MappedTraitsArg>>,
-                          public HashMap<KeyArg,
-                                         MappedArg,
-                                         HashArg,
-                                         KeyTraitsArg,
-                                         MappedTraitsArg,
-                                         HeapAllocator> {
+class HeapHashMap final
+    : public GarbageCollected<
+          HeapHashMap<KeyArg, MappedArg, KeyTraitsArg, MappedTraitsArg>>,
+      public HashMap<KeyArg,
+                     MappedArg,
+                     KeyTraitsArg,
+                     MappedTraitsArg,
+                     HeapAllocator> {
   DISALLOW_NEW();
 
  public:
   HeapHashMap() { CheckType(); }
 
   void Trace(Visitor* visitor) const {
-    HashMap<KeyArg, MappedArg, HashArg, KeyTraitsArg, MappedTraitsArg,
+    HashMap<KeyArg, MappedArg, KeyTraitsArg, MappedTraitsArg,
             HeapAllocator>::Trace(visitor);
   }
 

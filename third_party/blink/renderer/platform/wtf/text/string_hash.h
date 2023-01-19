@@ -70,14 +70,6 @@ struct StringHash {
   static const bool safe_to_compare_to_empty_or_deleted = false;
 };
 
-// This hash can be used in cases where the key is a hash of a string, but we
-// don't want to store the string. It's not really specific to string hashing,
-// but all our current uses of it are for strings.
-struct AlreadyHashed : IntHash<unsigned> {
-  STATIC_ONLY(AlreadyHashed);
-  static unsigned GetHash(unsigned key) { return key; }
-};
-
 // StringHash is the default hash for String, StringImpl* and
 // scopoed_refptr<StringImpl>.
 template <>
@@ -98,7 +90,6 @@ struct hash<WTF::String> {
 };
 }  // namespace std
 
-using WTF::AlreadyHashed;
 using WTF::StringHash;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_HASH_H_

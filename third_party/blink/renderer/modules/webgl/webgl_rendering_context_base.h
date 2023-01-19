@@ -116,8 +116,7 @@ class WebGLShaderPrecisionFormat;
 class WebGLVertexArrayObjectBase;
 class XRSystem;
 
-using GLenumHashSet =
-    HashSet<GLenum, WTF::AlreadyHashed, IntWithZeroKeyHashTraits<GLenum>>;
+using GLenumHashSet = HashSet<GLenum, AlreadyHashedWithZeroKeyTraits>;
 
 // This class uses the color mask to prevent drawing to the alpha channel, if
 // the DrawingBuffer requires RGB emulation.

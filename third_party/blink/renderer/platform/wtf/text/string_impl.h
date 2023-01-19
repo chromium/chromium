@@ -60,8 +60,6 @@ typedef const struct __CFString* CFStringRef;
 
 namespace WTF {
 
-struct AlreadyHashed;
-
 enum TextCaseSensitivity {
   kTextCaseSensitive,
   kTextCaseASCIIInsensitive,
@@ -76,7 +74,8 @@ enum StripBehavior { kStripExtraWhiteSpace, kDoNotStripWhiteSpace };
 
 typedef bool (*CharacterMatchFunctionPtr)(UChar);
 typedef bool (*IsWhiteSpaceFunctionPtr)(UChar);
-typedef HashMap<wtf_size_t, StringImpl*, AlreadyHashed> StaticStringsTable;
+typedef HashMap<wtf_size_t, StringImpl*, AlreadyHashedTraits>
+    StaticStringsTable;
 
 // You can find documentation about this class in this doc:
 // https://docs.google.com/document/d/1kOCUlJdh2WJMJGDf-WoEQhmnjKLaOYRbiHz5TiGJl14/edit?usp=sharing

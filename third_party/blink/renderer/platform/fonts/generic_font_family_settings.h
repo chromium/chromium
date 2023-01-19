@@ -81,8 +81,7 @@ class PLATFORM_EXPORT GenericFontFamilySettings {
   // We need to use -2 and -3 for empty value and deleted value.
   using UScriptCodeHashTraits = IntHashTraits<int, -1, -3>;
 
-  typedef HashMap<int, AtomicString, DefaultHash<int>, UScriptCodeHashTraits>
-      ScriptFontFamilyMap;
+  typedef HashMap<int, AtomicString, UScriptCodeHashTraits> ScriptFontFamilyMap;
 
   void SetGenericFontFamilyMap(ScriptFontFamilyMap&,
                                const AtomicString&,

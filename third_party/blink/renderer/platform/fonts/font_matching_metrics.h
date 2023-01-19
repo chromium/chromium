@@ -51,27 +51,15 @@ struct IdentifiableTokenKey {
   }
 };
 
-// A helper that defines the hash and equality functions that HashMap should use
-// internally for comparing IdentifiableTokenKeys.
-struct IdentifiableTokenKeyHash {
-  STATIC_ONLY(IdentifiableTokenKeyHash);
+// A helper that defines the hash function and the invalid 'empty value' that
+// HashMap should use internally.
+struct IdentifiableTokenKeyHashTraits
+    : WTF::SimpleClassHashTraits<IdentifiableTokenKey> {
   static unsigned GetHash(const IdentifiableTokenKey& key) {
     IntHash<int64_t> hasher;
     return hasher.GetHash(key.token.ToUkmMetricValue()) ^
            hasher.GetHash((key.is_deleted_value << 1) + key.is_empty_value);
   }
-  static bool Equal(const IdentifiableTokenKey& a,
-                    const IdentifiableTokenKey& b) {
-    return a == b;
-  }
-  static const bool safe_to_compare_to_empty_or_deleted = true;
-};
-
-// A helper that defines the invalid 'empty value' that HashMap should use
-// internally.
-struct IdentifiableTokenKeyHashTraits
-    : WTF::SimpleClassHashTraits<IdentifiableTokenKey> {
-  STATIC_ONLY(IdentifiableTokenKeyHashTraits);
   static const bool kEmptyValueIsZero = false;
   static IdentifiableTokenKey EmptyValue() { return IdentifiableTokenKey(); }
 };
@@ -201,7 +189,6 @@ class PLATFORM_EXPORT FontMatchingMetrics {
   // of the returned typeface or 0, if no valid typeface was found.
   using TokenToTokenHashMap = HashMap<IdentifiableTokenKey,
                                       IdentifiableToken,
-                                      IdentifiableTokenKeyHash,
                                       IdentifiableTokenKeyHashTraits>;
 
   // Adds a digest of the |font_data|'s typeface to |hash_map| using the key

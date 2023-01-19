@@ -77,10 +77,8 @@ class CORE_EXPORT LegacyDOMSnapshotAgent {
   int GetStyleIndexForNode(Node*);
 
   struct VectorStringHashTraits;
-  using ComputedStylesMap = WTF::HashMap<Vector<String>,
-                                         int,
-                                         VectorStringHashTraits,
-                                         VectorStringHashTraits>;
+  using ComputedStylesMap =
+      WTF::HashMap<Vector<String>, int, VectorStringHashTraits>;
   using CSSPropertyFilter = Vector<std::pair<String, CSSPropertyID>>;
   using PaintOrderMap = HeapHashMap<Member<PaintLayer>, int>;
 

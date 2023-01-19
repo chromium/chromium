@@ -156,14 +156,12 @@ class MODULES_EXPORT ServiceWorkerContainer final
   // ServiceWorkerRegistration object in current execution context.
   HeapHashMap<int64_t,
               WeakMember<ServiceWorkerRegistration>,
-              IntHash<int64_t>,
               IntWithZeroKeyHashTraits<int64_t>>
       service_worker_registration_objects_;
   // Map from service worker version id to JavaScript ServiceWorker object in
   // current execution context.
   HeapHashMap<int64_t,
               WeakMember<ServiceWorker>,
-              IntHash<int64_t>,
               IntWithZeroKeyHashTraits<int64_t>>
       service_worker_objects_;
 

@@ -89,12 +89,30 @@ class PLATFORM_EXPORT ParkableStringManager {
   constexpr static base::TimeDelta kFirstParkingDelay{base::Seconds(60)};
 
   static const char* kAllocatorDumpName;
+
+  // Compares not the pointers, but the arrays. Uses pointers to save space.
+  struct SecureDigestHashTraits
+      : GenericHashTraits<const ParkableStringImpl::SecureDigest*> {
+    static unsigned GetHash(const ParkableStringImpl::SecureDigest* digest) {
+      // The first bytes of the hash are as good as anything else.
+      return *reinterpret_cast<const unsigned*>(digest->data());
+    }
+
+    static bool Equal(const ParkableStringImpl::SecureDigest* const a,
+                      const ParkableStringImpl::SecureDigest* const b) {
+      return a == b ||
+             std::equal(a->data(), a->data() + ParkableStringImpl::kDigestSize,
+                        b->data());
+    }
+
+    static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
+  };
+
   // Relies on secure hash equality for deduplication. If one day SHA256 becomes
   // insecure, then this would need to be updated to a more robust hash.
-  struct SecureDigestHash;
   using StringMap = WTF::HashMap<const ParkableStringImpl::SecureDigest*,
                                  ParkableStringImpl*,
-                                 SecureDigestHash>;
+                                 SecureDigestHashTraits>;
 
   bool IsOnParkedMapForTesting(ParkableStringImpl* string);
   bool IsOnDiskMapForTesting(ParkableStringImpl* string);

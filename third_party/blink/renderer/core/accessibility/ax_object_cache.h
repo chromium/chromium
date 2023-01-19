@@ -58,9 +58,8 @@ class LocalFrameView;
 
 class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
  public:
-  using BlinkAXEventIntentsSet = HashCountedSet<BlinkAXEventIntent,
-                                                BlinkAXEventIntentHash,
-                                                BlinkAXEventIntentHashTraits>;
+  using BlinkAXEventIntentsSet =
+      HashCountedSet<BlinkAXEventIntent, BlinkAXEventIntentHashTraits>;
 
   static AXObjectCache* Create(Document&, const ui::AXMode&);
 

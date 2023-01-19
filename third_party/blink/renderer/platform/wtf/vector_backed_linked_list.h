@@ -328,7 +328,7 @@ class VectorBackedLinkedList {
   wtf_size_t free_head_index_ = anchor_index_;
   wtf_size_t size_ = 0;
 
-  template <typename T, typename U, typename V, typename W>
+  template <typename T, typename U, typename V>
   friend class LinkedHashSet;
   FRIEND_TEST_ALL_PREFIXES(VectorBackedLinkedListTest, Insert);
   FRIEND_TEST_ALL_PREFIXES(VectorBackedLinkedListTest, PushFront);

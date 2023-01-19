@@ -182,22 +182,9 @@ inline bool operator==(const ControlKey& a, const ControlKey& b) {
   return a.GetName() == b.GetName() && a.GetType() == b.GetType();
 }
 
-struct ControlKeyHash {
-  static unsigned GetHash(const ControlKey&);
-  static bool Equal(const ControlKey& a, const ControlKey& b) { return a == b; }
-  static const bool safe_to_compare_to_empty_or_deleted = true;
-};
-
-unsigned ControlKeyHash::GetHash(const ControlKey& key) {
-  return StringHasher::HashMemory<sizeof(ControlKey)>(&key);
-}
-
-struct ControlKeyHashTraits : WTF::GenericHashTraits<ControlKey> {
-  static void ConstructDeletedValue(ControlKey& slot, bool) {
-    new (NotNullTag::kNotNull, &slot) ControlKey(WTF::kHashTableDeletedValue);
-  }
-  static bool IsDeletedValue(const ControlKey& value) {
-    return value.IsHashTableDeletedValue();
+struct ControlKeyHashTraits : SimpleClassHashTraits<ControlKey> {
+  static unsigned GetHash(const ControlKey& key) {
+    return StringHasher::HashMemory<sizeof(ControlKey)>(&key);
   }
 };
 
@@ -227,10 +214,8 @@ class SavedFormState {
   Vector<String> GetReferencedFilePaths() const;
 
  private:
-  using ControlStateMap = HashMap<ControlKey,
-                                  Deque<FormControlState>,
-                                  ControlKeyHash,
-                                  ControlKeyHashTraits>;
+  using ControlStateMap =
+      HashMap<ControlKey, Deque<FormControlState>, ControlKeyHashTraits>;
   ControlStateMap state_for_new_controls_;
   wtf_size_t control_state_count_;
 };

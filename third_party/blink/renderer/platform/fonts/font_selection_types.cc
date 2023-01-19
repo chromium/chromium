@@ -55,7 +55,7 @@ unsigned FontSelectionRequest::GetHash() const {
   return hasher.hash();
 }
 
-unsigned FontSelectionRequestKeyHash::GetHash(
+unsigned FontSelectionRequestKeyHashTraits::GetHash(
     const FontSelectionRequestKey& key) {
   IntegerHasher hasher;
   hasher.add(key.request.GetHash());
@@ -63,7 +63,7 @@ unsigned FontSelectionRequestKeyHash::GetHash(
   return hasher.hash();
 }
 
-unsigned FontSelectionCapabilitiesHash::GetHash(
+unsigned FontSelectionCapabilitiesHashTraits::GetHash(
     const FontSelectionCapabilities& key) {
   IntegerHasher hasher;
   hasher.add(key.width.UniqueValue());

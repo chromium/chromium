@@ -24,8 +24,7 @@ namespace blink {
 // that the hash functions for HighlightRegistryMapEntry don't allow storing
 // more than one entry with the same key (highlight name).
 using HighlightRegistryMap =
-    HeapLinkedHashSet<Member<HighlightRegistryMapEntry>,
-                      HashTraits<Member<HighlightRegistryMapEntry>>>;
+    HeapLinkedHashSet<Member<HighlightRegistryMapEntry>>;
 using HighlightRegistryMapIterable = Maplike<HighlightRegistry>;
 class LocalFrame;
 

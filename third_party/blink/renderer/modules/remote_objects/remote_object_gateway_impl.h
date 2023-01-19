@@ -68,10 +68,7 @@ class MODULES_EXPORT RemoteObjectGatewayImpl
   void InjectNamed(const WTF::String& object_name, int32_t object_id);
 
   HashMap<String, int32_t> named_objects_;
-  HashMap<int32_t,
-          RemoteObject*,
-          IntHash<int32_t>,
-          IntWithZeroKeyHashTraits<int32_t>>
+  HashMap<int32_t, RemoteObject*, IntWithZeroKeyHashTraits<int32_t>>
       remote_objects_;
 
   HeapMojoReceiver<mojom::blink::RemoteObjectGateway,

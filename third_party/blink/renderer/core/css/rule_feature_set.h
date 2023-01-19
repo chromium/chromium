@@ -287,7 +287,6 @@ class CORE_EXPORT RuleFeatureSet {
   using PseudoTypeInvalidationSetMap =
       HashMap<CSSSelector::PseudoType,
               scoped_refptr<InvalidationSet>,
-              IntHash<unsigned>,
               IntWithZeroKeyHashTraits<unsigned>>;
   using ValuesInHasArgument = HashSet<AtomicString>;
   using PseudosInHasArgument = HashSet<CSSSelector::PseudoType>;

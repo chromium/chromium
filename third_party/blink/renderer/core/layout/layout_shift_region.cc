@@ -47,10 +47,7 @@ class BasicIntervals {
   Vector<int> endpoints_;
   // Use int64_t which is larger than real |int| since the empty value of the
   // key is max and deleted value of the key is max - 1 in HashMap.
-  HashMap<int64_t,
-          unsigned,
-          IntHash<int64_t>,
-          IntWithZeroKeyHashTraits<int64_t>>
+  HashMap<int64_t, unsigned, IntWithZeroKeyHashTraits<int64_t>>
       endpoint_to_index_;
 
 #if DCHECK_IS_ON()

@@ -41,7 +41,7 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -84,7 +84,7 @@ class CORE_EXPORT SecurityContext {
 
   void Trace(Visitor*) const;
 
-  using InsecureNavigationsSet = HashSet<unsigned, WTF::AlreadyHashed>;
+  using InsecureNavigationsSet = HashSet<unsigned, AlreadyHashedTraits>;
   static WTF::Vector<unsigned> SerializeInsecureNavigationSet(
       const InsecureNavigationsSet&);
 

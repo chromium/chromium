@@ -195,8 +195,7 @@ class GridTrackSizingAlgorithm final
   void ComputeGridContainerIntrinsicSizes();
 
   // Helper methods for step 4. Stretch flexible tracks.
-  typedef HashSet<size_t, DefaultHash<size_t>, IntWithZeroKeyHashTraits<size_t>>
-      TrackIndexSet;
+  typedef HashSet<size_t, IntWithZeroKeyHashTraits<size_t>> TrackIndexSet;
   double ComputeFlexFactorUnitSize(
       const Vector<GridTrack>& tracks,
       double flex_factor_sum,

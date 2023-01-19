@@ -105,10 +105,7 @@ class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
   class FontSelectionQueryResult final
       : public GarbageCollected<FontSelectionQueryResult> {
     using Map =
-        HeapHashMap<FontSelectionRequestKey,
-                    Member<CSSSegmentedFontFace>,
-                    FontSelectionRequestKeyHash,
-                    WTF::SimpleClassHashTraits<FontSelectionRequestKey>>;
+        HeapHashMap<FontSelectionRequestKey, Member<CSSSegmentedFontFace>>;
 
    public:
     CSSSegmentedFontFace* GetOrCreate(const FontSelectionRequest& request,

@@ -67,13 +67,12 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
   // they're common colors and worth having an early-out for.
   struct ColorHashTraitsForCSSValuePool : WTF::GenericHashTraits<Color> {
     STATIC_ONLY(ColorHashTraitsForCSSValuePool);
+    static unsigned GetHash(const Color& key) { return key.GetHash(); }
     static Color EmptyValue() { return Color::kTransparent; }
     static Color DeletedValue() { return Color::kWhite; }
   };
-  using ColorValueCache = HeapHashMap<Color,
-                                      Member<CSSColor>,
-                                      DefaultHash<Color>,
-                                      ColorHashTraitsForCSSValuePool>;
+  using ColorValueCache =
+      HeapHashMap<Color, Member<CSSColor>, ColorHashTraitsForCSSValuePool>;
   static const unsigned kMaximumColorCacheSize = 512;
   using FontFaceValueCache =
       HeapHashMap<AtomicString, Member<const CSSValueList>>;

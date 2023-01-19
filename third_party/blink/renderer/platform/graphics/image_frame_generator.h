@@ -182,7 +182,6 @@ class PLATFORM_EXPORT ImageFrameGenerator final
   // insertions into the map.
   HashMap<cc::PaintImage::GeneratorClientId,
           std::unique_ptr<ClientLock>,
-          IntHash<cc::PaintImage::GeneratorClientId>,
           IntWithZeroKeyHashTraits<cc::PaintImage::GeneratorClientId>>
       lock_map_ GUARDED_BY(generator_lock_);
 

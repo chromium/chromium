@@ -29,10 +29,8 @@ struct NamedGridLine {
   bool is_first_repeat : 1;
 };
 
-using OrderedNamedGridLines = HashMap<size_t,
-                                      Vector<NamedGridLine>,
-                                      IntHash<size_t>,
-                                      IntWithZeroKeyHashTraits<size_t>>;
+using OrderedNamedGridLines =
+    HashMap<size_t, Vector<NamedGridLine>, IntWithZeroKeyHashTraits<size_t>>;
 
 }  // namespace blink
 

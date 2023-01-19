@@ -82,26 +82,6 @@ void MoveString(ParkableStringImpl* string,
 const char* ParkableStringManager::kAllocatorDumpName = "parkable_strings";
 const base::TimeDelta ParkableStringManager::kFirstParkingDelay;
 
-// Compares not the pointers, but the arrays. Uses pointers to save space.
-struct ParkableStringManager::SecureDigestHash {
-  STATIC_ONLY(SecureDigestHash);
-
-  static unsigned GetHash(
-      const ParkableStringImpl::SecureDigest* const digest) {
-    // The first bytes of the hash are as good as anything else.
-    return *reinterpret_cast<const unsigned*>(digest->data());
-  }
-
-  static inline bool Equal(const ParkableStringImpl::SecureDigest* const a,
-                           const ParkableStringImpl::SecureDigest* const b) {
-    return a == b ||
-           std::equal(a->data(), a->data() + ParkableStringImpl::kDigestSize,
-                      b->data());
-  }
-
-  static constexpr bool safe_to_compare_to_empty_or_deleted = false;
-};
-
 // static
 ParkableStringManagerDumpProvider*
 ParkableStringManagerDumpProvider::Instance() {

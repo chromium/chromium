@@ -647,6 +647,7 @@ struct EmptyString {
 
 template <>
 struct HashTraits<EmptyString> : SimpleClassHashTraits<EmptyString> {
+  static unsigned GetHash(const EmptyString&) { return 0; }
   static const bool kEmptyValueIsZero = false;
 
   // This overrides SimpleClassHashTraits<EmptyString>::EmptyValue() which
@@ -656,15 +657,6 @@ struct HashTraits<EmptyString> : SimpleClassHashTraits<EmptyString> {
     empty.empty_ = true;
     return empty;
   }
-};
-
-template <>
-struct DefaultHash<EmptyString> {
-  static unsigned GetHash(const EmptyString&) { return 0; }
-  static bool Equal(const EmptyString& value1, const EmptyString& value2) {
-    return value1 == value2;
-  }
-  static const bool safe_to_compare_to_empty_or_deleted = true;
 };
 
 TEST(LinkedHashSetTest, Swap) {
@@ -817,17 +809,13 @@ struct Complicated {
 };
 
 struct ComplicatedHashTraits : GenericHashTraits<Complicated> {
-  static constexpr bool kEmptyValueIsZero = false;
-  static Complicated EmptyValue() { return static_cast<Complicated>(0); }
-  static Complicated DeletedValue() { return static_cast<Complicated>(-1); }
-};
-
-struct ComplicatedHashFunctions {
   static unsigned GetHash(const Complicated& key) { return key.simple_.value_; }
   static bool Equal(const Complicated& a, const Complicated& b) {
     return a.simple_.value_ == b.simple_.value_;
   }
-  static const bool safe_to_compare_to_empty_or_deleted = true;
+  static constexpr bool kEmptyValueIsZero = false;
+  static Complicated EmptyValue() { return static_cast<Complicated>(0); }
+  static Complicated DeletedValue() { return static_cast<Complicated>(-1); }
 };
 
 struct ComplexityTranslator {
@@ -838,8 +826,7 @@ struct ComplexityTranslator {
 };
 
 TEST(LinkedHashSetHashFunctionsTest, CustomHashFunction) {
-  using Set = LinkedHashSet<Complicated, ComplicatedHashTraits,
-                            ComplicatedHashFunctions>;
+  using Set = LinkedHashSet<Complicated, ComplicatedHashTraits>;
   Set set;
   set.insert(Complicated(42));
 
@@ -859,8 +846,7 @@ TEST(LinkedHashSetHashFunctionsTest, CustomHashFunction) {
 }
 
 TEST(LinkedHashSetTranslatorTest, ComplexityTranslator) {
-  using Set = LinkedHashSet<Complicated, ComplicatedHashTraits,
-                            ComplicatedHashFunctions>;
+  using Set = LinkedHashSet<Complicated, ComplicatedHashTraits>;
   Set set;
   set.insert(Complicated(42));
 

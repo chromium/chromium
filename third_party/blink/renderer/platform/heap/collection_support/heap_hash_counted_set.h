@@ -12,19 +12,17 @@
 
 namespace blink {
 
-template <typename Value,
-          typename HashFunctions = DefaultHash<Value>,
-          typename Traits = HashTraits<Value>>
+template <typename Value, typename Traits = DefaultHashAndTraits<Value>>
 class HeapHashCountedSet final
-    : public GarbageCollected<HeapHashCountedSet<Value, HashFunctions, Traits>>,
-      public HashCountedSet<Value, HashFunctions, Traits, HeapAllocator> {
+    : public GarbageCollected<HeapHashCountedSet<Value, Traits>>,
+      public HashCountedSet<Value, Traits, HeapAllocator> {
   DISALLOW_NEW();
 
  public:
   HeapHashCountedSet() { CheckType(); }
 
   void Trace(Visitor* visitor) const {
-    HashCountedSet<Value, HashFunctions, Traits, HeapAllocator>::Trace(visitor);
+    HashCountedSet<Value, Traits, HeapAllocator>::Trace(visitor);
   }
 
  private:
@@ -43,16 +41,13 @@ class HeapHashCountedSet final
 
 namespace WTF {
 
-template <typename Value,
-          typename HashFunctions,
-          typename Traits,
-          typename VectorType>
-inline void CopyToVector(
-    const blink::HeapHashCountedSet<Value, HashFunctions, Traits>& set,
-    VectorType& vector) {
-  CopyToVector(static_cast<const HashCountedSet<Value, HashFunctions, Traits,
-                                                blink::HeapAllocator>&>(set),
-               vector);
+template <typename Value, typename Traits, typename VectorType>
+inline void CopyToVector(const blink::HeapHashCountedSet<Value, Traits>& set,
+                         VectorType& vector) {
+  CopyToVector(
+      static_cast<const HashCountedSet<Value, Traits, blink::HeapAllocator>&>(
+          set),
+      vector);
 }
 
 }  // namespace WTF

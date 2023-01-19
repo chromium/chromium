@@ -79,7 +79,7 @@ class PLATFORM_EXPORT FetchClientSettingsObject
       const = 0;
 
   // https://w3c.github.io/webappsec-upgrade-insecure-requests/#upgrade-insecure-navigations-set
-  using InsecureNavigationsSet = HashSet<unsigned, WTF::AlreadyHashed>;
+  using InsecureNavigationsSet = HashSet<unsigned, AlreadyHashedTraits>;
   virtual const InsecureNavigationsSet& GetUpgradeInsecureNavigationsSet()
       const = 0;
 

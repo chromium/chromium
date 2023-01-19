@@ -185,19 +185,9 @@ class ShapeCache {
     return nullptr;
   }
 
-  struct SmallStringKeyHash {
-    STATIC_ONLY(SmallStringKeyHash);
-    static unsigned GetHash(const SmallStringKey& key) { return key.GetHash(); }
-    static bool Equal(const SmallStringKey& a, const SmallStringKey& b) {
-      return a == b;
-    }
-    // Empty and deleted values have lengths that are not equal to any valid
-    // length.
-    static const bool safe_to_compare_to_empty_or_deleted = true;
-  };
-
   struct SmallStringKeyHashTraits : WTF::SimpleClassHashTraits<SmallStringKey> {
     STATIC_ONLY(SmallStringKeyHashTraits);
+    static unsigned GetHash(const SmallStringKey& key) { return key.GetHash(); }
     static const bool kEmptyValueIsZero = false;
     static bool IsEmptyValue(const SmallStringKey& key) {
       return key.IsHashTableEmptyValue();
@@ -207,15 +197,9 @@ class ShapeCache {
 
   friend bool operator==(const SmallStringKey&, const SmallStringKey&);
 
-  typedef HashMap<SmallStringKey,
-                  ShapeCacheEntry,
-                  SmallStringKeyHash,
-                  SmallStringKeyHashTraits>
+  typedef HashMap<SmallStringKey, ShapeCacheEntry, SmallStringKeyHashTraits>
       SmallStringMap;
-  typedef HashMap<uint32_t,
-                  ShapeCacheEntry,
-                  DefaultHash<uint32_t>,
-                  IntWithZeroKeyHashTraits<uint32_t>>
+  typedef HashMap<uint32_t, ShapeCacheEntry, IntWithZeroKeyHashTraits<uint32_t>>
       SingleCharMap;
 
   // Hard limit to guard against pathological growth. The expected number of

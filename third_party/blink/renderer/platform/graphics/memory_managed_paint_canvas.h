@@ -52,7 +52,6 @@ class PLATFORM_EXPORT MemoryManagedPaintCanvas final
   void UpdateMemoryUsage(const cc::PaintImage& image);
 
   HashSet<cc::PaintImage::ContentId,
-          DefaultHash<cc::PaintImage::ContentId>,
           IntWithZeroKeyHashTraits<cc::PaintImage::ContentId>>
       cached_image_ids_;
 

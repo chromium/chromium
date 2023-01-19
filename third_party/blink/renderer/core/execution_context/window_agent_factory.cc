@@ -108,14 +108,14 @@ void WindowAgentFactory::Trace(Visitor* visitor) const {
 }
 
 // static
-unsigned WindowAgentFactory::SchemeAndRegistrableDomainHash::GetHash(
+unsigned WindowAgentFactory::SchemeAndRegistrableDomainTraits::GetHash(
     const SchemeAndRegistrableDomain& value) {
   return WTF::HashInts(StringHash::GetHash(value.scheme),
                        StringHash::GetHash(value.registrable_domain));
 }
 
 // static
-bool WindowAgentFactory::SchemeAndRegistrableDomainHash::Equal(
+bool WindowAgentFactory::SchemeAndRegistrableDomainTraits::Equal(
     const SchemeAndRegistrableDomain& x,
     const SchemeAndRegistrableDomain& y) {
   return x.scheme == y.scheme && x.registrable_domain == y.registrable_domain;

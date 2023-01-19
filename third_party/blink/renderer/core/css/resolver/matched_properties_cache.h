@@ -114,10 +114,7 @@ class CORE_EXPORT MatchedPropertiesCache {
   // long as *all* properties referred to by the entry are alive. This requires
   // custom weakness which is managed through
   // |RemoveCachedMatchedPropertiesWithDeadEntries|.
-  using Cache = HeapHashMap<unsigned,
-                            Member<CachedMatchedProperties>,
-                            DefaultHash<unsigned>,
-                            HashTraits<unsigned>>;
+  using Cache = HeapHashMap<unsigned, Member<CachedMatchedProperties>>;
 
   void RemoveCachedMatchedPropertiesWithDeadEntries(const LivenessBroker&);
 

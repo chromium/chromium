@@ -111,7 +111,6 @@ class CORE_EXPORT TouchEventManager final
   // The attributes of each active touch point indexed by the touch ID.
   using TouchAttributeMap = HeapHashMap<int,
                                         Member<TouchPointAttributes>,
-                                        IntHash<int>,
                                         IntWithZeroKeyHashTraits<int>>;
   TouchAttributeMap touch_attribute_map_;
 

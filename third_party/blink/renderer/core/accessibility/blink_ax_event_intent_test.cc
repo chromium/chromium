@@ -21,16 +21,16 @@ TEST(BlinkAXEventIntentTest, Equality) {
                              ax::mojom::blink::TextBoundary::kWordEnd,
                              ax::mojom::blink::MoveDirection::kForward);
 
-  EXPECT_NE(BlinkAXEventIntentHash::GetHash(intent1),
-            BlinkAXEventIntentHash::GetHash(intent2));
-  EXPECT_NE(BlinkAXEventIntentHash::GetHash(intent1),
-            BlinkAXEventIntentHash::GetHash(intent3));
-  EXPECT_EQ(BlinkAXEventIntentHash::GetHash(intent2),
-            BlinkAXEventIntentHash::GetHash(intent3));
+  EXPECT_NE(BlinkAXEventIntentHashTraits::GetHash(intent1),
+            BlinkAXEventIntentHashTraits::GetHash(intent2));
+  EXPECT_NE(BlinkAXEventIntentHashTraits::GetHash(intent1),
+            BlinkAXEventIntentHashTraits::GetHash(intent3));
+  EXPECT_EQ(BlinkAXEventIntentHashTraits::GetHash(intent2),
+            BlinkAXEventIntentHashTraits::GetHash(intent3));
 
-  EXPECT_FALSE(BlinkAXEventIntentHash::Equal(intent1, intent2));
-  EXPECT_FALSE(BlinkAXEventIntentHash::Equal(intent1, intent3));
-  EXPECT_TRUE(BlinkAXEventIntentHash::Equal(intent2, intent3));
+  EXPECT_FALSE(BlinkAXEventIntentHashTraits::Equal(intent1, intent2));
+  EXPECT_FALSE(BlinkAXEventIntentHashTraits::Equal(intent1, intent3));
+  EXPECT_TRUE(BlinkAXEventIntentHashTraits::Equal(intent2, intent3));
 }
 
 TEST(BlinkAXEventIntentTest, EqualityWithEmptyValue) {
@@ -40,13 +40,13 @@ TEST(BlinkAXEventIntentTest, EqualityWithEmptyValue) {
   BlinkAXEventIntent intent2;
   BlinkAXEventIntent intent3;
 
-  EXPECT_NE(BlinkAXEventIntentHash::GetHash(intent1),
-            BlinkAXEventIntentHash::GetHash(intent2));
-  EXPECT_FALSE(BlinkAXEventIntentHash::Equal(intent1, intent2));
+  EXPECT_NE(BlinkAXEventIntentHashTraits::GetHash(intent1),
+            BlinkAXEventIntentHashTraits::GetHash(intent2));
+  EXPECT_FALSE(BlinkAXEventIntentHashTraits::Equal(intent1, intent2));
 
-  EXPECT_EQ(BlinkAXEventIntentHash::GetHash(intent2),
-            BlinkAXEventIntentHash::GetHash(intent3));
-  EXPECT_TRUE(BlinkAXEventIntentHash::Equal(intent2, intent3));
+  EXPECT_EQ(BlinkAXEventIntentHashTraits::GetHash(intent2),
+            BlinkAXEventIntentHashTraits::GetHash(intent3));
+  EXPECT_TRUE(BlinkAXEventIntentHashTraits::Equal(intent2, intent3));
 }
 
 TEST(BlinkAXEventIntentTest, EqualityWithDeletedValue) {
@@ -55,13 +55,13 @@ TEST(BlinkAXEventIntentTest, EqualityWithDeletedValue) {
   BlinkAXEventIntent intent2(WTF::kHashTableDeletedValue);
   BlinkAXEventIntent intent3(WTF::kHashTableDeletedValue);
 
-  EXPECT_NE(BlinkAXEventIntentHash::GetHash(intent1),
-            BlinkAXEventIntentHash::GetHash(intent2));
-  EXPECT_FALSE(BlinkAXEventIntentHash::Equal(intent1, intent2));
+  EXPECT_NE(BlinkAXEventIntentHashTraits::GetHash(intent1),
+            BlinkAXEventIntentHashTraits::GetHash(intent2));
+  EXPECT_FALSE(BlinkAXEventIntentHashTraits::Equal(intent1, intent2));
 
-  EXPECT_EQ(BlinkAXEventIntentHash::GetHash(intent2),
-            BlinkAXEventIntentHash::GetHash(intent3));
-  EXPECT_TRUE(BlinkAXEventIntentHash::Equal(intent2, intent3));
+  EXPECT_EQ(BlinkAXEventIntentHashTraits::GetHash(intent2),
+            BlinkAXEventIntentHashTraits::GetHash(intent3));
+  EXPECT_TRUE(BlinkAXEventIntentHashTraits::Equal(intent2, intent3));
 }
 
 }  // namespace test

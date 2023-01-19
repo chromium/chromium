@@ -414,8 +414,8 @@ BlinkAXEventIntent& BlinkAXEventIntent::operator=(
     const BlinkAXEventIntent& intent) = default;
 
 bool operator==(const BlinkAXEventIntent& a, const BlinkAXEventIntent& b) {
-  return BlinkAXEventIntentHash::GetHash(a) ==
-         BlinkAXEventIntentHash::GetHash(b);
+  return BlinkAXEventIntentHashTraits::GetHash(a) ==
+         BlinkAXEventIntentHashTraits::GetHash(b);
 }
 
 bool operator!=(const BlinkAXEventIntent& a, const BlinkAXEventIntent& b) {
@@ -435,7 +435,8 @@ std::string BlinkAXEventIntent::ToString() const {
 }
 
 // static
-unsigned int BlinkAXEventIntentHash::GetHash(const BlinkAXEventIntent& key) {
+unsigned int BlinkAXEventIntentHashTraits::GetHash(
+    const BlinkAXEventIntent& key) {
   // If the intent is uninitialized, it is not safe to rely on the memory being
   // initialized to zero, because any uninitialized field that might be
   // accidentally added in the future will produce a potentially non-zero memory
@@ -454,12 +455,6 @@ unsigned int BlinkAXEventIntentHash::GetHash(const BlinkAXEventIntent& key) {
   WTF::AddIntToHash(hash,
                     static_cast<const unsigned>(key.intent().move_direction));
   return hash;
-}
-
-// static
-bool BlinkAXEventIntentHash::Equal(const BlinkAXEventIntent& a,
-                                   const BlinkAXEventIntent& b) {
-  return a == b;
 }
 
 }  // namespace blink

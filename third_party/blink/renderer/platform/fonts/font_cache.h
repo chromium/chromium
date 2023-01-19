@@ -95,7 +95,6 @@ enum class AlternateFontName {
 
 typedef HashMap<FallbackListCompositeKey,
                 std::unique_ptr<ShapeCache>,
-                FallbackListCompositeKeyHash,
                 FallbackListCompositeKeyTraits>
     FallbackListShaperCache;
 

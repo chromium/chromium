@@ -192,14 +192,16 @@ inline void AddFloatToHash(unsigned& hash, float value) {
 template <typename T>
 struct DefaultHash;
 
-// Actual implementation of DefaultHash.
+// Actual implementation of DefaultHash. This is kept temporarily before we
+// combine all DefaultHash into HashTraits.
 //
-// The case of |isIntegral| == false is not implemented. If you see a compile
-// error saying DefaultHashImpl<T, false> is not defined, that's because the
-// default hash functions for T are not defined. You need to implement them
-// yourself.
+// The case of |isIntegral| == false is not implemented by default.
 template <typename T, bool isIntegral>
-struct DefaultHashImpl;
+struct DefaultHashImpl {
+  // If DefaultHash<T> falls back to this, the hash traits type is supposed to
+  // be completely implemented. See hash_traits.h.
+  using Undefined = void;
+};
 
 template <typename T>
 struct DefaultHashImpl<T, true> : IntHash<T> {};

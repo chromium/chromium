@@ -462,7 +462,7 @@ class CORE_EXPORT ContentSecurityPolicy final
   ConsoleMessageVector console_messages_;
   bool header_delivered_{false};
 
-  HashSet<unsigned, AlreadyHashed> violation_reports_sent_;
+  HashSet<unsigned, AlreadyHashedTraits> violation_reports_sent_;
 
   // We put the hash functions used on the policy object so that we only need
   // to calculate a hash once and then distribute it to all of the directives

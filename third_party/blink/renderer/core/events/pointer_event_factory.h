@@ -106,7 +106,7 @@ class CORE_EXPORT PointerEventFactory {
   // deleted hash value.
   template <typename T>
   using PointerIdKeyMap =
-      HashMap<int64_t, T, IntHash<int64_t>, IntWithZeroKeyHashTraits<int64_t>>;
+      HashMap<int64_t, T, IntWithZeroKeyHashTraits<int64_t>>;
   typedef struct IncomingId : public std::pair<int, int> {
     IncomingId() = default;
     IncomingId(WebPointerProperties::PointerType pointer_type, int raw_id)
@@ -121,9 +121,8 @@ class CORE_EXPORT PointerEventFactory {
   using IncomingIdToPointerIdMap =
       HashMap<IncomingId,
               PointerId,
-              WTF::PairHash<int, int>,
-              WTF::PairHashTraits<IntWithZeroKeyHashTraits<int>,
-                                  IntWithZeroKeyHashTraits<int>>>;
+              PairHashTraits<IntWithZeroKeyHashTraits<int>,
+                             IntWithZeroKeyHashTraits<int>>>;
 
   typedef struct PointerAttributes {
     IncomingId incoming_id;

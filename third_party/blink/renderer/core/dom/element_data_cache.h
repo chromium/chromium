@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -47,7 +46,9 @@ class ElementDataCache final : public GarbageCollected<ElementDataCache> {
   void Trace(Visitor*) const;
 
  private:
-  typedef HeapHashMap<unsigned, Member<ShareableElementData>, AlreadyHashed>
+  typedef HeapHashMap<unsigned,
+                      Member<ShareableElementData>,
+                      AlreadyHashedTraits>
       ShareableElementDataCache;
   ShareableElementDataCache shareable_element_data_cache_;
 };

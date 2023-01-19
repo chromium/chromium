@@ -136,10 +136,7 @@ class MODULES_EXPORT ImageDecoderCore {
   // When decode() of incomplete frames has been requested, we need to track the
   // generation id for each SkBitmap that we've handed out. So that we can defer
   // resolution of promises until a new bitmap is generated.
-  HashMap<uint32_t,
-          uint32_t,
-          DefaultHash<uint32_t>,
-          IntWithZeroKeyHashTraits<uint32_t>>
+  HashMap<uint32_t, uint32_t, IntWithZeroKeyHashTraits<uint32_t>>
       incomplete_frames_;
 
   // By default, assume in order decoding and purge all decoded frames except

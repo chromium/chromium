@@ -157,7 +157,6 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
   // Map from keyCodes to keydown entries and keydown timestamps.
   HeapHashMap<int,
               Member<KeyboardEntryAndTimestamps>,
-              IntHash<int>,
               IntWithZeroKeyHashTraits<int>>
       key_code_entry_map_;
   // Whether we are composing or not. When we are not composing, we set
@@ -169,7 +168,6 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
   // interaction, and other information.
   HeapHashMap<PointerId,
               Member<PointerEntryAndInfo>,
-              IntHash<PointerId>,
               IntWithZeroKeyHashTraits<PointerId>>
       pointer_id_entry_map_;
   HeapTaskRunnerTimer<ResponsivenessMetrics> pointer_flush_timer_;

@@ -108,18 +108,10 @@ class CORE_EXPORT BlinkAXEventIntent final {
   bool is_deleted_ = false;
 };
 
-struct CORE_EXPORT BlinkAXEventIntentHash final {
+struct CORE_EXPORT BlinkAXEventIntentHashTraits
+    : WTF::SimpleClassHashTraits<BlinkAXEventIntent> {
   // Computes the hash of a BlinkAXEventIntent instance.
   static unsigned GetHash(const BlinkAXEventIntent& key);
-  // Used by HashSet to compare two BlinkAXEventIntent instances.
-  static bool Equal(const BlinkAXEventIntent& a, const BlinkAXEventIntent& b);
-  // We support creating and comparing with empty (uninitialized) and deleted
-  // HashSet BlinkAXEventIntent entries.
-  static constexpr bool safe_to_compare_to_empty_or_deleted = true;
-};
-
-struct CORE_EXPORT BlinkAXEventIntentHashTraits final
-    : WTF::SimpleClassHashTraits<BlinkAXEventIntent> {
   // Zeroed memory cannot be used for BlinkAXEventIntent.
   static constexpr bool kEmptyValueIsZero = false;
 };

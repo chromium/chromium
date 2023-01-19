@@ -179,23 +179,19 @@ class FloatingObject : public GarbageCollected<FloatingObject> {
 #endif
 };
 
-struct FloatingObjectHashFunctions {
-  STATIC_ONLY(FloatingObjectHashFunctions);
-  static unsigned GetHash(FloatingObject* key) {
-    return DefaultHash<LayoutBox*>::GetHash(key->GetLayoutObject());
-  }
+struct FloatingObjectHashTraits : HashTraits<Member<FloatingObject>> {
   static unsigned GetHash(const Member<FloatingObject>& key) {
-    return GetHash(key.Get());
+    return DefaultHash<LayoutBox*>::GetHash(key->GetLayoutObject());
   }
   static bool Equal(const Member<FloatingObject>& a, FloatingObject* b) {
     return a->GetLayoutObject() == b->GetLayoutObject();
   }
   static bool Equal(const Member<FloatingObject>& a,
                     const Member<FloatingObject>& b) {
-    return Equal(a, b.Get());
+    return a->GetLayoutObject() == b->GetLayoutObject();
   }
 
-  static const bool safe_to_compare_to_empty_or_deleted = false;
+  static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 };
 struct FloatingObjectHashTranslator {
   STATIC_ONLY(FloatingObjectHashTranslator);
@@ -210,9 +206,7 @@ struct FloatingObjectHashTranslator {
   }
 };
 
-typedef HeapLinkedHashSet<Member<FloatingObject>,
-                          HashTraits<Member<FloatingObject>>,
-                          FloatingObjectHashFunctions>
+typedef HeapLinkedHashSet<Member<FloatingObject>, FloatingObjectHashTraits>
     FloatingObjectSet;
 typedef FloatingObjectSet::const_iterator FloatingObjectSetIterator;
 typedef WTF::PODInterval<LayoutUnit, FloatingObject*> FloatingObjectInterval;

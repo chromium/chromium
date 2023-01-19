@@ -67,7 +67,7 @@ struct PresentationAttributeCacheEntry final
 using PresentationAttributeCache =
     HeapHashMap<unsigned,
                 Member<PresentationAttributeCacheEntry>,
-                AlreadyHashed>;
+                AlreadyHashedTraits>;
 static PresentationAttributeCache& GetPresentationAttributeCache() {
   DEFINE_STATIC_LOCAL(Persistent<PresentationAttributeCache>, cache,
                       (MakeGarbageCollected<PresentationAttributeCache>()));

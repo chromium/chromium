@@ -76,6 +76,23 @@ struct GenericHashTraitsBase {
   using PeekOutType = T;
   static const T& Peek(const T& value) { return value; }
 
+  // Computes the hash code.
+  static unsigned GetHash(const T&) = delete;
+
+  // Whether two values are equal. By default, operator== is used.
+  static bool Equal(const T& a, const T& b) { return a == b; }
+
+  // When this is true, the hash table can optimize lookup operations by
+  // skipping checks for empty or deleted values. It can be true only if
+  // Equal(a, b) can reliably return false where
+  //    IsHashTraitsEmptyValue(a) != IsHashTraitsEmptyValue(b) or
+  //    IsHashTraitsDeletedValue(a) != IsHashTraitsDeletedValue(b).
+  // If this is false, the hash table will never call Equal(a, b) where a or b
+  // is an empty or a deleted value. When T is a pointer type, Equal(a, b) can
+  // dereference a and b safely without checking if a or b is nullptr or an
+  // invalid pointer that represents the deleted value.
+  static constexpr bool kSafeToCompareToEmptyOrDeleted = true;
+
   // Defines the empty value which is used to fill unused slots in the hash
   // table. This function is preferred to IsEmptyValue() when the empty value
   // can be represented with a value that can be safely and trivially
@@ -86,17 +103,15 @@ struct GenericHashTraitsBase {
   // Checks if a given value is an empty value. If this is defined, the hash
   // table will call this function (through IsHashTraitsEmptyValue()) to check
   // if a slot is empty. Otherwise `v == EmptyValue()` will be used.
-  // TODO(wangxianzhu): Make clear the requirement of this function when
-  // HashFunctions::safe_to_compare_to_empty_or_deleted is false.
   static void IsEmptyValue(const T& v) = delete;
 
+  // When this is true, the hash table can optimize allocation of empty hash
+  // slots with zeroed memory without calling EmptyValue().
   // This flag can be set to true if any of the following conditions is true:
   // 1. EmptyValue() is defined and all bytes of the return value are zero.
   // 2. IsEmptyValue() is defined and it returns true for a value containing all
   //    zero bytes.
   // Otherwise this flag must be set to false.
-  // When this is true, the hash table can optimize allocation of empty hash
-  // slots with zeroed memory without calling EmptyValue().
   static constexpr bool kEmptyValueIsZero = false;
 
   // Defines the deleted value which is used to fill the slot for a hash entry
@@ -111,8 +126,6 @@ struct GenericHashTraitsBase {
   // Checks if a given value is a deleted value. If this is defined, the hash
   // table will call this function (through IsHashTraitsDeletedValue()) to check
   // if a slot is deleted. Otherwise `v == DeletedValue()` will be used.
-  // TODO(wangxianzhu): Make clear the requirement of this function when
-  // HashFunctions::safe_to_compare_to_empty_or_deleted is false.
   static bool IsDeletedValue(const T& v) = delete;
 
   // Constructs a deleted value in-place in the given memory space.
@@ -162,6 +175,7 @@ struct GenericHashTraitsBase {
 template <typename T, auto empty_value, auto deleted_value>
 struct IntOrEnumHashTraits : internal::GenericHashTraitsBase<T> {
   static_assert(std::is_integral_v<T> || std::is_enum_v<T>);
+  static unsigned GetHash(T key) { return IntHash<T>::GetHash(key); }
   static constexpr bool kEmptyValueIsZero =
       static_cast<int64_t>(empty_value) == 0;
   static constexpr T EmptyValue() { return static_cast<T>(empty_value); }
@@ -217,6 +231,14 @@ struct IntWithZeroKeyHashTraits
     : IntHashTraits<T,
                     std::numeric_limits<T>::max(),
                     std::numeric_limits<T>::max() - 1> {};
+
+// This hash traits can be used in cases where the key is already a good hash.
+struct AlreadyHashedTraits : GenericHashTraits<unsigned> {
+  static unsigned GetHash(unsigned key) { return key; }
+};
+struct AlreadyHashedWithZeroKeyTraits : IntWithZeroKeyHashTraits<unsigned> {
+  static unsigned GetHash(unsigned key) { return key; }
+};
 
 template <typename P>
 struct GenericHashTraits<P*> : internal::GenericHashTraitsBase<P*> {
@@ -317,6 +339,8 @@ struct HashTraits : GenericHashTraits<T> {};
 
 // This hash traits type requires the following methods in class T, unless
 // the corresponding hash traits method is overridden:
+//   // Computes the hash code, for GetHash().
+//   unsigned GetHash() const;
 //   // Creates the deleted value, for ConstructDeletedValue().
 //   T(HashTableDeletedValueType);
 //   // Checks if `this` is a deleted value, for IsDeletedValue().
@@ -326,6 +350,7 @@ struct HashTraits : GenericHashTraits<T> {};
 template <typename T>
 struct SimpleClassHashTraits : GenericHashTraits<T> {
   static_assert(std::is_class_v<T>);
+  static unsigned GetHash(const T& key) { return key.GetHash(); }
   static constexpr bool kEmptyValueIsZero = true;
   template <typename U = void>
   struct NeedsToForbidGCOnMove {
@@ -442,6 +467,18 @@ struct PairHashTraitsBase
   using TraitType =
       T<typename FirstTraits::TraitType, typename SecondTraits::TraitType>;
 
+  static unsigned GetHash(const TraitType& p) {
+    return HashInts(FirstTraits::GetHash(p.first),
+                    SecondTraits::GetHash(p.second));
+  }
+  static bool Equal(const TraitType& a, const TraitType& b) {
+    return FirstTraits::Equal(a.*first_field, b.*first_field) &&
+           SecondTraits::Equal(a.*second_field, b.*second_field);
+  }
+  static constexpr bool kSafeToCompareToEmptyOrDeleted =
+      FirstTraits::kSafeToCompareToEmptyOrDeleted &&
+      SecondTraits::kSafeToCompareToEmptyOrDeleted;
+
   static constexpr bool kEmptyValueIsZero =
       FirstTraits::kEmptyValueIsZero && SecondTraits::kEmptyValueIsZero;
   static TraitType EmptyValue() {
@@ -555,8 +592,46 @@ template <typename Key, typename Value>
 struct HashTraits<KeyValuePair<Key, Value>>
     : public KeyValuePairHashTraits<HashTraits<Key>, HashTraits<Value>> {};
 
+// Temporary adapters during combining HashFunctions and HashTraits.
+template <typename HashFunctions, typename KeyTraits, typename Enable = void>
+struct CombinedHashTraits : HashFunctions, KeyTraits {
+  using HashFunctions::Equal;
+  using HashFunctions::GetHash;
+  // Note the name change.
+  static constexpr bool kSafeToCompareToEmptyOrDeleted =
+      HashFunctions::safe_to_compare_to_empty_or_deleted;
+};
+// If HashFunctions is not explicitly defined, we assume KeyTraits is already a
+// full hash traits type.
+template <typename HashFunctions, typename KeyTraits>
+struct CombinedHashTraits<HashFunctions,
+                          KeyTraits,
+                          std::void_t<typename HashFunctions::Undefined>>
+    : KeyTraits {};
+template <typename Key, typename Enable = void>
+struct DefaultHashAndTraits
+    : CombinedHashTraits<DefaultHash<Key>, HashTraits<Key>> {};
+// Use HashFunctions + HashTraits<Key> if the second argument (i.e. the third
+// argument of HashMap) is a legacy hash functions type.
+template <typename Key, typename HashFunctions, typename Enable = void>
+struct HashTraitsAdapter : CombinedHashTraits<HashFunctions, HashTraits<Key>> {
+};
+// Use KeyTraits if it's already a full hash traits type.
+template <typename Key, typename KeyTraits>
+struct HashTraitsAdapter<Key,
+                         KeyTraits,
+                         std::void_t<typename KeyTraits::TraitType>>
+    : KeyTraits {};
+
 }  // namespace WTF
 
+// Temporary hash traits adapters.
+using WTF::CombinedHashTraits;
+using WTF::DefaultHashAndTraits;
+using WTF::HashTraitsAdapter;
+
+using WTF::AlreadyHashedTraits;
+using WTF::AlreadyHashedWithZeroKeyTraits;
 using WTF::EnumHashTraits;
 using WTF::GenericHashTraits;
 using WTF::HashTraits;

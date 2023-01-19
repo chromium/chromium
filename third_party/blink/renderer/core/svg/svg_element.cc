@@ -682,8 +682,7 @@ using AnimatedPropertyTypeHashTraits =
 
 using AttributeToPropertyTypeMap = HashMap<QualifiedName,
                                            AnimatedPropertyType,
-                                           DefaultHash<QualifiedName>,
-                                           HashTraits<QualifiedName>,
+                                           DefaultHashAndTraits<QualifiedName>,
                                            AnimatedPropertyTypeHashTraits>;
 AnimatedPropertyType SVGElement::AnimatedPropertyTypeForCSSAttribute(
     const QualifiedName& attribute_name) {

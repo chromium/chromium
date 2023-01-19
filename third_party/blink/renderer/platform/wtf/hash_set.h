@@ -38,15 +38,13 @@ struct IdentityExtractor;
 // allowed; for integer keys 0 or -1 can't be used as a key. This restriction
 // can be lifted if you supply custom key traits.
 template <typename ValueArg,
-          typename HashArg = DefaultHash<ValueArg>,
-          typename TraitsArg = HashTraits<ValueArg>,
+          typename TraitsArg = DefaultHashAndTraits<ValueArg>,
           typename Allocator = PartitionAllocator>
 class HashSet {
   USE_ALLOCATOR(HashSet, Allocator);
 
  private:
-  typedef HashArg HashFunctions;
-  typedef TraitsArg ValueTraits;
+  typedef HashTraitsAdapter<ValueArg, TraitsArg> ValueTraits;
   typedef typename ValueTraits::PeekInType ValuePeekInType;
 
  public:
@@ -57,7 +55,6 @@ class HashSet {
   typedef HashTable<ValueType,
                     ValueType,
                     IdentityExtractor,
-                    HashFunctions,
                     ValueTraits,
                     ValueTraits,
                     Allocator>
@@ -185,11 +182,8 @@ struct HashSetTranslatorAdapter {
   }
 };
 
-template <typename Value,
-          typename HashFunctions,
-          typename Traits,
-          typename Allocator>
-HashSet<Value, HashFunctions, Traits, Allocator>::HashSet(
+template <typename Value, typename Traits, typename Allocator>
+HashSet<Value, Traits, Allocator>::HashSet(
     std::initializer_list<ValueType> elements) {
   if (elements.size()) {
     impl_.ReserveCapacityForSize(
@@ -200,17 +194,17 @@ HashSet<Value, HashFunctions, Traits, Allocator>::HashSet(
 }
 
 template <typename Value,
-          typename HashFunctions,
+
           typename Traits,
           typename Allocator>
-auto HashSet<Value, HashFunctions, Traits, Allocator>::operator=(
+auto HashSet<Value, Traits, Allocator>::operator=(
     std::initializer_list<ValueType> elements) -> HashSet& {
   *this = HashSet(std::move(elements));
   return *this;
 }
 
-template <typename T, typename U, typename V, typename W>
-bool operator==(const HashSet<T, U, V, W>& a, const HashSet<T, U, V, W>& b) {
+template <typename T, typename U, typename V>
+bool operator==(const HashSet<T, U, V>& a, const HashSet<T, U, V>& b) {
   if (a.size() != b.size())
     return false;
 
@@ -224,83 +218,81 @@ bool operator==(const HashSet<T, U, V, W>& a, const HashSet<T, U, V, W>& b) {
   return true;
 }
 
-template <typename T, typename U, typename V, typename W>
-inline unsigned HashSet<T, U, V, W>::size() const {
+template <typename T, typename U, typename V>
+inline unsigned HashSet<T, U, V>::size() const {
   return impl_.size();
 }
 
-template <typename T, typename U, typename V, typename W>
-inline unsigned HashSet<T, U, V, W>::Capacity() const {
+template <typename T, typename U, typename V>
+inline unsigned HashSet<T, U, V>::Capacity() const {
   return impl_.Capacity();
 }
 
-template <typename T, typename U, typename V, typename W>
-inline bool HashSet<T, U, V, W>::empty() const {
+template <typename T, typename U, typename V>
+inline bool HashSet<T, U, V>::empty() const {
   return impl_.empty();
 }
 
-template <typename T, typename U, typename V, typename W>
-inline typename HashSet<T, U, V, W>::iterator HashSet<T, U, V, W>::begin()
-    const {
+template <typename T, typename U, typename V>
+inline typename HashSet<T, U, V>::iterator HashSet<T, U, V>::begin() const {
   return impl_.begin();
 }
 
-template <typename T, typename U, typename V, typename W>
-inline typename HashSet<T, U, V, W>::iterator HashSet<T, U, V, W>::end() const {
+template <typename T, typename U, typename V>
+inline typename HashSet<T, U, V>::iterator HashSet<T, U, V>::end() const {
   return impl_.end();
 }
 
-template <typename T, typename U, typename V, typename W>
-inline typename HashSet<T, U, V, W>::iterator HashSet<T, U, V, W>::find(
+template <typename T, typename U, typename V>
+inline typename HashSet<T, U, V>::iterator HashSet<T, U, V>::find(
     ValuePeekInType value) const {
   return impl_.find(value);
 }
 
 template <typename Value,
-          typename HashFunctions,
+
           typename Traits,
           typename Allocator>
-inline bool HashSet<Value, HashFunctions, Traits, Allocator>::Contains(
+inline bool HashSet<Value, Traits, Allocator>::Contains(
     ValuePeekInType value) const {
   return impl_.Contains(value);
 }
 
 template <typename Value,
-          typename HashFunctions,
+
           typename Traits,
           typename Allocator>
 template <typename HashTranslator, typename T>
-typename HashSet<Value, HashFunctions, Traits, Allocator>::
-    iterator inline HashSet<Value, HashFunctions, Traits, Allocator>::Find(
+typename HashSet<Value, Traits, Allocator>::
+    iterator inline HashSet<Value, Traits, Allocator>::Find(
         const T& value) const {
   return impl_.template Find<HashSetTranslatorAdapter<HashTranslator>>(value);
 }
 
 template <typename Value,
-          typename HashFunctions,
+
           typename Traits,
           typename Allocator>
 template <typename HashTranslator, typename T>
-inline bool HashSet<Value, HashFunctions, Traits, Allocator>::Contains(
-    const T& value) const {
+inline bool HashSet<Value, Traits, Allocator>::Contains(const T& value) const {
   return impl_.template Contains<HashSetTranslatorAdapter<HashTranslator>>(
       value);
 }
 
-template <typename T, typename U, typename V, typename W>
+template <typename T, typename U, typename V>
 template <typename IncomingValueType>
-inline typename HashSet<T, U, V, W>::AddResult HashSet<T, U, V, W>::insert(
+inline typename HashSet<T, U, V>::AddResult HashSet<T, U, V>::insert(
     IncomingValueType&& value) {
   return impl_.insert(std::forward<IncomingValueType>(value));
 }
 
 template <typename Value,
-          typename HashFunctions,
+
           typename Traits,
           typename Allocator>
 template <typename HashTranslator, typename T>
-inline typename HashSet<Value, HashFunctions, Traits, Allocator>::AddResult
-HashSet<Value, HashFunctions, Traits, Allocator>::AddWithTranslator(T&& value) {
+inline typename HashSet<Value, Traits, Allocator>::AddResult
+HashSet<Value, Traits, Allocator>::AddWithTranslator(T&& value) {
   // Forward only the first argument, because the second argument isn't actually
   // used in HashSetTranslatorAdapter.
   return impl_
@@ -308,23 +300,23 @@ HashSet<Value, HashFunctions, Traits, Allocator>::AddWithTranslator(T&& value) {
           std::forward<T>(value), value);
 }
 
-template <typename T, typename U, typename V, typename W>
-inline void HashSet<T, U, V, W>::erase(iterator it) {
+template <typename T, typename U, typename V>
+inline void HashSet<T, U, V>::erase(iterator it) {
   impl_.erase(it.impl_);
 }
 
-template <typename T, typename U, typename V, typename W>
-inline void HashSet<T, U, V, W>::erase(ValuePeekInType value) {
+template <typename T, typename U, typename V>
+inline void HashSet<T, U, V>::erase(ValuePeekInType value) {
   erase(find(value));
 }
 
-template <typename T, typename U, typename V, typename W>
-inline void HashSet<T, U, V, W>::clear() {
+template <typename T, typename U, typename V>
+inline void HashSet<T, U, V>::clear() {
   impl_.clear();
 }
 
-template <typename T, typename U, typename V, typename W>
-inline auto HashSet<T, U, V, W>::Take(iterator it) -> ValueType {
+template <typename T, typename U, typename V>
+inline auto HashSet<T, U, V>::Take(iterator it) -> ValueType {
   if (it == end())
     return ValueTraits::EmptyValue();
 
@@ -334,13 +326,13 @@ inline auto HashSet<T, U, V, W>::Take(iterator it) -> ValueType {
   return result;
 }
 
-template <typename T, typename U, typename V, typename W>
-inline auto HashSet<T, U, V, W>::Take(ValuePeekInType value) -> ValueType {
+template <typename T, typename U, typename V>
+inline auto HashSet<T, U, V>::Take(ValuePeekInType value) -> ValueType {
   return Take(find(value));
 }
 
-template <typename T, typename U, typename V, typename W>
-inline auto HashSet<T, U, V, W>::TakeAny() -> ValueType {
+template <typename T, typename U, typename V>
+inline auto HashSet<T, U, V>::TakeAny() -> ValueType {
   return Take(begin());
 }
 

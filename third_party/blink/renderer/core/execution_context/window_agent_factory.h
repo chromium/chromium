@@ -63,18 +63,13 @@ class WindowAgentFactory final : public GarbageCollected<WindowAgentFactory> {
         : scheme(scheme), registrable_domain(registrable_domain) {}
   };
 
-  struct SchemeAndRegistrableDomainHash {
-    STATIC_ONLY(SchemeAndRegistrableDomainHash);
-    static const bool safe_to_compare_to_empty_or_deleted = false;
-
+  struct SchemeAndRegistrableDomainTraits
+      : SimpleClassHashTraits<SchemeAndRegistrableDomain> {
+    static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
     static unsigned GetHash(const SchemeAndRegistrableDomain&);
     static bool Equal(const SchemeAndRegistrableDomain&,
                       const SchemeAndRegistrableDomain&);
-  };
 
-  struct SchemeAndRegistrableDomainTraits
-      : SimpleClassHashTraits<SchemeAndRegistrableDomain> {
-    STATIC_ONLY(SchemeAndRegistrableDomainTraits);
     static bool IsEmptyValue(const SchemeAndRegistrableDomain&);
     static bool IsDeletedValue(const SchemeAndRegistrableDomain& value);
     static void ConstructDeletedValue(SchemeAndRegistrableDomain& slot,
@@ -107,7 +102,6 @@ class WindowAgentFactory final : public GarbageCollected<WindowAgentFactory> {
   // Use registerable domain as the key for general tuple origins.
   using TupleOriginAgents = HeapHashMap<SchemeAndRegistrableDomain,
                                         WeakMember<WindowAgent>,
-                                        SchemeAndRegistrableDomainHash,
                                         SchemeAndRegistrableDomainTraits>;
   TupleOriginAgents tuple_origin_agents_;
   Member<AgentGroupScheduler> agent_group_scheduler_;

@@ -89,12 +89,10 @@ class IntWrapper : public GarbageCollected<IntWrapper> {
 };
 std::atomic_int IntWrapper::destructor_calls_{0};
 
-struct IntWrapperHash {
+struct IntWrapperHashTraits : GenericHashTraits<IntWrapper> {
   static unsigned GetHash(const IntWrapper& key) {
     return WTF::HashInt(static_cast<uint32_t>(key.Value()));
   }
-
-  static bool Equal(const IntWrapper& a, const IntWrapper& b) { return a == b; }
 };
 
 static_assert(WTF::IsTraceable<IntWrapper>::value,
@@ -103,8 +101,9 @@ static_assert(WTF::IsTraceable<HeapVector<IntWrapper>>::value,
               "HeapVector<IntWrapper> must be traceable.");
 static_assert(WTF::IsTraceable<HeapDeque<IntWrapper>>::value,
               "HeapDeque<IntWrapper> must be traceable.");
-static_assert(WTF::IsTraceable<HeapHashSet<IntWrapper, IntWrapperHash>>::value,
-              "HeapHashSet<IntWrapper> must be traceable.");
+static_assert(
+    WTF::IsTraceable<HeapHashSet<IntWrapper, IntWrapperHashTraits>>::value,
+    "HeapHashSet<IntWrapper> must be traceable.");
 static_assert(WTF::IsTraceable<HeapHashMap<int, IntWrapper>>::value,
               "HeapHashMap<int, IntWrapper> must be traceable.");
 
@@ -476,42 +475,21 @@ class ThreadMarker {
   ThreadState* creating_thread_;
   unsigned num_ = 0;
 };
-
-struct ThreadMarkerHash {
-  static unsigned GetHash(const ThreadMarker& key) {
-    return static_cast<unsigned>(
-        reinterpret_cast<uintptr_t>(key.creating_thread_) + key.num_);
-  }
-
-  static bool Equal(const ThreadMarker& a, const ThreadMarker& b) {
-    return a == b;
-  }
-
-  static const bool safe_to_compare_to_empty_or_deleted = false;
-};
 }  // namespace
 
 }  // namespace blink
 
 namespace WTF {
 
-template <typename T>
-struct DefaultHash;
-template <>
-struct DefaultHash<blink::ThreadMarker> : blink::ThreadMarkerHash {};
-
 // ThreadMarkerHash is the default hash for ThreadMarker
 template <>
 struct HashTraits<blink::ThreadMarker>
-    : GenericHashTraits<blink::ThreadMarker> {
-  static const bool kEmptyValueIsZero = true;
-  static void ConstructDeletedValue(blink::ThreadMarker& slot, bool) {
-    new (NotNullTag::kNotNull, &slot)
-        blink::ThreadMarker(kHashTableDeletedValue);
+    : SimpleClassHashTraits<blink::ThreadMarker> {
+  static unsigned GetHash(const blink::ThreadMarker& key) {
+    return static_cast<unsigned>(
+        reinterpret_cast<uintptr_t>(key.creating_thread_) + key.num_);
   }
-  static bool IsDeletedValue(const blink::ThreadMarker& slot) {
-    return slot.IsHashTableDeletedValue();
-  }
+  static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 };
 
 }  // namespace WTF
@@ -632,9 +610,7 @@ TEST_F(HeapTest, HashMapOfMembers) {
   IntWrapper::destructor_calls_ = 0;
   size_t initial_object_payload_size = GetOverallObjectSize();
   {
-    typedef HeapHashMap<
-        Member<IntWrapper>, Member<IntWrapper>, DefaultHash<Member<IntWrapper>>,
-        HashTraits<Member<IntWrapper>>, HashTraits<Member<IntWrapper>>>
+    typedef HeapHashMap<Member<IntWrapper>, Member<IntWrapper>>
         HeapObjectIdentityMap;
 
     Persistent<HeapObjectIdentityMap> map =
@@ -1732,10 +1708,7 @@ static void HeapMapDestructorHelper(bool clear_maps) {
                       Member<RefCountedAndGarbageCollected>>
       RefMap;
 
-  typedef HeapHashMap<WeakMember<IntWrapper>, ThingWithDestructor,
-                      DefaultHash<WeakMember<IntWrapper>>,
-                      HashTraits<WeakMember<IntWrapper>>>
-      Map;
+  typedef HeapHashMap<WeakMember<IntWrapper>, ThingWithDestructor> Map;
 
   Persistent<Map> map(MakeGarbageCollected<Map>());
   Persistent<RefMap> ref_map(MakeGarbageCollected<RefMap>());
@@ -3110,21 +3083,7 @@ class KeyWithCopyingMoveConstructor final {
   DISALLOW_NEW();
 
  public:
-  struct Hash {
-    STATIC_ONLY(Hash);
-
-   public:
-    static unsigned GetHash(const KeyWithCopyingMoveConstructor& key) {
-      return key.hash_;
-    }
-
-    static bool Equal(const KeyWithCopyingMoveConstructor& x,
-                      const KeyWithCopyingMoveConstructor& y) {
-      return x.hash_ == y.hash_;
-    }
-
-    static constexpr bool safe_to_compare_to_empty_or_deleted = true;
-  };
+  unsigned GetHash() const { return hash_; }
 
   KeyWithCopyingMoveConstructor() = default;
   explicit KeyWithCopyingMoveConstructor(WTF::HashTableDeletedValueType)
@@ -3156,10 +3115,6 @@ class KeyWithCopyingMoveConstructor final {
 }  // namespace blink
 
 namespace WTF {
-
-template <>
-struct DefaultHash<blink::KeyWithCopyingMoveConstructor>
-    : blink::KeyWithCopyingMoveConstructor::Hash {};
 
 template <>
 struct HashTraits<blink::KeyWithCopyingMoveConstructor>
