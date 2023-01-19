@@ -210,11 +210,6 @@ BASE_FEATURE(kPath2DPaintCache,
              "Path2DPaintCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable by default. This feature is for a kill switch.
-BASE_FEATURE(kLayoutNGBlockInInline,
-             "LayoutNGBlockInInline",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPrivacySandboxAdsAPIs,
              "PrivacySandboxAdsAPIs",
              base::FEATURE_DISABLED_BY_DEFAULT);

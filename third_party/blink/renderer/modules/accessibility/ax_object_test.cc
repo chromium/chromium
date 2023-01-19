@@ -611,9 +611,7 @@ TEST_F(AccessibilityTest, TreeNavigationWithContinuations) {
 
   // BlockInInline changes |ax_body| not to be ignored. See the design doc at
   // crbug.com/716930 for more details.
-  EXPECT_EQ(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled() ? ax_body
-                                                                   : ax_root,
-            ax_link->ParentObjectUnignored());
+  EXPECT_EQ(ax_body, ax_link->ParentObjectUnignored());
   EXPECT_EQ(ax_body, ax_link->ParentObjectIncludedInTree());
 
   EXPECT_EQ(ax_link, ax_text_before->ParentObjectUnignored());

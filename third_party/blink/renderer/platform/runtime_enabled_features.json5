@@ -1641,11 +1641,6 @@
       base_feature: "LayoutNG",
     },
     {
-      name: "LayoutNGBlockInInline",
-      depends_on: ["LayoutNG"],
-      status: "stable",
-    },
-    {
       // A kill-switch for a fix of crbug.com/1366268.
       name: "LayoutNGDelayScrollOffsetClamping",
       base_feature: "LayoutNGDelayScrollOffsetClamping",

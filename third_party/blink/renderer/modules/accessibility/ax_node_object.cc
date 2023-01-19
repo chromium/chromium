@@ -3520,9 +3520,6 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
   if (previous->IsControl() || next->IsControl())
     return true;
 
-  if (!RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled())
-    return false;
-
   // When |previous| and |next| are in same inline formatting context, we
   // may have block-in-inline between |previous| and |next|.
   // For <div>abc<p aria-hidden=true>...</p>def</div>, we have following

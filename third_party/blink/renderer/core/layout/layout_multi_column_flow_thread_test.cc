@@ -1160,8 +1160,7 @@ TEST_F(MultiColumnRenderingTest, Continuation) {
 
   // 1. Continuations should be in anonymous block in LayoutNG.
   EXPECT_FALSE(flow_thread.ChildrenInline());
-  if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) {
-    EXPECT_EQ(R"DUMP(
+  EXPECT_EQ(R"DUMP(
 LayoutNGBlockFlow DIV id="mc"
   +--LayoutMultiColumnFlowThread (anonymous)
   |  +--LayoutNGBlockFlow (anonymous)
@@ -1172,29 +1171,11 @@ LayoutNGBlockFlow DIV id="mc"
   |  |  |  +--LayoutText #text "y"
   +--LayoutMultiColumnSet (anonymous)
 )DUMP",
-              ToSimpleLayoutTree(container));
-  } else {
-    EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="mc"
-  +--LayoutMultiColumnFlowThread (anonymous)
-  |  +--LayoutNGBlockFlow (anonymous)
-  |  |  +--LayoutNGBlockFlow (anonymous)
-  |  |  |  +--LayoutInline SPAN
-  |  |  |  |  +--LayoutText #text "x"
-  |  |  +--LayoutNGBlockFlow (anonymous)
-  |  |  |  +--LayoutNGBlockFlow DIV id="inner"
-  |  |  +--LayoutNGBlockFlow (anonymous)
-  |  |  |  +--LayoutInline SPAN
-  |  |  |  |  +--LayoutText #text "y"
-  +--LayoutMultiColumnSet (anonymous)
-)DUMP",
-              ToSimpleLayoutTree(container));
-  }
+            ToSimpleLayoutTree(container));
 
   // 2. Remove #inner to avoid continuation.
   GetElementById("inner")->remove();
-  if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) {
-    EXPECT_EQ(R"DUMP(
+  EXPECT_EQ(R"DUMP(
 LayoutNGBlockFlow DIV id="mc"
   +--LayoutMultiColumnFlowThread (anonymous)
   |  +--LayoutNGBlockFlow (anonymous)
@@ -1203,28 +1184,13 @@ LayoutNGBlockFlow DIV id="mc"
   |  |  |  +--LayoutText #text "y"
   +--LayoutMultiColumnSet (anonymous)
 )DUMP",
-              ToSimpleLayoutTree(container));
-  } else {
-    EXPECT_FALSE(flow_thread.ChildrenInline());
-    EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="mc"
-  +--LayoutMultiColumnFlowThread (anonymous)
-  |  +--LayoutNGBlockFlow (anonymous)
-  |  |  +--LayoutInline SPAN
-  |  |  |  +--LayoutText #text "x"
-  |  |  +--LayoutInline SPAN
-  |  |  |  +--LayoutText #text "y"
-  +--LayoutMultiColumnSet (anonymous)
-)DUMP",
-              ToSimpleLayoutTree(container));
-  }
+            ToSimpleLayoutTree(container));
 
   // 3. Normalize to merge "x" and "y".
   // See http://crbug.com/1201508 for redundant |LayoutInline SPAN|.
   multicol.normalize();
-  if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) {
-    EXPECT_FALSE(flow_thread.ChildrenInline());
-    EXPECT_EQ(R"DUMP(
+  EXPECT_FALSE(flow_thread.ChildrenInline());
+  EXPECT_EQ(R"DUMP(
 LayoutNGBlockFlow DIV id="mc"
   +--LayoutMultiColumnFlowThread (anonymous)
   |  +--LayoutNGBlockFlow (anonymous)
@@ -1232,20 +1198,7 @@ LayoutNGBlockFlow DIV id="mc"
   |  |  |  +--LayoutText #text "xy"
   +--LayoutMultiColumnSet (anonymous)
 )DUMP",
-              ToSimpleLayoutTree(container));
-  } else {
-    EXPECT_FALSE(flow_thread.ChildrenInline());
-    EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="mc"
-  +--LayoutMultiColumnFlowThread (anonymous)
-  |  +--LayoutNGBlockFlow (anonymous)
-  |  |  +--LayoutInline SPAN
-  |  |  |  +--LayoutText #text "xy"
-  |  |  +--LayoutInline SPAN
-  +--LayoutMultiColumnSet (anonymous)
-)DUMP",
-              ToSimpleLayoutTree(container));
-  }
+            ToSimpleLayoutTree(container));
 }
 
 TEST_F(MultiColumnRenderingTest, InsertBlock) {

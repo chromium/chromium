@@ -322,7 +322,6 @@ void CollectInlinesInternal(ItemsBuilder* builder,
       builder->ClearNeedsLayout(layout_inline);
     } else {
       DCHECK(!node->IsInline());
-      DCHECK(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled());
       builder->AppendBlockInInline(node);
       builder->ClearInlineFragment(node);
     }

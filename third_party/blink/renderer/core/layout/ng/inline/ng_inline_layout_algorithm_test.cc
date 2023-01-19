@@ -92,7 +92,6 @@ TEST_F(NGInlineLayoutAlgorithmTest, TypesForFirstLine) {
 }
 
 TEST_F(NGInlineLayoutAlgorithmTest, TypesForBlockInInline) {
-  ScopedLayoutNGBlockInInlineForTest block_in_inline_scope(true);
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <div id="block-in-inline">
@@ -588,7 +587,6 @@ TEST_F(NGInlineLayoutAlgorithmTest,
 
 // Block-in-inline is not reusable. See |EndOfReusableItems|.
 TEST_F(NGInlineLayoutAlgorithmTest, BlockInInlineAppend) {
-  ScopedLayoutNGBlockInInlineForTest scoped_for_test(true);
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>

@@ -3996,7 +3996,6 @@ Node* LayoutBlockFlow::NodeForHitTest() const {
   // block-in-inline we're actually still inside the enclosing element
   // that was split. Use the appropriate inner node.
   if (UNLIKELY(IsBlockInInline())) {
-    DCHECK(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled());
     DCHECK(Parent());
     DCHECK(Parent()->IsLayoutInline());
     return Parent()->NodeForHitTest();

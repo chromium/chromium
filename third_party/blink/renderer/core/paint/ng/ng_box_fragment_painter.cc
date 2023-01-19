@@ -1698,7 +1698,6 @@ void NGBoxFragmentPainter::PaintBoxItem(
   }
 
   // Block-in-inline
-  DCHECK(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled());
   DCHECK(!child_fragment.GetLayoutObject()->IsInline());
   PaintInfo paint_info_for_descendants = paint_info.ForDescendants();
   paint_info_for_descendants.SetIsInFragmentTraversal();

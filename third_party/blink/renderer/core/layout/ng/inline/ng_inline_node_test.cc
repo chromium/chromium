@@ -1212,13 +1212,8 @@ TEST_F(NGInlineNodeTest, ClearFirstInlineFragmentOnSplitFlow) {
   // destroyed, and should not be accessible.
   GetDocument().UpdateStyleAndLayoutTree();
   const LayoutObject* layout_text = text->GetLayoutObject();
-  if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) {
-    EXPECT_TRUE(layout_text->IsInLayoutNGInlineFormattingContext());
-    EXPECT_TRUE(layout_text->HasInlineFragments());
-  } else {
-    EXPECT_FALSE(layout_text->IsInLayoutNGInlineFormattingContext());
-    EXPECT_FALSE(layout_text->HasInlineFragments());
-  }
+  EXPECT_TRUE(layout_text->IsInLayoutNGInlineFormattingContext());
+  EXPECT_TRUE(layout_text->HasInlineFragments());
 
   // Update layout. There should be a different instance of the text fragment.
   UpdateAllLifecyclePhasesForTest();
@@ -1229,23 +1224,13 @@ TEST_F(NGInlineNodeTest, ClearFirstInlineFragmentOnSplitFlow) {
   // Check it is the one owned by the new root inline formatting context.
   LayoutBlock* inner_span_cb = inner_span->GetLayoutObject()->ContainingBlock();
   LayoutObject* container = GetLayoutObjectByElementId("container");
-  if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) {
-    EXPECT_EQ(inner_span_cb, container);
-  } else {
-    EXPECT_TRUE(inner_span_cb->IsAnonymous());
-    EXPECT_EQ(inner_span_cb->Parent(), container);
-  }
+  EXPECT_EQ(inner_span_cb, container);
   NGInlineCursor inner_span_cb_cursor(*To<LayoutBlockFlow>(inner_span_cb));
   inner_span_cb_cursor.MoveToFirstLine();
   inner_span_cb_cursor.MoveToFirstChild();
   EXPECT_TRUE(inner_span_cb_cursor);
-  if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) {
-    EXPECT_EQ(inner_span_cb_cursor.Current().GetLayoutObject(),
-              outer_span->GetLayoutObject());
-  } else {
-    EXPECT_EQ(inner_span_cb_cursor.Current().GetLayoutObject(),
-              text->GetLayoutObject());
-  }
+  EXPECT_EQ(inner_span_cb_cursor.Current().GetLayoutObject(),
+            outer_span->GetLayoutObject());
 }
 
 TEST_F(NGInlineNodeTest, AddChildToSVGRoot) {

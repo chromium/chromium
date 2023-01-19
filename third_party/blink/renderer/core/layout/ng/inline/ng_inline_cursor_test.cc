@@ -293,12 +293,8 @@ TEST_P(NGInlineCursorTest, CulledInlineBlockChild) {
   )HTML");
   NGInlineCursor cursor;
   cursor.MoveToIncludingCulledInline(*GetLayoutObjectByElementId("culled"));
-  if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) {
-    EXPECT_THAT(LayoutObjectToDebugStringList(cursor),
-                ElementsAre("#culled", "#culled", "#culled"));
-  } else {
-    EXPECT_THAT(LayoutObjectToDebugStringList(cursor), ElementsAre("#culled"));
-  }
+  EXPECT_THAT(LayoutObjectToDebugStringList(cursor),
+              ElementsAre("#culled", "#culled", "#culled"));
 }
 
 TEST_P(NGInlineCursorTest, CulledInlineWithRoot) {

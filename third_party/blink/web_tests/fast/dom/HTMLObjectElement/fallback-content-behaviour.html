@@ -25,16 +25,14 @@
         <applet class="object" type="application/x-no-such-plugin" width="100" height="100" data-expected-width="0" data-expected-height="0"></applet>
         <applet class="object" width="100" height="100" data-expected-width="0" data-expected-height="0"></applet>
         <applet class="object" data-expected-width="0" data-expected-height="0"></applet>
-<script>
-if (window.internals && internals.runtimeFlags.layoutNGBlockInInlineEnabled) {
-    // TODO(crbug.com/716930): offsetWidth and offsetHeight differ when
-    // LayoutNGBlockInInline is enabled.
-    // https://docs.google.com/document/d/15kgdIHhb9EVNup6Ir5NWwJxpzY5GH0ED7Ld3iMW3HlA/edit?pli=1#bookmark=id.kssozto3r8eu
-    bi1.dataset.expectedWidth = 500;
-    bi1.dataset.expectedHeight = 100;
-    bi2.dataset.expectedWidth = 500;
-    bi2.dataset.expectedHeight = 100;
-}
-</script>
+        <script>
+            // TODO(crbug.com/716930): offsetWidth and offsetHeight differ when
+            // LayoutNGBlockInInline was enabled.
+            // https://docs.google.com/document/d/15kgdIHhb9EVNup6Ir5NWwJxpzY5GH0ED7Ld3iMW3HlA/edit?pli=1#bookmark=id.kssozto3r8eu
+            bi1.dataset.expectedWidth = 500;
+            bi1.dataset.expectedHeight = 100;
+            bi2.dataset.expectedWidth = 500;
+            bi2.dataset.expectedHeight = 100;
+        </script>
     </body>
 </html>

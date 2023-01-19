@@ -292,7 +292,6 @@ TEST_F(NGPhysicalBoxFragmentTest, MayHaveDescendantAboveBlockStart) {
 
 TEST_F(NGPhysicalBoxFragmentTest,
        MayHaveDescendantAboveBlockStartBlockInInline) {
-  ScopedLayoutNGBlockInInlineForTest block_in_inline(true);
   SetBodyInnerHTML(R"HTML(
     <div id="container2">
       <div id="container">

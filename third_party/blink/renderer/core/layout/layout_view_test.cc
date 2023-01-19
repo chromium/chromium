@@ -263,29 +263,22 @@ TEST_P(LayoutViewHitTestTest, BlockInInlineWithListItem) {
   //      LayoutInline {SPAN}
   EXPECT_EQ(PositionWithAffinity(Position(span, 0)), HitTest(0, 5));
   EXPECT_EQ(PositionWithAffinity(Position(span, 0)), HitTest(0, 10));
-  if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) {
-    if (IsAndroidOrWindowsEditingBehavior()) {
-      EXPECT_EQ(PositionWithAffinity(Position(abc, 1)), HitTest(10, 5));
-      EXPECT_EQ(PositionWithAffinity(Position(abc, 1)), HitTest(10, 10));
-      EXPECT_EQ(PositionWithAffinity(Position(abc, 3), TextAffinity::kUpstream),
-                HitTest(100, 5));
-      EXPECT_EQ(PositionWithAffinity(Position(abc, 3), TextAffinity::kUpstream),
-                HitTest(100, 10));
-    } else {
-      EXPECT_EQ(PositionWithAffinity(Position::BeforeNode(inner)),
-                HitTest(10, 5));
-      EXPECT_EQ(PositionWithAffinity(Position::BeforeNode(inner)),
-                HitTest(10, 10));
-      EXPECT_EQ(PositionWithAffinity(Position::BeforeNode(inner)),
-                HitTest(100, 5));
-      EXPECT_EQ(PositionWithAffinity(Position::BeforeNode(inner)),
-                HitTest(100, 10));
-    }
+  if (IsAndroidOrWindowsEditingBehavior()) {
+    EXPECT_EQ(PositionWithAffinity(Position(abc, 1)), HitTest(10, 5));
+    EXPECT_EQ(PositionWithAffinity(Position(abc, 1)), HitTest(10, 10));
+    EXPECT_EQ(PositionWithAffinity(Position(abc, 3), TextAffinity::kUpstream),
+              HitTest(100, 5));
+    EXPECT_EQ(PositionWithAffinity(Position(abc, 3), TextAffinity::kUpstream),
+              HitTest(100, 10));
   } else {
-    EXPECT_EQ(PositionWithAffinity(Position(span, 0)), HitTest(10, 5));
-    EXPECT_EQ(PositionWithAffinity(Position(span, 0)), HitTest(10, 10));
-    EXPECT_EQ(PositionWithAffinity(Position(span, 0)), HitTest(100, 5));
-    EXPECT_EQ(PositionWithAffinity(Position(span, 0)), HitTest(100, 10));
+    EXPECT_EQ(PositionWithAffinity(Position::BeforeNode(inner)),
+              HitTest(10, 5));
+    EXPECT_EQ(PositionWithAffinity(Position::BeforeNode(inner)),
+              HitTest(10, 10));
+    EXPECT_EQ(PositionWithAffinity(Position::BeforeNode(inner)),
+              HitTest(100, 5));
+    EXPECT_EQ(PositionWithAffinity(Position::BeforeNode(inner)),
+              HitTest(100, 10));
   }
   EXPECT_EQ(PositionWithAffinity(Position(abc, 3), TextAffinity::kUpstream),
             HitTest(100, 15));

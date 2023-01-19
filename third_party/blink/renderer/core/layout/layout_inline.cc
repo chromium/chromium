@@ -554,8 +554,7 @@ void LayoutInline::AddChildIgnoringContinuation(LayoutObject* new_child,
       // wrapper, |CreateAnonymousTableWithParent| creates an inline table if
       // the parent is |LayoutInline|.
       !new_child->IsTablePart()) {
-    if (UNLIKELY(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) &&
-        !ForceLegacyLayout()) {
+    if (!ForceLegacyLayout()) {
       AddChildAsBlockInInline(new_child, before_child);
       return;
     }
@@ -571,8 +570,7 @@ void LayoutInline::AddChildIgnoringContinuation(LayoutObject* new_child,
   // If inserting an inline child before a block-in-inline, change
   // |before_child| to the anonymous block. The anonymous block may need to be
   // split if |before_child| is not the first child.
-  if (before_child && before_child->Parent() != this &&
-      RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) {
+  if (before_child && before_child->Parent() != this) {
     DCHECK(!ForceLegacyLayout());
     DCHECK(before_child->Parent()->IsBlockInInline());
     DCHECK(IsA<LayoutBlockFlow>(before_child->Parent()));
@@ -588,7 +586,6 @@ void LayoutInline::AddChildIgnoringContinuation(LayoutObject* new_child,
 
 void LayoutInline::AddChildAsBlockInInline(LayoutObject* new_child,
                                            LayoutObject* before_child) {
-  DCHECK(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled());
   DCHECK(!ForceLegacyLayout());
   DCHECK(!new_child->IsInline());
   LayoutBlockFlow* anonymous_box;
@@ -841,7 +838,6 @@ LayoutBox* LayoutInline::CreateAnonymousBoxToSplit(
   NOT_DESTROYED();
   DCHECK(box_to_split->IsBlockInInline());
   DCHECK(IsA<LayoutBlockFlow>(box_to_split));
-  DCHECK(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled());
   DCHECK(!ForceLegacyLayout());
   return CreateAnonymousContainerForBlockChildren(/* split_flow */ false);
 }
@@ -1715,8 +1711,7 @@ PaintLayerType LayoutInline::LayerTypeRequired() const {
 
 void LayoutInline::ChildBecameNonInline(LayoutObject* child) {
   NOT_DESTROYED();
-  if (UNLIKELY(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) &&
-      !ForceLegacyLayout()) {
+  if (!ForceLegacyLayout()) {
     DCHECK(!child->IsInline());
     // Following tests reach here.
     //  * external/wpt/css/CSS2/positioning/toogle-abspos-on-relpos-inline-child.html
