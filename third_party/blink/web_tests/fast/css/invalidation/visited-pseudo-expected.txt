@@ -3,7 +3,7 @@ Use descendant invalidation set for :visited pseudo class.
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 PASS internals.computedStyleIncludingVisitedInfo(match).backgroundColor is red
-PASS internals.updateStyleAndReturnAffectedElementCount() is 5
+PASS internals.updateStyleAndReturnAffectedElementCount() is 6
 PASS internals.computedStyleIncludingVisitedInfo(match).backgroundColor is green
 PASS successfullyParsed is true
 

@@ -38,7 +38,7 @@ link.href = "not-visited.html";
 if (window.internals) {
     // Ideally, the affected element count should be 2, but there is a _insideLink that
     // causes inheritance to recalc all elements inside <a>.
-    shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "5");
+    shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "6");
     shouldBe("internals.computedStyleIncludingVisitedInfo(match).backgroundColor", "green");
 }
 

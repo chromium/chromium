@@ -4268,8 +4268,10 @@ scoped_refptr<ComputedStyle> LayoutObject::GetUncachedPseudoElementStyle(
 }
 
 const ComputedStyle* LayoutObject::GetSelectionStyle() const {
-  if (RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
-      StyleRef().HighlightData()) {
+  if (UsesHighlightPseudoInheritance(kPseudoIdSelection)) {
+    if (!StyleRef().HighlightData()) {
+      return nullptr;
+    }
     return StyleRef().HighlightData()->Selection();
   }
   return GetCachedPseudoElementStyle(kPseudoIdSelection);

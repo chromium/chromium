@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 namespace {
@@ -35,7 +36,13 @@ Color SelectionWebkitTextFillColor(const Document& document,
 
 }  // namespace
 
-class HighlightPaintingUtilsTest : public SimTest {};
+class HighlightPaintingUtilsTest : public SimTest,
+                                   private ScopedHighlightInheritanceForTest {
+ public:
+  // TODO(crbug.com/1024156) remove CachedPseudoStyles tests, but keep
+  // SelectedTextInputShadow, when HighlightInheritance becomes stable
+  HighlightPaintingUtilsTest() : ScopedHighlightInheritanceForTest(false) {}
+};
 
 TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesWindowInactive) {
   // Test that we are only caching active selection styles as so that we don't

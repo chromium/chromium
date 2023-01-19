@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL getComputedStyle() for ::selection assert_equals: Background color is lime. expected "rgb(0, 255, 0)" but got "rgba(0, 0, 0, 0)"
-FAIL getComputedStyle() for ::target-text assert_equals: Background color is lime. expected "rgb(0, 255, 0)" but got "rgba(0, 0, 0, 0)"
-PASS getComputedStyle() for ::spelling-error
-PASS getComputedStyle() for ::grammar-error
-PASS getComputedStyle() for ::highlight(foo)
-Harness: the test ran to completion.
-

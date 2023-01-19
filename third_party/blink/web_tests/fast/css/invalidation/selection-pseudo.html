@@ -51,7 +51,7 @@ shouldBe("getComputedStyle(select[0], '::selection').backgroundColor", "red");
 document.body.offsetTop; // Force recalc.
 t1.className = "t1";
 if (window.internals)
-    shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "1");
+    shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "4");
 shouldBe("getComputedStyle(select[0], '::selection').backgroundColor", "green");
 
 shouldBeDefined(window.testRunner);
@@ -63,6 +63,6 @@ shouldBe("getComputedStyle(select[1], '::selection').backgroundColor", "red");
 document.body.offsetTop; // Force recalc.
 t2.className = "t2";
 if (window.internals)
-    shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "1");
+    shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "4");
 shouldBe("getComputedStyle(select[1], '::selection').backgroundColor", "green");
 </script>

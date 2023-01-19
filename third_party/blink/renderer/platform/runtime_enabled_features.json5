@@ -1513,6 +1513,7 @@
     },
     {
       name: "HighlightInheritance",
+      status: "experimental",
     },
     {
       name: "HighlightOverlayPainting",

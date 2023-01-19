@@ -264,6 +264,14 @@ String ComputeBaseComputedStyleDiff(const ComputedStyle* base_computed_style,
   // See crbug.com/1158076.
   exclusions.insert(DebugField::inside_link_);
 
+  // HighlightData is calculated after StyleResolver::ResolveStyle, hence any
+  // freshly resolved style for diffing purposes will not contain the updated
+  // HighlightData. We can safely ignore this because animations and inline
+  // styles do not affect the presence or absence of the various highlight
+  // styles, and we will invariably update those styles when we return to
+  // RecalcOwnStyle, regardless of how ResolveStyle produces its result.
+  exclusions.insert(DebugField::highlight_data_);
+
   Vector<DebugField> diff =
       base_computed_style->DebugDiffFields(computed_style);
 
