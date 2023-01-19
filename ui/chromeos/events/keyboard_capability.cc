@@ -7,6 +7,9 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
+#include "ui/chromeos/events/event_rewriter_chromeos.h"
+#include "ui/chromeos/events/keyboard_layout_util.h"
+#include "ui/events/devices/device_data_manager.h"
 
 namespace ui {
 
@@ -62,6 +65,24 @@ bool KeyboardCapability::IsTopRowKey(const KeyboardCode& key_code) const {
           VKEY_VOLUME_UP,
       });
   return base::Contains(*top_row_action_keys, key_code);
+}
+
+bool KeyboardCapability::HasLauncherButton(
+    const absl::optional<InputDevice>& keyboard) {
+  // Use current implementation. If keyboard is provided, launcher button
+  // depends on if this keyboard is layout2 type. If keyboard is not provided,
+  // launcher button depends on if any keyboard in DeviceDataManager is layout2
+  // type.
+  // TODO(zhangwenyu): Handle edge cases.
+  if (!keyboard.has_value()) {
+    // DeviceUsesKeyboardLayout2() relies on DeviceDataManager.
+    DCHECK(DeviceDataManager::HasInstance());
+    DCHECK(DeviceDataManager::GetInstance()->AreDeviceListsComplete());
+    return DeviceUsesKeyboardLayout2();
+  }
+
+  return EventRewriterChromeOS::GetKeyboardTopRowLayout(keyboard.value()) ==
+         KeyboardTopRowLayout::kKbdTopRowLayout2;
 }
 
 }  // namespace ui

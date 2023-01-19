@@ -3476,6 +3476,7 @@ test("ash_unittests") {
     "//components/viz/test:test_support",
     "//device/bluetooth",
     "//device/bluetooth:mocks",
+    "//device/udev_linux:test_support",
     "//extensions/common:common_constants",
     "//google_apis/calendar",
     "//mojo/core/embedder",

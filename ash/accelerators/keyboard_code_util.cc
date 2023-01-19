@@ -6,11 +6,11 @@
 
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/logging.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/chromeos/events/keyboard_layout_util.h"
-#include "ui/events/devices/device_data_manager.h"
+#include "ui/chromeos/events/keyboard_capability.h"
 
 namespace ash {
 
@@ -34,11 +34,9 @@ absl::optional<std::u16string> GetSpecialStringForKeyboardCode(
       msg_id = IDS_KSV_MODIFIER_SHIFT;
       break;
     case ui::VKEY_COMMAND:
-      // DeviceUsesKeyboardLayout2() relies on DeviceDataManager.
-      DCHECK(ui::DeviceDataManager::HasInstance());
-      DCHECK(ui::DeviceDataManager::GetInstance()->AreDeviceListsComplete());
-      msg_id = ui::DeviceUsesKeyboardLayout2() ? IDS_KSV_MODIFIER_LAUNCHER
-                                               : IDS_KSV_MODIFIER_SEARCH;
+      msg_id = Shell::Get()->keyboard_capability()->HasLauncherButton()
+                   ? IDS_KSV_MODIFIER_LAUNCHER
+                   : IDS_KSV_MODIFIER_SEARCH;
       break;
     case ui::VKEY_ESCAPE:
       msg_id = IDS_KSV_KEY_ESCAPE;

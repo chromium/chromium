@@ -4,16 +4,58 @@
 
 #include "ui/chromeos/events/keyboard_capability.h"
 
+#include <memory>
+
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "components/prefs/pref_service.h"
+#include "device/udev_linux/fake_udev_loader.h"
+#include "ui/events/devices/device_data_manager_test_api.h"
+#include "ui/events/devices/input_device.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
 
 namespace {
+
+constexpr char kKbdTopRowPropertyName[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
+constexpr char kKbdTopRowLayout1Tag[] = "1";
+constexpr char kKbdTopRowLayout2Tag[] = "2";
+
+class FakeDeviceManager {
+ public:
+  FakeDeviceManager() = default;
+  FakeDeviceManager(const FakeDeviceManager&) = delete;
+  FakeDeviceManager& operator=(const FakeDeviceManager&) = delete;
+  ~FakeDeviceManager() = default;
+
+  // Add a fake keyboard to DeviceDataManagerTestApi and provide layout info to
+  // fake udev.
+  void AddFakeKeyboard(const ui::InputDevice& fake_keyboard,
+                       const std::string& layout) {
+    fake_keyboard_devices_.push_back(fake_keyboard);
+
+    ui::DeviceDataManagerTestApi().SetKeyboardDevices({});
+    ui::DeviceDataManagerTestApi().SetKeyboardDevices(fake_keyboard_devices_);
+    ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
+
+    std::map<std::string, std::string> sysfs_properties;
+    std::map<std::string, std::string> sysfs_attributes;
+    sysfs_properties[kKbdTopRowPropertyName] = layout;
+    fake_udev_.Reset();
+    fake_udev_.AddFakeDevice(fake_keyboard.name, fake_keyboard.sys_path.value(),
+                             /*subsystem=*/"input", /*devnode=*/absl::nullopt,
+                             /*devtype=*/absl::nullopt,
+                             std::move(sysfs_attributes),
+                             std::move(sysfs_properties));
+  }
+
+ private:
+  testing::FakeUdevLoader fake_udev_;
+  std::vector<ui::InputDevice> fake_keyboard_devices_;
+};
 
 class TestObserver : public ui::KeyboardCapability::Observer {
  public:
@@ -45,6 +87,7 @@ class KeyboardCapabilityTest : public AshTestBase {
     AshTestBase::SetUp();
     keyboard_capability_ = Shell::Get()->keyboard_capability();
     test_observer_ = std::make_unique<TestObserver>();
+    fake_keyboard_manager_ = std::make_unique<FakeDeviceManager>();
     keyboard_capability_->AddObserver(test_observer_.get());
   }
 
@@ -56,6 +99,7 @@ class KeyboardCapabilityTest : public AshTestBase {
  protected:
   ui::KeyboardCapability* keyboard_capability_;
   std::unique_ptr<TestObserver> test_observer_;
+  std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
 };
 
 TEST_F(KeyboardCapabilityTest, TestObserver) {
@@ -116,6 +160,33 @@ TEST_F(KeyboardCapabilityTest, TestIsTopRowKey) {
 
   // A key not in the kLayout2TopRowKeyToFKeyMap is not a top row key.
   EXPECT_FALSE(keyboard_capability_->IsTopRowKey(ui::KeyboardCode::VKEY_A));
+}
+
+TEST_F(KeyboardCapabilityTest, TestHasLauncherButton) {
+  // Add a non-layout2 keyboard.
+  ui::InputDevice fake_keyboard1(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/"Keyboard1");
+  fake_keyboard1.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard1, kKbdTopRowLayout1Tag);
+
+  // Provide specific keyboard. Launcher button depends on if the keyboard is
+  // layout2 type.
+  EXPECT_FALSE(keyboard_capability_->HasLauncherButton(fake_keyboard1));
+  // Do not provide specific keyboard. Launcher button depends on if any one
+  // of the keyboards is layout2 type.
+  EXPECT_FALSE(keyboard_capability_->HasLauncherButton());
+
+  // Add a layout2 keyboard.
+  ui::InputDevice fake_keyboard2(
+      /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/"Keyboard2");
+  fake_keyboard1.sys_path = base::FilePath("path2");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard2, kKbdTopRowLayout2Tag);
+
+  EXPECT_FALSE(keyboard_capability_->HasLauncherButton(fake_keyboard1));
+  EXPECT_TRUE(keyboard_capability_->HasLauncherButton(fake_keyboard2));
+  EXPECT_TRUE(keyboard_capability_->HasLauncherButton());
 }
 
 }  // namespace ash

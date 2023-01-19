@@ -7,8 +7,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
@@ -19,12 +19,13 @@ namespace {
 constexpr double kResultRelevanceThreshold = 0.89;
 }
 
-class KeyboardShortcutProviderTest : public testing::Test {
+class KeyboardShortcutProviderTest : public ChromeAshTestBase {
  public:
   KeyboardShortcutProviderTest() = default;
 
  protected:
   void SetUp() override {
+    ChromeAshTestBase::SetUp();
     // A DCHECK inside a KSV metadata utility function relies on device lists
     // being complete.
     ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
@@ -38,7 +39,7 @@ class KeyboardShortcutProviderTest : public testing::Test {
     Wait();
   }
 
-  void Wait() { task_environment_.RunUntilIdle(); }
+  void Wait() { task_environment()->RunUntilIdle(); }
 
   const SearchProvider::Results& results() {
     return search_controller_->last_results();
@@ -47,8 +48,6 @@ class KeyboardShortcutProviderTest : public testing::Test {
   void StartSearch(const std::u16string& query) {
     search_controller_->StartSearch(query);
   }
-
-  content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<Profile> profile_;
   std::unique_ptr<TestSearchController> search_controller_;

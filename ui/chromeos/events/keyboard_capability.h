@@ -6,7 +6,9 @@
 #define UI_CHROMEOS_EVENTS_KEYBOARD_CAPABILITY_H_
 
 #include "base/containers/fixed_flat_map.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/events/devices/input_device.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ui {
@@ -135,6 +137,11 @@ class KeyboardCapability {
   // Check if a key code is one of the top row keys.
   // TODO(zhangwenyu): Support all 4 legacy layouts and custom vivaldi layouts.
   bool IsTopRowKey(const ui::KeyboardCode& key_code) const;
+
+  // Check if a keyboard has a launcher button rather than a search button.
+  // TODO(zhangwenyu): Handle command key and window key cases.
+  bool HasLauncherButton(
+      const absl::optional<InputDevice>& keyboard = absl::nullopt);
 
  private:
   std::unique_ptr<Delegate> delegate_;

@@ -8,6 +8,7 @@
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,7 +22,7 @@ using ::ui::KeyboardCode;
 using TextVector = ChromeSearchResult::TextVector;
 using TextType = ::ash::SearchResultTextItemType;
 
-class KeyboardShortcutResultTest : public testing::Test {
+class KeyboardShortcutResultTest : public ChromeAshTestBase {
  public:
   TextVector GetTextVectorFromTemplate(
       const std::u16string& template_string,
