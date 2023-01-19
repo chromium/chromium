@@ -944,20 +944,6 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
   if (!params.Url().IsValid())
     return ResourceRequestBlockedReason::kOther;
 
-  // data: URL is not supported in SVGUseElement.
-  if (RuntimeEnabledFeatures::RemoveDataUrlInSvgUseEnabled() &&
-      options.initiator_info.name == AtomicString("use") &&
-      params.Url().ProtocolIsData()) {
-    String message = "Unsafe attempt to load URL " +
-                     params.Url().ElidedString() + " from origin " +
-                     resource_request.RequestorOrigin()->ToString() +
-                     ". Domains, protocols and ports must match.\n";
-    console_logger_->AddConsoleMessage(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError, message);
-    return ResourceRequestBlockedReason::kOrigin;
-  }
-
   ResourceLoadPriority computed_load_priority = resource_request.Priority();
   // We should only compute the priority for ResourceRequests whose priority has
   // not already been set.

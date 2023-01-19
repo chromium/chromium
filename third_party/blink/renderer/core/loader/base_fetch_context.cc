@@ -657,6 +657,13 @@ BaseFetchContext::CanRequestInternal(
   if (IsSVGImageChromeClient() && !url.ProtocolIsData())
     return ResourceRequestBlockedReason::kOrigin;
 
+  // data: URL is deprecated in SVGUseElement.
+  if (RuntimeEnabledFeatures::RemoveDataUrlInSvgUseEnabled() &&
+      options.initiator_info.name.Ascii() == "use" && url.ProtocolIsData()) {
+    PrintAccessDeniedMessage(url);
+    return ResourceRequestBlockedReason::kOrigin;
+  }
+
   // Measure the number of embedded-credential ('http://user:password@...')
   // resources embedded as subresources.
   const FetchClientSettingsObject& fetch_client_settings_object =
