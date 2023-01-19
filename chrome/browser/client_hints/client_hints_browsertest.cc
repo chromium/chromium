@@ -1979,6 +1979,15 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, Default) {
   histogram_tester.ExpectTotalCount("ClientHints.UpdateEventCount",
                                     update_event_count);
 
+  // One fetch when initially add the client hints head, one fetch for look up
+  // commit client hints when navigation commits.
+  histogram_tester.ExpectTotalCount("ClientHints.FetchLatency_Total", 2);
+  histogram_tester.ExpectTotalCount("ClientHints.FetchLatency_PrefRead", 2);
+  histogram_tester.ExpectTotalCount("ClientHints.FetchLatency_PrerenderHost",
+                                    2);
+  histogram_tester.ExpectTotalCount("ClientHints.FetchLatency_OriginTrialCheck",
+                                    2);
+
   EXPECT_EQ(2u, count_user_agent_hint_headers_seen());
   EXPECT_EQ(2u, count_ua_mobile_client_hints_headers_seen());
   EXPECT_EQ(2u, count_ua_platform_client_hints_headers_seen());

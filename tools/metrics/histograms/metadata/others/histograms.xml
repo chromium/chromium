@@ -2911,14 +2911,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ClientHints.FetchLatency" units="ms"
+<histogram name="ClientHints.FetchLatency{OperationType}" units="ms"
     expires_after="2023-06-25">
   <owner>miketaylr@chromium.org</owner>
   <owner>potassium-katabolism@google.com</owner>
   <summary>
     The latency (in milliseconds) to fetch the client hints for a given origin
-    from the Accept-CH cache.
+    from the Accept-CH cache for {OperationType}.
   </summary>
+  <token key="OperationType">
+    <variant name="_OriginTrialCheck"
+        summary="checking origin trial client hints"/>
+    <variant name="_PrefRead" summary="PrefService read"/>
+    <variant name="_PrerenderHost" summary="prerender host"/>
+    <variant name="_Total"
+        summary="all subcategories operations: PrefRead, PrerenderHost, and
+                 OriginTrialCheck"/>
+  </token>
 </histogram>
 
 <histogram name="ClientHints.PersistDuration" units="ms"
