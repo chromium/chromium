@@ -1,0 +1,59 @@
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+<head>
+<script>
+let fulfillDone = () => {};
+const output = [];
+const testRunner = {};
+testRunner.dumpAsText = () => {};
+testRunner.waitUntilDone = () => {};
+testRunner.setPopupBlockingEnabled = () => {};
+testRunner.notifyDone = () => {
+  return fulfillDone(output.join('\n'));
+};
+DevToolsHost = {};
+DevToolsHost.sendMessageToEmbedder = (message) => {
+  const object = JSON.parse(message);
+  sendProtocolMessage(object.params[0]);
+}
+
+DevToolsHost.dummyPageURL = `http://127.0.0.1:${window.location.port}/protocol/inspector-protocol-page.html`;
+
+</script>
+<script src="/resources/inspector-protocol-test.js"></script>
+<script>
+DevToolsAPI._log = text => output.push(text);
+
+window.cdp.onmessage = json => {
+  DevToolsAPI.dispatchMessage(json);
+}
+
+function sendProtocolMessage(json) {
+  window.cdp.send(json);
+}
+
+async function runTest(params) {
+  const testScriptURL = params.test;
+  const testBaseURL = testScriptURL.substring(0, testScriptURL.lastIndexOf('/') + 1);
+
+  const targetPageURL = params.target || params.test;
+  const targetBaseURL = targetPageURL.substring(0, targetPageURL.lastIndexOf('/') + 1);
+
+  const testScript = await DevToolsAPI._fetch(testScriptURL);
+  const testFunction = eval(`${testScript}\n//# sourceURL=${testScriptURL}`);
+  const testRunner = new TestRunner(testBaseURL, targetBaseURL,
+      DevToolsAPI._log, DevToolsAPI._completeTest, DevToolsAPI._fetch, params);
+  if (params.dumpDevToolsProtocol)
+    testRunner.startDumpingProtocolMessages();
+  testFunction(testRunner);
+
+  return new Promise(fulfill => { fulfillDone = fulfill; });
+}
+
+</script>
+</head>
+</html>

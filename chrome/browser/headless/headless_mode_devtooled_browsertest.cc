@@ -12,15 +12,14 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
 
 namespace headless {
 
-HeadlessDevTooledBrowserTest::HeadlessDevTooledBrowserTest() = default;
-HeadlessDevTooledBrowserTest::~HeadlessDevTooledBrowserTest() = default;
+HeadlessModeDevTooledBrowserTest::HeadlessModeDevTooledBrowserTest() = default;
+HeadlessModeDevTooledBrowserTest::~HeadlessModeDevTooledBrowserTest() = default;
 
-void HeadlessDevTooledBrowserTest::RunTest() {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
+void HeadlessModeDevTooledBrowserTest::RunTest() {
   browser_devtools_client_.AttachToBrowser();
 
   content::BrowserContext* browser_context = browser()->profile();
@@ -34,7 +33,8 @@ void HeadlessDevTooledBrowserTest::RunTest() {
 
   devtools_client_.AttachToWebContents(web_contents_.get());
 
-  GURL url = GetURL();
+  // TODO(crbug.com/1408835): Figure about a better way to cope with racing.
+  GURL url("about:blank");
   content::NavigationController::LoadURLParams params(url);
   web_contents_->GetController().LoadURLWithParams(params);
 
@@ -52,16 +52,20 @@ void HeadlessDevTooledBrowserTest::RunTest() {
   base::RunLoop().RunUntilIdle();
 }
 
-void HeadlessDevTooledBrowserTest::RenderViewReady() {
-  RunDevTooledTest();
+void HeadlessModeDevTooledBrowserTest::
+    DocumentOnLoadCompletedInPrimaryMainFrame() {
+  if (!test_started_) {
+    test_started_ = true;
+    RunDevTooledTest();
+  }
 }
 
-void HeadlessDevTooledBrowserTest::WebContentsDestroyed() {
+void HeadlessModeDevTooledBrowserTest::WebContentsDestroyed() {
   FinishAsyncTest();
   FAIL() << "Web contents destroyed unexpectedly.";
 }
 
-void HeadlessDevTooledBrowserTest::RunAsyncTest() {
+void HeadlessModeDevTooledBrowserTest::RunAsyncTest() {
   DCHECK(!run_loop_);
 
   run_loop_ = std::make_unique<base::RunLoop>(
@@ -70,24 +74,22 @@ void HeadlessDevTooledBrowserTest::RunAsyncTest() {
   run_loop_ = nullptr;
 }
 
-void HeadlessDevTooledBrowserTest::FinishAsyncTest() {
+void HeadlessModeDevTooledBrowserTest::FinishAsyncTest() {
   DCHECK(run_loop_);
 
   run_loop_->Quit();
 }
 
-GURL HeadlessDevTooledBrowserTest::GetURL() {
-  return GURL("about:blank");
-}
-
-class HeadlessDevToolsClientNavigationTest
-    : public HeadlessDevTooledBrowserTest {
+class HeadlessModeDevToolsClientNavigationTest
+    : public HeadlessModeDevTooledBrowserTest {
  public:
   void RunDevTooledTest() override {
+    ASSERT_TRUE(embedded_test_server()->Start());
+
     devtools_client_.AddEventHandler(
         "Page.loadEventFired",
         base::BindRepeating(
-            &HeadlessDevToolsClientNavigationTest::OnLoadEventFired,
+            &HeadlessModeDevToolsClientNavigationTest::OnLoadEventFired,
             base::Unretained(this)));
     SendCommandSync(devtools_client_, "Page.enable");
 
@@ -103,6 +105,6 @@ class HeadlessDevToolsClientNavigationTest
   }
 };
 
-HEADLESS_DEVTOOLED_TEST_F(HeadlessDevToolsClientNavigationTest);
+HEADLESS_MODE_DEVTOOLED_TEST_F(HeadlessModeDevToolsClientNavigationTest);
 
 }  // namespace headless

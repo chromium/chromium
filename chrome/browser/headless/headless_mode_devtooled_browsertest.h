@@ -12,7 +12,6 @@
 #include "components/devtools/simple_devtools_protocol_client/simple_devtools_protocol_client.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
 
 namespace content {
 class WebContents;
@@ -23,22 +22,19 @@ namespace headless {
 // Base class for tests that require access to a DevToolsClient. Subclasses
 // should override the RunDevTooledTest() method, which is called asynchronously
 // when the DevToolsClient is ready.
-class HeadlessDevTooledBrowserTest : public HeadlessModeBrowserTest,
-                                     public content::WebContentsObserver {
+class HeadlessModeDevTooledBrowserTest : public HeadlessModeBrowserTest,
+                                         public content::WebContentsObserver {
  public:
-  HeadlessDevTooledBrowserTest();
-  ~HeadlessDevTooledBrowserTest() override;
+  HeadlessModeDevTooledBrowserTest();
+  ~HeadlessModeDevTooledBrowserTest() override;
 
  protected:
   using SimpleDevToolsProtocolClient =
       simple_devtools_protocol_client::SimpleDevToolsProtocolClient;
 
   // content::WebContentsObserver implementation:
-  void RenderViewReady() override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
   void WebContentsDestroyed() override;
-
-  // Implemented by tests to navigate to a page other than 'about:blank'.
-  virtual GURL GetURL();
 
   // Implemented by tests and used to send requests to DevTools. Subclasses
   // need to ensure that FinishAsyncTest() is called at some point.
@@ -60,31 +56,32 @@ class HeadlessDevTooledBrowserTest : public HeadlessModeBrowserTest,
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
+  bool test_started_ = false;
 };
 
-#define HEADLESS_DEVTOOLED_TEST_F(TEST_FIXTURE_NAME)        \
+#define HEADLESS_MODE_DEVTOOLED_TEST_F(TEST_FIXTURE_NAME)   \
   IN_PROC_BROWSER_TEST_F(TEST_FIXTURE_NAME, RunAsyncTest) { \
     RunTest();                                              \
   }                                                         \
-  class HeadlessDevTooledBrowserTestNeedsSemicolon##TEST_FIXTURE_NAME {}
+  class HeadlessModeDevTooledBrowserTestNeedsSemicolon##TEST_FIXTURE_NAME {}
 
-#define HEADLESS_DEVTOOLED_TEST_P(TEST_FIXTURE_NAME)        \
+#define HEADLESS_MODE_DEVTOOLED_TEST_P(TEST_FIXTURE_NAME)   \
   IN_PROC_BROWSER_TEST_P(TEST_FIXTURE_NAME, RunAsyncTest) { \
     RunTest();                                              \
   }                                                         \
-  class HeadlessDevTooledBrowserTestNeedsSemicolon##TEST_FIXTURE_NAME {}
+  class HeadlessModeDevTooledBrowserTestNeedsSemicolon##TEST_FIXTURE_NAME {}
 
-#define DISABLED_HEADLESS_DEVTOOLED_TEST_F(TEST_FIXTURE_NAME)        \
+#define DISABLED_HEADLESS_MODE_DEVTOOLED_TEST_F(TEST_FIXTURE_NAME)   \
   IN_PROC_BROWSER_TEST_F(TEST_FIXTURE_NAME, DISABLED_RunAsyncTest) { \
     RunTest();                                                       \
   }                                                                  \
-  class HeadlessDevTooledBrowserTestNeedsSemicolon##TEST_FIXTURE_NAME {}
+  class HeadlessModeDevTooledBrowserTestNeedsSemicolon##TEST_FIXTURE_NAME {}
 
-#define DISABLED_HEADLESS_DEVTOOLED_TEST_P(TEST_FIXTURE_NAME)        \
+#define DISABLED_HEADLESS_MODE_DEVTOOLED_TEST_P(TEST_FIXTURE_NAME)   \
   IN_PROC_BROWSER_TEST_P(TEST_FIXTURE_NAME, DISABLED_RunAsyncTest) { \
     RunTest();                                                       \
   }                                                                  \
-  class HeadlessDevTooledBrowserTestNeedsSemicolon##TEST_FIXTURE_NAME {}
+  class HeadlessModeDevTooledBrowserTestNeedsSemicolon##TEST_FIXTURE_NAME {}
 
 }  // namespace headless
 
