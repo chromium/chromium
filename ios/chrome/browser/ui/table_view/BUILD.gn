@@ -59,9 +59,6 @@ source_set("presentation") {
     "table_view_animator.h",
     "table_view_animator.mm",
     "table_view_modal_presenting.h",
-    "table_view_presentation_controller.h",
-    "table_view_presentation_controller.mm",
-    "table_view_presentation_controller_delegate.h",
   ]
   deps = [
     "//ios/chrome/browser/ui/image_util",

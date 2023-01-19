@@ -144,7 +144,6 @@ source_set("clear_browsing_data") {
     "//ios/chrome/browser/ui/settings",
     "//ios/chrome/browser/ui/settings/clear_browsing_data",
     "//ios/chrome/browser/ui/table_view",
-    "//ios/chrome/browser/ui/table_view:presentation",
     "//ios/chrome/browser/url_loading",
     "//ios/web/public",
   ]
