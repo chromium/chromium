@@ -264,20 +264,18 @@ AppContainerBase::GetSecurityCapabilities() {
 
 ResultCode AppContainerBase::BuildLowBoxToken(base::win::ScopedHandle* token) {
   if (type_ == AppContainerType::kLowbox) {
-    if (CreateLowBoxToken(token->Get(), PRIMARY,
-                          GetSecurityCapabilities().get(),
-                          token) != ERROR_SUCCESS) {
+    if (!CreateLowBoxToken(token->get(), PRIMARY, package_sid_, capabilities_,
+                           token)) {
       return SBOX_ERROR_CANNOT_CREATE_LOWBOX_TOKEN;
     }
 
-    if (!ReplacePackageSidInDacl(token->Get(),
+    if (!ReplacePackageSidInDacl(token->get(),
                                  base::win::SecurityObjectType::kKernel,
                                  package_sid_, TOKEN_ALL_ACCESS)) {
       return SBOX_ERROR_CANNOT_MODIFY_LOWBOX_TOKEN_DACL;
     }
-  } else if (CreateLowBoxToken(nullptr, IMPERSONATION,
-                               GetSecurityCapabilities().get(),
-                               token) != ERROR_SUCCESS) {
+  } else if (!CreateLowBoxToken(nullptr, IMPERSONATION, package_sid_,
+                                capabilities_, token)) {
     return SBOX_ERROR_CANNOT_CREATE_LOWBOX_IMPERSONATION_TOKEN;
   }
 

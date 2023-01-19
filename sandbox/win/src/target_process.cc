@@ -28,7 +28,6 @@
 #include "sandbox/win/src/restricted_token_utils.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/sandbox_types.h"
-#include "sandbox/win/src/security_capabilities.h"
 #include "sandbox/win/src/sharedmem_ipc_server.h"
 #include "sandbox/win/src/startup_information_helper.h"
 #include "sandbox/win/src/win_utils.h"
@@ -85,9 +84,8 @@ bool GetAppContainerImpersonationToken(
   auto app_container_sid = token->AppContainerSid();
   if (!app_container_sid)
     return false;
-  SecurityCapabilities security_caps(*app_container_sid, capabilities);
-  return CreateLowBoxToken(initial_token, IMPERSONATION, &security_caps,
-                           impersonation_token) == ERROR_SUCCESS;
+  return CreateLowBoxToken(initial_token, IMPERSONATION, *app_container_sid,
+                           capabilities, impersonation_token);
 }
 
 }  // namespace
