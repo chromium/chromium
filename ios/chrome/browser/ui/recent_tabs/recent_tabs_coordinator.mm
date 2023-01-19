@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_menu_provider.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_presentation_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
-#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_transitioning_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/synced_sessions.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
@@ -44,8 +43,6 @@
 @property(nonatomic, strong)
     TableViewNavigationController* recentTabsNavigationController;
 @property(nonatomic, strong)
-    RecentTabsTransitioningDelegate* recentTabsTransitioningDelegate;
-@property(nonatomic, strong)
     RecentTabsTableViewController* recentTabsTableViewController;
 @property(nonatomic, strong) SharingCoordinator* sharingCoordinator;
 @property(nonatomic, strong)
@@ -56,7 +53,6 @@
 @synthesize completion = _completion;
 @synthesize mediator = _mediator;
 @synthesize recentTabsNavigationController = _recentTabsNavigationController;
-@synthesize recentTabsTransitioningDelegate = _recentTabsTransitioningDelegate;
 
 - (void)start {
   // Initialize and configure RecentTabsTableViewController.
@@ -109,17 +105,17 @@
       initWithTable:self.recentTabsTableViewController];
   self.recentTabsNavigationController.toolbarHidden = YES;
 
-      [self.recentTabsNavigationController
-          setModalPresentationStyle:UIModalPresentationFormSheet];
-      self.recentTabsNavigationController.presentationController.delegate =
-          self.recentTabsTableViewController;
+  [self.recentTabsNavigationController
+      setModalPresentationStyle:UIModalPresentationFormSheet];
+  self.recentTabsNavigationController.presentationController.delegate =
+      self.recentTabsTableViewController;
 
-      self.recentTabsTableViewController.preventUpdates = NO;
+  self.recentTabsTableViewController.preventUpdates = NO;
 
-      [self.baseViewController
-          presentViewController:self.recentTabsNavigationController
-                       animated:YES
-                     completion:nil];
+  [self.baseViewController
+      presentViewController:self.recentTabsNavigationController
+                   animated:YES
+                 completion:nil];
 }
 
 - (void)stop {
@@ -132,7 +128,6 @@
   self.recentTabsContextMenuHelper = nil;
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
-  self.recentTabsTransitioningDelegate = nil;
   [self.mediator disconnect];
 }
 
