@@ -346,8 +346,6 @@ void FileAnalyzer::OnDocumentAnalysisFinished(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Log metrics for Document Analysis.
-  base::UmaHistogramBoolean("SBClientDownload.DocumentAnalysisSuccess",
-                            document_results.success);
   LogAnalysisDurationWithAndWithoutSuffix("Document");
 
   ClientDownloadRequest::DocumentSummary document_summary;

@@ -129,16 +129,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.DocumentAnalysisSuccess" enum="Boolean"
-    expires_after="2023-02-19">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    For each Office file analyzed by the SafeBrowsing download service, records
-    if analysis by maldoca was successful.
-  </summary>
-</histogram>
-
 <histogram name="SBClientDownload.DocumentCheckDownloadStats"
     enum="SBClientDownloadCheckDownloadStats" expires_after="2023-06-10">
   <owner>drubery@chromium.org</owner>
