@@ -262408,16 +262408,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "17172e9fd0c4e5646441d7e4d41239f4ce53dbdb",
-     []
-    ],
-    "mtime.json": [
-     "5b56e0935016e09a6d27fa83cc263233fb45b983",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -309560,10 +309550,6 @@
      ],
      "highlight-cascade-007.html.ini": [
       "2498ea002174797a36f46530700ad0bab5761de6",
-      []
-     ],
-     "highlight-currentcolor-computed-inheritance-expected.txt": [
-      "e12026ba7313ef187dfe56d2aea31cc441556950",
       []
      ],
      "highlight-currentcolor-computed-inheritance.html.ini": [
@@ -378607,7 +378593,7 @@
       []
      ],
      "mock-subapps.js": [
-      "467d932465bb63b031e831b2f42f98ad2935d04f",
+      "ddbf27649e19954fd602b80aac17e1b5c19576be",
       []
      ],
      "mock-textdetection.js": [
@@ -438269,7 +438255,7 @@
        ]
       ],
       "content-visibility-035.html": [
-       "bc84c28d4a362cc37755ec8886573d2a1f70f8ee",
+       "c2f62ca438b19bf6004ad46cd31a48ace05fd1a7",
        [
         null,
         {}
@@ -605824,7 +605810,7 @@
    },
    "subapps": {
     "add-error.tentative.https.html": [
-     "c9db29b62de6599425f7157c3d50d956f1e69f48",
+     "3dafdcd5aca11819808c393a22bb15fcb14b4e1f",
      [
       null,
       {
@@ -605833,7 +605819,7 @@
      ]
     ],
     "add-success.tentative.https.html": [
-     "b2751adcb8fa0b68817d46687a5196fbd75f37b2",
+     "fee7c6605c626c68bc591ce885cadff7cd294ee8",
      [
       null,
       {
@@ -605874,14 +605860,14 @@
      ]
     ],
     "list-success.tentative.https.html": [
-     "0ee02230e805b1085a901a64e102182e48e5738f",
+     "d214b8ac14a7588c27c313f2ee6df1e138ccdb0c",
      [
       null,
       {}
      ]
     ],
     "remove-error.tentative.https.html": [
-     "05305c4fafc5db90d13db4f7ac65a6c10154e710",
+     "e447ccede5c53199789ef8c8defb80e18303311a",
      [
       null,
       {}
