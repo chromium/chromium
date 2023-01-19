@@ -9,6 +9,9 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
@@ -40,10 +43,6 @@
 #include "tools/v8_context_snapshot/buildflags.h"
 #include "v8/include/v8-initialization.h"
 #include "v8/include/v8-snapshot.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
 #if BUILDFLAG(IS_ANDROID)
@@ -454,22 +453,6 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
   const size_t min_pool_size = partition_alloc::internal::
       PartitionAddressSpace::ConfigurablePoolMinSize();
   size_t pool_size = max_pool_size;
-#if BUILDFLAG(IS_WIN)
-  // On Windows prior to 8.1 we allocate a smaller Pool since reserving
-  // virtual memory is expensive on these OSes.
-  if (base::win::GetVersion() < base::win::Version::WIN8_1) {
-    // The size chosen here should be synchronized with the size of the
-    // virtual memory reservation for the V8 sandbox on these platforms.
-    // Currently, that is 8GB, of which 4GB are used for V8's pointer
-    // compression region.
-    // TODO(saelo) give this constant a proper name and maybe move it
-    // somewhere else.
-    constexpr size_t kGB = 1ULL << 30;
-    pool_size = 4ULL * kGB;
-    DCHECK_LE(pool_size, max_pool_size);
-    DCHECK_GE(pool_size, min_pool_size);
-  }
-#endif
   // Try to reserve the maximum size of the pool at first, then keep halving
   // the size on failure until it succeeds.
   uintptr_t pool_base = 0;
