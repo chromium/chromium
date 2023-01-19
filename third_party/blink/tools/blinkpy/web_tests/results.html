@@ -871,8 +871,7 @@ const Report = {
           traversal.html[index] = `<div>cp "${actualFile}" "${parser.basename + expectedNames[i]}";</div>`;
         } else {
           traversal.html[index] =
-              `<div>wget "${url.href}";</div>
-               <div>mv "${parser.basename + actualNames[i]}" "${parser.basename + expectedNames[i]}";</div>`;
+              `<div>wget "${url.href}" --backups=0 -O "${parser.basename + expectedNames[i]}";</div>`;
         }
         traversal.waitCount--;
       });
