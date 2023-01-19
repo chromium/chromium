@@ -8,6 +8,14 @@ if (is_win) {
   import("//build/config/win/visual_studio_version.gni")
 }
 
+config("brotli_defines") {
+  # By default, brotli depends on undefined behavior, but setting
+  # BROTLI_BUILD_PORTABLE should result in a build which does not.
+  if (is_ubsan) {
+    defines = [ "BROTLI_BUILD_PORTABLE" ]
+  }
+}
+
 config("includes") {
   include_dirs = [ "include" ]
 }
@@ -40,12 +48,14 @@ common_sources = [
 static_library("common") {
   sources = common_sources
   public_configs = [ ":includes" ]
+  configs += [ ":brotli_defines" ]
   deps = [ ":headers" ]
 }
 
 static_library("common_no_dictionary_data") {
   sources = common_sources
   public_configs = [ ":includes" ]
+  configs += [ ":brotli_defines" ]
   deps = [ ":headers" ]
   defines = [ "BROTLI_EXTERNAL_DICTIONARY_DATA" ]
 }
@@ -131,6 +141,7 @@ enc_sources = [
 static_library("dec") {
   sources = dec_sources
   public_configs = [ ":includes" ]
+  configs += [ ":brotli_defines" ]
   public_deps = [ ":headers" ]
   deps = [ ":common" ]
 
@@ -145,6 +156,7 @@ static_library("dec") {
 static_library("dec_no_dictionary_data") {
   sources = dec_sources
   public_configs = [ ":includes" ]
+  configs += [ ":brotli_defines" ]
   public_deps = [ ":headers" ]
   deps = [ ":common_no_dictionary_data" ]
 
@@ -159,7 +171,7 @@ static_library("dec_no_dictionary_data") {
 static_library("enc") {
   sources = enc_sources
   public_configs = [ ":includes" ]
-
+  configs += [ ":brotli_defines" ]
   public_deps = [ ":headers" ]
   deps = [ ":common" ]
 
@@ -175,6 +187,7 @@ if (current_toolchain == host_toolchain) {
   executable("brotli") {
     sources = [ "tools/brotli.c" ]
     public_configs = [ ":includes" ]
+    configs += [ ":brotli_defines" ]
 
     deps = [
       ":common",
