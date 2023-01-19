@@ -11,16 +11,13 @@
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/payment_app_factory.h"
 #include "components/webdata/common/web_data_service_consumer.h"
-#include "content/public/browser/web_contents_observer.h"
 
 namespace payments {
 
 struct SecurePaymentConfirmationCredential;
 
-class SecurePaymentConfirmationAppFactory
-    : public PaymentAppFactory,
-      public WebDataServiceConsumer,
-      public content::WebContentsObserver {
+class SecurePaymentConfirmationAppFactory : public PaymentAppFactory,
+                                            public WebDataServiceConsumer {
  public:
   SecurePaymentConfirmationAppFactory();
   ~SecurePaymentConfirmationAppFactory() override;
@@ -40,9 +37,6 @@ class SecurePaymentConfirmationAppFactory
   void OnWebDataServiceRequestDone(
       WebDataServiceBase::Handle handle,
       std::unique_ptr<WDTypedResult> result) override;
-
-  // WebContentsObserver:
-  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
   void OnIsUserVerifyingPlatformAuthenticatorAvailable(
       std::unique_ptr<Request> request,

@@ -275,9 +275,6 @@ void SecurePaymentConfirmationAppFactory::Create(
         delegate->SetOptOutOffered();
       }
 
-      // Observe the web contents to ensure the authenticator outlives it.
-      Observe(delegate->GetWebContents());
-
       std::unique_ptr<webauthn::InternalAuthenticator> authenticator =
           delegate->CreateInternalAuthenticator();
       if (!authenticator) {
@@ -304,10 +301,6 @@ void SecurePaymentConfirmationAppFactory::Create(
   }
 
   delegate->OnDoneCreatingPaymentApps();
-}
-
-void SecurePaymentConfirmationAppFactory::RenderFrameDeleted(
-    content::RenderFrameHost* render_frame_host) {
 }
 
 void SecurePaymentConfirmationAppFactory::OnWebDataServiceRequestDone(
