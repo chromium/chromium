@@ -4,11 +4,12 @@
 
 #include "chrome/browser/ash/arc/tracing/arc_system_model.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 #include <set>
 
 #include "base/strings/stringprintf.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -33,15 +34,16 @@ bool LoadThreads(const base::Value* value,
     if (!it.second.is_dict())
       return false;
 
-    const base::Value* name = it.second.FindKey(kKeyName);
-    if (!name || !name->is_string())
+    const std::string* name = it.second.GetDict().FindString(kKeyName);
+    if (!name) {
       return false;
-    const base::Value* pid = it.second.FindKey(kKeyPid);
-    if (!pid || !pid->is_int())
+    }
+    const absl::optional<int> pid = it.second.GetDict().FindInt(kKeyPid);
+    if (!pid) {
       return false;
+    }
 
-    (*out_threads)[tid] =
-        ArcSystemModel::ThreadInfo(pid->GetInt(), name->GetString());
+    (*out_threads)[tid] = ArcSystemModel::ThreadInfo(pid.value(), *name);
   }
 
   return true;
@@ -164,14 +166,17 @@ bool ArcSystemModel::Load(const base::Value* root) {
   if (!root || !root->is_dict())
     return false;
 
-  if (!LoadThreads(root->FindKey(kKeyThreads), &thread_map_))
+  if (!LoadThreads(root->GetDict().Find(kKeyThreads), &thread_map_)) {
     return false;
+  }
 
-  if (!LoadAllCpuEvents(root->FindKey(kKeyCpu), &all_cpu_events_))
+  if (!LoadAllCpuEvents(root->GetDict().Find(kKeyCpu), &all_cpu_events_)) {
     return false;
+  }
 
-  if (!LoadValueEvents(root->FindKey(kKeyMemory), &memory_events_))
+  if (!LoadValueEvents(root->GetDict().Find(kKeyMemory), &memory_events_)) {
     return false;
+  }
 
   return true;
 }
