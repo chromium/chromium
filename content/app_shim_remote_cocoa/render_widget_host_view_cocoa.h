@@ -126,11 +126,6 @@ struct DidOverscrollParams;
   // Indicates if we are currently handling a key down event.
   BOOL _handlingKeyDown;
 
-  // Indicates if a reconversion (which means a piece of committed text becomes
-  // part of the composition again) is triggered in Japanese IME when Live
-  // Conversion is on.
-  BOOL _isReconversionTriggered;
-
   // Indicates if there is any marked text.
   BOOL _hasMarkedText;
 
