@@ -22,6 +22,7 @@
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -249,10 +250,9 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
                                    public DriveFsPinManager::Observer {
  public:
   ~DriveInternalsWebUIHandler() override {
-    if (pin_manager_) {
-      pin_manager_->RemoveObserver(this);
-      VLOG(1) << "Removed Pin manager observer";
-    }
+    VLOG_IF(1, pin_manager_)
+        << "DriveInternalsWebUIHandler dropped before DriveFsPinManager";
+    OnDrop();
   }
 
   DriveInternalsWebUIHandler() = default;
@@ -616,28 +616,30 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
         GetIntegrationService();
     DCHECK(integration_service);
 
-    if (pin_manager_) {
-      pin_manager_->RemoveObserver(this);
-      VLOG(1) << "Removed Pin manager observer";
-      pin_manager_.reset();
-    }
+    OnDrop();
+    DCHECK(!pin_manager_);
 
-    DriveFsPinManager* const pin_manager = integration_service->GetPinManager();
-    if (!pin_manager) {
+    pin_manager_ = integration_service->GetPinManager();
+    if (!pin_manager_) {
       LOG(ERROR) << "No DriveFS pin manager";
       SetSectionEnabled("bulk-pinning-section", false);
       return;
     }
 
-    pin_manager_ = pin_manager->GetWeakPtr();
     pin_manager_->AddObserver(this);
-    VLOG(1) << "Added Pin manager observer";
 
-    OnProgress(pin_manager_->GetProgress());
     SetSectionEnabled("bulk-pinning-section", true);
-    const bool bulk_pinning_enabled =
-        GetPrefs()->GetBoolean(drive::prefs::kDriveFsBulkPinningEnabled);
-    MaybeCallJavascript("updateBulkPinning", base::Value(bulk_pinning_enabled));
+    OnProgress(pin_manager_->GetProgress());
+    MaybeCallJavascript("updateBulkPinning",
+                        base::Value(GetPrefs()->GetBoolean(
+                            drive::prefs::kDriveFsBulkPinningEnabled)));
+  }
+
+  void OnDrop() override {
+    if (pin_manager_) {
+      pin_manager_->RemoveObserver(this);
+      pin_manager_ = nullptr;
+    }
   }
 
   void OnProgress(const drivefs::pinning::SetupProgress& progress) override {
@@ -998,7 +1000,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   }
 
   // DriveFS bulk-pinning manager.
-  base::WeakPtr<DriveFsPinManager> pin_manager_;
+  base::raw_ptr<DriveFsPinManager> pin_manager_ = nullptr;
 
   // The last event sent to the JavaScript side.
   int last_sent_event_id_ = -1;

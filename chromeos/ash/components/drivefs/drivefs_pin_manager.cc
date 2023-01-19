@@ -466,6 +466,9 @@ DriveFsPinManager::DriveFsPinManager(base::FilePath profile_path,
 DriveFsPinManager::~DriveFsPinManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!InProgress(progress_.stage)) << "Pin manager is " << progress_.stage;
+  for (Observer& observer : observers_) {
+    observer.OnDrop();
+  }
 }
 
 void DriveFsPinManager::Start() {
@@ -841,26 +844,9 @@ void DriveFsPinManager::OnError(const mojom::DriveError& error) {
 
 void DriveFsPinManager::NotifyProgress() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (observers_.empty()) {
-    return;
-  }
-
-  VLOG(3) << "Notifying observers";
   for (Observer& observer : observers_) {
     observer.OnProgress(progress_);
   }
-  VLOG(3) << "Notified observers";
-}
-
-void DriveFsPinManager::AddObserver(Observer* const observer) {
-  observers_.AddObserver(observer);
-  VLOG(3) << "Added observer " << observer;
-}
-
-void DriveFsPinManager::RemoveObserver(Observer* const observer) {
-  observers_.RemoveObserver(observer);
-  VLOG(3) << "Removed observer " << observer;
 }
 
 void DriveFsPinManager::CheckStalledFiles() {

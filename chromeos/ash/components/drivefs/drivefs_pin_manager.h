@@ -139,11 +139,20 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   class Observer : public base::CheckedObserver {
    public:
     // Called when the setup progresses.
-    virtual void OnProgress(const SetupProgress& progress) = 0;
+    virtual void OnProgress(const SetupProgress& progress) {}
+
+    // Called when the DriveFsPinManager is getting deleted.
+    virtual void OnDrop() {}
   };
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  void AddObserver(Observer* const observer) {
+    observers_.AddObserver(observer);
+  }
+
+  void RemoveObserver(Observer* const observer) {
+    DCHECK(observers_.HasObserver(observer));
+    observers_.RemoveObserver(observer);
+  }
 
   // drivefs::DriveFsHostObserver
   void OnSyncingStatusUpdate(const mojom::SyncingStatus& status) override;
