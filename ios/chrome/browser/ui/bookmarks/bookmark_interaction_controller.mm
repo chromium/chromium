@@ -37,8 +37,6 @@
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
-#import "ios/chrome/browser/ui/table_view/table_view_presentation_controller.h"
-#import "ios/chrome/browser/ui/table_view/table_view_presentation_controller_delegate.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/util/url_with_title.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
@@ -74,8 +72,7 @@ enum class PresentedState {
     BookmarksEditorViewControllerDelegate,
     BookmarksFolderEditorViewControllerDelegate,
     BookmarksFolderChooserViewControllerDelegate,
-    BookmarkHomeViewControllerDelegate,
-    TableViewPresentationControllerDelegate> {
+    BookmarkHomeViewControllerDelegate> {
   // The browser bookmarks are presented in.
   Browser* _browser;  // weak
 
@@ -591,27 +588,6 @@ enum class PresentedState {
       [self openURLInNewTab:url inIncognito:inIncognito inBackground:YES];
     }
   }  // end for
-}
-
-#pragma mark - TableViewPresentationControllerDelegate
-
-- (BOOL)presentationControllerShouldDismissOnTouchOutside:
-    (TableViewPresentationController*)controller {
-  BOOL shouldDismissOnTouchOutside = YES;
-
-  ChromeTableViewController* tableViewController =
-      base::mac::ObjCCast<ChromeTableViewController>(
-          self.bookmarkNavigationController.topViewController);
-  if (tableViewController) {
-    shouldDismissOnTouchOutside =
-        [tableViewController shouldBeDismissedOnTouchOutside];
-  }
-  return shouldDismissOnTouchOutside;
-}
-
-- (void)presentationControllerWillDismiss:
-    (TableViewPresentationController*)controller {
-  [self dismissBookmarkModalControllerAnimated:YES];
 }
 
 #pragma mark - BookmarksCommands
