@@ -450,10 +450,7 @@ TEST_P(CullRectUpdaterTest, AbsolutePositionUnderNonContainingStackingContext) {
 
   GetDocument().getElementById("scroller")->scrollTo(200, 200);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(RuntimeEnabledFeatures::LayoutNGEnabled()
-                ? gfx::Rect(200, 200, 200, 200)
-                : gfx::Rect(150, 200, 200, 200),
-            GetCullRect("absolute").Rect());
+  EXPECT_EQ(gfx::Rect(200, 200, 200, 200), GetCullRect("absolute").Rect());
 }
 
 TEST_P(CullRectUpdaterTest, StackedChildOfNonStackingContextScroller) {

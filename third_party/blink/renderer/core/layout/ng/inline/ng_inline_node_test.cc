@@ -316,7 +316,6 @@ TEST_F(NGInlineNodeTest, CollectInlinesMixedTextEndWithON) {
 }
 
 TEST_F(NGInlineNodeTest, CollectInlinesTextCombineBR) {
-  ScopedLayoutNGForTest enable_layout_ng(true);
   InsertStyleElement(
       "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetupHtml("t", u"<div id=t>a<br>z</div>");
@@ -333,7 +332,6 @@ TEST_F(NGInlineNodeTest, CollectInlinesTextCombineBR) {
 
 // http://crbug.com/1222633
 TEST_F(NGInlineNodeTest, CollectInlinesTextCombineListItemMarker) {
-  ScopedLayoutNGForTest enable_layout_ng(true);
   InsertStyleElement(
       "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetupHtml("t", u"<li id=t>ab</li>");
@@ -354,7 +352,6 @@ TEST_F(NGInlineNodeTest, CollectInlinesTextCombineListItemMarker) {
 }
 
 TEST_F(NGInlineNodeTest, CollectInlinesTextCombineNewline) {
-  ScopedLayoutNGForTest enable_layout_ng(true);
   InsertStyleElement(
       "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetupHtml("t", u"<pre id=t>a\nz</pre>");
@@ -370,7 +367,6 @@ TEST_F(NGInlineNodeTest, CollectInlinesTextCombineNewline) {
 }
 
 TEST_F(NGInlineNodeTest, CollectInlinesTextCombineWBR) {
-  ScopedLayoutNGForTest enable_layout_ng(true);
   InsertStyleElement(
       "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetupHtml("t", u"<div id=t>a<wbr>z</div>");
@@ -1562,7 +1558,6 @@ TEST_F(NGInlineNodeTest, InitialLetter) {
 }
 
 TEST_F(NGInlineNodeTest, TextCombineUsesScalingX) {
-  ScopedLayoutNGForTest enable_layout_ng(true);
   LoadAhem();
   InsertStyleElement(
       "div {"
@@ -1584,7 +1579,6 @@ TEST_F(NGInlineNodeTest, TextCombineUsesScalingX) {
 
 // http://crbug.com/1226930
 TEST_F(NGInlineNodeTest, TextCombineWordSpacing) {
-  ScopedLayoutNGForTest enable_layout_ng(true);
   LoadAhem();
   InsertStyleElement(
       "div {"

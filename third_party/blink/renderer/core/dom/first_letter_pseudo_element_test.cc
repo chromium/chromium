@@ -65,8 +65,6 @@ TEST_F(FirstLetterPseudoElementTest, EmptySpanOnly) {
 }
 
 TEST_F(FirstLetterPseudoElementTest, InitialLetter) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
   ScopedCSSInitialLetterForTest enable_initial_letter_scope(true);
   LoadAhem();
   InsertStyleElement(

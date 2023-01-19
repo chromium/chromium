@@ -628,24 +628,15 @@ TEST_P(PaintLayerPainterTest, PaintPhaseFloatUnderInlineLayer) {
       *GetDocument().getElementById("float")->GetLayoutObject();
   PaintLayer& span_layer = *GetPaintLayerByElementId("span");
   ASSERT_TRUE(&span_layer == float_div.EnclosingLayer());
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    ASSERT_TRUE(span_layer.NeedsPaintPhaseFloat());
-  } else {
-    ASSERT_FALSE(span_layer.NeedsPaintPhaseFloat());
-  }
+  ASSERT_TRUE(span_layer.NeedsPaintPhaseFloat());
   auto& self_painting_layer = *GetPaintLayerByElementId("self-painting-layer");
   ASSERT_TRUE(self_painting_layer.IsSelfPaintingLayer());
   auto& non_self_painting_layer =
       *GetPaintLayerByElementId("non-self-painting-layer");
   ASSERT_FALSE(non_self_painting_layer.IsSelfPaintingLayer());
 
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_FALSE(self_painting_layer.NeedsPaintPhaseFloat());
-    EXPECT_TRUE(span_layer.NeedsPaintPhaseFloat());
-  } else {
-    EXPECT_TRUE(self_painting_layer.NeedsPaintPhaseFloat());
-    EXPECT_FALSE(span_layer.NeedsPaintPhaseFloat());
-  }
+  EXPECT_FALSE(self_painting_layer.NeedsPaintPhaseFloat());
+  EXPECT_TRUE(span_layer.NeedsPaintPhaseFloat());
   EXPECT_FALSE(non_self_painting_layer.NeedsPaintPhaseFloat());
   EXPECT_THAT(ContentDisplayItems(),
               Contains(IsSameId(float_div.Id(),

@@ -2760,11 +2760,6 @@ TEST_F(ImplicitRootScrollerSimTest, AppliedAtFractionalZoom) {
 // work without a clear benefit so for now ensure it doesn't get promoted and
 // doesn't cause any crashes. https://crbug.com/1125621.
 TEST_F(ImplicitRootScrollerSimTest, FieldsetNGCantBeRootScroller) {
-  // This test is specifically ensuring we avoid crashing with the LayoutNG
-  // version of fieldset since it uses an anonymous LayoutBox for scrolling.
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");

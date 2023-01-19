@@ -387,9 +387,6 @@ TEST_F(FocusgroupControllerTest, FocusgroupExtendsInAxis) {
 }
 
 TEST_F(FocusgroupControllerTest, FindNearestFocusgroupAncestor) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-
   GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
     <div>
       <span id=item1 tabindex=0></span>
@@ -641,9 +638,6 @@ TEST_F(FocusgroupControllerTest, IsFocusgroupItem) {
 }
 
 TEST_F(FocusgroupControllerTest, CellAtIndexInRowBehaviorOnNoCellFound) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-
   GetDocument().body()->setInnerHTML(R"HTML(
     <table id=table focusgroup=grid>
       <tr>

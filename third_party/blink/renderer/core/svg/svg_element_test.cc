@@ -17,8 +17,6 @@ namespace blink {
 class SVGElementTest : public PageTestBase {};
 
 TEST_F(SVGElementTest, BaseComputedStyleForSMILWithContainerQueries) {
-  ScopedLayoutNGForTest scoped_ng(true);
-
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       #rect2 { display: none }
@@ -70,8 +68,6 @@ TEST_F(SVGElementTest, BaseComputedStyleForSMILWithContainerQueries) {
 }
 
 TEST_F(SVGElementTest, ContainerUnitContext) {
-  ScopedLayoutNGForTest scoped_ng(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       #container, #svg { container-type:size; }

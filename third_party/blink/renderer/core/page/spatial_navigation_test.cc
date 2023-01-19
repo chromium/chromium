@@ -782,9 +782,6 @@ TEST_F(SpatialNavigationTest, InlineImageLinkWithLineHeight) {
 }
 
 TEST_F(SpatialNavigationTest, InlineImageTextLinkWithLineHeight) {
-  // Fails when LayoutNG is disabled. See crbug.com/1160211
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
   LoadAhem();
   SetBodyInnerHTML(
       "<!DOCTYPE html>"
@@ -810,9 +807,6 @@ TEST_F(SpatialNavigationTest, InlineImageTextLinkWithLineHeight) {
 }
 
 TEST_F(SpatialNavigationTest, InlineLinkWithInnerBlock) {
-  // Fails when LayoutNG is disabled. See crbug.com/1160211
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
   LoadAhem();
   SetBodyInnerHTML(
       "<!DOCTYPE html>"
@@ -958,9 +952,6 @@ TEST_F(SpatialNavigationTest, NormalizedLineBrokenLink) {
 }
 
 TEST_F(SpatialNavigationTest, NormalizedLineBrokenLinkWithImg) {
-  // Fails when LayoutNG is disabled. See crbug.com/1160211
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
   LoadAhem();
   SetBodyInnerHTML(
       "<!DOCTYPE html>"

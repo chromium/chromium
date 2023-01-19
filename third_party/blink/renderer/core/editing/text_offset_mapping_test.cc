@@ -289,16 +289,9 @@ TEST_F(TextOffsetMappingTest, BlockInInlineWithAbsolute) {
   for (const auto contents : TextOffsetMapping::BackwardRangeOf(position))
     results.push_back(GetRange(contents));
 
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    ElementsAre("<div id=\"t\"><i><p><a></a></p></i> </div><p>^ab|</p>",
-                "<div id=\"t\"><i><p><a></a></p></i>^ |</div><p>ab</p>",
-                "<div id=\"t\">^<i><p><a></a></p></i>| </div><p>ab</p>");
-  } else {
-    EXPECT_THAT(
-        results,
-        ElementsAre("<div id=\"t\"><i><p><a></a></p></i> </div><p>^ab|</p>",
-                    "<div id=\"t\">^<i><p><a></a></p></i> |</div><p>ab</p>"));
-  }
+  ElementsAre("<div id=\"t\"><i><p><a></a></p></i> </div><p>^ab|</p>",
+              "<div id=\"t\"><i><p><a></a></p></i>^ |</div><p>ab</p>",
+              "<div id=\"t\">^<i><p><a></a></p></i>| </div><p>ab</p>");
 }
 
 TEST_F(TextOffsetMappingTest, ForwardRangesWithTextControl) {
@@ -359,13 +352,8 @@ TEST_F(TextOffsetMappingTest, BackwardRangesWithTextControl) {
 
 // http://crbug.com/1295233
 TEST_F(TextOffsetMappingTest, RangeWithBlockInInline) {
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_EQ("<div><p>ab</p><b><p>cd</p></b>^yz|</div>",
-              GetRange("<div><p>ab</p><b><p>cd</p></b>|yz</div>"));
-  } else {
-    EXPECT_EQ("<div><p>ab</p>^<b><p>cd</p></b>yz|</div>",
-              GetRange("<div><p>ab</p><b><p>cd</p></b>|yz</div>"));
-  }
+  EXPECT_EQ("<div><p>ab</p><b><p>cd</p></b>^yz|</div>",
+            GetRange("<div><p>ab</p><b><p>cd</p></b>|yz</div>"));
 }
 
 // http://crbug.com/832497

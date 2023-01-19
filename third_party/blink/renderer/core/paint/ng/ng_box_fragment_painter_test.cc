@@ -36,12 +36,11 @@ void ExtractLinks(const PaintRecord& record, std::vector<GURL>* links) {
 
 }  // namespace
 
-class NGBoxFragmentPainterTest : public PaintControllerPaintTest,
-                                 private ScopedLayoutNGForTest {
+class NGBoxFragmentPainterTest : public PaintControllerPaintTest {
  public:
-  NGBoxFragmentPainterTest(LocalFrameClient* local_frame_client = nullptr)
-      : PaintControllerPaintTest(local_frame_client),
-        ScopedLayoutNGForTest(true) {}
+  explicit NGBoxFragmentPainterTest(
+      LocalFrameClient* local_frame_client = nullptr)
+      : PaintControllerPaintTest(local_frame_client) {}
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(NGBoxFragmentPainterTest);

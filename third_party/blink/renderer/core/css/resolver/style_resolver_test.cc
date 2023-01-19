@@ -74,10 +74,9 @@ class StyleResolverTest : public PageTestBase {
   }
 };
 
-class StyleResolverTestCQ : public StyleResolverTest,
-                            public ScopedLayoutNGForTest {
+class StyleResolverTestCQ : public StyleResolverTest {
  protected:
-  StyleResolverTestCQ() : ScopedLayoutNGForTest(true) {}
+  StyleResolverTestCQ() = default;
 };
 
 TEST_F(StyleResolverTest, StyleForTextInDisplayNone) {

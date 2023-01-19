@@ -179,10 +179,7 @@ TEST_F(MapCoordinatesTest, TextInRelPosInline) {
   ASSERT_TRUE(text->IsText());
   PhysicalOffset mapped_point =
       MapLocalToAncestor(text, text->ContainingBlock(), PhysicalOffset(10, 30));
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    EXPECT_EQ(PhysicalOffset(10, 30), mapped_point);
-  else
-    EXPECT_EQ(PhysicalOffset(17, 34), mapped_point);
+  EXPECT_EQ(PhysicalOffset(10, 30), mapped_point);
   mapped_point =
       MapAncestorToLocal(text, text->ContainingBlock(), mapped_point);
   EXPECT_EQ(PhysicalOffset(10, 30), mapped_point);
@@ -197,10 +194,7 @@ TEST_F(MapCoordinatesTest, RelposInline) {
   PhysicalOffset mapped_point =
       MapLocalToAncestor(target, To<LayoutBoxModelObject>(target->Parent()),
                          PhysicalOffset(10, 10));
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    EXPECT_EQ(PhysicalOffset(10, 10), mapped_point);
-  else
-    EXPECT_EQ(PhysicalOffset(60, 110), mapped_point);
+  EXPECT_EQ(PhysicalOffset(10, 10), mapped_point);
   mapped_point = MapAncestorToLocal(
       target, To<LayoutBoxModelObject>(target->Parent()), mapped_point);
   EXPECT_EQ(PhysicalOffset(10, 10), mapped_point);
@@ -222,37 +216,22 @@ TEST_F(MapCoordinatesTest, RelposInlineInRelposInline) {
 
   PhysicalOffset mapped_point =
       MapLocalToAncestor(target, containing_block, PhysicalOffset(20, 10));
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    EXPECT_EQ(PhysicalOffset(20, 10), mapped_point);
-  else
-    EXPECT_EQ(PhysicalOffset(75, 116), mapped_point);
+  EXPECT_EQ(PhysicalOffset(20, 10), mapped_point);
   mapped_point = MapAncestorToLocal(target, containing_block, mapped_point);
   EXPECT_EQ(PhysicalOffset(20, 10), mapped_point);
 
   // Walk each ancestor in the chain separately, to verify each step on the way.
   mapped_point = MapLocalToAncestor(target, parent, PhysicalOffset(20, 10));
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    EXPECT_EQ(PhysicalOffset(20, 10), mapped_point);
-  else
-    EXPECT_EQ(PhysicalOffset(70, 110), mapped_point);
+  EXPECT_EQ(PhysicalOffset(20, 10), mapped_point);
 
   mapped_point = MapLocalToAncestor(parent, containing_block, mapped_point);
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    EXPECT_EQ(PhysicalOffset(20, 10), mapped_point);
-  else
-    EXPECT_EQ(PhysicalOffset(75, 116), mapped_point);
+  EXPECT_EQ(PhysicalOffset(20, 10), mapped_point);
 
   mapped_point = MapAncestorToLocal(parent, containing_block, mapped_point);
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    EXPECT_EQ(PhysicalOffset(20, 10), mapped_point);
-  else
-    EXPECT_EQ(PhysicalOffset(70, 110), mapped_point);
+  EXPECT_EQ(PhysicalOffset(20, 10), mapped_point);
 
   mapped_point = MapAncestorToLocal(target, parent, mapped_point);
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    EXPECT_EQ(PhysicalOffset(20, 10), mapped_point);
-  else
-    EXPECT_EQ(PhysicalOffset(20, 10), mapped_point);
+  EXPECT_EQ(PhysicalOffset(20, 10), mapped_point);
 }
 
 TEST_F(MapCoordinatesTest, RelPosBlock) {
@@ -1356,13 +1335,7 @@ TEST_F(MapCoordinatesTest, Table) {
   LayoutBox* tr = td->ParentBox();
   ASSERT_TRUE(tr->IsTableRow());
   mapped_point = MapLocalToAncestor(td, tr, PhysicalOffset(2, 47));
-  // TablesNG and Legacy row inline starts differ:
-  // TablesNG inline start does not include border-spacing,
-  // Legacy does.
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    EXPECT_EQ(PhysicalOffset(116, 47), mapped_point);
-  else
-    EXPECT_EQ(PhysicalOffset(126, 47), mapped_point);
+  EXPECT_EQ(PhysicalOffset(116, 47), mapped_point);
   mapped_point = MapAncestorToLocal(td, tr, mapped_point);
   EXPECT_EQ(PhysicalOffset(2, 47), mapped_point);
 
@@ -1376,11 +1349,7 @@ TEST_F(MapCoordinatesTest, Table) {
   LayoutBox* table = tbody->ParentBox();
   ASSERT_TRUE(table->IsTable());
   mapped_point = MapLocalToAncestor(tbody, table, PhysicalOffset(126, 161));
-  // TablesNG and Legacy row inline starts differ.
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    EXPECT_EQ(PhysicalOffset(141, 290), mapped_point);
-  else
-    EXPECT_EQ(PhysicalOffset(131, 290), mapped_point);
+  EXPECT_EQ(PhysicalOffset(141, 290), mapped_point);
   mapped_point = MapAncestorToLocal(tbody, table, mapped_point);
   EXPECT_EQ(PhysicalOffset(126, 161), mapped_point);
 

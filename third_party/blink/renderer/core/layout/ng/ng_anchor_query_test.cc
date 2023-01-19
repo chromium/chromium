@@ -14,11 +14,9 @@ namespace blink {
 namespace {
 
 class NGAnchorQueryTest : public RenderingTest,
-                          private ScopedLayoutNGForTest,
                           private ScopedCSSAnchorPositioningForTest {
  public:
-  NGAnchorQueryTest()
-      : ScopedLayoutNGForTest(true), ScopedCSSAnchorPositioningForTest(true) {}
+  NGAnchorQueryTest() : ScopedCSSAnchorPositioningForTest(true) {}
 
   const NGPhysicalAnchorQuery* AnchorQuery(const Element& element) const {
     const LayoutBlockFlow* container =

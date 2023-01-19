@@ -32,8 +32,6 @@ class NGInlineLayoutTest : public SimTest {
 };
 
 TEST_F(NGInlineLayoutTest, BlockWithSingleTextNode) {
-  ScopedLayoutNGForTest layout_ng(true);
-
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
   main_resource.Complete(
@@ -61,8 +59,6 @@ TEST_F(NGInlineLayoutTest, BlockWithSingleTextNode) {
 }
 
 TEST_F(NGInlineLayoutTest, BlockWithTextAndAtomicInline) {
-  ScopedLayoutNGForTest layout_ng(true);
-
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
   main_resource.Complete("<div id=\"target\">Hello <img>.</div>");

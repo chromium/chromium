@@ -29,7 +29,6 @@ class DeferredShapingTest : public RenderingTest {
   }
 
  private:
-  ScopedLayoutNGForTest enablee_layout_ng_{true};
   ScopedDeferredShapingForTest enable_deferred_shapign_{true};
 };
 

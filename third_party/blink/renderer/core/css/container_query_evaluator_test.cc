@@ -31,11 +31,8 @@
 
 namespace blink {
 
-class ContainerQueryEvaluatorTest : public PageTestBase,
-                                    private ScopedLayoutNGForTest {
+class ContainerQueryEvaluatorTest : public PageTestBase {
  public:
-  ContainerQueryEvaluatorTest() : ScopedLayoutNGForTest(true) {}
-
   void SetUp() override {
     PageTestBase::SetUp();
     GetDocument().body()->setInnerHTML(R"HTML(
@@ -673,7 +670,6 @@ TEST_F(ContainerQueryEvaluatorTest, LegacyPrinting) {
 }
 
 TEST_F(ContainerQueryEvaluatorTest, Printing) {
-  ScopedLayoutNGForTest ng_scope(true);
   ScopedLayoutNGPrintingForTest ng_printing_scope(true);
 
   SetBodyInnerHTML(R"HTML(

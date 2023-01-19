@@ -50,19 +50,11 @@ TEST_F(LayoutObjectFactoryTest, TextCombineInHorizontal) {
   SetBodyInnerHTML("<div><tcy id=sample>ab</tcy></div>");
   const auto& sample_layout_object = *GetLayoutObjectByElementId("sample");
 
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_EQ(R"DUMP(
+  EXPECT_EQ(R"DUMP(
 LayoutInline TCY id="sample"
   +--LayoutText #text "ab"
 )DUMP",
-              ToSimpleLayoutTree(sample_layout_object));
-  } else {
-    EXPECT_EQ(R"DUMP(
-LayoutInline TCY id="sample"
-  +--LayoutTextCombine #text "ab"
-)DUMP",
-              ToSimpleLayoutTree(sample_layout_object));
-  }
+            ToSimpleLayoutTree(sample_layout_object));
 }
 
 TEST_F(LayoutObjectFactoryTest, TextCombineInVertical) {
@@ -72,20 +64,12 @@ TEST_F(LayoutObjectFactoryTest, TextCombineInVertical) {
   SetBodyInnerHTML("<div><tcy id=sample>ab</tcy></div>");
   const auto& sample_layout_object = *GetLayoutObjectByElementId("sample");
 
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_EQ(R"DUMP(
+  EXPECT_EQ(R"DUMP(
 LayoutInline TCY id="sample"
   +--LayoutNGTextCombine (anonymous)
   |  +--LayoutText #text "ab"
 )DUMP",
-              ToSimpleLayoutTree(sample_layout_object));
-  } else {
-    EXPECT_EQ(R"DUMP(
-LayoutInline TCY id="sample"
-  +--LayoutTextCombine #text "ab"
-)DUMP",
-              ToSimpleLayoutTree(sample_layout_object));
-  }
+            ToSimpleLayoutTree(sample_layout_object));
 }
 
 TEST_F(LayoutObjectFactoryTest, WordBreak) {

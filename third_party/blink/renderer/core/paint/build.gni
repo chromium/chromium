@@ -304,7 +304,6 @@ blink_core_tests_paint = [
   "scrollable_area_painter_test.cc",
   "selection_bounds_recorder_test.cc",
   "svg_container_painter_test.cc",
-  "table_painter_test.cc",
   "text_painter_test.cc",
   "text_selection_repaint_test.cc",
   "timing/first_meaningful_paint_detector_test.cc",

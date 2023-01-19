@@ -801,8 +801,6 @@ TEST_F(AnimationKeyframeEffectModel, CompositorUpdateColorProperty) {
 }
 
 TEST_F(AnimationKeyframeEffectModel, CompositorSnapshotContainerRelative) {
-  ScopedLayoutNGForTest layout_ng(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       #container {

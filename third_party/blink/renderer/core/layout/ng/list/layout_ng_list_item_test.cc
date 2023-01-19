@@ -16,7 +16,6 @@ namespace {
 
 // http://crbug.com/1222633
 TEST_F(LayoutNGListItemTest, FindSymbolMarkerLayoutTextWithTextCombine) {
-  ScopedLayoutNGForTest enable_layout_ng_text_combine(true);
   InsertStyleElement(
       "li { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<li id=target>a</li>");

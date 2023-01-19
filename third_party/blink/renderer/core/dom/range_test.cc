@@ -354,8 +354,6 @@ static Vector<gfx::Size> ComputeSizesOfQuads(const Vector<gfx::QuadF>& quads) {
 
 // http://crbug.com/1240510
 TEST_F(RangeTest, GetBorderAndTextQuadsWithCombinedText) {
-  ScopedLayoutNGForTest enable_layout_ng(true);
-
   LoadAhem();
   InsertStyleElement(
       "body { font: 20px/25px Ahem; margin: 0px; }"

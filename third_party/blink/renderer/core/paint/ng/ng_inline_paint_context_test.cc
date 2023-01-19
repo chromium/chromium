@@ -20,11 +20,9 @@ String StringFromTextItem(const NGInlineCursor& cursor) {
 }  // namespace
 
 class NGInlinePaintContextTest : public RenderingTest,
-                                 private ScopedLayoutNGForTest,
                                  private ScopedTextDecoratingBoxForTest {
  public:
-  NGInlinePaintContextTest()
-      : ScopedLayoutNGForTest(true), ScopedTextDecoratingBoxForTest(true) {}
+  NGInlinePaintContextTest() : ScopedTextDecoratingBoxForTest(true) {}
 
   Vector<float> GetFontSizes(
       const NGInlinePaintContext::DecoratingBoxList& boxes) {

@@ -909,12 +909,9 @@ TEST_F(LayoutSelectionTest, InvalidateSlot) {
 
 class NGLayoutSelectionTest
     : public LayoutSelectionTestBase,
-      private ScopedLayoutNGForTest,
       private ScopedPaintUnderInvalidationCheckingForTest {
  public:
-  NGLayoutSelectionTest()
-      : ScopedLayoutNGForTest(true),
-        ScopedPaintUnderInvalidationCheckingForTest(true) {}
+  NGLayoutSelectionTest() : ScopedPaintUnderInvalidationCheckingForTest(true) {}
 
  protected:
   const Text* GetFirstTextNode() {

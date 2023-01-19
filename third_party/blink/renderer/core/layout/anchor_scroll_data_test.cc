@@ -41,10 +41,6 @@ class AnchorScrollDataTest : public RenderingTest,
 };
 
 TEST_F(AnchorScrollDataTest, HasDataAndTranslation) {
-  // Anchor positioning is NG-only.
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-
   SetBodyInnerHTML(R"HTML(
     <div style="position: relative">
       <div style="overflow: scroll; height: 20px;">
@@ -81,10 +77,6 @@ TEST_F(AnchorScrollDataTest, HasDataAndTranslation) {
 // Tests that AnchorScrollData should be properly detached if an element changes
 // from using anchor-scroll to no longer using anchor-scroll
 TEST_F(AnchorScrollDataTest, Detach) {
-  // Anchor positioning is NG-only.
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-
   SetBodyInnerHTML(R"HTML(
     <style>.anchored { position: absolute; anchor-scroll: --a1; }</style>
     <div style="position: relative>
@@ -130,10 +122,6 @@ TEST_F(AnchorScrollDataTest, Detach) {
 // Verifies that a new frame is scheduled if a style update changes the size of
 // a scroller, which in turn changes the scroll offset.
 TEST_F(AnchorScrollDataTest, ScrollerSizeChange) {
-  // Anchor positioning is NG-only.
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-
   SetBodyInnerHTML(R"HTML(
     <style>
       #scroller { overflow: scroll; height: 100px; }
@@ -196,10 +184,6 @@ TEST_F(AnchorScrollDataTest, ScrollerSizeChange) {
 // Verifies that a new frame is scheduled if a style update changes the size of
 // the content of a scroller, which in turn changes the scroll offset.
 TEST_F(AnchorScrollDataTest, ScrollContentSizeChange) {
-  // Anchor positioning is NG-only.
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-
   SetBodyInnerHTML(R"HTML(
     <style>
       #scroller { overflow: scroll; height: 100px; }

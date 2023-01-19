@@ -541,8 +541,6 @@ TEST_F(DisplayLockContextTest,
 }
 
 TEST_F(DisplayLockContextTest, FindInPageWithChangedContent) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
   ResizeAndFocus();
   SetHtmlInnerHTML(R"HTML(
     <style>
@@ -3194,52 +3192,6 @@ TEST_F(DisplayLockContextRenderingTest,
   test::RunPendingTasks();
 
   EXPECT_TRUE(context->HadAnyViewportIntersectionNotifications());
-}
-
-class DisplayLockContextLegacyRenderingTest : public RenderingTest,
-                                              private ScopedLayoutNGForTest {
- public:
-  DisplayLockContextLegacyRenderingTest()
-      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()),
-        ScopedLayoutNGForTest(false) {}
-};
-
-TEST_F(DisplayLockContextLegacyRenderingTest,
-       QuirksHiddenParentBlocksChildLayout) {
-  GetDocument().SetCompatibilityMode(Document::kQuirksMode);
-  SetHtmlInnerHTML(R"HTML(
-    <style>
-      .hidden { content-visibility: hidden; }
-      #grandparent { height: 100px; }
-      #parent { height: auto; }
-      #item { height: 10%; }
-    </style>
-    <div id=grandparent>
-      <div id=parent>
-        <div>
-          <div id=item></div>
-        </div>
-      </div>
-    </div>
-  )HTML");
-
-  auto* grandparent = GetDocument().getElementById("grandparent");
-  auto* parent = GetDocument().getElementById("parent");
-
-  auto* grandparent_box = To<LayoutBox>(grandparent->GetLayoutObject());
-  auto* item_box = GetLayoutBoxByElementId("item");
-
-  ASSERT_TRUE(grandparent_box);
-  ASSERT_TRUE(parent->GetLayoutObject());
-  ASSERT_TRUE(item_box);
-
-  EXPECT_EQ(item_box->PercentHeightContainer(), grandparent_box);
-  parent->classList().Add("hidden");
-  grandparent->setAttribute(html_names::kStyleAttr, "height: 150px");
-
-  // This shouldn't DCHECK. We are allowed to have dirty percent height
-  // descendants in quirks mode since they can cross a display-lock boundary.
-  UpdateAllLifecyclePhasesForTest();
 }
 
 TEST_F(DisplayLockContextTest, PrintingUnlocksAutoLocks) {

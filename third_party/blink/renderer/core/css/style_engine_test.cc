@@ -161,11 +161,7 @@ class StyleEngineTest : public PageTestBase {
   }
 };
 
-class StyleEngineContainerQueryTest : public StyleEngineTest,
-                                      private ScopedLayoutNGForTest {
- public:
-  StyleEngineContainerQueryTest() : ScopedLayoutNGForTest(true) {}
-};
+class StyleEngineContainerQueryTest : public StyleEngineTest {};
 
 StyleEngineTest::RuleSetInvalidation
 StyleEngineTest::ScheduleInvalidationsForRules(TreeScope& tree_scope,

@@ -284,11 +284,7 @@ std::ostream& operator<<(std::ostream& out, NGOffsetMappingTestData data) {
 
 class MapDOMOffsetToTextContentOffset
     : public LayoutTextTest,
-      private ScopedLayoutNGForTest,
-      public testing::WithParamInterface<NGOffsetMappingTestData> {
- public:
-  MapDOMOffsetToTextContentOffset() : ScopedLayoutNGForTest(true) {}
-};
+      public testing::WithParamInterface<NGOffsetMappingTestData> {};
 
 INSTANTIATE_TEST_SUITE_P(LayoutTextTest,
                          MapDOMOffsetToTextContentOffset,
@@ -1095,7 +1091,6 @@ TEST_F(LayoutTextTest, PhysicalLinesBoundingBox) {
 }
 
 TEST_F(LayoutTextTest, PhysicalLinesBoundingBoxTextCombine) {
-  ScopedLayoutNGForTest enable_layout_ng(true);
   LoadAhem();
   InsertStyleElement(
       "body { font: 100px/130px Ahem; }"

@@ -92,8 +92,6 @@ TEST_F(LayoutInlineTest, SimpleContinuation) {
 }
 
 TEST_F(LayoutInlineTest, BlockInInlineRemove) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
   SetBodyInnerHTML(R"HTML(
     <div>
       <span id="span">before
@@ -453,11 +451,8 @@ TEST_F(LayoutInlineTest, VisualRectInDocumentSVGTspanTB) {
 
 // When adding focus ring rects, we should avoid adding duplicated rect for
 // continuations.
-TEST_F(LayoutInlineTest, FocusRingRecursiveContinuations) {
-  // TODO(crbug.com/835484): The test is broken for LayoutNG.
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-
+// TODO(crbug.com/835484): The test is broken for LayoutNG.
+TEST_F(LayoutInlineTest, DISABLED_FocusRingRecursiveContinuations) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -488,11 +483,8 @@ TEST_F(LayoutInlineTest, FocusRingRecursiveContinuations) {
 
 // When adding focus ring rects, we should avoid adding line box rects of
 // recursive inlines repeatedly.
-TEST_F(LayoutInlineTest, FocusRingRecursiveInlinesVerticalRL) {
-  // TODO(crbug.com/835484): The test is broken for LayoutNG.
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-
+// TODO(crbug.com/835484): The test is broken for LayoutNG.
+TEST_F(LayoutInlineTest, DISABLED_FocusRingRecursiveInlinesVerticalRL) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -526,11 +518,8 @@ TEST_F(LayoutInlineTest, FocusRingRecursiveInlinesVerticalRL) {
 
 // When adding focus ring rects, we should avoid adding duplicated rect for
 // continuations.
-TEST_F(LayoutInlineTest, FocusRingRecursiveContinuationsVerticalRL) {
-  // TODO(crbug.com/835484): The test is broken for LayoutNG.
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-
+// TODO(crbug.com/835484): The test is broken for LayoutNG.
+TEST_F(LayoutInlineTest, DISABLED_FocusRingRecursiveContinuationsVerticalRL) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -564,11 +553,8 @@ TEST_F(LayoutInlineTest, FocusRingRecursiveContinuationsVerticalRL) {
 
 // When adding focus ring rects, we should avoid adding line box rects of
 // recursive inlines repeatedly.
-TEST_F(LayoutInlineTest, FocusRingRecursiveInlines) {
-  // TODO(crbug.com/835484): The test is broken for LayoutNG.
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-
+// TODO(crbug.com/835484): The test is broken for LayoutNG.
+TEST_F(LayoutInlineTest, DISABLED_FocusRingRecursiveInlines) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>

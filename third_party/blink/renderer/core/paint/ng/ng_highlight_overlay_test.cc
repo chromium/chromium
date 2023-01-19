@@ -31,12 +31,9 @@ using HighlightPart = NGHighlightOverlay::HighlightPart;
 }  // namespace
 
 class NGHighlightOverlayTest : public PageTestBase,
-                               private ScopedHighlightOverlayPaintingForTest,
-                               private ScopedLayoutNGForTest {
+                               private ScopedHighlightOverlayPaintingForTest {
  public:
-  NGHighlightOverlayTest()
-      : ScopedHighlightOverlayPaintingForTest(true),
-        ScopedLayoutNGForTest(true) {}
+  NGHighlightOverlayTest() : ScopedHighlightOverlayPaintingForTest(true) {}
 };
 
 TEST_F(NGHighlightOverlayTest, ComputeLayers) {

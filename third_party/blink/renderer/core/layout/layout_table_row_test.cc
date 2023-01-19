@@ -145,30 +145,14 @@ TEST_F(LayoutTableRowTest, VisualOverflow) {
   auto* row1 = GetRowByElementId("row1");
   // TablesNG row geometry does not include border spacing. Legacy does.
   // All row geometry expectations are different.
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_EQ(LayoutRect(0, 0, 320, 320), row1->ContentsVisualOverflowRect());
-    EXPECT_EQ(LayoutRect(0, 0, 430, 320), row1->SelfVisualOverflowRect());
-  } else {
-    EXPECT_EQ(LayoutRect(120, 0, 210, 320), row1->ContentsVisualOverflowRect());
-    EXPECT_EQ(LayoutRect(0, 0, 450, 320), row1->SelfVisualOverflowRect());
-  }
+  EXPECT_EQ(LayoutRect(0, 0, 320, 320), row1->ContentsVisualOverflowRect());
+  EXPECT_EQ(LayoutRect(0, 0, 430, 320), row1->SelfVisualOverflowRect());
   auto* row2 = GetRowByElementId("row2");
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_EQ(LayoutRect(-10, -10, 440, 220),
-              row2->ContentsVisualOverflowRect());
-    EXPECT_EQ(LayoutRect(0, 0, 430, 210), row2->SelfVisualOverflowRect());
-  } else {
-    EXPECT_EQ(LayoutRect(0, -10, 440, 220), row2->ContentsVisualOverflowRect());
-    EXPECT_EQ(LayoutRect(0, 0, 450, 210), row2->SelfVisualOverflowRect());
-  }
+  EXPECT_EQ(LayoutRect(-10, -10, 440, 220), row2->ContentsVisualOverflowRect());
+  EXPECT_EQ(LayoutRect(0, 0, 430, 210), row2->SelfVisualOverflowRect());
   auto* row3 = GetRowByElementId("row3");
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_EQ(LayoutRect(), row3->ContentsVisualOverflowRect());
-    EXPECT_EQ(LayoutRect(0, 0, 430, 100), row3->SelfVisualOverflowRect());
-  } else {
-    EXPECT_EQ(LayoutRect(), row3->ContentsVisualOverflowRect());
-    EXPECT_EQ(LayoutRect(0, 0, 450, 100), row3->SelfVisualOverflowRect());
-  }
+  EXPECT_EQ(LayoutRect(), row3->ContentsVisualOverflowRect());
+  EXPECT_EQ(LayoutRect(0, 0, 430, 100), row3->SelfVisualOverflowRect());
 }
 
 TEST_F(LayoutTableRowTest, VisualOverflowWithCollapsedBorders) {
@@ -190,28 +174,15 @@ TEST_F(LayoutTableRowTest, VisualOverflowWithCollapsedBorders) {
   auto* row = GetRowByElementId("row");
 
   LayoutRect expected_self_visual_overflow = row->BorderBoxRect();
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    // Row's visual overflow does not include collapsed borders.
-    // They are painted by the table.
-  } else {
-    // The row's self visual overflow covers the collapsed borders.
-    expected_self_visual_overflow.ExpandEdges(LayoutUnit(1), LayoutUnit(8),
-                                              LayoutUnit(5), LayoutUnit(0));
-  }
+  // Row's visual overflow does not include collapsed borders.
+  // They are painted by the table.
   EXPECT_EQ(expected_self_visual_overflow, row->SelfVisualOverflowRect());
 
   LayoutRect expected_visual_overflow = row->BorderBoxRect();
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    // Row's visual overflow does not include collapsed borders.
-    // It does include visual overflow of all cells.
-    expected_visual_overflow.ExpandEdges(LayoutUnit(3), LayoutUnit(0),
-                                         LayoutUnit(3), LayoutUnit(3));
-  } else {
-    // The row's visual overflow covers self visual overflow and visual
-    // overflows of all cells.
-    expected_visual_overflow.ExpandEdges(LayoutUnit(3), LayoutUnit(8),
-                                         LayoutUnit(5), LayoutUnit(3));
-  }
+  // Row's visual overflow does not include collapsed borders.
+  // It does include visual overflow of all cells.
+  expected_visual_overflow.ExpandEdges(LayoutUnit(3), LayoutUnit(0),
+                                       LayoutUnit(3), LayoutUnit(3));
   EXPECT_EQ(expected_visual_overflow, row->VisualOverflowRect());
 }
 

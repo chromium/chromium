@@ -57,10 +57,6 @@ class VisibleUnitsLineTest : public EditingTestBase {
     return CreateVisiblePosition(PositionInFlatTree(&anchor, offset), affinity);
   }
 
-  static bool LayoutNGEnabled() {
-    return RuntimeEnabledFeatures::LayoutNGEnabled();
-  }
-
   std::string TestEndOfLine(const std::string& input) {
     const Position& caret = SetCaretTextToBody(input);
     const Position& result =
@@ -107,7 +103,6 @@ TEST_F(VisibleUnitsLineTest, endOfLine) {
   Node* five = shadow_root->getElementById("five")->firstChild();
   Node* six = shadow_root->getElementById("six")->firstChild();
   Node* seven = shadow_root->getElementById("seven")->firstChild();
-  Node* br = shadow_root->QuerySelector("br");
 
   EXPECT_EQ(
       Position(seven, 7),
@@ -123,23 +118,18 @@ TEST_F(VisibleUnitsLineTest, endOfLine) {
       PositionInFlatTree(seven, 7),
       EndOfLine(CreateVisiblePositionInFlatTree(*one, 1)).DeepEquivalent());
 
+  EXPECT_EQ(Position(two, 2), EndOfLine(CreateVisiblePositionInDOMTree(
+                                            *two, 0, TextAffinity::kUpstream))
+                                  .DeepEquivalent());
   EXPECT_EQ(
-      // The result on legacy layout is broken and not worth fixing.
-      LayoutNGEnabled() ? Position(two, 2) : Position::BeforeNode(*br),
-      EndOfLine(
-          CreateVisiblePositionInDOMTree(*two, 0, TextAffinity::kUpstream))
-          .DeepEquivalent());
-  EXPECT_EQ(
-      // The result on legacy layout is broken and not worth fixing.
-      LayoutNGEnabled() ? Position(two, 2) : Position::BeforeNode(*br),
+      Position(two, 2),
       EndOfLine(CreateVisiblePositionInDOMTree(*two, 0)).DeepEquivalent());
   EXPECT_EQ(
       PositionInFlatTree(two, 2),
       EndOfLine(CreateVisiblePositionInFlatTree(*two, 0)).DeepEquivalent());
 
   EXPECT_EQ(
-      // The result on legacy layout is broken and not worth fixing.
-      LayoutNGEnabled() ? Position(two, 2) : Position::BeforeNode(*br),
+      Position(two, 2),
       EndOfLine(CreateVisiblePositionInDOMTree(*two, 1)).DeepEquivalent());
   EXPECT_EQ(
       PositionInFlatTree(two, 2),
@@ -164,8 +154,7 @@ TEST_F(VisibleUnitsLineTest, endOfLine) {
       EndOfLine(CreateVisiblePositionInFlatTree(*four, 1)).DeepEquivalent());
 
   EXPECT_EQ(
-      // The result on legacy layout is broken and not worth fixing.
-      LayoutNGEnabled() ? Position(two, 2) : Position::BeforeNode(*br),
+      Position(two, 2),
       EndOfLine(CreateVisiblePositionInDOMTree(*five, 1)).DeepEquivalent());
   EXPECT_EQ(
       PositionInFlatTree(two, 2),
@@ -219,11 +208,7 @@ TEST_F(VisibleUnitsLineTest, isEndOfLine) {
 
   EXPECT_TRUE(IsEndOfLine(
       CreateVisiblePositionInFlatTree(*two, 2, TextAffinity::kUpstream)));
-  // The result on legacy layout is broken and not worth fixing.
-  if (LayoutNGEnabled())
-    EXPECT_TRUE(IsEndOfLine(CreateVisiblePositionInFlatTree(*two, 2)));
-  else
-    EXPECT_FALSE(IsEndOfLine(CreateVisiblePositionInDOMTree(*two, 2)));
+  EXPECT_TRUE(IsEndOfLine(CreateVisiblePositionInFlatTree(*two, 2)));
   EXPECT_TRUE(IsEndOfLine(CreateVisiblePositionInFlatTree(*two, 2)));
 
   EXPECT_FALSE(IsEndOfLine(CreateVisiblePositionInDOMTree(*three, 3)));
@@ -273,16 +258,9 @@ TEST_F(VisibleUnitsLineTest, isLogicalEndOfLine) {
   EXPECT_FALSE(IsLogicalEndOfLine(CreateVisiblePositionInDOMTree(*one, 1)));
   EXPECT_FALSE(IsLogicalEndOfLine(CreateVisiblePositionInFlatTree(*one, 1)));
 
-  // The result in legacy layout is broken and not worth fixing.
-  if (LayoutNGEnabled()) {
-    EXPECT_TRUE(IsLogicalEndOfLine(
-        CreateVisiblePositionInDOMTree(*two, 2, TextAffinity::kUpstream)));
-    EXPECT_TRUE(IsLogicalEndOfLine(CreateVisiblePositionInDOMTree(*two, 2)));
-  } else {
-    EXPECT_FALSE(IsLogicalEndOfLine(
-        CreateVisiblePositionInDOMTree(*two, 2, TextAffinity::kUpstream)));
-    EXPECT_FALSE(IsLogicalEndOfLine(CreateVisiblePositionInDOMTree(*two, 2)));
-  }
+  EXPECT_TRUE(IsLogicalEndOfLine(
+      CreateVisiblePositionInDOMTree(*two, 2, TextAffinity::kUpstream)));
+  EXPECT_TRUE(IsLogicalEndOfLine(CreateVisiblePositionInDOMTree(*two, 2)));
   EXPECT_TRUE(IsLogicalEndOfLine(CreateVisiblePositionInFlatTree(*two, 2)));
 
   EXPECT_FALSE(IsLogicalEndOfLine(CreateVisiblePositionInDOMTree(*three, 3)));
@@ -448,7 +426,6 @@ TEST_F(VisibleUnitsLineTest, logicalEndOfLine) {
   Node* five = shadow_root->getElementById("five")->firstChild();
   Node* six = shadow_root->getElementById("six")->firstChild();
   Node* seven = shadow_root->getElementById("seven")->firstChild();
-  Node* br = shadow_root->QuerySelector("br");
 
   EXPECT_EQ(Position(seven, 7),
             LogicalEndOfLine(CreateVisiblePositionInDOMTree(*one, 0))
@@ -464,21 +441,18 @@ TEST_F(VisibleUnitsLineTest, logicalEndOfLine) {
             LogicalEndOfLine(CreateVisiblePositionInFlatTree(*one, 1))
                 .DeepEquivalent());
 
-  // The result on legacy layout is broken and not worth fixing.
-  EXPECT_EQ(LayoutNGEnabled() ? Position(two, 2) : Position::BeforeNode(*br),
+  EXPECT_EQ(Position(two, 2),
             LogicalEndOfLine(CreateVisiblePositionInDOMTree(
                                  *two, 0, TextAffinity::kUpstream))
                 .DeepEquivalent());
-  // The result on legacy layout is broken and not worth fixing.
-  EXPECT_EQ(LayoutNGEnabled() ? Position(two, 2) : Position::BeforeNode(*br),
+  EXPECT_EQ(Position(two, 2),
             LogicalEndOfLine(CreateVisiblePositionInDOMTree(*two, 0))
                 .DeepEquivalent());
   EXPECT_EQ(PositionInFlatTree(two, 2),
             LogicalEndOfLine(CreateVisiblePositionInFlatTree(*two, 0))
                 .DeepEquivalent());
 
-  // The result on legacy layout is broken and not worth fixing.
-  EXPECT_EQ(LayoutNGEnabled() ? Position(two, 2) : Position::BeforeNode(*br),
+  EXPECT_EQ(Position(two, 2),
             LogicalEndOfLine(CreateVisiblePositionInDOMTree(*two, 1))
                 .DeepEquivalent());
   EXPECT_EQ(PositionInFlatTree(two, 2),
@@ -503,8 +477,7 @@ TEST_F(VisibleUnitsLineTest, logicalEndOfLine) {
             LogicalEndOfLine(CreateVisiblePositionInFlatTree(*four, 1))
                 .DeepEquivalent());
 
-  // The result on legacy layout is broken and not worth fixing.
-  EXPECT_EQ(LayoutNGEnabled() ? Position(two, 2) : Position::BeforeNode(*br),
+  EXPECT_EQ(Position(two, 2),
             LogicalEndOfLine(CreateVisiblePositionInDOMTree(*five, 1))
                 .DeepEquivalent());
   EXPECT_EQ(PositionInFlatTree(two, 2),
@@ -786,19 +759,13 @@ TEST_F(VisibleUnitsLineTest, EndOfLineWithPositionRelative) {
 
   EXPECT_EQ("<p>ab <b>cd</b> <b>ef|</b></p>",
             TestEndOfLine("<p>a|b <b>cd</b> <b>ef</b></p>"));
-  // Note: legacy result is wrong. See EndOfLineWithBidi.
   EXPECT_EQ(
-      LayoutNGEnabled()
-          ? "<p><bdo dir=\"rtl\">ab <b>cd</b> <b>ef|</b></bdo></p>"
-          : "<p><bdo dir=\"rtl\">ab |<b>cd</b> <b>ef</b></bdo></p>",
+      "<p><bdo dir=\"rtl\">ab <b>cd</b> <b>ef|</b></bdo></p>",
       TestEndOfLine("<p><bdo dir=\"rtl\">a|b <b>cd</b> <b>ef</b></bdo></p>"));
   EXPECT_EQ("<p dir=\"rtl\">ab <b>cd</b> <b>ef|</b></p>",
             TestEndOfLine("<p dir=\"rtl\">a|b <b>cd</b> <b>ef</b></p>"));
-  // Note: legacy result is wrong. See EndOfLineWithBidi.
   EXPECT_EQ(
-      LayoutNGEnabled()
-          ? "<p dir=\"rtl\"><bdo dir=\"rtl\">ab <b>cd</b> <b>ef|</b></bdo></p>"
-          : "<p dir=\"rtl\"><bdo dir=\"rtl\">ab |<b>cd</b> <b>ef</b></bdo></p>",
+      "<p dir=\"rtl\"><bdo dir=\"rtl\">ab <b>cd</b> <b>ef|</b></bdo></p>",
       TestEndOfLine(
           "<p dir=\"rtl\"><bdo dir=\"rtl\">a|b <b>cd</b> <b>ef</b></bdo></p>"));
 }
@@ -1114,14 +1081,10 @@ TEST_F(VisibleUnitsLineTest, StartOfLineWithPositionRelative) {
   EXPECT_EQ("<p dir=\"rtl\"><b>|abc</b> xyz</p>",
             TestStartOfLine("<p dir=\"rtl\"><b>abc</b> |xyz</p>"))
       << "RTL-LTR";
-  // Legacy results are wrong. See StartOfLineWithBidi
-  EXPECT_EQ(LayoutNGEnabled() ? "<p><bdo dir=\"rtl\"><b>|abc</b> xyz</bdo></p>"
-                              : "<p><bdo dir=\"rtl\"><b>abc|</b> xyz</bdo></p>",
+  EXPECT_EQ("<p><bdo dir=\"rtl\"><b>|abc</b> xyz</bdo></p>",
             TestStartOfLine("<p><bdo dir=\"rtl\"><b>abc</b> |xyz</bdo></p>"))
       << "LTR-RTL";
-  EXPECT_EQ(LayoutNGEnabled()
-                ? "<p dir=\"rtl\"><bdo dir=\"rtl\"><b>|abc</b> xyz</bdo></p>"
-                : "<p dir=\"rtl\"><bdo dir=\"rtl\"><b>abc|</b> xyz</bdo></p>",
+  EXPECT_EQ("<p dir=\"rtl\"><bdo dir=\"rtl\"><b>|abc</b> xyz</bdo></p>",
             TestStartOfLine(
                 "<p dir=\"rtl\"><bdo  dir=\"rtl\"><b>abc</b> |xyz</bdo></p>"))
       << "RTL-RTL";
@@ -1170,11 +1133,7 @@ TEST_F(VisibleUnitsLineTest, TextOverflowEllipsis2) {
   const PositionWithAffinity& start_of_line =
       StartOfLine(PositionWithAffinity(Position(span, 1)));
 
-  // The result on legacy layout is broken and not worth fixing.
-  EXPECT_EQ(LayoutNGEnabled()
-                ? PositionWithAffinity(Position::BeforeNode(*span))
-                : PositionWithAffinity(),
-            start_of_line);
+  EXPECT_EQ(PositionWithAffinity(Position::BeforeNode(*span)), start_of_line);
 }
 
 // https://crbug.com/1181451
@@ -1190,8 +1149,7 @@ TEST_F(VisibleUnitsLineTest, InSameLineWithBidiReordering) {
   PositionWithAffinity p2(Position(span->firstChild(), 2));
 
   // Should not crash.
-  // The result on legacy layout is broken and not worth fixing.
-  EXPECT_EQ(LayoutNGEnabled() ? true : false, InSameLine(p1, p2));
+  EXPECT_EQ(true, InSameLine(p1, p2));
 }
 
 }  // namespace blink

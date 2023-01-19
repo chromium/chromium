@@ -21,10 +21,7 @@ PhysicalRect FromFloatRound(const gfx::RectF& rect) {
 
 using testing::ElementsAre;
 
-class NGInkOverflowTest : public testing::Test, private ScopedLayoutNGForTest {
- public:
-  NGInkOverflowTest() : ScopedLayoutNGForTest(true) {}
-};
+class NGInkOverflowTest : public testing::Test {};
 
 TEST_F(NGInkOverflowTest, Empty) {
   NGInkOverflow overflow;

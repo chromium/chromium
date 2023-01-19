@@ -1522,11 +1522,6 @@ TEST_F(NGOffsetMappingGetterTest, Get) {
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
   DCHECK(layout_block_flow->ChildrenInline());
 
-  // For the purpose of this test, ensure this is laid out by each layout
-  // engine.
-  DCHECK_EQ(layout_block_flow->IsLayoutNGObject(),
-            RuntimeEnabledFeatures::LayoutNGEnabled());
-
   const NGOffsetMapping* mapping =
       NGInlineNode::GetOffsetMapping(layout_block_flow);
   EXPECT_TRUE(mapping);

@@ -449,10 +449,7 @@ TEST_F(
       EPosition::kFixed));
 
   auto offset = layout_object->OffsetFromContainer(span_layout_object);
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    EXPECT_EQ(PhysicalOffset(22, 11), offset);
-  else
-    EXPECT_EQ(PhysicalOffset(20, 10), offset);
+  EXPECT_EQ(PhysicalOffset(22, 11), offset);
 
   // Sanity check: Make sure we don't generate anonymous objects.
   EXPECT_EQ(nullptr, body_layout_object->SlowFirstChild()->NextSibling());
@@ -513,13 +510,8 @@ TEST_F(LayoutObjectTest, InlineFloatMismatch) {
 
   LayoutObject* float_obj = GetLayoutObjectByElementId("float_obj");
   LayoutObject* span = GetLayoutObjectByElementId("span");
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    // 10px for margin + 40px for inset.
-    EXPECT_EQ(PhysicalOffset(50, 0), float_obj->OffsetFromAncestor(span));
-  } else {
-    // 10px for margin, -40px because float is to the left of the span.
-    EXPECT_EQ(PhysicalOffset(-30, 0), float_obj->OffsetFromAncestor(span));
-  }
+  // 10px for margin + 40px for inset.
+  EXPECT_EQ(PhysicalOffset(50, 0), float_obj->OffsetFromAncestor(span));
 }
 
 TEST_F(LayoutObjectTest, FloatUnderInline) {
@@ -543,30 +535,15 @@ TEST_F(LayoutObjectTest, FloatUnderInline) {
 
   EXPECT_EQ(layered_div->Layer(), layered_div->PaintingLayer());
   EXPECT_EQ(layered_span->Layer(), layered_span->PaintingLayer());
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    // LayoutNG inline-level floats are children of their inline-level
-    // containers. As such LayoutNG paints these within the correct
-    // inline-level layer.
-    EXPECT_EQ(layered_span->Layer(), floating->PaintingLayer());
-    EXPECT_EQ(layered_span, floating->Container());
-  } else {
-    EXPECT_EQ(layered_div->Layer(), floating->PaintingLayer());
-    EXPECT_EQ(container, floating->Container());
-  }
+  // Inline-level floats are children of their inline-level containers. As such
+  // LayoutNG paints these within the correct inline-level layer.
+  EXPECT_EQ(layered_span->Layer(), floating->PaintingLayer());
+  EXPECT_EQ(layered_span, floating->Container());
   EXPECT_EQ(container, floating->ContainingBlock());
 
   LayoutObject::AncestorSkipInfo skip_info(layered_span);
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_EQ(layered_span, floating->Container(&skip_info));
-    EXPECT_FALSE(skip_info.AncestorSkipped());
-  } else {
-    EXPECT_EQ(container, floating->Container(&skip_info));
-    EXPECT_TRUE(skip_info.AncestorSkipped());
-
-    skip_info = LayoutObject::AncestorSkipInfo(container);
-    EXPECT_EQ(container, floating->Container(&skip_info));
-    EXPECT_FALSE(skip_info.AncestorSkipped());
-  }
+  EXPECT_EQ(layered_span, floating->Container(&skip_info));
+  EXPECT_FALSE(skip_info.AncestorSkipped());
 }
 
 TEST_F(LayoutObjectTest, MutableForPaintingClearPaintFlags) {
@@ -1393,9 +1370,6 @@ TEST_F(LayoutObjectSimTest, FirstLineBackgroundImageDirtyStyleCrash) {
 }
 
 TEST_F(LayoutObjectTest, NeedsLayoutOverflowRecalc) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-
   SetBodyInnerHTML(R"HTML(
     <div id='wrapper'>
       <div id='target'>foo</div>
@@ -1609,8 +1583,6 @@ TEST_F(LayoutObjectTest, SetNeedsCollectInlinesForSvgText) {
 
 // crbug.com/1247686
 TEST_F(LayoutObjectTest, SetNeedsCollectInlinesForSvgInline) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
   SetBodyInnerHTML(R"HTML(
     <div>
     <svg xmlns="http://www.w3.org/2000/svg" id="ancestor">

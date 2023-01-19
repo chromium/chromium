@@ -17,10 +17,6 @@ namespace blink {
 
 class HitTestingTest : public RenderingTest {
  protected:
-  bool LayoutNGEnabled() const {
-    return RuntimeEnabledFeatures::LayoutNGEnabled();
-  }
-
   PositionWithAffinity HitTest(const PhysicalOffset offset) {
     const HitTestRequest hit_request(HitTestRequest::kActive);
     const HitTestLocation hit_location(offset);

@@ -168,7 +168,6 @@ TEST_F(NGLineBreakerTest, SingleNode) {
 
 // For "text-combine-upright-break-inside-001a.html"
 TEST_F(NGLineBreakerTest, TextCombineCloseTag) {
-  ScopedLayoutNGForTest enable_layout_ng(true);
   LoadAhem();
   InsertStyleElement(
       "#container {"
@@ -195,7 +194,6 @@ TEST_F(NGLineBreakerTest, TextCombineCloseTag) {
 }
 
 TEST_F(NGLineBreakerTest, TextCombineBreak) {
-  ScopedLayoutNGForTest enable_layout_ng(true);
   LoadAhem();
   InsertStyleElement(
       "#container {"
@@ -214,7 +212,6 @@ TEST_F(NGLineBreakerTest, TextCombineBreak) {
 }
 
 TEST_F(NGLineBreakerTest, TextCombineNoBreak) {
-  ScopedLayoutNGForTest enable_layout_ng(true);
   LoadAhem();
   InsertStyleElement(
       "#container {"
@@ -233,7 +230,6 @@ TEST_F(NGLineBreakerTest, TextCombineNoBreak) {
 }
 
 TEST_F(NGLineBreakerTest, TextCombineNoBreakWithSpace) {
-  ScopedLayoutNGForTest enable_layout_ng(true);
   LoadAhem();
   InsertStyleElement(
       "#container {"

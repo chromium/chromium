@@ -18,11 +18,7 @@ namespace blink {
 
 class StyleRecalcChangeTest : public PageTestBase {};
 
-class StyleRecalcChangeTestCQ : public StyleRecalcChangeTest,
-                                private ScopedLayoutNGForTest {
- public:
-  StyleRecalcChangeTestCQ() : ScopedLayoutNGForTest(true) {}
-};
+class StyleRecalcChangeTestCQ : public StyleRecalcChangeTest {};
 
 TEST_F(StyleRecalcChangeTest, SuppressRecalc) {
   SetBodyInnerHTML(R"HTML(

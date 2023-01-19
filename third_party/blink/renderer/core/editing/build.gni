@@ -395,7 +395,6 @@ blink_core_tests_editing = [
   "ime/ime_text_span_test.cc",
   "ime/input_method_controller_test.cc",
   "ime/stylus_writing_gesture_test.cc",
-  "inline_box_position_test.cc",
   "iterators/character_iterator_test.cc",
   "iterators/simplified_backwards_text_iterator_test.cc",
   "iterators/text_iterator_behavior_test.cc",

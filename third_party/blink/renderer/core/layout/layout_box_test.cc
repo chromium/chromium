@@ -367,10 +367,7 @@ TEST_F(LayoutBoxTest, LocationContainer) {
   EXPECT_EQ(body, table->LocationContainer());
   EXPECT_EQ(table, tbody->LocationContainer());
   EXPECT_EQ(tbody, row->LocationContainer());
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    EXPECT_EQ(row, cell->LocationContainer());
-  else
-    EXPECT_EQ(tbody, cell->LocationContainer());
+  EXPECT_EQ(row, cell->LocationContainer());
 }
 
 TEST_F(LayoutBoxTest, TopLeftLocationFlipped) {
@@ -417,22 +414,14 @@ TEST_F(LayoutBoxTest, TableRowCellTopLeftLocationFlipped) {
 
   const LayoutBox* cell1 = GetLayoutBoxByElementId("cell1");
   EXPECT_EQ(LayoutPoint(0, 0), cell1->Location());
-  // TablesNG cells are container is row, Legacy is section.
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    EXPECT_EQ(PhysicalOffset(0, 0), cell1->PhysicalLocation());
-  else
-    EXPECT_EQ(PhysicalOffset(300, 0), cell1->PhysicalLocation());
+  EXPECT_EQ(PhysicalOffset(0, 0), cell1->PhysicalLocation());
 
   const LayoutBox* row2 = GetLayoutBoxByElementId("row2");
   EXPECT_EQ(LayoutPoint(100, 0), row2->Location());
   EXPECT_EQ(PhysicalOffset(0, 0), row2->PhysicalLocation());
 
   const LayoutBox* cell2 = GetLayoutBoxByElementId("cell2");
-  // TablesNG cells are container is row, Legacy is section.
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    EXPECT_EQ(LayoutPoint(0, 0), cell2->Location());
-  else
-    EXPECT_EQ(LayoutPoint(100, 0), cell2->Location());
+  EXPECT_EQ(LayoutPoint(0, 0), cell2->Location());
   EXPECT_EQ(PhysicalOffset(0, 0), cell2->PhysicalLocation());
 }
 
@@ -884,16 +873,9 @@ TEST_F(LayoutBoxTest, MarkerContainerLayoutOverflowRect) {
 
   auto* marker_container =
       To<LayoutBox>(GetLayoutObjectByElementId("target")->SlowFirstChild());
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_GE(marker_container->Location().Y() +
-                  marker_container->LayoutOverflowRect().MaxY(),
-              LayoutUnit(50));
-  } else {
-    // Unit marker_container's frame_rect which y-pos starts from 0 and marker's
-    // frame_rect in Legacy.
-    EXPECT_EQ(LayoutPoint(), marker_container->Location());
-    EXPECT_GE(marker_container->LayoutOverflowRect().MaxY(), LayoutUnit(50));
-  }
+  EXPECT_GE(marker_container->Location().Y() +
+                marker_container->LayoutOverflowRect().MaxY(),
+            LayoutUnit(50));
 }
 
 static String CommonStyleForGeometryWithScrollbarTests() {
@@ -1024,44 +1006,24 @@ TEST_F(LayoutBoxTest,
   EXPECT_EQ(PhysicalOffset(150, 90), vlr_in_htb->PhysicalLocation());
 
   const auto* vrl_in_htb = GetLayoutBoxByElementId("vrl-in-htb");
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_EQ(LayoutPoint(150, 90), vrl_in_htb->Location());
-    EXPECT_EQ(PhysicalOffset(150, 90), vrl_in_htb->PhysicalLocation());
-  } else {
-    EXPECT_EQ(LayoutPoint(250, 90), vrl_in_htb->Location());
-    EXPECT_EQ(PhysicalOffset(250, 90), vrl_in_htb->PhysicalLocation());
-  }
+  EXPECT_EQ(LayoutPoint(150, 90), vrl_in_htb->Location());
+  EXPECT_EQ(PhysicalOffset(150, 90), vrl_in_htb->PhysicalLocation());
 
   const auto* htb_in_vlr = GetLayoutBoxByElementId("htb-in-vlr");
   EXPECT_EQ(LayoutPoint(150, 90), htb_in_vlr->Location());
   EXPECT_EQ(PhysicalOffset(150, 90), htb_in_vlr->PhysicalLocation());
 
   const auto* vrl_in_vlr = GetLayoutBoxByElementId("vrl-in-vlr");
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_EQ(LayoutPoint(150, 90), vrl_in_vlr->Location());
-    EXPECT_EQ(PhysicalOffset(150, 90), vrl_in_vlr->PhysicalLocation());
-  } else {
-    EXPECT_EQ(LayoutPoint(250, 90), vrl_in_vlr->Location());
-    EXPECT_EQ(PhysicalOffset(250, 90), vrl_in_vlr->PhysicalLocation());
-  }
+  EXPECT_EQ(LayoutPoint(150, 90), vrl_in_vlr->Location());
+  EXPECT_EQ(PhysicalOffset(150, 90), vrl_in_vlr->PhysicalLocation());
 
   const auto* htb_in_vrl = GetLayoutBoxByElementId("htb-in-vrl");
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_EQ(LayoutPoint(240, 90), htb_in_vrl->Location());
-    EXPECT_EQ(PhysicalOffset(150, 90), htb_in_vrl->PhysicalLocation());
-  } else {
-    EXPECT_EQ(LayoutPoint(340, 90), htb_in_vrl->Location());
-    EXPECT_EQ(PhysicalOffset(50, 90), htb_in_vrl->PhysicalLocation());
-  }
+  EXPECT_EQ(LayoutPoint(240, 90), htb_in_vrl->Location());
+  EXPECT_EQ(PhysicalOffset(150, 90), htb_in_vrl->PhysicalLocation());
 
   const auto* vlr_in_vrl = GetLayoutBoxByElementId("vlr-in-vrl");
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_EQ(LayoutPoint(240, 90), vlr_in_vrl->Location());
-    EXPECT_EQ(PhysicalOffset(150, 90), vlr_in_vrl->PhysicalLocation());
-  } else {
-    EXPECT_EQ(LayoutPoint(340, 90), vlr_in_vrl->Location());
-    EXPECT_EQ(PhysicalOffset(50, 90), vlr_in_vrl->PhysicalLocation());
-  }
+  EXPECT_EQ(LayoutPoint(240, 90), vlr_in_vrl->Location());
+  EXPECT_EQ(PhysicalOffset(150, 90), vlr_in_vrl->PhysicalLocation());
 }
 
 TEST_F(LayoutBoxTest,
@@ -1327,55 +1289,29 @@ TEST_F(LayoutBoxTest, LocationOfRelativeChildWithContainerScrollbars) {
   const auto* rtl_vlr = GetLayoutBoxByElementId("rtl-vlr");
   const auto* rtl_vrl = GetLayoutBoxByElementId("rtl-vrl");
 
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_EQ(LayoutPoint(178, 177), normal->Location());
-    EXPECT_EQ(PhysicalOffset(178, 177), normal->PhysicalLocation());
-    EXPECT_EQ(PhysicalOffset(0, 0), normal->OffsetForInFlowPosition());
+  EXPECT_EQ(LayoutPoint(178, 177), normal->Location());
+  EXPECT_EQ(PhysicalOffset(178, 177), normal->PhysicalLocation());
+  EXPECT_EQ(PhysicalOffset(0, 0), normal->OffsetForInFlowPosition());
 
-    EXPECT_EQ(LayoutPoint(278, 107), vlr->Location());
-    EXPECT_EQ(PhysicalOffset(278, 107), vlr->PhysicalLocation());
-    EXPECT_EQ(PhysicalOffset(0, 0), vlr->OffsetForInFlowPosition());
+  EXPECT_EQ(LayoutPoint(278, 107), vlr->Location());
+  EXPECT_EQ(PhysicalOffset(278, 107), vlr->PhysicalLocation());
+  EXPECT_EQ(PhysicalOffset(0, 0), vlr->OffsetForInFlowPosition());
 
-    EXPECT_EQ(LayoutPoint(77, 107), vrl->Location());
-    EXPECT_EQ(PhysicalOffset(313, 107), vrl->PhysicalLocation());
-    EXPECT_EQ(PhysicalOffset(0, 0), vrl->OffsetForInFlowPosition());
+  EXPECT_EQ(LayoutPoint(77, 107), vrl->Location());
+  EXPECT_EQ(PhysicalOffset(313, 107), vrl->PhysicalLocation());
+  EXPECT_EQ(PhysicalOffset(0, 0), vrl->OffsetForInFlowPosition());
 
-    EXPECT_EQ(LayoutPoint(428, 177), rtl->Location());
-    EXPECT_EQ(PhysicalOffset(428, 177), rtl->PhysicalLocation());
-    EXPECT_EQ(PhysicalOffset(0, 0), rtl->OffsetForInFlowPosition());
+  EXPECT_EQ(LayoutPoint(428, 177), rtl->Location());
+  EXPECT_EQ(PhysicalOffset(428, 177), rtl->PhysicalLocation());
+  EXPECT_EQ(PhysicalOffset(0, 0), rtl->OffsetForInFlowPosition());
 
-    EXPECT_EQ(LayoutPoint(278, 211), rtl_vlr->Location());
-    EXPECT_EQ(PhysicalOffset(278, 211), rtl_vlr->PhysicalLocation());
-    EXPECT_EQ(PhysicalOffset(0, 0), rtl_vlr->OffsetForInFlowPosition());
+  EXPECT_EQ(LayoutPoint(278, 211), rtl_vlr->Location());
+  EXPECT_EQ(PhysicalOffset(278, 211), rtl_vlr->PhysicalLocation());
+  EXPECT_EQ(PhysicalOffset(0, 0), rtl_vlr->OffsetForInFlowPosition());
 
-    EXPECT_EQ(LayoutPoint(77, 211), rtl_vrl->Location());
-    EXPECT_EQ(PhysicalOffset(313, 211), rtl_vrl->PhysicalLocation());
-    EXPECT_EQ(PhysicalOffset(0, 0), rtl_vrl->OffsetForInFlowPosition());
-  } else {
-    EXPECT_EQ(LayoutPoint(90, 100), normal->Location());
-    EXPECT_EQ(PhysicalOffset(90, 100), normal->PhysicalLocation());
-    EXPECT_EQ(PhysicalOffset(88, 77), normal->OffsetForInFlowPosition());
-
-    EXPECT_EQ(LayoutPoint(190, 30), vlr->Location());
-    EXPECT_EQ(PhysicalOffset(190, 30), vlr->PhysicalLocation());
-    EXPECT_EQ(PhysicalOffset(88, 77), vlr->OffsetForInFlowPosition());
-
-    EXPECT_EQ(LayoutPoint(165, 30), vrl->Location());
-    EXPECT_EQ(PhysicalOffset(225, 30), vrl->PhysicalLocation());
-    EXPECT_EQ(PhysicalOffset(88, 77), vrl->OffsetForInFlowPosition());
-
-    EXPECT_EQ(LayoutPoint(340, 100), rtl->Location());
-    EXPECT_EQ(PhysicalOffset(340, 100), rtl->PhysicalLocation());
-    EXPECT_EQ(PhysicalOffset(88, 77), rtl->OffsetForInFlowPosition());
-
-    EXPECT_EQ(LayoutPoint(190, 134), rtl_vlr->Location());
-    EXPECT_EQ(PhysicalOffset(190, 134), rtl_vlr->PhysicalLocation());
-    EXPECT_EQ(PhysicalOffset(88, 77), rtl_vlr->OffsetForInFlowPosition());
-
-    EXPECT_EQ(LayoutPoint(165, 134), rtl_vrl->Location());
-    EXPECT_EQ(PhysicalOffset(225, 134), rtl_vrl->PhysicalLocation());
-    EXPECT_EQ(PhysicalOffset(88, 77), rtl_vrl->OffsetForInFlowPosition());
-  }
+  EXPECT_EQ(LayoutPoint(77, 211), rtl_vrl->Location());
+  EXPECT_EQ(PhysicalOffset(313, 211), rtl_vrl->PhysicalLocation());
+  EXPECT_EQ(PhysicalOffset(0, 0), rtl_vrl->OffsetForInFlowPosition());
 }
 
 TEST_F(LayoutBoxTest, LocationOfFloatLeftChildWithContainerScrollbars) {
@@ -1644,21 +1580,9 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(PhysicalOffset(), normal->ScrolledContentOffset());
   EXPECT_EQ(gfx::Vector2d(), normal->OriginAdjustmentForScrollbars());
   EXPECT_EQ(gfx::Vector2d(), scrollable_area->ScrollOffsetInt());
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_EQ(LayoutRect(50, 20, 2060, 1040), normal->LayoutOverflowRect());
-    EXPECT_EQ(gfx::Vector2d(1615, 716),
-              scrollable_area->MaximumScrollOffsetInt());
-  } else {
-    // 50 = border_left, 20 = border_top
-    // 2040 = child_width + padding_left (without padding_right which is in
-    //        inline-end direction)
-    // 1040 = child_height + padding_top + padding_bottom
-    EXPECT_EQ(LayoutRect(50, 20, 2040, 1040), normal->LayoutOverflowRect());
-    // 1595 = layout_overflow_width (2040) - client_width (445 -> see below).
-    // 716 = layout_overflow_height (1040) - client_height (324 -> see below).
-    EXPECT_EQ(gfx::Vector2d(1595, 716),
-              scrollable_area->MaximumScrollOffsetInt());
-  }
+  EXPECT_EQ(LayoutRect(50, 20, 2060, 1040), normal->LayoutOverflowRect());
+  EXPECT_EQ(gfx::Vector2d(1615, 716),
+            scrollable_area->MaximumScrollOffsetInt());
   EXPECT_EQ(gfx::Vector2d(), scrollable_area->MinimumScrollOffsetInt());
   EXPECT_EQ(gfx::Point(), scrollable_area->ScrollOrigin());
   EXPECT_EQ(gfx::PointF(), scrollable_area->ScrollPosition());
@@ -1673,20 +1597,9 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(PhysicalOffset(), vlr->ScrolledContentOffset());
   EXPECT_EQ(gfx::Vector2d(), vlr->OriginAdjustmentForScrollbars());
   EXPECT_EQ(gfx::Vector2d(), scrollable_area->ScrollOffsetInt());
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_EQ(LayoutRect(50, 20, 2060, 1040), vlr->LayoutOverflowRect());
-    EXPECT_EQ(gfx::Vector2d(1615, 716),
-              scrollable_area->MaximumScrollOffsetInt());
-  } else {
-    // 2060 = child_width + padding_left + padding_right
-    // 1010 = child_height + padding_top (without padding_bottom which is in
-    //        inline-end direction)
-    EXPECT_EQ(LayoutRect(50, 20, 2060, 1010), vlr->LayoutOverflowRect());
-    // 1615 = layout_overflow_width (2060) - client_width (445).
-    // 686 = layout_overflow_height (1010) - client_height (324).
-    EXPECT_EQ(gfx::Vector2d(1615, 686),
-              scrollable_area->MaximumScrollOffsetInt());
-  }
+  EXPECT_EQ(LayoutRect(50, 20, 2060, 1040), vlr->LayoutOverflowRect());
+  EXPECT_EQ(gfx::Vector2d(1615, 716),
+            scrollable_area->MaximumScrollOffsetInt());
   EXPECT_EQ(gfx::Vector2d(), scrollable_area->MinimumScrollOffsetInt());
   EXPECT_EQ(gfx::Point(), scrollable_area->ScrollOrigin());
   EXPECT_EQ(gfx::PointF(), scrollable_area->ScrollPosition());
@@ -1702,13 +1615,8 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(gfx::Vector2d(), vrl->OriginAdjustmentForScrollbars());
   EXPECT_EQ(gfx::Vector2d(), scrollable_area->ScrollOffsetInt());
   // Same as "vlr" except for flipping.
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_EQ(LayoutRect(45, 20, 2060, 1040), vrl->LayoutOverflowRect());
-    EXPECT_EQ(gfx::Vector2d(0, 716), scrollable_area->MaximumScrollOffsetInt());
-  } else {
-    EXPECT_EQ(LayoutRect(45, 20, 2060, 1010), vrl->LayoutOverflowRect());
-    EXPECT_EQ(gfx::Vector2d(0, 686), scrollable_area->MaximumScrollOffsetInt());
-  }
+  EXPECT_EQ(LayoutRect(45, 20, 2060, 1040), vrl->LayoutOverflowRect());
+  EXPECT_EQ(gfx::Vector2d(0, 716), scrollable_area->MaximumScrollOffsetInt());
   EXPECT_EQ(gfx::Vector2d(-1615, 0), scrollable_area->MinimumScrollOffsetInt());
   EXPECT_EQ(gfx::Point(1615, 0), scrollable_area->ScrollOrigin());
   EXPECT_EQ(gfx::PointF(1615, 0), scrollable_area->ScrollPosition());
@@ -1723,25 +1631,11 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(PhysicalOffset(), rtl->ScrolledContentOffset());
   EXPECT_EQ(gfx::Vector2d(15, 0), rtl->OriginAdjustmentForScrollbars());
   EXPECT_EQ(gfx::Vector2d(), scrollable_area->ScrollOffsetInt());
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_EQ(LayoutRect(-1550, 20, 2060, 1040), rtl->LayoutOverflowRect());
-    EXPECT_EQ(gfx::Vector2d(0, 716), scrollable_area->MaximumScrollOffsetInt());
-    EXPECT_EQ(gfx::Vector2d(-1615, 0),
-              scrollable_area->MinimumScrollOffsetInt());
-    EXPECT_EQ(gfx::Point(1615, 0), scrollable_area->ScrollOrigin());
-    EXPECT_EQ(gfx::PointF(1615, 0), scrollable_area->ScrollPosition());
-  } else {
-    // The contents overflow to the left.
-    // 2020 = child_width + padding_right (without padding_left which is in
-    //        inline-end direction)
-    // 1040 = child_height + padding_top + padding_bottom
-    EXPECT_EQ(LayoutRect(-1510, 20, 2020, 1040), rtl->LayoutOverflowRect());
-    EXPECT_EQ(gfx::Vector2d(0, 716), scrollable_area->MaximumScrollOffsetInt());
-    EXPECT_EQ(gfx::Vector2d(-1575, 0),
-              scrollable_area->MinimumScrollOffsetInt());
-    EXPECT_EQ(gfx::Point(1575, 0), scrollable_area->ScrollOrigin());
-    EXPECT_EQ(gfx::PointF(1575, 0), scrollable_area->ScrollPosition());
-  }
+  EXPECT_EQ(LayoutRect(-1550, 20, 2060, 1040), rtl->LayoutOverflowRect());
+  EXPECT_EQ(gfx::Vector2d(0, 716), scrollable_area->MaximumScrollOffsetInt());
+  EXPECT_EQ(gfx::Vector2d(-1615, 0), scrollable_area->MinimumScrollOffsetInt());
+  EXPECT_EQ(gfx::Point(1615, 0), scrollable_area->ScrollOrigin());
+  EXPECT_EQ(gfx::PointF(1615, 0), scrollable_area->ScrollPosition());
   // These are the same as in the NonScrollable test.
   EXPECT_EQ(LayoutRect(0, 0, 540, 400), rtl->BorderBoxRect());
   EXPECT_EQ(LayoutRect(65, 20, 445, 324), rtl->NoOverflowRect());
@@ -1753,26 +1647,11 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(PhysicalOffset(), rtl_vlr->ScrolledContentOffset());
   EXPECT_EQ(gfx::Vector2d(), rtl_vlr->OriginAdjustmentForScrollbars());
   EXPECT_EQ(gfx::Vector2d(), scrollable_area->ScrollOffsetInt());
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_EQ(LayoutRect(50, -696, 2060, 1040), rtl_vlr->LayoutOverflowRect());
-    EXPECT_EQ(gfx::Vector2d(1615, 0),
-              scrollable_area->MaximumScrollOffsetInt());
-    EXPECT_EQ(gfx::Vector2d(0, -716),
-              scrollable_area->MinimumScrollOffsetInt());
-    EXPECT_EQ(gfx::Point(0, 716), scrollable_area->ScrollOrigin());
-    EXPECT_EQ(gfx::PointF(0, 716), scrollable_area->ScrollPosition());
-  } else {
-    // 2060 = child_width + padding_left + padding_right
-    // 1030 = child_height + padding_bottom (without padding_top which is in
-    //        inline-end direction)
-    EXPECT_EQ(LayoutRect(50, -686, 2060, 1030), rtl_vlr->LayoutOverflowRect());
-    EXPECT_EQ(gfx::Vector2d(1615, 0),
-              scrollable_area->MaximumScrollOffsetInt());
-    EXPECT_EQ(gfx::Vector2d(0, -706),
-              scrollable_area->MinimumScrollOffsetInt());
-    EXPECT_EQ(gfx::Point(0, 706), scrollable_area->ScrollOrigin());
-    EXPECT_EQ(gfx::PointF(0, 706), scrollable_area->ScrollPosition());
-  }
+  EXPECT_EQ(LayoutRect(50, -696, 2060, 1040), rtl_vlr->LayoutOverflowRect());
+  EXPECT_EQ(gfx::Vector2d(1615, 0), scrollable_area->MaximumScrollOffsetInt());
+  EXPECT_EQ(gfx::Vector2d(0, -716), scrollable_area->MinimumScrollOffsetInt());
+  EXPECT_EQ(gfx::Point(0, 716), scrollable_area->ScrollOrigin());
+  EXPECT_EQ(gfx::PointF(0, 716), scrollable_area->ScrollPosition());
   // These are the same as in the NonScrollable test.
   EXPECT_EQ(LayoutRect(0, 0, 540, 400), rtl_vlr->BorderBoxRect());
   EXPECT_EQ(LayoutRect(50, 20, 445, 324), rtl_vlr->NoOverflowRect());
@@ -1785,21 +1664,12 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(gfx::Vector2d(), rtl_vrl->OriginAdjustmentForScrollbars());
   EXPECT_EQ(gfx::Vector2d(), scrollable_area->ScrollOffsetInt());
   // Same as "vlr" except for flipping.
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_EQ(LayoutRect(45, -696, 2060, 1040), rtl_vrl->LayoutOverflowRect());
-    EXPECT_EQ(gfx::Vector2d(), scrollable_area->MaximumScrollOffsetInt());
-    EXPECT_EQ(gfx::Vector2d(-1615, -716),
-              scrollable_area->MinimumScrollOffsetInt());
-    EXPECT_EQ(gfx::Point(1615, 716), scrollable_area->ScrollOrigin());
-    EXPECT_EQ(gfx::PointF(1615, 716), scrollable_area->ScrollPosition());
-  } else {
-    EXPECT_EQ(LayoutRect(45, -686, 2060, 1030), rtl_vrl->LayoutOverflowRect());
-    EXPECT_EQ(gfx::Vector2d(), scrollable_area->MaximumScrollOffsetInt());
-    EXPECT_EQ(gfx::Vector2d(-1615, -706),
-              scrollable_area->MinimumScrollOffsetInt());
-    EXPECT_EQ(gfx::Point(1615, 706), scrollable_area->ScrollOrigin());
-    EXPECT_EQ(gfx::PointF(1615, 706), scrollable_area->ScrollPosition());
-  }
+  EXPECT_EQ(LayoutRect(45, -696, 2060, 1040), rtl_vrl->LayoutOverflowRect());
+  EXPECT_EQ(gfx::Vector2d(), scrollable_area->MaximumScrollOffsetInt());
+  EXPECT_EQ(gfx::Vector2d(-1615, -716),
+            scrollable_area->MinimumScrollOffsetInt());
+  EXPECT_EQ(gfx::Point(1615, 716), scrollable_area->ScrollOrigin());
+  EXPECT_EQ(gfx::PointF(1615, 716), scrollable_area->ScrollPosition());
   EXPECT_EQ(gfx::Vector2d(), rtl_vrl->OriginAdjustmentForScrollbars());
   // These are the same as in the NonScrollable test.
   EXPECT_EQ(LayoutRect(0, 0, 540, 400), rtl_vrl->BorderBoxRect());
