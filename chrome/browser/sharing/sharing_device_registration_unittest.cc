@@ -12,7 +12,6 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/sharing/features.h"
@@ -227,7 +226,6 @@ class SharingDeviceRegistrationTest : public testing::Test {
   syncer::FakeDeviceInfoSyncService fake_device_info_sync_service_;
   FakeInstanceID fake_instance_id_;
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<PrefService> pref_service_ =
       CreatePrefServiceAndRegisterPrefs();
   SharingSyncPreference sync_prefs_;
@@ -295,7 +293,8 @@ TEST_F(SharingDeviceRegistrationTest, RegisterDeviceTest_Success) {
 }
 
 TEST_F(SharingDeviceRegistrationTest, RegisterDeviceTest_Vapid_Only) {
-  scoped_feature_list_.InitAndDisableFeature(kSharingSendViaSync);
+  // Make sync unavailable to force using vapid.
+  test_sync_service_.SetFailedDataTypes(syncer::SHARING_MESSAGE);
   SetInstanceIDFCMResult(instance_id::InstanceID::Result::SUCCESS);
   SetInstanceIDFCMToken(kVapidFCMToken);
   fake_device_info_sync_service_.GetDeviceInfoTracker()->Add(
@@ -340,7 +339,8 @@ TEST_F(SharingDeviceRegistrationTest, RegisterDeviceTest_SenderIDOnly) {
 }
 
 TEST_F(SharingDeviceRegistrationTest, RegisterDeviceTest_InternalError) {
-  scoped_feature_list_.InitAndDisableFeature(kSharingSendViaSync);
+  // Make sync unavailable to force using vapid.
+  test_sync_service_.SetFailedDataTypes(syncer::SHARING_MESSAGE);
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/syncer::UserSelectableTypeSet());

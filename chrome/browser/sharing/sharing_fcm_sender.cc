@@ -9,7 +9,6 @@
 #include "base/guid.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version.h"
-#include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_message_bridge.h"
 #include "chrome/browser/sharing/sharing_sync_preference.h"
@@ -72,7 +71,6 @@ void SharingFCMSender::SendMessageToFcmTarget(
   TRACE_EVENT0("sharing", "SharingFCMSender::SendMessageToFcmTarget");
 
   bool canSendViaSync =
-      base::FeatureList::IsEnabled(kSharingSendViaSync) &&
       sync_service_->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE) &&
       !fcm_configuration.sender_id_fcm_token().empty() &&
       !fcm_configuration.sender_id_p256dh().empty() &&
@@ -81,8 +79,7 @@ void SharingFCMSender::SendMessageToFcmTarget(
                          !fcm_configuration.vapid_p256dh().empty() &&
                          !fcm_configuration.vapid_auth_secret().empty();
 
-  if (canSendViaSync && (!canSendViaVapid ||
-                         !base::FeatureList::IsEnabled(kSharingPreferVapid))) {
+  if (canSendViaSync) {
     message.set_message_id(base::GenerateGUID());
     EncryptMessage(
         kSharingSenderID, fcm_configuration.sender_id_p256dh(),
@@ -95,6 +92,7 @@ void SharingFCMSender::SendMessageToFcmTarget(
     return;
   }
 
+  // TODO(crbug.com/1408456): This can probably go away.
   if (canSendViaVapid) {
     absl::optional<SharingSyncPreference::FCMRegistration> fcm_registration =
         sync_preference_->GetFCMRegistration();
@@ -127,8 +125,7 @@ void SharingFCMSender::SendMessageToServerTarget(
     SendMessageCallback callback) {
   TRACE_EVENT0("sharing", "SharingFCMSender::SendMessageToServerTarget");
 
-  if (!base::FeatureList::IsEnabled(kSharingSendViaSync) ||
-      !sync_service_->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE)) {
+  if (!sync_service_->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE)) {
     std::move(callback).Run(SharingSendMessageResult::kInternalError,
                             /*message_id=*/absl::nullopt,
                             SharingChannelType::kServer);

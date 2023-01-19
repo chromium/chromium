@@ -10,7 +10,6 @@
 #include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/sharing/fake_device_info.h"
 #include "chrome/browser/sharing/features.h"
@@ -204,7 +203,6 @@ class SharingServiceTest : public testing::Test {
     return sharing_service_.get();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -365,11 +363,6 @@ TEST_F(SharingServiceTest, DeviceRegistrationPreferenceNotAvailable) {
 }
 
 TEST_F(SharingServiceTest, DeviceRegistrationTransportMode) {
-  // Enable the transport mode required features.
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{kSharingSendViaSync},
-      /*disabled_features=*/{});
-
   test_sync_service_.SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
 

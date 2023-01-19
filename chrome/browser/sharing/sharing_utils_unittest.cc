@@ -31,17 +31,12 @@ class SharingUtilsTest : public testing::Test {
   SharingUtilsTest() = default;
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   syncer::TestSyncService test_sync_service_;
 };
 
 }  // namespace
 
 TEST_F(SharingUtilsTest, SyncEnabled_FullySynced) {
-  // Disable transport mode required features.
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{kSharingSendViaSync});
   test_sync_service_.SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   // PREFERENCES is actively synced.
@@ -55,26 +50,20 @@ TEST_F(SharingUtilsTest, SyncEnabled_FullySynced) {
 }
 
 TEST_F(SharingUtilsTest, SyncDisabled_FullySynced_MissingDataTypes) {
-  // Disable transport mode required features.
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{kSharingSendViaSync});
   test_sync_service_.SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   // Missing PREFERENCES.
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/syncer::UserSelectableTypeSet());
+  // Not able to sync SHARING_MESSAGE.
+  test_sync_service_.SetFailedDataTypes({syncer::SHARING_MESSAGE});
 
   EXPECT_FALSE(IsSyncEnabledForSharing(&test_sync_service_));
   EXPECT_TRUE(IsSyncDisabledForSharing(&test_sync_service_));
 }
 
 TEST_F(SharingUtilsTest, SyncEnabled_SigninOnly) {
-  // Enable transport mode required features.
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{kSharingSendViaSync},
-      /*disabled_features=*/{});
   test_sync_service_.SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   // SHARING_MESSAGE is actively synced.
@@ -83,10 +72,6 @@ TEST_F(SharingUtilsTest, SyncEnabled_SigninOnly) {
 }
 
 TEST_F(SharingUtilsTest, SyncDisabled_SigninOnly_MissingDataTypes) {
-  // Enable transport mode required features.
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{kSharingSendViaSync},
-      /*disabled_features=*/{});
   test_sync_service_.SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   // Missing SHARING_MESSAGE.

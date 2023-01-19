@@ -24,14 +24,4 @@ extern const base::FeatureParam<int> kSharingPulseDeltaDesktopHours;
 // backgrounded. Such devices cannot be marked stale aggressively.
 extern const base::FeatureParam<int> kSharingPulseDeltaAndroidHours;
 
-// Feature flag for configuring the timeout in the sharing message bridge.
-BASE_DECLARE_FEATURE(kSharingMessageBridgeTimeout);
-extern const base::FeatureParam<int> kSharingMessageBridgeTimeoutSeconds;
-
-// Feature flag for sending sharing message via Sync.
-BASE_DECLARE_FEATURE(kSharingSendViaSync);
-
-// Feature flag for prefer sending sharing message using VAPID.
-BASE_DECLARE_FEATURE(kSharingPreferVapid);
-
 #endif  // CHROME_BROWSER_SHARING_FEATURES_H_

@@ -24,6 +24,8 @@ class SharingMessageBridgeImpl : public SharingMessageBridge,
   SharingMessageBridgeImpl(const SharingMessageBridgeImpl&) = delete;
   SharingMessageBridgeImpl& operator=(const SharingMessageBridgeImpl&) = delete;
 
+  constexpr static base::TimeDelta kCommitTimeout = base::Seconds(8);
+
   // SharingMessageBridge implementation.
   void SendSharingMessage(
       std::unique_ptr<sync_pb::SharingMessageSpecifics> specifics,

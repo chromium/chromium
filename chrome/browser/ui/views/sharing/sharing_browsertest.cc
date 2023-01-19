@@ -15,7 +15,6 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_device_registration_result.h"
 #include "chrome/browser/sharing/sharing_device_source_sync.h"
@@ -196,28 +195,19 @@ void SharingBrowserTest::CheckLastReceiver(
   auto fcm_configuration = GetFCMChannel(device);
   ASSERT_TRUE(fcm_configuration);
 
-  if (base::FeatureList::IsEnabled(kSharingSendViaSync)) {
-    EXPECT_EQ(fcm_configuration->sender_id_fcm_token(),
-              fake_sharing_message_bridge_.specifics()
-                  .channel_configuration()
-                  .fcm()
-                  .token());
-  } else {
-    EXPECT_EQ(fcm_configuration->vapid_fcm_token(),
-              fake_web_push_sender_->fcm_token());
-  }
+  EXPECT_EQ(fcm_configuration->sender_id_fcm_token(),
+            fake_sharing_message_bridge_.specifics()
+                .channel_configuration()
+                .fcm()
+                .token());
 }
 
 chrome_browser_sharing::SharingMessage
 SharingBrowserTest::GetLastSharingMessageSent() const {
   chrome_browser_sharing::SharingMessage sharing_message;
 
-  if (base::FeatureList::IsEnabled(kSharingSendViaSync)) {
-    sharing_message.ParseFromString(
-        fake_sharing_message_bridge_.specifics().payload());
-  } else {
-    sharing_message.ParseFromString(fake_web_push_sender_->message().payload);
-  }
+  sharing_message.ParseFromString(
+      fake_sharing_message_bridge_.specifics().payload());
   return sharing_message;
 }
 

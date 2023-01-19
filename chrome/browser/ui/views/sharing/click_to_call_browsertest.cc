@@ -162,32 +162,6 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, ContextMenu_EscapedCharacters) {
 }
 
 IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest,
-                       ContextMenu_DevicesAvailable_SyncTurnedOff) {
-  if (base::FeatureList::IsEnabled(kSharingSendViaSync)) {
-    // Turning off sync will have no effect when Click to Call is available on
-    // sign-in.
-    return;
-  }
-
-  Init(sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
-       sync_pb::SharingSpecificFields::UNKNOWN);
-  auto devices = sharing_service()->GetDeviceCandidates(
-      sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
-  ASSERT_EQ(1u, devices.size());
-
-  // Disable syncing preferences which is necessary for Sharing.
-  GetSyncService(0)->GetUserSettings()->SetSelectedTypes(false, {});
-  ASSERT_TRUE(AwaitQuiescence());
-
-  std::unique_ptr<TestRenderViewContextMenu> menu =
-      InitContextMenu(GURL(kTelUrl), kLinkText, kTextWithoutPhoneNumber);
-  EXPECT_FALSE(menu->IsItemPresent(
-      IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE));
-  EXPECT_FALSE(menu->IsItemPresent(
-      IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES));
-}
-
-IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest,
                        ContextMenu_TelLink_MultipleDevicesAvailable) {
   Init(sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
        sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
