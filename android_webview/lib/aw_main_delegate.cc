@@ -232,16 +232,8 @@ absl::optional<int> AwMainDelegate::BasicStartupComplete() {
       features.DisableIfNotSet(::features::kDefaultANGLEVulkan);
     }
 
-    if (cl->HasSwitch(switches::kWebViewMPArchFencedFrames)) {
-      features.EnableIfNotSetWithParameter(blink::features::kFencedFrames,
-                                           "implementation_type", "mparch");
-      features.EnableIfNotSet(blink::features::kSharedStorageAPI);
-      features.EnableIfNotSet(::features::kPrivacySandboxAdsAPIsOverride);
-    }
-
-    if (cl->HasSwitch(switches::kWebViewShadowDOMFencedFrames)) {
-      features.EnableIfNotSetWithParameter(blink::features::kFencedFrames,
-                                           "implementation_type", "shadow_dom");
+    if (cl->HasSwitch(switches::kWebViewFencedFrames)) {
+      features.EnableIfNotSet(blink::features::kFencedFrames);
       features.EnableIfNotSet(blink::features::kSharedStorageAPI);
       features.EnableIfNotSet(::features::kPrivacySandboxAdsAPIsOverride);
     }

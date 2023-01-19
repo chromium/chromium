@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.test.util.AwTestTouchUtils;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.GraphicsTestUtils;
@@ -40,7 +41,7 @@ import java.util.concurrent.TimeoutException;
  * Test for creating fenced frames in Android WebView.
  */
 @DoNotBatch(reason = "Test instrumentation only supports one hardware compositing view.")
-@CommandLineFlags.Add("webview-mparch-fenced-frames")
+@CommandLineFlags.Add(AwSwitches.WEBVIEW_FENCED_FRAMES)
 @RunWith(AwJUnit4ClassRunner.class)
 public class FencedFrameTest {
     @Rule
