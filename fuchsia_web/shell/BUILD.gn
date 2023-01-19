@@ -33,6 +33,23 @@ source_set("remote_debugging_port") {
   deps = [ "//base" ]
 }
 
+source_set("present_frame") {
+  testonly = true
+  sources = [
+    "present_frame.cc",
+    "present_frame.h",
+  ]
+  deps = [
+    "//base",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy",
+    "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
+  ]
+  public_deps = [
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+  ]
+}
+
 fuchsia_component("web_engine_shell_component") {
   testonly = true
   manifest = "web_engine_shell.cml"
@@ -79,14 +96,13 @@ executable("web_engine_shell_exec") {
   data = [ "data" ]
 
   deps = [
+    ":present_frame",
     ":remote_debugging_port",
     "//base",
+    "//components/fuchsia_component_support:annotations_manager",
     "//fuchsia_web/common",
     "//fuchsia_web/webinstance_host:webinstance_host_v1",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
     "//third_party/fuchsia-sdk/sdk/pkg/fdio",
-    "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//third_party/widevine/cdm:buildflags",
     "//url",
@@ -126,11 +142,13 @@ if (enable_cast_receiver) {
     ]
 
     deps = [
+      ":present_frame",
       ":remote_debugging_port",
       "//base",
       "//base/test:test_support",
       "//components/cast/message_port:message_port",
       "//components/cast_streaming/test:test_sender_using_net_sockets",
+      "//components/fuchsia_component_support:annotations_manager",
       "//fuchsia_web/cast_streaming",
       "//fuchsia_web/common",
       "//fuchsia_web/common/test:test_support",
@@ -138,10 +156,7 @@ if (enable_cast_receiver) {
       "//fuchsia_web/webinstance_host:webinstance_host_v1",
       "//media",
       "//media/gpu/test:test_helpers",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
       "//third_party/fuchsia-sdk/sdk/pkg/fdio",
-      "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
       "//url",
     ]

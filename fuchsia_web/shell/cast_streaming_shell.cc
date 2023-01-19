@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <fuchsia/ui/policy/cpp/fidl.h>
+#include <fuchsia/element/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
-#include <lib/ui/scenic/cpp/view_token_pair.h>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -22,10 +21,12 @@
 #include "components/cast/message_port/fuchsia/create_web_message.h"
 #include "components/cast/message_port/platform_message_port.h"
 #include "components/cast_streaming/test/cast_streaming_test_sender.h"
+#include "components/fuchsia_component_support/annotations_manager.h"
 #include "fuchsia_web/cast_streaming/cast_streaming.h"
 #include "fuchsia_web/common/init_logging.h"
 #include "fuchsia_web/common/test/fit_adapter.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
+#include "fuchsia_web/shell/present_frame.h"
 #include "fuchsia_web/shell/remote_debugging_port.h"
 #include "fuchsia_web/webengine/switches.h"
 #include "fuchsia_web/webinstance_host/web_instance_host_v1.h"
@@ -84,20 +85,15 @@ fuchsia::web::CreateContextParams GetCreateContextParams(
 }
 
 // Set autoplay, enable all logging, and present fullscreen view of `frame`.
-void ConfigureFrame(fuchsia::web::Frame* frame) {
+void ConfigureFrame(
+    fuchsia::web::Frame* frame,
+    fidl::InterfaceHandle<fuchsia::element::AnnotationController>
+        annotation_controller) {
   fuchsia::web::ContentAreaSettings settings;
   settings.set_autoplay_policy(fuchsia::web::AutoplayPolicy::ALLOW);
   frame->SetContentAreaSettings(std::move(settings));
-
   frame->SetJavaScriptLogLevel(fuchsia::web::ConsoleLogLevel::DEBUG);
-
-  auto view_tokens = scenic::ViewTokenPair::New();
-  frame->CreateView(std::move(view_tokens.view_token));
-  auto presenter = base::ComponentContextForProcess()
-                       ->svc()
-                       ->Connect<fuchsia::ui::policy::Presenter>();
-  presenter->PresentOrReplaceView(std::move(view_tokens.view_holder_token),
-                                  nullptr);
+  PresentFrame(frame, std::move(annotation_controller));
 }
 
 }  // namespace
@@ -157,7 +153,16 @@ int main(int argc, char** argv) {
         quit_run_loop.Run();
       });
 
-  ConfigureFrame(frame.get());
+  // The underlying PresentView call expects an AnnotationController and will
+  // return PresentViewError.INVALID_ARGS without one. The AnnotationController
+  // should serve WatchAnnotations, but it doesn't need to do anything.
+  // TODO(b/264899156): Remove this when AnnotationController becomes
+  // optional.
+  auto annotations_manager =
+      std::make_unique<fuchsia_component_support::AnnotationsManager>();
+  fuchsia::element::AnnotationControllerPtr annotation_controller;
+  annotations_manager->Connect(annotation_controller.NewRequest());
+  ConfigureFrame(frame.get(), std::move(annotation_controller));
 
   // Register the MessagePort for the Cast Streaming Receiver.
   std::unique_ptr<cast_api_bindings::MessagePort> sender_message_port;

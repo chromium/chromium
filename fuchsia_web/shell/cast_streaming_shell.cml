@@ -20,6 +20,7 @@
   use: [
     {
       protocol: [
+        "fuchsia.element.GraphicalPresenter",
         "fuchsia.feedback.ComponentDataRegister",
         "fuchsia.feedback.CrashReportingProductRegister",
         "fuchsia.sys.Environment",
