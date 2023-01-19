@@ -63,8 +63,7 @@
 @interface ReadingListCoordinator () <ReadingListMenuProvider,
                                       ReadingListListItemFactoryDelegate,
                                       ReadingListListViewControllerAudience,
-                                      ReadingListListViewControllerDelegate,
-                                      UIViewControllerTransitioningDelegate>
+                                      ReadingListListViewControllerDelegate>
 
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
@@ -224,47 +223,6 @@
               openItemOfflineInNewTab:(id<ReadingListListItem>)item {
   DCHECK_EQ(self.tableViewController, viewController);
   [self openItemOfflineInNewTab:item];
-}
-
-#pragma mark - UIViewControllerTransitioningDelegate
-
-- (UIPresentationController*)
-presentationControllerForPresentedViewController:(UIViewController*)presented
-                        presentingViewController:(UIViewController*)presenting
-                            sourceViewController:(UIViewController*)source {
-  return [[TableViewPresentationController alloc]
-      initWithPresentedViewController:presented
-             presentingViewController:presenting];
-}
-
-- (id<UIViewControllerAnimatedTransitioning>)
-animationControllerForPresentedController:(UIViewController*)presented
-                     presentingController:(UIViewController*)presenting
-                         sourceController:(UIViewController*)source {
-  UITraitCollection* traitCollection = presenting.traitCollection;
-  if (traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact &&
-      traitCollection.verticalSizeClass != UIUserInterfaceSizeClassCompact) {
-    // Use the default animator for fullscreen presentations.
-    return nil;
-  }
-
-  TableViewAnimator* animator = [[TableViewAnimator alloc] init];
-  animator.presenting = YES;
-  return animator;
-}
-
-- (id<UIViewControllerAnimatedTransitioning>)
-animationControllerForDismissedController:(UIViewController*)dismissed {
-  UITraitCollection* traitCollection = dismissed.traitCollection;
-  if (traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact &&
-      traitCollection.verticalSizeClass != UIUserInterfaceSizeClassCompact) {
-    // Use the default animator for fullscreen presentations.
-    return nil;
-  }
-
-  TableViewAnimator* animator = [[TableViewAnimator alloc] init];
-  animator.presenting = NO;
-  return animator;
 }
 
 #pragma mark - URL Loading Helpers
