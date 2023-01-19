@@ -190,7 +190,7 @@ class BasePasswordManagerViewControllerTest
     }
 
     [passwords_controller setPasswordCheckUIState:state
-                 unmutedCompromisedPasswordsCount:count];
+                           insecurePasswordsCount:count];
   }
 
   // Adds a form to PasswordManagerViewController.
@@ -885,9 +885,10 @@ TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateSafe) {
 }
 
 // Test verifies unsafe state of password check cell.
-TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateUnSafe) {
+TEST_F(PasswordManagerViewControllerTest,
+       PasswordCheckStateUnmutedCompromisedPasswords) {
   AddSavedForm1(/*has_password_issues=*/true);
-  ChangePasswordCheckState(PasswordCheckStateUnSafe);
+  ChangePasswordCheckState(PasswordCheckStateUnmutedCompromisedPasswords);
 
   CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
                           GetSectionIndex(SectionIdentifierPasswordCheck), 1);

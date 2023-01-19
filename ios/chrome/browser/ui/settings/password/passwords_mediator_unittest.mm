@@ -77,7 +77,7 @@ PasswordForm CreatePasswordForm() {
 @implementation FakePasswordsConsumer
 
 - (void)setPasswordCheckUIState:(PasswordCheckUIState)state
-    unmutedCompromisedPasswordsCount:(NSInteger)count {
+         insecurePasswordsCount:(NSInteger)count {
 }
 
 - (void)setPasswords:(std::vector<password_manager::CredentialUIEntry>)passwords

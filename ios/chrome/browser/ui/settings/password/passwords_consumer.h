@@ -17,10 +17,16 @@ class AffiliatedGroup;
 
 // Enum with all possible UI states of password check.
 typedef NS_ENUM(NSInteger, PasswordCheckUIState) {
-  // When no compromised passwords were detected.
+  // When no insecure passwords were detected.
   PasswordCheckStateSafe,
-  // When user has compromised passwords.
-  PasswordCheckStateUnSafe,
+  // When user has unmuted compromised passwords.
+  PasswordCheckStateUnmutedCompromisedPasswords,
+  // When user has reused passwords.
+  PasswordCheckStateReusedPasswords,
+  // When user has weak passwords.
+  PasswordCheckStateWeakPasswords,
+  // When user has dismissed warnings.
+  PasswordCheckStateDismissedWarnings,
   // When check was not perfect and state is unclear.
   PasswordCheckStateDefault,
   // When password check is running.
@@ -34,10 +40,9 @@ typedef NS_ENUM(NSInteger, PasswordCheckUIState) {
 // Consumer for the Passwords Screen.
 @protocol PasswordsConsumer <NSObject>
 
-// Displays current password check UI state on screen for unmuted compromised
-// credentials.
+// Displays current password check UI state on screen for insecure credentials.
 - (void)setPasswordCheckUIState:(PasswordCheckUIState)state
-    unmutedCompromisedPasswordsCount:(NSInteger)count;
+         insecurePasswordsCount:(NSInteger)count;
 
 // Displays password and blocked forms.
 // TODO(crbug.com/1359392): Remove this.

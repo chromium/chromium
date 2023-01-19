@@ -40,6 +40,12 @@
 namespace {
 // Amount of time after which timestamp is shown instead of "just now".
 constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
+
+// Returns true if the Password Checkup feature flag is enabled.
+bool IsPasswordCheckupEnabled() {
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kIOSPasswordCheckup);
+}
 }  // namespace
 
 @interface PasswordsMediator () <IdentityManagerObserverBridgeDelegate,
@@ -323,7 +329,7 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
   NSInteger insecurePasswordsCount =
       _passwordCheckManager->GetInsecureCredentials().size();
   [self.consumer setPasswordCheckUIState:passwordCheckUIState
-        unmutedCompromisedPasswordsCount:insecurePasswordsCount];
+                  insecurePasswordsCount:insecurePasswordsCount];
 }
 
 // Returns PasswordCheckUIState based on PasswordCheckState.
@@ -340,14 +346,21 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
     case PasswordCheckState::kSignedOut:
     case PasswordCheckState::kOffline:
     case PasswordCheckState::kQuotaLimit:
-    case PasswordCheckState::kOther:
+    case PasswordCheckState::kOther: {
+      PasswordCheckUIState warningState =
+          IsPasswordCheckupEnabled()
+              ? [self passwordCheckUIStateFromHighestPriorityWarningType]
+              : PasswordCheckStateUnmutedCompromisedPasswords;
       return _passwordCheckManager->GetInsecureCredentials().empty()
                  ? PasswordCheckStateError
-                 : PasswordCheckStateUnSafe;
+                 : warningState;
+    }
     case PasswordCheckState::kCanceled:
     case PasswordCheckState::kIdle: {
       if (!_passwordCheckManager->GetInsecureCredentials().empty()) {
-        return PasswordCheckStateUnSafe;
+        return IsPasswordCheckupEnabled()
+                   ? [self passwordCheckUIStateFromHighestPriorityWarningType]
+                   : PasswordCheckStateUnmutedCompromisedPasswords;
       } else if (_currentState == PasswordCheckState::kIdle) {
         // Safe state is only possible after the state transitioned from
         // kRunning to kIdle.
@@ -355,6 +368,23 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
       }
       return PasswordCheckStateDefault;
     }
+  }
+}
+
+// Returns the right PasswordCheckUIState depending on the highest priority
+// warning type.
+- (PasswordCheckUIState)passwordCheckUIStateFromHighestPriorityWarningType {
+  switch (_passwordCheckManager->GetWarningOfHighestPriority()) {
+    case WarningType::kCompromisedPasswordsWarning:
+      return PasswordCheckStateUnmutedCompromisedPasswords;
+    case WarningType::kReusedPasswordsWarning:
+      return PasswordCheckStateReusedPasswords;
+    case WarningType::kWeakPasswordsWarning:
+      return PasswordCheckStateWeakPasswords;
+    case WarningType::kDismissedWarningsWarning:
+      return PasswordCheckStateDismissedWarnings;
+    case WarningType::kNoInsecurePasswordsWarning:
+      return PasswordCheckStateSafe;
   }
 }
 

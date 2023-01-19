@@ -274,8 +274,8 @@ NSInteger kTrailingSymbolSize = 18;
 // Current state of the Password Check.
 @property(nonatomic, assign) PasswordCheckUIState passwordCheckState;
 
-// Number of compromised passwords.
-@property(assign) NSInteger compromisedPasswordsCount;
+// Number of insecure passwords.
+@property(assign) NSInteger insecurePasswordsCount;
 
 // Stores the most recently created or updated Affiliated Group.
 @property(nonatomic, assign) absl::optional<password_manager::AffiliatedGroup>
@@ -1114,8 +1114,8 @@ NSInteger kTrailingSymbolSize = 18;
 #pragma mark - PasswordsConsumer
 
 - (void)setPasswordCheckUIState:(PasswordCheckUIState)state
-    unmutedCompromisedPasswordsCount:(NSInteger)count {
-  self.compromisedPasswordsCount = count;
+         insecurePasswordsCount:(NSInteger)count {
+  self.insecurePasswordsCount = count;
   // Update password check status and check button with new state.
   [self updatePasswordCheckButtonWithState:state];
   [self updatePasswordCheckStatusLabelWithState:state];
@@ -1644,7 +1644,7 @@ NSInteger kTrailingSymbolSize = 18;
       sectionForSectionIdentifier:SectionIdentifierPasswordCheck];
 
   switch (state) {
-    case PasswordCheckStateUnSafe:
+    case PasswordCheckStateUnmutedCompromisedPasswords:
       [self.tableViewModel setFooter:[self lastCompletedCheckTime]
             forSectionWithIdentifier:SectionIdentifierPasswordCheck];
       // Transition from disabled to unsafe state is possible only on page load.
@@ -1663,11 +1663,17 @@ NSInteger kTrailingSymbolSize = 18;
     case PasswordCheckStateError:
     case PasswordCheckStateRunning:
     case PasswordCheckStateDisabled:
-      if (oldState != PasswordCheckStateUnSafe)
+      if (oldState != PasswordCheckStateUnmutedCompromisedPasswords) {
         return;
+      }
 
       [self.tableViewModel setFooter:nil
             forSectionWithIdentifier:SectionIdentifierPasswordCheck];
+      break;
+    // TODO(crbug.com/1406540): Handle weak/reused/dismissed states
+    case PasswordCheckStateReusedPasswords:
+    case PasswordCheckStateWeakPasswords:
+    case PasswordCheckStateDismissedWarnings:
       break;
   }
   if (update) {
@@ -1704,7 +1710,7 @@ NSInteger kTrailingSymbolSize = 18;
 
   switch (state) {
     case PasswordCheckStateSafe:
-    case PasswordCheckStateUnSafe:
+    case PasswordCheckStateUnmutedCompromisedPasswords:
     case PasswordCheckStateDefault:
     case PasswordCheckStateError:
       _checkForProblemsItem.textColor = [UIColor colorNamed:kBlueColor];
@@ -1718,6 +1724,11 @@ NSInteger kTrailingSymbolSize = 18;
           [UIColor colorNamed:kTextSecondaryColor];
       _checkForProblemsItem.accessibilityTraits |=
           UIAccessibilityTraitNotEnabled;
+      break;
+    // TODO(crbug.com/1406540): Handle weak/reused/dismissed states
+    case PasswordCheckStateReusedPasswords:
+    case PasswordCheckStateWeakPasswords:
+    case PasswordCheckStateDismissedWarnings:
       break;
   }
 }
@@ -1745,11 +1756,11 @@ NSInteger kTrailingSymbolSize = 18;
       _passwordProblemsItem.enabled = NO;
       break;
     }
-    case PasswordCheckStateUnSafe: {
+    case PasswordCheckStateUnmutedCompromisedPasswords: {
       _passwordProblemsItem.detailText =
           base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
               IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT,
-              self.compromisedPasswordsCount));
+              self.insecurePasswordsCount));
       if (UseSymbols()) {
         _passwordProblemsItem.trailingImage =
             DefaultSymbolTemplateWithPointSize(kWarningFillSymbol,
@@ -1766,7 +1777,7 @@ NSInteger kTrailingSymbolSize = 18;
       break;
     }
     case PasswordCheckStateSafe: {
-      DCHECK(!self.compromisedPasswordsCount);
+      DCHECK(!self.insecurePasswordsCount);
       UIImage* safeIconImage =
           UseSymbols()
               ? DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol,
@@ -1789,14 +1800,19 @@ NSInteger kTrailingSymbolSize = 18;
       _passwordProblemsItem.infoButtonHidden = NO;
       break;
     }
+    // TODO(crbug.com/1406540): Handle weak/reused/dismissed states
+    case PasswordCheckStateReusedPasswords:
+    case PasswordCheckStateWeakPasswords:
+    case PasswordCheckStateDismissedWarnings:
+      break;
   }
 
   // Notify the accessibility to focus on the password check status cell when
   // the status changed to unsafe, safe or error. (Only do it after the user tap
   // on the "Check Now" button.)
   if (self.shouldFocusAccessibilityOnPasswordCheckStatus &&
-      (state == PasswordCheckStateUnSafe || state == PasswordCheckStateSafe ||
-       state == PasswordCheckStateError)) {
+      (state == PasswordCheckStateUnmutedCompromisedPasswords ||
+       state == PasswordCheckStateSafe || state == PasswordCheckStateError)) {
     [self focusAccessibilityOnPasswordCheckStatus];
     self.shouldFocusAccessibilityOnPasswordCheckStatus = NO;
   }
@@ -2012,9 +2028,10 @@ NSInteger kTrailingSymbolSize = 18;
 }
 
 - (void)showPasswordIssuesPage {
-  if (!self.compromisedPasswordsCount ||
-      self.passwordCheckState == PasswordCheckStateRunning)
+  if (!self.insecurePasswordsCount ||
+      self.passwordCheckState == PasswordCheckStateRunning) {
     return;
+  }
   [self.handler showCompromisedPasswords];
   password_manager::LogPasswordCheckReferrer(
       password_manager::PasswordCheckReferrer::kPasswordSettings);
@@ -2276,7 +2293,8 @@ NSInteger kTrailingSymbolSize = 18;
     case ItemTypeSavePasswordsSwitch:
       return NO;
     case ItemTypePasswordCheckStatus:
-      return self.passwordCheckState == PasswordCheckStateUnSafe;
+      return self.passwordCheckState ==
+             PasswordCheckStateUnmutedCompromisedPasswords;
     case ItemTypeCheckForProblemsButton:
       return self.passwordCheckState != PasswordCheckStateRunning &&
              self.passwordCheckState != PasswordCheckStateDisabled;
