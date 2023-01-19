@@ -4,7 +4,6 @@
 
 import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
@@ -35,8 +34,4 @@ js_library("manage_a11y_page") {
 js_library("manage_a11y_page_browser_proxy") {
   deps = [ "//ash/webui/common/resources:cr.m" ]
   externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-html_to_js("web_components") {
-  js_files = [ "manage_a11y_page.js" ]
 }

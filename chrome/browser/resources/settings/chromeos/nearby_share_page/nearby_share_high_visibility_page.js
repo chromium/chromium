@@ -16,7 +16,9 @@ import '../../shared/nearby_shared_icons.html.js';
 
 import {RegisterReceiveSurfaceResult} from '/mojo/nearby_share.mojom-webui.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './nearby_share_high_visibility_page.html.js';
 
 /**
  * Represents the current error state, if one exists.
@@ -57,7 +59,7 @@ class NearbyShareHighVisibilityPageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

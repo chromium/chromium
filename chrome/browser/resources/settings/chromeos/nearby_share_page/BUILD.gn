@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile") {
@@ -150,16 +149,4 @@ js_library("nearby_account_manager_browser_proxy") {
 }
 
 js_library("types") {
-}
-
-html_to_js("web_components") {
-  js_files = [
-    "nearby_share_confirm_page.js",
-    "nearby_share_contact_visibility_dialog.js",
-    "nearby_share_data_usage_dialog.js",
-    "nearby_share_device_name_dialog.js",
-    "nearby_share_high_visibility_page.js",
-    "nearby_share_receive_dialog.js",
-    "nearby_share_subpage.js",
-  ]
 }

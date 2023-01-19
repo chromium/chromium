@@ -14,10 +14,12 @@ import '../../shared/nearby_onboarding_page.js';
 import '../../shared/nearby_visibility_page.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NearbyContactVisibilityElement} from '../../shared/nearby_contact_visibility.js';
 import {NearbySettings} from '../../shared/nearby_share_settings_behavior.js';
+
+import {getTemplate} from './nearby_share_contact_visibility_dialog.html.js';
 
 /** @polymer */
 class NearbyShareContactVisibilityDialogElement extends PolymerElement {
@@ -26,7 +28,7 @@ class NearbyShareContactVisibilityDialogElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

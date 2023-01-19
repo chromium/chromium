@@ -23,7 +23,7 @@ import {ReceiveObserverInterface, ReceiveObserverReceiver, ShareTarget, Transfer
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {FastInitiationNotificationState, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
-import {flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {getContactManager} from '../../shared/nearby_contact_manager.js';
@@ -36,6 +36,7 @@ import {Route, Router} from '../router.js';
 
 import {NearbyAccountManagerBrowserProxyImpl} from './nearby_account_manager_browser_proxy.js';
 import {observeReceiveManager} from './nearby_share_receive_manager.js';
+import {getTemplate} from './nearby_share_subpage.html.js';
 import {dataUsageStringToEnum, NearbyShareDataUsage} from './types.js';
 
 /**
@@ -64,7 +65,7 @@ class SettingsNearbyShareSubpageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

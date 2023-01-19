@@ -84,13 +84,12 @@ ts_library("build_ts") {
     ":generate_html_wrapper_files",
     ":generate_mojom_webui",
     ":preprocess",
-    ":preprocess_generated_web_component_files",
     "//ash/webui/common/resources:generate_definitions",
   ]
   definitions = ts_definition_files
   root_dir = tsc_input_dir
-  in_files = src_ts_files + html_wrapper_files + css_wrapper_files +
-             generated_web_component_files + mojom_webui_files
+  in_files =
+      src_ts_files + html_wrapper_files + css_wrapper_files + mojom_webui_files
   out_dir = tsc_output_dir
 }
 
@@ -101,19 +100,7 @@ preprocess_if_expr("preprocess") {
   out_folder = tsc_input_dir
 }
 
-preprocess_if_expr("preprocess_generated_web_component_files") {
-  defines = chrome_grit_defines
-  deps = [
-    # preprocess should happen before these code gen.
-    # This remaining target should natually disappear after we migrated fully
-    # to typescript.
-    ":generate_web_components",
-  ]
-  in_folder = get_path_info("../", "gen_dir")
-  in_files = generated_web_component_files
-  out_folder = tsc_input_dir
-}
-
+# preprocess should happen before these code gen.
 html_to_wrapper("generate_html_wrapper_files") {
   deps = [ ":preprocess" ]
   in_files = html_files
@@ -121,6 +108,7 @@ html_to_wrapper("generate_html_wrapper_files") {
   out_folder = tsc_input_dir
 }
 
+# preprocess should happen before these code gen.
 css_to_wrapper("generate_css_wrapper_files") {
   deps = [ ":preprocess" ]
   in_files = css_files
@@ -276,14 +264,6 @@ generate_grd("build_grd") {
     manifest_files += [ "$target_gen_dir/build_ts.manifest" ]
     resource_path_rewrites += [ "chromeos/os_settings.html|os_settings.html" ]
   }
-}
-
-group("generate_web_components") {
-  public_deps = [
-    # Sub-folder targets
-    "nearby_share_page:web_components",
-    "os_a11y_page:web_components",
-  ]
 }
 
 # TODO(crbug/1315757) Gradually remove closure compilation for subfolders/pages

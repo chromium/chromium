@@ -32,10 +32,11 @@ import './nearby_share_high_visibility_page.js';
 import {ReceiveManagerInterface, ReceiveObserverInterface, ReceiveObserverReceiver, RegisterReceiveSurfaceResult, ShareTarget, TransferMetadata, TransferStatus} from '/mojo/nearby_share.mojom-webui.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NearbySettings} from '../../shared/nearby_share_settings_behavior.js';
 
+import {getTemplate} from './nearby_share_receive_dialog.html.js';
 import {getReceiveManager, observeReceiveManager} from './nearby_share_receive_manager.js';
 
 /** @enum {string} */
@@ -54,7 +55,7 @@ class NearbyShareReceiveDialogElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

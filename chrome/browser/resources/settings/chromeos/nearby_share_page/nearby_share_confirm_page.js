@@ -16,7 +16,9 @@ import '../../shared/nearby_progress.js';
 
 import {ShareTarget, TransferStatus} from '/mojo/nearby_share.mojom-webui.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './nearby_share_confirm_page.html.js';
 
 /**
  * The progress bar asset URL for light mode.
@@ -45,7 +47,7 @@ class NearbyShareConfirmPageElement extends NearbyShareConfirmPageElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
