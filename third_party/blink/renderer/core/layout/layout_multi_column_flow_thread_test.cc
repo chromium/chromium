@@ -623,13 +623,8 @@ TEST_F(MultiColumnRenderingTest, columnSetAtBlockOffsetVerticalLr) {
             third_row);  // overflow
 }
 
-// TODO(mstensho): Don't disable LayoutNG, and make sure that the tests still
-// pass.
-class MultiColumnTreeModifyingTest : public MultiColumnRenderingTest,
-                                     private ScopedLayoutNGForTest {
+class MultiColumnTreeModifyingTest : public MultiColumnRenderingTest {
  public:
-  MultiColumnTreeModifyingTest() : ScopedLayoutNGForTest(false) {}
-
   void SetMulticolHTML(const char*);
   void ReparentLayoutObject(const char* new_parent_id,
                             const char* child_id,
