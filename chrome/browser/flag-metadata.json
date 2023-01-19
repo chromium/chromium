@@ -3017,11 +3017,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-secure-payment-confirmation-android",
-    "owners": [ "web-payments-team@google.com" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "enable-service-workers-for-chrome-untrusted",
     "owners": [ "ortuno", "dominicschulz" ],
     "expiry_milestone": 110
