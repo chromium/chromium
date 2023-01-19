@@ -347,4 +347,10 @@ BASE_FEATURE(kPriorityIncremental,
              "PriorityIncremental",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Prefetch to follow normal semantics instead of 5-minute rule
+// https://crbug.com/1345207
+BASE_FEATURE(kPrefetchFollowsNormalCacheSemantics,
+             "PrefetchFollowsNormalCacheSemantics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features

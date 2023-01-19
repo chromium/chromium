@@ -4,6 +4,7 @@
 
 #include "net/http/http_cache_transaction.h"
 
+#include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"  // For IS_POSIX
 
@@ -3109,7 +3110,9 @@ ValidationType HttpCache::Transaction::RequiresValidation() {
   base::TimeDelta response_time_in_cache =
       cache_->clock_->Now() - response_.response_time;
 
-  if (!(effective_load_flags_ & LOAD_PREFETCH) &&
+  if (!base::FeatureList::IsEnabled(
+          features::kPrefetchFollowsNormalCacheSemantics) &&
+      !(effective_load_flags_ & LOAD_PREFETCH) &&
       (response_time_in_cache >= base::TimeDelta())) {
     bool reused_within_time_window =
         response_time_in_cache < base::Minutes(kPrefetchReuseMins);

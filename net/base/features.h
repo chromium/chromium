@@ -384,6 +384,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPlatformKeyProbeSHA256);
 // https://crbug.com/1362031
 NET_EXPORT BASE_DECLARE_FEATURE(kPriorityIncremental);
 
+// Prefetch to follow normal semantics instead of 5-minute rule
+// https://crbug.com/1345207
+NET_EXPORT BASE_DECLARE_FEATURE(kPrefetchFollowsNormalCacheSemantics);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
