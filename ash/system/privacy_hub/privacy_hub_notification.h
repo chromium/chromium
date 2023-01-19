@@ -87,6 +87,11 @@ class ASH_EXPORT PrivacyHubNotification {
   // remaining time and then hidden.
   void Hide();
 
+  // Get the underlying `SystemNotificationBuilder` to do modifications beyond
+  // what this wrapper allows you to do. If you change the ID of the message
+  // `Show()` and `Hide()` are not going to work reliably.
+  SystemNotificationBuilder& builder() { return builder_; }
+
  private:
   // Get names of apps accessing the `sensors_for_apps_`. At most
   // `message_ids_.size()` elements will be returned.

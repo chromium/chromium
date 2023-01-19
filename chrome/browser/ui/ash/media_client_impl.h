@@ -8,6 +8,7 @@
 #include "ash/public/cpp/media_client.h"
 #include "ash/public/cpp/media_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/system/privacy_hub/privacy_hub_notification.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -210,6 +211,8 @@ class MediaClientImpl : public ash::MediaClient,
   // Stores the state of the camera software privacy switch state locally.
   cros::mojom::CameraPrivacySwitchState camera_sw_privacy_switch_state_ =
       cros::mojom::CameraPrivacySwitchState::UNKNOWN;
+
+  ash::PrivacyHubNotification notification_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -249,13 +249,13 @@ class ASH_PUBLIC_EXPORT SystemNotificationBuilder {
   // Create a owning pointer of a notification from the currently stored fields.
   std::unique_ptr<message_center::Notification> BuildPtr() const;
 
- private:
   // Get a NotifierId by combining `catalog_name_` and `id_` if `notifier_id_`
   // is `absl::nullopt`, otherwise returns the value of `notifier_id_`.
   // The `notifier_id_` should never be read directly but only through this
   // method.
   message_center::NotifierId GetNotifierId() const;
 
+ private:
   message_center::NotificationType type_ =
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE;
   std::string id_;

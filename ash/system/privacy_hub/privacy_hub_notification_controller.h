@@ -51,6 +51,9 @@ class ASH_EXPORT PrivacyHubNotificationController {
   // a notification.
   static void OpenPrivacyHubSettingsPage();
 
+  // Open the support page for Privacy Hub.
+  static void OpenSupportUrl();
+
  private:
   // Show all notifications that are currently active and combine them if
   // necessary. From the `changed_sensor` in combination with `sensors_`,

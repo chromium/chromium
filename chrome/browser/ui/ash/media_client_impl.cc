@@ -10,11 +10,12 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/media_controller.h"
-#include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -271,7 +272,18 @@ std::string PrivacySwitchOnNotificationIdForDevice(
 
 }  // namespace
 
-MediaClientImpl::MediaClientImpl() {
+MediaClientImpl::MediaClientImpl()
+    : notification_(
+          kCameraPrivacySwitchNotifierId,
+          IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_TITLE,
+          ash::PrivacyHubNotification::MessageIds{
+              IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE},
+          ash::PrivacyHubNotification::SensorSet{},
+          base::MakeRefCounted<ash::PrivacyHubNotificationClickDelegate>(
+              base::BindRepeating(
+                  ash::PrivacyHubNotificationController::OpenSupportUrl)),
+          ash::NotificationCatalogName::kCameraPrivacySwitch,
+          IDS_ASH_LEARN_MORE) {
   MediaCaptureDevicesDispatcher::GetInstance()->AddObserver(this);
   BrowserList::AddObserver(this);
 
@@ -301,6 +313,9 @@ MediaClientImpl::MediaClientImpl() {
     content::GetVideoCaptureService().ConnectToVideoSourceProvider(
         video_source_provider_remote_.BindNewPipeAndPassReceiver());
   }
+
+  notification_.builder().SetNotifierId(
+      notification_.builder().GetNotifierId());
 
   DCHECK(!g_media_client);
   g_media_client = this;
@@ -674,8 +689,6 @@ void MediaClientImpl::ShowCameraOffNotification(const std::string& device_id,
   camera_switch_notification_shown_timestamp_ = base::TimeTicks::Now();
 
   const std::u16string device_name_u16 = base::UTF8ToUTF16(device_name);
-  const std::u16string message = l10n_util::GetStringFUTF16(
-      IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE, device_name_u16);
   // TODO(b/262380194) Show a message which includes the app name once we can
   // reliably determine which app is being used by what camera that has an
   // active privacy switch.
@@ -688,30 +701,18 @@ void MediaClientImpl::ShowCameraOffNotification(const std::string& device_id,
   const std::string notification_id =
       PrivacySwitchOnNotificationIdForDevice(device_name);
 
-  message_center::RichNotificationData rich_notification_data;
-  rich_notification_data.remove_on_click = true;
   if (resurface) {
     RemoveCameraOffNotificationByID(notification_id);
-  } else {
-    rich_notification_data.priority =
-        message_center::NotificationPriority::LOW_PRIORITY;
   }
 
-  message_center::Notification notification = ash::CreateSystemNotification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
-      l10n_util::GetStringFUTF16(
-          IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_TITLE, device_name_u16),
-      message, std::u16string(), GURL(),
-      message_center::NotifierId(
-          message_center::NotifierType::SYSTEM_COMPONENT,
-          kCameraPrivacySwitchNotifierId,
-          ash::NotificationCatalogName::kCameraPrivacySwitch),
-      rich_notification_data,
-      new message_center::HandleNotificationClickDelegate(
-          base::DoNothingAs<void()>()),
-      vector_icons::kSettingsIcon,
-      message_center::SystemNotificationWarningLevel::NORMAL);
-  SystemNotificationHelper::GetInstance()->Display(notification);
+  SystemNotificationHelper::GetInstance()->Display(
+      notification_.builder()
+          .SetId(notification_id)
+          .SetTitleWithArgs(IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_TITLE,
+                            {device_name_u16})
+          .SetMessageWithArgs(IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE,
+                              {device_name_u16})
+          .Build());
   existing_notifications_.insert(notification_id);
 }
 

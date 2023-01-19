@@ -9,8 +9,8 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/system/privacy_hub/privacy_hub_notification.h"
 #include "base/supports_user_data.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
@@ -79,15 +79,11 @@ class ASH_EXPORT CameraPrivacySwitchController
   void SetCameraPrivacySwitchAPIForTest(
       std::unique_ptr<CameraPrivacySwitchAPI> switch_api);
 
-  // Displays the camera off notification.
-  void ShowCameraOffNotification();
-
   // Retrieves the current value of the user pref.
   CameraSWPrivacySwitchSetting GetUserSwitchPreference();
 
   // Set `prefs::kUserCameraAllowed` to the value of `enabled` and log the
-  // interaction from a notification. TODO(b/248211321) find a better location
-  // for this.
+  // interaction from a notification.
   static void SetAndLogCameraPreferenceFromNotification(bool enabled);
 
   // This is called when the set of applications accessing the camera changes.
@@ -97,20 +93,6 @@ class ASH_EXPORT CameraPrivacySwitchController
   void ActiveApplicationsChanged(bool application_added);
 
  private:
-  // Displays the "Do you want to turn the camera off" notification.
-  void ShowHWCameraSwitchOffSWCameraSwitchOnNotification();
-
-  // A helper to generate the message to display in the camera software switch
-  // notification.
-  std::u16string GetCameraOffNotificationMessage();
-
-  // Displays a notification with an action that can enable/disable the camera.
-  void ShowNotification(bool action_enables_camera,
-                        const char* kNotificationId,
-                        const int notification_title_id,
-                        const std::u16string& notification_message,
-                        const NotificationCatalogName catalog);
-
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<CameraPrivacySwitchAPI> switch_api_;
   cros::mojom::CameraPrivacySwitchState camera_privacy_switch_state_ =
@@ -119,6 +101,7 @@ class ASH_EXPORT CameraPrivacySwitchController
   bool is_camera_observer_added_ = false;
   int camera_count_ = -1;
   bool camera_used_while_deactivated_ = false;
+  PrivacyHubNotification turn_sw_switch_on_notification_;
 };
 
 }  // namespace ash

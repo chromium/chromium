@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/public/cpp/media_controller.h"
+#include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "chrome/browser/ash/extensions/media_player_api.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -26,7 +27,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/media_keys_listener.h"
-#include "ui/message_center/message_center.h"
 
 // Gmock matchers and actions that are used below.
 using ::testing::AnyOf;
@@ -122,19 +122,32 @@ class FakeNotificationDisplayService : public NotificationDisplayService {
 
   size_t show_called_times() const { return show_called_times_; }
 
-  std::vector<const message_center::Notification*> GetActiveNotifications()
-      const {
-    std::vector<const message_center::Notification*> keys;
-    for (const auto& notification_iter : active_notifications_) {
-      keys.push_back(&notification_iter.second);
-    }
+  void SimulateClick(const std::string& id, absl::optional<int> button_idx) {
+    auto notification_iter = active_notifications_.find(id);
+    ASSERT_TRUE(notification_iter != active_notifications_.end());
 
-    return keys;
+    message_center::Notification notification = notification_iter->second;
+
+    notification.delegate()->Click(button_idx, absl::nullopt);
+
+    if (notification.rich_notification_data().remove_on_click) {
+      active_notifications_.erase(id);
+    }
   }
 
  private:
   std::map<std::string, message_center::Notification> active_notifications_;
   size_t show_called_times_ = 0;
+};
+
+class MockNewWindowDelegate
+    : public testing::NiceMock<ash::TestNewWindowDelegate> {
+ public:
+  // TestNewWindowDelegate:
+  MOCK_METHOD(void,
+              OpenUrl,
+              (const GURL& url, OpenUrlFrom from, Disposition disposition),
+              (override));
 };
 
 }  // namespace
@@ -270,6 +283,11 @@ class MediaClientAppUsingCameraInBrowserEnvironmentTest
  public:
   MediaClientAppUsingCameraInBrowserEnvironmentTest() {
     user_manager_.Initialize();
+    auto delegate = std::make_unique<MockNewWindowDelegate>();
+    new_window_delegate_ = delegate.get();
+    window_delegate_provider_ =
+        std::make_unique<ash::TestNewWindowDelegateProvider>(
+            std::move(delegate));
   }
 
   ~MediaClientAppUsingCameraInBrowserEnvironmentTest() override {
@@ -335,6 +353,8 @@ class MediaClientAppUsingCameraInBrowserEnvironmentTest
   MediaClientImpl media_client_;
   SystemNotificationHelper system_notification_helper_;
   user_manager::FakeUserManager user_manager_;
+  base::raw_ptr<MockNewWindowDelegate> new_window_delegate_ = nullptr;
+  std::unique_ptr<ash::TestNewWindowDelegateProvider> window_delegate_provider_;
 };
 
 TEST_F(MediaClientTest, HandleMediaAccelerators) {
@@ -508,10 +528,6 @@ TEST_F(MediaClientAppUsingCameraInBrowserEnvironmentTest,
   EXPECT_TRUE(notification_display_service->HasNotificationMessageContaining(
       generic_notification_message_prefix));
   ASSERT_EQ(notification_display_service->NumberOfActiveNotifications(), 1u);
-  EXPECT_EQ(notification_display_service->GetActiveNotifications()
-                .front()
-                ->priority(),
-            message_center::NotificationPriority::LOW_PRIORITY);
 }
 
 TEST_F(MediaClientAppUsingCameraInBrowserEnvironmentTest,
@@ -549,5 +565,37 @@ TEST_F(MediaClientAppUsingCameraInBrowserEnvironmentTest,
   // notification should be removed.
   media_client_.OnCameraSWPrivacySwitchStateChanged(
       cros::mojom::CameraPrivacySwitchState::ON);
+  EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 0u);
+}
+
+TEST_F(MediaClientAppUsingCameraInBrowserEnvironmentTest,
+       LearnMoreButtonInteraction) {
+  FakeNotificationDisplayService* notification_display_service =
+      SetSystemNotificationService();
+  const char* app_id = "app";
+  const char* app_name = "App name";
+  const apps::CapabilityAccessPtr capability_access =
+      MakeCapabilityAccess(app_id, false);
+
+  user_manager_.AddUser(account_id_);
+  ASSERT_TRUE(user_manager::UserManager::Get()->GetActiveUser());
+
+  EXPECT_EQ(notification_display_service->show_called_times(), 0u);
+
+  LaunchAppUpdateActiveClientCount(app_id, app_name, true, 1);
+
+  // Showing the camera notification, e.g. because the privacy switch was
+  // toggled.
+  SetCameraHWPrivacySwitchState("device_id",
+                                cros::mojom::CameraPrivacySwitchState::ON);
+  MakeDeviceActive("device_id");
+  ShowCameraOffNotification("device_id", "device_name");
+
+  EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 1u);
+  EXPECT_CALL(*new_window_delegate_, OpenUrl).Times(1);
+
+  notification_display_service->SimulateClick(
+      "ash.media.camera.activity_with_privacy_switch_on.device_name", 0);
+
   EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 0u);
 }

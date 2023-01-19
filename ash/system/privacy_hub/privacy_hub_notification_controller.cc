@@ -4,6 +4,7 @@
 
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/shell.h"
@@ -23,6 +24,9 @@ void SetAndLogMicrophoneMute(const bool muted) {
       muted, CrasAudioHandler::InputMuteChangeMethod::kOther);
   privacy_hub_metrics::LogMicrophoneEnabledFromNotification(!muted);
 }
+
+constexpr char kLearnMoreUrl[] =
+    "https://support.google.com/chromebook/?p=privacy_hub";
 
 }  // namespace
 
@@ -109,6 +113,12 @@ void PrivacyHubNotificationController::RemoveSensorDisabledNotification(
 void PrivacyHubNotificationController::OpenPrivacyHubSettingsPage() {
   privacy_hub_metrics::LogPrivacyHubOpenedFromNotification();
   Shell::Get()->system_tray_model()->client()->ShowPrivacyHubSettings();
+}
+
+void PrivacyHubNotificationController::OpenSupportUrl() {
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(kLearnMoreUrl), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void PrivacyHubNotificationController::ShowAllActiveNotifications(

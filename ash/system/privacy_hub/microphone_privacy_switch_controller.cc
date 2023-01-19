@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -21,9 +20,6 @@
 
 namespace ash {
 namespace {
-
-const char kLearnMoreUrl[] =
-    "https://support.google.com/chromebook/?p=privacy_hub";
 
 size_t CountActiveInputStreams() {
   size_t num_active_streams = 0;
@@ -59,12 +55,8 @@ MicrophonePrivacySwitchController::MicrophonePrivacySwitchController()
            IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES},
           {SensorDisabledNotificationDelegate::Sensor::kMicrophone},
           base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
-              base::BindRepeating([]() {
-                NewWindowDelegate::GetPrimary()->OpenUrl(
-                    GURL(kLearnMoreUrl),
-                    NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-                    NewWindowDelegate::Disposition::kNewForegroundTab);
-              })),
+              base::BindRepeating(
+                  PrivacyHubNotificationController::OpenSupportUrl)),
           ash::NotificationCatalogName::kMicrophoneMute,
           IDS_ASH_LEARN_MORE) {
   Shell::Get()->session_controller()->AddObserver(this);

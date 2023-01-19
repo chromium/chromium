@@ -7,9 +7,6 @@
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/notifier_catalogs.h"
-#include "ash/public/cpp/notification_utils.h"
-#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -20,10 +17,7 @@
 #include "ash/system/system_notification_controller.h"
 #include "base/check.h"
 #include "components/prefs/pref_service.h"
-#include "components/vector_icons/vector_icons.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/message_center/message_center.h"
 
 namespace ash {
 
@@ -59,9 +53,20 @@ void VCDPrivacyAdapter::SetCameraSWPrivacySwitch(
 }  // namespace
 
 CameraPrivacySwitchController::CameraPrivacySwitchController()
-    : switch_api_(std::make_unique<VCDPrivacyAdapter>())
-
-{
+    : switch_api_(std::make_unique<VCDPrivacyAdapter>()),
+      turn_sw_switch_on_notification_(
+          kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId,
+          IDS_PRIVACY_HUB_WANT_TO_TURN_OFF_CAMERA_NOTIFICATION_TITLE,
+          {IDS_PRIVACY_HUB_WANT_TO_TURN_OFF_CAMERA_NOTIFICATION_MESSAGE},
+          PrivacyHubNotification::SensorSet(),
+          base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
+              base::BindRepeating([]() {
+                CameraPrivacySwitchController::
+                    SetAndLogCameraPreferenceFromNotification(false);
+              })),
+          ash::NotificationCatalogName::
+              kPrivacyHubHWCameraSwitchOffSWCameraSwitchOn,
+          IDS_PRIVACY_HUB_TURN_OFF_CAMERA_ACTION_BUTTON) {
   Shell::Get()->session_controller()->AddObserver(this);
 }
 
@@ -112,12 +117,7 @@ void CameraPrivacySwitchController::OnPreferenceChanged(
   const CameraSWPrivacySwitchSetting pref_val = GetUserSwitchPreference();
   switch_api_->SetCameraSWPrivacySwitch(pref_val);
 
-  if (message_center::MessageCenter* const message_center =
-          message_center::MessageCenter::Get()) {
-    message_center->RemoveNotification(
-        kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId,
-        /*by_user=*/false);
-  }
+  turn_sw_switch_on_notification_.Hide();
 
   if (active_applications_using_camera_count_ == 0)
     return;
@@ -186,13 +186,11 @@ void CameraPrivacySwitchController::OnCameraHWPrivacySwitchStateChanged(
   if (state == cros::mojom::CameraPrivacySwitchState::ON &&
       GetUserSwitchPreference() == CameraSWPrivacySwitchSetting::kEnabled &&
       camera_count_ > 1) {
-    ShowHWCameraSwitchOffSWCameraSwitchOnNotification();
+    turn_sw_switch_on_notification_.Show();
   }
   if (state == cros::mojom::CameraPrivacySwitchState::OFF) {
     // Clear the notification that might have been displayed earlier
-    message_center::MessageCenter::Get()->RemoveNotification(
-        kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId,
-        /*by_user=*/false);
+    turn_sw_switch_on_notification_.Hide();
   }
 }
 
@@ -211,87 +209,6 @@ void CameraPrivacySwitchController::OnCameraSWPrivacySwitchStateChanged(
 cros::mojom::CameraPrivacySwitchState
 CameraPrivacySwitchController::HWSwitchState() const {
   return camera_privacy_switch_state_;
-}
-
-std::u16string
-CameraPrivacySwitchController::GetCameraOffNotificationMessage() {
-  auto* sensor_disabled_notification_delegate =
-      SensorDisabledNotificationDelegate::Get();
-  std::vector<std::u16string> app_names =
-      sensor_disabled_notification_delegate->GetAppsAccessingSensor(
-          SensorDisabledNotificationDelegate::Sensor::kCamera);
-
-  if (app_names.size() == 1) {
-    return l10n_util::GetStringFUTF16(
-        IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
-        app_names[0]);
-  } else if (app_names.size() == 2) {
-    return l10n_util::GetStringFUTF16(
-        IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES,
-        app_names[0], app_names[1]);
-  }
-
-  return l10n_util::GetStringUTF16(
-      IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE);
-}
-
-void CameraPrivacySwitchController::ShowCameraOffNotification() {
-  ShowNotification(/*action_enables_camera=*/true,
-                   kPrivacyHubCameraOffNotificationId,
-                   IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_TITLE,
-                   GetCameraOffNotificationMessage(),
-                   ash::NotificationCatalogName::kPrivacyHubCamera);
-}
-
-void CameraPrivacySwitchController::
-    ShowHWCameraSwitchOffSWCameraSwitchOnNotification() {
-  ShowNotification(
-      /*action_enables_camera=*/false,
-      kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId,
-      IDS_PRIVACY_HUB_WANT_TO_TURN_OFF_CAMERA_NOTIFICATION_TITLE,
-      l10n_util::GetStringUTF16(
-          IDS_PRIVACY_HUB_WANT_TO_TURN_OFF_CAMERA_NOTIFICATION_MESSAGE),
-      NotificationCatalogName::kPrivacyHubHWCameraSwitchOffSWCameraSwitchOn);
-}
-
-void CameraPrivacySwitchController::ShowNotification(
-    bool action_enables_camera,
-    const char* kNotificationId,
-    const int notification_title_id,
-    const std::u16string& notification_message,
-    const NotificationCatalogName catalog) {
-  message_center::RichNotificationData notification_data;
-  notification_data.pinned = false;
-  notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
-      action_enables_camera ? IDS_PRIVACY_HUB_TURN_ON_CAMERA_ACTION_BUTTON
-                            : IDS_PRIVACY_HUB_TURN_OFF_CAMERA_ACTION_BUTTON));
-  notification_data.remove_on_click = true;
-
-  scoped_refptr<message_center::NotificationDelegate> delegate =
-      base::MakeRefCounted<
-          message_center::HandleNotificationClickDelegate>(base::BindRepeating(
-          [](bool camera_enabled, const char* notification_id,
-             absl::optional<int> button_index) {
-            if (!button_index) {
-              PrivacyHubNotificationController::OpenPrivacyHubSettingsPage();
-              return;
-            }
-            SetAndLogCameraPreferenceFromNotification(camera_enabled);
-          },
-          action_enables_camera, kNotificationId));
-
-  message_center::MessageCenter::Get()->AddNotification(
-      ash::CreateSystemNotificationPtr(
-          message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
-          l10n_util::GetStringUTF16(notification_title_id),
-          notification_message,
-          /*display_source=*/std::u16string(),
-          /*origin_url=*/GURL(),
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT, kNotificationId,
-              catalog),
-          notification_data, std::move(delegate), vector_icons::kSettingsIcon,
-          message_center::SystemNotificationWarningLevel::NORMAL));
 }
 
 void CameraPrivacySwitchController::ActiveApplicationsChanged(
