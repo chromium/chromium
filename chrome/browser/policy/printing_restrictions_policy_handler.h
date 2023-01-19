@@ -121,7 +121,7 @@ class PrintingPaperSizeDefaultPolicyHandler : public TypeCheckingPolicyHandler {
                            PrefValueMap* prefs) override;
 
  private:
-  bool CheckIntSubkey(const base::Value* dict,
+  bool CheckIntSubkey(const base::Value::Dict& dict,
                       const std::string& key,
                       PolicyErrorMap* errors);
   bool GetValue(const PolicyMap& policies,
