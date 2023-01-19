@@ -6892,22 +6892,6 @@ crbug.com/1401318 [ Debug Linux ] external/wpt/dom/events/scrolling/scrollend-ev
 # TODO(crbug.com/1401396): Re-enable this test
 external/wpt/webrtc/simulcast/setParameters-active.https.html [ Pass Timeout ]
 
-# image-set() failures (sheriff 2022-12-16)
-external/wpt/css/css-images/image-set/image-set-empty-url-rendering.html [ Failure Pass ]
-external/wpt/css/css-images/image-set/image-set-invalid-resolution-rendering-2.html [ Failure Pass ]
-external/wpt/css/css-images/image-set/image-set-content-rendering.html [ Failure Pass ]
-external/wpt/css/css-images/image-set/image-set-type-unsupported-rendering.html [ Failure Pass ]
-external/wpt/css/css-images/image-set/image-set-type-unsupported-rendering-2.html [ Failure Pass ]
-external/wpt/css/css-images/image-set/image-set-unordered-res-rendering.html [ Failure Pass ]
-external/wpt/css/css-images/image-set/image-set-first-match-rendering.html [ Failure Pass ]
-external/wpt/css/css-images/image-set/image-set-rendering.html [ Failure Pass ]
-external/wpt/css/css-images/image-set/image-set-rendering-2.html [ Failure Pass ]
-external/wpt/css/css-images/image-set/image-set-invalid-resolution-rendering.html [ Failure Pass ]
-
-# TODO(crbug.com/1402194): Re-enable this test
-crbug.com/1402194 [ Mac ] external/wpt/css/css-images/image-set/image-set-no-res-rendering-2.html [ Failure Pass ]
-crbug.com/1402194 [ Mac ] external/wpt/css/css-images/image-set/image-set-no-res-rendering.html [ Failure Pass ]
-
 # Flaky CSP tests. To be re-enabled.
 crbug.com/1400930 external/wpt/content-security-policy/embedded-enforcement/subsumption_algorithm-general.html [ Pass Timeout ]
 crbug.com/1399780 external/wpt/content-security-policy/embedded-enforcement/subsumption_algorithm-nonces.html [ Pass Timeout ]
