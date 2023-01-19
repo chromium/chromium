@@ -36,6 +36,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
 
@@ -124,6 +125,10 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       "mobileBookmarksId",
       base::NumberToString(bookmark_model ? bookmark_model->mobile_node()->id()
                                           : -1));
+
+  source->AddString(
+      "chromeRefresh2023Attribute",
+      features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(

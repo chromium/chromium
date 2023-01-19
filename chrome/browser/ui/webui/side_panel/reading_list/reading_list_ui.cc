@@ -31,6 +31,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
 
@@ -67,6 +68,10 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
   source->AddBoolean(
       "hasUnseenReadingListEntries",
       reading_list_model->loaded() ? reading_list_model->unseen_size() : false);
+
+  source->AddString(
+      "chromeRefresh2023Attribute",
+      features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
