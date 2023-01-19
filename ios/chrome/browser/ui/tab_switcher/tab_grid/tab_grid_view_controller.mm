@@ -192,6 +192,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 @property(nonatomic, weak) ThumbStripPlusSignButton* plusSignButton;
 // Bottom constraint for `plusSignButton`.
 @property(nonatomic, weak) NSLayoutConstraint* plusSignButtonBottomConstraint;
+// Constraints for the pinned tabs view.
+@property(nonatomic, strong)
+    NSArray<NSLayoutConstraint*>* pinnedTabsConstraints;
 
 // The current state of the tab grid when using the thumb strip.
 @property(nonatomic, assign) ViewRevealState currentState;
@@ -354,6 +357,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [super traitCollectionDidChange:previousTraitCollection];
   [self.traitCollectionObserver viewController:self
                       traitCollectionDidChange:previousTraitCollection];
+  if (IsPinnedTabsEnabled()) {
+    [self updatePinnedTabsViewControllerConstraints];
+  }
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -1513,31 +1519,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.view addSubview:pinnedTabsViewController.view];
   [pinnedTabsViewController didMoveToParentViewController:self];
 
-  NSMutableArray* pinnedTabsConstraints =
-      [[NSMutableArray alloc] initWithArray:@[
-        [pinnedTabsViewController.view.leadingAnchor
-            constraintEqualToAnchor:self.view.leadingAnchor
-                           constant:kPinnedViewHorizontalPadding],
-        [pinnedTabsViewController.view.trailingAnchor
-            constraintEqualToAnchor:self.view.trailingAnchor
-                           constant:-kPinnedViewHorizontalPadding],
-      ]];
-  switch (GetPinnedTabsPosition()) {
-    case PinnedTabsPosition::kBottomPosition:
-      [pinnedTabsConstraints
-          addObject:[pinnedTabsViewController.view.bottomAnchor
-                        constraintEqualToAnchor:self.bottomToolbar.topAnchor
-                                       constant:-kPinnedViewBottomPadding]];
-      break;
-
-    case PinnedTabsPosition::kTopPosition:
-      [pinnedTabsConstraints
-          addObject:[pinnedTabsViewController.view.topAnchor
-                        constraintEqualToAnchor:self.topToolbar.bottomAnchor
-                                       constant:kPinnedViewTopPadding]];
-      break;
-  }
-  [NSLayoutConstraint activateConstraints:pinnedTabsConstraints];
+  [self updatePinnedTabsViewControllerConstraints];
 }
 
 // Adds the thumb strip's plus sign button, which is visible when the plus sign
@@ -1567,10 +1549,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)configureViewControllerForCurrentSizeClassesAndPage {
   self.configuration = TabGridConfigurationFloatingButton;
-  if ((self.traitCollection.verticalSizeClass ==
-           UIUserInterfaceSizeClassRegular &&
-       self.traitCollection.horizontalSizeClass ==
-           UIUserInterfaceSizeClassCompact) ||
+  if ([self shouldUseCompactLayout] ||
       self.tabGridMode == TabGridModeSelection) {
     // The bottom toolbar configuration is applied when the UI is narrow but
     // vertically long or the selection mode is enabled.
@@ -2900,6 +2879,71 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   } else {
     [self doneButtonTapped:nil];
   }
+}
+
+// Returns `YES` if should use compact layout.
+- (BOOL)shouldUseCompactLayout {
+  return self.traitCollection.verticalSizeClass ==
+             UIUserInterfaceSizeClassRegular &&
+         self.traitCollection.horizontalSizeClass ==
+             UIUserInterfaceSizeClassCompact;
+}
+
+// Updates and sets constraints for `pinnedTabsViewController`.
+- (void)updatePinnedTabsViewControllerConstraints {
+  if ([self.pinnedTabsConstraints count] > 0) {
+    [NSLayoutConstraint deactivateConstraints:self.pinnedTabsConstraints];
+    self.pinnedTabsConstraints = nil;
+  }
+
+  UIView* pinnedView = self.pinnedTabsViewController.view;
+  NSMutableArray<NSLayoutConstraint*>* pinnedTabsConstraints =
+      [[NSMutableArray alloc] init];
+  BOOL compactLayout = [self shouldUseCompactLayout];
+
+  if (compactLayout) {
+    [pinnedTabsConstraints addObjectsFromArray:@[
+      [pinnedView.leadingAnchor
+          constraintEqualToAnchor:self.view.leadingAnchor
+                         constant:kPinnedViewHorizontalPadding],
+      [pinnedView.trailingAnchor
+          constraintEqualToAnchor:self.view.trailingAnchor
+                         constant:-kPinnedViewHorizontalPadding],
+    ]];
+  } else {
+    [pinnedTabsConstraints addObjectsFromArray:@[
+      [pinnedView.centerXAnchor
+          constraintEqualToAnchor:self.view.centerXAnchor],
+      [pinnedView.widthAnchor
+          constraintEqualToAnchor:self.view.widthAnchor
+                       multiplier:kPinnedViewMaxWidthInPercent]
+    ]];
+  }
+
+  switch (GetPinnedTabsPosition()) {
+    case PinnedTabsPosition::kBottomPosition: {
+      if (compactLayout) {
+        [pinnedTabsConstraints
+            addObject:[pinnedView.bottomAnchor
+                          constraintEqualToAnchor:self.bottomToolbar.topAnchor
+                                         constant:-kPinnedViewBottomPadding]];
+      } else {
+        [pinnedTabsConstraints
+            addObject:[pinnedView.topAnchor
+                          constraintEqualToAnchor:self.bottomToolbar
+                                                      .topAnchor]];
+      }
+    } break;
+    case PinnedTabsPosition::kTopPosition:
+      [pinnedTabsConstraints
+          addObject:[pinnedView.topAnchor
+                        constraintEqualToAnchor:self.topToolbar.bottomAnchor
+                                       constant:kPinnedViewTopPadding]];
+      break;
+  }
+
+  self.pinnedTabsConstraints = pinnedTabsConstraints;
+  [NSLayoutConstraint activateConstraints:self.pinnedTabsConstraints];
 }
 
 @end

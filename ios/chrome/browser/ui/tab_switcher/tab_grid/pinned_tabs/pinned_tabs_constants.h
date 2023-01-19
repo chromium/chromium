@@ -11,6 +11,7 @@
 extern const CGFloat kPinnedViewDragEnabledHeight;
 extern const CGFloat kPinnedViewDefaultHeight;
 extern const CGFloat kPinnedViewCornerRadius;
+extern const CGFloat kPinnedViewMaxWidthInPercent;
 
 // Pinned view constraints.
 extern const CGFloat kPinnedViewHorizontalPadding;

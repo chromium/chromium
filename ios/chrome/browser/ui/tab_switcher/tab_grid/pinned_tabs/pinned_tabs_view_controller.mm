@@ -31,9 +31,6 @@ namespace {
 // The number of sections for the pinned collection view.
 NSInteger kNumberOfSectionsInPinnedCollection = 1;
 
-// Leading/trailing inset of the collection view content.
-const CGFloat kCollectionViewHorizontalInset = 11.0f;
-
 // Pinned cell identifier.
 NSString* const kCellIdentifier = @"PinnedCellIdentifier";
 
@@ -563,8 +560,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   collectionView.dropDelegate = self;
   collectionView.dragInteractionEnabled = YES;
   collectionView.showsHorizontalScrollIndicator = NO;
-  collectionView.contentInset = UIEdgeInsetsMake(
-      0, kCollectionViewHorizontalInset, 0, kCollectionViewHorizontalInset);
 
   self.view = collectionView;
 

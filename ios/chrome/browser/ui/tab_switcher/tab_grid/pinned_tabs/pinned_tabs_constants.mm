@@ -17,6 +17,7 @@ const CGFloat kPinnedViewCornerRadius = 25.0f;
 const CGFloat kPinnedViewHorizontalPadding = 6.0f;
 const CGFloat kPinnedViewBottomPadding = 8.0f;
 const CGFloat kPinnedViewTopPadding = 24.0f;
+const CGFloat kPinnedViewMaxWidthInPercent = 0.5f;
 
 // Pinned view animations.
 const NSTimeInterval kPinnedViewFadeInTime = 0.2;
@@ -49,4 +50,4 @@ const CGFloat kPinnedCellSelectionRingPadding =
 
 // Pinned cell collection view layout constraints.
 const CGFloat kPinnedCellVerticalLayoutInsets = 16.0f;
-const CGFloat kPinnedCellHorizontalLayoutInsets = 8.0f;
+const CGFloat kPinnedCellHorizontalLayoutInsets = 16.0f;
