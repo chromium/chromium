@@ -1042,6 +1042,7 @@ class XDesktop(Desktop):
     # GTK can end up connecting to an active Wayland display instead of the
     # CRD X11 session.
     self.child_env["GDK_BACKEND"] = "x11"
+    self.child_env["XDG_SESSION_TYPE"] = "x11"
 
   def launch_session(self, *args, **kwargs):
     logging.info("Launching X server and X session.")
@@ -1953,9 +1954,6 @@ Web Store: https://chrome.google.com/remotedesktop"""
                       type=int, nargs=2, default=False, action="store",
                       help=argparse.SUPPRESS)
   parser.add_argument(dest="args", nargs="*", help=argparse.SUPPRESS)
-  parser.add_argument("--is-wayland", dest="is_wayland",
-                      default=False, action="store_true",
-                      help="If true, starts wayland session on the host.")
   return parser
 
 
@@ -2174,7 +2172,12 @@ def main():
   if host.host_id:
     logging.info("Using host_id: " + host.host_id)
 
-  if options.is_wayland:
+  extra_start_host_args = []
+  if HOST_EXTRA_PARAMS_ENV_VAR in os.environ:
+      extra_start_host_args = \
+          re.split('\s+', os.environ[HOST_EXTRA_PARAMS_ENV_VAR].strip())
+  is_wayland = any([opt == '--enable-wayland' for opt in extra_start_host_args])
+  if is_wayland:
     desktop = WaylandDesktop(sizes)
   else:
     desktop = XDesktop(sizes)
@@ -2231,10 +2234,6 @@ def main():
           desktop.session_proc is None):
         desktop.launch_session(options.args, backoff_time)
       if desktop.host_proc is None:
-        extra_start_host_args = []
-        if HOST_EXTRA_PARAMS_ENV_VAR in os.environ:
-            extra_start_host_args = \
-                re.split('\s+', os.environ[HOST_EXTRA_PARAMS_ENV_VAR].strip())
         desktop.launch_host(host_config, extra_start_host_args, backoff_time)
 
     deadline = max(relaunch_times) if relaunch_times else 0

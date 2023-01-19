@@ -43,13 +43,10 @@
 #include "remoting/signaling/signaling_id_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if defined(REMOTING_USE_WAYLAND) || defined(REMOTING_USE_X11)
-#include "remoting/host/linux/wayland_utils.h"
-#endif  // defined(REMOTING_USE_WAYLAND) || defined(REMOTING_USE_X11)
-
-#if defined(REMOTING_USE_WAYLAND)
+#if BUILDFLAG(IS_LINUX)
 #include "remoting/host/linux/wayland_manager.h"
-#endif  // defined(REMOTING_USE_WAYLAND)
+#include "remoting/host/linux/wayland_utils.h"
+#endif  // BUILDFLAG(IS_LINUX)
 
 namespace remoting {
 
@@ -147,11 +144,11 @@ void It2MeHost::Connect(
 
   OnPolicyUpdate(std::move(policies));
 
-#if defined(REMOTING_USE_WAYLAND)
+#if BUILDFLAG(IS_LINUX)
   if (IsRunningWayland()) {
     WaylandManager::Get()->Init(host_context_->ui_task_runner());
   }
-#endif  // defined(REMOTING_USE_WAYLAND)
+#endif  // BUILDFLAG(IS_LINUX)
 
   desktop_environment_factory_ =
       std::make_unique<It2MeDesktopEnvironmentFactory>(
@@ -286,7 +283,7 @@ void It2MeHost::ConnectOnNetworkThread(
 
   // Set up the desktop environment options.
   DesktopEnvironmentOptions options(DesktopEnvironmentOptions::CreateDefault());
-#if defined(REMOTING_USE_WAYLAND)
+#if BUILDFLAG(IS_LINUX)
   if (IsRunningWayland()) {
     options.desktop_capture_options()->set_prefer_cursor_embedded(true);
   }

@@ -119,7 +119,7 @@ bool DesktopEnvironmentOptions::capture_video_on_dedicated_thread() const {
   // TODO(joedow): Determine whether we can migrate additional platforms to
   // using the DesktopCaptureWrapper instead of the DesktopCaptureProxy. Then
   // clean up DesktopCapturerProxy::Core::CreateCapturer().
-#if BUILDFLAG(IS_LINUX) && !defined(REMOTING_USE_WAYLAND)
+#if BUILDFLAG(IS_LINUX)
   return capture_video_on_dedicated_thread_;
 #else
   return false;

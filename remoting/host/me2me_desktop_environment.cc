@@ -38,6 +38,7 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if defined(REMOTING_USE_X11)
+#include "remoting/host/linux/wayland_utils.h"
 #include "remoting/host/linux/x11_util.h"
 #include "ui/gfx/x/connection.h"
 #endif  // defined(REMOTING_USE_X11)
@@ -125,13 +126,15 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
   }
 
 #if BUILDFLAG(IS_LINUX) && defined(REMOTING_USE_X11)
-  capabilities += " ";
-  capabilities += protocol::kMultiStreamCapability;
-
-  // Client-controlled layout is only supported with Xorg+video-dummy.
-  if (UsingVideoDummyDriver()) {
+  if (!IsRunningWayland()) {
     capabilities += " ";
-    capabilities += protocol::kClientControlledLayoutCapability;
+    capabilities += protocol::kMultiStreamCapability;
+
+    // Client-controlled layout is only supported with Xorg+video-dummy.
+    if (UsingVideoDummyDriver()) {
+      capabilities += " ";
+      capabilities += protocol::kClientControlledLayoutCapability;
+    }
   }
 #endif  // BUILDFLAG(IS_LINUX) && defined(REMOTING_USE_X11)
 
@@ -170,8 +173,10 @@ Me2MeDesktopEnvironment::Me2MeDesktopEnvironment(
   mutable_desktop_capture_options()->set_detect_updated_region(false);
 #endif
 
-#if defined(REMOTING_USE_WAYLAND)
-  mutable_desktop_capture_options()->set_prefer_cursor_embedded(false);
+#if BUILDFLAG(IS_LINUX)
+  if (IsRunningWayland()) {
+    mutable_desktop_capture_options()->set_prefer_cursor_embedded(false);
+  }
 #endif
 }
 

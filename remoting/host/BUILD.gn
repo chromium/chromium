@@ -6,11 +6,9 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/util/process_version.gni")
 import("//remoting/build/config/remoting_build.gni")
-import("//remoting/build/config/remoting_features.gni")
 import("//remoting/build/config/remoting_logging.gni")
 
 assert(!remoting_use_x11 || is_linux, "X11 is only supported on Linux")
-assert(!remoting_use_wayland || is_linux, "Wayland is only supported on Linux")
 
 group("all_tests") {
   testonly = true
@@ -226,7 +224,7 @@ source_set("resources") {
   }
 }
 
-if (remoting_use_wayland) {
+if (is_linux) {
   pkg_config("xkbcommon") {
     packages = [ "xkbcommon" ]
   }
@@ -497,42 +495,20 @@ static_library("common") {
     }
   }
 
-  if (remoting_use_x11 || remoting_use_wayland) {
-    deps += [ "//remoting/host/linux:wayland" ]
-    sources += [
-      "curtain_mode_linux.cc",
-      "desktop_display_info_loader_linux.cc",
-      "input_injector_linux.cc",
-      "keyboard_layout_monitor_linux.cc",
-    ]
-  }
   if (remoting_use_x11) {
     defines += [ "REMOTING_USE_X11" ]
     sources += [
+      "curtain_mode_linux.cc",
+      "desktop_display_info_loader_linux.cc",
       "desktop_display_info_loader_x11.cc",
       "desktop_display_info_loader_x11.h",
       "desktop_resizer_x11.cc",
       "desktop_resizer_x11.h",
+      "input_injector_constants_linux.h",
+      "input_injector_linux.cc",
       "input_injector_x11.cc",
       "input_injector_x11.h",
-      "x11_crtc_resizer.cc",
-      "x11_crtc_resizer.h",
-      "x11_display_util.cc",
-      "x11_display_util.h",
-    ]
-    deps += [
-      "//remoting/host/linux:x11",
-      "//ui/base/x",
-      "//ui/events/platform/x11",
-      "//ui/gfx/x",
-    ]
-    if (is_linux) {
-      deps += [ "//build/config/linux/gtk" ]
-    }
-  } else if (remoting_use_wayland && is_linux) {
-    defines += [ "REMOTING_USE_WAYLAND" ]
-    sources += [
-      "input_injector_constants_linux.h",
+      "keyboard_layout_monitor_linux.cc",
       "linux/clipboard_portal.cc",
       "linux/clipboard_portal.h",
       "linux/clipboard_portal_injector.cc",
@@ -563,13 +539,24 @@ static_library("common") {
       "linux/wayland_manager.h",
       "linux/wayland_seat.cc",
       "linux/wayland_seat.h",
+      "x11_crtc_resizer.cc",
+      "x11_crtc_resizer.h",
+      "x11_display_util.cc",
+      "x11_display_util.h",
     ]
     public_deps += [
-      "//remoting/host/linux:wayland",
       "//third_party/wayland:wayland_client",
       "//third_party/wayland-protocols:xdg_output_protocol",
     ]
-    deps += [ "//ui/gtk:gtk_config" ]
+    deps += [
+      "//build/config/linux/gtk",
+      "//remoting/host/linux:wayland",
+      "//remoting/host/linux:x11",
+      "//ui/base/x",
+      "//ui/events/platform/x11",
+      "//ui/gfx/x",
+      "//ui/gtk:gtk_config",
+    ]
     public_configs = [ ":xkbcommon" ]
   }
 
@@ -584,11 +571,6 @@ static_library("common") {
       "xsession_chooser_linux.cc",
     ]
     if (remoting_use_x11) {
-      sources += [
-        "linux/keyboard_layout_monitor_utils.cc",
-        "linux/keyboard_layout_monitor_utils.h",
-      ]
-    } else if (remoting_use_wayland) {
       sources += [
         "linux/keyboard_layout_monitor_utils.cc",
         "linux/keyboard_layout_monitor_utils.h",
@@ -693,7 +675,6 @@ static_library("common") {
       "//remoting/host/win:remoting_lib_idl",
       "//remoting/host/win:trust_util",
     ]
-
     public_deps += [ "//remoting/host/win" ]
   }
 }
@@ -846,9 +827,11 @@ source_set("unit_tests") {
     "//ui/events:events",
   ]
 
-  if (remoting_use_wayland && is_linux) {
-    defines = [ "REMOTING_USE_WAYLAND" ]
-    deps += [ "//ui/gtk:gtk_config" ]
+  if (is_linux) {
+    deps += [
+      "//remoting/host/linux:wayland",
+      "//ui/gtk:gtk_config",
+    ]
   }
 
   if (is_linux) {
@@ -1065,9 +1048,9 @@ if (enable_me2me_host) {
         "//remoting/host/linux:wayland",
         "//ui/events/platform/x11:x11",
       ]
-    } else if (remoting_use_wayland && is_linux) {
-      defines += [ "REMOTING_USE_WAYLAND" ]
-      deps += [ "//ui/gtk:gtk_config" ]
+      if (is_linux) {
+        deps += [ "//ui/gtk:gtk_config" ]
+      }
     }
 
     if (is_posix) {

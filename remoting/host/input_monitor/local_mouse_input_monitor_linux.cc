@@ -9,11 +9,8 @@
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
-#include "remoting/host/linux/wayland_utils.h"
-
-#if defined(REMOTING_USE_X11)
 #include "remoting/host/input_monitor/local_mouse_input_monitor_x11.h"
-#endif
+#include "remoting/host/linux/wayland_utils.h"
 
 namespace remoting {
 
@@ -23,15 +20,12 @@ std::unique_ptr<LocalPointerInputMonitor> LocalPointerInputMonitor::Create(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
     LocalInputMonitor::PointerMoveCallback on_mouse_move,
     base::OnceClosure disconnect_callback) {
-#if defined(REMOTING_USE_WAYLAND)
-  NOTIMPLEMENTED();
-  return nullptr;
-#elif defined(REMOTING_USE_X11)
+  if (IsRunningWayland()) {
+    NOTIMPLEMENTED();
+    return nullptr;
+  }
   return std::make_unique<LocalMouseInputMonitorX11>(
       caller_task_runner, input_task_runner, std::move(on_mouse_move));
-#else
-#error "Should use either wayland or X11."
-#endif
 }
 
 }  // namespace remoting

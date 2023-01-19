@@ -126,9 +126,9 @@
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#if defined(REMOTING_USE_X11) || defined(REMOTING_USE_WAYLAND)
+#if defined(REMOTING_USE_X11)
 #include <gtk/gtk.h>
-#endif  // defined(REMOTING_USE_X11) || defined(REMOTING_USE_WAYLAND)
+#endif  // defined(REMOTING_USE_X11)
 
 #if defined(REMOTING_USE_X11)
 #include "ui/events/platform/x11/x11_event_source.h"
@@ -155,9 +155,10 @@
 #include "remoting/host/win/session_desktop_environment.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-#if defined(REMOTING_USE_WAYLAND)
+#if BUILDFLAG(IS_LINUX)
 #include "remoting/host/linux/wayland_manager.h"
-#endif  // defined(REMOTING_USE_WAYLAND)
+#include "remoting/host/linux/wayland_utils.h"
+#endif  // BUILDFLAG(IS_LINUX)
 
 using remoting::protocol::NetworkSettings;
 using remoting::protocol::PairingRegistry;
@@ -949,9 +950,11 @@ void HostProcess::StartOnUiThread() {
       base::BindRepeating(&HostProcess::OnPolicyUpdate, base::Unretained(this)),
       base::BindRepeating(&HostProcess::OnPolicyError, base::Unretained(this)));
 
-#if defined(REMOTING_USE_WAYLAND)
-  WaylandManager::Get()->Init(context_->ui_task_runner());
-#endif  // defined(REMOTING_USE_WAYLAND
+#if BUILDFLAG(IS_LINUX)
+  if (IsRunningWayland()) {
+    WaylandManager::Get()->Init(context_->ui_task_runner());
+  }
+#endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // If an audio pipe is specific on the command-line then initialize
@@ -1973,7 +1976,7 @@ int HostProcessMain() {
   x11::InitXlib();
 #endif  // defined(REMOTING_USE_X11)
 
-#if defined(REMOTING_USE_X11) || defined(REMOTING_USE_WAYLAND)
+#if defined(REMOTING_USE_X11)
   if (!cmd_line->HasSwitch(kReportOfflineReasonSwitchName)) {
     // Required for any calls into GTK functions, such as the Disconnect and
     // Continue windows, though these should not be used for the Me2Me case
@@ -1984,7 +1987,7 @@ int HostProcessMain() {
     gtk_init(nullptr, nullptr);
 #endif
   }
-#endif  // defined(REMOTING_USE_X11) || defined(REMOTING_USE_WAYLAND)
+#endif  // defined(REMOTING_USE_X11)
 
   // Need to prime the host OS version value for linux to prevent IO on the
   // network thread. base::GetLinuxDistro() caches the result.

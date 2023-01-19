@@ -30,7 +30,7 @@
 #include "remoting/host/chromeos/frame_sink_desktop_capturer.h"
 #endif
 
-#if defined(REMOTING_USE_WAYLAND)
+#if BUILDFLAG(IS_LINUX)
 #include "base/environment.h"
 #include "base/nix/xdg_util.h"
 #include "remoting/host/linux/wayland_desktop_capturer.h"
@@ -96,7 +96,7 @@ void DesktopCapturerProxy::Core::CreateCapturer(
     capturer_ = std::make_unique<webrtc::DesktopCapturerDifferWrapper>(
         std::make_unique<AuraDesktopCapturer>());
   }
-#elif defined(REMOTING_USE_WAYLAND)
+#elif BUILDFLAG(IS_LINUX)
   static base::nix::SessionType session_type = base::nix::SessionType::kUnset;
   if (session_type == base::nix::SessionType::kUnset) {
     std::unique_ptr<base::Environment> env = base::Environment::Create();

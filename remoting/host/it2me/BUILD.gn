@@ -50,10 +50,6 @@ source_set("common") {
 
   deps = []
 
-  if (remoting_use_wayland) {
-    defines = [ "REMOTING_USE_WAYLAND" ]
-  }
-
   if (is_linux) {
     sources += [ "it2me_confirmation_dialog_linux.cc" ]
   }
@@ -222,10 +218,8 @@ if (!is_chromeos_ash && enable_remoting_host) {
       deps += [
         "//build/config/linux/gtk",
         "//ui/events/platform/x11",
+        "//ui/gtk:gtk_config",
       ]
-    } else if (remoting_use_wayland) {
-      defines = [ "REMOTING_USE_WAYLAND" ]
-      deps += [ "//ui/gtk:gtk_config" ]
     }
 
     if (is_mac) {

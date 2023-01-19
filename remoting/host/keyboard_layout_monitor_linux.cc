@@ -16,22 +16,18 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/linux/keyboard_layout_monitor_utils.h"
+#include "remoting/host/linux/keyboard_layout_monitor_wayland.h"
+#include "remoting/host/linux/wayland_utils.h"
 #include "remoting/proto/control.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/glib/glib_signal.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
-
-#if defined(REMOTING_USE_WAYLAND)
-#include "remoting/host/linux/keyboard_layout_monitor_wayland.h"
-#include "remoting/host/linux/wayland_utils.h"
-#else
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/xkb.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_types.h"
-#endif
 
 namespace remoting {
 
@@ -39,7 +35,6 @@ namespace {
 
 class KeyboardLayoutMonitorLinux;
 
-#if !defined(REMOTING_USE_WAYLAND)
 // Deletes a pointer on the main GTK+ thread.
 class GtkThreadDeleter {
  public:
@@ -333,22 +328,16 @@ gboolean KeyboardLayoutMonitorLinux::StartLayoutMonitorOnGtkThread(
   return G_SOURCE_REMOVE;
 }
 
-#endif  // !defined(REMOTING_USE_WAYLAND)
-
 }  // namespace
 
 // static
 std::unique_ptr<KeyboardLayoutMonitor> KeyboardLayoutMonitor::Create(
     base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback,
     scoped_refptr<base::SingleThreadTaskRunner> input_task_runner) {
-#if defined(REMOTING_USE_WAYLAND)
   if (IsRunningWayland()) {
     return std::make_unique<KeyboardLayoutMonitorWayland>(std::move(callback));
   }
-  return nullptr;
-#else
   return std::make_unique<KeyboardLayoutMonitorLinux>(std::move(callback));
-#endif
 }
 
 }  // namespace remoting
