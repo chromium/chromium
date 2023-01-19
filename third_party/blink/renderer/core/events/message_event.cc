@@ -222,6 +222,10 @@ MessageEvent* MessageEvent::Create(const AtomicString& type,
         "The optional 'source' property is neither a Window nor MessagePort.");
     return nullptr;
   }
+
+  // https://linear.app/replay/issue/RUN-1150
+  recordreplay::Assert("[RUN-1150] MessageEvent::Create #1");
+
   return MakeGarbageCollected<MessageEvent>(type, initializer);
 }
 

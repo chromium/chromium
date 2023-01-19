@@ -826,6 +826,11 @@ absl::optional<WakeUp> SequenceManagerImpl::AdjustWakeUp(
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (!wake_up)
     return absl::nullopt;
+
+  // https://linear.app/replay/issue/RUN-1150
+  recordreplay::Assert("[RUN-1150] SequenceManagerImpl::AdjustWakeUp #1 %d",
+                       lazy_now->has_value());
+
   // Overdue work needs to be run immediately.
   if (lazy_now->Now() >= wake_up->earliest_time())
     return WakeUp{};
