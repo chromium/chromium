@@ -23,7 +23,10 @@ namespace ui {
 class COMPONENT_EXPORT(AX_PLATFORM) AutomationPosition final
     : public gin::Wrappable<AutomationPosition> {
  public:
-  AutomationPosition(const ui::AXNode& node, int offset, bool is_upstream);
+  AutomationPosition(const ui::AXNode& node,
+                     AXPositionKind kind,
+                     int offset,
+                     bool is_upstream);
 
   AutomationPosition(const AutomationPosition&) = delete;
   AutomationPosition& operator=(const AutomationPosition&) = delete;

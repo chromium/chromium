@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -660,6 +660,16 @@ chrome.automation.SortDirectionType = {
   ASCENDING: 'ascending',
   DESCENDING: 'descending',
   OTHER: 'other',
+};
+
+/**
+ * @enum {string}
+ * @see https://developer.chrome.com/extensions/automation#type-PositionType
+ */
+chrome.automation.PositionType = {
+  NULL: 'null',
+  TEXT: 'text',
+  TREE: 'tree',
 };
 
 /**
@@ -2522,12 +2532,13 @@ chrome.automation.AutomationNode.prototype.languageAnnotationForStringAttribute 
 
 /**
  * Creates a position object backed by Chrome's accessibility position support.
+ * @param {!chrome.automation.PositionType} type
  * @param {number} offset
  * @param {boolean=} isUpstream
  * @return {!chrome.automation.AutomationPosition}
  * @see https://developer.chrome.com/extensions/automation#method-createPosition
  */
-chrome.automation.AutomationNode.prototype.createPosition = function(offset, isUpstream) {};
+chrome.automation.AutomationNode.prototype.createPosition = function(type, offset, isUpstream) {};
 
 
 /**

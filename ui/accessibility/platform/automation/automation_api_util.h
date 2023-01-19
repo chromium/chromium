@@ -11,6 +11,8 @@
 
 namespace ui {
 
+enum class AXPositionKind;
+
 bool COMPONENT_EXPORT(AX_PLATFORM)
     ShouldIgnoreAXEventForAutomation(ax::mojom::Event event_type);
 
@@ -27,6 +29,9 @@ std::tuple<ax::mojom::Event, AXEventGenerator::Event> COMPONENT_EXPORT(
 std::tuple<ax::mojom::Event, AXEventGenerator::Event> COMPONENT_EXPORT(
     AX_PLATFORM)
     AutomationEventTypeToAXEventTuple(const char* event_type_string);
+
+AXPositionKind COMPONENT_EXPORT(AX_PLATFORM)
+    StringToAXPositionKind(const std::string& type);
 
 // Possible tree changes to listen to using addTreeChangeObserver. Note that
 // listening to all tree changes can be expensive.

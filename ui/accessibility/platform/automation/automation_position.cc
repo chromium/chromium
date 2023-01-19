@@ -11,12 +11,28 @@
 namespace ui {
 
 AutomationPosition::AutomationPosition(const ui::AXNode& node,
+                                       AXPositionKind kind,
                                        int offset,
                                        bool is_upstream) {
-  position_ = ui::AXNodePosition::CreatePosition(
-      node, offset,
-      is_upstream ? ax::mojom::TextAffinity::kUpstream
-                  : ax::mojom::TextAffinity::kDownstream);
+  ax::mojom::TextAffinity affinity = is_upstream
+                                         ? ax::mojom::TextAffinity::kUpstream
+                                         : ax::mojom::TextAffinity::kDownstream;
+  switch (kind) {
+    case AXPositionKind::TREE_POSITION:
+      position_ = ui::AXNodePosition::CreatePosition(node, offset, affinity);
+      break;
+    case AXPositionKind::TEXT_POSITION:
+      if (offset < 0) {
+        offset = 0;
+      }
+      position_ =
+          ui::AXNodePosition::CreateTextPosition(node, offset, affinity);
+      position_->SnapToMaxTextOffsetIfBeyond();
+      break;
+    case AXPositionKind::NULL_POSITION:
+      NOTREACHED();
+      break;
+  }
 }
 
 AutomationPosition::~AutomationPosition() = default;

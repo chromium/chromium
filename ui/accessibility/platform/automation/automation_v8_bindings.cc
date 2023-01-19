@@ -1647,9 +1647,10 @@ void AutomationV8Bindings::GetChildIDAtIndex(
 void AutomationV8Bindings::CreateAutomationPosition(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   v8::Isolate* isolate = automation_v8_router_->GetIsolate();
-  if (args.Length() < 4 || !args[0]->IsString() /* tree id */ ||
-      !args[1]->IsInt32() /* node id */ || !args[2]->IsInt32() /* offset */ ||
-      !args[3]->IsBoolean() /* is upstream affinity */) {
+  if (args.Length() < 5 || !args[0]->IsString() /* tree id */ ||
+      !args[1]->IsInt32() /* node id */ || !args[2]->IsString() /* type */ ||
+      !args[3]->IsInt32() /* offset */ ||
+      !args[4]->IsBoolean() /* is upstream affinity */) {
     automation_v8_router_->ThrowInvalidArgumentsException();
   }
 
@@ -1668,12 +1669,14 @@ void AutomationV8Bindings::CreateAutomationPosition(
   if (!node)
     return;
 
+  AXPositionKind kind =
+      StringToAXPositionKind(*v8::String::Utf8Value(isolate, args[2]));
   int offset =
-      args[2]->Int32Value(automation_v8_router_->GetContext()).ToChecked();
+      args[3]->Int32Value(automation_v8_router_->GetContext()).ToChecked();
   bool is_upstream = args[3]->BooleanValue(isolate);
 
   gin::Handle<AutomationPosition> handle = gin::CreateHandle(
-      isolate, new AutomationPosition(*node, offset, is_upstream));
+      isolate, new AutomationPosition(*node, kind, offset, is_upstream));
   args.GetReturnValue().Set(handle.ToV8().As<v8::Object>());
 }
 

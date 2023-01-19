@@ -9,6 +9,7 @@ import {ParagraphUtils} from './paragraph_utils.js';
 import {RectUtil} from './rect_util.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
+const PositionType = chrome.automation.PositionType;
 const RoleType = chrome.automation.RoleType;
 
 // Utilities for automation nodes in Select-to-Speak.
@@ -219,7 +220,7 @@ export class NodeUtils {
    * @return {!NodeUtils.Position} The node matching the selected offset.
    */
   static getDeepEquivalentForSelection(parent, offset, isStart) {
-    const automationPosition = parent.createPosition(offset);
+    const automationPosition = parent.createPosition(PositionType.TREE, offset);
     if (!automationPosition.node) {
       // TODO(accessibility): Bugs in AXPosition cause this; for example, a
       // selection on a text field.

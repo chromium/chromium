@@ -5,6 +5,7 @@
 #include "ui/accessibility/platform/automation/automation_api_util.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_event_generator.h"
+#include "ui/accessibility/ax_position.h"
 
 namespace ui {
 
@@ -225,6 +226,16 @@ AutomationEventTypeToAXEventTuple(const char* event_type_string) {
   MaybeParseAXEnum<ax::mojom::Event>(event_type_string, &ax_event);
   return std::tuple<ax::mojom::Event, AXEventGenerator::Event>(
       ax_event, AXEventGenerator::Event::NONE);
+}
+
+AXPositionKind StringToAXPositionKind(const std::string& type) {
+  if (type == "tree") {
+    return AXPositionKind::TREE_POSITION;
+  } else if (type == "text") {
+    return AXPositionKind::TEXT_POSITION;
+  }
+
+  return AXPositionKind::NULL_POSITION;
 }
 
 }  // namespace ui
