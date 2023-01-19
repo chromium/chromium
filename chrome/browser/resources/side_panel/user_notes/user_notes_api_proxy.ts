@@ -10,6 +10,7 @@ export interface UserNotesApiProxy {
   showUi(): void;
   getNotesForCurrentTab(): Promise<{notes: Note[]}>;
   newNoteFinished(text: string): Promise<{success: boolean}>;
+  updateNote(guid: string, text: string): Promise<{success: boolean}>;
   deleteNote(guid: string): Promise<{success: boolean}>;
   getCallbackRouter(): UserNotesPageCallbackRouter;
 }
@@ -37,6 +38,10 @@ export class UserNotesApiProxyImpl implements UserNotesApiProxy {
 
   newNoteFinished(text: string) {
     return this.handler.newNoteFinished(text);
+  }
+
+  updateNote(guid: string, text: string) {
+    return this.handler.updateNote(guid, text);
   }
 
   deleteNote(guid: string) {

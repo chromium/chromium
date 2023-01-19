@@ -80,4 +80,87 @@ suite('UserNotesAppTest', () => {
     assertEquals(text, sampleNoteContent);
     assertEquals('', entryNote.$.noteContent.textContent);
   });
+
+  test('edit note and save changes', async () => {
+    const notesElements = queryNotes();
+    const note = notesElements[0]!;
+    const originalContent = note.$.noteContent.textContent;
+    assertEquals('false', note.$.noteContent.getAttribute('contenteditable'));
+    const contextMenuElement =
+        note.shadowRoot!.querySelector('user-note-menu')!;
+    const noteMenuButton = contextMenuElement.shadowRoot!.querySelector(
+                               '#menuButton') as HTMLButtonElement;
+    noteMenuButton.click();
+    const noteMenu = contextMenuElement.$.menu;
+    // Click edit button.
+    const editButton =
+        noteMenu.querySelectorAll('.dropdown-item')[0]! as HTMLButtonElement;
+    editButton.click();
+    assertEquals('true', note.$.noteContent.getAttribute('contenteditable'));
+    assertEquals(originalContent, note.$.noteContent.textContent);
+    // Update content.
+    const newContent = 'different content';
+    note.$.noteContent.textContent = newContent;
+    // Click add button.
+    note.$.noteContent.focus();
+    await flushTasks();
+    const noteAddButton =
+        note.shadowRoot!.querySelector('#addButton')! as HTMLButtonElement;
+    noteAddButton.click();
+    // Verify changes to content have been saved and the note is no longer in
+    // the editing state.
+    const [, text] = await testProxy.whenCalled('updateNote');
+    assertEquals(text, newContent);
+    assertEquals('false', note.$.noteContent.getAttribute('contenteditable'));
+    assertEquals(newContent, note.$.noteContent.textContent);
+  });
+
+  test('cancel while editing note', async () => {
+    const notesElements = queryNotes();
+    const note = notesElements[0]!;
+    const originalContent = note.$.noteContent.textContent;
+    assertEquals('false', note.$.noteContent.getAttribute('contenteditable'));
+    const contextMenuElement =
+        note.shadowRoot!.querySelector('user-note-menu')!;
+    const noteMenuButton = contextMenuElement.shadowRoot!.querySelector(
+                               '#menuButton') as HTMLButtonElement;
+    noteMenuButton.click();
+    const noteMenu = contextMenuElement.$.menu;
+    // Click edit button.
+    const editButton =
+        noteMenu.querySelectorAll('.dropdown-item')[0]! as HTMLButtonElement;
+    editButton.click();
+    assertEquals('true', note.$.noteContent.getAttribute('contenteditable'));
+    assertEquals(originalContent, note.$.noteContent.textContent);
+    // Update content.
+    note.$.noteContent.textContent = 'different content';
+    // Click cancel button.
+    note.$.noteContent.focus();
+    await flushTasks();
+    const notesCancelButton =
+        note.shadowRoot!.querySelector('#cancelButton')! as HTMLButtonElement;
+    notesCancelButton.click();
+    // Verify changes to content have been undone and the note is no longer in
+    // the editing state.
+    assertEquals('false', note.$.noteContent.getAttribute('contenteditable'));
+    assertEquals(originalContent, note.$.noteContent.textContent);
+  });
+
+  test('delete note', async () => {
+    const notesElements = queryNotes();
+    assertEquals(notesElements.length, 3);
+    const note = notesElements[0]!;
+    assertEquals('false', note.$.noteContent.getAttribute('contenteditable'));
+    const contextMenuElement =
+        note.shadowRoot!.querySelector('user-note-menu')!;
+    const noteMenuButton = contextMenuElement.shadowRoot!.querySelector(
+                               '#menuButton') as HTMLButtonElement;
+    noteMenuButton.click();
+    const noteMenu = contextMenuElement.$.menu;
+    // Click delete button.
+    const deleteButton =
+        noteMenu.querySelectorAll('.dropdown-item')[1]! as HTMLButtonElement;
+    deleteButton.click();
+    await testProxy.whenCalled('deleteNote');
+  });
 });

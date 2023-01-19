@@ -7,8 +7,8 @@ import 'chrome://resources/cr_elements/mwb_element_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
+import './user_note_menu.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './user_note.html.js';
@@ -32,6 +32,10 @@ export class UserNoteElement extends PolymerElement {
 
   static get properties() {
     return {
+      /**
+       * The `note` is undefined if the UserNoteElement is the persistent entry
+       * note and not a preexisting note.
+       */
       note: {
         type: Object,
         observer: 'onNoteChanged_',
@@ -103,7 +107,13 @@ export class UserNoteElement extends PolymerElement {
   }
 
   private onCancelClick_() {
-    this.clearInput_();
+    if (this.note === undefined) {
+      this.clearInput_();
+    } else {
+      this.$.noteContent.textContent = this.note.text;
+      this.onNoteContentInput_();
+      this.editing_ = false;
+    }
   }
 
   private async onAddClick_() {
@@ -111,14 +121,17 @@ export class UserNoteElement extends PolymerElement {
       await this.userNotesApi_.newNoteFinished(this.$.noteContent.textContent!);
       this.clearInput_();
     } else {
-      // TODO(crbug.com/1394044): implement editing of an existing note.
+      await this.userNotesApi_.updateNote(
+          this.note.guid, this.$.noteContent.textContent!);
+      this.editing_ = false;
     }
   }
 
-  private onMenuButtonClick_() {
-    // TODO(crbug.com/1394044): add menu with edit and delete options.
-    assert(this.note);
-    this.userNotesApi_.deleteNote(this.note.guid);
+  private onEditClicked_() {
+    this.editing_ = true;
+    setTimeout(() => {
+      this.$.noteContent.focus();
+    }, 0);
   }
 }
 

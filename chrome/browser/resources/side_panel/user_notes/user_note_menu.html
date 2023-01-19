@@ -1,0 +1,20 @@
+<style include="cr-icons">
+  #menuButton {
+    --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+  }
+</style>
+
+<cr-icon-button id="menuButton" class="no-overlap" iron-icon="cr:more-vert"
+    on-click="onMenuButtonClick_" >
+</cr-icon-button>
+
+<cr-lazy-render id="contextMenu">
+  <cr-action-menu id="menu">
+      <button class="dropdown-item" on-click="onEditClick_">
+        $i18n{edit}
+      </button>
+      <button class="dropdown-item" on-click="onDeleteClick_">
+        $i18n{delete}
+      </button>
+  </cr-action-menu>
+</cr-lazy-render>

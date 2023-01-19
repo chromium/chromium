@@ -18,6 +18,7 @@ export class TestUserNotesApiProxy extends TestBrowserProxy implements
       'getNotesForCurrentTab',
       'newNoteFinished',
       'showUi',
+      'updateNote',
     ]);
 
     this.notes_ = [];
@@ -40,6 +41,11 @@ export class TestUserNotesApiProxy extends TestBrowserProxy implements
 
   showUi() {
     this.methodCalled('showUi');
+  }
+
+  updateNote(guid: string, text: string) {
+    this.methodCalled('updateNote', guid, text);
+    return Promise.resolve({success: true});
   }
 
   getCallbackRouter() {

@@ -41,10 +41,6 @@
     position: relative;
   }
 
-  #menuButton {
-    --cr-icon-button-fill-color: var(--cr-secondary-text-color);
-  }
-
   #noteContent {
     color: var(--cr-primary-text-color);
     padding: var(--note-content-vertical-padding)
@@ -110,9 +106,8 @@
 <template is="dom-if" if="[[!editing_]]" restamp>
   <div id="inactiveHeader" hidden="[[editing_]]">
     <div id="headerText">[[note.lastModificationTimeText]]</div>
-    <cr-icon-button id="menuButton" class="no-overlap" iron-icon="cr:more-vert"
-        on-click="onMenuButtonClick_" >
-    </cr-icon-button>
+    <user-note-menu note="[[note]]" on-edit-clicked="onEditClicked_">
+    </user-note-menu>
   </div>
 </template>
 <div id="placeholderText" hidden="[[!showPlaceholder_]]">$i18n{addANote}</div>

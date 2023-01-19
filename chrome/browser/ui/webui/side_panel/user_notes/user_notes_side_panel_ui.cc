@@ -27,10 +27,14 @@ UserNotesSidePanelUI::UserNotesSidePanelUI(content::WebUI* web_ui)
       {"add", IDS_ADD},
       {"addANote", IDS_ADD_NEW_USER_NOTE_PLACEHOLDER_TEXT},
       {"cancel", IDS_CANCEL},
+      {"delete", IDS_DELETE},
+      {"edit", IDS_EDIT},
       {"title", IDS_USER_NOTE_TITLE},
       {"tooltipClose", IDS_CLOSE},
   };
-  source->AddLocalizedStrings(kLocalizedStrings);
+  for (const auto& str : kLocalizedStrings) {
+    webui::AddLocalizedString(source, str.name, str.id);
+  }
 
   webui::SetupWebUIDataSource(source,
                               base::make_span(kSidePanelUserNotesResources,

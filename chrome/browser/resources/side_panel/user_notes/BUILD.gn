@@ -14,6 +14,7 @@ build_webui("build") {
   web_component_files = [
     "app.ts",
     "user_note.ts",
+    "user_note_menu.ts",
   ]
 
   non_web_component_files = [ "user_notes_api_proxy.ts" ]
