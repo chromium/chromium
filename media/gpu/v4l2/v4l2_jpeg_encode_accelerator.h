@@ -76,9 +76,8 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
                         BitstreamBuffer* exif_buffer) override;
 
  private:
-  void InitializeOnTaskRunner(
-      chromeos_camera::JpegEncodeAccelerator::Client* client,
-      InitCB init_cb);
+  void InitializeTask(chromeos_camera::JpegEncodeAccelerator::Client* client,
+                      InitCB init_cb);
 
   // Record for input buffers.
   struct I420BufferRecord {
@@ -146,8 +145,7 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
   // Encode Instance. One EncodedInstance is used for a specific set of jpeg
   // parameters. The stored parameters are jpeg quality and resolutions of input
   // image.
-  // We execute all EncodedInstance methods on |encoder_task_runner_| except
-  // Initialize().
+  // We execute all EncodedInstance methods on |encoder_task_runner_|.
   class EncodedInstance {
    public:
     EncodedInstance(V4L2JpegEncodeAccelerator* parent);
@@ -262,8 +260,7 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
   // Encode Instance. One EncodedInstance is used for a specific set of jpeg
   // parameters. The stored parameters are jpeg quality and resolutions of input
   // image.
-  // We execute all EncodedInstance methods on |encoder_task_runner_| except
-  // Initialize().
+  // We execute all EncodedInstance methods on |encoder_task_runner_|.
   class EncodedInstanceDmaBuf {
    public:
     EncodedInstanceDmaBuf(V4L2JpegEncodeAccelerator* parent);
@@ -391,19 +388,6 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
   // Run on |encoder_thread_| to destroy input and output buffers.
   void DestroyTask();
 
-  // The |latest_input_buffer_coded_size_| and |latest_quality_| are used to
-  // check if we need to open new EncodedInstance.
-
-  // Latest coded size of input buffer.
-  gfx::Size latest_input_buffer_coded_size_;
-  // TODO(wtlee): To be deprecated. (crbug.com/944705)
-  gfx::Size latest_input_buffer_coded_size_legacy_;
-
-  // Latest encode quality.
-  int latest_quality_;
-  // TODO(wtlee): To be deprecated. (crbug.com/944705)
-  int latest_quality_legacy_;
-
   // GPU IO task runner.
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
@@ -418,10 +402,26 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
   // All the below members except |weak_factory_| are accessed from
   // |encoder_thread_| only (if it's running).
 
+  // The |latest_input_buffer_coded_size_| and |latest_quality_| are used to
+  // check if we need to open new EncodedInstance.
+  // Latest coded size of input buffer.
+  gfx::Size latest_input_buffer_coded_size_
+      GUARDED_BY_CONTEXT(encoder_sequence_);
+  // TODO(wtlee): To be deprecated. (crbug.com/944705)
+  gfx::Size latest_input_buffer_coded_size_legacy_
+      GUARDED_BY_CONTEXT(encoder_sequence_);
+  // Latest encode quality.
+  int latest_quality_ GUARDED_BY_CONTEXT(encoder_sequence_);
+  // TODO(wtlee): To be deprecated. (crbug.com/944705)
+  int latest_quality_legacy_ GUARDED_BY_CONTEXT(encoder_sequence_);
   // JEA may open multiple devices for different input parameters.
   // We handle the |encoded_instances_| by order for keeping user's input order.
-  std::queue<std::unique_ptr<EncodedInstance>> encoded_instances_;
-  std::queue<std::unique_ptr<EncodedInstanceDmaBuf>> encoded_instances_dma_buf_;
+  std::queue<std::unique_ptr<EncodedInstance>> encoded_instances_
+      GUARDED_BY_CONTEXT(encoder_sequence_);
+  std::queue<std::unique_ptr<EncodedInstanceDmaBuf>> encoded_instances_dma_buf_
+      GUARDED_BY_CONTEXT(encoder_sequence_);
+
+  SEQUENCE_CHECKER(encoder_sequence_);
 
   // Point to |this| for use in posting tasks from the encoder thread back to
   // the ChildThread.

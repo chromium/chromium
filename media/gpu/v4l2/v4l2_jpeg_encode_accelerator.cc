@@ -103,7 +103,7 @@ V4L2JpegEncodeAccelerator::EncodedInstance::EncodedInstance(
 V4L2JpegEncodeAccelerator::EncodedInstance::~EncodedInstance() {}
 
 void V4L2JpegEncodeAccelerator::EncodedInstance::DestroyTask() {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   while (!input_job_queue_.empty())
     input_job_queue_.pop();
   while (!running_job_queue_.empty())
@@ -114,6 +114,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstance::DestroyTask() {
 }
 
 bool V4L2JpegEncodeAccelerator::EncodedInstance::Initialize() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   device_ = V4L2Device::Create();
 
   if (!device_) {
@@ -166,7 +167,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstance::FillQuantizationTable(
 
 void V4L2JpegEncodeAccelerator::EncodedInstance::PrepareJpegMarkers(
     gfx::Size coded_size) {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   // Quantization Tables.
   // i = 0 for Luminance
   // i = 1 for Chrominance
@@ -302,7 +303,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstance::PrepareJpegMarkers(
 bool V4L2JpegEncodeAccelerator::EncodedInstance::SetUpJpegParameters(
     int quality,
     gfx::Size coded_size) {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
 
   struct v4l2_ext_controls ctrls;
   struct v4l2_ext_control ctrl;
@@ -353,7 +354,7 @@ size_t V4L2JpegEncodeAccelerator::EncodedInstance::OutputBufferQueuedCount() {
 bool V4L2JpegEncodeAccelerator::EncodedInstance::CreateBuffers(
     gfx::Size coded_size,
     size_t output_buffer_size) {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
 
   // The order of set output/input formats matters.
   // rk3399 reset input format when we set output format.
@@ -378,7 +379,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstance::CreateBuffers(
 
 bool V4L2JpegEncodeAccelerator::EncodedInstance::SetInputBufferFormat(
     gfx::Size coded_size) {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   DCHECK(!input_streamon_);
   DCHECK(input_job_queue_.empty());
 
@@ -433,7 +434,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstance::SetInputBufferFormat(
 bool V4L2JpegEncodeAccelerator::EncodedInstance::SetOutputBufferFormat(
     gfx::Size coded_size,
     size_t buffer_size) {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   DCHECK(!output_streamon_);
   DCHECK(running_job_queue_.empty());
 
@@ -453,7 +454,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstance::SetOutputBufferFormat(
 }
 
 bool V4L2JpegEncodeAccelerator::EncodedInstance::RequestInputBuffers() {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   struct v4l2_format format;
   memset(&format, 0, sizeof(format));
   format.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
@@ -511,7 +512,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstance::RequestInputBuffers() {
 }
 
 bool V4L2JpegEncodeAccelerator::EncodedInstance::RequestOutputBuffers() {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   struct v4l2_requestbuffers reqbufs;
   memset(&reqbufs, 0, sizeof(reqbufs));
   reqbufs.count = kBufferCount;
@@ -553,7 +554,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstance::RequestOutputBuffers() {
 }
 
 void V4L2JpegEncodeAccelerator::EncodedInstance::DestroyInputBuffers() {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   free_input_buffers_.clear();
 
   if (input_buffer_map_.empty())
@@ -583,7 +584,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstance::DestroyInputBuffers() {
 }
 
 void V4L2JpegEncodeAccelerator::EncodedInstance::DestroyOutputBuffers() {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   free_output_buffers_.clear();
 
   if (output_buffer_map_.empty())
@@ -610,7 +611,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstance::DestroyOutputBuffers() {
 }
 
 void V4L2JpegEncodeAccelerator::EncodedInstance::ServiceDevice() {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
 
   if (!running_job_queue_.empty()) {
     Dequeue();
@@ -626,7 +627,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstance::ServiceDevice() {
 }
 
 void V4L2JpegEncodeAccelerator::EncodedInstance::EnqueueInput() {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   while (!input_job_queue_.empty() && !free_input_buffers_.empty()) {
     if (!EnqueueInputRecord())
       return;
@@ -640,7 +641,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstance::EnqueueInput() {
 }
 
 void V4L2JpegEncodeAccelerator::EncodedInstance::EnqueueOutput() {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   while (running_job_queue_.size() > OutputBufferQueuedCount() &&
          !free_output_buffers_.empty()) {
     if (!EnqueueOutputRecord())
@@ -655,7 +656,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstance::EnqueueOutput() {
 }
 
 bool V4L2JpegEncodeAccelerator::EncodedInstance::EnqueueInputRecord() {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   DCHECK(!input_job_queue_.empty());
   DCHECK(!free_input_buffers_.empty());
 
@@ -731,7 +732,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstance::EnqueueInputRecord() {
 }
 
 bool V4L2JpegEncodeAccelerator::EncodedInstance::EnqueueOutputRecord() {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   DCHECK(!free_output_buffers_.empty());
 
   // Enqueue an output (VIDEO_CAPTURE) buffer.
@@ -758,7 +759,7 @@ size_t V4L2JpegEncodeAccelerator::EncodedInstance::FinalizeJpegImage(
     const JpegBufferRecord& output_buffer,
     size_t buffer_size,
     base::WritableSharedMemoryMapping exif_mapping) {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   size_t idx;
 
   // Fill SOI and EXIF markers.
@@ -828,7 +829,7 @@ size_t V4L2JpegEncodeAccelerator::EncodedInstance::FinalizeJpegImage(
 }
 
 void V4L2JpegEncodeAccelerator::EncodedInstance::Dequeue() {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   // Dequeue completed input (VIDEO_OUTPUT) buffers,
   // and recycle to the free list.
   struct v4l2_buffer dqbuf;
@@ -917,7 +918,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstance::Dequeue() {
 
 void V4L2JpegEncodeAccelerator::EncodedInstance::NotifyError(int32_t task_id,
                                                              Status status) {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   parent_->NotifyError(task_id, status);
 }
 
@@ -933,7 +934,7 @@ V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::EncodedInstanceDmaBuf(
 V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::~EncodedInstanceDmaBuf() {}
 
 void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::DestroyTask() {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   while (!input_job_queue_.empty())
     input_job_queue_.pop();
   while (!running_job_queue_.empty())
@@ -944,6 +945,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::DestroyTask() {
 }
 
 bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::Initialize() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   device_ = V4L2Device::Create();
   gpu_memory_buffer_support_ = std::make_unique<gpu::GpuMemoryBufferSupport>();
 
@@ -1003,7 +1005,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::FillQuantizationTable(
 
 void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::PrepareJpegMarkers(
     gfx::Size coded_size) {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   // Quantization Tables.
   // i = 0 for Luminance
   // i = 1 for Chrominance
@@ -1139,7 +1141,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::PrepareJpegMarkers(
 bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::SetUpJpegParameters(
     int quality,
     gfx::Size coded_size) {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
 
   struct v4l2_ext_controls ctrls;
   struct v4l2_ext_control ctrl;
@@ -1226,7 +1228,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::CreateBuffers(
     gfx::Size coded_size,
     const VideoFrameLayout& input_layout,
     size_t output_buffer_size) {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
 
   // The order of set output/input formats matters.
   // rk3399 reset input format when we set output format.
@@ -1252,7 +1254,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::CreateBuffers(
 bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::SetInputBufferFormat(
     gfx::Size coded_size,
     const VideoFrameLayout& input_layout) {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   DCHECK(!input_streamon_);
   DCHECK(input_job_queue_.empty());
 
@@ -1346,7 +1348,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::SetInputBufferFormat(
 bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::SetOutputBufferFormat(
     gfx::Size coded_size,
     size_t buffer_size) {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   DCHECK(!output_streamon_);
   DCHECK(running_job_queue_.empty());
 
@@ -1367,7 +1369,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::SetOutputBufferFormat(
 }
 
 bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::RequestInputBuffers() {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   struct v4l2_format format;
   memset(&format, 0, sizeof(format));
   format.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
@@ -1390,7 +1392,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::RequestInputBuffers() {
 }
 
 bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::RequestOutputBuffers() {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   struct v4l2_requestbuffers reqbufs;
   memset(&reqbufs, 0, sizeof(reqbufs));
   reqbufs.count = kBufferCount;
@@ -1407,7 +1409,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::RequestOutputBuffers() {
 }
 
 void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::DestroyInputBuffers() {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   free_input_buffers_.clear();
 
   if (input_streamon_) {
@@ -1427,7 +1429,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::DestroyInputBuffers() {
 }
 
 void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::DestroyOutputBuffers() {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   free_output_buffers_.clear();
 
   if (output_streamon_) {
@@ -1445,7 +1447,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::DestroyOutputBuffers() {
 }
 
 void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::ServiceDevice() {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
 
   if (!running_job_queue_.empty()) {
     Dequeue();
@@ -1460,7 +1462,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::ServiceDevice() {
 }
 
 void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::EnqueueInput() {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   while (!input_job_queue_.empty() && !free_input_buffers_.empty()) {
     if (!EnqueueInputRecord())
       return;
@@ -1474,7 +1476,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::EnqueueInput() {
 }
 
 void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::EnqueueOutput() {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   while (running_job_queue_.size() > OutputBufferQueuedCount() &&
          !free_output_buffers_.empty()) {
     if (!EnqueueOutputRecord())
@@ -1489,7 +1491,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::EnqueueOutput() {
 }
 
 bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::EnqueueInputRecord() {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   DCHECK(!input_job_queue_.empty());
   DCHECK(!free_input_buffers_.empty());
 
@@ -1536,7 +1538,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::EnqueueInputRecord() {
 }
 
 bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::EnqueueOutputRecord() {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   DCHECK(!free_output_buffers_.empty());
 
   // Enqueue an output (VIDEO_CAPTURE) buffer.
@@ -1564,7 +1566,7 @@ size_t V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::FinalizeJpegImage(
     scoped_refptr<VideoFrame> output_frame,
     size_t buffer_size,
     base::WritableSharedMemoryMapping exif_mapping) {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   size_t idx = 0;
 
   auto output_gmb_handle = CreateGpuMemoryBufferHandle(output_frame.get());
@@ -1714,7 +1716,7 @@ size_t V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::FinalizeJpegImage(
 }
 
 void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::Dequeue() {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   // Dequeue completed input (VIDEO_OUTPUT) buffers,
   // and recycle to the free list.
   struct v4l2_buffer dqbuf;
@@ -1799,7 +1801,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::Dequeue() {
 void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::NotifyError(
     int32_t task_id,
     Status status) {
-  DCHECK(parent_->encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
   parent_->NotifyError(task_id, status);
 }
 
@@ -1810,6 +1812,7 @@ V4L2JpegEncodeAccelerator::V4L2JpegEncodeAccelerator(
       encoder_thread_("V4L2JpegEncodeThread"),
       weak_factory_(this) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
+  DETACH_FROM_SEQUENCE(encoder_sequence_);
   weak_ptr_ = weak_factory_.GetWeakPtr();
 }
 
@@ -1826,7 +1829,7 @@ V4L2JpegEncodeAccelerator::~V4L2JpegEncodeAccelerator() {
 }
 
 void V4L2JpegEncodeAccelerator::DestroyTask() {
-  DCHECK(encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
 
   while (!encoded_instances_.empty()) {
     encoded_instances_.front()->DestroyTask();
@@ -1864,13 +1867,12 @@ void V4L2JpegEncodeAccelerator::NotifyError(int32_t task_id, Status status) {
   client_->NotifyError(task_id, status);
 }
 
-void V4L2JpegEncodeAccelerator::InitializeOnTaskRunner(
+void V4L2JpegEncodeAccelerator::InitializeTask(
     chromeos_camera::JpegEncodeAccelerator::Client* client,
     chromeos_camera::JpegEncodeAccelerator::InitCB init_cb) {
-  DCHECK(io_task_runner_->BelongsToCurrentThread());
-  std::unique_ptr<EncodedInstanceDmaBuf> encoded_device(
-      new EncodedInstanceDmaBuf(this));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
 
+  auto encoded_device = std::make_unique<EncodedInstanceDmaBuf>(this);
   // We just check if we can initialize device here.
   if (!encoded_device->Initialize()) {
     VLOGF(1) << "Failed to initialize device";
@@ -1878,18 +1880,8 @@ void V4L2JpegEncodeAccelerator::InitializeOnTaskRunner(
     return;
   }
 
-  if (!encoder_thread_.Start()) {
-    VLOGF(1) << "encoder thread failed to start";
-    std::move(init_cb).Run(THREAD_CREATION_FAILED);
-    return;
-  }
-
-  client_ = client;
-  encoder_task_runner_ = encoder_thread_.task_runner();
-
   VLOGF(2) << "V4L2JpegEncodeAccelerator initialized.";
   std::move(init_cb).Run(ENCODE_OK);
-  return;
 }
 
 void V4L2JpegEncodeAccelerator::InitializeAsync(
@@ -1897,10 +1889,20 @@ void V4L2JpegEncodeAccelerator::InitializeAsync(
     chromeos_camera::JpegEncodeAccelerator::InitCB init_cb) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
 
-  io_task_runner_->PostTask(
+  if (!encoder_thread_.Start()) {
+    VLOGF(1) << "encoder thread failed to start";
+    io_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(init_cb), THREAD_CREATION_FAILED));
+    return;
+  }
+
+  client_ = client;
+  encoder_task_runner_ = encoder_thread_.task_runner();
+
+  encoder_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&V4L2JpegEncodeAccelerator::InitializeOnTaskRunner,
-                     weak_ptr_, client, BindToCurrentLoop(std::move(init_cb))));
+      base::BindOnce(&V4L2JpegEncodeAccelerator::InitializeTask, weak_ptr_,
+                     client, BindToCurrentLoop(std::move(init_cb))));
 }
 
 size_t V4L2JpegEncodeAccelerator::GetMaxCodedBufferSize(
@@ -2014,7 +2016,7 @@ void V4L2JpegEncodeAccelerator::EncodeWithDmaBuf(
 
 void V4L2JpegEncodeAccelerator::EncodeTaskLegacy(
     std::unique_ptr<JobRecord> job_record) {
-  DCHECK(encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
 
   // Check if the parameters of input frame changes.
   // If it changes, we open a new device and put the job in it.
@@ -2059,7 +2061,7 @@ void V4L2JpegEncodeAccelerator::EncodeTaskLegacy(
 
 void V4L2JpegEncodeAccelerator::EncodeTask(
     std::unique_ptr<JobRecord> job_record) {
-  DCHECK(encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
 
   // Check if the parameters of input frame changes.
   // If it changes, we open a new device and put the job in it.
@@ -2107,7 +2109,7 @@ void V4L2JpegEncodeAccelerator::EncodeTask(
 }
 
 void V4L2JpegEncodeAccelerator::ServiceDeviceTaskLegacy() {
-  DCHECK(encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
 
   // Always service the first device to keep the input order.
   encoded_instances_.front()->ServiceDevice();
@@ -2131,7 +2133,7 @@ void V4L2JpegEncodeAccelerator::ServiceDeviceTaskLegacy() {
 }
 
 void V4L2JpegEncodeAccelerator::ServiceDeviceTask() {
-  DCHECK(encoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
 
   // Always service the first device to keep the input order.
   encoded_instances_dma_buf_.front()->ServiceDevice();
