@@ -2086,6 +2086,9 @@ class ComputedStyle : public ComputedStyleBase,
     if (HasNonInitialBackdropFilter()) {
       return true;
     }
+    if (ViewTransitionName()) {
+      return true;
+    }
     return false;
   }
 

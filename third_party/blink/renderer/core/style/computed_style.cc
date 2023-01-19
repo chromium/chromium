@@ -1219,6 +1219,7 @@ static bool HasPropertyThatCreatesStackingContext(
       case CSSPropertyID::kMixBlendMode:
       case CSSPropertyID::kIsolation:
       case CSSPropertyID::kContain:
+      case CSSPropertyID::kViewTransitionName:
         return true;
       default:
         break;
