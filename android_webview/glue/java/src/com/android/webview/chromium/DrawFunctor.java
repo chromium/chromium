@@ -4,6 +4,9 @@
 
 package com.android.webview.chromium;
 
+import org.chromium.base.annotations.JniIgnoreNatives;
+
+@JniIgnoreNatives
 class DrawFunctor {
     public static long getDrawFnFunctionTable() {
         return nativeGetFunctionTable();

@@ -146,8 +146,9 @@ def _DictForPath(path,
 
   fully_qualified_class = jni_generator.ExtractFullyQualifiedJavaClassName(
       path, contents)
+  natives = jni_generator.ExtractNatives(contents, 'long')
 
-  natives = jni_generator.ProxyHelpers.ExtractStaticProxyNatives(
+  natives += jni_generator.ProxyHelpers.ExtractStaticProxyNatives(
       fully_qualified_class=fully_qualified_class,
       contents=contents,
       ptr_type='long',

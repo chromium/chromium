@@ -35,6 +35,15 @@ inline jclass org_chromium_foo_Foo_clazz(JNIEnv* env) {
 
 
 // Step 3: Method stubs.
+static void JNI_Foo_DoSomething(JNIEnv* env, const base::android::JavaParamRef<jobject>& callback);
+
+JNI_GENERATOR_EXPORT void Java_org_chromium_foo_Foo_nativeDoSomething(
+    JNIEnv* env,
+    jclass jcaller,
+    jobject callback) {
+  return JNI_Foo_DoSomething(env, base::android::JavaParamRef<jobject>(env, callback));
+}
+
 
 static std::atomic<jmethodID> g_org_chromium_foo_Foo_calledByNative(nullptr);
 static void Java_Foo_calledByNative(JNIEnv* env, const base::android::JavaRef<jobject>& callback) {

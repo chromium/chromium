@@ -219,6 +219,280 @@ class TestGenerator(BaseTest):
 
     self.assertRaises(AssertionError, willRaise)
 
+  def testNatives(self):
+    test_data = """"
+    import android.graphics.Bitmap;
+    import android.view.View;
+
+    interface OnFrameAvailableListener {}
+    private native int nativeInit();
+    private native void nativeDestroy(int nativeChromeBrowserProvider);
+    private native long nativeAddBookmark(
+            int nativeChromeBrowserProvider,
+            String url, String title, boolean isFolder, long parentId);
+    private static native String nativeGetDomainAndRegistry(String url);
+    private static native void nativeCreateHistoricalTabFromState(
+            byte[] state, int tab_index);
+    private native byte[] nativeGetStateAsByteArray(View view);
+    private static native String[] nativeGetAutofillProfileGUIDs();
+    private native void nativeSetRecognitionResults(
+            int sessionId, String[] results);
+    private native long nativeAddBookmarkFromAPI(
+            int nativeChromeBrowserProvider,
+            String url, Long created, Boolean isBookmark,
+            Long date, byte[] favicon, String title, Integer visits);
+    native int nativeFindAll(String find);
+    private static native OnFrameAvailableListener nativeGetInnerClass();
+    private native Bitmap nativeQueryBitmap(
+            int nativeChromeBrowserProvider,
+            String[] projection, String selection,
+            String[] selectionArgs, String sortOrder);
+    private native void nativeGotOrientation(
+            int nativeDataFetcherImplAndroid,
+            double alpha, double beta, double gamma);
+    private static native Throwable nativeMessWithJavaException(Throwable e);
+    """
+    jni_params = jni_generator.JniParams(
+        'org/chromium/example/jni_generator/SampleForTests')
+    jni_params.ExtractImportsAndInnerClasses(test_data)
+    natives = jni_generator.ExtractNatives(test_data, 'int')
+    golden_natives = [
+        NativeMethod(
+            return_type='int',
+            static=False,
+            name='Init',
+            params=[],
+            java_class_name=None),
+        NativeMethod(
+            return_type='void',
+            static=False,
+            name='Destroy',
+            params=[Param(datatype='int', name='nativeChromeBrowserProvider')],
+            java_class_name=None),
+        NativeMethod(
+            return_type='long',
+            static=False,
+            name='AddBookmark',
+            params=[
+                Param(datatype='int', name='nativeChromeBrowserProvider'),
+                Param(datatype='String', name='url'),
+                Param(datatype='String', name='title'),
+                Param(datatype='boolean', name='isFolder'),
+                Param(datatype='long', name='parentId')
+            ],
+            java_class_name=None),
+        NativeMethod(
+            return_type='String',
+            static=True,
+            name='GetDomainAndRegistry',
+            params=[Param(datatype='String', name='url')],
+            java_class_name=None),
+        NativeMethod(
+            return_type='void',
+            static=True,
+            name='CreateHistoricalTabFromState',
+            params=[
+                Param(datatype='byte[]', name='state'),
+                Param(datatype='int', name='tab_index')
+            ],
+            java_class_name=None),
+        NativeMethod(
+            return_type='byte[]',
+            static=False,
+            name='GetStateAsByteArray',
+            params=[Param(datatype='View', name='view')],
+            java_class_name=None),
+        NativeMethod(
+            return_type='String[]',
+            static=True,
+            name='GetAutofillProfileGUIDs',
+            params=[],
+            java_class_name=None),
+        NativeMethod(
+            return_type='void',
+            static=False,
+            name='SetRecognitionResults',
+            params=[
+                Param(datatype='int', name='sessionId'),
+                Param(datatype='String[]', name='results')
+            ],
+            java_class_name=None),
+        NativeMethod(
+            return_type='long',
+            static=False,
+            name='AddBookmarkFromAPI',
+            params=[
+                Param(datatype='int', name='nativeChromeBrowserProvider'),
+                Param(datatype='String', name='url'),
+                Param(datatype='Long', name='created'),
+                Param(datatype='Boolean', name='isBookmark'),
+                Param(datatype='Long', name='date'),
+                Param(datatype='byte[]', name='favicon'),
+                Param(datatype='String', name='title'),
+                Param(datatype='Integer', name='visits')
+            ],
+            java_class_name=None),
+        NativeMethod(
+            return_type='int',
+            static=False,
+            name='FindAll',
+            params=[Param(datatype='String', name='find')],
+            java_class_name=None),
+        NativeMethod(
+            return_type='OnFrameAvailableListener',
+            static=True,
+            name='GetInnerClass',
+            params=[],
+            java_class_name=None),
+        NativeMethod(
+            return_type='Bitmap',
+            static=False,
+            name='QueryBitmap',
+            params=[
+                Param(datatype='int', name='nativeChromeBrowserProvider'),
+                Param(datatype='String[]', name='projection'),
+                Param(datatype='String', name='selection'),
+                Param(datatype='String[]', name='selectionArgs'),
+                Param(datatype='String', name='sortOrder'),
+            ],
+            java_class_name=None),
+        NativeMethod(
+            return_type='void',
+            static=False,
+            name='GotOrientation',
+            params=[
+                Param(datatype='int', name='nativeDataFetcherImplAndroid'),
+                Param(datatype='double', name='alpha'),
+                Param(datatype='double', name='beta'),
+                Param(datatype='double', name='gamma'),
+            ],
+            java_class_name=None),
+        NativeMethod(
+            return_type='Throwable',
+            static=True,
+            name='MessWithJavaException',
+            params=[Param(datatype='Throwable', name='e')],
+            java_class_name=None)
+    ]
+    self.AssertListEquals(golden_natives, natives)
+    h1 = jni_generator.InlHeaderFileGenerator('', 'org/chromium/TestJni',
+                                              natives, [], [], jni_params,
+                                              TestOptions())
+    self.AssertGoldenTextEquals(h1.GetContent())
+    h2 = jni_registration_generator.HeaderGenerator('',
+                                                    '',
+                                                    'org/chromium/TestJni',
+                                                    natives,
+                                                    jni_params,
+                                                    True,
+                                                    use_proxy_hash=False)
+    content = TestGenerator._MergeRegistrationForTests([h2.Generate()])
+
+    self.AssertGoldenTextEquals(jni_registration_generator.CreateFromDict(
+        content, use_hash=False, manual_jni_registration=True),
+                                suffix='Registrations')
+
+  def testInnerClassNatives(self):
+    test_data = """
+    class MyInnerClass {
+      @NativeCall("MyInnerClass")
+      private native int nativeInit();
+    }
+    """
+    natives = jni_generator.ExtractNatives(test_data, 'int')
+    golden_natives = [
+        NativeMethod(
+            return_type='int',
+            static=False,
+            name='Init',
+            params=[],
+            java_class_name='MyInnerClass')
+    ]
+    self.AssertListEquals(golden_natives, natives)
+    jni_params = jni_generator.JniParams('')
+    h = jni_generator.InlHeaderFileGenerator('', 'org/chromium/TestJni',
+                                             natives, [], [], jni_params,
+                                             TestOptions())
+    self.AssertGoldenTextEquals(h.GetContent())
+
+  def testInnerClassNativesMultiple(self):
+    test_data = """
+    class MyInnerClass {
+      @NativeCall("MyInnerClass")
+      private native int nativeInit();
+    }
+    class MyOtherInnerClass {
+      @NativeCall("MyOtherInnerClass")
+      private native int nativeInit();
+    }
+    """
+    natives = jni_generator.ExtractNatives(test_data, 'int')
+    golden_natives = [
+        NativeMethod(
+            return_type='int',
+            static=False,
+            name='Init',
+            params=[],
+            java_class_name='MyInnerClass'),
+        NativeMethod(
+            return_type='int',
+            static=False,
+            name='Init',
+            params=[],
+            java_class_name='MyOtherInnerClass')
+    ]
+    self.AssertListEquals(golden_natives, natives)
+    jni_params = jni_generator.JniParams('')
+    h = jni_generator.InlHeaderFileGenerator('', 'org/chromium/TestJni',
+                                             natives, [], [], jni_params,
+                                             TestOptions())
+    self.AssertGoldenTextEquals(h.GetContent())
+
+  def testInnerClassNativesBothInnerAndOuter(self):
+    test_data = """
+    class MyOuterClass {
+      private native int nativeInit();
+      class MyOtherInnerClass {
+        @NativeCall("MyOtherInnerClass")
+        private native int nativeInit();
+      }
+    }
+    """
+    natives = jni_generator.ExtractNatives(test_data, 'int')
+    golden_natives = [
+        NativeMethod(
+            return_type='int',
+            static=False,
+            name='Init',
+            params=[],
+            java_class_name=None),
+        NativeMethod(
+            return_type='int',
+            static=False,
+            name='Init',
+            params=[],
+            java_class_name='MyOtherInnerClass')
+    ]
+    self.AssertListEquals(golden_natives, natives)
+    jni_params = jni_generator.JniParams('')
+    h = jni_generator.InlHeaderFileGenerator('', 'org/chromium/TestJni',
+                                             natives, [], [], jni_params,
+                                             TestOptions())
+    self.AssertGoldenTextEquals(h.GetContent())
+
+    h2 = jni_registration_generator.HeaderGenerator('',
+                                                    '',
+                                                    'org/chromium/TestJni',
+                                                    natives,
+                                                    jni_params,
+                                                    True,
+                                                    use_proxy_hash=False)
+    content = TestGenerator._MergeRegistrationForTests([h2.Generate()])
+
+    self.AssertGoldenTextEquals(jni_registration_generator.CreateFromDict(
+        content, use_hash=False, manual_jni_registration=True),
+                                suffix='Registrations')
+
   def testCalledByNatives(self):
     test_data = """"
     import android.graphics.Bitmap;
@@ -719,6 +993,27 @@ public class java.util.HashSet {
       self.assertEqual(86, len(jni_from_javap.called_by_natives))
       self.AssertGoldenTextEquals(jni_from_javap.GetContent())
 
+  def testREForNatives(self):
+    # We should not match "native SyncSetupFlow" inside the comment.
+    test_data = """
+    /**
+     * Invoked when the setup process is complete so we can disconnect from the
+     * private native void nativeSyncSetupFlowHandler();.
+     */
+    public void destroy() {
+        Log.v(TAG, "Destroying native SyncSetupFlow");
+        if (mNativeSyncSetupFlow != 0) {
+            nativeSyncSetupEnded(mNativeSyncSetupFlow);
+            mNativeSyncSetupFlow = 0;
+        }
+    }
+    private native void nativeSyncSetupEnded(
+        int nativeAndroidSyncSetupFlowHandler);
+    """
+    jni_from_java = jni_generator.JNIFromJavaSource(
+        test_data, 'foo/bar', TestOptions())
+    self.AssertGoldenTextEquals(jni_from_java.GetContent())
+
   def testRaisesOnNonJNIMethod(self):
     test_data = """
     class MyInnerClass {
@@ -735,6 +1030,24 @@ public class java.util.HashSet {
         'org/chromium/example/jni_generator/SampleForTests')
     self.AssertGoldenTextEquals(
         generated_text, golden_file='SampleForTests_jni.golden')
+
+  def testNoWrappingPreprocessorLines(self):
+    test_data = """
+    package com.google.lookhowextremelylongiam.snarf.icankeepthisupallday;
+
+    class ReallyLongClassNamesAreAllTheRage {
+        private static native int nativeTest();
+    }
+    """
+    jni_from_java = jni_generator.JNIFromJavaSource(
+        test_data, ('com/google/lookhowextremelylongiam/snarf/'
+                    'icankeepthisupallday/ReallyLongClassNamesAreAllTheRage'),
+        TestOptions())
+    jni_lines = jni_from_java.GetContent().split('\n')
+    line = next(
+        line for line in jni_lines if line.lstrip().startswith('#ifndef'))
+    self.assertTrue(
+        len(line) > 80, ('Expected #ifndef line to be > 80 chars: ', line))
 
   def testImports(self):
     import_header = """
@@ -796,6 +1109,29 @@ class Foo {
     self.AssertTextEquals('[Ljava/nio/ByteBuffer;',
                           jni_params.JavaToJni('java/nio/ByteBuffer[]'))
 
+  def testNativesLong(self):
+    test_options = TestOptions()
+    test_options.ptr_type = 'long'
+    test_data = """"
+    private native void nativeDestroy(long nativeChromeBrowserProvider);
+    """
+    jni_params = jni_generator.JniParams('')
+    jni_params.ExtractImportsAndInnerClasses(test_data)
+    natives = jni_generator.ExtractNatives(test_data, test_options.ptr_type)
+    golden_natives = [
+        NativeMethod(
+            return_type='void',
+            static=False,
+            name='Destroy',
+            params=[Param(datatype='long', name='nativeChromeBrowserProvider')],
+            java_class_name=None,
+            ptr_type=test_options.ptr_type),
+    ]
+    self.AssertListEquals(golden_natives, natives)
+    h = jni_generator.InlHeaderFileGenerator(
+        '', 'org/chromium/TestJni', natives, [], [], jni_params, test_options)
+    self.AssertGoldenTextEquals(h.GetContent())
+
   def testMainDexAnnotation(self):
     mainDexEntries = [
         '@MainDex public class Test {',
@@ -840,6 +1176,43 @@ class Foo {
     for entry in noMainDexEntries:
       self.assertEqual(False, IsMainDexJavaClass(entry))
 
+  def testNativeExportsOnlyOption(self):
+    test_data = """
+    package org.chromium.example.jni_generator;
+
+    /** The pointer to the native Test. */
+    long nativeTest;
+
+    class Test {
+        private static native int nativeStaticMethod(long nativeTest, int arg1);
+        private native int nativeMethod(long nativeTest, int arg1);
+        @CalledByNative
+        private void testMethodWithParam(int iParam);
+        @CalledByNative
+        private String testMethodWithParamAndReturn(int iParam);
+        @CalledByNative
+        private static int testStaticMethodWithParam(int iParam);
+        @CalledByNative
+        private static double testMethodWithNoParam();
+        @CalledByNative
+        private static String testStaticMethodWithNoParam();
+
+        class MyInnerClass {
+          @NativeCall("MyInnerClass")
+          private native int nativeInit();
+        }
+        class MyOtherInnerClass {
+          @NativeCall("MyOtherInnerClass")
+          private native int nativeInit();
+        }
+    }
+    """
+    options = TestOptions()
+    options.native_exports_optional = False
+    jni_from_java = jni_generator.JNIFromJavaSource(
+        test_data, 'org/chromium/example/jni_generator/SampleForTests', options)
+    self.AssertGoldenTextEquals(jni_from_java.GetContent())
+
   def testOuterInnerRaises(self):
     test_data = """
     package org.chromium.media;
@@ -867,6 +1240,9 @@ class Foo {
     @CalledByNative
     private static void calledByNative(Bar.Callback callback) {
     }
+
+    private static native void nativeDoSomething(Bar.Callback callback);
+    }
     """
     jni_from_java = jni_generator.JNIFromJavaSource(test_data,
                                                     'org/chromium/foo/Foo',
@@ -884,8 +1260,55 @@ class Foo {
     private static void calledByNative(Bar1.Callback callback1,
                                        Bar2.Callback callback2) {
     }
+
+    private static native void nativeDoSomething(Bar1.Callback callback1,
+                                                 Bar2.Callback callback2);
     }
     """
+    jni_from_java = jni_generator.JNIFromJavaSource(test_data,
+                                                    'org/chromium/foo/Foo',
+                                                    TestOptions())
+    self.AssertGoldenTextEquals(jni_from_java.GetContent())
+
+  def testTracing(self):
+    test_data = """
+    package org.chromium.foo;
+
+    @JNINamespace("org::chromium_foo")
+    class Foo {
+
+    @CalledByNative
+    Foo();
+
+    @CalledByNative
+    void callbackFromNative();
+
+    native void nativeInstanceMethod(long nativeInstance);
+
+    static native void nativeStaticMethod();
+    }
+    """
+    options_with_tracing = TestOptions()
+    options_with_tracing.enable_tracing = True
+    jni_from_java = jni_generator.JNIFromJavaSource(
+        test_data, 'org/chromium/foo/Foo', options_with_tracing)
+    self.AssertGoldenTextEquals(jni_from_java.GetContent())
+
+  def testStaticBindingCaller(self):
+    test_data = """
+    package org.chromium.foo;
+
+    class Bar {
+      static native void nativeShouldBindCaller(Object caller);
+      static native void nativeShouldBindCaller(Object caller, int a);
+      static native void nativeFoo(long nativeNativeObject, Bar caller);
+      static native void nativeFoo(long nativeNativeObject, Bar caller, int a);
+      native void nativeCallNativeMethod(long nativePtr);
+      @NativeClassQualifiedName("Foo::Bar")
+      native void nativeCallWithQualifiedObject(long nativePtr);
+    }
+    """
+
     jni_from_java = jni_generator.JNIFromJavaSource(test_data,
                                                     'org/chromium/foo/Foo',
                                                     TestOptions())

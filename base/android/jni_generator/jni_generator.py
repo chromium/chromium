@@ -39,14 +39,25 @@ _COMMENT_REMOVER_REGEX = re.compile(
     r'//.*?$|/\*.*?\*/|\'(?:\\.|[^\\\'])*\'|"(?:\\.|[^\\"])*"',
     re.DOTALL | re.MULTILINE)
 
+_EXTRACT_NATIVES_REGEX = re.compile(
+    r'(@NativeClassQualifiedName'
+    r'\(\"(?P<native_class_name>.*?)\"\)\s+)?'
+    r'(@NativeCall(\(\"(?P<java_class_name>.*?)\"\))\s+)?'
+    r'(?P<qualifiers>\w+\s\w+|\w+|\s+)\s*native '
+    r'(?P<return_type>\S*) '
+    r'(?P<name>native\w+)\((?P<params>.*?)\);')
+
 _MAIN_DEX_REGEX = re.compile(r'^\s*(?:@(?:\w+\.)*\w+\s+)*@MainDex\b',
                              re.MULTILINE)
 
+# Matches on method declarations unlike _EXTRACT_NATIVES_REGEX
+# doesn't require name to be prefixed with native, and does not
+# require a native qualifier.
 _EXTRACT_METHODS_REGEX = re.compile(
     r'(@NativeClassQualifiedName'
     r'\(\"(?P<native_class_name>.*?)\"\)\s*)?'
     r'(?P<qualifiers>'
-    r'((public|private|static|final|abstract|protected)\s*)*)\s+'
+    r'((public|private|static|final|abstract|protected|native)\s*)*)\s+'
     r'(?P<return_type>\S*)\s+'
     r'(?P<name>\w+)\((?P<params>.*?)\);',
     flags=re.DOTALL)
@@ -523,6 +534,23 @@ def ExtractFullyQualifiedJavaClassName(java_file_name, contents):
   return class_path + '/' + class_name
 
 
+def ExtractNatives(contents, ptr_type):
+  """Returns a list of dict containing information about a native method."""
+  contents = contents.replace('\n', '')
+  natives = []
+  for match in _EXTRACT_NATIVES_REGEX.finditer(contents):
+    native = NativeMethod(
+        static='static' in match.group('qualifiers'),
+        java_class_name=match.group('java_class_name'),
+        native_class_name=match.group('native_class_name'),
+        return_type=match.group('return_type'),
+        name=match.group('name').replace('native', ''),
+        params=JniParams.Parse(match.group('params')),
+        ptr_type=ptr_type)
+    natives += [native]
+  return natives
+
+
 def IsMainDexJavaClass(contents):
   """Returns True if the class or any of its methods are annotated as @MainDex.
 
@@ -943,10 +971,13 @@ class JNIFromJavaSource(object):
     self.jni_params = JniParams(fully_qualified_class)
     self.jni_params.ExtractImportsAndInnerClasses(contents)
     jni_namespace = ExtractJNINamespace(contents) or options.namespace
+    natives = ExtractNatives(contents, options.ptr_type)
     called_by_natives = ExtractCalledByNatives(self.jni_params, contents,
                                                options.always_mangle)
-    natives = ProxyHelpers.ExtractStaticProxyNatives(fully_qualified_class,
-                                                     contents, options.ptr_type)
+
+    natives += ProxyHelpers.ExtractStaticProxyNatives(fully_qualified_class,
+                                                      contents,
+                                                      options.ptr_type)
 
     if len(natives) == 0 and len(called_by_natives) == 0:
       raise SyntaxError(
