@@ -707,6 +707,7 @@ source_set("ash") {
     "bruschetta/bruschetta_download_client.h",
     "bruschetta/bruschetta_features.cc",
     "bruschetta/bruschetta_features.h",
+    "bruschetta/bruschetta_installer.cc",
     "bruschetta/bruschetta_installer.h",
     "bruschetta/bruschetta_installer_impl.cc",
     "bruschetta/bruschetta_installer_impl.h",

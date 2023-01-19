@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_download_client.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/guest_os/dbus_test_helper.h"
@@ -57,7 +58,7 @@ class MockObserver : public BruschettaInstaller::Observer {
               StateChanged,
               (BruschettaInstaller::State state),
               (override));
-  MOCK_METHOD(void, Error, (), (override));
+  MOCK_METHOD(void, Error, (BruschettaInstallError), (override));
 };
 
 class BruschettaInstallerTest : public testing::TestWithParam<int>,

@@ -132,7 +132,7 @@ void BruschettaInstallerImpl::Install(std::string vm_name,
     InstallToolsDlc();
   } else {
     install_running_ = false;
-    NotifyObserverError();
+    NotifyObserverError(BruschettaInstallError::kInstallationProhibited);
     LOG(ERROR) << "Installation prohibited by policy";
     return;
   }
@@ -159,7 +159,7 @@ void BruschettaInstallerImpl::OnToolsDlcInstalled(
 
   if (install_result.error != dlcservice::kErrorNone) {
     install_running_ = false;
-    NotifyObserverError();
+    NotifyObserverError(BruschettaInstallError::kDlcInstallError);
     LOG(ERROR) << "Failed to install tools dlc: " << install_result.error;
     return;
   }
@@ -220,7 +220,7 @@ void BruschettaInstallerImpl::DownloadFailed() {
   }
 
   install_running_ = false;
-  NotifyObserverError();
+  NotifyObserverError(BruschettaInstallError::kDownloadError);
 }
 
 void BruschettaInstallerImpl::DownloadSucceeded(
@@ -254,7 +254,7 @@ void BruschettaInstallerImpl::OnFirmwareDownloaded(
   if (!base::EqualsCaseInsensitiveASCII(completion_info.hash256,
                                         *expected_hash)) {
     install_running_ = false;
-    NotifyObserverError();
+    NotifyObserverError(BruschettaInstallError::kInvalidFirmware);
     LOG(ERROR) << "Downloaded firmware image has incorrect hash";
     LOG(ERROR) << "Actual   " << completion_info.hash256;
     LOG(ERROR) << "Expected " << *expected_hash;
@@ -291,7 +291,7 @@ void BruschettaInstallerImpl::OnBootDiskDownloaded(
   if (!base::EqualsCaseInsensitiveASCII(completion_info.hash256,
                                         *expected_hash)) {
     install_running_ = false;
-    NotifyObserverError();
+    NotifyObserverError(BruschettaInstallError::kInvalidBootDisk);
     LOG(ERROR) << "Downloaded boot disk has incorrect hash";
     LOG(ERROR) << "Actual   " << completion_info.hash256;
     LOG(ERROR) << "Expected " << *expected_hash;
@@ -328,7 +328,7 @@ void BruschettaInstallerImpl::OnPflashDownloaded(
   if (!base::EqualsCaseInsensitiveASCII(completion_info.hash256,
                                         *expected_hash)) {
     install_running_ = false;
-    NotifyObserverError();
+    NotifyObserverError(BruschettaInstallError::kInvalidPflash);
     LOG(ERROR) << "Downloaded pflash has incorrect hash";
     LOG(ERROR) << "Actual   " << completion_info.hash256;
     LOG(ERROR) << "Expected " << *expected_hash;
@@ -405,7 +405,7 @@ void BruschettaInstallerImpl::OnOpenFds(std::unique_ptr<Fds> fds) {
 
   if (!fds) {
     install_running_ = false;
-    NotifyObserverError();
+    NotifyObserverError(BruschettaInstallError::kUnableToOpenImages);
     LOG(ERROR) << "Failed to open image files";
     return;
   }
@@ -446,7 +446,7 @@ void BruschettaInstallerImpl::OnCreateVmDisk(
       result->status() !=
           vm_tools::concierge::DiskImageStatus::DISK_STATUS_CREATED) {
     install_running_ = false;
-    NotifyObserverError();
+    NotifyObserverError(BruschettaInstallError::kCreateDiskError);
     if (result) {
       LOG(ERROR) << "Create VM failed: " << result->failure_reason();
     } else {
@@ -468,7 +468,7 @@ void BruschettaInstallerImpl::StartVm() {
     // Policy has changed to prohibit installation, so bail out before actually
     // starting the VM.
     install_running_ = false;
-    NotifyObserverError();
+    NotifyObserverError(BruschettaInstallError::kInstallationProhibited);
     LOG(ERROR) << "Installation prohibited by policy";
     return;
   }
@@ -516,7 +516,7 @@ void BruschettaInstallerImpl::OnStartVm(
 
   if (!result || !result->success()) {
     install_running_ = false;
-    NotifyObserverError();
+    NotifyObserverError(BruschettaInstallError::kStartVmFailed);
     if (result) {
       LOG(ERROR) << "VM failed to start: " << result->failure_reason();
     } else {
@@ -553,9 +553,11 @@ void BruschettaInstallerImpl::NotifyObserver(State state) {
   }
 }
 
-void BruschettaInstallerImpl::NotifyObserverError() {
+void BruschettaInstallerImpl::NotifyObserverError(
+    BruschettaInstallError error) {
+  VLOG(2) << "Error installing: " << BruschettaInstallErrorString(error);
   if (observer_) {
-    observer_->Error();
+    observer_->Error(error);
   }
 }
 
