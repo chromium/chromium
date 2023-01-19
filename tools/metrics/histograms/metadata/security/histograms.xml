@@ -146,7 +146,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstMode.NavigationEvent"
-    enum="HttpsFirstModeNavigationEvent" expires_after="2023-01-15">
+    enum="HttpsFirstModeNavigationEvent" expires_after="2023-07-09">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -168,7 +168,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstMode.SettingEnabledAtStartup"
-    enum="BooleanEnabled" expires_after="2023-06-25">
+    enum="BooleanEnabled" expires_after="2023-07-09">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -186,17 +186,6 @@ chromium-metrics-reviews@google.com.
     Records the usage of the base::JSONParser's non-RFC-8259-conforming
     extensions when parsing JSON documents. This histogram is emitted each time
     an instance of non-conforming syntax is detected in a document.
-  </summary>
-</histogram>
-
-<histogram name="Security.MixedForm.InterstitialTriggerState"
-    enum="MixedFormInterstitialTriggeredState" expires_after="2022-06-26">
-  <owner>carlosil@chromium.org</owner>
-  <owner>security-enamel@chromium.org</owner>
-  <summary>
-    Logs when an interstitial was triggered (or would have been triggered but
-    was not due to the currently enabled experiment mode) and whether it was a
-    direct submission to an insecure URL, or a redirect through one.
   </summary>
 </histogram>
 
@@ -262,7 +251,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.TimeOpen" units="ms"
-    expires_after="2023-03-30">
+    expires_after="2023-07-09">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -272,7 +261,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.TimeOpen.Action" units="ms"
-    expires_after="2023-06-04">
+    expires_after="2023-07-09">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -282,7 +271,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.TimeOpen.NoAction" units="ms"
-    expires_after="2023-03-30">
+    expires_after="2023-07-09">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -363,34 +352,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Security.SafetyTips.PageInfo.Action"
-    enum="WebsiteSettingsAction" expires_after="2021-10-25">
-  <owner>jdeblasio@chromium.org</owner>
-  <owner>src/chrome/browser/lookalikes/OWNERS</owner>
-  <summary>
-    Tracks Page Info bubble actions along with the Safety Tip status of the
-    page.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Security.SafetyTips.ReputationCheckComplete"
-    enum="SafetyTipStatus" expires_after="2022-05-01">
-  <owner>jdeblasio@chromium.org</owner>
-  <owner>src/chrome/browser/lookalikes/OWNERS</owner>
-  <summary>
-    Records the Safety Tip status of a page after navigation commit or page
-    visibility change. This is the same as SafetyTipShown, but with additional
-    suffixes for clarity.
-  </summary>
-</histogram>
-
 <histogram name="Security.SafetyTips.SafetyTipIgnoredPageLoad"
-    enum="SafetyTipStatus" expires_after="2021-12-26">
+    enum="SafetyTipStatus" expires_after="2023-06-25">
   <owner>jdeblasio@chromium.org</owner>
   <owner>src/chrome/browser/lookalikes/OWNERS</owner>
   <summary>
     Records the Safety Tip status of a page after navigation commit for a page
     where the Safety Tip has previously been ignored.
+
+    Note: This histogram was expired from 2021-12-26 until 2023-01-19.
   </summary>
 </histogram>
 
@@ -402,36 +372,6 @@ chromium-metrics-reviews@google.com.
     Records the Safety Tip status of a page after navigation commit or page
     visibility change.
   </summary>
-</histogram>
-
-<histogram name="Security.SafetyTips.SafetyTipShown_AfterFlag"
-    enum="SafetyTipStatus" expires_after="2021-12-25">
-  <owner>jdeblasio@chromium.org</owner>
-  <owner>src/chrome/browser/lookalikes/OWNERS</owner>
-  <summary>
-    Records the Safety Tip status of a page after navigation commit or page
-    visibility change. This is the same as SafetyTipShown, but records *after*
-    the flag is checked to evaluate the impact of starts_active.
-  </summary>
-</histogram>
-
-<histogram name="Security.SafetyTips.StatusWithInitiator.{SafetyTipInitiator}"
-    enum="SafetyTipStatus" expires_after="2021-10-25">
-  <owner>jdeblasio@chromium.org</owner>
-  <owner>meacer@chromium.org</owner>
-  <summary>
-    Records the Safety Tip status of a page after navigation commit, alongside
-    how the corresponding navigation was initiated. Only recorded on navigations
-    that were visible at commit time.
-  </summary>
-  <token key="SafetyTipInitiator">
-    <variant name="CrossOrigin" summary="Initiated by an unrelated origin"/>
-    <variant name="SameOrigin" summary="Initiated by the same origin"/>
-    <variant name="SameRegDomain"
-        summary="Initiated by the same registered domain"/>
-    <variant name="UnexpectedUrl" summary="Metrics failure"/>
-    <variant name="Unknown" summary="Initiator unknown"/>
-  </token>
 </histogram>
 
 <histogram name="Security.SCTAuditing.NumPersistedReportsLoaded"
@@ -467,7 +407,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptIn.ReportDeduplicated" enum="Boolean"
-    expires_after="2023-01-15">
+    expires_after="2023-07-15">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -478,7 +418,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptIn.ReportersHWM" units="reporters"
-    expires_after="2023-01-15">
+    expires_after="2023-07-15">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -488,7 +428,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptIn.ReportSampled" enum="Boolean"
-    expires_after="2023-03-19">
+    expires_after="2023-07-15">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -499,7 +439,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptIn.ReportSize" units="bytes"
-    expires_after="2023-03-19">
+    expires_after="2023-07-15">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -509,7 +449,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptIn.ReportSucceeded" enum="Boolean"
-    expires_after="2023-06-04">
+    expires_after="2023-07-15">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -520,7 +460,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptOut.DroppedDueToLogNotFound"
-    enum="Boolean" expires_after="2023-06-18">
+    enum="Boolean" expires_after="2023-07-15">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -531,7 +471,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptOut.LookupQueryResult"
-    enum="SCTLookupQueryResult" expires_after="2023-06-18">
+    enum="SCTLookupQueryResult" expires_after="2023-07-15">
   <owner>cthomp@chromium.org</owner>
   <owner>nsatragno@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
@@ -542,7 +482,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptOut.PopularSCTSkipped" enum="Boolean"
-    expires_after="2023-04-16">
+    expires_after="2023-07-15">
   <owner>cthomp@chromium.org</owner>
   <owner>nsatragno@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
@@ -554,7 +494,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptOut.ReportCount" units="reports"
-    expires_after="2023-06-11">
+    expires_after="2023-07-15">
   <owner>cthomp@chromium.org</owner>
   <owner>jdeblasio@chromium.org</owner>
   <summary>
@@ -569,7 +509,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SecurityLevel.DownloadStarted" enum="SecurityLevel"
-    expires_after="2023-01-15">
+    expires_after="2023-06-30">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -608,7 +548,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SecurityLevel.OnCommit" enum="SecurityLevel"
-    expires_after="2023-02-12">
+    expires_after="2023-06-30">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -620,7 +560,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SecurityLevel.OnComplete" enum="SecurityLevel"
-    expires_after="2023-03-19">
+    expires_after="2023-06-30">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>

@@ -5379,16 +5379,9 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Security.PageInfo.TimeOpen.Action"/>
   <affected-histogram name="Security.PageInfo.TimeOpen.NoAction"/>
   <affected-histogram name="Security.SafetyTips.Interaction"/>
-  <affected-histogram name="Security.SafetyTips.PageInfo.Action"/>
   <affected-histogram name="Security.SiteEngagement"/>
   <affected-histogram name="Security.SiteEngagementDelta"/>
   <affected-histogram name="Security.TimeOnPage2"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="SafetyTip_EntryPoint" separator=".">
-  <suffix name="DidFinishNavigation" label="DidFinishNavigation entry point"/>
-  <suffix name="VisibilityChanged" label="VisibilityChanged entry point"/>
-  <affected-histogram name="Security.SafetyTips.ReputationCheckComplete"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="SB2RequestDestinations" separator=".">
