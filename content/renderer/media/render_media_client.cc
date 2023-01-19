@@ -29,13 +29,14 @@ namespace {
 #endif
 
 #if NEEDS_PROFILE_UPDATER
-void UpdateVideoProfilesInternal(const gpu::GPUInfo& info) {
-  const auto gpu_profiles = info.video_decode_accelerator_supported_profiles;
+void UpdateVideoProfilesInternal(
+    const media::SupportedVideoDecoderConfigs& supported_configs) {
   base::flat_set<media::VideoCodecProfile> media_profiles;
-  media_profiles.reserve(gpu_profiles.size());
-  for (const auto& profile : gpu_profiles) {
-    media_profiles.insert(
-        static_cast<media::VideoCodecProfile>(profile.profile));
+  for (const auto& config : supported_configs) {
+    for (int profile = config.profile_min; profile <= config.profile_max;
+         profile++) {
+      media_profiles.insert(static_cast<media::VideoCodecProfile>(profile));
+    }
   }
   media::UpdateDefaultSupportedVideoProfiles(media_profiles);
 }
@@ -50,12 +51,37 @@ void RenderMediaClient::Initialize() {
   media::SetMediaClient(client);
 }
 
-RenderMediaClient::RenderMediaClient() {
+RenderMediaClient::RenderMediaClient()
+    : main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
 #if NEEDS_PROFILE_UPDATER
-  // Unretained is safe here since the MediaClient is never destructed.
-  RenderThreadImpl::current()->EstablishGpuChannel(base::BindOnce(
-      &RenderMediaClient::OnEstablishedGpuChannel, base::Unretained(this)));
+  // We'll first try to query the supported video decoder configurations
+  // asynchronously. If IsSupportedVideoType() is called before we get a
+  // response, that method will fall back to querying the video decoder
+  // configurations synchronously.
+  //
+  // The base::Unretained()s here are safe here since the MediaClient is never
+  // destructed.
+  RenderThreadImpl::current()->BindHostReceiver(
+      interface_factory_for_supported_profiles_.BindNewPipeAndPassReceiver());
+  interface_factory_for_supported_profiles_.set_disconnect_handler(
+      base::BindOnce(&RenderMediaClient::OnGetSupportedVideoDecoderConfigs,
+                     base::Unretained(this),
+                     media::SupportedVideoDecoderConfigs(),
+                     media::VideoDecoderType::kUnknown));
 
+  interface_factory_for_supported_profiles_->CreateVideoDecoder(
+      video_decoder_for_supported_profiles_.BindNewPipeAndPassReceiver(),
+      /*dst_video_decoder=*/{});
+  video_decoder_for_supported_profiles_.set_disconnect_handler(
+      base::BindOnce(&RenderMediaClient::OnGetSupportedVideoDecoderConfigs,
+                     base::Unretained(this),
+                     media::SupportedVideoDecoderConfigs(),
+                     media::VideoDecoderType::kUnknown),
+      main_task_runner_);
+
+  video_decoder_for_supported_profiles_->GetSupportedConfigs(
+      base::BindOnce(&RenderMediaClient::OnGetSupportedVideoDecoderConfigs,
+                     base::Unretained(this)));
 #endif
 }
 
@@ -72,16 +98,20 @@ bool RenderMediaClient::IsSupportedAudioType(const media::AudioType& type) {
 
 bool RenderMediaClient::IsSupportedVideoType(const media::VideoType& type) {
 #if NEEDS_PROFILE_UPDATER
-  if (!did_update_.IsSignaled()) {
-    // The asynchronous request didn't complete in time, so we must now block
-    // until until the information from the GPU channel is available.
-    if (auto* render_thread = content::RenderThreadImpl::current()) {
-      if (auto gpu_host = render_thread->EstablishGpuChannelSync())
-        UpdateVideoProfilesInternal(gpu_host->gpu_info());
-      did_update_.Signal();
-    } else {
-      // There's already an asynchronous request on the main thread, so wait...
-      did_update_.Wait();
+  {
+    base::AutoLock lock(supported_video_decoder_profiles_lock_);
+    if (!supported_video_decoder_profiles_are_known_) {
+      // We didn't get the response for the asynchronous query in time. Let's
+      // fall back to a synchronous query.
+      media::SupportedVideoDecoderConfigs configs;
+      media::VideoDecoderType video_decoder_type;
+      if (!video_decoder_for_supported_profiles_->GetSupportedConfigs(
+              &configs, &video_decoder_type)) {
+        configs.clear();
+      }
+      UpdateVideoProfilesInternal(configs);
+      supported_video_decoder_profiles_are_known_ = true;
+      ResetConnectionForSupportedProfilesQuery();
     }
   }
 #endif
@@ -101,14 +131,33 @@ RenderMediaClient::GetAudioRendererAlgorithmParameters(
       audio_parameters);
 }
 
-void RenderMediaClient::OnEstablishedGpuChannel(
-    scoped_refptr<gpu::GpuChannelHost> host) {
+void RenderMediaClient::OnGetSupportedVideoDecoderConfigs(
+    const media::SupportedVideoDecoderConfigs& configs,
+    media::VideoDecoderType type) {
 #if NEEDS_PROFILE_UPDATER
-  if (host && !did_update_.IsSignaled())
-    UpdateVideoProfilesInternal(host->gpu_info());
+  base::AutoLock lock(supported_video_decoder_profiles_lock_);
+  if (!supported_video_decoder_profiles_are_known_) {
+    UpdateVideoProfilesInternal(configs);
+    supported_video_decoder_profiles_are_known_ = true;
+  }
+  ResetConnectionForSupportedProfilesQuery();
+#endif
+}
 
-  // Signal even if host is nullptr, since that's the same has having no GPU.
-  did_update_.Signal();
+void RenderMediaClient::ResetConnectionForSupportedProfilesQuery() {
+#if NEEDS_PROFILE_UPDATER
+  if (!main_task_runner_->RunsTasksInCurrentSequence()) {
+    // The base::Unretained() here is safe because the MediaClient is never
+    // destructed.
+    main_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &RenderMediaClient::ResetConnectionForSupportedProfilesQuery,
+            base::Unretained(this)));
+    return;
+  }
+  interface_factory_for_supported_profiles_.reset();
+  video_decoder_for_supported_profiles_.reset();
 #endif
 }
 

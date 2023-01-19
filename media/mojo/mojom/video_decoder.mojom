@@ -66,6 +66,7 @@ interface VideoDecoder {
   // that does not match an entry in this list.
   //
   // May be called before Construct().
+  [Sync]
   GetSupportedConfigs() =>
       (array<SupportedVideoDecoderConfig> supported_configs,
        VideoDecoderType decoder_type);
