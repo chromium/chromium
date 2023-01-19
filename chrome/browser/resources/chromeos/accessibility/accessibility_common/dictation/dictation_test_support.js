@@ -30,66 +30,100 @@ class DictationTestSupport {
     this.notifyCcTests_();
   }
 
-  /**
-   * TODO(b:264535324): Remove polling from this method.
-   * Waits for the FocusHandler to initialize.
-   */
+  /** Waits for the FocusHandler to initialize. */
   async waitForFocusHandler() {
+    const focusHandler = this.dictation_.focusHandler_;
+    const isReady = () => {
+      return focusHandler.isReadyForTesting();
+    };
+
+    if (isReady()) {
+      this.notifyCcTests_();
+      return;
+    }
+
     await new Promise(resolve => {
-      const printErrorMessageTimeoutId = setTimeout(() => {
-        console.error('Still waiting for FocusHandler');
-      }, 3.5 * 1000);
-      const intervalId = setInterval(() => {
-        if (this.dictation_.focusHandler_.isReadyForTesting()) {
-          clearTimeout(printErrorMessageTimeoutId);
-          clearInterval(intervalId);
+      // Wait for focusHandler to be active and have a valid editable node by
+      // attaching the necessary event listeners.
+      const onPropertyChanged = () => {
+        if (isReady()) {
+          focusHandler.onActiveChangedForTesting_ = null;
+          focusHandler.onEditableNodeChangedForTesting_ = null;
           resolve();
         }
-      }, 500);
+      };
+
+      focusHandler.onActiveChangedForTesting_ = onPropertyChanged;
+      focusHandler.onEditableNodeChangedForTesting_ = onPropertyChanged;
     });
 
     this.notifyCcTests_();
   }
 
-  /**
-   * TODO(b:264535324): Remove polling from this method.
-   * Waits for the SandboxedPumpkinTagger to initialize.
-   */
+  /** Waits for the SandboxedPumpkinTagger to initialize. */
   async WaitForPumpkinTaggerReady() {
+    const strategy = this.dictation_.speechParser_.pumpkinParseStrategy_;
+    const isReady = () => {
+      return strategy.pumpkinTaggerReady_;
+    };
+
+    if (isReady()) {
+      this.notifyCcTests_();
+      return;
+    }
+
     await new Promise(resolve => {
-      const printErrorMessageTimeoutId = setTimeout(() => {
-        console.error('Still waiting for SandboxedPumpkinTagger');
-      }, 3.5 * 1000);
-      const intervalId = setInterval(() => {
-        if (this.dictation_.speechParser_.pumpkinParseStrategy_
-                .pumpkinTaggerReady_) {
-          clearTimeout(printErrorMessageTimeoutId);
-          clearInterval(intervalId);
+      // Wait for SandboxedPumpkinTagger to initialize by attaching the
+      // necessary event listener.
+      const onPropertyChanged = () => {
+        if (isReady()) {
+          strategy.onPumpkinTaggerReadyChangedForTesting_ = null;
           resolve();
         }
-      }, 500);
+      };
+      strategy.onPumpkinTaggerReadyChangedForTesting_ = onPropertyChanged;
     });
 
     this.notifyCcTests_();
   }
 
-  /**
-   * TODO(b:264535324): Remove polling from this method.
-   * @param {string} value
-   */
+  /** @param {string} value */
   async waitForEditableValue(value) {
+    const inputController = this.dictation_.inputController_;
+    const goalTest = () => {
+      const data = inputController.getEditableNodeData();
+      return data && data.value === value;
+    };
+
+    if (goalTest()) {
+      this.notifyCcTests_();
+      return;
+    }
+
     await new Promise(resolve => {
-      const printErrorMessageTimeoutId = setTimeout(() => {
-        console.error('Still waiting for editable value: ' + value);
-      }, 3.5 * 1000);
-      const intervalId = setInterval(() => {
-        const data = this.dictation_.inputController_.getEditableNodeData();
-        if (data && data.value === value) {
-          clearTimeout(printErrorMessageTimeoutId);
-          clearInterval(intervalId);
+      // Wait for the editable value by attaching the necessary event listeners.
+      const editableNode = inputController.getEditableNodeData().node;
+      const onEditableValueChanged = () => {
+        if (goalTest()) {
+          inputController.onSurroundingTextChangedForTesting_ = null;
+          editableNode.removeEventListener(
+              chrome.automation.EventType.VALUE_IN_TEXT_FIELD_CHANGED,
+              onEditableValueChanged);
           resolve();
         }
-      }, 500);
+      };
+
+      // Attach two event listeners: one for the VALUE_IN_TEXT_FIELD_CHANGED
+      // accessibility event, and one for the onSurroundingTextChanged IME
+      // event. The VALUE_IN_TEXT_FIELD_CHANGED event gets fired when the value
+      // of a <textarea> or <input> is changed; however, it doesn't get fired
+      // when the value of a content editable is changed. To support content
+      // editables, we use the onSurroundingTextChanged IME events.
+      inputController.onSurroundingTextChangedForTesting_ =
+          onEditableValueChanged;
+      editableNode.addEventListener(
+          chrome.automation.EventType.VALUE_IN_TEXT_FIELD_CHANGED,
+          onEditableValueChanged);
     });
 
     this.notifyCcTests_();

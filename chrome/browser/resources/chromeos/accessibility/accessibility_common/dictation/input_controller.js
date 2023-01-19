@@ -58,11 +58,17 @@ export class InputController {
     /** @private {?function(number):void} */
     this.onBlurListener_ = null;
 
-    /** @private {?function(string, !SurroundingInfo):void} */
+    /**
+     * A listener for chrome.input.ime.onSurroundingTextChanged events.
+     * @private {?function(string, !SurroundingInfo):void}
+     */
     this.onSurroundingTextChangedListener_ = null;
 
     /** @private {?SurroundingInfo} */
     this.surroundingInfo_ = null;
+
+    /** @private {?function(): void} */
+    this.onSurroundingTextChangedForTesting_ = null;
 
     this.initialize_();
   }
@@ -208,6 +214,9 @@ export class InputController {
     }
 
     this.surroundingInfo_ = surroundingInfo;
+    if (this.onSurroundingTextChangedForTesting_) {
+      this.onSurroundingTextChangedForTesting_();
+    }
   }
 
   /**
