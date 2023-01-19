@@ -4445,8 +4445,16 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20230118",
                     "enable_features": [
+                        "EcheLauncher",
+                        "EcheSWA"
+                    ]
+                },
+                {
+                    "name": "Enabled_Dogfood",
+                    "enable_features": [
+                        "EcheLauncher",
                         "EcheSWA"
                     ]
                 }
