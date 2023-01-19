@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/test/test_help_bubble.h"
 #include "components/user_education/webui/help_bubble_webui.h"
 #include "components/user_education/webui/tracked_element_webui.h"
 #include "components/vector_icons/vector_icons.h"
@@ -51,6 +52,10 @@ class MockHelpBubbleClient : public help_bubble::mojom::HelpBubbleClient {
   MOCK_METHOD(void,
               HideHelpBubble,
               (const std::string& native_identifier),
+              (override));
+  MOCK_METHOD(void,
+              ExternalHelpBubbleUpdated,
+              (const std::string& native_identifier, bool shown),
               (override));
 };
 
@@ -380,6 +385,42 @@ TEST_F(HelpBubbleHandlerTest, FocusHelpBubble) {
   EXPECT_CALL(
       test_handler_->mock(),
       HideHelpBubble(kHelpBubbleHandlerTestElementIdentifier.GetName()));
+  EXPECT_TRUE(help_bubble->Close());
+}
+
+TEST_F(HelpBubbleHandlerTest, ExternalHelpBubbleUpdated) {
+  // Generate and retrieve a tracked element.
+  handler()->HelpBubbleAnchorVisibilityChanged(
+      kHelpBubbleHandlerTestElementIdentifier.GetName(), true, kElementBounds);
+  auto* const element =
+      ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+          kHelpBubbleHandlerTestElementIdentifier, test_handler_->context());
+
+  // Create a dummy external help bubble.
+  HelpBubbleParams params;
+  params.body_text = u"Help bubble body.";
+  params.close_button_alt_text = u"Close button alt text.";
+  HelpBubbleButtonParams button_params;
+  button_params.is_default = true;
+  button_params.text = u"Button";
+  params.buttons.emplace_back(std::move(button_params));
+
+  std::unique_ptr<HelpBubble> help_bubble =
+      std::make_unique<test::TestHelpBubble>(element->context(),
+                                             std::move(params));
+
+  // Call the floating help bubble created method and ensure that the correct
+  // message is sent over to the client.
+  EXPECT_CALL(test_handler_->mock(),
+              ExternalHelpBubbleUpdated(element->identifier().GetName(), true));
+  test_handler_->OnFloatingHelpBubbleCreated(element->identifier(),
+                                             help_bubble.get());
+
+  // Close the bubble and verify that the correct message is sent, this that
+  // there is no longer a bubble.
+  EXPECT_CALL(
+      test_handler_->mock(),
+      ExternalHelpBubbleUpdated(element->identifier().GetName(), false));
   EXPECT_TRUE(help_bubble->Close());
 }
 

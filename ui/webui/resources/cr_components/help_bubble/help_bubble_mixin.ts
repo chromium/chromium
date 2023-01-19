@@ -23,7 +23,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {InsetsF, RectF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {HELP_BUBBLE_DISMISSED_EVENT, HELP_BUBBLE_TIMED_OUT_EVENT, HelpBubbleDismissedEvent, HelpBubbleElement} from './help_bubble.js';
+import {ANCHOR_HIGHLIGHT_CLASS, HELP_BUBBLE_DISMISSED_EVENT, HELP_BUBBLE_TIMED_OUT_EVENT, HelpBubbleDismissedEvent, HelpBubbleElement} from './help_bubble.js';
 import {HelpBubbleClientCallbackRouter, HelpBubbleClosedReason, HelpBubbleHandlerInterface, HelpBubbleParams} from './help_bubble.mojom-webui.js';
 import {HelpBubbleController, Trackable} from './help_bubble_controller.js';
 import {HelpBubbleProxyImpl} from './help_bubble_proxy.js';
@@ -70,7 +70,9 @@ export const HelpBubbleMixin = dedupingMixin(
               router.toggleFocusForAccessibility.addListener(
                   this.onToggleHelpBubbleFocusForAccessibility_.bind(this)),
               router.hideHelpBubble.addListener(
-                  this.onHideHelpBubble_.bind(this)));
+                  this.onHideHelpBubble_.bind(this)),
+              router.externalHelpBubbleUpdated.addListener(
+                  this.onExternalHelpBubbleUpdated_.bind(this)));
 
           this.helpBubbleAnchorObserver_ = new IntersectionObserver(
               entries => entries.forEach(
@@ -397,6 +399,27 @@ export const HelpBubbleMixin = dedupingMixin(
           // This may be called with nativeId not handled by this mixin
           // Ignore return value to silently fail
           this.hideHelpBubble(nativeId);
+        }
+
+        /**
+         * This event is emitted by the mojo router.
+         */
+        private onExternalHelpBubbleUpdated_(nativeId: string, shown: boolean) {
+          if (!this.helpBubbleControllerById_.has(nativeId)) {
+            // Identifier not handled by this mixin.
+            return;
+          }
+
+          // Get the associated bubble anchor and verify that it is present.
+          const bubble = this.helpBubbleControllerById_.get(nativeId)!;
+          const anchor = bubble.getAnchor();
+          if (!anchor) {
+            return;
+          }
+
+          // Toggle the highlight class on or off as appropriate. Currently, no
+          // other action is needed.
+          anchor.classList.toggle(ANCHOR_HIGHLIGHT_CLASS, shown);
         }
 
         /**

@@ -68,6 +68,10 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
             .SetDescription("ShowHelpBubble"));
   }
 
+  auto CloseHelpBubble() {
+    return Do(base::BindLambdaForTesting([this]() { help_bubble_->Close(); }));
+  }
+
  protected:
   std::unique_ptr<user_education::HelpBubble> help_bubble_;
 
@@ -93,6 +97,9 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
                        ShowFloatingHelpBubble) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReadLaterElementId);
+  const DeepQuery kPathToAddCurrentTabElement{"reading-list-app",
+                                              "#currentPageActionButton"};
   RunTestSequence(
       // Click on the toolbar button to show the side panel.
       PressButton(kSidePanelButtonElementId), WaitForShow(kSidePanelElementId),
@@ -100,6 +107,13 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
       SelectDropdownItem(kSidePanelComboboxElementId,
                          static_cast<int>(SidePanelEntry::Id::kReadingList)),
       ShowHelpBubble(kAddCurrentTabToReadingListElementId),
+
+      // Verify that the anchor element is marked.
+      InstrumentNonTabWebView(kReadLaterElementId,
+                              kReadLaterSidePanelWebViewElementId),
+      CheckJsResultAt(kReadLaterElementId, kPathToAddCurrentTabElement,
+                      "el => el.classList.contains('help-anchor-highlight')",
+                      true),
 
       // Expect the help bubble to display with the correct parameters.
       CheckView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
@@ -122,7 +136,13 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
                               ->GetBoundsInScreen();
                       return bubble_rect.Intersects(side_panel_rect);
                     },
-                    browser()->window()->GetElementContext())));
+                    browser()->window()->GetElementContext())),
+
+      // Verify that the anchor element is no longer marked.
+      CloseHelpBubble(),
+      CheckJsResultAt(kReadLaterElementId, kPathToAddCurrentTabElement,
+                      "el => el.classList.contains('help-anchor-highlight')",
+                      false));
 }
 
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,

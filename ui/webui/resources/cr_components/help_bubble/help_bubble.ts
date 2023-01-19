@@ -26,9 +26,9 @@ import {InsetsF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mo
 import {getTemplate} from './help_bubble.html.js';
 import {HelpBubbleArrowPosition, HelpBubbleButtonParams, Progress} from './help_bubble.mojom-webui.js';
 
-const ANCHOR_HIGHLIGHT_CLASS = 'help-anchor-highlight';
-
 const ACTION_BUTTON_ID_PREFIX = 'action-button-';
+
+export const ANCHOR_HIGHLIGHT_CLASS = 'help-anchor-highlight';
 
 export const HELP_BUBBLE_DISMISSED_EVENT = 'help-bubble-dismissed';
 export const HELP_BUBBLE_TIMED_OUT_EVENT = 'help-bubble-timed-out';

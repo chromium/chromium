@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
@@ -106,6 +107,7 @@ struct HelpBubbleHandlerBase::ElementData {
   std::unique_ptr<TrackedElementWebUI> element;
   std::unique_ptr<HelpBubbleParams> params;
   base::raw_ptr<HelpBubbleWebUI> help_bubble = nullptr;
+  base::CallbackListSubscription external_bubble_subscription;
 
   // This is set to true if we are closing the help bubble as the result of a
   // message from the WebUI, rather than a browser-side event. It is used as a
@@ -392,6 +394,31 @@ gfx::Rect HelpBubbleHandlerBase::GetHelpBubbleBoundsInScreen(
     ui::ElementIdentifier anchor_id) const {
   // TODO(dfried): implement.
   return gfx::Rect();
+}
+
+void HelpBubbleHandlerBase::OnFloatingHelpBubbleCreated(
+    ui::ElementIdentifier anchor_id,
+    HelpBubble* help_bubble) {
+  GetClient()->ExternalHelpBubbleUpdated(anchor_id.GetName(), true);
+  const auto it = element_data_.find(anchor_id);
+  if (it == element_data_.end()) {
+    return;
+  }
+  DCHECK(!it->second.external_bubble_subscription);
+  it->second.external_bubble_subscription = help_bubble->AddOnCloseCallback(
+      base::BindOnce(&HelpBubbleHandlerBase::OnFloatingHelpBubbleClosed,
+                     weak_ptr_factory_.GetWeakPtr(), anchor_id));
+}
+
+void HelpBubbleHandlerBase::OnFloatingHelpBubbleClosed(
+    ui::ElementIdentifier anchor_id,
+    HelpBubble* help_bubble) {
+  const auto it = element_data_.find(anchor_id);
+  if (it == element_data_.end()) {
+    return;
+  }
+  it->second.external_bubble_subscription = base::CallbackListSubscription();
+  GetClient()->ExternalHelpBubbleUpdated(anchor_id.GetName(), false);
 }
 
 HelpBubbleHandlerBase::ElementData* HelpBubbleHandlerBase::GetDataByName(

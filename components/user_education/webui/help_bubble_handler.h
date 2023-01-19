@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
@@ -29,6 +30,7 @@ class WebContents;
 
 namespace user_education {
 
+class HelpBubble;
 class HelpBubbleWebUI;
 
 // Base class abstracting away IPC so that handler functionality can be tested
@@ -83,8 +85,10 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
   virtual void ReportBadMessage(base::StringPiece error);
 
  private:
+  friend class FloatingWebUIHelpBubbleFactory;
   friend class HelpBubbleFactoryWebUI;
   friend class HelpBubbleWebUI;
+  FRIEND_TEST_ALL_PREFIXES(HelpBubbleHandlerTest, ExternalHelpBubbleUpdated);
 
   struct ElementData;
 
@@ -94,6 +98,10 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
   void OnHelpBubbleClosing(ui::ElementIdentifier anchor_id);
   bool ToggleHelpBubbleFocusForAccessibility(ui::ElementIdentifier anchor_id);
   gfx::Rect GetHelpBubbleBoundsInScreen(ui::ElementIdentifier anchor_id) const;
+  void OnFloatingHelpBubbleCreated(ui::ElementIdentifier anchor_id,
+                                   HelpBubble* help_bubble);
+  void OnFloatingHelpBubbleClosed(ui::ElementIdentifier anchor_id,
+                                  HelpBubble* help_bubble);
 
   // mojom::HelpBubbleHandler:
   void HelpBubbleAnchorVisibilityChanged(const std::string& identifier_name,

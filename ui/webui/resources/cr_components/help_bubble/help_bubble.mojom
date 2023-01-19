@@ -155,4 +155,9 @@ interface HelpBubbleClient {
   // Invoked to hide the help bubble anchored to `native_identifier` if it
   // should no longer be shown.
   HideHelpBubble(string native_identifier);
+
+  // Notifies the client that an external help bubble (i.e. one owned/displayed
+  // by the handler) anchored to `native_identifier` has been shown or hidden.
+  // The client may change the visual appearance of the anchor as a result.
+  ExternalHelpBubbleUpdated(string native_identifier, bool shown);
 };

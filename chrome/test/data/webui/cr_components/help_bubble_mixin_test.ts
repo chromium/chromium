@@ -6,7 +6,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 
 import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import {HelpBubbleElement} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
+import {ANCHOR_HIGHLIGHT_CLASS, HelpBubbleElement} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 import {HelpBubbleArrowPosition, HelpBubbleClientCallbackRouter, HelpBubbleClientRemote, HelpBubbleClosedReason, HelpBubbleHandlerInterface, HelpBubbleParams} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import {HelpBubbleController} from 'chrome://resources/cr_components/help_bubble/help_bubble_controller.js';
 import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
@@ -415,6 +415,21 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
             defaultParams.nativeIdentifier);
         await waitAfterNextRender(container);
         assertFalse(container.isHelpBubbleShowing());
+      });
+
+  test(
+      'help bubble adds class to element on external help bubble shown',
+      async () => {
+        testProxy.getCallbackRouterRemote().externalHelpBubbleUpdated(
+            TITLE_NATIVE_ID, true);
+        await waitAfterNextRender(container);
+        assertTrue(
+            container.$.title.classList.contains(ANCHOR_HIGHLIGHT_CLASS));
+        testProxy.getCallbackRouterRemote().externalHelpBubbleUpdated(
+            TITLE_NATIVE_ID, false);
+        await waitAfterNextRender(container);
+        assertFalse(
+            container.$.title.classList.contains(ANCHOR_HIGHLIGHT_CLASS));
       });
 
   test(
