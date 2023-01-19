@@ -64,6 +64,7 @@
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
+#include "chrome/browser/ash/app_list/app_service/app_service_app_icon_loader.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_icon.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
@@ -281,6 +282,59 @@ class TestAppIconLoaderImpl : public AppIconLoader {
   int fetch_count_ = 0;
   int clear_count_ = 0;
   std::set<std::string> supported_apps_;
+};
+
+// Fake AppServiceAppIconLoader to wait for icons loaded.
+class FakeAppServiceAppIconLoader : public AppServiceAppIconLoader {
+ public:
+  FakeAppServiceAppIconLoader(Profile* profile,
+                              int resource_size_in_dip,
+                              AppIconLoaderDelegate* delegate)
+      : AppServiceAppIconLoader(profile, resource_size_in_dip, delegate) {}
+
+  void WaitForIconLoadded(
+      const std::vector<std::string>& expected_icon_loaded_app_ids) {
+    bool icon_loaded = true;
+    for (const auto& app_id : expected_icon_loaded_app_ids) {
+      if (!base::Contains(icon_loaded_app_ids_, app_id)) {
+        icon_loaded = false;
+        break;
+      }
+    }
+
+    if (icon_loaded) {
+      return;
+    }
+
+    expected_icon_loaded_app_ids_ = expected_icon_loaded_app_ids;
+    base::RunLoop run_loop;
+    icon_loaded_callback_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+ private:
+  // Callback invoked when the icon is loaded.
+  void OnLoadIcon(const std::string& app_id,
+                  apps::IconValuePtr icon_value) override {
+    AppServiceAppIconLoader::OnLoadIcon(app_id, std::move(icon_value));
+    icon_loaded_app_ids_.insert(app_id);
+
+    bool icon_loaded = true;
+    for (const auto& id : expected_icon_loaded_app_ids_) {
+      if (!base::Contains(icon_loaded_app_ids_, id)) {
+        icon_loaded = false;
+        break;
+      }
+    }
+
+    if (icon_loaded && !icon_loaded_callback_.is_null()) {
+      std::move(icon_loaded_callback_).Run();
+    }
+  }
+
+  base::OnceClosure icon_loaded_callback_;
+  std::set<std::string> icon_loaded_app_ids_;
+  std::vector<std::string> expected_icon_loaded_app_ids_;
 };
 
 // Test implementation of ShelfControllerHelper.
@@ -1200,34 +1254,11 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
                                                       : absl::optional<GURL>());
   }
 
-  void WaitForOnAppUpdated(const std::map<std::string, int>& app_ids) {
-    on_app_updated_app_ids_ = app_ids;
-    base::RunLoop run_loop;
-    on_app_updated_callback_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
-
   void RemoveWebApp(const char* web_app_id) {
     web_app::test::UninstallWebApp(profile(), web_app_id);
     web_app::AppReadinessWaiter(profile(), web_app_id,
                                 apps::Readiness::kUninstalledByUser)
         .Await();
-  }
-
-  // apps::AppRegistryCache::Observer overrides:
-  void OnAppUpdate(const apps::AppUpdate& update) override {
-    if (!on_app_updated_callback_.is_null() &&
-        apps_util::IsInstalled(update.Readiness())) {
-      if (base::Contains(on_app_updated_app_ids_, update.AppId())) {
-        on_app_updated_app_ids_[update.AppId()]--;
-        if (on_app_updated_app_ids_[update.AppId()] == 0)
-          on_app_updated_app_ids_.erase(update.AppId());
-      }
-      if (on_app_updated_app_ids_.empty()) {
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, std::move(on_app_updated_callback_));
-      }
-    }
   }
 
   void OnAppRegistryCacheWillBeDestroyed(
@@ -1277,8 +1308,6 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   }
 
   apps::AppServiceTest app_service_test_;
-  base::OnceClosure on_app_updated_callback_;
-  std::map<std::string, int> on_app_updated_app_ids_;
 };
 
 class ChromeShelfControllerWithArcTest : public ChromeShelfControllerTestBase {
@@ -2005,6 +2034,14 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
   StartAppSyncService(copy_sync_list);
   RecreateShelfController()->Init();
 
+  // Set FakeAppServiceAppIconLoader to wait for icons loaded.
+  auto fake_app_service_icon_loader =
+      std::make_unique<FakeAppServiceAppIconLoader>(
+          profile(), extension_misc::EXTENSION_ICON_MEDIUM,
+          shelf_controller_.get());
+  FakeAppServiceAppIconLoader* icon_loader = fake_app_service_icon_loader.get();
+  SetAppIconLoader(std::move(fake_app_service_icon_loader));
+
   // Pins must be automatically updated.
   SendListOfArcApps();
   EXPECT_TRUE(shelf_controller_->IsAppPinned(extension1_->id()));
@@ -2026,9 +2063,9 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
             GetPinnedAppStatus());
 
   // ARC apps, Fake App 1 and Fake App 0, are updated due to icon updates. So
-  // wait for ARC apps icon updated in AppService before reset sync service.
-  WaitForOnAppUpdated(
-      std::map<std::string, int>{{arc_app_id1, 2}, {arc_app_id2, 2}});
+  // wait for ARC apps icon updated by AppService before reset sync service.
+  icon_loader->WaitForIconLoadded(
+      std::vector<std::string>{arc_app_id1, arc_app_id2});
   copy_sync_list = app_list_syncable_service_->GetAllSyncDataForTesting();
 
   ResetShelfController();

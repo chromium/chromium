@@ -44,7 +44,7 @@ class AppServiceAppIconLoader : public AppIconLoader,
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
- private:
+ protected:
   using AppIDToIconMap = std::map<std::string, gfx::ImageSkia>;
   using AppIDToShelfAppId = std::map<std::string, std::set<std::string>>;
 
@@ -52,11 +52,13 @@ class AppServiceAppIconLoader : public AppIconLoader,
   void CallLoadIcon(const std::string& app_id, bool allow_placeholder_icon);
 
   // Callback invoked when the icon is loaded.
-  void OnLoadIcon(const std::string& app_id, apps::IconValuePtr icon_value);
+  virtual void OnLoadIcon(const std::string& app_id,
+                          apps::IconValuePtr icon_value);
 
   // Returns true if the app_id does exist in icon_map_.
   bool Exist(const std::string& app_id);
 
+ private:
   // Maps from an app id to shelf app ids.
   AppIDToShelfAppId shelf_app_id_map_;
 
