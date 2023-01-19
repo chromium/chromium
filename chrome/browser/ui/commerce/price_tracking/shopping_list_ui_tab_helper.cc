@@ -182,6 +182,10 @@ void ShoppingListUiTabHelper::UpdatePriceTrackingStateFromSubscriptions() {
       cluster_id_for_page_.value(),
       base::BindOnce(
           [](base::WeakPtr<ShoppingListUiTabHelper> helper, bool is_tracked) {
+            if (!helper) {
+              return;
+            }
+
             helper->is_cluster_id_tracked_by_user_ = is_tracked;
             helper->UpdatePriceTrackingIconView();
           },
