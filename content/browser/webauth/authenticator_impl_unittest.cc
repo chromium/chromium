@@ -486,8 +486,17 @@ std::vector<uint8_t> UncompressLargeBlob(device::LargeBlob blob) {
   gzipper.Inflate(blob.compressed_data, blob.original_size,
                   base::BindLambdaForTesting(
                       [&](absl::optional<mojo_base::BigBuffer> result) {
-                        uncompressed =
-                            device::fido_parsing_utils::Materialize(*result);
+                        if (result) {
+                          uncompressed =
+                              device::fido_parsing_utils::Materialize(*result);
+                        } else {
+                          // Magic value to indicate failure.
+                          const char kErrorMsg[] = "decompress error";
+                          uncompressed.assign(
+                              reinterpret_cast<const uint8_t*>(kErrorMsg),
+                              reinterpret_cast<const uint8_t*>(
+                                  std::end(kErrorMsg)));
+                        }
                         run_loop.Quit();
                       }));
   run_loop.Run();
