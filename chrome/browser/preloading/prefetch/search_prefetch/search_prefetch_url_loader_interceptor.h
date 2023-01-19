@@ -42,9 +42,6 @@ class SearchPrefetchURLLoaderInterceptor
       content::URLLoaderRequestInterceptor::LoaderCallback callback) override;
 
  private:
-  bool MaybeInterceptNavigation(
-      const network::ResourceRequest& tentative_resource_request);
-
   // Used to get the current WebContents/Profile.
   const int frame_tree_node_id_;
 
