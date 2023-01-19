@@ -320,7 +320,7 @@ struct Config {
   // The `kHistoryClustersVisitDeduping` feature and child params.
 
   // Use host instead of heavily-stripped URL as URL for deduping.
-  bool use_host_for_visit_deduping = false;
+  bool use_host_for_visit_deduping = true;
 
   // The `kOnDeviceClusteringVisitRanking` feature and child params.
 

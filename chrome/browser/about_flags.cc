@@ -1293,13 +1293,6 @@ const FeatureEntry::FeatureVariation kJourneysLabelsVariations[] = {
      kJourneysLabelsWithEntitiesNoHostnamesParams,
      std::size(kJourneysLabelsWithEntitiesNoHostnamesParams), nullptr},
 };
-const FeatureEntry::FeatureParam kJourneysVisitDedupingUseHostParams[] = {
-    {"use_host_for_visit_deduping", "true"},
-};
-const FeatureEntry::FeatureVariation kJourneysVisitDedupingVariations[] = {
-    {"Use host", kJourneysVisitDedupingUseHostParams,
-     std::size(kJourneysVisitDedupingUseHostParams), nullptr},
-};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kLocalWebApprovalsPreferLocalParams[] = {
@@ -5501,15 +5494,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      SINGLE_VALUE_TYPE(history_clusters::switches::
                            kShouldShowAllClustersOnProminentUiSurfaces)},
-
-    {"history-journeys-visit-deduping",
-     flag_descriptions::kJourneysVisitDedupingName,
-     flag_descriptions::kJourneysVisitDedupingDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         history_clusters::internal::kHistoryClustersVisitDeduping,
-         kJourneysVisitDedupingVariations,
-         "HistoryJourneysVisitDeduping")},
 
     {"history-journeys-include-synced-visits",
      flag_descriptions::kJourneysIncludeSyncedVisitsName,

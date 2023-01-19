@@ -170,6 +170,7 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
     config_.max_entity_aliases_in_keywords = 100;
     config_.entity_relevance_threshold = 60;
     config_.should_check_hosts_to_skip_clustering_for = true;
+    config_.use_host_for_visit_deduping = false;
     SetConfigForTesting(config_);
   }
 

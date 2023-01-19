@@ -6,6 +6,7 @@
 
 #include "base/test/task_environment.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
+#include "components/history_clusters/core/config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,7 +17,12 @@ using ::testing::ElementsAre;
 
 class ClustererTest : public ::testing::Test {
  public:
-  void SetUp() override { clusterer_ = std::make_unique<Clusterer>(); }
+  void SetUp() override {
+    config_.use_host_for_visit_deduping = false;
+    SetConfigForTesting(config_);
+
+    clusterer_ = std::make_unique<Clusterer>();
+  }
 
   void TearDown() override { clusterer_.reset(); }
 
@@ -26,6 +32,7 @@ class ClustererTest : public ::testing::Test {
   }
 
  private:
+  Config config_;
   std::unique_ptr<Clusterer> clusterer_;
   base::test::TaskEnvironment task_environment_;
 };

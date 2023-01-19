@@ -4133,11 +4133,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "history-journeys-visit-deduping",
-    "owners": [ "sophiechang", "chrome-journeys@google.com", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "hotspot",
     "owners": [ "jiajunz@google.com", "cros-connectivity@google.com" ],
     "expiry_milestone": 120
