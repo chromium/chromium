@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_metadata_store.h"
@@ -470,10 +471,11 @@ void WifiConfigurationBridge::OnNetworkUpdate(
     return;
   }
 
-  if (!set_properties->FindKey(shill::kAutoConnectProperty) &&
-      !set_properties->FindKey(shill::kPriorityProperty) &&
-      !set_properties->FindKey(shill::kProxyConfigProperty) &&
-      !set_properties->FindKey(shill::kMeteredProperty) &&
+  const base::Value::Dict& set_properties_dict = set_properties->GetDict();
+  if (!set_properties_dict.contains(shill::kAutoConnectProperty) &&
+      !set_properties_dict.contains(shill::kPriorityProperty) &&
+      !set_properties_dict.contains(shill::kProxyConfigProperty) &&
+      !set_properties_dict.contains(shill::kMeteredProperty) &&
       !set_properties->FindPath(
           base::StringPrintf("%s.%s", shill::kStaticIPConfigProperty,
                              shill::kNameServersProperty))) {
