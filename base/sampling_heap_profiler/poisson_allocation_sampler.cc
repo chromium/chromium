@@ -19,6 +19,7 @@
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 
@@ -32,12 +33,6 @@ const intptr_t kAccumulatedBytesOffset = 1 << 29;
 
 // Controls if sample intervals should not be randomized. Used for testing.
 bool g_deterministic = false;
-
-// Controls if hooked samples should be ignored. Used for testing.
-std::atomic_bool g_mute_hooked_samples{false};
-
-// A positive value if profiling is running, otherwise it's zero.
-std::atomic_bool g_running{false};
 
 // Pointer to the current |LockFreeAddressHashSet|.
 std::atomic<LockFreeAddressHashSet*> g_sampled_addresses_set{nullptr};
@@ -160,8 +155,7 @@ bool PoissonAllocationSampler::ScopedSuppressRandomnessForTesting::
 
 PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::
     ScopedMuteHookedSamplesForTesting() {
-  DCHECK(!g_mute_hooked_samples);
-  g_mute_hooked_samples = true;
+  SetProfilingStateFlag(ProfilingStateFlag::kHookedSamplesMutedForTesting);
 
   // Make sure hooks have been installed, so that the only order of operations
   // that needs to be handled is Install Hooks -> Remove Hooks For Testing ->
@@ -178,17 +172,21 @@ PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::
 
 PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::
     ~ScopedMuteHookedSamplesForTesting() {
-  DCHECK(g_mute_hooked_samples);
   // Restore the allocator hooks and accumulated bytes.
   ThreadLocalData* const thread_local_data = GetThreadLocalData();
   thread_local_data->accumulated_bytes = accumulated_bytes_snapshot_;
 
   allocator::dispatcher::InstallStandardAllocatorHooks();
 
-  g_mute_hooked_samples = false;
+  ResetProfilingStateFlag(ProfilingStateFlag::kHookedSamplesMutedForTesting);
 }
 
+// static
 PoissonAllocationSampler* PoissonAllocationSampler::instance_ = nullptr;
+
+// static
+ABSL_CONST_INIT std::atomic<PoissonAllocationSampler::ProfilingStateFlagMask>
+    PoissonAllocationSampler::profiling_state_{0};
 
 PoissonAllocationSampler::PoissonAllocationSampler() {
   CHECK_EQ(nullptr, instance_);
@@ -218,11 +216,6 @@ void PoissonAllocationSampler::InstallAllocatorHooksOnce() {
     DCHECK(g_sampled_addresses_set.load(std::memory_order_acquire));
     return true;
   }();
-}
-
-// static
-bool PoissonAllocationSampler::AreHookedSamplesMuted() {
-  return g_mute_hooked_samples;
 }
 
 void PoissonAllocationSampler::SetSamplingInterval(
@@ -268,6 +261,25 @@ void PoissonAllocationSampler::RecordAlloc(
     size_t size,
     base::allocator::dispatcher::AllocationSubsystem type,
     const char* context) {
+  // The allocation hooks may be installed before the sampler is started. Check
+  // if its ever been started first to avoid extra work on the fast path,
+  // because it's the most common case.
+  const ProfilingStateFlagMask state =
+      profiling_state_.load(std::memory_order_relaxed);
+  if (LIKELY(!(state & ProfilingStateFlag::kWasStarted))) {
+    return;
+  }
+
+  // When sampling is muted for testing, only handle manual calls to
+  // RecordAlloc. (This doesn't need to be checked in RecordFree because muted
+  // allocations won't be added to sampled_addresses_set(), so RecordFree
+  // already skips them.)
+  if (UNLIKELY((state & ProfilingStateFlag::kHookedSamplesMutedForTesting) &&
+               type != base::allocator::dispatcher::AllocationSubsystem::
+                           kManualForTesting)) {
+    return;
+  }
+
   ThreadLocalData* const thread_local_data = GetThreadLocalData();
 
   thread_local_data->accumulated_bytes += size;
@@ -275,10 +287,12 @@ void PoissonAllocationSampler::RecordAlloc(
   if (LIKELY(accumulated_bytes < 0))
     return;
 
-  if (UNLIKELY(!g_running.load(std::memory_order_relaxed))) {
-    // Sampling is in fact disabled. Reset the state of the sampler.
-    // We do this check off the fast-path, because it's quite a rare state when
-    // allocation hooks are installed but the sampler is not running.
+  if (UNLIKELY(!(state & ProfilingStateFlag::kIsRunning))) {
+    // Sampling was in fact disabled when the hook was called. Reset the state
+    // of the sampler. We do this check off the fast-path, because it's quite a
+    // rare state when the sampler is stopped after it's started. (The most
+    // common caller of PoissonAllocationSampler starts it and leaves it running
+    // for the rest of the Chrome session.)
     thread_local_data->sampling_interval_initialized = false;
     thread_local_data->accumulated_bytes = 0;
     return;
@@ -397,6 +411,26 @@ PoissonAllocationSampler* PoissonAllocationSampler::Get() {
   return instance.get();
 }
 
+// static
+void PoissonAllocationSampler::SetProfilingStateFlag(ProfilingStateFlag flag) {
+  ProfilingStateFlagMask flags = flag;
+  if (flag == ProfilingStateFlag::kIsRunning) {
+    flags |= ProfilingStateFlag::kWasStarted;
+  }
+  ProfilingStateFlagMask old_state =
+      profiling_state_.fetch_or(flags, std::memory_order_relaxed);
+  DCHECK(!(old_state & flag));
+}
+
+// static
+void PoissonAllocationSampler::ResetProfilingStateFlag(
+    ProfilingStateFlag flag) {
+  DCHECK_NE(flag, kWasStarted);
+  ProfilingStateFlagMask old_state =
+      profiling_state_.fetch_and(~flag, std::memory_order_relaxed);
+  DCHECK(old_state & flag);
+}
+
 void PoissonAllocationSampler::AddSamplesObserver(SamplesObserver* observer) {
   // The following implementation (including ScopedMuteThreadSamples) will use
   // `thread_local`, which may cause a reentrancy issue.  So, temporarily
@@ -406,9 +440,18 @@ void PoissonAllocationSampler::AddSamplesObserver(SamplesObserver* observer) {
   ScopedMuteThreadSamples no_reentrancy_scope;
   AutoLock lock(mutex_);
   DCHECK(ranges::find(observers_, observer) == observers_.end());
+  bool profiler_was_stopped = observers_.empty();
   observers_.push_back(observer);
   InstallAllocatorHooksOnce();
-  g_running = !observers_.empty();
+
+  // Start the profiler if this was the first observer. Setting/resetting
+  // kIsRunning isn't racy because it's performed based on `observers_.empty()`
+  // while holding `mutex_`.
+  if (profiler_was_stopped) {
+    SetProfilingStateFlag(ProfilingStateFlag::kIsRunning);
+  }
+  DCHECK(profiling_state_.load(std::memory_order_relaxed) &
+         ProfilingStateFlag::kIsRunning);
 }
 
 void PoissonAllocationSampler::RemoveSamplesObserver(
@@ -423,7 +466,15 @@ void PoissonAllocationSampler::RemoveSamplesObserver(
   auto it = ranges::find(observers_, observer);
   DCHECK(it != observers_.end());
   observers_.erase(it);
-  g_running = !observers_.empty();
+
+  // Stop the profiler if there are no more observers. Setting/resetting
+  // kIsRunning isn't racy because it's performed based on `observers_.empty()`
+  // while holding `mutex_`.
+  DCHECK(profiling_state_.load(std::memory_order_relaxed) &
+         ProfilingStateFlag::kIsRunning);
+  if (observers_.empty()) {
+    ResetProfilingStateFlag(ProfilingStateFlag::kIsRunning);
+  }
 }
 
 }  // namespace base
