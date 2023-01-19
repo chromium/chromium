@@ -70,10 +70,10 @@
       color: white;
     }
 
-    :host([updated][actionable]:hover) ::slotted([slot=previous-label]) {
+    :host([updated][actionable]:hover) ::slotted([slot=previous-badge]) {
       color: var(--google-green-200);
     }
   }
 </style>
 <slot></slot>
-<slot name="previous-label"></slot>
+<slot name="previous-badge"></slot>

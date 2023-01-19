@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="../demo.css">
 <style>
-  .chip {
+  .badge {
     align-items: center;
     background: var(--google-grey-200);
     border-radius: 100px;
@@ -12,7 +12,7 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    .chip {
+    .badge {
       background: var(--google-grey-700);
     }
   }
@@ -57,11 +57,11 @@
   <cr-url-list-item url="http://www.google.com">
     <div slot="title">Google</div>
     <div slot="description">google.com</div>
-    <div class="chip" slot="chips">
-      <iron-icon icon="cr:error-outline"></iron-icon> Chip 1
+    <div class="badge" slot="badges">
+      <iron-icon icon="cr:error-outline"></iron-icon> Badge 1
     </div>
-    <div class="chip" slot="chips">
-      <iron-icon icon="cr:insert-drive-file"></iron-icon> Chip 2
+    <div class="badge" slot="badges">
+      <iron-icon icon="cr:insert-drive-file"></iron-icon> Badge 2
     </div>
     <cr-icon-button iron-icon="cr:check-circle" slot="suffix-icon">
     </cr-icon-button>
@@ -86,11 +86,11 @@
   <cr-url-list-item url="http://www.google.com" size="compact">
     <div slot="title">Google</div>
     <div slot="description">google.com</div>
-    <div class="chip" slot="chips">
-      <iron-icon icon="cr:error-outline"></iron-icon> Chip 1
+    <div class="badge" slot="badges">
+      <iron-icon icon="cr:error-outline"></iron-icon> Badge 1
     </div>
-    <div class="chip" slot="chips">
-      <iron-icon icon="cr:insert-drive-file"></iron-icon> Chip 2
+    <div class="badge" slot="badges">
+      <iron-icon icon="cr:insert-drive-file"></iron-icon> Badge 2
     </div>
   </cr-url-list-item>
 
@@ -118,11 +118,11 @@
   <cr-url-list-item url="http://www.google.com" size="large">
     <div slot="title">Google</div>
     <div slot="description">google.com</div>
-    <div class="chip" slot="chips">
-      <iron-icon icon="cr:error-outline"></iron-icon> Chip 1
+    <div class="badge" slot="badges">
+      <iron-icon icon="cr:error-outline"></iron-icon> Badge 1
     </div>
-    <div class="chip" slot="chips">
-      <iron-icon icon="cr:insert-drive-file"></iron-icon> Chip 2
+    <div class="badge" slot="badges">
+      <iron-icon icon="cr:insert-drive-file"></iron-icon> Badge 2
     </div>
   </cr-url-list-item>
 

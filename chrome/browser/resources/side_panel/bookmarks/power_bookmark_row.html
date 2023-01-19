@@ -61,14 +61,14 @@
   <template is="dom-if" if="[[!hasInput]]"
       on-dom-change="onInputDisplayChange_">
     <button slot="title" id="title" role="button" tabindex="0"
-        aria-labelledby="title description chips">
+        aria-labelledby="title description badges">
       [[bookmark.title]]
     </button>
 
     <div slot="description" id="description" hidden$="[[!description]]">
       [[description]]
     </div>
-2   <slot slot="chips" id="chips" name="chips"></slot>
+2   <slot slot="badges" id="badges" name="badges"></slot>
 
     <cr-icon-button slot="suffix-icon" iron-icon="[[trailingIcon]]"
         hidden="[[!trailingIcon]]" on-click="onTrailingIconClicked_"

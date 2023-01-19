@@ -237,17 +237,17 @@
             on-trailing-icon-clicked="onShowContextMenuClicked_"
             on-checkbox-change="onRowSelectedChange_"
             on-input-change="onRename_">
-          <div slot="chips">
+          <div slot="badges">
             <template is="dom-if"
                 if="[[isPriceTracked_(item, showPriceTracking_)]]" restamp>
-              <sp-label updated="[[showDiscountedPrice_(item)]]">
+              <sp-list-item-badge updated="[[showDiscountedPrice_(item)]]">
                 <iron-icon icon="bookmarks:price-tracking"></iron-icon>
                 <div>[[getCurrentPrice_(item)]]</div>
-                <div slot="previous-label"
+                <div slot="previous-badge"
                     hidden$="[[!showDiscountedPrice_(item)]]">
                   [[getPreviousPrice_(item)]]
                 </div>
-              </sp-label>
+              </sp-list-item-badge>
             </template>
           </div>
         </power-bookmark-row>

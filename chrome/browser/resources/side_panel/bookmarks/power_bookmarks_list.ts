@@ -9,7 +9,7 @@ import './power_bookmarks_context_menu.js';
 import './power_bookmark_row.js';
 import '//bookmarks-side-panel.top-chrome/shared/sp_empty_state.js';
 import '//bookmarks-side-panel.top-chrome/shared/sp_footer.js';
-import '//bookmarks-side-panel.top-chrome/shared/sp_label.js';
+import '//bookmarks-side-panel.top-chrome/shared/sp_list_item_badge.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
