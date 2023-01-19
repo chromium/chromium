@@ -478,6 +478,7 @@ void ServiceWorkerUpdatedScriptLoader::CommitCompleted(
     const std::string& status_message) {
   net::Error error_code = static_cast<net::Error>(status.error_code);
   int bytes_written = -1;
+  std::string sha256_checksum;
   if (error_code == net::OK) {
     CHECK(cache_writer_);
     CHECK_EQ(LoaderState::kCompleted, network_loader_state_);
@@ -491,6 +492,7 @@ void ServiceWorkerUpdatedScriptLoader::CommitCompleted(
       error_code = net::ERR_FILE_EXISTS;
     }
     bytes_written = cache_writer_->bytes_written();
+    sha256_checksum = cache_writer_->GetSha256Checksum();
   } else {
     // AddMessageConsole must be called before notifying that an error occurred
     // because the worker stops soon after receiving the error response.
@@ -504,7 +506,8 @@ void ServiceWorkerUpdatedScriptLoader::CommitCompleted(
   // and this loader hasn't started the caching yet.
   if (cache_writer_) {
     version_->script_cache_map()->NotifyFinishedCaching(
-        request_url_, bytes_written, error_code, status_message);
+        request_url_, bytes_written, sha256_checksum, error_code,
+        status_message);
   }
 
   client_->OnComplete(status);

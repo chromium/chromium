@@ -236,12 +236,13 @@ void ServiceWorkerScriptLoaderFactory::OnCopyScriptFinished(
   }
 
   int64_t resource_size = cache_writer_->bytes_written();
+  std::string sha256_checksum = cache_writer_->GetSha256Checksum();
   cache_writer_.reset();
   scoped_refptr<ServiceWorkerVersion> version = worker_host_->version();
 
   if (error != net::OK) {
     version->script_cache_map()->NotifyFinishedCaching(
-        resource_request.url, resource_size, error,
+        resource_request.url, resource_size, sha256_checksum, error,
         ServiceWorkerConsts::kServiceWorkerCopyScriptError);
 
     mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
@@ -252,7 +253,8 @@ void ServiceWorkerScriptLoaderFactory::OnCopyScriptFinished(
   // The copy operation is successful, add the newly copied resource record to
   // the script cache map to identify that the script is installed.
   version->script_cache_map()->NotifyFinishedCaching(
-      resource_request.url, resource_size, net::OK, std::string());
+      resource_request.url, resource_size, sha256_checksum, net::OK,
+      std::string());
 
   // Use ServiceWorkerInstalledScriptLoader to load the new copy.
   mojo::Remote<storage::mojom::ServiceWorkerResourceReader> resource_reader;

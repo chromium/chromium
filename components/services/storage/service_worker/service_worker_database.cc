@@ -2175,6 +2175,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseResourceRecord(
   (*out)->resource_id = record.resource_id();
   (*out)->url = url;
   (*out)->size_bytes = record.size_bytes();
+  (*out)->sha256_checksum = record.sha256_checksum();
   return Status::kOk;
 }
 
@@ -2199,6 +2200,7 @@ void ServiceWorkerDatabase::WriteResourceRecordInBatch(
   data.set_resource_id(resource.resource_id);
   data.set_url(resource.url.spec());
   data.set_size_bytes(resource.size_bytes);
+  data.set_sha256_checksum(resource.sha256_checksum.value());
 
   std::string value;
   bool success = data.SerializeToString(&value);

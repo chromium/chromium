@@ -41,7 +41,8 @@ ResourceRecord CreateResourceRecord(int64_t resource_id,
                                     const GURL& url,
                                     int64_t size_bytes) {
   EXPECT_TRUE(url.is_valid());
-  return mojom::ServiceWorkerResourceRecord::New(resource_id, url, size_bytes);
+  return mojom::ServiceWorkerResourceRecord::New(resource_id, url, size_bytes,
+                                                 /*sha256_checksum=*/"");
 }
 
 mojom::ServiceWorkerRegistrationDataPtr CreateRegistrationData(

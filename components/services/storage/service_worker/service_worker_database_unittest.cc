@@ -62,7 +62,8 @@ ResourceRecordPtr CreateResource(int64_t resource_id,
                                  const GURL& url,
                                  uint64_t size_bytes) {
   EXPECT_TRUE(url.is_valid());
-  return mojom::ServiceWorkerResourceRecord::New(resource_id, url, size_bytes);
+  return mojom::ServiceWorkerResourceRecord::New(resource_id, url, size_bytes,
+                                                 /*sha256_checksum=*/"");
 }
 
 ServiceWorkerDatabase* CreateDatabase(const base::FilePath& path) {
@@ -101,6 +102,7 @@ void VerifyResourceRecords(const std::vector<ResourceRecordPtr>& expected,
     EXPECT_EQ(expected[i]->resource_id, actual[i]->resource_id);
     EXPECT_EQ(expected[i]->url, actual[i]->url);
     EXPECT_EQ(expected[i]->size_bytes, actual[i]->size_bytes);
+    EXPECT_EQ(expected[i]->sha256_checksum, actual[i]->sha256_checksum);
   }
 }
 

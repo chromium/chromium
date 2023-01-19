@@ -11,6 +11,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "crypto/secure_hash.h"
+#include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/completion_once_callback.h"
@@ -170,7 +172,8 @@ ServiceWorkerCacheWriter::ServiceWorkerCacheWriter(
       compare_reader_(std::move(compare_reader)),
       copy_reader_(std::move(copy_reader)),
       writer_(std::move(writer)),
-      writer_resource_id_(writer_resource_id) {
+      writer_resource_id_(writer_resource_id),
+      checksum_(crypto::SecureHash::Create(crypto::SecureHash::SHA256)) {
   if (compare_reader_) {
     compare_reader_.set_disconnect_handler(
         base::BindOnce(&ServiceWorkerCacheWriter::OnRemoteDisconnected,
@@ -842,6 +845,9 @@ int ServiceWorkerCacheWriter::WriteDataToResponseWriter(
       &ServiceWorkerCacheWriter::AsyncDoLoop, weak_factory_.GetWeakPtr());
   scoped_refptr<AsyncOnlyCompletionCallbackAdaptor> adaptor(
       new AsyncOnlyCompletionCallbackAdaptor(std::move(run_callback)));
+
+  checksum_->Update(data->data(), length);
+
   mojo_base::BigBuffer big_buffer(
       base::as_bytes(base::make_span(data->data(), length)));
   writer_->WriteData(
@@ -920,6 +926,15 @@ void ServiceWorkerCacheWriter::AsyncDoLoop(int result) {
     OnWriteCompleteCallback callback = std::move(pending_callback_);
     std::move(callback).Run(net::ERR_IO_PENDING);
   }
+}
+
+std::string ServiceWorkerCacheWriter::GetSha256Checksum() {
+  DCHECK_EQ(STATE_DONE, state_);
+  DCHECK(checksum_);
+  uint8_t result[crypto::kSHA256Length];
+  checksum_->Finish(result, crypto::kSHA256Length);
+  checksum_ = nullptr;
+  return base::HexEncode(result);
 }
 
 }  // namespace content

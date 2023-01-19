@@ -86,4 +86,9 @@ struct ServiceWorkerResourceRecord {
   // |size_bytes| could be -1 when there was an error while loading the worker
   // script data, but when stored to the database this value is always >= 0.
   int64 size_bytes = 0;
+
+  // |sha256_checksum| is a hash string calculated from each service worker
+  // script resource data with the SHA256 algorithm. This could be empty when
+  // the stored record is old.
+  string? sha256_checksum;
 };

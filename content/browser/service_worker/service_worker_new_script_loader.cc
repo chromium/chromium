@@ -689,12 +689,14 @@ void ServiceWorkerNewScriptLoader::CommitCompleted(
                          "request_url", request_url_);
   net::Error error_code = static_cast<net::Error>(status.error_code);
   int bytes_written = -1;
+  std::string sha256_checksum;
   if (error_code == net::OK) {
     CHECK_EQ(LoaderState::kCompleted, network_loader_state_);
     CHECK_EQ(WriterState::kCompleted, header_writer_state_);
     CHECK_EQ(WriterState::kCompleted, body_writer_state_);
     CHECK(cache_writer_->did_replace());
     bytes_written = cache_writer_->bytes_written();
+    sha256_checksum = cache_writer_->GetSha256Checksum();
   } else {
     // When we fail a main script fetch, we do not have a renderer in which to
     // log the failure. We call into devtools with the frame id instead.
@@ -714,7 +716,7 @@ void ServiceWorkerNewScriptLoader::CommitCompleted(
     }
   }
   version_->script_cache_map()->NotifyFinishedCaching(
-      request_url_, bytes_written, error_code, status_message);
+      request_url_, bytes_written, sha256_checksum, error_code, status_message);
 
   client_->OnComplete(status);
   client_producer_.reset();

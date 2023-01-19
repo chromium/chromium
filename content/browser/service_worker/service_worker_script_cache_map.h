@@ -43,6 +43,7 @@ class CONTENT_EXPORT ServiceWorkerScriptCacheMap {
   void NotifyStartedCaching(const GURL& url, int64_t resource_id);
   void NotifyFinishedCaching(const GURL& url,
                              int64_t size_bytes,
+                             const std::string& sha256_checksum,
                              net::Error net_error,
                              const std::string& status_message);
 

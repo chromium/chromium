@@ -198,7 +198,7 @@ class ResourceWriter {
   void DidWriteMetadata(int result) {
     DCHECK_EQ(result, static_cast<int>(meta_data_.size()));
     std::move(callback_).Run(storage::mojom::ServiceWorkerResourceRecord::New(
-        resource_id_, script_url_, body_.size()));
+        resource_id_, script_url_, body_.size(), /*sha256_checksum=*/""));
   }
 
   const raw_ref<const mojo::Remote<storage::mojom::ServiceWorkerStorageControl>>
@@ -449,9 +449,9 @@ CreateServiceWorkerRegistrationAndVersion(ServiceWorkerContextCore* context,
       CreateNewServiceWorkerVersion(context->registry(), registration.get(),
                                     script, blink::mojom::ScriptType::kClassic);
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> records;
-  records.push_back(
-      storage::mojom::ServiceWorkerResourceRecord::New(resource_id, script,
-                                                       /*size_bytes=*/100));
+  records.push_back(storage::mojom::ServiceWorkerResourceRecord::New(
+      resource_id, script,
+      /*size_bytes=*/100, /*sha256_checksum=*/""));
   version->script_cache_map()->SetResources(records);
   version->set_fetch_handler_type(
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
