@@ -23,6 +23,7 @@ ARC_COMPILE_GUARD = [
     '#error "This file requires ARC support."',
     '#endif',
 ]
+BOXED_BOOL_PATTERN = r'@\((YES|NO)\)'
 
 def IsSubListOf(needle, hay):
     """Returns whether there is a slice of |hay| equal to |needle|."""
@@ -188,6 +189,25 @@ def _HasToDoWithNoBug(input_api, line):
     crbug_match = crbug_regex.match(todo_match.group(1))
     return not crbug_match
 
+def _CheckHasNoBoxedBOOL(input_api, output_api):
+    """ Checks that there are no @(YES) or @(NO)."""
+    boxed_BOOL_regex = input_api.re.compile(BOXED_BOOL_PATTERN)
+
+    errors = []
+    for f in input_api.AffectedFiles():
+        for line_num, line in f.ChangedContents():
+            if boxed_BOOL_regex.search(line):
+                errors.append('%s:%s' % (f.LocalPath(), line_num))
+    if not errors:
+        return []
+
+    plural_suffix = '' if len(errors) == 1 else 's'
+    error_message = ('Found boxed BOOL%(plural)s. '
+                     'Prefer @YES or @NO in ios code:' % {
+                         'plural': plural_suffix
+                     })
+
+    return [output_api.PresubmitPromptWarning(error_message, items=errors)]
 
 def CheckChangeOnUpload(input_api, output_api):
     results = []
@@ -196,4 +216,5 @@ def CheckChangeOnUpload(input_api, output_api):
     results.extend(_CheckARCCompilationGuard(input_api, output_api))
     results.extend(_CheckHasNoIncludeDirectives(input_api, output_api))
     results.extend(_CheckHasNoPipeInComment(input_api, output_api))
+    results.extend(_CheckHasNoBoxedBOOL(input_api, output_api))
     return results
