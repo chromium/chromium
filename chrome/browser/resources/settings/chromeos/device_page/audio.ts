@@ -60,6 +60,11 @@ class SettingsAudioElement extends SettingsAudioElementBase {
         reflectToAttribute: true,
       },
 
+      isInputMuted_: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
+
       isNoiseCancellationEnabled_: {
         type: Boolean,
         observer:
@@ -227,6 +232,11 @@ class SettingsAudioElement extends SettingsAudioElementBase {
     if (route !== routes.AUDIO) {
       return;
     }
+  }
+
+  /** Handles updating the mic icon depending on the input mute state. */
+  protected getInputIcon_(): string {
+    return this.isInputMuted_ ? 'settings:mic-off' : 'cr:mic';
   }
 }
 

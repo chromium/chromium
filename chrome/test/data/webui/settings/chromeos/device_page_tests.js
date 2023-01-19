@@ -1200,11 +1200,13 @@ suite('SettingsDevicePage', function() {
           audioPage.shadowRoot.querySelector('#audioInputGainMuteButton');
 
       assertFalse(audioPage.getIsInputMutedForTest());
+      assertEquals('cr:mic', inputMuteButton.ironIcon);
 
       inputMuteButton.click();
       await flushTasks();
 
       assertTrue(audioPage.getIsInputMutedForTest());
+      assertEquals('settings:mic-off', inputMuteButton.ironIcon);
     });
 
     test('simulate setting input gain slider', async function() {

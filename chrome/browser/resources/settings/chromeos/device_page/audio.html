@@ -63,6 +63,20 @@
   :host(:not([is-output-muted_])) #audioOutputMuteButton:hover {
     --cr-icon-button-fill-color: var(--cros-color-primary);
   }
+
+  :host([is-input-muted_]) #audioInputGainVolumeSlider {
+    --cr-slider-active-color: var(--cros-slider-color-inactive);
+    --cr-slider-container-color: var(--cros-slider-track-color-inactive);
+    --cr-slider-knob-color-rgb: var(--cros-color-primary-rgb);
+  }
+
+  :host([is-input-muted_]) #audioInputGainMuteButton {
+    --cr-icon-button-fill-color: var(--cros-color-secondary);
+  }
+
+  :host(:not([is-input-muted_])) #audioInputGainMuteButton {
+    --cr-icon-button-fill-color: var(--cros-color-prominent);
+  }
 </style>
 
 <!-- Output section -->
@@ -136,7 +150,8 @@
           <div>
             <!--TODO(b/260277007): Replace icon once mic-on and mic-off icons
                 available. -->
-            <cr-icon-button id="audioInputGainMuteButton" iron-icon="cr:mic"
+            <cr-icon-button id="audioInputGainMuteButton"
+                iron-icon="[[getInputIcon_(isInputMuted_)]]"
                 on-click="onInputMuteClicked">
             </cr-icon-button>
             <cr-slider id ="audioInputGainVolumeSlider" min="0" max="100"
