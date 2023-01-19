@@ -17,6 +17,7 @@ mojom("mojom") {
   ]
 
   webui_module_path = "chrome://resources/cr_components/customize_themes/"
+  use_typescript_sources = true
 }
 
 build_cr_component("build") {
@@ -34,8 +35,8 @@ build_cr_component("build") {
 
   non_web_component_files = [ "browser_proxy.ts" ]
 
-  mojo_files_deps = [ ":mojom_js__generator" ]
-  mojo_files = [ "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components/customize_themes/customize_themes.mojom-webui.js" ]
+  mojo_files_deps = [ ":mojom_ts__generator" ]
+  mojo_files = [ "$target_gen_dir/customize_themes.mojom-webui.ts" ]
 
   tsc_dir = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/customize_themes"
   ts_deps = [

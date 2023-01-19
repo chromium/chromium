@@ -21,18 +21,13 @@ mojom("mojom") {
     "//skia/public/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
+  use_typescript_sources = true
   webui_module_path = "chrome://resources/cr_components/most_visited/"
 }
 
 html_to_wrapper("html_wrapper_files") {
   in_files = html_files
   minify = optimize_webui
-}
-
-copy("copy_mojom") {
-  deps = [ ":mojom_js__generator" ]
-  sources = [ "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components/most_visited/most_visited.mojom-webui.js" ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
 copy("copy_src") {
@@ -52,9 +47,9 @@ ts_library("build_ts") {
     "//ui/webui/resources/mojo:library",
   ]
   extra_deps = [
-    ":copy_mojom",
     ":copy_src",
     ":html_wrapper_files",
+    ":mojom_ts__generator",
   ]
 }
 

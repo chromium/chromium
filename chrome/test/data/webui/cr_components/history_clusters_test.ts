@@ -29,34 +29,47 @@ suite('history-clusters', () => {
     createBrowserProxy();
   });
 
-  function getTestResult() {
-    const cluster1 = new Cluster();
-    const urlVisit1 = new URLVisit();
-    urlVisit1.normalizedUrl = {url: 'https://www.google.com'};
-    urlVisit1.urlForDisplay = 'https://www.google.com';
-    urlVisit1.pageTitle = '';
-    urlVisit1.titleMatchPositions = [];
-    urlVisit1.urlForDisplayMatchPositions = [];
-    urlVisit1.duplicates = [];
-    urlVisit1.relativeDate = '';
-    urlVisit1.annotations = [];
-    urlVisit1.hidden = false;
-    urlVisit1.debugInfo = {};
-    const rawVisitData = new RawVisitData();
-    rawVisitData.url = {url: ''};
-    rawVisitData.visitTime = {internalValue: BigInt(0)};
-    urlVisit1.rawVisitData = rawVisitData;
-    cluster1.visits = [urlVisit1];
-    cluster1.labelMatchPositions = [];
-    cluster1.relatedSearches = [];
-    const cluster2 = new Cluster();
-    cluster2.visits = [];
-    cluster2.labelMatchPositions = [];
-    cluster2.relatedSearches = [];
+  function getTestResult(): QueryResult {
+    const rawVisitData: RawVisitData = {
+      url: {url: ''},
+      visitTime: {internalValue: BigInt(0)},
+    };
 
-    const queryResult = new QueryResult();
-    queryResult.query = '';
-    queryResult.clusters = [cluster1, cluster2];
+    const urlVisit1: URLVisit = {
+      normalizedUrl: {url: 'https://www.google.com'},
+      urlForDisplay: 'https://www.google.com',
+      pageTitle: '',
+      titleMatchPositions: [],
+      urlForDisplayMatchPositions: [],
+      duplicates: [],
+      relativeDate: '',
+      annotations: [],
+      hidden: false,
+      debugInfo: {},
+      rawVisitData: rawVisitData,
+      isKnownToSync: false,
+    };
+
+    const cluster1: Cluster = {
+      id: BigInt(111),
+      visits: [urlVisit1],
+      labelMatchPositions: [],
+      relatedSearches: [],
+    };
+
+    const cluster2: Cluster = {
+      id: BigInt(222),
+      visits: [],
+      labelMatchPositions: [],
+      relatedSearches: [],
+    };
+
+    const queryResult: QueryResult = {
+      query: '',
+      clusters: [cluster1, cluster2],
+      canLoadMore: false,
+      isContinuation: false,
+    };
 
     return queryResult;
   }

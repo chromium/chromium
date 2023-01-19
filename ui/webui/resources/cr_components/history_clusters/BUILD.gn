@@ -17,6 +17,7 @@ mojom("mojo_bindings") {
     "//url/mojom:url_mojom_gurl",
   ]
   webui_module_path = "chrome://resources/cr_components/history_clusters/"
+  use_typescript_sources = true
 }
 
 build_cr_component("build") {
@@ -42,8 +43,8 @@ build_cr_component("build") {
     "shared_vars.css",
   ]
 
-  mojo_files_deps = [ ":mojo_bindings_js__generator" ]
-  mojo_files = [ "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components/history_clusters/history_clusters.mojom-webui.js" ]
+  mojo_files_deps = [ ":mojo_bindings_ts__generator" ]
+  mojo_files = [ "$target_gen_dir/history_clusters.mojom-webui.ts" ]
 
   tsc_dir = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/history_clusters"
   ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]

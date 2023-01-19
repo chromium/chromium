@@ -22,6 +22,6 @@ _non_web_component_files = [
   "window_proxy.ts",
 ]
 
-mojo_files = [ "most_visited.mojom-webui.js" ]
+mojo_files = [ "most_visited.mojom-webui.ts" ]
 
 ts_files = _web_component_files + _non_web_component_files

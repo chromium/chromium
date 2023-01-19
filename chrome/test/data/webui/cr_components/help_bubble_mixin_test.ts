@@ -259,14 +259,16 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     assertFalse(container.isHelpBubbleShowing());
   });
 
-  const defaultParams: HelpBubbleParams = new HelpBubbleParams();
-  defaultParams.nativeIdentifier = PARAGRAPH_NATIVE_ID;
-  defaultParams.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
-  defaultParams.position = HelpBubbleArrowPosition.BOTTOM_CENTER;
-  defaultParams.bodyText = 'This is a help bubble.';
-  defaultParams.bodyIconName = 'lightbulb_outline';
-  defaultParams.bodyIconAltText = BODY_ICON_ALT_TEXT;
-  defaultParams.buttons = [];
+  const defaultParams: HelpBubbleParams = {
+    nativeIdentifier: PARAGRAPH_NATIVE_ID,
+    closeButtonAltText: CLOSE_BUTTON_ALT_TEXT,
+    position: HelpBubbleArrowPosition.BOTTOM_CENTER,
+    bodyText: 'This is a help bubble.',
+    bodyIconName: 'lightbulb_outline',
+    bodyIconAltText: BODY_ICON_ALT_TEXT,
+    buttons: [],
+    forceCloseButton: false,
+  };
 
   test('help bubble mixin shows bubble when called directly', () => {
     assertFalse(container.isHelpBubbleShowing());
@@ -445,13 +447,15 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
   test(
       'help bubble ignores unregistered ID in ShowHelpBubble call',
       async () => {
-        const params: HelpBubbleParams = new HelpBubbleParams();
-        params.nativeIdentifier = 'This is an unregistered identifier';
-        params.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
-        params.bodyIconAltText = BODY_ICON_ALT_TEXT;
-        params.position = HelpBubbleArrowPosition.BOTTOM_CENTER;
-        params.bodyText = 'This is a help bubble.';
-        params.buttons = [];
+        const params: HelpBubbleParams = {
+          nativeIdentifier: 'This is an unregistered identifier',
+          closeButtonAltText: CLOSE_BUTTON_ALT_TEXT,
+          bodyIconAltText: BODY_ICON_ALT_TEXT,
+          position: HelpBubbleArrowPosition.BOTTOM_CENTER,
+          bodyText: 'This is a help bubble.',
+          buttons: [],
+          forceCloseButton: false,
+        };
 
         testProxy.getCallbackRouterRemote().showHelpBubble(params);
         await waitAfterNextRender(container);
@@ -614,14 +618,16 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     assertTrue(isVisible(bubble));
   });
 
-  const paramsWithTitle: HelpBubbleParams = new HelpBubbleParams();
-  paramsWithTitle.nativeIdentifier = TITLE_NATIVE_ID;
-  paramsWithTitle.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
-  paramsWithTitle.bodyIconAltText = BODY_ICON_ALT_TEXT;
-  paramsWithTitle.position = HelpBubbleArrowPosition.TOP_CENTER;
-  paramsWithTitle.bodyText = 'This is another help bubble.';
-  paramsWithTitle.titleText = 'This is a title';
-  paramsWithTitle.buttons = [];
+  const paramsWithTitle: HelpBubbleParams = {
+    nativeIdentifier: TITLE_NATIVE_ID,
+    closeButtonAltText: CLOSE_BUTTON_ALT_TEXT,
+    bodyIconAltText: BODY_ICON_ALT_TEXT,
+    position: HelpBubbleArrowPosition.TOP_CENTER,
+    bodyText: 'This is another help bubble.',
+    titleText: 'This is a title',
+    buttons: [],
+    forceCloseButton: false,
+  };
 
   test('help bubble mixin shows multiple bubbles', async () => {
     testProxy.getCallbackRouterRemote().showHelpBubble(defaultParams);
@@ -654,14 +660,16 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     assertEquals(paramsWithTitle.titleText, titleBubble.titleText);
   });
 
-  const paramsWithProgress: HelpBubbleParams = new HelpBubbleParams();
-  paramsWithProgress.nativeIdentifier = LIST_NATIVE_ID;
-  paramsWithProgress.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
-  paramsWithProgress.bodyIconAltText = BODY_ICON_ALT_TEXT;
-  paramsWithProgress.position = HelpBubbleArrowPosition.TOP_CENTER;
-  paramsWithProgress.bodyText = 'This is another help bubble.';
-  paramsWithProgress.progress = {current: 1, total: 3};
-  paramsWithProgress.buttons = [];
+  const paramsWithProgress: HelpBubbleParams = {
+    nativeIdentifier: LIST_NATIVE_ID,
+    closeButtonAltText: CLOSE_BUTTON_ALT_TEXT,
+    bodyIconAltText: BODY_ICON_ALT_TEXT,
+    position: HelpBubbleArrowPosition.TOP_CENTER,
+    bodyText: 'This is another help bubble.',
+    progress: {current: 1, total: 3},
+    buttons: [],
+    forceCloseButton: false,
+  };
 
   test(
       'help bubble mixin shows bubbles with and without progress', async () => {
@@ -715,23 +723,25 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     assertFalse(container.isHelpBubbleShowing());
   });
 
-  const buttonParams: HelpBubbleParams = new HelpBubbleParams();
-  buttonParams.nativeIdentifier = PARAGRAPH_NATIVE_ID;
-  buttonParams.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
-  buttonParams.bodyIconAltText = BODY_ICON_ALT_TEXT;
-  buttonParams.position = HelpBubbleArrowPosition.TOP_CENTER;
-  buttonParams.bodyText = 'This is another help bubble.';
-  buttonParams.titleText = 'This is a title';
-  buttonParams.buttons = [
-    {
-      text: 'button1',
-      isDefault: false,
-    },
-    {
-      text: 'button2',
-      isDefault: true,
-    },
-  ];
+  const buttonParams: HelpBubbleParams = {
+    nativeIdentifier: PARAGRAPH_NATIVE_ID,
+    closeButtonAltText: CLOSE_BUTTON_ALT_TEXT,
+    bodyIconAltText: BODY_ICON_ALT_TEXT,
+    position: HelpBubbleArrowPosition.TOP_CENTER,
+    bodyText: 'This is another help bubble.',
+    titleText: 'This is a title',
+    buttons: [
+      {
+        text: 'button1',
+        isDefault: false,
+      },
+      {
+        text: 'button2',
+        isDefault: true,
+      },
+    ],
+    forceCloseButton: false,
+  };
 
   test('help bubble mixin sends action button clicked event', async () => {
     container.showHelpBubble(p1Bubble, buttonParams);
@@ -752,14 +762,16 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     assertFalse(container.isHelpBubbleShowing());
   });
 
-  const timeoutParams: HelpBubbleParams = new HelpBubbleParams();
-  timeoutParams.nativeIdentifier = PARAGRAPH_NATIVE_ID;
-  timeoutParams.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
-  timeoutParams.bodyIconAltText = BODY_ICON_ALT_TEXT;
-  timeoutParams.position = HelpBubbleArrowPosition.TOP_CENTER;
-  timeoutParams.bodyText = 'This is another help bubble.';
-  timeoutParams.titleText = 'This is a title';
-  timeoutParams.buttons = [];
+  const timeoutParams: HelpBubbleParams = {
+    nativeIdentifier: PARAGRAPH_NATIVE_ID,
+    closeButtonAltText: CLOSE_BUTTON_ALT_TEXT,
+    bodyIconAltText: BODY_ICON_ALT_TEXT,
+    position: HelpBubbleArrowPosition.TOP_CENTER,
+    bodyText: 'This is another help bubble.',
+    titleText: 'This is a title',
+    buttons: [],
+    forceCloseButton: false,
+  };
 
   // It is hard to guarantee the correct timing on various test systems,
   // so the 'before timeout' and 'after timeout' tests are split
