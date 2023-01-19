@@ -236,7 +236,6 @@ TestToBuilderStringDict = Dict[str, BuilderToStepMap]
 FullOrNeverPassStepValue = List[str]
 PartialPassStepValue = Dict[str, List[str]]
 PassStepValue = Union[FullOrNeverPassStepValue, PartialPassStepValue]
-OrderedPassStringDict = OrderedDict[str, Dict[str, PassStepValue]]
 
 UnmatchedResultsType = Dict[str, data_types.ResultListType]
 UnusedExpectation = Dict[str, List[data_types.Expectation]]
@@ -694,55 +693,3 @@ def _OutputUrlsForClDescription(affected_urls: List[str],
     output_str += AddBugTypeToOutputString(orphaned_urls, 'Fixed:')
 
   file_handle.write('Affected bugs for CL description:\n%s' % output_str)
-
-
-def ConvertBuilderMapToPassOrderedStringDict(
-    builder_map: data_types.BuilderStepMap) -> OrderedPassStringDict:
-  """Converts |builder_map| into an ordered dict split by pass type.
-
-  Args:
-    builder_map: A data_types.BuildStepMap.
-
-  Returns:
-    A collections.OrderedDict in the following format:
-    {
-      result_output.FULL_PASS: {
-        builder_name: [
-          step_name (total passes / total builds)
-        ],
-      },
-      result_output.NEVER_PASS: {
-        builder_name: [
-          step_name (total passes / total builds)
-        ],
-      },
-      result_output.PARTIAL_PASS: {
-        builder_name: {
-          step_name (total passes / total builds): [
-            failure links,
-          ],
-        },
-      },
-    }
-
-    The ordering and presence of the top level keys is guaranteed.
-  """
-  # This is similar to what we do in
-  # result_output._ConvertTestExpectationMapToStringDict, but we want the
-  # top-level grouping to be by pass type rather than by builder, so we can't
-  # re-use the code from there.
-  # Ordered dict used to ensure that order is guaranteed when printing out.
-  str_dict = collections.OrderedDict()
-  str_dict[FULL_PASS] = {}
-  str_dict[NEVER_PASS] = {}
-  str_dict[PARTIAL_PASS] = {}
-  for builder_name, step_name, stats in builder_map.IterBuildStats():
-    step_str = AddStatsToStr(step_name, stats)
-    if stats.did_fully_pass:
-      str_dict[FULL_PASS].setdefault(builder_name, []).append(step_str)
-    elif stats.did_never_pass:
-      str_dict[NEVER_PASS].setdefault(builder_name, []).append(step_str)
-    else:
-      str_dict[PARTIAL_PASS].setdefault(builder_name, {})[step_str] = list(
-          stats.failure_links)
-  return str_dict

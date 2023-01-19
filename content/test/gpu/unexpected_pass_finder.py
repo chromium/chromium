@@ -165,13 +165,6 @@ def main():
                         'etc. may still need to be removed.\n' %
                         expectation_file)
 
-  # These two options are mutually exclusive.
-  if args.modify_semi_stale_expectations:
-    affected_urls |= expectations_instance.ModifySemiStaleExpectations(
-        semi_stale)
-    stale_message += ('Semi-stale expectations modified in %s. Stale '
-                      'comments, etc. may still need to be removed.\n' %
-                      args.expectation_file)
   if args.narrow_semi_stale_expectation_scope:
     affected_urls |= expectations_instance.NarrowSemiStaleExpectationScope(
         semi_stale)
