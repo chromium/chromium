@@ -203,15 +203,7 @@ void AssistantPageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void AssistantPageView::ChildPreferredSizeChanged(views::View* child) {
-  MaybeUpdateAppListState(child->GetHeightForWidth(width()));
   PreferredSizeChanged();
-}
-
-void AssistantPageView::ChildVisibilityChanged(views::View* child) {
-  if (!child->GetVisible())
-    return;
-
-  MaybeUpdateAppListState(child->GetHeightForWidth(width()));
 }
 
 void AssistantPageView::VisibilityChanged(views::View* starting_from,
@@ -244,14 +236,6 @@ void AssistantPageView::OnGestureEvent(ui::GestureEvent* event) {
     default:
       break;
   }
-}
-
-void AssistantPageView::OnWillBeShown() {
-  // Our preferred size may require a change in AppListState in order to ensure
-  // that the AssistantPageView renders fully on screen w/o being clipped. We do
-  // this in OnWillBeShown(), as opposed to waiting for OnShown(), so that the
-  // AppListState change animation can run in sync with page change animations.
-  MaybeUpdateAppListState(GetPreferredSize().height());
 }
 
 void AssistantPageView::OnAnimationStarted(AppListState from_state,
@@ -464,9 +448,6 @@ void AssistantPageView::UpdateBackground(bool in_tablet_mode) {
   else
     layer()->SetColor(SK_ColorWHITE);
 }
-
-// TODO(crbug.com/1359096): Clean up this function and its relative code path.
-void AssistantPageView::MaybeUpdateAppListState(int child_height) {}
 
 BEGIN_METADATA(AssistantPageView, views::View)
 END_METADATA

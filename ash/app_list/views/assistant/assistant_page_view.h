@@ -44,9 +44,7 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
   void RequestFocus() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void ChildPreferredSizeChanged(views::View* child) override;
-  void ChildVisibilityChanged(views::View* child) override;
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
-  void OnWillBeShown() override;
   void OnAnimationStarted(AppListState from_state,
                           AppListState to_state) override;
   gfx::Size GetPreferredSearchBoxSize() const override;
@@ -84,7 +82,6 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
  private:
   void InitLayout();
   void UpdateBackground(bool in_tablet_mode);
-  void MaybeUpdateAppListState(int child_height);
 
   AssistantViewDelegate* const assistant_view_delegate_;
 
