@@ -426,7 +426,11 @@ void AXNodeObject::AlterSliderOrSpinButtonValue(bool increase) {
       ->PostDelayedTask(
           FROM_HERE,
           WTF::BindOnce(
-              [](Node* node, KeyboardEvent* evt) { node->DispatchEvent(*evt); },
+              [](Node* node, KeyboardEvent* evt) {
+                if (node) {
+                  node->DispatchEvent(*evt);
+                }
+              },
               WrapWeakPersistent(GetNode()), WrapPersistent(keyup)),
           base::Milliseconds(100));
 }
