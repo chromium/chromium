@@ -21,6 +21,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -3649,17 +3650,14 @@ IN_PROC_BROWSER_TEST_P(ClearAllCachedAuthTokensFunctionTestWithPartitionParam,
       "test_name", "test_value", "test.com", "/", base::Time(), base::Time(),
       base::Time(), base::Time(), true, false,
       net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT, false);
-  base::RunLoop set_cookie_loop;
+  base::test::TestFuture<bool> future;
   GetCookieManager()->SetCanonicalCookie(
       *test_cookie,
       net::cookie_util::SimulatedCookieSource(*test_cookie, url::kHttpsScheme),
       net::CookieOptions(),
-      net::cookie_util::AdaptCookieAccessResultToBool(
-          base::BindLambdaForTesting([&](bool include) {
-            set_cookie_loop.Quit();
-            EXPECT_TRUE(include);
-          })));
-  set_cookie_loop.Run();
+      base::BindOnce(net::cookie_util::IsCookieAccessResultInclude)
+          .Then(future.GetCallback()));
+  EXPECT_TRUE(future.Get());
 
   EXPECT_FALSE(GetCookies().empty());
   ASSERT_TRUE(RunClearAllCachedAuthTokensFunction());

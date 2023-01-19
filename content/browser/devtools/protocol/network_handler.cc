@@ -1560,8 +1560,9 @@ void NetworkHandler::SetCookie(const std::string& name,
   storage_partition_->GetCookieManagerForBrowserProcess()->SetCanonicalCookie(
       *cookie, net::cookie_util::SimulatedCookieSource(*cookie, "https"),
       options,
-      net::cookie_util::AdaptCookieAccessResultToBool(base::BindOnce(
-          &SetCookieCallback::sendSuccess, std::move(callback))));
+      base::BindOnce(net::cookie_util::IsCookieAccessResultInclude)
+          .Then(base::BindOnce(&SetCookieCallback::sendSuccess,
+                               std::move(callback))));
 }
 
 // static

@@ -274,14 +274,14 @@ GetSamePartyStatus(const CanonicalCookie& cookie,
                    const CookieOptions& options,
                    bool same_party_attribute_enabled);
 
-// Takes a callback accepting a CookieAccessResult and returns a callback
-// that accepts a bool, setting the bool to true if the CookieInclusionStatus
-// in CookieAccessResult was set to "include", else sending false.
+// Takes a CookieAccessResult and returns a bool, returning true if the
+// CookieInclusionStatus in CookieAccessResult was set to "include", else
+// returning false.
 //
 // Can be used with SetCanonicalCookie when you don't need to know why a cookie
 // was blocked, only whether it was blocked.
-NET_EXPORT base::OnceCallback<void(CookieAccessResult)>
-AdaptCookieAccessResultToBool(base::OnceCallback<void(bool)> callback);
+NET_EXPORT bool IsCookieAccessResultInclude(
+    CookieAccessResult cookie_access_result);
 
 // Turn a CookieAccessResultList into a CookieList by stripping out access
 // results (for callers who only care about cookies).

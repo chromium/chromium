@@ -1541,30 +1541,11 @@ INSTANTIATE_TEST_SUITE_P(/* no label */,
                          ::testing::Combine(::testing::Bool(),
                                             ::testing::Bool()));
 
-TEST(CookieUtilTest, AdaptCookieAccessResultToBool) {
-  bool result_out = true;
-  base::OnceCallback<void(bool)> callback = base::BindLambdaForTesting(
-      [&result_out](bool result) { result_out = result; });
+TEST(CookieUtilTest, IsCookieAccessResultInclude) {
+  EXPECT_FALSE(cookie_util::IsCookieAccessResultInclude(CookieAccessResult(
+      CookieInclusionStatus(CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR))));
 
-  base::OnceCallback<void(CookieAccessResult)> adapted_callback =
-      cookie_util::AdaptCookieAccessResultToBool(std::move(callback));
-
-  std::move(adapted_callback)
-      .Run(CookieAccessResult(
-          CookieInclusionStatus(CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR)));
-
-  EXPECT_FALSE(result_out);
-
-  result_out = false;
-  callback = base::BindLambdaForTesting(
-      [&result_out](bool result) { result_out = result; });
-
-  adapted_callback =
-      cookie_util::AdaptCookieAccessResultToBool(std::move(callback));
-
-  std::move(adapted_callback).Run(CookieAccessResult());
-
-  EXPECT_TRUE(result_out);
+  EXPECT_TRUE(cookie_util::IsCookieAccessResultInclude(CookieAccessResult()));
 }
 
 TEST(CookieUtilTest, GetSamePartyStatus_NotInSet) {

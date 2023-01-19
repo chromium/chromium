@@ -490,11 +490,13 @@ void CookieManager::SetCookieHelper(const GURL& host,
     // will make a copy before our smart pointer goes out of scope.
     GetMojoCookieManager()->SetCanonicalCookie(
         *cc.get(), new_host, net::CookieOptions::MakeAllInclusive(),
-        net::cookie_util::AdaptCookieAccessResultToBool(std::move(callback)));
+        base::BindOnce(net::cookie_util::IsCookieAccessResultInclude)
+            .Then(std::move(callback)));
   } else {
     GetCookieStore()->SetCanonicalCookieAsync(
         std::move(cc), new_host, net::CookieOptions::MakeAllInclusive(),
-        net::cookie_util::AdaptCookieAccessResultToBool(std::move(callback)));
+        base::BindOnce(net::cookie_util::IsCookieAccessResultInclude)
+            .Then(std::move(callback)));
   }
 }
 

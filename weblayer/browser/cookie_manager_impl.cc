@@ -222,9 +222,10 @@ void CookieManagerImpl::SetCookieInternal(const GURL& url,
       ->GetCookieManagerForBrowserProcess()
       ->SetCanonicalCookie(
           *cc, url, net::CookieOptions::MakeAllInclusive(),
-          net::cookie_util::AdaptCookieAccessResultToBool(
-              base::BindOnce(&CookieManagerImpl::OnCookieSet,
-                             weak_factory_.GetWeakPtr(), std::move(callback))));
+          base::BindOnce(net::cookie_util::IsCookieAccessResultInclude)
+              .Then(base::BindOnce(&CookieManagerImpl::OnCookieSet,
+                                   weak_factory_.GetWeakPtr(),
+                                   std::move(callback))));
 }
 
 int CookieManagerImpl::AddCookieChangedCallbackInternal(

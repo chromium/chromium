@@ -882,15 +882,8 @@ CookieSamePartyStatus GetSamePartyStatus(
   };
 }
 
-base::OnceCallback<void(CookieAccessResult)> AdaptCookieAccessResultToBool(
-    base::OnceCallback<void(bool)> callback) {
-  return base::BindOnce(
-      [](base::OnceCallback<void(bool)> inner_callback,
-         const CookieAccessResult access_result) {
-        bool success = access_result.status.IsInclude();
-        std::move(inner_callback).Run(success);
-      },
-      std::move(callback));
+bool IsCookieAccessResultInclude(CookieAccessResult cookie_access_result) {
+  return cookie_access_result.status.IsInclude();
 }
 
 CookieList StripAccessResults(
