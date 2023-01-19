@@ -155,16 +155,16 @@ bool GatewayCanBePingedRoutine::ParseICMPResult(const std::string& status,
   if (!info.is_dict()) {
     return false;
   }
-  const base::Value* recvd_value = info.FindKey("recvd");
-  if (!recvd_value || !recvd_value->is_int() || recvd_value->GetInt() < 1) {
+  const absl::optional<int> recvd_value = info.GetDict().FindInt("recvd");
+  if (!recvd_value || recvd_value.value() < 1) {
     return false;
   }
 
-  const base::Value* avg_value = info.FindKey("avg");
-  if (!avg_value || !avg_value->is_double()) {
+  const absl::optional<double> avg_value = info.GetDict().FindDouble("avg");
+  if (!avg_value) {
     return false;
   }
-  *latency = base::Milliseconds(avg_value->GetDouble());
+  *latency = base::Milliseconds(avg_value.value());
   *ip = ip_addr;
 
   return true;
