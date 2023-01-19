@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+<script>
+let firedBeforePrint = false;
+let firedAfterPrint = false;
+window.addEventListener('beforeprint', function (_) {
+  firedBeforePrint = true;
+});
+window.addEventListener('afterprint', function (_) {
+  firedAfterPrint = true;
+});
+</script>
+</html>
