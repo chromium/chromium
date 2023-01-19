@@ -19,9 +19,11 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -38,11 +40,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "components/policy/proto/chrome_device_policy.pb.h"
-#else
-#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #endif
 
 using ::policy::CloudPolicyClient;
@@ -205,30 +203,26 @@ void ReportingServerConnector::UploadEncryptedReport(
                        std::move(merging_payload), std::move(callback)));
     return;
   }
+
   // Now we are on UI task runner.
-
-  // Acquire context for the upload.
-  Profile* profile = nullptr;
-#if BUILDFLAG(IS_CHROMEOS)
-  profile = ProfileManager::GetPrimaryUserProfile();
-#else
-  if (g_browser_process) {
-    auto* const profile_manager = g_browser_process->profile_manager();
-    if (profile_manager) {
-      profile = profile_manager->GetLastUsedProfileIfLoaded();
-    }
-  }
-#endif
-  auto context = GetContext(profile);
-
-  // The `policy::CloudPolicyClient` object is retrieved in two different ways
-  // for ChromeOS and non-ChromeOS browsers.
   ReportingServerConnector* const connector = GetInstance();
   auto client_status = connector->EnsureUsableClient();
   if (!client_status.ok()) {
     std::move(callback).Run(client_status);
     return;
   }
+  if (connector->client_->dm_token().empty()) {
+    std::move(callback).Run(
+        Status(error::UNAVAILABLE, "Device DM token not set"));
+    return;
+  }
+
+  // Client is usable. Prepare context for the upload.
+  // Compose the only context elements needed by reporting server.
+  base::Value::Dict context;
+  context.SetByDottedPath("browser.userAgent",
+                          embedder_support::GetUserAgent());
+  context.SetByDottedPath("device.dmToken", connector->client_->dm_token());
 
   // Forward the `UploadEncryptedReport` to the cloud policy client.
   absl::optional<int> request_payload_size;
