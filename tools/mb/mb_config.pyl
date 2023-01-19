@@ -2880,7 +2880,7 @@
 
     'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
-      'linux_wayland', 'ozone_headless', 'remoting_use_wayland',
+      'linux_wayland', 'ozone_headless',
     ],
 
     'headless_shell_release_bot_reclient': [
@@ -4604,10 +4604,6 @@
 
     'release_trybot_reclient': {
       'mixins': ['release_bot_reclient', 'no_symbols', 'dcheck_always_on'],
-    },
-
-    'remoting_use_wayland': {
-      'gn_args': 'remoting_use_wayland=true',
     },
 
     'resource_allowlisting': {
