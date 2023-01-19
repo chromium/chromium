@@ -10,14 +10,11 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/values.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/install_result_code.h"
 
 class Profile;
-
-struct WebAppInstallInfo;
 
 namespace network {
 class SimpleURLLoader;
@@ -36,12 +33,6 @@ class WebAppPreloadInstaller {
   ~WebAppPreloadInstaller();
   WebAppPreloadInstaller(const WebAppPreloadInstaller&) = delete;
   WebAppPreloadInstaller& operator=(const WebAppPreloadInstaller&) = delete;
-
-  // This method is prototype quality and doesn't handle all edge cases.
-  static std::unique_ptr<WebAppInstallInfo> ManifestToWebAppInstallInfo(
-      GURL document_url,
-      GURL original_manifest_url,
-      base::Value::Dict& manifest);
 
   // Attempts to install the given web `app`, calling `callback` after
   // installation completes. Must only be called if `app.GetPlatform()` returns

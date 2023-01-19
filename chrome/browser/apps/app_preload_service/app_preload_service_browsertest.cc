@@ -27,22 +27,24 @@ namespace apps {
 
 class AppPreloadServiceBrowserTest : public InProcessBrowserTest {
  public:
-  void SetUp() override {
+  AppPreloadServiceBrowserTest() {
     feature_list_.InitWithFeatures(
         {/*enabled_features=*/features::kAppPreloadService},
         /*disabled_features=*/{});
+  }
+
+  void SetUpOnMainThread() override {
+    // Note that App Preload Service runs as part of browser startup, so the
+    // browser test SetUp() method will trigger a call to APS before any test
+    // code runs. This call will fail as the EmbeddedTestServer will not be
+    // started.
+    InProcessBrowserTest::SetUpOnMainThread();
 
     https_server_.RegisterRequestHandler(base::BindRepeating(
         &AppPreloadServiceBrowserTest::HandleRequest, base::Unretained(this)));
     ASSERT_TRUE(https_server()->Start());
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         ash::switches::kAlmanacApiUrl, https_server()->GetURL("/").spec());
-
-    // Note that App Preload Service runs as part of browser startup, so calling
-    // SetUp() will trigger a call to APS before any test code runs. This call
-    // will fail as the EmbeddedTestServer will 404 if no response has been
-    // configured.
-    InProcessBrowserTest::SetUp();
   }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
