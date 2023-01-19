@@ -44,6 +44,7 @@ class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
       chromeos::DBusMethodCallback<rmad::GetLogReply> callback) override;
 
   void SaveLog(
+      const std::string& diagnostics_log_text,
       chromeos::DBusMethodCallback<rmad::SaveLogReply> callback) override;
 
   void RecordBrowserActionMetric(
@@ -62,6 +63,8 @@ class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
   void SetGetLogReply(const std::string& log, rmad::RmadErrorCode error);
   void SetSaveLogReply(const std::string& save_path, rmad::RmadErrorCode error);
   void SetRecordBrowserActionMetricReply(rmad::RmadErrorCode error);
+
+  std::string GetDiagnosticsLogsText() const;
 
   void TriggerErrorObservation(rmad::RmadErrorCode error);
   void TriggerCalibrationProgressObservation(
@@ -101,6 +104,7 @@ class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
   rmad::RecordBrowserActionMetricReply record_browser_action_metric_reply_;
   base::ObserverList<Observer, /*check_empty=*/true, /*allow_reentrancy=*/false>
       observers_;
+  std::string diagnostics_logs_text_;
 };
 
 }  // namespace ash

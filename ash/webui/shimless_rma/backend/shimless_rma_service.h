@@ -236,6 +236,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
                 absl::optional<rmad::GetLogReply> response);
   void OnSaveLog(SaveLogCallback callback,
                  absl::optional<rmad::SaveLogReply> response);
+  void OnDiagnosticsLogReady(SaveLogCallback callback,
+                             const std::string& diagnostics_log_text);
 
   void OnOsUpdateStatusCallback(update_engine::Operation operation,
                                 double progress,
@@ -348,6 +350,11 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   // It is used to allow abort requests to reboot or exit to login, even if the
   // request fails.
   bool critical_error_occurred_ = false;
+
+  // Task runner for tasks posted by the Shimless service. Used to ensure
+  // posted tasks are handled while this service is in scope to stop
+  // heap-use-after-free error.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

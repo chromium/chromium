@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
+#include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
 #include "ash/webui/shimless_rma/backend/version_updater.h"
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
@@ -21,6 +22,8 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chromeos/ash/components/dbus/rmad/rmad.pb.h"
 #include "chromeos/ash/components/dbus/rmad/rmad_client.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -68,7 +71,9 @@ network_mojom::NetworkFilterPtr GetConfiguredWiFiFilter() {
 
 ShimlessRmaService::ShimlessRmaService(
     std::unique_ptr<ShimlessRmaDelegate> shimless_rma_delegate)
-    : shimless_rma_delegate_(std::move(shimless_rma_delegate)) {
+    : shimless_rma_delegate_(std::move(shimless_rma_delegate)),
+      task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   RmadClient::Get()->AddObserver(this);
 
   // Enable accessibility features.
@@ -924,9 +929,32 @@ void ShimlessRmaService::GetLog(GetLogCallback callback) {
 }
 
 void ShimlessRmaService::SaveLog(SaveLogCallback callback) {
-  RmadClient::Get()->SaveLog(base::BindOnce(&ShimlessRmaService::OnSaveLog,
-                                            weak_ptr_factory_.GetWeakPtr(),
-                                            std::move(callback)));
+  if (features::IsLogControllerForDiagnosticsAppEnabled() &&
+      diagnostics::DiagnosticsLogController::IsInitialized()) {
+    task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(
+            &diagnostics::DiagnosticsLogController::
+                GenerateSessionStringOnBlockingPool,
+            // base::Unretained safe here because ~DiagnosticsLogController is
+            // called during shutdown of ash::Shell and will out-live
+            // ShimlessRmaService.
+            base::Unretained(diagnostics::DiagnosticsLogController::Get())),
+        base::BindOnce(&ShimlessRmaService::OnDiagnosticsLogReady,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
+  OnDiagnosticsLogReady(std::move(callback), "");
+}
+
+void ShimlessRmaService::OnDiagnosticsLogReady(
+    SaveLogCallback callback,
+    const std::string& diagnostics_log_text) {
+  RmadClient::Get()->SaveLog(
+      diagnostics_log_text,
+      base::BindOnce(&ShimlessRmaService::OnSaveLog,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ShimlessRmaService::OnGetLog(GetLogCallback callback,
