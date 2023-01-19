@@ -9,6 +9,7 @@ import("//build/config/android/rules.gni")
 # Variables:
 #   package_name: Package name to use for the stub.
 #   package_name_from_target: Use the package name from this apk/bundle target.
+#   static_library_name: For static library apks, name for the <static-library>.
 #   stub_output: Path to output stub apk (default: do not create a stub).
 #
 # package_name and package_name_from_target are mutually exclusive.
@@ -19,8 +20,25 @@ template("system_image_stub_apk") {
 
   _resource_apk_path = "${target_out_dir}/$target_name.ap_"
   _resource_apk_target_name = "${target_name}__compile_resources"
+
+  _manifest_target_name = "${target_name}__manifest"
+  _manifest_path = "$target_gen_dir/$_manifest_target_name.xml"
+  action("$_manifest_target_name") {
+    outputs = [ _manifest_path ]
+    script = "//build/android/gyp/create_stub_manifest.py"
+    args = [
+      "--output",
+      rebase_path(_manifest_path, root_build_dir),
+    ]
+    if (defined(invoker.static_library_name)) {
+      args += [
+        "--static-library-name",
+        invoker.static_library_name,
+      ]
+    }
+  }
+
   action_with_pydeps(_resource_apk_target_name) {
-    _manifest_path = "//build/android/AndroidManifest.xml"
     script = "//build/android/gyp/compile_resources.py"
     inputs = [
       _manifest_path,
@@ -37,11 +55,12 @@ template("system_image_stub_apk") {
       "--arsc-path",
       rebase_path(_resource_apk_path, root_build_dir),
     ]
+    deps = [ ":$_manifest_target_name" ]
     if (defined(invoker.package_name)) {
       _package_name = invoker.package_name
     } else {
       _target = invoker.package_name_from_target
-      deps = [ "${_target}$build_config_target_suffix" ]
+      deps += [ "${_target}$build_config_target_suffix" ]
       _build_config = get_label_info(_target, "target_gen_dir") + "/" +
                       get_label_info(_target, "name") + ".build_config.json"
       inputs += [ _build_config ]
@@ -76,6 +95,7 @@ template("system_image_stub_apk") {
 # Variables:
 #   apk_or_bundle_target: Target that creates input bundle or apk.
 #   input_apk_or_bundle: Path to input .apk or .aab.
+#   static_library_name: For static library apks, name for the <static-library>.
 #   output: Path to the output system .apk or .zip.
 #   fuse_apk: Fuse all apk splits into a single .apk (default: false).
 #   stub_output: Path to output stub apk (default: do not create a stub).
@@ -84,6 +104,7 @@ template("system_image_apks") {
   if (defined(invoker.stub_output)) {
     _stub_apk_target_name = "${target_name}__stub"
     system_image_stub_apk(_stub_apk_target_name) {
+      forward_variables_from(invoker, [ "static_library_name" ])
       package_name_from_target = invoker.apk_or_bundle_target
       stub_output = invoker.stub_output
     }
