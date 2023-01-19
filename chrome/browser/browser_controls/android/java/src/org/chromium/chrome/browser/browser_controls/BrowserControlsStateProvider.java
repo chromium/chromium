@@ -40,11 +40,6 @@ public interface BrowserControlsStateProvider {
          * Called when the height of the top controls are changed.
          */
         default void onTopControlsHeightChanged(int topControlsHeight, int topControlsMinHeight) {}
-
-        /**
-         * Called whenever the controls' Android View visibility changes.
-         */
-        default void onAndroidVisibilityChanged(int visibility) {}
     }
 
     /**

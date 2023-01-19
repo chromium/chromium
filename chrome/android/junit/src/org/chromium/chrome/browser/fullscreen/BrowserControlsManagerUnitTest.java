@@ -294,10 +294,10 @@ public class BrowserControlsManagerUnitTest {
 
         int token = browserControlsManager.hideAndroidControlsAndClearOldToken(
                 TokenHolder.INVALID_TOKEN);
-        verify(mBrowserControlsStateProviderObserver).onAndroidVisibilityChanged(View.INVISIBLE);
+        verify(mContainerView).setVisibility(View.INVISIBLE);
 
         when(mContainerView.getVisibility()).thenReturn(View.INVISIBLE);
         browserControlsManager.releaseAndroidControlsHidingToken(token);
-        verify(mBrowserControlsStateProviderObserver).onAndroidVisibilityChanged(View.VISIBLE);
+        verify(mContainerView).setVisibility(View.VISIBLE);
     }
 }

@@ -149,10 +149,6 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                     ViewUtils.requestLayout(mControlContainer.getView(),
                             "BrowserControlsManager.mUpdateVisibilityRunnable Runnable");
                 }
-
-                for (BrowserControlsStateProvider.Observer observer : mControlsObservers) {
-                    observer.onAndroidVisibilityChanged(visibility);
-                }
             }
         }
     };
