@@ -665,9 +665,9 @@ TEST_F(HistoryURLProviderTest, WhatYouTyped_Exact_URLPreservesUsernameAndPasswor
 
 // Test that file: URLs are handled appropriately on each platform.
 // url_formatter has per-platform logic for Windows vs POSIX, and
-// AutocompleteInput has special casing for iOS.
+// AutocompleteInput has special casing for iOS and Android.
 TEST_F(HistoryURLProviderTest, Files) {
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   // On iOS, check that file URIs are treated like queries.
   AutocompleteInput ios_input_1(
       u"file:///foo", std::u16string::npos, std::string(),
@@ -678,7 +678,7 @@ TEST_F(HistoryURLProviderTest, Files) {
   EXPECT_EQ(matches_.size(), 0u);
 #endif  // BUILDFLAG(IS_IOS)
 
-#if !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // For everything but iOS, fixing up "file:" should result in an inline
   // autocomplete offset of just after "file:", not just after "file://".
   const std::u16string input_1(u"file:");
@@ -688,7 +688,7 @@ TEST_F(HistoryURLProviderTest, Files) {
   EXPECT_EQ(u"///C:/foo.txt", matches_.front().inline_autocompletion);
 #endif  // !BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // url_formatter::SegmentURLInternal does URL fixup differently depending on
   // platform. On all POSIX systems including iOS, /foo --> file:///foo.
   const std::u16string input_2(u"/foo");
@@ -696,7 +696,7 @@ TEST_F(HistoryURLProviderTest, Files) {
   ASSERT_NO_FATAL_FAILURE(
       RunTest(input_2, std::string(), false, fixup_2, std::size(fixup_2)));
   EXPECT_TRUE(matches_[0].destination_url.SchemeIsFile());
-#elif BUILDFLAG(IS_IOS)
+#elif BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   // However, AutocompleteInput ignores the URL fixup on iOS because it
   // treates iOS like a query.
   AutocompleteInput ios_input_2(u"/foo", std::u16string::npos, std::string(),
@@ -1168,14 +1168,14 @@ TEST_F(HistoryURLProviderTest, SuggestExactInput) {
       "mailto://a@b.com", {0, npos, npos}, 0 },
     { "http://a%20b/x%20y", false,
       "http://a%20b/x y", {0, npos, npos}, 0 },
-#if !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
     // file: URIs are treated like queries on iOS and need to be excluded from
     // this test, which assumes that all the inputs have canonical URLs.
     { "file:///x%20y/a%20b", true,
       "file:///x y/a b", {0, npos, npos}, 0 },
     { "file://x%20y/a%20b", true,
       "file://x%20y/a b", {0, npos, npos}, 0 },
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
     { "view-source:x%20y/a%20b", true,
      "view-source:x%20y/a b", {0, npos, npos}, 0 },
     { "view-source:http://x%20y/a%20b", false,

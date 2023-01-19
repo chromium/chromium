@@ -293,8 +293,9 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
     // either case, |parsed_scheme_utf8| will tell us that this is a file URL,
     // but |parts->scheme| might be empty, e.g. if the user typed "C:\foo".
 
-#if BUILDFLAG(IS_IOS)
-    // On iOS, which cannot display file:/// URLs, treat this case like a query.
+#if (BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))
+    // On iOS and Android, which cannot display file:/// URLs, treat this case
+    // like a query.
     return metrics::OmniboxInputType::QUERY;
 #else
     return metrics::OmniboxInputType::URL;

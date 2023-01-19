@@ -122,12 +122,12 @@ TEST(AutocompleteInputTest, InputType) {
     {u"C:\\Program Files", metrics::OmniboxInputType::URL},
     {u"\\\\Server\\Folder\\File", metrics::OmniboxInputType::URL},
 #endif  // BUILDFLAG(IS_WIN)
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
     {u"file:///foo", metrics::OmniboxInputType::QUERY},
     {u"/foo", metrics::OmniboxInputType::QUERY},
 #else
     {u"file:///foo", metrics::OmniboxInputType::URL},
-#endif  // BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
     {u"http:foo", metrics::OmniboxInputType::URL},
     {u"http://foo", metrics::OmniboxInputType::URL},
     {u"http://foo._", metrics::OmniboxInputType::UNKNOWN},
