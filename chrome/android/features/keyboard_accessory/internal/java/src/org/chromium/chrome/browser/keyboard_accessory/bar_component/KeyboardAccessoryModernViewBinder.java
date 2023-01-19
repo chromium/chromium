@@ -103,6 +103,11 @@ class KeyboardAccessoryModernViewBinder {
                 chipView.setMaxWidth(Integer.MAX_VALUE);
             }
 
+            // When chips are recycled, the constraint on primary text width (that is applied on
+            // long credit card suggestions) can persist. Reset such constraints.
+            chipView.getPrimaryTextView().setMaxWidth(Integer.MAX_VALUE);
+            chipView.getPrimaryTextView().setEllipsize(null);
+
             chipView.getPrimaryTextView().setText(item.getSuggestion().getLabel());
             if (item.getSuggestion().getItemTag() != null
                     && !item.getSuggestion().getItemTag().isEmpty()) {
