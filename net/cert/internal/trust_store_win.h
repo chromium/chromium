@@ -39,12 +39,13 @@ class NET_EXPORT TrustStoreWin : public TrustStore {
 
     // Returns true if any of the cert stores are not initialized.
     bool is_null() const {
-      return !roots.get() || !intermediates.get() || !disallowed.get() ||
-             !all.get();
+      return !roots.get() || !intermediates.get() || !trusted_people.get() ||
+             !disallowed.get() || !all.get();
     }
 
     crypto::ScopedHCERTSTORE roots;
     crypto::ScopedHCERTSTORE intermediates;
+    crypto::ScopedHCERTSTORE trusted_people;
     crypto::ScopedHCERTSTORE disallowed;
     crypto::ScopedHCERTSTORE all;
 

@@ -11,6 +11,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "net/base/features.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/x509_util.h"
@@ -95,6 +96,8 @@ TrustStoreWin::CertStores::CreateInMemoryStoresForTesting() {
       CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
   stores.intermediates = crypto::ScopedHCERTSTORE(CertOpenStore(
       CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+  stores.trusted_people = crypto::ScopedHCERTSTORE(CertOpenStore(
+      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
   stores.disallowed = crypto::ScopedHCERTSTORE(CertOpenStore(
       CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
   stores.InitializeAllCertsStore();
@@ -113,6 +116,8 @@ TrustStoreWin::CertStores TrustStoreWin::CertStores::CreateWithCollections() {
       CertOpenStore(CERT_STORE_PROV_COLLECTION, 0, NULL, 0, nullptr));
   stores.intermediates = crypto::ScopedHCERTSTORE(
       CertOpenStore(CERT_STORE_PROV_COLLECTION, 0, NULL, 0, nullptr));
+  stores.trusted_people = crypto::ScopedHCERTSTORE(
+      CertOpenStore(CERT_STORE_PROV_COLLECTION, 0, NULL, 0, nullptr));
   stores.disallowed = crypto::ScopedHCERTSTORE(
       CertOpenStore(CERT_STORE_PROV_COLLECTION, 0, NULL, 0, nullptr));
   stores.InitializeAllCertsStore();
@@ -129,6 +134,8 @@ void TrustStoreWin::CertStores::InitializeAllCertsStore() {
   // SyncGetIssuersOf will find them. disallowed_cert_store is not added
   // because the certs are distrusted; making them non-findable in
   // SyncGetIssuersOf helps us fail path-building faster.
+  // `trusted_people` is not added because it can only contain end-entity
+  // certs, so checking it for issuers during path building is not necessary.
   if (!CertAddStoreToCollection(all.get(), intermediates.get(),
                                 /*dwUpdateFlags=*/0, /*dwPriority=*/0)) {
     return;
@@ -184,6 +191,19 @@ class TrustStoreWin::Impl {
         stores.intermediates.get(), CERT_SYSTEM_STORE_CURRENT_USER_GROUP_POLICY,
         L"CA");
 
+    // Grab the user-added trusted server certs. Trusted end-entity certs are
+    // only allowed for server auth in the "local machine" store, but not in the
+    // "current user" store.
+    GatherEnterpriseCertsForLocation(stores.trusted_people.get(),
+                                     CERT_SYSTEM_STORE_LOCAL_MACHINE,
+                                     L"TrustedPeople");
+    GatherEnterpriseCertsForLocation(
+        stores.trusted_people.get(),
+        CERT_SYSTEM_STORE_LOCAL_MACHINE_GROUP_POLICY, L"TrustedPeople");
+    GatherEnterpriseCertsForLocation(stores.trusted_people.get(),
+                                     CERT_SYSTEM_STORE_LOCAL_MACHINE_ENTERPRISE,
+                                     L"TrustedPeople");
+
     // Grab the user-added disallowed certs.
     GatherEnterpriseCertsForLocation(stores.disallowed.get(),
                                      CERT_SYSTEM_STORE_LOCAL_MACHINE,
@@ -208,12 +228,17 @@ class TrustStoreWin::Impl {
     // clearing various caches, this should be replaced with
     // CERT_STORE_CTRL_NOTIFY_CHANGE and CERT_STORE_CTRL_RESYNC.
     if (!CertControlStore(stores.all.get(), 0, CERT_STORE_CTRL_AUTO_RESYNC,
-                          0)) {
+                          0) ||
+        !CertControlStore(stores.trusted_people.get(), 0,
+                          CERT_STORE_CTRL_AUTO_RESYNC, 0) ||
+        !CertControlStore(stores.disallowed.get(), 0,
+                          CERT_STORE_CTRL_AUTO_RESYNC, 0)) {
       PLOG(ERROR) << "Error enabling CERT_STORE_CTRL_AUTO_RESYNC";
     }
 
     root_cert_store_ = std::move(stores.roots);
     intermediate_cert_store_ = std::move(stores.intermediates);
+    trusted_people_cert_store_ = std::move(stores.trusted_people);
     disallowed_cert_store_ = std::move(stores.disallowed);
     all_certs_store_ = std::move(stores.all);
   }
@@ -222,6 +247,7 @@ class TrustStoreWin::Impl {
       : root_cert_store_(std::move(stores.roots)),
         intermediate_cert_store_(std::move(stores.intermediates)),
         all_certs_store_(std::move(stores.all)),
+        trusted_people_cert_store_(std::move(stores.trusted_people)),
         disallowed_cert_store_(std::move(stores.disallowed)) {}
 
   ~Impl() = default;
@@ -231,7 +257,8 @@ class TrustStoreWin::Impl {
   void SyncGetIssuersOf(const ParsedCertificate* cert,
                         ParsedCertificateList* issuers) {
     if (!root_cert_store_.get() || !intermediate_cert_store_.get() ||
-        !all_certs_store_.get() || !disallowed_cert_store_.get()) {
+        !trusted_people_cert_store_.get() || !all_certs_store_.get() ||
+        !disallowed_cert_store_.get()) {
       return;
     }
     base::span<const uint8_t> issuer_span = cert->issuer_tlv().AsSpan();
@@ -259,7 +286,8 @@ class TrustStoreWin::Impl {
   CertificateTrust GetTrust(const ParsedCertificate* cert,
                             base::SupportsUserData* debug_data) {
     if (!root_cert_store_.get() || !intermediate_cert_store_.get() ||
-        !all_certs_store_.get() || !disallowed_cert_store_.get()) {
+        !trusted_people_cert_store_.get() || !all_certs_store_.get() ||
+        !disallowed_cert_store_.get()) {
       return CertificateTrust::ForUnspecified();
     }
 
@@ -295,7 +323,35 @@ class TrustStoreWin::Impl {
         // If we find at least one version of the cert that is trusted for TLS
         // Server Auth, we will trust the cert.
         if (IsCertTrustedForServerAuth(cert_from_store)) {
-          return CertificateTrust::ForTrustAnchor().WithEnforceAnchorExpiry();
+          if (base::FeatureList::IsEnabled(
+                  features::kTrustStoreTrustedLeafSupport)) {
+            // Certificates in the Roots store may be used as either trust
+            // anchors or trusted leafs (if self-signed).
+            return CertificateTrust::ForTrustAnchorOrLeaf()
+                .WithEnforceAnchorExpiry()
+                .WithRequireLeafSelfSigned();
+          } else {
+            return CertificateTrust::ForTrustAnchor().WithEnforceAnchorExpiry();
+          }
+        }
+      }
+    }
+
+    if (base::FeatureList::IsEnabled(features::kTrustStoreTrustedLeafSupport)) {
+      while ((cert_from_store = CertFindCertificateInStore(
+                  trusted_people_cert_store_.get(), X509_ASN_ENCODING, 0,
+                  CERT_FIND_SHA1_HASH, &cert_hash_blob, cert_from_store))) {
+        base::span<const uint8_t> cert_from_store_span = base::make_span(
+            cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded);
+        if (base::ranges::equal(cert_span, cert_from_store_span)) {
+          // If we find at least one version of the cert that is trusted for TLS
+          // Server Auth, we will trust the cert.
+          if (IsCertTrustedForServerAuth(cert_from_store)) {
+            // Certificates in the Trusted People store may be trusted leafs (if
+            // self-signed).
+            return CertificateTrust::ForTrustedLeaf()
+                .WithRequireLeafSelfSigned();
+          }
         }
       }
     }
@@ -323,6 +379,9 @@ class TrustStoreWin::Impl {
 
   // Cert Collection for searching via SyncGetIssuersOf()
   crypto::ScopedHCERTSTORE all_certs_store_;
+
+  // Cert Collection containing all user-added trust leafs.
+  crypto::ScopedHCERTSTORE trusted_people_cert_store_;
 
   // Cert Collection for all disallowed certs.
   crypto::ScopedHCERTSTORE disallowed_cert_store_;
