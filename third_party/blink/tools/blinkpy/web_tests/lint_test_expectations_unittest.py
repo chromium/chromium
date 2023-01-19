@@ -26,11 +26,9 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import json
 import optparse
 import textwrap
 import unittest
-from unittest.mock import patch
 
 from blinkpy.common import exit_codes
 from blinkpy.common.host_mock import MockHost
@@ -493,42 +491,6 @@ class CheckVirtualSuiteTest(unittest.TestCase):
         res = lint_test_expectations.check_virtual_test_suites(
             self.host, self.options)
         self.assertFalse(res)
-
-    def test_check_virtual_test_suites_any_js(self):
-        suites = [
-            VirtualTestSuite(prefix='wpt-any-js',
-                             platforms=['Linux', 'Mac', 'Win'],
-                             bases=[
-                                 'external/wpt/test.any.html',
-                                 'external/wpt/test.any.worker.html'
-                             ],
-                             args=['--arg']),
-        ]
-        fs = self.host.filesystem
-        fs.write_text_file(
-            fs.join(self.port.web_tests_dir(), 'virtual', 'wpt-any-js',
-                    'README.md'), '')
-        manifest = {
-            'items': {
-                'testharness': {
-                    'test.any.js': [
-                        'df2f8b048c370d3ab009946d73d7de6f8a412471',
-                        ['test.any.html', {}],
-                        ['test.any.worker.html', {}],
-                    ],
-                },
-            },
-        }
-        manifest_path = fs.join(self.port.web_tests_dir(), 'external', 'wpt',
-                                'MANIFEST.json')
-        with fs.open_text_file_for_writing(manifest_path) as manifest_file:
-            json.dump(manifest, manifest_file)
-        with patch.object(self.port,
-                          'virtual_test_suites',
-                          return_value=suites):
-            self.assertEqual(
-                lint_test_expectations.check_virtual_test_suites(
-                    self.host, self.options), [])
 
     def test_check_virtual_test_suites_redundant(self):
         self.port.virtual_test_suites = lambda: [

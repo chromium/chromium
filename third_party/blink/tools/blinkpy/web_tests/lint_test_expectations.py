@@ -29,7 +29,6 @@
 import contextlib
 import json
 import logging
-import posixpath
 import optparse
 import re
 import traceback
@@ -326,13 +325,6 @@ def check_virtual_test_suites(host, options):
     virtual_suites = port.virtual_test_suites()
     virtual_suites.sort(key=lambda s: s.full_prefix)
 
-    wpt_tests = set()
-    for wpt_dir in port.WPT_DIRS:
-        with contextlib.suppress(FileNotFoundError):
-            wpt_tests.update(
-                posixpath.join(wpt_dir, url)
-                for url in port.wpt_manifest(wpt_dir).all_urls())
-
     failures = []
     for suite in virtual_suites:
         suite_comps = suite.full_prefix.split(port.TEST_PATH_SEPARATOR)
@@ -360,7 +352,7 @@ def check_virtual_test_suites(host, options):
                 continue
             base_comps = base.split(port.TEST_PATH_SEPARATOR)
             absolute_base = port.abspath_for_test(base)
-            if fs.isfile(absolute_base) or base in wpt_tests:
+            if fs.isfile(absolute_base):
                 del base_comps[-1]
             elif not fs.isdir(absolute_base):
                 failure = 'Base "{}" in virtual suite "{}" must refer to a real file or directory'.format(

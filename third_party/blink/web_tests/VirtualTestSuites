@@ -1696,7 +1696,7 @@
     "bases": [
       "external/wpt/html/infrastructure/safe-passing-of-structured-data/cross-origin-transfer-resizable-arraybuffer.html",
       "external/wpt/html/infrastructure/safe-passing-of-structured-data/messagechannel.any.js",
-      "external/wpt/html/infrastructure/safe-passing-of-structured-data/window-postmessage.window.html",
+      "external/wpt/html/infrastructure/safe-passing-of-structured-data/window-postmessage.window.js",
       "external/wpt/html/webappapis/structured-clone/structured-clone.any.js",
       "external/wpt/webidl/ecmascript-binding/allow-resizable.html",
       "external/wpt/workers/semantics/structured-clone/dedicated.html",
