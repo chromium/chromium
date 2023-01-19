@@ -105,7 +105,7 @@ BASE_FEATURE(kIOSPasswordCheckup,
 // Feature flag to show local/account storage in save/update password infobar
 // subtitle.
 BASE_FEATURE(kIOSShowPasswordStorageInSaveInfobar,
-             "ShowPasswordStorageInSaveInfobar",
+             "IOSShowPasswordStorageInSaveInfobar",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // IS_IOS
 
