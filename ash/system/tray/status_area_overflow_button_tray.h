@@ -8,16 +8,10 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
-#include "ash/system/tray/tray_bubble_wrapper.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
-#include "ui/gfx/canvas.h"
-#include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/scoped_canvas.h"
 #include "ui/views/controls/image_view.h"
 
 namespace gfx {

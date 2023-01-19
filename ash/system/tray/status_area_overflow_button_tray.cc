@@ -4,28 +4,34 @@
 
 #include "ash/system/tray/status_area_overflow_button_tray.h"
 
+#include <memory>
+
 #include "ash/constants/tray_background_view_catalog.h"
-#include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/animation/tween.h"
-#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/border.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
 namespace {
+
 constexpr int kAnimationDurationMs = 250;
 constexpr int kTrayWidth = kStatusAreaOverflowButtonSize.width();
 constexpr int kTrayHeight = kStatusAreaOverflowButtonSize.height();
+
 }  // namespace
 
 StatusAreaOverflowButtonTray::IconView::IconView()
@@ -37,14 +43,15 @@ StatusAreaOverflowButtonTray::IconView::IconView()
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  gfx::ImageSkia image = gfx::CreateVectorIcon(
+  SetImage(ui::ImageModel::FromVectorIcon(
       kOverflowShelfRightIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary));
-  SetImage(image);
+      static_cast<ui::ColorId>(kColorAshIconColorPrimary)));
 
-  const int vertical_padding = (kTrayHeight - image.height()) / 2;
-  const int horizontal_padding = (kTrayWidth - image.width()) / 2;
+  // The icon has the default size. Use the size to calculate the border so that
+  // the icon is placed at the center of the ink drop.
+  const int size = gfx::GetDefaultSizeOfVectorIcon(kOverflowShelfRightIcon);
+  const int vertical_padding = (kTrayHeight - size) / 2;
+  const int horizontal_padding = (kTrayWidth - size) / 2;
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(vertical_padding, horizontal_padding)));
 
