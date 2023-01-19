@@ -36799,6 +36799,9 @@ Called by update_extension_permission.py.-->
   <int value="26"
       label="Timed out while waiting for confirm passkey event from Bluetooth
              adapter"/>
+  <int value="27"
+      label="Failed to disconnect from GATT before retrying a failed GATT
+             connection"/>
 </enum>
 
 <enum name="FastPairPairingMethod">

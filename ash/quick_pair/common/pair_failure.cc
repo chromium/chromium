@@ -98,6 +98,10 @@ std::ostream& operator<<(std::ostream& stream, PairFailure failure) {
       stream << "[Timed out while waiting for confirm passkey event from "
                 "Bluetooth adapter]";
       break;
+    case PairFailure::kFailureToDisconnectGattBetweenRetries:
+      stream << "[Failed to disconnect from GATT before retrying a failed GATT "
+                "connection]";
+      break;
   }
 
   return stream;

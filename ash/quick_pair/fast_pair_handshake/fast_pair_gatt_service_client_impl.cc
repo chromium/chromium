@@ -42,6 +42,8 @@ constexpr uint8_t kAccountKeyStartByte = 0x04;
 
 constexpr base::TimeDelta kGattOperationTimeout = base::Seconds(15);
 constexpr int kMaxNumGattConnectionAttempts = 3;
+constexpr base::TimeDelta kCoolOffPeriodBeforeGattConnectionAfterDisconnect =
+    base::Seconds(2);
 
 constexpr const char* ToString(
     device::BluetoothGattService::GattErrorCode error_code) {
@@ -177,6 +179,45 @@ void FastPairGattServiceClientImpl::AttemptGattConnection() {
 
   QP_LOG(INFO) << __func__ << ": Starting GATT connection attempt #"
                << num_gatt_connection_attempts_ << " to device";
+
+  // Attempt creating a GATT connection with the device.
+  auto* device = adapter_->GetDevice(device_address_);
+  if (!device) {
+    // The device must have been lost between connection attempts.
+    NotifyInitializedError(
+        PairFailure::kPairingDeviceLostBetweenGattConnectionAttempts);
+    return;
+  }
+
+  // Remove any pre-existing GATT connection on the device before we make a
+  // new one. We cannot determine if there is a GATT connection already
+  // established, and because its not very expensive and has no impact if there
+  // is no connection established, we call `Disconnect` regardless.
+  QP_LOG(INFO) << __func__
+               << ": Disconnecting any previous connections before attempt";
+  device->Disconnect(
+      base::BindOnce(
+          &FastPairGattServiceClientImpl::CoolOffBeforeCreateGattConnection,
+          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&FastPairGattServiceClientImpl::NotifyInitializedError,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     PairFailure::kFailureToDisconnectGattBetweenRetries));
+}
+
+void FastPairGattServiceClientImpl::CoolOffBeforeCreateGattConnection() {
+  QP_LOG(INFO) << __func__;
+
+  // In order for the Disconnect to propagate into the platform code, we need
+  // a cool off period before we attempt to create a GATT connection in the case
+  // we did disconnect an active GATT connection.
+  gatt_connect_after_disconnect_cool_off_timer_.Start(
+      FROM_HERE, kCoolOffPeriodBeforeGattConnectionAfterDisconnect,
+      base::BindOnce(&FastPairGattServiceClientImpl::CreateGattConnection,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FastPairGattServiceClientImpl::CreateGattConnection() {
+  QP_LOG(INFO) << __func__;
 
   // Attempt creating a GATT connection with the device.
   auto* device = adapter_->GetDevice(device_address_);
