@@ -61,7 +61,7 @@ void CloneBookmarkNodeImpl(BookmarkModel* model,
     Time date_added = reset_node_times ? Time::Now() : element.date_added;
     DCHECK(!date_added.is_null());
 
-    const BookmarkNode* node = model->AddNewURL(
+    const BookmarkNode* node = model->AddURL(
         parent, index_to_add_at, element.title, element.url, &meta_info_map);
     model->SetDateAdded(node, date_added);
 
