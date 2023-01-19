@@ -18,33 +18,30 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../settings_shared.css.js';
 import './multidevice_feature_toggle.js';
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {castExists} from '../assert_extras.js';
+import {Constructor} from '../common/types';
 import {routes} from '../os_route.js';
-import {RouteOriginBehavior, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
+import {RouteOriginMixin, RouteOriginMixinInterface} from '../route_origin_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {MultiDeviceFeature} from './multidevice_constants.js';
 import {MultiDeviceFeatureBehavior, MultiDeviceFeatureBehaviorInterface} from './multidevice_feature_behavior.js';
 import {getTemplate} from './multidevice_feature_item.html.js';
-import {SettingsMultideviceFeatureToggleElement} from './multidevice_feature_toggle.js';
 import {recordSmartLockToggleMetric, SmartLockToggleLocation} from './multidevice_metrics_logger.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {MultiDeviceFeatureBehaviorInterface}
- * @implements {RouteOriginBehaviorInterface}
- */
-const SettingsMultideviceFeatureItemElementBase = mixinBehaviors(
-    [MultiDeviceFeatureBehavior, RouteOriginBehavior], PolymerElement);
+const SettingsMultideviceFeatureItemElementBase =
+    mixinBehaviors(
+        [MultiDeviceFeatureBehavior], RouteOriginMixin(PolymerElement)) as
+    Constructor<PolymerElement&RouteOriginMixinInterface&
+                MultiDeviceFeatureBehaviorInterface>;
 
-/** @polymer */
-class SettingsMultideviceFeatureItemElement extends
+export class SettingsMultideviceFeatureItemElement extends
     SettingsMultideviceFeatureItemElementBase {
   static get is() {
-    return 'settings-multidevice-feature-item';
+    return 'settings-multidevice-feature-item' as const;
   }
 
   static get template() {
@@ -53,14 +50,12 @@ class SettingsMultideviceFeatureItemElement extends
 
   static get properties() {
     return {
-      /** @type {!MultiDeviceFeature} */
       feature: Number,
 
       /**
        * If it is truthy, the item should be actionable and clicking on it
        * should navigate to the provided route. Otherwise, the item does not
        * have a subpage to navigate to.
-       * @type {!Route|undefined}
        */
       subpageRoute: Object,
 
@@ -81,7 +76,6 @@ class SettingsMultideviceFeatureItemElement extends
       /**
        * URLSearchParams for subpage route. No param is provided if it is
        * undefined.
-       * @type {URLSearchParams|undefined}
        */
       subpageRouteUrlSearchParams: Object,
 
@@ -100,13 +94,22 @@ class SettingsMultideviceFeatureItemElement extends
     };
   }
 
+  feature: MultiDeviceFeature;
+  icon: string;
+  iconTooltip: string;
+  isSubFeature: boolean;
+  isFeatureIconHidden: boolean;
+  subpageRoute: Route|undefined;
+  subpageRouteUrlSearchParams: URLSearchParams|undefined;
+  private route_: Route;
+
   constructor() {
     super();
 
     this.route_ = routes.MULTIDEVICE_FEATURES;
   }
 
-  ready() {
+  override ready(): void {
     super.ready();
 
     this.addEventListener(
@@ -115,46 +118,32 @@ class SettingsMultideviceFeatureItemElement extends
     this.addFocusConfig(this.subpageRoute, '#subpageButton');
   }
 
-  /** @override */
-  focus() {
-    const slot =
-        this.shadowRoot.querySelector('slot[name="feature-controller"]');
+  override focus(): void {
+    const slot = castExists(this.shadowRoot!.querySelector<HTMLSlotElement>(
+        'slot[name="feature-controller"]'));
     const elems = slot.assignedElements({flatten: true});
     assert(elems.length > 0);
     // Elems contains any elements that override the feature controller. If none
     // exist, contains the default toggle elem.
-    elems[0].focus();
+    (elems[0] as HTMLElement).focus();
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isRowClickable_() {
+  private isRowClickable_(): boolean {
     return this.hasSubpageClickHandler_() ||
         this.isFeatureStateEditable(this.feature);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  hasSubpageClickHandler_() {
+  private hasSubpageClickHandler_(): boolean {
     return !!this.subpageRoute && this.isFeatureAllowedByPolicy(this.feature);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowSeparator_() {
+  private shouldShowSeparator_(): boolean {
     return this.hasSubpageClickHandler_() || !!this.iconTooltip;
   }
 
-  /** @private */
-  handleItemClick_(event) {
+  private handleItemClick_(event: Event): void {
     // We do not navigate away if the click was on a link.
-    if (event.composedPath()[0].tagName === 'A') {
+    if ((event.composedPath()[0] as Element).tagName === 'A') {
       event.stopPropagation();
       return;
     }
@@ -163,10 +152,8 @@ class SettingsMultideviceFeatureItemElement extends
       if (this.isFeatureStateEditable(this.feature)) {
         // Toggle the editable feature if the feature is editable and does not
         // link to a subpage.
-        const toggleButton =
-            /** @type {SettingsMultideviceFeatureToggleElement} */
-            (this.shadowRoot.querySelector(
-                'settings-multidevice-feature-toggle'));
+        const toggleButton = castExists(this.shadowRoot!.querySelector(
+            'settings-multidevice-feature-toggle'));
         toggleButton.toggleFeature();
       }
       return;
@@ -175,9 +162,10 @@ class SettingsMultideviceFeatureItemElement extends
     // Remove the search term when navigating to avoid potentially having any
     // visible search term reappear at a later time. See
     // https://crbug.com/989119.
+    assert(this.subpageRoute);
     Router.getInstance().navigateTo(
-        /** @type {!Route} */ (this.subpageRoute),
-        this.subpageRouteUrlSearchParams, true /* opt_removeSearch */);
+        this.subpageRoute, this.subpageRouteUrlSearchParams,
+        true /* opt_removeSearch */);
   }
 
 
@@ -185,20 +173,17 @@ class SettingsMultideviceFeatureItemElement extends
    * The class name used for given multidevice feature item text container
    * Checks if icon is present next to text to determine if class 'middle'
    * applies
-   * @param {boolean} isFeatureIconHidden
-   * @return {string}
-   * @private
    */
-  getItemTextContainerClassName_(isFeatureIconHidden) {
+  private getItemTextContainerClassName_(isFeatureIconHidden: boolean): string {
     return isFeatureIconHidden ? 'start' : 'middle';
   }
 
   /**
    * Intercept (but do not stop propagation of) the feature-toggle-clicked event
    * for the purpose of logging metrics.
-   * @private
    */
-  onFeatureToggleClicked_(event) {
+  private onFeatureToggleClicked_(
+      event: CustomEvent<{feature: MultiDeviceFeature, enabled: boolean}>) {
     const feature = event.detail.feature;
     const enabled = event.detail.enabled;
 
@@ -210,6 +195,13 @@ class SettingsMultideviceFeatureItemElement extends
 
       recordSmartLockToggleMetric(toggleLocation, enabled);
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsMultideviceFeatureItemElement.is]:
+        SettingsMultideviceFeatureItemElement;
   }
 }
 

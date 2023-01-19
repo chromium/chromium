@@ -24,30 +24,28 @@ import {CrosNetworkConfigRemote, FilterType, InhibitReason, NetworkStateProperti
 import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {castExists} from '../assert_extras.js';
+import {Constructor} from '../common/types';
 import {routes} from '../os_route.js';
 import {OsSettingsRoutes} from '../os_settings_routes.js';
 
 import {MultiDeviceFeatureBehavior, MultiDeviceFeatureBehaviorInterface} from './multidevice_feature_behavior.js';
 import {getTemplate} from './multidevice_tether_item.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {NetworkListenerBehaviorInterface}
- * @implements {MultiDeviceFeatureBehaviorInterface}
- */
-const SettingsMultideviceTetherItemElementBase = mixinBehaviors(
-    [
-      NetworkListenerBehavior,
-      MultiDeviceFeatureBehavior,
-    ],
-    PolymerElement);
+const SettingsMultideviceTetherItemElementBase =
+    mixinBehaviors(
+        [
+          NetworkListenerBehavior,
+          MultiDeviceFeatureBehavior,
+        ],
+        PolymerElement) as
+    Constructor<PolymerElement&NetworkListenerBehaviorInterface&
+                MultiDeviceFeatureBehaviorInterface>;
 
-/** @polymer */
 class SettingsMultideviceTetherItemElement extends
     SettingsMultideviceTetherItemElementBase {
   static get is() {
-    return 'settings-multidevice-tether-item';
+    return 'settings-multidevice-tether-item' as const;
   }
 
   static get template() {
@@ -58,7 +56,6 @@ class SettingsMultideviceTetherItemElement extends
     return {
       /**
        * The device state for tethering.
-       * @private {?OncMojo.DeviceStateProperties|undefined}
        */
       deviceState_: Object,
 
@@ -66,13 +63,11 @@ class SettingsMultideviceTetherItemElement extends
        * The network state for a potential tethering host phone. Note that there
        * is at most one because only one MultiDevice host phone is allowed on an
        * account at a given time.
-       * @private {?OncMojo.NetworkStateProperties|undefined}
        */
       activeNetworkState_: Object,
 
       /**
        * Alias for allowing Polymer bindings to routes.
-       * @type {?OsSettingsRoutes}
        */
       routes: {
         type: Object,
@@ -81,7 +76,6 @@ class SettingsMultideviceTetherItemElement extends
 
       /**
        * Whether to show technology badge on mobile network icon.
-       * @private
        */
       showTechnologyBadge_: {
         type: Boolean,
@@ -93,26 +87,29 @@ class SettingsMultideviceTetherItemElement extends
     };
   }
 
-  /** @override */
+  routes: OsSettingsRoutes|null;
+  private activeNetworkState_: OncMojo.NetworkStateProperties|undefined;
+  private deviceState_: OncMojo.DeviceStateProperties|undefined;
+  private networkConfig_: CrosNetworkConfigRemote;
+  private showTechnologyBadge_: boolean;
+
   constructor() {
     super();
 
-    /** @private {!CrosNetworkConfigRemote} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.updateTetherDeviceState_();
     this.updateTetherNetworkState_();
   }
 
-  /** @override */
-  focus() {
-    this.shadowRoot.querySelector('settings-multidevice-feature-item').focus();
+  override focus(): void {
+    this.shadowRoot!.querySelector(
+                        'settings-multidevice-feature-item')!.focus();
   }
 
   /**
@@ -121,12 +118,9 @@ class SettingsMultideviceTetherItemElement extends
    * onNetworkStateListChanged, triggering updateTetherNetworkState_ and
    * rendering this callback redundant. As a result, we return early if the
    * active network is not changed.
-   * @param {!Array<NetworkStateProperties>}
-   *     networks
-   * @private
    */
-  onActiveNetworksChanged(networks) {
-    const guid = this.activeNetworkState_.guid;
+  override onActiveNetworksChanged(networks: NetworkStateProperties[]): void {
+    const guid = this.activeNetworkState_!.guid;
     if (!networks.find(network => network.guid === guid)) {
       return;
     }
@@ -138,12 +132,12 @@ class SettingsMultideviceTetherItemElement extends
   }
 
   /** CrosNetworkConfigObserver impl */
-  onNetworkStateListChanged() {
+  override onNetworkStateListChanged(): void {
     this.updateTetherNetworkState_();
   }
 
   /** CrosNetworkConfigObserver impl */
-  onDeviceStateListChanged() {
+  override onDeviceStateListChanged(): void {
     this.updateTetherDeviceState_();
   }
 
@@ -153,9 +147,8 @@ class SettingsMultideviceTetherItemElement extends
    * there is none). Note that crosNetworkConfig.getDeviceStateList retrieves at
    * most one device per NetworkType so there will be at most one Tether device
    * state.
-   * @private
    */
-  updateTetherDeviceState_() {
+  private updateTetherDeviceState_(): void {
     this.networkConfig_.getDeviceStateList().then(response => {
       const kTether = NetworkType.kTether;
       const deviceStates = response.result;
@@ -168,7 +161,7 @@ class SettingsMultideviceTetherItemElement extends
         scanning: false,
         simAbsent: false,
         type: kTether,
-      };
+      } as OncMojo.DeviceStateProperties;
     });
   }
 
@@ -178,9 +171,8 @@ class SettingsMultideviceTetherItemElement extends
    * only one host is allowed on an account at a given time. Then it sets
    * this.activeNetworkState_ to that network if there is one or a dummy object
    * with an empty string for a GUID otherwise.
-   * @private
    */
-  updateTetherNetworkState_() {
+  private updateTetherNetworkState_(): void {
     const kTether = NetworkType.kTether;
     const filter = {
       filter: FilterType.kVisible,
@@ -198,19 +190,22 @@ class SettingsMultideviceTetherItemElement extends
    * Returns an array containing the active network state if there is one
    * (note that if there is not GUID will be falsy).  Returns an empty array
    * otherwise.
-   * @return {!Array<NetworkStateProperties>}
-   * @private
    */
-  getNetworkStateList_() {
-    return this.activeNetworkState_.guid ? [this.activeNetworkState_] : [];
+  private getNetworkStateList_(): NetworkStateProperties[] {
+    return this.activeNetworkState_!.guid ?
+        [castExists(this.activeNetworkState_)] :
+        [];
   }
 
-  /**
-   * @return {!URLSearchParams}
-   * @private
-   */
-  getTetherNetworkUrlSearchParams_() {
+  private getTetherNetworkUrlSearchParams_(): URLSearchParams {
     return new URLSearchParams('type=Tether');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsMultideviceTetherItemElement.is]:
+        SettingsMultideviceTetherItemElement;
   }
 }
 

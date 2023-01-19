@@ -6,38 +6,22 @@ import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_style.css
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import '../../settings_shared.css.js';
 
-import {CrRadioButtonMixin} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_mixin.js';
+import {CrRadioButtonMixin, CrRadioButtonMixinInterface} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_mixin.js';
 import {PaperRippleBehavior} from 'chrome://resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
+import {PaperRippleElement} from 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Constructor} from '../common/types.js';
 
 import {getTemplate} from './multidevice_radio_button.html.js';
 
-class PaperRippleBehaviorInterface {
-  constructor() {
-    /**
-     * @type {?Element}
-     * @protected
-     */
-    this._rippleContainer;
-  }
-
-  /** @return {!HTMLElement} */
-  getRipple() {}
-}
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {CrRadioButtonMixinInterface}
- * @implements {PaperRippleBehaviorInterface}
- */
 const MultideviceRadioButtonElementBase =
-    mixinBehaviors([PaperRippleBehavior], CrRadioButtonMixin(PolymerElement));
+    mixinBehaviors([PaperRippleBehavior], CrRadioButtonMixin(PolymerElement)) as
+    Constructor<PolymerElement&CrRadioButtonMixinInterface&PaperRippleBehavior>;
 
-/** @polymer */
 class MultideviceRadioButtonElement extends MultideviceRadioButtonElementBase {
   static get is() {
-    return 'multidevice-radio-button';
+    return 'multidevice-radio-button' as const;
   }
 
   static get template() {
@@ -68,21 +52,20 @@ class MultideviceRadioButtonElement extends MultideviceRadioButtonElementBase {
     };
   }
 
-  ready() {
+  override ready(): void {
     super.ready();
     this.setAttribute('role', 'radio');
   }
 
   // Overridden from CrRadioButtonMixin
-  /** @override */
-  getPaperRipple() {
+  override getPaperRipple(): PaperRippleElement {
     return this.getRipple();
   }
 
   // Overridden from PaperRippleBehavior
   /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  _createRipple() {
-    this._rippleContainer = this.shadowRoot.querySelector('.disc-wrapper');
+  override _createRipple(): PaperRippleElement {
+    this._rippleContainer = this.shadowRoot!.querySelector('.disc-wrapper');
     const ripple = super._createRipple();
     ripple.id = 'ink';
     ripple.setAttribute('recenters', '');
@@ -90,19 +73,23 @@ class MultideviceRadioButtonElement extends MultideviceRadioButtonElementBase {
     return ripple;
   }
 
-  getLabel_(label) {
+  private getLabel_(label: string): string {
     return label;
   }
 
   /**
    * Prevents on-click handles on the control from being activated when the
    * indicator is clicked.
-   * @param {!Event} e The click event.
-   * @private
    */
-  onIndicatorTap_(e) {
+  private onIndicatorTap_(e: Event): void {
     e.preventDefault();
     e.stopPropagation();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [MultideviceRadioButtonElement.is]: MultideviceRadioButtonElement;
   }
 }
 

@@ -14,37 +14,33 @@
 
 import '../../settings_shared.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {castExists} from '../assert_extras.js';
+import {Constructor} from '../common/types.js';
 import {routes} from '../os_route.js';
 import {Router} from '../router.js';
 
 import {MultiDeviceFeatureBehavior, MultiDeviceFeatureBehaviorInterface} from './multidevice_feature_behavior.js';
 import {getTemplate} from './multidevice_wifi_sync_disabled_link.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {MultiDeviceFeatureBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- */
 const SettingsMultideviceWifiSyncDisabledLinkElementBase =
-    mixinBehaviors([MultiDeviceFeatureBehavior, I18nBehavior], PolymerElement);
+    mixinBehaviors([MultiDeviceFeatureBehavior], I18nMixin(PolymerElement)) as
+    Constructor<PolymerElement&I18nMixinInterface&
+                MultiDeviceFeatureBehaviorInterface>;
 
-/** @polymer */
 class SettingsMultideviceWifiSyncDisabledLinkElement extends
     SettingsMultideviceWifiSyncDisabledLinkElementBase {
   static get is() {
-    return 'settings-multidevice-wifi-sync-disabled-link';
+    return 'settings-multidevice-wifi-sync-disabled-link' as const;
   }
 
   static get template() {
     return getTemplate();
   }
 
-  getAriaLabelledContent_() {
+  private getAriaLabelledContent_(): string {
     const tempEl = document.createElement('div');
     tempEl.innerHTML = this.i18nAdvanced(
         'multideviceEnableWifiSyncV1ItemSummary', {attrs: ['id']});
@@ -55,14 +51,15 @@ class SettingsMultideviceWifiSyncDisabledLinkElement extends
         const spanNode = document.createElement('span');
         spanNode.textContent = node.textContent;
         spanNode.id = `id${index}`;
-        spanNode.setAttribute('aria-hidden', true);
+        spanNode.setAttribute('aria-hidden', 'true');
         node.replaceWith(spanNode);
-        return;
       }
     });
 
-    const chromeSyncLink = tempEl.querySelector('#chromeSyncLink');
-    const learnMoreLink = tempEl.querySelector('#learnMoreLink');
+    const chromeSyncLink =
+        castExists(tempEl.querySelector<HTMLAnchorElement>('#chromeSyncLink'));
+    const learnMoreLink =
+        castExists(tempEl.querySelector<HTMLAnchorElement>('#learnMoreLink'));
 
     chromeSyncLink.setAttribute(
         'aria-label', this.i18n('multideviceWifiSyncChromeSyncLabel'));
@@ -73,24 +70,26 @@ class SettingsMultideviceWifiSyncDisabledLinkElement extends
     return tempEl.innerHTML;
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
-    const chromeSyncLink = this.shadowRoot.querySelector('#chromeSyncLink');
+    const chromeSyncLink = this.shadowRoot!.querySelector('#chromeSyncLink');
     if (chromeSyncLink) {
       chromeSyncLink.addEventListener(
           'click', this.onChromeSyncLinkClick_.bind(this));
     }
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onChromeSyncLinkClick_(event) {
+  private onChromeSyncLinkClick_(event: Event): void {
     event.preventDefault();
     Router.getInstance().navigateTo(routes.OS_SYNC);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsMultideviceWifiSyncDisabledLinkElement.is]:
+        SettingsMultideviceWifiSyncDisabledLinkElement;
   }
 }
 

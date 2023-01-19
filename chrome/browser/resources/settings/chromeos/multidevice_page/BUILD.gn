@@ -18,23 +18,14 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":multidevice_browser_proxy",
-    ":multidevice_combined_setup_item",
     ":multidevice_constants",
     ":multidevice_feature_behavior",
-    ":multidevice_feature_item",
-    ":multidevice_feature_toggle",
     ":multidevice_metrics_logger",
     ":multidevice_notification_access_setup_dialog",
     ":multidevice_page",
     ":multidevice_permissions_setup_dialog",
-    ":multidevice_radio_button",
     ":multidevice_screen_lock_subpage",
     ":multidevice_subpage",
-    ":multidevice_task_continuation_disabled_link",
-    ":multidevice_task_continuation_item",
-    ":multidevice_tether_item",
-    ":multidevice_wifi_sync_disabled_link",
-    ":multidevice_wifi_sync_item",
   ]
 }
 
@@ -53,28 +44,6 @@ js_library("multidevice_feature_behavior") {
   deps = [
     ":multidevice_constants",
     "//ash/webui/common/resources:i18n_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("multidevice_feature_item") {
-  deps = [
-    ":multidevice_constants",
-    ":multidevice_feature_behavior",
-    ":multidevice_feature_toggle",
-    ":multidevice_metrics_logger",
-    "..:os_route",
-    "..:route_origin_behavior",
-    "..:router",
-    "//ash/webui/common/resources:assert",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("multidevice_feature_toggle") {
-  deps = [
-    ":multidevice_constants",
-    ":multidevice_feature_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -116,101 +85,16 @@ js_library("multidevice_permissions_setup_dialog") {
   ]
 }
 
-js_library("multidevice_radio_button") {
-  deps = [ "//third_party/polymer/v3_0/components-chromium/paper-behaviors:paper-ripple-behavior" ]
-  externs_list = [
-    "//ui/webui/resources/cr_elements/cr_radio_button/cr_radio_button_externs.js",
-    "//ui/webui/resources/cr_elements/policy/cr_policy_indicator_externs.js",
-  ]
-}
-
 js_library("multidevice_subpage") {
   deps = [
     ":multidevice_browser_proxy",
-    ":multidevice_combined_setup_item",
     ":multidevice_constants",
-    ":multidevice_task_continuation_item",
-    ":multidevice_wifi_sync_item",
     "..:deep_linking_behavior",
     "..:os_route",
     "..:os_settings_routes",
     "..:route_observer_behavior",
     "..:router",
     "//ash/webui/common/resources/network:network_listener_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("multidevice_combined_setup_item") {
-  deps = [
-    ":multidevice_constants",
-    ":multidevice_feature_behavior",
-    ":multidevice_feature_item",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [ "../settings_controls_types.js" ]
-}
-
-js_library("multidevice_tether_item") {
-  deps = [
-    ":multidevice_feature_behavior",
-    "..:os_route",
-    "..:os_settings_routes",
-    "//ash/webui/common/resources/network:mojo_interface_provider",
-    "//ash/webui/common/resources/network:network_listener_behavior",
-    "//ash/webui/common/resources/network:onc_mojo",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("multidevice_task_continuation_item") {
-  deps = [
-    ":multidevice_constants",
-    ":multidevice_feature_behavior",
-    ":multidevice_feature_item",
-    ":multidevice_task_continuation_disabled_link",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [ "../settings_controls_types.js" ]
-}
-
-js_library("multidevice_wifi_sync_item") {
-  deps = [
-    ":multidevice_feature_behavior",
-    ":multidevice_feature_item",
-    ":multidevice_wifi_sync_disabled_link",
-    "..:os_route",
-    "..:route_origin_behavior",
-    "..:router",
-    "../os_people_page:os_sync_browser_proxy",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [ "../settings_controls_types.js" ]
-}
-
-js_library("multidevice_task_continuation_disabled_link") {
-  deps = [
-    "..:os_route",
-    "..:router",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("multidevice_wifi_sync_disabled_link") {
-  deps = [
-    ":multidevice_feature_behavior",
-    "..:os_route",
-    "..:route_origin_behavior",
-    "..:router",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:load_time_data.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -227,18 +111,6 @@ js_library("multidevice_screen_lock_subpage") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [ "$externs_path/chrome_extensions.js" ]
-}
-
-js_library("multidevice_smartlock_item") {
-  deps = [
-    ":multidevice_browser_proxy",
-    ":multidevice_constants",
-    ":multidevice_feature_behavior",
-    ":multidevice_feature_item",
-    "..:metrics_recorder",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
 }
 
 js_library("multidevice_metrics_logger") {

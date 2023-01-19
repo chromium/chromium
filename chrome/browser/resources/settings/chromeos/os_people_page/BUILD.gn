@@ -95,7 +95,6 @@ js_library("lock_screen") {
     "..:os_route",
     "..:route_observer_behavior",
     "..:router",
-    "../multidevice_page:multidevice_smartlock_item",
     "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:focus_without_ink_js",
     "//ash/webui/common/resources:i18n_behavior",

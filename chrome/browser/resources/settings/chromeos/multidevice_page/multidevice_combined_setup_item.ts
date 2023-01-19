@@ -11,28 +11,25 @@ import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './multidevice_feature_item.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Constructor} from '../common/types';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
 import {getTemplate} from './multidevice_combined_setup_item.html.js';
 import {PhoneHubPermissionsSetupFeatureCombination} from './multidevice_constants.js';
 import {MultiDeviceFeatureBehavior, MultiDeviceFeatureBehaviorInterface} from './multidevice_feature_behavior.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {MultiDeviceFeatureBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- */
 const SettingsMultideviceCombinedSetupItemElementBase =
-    mixinBehaviors([MultiDeviceFeatureBehavior, I18nBehavior], PolymerElement);
+    mixinBehaviors([MultiDeviceFeatureBehavior], I18nMixin(PolymerElement)) as
+    Constructor<PolymerElement&I18nMixinInterface&
+                MultiDeviceFeatureBehaviorInterface>;
 
-/** @polymer */
 class SettingsMultideviceCombinedSetupItemElement extends
     SettingsMultideviceCombinedSetupItemElementBase {
   static get is() {
-    return 'settings-multidevice-combined-setup-item';
+    return 'settings-multidevice-combined-setup-item' as const;
   }
 
   static get template() {
@@ -59,14 +56,12 @@ class SettingsMultideviceCombinedSetupItemElement extends
         value: false,
       },
 
-      /** @private */
       setupName_: {
         type: String,
         computed: 'getSetupName_(cameraRoll, notifications, appStreaming)',
         reflectToAttribute: true,
       },
 
-      /** @private */
       setupSummary_: {
         type: String,
         computed: 'getSetupSummary_(cameraRoll, notifications, appStreaming)',
@@ -75,19 +70,21 @@ class SettingsMultideviceCombinedSetupItemElement extends
     };
   }
 
-  /** @override */
+  cameraRoll: boolean;
+  notifications: boolean;
+  appStreaming: boolean;
+
+  private browserProxy_: MultiDeviceBrowserProxy;
+  private setupName_: string;
+  private setupSummary_: string;
+
   constructor() {
     super();
 
-    /** @private {!MultiDeviceBrowserProxy} */
     this.browserProxy_ = MultiDeviceBrowserProxyImpl.getInstance();
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getSetupName_() {
+  private getSetupName_(): string {
     if (this.cameraRoll && this.notifications && this.appStreaming) {
       return this.i18n(
           'multidevicePhoneHubCameraRollNotificationsAndAppsItemTitle');
@@ -105,11 +102,7 @@ class SettingsMultideviceCombinedSetupItemElement extends
     return '';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getSetupSummary_() {
+  private getSetupSummary_(): string {
     if (this.cameraRoll && this.notifications && this.appStreaming) {
       return this.i18n(
           'multidevicePhoneHubCameraRollNotificationsAndAppsItemSummary');
@@ -127,8 +120,7 @@ class SettingsMultideviceCombinedSetupItemElement extends
     return '';
   }
 
-  /** @private */
-  handlePhoneHubSetupClick_() {
+  private handlePhoneHubSetupClick_(): void {
     const permissionSetupRequiredEvent = new CustomEvent(
         'permission-setup-requested', {bubbles: true, composed: true});
     this.dispatchEvent(permissionSetupRequiredEvent);
@@ -152,12 +144,18 @@ class SettingsMultideviceCombinedSetupItemElement extends
     this.browserProxy_.logPhoneHubPermissionSetUpButtonClicked(setupMode);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  getButtonDisabledState_() {
+  private getButtonDisabledState_(): boolean {
     return !this.isSuiteOn() || !this.isPhoneHubOn();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsMultideviceCombinedSetupItemElement.is]:
+        SettingsMultideviceCombinedSetupItemElement;
+  }
+  interface HTMLElementEventMap {
+    'permission-setup-requested': CustomEvent;
   }
 }
 

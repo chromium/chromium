@@ -22,32 +22,32 @@ import './multidevice_task_continuation_disabled_link.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import '../../settings_shared.css.js';
 
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SyncBrowserProxyImpl} from '../../people_page/sync_browser_proxy.js';
+import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs} from '../../people_page/sync_browser_proxy.js';
+import {Constructor} from '../common/types.js';
 
 import {MultiDeviceFeatureBehavior, MultiDeviceFeatureBehaviorInterface} from './multidevice_feature_behavior.js';
+import {SettingsMultideviceFeatureItemElement} from './multidevice_feature_item.js';
 import {getTemplate} from './multidevice_task_continuation_item.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {MultiDeviceFeatureBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsMultideviceTaskContinuationItemElementBase = mixinBehaviors(
-    [
-      MultiDeviceFeatureBehavior,
-      WebUIListenerBehavior,
-    ],
-    PolymerElement);
+interface SettingsMultideviceTaskContinuationItemElement {
+  $: {
+    phoneHubTaskContinuationItem: SettingsMultideviceFeatureItemElement,
+  };
+}
 
-/** @polymer */
+const SettingsMultideviceTaskContinuationItemElementBase =
+    mixinBehaviors(
+        [MultiDeviceFeatureBehavior], WebUiListenerMixin(PolymerElement)) as
+    Constructor<PolymerElement&WebUiListenerMixinInterface&
+                MultiDeviceFeatureBehaviorInterface>;
+
 class SettingsMultideviceTaskContinuationItemElement extends
     SettingsMultideviceTaskContinuationItemElementBase {
   static get is() {
-    return 'settings-multidevice-task-continuation-item';
+    return 'settings-multidevice-task-continuation-item' as const;
   }
 
   static get template() {
@@ -56,7 +56,6 @@ class SettingsMultideviceTaskContinuationItemElement extends
 
   static get properties() {
     return {
-      /** @private */
       isChromeTabsSyncEnabled_: {
         type: Boolean,
         value: false,
@@ -64,19 +63,19 @@ class SettingsMultideviceTaskContinuationItemElement extends
     };
   }
 
-  /** @override */
+  private isChromeTabsSyncEnabled_: boolean;
+  private syncBrowserProxy_: SyncBrowserProxy;
+
   constructor() {
     super();
 
-    /** @private {!SyncBrowserProxy} */
     this.syncBrowserProxy_ = SyncBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'sync-prefs-changed', this.handleSyncPrefsChanged_.bind(this));
 
     // Cause handleSyncPrefsChanged_() to be called when the element is first
@@ -84,10 +83,9 @@ class SettingsMultideviceTaskContinuationItemElement extends
     this.syncBrowserProxy_.sendSyncPrefsChanged();
   }
 
-  /** @override */
-  focus() {
+  override focus(): void {
     if (!this.isChromeTabsSyncEnabled_) {
-      this.shadowRoot.querySelector('cr-toggle').focus();
+      this.shadowRoot!.querySelector('cr-toggle')!.focus();
     } else {
       this.$.phoneHubTaskContinuationItem.focus();
     }
@@ -95,11 +93,16 @@ class SettingsMultideviceTaskContinuationItemElement extends
 
   /**
    * Handler for when the sync preferences are updated.
-   * @param {!SyncPrefs} syncPrefs
-   * @private
    */
-  handleSyncPrefsChanged_(syncPrefs) {
+  private handleSyncPrefsChanged_(syncPrefs: SyncPrefs): void {
     this.isChromeTabsSyncEnabled_ = !!syncPrefs && syncPrefs.tabsSynced;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsMultideviceTaskContinuationItemElement.is]:
+        SettingsMultideviceTaskContinuationItemElement;
   }
 }
 

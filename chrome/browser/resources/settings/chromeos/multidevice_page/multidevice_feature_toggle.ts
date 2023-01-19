@@ -13,25 +13,29 @@
 
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
+import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Constructor} from '../common/types.js';
 
 import {MultiDeviceFeature, MultiDeviceFeatureState} from './multidevice_constants.js';
 import {MultiDeviceFeatureBehavior, MultiDeviceFeatureBehaviorInterface} from './multidevice_feature_behavior.js';
 import {getTemplate} from './multidevice_feature_toggle.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {MultiDeviceFeatureBehaviorInterface}
- */
-const SettingsMultideviceFeatureToggleElementBase =
-    mixinBehaviors([MultiDeviceFeatureBehavior], PolymerElement);
+export interface SettingsMultideviceFeatureToggleElement {
+  $: {
+    toggle: CrToggleElement,
+  };
+}
 
-/** @polymer */
+const SettingsMultideviceFeatureToggleElementBase =
+    mixinBehaviors([MultiDeviceFeatureBehavior], PolymerElement) as
+    Constructor<PolymerElement&MultiDeviceFeatureBehaviorInterface>;
+
 export class SettingsMultideviceFeatureToggleElement extends
     SettingsMultideviceFeatureToggleElementBase {
   static get is() {
-    return 'settings-multidevice-feature-toggle';
+    return 'settings-multidevice-feature-toggle' as const;
   }
 
   static get template() {
@@ -40,12 +44,8 @@ export class SettingsMultideviceFeatureToggleElement extends
 
   static get properties() {
     return {
-      /** @type {!MultiDeviceFeature} */
       feature: Number,
-
       toggleAriaLabel: String,
-
-      /** @private {boolean} */
       checked_: Boolean,
     };
   }
@@ -54,15 +54,17 @@ export class SettingsMultideviceFeatureToggleElement extends
     return ['resetChecked_(feature, pageContentData)'];
   }
 
-  /** @override */
-  ready() {
+  feature: MultiDeviceFeature;
+  toggleAriaLabel: string;
+  private checked_: boolean;
+
+  override ready(): void {
     super.ready();
 
     this.addEventListener('click', this.onDisabledInnerToggleClick_);
   }
 
-  /** @override */
-  focus() {
+  override focus(): void {
     this.$.toggle.focus();
   }
 
@@ -71,7 +73,7 @@ export class SettingsMultideviceFeatureToggleElement extends
    * without other links. It attempts to toggle the feature's status if the user
    * is allowed.
    */
-  toggleFeature() {
+  toggleFeature(): void {
     this.resetChecked_();
 
     // Pass the negation of |this.checked_|: this indicates that if the toggle
@@ -90,9 +92,8 @@ export class SettingsMultideviceFeatureToggleElement extends
    * MultiDevice mojo service, we need the cr-toggle to appear not to change
    * when pressed. This method resets it before a change is visible to the
    * user.
-   * @private
    */
-  resetChecked_() {
+  private resetChecked_(): void {
     // If Phone Hub notification access is prohibited, the toggle is always off.
     if (this.feature === MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS &&
         this.isPhoneHubNotificationAccessProhibited()) {
@@ -120,18 +121,27 @@ export class SettingsMultideviceFeatureToggleElement extends
    * while it is disabled, the click event targets the parent element directly
    * instead of propagating through the cr-toggle. This handler prevents such a
    * click from unintentionally bubbling up the tree.
-   * @private
    */
-  onDisabledInnerToggleClick_(event) {
+  private onDisabledInnerToggleClick_(event: Event) {
     event.stopPropagation();
   }
 
   /**
    * Returns the A11y label for the toggle.
-   * @private
    */
-  getToggleA11yLabel_() {
+  private getToggleA11yLabel_(): string {
     return this.toggleAriaLabel || this.getFeatureName(this.feature);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsMultideviceFeatureToggleElement.is]:
+        SettingsMultideviceFeatureToggleElement;
+  }
+  interface HTMLElementEventMap {
+    'feature-toggle-clicked':
+        CustomEvent<{feature: MultiDeviceFeature, enabled: boolean}>;
   }
 }
 
