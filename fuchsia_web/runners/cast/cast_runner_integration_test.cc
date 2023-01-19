@@ -958,7 +958,13 @@ TEST_F(CastRunnerIntegrationTest, OnApplicationTerminated_WindowClose) {
 // Verifies that the ComponentController reports TerminationReason::EXITED and
 // exit code ZX_OK if the web content terminates itself.
 // TODO(https://crbug.com/1066833): Make this a WebRunner test.
-TEST_F(CastRunnerIntegrationTest, OnTerminated_WindowClose) {
+// TODO(crbug.com/1408810): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_OnTerminated_WindowClose DISABLED_OnTerminated_WindowClose
+#else
+#define MAYBE_OnTerminated_WindowClose OnTerminated_WindowClose
+#endif
+TEST_F(CastRunnerIntegrationTest, MAYBE_OnTerminated_WindowClose) {
   TestCastComponent component(cast_runner());
   const GURL url = test_server().GetURL(kBlankAppUrl);
   app_config_manager().AddApp(kTestAppId, url);
