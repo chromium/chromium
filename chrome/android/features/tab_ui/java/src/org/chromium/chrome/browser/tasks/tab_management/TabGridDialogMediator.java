@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMediator.INITIAL_SCROLL_INDEX_OFFSET_GTS;
+
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -533,7 +535,8 @@ public class TabGridDialogMediator
         }
         List<Tab> relatedTabs = getRelatedTabs(mCurrentTabId);
         Tab currentTab = mTabModelSelector.getTabById(mCurrentTabId);
-        int initialPosition = relatedTabs.indexOf(currentTab);
+        int initialPosition =
+                Math.max(relatedTabs.indexOf(currentTab) - INITIAL_SCROLL_INDEX_OFFSET_GTS, 0);
         mModel.set(TabGridPanelProperties.INITIAL_SCROLL_INDEX, initialPosition);
     }
 

@@ -476,15 +476,15 @@ public class TabSwitcherMediatorUnitTest {
 
         doReturn(1).when(mTabModelFilter).index();
         mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(incognitoTabModel, mTabModel);
-        assertThat(mModel.get(TabListContainerProperties.INITIAL_SCROLL_INDEX), equalTo(1));
+        assertThat(mModel.get(TabListContainerProperties.INITIAL_SCROLL_INDEX), equalTo(0));
 
         doReturn(2).when(mTabModelFilter).index();
         mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(incognitoTabModel, mTabModel);
-        assertThat(mModel.get(TabListContainerProperties.INITIAL_SCROLL_INDEX), equalTo(2));
+        assertThat(mModel.get(TabListContainerProperties.INITIAL_SCROLL_INDEX), equalTo(0));
 
         doReturn(3).when(mTabModelFilter).index();
         mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(incognitoTabModel, mTabModel);
-        assertThat(mModel.get(TabListContainerProperties.INITIAL_SCROLL_INDEX), equalTo(3));
+        assertThat(mModel.get(TabListContainerProperties.INITIAL_SCROLL_INDEX), equalTo(1));
     }
 
     @Test
@@ -576,11 +576,10 @@ public class TabSwitcherMediatorUnitTest {
         mMediator.showTabSwitcherView(true);
         assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(true));
 
-        // Set to an "invalid" value and ensure it gets changed.
-        mModel.set(TabListContainerProperties.INITIAL_SCROLL_INDEX, 1337);
+        mModel.set(TabListContainerProperties.INITIAL_SCROLL_INDEX, 1);
 
         mTabModelObserverCaptor.getValue().restoreCompleted();
-        assertThat(mModel.get(TabListContainerProperties.INITIAL_SCROLL_INDEX), equalTo(2));
+        assertThat(mModel.get(TabListContainerProperties.INITIAL_SCROLL_INDEX), equalTo(0));
     }
 
     @Test
@@ -716,11 +715,10 @@ public class TabSwitcherMediatorUnitTest {
         initAndAssertAllProperties();
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
 
-        // Set to an "invalid" value and ensure it gets changed.
-        mModel.set(TabListContainerProperties.INITIAL_SCROLL_INDEX, 1337);
+        mModel.set(TabListContainerProperties.INITIAL_SCROLL_INDEX, 1);
 
         mMediator.prepareTabSwitcherView();
-        assertThat(mModel.get(TabListContainerProperties.INITIAL_SCROLL_INDEX), equalTo(2));
+        assertThat(mModel.get(TabListContainerProperties.INITIAL_SCROLL_INDEX), equalTo(0));
     }
 
     @Test

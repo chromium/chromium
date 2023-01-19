@@ -4,15 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.lessThan;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.hamcrest.MockitoHamcrest.intThat;
-
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.areAnimatorsEnabled;
 
 import android.content.res.ColorStateList;
@@ -40,7 +31,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.UiThreadTest;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView.VisibilityListener;
@@ -60,7 +50,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Tests for {@link TabGridPanelViewBinder}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
 public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     private static final String TAG = "TGPVBT";
     private static final int CONTENT_TOP_MARGIN = 56;
@@ -75,7 +64,6 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     private EditText mTitleTextView;
     private View mMainContent;
     private ScrimCoordinator mScrimCoordinator;
-    private GridLayoutManager mLayoutManager;
 
     @Override
     public void setUpTest() throws Exception {
@@ -86,8 +74,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
             mContentView =
                     (TabListRecyclerView) LayoutInflater.from(getActivity())
                             .inflate(R.layout.tab_list_recycler_view_layout, parentView, false);
-            mLayoutManager = spy(new GridLayoutManager(getActivity(), 2));
-            mContentView.setLayoutManager(mLayoutManager);
+            mContentView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
             mToolbarView = (TabGroupUiToolbarView) LayoutInflater.from(getActivity())
                                    .inflate(R.layout.bottom_tab_grid_toolbar, mContentView, false);
             LayoutInflater.from(getActivity())
@@ -479,19 +466,6 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
         });
 
         Assert.assertNotNull(mTabGridDialogView.getVisibilityListenerForTesting());
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testSetInitialScrollIndex() {
-        mContentView.layout(0, 0, 100, 500);
-
-        mModel.set(TabGridPanelProperties.INITIAL_SCROLL_INDEX, 5);
-
-        verify(mLayoutManager, times(1))
-                .scrollToPositionWithOffset(eq(5),
-                        intThat(allOf(lessThan(mContentView.getHeight() / 2), greaterThan(0))));
     }
 
     @Override
