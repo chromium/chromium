@@ -29,6 +29,8 @@
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace extensions {
 
@@ -65,14 +67,12 @@ class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
     pm_observation_.Observe(ProcessManager::Get(port_->browser_context_));
   }
 
-  void TrackTabFrames(content::WebContents* tab) {
-    Observe(tab);
-  }
+  void TrackTabFrames(content::WebContents* tab) { Observe(tab); }
 
  private:
   // content::WebContentsObserver overrides:
-  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host)
-      override {
+  void RenderFrameDeleted(
+      content::RenderFrameHost* render_frame_host) override {
     port_->UnregisterFrame(render_frame_host);
   }
 
@@ -309,7 +309,7 @@ void ExtensionMessagePort::DispatchOnDisconnect(
 }
 
 void ExtensionMessagePort::DispatchOnMessage(const Message& message) {
-  // Since we are now receicing a message, we can mark any asynchronous reply
+  // Since we are now receiving a message, we can mark any asynchronous reply
   // that may have been pending for this port as no longer pending.
   asynchronous_reply_pending_ = false;
   SendToPort(base::BindRepeating(&ExtensionMessagePort::BuildDeliverMessageIPC,
@@ -498,14 +498,23 @@ void ExtensionMessagePort::SendToPort(IPCBuilderCallback ipc_builder) {
     // sees. It is not worth the effort to present all of them to the user. It's
     // unlikely they will see the same one every time and if they do, when they
     // fix that one, they will see the others.
+    //
+    // TODO (crbug.com/1382623): currently we only make use of the base URL,
+    // it's also possible to get the full URL from extension ID so it could
+    // provide more useful context.
     if (target.render_frame_host &&
         target.render_frame_host->IsInLifecycleState(
             content::RenderFrameHost::LifecycleState::kInBackForwardCache)) {
       content::BackForwardCache::DisableForRenderFrameHost(
-          target.render_frame_host, back_forward_cache::DisabledReason(
-                                        back_forward_cache::DisabledReasonId::
-                                            kExtensionSentMessageToCachedFrame,
-                                        /*context=*/extension_id_));
+          target.render_frame_host,
+          back_forward_cache::DisabledReason(
+              back_forward_cache::DisabledReasonId::
+                  kExtensionSentMessageToCachedFrame,
+              /*context=*/extension_id_),
+          ukm::UkmRecorder::GetSourceIdFromScopeImpl(
+              Extension::GetBaseURLFromExtensionId(extension_id_),
+              ukm::SourceIdType::EXTENSION_ID));
+
       continue;
     }
 

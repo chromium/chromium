@@ -11,15 +11,18 @@
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-shared.h"
 
@@ -58,6 +61,10 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ExtensionBrowserTest::SetUpOnMainThread();
+  }
+
+  content::RenderFrameHost* current_main_frame_host() {
+    return web_contents()->GetPrimaryMainFrame();
   }
 
   void RunChromeRuntimeConnectTest() {
@@ -1191,6 +1198,165 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   // Extension should no longer be able to change title, since the permission
   // should not revive with BFCache navigation to a.com.
   ExpectTitleChangeFail(*extension);
+}
+
+// This subclass adds some necessary setup for testing the BFCache metrics
+// reported by the extensions.
+class ExtensionBackForwardCacheMetricsBrowserTest
+    : public ExtensionBackForwardCacheBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    ExtensionBackForwardCacheBrowserTest::SetUpOnMainThread();
+
+    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    // Enable extension sync, otherwise the new source url entry will be
+    // dropped.
+    test_ukm_recorder_->SetIsWebstoreExtensionCallback(
+        base::BindRepeating([](base::StringPiece) { return true; }));
+  }
+
+ protected:
+  ukm::TestUkmRecorder* test_ukm_recorder() { return test_ukm_recorder_.get(); }
+
+ private:
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
+};
+
+namespace {
+
+// Convert the given source and reason into metric value that is used for metric
+// testing. This follows the implementation of
+// `content::BackForwardCacheMetrics::MetricValue`.
+// See the comments from `content::BackForwardCache::DisabledSource` also.
+constexpr int ToBackForwardCacheDisabledReasonMetricValue(
+    content::BackForwardCache::DisabledSource source,
+    back_forward_cache::DisabledReasonId reason) {
+  return (static_cast<int>(source) << 16) + static_cast<int>(reason);
+}
+
+}  // namespace
+
+// Test if the extension sends message to a cached document, the document is not
+// allowed to enter the back/forward cache, and the
+// `BackForwardCacheDisabledForRenderFrameHostReason` metric will be recorded
+// for the document URL and the extension URL.
+// It also tests the case when the same extension triggers the disabling twice
+// in different navigations, the metrics should be recorded under different
+// source ids.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionBackForwardCacheMetricsBrowserTest,
+    BFCacheMetricsRecordedIfExtensionSendsMessageToCachedFrame) {
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
+                        .AppendASCII("content_script_message_on_pagehide"));
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+  content::RenderFrameHostWrapper rfh_a(current_main_frame_host());
+
+  // 2) Wait for the extension to be successfully loaded.
+  const char16_t kTitleModified[] = u"modified";
+  ASSERT_EQ(
+      kTitleModified,
+      content::TitleWatcher(web_contents(), kTitleModified).WaitAndGetTitle());
+
+  // 3) Navigate to B.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+
+  // 4) Wait for A to be deleted since back/forward cache will be disabled
+  // because the loaded extension is attempting to send messages to the cached
+  // page A.
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+
+  // 5) Go back to A.
+  web_contents()->GetController().GoBack();
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+
+  // Expect that metrics are recorded properly in `test_ukm_recorder()`.
+  constexpr int kExtensionSentMessageToCachedFrame =
+      ToBackForwardCacheDisabledReasonMetricValue(
+          content::BackForwardCache::DisabledSource::kEmbedder,
+          back_forward_cache::DisabledReasonId::
+              kExtensionSentMessageToCachedFrame);
+
+  auto entries = test_ukm_recorder()->GetEntriesByName(
+      ukm::builders::BackForwardCacheDisabledForRenderFrameHostReason::
+          kEntryName);
+  // There should be two entries, one for the document URL and one for the
+  // extension URL.
+  ASSERT_EQ(2u, entries.size());
+
+  std::vector<const GURL> entry_urls;
+  for (const auto* const entry : entries) {
+    auto* src = test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
+    EXPECT_TRUE(src)
+        << "The recorded UKM source id should have a source URL registered.";
+
+    entry_urls.push_back(src->url());
+    test_ukm_recorder()->ExpectEntryMetric(
+        entry,
+        ukm::builders::BackForwardCacheDisabledForRenderFrameHostReason::
+            kReason2Name,
+        kExtensionSentMessageToCachedFrame);
+  }
+  EXPECT_THAT(entry_urls,
+              testing::UnorderedElementsAre(url_a, extension->url()))
+      << "UKM metrics should be recorded under the document URL and the "
+         "extension URL.";
+
+  // 6) Now we are in A, wait for the extension to be successfully loaded.
+  content::RenderFrameHostWrapper rfh_a2(current_main_frame_host());
+  ASSERT_EQ(
+      kTitleModified,
+      content::TitleWatcher(web_contents(), kTitleModified).WaitAndGetTitle());
+
+  // 7) Navigate to B.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+
+  // 8) Wait for A to be deleted since back/forward cache will be disabled
+  // because the loaded extension is attempting to send messages to the cached
+  // page A.
+  ASSERT_TRUE(rfh_a2.WaitUntilRenderFrameDeleted());
+
+  // 9) Go back to A.
+  web_contents()->GetController().GoBack();
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+
+  // Expect that metrics are recorded properly in `test_ukm_recorder()`, and
+  // with a different source id compared to the first time.
+  entries = test_ukm_recorder()->GetEntriesByName(
+      ukm::builders::BackForwardCacheDisabledForRenderFrameHostReason::
+          kEntryName);
+  // There should be two more new entries, one for the document URL and one for
+  // the extension URL.
+  EXPECT_EQ(2u + 2u, entries.size())
+      << "Another 2 UKM metrics with different source ID should be recorded "
+         "from the second navigation";
+
+  entry_urls.clear();
+  for (const auto* const entry : entries) {
+    auto* src = test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
+    ASSERT_TRUE(src)
+        << "The recorded UKM source id should have a source URL registered.";
+
+    entry_urls.push_back(src->url());
+    test_ukm_recorder()->ExpectEntryMetric(
+        entry,
+        ukm::builders::BackForwardCacheDisabledForRenderFrameHostReason::
+            kReason2Name,
+        kExtensionSentMessageToCachedFrame);
+  }
+
+  EXPECT_THAT(entry_urls, testing::UnorderedElementsAre(
+                              url_a, url_a, extension->url(), extension->url()))
+      << "UKM metrics should be recorded under the document URL and the "
+         "extension URL, and they are recorded twice each with different UKM "
+         "source id.";
 }
 
 }  // namespace extensions

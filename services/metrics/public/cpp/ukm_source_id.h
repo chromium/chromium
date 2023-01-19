@@ -87,8 +87,14 @@ class METRICS_EXPORT SourceIdObj {
     // associated events are expected to be recorded within the same report
     // interval; it will not be kept in memory between different reports.
     CHROMEOS_WEBSITE_ID = 11,
+    // Source ID type for extensions. A new source of this
+    // type and associated events are expected to be recorded within the same
+    // report interval; it will not be kept in memory between different reports.
+    // Some criteria (e.g. checking if it's a synced extension) will be applied
+    // when recording metrics with this type.
+    EXTENSION_ID = 12,
 
-    kMaxValue = CHROMEOS_WEBSITE_ID,
+    kMaxValue = EXTENSION_ID,
   };
 
   // Default constructor has the invalid value.

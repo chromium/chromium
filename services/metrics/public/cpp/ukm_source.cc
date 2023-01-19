@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/hash/hash.h"
 #include "base/notreached.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/metrics_proto/ukm/source.pb.h"
 
 namespace ukm {
@@ -63,6 +64,8 @@ SourceType ToProtobufSourceType(SourceIdType source_id_type) {
       return SourceType::WEB_IDENTITY_ID;
     case SourceIdType::CHROMEOS_WEBSITE_ID:
       return SourceType::CHROMEOS_WEBSITE_ID;
+    case SourceIdType::EXTENSION_ID:
+      return SourceType::EXTENSION_ID;
   }
 }
 

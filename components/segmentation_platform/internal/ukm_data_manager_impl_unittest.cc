@@ -32,7 +32,7 @@ using ukm::builders::PageLoad;
 using ukm::builders::PaintPreviewCapture;
 
 constexpr ukm::SourceId kSourceId = 10;
-constexpr ukm::SourceId kSourceId2 = 12;
+constexpr ukm::SourceId kSourceId2 = 20;
 
 ukm::mojom::UkmEntryPtr GetSamplePageLoadEntry(
     ukm::SourceId source_id = kSourceId) {

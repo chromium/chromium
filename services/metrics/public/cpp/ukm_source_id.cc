@@ -111,6 +111,8 @@ std::string GetSourceIdTypeDebugString(SourceId source_id) {
       return "WEB_IDENTITY_ID";
     case SourceIdObj::Type::CHROMEOS_WEBSITE_ID:
       return "CHROMEOS_WEBSITE_ID";
+    case SourceIdObj::Type::EXTENSION_ID:
+      return "EXTENSION_ID";
   }
 }
 

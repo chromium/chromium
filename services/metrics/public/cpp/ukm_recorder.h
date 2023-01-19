@@ -37,6 +37,10 @@ namespace web_app {
 class DesktopWebAppUkmRecorder;
 }
 
+namespace extensions {
+class ExtensionMessagePort;
+}
+
 namespace weblayer {
 class BackgroundSyncDelegateImpl;
 }
@@ -146,6 +150,9 @@ class METRICS_EXPORT UkmRecorder {
   friend metrics::UkmRecorderInterface;
   friend PermissionUmaUtil;
   friend content::RenderFrameHostImpl;
+  // `extensions::ExtensionMessagePort` is marked as friend to allow it to
+  // associate an extension URL with a new source Id.
+  friend extensions::ExtensionMessagePort;
 
   // Associates the SourceId with a URL. Most UKM recording code should prefer
   // to use a shared SourceId that is already associated with a URL, rather

@@ -243,6 +243,12 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   // Marks for deletion if the |source_id| is of a certain type.
   void MaybeMarkForDeletion(SourceId source_id);
 
+  // Checks if the given |sanitized_extension_url| should be dropped because of
+  // invalid scheme, extension URL recording consent, or whether it's a webstore
+  // extension, and records the dropped reason if so.
+  bool ShouldDropExtensionUrl(const GURL& sanitized_extension_url,
+                              bool has_recorded_reason) const;
+
   // Returns the result whether |sanitized_url| should be recorded.
   ShouldRecordUrlResult ShouldRecordUrl(SourceId source_id,
                                         const GURL& sanitized_url) const;

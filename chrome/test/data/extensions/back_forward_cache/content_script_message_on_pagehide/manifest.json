@@ -1,0 +1,17 @@
+{
+  "name": "extension send message on page hide",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Test sending message from extensions.",
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content_script.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  }
+}
