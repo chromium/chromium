@@ -26,6 +26,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -2905,6 +2906,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 #endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        MAYBE_AccessibilitySelectMenu) {
+  // Fails when synchronous a11y serialization is enabled - crbug.com/1401767
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSerializeAccessibilityPostLifecycle)) {
+    return;
+  }
   RunHtmlTest(FILE_PATH_LITERAL("selectmenu.html"));
 }
 
