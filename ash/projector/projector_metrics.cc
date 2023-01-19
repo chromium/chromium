@@ -37,6 +37,10 @@ constexpr char kProjectorPendingScreencastChangeIntervalHistogramName[] =
 constexpr char kProjectorPolicyChangeHandlingErrorHistogramName[] =
     "Ash.Projector.PolicyChangeHandlingError";
 
+constexpr char
+    kProjectorOnDeviceToServerSpeechRecognitionFallbackReasonHistogramName[] =
+        "Ash.Projector.OnDeviceToServerSpeechRecognitionFallbackReason";
+
 // Appends the proper suffix to |prefix| based on whether the user is in tablet
 // mode or not.
 std::string GetHistogramName(const std::string& prefix) {
@@ -112,6 +116,13 @@ ASH_EXPORT void RecordPendingScreencastChangeInterval(
   // bucket.
   base::UmaHistogramTimes(
       kProjectorPendingScreencastChangeIntervalHistogramName, interval);
+}
+
+ASH_EXPORT void RecordOnDeviceToServerSpeechRecognitionFallbackReason(
+    OnDeviceToServerSpeechRecognitionFallbackReason reason) {
+  base::UmaHistogramEnumeration(
+      kProjectorOnDeviceToServerSpeechRecognitionFallbackReasonHistogramName,
+      reason);
 }
 
 }  // namespace ash

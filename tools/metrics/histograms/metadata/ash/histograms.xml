@@ -4119,6 +4119,19 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
+<histogram name="Ash.Projector.OnDeviceToServerSpeechRecognitionFallbackReason"
+    enum="OnDeviceToServerSpeechRecognitionFallbackReason"
+    expires_after="2023-12-17">
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
+  <owner>cros-projector@google.com</owner>
+  <summary>
+    Records the fallback reason of using server based speech recognition instead
+    of on device speech recogniton. This metric is recorded on server based
+    speech recognition in projector session.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Projector.PendingScreencastBatchIOTaskDuration" units="ms"
     expires_after="2023-10-17">
   <owner>xiqiruan@chromium.org</owner>

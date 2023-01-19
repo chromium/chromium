@@ -75067,6 +75067,16 @@ Called by update_net_trust_anchors.py.-->
       label="The permission request is delivered to phone's Exo package"/>
 </enum>
 
+<enum name="OnDeviceToServerSpeechRecognitionFallbackReason">
+  <int value="0" label="Device does not support SODA"/>
+  <int value="1" label="User's language is not supported by SODA"/>
+  <int value="2" label="SODA binary is not installed"/>
+  <int value="3" label="SODA binary and language packs are downloading"/>
+  <int value="4" label="SODA installation failed"/>
+  <int value="5" label="SODA installation error needs reboot"/>
+  <int value="6" label="Enforced by flag for dev"/>
+</enum>
+
 <enum name="OnServiceConnectedTimedOutResult">
   <int value="0" label="AlreadyConnected">
     OnServiceConnected is already called. Everything worked as expected.

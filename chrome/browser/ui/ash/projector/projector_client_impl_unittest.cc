@@ -7,12 +7,14 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/projector/projector_metrics.h"
 #include "ash/public/cpp/locale_update_controller.h"
 #include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/test/mock_projector_controller.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "ash/webui/projector_app/test/mock_app_client.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,6 +31,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -39,6 +42,10 @@ const char kFirstSpeechResult[] = "the brown fox";
 const char kSecondSpeechResult[] = "the brown fox jumped over the lazy dog";
 
 const char kEnglishUS[] = "en-US";
+
+constexpr char kS3FallbackReasonMetricName[] =
+    "Ash.Projector.OnDeviceToServerSpeechRecognitionFallbackReason";
+
 inline void SetLocale(const std::string& locale) {
   g_browser_process->SetApplicationLocale(locale);
 }
@@ -167,6 +174,29 @@ class ProjectorClientImplUnitTest
   }
 
  protected:
+  // Start speech recognition and verify on device to server based speech
+  // recognition fallback reason. If `expected_reason` is null, there will be no
+  // metric recorded because there is no fallback to server based recognition.
+  void MaybeReportToServerBasedFallbackReasonMetricAndVerify(
+      absl::optional<ash::OnDeviceToServerSpeechRecognitionFallbackReason>
+          expected_reason,
+      int expected_count) {
+    ProjectorClientImpl* client =
+        static_cast<ProjectorClientImpl*>(projector_client_.get());
+    client->StartSpeechRecognition();
+    if (expected_reason.has_value()) {
+      histogram_tester_.ExpectBucketCount(kS3FallbackReasonMetricName,
+                                          /*sample=*/expected_reason.value(),
+                                          /*expected_count=*/expected_count);
+    } else {
+      EXPECT_TRUE(client->GetSpeechRecognitionAvailability().use_on_device);
+    }
+
+    client->OnSpeechRecognitionStopped();
+  }
+
+  base::HistogramTester histogram_tester_;
+
   content::BrowserTaskEnvironment task_environment_;
   Profile* testing_profile_ = nullptr;
 
@@ -285,6 +315,64 @@ TEST_P(ProjectorClientImplUnitTest, SpeechRecognitionAvailability) {
     EXPECT_TRUE(IsEqualAvailability(
         projector_client_->GetSpeechRecognitionAvailability(), availability));
   }
+}
+
+TEST_P(ProjectorClientImplUnitTest, FallbackReasonMetric) {
+  const bool force_enable_server_based =
+      features::ShouldForceEnableServerSideSpeechRecognitionForDev();
+  const bool server_based_available =
+      features::IsInternalServerSideSpeechRecognitionEnabled();
+
+  size_t expect_total_count = 0;
+
+  SetLocale(kFrench);
+  if (server_based_available) {
+    if (force_enable_server_based) {
+      MaybeReportToServerBasedFallbackReasonMetricAndVerify(
+          ash::OnDeviceToServerSpeechRecognitionFallbackReason::kEnforcedByFlag,
+          1);
+      expect_total_count++;
+    } else {
+      // French is not available for SODA:
+      MaybeReportToServerBasedFallbackReasonMetricAndVerify(
+          ash::OnDeviceToServerSpeechRecognitionFallbackReason::
+              kUserLanguageNotAvailableForSoda,
+          1);
+
+      // Set available language for SODA:
+      SetLocale(kEnglishUS);
+
+      // Verify metric reports for SODA error:
+      speech::SodaInstaller::GetInstance()->UninstallSodaForTesting();
+
+      speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(
+          speech::LanguageCode::kEnUs,
+          speech::SodaInstaller::ErrorCode::kUnspecifiedError);
+      MaybeReportToServerBasedFallbackReasonMetricAndVerify(
+          ash::OnDeviceToServerSpeechRecognitionFallbackReason::
+              kSodaInstallationErrorUnspecified,
+          1);
+      speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(
+          speech::LanguageCode::kEnUs,
+          speech::SodaInstaller::ErrorCode::kNeedsReboot);
+      MaybeReportToServerBasedFallbackReasonMetricAndVerify(
+          ash::OnDeviceToServerSpeechRecognitionFallbackReason::
+              kSodaInstallationErrorNeedsReboot,
+          1);
+      expect_total_count += 3;
+    }
+  } else {
+    if (!force_enable_server_based) {
+      // Set available language for SODA:
+      SetLocale(kEnglishUS);
+
+      // No metric reports if SODA is available:
+      MaybeReportToServerBasedFallbackReasonMetricAndVerify(absl::nullopt, 0);
+    }
+  }
+
+  histogram_tester_.ExpectTotalCount(kS3FallbackReasonMetricName,
+                                     /*count=*/expect_total_count);
 }
 
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

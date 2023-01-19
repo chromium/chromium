@@ -12,10 +12,12 @@
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
@@ -69,6 +71,42 @@ inline const std::string GetLocaleOrLanguageForServerSideRecognition() {
   }
 
   return locale;
+}
+
+ash::OnDeviceToServerSpeechRecognitionFallbackReason GetFallbackReason(
+    ash::OnDeviceRecognitionAvailability availability) {
+  if (ash::features::ShouldForceEnableServerSideSpeechRecognitionForDev()) {
+    return ash::OnDeviceToServerSpeechRecognitionFallbackReason::
+        kEnforcedByFlag;
+  }
+
+  DCHECK_NE(availability, ash::OnDeviceRecognitionAvailability::kAvailable);
+  switch (availability) {
+    case ash::OnDeviceRecognitionAvailability::kSodaNotAvailable:
+      return ash::OnDeviceToServerSpeechRecognitionFallbackReason::
+          kSodaNotAvailable;
+    case ash::OnDeviceRecognitionAvailability::kUserLanguageNotAvailable:
+      return ash::OnDeviceToServerSpeechRecognitionFallbackReason::
+          kUserLanguageNotAvailableForSoda;
+    case ash::OnDeviceRecognitionAvailability::kSodaNotInstalled:
+      return ash::OnDeviceToServerSpeechRecognitionFallbackReason::
+          kSodaNotInstalled;
+    case ash::OnDeviceRecognitionAvailability::kSodaInstalling:
+      return ash::OnDeviceToServerSpeechRecognitionFallbackReason::
+          kSodaInstalling;
+    case ash::OnDeviceRecognitionAvailability::
+        kSodaInstallationErrorUnspecified:
+      return ash::OnDeviceToServerSpeechRecognitionFallbackReason::
+          kSodaInstallationErrorUnspecified;
+    case ash::OnDeviceRecognitionAvailability::
+        kSodaInstallationErrorNeedsReboot:
+      return ash::OnDeviceToServerSpeechRecognitionFallbackReason::
+          kSodaInstallationErrorNeedsReboot;
+    case ash::OnDeviceRecognitionAvailability::kAvailable:
+      break;
+  }
+  NOTREACHED();
+  return ash::OnDeviceToServerSpeechRecognitionFallbackReason::kMaxValue;
 }
 
 }  // namespace
@@ -148,6 +186,10 @@ void ProjectorClientImpl::StartSpeechRecognition() {
           /*enable_formatting=*/true, locale,
           /*is_server_based=*/!availability.use_on_device,
           media::mojom::RecognizerClientType::kProjector));
+  if (!availability.use_on_device) {
+    RecordOnDeviceToServerSpeechRecognitionFallbackReason(
+        GetFallbackReason(availability.on_device_availability));
+  }
 }
 
 void ProjectorClientImpl::StopSpeechRecognition() {

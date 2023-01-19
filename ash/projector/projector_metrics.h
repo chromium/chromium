@@ -107,6 +107,32 @@ enum class ProjectorPolicyChangeHandlingError {
   kMaxValue = kSyncBridge
 };
 
+// These enum values represent potential error that occurs at policy value
+// change handling and log to UMA. Entries should not be renumbered and numeric
+// values should never be reused. Please keep in sync with
+// "OnDeviceToServerSpeechRecognitionFallbackReason" in
+// src/tools/metrics/histograms/enums.xml.
+// This enum is the smiliar to the `OnDeviceRecognitionAvailability` because
+// all fallback reasons are related to on device recognition is not supported.
+enum class OnDeviceToServerSpeechRecognitionFallbackReason : int {
+  // Device does not support SODA (Speech on Device API)
+  kSodaNotAvailable = 0,
+  // User's language is not supported by SODA.
+  kUserLanguageNotAvailableForSoda = 1,
+  // SODA binary is not yet installed.
+  kSodaNotInstalled = 2,
+  // SODA binary and language packs are downloading.
+  kSodaInstalling = 3,
+  // SODA installation failed.
+  kSodaInstallationErrorUnspecified = 4,
+  // SODA installation error needs reboot
+  kSodaInstallationErrorNeedsReboot = 5,
+  // Server based speech recognition is enforced by flag for dev purpose.
+  kEnforcedByFlag = 6,
+
+  kMaxValue = kEnforcedByFlag,
+};
+
 // Records the buttons the user presses on the Projector toolbar.
 void RecordToolbarMetrics(ProjectorToolbar button);
 
@@ -133,6 +159,9 @@ void RecordPendingScreencastChangeInterval(const base::TimeDelta interval);
 // TODO(b/240497023): remove this once confirmed the nullptr should never
 // occurs and the nullptr check is converted to DCEHCK.
 void RecordPolicyChangeHandlingError(ProjectorPolicyChangeHandlingError error);
+
+void RecordOnDeviceToServerSpeechRecognitionFallbackReason(
+    OnDeviceToServerSpeechRecognitionFallbackReason reason);
 
 }  // namespace ash
 
