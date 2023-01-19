@@ -81,7 +81,6 @@ ALL_FINDER_COMMENTS = frozenset(FINDER_DISABLE_COMMENTS
 GIT_BLAME_REGEX = re.compile(
     r'^[\w\s]+\(.+(?P<date>\d\d\d\d-\d\d-\d\d)[^\)]+\)(?P<content>.*)$',
     re.DOTALL)
-EXPECTATION_LINE_REGEX = re.compile(r'^.*\[ .* \] .* \[ \w* \].*$', re.DOTALL)
 TAG_GROUP_REGEX = re.compile(r'# tags: \[([^\]]*)\]', re.MULTILINE | re.DOTALL)
 # Looks for cases of the group start and end comments with nothing but optional
 # whitespace between them.
@@ -217,7 +216,12 @@ class Expectations(object):
       assert match
       date = match.groupdict()['date']
       line_content = match.groupdict()['content']
-      if EXPECTATION_LINE_REGEX.match(line):
+      stripped_line_content = line_content.strip()
+      # Auto-add comments and blank space, otherwise only add if the grace
+      # period has expired.
+      if not stripped_line_content or stripped_line_content.startswith('#'):
+        content += line_content
+      else:
         if six.PY2:
           date_parts = date.split('-')
           date = datetime.date(year=int(date_parts[0]),
@@ -231,8 +235,6 @@ class Expectations(object):
         else:
           logging.debug('Omitting expectation %s because it is too new',
                         line_content.rstrip())
-      else:
-        content += line_content
     return content
 
   def RemoveExpectationsFromFile(self,

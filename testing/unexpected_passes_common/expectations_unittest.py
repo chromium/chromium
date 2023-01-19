@@ -184,7 +184,9 @@ class GetNonRecentExpectationContentUnittest(unittest.TestCase):
 5f03bc04975c04 (Some R. Author    {today_date} 00:00:00 +0000  4)
 5f03bc04975c04 (Some R. Author    {today_date} 00:00:00 +0000  5)crbug.com/1234 [ tag1 ] testname [ Failure ]
 98637cd80f8c15 (Some R. Author    {yesterday_date} 00:00:00 +0000  6)[ tag2 ] testname [ Failure ] # Comment
-3fcadac9d861d0 (Some R. Author    {older_date} 00:00:00 +0000  7)[ tag1 ] othertest [ Failure ]"""
+3fcadac9d861d0 (Some R. Author    {older_date} 00:00:00 +0000  7)[ tag1 ] othertest [ Failure ]
+5f03bc04975c04 (Some R. Author    {today_date} 00:00:00 +0000  8)crbug.com/2345 testname [ Failure ]
+3fcadac9d861d0 (Some R. Author    {older_date} 00:00:00 +0000  9)crbug.com/3456 othertest [ Failure ]"""
     # pylint: enable=line-too-long
     blame_output = blame_output.format(today_date=today_str,
                                        yesterday_date=yesterday_str,
@@ -196,7 +198,8 @@ class GetNonRecentExpectationContentUnittest(unittest.TestCase):
 # tags: [ tag2 ]
 # results: [ Failure ]
 
-[ tag1 ] othertest [ Failure ]"""
+[ tag1 ] othertest [ Failure ]
+crbug.com/3456 othertest [ Failure ]"""
     self.assertEqual(self.instance._GetNonRecentExpectationContent('', 1),
                      expected_content)
 
