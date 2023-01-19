@@ -150,7 +150,10 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
   visit_id_to_cluster_map_[new_visit.visit_id] = *cluster_id;
   visit_url_to_cluster_map_[normalized_url] = *cluster_id;
 
-  if (ShouldUseNavigationContextClustersFromPersistence()) {
+  // Only persist the visit if the transition is visible. Still add it to the
+  // cluster maps in case newer visits reference it though.
+  if (ShouldUseNavigationContextClustersFromPersistence() &&
+      IsTransitionUserVisible(new_visit.transition)) {
     history::ClusterVisit cluster_visit;
     cluster_visit.annotated_visit.visit_row.visit_id = new_visit.visit_id;
     cluster_visit.normalized_url = GURL(normalized_url);

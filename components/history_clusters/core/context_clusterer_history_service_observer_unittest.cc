@@ -190,7 +190,8 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
                 base::Time visit_time,
                 history::VisitID opener_visit = history::kInvalidVisitID,
                 history::VisitID referring_visit = history::kInvalidVisitID,
-                bool is_synced_visit = false) {
+                bool is_synced_visit = false,
+                bool is_visible_visit = true) {
     history::URLRow url_row(url);
     history::VisitRow new_visit;
     new_visit.visit_id = visit_id;
@@ -198,6 +199,10 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
     new_visit.opener_visit = opener_visit;
     new_visit.referring_visit = referring_visit;
     new_visit.originator_cache_guid = is_synced_visit ? "otherdevice" : "";
+    new_visit.transition = ui::PageTransitionFromInt(
+        (is_visible_visit ? ui::PAGE_TRANSITION_LINK
+                          : ui::PAGE_TRANSITION_AUTO_SUBFRAME) |
+        ui::PAGE_TRANSITION_CHAIN_END);
     observer_->OnURLVisited(history_service_.get(), url_row, new_visit);
   }
 
@@ -282,6 +287,12 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
 
   EXPECT_EQ(1, GetNumClustersCreated());
   EXPECT_THAT(GetClusterVisitIds(got_cluster_visits), ElementsAre(1, 2));
+
+  // Add a visit that is not visible to the user but refers to one of the visits
+  // in the cluster. Should not be persisted.
+  VisitURL(GURL("https://example.com/notvisible"), 3,
+           base::Time::FromTimeT(124), 1, history::kInvalidVisitID, false,
+           false);
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest,

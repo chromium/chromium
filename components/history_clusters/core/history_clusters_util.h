@@ -71,6 +71,9 @@ void SortClusters(std::vector<history::Cluster>* clusters);
 // Whether to use navigation context clusters from persistence.
 bool ShouldUseNavigationContextClustersFromPersistence();
 
+// Whether the transition is user-visible.
+bool IsTransitionUserVisible(int32_t transition);
+
 }  // namespace history_clusters
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_UTIL_H_

@@ -16,19 +16,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_types.h"
-
-namespace {
-
-// Is the transition user-visible.
-bool IsTransitionUserVisible(int32_t transition) {
-  ui::PageTransition page_transition = ui::PageTransitionFromInt(transition);
-  return (ui::PAGE_TRANSITION_CHAIN_END & transition) != 0 &&
-         ui::PageTransitionIsMainFrame(page_transition) &&
-         !ui::PageTransitionCoreTypeIs(page_transition,
-                                       ui::PAGE_TRANSITION_KEYWORD_GENERATED);
-}
-
-}  // namespace
+#include "components/history_clusters/core/history_clusters_util.h"
 
 namespace history_clusters {
 

@@ -349,4 +349,12 @@ bool ShouldUseNavigationContextClustersFromPersistence() {
          GetConfig().use_navigation_context_clusters;
 }
 
+bool IsTransitionUserVisible(int32_t transition) {
+  ui::PageTransition page_transition = ui::PageTransitionFromInt(transition);
+  return (ui::PAGE_TRANSITION_CHAIN_END & transition) != 0 &&
+         ui::PageTransitionIsMainFrame(page_transition) &&
+         !ui::PageTransitionCoreTypeIs(page_transition,
+                                       ui::PAGE_TRANSITION_KEYWORD_GENERATED);
+}
+
 }  // namespace history_clusters
