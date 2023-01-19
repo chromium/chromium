@@ -21,13 +21,16 @@ import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessP
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
+// TODO(crbug/1319351): Extend the comment below to explain under which circumstances this class is
+// still used
 /**
  * A View that shows the user the next step they must complete to start syncing their data (eg.
  * Recent Tabs or Bookmarks).
- * If inflated manually, {@link SyncPromoView#init(int)} must be called before
+ * If inflated manually, {@link LegacySyncPromoView#init(int)} must be called before
  * attaching this View to a ViewGroup.
  */
-public class SyncPromoView extends LinearLayout implements SyncService.SyncStateChangedListener {
+public class LegacySyncPromoView
+        extends LinearLayout implements SyncService.SyncStateChangedListener {
     private @AccessPoint int mAccessPoint;
     private boolean mInitialized;
 
@@ -36,15 +39,16 @@ public class SyncPromoView extends LinearLayout implements SyncService.SyncState
     private Button mPositiveButton;
 
     /**
-     * A convenience method to inflate and initialize a SyncPromoView.
-     * @param parent A parent used to provide LayoutParams (the SyncPromoView will not be
+     * A convenience method to inflate and initialize a LegacySyncPromoView.
+     * @param parent A parent used to provide LayoutParams (the LegacySyncPromoView will not be
      *         attached).
-     * @param accessPoint Where the SyncPromoView is used.
+     * @param accessPoint Where the LegacySyncPromoView is used.
      */
-    public static SyncPromoView create(ViewGroup parent, @AccessPoint int accessPoint) {
+    public static LegacySyncPromoView create(ViewGroup parent, @AccessPoint int accessPoint) {
         // TODO(injae): crbug.com/829548
-        SyncPromoView result = (SyncPromoView) LayoutInflater.from(parent.getContext())
-                                       .inflate(R.layout.legacy_sync_promo_view, parent, false);
+        LegacySyncPromoView result =
+                (LegacySyncPromoView) LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.legacy_sync_promo_view, parent, false);
         result.init(accessPoint);
         return result;
     }
@@ -52,7 +56,7 @@ public class SyncPromoView extends LinearLayout implements SyncService.SyncState
     /**
      * Constructor for inflating from xml.
      */
-    public SyncPromoView(Context context, AttributeSet attrs) {
+    public LegacySyncPromoView(Context context, AttributeSet attrs) {
         super(context, attrs);
         // This promo is about enabling sync, so no sense in showing it if
         // syncing isn't possible.
@@ -78,8 +82,9 @@ public class SyncPromoView extends LinearLayout implements SyncService.SyncState
         mInitialized = true;
 
         assert mAccessPoint == SigninAccessPoint.BOOKMARK_MANAGER
-                || mAccessPoint == SigninAccessPoint.RECENT_TABS
-                : "SyncPromoView only has strings for bookmark manager and recent tabs.";
+                || mAccessPoint
+                        == SigninAccessPoint.RECENT_TABS
+            : "LegacySyncPromoView only has strings for bookmark manager and recent tabs.";
 
         // The title stays the same no matter what action the user must take.
         if (mAccessPoint == SigninAccessPoint.BOOKMARK_MANAGER) {
@@ -181,7 +186,7 @@ public class SyncPromoView extends LinearLayout implements SyncService.SyncState
 
     @Override
     protected void onAttachedToWindow() {
-        assert mInitialized : "init(...) must be called on SyncPromoView before use.";
+        assert mInitialized : "init(...) must be called on LegacySyncPromoView before use.";
 
         super.onAttachedToWindow();
         SyncService.get().addSyncStateChangedListener(this);

@@ -7503,7 +7503,7 @@
         errorLine1="        assert SyncService.get() != null;"
         errorLine2="               ~~~~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/signin/SyncPromoView.java"
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/signin/LegacySyncPromoView.java"
             line="59"
             column="16"/>
     </issue>

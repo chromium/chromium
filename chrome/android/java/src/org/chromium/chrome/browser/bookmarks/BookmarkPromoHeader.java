@@ -18,8 +18,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.LegacySyncPromoView;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
-import org.chromium.chrome.browser.signin.SyncPromoView;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -125,7 +125,8 @@ public class BookmarkPromoHeader implements SyncService.SyncStateChangedListener
      *         {@link RecyclerView}.
      */
     ViewHolder createSyncPromoHolder(ViewGroup parent) {
-        SyncPromoView view = SyncPromoView.create(parent, SigninAccessPoint.BOOKMARK_MANAGER);
+        LegacySyncPromoView view =
+                LegacySyncPromoView.create(parent, SigninAccessPoint.BOOKMARK_MANAGER);
 
         // ViewHolder is abstract and it cannot be instantiated directly.
         return new ViewHolder(view) {};

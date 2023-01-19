@@ -29,7 +29,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSessionWindow;
-import org.chromium.chrome.browser.signin.SyncPromoView;
+import org.chromium.chrome.browser.signin.LegacySyncPromoView;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
@@ -475,7 +475,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
         View getChildView(
                 int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
             if (convertView == null) {
-                convertView = SyncPromoView.create(parent, SigninAccessPoint.RECENT_TABS);
+                convertView = LegacySyncPromoView.create(parent, SigninAccessPoint.RECENT_TABS);
             }
             return convertView;
         }

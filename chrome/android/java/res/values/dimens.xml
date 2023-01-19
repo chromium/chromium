@@ -283,7 +283,7 @@ found in the LICENSE file.
 
     <!--  Used as a margin to force the shadow view to overlap other views. -->
     <dimen name="action_bar_shadow_margin_negative">-10dp</dimen>
-    <dimen name="sync_promo_view_padding">16dp</dimen>
+    <dimen name="legacy_sync_promo_view_padding">16dp</dimen>
     <!-- 18dp padding is added to each side of the remove button to limit the image width to 20dp (56dp - 2 * 18dp). -->
     <dimen name="history_item_remove_button_lateral_padding">18dp</dimen>
     <!-- The List/Journeys toggle in the history UI is laid out at 40 dp (less than the typical minimum of 48dp)
