@@ -59,7 +59,8 @@ std::ostream& operator<<(std::ostream& out,
 
 bool operator==(const AttributionDataClear& a, const AttributionDataClear& b) {
   return a.time == b.time && a.delete_begin == b.delete_begin &&
-         a.delete_end == b.delete_end && a.origins == b.origins;
+         a.delete_end == b.delete_end && a.origins == b.origins &&
+         a.delete_rate_limit_data == b.delete_rate_limit_data;
 }
 
 std::ostream& operator<<(std::ostream& out, const AttributionDataClear& c) {
@@ -80,7 +81,7 @@ std::ostream& operator<<(std::ostream& out, const AttributionDataClear& c) {
     out << "null";
   }
 
-  return out;
+  return out << ",delete_rate_limit_data=" << c.delete_rate_limit_data << "}";
 }
 
 namespace {
@@ -507,7 +508,8 @@ TEST(AttributionSimulatorInputParserTest, ValidDataClearParses) {
       "origins": [
         "https://r.test",
         "https://s.test"
-      ]
+      ],
+      "delete_rate_limit_data": false
     }
   ]})json";
 
@@ -521,7 +523,8 @@ TEST(AttributionSimulatorInputParserTest, ValidDataClearParses) {
               /*time=*/kOffsetTime + base::Milliseconds(1643235574123),
               /*delete_begin=*/kOffsetTime + base::Milliseconds(1643235573123),
               /*delete_end=*/base::Time::Max(),
-              /*origins=*/absl::nullopt),
+              /*origins=*/absl::nullopt,
+              /*delete_rate_limit_data=*/true),
           AttributionDataClear(
               /*time=*/kOffsetTime + base::Milliseconds(1643235574123),
               /*delete_begin=*/base::Time::Min(),
@@ -530,7 +533,8 @@ TEST(AttributionSimulatorInputParserTest, ValidDataClearParses) {
               base::flat_set<url::Origin>{
                   url::Origin::Create(GURL("https://r.test")),
                   url::Origin::Create(GURL("https://s.test")),
-              }))));
+              },
+              /*delete_rate_limit_data=*/false))));
   EXPECT_THAT(error_stream.str(), IsEmpty());
 }
 

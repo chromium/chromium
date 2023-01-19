@@ -218,11 +218,15 @@ class AttributionSimulatorInputParser {
           }));
     }
 
+    bool delete_rate_limit_data =
+        ParseBool(dict, "delete_rate_limit_data").value_or(true);
+
     if (has_error())
       return;
 
     events_.push_back(AttributionDataClear(time, delete_begin, delete_end,
-                                           std::move(origin_set)));
+                                           std::move(origin_set),
+                                           delete_rate_limit_data));
   }
 
   void ParseSource(base::Value&& source) {
@@ -335,6 +339,23 @@ class AttributionSimulatorInputParser {
     return base::Time();
   }
 
+  absl::optional<bool> ParseBool(const base::Value::Dict& dict,
+                                 base::StringPiece key) {
+    auto context = PushContext(key);
+
+    const base::Value* v = dict.Find(key);
+    if (!v) {
+      return absl::nullopt;
+    }
+
+    if (!v->is_bool()) {
+      *Error() << "must be a bool";
+      return absl::nullopt;
+    }
+
+    return v->GetBool();
+  }
+
   absl::optional<AttributionSourceType> ParseSourceType(
       const base::Value::Dict& dict) {
     static constexpr char kKey[] = "source_type";
@@ -395,11 +416,13 @@ AttributionDataClear::AttributionDataClear(
     base::Time time,
     base::Time delete_begin,
     base::Time delete_end,
-    absl::optional<base::flat_set<url::Origin>> origins)
+    absl::optional<base::flat_set<url::Origin>> origins,
+    bool delete_rate_limit_data)
     : time(time),
       delete_begin(delete_begin),
       delete_end(delete_end),
-      origins(std::move(origins)) {}
+      origins(std::move(origins)),
+      delete_rate_limit_data(delete_rate_limit_data) {}
 
 AttributionDataClear::~AttributionDataClear() = default;
 

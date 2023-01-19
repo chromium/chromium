@@ -44,11 +44,13 @@ struct AttributionDataClear {
   base::Time delete_end;
   // If null, matches all origins.
   absl::optional<base::flat_set<url::Origin>> origins;
+  bool delete_rate_limit_data;
 
   AttributionDataClear(base::Time time,
                        base::Time delete_begin,
                        base::Time delete_end,
-                       absl::optional<base::flat_set<url::Origin>> origins);
+                       absl::optional<base::flat_set<url::Origin>> origins,
+                       bool delete_rate_limit_data);
 
   ~AttributionDataClear();
 

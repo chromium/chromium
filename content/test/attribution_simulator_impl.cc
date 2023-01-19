@@ -299,8 +299,8 @@ class AttributionEventHandler : public AttributionObserver {
         base::BindOnce(&AttributionManagerImpl::ClearData,
                        base::Unretained(manager_), clear.delete_begin,
                        clear.delete_end, std::move(filter),
-                       /*filter_builder=*/nullptr,
-                       /*delete_rate_limit_data=*/true, base::DoNothing()));
+                       /*filter_builder=*/nullptr, clear.delete_rate_limit_data,
+                       base::DoNothing()));
   }
 
   base::Value::Dict TakeOutput() {
