@@ -210,6 +210,15 @@ complain about being unable to find the browser binary on Android if you build
 in a non-standard output directory. Thus, `out/Release` or `out/Debug` are
 suggested when testing on Android.
 
+If you are running on a platform that does not support multiple browser
+instances at a time (Android or ChromeOS), it is also recommended that you pass
+in `--jobs=1`. This only has an effect on test suites that have parallel test
+support, but failure to pass in the argument for those tests on these platforms
+will result in weird failures due to multiple test processes stepping on each
+other. On other platforms, you are still free to specify `--jobs` to get more
+or less parallelization instead of relying on the default of one test process
+per logical core.
+
 **Note:** The tests require some third-party Python packages. Obtaining these
 packages is handled automatically by `vpython3`, and the script's shebang should
 use vpython if running the script directly. If you're used to invoking `python3`
