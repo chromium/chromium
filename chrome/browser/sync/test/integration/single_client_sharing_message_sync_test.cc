@@ -202,13 +202,7 @@ class SharingMessageCommitChecker : public SingleClientStatusChangeChecker {
 
 class SingleClientSharingMessageSyncTest : public SyncTest {
  public:
-  SingleClientSharingMessageSyncTest() : SyncTest(SINGLE_CLIENT) {
-    // Replace the default value (5 seconds) with 1 minute to reduce possibility
-    // of test flakiness.
-    features_override_.InitAndEnableFeatureWithParameters(
-        kSharingMessageBridgeTimeout,
-        {{"SharingMessageBridgeTimeoutSeconds", "60"}});
-  }
+  SingleClientSharingMessageSyncTest() : SyncTest(SINGLE_CLIENT) {}
 
   bool WaitForSharingMessage(
       std::vector<SharingMessageSpecifics> expected_specifics) {
@@ -216,9 +210,6 @@ class SingleClientSharingMessageSyncTest : public SyncTest {
                                          std::move(expected_specifics))
         .Wait();
   }
-
- private:
-  base::test::ScopedFeatureList features_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest, ShouldSubmit) {
@@ -341,9 +332,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(callback_checker.Wait());
 }
 
+// Disables, see http://crbug.com/1408550
 IN_PROC_BROWSER_TEST_F(
     SingleClientSharingMessageSyncTest,
-    ShouldRetrySendingSharingMessageDataTypeOnTransientAuthError) {
+    DISABLED_ShouldRetrySendingSharingMessageDataTypeOnTransientAuthError) {
   const std::string payload = "payload";
 
   ASSERT_TRUE(SetupSync());
