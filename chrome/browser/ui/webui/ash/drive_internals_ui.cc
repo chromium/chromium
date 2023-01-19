@@ -68,6 +68,7 @@ namespace ash {
 namespace {
 
 using content::BrowserThread;
+using drive::DriveIntegrationService;
 using drivefs::pinning::DriveFsPinManager;
 
 constexpr char kKey[] = "key";
@@ -374,10 +375,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   void OnPageLoaded(const base::Value::List& args) {
     AllowJavascript();
 
-    drive::DriveIntegrationService* const integration_service =
-        GetIntegrationService();
-    // |integration_service| may be NULL in the guest/incognito mode.
-    if (!integration_service) {
+    DriveIntegrationService* const service = GetIntegrationService();
+    if (!service) {
       LOG(ERROR) << "No DriveFS integration service";
       return;
     }
@@ -414,10 +413,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   void OnPeriodicUpdate(const base::Value::List& args) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-    drive::DriveIntegrationService* integration_service =
-        GetIntegrationService();
-    // |integration_service| may be NULL in the guest/incognito mode.
-    if (!integration_service) {
+    DriveIntegrationService* const service = GetIntegrationService();
+    if (!service) {
       return;
     }
 
@@ -489,10 +486,9 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     AppendKeyValue(paths, "Downloads",
                    file_manager::util::GetDownloadsFolderForProfile(profile())
                        .AsUTF8Unsafe());
-    const auto* integration_service = GetIntegrationService();
-    if (integration_service) {
+    if (DriveIntegrationService* const service = GetIntegrationService()) {
       AppendKeyValue(paths, "Drive",
-                     integration_service->GetMountPointPath().AsUTF8Unsafe());
+                     service->GetMountPointPath().AsUTF8Unsafe());
     }
 
     const char* const kPathPreferences[] = {
@@ -552,13 +548,12 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
       return;
     }
 
-    drive::DriveIntegrationService* integration_service =
-        GetIntegrationService();
-    if (!integration_service) {
+    DriveIntegrationService* const service = GetIntegrationService();
+    if (!service) {
       return;
     }
 
-    integration_service->GetSyncingPaths(
+    service->GetSyncingPaths(
         base::BindOnce(&DriveInternalsWebUIHandler::OnGetSyncingPaths,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -582,9 +577,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
       return;
     }
 
-    drive::DriveIntegrationService* integration_service =
-        GetIntegrationService();
-    if (!integration_service) {
+    DriveIntegrationService* const service = GetIntegrationService();
+    if (!service) {
       return;
     }
 
@@ -595,8 +589,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
                              ? &DriveInternalsWebUIHandler::OnAddSyncPath
                              : &DriveInternalsWebUIHandler::OnRemoveSyncPath,
                          weak_ptr_factory_.GetWeakPtr(), sync_path);
-      integration_service->ToggleSyncForPath(sync_path, status,
-                                             std::move(callback));
+      service->ToggleSyncForPath(sync_path, status, std::move(callback));
     }
   }
 
@@ -612,14 +605,13 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   }
 
   void UpdateBulkPinningSection() {
-    drive::DriveIntegrationService* const integration_service =
-        GetIntegrationService();
-    DCHECK(integration_service);
+    DriveIntegrationService* const service = GetIntegrationService();
+    DCHECK(service);
 
     OnDrop();
     DCHECK(!pin_manager_);
 
-    pin_manager_ = integration_service->GetPinManager();
+    pin_manager_ = service->GetPinManager();
     if (!pin_manager_) {
       LOG(ERROR) << "No DriveFS pin manager";
       SetSectionEnabled("bulk-pinning-section", false);
@@ -666,10 +658,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     RegisterDeveloperMessages();
 
     // Get the startup arguments.
-    drive::DriveIntegrationService* integration_service =
-        GetIntegrationService();
-    if (integration_service) {
-      integration_service->GetStartupArguments(
+    if (DriveIntegrationService* const service = GetIntegrationService()) {
+      service->GetStartupArguments(
           base::BindOnce(&DriveInternalsWebUIHandler::OnGetStartupArguments,
                          weak_ptr_factory_.GetWeakPtr()));
     }
@@ -719,14 +709,13 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   void UpdateEventLogSection() {
     SetSectionEnabled("event-log-section", true);
 
-    drive::DriveIntegrationService* integration_service =
-        GetIntegrationService();
-    if (!integration_service) {
+    DriveIntegrationService* const service = GetIntegrationService();
+    if (!service) {
       return;
     }
 
     const std::vector<drive::EventLogger::Event> log =
-        integration_service->event_logger()->GetHistory();
+        service->event_logger()->GetHistory();
 
     base::Value::List list;
     for (const drive::EventLogger::Event& event : log) {
@@ -756,12 +745,12 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     }
     service_log_file_is_processing_ = true;
 
-    drive::DriveIntegrationService* integration_service =
-        GetIntegrationService();
-    if (!integration_service) {
+    DriveIntegrationService* const service = GetIntegrationService();
+    if (!service) {
       return;
     }
-    base::FilePath log_path = integration_service->GetDriveFsLogPath();
+
+    base::FilePath log_path = service->GetDriveFsLogPath();
     if (log_path.empty()) {
       return;
     }
@@ -821,9 +810,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   // Called when the "Verbose Logging" checkbox on the page is changed.
   void SetVerboseLoggingEnabled(const base::Value::List& args) {
     AllowJavascript();
-    drive::DriveIntegrationService* integration_service =
-        GetIntegrationService();
-    if (!integration_service) {
+    DriveIntegrationService* const service = GetIntegrationService();
+    if (!service) {
       return;
     }
 
@@ -837,9 +825,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
 
   void SetMirroringEnabled(const base::Value::List& args) {
     AllowJavascript();
-    drive::DriveIntegrationService* integration_service =
-        GetIntegrationService();
-    if (!integration_service) {
+    DriveIntegrationService* const service = GetIntegrationService();
+    if (!service) {
       return;
     }
 
@@ -874,14 +861,13 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
       return;
     }
 
-    drive::DriveIntegrationService* integration_service =
-        GetIntegrationService();
-    if (!integration_service) {
+    DriveIntegrationService* const service = GetIntegrationService();
+    if (!service) {
       OnSetStartupArguments(false);
       return;
     }
 
-    integration_service->SetStartupArguments(
+    service->SetStartupArguments(
         args[0].GetString(),
         base::BindOnce(&DriveInternalsWebUIHandler::OnSetStartupArguments,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -898,50 +884,40 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
 
   void SetTracingEnabled(bool enabled, const base::Value::List& args) {
     AllowJavascript();
-    drive::DriveIntegrationService* integration_service =
-        GetIntegrationService();
-    if (integration_service) {
-      integration_service->SetTracingEnabled(enabled);
+    if (DriveIntegrationService* const service = GetIntegrationService()) {
+      service->SetTracingEnabled(enabled);
     }
   }
 
   void SetNetworkingEnabled(bool enabled, const base::Value::List& args) {
     AllowJavascript();
     CHECK(developer_mode_);
-    drive::DriveIntegrationService* integration_service =
-        GetIntegrationService();
-    if (integration_service) {
-      integration_service->SetNetworkingEnabled(enabled);
+    if (DriveIntegrationService* const service = GetIntegrationService()) {
+      service->SetNetworkingEnabled(enabled);
     }
   }
 
   void ForcePauseSyncing(bool enabled, const base::Value::List& args) {
     AllowJavascript();
     CHECK(developer_mode_);
-    drive::DriveIntegrationService* integration_service =
-        GetIntegrationService();
-    if (integration_service) {
-      integration_service->ForcePauseSyncing(enabled);
+    if (DriveIntegrationService* const service = GetIntegrationService()) {
+      service->ForcePauseSyncing(enabled);
     }
   }
 
   void DumpAccountSettings(const base::Value::List& args) {
     AllowJavascript();
     CHECK(developer_mode_);
-    drive::DriveIntegrationService* integration_service =
-        GetIntegrationService();
-    if (integration_service) {
-      integration_service->DumpAccountSettings();
+    if (DriveIntegrationService* const service = GetIntegrationService()) {
+      service->DumpAccountSettings();
     }
   }
 
   void LoadAccountSettings(const base::Value::List& args) {
     AllowJavascript();
     CHECK(developer_mode_);
-    drive::DriveIntegrationService* integration_service =
-        GetIntegrationService();
-    if (integration_service) {
-      integration_service->LoadAccountSettings();
+    if (DriveIntegrationService* const service = GetIntegrationService()) {
+      service->LoadAccountSettings();
     }
   }
 
@@ -949,10 +925,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   void RestartDrive(const base::Value::List& args) {
     AllowJavascript();
 
-    drive::DriveIntegrationService* integration_service =
-        GetIntegrationService();
-    if (integration_service) {
-      integration_service->RestartDrive();
+    if (DriveIntegrationService* const service = GetIntegrationService()) {
+      service->RestartDrive();
     }
   }
 
@@ -960,10 +934,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   void ResetDriveFileSystem(const base::Value::List& args) {
     AllowJavascript();
 
-    drive::DriveIntegrationService* integration_service =
-        GetIntegrationService();
-    if (integration_service) {
-      integration_service->ClearCacheAndRemountFileSystem(
+    if (DriveIntegrationService* const service = GetIntegrationService()) {
+      service->ClearCacheAndRemountFileSystem(
           base::BindOnce(&DriveInternalsWebUIHandler::ResetFinished,
                          weak_ptr_factory_.GetWeakPtr()));
     }
@@ -972,10 +944,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   void ZipDriveFsLogs(const base::Value::List& args) {
     AllowJavascript();
 
-    drive::DriveIntegrationService* integration_service =
-        GetIntegrationService();
-    if (!integration_service ||
-        integration_service->GetDriveFsLogPath().empty()) {
+    DriveIntegrationService* const service = GetIntegrationService();
+    if (!service || service->GetDriveFsLogPath().empty()) {
       return;
     }
 
@@ -991,10 +961,11 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   Profile* profile() { return Profile::FromWebUI(web_ui()); }
   PrefService* GetPrefs() { return profile()->GetPrefs(); }
 
-  // Returns a DriveIntegrationService.
-  drive::DriveIntegrationService* GetIntegrationService() {
+  // Returns a DriveIntegrationService, if any.
+  // May return nullptr in guest/incognito mode.
+  DriveIntegrationService* GetIntegrationService() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    drive::DriveIntegrationService* const service =
+    DriveIntegrationService* const service =
         drive::DriveIntegrationServiceFactory::FindForProfile(profile());
     return service && service->is_enabled() ? service : nullptr;
   }
