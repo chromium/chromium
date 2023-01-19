@@ -1,6 +1,6 @@
 # Chromium Docs
 
-[logo]: https://chromium-review.googlesource.com/plugins/chromium-style/static/web/chromium_logo.png
+[logo]: /docs/images/chromium_logo.png
 [home]: /docs/README.md
 
 * [Home][home]
