@@ -30,7 +30,6 @@ class ProcessMemoryDump;
 }  // namespace base
 
 namespace gpu {
-class DawnEGLImageRepresentation;
 class D3DImageBacking;
 class D3DImageBackingFactoryTest;
 class GLTextureImageBacking;
@@ -42,13 +41,12 @@ FORWARD_DECLARE_TEST(GpuOESEGLImageTest, EGLImageToTexture);
 }  // namespace gpu
 
 namespace gpu::gles2 {
-class BackTexture;
 class GLES2DecoderImpl;
 class GLES2DecoderPassthroughImpl;
 class PassthroughAbstractTextureImpl;
 class Texture;
 class ValidatingAbstractTextureImpl;
-}
+}  // namespace gpu::gles2
 
 namespace media {
 class GLImageEGLStream;
@@ -63,8 +61,6 @@ class VTVideoDecodeAccelerator;
 
 namespace ui {
 class NativePixmapGLBinding;
-class NativePixmapEGLBinding;
-class NativePixmapEGLX11Binding;
 class SurfacelessGlRenderer;
 class SurfacelessSkiaGlRenderer;
 }  // namespace ui
@@ -131,12 +127,10 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   static media::GLImageEGLStream* ToGLImageEGLStream(GLImage* image);
   static media::GLImagePbuffer* ToGLImagePbuffer(GLImage* image);
 
-  friend class gpu::DawnEGLImageRepresentation;
   friend class gpu::D3DImageBacking;
   friend class gpu::D3DImageBackingFactoryTest;
   friend class gpu::GLTextureImageBacking;
   friend class gpu::GLTexturePassthroughD3DImageRepresentation;
-  friend class gpu::gles2::BackTexture;
   friend class gpu::gles2::GLES2DecoderImpl;
   friend class gpu::gles2::GLES2DecoderPassthroughImpl;
   friend class gpu::gles2::PassthroughAbstractTextureImpl;
@@ -149,8 +143,6 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   friend class media::V4L2SliceVideoDecodeAccelerator;
   friend class media::VTVideoDecodeAccelerator;
   friend class ui::NativePixmapGLBinding;
-  friend class ui::NativePixmapEGLBinding;
-  friend class ui::NativePixmapEGLX11Binding;
   friend class ui::SurfacelessGlRenderer;
   friend class ui::SurfacelessSkiaGlRenderer;
   friend class viz::ImageContextImpl;
