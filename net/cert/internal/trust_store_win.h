@@ -25,6 +25,10 @@ class NET_EXPORT TrustStoreWin : public TrustStore {
     CertStores(CertStores&& other);
     CertStores& operator=(CertStores&& other);
 
+    // Create a CertStores object with the stores initialized with (empty)
+    // CERT_STORE_PROV_COLLECTION stores.
+    static CertStores CreateWithCollections();
+
     // Create a CertStores object with the stores pre-initialized with
     // in-memory cert stores for testing purposes.
     static CertStores CreateInMemoryStoresForTesting();
@@ -33,12 +37,21 @@ class NET_EXPORT TrustStoreWin : public TrustStore {
     // purposes.
     static CertStores CreateNullStoresForTesting();
 
+    // Returns true if any of the cert stores are not initialized.
+    bool is_null() const {
+      return !roots.get() || !intermediates.get() || !disallowed.get() ||
+             !all.get();
+    }
+
     crypto::ScopedHCERTSTORE roots;
     crypto::ScopedHCERTSTORE intermediates;
     crypto::ScopedHCERTSTORE disallowed;
+    crypto::ScopedHCERTSTORE all;
 
    private:
     CertStores();
+
+    void InitializeAllCertsStore();
   };
 
   // Creates a TrustStoreWin.

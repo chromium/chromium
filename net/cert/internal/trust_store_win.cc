@@ -97,12 +97,46 @@ TrustStoreWin::CertStores::CreateInMemoryStoresForTesting() {
       CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
   stores.disallowed = crypto::ScopedHCERTSTORE(CertOpenStore(
       CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+  stores.InitializeAllCertsStore();
   return stores;
 }
 
 TrustStoreWin::CertStores
 TrustStoreWin::CertStores::CreateNullStoresForTesting() {
   return TrustStoreWin::CertStores();
+}
+
+// static
+TrustStoreWin::CertStores TrustStoreWin::CertStores::CreateWithCollections() {
+  TrustStoreWin::CertStores stores;
+  stores.roots = crypto::ScopedHCERTSTORE(
+      CertOpenStore(CERT_STORE_PROV_COLLECTION, 0, NULL, 0, nullptr));
+  stores.intermediates = crypto::ScopedHCERTSTORE(
+      CertOpenStore(CERT_STORE_PROV_COLLECTION, 0, NULL, 0, nullptr));
+  stores.disallowed = crypto::ScopedHCERTSTORE(
+      CertOpenStore(CERT_STORE_PROV_COLLECTION, 0, NULL, 0, nullptr));
+  stores.InitializeAllCertsStore();
+  return stores;
+}
+
+void TrustStoreWin::CertStores::InitializeAllCertsStore() {
+  all = crypto::ScopedHCERTSTORE(
+      CertOpenStore(CERT_STORE_PROV_COLLECTION, 0, NULL, 0, nullptr));
+  if (is_null()) {
+    return;
+  }
+  // Add intermediate and root cert stores to the all_cert_store collection so
+  // SyncGetIssuersOf will find them. disallowed_cert_store is not added
+  // because the certs are distrusted; making them non-findable in
+  // SyncGetIssuersOf helps us fail path-building faster.
+  if (!CertAddStoreToCollection(all.get(), intermediates.get(),
+                                /*dwUpdateFlags=*/0, /*dwPriority=*/0)) {
+    return;
+  }
+  if (!CertAddStoreToCollection(all.get(), roots.get(),
+                                /*dwUpdateFlags=*/0, /*dwPriority=*/0)) {
+    return;
+  }
 }
 
 class TrustStoreWin::Impl {
@@ -112,79 +146,59 @@ class TrustStoreWin::Impl {
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
 
-    crypto::ScopedHCERTSTORE root_cert_store(
-        CertOpenStore(CERT_STORE_PROV_COLLECTION, 0, NULL, 0, nullptr));
-    crypto::ScopedHCERTSTORE intermediate_cert_store(
-        CertOpenStore(CERT_STORE_PROV_COLLECTION, 0, NULL, 0, nullptr));
-    crypto::ScopedHCERTSTORE all_certs_store(
-        CertOpenStore(CERT_STORE_PROV_COLLECTION, 0, NULL, 0, nullptr));
-    crypto::ScopedHCERTSTORE disallowed_cert_store(
-        CertOpenStore(CERT_STORE_PROV_COLLECTION, 0, NULL, 0, nullptr));
-    if (!root_cert_store.get() || !intermediate_cert_store.get() ||
-        !all_certs_store.get() || !disallowed_cert_store.get()) {
-      return;
-    }
-
-    // Add intermediate and root cert stores to the all_cert_store collection so
-    // SyncGetIssuersOf will find them. disallowed_cert_store is not added
-    // because the certs are distrusted; making them non-findable in
-    // SyncGetIssuersOf helps us fail path-building faster.
-    if (!CertAddStoreToCollection(all_certs_store.get(),
-                                  intermediate_cert_store.get(),
-                                  /*dwUpdateFlags=*/0, /*dwPriority=*/0)) {
-      return;
-    }
-    if (!CertAddStoreToCollection(all_certs_store.get(), root_cert_store.get(),
-                                  /*dwUpdateFlags=*/0, /*dwPriority=*/0)) {
+    CertStores stores = CertStores::CreateWithCollections();
+    if (stores.is_null()) {
+      // If there was an error initializing the cert store collections, give
+      // up. The Impl object will still be created but any calls to its public
+      // methods will return no results.
       return;
     }
 
     // Grab the user-added roots.
-    GatherEnterpriseCertsForLocation(root_cert_store.get(),
+    GatherEnterpriseCertsForLocation(stores.roots.get(),
                                      CERT_SYSTEM_STORE_LOCAL_MACHINE, L"ROOT");
     GatherEnterpriseCertsForLocation(
-        root_cert_store.get(), CERT_SYSTEM_STORE_LOCAL_MACHINE_GROUP_POLICY,
+        stores.roots.get(), CERT_SYSTEM_STORE_LOCAL_MACHINE_GROUP_POLICY,
         L"ROOT");
-    GatherEnterpriseCertsForLocation(root_cert_store.get(),
+    GatherEnterpriseCertsForLocation(stores.roots.get(),
                                      CERT_SYSTEM_STORE_LOCAL_MACHINE_ENTERPRISE,
                                      L"ROOT");
-    GatherEnterpriseCertsForLocation(root_cert_store.get(),
+    GatherEnterpriseCertsForLocation(stores.roots.get(),
                                      CERT_SYSTEM_STORE_CURRENT_USER, L"ROOT");
     GatherEnterpriseCertsForLocation(
-        root_cert_store.get(), CERT_SYSTEM_STORE_CURRENT_USER_GROUP_POLICY,
+        stores.roots.get(), CERT_SYSTEM_STORE_CURRENT_USER_GROUP_POLICY,
         L"ROOT");
 
     // Grab the user-added intermediates.
-    GatherEnterpriseCertsForLocation(intermediate_cert_store.get(),
+    GatherEnterpriseCertsForLocation(stores.intermediates.get(),
                                      CERT_SYSTEM_STORE_LOCAL_MACHINE, L"CA");
     GatherEnterpriseCertsForLocation(
-        intermediate_cert_store.get(),
+        stores.intermediates.get(),
         CERT_SYSTEM_STORE_LOCAL_MACHINE_GROUP_POLICY, L"CA");
-    GatherEnterpriseCertsForLocation(intermediate_cert_store.get(),
+    GatherEnterpriseCertsForLocation(stores.intermediates.get(),
                                      CERT_SYSTEM_STORE_LOCAL_MACHINE_ENTERPRISE,
                                      L"CA");
-    GatherEnterpriseCertsForLocation(intermediate_cert_store.get(),
+    GatherEnterpriseCertsForLocation(stores.intermediates.get(),
                                      CERT_SYSTEM_STORE_CURRENT_USER, L"CA");
     GatherEnterpriseCertsForLocation(
-        intermediate_cert_store.get(),
-        CERT_SYSTEM_STORE_CURRENT_USER_GROUP_POLICY, L"CA");
+        stores.intermediates.get(), CERT_SYSTEM_STORE_CURRENT_USER_GROUP_POLICY,
+        L"CA");
 
     // Grab the user-added disallowed certs.
-    GatherEnterpriseCertsForLocation(disallowed_cert_store.get(),
+    GatherEnterpriseCertsForLocation(stores.disallowed.get(),
                                      CERT_SYSTEM_STORE_LOCAL_MACHINE,
                                      L"Disallowed");
     GatherEnterpriseCertsForLocation(
-        disallowed_cert_store.get(),
-        CERT_SYSTEM_STORE_LOCAL_MACHINE_GROUP_POLICY, L"Disallowed");
-    GatherEnterpriseCertsForLocation(disallowed_cert_store.get(),
+        stores.disallowed.get(), CERT_SYSTEM_STORE_LOCAL_MACHINE_GROUP_POLICY,
+        L"Disallowed");
+    GatherEnterpriseCertsForLocation(stores.disallowed.get(),
                                      CERT_SYSTEM_STORE_LOCAL_MACHINE_ENTERPRISE,
                                      L"Disallowed");
-    GatherEnterpriseCertsForLocation(disallowed_cert_store.get(),
-                                     CERT_SYSTEM_STORE_CURRENT_USER,
-                                     L"Disallowed");
     GatherEnterpriseCertsForLocation(
-        disallowed_cert_store.get(),
-        CERT_SYSTEM_STORE_CURRENT_USER_GROUP_POLICY, L"Disallowed");
+        stores.disallowed.get(), CERT_SYSTEM_STORE_CURRENT_USER, L"Disallowed");
+    GatherEnterpriseCertsForLocation(
+        stores.disallowed.get(), CERT_SYSTEM_STORE_CURRENT_USER_GROUP_POLICY,
+        L"Disallowed");
 
     // Auto-sync all of the cert stores to get updates to the cert store.
     // Auto-syncing on all_certs_store seems to work to resync the nested
@@ -193,24 +207,21 @@ class TrustStoreWin::Impl {
     // are somewhat unclear. If and when root store changes are linked to
     // clearing various caches, this should be replaced with
     // CERT_STORE_CTRL_NOTIFY_CHANGE and CERT_STORE_CTRL_RESYNC.
-    if (!CertControlStore(all_certs_store.get(), 0, CERT_STORE_CTRL_AUTO_RESYNC,
+    if (!CertControlStore(stores.all.get(), 0, CERT_STORE_CTRL_AUTO_RESYNC,
                           0)) {
       PLOG(ERROR) << "Error enabling CERT_STORE_CTRL_AUTO_RESYNC";
     }
 
-    root_cert_store_ = std::move(root_cert_store);
-    intermediate_cert_store_ = std::move(intermediate_cert_store);
-    disallowed_cert_store_ = std::move(disallowed_cert_store);
-    all_certs_store_ = std::move(all_certs_store);
+    root_cert_store_ = std::move(stores.roots);
+    intermediate_cert_store_ = std::move(stores.intermediates);
+    disallowed_cert_store_ = std::move(stores.disallowed);
+    all_certs_store_ = std::move(stores.all);
   }
 
-  // all_certs_store should be a combination of root_cert_store and
-  // intermediate_cert_store, but we ask callers to explicitly pass this in so
-  // that all the error checking can happen outside of the constructor.
-  Impl(CertStores stores, crypto::ScopedHCERTSTORE all_certs_store)
+  Impl(CertStores stores)
       : root_cert_store_(std::move(stores.roots)),
         intermediate_cert_store_(std::move(stores.intermediates)),
-        all_certs_store_(std::move(all_certs_store)),
+        all_certs_store_(std::move(stores.all)),
         disallowed_cert_store_(std::move(stores.disallowed)) {}
 
   ~Impl() = default;
@@ -335,21 +346,8 @@ TrustStoreWin::Impl* TrustStoreWin::MaybeInitializeAndGetImpl() {
 
 std::unique_ptr<TrustStoreWin> TrustStoreWin::CreateForTesting(
     CertStores stores) {
-  crypto::ScopedHCERTSTORE all_certs_store(
-      CertOpenStore(CERT_STORE_PROV_COLLECTION, 0, NULL, 0, nullptr));
-
-  if (all_certs_store.get() && stores.intermediates.get()) {
-    CertAddStoreToCollection(all_certs_store.get(), stores.intermediates.get(),
-                             /*dwUpdateFlags=*/0, /*dwPriority=*/0);
-  }
-  if (all_certs_store.get() && stores.roots.get()) {
-    CertAddStoreToCollection(all_certs_store.get(), stores.roots.get(),
-                             /*dwUpdateFlags=*/0, /*dwPriority=*/0);
-  }
-
-  return base::WrapUnique(
-      new TrustStoreWin(std::make_unique<TrustStoreWin::Impl>(
-          std::move(stores), std::move(all_certs_store))));
+  return base::WrapUnique(new TrustStoreWin(
+      std::make_unique<TrustStoreWin::Impl>(std::move(stores))));
 }
 
 TrustStoreWin::TrustStoreWin(std::unique_ptr<Impl> impl)
