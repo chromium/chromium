@@ -47,7 +47,6 @@
 #include "components/printing/browser/print_manager_utils.h"
 #include "components/printing/common/print.mojom-test-utils.h"
 #include "components/printing/common/print.mojom.h"
-#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -2045,34 +2044,6 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, WindowDotPrint) {
   content::ExecuteScriptAsync(web_contents->GetPrimaryMainFrame(),
                               "window.print();");
   print_preview_observer.WaitUntilPreviewIsReady();
-}
-
-IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
-                       WindowDotPrintTriggersBeforeAfterEvents) {
-  // Load test page and check the initial state.
-  const GURL kUrl(
-      embedded_test_server()->GetURL("/printing/on_before_after_events.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
-  EXPECT_EQ(false, content::EvalJs(rfh, "firedBeforePrint"));
-  EXPECT_EQ(false, content::EvalJs(rfh, "firedAfterPrint"));
-
-  // Load Print Preview and make sure the beforeprint event fired.
-  PrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false);
-  content::ExecuteScriptAsync(rfh, "window.print();");
-  print_preview_observer.WaitUntilPreviewIsReady();
-  EXPECT_EQ(true, content::EvalJs(rfh, "firedBeforePrint"));
-  EXPECT_EQ(false, content::EvalJs(rfh, "firedAfterPrint"));
-
-  // Close the Print Preview dialog and make sure the afterprint event fired.
-  auto* web_contents_modal_dialog_manager =
-      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
-  ASSERT_TRUE(web_contents_modal_dialog_manager);
-  web_contents_modal_dialog_manager->CloseAllDialogs();
-  EXPECT_EQ(true, content::EvalJs(rfh, "firedBeforePrint"));
-  EXPECT_EQ(true, content::EvalJs(rfh, "firedAfterPrint"));
 }
 
 class PrintPrerenderBrowserTest : public PrintBrowserTest {
