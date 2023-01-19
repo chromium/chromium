@@ -323,6 +323,7 @@ ArcAppIconDescriptor GetAppListIconDescriptor(
 bool IsIconCreated(Profile* profile,
                    ArcAppListPrefs* prefs,
                    const std::string& app_id,
+                   int dip_size,
                    ui::ResourceScaleFactor scale_factor) {
   // When the kUnifiedAppServiceIconLoading flag is enabled, the AppService
   // saves the adaptive icon with the foreground and background icon files, so
@@ -333,25 +334,31 @@ bool IsIconCreated(Profile* profile,
 
     auto foreground_path = apps::GetForegroundIconPath(
         profile->GetPath(), app_id,
-        apps_util::ConvertDipToPxForScale(
-            ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
-            scale_factor));
+        apps_util::ConvertDipToPxForScale(dip_size, scale_factor));
     auto background_path = apps::GetBackgroundIconPath(
         profile->GetPath(), app_id,
-        apps_util::ConvertDipToPxForScale(
-            ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
-            scale_factor));
+        apps_util::ConvertDipToPxForScale(dip_size, scale_factor));
     return apps::IsAdaptiveIcon(foreground_path, background_path);
   }
 
-  return base::PathExists(
-      prefs->GetIconPath(app_id, GetAppListIconDescriptor(scale_factor)));
+  return base::PathExists(prefs->GetIconPath(
+      app_id, GetAppListIconDescriptor(dip_size, scale_factor)));
 }
 
-void WaitForIconCreation(ArcAppListPrefs* prefs,
+void WaitForIconCreation(Profile* profile,
+                         ArcAppListPrefs* prefs,
                          const std::string& app_id,
                          int dip_size,
                          ui::ResourceScaleFactor scale_factor) {
+  if (base::FeatureList::IsEnabled(apps::kUnifiedAppServiceIconLoading)) {
+    // Process pending tasks. This performs multiple thread hops, so we need
+    // to run it continuously until it is resolved.
+    do {
+      content::RunAllTasksUntilIdle();
+    } while (!IsIconCreated(profile, prefs, app_id, dip_size, scale_factor));
+    return;
+  }
+
   const base::FilePath icon_path = prefs->GetIconPath(
       app_id, GetAppListIconDescriptor(dip_size, scale_factor));
   // Process pending tasks. This performs multiple thread hops, so we need
@@ -1139,7 +1146,7 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
       for (auto& scale_factor : scale_factors) {
         // Force the icon to be loaded.
         WaitForIconCreation(
-            ArcAppListPrefs::Get(profile()), app_id,
+            profile(), ArcAppListPrefs::Get(profile()), app_id,
             ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
             scale_factor);
       }
@@ -1147,7 +1154,7 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
       // Wait AppServiceAppIconLoader to generate the bad icon image files.
       for (auto& scale_factor : scale_factors) {
         // Force the icon to be loaded.
-        WaitForIconCreation(ArcAppListPrefs::Get(profile()), app_id,
+        WaitForIconCreation(profile(), ArcAppListPrefs::Get(profile()), app_id,
                             extension_misc::EXTENSION_ICON_MEDIUM,
                             scale_factor);
       }
@@ -1874,8 +1881,10 @@ TEST_P(ArcAppModelBuilderTest, RequestShortcutIcons) {
   for (auto& scale_factor : scale_factors) {
     expected_dimensions.insert(
         GetAppListIconDimensionForScaleFactor(scale_factor));
-    EXPECT_TRUE(IsIconCreated(profile(), prefs, ArcAppTest::GetAppId(shortcut),
-                              scale_factor));
+    EXPECT_TRUE(IsIconCreated(
+        profile(), prefs, ArcAppTest::GetAppId(shortcut),
+        ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+        scale_factor));
   }
 
   // At this moment we should receive all requests for icon loading.
@@ -1900,8 +1909,10 @@ TEST_P(ArcAppModelBuilderTest, RequestShortcutIcons) {
 
   // Validate all icon files are installed.
   for (auto& scale_factor : scale_factors) {
-    EXPECT_TRUE(IsIconCreated(profile(), prefs, ArcAppTest::GetAppId(shortcut),
-                              scale_factor));
+    EXPECT_TRUE(IsIconCreated(
+        profile(), prefs, ArcAppTest::GetAppId(shortcut),
+        ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+        scale_factor));
   }
 }
 
@@ -1978,7 +1989,10 @@ TEST_P(ArcAppModelBuilderTest, InstallIcon) {
                                                 .default_grid_icon_dimension(),
                                             scale_factor))
           : prefs->GetIconPath(app_id, GetAppListIconDescriptor(scale_factor));
-  EXPECT_FALSE(IsIconCreated(profile(), prefs, app_id, scale_factor));
+  EXPECT_FALSE(IsIconCreated(
+      profile(), prefs, app_id,
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+      scale_factor));
 
   const AppServiceAppItem* app_item = FindArcItem(app_id);
   EXPECT_NE(nullptr, app_item);
@@ -1989,7 +2003,10 @@ TEST_P(ArcAppModelBuilderTest, InstallIcon) {
 
   // Validate that icons are installed, have right content and icon is
   // refreshed for ARC app item.
-  EXPECT_TRUE(IsIconCreated(profile(), prefs, app_id, scale_factor));
+  EXPECT_TRUE(IsIconCreated(
+      profile(), prefs, app_id,
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+      scale_factor));
 
   std::string png_data;
   EXPECT_TRUE(app_instance()->GetIconResponse(
@@ -2018,14 +2035,20 @@ TEST_P(ArcAppModelBuilderTest, RemoveAppCleanUpFolder) {
 
   // No app folder by default.
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(IsIconCreated(profile(), prefs, app_id, scale_factor));
+  EXPECT_FALSE(IsIconCreated(
+      profile(), prefs, app_id,
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+      scale_factor));
 
   SendRefreshAppList(apps);
   const base::FilePath app_path = prefs->GetAppPath(app_id);
 
   // Now send generated icon for the app.
   WaitForIconUpdates(profile_.get(), app_id);
-  EXPECT_TRUE(IsIconCreated(profile(), prefs, app_id, scale_factor));
+  EXPECT_TRUE(IsIconCreated(
+      profile(), prefs, app_id,
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+      scale_factor));
 
   // Send empty app list. This will delete app and its folder.
   SendRefreshAppList(std::vector<arc::mojom::AppInfoPtr>());
@@ -2033,7 +2056,10 @@ TEST_P(ArcAppModelBuilderTest, RemoveAppCleanUpFolder) {
   // to run it continuously until it is resolved.
   do {
     content::RunAllTasksUntilIdle();
-  } while (IsIconCreated(profile(), prefs, app_id, scale_factor));
+  } while (IsIconCreated(
+      profile(), prefs, app_id,
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+      scale_factor));
 }
 
 TEST_P(ArcAppModelBuilderTest, LastLaunchTime) {
@@ -2772,7 +2798,7 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderWithBadIcon) {
     app_item->icon().GetRepresentation(
         ui::GetScaleForResourceScaleFactor(scale_factor));
     WaitForIconCreation(
-        prefs, app_id,
+        profile_.get(), prefs, app_id,
         ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
         scale_factor);
   }
