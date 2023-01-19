@@ -178,6 +178,14 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, MultiProfileFileLaunchWhileOpen) {
   helper_.CheckWindowCreated();
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckFilesLoadedInSite) {
+  helper_.InstallMenuOption(InstallableSite::kFileHandler);
+  helper_.LaunchFileExpectDialog(Site::kFileHandler, FilesOptions::kOneFooFile,
+                                 AllowDenyOptions::kAllow,
+                                 AskAgainOptions::kAskAgain);
+  helper_.CheckFilesLoadedInSite(Site::kFileHandler, FilesOptions::kOneFooFile);
+}
+
 // Generated tests:
 
 IN_PROC_BROWSER_TEST_F(
