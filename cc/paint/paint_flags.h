@@ -163,8 +163,8 @@ class CC_PAINT_EXPORT PaintFlags {
   }
 
   // Returns true if this (of a drawOp) allows the sequence
-  // saveLayerAlpha/drawOp/restore to be folded into a single drawOp by baking
-  // the alpha in the saveLayerAlpha into the flags of the drawOp.
+  // saveLayerAlphaf/drawOp/restore to be folded into a single drawOp by baking
+  // the alpha in the saveLayerAlphaf into the flags of the drawOp.
   bool SupportsFoldingAlpha() const;
 
   // SkPaint does not support loopers, so callers of SkToPaint need

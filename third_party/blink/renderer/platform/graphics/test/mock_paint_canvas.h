@@ -29,8 +29,8 @@ class MockPaintCanvas : public cc::PaintCanvas {
   MOCK_METHOD1(saveLayer, int(const cc::PaintFlags& flags));
   MOCK_METHOD2(saveLayer,
                int(const SkRect& bounds, const cc::PaintFlags& flags));
-  MOCK_METHOD1(saveLayerAlpha, int(uint8_t alpha));
-  MOCK_METHOD2(saveLayerAlpha, int(const SkRect& bounds, uint8_t alpha));
+  MOCK_METHOD1(saveLayerAlphaf, int(float alpha));
+  MOCK_METHOD2(saveLayerAlphaf, int(const SkRect& bounds, float alpha));
   MOCK_METHOD0(restore, void());
   MOCK_CONST_METHOD0(getSaveCount, int());
   MOCK_METHOD1(restoreToCount, void(int save_count));

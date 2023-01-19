@@ -464,10 +464,10 @@ void SoftwareRenderer::DrawTextureQuad(const TextureDrawQuad* quad) {
 
   bool blend_background =
       quad->background_color != SkColors::kTransparent && !image->isOpaque();
-  bool needs_layer = blend_background && (current_paint_.getAlpha() != 0xFF);
+  bool needs_layer = blend_background && (current_paint_.getAlphaf() != 1.f);
   if (needs_layer) {
-    current_canvas_->saveLayerAlpha(&quad_rect, current_paint_.getAlpha());
-    current_paint_.setAlpha(0xFF);
+    current_canvas_->saveLayerAlphaf(&quad_rect, current_paint_.getAlphaf());
+    current_paint_.setAlphaf(1.f);
   }
   if (blend_background) {
     SkPaint background_paint;

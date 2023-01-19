@@ -46,8 +46,8 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   int save() override;
   int saveLayer(const PaintFlags& flags) override;
   int saveLayer(const SkRect& bounds, const PaintFlags& flags) override;
-  int saveLayerAlpha(uint8_t alpha) override;
-  int saveLayerAlpha(const SkRect& bounds, uint8_t alpha) override;
+  int saveLayerAlphaf(float alpha) override;
+  int saveLayerAlphaf(const SkRect& bounds, float alpha) override;
   void restore() override;
   int getSaveCount() const final;
   void restoreToCount(int save_count) override;
@@ -205,8 +205,8 @@ class CC_PAINT_EXPORT InspectableRecordPaintCanvas : public RecordPaintCanvas {
   int save() override;
   int saveLayer(const PaintFlags& flags) override;
   int saveLayer(const SkRect& bounds, const PaintFlags& flags) override;
-  int saveLayerAlpha(uint8_t alpha) override;
-  int saveLayerAlpha(const SkRect& bounds, uint8_t alpha) override;
+  int saveLayerAlphaf(float alpha) override;
+  int saveLayerAlphaf(const SkRect& bounds, float alpha) override;
   void restore() override;
 
   void translate(SkScalar dx, SkScalar dy) override;

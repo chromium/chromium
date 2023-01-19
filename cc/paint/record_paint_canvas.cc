@@ -83,13 +83,13 @@ int RecordPaintCanvas::saveLayer(const SkRect& bounds,
   return save_count_++;
 }
 
-int RecordPaintCanvas::saveLayerAlpha(uint8_t alpha) {
-  push<SaveLayerAlphaOp>(static_cast<float>(alpha / 255.0f));
+int RecordPaintCanvas::saveLayerAlphaf(float alpha) {
+  push<SaveLayerAlphaOp>(alpha);
   return save_count_++;
 }
 
-int RecordPaintCanvas::saveLayerAlpha(const SkRect& bounds, uint8_t alpha) {
-  push<SaveLayerAlphaOp>(bounds, static_cast<float>(alpha / 255.0f));
+int RecordPaintCanvas::saveLayerAlphaf(const SkRect& bounds, float alpha) {
+  push<SaveLayerAlphaOp>(bounds, alpha);
   return save_count_++;
 }
 
@@ -354,15 +354,16 @@ int InspectableRecordPaintCanvas::saveLayer(const SkRect& bounds,
   return CheckSaveCount(RecordPaintCanvas::saveLayer(bounds, flags),
                         canvas_.saveLayer(&bounds, &paint));
 }
-int InspectableRecordPaintCanvas::saveLayerAlpha(uint8_t alpha) {
-  return CheckSaveCount(RecordPaintCanvas::saveLayerAlpha(alpha),
-                        canvas_.saveLayerAlpha(nullptr, alpha));
+
+int InspectableRecordPaintCanvas::saveLayerAlphaf(float alpha) {
+  return CheckSaveCount(RecordPaintCanvas::saveLayerAlphaf(alpha),
+                        canvas_.saveLayerAlphaf(nullptr, alpha));
 }
 
-int InspectableRecordPaintCanvas::saveLayerAlpha(const SkRect& bounds,
-                                                 uint8_t alpha) {
-  return CheckSaveCount(RecordPaintCanvas::saveLayerAlpha(bounds, alpha),
-                        canvas_.saveLayerAlpha(&bounds, alpha));
+int InspectableRecordPaintCanvas::saveLayerAlphaf(const SkRect& bounds,
+                                                  float alpha) {
+  return CheckSaveCount(RecordPaintCanvas::saveLayerAlphaf(bounds, alpha),
+                        canvas_.saveLayerAlphaf(&bounds, alpha));
 }
 
 void InspectableRecordPaintCanvas::restore() {

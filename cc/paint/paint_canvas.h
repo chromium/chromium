@@ -74,8 +74,8 @@ class CC_PAINT_EXPORT PaintCanvas {
   virtual int save() = 0;
   virtual int saveLayer(const PaintFlags& flags) = 0;
   virtual int saveLayer(const SkRect& bounds, const PaintFlags& flags) = 0;
-  virtual int saveLayerAlpha(uint8_t alpha) = 0;
-  virtual int saveLayerAlpha(const SkRect& bounds, uint8_t alpha) = 0;
+  virtual int saveLayerAlphaf(float alpha) = 0;
+  virtual int saveLayerAlphaf(const SkRect& bounds, float alpha) = 0;
 
   virtual void restore() = 0;
   virtual int getSaveCount() const = 0;

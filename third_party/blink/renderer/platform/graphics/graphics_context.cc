@@ -268,7 +268,7 @@ void GraphicsContext::Concat(const SkM44& matrix) {
 
 void GraphicsContext::BeginLayer(float opacity) {
   DCHECK(canvas_);
-  canvas_->saveLayerAlpha(static_cast<uint8_t>(opacity * 255));
+  canvas_->saveLayerAlphaf(opacity);
 
 #if DCHECK_IS_ON()
   ++layer_count_;

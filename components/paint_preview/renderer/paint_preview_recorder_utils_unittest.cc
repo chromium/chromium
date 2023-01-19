@@ -125,7 +125,7 @@ TEST(PaintPreviewRecorderUtilsTest, TestParseLinks) {
   outer_canvas->restore();
 
   outer_canvas->saveLayer(rect_1, cc::PaintFlags());
-  outer_canvas->saveLayerAlpha(8);
+  outer_canvas->saveLayerAlphaf(0.2f);
   outer_canvas->restoreToCount(1);
   auto record = outer_recorder.finishRecordingAsPicture();
 
