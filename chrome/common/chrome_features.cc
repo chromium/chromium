@@ -958,7 +958,7 @@ BASE_FEATURE(kRemoveSupervisedUsersOnStartup,
 // Enables notification permission module in Safety Check.
 BASE_FEATURE(kSafetyCheckNotificationPermissions,
              "SafetyCheckNotificationPermissions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int>
     kSafetyCheckNotificationPermissionsMinEnagementLimit{

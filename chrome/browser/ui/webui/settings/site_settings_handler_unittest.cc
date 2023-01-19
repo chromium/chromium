@@ -743,6 +743,16 @@ class SiteSettingsHandlerTest : public testing::Test,
   }
 #endif  // #if BUILDFLAG(ENABLE_EXTENSIONS)
 
+  void ValidateCallbacksForNotificationPermission(int index) {
+    // When a notification permission is set or reset, there are two consecutive
+    // callbacks. The first one is to notify content setting observers, and
+    // the second one is to update safety check notification permission review.
+    ASSERT_EQ("contentSettingSitePermissionChanged",
+              web_ui()->call_data()[index]->arg1()->GetString());
+    ASSERT_EQ("notification-permission-review-list-maybe-changed",
+              web_ui()->call_data()[index + 1]->arg1()->GetString());
+  }
+
   // Content setting group name for the relevant ContentSettingsType.
   const std::string kNotifications;
   const std::string kCookies;
@@ -1411,7 +1421,11 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
     set_args.Append(false);  // Incognito.
 
     handler()->HandleSetCategoryPermissionForPattern(set_args);
-    ASSERT_EQ(1U, web_ui()->call_data().size());
+    ASSERT_EQ(2U, web_ui()->call_data().size());
+    // When HandleSetCategoryPermissionForPattern is called for a notification
+    // permission, there are two callbacks that make call_data size increase
+    // by 2 instead of 1.
+    ValidateCallbacksForNotificationPermission(0);
   }
 
   // Add and test 1 embargoed origin.
@@ -1494,7 +1508,11 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForInvalidOrigins) {
   set_args.Append(false);  // Incognito.
 
   handler()->HandleSetCategoryPermissionForPattern(set_args);
-  ASSERT_EQ(1U, web_ui()->call_data().size());
+  ASSERT_EQ(2U, web_ui()->call_data().size());
+  // When HandleSetCategoryPermissionForPattern is called for a notification
+  // permission, there are two callbacks that make call_data size increase
+  // by 2 instead of 1.
+  ValidateCallbacksForNotificationPermission(0);
 
   // Reset blocked origin.
   base::Value::List reset_args;
@@ -1519,7 +1537,11 @@ TEST_F(SiteSettingsHandlerTest, Origins) {
         content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
     set_args.Append(false);  // Incognito.
     handler()->HandleSetCategoryPermissionForPattern(set_args);
-    EXPECT_EQ(1U, web_ui()->call_data().size());
+    EXPECT_EQ(2U, web_ui()->call_data().size());
+    // When HandleSetCategoryPermissionForPattern is called for a notification
+    // permission, there are two callbacks that make call_data size increase
+    // by 2 instead of 1.
+    ValidateCallbacksForNotificationPermission(0);
   }
 
   base::Value::List get_exception_list_args;
@@ -1527,7 +1549,7 @@ TEST_F(SiteSettingsHandlerTest, Origins) {
   get_exception_list_args.Append(kNotifications);
   handler()->HandleGetExceptionList(get_exception_list_args);
   ValidateOrigin(google, "", google, CONTENT_SETTING_BLOCK,
-                 site_settings::SiteSettingSource::kPreference, 2U);
+                 site_settings::SiteSettingSource::kPreference, 3U);
 
   {
     // Reset things back to how they were.
@@ -1537,12 +1559,16 @@ TEST_F(SiteSettingsHandlerTest, Origins) {
     reset_args.Append(kNotifications);
     reset_args.Append(false);  // Incognito.
     handler()->HandleResetCategoryPermissionForPattern(reset_args);
-    EXPECT_EQ(3U, web_ui()->call_data().size());
+    EXPECT_EQ(5U, web_ui()->call_data().size());
+    // When HandleResetCategoryPermissionForPattern is called for a notification
+    // permission, there are two callbacks that make call_data size increase
+    // by 2 instead of 1.
+    ValidateCallbacksForNotificationPermission(3);
   }
 
   // Verify the reset was successful.
   handler()->HandleGetExceptionList(get_exception_list_args);
-  ValidateNoOrigin(4U);
+  ValidateNoOrigin(6U);
 }
 
 TEST_F(SiteSettingsHandlerTest, NotificationPermissionRevokeUkm) {
@@ -1644,10 +1670,15 @@ TEST_F(SiteSettingsHandlerTest, MAYBE_DefaultSettingSource) {
   set_notification_pattern_args.Append(false);
   handler()->HandleSetCategoryPermissionForPattern(
       set_notification_pattern_args);
+  ASSERT_EQ(5U, web_ui()->call_data().size());
+  // When HandleSetCategoryPermissionForPattern is called for a notification
+  // permission, there are two callbacks that make call_data size increase
+  // by 2 instead of 1.
+  ValidateCallbacksForNotificationPermission(3);
   // A user-set pattern should not show up as default.
   handler()->HandleGetOriginPermissions(get_origin_permissions_args);
   ValidateOrigin(google, google, expected_display_name, CONTENT_SETTING_ALLOW,
-                 site_settings::SiteSettingSource::kPreference, 5U);
+                 site_settings::SiteSettingSource::kPreference, 6U);
 
   base::Value::List set_notification_origin_args;
   set_notification_origin_args.Append(google);
@@ -1658,16 +1689,21 @@ TEST_F(SiteSettingsHandlerTest, MAYBE_DefaultSettingSource) {
   set_notification_origin_args.Append(false);
   handler()->HandleSetCategoryPermissionForPattern(
       set_notification_origin_args);
+  ASSERT_EQ(8U, web_ui()->call_data().size());
+  // When HandleSetCategoryPermissionForPattern is called for a notification
+  // permission, there are two callbacks that make call_data size increase
+  // by 2 instead of 1.
+  ValidateCallbacksForNotificationPermission(6);
   // A user-set per-origin permission should not show up as default.
   handler()->HandleGetOriginPermissions(get_origin_permissions_args);
   ValidateOrigin(google, google, expected_display_name, CONTENT_SETTING_BLOCK,
-                 site_settings::SiteSettingSource::kPreference, 7U);
+                 site_settings::SiteSettingSource::kPreference, 9U);
 
   // Enterprise-policy set defaults should not show up as default.
   source_setter.SetPolicyDefault(CONTENT_SETTING_ALLOW);
   handler()->HandleGetOriginPermissions(get_origin_permissions_args);
   ValidateOrigin(google, google, expected_display_name, CONTENT_SETTING_ALLOW,
-                 site_settings::SiteSettingSource::kPolicy, 8U);
+                 site_settings::SiteSettingSource::kPolicy, 10U);
 }
 
 TEST_F(SiteSettingsHandlerTest, GetAndSetOriginPermissions) {
