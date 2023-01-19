@@ -169,9 +169,7 @@ bool GLTextureIOSurfaceRepresentation::BeginAccess(GLenum mode) {
   DCHECK(mode_ == 0);
   mode_ = mode;
   bool readonly = mode_ != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
-  if (mode != GL_SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM)
-    return egl_state_->BeginAccess(readonly);
-  return true;
+  return egl_state_->BeginAccess(readonly);
 }
 
 void GLTextureIOSurfaceRepresentation::EndAccess() {

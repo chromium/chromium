@@ -80,8 +80,7 @@ New Procedures and Functions
 
     INVALID_ENUM is generated if <mode> is not one of
     SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM,
-    SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM, or
-    SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM.
+    SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM.
 
     The command
 
@@ -99,7 +98,6 @@ New Tokens
     Accepted by the <mode> parameter of BeginSharedImageAccessCHROMIUM:
     SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM        0x8AF6
     SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM   0x8AF7
-    SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM     0x8AF8
 
 Errors
 
@@ -114,3 +112,4 @@ Revision History
     2018-10-15   Created.
     2018-10-31   Added Begin/End calls.
     2020-06-21   Added mode SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM.
+    2023-01-18   Removed mode SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM.

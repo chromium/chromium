@@ -442,7 +442,6 @@ using Window = XID;
 #define GL_CHROMIUM_shared_image 1
 #define GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM 0x8AF6
 #define GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM 0x8AF7
-#define GL_SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM 0x8AF8
 #endif /* GL_CHROMIUM_shared_image */
 
 #ifndef GL_NV_internalformat_sample_query

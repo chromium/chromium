@@ -40,7 +40,7 @@ bool GLTextureGLCommonRepresentation::BeginAccess(GLenum mode) {
   DCHECK_EQ(mode_, 0u);
   mode_ = mode;
   bool readonly = mode_ != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
-  if (client_ && mode != GL_SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM) {
+  if (client_) {
     return client_->GLTextureImageRepresentationBeginAccess(readonly);
   }
   return true;
@@ -85,7 +85,7 @@ bool GLTexturePassthroughGLCommonRepresentation::BeginAccess(GLenum mode) {
   DCHECK(mode_ == 0);
   mode_ = mode;
   bool readonly = mode_ != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
-  if (client_ && mode != GL_SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM) {
+  if (client_) {
     return client_->GLTextureImageRepresentationBeginAccess(readonly);
   }
   return true;

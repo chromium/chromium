@@ -781,7 +781,6 @@ bool Validators::ShaderTypeValidator::IsValid(const GLenum value) const {
 bool Validators::SharedImageAccessModeValidator::IsValid(
     const GLenum value) const {
   switch (value) {
-    case GL_SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM:
     case GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM:
     case GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM:
       return true;

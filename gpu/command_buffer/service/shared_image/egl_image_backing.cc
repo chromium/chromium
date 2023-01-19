@@ -73,8 +73,7 @@ class EGLImageBacking::GLRepresentationShared {
   }
 
   bool BeginAccess(GLenum mode) {
-    if (mode == GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM ||
-        mode == GL_SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM) {
+    if (mode == GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM) {
       if (!backing_->BeginRead(this))
         return false;
       mode_ = RepresentationAccessMode::kRead;

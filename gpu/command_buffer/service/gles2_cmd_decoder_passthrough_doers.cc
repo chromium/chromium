@@ -4910,8 +4910,7 @@ error::Error
 GLES2DecoderPassthroughImpl::DoBeginSharedImageAccessDirectCHROMIUM(
     GLuint client_id,
     GLenum mode) {
-  if (mode != GL_SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM &&
-      mode != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM &&
+  if (mode != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM &&
       mode != GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM) {
     InsertError(GL_INVALID_ENUM, "unrecognized access mode");
     return error::kNoError;
