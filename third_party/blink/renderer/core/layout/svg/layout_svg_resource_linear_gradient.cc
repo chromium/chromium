@@ -49,17 +49,15 @@ void LayoutSVGResourceLinearGradient::CollectGradientAttributes() {
 gfx::PointF LayoutSVGResourceLinearGradient::StartPoint(
     const LinearGradientAttributes& attributes) const {
   NOT_DESTROYED();
-  return SVGLengthContext::ResolvePoint(GetElement(),
-                                        attributes.GradientUnits(),
-                                        *attributes.X1(), *attributes.Y1());
+  return ResolvePoint(attributes.GradientUnits(), *attributes.X1(),
+                      *attributes.Y1());
 }
 
 gfx::PointF LayoutSVGResourceLinearGradient::EndPoint(
     const LinearGradientAttributes& attributes) const {
   NOT_DESTROYED();
-  return SVGLengthContext::ResolvePoint(GetElement(),
-                                        attributes.GradientUnits(),
-                                        *attributes.X2(), *attributes.Y2());
+  return ResolvePoint(attributes.GradientUnits(), *attributes.X2(),
+                      *attributes.Y2());
 }
 
 scoped_refptr<Gradient> LayoutSVGResourceLinearGradient::BuildGradient() const {

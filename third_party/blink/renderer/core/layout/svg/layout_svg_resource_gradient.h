@@ -31,6 +31,7 @@
 
 namespace blink {
 
+class SVGLength;
 struct GradientData;
 
 class LayoutSVGResourceGradient : public LayoutSVGResourcePaintServer {
@@ -55,6 +56,9 @@ class LayoutSVGResourceGradient : public LayoutSVGResourcePaintServer {
   virtual void CollectGradientAttributes() = 0;
   virtual scoped_refptr<Gradient> BuildGradient() const = 0;
 
+  gfx::PointF ResolvePoint(SVGUnitTypes::SVGUnitType,
+                           const SVGLength& x,
+                           const SVGLength& y) const;
   static GradientSpreadMethod PlatformSpreadMethodFromSVGType(
       SVGSpreadMethodType);
 

@@ -24,11 +24,28 @@
 
 #include <memory>
 
+#include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 
 namespace blink {
+
+namespace {
+
+gfx::SizeF MakeViewport(const SVGLengthContext& context,
+                        const LengthPoint& point,
+                        SVGUnitTypes::SVGUnitType type) {
+  if (!point.X().IsPercentOrCalc() && !point.Y().IsPercentOrCalc()) {
+    return gfx::SizeF(0, 0);
+  }
+  if (type == SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
+    return gfx::SizeF(1, 1);
+  }
+  return context.ResolveViewport();
+}
+
+}  // unnamed namespace
 
 struct GradientData {
   USING_FAST_MALLOC(GradientData);
@@ -139,6 +156,16 @@ bool LayoutSVGResourceGradient::IsChildAllowed(LayoutObject* child,
     return false;
 
   return To<LayoutSVGResourceContainer>(child)->IsSVGPaintServer();
+}
+
+gfx::PointF LayoutSVGResourceGradient::ResolvePoint(
+    SVGUnitTypes::SVGUnitType type,
+    const SVGLength& x,
+    const SVGLength& y) const {
+  NOT_DESTROYED();
+  const SVGLengthContext context(GetElement());
+  const LengthPoint& point = context.ConvertToLengthPoint(x, y);
+  return PointForLengthPoint(point, MakeViewport(context, point, type));
 }
 
 GradientSpreadMethod LayoutSVGResourceGradient::PlatformSpreadMethodFromSVGType(

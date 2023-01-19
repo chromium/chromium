@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "third_party/blink/renderer/platform/geometry/length_point.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -357,21 +358,6 @@ gfx::RectF SVGLengthContext::ResolveRectangle(const SVGElement* context,
   return resolved_rect;
 }
 
-gfx::PointF SVGLengthContext::ResolvePoint(const SVGElement* context,
-                                           SVGUnitTypes::SVGUnitType type,
-                                           const SVGLength& x,
-                                           const SVGLength& y) {
-  DCHECK_NE(SVGUnitTypes::kSvgUnitTypeUnknown, type);
-  if (type == SVGUnitTypes::kSvgUnitTypeUserspaceonuse) {
-    SVGLengthContext length_context(context);
-    return gfx::PointF(x.Value(length_context), y.Value(length_context));
-  }
-  // TODO(fs): ScaleByPercentage() won't be correct for eg. cm units. They need
-  // to be resolved in user space and then be considered in objectBoundingBox
-  // space.
-  return gfx::PointF(x.ScaleByPercentage(1), y.ScaleByPercentage(1));
-}
-
 gfx::Vector2dF SVGLengthContext::ResolveLengthPair(
     const Length& x_length,
     const Length& y_length,
@@ -425,6 +411,18 @@ Length SVGLengthContext::ConvertToLength(const SVGLength& length) const {
   }
   return length.AsCSSPrimitiveValue().ConvertToLength(
       conversion_context.MakeConversionData());
+}
+
+LengthPoint SVGLengthContext::ConvertToLengthPoint(const SVGLength& x,
+                                                   const SVGLength& y) const {
+  CSSToLengthConversionDataContext conversion_context(context_);
+  if (!conversion_context.HasStyle()) {
+    return LengthPoint(Length::Fixed(0), Length::Fixed(0));
+  }
+  const CSSToLengthConversionData conversion_data =
+      conversion_context.MakeConversionData();
+  return LengthPoint(x.AsCSSPrimitiveValue().ConvertToLength(conversion_data),
+                     y.AsCSSPrimitiveValue().ConvertToLength(conversion_data));
 }
 
 float SVGLengthContext::ValueForLength(const UnzoomedLength& unzoomed_length,

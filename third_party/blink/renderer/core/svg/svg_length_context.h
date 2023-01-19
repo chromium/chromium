@@ -37,6 +37,7 @@ class ComputedStyle;
 class SVGElement;
 class SVGLength;
 class UnzoomedLength;
+struct LengthPoint;
 
 enum class SVGLengthMode { kWidth, kHeight, kOther };
 
@@ -63,10 +64,6 @@ class CORE_EXPORT SVGLengthContext {
                                      const SVGLength& y,
                                      const SVGLength& width,
                                      const SVGLength& height);
-  static gfx::PointF ResolvePoint(const SVGElement*,
-                                  SVGUnitTypes::SVGUnitType,
-                                  const SVGLength& x,
-                                  const SVGLength& y);
   static float ResolveLength(const SVGElement*,
                              SVGUnitTypes::SVGUnitType,
                              const SVGLength&);
@@ -75,6 +72,8 @@ class CORE_EXPORT SVGLengthContext {
                                    const ComputedStyle&) const;
 
   Length ConvertToLength(const SVGLength&) const;
+  LengthPoint ConvertToLengthPoint(const SVGLength& x,
+                                   const SVGLength& y) const;
 
   float ConvertValueToUserUnits(float,
                                 SVGLengthMode,
