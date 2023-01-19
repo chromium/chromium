@@ -35,12 +35,12 @@ export class DriveUploadPageElement extends HTMLElement {
   }
 
   private onContinueButtonClick(): void {
-    this.proxy.handler.respondAndClose(
+    this.proxy.handler.respondWithUserActionAndClose(
         UserAction.kConfirmOrUploadToGoogleDrive);
   }
 
   private onCancelButtonClick(): void {
-    this.proxy.handler.respondAndClose(UserAction.kCancel);
+    this.proxy.handler.respondWithUserActionAndClose(UserAction.kCancel);
   }
 }
 

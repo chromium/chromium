@@ -29,6 +29,16 @@ enum DialogPage {
   kMoveConfirmationGoogleDrive,
 };
 
+// A local file task that is displayed in the `kFileHandlerDialog` which the
+// user could select to open the files. The `position` is the tasks position
+// in a vector with the other `DialogTask`s.
+struct DialogTask {
+  int32 position;
+  string title;
+  string app_id;
+  string icon_url;
+};
+
 // Contains the arguments used to set up the dialog.
 struct DialogArgs {
   // List of files that will be uploaded on dialog close if the user completes
@@ -37,6 +47,10 @@ struct DialogArgs {
 
   // Tells the dialog which sub-page/flow we want to show.
   DialogPage dialog_page;
+
+  // The local file tasks the user can pick from to open the files. Displayed in
+  // the `kFileHandlerDialog` dialog.
+  array<DialogTask> tasks;
 };
 
 // Lives in the browser process. A renderer uses this to create a page handler
@@ -66,7 +80,11 @@ interface PageHandler {
   SignInToOneDrive() => (bool success);
 
   // Returns the user selected action and requests the dialog to be closed.
-  RespondAndClose(UserAction response);
+  RespondWithUserActionAndClose(UserAction response);
+
+  // Returns the user selected local file task to launch and requests the
+  // dialog to be closed.
+  RespondWithLocalTaskAndClose(int32 task_position);
 
   // Set Office as the default file handler for office files and mark the
   // setup as complete so that it does not need to be started again.
