@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_PRIVATE_PTR_H_
 
 #include "base/check.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "v8/include/cppgc/persistent.h"
 
@@ -148,7 +149,9 @@ class PtrStorageImpl<T,
 
  private:
   union {
-    T* ptr_;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION T* ptr_;
     [[maybe_unused]] std::aligned_storage_t<kMaxWebPrivatePtrSize, alignof(T*)>
         unused_;
   };
