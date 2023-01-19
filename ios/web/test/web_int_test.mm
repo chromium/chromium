@@ -84,16 +84,24 @@ void WebIntTest::SetUp() {
 }
 
 void WebIntTest::TearDown() {
-  // Tests can create an unresponsive WebProcess. WebIntTest::TearDown will
-  // call ClearBrowingData, which can take a very long time with an unresponsive
-  // WebProcess. Work around this problem by force closing WKWebView via a
-  // private API.
+  // Tests can create an unresponsive WebProcess or NetworkProcess.
+  // WebIntTest::TearDown will call ClearBrowingData, which can take a very long
+  // time with an unresponsive WebProcess or NetworkProcess. Work around this
+  // problem by force closing WKWebView and killing the existing NetworkProcess
+  // using private API.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
   WKWebView* web_view = base::mac::ObjCCast<WKWebView>(
       web::WebStateImpl::FromWebState(web_state())
           ->GetWebViewNavigationProxy());
   [web_view performSelector:@selector(_close)];
+
+  // This only deletes the data store object, not the underlying data store on
+  // disk. Since WKWebsiteDataStore owns the network process, this has the
+  // effect of killing the existing network process. A new network process
+  // will be created the next time the default data store is accessed, below.
+  [WKWebsiteDataStore
+      performSelector:@selector(_deleteDefaultDataStoreForTesting)];
 #pragma clang diagnostic pop
 
   RemoveWKWebViewCreatedData([WKWebsiteDataStore defaultDataStore],
