@@ -354,6 +354,14 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationClearRendering);
 MEDIA_EXPORT extern const base::FeatureParam<
     MediaFoundationClearRenderingStrategy>
     kMediaFoundationClearRenderingStrategyParam;
+
+// Enables the batch audio/video buffers reading for media playback.
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationBatchRead);
+
+// Specify the batch read count between client renderer and remote renderer,
+// default value is 1.
+MEDIA_EXPORT extern const base::FeatureParam<int> kBatchReadCount;
+
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)

@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/base_tracing.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/renderers/win/media_foundation_audio_stream.h"
@@ -20,10 +21,6 @@ namespace media {
 using Microsoft::WRL::ComPtr;
 
 namespace {
-
-// Requested buffer count. The actual returned buffer count could be less
-// according to DemuxerStream::Read() API.
-const uint32_t kBatchReadCount = 1;
 
 // |guid_string| is a binary serialization of a GUID in network byte order
 // format.
@@ -185,6 +182,21 @@ HRESULT MediaFoundationStreamWrapper::RuntimeClassInitialize(
                 << ", stream_type=" << DemuxerStream::GetTypeName(stream_type_);
 
   media_log_ = std::move(media_log);
+  if (base::FeatureList::IsEnabled(kMediaFoundationBatchRead)) {
+    if (kBatchReadCount.Get() < 1 || kBatchReadCount.Get() > 500) {
+      DLOG(WARNING) << "batch_read_count_=" << kBatchReadCount.Get()
+                    << " is out of range [1,500], "
+                    << (kBatchReadCount.Get() < 1
+                            ? "it shouldn't be negative or 0"
+                            : "it will spend more time "
+                              "on writing and reading and maybe impacts UX")
+                    << "; setting batch_read_count_=1";
+      batch_read_count_ = 1;
+    } else {
+      batch_read_count_ = kBatchReadCount.Get();
+    }
+  }
+  DVLOG_FUNC(1) << "batch_read_count_=" << batch_read_count_;
 
   RETURN_IF_FAILED(GenerateStreamDescriptor());
   RETURN_IF_FAILED(MFCreateEventQueue(&mf_media_event_queue_));
@@ -363,13 +375,13 @@ void MediaFoundationStreamWrapper::ProcessRequestsIfPossible() {
 
   // Request multi buffers by sending IPC to 'MojoDemuxerStreamImpl'.
   if (!pending_stream_read_) {
-    DVLOG_FUNC(3) << " IPC send, BatchReadCount=" << kBatchReadCount;
+    DVLOG_FUNC(3) << " IPC send, batch_read_count_=" << batch_read_count_;
     TRACE_EVENT2("media", "MFGetBuffersFromRendererByIPC",
                  "StreamType:", DemuxerStream::GetTypeName(stream_type_),
-                 "kBatchReadCount:", kBatchReadCount);
+                 "batch_read_count_:", batch_read_count_);
     pending_stream_read_ = true;
     demuxer_stream_->Read(
-        kBatchReadCount,
+        batch_read_count_,
         base::BindOnce(
             &MediaFoundationStreamWrapper::OnDemuxerStreamReadBuffers,
             weak_factory_.GetWeakPtr()));

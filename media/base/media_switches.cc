@@ -1073,6 +1073,13 @@ const base::FeatureParam<MediaFoundationClearRenderingStrategy>
         &kMediaFoundationClearRendering, "strategy",
         MediaFoundationClearRenderingStrategy::kDirectComposition,
         &kMediaFoundationClearRenderingStrategyOptions};
+
+BASE_FEATURE(kMediaFoundationBatchRead,
+             "MediaFoundationBatchRead",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kBatchReadCount{&kMediaFoundationBatchRead,
+                                              "batch_read_count", 1};
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)

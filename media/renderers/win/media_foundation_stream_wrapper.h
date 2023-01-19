@@ -192,6 +192,11 @@ class MediaFoundationStreamWrapper
   // to be guardedby the lock.
   std::deque<PendingInputBuffer> buffer_queue_ GUARDED_BY(lock_);
 
+  // |batch_read_count_| represents how many buffers we try to get by a IPC
+  // call. The actual returned buffer count could be less according to
+  // DemuxerStream::Read() API.
+  uint32_t batch_read_count_ = 1;
+
   bool stream_ended_ = false;
   GUID last_key_id_ = GUID_NULL;
 
