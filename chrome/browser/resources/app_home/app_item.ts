@@ -4,7 +4,7 @@
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AppInfo, RunOnOsLoginMode} from './app_home.mojom-webui.js';
+import {AppInfo} from './app_home.mojom-webui.js';
 import {getTemplate} from './app_item.html.js';
 
 export class AppItemElement extends PolymerElement {
@@ -33,8 +33,6 @@ export class AppItemElement extends PolymerElement {
     this.fire_('open-menu', {
       appInfo: this.appInfo,
       event: e,
-      runOnOsLoginModeChecked:
-          this.appInfo.runOnOsLoginMode !== RunOnOsLoginMode.kNotRun,
     });
 
     e.preventDefault();

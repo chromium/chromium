@@ -6,10 +6,9 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://apps/app_list.js';
 import 'chrome://apps/app_item.js';
 
-import {AppInfo, PageRemote} from 'chrome://apps/app_home.mojom-webui.js';
+import {AppInfo, PageRemote, RunOnOsLoginMode} from 'chrome://apps/app_home.mojom-webui.js';
 import {AppListElement} from 'chrome://apps/app_list.js';
 import {BrowserProxy} from 'chrome://apps/browser_proxy.js';
-import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -40,7 +39,7 @@ suite('AppListTest', () => {
           },
           mayShowRunOnOsLoginMode: true,
           mayToggleRunOnOsLoginMode: false,
-          runOnOsLoginMode: 0 /*kNotRun*/,
+          runOnOsLoginMode: RunOnOsLoginMode.kNotRun,
           mayShowOpenInWindow: true,
           openInWindow: false,
         },
@@ -54,7 +53,7 @@ suite('AppListTest', () => {
           },
           mayShowRunOnOsLoginMode: false,
           mayToggleRunOnOsLoginMode: false,
-          runOnOsLoginMode: 0 /*kNotRun*/,
+          runOnOsLoginMode: RunOnOsLoginMode.kNotRun,
           mayShowOpenInWindow: false,
           openInWindow: false,
         },
@@ -70,7 +69,7 @@ suite('AppListTest', () => {
       },
       mayShowRunOnOsLoginMode: false,
       mayToggleRunOnOsLoginMode: false,
-      runOnOsLoginMode: 0 /*kNotRun*/,
+      runOnOsLoginMode: RunOnOsLoginMode.kNotRun,
       mayShowOpenInWindow: false,
       openInWindow: false,
     };
@@ -140,64 +139,132 @@ suite('AppListTest', () => {
     const contextMenu =
         appListElement.shadowRoot!.querySelector('cr-action-menu');
     assertTrue(!!contextMenu);
-    assertTrue(contextMenu!.hidden);
+    assertTrue(contextMenu.hidden);
 
-    appItem!.dispatchEvent(new CustomEvent('contextmenu'));
-    assertFalse(contextMenu!.hidden);
+    appItem.dispatchEvent(new CustomEvent('contextmenu'));
+    assertFalse(contextMenu.hidden);
 
+    assertTrue(apps.appList.length >= 1);
     const appInfo = apps.appList[0]!;
 
     const openInWindow =
-        contextMenu!.querySelector<HTMLElement>('#open-in-window');
+        contextMenu.querySelector<HTMLElement>('#open-in-window');
     assertTrue(!!openInWindow);
-    assertEquals(openInWindow!.hidden, !appInfo.mayShowOpenInWindow);
+    assertEquals(openInWindow.hidden, !appInfo.mayShowOpenInWindow);
     assertEquals(
-        openInWindow!.querySelector<CrCheckboxElement>('cr-checkbox')!.checked,
+        openInWindow.querySelector('cr-checkbox')!.checked,
         appInfo.openInWindow);
 
     const launchOnStartup =
-        contextMenu!.querySelector<HTMLElement>('#launch-on-startup');
+        contextMenu.querySelector<HTMLElement>('#launch-on-startup');
     assertTrue(!!launchOnStartup);
-    assertEquals(launchOnStartup!.hidden, !appInfo.mayShowRunOnOsLoginMode);
+    assertEquals(launchOnStartup.hidden, !appInfo.mayShowRunOnOsLoginMode);
 
     assertEquals(
-        launchOnStartup!.querySelector<CrCheckboxElement>(
-                            'cr-checkbox')!.checked,
-        (appInfo.runOnOsLoginMode !== 0));
+        launchOnStartup.querySelector('cr-checkbox')!.checked,
+        (appInfo.runOnOsLoginMode !== RunOnOsLoginMode.kNotRun));
     assertEquals(
-        launchOnStartup!.querySelector<CrCheckboxElement>(
-                            'cr-checkbox')!.disabled,
+        launchOnStartup.querySelector('cr-checkbox')!.disabled,
         !appInfo.mayToggleRunOnOsLoginMode);
 
-    assertTrue(!!contextMenu!.querySelector('#create-shortcut'));
-    assertTrue(!!contextMenu!.querySelector('#uninstall'));
-    assertTrue(!!contextMenu!.querySelector('#app-settings'));
+    assertTrue(!!contextMenu.querySelector('#create-shortcut'));
+    assertTrue(!!contextMenu.querySelector('#uninstall'));
+    assertTrue(!!contextMenu.querySelector('#app-settings'));
   });
 
   test('toggle open in window', () => {
     const appItem = appListElement.shadowRoot!.querySelector('app-item');
     assertTrue(!!appItem);
 
-    appItem!.dispatchEvent(new CustomEvent('contextmenu'));
+    appItem.dispatchEvent(new CustomEvent('contextmenu'));
 
+    assertTrue(apps.appList.length >= 1);
     const appInfo = apps.appList[0]!;
     const openInWindow = appListElement.shadowRoot!.querySelector<HTMLElement>(
         '#open-in-window');
     assertTrue(!!openInWindow);
 
-    assertFalse(
-        openInWindow!.querySelector<CrCheckboxElement>('cr-checkbox')!.checked);
+    assertFalse(openInWindow!.querySelector('cr-checkbox')!.checked);
     assertFalse(appInfo.openInWindow);
     openInWindow!.click();
-    appItem!.dispatchEvent(new CustomEvent('contextmenu'));
-    assertTrue(
-        openInWindow!.querySelector<CrCheckboxElement>('cr-checkbox')!.checked);
+    appItem.dispatchEvent(new CustomEvent('contextmenu'));
+    assertTrue(openInWindow!.querySelector('cr-checkbox')!.checked);
     assertTrue(appInfo.openInWindow);
     openInWindow!.click();
-    appItem!.dispatchEvent(new CustomEvent('contextmenu'));
-    assertFalse(
-        openInWindow!.querySelector<CrCheckboxElement>('cr-checkbox')!.checked);
+    appItem.dispatchEvent(new CustomEvent('contextmenu'));
+    assertFalse(openInWindow!.querySelector('cr-checkbox')!.checked);
     assertFalse(appInfo.openInWindow);
+  });
+
+  test('toggle launch on startup', () => {
+    const appItem = appListElement.shadowRoot!.querySelector('app-item');
+    assertTrue(!!appItem);
+
+    appItem.dispatchEvent(new CustomEvent('contextmenu'));
+
+    assertTrue(apps.appList.length > 0);
+    const appInfo = apps.appList[0]!;
+    const launchOnStartup =
+        appListElement.shadowRoot!.querySelector<HTMLElement>(
+            '#launch-on-startup');
+    assertTrue(!!launchOnStartup);
+
+    assertFalse(launchOnStartup.querySelector('cr-checkbox')!.checked);
+    assertEquals(appInfo.runOnOsLoginMode, RunOnOsLoginMode.kNotRun);
+    launchOnStartup.click();
+    appItem.dispatchEvent(new CustomEvent('contextmenu'));
+    assertTrue(launchOnStartup.querySelector('cr-checkbox')!.checked);
+    assertEquals(appInfo.runOnOsLoginMode, RunOnOsLoginMode.kWindowed);
+    launchOnStartup.click();
+    appItem.dispatchEvent(new CustomEvent('contextmenu'));
+    assertFalse(launchOnStartup.querySelector('cr-checkbox')!.checked);
+    assertEquals(appInfo.runOnOsLoginMode, RunOnOsLoginMode.kNotRun);
+  });
+
+  test('click uninstall', () => {
+    const appItem = appListElement.shadowRoot!.querySelector('app-item');
+    assertTrue(!!appItem);
+
+    appItem.dispatchEvent(new CustomEvent('contextmenu'));
+
+    const uninstall =
+        appListElement.shadowRoot!.querySelector<HTMLElement>('#uninstall');
+    assertTrue(!!uninstall);
+
+    uninstall.click();
+    testBrowserProxy.fakeHandler.whenCalled('uninstallApp')
+        .then((appId: string) => assertEquals(appId, apps.appList[0]!.id));
+  });
+
+  test('click app settings', () => {
+    const appItem = appListElement.shadowRoot!.querySelector('app-item');
+    assertTrue(!!appItem);
+
+    appItem.dispatchEvent(new CustomEvent('contextmenu'));
+
+    const appSettings =
+        appListElement.shadowRoot!.querySelector<HTMLElement>('#app-settings');
+    assertTrue(!!appSettings);
+
+    appSettings.click();
+    testBrowserProxy.fakeHandler.whenCalled('showAppSettings')
+        .then((appId: string) => assertEquals(appId, apps.appList[0]!.id));
+  });
+
+  test('click create shortcut', () => {
+    const appItem = appListElement.shadowRoot!.querySelector('app-item');
+    assertTrue(!!appItem);
+
+    appItem.dispatchEvent(new CustomEvent('contextmenu'));
+
+    const createShortcut =
+        appListElement.shadowRoot!.querySelector<HTMLElement>(
+            '#create-shortcut');
+    assertTrue(!!createShortcut);
+
+    createShortcut.click();
+    testBrowserProxy.fakeHandler.whenCalled('createAppShortcut')
+        .then((appId: string) => assertEquals(appId, apps.appList[0]!.id));
   });
 
 });

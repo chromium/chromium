@@ -18,7 +18,6 @@ import {UserDisplayMode} from './user_display_mode.mojom-webui.js';
 export interface ActionMenuModel {
   appInfo: AppInfo;
   event: MouseEvent;
-  runOnOsLoginModeChecked: boolean;
 }
 
 type OpenMenuEvent = CustomEvent<ActionMenuModel>;
@@ -112,22 +111,29 @@ export class AppListElement extends PolymerElement {
     }
   }
 
-  private isOpenInWindowHidden_(selectedActionMenuModel: ActionMenuModel) {
-    return selectedActionMenuModel ?
-        !selectedActionMenuModel.appInfo.mayShowOpenInWindow :
+  private isOpenInWindowHidden_() {
+    return this.selectedActionMenuModel_ ?
+        !this.selectedActionMenuModel_.appInfo.mayShowOpenInWindow :
         true;
   }
 
-  private isLaunchOnStartupHidden_(selectedActionMenuModel: ActionMenuModel) {
-    return selectedActionMenuModel ?
-        !selectedActionMenuModel.appInfo.mayShowRunOnOsLoginMode :
+  private isLaunchOnStartupHidden_() {
+    return this.selectedActionMenuModel_ ?
+        !this.selectedActionMenuModel_.appInfo.mayShowRunOnOsLoginMode :
         true;
   }
 
-  private isLaunchOnStartupDisabled_(selectedActionMenuModel: ActionMenuModel) {
-    return selectedActionMenuModel ?
-        !selectedActionMenuModel.appInfo.mayToggleRunOnOsLoginMode :
+  private isLaunchOnStartupDisabled_() {
+    return this.selectedActionMenuModel_ ?
+        !this.selectedActionMenuModel_.appInfo.mayToggleRunOnOsLoginMode :
         true;
+  }
+
+  private isLaunchOnStartUp_() {
+    return this.selectedActionMenuModel_ ?
+        (this.selectedActionMenuModel_.appInfo.runOnOsLoginMode !==
+         RunOnOsLoginMode.kNotRun) :
+        false;
   }
 
   private onOpenInWindowItemClick_() {
@@ -148,7 +154,7 @@ export class AppListElement extends PolymerElement {
   private onLaunchOnStartupItemClick_() {
     if (this.selectedActionMenuModel_) {
       const appInfo = this.selectedActionMenuModel_.appInfo;
-      if (this.selectedActionMenuModel_.runOnOsLoginModeChecked) {
+      if (this.isLaunchOnStartUp_()) {
         BrowserProxy.getInstance().handler.setRunOnOsLoginMode(
             appInfo.id, RunOnOsLoginMode.kNotRun);
       } else {

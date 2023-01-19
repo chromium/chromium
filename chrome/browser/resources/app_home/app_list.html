@@ -56,8 +56,9 @@
       Launch on startup
     </div>
     <cr-checkbox
-      checked="{{selectedActionMenuModel_.runOnOsLoginModeChecked}}"
-      disabled="[[isLaunchOnStartupDisabled_(selectedActionMenuModel_)]]"
+      checked="[[isLaunchOnStartUp_(selectedActionMenuModel_)]]"
+      disabled=
+        "[[isLaunchOnStartupDisabled_(selectedActionMenuModel_)]]"
       on-change="onLaunchOnStartupItemClick_">
         Enable launching app on startup
     </cr-checkbox>

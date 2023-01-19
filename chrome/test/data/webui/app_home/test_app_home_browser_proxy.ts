@@ -4,16 +4,19 @@
 import {AppInfo, ClickEvent, PageCallbackRouter, PageHandlerInterface, PageRemote, RunOnOsLoginMode} from 'chrome://apps/app_home.mojom-webui.js';
 import {BrowserProxy} from 'chrome://apps/browser_proxy.js';
 import {UserDisplayMode} from 'chrome://apps/user_display_mode.mojom-webui.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 interface AppList {
   appList: AppInfo[];
 }
 
-export class FakePageHandler implements PageHandlerInterface {
+export class FakePageHandler extends TestBrowserProxy implements
+    PageHandlerInterface {
   private apps_: AppList;
   private callbackRouterRemote_: PageRemote;
 
   constructor(apps: AppList, callbackRouterRemote: PageRemote) {
+    super(['uninstallApp', 'showAppSettings', 'createAppShortcut']);
     this.apps_ = apps;
     this.callbackRouterRemote_ = callbackRouterRemote;
   }
@@ -22,17 +25,30 @@ export class FakePageHandler implements PageHandlerInterface {
     return Promise.resolve(this.apps_);
   }
 
-  uninstallApp(_appId: string) {}
+  uninstallApp(appId: string) {
+    this.methodCalled('uninstallApp', appId);
+  }
 
-  showAppSettings(_appId: string) {}
+  showAppSettings(appId: string) {
+    this.methodCalled('showAppSettings', appId);
+  }
 
-  createAppShortcut(_appId: string) {
+  createAppShortcut(appId: string) {
+    this.methodCalled('createAppShortcut', appId);
     return Promise.resolve();
   }
 
   launchApp(_appId: string, _source: number, _clickEvent: ClickEvent) {}
 
-  setRunOnOsLoginMode(_appId: string, _runOnOsLoginMode: RunOnOsLoginMode) {}
+  setRunOnOsLoginMode(appId: string, runOnOsLoginMode: RunOnOsLoginMode) {
+    for (const app of this.apps_.appList) {
+      if (app.id === appId) {
+        app.runOnOsLoginMode = runOnOsLoginMode;
+        this.callbackRouterRemote_.addApp(app);
+        break;
+      }
+    }
+  }
 
   launchDeprecatedAppDialog() {}
 
