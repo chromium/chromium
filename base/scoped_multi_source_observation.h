@@ -95,7 +95,7 @@ class ScopedMultiSourceObservation {
 
   const raw_ptr<Observer> observer_;
 
-  std::vector<Source*> sources_;
+  std::vector<raw_ptr<Source>> sources_;
 };
 
 }  // namespace base
