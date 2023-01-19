@@ -377,8 +377,10 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
       main_thread_only().next_delayed_do_work, &continuation_lazy_now);
   next_work_info.recent_now = continuation_lazy_now.Now();
 
-  recordreplay::Assert("[RUN-548] ThreadControllerWithMessagePumpImpl::DoWork #8 %ld",
-                       next_work_info.remaining_delay().ToInternalValue());
+  recordreplay::Assert("[RUN-548] ThreadControllerWithMessagePumpImpl::DoWork #8 %ld %ld %ld",
+                       next_work_info.delayed_run_time.ToInternalValue(),
+                       next_work_info.recent_now.ToInternalValue(),
+                       main_thread_only().next_delayed_do_work.ToInternalValue());
 
   return next_work_info;
 }
