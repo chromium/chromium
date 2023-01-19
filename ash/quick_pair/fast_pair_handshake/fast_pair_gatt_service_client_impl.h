@@ -115,6 +115,7 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
   void AttemptGattConnection();
   void CreateGattConnection();
   void CoolOffBeforeCreateGattConnection();
+  void OnGattServiceDiscoveryTimeout();
 
   // Callback from the adapter's call to create GATT connection.
   void OnGattConnection(

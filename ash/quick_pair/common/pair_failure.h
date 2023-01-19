@@ -75,7 +75,10 @@ enum class PairFailure {
   kConfirmPasskeyTimeout = 26,
   // Failed to disconnect GATT connections from device between retries.
   kFailureToDisconnectGattBetweenRetries = 27,
-  kMaxValue = kFailureToDisconnectGattBetweenRetries,
+  // Failed to create a GATT connection in the platform layer due to a Bluetooth
+  // device error.
+  kBluetoothDeviceFailureCreatingGattConnection = 28,
+  kMaxValue = kBluetoothDeviceFailureCreatingGattConnection,
 };
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)

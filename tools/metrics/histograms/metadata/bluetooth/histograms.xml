@@ -739,6 +739,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.GattConnection.RetryFailureReason"
+    enum="FastPairPairFailure" expires_after="2023-05-14">
+  <owner>jackshira@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the Fast Pair failure reason behind a GATT connection retry. Emitted
+    before we attempt to retry GATT connection. No metric is emitted on success,
+    or when it is the first time we attempt a GATT connection.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.FastPair.Handshake.FailureReason"
     enum="FastPairHandshakeFailureReason" expires_after="2023-07-02">
   <owner>shanefitz@google.com</owner>

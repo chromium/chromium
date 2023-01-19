@@ -649,6 +649,8 @@ const char kGattConnectionEffectiveSuccessRate[] =
     "Bluetooth.ChromeOS.FastPair.GattConnection.EffectiveSuccessRate";
 const char kGattConnectionAttemptCount[] =
     "Bluetooth.ChromeOS.FastPair.GattConnection.AttemptCount";
+const char kFastPairGattRetryFailureReason[] =
+    "Bluetooth.ChromeOS.FastPair.GattConnection.RetryFailureReason";
 const char kFastPairPairFailureInitialMetric[] =
     "Bluetooth.ChromeOS.FastPair.PairFailure.InitialPairingProtocol";
 const char kFastPairPairFailureSubsequentMetric[] =
@@ -1131,6 +1133,10 @@ void RecordEffectiveGattConnectionSuccess(bool success) {
 void RecordGattConnectionAttemptCount(int num_attempts) {
   base::UmaHistogramExactLinear(kGattConnectionAttemptCount, num_attempts,
                                 /*exclusive_max=*/10);
+}
+
+void RecordGattRetryFailureReason(PairFailure failure) {
+  base::UmaHistogramEnumeration(kFastPairGattRetryFailureReason, failure);
 }
 
 void RecordPairingResult(const Device& device, bool success) {

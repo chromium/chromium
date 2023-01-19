@@ -61,12 +61,18 @@ const char kWriteAccountKeyCharacteristicGattError[] =
 const char kWriteAccountKeyTimeMetric[] =
     "Bluetooth.ChromeOS.FastPair.AccountKey.Write.TotalTime";
 const char kFastPairGattConnectionStep[] = "FastPair.GattConnection";
+const char kFastPairGattRetryFailureReason[] =
+    "Bluetooth.ChromeOS.FastPair.GattConnection.RetryFailureReason";
 
 constexpr base::TimeDelta kConnectingTestTimeout = base::Seconds(15);
 constexpr base::TimeDelta kSimulateStackFrameHangSeconds = base::Seconds(90);
 constexpr base::TimeDelta kCoolOffPeriodBeforeGattConnectionAfterDisconnect =
     base::Seconds(2);
-constexpr base::TimeDelta kAllGattRetriesPeriod = base::Seconds(6);
+
+// 51 seconds is from 2 seconds for a cooloff period before GATT connection
+// attempts * 3 GATT attempts + 15 seconds GATT connecting timeout * 3 GATT
+// attempts.
+constexpr base::TimeDelta kAllGattRetriesPeriod = base::Seconds(51);
 
 // Below constants are used to construct MockBluetoothDevice for testing.
 constexpr char kTestBleDeviceAddress[] = "11:12:13:14:15:16";
@@ -618,35 +624,6 @@ class FastPairGattServiceClientTest : public testing::Test {
   base::WeakPtrFactory<FastPairGattServiceClientTest> weak_ptr_factory_{this};
 };
 
-TEST_F(FastPairGattServiceClientTest, GattServiceDiscoveryTimeout) {
-  histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 0);
-  histogram_tester().ExpectTotalCount(kGattConnectionResult, 0);
-  histogram_tester().ExpectTotalCount(kGattConnectionEffectiveSuccessRate, 0);
-  histogram_tester().ExpectTotalCount(kGattConnectionAttemptCount, 0);
-  histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicGattError, 0);
-  histogram_tester().ExpectTotalCount(kWritePasskeyCharacteristicGattError, 0);
-  histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 0);
-  histogram_tester().ExpectTotalCount(kNotifyPasskeyCharacteristicTime, 0);
-  histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 0);
-  SuccessfulGattConnectionSetUp();
-  FastForwardTimeByGattDisconnectCoolOff();
-  FastForwardTimeByConnectingTimeout();
-  NotifyGattDiscoveryCompleteForService(
-      ash::quick_pair::kFastPairBluetoothUuid);
-  EXPECT_EQ(GetInitializedCallbackResult(),
-            PairFailure::kGattServiceDiscoveryTimeout);
-  EXPECT_FALSE(ServiceIsSet());
-  histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 1);
-  histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 1);
-  histogram_tester().ExpectTotalCount(kGattConnectionResult, 1);
-  histogram_tester().ExpectTotalCount(kGattConnectionEffectiveSuccessRate, 1);
-  histogram_tester().ExpectTotalCount(kGattConnectionAttemptCount, 1);
-  histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicGattError, 0);
-  histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 0);
-  histogram_tester().ExpectTotalCount(kWritePasskeyCharacteristicGattError, 0);
-  histogram_tester().ExpectTotalCount(kNotifyPasskeyCharacteristicTime, 0);
-}
-
 TEST_F(FastPairGattServiceClientTest, FailedGattConnection) {
   histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 0);
   histogram_tester().ExpectTotalCount(kWritePasskeyCharacteristicGattError, 0);
@@ -660,6 +637,9 @@ TEST_F(FastPairGattServiceClientTest, FailedGattConnection) {
   histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 0);
   FailedGattConnectionSetUp();
   FastForwardTimeByAllGattRetries();
+  histogram_tester_.ExpectBucketCount(
+      kFastPairGattRetryFailureReason,
+      PairFailure::kBluetoothDeviceFailureCreatingGattConnection, 3);
   EXPECT_EQ(GetInitializedCallbackResult(), PairFailure::kCreateGattConnection);
   EXPECT_FALSE(ServiceIsSet());
   histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 1);
@@ -969,17 +949,27 @@ TEST_F(FastPairGattServiceClientTest, WriteAccountKeyTimeout) {
 TEST_F(FastPairGattServiceClientTest, TimeoutOnNonFastPairServiceDiscovery) {
   SuccessfulGattConnectionSetUp();
   FastForwardTimeByGattDisconnectCoolOff();
+
   NotifyGattDiscoveryCompleteForService(kNonFastPairUuid);
-  FastForwardTimeByConnectingTimeout();
-  EXPECT_EQ(GetInitializedCallbackResult(),
-            PairFailure::kGattServiceDiscoveryTimeout);
+
+  // Simulate all the GATT retries timing out following
+  // `NotifyGattCompleteForService` on an invalid UUID because the timeout have
+  // fired (not stopped because invalid UUID), which cause us to retry.
+  FastForwardTimeByAllGattRetries();
+
+  histogram_tester_.ExpectBucketCount(kFastPairGattRetryFailureReason,
+                                      PairFailure::kGattServiceDiscoveryTimeout,
+                                      3);
+  EXPECT_EQ(GetInitializedCallbackResult(), PairFailure::kCreateGattConnection);
 }
 
 TEST_F(FastPairGattServiceClientTest, HungGattConnectionTimesOut) {
   HungGattConnectionSetUp();
   FastForwardTimeByGattDisconnectCoolOff();
-  EXPECT_EQ(GetInitializedCallbackResult(),
-            PairFailure::kGattServiceDiscoveryTimeout);
+  histogram_tester_.ExpectBucketCount(kFastPairGattRetryFailureReason,
+                                      PairFailure::kGattServiceDiscoveryTimeout,
+                                      3);
+  EXPECT_EQ(GetInitializedCallbackResult(), PairFailure::kCreateGattConnection);
   EXPECT_FALSE(ServiceIsSet());
 }
 

@@ -275,6 +275,9 @@ COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordGattConnectionAttemptCount(int num_attempts);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordGattRetryFailureReason(PairFailure failure);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordPairingFailureReason(const Device& device, PairFailure failure);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
