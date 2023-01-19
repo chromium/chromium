@@ -141,12 +141,9 @@ HatsNotificationController::HatsNotificationController(
       product_specific_data_(product_specific_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (features::IsHatsUseNewHistogramsEnabled()) {
-    std::string histogram_name =
-        HatsFinchHelper::GetHistogramName(hats_config_);
-    if (!histogram_name.empty()) {
-      base::UmaHistogramSparse(histogram_name, kSurveyTriggeredEnumeration);
-    }
+  std::string histogram_name = HatsFinchHelper::GetHistogramName(hats_config_);
+  if (!histogram_name.empty()) {
+    base::UmaHistogramSparse(histogram_name, kSurveyTriggeredEnumeration);
   }
 
   base::ThreadPool::PostTaskAndReplyWithResult(

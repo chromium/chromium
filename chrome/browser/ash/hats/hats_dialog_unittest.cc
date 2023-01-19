@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -19,14 +18,6 @@ constexpr char kHistogramName[] = "Some.Kind.Of.Histogram";
 
 class HatsDialogTest : public testing::Test {
  public:
-  // TODO(jackshira): Remove these once we enable the feature by default.
-  void EnableFeature() {
-    scoped_feature_list_.InitAndEnableFeature(features::kHatsUseNewHistograms);
-  }
-  void DisableFeature() {
-    scoped_feature_list_.InitAndDisableFeature(features::kHatsUseNewHistograms);
-  }
-
   void TriggerAction(std::string action) {
     EXPECT_FALSE(
         HatsDialog::HandleClientTriggeredAction(action, kHistogramName));
@@ -43,12 +34,9 @@ class HatsDialogTest : public testing::Test {
 
  private:
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(HatsDialogTest, HandleClientTriggeredAction_Unknown) {
-  EnableFeature();
-
   // Client sent an invalid action, ignore it
   TriggerAction("Invalid");
 
@@ -56,8 +44,6 @@ TEST_F(HatsDialogTest, HandleClientTriggeredAction_Unknown) {
 }
 
 TEST_F(HatsDialogTest, HandleClientTriggeredAction_Loaded) {
-  EnableFeature();
-
   // Client asks to close the window
   TriggerAction("load");
 
@@ -67,8 +53,6 @@ TEST_F(HatsDialogTest, HandleClientTriggeredAction_Loaded) {
 }
 
 TEST_F(HatsDialogTest, HandleClientTriggeredAction_Close) {
-  EnableFeature();
-
   // Client asks to close the window
   TriggerActionAndClose("close");
 
@@ -76,8 +60,6 @@ TEST_F(HatsDialogTest, HandleClientTriggeredAction_Close) {
 }
 
 TEST_F(HatsDialogTest, HandleClientTriggeredAction_Complete) {
-  EnableFeature();
-
   // Client asks to close the window
   TriggerActionAndClose("complete");
 
@@ -87,8 +69,6 @@ TEST_F(HatsDialogTest, HandleClientTriggeredAction_Complete) {
 }
 
 TEST_F(HatsDialogTest, HandleClientTriggeredAction_Error) {
-  EnableFeature();
-
   // There was an unhandled error, close the window
   TriggerActionAndClose("survey-loading-error-12345");
 
@@ -96,8 +76,6 @@ TEST_F(HatsDialogTest, HandleClientTriggeredAction_Error) {
 }
 
 TEST_F(HatsDialogTest, HandleClientTriggeredAction_OldQuestionResponse) {
-  EnableFeature();
-
   TriggerAction("smiley-selected-2");
   TriggerAction("smiley-selected-2");
   TriggerAction("smiley-selected-4");
@@ -106,16 +84,12 @@ TEST_F(HatsDialogTest, HandleClientTriggeredAction_OldQuestionResponse) {
 }
 
 TEST_F(HatsDialogTest, HandleClientTriggeredAction_InvalidQuestion) {
-  EnableFeature();
-
   TriggerAction("answer-a-2");
 
   EXPECT_THAT(GetHistogramSamples(), testing::IsEmpty());
 }
 
 TEST_F(HatsDialogTest, HandleClientTriggeredAction_FirstQuestion) {
-  EnableFeature();
-
   TriggerAction("answer-1-2");
 
   std::vector<base::Bucket> expected = {{102, 1}};
@@ -123,8 +97,6 @@ TEST_F(HatsDialogTest, HandleClientTriggeredAction_FirstQuestion) {
 }
 
 TEST_F(HatsDialogTest, HandleClientTriggeredAction_SingleSelectQuestion) {
-  EnableFeature();
-
   TriggerAction("answer-2-4");
 
   std::vector<base::Bucket> expected = {{204, 1}};
@@ -132,8 +104,6 @@ TEST_F(HatsDialogTest, HandleClientTriggeredAction_SingleSelectQuestion) {
 }
 
 TEST_F(HatsDialogTest, HandleClientTriggeredAction_MultipleSelectQuestion) {
-  EnableFeature();
-
   TriggerAction("answer-3-2,4,5");
 
   std::vector<base::Bucket> expected = {{302, 1}, {304, 1}, {305, 1}};
@@ -141,8 +111,6 @@ TEST_F(HatsDialogTest, HandleClientTriggeredAction_MultipleSelectQuestion) {
 }
 
 TEST_F(HatsDialogTest, HandleClientTriggeredAction_FullWorkflow) {
-  EnableFeature();
-
   TriggerAction("load");
   TriggerAction("answer-1-2");
   TriggerAction("answer-2-3");
@@ -152,17 +120,6 @@ TEST_F(HatsDialogTest, HandleClientTriggeredAction_FullWorkflow) {
   std::vector<base::Bucket> expected = {{2, 1},   {3, 1},   {102, 1},
                                         {203, 1}, {304, 1}, {305, 1}};
   EXPECT_EQ(GetHistogramSamples(), expected);
-}
-
-TEST_F(HatsDialogTest, HandleClientTriggeredAction_DisabledFullWorkflow) {
-  DisableFeature();
-
-  TriggerAction("load");
-  TriggerAction("answer-1-2");
-  TriggerAction("answer-2-3");
-  TriggerAction("answer-3-4,5");
-  TriggerActionAndClose("close");
-  EXPECT_THAT(GetHistogramSamples(), testing::IsEmpty());
 }
 
 TEST_F(HatsDialogTest, ParseAnswer) {

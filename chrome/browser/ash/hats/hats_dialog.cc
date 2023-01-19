@@ -118,39 +118,37 @@ bool HatsDialog::HandleClientTriggeredAction(
     return true;
   }
 
-  if (features::IsHatsUseNewHistogramsEnabled()) {
-    // Page successfully loaded the survey.
-    if (action == kClientActionLoad) {
-      LogHistogram(histogram_name, kSurveyDisplayedEnumeration);
-      return false;
+  // Page successfully loaded the survey.
+  if (action == kClientActionLoad) {
+    LogHistogram(histogram_name, kSurveyDisplayedEnumeration);
+    return false;
+  }
+
+  // Page asks to be closed after completing the survey.
+  if (action == kClientActionComplete) {
+    LogHistogram(histogram_name, kSurveyCompleteEnumeration);
+    return true;
+  }
+
+  // A question was answered
+  if (base::StartsWith(action, kClientQuestionAnswered)) {
+    int question;
+    std::vector<int> question_scores;
+    if (!ParseAnswer(action, &question, &question_scores)) {
+      return false;  // It's a client error, but don't close the page.
     }
 
-    // Page asks to be closed after completing the survey.
-    if (action == kClientActionComplete) {
-      LogHistogram(histogram_name, kSurveyCompleteEnumeration);
-      return true;
+    for (int score : question_scores) {
+      // The enumeration is specified as `QQNN`, where `QQ` is the question
+      // number and `NN` is the answer index. Therefore, we can calculate this
+      // value via `QQ * 100 + NN`.
+      // Note: The `ParseAnswer` function guarantees that the score will be
+      // in the range [1, 100].
+      int enumeration = (question * 100) + score;
+      LogHistogram(histogram_name, enumeration);
     }
 
-    // A question was answered
-    if (base::StartsWith(action, kClientQuestionAnswered)) {
-      int question;
-      std::vector<int> question_scores;
-      if (!ParseAnswer(action, &question, &question_scores)) {
-        return false;  // It's a client error, but don't close the page.
-      }
-
-      for (int score : question_scores) {
-        // The enumeration is specified as `QQNN`, where `QQ` is the question
-        // number and `NN` is the answer index. Therefore, we can calculate this
-        // value via `QQ * 100 + NN`.
-        // Note: The `ParseAnswer` function guarantees that the score will be
-        // in the range [1, 100].
-        int enumeration = (question * 100) + score;
-        LogHistogram(histogram_name, enumeration);
-      }
-
-      return false;  // Don't close the page.
-    }
+    return false;  // Don't close the page.
   }
 
   // Future proof - ignore unimplemented commands.
@@ -163,13 +161,8 @@ HatsDialog::HatsDialog(const std::string& trigger_id,
     : trigger_id_(trigger_id), histogram_name_(histogram_name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (features::IsHatsUseNewHistogramsEnabled()) {
-    url_ = std::string(kCrOSHaTSURL) + "?emitAnswers=true&" + site_context +
-           "&trigger=" + trigger_id_;
-  } else {
-    url_ = std::string(kCrOSHaTSURL) + "?" + site_context +
-           "&trigger=" + trigger_id_;
-  }
+  url_ = std::string(kCrOSHaTSURL) + "?emitAnswers=true&" + site_context +
+         "&trigger=" + trigger_id_;
 
   set_can_resize(false);
 }
