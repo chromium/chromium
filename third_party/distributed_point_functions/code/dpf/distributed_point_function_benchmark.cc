@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <glog/logging.h>
-
 #include "absl/container/btree_set.h"
 #include "absl/numeric/int128.h"
 #include "absl/random/random.h"
 #include "benchmark/benchmark.h"
 #include "dpf/distributed_point_function.h"
+#include "glog/logging.h"
 #include "hwy/aligned_allocator.h"
 
 namespace distributed_point_functions {
@@ -365,6 +364,7 @@ void BM_BatchEvaluation(benchmark::State& state) {
   std::vector<const DpfKey*> key_pointers(num_keys * evaluation_points_per_key);
   auto evaluation_points =
       hwy::AllocateAligned<absl::uint128>(num_keys * evaluation_points_per_key);
+  CHECK(evaluation_points != nullptr);
   for (int i = 0; i < num_keys; ++i) {
     absl::uint128 alpha = absl::MakeUint128(absl::Uniform<uint64_t>(rng),
                                             absl::Uniform<uint64_t>(rng)) &

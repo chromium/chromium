@@ -16,10 +16,9 @@
 
 #include "dpf/aes_128_fixed_key_hash.h"
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
-
 #include "dpf/internal/status_matchers.h"
+#include "gmock/gmock.h"
+#include "gtest/gtest.h"
 
 namespace distributed_point_functions {
 namespace {

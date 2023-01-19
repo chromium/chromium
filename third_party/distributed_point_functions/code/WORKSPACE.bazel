@@ -4,11 +4,10 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # https://github.com/bazelbuild/rules_proto
 http_archive(
     name = "rules_proto",
-    sha256 = "a4382f78723af788f0bc19fd4c8411f44ffe0a72723670a34692ffad56ada3ac",
-    strip_prefix = "rules_proto-f7a30f6f80006b591fa7c437fe5a951eb10bcbcf",
+    sha256 = "0daa4fc5b2b820705fcbf239557515f9ab809be45a1e7c6dfaa1d465d5c615d4",
+    strip_prefix = "rules_proto-3f1ab99b718e3e7dd86ebdc49c580aa6a126b1cd",
     urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_proto/archive/f7a30f6f80006b591fa7c437fe5a951eb10bcbcf.zip",
-        "https://github.com/bazelbuild/rules_proto/archive/f7a30f6f80006b591fa7c437fe5a951eb10bcbcf.zip",
+        "https://github.com/bazelbuild/rules_proto/archive/3f1ab99b718e3e7dd86ebdc49c580aa6a126b1cd.zip",
     ],
 )
 
@@ -19,13 +18,13 @@ rules_proto_dependencies()
 rules_proto_toolchains()
 
 # rules_cc defines rules for generating C++ code from Protocol Buffers.
+# https://github.com/bazelbuild/rules_cc
 http_archive(
     name = "rules_cc",
-    sha256 = "e0e0e15cd88a8cdc153268dddf698c921550c7a1819bba987b57d41b643d8e0a",
-    strip_prefix = "rules_cc-0a198b994a5d61412ea1622ce681d17dbdbdd027",
+    sha256 = "e17cca44563e0918a36a8ea2a50acb99ea9ad726bbd3cad8ba95a643a40121ab",
+    strip_prefix = "rules_cc-d7c11265cb157c9b962d87d9ab67b8c24e3a875f",
     urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_cc/archive/0a198b994a5d61412ea1622ce681d17dbdbdd027.zip",
-        "https://github.com/bazelbuild/rules_cc/archive/0a198b994a5d61412ea1622ce681d17dbdbdd027.zip",
+        "https://github.com/bazelbuild/rules_cc/archive/d7c11265cb157c9b962d87d9ab67b8c24e3a875f.zip",
     ],
 )
 
@@ -34,13 +33,13 @@ load("@rules_cc//cc:repositories.bzl", "rules_cc_dependencies")
 rules_cc_dependencies()
 
 # io_bazel_rules_go defines rules for generating C++ code from Protocol Buffers.
+# https://github.com/bazelbuild/rules_go
 http_archive(
     name = "io_bazel_rules_go",
-    sha256 = "c1a2f7457c060aaeab0ed9b711b14a75c758297062a7b20fefbecd3504427677",
-    strip_prefix = "rules_go-707c634bf8f7ca5b57c2a923bec16fa62ced1fc7",
+    sha256 = "7c35e8515012279ef7bcbc39c4ef4b54a86756d853848cb621b7da49f156c82f",
+    strip_prefix = "rules_go-b397ab7ace3c4131f48b5f4d4d7e7e9e6809e0d2",
     urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_go/archive/707c634bf8f7ca5b57c2a923bec16fa62ced1fc7.zip",
-        "https://github.com/bazelbuild/rules_go/archive/707c634bf8f7ca5b57c2a923bec16fa62ced1fc7.zip",
+        "https://github.com/bazelbuild/rules_go/archive/b397ab7ace3c4131f48b5f4d4d7e7e9e6809e0d2.zip",
     ],
 )
 
@@ -48,73 +47,76 @@ load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_depe
 
 go_rules_dependencies()
 
-go_register_toolchains(version = "1.15.5")
+go_register_toolchains(version = "1.19.3")
 
 # Install gtest.
+# https://github.com/google/googletest
 http_archive(
     name = "com_github_google_googletest",
-    sha256 = "1315261a037d90405714830edf4243fccd89950556353aa3d21095b6a1430ead",
-    strip_prefix = "googletest-6a5eb807493214be733d4cbb9f07f22fde25284f",
+    sha256 = "3e91944af2d909a79f18ee9760765624810146ccfae8f1a8f990037a1677d44b",
+    strip_prefix = "googletest-ac7a126f39d5bcd909b78c9e69900c76659b1bbb",
     urls = [
-        "https://mirror.bazel.build/github.com/google/googletest/archive/6a5eb807493214be733d4cbb9f07f22fde25284f.zip",
-        "https://github.com/google/googletest/archive/6a5eb807493214be733d4cbb9f07f22fde25284f.zip",
+        "https://github.com/google/googletest/archive/ac7a126f39d5bcd909b78c9e69900c76659b1bbb.zip",
     ],
 )
 
 # abseil-cpp
+# https://github.com/abseil/abseil-cpp
 http_archive(
     name = "com_google_absl",
-    sha256 = "c3b9d19cd38cd475f60b5756db1bdc6d10ed43e5c7ce7374eae9a57d763d0597",
-    strip_prefix = "abseil-cpp-ebab79b5783b3298ee2f31251174c660c322d7ef",
+    sha256 = "431c0c47217c36106f90e2ca4fcdf45af618ea21adde880804661b1ecb240056",
+    strip_prefix = "abseil-cpp-1fb3830b1cf685999bb2bbd0294be0a53c9440a6",
     urls = [
-        "https://github.com/abseil/abseil-cpp/archive/ebab79b5783b3298ee2f31251174c660c322d7ef.zip",
+        "https://github.com/abseil/abseil-cpp/archive/1fb3830b1cf685999bb2bbd0294be0a53c9440a6.zip",
     ],
 )
 
 # BoringSSL
+# https://github.com/google/boringssl
 http_archive(
     name = "boringssl",
-    sha256 = "0369cbbee0340c42576e760138e0e9a6a749fd570ad1f963ac764584893ca727",
-    strip_prefix = "boringssl-57e74c2c7f76111fda83f8f3955a82ec3a2bde44",
+    sha256 = "88e4330f4f65ebfdf24847e4807c25f3eacfd5bf1a93f6629d3941196ff9b0b3",
+    strip_prefix = "boringssl-6347808f2a480a3792148bf7732232229db9b909",
     urls = [
-        "https://github.com/google/boringssl/archive/57e74c2c7f76111fda83f8f3955a82ec3a2bde44.zip",
+        "https://github.com/google/boringssl/archive/6347808f2a480a3792148bf7732232229db9b909.zip",
     ],
 )
 
 # Benchmarks
+# https://github.com/google/benchmark
 http_archive(
     name = "com_github_google_benchmark",
-    sha256 = "d37d3fb186bbcc30018962185606869c032e866bc9ad376a6112fbb64fe6935f",
-    strip_prefix = "benchmark-5e387e7d33a55b8d6b7c5025379b97cc9418fabf",
+    sha256 = "5f98b44165f3250f1d749b728018318d654f763ea0f4d7ea156e10e6e0cc678a",
+    strip_prefix = "benchmark-5e78bedfb07c615edb2b646d1e354980268c1728",
     urls = [
-        "https://mirror.bazel.build/github.com/google/benchmark/archive/5e387e7d33a55b8d6b7c5025379b97cc9418fabf.zip",
-        "https://github.com/google/benchmark/archive/5e387e7d33a55b8d6b7c5025379b97cc9418fabf.zip",
+        "https://github.com/google/benchmark/archive/5e78bedfb07c615edb2b646d1e354980268c1728.zip",
     ],
 )
 
 # gflags needed for glog.
+# https://github.com/gflags/gflags
 http_archive(
     name = "com_github_gflags_gflags",
-    sha256 = "cfdba0f2f17e8b1ff75c98113d5080d8ec016148426abcc19130864e2952d7bd",
-    strip_prefix = "gflags-827c769e5fc98e0f2a34c47cef953cc6328abced",
+    sha256 = "017e0a91531bfc45be9eaf07e4d8fed33c488b90b58509dbd2e33a33b2648ae6",
+    strip_prefix = "gflags-a738fdf9338412f83ab3f26f31ac11ed3f3ec4bd",
     urls = [
-        "https://mirror.bazel.build/github.com/gflags/gflags/archive/827c769e5fc98e0f2a34c47cef953cc6328abced.zip",
-        "https://github.com/gflags/gflags/archive/827c769e5fc98e0f2a34c47cef953cc6328abced.zip",
+        "https://github.com/gflags/gflags/archive/a738fdf9338412f83ab3f26f31ac11ed3f3ec4bd.zip",
     ],
 )
 
 # glog for logging
+# https://github.com/google/glog
 http_archive(
     name = "com_github_google_glog",
-    sha256 = "8476f6b3be29b3ebecc7de058183d510acec6e6dcef35d416cc3ac407a3a5645",
-    strip_prefix = "glog-a79416bab739907a31a1e139540921ff0492f010",
+    sha256 = "0f91ee6cc1edc3b1c53a286382e69a37e5d172ce208b7e5b305be8770d8c21b1",
+    strip_prefix = "glog-f545ff5e7d7f3df95f6e86c8cb987d9d9d4bd481",
     urls = [
-        "https://mirror.bazel.build/github.com/google/glog/archive/a79416bab739907a31a1e139540921ff0492f010.zip",
-        "https://github.com/google/glog/archive/a79416bab739907a31a1e139540921ff0492f010.zip",
+        "https://github.com/google/glog/archive/f545ff5e7d7f3df95f6e86c8cb987d9d9d4bd481.zip",
     ],
 )
 
 # IREE for cc_embed_data.
+# https://github.com/google/iree
 http_archive(
     name = "com_github_google_iree",
     sha256 = "aa369b29a5c45ae9d7aa8bf49ea1308221d1711277222f0755df6e0a575f6879",
@@ -125,31 +127,44 @@ http_archive(
 )
 
 # riegeli for file IO
+# https://github.com/google/riegeli
 http_archive(
     name = "com_github_google_riegeli",
-    sha256 = "63253b1e0550657f590e0ac827c5f88af1829100a84ce1c8cec3777c9a5647c7",
-    strip_prefix = "riegeli-13e762cbeac9e0060914e83c9f326c3b6763078b",
+    sha256 = "3de21a222271a1e2c5d728e7f46b63ab4520da829c09ef9727a322e693c9ac18",
+    strip_prefix = "riegeli-43b7ef9f995469609b6ab07f6becc82186314bfb",
     urls = [
-        "https://github.com/google/riegeli/archive/13e762cbeac9e0060914e83c9f326c3b6763078b.zip",
+        "https://github.com/google/riegeli/archive/43b7ef9f995469609b6ab07f6becc82186314bfb.zip",
+    ],
+)
+
+# rules_license needed for Highway
+# https://github.com/bazelbuild/rules_license
+http_archive(
+    name = "rules_license",
+    sha256 = "6157e1e68378532d0241ecd15d3c45f6e5cfd98fc10846045509fb2a7cc9e381",
+    urls = [
+        "https://github.com/bazelbuild/rules_license/releases/download/0.0.4/rules_license-0.0.4.tar.gz",
     ],
 )
 
 # Highway for SIMD operations.
+# https://github.com/google/highway
 http_archive(
     name = "com_github_google_highway",
-    sha256 = "2b11bd6356a425015c8f524cb3b3804784c0dc895fb7f3f1c48460f0327b5b1e",
-    strip_prefix = "highway-1c3c2bc6417f69ccb598c440678048ac6a8a561e",
+    sha256 = "cdba0eb21796598dd50fa0a4aa3651fa466c0d37c39d149ee383f725434e4314",
+    strip_prefix = "highway-45c98184ab7f81cf592c07633070b75fced14a52",
     urls = [
-        "https://github.com/google/highway/archive/1c3c2bc6417f69ccb598c440678048ac6a8a561e.zip",
+        "https://github.com/google/highway/archive/45c98184ab7f81cf592c07633070b75fced14a52.zip",
     ],
 )
 
 # cppitertools for logging
+# https://github.com/ryanhaining/cppitertools
 http_archive(
     name = "com_github_ryanhaining_cppitertools",
-    sha256 = "83aedc4f593212d8112eac0b32b5f191219604f3db922cc218fd733ea448118c",
-    strip_prefix = "cppitertools-b2b98e60438f1ed6b04b77cdb6cc5d5516af301b",
+    sha256 = "1608ddbe3c12b0c6e653b992ff63b5dceab9af5347ad93be8714d05e5dc17afb",
+    strip_prefix = "cppitertools-add5acc932dea2c78acd80747bab71ec0b5bce27",
     urls = [
-        "https://github.com/ryanhaining/cppitertools/archive/b2b98e60438f1ed6b04b77cdb6cc5d5516af301b.zip",
+        "https://github.com/ryanhaining/cppitertools/archive/add5acc932dea2c78acd80747bab71ec0b5bce27.zip",
     ],
 )

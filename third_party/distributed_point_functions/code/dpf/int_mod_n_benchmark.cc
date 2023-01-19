@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <openssl/rand.h>
-
 #include "absl/status/status.h"
 #include "absl/types/span.h"
 #include "benchmark/benchmark.h"
 #include "dpf/int_mod_n.h"
+#include "openssl/rand.h"
 
 namespace distributed_point_functions {
 namespace {

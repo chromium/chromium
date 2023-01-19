@@ -14,9 +14,6 @@
 
 #include "dpf/internal/evaluate_prg_hwy.h"
 
-#include <glog/logging.h>
-#include <openssl/aes.h>
-
 #include <cstdint>
 #include <limits>
 
@@ -25,7 +22,9 @@
 #include "absl/numeric/int128.h"
 #include "absl/status/status.h"
 #include "dpf/status_macros.h"
+#include "glog/logging.h"
 #include "hwy/aligned_allocator.h"
+#include "openssl/aes.h"
 
 // clang-format off
 #undef HWY_TARGET_INCLUDE
@@ -124,14 +123,14 @@ auto IsBitSet(D d, const V input, int index) {
 
   // Compute input AND index_64 on 64-bit integers.
   auto input_64 = hn::BitCast(d64, input);
-  input_64 &= index_64;
+  input_64 = hn::And(input_64, index_64);
 
   // Take the OR of every two adjacent 64-bit integers. This ensures that each
   // half of an 128-bit block is nonzero iff at least one half was nonzero.
-  input_64 |= hn::Shuffle01(input_64);
+  input_64 = hn::Or(input_64, hn::Shuffle01(input_64));
 
   // Compute a 64-bit mask that checks which integers are nonzero.
-  return input_64 != hn::Zero(d64);
+  return hn::Ne(input_64, hn::Zero(d64));
 }
 
 // Dummy struct to get HWY_ALIGN as a number, for testing if an array of
@@ -236,24 +235,28 @@ absl::Status EvaluateSeedsHwy(
       // Apply correction.
       const auto correction_seed = hn::LoadDup128(
           d64, reinterpret_cast<const uint64_t*>(correction_seeds + j));
-      vec_0 ^=
-          hn::BitCast(d8, hn::IfThenElseZero(control_mask_0, correction_seed));
-      vec_1 ^=
-          hn::BitCast(d8, hn::IfThenElseZero(control_mask_1, correction_seed));
-      vec_2 ^=
-          hn::BitCast(d8, hn::IfThenElseZero(control_mask_2, correction_seed));
-      vec_3 ^=
-          hn::BitCast(d8, hn::IfThenElseZero(control_mask_3, correction_seed));
+      vec_0 = hn::Xor(
+          vec_0,
+          hn::BitCast(d8, hn::IfThenElseZero(control_mask_0, correction_seed)));
+      vec_1 = hn::Xor(
+          vec_1,
+          hn::BitCast(d8, hn::IfThenElseZero(control_mask_1, correction_seed)));
+      vec_2 = hn::Xor(
+          vec_2,
+          hn::BitCast(d8, hn::IfThenElseZero(control_mask_2, correction_seed)));
+      vec_3 = hn::Xor(
+          vec_3,
+          hn::BitCast(d8, hn::IfThenElseZero(control_mask_3, correction_seed)));
 
       // Extract control bit for next level.
       const auto next_control_mask_0 = IsBitSet(d8, vec_0, 0);
       const auto next_control_mask_1 = IsBitSet(d8, vec_1, 0);
       const auto next_control_mask_2 = IsBitSet(d8, vec_2, 0);
       const auto next_control_mask_3 = IsBitSet(d8, vec_3, 0);
-      vec_0 &= clear_lowest_bit;
-      vec_1 &= clear_lowest_bit;
-      vec_2 &= clear_lowest_bit;
-      vec_3 &= clear_lowest_bit;
+      vec_0 = hn::And(vec_0, clear_lowest_bit);
+      vec_1 = hn::And(vec_1, clear_lowest_bit);
+      vec_2 = hn::And(vec_2, clear_lowest_bit);
+      vec_3 = hn::And(vec_3, clear_lowest_bit);
 
       // Perform control bit correction.
       const auto correction_control_mask_left =
@@ -321,10 +324,11 @@ absl::Status EvaluateSeedsHwy(
       // Apply correction.
       const auto correction_seed = hn::LoadDup128(
           d64, reinterpret_cast<const uint64_t*>(correction_seeds + j));
-      vec ^= hn::BitCast(d8, hn::IfThenElseZero(control_mask, correction_seed));
+      vec = hn::Xor(vec, hn::BitCast(d8, hn::IfThenElseZero(control_mask,
+                                                            correction_seed)));
       // Extract control bit for next level.
       const auto next_control_mask = IsBitSet(d8, vec, 0);
-      vec &= clear_lowest_bit;
+      vec = hn::And(vec, clear_lowest_bit);
 
       // Perform control bit correction.
       const auto correction_control_mask_left =
@@ -353,6 +357,9 @@ absl::Status EvaluateSeedsHwy(
     // to read. Calling MaskedLoad directly instead might lead to out-of-bounds
     // accesses.
     auto buffer = hwy::AllocateAligned<absl::uint128>(2 * blocks_per_lane);
+    if (buffer == nullptr) {
+      return absl::ResourceExhaustedError("Memory allocation error");
+    }
     auto buffer_ptr = reinterpret_cast<uint8_t*>(buffer.get());
     std::copy_n(seeds_in + i / sizeof(absl::uint128), remaining_blocks,
                 buffer.get());
@@ -373,9 +380,10 @@ absl::Status EvaluateSeedsHwy(
       // Perform seed correction.
       const auto correction_seed = hn::LoadDup128(
           d64, reinterpret_cast<const uint64_t*>(correction_seeds + j));
-      vec ^= hn::BitCast(d8, hn::IfThenElseZero(control_mask, correction_seed));
+      vec = hn::Xor(vec, hn::BitCast(d8, hn::IfThenElseZero(control_mask,
+                                                            correction_seed)));
       const auto next_control_mask = IsBitSet(d8, vec, 0);
-      vec &= clear_lowest_bit;
+      vec = hn::And(vec, clear_lowest_bit);
       const auto correction_control_mask_left =
           correction_controls_left[j] ? mask_all_one : mask_all_zero;
       const auto correction_control_mask_right =

@@ -14,14 +14,13 @@
 
 #include "dpf/internal/proto_validator.h"
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
-
 #include "absl/strings/str_format.h"
 #include "dpf/internal/proto_validator_test_textproto_embed.h"
 #include "dpf/internal/status_matchers.h"
 #include "dpf/tuple.h"
+#include "gmock/gmock.h"
 #include "google/protobuf/text_format.h"
+#include "gtest/gtest.h"
 
 namespace distributed_point_functions {
 namespace dpf_internal {

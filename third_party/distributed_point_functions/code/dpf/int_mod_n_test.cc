@@ -14,15 +14,14 @@
 
 #include "dpf/int_mod_n.h"
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
-
 #include <cstdint>
 
 #include "absl/numeric/int128.h"
 #include "absl/status/status.h"
 #include "absl/types/span.h"
 #include "dpf/internal/status_matchers.h"
+#include "gmock/gmock.h"
+#include "gtest/gtest.h"
 
 namespace distributed_point_functions {
 namespace {

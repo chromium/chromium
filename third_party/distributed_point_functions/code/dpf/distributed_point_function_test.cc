@@ -14,15 +14,14 @@
 
 #include "dpf/distributed_point_function.h"
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
-
 #include "absl/numeric/int128.h"
 #include "absl/random/random.h"
 #include "absl/strings/str_format.h"
 #include "absl/utility/utility.h"
 #include "dpf/distributed_point_function.pb.h"
 #include "dpf/internal/status_matchers.h"
+#include "gmock/gmock.h"
+#include "gtest/gtest.h"
 
 namespace distributed_point_functions {
 namespace {

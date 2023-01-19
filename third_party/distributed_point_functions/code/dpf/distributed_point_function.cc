@@ -14,16 +14,15 @@
 
 #include "dpf/distributed_point_function.h"
 
-#include <glog/logging.h>
-#include <openssl/rand.h>
-
 #include <limits>
 
 #include "dpf/internal/evaluate_prg_hwy.h"
 #include "dpf/internal/get_hwy_mode.h"
 #include "dpf/status_macros.h"
+#include "glog/logging.h"
 #include "google/protobuf/io/zero_copy_stream_impl_lite.h"
 #include "hwy/aligned_allocator.h"
+#include "openssl/rand.h"
 
 namespace distributed_point_functions {
 
@@ -241,6 +240,9 @@ absl::Status DistributedPointFunction::EvaluateSeeds(
 
   // Parse correction words for each level.
   auto correction_seeds = hwy::AllocateAligned<absl::uint128>(num_levels);
+  if (correction_seeds == nullptr) {
+    return absl::ResourceExhaustedError("Memory allocation error");
+  }
   BitVector correction_controls_left(num_levels),
       correction_controls_right(num_levels);
   for (int level = 0; level < num_levels; ++level) {
@@ -283,12 +285,18 @@ DistributedPointFunction::ExpandSeeds(
   // Copy seeds and control bits. We will swap these after every expansion.
   DpfExpansion expansion;
   expansion.seeds = hwy::AllocateAligned<absl::uint128>(output_size);
+  if (expansion.seeds == nullptr) {
+    return absl::ResourceExhaustedError("Memory allocation error");
+  }
   std::copy_n(partial_evaluations.seeds.get(), current_level_size,
               expansion.seeds.get());
   expansion.control_bits = partial_evaluations.control_bits;
   expansion.control_bits.reserve(output_size);
   DpfExpansion next_level_expansion;
   next_level_expansion.seeds = hwy::AllocateAligned<absl::uint128>(output_size);
+  if (next_level_expansion.seeds == nullptr) {
+    return absl::ResourceExhaustedError("Memory allocation error");
+  }
   next_level_expansion.control_bits.reserve(output_size);
 
   // We use an iterative expansion here to pipeline AES as much as possible.
@@ -376,6 +384,9 @@ DistributedPointFunction::ComputePartialEvaluations(
     // `prefixes`.
     partial_evaluations.seeds =
         hwy::AllocateAligned<absl::uint128>(num_prefixes);
+    if (partial_evaluations.seeds == nullptr) {
+      return absl::ResourceExhaustedError("Memory allocation error");
+    }
     partial_evaluations.control_bits.reserve(num_prefixes);
     for (int64_t i = 0; i < num_prefixes; ++i) {
       absl::uint128 previous_prefix = 0;
@@ -397,6 +408,9 @@ DistributedPointFunction::ComputePartialEvaluations(
     // No partial evaluations in `ctx` -> Start from the beginning.
     partial_evaluations.seeds =
         hwy::AllocateAligned<absl::uint128>(num_prefixes);
+    if (partial_evaluations.seeds == nullptr) {
+      return absl::ResourceExhaustedError("Memory allocation error");
+    }
     auto seeds = absl::MakeSpan(partial_evaluations.seeds.get(), num_prefixes);
     std::fill(
         seeds.begin(), seeds.end(),
@@ -448,6 +462,9 @@ DistributedPointFunction::ExpandAndUpdateContext(
   if (prefixes.empty()) {
     // First expansion -> Expand seed of the DPF key.
     selected_partial_evaluations.seeds = hwy::AllocateAligned<absl::uint128>(1);
+    if (selected_partial_evaluations.seeds == nullptr) {
+      return absl::ResourceExhaustedError("Memory allocation error");
+    }
     selected_partial_evaluations.seeds[0] =
         absl::MakeUint128(ctx.key().seed().high(), ctx.key().seed().low());
     selected_partial_evaluations.control_bits = {
@@ -486,6 +503,9 @@ DistributedPointFunction::HashExpandedSeeds(
   const int blocks_needed = blocks_needed_[hierarchy_level];
   auto hashed_expansion =
       hwy::AllocateAligned<absl::uint128>(expansion_size * blocks_needed);
+  if (hashed_expansion == nullptr) {
+    return absl::ResourceExhaustedError("Memory allocation error");
+  }
   for (int64_t i = 0; i < expansion_size; ++i) {
     for (int j = 0; j < blocks_needed; ++j) {
       hashed_expansion[i * blocks_needed + j] = expansion[i] + j;

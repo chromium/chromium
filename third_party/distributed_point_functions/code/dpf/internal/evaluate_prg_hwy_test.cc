@@ -14,11 +14,10 @@
 
 #include "dpf/internal/evaluate_prg_hwy.h"
 
-#include <gtest/gtest.h>
-
 #include "absl/numeric/int128.h"
 #include "dpf/aes_128_fixed_key_hash.h"
 #include "dpf/internal/status_matchers.h"
+#include "gtest/gtest.h"
 #include "hwy/aligned_allocator.h"
 
 // clang-format off
@@ -46,8 +45,11 @@ void TestOutputMatchesNoHwyVersion(int num_seeds, int num_levels) {
   hwy::AlignedFreeUniquePtr<bool[]> control_bits_in;
   if (num_seeds > 0) {
     seeds_in = hwy::AllocateAligned<absl::uint128>(num_seeds);
+    ASSERT_NE(seeds_in, nullptr);
     paths = hwy::AllocateAligned<absl::uint128>(num_seeds);
+    ASSERT_NE(paths, nullptr);
     control_bits_in = hwy::AllocateAligned<bool>(num_seeds);
+    ASSERT_NE(control_bits_in, nullptr);
   }
   for (int i = 0; i < num_seeds; ++i) {
     // All of these are arbitrary.
@@ -59,7 +61,9 @@ void TestOutputMatchesNoHwyVersion(int num_seeds, int num_levels) {
   hwy::AlignedFreeUniquePtr<bool[]> control_bits_out;
   if (num_seeds > 0) {
     seeds_out = hwy::AllocateAligned<absl::uint128>(num_seeds);
+    ASSERT_NE(seeds_out, nullptr);
     control_bits_out = hwy::AllocateAligned<bool>(num_seeds);
+    ASSERT_NE(control_bits_out, nullptr);
   }
 
   // Generate correction words.
@@ -68,8 +72,11 @@ void TestOutputMatchesNoHwyVersion(int num_seeds, int num_levels) {
       correction_controls_right;
   if (num_levels > 0) {
     correction_seeds = hwy::AllocateAligned<absl::uint128>(num_levels);
+    ASSERT_NE(correction_seeds, nullptr);
     correction_controls_left = hwy::AllocateAligned<bool>(num_levels);
+    ASSERT_NE(correction_controls_left, nullptr);
     correction_controls_right = hwy::AllocateAligned<bool>(num_levels);
+    ASSERT_NE(correction_controls_right, nullptr);
   }
   for (int i = 0; i < num_levels; ++i) {
     correction_seeds[i] = absl::MakeUint128(i + 1, i);
@@ -97,7 +104,9 @@ void TestOutputMatchesNoHwyVersion(int num_seeds, int num_levels) {
   hwy::AlignedFreeUniquePtr<bool[]> control_bits_out_wanted;
   if (num_seeds > 0) {
     seeds_out_wanted = hwy::AllocateAligned<absl::uint128>(num_seeds);
+    ASSERT_NE(seeds_out_wanted, nullptr);
     control_bits_out_wanted = hwy::AllocateAligned<bool>(num_seeds);
+    ASSERT_NE(control_bits_out_wanted, nullptr);
   }
   DPF_ASSERT_OK(EvaluateSeedsNoHwy(
       num_seeds, num_levels, seeds_in.get(), control_bits_in.get(), paths.get(),

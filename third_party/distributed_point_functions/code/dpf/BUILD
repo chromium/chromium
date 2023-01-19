@@ -64,7 +64,6 @@ cc_library(
         "@com_github_google_highway//:hwy",
         "@com_google_absl//absl/container:btree",
         "@com_google_absl//absl/container:flat_hash_map",
-        "@com_google_absl//absl/log",
         "@com_google_absl//absl/meta:type_traits",
         "@com_google_absl//absl/numeric:int128",
         "@com_google_absl//absl/status",

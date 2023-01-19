@@ -2,8 +2,12 @@ include_rules = [
   "+absl",
   "+benchmark",
   "+dpf",
+  "+glog/logging.h",
+  "+gmock",
   "+google/protobuf",
+  "+gtest",
   "+hwy",
+  "+openssl",
 ]
 
 specific_include_rules = {
