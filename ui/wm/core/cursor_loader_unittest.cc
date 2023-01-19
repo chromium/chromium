@@ -118,4 +118,30 @@ TEST_F(CursorLoaderTest, GetCursorData) {
   EXPECT_EQ(GetCursorHotspot(custom_cursor), kHotspot);
 }
 
+// Test the cursor image cache when fallbacks for system cursors are used.
+TEST_F(CursorLoaderTest, ImageCursorCache) {
+  CursorLoader cursor_loader(/*use_platform_cursors=*/false);
+  ui::Cursor cursor(CursorType::kPointer);
+  cursor_loader.SetPlatformCursor(&cursor);
+
+  // CursorLoader should keep a ref in its cursor cache.
+  auto platform_cursor = cursor.platform();
+  cursor.SetPlatformCursor(nullptr);
+  EXPECT_FALSE(platform_cursor->HasOneRef());
+
+  // Invalidate the cursor cache by changing the rotation.
+  cursor_loader.SetDisplayData(display::Display::ROTATE_90,
+                               cursor_loader.scale());
+  EXPECT_TRUE(platform_cursor->HasOneRef());
+
+  // Invalidate the cursor cache by changing the scale.
+  cursor_loader.SetPlatformCursor(&cursor);
+  platform_cursor = cursor.platform();
+  cursor.SetPlatformCursor(nullptr);
+  EXPECT_FALSE(platform_cursor->HasOneRef());
+  cursor_loader.SetDisplayData(cursor_loader.rotation(),
+                               cursor_loader.scale() * 2);
+  EXPECT_TRUE(platform_cursor->HasOneRef());
+}
+
 }  // namespace wm

@@ -50,6 +50,7 @@ void CursorLoader::UnloadCursors() {
 
 bool CursorLoader::SetDisplayData(display::Display::Rotation rotation,
                                   float scale) {
+  DCHECK_GT(scale, 0);
   if (rotation_ == rotation && scale_ == scale)
     return false;
 
