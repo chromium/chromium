@@ -67,7 +67,7 @@ class CastMediaNotificationItem
   void OnRouteUpdated(const media_router::MediaRoute& route);
 
   // Stops the cast session and logs UMA about the stop cast action.
-  void StopCasting(
+  virtual void StopCasting(
       global_media_controls::GlobalMediaControlsEntryPoint entry_point);
 
   // Returns a pending remote bound to |this|. This should not be called more

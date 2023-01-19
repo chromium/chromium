@@ -16,6 +16,8 @@
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class Profile;
+
 namespace global_media_controls {
 class MediaItemManager;
 class MediaItemUIListView;
@@ -78,6 +80,10 @@ class ASH_EXPORT MediaNotificationProviderImpl
     return media_session_item_producer_.get();
   }
 
+  void set_profile_for_testing(Profile* profile) {
+    profile_for_testing_ = profile;
+  }
+
  private:
   base::ObserverList<MediaNotificationProviderObserver> observers_;
 
@@ -92,6 +98,8 @@ class ASH_EXPORT MediaNotificationProviderImpl
   absl::optional<media_message_center::NotificationTheme> color_theme_;
 
   global_media_controls::MediaItemUIObserverSet item_ui_observer_set_{this};
+
+  raw_ptr<Profile> profile_for_testing_ = nullptr;
 };
 
 }  // namespace ash

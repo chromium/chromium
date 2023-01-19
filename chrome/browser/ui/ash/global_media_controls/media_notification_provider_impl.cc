@@ -7,6 +7,10 @@
 #include "ash/system/media/media_notification_provider.h"
 #include "ash/system/media/media_notification_provider_observer.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
+#include "chrome/browser/ui/views/global_media_controls/media_item_ui_legacy_cast_footer_view.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_session_item_producer.h"
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
@@ -16,6 +20,24 @@
 #include "ui/views/view.h"
 
 namespace ash {
+
+namespace {
+
+std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooterView(
+    base::WeakPtr<media_message_center::MediaNotificationItem> item,
+    Profile* profile) {
+  if (item->SourceType() != media_message_center::SourceType::kCast ||
+      !media_router::GlobalMediaControlsCastStartStopEnabled(profile)) {
+    return nullptr;
+  }
+  // Show a stop button for the Cast item.
+  return std::make_unique<MediaItemUILegacyCastFooterView>(base::BindRepeating(
+      &CastMediaNotificationItem::StopCasting,
+      static_cast<CastMediaNotificationItem*>(item.get())->GetWeakPtr(),
+      global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray));
+}
+
+}  // namespace
 
 MediaNotificationProviderImpl::MediaNotificationProviderImpl(
     media_session::MediaSessionService* service)
@@ -125,9 +147,12 @@ MediaNotificationProviderImpl::ShowMediaItem(
   if (!active_session_view_) {
     return nullptr;
   }
+  Profile* profile = profile_for_testing_
+                         ? profile_for_testing_.get()
+                         : ProfileManager::GetActiveUserProfile();
   auto item_ui = std::make_unique<global_media_controls::MediaItemUIView>(
-      id, item, /*footer_view=*/nullptr, /*device_selector_view=*/nullptr,
-      color_theme_);
+      id, item, BuildFooterView(item, profile),
+      /*device_selector_view=*/nullptr, color_theme_);
   auto* item_ui_ptr = item_ui.get();
   item_ui_observer_set_.Observe(id, item_ui_ptr);
 
