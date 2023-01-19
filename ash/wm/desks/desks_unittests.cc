@@ -3728,6 +3728,9 @@ struct PerDeskZOrderTestCase {
   // desk_1_windows.
   std::set<int> adw_windows;
 
+  // Windows to activate in order.
+  std::vector<int> activate_windows;
+
   // Once windows have been created and (some) promoted to all-desk, we start
   // the test by switching to desk 2. This is the list of windows that we expect
   // to find on desk 2.
@@ -3813,6 +3816,15 @@ TEST_P(DesksTest, PerDeskZOrder) {
        .move_windows = {},
        .close_windows = {},
        .expected_desk_1_windows = {1, 2}},
+      {.test_name = "Multiple adw windows 4",
+       .desk_1_windows = {1, 2, 3, 4},
+       .desk_2_windows = {},
+       .adw_windows = {1, 4},
+       .activate_windows = {4, 3, 2, 1},
+       .expected_desk_2_windows = {1, 4},
+       .move_windows = {},
+       .close_windows = {},
+       .expected_desk_1_windows = {4, 3, 2, 1}},
   };
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -3846,6 +3858,10 @@ TEST_P(DesksTest, PerDeskZOrder) {
     for (int id : test.adw_windows) {
       views::Widget::GetWidgetForNativeWindow(id_to_window.at(id).get())
           ->SetVisibleOnAllWorkspaces(true);
+    }
+
+    for (int id : test.activate_windows) {
+      wm::ActivateWindow(id_to_window.at(id).get());
     }
 
     aura::Window* root = window_to_id.begin()->first->GetRootWindow();

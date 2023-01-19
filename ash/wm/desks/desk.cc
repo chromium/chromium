@@ -518,10 +518,29 @@ void Desk::Activate(bool update_window_activation) {
   if (!update_window_activation || windows_.empty())
     return;
 
+  auto mru_window_list =
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
+
+  // If there's an adw window that has order=0 (should be on top), then we'll
+  // find it first and activate it. We use the MRU list here so that in the
+  // case that there are multiple roots that each have a topmost adw window,
+  // we'll activate the one most recently used.
+  if (features::IsPerDeskZOrderEnabled()) {
+    for (auto* window : mru_window_list) {
+      aura::Window* root = window->GetRootWindow();
+      auto& adw_data = all_desk_window_stacking_[root];
+
+      if (!adw_data.empty() && adw_data.front().window == window &&
+          adw_data.front().order == 0) {
+        wm::ActivateWindow(window);
+        return;
+      }
+    }
+  }
+
   // Activate the window on this desk that was most recently used right before
   // the user switched to another desk, so as not to break the user's workflow.
-  for (auto* window :
-       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk)) {
+  for (auto* window : mru_window_list) {
     const auto* window_state = WindowState::Get(window);
     // Floated window should be activated with the desk window, but it doesn't
     // belong to `windows_`.
@@ -535,18 +554,7 @@ void Desk::Activate(bool update_window_activation) {
 
     if (features::IsPerDeskZOrderEnabled() &&
         desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
-      // If per-desk z-order is enabled, then we will activate an all-desk
-      // window only if it is actually supposed to be stacked on top. Not doing
-      // this check could result in promoting an all-desk window to the top of
-      // the stack if it was the MRU window on the previous desk.
-      aura::Window* root = window->GetRootWindow();
-      auto& adw_data = all_desk_window_stacking_[root];
-      if (!adw_data.empty() && adw_data.front().window == window &&
-          adw_data.front().order == 0) {
-        wm::ActivateWindow(window);
-        return;
-      }
-
+      // Ignore an adw window that is not topmost.
       continue;
     }
 
