@@ -342,7 +342,8 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
     Records a user enabling a camera effect. Emitted at most once per camera
-    effect chosen when the camera session is closed.
+    effect chosen when the camera session is closed, or every hour if the
+    session duration exceeds an hour (and then at the end of the session).
   </summary>
 </histogram>
 
@@ -358,7 +359,8 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
     This metric is reported on ChromeOS devices with an effect applied that does
     not encounter an error during processing. It is emitted at the close of each
-    camera session.
+    camera session, or every hour if the session duration exceeds an hour (and
+    then at the end of the session).
   </summary>
   <token key="EffectType">
     <variant name="Blur"
@@ -387,7 +389,8 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
     This metric is reported on ChromeOS devices with an effect applied that does
     not encounter an error during processing. It is emitted at the close of each
-    camera session.
+    camera session, or every hour if the session duration exceeds an hour (and
+    then at the end of the session).
   </summary>
   <token key="EffectType">
     <variant name="Blur"
