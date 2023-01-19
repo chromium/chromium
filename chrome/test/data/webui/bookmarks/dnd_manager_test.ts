@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BookmarkElement, BookmarkManagerApiProxyImpl, BookmarksAppElement, BookmarksFolderNodeElement, BookmarksListElement, BrowserProxyImpl, DndManager, DragInfo, setDebouncerForTesting} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarkElement, BookmarkManagerApiProxyImpl, BookmarksAppElement, BookmarksFolderNodeElement, BookmarksItemElement, BookmarksListElement, BrowserProxyImpl, DndManager, DragInfo, overrideFolderOpenerTimeoutDelay, setDebouncerForTesting} from 'chrome://bookmarks/bookmarks.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {middleOfNode, topLeftOfNode} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestBookmarkManagerApiProxy} from './test_bookmark_manager_api_proxy.js';
 import {TestBookmarksBrowserProxy} from './test_browser_proxy.js';
@@ -30,14 +31,14 @@ suite('drag and drop', function() {
   }
 
   function getFolderNode(id: string) {
-    return findFolderNode(rootFolderNode, id) as BookmarkElement;
+    return findFolderNode(rootFolderNode, id) as BookmarksFolderNodeElement;
   }
 
   function getListItem(id: string) {
     const items = list.root!.querySelectorAll('bookmarks-item');
     for (let i = 0; i < items.length; i++) {
       if (items[i]!.itemId === id) {
-        return items[i] as BookmarkElement;
+        return items[i] as BookmarksItemElement;
       }
     }
     assertNotReached();
@@ -324,7 +325,7 @@ suite('drag and drop', function() {
 
     // All positions should be allowed even with the same bookmark id if the
     // drag element is from a different profile.
-    let dragTarget = getListItem('11');
+    let dragTarget: BookmarkElement = getListItem('11');
     move(dragTarget, topLeftOfNode(dragTarget));
     assertDragStyle(dragTarget, DragStyle.ABOVE);
 
@@ -348,7 +349,7 @@ suite('drag and drop', function() {
   });
 
   test('drag from sidebar to list', async function() {
-    let dragElement = getFolderNode('112');
+    let dragElement: BookmarkElement = getFolderNode('112');
     let dragTarget = getListItem('13');
 
     // Drag a folder onto the list.
@@ -387,7 +388,7 @@ suite('drag and drop', function() {
     // Search results should not be able to be dragged onto, but can be dragged
     // from.
     bookmarkManagerApi.onDragEnter.callListeners(createDragData(['2']));
-    let dragTarget = getListItem('13');
+    let dragTarget: BookmarkElement = getListItem('13');
     move(dragTarget);
     assertDragStyle(dragTarget, DragStyle.NONE);
 
@@ -440,68 +441,63 @@ suite('drag and drop', function() {
     assertDragStyle(dragTarget, DragStyle.NONE);
   });
 
-  /* Test is disabled because auto-expander functionality
-     is currently broken (https://crbug.com/1406349)
-
   test('auto expander', async function() {
-    const timerProxy = new TestTimerProxy();
-    timerProxy.immediatelyResolveTimeouts = false;
-
-    const autoExpander = dndManager.autoExpander_;
-    autoExpander.debouncer_.timerProxy_ = timerProxy;
+    overrideFolderOpenerTimeoutDelay(0);
+    store.setReducersEnabled(true);
 
     store.data.folderOpenState.set('11', false);
+    store.data.folderOpenState.set('14', false);
+    store.data.folderOpenState.set('15', false);
     store.notifyObservers();
     flush();
 
-    const dragElement = getFolderNode('14');
-    let dragTarget = getFolderNode('15');
+    const dragElement = getFolderNode('15');
+    await simulateDragStart(dragElement);
 
-    simulateDragStart(dragElement);
-
-    // Dragging onto folders without children doesn't update the auto expander.
+    // Dragging onto folders without children doesn't open the folder.
+    let dragTarget = getFolderNode('14');
     move(dragTarget);
-    assertEquals(null, autoExpander.lastElement_);
+    await flushTasks();
+    assertFalse(dragTarget.isOpen);
 
-    // Dragging onto open folders doesn't update the auto expander.
+    // Dragging onto itself doesn't open the folder.
+    move(dragElement);
+    await flushTasks();
+    assertFalse(dragElement.isOpen);
+
+    // Dragging onto an open folder doesn't affect the folder.
     dragTarget = getFolderNode('1');
+    assertTrue(dragTarget.isOpen);
     move(dragTarget);
-    assertEquals(null, autoExpander.lastElement_);
+    await flushTasks();
+    assertTrue(dragTarget.isOpen);
 
-    // Dragging onto a closed folder with children updates the auto expander.
     dragTarget = getFolderNode('11');
-    move(dragTarget);
-    assertEquals(dragTarget, autoExpander.lastElement_);
 
-    // Dragging onto another item resets the auto expander.
-    dragTarget = getFolderNode('1');
+    // Dragging off of a closed folder doesn't open it.
     move(dragTarget);
-    assertEquals(null, autoExpander.lastElement_);
+    move(list);
+    await flushTasks();
+    assertFalse(dragTarget.isOpen);
 
-    // Dragging onto the list resets the auto expander.
-    dragTarget = getFolderNode('11');
+    // Dragging onto a folder with DragStyle.BELOW doesn't open it.
+    move(dragTarget, bottomRightOfNode(dragTarget));
+    assertDragStyle(dragTarget, DragStyle.BELOW);
+    await flushTasks();
+    assertFalse(dragTarget.isOpen);
+
+    // Dragging onto a folder with DragStyle.ABOVE doesn't open it.
+    move(dragTarget, topLeftOfNode(dragTarget));
+    assertDragStyle(dragTarget, DragStyle.ABOVE);
+    await flushTasks();
+    assertFalse(dragTarget.isOpen);
+
+    // Dragging onto a closed folder with children opens it.
     move(dragTarget);
-    assertEquals(dragTarget, autoExpander.lastElement_);
-
-    dragTarget = list;
-    move(dragTarget);
-    assertEquals(null, autoExpander.lastElement_);
-
-    // Moving the mouse resets the delay.
-    dragTarget = getFolderNode('11');
-    move(dragTarget);
-    assertEquals(dragTarget, autoExpander.lastElement_);
-    const oldTimer = autoExpander.debouncer_.timer_;
-
-    move(dragTarget);
-    assertNotEquals(oldTimer, autoExpander.debouncer_.timer_);
-
-    // Auto expands after expand delay.
-    timerProxy.runTimeoutFn(autoExpander.debouncer_.timer_);
-    assertDeepEquals(changeFolderOpen('11', true), store.lastAction);
-    assertEquals(null, autoExpander.lastElement_);
+    assertDragStyle(dragTarget, DragStyle.ON);
+    await flushTasks();
+    assertTrue(dragTarget.isOpen);
   });
-  */
 
   test('drag item selects/deselects items', async function() {
     store.setReducersEnabled(true);
@@ -511,7 +507,7 @@ suite('drag and drop', function() {
 
     // Dragging an item not in the selection selects the dragged item and
     // deselects the previous selection.
-    let dragElement = getListItem('14');
+    let dragElement: BookmarkElement = getListItem('14');
     await simulateDragStart(dragElement);
     assertDeepEquals(['14'], normalizeIterable(store.data.selection.items));
     dispatchDragEvent('dragend', dragElement);

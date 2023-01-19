@@ -13,7 +13,7 @@ export {BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
 export {BookmarksCommandManagerElement} from './command_manager.js';
 export {Command, DropPosition, IncognitoAvailability, LOCAL_STORAGE_FOLDER_STATE_KEY, LOCAL_STORAGE_TREE_WIDTH_KEY, MenuSource, ROOT_NODE_ID} from './constants.js';
 export {DialogFocusManager} from './dialog_focus_manager.js';
-export {DndManager, DragInfo} from './dnd_manager.js';
+export {DndManager, DragInfo, overrideFolderOpenerTimeoutDelay} from './dnd_manager.js';
 export {BookmarksEditDialogElement} from './edit_dialog.js';
 export {BookmarksFolderNodeElement} from './folder_node.js';
 export {BookmarksItemElement} from './item.js';

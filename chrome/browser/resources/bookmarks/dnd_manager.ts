@@ -138,7 +138,11 @@ export class DragInfo {
   }
 }
 
-const EXPAND_FOLDER_DELAY: number = 400;
+// Ms to wait during a dragover to open closed folder.
+let folderOpenerTimeoutDelay = 400;
+export function overrideFolderOpenerTimeoutDelay(ms: number) {
+  folderOpenerTimeoutDelay = ms;
+}
 
 /**
  * Manages auto expanding of sidebar folders on hover while dragging.
@@ -178,7 +182,7 @@ class AutoExpander {
     if (overElement && overElement === this.lastElement_ &&
         dropPosition === DropPosition.ON) {
       if (x !== this.lastX_ || y !== this.lastY_) {
-        this.debouncer_.restartTimeout(EXPAND_FOLDER_DELAY);
+        this.debouncer_.restartTimeout(folderOpenerTimeoutDelay);
       }
     } else {
       // Otherwise, cancel the expander.
