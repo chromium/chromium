@@ -307,7 +307,7 @@ class SettingsInputMethodOptionsPageElement extends
     // of variable has changed, so we need to copy the current content into a
     // new variable.
     const updatedSettings = {};
-    Object.assign(updatedSettings, this.getPref(PREFS_PATH)['value']);
+    Object.assign(updatedSettings, this.getPref(PREFS_PATH).value);
 
     const engineId = this.getStorageEngineId_();
     if (updatedSettings[engineId] === undefined) {

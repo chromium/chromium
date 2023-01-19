@@ -268,8 +268,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
 
     // Wait until prefs are initialized before creating the model, so we can
     // include information about enabled languages.
-    promises.push(
-        CrSettingsPrefs.initialized.then(result => args.initialized = result));
+    promises.push(CrSettingsPrefs.initialized);
 
     // Get the language list.
     promises.push(this.languageSettingsPrivate_.getLanguageList().then(
