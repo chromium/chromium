@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace ash {
@@ -80,31 +81,32 @@ base::Value Notification::AppMetadata::ToValue() const {
 Notification::AppMetadata Notification::AppMetadata::FromValue(
     const base::Value& value) {
   DCHECK(value.is_dict());
-  DCHECK(value.FindKey(kVisibleAppName));
-  DCHECK(value.FindKey(kVisibleAppName)->is_string());
-  DCHECK(value.FindKey(kPackageName));
-  DCHECK(value.FindKey(kPackageName)->is_string());
-  DCHECK(value.FindKey(kUserId));
-  DCHECK(value.FindKey(kUserId)->is_double());
-  DCHECK(value.FindKey(kIcon));
-  DCHECK(value.FindKey(kIcon)->is_string());
+  const base::Value::Dict& dict = value.GetDict();
+  DCHECK(dict.contains(kVisibleAppName));
+  DCHECK(dict.FindString(kVisibleAppName));
+  DCHECK(dict.contains(kPackageName));
+  DCHECK(dict.FindString(kPackageName));
+  DCHECK(dict.contains(kUserId));
+  DCHECK(dict.FindDouble(kUserId));
+  DCHECK(dict.contains(kIcon));
+  DCHECK(dict.FindString(kIcon));
 
-  if (value.FindKey(kIconIsMonochrome)) {
-    DCHECK(value.FindKey(kIconIsMonochrome)->is_bool());
+  if (dict.contains(kIconIsMonochrome)) {
+    DCHECK(dict.FindBool(kIconIsMonochrome));
   }
   bool icon_is_monochrome =
-      value.FindBoolPath(kIconIsMonochrome).value_or(false);
+      dict.FindBoolByDottedPath(kIconIsMonochrome).value_or(false);
 
   absl::optional<SkColor> icon_color = absl::nullopt;
-  if (value.FindKey(kIconColorR)) {
-    DCHECK(value.FindKey(kIconColorR)->is_int());
-    DCHECK(value.FindKey(kIconColorG));
-    DCHECK(value.FindKey(kIconColorG)->is_int());
-    DCHECK(value.FindKey(kIconColorB));
-    DCHECK(value.FindKey(kIconColorB)->is_int());
-    icon_color = SkColorSetRGB(*(value.FindIntPath(kIconColorR)),
-                               *(value.FindIntPath(kIconColorG)),
-                               *(value.FindIntPath(kIconColorB)));
+  if (dict.contains(kIconColorR)) {
+    DCHECK(dict.FindInt(kIconColorR));
+    DCHECK(dict.contains(kIconColorG));
+    DCHECK(dict.FindInt(kIconColorG));
+    DCHECK(dict.contains(kIconColorB));
+    DCHECK(dict.FindInt(kIconColorB));
+    icon_color = SkColorSetRGB(*(dict.FindIntByDottedPath(kIconColorR)),
+                               *(dict.FindIntByDottedPath(kIconColorG)),
+                               *(dict.FindIntByDottedPath(kIconColorB)));
   }
 
   const base::Value* visible_app_name_value = value.FindPath(kVisibleAppName);
