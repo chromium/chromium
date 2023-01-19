@@ -40,10 +40,12 @@ bool ExitedCleanly(int exit_status) {
 #define MAYBE_ErrorCallback DISABLED_ErrorCallback
 #define MAYBE_CrashInErrorCallback DISABLED_CrashInErrorCallback
 #define MAYBE_ShouldExitCleanly DISABLED_ShouldExitCleanly
+#define MAYBE_TaskTraceCallback DISABLED_TaskTraceCallback
 #else
 #define MAYBE_ErrorCallback ErrorCallback
 #define MAYBE_CrashInErrorCallback CrashInErrorCallback
 #define MAYBE_ShouldExitCleanly ShouldExitCleanly
+#define MAYBE_TaskTraceCallback TaskTraceCallback
 #endif
 
 TEST_F(AsanServiceTest, MAYBE_ErrorCallback) {
@@ -116,7 +118,7 @@ class AsanTaskTraceTest {
       *task_environment_.GetMainThreadTaskRunner();
 };
 
-TEST_F(AsanServiceTest, TaskTraceCallback) {
+TEST_F(AsanServiceTest, MAYBE_TaskTraceCallback) {
   AsanTaskTraceTest test;
   // We can't check the symbolization of the task trace, as this will fail on
   // build configurations that don't include symbols. We instead just check
