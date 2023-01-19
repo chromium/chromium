@@ -1224,11 +1224,14 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
     emulated_back_buffer_ = std::make_unique<EmulatedDefaultFramebuffer>(
         api(), emulated_default_framebuffer_format_, feature_info_.get(),
         supports_separate_fbo_bindings_);
-    // Make sure to use a non-empty offscreen surface so that the framebuffer is
-    // complete.
+    // If we're an offscreen surface with zero width and/or height, set to a
+    // non-zero size so that we have a complete framebuffer for operations like
+    // glClear. Furthermore, on some ChromeOS platforms (particularly MediaTek
+    // devices), there are driver limitations on the minimum size of a buffer.
+    // Thus, we set the initial size to 64x64 here instead of 1x1.
     gfx::Size initial_size(
-        std::max(1, attrib_helper.offscreen_framebuffer_size.width()),
-        std::max(1, attrib_helper.offscreen_framebuffer_size.height()));
+        std::max(64, attrib_helper.offscreen_framebuffer_size.width()),
+        std::max(64, attrib_helper.offscreen_framebuffer_size.height()));
     if (!emulated_back_buffer_->Resize(initial_size, feature_info_.get())) {
       bool was_lost = CheckResetStatus();
       Destroy(true);
