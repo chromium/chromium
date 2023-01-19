@@ -24,36 +24,6 @@
 
 namespace ash {
 
-namespace {
-
-// A delegate for recording a mouse event location.
-class MouseEventLocationDelegate : public aura::test::TestWindowDelegate {
- public:
-  MouseEventLocationDelegate() = default;
-
-  MouseEventLocationDelegate(const MouseEventLocationDelegate&) = delete;
-  MouseEventLocationDelegate& operator=(const MouseEventLocationDelegate&) =
-      delete;
-
-  ~MouseEventLocationDelegate() override = default;
-
-  gfx::Point GetMouseEventLocationAndReset() {
-    gfx::Point p = mouse_event_location_;
-    mouse_event_location_.SetPoint(-100, -100);
-    return p;
-  }
-
-  void OnMouseEvent(ui::MouseEvent* event) override {
-    mouse_event_location_ = event->location();
-    event->SetHandled();
-  }
-
- private:
-  gfx::Point mouse_event_location_;
-};
-
-}  // namespace
-
 using NativeCursorManagerAshTest = AshTestBase;
 
 TEST_F(NativeCursorManagerAshTest, LockCursor) {
