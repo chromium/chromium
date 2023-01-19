@@ -670,6 +670,8 @@ void BrowserServiceLacros::LaunchOrNewTabWithProfile(
     return;
   }
 
+  display::ScopedDisplayForNewWindows scoped(target_display_id);
+
   Browser* browser =
       chrome::FindTabbedBrowser(profile, /*match_original_profiles=*/false);
   if (browser != nullptr) {
