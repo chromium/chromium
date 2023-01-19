@@ -1717,7 +1717,7 @@ class TestNavigationManager : public WebContentsObserver {
   // Waits until the navigation has been finished. Will automatically resume
   // navigations paused before this point. Returns false if the waiting was
   // terminated before reaching DidStartNavigation (e.g. timeout).
-  bool WaitForNavigationFinished();
+  [[nodiscard]] bool WaitForNavigationFinished();
 
   // Resume the navigation.
   // * Called after |WaitForRequestStart|, it causes the request to be sent.
