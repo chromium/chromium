@@ -5090,6 +5090,22 @@ TEST_P(CertVerifyProcConstraintsTest, KeyUsageNotPresentLeaf) {
   EXPECT_THAT(Verify(), IsOk());
 }
 
+TEST_P(CertVerifyProcConstraintsTest, KeyUsageCertSignLeaf) {
+  // Test a leaf that has keyUsage asserting keyCertSign and basicConstraints
+  // asserting CA=false. This should be an error according to 5280 section
+  // 4.2.1.3 and 4.2.1.9, however most implementations seem to allow it.
+  // Perhaps because 5280 section 6 does not explicitly say to enforce this on
+  // the target cert.
+  chain_[0]->SetKeyUsages(
+      {KEY_USAGE_BIT_KEY_CERT_SIGN, KEY_USAGE_BIT_DIGITAL_SIGNATURE});
+
+  EXPECT_THAT(Verify(), IsOk());
+  if (VerifyProcTypeIsBuiltin()) {
+    EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
+    EXPECT_THAT(VerifyWithExpiryAndFullConstraints(), IsOk());
+  }
+}
+
 TEST_P(CertVerifyProcConstraintsTest, ExtendedKeyUsageNoServerAuthRoot) {
   chain_[3]->SetExtendedKeyUsages({der::Input(kCodeSigning)});
 
@@ -5469,6 +5485,22 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, KeyUsageNoDigitalSignature) {
   }
 }
 
+TEST_P(CertVerifyProcConstraintsTrustedLeafTest, KeyUsageCertSignLeaf) {
+  // Test a leaf that has keyUsage asserting keyCertSign with basicConstraints
+  // CA=false, which is an error according to 5280 (4.2.1.3 and 4.2.1.9).
+  chain_[0]->SetKeyUsages(
+      {KEY_USAGE_BIT_KEY_CERT_SIGN, KEY_USAGE_BIT_DIGITAL_SIGNATURE});
+
+  if (VerifyProcTypeIsBuiltin()) {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
+    EXPECT_THAT(VerifyAsTrustedLeaf(), IsOk());
+  } else if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
+  } else {
+    EXPECT_THAT(Verify(), IsOk());
+  }
+}
+
 TEST_P(CertVerifyProcConstraintsTrustedLeafTest, ExtendedKeyUsageNoServerAuth) {
   chain_[0]->SetExtendedKeyUsages({der::Input(kCodeSigning)});
 
@@ -5705,6 +5737,26 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,
   EXPECT_THAT(Verify(), IsOk());
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(VerifyAsTrustedSelfSignedLeaf(), IsOk());
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest, KeyUsageCertSignLeaf) {
+  // Test a leaf that has keyUsage asserting keyCertSign with basicConstraints
+  // CA=false, which is an error according to 5280 (4.2.1.3 and 4.2.1.9).
+  cert_->SetKeyUsages(
+      {KEY_USAGE_BIT_KEY_CERT_SIGN, KEY_USAGE_BIT_DIGITAL_SIGNATURE});
+
+  EXPECT_THAT(Verify(), IsOk());
+  if (VerifyProcTypeIsBuiltin()) {
+    EXPECT_THAT(
+        VerifyWithTrust(
+            CertificateTrust::ForTrustAnchor().WithEnforceAnchorConstraints()),
+        IsError(ERR_CERT_INVALID));
+    EXPECT_THAT(VerifyAsTrustedSelfSignedLeaf(), IsOk());
+    EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForTrustAnchorOrLeaf()
+                                    .WithEnforceAnchorConstraints()
+                                    .WithRequireLeafSelfSigned()),
+                IsOk());
   }
 }
 
