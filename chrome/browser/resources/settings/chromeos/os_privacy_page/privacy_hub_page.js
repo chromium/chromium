@@ -13,20 +13,21 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../../controls/settings_toggle_button.js';
 import './metrics_consent_toggle_button.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route} from '../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {Route} from '../router.js';
 
 import {MediaDevicesProxy} from './media_devices_proxy.js';
 import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './privacy_hub_browser_proxy.js';
+import {getTemplate} from './privacy_hub_page.html.js';
 
 /**
  * These values are persisted to logs and should not be renumbered or re-used.
@@ -63,7 +64,7 @@ class SettingsPrivacyHubPage extends SettingsPrivacyHubPageBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   constructor() {

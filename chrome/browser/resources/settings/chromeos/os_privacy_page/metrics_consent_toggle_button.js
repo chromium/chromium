@@ -10,9 +10,10 @@
 
 import '../../controls/settings_toggle_button.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MetricsConsentBrowserProxy, MetricsConsentBrowserProxyImpl} from './metrics_consent_browser_proxy.js';
+import {getTemplate} from './metrics_consent_toggle_button.html.js';
 
 /** @polymer */
 class SettingsMetricsConsentToggleButtonElement extends PolymerElement {
@@ -21,7 +22,7 @@ class SettingsMetricsConsentToggleButtonElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

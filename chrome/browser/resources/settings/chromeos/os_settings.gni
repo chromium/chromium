@@ -202,6 +202,11 @@ web_component_files = [
   "chromeos/os_printing_page/cups_saved_printers.ts",
   "chromeos/os_printing_page/cups_settings_add_printer_dialog.ts",
   "chromeos/os_printing_page/os_printing_page.ts",
+  "chromeos/os_privacy_page/metrics_consent_toggle_button.js",
+  "chromeos/os_privacy_page/os_privacy_page.js",
+  "chromeos/os_privacy_page/peripheral_data_access_protection_dialog.js",
+  "chromeos/os_privacy_page/privacy_hub_page.js",
+  "chromeos/os_privacy_page/smart_privacy_page.js",
   "chromeos/os_reset_page/os_powerwash_dialog.ts",
   "chromeos/os_reset_page/os_powerwash_dialog_esim_item.ts",
   "chromeos/os_reset_page/os_reset_page.ts",
@@ -420,11 +425,6 @@ generated_web_component_files = [
   "chromeos/nearby_share_page/nearby_share_receive_dialog.js",
   "chromeos/nearby_share_page/nearby_share_subpage.js",
   "chromeos/os_a11y_page/manage_a11y_page.js",
-  "chromeos/os_privacy_page/metrics_consent_toggle_button.js",
-  "chromeos/os_privacy_page/os_privacy_page.js",
-  "chromeos/os_privacy_page/peripheral_data_access_protection_dialog.js",
-  "chromeos/os_privacy_page/privacy_hub_page.js",
-  "chromeos/os_privacy_page/smart_privacy_page.js",
 ]
 
 mojom_webui_files = [

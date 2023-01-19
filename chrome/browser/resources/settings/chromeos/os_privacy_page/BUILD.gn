@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
@@ -98,15 +97,5 @@ js_library("privacy_hub_browser_proxy") {
   deps = [
     "//ash/webui/common/resources:cr.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-html_to_js("web_components") {
-  js_files = [
-    "metrics_consent_toggle_button.js",
-    "os_privacy_page.js",
-    "peripheral_data_access_protection_dialog.js",
-    "privacy_hub_page.js",
-    "smart_privacy_page.js",
   ]
 }

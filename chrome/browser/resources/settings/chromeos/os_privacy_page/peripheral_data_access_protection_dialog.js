@@ -12,9 +12,11 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import '../../settings_shared.css.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
+
+import {getTemplate} from './peripheral_data_access_protection_dialog.html.js';
 
 /**
  * @constructor
@@ -32,7 +34,7 @@ class SettingsPeripheralDataAccessProtectionDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

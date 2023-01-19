@@ -283,7 +283,6 @@ group("generate_web_components") {
     # Sub-folder targets
     "nearby_share_page:web_components",
     "os_a11y_page:web_components",
-    "os_privacy_page:web_components",
   ]
 }
 
