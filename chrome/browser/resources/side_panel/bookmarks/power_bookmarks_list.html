@@ -1,16 +1,11 @@
 <style include="cr-icons cr-hidden-style">
   :host {
     --back-button-size: 14px;
-    --border-color: var(--google-grey-300);
-    --disabled-text-color: var(--google-grey-600);
     --edit-footer-background: var(--google-grey-50);
-    --label-selected-color: var(--google-blue-50);
   }
 
   @media (prefers-color-scheme: dark) {
     :host {
-      --border-color: var(--google-grey-700);
-      --disabled-text-color: var(--google-grey-500);
       --edit-footer-background: var(--google-grey-900-white-4-percent);
     }
   }
@@ -99,32 +94,6 @@
     gap: 8px;
   }
 
-  .label {
-    align-items: center;
-    background-color: transparent;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    color: var(--cr-secondary-text-color);
-    display: flex;
-    flex-direction: row;
-    font-size: var(--mwb-secondary-text-font-size);
-    gap: 4px;
-    padding: 6px;
-  }
-
-  .label[disabled] {
-    opacity: var(--cr-disabled-opacity);
-  }
-
-  .label[selected] {
-    background-color: var(--label-selected-color);
-    border-color: var(--label-selected-color);
-  }
-
-  .label:hover:not([disabled]) {
-    background-color: var(--google-grey-100);
-  }
-
   .label-row {
     display: flex;
     flex-direction: row;
@@ -186,12 +155,13 @@
   </cr-toolbar-search-field>
   <div class="label-row" hidden="[[guestMode_]]">
     <template is="dom-repeat" items="[[labels_]]">
-      <button class="label" selected$="[[item.active]]" disabled="[[editing_]]"
-          on-click="onLabelClicked_" aria-pressed="[[item.active]]">
-        <iron-icon class="label-icon"
-            icon="[[getLabelIcon_(item, item.active)]]"></iron-icon>
+      <sp-filter-chip
+          selected="[[item.active]]"
+          disabled="[[editing_]]"
+          on-click="onLabelClicked_">
+        <iron-icon icon="[[getLabelIcon_(item, item.active)]]"></iron-icon>
         [[item.label]]
-      </button>
+      </sp-filter-chip>
     </template>
   </div>
   <div class="heading-row" hidden="[[guestMode_]]">

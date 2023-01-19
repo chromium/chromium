@@ -1,0 +1,67 @@
+<style>
+  button {
+    --iron-icon-fill-color: var(--cr-link-color);
+    align-items: center;
+    appearance: none;
+    background-color: transparent;
+    border: 1px solid var(--google-grey-300);
+    border-radius: 4px;
+    color: var(--cr-secondary-text-color);
+    display: flex;
+    flex-direction: row;
+    font-size: 11px;
+    gap: 4px;
+    height: 28px;
+    padding: 0 6px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    button {
+      border-color: var(--google-grey-700);
+    }
+  }
+
+  button:not(:is([disabled], [selected])):hover {
+    background-color: rgba(var(--google-blue-500-rgb), .04);
+    border-color: var(--google-blue-100);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    button:not(:is([disabled], [selected])):hover {
+      background: linear-gradient(0deg,
+          rgba(var(--google-blue-300-rgb), .08),
+          rgba(var(--google-blue-300-rgb), .08)),
+          var(--google-grey-900);
+      border-color: rgba(var(--google-blue-300-rgb), .32);
+    }
+  }
+
+  button:focus-visible {
+    box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
+    outline: none;
+  }
+
+  button[disabled] {
+    opacity: var(--cr-disabled-opacity);
+  }
+
+  button[selected] {
+    background-color: var(--google-blue-50);
+    border-color: var(--google-blue-50);
+    color: var(--google-blue-600);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    button[selected] {
+      --iron-icon-fill-color: var(--google-grey-900);
+      background-color: var(--google-blue-300);
+      border-color: var(--google-blue-300);
+      color: var(--google-grey-900);
+    }
+  }
+</style>
+
+<button selected$="[[selected]]" disabled$="[[disabled]]"
+    aria-pressed="[[selected]]">
+  <slot></slot>
+</button>
