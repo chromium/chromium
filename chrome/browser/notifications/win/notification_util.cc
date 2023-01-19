@@ -43,7 +43,7 @@ NotificationLaunchId GetNotificationLaunchId(
 
   UINT32 length;
   hr = elements->get_Length(&length);
-  if (length == 0) {
+  if (FAILED(hr) || length == 0) {
     LogGetNotificationLaunchIdStatus(
         GetNotificationLaunchIdStatus::kMissingToastElementInDoc);
     DLOG(ERROR) << "No <toast> elements in document.";
