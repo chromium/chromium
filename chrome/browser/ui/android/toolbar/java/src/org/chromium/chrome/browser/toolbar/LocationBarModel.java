@@ -806,6 +806,10 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     protected GURL getUrlOfVisibleNavigationEntry() {
         if (mNativeLocationBarModelAndroid == 0) return GURL.emptyGURL();
+        if (mNtpDelegate.isCurrentlyVisible()) {
+            return getTab().getUrl();
+        }
+
         return LocationBarModelJni.get().getUrlOfVisibleNavigationEntry(
                 mNativeLocationBarModelAndroid, LocationBarModel.this);
     }
