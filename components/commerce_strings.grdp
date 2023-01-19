@@ -110,13 +110,6 @@
       Track prices across multiple sites
     </message>
 
-    <message name="IDS_BOOKMARKS_MENU_TRACK_PRICE" desc="Text shown as a menu item when the user is on a product page and the product's price is not currently being tracked. User can click this button to track this product.">
-      Track price
-    </message>
-    <message name="IDS_BOOKMARKS_MENU_UNTRACK_PRICE" desc="Text shown as a menu item when the user is on a product page and the product's price is currently being tracked. User can click this button to untrack this product.">
-      Untrack price
-    </message>
-
     <message name="IDS_BOOKMARKS_MANAGER_TRACKED_PRODUCTS" desc="Text shown for a product-specific bookmarks folder in the bookmarks manager. User can click this item to view their tracked product.">
       Tracked products
     </message>
@@ -130,12 +123,34 @@
     <message name="IDS_SIDE_PANEL_TRACKED_PRODUCTS" desc="Text shown for a product-specific bookmark folder in the side panel. Users can click this item to view their tracked products.">
       Tracked Products
     </message>
-    <message name="IDS_SIDE_PANEL_UNTRACK_BUTTON" desc="Text shown when user right-clicks a tracked product from the side panel. User can click this button to untrack this product.">
-      Untrack price
-    </message>
-    <message name="IDS_SIDE_PANEL_TRACK_BUTTON" desc="Text shown when user right-clicks an untracked product from the side panel. User can click this button to track this product.">
-      Track price
-    </message>
+    <if expr="is_macosx">
+      <message name="IDS_SIDE_PANEL_UNTRACK_BUTTON" desc="Text shown when user right-clicks a tracked product from the side panel. User can click this button to untrack this product.">
+        Untrack Price
+      </message>
+      <message name="IDS_SIDE_PANEL_TRACK_BUTTON" desc="Text shown when user right-clicks an untracked product from the side panel. User can click this button to track this product.">
+        Track Price
+      </message>
+      <message name="IDS_BOOKMARKS_MENU_UNTRACK_PRICE" desc="Text shown as a menu item when the user is on a product page and the product's price is currently being tracked. User can click this button to untrack this product.">
+        Untrack Price
+      </message>
+      <message name="IDS_BOOKMARKS_MENU_TRACK_PRICE" desc="Text shown as a menu item when the user is on a product page and the product's price is not currently being tracked. User can click this button to track this product.">
+        Track Price
+      </message>
+    </if> <!-- is_macosx -->
+    <if expr="not is_macosx">
+      <message name="IDS_SIDE_PANEL_UNTRACK_BUTTON" desc="Text shown when user right-clicks a tracked product from the side panel. User can click this button to untrack this product.">
+        Untrack price
+      </message>
+      <message name="IDS_SIDE_PANEL_TRACK_BUTTON" desc="Text shown when user right-clicks an untracked product from the side panel. User can click this button to track this product.">
+        Track price
+      </message>
+      <message name="IDS_BOOKMARKS_MENU_UNTRACK_PRICE" desc="Text shown as a menu item when the user is on a product page and the product's price is currently being tracked. User can click this button to untrack this product.">
+        Untrack price
+      </message>
+      <message name="IDS_BOOKMARKS_MENU_TRACK_PRICE" desc="Text shown as a menu item when the user is on a product page and the product's price is not currently being tracked. User can click this button to track this product.">
+        Track price
+      </message>
+    </if> <!-- not is_macosx -->
 
     <message name="IDS_PRICE_TRACKING_UNTRACK_PRODUCT_ACCESSIBILITY" desc="Accessibility string for the price tracking toggle button and bell icon when this product is currently being tracked. User can click this button or icon to untrack this product.">
       Turn off alerts

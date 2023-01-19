@@ -78,7 +78,7 @@ TEST_F(ShoppingListContextMenuControllerTest, AddMenuItem) {
   ASSERT_EQ(menu_mode()->GetCommandIdAt(0),
             IDC_BOOKMARK_BAR_UNTRACK_PRICE_FOR_SHOPPING_BOOKMARK);
   ASSERT_EQ(menu_mode()->GetLabelAt(0),
-            l10n_util::GetStringUTF16(IDS_BOOKMARKS_MENU_UNTRACK_PRICE));
+            l10n_util::GetStringUTF16(IDS_SIDE_PANEL_UNTRACK_BUTTON));
   menu_mode()->Clear();
 
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
@@ -96,7 +96,7 @@ TEST_F(ShoppingListContextMenuControllerTest, AddMenuItem) {
   ASSERT_EQ(menu_mode()->GetCommandIdAt(0),
             IDC_BOOKMARK_BAR_TRACK_PRICE_FOR_SHOPPING_BOOKMARK);
   ASSERT_EQ(menu_mode()->GetLabelAt(0),
-            l10n_util::GetStringUTF16(IDS_BOOKMARKS_MENU_TRACK_PRICE));
+            l10n_util::GetStringUTF16(IDS_SIDE_PANEL_TRACK_BUTTON));
 }
 
 TEST_F(ShoppingListContextMenuControllerTest, ExecuteMenuCommand) {

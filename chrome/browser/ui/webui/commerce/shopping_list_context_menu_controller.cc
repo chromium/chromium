@@ -31,11 +31,11 @@ void ShoppingListContextMenuController::AddPriceTrackingItemForBookmark() {
   if (commerce::IsBookmarkPriceTracked(bookmark_model_, bookmark_node_)) {
     menu_model_->AddItem(
         IDC_BOOKMARK_BAR_UNTRACK_PRICE_FOR_SHOPPING_BOOKMARK,
-        l10n_util::GetStringUTF16(IDS_BOOKMARKS_MENU_UNTRACK_PRICE));
+        l10n_util::GetStringUTF16(IDS_SIDE_PANEL_UNTRACK_BUTTON));
   } else {
     menu_model_->AddItem(
         IDC_BOOKMARK_BAR_TRACK_PRICE_FOR_SHOPPING_BOOKMARK,
-        l10n_util::GetStringUTF16(IDS_BOOKMARKS_MENU_TRACK_PRICE));
+        l10n_util::GetStringUTF16(IDS_SIDE_PANEL_TRACK_BUTTON));
   }
 }
 
