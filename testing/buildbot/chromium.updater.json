@@ -525,7 +525,7 @@
             {
               "cpu": "x86-64",
               "integrity": "high",
-              "os": "Windows-10-19042|Windows-10-19045",
+              "os": "Windows-10-19045",
               "pool": "chromium.tests"
             }
           ],
@@ -545,7 +545,7 @@
             {
               "cpu": "x86-64",
               "integrity": "high",
-              "os": "Windows-10-19042|Windows-10-19045",
+              "os": "Windows-10-19045",
               "pool": "chromium.tests"
             }
           ],
@@ -569,7 +569,7 @@
             {
               "cpu": "x86-64",
               "integrity": "high",
-              "os": "Windows-10-19042|Windows-10-19045",
+              "os": "Windows-10-19045",
               "pool": "chromium.tests"
             }
           ],
@@ -589,7 +589,7 @@
             {
               "cpu": "x86-64",
               "integrity": "high",
-              "os": "Windows-10-19042|Windows-10-19045",
+              "os": "Windows-10-19045",
               "pool": "chromium.tests"
             }
           ],
@@ -613,7 +613,7 @@
             {
               "cpu": "x86-64",
               "integrity": "high",
-              "os": "Windows-10-19042|Windows-10-19045",
+              "os": "Windows-10-19045",
               "pool": "chromium.tests"
             }
           ],
@@ -633,7 +633,7 @@
             {
               "cpu": "x86-64",
               "integrity": "high",
-              "os": "Windows-10-19042|Windows-10-19045",
+              "os": "Windows-10-19045",
               "pool": "chromium.tests"
             }
           ],
@@ -700,7 +700,7 @@
             {
               "cpu": "x86-64",
               "integrity": "high",
-              "os": "Windows-10-19042|Windows-10-19045",
+              "os": "Windows-10-19045",
               "pool": "chromium.tests"
             }
           ],
@@ -720,7 +720,7 @@
             {
               "cpu": "x86-64",
               "integrity": "high",
-              "os": "Windows-10-19042|Windows-10-19045",
+              "os": "Windows-10-19045",
               "pool": "chromium.tests"
             }
           ],
