@@ -43,7 +43,7 @@ BASE_FEATURE(kRendererAppContainer,
 // Enables shared/fixed policy for Windows sandbox policies.
 BASE_FEATURE(kSharedSandboxPolicies,
              "SharedSandboxPolicies",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Emergency "off switch" for pipe security changes, which apply more
 // restrictions to sandboxed processes from opening or creating pipes. This
