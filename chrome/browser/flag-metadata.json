@@ -2178,7 +2178,7 @@
   {
     "name": "enable-device-trust-connector",
     "owners": [ "rogerta", "seblalancette" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "enable-disco-feed-endpoint",
