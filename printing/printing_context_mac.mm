@@ -21,6 +21,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "printing/metafile.h"
 #include "printing/mojom/print.mojom.h"
+#include "printing/print_job_constants_cups.h"
 #include "printing/print_settings_initializer_mac.h"
 #include "printing/printing_features.h"
 #include "printing/units.h"
@@ -425,21 +426,21 @@ bool PrintingContextMac::SetOutputColor(int color_mode) {
 
   // TODO(crbug.com/1210992): Move `kKnownPpdColorSettings` elsewhere so it can
   // be used for general CUPS printing code (e.g., for parsing PPDs).
-  static constexpr PpdColorSetting kKnownPpdColorSettings[] = {
-      {"ARCMode", "CMBW", "CMColor"},                         // Sharp
-      {"BLW", "TrueM", "FalseM"},                             // Lexmark
-      {"BRMonoColor", "Mono", "FullColor"},                   // Brother
-      {"BRPrintQuality", "Black", "Color"},                   // Brother
-      {"CNIJGrayScale", "1", "0"},                            // Canon
-      {"ColorMode", "Monochrome", "Color"},                   // Samsung
-      {"ColorModel", "Gray", "Color"},                        // Generic
-      {"HPColorMode", "GrayscalePrint", "ColorPrint"},        // HP
-      {"Ink", "MONO", "COLOR"},                               // Epson
-      {"OKControl", "Gray", "Auto"},                          // Oki
-      {"PrintoutMode", "Normal.Gray", "Normal"},              // Foomatic
-      {"SelectColor", "Grayscale", "Color"},                  // Konica Minolta
-      {"XRXColor", "BW", "Automatic"},                        // Xerox
-      {"XROutputColor", "PrintAsGrayscale", "PrintAsColor"},  // Xerox
+  static const PpdColorSetting kKnownPpdColorSettings[] = {
+      {kCUPSSharpARCMode, kSharpCMBW, kSharpCMColor},        // Sharp
+      {kCUPSLexmarkBLW, kLexmarkBLWTrue, kLexmarkBLWFalse},  // Lexmark
+      {kCUPSBrotherMonoColor, kMono, kFullColor},            // Brother
+      {kCUPSBrotherPrintQuality, kBlack, kColor},            // Brother
+      {kCUPSCanonCNIJGrayScale, kOne, kZero},                // Canon
+      {kCUPSColorMode, kMonochrome, kColor},                 // Samsung
+      {kCUPSColorModel, kGray, kColor},                      // Generic
+      {kCUPSHpColorMode, kHpGrayscalePrint, kHpColorPrint},  // HP
+      {kCUPSEpsonInk, kEpsonMono, kEpsonColor},              // Epson
+      {kCUPSOkiControl, kGray, kAuto},                       // Oki
+      {kCUPSPrintoutMode, kNormalGray, kNormal},             // Foomatic
+      {kCUPSSelectColor, kGrayscale, kColor},                // Konica Minolta
+      {kCUPSXeroxXRXColor, kXeroxBW, kXeroxAutomatic},       // Xerox
+      {kCUPSXeroxXROutputColor, kPrintAsGrayscale, kPrintAsColor},  // Xerox
   };
 
   // Even when interfacing with printer settings using CUPS IPP, the print job
