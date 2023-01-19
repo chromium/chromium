@@ -90,12 +90,19 @@ class PPB_Graphics3D_Impl::ColorBuffer {
     if (is_single_buffered_)
       usage |= gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
 
+    // It's possible to create Graphics3D with zero size. To avoid creating
+    // shared image with zero size which will fail, we create 1x1. This matches
+    // legacy behaviour where command decoders would use 1x1 for any empty
+    // `offscreen_framebuffer_size`. Note, that to avoid any size mismatches, we
+    // keep `size_` intact.
+    auto shared_image_size = size.IsEmpty() ? gfx::Size(1, 1) : size;
+
     // Note, that we intentionally don't handle SCANOUT here. While
     // kPepper3DImageChromium is enabled on some CrOS devices, SkiaRenderer
     // don't support overlays for legacy mailboxes. To avoid any problems with
     // overlays, we don't introduce them here.
     mailbox_ = sii_->CreateSharedImage(
-        has_alpha ? viz::RGBA_8888 : viz::RGBX_8888, size,
+        has_alpha ? viz::RGBA_8888 : viz::RGBX_8888, shared_image_size,
         gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
         kUnpremul_SkAlphaType, usage, gpu::SurfaceHandle());
 
