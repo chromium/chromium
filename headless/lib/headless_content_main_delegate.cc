@@ -380,7 +380,6 @@ HeadlessContentMainDelegate::RunProcess(
                              "HeadlessContentMainDelegate::RunProcess";
 
   browser_runner->Run();
-  CHECK(browser_->did_shutdown());
   browser_runner->Shutdown();
   browser_.reset();
 

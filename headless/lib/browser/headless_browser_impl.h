@@ -121,8 +121,6 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser,
   policy::PolicyService* GetPolicyService();
 #endif
 
-  bool did_shutdown() const { return did_shutdown_; }
-
  private:
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<display::ScopedNativeScreen> screen_;
@@ -137,7 +135,6 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser,
       browser_contexts_;
   raw_ptr<HeadlessBrowserContext, DanglingUntriaged> default_browser_context_ =
       nullptr;
-  bool did_shutdown_ = false;  // TODO(1342152): remove once the bug is fixed.
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   std::unique_ptr<HeadlessRequestContextManager>
       system_request_context_manager_;

@@ -148,7 +148,6 @@ HeadlessBrowserImpl::BrowserMainThread() const {
 
 void HeadlessBrowserImpl::Shutdown() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  did_shutdown_ = true;
 
   weak_ptr_factory_.InvalidateWeakPtrs();
   // Make sure GetAllBrowserContexts is sane if called after this point.
@@ -198,8 +197,6 @@ void HeadlessBrowserImpl::RunOnStartCallback() {
 HeadlessBrowserContext* HeadlessBrowserImpl::CreateBrowserContext(
     HeadlessBrowserContext::Builder* builder) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  CHECK(!did_shutdown_);
 
   auto browser_context = HeadlessBrowserContextImpl::Create(builder);
   HeadlessBrowserContext* result = browser_context.get();
