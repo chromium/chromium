@@ -122,6 +122,7 @@
 //#define SK_HISTOGRAM_BOOLEAN(name, sample)
 //#define SK_HISTOGRAM_EXACT_LINEAR(name, sample, value_max)
 //#define SK_HISTOGRAM_MEMORY_KB(name, sample)
+#include "base/component_export.h"
 #include "skia/ext/skia_histogram.h"
 
 // ===== Begin Chrome-specific definitions =====
@@ -135,6 +136,11 @@
     PDF documents.
  */
 #define SK_PDF_USE_HARFBUZZ_SUBSET
+
+#if !defined(SK_API)
+// Handle exporting using base/component_export.h
+#define SK_API COMPONENT_EXPORT(SKIA)
+#endif
 
 // Chromium does not use these fonts.  This define causes type1 fonts to be
 // converted to type3 when producing PDFs, and reduces build size.

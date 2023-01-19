@@ -115,7 +115,11 @@ config("skia_config") {
 
 # Internal-facing config for Skia library code.
 config("skia_library_config") {
-  defines = []
+  # Turn on SK_API to export Skia's public API
+  defines = [
+    "IS_SKIA_IMPL=1",
+    "SKIA_IMPLEMENTATION=1",
+  ]
 
   # Skia uses C++17 language features in its internal code. Previously Skia was built with
   # "-std=c++17". See http://crbug.com/1257145 for why this was a bad idea.
@@ -125,8 +129,6 @@ config("skia_library_config") {
   if (!is_ios && !use_system_freetype) {
     defines += [ "SK_FREETYPE_MINIMUM_RUNTIME_VERSION=(((FREETYPE_MAJOR) * 0x01000000) | ((FREETYPE_MINOR) * 0x00010000) | ((FREETYPE_PATCH) * 0x00000100))" ]
   }
-
-  defines += [ "SKIA_IMPLEMENTATION=1" ]
 
   if (current_cpu == "arm") {
     if (arm_use_neon) {
