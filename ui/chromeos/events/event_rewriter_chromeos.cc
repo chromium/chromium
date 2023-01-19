@@ -17,7 +17,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/system/sys_info.h"
 #include "device/udev_linux/scoped_udev.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -543,12 +542,12 @@ KeyboardCapability::DeviceType IdentifyKeyboardType(
   // Parse |device_name| to help classify it.
   bool found_apple = false;
   bool found_keyboard = false;
-  for (size_t i = 0; i < tokens.size(); ++i) {
-    if (!found_apple && base::EqualsCaseInsensitiveASCII(tokens[i], "apple")) {
+  for (const auto& token : tokens) {
+    if (!found_apple && base::EqualsCaseInsensitiveASCII(token, "apple")) {
       found_apple = true;
     }
     if (!found_keyboard &&
-        base::EqualsCaseInsensitiveASCII(tokens[i], "keyboard")) {
+        base::EqualsCaseInsensitiveASCII(token, "keyboard")) {
       found_keyboard = true;
     }
   }
@@ -1879,8 +1878,7 @@ EventDispatchDetails EventRewriterChromeOS::RewriteKeyEventInContext(
     // When a key is pressed, store |current_key_state| if it is not stored
     // before.
     if (iter == pressed_key_states_.end()) {
-      pressed_key_states_.push_back(
-          std::make_pair(current_key_state, original_key_state));
+      pressed_key_states_.emplace_back(current_key_state, original_key_state);
     }
 
     if (status == EventRewriteStatus::EVENT_REWRITE_CONTINUE) {
