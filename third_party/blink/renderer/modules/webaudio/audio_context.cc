@@ -494,11 +494,12 @@ void AudioContext::DidClose() {
 
   // Reject all pending resolvers for setSinkId() before closing AudioContext.
   for (auto& set_sink_id_resolver : set_sink_id_resolvers_) {
-    set_sink_id_resolver->RejectWithDOMException(
+    set_sink_id_resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "Cannot resolve pending promise from setSinkId(), AudioContext is "
-        "going away");
+        "going away"));
   }
+  set_sink_id_resolvers_.clear();
 }
 
 bool AudioContext::IsContextCleared() const {
