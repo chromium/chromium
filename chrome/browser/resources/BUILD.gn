@@ -132,23 +132,17 @@ group("resources") {
   }
 }
 
-if (enable_js_type_check) {
+if (is_chromeos_ash && enable_js_type_check) {
   group("closure_compile") {
-    deps = []
-    if (is_chromeos_ash) {
-      deps += [
-        "chromeos:closure_compile",
-        "chromeos/contact_center_insights:closure_compile",
-        "gaia_auth_host:closure_compile",
-        "nearby_internals:closure_compile",
-        "nearby_share:closure_compile",
-        "nearby_share/shared:closure_compile_module",
-        "settings:closure_compile",
-      ]
-    }
-    if (is_android) {
-      deps += [ "video_tutorials:closure_compile" ]
-    }
+    deps = [
+      "chromeos:closure_compile",
+      "chromeos/contact_center_insights:closure_compile",
+      "gaia_auth_host:closure_compile",
+      "nearby_internals:closure_compile",
+      "nearby_share:closure_compile",
+      "nearby_share/shared:closure_compile_module",
+      "settings:closure_compile",
+    ]
   }
 }
 

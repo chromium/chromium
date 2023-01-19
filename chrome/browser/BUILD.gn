@@ -7702,7 +7702,10 @@ grit("resources") {
   }
 
   if (is_android) {
-    deps += [ "//chrome/browser/resources/offline_pages:build_ts" ]
+    deps += [
+      "//chrome/browser/resources/offline_pages:build_ts",
+      "//chrome/browser/resources/video_tutorials:build_ts",
+    ]
   }
   if (!is_android) {
     deps += [
