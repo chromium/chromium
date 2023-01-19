@@ -78,8 +78,8 @@ void WakeLockProvider::GetWakeLockWithoutContext(
       std::make_unique<WakeLock>(std::move(receiver), type, reason, description,
                                  WakeLockContext::WakeLockInvalidContextId,
                                  native_view_getter_, file_task_runner_, this);
-  GetWakeLockDataPerType(type).wake_locks[wake_lock.get()] =
-      std::move(wake_lock);
+  WakeLock* const key = wake_lock.get();
+  GetWakeLockDataPerType(type).wake_locks[key] = std::move(wake_lock);
 }
 
 void WakeLockProvider::NotifyOnWakeLockDeactivation(
