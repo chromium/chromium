@@ -129,7 +129,7 @@
             }
           ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "shards": 8
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -147,7 +147,8 @@
               "os": "Ubuntu-18.04"
             }
           ],
-          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
@@ -183,7 +184,8 @@
               "os": "Ubuntu-18.04"
             }
           ],
-          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"

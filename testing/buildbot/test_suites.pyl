@@ -1456,7 +1456,7 @@
               'cores': '8',
             },
           ],
-          'shards': 2,
+          'shards': 8,
         },
       },
       'content_browsertests': {
@@ -1466,6 +1466,7 @@
               'cores': '8',
             },
           ],
+          'shards': 5,
         },
       },
       'content_unittests': {
@@ -1484,6 +1485,7 @@
               'cores': '8',
             },
           ],
+          'shards': 3,
         },
       },
       'net_unittests': {
