@@ -63,18 +63,6 @@ MATCHER_P(InfoEquals, expected, "") {
   return expected.url == arg.url && expected.id == arg.id;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// Set the user preference for |origin| to prefer tab mirroring.
-void EnableTabMirroringForOrigin(PrefService* prefs,
-                                 const std::string& origin) {
-  ScopedListPrefUpdate update(
-      prefs, media_router::prefs::kMediaRouterTabMirroringSources);
-  base::Value::List& list = update.Get();
-  if (!base::Contains(list, base::Value(origin)))
-    list.Append(origin);
-}
-#endif
-
 }  // namespace
 
 namespace media_router {
@@ -775,92 +763,14 @@ TEST_F(PresentationServiceDelegateImplTest, AutoJoinRequest) {
 
   MockCreatePresentationConnectionCallbacks mock_create_connection_callbacks;
   const std::string kPresentationId("auto-join");
-  ASSERT_TRUE(IsAutoJoinPresentationId(kPresentationId));
-
-  EnableTabMirroringForOrigin(profile()->GetPrefs(), origin);
 
   auto& mock_local_manager = GetMockLocalPresentationManager();
   EXPECT_CALL(mock_local_manager, IsLocalPresentation(kPresentationId))
       .WillRepeatedly(Return(false));
 
-  // Auto-join requests should be rejected.
-  EXPECT_CALL(mock_create_connection_callbacks, OnCreateConnectionError(_));
-  EXPECT_CALL(*router_, JoinRouteInternal(_, kPresentationId, _, _, _, _, _))
-      .Times(0);
-  delegate_impl_->ReconnectPresentation(
-      *presentation_request_, kPresentationId,
-      base::BindOnce(
-          &MockCreatePresentationConnectionCallbacks::OnCreateConnectionSuccess,
-          base::Unretained(&mock_create_connection_callbacks)),
-      base::BindOnce(
-          &MockCreatePresentationConnectionCallbacks::OnCreateConnectionError,
-          base::Unretained(&mock_create_connection_callbacks)));
-
-  // Remove the user preference for |origin|.
-  {
-    ScopedListPrefUpdate update(profile()->GetPrefs(),
-                                prefs::kMediaRouterTabMirroringSources);
-    update->EraseValue(base::Value(origin));
-  }
-
-  // Auto-join requests should now go through.
-  EXPECT_CALL(*router_, JoinRouteInternal(_, kPresentationId, _, _, _, _, _))
-      .Times(1);
-  delegate_impl_->ReconnectPresentation(
-      *presentation_request_, kPresentationId,
-      base::BindOnce(
-          &MockCreatePresentationConnectionCallbacks::OnCreateConnectionSuccess,
-          base::Unretained(&mock_create_connection_callbacks)),
-      base::BindOnce(
-          &MockCreatePresentationConnectionCallbacks::OnCreateConnectionError,
-          base::Unretained(&mock_create_connection_callbacks)));
-}
-
-TEST_F(PresentationServiceDelegateImplIncognitoTest, AutoJoinRequest) {
-  std::string origin(frame_origin_.Serialize());
-  content::WebContentsTester::For(GetWebContents())
-      ->NavigateAndCommit(frame_url_);
-
-  MockCreatePresentationConnectionCallbacks mock_create_connection_callbacks;
-  const std::string kPresentationId("auto-join");
+  // A request to reconnect to a presentation with the special presentation ID
+  // should succeed.
   ASSERT_TRUE(IsAutoJoinPresentationId(kPresentationId));
-
-  EnableTabMirroringForOrigin(
-      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)->GetPrefs(),
-      origin);
-
-  auto& mock_local_manager = GetMockLocalPresentationManager();
-  EXPECT_CALL(mock_local_manager, IsLocalPresentation(kPresentationId))
-      .WillRepeatedly(Return(false));
-
-  // Setting the pref in OffTheRecord shouldn't set it for the regular
-  // profile.
-  const base::Value::List& non_off_the_record_origins =
-      profile()->GetPrefs()->GetList(prefs::kMediaRouterTabMirroringSources);
-  EXPECT_FALSE(base::Contains(non_off_the_record_origins, base::Value(origin)));
-
-  // Auto-join requests should be rejected.
-  EXPECT_CALL(mock_create_connection_callbacks, OnCreateConnectionError(_));
-  EXPECT_CALL(*router_, JoinRouteInternal(_, kPresentationId, _, _, _, _, _))
-      .Times(0);
-  delegate_impl_->ReconnectPresentation(
-      *presentation_request_, kPresentationId,
-      base::BindOnce(
-          &MockCreatePresentationConnectionCallbacks::OnCreateConnectionSuccess,
-          base::Unretained(&mock_create_connection_callbacks)),
-      base::BindOnce(
-          &MockCreatePresentationConnectionCallbacks::OnCreateConnectionError,
-          base::Unretained(&mock_create_connection_callbacks)));
-
-  // Remove the user preference for |origin| in OffTheRecord.
-  {
-    ScopedListPrefUpdate update(
-        profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)->GetPrefs(),
-        prefs::kMediaRouterTabMirroringSources);
-    update->EraseValue(base::Value(origin));
-  }
-
-  // Auto-join requests should now go through.
   EXPECT_CALL(*router_, JoinRouteInternal(_, kPresentationId, _, _, _, _, _))
       .Times(1);
   delegate_impl_->ReconnectPresentation(

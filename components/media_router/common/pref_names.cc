@@ -21,9 +21,6 @@ const char kMediaRouterReceiverIdHashToken[] =
 // dialog. Defaults to true.
 const char kMediaRouterShowCastSessionsStartedByOtherDevices[] =
     "media_router.show_cast_sessions_started_by_other_devices.enabled";
-// A list of website origins on which the user has chosen to use tab mirroring.
-const char kMediaRouterTabMirroringSources[] =
-    "media_router.tab_mirroring_sources";
 
 }  // namespace prefs
 }  // namespace media_router

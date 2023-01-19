@@ -135,8 +135,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                PrefRegistry::PUBLIC);
   registry->RegisterBooleanPref(
       media_router::prefs::kMediaRouterMediaRemotingEnabled, true);
-  registry->RegisterListPref(
-      media_router::prefs::kMediaRouterTabMirroringSources);
   registry->RegisterBooleanPref(
       media_router::prefs::kMediaRouterShowCastSessionsStartedByOtherDevices,
       true);

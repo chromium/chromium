@@ -33,10 +33,6 @@ class PresentationScreenAvailabilityListener;
 class WebContents;
 }  // namespace content
 
-namespace url {
-class Origin;
-}  // namespace url
-
 namespace media_router {
 
 class MediaRoute;
@@ -202,11 +198,6 @@ class PresentationServiceDelegateImpl
   MediaRoute::Id GetRouteId(
       const content::GlobalRenderFrameHostId& render_frame_host_id,
       const std::string& presentation_id) const;
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Returns true if auto-join requests should be cancelled for |origin|.
-  bool ShouldCancelAutoJoinForOrigin(const url::Origin& origin);
-#endif
 
   // Ensures that |connection| contains a valid pair of
   // blink::mojom::PresentationConnection{PtrInfo,Request} objects which will be

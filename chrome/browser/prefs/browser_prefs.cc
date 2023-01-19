@@ -816,6 +816,7 @@ const char kAutofillWalletImportStorageCheckboxState[] =
 // Deprecated 01/2023
 const char kSendDownloadToCloudPref[] =
     "enterprise_connectors.send_download_to_cloud";
+
 #if BUILDFLAG(IS_MAC)
 const char kDeviceTrustDisableKeyCreationPref[] =
     "enterprise_connectors.device_trust.disable_key_creation";
@@ -824,6 +825,12 @@ const char kDeviceTrustDisableKeyCreationPref[] =
 // Deprecated 01/2023.
 const char kFileSystemSyncAccessHandleAsyncInterfaceEnabled[] =
     "policy.file_system_sync_access_handle_async_interface_enabled";
+
+// Deprecated 01/2023.
+#if !BUILDFLAG(IS_ANDROID)
+const char kMediaRouterTabMirroringSources[] =
+    "media_router.tab_mirroring_sources";
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -894,8 +901,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 11/2022.
   registry->RegisterDictionaryPref(kLocalConsentsDictionary);
 
-  // Deprecated 01/2023
+  // Deprecated 01/2023.
   registry->RegisterListPref(kSendDownloadToCloudPref);
+
 #if BUILDFLAG(IS_MAC)
   registry->RegisterBooleanPref(kDeviceTrustDisableKeyCreationPref, false);
 #endif  // BUILDFLAG(IS_MAC)
@@ -1105,6 +1113,11 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 01/2023.
   registry->RegisterBooleanPref(
       kFileSystemSyncAccessHandleAsyncInterfaceEnabled, false);
+
+  // Deprecated 01/2023.
+#if !BUILDFLAG(IS_ANDROID)
+  registry->RegisterListPref(kMediaRouterTabMirroringSources);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace
@@ -2159,6 +2172,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 01/2023.
   profile_prefs->ClearPref(kFileSystemSyncAccessHandleAsyncInterfaceEnabled);
+
+  // Added 01/2023.
+#if !BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(kMediaRouterTabMirroringSources);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

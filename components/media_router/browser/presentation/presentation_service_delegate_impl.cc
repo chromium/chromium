@@ -43,12 +43,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "components/media_router/common/pref_names.h"
-#include "components/prefs/pref_service.h"
-#include "components/user_prefs/user_prefs.h"
-#endif
-
 using blink::mojom::PresentationConnection;
 using blink::mojom::PresentationError;
 using blink::mojom::PresentationErrorType;
@@ -516,16 +510,6 @@ void PresentationServiceDelegateImpl::ReconnectPresentation(
     return;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
-  if (IsAutoJoinPresentationId(presentation_id) &&
-      ShouldCancelAutoJoinForOrigin(request.frame_origin)) {
-    std::move(error_cb).Run(
-        PresentationError(PresentationErrorType::PRESENTATION_REQUEST_CANCELLED,
-                          "Auto-join request cancelled by user preferences."));
-    return;
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   auto* local_presentation_manager =
       LocalPresentationManagerFactory::GetOrCreateForWebContents(
           &GetWebContents());
@@ -722,16 +706,6 @@ MediaRoute::Id PresentationServiceDelegateImpl::GetRouteId(
              ? it->second->GetRouteId(presentation_id)
              : MediaRoute::Id();
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-bool PresentationServiceDelegateImpl::ShouldCancelAutoJoinForOrigin(
-    const url::Origin& origin) {
-  const base::Value::List& origins =
-      user_prefs::UserPrefs::Get(GetWebContents().GetBrowserContext())
-          ->GetList(prefs::kMediaRouterTabMirroringSources);
-  return base::Contains(origins, base::Value(origin.Serialize()));
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void PresentationServiceDelegateImpl::EnsurePresentationConnection(
     const content::GlobalRenderFrameHostId& render_frame_host_id,
