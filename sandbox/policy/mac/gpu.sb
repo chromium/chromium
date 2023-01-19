@@ -38,6 +38,10 @@
   (global-name "com.apple.system.opendirectoryd.membership") ; https://crbug.com/1126350#c5
   (global-name "com.apple.tsm.uiserver")
   (global-name "com.apple.windowserver.active")
+  ; Needed for VideoToolbox usage - https://crbug.com/767037
+  (xpc-service-name "com.apple.coremedia.videodecoder")
+  (xpc-service-name "com.apple.coremedia.videoencoder")
+  (xpc-service-name-regex #"\.apple-extension-service$")
 )
 
 ; Needed for metal decoding - https://crbug.com/957217
@@ -82,15 +86,6 @@
 
 (allow ipc-posix-shm-read-data
   (ipc-posix-name "apple.shm.notification_center"))
-
-
-; Needed for VideoToolbox usage - https://crbug.com/767037
-(if (>= os-version 1013)
-  (allow mach-lookup
-    (xpc-service-name "com.apple.coremedia.videodecoder")
-    (xpc-service-name "com.apple.coremedia.videoencoder")
-    (xpc-service-name-regex #"\.apple-extension-service$")
-))
 
 (allow sysctl-read
   (sysctl-name "hw.busfrequency_max")

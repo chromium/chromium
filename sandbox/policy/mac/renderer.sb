@@ -6,21 +6,17 @@
 
 ; Put the denials first.
 ; crbug.com/799149: These operations are allowed by default.
-(if (>= os-version 1013)
-  (if (param-true? disable-sandbox-denial-logging)
-    (deny iokit-get-properties process-info* nvram* (with no-log))
-    (deny iokit-get-properties process-info* nvram*)
-))
+(if (param-true? disable-sandbox-denial-logging)
+  (deny iokit-get-properties process-info* nvram* (with no-log))
+  (deny iokit-get-properties process-info* nvram*)
+)
 
 ; Allow cf prefs to work.
 (allow user-preference-read)
 
 ; process-info
-(if (>= os-version 1013)
-  (begin
-    (allow process-info-pidinfo)
-    (allow process-info-setcontrol (target self))
-))
+(allow process-info-pidinfo)
+(allow process-info-setcontrol (target self))
 
 ; File reads.
 ; Reads from the home directory.
@@ -85,19 +81,18 @@
 )
 
 ; IOKit properties.
-(if (>= os-version 1013)
-  (allow iokit-get-properties
-    (iokit-property "CaseSensitive")
-    (iokit-property "CoreStorage Encrypted")
-    (iokit-property "Ejectable")
-    (iokit-property "Encrypted")
-    (iokit-property "IOClassNameOverride")
-    (iokit-property "IOMediaIcon")
-    (iokit-property "Product Identification")
-    (iokit-property "Protocol Characteristics")
-    (iokit-property "Removable")
-    (iokit-property "image-encrypted")
-))
+(allow iokit-get-properties
+  (iokit-property "CaseSensitive")
+  (iokit-property "CoreStorage Encrypted")
+  (iokit-property "Ejectable")
+  (iokit-property "Encrypted")
+  (iokit-property "IOClassNameOverride")
+  (iokit-property "IOMediaIcon")
+  (iokit-property "Product Identification")
+  (iokit-property "Protocol Characteristics")
+  (iokit-property "Removable")
+  (iokit-property "image-encrypted")
+)
 
 ; For V8 to use in thread calculations.
 (if (>= os-version 1014)

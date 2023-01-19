@@ -27,17 +27,13 @@
 
 ; Mach IPC.
 (allow mach-lookup
-  (global-name "com.apple.audio.SystemSoundServer-OSX")
-  (global-name "com.apple.audio.VDCAssistant")
+  (global-name "com.apple.audio.AudioComponentRegistrar")
   (global-name "com.apple.audio.audiohald")
   (global-name "com.apple.audio.coreaudiod")
+  (global-name "com.apple.audio.SystemSoundServer-OSX")
+  (global-name "com.apple.audio.VDCAssistant")
+  (xpc-service-name "com.apple.audio.SandboxHelper")
 )
-
-(if (>= os-version 1013)
-  (allow mach-lookup
-    (global-name "com.apple.audio.AudioComponentRegistrar")
-    (xpc-service-name "com.apple.audio.SandboxHelper")
-  ))
 
 ; sysctls.
 (allow sysctl-read

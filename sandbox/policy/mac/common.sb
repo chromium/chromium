@@ -64,8 +64,6 @@
       (global-name "com.apple.FontObjectsServer")
       (global-name "com.apple.fonts")
     )
-    (if (< os-version 1012)
-      (allow mach-lookup (global-name "com.apple.FontServer")))
     ; To allow accessing downloaded and other hidden fonts in
     ; /System/Library/Asssets/com_apple_MobileAsset_Font*.
     ; (https://crbug.com/662686)
@@ -176,12 +174,8 @@
   (path "/dev/urandom")
 )
 
-(if (>= os-version 1013)
-  (begin (allow file-read* (subpath "/private/var/db/timezone"))
-         (allow file-read-data (subpath "/usr/share/zoneinfo.default"))))
-
-(if (< os-version 1013)
-  (allow file-read-data (subpath "/usr/share/zoneinfo")))
+(allow file-read* (subpath "/private/var/db/timezone"))
+(allow file-read-data (subpath "/usr/share/zoneinfo.default"))
 
 ; Reads from /Library.
 (allow file-read-data
