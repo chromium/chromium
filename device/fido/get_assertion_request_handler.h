@@ -142,8 +142,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
 
   CompletionCallback completion_callback_;
   State state_ = State::kWaitingForTouch;
-  CtapGetAssertionRequest request_;
-  CtapGetAssertionOptions options_;
+  const CtapGetAssertionRequest request_;
+  const CtapGetAssertionOptions options_;
   absl::optional<pin::TokenResponse> pin_token_;
 
   // If true, and if at the time the request is dispatched to the first

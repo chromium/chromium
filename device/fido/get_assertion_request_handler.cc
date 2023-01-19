@@ -313,6 +313,15 @@ CtapGetAssertionOptions SpecializeOptionsForAuthenticator(
   return specialized_options;
 }
 
+CtapGetAssertionRequest SetUVForDiscoverableRequests(
+    CtapGetAssertionRequest request) {
+  if (request.allow_list.empty()) {
+    // Resident credential requests always involve user verification.
+    request.user_verification = UserVerificationRequirement::kRequired;
+  }
+  return request;
+}
+
 }  // namespace
 
 GetAssertionRequestHandler::GetAssertionRequestHandler(
@@ -328,7 +337,7 @@ GetAssertionRequestHandler::GetAssertionRequestHandler(
               supported_transports,
               GetTransportsAllowedByRP(request))),
       completion_callback_(std::move(completion_callback)),
-      request_(std::move(request)),
+      request_(SetUVForDiscoverableRequests(std::move(request))),
       options_(std::move(options)),
       allow_skipping_pin_touch_(allow_skipping_pin_touch) {
   transport_availability_info().request_type = FidoRequestType::kGetAssertion;
@@ -343,11 +352,6 @@ GetAssertionRequestHandler::GetAssertionRequestHandler(
                            base::Contains(cred.transports,
                                           FidoTransportProtocol::kInternal);
                   });
-
-  if (request_.allow_list.empty()) {
-    // Resident credential requests always involve user verification.
-    request_.user_verification = UserVerificationRequirement::kRequired;
-  }
 
   FIDO_LOG(EVENT) << "Starting GetAssertion flow";
   Start();
