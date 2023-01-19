@@ -350,8 +350,9 @@ void SignedWebBundleReader::ReadResponse(
   auto response_location = entry_it->second->Clone();
   if (is_disconnected_) {
     // Try reconnecting the parser if it hasn't been attempted yet.
-    if (pending_read_responses_.empty())
+    if (pending_read_responses_.empty()) {
       Reconnect();
+    }
     pending_read_responses_.emplace_back(std::move(response_location),
                                          std::move(callback));
     return;
@@ -456,8 +457,9 @@ void SignedWebBundleReader::ReconnectForFile(base::File file) {
   }
 
   absl::optional<std::string> error;
-  if (file_error != base::File::FILE_OK)
+  if (file_error != base::File::FILE_OK) {
     error = base::File::ErrorToString(file_error);
+  }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&SignedWebBundleReader::DidReconnect,

@@ -210,8 +210,9 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
       base::expected<IsolatedWebAppReaderRegistry::Response,
                      IsolatedWebAppReaderRegistry::ReadResponseError>
           response) {
-    if (!loader_client_.is_connected())
+    if (!loader_client_.is_connected()) {
       return;
+    }
 
     if (!response.has_value()) {
       LogErrorMessageToConsole(
@@ -283,8 +284,9 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
   }
 
   void FinishReadingBody(net::Error net_error) {
-    if (!loader_client_.is_connected())
+    if (!loader_client_.is_connected()) {
       return;
+    }
 
     network::URLLoaderCompletionStatus status(net_error);
     // For these values we use the same `body_length_` as we don't currently

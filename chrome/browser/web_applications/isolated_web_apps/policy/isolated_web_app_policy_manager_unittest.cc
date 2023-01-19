@@ -190,8 +190,9 @@ void ShutdownManagedGuestSession() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::LoginState::IsInitialized())
+  if (ash::LoginState::IsInitialized()) {
     ash::LoginState::Shutdown();
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

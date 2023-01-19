@@ -39,10 +39,11 @@ void DescribeOptionalIsolationData(
     ::testing::MatchResultListener* result_listener,
     base::expected<absl::optional<IsolationData>, std::string> arg) {
   if (arg.has_value()) {
-    if (arg.value().has_value())
+    if (arg.value().has_value()) {
       *result_listener << arg.value()->AsDebugValue();
-    else
+    } else {
       *result_listener << "nullopt";
+    }
   } else {
     *result_listener << "an error with message: \"" << arg.error() << '"';
   }

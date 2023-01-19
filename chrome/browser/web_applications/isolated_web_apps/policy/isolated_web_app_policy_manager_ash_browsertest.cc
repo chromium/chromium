@@ -156,8 +156,9 @@ class IsolatedWebAppPolicyManagerAshBrowserTest
   }
 
   void WaitForSessionStart() {
-    if (session_manager::SessionManager::Get()->IsSessionStarted())
+    if (session_manager::SessionManager::Get()->IsSessionStarted()) {
       return;
+    }
     if (ash::WizardController::default_controller()) {
       ash::WizardController::default_controller()
           ->SkipPostLoginScreensForTesting();

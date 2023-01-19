@@ -60,16 +60,18 @@ using ::testing::IsTrue;
 using ::testing::NotNull;
 
 MATCHER_P(IsNetError, err, net::ErrorToString(err)) {
-  if (arg == err)
+  if (arg == err) {
     return true;
+  }
 
   *result_listener << net::ErrorToString(arg);
   return false;
 }
 
 MATCHER_P(IsHttpStatusCode, err, net::GetHttpReasonPhrase(err)) {
-  if (arg == err)
+  if (arg == err) {
     return true;
+  }
 
   *result_listener << net::GetHttpReasonPhrase(
       static_cast<net::HttpStatusCode>(arg));
@@ -743,23 +745,15 @@ class IsolatedWebAppURLLoaderFactorySignedWebBundleTest
     builder.AddExchange(base_url + "invalid-status-code",
                         {{":status", "201"}, {"content-type", "text/html"}},
                         "Hello World");
+    auto unsigned_bundle = builder.CreateBundle();
 
     web_package::WebBundleSigner::KeyPair key_pair(kTestPublicKey,
                                                    kTestPrivateKey);
-    return SignAndWriteBundleToDisk(builder.CreateBundle(), profile(),
-                                    key_pair);
-  }
-
-  base::FilePath SignAndWriteBundleToDisk(
-      const std::vector<uint8_t>& unsigned_bundle,
-      Profile* profile,
-      web_package::WebBundleSigner::KeyPair key_pair) {
     auto signed_bundle =
         web_package::WebBundleSigner::SignBundle(unsigned_bundle, {key_pair});
 
     base::FilePath web_bundle_path;
     CHECK(CreateTemporaryFileInDir(temp_dir_.GetPath(), &web_bundle_path));
-
     CHECK_EQ(static_cast<size_t>(base::WriteFile(
                  web_bundle_path, reinterpret_cast<char*>(signed_bundle.data()),
                  signed_bundle.size())),

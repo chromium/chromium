@@ -92,8 +92,9 @@ class BaseServiceWorkerVersionWaiter
       const BaseServiceWorkerVersionWaiter&) = delete;
 
   ~BaseServiceWorkerVersionWaiter() override {
-    if (service_worker_context_)
+    if (service_worker_context_) {
       service_worker_context_->RemoveObserver(this);
+    }
   }
 
  protected:
