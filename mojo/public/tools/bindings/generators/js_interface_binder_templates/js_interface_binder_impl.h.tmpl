@@ -1,3 +1,39 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+{%- set header_guard = "%s_JS_INTERFACE_BINDER_IMPL_H_"|format(
+        module.path|upper|replace("/","_")|replace(".","_")|
+            replace("-", "_")) %}
+
+#ifndef {{header_guard}}
+#define {{header_guard}}
+
+#include "{{module.path}}.h"
+
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+
+namespace {{module.namespace}} {
+
+{%  for interface_binder in interface_binders -%}
+
+class {{interface_binder.name}}Impl : public {{interface_binder.name}} {
+ public:
+  {{interface_binder.name}}Impl() = default;
+  ~{{interface_binder.name}}Impl() = default;
+
+{% for method in interface_binder.methods %}
+  void {{method.name}}(
+{%-  for param in method.parameters %}
+    {{param.kind|cpp_type}} {{param.name}}{{", " if not loop.last else ""}}
+{%-   endfor -%}
+  ) override {}
+{% endfor %}
+};
+
+{% endfor %}
+
+}  // {{module.namespace}}
+
+#endif // {{header_guard}}

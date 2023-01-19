@@ -33,6 +33,35 @@ from mojom.generate import template_expander
 import mojom.generate.module as mojom
 
 
+class JsInterfaceBinderImplStylizer(generator.Stylizer):
+  def StylizeConstant(self, mojom_name):
+    return mojom_name
+
+  def StylizeField(self, mojom_name):
+    return mojom_name
+
+  def StylizeStruct(self, mojom_name):
+    return mojom_name
+
+  def StylizeUnion(self, mojom_name):
+    return mojom_name
+
+  def StylizeParameter(self, mojom_name):
+    return mojom_name
+
+  def StylizeMethod(self, mojom_name):
+    return mojom_name
+
+  def StylizeEnumField(self, mojom_name):
+    return mojom_name
+
+  def StylizeEnum(self, mojom_name):
+    return mojom_name
+
+  def StylizeModule(self, mojom_namespace):
+    return '::'.join(mojom_namespace.split('.'))
+
+
 class Generator(generator.Generator):
   def __init__(self, *args, **kwargs):
     super(Generator, self).__init__(*args, **kwargs)
@@ -41,17 +70,63 @@ class Generator(generator.Generator):
   def GetTemplatePrefix():
     return "js_interface_binder_templates"
 
+  def _GetCppType(self, kind):
+    """Return a string representing the C++ type of `kind`
+
+     Returns None if the type is not supposed to be used in a JsInterfaceBinder.
+     """
+    if mojom.IsPendingRemoteKind(kind):
+      return "::mojo::PendingRemote<%s>" % kind.kind.name
+    if mojom.IsPendingReceiverKind(kind):
+      return "::mojo::PendingReceiver<%s>" % kind.kind.name
+
   def GetFilters(self):
-    return {}
+    return {
+        "cpp_type": self._GetCppType,
+    }
+
+  def _GetInterfaceBinders(self):
+    """Returns a list of Interface objects that are JsInterfaceBinders.
+
+    Raises an Exception if any JsInterfaceBinder don't satisfy JsInterfaceBinder
+    constraints.
+    """
+    interface_binders = [
+        interface for interface in self.module.interfaces if
+        (interface.attributes and interface.attributes.get('JsInterfaceBinder'))
+    ]
+
+    # Enforce JsInterfaceBinders constraints.
+    for interface_binder in interface_binders:
+      for method in interface_binder.methods:
+        print(method.response_parameters)
+        if method.response_parameters != None:
+          raise Exception(f'{interface_binder.name}.{method.name} has a '
+                          'response. JsInterfaceBinder\'s methods should not '
+                          'have responses.')
+
+        for param in method.parameters:
+          if not (mojom.IsPendingReceiverKind(param.kind)
+                  or mojom.IsPendingRemoteKind(param.kind)):
+            raise Exception(f'{interface_binder.name}.{method.name}\'s '
+                            f'"{param.name}" is not a pending_receiver or a '
+                            'pending_remote. JSInterfaceBinder\'s methods '
+                            'should only have pending_receiver or '
+                            'pending_remote parameters.')
+
+    return interface_binders
 
   def _GetParameters(self):
-    return {}
+    return {
+        "module": self.module,
+        "interface_binders": self._GetInterfaceBinders()
+    }
 
   @UseJinja("js_interface_binder_impl.h.tmpl")
   def _GenerateJsInterfaceBinderImpl(self):
     return self._GetParameters()
 
   def GenerateFiles(self, args):
-    self.module.Stylize(generator.Stylizer())
+    self.module.Stylize(JsInterfaceBinderImplStylizer())
     self.WriteWithComment(self._GenerateJsInterfaceBinderImpl(),
                           "%s-js-interface-binder-impl.h" % self.module.path)

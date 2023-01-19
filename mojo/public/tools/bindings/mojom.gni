@@ -1789,12 +1789,20 @@ template("mojom") {
         ]
       }
 
+      cpp_target_name = target_name
       source_set("${target_name}_js_interface_binder_impl") {
+        if (defined(invoker.testonly)) {
+          testonly = invoker.testonly
+        }
+
         sources = []
         foreach(base_path, output_file_base_paths) {
           sources = [ "$root_gen_dir/${base_path}-js-interface-binder-impl.h" ]
         }
-        deps = [ ":$generator_js_interface_binder_impl_target_name" ]
+        deps = [
+          ":$cpp_target_name",
+          ":$generator_js_interface_binder_impl_target_name",
+        ]
       }
     }
   }

@@ -5,5 +5,18 @@
 module mojo.test.js_interface_binder.mojom;
 
 [JsInterfaceBinder]
-interface FooJSInterfaceBinder {
+interface FooJsInterfaceBinder {
+  BindFooPageHandler(pending_receiver<FooPageHandler> page_handler,
+                     pending_remote<FooPage> page);
+
+  BindBar(pending_receiver<Bar> bar);
+  BindBarObserver(pending_remote<BarObserver> observer);
 };
+
+interface FooPageHandler {};
+
+interface FooPage {};
+
+interface Bar {};
+
+interface BarObserver {};
