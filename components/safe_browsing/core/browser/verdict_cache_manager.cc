@@ -392,10 +392,10 @@ typename T::VerdictType GetVerdictTypeFromMostMatchedCachedVerdict(
     return T::VERDICT_TYPE_UNSPECIFIED;
   }
 
-  base::Value* verdict_proto_value = verdict_entry->FindKey(proto_name);
-
-  if (verdict_proto_value && verdict_proto_value->is_string()) {
-    std::string serialized_proto = verdict_proto_value->GetString();
+  const std::string* verdict_proto_value =
+      verdict_entry->GetDict().FindString(proto_name);
+  if (verdict_proto_value) {
+    std::string serialized_proto = *verdict_proto_value;
 
     if (base::Base64Decode(serialized_proto, &serialized_proto) &&
         out_response->ParseFromString(serialized_proto)) {
@@ -708,12 +708,11 @@ VerdictCacheManager::GetCachedRealTimeUrlClientSideDetectionType(
         CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED;
   }
 
-  base::Value* cache_client_side_detection_type =
-      most_matching_verdict->FindKey(kCsdTypeCacheKey);
-  if (cache_client_side_detection_type &&
-      cache_client_side_detection_type->is_int()) {
+  const absl::optional<int> cache_client_side_detection_type =
+      most_matching_verdict->GetDict().FindInt(kCsdTypeCacheKey);
+  if (cache_client_side_detection_type) {
     return static_cast<safe_browsing::ClientSideDetectionType>(
-        cache_client_side_detection_type->GetInt());
+        cache_client_side_detection_type.value());
   } else {
     return safe_browsing::ClientSideDetectionType::
         CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED;
