@@ -10,7 +10,6 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/paths/paths.h"
-#import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/ntp/ios_popular_sites_field_trial.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -36,10 +35,6 @@ void IOSChromeFieldTrials::SetUpClientSideFieldTrials(
     return;
   }
 
-  // Add code here to enable field trials that are active at first run.
-  // See http://crrev/c/1128269 for an example.
-  fre_field_trial::Create(entropy_providers.low_entropy(), feature_list,
-                          GetApplicationContext()->GetLocalState());
   ios_popular_sites_field_trial::Create(
       entropy_providers.low_entropy(), feature_list,
       GetApplicationContext()->GetLocalState());

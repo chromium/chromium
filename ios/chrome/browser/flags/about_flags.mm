@@ -421,44 +421,6 @@ const FeatureEntry::FeatureVariation kTrendingQueriesModuleVariations[] = {
      std::size(kTrendingQueriesEnableFeedDisabled), nullptr},
 };
 
-const FeatureEntry::FeatureParam kNewMICEFREWithTangibleSyncA[] = {
-    {kNewMobileIdentityConsistencyFREParam,
-     kNewMobileIdentityConsistencyFREParamTangibleSyncA}};
-const FeatureEntry::FeatureParam kNewMICEFREWithTangibleSyncB[] = {
-    {kNewMobileIdentityConsistencyFREParam,
-     kNewMobileIdentityConsistencyFREParamTangibleSyncB}};
-const FeatureEntry::FeatureParam kNewMICEFREWithTangibleSyncC[] = {
-    {kNewMobileIdentityConsistencyFREParam,
-     kNewMobileIdentityConsistencyFREParamTangibleSyncC}};
-const FeatureEntry::FeatureParam kNewMICEFREWithTwoSteps[] = {
-    {kNewMobileIdentityConsistencyFREParam,
-     kNewMobileIdentityConsistencyFREParamTwoSteps}};
-const FeatureEntry::FeatureParam kNewMICEFREWithTangibleSyncD[] = {
-    {kNewMobileIdentityConsistencyFREParam,
-     kNewMobileIdentityConsistencyFREParamTangibleSyncD}};
-const FeatureEntry::FeatureParam kNewMICEFREWithTangibleSyncE[] = {
-    {kNewMobileIdentityConsistencyFREParam,
-     kNewMobileIdentityConsistencyFREParamTangibleSyncE}};
-const FeatureEntry::FeatureParam kNewMICEFREWithTangibleSyncF[] = {
-    {kNewMobileIdentityConsistencyFREParam,
-     kNewMobileIdentityConsistencyFREParamTangibleSyncF}};
-const FeatureEntry::FeatureVariation
-    kNewMobileIdentityConsistencyFREVariations[] = {
-        {"new FRE with tangible sync A", kNewMICEFREWithTangibleSyncA,
-         std::size(kNewMICEFREWithTangibleSyncA), nullptr},
-        {"new FRE with tangible sync B", kNewMICEFREWithTangibleSyncB,
-         std::size(kNewMICEFREWithTangibleSyncB), nullptr},
-        {"new FRE with tangible sync C", kNewMICEFREWithTangibleSyncC,
-         std::size(kNewMICEFREWithTangibleSyncC), nullptr},
-        {"new FRE with tangible sync D", kNewMICEFREWithTangibleSyncD,
-         std::size(kNewMICEFREWithTangibleSyncD), nullptr},
-        {"new FRE with tangible sync E", kNewMICEFREWithTangibleSyncE,
-         std::size(kNewMICEFREWithTangibleSyncE), nullptr},
-        {"new FRE with tangible sync F", kNewMICEFREWithTangibleSyncF,
-         std::size(kNewMICEFREWithTangibleSyncF), nullptr},
-        {"new FRE with 2 steps", kNewMICEFREWithTwoSteps,
-         std::size(kNewMICEFREWithTwoSteps), nullptr}};
-
 const FeatureEntry::FeatureParam kDmTokenDeletionParam[] = {{"forced", "true"}};
 const FeatureEntry::FeatureVariation kDmTokenDeletionVariation[] = {
     {"(Forced)", kDmTokenDeletionParam, std::size(kDmTokenDeletionParam),
@@ -678,13 +640,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"shared-highlighting-ios", flag_descriptions::kSharedHighlightingIOSName,
      flag_descriptions::kSharedHighlightingIOSDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSharedHighlightingIOS)},
-    {"new-mobile-identity-consistency-fre",
-     flag_descriptions::kNewMobileIdentityConsistencyFREName,
-     flag_descriptions::kNewMobileIdentityConsistencyFREDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(signin::kNewMobileIdentityConsistencyFRE,
-                                    kNewMobileIdentityConsistencyFREVariations,
-                                    kIOSMICeAndDefaultBrowserTrialName)},
 #if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
     {"screen-time-integration-ios",
      flag_descriptions::kScreenTimeIntegrationName,

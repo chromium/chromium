@@ -188,10 +188,7 @@ source_set("interruptible_chrome_coordinator") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "fre_field_trial_unittest.mm",
-    "trending_queries_field_trial_unittest.mm",
-  ]
+  sources = [ "trending_queries_field_trial_unittest.mm" ]
   deps = [
     ":field_trial",
     ":field_trial_constants",

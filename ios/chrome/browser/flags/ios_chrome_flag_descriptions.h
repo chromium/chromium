@@ -463,10 +463,6 @@ extern const char kMultilineFadeTruncatingLabelDescription[];
 extern const char kNativeFindInPageName[];
 extern const char kNativeFindInPageDescription[];
 
-// Title and description for the flag to use the new MICe FRE.
-extern const char kNewMobileIdentityConsistencyFREName[];
-extern const char kNewMobileIdentityConsistencyFREDescription[];
-
 // Title and description for the flag to enable the new overflow menu.
 extern const char kNewOverflowMenuName[];
 extern const char kNewOverflowMenuDescription[];

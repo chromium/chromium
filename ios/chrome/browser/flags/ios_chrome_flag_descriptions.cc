@@ -514,10 +514,6 @@ const char kNativeFindInPageDescription[] =
     "is replaced with a native implementation which also enables searching "
     "text in PDF files. Available for iOS 16 or later.";
 
-const char kNewMobileIdentityConsistencyFREName[] = "New MICE FRE";
-const char kNewMobileIdentityConsistencyFREDescription[] =
-    "New Mobile Identity Consistency FRE";
-
 const char kNewOverflowMenuName[] = "New Overflow Menu";
 const char kNewOverflowMenuDescription[] = "Enables the new overflow menu";
 

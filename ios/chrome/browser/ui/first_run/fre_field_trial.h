@@ -5,16 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_UI_FIRST_RUN_FRE_FIELD_TRIAL_H_
 #define IOS_CHROME_BROWSER_UI_FIRST_RUN_FRE_FIELD_TRIAL_H_
 
-#include "base/metrics/field_trial.h"
-#include "components/variations/variations_associated_data.h"
-
-class PrefRegistrySimple;
-class PrefService;
-
-namespace base {
-class FeatureList;
-}  // namespace base
-
 // Version of the new MICE FRE to show.
 enum class NewMobileIdentityConsistencyFRE {
   // New MICE FRE with tangible sync (welcome with sign-in + tangible sync
@@ -42,28 +32,6 @@ namespace fre_field_trial {
 // Returns the FRE to display according to the feature flag and experiment.
 // See NewMobileIdentityConsistencyFRE.
 NewMobileIdentityConsistencyFRE GetNewMobileIdentityConsistencyFRE();
-
-// Registers the local state pref used to manage grouping for this field trial.
-void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
-
-// Creates a field trial to control features that need to be used on first run,
-// including the LocationPermissions feature and FRE experiments.
-//
-// The trial group chosen on first run is persisted to local state prefs.
-void Create(const base::FieldTrial::EntropyProvider& low_entropy_provider,
-            base::FeatureList* feature_list,
-            PrefService* local_state);
-
-namespace testing {
-
-// Exposes CreateNewMICeAndDefaultBrowserFRETrial() for testing FieldTrial
-// set-up.
-int CreateNewMICeAndDefaultBrowserFRETrialForTesting(
-    const std::map<variations::VariationID, int>& weight_by_id,
-    const base::FieldTrial::EntropyProvider& low_entropy_provider,
-    base::FeatureList* feature_list);
-
-}  // namespace testing
 
 }  // namespace fre_field_trial
 
