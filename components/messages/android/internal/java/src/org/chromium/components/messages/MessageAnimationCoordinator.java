@@ -60,7 +60,12 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
     public void updateWithoutStacking(
             @Nullable MessageState candidate, boolean suspended, Runnable onFinished) {
         if (mCurrentDisplayedMessage == candidate) return;
-        if (!suspended && mAnimatorSet.isStarted()) {
+        if (mAnimatorSet.isStarted()) {
+            if (suspended) {
+                // Force animation to end in order to trigger callbacks.
+                mAnimatorSet.end();
+                onFinished.run();
+            }
             return;
         }
         if (mCurrentDisplayedMessage == null) {

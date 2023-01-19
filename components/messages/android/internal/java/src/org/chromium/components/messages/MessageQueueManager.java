@@ -129,8 +129,8 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
         // Remove the scope from the map if the messageQueue is empty.
         List<MessageState> messageQueue = mMessageQueues.get(scopeKey);
         messageQueue.remove(messageState);
-        Log.w(TAG, "Removed message with ID %s and key %s from the message queue.",
-                messageState.handler.getMessageIdentifier(), messageState.messageKey);
+        Log.w(TAG, "Removed message with ID %s and key %s from queue because of reason %s.",
+                message.getMessageIdentifier(), messageState.messageKey, dismissReason);
         if (messageQueue.isEmpty()) {
             mMessageQueues.remove(scopeKey);
             mScopeChangeController.lastMessageDismissed(scopeKey);
