@@ -144,6 +144,9 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
   // Font render hinting value to override any default settings
   gfx::FontRenderParams::Hinting font_render_hinting;
 
+  // Whether lazy loading of images and frames is enabled.
+  bool lazy_load_enabled = true;
+
   // Reminder: when adding a new field here, do not forget to add it to
   // HeadlessBrowserContextOptions (where appropriate).
  private:
@@ -164,6 +167,10 @@ class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
   Builder& EnableDevToolsServer(const net::HostPortPair& endpoint);
   Builder& EnableDevToolsPipe();
 
+  // Settings that are currently browser-wide, but could be per-context if
+  // needed.
+  Builder& SetEnableLazyLoading(bool enable);
+
   // Per-context settings.
 
   Builder& SetAcceptLanguage(const std::string& language);
@@ -177,7 +184,6 @@ class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
   Builder& SetCrashReporterEnabled(bool enabled);
   Builder& SetCrashDumpsDir(const base::FilePath& dir);
   Builder& SetFontRenderHinting(gfx::FontRenderParams::Hinting hinting);
-
   Options Build();
 
  private:

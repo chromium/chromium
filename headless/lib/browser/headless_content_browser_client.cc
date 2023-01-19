@@ -123,7 +123,9 @@ HeadlessContentBrowserClient::CreateBrowserMainParts(
 
 void HeadlessContentBrowserClient::OverrideWebkitPrefs(
     content::WebContents* web_contents,
-    blink::web_pref::WebPreferences* prefs) {}
+    blink::web_pref::WebPreferences* prefs) {
+  prefs->lazy_load_enabled = browser_->options()->lazy_load_enabled;
+}
 
 void HeadlessContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
     content::RenderFrameHost* render_frame_host,

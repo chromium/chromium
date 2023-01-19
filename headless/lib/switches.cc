@@ -28,6 +28,9 @@ const char kDisableCrashReporter[] = "disable-crash-reporter";
 // Whether cookies stored as part of user profile are encrypted.
 const char kDisableCookieEncryption[] = "disable-cookie-encryption";
 
+// Disables lazy loading of images and frames.
+const char kDisableLazyLoading[] = "disable-lazy-loading";
+
 // Do not emit tags when printing PDFs.
 const char kDisablePDFTagging[] = "disable-pdf-tagging";
 

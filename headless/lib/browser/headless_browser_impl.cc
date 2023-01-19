@@ -61,6 +61,11 @@ Builder& Builder::SetUserAgent(const std::string& agent) {
   return *this;
 }
 
+Builder& Builder::SetEnableLazyLoading(bool enable) {
+  options_.lazy_load_enabled = enable;
+  return *this;
+}
+
 Builder& Builder::SetAcceptLanguage(const std::string& language) {
   options_.accept_language = language;
   return *this;

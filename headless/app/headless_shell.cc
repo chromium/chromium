@@ -199,11 +199,14 @@ int HeadlessBrowserMain(content::ContentMainParams params) {
 #endif
 #if defined(HEADLESS_ENABLE_COMMANDS)
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
-  if ((command_line.HasSwitch(::switches::kRemoteDebuggingPort) ||
-       command_line.HasSwitch(::switches::kRemoteDebuggingPipe)) &&
-      HeadlessCommandHandler::HasHeadlessCommandSwitches(command_line)) {
-    LOG(ERROR) << "Headless commands are not compatible with remote debugging.";
-    return EXIT_FAILURE;
+  if (HeadlessCommandHandler::HasHeadlessCommandSwitches(command_line)) {
+    if (command_line.HasSwitch(::switches::kRemoteDebuggingPort) ||
+        command_line.HasSwitch(::switches::kRemoteDebuggingPipe)) {
+      LOG(ERROR)
+          << "Headless commands are not compatible with remote debugging.";
+      return EXIT_FAILURE;
+    }
+    command_line.AppendSwitch(switches::kDisableLazyLoading);
   }
 #endif
 

@@ -189,6 +189,10 @@ bool HandleCommandLineSwitches(base::CommandLine& command_line,
     builder.SetBlockNewWebContents(true);
   }
 
+  if (command_line.HasSwitch(switches::kDisableLazyLoading)) {
+    builder.SetEnableLazyLoading(false);
+  }
+
   return true;
 }
 
