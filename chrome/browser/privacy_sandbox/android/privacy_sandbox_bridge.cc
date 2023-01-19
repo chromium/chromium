@@ -181,3 +181,8 @@ static jboolean JNI_PrivacySandboxBridge_IsPartOfManagedFirstPartySet(
   return GetPrivacySandboxService()->IsPartOfManagedFirstPartySet(
       schemefulSite);
 }
+
+static void JNI_PrivacySandboxBridge_TopicsToggleChanged(JNIEnv* env,
+                                                         jboolean new_value) {
+  GetPrivacySandboxService()->TopicsToggleChanged(new_value);
+}

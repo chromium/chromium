@@ -134,6 +134,7 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
                                             : "Settings.PrivacySandbox.Topics.Disabled");
             setTopicsPrefEnabled(enabled);
             updatePreferenceVisibility();
+            PrivacySandboxBridge.topicsToggleChanged(enabled);
             return true;
         }
 

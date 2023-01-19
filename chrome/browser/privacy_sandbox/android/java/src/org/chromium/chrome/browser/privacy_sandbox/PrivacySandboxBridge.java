@@ -101,6 +101,10 @@ public class PrivacySandboxBridge {
         return PrivacySandboxBridgeJni.get().getFirstPartySetOwner(memberOrigin);
     }
 
+    public static void topicsToggleChanged(boolean newValue) {
+        PrivacySandboxBridgeJni.get().topicsToggleChanged(newValue);
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isPrivacySandboxEnabled();
@@ -120,5 +124,6 @@ public class PrivacySandboxBridge {
         void setFledgeJoiningAllowed(String topFrameEtldPlus1, boolean allowed);
         int getRequiredPromptType();
         void promptActionOccurred(int action);
+        void topicsToggleChanged(boolean newValue);
     }
 }
