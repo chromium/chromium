@@ -77,12 +77,11 @@ struct GenericHashTraitsBase {
   static const T& Peek(const T& value) { return value; }
 
   // Defines the empty value which is used to fill unused slots in the hash
-  // table. A hash traits type must define this function if its
-  // kEmptyValueIsZero is false or IsEmptyValue() is not defined.
-  // This function is preferred to IsEmptyValue() when the empty value can be
-  // represented with a value that can be safely and trivially compared/assigned
-  // to another value.
-  static T EmptyValue() = delete;
+  // table. This function is preferred to IsEmptyValue() when the empty value
+  // can be represented with a value that can be safely and trivially
+  // compared/assigned to another value. By default, the default constructor
+  // is used.
+  static T EmptyValue() { return T(); }
 
   // Checks if a given value is an empty value. If this is defined, the hash
   // table will call this function (through IsHashTraitsEmptyValue()) to check
@@ -176,7 +175,7 @@ struct IntOrEnumHashTraits : internal::GenericHashTraitsBase<T> {
 template <typename T, T empty_value = 0, T deleted_value = static_cast<T>(-1)>
 struct IntHashTraits
     : internal::IntOrEnumHashTraits<T, empty_value, deleted_value> {
-  static_assert(std::is_integral<T>::value);
+  static_assert(std::is_integral_v<T>);
 };
 
 // Default traits for an enum type.  0 is very popular, and -1 is also popular.
@@ -184,39 +183,32 @@ struct IntHashTraits
 template <typename T, auto empty_value = -128, auto deleted_value = -127>
 struct EnumHashTraits
     : internal::IntOrEnumHashTraits<T, empty_value, deleted_value> {
-  static_assert(std::is_enum<T>::value);
+  static_assert(std::is_enum_v<T>);
 };
 
 template <typename T, typename Enable = void>
 struct GenericHashTraits : internal::GenericHashTraitsBase<T> {
-  static_assert(!std::is_integral<T>::value);
-  static_assert(!std::is_enum<T>::value);
-  static T EmptyValue() { return T(); }
+  static_assert(!std::is_integral_v<T>);
+  static_assert(!std::is_enum_v<T>);
+  static_assert(!std::is_floating_point_v<T>);
 };
 
 template <typename T>
-struct GenericHashTraits<T, std::enable_if_t<std::is_integral<T>::value>>
-    : public IntHashTraits<T> {};
+struct GenericHashTraits<T, std::enable_if_t<std::is_integral_v<T>>>
+    : IntHashTraits<T> {};
 
 template <typename T>
-struct GenericHashTraits<T, std::enable_if_t<std::is_enum<T>::value>>
-    : public EnumHashTraits<T> {};
+struct GenericHashTraits<T, std::enable_if_t<std::is_enum_v<T>>>
+    : EnumHashTraits<T> {};
 
 template <typename T>
-struct HashTraits : GenericHashTraits<T> {};
-
-template <typename T>
-struct FloatHashTraits : GenericHashTraits<T> {
+struct GenericHashTraits<T, std::enable_if_t<std::is_floating_point_v<T>>>
+    : internal::GenericHashTraitsBase<T> {
   static constexpr T EmptyValue() { return std::numeric_limits<T>::infinity(); }
   static constexpr T DeletedValue() {
     return -std::numeric_limits<T>::infinity();
   }
 };
-
-template <>
-struct HashTraits<float> : FloatHashTraits<float> {};
-template <>
-struct HashTraits<double> : FloatHashTraits<double> {};
 
 // Default integral traits disallow both 0 and max as keys -- use these traits
 // to allow zero and disallow max - 1.
@@ -227,34 +219,14 @@ struct IntWithZeroKeyHashTraits
                     std::numeric_limits<T>::max() - 1> {};
 
 template <typename P>
-struct HashTraits<P*> : GenericHashTraits<P*> {
+struct GenericHashTraits<P*> : internal::GenericHashTraitsBase<P*> {
   static constexpr bool kEmptyValueIsZero = true;
   static constexpr P* DeletedValue() { return reinterpret_cast<P*>(-1); }
 };
 
-template <typename T>
-struct SimpleClassHashTraits : GenericHashTraits<T> {
-  static constexpr bool kEmptyValueIsZero = true;
-  template <typename U = void>
-  struct NeedsToForbidGCOnMove {
-    static constexpr bool value = false;
-  };
-  static void ConstructDeletedValue(T& slot, bool) {
-    new (NotNullTag::kNotNull, &slot) T(kHashTableDeletedValue);
-  }
-  static bool IsDeletedValue(const T& value) {
-    return value.IsHashTableDeletedValue();
-  }
-};
-
-// Default traits disallow both 0 and max as keys -- use these traits to allow
-// all values as keys.
-template <typename T>
-struct HashTraits<IntegralWithAllKeys<T>>
-    : SimpleClassHashTraits<IntegralWithAllKeys<T>> {};
-
 template <typename P>
-struct HashTraits<scoped_refptr<P>> : SimpleClassHashTraits<scoped_refptr<P>> {
+struct GenericHashTraits<scoped_refptr<P>>
+    : internal::GenericHashTraitsBase<scoped_refptr<P>> {
   static_assert(sizeof(void*) == sizeof(scoped_refptr<P>),
                 "Unexpected RefPtr size."
                 " RefPtr needs to be single pointer to support deleted value.");
@@ -273,6 +245,7 @@ struct HashTraits<scoped_refptr<P>> : SimpleClassHashTraits<scoped_refptr<P>> {
     P* ptr_;
   };
 
+  static constexpr bool kEmptyValueIsZero = true;
   static bool IsEmptyValue(const scoped_refptr<P>& value) { return !value; }
 
   static bool IsDeletedValue(const scoped_refptr<P>& value) {
@@ -296,11 +269,17 @@ struct HashTraits<scoped_refptr<P>> : SimpleClassHashTraits<scoped_refptr<P>> {
 
   typedef P* PeekOutType;
   static PeekOutType Peek(const scoped_refptr<P>& value) { return value.get(); }
+
+  template <typename = void>
+  struct NeedsToForbidGCOnMove {
+    static constexpr bool value = false;
+  };
 };
 
 template <typename T>
-struct HashTraits<std::unique_ptr<T>>
-    : SimpleClassHashTraits<std::unique_ptr<T>> {
+struct GenericHashTraits<std::unique_ptr<T>>
+    : internal::GenericHashTraitsBase<std::unique_ptr<T>> {
+  static constexpr bool kEmptyValueIsZero = true;
   static bool IsEmptyValue(const std::unique_ptr<T>& value) { return !value; }
 
   using PeekInType = T*;
@@ -323,10 +302,46 @@ struct HashTraits<std::unique_ptr<T>>
   static bool IsDeletedValue(const std::unique_ptr<T>& value) {
     return value.get() == reinterpret_cast<T*>(1u);
   }
+
+  template <typename = void>
+  struct NeedsToForbidGCOnMove {
+    static constexpr bool value = false;
+  };
+};
+
+// HashTraits<T> is defined as GenericHashTraits<T> by default.
+// The separation of HashTraits<T> and GenericHashTraits<T> is to allow
+// a specialized HashTraits<T> to inherit GenericHashTraits<T>.
+template <typename T>
+struct HashTraits : GenericHashTraits<T> {};
+
+// This hash traits type requires the following methods in class T, unless
+// the corresponding hash traits method is overridden:
+//   // Creates the deleted value, for ConstructDeletedValue().
+//   T(HashTableDeletedValueType);
+//   // Checks if `this` is a deleted value, for IsDeletedValue().
+//   bool IsHashTableDeletedValue() const;
+// Also requires T() and operator== if EmptyValue() and Equal() are not
+// overridden, respectively, which is the same as GenericHashTraits<T>.
+template <typename T>
+struct SimpleClassHashTraits : GenericHashTraits<T> {
+  static_assert(std::is_class_v<T>);
+  static constexpr bool kEmptyValueIsZero = true;
+  template <typename U = void>
+  struct NeedsToForbidGCOnMove {
+    static constexpr bool value = false;
+  };
+  static void ConstructDeletedValue(T& slot, bool) {
+    new (NotNullTag::kNotNull, &slot) T(kHashTableDeletedValue);
+  }
+  static bool IsDeletedValue(const T& value) {
+    return value.IsHashTableDeletedValue();
+  }
 };
 
 template <>
 struct HashTraits<String> : SimpleClassHashTraits<String> {
+  // Defined in string_hash.h.
   static bool IsEmptyValue(const String&);
   static bool IsDeletedValue(const String& value);
   static void ConstructDeletedValue(String& slot, bool zero_value);
@@ -543,6 +558,7 @@ struct HashTraits<KeyValuePair<Key, Value>>
 }  // namespace WTF
 
 using WTF::EnumHashTraits;
+using WTF::GenericHashTraits;
 using WTF::HashTraits;
 using WTF::IntHashTraits;
 using WTF::IntWithZeroKeyHashTraits;
