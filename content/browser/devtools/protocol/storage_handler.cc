@@ -194,14 +194,14 @@ class StorageHandler::IndexedDBObserver
 
   ~IndexedDBObserver() override { DCHECK_CURRENTLY_ON(BrowserThread::UI); }
 
-  void TrackOrigin(const blink::StorageKey& storage_key) {
+  void TrackStorageKey(const blink::StorageKey& storage_key) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (storage_keys_.find(storage_key) != storage_keys_.end())
       return;
     storage_keys_.insert(storage_key);
   }
 
-  void UntrackOrigin(const blink::StorageKey& storage_key) {
+  void UntrackStorageKey(const blink::StorageKey& storage_key) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     storage_keys_.erase(storage_key);
   }
@@ -543,8 +543,6 @@ void StorageHandler::OverrideQuotaForOrigin(
                      std::move(callback)));
 }
 
-// TODO(https://crbug.com/1199077): We should think about how this function
-// should be exposed when migrating to storage keys.
 Response StorageHandler::TrackCacheStorageForOrigin(
     const std::string& origin_string) {
   if (!storage_partition_)
@@ -573,8 +571,6 @@ Response StorageHandler::TrackCacheStorageForStorageKey(
   return Response::Success();
 }
 
-// TODO(https://crbug.com/1199077): We should think about how this function
-// should be exposed when migrating to storage keys.
 Response StorageHandler::UntrackCacheStorageForOrigin(
     const std::string& origin_string) {
   if (!storage_partition_)
@@ -613,9 +609,7 @@ Response StorageHandler::TrackIndexedDBForOrigin(
   if (!origin_url.is_valid() || origin.opaque())
     return Response::InvalidParams(origin_string + " is not a valid URL");
 
-  // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
-  // function once the Chrome DevTools Protocol (CDP) supports StorageKey.
-  GetIndexedDBObserver()->TrackOrigin(blink::StorageKey(origin));
+  GetIndexedDBObserver()->TrackStorageKey(blink::StorageKey(origin));
   return Response::Success();
 }
 
@@ -629,7 +623,7 @@ Response StorageHandler::TrackIndexedDBForStorageKey(
   if (!key)
     return Response::InvalidParams("Unable to deserialize storage key");
 
-  GetIndexedDBObserver()->TrackOrigin(*key);
+  GetIndexedDBObserver()->TrackStorageKey(*key);
   return Response::Success();
 }
 
@@ -643,9 +637,7 @@ Response StorageHandler::UntrackIndexedDBForOrigin(
   if (!origin_url.is_valid() || origin.opaque())
     return Response::InvalidParams(origin_string + " is not a valid URL");
 
-  // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
-  // function once the Chrome DevTools Protocol (CDP) supports StorageKey.
-  GetIndexedDBObserver()->UntrackOrigin(blink::StorageKey(origin));
+  GetIndexedDBObserver()->UntrackStorageKey(blink::StorageKey(origin));
   return Response::Success();
 }
 
@@ -659,7 +651,7 @@ Response StorageHandler::UntrackIndexedDBForStorageKey(
   if (!key)
     return Response::InvalidParams("Unable to deserialize storage key");
 
-  GetIndexedDBObserver()->UntrackOrigin(*key);
+  GetIndexedDBObserver()->UntrackStorageKey(*key);
   return Response::Success();
 }
 
