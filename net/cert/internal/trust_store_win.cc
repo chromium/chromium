@@ -81,6 +81,30 @@ bool IsCertTrustedForServerAuth(PCCERT_CONTEXT cert) {
 
 }  // namespace
 
+TrustStoreWin::CertStores::CertStores() = default;
+TrustStoreWin::CertStores::~CertStores() = default;
+TrustStoreWin::CertStores::CertStores(CertStores&& other) = default;
+TrustStoreWin::CertStores& TrustStoreWin::CertStores::operator=(
+    CertStores&& other) = default;
+
+// static
+TrustStoreWin::CertStores
+TrustStoreWin::CertStores::CreateInMemoryStoresForTesting() {
+  TrustStoreWin::CertStores stores;
+  stores.roots = crypto::ScopedHCERTSTORE(CertOpenStore(
+      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+  stores.intermediates = crypto::ScopedHCERTSTORE(CertOpenStore(
+      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+  stores.disallowed = crypto::ScopedHCERTSTORE(CertOpenStore(
+      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+  return stores;
+}
+
+TrustStoreWin::CertStores
+TrustStoreWin::CertStores::CreateNullStoresForTesting() {
+  return TrustStoreWin::CertStores();
+}
+
 class TrustStoreWin::Impl {
  public:
   // Creates a TrustStoreWin.
@@ -183,14 +207,11 @@ class TrustStoreWin::Impl {
   // all_certs_store should be a combination of root_cert_store and
   // intermediate_cert_store, but we ask callers to explicitly pass this in so
   // that all the error checking can happen outside of the constructor.
-  Impl(crypto::ScopedHCERTSTORE root_cert_store,
-       crypto::ScopedHCERTSTORE intermediate_cert_store,
-       crypto::ScopedHCERTSTORE disallowed_cert_store,
-       crypto::ScopedHCERTSTORE all_certs_store)
-      : root_cert_store_(std::move(root_cert_store)),
-        intermediate_cert_store_(std::move(intermediate_cert_store)),
+  Impl(CertStores stores, crypto::ScopedHCERTSTORE all_certs_store)
+      : root_cert_store_(std::move(stores.roots)),
+        intermediate_cert_store_(std::move(stores.intermediates)),
         all_certs_store_(std::move(all_certs_store)),
-        disallowed_cert_store_(std::move(disallowed_cert_store)) {}
+        disallowed_cert_store_(std::move(stores.disallowed)) {}
 
   ~Impl() = default;
   Impl(const Impl& other) = delete;
@@ -313,26 +334,22 @@ TrustStoreWin::Impl* TrustStoreWin::MaybeInitializeAndGetImpl() {
 }
 
 std::unique_ptr<TrustStoreWin> TrustStoreWin::CreateForTesting(
-    crypto::ScopedHCERTSTORE root_cert_store,
-    crypto::ScopedHCERTSTORE intermediate_cert_store,
-    crypto::ScopedHCERTSTORE disallowed_cert_store) {
+    CertStores stores) {
   crypto::ScopedHCERTSTORE all_certs_store(
       CertOpenStore(CERT_STORE_PROV_COLLECTION, 0, NULL, 0, nullptr));
 
-  if (all_certs_store.get() && intermediate_cert_store.get()) {
-    CertAddStoreToCollection(all_certs_store.get(),
-                             intermediate_cert_store.get(),
+  if (all_certs_store.get() && stores.intermediates.get()) {
+    CertAddStoreToCollection(all_certs_store.get(), stores.intermediates.get(),
                              /*dwUpdateFlags=*/0, /*dwPriority=*/0);
   }
-  if (all_certs_store.get() && root_cert_store.get()) {
-    CertAddStoreToCollection(all_certs_store.get(), root_cert_store.get(),
+  if (all_certs_store.get() && stores.roots.get()) {
+    CertAddStoreToCollection(all_certs_store.get(), stores.roots.get(),
                              /*dwUpdateFlags=*/0, /*dwPriority=*/0);
   }
 
   return base::WrapUnique(
       new TrustStoreWin(std::make_unique<TrustStoreWin::Impl>(
-          std::move(root_cert_store), std::move(intermediate_cert_store),
-          std::move(disallowed_cert_store), std::move(all_certs_store))));
+          std::move(stores), std::move(all_certs_store))));
 }
 
 TrustStoreWin::TrustStoreWin(std::unique_ptr<Impl> impl)

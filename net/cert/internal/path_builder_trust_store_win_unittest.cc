@@ -252,24 +252,19 @@ bool AreCertsEq(const std::shared_ptr<const ParsedCertificate> cert_1,
 // Test to ensure that path building stops when an intermediate cert is
 // encountered that is not usable for TLS because it is explicitly distrusted.
 TEST_F(PathBuilderMultiRootWindowsTest, TrustStoreWinOnlyFindTrustedTLSPath) {
-  crypto::ScopedHCERTSTORE root_store(CertOpenStore(
-      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
-  crypto::ScopedHCERTSTORE intermediate_store(CertOpenStore(
-      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
-  crypto::ScopedHCERTSTORE disallowed_store(CertOpenStore(
-      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+  TrustStoreWin::CertStores stores =
+      TrustStoreWin::CertStores::CreateInMemoryStoresForTesting();
 
-  AddToStoreWithEKURestriction(root_store.get(), d_by_d_,
+  AddToStoreWithEKURestriction(stores.roots.get(), d_by_d_,
                                szOID_PKIX_KP_SERVER_AUTH);
-  AddToStoreWithEKURestriction(root_store.get(), e_by_e_,
+  AddToStoreWithEKURestriction(stores.roots.get(), e_by_e_,
                                szOID_PKIX_KP_SERVER_AUTH);
-  AddToStoreWithEKURestriction(intermediate_store.get(), c_by_e_,
+  AddToStoreWithEKURestriction(stores.intermediates.get(), c_by_e_,
                                szOID_PKIX_KP_SERVER_AUTH);
-  AddToStoreWithEKURestriction(disallowed_store.get(), c_by_d_, nullptr);
+  AddToStoreWithEKURestriction(stores.disallowed.get(), c_by_d_, nullptr);
 
-  std::unique_ptr<TrustStoreWin> trust_store = TrustStoreWin::CreateForTesting(
-      std::move(root_store), std::move(intermediate_store),
-      std::move(disallowed_store));
+  std::unique_ptr<TrustStoreWin> trust_store =
+      TrustStoreWin::CreateForTesting(std::move(stores));
 
   CertPathBuilder path_builder(
       b_by_c_, trust_store.get(), &delegate_, time_, KeyPurpose::ANY_EKU,
@@ -299,19 +294,14 @@ TEST_F(PathBuilderMultiRootWindowsTest, TrustStoreWinOnlyFindTrustedTLSPath) {
 // path, then path building should fail, even if the root is enabled for
 // TLS.
 TEST_F(PathBuilderMultiRootWindowsTest, TrustStoreWinNoPathEKURestrictions) {
-  crypto::ScopedHCERTSTORE root_store(CertOpenStore(
-      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
-  crypto::ScopedHCERTSTORE intermediate_store(CertOpenStore(
-      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
-  crypto::ScopedHCERTSTORE disallowed_store(CertOpenStore(
-      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+  TrustStoreWin::CertStores stores =
+      TrustStoreWin::CertStores::CreateInMemoryStoresForTesting();
 
-  AddToStoreWithEKURestriction(root_store.get(), d_by_d_,
+  AddToStoreWithEKURestriction(stores.roots.get(), d_by_d_,
                                szOID_PKIX_KP_SERVER_AUTH);
-  AddToStoreWithEKURestriction(disallowed_store.get(), c_by_d_, nullptr);
-  std::unique_ptr<TrustStoreWin> trust_store = TrustStoreWin::CreateForTesting(
-      std::move(root_store), std::move(intermediate_store),
-      std::move(disallowed_store));
+  AddToStoreWithEKURestriction(stores.disallowed.get(), c_by_d_, nullptr);
+  std::unique_ptr<TrustStoreWin> trust_store =
+      TrustStoreWin::CreateForTesting(std::move(stores));
 
   CertPathBuilder path_builder(
       b_by_c_, trust_store.get(), &delegate_, time_, KeyPurpose::ANY_EKU,

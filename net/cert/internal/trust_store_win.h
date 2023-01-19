@@ -20,6 +20,27 @@ namespace net {
 // TODO(https://crbug.com/1239270): confirm this is thread safe.
 class NET_EXPORT TrustStoreWin : public TrustStore {
  public:
+  struct NET_EXPORT_PRIVATE CertStores {
+    ~CertStores();
+    CertStores(CertStores&& other);
+    CertStores& operator=(CertStores&& other);
+
+    // Create a CertStores object with the stores pre-initialized with
+    // in-memory cert stores for testing purposes.
+    static CertStores CreateInMemoryStoresForTesting();
+
+    // Create a CertStores object with null cert store pointers for testing
+    // purposes.
+    static CertStores CreateNullStoresForTesting();
+
+    crypto::ScopedHCERTSTORE roots;
+    crypto::ScopedHCERTSTORE intermediates;
+    crypto::ScopedHCERTSTORE disallowed;
+
+   private:
+    CertStores();
+  };
+
   // Creates a TrustStoreWin.
   TrustStoreWin();
 
@@ -31,10 +52,7 @@ class NET_EXPORT TrustStoreWin : public TrustStore {
   // as if it's the source of truth for roots for `GetTrust,
   // and `intermediate_cert_store` as an extra store (in addition to
   // root_cert_store) for locating certificates during `SyncGetIssuersOf`.
-  static std::unique_ptr<TrustStoreWin> CreateForTesting(
-      crypto::ScopedHCERTSTORE root_cert_store,
-      crypto::ScopedHCERTSTORE intermediate_cert_store,
-      crypto::ScopedHCERTSTORE disallowed_cert_store);
+  static std::unique_ptr<TrustStoreWin> CreateForTesting(CertStores stores);
 
   // Loads user settings from Windows CertStores. If there are errors,
   // the underlyingTrustStoreWin object may not read all Windows
