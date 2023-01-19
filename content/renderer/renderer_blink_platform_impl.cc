@@ -489,11 +489,9 @@ std::unique_ptr<WebAudioDevice> RendererBlinkPlatformImpl::CreateAudioDevice(
     layout = media::CHANNEL_LAYOUT_DISCRETE;
   }
 
-  // Using `UnguessableToken()` prevents from guessing the session ID to gain
-  // access to a capture stream.
-  return RendererWebAudioDeviceImpl::Create(
-      sink_descriptor, layout, number_of_output_channels, latency_hint,
-      callback, /*session_id=*/base::UnguessableToken());
+  return RendererWebAudioDeviceImpl::Create(sink_descriptor, layout,
+                                            number_of_output_channels,
+                                            latency_hint, callback);
 }
 
 bool RendererBlinkPlatformImpl::DecodeAudioFileData(
