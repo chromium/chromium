@@ -509,10 +509,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.LECredential.{Operation}{Action}"
-    enum="CryptohomeLECredError" expires_after="2023-01-22">
+    enum="CryptohomeLECredError" expires_after="2023-07-22">
   <owner>pmalani@chromium.org</owner>
   <owner>apronin@chromium.org</owner>
-  <owner>mnissler@chromium.org</owner>
   <owner>allenwebb@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -544,7 +543,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.LegacyCodePathUsage.{Location}"
-    enum="BooleanCodePathUsage" expires_after="2022-01-09">
+    enum="BooleanCodePathUsage" expires_after="2023-07-09">
   <owner>hardikgoyal@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -907,7 +906,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TpmResults" enum="CryptohomeTpmResults"
-    expires_after="2022-10-30">
+    expires_after="2023-10-30">
   <owner>afakhry@chromium.org</owner>
   <summary>
     The errors resulting from interacting with the Trusted Platform Module (TPM)
@@ -1121,7 +1120,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="CryptohomeClient" units="ms" expires_after="2022-07-24">
+<histogram name="CryptohomeClient" units="ms" expires_after="2023-07-24">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
