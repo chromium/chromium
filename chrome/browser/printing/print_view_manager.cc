@@ -384,6 +384,11 @@ void PrintViewManager::SetupScriptedPrintPreview(
     return;
   }
 
+  // Since window.print() is renderer-initiated, explicitly establish a
+  // connection to the RenderFrame here. Without this, later operations that
+  // expect the established connection can unexpected fail.
+  GetPrintRenderFrame(rfh);
+
   DCHECK(!print_preview_rfh_);
   print_preview_rfh_ = rfh;
   print_preview_state_ = SCRIPTED_PREVIEW;
