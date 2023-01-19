@@ -181,9 +181,13 @@ void ThemeSource::StartDataRequest(
 }
 
 std::string ThemeSource::GetMimeType(const GURL& url) {
-  std::string parsed_path;
-  webui::ParsePathAndScale(url, &parsed_path, nullptr);
-  return IsNewTabCssPath(parsed_path) ? "text/css" : "image/png";
+  const base::StringPiece file_path = url.path_piece();
+
+  if (base::EndsWith(file_path, ".css", base::CompareCase::INSENSITIVE_ASCII)) {
+    return "text/css";
+  }
+
+  return "image/png";
 }
 
 bool ThemeSource::AllowCaching() {

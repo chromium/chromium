@@ -57,11 +57,6 @@ void ParsePathAndImageSpec(const GURL& url,
                            float* scale_factor,
                            int* frame_index);
 
-// Parses a URL containing some path @{scale}x. If it does not contain a scale
-// factor then the default scale factor is returned.
-COMPONENT_EXPORT(UI_BASE)
-void ParsePathAndScale(const GURL& url, std::string* path, float* scale_factor);
-
 // Helper function to set some default values (e.g., font family, size,
 // language, and text direction) into the given dictionary. Requires an
 // application locale (i.e. g_browser_process->GetApplicationLocale()).

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <stddef.h>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
@@ -74,14 +75,26 @@ class WebUISourcesTest : public testing::Test {
 };
 
 TEST_F(WebUISourcesTest, ThemeSourceMimeTypes) {
-  EXPECT_EQ(
-      theme_source()->GetMimeType(GURL("chrome://theme/css/new_tab_theme.css")),
-      "text/css");
-  EXPECT_EQ(theme_source()->GetMimeType(
-                GURL("chrome://theme/css/new_tab_theme.css?foo")),
-            "text/css");
-  EXPECT_EQ(theme_source()->GetMimeType(GURL("chrome://theme/WRONGURL")),
-            "image/png");
+  std::vector<std::string> css_urls{
+      "chrome://theme/css/new_tab_theme.css",
+      "chrome://theme/css/new_tab_theme.css?foo",
+      "chrome://theme/colors.css?sets.css",
+      "chrome://theme/colors.css?sets.css=ui",
+  };
+
+  for (auto url : css_urls) {
+    EXPECT_EQ(theme_source()->GetMimeType(GURL(url)), "text/css");
+  }
+
+  std::vector<std::string> png_urls{
+      "chrome://theme/current-channel-logo",
+      "chrome://theme/other.png",
+      "chrome://theme/WRONGURL",
+  };
+
+  for (auto url : png_urls) {
+    EXPECT_EQ(theme_source()->GetMimeType(GURL(url)), "image/png");
+  }
 }
 
 TEST_F(WebUISourcesTest, ThemeSourceImages) {
