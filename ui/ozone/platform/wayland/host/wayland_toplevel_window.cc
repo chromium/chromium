@@ -232,7 +232,19 @@ void WaylandToplevelWindow::Maximize() {
 }
 
 void WaylandToplevelWindow::Minimize() {
-  SetWindowState(PlatformWindowState::kMinimized);
+  // Do not allow to minimize the window if it has never been configured. That
+  // is, if the browser is minimized (there are at least two windows) and the
+  // session is restored after crash or logout, which forced the browser to
+  // close, the session will only restore one window, while all the other
+  // windows will be set to minimized. That means windows will be never ack
+  // configured and they will stay forever minimized as a Wayland compositor
+  // will not activate those windows (upon user interaction) because the before
+  // mentioned initial configure/ack_configure messaging hasn't happened.
+  if (IsSurfaceConfigured()) {
+    SetWindowState(PlatformWindowState::kMinimized);
+  } else {
+    SetWindowState(PlatformWindowState::kNormal);
+  }
 }
 
 void WaylandToplevelWindow::Restore() {
