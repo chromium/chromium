@@ -63,8 +63,9 @@ namespace blink {
 
 WebFontPrewarmer* FontCache::prewarmer_ = nullptr;
 
-HashMap<String, sk_sp<SkTypeface>, CaseFoldingHash>*
-    FontCache::sideloaded_fonts_ = nullptr;
+using SideloadedFontsMap =
+    HashMap<String, sk_sp<SkTypeface>, CaseFoldingHashTraits<String>>;
+SideloadedFontsMap* FontCache::sideloaded_fonts_ = nullptr;
 
 // Cached system font metrics.
 AtomicString* FontCache::menu_font_family_name_ = nullptr;
@@ -91,7 +92,7 @@ int32_t EnsureMinimumFontHeightIfNeeded(int32_t font_height) {
 // we use FreeType here to parse the font's postscript name.
 sk_sp<SkTypeface> FindUniqueFontNameFromSideloadedFonts(
     const String& font_name,
-    HashMap<String, sk_sp<SkTypeface>, CaseFoldingHash>* sideloaded_fonts) {
+    SideloadedFontsMap* sideloaded_fonts) {
   CHECK(sideloaded_fonts);
   FT_Library library;
   FT_Init_FreeType(&library);
@@ -174,8 +175,9 @@ void FontCache::PrewarmFamily(const AtomicString& family_name) {
 
 // static
 void FontCache::AddSideloadedFontForTesting(sk_sp<SkTypeface> typeface) {
-  if (!sideloaded_fonts_)
-    sideloaded_fonts_ = new HashMap<String, sk_sp<SkTypeface>, CaseFoldingHash>;
+  if (!sideloaded_fonts_) {
+    sideloaded_fonts_ = new SideloadedFontsMap();
+  }
   SkString name;
   typeface->getFamilyName(&name);
   String name_wtf(name.c_str());

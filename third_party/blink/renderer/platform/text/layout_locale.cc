@@ -24,7 +24,9 @@ namespace blink {
 namespace {
 
 struct PerThreadData {
-  HashMap<AtomicString, scoped_refptr<LayoutLocale>, CaseFoldingHash>
+  HashMap<AtomicString,
+          scoped_refptr<LayoutLocale>,
+          CaseFoldingHashTraits<AtomicString>>
       locale_map;
   const LayoutLocale* default_locale = nullptr;
   const LayoutLocale* system_locale = nullptr;

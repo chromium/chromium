@@ -57,7 +57,7 @@ void DatabaseAuthorizer::ResetDeletes() {
 }
 
 namespace {
-using FunctionNameList = HashSet<String, CaseFoldingHash>;
+using FunctionNameList = HashSet<String, CaseFoldingHashTraits<String>>;
 
 const FunctionNameList& AllowedFunctions() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(

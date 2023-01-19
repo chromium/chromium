@@ -57,9 +57,11 @@ AXObjectCache* AXObjectCache::Create(Document& document,
 
 namespace {
 
-typedef HashSet<String, CaseFoldingHash> ARIAWidgetSet;
+using ARIAWidgetSet = HashSet<String, CaseFoldingHashTraits<String>>;
 
-const char* g_aria_widgets[] = {
+const ARIAWidgetSet& ARIARoleWidgetSet() {
+  // clang-format off
+  DEFINE_STATIC_LOCAL(ARIAWidgetSet, widget_set, ({
     // From http://www.w3.org/TR/wai-aria/roles#widget_roles
     "alert", "alertdialog", "button", "checkbox", "dialog", "gridcell", "link",
     "log", "marquee", "menuitem", "menuitemcheckbox", "menuitemradio", "option",
@@ -68,24 +70,20 @@ const char* g_aria_widgets[] = {
     // Composite user interface widgets.
     // This list is also from the w3.org site referenced above.
     "combobox", "grid", "listbox", "menu", "menubar", "radiogroup", "tablist",
-    "tree", "treegrid"};
-
-static ARIAWidgetSet* CreateARIARoleWidgetSet() {
-  ARIAWidgetSet* widget_set = new HashSet<String, CaseFoldingHash>();
-  for (size_t i = 0; i < std::size(g_aria_widgets); ++i)
-    widget_set->insert(String(g_aria_widgets[i]));
+    "tree", "treegrid",
+  }));
+  // clang-format on
   return widget_set;
 }
 
 bool IncludesARIAWidgetRole(const String& role) {
-  static const HashSet<String, CaseFoldingHash>* role_set =
-      CreateARIARoleWidgetSet();
-
+  const ARIAWidgetSet& role_set = ARIARoleWidgetSet();
   Vector<String> role_vector;
   role.Split(' ', role_vector);
   for (const auto& child : role_vector) {
-    if (role_set->Contains(child))
+    if (role_set.Contains(child)) {
       return true;
+    }
   }
   return false;
 }

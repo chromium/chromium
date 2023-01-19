@@ -912,8 +912,7 @@ mojom("mojom_platform") {
       types = [
         {
           mojom = "blink.mojom.FetchAPIRequestHeaders"
-          cpp =
-              "::WTF::HashMap<::WTF::String, WTF::String, WTF::CaseFoldingHash>"
+          cpp = "::WTF::HashMap<::WTF::String, WTF::String, WTF::CaseFoldingHashTraits<WTF::String>>"
           move_only = true
         },
       ]

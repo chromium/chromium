@@ -27,8 +27,9 @@
 
 namespace WTF {
 
-// The GetHash() functions on CaseFoldingHash do not support null strings.
-// find(), Contains(), and insert() on HashMap<String,..., CaseFoldingHash>
+// The GetHash() functions on CaseFoldingHashTraits do not support null strings.
+// find(), Contains(), and insert() on
+// HashMap<String,..., CaseFoldingHashTraits<String>>
 // cause a null-pointer dereference when passed null strings.
 class CaseFoldingHash {
   STATIC_ONLY(CaseFoldingHash);
@@ -51,8 +52,7 @@ class CaseFoldingHash {
   }
 
   static inline unsigned GetHash(const char* data, unsigned length) {
-    return CaseFoldingHash::GetHash(reinterpret_cast<const LChar*>(data),
-                                    length);
+    return GetHash(reinterpret_cast<const LChar*>(data), length);
   }
 
   static inline bool Equal(const StringImpl* a, const StringImpl* b) {
@@ -84,7 +84,7 @@ class CaseFoldingHash {
     return (a == b) || Equal(a.Impl(), b.Impl());
   }
 
-  static const bool safe_to_compare_to_empty_or_deleted = false;
+  static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 
  private:
   // Private so no one uses this in the belief that it will return the
@@ -101,8 +101,17 @@ class CaseFoldingHash {
   }
 };
 
+// T can be String, StringImpl*, scoped_refptr<StringImpl> and AtomicString.
+template <typename T>
+struct CaseFoldingHashTraits : HashTraits<T>, CaseFoldingHash {
+  using CaseFoldingHash::Equal;
+  using CaseFoldingHash::GetHash;
+  using CaseFoldingHash::kSafeToCompareToEmptyOrDeleted;
+};
+
 }  // namespace WTF
 
 using WTF::CaseFoldingHash;
+using WTF::CaseFoldingHashTraits;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_CASE_FOLDING_HASH_H_

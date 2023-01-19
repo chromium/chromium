@@ -14,21 +14,22 @@
 namespace mojo {
 
 template <>
-struct StructTraits<
-    blink::mojom::FetchAPIRequestHeadersDataView,
-    WTF::HashMap<WTF::String, WTF::String, WTF::CaseFoldingHash>> {
-  static WTF::HashMap<WTF::String, WTF::String> headers(
-      const WTF::HashMap<WTF::String, WTF::String, WTF::CaseFoldingHash>&
-          input) {
+struct StructTraits<blink::mojom::FetchAPIRequestHeadersDataView,
+                    WTF::HashMap<WTF::String,
+                                 WTF::String,
+                                 WTF::CaseFoldingHashTraits<WTF::String>>> {
+  using MapType = WTF::HashMap<WTF::String,
+                               WTF::String,
+                               WTF::CaseFoldingHashTraits<WTF::String>>;
+  static WTF::HashMap<WTF::String, WTF::String> headers(const MapType& input) {
     WTF::HashMap<WTF::String, WTF::String> map;
     for (const auto& tuple : input)
       map.insert(tuple.key, tuple.value);
     return map;
   }
 
-  static bool Read(
-      blink::mojom::FetchAPIRequestHeadersDataView in,
-      WTF::HashMap<WTF::String, WTF::String, WTF::CaseFoldingHash>* out) {
+  static bool Read(blink::mojom::FetchAPIRequestHeadersDataView in,
+                   MapType* out) {
     WTF::HashMap<WTF::String, WTF::String> in_headers;
     if (!in.ReadHeaders(&in_headers))
       return false;

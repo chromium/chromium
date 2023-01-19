@@ -193,8 +193,9 @@ struct HyphenatorLocaleData {
   const char* locale_for_exact_match = nullptr;
 };
 
-using LocaleMap =
-    HashMap<AtomicString, const HyphenatorLocaleData*, CaseFoldingHash>;
+using LocaleMap = HashMap<AtomicString,
+                          const HyphenatorLocaleData*,
+                          CaseFoldingHashTraits<AtomicString>>;
 
 static LocaleMap CreateLocaleFallbackMap() {
   // This data is from CLDR, compiled by AOSP.

@@ -251,11 +251,10 @@ using RoleHashTraits =
 constexpr wtf_size_t kNumRoles =
     static_cast<wtf_size_t>(ax::mojom::blink::Role::kMaxValue) + 1;
 
-using ARIARoleMap =
-    HashMap<String,
-            ax::mojom::blink::Role,
-            CombinedHashTraits<CaseFoldingHash, HashTraits<String>>,
-            RoleHashTraits>;
+using ARIARoleMap = HashMap<String,
+                            ax::mojom::blink::Role,
+                            CaseFoldingHashTraits<String>,
+                            RoleHashTraits>;
 
 struct RoleEntry {
   const char* role_name;
