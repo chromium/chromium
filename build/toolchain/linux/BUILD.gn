@@ -192,6 +192,11 @@ clang_toolchain("ash_clang_x64") {
     also_build_ash_chrome = false
     chromeos_is_browser_only = false
     use_clang_coverage = false
+
+    # Never build ash with asan. It is too slow for builders and cause
+    # tests being flaky.
+    is_asan = false
+    is_lsan = false
   }
 }
 
