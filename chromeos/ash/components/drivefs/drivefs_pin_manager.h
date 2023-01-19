@@ -110,13 +110,7 @@ struct SetupProgress {
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
     : public DriveFsHostObserver {
  public:
-  using SpaceResult = base::OnceCallback<void(int64_t)>;
-  using SpaceGetter =
-      base::RepeatingCallback<void(const base::FilePath&, SpaceResult)>;
-
-  DriveFsPinManager(const base::FilePath& profile_path,
-                    mojom::DriveFs* drivefs_interface,
-                    SpaceGetter get_free_space = {});
+  DriveFsPinManager(base::FilePath profile_path, mojom::DriveFs* drivefs);
 
   DriveFsPinManager(const DriveFsPinManager&) = delete;
   DriveFsPinManager& operator=(const DriveFsPinManager&) = delete;
@@ -126,10 +120,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   // Starts up the manager, which will first search for any unpinned items and
   // pin them (within the users My drive) then turn to a "monitoring" phase
   // which will ensure any new files created and switched to pinned state
-  // automatically. The complete callback will be called once the initial
-  // pinning has completed.
-  using CompletionCallback = base::OnceCallback<void(SetupStage)>;
-  void Start(CompletionCallback complete_callback = {}, bool should_pin = true);
+  // automatically.
+  void Start();
 
   // Stops the syncing setup.
   void Stop();
@@ -164,6 +156,30 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
 
   base::WeakPtr<DriveFsPinManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  // Sets the function that retrieves the free space. For tests only.
+  using SpaceResult = base::OnceCallback<void(int64_t)>;
+  using SpaceGetter =
+      base::RepeatingCallback<void(const base::FilePath&, SpaceResult)>;
+  void SetSpaceGetter(SpaceGetter f) { space_getter_ = std::move(f); }
+
+  // Sets the completion callback, which will be called once the initial pinning
+  // has completed.
+  using CompletionCallback = base::OnceCallback<void(SetupStage)>;
+  void SetCompletionCallback(CompletionCallback f) {
+    completion_callback_ = std::move(f);
+  }
+
+  // Sets the flag controlling whether the feature should actually pin files
+  // (default), or whether it should stop after checking the space requirements.
+  void ShouldPin(const bool b) { should_pin_ = b; }
+
+  // Sets the flag controlling whether the feature should regularly check the
+  // status of files that have been pinned but that haven't seen any progress
+  // yet.
+  void ShouldCheckStalledFiles(const bool b) {
+    should_check_stalled_files_ = b;
   }
 
  private:
@@ -247,7 +263,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   // ensure they are all still not available offline (i.e. still syncing). In
   // certain cases (e.g. hosted docs like gdocs) they will not emit a syncing
   // status update but will get pinned.
-  void CheckUnstartedFiles();
+  void CheckStalledFiles();
 
   // When an item goes to completed, it doesn't emit the final chunk of progress
   // nor it's final size, to ensure progress is adequately retrieved, this
@@ -267,16 +283,20 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
 
   // Should the feature actually pin files, or should it stop after checking the
   // space requirements?
-  bool should_pin_ = false;
+  bool should_pin_ = true;
 
-  CompletionCallback complete_callback_;
-  const SpaceGetter get_free_space_;
+  // Should the feature regularly check the status of files that have been
+  // pinned but that haven't seen any progress yet?
+  bool should_check_stalled_files_ = false;
+
+  SpaceGetter space_getter_;
+  CompletionCallback completion_callback_;
 
   SetupProgress progress_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::ObserverList<Observer> observers_;
 
   const base::FilePath profile_path_;
-  const raw_ptr<mojom::DriveFs> drivefs_interface_;
+  const raw_ptr<mojom::DriveFs> drivefs_;
   mojo::Remote<mojom::SearchQuery> search_query_;
   base::ElapsedTimer timer_;
 

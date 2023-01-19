@@ -455,28 +455,23 @@ bool DriveFsPinManager::MarkInProgress(const StableId id,
   return true;
 }
 
-DriveFsPinManager::DriveFsPinManager(const base::FilePath& profile_path,
-                                     mojom::DriveFs* drivefs_interface,
-                                     SpaceGetter get_free_space)
-    : get_free_space_(get_free_space ? std::move(get_free_space)
-                                     : base::BindRepeating(&GetFreeSpace)),
-      profile_path_(profile_path),
-      drivefs_interface_(drivefs_interface) {}
+DriveFsPinManager::DriveFsPinManager(base::FilePath profile_path,
+                                     mojom::DriveFs* const drivefs)
+    : space_getter_(base::BindRepeating(&GetFreeSpace)),
+      profile_path_(std::move(profile_path)),
+      drivefs_(drivefs) {
+  DCHECK(drivefs_);
+}
 
 DriveFsPinManager::~DriveFsPinManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!InProgress(progress_.stage)) << "Pin manager is " << progress_.stage;
 }
 
-// TODO(b/259454320): Pass through a `base::RepeatingCallback` here to enable
-// the callsite to receive progress updates.
-void DriveFsPinManager::Start(CompletionCallback complete_callback,
-                              const bool should_pin) {
+void DriveFsPinManager::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!InProgress(progress_.stage)) << "Pin manager is " << progress_.stage;
 
-  should_pin_ = should_pin;
-  complete_callback_ = std::move(complete_callback);
   progress_ = {};
   files_to_pin_.clear();
   files_to_track_.clear();
@@ -486,7 +481,7 @@ void DriveFsPinManager::Start(CompletionCallback complete_callback,
   progress_.stage = SetupStage::kCalculatingFreeSpace;
   NotifyProgress();
 
-  get_free_space_.Run(
+  space_getter_.Run(
       profile_path_.AppendASCII("GCache"),
       base::BindOnce(&DriveFsPinManager::OnFreeSpaceRetrieved, GetWeakPtr()));
 }
@@ -534,8 +529,8 @@ void DriveFsPinManager::OnFreeSpaceRetrieved(const int64_t free_space) {
   progress_.stage = SetupStage::kCalculatingRequiredSpace;
   NotifyProgress();
 
-  drivefs_interface_->StartSearchQuery(
-      search_query_.BindNewPipeAndPassReceiver(), CreateMyDriveQuery());
+  drivefs_->StartSearchQuery(search_query_.BindNewPipeAndPassReceiver(),
+                             CreateMyDriveQuery());
   search_query_->GetNextPage(base::BindOnce(
       &DriveFsPinManager::OnSearchResultForSizeCalculation, GetWeakPtr()));
 }
@@ -613,8 +608,8 @@ void DriveFsPinManager::Complete(const SetupStage stage) {
   files_to_pin_.clear();
   files_to_track_.clear();
 
-  if (complete_callback_) {
-    std::move(complete_callback_).Run(stage);
+  if (completion_callback_) {
+    std::move(completion_callback_).Run(stage);
   }
 }
 
@@ -660,12 +655,12 @@ void DriveFsPinManager::StartPinning() {
   progress_.stage = SetupStage::kSyncing;
   NotifyProgress();
 
-  // Start a periodic task that removes any files that are already available
-  // offline from the `files_to_track_` map.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&DriveFsPinManager::CheckUnstartedFiles, GetWeakPtr()),
-      kPeriodicRemovalInterval);
+  if (should_check_stalled_files_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DriveFsPinManager::CheckStalledFiles, GetWeakPtr()),
+        kPeriodicRemovalInterval);
+  }
 
   PinSomeFiles();
 }
@@ -685,9 +680,8 @@ void DriveFsPinManager::PinSomeFiles() {
     const Progress& progress = node.mapped();
     const std::string& path = progress.path;
 
-    // TODO(b/264932437) Use stable ID instead of path.
     VLOG(2) << "Pinning " << id << " " << Quote(path);
-    drivefs_interface_->SetPinnedByStableId(
+    drivefs_->SetPinnedByStableId(
         static_cast<int64_t>(id), true,
         base::BindOnce(&DriveFsPinManager::OnFilePinned, GetWeakPtr(), id,
                        path));
@@ -834,7 +828,7 @@ void DriveFsPinManager::OnFilesChanged(
     }
 
     VLOG(2) << "Checking changed " << id << " " << Quote(path);
-    drivefs_interface_->GetMetadataByStableId(
+    drivefs_->GetMetadataByStableId(
         static_cast<int64_t>(id),
         base::BindOnce(&DriveFsPinManager::OnMetadataRetrieved, GetWeakPtr(),
                        id, path));
@@ -869,14 +863,18 @@ void DriveFsPinManager::RemoveObserver(Observer* const observer) {
   VLOG(3) << "Removed observer " << observer;
 }
 
-void DriveFsPinManager::CheckUnstartedFiles() {
+void DriveFsPinManager::CheckStalledFiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!should_check_stalled_files_) {
+    return;
+  }
 
   for (const auto& [id, progress] : files_to_track_) {
     if (!progress.in_progress) {
       const std::string& path = progress.path;
       VLOG(2) << "Checking unstarted " << id << " " << Quote(path);
-      drivefs_interface_->GetMetadataByStableId(
+      drivefs_->GetMetadataByStableId(
           static_cast<int64_t>(id),
           base::BindOnce(&DriveFsPinManager::OnMetadataRetrieved, GetWeakPtr(),
                          id, path));
@@ -885,7 +883,7 @@ void DriveFsPinManager::CheckUnstartedFiles() {
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&DriveFsPinManager::CheckUnstartedFiles, GetWeakPtr()),
+      base::BindOnce(&DriveFsPinManager::CheckStalledFiles, GetWeakPtr()),
       kPeriodicRemovalInterval);
 
   PinSomeFiles();
