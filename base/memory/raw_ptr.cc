@@ -151,7 +151,7 @@ bool AsanUnownedPtrImpl::EndOfAliveAllocation(const volatile void* ptr) {
 
 bool AsanUnownedPtrImpl::LikelySmuggledScalar(const volatile void* ptr) {
   intptr_t address = reinterpret_cast<intptr_t>(ptr);
-  return address < 0x100;  // Negative or small positive.
+  return address < 0x4000;  // Negative or small positive.
 }
 
 }  // namespace base::internal
