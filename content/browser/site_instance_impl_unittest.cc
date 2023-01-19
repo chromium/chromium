@@ -1810,7 +1810,14 @@ TEST_F(SiteInstanceTest, CreateForGuest) {
     EXPECT_EQ(kGuestSiteUrl, instance2->GetSiteURL());
 }
 
-TEST_F(SiteInstanceTest, DoesSiteRequireDedicatedProcess) {
+// TODO(https://crbug.com/1377466): Test is flaky for android builders.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_DoesSiteRequireDedicatedProcess \
+  DISABLED_DoesSiteRequireDedicatedProcess
+#else
+#define MAYBE_DoesSiteRequireDedicatedProcess DoesSiteRequireDedicatedProcess
+#endif
+TEST_F(SiteInstanceTest, MAYBE_DoesSiteRequireDedicatedProcess) {
   class CustomBrowserClient : public EffectiveURLContentBrowserClient {
    public:
     CustomBrowserClient(const GURL& url_to_modify,
