@@ -39,6 +39,13 @@ class CoreTabHelper : public content::WebContentsObserver,
 
   void UpdateContentRestrictions(int content_restrictions);
 
+  // Encodes the given image to proper image format and adds to |search_args|
+  // thumbnail image content data. Returns the format the image was encoded to.
+  // Public for testing.
+  static lens::mojom::ImageFormat EncodeImageIntoSearchArgs(
+      const gfx::Image& image,
+      TemplateURLRef::SearchTermsArgs& search_args);
+
   // Open the Lens standalone experience for the image that triggered the
   // context menu. If the google lens supports opening requests in side panel,
   // then the request will open in the side panel instead of new tab.
@@ -107,10 +114,6 @@ class CoreTabHelper : public content::WebContentsObserver,
 
   // Wrapper method for fetching template URL service.
   TemplateURLService* GetTemplateURLService();
-
-  // Helper that returns true if the current Browser instance is a Progressive
-  // Web App
-  bool IsInProgressiveWebApp();
 
   // Posts the bytes and content type to the specified URL If |use_side_panel|
   // is true, the content will open in a side panel, otherwise it will open in
