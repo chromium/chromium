@@ -166,11 +166,6 @@ class BASE_EXPORT PoissonAllocationSampler {
   PoissonAllocationSampler();
   ~PoissonAllocationSampler() = delete;
 
-  // Installs allocator hooks if they weren't already installed. This is not
-  // static to ensure that allocator hooks can't be installed unless the
-  // PoissonAllocationSampler singleton exists.
-  void InstallAllocatorHooksOnce();
-
   static size_t GetNextSampleInterval(size_t base_interval);
 
   // Return the set of sampled addresses. This is only valid to call after

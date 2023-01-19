@@ -250,16 +250,6 @@ void InstallStandardAllocatorHooks() {
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_NACL)
 }
 
-void RemoveStandardAllocatorHooksForTesting() {
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
-  allocator_shim::RemoveAllocatorDispatchForTesting(
-      &allocator_shim_details::g_allocator_dispatch);  // IN-TEST
-#endif
-#if BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_NACL)
-  partition_alloc::PartitionAllocHooks::SetObserverHooks(nullptr, nullptr);
-#endif
-}
-
 }  // namespace base::allocator::dispatcher
 
 namespace base::allocator::dispatcher {

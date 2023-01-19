@@ -157,13 +157,6 @@ PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::
     ScopedMuteHookedSamplesForTesting() {
   SetProfilingStateFlag(ProfilingStateFlag::kHookedSamplesMutedForTesting);
 
-  // Make sure hooks have been installed, so that the only order of operations
-  // that needs to be handled is Install Hooks -> Remove Hooks For Testing ->
-  // Reinstall Hooks.
-  PoissonAllocationSampler::Get()->InstallAllocatorHooksOnce();
-
-  allocator::dispatcher::RemoveStandardAllocatorHooksForTesting();  // IN-TEST
-
   // Reset the accumulated bytes to 0 on this thread.
   ThreadLocalData* const thread_local_data = GetThreadLocalData();
   accumulated_bytes_snapshot_ = thread_local_data->accumulated_bytes;
@@ -172,12 +165,9 @@ PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::
 
 PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::
     ~ScopedMuteHookedSamplesForTesting() {
-  // Restore the allocator hooks and accumulated bytes.
+  // Restore the accumulated bytes.
   ThreadLocalData* const thread_local_data = GetThreadLocalData();
   thread_local_data->accumulated_bytes = accumulated_bytes_snapshot_;
-
-  allocator::dispatcher::InstallStandardAllocatorHooks();
-
   ResetProfilingStateFlag(ProfilingStateFlag::kHookedSamplesMutedForTesting);
 }
 
@@ -199,21 +189,19 @@ PoissonAllocationSampler::PoissonAllocationSampler() {
 // static
 void PoissonAllocationSampler::Init() {
   [[maybe_unused]] static bool init_once = []() {
+    // Install the allocator hooks immediately, to better match the behaviour
+    // of base::allocator::Initializer.
+    //
+    // TODO(crbug/1137393): Use base::allocator::Initializer to install the
+    // PoissonAllocationSampler hooks. All observers need to be passed to the
+    // initializer at the same time so this will install the hooks even earlier
+    // in process startup.
+    allocator::dispatcher::InstallStandardAllocatorHooks();
+
     // Touch thread local data on initialization to enforce proper setup of
     // underlying storage system.
     GetThreadLocalData();
     ReentryGuard::InitTLSSlot();
-    return true;
-  }();
-}
-
-void PoissonAllocationSampler::InstallAllocatorHooksOnce() {
-  [[maybe_unused]] static bool hook_installed = [] {
-    allocator::dispatcher::InstallStandardAllocatorHooks();
-
-    // The allocator hooks use `g_sampled_address_set` so it had better be
-    // initialized.
-    DCHECK(g_sampled_addresses_set.load(std::memory_order_acquire));
     return true;
   }();
 }
@@ -230,8 +218,9 @@ size_t PoissonAllocationSampler::SamplingInterval() const {
 
 // static
 size_t PoissonAllocationSampler::GetNextSampleInterval(size_t interval) {
-  if (UNLIKELY(g_deterministic))
+  if (UNLIKELY(g_deterministic)) {
     return interval;
+  }
 
   // We sample with a Poisson process, with constant average sampling
   // interval. This follows the exponential probability distribution with
@@ -248,10 +237,12 @@ size_t PoissonAllocationSampler::GetNextSampleInterval(size_t interval) {
   // huge gaps in the sampling stream. Probability of the upper bound gets hit
   // is exp(-20) ~ 2e-9, so it should not skew the distribution.
   size_t max_value = interval * 20;
-  if (UNLIKELY(value < min_value))
+  if (UNLIKELY(value < min_value)) {
     return min_value;
-  if (UNLIKELY(value > max_value))
+  }
+  if (UNLIKELY(value > max_value)) {
     return max_value;
+  }
   return static_cast<size_t>(value);
 }
 
@@ -284,8 +275,9 @@ void PoissonAllocationSampler::RecordAlloc(
 
   thread_local_data->accumulated_bytes += size;
   intptr_t accumulated_bytes = thread_local_data->accumulated_bytes;
-  if (LIKELY(accumulated_bytes < 0))
+  if (LIKELY(accumulated_bytes < 0)) {
     return;
+  }
 
   if (UNLIKELY(!(state & ProfilingStateFlag::kIsRunning))) {
     // Sampling was in fact disabled when the hook was called. Reset the state
@@ -308,8 +300,9 @@ void PoissonAllocationSampler::DoRecordAlloc(
     base::allocator::dispatcher::AllocationSubsystem type,
     const char* context) {
   // Failed allocation? Skip the sample.
-  if (UNLIKELY(!address))
+  if (UNLIKELY(!address)) {
     return;
+  }
 
   ThreadLocalData* const thread_local_data = GetThreadLocalData();
   size_t mean_interval = g_sampling_interval.load(std::memory_order_relaxed);
@@ -339,8 +332,9 @@ void PoissonAllocationSampler::DoRecordAlloc(
 
   thread_local_data->accumulated_bytes = accumulated_bytes;
 
-  if (UNLIKELY(ScopedMuteThreadSamples::IsMuted()))
+  if (UNLIKELY(ScopedMuteThreadSamples::IsMuted())) {
     return;
+  }
 
   ScopedMuteThreadSamples no_reentrancy_scope;
   std::vector<SamplesObserver*> observers_copy;
@@ -349,21 +343,24 @@ void PoissonAllocationSampler::DoRecordAlloc(
 
     // TODO(alph): Sometimes RecordAlloc is called twice in a row without
     // a RecordFree in between. Investigate it.
-    if (sampled_addresses_set().Contains(address))
+    if (sampled_addresses_set().Contains(address)) {
       return;
+    }
     sampled_addresses_set().Insert(address);
     BalanceAddressesHashSet();
     observers_copy = observers_;
   }
 
   size_t total_allocated = mean_interval * samples;
-  for (auto* observer : observers_copy)
+  for (auto* observer : observers_copy) {
     observer->SampleAdded(address, size, total_allocated, type, context);
+  }
 }
 
 void PoissonAllocationSampler::DoRecordFree(void* address) {
-  if (UNLIKELY(ScopedMuteThreadSamples::IsMuted()))
+  if (UNLIKELY(ScopedMuteThreadSamples::IsMuted())) {
     return;
+  }
   // There is a rare case on macOS and Android when the very first thread_local
   // access in ScopedMuteThreadSamples constructor may allocate and
   // thus reenter DoRecordAlloc. However the call chain won't build up further
@@ -375,8 +372,9 @@ void PoissonAllocationSampler::DoRecordFree(void* address) {
     observers_copy = observers_;
     sampled_addresses_set().Remove(address);
   }
-  for (auto* observer : observers_copy)
+  for (auto* observer : observers_copy) {
     observer->SampleRemoved(address);
+  }
 }
 
 void PoissonAllocationSampler::BalanceAddressesHashSet() {
@@ -388,8 +386,9 @@ void PoissonAllocationSampler::BalanceAddressesHashSet() {
   // All the readers continue to use the old one until the atomic switch
   // process takes place.
   LockFreeAddressHashSet& current_set = sampled_addresses_set();
-  if (current_set.load_factor() < 1)
+  if (current_set.load_factor() < 1) {
     return;
+  }
   auto new_set =
       std::make_unique<LockFreeAddressHashSet>(current_set.buckets_count() * 2);
   new_set->Copy(current_set);
@@ -442,7 +441,10 @@ void PoissonAllocationSampler::AddSamplesObserver(SamplesObserver* observer) {
   DCHECK(ranges::find(observers_, observer) == observers_.end());
   bool profiler_was_stopped = observers_.empty();
   observers_.push_back(observer);
-  InstallAllocatorHooksOnce();
+
+  // Adding the observer will enable profiling. This will use
+  // `g_sampled_address_set` so it had better be initialized.
+  DCHECK(g_sampled_addresses_set.load(std::memory_order_relaxed));
 
   // Start the profiler if this was the first observer. Setting/resetting
   // kIsRunning isn't racy because it's performed based on `observers_.empty()`
