@@ -266,18 +266,19 @@ void TestCertificateProviderExtension::HandleSignatureRequest(
     const base::Value& pin_status,
     const base::Value& pin,
     ReplyToJsCallback callback) {
-  CHECK_EQ(*sign_request.FindKey("certificate"),
+  CHECK_EQ(*sign_request.GetDict().Find("certificate"),
            ConvertBytesToValue(GetCertDer(*certificate_)));
   const std::string pin_status_string = pin_status.GetString();
   const std::string pin_string = pin.GetString();
 
-  const int sign_request_id = sign_request.FindKey("signRequestId")->GetInt();
+  const int sign_request_id =
+      sign_request.GetDict().FindInt("signRequestId").value();
   const std::vector<uint8_t> input =
-      ExtractBytesFromValue(*sign_request.FindKey("input"));
+      ExtractBytesFromValue(*sign_request.GetDict().Find("input"));
 
   const extensions::api::certificate_provider::Algorithm algorithm =
       extensions::api::certificate_provider::ParseAlgorithm(
-          sign_request.FindKey("algorithm")->GetString());
+          *sign_request.GetDict().FindString("algorithm"));
   int openssl_signature_algorithm = 0;
   if (algorithm == extensions::api::certificate_provider::Algorithm::
                        ALGORITHM_RSASSA_PKCS1_V1_5_SHA256) {
