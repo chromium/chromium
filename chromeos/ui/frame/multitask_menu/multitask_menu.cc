@@ -38,8 +38,11 @@ MultitaskMenu::MultitaskMenu(views::View* anchor,
   set_internal_name("MultitaskMenuBubbleWidget");
   set_margins(gfx::Insets());
   set_parent_window(parent_window);
-
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  SetAnchorView(anchor);
+#else
   SetAnchorRect(anchor->GetAnchorBoundsInScreen());
+#endif
   SetArrow(views::BubbleBorder::Arrow::TOP_CENTER);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetUseDefaultFillLayout(true);
