@@ -443,10 +443,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Histogram of the startup failures for the different sync datatypes. These
     are failures that occur during startup before the data type is fully loaded.
-    For USS datatypes, these errors are caused by failures in reading metadata
-    (or data) from the DB or by another failure in interaction with the model.
-    For Directory datatypes, startup errors are due to missing top level sync
-    nodes or model association. This is one of the base sync health metrics. The
+    These errors are caused by failures in reading metadata (or data) from the
+    DB or by another failure in interaction with the model. The
     Sync.ModelTypeStoreBackendError histograms may help diagnosing the problem.
   </summary>
 </histogram>
@@ -773,11 +771,9 @@ chromium-metrics-reviews@google.com.
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
-    Counts the number of entries for each model type. For directory types, the
-    count is based on the directory contents (excl. the root node), for USS
-    types, the count is based on metadata entries for the type. Recorded after
-    sync configuration. This metric is used for monitoring general health of
-    sync client-side code.
+    Counts the number of entries for each model type. The count is based on
+    metadata entries for the type. Recorded after sync configuration. This
+    metric is used for monitoring general health of sync client-side code.
   </summary>
   <token key="SyncModelType" variants="SyncModelType"/>
 </histogram>
