@@ -221,10 +221,10 @@ def RunCleanCommand(force_clean, clean_state, variable_expander):
     """
     # A list of (product_name, product_switch) tuples for the possible installed
     # products.
-    data = [
-        ('$CHROME_LONG_NAME', ''),
-        ('$CHROME_LONG_NAME', '--system-level'),
-    ]
+    data = [('$CHROME_LONG_NAME', '')]
+    # Chrome for Testing does not support system-level installs.
+    if variable_expander.Expand('$BRAND') != 'Google Chrome for Testing':
+        data.extend([('$CHROME_LONG_NAME', '--system-level')])
     if variable_expander.Expand('$BRAND') == 'Google Chrome':
         data.extend([('$CHROME_LONG_NAME_BETA', ''),
                      ('$CHROME_LONG_NAME_BETA', '--system-level'),
