@@ -511,6 +511,10 @@
           '--target',
           'Release_x64',
         ],
+        'swarming': {
+          "shards": 12,
+          "inverse_quickrun_shards": 24,
+        },
       },
       'win10-rel-no-external-ip': {
         'args': [
@@ -820,6 +824,10 @@
           '--target',
           'Release_x64',
         ],
+        'swarming': {
+          "shards": 18,
+          "inverse_quickrun_shards": 36,
+        },
       },
       'win10-rel-no-external-ip': {
         'args': [
@@ -1125,6 +1133,11 @@
           '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
           '--test-launcher-filter-file=../../testing/buildbot/filters/win.win-rel-cft.browser_tests.filter',
         ],
+        'swarming': {
+          # This is for slow test execution that often becomes a critical path of
+          # swarming jobs. crbug.com/868114
+          'shards': 15,
+        }
       },
       'win10-rel-no-external-ip': {
         # crbug.com/868082
@@ -1487,6 +1500,10 @@
         # TODO(crbug.com/1369158): Fix & re-enable.
         'isolate_profile_data': False,
       },
+      'win-rel-cft': {
+        # TODO(crbug.com/1369158): Fix & re-enable.
+        'isolate_profile_data': False,
+      },
     },
     'remove_from': [
       # Timeout happens sometimes (crbug.com/951799).
@@ -1575,6 +1592,11 @@
         # With a single shard seems to hit time limit.
         'swarming': {
           'shards': 2,
+        },
+      },
+      'win-rel-cft': {
+        'swarming': {
+          'inverse_quickrun_shards': 2,
         },
       },
     },
@@ -1817,6 +1839,15 @@
               'cores': '8|12',
             }
           ],
+        },
+      },
+      'win-rel-cft': {
+        # crbug.com/868082
+        'args': [
+          '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
+        ],
+        'swarming': {
+          'quickrun_shards': 18,
         },
       },
       'win10-rel-no-external-ip': {
@@ -2537,6 +2568,9 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/win.win-rel-cft.interactive_ui_tests.filter',
         ],
+        'swarming': {
+          'shards': 9,
+        },
       },
     },
   },
@@ -3325,6 +3359,11 @@
         'args': [
           '--coverage-continuous-mode=1',
         ],
+      },
+      'win-rel-cft': {
+        'swarming': {
+          'shards': 3,
+        },
       },
     },
   },

@@ -1288,7 +1288,7 @@
         },
       },
 
-      # Mirrors Win x64 Builder and Win10 Tests x64.
+      # Mirrors "Win x64 Builder" and "Win10 Tests x64".
       'win-rel-cft': {
         'mixins': [
           'x86-64',

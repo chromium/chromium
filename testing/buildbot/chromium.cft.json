@@ -4470,7 +4470,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
+          "shards": 15
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -4663,6 +4663,7 @@
               "os": "Windows-10-19042|Windows-10-19045"
             }
           ],
+          "inverse_quickrun_shards": 2,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_unittests",
@@ -4688,6 +4689,9 @@
         "test_id_prefix": "ninja://ui/compositor:compositor_unittests/"
       },
       {
+        "args": [
+          "--disable-features=WebRTC-H264WithOpenH264FFmpeg"
+        ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
@@ -4701,6 +4705,7 @@
               "os": "Windows-10-19042|Windows-10-19045"
             }
           ],
+          "quickrun_shards": 18,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
@@ -5201,7 +5206,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 3
+          "shards": 9
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -5804,7 +5809,8 @@
               "os": "Windows-10-19042|Windows-10-19045"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "sync_integration_tests",
         "test_id_prefix": "ninja://chrome/test:sync_integration_tests/"
@@ -6143,8 +6149,9 @@
               "os": "Windows-10-19042|Windows-10-19045"
             }
           ],
+          "inverse_quickrun_shards": 24,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 5
+          "shards": 12
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
@@ -6183,8 +6190,9 @@
               "os": "Windows-10-19042|Windows-10-19045"
             }
           ],
+          "inverse_quickrun_shards": 36,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 7
+          "shards": 18
         },
         "test_id_prefix": "ninja://:blink_wpt_tests/"
       },
@@ -6194,7 +6202,7 @@
         ],
         "check_flakiness_for_new_tests": false,
         "isolate_name": "chromedriver_py_tests",
-        "isolate_profile_data": true,
+        "isolate_profile_data": false,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
