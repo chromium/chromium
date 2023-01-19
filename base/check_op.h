@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/debugging_buildflags.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/template_util.h"
 
 // This header defines the (DP)CHECK_EQ etc. macros.
@@ -146,7 +147,9 @@ class BASE_EXPORT CheckOpResult {
                                       char* v2_str);
 
  private:
-  LogMessage* const log_message_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION LogMessage* const log_message_ = nullptr;
 };
 
 // Helper macro for binary operators.

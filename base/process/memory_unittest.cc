@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr_exclusion.h"
+
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "base/process/memory.h"
@@ -149,7 +151,9 @@ class OutOfMemoryTest : public testing::Test {
         signed_test_size_(std::numeric_limits<ssize_t>::max()) {}
 
  protected:
-  void* value_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION void* value_;
   size_t test_size_;
   size_t insecure_test_size_;
   ssize_t signed_test_size_;

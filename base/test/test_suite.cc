@@ -24,6 +24,7 @@
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -210,10 +211,18 @@ class CheckForLeakedGlobals : public testing::EmptyTestEventListener {
   }
 
  private:
-  FeatureList* feature_list_set_before_test_ = nullptr;
-  FeatureList* feature_list_set_before_case_ = nullptr;
-  ThreadPoolInstance* thread_pool_set_before_test_ = nullptr;
-  ThreadPoolInstance* thread_pool_set_before_case_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FeatureList* feature_list_set_before_test_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FeatureList* feature_list_set_before_case_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION ThreadPoolInstance* thread_pool_set_before_test_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION ThreadPoolInstance* thread_pool_set_before_case_ = nullptr;
 };
 
 // iOS: base::Process is not available.

@@ -11,6 +11,7 @@
 #include "base/base_export.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 
@@ -149,7 +150,9 @@ struct FeatureParam<std::string> {
   // GetFieldTrialParamValueByFeature() for more details.
   BASE_EXPORT std::string Get() const;
 
-  const Feature* const feature;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #global-scope, #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION const Feature* const feature;
   const char* const name;
   const char* const default_value;
 };
@@ -172,7 +175,9 @@ struct FeatureParam<double> {
   // GetFieldTrialParamValueByFeature() for more details.
   BASE_EXPORT double Get() const;
 
-  const Feature* const feature;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #global-scope, #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION const Feature* const feature;
   const char* const name;
   const double default_value;
 };
@@ -195,7 +200,9 @@ struct FeatureParam<int> {
   // GetFieldTrialParamValueByFeature() for more details.
   BASE_EXPORT int Get() const;
 
-  const Feature* const feature;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #global-scope, #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION const Feature* const feature;
   const char* const name;
   const int default_value;
 };
@@ -218,7 +225,9 @@ struct FeatureParam<bool> {
   // GetFieldTrialParamValueByFeature() for more details.
   BASE_EXPORT bool Get() const;
 
-  const Feature* const feature;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #global-scope, #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION const Feature* const feature;
   const char* const name;
   const bool default_value;
 };
@@ -241,7 +250,9 @@ struct FeatureParam<base::TimeDelta> {
   // GetFieldTrialParamValueByFeature() for more details.
   BASE_EXPORT base::TimeDelta Get() const;
 
-  const Feature* const feature;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #global-scope, #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION const Feature* const feature;
   const char* const name;
   const base::TimeDelta default_value;
 };
@@ -310,10 +321,14 @@ struct FeatureParam<Enum, true> {
     return "";
   }
 
-  const base::Feature* const feature;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #global-scope, #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION const base::Feature* const feature;
   const char* const name;
   const Enum default_value;
-  const Option* const options;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #global-scope, #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION const Option* const options;
   const size_t option_count;
 };
 

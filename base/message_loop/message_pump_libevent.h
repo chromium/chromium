@@ -11,6 +11,7 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_buildflags.h"
@@ -232,7 +233,9 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
 #endif
 
   // State for the current invocation of Run(). null if not running.
-  RunState* run_state_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION RunState* run_state_ = nullptr;
 
   // This flag is set if libevent has processed I/O events.
   bool processed_io_events_ = false;

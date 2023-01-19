@@ -16,6 +16,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -299,7 +300,9 @@ class BASE_EXPORT RunLoop {
   // A cached reference of RunLoop::Delegate for the thread driven by this
   // RunLoop for quick access without using TLS (also allows access to state
   // from another sequence during Run(), ref. |sequence_checker_| below).
-  Delegate* const delegate_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union, #global-scope
+  RAW_PTR_EXCLUSION Delegate* const delegate_;
 
   const Type type_;
 

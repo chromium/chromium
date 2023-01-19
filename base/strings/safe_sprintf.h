@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -197,7 +198,9 @@ struct Arg {
     const char* str;
 
     // A pointer to an arbitrary object.
-    const void* ptr;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION const void* ptr;
   };
   const enum Type type;
 };

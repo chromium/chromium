@@ -14,6 +14,7 @@
 #include "base/containers/stack_container.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump.h"
@@ -128,7 +129,9 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
 
   // Null if Run() is not currently executing. Otherwise it's a pointer into the
   // stack of the innermost nested Run() invocation.
-  RunState* run_state_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION RunState* run_state_ = nullptr;
 
   // Mapping of all file descriptors currently watched by this message pump.
   // std::map was chosen because (1) the number of elements can vary widely,

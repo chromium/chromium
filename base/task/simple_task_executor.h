@@ -6,6 +6,7 @@
 #define BASE_TASK_SIMPLE_TASK_EXECUTOR_H_
 
 #include "base/base_export.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/task/task_executor.h"
 #include "build/build_config.h"
 
@@ -45,7 +46,9 @@ class BASE_EXPORT SimpleTaskExecutor : public TaskExecutor {
 
   // In tests there may already be a TaskExecutor registered for the thread, we
   // keep tack of the previous TaskExecutor and restored it upon destruction.
-  TaskExecutor* const previous_task_executor_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION TaskExecutor* const previous_task_executor_;
 };
 
 }  // namespace base

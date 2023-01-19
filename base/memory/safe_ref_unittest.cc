@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,7 +26,9 @@ struct WithWeak : BaseClass {
   void Method() {}
 
   int i = 1;
-  WithWeak* self{this};
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION WithWeak* self{this};
   base::WeakPtrFactory<WithWeak> factory{this};
 };
 

@@ -20,6 +20,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
@@ -1707,7 +1708,9 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     return ptr;
   }
 
-  T* wrapped_ptr_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union, #global-scope, #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION T* wrapped_ptr_;
 
   template <typename U, typename V>
   friend class raw_ptr;

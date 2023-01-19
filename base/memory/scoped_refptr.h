@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr_exclusion.h"
 
 template <class T>
 class scoped_refptr;
@@ -332,7 +333,9 @@ class TRIVIAL_ABI scoped_refptr {
   }
 
  protected:
-  T* ptr_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union, #addr-of, #global-scope
+  RAW_PTR_EXCLUSION T* ptr_ = nullptr;
 
  private:
   template <typename U>

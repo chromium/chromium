@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 
@@ -47,7 +48,9 @@ typedef std::unordered_map<int, FilePath> PathMap;
 // providers claim overlapping keys.
 struct Provider {
   PathService::ProviderFunc func;
-  struct Provider* next;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #reinterpret-cast-trivial-type, #global-scope
+  RAW_PTR_EXCLUSION struct Provider* next;
 #ifndef NDEBUG
   int key_start;
   int key_end;

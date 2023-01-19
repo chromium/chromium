@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/profiler/frame.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/register_context.h"
@@ -90,7 +91,9 @@ class BASE_EXPORT Unwinder {
   ModuleCache* module_cache() const { return module_cache_; }
 
  private:
-  ModuleCache* module_cache_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION ModuleCache* module_cache_ = nullptr;
 };
 
 }  // namespace base

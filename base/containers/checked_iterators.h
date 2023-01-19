@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -207,9 +208,15 @@ class CheckedContiguousIterator {
     CHECK_EQ(end_, other.end_);
   }
 
-  const T* start_ = nullptr;
-  T* current_ = nullptr;
-  const T* end_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union, #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION const T* start_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union, #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION T* current_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union, #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION const T* end_ = nullptr;
 };
 
 template <typename T>

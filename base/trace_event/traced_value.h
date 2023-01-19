@@ -14,6 +14,7 @@
 
 #include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/string_piece.h"
 #include "base/trace_event/trace_arguments.h"
 
@@ -273,7 +274,9 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
       bool bool_value;
       base::StringPiece string_piece_value;
       std::string std_string_value;
-      void* void_ptr_value;
+      // This field is not a raw_ptr<> because it was filtered by the rewriter
+      // for: #union
+      RAW_PTR_EXCLUSION void* void_ptr_value;
       Array array_value;
       Dictionary dictionary_value;
 

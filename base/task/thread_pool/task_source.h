@@ -11,6 +11,7 @@
 #include "base/containers/intrusive_heap.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_token.h"
 #include "base/task/common/checked_lock.h"
@@ -127,7 +128,9 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
    private:
     friend class TaskSource;
 
-    TaskSource* task_source_;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION TaskSource* task_source_;
   };
 
   // |traits| is metadata that applies to all Tasks in the TaskSource.
@@ -336,7 +339,9 @@ class BASE_EXPORT RegisteredTaskSource {
 #endif  // DCHECK_IS_ON()
 
   scoped_refptr<TaskSource> task_source_;
-  TaskTracker* task_tracker_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION TaskTracker* task_tracker_ = nullptr;
 };
 
 // A pair of Transaction and RegisteredTaskSource. Useful to carry a

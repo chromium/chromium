@@ -9,6 +9,7 @@
 #include <type_traits>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -183,7 +184,9 @@ class optional_ref {
   }
 
  private:
-  T* const ptr_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION T* const ptr_ = nullptr;
 };
 
 template <typename T>

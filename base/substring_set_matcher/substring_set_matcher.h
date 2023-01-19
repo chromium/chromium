@@ -14,6 +14,7 @@
 
 #include "base/base_export.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/substring_set_matcher/matcher_string_pattern.h"
 
 namespace base {
@@ -275,7 +276,9 @@ class BASE_EXPORT SubstringSetMatcher {
       // Note that due to __attribute__((packed)) below, this pointer may be
       // unaligned on 64-bit platforms, causing slightly less efficient
       // access to it in some cases.
-      AhoCorasickEdge* edges;
+      // This field is not a raw_ptr<> because it was filtered by the rewriter
+      // for: #union
+      RAW_PTR_EXCLUSION AhoCorasickEdge* edges;
 
       // Inline edge storage, used if edges_capacity_ == 0.
       AhoCorasickEdge inline_edges[kNumInlineEdges];
