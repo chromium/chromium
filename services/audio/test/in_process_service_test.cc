@@ -43,7 +43,8 @@ class ServiceTestHelper {
       DCHECK(!service_);
       service_ = std::make_unique<audio::Service>(
           std::make_unique<InProcessAudioManagerAccessor>(audio_manager_),
-          false /* device_notifications_enabled */, std::move(receiver));
+          /*device_notifications_enabled=*/false,
+          /*run_audio_processing=*/false, std::move(receiver));
     }
 
     void QuitOnAudioThread() {

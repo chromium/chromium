@@ -316,9 +316,13 @@ declare_args() {
 }
 
 declare_args() {
-  # Currently it is available on Win, Mac and Linux, since it requires the audio
-  # service to run in a separate process.
-  chrome_wide_echo_cancellation_supported = is_win || is_mac || is_linux
+  # Currently it is available on Win, Mac, Linux and ChromeOS since it requires
+  # the audio service to run in a separate process.
+  # ChromeOS(http://crbug/1407588):  
+  # On CromeOS we are experimenting with the same set of systems CRAS runs on
+  # ie. is_chromeos_device.
+  chrome_wide_echo_cancellation_supported =
+    is_win || is_mac || is_linux || is_chromeos_device
 }
 
 # Do not expand this list without double-checking with OWNERS, this is a list of

@@ -65,8 +65,11 @@ class Service final : public mojom::AudioService {
   // a DeviceNotifier object that allows clients to/ subscribe to notifications
   // about device changes and a LogFactoryManager object that allows clients to
   // set a factory for audio logs.
+  // If |run_audio_processing| is true, the service will run Audio Processing
+  // Module (including for example acoustic echo cancellation).
   Service(std::unique_ptr<AudioManagerAccessor> audio_manager_accessor,
           bool enable_remote_client_support,
+          bool run_audio_processing,
           mojo::PendingReceiver<mojom::AudioService> receiver);
 
   Service(const Service&) = delete;
@@ -117,6 +120,7 @@ class Service final : public mojom::AudioService {
   mojo::Receiver<mojom::AudioService> receiver_;
   std::unique_ptr<AudioManagerAccessor> audio_manager_accessor_;
   const bool enable_remote_client_support_;
+  const bool run_audio_processing_;
   std::unique_ptr<base::SystemMonitor> system_monitor_;
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<media::AudioDeviceListenerMac> audio_device_listener_mac_;

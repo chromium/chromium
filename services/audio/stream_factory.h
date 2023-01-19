@@ -54,7 +54,8 @@ class StreamFactory final : public media::mojom::AudioStreamFactory {
   // If not nullptr, then |aecdump_recording_manager| must outlive the factory.
   explicit StreamFactory(
       media::AudioManager* audio_manager,
-      media::AecdumpRecordingManager* aecdump_recording_manager);
+      media::AecdumpRecordingManager* aecdump_recording_manager,
+      bool run_audio_processing);
 
   StreamFactory(const StreamFactory&) = delete;
   StreamFactory& operator=(const StreamFactory&) = delete;
