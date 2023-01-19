@@ -134,7 +134,6 @@ export class Background extends ChromeVoxState {
     LiveRegions.init();
     LocaleOutputHelper.init();
     LogStore.init();
-    MediaAutomationHandler.init();
     PageLoadSoundHandler.init();
     PanelBackground.init();
     RangeAutomationHandler.init();
@@ -145,6 +144,7 @@ export class Background extends ChromeVoxState {
     await Promise.all([
       DesktopAutomationHandler.init(),
       EventStreamLogger.init(),
+      MediaAutomationHandler.init(),
       PermissionChecker.init(),
     ]);
     ChromeVoxState.resolveReadyPromise_();

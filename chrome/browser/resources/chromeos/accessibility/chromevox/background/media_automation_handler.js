@@ -5,6 +5,7 @@
 /**
  * @fileoverview Handles media automation events.
  */
+import {AsyncUtil} from '../../common/async_util.js';
 import {LocalStorage} from '../../common/local_storage.js';
 import {TtsCapturingEventListener} from '../common/tts_interface.js';
 
@@ -26,24 +27,26 @@ export class MediaAutomationHandler extends BaseAutomationHandler {
 
     /** @type {Date} @private */
     this.lastTtsEvent_ = new Date();
-
-    ChromeVox.tts.addCapturingEventListener(this);
-
-    chrome.automation.getDesktop(node => {
-      this.node_ = node;
-
-      this.addListener_(
-          EventType.MEDIA_STARTED_PLAYING, this.onMediaStartedPlaying);
-      this.addListener_(
-          EventType.MEDIA_STOPPED_PLAYING, this.onMediaStoppedPlaying);
-    });
   }
 
-  static init() {
+  /** @private */
+  async addListeners_() {
+    ChromeVox.tts.addCapturingEventListener(this);
+
+    this.node_ = await AsyncUtil.getDesktop();
+
+    this.addListener_(
+        EventType.MEDIA_STARTED_PLAYING, this.onMediaStartedPlaying);
+    this.addListener_(
+        EventType.MEDIA_STOPPED_PLAYING, this.onMediaStoppedPlaying);
+  }
+
+  static async init() {
     if (MediaAutomationHandler.instance) {
       throw 'Error: trying to create two instances of singleton MediaAutomationHandler';
     }
     MediaAutomationHandler.instance = new MediaAutomationHandler();
+    await MediaAutomationHandler.instance.addListeners_();
   }
 
   /** @override */
