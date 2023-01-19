@@ -53,9 +53,8 @@ EcheAppUI::EcheAppUI(content::WebUI* web_ui,
   html_source->AddResourcePath(
       "eche_app.mojom-lite.js",
       IDR_ASH_ECHE_APP_ASH_WEBUI_ECHE_APP_UI_MOJOM_ECHE_APP_MOJOM_LITE_JS);
-  html_source->AddResourcePath(
-      "message_pipe.js",
-      IDR_ASH_ECHE_APP_______SYSTEM_APPS_PUBLIC_JS_MESSAGE_PIPE_JS);
+  html_source->AddResourcePath("message_pipe.js",
+                               IDR_ASH_ECHE_APP_MESSAGE_PIPE_JS);
   html_source->AddResourcePath("message_types.js",
                                IDR_ASH_ECHE_APP_MESSAGE_TYPES_JS);
   html_source->AddResourcePath("browser_proxy.js",

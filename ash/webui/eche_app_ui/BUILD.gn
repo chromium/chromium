@@ -189,9 +189,9 @@ js_type_check("closure_compile") {
 
 js_library("app") {
   deps = [
+    ":message_pipe",
     "//ash/webui/common/resources:cr.m",
     "//ash/webui/eche_app_ui/mojom:mojom_js_library_for_compile",
-    "//ash/webui/system_apps/public/js:message_pipe",
   ]
   externs_list = [ "$externs_path/metrics_private.js" ]
   sources = [
@@ -200,6 +200,10 @@ js_library("app") {
     "resources/mock/js/app_bundle.js",
     "resources/receiver.js",
   ]
+}
+
+js_library("message_pipe") {
+  sources = [ "resources/message_pipe.js" ]
 }
 
 js2gtest("browser_tests_js") {
@@ -211,8 +215,8 @@ js2gtest("browser_tests_js") {
 generate_grd("build_grd") {
   input_files_base_dir = rebase_path("resources", "//")
   input_files = [
-    "../../system_apps/public/js/message_pipe.js",
     "browser_proxy.js",
+    "message_pipe.js",
     "message_types.js",
     "receiver.js",
   ]

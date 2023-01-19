@@ -7,6 +7,15 @@ import {TEST_ONLY} from './receiver.js';
 const {parentMessagePipe} = TEST_ONLY;
 
 /**
+ * @typedef {{
+ *     name: string,
+ *     message: string,
+ *     stack: string,
+ * }}
+ */
+let GenericErrorResponse;
+
+/**
  * Test cases registered by GUEST_TEST.
  * @type {!Map<string, function(): Promise<undefined>>}
  */

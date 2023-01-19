@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,7 @@ class MessageData {
  *     stack: string,
  * }}
  */
-export let GenericErrorResponse;
+let GenericErrorResponse;
 
 /**
  * Error object allowing attributes to be undefined.
@@ -109,7 +109,7 @@ class NativeResolver {
  * @closurePrimitive {asserts.truthy}
  * @suppress {reportUnknownTypes} because T is not sufficiently constrained.
  */
-export function assertCast(condition) {
+/* #export */ function assertCast(condition) {
   if (!condition) {
     throw new Error('Failed assertion');
   }
@@ -163,7 +163,7 @@ function throwIfReserved(messageType) {
  * having to handle the internals. The caller can send messages to the other
  * window and receive async responses.
  */
-export class MessagePipe {
+/* #export */ class MessagePipe {
   /**
    * Constructs a new message pipe to the `target` window which has the
    * `targetOrigin` origin.
@@ -391,8 +391,8 @@ export class MessagePipe {
     const e = /** @type {!MessageEvent<!MessageData>} */ (event);
 
     // Ignore message events missing a type.
-    if (typeof e.data !== 'object' || !e.data
-        || typeof e.data.type !== 'string') {
+    if (typeof e.data !== 'object' || !e.data ||
+        typeof e.data.type !== 'string') {
       return;
     }
     const {messageId, type, message} = e.data;

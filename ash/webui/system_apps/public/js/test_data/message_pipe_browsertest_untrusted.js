@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {GenericErrorResponse, MessagePipe} from '../message_pipe.js';
+
 /** A pipe through which we can send messages to the parent frame. */
 const parentMessagePipe =
     new MessagePipe('chrome://system-app-test', window.parent);

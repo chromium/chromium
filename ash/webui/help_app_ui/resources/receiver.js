@@ -8,7 +8,7 @@
  */
 import './sandboxed_load_time_data.js';
 
-import {MessagePipe} from './message_pipe.m.js';
+import {MessagePipe} from './message_pipe.js';
 import {Message} from './message_types.js';
 
 /** A pipe through which we can send messages to the parent frame. */

@@ -17,6 +17,7 @@ stage_folder = "$target_gen_dir/stage"
 copy("stage_static") {
   sources = [
     "../../../../../ui/file_manager/image_loader/piex_loader.js",
+    "//ash/webui/system_apps/public/js/message_pipe.js",
     "//ash/webui/system_apps/public/js/sandboxed_load_time_data.js",
     "app_context_test_support.js",
     "error_reporter.js",
@@ -35,7 +36,6 @@ copy("stage_generated") {
   sources = [
     "$root_gen_dir/mojo/public/mojom/base/unguessable_token.mojom-lite.js",
     "$root_gen_dir/third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-lite.js",
-    "$target_gen_dir/../../../system_apps/public/js/message_pipe.m.js",
     "$target_gen_dir/../../media_app_ui.mojom-lite.js",
   ]
 
@@ -43,7 +43,6 @@ copy("stage_generated") {
 
   deps = [
     "//ash/webui/media_app_ui:mojo_bindings_js",
-    "//ash/webui/system_apps/public/js:modulize",
     "//third_party/blink/public/mojom:mojom_platform_js",
   ]
 }
@@ -134,7 +133,7 @@ js_library("launch") {
     ":message_types",
     ":mojo_api_bootstrap",
     "//ash/webui/common/resources:load_time_data.m",
-    "//ash/webui/system_apps/public/js:message_pipe.m",
+    "//ash/webui/system_apps/public/js:message_pipe",
   ]
 }
 
@@ -158,7 +157,7 @@ js_library("receiver") {
     ":app_context_test_support",
     ":message_types",
     ":piex_module_loader",
-    "//ash/webui/system_apps/public/js:message_pipe.m",
+    "//ash/webui/system_apps/public/js:message_pipe",
     "//ash/webui/system_apps/public/js:sandboxed_load_time_data",
   ]
 }

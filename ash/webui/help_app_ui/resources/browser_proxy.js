@@ -8,7 +8,7 @@ import './types.mojom-lite.js';
 import './index.mojom-lite.js';
 import './search.mojom-lite.js';
 
-import {MessagePipe} from './message_pipe.m.js';
+import {MessagePipe} from './message_pipe.js';
 import {Message} from './message_types.js';
 
 const help_app = {

@@ -5,6 +5,16 @@
 // Note we can only import from 'receiver.js': other modules are rolled-up into
 // it, and already loaded.
 import {TEST_ONLY} from './receiver.js';
+
+/**
+ * @typedef {{
+ *     name: string,
+ *     message: string,
+ *     stack: string,
+ * }}
+ */
+let GenericErrorResponse;
+
 const {
   RenameResult,
   DELEGATE,

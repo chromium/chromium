@@ -4,7 +4,7 @@
 
 import './sandboxed_load_time_data.js';
 
-import {assertCast, MessagePipe} from './message_pipe.m.js';
+import {assertCast, MessagePipe} from './message_pipe.js';
 import {EditInPhotosMessage, FileContext, IsFileArcWritableMessage, IsFileArcWritableResponse, IsFileBrowserWritableMessage, IsFileBrowserWritableResponse, LoadFilesMessage, Message, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
 import {loadPiex} from './piex_module_loader.js';
 

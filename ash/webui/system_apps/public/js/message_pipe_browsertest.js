@@ -38,8 +38,8 @@ function assertMatchErrorStack(
  * @return {!Promise<!Object>}
  */
 async function sendTestMessage(messageType, message = {}) {
-  await testMessageHandlersReady;
-  return untrustedMessagePipe.sendMessage(messageType, message);
+  await window['testMessageHandlersReady'];
+  return window['untrustedMessagePipe'].sendMessage(messageType, message);
 }
 
 // js2gtest fixtures require var here (https://crbug.com/1033337).
@@ -96,7 +96,7 @@ TEST_F('MessagePipeBrowserTest', 'IgnoresMessagesWithNoType', async () => {
 
 // Tests that we receive an error if our message is unhandled.
 TEST_F('MessagePipeBrowserTest', 'ReceivesNoHandlerError', async () => {
-  untrustedMessagePipe.logClientError = error =>
+  window['untrustedMessagePipe'].logClientError = error =>
       console.log(JSON.stringify(error));
   let caughtError = {};
 
@@ -126,7 +126,7 @@ TEST_F('MessagePipeBrowserTest', 'ReceivesNoHandlerError', async () => {
 
 // Tests that we receive an error if the handler fails.
 TEST_F('MessagePipeBrowserTest', 'ReceivesProxiedError', async () => {
-  untrustedMessagePipe.logClientError = error =>
+  window['untrustedMessagePipe'].logClientError = error =>
       console.log(JSON.stringify(error));
   let caughtError = {};
 
@@ -158,6 +158,8 @@ TEST_F('MessagePipeBrowserTest', 'ReceivesProxiedError', async () => {
 // Tests `MessagePipe.sendMessage()` properly propagates errors and appends
 // stacktraces.
 TEST_F('MessagePipeBrowserTest', 'CrossContextErrors', async () => {
+  const untrustedMessagePipe = window['untrustedMessagePipe'];
+
   untrustedMessagePipe.logClientError = error =>
       console.log(JSON.stringify(error));
   untrustedMessagePipe.rethrowErrors = false;
