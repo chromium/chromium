@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/federated/federated_service_controller.h"
+#include "ash/system/federated/federated_service_controller_impl.h"
 
 #include <string>
 
@@ -76,16 +76,16 @@ bool IsValidPrimaryUserType(const user_manager::UserType user_type) {
 
 }  // namespace
 
-FederatedServiceController::FederatedServiceController() {
+FederatedServiceControllerImpl::FederatedServiceControllerImpl() {
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
   DCHECK(session_controller);
   session_observation_.Observe(session_controller);
 }
 
-FederatedServiceController::~FederatedServiceController() = default;
+FederatedServiceControllerImpl::~FederatedServiceControllerImpl() = default;
 
-void FederatedServiceController::OnLoginStatusChanged(
+void FederatedServiceControllerImpl::OnLoginStatusChanged(
     LoginStatus login_status) {
   // Federated service daemon uses cryptohome as example store and we only treat
   // it available when a proper primary user type has signed in.
@@ -119,6 +119,10 @@ void FederatedServiceController::OnLoginStatusChanged(
       reported_ = true;
     }
   }
+}
+
+bool FederatedServiceControllerImpl::IsServiceAvailable() const {
+  return service_available_;
 }
 
 }  // namespace ash::federated

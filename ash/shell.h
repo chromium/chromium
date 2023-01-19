@@ -245,7 +245,7 @@ class DiagnosticsLogController;
 }  // namespace diagnostics
 
 namespace federated {
-class FederatedServiceController;
+class FederatedServiceControllerImpl;
 }  // namespace federated
 
 namespace quick_pair {
@@ -481,7 +481,7 @@ class ASH_EXPORT Shell : public SessionObserver,
     return event_transformation_handler_.get();
   }
 
-  federated::FederatedServiceController* federated_service_controller() {
+  federated::FederatedServiceControllerImpl* federated_service_controller() {
     return federated_service_controller_.get();
   }
 
@@ -1100,7 +1100,7 @@ class ASH_EXPORT Shell : public SessionObserver,
 
   std::unique_ptr<MultiCaptureServiceClient> multi_capture_service_client_;
 
-  std::unique_ptr<federated::FederatedServiceController>
+  std::unique_ptr<federated::FederatedServiceControllerImpl>
       federated_service_controller_;
 
   std::unique_ptr<quick_pair::Mediator> quick_pair_mediator_;

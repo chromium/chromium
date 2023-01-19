@@ -126,7 +126,7 @@
 #include "ash/system/camera/camera_effects_controller.h"
 #include "ash/system/caps_lock_notification_controller.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
-#include "ash/system/federated/federated_service_controller.h"
+#include "ash/system/federated/federated_service_controller_impl.h"
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/human_presence/human_presence_orientation_controller.h"
@@ -1581,7 +1581,7 @@ void Shell::Init(
 
   if (features::IsFederatedServiceEnabled()) {
     federated_service_controller_ =
-        std::make_unique<federated::FederatedServiceController>();
+        std::make_unique<federated::FederatedServiceControllerImpl>();
   }
 
   // Injects the factory which fulfills the implementation of the text context

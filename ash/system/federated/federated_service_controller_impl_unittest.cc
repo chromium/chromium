@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/federated/federated_service_controller.h"
+#include "ash/system/federated/federated_service_controller_impl.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/session/session_types.h"
@@ -16,9 +16,9 @@
 
 namespace ash::federated {
 
-class FederatedServiceControllerTestBase : public NoSessionAshTestBase {
+class FederatedServiceControllerImplTestBase : public NoSessionAshTestBase {
  public:
-  FederatedServiceControllerTestBase()
+  FederatedServiceControllerImplTestBase()
       : NoSessionAshTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         scoped_fake_service_connection_for_test_(&fake_service_connection_) {
@@ -28,12 +28,12 @@ class FederatedServiceControllerTestBase : public NoSessionAshTestBase {
         /*disabled_features=*/{});
   }
 
-  FederatedServiceControllerTestBase(
-      const FederatedServiceControllerTestBase&) = delete;
-  FederatedServiceControllerTestBase& operator=(
-      const FederatedServiceControllerTestBase&) = delete;
+  FederatedServiceControllerImplTestBase(
+      const FederatedServiceControllerImplTestBase&) = delete;
+  FederatedServiceControllerImplTestBase& operator=(
+      const FederatedServiceControllerImplTestBase&) = delete;
 
-  ~FederatedServiceControllerTestBase() override = default;
+  ~FederatedServiceControllerImplTestBase() override = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -42,7 +42,7 @@ class FederatedServiceControllerTestBase : public NoSessionAshTestBase {
   }
 
  protected:
-  FederatedServiceController* controller_ = nullptr;
+  FederatedServiceControllerImpl* controller_ = nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -50,15 +50,15 @@ class FederatedServiceControllerTestBase : public NoSessionAshTestBase {
   ScopedFakeServiceConnectionForTest scoped_fake_service_connection_for_test_;
 };
 
-TEST_F(FederatedServiceControllerTestBase, NormalUserLogin) {
+TEST_F(FederatedServiceControllerImplTestBase, NormalUserLogin) {
   SimulateUserLogin("user@gmail.com");
-  EXPECT_TRUE(controller_->service_available());
+  EXPECT_TRUE(controller_->IsServiceAvailable());
 
   GetSessionControllerClient()->LockScreen();
-  EXPECT_TRUE(controller_->service_available());
+  EXPECT_TRUE(controller_->IsServiceAvailable());
 
   GetSessionControllerClient()->UnlockScreen();
-  EXPECT_TRUE(controller_->service_available());
+  EXPECT_TRUE(controller_->IsServiceAvailable());
 
   // Signing out means ash-chrome exit and NoSessionAshTestBase does not
   // simulate exactly what happens in production.
@@ -68,30 +68,30 @@ TEST_F(FederatedServiceControllerTestBase, NormalUserLogin) {
   // and waits to be re-launched by the new federated_service_controller.
   GetSessionControllerClient()->RequestSignOut();
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(controller_->service_available());
+  EXPECT_FALSE(controller_->IsServiceAvailable());
 }
 
-TEST_F(FederatedServiceControllerTestBase, ChildUserLogin) {
+TEST_F(FederatedServiceControllerImplTestBase, ChildUserLogin) {
   SimulateUserLogin("user@gmail.com", user_manager::USER_TYPE_CHILD);
-  EXPECT_TRUE(controller_->service_available());
+  EXPECT_TRUE(controller_->IsServiceAvailable());
 }
 
-TEST_F(FederatedServiceControllerTestBase, InvalidLoginStatusAndUserType) {
+TEST_F(FederatedServiceControllerImplTestBase, InvalidLoginStatusAndUserType) {
   SimulateGuestLogin();
-  EXPECT_FALSE(controller_->service_available());
+  EXPECT_FALSE(controller_->IsServiceAvailable());
   ClearLogin();
 
   SimulateKioskMode(user_manager::USER_TYPE_ARC_KIOSK_APP);
 
-  EXPECT_FALSE(controller_->service_available());
+  EXPECT_FALSE(controller_->IsServiceAvailable());
   ClearLogin();
 
   SimulateKioskMode(user_manager::USER_TYPE_KIOSK_APP);
 
-  EXPECT_FALSE(controller_->service_available());
+  EXPECT_FALSE(controller_->IsServiceAvailable());
   ClearLogin();
 
-  EXPECT_FALSE(controller_->service_available());
+  EXPECT_FALSE(controller_->IsServiceAvailable());
 }
 
 }  // namespace ash::federated
