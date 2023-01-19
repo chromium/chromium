@@ -53,6 +53,13 @@ symbolset("password") {
   ]
 }
 
+symbolset("multicolor_password") {
+  sources = [
+    "multicolor_password.symbolset/Contents.json",
+    "multicolor_password.symbolset/multicolor.password.cr.svg",
+  ]
+}
+
 symbolset("password_manager") {
   sources = [
     "password_manager.symbolset/Contents.json",

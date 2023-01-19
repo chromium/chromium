@@ -34,6 +34,7 @@ extern NSString* const kReadingListSymbol;
 extern NSString* const kRecentTabsSymbol;
 extern NSString* const kLanguageSymbol;
 extern NSString* const kPasswordSymbol;
+extern NSString* const kMulticolorPasswordSymbol;
 extern NSString* const kCameraLensSymbol;
 extern NSString* const kDownTrendSymbol;
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)

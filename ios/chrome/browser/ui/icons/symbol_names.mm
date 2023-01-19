@@ -31,6 +31,7 @@ NSString* const kReadingListSymbol = @"square_bullet_square";
 NSString* const kRecentTabsSymbol = @"laptopcomputer_and_phone";
 NSString* const kLanguageSymbol = @"language";
 NSString* const kPasswordSymbol = @"password";
+NSString* const kMulticolorPasswordSymbol = @"multicolor_password";
 NSString* const kCameraLensSymbol = @"camera_lens";
 NSString* const kDownTrendSymbol = @"line_downtrend";
 NSString* const kIncognitoCircleFilliOS14Symbol =
