@@ -44,7 +44,7 @@
   }
 </style>
 <main id="main" aria-label="$i18n{googlePhotosLabel}" tabindex="-1">
-  <template is="dom-if" if="[[isTabStripVisible_(albumId, albums_)]]">
+  <template is="dom-if" if="[[isTabStripVisible_(albumId, albums_, albumsShared_)]]">
     <div id="tabStrip">
       <cr-button id="photosTab" aria-pressed="[[isPhotosTabSelected_(tab_)]]"
         on-click="onTabSelected_">
@@ -59,7 +59,7 @@
   <google-photos-photos id="photosContent"
     hidden="[[!isPhotosTabContentVisible_(hidden, photos_, tab_)]]">
   </google-photos-photos>
-  <template is="dom-if" if="[[!isAlbumsEmpty_(albums_)]]">
+  <template is="dom-if" if="[[!isAlbumsEmpty_(albums_, albumsShared_)]]">
     <google-photos-albums id="albumsContent"
       hidden="[[!isAlbumsTabContentVisible_(hidden, tab_)]]">
     </google-photos-albums>

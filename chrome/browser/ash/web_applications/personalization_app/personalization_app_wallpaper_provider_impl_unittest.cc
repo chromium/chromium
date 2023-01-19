@@ -557,9 +557,22 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchAlbums) {
           std::make_unique<::testing::NiceMock<
               wallpaper_handlers::MockGooglePhotosAlbumsFetcher>>(profile())));
 
+  auto* const google_photos_shared_albums_fetcher =
+      static_cast<::testing::NiceMock<
+          wallpaper_handlers::MockGooglePhotosSharedAlbumsFetcher>*>(
+          delegate()->SetGooglePhotosSharedAlbumsFetcherForTest(
+              std::make_unique<::testing::NiceMock<
+                  wallpaper_handlers::MockGooglePhotosSharedAlbumsFetcher>>(
+                  profile())));
+
   // Simulate the client making multiple requests for the same information to
   // test that all callbacks for that query are called.
   EXPECT_CALL(*google_photos_albums_fetcher,
+              AddRequestAndStartIfNecessary(absl::make_optional(kResumeToken),
+                                            ::testing::_))
+      .Times(kNumFetches);
+
+  EXPECT_CALL(*google_photos_shared_albums_fetcher,
               AddRequestAndStartIfNecessary(absl::make_optional(kResumeToken),
                                             ::testing::_))
       .Times(kNumFetches);
@@ -570,6 +583,12 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchAlbums) {
   FetchGooglePhotosEnabled();
   for (size_t i = 0; i < kNumFetches; ++i) {
     wallpaper_provider_remote()->get()->FetchGooglePhotosAlbums(
+        kResumeToken, base::BindLambdaForTesting(
+                          [](ash::personalization_app::mojom::
+                                 FetchGooglePhotosAlbumsResponsePtr response) {
+                            EXPECT_TRUE(response->albums.has_value());
+                          }));
+    wallpaper_provider_remote()->get()->FetchGooglePhotosSharedAlbums(
         kResumeToken, base::BindLambdaForTesting(
                           [](ash::personalization_app::mojom::
                                  FetchGooglePhotosAlbumsResponsePtr response) {

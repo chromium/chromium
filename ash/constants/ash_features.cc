@@ -3213,7 +3213,7 @@ bool IsWallpaperFullScreenPreviewEnabled() {
 }
 
 bool IsWallpaperGooglePhotosSharedAlbumsEnabled() {
-  return base::FeatureList::IsEnabled(kWallpaperFullScreenPreview);
+  return base::FeatureList::IsEnabled(kWallpaperGooglePhotosSharedAlbums);
 }
 
 bool IsWallpaperPerDeskEnabled() {

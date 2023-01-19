@@ -21,8 +21,10 @@ export interface BackdropState {
  * Stores Google Photos state.
  * |enabled| is whether the user is allowed to access Google Photos. It is
  * undefined only until it has been initialized.
- * |albums| is the list of Google Photos albums. It is undefined only until it
- * has been initialized, then either null (in error state) or a valid Array.
+ * |albums| is the list of Google Photos owned albums. It is undefined only
+ * until it has been initialized, then either null (in error state) or a valid
+ * Array.
+ * |albumsShared| is the list of Google Photos shared albums.
  * |photos| is the list of Google Photos photos. It is undefined only until it
  * has been initialized, then either null (in error state) or a valid Array.
  * |photosByAlbumId| is the list of Google Photos photos keyed by album id. The
@@ -32,10 +34,12 @@ export interface BackdropState {
 export interface GooglePhotosState {
   enabled: GooglePhotosEnablementState|undefined;
   albums: GooglePhotosAlbum[]|null|undefined;
+  albumsShared: GooglePhotosAlbum[]|null|undefined;
   photos: GooglePhotosPhoto[]|null|undefined;
   photosByAlbumId: Record<string, GooglePhotosPhoto[]|null|undefined>;
   resumeTokens: {
     albums: string|null,
+    albumsShared: string|null,
     photos: string|null,
     photosByAlbumId: Record<string, string|null>,
   };
@@ -72,6 +76,7 @@ export interface LoadingState {
   googlePhotos: {
     enabled: boolean,
     albums: boolean,
+    albumsShared: boolean,
     photos: boolean,
     photosByAlbumId: Record<string, boolean>,
   };
@@ -126,6 +131,7 @@ export function emptyState(): WallpaperState {
       googlePhotos: {
         enabled: false,
         albums: false,
+        albumsShared: false,
         photos: false,
         photosByAlbumId: {},
       },
@@ -138,9 +144,11 @@ export function emptyState(): WallpaperState {
     googlePhotos: {
       enabled: undefined,
       albums: undefined,
+      albumsShared: undefined,
       photos: undefined,
       photosByAlbumId: {},
-      resumeTokens: {albums: null, photos: null, photosByAlbumId: {}},
+      resumeTokens:
+          {albums: null, albumsShared: null, photos: null, photosByAlbumId: {}},
     },
   };
 }

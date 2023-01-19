@@ -119,13 +119,13 @@ export async function fetchGooglePhotosAlbum(
       action.appendGooglePhotosAlbumAction(albumId, photos, resumeToken));
 }
 
-/** Fetches the list of Google Photos albums and saves it to the store. */
+/** Fetches the list of Google Photos owned albums and saves it to the store. */
 export async function fetchGooglePhotosAlbums(
     provider: WallpaperProviderInterface,
     store: PersonalizationStore): Promise<void> {
   // Albums should only be fetched after determining whether access is allowed.
   const enabled = store.data.wallpaper.googlePhotos.enabled;
-  assert(enabled !== undefined);
+  assert(enabled !== undefined, 'Google Photos albums not enabled.');
 
   store.dispatch(action.beginLoadGooglePhotosAlbumsAction());
 
@@ -144,7 +144,7 @@ export async function fetchGooglePhotosAlbums(
     albums.push(...response.albums);
     resumeToken = response.resumeToken || null;
   } else {
-    console.warn('Failed to fetch Google Photos albums');
+    console.warn('Failed to fetch Google Photos owned albums');
     albums = null;
     // NOTE: `resumeToken` is intentionally *not* modified so that the request
     // which failed can be reattempted.
@@ -158,6 +158,51 @@ export async function fetchGooglePhotosAlbums(
   }
 
   store.dispatch(action.appendGooglePhotosAlbumsAction(albums, resumeToken));
+}
+
+/**
+ * Fetches the list of Google Photos shared albums and saves it to the store.
+ */
+export async function fetchGooglePhotosSharedAlbums(
+    provider: WallpaperProviderInterface,
+    store: PersonalizationStore): Promise<void> {
+  // Albums should only be fetched after determining whether access is allowed.
+  const enabled = store.data.wallpaper.googlePhotos.enabled;
+  assert(
+      enabled !== undefined, 'Google photos enablement state not initialized.');
+
+  store.dispatch(action.beginLoadGooglePhotosSharedAlbumsAction());
+
+  // If access is *not* allowed, short-circuit the request.
+  if (enabled !== GooglePhotosEnablementState.kEnabled) {
+    store.dispatch(action.appendGooglePhotosSharedAlbumsAction(
+        /*albums=*/ null, /*resumeToken=*/ null));
+    return;
+  }
+
+  let albums: GooglePhotosAlbum[]|null = [];
+  let resumeToken = store.data.wallpaper.googlePhotos.resumeTokens.albumsShared;
+
+  const {response} = await provider.fetchGooglePhotosSharedAlbums(resumeToken);
+  if (Array.isArray(response.albums)) {
+    albums.push(...response.albums);
+    resumeToken = response.resumeToken || null;
+  } else {
+    console.warn('Failed to fetch Google Photos shared albums');
+    albums = null;
+    // NOTE: `resumeToken` is intentionally *not* modified so that the request
+    // which failed can be reattempted.
+  }
+
+  // Impose max resolution.
+  if (albums !== null) {
+    albums = albums.map(
+        album =>
+            ({...album, preview: appendMaxResolutionSuffix(album.preview)}));
+  }
+
+  store.dispatch(
+      action.appendGooglePhotosSharedAlbumsAction(albums, resumeToken));
 }
 
 /** Fetches whether the user is allowed to access Google Photos. */

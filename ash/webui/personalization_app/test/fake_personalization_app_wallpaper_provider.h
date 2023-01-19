@@ -63,6 +63,10 @@ class FakePersonalizationAppWallpaperProvider
       const absl::optional<std::string>& resume_token,
       FetchGooglePhotosAlbumsCallback callback) override;
 
+  void FetchGooglePhotosSharedAlbums(
+      const absl::optional<std::string>& resume_token,
+      FetchGooglePhotosAlbumsCallback callback) override;
+
   void FetchGooglePhotosEnabled(
       FetchGooglePhotosEnabledCallback callback) override;
 

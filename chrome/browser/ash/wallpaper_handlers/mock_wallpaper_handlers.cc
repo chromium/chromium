@@ -43,6 +43,37 @@ absl::optional<size_t> MockGooglePhotosAlbumsFetcher::GetResultCount(
   return GooglePhotosAlbumsFetcher::GetResultCount(result);
 }
 
+MockGooglePhotosSharedAlbumsFetcher::MockGooglePhotosSharedAlbumsFetcher(
+    Profile* profile)
+    : GooglePhotosSharedAlbumsFetcher(profile) {
+  using ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponse;
+  using ash::personalization_app::mojom::GooglePhotosAlbumPtr;
+
+  ON_CALL(*this, AddRequestAndStartIfNecessary)
+      .WillByDefault(
+          [](const absl::optional<std::string>& resume_token,
+             base::OnceCallback<void(GooglePhotosAlbumsCbkArgs)> callback) {
+            auto response = FetchGooglePhotosAlbumsResponse::New(
+                std::vector<GooglePhotosAlbumPtr>(), absl::nullopt);
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(std::move(callback), std::move(response)));
+          });
+
+  ON_CALL(*this, ParseResponse)
+      .WillByDefault([this](const base::Value::Dict* response) {
+        return GooglePhotosSharedAlbumsFetcher::ParseResponse(response);
+      });
+}
+
+MockGooglePhotosSharedAlbumsFetcher::~MockGooglePhotosSharedAlbumsFetcher() =
+    default;
+
+absl::optional<size_t> MockGooglePhotosSharedAlbumsFetcher::GetResultCount(
+    const GooglePhotosAlbumsCbkArgs& result) {
+  return GooglePhotosSharedAlbumsFetcher::GetResultCount(result);
+}
+
 MockGooglePhotosEnabledFetcher::MockGooglePhotosEnabledFetcher(Profile* profile)
     : GooglePhotosEnabledFetcher(profile) {
   ON_CALL(*this, AddRequestAndStartIfNecessary)

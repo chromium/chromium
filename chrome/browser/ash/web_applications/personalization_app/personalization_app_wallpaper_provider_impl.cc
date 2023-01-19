@@ -264,9 +264,6 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosAlbums(
     wallpaper_receiver_.ReportBadMessage(
         "Cannot call `FetchGooglePhotosAlbums()` without confirming that the "
         "Google Photos enterprise setting is enabled.");
-    std::move(callback).Run(
-        ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponse::New(
-            absl::nullopt, absl::nullopt));
     return;
   }
 
@@ -276,6 +273,25 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosAlbums(
             profile_);
   }
   google_photos_albums_fetcher_->AddRequestAndStartIfNecessary(
+      resume_token, std::move(callback));
+}
+
+void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosSharedAlbums(
+    const absl::optional<std::string>& resume_token,
+    FetchGooglePhotosAlbumsCallback callback) {
+  if (!is_google_photos_enterprise_enabled_) {
+    wallpaper_receiver_.ReportBadMessage(
+        "Cannot call `FetchGooglePhotosAlbums()` without confirming that the "
+        "Google Photos enterprise setting is enabled.");
+    return;
+  }
+
+  if (!google_photos_shared_albums_fetcher_) {
+    google_photos_shared_albums_fetcher_ =
+        std::make_unique<wallpaper_handlers::GooglePhotosSharedAlbumsFetcher>(
+            profile_);
+  }
+  google_photos_shared_albums_fetcher_->AddRequestAndStartIfNecessary(
       resume_token, std::move(callback));
 }
 
@@ -768,6 +784,15 @@ PersonalizationAppWallpaperProviderImpl::SetGooglePhotosAlbumsFetcherForTest(
     std::unique_ptr<wallpaper_handlers::GooglePhotosAlbumsFetcher> fetcher) {
   google_photos_albums_fetcher_ = std::move(fetcher);
   return google_photos_albums_fetcher_.get();
+}
+
+wallpaper_handlers::GooglePhotosSharedAlbumsFetcher*
+PersonalizationAppWallpaperProviderImpl::
+    SetGooglePhotosSharedAlbumsFetcherForTest(
+        std::unique_ptr<wallpaper_handlers::GooglePhotosSharedAlbumsFetcher>
+            fetcher) {
+  google_photos_shared_albums_fetcher_ = std::move(fetcher);
+  return google_photos_shared_albums_fetcher_.get();
 }
 
 wallpaper_handlers::GooglePhotosEnabledFetcher*

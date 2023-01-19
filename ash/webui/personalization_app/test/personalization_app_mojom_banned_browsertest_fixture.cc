@@ -158,6 +158,11 @@ class MockPersonalizationAppWallpaperProvider
                FetchGooglePhotosAlbumsCallback callback),
               (override));
   MOCK_METHOD(void,
+              FetchGooglePhotosSharedAlbums,
+              (const absl::optional<std::string>& resume_token,
+               FetchGooglePhotosAlbumsCallback callback),
+              (override));
+  MOCK_METHOD(void,
               FetchGooglePhotosEnabled,
               (FetchGooglePhotosEnabledCallback callback),
               (override));

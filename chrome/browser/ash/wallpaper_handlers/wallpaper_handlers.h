@@ -241,6 +241,33 @@ class GooglePhotosAlbumsFetcher
       const GooglePhotosAlbumsCbkArgs& result) override;
 };
 
+using GooglePhotosAlbumsCbkArgs =
+    ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponsePtr;
+// Downloads the Google Photos albums a user has created.
+class GooglePhotosSharedAlbumsFetcher
+    : public GooglePhotosFetcher<GooglePhotosAlbumsCbkArgs> {
+ public:
+  explicit GooglePhotosSharedAlbumsFetcher(Profile* profile);
+
+  GooglePhotosSharedAlbumsFetcher(const GooglePhotosSharedAlbumsFetcher&) =
+      delete;
+  GooglePhotosSharedAlbumsFetcher& operator=(
+      const GooglePhotosSharedAlbumsFetcher&) = delete;
+
+  ~GooglePhotosSharedAlbumsFetcher() override;
+
+  virtual void AddRequestAndStartIfNecessary(
+      const absl::optional<std::string>& resume_token,
+      base::OnceCallback<void(GooglePhotosAlbumsCbkArgs)> callback);
+
+ protected:
+  // GooglePhotosFetcher:
+  GooglePhotosAlbumsCbkArgs ParseResponse(
+      const base::Value::Dict* response) override;
+  absl::optional<size_t> GetResultCount(
+      const GooglePhotosAlbumsCbkArgs& result) override;
+};
+
 using ash::personalization_app::mojom::GooglePhotosEnablementState;
 // Downloads whether the user is allowed to access Google Photos data.
 class GooglePhotosEnabledFetcher

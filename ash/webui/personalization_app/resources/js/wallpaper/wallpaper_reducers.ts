@@ -191,6 +191,24 @@ function loadingReducer(
           albums: false,
         },
       };
+    case WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_SHARED_ALBUMS:
+      assert(state.googlePhotos.albumsShared === false);
+      return {
+        ...state,
+        googlePhotos: {
+          ...state.googlePhotos,
+          albumsShared: true,
+        },
+      };
+    case WallpaperActionName.APPEND_GOOGLE_PHOTOS_SHARED_ALBUMS:
+      assert(state.googlePhotos.albumsShared === true);
+      return {
+        ...state,
+        googlePhotos: {
+          ...state.googlePhotos,
+          albumsShared: false,
+        },
+      };
     case WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ENABLED:
       assert(state.googlePhotos.enabled === false);
       return {
@@ -457,10 +475,12 @@ function googlePhotosReducer(
       };
     case WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUMS:
       // The list of albums should be loaded only while additional albums exist.
-      assert(!state.albums || state.resumeTokens.albums);
+      assert(
+          !state.albums || state.resumeTokens.albums,
+          'Additional owned albums do not exist.');
       return state;
     case WallpaperActionName.APPEND_GOOGLE_PHOTOS_ALBUMS:
-      assert(action.albums !== undefined);
+      assert(action.albums !== undefined, 'No owned albums fetched.');
       // Case: First batch of albums.
       if (!Array.isArray(state.albums)) {
         return {
@@ -489,6 +509,43 @@ function googlePhotosReducer(
         resumeTokens: {
           ...state.resumeTokens,
           albums: action.resumeToken,
+        },
+      };
+    case WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_SHARED_ALBUMS:
+      assert(
+          !state.albumsShared || state.resumeTokens.albumsShared,
+          'Additional shared albums do not exist.');
+      return state;
+    case WallpaperActionName.APPEND_GOOGLE_PHOTOS_SHARED_ALBUMS:
+      assert(action.albums !== undefined, 'No shared albums fetched.');
+      // Case: First batch of albums.
+      if (!Array.isArray(state.albumsShared)) {
+        return {
+          ...state,
+          albumsShared: action.albums,
+          resumeTokens: {
+            ...state.resumeTokens,
+            albumsShared: action.resumeToken,
+          },
+        };
+      }
+      // Case: Subsequent batches of albums.
+      if (Array.isArray(action.albums)) {
+        return {
+          ...state,
+          albumsShared: [...state.albumsShared, ...action.albums],
+          resumeTokens: {
+            ...state.resumeTokens,
+            albumsShared: action.resumeToken,
+          },
+        };
+      }
+      // Case: Error.
+      return {
+        ...state,
+        resumeTokens: {
+          ...state.resumeTokens,
+          albumsShared: action.resumeToken,
         },
       };
     case WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ENABLED:

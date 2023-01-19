@@ -18,9 +18,12 @@ import {DisplayableImage} from './constants.js';
 export enum WallpaperActionName {
   APPEND_GOOGLE_PHOTOS_ALBUM = 'append_google_photos_album',
   APPEND_GOOGLE_PHOTOS_ALBUMS = 'append_google_photos_albums',
+  APPEND_GOOGLE_PHOTOS_SHARED_ALBUMS = 'append_google_photos_shared_albums',
   APPEND_GOOGLE_PHOTOS_PHOTOS = 'append_google_photos_photos',
   BEGIN_LOAD_GOOGLE_PHOTOS_ALBUM = 'begin_load_google_photos_album',
   BEGIN_LOAD_GOOGLE_PHOTOS_ALBUMS = 'begin_load_google_photos_albums',
+  BEGIN_LOAD_GOOGLE_PHOTOS_SHARED_ALBUMS =
+      'begin_load_google_photos_shared_albums',
   BEGIN_LOAD_GOOGLE_PHOTOS_ENABLED = 'begin_load_google_photos_enabled',
   BEGIN_LOAD_GOOGLE_PHOTOS_PHOTOS = 'begin_load_google_photos_photos',
   BEGIN_LOAD_IMAGES_FOR_COLLECTIONS = 'begin_load_images_for_collections',
@@ -48,8 +51,9 @@ export enum WallpaperActionName {
 
 export type WallpaperActions =
     AppendGooglePhotosAlbumAction|AppendGooglePhotosAlbumsAction|
-    AppendGooglePhotosPhotosAction|BeginLoadDefaultImageThumbnailAction|
-    BeginLoadGooglePhotosAlbumAction|BeginLoadGooglePhotosAlbumsAction|
+    AppendGooglePhotosSharedAlbumsAction|AppendGooglePhotosPhotosAction|
+    BeginLoadDefaultImageThumbnailAction|BeginLoadGooglePhotosAlbumAction|
+    BeginLoadGooglePhotosAlbumsAction|BeginLoadGooglePhotosSharedAlbumsAction|
     BeginLoadGooglePhotosEnabledAction|BeginLoadGooglePhotosPhotosAction|
     BeginLoadImagesForCollectionsAction|BeginLoadLocalImagesAction|
     BeginLoadLocalImageDataAction|BeginUpdateDailyRefreshImageAction|
@@ -90,8 +94,8 @@ export type AppendGooglePhotosAlbumsAction = Action&{
 };
 
 /**
- * Appends to the list of Google Photos albums. May be called with null on
- * error.
+ * Appends to the list of Google Photos owned albums. May be called with
+ * null on error.
  */
 export function appendGooglePhotosAlbumsAction(
     albums: GooglePhotosAlbum[]|null,
@@ -100,6 +104,26 @@ export function appendGooglePhotosAlbumsAction(
     albums,
     resumeToken,
     name: WallpaperActionName.APPEND_GOOGLE_PHOTOS_ALBUMS,
+  };
+}
+
+export type AppendGooglePhotosSharedAlbumsAction = Action&{
+  name: WallpaperActionName.APPEND_GOOGLE_PHOTOS_SHARED_ALBUMS,
+  albums: GooglePhotosAlbum[] | null,
+  resumeToken: string | null,
+};
+
+/**
+ * Appends to the list of Google Photos shared albums. May be called with
+ * null on error.
+ */
+export function appendGooglePhotosSharedAlbumsAction(
+    albums: GooglePhotosAlbum[]|null,
+    resumeToken: string|null): AppendGooglePhotosSharedAlbumsAction {
+  return {
+    albums,
+    resumeToken,
+    name: WallpaperActionName.APPEND_GOOGLE_PHOTOS_SHARED_ALBUMS,
   };
 }
 
@@ -147,6 +171,18 @@ export type BeginLoadGooglePhotosAlbumsAction = Action&{
 export function beginLoadGooglePhotosAlbumsAction():
     BeginLoadGooglePhotosAlbumsAction {
   return {name: WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUMS};
+}
+
+export type BeginLoadGooglePhotosSharedAlbumsAction = Action&{
+  name: WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_SHARED_ALBUMS,
+};
+
+/**
+ * Notify that the app is loading the list of Google Photos albums.
+ */
+export function beginLoadGooglePhotosSharedAlbumsAction():
+    BeginLoadGooglePhotosSharedAlbumsAction {
+  return {name: WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_SHARED_ALBUMS};
 }
 
 export type BeginLoadGooglePhotosEnabledAction = Action&{

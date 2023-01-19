@@ -41,6 +41,38 @@ class MockGooglePhotosAlbumsFetcher : public GooglePhotosAlbumsFetcher {
       const GooglePhotosAlbumsCbkArgs& result) override;
 };
 
+// Fetcher that returns an empty album list and no resume token in response to a
+// request for the user's Google Photos shared albums. Used to avoid network
+// requests in unit tests.
+class MockGooglePhotosSharedAlbumsFetcher
+    : public GooglePhotosSharedAlbumsFetcher {
+ public:
+  explicit MockGooglePhotosSharedAlbumsFetcher(Profile* profile);
+
+  MockGooglePhotosSharedAlbumsFetcher(
+      const MockGooglePhotosSharedAlbumsFetcher&) = delete;
+  MockGooglePhotosSharedAlbumsFetcher& operator=(
+      const MockGooglePhotosSharedAlbumsFetcher&) = delete;
+
+  ~MockGooglePhotosSharedAlbumsFetcher() override;
+
+  // GooglePhotosSharedAlbumsFetcher:
+  MOCK_METHOD(void,
+              AddRequestAndStartIfNecessary,
+              (const absl::optional<std::string>& resume_token,
+               base::OnceCallback<void(GooglePhotosAlbumsCbkArgs)> callback),
+              (override));
+
+  MOCK_METHOD(GooglePhotosAlbumsCbkArgs,
+              ParseResponse,
+              (const base::Value::Dict* response),
+              (override));
+
+  // Overridden to increase visibility.
+  absl::optional<size_t> GetResultCount(
+      const GooglePhotosAlbumsCbkArgs& result) override;
+};
+
 // Fetcher that claims the user is allowed to access Google Photos data. Used to
 // avoid network requests in unit tests.
 class MockGooglePhotosEnabledFetcher : public GooglePhotosEnabledFetcher {

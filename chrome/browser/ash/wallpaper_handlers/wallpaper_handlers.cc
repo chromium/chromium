@@ -82,10 +82,15 @@ constexpr char kGooglePhotosAlbumUrl[] =
 constexpr char kGooglePhotosAlbumCollectionOrder[] = "1";
 constexpr char kGooglePhotosAlbumShuffledOrder[] = "2";
 
-// The URL to download the albums in a user's Google Photos library.
+// The URL to download the owned albums in a user's Google Photos library.
 constexpr char kGooglePhotosAlbumsUrl[] =
     "https://photosfirstparty-pa.googleapis.com/v1/chromeos/"
     "userCollections:read";
+
+// The URL to download the shared albums in a user's Google Photos library.
+constexpr char kGooglePhotosSharedAlbumsUrl[] =
+    "https://photosfirstparty-pa.googleapis.com/v1/chromeos/"
+    "sharedCollections:read";
 
 constexpr net::NetworkTrafficAnnotationTag
     kGooglePhotosAlbumsTrafficAnnotation =
@@ -95,8 +100,9 @@ constexpr net::NetworkTrafficAnnotationTag
         sender: "ChromeOS Wallpaper Picker"
         description:
           "Within the Google Photos tile, the ChromeOS Wallpaper Picker "
-          "shows the user the Google Photos albums they have created so that "
-          "they can pick a photo or turn on the surprise me feature from "
+          "shows the user the Google Photos albums they have created and "
+          "the Google Photos albums they shared with other users so that "
+          "they can pick a photo or turn on the daily refresh feature from "
           "within an album. This query fetches those albums."
         trigger: "When the user accesses the Google Photos tile within the "
                  "ChromeOS Wallpaper Picker app."
@@ -235,6 +241,9 @@ absl::optional<GooglePhotosApi> ToGooglePhotosApi(const GURL& url) {
     return GooglePhotosApi::kGetAlbum;
   if (base::StartsWith(spec, kGooglePhotosAlbumsUrl))
     return GooglePhotosApi::kGetAlbums;
+  if (base::StartsWith(spec, kGooglePhotosSharedAlbumsUrl)) {
+    return GooglePhotosApi::kGetAlbums;
+  }
   if (base::StartsWith(spec, kGooglePhotosPhotoUrl))
     return GooglePhotosApi::kGetPhoto;
   if (base::StartsWith(spec, kGooglePhotosPhotosUrl))
@@ -766,6 +775,74 @@ GooglePhotosAlbumsCbkArgs GooglePhotosAlbumsFetcher::ParseResponse(
 }
 
 absl::optional<size_t> GooglePhotosAlbumsFetcher::GetResultCount(
+    const GooglePhotosAlbumsCbkArgs& result) {
+  return result && result->albums ? absl::make_optional(result->albums->size())
+                                  : absl::nullopt;
+}
+
+GooglePhotosSharedAlbumsFetcher::GooglePhotosSharedAlbumsFetcher(
+    Profile* profile)
+    : GooglePhotosFetcher(profile, kGooglePhotosAlbumsTrafficAnnotation) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+}
+
+GooglePhotosSharedAlbumsFetcher::~GooglePhotosSharedAlbumsFetcher() = default;
+
+void GooglePhotosSharedAlbumsFetcher::AddRequestAndStartIfNecessary(
+    const absl::optional<std::string>& resume_token,
+    base::OnceCallback<void(GooglePhotosAlbumsCbkArgs)> callback) {
+  GURL service_url = GURL(kGooglePhotosSharedAlbumsUrl);
+  if (resume_token.has_value()) {
+    service_url = net::AppendQueryParameter(service_url, "resume_token",
+                                            resume_token.value());
+  }
+  GooglePhotosFetcher::AddRequestAndStartIfNecessary(service_url,
+                                                     std::move(callback));
+}
+
+GooglePhotosAlbumsCbkArgs GooglePhotosSharedAlbumsFetcher::ParseResponse(
+    const base::Value::Dict* response) {
+  auto parsed_response =
+      ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponse::New();
+  if (!response) {
+    return parsed_response;
+  }
+
+  const auto* resume_token = response->FindString("resumeToken");
+  if (resume_token && !resume_token->empty()) {
+    parsed_response->resume_token = *resume_token;
+  }
+
+  const auto* response_albums = response->FindList("collection");
+  if (!response_albums) {
+    return parsed_response;
+  }
+
+  parsed_response->albums =
+      std::vector<ash::personalization_app::mojom::GooglePhotosAlbumPtr>();
+  for (const auto& untyped_response_album : *response_albums) {
+    DCHECK(untyped_response_album.is_dict());
+    const auto& response_album = untyped_response_album.GetDict();
+    const auto* album_id =
+        response_album.FindStringByDottedPath("collectionId.mediaKey");
+    const auto* title = response_album.FindString("name");
+    const auto* cover_photo_url =
+        response_album.FindString("coverItemServingUrl");
+
+    if (!album_id || !title || !cover_photo_url) {
+      LOG(ERROR) << "Failed to parse item in Google Photos albums response.";
+      continue;
+    }
+
+    // `num_image` is always 0 for shared albums.
+    parsed_response->albums->push_back(
+        ash::personalization_app::mojom::GooglePhotosAlbum::New(
+            *album_id, *title, /*num_image=*/0, GURL(*cover_photo_url)));
+  }
+  return parsed_response;
+}
+
+absl::optional<size_t> GooglePhotosSharedAlbumsFetcher::GetResultCount(
     const GooglePhotosAlbumsCbkArgs& result) {
   return result && result->albums ? absl::make_optional(result->albums->size())
                                   : absl::nullopt;

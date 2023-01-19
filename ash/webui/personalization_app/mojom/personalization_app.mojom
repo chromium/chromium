@@ -236,6 +236,15 @@ interface WallpaperProvider {
     FetchGooglePhotosAlbums(string? resume_token) =>
         (FetchGooglePhotosAlbumsResponse response);
 
+    // Fetch the list of albums shared with the user or shared by the user in
+    // Google Photos. Albums with no photo assets will not be returned. On
+    // error, |response.albums| will be absent. |response.resume_token| will
+    // be present when there are more results to fetch; |resume_token| will
+    // be present when this is a follow-up query to one that indicated there
+    // were more results to fetch.
+    FetchGooglePhotosSharedAlbums(string? resume_token) =>
+        (FetchGooglePhotosAlbumsResponse response);
+
     // Fetch whether the user is allowed to access Google Photos data.
     FetchGooglePhotosEnabled() => (GooglePhotosEnablementState state);
 
