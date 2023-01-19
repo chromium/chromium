@@ -79,6 +79,7 @@ try_.builder(
         retry_failed_shards = False,
     ),
     cores = None,
+    goma_backend = None,
     os = os.MAC_ANY,
 )
 

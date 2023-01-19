@@ -1042,7 +1042,7 @@
       'fuchsia-angle-try': 'angle_deqp_release_trybot_fuchsia_reclient',
       'ios-angle-try-intel': 'angle_deqp_release_trybot_ios',
       'linux-angle-chromium-try': 'gpu_tests_release_trybot_reclient',
-      'mac-angle-chromium-try': 'gpu_tests_release_trybot',
+      'mac-angle-chromium-try': 'gpu_tests_release_trybot_reclient',
       'win-angle-chromium-x64-try': 'gpu_tests_release_trybot_reclient',
       'win-angle-chromium-x86-try': 'gpu_tests_release_trybot_x86_reclient',
     },
@@ -1104,7 +1104,7 @@
       'android-dawn-arm-rel': 'dawn_tests_android_release_trybot',
       'dawn-android-arm-deps-rel': 'dawn_tests_android_release_trybot',
       'dawn-linux-x64-deps-rel': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
-      'dawn-mac-x64-deps-rel': 'dawn_tests_release_trybot_alloc_none',
+      'dawn-mac-x64-deps-rel': 'dawn_tests_release_trybot_alloc_none_reclient',
       'dawn-try-mac-amd-exp': 'dawn_tests_release_trybot_alloc_none',
       'dawn-try-mac-intel-exp': 'dawn_tests_release_trybot_alloc_none',
       'dawn-try-win-x64-intel-exp': 'dawn_tests_release_trybot_reclient',
@@ -1228,7 +1228,7 @@
       'gpu-fyi-try-mac-arm64-apple-m1-exp': 'gpu_fyi_tests_release_trybot_arm64',
       'gpu-fyi-try-mac-arm64-apple-m1-rel': 'gpu_fyi_tests_release_trybot_arm64',
       'gpu-fyi-try-mac-intel-asan': 'gpu_fyi_tests_release_trybot_asan',
-      'gpu-fyi-try-mac-intel-dbg': 'gpu_fyi_tests_debug_trybot',
+      'gpu-fyi-try-mac-intel-dbg': 'gpu_fyi_tests_debug_trybot_reclient',
       'gpu-fyi-try-mac-intel-exp': 'gpu_fyi_tests_release_trybot',
       'gpu-fyi-try-mac-intel-rel': 'gpu_fyi_tests_release_trybot',
       'gpu-fyi-try-mac-nvidia-retina-exp': 'gpu_fyi_tests_release_trybot',
@@ -1275,7 +1275,7 @@
       'mac_chromium_compile_dbg_ng': 'gpu_tests_debug_bot',
       'mac_chromium_compile_rel_ng': 'gpu_tests_release_trybot',
       'mac_chromium_dbg_ng': 'gpu_tests_debug_bot',
-      'mac_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot',
+      'mac_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_reclient',
       'mac_upload_clang': 'release_bot',
       'mac_upload_clang_arm': 'release_bot',
     },
@@ -2445,6 +2445,13 @@
     'dawn_tests_release_trybot_alloc_none': [
       'dawn_tests', 'release_trybot', 'padisabled',
     ],
+
+    # https://crbug.com/dawn/1200: temporarily avoid using partition alloc
+    # while we investigate a crash in the mac AMD shader compiler.
+    'dawn_tests_release_trybot_alloc_none_reclient': [
+      'dawn_tests', 'release_trybot_reclient', 'padisabled',
+    ],
+
 
     'dawn_tests_release_trybot_reclient': [
       'dawn_tests', 'release_trybot_reclient',

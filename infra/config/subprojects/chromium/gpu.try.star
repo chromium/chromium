@@ -371,6 +371,7 @@ gpu_mac_builder(
         "ci/Mac FYI Debug (Intel)",
     ],
     pool = "luci.chromium.gpu.mac.mini.intel.try",
+    goma_backend = None,
 )
 
 gpu_mac_builder(

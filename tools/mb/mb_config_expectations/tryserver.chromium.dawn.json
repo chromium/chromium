@@ -49,8 +49,8 @@
       "is_debug": false,
       "symbol_level": 0,
       "use_dawn": true,
-      "use_goma": true,
-      "use_partition_alloc_as_malloc": false
+      "use_partition_alloc_as_malloc": false,
+      "use_remoteexec": true
     }
   },
   "dawn-try-mac-amd-exp": {

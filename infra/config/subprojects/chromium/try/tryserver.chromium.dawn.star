@@ -112,6 +112,7 @@ try_.builder(
             cq.location_filter(path_regexp = "ui/gl/features.gni"),
         ],
     ),
+    goma_backend = None,
 )
 
 try_.builder(

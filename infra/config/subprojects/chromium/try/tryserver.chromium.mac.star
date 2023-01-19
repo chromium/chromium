@@ -522,6 +522,7 @@ try_.gpu.optional_tests_builder(
             cq.location_filter(path_regexp = "ui/gl/.+"),
         ],
     ),
+    goma_backend = None,
 )
 
 # RTS builders (https://crbug.com/1203048)
