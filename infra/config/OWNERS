@@ -13,3 +13,7 @@ per-file chops-weetbix*=mdraz@google.com
 per-file luci-analysis*=meiring@google.com
 per-file luci-analysis*=mwarton@google.com
 per-file luci-analysis*=mdraz@google.com
+
+# For Code Coverage configs
+per-file subprojects/chromium/ci/chromium.coverage.star=jeffyoon@google.com
+per-file subprojects/chromium/ci/chromium.coverage.star=pasthana@google.com
