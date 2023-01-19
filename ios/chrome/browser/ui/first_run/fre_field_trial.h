@@ -14,8 +14,6 @@ enum class NewMobileIdentityConsistencyFRE {
   kTangibleSyncA = 0,
   kTangibleSyncB,
   kTangibleSyncC,
-  // New MICE FRE with 2 steps (welcome with sign-in + sync screens).
-  kTwoSteps,
   // Old FRE.
   kOld,
   // New MICE FRE with tangible sync (welcome with sign-in + tangible sync

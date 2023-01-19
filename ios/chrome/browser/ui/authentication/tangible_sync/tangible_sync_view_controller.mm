@@ -111,7 +111,6 @@ UIView* IconViewWithImage(NSString* image_name, BOOL custom_symbol) {
       subtitleStringID = IDS_IOS_TANGIBLE_SYNC_SUBTITLE_BACK_UP;
       _activateSyncButtonID = IDS_IOS_TANGIBLE_SYNC_TURN_ON_SYNC;
       break;
-    case NewMobileIdentityConsistencyFRE::kTwoSteps:
     case NewMobileIdentityConsistencyFRE::kOld:
       NOTREACHED();
       break;

@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/legacy_signin/legacy_signin_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
-#import "ios/chrome/browser/ui/first_run/sync/sync_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/tangible_sync/tangible_sync_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/welcome/welcome_screen_coordinator.h"
 #import "ios/chrome/browser/ui/screen/screen_provider.h"
@@ -140,11 +139,6 @@
           initWithBaseNavigationController:self.navigationController
                                    browser:self.browser
                             showFREConsent:YES
-                                  delegate:self];
-    case kSync:
-      return [[SyncScreenCoordinator alloc]
-          initWithBaseNavigationController:self.navigationController
-                                   browser:self.browser
                                   delegate:self];
     case kTangibleSync:
       return [[TangibleSyncScreenCoordinator alloc]

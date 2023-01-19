@@ -76,7 +76,6 @@ NSString* const kEnterpriseIconName = @"enterprise_icon";
         case NewMobileIdentityConsistencyFRE::kTangibleSyncB:
         case NewMobileIdentityConsistencyFRE::kTangibleSyncC:
         case NewMobileIdentityConsistencyFRE::kTangibleSyncF:
-        case NewMobileIdentityConsistencyFRE::kTwoSteps:
           self.titleText =
               l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
           break;

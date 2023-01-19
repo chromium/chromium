@@ -39,6 +39,7 @@ source_set("signin_sync") {
     "//ios/chrome/browser/ui/first_run:interruptible_chrome_coordinator",
     "//ios/chrome/browser/ui/first_run:screen_delegate",
     "//ios/chrome/browser/ui/first_run:utils",
+    "//ios/chrome/browser/ui/first_run/resources:sync_screen_banner",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/unified_consent",
     "//ios/chrome/browser/url_loading",

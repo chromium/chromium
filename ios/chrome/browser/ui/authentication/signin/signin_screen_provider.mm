@@ -17,7 +17,6 @@
 - (instancetype)init {
   NSMutableArray* screens = [NSMutableArray array];
   switch (fre_field_trial::GetNewMobileIdentityConsistencyFRE()) {
-    case NewMobileIdentityConsistencyFRE::kTwoSteps:
     case NewMobileIdentityConsistencyFRE::kTangibleSyncA:
     case NewMobileIdentityConsistencyFRE::kTangibleSyncB:
     case NewMobileIdentityConsistencyFRE::kTangibleSyncC:

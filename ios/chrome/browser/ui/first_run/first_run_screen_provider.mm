@@ -19,10 +19,6 @@
   NSMutableArray* screens = [NSMutableArray array];
 
   switch (fre_field_trial::GetNewMobileIdentityConsistencyFRE()) {
-    case NewMobileIdentityConsistencyFRE::kTwoSteps:
-      [screens addObject:@(kSignIn)];
-      [screens addObject:@(kSync)];
-      break;
     case NewMobileIdentityConsistencyFRE::kTangibleSyncA:
     case NewMobileIdentityConsistencyFRE::kTangibleSyncB:
     case NewMobileIdentityConsistencyFRE::kTangibleSyncC:
