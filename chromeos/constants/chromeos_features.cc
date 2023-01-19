@@ -55,7 +55,7 @@ BASE_FEATURE(kDisableQuickAnswersV2Translation,
 // WebUI instead by default. Cleanup CL: https://crrev.com/c/4055733/2.
 BASE_FEATURE(kPasswordManagerSystemAuthentication,
              "PasswordManagerSystemAuthentication",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to enable quick answers V2 settings sub-toggles.
 BASE_FEATURE(kQuickAnswersV2SettingsSubToggle,
