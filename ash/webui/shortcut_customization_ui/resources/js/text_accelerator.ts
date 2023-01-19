@@ -37,9 +37,9 @@ export class TextAcceleratorElement extends PolymerElement {
   parts: TextAcceleratorPart[];
 
   private parseAndDisplayTextParts(): void {
-    const wrapper =
-        this.shadowRoot!.querySelector('#text-wrapper') as HTMLDivElement;
-    wrapper.innerHTML = '';
+    const container =
+        this.shadowRoot!.querySelector('.parts-container') as HTMLDivElement;
+    container.innerHTML = '';
     const textParts: Node[] = [];
     for (const part of this.parts) {
       const text = mojoString16ToString(part.text);
@@ -52,7 +52,7 @@ export class TextAcceleratorElement extends PolymerElement {
       }
     }
 
-    wrapper.append(...textParts);
+    container.append(...textParts);
   }
 
   private createDelimiterIconPart(): IronIconElement {

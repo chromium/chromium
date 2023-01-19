@@ -6,7 +6,12 @@
   #text-wrapper {
     align-items: center;
     display: flex;
-    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .parts-container {
+    align-items: center;
+    display: flex;
   }
 
   iron-icon {
@@ -17,5 +22,8 @@
 <div class="container">
   <!-- This element's innerHTML is dynamically set based on its text
   accelerator parts. -->
-  <div id="text-wrapper"></div>
+  <div id="text-wrapper">
+    <div class="parts-container"></div>
+    <iron-icon id="lock" icon="shortcut-customization:lock"></iron-icon>
+  </div>
 </div>
