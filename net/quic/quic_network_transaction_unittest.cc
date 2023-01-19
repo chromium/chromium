@@ -3872,12 +3872,7 @@ TEST_P(QuicNetworkTransactionTest,
 
 TEST_P(QuicNetworkTransactionTest,
        ProtocolErrorAfterHandshakeConfirmedThenBrokenWithUseDnsHttpsSvcbAlpn) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      // enabled_features
-      {features::kUseDnsHttpsSvcbAlpn},
-      // disabled_features
-      {});
+  session_params_.use_dns_https_svcb_alpn = true;
   context_.params()->idle_connection_timeout = base::Seconds(5);
 
   // The request will initially go out over QUIC.
