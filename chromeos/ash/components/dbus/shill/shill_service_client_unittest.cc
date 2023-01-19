@@ -24,7 +24,7 @@ namespace ash {
 
 namespace {
 
-const char kExampleServicePath[] = "/foo/bar";
+const char kExampleServicePath[] = "/service/1";
 
 }  // namespace
 
@@ -389,6 +389,24 @@ TEST_F(ShillServiceClientTest, ResetTrafficCounters) {
   EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
 
   // Run the message loop.
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(ShillServiceClientTest, InvalidServicePath) {
+  // Create response.
+  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+
+  // Expect the callback to not run and the error callback to run once.
+  base::MockCallback<base::OnceClosure> mock_closure;
+  base::MockCallback<ShillServiceClient::ErrorCallback> mock_error_callback;
+  PrepareForMethodCall(shill::kConnectFunction,
+                       base::BindRepeating(&ExpectNoArgument), response.get());
+  EXPECT_CALL(mock_closure, Run()).Times(0);
+  EXPECT_CALL(mock_error_callback, Run(_, _)).Times(1);
+
+  // Call method.
+  client_->Connect(dbus::ObjectPath("/invalid/path"), mock_closure.Get(),
+                   mock_error_callback.Get());
   base::RunLoop().RunUntilIdle();
 }
 

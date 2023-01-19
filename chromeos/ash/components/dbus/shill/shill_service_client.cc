@@ -28,6 +28,8 @@ namespace {
 #define DBUS_ERROR_UNKNOWN_OBJECT "org.freedesktop.DBus.Error.UnknownObject"
 #endif
 
+const char kInvalidPathError[] = "InvalidObjectPath";
+
 ShillServiceClient* g_instance = nullptr;
 
 // Error callback for GetProperties.
@@ -43,10 +45,11 @@ void OnGetDictionaryError(const std::string& method_name,
   // Suppress ERROR messages for UnknownMethod/Object" since this can
   // happen under normal conditions. See crbug.com/130660 and crbug.com/222210.
   if (error_name == DBUS_ERROR_UNKNOWN_METHOD ||
-      error_name == DBUS_ERROR_UNKNOWN_OBJECT)
+      error_name == DBUS_ERROR_UNKNOWN_OBJECT) {
     VLOG(1) << log_string;
-  else
+  } else {
     LOG(ERROR) << log_string;
+  }
 
   std::move(callback).Run(absl::nullopt);
 }
@@ -73,27 +76,39 @@ class ShillServiceClientImpl : public ShillServiceClient {
   void AddPropertyChangedObserver(
       const dbus::ObjectPath& service_path,
       ShillPropertyChangedObserver* observer) override {
-    GetHelper(service_path)->AddPropertyChangedObserver(observer);
+    auto* helper = GetHelper(service_path);
+    if (!helper) {
+      return;
+    }
+    helper->AddPropertyChangedObserver(observer);
   }
 
   void RemovePropertyChangedObserver(
       const dbus::ObjectPath& service_path,
       ShillPropertyChangedObserver* observer) override {
-    GetHelper(service_path)->RemovePropertyChangedObserver(observer);
+    auto* helper = GetHelper(service_path);
+    if (!helper) {
+      return;
+    }
+    helper->RemovePropertyChangedObserver(observer);
   }
 
   void GetProperties(
       const dbus::ObjectPath& service_path,
       chromeos::DBusMethodCallback<base::Value> callback) override {
+    auto* helper = GetHelper(service_path);
+    if (!helper) {
+      std::move(callback).Run(base::Value());
+      return;
+    }
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
                                  shill::kGetPropertiesFunction);
     auto split_callback = base::SplitOnceCallback(std::move(callback));
-    GetHelper(service_path)
-        ->CallValueMethodWithErrorCallback(
-            &method_call,
-            AdaptCallbackWithoutStatus(std::move(split_callback.first)),
-            base::BindOnce(&OnGetDictionaryError, "GetProperties", service_path,
-                           std::move(split_callback.second)));
+    helper->CallValueMethodWithErrorCallback(
+        &method_call,
+        AdaptCallbackWithoutStatus(std::move(split_callback.first)),
+        base::BindOnce(&OnGetDictionaryError, "GetProperties", service_path,
+                       std::move(split_callback.second)));
   }
 
   void SetProperty(const dbus::ObjectPath& service_path,
@@ -101,159 +116,212 @@ class ShillServiceClientImpl : public ShillServiceClient {
                    const base::Value& value,
                    base::OnceClosure callback,
                    ErrorCallback error_callback) override {
+    auto* helper = GetHelper(service_path);
+    if (!helper) {
+      std::move(error_callback).Run(kInvalidPathError, "");
+      return;
+    }
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
                                  shill::kSetPropertyFunction);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(name);
     ShillClientHelper::AppendValueDataAsVariant(&writer, value);
-    GetHelper(service_path)
-        ->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
-                                          std::move(error_callback));
+    helper->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
+                                            std::move(error_callback));
   }
 
   void SetProperties(const dbus::ObjectPath& service_path,
                      const base::Value& properties,
                      base::OnceClosure callback,
                      ErrorCallback error_callback) override {
+    auto* helper = GetHelper(service_path);
+    if (!helper) {
+      std::move(error_callback).Run(kInvalidPathError, "");
+      return;
+    }
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
                                  shill::kSetPropertiesFunction);
     dbus::MessageWriter writer(&method_call);
     ShillClientHelper::AppendServiceProperties(&writer, properties);
-    GetHelper(service_path)
-        ->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
-                                          std::move(error_callback));
+    helper->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
+                                            std::move(error_callback));
   }
 
   void ClearProperty(const dbus::ObjectPath& service_path,
                      const std::string& name,
                      base::OnceClosure callback,
                      ErrorCallback error_callback) override {
+    auto* helper = GetHelper(service_path);
+    if (!helper) {
+      std::move(error_callback).Run(kInvalidPathError, "");
+      return;
+    }
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
                                  shill::kClearPropertyFunction);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(name);
-    GetHelper(service_path)
-        ->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
-                                          std::move(error_callback));
+    helper->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
+                                            std::move(error_callback));
   }
 
   void ClearProperties(const dbus::ObjectPath& service_path,
                        const std::vector<std::string>& names,
                        ListValueCallback callback,
                        ErrorCallback error_callback) override {
+    auto* helper = GetHelper(service_path);
+    if (!helper) {
+      std::move(error_callback).Run(kInvalidPathError, "");
+      return;
+    }
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
                                  shill::kClearPropertiesFunction);
     dbus::MessageWriter writer(&method_call);
     writer.AppendArrayOfStrings(names);
-    GetHelper(service_path)
-        ->CallListValueMethodWithErrorCallback(
-            &method_call, std::move(callback), std::move(error_callback));
+    helper->CallListValueMethodWithErrorCallback(
+        &method_call, std::move(callback), std::move(error_callback));
   }
 
   void Connect(const dbus::ObjectPath& service_path,
                base::OnceClosure callback,
                ErrorCallback error_callback) override {
+    auto* helper = GetHelper(service_path);
+    if (!helper) {
+      std::move(error_callback).Run(kInvalidPathError, "");
+      return;
+    }
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
                                  shill::kConnectFunction);
-    GetHelper(service_path)
-        ->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
-                                          std::move(error_callback));
+    helper->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
+                                            std::move(error_callback));
   }
 
   void Disconnect(const dbus::ObjectPath& service_path,
                   base::OnceClosure callback,
                   ErrorCallback error_callback) override {
+    auto* helper = GetHelper(service_path);
+    if (!helper) {
+      std::move(error_callback).Run(kInvalidPathError, "");
+      return;
+    }
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
                                  shill::kDisconnectFunction);
-    GetHelper(service_path)
-        ->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
-                                          std::move(error_callback));
+    helper->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
+                                            std::move(error_callback));
   }
 
   void Remove(const dbus::ObjectPath& service_path,
               base::OnceClosure callback,
               ErrorCallback error_callback) override {
+    auto* helper = GetHelper(service_path);
+    if (!helper) {
+      std::move(error_callback).Run(kInvalidPathError, "");
+      return;
+    }
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
                                  shill::kRemoveServiceFunction);
-    GetHelper(service_path)
-        ->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
-                                          std::move(error_callback));
+    helper->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
+                                            std::move(error_callback));
   }
 
   void CompleteCellularActivation(const dbus::ObjectPath& service_path,
                                   base::OnceClosure callback,
                                   ErrorCallback error_callback) override {
+    auto* helper = GetHelper(service_path);
+    if (!helper) {
+      std::move(error_callback).Run(kInvalidPathError, "");
+      return;
+    }
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
                                  shill::kCompleteCellularActivationFunction);
     dbus::MessageWriter writer(&method_call);
-    GetHelper(service_path)
-        ->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
-                                          std::move(error_callback));
+    helper->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
+                                            std::move(error_callback));
   }
 
   void GetLoadableProfileEntries(
       const dbus::ObjectPath& service_path,
       chromeos::DBusMethodCallback<base::Value> callback) override {
+    auto* helper = GetHelper(service_path);
+    if (!helper) {
+      std::move(callback).Run(base::Value());
+      return;
+    }
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
                                  shill::kGetLoadableProfileEntriesFunction);
     auto split_callback = base::SplitOnceCallback(std::move(callback));
-    GetHelper(service_path)
-        ->CallValueMethodWithErrorCallback(
-            &method_call,
-            AdaptCallbackWithoutStatus(std::move(split_callback.first)),
-            base::BindOnce(&OnGetDictionaryError, "GetLoadableProfileEntries",
-                           service_path, std::move(split_callback.second)));
+    helper->CallValueMethodWithErrorCallback(
+        &method_call,
+        AdaptCallbackWithoutStatus(std::move(split_callback.first)),
+        base::BindOnce(&OnGetDictionaryError, "GetLoadableProfileEntries",
+                       service_path, std::move(split_callback.second)));
   }
 
   void GetWiFiPassphrase(const dbus::ObjectPath& service_path,
                          StringCallback callback,
                          ErrorCallback error_callback) override {
+    auto* helper = GetHelper(service_path);
+    if (!helper) {
+      std::move(error_callback).Run(kInvalidPathError, "");
+      return;
+    }
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
                                  shill::kGetWiFiPassphraseFunction);
-
-    GetHelper(service_path)
-        ->CallStringMethodWithErrorCallback(&method_call, std::move(callback),
-                                            std::move(error_callback));
+    helper->CallStringMethodWithErrorCallback(&method_call, std::move(callback),
+                                              std::move(error_callback));
   }
 
   void GetEapPassphrase(const dbus::ObjectPath& service_path,
                         StringCallback callback,
                         ErrorCallback error_callback) override {
+    auto* helper = GetHelper(service_path);
+    if (!helper) {
+      std::move(error_callback).Run(kInvalidPathError, "");
+      return;
+    }
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
                                  shill::kGetEapPassphraseFunction);
-
-    GetHelper(service_path)
-        ->CallStringMethodWithErrorCallback(&method_call, std::move(callback),
-                                            std::move(error_callback));
+    helper->CallStringMethodWithErrorCallback(&method_call, std::move(callback),
+                                              std::move(error_callback));
   }
 
   void RequestPortalDetection(
       const dbus::ObjectPath& service_path,
       chromeos::VoidDBusMethodCallback callback) override {
+    auto* helper = GetHelper(service_path);
+    if (!helper) {
+      std::move(callback).Run(false);
+      return;
+    }
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
                                  shill::kRequestPortalDetectionFunction);
-
-    GetHelper(service_path)->CallVoidMethod(&method_call, std::move(callback));
+    helper->CallVoidMethod(&method_call, std::move(callback));
   }
 
   void RequestTrafficCounters(
       const dbus::ObjectPath& service_path,
       chromeos::DBusMethodCallback<base::Value> callback) override {
+    auto* helper = GetHelper(service_path);
+    if (!helper) {
+      std::move(callback).Run(base::Value());
+      return;
+    }
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
                                  shill::kRequestTrafficCountersFunction);
-
-    GetHelper(service_path)->CallValueMethod(&method_call, std::move(callback));
+    helper->CallValueMethod(&method_call, std::move(callback));
   }
 
   void ResetTrafficCounters(const dbus::ObjectPath& service_path,
                             base::OnceClosure callback,
                             ErrorCallback error_callback) override {
+    auto* helper = GetHelper(service_path);
+    if (!helper) {
+      std::move(error_callback).Run(kInvalidPathError, "");
+      return;
+    }
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
                                  shill::kResetTrafficCountersFunction);
-
-    GetHelper(service_path)
-        ->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
-                                          std::move(error_callback));
+    helper->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
+                                            std::move(error_callback));
   }
 
   ShillServiceClient::TestInterface* GetTestInterface() override {
@@ -265,9 +333,17 @@ class ShillServiceClientImpl : public ShillServiceClient {
 
   // Returns the corresponding ShillClientHelper for the profile.
   ShillClientHelper* GetHelper(const dbus::ObjectPath& service_path) {
+    static const std::string kServicePrefix("/service/");
+    if (service_path.value().compare(0, kServicePrefix.size(),
+                                     kServicePrefix) != 0) {
+      LOG(ERROR) << "Invalid service path: " << service_path.value();
+      return nullptr;
+    }
+
     HelperMap::iterator it = helpers_.find(service_path.value());
-    if (it != helpers_.end())
+    if (it != helpers_.end()) {
       return it->second;
+    }
 
     // There is no helper for the profile, create it.
     dbus::ObjectProxy* object_proxy =

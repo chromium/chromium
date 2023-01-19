@@ -130,11 +130,9 @@ void ShillClientUnittestBase::SetUp() {
       .WillRepeatedly(
           Invoke(this, &ShillClientUnittestBase::OnConnectToPacketReceived));
 
-  // Set an expectation so mock_bus's GetObjectProxy() for the given
-  // service name and the object path will return mock_proxy_.
   EXPECT_CALL(*mock_bus_.get(),
               GetObjectProxy(shill::kFlimflamServiceName, object_path_))
-      .WillOnce(Return(mock_proxy_.get()));
+      .WillRepeatedly(Return(mock_proxy_.get()));
 
   // Set an expectation so mock_bus's GetDBusTaskRunner will return the current
   // task runner.
