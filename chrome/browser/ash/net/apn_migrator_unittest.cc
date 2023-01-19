@@ -314,11 +314,9 @@ TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigrateNetworksWithoutCustomApns) {
   // migrated.
   EXPECT_CALL(*managed_cellular_pref_handler(),
               ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
-      .Times(2)
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*managed_cellular_pref_handler(),
               ContainsApnMigratedIccid(Eq(kTestCellularIccid2)))
-      .Times(2)
       .WillRepeatedly(Return(false));
 
   // Simulate that all networks do not have custom APNs
@@ -380,7 +378,6 @@ TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigrateNetwork) {
   {
     EXPECT_CALL(*managed_cellular_pref_handler(),
                 ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
-        .Times(2)
         .WillRepeatedly(Return(false));
 
     base::Value::Dict custom_apn_1;
