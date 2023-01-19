@@ -36,8 +36,9 @@ void ClickToCallContextMenuObserver::SubMenuDelegate::ExecuteCommand(
     int command_id,
     int event_flags) {
   if (command_id < kSubMenuFirstDeviceCommandId ||
-      command_id > kSubMenuLastDeviceCommandId)
+      command_id > kSubMenuLastDeviceCommandId) {
     return;
+  }
   int device_index = command_id - kSubMenuFirstDeviceCommandId;
   parent_->SendClickToCallMessage(device_index);
 }
