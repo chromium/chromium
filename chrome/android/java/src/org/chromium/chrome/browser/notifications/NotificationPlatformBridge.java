@@ -748,8 +748,6 @@ public class NotificationPlatformBridge {
     @CalledByNative
     private void closeNotification(final String notificationId, String scopeUrl,
             boolean hasQueriedWebApkPackage, String webApkPackage) {
-        WebPlatformNotificationMetrics.getInstance().onNotificationClosed();
-
         if (!hasQueriedWebApkPackage) {
             final String webApkPackageFound = WebApkValidator.queryFirstWebApkPackage(
                     ContextUtils.getApplicationContext(), scopeUrl);

@@ -35,13 +35,6 @@ public class NotificationServiceImpl extends NotificationService.Impl {
     public static class Receiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (NotificationConstants.ACTION_CLICK_NOTIFICATION.equals(intent.getAction())) {
-                int actionIndex = intent.getIntExtra(
-                        NotificationConstants.EXTRA_NOTIFICATION_INFO_ACTION_INDEX, -1);
-                boolean isActionButton = actionIndex != -1;
-                WebPlatformNotificationMetrics.getInstance().onNotificationClicked(isActionButton);
-            }
-
             Log.i(TAG, "Received a notification intent in the NotificationService's receiver.");
             // Android encourages us not to start services directly on N+, so instead we
             // schedule a job to handle the notification intent. We use the Android JobScheduler

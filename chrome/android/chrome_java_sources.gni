@@ -756,7 +756,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/notifications/NotificationTriggerBackgroundTask.java",
   "java/src/org/chromium/chrome/browser/notifications/NotificationTriggerScheduler.java",
   "java/src/org/chromium/chrome/browser/notifications/PushMessagingServiceBridge.java",
-  "java/src/org/chromium/chrome/browser/notifications/WebPlatformNotificationMetrics.java",
   "java/src/org/chromium/chrome/browser/notifications/scheduler/DisplayAgent.java",
   "java/src/org/chromium/chrome/browser/notifications/scheduler/NotificationSchedulerTask.java",
   "java/src/org/chromium/chrome/browser/ntp/FeedPositionUtils.java",

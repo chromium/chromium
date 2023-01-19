@@ -190,7 +190,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/night_mode/GlobalNightModeStateProviderHolderTest.java",
   "junit/src/org/chromium/chrome/browser/notifications/NotificationTriggerBackgroundTaskTest.java",
   "junit/src/org/chromium/chrome/browser/notifications/NotificationTriggerSchedulerTest.java",
-  "junit/src/org/chromium/chrome/browser/notifications/WebPlatformNotificationMetricsTest.java",
   "junit/src/org/chromium/chrome/browser/ntp/FeedPositionUtilUnitTest.java",
   "junit/src/org/chromium/chrome/browser/offlinepages/BackgroundSchedulerTest.java",
   "junit/src/org/chromium/chrome/browser/offlinepages/ClientIdTest.java",
