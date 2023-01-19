@@ -415,9 +415,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="QueryType">
     <variant name="ComputeMetadata"/>
-    <variant name="FindOwner"/>
     <variant name="FindOwners"/>
-    <variant name="Sets"/>
   </token>
 </histogram>
 
@@ -454,7 +452,6 @@ chromium-metrics-reviews@google.com.
     <variant name="ContextReadyToServeQueries"/>
     <variant name="ReadCommandLineSet"/>
     <variant name="ReadComponentSets"/>
-    <variant name="ReadPersistedSets"/>
     <variant name="ReadyToServeQueries"/>
   </token>
 </histogram>
