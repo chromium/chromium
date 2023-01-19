@@ -11,7 +11,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
+
+namespace base {
+class UnguessableToken;
+}  // namespace base
 
 namespace ui {
 class Event;
@@ -32,7 +37,7 @@ using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
 // The "return to app" button that resides within the "return to app" panel,
 // showing information of a particular running media app. Clicking on this
 // button will take users to the app.
-class ASH_EXPORT ReturnToAppButton : public views::View {
+class ASH_EXPORT ReturnToAppButton : public views::Button {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -47,6 +52,7 @@ class ASH_EXPORT ReturnToAppButton : public views::View {
   // the summary row if there are multiple media apps.
   ReturnToAppButton(ReturnToAppPanel* panel,
                     bool is_top_row,
+                    const base::UnguessableToken& id,
                     bool is_capturing_camera,
                     bool is_capturing_microphone,
                     bool is_capturing_screen,

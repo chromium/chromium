@@ -12,6 +12,7 @@
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -89,6 +90,14 @@ std::u16string GetMediaAppDisplayText(
                                 : media_app->title;
 }
 
+void ReturnToApp(const base::UnguessableToken& id) {
+  // Returns early for the summary row, which has empty `id`.
+  if (id.is_empty()) {
+    return;
+  }
+  ash::VideoConferenceTrayController::Get()->ReturnToApp(id);
+}
+
 // A customized toggle button for the return to app panel, which rotates
 // depending on the expand state.
 class ReturnToAppExpandButton : public views::ImageButton,
@@ -149,11 +158,13 @@ class ReturnToAppExpandButton : public views::ImageButton,
 
 ReturnToAppButton::ReturnToAppButton(ReturnToAppPanel* panel,
                                      bool is_top_row,
+                                     const base::UnguessableToken& id,
                                      bool is_capturing_camera,
                                      bool is_capturing_microphone,
                                      bool is_capturing_screen,
                                      const std::u16string& display_text)
-    : is_capturing_camera_(is_capturing_camera),
+    : views::Button(base::BindRepeating(&ReturnToApp, id)),
+      is_capturing_camera_(is_capturing_camera),
       is_capturing_microphone_(is_capturing_microphone),
       is_capturing_screen_(is_capturing_screen),
       panel_(panel) {
@@ -190,6 +201,9 @@ ReturnToAppButton::ReturnToAppButton(ReturnToAppPanel* panel,
         IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SHOW_TOOLTIP));
     expand_button_ = AddChildView(std::move(expand_button));
   }
+
+  // TODO(b/253646076): Double check accessible name for this button.
+  SetAccessibleName(display_text);
 }
 
 ReturnToAppButton::~ReturnToAppButton() = default;
@@ -268,7 +282,7 @@ void ReturnToAppPanel::AddButtonsToPanel(MediaApps apps) {
     auto& app = apps.front();
     auto app_button = std::make_unique<ReturnToAppButton>(
         /*panel=*/this,
-        /*is_top_row=*/true, app->is_capturing_camera,
+        /*is_top_row=*/true, app->id, app->is_capturing_camera,
         app->is_capturing_microphone, app->is_capturing_screen,
         GetMediaAppDisplayText(app));
     app_button->expand_button()->SetVisible(false);
@@ -298,14 +312,15 @@ void ReturnToAppPanel::AddButtonsToPanel(MediaApps apps) {
 
   summary_row_view_ = AddChildView(std::make_unique<ReturnToAppButton>(
       /*panel=*/this,
-      /*is_top_row=*/true, any_apps_capturing_camera,
-      any_apps_capturing_microphone, any_apps_capturing_screen, summary_text));
+      /*is_top_row=*/true, /*app_id=*/base::UnguessableToken::Null(),
+      any_apps_capturing_camera, any_apps_capturing_microphone,
+      any_apps_capturing_screen, summary_text));
   summary_row_view_->AddObserver(this);
 
   for (auto& app : apps) {
     AddChildView(std::make_unique<ReturnToAppButton>(
         /*panel=*/this,
-        /*is_top_row=*/false, app->is_capturing_camera,
+        /*is_top_row=*/false, app->id, app->is_capturing_camera,
         app->is_capturing_microphone, app->is_capturing_screen,
         GetMediaAppDisplayText(app)));
   }

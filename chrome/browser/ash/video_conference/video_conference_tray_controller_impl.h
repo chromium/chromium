@@ -25,6 +25,7 @@ class VideoConferenceTrayControllerImpl : public VideoConferenceTrayController {
   void SetCameraMuted(bool muted) override;
   void SetMicrophoneMuted(bool muted) override;
   void GetMediaApps(base::OnceCallback<void(MediaApps)> ui_callback) override;
+  void ReturnToApp(const base::UnguessableToken& id) override;
 };
 
 }  // namespace ash

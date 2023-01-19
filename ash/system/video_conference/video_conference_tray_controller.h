@@ -14,6 +14,10 @@
 #include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 
+namespace base {
+class UnguessableToken;
+}  // namespace base
+
 namespace ash {
 
 using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
@@ -76,6 +80,9 @@ class ASH_EXPORT VideoConferenceTrayController
   // "Return to app" panel of the bubble. Virtual for testing/mocking.
   virtual void GetMediaApps(
       base::OnceCallback<void(MediaApps)> ui_callback) = 0;
+
+  // Brings the app with the given `id` to the foreground.
+  virtual void ReturnToApp(const base::UnguessableToken& id) = 0;
 
   // Updates the tray UI with the given `VideoConferenceMediaState`.
   void UpdateWithMediaState(VideoConferenceMediaState state);

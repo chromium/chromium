@@ -58,6 +58,11 @@ void FakeVideoConferenceTrayController::GetMediaApps(
   std::move(ui_callback).Run(std::move(apps));
 }
 
+void FakeVideoConferenceTrayController::ReturnToApp(
+    const base::UnguessableToken& id) {
+  app_to_launch_state_[id] = true;
+}
+
 void FakeVideoConferenceTrayController::AddMediaApp(
     crosapi::mojom::VideoConferenceMediaAppInfoPtr media_app) {
   media_apps_.push_back(std::move(media_app));

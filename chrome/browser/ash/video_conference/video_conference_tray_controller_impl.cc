@@ -63,4 +63,12 @@ void VideoConferenceTrayControllerImpl::GetMediaApps(
       ->GetMediaApps(std::move(ui_callback));
 }
 
+void VideoConferenceTrayControllerImpl::ReturnToApp(
+    const base::UnguessableToken& id) {
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->video_conference_manager_ash()
+      ->ReturnToApp(id);
+}
+
 }  // namespace ash

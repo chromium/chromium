@@ -7,9 +7,16 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/status_area_widget.h"
+#include "ash/system/status_area_widget_test_helper.h"
+#include "ash/system/video_conference/bubble/bubble_view.h"
+#include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
+#include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/token.h"
+#include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/test_event.h"
@@ -23,9 +30,10 @@ crosapi::mojom::VideoConferenceMediaAppInfoPtr CreateFakeMediaApp(
     bool is_capturing_microphone,
     bool is_capturing_screen,
     const std::u16string& title,
-    std::string url) {
+    std::string url,
+    const base::UnguessableToken& id = base::UnguessableToken::Create()) {
   return crosapi::mojom::VideoConferenceMediaAppInfo::New(
-      /*id=*/base::UnguessableToken::Create(),
+      id,
       /*last_activity_time=*/base::Time::Now(), is_capturing_camera,
       is_capturing_microphone, is_capturing_screen, title,
       /*url=*/GURL(url));
@@ -77,6 +85,9 @@ class ReturnToAppPanelTest : public AshTestBase {
 
     set_create_global_cras_audio_handler(false);
     AshTestBase::SetUp();
+
+    // Make the video conference tray visible for testing.
+    video_conference_tray()->SetVisiblePreferred(true);
   }
 
   void TearDown() override {
@@ -84,6 +95,22 @@ class ReturnToAppPanelTest : public AshTestBase {
     controller_.reset();
     CrasAudioHandler::Shutdown();
     CrasAudioClient::Shutdown();
+  }
+
+  VideoConferenceTray* video_conference_tray() {
+    return StatusAreaWidgetTestHelper::GetStatusAreaWidget()
+        ->video_conference_tray();
+  }
+
+  IconButton* toggle_bubble_button() {
+    return video_conference_tray()->toggle_bubble_button_;
+  }
+
+  // Get the `ReturnToAppPanel` from the test `StatusAreaWidget`.
+  ReturnToAppPanel* GetReturnToAppPanel() {
+    return static_cast<ReturnToAppPanel*>(
+        video_conference_tray()->GetBubbleView()->GetViewByID(
+            BubbleViewID::kReturnToApp));
   }
 
   FakeVideoConferenceTrayController* controller() { return controller_.get(); }
@@ -254,6 +281,46 @@ TEST_F(ReturnToAppPanelTest, MaxCapturingCount) {
       /*url=*/""));
   return_to_app_panel = std::make_unique<ReturnToAppPanel>();
   EXPECT_EQ(3, return_to_app_panel->max_capturing_count());
+}
+
+TEST_F(ReturnToAppPanelTest, ReturnToApp) {
+  auto app_id1 = base::UnguessableToken::Create();
+  auto app_id2 = base::UnguessableToken::Create();
+
+  controller()->ClearMediaApps();
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
+      /*is_capturing_screen=*/false, /*title=*/u"Google Meet",
+      /*url=*/kGoogleMeetTestUrl, /*id=*/app_id1));
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/false, /*is_capturing_microphone=*/false,
+      /*is_capturing_screen=*/true, /*title=*/u"Zoom",
+      /*url=*/"", /*id=*/app_id2));
+
+  LeftClickOn(toggle_bubble_button());
+  auto* return_to_app_panel = GetReturnToAppPanel();
+
+  auto* summary_row =
+      static_cast<ReturnToAppButton*>(return_to_app_panel->children().front());
+  auto* first_app_row =
+      static_cast<ReturnToAppButton*>(return_to_app_panel->children()[1]);
+  auto* second_app_row =
+      static_cast<ReturnToAppButton*>(return_to_app_panel->children()[2]);
+
+  // Clicking on the summary row should not launch any apps.
+  LeftClickOn(summary_row);
+  EXPECT_FALSE(controller()->app_to_launch_state_[app_id1]);
+  EXPECT_FALSE(controller()->app_to_launch_state_[app_id2]);
+
+  LeftClickOn(summary_row->expand_button());
+
+  // Clicking each row should open the corresponding app.
+  LeftClickOn(first_app_row);
+  EXPECT_TRUE(controller()->app_to_launch_state_[app_id1]);
+  EXPECT_FALSE(controller()->app_to_launch_state_[app_id2]);
+
+  LeftClickOn(second_app_row);
+  EXPECT_TRUE(controller()->app_to_launch_state_[app_id2]);
 }
 
 }  // namespace ash::video_conference
