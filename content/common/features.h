@@ -23,6 +23,9 @@ BASE_DECLARE_FEATURE(kAvoidUnnecessaryNavigationCancellations);
 // of OnShowWithPageVisibility. Disabling will revert the refactor and use the
 // direct ShowInternal path.
 BASE_DECLARE_FEATURE(kOnShowWithPageVisibility);
+// Enables skipping of calls to hideSoftInputFromWindow when there is not a
+// keyboard currently visible.
+BASE_DECLARE_FEATURE(kOptimizeImmHideCalls);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // When enabled, queues navigations instead of cancelling the previous

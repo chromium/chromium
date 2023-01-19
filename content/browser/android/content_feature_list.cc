@@ -5,6 +5,7 @@
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
+#include "content/common/features.h"
 #include "content/public/android/content_jni_headers/ContentFeatureListImpl_jni.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"
@@ -31,6 +32,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kComputeAXMode,
     &features::kFedCm,
     &features::kOnDemandAccessibilityEvents,
+    &kOptimizeImmHideCalls,
     &features::kProcessSharingWithStrictSiteInstances,
     &features::kReduceGpuPriorityOnBackground,
     &features::kRequestDesktopSiteAdditions,
