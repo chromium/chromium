@@ -127,8 +127,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/dom_distiller/distiller_ui_handle_android.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher.h"
-#include "chrome/browser/ui/webui/explore_sites_internals/explore_sites_internals.mojom.h"
-#include "chrome/browser/ui/webui/explore_sites_internals/explore_sites_internals_ui.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals.mojom.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals_ui.h"
 #include "chrome/common/offline_page_auto_fetcher.mojom.h"
@@ -900,11 +898,7 @@ void PopulateChromeWebUIFrameBinders(
       app_management::mojom::PageHandlerFactory, WebAppSettingsUI>(map);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-  RegisterWebUIControllerInterfaceBinder<
-      explore_sites_internals::mojom::PageHandler,
-      explore_sites::ExploreSitesInternalsUI>(map);
-#else
+#if !BUILDFLAG(IS_ANDROID)
   RegisterWebUIControllerInterfaceBinder<downloads::mojom::PageHandlerFactory,
                                          DownloadsUI>(map);
 

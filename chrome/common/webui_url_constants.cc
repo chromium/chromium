@@ -237,7 +237,6 @@ const char kChromeUIWelcomeWin10Host[] = "welcome-win10";
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
-const char kChromeUIExploreSitesInternalsHost[] = "explore-sites-internals";
 const char kChromeUIJavaCrashURL[] = "chrome://java-crash/";
 const char kChromeUINativeBookmarksURL[] = "chrome-native://bookmarks/";
 const char kChromeUINativeExploreURL[] = "chrome-native://explore";
@@ -743,7 +742,6 @@ const char* const kChromeHostURLs[] = {
     kChromeUIWhatsNewHost,
 #endif
 #if BUILDFLAG(IS_ANDROID)
-    kChromeUIExploreSitesInternalsHost,
     kChromeUIOfflineInternalsHost,
     kChromeUISnippetsInternalsHost,
     kChromeUIWebApksHost,

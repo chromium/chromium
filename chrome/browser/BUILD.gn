@@ -3328,7 +3328,6 @@ static_library("browser") {
       "//chrome/browser/touch_to_fill/payments/android:public",
       "//chrome/browser/ui:adaptive_toolbar_enums_java",
       "//chrome/browser/ui/android/layouts:android",
-      "//chrome/browser/ui/webui/explore_sites_internals:mojo_bindings",
       "//chrome/browser/ui/webui/feed_internals:mojo_bindings",
       "//chrome/browser/usb/android:jni_headers",
       "//chrome/browser/video_tutorials/internal",
@@ -7703,10 +7702,7 @@ grit("resources") {
   }
 
   if (is_android) {
-    deps += [
-      "//chrome/browser/resources/offline_pages:build_ts",
-      "//chrome/browser/ui/webui/explore_sites_internals:mojo_bindings_js",
-    ]
+    deps += [ "//chrome/browser/resources/offline_pages:build_ts" ]
   }
   if (!is_android) {
     deps += [

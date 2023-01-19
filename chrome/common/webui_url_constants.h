@@ -226,7 +226,6 @@ extern const char kChromeUIWelcomeWin10Host[];
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
-extern const char kChromeUIExploreSitesInternalsHost[];
 extern const char kChromeUIJavaCrashURL[];
 extern const char kChromeUINativeBookmarksURL[];
 extern const char kChromeUINativeExploreURL[];
