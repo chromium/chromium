@@ -715,4 +715,53 @@ TEST_P(UnifiedSystemTrayTest, BubbleHideBehavior) {
   ShowNotificationBubble();
   EXPECT_FALSE(IsBubbleShown());
 }
+
+TEST_P(UnifiedSystemTrayTest, BubbleViewSizeChangeWithEnoughSpace) {
+  // Set a large enough screen size.
+  UpdateDisplay("1600x900");
+
+  auto* tray = GetPrimaryUnifiedSystemTray();
+  tray->ShowBubble();
+  auto* bubble_view = tray->bubble()->GetBubbleView();
+
+  // The main page height should be smaller than the detailed view height.
+  EXPECT_GT(464, bubble_view->height());
+
+  // Goes to a detailed view (here using calendar view).
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
+
+  // Asserts that calendar is actually shown.
+  EXPECT_TRUE(GetPrimaryUnifiedSystemTray()->IsShowingCalendarView());
+
+  if (IsQsRevampEnabled()) {
+    // The bubble height should be fixed to the detailed view height.
+    EXPECT_EQ(464, bubble_view->height());
+  } else {
+    EXPECT_GT(464, bubble_view->height());
+  }
+  tray->CloseBubble();
+}
+
+TEST_P(UnifiedSystemTrayTest, BubbleViewSizeChangeNoEnoughSpace) {
+  // Set a small screen size.
+  UpdateDisplay("300x200");
+
+  auto* tray = GetPrimaryUnifiedSystemTray();
+  tray->ShowBubble();
+  auto* bubble_view = tray->bubble()->GetBubbleView();
+
+  // The main page height should be smaller than the detailed view height.
+  EXPECT_GT(464, bubble_view->height());
+
+  // Goes to a detailed view (here using calendar view).
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
+  // Asserts that calendar is actually shown.
+  EXPECT_TRUE(GetPrimaryUnifiedSystemTray()->IsShowingCalendarView());
+
+  // No enough space for the fixed detailed view height.
+  EXPECT_GT(464, bubble_view->height());
+  tray->CloseBubble();
+}
 }  // namespace ash

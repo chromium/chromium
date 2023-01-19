@@ -541,10 +541,12 @@ void UnifiedSystemTrayController::TransitionToMainView(bool restore_focus) {
   auto scoped_detailed_view_controller = std::move(detailed_view_controller_);
 
   if (features::IsQsRevampEnabled()) {
+    bubble_->UpdateBubbleHeight(/*is_showing_detiled_view=*/false);
     quick_settings_view_->ResetDetailedView();
     if (restore_focus) {
       quick_settings_view_->RestoreFocus();
     }
+    UpdateBubble();
     return;
   }
   unified_view_->ResetDetailedView();
@@ -759,6 +761,7 @@ void UnifiedSystemTrayController::ShowDetailedView(
 
   showing_audio_detailed_view_ = false;
   if (features::IsQsRevampEnabled()) {
+    bubble_->UpdateBubbleHeight(/*is_showing_detiled_view=*/true);
     quick_settings_view_->SetDetailedView(controller->CreateView());
   } else {
     unified_view_->SetDetailedView(controller->CreateView());

@@ -126,6 +126,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     bool translucent = false;
     // Whether the view is fully transparent (only serves as a container).
     bool transparent = false;
+    // Should use the fixed max_height from this param.
+    bool use_fixed_height = false;
   };
 
   explicit TrayBubbleView(const InitParams& init_params);
@@ -207,6 +209,10 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
 
   // views::MouseWatcherListener:
   void MouseMovedOutOfHost() override;
+
+  // Getter and setter for `param_.use_fixed_height`.
+  bool ShouldUseFixedHeight() const;
+  void SetShouldUseFixedHeight(bool shoud_use_fixed_height);
 
  protected:
   // views::View:

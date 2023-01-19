@@ -120,8 +120,9 @@ class BottomAlignedBoxLayout : public views::BoxLayout {
          i != host->children().rend() && consumed_height < host->height();
          ++i) {
       View* child = *i;
-      if (!child->GetVisible())
+      if (!child->GetVisible()) {
         continue;
+      }
       gfx::Size size = child->GetPreferredSize();
       child->SetBounds(0, host->height() - consumed_height - size.height(),
                        host->width(), size.height());
@@ -214,8 +215,9 @@ void TrayBubbleView::RerouteEventHandler::OnKeyEvent(ui::KeyEvent* event) {
 
     tray_bubble_view_->GetWidget()->OnKeyEvent(event);
 
-    if (event->handled())
+    if (event->handled()) {
       return;
+    }
   }
 
   // Always consumes key event not to pass it to other widgets. Calling
@@ -258,8 +260,9 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   SetAccessibleWindowRole(ax::mojom::Role::kDialog);
   // We force to create contents background since the bubble border background
   // is not shown in this view.
-  if (features::IsDarkLightModeEnabled())
+  if (features::IsDarkLightModeEnabled()) {
     set_force_create_contents_background(true);
+  }
   // Bubbles that use transparent colors should not paint their ClientViews to a
   // layer as doing so could result in visual artifacts.
   SetPaintClientToLayer(false);
@@ -343,8 +346,9 @@ void TrayBubbleView::InitializeAndShowBubble() {
 
   // Register pre target event handler to reroute key
   // events to the widget for activating the view or closing it.
-  if (!CanActivate() && params_.reroute_event_handler)
+  if (!CanActivate() && params_.reroute_event_handler) {
     reroute_event_handler_ = std::make_unique<RerouteEventHandler>(this);
+  }
 }
 
 void TrayBubbleView::UpdateBubble() {
@@ -356,8 +360,9 @@ void TrayBubbleView::UpdateBubble() {
 
 void TrayBubbleView::SetMaxHeight(int height) {
   params_.max_height = height;
-  if (GetWidget())
+  if (GetWidget()) {
     SizeToContents();
+  }
 }
 
 void TrayBubbleView::SetBottomPadding(int padding) {
@@ -365,11 +370,13 @@ void TrayBubbleView::SetBottomPadding(int padding) {
 }
 
 void TrayBubbleView::SetPreferredWidth(int width) {
-  if (preferred_width_ == width)
+  if (preferred_width_ == width) {
     return;
+  }
   preferred_width_ = width;
-  if (GetWidget())
+  if (GetWidget()) {
     SizeToContents();
+  }
 }
 
 gfx::Insets TrayBubbleView::GetBorderInsets() const {
@@ -416,8 +423,9 @@ void TrayBubbleView::OnWidgetClosing(Widget* widget) {
 
   BubbleDialogDelegateView::OnWidgetClosing(widget);
 
-  if (IsAnchoredToStatusArea())
+  if (IsAnchoredToStatusArea()) {
     tray_bubble_counter_.reset();
+  }
 }
 
 void TrayBubbleView::OnWidgetActivationChanged(Widget* widget, bool active) {
@@ -429,8 +437,9 @@ void TrayBubbleView::OnWidgetActivationChanged(Widget* widget, bool active) {
 }
 
 ui::LayerType TrayBubbleView::GetLayerType() const {
-  if (params_.translucent)
+  if (params_.translucent) {
     return ui::LAYER_NOT_DRAWN;
+  }
   return ui::LAYER_TEXTURED;
 }
 
@@ -439,11 +448,13 @@ std::unique_ptr<NonClientFrameView> TrayBubbleView::CreateNonClientFrameView(
   // Create the customized bubble border.
   std::unique_ptr<BubbleBorder> bubble_border =
       std::make_unique<BubbleBorder>(arrow(), BubbleBorder::NO_SHADOW);
-  if (params_.corner_radius)
+  if (params_.corner_radius) {
     bubble_border->SetCornerRadius(params_.corner_radius);
+  }
   bubble_border->set_avoid_shadow_overlap(true);
-  if (params_.anchor_mode == AnchorMode::kRect && params_.insets.has_value())
+  if (params_.anchor_mode == AnchorMode::kRect && params_.insets.has_value()) {
     bubble_border->set_insets(params_.insets.value());
+  }
 
   auto frame = BubbleDialogDelegateView::CreateNonClientFrameView(widget);
   static_cast<BubbleFrameView*>(frame.get())
@@ -461,10 +472,11 @@ void TrayBubbleView::GetWidgetHitTestMask(SkPath* mask) const {
 }
 
 std::u16string TrayBubbleView::GetAccessibleWindowTitle() const {
-  if (delegate_)
+  if (delegate_) {
     return delegate_->GetAccessibleNameForBubble();
-  else
+  } else {
     return std::u16string();
+  }
 }
 
 gfx::Size TrayBubbleView::CalculatePreferredSize() const {
@@ -478,6 +490,9 @@ int TrayBubbleView::GetHeightForWidth(int width) const {
   };
   const int height = std::accumulate(children().cbegin(), children().cend(),
                                      GetInsets().height(), visible_height);
+  if (params_.use_fixed_height) {
+    return (params_.max_height != 0) ? params_.max_height : height;
+  }
   return (params_.max_height != 0) ? std::min(height, params_.max_height)
                                    : height;
 }
@@ -502,8 +517,9 @@ void TrayBubbleView::OnMouseExited(const ui::MouseEvent& event) {
   // Disable any MouseWatcher waiting for user interaction inside the bubble.
   mouse_watcher_.reset();
   // Only notify the delegate on exit if it was notified on enter.
-  if (delegate_ && mouse_actively_entered_)
+  if (delegate_ && mouse_actively_entered_) {
     delegate_->OnMouseExitedView();
+  }
 }
 
 void TrayBubbleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -515,8 +531,9 @@ void TrayBubbleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void TrayBubbleView::OnThemeChanged() {
   views::BubbleDialogDelegateView::OnThemeChanged();
-  if (params_.transparent)
+  if (params_.transparent) {
     return;
+  }
 
   if (features::IsDarkLightModeEnabled()) {
     SetBorder(std::make_unique<views::HighlightBorder>(
@@ -527,17 +544,27 @@ void TrayBubbleView::OnThemeChanged() {
   }
 
   DCHECK(layer());
-  if (layer()->type() != ui::LAYER_SOLID_COLOR)
+  if (layer()->type() != ui::LAYER_SOLID_COLOR) {
     return;
+  }
   layer()->SetColor(GetColorProvider()->GetColor(kColorAshShieldAndBase80));
 }
 
 void TrayBubbleView::MouseMovedOutOfHost() {
   // The user moved the mouse that was over the bubble when it was first shown.
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnMouseEnteredView();
+  }
   mouse_actively_entered_ = true;
   mouse_watcher_.reset();
+}
+
+bool TrayBubbleView::ShouldUseFixedHeight() const {
+  return params_.use_fixed_height;
+}
+
+void TrayBubbleView::SetShouldUseFixedHeight(bool shoud_use_fixed_height) {
+  params_.use_fixed_height = shoud_use_fixed_height;
 }
 
 void TrayBubbleView::ChildPreferredSizeChanged(View* child) {
@@ -545,13 +572,15 @@ void TrayBubbleView::ChildPreferredSizeChanged(View* child) {
 }
 
 void TrayBubbleView::SetBubbleBorderInsets(gfx::Insets insets) {
-  if (GetBubbleFrameView()->bubble_border())
+  if (GetBubbleFrameView()->bubble_border()) {
     GetBubbleFrameView()->bubble_border()->set_insets(insets);
+  }
 }
 
 void TrayBubbleView::CloseBubbleView() {
-  if (!delegate_)
+  if (!delegate_) {
     return;
+  }
 
   delegate_->HideBubble(this);
 }
