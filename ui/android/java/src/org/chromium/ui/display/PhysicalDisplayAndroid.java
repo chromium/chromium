@@ -18,6 +18,7 @@ import android.view.WindowManager;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.StrictModeContext;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.compat.ApiHelperForR;
 import org.chromium.base.compat.ApiHelperForS;
@@ -138,8 +139,11 @@ import java.util.List;
         super(display.getDisplayId());
         if (USE_CONFIGURATION) {
             Context appContext = ContextUtils.getApplicationContext();
-            mWindowContext = ApiHelperForS.createWindowContext(
-                    appContext, display, WindowManager.LayoutParams.TYPE_APPLICATION, null);
+            // `createWindowContext` on some devices writes to disk. See crbug.com/1408587.
+            try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
+                mWindowContext = ApiHelperForS.createWindowContext(
+                        appContext, display, WindowManager.LayoutParams.TYPE_APPLICATION, null);
+            }
             assert display.getDisplayId()
                     == ApiHelperForR.getDisplay(mWindowContext).getDisplayId();
             mComponentCallbacks = new ComponentCallbacks() {
