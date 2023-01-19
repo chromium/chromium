@@ -139,10 +139,10 @@ void PreconnectManager::StartPreresolveHosts(
     return;
   // Push jobs in front of the queue due to higher priority.
   for (const GURL& url : base::Reversed(urls)) {
-    PreresolveJobId job_id =
-        preresolve_jobs_.Add(std::make_unique<PreresolveJob>(
-            url, 0, kAllowCredentialsOnPreconnectByDefault,
-            network_anonymization_key, nullptr));
+    PreresolveJobId job_id = preresolve_jobs_.Add(
+        std::make_unique<PreresolveJob>(url.DeprecatedGetOriginAsURL(), 0,
+                                        kAllowCredentialsOnPreconnectByDefault,
+                                        network_anonymization_key, nullptr));
     queued_jobs_.push_front(job_id);
   }
 
