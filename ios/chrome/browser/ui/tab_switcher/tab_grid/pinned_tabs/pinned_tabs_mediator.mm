@@ -293,6 +293,50 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
                       withItem:GetTabSwitcherItem(webState)];
 }
 
+#pragma mark - GridImageDataSource
+
+- (void)snapshotForIdentifier:(NSString*)identifier
+                   completion:(void (^)(UIImage*))completion {
+  // TODO (crbug.com/1406524): Implement or remove.
+}
+
+- (void)faviconForIdentifier:(NSString*)identifier
+                  completion:(void (^)(UIImage*))completion {
+  web::WebState* webState =
+      GetWebState(self.webStateList, identifier, /*pinned=*/YES);
+
+  if (!webState) {
+    return;
+  }
+
+  // NTP tabs get no favicon.
+  if (IsURLNtp(webState->GetVisibleURL())) {
+    return;
+  }
+
+  UIImage* defaultFavicon =
+      [UIImage imageNamed:@"default_world_favicon_regular"];
+  completion(defaultFavicon);
+
+  favicon::FaviconDriver* faviconDriver =
+      favicon::WebFaviconDriver::FromWebState(webState);
+
+  if (faviconDriver) {
+    gfx::Image favicon = faviconDriver->GetFavicon();
+    if (!favicon.IsEmpty()) {
+      completion(favicon.ToUIImage());
+    }
+  }
+}
+
+- (void)preloadSnapshotsForVisibleGridSize:(int)gridSize {
+  // TODO (crbug.com/1406524): Implement or remove.
+}
+
+- (void)clearPreloadedSnapshots {
+  // TODO (crbug.com/1406524): Implement or remove.
+}
+
 #pragma mark - TabCollectionCommands
 
 - (void)selectItemWithID:(NSString*)itemID {

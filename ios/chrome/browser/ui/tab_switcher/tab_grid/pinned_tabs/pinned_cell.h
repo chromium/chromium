@@ -12,10 +12,9 @@
 // A cell for the pinned tabs view. Contains an icon, title, snapshot.
 @interface PinnedCell : TabCell
 
-// View for displaying the favicon.
-@property(nonatomic, strong) UIImageView* faviconView;
-// Title is displayed by this label.
-@property(nonatomic, strong) UILabel* titleLabel;
+// Settable UI elements of the cell.
+@property(nonatomic, strong) UIImage* icon;
+@property(nonatomic, copy) NSString* title;
 
 @end
 

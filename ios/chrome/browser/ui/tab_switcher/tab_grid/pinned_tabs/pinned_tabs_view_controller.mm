@@ -620,14 +620,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)configureCell:(PinnedCell*)cell withItem:(TabSwitcherItem*)item {
   if (item) {
     cell.itemIdentifier = item.identifier;
-    cell.titleLabel.text = item.title;
+    cell.title = item.title;
     NSString* itemIdentifier = item.identifier;
     [self.imageDataSource faviconForIdentifier:itemIdentifier
                                     completion:^(UIImage* icon) {
                                       // Only update the icon if the cell is not
                                       // already reused for another item.
                                       if ([cell hasIdentifier:itemIdentifier]) {
-                                        cell.faviconView.image = icon;
+                                        cell.icon = icon;
                                       }
                                     }];
   }

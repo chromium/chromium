@@ -21,6 +21,7 @@ source_set("pinned_tabs") {
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher:tab_utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_collection_commands",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ios/chrome/browser/url",
     "//ios/chrome/browser/web_state_list",
     "//ios/web",
