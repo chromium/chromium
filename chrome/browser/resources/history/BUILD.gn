@@ -62,11 +62,6 @@ build_webui("build") {
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "history"
-    optimize_webui_out_files = [
-      "history.rollup.js",
-      "lazy_load.rollup.js",
-      "shared.rollup.js",
-    ]
     optimize_webui_in_files = [
       "history.js",
       "lazy_load.js",

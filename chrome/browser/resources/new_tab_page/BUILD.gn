@@ -110,11 +110,6 @@ if (optimize_webui) {
       "lazy_load.js",
     ]
     out_manifest = "$target_gen_dir/$build_manifest"
-    js_out_files = [
-      "new_tab_page.rollup.js",
-      "lazy_load.rollup.js",
-      "shared.rollup.js",
-    ]
     excludes = [
                  "chrome://resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js",
                  "chrome://resources/cr_components/customize_themes/customize_themes.mojom-webui.js",

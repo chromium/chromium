@@ -16,8 +16,15 @@ template("optimize_webui") {
 
     inputs = []
     outputs = []
-    foreach(_out, invoker.js_out_files) {
-      outputs += [ "$target_gen_dir/$_out" ]
+    input_count = 0
+    foreach(f, invoker.js_module_in_files) {
+      input_count = input_count + 1
+      out_file = string_replace(f, ".js", ".rollup.js")
+      outputs += [ "$target_gen_dir/$out_file" ]
+      if (input_count == 2) {
+        folder = get_path_info(f, "dir")
+        outputs += [ "$target_gen_dir/$folder/shared.rollup.js" ]
+      }
     }
 
     deps = invoker.deps
@@ -36,8 +43,6 @@ template("optimize_webui") {
       "--target_name",
       target_name,
     ]
-
-    args += [ "--js_out_files" ] + invoker.js_out_files
 
     if (defined(invoker.excludes)) {
       args += [ "--exclude" ] + invoker.excludes

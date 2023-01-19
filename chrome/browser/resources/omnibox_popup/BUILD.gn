@@ -22,7 +22,6 @@ build_webui("build") {
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "omnibox-popup.top-chrome"
-    optimize_webui_out_files = [ "omnibox_popup.rollup.js" ]
     optimize_webui_in_files = [ "omnibox_popup.js" ]
     optimize_webui_excludes = [
       "chrome://resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js",

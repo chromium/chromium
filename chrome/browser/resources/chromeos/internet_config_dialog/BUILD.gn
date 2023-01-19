@@ -17,7 +17,6 @@ if (optimize_webui) {
 
   optimize_webui("build") {
     host = "internet-config-dialog"
-    js_out_files = [ "internet_config_dialog.rollup.js" ]
     js_module_in_files = [ "internet_config_dialog.js" ]
     input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
     out_manifest = "$target_gen_dir/$build_manifest"

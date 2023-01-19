@@ -68,11 +68,6 @@ build_webui("build") {
       "profile_picker.js",
       "lazy_load.js",
     ]
-    optimize_webui_out_files = [
-      "profile_picker.rollup.js",
-      "lazy_load.rollup.js",
-      "shared.rollup.js",
-    ]
     optimize_webui_excludes = [
       "chrome://resources/js/cr.js",
       "chrome://resources/mojo/mojo/public/js/bindings.js",

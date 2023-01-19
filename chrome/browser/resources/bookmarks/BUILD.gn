@@ -68,7 +68,6 @@ build_webui("build") {
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "bookmarks"
-    optimize_webui_out_files = [ "bookmarks.rollup.js" ]
     optimize_webui_in_files = [ "bookmarks.js" ]
     optimize_webui_excludes = [ "chrome://resources/js/cr.js" ]
     optimize_webui_resource_paths_rewrites =

@@ -239,7 +239,6 @@ template("build_webui") {
       visibility = [ ":build_grd" ]
       host = invoker.optimize_webui_host
       input = rebase_path(tsc_dir, root_build_dir)
-      js_out_files = invoker.optimize_webui_out_files
       js_module_in_files = invoker.optimize_webui_in_files
       out_manifest = "$target_gen_dir/$bundle_manifest"
       excludes = invoker.optimize_webui_excludes

@@ -72,19 +72,37 @@ function getPathForUrl(source, origin, urlPrefix, urlSrcPath, excludes) {
   return joinPaths(urlSrcPath, pathFromUrl);
 }
 
+/**
+ * @param rootPath Path to the root directory of the set of files being
+ *     bundled.
+ * @param bundlePath Path from the root directory to the bundled file(s)
+ *     being generated. E.g. if the output bundle is ROOT/foo/bundle.js,
+ *     this is "foo".
+ * @param hostUrl The URL for the WebUI host, e.g. chrome://settings.
+ *     Used to support absolute "/" style imports that are excluded from
+ *     the bundle.
+ * @param excludes Imports that should be excluded from the bundle.
+ * @param externalPaths Array of mappings from URLs to paths where the
+ *     files imported from the URLs can be found, e.g.
+ *     chrome://resources|gen/ui/webui/resources/preprocessed/
+ */
 export default function plugin(
-    rootPath, hostUrl, excludes, externalPaths, allowEmptyExtension) {
+    rootPath, bundlePath, hostUrl, excludes, externalPaths) {
   const urlsToPaths = new Map();
   for (const externalPath of externalPaths) {
     const [url, path] = externalPath.split('|', 2);
     urlsToPaths.set(url, path);
   }
 
+  const parentPath = '../';
+  const outputToRoot =
+      bundlePath ? parentPath.repeat(bundlePath.split('/').length) : './';
+
   return {
     name: 'webui-path-resolver-plugin',
 
     resolveId(source, origin) {
-      if (path.extname(source) === '' && !allowEmptyExtension) {
+      if (path.extname(source) === '') {
         this.error(
             `Invalid path (missing file extension) was found: ${source}`);
       }
@@ -114,7 +132,9 @@ export default function plugin(
         const pathFromRoot = relativePath(rootPath, fullSourcePath);
         if (excludes.includes(pathFromRoot)) {
           const url = new URL(pathFromRoot, hostUrl);
-          return {id: url.href, external: 'absolute'};
+          return source.startsWith('/') ?
+              {id: url.href, external: 'absolute'} :
+              {id: outputToRoot + pathFromRoot, external: 'relative'};
         }
       }
 

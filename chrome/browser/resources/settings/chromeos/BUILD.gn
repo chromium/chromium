@@ -34,11 +34,6 @@ if (optimize_webui) {
       "chromeos/lazy_load.js",
       "chromeos/os_settings.js",
     ]
-    js_out_files = [
-      "lazy_load.rollup.js",
-      "os_settings.rollup.js",
-      "shared.rollup.js",
-    ]
     out_manifest = "$target_gen_dir/$build_manifest_v3"
 
     deps = [
@@ -267,9 +262,9 @@ generate_grd("build_grd") {
     manifest_files += [ "$target_gen_dir/$build_manifest_v3" ]
     input_files += [ "../../nearby_share/shared/nearby_shared_icons.html" ]
     resource_path_rewrites += [
-      "lazy_load.rollup.js|chromeos/lazy_load.js",
-      "os_settings.rollup.js|chromeos/os_settings.js",
-      "shared.rollup.js|chromeos/shared.rollup.js",
+      "chromeos/lazy_load.rollup.js|chromeos/lazy_load.js",
+      "chromeos/os_settings.rollup.js|chromeos/os_settings.js",
+      "chromeos/shared.rollup.js|chromeos/shared.rollup.js",
       "../../nearby_share/shared/nearby_shared_icons.html|shared/nearby_shared_icons.html",
     ]
   } else {

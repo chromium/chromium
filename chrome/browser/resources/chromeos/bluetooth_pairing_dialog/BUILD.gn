@@ -17,7 +17,6 @@ if (optimize_webui) {
 
   optimize_webui("build") {
     host = "bluetooth-pairing"
-    js_out_files = [ "bluetooth_pairing_dialog.rollup.js" ]
     js_module_in_files = [ "bluetooth_pairing_dialog.js" ]
     input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
     out_manifest = "$target_gen_dir/$build_manifest"

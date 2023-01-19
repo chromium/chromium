@@ -214,7 +214,5 @@ optimize_webui("build_injected_scripts") {
   host = "about:blank"
   input = rebase_path(stage_folder, root_build_dir)
   js_module_in_files = [ "saml_injected.js" ]
-  js_out_files = [ "saml_injected.rollup.js" ]
-
   deps = [ ":saml_injected_copy" ]
 }

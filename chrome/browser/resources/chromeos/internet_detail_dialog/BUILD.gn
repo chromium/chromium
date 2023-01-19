@@ -18,7 +18,6 @@ if (optimize_webui) {
 
   optimize_webui("build") {
     host = "internet-detail-dialog"
-    js_out_files = [ "internet_detail_dialog_container.rollup.js" ]
     js_module_in_files = [ "internet_detail_dialog_container.js" ]
     input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
 

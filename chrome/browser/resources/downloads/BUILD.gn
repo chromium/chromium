@@ -51,7 +51,6 @@ build_webui("build") {
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "downloads"
-    optimize_webui_out_files = [ "downloads.rollup.js" ]
     optimize_webui_in_files = [ "downloads.js" ]
     optimize_webui_excludes = [
       "chrome://resources/js/cr.js",

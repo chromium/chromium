@@ -134,7 +134,6 @@ build_webui("build") {
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "print"
-    optimize_webui_out_files = [ "print_preview.rollup.js" ]
     optimize_webui_in_files = [ "print_preview.js" ]
     optimize_webui_excludes = [
       "chrome://resources/js/cr.js",

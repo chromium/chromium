@@ -172,8 +172,6 @@ import './element_in_dir/element_in_dir.js';
         'fake-host',
         '--js_module_in_files',
         'ui.js',
-        '--js_out_files',
-        'ui.rollup.js',
     ]
     self._run_optimize(args)
 
@@ -189,8 +187,6 @@ import './element_in_dir/element_in_dir.js';
         'fake-host',
         '--js_module_in_files',
         'ui.js',
-        '--js_out_files',
-        'ui.rollup.js',
         '--external_paths',
         'chrome://resources|%s' % resources_path,
     ]
@@ -230,10 +226,6 @@ import './element_in_dir/element_in_dir.js';
         '--js_module_in_files',
         'ui.js',
         'lazy.js',
-        '--js_out_files',
-        'ui.rollup.js',
-        'lazy.rollup.js',
-        'shared.rollup.js',
         '--out-manifest',
         os.path.join(self._out_folder, 'out_manifest.json'),
     ]
@@ -281,8 +273,6 @@ import './element_in_dir/element_in_dir.js';
         'fake-host',
         '--js_module_in_files',
         'ui.js',
-        '--js_out_files',
-        'ui.rollup.js',
         '--external_paths',
         'chrome://resources|%s' % resources_path,
         'some-fake-scheme://foo|%s' % os.path.abspath(custom_dir),
@@ -314,8 +304,6 @@ import './element_in_dir/element_in_dir.js';
         'chrome-extension://myextensionid/',
         '--js_module_in_files',
         'ui.js',
-        '--js_out_files',
-        'ui.rollup.js',
         '--exclude',
         'element_in_dir/element_in_dir.js',
     ]
@@ -340,8 +328,6 @@ import './element_in_dir/element_in_dir.js';
         'chrome-untrusted://fake-host',
         '--js_module_in_files',
         'ui.js',
-        '--js_out_files',
-        'ui.rollup.js',
         '--external_paths',
         '//resources|%s' % resources_path,
         'chrome-untrusted://resources|%s' % resources_path,
@@ -372,8 +358,6 @@ import './element_in_dir/element_in_dir.js';
         'chrome-untrusted://fake-host',
         '--js_module_in_files',
         'ui.js',
-        '--js_out_files',
-        'ui.rollup.js',
         '--external_paths',
         '//resources|%s' % resources_path,
         'chrome-untrusted://resources|%s' % resources_path,
@@ -415,8 +399,6 @@ alert('hello from external_element_dep');''')
         'fake-host',
         '--js_module_in_files',
         'ui.js',
-        '--js_out_files',
-        'ui.rollup.js',
         '--external_paths',
         '//resources|%s' % resources_path,
         'some-fake-scheme://foo|%s' % os.path.abspath(custom_dir_foo),

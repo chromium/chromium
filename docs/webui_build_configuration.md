@@ -233,11 +233,6 @@ input: The location of the input files to be bundled.
 js_module_in_files: The names of the root files to bundle. These files should
                     import all other dependencies (directly or indirectly).
                     These should be specified with respect to |input|.
-js_out_files: The names of the final bundled files to output. If only one
-              |js_module_in_files| is provided, there should be 1 file name
-              specified. If 2 |js_module_in_files| are provided, there should
-              be 3 file names (1 for each input, plus 1 for the shared bundle,
-              which should be the last output file name).
 out_manifest: File location to write the manifest of all output files created
               by optimize_webui(). Useful for generating grds.
 deps: Targets generating any files being bundled. Note that this should include
@@ -461,7 +456,6 @@ optimize: Specifies whether any optimization steps will be used, defaults to
 optimize_webui_excludes: See |excludes| in optimize_webui().
 optimize_webui_host: See |host| in optimize_webui().
 optimize_webui_in_files: See |in_files| in optimize_webui().
-optimize_webui_out_files: See |out_files| in optimize_webui().
 
 Other params:
 grd_prefix: See |grd_prefix| in generate_grd(). Required parameter.

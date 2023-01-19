@@ -76,7 +76,6 @@ build_webui("build") {
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "tab-search.top-chrome"
-    optimize_webui_out_files = [ "tab_search.rollup.js" ]
     optimize_webui_in_files = [ "tab_search.js" ]
     optimize_webui_excludes = [
       "chrome://resources/js/cr.js",

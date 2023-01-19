@@ -58,7 +58,6 @@ if (optimize_webui) {
   optimize_webui("build") {
     host = "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai"
     input = rebase_path("$target_gen_dir/$tsc_folder", root_build_dir)
-    js_out_files = [ "pdf_viewer_wrapper.rollup.js" ]
     js_module_in_files = [ "pdf_viewer_wrapper.js" ]
     out_manifest = "$target_gen_dir/$build_manifest"
 
@@ -85,7 +84,6 @@ build_internal_plugin_manifest = "build_internal_plugin_manifest.json"
 optimize_webui("build_internal_plugin") {
   host = "about:blank"
   input = rebase_path("$target_gen_dir/$tsc_folder", root_build_dir)
-  js_out_files = [ "pdf_internal_plugin_wrapper.rollup.js" ]
   js_module_in_files = [ "pdf_internal_plugin_wrapper.js" ]
   out_manifest = "$target_gen_dir/$build_internal_plugin_manifest"
 

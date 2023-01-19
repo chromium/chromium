@@ -225,7 +225,6 @@ if (optimize_webui) {
   optimize_webui("build") {
     host = "personalization"
     input = rebase_path("$target_gen_dir/tsc", root_build_dir)
-    js_out_files = [ "personalization_app.rollup.js" ]
     js_module_in_files = [ "js/personalization_app.js" ]
     out_manifest = "$target_gen_dir/$build_manifest"
 
@@ -246,7 +245,7 @@ generate_grd("build_grd") {
     deps = [ ":build" ]
     manifest_files = [ "$target_gen_dir/$build_manifest" ]
     resource_path_rewrites =
-        [ "personalization_app.rollup.js|js/personalization_app.js" ]
+        [ "js/personalization_app.rollup.js|js/personalization_app.js" ]
   } else {
     deps = [ ":build_ts" ]
     manifest_files =

@@ -50,7 +50,6 @@ copy("stage_generated") {
 
 optimize_webui("launch_rollup") {
   host = "media-app"
-  js_out_files = [ "launch.rollup.js" ]
   js_module_in_files = [ "launch.js" ]
   input = rebase_path(stage_folder, root_build_dir)
   deps = [
@@ -61,7 +60,6 @@ optimize_webui("launch_rollup") {
 
 optimize_webui("receiver_rollup") {
   host = "media-app"
-  js_out_files = [ "receiver.rollup.js" ]
   js_module_in_files = [ "receiver.js" ]
   input = rebase_path(stage_folder, root_build_dir)
   deps = [
@@ -72,7 +70,6 @@ optimize_webui("receiver_rollup") {
 
 optimize_webui("piex_rollup") {
   host = "media-app"
-  js_out_files = [ "piex_module.rollup.js" ]
   js_module_in_files = [ "piex_module.js" ]
   input = rebase_path(stage_folder, root_build_dir)
   deps = [
