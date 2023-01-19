@@ -587,6 +587,11 @@ extern const char kOptimizationTargetPredictionName[];
 extern const char kPasswordReuseDetectionName[];
 extern const char kPasswordReuseDetectionDescription[];
 
+// Title and description for the flag to have the Promos Manager use the FET as
+// its impression tracking system.
+extern const char kPromosManagerUsesFETName[];
+extern const char kPromosManagerUsesFETDescription[];
+
 // Title and description for the flag to enable PriceNotifications IPH to be
 // alwayws be displayed.
 extern const char kIPHPriceNotificationsWhileBrowsingName[];

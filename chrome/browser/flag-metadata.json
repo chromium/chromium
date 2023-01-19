@@ -5774,6 +5774,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "promos-manager-uses-fet",
+    "owners": ["rkgibson@google.com", "bling-get-set-up@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "pull-to-refresh",
     "owners": [ "afakhry", "tclaiborne" ],
     "expiry_milestone": 99

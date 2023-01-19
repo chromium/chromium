@@ -1216,6 +1216,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMultilineFadeTruncatingLabelName,
      flag_descriptions::kMultilineFadeTruncatingLabelDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kMultilineFadeTruncatingLabel)},
+    {"promos-manager-uses-fet", flag_descriptions::kPromosManagerUsesFETName,
+     flag_descriptions::kPromosManagerUsesFETDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kPromosManagerUsesFET)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

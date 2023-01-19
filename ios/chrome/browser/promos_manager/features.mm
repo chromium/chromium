@@ -18,6 +18,10 @@ BASE_FEATURE(kFullscreenPromosManagerSkipInternalLimits,
              "FullscreenPromosManagerSkipInternalLimits",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPromosManagerUsesFET,
+             "PromosManagerUsesFET",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsFullscreenPromosManagerEnabled() {
   return base::FeatureList::IsEnabled(kFullscreenPromosManager);
 }
@@ -25,4 +29,8 @@ bool IsFullscreenPromosManagerEnabled() {
 bool IsSkippingInternalImpressionLimitsEnabled() {
   return base::FeatureList::IsEnabled(
       kFullscreenPromosManagerSkipInternalLimits);
+}
+
+bool ShouldPromosManagerUseFET() {
+  return base::FeatureList::IsEnabled(kPromosManagerUsesFET);
 }

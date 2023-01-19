@@ -655,6 +655,11 @@ const char kPasswordReuseDetectionDescription[] =
     "Displays warning when user types or pastes a saved password into a "
     "phishing website.";
 
+const char kPromosManagerUsesFETName[] = "Promos Manager using FET";
+const char kPromosManagerUsesFETDescription[] =
+    "Migrates the Promos Manager to use the Feature Engagement Tracker as its "
+    "impression tracking system";
+
 const char kIPHPriceNotificationsWhileBrowsingName[] =
     "Price Tracking IPH Display";
 const char kIPHPriceNotificationsWhileBrowsingDescription[] =
