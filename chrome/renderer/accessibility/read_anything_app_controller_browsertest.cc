@@ -19,7 +19,7 @@ class MockAXTreeDistiller : public AXTreeDistiller {
       : AXTreeDistiller(render_frame, base::NullCallback()) {}
   MOCK_METHOD(void,
               Distill,
-              (ui::AXTree * tree, const ui::AXTreeUpdate& snapshot),
+              (const ui::AXTree& tree, const ui::AXTreeUpdate& snapshot),
               (override));
 };
 

@@ -420,7 +420,7 @@ void ReadAnythingAppController::Distill() {
   ui::AXTreeUpdate snapshot;
   CHECK(serializer.SerializeChanges(tree->root(), &snapshot));
   distillation_in_progress_ = true;
-  distiller_->Distill(tree, snapshot);
+  distiller_->Distill(*tree, snapshot);
 }
 
 void ReadAnythingAppController::OnAXTreeDistilled(
