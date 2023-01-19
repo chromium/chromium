@@ -4,16 +4,29 @@
 
 #include "base/test/gtest_tags.h"
 
+#include "base/command_line.h"
 #include "base/test/gtest_util.h"
+#include "base/test/test_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
 
-TEST(GtestTagsTest, AddInvalidName) {
+class GtestTagsTest : public ::testing::Test {
+ public:
+  void SetUp() override {
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kTestLauncherOutput)) {
+      GTEST_SKIP() << "XmlUnitTestResultPrinterTest is not initialized "
+                   << "for single process tests.";
+    }
+  }
+};
+
+TEST_F(GtestTagsTest, AddInvalidName) {
   EXPECT_DCHECK_DEATH(AddTagToTestResult("", "value"));
 }
 
-TEST(GtestTagsTest, AddValidTag) {
+TEST_F(GtestTagsTest, AddValidTag) {
   AddTagToTestResult("name", "value");
 }
 

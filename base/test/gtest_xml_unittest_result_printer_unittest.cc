@@ -14,7 +14,18 @@
 
 namespace base {
 
-TEST(XmlUnitTestResultPrinterTest, LinkInXmlFile) {
+class XmlUnitTestResultPrinterTest : public ::testing::Test {
+ public:
+  void SetUp() override {
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kTestLauncherOutput)) {
+      GTEST_SKIP() << "XmlUnitTestResultPrinterTest is not initialized "
+                   << "for single process tests.";
+    }
+  }
+};
+
+TEST_F(XmlUnitTestResultPrinterTest, LinkInXmlFile) {
   XmlUnitTestResultPrinter::Get()->AddLink("unique_link", "http://google.com");
   std::string file_path =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -31,7 +42,7 @@ TEST(XmlUnitTestResultPrinterTest, LinkInXmlFile) {
       << expected_content << " not found in " << content;
 }
 
-TEST(XmlUnitTestResultPrinterTest, EscapedLinkInXmlFile) {
+TEST_F(XmlUnitTestResultPrinterTest, EscapedLinkInXmlFile) {
   XmlUnitTestResultPrinter::Get()->AddLink(
       "unique_link", "http://google.com/path?id=\"'<>&\"");
   std::string file_path =
@@ -49,7 +60,7 @@ TEST(XmlUnitTestResultPrinterTest, EscapedLinkInXmlFile) {
       << expected_content << " not found in " << content;
 }
 
-TEST(XmlUnitTestResultPrinterTest, TagInXmlFile) {
+TEST_F(XmlUnitTestResultPrinterTest, TagInXmlFile) {
   XmlUnitTestResultPrinter::Get()->AddTag("tag_name", "tag_value");
   std::string file_path =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
