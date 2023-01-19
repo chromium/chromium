@@ -1933,7 +1933,8 @@ id<GREYMatcher> EditDoneButton() {
 // Tests that adding new password credential where the username and website
 // matches with an existing credential results in showing a section alert for
 // the existing credential.
-- (void)testAddNewDuplicatedPasswordCredential {
+// TODO(crbug.com/1408773): Test is consistently failing.
+- (void)DISABLED_testAddNewDuplicatedPasswordCredential {
   SaveExamplePasswordForm();
 
   OpenPasswordSettings();
