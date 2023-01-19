@@ -864,6 +864,11 @@ extern const char kGlobalMediaControlsForCastDescription[];
 extern const char kMediaRemotingWithoutFullscreenName[];
 extern const char kMediaRemotingWithoutFullscreenDescription[];
 
+#if BUILDFLAG(IS_CHROMEOS)
+extern const char kGlobalMediaControlsCrOSUpdatedUIName[];
+extern const char kGlobalMediaControlsCrOSUpdatedUIDescription[];
+#endif
+
 extern const char kGlobalMediaControlsModernUIName[];
 extern const char kGlobalMediaControlsModernUIDescription[];
 

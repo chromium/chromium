@@ -1549,6 +1549,13 @@ const char kMediaRemotingWithoutFullscreenDescription[] =
     "Starts Media Remoting from Global Media Controls without making the "
     "videos fullscreen.";
 
+#if BUILDFLAG(IS_CHROMEOS)
+const char kGlobalMediaControlsCrOSUpdatedUIName[] =
+    "Global Media Controls CrOS updated UI";
+const char kGlobalMediaControlsCrOSUpdatedUIDescription[] =
+    "Show updated UI for Global Media Controls in CrOS.";
+#endif
+
 const char kGlobalMediaControlsModernUIName[] =
     "Global Media Controls Modern UI";
 const char kGlobalMediaControlsModernUIDescription[] =

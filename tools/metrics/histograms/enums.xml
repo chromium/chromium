@@ -58442,6 +58442,7 @@ from previous Chrome versions.
   <int value="-1467839547" label="ContextMenuShopWithGoogleLens:disabled"/>
   <int value="-1467642274" label="KeyboardShortcutViewer:disabled"/>
   <int value="-1467332609" label="tab-management-experiment-type-anise"/>
+  <int value="-1467027479" label="GlobalMediaControlsCrOSUpdatedUI:enabled"/>
   <int value="-1466990325" label="CrosCompUpdates:enabled"/>
   <int value="-1466862366" label="TouchToFillAndroid:enabled"/>
   <int value="-1466759286" label="TabModalJsDialog:disabled"/>
@@ -64699,6 +64700,7 @@ from previous Chrome versions.
   <int value="2137571271" label="MediaSessionWebRTC:enabled"/>
   <int value="2137599770" label="enable-win32k-renderer-lockdown"/>
   <int value="2138146331" label="OmniboxVoiceSearchAlwaysVisible:enabled"/>
+  <int value="2138431623" label="GlobalMediaControlsCrOSUpdatedUI:disabled"/>
   <int value="2139048614" label="UseSurfaceLayerForVideo:enabled"/>
   <int value="2139520082" label="EnableRestrictedWebApis:disabled"/>
   <int value="2140205372" label="ScreenAI"/>

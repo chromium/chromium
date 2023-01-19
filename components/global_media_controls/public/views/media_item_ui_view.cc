@@ -14,6 +14,7 @@
 #include "components/global_media_controls/public/views/media_item_ui_device_selector.h"
 #include "components/global_media_controls/public/views/media_item_ui_footer.h"
 #include "components/media_message_center/media_notification_item.h"
+#include "components/media_message_center/media_notification_view_ash_impl.h"
 #include "components/media_message_center/media_notification_view_modern_impl.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -130,8 +131,19 @@ MediaItemUIView::MediaItemUIView(
       dismiss_button_container_->AddChildView(std::move(dismiss_button));
   UpdateDismissButtonIcon();
 
+#if BUILDFLAG(IS_CHROMEOS)
+  bool use_cros_updated_ui =
+      base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI);
+#else
+  bool use_cros_updated_ui = false;
+#endif
+
   std::unique_ptr<media_message_center::MediaNotificationView> view;
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI)) {
+  if (use_cros_updated_ui) {
+    view = std::make_unique<media_message_center::MediaNotificationViewAshImpl>(
+        this, std::move(item), std::move(dismiss_button_placeholder), theme);
+  } else if (base::FeatureList::IsEnabled(
+                 media::kGlobalMediaControlsModernUI)) {
     footer_view_ = footer_view_.get();
     view =
         std::make_unique<media_message_center::MediaNotificationViewModernImpl>(

@@ -525,6 +525,11 @@ BASE_FEATURE(kGlobalMediaControlsAutoDismiss,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
+// Updated global media controls UI for CrOS.
+BASE_FEATURE(kGlobalMediaControlsCrOSUpdatedUI,
+             "GlobalMediaControlsCrOSUpdatedUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Show Cast sessions in Global Media Controls.
 BASE_FEATURE(kGlobalMediaControlsForCast,
              "GlobalMediaControlsForCast",

@@ -6802,6 +6802,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kMouseSubframeNoImplicitCapture)},
 
 #if BUILDFLAG(IS_CHROMEOS)
+    {"global-media-controls-cros-updated-ui",
+     flag_descriptions::kGlobalMediaControlsCrOSUpdatedUIName,
+     flag_descriptions::kGlobalMediaControlsCrOSUpdatedUIDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(media::kGlobalMediaControlsCrOSUpdatedUI)},
+
     {"global-media-controls-for-cast",
      flag_descriptions::kGlobalMediaControlsForCastName,
      flag_descriptions::kGlobalMediaControlsForCastDescription, kOsCrOS,
