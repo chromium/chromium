@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector.h"
@@ -44,10 +45,16 @@ std::string CreateDeviceName(const std::string& name,
                              int port,
                              const std::string& backend_prefix) {
   std::string path;
-  if (rs == "none")
+  if (rs == "none") {
     path = "eSCL/";
-  else if (!rs.empty())
-    path = rs + "/";
+  } else if (!rs.empty()) {
+    // Some scanners report rs=/eSCL instead of rs=eSCL. This causes problems
+    // without our URL construction, so trim any leading slashes here. We also
+    // trim trailing slashes in case any scanners report rs=eSCL/, since we
+    // append a slash after.
+    base::TrimString(rs, "/", &path);
+    path += "/";
+  }
 
   // Replace colons in the instance name to prevent them from breaking
   // sane-airscan's device name parsing logic.
@@ -84,14 +91,17 @@ absl::optional<Scanner> CreateSaneScanner(const std::string& name,
   // If the name contains "EPSON" and is a generic service type, use the
   // "epsonds:net" backend.
   if (service_type == ZeroconfScannerDetector::kGenericScannerServiceType &&
-      base::StartsWith(name, "EPSON"))
+      base::StartsWith(name, "EPSON")) {
     device_name = base::StringPrintf("%s:%s", "epsonds:net",
                                      ip_address.ToString().c_str());
-  else if (service_type != ZeroconfScannerDetector::kGenericScannerServiceType)
+  } else if (service_type !=
+             ZeroconfScannerDetector::kGenericScannerServiceType) {
     device_name =
         CreateDeviceName(name, scheme, rs, ip_address, port, "airscan:escl");
-  if (device_name.empty())
+  }
+  if (device_name.empty()) {
     return absl::nullopt;
+  }
 
   Scanner scanner;
   scanner.display_name = name;
