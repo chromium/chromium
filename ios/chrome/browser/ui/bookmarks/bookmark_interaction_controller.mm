@@ -28,7 +28,6 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_path_cache.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_transitioning_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller.h"
@@ -129,11 +128,6 @@ enum class PresentedState {
 
 @property(nonatomic, strong) BookmarkMediator* mediator;
 
-// The transitioning delegate that is used when presenting
-// `self.bookmarkBrowser`.
-@property(nonatomic, strong)
-    BookmarkTransitioningDelegate* bookmarkTransitioningDelegate;
-
 // Handler for Application Commands.
 @property(nonatomic, readonly, weak) id<ApplicationCommands>
     applicationCommandsHandler;
@@ -166,7 +160,6 @@ enum class PresentedState {
 @synthesize bookmarkNavigationController = _bookmarkNavigationController;
 @synthesize bookmarkNavigationControllerDelegate =
     _bookmarkNavigationControllerDelegate;
-@synthesize bookmarkTransitioningDelegate = _bookmarkTransitioningDelegate;
 @synthesize currentPresentedState = _currentPresentedState;
 @synthesize delegate = _delegate;
 @synthesize folderEditor = _folderEditor;
@@ -409,7 +402,6 @@ enum class PresentedState {
 
   self.bookmarkBrowser.homeDelegate = nil;
   self.bookmarkBrowser = nil;
-  self.bookmarkTransitioningDelegate = nil;
   self.bookmarkNavigationController = nil;
   self.bookmarkNavigationControllerDelegate = nil;
 }
@@ -426,7 +418,6 @@ enum class PresentedState {
       dismissViewControllerAnimated:animated
                          completion:^{
                            self.bookmarkNavigationController = nil;
-                           self.bookmarkTransitioningDelegate = nil;
                          }];
   self.currentPresentedState = PresentedState::NONE;
 }
@@ -443,7 +434,6 @@ enum class PresentedState {
                            self.folderEditor.delegate = nil;
                            self.folderEditor = nil;
                            self.bookmarkNavigationController = nil;
-                           self.bookmarkTransitioningDelegate = nil;
                          }];
   self.currentPresentedState = PresentedState::NONE;
 }
@@ -460,7 +450,6 @@ enum class PresentedState {
                            self.folderSelector.delegate = nil;
                            self.folderSelector = nil;
                            self.bookmarkNavigationController = nil;
-                           self.bookmarkTransitioningDelegate = nil;
                          }];
   self.currentPresentedState = PresentedState::NONE;
 }
@@ -667,11 +656,10 @@ enum class PresentedState {
 // Presents `viewController` using the appropriate presentation and styling,
 // depending on whether the UIRefresh experiment is enabled or disabled. Sets
 // `self.bookmarkNavigationController` to the UINavigationController subclass
-// used, and may set `self.bookmarkNavigationControllerDelegate` or
-// `self.bookmarkTransitioningDelegate` depending on whether or not the desired
-// transition requires those objects.  If `replacementViewControllers` is not
-// nil, those controllers are swapped in to the UINavigationController instead
-// of `viewController`.
+// used, and may set `self.bookmarkNavigationControllerDelegate` depending on
+// whether or not the desired transition requires those objects.  If
+// `replacementViewControllers` is not nil, those controllers are swapped in to
+// the UINavigationController instead of `viewController`.
 - (void)presentTableViewController:
             (ChromeTableViewController<
                 UIAdaptivePresentationControllerDelegate>*)viewController

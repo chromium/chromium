@@ -21,8 +21,6 @@ source_set("bookmarks") {
     "bookmark_navigation_controller_delegate.mm",
     "bookmark_promo_controller.h",
     "bookmark_promo_controller.mm",
-    "bookmark_transitioning_delegate.h",
-    "bookmark_transitioning_delegate.mm",
     "synced_bookmarks_bridge.h",
     "synced_bookmarks_bridge.mm",
   ]
