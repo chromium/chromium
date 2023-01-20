@@ -590,6 +590,9 @@ ci.builder(
         category = "builder_tester|arm64",
         short_name = "10",
     ),
+
+    # TODO(crbug.com/1366956): remove this after confirm py3 works on this builder.
+    omit_python2 = True,
 )
 
 ci.builder(
@@ -1184,6 +1187,9 @@ ci.builder(
         short_name = "N",
     ),
     execution_timeout = 4 * time.hour,
+
+    # TODO(crbug.com/1366956): remove this after confirm py3 works on this builder.
+    omit_python2 = True,
 )
 
 ci.thin_tester(
@@ -1251,6 +1257,9 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     execution_timeout = 4 * time.hour,
+
+    # TODO(crbug.com/1366956): remove this after confirm py3 works on this builder.
+    omit_python2 = True,
 )
 
 ci.builder(
@@ -1282,6 +1291,9 @@ ci.builder(
         category = "builder_tester|x86",
         short_name = "P",
     ),
+
+    # TODO(crbug.com/1366956): remove this after confirm py3 works on this builder.
+    omit_python2 = True,
 )
 
 # TODO(crbug.com/1137474): Update the console view config once on CQ
@@ -1316,6 +1328,9 @@ ci.builder(
         category = "builder_tester|x86",
         short_name = "11",
     ),
+
+    # TODO(crbug.com/1366956): remove this after confirm py3 works on this builder.
+    omit_python2 = True,
 )
 
 ci.builder(
