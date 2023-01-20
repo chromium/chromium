@@ -316,9 +316,8 @@ source_set("test_support") {
     "app_service_test.h",
   ]
 
-  public_deps = [ ":app_service" ]
-
   deps = [
+    ":app_service",
     "//build:chromeos_buildflags",
     "//chrome/test:test_support",
     "//components/services/app_service/public/cpp:app_types",
