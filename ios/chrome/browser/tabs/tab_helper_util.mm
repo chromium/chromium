@@ -194,19 +194,8 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
 
   UniqueIDDataTabHelper::CreateForWebState(web_state);
 
-  PasswordTabHelper::CreateForWebState(web_state);
-
-  AutofillTabHelper::CreateForWebState(
-      web_state,
-      PasswordTabHelper::FromWebState(web_state)->GetPasswordManager());
-
   // Depends on favicon::WebFaviconDriver, must be created after it.
-    SearchEngineTabHelper::CreateForWebState(web_state);
-
-  FormSuggestionTabHelper::CreateForWebState(web_state, @[
-    PasswordTabHelper::FromWebState(web_state)->GetSuggestionProvider(),
-    AutofillTabHelper::FromWebState(web_state)->GetSuggestionProvider(),
-  ]);
+  SearchEngineTabHelper::CreateForWebState(web_state);
 
   ukm::InitializeSourceUrlRecorderForWebState(web_state);
 
@@ -235,6 +224,16 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     PagePlaceholderTabHelper::CreateForWebState(web_state);
     PrintTabHelper::CreateForWebState(web_state);
     ChromeIOSTranslateClient::CreateForWebState(web_state);
+
+    PasswordTabHelper::CreateForWebState(web_state);
+    AutofillTabHelper::CreateForWebState(
+        web_state,
+        PasswordTabHelper::FromWebState(web_state)->GetPasswordManager());
+
+    FormSuggestionTabHelper::CreateForWebState(web_state, @[
+      PasswordTabHelper::FromWebState(web_state)->GetSuggestionProvider(),
+      AutofillTabHelper::FromWebState(web_state)->GetSuggestionProvider(),
+    ]);
   }
 
   InfobarBadgeTabHelper::CreateForWebState(web_state);

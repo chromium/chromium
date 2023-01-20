@@ -118,7 +118,7 @@
   // Attach tab helpers to use _previewWebState as a browser tab. It ensures
   // _previewWebState has all the expected tab helpers, including the
   // history tab helper which adding the history entry of the preview.
-  AttachTabHelpers(_previewWebState.get(), /*for_prerender=*/false);
+  AttachTabHelpers(_previewWebState.get(), /*for_prerender=*/true);
   _previewWebState->SetWebUsageEnabled(true);
 
   // Delay the history record when showing the preview. (The history entry will
