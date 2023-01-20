@@ -157,9 +157,8 @@ class MockAutofillClient : public TestAutofillClient {
 class MockAutofillDownloadManager : public TestAutofillDownloadManager {
  public:
   MockAutofillDownloadManager(AutofillClient* client,
-                              AutofillDriver* driver,
                               AutofillDownloadManager::Observer* observer)
-      : TestAutofillDownloadManager(client, driver, observer) {}
+      : TestAutofillDownloadManager(client, observer) {}
   MockAutofillDownloadManager(const MockAutofillDownloadManager&) = delete;
   MockAutofillDownloadManager& operator=(const MockAutofillDownloadManager&) =
       delete;
@@ -434,8 +433,7 @@ class BrowserAutofillManagerTest : public testing::Test {
         std::move(single_field_form_fill_router));
 
     auto download_manager = std::make_unique<MockAutofillDownloadManager>(
-        &autofill_client_, autofill_driver_.get(),
-        browser_autofill_manager_.get());
+        &autofill_client_, browser_autofill_manager_.get());
     download_manager_ = download_manager.get();
     browser_autofill_manager_->set_download_manager_for_test(
         std::move(download_manager));

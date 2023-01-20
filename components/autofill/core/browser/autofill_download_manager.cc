@@ -573,6 +573,7 @@ bool GetAPIQueryPayload(const AutofillPageQueryRequest& query,
 struct AutofillDownloadManager::FormRequestData {
   std::vector<FormSignature> form_signatures;
   RequestType request_type;
+  absl::optional<net::IsolationInfo> isolation_info;
   std::string payload;
   int num_attempts = 0;
 };
@@ -590,13 +591,11 @@ std::vector<variations::VariationID>*
 
 AutofillDownloadManager::AutofillDownloadManager(
     AutofillClient* client,
-    AutofillDriver* driver,
     Observer* observer,
     const std::string& api_key,
     IsRawMetadataUploadingEnabled is_raw_metadata_uploading_enabled,
     LogManager* log_manager)
     : client_(client),
-      driver_(driver),
       observer_(observer),
       api_key_(api_key),
       log_manager_(log_manager),
@@ -609,10 +608,8 @@ AutofillDownloadManager::AutofillDownloadManager(
 }
 
 AutofillDownloadManager::AutofillDownloadManager(AutofillClient* client,
-                                                 AutofillDriver* driver,
                                                  Observer* observer)
     : AutofillDownloadManager(client,
-                              driver,
                               observer,
                               kDefaultAPIKey,
                               IsRawMetadataUploadingEnabled(false),
@@ -621,7 +618,8 @@ AutofillDownloadManager::AutofillDownloadManager(AutofillClient* client,
 AutofillDownloadManager::~AutofillDownloadManager() = default;
 
 bool AutofillDownloadManager::StartQueryRequest(
-    const std::vector<FormStructure*>& forms) {
+    const std::vector<FormStructure*>& forms,
+    net::IsolationInfo isolation_info) {
   if (!IsEnabled())
     return false;
 
@@ -656,10 +654,12 @@ bool AutofillDownloadManager::StartQueryRequest(
     return false;
   }
 
-  FormRequestData request_data;
-  request_data.form_signatures = std::move(queried_form_signatures);
-  request_data.request_type = AutofillDownloadManager::REQUEST_QUERY;
-  request_data.payload = std::move(payload);
+  FormRequestData request_data = {
+      .form_signatures = std::move(queried_form_signatures),
+      .request_type = AutofillDownloadManager::REQUEST_QUERY,
+      .isolation_info = std::move(isolation_info),
+      .payload = std::move(payload),
+  };
   AutofillMetrics::LogServerQueryMetric(AutofillMetrics::QUERY_SENT);
 
   std::string query_data;
@@ -733,10 +733,12 @@ bool AutofillDownloadManager::StartUploadRequest(
       return false;
     }
 
-    FormRequestData request_data;
-    request_data.form_signatures = {form.form_signature()};
-    request_data.request_type = AutofillDownloadManager::REQUEST_UPLOAD;
-    request_data.payload = std::move(payload);
+    FormRequestData request_data = {
+        .form_signatures = {form.form_signature()},
+        .request_type = AutofillDownloadManager::REQUEST_UPLOAD,
+        .isolation_info = absl::nullopt,
+        .payload = std::move(payload),
+    };
 
     DVLOG(1) << "Sending Autofill Upload Request:\n" << upload;
     LOG_AF(log_manager_) << LoggingScope::kAutofillServer
@@ -802,6 +804,16 @@ std::tuple<GURL, std::string> AutofillDownloadManager::GetRequestURLAndMethod(
 }
 
 bool AutofillDownloadManager::StartRequest(FormRequestData request_data) {
+  // REQUEST_UPLOADs take no IsolationInfo because Password Manager uploads when
+  // RenderFrameHostImpl::DidCommitNavigation() is called, in which case
+  // AutofillDriver::IsolationInfo() may crash because there is no committing
+  // NavigationRequest. Not setting an IsolationInfo is safe because no
+  // information about the response is passed to the renderer, or is otherwise
+  // visible to a page. See crbug/1176635#c22.
+  DCHECK(
+      (request_data.request_type == AutofillDownloadManager::REQUEST_UPLOAD) ==
+      !request_data.isolation_info);
+
   // Get the URL and method to use for this request.
   auto [request_url, method] = GetRequestURLAndMethod(request_data);
 
@@ -822,16 +834,11 @@ bool AutofillDownloadManager::StartRequest(FormRequestData request_data) {
   // As it is shared, it is not trusted and we cannot assign trusted_params
   // to the network request.
 #if !BUILDFLAG(IS_IOS)
-  // Do not call IsolationInfo() for REQUEST_UPLOADs because Password Manager
-  // uploads when RenderFrameHostImpl::DidCommitNavigation() is called, in which
-  // case IsolationInfo() may crash because there is no committing
-  // NavigationRequest. This is safe because no information about the response
-  // is passed to the renderer, or is otherwise visible to a page.
-  // crbug/1176635#c22
-  if (request_data.request_type != AutofillDownloadManager::REQUEST_UPLOAD) {
+  if (request_data.isolation_info) {
     resource_request->trusted_params =
         network::ResourceRequest::TrustedParams();
-    resource_request->trusted_params->isolation_info = driver_->IsolationInfo();
+    resource_request->trusted_params->isolation_info =
+        *request_data.isolation_info;
   }
 #endif
 

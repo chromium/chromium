@@ -26,6 +26,7 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/variations/variations_ids_provider.h"
 #include "net/base/backoff_entry.h"
+#include "net/base/isolation_info.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
@@ -34,7 +35,6 @@ class PrefService;
 namespace autofill {
 
 class AutofillClient;
-class AutofillDriver;
 class LogManager;
 
 const size_t kMaxQueryGetSize = 10240;  // 10 KiB
@@ -88,7 +88,6 @@ class AutofillDownloadManager {
   //   effect if using API.
   AutofillDownloadManager(
       AutofillClient* client,
-      AutofillDriver* driver,
       Observer* observer,
       const std::string& api_key,
       IsRawMetadataUploadingEnabled is_raw_metadata_uploading_enabled,
@@ -96,15 +95,14 @@ class AutofillDownloadManager {
   // |driver| must outlive this instance.
   // |observer| - observer to notify on successful completion or error.
   // Uses an API callback function that gives an empty string.
-  AutofillDownloadManager(AutofillClient* client,
-                          AutofillDriver* driver,
-                          Observer* observer);
+  AutofillDownloadManager(AutofillClient* client, Observer* observer);
   virtual ~AutofillDownloadManager();
 
   // Starts a query request to Autofill servers. The observer is called with the
   // list of the fields of all requested forms.
   // |forms| - array of forms aggregated in this request.
-  virtual bool StartQueryRequest(const std::vector<FormStructure*>& forms);
+  virtual bool StartQueryRequest(const std::vector<FormStructure*>& forms,
+                                 net::IsolationInfo isolation_info);
 
   // Starts an upload request for the given |form|.
   // |available_field_types| should contain the types for which we have data
@@ -200,10 +198,6 @@ class AutofillDownloadManager {
   // The AutofillClient that this instance will use. Must not be null, and must
   // outlive this instance.
   const raw_ptr<AutofillClient> client_;
-
-  // The AutofillDriver that this instance will use. Must not be null, and must
-  // outlive this instance.
-  const raw_ptr<AutofillDriver> driver_;  // WEAK
 
   // The observer to notify when server predictions are successfully received.
   // Must not be null.

@@ -17,7 +17,6 @@ class FormStructure;
 class TestAutofillDownloadManager : public AutofillDownloadManager {
  public:
   TestAutofillDownloadManager(AutofillClient* client,
-                              AutofillDriver* driver,
                               AutofillDownloadManager::Observer* observer);
 
   TestAutofillDownloadManager(const TestAutofillDownloadManager&) = delete;
@@ -27,7 +26,8 @@ class TestAutofillDownloadManager : public AutofillDownloadManager {
   ~TestAutofillDownloadManager() override;
 
   // AutofillDownloadManager overrides.
-  bool StartQueryRequest(const std::vector<FormStructure*>& forms) override;
+  bool StartQueryRequest(const std::vector<FormStructure*>& forms,
+                         net::IsolationInfo isolation_info) override;
 
   // Unique to TestAutofillDownloadManager:
 

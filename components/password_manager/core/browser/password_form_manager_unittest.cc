@@ -143,7 +143,7 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
 class MockAutofillDownloadManager : public autofill::AutofillDownloadManager {
  public:
   MockAutofillDownloadManager()
-      : AutofillDownloadManager(nullptr, nullptr, &fake_observer) {}
+      : AutofillDownloadManager(nullptr, &fake_observer) {}
   MockAutofillDownloadManager(const MockAutofillDownloadManager&) = delete;
   MockAutofillDownloadManager& operator=(const MockAutofillDownloadManager&) =
       delete;
