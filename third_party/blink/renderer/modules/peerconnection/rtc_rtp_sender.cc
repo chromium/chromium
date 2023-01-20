@@ -9,6 +9,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
@@ -58,6 +59,155 @@
 namespace blink {
 
 namespace {
+
+// This enum is used for logging and values must match the ones in
+// tools/metrics/histograms/enums.xml
+enum class WebRtcScalabilityMode {
+  kInvalid = 0,
+  kL1T1 = 1,
+  kL1T2 = 2,
+  kL1T3 = 3,
+  kL2T1 = 4,
+  kL2T1h = 5,
+  kL2T1_KEY = 6,
+  kL2T2 = 7,
+  kL2T2h = 8,
+  kL2T2_KEY = 9,
+  kL2T2_KEY_SHIFT = 10,
+  kL2T3 = 11,
+  kL2T3h = 12,
+  kL2T3_KEY = 13,
+  kL3T1 = 14,
+  kL3T1h = 15,
+  kL3T1_KEY = 16,
+  kL3T2 = 17,
+  kL3T2h = 18,
+  kL3T2_KEY = 19,
+  kL3T3 = 20,
+  kL3T3h = 21,
+  kL3T3_KEY = 22,
+  kS2T1 = 23,
+  kS2T1h = 24,
+  kS2T2 = 25,
+  kS2T2h = 26,
+  kS2T3 = 27,
+  kS2T3h = 28,
+  kS3T1 = 29,
+  kS3T1h = 30,
+  kS3T2 = 31,
+  kS3T2h = 32,
+  kS3T3 = 33,
+  kS3T3h = 34,
+  kMaxValue = kS3T3h,
+};
+
+WebRtcScalabilityMode ScalabilityModeStringToUMAMode(
+    const std::string& scalability_mode_string) {
+  if (scalability_mode_string == "L1T1") {
+    return WebRtcScalabilityMode::kL1T1;
+  }
+  if (scalability_mode_string == "L1T2") {
+    return WebRtcScalabilityMode::kL1T2;
+  }
+  if (scalability_mode_string == "L1T3") {
+    return WebRtcScalabilityMode::kL1T3;
+  }
+  if (scalability_mode_string == "L2T1") {
+    return WebRtcScalabilityMode::kL2T1;
+  }
+  if (scalability_mode_string == "L2T1h") {
+    return WebRtcScalabilityMode::kL2T1h;
+  }
+  if (scalability_mode_string == "L2T1_KEY") {
+    return WebRtcScalabilityMode::kL2T1_KEY;
+  }
+  if (scalability_mode_string == "L2T2") {
+    return WebRtcScalabilityMode::kL2T2;
+  }
+  if (scalability_mode_string == "L2T2h") {
+    return WebRtcScalabilityMode::kL2T2h;
+  }
+  if (scalability_mode_string == "L2T2_KEY") {
+    return WebRtcScalabilityMode::kL2T2_KEY;
+  }
+  if (scalability_mode_string == "L2T2_KEY_SHIFT") {
+    return WebRtcScalabilityMode::kL2T2_KEY_SHIFT;
+  }
+  if (scalability_mode_string == "L2T3") {
+    return WebRtcScalabilityMode::kL2T3;
+  }
+  if (scalability_mode_string == "L2T3h") {
+    return WebRtcScalabilityMode::kL2T3h;
+  }
+  if (scalability_mode_string == "L2T3_KEY") {
+    return WebRtcScalabilityMode::kL2T3_KEY;
+  }
+  if (scalability_mode_string == "L3T1") {
+    return WebRtcScalabilityMode::kL3T1;
+  }
+  if (scalability_mode_string == "L3T1h") {
+    return WebRtcScalabilityMode::kL3T1h;
+  }
+  if (scalability_mode_string == "L3T1_KEY") {
+    return WebRtcScalabilityMode::kL3T1_KEY;
+  }
+  if (scalability_mode_string == "L3T2") {
+    return WebRtcScalabilityMode::kL3T2;
+  }
+  if (scalability_mode_string == "L3T2h") {
+    return WebRtcScalabilityMode::kL3T2h;
+  }
+  if (scalability_mode_string == "L3T2_KEY") {
+    return WebRtcScalabilityMode::kL3T2_KEY;
+  }
+  if (scalability_mode_string == "L3T3") {
+    return WebRtcScalabilityMode::kL3T3;
+  }
+  if (scalability_mode_string == "L3T3h") {
+    return WebRtcScalabilityMode::kL3T3h;
+  }
+  if (scalability_mode_string == "L3T3_KEY") {
+    return WebRtcScalabilityMode::kL3T3_KEY;
+  }
+  if (scalability_mode_string == "S2T1") {
+    return WebRtcScalabilityMode::kS2T1;
+  }
+  if (scalability_mode_string == "S2T1h") {
+    return WebRtcScalabilityMode::kS2T1h;
+  }
+  if (scalability_mode_string == "S2T2") {
+    return WebRtcScalabilityMode::kS2T2;
+  }
+  if (scalability_mode_string == "S2T2h") {
+    return WebRtcScalabilityMode::kS2T2h;
+  }
+  if (scalability_mode_string == "S2T3") {
+    return WebRtcScalabilityMode::kS2T3;
+  }
+  if (scalability_mode_string == "S2T3h") {
+    return WebRtcScalabilityMode::kS2T3h;
+  }
+  if (scalability_mode_string == "S3T1") {
+    return WebRtcScalabilityMode::kS3T1;
+  }
+  if (scalability_mode_string == "S3T1h") {
+    return WebRtcScalabilityMode::kS3T1h;
+  }
+  if (scalability_mode_string == "S3T2") {
+    return WebRtcScalabilityMode::kS3T2;
+  }
+  if (scalability_mode_string == "S3T2h") {
+    return WebRtcScalabilityMode::kS3T2h;
+  }
+  if (scalability_mode_string == "S3T3") {
+    return WebRtcScalabilityMode::kS3T3;
+  }
+  if (scalability_mode_string == "S3T3h") {
+    return WebRtcScalabilityMode::kS3T3h;
+  }
+
+  return WebRtcScalabilityMode::kInvalid;
+}
 
 class ReplaceTrackRequest : public RTCVoidRequest {
  public:
@@ -353,6 +503,9 @@ webrtc::RtpEncodingParameters ToRtpEncodingParameters(
   // https://w3c.github.io/webrtc-svc/
   if (encoding->hasScalabilityMode()) {
     webrtc_encoding.scalability_mode = encoding->scalabilityMode().Utf8();
+    WebRtcScalabilityMode scalability_mode =
+        ScalabilityModeStringToUMAMode(*webrtc_encoding.scalability_mode);
+    UMA_HISTOGRAM_ENUMERATION("WebRtcScalabilityMode", scalability_mode);
   }
   webrtc_encoding.adaptive_ptime = encoding->adaptivePtime();
   return webrtc_encoding;

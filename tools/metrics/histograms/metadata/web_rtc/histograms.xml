@@ -2862,6 +2862,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Video.ScalabilityMode" enum="WebRtcScalabilityMode"
+    expires_after="M120">
+  <owner>orphis@chromium.org</owner>
+  <owner>toprice@chromium.org</owner>
+  <summary>
+    Counts usage of each scalability mode used to configure the video senders in
+    RTCRtpEncodingParameters from addTransceiver and setParameters APIs. This is
+    part of the WebRTC-SVC specification.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.Video.Screenshare.BandwidthLimitedResolutionInPercent"
     units="%" expires_after="never">
 <!-- expires-never: WebRTC health metric. -->

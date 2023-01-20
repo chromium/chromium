@@ -107332,6 +107332,44 @@ others/histograms.xml -->
   <int value="157670" label="Connected, Data, Stun, local IPv6, remote MDNS"/>
 </enum>
 
+<enum name="WebRtcScalabilityMode">
+  <int value="0" label="Invalid"/>
+  <int value="1" label="L1T1"/>
+  <int value="2" label="L1T2"/>
+  <int value="3" label="L1T3"/>
+  <int value="4" label="L2T1"/>
+  <int value="5" label="L2T1h"/>
+  <int value="6" label="L2T1_KEY"/>
+  <int value="7" label="L2T2"/>
+  <int value="8" label="L2T2h"/>
+  <int value="9" label="L2T2_KEY"/>
+  <int value="10" label="L2T2_KEY_SHIFT"/>
+  <int value="11" label="L2T3"/>
+  <int value="12" label="L2T3h"/>
+  <int value="13" label="L2T3_KEY"/>
+  <int value="14" label="L3T1"/>
+  <int value="15" label="L3T1h"/>
+  <int value="16" label="L3T1_KEY"/>
+  <int value="17" label="L3T2"/>
+  <int value="18" label="L3T2h"/>
+  <int value="19" label="L3T2_KEY"/>
+  <int value="20" label="L3T3"/>
+  <int value="21" label="L3T3h"/>
+  <int value="22" label="L3T3_KEY"/>
+  <int value="23" label="S2T1"/>
+  <int value="24" label="S2T1h"/>
+  <int value="25" label="S2T2"/>
+  <int value="26" label="S2T2h"/>
+  <int value="27" label="S2T3"/>
+  <int value="28" label="S2T3h"/>
+  <int value="29" label="S3T1"/>
+  <int value="30" label="S3T1h"/>
+  <int value="31" label="S3T2"/>
+  <int value="32" label="S3T2h"/>
+  <int value="33" label="S3T3"/>
+  <int value="34" label="S3T3h"/>
+</enum>
+
 <enum name="WebRtcStunIntegrityOutcome">
   <summary>
     Records the outcome of a STUN integrity check - succeeds, fails, or &quot;no
