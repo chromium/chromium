@@ -156,6 +156,7 @@ source_set("common") {
     "fetch/fetch_api_request_body_mojom_traits.cc",
     "frame/frame_ad_evidence.cc",
     "frame/frame_ad_evidence_mojom_traits.cc",
+    "frame/frame_owner_element_type_mojom_traits.cc",
     "frame/frame_policy.cc",
     "frame/frame_policy_mojom_traits.cc",
     "frame/frame_visual_properties.cc",

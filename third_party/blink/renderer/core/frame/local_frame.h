@@ -42,6 +42,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/frame/transient_allow_fullscreen.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-blink.h"
@@ -285,6 +286,10 @@ class CORE_EXPORT LocalFrame final
   BackgroundColorPaintImageGenerator* GetBackgroundColorPaintImageGenerator();
   BoxShadowPaintImageGenerator* GetBoxShadowPaintImageGenerator();
   ClipPathPaintImageGenerator* GetClipPathPaintImageGenerator();
+
+  void AddResourceTimingEntryFromNonNavigatedFrame(
+      mojom::blink::ResourceTimingInfoPtr timing,
+      blink::FrameOwnerElementType initiator_type);
 
   // A local root is the root of a connected subtree that contains only
   // LocalFrames. The local root is responsible for coordinating input, layout,

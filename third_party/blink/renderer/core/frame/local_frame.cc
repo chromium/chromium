@@ -180,6 +180,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
@@ -229,6 +230,28 @@
 namespace blink {
 
 namespace {
+
+const AtomicString& ConvertElementTypeToInitiatorType(
+    blink::FrameOwnerElementType frame_owner_elem_type) {
+  switch (frame_owner_elem_type) {
+    case blink::FrameOwnerElementType::kFrame:
+      return blink::html_names::kFrameTag.LocalName();
+    case blink::FrameOwnerElementType::kIframe:
+      return blink::html_names::kIFrameTag.LocalName();
+    case blink::FrameOwnerElementType::kObject:
+      return blink::html_names::kObjectTag.LocalName();
+    case blink::FrameOwnerElementType::kFencedframe:
+      return blink::html_names::kFencedframeTag.LocalName();
+    case blink::FrameOwnerElementType::kEmbed:
+      return blink::html_names::kEmbedTag.LocalName();
+    case blink::FrameOwnerElementType::kPortal:
+      return blink::html_names::kPortalTag.LocalName();
+    case blink::FrameOwnerElementType::kNone:
+      NOTREACHED();
+  }
+  NOTREACHED();
+  return blink::html_names::kFrameTag.LocalName();
+}
 
 // Maintain a global (statically-allocated) hash map indexed by the the result
 // of hashing the |frame_token| passed on creation of a LocalFrame object.
@@ -670,6 +693,16 @@ ClipPathPaintImageGenerator* LocalFrame::GetClipPathPaintImageGenerator() {
         ClipPathPaintImageGenerator::Create(local_root);
   }
   return local_root.clip_path_paint_image_generator_.Get();
+}
+
+void LocalFrame::AddResourceTimingEntryFromNonNavigatedFrame(
+    mojom::blink::ResourceTimingInfoPtr timing,
+    blink::FrameOwnerElementType initiator_type) {
+  auto* local_dom_window = DomWindow();
+  DOMWindowPerformance::performance(*local_dom_window)
+      ->AddResourceTiming(std::move(timing),
+                          ConvertElementTypeToInitiatorType(initiator_type),
+                          local_dom_window);
 }
 
 const SecurityContext* LocalFrame::GetSecurityContext() const {

@@ -68,6 +68,9 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void ReportBlinkFeatureUsage(
       const std::vector<blink::mojom::WebFeature>&) override;
   void RenderFallbackContent() override;
+  void AddResourceTimingEntryFromNonNavigatedFrame(
+      blink::mojom::ResourceTimingInfoPtr timing,
+      blink::FrameOwnerElementType parent_frame_element_type) override;
   void RenderFallbackContentWithResourceTiming(
       blink::mojom::ResourceTimingInfoPtr,
       const std::string& server_timing_value) override;

@@ -3187,7 +3187,6 @@ crbug.com/626703 external/wpt/geolocation-API/getCurrentPosition_permission_allo
 crbug.com/626703 [ Mac ] external/wpt/speculation-rules/prerender/media-autoplay.html [ Skip Timeout ]
 crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/media-autoplay.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/geolocation-API/idlharness.https.window.html [ Skip Timeout ]
-crbug.com/1385278 external/wpt/resource-timing/iframe-failed-commit.html [ Failure Pass Skip Timeout ]
 crbug.com/626703 external/wpt/webrtc/RTCConfiguration-iceTransportPolicy.html [ Skip Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Failure Timeout ]
 crbug.com/626703 [ Mac10.14 ] virtual/portals/external/wpt/portals/no-portal-in-sandboxed-popup.html [ Timeout ]

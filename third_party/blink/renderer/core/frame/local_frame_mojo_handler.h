@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/media/fullscreen_video_element.mojom-blink.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
@@ -124,6 +125,9 @@ class LocalFrameMojoHandler
   void RenderFallbackContentWithResourceTiming(
       mojom::blink::ResourceTimingInfoPtr timing,
       const String& server_timing_values) final;
+  void AddResourceTimingEntryFromNonNavigatedFrame(
+      mojom::blink::ResourceTimingInfoPtr timing,
+      blink::FrameOwnerElementType parent_frame_owner_element_type) final;
   void BeforeUnload(bool is_reload, BeforeUnloadCallback callback) final;
   void MediaPlayerActionAt(
       const gfx::Point& window_point,

@@ -16,10 +16,12 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom-blink.h"
 #include "third_party/blink/public/mojom/opengraph/metadata.mojom-blink.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_frame_serializer.h"
@@ -67,6 +69,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/platform/mhtml/serialized_resource.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
@@ -758,6 +761,13 @@ void LocalFrameMojoHandler::RenderFallbackContentWithResourceTiming(
     const String& server_timing_value) {
   frame_->RenderFallbackContentWithResourceTiming(std::move(timing),
                                                   server_timing_value);
+}
+
+void LocalFrameMojoHandler::AddResourceTimingEntryFromNonNavigatedFrame(
+    mojom::blink::ResourceTimingInfoPtr timing,
+    blink::FrameOwnerElementType parent_frame_owner_element_type) {
+  frame_->AddResourceTimingEntryFromNonNavigatedFrame(
+      std::move(timing), parent_frame_owner_element_type);
 }
 
 void LocalFrameMojoHandler::BeforeUnload(bool is_reload,

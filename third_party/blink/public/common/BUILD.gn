@@ -161,6 +161,7 @@ source_set("headers") {
     "frame/fenced_frame_sandbox_flags.h",
     "frame/frame_ad_evidence.h",
     "frame/frame_owner_element_type.h",
+    "frame/frame_owner_element_type_mojom_traits.h",
     "frame/frame_policy.h",
     "frame/frame_visual_properties.h",
     "frame/from_ad_state.h",

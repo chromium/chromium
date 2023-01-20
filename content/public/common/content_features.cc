@@ -90,6 +90,12 @@ BASE_FEATURE(kBackForwardCache,
              "BackForwardCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables reporting ResourceTiming entries for document, who initiated a
+// cancelled navigation in one of their <iframe>.
+BASE_FEATURE(kResourceTimingForCancelledNavigationInFrame,
+             "ResourceTimingForCancelledNavigationInFrame",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Allows pages that created a MediaSession service to stay eligible for the
 // back/forward cache.
 BASE_FEATURE(kBackForwardCacheMediaSessionService,

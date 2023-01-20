@@ -84,6 +84,10 @@ void FakeLocalFrame::ReportBlinkFeatureUsage(
 
 void FakeLocalFrame::RenderFallbackContent() {}
 
+void FakeLocalFrame::AddResourceTimingEntryFromNonNavigatedFrame(
+    blink::mojom::ResourceTimingInfoPtr timing,
+    blink::FrameOwnerElementType parent_frame_element_type) {}
+
 void FakeLocalFrame::RenderFallbackContentWithResourceTiming(
     blink::mojom::ResourceTimingInfoPtr,
     const std::string& server_timing_value) {}

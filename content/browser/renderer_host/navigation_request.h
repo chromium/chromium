@@ -559,6 +559,14 @@ class CONTENT_EXPORT NavigationRequest
   // new process.
   void ResetStateForSiteInstanceChange();
 
+  // If a navigation has been cancelled, and was initiated by the parent
+  // document, report it with the appropriate ResourceTiming entry information.
+  //
+  // The ResourceTiming entry may not be sent if the current frame
+  // does not have a parent, or if the navigation was cancelled before
+  // a request was made.
+  void MaybeAddResourceTimingEntryForCancelledNavigation();
+
   // Lazily initializes and returns the mojo::NavigationClient interface used
   // for commit.
   mojom::NavigationClient* GetCommitNavigationClient();

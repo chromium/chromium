@@ -157,6 +157,16 @@ enum ViewTransitionSameOriginOptIn {
   kEnabled,
 };
 
+enum FrameOwnerElementType {
+  kNone,
+  kIframe,
+  kObject,
+  kEmbed,
+  kFrame,
+  kPortal,
+  kFencedframe
+};
+
 // The maximum number of characters of the document's title that we're willing
 // to accept in the browser process.
 const uint16 kMaxTitleChars = 4096; // 4 * 1024;
@@ -677,6 +687,22 @@ interface LocalFrame {
   GetTextSurroundingSelection(uint32 max_length)
       => (mojo_base.mojom.String16 content, uint32 start_offset,
           uint32 end_offset);
+
+  // Report ResourceTiming information about cancelled navigation in iframe
+  // initiated from this document. This is required to prevent revealing
+  // information about the status codes to the parent frame. (See crbug.com/1346924)
+  //
+  // Example of cancelled navigations:
+  // - 204 - No Content
+  // - 205 - Reset Content
+  // - Extension blocking navigation (e.g. Ad blocker)
+  // - etc
+  //
+  // |parent_frame_element_type| is used on the blink side to determine the
+  // 'initiator_type' of the entry.
+  AddResourceTimingEntryFromNonNavigatedFrame(
+    ResourceTimingInfo timing,
+    blink.mojom.FrameOwnerElementType parent_frame_element_type);
 
   // Creates an intervention report in the frame with contents |id| and
   // |message|, returns once the report has been queued. |id| identifies the
