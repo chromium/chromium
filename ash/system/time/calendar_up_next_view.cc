@@ -237,6 +237,8 @@ void CalendarUpNextView::UpdateEvents(
   content_view_->RemoveAllChildViews();
 
   const auto now = base::Time::NowFromSystemTime();
+  const auto [selected_date_midnight, selected_date_midnight_utc] =
+      calendar_utils::GetMidnight(now);
 
   // Single events are displayed filling the whole width of the tray.
   if (events.size() == 1) {
@@ -244,7 +246,8 @@ void CalendarUpNextView::UpdateEvents(
     auto* child_view = content_view_->AddChildView(
         std::make_unique<CalendarEventListItemViewJelly>(
             calendar_view_controller_,
-            SelectedDateParams{now, now.UTCMidnight(), now.LocalMidnight()},
+            SelectedDateParams{now, selected_date_midnight,
+                               selected_date_midnight_utc},
             /*event=*/event, /*round_top_corners=*/true,
             /*round_bottom_corners=*/true,
             /*max_width=*/kFullWidth));
@@ -264,7 +267,8 @@ void CalendarUpNextView::UpdateEvents(
     content_view_->AddChildView(
         std::make_unique<CalendarEventListItemViewJelly>(
             calendar_view_controller_,
-            SelectedDateParams{now, now.UTCMidnight(), now.LocalMidnight()},
+            SelectedDateParams{now, selected_date_midnight,
+                               selected_date_midnight_utc},
             /*event=*/event, /*round_top_corners=*/true,
             /*round_bottom_corners=*/true,
             /*max_width=*/kMaxItemWidth));

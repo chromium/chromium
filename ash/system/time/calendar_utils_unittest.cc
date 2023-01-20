@@ -8,6 +8,7 @@
 #include "ash/system/time/date_helper.h"
 #include "ash/test/ash_test_base.h"
 #include "base/i18n/rtl.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 
@@ -448,6 +449,78 @@ TEST_F(CalendarUtilsUnitTest, GetYearOfDay) {
 
   // Reset locale to English for other tests.
   SetDefaultLocale("en");
+}
+
+struct TimezoneTestParams {
+  const char* midnight_string;
+  const char* midnight_utc_string;
+  const std::u16string timezone_id;
+  const std::string timezone;
+};
+
+class CalendarUtilsMidnightTest
+    : public CalendarUtilsUnitTest,
+      public testing::WithParamInterface<TimezoneTestParams> {
+ public:
+  const char* GetMidnightString() { return GetParam().midnight_string; }
+  const char* GetMidnightUTCString() { return GetParam().midnight_utc_string; }
+  const std::u16string GetTimezoneId() { return GetParam().timezone_id; }
+  const std::string GetTimezone() { return GetParam().timezone; }
+
+  // testing::Test:
+  void SetUp() override { CalendarUtilsUnitTest::SetUp(); }
+
+  void TearDown() override { CalendarUtilsUnitTest::TearDown(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CalendarUtilsMidnightTest,
+    testing::Values(
+        // GMT-8 Timezone.
+        TimezoneTestParams{"19 Jan 2023 00:00 UTC", "19 Jan 2023 08:00 UTC",
+                           u"America/Los_Angeles", "America/Los_Angeles"},
+        // GMT Timezone.
+        TimezoneTestParams{"19 Jan 2023 00:00 UTC", "19 Jan 2023 00:00 UTC",
+                           u"Europe/London", "Europe/London"},
+        // GMT+13 Timezone. Based on the `selected_date_string`, midnight will
+        // be the following day in this timezone.
+        TimezoneTestParams{"20 Jan 2023 00:00 UTC", "19 Jan 2023 11:00 UTC",
+                           u"Pacific/Auckland", "Pacific/Auckland"}),
+    [](const testing::TestParamInfo<CalendarUtilsMidnightTest::ParamType>&
+           info) {
+      std::string name = info.param.timezone;
+      base::ranges::replace_if(
+          name, [](char c) { return !std::isalnum(c); }, '_');
+      return name;
+    });
+
+TEST_P(CalendarUtilsMidnightTest,
+       GetCorrectLocalAndUtcMidnightAcrossTimezones) {
+  // 12:00 UTC will fall into a different day in far ahead timezones so we
+  // anchor here.
+  const char* now_string = "19 Jan 2023 12:00 UTC";
+  const char* expected_midnight_string = GetMidnightString();
+  const char* expected_midnight_utc_string = GetMidnightUTCString();
+
+  // Set timezone to GMT+13.
+  ash::system::ScopedTimezoneSettings timezone_settings(GetTimezoneId());
+  calendar_test_utils::ScopedLibcTimeZone scoped_libc_timezone(GetTimezone());
+  ASSERT_TRUE(scoped_libc_timezone.is_success());
+
+  // Convert expected string values to base::Time.
+  base::Time now, expected_midnight, expected_midnight_utc;
+  EXPECT_TRUE(base::Time::FromUTCString(now_string, &now));
+  EXPECT_TRUE(
+      base::Time::FromUTCString(expected_midnight_string, &expected_midnight));
+  EXPECT_TRUE(base::Time::FromUTCString(expected_midnight_utc_string,
+                                        &expected_midnight_utc));
+
+  const auto [actual_midnight, actual_midnight_utc] =
+      calendar_utils::GetMidnight(now);
+
+  EXPECT_EQ(expected_midnight, actual_midnight);
+  EXPECT_EQ(expected_midnight_utc, actual_midnight_utc);
 }
 
 }  // namespace ash

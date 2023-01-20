@@ -285,6 +285,16 @@ const std::tuple<base::Time, base::Time> GetStartAndEndTime(
     const base::Time& selected_date_midnight,
     const base::Time& selected_date_midnight_utc);
 
+// Calculates the UTC and local midnight times for the given `base::Time`,
+// rounding to the correct midnight for the given timezone. This avoids an
+// issue with `base::Time::UTCMidnight()`, which will (in certain ahead
+// timezones) return the previous days midnight.
+// For example, if the current time is 19 Jan 2023 00:10 in GMT+13, then
+// `GetUTCMidnight` will return 19 Jan 2023 00:00 UTC.
+// `base::Time::UTCMidnight()` will round down to 18 Jan 2023 00:00 UTC.
+ASH_EXPORT const std::tuple<base::Time, base::Time> GetMidnight(
+    const base::Time);
+
 }  // namespace calendar_utils
 
 }  // namespace ash

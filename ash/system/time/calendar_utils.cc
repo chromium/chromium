@@ -364,6 +364,14 @@ ASH_EXPORT const std::tuple<base::Time, base::Time> GetStartAndEndTime(
   return std::make_tuple(start_time, end_time);
 }
 
+const std::tuple<base::Time, base::Time> GetMidnight(const base::Time time) {
+  const auto time_difference = GetTimeDifference(time);
+  const auto utc_midnight = (time + time_difference).UTCMidnight();
+  const auto local_midnight = utc_midnight - time_difference;
+
+  return std::make_tuple(utc_midnight, local_midnight);
+}
+
 }  // namespace calendar_utils
 
 }  // namespace ash

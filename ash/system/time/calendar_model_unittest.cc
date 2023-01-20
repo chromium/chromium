@@ -492,6 +492,9 @@ TEST_F(CalendarModelTest, FetchingSuccessfullyWithMultiEvents) {
 TEST_F(CalendarModelTest, ChangeTimeDifference) {
   // Sets the timezone to "America/Los_Angeles".
   ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
+  calendar_test_utils::ScopedLibcTimeZone scoped_libc_timezone(
+      "America/Los_Angeles");
+  ASSERT_TRUE(scoped_libc_timezone.is_success());
 
   // Set today to`kStartTime0`.
   SetTodayFromStr(kStartTime0);

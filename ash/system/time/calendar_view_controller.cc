@@ -186,10 +186,8 @@ void CalendarViewController::ShowEventListView(
   selected_date_row_index_ = row_index;
   expanded_row_index_ = row_index;
 
-  base::TimeDelta time_difference =
-      calendar_utils::GetTimeDifference(selected_date);
-  selected_date_midnight_ = (selected_date + time_difference).UTCMidnight();
-  selected_date_midnight_utc_ = selected_date_midnight_ - time_difference;
+  std::tie(selected_date_midnight_, selected_date_midnight_utc_) =
+      calendar_utils::GetMidnight(selected_date);
 
   // Notify observers.
   for (auto& observer : observers_)
