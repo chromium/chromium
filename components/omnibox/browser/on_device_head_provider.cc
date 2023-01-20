@@ -54,6 +54,17 @@ int OnDeviceHeadSuggestMaxScoreForNonUrlInput(bool is_incognito) {
   return kDefaultScore;
 }
 
+std::string SanitizeInput(const std::u16string& input) {
+  std::u16string trimmed_input;
+  base::TrimWhitespace(input, base::TRIM_ALL, &trimmed_input);
+  return base::UTF16ToUTF8(base::i18n::ToLower(trimmed_input));
+}
+
+enum class SuggestionType {
+  HEAD = 0,
+  TAIL,
+};
+
 }  // namespace
 
 struct OnDeviceHeadProvider::OnDeviceHeadProviderParams {
@@ -66,6 +77,9 @@ struct OnDeviceHeadProvider::OnDeviceHeadProviderParams {
 
   // The suggestions fetched from the on device model which matches the input.
   std::vector<std::string> suggestions;
+
+  // The type of the result suggestions.
+  SuggestionType suggestion_type;
 
   // Indicates whether this request failed or not.
   bool failed = false;
@@ -80,6 +94,16 @@ struct OnDeviceHeadProvider::OnDeviceHeadProviderParams {
   OnDeviceHeadProviderParams(const OnDeviceHeadProviderParams&) = delete;
   OnDeviceHeadProviderParams& operator=(const OnDeviceHeadProviderParams&) =
       delete;
+};
+
+struct OnDeviceHeadProvider::OnDeviceModelFiles {
+  // TODO(crbug.com/1372112): update head model class to take file path instead
+  // of the std::string file name.
+  std::string head_model_filename;
+
+  base::FilePath tail_model_filepath;
+
+  base::FilePath vocab_filepath;
 };
 
 // static
@@ -151,8 +175,10 @@ void OnDeviceHeadProvider::Start(const AutocompleteInput& input,
     return;
 
   matches_.clear();
-  if (input.text().empty() || GetOnDeviceHeadModelFilename().empty())
+  if (input.text().empty() ||
+      GetOnDeviceModelFiles().head_model_filename.empty()) {
     return;
+  }
 
   // Note |on_device_search_request_id_| has already been changed in |Stop| so
   // we don't need to change it again here to get a new id for this request.
@@ -177,15 +203,13 @@ void OnDeviceHeadProvider::Stop(bool clear_cached_results,
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-// TODO(crbug.com/925072): post OnDeviceHeadModel::GetSuggestionsForPrefix
-// directly and remove this function.
 // static
 std::unique_ptr<OnDeviceHeadProvider::OnDeviceHeadProviderParams>
 OnDeviceHeadProvider::GetSuggestionsFromModel(
-    const std::string& model_filename,
+    OnDeviceModelFiles model_files,
     const size_t provider_max_matches,
     std::unique_ptr<OnDeviceHeadProviderParams> params) {
-  if (model_filename.empty() || !params) {
+  if (model_files.head_model_filename.empty() || !params) {
     if (params) {
       params->failed = true;
     }
@@ -193,15 +217,20 @@ OnDeviceHeadProvider::GetSuggestionsFromModel(
   }
 
   params->creation_time = base::TimeTicks::Now();
-  std::u16string trimmed_input;
-  base::TrimWhitespace(params->input.text(), base::TRIM_ALL, &trimmed_input);
+  std::string sanitized_input = SanitizeInput(params->input.text());
+
   auto results = OnDeviceHeadModel::GetSuggestionsForPrefix(
-      model_filename, provider_max_matches,
-      base::UTF16ToUTF8(base::i18n::ToLower(trimmed_input)));
+      model_files.head_model_filename, provider_max_matches, sanitized_input);
   params->suggestions.clear();
-  for (const auto& item : results) {
-    // The second member is the score which is not useful for provider.
-    params->suggestions.push_back(item.first);
+  if (results.empty()) {
+    // TODO(crbug.com/1372112): call tail model executor if `results` is empty.
+    params->suggestion_type = SuggestionType::TAIL;
+  } else {
+    params->suggestion_type = SuggestionType::HEAD;
+    for (const auto& item : results) {
+      // The second member is the score which is not useful for provider.
+      params->suggestions.push_back(item.first);
+    }
   }
   return params;
 }
@@ -224,7 +253,7 @@ void OnDeviceHeadProvider::DoSearch(
   worker_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&OnDeviceHeadProvider::GetSuggestionsFromModel,
-                     GetOnDeviceHeadModelFilename(), provider_max_matches_,
+                     GetOnDeviceModelFiles(), provider_max_matches_,
                      std::move(params)),
       base::BindOnce(&OnDeviceHeadProvider::SearchDone,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -256,6 +285,7 @@ void OnDeviceHeadProvider::SearchDone(
                         ? kBaseRelevanceForUrlInput
                         : OnDeviceHeadSuggestMaxScoreForNonUrlInput(
                               client()->IsOffTheRecord());
+    bool is_tail_suggestion = (params->suggestion_type == SuggestionType::TAIL);
 
     for (const auto& item : params->suggestions) {
       matches_.push_back(BaseSearchProvider::CreateOnDeviceSearchSuggestion(
@@ -266,7 +296,7 @@ void OnDeviceHeadProvider::SearchDone(
           /*search_terms_data=*/
           template_url_service->search_terms_data(),
           /*accepted_suggestion=*/TemplateURLRef::NO_SUGGESTION_CHOSEN,
-          /*is_tail_suggestion=*/false));
+          is_tail_suggestion));
     }
     UMA_HISTOGRAM_TIMES("Omnibox.OnDeviceHeadSuggest.AsyncQueryTime",
                         base::TimeTicks::Now() - params->creation_time);
@@ -276,9 +306,18 @@ void OnDeviceHeadProvider::SearchDone(
   NotifyListeners(true);
 }
 
-std::string OnDeviceHeadProvider::GetOnDeviceHeadModelFilename() const {
+// static
+OnDeviceHeadProvider::OnDeviceModelFiles
+OnDeviceHeadProvider::GetOnDeviceModelFiles() {
   auto* model_update_listener = OnDeviceModelUpdateListener::GetInstance();
-  return model_update_listener != nullptr
-             ? model_update_listener->head_model_filename()
-             : "";
+  OnDeviceModelFiles model_files;
+  if (model_update_listener != nullptr) {
+    model_files.head_model_filename =
+        model_update_listener->head_model_filename();
+    model_files.tail_model_filepath =
+        model_update_listener->tail_model_filepath();
+    model_files.vocab_filepath = model_update_listener->vocab_filepath();
+  }
+
+  return model_files;
 }

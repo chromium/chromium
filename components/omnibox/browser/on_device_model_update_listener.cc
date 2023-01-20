@@ -22,22 +22,6 @@ std::string GetModelFilenameFromDirectory(const base::FilePath& model_dir) {
   return optimization_guide::FilePathToString(model_file_path);
 }
 
-// Helper function which returns tail model filename and its vocabulary.
-std::pair<std::string, std::string> GetTailModelAndVocabFilenames(
-    const base::FilePath& model_file_path,
-    const base::flat_set<base::FilePath>& additional_files) {
-  std::string model_filename, vocab_filename;
-
-  if (!model_file_path.empty())
-    model_filename = optimization_guide::FilePathToString(model_file_path);
-
-  if (additional_files.size() > 0)
-    vocab_filename =
-        optimization_guide::FilePathToString(*additional_files.begin());
-
-  return std::make_pair(model_filename, vocab_filename);
-}
-
 }  // namespace
 
 // static
@@ -51,14 +35,14 @@ std::string OnDeviceModelUpdateListener::head_model_filename() const {
   return head_model_filename_;
 }
 
-std::string OnDeviceModelUpdateListener::tail_model_filename() const {
+base::FilePath OnDeviceModelUpdateListener::tail_model_filepath() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return tail_model_filename_;
+  return tail_model_filepath_;
 }
 
-std::string OnDeviceModelUpdateListener::vocab_filename() const {
+base::FilePath OnDeviceModelUpdateListener::vocab_filepath() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return vocab_filename_;
+  return vocab_filepath_;
 }
 
 OnDeviceModelUpdateListener::OnDeviceModelUpdateListener() = default;
@@ -87,25 +71,20 @@ void OnDeviceModelUpdateListener::OnTailModelUpdate(
     const base::flat_set<base::FilePath>& additional_files) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!(model_file.empty() || additional_files.empty())) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::TaskPriority::BEST_EFFORT,
-         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN, base::MayBlock()},
-        base::BindOnce(&GetTailModelAndVocabFilenames, model_file,
-                       additional_files),
-        base::BindOnce(
-            [](const std::pair<std::string, std::string>& filenames) {
-              if (!filenames.first.empty())
-                GetInstance()->tail_model_filename_ = filenames.first;
-              if (!filenames.second.empty())
-                GetInstance()->vocab_filename_ = filenames.second;
-            }));
+    tail_model_filepath_ = model_file;
+    for (const auto& file_path : additional_files) {
+      if (!file_path.empty()) {
+        // Currently only one additional file (i.e. vocabulary) will be sent.
+        vocab_filepath_ = file_path;
+        break;
+      }
+    }
   }
 }
 
 void OnDeviceModelUpdateListener::ResetListenerForTest() {
   head_model_dir_.clear();
   head_model_filename_.clear();
-  tail_model_filename_.clear();
-  vocab_filename_.clear();
+  tail_model_filepath_.clear();
+  vocab_filepath_.clear();
 }

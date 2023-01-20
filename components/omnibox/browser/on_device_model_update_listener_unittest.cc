@@ -66,8 +66,8 @@ TEST_F(OnDeviceModelUpdateListenerTest, OnTailModelUpdate) {
   listener_->OnTailModelUpdate(model_path, additional_files);
 
   task_environment_.RunUntilIdle();
-  ASSERT_TRUE(base::EndsWith(listener_->tail_model_filename(),
+  ASSERT_TRUE(base::EndsWith(listener_->tail_model_filepath().MaybeAsASCII(),
                              kTailModelFilename, base::CompareCase::SENSITIVE));
-  ASSERT_TRUE(base::EndsWith(listener_->vocab_filename(), kVocabFilename,
-                             base::CompareCase::SENSITIVE));
+  ASSERT_TRUE(base::EndsWith(listener_->vocab_filepath().MaybeAsASCII(),
+                             kVocabFilename, base::CompareCase::SENSITIVE));
 }

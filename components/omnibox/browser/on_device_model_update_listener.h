@@ -31,8 +31,8 @@ class OnDeviceModelUpdateListener {
       const base::flat_set<base::FilePath>& additional_files);
 
   std::string head_model_filename() const;
-  std::string tail_model_filename() const;
-  std::string vocab_filename() const;
+  base::FilePath tail_model_filepath() const;
+  base::FilePath vocab_filepath() const;
 
  private:
   friend class base::NoDestructor<OnDeviceModelUpdateListener>;
@@ -53,11 +53,11 @@ class OnDeviceModelUpdateListener {
   // The filename of the head model.
   std::string head_model_filename_;
 
-  // The filename of the tail model.
-  std::string tail_model_filename_;
+  // The file path of the tail model.
+  base::FilePath tail_model_filepath_;
 
-  // The filename of the vocabulary file for the tail model.
-  std::string vocab_filename_;
+  // The file path of the vocabulary file for the tail model.
+  base::FilePath vocab_filepath_;
 
   THREAD_CHECKER(thread_checker_);
 };

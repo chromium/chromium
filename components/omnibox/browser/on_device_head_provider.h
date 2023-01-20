@@ -24,8 +24,8 @@ class AutocompleteProviderListener;
 // greater than 99, such that its matches will not show before any other
 // providers; However the relevance can be changed to any arbitrary value by
 // Finch when the input is not classified as a URL.
-// TODO(crbug.com/925072): make some cleanups after removing |model_| and |this|
-// in task postings from this class.
+// TODO(crbug.com/1372112): rename this provider to "OnDeviceProvider" since it
+// will serve both head and tail suggestions.
 class OnDeviceHeadProvider : public AutocompleteProvider {
  public:
   static OnDeviceHeadProvider* Create(AutocompleteProviderClient* client,
@@ -43,6 +43,9 @@ class OnDeviceHeadProvider : public AutocompleteProvider {
   // A useful data structure to store Autocomplete input and suggestions fetched
   // from the on device head model for a search request to the model.
   struct OnDeviceHeadProviderParams;
+
+  // The structure holds file names or paths for on device models.
+  struct OnDeviceModelFiles;
 
   OnDeviceHeadProvider(AutocompleteProviderClient* client,
                        AutocompleteProviderListener* listener);
@@ -62,28 +65,27 @@ class OnDeviceHeadProvider : public AutocompleteProvider {
   // fetches by DoSearch and then calls NotifyListeners.
   void SearchDone(std::unique_ptr<OnDeviceHeadProviderParams> params);
 
-  // Helper functions to read model filename from the static
+  // Helper functions to read model files from the static
   // OnDeviceModelUpdateListener instance.
-  std::string GetOnDeviceHeadModelFilename() const;
+  static OnDeviceModelFiles GetOnDeviceModelFiles();
 
-  // Fetches suggestions matching the params from the given on device head
-  // model.
+  // Fetches suggestions matching the params from the given on device model.
   static std::unique_ptr<OnDeviceHeadProviderParams> GetSuggestionsFromModel(
-      const std::string& model_filename,
+      OnDeviceModelFiles model_files,
       const size_t provider_max_matches,
       std::unique_ptr<OnDeviceHeadProviderParams> params);
 
   raw_ptr<AutocompleteProviderClient> client_;
 
-  // The task runner dedicated for on device head model operations which is
-  // added to offload expensive operations out of the UI sequence.
+  // The task runner dedicated for on device model operations which is added to
+  // offload expensive operations out of the UI sequence.
   scoped_refptr<base::SequencedTaskRunner> worker_task_runner_;
 
   // Sequence checker that ensure autocomplete request handling will only happen
   // on main thread.
   SEQUENCE_CHECKER(main_sequence_checker_);
 
-  // The request id used to trace current request to the on device head model.
+  // The request id used to trace current request to the on device models.
   // The id will be increased whenever a new request is received from the
   // AutocompleteController.
   size_t on_device_search_request_id_;
