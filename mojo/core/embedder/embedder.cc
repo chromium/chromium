@@ -34,12 +34,7 @@
         // BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_NACL)
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
-namespace mojo {
-namespace core {
+namespace mojo::core {
 
 namespace {
 
@@ -80,23 +75,12 @@ void InitFeatures() {
       base::FeatureList::IsEnabled(kMojoAvoidRandomPipeId));
 
   if (base::FeatureList::IsEnabled(kMojoIpcz)) {
-    EnableMojoIpczIfSupported();
+    EnableMojoIpcz();
   }
 }
 
-void EnableMojoIpczIfSupported() {
-#if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/1299283): Sandboxed processes on Windows versions
-  // older than 8.1 require some extra (not yet implemented) setup for ipcz to
-  // work properly. This is omitted for early experimentation.
-  const bool kIsIpczSupported =
-      base::win::GetVersion() >= base::win::Version::WIN8_1;
-#else
-  const bool kIsIpczSupported = true;
-#endif
-  if (kIsIpczSupported) {
-    g_mojo_ipcz_enabled.store(true, std::memory_order_release);
-  }
+void EnableMojoIpcz() {
+  g_mojo_ipcz_enabled.store(true, std::memory_order_release);
 }
 
 void Init(const Configuration& configuration) {
@@ -177,5 +161,4 @@ IpczDriverHandle CreateIpczTransportFromEndpoint(
   return ipcz_driver::ObjectBase::ReleaseAsHandle(std::move(transport));
 }
 
-}  // namespace core
-}  // namespace mojo
+}  // namespace mojo::core
