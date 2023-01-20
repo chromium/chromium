@@ -725,7 +725,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                         : R.string.website_settings_site_data_page_add_allow_exception_description;
                 break;
             case SiteSettingsCategory.Type.THIRD_PARTY_COOKIES:
-                resource = getCookieControlsMode() == CookieControlsMode.BLOCK_THIRD_PARTY
+                resource = getCookieControlsMode() == CookieControlsMode.OFF
                         ? R.string.website_settings_third_party_cookies_page_add_block_exception_description
                         : R.string.website_settings_third_party_cookies_page_add_allow_exception_description;
                 break;
@@ -790,9 +790,9 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                         : ContentSettingValues.ALLOW;
                 break;
             case GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE:
-                setting = getCookieControlsMode() == CookieControlsMode.BLOCK_THIRD_PARTY
-                        ? ContentSettingValues.ALLOW
-                        : ContentSettingValues.BLOCK;
+                setting = getCookieControlsMode() == CookieControlsMode.OFF
+                        ? ContentSettingValues.BLOCK
+                        : ContentSettingValues.ALLOW;
                 break;
             case GlobalToggleLayout.TRI_STATE_TOGGLE:
             case GlobalToggleLayout.BINARY_TOGGLE:
