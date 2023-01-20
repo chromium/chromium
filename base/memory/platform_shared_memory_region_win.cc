@@ -14,14 +14,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process_handle.h"
-#include "base/rand_util.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/win/windows_version.h"
 
-namespace base {
-namespace subtle {
+namespace base::subtle {
 
 namespace {
 
@@ -216,18 +211,6 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
   }
 
   std::u16string name;
-  if (win::GetVersion() < win::Version::WIN8_1) {
-    // Windows < 8.1 ignores DACLs on certain unnamed objects (like shared
-    // sections). So, we generate a random name when we need to enforce
-    // read-only.
-    uint64_t rand_values[4];
-    RandBytes(&rand_values, sizeof(rand_values));
-    name = ASCIIToUTF16(StringPrintf("CrSharedMem_%016llx%016llx%016llx%016llx",
-                                     rand_values[0], rand_values[1],
-                                     rand_values[2], rand_values[3]));
-    DCHECK(!name.empty());
-  }
-
   SECURITY_ATTRIBUTES sa = {sizeof(sa), &sd, FALSE};
   // Ask for the file mapping with reduced permisions to avoid passing the
   // access control permissions granted by default into unpriviledged process.
@@ -284,5 +267,4 @@ PlatformSharedMemoryRegion::PlatformSharedMemoryRegion(
     const UnguessableToken& guid)
     : handle_(std::move(handle)), mode_(mode), size_(size), guid_(guid) {}
 
-}  // namespace subtle
-}  // namespace base
+}  // namespace base::subtle
