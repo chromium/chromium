@@ -823,6 +823,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.CustomizeChromeOpened"
+    enum="NTPCustomizeChromeEntryPoint" expires_after="2023-07-30">
+  <owner>pauladedeji@chromium.org</owner>
+  <owner>danpeng@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Captures calls to open Customize Chrome on the NTP. Calls can be made to
+    open Customize Chrome while it is already open. Opening Customize Chrome
+    from inside the side panel is tracked by
+    &quot;SidePanel.CustomizeChrome.ShowTriggered&quot;.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Customized" enum="NTPCustomizedFeatures"
     expires_after="2023-06-18">
   <owner>tiborg@chromium.org</owner>

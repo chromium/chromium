@@ -73340,6 +73340,12 @@ Called by update_net_trust_anchors.py.-->
       label="Image set as background (through double-click or 'Done')."/>
 </enum>
 
+<enum name="NTPCustomizeChromeEntryPoint">
+  <int value="0" label="Customize Chrome button clicked."/>
+  <int value="1" label="Customize module clicked."/>
+  <int value="2" label="NTP URL has customize chrome parameters."/>
+</enum>
+
 <enum name="NTPCustomizedFeatures">
   <int value="0" label="Background customized"/>
   <int value="1" label="Shortcut customized"/>
