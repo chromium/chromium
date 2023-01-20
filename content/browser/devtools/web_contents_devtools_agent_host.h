@@ -40,6 +40,7 @@ class CONTENT_EXPORT WebContentsDevToolsAgentHost
   void WillInitiatePrerender(FrameTreeNode* ftn);
   // TODO(caseq): do we need more specific signals here?
   void UpdateChildFrameTrees(bool update_target_info);
+  void InspectElement(RenderFrameHost* frame_host, int x, int y) override;
 
  private:
   class AutoAttacher;
@@ -80,6 +81,7 @@ class CONTENT_EXPORT WebContentsDevToolsAgentHost
   void WebContentsDestroyed() override;
 
   DevToolsAgentHostImpl* GetPrimaryFrameAgent();
+  scoped_refptr<DevToolsAgentHost> GetOrCreatePrimaryFrameAgent();
 
   std::unique_ptr<AutoAttacher> auto_attacher_;
 };
