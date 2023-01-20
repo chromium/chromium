@@ -117,6 +117,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   MemoryInfo* memory(ScriptState*) const override;
 
   EventCounts* eventCounts() override;
+  uint64_t interactionCount() const override;
 
   bool FirstInputDetected() const { return !!first_input_timing_; }
 

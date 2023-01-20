@@ -6562,6 +6562,7 @@ interface PendingPostBeacon : PendingBeacon
 interface Performance : EventTarget
     attribute @@toStringTag
     getter eventCounts
+    getter interactionCount
     getter memory
     getter navigation
     getter onresourcetimingbufferfull

@@ -30,6 +30,7 @@ class MockPerformance : public Performance {
   ~MockPerformance() override = default;
 
   ExecutionContext* GetExecutionContext() const override { return nullptr; }
+  uint64_t interactionCount() const override { return 0; }
 };
 
 class PerformanceObserverTest : public testing::Test {

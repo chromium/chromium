@@ -121,6 +121,8 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
   // while.
   void MaybeFlushKeyboardEntries(DOMHighResTimeStamp current_time);
 
+  uint64_t GetInteractionCount() const;
+
   void Trace(Visitor*) const;
 
  private:
@@ -179,6 +181,7 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
   absl::optional<PointerId> last_pointer_id_;
 
   uint32_t current_interaction_id_for_event_timing_;
+  uint64_t interaction_count_ = 0;
 
   // Whether to perform UKM sampling.
   bool sampling_ = true;

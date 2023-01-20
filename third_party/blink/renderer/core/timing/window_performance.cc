@@ -715,6 +715,10 @@ EventCounts* WindowPerformance::eventCounts() {
   return event_counts_;
 }
 
+uint64_t WindowPerformance::interactionCount() const {
+  return responsiveness_metrics_->GetInteractionCount();
+}
+
 void WindowPerformance::OnLargestContentfulPaintUpdated(
     base::TimeTicks start_time,
     base::TimeTicks render_time,

@@ -111,6 +111,7 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
       ScriptState*,
       ExceptionState& exception_state) const;
   virtual EventCounts* eventCounts();
+  virtual std::uint64_t interactionCount() const = 0;
 
   // Reduce the resolution to prevent timing attacks. See:
   // http://www.w3.org/TR/hr-time-2/#privacy-security

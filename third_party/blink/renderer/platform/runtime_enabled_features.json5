@@ -1162,6 +1162,10 @@
       base_feature: "EventPath",
     },
     {
+      name: "EventTimingInteractionCount",
+      status: "experimental",
+    },
+    {
       name: "ExperimentalContentSecurityPolicyFeatures",
       status: "experimental",
     },

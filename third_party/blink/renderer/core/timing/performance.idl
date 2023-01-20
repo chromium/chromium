@@ -73,6 +73,7 @@ interface Performance : EventTarget {
 
     // Event Timing
     [Exposed=Window, SameObject, SaveSameObject] readonly attribute EventCounts eventCounts;
+    [Exposed=Window, RuntimeEnabled=EventTimingInteractionCount] readonly attribute unsigned long long interactionCount;
 
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

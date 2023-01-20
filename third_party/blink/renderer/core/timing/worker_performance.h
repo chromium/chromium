@@ -48,6 +48,7 @@ class WorkerPerformance final : public Performance {
   ExecutionContext* GetExecutionContext() const override {
     return execution_context_;
   }
+  uint64_t interactionCount() const override { return 0; }
 
   void Trace(Visitor*) const override;
 

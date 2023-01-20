@@ -50,6 +50,7 @@ class TestPerformance : public Performance {
   ExecutionContext* GetExecutionContext() const override {
     return execution_context_.Get();
   }
+  uint64_t interactionCount() const override { return 0; }
 
   int NumActiveObservers() { return active_observers_.size(); }
 

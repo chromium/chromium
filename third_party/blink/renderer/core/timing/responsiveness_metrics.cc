@@ -406,8 +406,13 @@ void ResponsivenessMetrics::MaybeFlushKeyboardEntries(
   key_code_entry_map_.RemoveAll(key_codes_to_remove);
 }
 
+uint64_t ResponsivenessMetrics::GetInteractionCount() const {
+  return interaction_count_;
+}
+
 void ResponsivenessMetrics::UpdateInteractionId() {
   current_interaction_id_for_event_timing_ += kInteractionIdIncrement;
+  interaction_count_++;
 }
 
 uint32_t ResponsivenessMetrics::GetCurrentInteractionId() const {
