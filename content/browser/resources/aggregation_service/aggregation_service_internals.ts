@@ -173,8 +173,6 @@ function reportStatusToText(status: ReportStatus) {
       return 'Failed to assemble';
     case ReportStatus.kFailedToSend:
       return 'Failed to send';
-    default:
-      return status.toString();
   }
 }
 

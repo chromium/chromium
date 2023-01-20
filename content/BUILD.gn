@@ -119,7 +119,6 @@ grit("dev_ui_content_resources") {
   deps = [
     "//content/browser/resources/gpu:html_wrapper_files",
     "//content/browser/resources/process:build_ts",
-    "//storage/browser/quota:mojo_bindings_js__generator",
   ]
 }
 

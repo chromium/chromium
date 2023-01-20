@@ -2,26 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {QuotaInternalsHandler} from './quota_internals.mojom-webui.js';
+import {BucketTableEntry, QuotaInternalsHandler} from './quota_internals.mojom-webui.js';
 
 export enum StorageType {
   TEMPORARY = 0,
   // PERSISTENT = 1, DEPRECATED
   SYNCABLE = 2,
-}
-
-export interface BucketTableEntry {
-  'bucketId': bigint;
-  'storageKey': string;
-  'type': StorageType;
-  'name': string;
-  'usage': bigint;
-  'useCount': bigint;
-  'lastAccessed': Time;
-  'lastModified': Time;
 }
 
 interface GetDiskAvailabilityAndTempPoolSizeResult {
@@ -33,15 +21,6 @@ interface GetDiskAvailabilityAndTempPoolSizeResult {
 interface GetGlobalUsageResult {
   usage: bigint;
   unlimitedUsage: bigint;
-}
-
-interface GetStatisticsResult {
-  evictionStatistics: {
-    'errors-on-getting-usage-and-quota': string,
-    'evicted-buckets': string,
-    'eviction-rounds': string,
-    'skipped-eviction-rounds': string,
-  };
 }
 
 export interface RetrieveBucketsTableResult {
@@ -73,7 +52,7 @@ export class QuotaInternalsBrowserProxy {
     return this.handler.getGlobalUsageForInternals(storageType);
   }
 
-  getStatistics(): Promise<GetStatisticsResult> {
+  getStatistics(): Promise<{evictionStatistics: {[key: string]: string}}> {
     return this.handler.getStatistics();
   }
 

@@ -19,6 +19,7 @@ build_webui("build") {
 
   web_component_files = [ "aggregation_service_internals_table.ts" ]
 
+  ts_use_local_config = false
   ts_deps = [
     "//ui/webui/resources:library",
     "//ui/webui/resources/mojo:library",
@@ -26,10 +27,10 @@ build_webui("build") {
 
   aggregation_service_content_folder = "content/browser/aggregation_service"
 
-  mojo_files = [ "$root_gen_dir/mojom-webui/$aggregation_service_content_folder/aggregation_service_internals.mojom-webui.js" ]
+  mojo_files = [ "$root_gen_dir/$aggregation_service_content_folder/aggregation_service_internals.mojom-webui.ts" ]
 
   mojo_files_deps =
-      [ "//$aggregation_service_content_folder:mojo_bindings_js__generator" ]
+      [ "//$aggregation_service_content_folder:mojo_bindings_ts__generator" ]
 
   grit_output_dir = "$root_gen_dir/content"
   html_to_wrapper_template = "native"

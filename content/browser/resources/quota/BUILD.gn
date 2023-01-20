@@ -17,8 +17,9 @@ build_webui("build") {
     "quota_internals_browser_proxy.ts",
   ]
 
-  mojo_files_deps = [ "//storage/browser/quota:mojo_bindings_js__generator" ]
-  mojo_files = [ "$root_gen_dir/mojom-webui/storage/browser/quota/quota_internals.mojom-webui.js" ]
+  mojo_files_deps = [ "//storage/browser/quota:mojo_bindings_ts__generator" ]
+  mojo_files =
+      [ "$root_gen_dir/storage/browser/quota/quota_internals.mojom-webui.ts" ]
 
   ts_deps = [
     "//ui/webui/resources:library",

@@ -7,6 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojo_bindings") {
   sources = [ "quota_internals.mojom" ]
   webui_module_path = "/"
+  use_typescript_sources = true
 
   public_deps = [ "//url/mojom:url_mojom_origin" ]
 

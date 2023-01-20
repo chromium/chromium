@@ -6,7 +6,8 @@ import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import {BucketTableEntry, QuotaInternalsBrowserProxy, RetrieveBucketsTableResult, StorageType} from './quota_internals_browser_proxy.js';
+import {BucketTableEntry} from './quota_internals.mojom-webui.js';
+import {QuotaInternalsBrowserProxy, RetrieveBucketsTableResult, StorageType} from './quota_internals_browser_proxy.js';
 
 // Object for constructing the bucket row in the usage table.
 interface StorageTypeBucketTableEntry {

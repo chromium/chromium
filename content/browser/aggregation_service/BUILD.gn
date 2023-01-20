@@ -11,6 +11,7 @@ mojom("mojo_bindings") {
     "//url/mojom:url_mojom_origin",
   ]
   webui_module_path = "/"
+  use_typescript_sources = true
 
   cpp_typemaps = [
     {
