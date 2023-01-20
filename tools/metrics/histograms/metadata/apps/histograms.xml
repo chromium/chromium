@@ -1088,6 +1088,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Apps.AppList.SystemInfoProvider.CrosHealthdProbeError.{ProbeErrorSourceStruct}"
+    enum="CrosDiagnosticsCrosHealthdProbeError" expires_after="2023-10-15">
+  <owner>laurencom@google.com</owner>
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@google.com</owner>
+  <summary>
+    Records the ProbeError::ErrorType returned on request for
+    {ProbeErrorSourceStruct}. Recorded on the event a request to cros_healthd
+    probe service returns a ProbeError. This can occur when a request is made to
+    the CrosHealthdProbeService within the System Info Provider.
+  </summary>
+  <token key="ProbeErrorSourceStruct">
+    <variant name="BatteryInfo"/>
+    <variant name="CpuInfo"/>
+    <variant name="MemoryInfo"/>
+  </token>
+</histogram>
+
+<histogram name="Apps.AppList.SystemInfoProvider.Error.{ErrorSource}"
+    enum="CrosDiagnosticsDataError" expires_after="2023-10-15">
+  <owner>laurencom@google.com</owner>
+  <owner>wrong@google.com</owner>
+  <owner>tby@google.com</owner>
+  <summary>
+    Records error type such as no data error, not a number error and expectation
+    not met error when receiving system information including battery info,
+    network info and system info. All errors are recorded.
+  </summary>
+  <token key="ErrorSource">
+    <variant name="Battery"/>
+    <variant name="Network"/>
+  </token>
+</histogram>
+
 <histogram name="Apps.AppList.TimeToUserAction{TabletOrClamshell}" units="ms"
     expires_after="2023-06-19">
   <owner>gzadina@google.com</owner>
