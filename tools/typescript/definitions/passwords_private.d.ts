@@ -157,6 +157,10 @@ declare global {
         note?: string;
       }
 
+      export interface PasswordUiEntryList {
+        entries: PasswordUiEntry[];
+      }
+
       export function recordPasswordsPageAccessInSettings(): void;
       export function changeSavedPassword(
           id: number, params: ChangeSavedPasswordParams): Promise<number>;
@@ -181,6 +185,8 @@ declare global {
       export function isOptedInForAccountStorage(): Promise<boolean>;
       export function optInForAccountStorage(optIn: boolean): void;
       export function getInsecureCredentials(): Promise<PasswordUiEntry[]>;
+      export function getCredentialsWithReusedPassword():
+          Promise<PasswordUiEntryList[]>;
       export function muteInsecureCredential(credential: PasswordUiEntry):
           Promise<void>;
       export function unmuteInsecureCredential(credential: PasswordUiEntry):

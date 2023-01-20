@@ -266,6 +266,38 @@ TestPasswordsPrivateDelegate::GetInsecureCredentials() {
   return credentials;
 }
 
+std::vector<api::passwords_private::PasswordUiEntryList>
+TestPasswordsPrivateDelegate::GetCredentialsWithReusedPassword() {
+  std::vector<api::passwords_private::PasswordUiEntryList> result;
+
+  api::passwords_private::PasswordUiEntry credential_1;
+  credential_1.username = "bob";
+  credential_1.urls.shown = "example.com";
+  credential_1.urls.link = "https://example.com";
+  credential_1.is_android_credential = false;
+  credential_1.change_password_url = "https://example.com/change-password";
+  credential_1.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
+  credential_1.compromised_info.emplace();
+  credential_1.compromised_info->compromise_types = {
+      api::passwords_private::COMPROMISE_TYPE_REUSED};
+
+  api::passwords_private::PasswordUiEntry credential_2;
+  credential_2.username = "angela";
+  credential_2.urls.shown = "test.com";
+  credential_2.urls.link = "https://test.com";
+  credential_2.is_android_credential = false;
+  credential_2.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
+  credential_2.compromised_info.emplace();
+  credential_2.compromised_info->compromise_types = {
+      api::passwords_private::COMPROMISE_TYPE_REUSED};
+
+  result.emplace_back();
+  result[0].entries.push_back(std::move(credential_1));
+  result[0].entries.push_back(std::move(credential_2));
+
+  return result;
+}
+
 // Fake implementation of MuteInsecureCredential. This succeeds if the
 // delegate knows of a insecure credential with the same id.
 bool TestPasswordsPrivateDelegate::MuteInsecureCredential(

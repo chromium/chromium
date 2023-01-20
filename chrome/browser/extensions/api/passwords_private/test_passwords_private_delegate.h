@@ -73,6 +73,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
                               content::WebContents* web_contents) override;
   std::vector<api::passwords_private::PasswordUiEntry> GetInsecureCredentials()
       override;
+  std::vector<api::passwords_private::PasswordUiEntryList>
+  GetCredentialsWithReusedPassword() override;
   // Fake implementation of `MuteInsecureCredential`. This succeeds if the
   // delegate knows of a insecure credential with the same id.
   bool MuteInsecureCredential(

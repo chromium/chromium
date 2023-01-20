@@ -362,4 +362,10 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, GetCredentialGroups) {
   EXPECT_TRUE(RunPasswordsSubtest("getCredentialGroups"));
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
+                       GetCredentialsWithReusedPassword) {
+  EXPECT_TRUE(RunPasswordsSubtest("getCredentialsWithReusedPassword"))
+      << message_;
+}
+
 }  // namespace extensions

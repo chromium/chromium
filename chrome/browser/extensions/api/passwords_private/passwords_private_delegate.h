@@ -186,6 +186,10 @@ class PasswordsPrivateDelegate : public KeyedService {
   virtual std::vector<api::passwords_private::PasswordUiEntry>
   GetInsecureCredentials() = 0;
 
+  // Obtains all credentials which reuse passwords.
+  virtual std::vector<api::passwords_private::PasswordUiEntryList>
+  GetCredentialsWithReusedPassword() = 0;
+
   // Attempts to mute |credential| from the password store. Returns whether
   // the mute succeeded.
   virtual bool MuteInsecureCredential(

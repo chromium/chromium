@@ -302,6 +302,16 @@ ResponseAction PasswordsPrivateGetInsecureCredentialsFunction::Run() {
           GetDelegate(browser_context())->GetInsecureCredentials())));
 }
 
+// PasswordsPrivateGetCredentialsWithReusedPasswordFunction:
+PasswordsPrivateGetCredentialsWithReusedPasswordFunction::
+    ~PasswordsPrivateGetCredentialsWithReusedPasswordFunction() = default;
+
+ResponseAction PasswordsPrivateGetCredentialsWithReusedPasswordFunction::Run() {
+  return RespondNow(ArgumentList(
+      api::passwords_private::GetCredentialsWithReusedPassword::Results::Create(
+          GetDelegate(browser_context())->GetCredentialsWithReusedPassword())));
+}
+
 // PasswordsPrivateMuteInsecureCredentialFunction:
 PasswordsPrivateMuteInsecureCredentialFunction::
     ~PasswordsPrivateMuteInsecureCredentialFunction() = default;

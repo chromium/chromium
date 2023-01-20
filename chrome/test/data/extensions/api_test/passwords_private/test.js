@@ -631,6 +631,38 @@ var availableTests = [
 
     chrome.passwordsPrivate.getCredentialGroups(callback);
   },
+
+  function getCredentialsWithReusedPassword() {
+    chrome.passwordsPrivate.getCredentialsWithReusedPassword(
+      credentialsGroupedByPassword => {
+        chrome.test.assertEq(1, credentialsGroupedByPassword.length);
+
+        var credentialsWithReusedPassword = credentialsGroupedByPassword[0];
+        chrome.test.assertEq(2, credentialsWithReusedPassword.entries.length);
+
+        var firstCredentials = credentialsWithReusedPassword.entries[0];
+        chrome.test.assertEq('example.com', firstCredentials.urls.shown);
+        chrome.test.assertEq('https://example.com', firstCredentials.urls.link);
+        chrome.test.assertFalse(firstCredentials.isAndroidCredential);
+        chrome.test.assertEq(
+            'https://example.com/change-password',
+            firstCredentials.changePasswordUrl);
+        chrome.test.assertEq('bob', firstCredentials.username);
+        chrome.test.assertEq(
+            ['REUSED'],
+            firstCredentials.compromisedInfo.compromiseTypes);
+
+        var secondCredential = credentialsWithReusedPassword.entries[1];
+        chrome.test.assertEq('test.com', secondCredential.urls.shown);
+        chrome.test.assertEq('https://test.com', secondCredential.urls.link);
+        chrome.test.assertFalse(secondCredential.isAndroidCredential);
+        chrome.test.assertEq('angela', secondCredential.username);
+        chrome.test.assertEq(
+            ['REUSED'],
+            secondCredential.compromisedInfo.compromiseTypes);
+        chrome.test.succeed();
+      });
+  },
 ];
 
 var testToRun = window.location.search.substring(1);

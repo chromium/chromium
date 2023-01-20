@@ -682,6 +682,11 @@ PasswordsPrivateDelegateImpl::GetInsecureCredentials() {
   return password_check_delegate_.GetInsecureCredentials();
 }
 
+std::vector<api::passwords_private::PasswordUiEntryList>
+PasswordsPrivateDelegateImpl::GetCredentialsWithReusedPassword() {
+  return password_check_delegate_.GetCredentialsWithReusedPassword();
+}
+
 bool PasswordsPrivateDelegateImpl::MuteInsecureCredential(
     const api::passwords_private::PasswordUiEntry& credential) {
   return password_check_delegate_.MuteInsecureCredential(credential);

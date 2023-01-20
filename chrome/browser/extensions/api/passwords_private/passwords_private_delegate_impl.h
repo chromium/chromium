@@ -98,6 +98,8 @@ class PasswordsPrivateDelegateImpl
                               content::WebContents* web_contents) override;
   std::vector<api::passwords_private::PasswordUiEntry> GetInsecureCredentials()
       override;
+  std::vector<api::passwords_private::PasswordUiEntryList>
+  GetCredentialsWithReusedPassword() override;
   bool MuteInsecureCredential(
       const api::passwords_private::PasswordUiEntry& credential) override;
   bool UnmuteInsecureCredential(

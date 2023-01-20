@@ -35612,6 +35612,7 @@ Called by update_extension_histograms.py.-->
   <int value="1754"
       label="SMARTCARDPROVIDERPRIVATE_REPORTGETSTATUSCHANGERESULT"/>
   <int value="1755" label="FILEMANAGERPRIVATE_RESUMEIOTASK"/>
+  <int value="1756" label="PASSWORDSPRIVATE_GETCREDENTIALSWITHREUSEDPASSWORD"/>
 </enum>
 
 <enum name="ExtensionIconState">

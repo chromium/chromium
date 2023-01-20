@@ -43,6 +43,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -241,14 +242,15 @@ auto ExpectCompromisedInfo(
 }
 
 // Creates matcher for a given compromised credential
-auto ExpectWeakCredential(
-    const std::string& formatted_origin,
-    const std::string& detailed_origin,
-    const absl::optional<std::string>& change_password_url,
-    const std::u16string& username) {
-  return AllOf(Field(&PasswordUiEntry::username, base::UTF16ToASCII(username)),
-               Field(&PasswordUiEntry::urls,
-                     ExpectUrls(formatted_origin, detailed_origin)));
+auto ExpectCredential(const std::string& formatted_origin,
+                      const std::string& detailed_origin,
+                      const absl::optional<std::string>& change_password_url,
+                      const std::u16string& username) {
+  return AllOf(
+      Field(&PasswordUiEntry::username, base::UTF16ToASCII(username)),
+      Field(&PasswordUiEntry::urls,
+            ExpectUrls(formatted_origin, detailed_origin)),
+      Field(&PasswordUiEntry::change_password_url, change_password_url));
 }
 
 // Creates matcher for a given compromised credential
@@ -348,10 +350,10 @@ TEST_F(PasswordCheckDelegateTest, GetInsecureCredentialsFillsFieldsCorrectly) {
   EXPECT_THAT(
       delegate().GetInsecureCredentials(),
       UnorderedElementsAre(
-          ExpectWeakCredential(
-              "example.com", "https://example.com/",
-              "https://example.com/.well-known/change-password", kUsername1),
-          ExpectWeakCredential(
+          ExpectCredential("example.com", "https://example.com/",
+                           "https://example.com/.well-known/change-password",
+                           kUsername1),
+          ExpectCredential(
               "Example App",
               "https://play.google.com/store/apps/details?id=com.example.app",
               "https://example.com/.well-known/change-password", kUsername2)));
@@ -381,7 +383,7 @@ TEST_F(PasswordCheckDelegateTest, WeakCheckWhenUserSignedOut) {
 
   EXPECT_THAT(
       delegate().GetInsecureCredentials(),
-      ElementsAre(ExpectWeakCredential(
+      ElementsAre(ExpectCredential(
           "example.com", "https://example.com/",
           "https://example.com/.well-known/change-password", kUsername1)));
   EXPECT_EQ(api::passwords_private::PASSWORD_CHECK_STATE_SIGNED_OUT,
@@ -1116,6 +1118,57 @@ TEST_F(PasswordCheckDelegateTest, WellKnownChangePasswordUrl_androidrealm) {
   EXPECT_EQ(GURL(*delegate().GetInsecureCredentials().at(1).change_password_url)
                 .path(),
             password_manager::kWellKnownChangePasswordPath);
+}
+
+// Verify that GetCredentialsWithReusedPassword() correctly represents reused
+// credentials.
+TEST_F(PasswordCheckDelegateTest,
+       GetCredentialsWithReusedPasswordFillsFieldsCorrectly) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordManagerRedesign);
+
+  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1));
+  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername2, kWeakPassword2));
+  store().AddLogin(MakeSavedAndroidPassword(
+      kExampleApp, kUsername2, "Example App", kExampleCom, kWeakPassword1));
+  store().AddLogin(MakeSavedAndroidPassword(
+      kExampleApp, kUsername1, "Example App", kExampleCom, kWeakPassword2));
+  RunUntilIdle();
+  delegate().StartPasswordCheck();
+  RunUntilIdle();
+
+  auto credential_with_the_same_password =
+      delegate().GetCredentialsWithReusedPassword();
+  EXPECT_EQ(2u, credential_with_the_same_password.size());
+
+  EXPECT_THAT(
+      credential_with_the_same_password,
+      UnorderedElementsAre(
+          Field(&api::passwords_private::PasswordUiEntryList::entries,
+                UnorderedElementsAre(
+                    ExpectCredential(
+                        "example.com", "https://example.com/",
+                        "https://example.com/.well-known/change-password",
+                        kUsername2),
+                    ExpectCredential(
+                        "Example App",
+                        "https://play.google.com/store/apps/"
+                        "details?id=com.example.app",
+                        "https://example.com/.well-known/change-password",
+                        kUsername1))),
+          Field(&api::passwords_private::PasswordUiEntryList::entries,
+                UnorderedElementsAre(
+                    ExpectCredential(
+                        "example.com", "https://example.com/",
+                        "https://example.com/.well-known/change-password",
+                        kUsername1),
+                    ExpectCredential(
+                        "Example App",
+                        "https://play.google.com/store/apps/"
+                        "details?id=com.example.app",
+                        "https://example.com/.well-known/change-password",
+                        kUsername2)))));
 }
 
 }  // namespace extensions
