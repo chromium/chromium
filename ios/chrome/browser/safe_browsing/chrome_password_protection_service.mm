@@ -82,13 +82,6 @@ using ShowWarningCallback =
 
 namespace {
 
-// Records changes in the phished status of saved credential.
-void LogCredentialPhishedStatusChanged(
-    safe_browsing::CredentialPhishedStatus status) {
-  base::UmaHistogramEnumeration("SafeBrowsing.CredentialPhishedStatusChange",
-                                status);
-}
-
 // Returns true if the command line has an artificial unsafe cached verdict.
 bool HasArtificialCachedVerdict() {
   std::string phishing_url_string =
@@ -273,8 +266,6 @@ void ChromePasswordProtectionService::PersistPhishedSavedPasswordCredential(
     if (!password_store) {
       continue;
     }
-    LogCredentialPhishedStatusChanged(
-        safe_browsing::CredentialPhishedStatus::kMarkedAsPhished);
     add_phished_credentials_.Run(password_store, credential);
   }
 }
@@ -292,8 +283,6 @@ void ChromePasswordProtectionService::RemovePhishedSavedPasswordCredential(
     if (!password_store) {
       continue;
     }
-    LogCredentialPhishedStatusChanged(
-        safe_browsing::CredentialPhishedStatus::kSiteMarkedAsLegitimate);
     remove_phished_credentials_.Run(password_store, credential);
   }
 }

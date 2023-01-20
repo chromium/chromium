@@ -166,12 +166,6 @@ PasswordReuseLookup::ReputationVerdict GetVerdictToLogFromResponse(
   return PasswordReuseLookup::VERDICT_UNSPECIFIED;
 }
 
-// Records changes in the phished status of saved credential.
-void LogCredentialPhishedStatusChanged(CredentialPhishedStatus status) {
-  base::UmaHistogramEnumeration("SafeBrowsing.CredentialPhishedStatusChange",
-                                status);
-}
-
 // Given a |web_contents|, returns the navigation id of its last committed
 // navigation.
 int64_t GetLastCommittedNavigationID(content::WebContents* web_contents) {
@@ -1717,8 +1711,6 @@ void ChromePasswordProtectionService::PersistPhishedSavedPasswordCredential(
     if (!password_store) {
       continue;
     }
-    LogCredentialPhishedStatusChanged(
-        CredentialPhishedStatus::kMarkedAsPhished);
     add_phished_credentials_.Run(password_store, credential);
   }
 }
@@ -1736,8 +1728,6 @@ void ChromePasswordProtectionService::RemovePhishedSavedPasswordCredential(
     if (!password_store) {
       continue;
     }
-    LogCredentialPhishedStatusChanged(
-        CredentialPhishedStatus::kSiteMarkedAsLegitimate);
     remove_phished_credentials_.Run(password_store, credential);
   }
 }

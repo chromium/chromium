@@ -429,27 +429,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.CookieAgeHours" units="hours"
-    expires_after="2023-06-04">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether the age of the Safe Browsing cookie at startup or when a new
-    profile is created.
-  </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.CredentialPhishedStatusChange"
-    enum="CredentialPhishedStatus" expires_after="2023-02-19">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Recorded when the phished status of a saved credential changes. Records when
-    a credential is marked phished or when a phished insecure credential entry
-    is removed because the site was marked as legitimate.
-  </summary>
-</histogram>
-
 <histogram
     name="SafeBrowsing.Daily.BypassCountLast28Days.{UserState}.{EventType}"
     units="events" expires_after="2024-01-04">
@@ -844,16 +823,6 @@ chromium-metrics-reviews@google.com.
 
     This is for the file types loaded from the resource bundle packaged with
     Chrome, which is always loaded at startup.
-  </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.HasCookieAtStartup" enum="Boolean"
-    expires_after="2023-02-12">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether a Safe Browsing cookie exists at startup or when a new
-    profile is created.
   </summary>
 </histogram>
 

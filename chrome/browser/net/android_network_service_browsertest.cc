@@ -21,7 +21,7 @@ namespace {
 
 class AndroidChromeNetworkContextCleanupBrowserTest
     : public AndroidBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   AndroidChromeNetworkContextCleanupBrowserTest() = default;
   ~AndroidChromeNetworkContextCleanupBrowserTest() override = default;
@@ -42,10 +42,6 @@ class AndroidChromeNetworkContextCleanupBrowserTest
   // Whether to create the `NetworkContextFilePaths.data_directory` before
   // initializing the network service.
   bool create_data_directory_;
-
-  // Whether to create the `data_direcory` for the SafeBrowsing network context
-  // or for the regular one. The tests support creating only one.
-  bool data_directory_is_for_safebrowsing_;
 
   // Whether to write protect the `data_directory`. Used to check errors on
   // deletion.
@@ -83,17 +79,9 @@ class AndroidChromeNetworkContextCleanupBrowserTest
     // Initialize the parameters.
     create_data_directory_ = std::get<0>(GetParam());
     write_protect_data_directory_ = std::get<1>(GetParam());
-    data_directory_is_for_safebrowsing_ = std::get<2>(GetParam());
-
-    if (data_directory_is_for_safebrowsing_) {
-      data_directory_ = user_data_dir()
-                            .AppendASCII(chrome::kInitialProfile)
-                            .AppendASCII("Safe Browsing Network");
-    } else {
-      data_directory_ = user_data_dir()
-                            .AppendASCII(chrome::kInitialProfile)
-                            .AppendASCII(chrome::kNetworkDataDirname);
-    }
+    data_directory_ = user_data_dir()
+                          .AppendASCII(chrome::kInitialProfile)
+                          .AppendASCII(chrome::kNetworkDataDirname);
 
     // Create the profile directory.
     base::FilePath profile_dir =
@@ -168,8 +156,7 @@ INSTANTIATE_TEST_SUITE_P(
     AndroidChromeNetworkContextCleanupBrowserTest,
     testing::Combine(
         /* create_data_directory_= */ testing::Values(true),
-        /* write_protect_data_directory_= */ testing::Values(false),
-        /* data_directory_is_for_safebrowsing_= */ testing::Bool()));
+        /* write_protect_data_directory_= */ testing::Values(false)));
 
 // Check that when the directories are already cleaned up, the histogram with
 // the corresponding bucket is recorded.
@@ -178,8 +165,7 @@ INSTANTIATE_TEST_SUITE_P(
     AndroidChromeNetworkContextCleanupBrowserTest,
     testing::Combine(
         /* create_data_directory_= */ testing::Values(false),
-        /* write_protect_data_directory_= */ testing::Values(false),
-        /* data_directory_is_for_safebrowsing_= */ testing::Values(false)));
+        /* write_protect_data_directory_= */ testing::Values(false)));
 
 // Check that failure to delete a network context data directory is recorded in
 // UMA.
@@ -188,8 +174,7 @@ INSTANTIATE_TEST_SUITE_P(
     AndroidChromeNetworkContextCleanupBrowserTest,
     testing::Combine(
         /* create_data_directory_= */ testing::Values(true),
-        /* write_protect_data_directory_= */ testing::Values(true),
-        /* data_directory_is_for_safebrowsing_= */ testing::Values(false)));
+        /* write_protect_data_directory_= */ testing::Values(true)));
 
 IN_PROC_BROWSER_TEST_P(AndroidChromeNetworkContextCleanupBrowserTest,
                        NavigateAndCheck) {
