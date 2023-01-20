@@ -3064,7 +3064,7 @@ bool IsQuickDimEnabled() {
 }
 
 bool IsQuickSettingsNetworkRevampEnabled() {
-  return base::FeatureList::IsEnabled(kQuickSettingsNetworkRevamp);
+  return true;
 }
 
 bool IsPerDeskZOrderEnabled() {
