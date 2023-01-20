@@ -306,10 +306,6 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyUsername) {
       store().stored_passwords(),
       ElementsAre(Pair(form.signon_realm, ElementsAre(updated_username))));
 
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordEditUpdatedValues",
-      metrics_util::PasswordEditUpdatedValues::kUsername, 1);
-
   presenter().RemoveObserver(&observer);
 }
 
@@ -404,9 +400,6 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyPassword) {
   EXPECT_THAT(
       store().stored_passwords(),
       ElementsAre(Pair(form.signon_realm, ElementsAre(updated_password))));
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordEditUpdatedValues",
-      metrics_util::PasswordEditUpdatedValues::kPassword, 1);
 
   presenter().RemoveObserver(&observer);
 }
@@ -600,9 +593,6 @@ TEST_F(SavedPasswordsPresenterTest, EditUsernameAndPassword) {
   RunUntilIdle();
   EXPECT_THAT(store().stored_passwords(),
               ElementsAre(Pair(form.signon_realm, ElementsAre(updated_both))));
-  histogram_tester.ExpectBucketCount(
-      "PasswordManager.PasswordEditUpdatedValues",
-      metrics_util::PasswordEditUpdatedValues::kBoth, 1);
 
   presenter().RemoveObserver(&observer);
 }
@@ -665,9 +655,6 @@ TEST_F(SavedPasswordsPresenterTest, EditPasswordWithoutChanges) {
             presenter().EditSavedCredentials(CredentialUIEntry(form),
                                              CredentialUIEntry(form)));
   RunUntilIdle();
-  histogram_tester.ExpectBucketCount(
-      "PasswordManager.PasswordEditUpdatedValues",
-      metrics_util::PasswordEditUpdatedValues::kNone, 1);
 
   presenter().RemoveObserver(&observer);
 }

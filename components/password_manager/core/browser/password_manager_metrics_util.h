@@ -806,10 +806,6 @@ void LogProtectedPasswordHashCounts(size_t gaia_hash_count,
                                     bool does_primary_account_exists,
                                     bool is_signed_in);
 
-// Log the result of the password edit action.
-void LogPasswordEditResult(IsUsernameChanged password_changed,
-                           IsPasswordChanged username_changed);
-
 // Log the user interaction events when creating a new credential from settings.
 void LogUserInteractionsWhenAddingCredentialFromSettings(
     AddCredentialFromSettingsUserInteractions

@@ -375,22 +375,6 @@ void LogProtectedPasswordHashCounts(size_t gaia_hash_count,
 
 void LogProtectedPasswordReuse(PasswordType reused_password_type) {}
 
-void LogPasswordEditResult(IsUsernameChanged username_changed,
-                           IsPasswordChanged password_changed) {
-  PasswordEditUpdatedValues values;
-  if (username_changed && password_changed) {
-    values = PasswordEditUpdatedValues::kBoth;
-  } else if (username_changed) {
-    values = PasswordEditUpdatedValues::kUsername;
-  } else if (password_changed) {
-    values = PasswordEditUpdatedValues::kPassword;
-  } else {
-    values = PasswordEditUpdatedValues::kNone;
-  }
-  base::UmaHistogramEnumeration("PasswordManager.PasswordEditUpdatedValues",
-                                values);
-}
-
 void LogUserInteractionsWhenAddingCredentialFromSettings(
     AddCredentialFromSettingsUserInteractions
         add_credential_from_settings_user_interaction) {

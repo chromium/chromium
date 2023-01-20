@@ -2255,6 +2255,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.PasswordEditUpdatedValues"
     enum="PasswordEditUpdatedValues" expires_after="2023-07-09">
+  <obsolete>
+    For some time now, SavedPasswordsPresenter::EditSavedCredentials is used not
+    only by &quot;password edit dialog&quot;, so the metrics is not accurate.
+  </obsolete>
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>

@@ -333,8 +333,6 @@ SavedPasswordsPresenter::EditSavedCredentials(
   // Nothing changed.
   if (!username_changed && !password_changed && !note_changed &&
       !issues_changed) {
-    password_manager::metrics_util::LogPasswordEditResult(username_changed,
-                                                          password_changed);
     return EditResult::kNothingChanged;
   }
 
@@ -383,8 +381,6 @@ SavedPasswordsPresenter::EditSavedCredentials(
     }
   }
 
-  password_manager::metrics_util::LogPasswordEditResult(username_changed,
-                                                        password_changed);
   return EditResult::kSuccess;
 }
 
