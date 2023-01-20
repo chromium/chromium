@@ -2405,7 +2405,7 @@
     // Spec: https://w3c.github.io/webrtc-svc/
     {
       name: "RTCSvcScalabilityMode",
-      status: "experimental",
+      status: "stable",
       base_feature: "RTCSvcScalabilityMode",
     },
     {
