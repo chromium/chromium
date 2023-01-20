@@ -109,7 +109,6 @@ class PasswordSaveManager {
 
   virtual bool IsNewLogin() const = 0;
   virtual bool IsPasswordUpdate() const = 0;
-  virtual bool IsSamePassword() const = 0;
   virtual bool HasGeneratedPassword() const = 0;
 
   // Signals that the user updated the username value in the bubble prompt.

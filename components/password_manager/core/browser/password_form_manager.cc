@@ -544,10 +544,6 @@ bool PasswordFormManager::IsPasswordUpdate() const {
   return password_save_manager_->IsPasswordUpdate();
 }
 
-bool PasswordFormManager::IsSamePassword() const {
-  return password_save_manager_->IsSamePassword();
-}
-
 base::WeakPtr<PasswordManagerDriver> PasswordFormManager::GetDriver() const {
   return driver_;
 }

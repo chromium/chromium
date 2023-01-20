@@ -486,11 +486,6 @@ bool PasswordSaveManagerImpl::IsPasswordUpdate() const {
   return pending_credentials_state_ == PendingCredentialsState::UPDATE;
 }
 
-bool PasswordSaveManagerImpl::IsSamePassword() const {
-  return pending_credentials_state_ ==
-         PendingCredentialsState::EQUAL_TO_SAVED_MATCH;
-}
-
 bool PasswordSaveManagerImpl::HasGeneratedPassword() const {
   return generation_manager_ && generation_manager_->HasGeneratedPassword();
 }

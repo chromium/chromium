@@ -81,7 +81,6 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
 
   bool IsNewLogin() const override;
   bool IsPasswordUpdate() const override;
-  bool IsSamePassword() const override;
   bool HasGeneratedPassword() const override;
 
   void UsernameUpdatedInBubble() override;

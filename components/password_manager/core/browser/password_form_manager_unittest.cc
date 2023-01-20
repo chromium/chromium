@@ -1091,7 +1091,6 @@ TEST_P(PasswordFormManagerTest, OverridePassword) {
   EXPECT_TRUE(
       form_manager_->ProvisionallySave(submitted_form, &driver_, nullptr));
   EXPECT_FALSE(form_manager_->IsNewLogin());
-  EXPECT_FALSE(form_manager_->IsSamePassword());
   EXPECT_TRUE(form_manager_->IsPasswordUpdate());
 
   MockFormSaver& form_saver = MockFormSaver::Get(form_manager_.get());
@@ -1125,7 +1124,6 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordOnChangePasswordForm) {
   EXPECT_TRUE(
       form_manager_->ProvisionallySave(submitted_form, &driver_, nullptr));
   EXPECT_FALSE(form_manager_->IsNewLogin());
-  EXPECT_FALSE(form_manager_->IsSamePassword());
   EXPECT_TRUE(form_manager_->IsPasswordUpdate());
 
   MockFormSaver& form_saver = MockFormSaver::Get(form_manager_.get());
@@ -1251,7 +1249,6 @@ TEST_P(PasswordFormManagerTest, UpdateUsernameToAlreadyExisting) {
 
   CheckPendingCredentials(expected, form_manager_->GetPendingCredentials());
   EXPECT_FALSE(form_manager_->IsNewLogin());
-  EXPECT_FALSE(form_manager_->IsSamePassword());
   EXPECT_TRUE(form_manager_->IsPasswordUpdate());
 }
 
@@ -1292,7 +1289,6 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueToAlreadyExisting) {
 
   CheckPendingCredentials(saved_match_, form_manager_->GetPendingCredentials());
   EXPECT_FALSE(form_manager_->IsNewLogin());
-  EXPECT_TRUE(form_manager_->IsSamePassword());
   EXPECT_FALSE(form_manager_->IsPasswordUpdate());
 }
 
@@ -2059,7 +2055,6 @@ TEST_P(PasswordFormManagerTest, HTTPAuthAlreadySaved) {
   // in state new login nor password overridden.
   ASSERT_TRUE(form_manager_->ProvisionallySaveHttpAuthForm(http_auth_form));
   EXPECT_FALSE(form_manager_->IsNewLogin());
-  EXPECT_TRUE(form_manager_->IsSamePassword());
   EXPECT_FALSE(form_manager_->IsPasswordUpdate());
 }
 
@@ -2086,7 +2081,6 @@ TEST_P(PasswordFormManagerTest, HTTPAuthPasswordOverridden) {
   ASSERT_TRUE(
       form_manager_->ProvisionallySaveHttpAuthForm(submitted_http_auth_form));
   EXPECT_FALSE(form_manager_->IsNewLogin());
-  EXPECT_FALSE(form_manager_->IsSamePassword());
   EXPECT_TRUE(form_manager_->IsPasswordUpdate());
 
   // Check that the password is updated in the stored credential.
@@ -2333,7 +2327,6 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
     ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                  &possible_username_data));
     EXPECT_EQ(form_manager_->IsPasswordUpdate(), is_password_update);
-    EXPECT_FALSE(form_manager_->IsSamePassword());
 
     // Check that uploads for both username and password form happen.
     testing::InSequence in_sequence;
@@ -3003,7 +2996,6 @@ class MockPasswordSaveManager : public PasswordSaveManager {
                void(autofill::mojom::SubmissionIndicatorEvent));
   MOCK_CONST_METHOD0(IsNewLogin, bool());
   MOCK_CONST_METHOD0(IsPasswordUpdate, bool());
-  MOCK_CONST_METHOD0(IsSamePassword, bool());
   MOCK_CONST_METHOD0(HasGeneratedPassword, bool());
   MOCK_METHOD0(UsernameUpdatedInBubble, void());
   std::unique_ptr<PasswordSaveManager> Clone() override {
@@ -3253,11 +3245,6 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, IsNewLogin) {
 TEST_F(PasswordFormManagerTestWithMockedSaver, IsPasswordUpdate) {
   EXPECT_CALL(*mock_password_save_manager(), IsPasswordUpdate());
   form_manager_->IsPasswordUpdate();
-}
-
-TEST_F(PasswordFormManagerTestWithMockedSaver, IsSamePassword) {
-  EXPECT_CALL(*mock_password_save_manager(), IsSamePassword());
-  form_manager_->IsSamePassword();
 }
 
 TEST_F(PasswordFormManagerTestWithMockedSaver, HasGeneratedPassword) {
