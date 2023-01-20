@@ -77,15 +77,20 @@ class UIControlsDesktopOzone : public UIControlsAura {
     return true;
   }
 
-  bool SendMouseMove(int screen_x, int screen_y) override {
-    return SendMouseMoveNotifyWhenDone(screen_x, screen_y, base::OnceClosure());
+  bool SendMouseMove(int screen_x,
+                     int screen_y,
+                     aura::Window* window_hint) override {
+    return SendMouseMoveNotifyWhenDone(screen_x, screen_y, base::OnceClosure(),
+                                       window_hint);
   }
   bool SendMouseMoveNotifyWhenDone(int screen_x,
                                    int screen_y,
-                                   base::OnceClosure closure) override {
+                                   base::OnceClosure closure,
+                                   aura::Window* window_hint) override {
     gfx::Point screen_location(screen_x, screen_y);
     gfx::Point root_location = screen_location;
-    aura::Window* root_window = RootWindowForPoint(screen_location);
+    aura::Window* root_window =
+        RootWindowForPoint(screen_location, window_hint);
     if (root_window == nullptr)
       return true;
 
@@ -127,17 +132,20 @@ class UIControlsDesktopOzone : public UIControlsAura {
   }
   bool SendMouseEvents(MouseButton type,
                        int button_state,
-                       int accelerator_state) override {
-    return SendMouseEventsNotifyWhenDone(
-        type, button_state, base::OnceClosure(), accelerator_state);
+                       int accelerator_state,
+                       aura::Window* window_hint) override {
+    return SendMouseEventsNotifyWhenDone(type, button_state,
+                                         base::OnceClosure(), accelerator_state,
+                                         window_hint);
   }
 
   bool SendMouseEventsNotifyWhenDone(MouseButton type,
                                      int button_state,
                                      base::OnceClosure closure,
-                                     int accelerator_state) override {
+                                     int accelerator_state,
+                                     aura::Window* window_hint) override {
     gfx::Point mouse_loc = aura::Env::GetInstance()->last_mouse_location();
-    aura::Window* root_window = RootWindowForPoint(mouse_loc);
+    aura::Window* root_window = RootWindowForPoint(mouse_loc, window_hint);
     if (root_window == nullptr)
       return true;
 
@@ -154,8 +162,9 @@ class UIControlsDesktopOzone : public UIControlsAura {
         accelerator_state, mouse_loc, mouse_root_loc, std::move(closure));
     return true;
   }
-  bool SendMouseClick(MouseButton type) override {
-    return SendMouseEvents(type, UP | DOWN, ui_controls::kNoAccelerator);
+  bool SendMouseClick(MouseButton type, aura::Window* window_hint) override {
+    return SendMouseEvents(type, UP | DOWN, ui_controls::kNoAccelerator,
+                           window_hint);
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -189,7 +198,8 @@ class UIControlsDesktopOzone : public UIControlsAura {
 #endif
 
  private:
-  aura::Window* RootWindowForPoint(const gfx::Point& point) {
+  aura::Window* RootWindowForPoint(const gfx::Point& point,
+                                   aura::Window* window_hint = nullptr) {
     // Most interactive_ui_tests run inside of the aura_test_helper
     // environment. This means that we can't rely on display::Screen and several
     // other things to work properly. Therefore we hack around this by
@@ -203,10 +213,17 @@ class UIControlsDesktopOzone : public UIControlsAura {
                  window->HasCapture();
         });
 
-    if (i == windows.cend())
-      return nullptr;
-
-    return (*i)->GetRootWindow();
+    // Compare the window we found (if any) and the window hint (again, if any).
+    // If there is a hint and a window with capture they had better be the same
+    // or the test is trying to do something that can't actually happen.
+    aura::Window* const found =
+        i != windows.cend() ? (*i)->GetRootWindow() : nullptr;
+    aura::Window* const hint =
+        window_hint ? window_hint->GetRootWindow() : nullptr;
+    if (found && hint && found->HasCapture()) {
+      CHECK_EQ(found, hint);
+    }
+    return hint ? hint : found;
   }
 
   aura::Window* TopRootWindow() {

@@ -22,8 +22,7 @@
 #include "ui/events/test/events_test_utils.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
-namespace aura {
-namespace test {
+namespace aura::test {
 
 class UIControlsOzone : public ui_controls::UIControlsAura {
  public:
@@ -47,18 +46,24 @@ class UIControlsOzone : public ui_controls::UIControlsAura {
                                   bool alt,
                                   bool command,
                                   base::OnceClosure closure) override;
-  bool SendMouseMove(int screen_x, int screen_y) override;
+  bool SendMouseMove(int screen_x,
+                     int screen_y,
+                     aura::Window* window_hint) override;
   bool SendMouseMoveNotifyWhenDone(int screen_x,
                                    int screen_y,
-                                   base::OnceClosure closure) override;
+                                   base::OnceClosure closure,
+                                   aura::Window* window_hint) override;
   bool SendMouseEvents(ui_controls::MouseButton type,
                        int button_state,
-                       int accelerator_state) override;
+                       int accelerator_state,
+                       aura::Window* window_hint) override;
   bool SendMouseEventsNotifyWhenDone(ui_controls::MouseButton type,
                                      int button_state,
                                      base::OnceClosure closure,
-                                     int accelerator_state) override;
-  bool SendMouseClick(ui_controls::MouseButton type) override;
+                                     int accelerator_state,
+                                     aura::Window* window_hint) override;
+  bool SendMouseClick(ui_controls::MouseButton type,
+                      aura::Window* window_hint) override;
 #if BUILDFLAG(IS_CHROMEOS)
   bool SendTouchEvents(int action, int id, int x, int y) override;
   bool SendTouchEventsNotifyWhenDone(int action,
@@ -95,14 +100,16 @@ class UIControlsOzone : public ui_controls::UIControlsAura {
                       int flags,
                       int changed_button_flags,
                       int64_t display_id,
-                      base::OnceClosure closure);
+                      base::OnceClosure closure,
+                      aura::Window* window_hint);
 
   void PostMouseEventTask(ui::EventType type,
                           const gfx::PointF& host_location,
                           int flags,
                           int changed_button_flags,
                           int64_t display_id,
-                          base::OnceClosure closure);
+                          base::OnceClosure closure,
+                          base::WeakPtr<WindowTreeHost> host_hint);
 
   void PostTouchEvent(ui::EventType type,
                       const gfx::PointF& host_location,
@@ -128,7 +135,6 @@ class UIControlsOzone : public ui_controls::UIControlsAura {
   static unsigned button_down_mask_;
 };
 
-}  // namespace test
-}  // namespace aura
+}  // namespace aura::test
 
 #endif  // UI_AURA_TEST_UI_CONTROLS_OZONE_H_
