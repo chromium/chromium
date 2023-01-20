@@ -1404,6 +1404,14 @@ CSSStringValue* ConsumeString(CSSParserTokenRange& range) {
       range.ConsumeIncludingWhitespace().Value().ToString());
 }
 
+StringView ConsumeStringAsStringView(CSSParserTokenRange& range) {
+  if (range.Peek().GetType() != CSSParserTokenType::kStringToken) {
+    return StringView();
+  }
+
+  return range.ConsumeIncludingWhitespace().Value();
+}
+
 StringView ConsumeUrlAsStringView(CSSParserTokenRange& range,
                                   const CSSParserContext& context) {
   StringView url;
@@ -1437,6 +1445,15 @@ StringView ConsumeUrlAsStringView(CSSParserTokenRange& range,
   }
 
   return url;
+}
+
+StringView ConsumeUrlOrStringAsStringView(CSSParserTokenRange& range,
+                                          const CSSParserContext& context) {
+  if (range.Peek().GetType() == CSSParserTokenType::kStringToken) {
+    return ConsumeStringAsStringView(range);
+  }
+
+  return ConsumeUrlAsStringView(range, context);
 }
 
 cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenRange& range,
@@ -3307,7 +3324,10 @@ static CSSValue* ConsumeImageSet(CSSParserTokenRange& range,
   auto* image_set = MakeGarbageCollected<CSSImageSetValue>();
   do {
     AtomicString url_value =
-        ConsumeUrlAsStringView(args, context).ToAtomicString();
+        (RuntimeEnabledFeatures::CSSImageSetEnabled()
+             ? ConsumeUrlOrStringAsStringView(args, context)
+             : ConsumeUrlAsStringView(args, context))
+            .ToAtomicString();
     if (url_value.IsNull()) {
       return nullptr;
     }

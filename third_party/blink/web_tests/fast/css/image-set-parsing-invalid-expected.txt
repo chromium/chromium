@@ -42,14 +42,6 @@ PASS cssRule is ""
 
 Scale factor is 0 : -webkit-image-set(url('#a') 0x
 PASS cssRule is ""
-
-
-No url function : image-set('#a' 1x
-PASS cssRule is ""
-
-
-No url function : -webkit-image-set('#a' 1x
-PASS cssRule is ""
 PASS successfullyParsed is true
 
 TEST COMPLETE

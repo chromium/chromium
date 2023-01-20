@@ -37,6 +37,4 @@ testInvalidImageSets('Too many scale factor parameters', 'url(\'#a\') 1x 2x');
 
 testInvalidImageSets('Scale factor is 0', 'url(\'#a\') 0x');
 
-testInvalidImageSets('No url function', '\'#a\' 1x');
-
 successfullyParsed = true;
