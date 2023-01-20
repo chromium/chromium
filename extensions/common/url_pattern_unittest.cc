@@ -158,6 +158,52 @@ TEST(ExtensionURLPatternTest, IPv6Patterns) {
   }
 }
 
+// Verify percent encoding behavior.
+TEST(ExtensionURLPatternTest, PercentEncodedAscii) {
+  {
+    URLPattern pattern(kAllSchemes);
+    ASSERT_EQ(URLPattern::ParseResult::kSuccess,
+              pattern.Parse("http://*/%40*"));
+    EXPECT_EQ("http", pattern.scheme());
+    EXPECT_EQ("", pattern.host());
+    EXPECT_TRUE(pattern.match_subdomains());
+    EXPECT_FALSE(pattern.match_all_urls());
+    EXPECT_EQ("/%40*", pattern.path());
+  }
+  {
+    URLPattern pattern(kAllSchemes);
+    ASSERT_EQ(URLPattern::ParseResult::kSuccess, pattern.Parse("http://*/@*"));
+    EXPECT_EQ("http", pattern.scheme());
+    EXPECT_EQ("", pattern.host());
+    EXPECT_TRUE(pattern.match_subdomains());
+    EXPECT_FALSE(pattern.match_all_urls());
+    EXPECT_EQ("/@*", pattern.path());
+  }
+}
+
+// Verify percent encoding behavior.
+TEST(ExtensionURLPatternTest, PercentEncodedNonAscii) {
+  {
+    URLPattern pattern(kAllSchemes);
+    ASSERT_EQ(URLPattern::ParseResult::kSuccess,
+              pattern.Parse("http://*/%F0%9F%90%B1*"));
+    EXPECT_EQ("http", pattern.scheme());
+    EXPECT_EQ("", pattern.host());
+    EXPECT_TRUE(pattern.match_subdomains());
+    EXPECT_FALSE(pattern.match_all_urls());
+    EXPECT_EQ("/%F0%9F%90%B1*", pattern.path());
+  }
+  {
+    URLPattern pattern(kAllSchemes);
+    ASSERT_EQ(URLPattern::ParseResult::kSuccess, pattern.Parse("http://*/🐱*"));
+    EXPECT_EQ("http", pattern.scheme());
+    EXPECT_EQ("", pattern.host());
+    EXPECT_TRUE(pattern.match_subdomains());
+    EXPECT_FALSE(pattern.match_all_urls());
+    EXPECT_EQ("/🐱*", pattern.path());
+  }
+}
+
 // all pages for a given scheme
 TEST(ExtensionURLPatternTest, Match1) {
   URLPattern pattern(kAllSchemes);
