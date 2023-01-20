@@ -195,19 +195,17 @@ class PrefTestCase {
 // part of the data loaded from chrome/test/data/policy/policy_test_cases.json.
 class PolicyPrefMappingTest {
  public:
-  explicit PolicyPrefMappingTest(const base::Value& mapping)
-      : policies_(base::Value::Type::DICTIONARY),
-        policies_settings_(base::Value::Type::DICTIONARY) {
-    const base::Value* policies = mapping.FindDictKey("policies");
-    const base::Value* policies_settings =
-        mapping.FindDictKey("policies_settings");
-    const base::Value* prefs = mapping.FindDictKey("prefs");
+  explicit PolicyPrefMappingTest(const base::Value::Dict& mapping) {
+    const base::Value::Dict* policies = mapping.FindDict("policies");
+    const base::Value::Dict* policies_settings =
+        mapping.FindDict("policies_settings");
+    const base::Value::Dict* prefs = mapping.FindDict("prefs");
     if (policies)
       policies_ = policies->Clone();
     if (policies_settings)
       policies_settings_ = policies_settings->Clone();
     if (prefs) {
-      for (auto [name, setting] : prefs->DictItems()) {
+      for (auto [name, setting] : *prefs) {
         if (!setting.is_dict()) {
           ADD_FAILURE() << "prefs item " << name << " is not dict";
           continue;
@@ -218,10 +216,10 @@ class PolicyPrefMappingTest {
     if (prefs_.empty()) {
       ADD_FAILURE() << "missing |prefs|";
     }
-    const base::Value* required_buildflags_value =
-        mapping.FindListKey("required_buildflags");
-    if (required_buildflags_value) {
-      for (const auto& required_buildflag: required_buildflags_value->GetList()) {
+    const base::Value::List* required_buildflags =
+        mapping.FindList("required_buildflags");
+    if (required_buildflags) {
+      for (const auto& required_buildflag : *required_buildflags) {
         required_buildflags_.push_back(required_buildflag.GetString());
       }
     }
@@ -230,8 +228,10 @@ class PolicyPrefMappingTest {
   PolicyPrefMappingTest(const PolicyPrefMappingTest& other) = delete;
   PolicyPrefMappingTest& operator=(const PolicyPrefMappingTest& other) = delete;
 
-  const base::Value& policies() const { return policies_; }
-  const base::Value& policies_settings() const { return policies_settings_; }
+  const base::Value::Dict& policies() const { return policies_; }
+  const base::Value::Dict& policies_settings() const {
+    return policies_settings_;
+  }
 
   const std::vector<std::unique_ptr<PrefTestCase>>& prefs() const {
     return prefs_;
@@ -242,8 +242,8 @@ class PolicyPrefMappingTest {
   }
 
  private:
-  base::Value policies_;
-  base::Value policies_settings_;
+  base::Value::Dict policies_;
+  base::Value::Dict policies_settings_;
   const std::string pref_;
   std::vector<std::unique_ptr<PrefTestCase>> prefs_;
   std::vector<std::string> required_buildflags_;
@@ -274,29 +274,29 @@ bool CheckRequiredBuildFlagsSupported(const PolicyPrefMappingTest* test) {
 // loaded from chrome/test/data/policy/policy_test_cases.json.
 class PolicyTestCase {
  public:
-  PolicyTestCase(const std::string& name, const base::Value& test_case)
+  PolicyTestCase(const std::string& name, const base::Value::Dict& test_case)
       : name_(name) {
-    is_official_only_ = test_case.FindBoolKey("official_only").value_or(false);
+    is_official_only_ = test_case.FindBool("official_only").value_or(false);
     can_be_recommended_ =
-        test_case.FindBoolKey("can_be_recommended").value_or(false);
+        test_case.FindBool("can_be_recommended").value_or(false);
     has_reason_for_missing_test_ =
-        test_case.FindStringKey("reason_for_missing_test") != nullptr;
+        test_case.FindString("reason_for_missing_test") != nullptr;
 
-    const base::Value* os_list = test_case.FindListKey("os");
+    const base::Value::List* os_list = test_case.FindList("os");
     if (os_list) {
-      for (const auto& os : os_list->GetList()) {
+      for (const auto& os : *os_list) {
         if (os.is_string())
           supported_os_.push_back(os.GetString());
       }
     }
 
-    const base::Value* policy_pref_mapping_tests =
-        test_case.FindListKey("policy_pref_mapping_tests");
+    const base::Value::List* policy_pref_mapping_tests =
+        test_case.FindList("policy_pref_mapping_tests");
     if (policy_pref_mapping_tests) {
-      for (const auto& mapping : policy_pref_mapping_tests->GetList()) {
+      for (const auto& mapping : *policy_pref_mapping_tests) {
         if (mapping.is_dict()) {
           policy_pref_mapping_tests_.push_back(
-              std::make_unique<PolicyPrefMappingTest>(mapping));
+              std::make_unique<PolicyPrefMappingTest>(mapping.GetDict()));
         }
       }
     }
@@ -405,7 +405,7 @@ class PolicyTestCases {
       if (policy_name == kInstructionKeyName)
         continue;
       auto policy_test_case =
-          std::make_unique<PolicyTestCase>(it.first, it.second);
+          std::make_unique<PolicyTestCase>(it.first, it.second.GetDict());
       policy_test_cases_[policy_name].push_back(std::move(policy_test_case));
     }
   }
@@ -433,12 +433,13 @@ struct PolicySettings {
 };
 
 PolicySettings GetPolicySettings(const std::string& policy,
-                                 const base::Value& policies_settings) {
+                                 const base::Value::Dict& policies_settings) {
   PolicySettings settings;
-  const base::Value* settings_value = policies_settings.FindPath(policy);
+  const base::Value::Dict* settings_value =
+      policies_settings.FindDictByDottedPath(policy);
   if (!settings_value)
     return settings;
-  const std::string* source = settings_value->FindStringKey("source");
+  const std::string* source = settings_value->FindString("source");
   if (source) {
     if (*source == "enterprise_default")
       settings.source = POLICY_SOURCE_ENTERPRISE_DEFAULT;
@@ -458,7 +459,7 @@ PolicySettings GetPolicySettings(const std::string& policy,
       settings.source = POLICY_SOURCE_CLOUD_FROM_ASH;
   }
 
-  const std::string* scope = settings_value->FindStringKey("scope");
+  const std::string* scope = settings_value->FindString("scope");
   if (scope) {
     if (*scope == "user")
       settings.scope = POLICY_SCOPE_USER;
@@ -470,14 +471,14 @@ PolicySettings GetPolicySettings(const std::string& policy,
 }
 
 void SetProviderPolicy(MockConfigurationPolicyProvider* provider,
-                       const base::Value& policies,
-                       const base::Value& policies_settings,
+                       const base::Value::Dict& policies,
+                       const base::Value::Dict& policies_settings,
                        PolicyLevel level) {
   PolicyMap policy_map;
 #if BUILDFLAG(IS_CHROMEOS)
   SetEnterpriseUsersDefaults(&policy_map);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  for (auto it : policies.DictItems()) {
+  for (auto it : policies) {
     const PolicyDetails* policy_details = GetChromePolicyDetails(it.first);
     const PolicySettings policy_settings =
         GetPolicySettings(it.first, policies_settings);
@@ -643,7 +644,7 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
           prefs->ClearPref(pref_case->pref());
           CheckPrefHasDefaultValue(pref);
 
-          const base::Value& policies = pref_mapping->policies();
+          const base::Value::Dict& policies = pref_mapping->policies();
 
           const base::Value* expected_value = pref_case->value();
           bool expect_value_to_be_default = false;
@@ -651,10 +652,10 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
             expected_value = pref_case->default_value();
             expect_value_to_be_default = true;
           }
-          if (!expected_value && policies.DictSize() == 1) {
+          if (!expected_value && policies.size() == 1) {
             // If no value/default value is specified, fall back to the policy
             // value (if only one policy is set).
-            expected_value = &policies.DictItems().begin()->second;
+            expected_value = &policies.begin()->second;
             expect_value_to_be_default = false;
           }
           ASSERT_TRUE(expected_value);
