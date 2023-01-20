@@ -45,6 +45,7 @@ AudioManagerPulse::AudioManagerPulse(std::unique_ptr<AudioThread> audio_thread,
       devices_(nullptr),
       native_input_sample_rate_(kDefaultSampleRate),
       native_channel_count_(kDefaultChannelCount),
+      output_sample_rate_(kDefaultSampleRate),
       output_channel_count_(kDefaultChannelCount) {
   DCHECK(input_mainloop_);
   DCHECK(input_context_);
@@ -213,26 +214,24 @@ std::string AudioManagerPulse::GetAssociatedOutputDeviceID(
 AudioParameters AudioManagerPulse::GetPreferredOutputStreamParameters(
     const std::string& output_device_id,
     const AudioParameters& input_params) {
-  // TODO(tommi): Support |output_device_id|.
-  // TODO(crbug.com/1408574): Set |sample_rate| from |output_device_id|
-  VLOG_IF(0, !output_device_id.empty()) << "Not implemented!";
-
   int buffer_size = kMinimumOutputBufferSize;
 
   // Query native parameters where applicable; Pulse does not require these to
   // be respected though, so prefer the input parameters for channel count.
   UpdateNativeAudioHardwareInfo();
+  output_sample_rate_ = native_input_sample_rate_ ? native_input_sample_rate_
+                                                  : kDefaultSampleRate;
   output_channel_count_ =
       native_channel_count_ ? native_channel_count_ : kDefaultChannelCount;
-  pa_operation* operation = pa_context_get_sink_info_by_name(
-      input_context_,
-      (output_device_id.empty() ? default_sink_name_ : output_device_id)
-          .c_str(),
-      GetOutputChannelCountCallback, this);
-  WaitForOperationCompletion(input_mainloop_, operation, input_context_);
-
-  int sample_rate = native_input_sample_rate_ ? native_input_sample_rate_
-                                              : kDefaultSampleRate;
+  {
+    AutoPulseLock auto_lock(input_mainloop_);
+    auto* operation = pa_context_get_sink_info_by_name(
+        input_context_,
+        (output_device_id.empty() ? default_sink_name_ : output_device_id)
+            .c_str(),
+        UpdateOutputInfoCallback, this);
+    WaitForOperationCompletion(input_mainloop_, operation, input_context_);
+  }
 
   if ((output_channel_count_ < kMinChannelCount) ||
       (output_channel_count_ > kMaxChannelCount)) {
@@ -266,7 +265,8 @@ AudioParameters AudioManagerPulse::GetPreferredOutputStreamParameters(
     buffer_size = user_buffer_size;
 
   return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         channel_layout_config, sample_rate, buffer_size);
+                         channel_layout_config, output_sample_rate_,
+                         buffer_size);
 }
 
 AudioOutputStream* AudioManagerPulse::MakeOutputStream(
@@ -344,10 +344,10 @@ void AudioManagerPulse::OutputDevicesInfoCallback(pa_context* context,
   manager->devices_->push_back(AudioDeviceName(info->description, info->name));
 }
 
-void AudioManagerPulse::GetOutputChannelCountCallback(pa_context* context,
-                                                      const pa_sink_info* info,
-                                                      int eol,
-                                                      void* user_data) {
+void AudioManagerPulse::UpdateOutputInfoCallback(pa_context* context,
+                                                 const pa_sink_info* info,
+                                                 int eol,
+                                                 void* user_data) {
   AudioManagerPulse* manager = reinterpret_cast<AudioManagerPulse*>(user_data);
 
   if (eol) {
@@ -356,6 +356,7 @@ void AudioManagerPulse::GetOutputChannelCountCallback(pa_context* context,
     return;
   }
 
+  manager->output_sample_rate_ = info->sample_spec.rate;
   manager->output_channel_count_ = info->sample_spec.channels;
 }
 
