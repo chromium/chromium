@@ -332,7 +332,7 @@ BASE_FEATURE(kEnableMachineLearningModelLoaderWebPlatformApi,
 // false (and the command-line override is not set in the renderer), the API
 // will appear as unsupported if asked for by a plugin.
 BASE_FEATURE(kSupportPepperVideoDecoderDevAPI,
-             "kSupportPepperVideoDecoderDevAPI",
+             "SupportPepperVideoDecoderDevAPI",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables service workers on chrome-untrusted:// urls.
