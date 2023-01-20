@@ -6,8 +6,17 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.hamcrest.MockitoHamcrest.intThat;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.areAnimatorsEnabled;
 
@@ -16,6 +25,8 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -24,10 +35,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.Spy;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -49,6 +62,7 @@ import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
+@Batch(Batch.PER_CLASS)
 public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase {
     /**
      * BlankUiTestActivityTestCase also needs {@link ChromeFeatureList}'s
@@ -63,6 +77,10 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
     private PropertyModel mContainerModel;
     private PropertyModelChangeProcessor mMCP;
     private TabListRecyclerView mRecyclerView;
+    @Spy
+    private GridLayoutManager mGridLayoutManager;
+    @Spy
+    private LinearLayoutManager mLinearLayoutManager;
     private CallbackHelper mStartedShowingCallback;
     private CallbackHelper mFinishedShowingCallback;
     private CallbackHelper mStartedHidingCallback;
@@ -116,6 +134,20 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
 
             mMCP = PropertyModelChangeProcessor.create(
                     mContainerModel, mRecyclerView, TabListContainerViewBinder::bind);
+        });
+    }
+
+    private void setUpGridLayoutManager() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mGridLayoutManager = spy(new GridLayoutManager(getActivity(), 2));
+            mRecyclerView.setLayoutManager(mGridLayoutManager);
+        });
+    }
+
+    private void setUpLinearLayoutManager() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mLinearLayoutManager = spy(new LinearLayoutManager(getActivity()));
+            mRecyclerView.setLayoutManager(mLinearLayoutManager);
         });
     }
 
@@ -289,6 +321,72 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
 
         mContainerModel.set(TabListContainerProperties.BOTTOM_PADDING, CONTAINER_HEIGHT);
         assertThat(mRecyclerView.getPaddingBottom(), equalTo(CONTAINER_HEIGHT));
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testSetInitialScrollIndex_Carousel() {
+        setUpLinearLayoutManager();
+        mRecyclerView.layout(0, 0, 1000, 100);
+
+        mContainerModel.set(
+                TabListContainerProperties.MODE, TabListCoordinator.TabListMode.CAROUSEL);
+        mContainerModel.set(TabListContainerProperties.INITIAL_SCROLL_INDEX, 3);
+
+        // Offset will be view width (1000) / 2 - tab card width calculated from dp dimension / 2.
+        verify(mLinearLayoutManager, times(1))
+                .scrollToPositionWithOffset(eq(3),
+                        intThat(allOf(lessThan(mRecyclerView.getWidth() / 2), greaterThan(0))));
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testSetInitialScrollIndex_Grid() {
+        setUpGridLayoutManager();
+        mRecyclerView.layout(0, 0, 100, 500);
+
+        mContainerModel.set(TabListContainerProperties.MODE, TabListCoordinator.TabListMode.GRID);
+        mContainerModel.set(TabListContainerProperties.INITIAL_SCROLL_INDEX, 5);
+
+        // Offset will be view height (500) / 2 - tab card height calculated from TabUtils / 2
+        verify(mGridLayoutManager, times(1))
+                .scrollToPositionWithOffset(eq(5),
+                        intThat(allOf(lessThan(mRecyclerView.getHeight() / 2), greaterThan(0))));
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testSetInitialScrollIndex_List_NoTabs() {
+        setUpLinearLayoutManager();
+        mRecyclerView.layout(0, 0, 100, 500);
+
+        mContainerModel.set(TabListContainerProperties.MODE, TabListCoordinator.TabListMode.LIST);
+        mContainerModel.set(TabListContainerProperties.INITIAL_SCROLL_INDEX, 7);
+
+        // Offset will be 0 to avoid divide by 0 with no tabs.
+        verify(mLinearLayoutManager, times(1)).scrollToPositionWithOffset(eq(7), eq(0));
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testSetInitialScrollIndex_List_WithTabs() {
+        setUpLinearLayoutManager();
+        mRecyclerView.layout(0, 0, 100, 500);
+
+        doReturn(9).when(mLinearLayoutManager).getItemCount();
+        int range = mRecyclerView.computeVerticalScrollRange();
+
+        mContainerModel.set(TabListContainerProperties.MODE, TabListCoordinator.TabListMode.LIST);
+        mContainerModel.set(TabListContainerProperties.INITIAL_SCROLL_INDEX, 5);
+
+        // 9 Tabs at 900 scroll extent = 100 per tab. With view height of 500 the offset is
+        // 500 / 2 - range / 9 / 2 = result.
+        verify(mLinearLayoutManager, times(1))
+                .scrollToPositionWithOffset(eq(5), eq(250 - range / 9 / 2));
     }
 
     @Override

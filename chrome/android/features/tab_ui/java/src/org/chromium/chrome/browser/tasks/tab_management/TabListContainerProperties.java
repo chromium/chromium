@@ -40,7 +40,13 @@ class TabListContainerProperties {
     public static final PropertyModel.WritableIntPropertyKey BOTTOM_PADDING =
             new PropertyModel.WritableIntPropertyKey();
 
+    /**
+     * Same as {@link TabListCoordinator.TabListMode}.
+     */
+    public static final PropertyModel.WritableIntPropertyKey MODE =
+            new PropertyModel.WritableIntPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {IS_VISIBLE, IS_INCOGNITO,
             VISIBILITY_LISTENER, INITIAL_SCROLL_INDEX, ANIMATE_VISIBILITY_CHANGES, TOP_MARGIN,
-            BOTTOM_CONTROLS_HEIGHT, SHADOW_TOP_OFFSET, BOTTOM_PADDING};
+            BOTTOM_CONTROLS_HEIGHT, SHADOW_TOP_OFFSET, BOTTOM_PADDING, MODE};
 }

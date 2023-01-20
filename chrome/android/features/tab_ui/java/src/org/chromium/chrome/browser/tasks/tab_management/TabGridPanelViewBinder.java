@@ -34,9 +34,10 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -127,8 +128,13 @@ class TabGridPanelViewBinder {
             }
         } else if (INITIAL_SCROLL_INDEX == propertyKey) {
             int index = (Integer) model.get(INITIAL_SCROLL_INDEX);
-            ((LinearLayoutManager) viewHolder.contentView.getLayoutManager())
-                    .scrollToPositionWithOffset(index, 0);
+            RecyclerView view = viewHolder.contentView;
+            if (view.getWidth() == 0 || view.getHeight() == 0) {
+                // If layout hasn't happened post the scroll index change until layout happens.
+                view.post(() -> setScrollIndex(view, index));
+                return;
+            }
+            setScrollIndex(viewHolder.contentView, index);
         } else if (IS_MAIN_CONTENT_VISIBLE == propertyKey) {
             viewHolder.contentView.setVisibility(View.VISIBLE);
         } else if (MENU_CLICK_LISTENER == propertyKey) {
@@ -164,5 +170,19 @@ class TabGridPanelViewBinder {
                         model.get(COLLAPSE_BUTTON_CONTENT_DESCRIPTION));
             }
         }
+    }
+
+    private static void setScrollIndex(RecyclerView view, int index) {
+        GridLayoutManager layoutManager = (GridLayoutManager) view.getLayoutManager();
+        int offset = computeOffset(view, layoutManager);
+        layoutManager.scrollToPositionWithOffset(index, offset);
+    }
+
+    private static int computeOffset(View view, GridLayoutManager layoutManager) {
+        int width = view.getWidth();
+        int height = view.getHeight();
+        int cardWidth = width / layoutManager.getSpanCount();
+        int cardHeight = TabUtils.deriveGridCardHeight(cardWidth, view.getContext());
+        return height / 2 - cardHeight / 2;
     }
 }
