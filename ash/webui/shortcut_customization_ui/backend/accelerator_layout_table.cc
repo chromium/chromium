@@ -347,6 +347,24 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
           {NonConfigurableActions::kAmbientCaretBrowsing,
            NonConfigurableAcceleratorDetails({ui::Accelerator(
                ui::VKEY_7, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN)})},
+          {NonConfigurableActions::kSixPackDelete,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_BACK, ui::EF_COMMAND_DOWN)})},
+          {NonConfigurableActions::kSixPackHome,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_LEFT, ui::EF_COMMAND_DOWN)})},
+          {NonConfigurableActions::kSixPackPageUp,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_UP, ui::EF_COMMAND_DOWN)})},
+          {NonConfigurableActions::kSixPackEnd,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN)})},
+          {NonConfigurableActions::kSixPackPageDown,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_DOWN, ui::EF_COMMAND_DOWN)})},
+          {NonConfigurableActions::kSixPackInsert,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_BACK, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN)})},
       });
   return *nonConfigurableActionsMap;
 }

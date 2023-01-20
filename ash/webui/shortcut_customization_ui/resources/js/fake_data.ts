@@ -64,6 +64,25 @@ const cycleTabsAccelerator: MojoAcceleratorInfo = {
   },
 };
 
+const sixPackDeleteAccelerator: MojoAcceleratorInfo = {
+  type: AcceleratorType.kDefault,
+  state: AcceleratorState.kEnabled,
+  locked: true,
+  layoutProperties: {
+    standardAccelerator: {
+      keyDisplay: stringToMojoString16('backspace'),
+      accelerator: {
+        modifiers: Modifier.COMMAND,
+        keyCode: 8,
+        keyState: 0,
+        timeStamp: fakeTimestamp,
+      },
+    },
+    textAccelerator: undefined,
+
+  },
+};
+
 export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
   [AcceleratorSource.kAsh]: {
     // Snap Window Left
@@ -147,6 +166,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
     // New Tab
     [0]: [newTabAccelerator],
     [1]: [cycleTabsAccelerator],
+    [2]: [sixPackDeleteAccelerator],
   },
 };
 
@@ -154,6 +174,7 @@ export const fakeAmbientConfig: MojoAcceleratorConfig = {
   [AcceleratorSource.kAmbient]: {
     [0]: [newTabAccelerator],
     [1]: [cycleTabsAccelerator],
+    [2]: [sixPackDeleteAccelerator],
   },
 };
 
@@ -205,6 +226,14 @@ export const fakeLayoutInfo: MojoLayoutInfo[] = [
     style: LayoutStyle.kText,
     source: AcceleratorSource.kAmbient,
     action: 1,
+  },
+  {
+    category: AcceleratorCategory.kEventRewriter,
+    subCategory: AcceleratorSubcategory.kSixPackKeys,
+    description: stringToMojoString16('Delete'),
+    style: LayoutStyle.kDefault,
+    source: AcceleratorSource.kAmbient,
+    action: 2,
   },
 ];
 

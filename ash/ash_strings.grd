@@ -3809,6 +3809,26 @@ Connect your device to power.
         <ph name="MODIFIER_ONE">$1<ex>shift</ex></ph> <ph name="MODIFIER_TWO">$2<ex>alt</ex></ph> <ph name="KEY_ONE">$3<ex>i</ex></ph> then <ph name="KEY_TWO">$4<ex>esc</ex></ph>
       </message>
 
+      <!-- Six-Pack Keys -->
+      <message name="IDS_EVENT_REWRITER_ACCELERATOR_SIX_PACK_DELETE_DESCRIPTION" translateable="false" desc="Label for the delete six-pack-key.">
+        Delete
+      </message>
+      <message name="IDS_EVENT_REWRITER_ACCELERATOR_SIX_PACK_HOME_DESCRIPTION" translateable="false" desc="Label for the home six-pack-key.">
+        Home
+      </message>
+      <message name="IDS_EVENT_REWRITER_ACCELERATOR_SIX_PACK_PAGE_UP_DESCRIPTION" translateable="false" desc="Label for the page up six-pack-key.">
+        PageUp
+      </message>
+      <message name="IDS_EVENT_REWRITER_ACCELERATOR_SIX_PACK_END_DESCRIPTION" translateable="false" desc="Label for the end six-pack-key.">
+        End
+      </message>
+      <message name="IDS_EVENT_REWRITER_ACCELERATOR_SIX_PACK_PAGE_DOWN_DESCRIPTION" translateable="false" desc="Label for the page down six-pack-key.">
+        PageDown
+      </message>
+      <message name="IDS_EVENT_REWRITER_ACCELERATOR_SIX_PACK_INSERT_DESCRIPTION" translateable="false" desc="Label for the insert six-pack-key.">
+        Insert
+      </message>
+
       <!-- Tray scale strings -->
       <message name="IDS_ASH_STATUS_TRAY_SCALE" desc="The label used in scale setting detailed page of ash tray popup.">
         Display scale settings

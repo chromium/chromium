@@ -75,6 +75,7 @@ enum AcceleratorCategory {
   kAccessibility,
   kDebug,
   kDeveloper,
+  kEventRewriter,
 };
 
 // Enum of secondary-level accelerator categories. Used in the UI for
@@ -85,6 +86,7 @@ enum AcceleratorSubcategory {
   kGeneral,
   kSystemControls,
   kSystemApps,
+  kSixPackKeys,
 };
 
 // Enum of possible options for text accelerators.

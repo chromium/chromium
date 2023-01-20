@@ -3716,9 +3716,11 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_ACCESSIBILITY" desc="Category named 'Accessibility' shown on the navigation sidebar" translateable="false">Accessibility</message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_DEBUG" desc="Category named 'Debug' shown on the navigation sidebar" translateable="false">Debug</message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_DEVELOPER" desc="Category named 'Developer' shown on the navigation sidebar" translateable="false">Developer</message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_EVENT_REWRITER" desc="Category named 'Special Keys' shown on the navigation sidebar" translateable="false">Special Keys</message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_GENERAL" desc="Subcategory named 'General' shown within main shortcuts section" translateable="false">General</message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_SYSTEM_APPS" desc="Subcategory named 'System Apps' shown within main shortcuts section" translateable="false">System Apps</message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_SYSTEM_CONTROLS" desc="Subcategory named 'System Controls' shown within main shortcuts section" translateable="false">System Controls</message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_SIX_PACK" desc="Subcategory named 'Six Pack' shown within main shortcuts section" translateable="false">Six Pack</message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_KEY_SPACE" desc="Lowercase name of the keyboard key 'Space'" translateable="false">space</message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_KEY_TAB" desc="Lowercase name of the keyboard key 'Tab'" translateable="false">tab</message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_KEY_ESCAPE" desc="Lowercase name of the keyboard key 'Escape', abbreviated if possible" translateable="false">esc</message>

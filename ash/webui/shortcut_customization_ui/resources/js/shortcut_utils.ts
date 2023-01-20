@@ -80,6 +80,8 @@ export const getCategoryNameStringId =
           return `${categoryPrefix}Debug`;
         case AcceleratorCategory.kDeveloper:
           return `${categoryPrefix}Developer`;
+        case AcceleratorCategory.kEventRewriter:
+          return `${categoryPrefix}EventRewriter`;
         default: {
           // If this case is reached, then an invalid category was passed in.
           assertNotReached();
@@ -97,6 +99,8 @@ export const getSubcategoryNameStringId =
           return `${subcategoryPrefix}SystemApps`;
         case AcceleratorSubcategory.kSystemControls:
           return `${subcategoryPrefix}SystemControls`;
+        case AcceleratorSubcategory.kSixPackKeys:
+          return `${subcategoryPrefix}SixPackKeys`;
         default: {
           // If this case is reached, then an invalid category was passed in.
           assertNotReached();
