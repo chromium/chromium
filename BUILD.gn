@@ -153,10 +153,11 @@ group("gn_all") {
   }
 
   if (!is_castos) {
-    deps += [
-      "//chrome/installer",
-      "//chrome/updater",
-    ]
+    deps += [ "//chrome/installer" ]
+  }
+
+  if (enable_updater) {
+    deps += [ "//chrome/updater" ]
   }
 
   if (enable_ppapi) {
