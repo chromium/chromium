@@ -78,8 +78,6 @@
 - (void)setupSelectedBackgroundView {
   UIView* selectedBackgroundBorderView = [[UIView alloc] init];
   selectedBackgroundBorderView.translatesAutoresizingMaskIntoConstraints = NO;
-  selectedBackgroundBorderView.backgroundColor =
-      [UIColor colorNamed:kGridBackgroundColor];
   selectedBackgroundBorderView.layer.cornerRadius =
       kPinnedCellCornerRadius + kPinnedCellSelectionRingGapWidth +
       kPinnedCellSelectionRingTintWidth;
