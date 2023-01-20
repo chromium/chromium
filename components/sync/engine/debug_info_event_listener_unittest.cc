@@ -24,14 +24,15 @@ TEST_F(DebugInfoEventListenerTest, VerifyEventsAdded) {
 
 TEST_F(DebugInfoEventListenerTest, VerifyQueueSize) {
   DebugInfoEventListener debug_info_event_listener;
-  for (unsigned int i = 0; i < 2 * kMaxEntries; ++i) {
+  for (size_t i = 0; i < 2 * DebugInfoEventListener::kMaxEvents; ++i) {
     debug_info_event_listener.CreateAndAddEvent(
         sync_pb::SyncEnums::INITIALIZATION_COMPLETE);
   }
   sync_pb::DebugInfo debug_info = debug_info_event_listener.GetDebugInfo();
   debug_info_event_listener.ClearDebugInfo();
   ASSERT_TRUE(debug_info.events_dropped());
-  ASSERT_EQ(static_cast<int>(kMaxEntries), debug_info.events_size());
+  ASSERT_EQ(static_cast<int>(DebugInfoEventListener::kMaxEvents),
+            debug_info.events_size());
 }
 
 TEST_F(DebugInfoEventListenerTest, VerifyGetEvents) {

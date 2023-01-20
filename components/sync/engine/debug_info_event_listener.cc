@@ -12,10 +12,7 @@
 
 namespace syncer {
 
-DebugInfoEventListener::DebugInfoEventListener()
-    : events_dropped_(false),
-      cryptographer_has_pending_keys_(false),
-      cryptographer_can_encrypt_(false) {}
+DebugInfoEventListener::DebugInfoEventListener() = default;
 
 DebugInfoEventListener::~DebugInfoEventListener() = default;
 
@@ -120,7 +117,7 @@ void DebugInfoEventListener::OnNudgeFromDatatype(ModelType datatype) {
 
 sync_pb::DebugInfo DebugInfoEventListener::GetDebugInfo() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_LE(events_.size(), kMaxEntries);
+  DCHECK_LE(events_.size(), kMaxEvents);
 
   sync_pb::DebugInfo debug_info;
   for (const sync_pb::DebugEventInfo& event : events_) {
@@ -136,7 +133,7 @@ sync_pb::DebugInfo DebugInfoEventListener::GetDebugInfo() const {
 
 void DebugInfoEventListener::ClearDebugInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_LE(events_.size(), kMaxEntries);
+  DCHECK_LE(events_.size(), kMaxEvents);
 
   events_.clear();
   events_dropped_ = false;
@@ -153,7 +150,7 @@ void DebugInfoEventListener::CreateAndAddEvent(
 void DebugInfoEventListener::AddEventToQueue(
     const sync_pb::DebugEventInfo& event_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (events_.size() >= kMaxEntries) {
+  if (events_.size() >= kMaxEvents) {
     DVLOG(1) << "DebugInfoEventListener::AddEventToQueue Dropping an old event "
              << "because of full queue";
 

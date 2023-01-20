@@ -54,7 +54,7 @@ DataTypeStatusTable BuildStatusTable(ModelTypeSet crypto_errors,
   }
   for (ModelType type : datatype_errors) {
     error_map[type] = SyncError(FROM_HERE, SyncError::DATATYPE_ERROR,
-                                "association error expected", type);
+                                "datatype error expected", type);
   }
   for (ModelType type : unready_errors) {
     error_map[type] = SyncError(FROM_HERE, SyncError::UNREADY_ERROR,
@@ -834,8 +834,8 @@ TEST_F(SyncDataTypeManagerImplTest, PrioritizedConfigurationReconfigure) {
   SetConfigureStartExpectation();
   SetConfigureDoneExpectation(DataTypeManager::OK, DataTypeStatusTable());
 
-  // Reconfigure while associating PRIORITY_PREFERENCES and downloading
-  // BOOKMARKS.
+  // Start a configuration with BOOKMARKS and PRIORITY_PREFERENCES, and finish
+  // the download of PRIORITY_PREFERENCES.
   Configure(ModelTypeSet(BOOKMARKS, PRIORITY_PREFERENCES));
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
@@ -846,19 +846,22 @@ TEST_F(SyncDataTypeManagerImplTest, PrioritizedConfigurationReconfigure) {
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
   EXPECT_EQ(AddControlTypesTo(BOOKMARKS), last_configure_params().to_download);
 
-  // Enable syncing for APPS.
+  // Enable syncing for APPS while the download of BOOKMARKS is still pending.
   Configure(ModelTypeSet(BOOKMARKS, PRIORITY_PREFERENCES, APPS));
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
 
-  // Reconfiguration starts after downloading and association of previous
-  // types finish.
+  // Reconfiguration starts after downloading of previous types finishes.
   FinishDownload(ModelTypeSet(BOOKMARKS), ModelTypeSet());
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
   EXPECT_EQ(ModelTypeSet(), last_configure_params().to_download);
 
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
+  // Priority types: Nothing to download, since PRIORITY_PREFERENCES was
+  // downloaded before.
+  EXPECT_EQ(ModelTypeSet(), last_configure_params().to_download);
   FinishDownload(ModelTypeSet(PRIORITY_PREFERENCES), ModelTypeSet());
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
+  // Regular types: Only the newly-enabled APPS still needs to be downloaded.
   EXPECT_EQ(AddControlTypesTo(APPS), last_configure_params().to_download);
 
   FinishDownload(ModelTypeSet(BOOKMARKS, APPS), ModelTypeSet());

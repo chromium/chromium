@@ -22,11 +22,6 @@ class EncryptedData;
 
 namespace syncer {
 
-// In order to track datatype association results, we need at least as many
-// entries as datatypes. Reserve additional space for other kinds of events that
-// are likely to happen during first sync or startup.
-const unsigned int kMaxEntries = GetNumModelTypes() + 10;
-
 // Listens to events and records them in a queue. And passes the events to
 // syncer when requested.
 // This class is not thread safe and should only be accessed on the sync thread.
@@ -34,6 +29,10 @@ class DebugInfoEventListener : public SyncManager::Observer,
                                public SyncEncryptionHandler::Observer,
                                public DebugInfoGetter {
  public:
+  // Keep a few more events than there are data types, to ensure that any
+  // data-type-specific events during first sync or startup aren't dropped.
+  static constexpr const size_t kMaxEvents = GetNumModelTypes() + 10;
+
   DebugInfoEventListener();
 
   DebugInfoEventListener(const DebugInfoEventListener&) = delete;
@@ -83,19 +82,19 @@ class DebugInfoEventListener : public SyncManager::Observer,
   void AddEventToQueue(const sync_pb::DebugEventInfo& event_info);
   void CreateAndAddEvent(sync_pb::SyncEnums::SingletonDebugEventType type);
 
-  using DebugEventInfoQueue = base::circular_deque<sync_pb::DebugEventInfo>;
-  DebugEventInfoQueue events_;
+  // Stores the most recent events, up to some limit.
+  base::circular_deque<sync_pb::DebugEventInfo> events_;
 
-  // True indicates we had to drop one or more events to keep our limit of
-  // |kMaxEntries|.
-  bool events_dropped_;
+  // Indicates whether any events had to be dropped because there were more than
+  // the limit.
+  bool events_dropped_ = false;
 
   // Cryptographer has keys that are not yet decrypted.
-  bool cryptographer_has_pending_keys_;
+  bool cryptographer_has_pending_keys_ = false;
 
   // Cryptographer is able to encrypt data, which usually means it's initialized
   // and does not have pending keys.
-  bool cryptographer_can_encrypt_;
+  bool cryptographer_can_encrypt_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
