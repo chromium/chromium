@@ -207,6 +207,9 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
 #elif BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // Fails on Mac/Arm, https://crbug.com/1222675
 #define MAYBE_PeerConnection DISABLED_PeerConnection
+#elif BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_X86_64)
+// Flaky on Fuchsia-x64, https://crbug.com/1408820
+#define MAYBE_PeerConnection DISABLED_PeerConnection
 #else
 #define MAYBE_PeerConnection PeerConnection
 #endif
