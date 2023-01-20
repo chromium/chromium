@@ -26,16 +26,7 @@ WGPUComputePipelineDescriptor AsDawnType(
   WGPUComputePipelineDescriptor dawn_desc = {};
   dawn_desc.nextInChain = nullptr;
 
-  if (webgpu_desc->hasLayout()) {
-    dawn_desc.layout = AsDawnType(webgpu_desc->layout());
-  } else {
-    // TODO(crbug.com/1069302): Remove this branch after the deprecation period.
-    device->AddConsoleWarning(
-        "Leaving the layout of a compute pipeline undefined has been "
-        "deprecated, and specifying a pipeline layout will soon be required. "
-        "Set layout to 'auto' if an implicit pipeline layout is desired.");
-  }
-
+  dawn_desc.layout = AsDawnType(webgpu_desc->layout());
   if (webgpu_desc->hasLabel()) {
     *label = webgpu_desc->label().Utf8();
     dawn_desc.label = label->c_str();

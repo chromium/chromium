@@ -5,8 +5,7 @@
 // https://gpuweb.github.io/gpuweb/
 
 dictionary GPUPipelineDescriptorBase : GPUObjectDescriptorBase {
-    // TODO(crbug.com/1069302): Make required after deprecation period.
-    (GPUPipelineLayout or GPUAutoLayoutMode) layout;
+    required (GPUPipelineLayout or GPUAutoLayoutMode) layout;
 };
 
 enum GPUAutoLayoutMode {

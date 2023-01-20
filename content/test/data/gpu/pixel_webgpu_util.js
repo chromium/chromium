@@ -94,6 +94,7 @@ fn main(@location(0) fragUV : vec2<f32>) -> @location(0) vec4<f32> {
     importExternalTextureTest: function(
       device, context, video) {
         const blitPipeline = device.createRenderPipeline({
+          layout: 'auto',
           vertex: {
             module: device.createShaderModule({
               code: wgslShaders.vertex,
@@ -162,6 +163,7 @@ fn main(@location(0) fragUV : vec2<f32>) -> @location(0) vec4<f32> {
     uploadToGPUTextureTest: function(
       device, context, canvasImageSource, options) {
       const blitPipeline = device.createRenderPipeline({
+        layout: 'auto',
         vertex: {
           module: device.createShaderModule({
             code: wgslShaders.vertex,
@@ -267,6 +269,7 @@ fn main(@location(0) fragUV : vec2<f32>) -> @location(0) vec4<f32> {
 
     fourColorsTest: function(device, context, width, height) {
       const clearPipeline = device.createRenderPipeline({
+        layout: 'auto',
         vertex: {
           module: device.createShaderModule({
             code: wgslShaders.vertex,
