@@ -51,6 +51,7 @@
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/ash/components/system/devicemode.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/components/timezone/timezone_resolver.h"
@@ -145,7 +146,8 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(::prefs::kMinimumAllowedChromeVersion, "");
   registry->RegisterIntegerPref(
       ::prefs::kLacrosLaunchSwitch,
-      static_cast<int>(crosapi::browser_util::LacrosAvailability::kUserChoice));
+      static_cast<int>(
+          ash::standalone_browser::LacrosAvailability::kUserChoice));
   registry->RegisterIntegerPref(
       ::prefs::kLacrosSelection,
       static_cast<int>(

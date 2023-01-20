@@ -1,0 +1,17 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash,
+       "Non-Chrome-OS builds must not depend on //chromeos/ash")
+
+component("standalone_browser") {
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER_IMPL" ]
+  deps = [ "//base" ]
+  sources = [
+    "lacros_availability.cc",
+    "lacros_availability.h",
+  ]
+}

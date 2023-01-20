@@ -3805,6 +3805,7 @@ source_set("ash") {
     "//chromeos/ash/components/multidevice/logging",
     "//chromeos/ash/components/peripheral_notification",
     "//chromeos/ash/components/power",
+    "//chromeos/ash/components/standalone_browser",
     "//chromeos/ash/components/sync_wifi",
     "//chromeos/ash/components/tpm",
     "//chromeos/ash/components/tpm:buildflags",

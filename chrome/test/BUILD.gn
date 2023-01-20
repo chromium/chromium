@@ -2501,6 +2501,7 @@ if (!is_android) {
         "//chrome/browser/ash/system_web_apps/test_support",
         "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
         "//chrome/browser/ui/ash/system_web_apps",
+        "//chromeos/ash/components/standalone_browser",
       ]
     }
 

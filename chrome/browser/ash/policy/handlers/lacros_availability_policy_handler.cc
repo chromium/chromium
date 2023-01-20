@@ -38,7 +38,7 @@ void LacrosAvailabilityPolicyHandler::ApplyPolicySettings(
   }
 }
 
-absl::optional<crosapi::browser_util::LacrosAvailability>
+absl::optional<ash::standalone_browser::LacrosAvailability>
 LacrosAvailabilityPolicyHandler::GetValue(const PolicyMap& policies,
                                           PolicyErrorMap* errors) {
   const base::Value* value;
@@ -47,7 +47,7 @@ LacrosAvailabilityPolicyHandler::GetValue(const PolicyMap& policies,
     return absl::nullopt;
 
   auto parsed =
-      crosapi::browser_util::ParseLacrosAvailability(value->GetString());
+      ash::standalone_browser::ParseLacrosAvailability(value->GetString());
   if (!parsed.has_value() && errors)
     errors->AddError(policy_name(), IDS_POLICY_INVALID_SELECTION_ERROR,
                      "LacrosAvailabilty value");

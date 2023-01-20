@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
@@ -67,7 +68,7 @@ bool CreatePreferenceFileForProfile(const AccountId& account_id) {
 }
 
 void SetLacrosAvailability(
-    crosapi::browser_util::LacrosAvailability lacros_availability) {
+    ash::standalone_browser::LacrosAvailability lacros_availability) {
   policy::PolicyMap policy;
   policy.Set(policy::key::kLacrosAvailability, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
@@ -198,7 +199,8 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorMoveMigrateOnSignInByPolicy,
   base::RunLoop run_loop;
   ScopedRestartAttemptForTesting scoped_restart_attempt(
       base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
-  SetLacrosAvailability(crosapi::browser_util::LacrosAvailability::kLacrosOnly);
+  SetLacrosAvailability(
+      ash::standalone_browser::LacrosAvailability::kLacrosOnly);
   ASSERT_TRUE(LoginAsExistingRegularUser());
   run_loop.Run();
   EXPECT_TRUE(
@@ -467,7 +469,8 @@ class BrowserDataMigratorForKiosk : public KioskBaseTest {
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserDataMigratorForKiosk, MigrateOnKioskLaunch) {
-  SetLacrosAvailability(crosapi::browser_util::LacrosAvailability::kUserChoice);
+  SetLacrosAvailability(
+      ash::standalone_browser::LacrosAvailability::kUserChoice);
 
   // Call this so that the test app is registered with `KioskAppManager` and
   // thus the `AccountId` can be retrieved.

@@ -27,6 +27,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/common/pref_names.h"  // nogncheck
+#include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -576,7 +577,7 @@ TEST_F(ExtensionRegistrarTest,
       ->RegisterIntegerPref(
           prefs::kLacrosLaunchSwitch,
           static_cast<int>(
-              crosapi::browser_util::LacrosAvailability::kLacrosOnly));
+              ash::standalone_browser::LacrosAvailability::kLacrosOnly));
   EXPECT_FALSE(crosapi::browser_util::IsAshWebBrowserEnabled());
 
   // Prevent the extension from being disabled (by the user).
@@ -598,7 +599,7 @@ TEST_F(ExtensionRegistrarTest,
       ->RegisterIntegerPref(
           prefs::kLacrosLaunchSwitch,
           static_cast<int>(
-              crosapi::browser_util::LacrosAvailability::kLacrosPrimary));
+              ash::standalone_browser::LacrosAvailability::kLacrosPrimary));
   EXPECT_TRUE(crosapi::browser_util::IsAshWebBrowserEnabled());
 
   // Prevent the extension from being disabled (by the user).

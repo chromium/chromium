@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/strings/string_piece.h"
+#include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
@@ -60,24 +61,6 @@ enum class LacrosLaunchSwitchSource {
   // the policy might still not be used, but it is programmatically overridden
   // and not by the user (e.g. special Googler user case).
   kForcedByPolicy = 3
-};
-
-// Represents the policy indicating how to launch Lacros browser, named
-// LacrosAvailability. The values shall be consistent with the controlling
-// policy.
-enum class LacrosAvailability {
-  // Indicates that the user decides whether to enable Lacros (if allowed) and
-  // make it the primary/only browser.
-  kUserChoice = 0,
-  // Indicates that Lacros is not allowed to be enabled.
-  kLacrosDisallowed = 1,
-  // Indicates that Lacros will be enabled (if allowed). Ash browser is the
-  // primary browser.
-  kSideBySide = 2,
-  // Similar to kSideBySide but Lacros is the primary browser.
-  kLacrosPrimary = 3,
-  // Indicates that Lacros (if allowed) is the only available browser.
-  kLacrosOnly = 4
 };
 
 // Represents the policy indicating which Lacros browser to launch, named
@@ -294,7 +277,7 @@ bool IsLacrosPrimaryBrowserAllowed();
 // `IsLacrosPrimaryBrowserAllowed()`.
 bool IsLacrosPrimaryBrowserAllowedForMigration(
     const user_manager::User* user,
-    LacrosAvailability lacros_availability);
+    ash::standalone_browser::LacrosAvailability lacros_availability);
 
 // Returns true if `ash::features::kLacrosPrimary` flag is allowed.
 bool IsLacrosPrimaryFlagAllowed();
@@ -383,11 +366,12 @@ base::Version GetInstalledLacrosComponentVersion(
 
 // Exposed for testing. Sets lacros-availability cache for testing.
 void SetCachedLacrosAvailabilityForTesting(
-    LacrosAvailability lacros_availability);
+    ash::standalone_browser::LacrosAvailability lacros_availability);
 
 // Exposed for testing. Returns the lacros integration suggested by the policy
 // lacros-availability, modified by Finch flags and user flags as appropriate.
-LacrosAvailability GetCachedLacrosAvailabilityForTesting();
+ash::standalone_browser::LacrosAvailability
+GetCachedLacrosAvailabilityForTesting();
 
 // GetCachedLacrosDataBackwardMigrationMode returns the cached value of the
 // LacrosDataBackwardMigrationMode policy.
@@ -465,20 +449,13 @@ LacrosLaunchSwitchSource GetLacrosLaunchSwitchSource();
 
 // Allow unit tests to simulate that the readout of policies has taken place
 // so that later DCHECKs do not fail.
-void SetLacrosLaunchSwitchSourceForTest(LacrosAvailability test_value);
-
-// Parses the string representation of LacrosAvailability policy value into
-// the enum value. Returns nullopt on unknown value.
-absl::optional<LacrosAvailability> ParseLacrosAvailability(
-    base::StringPiece value);
+void SetLacrosLaunchSwitchSourceForTest(
+    ash::standalone_browser::LacrosAvailability test_value);
 
 // Parses the string representation of LacrosSelection policy value into the
 // enum value. Returns nullopt on unknown value.
 absl::optional<LacrosSelectionPolicy> ParseLacrosSelectionPolicy(
     base::StringPiece value);
-
-// Returns the policy value name from the given value.
-base::StringPiece GetLacrosAvailabilityPolicyName(LacrosAvailability value);
 
 // Parses the string representation of LacrosDataBackwardMigrationMode policy
 // value into the enum value. Returns nullopt on unknown value.

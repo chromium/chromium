@@ -24,6 +24,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/component_updater/component_updater_service.h"
@@ -39,6 +40,7 @@
 #include "components/version_info/version_info.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
+using ash::standalone_browser::LacrosAvailability;
 using user_manager::User;
 using version_info::Channel;
 
@@ -65,17 +67,6 @@ absl::optional<LacrosDataBackwardMigrationMode>
 // The rootfs lacros-chrome metadata keys.
 constexpr char kLacrosMetadataContentKey[] = "content";
 constexpr char kLacrosMetadataVersionKey[] = "version";
-
-// The conversion map for LacrosAvailability policy data. The values must match
-// the ones from LacrosAvailability.yaml.
-constexpr auto kLacrosAvailabilityMap =
-    base::MakeFixedFlatMap<base::StringPiece, LacrosAvailability>({
-        {"user_choice", LacrosAvailability::kUserChoice},
-        {"lacros_disallowed", LacrosAvailability::kLacrosDisallowed},
-        {"side_by_side", LacrosAvailability::kSideBySide},
-        {"lacros_primary", LacrosAvailability::kLacrosPrimary},
-        {"lacros_only", LacrosAvailability::kLacrosOnly},
-    });
 
 // The conversion map for LacrosDataBackwardMigrationMode policy data. The
 // values must match the ones from LacrosDataBackwardMigrationMode.yaml.
@@ -169,7 +160,7 @@ LacrosAvailability DetermineLacrosAvailabilityFromPolicyValue(
     return LacrosAvailability::kUserChoice;
   }
 
-  auto result = ParseLacrosAvailability(policy_value);
+  auto result = ash::standalone_browser::ParseLacrosAvailability(policy_value);
   if (!result.has_value())
     return LacrosAvailability::kUserChoice;
 
@@ -1111,16 +1102,6 @@ LacrosLaunchSwitchSource GetLacrosLaunchSwitchSource() {
              : LacrosLaunchSwitchSource::kForcedByPolicy;
 }
 
-absl::optional<LacrosAvailability> ParseLacrosAvailability(
-    base::StringPiece value) {
-  auto* it = kLacrosAvailabilityMap.find(value);
-  if (it != kLacrosAvailabilityMap.end())
-    return it->second;
-
-  LOG(ERROR) << "Unknown LacrosAvailability policy value is passed: " << value;
-  return absl::nullopt;
-}
-
 absl::optional<LacrosSelectionPolicy> ParseLacrosSelectionPolicy(
     base::StringPiece value) {
   auto* it = kLacrosSelectionPolicyMap.find(value);
@@ -1129,16 +1110,6 @@ absl::optional<LacrosSelectionPolicy> ParseLacrosSelectionPolicy(
 
   LOG(ERROR) << "Unknown LacrosSelection policy value is passed: " << value;
   return absl::nullopt;
-}
-
-base::StringPiece GetLacrosAvailabilityPolicyName(LacrosAvailability value) {
-  for (const auto& entry : kLacrosAvailabilityMap) {
-    if (entry.second == value)
-      return entry.first;
-  }
-
-  NOTREACHED();
-  return base::StringPiece();
 }
 
 absl::optional<LacrosDataBackwardMigrationMode>

@@ -23,6 +23,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/account_id/account_id.h"
@@ -32,7 +33,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using crosapi::browser_util::LacrosAvailability;
+using ash::standalone_browser::LacrosAvailability;
 using crosapi::browser_util::LacrosLaunchSwitchSource;
 using crosapi::browser_util::LacrosSelection;
 using user_manager::User;
