@@ -3355,7 +3355,7 @@
     // permission. See crbug.com/1328581
     {
       name: "WindowManagementPermissionAlias",
-      status: "experimental",
+      status: "stable",
       base_feature: "WindowManagementPermissionAlias",
     },
     // Allows sites to request fullscreen when the set of screens change.

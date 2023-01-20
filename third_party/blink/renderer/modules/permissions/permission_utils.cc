@@ -304,6 +304,8 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
     return CreatePermissionDescriptor(PermissionName::TOP_LEVEL_STORAGE_ACCESS);
   }
   if (name == "window-management") {
+    UseCounter::Count(CurrentExecutionContext(script_state->GetIsolate()),
+                      WebFeature::kWindowManagementPermissionDescriptorUsed);
     if (!RuntimeEnabledFeatures::WindowManagementPermissionAliasEnabled()) {
       exception_state.ThrowTypeError(
           "The Window Management alias is not enabled.");
@@ -312,6 +314,8 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
     return CreatePermissionDescriptor(PermissionName::WINDOW_MANAGEMENT);
   }
   if (name == "window-placement") {
+    UseCounter::Count(CurrentExecutionContext(script_state->GetIsolate()),
+                      WebFeature::kWindowPlacementPermissionDescriptorUsed);
     return CreatePermissionDescriptor(PermissionName::WINDOW_MANAGEMENT);
   }
   if (name == "local-fonts") {

@@ -3785,6 +3785,10 @@ enum WebFeature {
   kDisableThirdPartyStoragePartitioning = 4444,
   kServiceWorkerFetchHandlerUpdateAfterInitialization = 4445,
   kObsoleteCreateImageBitmapImageOrientationNone = 4446,
+  kWindowManagementPermissionDescriptorUsed = 4447,
+  kWindowPlacementPermissionDescriptorUsed = 4448,
+  kWindowManagementPermissionPolicyParsed = 4449,
+  kWindowPlacementPermissionPolicyParsed = 4450,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

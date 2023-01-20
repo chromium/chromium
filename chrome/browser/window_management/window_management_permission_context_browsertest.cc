@@ -63,10 +63,9 @@ class WindowManagementPermissionContextTest
       public testing::WithParamInterface<PermissionContextTestParams> {
  public:
   WindowManagementPermissionContextTest() {
-    if (AliasEnabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          {permissions::features::kWindowManagementPermissionAlias}, {});
-    }
+    scoped_feature_list_.InitWithFeatureState(
+        permissions::features::kWindowManagementPermissionAlias,
+        AliasEnabled());
   }
   void SetUpOnMainThread() override {
     // Support multiple sites on the test server.

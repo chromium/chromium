@@ -39,10 +39,9 @@ class WindowManagementTest
       public testing::WithParamInterface<PermissionTestParams> {
  public:
   WindowManagementTest() {
-    if (AliasEnabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          {permissions::features::kWindowManagementPermissionAlias}, {});
-    }
+    scoped_feature_list_.InitWithFeatureState(
+        permissions::features::kWindowManagementPermissionAlias,
+        AliasEnabled());
   }
 
   void SetUpOnMainThread() override {
