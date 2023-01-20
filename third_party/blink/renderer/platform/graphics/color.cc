@@ -249,7 +249,6 @@ float Color::HueInterpolation(float value1,
   DCHECK(value1 >= 0.0f && value1 < 360.0f) << value1;
   DCHECK(value2 >= 0.0f && value2 < 360.0f) << value2;
   DCHECK(percentage >= 0.0f && percentage <= 1.0f);
-  percentage = 1.0f - percentage;
   // Adapt values of angles if needed, depending on the hue_method.
   switch (hue_method) {
     case Color::HueInterpolationMethod::kShorter: {
@@ -283,7 +282,7 @@ float Color::HueInterpolation(float value1,
       DCHECK(-360.0f < value2 - value1 && value2 - value1 <= 0.f);
       break;
   }
-  return AngleToUnitCircleDegrees(blink::Blend(value2, value1, percentage));
+  return AngleToUnitCircleDegrees(blink::Blend(value1, value2, percentage));
 }
 
 // static
@@ -353,15 +352,21 @@ Color Color::InterpolateColors(
                                     color2.param0_, color2.param0_is_none_)
       : (interpolation_space == ColorInterpolationSpace::kHSL ||
          interpolation_space == ColorInterpolationSpace::kHWB)
-          ? HueInterpolation(color2.param0_, color1.param0_, percentage,
-                             hue_method.value())
-          : blink::Blend(color2.param0_, color1.param0_, percentage);
+          // TODO(aaronhk): Historically we store hue in the range [0, 6] for
+          // hsl and hwb. This is so that primary and secondary colors are
+          // integers. With the addition of lch and oklch, this makes less
+          // sense. We should transform these to degrees [0, 360] which is
+          // what HueInterpolation() relies on.
+          ? HueInterpolation(color1.param0_ * 60.f, color2.param0_ * 60.f,
+                             percentage, hue_method.value()) /
+                60.f
+          : blink::Blend(color1.param0_, color2.param0_, percentage);
 
   absl::optional<float> param1 =
       (color1.param1_is_none_ || color2.param1_is_none_)
           ? HandleNoneInterpolation(color1.param1_, color1.param1_is_none_,
                                     color2.param1_, color2.param1_is_none_)
-          : blink::Blend(color2.param1_, color1.param1_, percentage);
+          : blink::Blend(color1.param1_, color2.param1_, percentage);
 
   absl::optional<float> param2 =
       (color1.param2_is_none_ || color2.param2_is_none_)
@@ -369,15 +374,15 @@ Color Color::InterpolateColors(
                                     color2.param2_, color2.param2_is_none_)
       : (interpolation_space == ColorInterpolationSpace::kLch ||
          interpolation_space == ColorInterpolationSpace::kOklch)
-          ? HueInterpolation(color2.param2_, color1.param2_, percentage,
+          ? HueInterpolation(color1.param2_, color2.param2_, percentage,
                              hue_method.value())
-          : blink::Blend(color2.param2_, color1.param2_, percentage);
+          : blink::Blend(color1.param2_, color2.param2_, percentage);
 
   absl::optional<float> alpha =
       (color1.alpha_is_none_ && color2.alpha_is_none_)
           ? HandleNoneInterpolation(alpha1.value(), color1.alpha_is_none_,
                                     alpha2.value(), color2.alpha_is_none_)
-          : blink::Blend(alpha2.value(), alpha1.value(), percentage);
+          : blink::Blend(alpha1.value(), alpha2.value(), percentage);
 
   Color result;
   ColorSpace result_color_space =

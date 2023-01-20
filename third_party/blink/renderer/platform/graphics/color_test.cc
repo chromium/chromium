@@ -46,7 +46,7 @@ struct ColorMixTest {
   absl::optional<Color::HueInterpolationMethod> hue_method;
   Color color_left;
   Color color_right;
-  float percentage_left;
+  float percentage_right;
   float alpha_multiplier;
   Color color_expected;
 };
@@ -66,9 +66,8 @@ TEST(BlinkColor, ColorMixSameColorSpace) {
        /*percentage =*/0.5f, /*alpha_multiplier=*/1.0f,
        CreateSRGBColor(0.5f, 0.5f, 0.0f, 1.0f)},
       {Color::ColorInterpolationSpace::kSRGB, absl::nullopt,
-       Color::FromColorSpace(Color::ColorSpace::kRec2020,
-                                0.7919771358198009f, 0.23097568481079767f,
-                                0.07376147493817597f, 1.0f),
+       Color::FromColorSpace(Color::ColorSpace::kRec2020, 0.7919771358198009f,
+                             0.23097568481079767f, 0.07376147493817597f, 1.0f),
        Color::FromColorSpace(Color::ColorSpace::kLab, 87.81853633115202f,
                              -79.27108223854806f, 80.99459785152247f, 1.0f),
        /*percentage =*/0.5f, /*alpha_multiplier=*/1.0f,
@@ -76,19 +75,19 @@ TEST(BlinkColor, ColorMixSameColorSpace) {
       {Color::ColorInterpolationSpace::kSRGB, absl::nullopt,
        CreateSRGBColor(1.0f, 0.0f, 0.0f, 1.0f),
        CreateSRGBColor(0.0f, 1.0f, 0.0f, 1.0f),
-       /*percentage =*/0.75f, /*alpha_multiplier=*/0.5f,
+       /*percentage =*/0.25f, /*alpha_multiplier=*/0.5f,
        CreateSRGBColor(0.75f, 0.25f, 0.0f, 0.5f)},
       // Value obtained form the spec https://www.w3.org/TR/css-color-5/.
       {Color::ColorInterpolationSpace::kSRGB, absl::nullopt,
        CreateSRGBColor(1.0f, 0.0f, 0.0f, 0.7f),
        CreateSRGBColor(0.0f, 1.0f, 0.0f, 0.2f),
-       /*percentage =*/0.25f, /*alpha_multiplier=*/1.0f,
+       /*percentage =*/0.75f, /*alpha_multiplier=*/1.0f,
        CreateSRGBColor(0.53846f, 0.46154f, 0.0f, 0.325f)}};
   for (auto& color_mix_test : color_mix_tests) {
     Color result = Color::FromColorMix(
         color_mix_test.mix_space, color_mix_test.hue_method,
         color_mix_test.color_left, color_mix_test.color_right,
-        color_mix_test.percentage_left, color_mix_test.alpha_multiplier);
+        color_mix_test.percentage_right, color_mix_test.alpha_multiplier);
     EXPECT_EQ(
         result.GetColorSpace(),
         Color::ColorInterpolationSpaceToColorSpace(color_mix_test.mix_space));

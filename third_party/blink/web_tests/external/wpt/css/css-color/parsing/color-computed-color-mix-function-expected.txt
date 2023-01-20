@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 474 tests; 324 PASS, 150 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 474 tests; 400 PASS, 74 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Property color value 'color-mix(in hsl, hsl(120deg 10% 20%), hsl(30deg 30% 40%))'
 PASS Property color value 'color-mix(in hsl, hsl(120deg 10% 20%) 25%, hsl(30deg 30% 40%))'
 PASS Property color value 'color-mix(in hsl, 25% hsl(120deg 10% 20%), hsl(30deg 30% 40%))'
@@ -20,34 +20,34 @@ FAIL Property color value 'color-mix(in hsl, hsl(120deg 10% 20% / .4) 12.5%, hsl
 PASS Property color value 'color-mix(in hsl, hsl(120deg 10% 20% / .4) 0%, hsl(30deg 30% 40% / .8))'
 PASS Property color value 'color-mix(in hsl, hsl(40deg 50% 50%), hsl(60deg 50% 50%))'
 PASS Property color value 'color-mix(in hsl, hsl(60deg 50% 50%), hsl(40deg 50% 50%))'
-FAIL Property color value 'color-mix(in hsl, hsl(50deg 50% 50%), hsl(330deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 191 +/- 0.0001, expected 191 but got 64
-FAIL Property color value 'color-mix(in hsl, hsl(330deg 50% 50%), hsl(50deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 191 +/- 0.0001, expected 191 but got 64
-FAIL Property color value 'color-mix(in hsl, hsl(20deg 50% 50%), hsl(320deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 191 +/- 0.0001, expected 191 but got 64
-FAIL Property color value 'color-mix(in hsl, hsl(320deg 50% 50%), hsl(20deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 191 +/- 0.0001, expected 191 but got 64
+PASS Property color value 'color-mix(in hsl, hsl(50deg 50% 50%), hsl(330deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl, hsl(330deg 50% 50%), hsl(50deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl, hsl(20deg 50% 50%), hsl(320deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl, hsl(320deg 50% 50%), hsl(20deg 50% 50%))'
 PASS Property color value 'color-mix(in hsl shorter hue, hsl(40deg 50% 50%), hsl(60deg 50% 50%))'
 PASS Property color value 'color-mix(in hsl shorter hue, hsl(60deg 50% 50%), hsl(40deg 50% 50%))'
-FAIL Property color value 'color-mix(in hsl shorter hue, hsl(50deg 50% 50%), hsl(330deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 191 +/- 0.0001, expected 191 but got 64
-FAIL Property color value 'color-mix(in hsl shorter hue, hsl(330deg 50% 50%), hsl(50deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 191 +/- 0.0001, expected 191 but got 64
-FAIL Property color value 'color-mix(in hsl shorter hue, hsl(20deg 50% 50%), hsl(320deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 191 +/- 0.0001, expected 191 but got 64
-FAIL Property color value 'color-mix(in hsl shorter hue, hsl(320deg 50% 50%), hsl(20deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 191 +/- 0.0001, expected 191 but got 64
-FAIL Property color value 'color-mix(in hsl longer hue, hsl(40deg 50% 50%), hsl(60deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 85 +/- 0.0001, expected 85 but got 64
-FAIL Property color value 'color-mix(in hsl longer hue, hsl(60deg 50% 50%), hsl(40deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 85 +/- 0.0001, expected 85 but got 64
-FAIL Property color value 'color-mix(in hsl longer hue, hsl(50deg 50% 50%), hsl(330deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 170 +/- 0.0001, expected 170 but got 64
-FAIL Property color value 'color-mix(in hsl longer hue, hsl(330deg 50% 50%), hsl(50deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 170 +/- 0.0001, expected 170 but got 64
-FAIL Property color value 'color-mix(in hsl longer hue, hsl(20deg 50% 50%), hsl(320deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 191 +/- 0.0001, expected 191 but got 64
-FAIL Property color value 'color-mix(in hsl longer hue, hsl(320deg 50% 50%), hsl(20deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 191 +/- 0.0001, expected 191 but got 64
-FAIL Property color value 'color-mix(in hsl increasing hue, hsl(40deg 50% 50%), hsl(60deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 191 +/- 0.0001, expected 191 but got 64
-FAIL Property color value 'color-mix(in hsl increasing hue, hsl(60deg 50% 50%), hsl(40deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 64 +/- 0.0001, expected 64 but got 191
-FAIL Property color value 'color-mix(in hsl increasing hue, hsl(50deg 50% 50%), hsl(330deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 170 +/- 0.0001, expected 170 but got 64
-FAIL Property color value 'color-mix(in hsl increasing hue, hsl(330deg 50% 50%), hsl(50deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 191 +/- 0.0001, expected 191 but got 64
-FAIL Property color value 'color-mix(in hsl increasing hue, hsl(20deg 50% 50%), hsl(320deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 191 +/- 0.0001, expected 191 but got 64
-FAIL Property color value 'color-mix(in hsl increasing hue, hsl(320deg 50% 50%), hsl(20deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 191 +/- 0.0001, expected 191 but got 64
-FAIL Property color value 'color-mix(in hsl decreasing hue, hsl(40deg 50% 50%), hsl(60deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 64 +/- 0.0001, expected 64 but got 191
-FAIL Property color value 'color-mix(in hsl decreasing hue, hsl(60deg 50% 50%), hsl(40deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 191 +/- 0.0001, expected 191 but got 64
-FAIL Property color value 'color-mix(in hsl decreasing hue, hsl(50deg 50% 50%), hsl(330deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 191 +/- 0.0001, expected 191 but got 64
-FAIL Property color value 'color-mix(in hsl decreasing hue, hsl(330deg 50% 50%), hsl(50deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 170 +/- 0.0001, expected 170 but got 64
-FAIL Property color value 'color-mix(in hsl decreasing hue, hsl(20deg 50% 50%), hsl(320deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 191 +/- 0.0001, expected 191 but got 64
-FAIL Property color value 'color-mix(in hsl decreasing hue, hsl(320deg 50% 50%), hsl(20deg 50% 50%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 191 +/- 0.0001, expected 191 but got 64
+PASS Property color value 'color-mix(in hsl shorter hue, hsl(50deg 50% 50%), hsl(330deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl shorter hue, hsl(330deg 50% 50%), hsl(50deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl shorter hue, hsl(20deg 50% 50%), hsl(320deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl shorter hue, hsl(320deg 50% 50%), hsl(20deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl longer hue, hsl(40deg 50% 50%), hsl(60deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl longer hue, hsl(60deg 50% 50%), hsl(40deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl longer hue, hsl(50deg 50% 50%), hsl(330deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl longer hue, hsl(330deg 50% 50%), hsl(50deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl longer hue, hsl(20deg 50% 50%), hsl(320deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl longer hue, hsl(320deg 50% 50%), hsl(20deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl increasing hue, hsl(40deg 50% 50%), hsl(60deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl increasing hue, hsl(60deg 50% 50%), hsl(40deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl increasing hue, hsl(50deg 50% 50%), hsl(330deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl increasing hue, hsl(330deg 50% 50%), hsl(50deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl increasing hue, hsl(20deg 50% 50%), hsl(320deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl increasing hue, hsl(320deg 50% 50%), hsl(20deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl decreasing hue, hsl(40deg 50% 50%), hsl(60deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl decreasing hue, hsl(60deg 50% 50%), hsl(40deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl decreasing hue, hsl(50deg 50% 50%), hsl(330deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl decreasing hue, hsl(330deg 50% 50%), hsl(50deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl decreasing hue, hsl(20deg 50% 50%), hsl(320deg 50% 50%))'
+PASS Property color value 'color-mix(in hsl decreasing hue, hsl(320deg 50% 50%), hsl(20deg 50% 50%))'
 FAIL Property color value 'color-mix(in hsl specified hue, hsl(40deg 50% 50%), hsl(60deg 50% 50%))' assert_true: 'color-mix(in hsl specified hue, hsl(40deg 50% 50%), hsl(60deg 50% 50%))' is a supported value for color. expected true got false
 FAIL Property color value 'color-mix(in hsl specified hue, hsl(60deg 50% 50%), hsl(40deg 50% 50%))' assert_true: 'color-mix(in hsl specified hue, hsl(60deg 50% 50%), hsl(40deg 50% 50%))' is a supported value for color. expected true got false
 FAIL Property color value 'color-mix(in hsl specified hue, hsl(50deg 50% 50%), hsl(330deg 50% 50%))' assert_true: 'color-mix(in hsl specified hue, hsl(50deg 50% 50%), hsl(330deg 50% 50%))' is a supported value for color. expected true got false
@@ -92,34 +92,34 @@ FAIL Property color value 'color-mix(in hwb, hwb(120deg 10% 20% / .4) 12.5%, hwb
 PASS Property color value 'color-mix(in hwb, hwb(120deg 10% 20% / .4) 0%, hwb(30deg 30% 40% / .8))'
 PASS Property color value 'color-mix(in hwb, hwb(40deg 30% 40%), hwb(60deg 30% 40%))'
 PASS Property color value 'color-mix(in hwb, hwb(60deg 30% 40%), hwb(40deg 30% 40%))'
-FAIL Property color value 'color-mix(in hwb, hwb(50deg 30% 40%), hwb(330deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 153 +/- 0.0001, expected 153 but got 77
-FAIL Property color value 'color-mix(in hwb, hwb(330deg 30% 40%), hwb(50deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 153 +/- 0.0001, expected 153 but got 77
-FAIL Property color value 'color-mix(in hwb, hwb(20deg 30% 40%), hwb(320deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 153 +/- 0.0001, expected 153 but got 77
-FAIL Property color value 'color-mix(in hwb, hwb(320deg 30% 40%), hwb(20deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 153 +/- 0.0001, expected 153 but got 77
+PASS Property color value 'color-mix(in hwb, hwb(50deg 30% 40%), hwb(330deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb, hwb(330deg 30% 40%), hwb(50deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb, hwb(20deg 30% 40%), hwb(320deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb, hwb(320deg 30% 40%), hwb(20deg 30% 40%))'
 PASS Property color value 'color-mix(in hwb shorter hue, hwb(40deg 30% 40%), hwb(60deg 30% 40%))'
 PASS Property color value 'color-mix(in hwb shorter hue, hwb(60deg 30% 40%), hwb(40deg 30% 40%))'
-FAIL Property color value 'color-mix(in hwb shorter hue, hwb(50deg 30% 40%), hwb(330deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 153 +/- 0.0001, expected 153 but got 77
-FAIL Property color value 'color-mix(in hwb shorter hue, hwb(330deg 30% 40%), hwb(50deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 153 +/- 0.0001, expected 153 but got 77
-FAIL Property color value 'color-mix(in hwb shorter hue, hwb(20deg 30% 40%), hwb(320deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 153 +/- 0.0001, expected 153 but got 77
-FAIL Property color value 'color-mix(in hwb shorter hue, hwb(320deg 30% 40%), hwb(20deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 153 +/- 0.0001, expected 153 but got 77
-FAIL Property color value 'color-mix(in hwb longer hue, hwb(40deg 30% 40%), hwb(60deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 89 +/- 0.0001, expected 89 but got 77
-FAIL Property color value 'color-mix(in hwb longer hue, hwb(60deg 30% 40%), hwb(40deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 89 +/- 0.0001, expected 89 but got 77
-FAIL Property color value 'color-mix(in hwb longer hue, hwb(50deg 30% 40%), hwb(330deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 140 +/- 0.0001, expected 140 but got 77
-FAIL Property color value 'color-mix(in hwb longer hue, hwb(330deg 30% 40%), hwb(50deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 140 +/- 0.0001, expected 140 but got 77
-FAIL Property color value 'color-mix(in hwb longer hue, hwb(20deg 30% 40%), hwb(320deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 153 +/- 0.0001, expected 153 but got 77
-FAIL Property color value 'color-mix(in hwb longer hue, hwb(320deg 30% 40%), hwb(20deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 153 +/- 0.0001, expected 153 but got 77
-FAIL Property color value 'color-mix(in hwb increasing hue, hwb(40deg 30% 40%), hwb(60deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 153 +/- 0.0001, expected 153 but got 77
-FAIL Property color value 'color-mix(in hwb increasing hue, hwb(60deg 30% 40%), hwb(40deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 77 +/- 0.0001, expected 77 but got 153
-FAIL Property color value 'color-mix(in hwb increasing hue, hwb(50deg 30% 40%), hwb(330deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 140 +/- 0.0001, expected 140 but got 77
-FAIL Property color value 'color-mix(in hwb increasing hue, hwb(330deg 30% 40%), hwb(50deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 153 +/- 0.0001, expected 153 but got 77
-FAIL Property color value 'color-mix(in hwb increasing hue, hwb(20deg 30% 40%), hwb(320deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 153 +/- 0.0001, expected 153 but got 77
-FAIL Property color value 'color-mix(in hwb increasing hue, hwb(320deg 30% 40%), hwb(20deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 153 +/- 0.0001, expected 153 but got 77
-FAIL Property color value 'color-mix(in hwb decreasing hue, hwb(40deg 30% 40%), hwb(60deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 77 +/- 0.0001, expected 77 but got 153
-FAIL Property color value 'color-mix(in hwb decreasing hue, hwb(60deg 30% 40%), hwb(40deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 153 +/- 0.0001, expected 153 but got 77
-FAIL Property color value 'color-mix(in hwb decreasing hue, hwb(50deg 30% 40%), hwb(330deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 153 +/- 0.0001, expected 153 but got 77
-FAIL Property color value 'color-mix(in hwb decreasing hue, hwb(330deg 30% 40%), hwb(50deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 140 +/- 0.0001, expected 140 but got 77
-FAIL Property color value 'color-mix(in hwb decreasing hue, hwb(20deg 30% 40%), hwb(320deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 153 +/- 0.0001, expected 153 but got 77
-FAIL Property color value 'color-mix(in hwb decreasing hue, hwb(320deg 30% 40%), hwb(20deg 30% 40%))' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 153 +/- 0.0001, expected 153 but got 77
+PASS Property color value 'color-mix(in hwb shorter hue, hwb(50deg 30% 40%), hwb(330deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb shorter hue, hwb(330deg 30% 40%), hwb(50deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb shorter hue, hwb(20deg 30% 40%), hwb(320deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb shorter hue, hwb(320deg 30% 40%), hwb(20deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb longer hue, hwb(40deg 30% 40%), hwb(60deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb longer hue, hwb(60deg 30% 40%), hwb(40deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb longer hue, hwb(50deg 30% 40%), hwb(330deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb longer hue, hwb(330deg 30% 40%), hwb(50deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb longer hue, hwb(20deg 30% 40%), hwb(320deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb longer hue, hwb(320deg 30% 40%), hwb(20deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb increasing hue, hwb(40deg 30% 40%), hwb(60deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb increasing hue, hwb(60deg 30% 40%), hwb(40deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb increasing hue, hwb(50deg 30% 40%), hwb(330deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb increasing hue, hwb(330deg 30% 40%), hwb(50deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb increasing hue, hwb(20deg 30% 40%), hwb(320deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb increasing hue, hwb(320deg 30% 40%), hwb(20deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb decreasing hue, hwb(40deg 30% 40%), hwb(60deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb decreasing hue, hwb(60deg 30% 40%), hwb(40deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb decreasing hue, hwb(50deg 30% 40%), hwb(330deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb decreasing hue, hwb(330deg 30% 40%), hwb(50deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb decreasing hue, hwb(20deg 30% 40%), hwb(320deg 30% 40%))'
+PASS Property color value 'color-mix(in hwb decreasing hue, hwb(320deg 30% 40%), hwb(20deg 30% 40%))'
 FAIL Property color value 'color-mix(in hwb specified hue, hwb(40deg 30% 40%), hwb(60deg 30% 40%))' assert_true: 'color-mix(in hwb specified hue, hwb(40deg 30% 40%), hwb(60deg 30% 40%))' is a supported value for color. expected true got false
 FAIL Property color value 'color-mix(in hwb specified hue, hwb(60deg 30% 40%), hwb(40deg 30% 40%))' assert_true: 'color-mix(in hwb specified hue, hwb(60deg 30% 40%), hwb(40deg 30% 40%))' is a supported value for color. expected true got false
 FAIL Property color value 'color-mix(in hwb specified hue, hwb(50deg 30% 40%), hwb(330deg 30% 40%))' assert_true: 'color-mix(in hwb specified hue, hwb(50deg 30% 40%), hwb(330deg 30% 40%))' is a supported value for color. expected true got false
@@ -180,18 +180,18 @@ PASS Property color value 'color-mix(in lch longer hue, lch(100 0 50deg), lch(10
 PASS Property color value 'color-mix(in lch longer hue, lch(100 0 330deg), lch(100 0 50deg))'
 PASS Property color value 'color-mix(in lch longer hue, lch(100 0 20deg), lch(100 0 320deg))'
 PASS Property color value 'color-mix(in lch longer hue, lch(100 0 320deg), lch(100 0 20deg))'
-FAIL Property color value 'color-mix(in lch increasing hue, lch(100 0 40deg), lch(100 0 60deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 50 +/- 0.0001, expected 50 but got 230
-FAIL Property color value 'color-mix(in lch increasing hue, lch(100 0 60deg), lch(100 0 40deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 230 +/- 0.0001, expected 230 but got 50
-FAIL Property color value 'color-mix(in lch increasing hue, lch(100 0 50deg), lch(100 0 330deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 190 +/- 0.0001, expected 190 but got 10
-FAIL Property color value 'color-mix(in lch increasing hue, lch(100 0 330deg), lch(100 0 50deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 10 +/- 0.0001, expected 10 but got 190
-FAIL Property color value 'color-mix(in lch increasing hue, lch(100 0 20deg), lch(100 0 320deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 170 +/- 0.0001, expected 170 but got 350
-FAIL Property color value 'color-mix(in lch increasing hue, lch(100 0 320deg), lch(100 0 20deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 350 +/- 0.0001, expected 350 but got 170
-FAIL Property color value 'color-mix(in lch decreasing hue, lch(100 0 40deg), lch(100 0 60deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 230 +/- 0.0001, expected 230 but got 50
-FAIL Property color value 'color-mix(in lch decreasing hue, lch(100 0 60deg), lch(100 0 40deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 50 +/- 0.0001, expected 50 but got 230
-FAIL Property color value 'color-mix(in lch decreasing hue, lch(100 0 50deg), lch(100 0 330deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 10 +/- 0.0001, expected 10 but got 190
-FAIL Property color value 'color-mix(in lch decreasing hue, lch(100 0 330deg), lch(100 0 50deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 190 +/- 0.0001, expected 190 but got 10
-FAIL Property color value 'color-mix(in lch decreasing hue, lch(100 0 20deg), lch(100 0 320deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 350 +/- 0.0001, expected 350 but got 170
-FAIL Property color value 'color-mix(in lch decreasing hue, lch(100 0 320deg), lch(100 0 20deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 170 +/- 0.0001, expected 170 but got 350
+PASS Property color value 'color-mix(in lch increasing hue, lch(100 0 40deg), lch(100 0 60deg))'
+PASS Property color value 'color-mix(in lch increasing hue, lch(100 0 60deg), lch(100 0 40deg))'
+PASS Property color value 'color-mix(in lch increasing hue, lch(100 0 50deg), lch(100 0 330deg))'
+PASS Property color value 'color-mix(in lch increasing hue, lch(100 0 330deg), lch(100 0 50deg))'
+PASS Property color value 'color-mix(in lch increasing hue, lch(100 0 20deg), lch(100 0 320deg))'
+PASS Property color value 'color-mix(in lch increasing hue, lch(100 0 320deg), lch(100 0 20deg))'
+PASS Property color value 'color-mix(in lch decreasing hue, lch(100 0 40deg), lch(100 0 60deg))'
+PASS Property color value 'color-mix(in lch decreasing hue, lch(100 0 60deg), lch(100 0 40deg))'
+PASS Property color value 'color-mix(in lch decreasing hue, lch(100 0 50deg), lch(100 0 330deg))'
+PASS Property color value 'color-mix(in lch decreasing hue, lch(100 0 330deg), lch(100 0 50deg))'
+PASS Property color value 'color-mix(in lch decreasing hue, lch(100 0 20deg), lch(100 0 320deg))'
+PASS Property color value 'color-mix(in lch decreasing hue, lch(100 0 320deg), lch(100 0 20deg))'
 FAIL Property color value 'color-mix(in lch specified hue, lch(100 0 40deg), lch(100 0 60deg))' assert_true: 'color-mix(in lch specified hue, lch(100 0 40deg), lch(100 0 60deg))' is a supported value for color. expected true got false
 FAIL Property color value 'color-mix(in lch specified hue, lch(100 0 60deg), lch(100 0 40deg))' assert_true: 'color-mix(in lch specified hue, lch(100 0 60deg), lch(100 0 40deg))' is a supported value for color. expected true got false
 FAIL Property color value 'color-mix(in lch specified hue, lch(100 0 50deg), lch(100 0 330deg))' assert_true: 'color-mix(in lch specified hue, lch(100 0 50deg), lch(100 0 330deg))' is a supported value for color. expected true got false
@@ -243,18 +243,18 @@ PASS Property color value 'color-mix(in oklch longer hue, oklch(100 0 50deg), ok
 PASS Property color value 'color-mix(in oklch longer hue, oklch(100 0 330deg), oklch(100 0 50deg))'
 PASS Property color value 'color-mix(in oklch longer hue, oklch(100 0 20deg), oklch(100 0 320deg))'
 PASS Property color value 'color-mix(in oklch longer hue, oklch(100 0 320deg), oklch(100 0 20deg))'
-FAIL Property color value 'color-mix(in oklch increasing hue, oklch(100 0 40deg), oklch(100 0 60deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 50 +/- 0.0001, expected 50 but got 230
-FAIL Property color value 'color-mix(in oklch increasing hue, oklch(100 0 60deg), oklch(100 0 40deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 230 +/- 0.0001, expected 230 but got 50
-FAIL Property color value 'color-mix(in oklch increasing hue, oklch(100 0 50deg), oklch(100 0 330deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 190 +/- 0.0001, expected 190 but got 10
-FAIL Property color value 'color-mix(in oklch increasing hue, oklch(100 0 330deg), oklch(100 0 50deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 10 +/- 0.0001, expected 10 but got 190
-FAIL Property color value 'color-mix(in oklch increasing hue, oklch(100 0 20deg), oklch(100 0 320deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 170 +/- 0.0001, expected 170 but got 350
-FAIL Property color value 'color-mix(in oklch increasing hue, oklch(100 0 320deg), oklch(100 0 20deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 350 +/- 0.0001, expected 350 but got 170
-FAIL Property color value 'color-mix(in oklch decreasing hue, oklch(100 0 40deg), oklch(100 0 60deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 230 +/- 0.0001, expected 230 but got 50
-FAIL Property color value 'color-mix(in oklch decreasing hue, oklch(100 0 60deg), oklch(100 0 40deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 50 +/- 0.0001, expected 50 but got 230
-FAIL Property color value 'color-mix(in oklch decreasing hue, oklch(100 0 50deg), oklch(100 0 330deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 10 +/- 0.0001, expected 10 but got 190
-FAIL Property color value 'color-mix(in oklch decreasing hue, oklch(100 0 330deg), oklch(100 0 50deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 190 +/- 0.0001, expected 190 but got 10
-FAIL Property color value 'color-mix(in oklch decreasing hue, oklch(100 0 20deg), oklch(100 0 320deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 350 +/- 0.0001, expected 350 but got 170
-FAIL Property color value 'color-mix(in oklch decreasing hue, oklch(100 0 320deg), oklch(100 0 20deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 170 +/- 0.0001, expected 170 but got 350
+PASS Property color value 'color-mix(in oklch increasing hue, oklch(100 0 40deg), oklch(100 0 60deg))'
+PASS Property color value 'color-mix(in oklch increasing hue, oklch(100 0 60deg), oklch(100 0 40deg))'
+PASS Property color value 'color-mix(in oklch increasing hue, oklch(100 0 50deg), oklch(100 0 330deg))'
+PASS Property color value 'color-mix(in oklch increasing hue, oklch(100 0 330deg), oklch(100 0 50deg))'
+PASS Property color value 'color-mix(in oklch increasing hue, oklch(100 0 20deg), oklch(100 0 320deg))'
+PASS Property color value 'color-mix(in oklch increasing hue, oklch(100 0 320deg), oklch(100 0 20deg))'
+PASS Property color value 'color-mix(in oklch decreasing hue, oklch(100 0 40deg), oklch(100 0 60deg))'
+PASS Property color value 'color-mix(in oklch decreasing hue, oklch(100 0 60deg), oklch(100 0 40deg))'
+PASS Property color value 'color-mix(in oklch decreasing hue, oklch(100 0 50deg), oklch(100 0 330deg))'
+PASS Property color value 'color-mix(in oklch decreasing hue, oklch(100 0 330deg), oklch(100 0 50deg))'
+PASS Property color value 'color-mix(in oklch decreasing hue, oklch(100 0 20deg), oklch(100 0 320deg))'
+PASS Property color value 'color-mix(in oklch decreasing hue, oklch(100 0 320deg), oklch(100 0 20deg))'
 FAIL Property color value 'color-mix(in oklch specified hue, oklch(100 0 40deg), oklch(100 0 60deg))' assert_true: 'color-mix(in oklch specified hue, oklch(100 0 40deg), oklch(100 0 60deg))' is a supported value for color. expected true got false
 FAIL Property color value 'color-mix(in oklch specified hue, oklch(100 0 60deg), oklch(100 0 40deg))' assert_true: 'color-mix(in oklch specified hue, oklch(100 0 60deg), oklch(100 0 40deg))' is a supported value for color. expected true got false
 FAIL Property color value 'color-mix(in oklch specified hue, oklch(100 0 50deg), oklch(100 0 330deg))' assert_true: 'color-mix(in oklch specified hue, oklch(100 0 50deg), oklch(100 0 330deg))' is a supported value for color. expected true got false

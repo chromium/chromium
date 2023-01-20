@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/css_color_mix_value.h"
-#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -43,8 +42,8 @@ bool CSSColorMixValue::NormalizePercentages(
     }
   }
 
-  mix_amount = p1;
-  if (p2 == 0.0) {
+  mix_amount = p2;
+  if (p1 == 0.0) {
     mix_amount = 1.0;
   }
 
