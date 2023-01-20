@@ -363,8 +363,11 @@ void FrameSizeButton::StateChanged(views::Button::ButtonState old_state) {
   if (!chromeos::wm::features::IsFloatWindowEnabled())
     return;
 
-  if (GetState() == views::Button::STATE_HOVERED && GetWidget()->IsActive()) {
+  // Pie animation will start on both active/inactive window.
+  if (GetState() == views::Button::STATE_HOVERED) {
     // On animation end we should show the multitask menu.
+    // Note that if the window is not active, after the pie animation this will
+    // activate the window.
     StartPieAnimation(kPieAnimationHoverDuration,
                       MultitaskMenuEntryType::kFrameSizeButtonHover);
   } else if (old_state == views::Button::STATE_HOVERED) {
