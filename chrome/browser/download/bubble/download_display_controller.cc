@@ -141,7 +141,7 @@ void DownloadDisplayController::OnNewItem(bool show_details) {
           /*notify_download=*/true,
           /*force_update=*/true);
     }
-  } else if (download::ShouldShowDetailsAutomatically(browser_->profile())) {
+  } else {
     display_->ShowDetails();
   }
 }
@@ -241,7 +241,7 @@ void DownloadDisplayController::OnFullscreenStateChanged() {
   UpdateToolbarButtonState(all_models);
   int in_progress_count = InProgressDownloadCount(all_models);
   if (in_progress_count > 0 &&
-      download::ShouldShowDetailsAutomatically(browser_->profile())) {
+      download::ShouldShowDownloadBubble(browser_->profile())) {
     display_->ShowDetails();
   }
 }

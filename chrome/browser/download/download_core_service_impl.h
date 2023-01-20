@@ -53,7 +53,6 @@ class DownloadCoreServiceImpl : public DownloadCoreService {
   void SetDownloadManagerDelegateForTesting(
       std::unique_ptr<ChromeDownloadManagerDelegate> delegate) override;
   bool IsDownloadUiEnabled() override;
-  bool IsDownloadObservedByExtension() override;
   DownloadUIController* GetDownloadUIController() override;
   void SetDownloadHistoryForTesting(
       std::unique_ptr<DownloadHistory> download_history) override;

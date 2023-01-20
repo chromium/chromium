@@ -4846,29 +4846,6 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionBubbleEnabledTest,
   EXPECT_FALSE(GetDownloadToolbarButton()->IsShowing());
 }
 
-// Flaky. crbug.com/1386043
-IN_PROC_BROWSER_TEST_F(DownloadExtensionBubbleEnabledTest,
-                       DISABLED_SetUiOptionsShowDetails) {
-  LoadExtension("downloads_split");
-  DownloadManager::DownloadVector items;
-  CreateFirstSlowTestDownload();
-  GetCurrentManager()->GetAllDownloads(&items);
-  ScopedItemVectorCanceller delete_items(&items);
-
-  EXPECT_TRUE(GetDownloadToolbarButton()->IsShowing());
-  // Details are not shown because the download item is observed by an
-  // extension.
-  EXPECT_FALSE(GetDownloadToolbarButton()->IsShowingDetails());
-
-  DisableExtension(GetExtensionId());
-
-  CreateSecondSlowTestDownload();
-  GetCurrentManager()->GetAllDownloads(&items);
-  EXPECT_TRUE(GetDownloadToolbarButton()->IsShowing());
-  // Details are shown because the extension is disabled.
-  EXPECT_TRUE(GetDownloadToolbarButton()->IsShowingDetails());
-}
-
 IN_PROC_BROWSER_TEST_F(DownloadExtensionBubbleEnabledTest,
                        SetUiOptionsOffTheRecord) {
   LoadExtension("downloads_split");
