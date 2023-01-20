@@ -23,7 +23,8 @@ class BorealisSecurityDelegateTest : public testing::Test {
 
 }  // namespace
 
-TEST_F(BorealisSecurityDelegateTest, MainAppCanSelfActivate) {
+// TODO(b/244651040): Remove legacy tests when sommelier changes are complete.
+TEST_F(BorealisSecurityDelegateTest, MainAppCanSelfActivateLegacy) {
   CreateFakeMainApp(&profile_);
   std::unique_ptr<ScopedTestWindow> window = MakeAndTrackWindow(
       "org.chromium.borealis.wmclass.Steam",
@@ -32,7 +33,16 @@ TEST_F(BorealisSecurityDelegateTest, MainAppCanSelfActivate) {
       BorealisSecurityDelegate(&profile_).CanSelfActivate(window->window()));
 }
 
-TEST_F(BorealisSecurityDelegateTest, NormalAppCanNotSelfActivate) {
+TEST_F(BorealisSecurityDelegateTest, MainAppCanSelfActivate) {
+  CreateFakeMainApp(&profile_);
+  std::unique_ptr<ScopedTestWindow> window = MakeAndTrackWindow(
+      "org.chromium.guest_os.borealis.wmclass.Steam",
+      &BorealisService::GetForProfile(&profile_)->WindowManager());
+  EXPECT_TRUE(
+      BorealisSecurityDelegate(&profile_).CanSelfActivate(window->window()));
+}
+
+TEST_F(BorealisSecurityDelegateTest, NormalAppCanNotSelfActivateLegacy) {
   CreateFakeApp(&profile_, "not_steam", "borealis/123");
   std::unique_ptr<ScopedTestWindow> window = MakeAndTrackWindow(
       "org.chromium.borealis.wmclass.not_steam",
@@ -46,9 +56,36 @@ TEST_F(BorealisSecurityDelegateTest, NormalAppCanNotSelfActivate) {
       BorealisSecurityDelegate(&profile_).CanSelfActivate(window->window()));
 }
 
-TEST_F(BorealisSecurityDelegateTest, AnonymousAppCanNotSelfActivate) {
+TEST_F(BorealisSecurityDelegateTest, NormalAppCanNotSelfActivate) {
+  CreateFakeApp(&profile_, "not_steam", "borealis/123");
+  std::unique_ptr<ScopedTestWindow> window = MakeAndTrackWindow(
+      "org.chromium.guest_os.borealis.wmclass.not_steam",
+      &BorealisService::GetForProfile(&profile_)->WindowManager());
+
+  ASSERT_FALSE(BorealisWindowManager::IsAnonymousAppId(
+      BorealisService::GetForProfile(&profile_)->WindowManager().GetShelfAppId(
+          window->window())));
+
+  EXPECT_FALSE(
+      BorealisSecurityDelegate(&profile_).CanSelfActivate(window->window()));
+}
+
+TEST_F(BorealisSecurityDelegateTest, AnonymousAppCanNotSelfActivateLegacy) {
   std::unique_ptr<ScopedTestWindow> window = MakeAndTrackWindow(
       "org.chromium.borealis.wmclass.anonymous",
+      &BorealisService::GetForProfile(&profile_)->WindowManager());
+
+  ASSERT_TRUE(BorealisWindowManager::IsAnonymousAppId(
+      BorealisService::GetForProfile(&profile_)->WindowManager().GetShelfAppId(
+          window->window())));
+
+  EXPECT_FALSE(
+      BorealisSecurityDelegate(&profile_).CanSelfActivate(window->window()));
+}
+
+TEST_F(BorealisSecurityDelegateTest, AnonymousAppCanNotSelfActivate) {
+  std::unique_ptr<ScopedTestWindow> window = MakeAndTrackWindow(
+      "org.chromium.guest_os.borealis.wmclass.anonymous",
       &BorealisService::GetForProfile(&profile_)->WindowManager());
 
   ASSERT_TRUE(BorealisWindowManager::IsAnonymousAppId(

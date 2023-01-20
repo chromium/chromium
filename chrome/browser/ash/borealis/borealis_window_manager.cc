@@ -27,8 +27,13 @@
 
 namespace borealis {
 
-const char kBorealisWindowPrefix[] = "org.chromium.borealis.";
-const char kFullscreenClientShellId[] = "org.chromium.borealis.wmclass.steam";
+// TODO(b/244651040): Remove legacy prefix when sommelier changes are complete.
+const char kBorealisWindowPrefixLegacy[] = "org.chromium.borealis.";
+const char kBorealisWindowPrefix[] = "org.chromium.guest_os.borealis.";
+const char kFullscreenClientShellIdLegacy[] =
+    "org.chromium.borealis.wmclass.steam";
+const char kFullscreenClientShellId[] =
+    "org.chromium.guest_os.borealis.wmclass.steam";
 const char kBorealisClientSuffix[] = "wmclass.Steam";
 const char kBorealisAnonymousPrefix[] = "borealis_anon:";
 
@@ -60,6 +65,10 @@ std::string BorealisIdToAppId(Profile* profile, unsigned borealis_id) {
   return {};
 }
 
+bool IsBorealisWindowIdLegacy(const std::string& window_id) {
+  return base::StartsWith(window_id, borealis::kBorealisWindowPrefixLegacy);
+}
+
 std::string WindowToAppId(Profile* profile, const aura::Window* window) {
   // The Borealis app ID is the most reliable method, if known.
   absl::optional<int> borealis_id = GetBorealisAppId(window);
@@ -77,10 +86,10 @@ std::string WindowToAppId(Profile* profile, const aura::Window* window) {
   // TODO(b/244651040): remove the string replacement after new window_id format
   // is deployed.
   std::string window_id(*GetWindowId(window));
-  if (borealis::BorealisWindowManager::IsBorealisWindowId(window_id)) {
-    base::ReplaceFirstSubstringAfterOffset(&window_id, 0,
-                                           borealis::kBorealisWindowPrefix,
-                                           "org.chromium.termina.");
+  if (IsBorealisWindowIdLegacy(window_id)) {
+    base::ReplaceFirstSubstringAfterOffset(
+        &window_id, 0, borealis::kBorealisWindowPrefixLegacy,
+        "org.chromium.termina.");
   }
   std::string guest_os_shelf_app_id =
       guest_os::GetGuestOsShelfAppId(profile, &window_id, nullptr);
@@ -109,7 +118,8 @@ bool BorealisWindowManager::IsBorealisWindow(const aura::Window* window) {
 
 // static
 bool BorealisWindowManager::IsBorealisWindowId(const std::string& window_id) {
-  return base::StartsWith(window_id, borealis::kBorealisWindowPrefix);
+  return base::StartsWith(window_id, borealis::kBorealisWindowPrefix) ||
+         base::StartsWith(window_id, borealis::kBorealisWindowPrefixLegacy);
 }
 
 // static
@@ -137,8 +147,10 @@ bool BorealisWindowManager::ShouldNewWindowBeMinimized(
 
   // If the fullscreen window is the borealis client, then we allow windows to
   // take focus.
-  if (*active_window_id == borealis::kFullscreenClientShellId)
+  if (*active_window_id == borealis::kFullscreenClientShellId ||
+      *active_window_id == borealis::kFullscreenClientShellIdLegacy) {
     return false;
+  }
 
   return true;
 }
@@ -181,8 +193,9 @@ void BorealisWindowManager::RemoveObserver(
 }
 
 std::string BorealisWindowManager::GetShelfAppId(aura::Window* window) {
-  if (!IsBorealisWindow(window))
+  if (!IsBorealisWindow(window)) {
     return {};
+  }
 
   // We delay the observation until the first time we actually see a borealis
   // window, which prevents unnecessary messages being sent and breaks an

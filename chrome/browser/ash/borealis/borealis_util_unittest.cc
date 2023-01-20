@@ -51,15 +51,29 @@ TEST_F(BorealisUtilTest, GetBorealisAppIdReturnsId) {
   EXPECT_EQ(GetBorealisAppId("steam://rungameid/123").value(), 123);
 }
 
-TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsEmptyOnFailure) {
+// TODO(b/244651040): Remove legacy tests when sommelier changes are complete.
+TEST_F(BorealisUtilTest,
+       GetBorealisAppIdFromWindowReturnsEmptyOnFailureLegacy) {
   std::unique_ptr<aura::Window> window =
       MakeWindow("org.chromium.borealis.wmclass.foo");
   EXPECT_EQ(GetBorealisAppId(window.get()), absl::nullopt);
 }
 
-TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsId) {
+TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsEmptyOnFailure) {
+  std::unique_ptr<aura::Window> window =
+      MakeWindow("org.chromium.guest_os.borealis.wmclass.foo");
+  EXPECT_EQ(GetBorealisAppId(window.get()), absl::nullopt);
+}
+
+TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsIdLegacy) {
   std::unique_ptr<aura::Window> window =
       MakeWindow("org.chromium.borealis.xprop.123");
+  EXPECT_EQ(GetBorealisAppId(window.get()).value(), 123);
+}
+
+TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsId) {
+  std::unique_ptr<aura::Window> window =
+      MakeWindow("org.chromium.guest_os.borealis.xprop.123");
   EXPECT_EQ(GetBorealisAppId(window.get()).value(), 123);
 }
 
