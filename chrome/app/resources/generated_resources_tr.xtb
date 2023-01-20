@@ -3246,7 +3246,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3936390757709632190">&amp;Sesi yeni sekmede aç</translation>
 <translation id="3936925983113350642">Seçtiğiniz şifre, daha sonra bu dosyayı geri yüklemek için gerekli olacaktır. Lütfen şifrenizi güvenli bir yere kaydedin.</translation>
 <translation id="3937640725563832867">Sertifikayı Verenin Alternatif Adı</translation>
-<translation id="3937734102568271121"><ph name="LANGUAGE" /> Dilini Daima Çevir</translation>
+<translation id="3937734102568271121">Bu Dili (<ph name="LANGUAGE" />) Daima Çevir</translation>
 <translation id="3938128855950761626"><ph name="VENDOR_ID" /> kimliğine sahip tedarikçinin cihazları</translation>
 <translation id="3940233957883229251">Otomatik tekrarı etkinleştir</translation>
 <translation id="3941565636838060942">Bu programa erişimi gizlemek için Denetim Masası'nda
@@ -3649,7 +3649,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4324577459193912240">Dosya eksik</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> uygulamasının yüklemesi kaldırılıyor...</translation>
 <translation id="4330191372652740264">Buzlu su</translation>
-<translation id="4330387663455830245"><ph name="LANGUAGE" /> Dilini Hiçbir Zaman Çevirme</translation>
+<translation id="4330387663455830245">Bu Dili (<ph name="LANGUAGE" />) Asla Çevirme</translation>
 <translation id="4332976768901252016">Ebeveyn Denetimlerini ayarlama</translation>
 <translation id="4333854382783149454">PKCS #1 RSA Şifrelemeli SHA-1</translation>
 <translation id="4336434711095810371">Tüm verileri temizle</translation>
@@ -4665,7 +4665,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5287425679749926365">Hesaplarınız</translation>
 <translation id="5288106344236929384"><ph name="DOMAIN" /> adresindeki <ph name="USERNAME" /> için diğer işlemler ve şifre anahtarı seçenekleri</translation>
 <translation id="5288678174502918605">Kapatılan Sekmeyi T&amp;ekrar Aç</translation>
-<translation id="52895863590846877">Sayfa <ph name="LANGUAGE" /> değil</translation>
+<translation id="52895863590846877">Sayfa bu dilde (<ph name="LANGUAGE" />) değil</translation>
 <translation id="52912272896845572">Özel anahtar dosyası geçersiz.</translation>
 <translation id="5291739252352359682">Chrome tarayıcıda medya için otomatik olarak altyazı oluşturur (şu anda yalnızca İngilizce olarak kullanılabilir). Tüm ses ve altyazılar yerel olarak işlenir ve cihazınızdan hiçbir zaman dışarı çıkmaz.</translation>
 <translation id="529175790091471945">Bu cihazı biçimlendir</translation>
@@ -6366,7 +6366,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="6863496016067551393">Tüm uzantılara izin verilen siteler</translation>
 <translation id="686366188661646310">Şifre silinsin mi?</translation>
 <translation id="6865313869410766144">Form otomatik doldurma verileri</translation>
-<translation id="6865598234501509159">Sayfa <ph name="LANGUAGE" /> Değil</translation>
+<translation id="6865598234501509159">Sayfa Bu Dilde (<ph name="LANGUAGE" />) Değil</translation>
 <translation id="6865708901122695652">WebRTC etkinlik günlükleri (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Sessiz</translation>
 <translation id="686664946474413495">Renk sıcaklığı</translation>
@@ -7125,7 +7125,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7598466960084663009">Bilgisayarı yeniden başlat</translation>
 <translation id="7599527631045201165">Cihaz adı çok uzun. Tekrar denemek için daha kısa bir ad girin.</translation>
 <translation id="7600054753482800821">Arama &amp;motorlarını ve site aramalarını yönetin</translation>
-<translation id="7600965453749440009"><ph name="LANGUAGE" /> dilini asla çevirme</translation>
+<translation id="7600965453749440009">Bu dili (<ph name="LANGUAGE" />) asla çevirme</translation>
 <translation id="760197030861754408">Bağlanmak için <ph name="LANDING_PAGE" /> sayfasına gidin.</translation>
 <translation id="7602079150116086782">Diğer cihazlardan sekme yok</translation>
 <translation id="7602173054665172958">Yazdırma yönetimi</translation>
@@ -8430,7 +8430,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <ph name="DOMAIN" />, akıllı kartınızın takılı kalmasını gerektiriyor.}}</translation>
 <translation id="8776294611668764629">Güvenlik kontrolü için fazla büyük olduğundan bu dosya kuruluşunuz tarafından engellendi. 50 MB'a kadar olan dosyaları açabilirsiniz.</translation>
 <translation id="8777628254805677039">kök şifre</translation>
-<translation id="8778393144535275552">Görüntülenen site verilerini temizle</translation>
+<translation id="8778393144535275552">Verileri temizle</translation>
 <translation id="8779944680596936487">Siteler, çerezleri yalnızca kendi sitelerindeki tarama etkinliğinizi görmek için kullanabilir</translation>
 <translation id="8780123805589053431">Google'dan resim açıklamaları al</translation>
 <translation id="8780443667474968681">Sesli arama özelliği kapatıldı.</translation>

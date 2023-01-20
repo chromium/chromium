@@ -52,7 +52,7 @@
 <translation id="1096545575934602868">Ce champ ne peut pas contenir plus de <ph name="MAX_ITEMS_LIMIT" /> entrées. Toutes les entrées supplémentaires seront supprimées.</translation>
 <translation id="1100782917270858593">Bouton "Reprendre votre parcours", appuyez sur Entrée pour reprendre votre parcours et voir les activités pertinentes dans votre historique Chrome</translation>
 <translation id="1101672080107056897">Action en cas d'erreur</translation>
-<translation id="1103523840287552314">Toujours traduire les pages en <ph name="LANGUAGE" /></translation>
+<translation id="1103523840287552314">Toujours traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Sélectionnez une autorisation pour <ph name="PERMISSION_NAME" /></translation>
 <translation id="1112828774174131240">Antiquités et objets de collection</translation>
@@ -2662,7 +2662,7 @@ Informations supplémentaires :
 <translation id="7716424297397655342">Impossible de charger ce site à partir du cache</translation>
 <translation id="7723047071702270851">Modifier la carte</translation>
 <translation id="7734285854693414638">Créez rapidement un formulaire dans Google Forms</translation>
-<translation id="773466115871691567">Toujours traduire les pages en <ph name="SOURCE_LANGUAGE" /></translation>
+<translation id="773466115871691567">Toujours traduire les pages rédigées en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="7736959720849233795">Copier l'adresse du lien</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="77424286611022110">Ce site affiche des annonces intrusives ou trompeuses. <ph name="LEARN_MORE_LINK_TEXT" /></translation>

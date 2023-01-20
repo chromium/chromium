@@ -39,7 +39,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Masaüstü Yer İşaretleri</translation>
 <translation id="1067561478268651872"><ph name="SECURE_DNS_SALT" /> politikası ayarlanmazsa <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> politikası kullanılmaz.</translation>
-<translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> dilindeki sayfaları asla çevirme</translation>
+<translation id="1068672505746868501">Bu dildeki (<ph name="SOURCE_LANGUAGE" />) sayfaları asla çevirme</translation>
 <translation id="1070853536588271387">Hibrit ve alternatif araçlar</translation>
 <translation id="1070901266639972381">Gece</translation>
 <translation id="1072594122896439679">Müzik ve ses</translation>
@@ -2341,7 +2341,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6979440798594660689">Sesi kapat (varsayılan)</translation>
 <translation id="6989763994942163495">Gelişmiş ayarları göster...</translation>
 <translation id="6992499368826755835">Otomotiv sektörü</translation>
-<translation id="6996312675313362352"><ph name="ORIGINAL_LANGUAGE" /> dilini daima çevir</translation>
+<translation id="6996312675313362352">Bu dili (<ph name="ORIGINAL_LANGUAGE" />) daima çevir</translation>
 <translation id="6999969238895751684">Eğlence sektörü</translation>
 <translation id="7003335073762455340">Bu ürünü takip ediyorsunuz. Bu sayfa <ph name="LAST_BOOKMARKS_FOLDER" /> klasörüne kaydedildi.</translation>
 <translation id="7004583254764674281">Kartları daha hızlı onaylamak için Windows Hello'yu kullanın</translation>
@@ -2603,7 +2603,7 @@ Ek ayrıntılar:
 <translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" />'tan az</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> şu anda bu isteği işleme alamıyor.</translation>
-<translation id="7600965453749440009"><ph name="LANGUAGE" /> dilini asla çevirme</translation>
+<translation id="7600965453749440009">Bu dili (<ph name="LANGUAGE" />) asla çevirme</translation>
 <translation id="7610193165460212391">Değer aralık dışında: <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Son kullanım tarihi: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında şifrelerinizi görüntüleyip yönetmek için Sekme'ye, sonra Enter'a basın</translation>
@@ -2661,7 +2661,7 @@ Ek ayrıntılar:
 <translation id="7716424297397655342">Bu site önbellekten yüklenemiyor</translation>
 <translation id="7723047071702270851">Kartı Düzenleyin</translation>
 <translation id="7734285854693414638">Google Formlar'da hızlıca yeni bir form oluşturun</translation>
-<translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" /> dilindeki sayfaları her zaman çevir</translation>
+<translation id="773466115871691567">Bu dildeki (<ph name="SOURCE_LANGUAGE" />) sayfaları daima çevir</translation>
 <translation id="7736959720849233795">Bağlantı Adresini Kopyala</translation>
 <translation id="7740996059027112821">Standart</translation>
 <translation id="77424286611022110">Bu site, araya giren veya yanıltıcı reklamlar gösteriyor. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
