@@ -241,7 +241,6 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
                                  PreloadCancelling> {
   std::unique_ptr<web::WebStateDelegateBridge> _webStateDelegate;
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
-  std::unique_ptr<web::WebStateObserverBridge> _webStateToReplaceObserver;
   std::unique_ptr<PrefObserverBridge> _observerBridge;
   std::unique_ptr<ConnectionTypeObserverBridge> _connectionTypeObserver;
   std::unique_ptr<web::WebStatePolicyDeciderBridge> _policyDeciderBridge;
@@ -261,7 +260,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   // A weak pointer to the webState that will be replaced with the prerendered
   // one. This is needed by `startPrerender` to build the new webstate with the
   // same sessions.
-  web::WebState* _webStateToReplace;
+  base::WeakPtr<web::WebState> _webStateToReplace;
 
   std::unique_ptr<PreloadManageAccountsDelegate> _manageAccountsDelegate;
 }
@@ -335,8 +334,6 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
         net::NetworkChangeNotifier::GetConnectionType());
     _webStateDelegate = std::make_unique<web::WebStateDelegateBridge>(self);
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
-    _webStateToReplaceObserver =
-        std::make_unique<web::WebStateObserverBridge>(self);
     _observerBridge = std::make_unique<PrefObserverBridge>(self);
     _prefChangeRegistrar.Init(_browserState->GetPrefs());
     _observerBridge->ObserveChangesForPreference(
@@ -349,7 +346,6 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
       _connectionTypeObserver =
           std::make_unique<ConnectionTypeObserverBridge>(self);
     }
-    _webStateToReplace = nullptr;
     [[NSNotificationCenter defaultCenter]
         addObserver:self
            selector:@selector(didReceiveMemoryWarning)
@@ -435,12 +431,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   }
 
   [self removeScheduledPrerenderRequests];
-  _webStateToReplace = currentWebState;
-  // Observing the `_webStateToReplace` to make sure that if it's destructed
-  // the pre-rendering will be canceled.
-  if (_webStateToReplace) {
-    _webStateToReplace->AddObserver(_webStateToReplaceObserver.get());
-  }
+  _webStateToReplace = currentWebState->GetWeakPtr();
   _scheduledRequest =
       std::make_unique<PrerenderRequest>(url, transition, referrer);
 
@@ -566,9 +557,6 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
 
 - (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigation {
-  // the `_webStateToReplace` is observed for destruction event only.
-  if (_webStateToReplace == webState)
-    return;
   DCHECK_EQ(webState, _webState.get());
   if ([self shouldCancelPreloadForMimeType:webState->GetContentsMimeType()])
     [self schedulePrerenderCancel];
@@ -576,10 +564,6 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
 
 - (void)webState:(web::WebState*)webState
     didLoadPageWithSuccess:(BOOL)loadSuccess {
-  // the `_webStateToReplace` is observed for destruction event only.
-  if (_webStateToReplace == webState)
-    return;
-
   DCHECK_EQ(webState, _webState.get());
   // The load should have been cancelled when the navigation finishes, but this
   // makes sure that we didn't miss one.
@@ -590,14 +574,6 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   }
 }
 
-- (void)webStateDestroyed:(web::WebState*)webState {
-  if (_webState.get() == webState)
-    return;
-  DCHECK_EQ(webState, _webStateToReplace);
-  // There is no way to create a pre-rendered webState without existing webState
-  // web state to replace, So cancel the prerender.
-  [self schedulePrerenderCancel];
-}
 #pragma mark - CRWWebStatePolicyDecider
 
 - (void)shouldAllowRequest:(NSURLRequest*)request
@@ -679,10 +655,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
 - (void)removeScheduledPrerenderRequests {
   [NSObject cancelPreviousPerformRequestsWithTarget:self];
   _scheduledRequest = nullptr;
-  if (_webStateToReplace) {
-    _webStateToReplace->RemoveObserver(_webStateToReplaceObserver.get());
-  }
-  _webStateToReplace = nullptr;
+  _webStateToReplace.reset();
 }
 
 #pragma mark - Prerender Helpers
@@ -692,25 +665,24 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   [self destroyPreviewContents];
   self.prerenderedURL = self.scheduledURL;
   std::unique_ptr<PrerenderRequest> request = std::move(_scheduledRequest);
-  // No need to observer the destruction of the `_webStateToReplace` anymore
-  // as it will be used here.
-  if (_webStateToReplace) {
-    _webStateToReplace->RemoveObserver(_webStateToReplaceObserver.get());
-  }
+
+  web::WebState* webStateToReplace = _webStateToReplace.get();
+  _webStateToReplace.reset();
 
   // TODO(crbug.com/1140583): The correct way is to always get the
   // webStateToReplace from the delegate. however this is not possible because
   // there is only one delegate per browser state.
-  if (!_webStateToReplace)
-    _webStateToReplace = [self.delegate webStateToReplace];
+  if (!webStateToReplace) {
+    webStateToReplace = [self.delegate webStateToReplace];
+  }
 
-  if (!self.prerenderedURL.is_valid() || !_webStateToReplace) {
+  if (!self.prerenderedURL.is_valid() || !webStateToReplace) {
     [self destroyPreviewContents];
     return;
   }
 
   // Use web::WebState::CreateWithStorageSession to clone the
-  // _webStateToReplace navigation history. This may create an
+  // webStateToReplace navigation history. This may create an
   // unrealized WebState, however, PreloadController needs a realized
   // one, so force the realization.
   // TODO(crbug.com/1291626): remove when there is a way to
@@ -718,12 +690,11 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   web::WebState::CreateParams createParams(self.browserState);
   createParams.last_active_time = base::Time::Now();
   _webState = web::WebState::CreateWithStorageSession(
-      createParams, _webStateToReplace->BuildSessionStorage());
+      createParams, webStateToReplace->BuildSessionStorage());
   // Do not trigger a CheckForOverRealization here, as it's expected
   // that typing fast may trigger multiple prerenders.
   web::IgnoreOverRealizationCheck();
   _webState->ForceRealized();
-  _webStateToReplace = nullptr;
 
   // Add the preload controller as a policyDecider before other tab helpers, so
   // that it can block the navigation if needed before other policy deciders
