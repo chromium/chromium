@@ -212,6 +212,18 @@ class UnretainedRefWrapper {
       "base/functional/disallow_unretained.h for alternatives.");
 
   explicit UnretainedRefWrapper(T& o) : ref_(o) {}
+
+  // Trick to only instantiate these constructors if they are used. Otherwise,
+  // instantiating UnretainedWrapper with a T that is not supported by
+  // raw_ref would trigger raw_ref<T>'s static_assert.
+  //
+  // This is only needed when <T, Trait, true> specialization isn't compiled in
+  // when MTECheckedPtr is enabled.
+  template <typename U = T, typename Traits>
+  explicit UnretainedRefWrapper(const raw_ref<U, Traits>& o) : ref_(o.get()) {}
+  template <typename U = T, typename Traits>
+  explicit UnretainedRefWrapper(raw_ref<U, Traits>&& o) : ref_(o.get()) {}
+
   T& get() const { return ref_; }
 
  private:
