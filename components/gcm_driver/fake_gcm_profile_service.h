@@ -18,6 +18,10 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
+namespace instance_id {
+class FakeGCMDriverForInstanceID;
+}  // namespace instance_id
+
 namespace gcm {
 
 // Acts as a bridge between GCM API and GCM Client layer for testing purposes.
@@ -26,7 +30,8 @@ class FakeGCMProfileService : public GCMProfileService {
   // Helper function to be used with KeyedServiceFactory::SetTestingFactory().
   static std::unique_ptr<KeyedService> Build(content::BrowserContext* context);
 
-  FakeGCMProfileService();
+  explicit FakeGCMProfileService(
+      std::unique_ptr<instance_id::FakeGCMDriverForInstanceID> fake_gcm_driver);
 
   FakeGCMProfileService(const FakeGCMProfileService&) = delete;
   FakeGCMProfileService& operator=(const FakeGCMProfileService&) = delete;
@@ -37,6 +42,8 @@ class FakeGCMProfileService : public GCMProfileService {
 
   void DispatchMessage(const std::string& app_id,
                        const IncomingMessage& message);
+
+  instance_id::FakeGCMDriverForInstanceID* GetFakeGCMDriver();
 
   const OutgoingMessage& last_sent_message() const {
     return last_sent_message_;

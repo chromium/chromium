@@ -23,7 +23,6 @@
 #include "chrome/browser/sync/test/integration/fake_server_invalidation_sender.h"
 #include "chrome/browser/sync/test/integration/invalidations/fake_server_sync_invalidation_sender.h"
 #include "chrome/common/buildflags.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/fake_server.h"
@@ -75,7 +74,6 @@ class FakeServer;
 }  // namespace fake_server
 
 namespace syncer {
-class FCMHandler;
 class SyncServiceImpl;
 }  // namespace syncer
 
@@ -445,8 +443,6 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // profiles within the FakeServerInvalidationSender.
   std::map<const Profile*, invalidation::FCMNetworkHandler*>
       profile_to_fcm_network_handler_map_;
-
-  std::map<const Profile*, syncer::FCMHandler*> profile_to_fcm_handler_map_;
 
   // Triggers a GetUpdates via refresh after a configuration.
   std::unique_ptr<ConfigurationRefresher> configuration_refresher_;

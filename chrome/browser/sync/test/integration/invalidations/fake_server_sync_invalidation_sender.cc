@@ -4,20 +4,13 @@
 
 #include "chrome/browser/sync/test/integration/invalidations/fake_server_sync_invalidation_sender.h"
 
-#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
+#include "base/logging.h"
 #include "base/time/time.h"
+#include "components/gcm_driver/instance_id/fake_gcm_driver_for_instance_id.h"
 #include "components/sync/base/time.h"
-#include "components/sync/invalidations/fcm_handler.h"
 
 namespace fake_server {
-
-namespace {
-
-// This has the same value as in
-// components/sync/invalidations/sync_invalidations_service_impl.cc.
-const char kSyncInvalidationsAppId[] = "com.google.chrome.sync.invalidations";
-
-}  // namespace
 
 FakeServerSyncInvalidationSender::FakeServerSyncInvalidationSender(
     FakeServer* fake_server)
@@ -28,30 +21,23 @@ FakeServerSyncInvalidationSender::FakeServerSyncInvalidationSender(
 
 FakeServerSyncInvalidationSender::~FakeServerSyncInvalidationSender() {
   fake_server_->RemoveObserver(this);
-
-  // Unsubscribe from all the remaining FCM handlers. This is mostly the case
-  // for Android platform.
-  for (syncer::FCMHandler* fcm_handler : fcm_handlers_) {
-    fcm_handler->RemoveTokenObserver(this);
+  for (instance_id::FakeGCMDriverForInstanceID* fake_gcm_driver :
+       fake_gcm_drivers_) {
+    fake_gcm_driver->RemoveConnectionObserver(this);
   }
 }
 
-void FakeServerSyncInvalidationSender::AddFCMHandler(
-    syncer::FCMHandler* fcm_handler) {
-  DCHECK(fcm_handler);
-  DCHECK(!base::Contains(fcm_handlers_, fcm_handler));
-
-  fcm_handlers_.push_back(fcm_handler);
-  fcm_handler->AddTokenObserver(this);
+void FakeServerSyncInvalidationSender::AddFakeGCMDriver(
+    instance_id::FakeGCMDriverForInstanceID* fake_gcm_driver) {
+  // It's safe to cast since SyncTest uses FakeGCMProfileService.
+  fake_gcm_drivers_.push_back(fake_gcm_driver);
+  fake_gcm_driver->AddConnectionObserver(this);
 }
 
-void FakeServerSyncInvalidationSender::RemoveFCMHandler(
-    syncer::FCMHandler* fcm_handler) {
-  DCHECK(fcm_handler);
-  DCHECK(base::Contains(fcm_handlers_, fcm_handler));
-
-  fcm_handler->RemoveTokenObserver(this);
-  base::Erase(fcm_handlers_, fcm_handler);
+void FakeServerSyncInvalidationSender::RemoveFakeGCMDriver(
+    instance_id::FakeGCMDriverForInstanceID* fake_gcm_driver) {
+  fake_gcm_driver->RemoveConnectionObserver(this);
+  base::Erase(fake_gcm_drivers_, fake_gcm_driver);
 }
 
 void FakeServerSyncInvalidationSender::OnWillCommit() {
@@ -92,18 +78,28 @@ void FakeServerSyncInvalidationSender::OnCommit(
   DeliverInvalidationsToHandlers();
 }
 
-void FakeServerSyncInvalidationSender::OnFCMRegistrationTokenChanged() {
+void FakeServerSyncInvalidationSender::OnConnected(
+    const net::IPEndPoint& ip_endpoint) {
+  // Try to deliver invalidations once GCMDriver is connected.
+  DVLOG(1) << "GCM driver connected";
   DeliverInvalidationsToHandlers();
 }
 
 void FakeServerSyncInvalidationSender::DeliverInvalidationsToHandlers() {
-  for (auto& token_and_invalidations : invalidations_to_deliver_) {
+  DVLOG(1) << "Trying to deliver invalidations for "
+           << invalidations_to_deliver_.size()
+           << " FCM tokens. Known target tokens from DeviceInfo: "
+           << token_to_interested_data_types_.size();
+  std::set<std::string> processed_tokens;
+  for (const auto& token_and_invalidations : invalidations_to_deliver_) {
     const std::string& token = token_and_invalidations.first;
-    // Pass a message to each FCMHandler to simulate a message from the
-    // GCMDriver.
+
+    // Pass a message to GCMDriver to simulate a message from the server.
     // TODO(crbug.com/1082115): Implement reflection blocking.
-    syncer::FCMHandler* fcm_handler = GetFCMHandlerByToken(token);
-    if (!fcm_handler) {
+    instance_id::FakeGCMDriverForInstanceID* fake_gcm_driver =
+        GetFakeGCMDriverByToken(token);
+    if (!fake_gcm_driver) {
+      DVLOG(1) << "Could not find FakeGCMDriver for token: " << token;
       continue;
     }
 
@@ -111,18 +107,37 @@ void FakeServerSyncInvalidationSender::DeliverInvalidationsToHandlers() {
          token_and_invalidations.second) {
       gcm::IncomingMessage message;
       message.raw_data = payload.SerializeAsString();
-      fcm_handler->OnMessage(kSyncInvalidationsAppId, message);
+      fake_gcm_driver->DispatchMessage(kSyncInvalidationsAppId, message);
     }
 
-    token_and_invalidations.second.clear();
+    processed_tokens.insert(token);
+  }
+
+  for (const std::string& token_to_remove : processed_tokens) {
+    invalidations_to_deliver_.erase(token_to_remove);
   }
 }
 
-syncer::FCMHandler* FakeServerSyncInvalidationSender::GetFCMHandlerByToken(
+instance_id::FakeGCMDriverForInstanceID*
+FakeServerSyncInvalidationSender::GetFakeGCMDriverByToken(
     const std::string& fcm_registration_token) const {
-  for (syncer::FCMHandler* fcm_handler : fcm_handlers_) {
-    if (fcm_registration_token == fcm_handler->GetFCMRegistrationToken()) {
-      return fcm_handler;
+  for (instance_id::FakeGCMDriverForInstanceID* fake_gcm_driver :
+       fake_gcm_drivers_) {
+#if !BUILDFLAG(IS_ANDROID)
+    // On Android platform FCM registration token is returned from Java
+    // implementation, so HasTokenForAppId() does not contain these tokens.
+    // Since Android does not support several profiles, for the simplicity just
+    // check for AppHandler registration.
+    if (!fake_gcm_driver->HasTokenForAppId(kSyncInvalidationsAppId,
+                                           fcm_registration_token)) {
+      continue;
+    }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+    // AppHandler may not be registered while SyncSetup() is not called yet, the
+    // server should keep invalidations to deliver them later.
+    if (fake_gcm_driver->GetAppHandler(kSyncInvalidationsAppId)) {
+      return fake_gcm_driver;
     }
   }
   return nullptr;

@@ -21,6 +21,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -36,7 +39,6 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
@@ -64,6 +66,7 @@
 #include "components/invalidation/impl/profile_identity_provider.h"
 #include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/invalidation/public/invalidation_service.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -75,7 +78,6 @@
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/engine/sync_scheduler_impl.h"
-#include "components/sync/invalidations/fcm_handler.h"
 #include "components/sync/invalidations/sync_invalidations_service_impl.h"
 #include "components/sync/test/fake_server_network_resources.h"
 #include "content/public/browser/navigation_entry.h"
@@ -206,6 +208,29 @@ invalidation::FCMNetworkHandler* GetFCMNetworkHandler(
 
   auto it = profile_to_fcm_network_handler_map->find(profile);
   return it != profile_to_fcm_network_handler_map->end() ? it->second : nullptr;
+}
+
+std::unique_ptr<KeyedService> CreateGCMProfileService(
+    content::BrowserContext* context) {
+  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
+
+  Profile* profile = Profile::FromBrowserContext(context);
+  auto service = std::make_unique<gcm::FakeGCMProfileService>(
+      std::make_unique<FakeSyncGCMDriver>(profile, blocking_task_runner));
+
+  service->GetFakeGCMDriver()->WaitForAppIdBeforeConnection(
+      fake_server::FakeServerSyncInvalidationSender::kSyncInvalidationsAppId);
+  return service;
+}
+
+instance_id::FakeGCMDriverForInstanceID* GetFakeGCMDriverForProfile(
+    Profile* profile) {
+  return static_cast<gcm::FakeGCMProfileService*>(
+             gcm::GCMProfileServiceFactory::GetForProfile(profile))
+      ->GetFakeGCMDriver();
 }
 
 }  // namespace
@@ -665,17 +690,8 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
     sync_service_impl->OverrideNetworkForTest(
         fake_server::CreateFakeServerHttpPostProviderFactory(
             GetFakeServer()->AsWeakPtr()));
-    // TODO(crbug.com/1331206): use GCM driver directly to deliver
-    // invalidations.
-    syncer::SyncInvalidationsServiceImpl* sync_invalidations_service =
-        static_cast<syncer::SyncInvalidationsServiceImpl*>(
-            SyncInvalidationsServiceFactory::GetForProfile(profile));
-    if (sync_invalidations_service) {
-      profile_to_fcm_handler_map_[profile] =
-          sync_invalidations_service->GetFCMHandlerForTesting();
-      fake_server_sync_invalidation_sender_->AddFCMHandler(
-          sync_invalidations_service->GetFCMHandlerForTesting());
-    }
+    fake_server_sync_invalidation_sender_->AddFakeGCMDriver(
+        GetFakeGCMDriverForProfile(profile));
   }
 
   SyncServiceImplHarness::SigninType signin_type =
@@ -907,7 +923,6 @@ void SyncTest::TearDownOnMainThread() {
              observer : fake_server_invalidation_observers_) {
       fake_server_->RemoveObserver(observer.get());
     }
-    profile_to_fcm_handler_map_.clear();
     fake_server_sync_invalidation_sender_.reset();
     fake_server_.reset();
   }
@@ -962,18 +977,13 @@ void SyncTest::OnProfileWillBeDestroyed(Profile* profile) {
     }
 
     CheckForDataTypeFailures(/*client_index=*/index);
+    fake_server_sync_invalidation_sender_->RemoveFakeGCMDriver(
+        GetFakeGCMDriverForProfile(profile));
     profiles_[index] = nullptr;
     clients_[index].reset();
 #if !BUILDFLAG(IS_ANDROID)
     DCHECK(!browsers_[index]);
 #endif  // !BUILDFLAG(IS_ANDROID)
-  }
-
-  if (fake_server_sync_invalidation_sender_) {
-    DCHECK(base::Contains(profile_to_fcm_handler_map_, profile));
-    fake_server_sync_invalidation_sender_->RemoveFCMHandler(
-        profile_to_fcm_handler_map_[profile]);
-    profile_to_fcm_handler_map_.erase(profile);
   }
 }
 
@@ -991,7 +1001,7 @@ void SyncTest::OnWillCreateBrowserContextServices(
           base::BindRepeating(&SyncTest::CreateProfileInvalidationProvider,
                               &profile_to_fcm_network_handler_map_));
   gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
-      context, base::BindRepeating(&FakeSyncGCMDriver::Build));
+      context, base::BindRepeating(&CreateGCMProfileService));
 }
 
 // static
@@ -1104,12 +1114,6 @@ void SyncTest::SetUpOnMainThread() {
           std::make_unique<fake_server::FakeServerSyncInvalidationSender>(
               fake_server_.get());
 
-      // Subscribe to invalidations for all the profiles which were created
-      // before. This is mainly the case on Android platform.
-      for (const auto& profile_and_fcm_handler : profile_to_fcm_handler_map_) {
-        fake_server_sync_invalidation_sender_->AddFCMHandler(
-            profile_and_fcm_handler.second);
-      }
       SetupMockGaiaResponses();
       SetupMockGaiaResponsesForProfile(
           ProfileManager::GetLastUsedProfileIfLoaded());

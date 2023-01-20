@@ -10,6 +10,8 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 
 namespace base {
@@ -34,6 +36,21 @@ class FakeGCMDriverForInstanceID : public gcm::FakeGCMDriver,
 
   // FakeGCMDriver overrides:
   gcm::InstanceIDHandler* GetInstanceIDHandlerInternal() override;
+  void AddConnectionObserver(gcm::GCMConnectionObserver* observer) override;
+  void RemoveConnectionObserver(gcm::GCMConnectionObserver* observer) override;
+  void AddAppHandler(const std::string& app_id,
+                     gcm::GCMAppHandler* handler) override;
+
+  // Expose protected method for testing.
+  using gcm::FakeGCMDriver::DispatchMessage;
+
+  // Returns true if the given |app_id| has the expected |token|. Note that
+  // tokens may be loaded before GCMDriver is connected.
+  bool HasTokenForAppId(const std::string& app_id,
+                        const std::string& token) const;
+
+  // GCMDriver will not connect until the given |app_id| is added.
+  void WaitForAppIdBeforeConnection(const std::string& app_id);
 
   const std::string& last_gettoken_app_id() const {
     return last_gettoken_app_id_;
@@ -69,7 +86,13 @@ class FakeGCMDriverForInstanceID : public gcm::FakeGCMDriver,
                          GetInstanceIDDataCallback callback) override;
 
  private:
+  // Stores generated FCM registration tokens to a file, to keep the same tokens
+  // across browser restarts in tests.
   void StoreTokensIfNeeded();
+
+  // Used to simulate connection of GCMDriver after adding the first
+  // GCMAppHandler.
+  void ConnectIfNeeded();
 
   std::string GenerateTokenImpl(const std::string& app_id,
                                 const std::string& authorized_entity,
@@ -83,6 +106,20 @@ class FakeGCMDriverForInstanceID : public gcm::FakeGCMDriver,
   std::string last_gettoken_app_id_;
   std::string last_gettoken_authorized_entity_;
   std::string last_deletetoken_app_id_;
+
+  // Simulate a connection to the server only after the given AppHandler has
+  // been added. This is required to prevent message loss in GCMDriver while
+  // dispatching a message.
+  // TODO(crbug.com/1408769): remove once GCMDriver fixes it.
+  std::string app_id_for_connection_;
+  bool connected_ = false;
+
+  base::ObserverList<gcm::GCMConnectionObserver,
+                     /*check_empty=*/false,
+                     /*allow_reentrancy=*/false>::Unchecked
+      connection_observers_;
+
+  base::WeakPtrFactory<FakeGCMDriverForInstanceID> weak_ptr_factory_{this};
 };
 
 }  // namespace instance_id

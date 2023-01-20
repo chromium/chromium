@@ -184,9 +184,17 @@ GCMProfileService::GCMProfileService(
 }
 #endif  // BUILDFLAG(USE_GCM_FROM_PLATFORM)
 
-GCMProfileService::GCMProfileService() {}
+GCMProfileService::GCMProfileService(std::unique_ptr<GCMDriver> gcm_driver)
+    : driver_(std::move(gcm_driver)) {
+#if !BUILDFLAG(USE_GCM_FROM_PLATFORM)
+  if (identity_observer_) {
+    identity_observer_ = std::make_unique<IdentityObserver>(
+        identity_manager_, url_loader_factory_, driver_.get());
+  }
+#endif  // !BUILDFLAG(USE_GCM_FROM_PLATFORM)
+}
 
-GCMProfileService::~GCMProfileService() {}
+GCMProfileService::~GCMProfileService() = default;
 
 void GCMProfileService::Shutdown() {
 #if !BUILDFLAG(USE_GCM_FROM_PLATFORM)
@@ -196,17 +204,6 @@ void GCMProfileService::Shutdown() {
     driver_->Shutdown();
     driver_.reset();
   }
-}
-
-void GCMProfileService::SetDriverForTesting(std::unique_ptr<GCMDriver> driver) {
-  driver_ = std::move(driver);
-
-#if !BUILDFLAG(USE_GCM_FROM_PLATFORM)
-  if (identity_observer_) {
-    identity_observer_ = std::make_unique<IdentityObserver>(
-        identity_manager_, url_loader_factory_, driver.get());
-  }
-#endif  // !BUILDFLAG(USE_GCM_FROM_PLATFORM)
 }
 
 }  // namespace gcm
