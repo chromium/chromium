@@ -17,6 +17,8 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/resources/grit/ui_resources.h"
@@ -75,11 +77,20 @@ void DownloadDialogView::AddHeader() {
 }
 
 void DownloadDialogView::AddFooter() {
-  auto* footer = AddChildView(std::make_unique<HoverButton>(
-      base::BindRepeating(&DownloadDialogView::ShowAllDownloads,
-                          base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_FOOTER_LINK)));
-  footer->SetBorder(views::CreateEmptyBorder(GetLayoutInsets(DOWNLOAD_ROW)));
+  // Do not display an icon in the primary position.
+  auto empty_primary_icon = std::make_unique<views::View>();
+  auto launch_icon_view = std::make_unique<views::ImageView>();
+  launch_icon_view->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kLaunchIcon, ui::kColorIconSecondary));
+
+  AddChildView(std::make_unique<HoverButton>(
+                   base::BindRepeating(&DownloadDialogView::ShowAllDownloads,
+                                       base::Unretained(this)),
+                   std::move(empty_primary_icon),
+                   l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_FOOTER_LINK),
+                   /*subtitle=*/std::u16string(), std::move(launch_icon_view),
+                   /*resize_row_for_secondary_view=*/false))
+      ->SetBorder(views::CreateEmptyBorder(GetLayoutInsets(DOWNLOAD_ROW)));
 }
 
 DownloadDialogView::DownloadDialogView(
