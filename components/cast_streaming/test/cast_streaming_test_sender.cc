@@ -142,10 +142,15 @@ void CastStreamingTestSender::Start(
 void CastStreamingTestSender::Stop() {
   VLOG(1) << __func__;
 
-  sender_session_.reset();
-  message_port_.reset();
+  // Senders must be deconstructed before the session that hosts them.
   audio_sender_observer_.reset();
   video_sender_observer_.reset();
+
+  // Disconnect the message port before destructing its client.
+  message_port_->ResetClient();
+  sender_session_.reset();
+  message_port_.reset();
+
   audio_decoder_config_.reset();
   video_decoder_config_.reset();
   has_startup_completed_ = false;

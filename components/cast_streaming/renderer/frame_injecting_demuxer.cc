@@ -403,6 +403,10 @@ void FrameInjectingDemuxer::Seek(base::TimeDelta time,
   std::move(status_cb).Run(media::PIPELINE_OK);
 }
 
+bool FrameInjectingDemuxer::IsSeekable() const {
+  return false;
+}
+
 void FrameInjectingDemuxer::Stop() {
   DVLOG(1) << __func__;
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());

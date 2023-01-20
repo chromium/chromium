@@ -567,7 +567,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Returns true if the player is hidden.
   bool IsHidden() const;
 
-  // Returns true if the player's source is streaming.
+  // Returns true if the player is in streaming mode, meaning that the source
+  // or the demuxer doesn't support timeline or seeking.
   bool IsStreaming() const;
 
   // Return whether |pipeline_metadata_| is compatible with an overlay. This

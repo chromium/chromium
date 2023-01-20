@@ -232,6 +232,7 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
   void StartWaitingForSeek(base::TimeDelta seek_time) override;
   void CancelPendingSeek(base::TimeDelta seek_time) override;
   void Seek(base::TimeDelta time, PipelineStatusCallback cb) override;
+  bool IsSeekable() const override;
   base::Time GetTimelineOffset() const override;
   std::vector<DemuxerStream*> GetAllStreams() override;
   base::TimeDelta GetStartTime() const override;

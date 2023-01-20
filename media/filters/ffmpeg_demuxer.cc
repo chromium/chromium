@@ -1068,6 +1068,10 @@ void FFmpegDemuxer::Seek(base::TimeDelta time, PipelineStatusCallback cb) {
                                     weak_factory_.GetWeakPtr()));
 }
 
+bool FFmpegDemuxer::IsSeekable() const {
+  return true;
+}
+
 void FFmpegDemuxer::SeekInternal(base::TimeDelta time,
                                  base::OnceClosure seek_cb) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());

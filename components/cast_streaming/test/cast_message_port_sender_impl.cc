@@ -25,6 +25,11 @@ CastMessagePortSenderImpl::CastMessagePortSenderImpl(
 CastMessagePortSenderImpl::~CastMessagePortSenderImpl() = default;
 
 void CastMessagePortSenderImpl::MaybeClose() {
+  // We may be called multiple times, but only want to close once.
+  if (is_closed_) {
+    return;
+  }
+
   if (message_port_) {
     message_port_.reset();
   }
@@ -35,6 +40,7 @@ void CastMessagePortSenderImpl::MaybeClose() {
       std::move(on_close_).Run();
     }
   }
+  is_closed_ = true;
 }
 
 void CastMessagePortSenderImpl::SetClient(

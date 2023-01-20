@@ -238,6 +238,7 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   void Initialize(DemuxerHost* host, PipelineStatusCallback init_cb) override;
   void Stop() override;
   void Seek(base::TimeDelta time, PipelineStatusCallback cb) override;
+  bool IsSeekable() const override;
   base::Time GetTimelineOffset() const override;
   std::vector<DemuxerStream*> GetAllStreams() override;
   base::TimeDelta GetStartTime() const override;

@@ -50,6 +50,7 @@ class CastMessagePortSenderImpl final
   std::unique_ptr<cast_api_bindings::MessagePort> message_port_;
   base::OnceClosure on_close_;
   base::OnceClosure on_system_sender_message_received_;
+  bool is_closed_ = false;
 };
 
 }  // namespace cast_streaming

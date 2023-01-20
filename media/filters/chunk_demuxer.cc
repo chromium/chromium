@@ -580,6 +580,10 @@ void ChunkDemuxer::Seek(base::TimeDelta time, PipelineStatusCallback cb) {
   RunSeekCB_Locked(PIPELINE_OK);
 }
 
+bool ChunkDemuxer::IsSeekable() const {
+  return true;
+}
+
 // Demuxer implementation.
 base::Time ChunkDemuxer::GetTimelineOffset() const {
   return timeline_offset_;

@@ -140,7 +140,7 @@ class MEDIA_EXPORT DemuxerManager {
   bool HasDemuxerOverride() const;
   absl::optional<GURL> GetDataSourceUrlAfterRedirects() const;
   bool DataSourceFullyBuffered() const;
-  bool IsStreamingDataSource() const;
+  bool IsStreaming() const;
   bool PassedDataSourceTimingAllowOriginCheck() const;
 
  private:

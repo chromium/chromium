@@ -366,10 +366,6 @@ class WebMediaPlayerImplTest
         .WillByDefault(ReturnRef(surface_id_));
   }
 
-  void InitializeWebMediaPlayerImpl() {
-    InitializeWebMediaPlayerImplInternal(nullptr);
-  }
-
   WebMediaPlayerImplTest(const WebMediaPlayerImplTest&) = delete;
   WebMediaPlayerImplTest& operator=(const WebMediaPlayerImplTest&) = delete;
 
@@ -390,8 +386,8 @@ class WebMediaPlayerImplTest
   }
 
  protected:
-  void InitializeWebMediaPlayerImplInternal(
-      std::unique_ptr<media::Demuxer> demuxer_override) {
+  void InitializeWebMediaPlayerImpl(
+      std::unique_ptr<media::Demuxer> demuxer_override = nullptr) {
     auto media_log = std::make_unique<NiceMock<media::MockMediaLog>>();
     InitializeSurfaceLayerBridge();
 
@@ -595,6 +591,8 @@ class WebMediaPlayerImplTest
 
   bool IsSuspended() { return wmpi_->pipeline_controller_->IsSuspended(); }
 
+  bool IsStreaming() const { return wmpi_->IsStreaming(); }
+
   int64_t GetDataSourceMemoryUsage() const {
     return wmpi_->demuxer_manager_->GetDataSourceMemoryUsage();
   }
@@ -748,14 +746,20 @@ class WebMediaPlayerImplTest
     // to the WebAssociatedURLLoaderClient handed out by the DataSource after it
     // requests loading of a resource. We then use that client as if we are the
     // network stack and "serve" an in memory file to the DataSource.
+    const bool should_have_client =
+        !wmpi_->demuxer_manager_->HasDemuxerOverride();
     WebAssociatedURLLoaderClient* client = nullptr;
-    EXPECT_CALL(mock_resource_fetch_context_, CreateUrlLoader(_))
-        .WillRepeatedly(Invoke([&client](const WebAssociatedURLLoaderOptions&) {
-          auto a = std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
-          EXPECT_CALL(*a, LoadAsynchronously(_, _))
-              .WillRepeatedly(testing::SaveArg<1>(&client));
-          return a;
-        }));
+    if (should_have_client) {
+      EXPECT_CALL(mock_resource_fetch_context_, CreateUrlLoader(_))
+          .WillRepeatedly(
+              Invoke([&client](const WebAssociatedURLLoaderOptions&) {
+                auto a =
+                    std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
+                EXPECT_CALL(*a, LoadAsynchronously(_, _))
+                    .WillRepeatedly(testing::SaveArg<1>(&client));
+                return a;
+              }));
+    }
 
     wmpi_->Load(WebMediaPlayer::kLoadTypeURL,
                 WebMediaPlayerSource(WebURL(kTestURL)),
@@ -763,6 +767,10 @@ class WebMediaPlayerImplTest
                 /*is_cache_disabled=*/false);
 
     base::RunLoop().RunUntilIdle();
+    if (!should_have_client) {
+      return;
+    }
+    EXPECT_TRUE(client);
 
     // Load a real media file into memory.
     scoped_refptr<media::DecoderBuffer> data =
@@ -1594,6 +1602,24 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_Streaming) {
   EXPECT_FALSE(state.is_memory_reporting_enabled);
 }
 
+TEST_F(WebMediaPlayerImplTest, IsStreamingIfDemuxerDoesntSupportSeeking) {
+  std::unique_ptr<media::MockDemuxer> demuxer =
+      std::make_unique<NiceMock<media::MockDemuxer>>();
+  ON_CALL(*demuxer, IsSeekable()).WillByDefault(Return(false));
+  InitializeWebMediaPlayerImpl(std::move(demuxer));
+  Load(kVideoOnlyTestFile);
+  EXPECT_TRUE(IsStreaming());
+}
+
+TEST_F(WebMediaPlayerImplTest, IsNotStreamingIfDemuxerSupportsSeeking) {
+  std::unique_ptr<media::MockDemuxer> demuxer =
+      std::make_unique<NiceMock<media::MockDemuxer>>();
+  ON_CALL(*demuxer, IsSeekable()).WillByDefault(Return(true));
+  InitializeWebMediaPlayerImpl(std::move(demuxer));
+  Load(kVideoOnlyTestFile);
+  EXPECT_FALSE(IsStreaming());
+}
+
 TEST_F(WebMediaPlayerImplTest, ResumeEnded) {
   media::PipelineMetadata metadata;
   metadata.has_video = true;
@@ -2334,7 +2360,7 @@ TEST_F(WebMediaPlayerImplTest, DISABLED_DemuxerOverride) {
   // Called when WebMediaPlayerImpl is destroyed.
   EXPECT_CALL(*demuxer.get(), Stop());
 
-  InitializeWebMediaPlayerImplInternal(std::move(demuxer));
+  InitializeWebMediaPlayerImpl(std::move(demuxer));
 
   EXPECT_FALSE(IsSuspended());
   wmpi_->Load(WebMediaPlayer::kLoadTypeURL,

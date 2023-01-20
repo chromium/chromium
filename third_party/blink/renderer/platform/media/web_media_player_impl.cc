@@ -3378,7 +3378,7 @@ bool WebMediaPlayerImpl::IsHidden() const {
 }
 
 bool WebMediaPlayerImpl::IsStreaming() const {
-  return demuxer_manager_->IsStreamingDataSource();
+  return demuxer_manager_->IsStreaming();
 }
 
 bool WebMediaPlayerImpl::DoesOverlaySupportMetadata() const {

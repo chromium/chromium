@@ -13,8 +13,11 @@ found in the LICENSE file.
     video.onerror = function() {
       document.title = "error";
     }
-    video.oncanplay = function() {
-      document.title = "canplay";
+
+    // We currently don't actually load any video, so just want to make sure
+    // that the web video player has successfully loaded the metadata.
+    video.onloadedmetadata = function() {
+      document.title = "loadedmetadata";
     }
   </script>
 </body>

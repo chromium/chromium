@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(CastStreamingTest, LoadSuccess) {
                                        page_url.spec()));
 
   ASSERT_TRUE(sender.RunUntilActive());
-  frame.navigation_listener().RunUntilTitleEquals("canplay");
+  frame.navigation_listener().RunUntilTitleEquals("loadedmetadata");
 
   EXPECT_TRUE(post_result.Wait());
   EXPECT_NE(sender.audio_decoder_config(), absl::nullopt);
@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(CastStreamingTest, VideoOnlyReceiver) {
                                        kPageUrl.spec()));
 
   ASSERT_TRUE(sender.RunUntilActive());
-  frame.navigation_listener().RunUntilTitleEquals("canplay");
+  frame.navigation_listener().RunUntilTitleEquals("loadedmetadata");
 
   EXPECT_TRUE(post_result.Wait());
   EXPECT_EQ(sender.audio_decoder_config(), absl::nullopt);

@@ -72,6 +72,11 @@ void MediaUrlDemuxer::Seek(base::TimeDelta time,
                          base::BindOnce(std::move(status_cb), PIPELINE_OK));
 }
 
+bool MediaUrlDemuxer::IsSeekable() const {
+  // While the demuxer itself is not seekable, the underlying player is.
+  return true;
+}
+
 void MediaUrlDemuxer::Stop() {}
 
 void MediaUrlDemuxer::AbortPendingReads() {}

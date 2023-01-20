@@ -54,6 +54,7 @@ class FrameInjectingDemuxer final : public media::Demuxer {
   void CancelPendingSeek(base::TimeDelta seek_time) override;
   void Seek(base::TimeDelta time,
             media::PipelineStatusCallback status_cb) override;
+  bool IsSeekable() const override;
   void Stop() override;
   base::TimeDelta GetStartTime() const override;
   base::Time GetTimelineOffset() const override;

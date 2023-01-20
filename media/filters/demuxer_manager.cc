@@ -354,10 +354,10 @@ PipelineStatus DemuxerManager::CreateDemuxer(
   // after metadata is reached - in this case we'll have to do a normal startup.
   if (demuxer_->GetDemuxerType() == DemuxerType::kChunkDemuxer ||
       preload != DataSource::METADATA || client_->CouldPlayIfEnoughData() ||
-      IsStreamingDataSource()) {
+      IsStreaming()) {
     return std::move(on_demuxer_created)
-        .Run(demuxer_.get(), Pipeline::StartType::kNormal,
-             IsStreamingDataSource(), is_static);
+        .Run(demuxer_.get(), Pipeline::StartType::kNormal, IsStreaming(),
+             is_static);
   }
 
   // We can only do a universal suspend for posters, unless the flag is enabled.
@@ -366,7 +366,7 @@ PipelineStatus DemuxerManager::CreateDemuxer(
     suspended_mode = Pipeline::StartType::kSuspendAfterMetadata;
   }
   return std::move(on_demuxer_created)
-      .Run(demuxer_.get(), suspended_mode, IsStreamingDataSource(), is_static);
+      .Run(demuxer_.get(), suspended_mode, IsStreaming(), is_static);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -451,8 +451,9 @@ bool DemuxerManager::DataSourceFullyBuffered() const {
   return data_source_ && data_source_->AssumeFullyBuffered();
 }
 
-bool DemuxerManager::IsStreamingDataSource() const {
-  return data_source_ && data_source_->IsStreaming();
+bool DemuxerManager::IsStreaming() const {
+  return (data_source_ && data_source_->IsStreaming()) ||
+         (demuxer_ && !demuxer_->IsSeekable());
 }
 
 bool DemuxerManager::PassedDataSourceTimingAllowOriginCheck() const {

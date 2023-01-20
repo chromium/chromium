@@ -482,6 +482,10 @@ void StreamProvider::Seek(base::TimeDelta time,
                                base::BindOnce(std::move(seek_cb), PIPELINE_OK));
 }
 
+bool StreamProvider::IsSeekable() const {
+  return false;
+}
+
 void StreamProvider::Stop() {}
 
 base::TimeDelta StreamProvider::GetStartTime() const {
