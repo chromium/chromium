@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.user_education.IPHCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.feature_engagement.FeatureConstants;
 
 import java.util.HashMap;
@@ -56,7 +55,6 @@ import java.util.Set;
 @Config(shadows = {ToggleTabStackButtonCoordinatorTest.ShadowChromeFeatureList.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 @DisableFeatures(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS)
-@EnableFeatures(ChromeFeatureList.ENABLE_IPH)
 public class ToggleTabStackButtonCoordinatorTest {
     private static final ToolbarIntentMetadata DEFAULT_INTENT_METADATA =
             new ToolbarIntentMetadata(/*isMainIntent*/ true, /*isIntentWithEffect*/ false);

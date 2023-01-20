@@ -24,8 +24,6 @@ BASE_DECLARE_FEATURE(kUseClientConfigIPH);
 // A feature to ensure all arrays can contain at least one feature.
 BASE_DECLARE_FEATURE(kIPHDummyFeature);
 
-BASE_DECLARE_FEATURE(kEnableIPH);
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 BASE_DECLARE_FEATURE(kIPHBatterySaverModeFeature);

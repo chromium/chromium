@@ -280,7 +280,6 @@ public final class ShareSheetBottomSheetContentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.ENABLE_IPH})
     @Features.DisableFeatures(
             {ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS, ChromeFeatureList.SNOOZABLE_IPH})
     public void

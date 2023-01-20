@@ -33,14 +33,12 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IPHCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.Features.JUnitProcessor;
 
 /** Unit test for {@link ReadLaterIPHController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @DisableFeatures({ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS})
-@EnableFeatures({ChromeFeatureList.ENABLE_IPH})
 public class ReadLaterIPHControllerUnitTest {
     @Rule
     public TestRule mFeaturesProcessor = new JUnitProcessor();

@@ -233,10 +233,6 @@ public class IPHCommandBuilder {
      * @return an (@see IPHCommand) containing the accumulated state of this builder.
      */
     public IPHCommand build() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_IPH)) {
-            return null;
-        }
-
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS)) {
             return buildLazy();
         }

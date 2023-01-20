@@ -125,7 +125,6 @@ import java.util.List;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.EnableFeatures(ChromeFeatureList.ENABLE_IPH)
 public class AppBannerManagerTest {
     @Rule
     public ChromeTabbedActivityTestRule mTabbedActivityTestRule =

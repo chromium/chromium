@@ -6925,10 +6925,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kLensCameraAssistedSearch,
                                     kLensCameraAssistedSearchVariations,
                                     "LensCameraAssistedSearch")},
-
-    {"enable-iph", flag_descriptions::kEnableIphName,
-     flag_descriptions::kEnableIphDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(feature_engagement::kEnableIPH)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"autofill-always-return-cloud-tokenized-card",
