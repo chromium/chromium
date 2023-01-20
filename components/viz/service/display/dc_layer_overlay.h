@@ -126,8 +126,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
       const gfx::RectF& display_rect,
       AggregatedRenderPass* render_pass,
       const QuadList::Iterator& it,
-      const gfx::Rect& quad_rectangle_in_target_space,
-      const gfx::Rect& occluding_damage_rect,
+      const gfx::Rect& quad_rectangle_in_root_space,
       bool is_overlay,
       QuadList::Iterator* new_it,
       size_t* new_index,
@@ -138,13 +137,10 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // Returns an iterator to the element after |it|.
   QuadList::Iterator ProcessForOverlay(const gfx::RectF& display_rect,
                                        AggregatedRenderPass* render_pass,
-                                       const gfx::Rect& quad_rectangle,
-                                       const QuadList::Iterator& it,
-                                       gfx::Rect* damage_rect);
+                                       const QuadList::Iterator& it);
   void ProcessForUnderlay(const gfx::RectF& display_rect,
                           AggregatedRenderPass* render_pass,
                           const gfx::Rect& quad_rectangle,
-                          const gfx::Rect& occluding_damage_rect,
                           const QuadList::Iterator& it,
                           size_t processed_overlay_count,
                           gfx::Rect* damage_rect,
@@ -153,10 +149,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   void UpdateRootDamageRect(const gfx::RectF& display_rect,
                             gfx::Rect* damage_rect);
 
-  void RemoveOverlayDamageRect(const QuadList::Iterator& it,
-                               const gfx::Rect& quad_rectangle,
-                               const gfx::Rect& occluding_damage_rect,
-                               gfx::Rect* damage_rect);
+  void RemoveOverlayDamageRect(const QuadList::Iterator& it);
 
   void InsertDebugBorderDrawQuad(
       const std::vector<DCLayerOverlayCandidate>* dc_layer_overlays,

@@ -236,6 +236,8 @@ class DCLayerOverlayTest : public testing::Test {
     output_surface_ = nullptr;
   }
 
+  void TestRenderPassRootTransform(bool is_overlay);
+
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<MockDCLayerOutputSurface> output_surface_;
   cc::FakeOutputSurfaceClient output_surface_client_;
@@ -1206,6 +1208,86 @@ TEST_F(DCLayerOverlayTest, VideoCapture) {
     auto* root_pass = pass_list.back().get();
     int quad_count = root_pass->quad_list.size();
     EXPECT_EQ(2, quad_count);
+  }
+}
+
+TEST_F(DCLayerOverlayTest, RenderPassRootTransformOverlay) {
+  TestRenderPassRootTransform(/*is_overlay*/ true);
+}
+
+TEST_F(DCLayerOverlayTest, RenderPassRootTransformUnderlay) {
+  TestRenderPassRootTransform(/*is_overlay*/ false);
+}
+
+// Tests processing overlays/underlays in a render pass that contains a
+// non-identity transform to root.
+void DCLayerOverlayTest::TestRenderPassRootTransform(bool is_overlay) {
+  const gfx::Rect kOutputRect = gfx::Rect(0, 0, 256, 256);
+  const gfx::Rect kVideoRect = gfx::Rect(0, 0, 100, 100);
+  const gfx::Rect kOpaqueRect = gfx::Rect(90, 80, 15, 30);
+  const gfx::Transform kRenderPassToRootTransform =
+      gfx::Transform::MakeTranslation(27, 45);
+  const SurfaceDamageRectList kSurfaceDamageRectList = {
+      gfx::Rect(25, 20, 10, 10),    // above overlay
+      gfx::Rect(27, 45, 100, 100),  // damage rect of video overlay
+      gfx::Rect(30, 25, 50, 50)};   // below overlay
+  const size_t kOverlayDamageIndex = 1;
+
+  for (size_t frame = 0; frame < 3; frame++) {
+    auto pass = CreateRenderPass();
+    pass->transform_to_root_target = kRenderPassToRootTransform;
+    pass->shared_quad_state_list.back()->overlay_damage_index =
+        kOverlayDamageIndex;
+
+    if (!is_overlay) {
+      // Create a quad that occludes the video to force it to an underlay.
+      CreateOpaqueQuadAt(resource_provider_.get(),
+                         pass->shared_quad_state_list.back(), pass.get(),
+                         kOpaqueRect, SkColors::kWhite);
+    }
+
+    auto* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+    video_quad->rect = gfx::Rect(kVideoRect);
+    video_quad->visible_rect = video_quad->rect;
+
+    std::vector<DCLayerOverlayCandidate> dc_layer_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list = kSurfaceDamageRectList;
+
+    damage_rect_ = kOutputRect;
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), nullptr, &dc_layer_list,
+        &damage_rect_, &content_bounds_);
+    LOG(INFO) << damage_rect_.ToString();
+
+    EXPECT_EQ(dc_layer_list.size(), 1u);
+    EXPECT_EQ(dc_layer_list[0].transform, kRenderPassToRootTransform);
+    if (is_overlay) {
+      EXPECT_GT(dc_layer_list[0].z_order, 0);
+    } else {
+      EXPECT_LT(dc_layer_list[0].z_order, 0);
+    }
+
+    if (frame == 0) {
+      // On the first frame, the damage rect should be unchanged since the
+      // overlays are being processed for the first time.
+      EXPECT_EQ(gfx::Rect(0, 0, 256, 256), damage_rect_);
+    } else {
+      // With the render pass to root transform, the video overlay should have
+      // been translated to (27,45 100x100). The final damage rect should
+      // include (25,20 10x10), which doesn't intersect the overlay. The
+      // (30,25 50x50) surface damage is partially under the overlay, so the
+      // overlay damage can be subtracted to become (30,25 50x15). The final
+      // damage rect is (25,20 10x10) union (30,25 50x15).
+      EXPECT_EQ(damage_rect_, gfx::Rect(25, 20, 55, 25));
+    }
   }
 }
 
