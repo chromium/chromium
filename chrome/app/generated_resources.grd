@@ -2220,6 +2220,14 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DOWNLOAD_TOAST_CLEARED_ALL" desc="Toast message for clearing all download entries">
         Cleared all
       </message>
+      <message name="IDS_DOWNLOAD_DEEP_SCAN"
+               desc="In the download view, the 'Scan' button when prompt for deep scan">
+        Scan
+      </message>
+      <message name="IDS_DOWNLOAD_BYPASS_DEEP_SCAN"
+               desc="In the download view, the 'Open' button when prompt for deep scan">
+        Open
+      </message>
 
 
       <!-- Download Alerts for Accessibility -->

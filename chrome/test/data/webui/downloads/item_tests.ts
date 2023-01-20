@@ -114,6 +114,17 @@ suite('item tests', function() {
     assertEquals(item.shadowRoot!.querySelector('#openNow'), null);
   });
 
+  test('deep scan buttons shown on correct state', async () => {
+    item.set('data', createDownload({
+               filePath: 'unique1',
+               hideDate: false,
+               state: States.PROMPT_FOR_SCANNING,
+             }));
+    flush();
+    assertNotEquals(item.shadowRoot!.querySelector('#deepScan'), null);
+    assertNotEquals(item.shadowRoot!.querySelector('#bypassDeepScan'), null);
+  });
+
   test('undo is shown in toast', () => {
     item.data = createDownload({hideDate: false});
     toastManager.show('', /* hideSlotted= */ true);

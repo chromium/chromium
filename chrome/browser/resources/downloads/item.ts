@@ -137,6 +137,12 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         value: false,
       },
 
+      showDeepScan_: {
+        computed: 'computeShowDeepScan_(data.state)',
+        type: Boolean,
+        value: false,
+      },
+
       useFileIcon_: Boolean,
     };
   }
@@ -302,7 +308,8 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
       case States.ASYNC_SCANNING:
         return loadTimeData.getString('asyncScanningDownloadDesc');
-
+      case States.PROMPT_FOR_SCANNING:
+        return loadTimeData.getString('promptForScanningDesc');
       case States.IN_PROGRESS:
       case States.PAUSED:  // Fallthrough.
         return data.progressStatusText;
@@ -342,6 +349,10 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       if (this.data.state === States.ASYNC_SCANNING) {
         return 'cr:info';
       }
+
+      if (this.data.state === States.PROMPT_FOR_SCANNING) {
+        return 'cr:warning';
+      }
     }
     if (this.isDangerous_) {
       return 'cr:error';
@@ -372,6 +383,10 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
       if (this.data.state === States.ASYNC_SCANNING) {
         return 'grey';
+      }
+
+      if (this.data.state === States.PROMPT_FOR_SCANNING) {
+        return 'yellow';
       }
     }
     if (this.isDangerous_) {
@@ -455,12 +470,17 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   private computeShowProgress_(): boolean {
     return this.showCancel_ && this.data.percent >= -1 &&
-        this.data.state !== States.ASYNC_SCANNING;
+        this.data.state !== States.ASYNC_SCANNING &&
+        this.data.state !== States.PROMPT_FOR_SCANNING;
   }
 
   private computeShowOpenNow_(): boolean {
     const allowOpenNow = loadTimeData.getBoolean('allowOpenNow');
     return this.data.state === States.ASYNC_SCANNING && allowOpenNow;
+  }
+
+  private computeShowDeepScan_(): boolean {
+    return this.data.state === States.PROMPT_FOR_SCANNING;
   }
 
   private computeTag_(): string {
@@ -512,6 +532,8 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       this.useFileIcon_ = false;
     } else if (this.data.state === States.ASYNC_SCANNING) {
       this.useFileIcon_ = false;
+    } else if (this.data.state === States.PROMPT_FOR_SCANNING) {
+      this.useFileIcon_ = false;
     } else {
       this.$.url.href = this.data.url;
       const path = this.data.filePath;
@@ -537,6 +559,14 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   private onOpenNowTap_() {
     this.mojoHandler_!.openDuringScanningRequiringGesture(this.data.id);
+  }
+
+  private onDeepScanTap_() {
+    this.mojoHandler_!.deepScan(this.data.id);
+  }
+
+  private onBypassDeepScanTap_() {
+    this.mojoHandler_!.bypassDeepScanRequiringGesture(this.data.id);
   }
 
   private onReviewDangerousTap_() {

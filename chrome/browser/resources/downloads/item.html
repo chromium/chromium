@@ -277,7 +277,8 @@
 
   #pauseOrResume,
   #dangerous .action-button,
-  #openNow {
+  #openNow,
+  #deepScan {
     margin-inline-end: 8px;
   }
 </style>
@@ -368,6 +369,20 @@
           <cr-button on-click="onOpenNowTap_" id="openNow" class="action-button"
                      focus-row-control focus-type="open">
             $i18n{controlOpenNow}
+          </cr-button>
+        </span>
+      </template>
+      <template is="dom-if" if="[[showDeepScan_]]" restamp>
+        <span role="gridcell">
+          <cr-button on-click="onDeepScanTap_" id="deepScan"
+                     class="action-button" focus-row-control focus-type="open">
+            $i18n{controlDeepScan}
+          </cr-button>
+        </span>
+        <span role="gridcell">
+          <cr-button on-click="onBypassDeepScanTap_" id="bypassDeepScan"
+                     focus-row-control focus-type="open">
+            $i18n{controlBypassDeepScan}
           </cr-button>
         </span>
       </template>

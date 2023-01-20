@@ -282,13 +282,16 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
 
   switch (download_item->GetState()) {
     case download::DownloadItem::IN_PROGRESS: {
-      if (download_item->IsDangerous()) {
-        state = "DANGEROUS";
-      } else if (download_item->IsInsecure()) {
-        state = "INSECURE";
+      if (download_item->GetDangerType() ==
+          download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
+        state = "PROMPT_FOR_SCANNING";
       } else if (download_item->GetDangerType() ==
                  download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
         state = "ASYNC_SCANNING";
+      } else if (download_item->IsDangerous()) {
+        state = "DANGEROUS";
+      } else if (download_item->IsInsecure()) {
+        state = "INSECURE";
       } else if (download_item->IsPaused()) {
         state = "PAUSED";
       } else {

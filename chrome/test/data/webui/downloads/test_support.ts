@@ -55,6 +55,8 @@ class FakePageHandler implements PageHandlerInterface {
   openDownloadsFolderRequiringGesture() {}
   openDuringScanningRequiringGesture(_id: string) {}
   reviewDangerousRequiringGesture(_id: string) {}
+  deepScan(_id: string) {}
+  bypassDeepScanRequiringGesture(_id: string) {}
 }
 
 export class TestIconLoader extends TestBrowserProxy implements IconLoader {

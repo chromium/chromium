@@ -731,10 +731,13 @@ Permissions you've already given to websites and apps may apply to this account.
          desc="Message shown to the user on chrome://downloads page to explain that this download is blocked because it is malware.">
         This file is dangerous, so Chrome has blocked it.
       </message>
-
       <message name="IDS_BLOCK_REASON_UNWANTED_DOWNLOAD"
          desc="Message shown to the user on chrome://downloads page to explain that this download is blocked because it is unwanted sofware.">
         This file may be dangerous, so Chrome has blocked it.
+      </message>
+      <message name="IDS_BLOCK_REASON_PROMPT_FOR_SCANNING"
+         desc="Message shown to the user on chrome://downloads page to explain that this download is recommended to be scanned.">
+        Chrome recommends scanning this file because it may be dangerous.
       </message>
 
       <!-- Abandon in-progress downloads confirmation dialog -->

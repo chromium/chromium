@@ -78,6 +78,8 @@ enum DownloadsDOMEvent {
   DOWNLOADS_DOM_EVENT_RETRY_DOWNLOAD = 12,
   DOWNLOADS_DOM_EVENT_OPEN_DURING_SCANNING = 13,
   DOWNLOADS_DOM_EVENT_REVIEW_DANGEROUS = 14,
+  DOWNLOADS_DOM_EVENT_DEEP_SCAN = 15,
+  DOWNLOADS_DOM_EVENT_BYPASS_DEEP_SCAN = 16,
   DOWNLOADS_DOM_EVENT_MAX
 };
 
@@ -414,6 +416,33 @@ void DownloadsDOMHandler::OpenDuringScanningRequiringGesture(
 #if BUILDFLAG(FULL_SAFE_BROWSING)
     model.CompleteSafeBrowsingScan();
 #endif
+  }
+}
+
+void DownloadsDOMHandler::DeepScan(const std::string& id) {
+  CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_DEEP_SCAN);
+  download::DownloadItem* download = GetDownloadByStringId(id);
+  if (download) {
+    DownloadItemModel model(download);
+    DownloadCommands commands(model.GetWeakPtr());
+    commands.ExecuteCommand(DownloadCommands::DEEP_SCAN);
+  }
+}
+
+void DownloadsDOMHandler::BypassDeepScanRequiringGesture(
+    const std::string& id) {
+  if (!GetWebUIWebContents()->HasRecentInteraction()) {
+    LOG(ERROR) << "BypassDeepScanRequiringGesture received without recent "
+                  "user interaction";
+    return;
+  }
+
+  CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_BYPASS_DEEP_SCAN);
+  download::DownloadItem* download = GetDownloadByStringId(id);
+  if (download) {
+    DownloadItemModel model(download);
+    DownloadCommands commands(model.GetWeakPtr());
+    commands.ExecuteCommand(DownloadCommands::BYPASS_DEEP_SCANNING);
   }
 }
 

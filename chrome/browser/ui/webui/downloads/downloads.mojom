@@ -71,6 +71,13 @@ interface PageHandler {
   // received a warning deep scanning verdict. This requires a user gesture on
   // the WebUI.
   ReviewDangerousRequiringGesture(string id);
+
+  // Performs deep scan for the download with the given |id|.
+  DeepScan(string id);
+
+  // Bypass deep scan for download with the given |id|. This requires a user
+  // gesture on the WebUI.
+  BypassDeepScanRequiringGesture(string id);
 };
 
 interface Page {

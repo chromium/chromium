@@ -28514,6 +28514,9 @@ Called by update_document_policy_enum.py.-->
   <int value="11" label="Resume"/>
   <int value="12" label="RetryDownload"/>
   <int value="13" label="OpenDuringScanning"/>
+  <int value="14" label="ReviewDangerous"/>
+  <int value="15" label="DeepScan"/>
+  <int value="16" label="BypassDeepScan"/>
 </enum>
 
 <enum name="DownloadedFileAction">
