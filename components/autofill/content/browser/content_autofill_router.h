@@ -23,7 +23,6 @@
 
 namespace autofill {
 
-class AutofillableData;
 class ContentAutofillDriver;
 
 // ContentAutofillRouter routes events between ContentAutofillDriver objects in
@@ -275,16 +274,6 @@ class ContentAutofillRouter {
                        const FormData& form,
                        const FormFieldData& field,
                        const std::u16string& old_value));
-
-  // Event called by Autofill Assistant as if it was called by the renderer.
-  void FillFormForAssistant(ContentAutofillDriver* source,
-                            const AutofillableData& fill_data,
-                            const FormData& form,
-                            const FormFieldData& field,
-                            void (*callback)(ContentAutofillDriver* target,
-                                             const AutofillableData& fill_data,
-                                             const FormData& form,
-                                             const FormFieldData& fiel));
 
   // Event called when the context menu is opened on a field.
   void OnContextMenuShownInField(

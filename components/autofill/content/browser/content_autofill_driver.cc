@@ -15,7 +15,6 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/content_autofill_router.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/data_model/autofillable_data.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -526,30 +525,6 @@ void ContentAutofillDriver::JavaScriptChangedAutofilledValue(
          const FormFieldData& field, const std::u16string& old_value) {
         target->autofill_manager_->OnJavaScriptChangedAutofilledValue(
             form, field, old_value);
-      });
-}
-
-void ContentAutofillDriver::FillFormForAssistant(
-    const AutofillableData& fill_data,
-    const FormData& raw_form,
-    const FormFieldData& raw_field) {
-  FormData form = raw_form;
-  FormFieldData field = raw_field;
-  SetFrameAndFormMetaData(form, &field);
-  autofill_router().FillFormForAssistant(
-      this, fill_data, form, field,
-      [](ContentAutofillDriver* target, const AutofillableData& fill_data,
-         const FormData& form, const FormFieldData& field) {
-        DCHECK(target->autofill_manager_);
-        if (fill_data.is_profile()) {
-          target->autofill_manager_->FillProfileForm(fill_data.profile(), form,
-                                                     field);
-        } else if (fill_data.is_credit_card()) {
-          target->autofill_manager_->FillCreditCardForm(
-              form, field, fill_data.credit_card(), fill_data.cvc());
-        } else {
-          NOTREACHED();
-        }
       });
 }
 
