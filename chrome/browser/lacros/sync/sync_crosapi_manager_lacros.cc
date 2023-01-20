@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "chrome/browser/lacros/sync/crosapi_session_sync_notifier.h"
 #include "chrome/browser/lacros/sync/sync_explicit_passphrase_client_lacros.h"
 #include "chrome/browser/lacros/sync/sync_user_settings_client_lacros.h"
 #include "chrome/browser/profiles/profile.h"
@@ -88,6 +89,25 @@ std::unique_ptr<SyncUserSettingsClientLacros> MaybeCreateSyncUserSettingsClient(
       std::move(client_remote), sync_user_settings);
 }
 
+// Detects changes in foreign browser sessions and notify
+// CrosapiSessionSyncNotifier
+std::unique_ptr<CrosapiSessionSyncNotifier>
+MaybeCreateCrosapiSessionSyncNotifier() {
+  if (chromeos::LacrosService::Get()
+          ->GetInterfaceVersion<crosapi::mojom::SyncService>() <
+      static_cast<int>(
+          crosapi::mojom::SyncService::kBindSyncedSessionClientMinVersion)) {
+    return nullptr;
+  }
+  // TODO(b/260599791): in a subsequent CL,
+  // - a CrosapiSessionSyncNotifier will be created and its member function
+  // passed as part of the subscription to foreign browser sessions. Upon a
+  // change in foreign browser sessions, all work will be inside of the
+  // CrosapiSessionSyncNotifier object.
+  // - Check that kSyncedSessionClient flag is enabled
+  return nullptr;
+}
+
 }  // namespace
 
 SyncCrosapiManagerLacros::SyncCrosapiManagerLacros() = default;
@@ -105,6 +125,9 @@ void SyncCrosapiManagerLacros::PostProfileInit(Profile* profile) {
     return;
   }
   sync_service->AddObserver(this);
+
+  DCHECK(!crosapi_session_sync_notifier_);
+  crosapi_session_sync_notifier_ = MaybeCreateCrosapiSessionSyncNotifier();
 
   DCHECK(!sync_explicit_passphrase_client_);
   sync_explicit_passphrase_client_ =

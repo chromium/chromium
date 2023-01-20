@@ -12,6 +12,7 @@
 class Profile;
 class SyncExplicitPassphraseClientLacros;
 class SyncUserSettingsClientLacros;
+class CrosapiSessionSyncNotifier;
 
 namespace syncer {
 class SyncService;
@@ -35,6 +36,7 @@ class SyncCrosapiManagerLacros : public syncer::SyncServiceObserver {
   std::unique_ptr<SyncExplicitPassphraseClientLacros>
       sync_explicit_passphrase_client_;
   std::unique_ptr<SyncUserSettingsClientLacros> sync_user_settings_client_;
+  std::unique_ptr<CrosapiSessionSyncNotifier> crosapi_session_sync_notifier_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_SYNC_SYNC_CROSAPI_MANAGER_LACROS_H_
