@@ -1812,6 +1812,8 @@ def main(argv):
         assert 'base_module_config' not in deps_info, (
             'Must have exactly 1 base module!')
         deps_info['package_name'] = c['package_name']
+        deps_info['version_code'] = c['version_code']
+        deps_info['version_name'] = c['version_name']
         deps_info['base_module_config'] = c['path']
         # Use the base module's android manifest for linting.
         deps_info['lint_android_manifest'] = c['android_manifest']

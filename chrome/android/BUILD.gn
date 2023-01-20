@@ -2887,8 +2887,11 @@ if (current_toolchain == default_toolchain) {
     # Can be used to install compressed apks on system images.
     system_image_stub_apk("trichrome_library_system_stub_apk") {
       package_name = trichrome_library_package
+      version_code = trichrome_version_code
+      version_name = chrome_version_name
       stub_output = "$root_out_dir/apks/TrichromeLibrary-Stub.apk"
       static_library_name = trichrome_library_package
+      static_library_version = trichrome_version_code
     }
   }
 
