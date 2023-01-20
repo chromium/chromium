@@ -579,13 +579,6 @@ void AppBrowserController::SetOnUpdateDraggableRegionForTesting(
   on_draggable_region_set_for_testing_ = std::move(done);
 }
 
-void AppBrowserController::SetInitialURL(const GURL& initial_url) {
-  DCHECK(initial_url_.is_empty());
-  initial_url_ = initial_url;
-
-  OnReceivedInitialURL();
-}
-
 void AppBrowserController::UpdateThemePack() {
   absl::optional<SkColor> theme_color = GetThemeColor();
 
@@ -637,6 +630,13 @@ void AppBrowserController::UpdateThemePack() {
   BrowserThemePack::BuildFromColors(colors, theme_pack_.get());
   if (browser_->window())
     browser_->window()->UserChangedTheme(BrowserThemeChangeType::kWebAppTheme);
+}
+
+void AppBrowserController::SetInitialURL(const GURL& initial_url) {
+  DCHECK(initial_url_.is_empty());
+  initial_url_ = initial_url;
+
+  OnReceivedInitialURL();
 }
 
 }  // namespace web_app

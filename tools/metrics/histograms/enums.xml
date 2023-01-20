@@ -58616,6 +58616,7 @@ from previous Chrome versions.
   <int value="-1390005994" label="AppCache:disabled"/>
   <int value="-1389948505" label="InitialNavigationEntry:disabled"/>
   <int value="-1388817073" label="OmniboxReverseAnswers:disabled"/>
+  <int value="-1388546778" label="WebAppManifestImmediateUpdating:disabled"/>
   <int value="-1388044691" label="ContentLanguagesInLanguagePicker:enabled"/>
   <int value="-1387498034"
       label="SafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid:enabled"/>
@@ -59601,6 +59602,7 @@ from previous Chrome versions.
   <int value="-842597982" label="ShelfPalmRejectionTouchArea:disabled"/>
   <int value="-842438090" label="enable-md-feedback"/>
   <int value="-841549378" label="DisableLacrosTtsSupport:disabled"/>
+  <int value="-839822160" label="WebAppManifestImmediateUpdating:enabled"/>
   <int value="-839664591" label="enable-web-authentication-testing-api"/>
   <int value="-839544057" label="WebRtcCombinedNetworkAndWorkerThread:enabled"/>
   <int value="-838719204"

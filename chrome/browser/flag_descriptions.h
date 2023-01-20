@@ -2507,6 +2507,9 @@ extern const char kSharingDesktopSharePreviewDescription[];
 extern const char kSharingDesktopShareToGoogleCollectionsName[];
 extern const char kSharingDesktopShareToGoogleCollectionsDescription[];
 
+extern const char kWebAppManifestImmediateUpdatingName[];
+extern const char kWebAppManifestImmediateUpdatingDescription[];
+
 extern const char kWebAuthenticationPermitEnterpriseAttestationName[];
 extern const char kWebAuthenticationPermitEnterpriseAttestationDescription[];
 
