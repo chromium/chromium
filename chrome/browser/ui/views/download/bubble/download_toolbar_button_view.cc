@@ -4,7 +4,12 @@
 
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 
+#include <string>
+
 #include "base/functional/bind.h"
+#include "base/i18n/number_formatting.h"
+#include "base/strings/strcat.h"
+#include "cc/paint/paint_flags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
@@ -24,11 +29,20 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/image/canvas_image_source.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/render_text.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/progress_ring_utils.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/fill_layout.h"
@@ -42,6 +56,46 @@ constexpr int kProgressRingRadiusTouchMode = 12;
 constexpr float kProgressRingStrokeWidth = 1.7f;
 // 7.5 rows * 60 px per row = 450;
 constexpr int kMaxHeightForRowList = 450;
+
+// Helper class to draw a circular badge with text.
+class CircleBadgeImageSource : public gfx::CanvasImageSource {
+ public:
+  CircleBadgeImageSource(const gfx::Size& size,
+                         gfx::RenderText& render_text,
+                         SkColor text_color,
+                         SkColor background_color)
+      : gfx::CanvasImageSource(size),
+        render_text_(&render_text),
+        text_color_(text_color),
+        background_color_(background_color) {}
+
+  CircleBadgeImageSource(const CircleBadgeImageSource&) = delete;
+  CircleBadgeImageSource& operator=(const CircleBadgeImageSource&) = delete;
+
+  ~CircleBadgeImageSource() override = default;
+
+  // gfx::CanvasImageSource:
+  void Draw(gfx::Canvas* canvas) override {
+    cc::PaintFlags flags;
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setAntiAlias(true);
+    flags.setColor(background_color_);
+
+    const gfx::Rect& badge_rect = render_text_->display_rect();
+    // Set the corner radius to make the rectangle appear like a circle.
+    const int corner_radius = badge_rect.height() / 2;
+    canvas->DrawRoundRect(badge_rect, corner_radius, flags);
+
+    render_text_->SetColor(text_color_);
+    render_text_->Draw(canvas);
+  }
+
+ private:
+  // Pointee may be modified to change the text color upon painting.
+  gfx::RenderText* const render_text_ = nullptr;
+  const SkColor text_color_;
+  const SkColor background_color_;
+};
 
 gfx::Insets GetPrimaryViewMargin() {
   return gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -67,6 +121,11 @@ DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_DOWNLOAD_ICON));
   SetVisible(false);
 
+  badge_image_view_ = AddChildView(std::make_unique<views::ImageView>());
+  badge_image_view_->SetPaintToLayer();
+  badge_image_view_->layer()->SetFillsBoundsOpaquely(false);
+  badge_image_view_->SetCanProcessEventsWithinSubtree(false);
+
   scanning_animation_.SetSlideDuration(base::Milliseconds(2500));
   scanning_animation_.SetTweenType(gfx::Tween::LINEAR);
 
@@ -80,6 +139,49 @@ DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
 DownloadToolbarButtonView::~DownloadToolbarButtonView() {
   controller_.reset();
   bubble_controller_.reset();
+}
+
+gfx::ImageSkia DownloadToolbarButtonView::GetBadgeImage(
+    bool is_active,
+    int progress_download_count,
+    SkColor badge_text_color,
+    SkColor badge_background_color) {
+  // Only display the badge if there are multiple downloads.
+  if (!is_active || progress_download_count < 2) {
+    return gfx::ImageSkia();
+  }
+
+  const int badge_height = badge_image_view_->bounds().height();
+  bool use_placeholder = progress_download_count > kMaxDownloadCountDisplayed;
+  const int index = use_placeholder ? 0 : progress_download_count - 1;
+  gfx::RenderText* render_text = render_texts_.at(index).get();
+  if (render_text == nullptr) {
+    ui::ResourceBundle* bundle = &ui::ResourceBundle::GetSharedInstance();
+    gfx::FontList font = bundle->GetFontList(ui::ResourceBundle::BaseFont)
+                             .DeriveWithHeightUpperBound(badge_height);
+    std::u16string text =
+        use_placeholder
+            ? base::StrCat(
+                  {base::FormatNumber(kMaxDownloadCountDisplayed), u"+"})
+            : base::FormatNumber(progress_download_count);
+
+    std::unique_ptr<gfx::RenderText> new_render_text =
+        gfx::RenderText::CreateRenderText();
+    new_render_text->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+    new_render_text->SetCursorEnabled(false);
+    new_render_text->SetFontList(std::move(font));
+    new_render_text->SetText(std::move(text));
+    new_render_text->SetDisplayRect(
+        gfx::Rect(gfx::Point(), gfx::Size(badge_height, badge_height)));
+    // Color is set by the CircleBadgeImageSource when drawing.
+
+    render_text = new_render_text.get();
+    render_texts_[index] = std::move(new_render_text);
+  }
+
+  return gfx::CanvasImageSource::MakeImageSkia<CircleBadgeImageSource>(
+      gfx::Size(badge_height, badge_height), *render_text, badge_text_color,
+      badge_background_color);
 }
 
 void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
@@ -96,22 +198,11 @@ void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
 
   bool is_disabled = GetVisualState() == Button::STATE_DISABLED;
   bool is_active = icon_info.is_active;
-  SkColor background_color, progress_color;
-  if (is_disabled) {
-    background_color = GetForegroundColor(ButtonState::STATE_DISABLED);
-    progress_color =
-        icon_color_.value_or(GetForegroundColor(ButtonState::STATE_DISABLED));
-  } else if (!is_active) {
-    background_color =
-        GetColorProvider()->GetColor(kColorDownloadToolbarButtonRingBackground);
-    progress_color = icon_color_.value_or(
-        GetColorProvider()->GetColor(kColorDownloadToolbarButtonInactive));
-  } else {
-    background_color =
-        GetColorProvider()->GetColor(kColorDownloadToolbarButtonRingBackground);
-    progress_color = icon_color_.value_or(
-        GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive));
-  }
+  SkColor background_color =
+      is_disabled ? GetForegroundColor(ButtonState::STATE_DISABLED)
+                  : GetColorProvider()->GetColor(
+                        kColorDownloadToolbarButtonRingBackground);
+  SkColor progress_color = GetProgressColor(is_disabled, is_active);
 
   int ring_radius = ui::TouchUiController::Get()->touch_ui()
                         ? kProgressRingRadiusTouchMode
@@ -221,6 +312,28 @@ void DownloadToolbarButtonView::UpdateIcon() {
       Button::STATE_DISABLED,
       ui::ImageModel::FromVectorIcon(
           *new_icon, GetForegroundColor(ButtonState::STATE_DISABLED)));
+
+  badge_image_view_->SetImage(GetBadgeImage(
+      icon_info.is_active, controller_->GetProgress().download_count,
+      GetProgressColor(GetVisualState() == Button::STATE_DISABLED,
+                       icon_info.is_active),
+      GetColorProvider()->GetColor(kColorToolbar)));
+}
+
+void DownloadToolbarButtonView::Layout() {
+  ToolbarButton::Layout();
+  gfx::Size size = GetPreferredSize();
+  // Badge width and height are the same.
+  const int badge_height = std::min(size.width(), size.height()) / 2;
+  const int badge_offset_x = size.width() - badge_height;
+  const int badge_offset_y = size.height() - badge_height;
+  // If the badge height has changed, clear the cache of render_texts_.
+  if (badge_height != badge_image_view_->bounds().height()) {
+    render_texts_ = std::array<std::unique_ptr<gfx::RenderText>,
+                               kMaxDownloadCountDisplayed>{};
+  }
+  badge_image_view_->SetBoundsRect(
+      gfx::Rect(badge_offset_x, badge_offset_y, badge_height, badge_height));
 }
 
 std::unique_ptr<views::View> DownloadToolbarButtonView::GetPrimaryView() {
@@ -359,6 +472,19 @@ void DownloadToolbarButtonView::SetIconColor(SkColor color) {
     return;
   icon_color_ = color;
   UpdateIcon();
+}
+
+SkColor DownloadToolbarButtonView::GetProgressColor(bool is_disabled,
+                                                    bool is_active) const {
+  if (is_disabled) {
+    return icon_color_.value_or(
+        GetForegroundColor(ButtonState::STATE_DISABLED));
+  } else if (is_active) {
+    return icon_color_.value_or(
+        GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive));
+  }
+  return icon_color_.value_or(
+      GetColorProvider()->GetColor(kColorDownloadToolbarButtonInactive));
 }
 
 BEGIN_METADATA(DownloadToolbarButtonView, ToolbarButton)
