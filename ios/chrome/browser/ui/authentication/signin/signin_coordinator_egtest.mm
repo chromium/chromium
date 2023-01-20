@@ -185,7 +185,12 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  if ([self isRunningTest:@selector(testOpenSignInFromNTP)]) {
+  if ([self
+          isRunningTest:@selector
+          (testOpenManageSyncSettingsFromNTPWhenSigninIsNotAllowedByPolicy)] ||
+      [self isRunningTest:@selector
+            (testOpenManageSyncSettingsFromNTPWhenSyncDisabledByPolicy)] ||
+      [self isRunningTest:@selector(testOpenSignInFromNTP)]) {
     config.features_enabled.push_back(switches::kIdentityStatusConsistency);
   }
   return config;
@@ -851,6 +856,42 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Sign in to Chrome.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  // Select the identity disc particle.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(GetNSString(
+                                          IDS_ACCNAME_PARTICLE_DISC))]
+      performAction:grey_tap()];
+
+  // Ensure the Settings menu is displayed.
+  [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that a signed-in user can open "Settings" screen from the NTP.
+- (void)testOpenManageSyncSettingsFromNTPWhenSigninIsNotAllowedByPolicy {
+  // Disable sign-in with policy.
+  SetSigninEnterprisePolicyValue(BrowserSigninMode::kDisabled);
+
+  // Select the identity disc particle.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(GetNSString(
+                                          IDS_ACCNAME_PARTICLE_DISC))]
+      performAction:grey_tap()];
+
+  // Ensure the Settings menu is displayed.
+  [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that a signed-in user can open "Settings" screen from the NTP.
+- (void)testOpenManageSyncSettingsFromNTPWhenSyncDisabledByPolicy {
+  // Disable sync by policy.
+  policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(GetNSString(
+                                       IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE)),
+                                   grey_userInteractionEnabled(), nil)]
+      performAction:grey_tap()];
 
   // Select the identity disc particle.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(GetNSString(

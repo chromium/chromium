@@ -42,7 +42,9 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/system_identity_manager.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -747,7 +749,13 @@
   base::RecordAction(base::UserMetricsAction("MobileNTPIdentityDiscTapped"));
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
-  if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+  BOOL isSignedIn =
+      self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+  BOOL isSigninNotAllowed = self.authService->GetServiceStatus() !=
+                            AuthenticationService::ServiceStatus::SigninAllowed;
+  BOOL isSyncDisabled = IsSyncDisabledByPolicy(
+      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState()));
+  if (isSignedIn || isSigninNotAllowed || isSyncDisabled) {
     [handler showSettingsFromViewController:self.baseViewController];
   } else {
     ShowSigninCommand* const showSigninCommand = [[ShowSigninCommand alloc]
