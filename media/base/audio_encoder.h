@@ -69,6 +69,11 @@ class MEDIA_EXPORT AudioEncoder {
     bool use_dtx;
   };
 
+  enum class AacOutputFormat { AAC, ADTS };
+  struct MEDIA_EXPORT AacOptions {
+    AacOutputFormat format;
+  };
+
   struct MEDIA_EXPORT Options {
     Options();
     Options(const Options&);
@@ -83,6 +88,7 @@ class MEDIA_EXPORT AudioEncoder {
     int sample_rate;
 
     absl::optional<OpusOptions> opus;
+    absl::optional<AacOptions> aac;
   };
 
   // A sequence of codec specific bytes, commonly known as extradata.

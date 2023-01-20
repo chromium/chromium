@@ -825,6 +825,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/webaudio/stereo_panner_options.idl",
           "//third_party/blink/renderer/modules/webaudio/wave_shaper_node.idl",
           "//third_party/blink/renderer/modules/webaudio/wave_shaper_options.idl",
+          "//third_party/blink/renderer/modules/webcodecs/aac_encoder_config.idl",
           "//third_party/blink/renderer/modules/webcodecs/audio_data.idl",
           "//third_party/blink/renderer/modules/webcodecs/audio_data_copy_to_options.idl",
           "//third_party/blink/renderer/modules/webcodecs/audio_data_init.idl",

@@ -28,6 +28,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_aac_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_config.h"
@@ -75,6 +76,22 @@ bool VerifyParameterValues(const T& value,
                                        error_builder.ToString());
   }
   return false;
+}
+
+AudioEncoderTraits::ParsedConfig* ParseAacConfigStatic(
+    const AacEncoderConfig* aac_config,
+    AudioEncoderTraits::ParsedConfig* result,
+    ExceptionState& exception_state) {
+  result->options.aac = media::AudioEncoder::AacOptions();
+  switch (aac_config->format().AsEnum()) {
+    case V8AacBitstreamFormat::Enum::kAac:
+      result->options.aac->format = media::AudioEncoder::AacOutputFormat::AAC;
+      return result;
+    case V8AacBitstreamFormat::Enum::kAdts:
+      result->options.aac->format = media::AudioEncoder::AacOutputFormat::ADTS;
+      return result;
+  }
+  return result;
 }
 
 AudioEncoderTraits::ParsedConfig* ParseOpusConfigStatic(
@@ -200,13 +217,19 @@ AudioEncoderTraits::ParsedConfig* ParseConfigStatic(
     result->options.bitrate = static_cast<int>(config->bitrate());
   }
 
-  // Only Opus supports codec-specific parameters for now.
-  if (result->options.codec != media::AudioCodec::kOpus)
-    return result;
-
-  return ParseOpusConfigStatic(
-      config->hasOpus() ? config->opus() : OpusEncoderConfig::Create(), result,
-      exception_state);
+  switch (result->options.codec) {
+    case media::AudioCodec::kOpus:
+      return ParseOpusConfigStatic(
+          config->hasOpus() ? config->opus() : OpusEncoderConfig::Create(),
+          result, exception_state);
+    case media::AudioCodec::kAAC: {
+      auto* aac_config =
+          config->hasAac() ? config->aac() : AacEncoderConfig::Create();
+      return ParseAacConfigStatic(aac_config, result, exception_state);
+    }
+    default:
+      return result;
+  }
 }
 
 bool VerifyCodecSupportStatic(AudioEncoderTraits::ParsedConfig* config,
@@ -272,6 +295,12 @@ bool VerifyCodecSupportStatic(AudioEncoderTraits::ParsedConfig* config,
   }
 }
 
+AacEncoderConfig* CopyAacConfig(const AacEncoderConfig& config) {
+  auto* result = AacEncoderConfig::Create();
+  result->setFormat(config.format());
+  return result;
+}
+
 OpusEncoderConfig* CopyOpusConfig(const OpusEncoderConfig& config) {
   auto* opus_result = OpusEncoderConfig::Create();
   opus_result->setFormat(config.format());
@@ -293,6 +322,9 @@ AudioEncoderConfig* CopyConfig(const AudioEncoderConfig& config) {
 
   if (config.codec() == String("opus") && config.hasOpus())
     result->setOpus(CopyOpusConfig(*config.opus()));
+  if (config.codec() == String("aac") && config.hasAac()) {
+    result->setAac(CopyAacConfig(*config.aac()));
+  }
 
   return result;
 }

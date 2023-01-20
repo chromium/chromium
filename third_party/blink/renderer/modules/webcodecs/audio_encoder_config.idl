@@ -18,5 +18,6 @@ dictionary AudioEncoderConfig {
   [EnforceRange] unsigned long long bitrate;
 
   // Codec-specific extensions
+  AacEncoderConfig aac;
   OpusEncoderConfig opus;
 };
