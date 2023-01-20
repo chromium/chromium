@@ -1249,7 +1249,7 @@
     'name': 'chromium.cft',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      # Mirrors Linux Builder and Linux Tests.
+      # Mirrors "Linux Builder" and "Linux Tests".
       'linux-rel-cft': {
         'mixins': [
           'isolate_profile_data',

@@ -469,6 +469,14 @@
           '--flag-specific=enable-editing-ng',
         ],
       },
+      'linux-rel-cft': {
+        "args": [
+          "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
+        ],
+        'swarming': {
+          'shards': 8,
+        },
+      },
       'mac-rel-cft': {
         'swarming': {
           'dimension_sets': [
@@ -792,6 +800,14 @@
         'args': [
           '--flag-specific=enable-editing-ng',
         ],
+      },
+      'linux-rel-cft': {
+        "args": [
+          "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
+        ],
+        'swarming': {
+          'shards': 10,
+        },
       },
       'mac-rel-cft': {
         'args': [
@@ -1121,6 +1137,9 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux.linux-rel-cft.browser_tests.filter',
         ],
+        'swarming': {
+          'shards': 20,
+        },
       },
       'mac-code-coverage': {
         'args': [
@@ -2999,6 +3018,14 @@
           'shards': 20,
         },
       },
+      'linux-rel-cft': {
+        "args": [
+          "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
+        ],
+        'swarming': {
+          'quickrun_shards': 18,
+        },
+      },
     },
   },
   'notification_helper_unittests': {
@@ -3819,6 +3846,7 @@
   'webdriver_tests_suite': {
     'remove_from': [
       'Linux Tests',  # https://crbug.com/929689, https://crbug.com/936557
+      'linux-rel-cft',
     ],
   },
   'webgl2_conformance_d3d11_passthrough_tests': {
