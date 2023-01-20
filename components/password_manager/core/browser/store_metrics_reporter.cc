@@ -220,9 +220,11 @@ void ReportPasswordNotesMetrics(
 
   const std::string histogram_name =
       base::StrCat({kPasswordManager, suffix_for_store,
-                    ".PasswordNotes.CountNotesPerCredential2"});
+                    ".PasswordNotes.CountNotesPerCredential3"});
   base::ranges::for_each(forms, [histogram_name](const auto& form) {
-    base::UmaHistogramCounts100(histogram_name, form->notes.size());
+    if (!form->notes.empty()) {
+      base::UmaHistogramCounts100(histogram_name, form->notes.size());
+    }
   });
 }
 

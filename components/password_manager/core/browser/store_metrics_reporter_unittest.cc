@@ -1086,8 +1086,8 @@ TEST_F(StoreMetricsReporterTest, ReportPasswordNoteMetrics) {
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("PasswordManager.ProfileStore."
-                                     "PasswordNotes.CountNotesPerCredential2"),
-      BucketsAre(base::Bucket(0, 1), base::Bucket(1, 2), base::Bucket(2, 2)));
+                                     "PasswordNotes.CountNotesPerCredential3"),
+      BucketsAre(base::Bucket(0, 0), base::Bucket(1, 2), base::Bucket(2, 2)));
   histogram_tester.ExpectBucketCount(
       "PasswordManager.ProfileStore.PasswordNotes."
       "CountCredentialsWithNonEmptyNotes2",
@@ -1095,8 +1095,8 @@ TEST_F(StoreMetricsReporterTest, ReportPasswordNoteMetrics) {
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("PasswordManager.AccountStore."
-                                     "PasswordNotes.CountNotesPerCredential2"),
-      BucketsAre(base::Bucket(0, 1), base::Bucket(1, 2)));
+                                     "PasswordNotes.CountNotesPerCredential3"),
+      BucketsAre(base::Bucket(0, 0), base::Bucket(1, 2)));
   histogram_tester.ExpectBucketCount(
       "PasswordManager.AccountStore.PasswordNotes."
       "CountCredentialsWithNonEmptyNotes2",
