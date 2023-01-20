@@ -6937,3 +6937,6 @@ http/tests/security/cross-frame-access-parent-explicit-domain.html [ Failure Pas
 http/tests/security/cross-frame-access-port-explicit-domain.html [ Failure Pass ]
 http/tests/security/cross-frame-access-protocol-explicit-domain.html [ Failure Pass ]
 http/tests/security/canvas-remote-read-remote-image-document-domain.html [ Failure Pass ]
+
+# Sheriff 2023-01-20
+crbug.com/1408919 [ Mac ] virtual/text-antialias/capitalize-boundaries.html [ Failure Pass ]
