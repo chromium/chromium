@@ -362,6 +362,7 @@ bool LayoutBlockFlow::IsSelfCollapsingBlock() const {
     DCHECK(CreatesNewFormattingContext());
     return false;
   }
+  DCHECK(!RuntimeEnabledFeatures::LayoutNGPrintingEnabled());
   if (!IsLayoutNGObject())
     DCHECK_EQ(!is_self_collapsing_, !CheckIfIsSelfCollapsingBlock());
   return is_self_collapsing_;

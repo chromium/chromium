@@ -1423,9 +1423,12 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
   else
     box_->ClearNeedsLayout();
 
-  // Overflow computation depends on this being set.
-  if (LIKELY(block_flow))
-    block_flow->SetIsSelfCollapsingFromNG(layout_result.IsSelfCollapsing());
+  if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
+    // Overflow computation depends on this being set.
+    if (LIKELY(block_flow)) {
+      block_flow->SetIsSelfCollapsingFromNG(layout_result.IsSelfCollapsing());
+    }
+  }
 
   // We should notify the display lock that we've done layout on self, and if
   // it's not blocked, on children.
