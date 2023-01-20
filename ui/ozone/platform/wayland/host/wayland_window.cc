@@ -655,10 +655,6 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
     return false;
   }
 
-  if (properties.inhibit_keyboard_shortcuts) {
-    root_surface_->InhibitKeyboardShortcuts();
-  }
-
   State state;
   state.bounds_dip = properties.bounds;
   // Properties contain DIP bounds but the buffer scale is initially 1 so it's
@@ -668,6 +664,10 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
 
   opacity_ = properties.opacity;
   type_ = properties.type;
+
+  if (properties.inhibit_keyboard_shortcuts) {
+    InitKeyboardShortcutsInhibition();
+  }
 
   connection_->window_manager()->AddWindow(GetWidget(), this);
 
@@ -697,6 +697,40 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   connection_->Flush();
 
   return true;
+}
+
+// When upper layer requests to 'inhibit keyboard shortcuts', two different
+// behaviors are currently implemented:
+//
+// 1. If `zcr_keyboard_extension_v1` extension is available (typically meaning
+// it is running under Exo compositor), shortcuts are kept inhibited since the
+// window initialization. That is required to keep Lacros behaving just like
+// Ash Chrome's classic browser.
+//
+// 2. Otherwise, keyboard shortcuts will be inhibited only when in fullscreen.
+// See KeyboardLock spec for more details: https://wicg.github.io/keyboard-lock
+//
+// The main technical difference here is that keyboard-extension-v1 extension
+// allows ozone/wayland to report back to the Wayland compositor that a given
+// key was not processed by the client, giving it a chance of processing global
+// shortcuts (even with a shortcuts inhibitor in place), which is not currently
+// possible with standard Wayland protocol and extensions.
+//
+// TODO(crbug.com/1338554): Revisit and update when/if this scenario changes.
+void WaylandWindow::InitKeyboardShortcutsInhibition() {
+  DCHECK_EQ(keyboard_shortcuts_inhibition_mode_,
+            KeyboardShortcutsInhibitionMode::kDisabled);
+  if (!connection_->keyboard_extension_v1()) {
+    // Only set inhibition mode to kFullscreenOnly and defer the actual handling
+    // to the subsequent shell surface configure events, where window state is
+    // applied/updated. See WaylandToplevelWindow::HandleAuraToplevelConfigure.
+    keyboard_shortcuts_inhibition_mode_ =
+        KeyboardShortcutsInhibitionMode::kFullscreenOnly;
+    return;
+  }
+  keyboard_shortcuts_inhibition_mode_ =
+      KeyboardShortcutsInhibitionMode::kAlwaysEnabled;
+  root_surface()->SetKeyboardShortcutsInhibition(/*enabled=*/true);
 }
 
 void WaylandWindow::SetWindowGeometry(gfx::Size size_dip) {}

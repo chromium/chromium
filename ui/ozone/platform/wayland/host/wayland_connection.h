@@ -129,6 +129,9 @@ class WaylandConnection {
   }
   xdg_wm_base* shell() const { return shell_.get(); }
   wp_presentation* presentation() const { return presentation_.get(); }
+  zcr_keyboard_extension_v1* keyboard_extension_v1() const {
+    return keyboard_extension_v1_.get();
+  }
   zwp_keyboard_shortcuts_inhibit_manager_v1*
   keyboard_shortcuts_inhibit_manager_v1() const {
     return keyboard_shortcuts_inhibit_manager_v1_.get();
