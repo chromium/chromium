@@ -32,7 +32,7 @@ import com.ark.browser.ui.fragment.base.BaseFragment;
 import com.ark.browser.ui.fragment.dialog.DownloadDialog;
 import com.ark.browser.ui.widget.BottomControlBar;
 import com.ark.browser.ui.widget.BottomController;
-import com.ark.browser.ui.widget.homepage.SwitcherRecyclerLayout;
+import com.ark.browser.ui.widget.homepage.TabSwitcherLayout;
 import com.ark.browser.ui.widget.homepage.TabSwitcherManager;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
@@ -78,10 +78,6 @@ public class ArkMainFragment extends BaseFragment implements
     private static final String TAG = "ArkMainFragment";
 
     private ArkCompositorViewHolder mViewHolder;
-//    private ProgressBar mProgressBar;
-//    private EditText mUrlBar;
-    private SwitcherRecyclerLayout mSwitcher;
-    private View mBrowserLayout;
 
     private BottomController mBottomController;
     private TabSwitcherManager mSwitcherManager;
@@ -225,8 +221,8 @@ public class ArkMainFragment extends BaseFragment implements
                     mOpenPage = runnable;
                 }
 
-                if (mSwitcher != null) {
-                    mSwitcher.notifyDataSetChanged();
+                if (mSwitcherManager != null) {
+                    mSwitcherManager.getTabSwitcherLayout().onRestore();
                 }
             });
         });
@@ -234,8 +230,6 @@ public class ArkMainFragment extends BaseFragment implements
 
     @Override
     protected void initView(View view, @Nullable Bundle savedInstanceState) {
-
-        mBrowserLayout = findViewById(R.id.browser_layout);
 
         mViewHolder = findViewById(R.id.compositor_view_holder);
 //        ViewGroup rootView = (ViewGroup) _mActivity.getWindow().getDecorView().getRootView();
@@ -247,8 +241,9 @@ public class ArkMainFragment extends BaseFragment implements
 
         getWindowAndroid().setAnimationPlaceholderView(mViewHolder.getCompositorView());
 
-        mSwitcher = findViewById(R.id.tab_switcher);
-        mSwitcherManager = new TabSwitcherManager(mBrowserLayout, mSwitcher);
+        //    private ProgressBar mProgressBar;
+        //    private EditText mUrlBar;
+        mSwitcherManager = new TabSwitcherManager(view);
 
         BottomControlBar bottomControlBar = findViewById(R.id.bottom_control_bar);
         bottomControlBar.setSwitcherManager(mSwitcherManager);

@@ -12,6 +12,11 @@
     android:layout_height="match_parent"
     android:layout_weight="1" >
 
+    <View
+        android:id="@+id/launcher_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <include layout="@layout/layout_browser"
         android:id="@+id/browser_layout"
         android:layout_width="match_parent"
@@ -21,8 +26,8 @@
         android:visibility="invisible"
         />
 
-    <com.ark.browser.ui.widget.homepage.SwitcherRecyclerLayout
-        android:id="@+id/tab_switcher"
+    <com.ark.browser.ui.widget.homepage.TabSwitcherLayout
+        android:id="@+id/tab_switcher_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

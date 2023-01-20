@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.ark.browser.ui.widget.homepage.SwitcherRecyclerLayout
+        android:id="@+id/my_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <com.ark.browser.ui.widget.ShadowLayout
+        android:id="@+id/top_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        app:hl_cornerRadius="8dp"
+        app:hl_shadowBackColor="#40000000"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            >
+
+            <!--                android:layout_gravity="center_horizontal"-->
+            <!--                android:background="@drawable/bg_switcher_indicator"-->
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingVertical="4dp"
+                android:paddingHorizontal="24dp"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/bg_switcher_indicator_child"
+                >
+
+                <!--                <ImageView-->
+                <!--                    android:id="@+id/iv_nav_page_normal"-->
+                <!--                    android:layout_width="24dp"-->
+                <!--                    android:layout_height="24dp"-->
+                <!--                    app:srcCompat="@drawable/ic_nav_page_normal"-->
+                <!--                    android:layout_gravity="center_vertical"-->
+                <!--                    />-->
+
+                <TextView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:text="99"
+                    android:gravity="center"
+                    android:textSize="10sp"
+                    android:textColor="@color/white"
+                    android:background="@drawable/ic_nav_page_normal"
+                    android:layout_gravity="center_vertical"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="窗口"
+                    android:textColor="@color/white"
+                    android:layout_marginStart="4dp"
+                    android:layout_gravity="center_vertical"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingVertical="4dp"
+                android:paddingHorizontal="24dp"
+                android:layout_gravity="center_vertical"
+                >
+
+                <!--                <ImageView-->
+                <!--                    android:layout_width="24dp"-->
+                <!--                    android:layout_height="24dp"-->
+                <!--                    app:srcCompat="@drawable/ic_nav_page_incg"-->
+                <!--                    android:layout_gravity="center_vertical"-->
+                <!--                    />-->
+
+                <TextView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:text="0"
+                    android:gravity="center"
+                    android:textSize="10sp"
+                    android:textColor="@color/white"
+                    android:background="@drawable/ic_nav_page_incg"
+                    android:layout_gravity="center_vertical"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="无痕"
+                    android:textColor="@color/white"
+                    android:layout_marginStart="4dp"
+                    android:layout_gravity="center_vertical"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.ark.browser.ui.widget.ShadowLayout>
+
+    <net.lucode.hackware.magicindicator.MagicIndicator
+        android:id="@+id/magic_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:padding="4dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/bg_switcher_indicator"
+        android:layout_marginTop="48dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
+        >
+
+    </net.lucode.hackware.magicindicator.MagicIndicator>
+
+    <com.ark.browser.ui.widget.ShadowLayout
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:hl_shadowBackColor="#60000000"
+        app:hl_cornerRadius="16dp"
+        app:hl_shadowLimit="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <com.ark.browser.ui.widget.DrawableTintTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="28dp"
+                android:paddingVertical="8dp"
+                android:gravity="center"
+                android:text="全部关闭"
+                android:textColor="@color/white"
+                android:background="?android:attr/selectableItemBackground"
+                android:drawableTop="@drawable/ic_delete"
+                app:drawable_tint_color="@color/white"
+                android:textSize="12sp"
+                />
+
+            <ImageButton
+                android:id="@+id/btn_search"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:paddingVertical="6dp"
+                android:background="@drawable/bg_search_switcher"
+                android:src="@drawable/ic_search_v1"
+                android:tint="@color/white"
+                />
+
+            <com.ark.browser.ui.widget.DrawableTintTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingHorizontal="28dp"
+                android:paddingVertical="8dp"
+                android:text="最近关闭"
+                android:textColor="@color/white"
+                android:drawableTop="@drawable/ic_recently_closed"
+                app:drawable_tint_color="@color/white"
+                android:background="?android:attr/selectableItemBackground"
+                android:textSize="12sp"
+                />
+
+        </LinearLayout>
+
+    </com.ark.browser.ui.widget.ShadowLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.zpj.progressbar.ZProgressBar
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:src="@drawable/ic_state_empty"
+            android:alpha="0.8"
+            app:zbp_progress_bar_width="2.5dp"
+            app:zbp_border_width="2.5dp"
+            app:zbp_progress_bar_color="@color/colorPrimary"
+            app:zbp_border_color="@color/transparent"
+            app:zbp_radius="18dp"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_state_empty"
+            android:alpha="0.8"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="空空如也"
+            android:textColor="@color/white"
+            android:layout_gravity="center"
+            android:textStyle="bold"
+            android:layout_marginTop="4dp"
+            android:alpha="0.8"
+            />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

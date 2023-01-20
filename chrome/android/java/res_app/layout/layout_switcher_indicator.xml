@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingVertical="4dp"
+    android:paddingHorizontal="24dp"
+    android:background="@drawable/bg_switcher_indicator_child">
+
+    <TextView
+        android:id="@+id/tv_count"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:text="99"
+        android:gravity="center"
+        android:textSize="10sp"
+        android:textColor="@color/white"
+        android:background="@drawable/ic_nav_page_normal"
+        android:layout_gravity="center_vertical"
+        />
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="窗口"
+        android:textColor="@color/white"
+        android:layout_marginStart="4dp"
+        android:layout_gravity="center_vertical"
+        />
+
+</LinearLayout>

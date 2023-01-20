@@ -144,6 +144,9 @@ public class BottomControlBar extends FrameLayout {
                 isMoved = true;
                 isUp = true;
                 mSwitcherManager.showSwitcher();
+                if (deltaY > 0) {
+                    deltaY = 0;
+                }
                 mSwitcherManager.getSwitcher().moveDrag(deltaX, deltaY);
                 break;
             case MotionEvent.ACTION_UP:
