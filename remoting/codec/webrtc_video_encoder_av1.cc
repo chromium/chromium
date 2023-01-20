@@ -427,6 +427,13 @@ void WebrtcVideoEncoderAV1::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
     LOG(ERROR) << "Encoding error: " << aom_codec_err_to_string(ret) << "\n  "
                << aom_codec_error(codec_.get()) << "\n  "
                << (error_detail ? error_detail : "No error details");
+    // There is an issue where the AV1 codec begins returning AOM_CODEC_ERROR
+    // without any useful error details. This error is not recoverable so no
+    // frames are encoded during this time.  The short-term fix is to reset the
+    // codec while we investigate the root cause (see b/266098558).
+    if (ret == AOM_CODEC_ERROR) {
+      codec_.reset();
+    }
     std::move(done).Run(EncodeResult::UNKNOWN_ERROR, nullptr);
     return;
   }
