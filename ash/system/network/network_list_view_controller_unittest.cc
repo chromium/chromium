@@ -363,10 +363,15 @@ class NetworkListViewControllerTest : public AshTestBase,
             kConnectionWarningLabel);
   }
 
-  views::ImageView* GetConnectionWarningIcon() {
+  views::ImageView* GetConnectionWarningSystemIcon() {
     return FindViewById<views::ImageView*>(
         NetworkListViewControllerImpl::NetworkListViewControllerViewChildId::
-            kConnectionWarningIcon);
+            kConnectionWarningSystemIcon);
+  }
+  views::ImageView* GetConnectionWarningManagedIcon() {
+    return FindViewById<views::ImageView*>(
+        NetworkListViewControllerImpl::NetworkListViewControllerViewChildId::
+            kConnectionWarningManagedIcon);
   }
 
   views::View* GetViewInNetworkList(std::string id) {
@@ -1245,7 +1250,7 @@ TEST_P(NetworkListViewControllerTest, ConnectionWarningSystemIconVpn) {
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MONITORED_WARNING),
       GetConnectionLabelView()->GetText());
   EXPECT_EQ(network_list()->children().at(0), GetConnectionWarning());
-  views::ImageView* icon = GetConnectionWarningIcon();
+  views::ImageView* icon = GetConnectionWarningSystemIcon();
   ASSERT_THAT(icon, NotNull());
   EXPECT_TRUE(IsSystemIcon(icon));
 
@@ -1272,7 +1277,7 @@ TEST_P(NetworkListViewControllerTest, ConnectionWarningManagedIconVpn) {
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MONITORED_WARNING),
       GetConnectionLabelView()->GetText());
   EXPECT_EQ(network_list()->children().at(0), GetConnectionWarning());
-  views::ImageView* icon = GetConnectionWarningIcon();
+  views::ImageView* icon = GetConnectionWarningManagedIcon();
   ASSERT_THAT(icon, NotNull());
   EXPECT_TRUE(IsManagedIcon(icon));
 
@@ -1295,7 +1300,7 @@ TEST_P(NetworkListViewControllerTest, ConnectionWarningSystemIconProxy) {
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MONITORED_WARNING),
       GetConnectionLabelView()->GetText());
 
-  views::ImageView* icon = GetConnectionWarningIcon();
+  views::ImageView* icon = GetConnectionWarningSystemIcon();
   ASSERT_THAT(icon, NotNull());
   EXPECT_TRUE(IsSystemIcon(icon));
 }
@@ -1314,7 +1319,7 @@ TEST_P(NetworkListViewControllerTest, ConnectionWarningManagedIconProxy) {
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MANAGED_WARNING),
       GetConnectionLabelView()->GetText());
 
-  views::ImageView* icon = GetConnectionWarningIcon();
+  views::ImageView* icon = GetConnectionWarningManagedIcon();
   ASSERT_THAT(icon, NotNull());
   EXPECT_TRUE(IsManagedIcon(icon));
 }
@@ -1336,7 +1341,7 @@ TEST_P(NetworkListViewControllerTest, ConnectionWarningDisconnectReconnect) {
       GetConnectionLabelView()->GetText());
 
   {
-    views::ImageView* icon = GetConnectionWarningIcon();
+    views::ImageView* icon = GetConnectionWarningManagedIcon();
     ASSERT_THAT(icon, NotNull());
     EXPECT_TRUE(IsManagedIcon(icon));
   }
@@ -1360,7 +1365,7 @@ TEST_P(NetworkListViewControllerTest, ConnectionWarningDisconnectReconnect) {
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MANAGED_WARNING),
       GetConnectionLabelView()->GetText());
   {
-    views::ImageView* icon = GetConnectionWarningIcon();
+    views::ImageView* icon = GetConnectionWarningManagedIcon();
     ASSERT_THAT(icon, NotNull());
     EXPECT_TRUE(IsManagedIcon(icon));
   }
@@ -1382,7 +1387,7 @@ TEST_P(NetworkListViewControllerTest,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MANAGED_WARNING),
       GetConnectionLabelView()->GetText());
 
-  views::ImageView* icon = GetConnectionWarningIcon();
+  views::ImageView* icon = GetConnectionWarningManagedIcon();
   ASSERT_THAT(icon, NotNull());
   EXPECT_TRUE(IsManagedIcon(icon));
 }
