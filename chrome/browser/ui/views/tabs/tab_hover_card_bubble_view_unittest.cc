@@ -14,9 +14,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/render_text.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#elif BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -28,8 +26,8 @@ namespace {
 //
 // Whether a single grapheme composed of multiple glyphs/codepoints correctly
 // displays on a system is dependent on the OS version and font. Some older OSes
-// (specifically Win7) do not support some of the more complex test graphemes we
-// are using to test elision at grapheme boundaries.
+// do not support some of the more complex test graphemes we are using to test
+// elision at grapheme boundaries.
 //
 // On systems which do not support a glyph or grapheme, a multi-codepoint
 // grapheme may appear as multiple glyphs. It's therefore possible for a test
@@ -39,7 +37,6 @@ namespace {
 // cases on systems we know do not support them.
 enum OmitOnPlatforms {
   kRunOnAllPlatforms = 0,
-  kOmitOnWin7 = 1 << 0,
 
   // TODO(crbug/1267013): Remove once emoji (including modified/joined emoji)
   // are supported on Fuchsia.
@@ -47,12 +44,7 @@ enum OmitOnPlatforms {
 };
 
 bool ShouldOmitOnPlatform(int omit_on) {
-#if BUILDFLAG(IS_WIN)
-  if (omit_on & kOmitOnWin7) {
-    return base::win::OSInfo::GetInstance()->version() <=
-           base::win::Version::WIN7;
-  }
-#elif BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   if (omit_on & kOmitOnFuchsia)
     return true;
 #endif
@@ -292,28 +284,28 @@ const ElideTestParams kElideTestParams[]{
      "Two-character emoji fully elided between lines."},
     {u"abc" MAN_EMOJI MEDIUM_SKIN_TONE_MODIFIER u"efg", 4, 7, 3,
      u"abc" MAN_EMOJI MEDIUM_SKIN_TONE_MODIFIER u"\nefg",
-     "First line ends with modified emoji.", kOmitOnWin7 | kOmitOnFuchsia},
+     "First line ends with modified emoji.", kOmitOnFuchsia},
     {u"abc" MAN_EMOJI MEDIUM_SKIN_TONE_MODIFIER u"efg", 3, 3, 2,
      ELLIPSIZE(u"abc", u"fg"), "Modified emoji fully elided between lines."},
     {u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"efg", 4, 10, 3,
      u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"\nefg",
      "First line ends with joined emoji, full string returned.",
-     kOmitOnWin7 | kOmitOnFuchsia},
+     kOmitOnFuchsia},
     {u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"efgh", 4, 10, 3,
      ELLIPSIZE(u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE, u"fgh"),
      "First line ends with joined emoji, string cut in middle (1).",
-     kOmitOnWin7 | kOmitOnFuchsia},
+     kOmitOnFuchsia},
     {u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"defghi", 5, 11, 4,
      ELLIPSIZE(u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"d", u"fghi"),
      "First line ends with joined emoji, string cut in middle (2).",
-     kOmitOnWin7 | kOmitOnFuchsia},
+     kOmitOnFuchsia},
     {u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"efg", 3, 3, 2,
      ELLIPSIZE(u"abc", u"fg"), "Joined emoji fully elided between lines."},
     {u"abcde" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE
          MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"fg",
      4, 4, 9, ELLIPSIZE(u"abcd", MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"fg"),
      "Joined emoji in sequence; first emoji is elided but not second.",
-     kOmitOnWin7 | kOmitOnFuchsia},
+     kOmitOnFuchsia},
     // These test the combined function of the Elide() method, including the
     // intelligent overlapping and positioning of lines and extensions.
     {u"abcdef", 5, 5, 4, u"abcde\nf", "Wrap at last possible location."},

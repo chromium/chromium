@@ -7,10 +7,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
 namespace vr {
 
 // TODO(crbug.com/1394319): Re-enable this test on MSAN if not removed.
@@ -23,11 +19,6 @@ namespace vr {
 #define MAYBE_InitializeAndCleanup InitializeAndCleanup
 #endif
 TEST(GlTestEnvironmentTest, MAYBE_InitializeAndCleanup) {
-#if BUILDFLAG(IS_WIN)
-  // VR is not supported on Windows 7.
-  if (base::win::GetVersion() <= base::win::Version::WIN7)
-    return;
-#endif
   GlTestEnvironment gl_test_environment(gfx::Size(100, 100));
   EXPECT_NE(gl_test_environment.GetFrameBufferForTesting(), 0u);
   EXPECT_EQ(glGetError(), (GLenum)GL_NO_ERROR);
