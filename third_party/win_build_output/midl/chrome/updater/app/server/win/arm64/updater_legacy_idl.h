@@ -154,6 +154,18 @@ typedef struct GoogleUpdate3WebSystemClass GoogleUpdate3WebSystemClass;
 #endif 	/* __GoogleUpdate3WebSystemClass_FWD_DEFINED__ */
 
 
+#ifndef __GoogleUpdate3WebServiceClass_FWD_DEFINED__
+#define __GoogleUpdate3WebServiceClass_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class GoogleUpdate3WebServiceClass GoogleUpdate3WebServiceClass;
+#else
+typedef struct GoogleUpdate3WebServiceClass GoogleUpdate3WebServiceClass;
+#endif /* __cplusplus */
+
+#endif 	/* __GoogleUpdate3WebServiceClass_FWD_DEFINED__ */
+
+
 #ifndef __PolicyStatusUserClass_FWD_DEFINED__
 #define __PolicyStatusUserClass_FWD_DEFINED__
 
@@ -2771,6 +2783,14 @@ EXTERN_C const CLSID CLSID_GoogleUpdate3WebSystemClass;
 
 class DECLSPEC_UUID("FAC5C548-84EC-474C-A4B3-CD414E09B14C")
 GoogleUpdate3WebSystemClass;
+#endif
+
+EXTERN_C const CLSID CLSID_GoogleUpdate3WebServiceClass;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("687DCE9A-57BE-4026-BEC4-C0A9ACBBCAF2")
+GoogleUpdate3WebServiceClass;
 #endif
 
 EXTERN_C const CLSID CLSID_PolicyStatusUserClass;

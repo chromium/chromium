@@ -193,6 +193,7 @@ std::vector<CLSID> GetActiveServers(UpdaterScope scope) {
       return {
           __uuidof(UpdaterSystemClass),
           __uuidof(GoogleUpdate3WebSystemClass),
+          __uuidof(GoogleUpdate3WebServiceClass),
           __uuidof(PolicyStatusSystemClass),
           __uuidof(ProcessLauncherClass),
       };

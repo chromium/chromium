@@ -37,6 +37,10 @@ CoCreatableClassWithFactoryEx(
     Microsoft::WRL::SimpleClassFactory<LegacyOnDemandImpl>,
     ActiveSystem);
 CoCreatableClassWithFactoryEx(
+    GoogleUpdate3WebServiceClass,
+    Microsoft::WRL::SimpleClassFactory<LegacyOnDemandImpl>,
+    ActiveSystem);
+CoCreatableClassWithFactoryEx(
     ProcessLauncherClass,
     Microsoft::WRL::SimpleClassFactory<LegacyProcessLauncherImpl>,
     ActiveSystem);

@@ -528,6 +528,14 @@ library UpdaterLegacyLib {
   }
 
   [
+    uuid(PLACEHOLDER-GUID-687DCE9A-57BE-4026-BEC4-C0A9ACBBCAF2),
+    helpstring("GoogleUpdate3WebServiceClass (do not use, for backward compat)")
+  ]
+  coclass GoogleUpdate3WebServiceClass {
+    [default] interface IUnknown;
+  }
+
+  [
     uuid(PLACEHOLDER-GUID-E432DCFE-6A32-4C07-B038-9D74AC80D6AB),
     helpstring("Policy Status for per-user applications.")
   ]

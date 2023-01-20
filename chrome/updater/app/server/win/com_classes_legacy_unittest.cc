@@ -251,6 +251,8 @@ TEST(LegacyCOMClassesTest, CheckLegacyInterfaceIDs) {
             L"{22181302-A8A6-4F84-A541-E5CBFC70CC43}");
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(GoogleUpdate3WebSystemClass)),
             L"{8A1D4361-2C08-4700-A351-3EAA9CBFF5E4}");
+  EXPECT_EQ(base::win::WStringFromGUID(__uuidof(GoogleUpdate3WebServiceClass)),
+            L"{534F5323-3569-4f42-919D-1E1CF93E5BF6}");
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(PolicyStatusUserClass)),
             L"{6DDCE70D-A4AE-4E97-908C-BE7B2DB750AD}");
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(PolicyStatusSystemClass)),
@@ -284,6 +286,8 @@ TEST(LegacyCOMClassesTest, CheckLegacyInterfaceIDs) {
             L"{75828ED1-7BE8-45D0-8950-AA85CBF74510}");
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(GoogleUpdate3WebSystemClass)),
             L"{283209B7-C761-41CA-BE8D-B5321CD78FD6}");
+  EXPECT_EQ(base::win::WStringFromGUID(__uuidof(GoogleUpdate3WebServiceClass)),
+            L"{B52C8B56-9541-4B78-9B2F-665366B78A9C}");
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(PolicyStatusUserClass)),
             L"{4DAC24AB-B340-4B7E-AD01-1504A7F59EEA}");
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(PolicyStatusSystemClass)),
