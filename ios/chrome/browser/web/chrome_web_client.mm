@@ -48,7 +48,6 @@
 #import "ios/chrome/browser/url/url_util.h"
 #import "ios/chrome/browser/web/browser_about_rewriter.h"
 #import "ios/chrome/browser/web/chrome_main_parts.h"
-#import "ios/chrome/browser/web/error_page_controller_bridge.h"
 #import "ios/chrome/browser/web/error_page_util.h"
 #import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/font_size/font_size_java_script_feature.h"
@@ -373,13 +372,6 @@ void ChromeWebClient::PrepareErrorPage(
   } else {
     std::move(error_html_callback)
         .Run(GetErrorPage(url, error, is_post, is_off_the_record));
-    ErrorPageControllerBridge* error_page_controller =
-        ErrorPageControllerBridge::FromWebState(web_state);
-    if (error_page_controller) {
-      // ErrorPageControllerBridge may not be created for web_state not attached
-      // to a tab.
-      error_page_controller->StartHandlingJavascriptCommands();
-    }
   }
 }
 

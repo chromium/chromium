@@ -84,7 +84,6 @@
 #import "ios/chrome/browser/voice/voice_search_navigations_tab_helper.h"
 #import "ios/chrome/browser/web/annotations/annotations_tab_helper.h"
 #import "ios/chrome/browser/web/blocked_popup_tab_helper.h"
-#import "ios/chrome/browser/web/error_page_controller_bridge.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/web/image_fetch/image_fetch_tab_helper.h"
 #import "ios/chrome/browser/web/invalid_url_tab_helper.h"
@@ -140,7 +139,6 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
       web_state);
   password_manager::WellKnownChangePasswordTabHelper::CreateForWebState(
       web_state);
-  ErrorPageControllerBridge::CreateForWebState(web_state);
 
   InvalidUrlTabHelper::CreateForWebState(web_state);
 

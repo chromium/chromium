@@ -25,20 +25,20 @@ window.errorPageController = {
 
   // Track easter egg plays and high scores.
   trackEasterEgg: function() {
-    __gCrWeb.message.invokeOnHost(
-        {'command': 'errorPageController.trackEasterEgg'});
+    window.webkit.messageHandlers['ErrorPageMessage'].postMessage(
+        {'command': 'trackEasterEgg'});
   },
 
   updateEasterEggHighScore: function(highScore) {
-    __gCrWeb.message.invokeOnHost({
-      'command': 'errorPageController.updateEasterEggHighScore',
+    window.webkit.messageHandlers['ErrorPageMessage'].postMessage({
+      'command': 'updateEasterEggHighScore',
       'highScore': highScore.toString(),
     });
   },
 
   resetEasterEggHighScore: function() {
-    __gCrWeb.message.invokeOnHost(
-        {'command': 'errorPageController.resetEasterEggHighScore'});
+    window.webkit.messageHandlers['ErrorPageMessage'].postMessage(
+        {'command': 'resetEasterEggHighScore'});
   },
 };
 

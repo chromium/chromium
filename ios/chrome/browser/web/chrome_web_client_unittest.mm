@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
 #import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
-#import "ios/chrome/browser/web/error_page_controller_bridge.h"
 #import "ios/chrome/browser/web/error_page_util.h"
 #import "ios/chrome/browser/web/features.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_container.h"
@@ -154,7 +153,6 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageNonPostNonOtr) {
         page = error_html;
       });
   web::FakeWebState web_state;
-  ErrorPageControllerBridge::CreateForWebState(&web_state);
   web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
                               /*is_post=*/false,
                               /*is_off_the_record=*/false,
@@ -181,7 +179,6 @@ TEST_F(ChromeWebClientTest, PrepareErrorPagePostNonOtr) {
         page = error_html;
       });
   web::FakeWebState web_state;
-  ErrorPageControllerBridge::CreateForWebState(&web_state);
   web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
                               /*is_post=*/true,
                               /*is_off_the_record=*/false,
@@ -208,7 +205,6 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageNonPostOtr) {
         page = error_html;
       });
   web::FakeWebState web_state;
-  ErrorPageControllerBridge::CreateForWebState(&web_state);
   web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
                               /*is_post=*/false,
                               /*is_off_the_record=*/true,
@@ -235,7 +231,6 @@ TEST_F(ChromeWebClientTest, PrepareErrorPagePostOtr) {
         page = error_html;
       });
   web::FakeWebState web_state;
-  ErrorPageControllerBridge::CreateForWebState(&web_state);
   web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
                               /*is_post=*/true,
                               /*is_off_the_record=*/true,
