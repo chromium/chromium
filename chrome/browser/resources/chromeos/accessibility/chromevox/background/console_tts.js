@@ -19,9 +19,8 @@ export class ConsoleTts {
      * True if the console TTS is enabled by the user.
      * @private {boolean}
      */
-    this.enabled_ =
-        ChromeVoxPrefs.instance.getPrefs()['enableSpeechLogging'] ===
-        String(true);
+    this.enabled_ = /** @type {boolean} */ (
+        ChromeVoxPrefs.instance.getPrefs()['enableSpeechLogging']);
   }
 
   /**

@@ -386,11 +386,11 @@ export class OptionsPage {
   /**
    * Set the html element for a preference to match the given value.
    * @param {Element} element The HTML control.
-   * @param {string} value The new value.
+   * @param {*} value The new value.
    */
   static setValue(element, value) {
     if (element.tagName === 'INPUT' && element.type === 'checkbox') {
-      element.checked = (value === 'true');
+      element.checked = value;
     } else if (element.tagName === 'INPUT' && element.type === 'radio') {
       element.checked = (String(element.value) === value);
     } else {
