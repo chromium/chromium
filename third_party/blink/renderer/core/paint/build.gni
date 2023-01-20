@@ -277,6 +277,7 @@ blink_core_tests_paint = [
   "fragment_data_test.cc",
   "highlight_painting_utils_test.cc",
   "html_canvas_painter_test.cc",
+  "image_painter_test.cc",
   "inline_text_box_painter_test.cc",
   "link_highlight_impl_test.cc",
   "ng/ng_box_fragment_painter_test.cc",

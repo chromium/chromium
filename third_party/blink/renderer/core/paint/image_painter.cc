@@ -176,18 +176,23 @@ void ImagePainter::PaintReplaced(const PaintInfo& paint_info,
   PhysicalRect visual_rect =
       layout_image_.ClipsToContentBox() ? content_rect : paint_rect;
 
-  // As an optimization for sprite sheets, an image may use the cull rect when
-  // generating the display item, which optimizes the following scenario:
+  // As an optimization for SVG sprite sheets, an image may use the cull rect
+  // when generating the display item, which optimizes the following scenario:
   //   <div style="overflow: hidden; pos: rel; width: ..px; height: ..px;">
   //     <img src="spritesheet.svg" style="pos: abs; top: -..px; left: -..px;">
-  // This requires invalidating when the cull rect changes, which could regress
-  // performance due to the interest rect (scrolling cull rect) changing. To
-  // avoid this, we only consider "sprite sheet" cull rects that are cull rects
-  // fully contained within the image's visual rect.
-  PhysicalRect cull_rect(paint_info.GetCullRect().Rect());
-  bool has_sprite_sheet_cull_rect = visual_rect.Contains(cull_rect);
-  if (has_sprite_sheet_cull_rect) {
-    visual_rect.Intersect(cull_rect);
+  // The bitmap image codepath does not support subrect decoding and vetoes some
+  // optimizations if subrects are used to avoid bleeding (see:
+  // https://crbug.com/1404998#c12), so we limit this optimization to SVG.
+  if (layout_image_.CachedImage() &&
+      layout_image_.CachedImage()->GetImage()->IsSVGImage()) {
+    PhysicalRect cull_rect(paint_info.GetCullRect().Rect());
+    // Depending on the cull rect requires that we invalidate when the cull rect
+    // changes (see call to `UpdatePaintedRect`), which could do additional
+    // invalidations following scroll updates. To avoid this, we only consider
+    // "sprite sheet" cull rects which are fully contained in the visual rect.
+    if (visual_rect.Contains(cull_rect)) {
+      visual_rect.Intersect(cull_rect);
+    }
   }
   layout_image_.GetMutableForPainting().UpdatePaintedRect(visual_rect);
 
