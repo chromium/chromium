@@ -75,6 +75,12 @@ class ReportingService {
   // True iff reporting is currently enabled.
   bool reporting_active() const;
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  void SetIsInForegound(bool is_in_foreground) {
+    is_in_foreground_ = is_in_foreground;
+  }
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
   // Registers local state prefs used by this class. This should only be called
   // once.
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -116,6 +122,10 @@ class ReportingService {
   // instance.
   const raw_ptr<MetricsServiceClient> client_;
 
+  // Used to flush changes to disk after uploading a log. Weak pointer; must
+  // outlive |this| instance.
+  const raw_ptr<PrefService> local_state_;
+
   // Largest log size to attempt to retransmit.
   size_t max_retransmit_size_;
 
@@ -145,6 +155,13 @@ class ReportingService {
 
   // Info on current reporting state to send along with reports.
   ReportingInfo reporting_info_;
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // Indicates whether the browser is currently in the foreground. Used to
+  // determine whether |local_state_| should be flushed immediately after
+  // uploading a log.
+  bool is_in_foreground_ = false;
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   SEQUENCE_CHECKER(sequence_checker_);
 

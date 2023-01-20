@@ -489,6 +489,7 @@ void MetricsService::OnApplicationNotIdle() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void MetricsService::OnAppEnterBackground(bool keep_recording_in_background) {
   is_in_foreground_ = false;
+  reporting_service_.SetIsInForegound(false);
   if (!keep_recording_in_background) {
     rotation_scheduler_->Stop();
     reporting_service_.Stop();
@@ -520,6 +521,7 @@ void MetricsService::OnAppEnterBackground(bool keep_recording_in_background) {
 
 void MetricsService::OnAppEnterForeground(bool force_open_new_log) {
   is_in_foreground_ = true;
+  reporting_service_.SetIsInForegound(true);
   state_manager_->LogHasSessionShutdownCleanly(false);
   StartSchedulerIfNecessary();
 

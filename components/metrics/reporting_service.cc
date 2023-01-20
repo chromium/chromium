@@ -33,6 +33,7 @@ ReportingService::ReportingService(MetricsServiceClient* client,
                                    size_t max_retransmit_size,
                                    MetricsLogsEventManager* logs_event_manager)
     : client_(client),
+      local_state_(local_state),
       max_retransmit_size_(max_retransmit_size),
       logs_event_manager_(logs_event_manager),
       reporting_active_(false),
@@ -240,6 +241,19 @@ void ReportingService::OnLogUploadComplete(int response_code,
       log_store()->DiscardStagedLog();
       // Store the updated list to disk now that the removed log is uploaded.
       log_store()->TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+      // If Chrome is in the background, flush the discarded and trimmed logs
+      // from |local_state_| immediately because the process may be killed at
+      // any time from now without persisting the changes. Otherwise, we may end
+      // up re-uploading the same log in a future session. We do not do this if
+      // Chrome is in the foreground because of the assumption that
+      // |local_state_| will be flushed when convenient, and we do not want to
+      // do more work than necessary on the main thread while Chrome is visible.
+      if (!is_in_foreground_) {
+        local_state_->CommitPendingWrite();
+      }
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     }
   }
 
