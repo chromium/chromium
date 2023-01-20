@@ -33,6 +33,10 @@
 #include "ui/gl/init/gl_factory.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 using ::gl::MockGLInterface;
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -513,7 +517,6 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
         new MockCopyTexImageResourceManager(feature_info.get());
     decoder_->SetCopyTexImageBlitterForTest(copy_tex_image_blitter_);
   }
-
   gpu::ContextResult result = decoder_->Initialize(
       surface_, context_, false, DisallowedFeatures(), attribs);
   if (result != gpu::ContextResult::kSuccess) {
@@ -2420,6 +2423,12 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
   command_line->AppendSwitchASCII(switches::kUseANGLE,
                                   gl::kANGLEImplementationNullName);
 
+#if BUILDFLAG(IS_OZONE)
+  ui::OzonePlatform::InitParams params;
+  params.single_process = true;
+  ui::OzonePlatform::InitializeForGPU(params);
+#endif
+
   context_creation_attribs_.offscreen_framebuffer_size = gfx::Size(4, 4);
   context_creation_attribs_.alpha_size = 8;
   context_creation_attribs_.blue_size = 8;
@@ -2430,12 +2439,15 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
   context_creation_attribs_.bind_generates_resource = true;
 
   gl::init::InitializeStaticGLBindingsImplementation(
-      gl::GLImplementationParts(gl::kGLImplementationEGLANGLE), false);
+      gl::GLImplementationParts(gl::ANGLEImplementation::kNull), false);
   display_ = gl::init::InitializeGLOneOffPlatformImplementation(
       /*fallback_to_software_gl=*/false,
       /*disable_gl_drawing=*/false,
       /*init_extensions=*/true,
       /*gpu_preference=*/gl::GpuPreference::kDefault);
+
+  // Ensure we're running with Null Backend.
+  ASSERT_EQ(gl::GetANGLEImplementation(), gl::ANGLEImplementation::kNull);
 
   scoped_refptr<gles2::FeatureInfo> feature_info = new gles2::FeatureInfo();
   group_ = new gles2::ContextGroup(
@@ -2465,8 +2477,12 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
       group_->Initialize(decoder_.get(), context_creation_attribs_.context_type,
                          DisallowedFeatures()),
       gpu::ContextResult::kSuccess);
+
+  // We need command buffer to emulate default framebuffer is the GLSurface is
+  // surfaceless.
+  const bool offscreen = surface_->IsSurfaceless();
   ASSERT_EQ(
-      decoder_->Initialize(surface_, context_, false, DisallowedFeatures(),
+      decoder_->Initialize(surface_, context_, offscreen, DisallowedFeatures(),
                            context_creation_attribs_),
       gpu::ContextResult::kSuccess);
 

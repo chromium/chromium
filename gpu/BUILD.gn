@@ -7,8 +7,10 @@ import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
+import("//third_party/angle/gni/angle.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//ui/gl/features.gni")
+
 if (is_android) {
   # Pull in enable_chrome_android_internal.
   import("//build/config/android/config.gni")
@@ -638,9 +640,12 @@ test("gpu_unittests") {
     sources += [ "command_buffer/service/gpu_fence_manager_unittest.cc" ]
   }
 
-  # TODO(geofflang): Run passthrough command decoder unittests on more platforms
-  # once initialization of ANGLE's NULL context is supported
-  if ((is_win || ((is_linux || is_chromeos) && !use_ozone)) && !is_asan) {
+  # On official builds angle doesn't build null backend that is required for
+  # unit tests. We don't check directly for angle_enable_null to avoid
+  # accidental skipping all the tests if angle logic to build null backend will
+  # change.
+  if (!is_official_build) {
+    assert(angle_enable_null)
     sources += [
       "command_buffer/service/gles2_cmd_decoder_passthrough_unittest_buffers.cc",
       "command_buffer/service/gles2_cmd_decoder_passthrough_unittest_commands.cc",

@@ -55,8 +55,9 @@ class GLOzoneEGLFlatland : public GLOzoneEGL {
   scoped_refptr<gl::GLSurface> CreateOffscreenGLSurface(
       gl::GLDisplay* display,
       const gfx::Size& size) override {
-    return gl::InitializeGLSurface(base::MakeRefCounted<gl::SurfacelessEGL>(
-        display->GetAs<gl::GLDisplayEGL>(), size));
+    return gl::InitializeGLSurface(
+        base::MakeRefCounted<gl::PbufferGLSurfaceEGL>(
+            display->GetAs<gl::GLDisplayEGL>(), size));
   }
 
   gl::EGLDisplayPlatform GetNativeDisplay() override {
