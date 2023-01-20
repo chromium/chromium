@@ -43,6 +43,9 @@ namespace ash {
 
 namespace {
 
+// The padding between sliders inside the `UnifiedSlidersContainerView`.
+const int kSlidersPadding = 8;
+
 class DetailedViewContainer : public views::View {
  public:
   DetailedViewContainer() = default;
@@ -102,10 +105,10 @@ void UnifiedSlidersContainerView::SetExpandedAmount(double expanded_amount) {
 }
 
 int UnifiedSlidersContainerView::GetExpandedHeight() const {
-  return std::accumulate(children().cbegin(), children().cend(), 0,
-                         [](int height, const auto* v) {
-                           return height + v->GetHeightForWidth(kTrayMenuWidth);
-                         });
+  return std::accumulate(
+      children().cbegin(), children().cend(), 0, [](int height, const auto* v) {
+        return height + v->GetHeightForWidth(kTrayMenuWidth) + kSlidersPadding;
+      });
 }
 
 void UnifiedSlidersContainerView::Layout() {
@@ -113,7 +116,7 @@ void UnifiedSlidersContainerView::Layout() {
   for (auto* child : children()) {
     int height = child->GetHeightForWidth(kTrayMenuWidth);
     child->SetBounds(0, y, kTrayMenuWidth, height);
-    y += height;
+    y += height + kSlidersPadding;
   }
 }
 
