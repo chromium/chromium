@@ -11,24 +11,24 @@ on:
 
 jobs:
   wpt:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
-      - name: Set up Node.js
-        uses: actions/setup-node@v1
+      - name: Set up node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 16
       - name: Install dependencies
         run: npm install
       - name: Build
         run: npm run build
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: 3.9
       - name: Set up virtualenv
         run: pip install virtualenv
       - name: Set up hosts

@@ -18,28 +18,28 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install chrome-dev
         run: |
-          sudo apt-get install xvfb
+          sudo apt-get install -y xvfb
           wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
           sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
           sudo apt-get update
           sudo apt-get install -y google-chrome-unstable
-      - name: Set up Node.js
-        uses: actions/setup-node@v1
+      - name: Set up node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 16
       - name: Install npm dependencies
         run: npm install
       - name: Build
         run: npm run build
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.8
+          python-version: 3.9
       - name: Install Python dependencies
-        run: python -m pip install -r tests/requirements.txt
+        run: pip install -r tests/requirements.txt
       - name: Run e2e tests
         run: CHANNEL=chrome-dev xvfb-run --auto-servernum npm run e2e-${{ matrix.headful-argument }}
 

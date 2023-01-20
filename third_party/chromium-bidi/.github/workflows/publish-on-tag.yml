@@ -10,21 +10,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repo
-        uses: actions/checkout@v2
-      - name: Set up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/checkout@v3
+      - name: Set up node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 16
       - name: Install npm dependencies
         run: npm install
       - name: Build
         run: npm run build
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.8
+          python-version: 3.9
       - name: Install Python dependencies
-        run: python -m pip install -r tests/requirements.txt
+        run: pip install -r tests/requirements.txt
       - name: Test
         run: npm test
       - name: Publish
