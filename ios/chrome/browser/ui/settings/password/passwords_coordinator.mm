@@ -171,7 +171,7 @@
 
 #pragma mark - PasswordsSettingsCommands
 
-- (void)showCompromisedPasswords {
+- (void)showPasswordIssues {
   DCHECK(!self.passwordIssuesCoordinator);
   self.passwordIssuesCoordinator = [[PasswordIssuesCoordinator alloc]
       initWithBaseNavigationController:self.baseNavigationController

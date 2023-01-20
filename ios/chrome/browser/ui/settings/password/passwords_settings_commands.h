@@ -15,7 +15,7 @@ struct CredentialUIEntry;
 @protocol PasswordsSettingsCommands <NSObject>
 
 // Shows the screen with password issues.
-- (void)showCompromisedPasswords;
+- (void)showPasswordIssues;
 
 // Shows passwords details for blocked passwords.
 - (void)showDetailedViewForCredential:

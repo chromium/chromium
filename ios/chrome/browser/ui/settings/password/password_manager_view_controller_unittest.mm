@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller+private.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
+#import "ios/chrome/browser/ui/settings/password/passwords_settings_commands.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
@@ -47,6 +48,8 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -76,10 +79,6 @@ using ::testing::Return;
 @end
 
 namespace {
-
-typedef struct {
-  bool password_check_enabled;
-} PasswordCheckFeatureStatus;
 
 // Use this test suite for tests that verify behaviors of
 // PasswordManagerViewController before loading the passwords for the first time
@@ -128,6 +127,12 @@ class BasePasswordManagerViewControllerTest
     passwords_controller.delegate = mediator_;
     mediator_.consumer = passwords_controller;
     [passwords_controller setPasswords:{} blockedSites:{}];
+
+    // Set up handler. Use strict mock to ensure `showPasswordIssues` isn't
+    // called except when that page is available.
+    passwords_settings_commands_strict_mock_ =
+        OCMStrictProtocolMock(@protocol(PasswordsSettingsCommands));
+    passwords_controller.handler = passwords_settings_commands_strict_mock_;
   }
 
   int GetSectionIndex(PasswordSectionIdentifier section) {
@@ -297,6 +302,16 @@ class BasePasswordManagerViewControllerTest
         }));
   }
 
+  // Selects a cell in the table view.
+  void SelectCell(NSInteger item, NSInteger sectionIndex) {
+    PasswordManagerViewController* passwords_controller =
+        GetPasswordManagerViewController();
+    [passwords_controller
+                      tableView:passwords_controller.tableView
+        didSelectRowAtIndexPath:[NSIndexPath indexPathForItem:item
+                                                    inSection:sectionIndex]];
+  }
+
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   web::WebTaskEnvironment task_environment_;
@@ -305,6 +320,7 @@ class BasePasswordManagerViewControllerTest
   TestPasswordsMediator* mediator_;
   ScopedKeyWindow scoped_window_;
   UIViewController* root_view_controller_ = nil;
+  id passwords_settings_commands_strict_mock_;
 };
 
 // Tests receiving an on-device encryption update before passwords finished
@@ -832,11 +848,17 @@ TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateDisabled) {
   EXPECT_FALSE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_FALSE(checkPassword.trailingImage);
+  EXPECT_FALSE(checkPassword.accessoryType);
 
   SetEditing(true);
   EXPECT_FALSE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_FALSE(checkPassword.trailingImage);
+  EXPECT_FALSE(checkPassword.accessoryType);
+  SetEditing(false);
+
+  SelectCell(/*item=*/0,
+             /*sectionIndex=*/GetSectionIndex(SectionIdentifierPasswordCheck));
   [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
@@ -854,16 +876,29 @@ TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateDefault) {
   EXPECT_TRUE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_FALSE(checkPassword.trailingImage);
+  EXPECT_FALSE(checkPassword.accessoryType);
 
   SetEditing(true);
   EXPECT_FALSE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_FALSE(checkPassword.trailingImage);
+  EXPECT_FALSE(checkPassword.accessoryType);
+  SetEditing(false);
+
+  SelectCell(/*item=*/0,
+             /*sectionIndex=*/GetSectionIndex(SectionIdentifierPasswordCheck));
   [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
-// Test verifies safe state of password check cell.
-TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateSafe) {
+// Test verifies safe state of password check cell with kIOSPasswordCheckup
+// feature disabled.
+TEST_F(PasswordManagerViewControllerTest,
+       PasswordCheckStateSafeWithoutKIOSPasswordCheckup) {
+  // Disable Password Checkup feature.
+  base::test::ScopedFeatureList featureList;
+  featureList.InitAndDisableFeature(
+      password_manager::features::kIOSPasswordCheckup);
+
   ChangePasswordCheckState(PasswordCheckStateSafe);
 
   CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
@@ -876,11 +911,54 @@ TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateSafe) {
   EXPECT_TRUE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_TRUE(checkPassword.trailingImage);
+  EXPECT_FALSE(checkPassword.accessoryType);
 
   SetEditing(true);
   EXPECT_FALSE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_TRUE(checkPassword.trailingImage);
+  EXPECT_FALSE(checkPassword.accessoryType);
+  SetEditing(false);
+
+  SelectCell(/*item=*/0,
+             /*sectionIndex=*/GetSectionIndex(SectionIdentifierPasswordCheck));
+  [GetPasswordManagerViewController() settingsWillBeDismissed];
+}
+
+// Test verifies safe state of password check cell with kIOSPasswordCheckup
+// feature enabled.
+TEST_F(PasswordManagerViewControllerTest,
+       PasswordCheckStateSafeWithKIOSPasswordCheckup) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList featureList;
+  featureList.InitAndEnableFeature(
+      password_manager::features::kIOSPasswordCheckup);
+
+  ChangePasswordCheckState(PasswordCheckStateSafe);
+
+  CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
+                          GetSectionIndex(SectionIdentifierPasswordCheck), 1);
+  CheckDetailItemTextWithPluralIds(
+      IDS_IOS_CHECK_PASSWORDS, IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT, 0,
+      GetSectionIndex(SectionIdentifierPasswordCheck), 0);
+  SettingsCheckItem* checkPassword =
+      GetTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 0);
+  EXPECT_TRUE(checkPassword.enabled);
+  EXPECT_TRUE(checkPassword.indicatorHidden);
+  EXPECT_TRUE(checkPassword.trailingImage);
+  EXPECT_TRUE(checkPassword.accessoryType);
+
+  SetEditing(true);
+  EXPECT_FALSE(checkPassword.enabled);
+  EXPECT_TRUE(checkPassword.indicatorHidden);
+  EXPECT_TRUE(checkPassword.trailingImage);
+  EXPECT_TRUE(checkPassword.accessoryType);
+  SetEditing(false);
+
+  OCMExpect([passwords_settings_commands_strict_mock_ showPasswordIssues]);
+  SelectCell(/*item=*/0,
+             /*sectionIndex=*/GetSectionIndex(SectionIdentifierPasswordCheck));
+  EXPECT_OCMOCK_VERIFY(passwords_settings_commands_strict_mock_);
   [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
@@ -900,12 +978,20 @@ TEST_F(PasswordManagerViewControllerTest,
   EXPECT_TRUE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_TRUE(checkPassword.trailingImage);
+  EXPECT_TRUE(checkPassword.accessoryType);
 
   SetEditing(true);
   EXPECT_FALSE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_TRUE(checkPassword.trailingImage);
+  EXPECT_TRUE(checkPassword.accessoryType);
   [GetPasswordManagerViewController() settingsWillBeDismissed];
+  SetEditing(false);
+
+  OCMExpect([passwords_settings_commands_strict_mock_ showPasswordIssues]);
+  SelectCell(/*item=*/0,
+             /*sectionIndex=*/GetSectionIndex(SectionIdentifierPasswordCheck));
+  EXPECT_OCMOCK_VERIFY(passwords_settings_commands_strict_mock_);
 }
 
 // Test verifies running state of password check cell.
@@ -922,11 +1008,17 @@ TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateRunning) {
   EXPECT_TRUE(checkPassword.enabled);
   EXPECT_FALSE(checkPassword.indicatorHidden);
   EXPECT_FALSE(checkPassword.trailingImage);
+  EXPECT_FALSE(checkPassword.accessoryType);
 
   SetEditing(true);
   EXPECT_FALSE(checkPassword.enabled);
   EXPECT_FALSE(checkPassword.indicatorHidden);
   EXPECT_FALSE(checkPassword.trailingImage);
+  EXPECT_FALSE(checkPassword.accessoryType);
+  SetEditing(false);
+
+  SelectCell(/*item=*/0,
+             /*sectionIndex=*/GetSectionIndex(SectionIdentifierPasswordCheck));
   [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
@@ -945,12 +1037,18 @@ TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateError) {
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_FALSE(checkPassword.trailingImage);
   EXPECT_FALSE(checkPassword.infoButtonHidden);
+  EXPECT_FALSE(checkPassword.accessoryType);
 
   SetEditing(true);
   EXPECT_FALSE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_FALSE(checkPassword.trailingImage);
   EXPECT_FALSE(checkPassword.infoButtonHidden);
+  EXPECT_FALSE(checkPassword.accessoryType);
+  SetEditing(false);
+
+  SelectCell(/*item=*/0,
+             /*sectionIndex=*/GetSectionIndex(SectionIdentifierPasswordCheck));
   [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
@@ -964,12 +1062,8 @@ TEST_F(PasswordManagerViewControllerTest, StartPasswordCheck) {
 
   EXPECT_CALL(GetMockPasswordCheckService(), CheckUsernamePasswordPairs);
 
-  [passwords_controller
-                    tableView:passwords_controller.tableView
-      didSelectRowAtIndexPath:
-          [NSIndexPath indexPathForItem:1
-                              inSection:GetSectionIndex(
-                                            SectionIdentifierPasswordCheck)]];
+  SelectCell(/*item=*/1,
+             /*sectionIndex=*/GetSectionIndex(SectionIdentifierPasswordCheck));
   [passwords_controller settingsWillBeDismissed];
 }
 

@@ -137,6 +137,12 @@ bool ShouldShowSettingsUI() {
       password_manager::features::kIOSPasswordUISplit);
 }
 
+// Returns true if the password checkup feature flag is enabled.
+bool IsPasswordCheckupEnabled() {
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kIOSPasswordCheckup);
+}
+
 // The size of trailing symbol icons for safe/unsafe state.
 NSInteger kTrailingSymbolSize = 18;
 
@@ -1790,6 +1796,10 @@ NSInteger kTrailingSymbolSize = 18;
       _passwordProblemsItem.trailingImage = safeIconImage;
       _passwordProblemsItem.trailingImageTintColor =
           [UIColor colorNamed:kGreenColor];
+      if (IsPasswordCheckupEnabled()) {
+        _passwordProblemsItem.accessoryType =
+            UITableViewCellAccessoryDisclosureIndicator;
+      }
       break;
     }
     case PasswordCheckStateDefault:
@@ -2027,12 +2037,13 @@ NSInteger kTrailingSymbolSize = 18;
   [self.delegate deleteCredentials:credentialsToDelete];
 }
 
+// Notifies the handler to show the password issues page if the state of the
+// Password Check cell allows it.
 - (void)showPasswordIssuesPage {
-  if (!self.insecurePasswordsCount ||
-      self.passwordCheckState == PasswordCheckStateRunning) {
+  if (![self IsPasswordCheckTappable]) {
     return;
   }
-  [self.handler showCompromisedPasswords];
+  [self.handler showPasswordIssues];
   password_manager::LogPasswordCheckReferrer(
       password_manager::PasswordCheckReferrer::kPasswordSettings);
 }
@@ -2181,6 +2192,19 @@ NSInteger kTrailingSymbolSize = 18;
          _blockedSites.empty();
 }
 
+// Helper method to determine whether the Password Check cell is tappable or
+// not.
+- (BOOL)IsPasswordCheckTappable {
+  if (IsPasswordCheckupEnabled()) {
+    return self.passwordCheckState ==
+               PasswordCheckStateUnmutedCompromisedPasswords ||
+           self.passwordCheckState == PasswordCheckStateSafe;
+  } else {
+    return self.passwordCheckState ==
+           PasswordCheckStateUnmutedCompromisedPasswords;
+  }
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
@@ -2293,8 +2317,7 @@ NSInteger kTrailingSymbolSize = 18;
     case ItemTypeSavePasswordsSwitch:
       return NO;
     case ItemTypePasswordCheckStatus:
-      return self.passwordCheckState ==
-             PasswordCheckStateUnmutedCompromisedPasswords;
+      return [self IsPasswordCheckTappable];
     case ItemTypeCheckForProblemsButton:
       return self.passwordCheckState != PasswordCheckStateRunning &&
              self.passwordCheckState != PasswordCheckStateDisabled;
