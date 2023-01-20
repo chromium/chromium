@@ -81,6 +81,14 @@ class AppStreamLauncherDataModelTest : public testing::Test {
     app_stream_launcher_data_launcher_->SetAppList(streamable_apps);
   }
 
+  void AddAppToList(const Notification::AppMetadata& app_to_add) {
+    app_stream_launcher_data_launcher_->AddAppToList(app_to_add);
+  }
+
+  void RemoveAppFromList(const proto::App app_to_remove) {
+    app_stream_launcher_data_launcher_->RemoveAppFromList(app_to_remove);
+  }
+
   const std::vector<Notification::AppMetadata>* GetAppsList() {
     return app_stream_launcher_data_launcher_->GetAppsList();
   }
@@ -122,6 +130,54 @@ TEST_F(AppStreamLauncherDataModelTest, SetAppsList) {
   EXPECT_EQ(GetAppsListSortedByName()->size(), 2u);
   EXPECT_EQ(GetAppsListSortedByName()->at(0).visible_app_name, u"Gboard");
   EXPECT_EQ(GetAppsListSortedByName()->at(1).visible_app_name, u"GPay");
+}
+
+TEST_F(AppStreamLauncherDataModelTest, AddAppToList) {
+  std::vector<Notification::AppMetadata> apps_list;
+  apps_list.emplace_back(Notification::AppMetadata(
+      u"GPay", "com.fakeapp1", gfx::Image(), absl::nullopt, true, 1,
+      proto::AppStreamabilityStatus::STREAMABLE));
+  apps_list.emplace_back(Notification::AppMetadata(
+      u"Gboard", "com.fakeapp2", gfx::Image(), absl::nullopt, true, 1,
+      proto::AppStreamabilityStatus::STREAMABLE));
+  SetAppList(apps_list);
+  AddAppToList(Notification::AppMetadata(
+      u"added_app", "com.fakeapp3", gfx::Image(), absl::nullopt, true, 1,
+      proto::AppStreamabilityStatus::STREAMABLE));
+  AddAppToList(Notification::AppMetadata(
+      u"a_added_app", "com.fakeapp3", gfx::Image(), absl::nullopt, true, 1,
+      proto::AppStreamabilityStatus::STREAMABLE));
+  EXPECT_TRUE(IsObserverAppListChanged());
+  EXPECT_EQ(GetAppsList()->size(), 4u);
+  EXPECT_EQ(GetAppsList()->at(0).visible_app_name, u"GPay");
+  EXPECT_EQ(GetAppsList()->at(1).visible_app_name, u"Gboard");
+  EXPECT_EQ(GetAppsList()->at(2).visible_app_name, u"added_app");
+  EXPECT_EQ(GetAppsList()->at(3).visible_app_name, u"a_added_app");
+  EXPECT_EQ(GetAppsListSortedByName()->size(), 4u);
+  EXPECT_EQ(GetAppsListSortedByName()->at(0).visible_app_name, u"a_added_app");
+  EXPECT_EQ(GetAppsListSortedByName()->at(1).visible_app_name, u"added_app");
+  EXPECT_EQ(GetAppsListSortedByName()->at(2).visible_app_name, u"Gboard");
+  EXPECT_EQ(GetAppsListSortedByName()->at(3).visible_app_name, u"GPay");
+}
+
+TEST_F(AppStreamLauncherDataModelTest, RemoveAppFromList) {
+  std::vector<Notification::AppMetadata> apps_list;
+  apps_list.emplace_back(Notification::AppMetadata(
+      u"GPay", "com.fakeapp1", gfx::Image(), absl::nullopt, true, 1,
+      proto::AppStreamabilityStatus::STREAMABLE));
+  apps_list.emplace_back(Notification::AppMetadata(
+      u"Gboard", "com.fakeapp2", gfx::Image(), absl::nullopt, true, 1,
+      proto::AppStreamabilityStatus::STREAMABLE));
+  SetAppList(apps_list);
+  auto app_to_remove = proto::App();
+  app_to_remove.set_package_name("com.fakeapp1");
+  app_to_remove.set_visible_name("GPay");
+  RemoveAppFromList(app_to_remove);
+  EXPECT_TRUE(IsObserverAppListChanged());
+  EXPECT_EQ(GetAppsList()->size(), 1u);
+  EXPECT_EQ(GetAppsList()->at(0).visible_app_name, u"Gboard");
+  EXPECT_EQ(GetAppsListSortedByName()->size(), 1u);
+  EXPECT_EQ(GetAppsListSortedByName()->at(0).visible_app_name, u"Gboard");
 }
 }  // namespace phonehub
 }  // namespace ash
