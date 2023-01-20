@@ -32,25 +32,18 @@ namespace {
 
 constexpr char kGrantIsImplicitHistogram[] =
     "API.StorageAccess.GrantIsImplicit";
-constexpr char kPromptResultHistogram[] =
-    "Permissions.Action.TopLevelStorageAccess";
 constexpr char kRequestOutcomeHistogram[] = "API.StorageAccess.RequestOutcome";
 
 GURL GetTopLevelURL() {
   return GURL("https://embedder.example.com");
 }
 
-GURL GetDummyEmbeddingUrlWithSubdomain() {
-  return GURL("https://subdomain.example_embedder_1.com");
-}
-
 GURL GetRequesterURL() {
   return GURL("https://requester.example.com");
 }
 
-GURL GetDummyEmbeddingUrl(int dummy_id) {
-  return GURL(std::string(url::kHttpsScheme) + "://example_embedder_" +
-              base::NumberToString(dummy_id) + ".com");
+GURL GetDummyEmbeddingUrl() {
+  return GURL("https://example_embedder.com");
 }
 
 }  // namespace
@@ -59,20 +52,14 @@ class TopLevelStorageAccessPermissionContextTest
     : public ChromeRenderViewHostTestHarness {
  public:
   explicit TopLevelStorageAccessPermissionContextTest(bool saa_enabled) {
-    std::vector<base::test::FeatureRefAndParams> enabled;
+    std::vector<base::test::FeatureRef> enabled;
     std::vector<base::test::FeatureRef> disabled;
     if (saa_enabled) {
-      enabled.push_back({net::features::kStorageAccessAPI,
-                         {
-                             {
-                                 "storage_access_api_auto_deny_outside_fps",
-                                 "false",
-                             },
-                         }});
+      enabled.push_back(net::features::kStorageAccessAPI);
     } else {
       disabled.push_back(net::features::kStorageAccessAPI);
     }
-    features_.InitWithFeaturesAndParameters(enabled, disabled);
+    features_.InitWithFeatures(enabled, disabled);
   }
 
   void SetUp() override {
@@ -93,35 +80,6 @@ class TopLevelStorageAccessPermissionContextTest
   void TearDown() override {
     mock_permission_prompt_factory_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
-  }
-
-  // Helper to request storage access on enough unique embedding_origin GURLs
-  // from |requesting_origin| to ensure that all potential implicit grants will
-  // be granted.
-  void ExhaustImplicitGrants(
-      const GURL& requesting_origin,
-      TopLevelStorageAccessPermissionContext& permission_context) {
-    permissions::PermissionRequestID fake_id = CreateFakeID();
-
-    permissions::PermissionRequestManager* manager =
-        permissions::PermissionRequestManager::FromWebContents(web_contents());
-    DCHECK(manager);
-    const int implicit_grant_limit =
-        net::features::kStorageAccessAPIDefaultImplicitGrantLimit;
-    base::RunLoop run_loop;
-    auto barrier = base::BarrierCallback<ContentSetting>(
-        implicit_grant_limit,
-        base::BindLambdaForTesting(
-            [&](const std::vector<ContentSetting>& results) {
-              run_loop.Quit();
-            }));
-    for (int grant_id = 0; grant_id < implicit_grant_limit; grant_id++) {
-      permission_context.DecidePermissionForTesting(
-          fake_id, requesting_origin, GetDummyEmbeddingUrl(grant_id),
-          /*user_gesture=*/true, barrier);
-    }
-    run_loop.Run();
-    EXPECT_FALSE(manager->IsRequestInProgress());
   }
 
   permissions::PermissionRequestID CreateFakeID() {
@@ -169,6 +127,17 @@ TEST_F(TopLevelStorageAccessPermissionContextTestAPIDisabledTest,
   EXPECT_EQ(CONTENT_SETTING_BLOCK, future.Get());
 }
 
+TEST_F(TopLevelStorageAccessPermissionContextTestAPIDisabledTest,
+       PermissionStatusBlocked) {
+  TopLevelStorageAccessPermissionContext permission_context(profile());
+
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            permission_context
+                .GetPermissionStatus(/*render_frame_host=*/nullptr,
+                                     GetRequesterURL(), GetTopLevelURL())
+                .content_setting);
+}
+
 class TopLevelStorageAccessPermissionContextTestAPIEnabledTest
     : public TopLevelStorageAccessPermissionContextTest {
  public:
@@ -180,43 +149,6 @@ class TopLevelStorageAccessPermissionContextTestAPIEnabledTest
  private:
   base::HistogramTester histogram_tester_;
 };
-
-// When the Storage Access API feature is enabled and we have a user gesture we
-// should get a decision.
-TEST_F(TopLevelStorageAccessPermissionContextTestAPIEnabledTest,
-       PermissionDecided) {
-  TopLevelStorageAccessPermissionContext permission_context(profile());
-  permissions::PermissionRequestID fake_id = CreateFakeID();
-
-  ExhaustImplicitGrants(GetRequesterURL(), permission_context);
-
-  base::test::TestFuture<ContentSetting> future;
-  permission_context.DecidePermissionForTesting(
-      fake_id, GetRequesterURL(), GetTopLevelURL(),
-      /*user_gesture=*/true, future.GetCallback());
-
-  // Run until the prompt is ready.
-  base::RunLoop().RunUntilIdle();
-
-  permissions::PermissionRequestManager* manager =
-      permissions::PermissionRequestManager::FromWebContents(web_contents());
-  ASSERT_TRUE(manager);
-  ASSERT_TRUE(manager->IsRequestInProgress());
-
-  permissions::PermissionRequest* request = manager->Requests().front();
-  ASSERT_TRUE(request);
-  ASSERT_EQ(1u, manager->Requests().size());
-  // Prompt should have both origins.
-  EXPECT_EQ(GetRequesterURL(), manager->GetRequestingOrigin());
-  EXPECT_EQ(GetTopLevelURL(), manager->GetEmbeddingOrigin());
-
-  manager->Dismiss();
-  EXPECT_EQ(CONTENT_SETTING_ASK, future.Get());
-  EXPECT_EQ(
-      histogram_tester().GetBucketCount(kRequestOutcomeHistogram,
-                                        CookieRequestOutcome::kDismissedByUser),
-      1);
-}
 
 // No user gesture should force a permission rejection.
 TEST_F(TopLevelStorageAccessPermissionContextTestAPIEnabledTest,
@@ -235,17 +167,6 @@ TEST_F(TopLevelStorageAccessPermissionContextTestAPIEnabledTest,
             1);
 }
 
-TEST_F(TopLevelStorageAccessPermissionContextTestAPIDisabledTest,
-       PermissionStatusBlocked) {
-  TopLevelStorageAccessPermissionContext permission_context(profile());
-
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            permission_context
-                .GetPermissionStatus(/*render_frame_host=*/nullptr,
-                                     GetRequesterURL(), GetTopLevelURL())
-                .content_setting);
-}
-
 TEST_F(TopLevelStorageAccessPermissionContextTestAPIEnabledTest,
        PermissionStatusAsksWhenFeatureEnabled) {
   TopLevelStorageAccessPermissionContext permission_context(profile());
@@ -257,229 +178,13 @@ TEST_F(TopLevelStorageAccessPermissionContextTestAPIEnabledTest,
                 .content_setting);
 }
 
-// Validate that each requesting origin has its own implicit grant limit. If
-// the limit for one origin is exhausted it should not affect another.
-TEST_F(TopLevelStorageAccessPermissionContextTestAPIEnabledTest,
-       ImplicitGrantLimitPerRequestingOrigin) {
-  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 0);
-
-  TopLevelStorageAccessPermissionContext permission_context(profile());
-  permissions::PermissionRequestID fake_id = CreateFakeID();
-
-  ExhaustImplicitGrants(GetRequesterURL(), permission_context);
-  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 5);
-  histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
-                                       /*sample=*/true, 5);
-  EXPECT_EQ(
-      histogram_tester().GetBucketCount(
-          kRequestOutcomeHistogram, CookieRequestOutcome::kGrantedByAllowance),
-      5);
-
-  permissions::PermissionRequestManager* manager =
-      permissions::PermissionRequestManager::FromWebContents(web_contents());
-  ASSERT_TRUE(manager);
-
-  {
-    base::test::TestFuture<ContentSetting> future;
-    permission_context.DecidePermissionForTesting(
-        fake_id, GetRequesterURL(), GetTopLevelURL(),
-        /*user_gesture=*/true, future.GetCallback());
-
-    // Run until the prompt is ready.
-    base::RunLoop().RunUntilIdle();
-
-    ASSERT_TRUE(manager->IsRequestInProgress());
-
-    // Close the prompt and validate we get the expected setting back in our
-    // callback.
-    manager->Dismiss();
-    EXPECT_EQ(CONTENT_SETTING_ASK, future.Get());
-  }
-
-  EXPECT_EQ(
-      histogram_tester().GetBucketCount(kRequestOutcomeHistogram,
-                                        CookieRequestOutcome::kDismissedByUser),
-      1);
-
-  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 5);
-  histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
-                                       /*sample=*/true, 5);
-  histogram_tester().ExpectTotalCount(kPromptResultHistogram, 1);
-  histogram_tester().ExpectBucketCount(
-      kPromptResultHistogram,
-      /*sample=*/permissions::PermissionAction::DISMISSED, 1);
-
-  GURL alternate_requester_url = GURL("https://requester2_example.com");
-
-  // However now if a different requesting origin makes a request we should see
-  // it gets auto-granted as the limit has not been reached for it yet.
-  base::test::TestFuture<ContentSetting> future;
-  permission_context.DecidePermissionForTesting(
-      fake_id, alternate_requester_url, GetTopLevelURL(),
-      /*user_gesture=*/true, future.GetCallback());
-
-  // We should have no prompts still and our latest result should be an allow.
-  EXPECT_EQ(CONTENT_SETTING_ALLOW, future.Get());
-  EXPECT_FALSE(manager->IsRequestInProgress());
-  EXPECT_EQ(
-      histogram_tester().GetBucketCount(
-          kRequestOutcomeHistogram, CookieRequestOutcome::kGrantedByAllowance),
-      6);
-
-  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 6);
-  histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
-                                       /*sample=*/true, 6);
-  histogram_tester().ExpectBucketCount(
-      kPromptResultHistogram,
-      /*sample=*/permissions::PermissionAction::DISMISSED, 1);
-}
-
-// Validate that each the implicit grant limit is scoped by top-level site.
-TEST_F(TopLevelStorageAccessPermissionContextTestAPIEnabledTest,
-       ImplicitGrantLimitSiteScoping) {
-  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 0);
-
-  TopLevelStorageAccessPermissionContext permission_context(profile());
-
-  ExhaustImplicitGrants(GetRequesterURL(), permission_context);
-
-  permissions::PermissionRequestManager* manager =
-      permissions::PermissionRequestManager::FromWebContents(web_contents());
-
-  content::WebContentsTester::For(web_contents())
-      ->NavigateAndCommit(GetDummyEmbeddingUrlWithSubdomain());
-
-  // Although the grants are exhausted, another request from a top-level origin
-  // that is same site with an existing grant should still be auto-granted. The
-  // call is to `RequestPermission`, which checks for existing grants, while
-  // `DecidePermission` does not.
-  base::test::TestFuture<ContentSetting> future;
-  permission_context.RequestPermission(CreateFakeID(), GetRequesterURL(), true,
-                                       future.GetCallback());
-
-  int implicit_grant_limit =
-      net::features::kStorageAccessAPIDefaultImplicitGrantLimit;
-
-  // We should have no prompts still and our latest result should be an allow.
-  EXPECT_FALSE(manager->IsRequestInProgress());
-  EXPECT_EQ(CONTENT_SETTING_ALLOW, future.Get());
-  EXPECT_EQ(
-      histogram_tester().GetBucketCount(
-          kRequestOutcomeHistogram, CookieRequestOutcome::kGrantedByAllowance),
-      implicit_grant_limit);
-
-  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram,
-                                      implicit_grant_limit);
-  histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
-                                       /*sample=*/true, implicit_grant_limit);
-}
-
-TEST_F(TopLevelStorageAccessPermissionContextTestAPIEnabledTest,
-       ExplicitGrantDenial) {
-  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 0);
-  histogram_tester().ExpectTotalCount(kPromptResultHistogram, 0);
-
-  TopLevelStorageAccessPermissionContext permission_context(profile());
-  permissions::PermissionRequestID fake_id = CreateFakeID();
-
-  ExhaustImplicitGrants(GetRequesterURL(), permission_context);
-  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 5);
-  histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
-                                       /*sample=*/true, 5);
-
-  base::test::TestFuture<ContentSetting> future;
-  permission_context.DecidePermissionForTesting(
-      fake_id, GetRequesterURL(), GetTopLevelURL(),
-      /*user_gesture=*/true, future.GetCallback());
-
-  // Run until the prompt is ready.
-  base::RunLoop().RunUntilIdle();
-
-  permissions::PermissionRequestManager* manager =
-      permissions::PermissionRequestManager::FromWebContents(web_contents());
-  ASSERT_TRUE(manager);
-  ASSERT_TRUE(manager->IsRequestInProgress());
-
-  // Deny the prompt and validate we get the expected setting back in our
-  // callback.
-  manager->Deny();
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, future.Get());
-
-  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 5);
-  histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
-                                       /*sample=*/true, 5);
-  histogram_tester().ExpectTotalCount(kPromptResultHistogram, 1);
-  histogram_tester().ExpectBucketCount(
-      kPromptResultHistogram,
-      /*sample=*/permissions::PermissionAction::DENIED, 1);
-  EXPECT_EQ(histogram_tester().GetBucketCount(
-                kRequestOutcomeHistogram, CookieRequestOutcome::kDeniedByUser),
-            1);
-}
-
-TEST_F(TopLevelStorageAccessPermissionContextTestAPIEnabledTest,
-       ExplicitGrantAccept) {
-  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 0);
-  histogram_tester().ExpectTotalCount(kPromptResultHistogram, 0);
-
-  TopLevelStorageAccessPermissionContext permission_context(profile());
-  permissions::PermissionRequestID fake_id = CreateFakeID();
-
-  ExhaustImplicitGrants(GetRequesterURL(), permission_context);
-  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 5);
-  histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
-                                       /*sample=*/true, 5);
-
-  base::test::TestFuture<ContentSetting> future;
-  permission_context.DecidePermissionForTesting(
-      fake_id, GetRequesterURL(), GetTopLevelURL(),
-      /*user_gesture=*/true, future.GetCallback());
-
-  // Run until the prompt is ready.
-  base::RunLoop().RunUntilIdle();
-
-  permissions::PermissionRequestManager* manager =
-      permissions::PermissionRequestManager::FromWebContents(web_contents());
-  ASSERT_TRUE(manager);
-  ASSERT_TRUE(manager->IsRequestInProgress());
-
-  // Accept the prompt and validate we get the expected setting back in our
-  // callback.
-  manager->Accept();
-  EXPECT_EQ(CONTENT_SETTING_ALLOW, future.Get());
-
-  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 6);
-  histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
-                                       /*sample=*/true, 5);
-  histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
-                                       /*sample=*/false, 1);
-  histogram_tester().ExpectTotalCount(kPromptResultHistogram, 1);
-  histogram_tester().ExpectBucketCount(
-      kPromptResultHistogram,
-      /*sample=*/permissions::PermissionAction::GRANTED, 1);
-  EXPECT_EQ(histogram_tester().GetBucketCount(
-                kRequestOutcomeHistogram, CookieRequestOutcome::kGrantedByUser),
-            1);
-}
-
 class TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest
     : public TopLevelStorageAccessPermissionContextTestAPIEnabledTest {
  public:
   TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest() {
-    features_.InitWithFeaturesAndParameters(
+    features_.InitWithFeatures(
         /*enabled_features=*/
-        {{features::kFirstPartySets, {}},
-         {net::features::kStorageAccessAPI,
-          {
-              {
-                  "storage_access_api_auto_grant_in_fps",
-                  "true",
-              },
-              {
-                  "storage_access_api_auto_deny_outside_fps",
-                  "false",
-              },
-          }}},
+        {features::kFirstPartySets, net::features::kStorageAccessAPI},
         /*disabled_features=*/{});
   }
   void SetUp() override {
@@ -536,4 +241,88 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
       ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &non_restorable_grants,
       content_settings::SessionModel::NonRestorableUserSession);
   EXPECT_EQ(1u, non_restorable_grants.size());
+}
+
+TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
+       ImplicitGrant_AutodeniedOutsideFPS) {
+  TopLevelStorageAccessPermissionContext permission_context(profile());
+  permissions::PermissionRequestID fake_id = CreateFakeID();
+
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  DCHECK(settings_map);
+
+  // Check no `SessionModel::NonRestorableUserSession` setting exists yet.
+  ContentSettingsForOneType non_restorable_grants;
+  settings_map->GetSettingsForOneType(
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &non_restorable_grants,
+      content_settings::SessionModel::NonRestorableUserSession);
+  EXPECT_EQ(0u, non_restorable_grants.size());
+
+  base::test::TestFuture<ContentSetting> future;
+  permission_context.DecidePermissionForTesting(
+      fake_id, GetRequesterURL(), GetDummyEmbeddingUrl(),
+      /*user_gesture=*/true, future.GetCallback());
+
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, future.Get());
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kRequestOutcomeHistogram,
+                CookieRequestOutcome::kDeniedByFirstPartySet),
+            1);
+
+  // Check the `SessionModel::NonRestorableUserSession` settings.
+  // None were granted, and implicit denials are not currently persisted, which
+  // preserves the default `ASK` setting.
+  settings_map->GetSettingsForOneType(
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &non_restorable_grants,
+      content_settings::SessionModel::NonRestorableUserSession);
+  EXPECT_EQ(0u, non_restorable_grants.size());
+}
+
+class TopLevelStorageAccessPermissionContextAPIFirstPartySetsDisabledTest
+    : public TopLevelStorageAccessPermissionContextTestAPIEnabledTest {
+ public:
+  TopLevelStorageAccessPermissionContextAPIFirstPartySetsDisabledTest() {
+    features_.InitWithFeatures(
+        /*enabled_features=*/
+        {net::features::kStorageAccessAPI},
+        /*disabled_features=*/{features::kFirstPartySets});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(TopLevelStorageAccessPermissionContextAPIFirstPartySetsDisabledTest,
+       PermissionDeniedWithFPSDisabled) {
+  TopLevelStorageAccessPermissionContext permission_context(profile());
+  permissions::PermissionRequestID fake_id = CreateFakeID();
+
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  DCHECK(settings_map);
+
+  // Check no `SessionModel::NonRestorableUserSession` setting exists yet.
+  ContentSettingsForOneType non_restorable_grants;
+  settings_map->GetSettingsForOneType(
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &non_restorable_grants,
+      content_settings::SessionModel::NonRestorableUserSession);
+  EXPECT_EQ(0u, non_restorable_grants.size());
+
+  base::test::TestFuture<ContentSetting> future;
+  permission_context.DecidePermissionForTesting(
+      fake_id, GetRequesterURL(), GetTopLevelURL(),
+      /*user_gesture=*/true, future.GetCallback());
+
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, future.Get());
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kRequestOutcomeHistogram,
+                CookieRequestOutcome::kDeniedByPrerequisites),
+            1);
+
+  // Check the `SessionModel::NonRestorableUserSession` settings granted by FPS.
+  settings_map->GetSettingsForOneType(
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &non_restorable_grants,
+      content_settings::SessionModel::NonRestorableUserSession);
+  EXPECT_EQ(0u, non_restorable_grants.size());
 }

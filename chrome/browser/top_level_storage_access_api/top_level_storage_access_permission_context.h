@@ -101,10 +101,8 @@ class TopLevelStorageAccessPermissionContext
       ContentSetting content_setting,
       CookieRequestOutcome outcome);
 
-  // Checks First-Party Sets metadata to determine if auto-grants or
-  // auto-denials are applicable. If no autogrant or autodenial is applicable,
-  // this tries to to use an implicit grant, and finally prompts the user if
-  // necessary.
+  // Checks First-Party Sets metadata to determine whether the request should be
+  // auto-rejected or auto-denied.
   void CheckForAutoGrantOrAutoDenial(
       const permissions::PermissionRequestID& id,
       const GURL& requesting_origin,
@@ -112,15 +110,6 @@ class TopLevelStorageAccessPermissionContext
       bool user_gesture,
       permissions::BrowserPermissionCallback callback,
       net::FirstPartySetMetadata metadata);
-
-  // Determines whether an implicit grant is available, and otherwise prompts
-  // the user.
-  void UseImplicitGrantOrPrompt(
-      const permissions::PermissionRequestID& id,
-      const GURL& requesting_origin,
-      const GURL& embedding_origin,
-      bool user_gesture,
-      permissions::BrowserPermissionCallback callback);
 
   base::WeakPtrFactory<TopLevelStorageAccessPermissionContext> weak_factory_{
       this};

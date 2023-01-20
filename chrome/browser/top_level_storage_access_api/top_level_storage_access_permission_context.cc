@@ -38,55 +38,7 @@
 
 namespace {
 
-constexpr base::TimeDelta kImplicitGrantDuration = base::Hours(24);
-constexpr base::TimeDelta kExplicitGrantDuration = base::Days(30);
-
-int GetImplicitGrantLimit() {
-  return net::features::kStorageAccessAPIImplicitGrantLimit.Get();
-}
-
-// Returns true iff the request was answered implicitly (assuming it met some
-// other baseline prerequisites).
-bool IsImplicitOutcome(CookieRequestOutcome outcome) {
-  return outcome == CookieRequestOutcome::kGrantedByAllowance ||
-         outcome == CookieRequestOutcome::kGrantedByFirstPartySet ||
-         outcome == CookieRequestOutcome::kDeniedByFirstPartySet;
-}
-
-content_settings::ContentSettingConstraints ComputeConstraints(
-    CookieRequestOutcome outcome,
-    bool implicit_result) {
-  if (!implicit_result) {
-    return {content_settings::GetConstraintExpiration(kExplicitGrantDuration),
-            content_settings::SessionModel::Durable};
-  }
-  if (outcome == CookieRequestOutcome::kGrantedByFirstPartySet) {
-    return {content_settings::GetConstraintExpiration(kImplicitGrantDuration),
-            content_settings::SessionModel::NonRestorableUserSession};
-  }
-  return {content_settings::GetConstraintExpiration(kImplicitGrantDuration),
-          content_settings::SessionModel::UserSession};
-}
-
-// Converts a ContentSetting to the corresponding CookieRequestOutcome. This
-// assumes that the request was not answered implicitly; i.e., that a prompt was
-// shown to the user (at some point - not necessarily for this request).
-CookieRequestOutcome RequestOutcomeFromPrompt(ContentSetting content_setting,
-                                              bool persist) {
-  switch (content_setting) {
-    case CONTENT_SETTING_DEFAULT:
-      return CookieRequestOutcome::kDismissedByUser;
-    case CONTENT_SETTING_ALLOW:
-      return persist ? CookieRequestOutcome::kGrantedByUser
-                     : CookieRequestOutcome::kReusedPreviousDecision;
-    case CONTENT_SETTING_BLOCK:
-      return persist ? CookieRequestOutcome::kDeniedByUser
-                     : CookieRequestOutcome::kReusedPreviousDecision;
-    default:
-      NOTREACHED();
-      return CookieRequestOutcome::kDeniedByUser;
-  }
-}
+constexpr base::TimeDelta kGrantDuration = base::Hours(24);
 
 // TODO(crbug.com/1385156): Switch to non-StorageAccessAPI metrics.
 void RecordOutcomeSample(CookieRequestOutcome outcome) {
@@ -130,13 +82,10 @@ void TopLevelStorageAccessPermissionContext::DecidePermission(
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kFirstPartySets) ||
-      (!net::features::kStorageAccessAPIAutoGrantInFPS.Get() &&
-       !net::features::kStorageAccessAPIAutoDenyOutsideFPS.Get())) {
-    // First-Party Sets is disabled, or Auto-grants and auto-denials are both
-    // disabled, so don't bother getting First-Party Sets data.
-    UseImplicitGrantOrPrompt(id, requesting_origin, embedding_origin,
-                             user_gesture, std::move(callback));
+  if (!base::FeatureList::IsEnabled(features::kFirstPartySets)) {
+    // First-Party Sets is disabled, so reject the request.
+    RecordOutcomeSample(CookieRequestOutcome::kDeniedByPrerequisites);
+    std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }
 
@@ -164,81 +113,28 @@ void TopLevelStorageAccessPermissionContext::CheckForAutoGrantOrAutoDenial(
     bool user_gesture,
     permissions::BrowserPermissionCallback callback,
     net::FirstPartySetMetadata metadata) {
-  // We should only run this method if something might need the FPS metadata.
-  DCHECK(net::features::kStorageAccessAPIAutoGrantInFPS.Get() ||
-         net::features::kStorageAccessAPIAutoDenyOutsideFPS.Get());
-
   if (metadata.AreSitesInSameFirstPartySet()) {
-    if (net::features::kStorageAccessAPIAutoGrantInFPS.Get()) {
-      // Service domains are not allowed to request storage access on behalf
-      // of other domains, even in the same First-Party Set.
-      if (metadata.top_frame_entry()->site_type() == net::SiteType::kService) {
-        NotifyPermissionSetInternal(
-            id, requesting_origin, embedding_origin, std::move(callback),
-            /*persist=*/true, CONTENT_SETTING_BLOCK,
-            CookieRequestOutcome::kDeniedByPrerequisites);
-        return;
-      }
-      // Since the sites are in the same First-Party Set, risk of abuse due to
-      // allowing access is considered to be low.
-      NotifyPermissionSetInternal(
-          id, requesting_origin, embedding_origin, std::move(callback),
-          /*persist=*/true, CONTENT_SETTING_ALLOW,
-          CookieRequestOutcome::kGrantedByFirstPartySet);
-      return;
-    }
-    // Not autogranting; fall back to implicit grants or prompt.
-  } else {
-    if (net::features::kStorageAccessAPIAutoDenyOutsideFPS.Get()) {
+    // Service domains are not allowed to request storage access on behalf
+    // of other domains, even in the same First-Party Set.
+    if (metadata.top_frame_entry()->site_type() == net::SiteType::kService) {
       NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
                                   std::move(callback),
                                   /*persist=*/true, CONTENT_SETTING_BLOCK,
-                                  CookieRequestOutcome::kDeniedByFirstPartySet);
+                                  CookieRequestOutcome::kDeniedByPrerequisites);
       return;
     }
-    // Not autodenying; fall back to implicit grants or prompt.
-  }
-
-  return UseImplicitGrantOrPrompt(id, requesting_origin, embedding_origin,
-                                  user_gesture, std::move(callback));
-}
-
-void TopLevelStorageAccessPermissionContext::UseImplicitGrantOrPrompt(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
-    bool user_gesture,
-    permissions::BrowserPermissionCallback callback) {
-  HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser_context());
-  DCHECK(settings_map);
-  // TODO(crbug.com/1385156): As the split from the Storage Access API
-  // completes, remove non-FPS implicit grant logic. Get all of our implicit
-  // grants and see which ones apply to our |requesting_origin|.
-  ContentSettingsForOneType implicit_grants;
-  settings_map->GetSettingsForOneType(
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &implicit_grants,
-      content_settings::SessionModel::UserSession);
-
-  const int existing_implicit_grants = base::ranges::count_if(
-      implicit_grants, [requesting_origin](const auto& entry) {
-        return entry.primary_pattern.Matches(requesting_origin);
-      });
-
-  // If we have fewer grants than our limit, we can just set an implicit grant
-  // now and skip prompting the user.
-  if (existing_implicit_grants < GetImplicitGrantLimit()) {
+    // Since the sites are in the same First-Party Set, risk of abuse due to
+    // allowing access is considered to be low.
     NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
                                 std::move(callback),
                                 /*persist=*/true, CONTENT_SETTING_ALLOW,
-                                CookieRequestOutcome::kGrantedByAllowance);
+                                CookieRequestOutcome::kGrantedByFirstPartySet);
     return;
   }
-
-  // Show prompt.
-  PermissionContextBase::DecidePermission(id, requesting_origin,
-                                          embedding_origin, user_gesture,
-                                          std::move(callback));
+  NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
+                              std::move(callback),
+                              /*persist=*/true, CONTENT_SETTING_BLOCK,
+                              CookieRequestOutcome::kDeniedByFirstPartySet);
 }
 
 ContentSetting
@@ -268,7 +164,10 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSet(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   NotifyPermissionSetInternal(
       id, requesting_origin, embedding_origin, std::move(callback), persist,
-      content_setting, RequestOutcomeFromPrompt(content_setting, persist));
+      content_setting,
+      content_setting == CONTENT_SETTING_ALLOW
+          ? CookieRequestOutcome::kGrantedByFirstPartySet
+          : CookieRequestOutcome::kDeniedByFirstPartySet);
 }
 
 void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
@@ -300,21 +199,14 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
   }
 
   // TODO(crbug.com/1385156): Switch to non-StorageAccessAPI metrics.
-  // Our failure cases are tracked by the prompt outcomes in the
-  // `Permissions.Action.TopLevelStorageAccess` histogram. We'll only log when a
-  // grant is actually generated.
-  bool implicit_result = IsImplicitOutcome(outcome);
-  base::UmaHistogramBoolean("API.StorageAccess.GrantIsImplicit",
-                            implicit_result);
+  base::UmaHistogramBoolean("API.StorageAccess.GrantIsImplicit", true);
 
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser_context());
   DCHECK(settings_map);
   DCHECK(persist);
 
-  // This permission was allowed so store it either ephemerally or more
-  // permanently depending on if the allow came from a prompt or automatic
-  // grant.
+  // This permission was allowed so store it.
   const net::SchemefulSite embedding_site(embedding_origin);
   const GURL embedding_site_as_url = embedding_site.GetURL();
   ContentSettingsPattern secondary_site_pattern =
@@ -328,7 +220,9 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
   settings_map->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(requesting_origin),
       secondary_site_pattern, ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-      content_setting, ComputeConstraints(outcome, implicit_result));
+      content_setting,
+      {content_settings::GetConstraintExpiration(kGrantDuration),
+       content_settings::SessionModel::NonRestorableUserSession});
 
   ContentSettingsForOneType grants;
   settings_map->GetSettingsForOneType(
