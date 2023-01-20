@@ -43,6 +43,10 @@
     padding-block-start: 16px;
   }
 
+  .no-blocked-sites {
+    padding-inline-start: 60px;
+  }
+
   #blockedSitesList {
     padding: 0 var(--cr-section-padding);
   }
@@ -138,7 +142,7 @@
 </cr-expand-button>
 <iron-collapse opened="[[blockedSitesExpanded_]]">
   <div id="blockedSitesDescription"
-      class="cr-row continuation cr-secondary-text">
+      class$="[[getBlockedSitesDescriptionClass_(blockedSitesList_.length)]]">
     [[computeBlockedSitesDescription_(blockedSitesList_.length)]]
   </div>
   <div id="blockedSitesList" role="region"

@@ -191,6 +191,13 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
             'fledgePageBlockedSitesDescription');
   }
 
+  private getBlockedSitesDescriptionClass_(): string {
+    const defaultClass = 'cr-row continuation cr-secondary-text';
+    return this.blockedSitesList_.length === 0 ?
+        `${defaultClass} no-blocked-sites` :
+        defaultClass;
+  }
+
   private onToggleChange_(e: Event) {
     const target = e.target as SettingsToggleButtonElement;
     this.metricsBrowserProxy_.recordAction(

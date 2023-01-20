@@ -43,6 +43,10 @@
     padding-block-start: 16px;
   }
 
+  .no-blocked-topics {
+    padding-inline-start: 60px;
+  }
+
   #blockedTopicsList {
     padding: 0 var(--cr-section-padding);
   }
@@ -116,7 +120,7 @@
 </cr-expand-button>
 <iron-collapse opened="[[blockedTopicsExpanded_]]">
   <div id="blockedTopicsDescription"
-      class="cr-row continuation cr-secondary-text">
+      class$="[[getBlockedTopicsDescriptionClass_(blockedTopicsList_.length)]]">
     [[computeBlockedTopicsDescription_(blockedTopicsList_.length)]]
   </div>
   <div id="blockedTopicsList" role="region"

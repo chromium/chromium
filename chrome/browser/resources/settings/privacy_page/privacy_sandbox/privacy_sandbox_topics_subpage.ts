@@ -143,6 +143,13 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
             'topicsPageBlockedTopicsDescription');
   }
 
+  private getBlockedTopicsDescriptionClass_(): string {
+    const defaultClass = 'cr-row continuation cr-secondary-text';
+    return this.blockedTopicsList_.length === 0 ?
+        `${defaultClass} no-blocked-topics` :
+        defaultClass;
+  }
+
   private onToggleChange_(e: Event) {
     const target = e.target as SettingsToggleButtonElement;
     this.metricsBrowserProxy_.recordAction(
