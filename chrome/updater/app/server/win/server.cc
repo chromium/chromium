@@ -69,7 +69,7 @@ bool SwapUninstallCmdLine(UpdaterScope scope,
 
   // TODO(crbug.com/1270520) - use a switch that can uninstall immediately if
   // unused, instead of requiring server starts.
-  uninstall_if_unused_command.AppendSwitch(kUninstallIfUnusedSwitch);
+  uninstall_if_unused_command.AppendSwitch(kWakeSwitch);
   if (IsSystemInstall(scope))
     uninstall_if_unused_command.AppendSwitch(kSystemSwitch);
   uninstall_if_unused_command.AppendSwitch(kEnableLoggingSwitch);

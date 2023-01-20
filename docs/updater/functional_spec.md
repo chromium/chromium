@@ -989,7 +989,7 @@ app is considered uninstalled.
 
 On Windows, the updater registers a "UninstallCmdLine" under the `Software\
 {Company}\Updater` key. This command line can be invoked by application
-uninstallers to cause the updater to  update its registrations. The updater
+uninstallers to cause the updater to update its registrations. The updater
 also checks for uninstallations in every periodic task execution.
 
 When the last registered application is uninstalled, the updater uninstalls

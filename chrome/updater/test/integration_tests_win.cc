@@ -245,7 +245,7 @@ void CheckInstallation(UpdaterScope scope,
                     .ReadValue(kRegValueUninstallCmdLine,
                                &uninstall_cmd_line_string));
       EXPECT_TRUE(base::CommandLine::FromString(uninstall_cmd_line_string)
-                      .HasSwitch(kUninstallIfUnusedSwitch));
+                      .HasSwitch(kWakeSwitch));
 
       if (!IsSystemInstall(scope)) {
         std::wstring run_updater_wake_command;
