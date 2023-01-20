@@ -4603,6 +4603,8 @@ static_library("browser") {
   if (is_chromeos_ash) {
     assert(enable_system_notifications)
     sources += [
+      "apps/app_deduplication_service/app_deduplication_cache.cc",
+      "apps/app_deduplication_service/app_deduplication_cache.h",
       "apps/app_deduplication_service/app_deduplication_mapper.cc",
       "apps/app_deduplication_service/app_deduplication_mapper.h",
       "apps/app_deduplication_service/app_deduplication_server_connector.cc",
