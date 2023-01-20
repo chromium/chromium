@@ -171,8 +171,12 @@ void EasyUnlockService::ResetLocalStateForUser(const AccountId& account_id) {
   if (!local_state)
     return;
 
-  ScopedDictPrefUpdate update(local_state, prefs::kEasyUnlockHardlockState);
-  update->Remove(account_id.GetUserEmail());
+  for (const std::string& pref :
+       std::vector<std::string>{prefs::kEasyUnlockHardlockState,
+                                prefs::kEasyUnlockLocalStateUserPrefs}) {
+    ScopedDictPrefUpdate update(local_state, pref);
+    update->Remove(account_id.GetUserEmail());
+  }
 
   EasyUnlockTpmKeyManager::ResetLocalStateForUser(account_id);
 }
