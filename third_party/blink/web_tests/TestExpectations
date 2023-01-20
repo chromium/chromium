@@ -1763,6 +1763,9 @@ crbug.com/248894 external/wpt/web-animations/responsive/textIndent.html [ Failur
 crbug.com/1377648 external/wpt/css/selectors/media/media-loading-state.html [ Skip Timeout ]
 crbug.com/1377648 external/wpt/css/selectors/media/media-playback-state.html [ Timeout ]
 crbug.com/1383480 external/wpt/css/selectors/invalidation/media-pseudo-classes-in-has.html [ Timeout ]
+crbug.com/1383480 external/wpt/css/selectors/invalidation/media-loading-pseudo-classes-in-has.html [ Skip Timeout ]
+crbug.com/1408679 external/wpt/css/selectors/invalidation/lang-pseudo-class-in-has-xhtml.xhtml [ Failure ]
+crbug.com/1408679 external/wpt/css/selectors/invalidation/lang-pseudo-class-in-has.html [ Failure ]
 
 # ====== Style team owned tests to here ======
 
@@ -3025,9 +3028,6 @@ crbug.com/626703 external/wpt/css/css-values/ic-unit-015.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-fonts/font-palette-empty-font-family.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-transforms/animation/translate-animation-on-svg.html [ Failure ]
 crbug.com/626703 external/wpt/css/mediaqueries/negation-001.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/invalidation/lang-pseudo-class-in-has-xhtml.xhtml [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/invalidation/lang-pseudo-class-in-has.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/invalidation/media-loading-pseudo-classes-in-has.html [ Skip Timeout ]
 crbug.com/626703 virtual/backface-visibility-interop/external/wpt/css/css-transforms/animation/translate-animation-on-svg.html [ Failure ]
 crbug.com/626703 [ Win10.20h2 ] virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/dedicated-worker/mediasource-worker-detach-element.html [ Timeout ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-transforms/animation/translate-animation-on-svg.html [ Failure ]
