@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/private_computing/private_computing_service.pb.h"
 #include "chromeos/ash/components/device_activity/fresnel_service.pb.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
@@ -77,6 +78,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
 
   // Whether current device active use case check membership is enabled or not.
   virtual bool IsEnabledCheckMembership() = 0;
+
+  // Generate status storing the last ping pacific date.
+  virtual private_computing::ActiveStatus GenerateActiveStatus() = 0;
 
   // Method used to reset the non constant saved state of the device active use
   // case. The state should be cleared after reporting device actives.

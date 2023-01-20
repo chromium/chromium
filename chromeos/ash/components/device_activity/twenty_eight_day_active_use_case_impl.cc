@@ -77,6 +77,20 @@ bool TwentyEightDayActiveUseCaseImpl::IsEnabledCheckMembership() {
       features::kDeviceActiveClient28DayActiveCheckMembership);
 }
 
+private_computing::ActiveStatus
+TwentyEightDayActiveUseCaseImpl::GenerateActiveStatus() {
+  private_computing::ActiveStatus status;
+
+  status.set_use_case(
+      private_computing::PrivateComputingUseCase::CROS_FRESNEL_28DAY_ACTIVE);
+
+  std::string last_ping_pt_date =
+      FormatPTDateString(GetLastKnownPingTimestamp());
+  status.set_last_ping_date(last_ping_pt_date);
+
+  return status;
+}
+
 bool TwentyEightDayActiveUseCaseImpl::SavePsmIdToDateMap(base::Time cur_ts) {
   // Generate |kRollingWindowSize| days of PSM identifiers to search.
   std::unordered_map<std::string, base::Time> psm_id_to_date_temp;

@@ -42,6 +42,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY) DailyUseCaseImpl
  // Whether current device active use case check membership is enabled or not.
   bool IsEnabledCheckMembership() override;
 
+  private_computing::ActiveStatus GenerateActiveStatus() override;
 };
 
 }  // namespace ash::device_activity

@@ -365,30 +365,7 @@ DeviceActivityClient::GetSaveStatusRequest() {
   private_computing::SaveStatusRequest request;
 
   for (auto* use_case : GetUseCases()) {
-    private_computing::ActiveStatus status;
-
-    // TODO: Before submission, check handling a last known ts that is
-    // unset / unix::epoch.
-    std::string last_ping_pt_date =
-        use_case->FormatPTDateString(use_case->GetLastKnownPingTimestamp());
-
-    psm_rlwe::RlweUseCase psm_use_case = use_case->GetPsmUseCase();
-    switch (psm_use_case) {
-      case psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY:
-        status.set_use_case(
-            private_computing::PrivateComputingUseCase::CROS_FRESNEL_DAILY);
-        status.set_last_ping_date(last_ping_pt_date);
-        break;
-      case psm_rlwe::RlweUseCase::CROS_FRESNEL_28DAY_ACTIVE:
-        status.set_use_case(private_computing::PrivateComputingUseCase::
-                                CROS_FRESNEL_28DAY_ACTIVE);
-        status.set_last_ping_date(last_ping_pt_date);
-        break;
-      default:
-        VLOG(1) << "Use case is not supported yet. "
-                << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase());
-        break;
-    }
+    private_computing::ActiveStatus status = use_case->GenerateActiveStatus();
 
     if (status.has_use_case()) {
       *request.add_active_status() = status;
