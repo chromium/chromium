@@ -780,7 +780,7 @@ void LayerTreeHostImpl::CommitComplete() {
       mutator_host_->HasSmilAnimation()) {
     frame_trackers_.StartSequence(
         FrameSequenceTrackerType::kMainThreadAnimation);
-    if (mutator_host_->HasSharedElementTransition()) {
+    if (mutator_host_->HasViewTransition()) {
       frame_trackers_.StartSequence(
           FrameSequenceTrackerType::kSETMainThreadAnimation);
     }
@@ -2546,7 +2546,7 @@ absl::optional<LayerTreeHostImpl::SubmitInfo> LayerTreeHostImpl::DrawLayers(
         FrameSequenceTrackerType::kMainThreadAnimation);
     frame_trackers_.StopSequence(
         FrameSequenceTrackerType::kSETMainThreadAnimation);
-  } else if (!mutator_host_->HasSharedElementTransition()) {
+  } else if (!mutator_host_->HasViewTransition()) {
     frame_trackers_.StopSequence(
         FrameSequenceTrackerType::kSETMainThreadAnimation);
   }
@@ -4302,7 +4302,7 @@ bool LayerTreeHostImpl::AnimateLayers(base::TimeTicks monotonic_time,
         FrameSequenceTrackerType::kCompositorAnimation);
   }
 
-  if (animated && mutator_host_->HasSharedElementTransition()) {
+  if (animated && mutator_host_->HasViewTransition()) {
     frame_trackers_.StartSequence(
         FrameSequenceTrackerType::kSETCompositorAnimation);
   } else {

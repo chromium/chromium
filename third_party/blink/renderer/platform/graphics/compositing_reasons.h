@@ -85,9 +85,9 @@ using CompositingReasons = uint64_t;
   /* Link highlight, frame overlay, etc. */                                   \
   V(LayerForOther)                                                            \
                                                                               \
-  /* ViewTransition shared element.                                           \
+  /* ViewTransition element.                                                  \
   See third_party/blink/renderer/core/view_transition/README.md. */           \
-  V(ViewTransitionSharedElement)
+  V(ViewTransitionElement)
 
 class PLATFORM_EXPORT CompositingReason {
   DISALLOW_NEW();

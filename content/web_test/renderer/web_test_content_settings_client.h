@@ -35,7 +35,7 @@ class WebTestContentSettingsClient : public blink::WebContentSettingsClient {
   bool AllowStorageAccessSync(StorageType storage_type) override;
   bool AllowRunningInsecureContent(bool enabled_per_settings,
                                    const blink::WebURL& url) override;
-  bool IncreaseSharedElementTransitionCallbackTimeout() const override;
+  bool IncreaseViewTransitionCallbackTimeout() const override;
 
  private:
   TestRunner* const test_runner_;

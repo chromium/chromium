@@ -735,8 +735,8 @@ void PaintArtifactCompositor::Update(
     if (layer.subtree_property_changed())
       root_layer_->SetNeedsCommit();
 
-    auto shared_element_id = layer.ViewTransitionResourceId();
-    if (shared_element_id.IsValid()) {
+    auto transition_resource_id = layer.ViewTransitionResourceId();
+    if (transition_resource_id.IsValid()) {
       host->property_trees()
           ->effect_tree_mutable()
           .AddTransitionPseudoElementEffectId(effect_id);

@@ -141,7 +141,7 @@ class MutatorHost {
   virtual bool HasCanvasInvalidation() const = 0;
   virtual bool HasJSAnimation() const = 0;
   virtual bool HasSmilAnimation() const = 0;
-  virtual bool HasSharedElementTransition() const = 0;
+  virtual bool HasViewTransition() const = 0;
 
   // Iterates through all animations and returns the minimum tick interval.
   // Returns 0 if there is a continuous animation which should be ticked

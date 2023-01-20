@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CC_VIEW_TRANSITION_VIEW_TRANSITION_SHARED_ELEMENT_ID_H_
-#define CC_VIEW_TRANSITION_VIEW_TRANSITION_SHARED_ELEMENT_ID_H_
+#ifndef CC_VIEW_TRANSITION_VIEW_TRANSITION_ELEMENT_ID_H_
+#define CC_VIEW_TRANSITION_VIEW_TRANSITION_ELEMENT_ID_H_
 
 #include <stdint.h>
 
@@ -23,7 +23,7 @@ class CC_EXPORT ViewTransitionElementId {
   ViewTransitionElementId(ViewTransitionElementId&&);
   ~ViewTransitionElementId();
 
-  // Add a shared index to this id. It must have a valid document tag.
+  // Add an element index to this id. It must have a valid document tag.
   void AddIndex(uint32_t index);
 
   // Returns true if the document tag matches this id and the index is in the
@@ -61,4 +61,4 @@ class CC_EXPORT ViewTransitionElementId {
 
 }  // namespace cc
 
-#endif  // CC_VIEW_TRANSITION_VIEW_TRANSITION_SHARED_ELEMENT_ID_H_
+#endif  // CC_VIEW_TRANSITION_VIEW_TRANSITION_ELEMENT_ID_H_

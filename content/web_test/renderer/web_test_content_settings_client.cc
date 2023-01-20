@@ -64,8 +64,8 @@ bool WebTestContentSettingsClient::AllowRunningInsecureContent(
   return enabled_per_settings || flags_->running_insecure_content_allowed();
 }
 
-bool WebTestContentSettingsClient::
-    IncreaseSharedElementTransitionCallbackTimeout() const {
+bool WebTestContentSettingsClient::IncreaseViewTransitionCallbackTimeout()
+    const {
   // In tests we want larger timeout to account for slower running tests.
   return true;
 }

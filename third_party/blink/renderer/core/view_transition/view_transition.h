@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
-#include "third_party/blink/renderer/platform/graphics/view_transition_shared_element_id.h"
+#include "third_party/blink/renderer/platform/graphics/view_transition_element_id.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -105,18 +105,18 @@ class CORE_EXPORT ViewTransition : public ScriptWrappable,
   // ActiveScriptWrappable functionality.
   bool HasPendingActivity() const override;
 
-  // Returns true if this object needs to create an EffectNode for the shared
-  // element transition.
-  bool NeedsSharedElementEffectNode(const LayoutObject& object) const;
+  // Returns true if this object needs to create an EffectNode for its element
+  // transition.
+  bool NeedsViewTransitionEffectNode(const LayoutObject& object) const;
 
   // Returns true if this object is painted via pseudo elements. Note that this
-  // is different from NeedsSharedElementFromEffectNode() since the root may not
-  // be a shared element, but require an effect node.
+  // is different from NeedsViewTransitionEffectNode() since the root may not
+  // be a transitioning element, but require an effect node.
   bool IsRepresentedViaPseudoElements(const LayoutObject& object) const;
 
-  // Updates an effect node. This effect populates the shared element id and the
-  // shared element resource id. The return value is a result of updating the
-  // effect node.
+  // Updates an effect node. This effect populates the view transition element
+  // id and the shared element resource id. The return value is a result of
+  // updating the effect node.
   PaintPropertyChangeType UpdateEffect(
       const LayoutObject& object,
       const EffectPaintPropertyNodeOrAlias& current_effect,

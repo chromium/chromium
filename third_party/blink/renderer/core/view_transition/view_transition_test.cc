@@ -135,7 +135,7 @@ class ViewTransitionTest : public testing::Test,
     auto* layout_object = e->GetLayoutObject();
     auto* transition = ViewTransitionUtils::GetActiveTransition(GetDocument());
     return layout_object && transition &&
-           transition->NeedsSharedElementEffectNode(*layout_object);
+           transition->NeedsViewTransitionEffectNode(*layout_object);
   }
 
   void ValidatePseudoElementTree(
@@ -240,7 +240,7 @@ TEST_P(ViewTransitionTest, LayoutShift) {
   auto* container_box = To<LayoutBox>(container_pseudo->GetLayoutObject());
   EXPECT_EQ(LayoutSize(100, 100), container_box->Size());
 
-  // Shared elements should not cause a layout shift.
+  // View transition elements should not cause a layout shift.
   auto* target =
       To<LayoutBox>(GetDocument().getElementById("target")->GetLayoutObject());
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
@@ -301,7 +301,7 @@ TEST_P(ViewTransitionTest, TransitionReadyPromiseResolves) {
   FinishTransition();
 }
 
-TEST_P(ViewTransitionTest, PrepareSharedElementsWantToBeComposited) {
+TEST_P(ViewTransitionTest, PrepareTransitionElementsWantToBeComposited) {
   SetHtmlInnerHTML(R"HTML(
     <style>
       /* TODO(crbug.com/1336462): html.css is parsed before runtime flags are enabled */
@@ -366,7 +366,7 @@ TEST_P(ViewTransitionTest, PrepareSharedElementsWantToBeComposited) {
   test::RunPendingTasks();
 }
 
-TEST_P(ViewTransitionTest, StartSharedElementsWantToBeComposited) {
+TEST_P(ViewTransitionTest, StartTransitionElementsWantToBeComposited) {
   SetHtmlInnerHTML(R"HTML(
     <style>
       /* TODO(crbug.com/1336462): html.css is parsed before runtime flags are enabled */
@@ -625,7 +625,7 @@ TEST_P(ViewTransitionTest, ViewTransitionPseudoTree) {
       kPseudoIdViewTransition));
 }
 
-TEST_P(ViewTransitionTest, ViewTransitionSharedElementInvalidation) {
+TEST_P(ViewTransitionTest, ViewTransitionElementInvalidation) {
   SetHtmlInnerHTML(R"HTML(
     <style>
       /* TODO(crbug.com/1336462): html.css is parsed before runtime flags are enabled */

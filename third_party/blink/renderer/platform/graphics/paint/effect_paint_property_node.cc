@@ -35,8 +35,7 @@ PaintPropertyChangeType EffectPaintPropertyNode::State::ComputeChange(
     const AnimationState& animation_state) const {
   if (local_transform_space != other.local_transform_space ||
       output_clip != other.output_clip || blend_mode != other.blend_mode ||
-      view_transition_shared_element_id !=
-          other.view_transition_shared_element_id ||
+      view_transition_element_id != other.view_transition_element_id ||
       view_transition_element_resource_id !=
           other.view_transition_element_resource_id) {
     return PaintPropertyChangeType::kChangedOnlyValues;

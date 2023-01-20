@@ -2502,8 +2502,8 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
       continue;
 
     // ViewTransition mutates the tree and mirrors post layout transform for
-    // shared elements to UA created elements. This may dirty style/layout
-    // requiring another lifecycle update.
+    // transitioning elements to UA created elements. This may dirty
+    // style/layout requiring another lifecycle update.
     needs_to_repeat_lifecycle = RunViewTransitionSteps(target_state);
     if (!needs_to_repeat_lifecycle)
       break;

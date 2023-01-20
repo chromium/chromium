@@ -1718,7 +1718,7 @@ _CONFIG = [
     },
     {
         'paths': [
-            'third_party/blink/renderer/platform/graphics/view_transition_shared_element_id.h'
+            'third_party/blink/renderer/platform/graphics/view_transition_element_id.h'
         ],
         'allowed': ['cc::ViewTransitionElementId'],
     },

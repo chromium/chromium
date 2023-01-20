@@ -155,13 +155,12 @@ void AnimationHost::SetHasSmilAnimation(bool has_smil_animation) {
   has_smil_animation_.Write(*this) = has_smil_animation;
 }
 
-bool AnimationHost::HasSharedElementTransition() const {
-  return has_shared_element_transition_.Read(*this);
+bool AnimationHost::HasViewTransition() const {
+  return has_view_transition_.Read(*this);
 }
 
-void AnimationHost::SetHasSharedElementTransition(
-    bool has_shared_element_transition) {
-  has_shared_element_transition_.Write(*this) = has_shared_element_transition;
+void AnimationHost::SetHasViewTransition(bool has_view_transition) {
+  has_view_transition_.Write(*this) = has_view_transition;
 }
 
 void AnimationHost::SetCurrentFrameHadRaf(bool current_frame_had_raf) {
@@ -345,7 +344,7 @@ void AnimationHost::PushPropertiesTo(MutatorHost* mutator_host_impl,
   host_impl->SetHasCanvasInvalidation(HasCanvasInvalidation());
   host_impl->SetHasInlineStyleMutation(HasJSAnimation());
   host_impl->SetHasSmilAnimation(HasSmilAnimation());
-  host_impl->SetHasSharedElementTransition(HasSharedElementTransition());
+  host_impl->SetHasViewTransition(HasViewTransition());
 
   if (needs_push_properties()) {
     needs_push_properties_.Write(*this) = false;

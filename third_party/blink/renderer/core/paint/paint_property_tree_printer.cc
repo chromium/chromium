@@ -54,7 +54,7 @@ class FrameViewPropertyTreePrinter
   }
 
   void CollectNodes(const LayoutObject& object) {
-    Traits::AddSharedElementTransitionProperties(object, *this);
+    Traits::AddViewTransitionProperties(object, *this);
 
     for (const auto* fragment = &object.FirstFragment(); fragment;
          fragment = fragment->NextFragment()) {
@@ -95,7 +95,7 @@ class PropertyTreePrinterTraits<TransformPaintPropertyNodeOrAlias> {
     printer.AddNode(properties.ScrollTranslation());
     printer.AddNode(properties.TransformIsolationNode());
   }
-  static void AddSharedElementTransitionProperties(
+  static void AddViewTransitionProperties(
       const LayoutObject& object,
       PropertyTreePrinter<TransformPaintPropertyNodeOrAlias>& printer) {}
   static void AddOtherProperties(
@@ -123,7 +123,7 @@ class PropertyTreePrinterTraits<ClipPaintPropertyNodeOrAlias> {
     printer.AddNode(properties.OverflowClip());
     printer.AddNode(properties.ClipIsolationNode());
   }
-  static void AddSharedElementTransitionProperties(
+  static void AddViewTransitionProperties(
       const LayoutObject& object,
       PropertyTreePrinter<ClipPaintPropertyNodeOrAlias>& printer) {}
   static void AddOtherProperties(
@@ -150,15 +150,16 @@ class PropertyTreePrinterTraits<EffectPaintPropertyNodeOrAlias> {
     printer.AddNode(properties.EffectIsolationNode());
   }
 
-  static void AddSharedElementTransitionProperties(
+  static void AddViewTransitionProperties(
       const LayoutObject& object,
       PropertyTreePrinter<EffectPaintPropertyNodeOrAlias>& printer) {
     auto* transition =
         ViewTransitionUtils::GetActiveTransition(object.GetDocument());
-    // `NeedsSharedElementEffectNode` is an indirect way to see if the object is
-    // participating in the transition.
-    if (!transition || !transition->NeedsSharedElementEffectNode(object))
+    // `NeedsViewTransitionEffectNode` is an indirect way to see if the object
+    // is participating in the transition.
+    if (!transition || !transition->NeedsViewTransitionEffectNode(object)) {
       return;
+    }
 
     printer.AddNode(transition->GetEffect(object));
   }
@@ -185,7 +186,7 @@ class PropertyTreePrinterTraits<ScrollPaintPropertyNode> {
     printer.AddNode(properties.Scroll());
   }
 
-  static void AddSharedElementTransitionProperties(
+  static void AddViewTransitionProperties(
       const LayoutObject& object,
       PropertyTreePrinter<ScrollPaintPropertyNode>& printer) {}
   static void AddOtherProperties(

@@ -101,15 +101,14 @@ void PageAnimator::ReportFrameAnimations(cc::AnimationHost* animation_host) {
     animation_host->SetHasSmilAnimation(has_smil_animation_);
     animation_host->SetCurrentFrameHadRaf(current_frame_had_raf_);
     animation_host->SetNextFrameHasPendingRaf(next_frame_has_pending_raf_);
-    animation_host->SetHasSharedElementTransition(
-        has_shared_element_transition_);
+    animation_host->SetHasViewTransition(has_view_transition_);
   }
   has_canvas_invalidation_ = false;
   has_inline_style_mutation_ = false;
   has_smil_animation_ = false;
   current_frame_had_raf_ = false;
   // next_frame_has_pending_raf_ is reset at PostAnimate().
-  // has_shared_element_transition_ is reset when the transition ends.
+  // has_view_transition_ is reset when the transition ends.
 }
 
 void PageAnimator::SetSuppressFrameRequestsWorkaroundFor704763Only(
@@ -137,9 +136,8 @@ void PageAnimator::SetNextFrameHasPendingRaf() {
   next_frame_has_pending_raf_ = true;
 }
 
-void PageAnimator::SetHasSharedElementTransition(
-    bool has_shared_element_transition) {
-  has_shared_element_transition_ = has_shared_element_transition;
+void PageAnimator::SetHasViewTransition(bool has_view_transition) {
+  has_view_transition_ = has_view_transition;
 }
 
 DISABLE_CFI_PERF

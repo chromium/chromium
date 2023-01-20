@@ -209,7 +209,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   bool HasCanvasInvalidation() const override;
   bool HasJSAnimation() const override;
   bool HasSmilAnimation() const override;
-  bool HasSharedElementTransition() const override;
+  bool HasViewTransition() const override;
 
   // Starts/stops throughput tracking represented by |sequence_id|.
   void StartThroughputTracking(TrackedAnimationSequenceId sequence_id);
@@ -219,7 +219,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   void SetHasCanvasInvalidation(bool has_canvas_invalidation);
   void SetHasInlineStyleMutation(bool has_inline_style_mutation);
   void SetHasSmilAnimation(bool has_svg_smil_animation);
-  void SetHasSharedElementTransition(bool hash_shared_element_transition);
+  void SetHasViewTransition(bool has_view_transition);
   void SetCurrentFrameHadRaf(bool current_frame_had_raf);
   void SetNextFrameHasPendingRaf(bool next_frame_has_pending_raf);
 
@@ -289,7 +289,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   ProtectedSequenceReadable<bool> has_canvas_invalidation_{false};
   ProtectedSequenceReadable<bool> has_inline_style_mutation_{false};
   ProtectedSequenceReadable<bool> has_smil_animation_{false};
-  ProtectedSequenceReadable<bool> has_shared_element_transition_{false};
+  ProtectedSequenceReadable<bool> has_view_transition_{false};
 
   ProtectedSequenceWritable<PendingThroughputTrackerInfos>
       pending_throughput_tracker_infos_;

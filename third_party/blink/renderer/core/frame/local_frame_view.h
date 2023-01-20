@@ -1010,8 +1010,6 @@ class CORE_EXPORT LocalFrameView final
   // StyleEngine instead of the base background color.
   bool ShouldUseColorAdjustBackground() const;
 
-  // Verifies the shared elements for the view transition on this view.
-  void VerifySharedElementsForViewTransition();
   // Append view transition requests from this view into the given vector.
   void AppendViewTransitionRequests(
       WTF::Vector<std::unique_ptr<ViewTransitionRequest>>&);

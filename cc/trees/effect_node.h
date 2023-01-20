@@ -8,7 +8,7 @@
 #include "cc/cc_export.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
-#include "cc/view_transition/view_transition_shared_element_id.h"
+#include "cc/view_transition/view_transition_element_id.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

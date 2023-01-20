@@ -60,7 +60,7 @@ class CORE_EXPORT PageAnimator final : public GarbageCollected<PageAnimator> {
   void SetHasSmilAnimation();
   void SetCurrentFrameHadRaf();
   void SetNextFrameHasPendingRaf();
-  void SetHasSharedElementTransition(bool);
+  void SetHasViewTransition(bool);
   void ReportFrameAnimations(cc::AnimationHost* animation_host);
 
  private:
@@ -81,7 +81,7 @@ class CORE_EXPORT PageAnimator final : public GarbageCollected<PageAnimator> {
   // True if there is a raf scheduled for the next frame.
   bool next_frame_has_pending_raf_ = false;
   // True if there is an ongoing view transition.
-  bool has_shared_element_transition_ = false;
+  bool has_view_transition_ = false;
 };
 
 }  // namespace blink

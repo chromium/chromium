@@ -500,12 +500,12 @@ void ViewTransition::ProcessCurrentState() {
         break;
 
       // Update the lifecycle if needed and discover the elements (deferred to
-      // AddSharedElementsFromCSS).
+      // AddTransitionElementsFromCSS).
       case State::kCaptureTagDiscovery:
         DCHECK(in_main_lifecycle_update_);
         DCHECK_GE(document_->Lifecycle().GetState(),
                   DocumentLifecycle::kCompositingInputsClean);
-        style_tracker_->AddSharedElementsFromCSS();
+        style_tracker_->AddTransitionElementsFromCSS();
         process_next_state = AdvanceTo(State::kCaptureRequestPending);
         DCHECK(process_next_state);
         break;
@@ -607,7 +607,7 @@ void ViewTransition::ProcessCurrentState() {
             DocumentUpdateReason::kViewTransition);
         DCHECK_GE(document_->Lifecycle().GetState(),
                   DocumentLifecycle::kPrePaintClean);
-        style_tracker_->AddSharedElementsFromCSS();
+        style_tracker_->AddTransitionElementsFromCSS();
         process_next_state = AdvanceTo(State::kAnimateRequestPending);
         DCHECK(process_next_state);
         break;
@@ -784,7 +784,7 @@ void ViewTransition::NotifyDOMCallbackFinished(bool success,
   ProcessCurrentState();
 }
 
-bool ViewTransition::NeedsSharedElementEffectNode(
+bool ViewTransition::NeedsViewTransitionEffectNode(
     const LayoutObject& object) const {
   // Layout view always needs an effect node, even if root itself is not
   // transitioning. The reason for this is that we want the root to have an
@@ -793,9 +793,10 @@ bool ViewTransition::NeedsSharedElementEffectNode(
   if (IsA<LayoutView>(object))
     return !IsTerminalState(state_);
 
-  // Otherwise check if the layout object has an active shared element.
+  // Otherwise check if the layout object has an active transition element.
   auto* element = DynamicTo<Element>(object.GetNode());
-  return element && style_tracker_ && style_tracker_->IsSharedElement(element);
+  return element && style_tracker_ &&
+         style_tracker_->IsTransitionElement(element);
 }
 
 bool ViewTransition::IsRepresentedViaPseudoElements(
@@ -807,7 +808,7 @@ bool ViewTransition::IsRepresentedViaPseudoElements(
     return style_tracker_->IsRootTransitioning();
 
   auto* element = DynamicTo<Element>(object.GetNode());
-  return element && style_tracker_->IsSharedElement(element);
+  return element && style_tracker_->IsTransitionElement(element);
 }
 
 PaintPropertyChangeType ViewTransition::UpdateEffect(
@@ -815,35 +816,32 @@ PaintPropertyChangeType ViewTransition::UpdateEffect(
     const EffectPaintPropertyNodeOrAlias& current_effect,
     const ClipPaintPropertyNodeOrAlias* current_clip,
     const TransformPaintPropertyNodeOrAlias* current_transform) {
-  DCHECK(NeedsSharedElementEffectNode(object));
+  DCHECK(NeedsViewTransitionEffectNode(object));
   DCHECK(current_transform);
   DCHECK(current_clip);
 
   EffectPaintPropertyNode::State state;
-  state.direct_compositing_reasons =
-      CompositingReason::kViewTransitionSharedElement;
+  state.direct_compositing_reasons = CompositingReason::kViewTransitionElement;
   state.local_transform_space = current_transform;
   state.output_clip = current_clip;
-  state.view_transition_shared_element_id =
-      ViewTransitionElementId(document_tag_);
+  state.view_transition_element_id = ViewTransitionElementId(document_tag_);
   state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
-      object.UniqueId(),
-      CompositorElementIdNamespace::kSharedElementTransition);
+      object.UniqueId(), CompositorElementIdNamespace::kViewTransitionElement);
   auto* element = DynamicTo<Element>(object.GetNode());
   if (!element) {
     // The only non-element participant is the layout view.
     DCHECK(object.IsLayoutView());
 
     style_tracker_->UpdateRootIndexAndSnapshotId(
-        state.view_transition_shared_element_id,
+        state.view_transition_element_id,
         state.view_transition_element_resource_id);
-    DCHECK(state.view_transition_shared_element_id.valid() ||
+    DCHECK(state.view_transition_element_id.valid() ||
            !style_tracker_->IsRootTransitioning());
     return style_tracker_->UpdateRootEffect(std::move(state), current_effect);
   }
 
   style_tracker_->UpdateElementIndicesAndSnapshotId(
-      element, state.view_transition_shared_element_id,
+      element, state.view_transition_element_id,
       state.view_transition_element_resource_id);
   return style_tracker_->UpdateEffect(element, std::move(state),
                                       current_effect);
@@ -851,7 +849,7 @@ PaintPropertyChangeType ViewTransition::UpdateEffect(
 
 EffectPaintPropertyNode* ViewTransition::GetEffect(
     const LayoutObject& object) const {
-  DCHECK(NeedsSharedElementEffectNode(object));
+  DCHECK(NeedsViewTransitionEffectNode(object));
 
   auto* element = DynamicTo<Element>(object.GetNode());
   if (!element)
@@ -944,8 +942,7 @@ void ViewTransition::PauseRendering() {
                                     this);
   const base::TimeDelta kTimeout = [this]() {
     if (auto* settings = document_->GetFrame()->GetContentSettingsClient();
-        settings &&
-        settings->IncreaseSharedElementTransitionCallbackTimeout()) {
+        settings && settings->IncreaseViewTransitionCallbackTimeout()) {
       return base::Seconds(15);
     } else {
       return base::Seconds(4);

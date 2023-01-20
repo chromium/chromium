@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
-#include "third_party/blink/renderer/platform/graphics/view_transition_shared_element_id.h"
+#include "third_party/blink/renderer/platform/graphics/view_transition_element_id.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
 #include "ui/gfx/geometry/transform.h"
@@ -31,8 +31,9 @@ class PseudoElement;
 //    are generated after the new Document has loaded and the transition can be
 //    started.
 //
-// 2) Tracking changes in the state of shared elements that are mirrored in the
-//    style for their corresponding pseudo element. For example, if a shared
+// 2) Tracking changes in the state of transition elements that are mirrored in
+// the
+//    style for their corresponding pseudo element. For example, if a transition
 //    element's size or viewport space transform is updated. This data is used
 //    to generate a dynamic UA stylesheet for these pseudo elements.
 //
@@ -66,7 +67,7 @@ class ViewTransitionStyleTracker
   ViewTransitionStyleTracker(Document& document, ViewTransitionState);
   ~ViewTransitionStyleTracker();
 
-  void AddSharedElementsFromCSS();
+  void AddTransitionElementsFromCSS();
 
   // Returns true if the pseudo element corresponding to the given id and name
   // is the only child.
@@ -141,7 +142,7 @@ class ViewTransitionStyleTracker
 
   int CapturedTagCount() const { return captured_name_count_; }
 
-  bool IsSharedElement(Node* node) const;
+  bool IsTransitionElement(Node* node) const;
 
   // This function represents whether root itself is participating in the
   // transition (i.e. it has a name in the current phase). Note that we create
@@ -212,7 +213,7 @@ class ViewTransitionStyleTracker
     // any of element's own effects, in a pseudo element layer.
     scoped_refptr<EffectPaintPropertyNode> effect_node;
 
-    // Index to add to the view transition shared element id.
+    // Index to add to the view transition element id.
     int element_index;
 
     // The visual overflow rect for this element. This is used to compute
@@ -237,12 +238,12 @@ class ViewTransitionStyleTracker
   void EndTransition();
 
   void AddConsoleError(String message, Vector<DOMNodeId> related_nodes = {});
-  void AddSharedElement(Element*, const AtomicString&);
+  void AddTransitionElement(Element*, const AtomicString&);
   bool FlattenAndVerifyElements(VectorOf<Element>&,
                                 VectorOf<AtomicString>&,
                                 absl::optional<RootData>&);
 
-  void AddSharedElementsFromCSSRecursive(PaintLayer*);
+  void AddTransitionElementsFromCSSRecursive(PaintLayer*);
 
   int OldRootDataTagSize() const {
     return old_root_data_ ? old_root_data_->names.size() : 0;
@@ -301,7 +302,7 @@ class ViewTransitionStyleTracker
   // by script for the start phase.
   int set_element_sequence_id_ = 0;
   HeapHashMap<Member<Element>, HashSet<std::pair<AtomicString, int>>>
-      pending_shared_element_names_;
+      pending_transition_element_names_;
 
   // This vector is passed as constructed to cc's view transition request,
   // so this uses the std::vector for that reason, instead of WTF::Vector.

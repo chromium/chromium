@@ -1148,7 +1148,7 @@ component("platform") {
     "graphics/video_frame_sink_bundle.h",
     "graphics/video_frame_submitter.cc",
     "graphics/video_frame_submitter.h",
-    "graphics/view_transition_shared_element_id.h",
+    "graphics/view_transition_element_id.h",
     "graphics/viz_util.cc",
     "graphics/viz_util.h",
     "graphics/web_graphics_context_3d_provider_util.cc",

@@ -13,7 +13,7 @@
 
 #include "base/functional/callback.h"
 #include "cc/cc_export.h"
-#include "cc/view_transition/view_transition_shared_element_id.h"
+#include "cc/view_transition/view_transition_element_id.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 

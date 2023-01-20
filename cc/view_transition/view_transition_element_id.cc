@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/view_transition/view_transition_shared_element_id.h"
+#include "cc/view_transition/view_transition_element_id.h"
 
 #include <sstream>
 #include <string>
