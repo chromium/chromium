@@ -69,7 +69,7 @@ public class AdaptiveToolbarStats {
         adaptiveToolbarStatePredictor.readFromSegmentationPlatform(result -> {
             RecordHistogram.recordEnumeratedHistogram(
                     "SegmentationPlatform.AdaptiveToolbar.SegmentSelected.Startup", result.second,
-                    AdaptiveToolbarButtonVariant.NUM_ENTRIES);
+                    AdaptiveToolbarButtonVariant.MAX_VALUE + 1);
         });
     }
 

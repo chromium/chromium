@@ -28,8 +28,7 @@ enum class AdaptiveToolbarButtonVariant {
   kPriceTracking = 6,
   // Reader mode action.
   kReaderMode = 7,
-  // Max number of entries.
-  kNumEntries
+  kMaxValue = kReaderMode,
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TOOLBAR_ADAPTIVE_TOOLBAR_ENUMS_H_

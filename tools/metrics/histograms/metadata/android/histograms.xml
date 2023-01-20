@@ -251,6 +251,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.AdaptiveToolbarButton.Variant.OnPageLoad"
+    enum="AdaptiveToolbarButtonVariant" expires_after="2023-06-30">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Reports the variant of the optional toolbar button that was shown after a
+    page load. Reports only when a page is loaded or a tab is switched. Reports
+    only when the contextual page actions feature is enabled and after all the
+    action providers have responded or the request has timed out. Only reported
+    for pages in the regular profile.
+  </summary>
+</histogram>
+
+<histogram name="Android.AdaptiveToolbarButton.Variant.OnStartNavigation"
+    enum="AdaptiveToolbarButtonVariant" expires_after="2023-06-30">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Reports the variant of the optional toolbar button being shown during the
+    start of a new navigation. Reports whenever
+    TabObserver.onDidStartNavigationInPrimaryMainFrame() is called which then
+    records the button variant currently being shown on the toolbar. Recorded
+    for both regular and incognito profiles.
+  </summary>
+</histogram>
+
 <histogram name="Android.AppLaunch.BlockDrawForInitialTabAccuracy"
     enum="AppLaunchBlockDrawForInitialTabAccuracy" expires_after="2022-10-16">
   <owner>sinansahin@google.com</owner>
