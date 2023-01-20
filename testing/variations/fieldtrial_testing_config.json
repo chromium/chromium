@@ -8899,9 +8899,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20220906",
+                    "name": "FixLinkPrefetchDNSAndPreconnectInNetworkService_20230120",
                     "enable_features": [
-                        "PreconnectInNetworkService"
+                        "PreconnectInNetworkService",
+                        "PrefetchDNSWithURL"
                     ]
                 }
             ]
