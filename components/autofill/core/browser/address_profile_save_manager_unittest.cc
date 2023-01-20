@@ -60,17 +60,6 @@ constexpr char kNewProfileWithIgnoredCountryDecisionHistogram[] =
 constexpr char kProfileUpdateWithIgnoredCountryDecisionHistogram[] =
     "Autofill.ProfileImport.UpdateProfileWithIgnoredCountryDecision";
 
-// Histograms related to |kAutofillRemoveInvalidPhoneNumberOnImport|
-// TODO(crbug.com/1298424): Cleanup when launched.
-constexpr char kNewProfileWithRemovedPhoneNumberDecisionHistogram[] =
-    "Autofill.ProfileImport.NewProfileWithRemovedPhoneNumberDecision";
-constexpr char kProfileUpdateWithRemovedPhoneNumberDecisionHistogram[] =
-    "Autofill.ProfileImport.UpdateProfileWithRemovedPhoneNumberDecision";
-constexpr char
-    kSilentUpdatesWithRemovedPhoneNumberProfileImportTypeHistogram[] =
-        "Autofill.ProfileImport."
-        "SilentUpdatesWithRemovedPhoneNumberProfileImportType";
-
 class MockPersonalDataManager : public TestPersonalDataManager {
  public:
   MockPersonalDataManager() = default;
@@ -335,12 +324,6 @@ void AddressProfileSaveManagerTest::TestImportScenario(
           ? kSilentUpdatesProfileImportTypeHistogram
           : kProfileImportTypeHistogram,
       test_scenario.expected_import_type, 1);
-  if (test_scenario.allow_only_silent_updates &&
-      import_metadata().phone_import_status == PhoneImportStatus::kInvalid) {
-    histogram_tester.ExpectUniqueSample(
-        kSilentUpdatesWithRemovedPhoneNumberProfileImportTypeHistogram,
-        test_scenario.expected_import_type, 1);
-  }
 
   const bool is_new_profile = test_scenario.expected_import_type ==
                               AutofillProfileImportType::kNewProfile;
@@ -398,13 +381,6 @@ void AddressProfileSaveManagerTest::TestImportScenario(
         import_metadata().did_ignore_invalid_country,
         kNewProfileWithIgnoredCountryDecisionHistogram,
         kProfileUpdateWithIgnoredCountryDecisionHistogram);
-
-    // Metrics related to removing invalid phone numbers.
-    TestFeatureSpecificNewOrUpdateProfileMetrics(
-        histogram_tester, test_scenario,
-        import_metadata().phone_import_status == PhoneImportStatus::kInvalid,
-        kNewProfileWithRemovedPhoneNumberDecisionHistogram,
-        kProfileUpdateWithRemovedPhoneNumberDecisionHistogram);
 
     for (auto edited_type : test_scenario.expected_edited_types_for_metrics) {
       histogram_tester.ExpectBucketCount(affected_edits_histo, edited_type, 1);
@@ -1365,8 +1341,7 @@ TEST_P(AddressProfileSaveManagerTest,
 // Runs the suite as if:
 // - an invalid country was ignored through
 //   `kAutofillIgnoreInvalidCountryOnImport`.
-// - the phone number was (not) removed with
-//   `kAutofillRemoveInvalidPhoneNumberOnImport`.
+// - the phone number was (not) removed (relevant for UKM metrics).
 // - the imported profile contains information from an input with an
 //   unrecognized autocomplete attribute. Such fields are considered for import
 //   when `kAutofillFillAndImportFromMoreFields` is active.

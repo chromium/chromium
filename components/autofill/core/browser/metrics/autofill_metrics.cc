@@ -2958,14 +2958,6 @@ void AutofillMetrics::LogSilentUpdatesProfileImportType(
       "Autofill.ProfileImport.SilentUpdatesProfileImportType", import_type);
 }
 
-void AutofillMetrics::LogSilentUpdatesWithRemovedPhoneNumberProfileImportType(
-    AutofillProfileImportType import_type) {
-  base::UmaHistogramEnumeration(
-      "Autofill.ProfileImport."
-      "SilentUpdatesWithRemovedPhoneNumberProfileImportType",
-      import_type);
-}
-
 void AutofillMetrics::LogNewProfileImportDecision(
     AutofillClient::SaveAddressProfileOfferUserDecision decision) {
   base::UmaHistogramEnumeration("Autofill.ProfileImport.NewProfileDecision",
@@ -2976,13 +2968,6 @@ void AutofillMetrics::LogNewProfileWithIgnoredCountryImportDecision(
     AutofillClient::SaveAddressProfileOfferUserDecision decision) {
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.NewProfileWithIgnoredCountryDecision", decision);
-}
-
-void AutofillMetrics::LogNewProfileWithRemovedPhoneNumberImportDecision(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
-  base::UmaHistogramEnumeration(
-      "Autofill.ProfileImport.NewProfileWithRemovedPhoneNumberDecision",
-      decision);
 }
 
 void AutofillMetrics::LogNewProfileEditedType(ServerFieldType edited_type) {
@@ -3008,13 +2993,6 @@ void AutofillMetrics::LogProfileUpdateWithIgnoredCountryImportDecision(
     AutofillClient::SaveAddressProfileOfferUserDecision decision) {
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.UpdateProfileWithIgnoredCountryDecision",
-      decision);
-}
-
-void AutofillMetrics::LogProfileUpdateWithRemovedPhoneNumberImportDecision(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
-  base::UmaHistogramEnumeration(
-      "Autofill.ProfileImport.UpdateProfileWithRemovedPhoneNumberDecision",
       decision);
 }
 

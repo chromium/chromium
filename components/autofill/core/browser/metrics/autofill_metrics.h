@@ -1363,12 +1363,6 @@ class AutofillMetrics {
   static void LogSilentUpdatesProfileImportType(
       AutofillProfileImportType import_type);
 
-  // Logs the type of profile import used for a silent update, which was only
-  // possible after an invalid phone number was removed.
-  // TODO(crbug.com/1298424): Cleanup when launched.
-  static void LogSilentUpdatesWithRemovedPhoneNumberProfileImportType(
-      AutofillProfileImportType import_type);
-
   // Logs the user decision for importing a new profile.
   static void LogNewProfileImportDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision);
@@ -1376,12 +1370,6 @@ class AutofillMetrics {
   // Logs the user decision for importing a new profile, which could only
   // be imported after an invalid country was ignored.
   static void LogNewProfileWithIgnoredCountryImportDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision);
-
-  // Logs the user decision for importing a new profile, which was only possible
-  // after an invalid phone number was removed.
-  // TODO(crbug.com/1298424): Cleanup when launched.
-  static void LogNewProfileWithRemovedPhoneNumberImportDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision);
 
   // Logs that a specific type was edited in a save prompt.
@@ -1397,12 +1385,6 @@ class AutofillMetrics {
   // Logs the user decision for updating an exiting profile, which could only
   // be imported after an invalid country was ignored.
   static void LogProfileUpdateWithIgnoredCountryImportDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision);
-
-  // Logs the user decision for updating an existing profile, which was only
-  // possible after an invalid phone number was removed.
-  // TODO(crbug.com/1298424): Cleanup when launched.
-  static void LogProfileUpdateWithRemovedPhoneNumberImportDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision);
 
   // Logs that a specific type changed in a profile update that received the

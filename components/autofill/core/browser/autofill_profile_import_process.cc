@@ -393,10 +393,6 @@ void ProfileImportProcess::CollectMetrics(ukm::UkmRecorder* ukm_recorder,
   if (allow_only_silent_updates_) {
     // Record the import type for the silent updates.
     AutofillMetrics::LogSilentUpdatesProfileImportType(import_type_);
-    if (import_metadata_.phone_import_status == PhoneImportStatus::kInvalid) {
-      AutofillMetrics::LogSilentUpdatesWithRemovedPhoneNumberProfileImportType(
-          import_type_);
-    }
     if (import_type_ == AutofillProfileImportType::kSilentUpdate ||
         import_type_ ==
             AutofillProfileImportType::kSilentUpdateForIncompleteProfile)
@@ -439,23 +435,13 @@ void ProfileImportProcess::CollectMetrics(ukm::UkmRecorder* ukm_recorder,
       AutofillMetrics::LogNewProfileWithIgnoredCountryImportDecision(
           user_decision_);
     }
-    if (import_metadata_.phone_import_status == PhoneImportStatus::kInvalid) {
-      AutofillMetrics::LogNewProfileWithRemovedPhoneNumberImportDecision(
-          user_decision_);
-    }
-
     LogUkmMetrics(num_edited_fields);
   } else if (import_type_ == AutofillProfileImportType::kConfirmableMerge ||
              import_type_ ==
                  AutofillProfileImportType::kConfirmableMergeAndSilentUpdate) {
     AutofillMetrics::LogProfileUpdateImportDecision(user_decision_);
-    if (import_metadata_.phone_import_status == PhoneImportStatus::kInvalid) {
-      AutofillMetrics::LogProfileUpdateWithRemovedPhoneNumberImportDecision(
-          user_decision_);
-    }
 
     DCHECK(merge_candidate_.has_value() && import_candidate_.has_value());
-
     // For all update prompts, log the field types and total number of fields
     // that would change due to the update. Note that this does not include
     // additional manual edits the user can perform in the storage dialog.
