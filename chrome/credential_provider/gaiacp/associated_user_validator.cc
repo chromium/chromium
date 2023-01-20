@@ -87,7 +87,8 @@ unsigned __stdcall CheckReauthStatus(void* param) {
     }
 
     absl::optional<int> expires_in = properties->FindIntKey("expires_in");
-    if (properties->FindKey("error") || !expires_in || expires_in.value() < 0) {
+    if (properties->GetDict().contains("error") || !expires_in ||
+        expires_in.value() < 0) {
       LOGFN(VERBOSE) << "Needs reauth sid=" << reauth_info->sid;
       return 0;
     }
