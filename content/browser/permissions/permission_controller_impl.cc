@@ -279,15 +279,12 @@ PermissionControllerImpl::SubscriptionsStatusMap
 PermissionControllerImpl::GetSubscriptionsStatuses(
     const absl::optional<GURL>& origin) {
   SubscriptionsStatusMap statuses;
-
-  if (!origin.has_value()) {
-    return statuses;
-  }
   for (SubscriptionsMap::iterator iter(&subscriptions_); !iter.IsAtEnd();
        iter.Advance()) {
     Subscription* subscription = iter.GetCurrentValue();
-    if (subscription->requesting_origin != *origin)
+    if (origin.has_value() && subscription->requesting_origin != *origin) {
       continue;
+    }
     statuses[iter.GetCurrentKey()] = GetSubscriptionCurrentValue(*subscription);
   }
   return statuses;
