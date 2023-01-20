@@ -996,7 +996,9 @@ void NigoriSyncBridgeImpl::PutNextApplicablePendingLocalCommit() {
 }
 
 void NigoriSyncBridgeImpl::MaybePopulateKeystoreKeysIntoCryptographer() {
-  DCHECK(!state_.keystore_keys_cryptographer->IsEmpty());
+  if (state_.keystore_keys_cryptographer->IsEmpty()) {
+    return;
+  }
   if (state_.passphrase_type == NigoriSpecifics::KEYSTORE_PASSPHRASE) {
     // KEYSTORE_PASSPHRASE should be ignored, because otherwise keystore key
     // rotation logic would be broken.
