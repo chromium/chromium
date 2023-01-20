@@ -467,7 +467,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)bookmarksNavigationBarDoneButton {
-  return grey_accessibilityID(kBookmarkHomeNavigationBarDoneButtonIdentifier);
+  return grey_accessibilityID(kBookmarksHomeNavigationBarDoneButtonIdentifier);
 }
 
 + (id<GREYMatcher>)bookmarksNavigationBarBackButton {

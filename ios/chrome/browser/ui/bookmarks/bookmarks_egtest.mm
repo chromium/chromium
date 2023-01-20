@@ -227,16 +227,17 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Verify the context bar is shown.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeUIToolbarIdentifier)]
+                                          kBookmarksHomeUIToolbarIdentifier)]
       assertWithMatcher:grey_notNil()];
 
   // Verify the context bar's leading and trailing buttons are shown.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeLeadingButtonIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBookmarksHomeLeadingButtonIdentifier)]
       assertWithMatcher:grey_notNil()];
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
-                                   kBookmarkHomeTrailingButtonIdentifier)]
+                                   kBookmarksHomeTrailingButtonIdentifier)]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -247,13 +248,13 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Verify the context bar is shown.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeUIToolbarIdentifier)]
+                                          kBookmarksHomeUIToolbarIdentifier)]
       assertWithMatcher:grey_notNil()];
 
   // Change to edit mode
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
-                                   kBookmarkHomeTrailingButtonIdentifier)]
+                                   kBookmarksHomeTrailingButtonIdentifier)]
       performAction:grey_tap()];
 
   // Verify context bar shows disabled "Delete" disabled "More" enabled
@@ -381,13 +382,13 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Verify the context bar is shown.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeUIToolbarIdentifier)]
+                                          kBookmarksHomeUIToolbarIdentifier)]
       assertWithMatcher:grey_notNil()];
 
   // Change to edit mode
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
-                                   kBookmarkHomeTrailingButtonIdentifier)]
+                                   kBookmarksHomeTrailingButtonIdentifier)]
       performAction:grey_tap()];
 
   // Multi select URL and folders.
@@ -564,7 +565,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Change to edit mode, using context menu.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
-                                   kBookmarkHomeTrailingButtonIdentifier)]
+                                   kBookmarksHomeTrailingButtonIdentifier)]
       performAction:grey_tap()];
 
   // Select every URL and folder.
@@ -743,17 +744,17 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Check that the TableView is presented.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeTableViewIdentifier)]
+                                          kBookmarksHomeTableViewIdentifier)]
       assertWithMatcher:grey_notNil()];
 
   // Swipe TableView down.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeTableViewIdentifier)]
+                                          kBookmarksHomeTableViewIdentifier)]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 
   // Check that the TableView has been dismissed.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeTableViewIdentifier)]
+                                          kBookmarksHomeTableViewIdentifier)]
       assertWithMatcher:grey_nil()];
 }
 
@@ -836,7 +837,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Go in edit mode.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
-                                   kBookmarkHomeTrailingButtonIdentifier)]
+                                   kBookmarksHomeTrailingButtonIdentifier)]
       performAction:grey_tap()];
 
   // Delete all bookmarks and folders under Mobile Bookmarks.

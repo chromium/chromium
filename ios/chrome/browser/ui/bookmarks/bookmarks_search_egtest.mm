@@ -176,7 +176,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Verify that scrim is visible.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeSearchScrimIdentifier)]
+                                          kBookmarksHomeSearchScrimIdentifier)]
       assertWithMatcher:grey_notNil()];
 
   // Searching.
@@ -185,7 +185,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Verify that scrim is not visible.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeSearchScrimIdentifier)]
+                                          kBookmarksHomeSearchScrimIdentifier)]
       assertWithMatcher:grey_nil()];
 
   // Go back to original folder content.
@@ -194,7 +194,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Verify that scrim is visible again.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeSearchScrimIdentifier)]
+                                          kBookmarksHomeSearchScrimIdentifier)]
       assertWithMatcher:grey_notNil()];
 
   // Cancel.
@@ -202,7 +202,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Verify that scrim is not visible.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeSearchScrimIdentifier)]
+                                          kBookmarksHomeSearchScrimIdentifier)]
       assertWithMatcher:grey_nil()];
 }
 
@@ -218,12 +218,12 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Tap on scrim.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeSearchScrimIdentifier)]
+                                          kBookmarksHomeSearchScrimIdentifier)]
       performAction:grey_tap()];
 
   // Verify that scrim is not visible.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeSearchScrimIdentifier)]
+                                          kBookmarksHomeSearchScrimIdentifier)]
       assertWithMatcher:grey_nil()];
 
   // Verifiy we went back to original folder content.
@@ -260,7 +260,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Verify that scrim is not visible.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeSearchScrimIdentifier)]
+                                          kBookmarksHomeSearchScrimIdentifier)]
       assertWithMatcher:grey_nil()];
 
   // Verifiy we went back to original folder content.
@@ -323,7 +323,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Verify we have no navigation bar.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeUIToolbarIdentifier)]
+                                          kBookmarksHomeUIToolbarIdentifier)]
       assertWithMatcher:grey_nil()];
 
   // Search.
@@ -332,7 +332,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Verify we now have a navigation bar.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeUIToolbarIdentifier)]
+                                          kBookmarksHomeUIToolbarIdentifier)]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -472,7 +472,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Change to edit mode
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
-                                   kBookmarkHomeTrailingButtonIdentifier)]
+                                   kBookmarksHomeTrailingButtonIdentifier)]
       performAction:grey_tap()];
 
   // Verify search bar is disabled.
@@ -499,7 +499,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Verify we now have a navigation bar.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeUIToolbarIdentifier)]
+                                          kBookmarksHomeUIToolbarIdentifier)]
       assertWithMatcher:grey_notNil()];
 
   [[EarlGrey selectElementWithMatcher:ContextBarLeadingButtonWithLabel(
@@ -523,7 +523,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Change to edit mode
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
-                                   kBookmarkHomeTrailingButtonIdentifier)]
+                                   kBookmarksHomeTrailingButtonIdentifier)]
       performAction:grey_tap()];
 
   // Select URL.
@@ -572,7 +572,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Change to edit mode
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
-                                   kBookmarkHomeTrailingButtonIdentifier)]
+                                   kBookmarksHomeTrailingButtonIdentifier)]
       performAction:grey_tap()];
 
   // Select URLs.
@@ -631,7 +631,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Change to edit mode, using context menu.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
-                                   kBookmarkHomeTrailingButtonIdentifier)]
+                                   kBookmarksHomeTrailingButtonIdentifier)]
       performAction:grey_tap()];
 
   // Select URL and folder.
@@ -701,7 +701,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Change to edit mode
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
-                                   kBookmarkHomeTrailingButtonIdentifier)]
+                                   kBookmarksHomeTrailingButtonIdentifier)]
       performAction:grey_tap()];
 
   // Select URL.
@@ -741,7 +741,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Verify we have no navigation bar.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeUIToolbarIdentifier)]
+                                          kBookmarksHomeUIToolbarIdentifier)]
       assertWithMatcher:grey_nil()];
 }
 

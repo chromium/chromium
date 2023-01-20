@@ -78,7 +78,7 @@ void LongPressBookmarkNodeWithLabel(NSString* bookmark_node_label) {
 
 void VerifyBookmarkContextMenuNil() {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeContextMenuIdentifier)]
+                                          kBookmarksHomeContextMenuIdentifier)]
       assertWithMatcher:grey_nil()];
 }
 
@@ -362,7 +362,7 @@ void SearchBookmarksForText(NSString* search_text) {
   // Change to edit mode, using context menu.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
-                                   kBookmarkHomeTrailingButtonIdentifier)]
+                                   kBookmarksHomeTrailingButtonIdentifier)]
       performAction:grey_tap()];
 
   // Select URL.

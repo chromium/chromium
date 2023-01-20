@@ -10,7 +10,7 @@
 
 // Bookmark container constants:
 // Accessibility identifier of the Bookmark Home View container.
-extern NSString* const kBookmarkHomeViewContainerIdentifier;
+extern NSString* const kBookmarksHomeViewContainerIdentifier;
 // Accessibility identifier of the Bookmark Edit View container.
 extern NSString* const kBookmarkEditViewContainerIdentifier;
 // Accessibility identifier of the Bookmark Folder Edit View container.
@@ -20,15 +20,15 @@ extern NSString* const kBookmarkFolderCreateViewContainerIdentifier;
 // Accessibility identifier of the Bookmark Folder Picker View container.
 extern NSString* const kBookmarkFolderPickerViewContainerIdentifier;
 // Accessibility identifier of the Bookmark Home TableView.
-extern NSString* const kBookmarkHomeTableViewIdentifier;
+extern NSString* const kBookmarksHomeTableViewIdentifier;
 // Accessibility identifier of the Bookmark Home context menu.
-extern NSString* const kBookmarkHomeContextMenuIdentifier;
+extern NSString* const kBookmarksHomeContextMenuIdentifier;
 
 // UINavigationBar accessibility constants:
 // Accessibility identifier of the Bookmark navigation bar.
 extern NSString* const kBookmarkNavigationBarIdentifier;
 // Accessibility identifier of the BookmarksHome VC navigation bar done button.
-extern NSString* const kBookmarkHomeNavigationBarDoneButtonIdentifier;
+extern NSString* const kBookmarksHomeNavigationBarDoneButtonIdentifier;
 // Accessibility identifier of the BookmarkEdit VC navigation bar done button.
 extern NSString* const kBookmarkEditNavigationBarDoneButtonIdentifier;
 // Accessibility identifier of the BookmarkFolderEdit VC navigation bar done
@@ -41,17 +41,17 @@ extern NSString* const kBookmarkEditDeleteButtonIdentifier;
 // Accessibility identifier of the BookmarkFolderEditorVC toolbar delete button.
 extern NSString* const kBookmarkFolderEditorDeleteButtonIdentifier;
 // Accessibility identifier of the BookmarksHomeVC leading button.
-extern NSString* const kBookmarkHomeLeadingButtonIdentifier;
+extern NSString* const kBookmarksHomeLeadingButtonIdentifier;
 // Accessibility identifier of the BookmarksHomeVC center button.
-extern NSString* const kBookmarkHomeCenterButtonIdentifier;
+extern NSString* const kBookmarksHomeCenterButtonIdentifier;
 // Accessibility identifier of the BookmarksHomeVC trailing button.
-extern NSString* const kBookmarkHomeTrailingButtonIdentifier;
+extern NSString* const kBookmarksHomeTrailingButtonIdentifier;
 // Accessibility identifier of the BookmarksHomeVC UIToolbar.
-extern NSString* const kBookmarkHomeUIToolbarIdentifier;
+extern NSString* const kBookmarksHomeUIToolbarIdentifier;
 // Accessibility identifier of the BookmarksHomeVC search bar.
-extern NSString* const kBookmarkHomeSearchBarIdentifier;
+extern NSString* const kBookmarksHomeSearchBarIdentifier;
 // Accessibility identifier of the search scrim.
-extern NSString* const kBookmarkHomeSearchScrimIdentifier;
+extern NSString* const kBookmarksHomeSearchScrimIdentifier;
 
 // Cell Layout constants:
 // The space between UIViews inside the cell.

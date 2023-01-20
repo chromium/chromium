@@ -335,7 +335,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   self.navigationController.navigationBarHidden = NO;
 
   self.navigationController.toolbar.accessibilityIdentifier =
-      kBookmarkHomeUIToolbarIdentifier;
+      kBookmarksHomeUIToolbarIdentifier;
 
   // SearchController Configuration.
   // Init the searchController with nil so the results are displayed on the
@@ -348,7 +348,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   self.searchController.searchResultsUpdater = self;
   self.searchController.searchBar.backgroundColor = UIColor.clearColor;
   self.searchController.searchBar.accessibilityIdentifier =
-      kBookmarkHomeSearchBarIdentifier;
+      kBookmarksHomeSearchBarIdentifier;
 
   // UIKit needs to know which controller will be presenting the
   // searchController. If we don't add this trying to dismiss while
@@ -358,7 +358,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   self.scrimView = [[UIControl alloc] init];
   self.scrimView.backgroundColor = [UIColor colorNamed:kScrimBackgroundColor];
   self.scrimView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.scrimView.accessibilityIdentifier = kBookmarkHomeSearchScrimIdentifier;
+  self.scrimView.accessibilityIdentifier = kBookmarksHomeSearchScrimIdentifier;
   [self.scrimView addTarget:self
                      action:@selector(dismissSearchController:)
            forControlEvents:UIControlEventTouchUpInside];
@@ -469,7 +469,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   // Configure the table view.
   self.sharedState.tableView.accessibilityIdentifier =
-      kBookmarkHomeTableViewIdentifier;
+      kBookmarksHomeTableViewIdentifier;
   self.sharedState.tableView.estimatedRowHeight = kEstimatedRowHeight;
   self.tableView.sectionHeaderHeight = 0;
   // Setting a sectionFooterHeight of 0 will be the same as not having a
@@ -1093,7 +1093,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   doneButton.accessibilityLabel =
       GetNSString(IDS_IOS_NAVIGATION_BAR_DONE_BUTTON);
   doneButton.accessibilityIdentifier =
-      kBookmarkHomeNavigationBarDoneButtonIdentifier;
+      kBookmarksHomeNavigationBarDoneButtonIdentifier;
   return doneButton;
 }
 
@@ -1646,7 +1646,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                       target:self
                                       action:@selector(leadingButtonClicked)];
   newFolderButton.accessibilityIdentifier =
-      kBookmarkHomeLeadingButtonIdentifier;
+      kBookmarksHomeLeadingButtonIdentifier;
   newFolderButton.enabled = [self allowsNewFolder];
 
   // Spacer button.
@@ -1662,7 +1662,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                        style:UIBarButtonItemStylePlain
                                       target:self
                                       action:@selector(trailingButtonClicked)];
-  editButton.accessibilityIdentifier = kBookmarkHomeTrailingButtonIdentifier;
+  editButton.accessibilityIdentifier = kBookmarksHomeTrailingButtonIdentifier;
   // The edit button is only enabled if the displayed root folder is editable
   // and has items. Note that Bookmarks Bar, Mobile Bookmarks, and Other
   // Bookmarks return as "editable" since their contents can be edited. Editing
@@ -1686,7 +1686,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   self.deleteButton.tintColor = [UIColor colorNamed:kRedColor];
   self.deleteButton.enabled = NO;
   self.deleteButton.accessibilityIdentifier =
-      kBookmarkHomeLeadingButtonIdentifier;
+      kBookmarksHomeLeadingButtonIdentifier;
 
   // Disabled More button.
   titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_BAR_MORE);
@@ -1696,7 +1696,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                       target:self
                                       action:@selector(centerButtonClicked)];
   self.moreButton.enabled = NO;
-  self.moreButton.accessibilityIdentifier = kBookmarkHomeCenterButtonIdentifier;
+  self.moreButton.accessibilityIdentifier =
+      kBookmarksHomeCenterButtonIdentifier;
 
   // Enabled Cancel button.
   titleString = GetNSString(IDS_CANCEL);
@@ -1705,7 +1706,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                        style:UIBarButtonItemStylePlain
                                       target:self
                                       action:@selector(trailingButtonClicked)];
-  cancelButton.accessibilityIdentifier = kBookmarkHomeTrailingButtonIdentifier;
+  cancelButton.accessibilityIdentifier = kBookmarksHomeTrailingButtonIdentifier;
 
   // Spacer button.
   UIBarButtonItem* spaceButton = [[UIBarButtonItem alloc]
@@ -1725,7 +1726,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
      forMultipleBookmarkURLs:(const std::set<const BookmarkNode*>)nodes {
   __weak BookmarksHomeViewController* weakSelf = self;
   coordinator.alertController.view.accessibilityIdentifier =
-      kBookmarkHomeContextMenuIdentifier;
+      kBookmarksHomeContextMenuIdentifier;
 
   NSString* titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_OPEN);
   [coordinator
@@ -1796,7 +1797,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   __weak BookmarksHomeViewController* weakSelf = self;
   std::string urlString = node->url().possibly_invalid_spec();
   coordinator.alertController.view.accessibilityIdentifier =
-      kBookmarkHomeContextMenuIdentifier;
+      kBookmarksHomeContextMenuIdentifier;
 
   int64_t nodeId = node->id();
   NSString* titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT);
@@ -1883,7 +1884,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
      forSingleBookmarkFolder:(const BookmarkNode*)node {
   __weak BookmarksHomeViewController* weakSelf = self;
   coordinator.alertController.view.accessibilityIdentifier =
-      kBookmarkHomeContextMenuIdentifier;
+      kBookmarksHomeContextMenuIdentifier;
 
   int64_t nodeId = node->id();
   NSString* titleString =
@@ -1933,7 +1934,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
         (const std::set<const bookmarks::BookmarkNode*>)nodes {
   __weak BookmarksHomeViewController* weakSelf = self;
   coordinator.alertController.view.accessibilityIdentifier =
-      kBookmarkHomeContextMenuIdentifier;
+      kBookmarksHomeContextMenuIdentifier;
 
   std::set<int64_t> nodeIds;
   for (const bookmarks::BookmarkNode* node : nodes) {
