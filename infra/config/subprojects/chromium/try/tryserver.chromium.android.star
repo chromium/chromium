@@ -94,6 +94,15 @@ try_.builder(
     ],
 )
 
+try_.builder(
+    name = "android-13-x64-rel",
+    mirrors = [
+        "ci/android-13-x64-rel",
+    ],
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
 try_.orchestrator_builder(
     name = "android-arm64-rel",
     description_html = "This builder may trigger tests on multiple Android versions.",
