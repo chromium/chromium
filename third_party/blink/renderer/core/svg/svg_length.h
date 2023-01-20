@@ -71,7 +71,6 @@ class CORE_EXPORT SVGLength final : public SVGListablePropertyBase {
     return To<CSSNumericLiteralValue>(*value_).GetType();
   }
 
-  void SetUnitType(CSSPrimitiveValue::UnitType);
   SVGLengthMode UnitMode() const {
     return static_cast<SVGLengthMode>(unit_mode_);
   }
@@ -87,9 +86,6 @@ class CORE_EXPORT SVGLength final : public SVGListablePropertyBase {
   void SetValueInSpecifiedUnits(float value);
 
   const CSSPrimitiveValue& AsCSSPrimitiveValue() const { return *value_; }
-
-  // Scale the input value by this SVGLength.
-  float ScaleByPercentage(float) const;
 
   String ValueAsString() const override;
   SVGParsingError SetValueAsString(const String&);
