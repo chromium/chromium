@@ -1032,6 +1032,15 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
   FrameTreeNode* frame_tree_node =
       FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
   DCHECK(frame_tree_node);
+  // Log each hint requested via an ACCEPT_CH Frame whether or not this caused
+  // the connection to be restarted.
+  auto* ukm_recorder = ukm::UkmRecorder::Get();
+  for (const auto& hint : accept_ch_frame) {
+    ukm::builders::ClientHints_AcceptCHFrameUsage(ukm_source_id_)
+        .SetType(static_cast<int64_t>(hint))
+        .Record(ukm_recorder->Get());
+  }
+
   ClientHintsControllerDelegate* client_hint_delegate =
       browser_context_->GetClientHintsControllerDelegate();
 

@@ -94,6 +94,8 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       StoragePartitionImpl* partition);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(NavigationURLLoaderImplTest,
+                           OnAcceptCHFrameReceivedUKM);
   // Starts the loader by finalizing loader factories initialization and
   // calling Restart().
   // This is called only once (while Restart can be called multiple times).

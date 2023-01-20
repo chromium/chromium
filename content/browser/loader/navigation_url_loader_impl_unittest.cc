@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/unguessable_token.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/loader/navigation_url_loader.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -42,6 +43,7 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
@@ -592,6 +594,77 @@ TEST_F(NavigationURLLoaderImplTest, MAYBE_NavigationTimeoutRedirectTest) {
   delegate.WaitForRequestRedirected();
   delegate.WaitForRequestFailed();
   EXPECT_EQ(net::ERR_TIMED_OUT, delegate.net_error());
+}
+
+// Verify that UKMs are recorded when OnAcceptCHFrameReceived is called.
+TEST_F(NavigationURLLoaderImplTest, OnAcceptCHFrameReceivedUKM) {
+  ASSERT_TRUE(http_test_server_.Start());
+  const GURL url = http_test_server_.GetURL("/foo");
+  const url::Origin origin = url::Origin::Create(url);
+  TestNavigationURLLoaderDelegate delegate;
+  std::unique_ptr<NavigationURLLoader> loader = CreateTestLoader(
+      url,
+      base::StringPrintf("%s: %s", net::HttpRequestHeaders::kOrigin,
+                         url.DeprecatedGetOriginAsURL().spec().c_str()),
+      "GET", &delegate, blink::NavigationDownloadPolicy(),
+      true /*is_main_frame*/, false /*upgrade_if_insecure*/);
+  loader->Start();
+
+  // Try recording no hints.
+  {
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
+    static_cast<NavigationURLLoaderImpl*>(loader.get())
+        ->OnAcceptCHFrameReceived(origin, {},
+                                  base::BindOnce([](int32_t) { return; }));
+    auto ukm_entries = ukm_recorder.GetEntriesByName(
+        ukm::builders::ClientHints_AcceptCHFrameUsage::kEntryName);
+    ASSERT_EQ(ukm_entries.size(), 0u);
+  }
+
+  // Try recording one hint.
+  {
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
+    static_cast<NavigationURLLoaderImpl*>(loader.get())
+        ->OnAcceptCHFrameReceived(origin,
+                                  {network::mojom::WebClientHintsType::kDpr},
+                                  base::BindOnce([](int32_t) { return; }));
+    auto ukm_entries = ukm_recorder.GetEntriesByName(
+        ukm::builders::ClientHints_AcceptCHFrameUsage::kEntryName);
+    ASSERT_EQ(ukm_entries.size(), 1u);
+    EXPECT_EQ(*ukm_recorder.GetEntryMetric(
+                  ukm_entries[0],
+                  ukm::builders::ClientHints_AcceptCHFrameUsage::kTypeName),
+              static_cast<int64_t>(network::mojom::WebClientHintsType::kDpr));
+  }
+
+  // Try recording all hints.
+  {
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
+    std::vector<network::mojom::WebClientHintsType> accept_ch_frame;
+    for (int64_t i = 0; i <= static_cast<int64_t>(
+                                 network::mojom::WebClientHintsType::kMaxValue);
+         ++i) {
+      accept_ch_frame.push_back(
+          static_cast<network::mojom::WebClientHintsType>(i));
+    }
+    static_cast<NavigationURLLoaderImpl*>(loader.get())
+        ->OnAcceptCHFrameReceived(origin, accept_ch_frame,
+                                  base::BindOnce([](int32_t) { return; }));
+    auto ukm_entries = ukm_recorder.GetEntriesByName(
+        ukm::builders::ClientHints_AcceptCHFrameUsage::kEntryName);
+    // If you're here because the test is failing when you added a new client
+    // hint be sure to increment the number below and add your new hint to the
+    // enum WebClientHintsType in tools/metrics/histograms/enums.xml.
+    ASSERT_EQ(ukm_entries.size(), 29u);
+    for (int64_t i = 0; i <= static_cast<int64_t>(
+                                 network::mojom::WebClientHintsType::kMaxValue);
+         ++i) {
+      EXPECT_EQ(*ukm_recorder.GetEntryMetric(
+                    ukm_entries[i],
+                    ukm::builders::ClientHints_AcceptCHFrameUsage::kTypeName),
+                i);
+    }
+  }
 }
 
 }  // namespace content

@@ -106781,6 +106781,44 @@ others/histograms.xml -->
   <int value="3" label="Accepted only by NSS (rejected by iOS)."/>
 </enum>
 
+<!--
+This must be kept in sync with services/network/public/mojom/web_client_hints_types.mojom
+DO NOT REMOVE TYPES THAT MADE IT TO STABLE AT ANY POINT!
+This is true even if the type has been removed from the mojom file.
+-->
+
+<enum name="WebClientHintsType">
+  <int value="0" label="DeviceMemory_DEPRECATED"/>
+  <int value="1" label="Dpr_DEPRECATED"/>
+  <int value="2" label="ResourceWidth_DEPRECATED"/>
+  <int value="3" label="ViewportWidth_DEPRECATED"/>
+  <int value="4" label="Rtt_DEPRECATED"/>
+  <int value="5" label="Downlink_DEPRECATED"/>
+  <int value="6" label="Ect_DEPRECATED"/>
+  <int value="7" label="Lang"/>
+  <int value="8" label="UA"/>
+  <int value="9" label="UAArch"/>
+  <int value="10" label="UAPlatform"/>
+  <int value="11" label="UAModel"/>
+  <int value="12" label="UAMobile"/>
+  <int value="13" label="UAFullVersion"/>
+  <int value="14" label="UAPlatformVersion"/>
+  <int value="15" label="PrefersColorScheme"/>
+  <int value="16" label="UABitness"/>
+  <int value="17" label="UAReduced"/>
+  <int value="18" label="ViewportHeight"/>
+  <int value="19" label="DeviceMemory"/>
+  <int value="20" label="Dpr"/>
+  <int value="21" label="ResourceWidth"/>
+  <int value="22" label="ViewportWidth"/>
+  <int value="23" label="UAFullVersionList"/>
+  <int value="24" label="FullUserAgent"/>
+  <int value="25" label="UAWoW64"/>
+  <int value="26" label="PartitionedCookies"/>
+  <int value="27" label="SaveData"/>
+  <int value="28" label="PrefersReducedMotion"/>
+</enum>
+
 <enum name="WebContentsAudioState">
   <int value="0" label="Never played audio"/>
   <int value="1" label="Currently playing audio"/>
