@@ -2,5 +2,6 @@ include_rules = [
   "+third_party/material_color_utilities",
   "+third_party/skia/include",
   "+skia/ext",
+  "+ui/base",
   "+ui/gfx",
 ]

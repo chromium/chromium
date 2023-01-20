@@ -129,6 +129,8 @@ component("mixers") {
     "color_provider_manager.h",
     "core_default_color_mixer.cc",
     "core_default_color_mixer.h",
+    "material_ui_color_mixer.cc",
+    "material_ui_color_mixer.h",
     "native_color_mixers.cc",
     "native_color_mixers.h",
     "ref_color_mixer.cc",
@@ -146,6 +148,7 @@ component("mixers") {
     ":color_headers",
     "//skia",
     "//third_party/material_color_utilities",
+    "//ui/base:features",
     "//ui/gfx:color_utils",
   ]
 

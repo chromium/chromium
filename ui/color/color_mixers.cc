@@ -4,7 +4,9 @@
 
 #include "ui/color/color_mixers.h"
 
+#include "ui/base/ui_base_features.h"
 #include "ui/color/core_default_color_mixer.h"
+#include "ui/color/material_ui_color_mixer.h"
 #include "ui/color/native_color_mixers.h"
 #include "ui/color/ref_color_mixer.h"
 #include "ui/color/sys_color_mixer.h"
@@ -21,6 +23,11 @@ void AddColorMixers(ColorProvider* provider,
   AddNativeCoreColorMixer(provider, key);
   AddUiColorMixer(provider, key);
   AddNativeUiColorMixer(provider, key);
+  if (features::IsChromeRefresh2023()) {
+    // This must come after the UI and native UI mixers to ensure leaf node
+    // colors are overridden with GM3 recipes when the refresh flag is enabled.
+    AddMaterialUiColorMixer(provider, key);
+  }
   AddNativePostprocessingMixer(provider, key);
 }
 
