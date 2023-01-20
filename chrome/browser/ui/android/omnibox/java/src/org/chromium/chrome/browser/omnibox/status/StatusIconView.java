@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.Space;
 
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.ui.base.ViewUtils;
 
 /**
  * StatusIconView is a custom view displaying the status icon in the location bar.
@@ -33,7 +34,11 @@ public class StatusIconView extends LinearLayout {
 
     @Override
     public void setVisibility(int visibility) {
-        mIconViewFrame.setVisibility(visibility);
+        int iconViewFrameVisibility = getIconVisibility();
+        if (iconViewFrameVisibility != visibility) {
+            mIconViewFrame.setVisibility(visibility);
+            ViewUtils.requestLayout(this, "StatusIconView setVisibility");
+        }
         // The holding space should be only be VISIBLE if the icon is GONE. The size should be (the
         // background size - the icon size).
         mStatusIconHoldingSpace.setVisibility(visibility == View.GONE ? View.VISIBLE : View.GONE);
