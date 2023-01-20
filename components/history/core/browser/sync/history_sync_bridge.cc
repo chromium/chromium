@@ -1054,6 +1054,21 @@ bool HistorySyncBridge::AddEntityInBackend(
     }
     referring_visit_id = added_visit_id;
 
+    // If the sending client supports syncing its clusters, add the appropriate
+    // details to history.
+    DCHECK(!specifics.originator_cache_guid().empty());
+    if (specifics.originator_cluster_id() > 0) {
+      // Populate the visit to a synced cluster.
+      history::ClusterVisit cluster_visit;
+      cluster_visit.annotated_visit.visit_row = visit_row;
+      cluster_visit.annotated_visit.visit_row.visit_id = added_visit_id;
+      // TODO(b/264457591): Refactor some of the cluster visit details to
+      //   History so it can be appropriately populated here.
+      history_backend_->AddVisitToSyncedCluster(
+          cluster_visit, specifics.originator_cache_guid(),
+          specifics.originator_cluster_id());
+    }
+
     // Remapping chain extremities (i.e. first and last visit in the chain) via
     // `id_remapper`: The first visit in the chain can refer to a visit outside
     // of the chain. Similarly, the last visit can be referred to by a visit

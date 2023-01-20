@@ -461,8 +461,8 @@ TEST_F(VisitAnnotationsDatabaseTest,
   // Add an initial cluster with multiple visits.
   VisitID visit_id1 = AddVisitWithTime(IntToTime(0));
   VisitID visit_id2 = AddVisitWithTime(IntToTime(1));
-  int64_t cluster_id1 = ReserveNextClusterId();
-  int64_t cluster_id2 = ReserveNextClusterId();
+  int64_t cluster_id1 = ReserveNextClusterId("", 0);
+  int64_t cluster_id2 = ReserveNextClusterId("", 0);
   Cluster cluster1 = CreateCluster({visit_id1, visit_id2});
   cluster1.cluster_id = cluster_id1;
   AddVisitsToCluster(cluster_id1, cluster1.visits);
@@ -518,6 +518,38 @@ TEST_F(VisitAnnotationsDatabaseTest,
   EXPECT_TRUE(out_cluster2.keyword_to_data_map.contains(u"keyword4"));
   EXPECT_THAT(GetVisitIdsInCluster(cluster_id2),
               UnorderedElementsAre(visit_id3, visit_id4));
+}
+
+TEST_F(VisitAnnotationsDatabaseTest, GetClusterIdForSyncedDetails) {
+  std::string originator_cache_guid = "somedevice";
+  int64_t originator_cluster_id = 1;
+
+  // Not a cluster with these details yet, so we expect for the cluster id to be
+  // 0.
+  EXPECT_EQ(GetClusterIdForSyncedDetails(originator_cache_guid,
+                                         originator_cluster_id),
+            0);
+
+  // Now, add a cluster ID with the details and make sure it was reserved
+  // successfully.
+  int64_t reserved_cluster_id =
+      ReserveNextClusterId(originator_cache_guid, originator_cluster_id);
+  EXPECT_GT(reserved_cluster_id, 0);
+
+  // Ask for the cluster id for the same synced details and should get the one
+  // that's been reserved.
+  EXPECT_EQ(GetClusterIdForSyncedDetails(originator_cache_guid,
+                                         originator_cluster_id),
+            reserved_cluster_id);
+
+  // Make sure that a different device with the same cluster id does not get
+  // resolved to the same cluster id.
+  EXPECT_EQ(GetClusterIdForSyncedDetails("otherdevice", originator_cluster_id),
+            0);
+
+  // Make sure that a cluster with the same originator cache guid but different
+  // cluster id does not get resolved to the same cluster id.
+  EXPECT_EQ(GetClusterIdForSyncedDetails(originator_cache_guid, 3), 0);
 }
 
 TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {

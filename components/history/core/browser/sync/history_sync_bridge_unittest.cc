@@ -1493,6 +1493,8 @@ TEST_F(HistorySyncBridgeTest, RemapsOriginatorVisitIDs) {
   ASSERT_EQ(last_row.originator_visit_id, last_visit_originator_id);
   // Make sure the opener (last visit of the chain) got remapped.
   EXPECT_EQ(last_row.opener_visit, chain_rows.back().visit_id);
+  // No originator cluster id provided.
+  EXPECT_EQ(backend()->add_visit_to_synced_cluster_count(), 0);
 }
 
 TEST_F(HistorySyncBridgeTest, RemapsLegacyRedirectChain) {
@@ -1518,6 +1520,32 @@ TEST_F(HistorySyncBridgeTest, RemapsLegacyRedirectChain) {
   // visit IDs, and thus no explicit links between the individual visits).
   VisitVector chain_rows = backend()->GetRedirectChain(chain_end_row);
   EXPECT_EQ(chain_rows.size(), 3u);
+}
+
+TEST_F(HistorySyncBridgeTest, AddsCluster) {
+  const std::string remote_cache_guid("remote_cache_guid");
+
+  const base::Time visit_time = base::Time::Now() - base::Minutes(9);
+  const std::vector<GURL> urls{GURL("https://start.chain.url"),
+                               GURL("https://middle.chain.url"),
+                               GURL("https://end.chain.url")};
+  const std::vector<VisitID> originator_visit_ids{0, 0, 0};
+  sync_pb::HistorySpecifics entity = CreateSpecifics(
+      visit_time, remote_cache_guid, urls, originator_visit_ids);
+  entity.set_originator_cluster_id(1);
+
+  // Start syncing - this should trigger the creation of local cluster IDs.
+  ApplyInitialSyncChanges({entity});
+
+  VisitRow chain_end_row;
+  ASSERT_TRUE(backend()->GetLastVisitByTime(visit_time, &chain_end_row));
+  // Make sure the chain got preserved (even though there were no originator
+  // visit IDs, and thus no explicit links between the individual visits).
+  VisitVector chain_rows = backend()->GetRedirectChain(chain_end_row);
+  EXPECT_EQ(chain_rows.size(), 3u);
+
+  // Should be called once per visit.
+  EXPECT_EQ(backend()->add_visit_to_synced_cluster_count(), 3);
 }
 
 }  // namespace

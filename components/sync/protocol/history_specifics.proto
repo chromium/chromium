@@ -84,6 +84,10 @@ message HistorySpecifics {
   // The ID of the visit, on the originator client, that opened this one, or 0
   // if no opener exists.
   optional int64 originator_opener_visit_id = 6;
+  // The ID of the cluster that this visit belongs to on the originator client,
+  // or 0 if the originator client does not support setting this field or the
+  // visit does not belong to any cluster.
+  optional int64 originator_cluster_id = 22;
 
   // The duration of the visit, in microseconds. Zero if the visit hasn't been
   // finished (or the duration wasn't updated for some other reason).

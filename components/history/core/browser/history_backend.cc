@@ -2173,7 +2173,9 @@ void HistoryBackend::ReplaceClusters(
 
 int64_t HistoryBackend::ReserveNextClusterId() {
   TRACE_EVENT0("browser", "HistoryBackend::ReserveNextClusterId");
-  return db_ ? db_->ReserveNextClusterId() : 0;
+  return db_ ? db_->ReserveNextClusterId(/*originator_cache_guid=*/"",
+                                         /*originator_cluster_id=*/0)
+             : 0;
 }
 
 void HistoryBackend::AddVisitsToCluster(
@@ -2184,6 +2186,31 @@ void HistoryBackend::AddVisitsToCluster(
     return;
 
   db_->AddVisitsToCluster(cluster_id, visits);
+}
+
+void HistoryBackend::AddVisitToSyncedCluster(
+    const history::ClusterVisit& cluster_visit,
+    const std::string& originator_cache_guid,
+    int64_t originator_cluster_id) {
+  TRACE_EVENT0("browser", "HistoryBackend::AddVisitToSyncedCluster");
+  if (!db_) {
+    return;
+  }
+
+  int64_t local_cluster_id = db_->GetClusterIdForSyncedDetails(
+      originator_cache_guid, originator_cluster_id);
+  if (local_cluster_id == 0) {
+    // Reserve a new one since one with the synced details does not already
+    // exist.
+    local_cluster_id =
+        db_->ReserveNextClusterId(originator_cache_guid, originator_cluster_id);
+  }
+  if (local_cluster_id == 0) {
+    // Cluster failed to be added to the DB - unclear if/how this can happen.
+    return;
+  }
+
+  db_->AddVisitsToCluster(local_cluster_id, {cluster_visit});
 }
 
 void HistoryBackend::UpdateClusterTriggerability(

@@ -4137,6 +4137,58 @@ TEST_F(
   EXPECT_TRUE(out_cluster.keyword_to_data_map.contains(u"keyword1"));
 }
 
+TEST_F(HistoryBackendTest, AddVisitToSyncedCluster_GetCluster) {
+  std::string originator_cache_guid = "originator";
+  int64_t originator_cluster_id = 123;
+
+  const ui::PageTransition kLink = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
+      ui::PAGE_TRANSITION_CHAIN_END);
+
+  // Add 1 synced visit to cluster.
+  VisitRow foreign_visit;
+  foreign_visit.visit_time = base::Time::Now();
+  foreign_visit.transition = kLink;
+  foreign_visit.originator_cache_guid = "originator";
+  foreign_visit.is_known_to_sync = true;
+  VisitID added_id1 = backend_->AddSyncedVisit(
+      GURL("https://some.url"), u"Title", /*hidden=*/false, foreign_visit,
+      absl::nullopt, absl::nullopt);
+  history::ClusterVisit cluster_visit;
+  cluster_visit.annotated_visit.visit_row = foreign_visit;
+  cluster_visit.annotated_visit.visit_row.visit_id = added_id1;
+  backend_->AddVisitToSyncedCluster(cluster_visit, originator_cache_guid,
+                                    originator_cluster_id);
+
+  int64_t local_cluster_id =
+      backend_->db_->GetClusterIdContainingVisit(added_id1);
+  EXPECT_GT(local_cluster_id, 0);
+
+  // Add another synced visit to same cluster.
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  VisitRow foreign_visit2;
+  foreign_visit2.visit_time = base::Time::Now();
+  foreign_visit2.transition = kLink;
+  foreign_visit2.originator_cache_guid = "originator";
+  foreign_visit2.is_known_to_sync = true;
+  VisitID added_id2 = backend_->AddSyncedVisit(
+      GURL("https://some.url"), u"Title", /*hidden=*/false, foreign_visit2,
+      absl::nullopt, absl::nullopt);
+  history::ClusterVisit cluster_visit2;
+  cluster_visit2.annotated_visit.visit_row = foreign_visit2;
+  cluster_visit2.annotated_visit.visit_row.visit_id = added_id2;
+  backend_->AddVisitToSyncedCluster(cluster_visit2, originator_cache_guid,
+                                    originator_cluster_id);
+
+  EXPECT_EQ(backend_->db_->GetClusterIdContainingVisit(added_id2),
+            local_cluster_id);
+
+  Cluster out_cluster = backend_->GetCluster(
+      local_cluster_id, /*include_keywords_and_duplicates=*/false);
+  VerifyCluster(out_cluster, {local_cluster_id, {added_id2, added_id1}});
+}
+
 TEST_F(HistoryBackendTest, GetRedirectChainStart) {
   auto last_visit_time = base::Time::Now();
   const auto add_visit = [&](std::string url, VisitID referring_visit,

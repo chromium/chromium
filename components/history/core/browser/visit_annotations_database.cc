@@ -679,7 +679,9 @@ void VisitAnnotationsDatabase::AddClusters(
   }
 }
 
-int64_t VisitAnnotationsDatabase::ReserveNextClusterId() {
+int64_t VisitAnnotationsDatabase::ReserveNextClusterId(
+    const std::string& originator_cache_guid,
+    int64_t originator_cluster_id) {
   sql::Statement clusters_statement(
       GetDB().GetCachedStatement(SQL_FROM_HERE,
                                  "INSERT INTO clusters"
@@ -691,9 +693,8 @@ int64_t VisitAnnotationsDatabase::ReserveNextClusterId() {
   clusters_statement.BindString16(1, u"");
   clusters_statement.BindString16(2, u"");
   clusters_statement.BindBool(3, false);
-  // TODO(b/264457591): Probably have this method take in the originator fields.
-  clusters_statement.BindString(4, "");
-  clusters_statement.BindInt64(5, 0);
+  clusters_statement.BindString(4, originator_cache_guid);
+  clusters_statement.BindInt64(5, originator_cluster_id);
   if (!clusters_statement.Run()) {
     DVLOG(0) << "Failed to execute 'clusters' insert statement";
   }
@@ -926,6 +927,26 @@ int64_t VisitAnnotationsDatabase::GetClusterIdContainingVisit(
   statement.BindInt64(0, visit_id);
   if (statement.Step())
     return statement.ColumnInt64(0);
+  return 0;
+}
+
+int64_t VisitAnnotationsDatabase::GetClusterIdForSyncedDetails(
+    const std::string& originator_cache_guid,
+    int64_t originator_cluster_id) {
+  DCHECK(!originator_cache_guid.empty());
+  DCHECK_GT(originator_cluster_id, 0);
+
+  sql::Statement statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT cluster_id "
+      "FROM clusters "
+      "WHERE originator_cache_guid=? AND originator_cluster_id=? "
+      "LIMIT 1"));
+  statement.BindString(0, originator_cache_guid);
+  statement.BindInt64(1, originator_cluster_id);
+  if (statement.Step()) {
+    return statement.ColumnInt64(0);
+  }
   return 0;
 }
 

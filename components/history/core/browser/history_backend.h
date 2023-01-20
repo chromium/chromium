@@ -522,6 +522,13 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   void AddVisitsToCluster(int64_t cluster_id,
                           const std::vector<ClusterVisit>& visits);
 
+  // Adds `cluster_visit` to the local cluster with `originator_cache_guid` and
+  // `originator_cluster_id`. If an existing cluster does not exist with those
+  // synced details, a new one will be created.
+  void AddVisitToSyncedCluster(const history::ClusterVisit& cluster_visit,
+                               const std::string& originator_cache_guid,
+                               int64_t originator_cluster_id) override;
+
   void UpdateClusterTriggerability(const std::vector<Cluster>& clusters);
 
   std::vector<Cluster> GetMostRecentClusters(

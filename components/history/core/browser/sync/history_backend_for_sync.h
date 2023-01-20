@@ -56,6 +56,10 @@ class HistoryBackendForSync {
   virtual bool UpdateVisitReferrerOpenerIDs(VisitID visit_id,
                                             VisitID referrer_id,
                                             VisitID opener_id) = 0;
+  virtual void AddVisitToSyncedCluster(
+      const history::ClusterVisit& cluster_visit,
+      const std::string& originator_cache_guid,
+      int64_t originator_cluster_id) = 0;
 
   virtual std::vector<GURL> GetFaviconURLsForURL(const GURL& page_url) = 0;
 

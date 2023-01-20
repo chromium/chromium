@@ -592,7 +592,7 @@ class HistoryService : public KeyedService {
   using ClusterIdCallback = base::OnceCallback<void(int64_t)>;
 
   // Adds a cluster with no visits and invokes `callback` with the ID of the
-  // new cluster.
+  // new cluster. It is expected for this to only be called for local visits.
   // Virtual for testing.
   virtual base::CancelableTaskTracker::TaskId ReserveNextClusterId(
       base::OnceCallback<void(int64_t)> callback,
