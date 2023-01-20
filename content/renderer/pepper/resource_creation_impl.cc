@@ -26,7 +26,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/command_line.h"
-#include "base/win/windows_version.h"
 #endif
 
 using ppapi::InputEventData;
@@ -136,18 +135,17 @@ PP_Resource ResourceCreationImpl::CreateImageData(PP_Instance instance,
                                                   const PP_Size* size,
                                                   PP_Bool init_to_zero) {
 #if BUILDFLAG(IS_WIN)
-  // If Win32K lockdown mitigations are enabled for Windows 8 and beyond,
-  // we use the SIMPLE image data type as the PLATFORM image data type
+  // We use the SIMPLE image data type as the PLATFORM image data type
   // calls GDI functions to create DIB sections etc which fail in Win32K
   // lockdown mode.
-  if (base::win::GetVersion() >= base::win::Version::WIN8)
-    return CreateImageDataSimple(instance, format, size, init_to_zero);
-#endif
+  return CreateImageDataSimple(instance, format, size, init_to_zero);
+#else
   return PPB_ImageData_Impl::Create(instance,
                                     ppapi::PPB_ImageData_Shared::PLATFORM,
                                     format,
                                     *size,
                                     init_to_zero);
+#endif
 }
 
 PP_Resource ResourceCreationImpl::CreateImageDataSimple(

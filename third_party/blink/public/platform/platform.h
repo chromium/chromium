@@ -626,11 +626,6 @@ class BLINK_PLATFORM_EXPORT Platform {
                                             uint16_t* udp_max_port,
                                             bool* allow_mdns_obfuscation) {}
 
-  virtual bool IsWebRtcHWH264DecodingEnabled(
-      webrtc::VideoCodecType video_coded_type) {
-    return true;
-  }
-
   virtual bool IsWebRtcHWEncodingEnabled() { return true; }
 
   virtual bool IsWebRtcHWDecodingEnabled() { return true; }

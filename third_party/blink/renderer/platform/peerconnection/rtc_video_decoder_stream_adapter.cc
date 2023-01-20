@@ -278,9 +278,6 @@ RTCVideoDecoderStreamAdapter::Create(
   const webrtc::VideoCodecType video_codec_type =
       webrtc::PayloadStringToCodecType(format.name);
 
-  if (!Platform::Current()->IsWebRtcHWH264DecodingEnabled(video_codec_type))
-    return nullptr;
-
   // Bail early for unknown codecs.
   if (WebRtcToMediaVideoCodec(video_codec_type) == media::VideoCodec::kUnknown)
     return nullptr;

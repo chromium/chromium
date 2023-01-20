@@ -4,6 +4,7 @@
 
 #include "content/child/runtime_features.h"
 
+#include <string>
 #include <vector>
 
 #include "base/base_switches.h"
@@ -46,10 +47,6 @@
 #include "base/android/build_info.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
 using blink::WebRuntimeFeatures;
 
 namespace {
@@ -67,9 +64,7 @@ void SetRuntimeFeatureDefaultsForPlatform(
   WebRuntimeFeatures::EnableCompositedSelectionUpdate(true);
 #endif
 #if BUILDFLAG(IS_WIN)
-  if (base::win::GetVersion() >= base::win::Version::WIN10) {
-    WebRuntimeFeatures::EnableWebBluetooth(true);
-  }
+  WebRuntimeFeatures::EnableWebBluetooth(true);
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
