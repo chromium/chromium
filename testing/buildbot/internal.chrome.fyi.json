@@ -133,7 +133,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Windows-10-19045",
+              "os": "Windows-10",
               "pool": "chrome.tests.finch"
             }
           ],

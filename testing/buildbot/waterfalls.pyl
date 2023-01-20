@@ -6580,7 +6580,7 @@
       'win-finch-smoke-chrome': {
         'mixins': [
           'chrome-finch-swarming-pool',
-          'win10',
+          'win10-any',
         ],
         'test_suites': {
           'isolated_scripts': 'chrome_finch_smoke_tests',
