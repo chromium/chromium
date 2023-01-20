@@ -19,8 +19,7 @@
     });
   }
 
-  async function getViewportResetCommands(count) {
-    await waitForAnimationFrame();
+  async function takeViewportResetCommands(count) {
     return await session.evaluate((count) => {
       return internals.evaluateInInspectorOverlay(`(function () {
         const commands = window.commands;
@@ -40,11 +39,18 @@
   });
 
   async function runTest(label, metrics, commandCount) {
+    // Consume another frame and delete any commands that might come from
+    // a previous test. On Mac and Windows, an additional frame might be
+    // rendered during the call to setDeviceMetricsOverride resulting in overlay
+    // commands using the previous emulation params being recorded.
+    await waitForAnimationFrame();
+    await takeViewportResetCommands(0);
     const result = await dp.Emulation.setDeviceMetricsOverride(metrics);
+    await waitForAnimationFrame();
     testRunner.log('Response to setDeviceMetricsOverride:');
     testRunner.log(result);
     testRunner.log(label);
-    testRunner.log(await getViewportResetCommands(commandCount));
+    testRunner.log(await takeViewportResetCommands(commandCount));
   }
 
   await runTest('Initial device metrics:', {

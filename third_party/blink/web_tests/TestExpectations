@@ -6336,8 +6336,6 @@ crbug.com/1394559 [ Win ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/
 crbug.com/1395120 [ Mac11-arm64 ] fast/frames/sandboxed-iframe-plugins.html [ Failure ]
 crbug.com/1395450 [ Debug Linux ] virtual/plz-dedicated-worker/http/tests/devtools/layers/layer-tree-model.js [ Failure ]
 crbug.com/1395412 [ Mac10.15 ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
-crbug.com/1395409 [ Mac ] inspector-protocol/overlay/overlay-viewport.js [ Failure ]
-crbug.com/1395409 [ Win ] inspector-protocol/overlay/overlay-viewport.js [ Failure ]
 crbug.com/1396422 [ Mac11-arm64 ] inspector-protocol/css/css-get-media-queries.js [ Failure ]
 crbug.com/1403736 [ Mac11-arm64 ] external/wpt/html/semantics/popovers/light-dismiss-event-ordering.tentative.html [ Timeout ]
 crbug.com/1396079 [ Mac ] inspector-protocol/memory/forcibly-purge-javascript-memory.js [ Crash Failure ]
