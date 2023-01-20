@@ -12,7 +12,7 @@ import './icons.html.js';
 import {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Page, Route, RouteObserverMixin, Router} from './router.js';
+import {Page, Route, RouteObserverMixin, Router, UrlParam} from './router.js';
 import {getTemplate} from './side_bar.html.js';
 
 export interface PasswordManagerSideBarElement {
@@ -46,6 +46,11 @@ export class PasswordManagerSideBarElement extends RouteObserverMixin
 
   private onSelectorActivate_(event: CustomEvent<{selected: Page}>) {
     Router.getInstance().navigateTo(event.detail.selected);
+    if (event.detail.selected === Page.CHECKUP) {
+      const params = new URLSearchParams();
+      params.set(UrlParam.START_CHECK, 'true');
+      Router.getInstance().updateRouterParams(params);
+    }
   }
 
   private getSelectedPage_(): string {

@@ -53,6 +53,12 @@ suite('PasswordManagerAppTest', function() {
         const ironItem =
             app.$.sidebar.shadowRoot!.querySelector<HTMLElement>(`#${page}`)!;
         assertTrue(ironItem.classList.contains('iron-selected'));
+        if (page === Page.CHECKUP) {
+          assertEquals(
+              'true',
+              String(Router.getInstance().currentRoute.queryParameters.get(
+                  UrlParam.START_CHECK)));
+        }
       }));
 
   test('app drawer', async () => {
@@ -101,5 +107,22 @@ suite('PasswordManagerAppTest', function() {
     // its contents remain visible as the drawer slides
     // out.
     assertTrue(!!app.shadowRoot!.querySelector('#drawerSidebar'));
+  });
+
+  test('Search navigates to Passwords and updates URL parameters', function() {
+    const query = new URLSearchParams();
+    query.set(UrlParam.START_CHECK, 'true');
+    Router.getInstance().navigateTo(Page.CHECKUP);
+    Router.getInstance().updateRouterParams(query);
+
+    app.$.toolbar.$.mainToolbar.getSearchField().setValue('hello');
+
+    assertEquals(Page.PASSWORDS, Router.getInstance().currentRoute.page);
+    assertEquals(
+        'hello',
+        String(Router.getInstance().currentRoute.queryParameters.get(
+            UrlParam.SEARCH_TERM)));
+    assertFalse(Router.getInstance().currentRoute.queryParameters.has(
+        UrlParam.START_CHECK));
   });
 });

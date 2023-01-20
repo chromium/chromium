@@ -27,7 +27,11 @@ export enum CheckupSubpage {
 }
 
 export enum UrlParam {
+  // Parameter which indicates search term.
   SEARCH_TERM = 'q',
+  // If this parameter is true, password check will start automatically when
+  // navigating to Checkup section.
+  START_CHECK = 'start',
 }
 
 export class Route {

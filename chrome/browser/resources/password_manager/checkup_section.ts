@@ -21,7 +21,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './checkup_section.html.js';
 import {CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerImpl} from './password_manager_proxy.js';
-import {CheckupSubpage, Page, Router} from './router.js';
+import {CheckupSubpage, Page, Route, RouteObserverMixin, Router, UrlParam} from './router.js';
 
 const CheckState = chrome.passwordsPrivate.PasswordCheckState;
 
@@ -39,8 +39,9 @@ export interface CheckupSectionElement {
   };
 }
 
-export class CheckupSectionElement extends I18nMixin
-(PolymerElement) {
+const CheckupSectionElementBase = RouteObserverMixin(I18nMixin(PolymerElement));
+
+export class CheckupSectionElement extends CheckupSectionElementBase {
   static get is() {
     return 'checkup-section';
   }
@@ -121,6 +122,7 @@ export class CheckupSectionElement extends I18nMixin
   private compromisedPasswords_: chrome.passwordsPrivate.PasswordUiEntry[];
   private weakPasswords_: chrome.passwordsPrivate.PasswordUiEntry[];
   private reusedPasswords_: chrome.passwordsPrivate.PasswordUiEntry[];
+  private didCheckAutomatically_: boolean = false;
 
   private statusChangedListener_: PasswordCheckStatusChangedListener|null =
       null;
@@ -180,6 +182,17 @@ export class CheckupSectionElement extends I18nMixin
     PasswordManagerImpl.getInstance().removeInsecureCredentialsListener(
         this.insecureCredentialsChangedListener_);
     this.insecureCredentialsChangedListener_ = null;
+  }
+
+  override currentRouteChanged(route: Route): void {
+    const param = route.queryParameters.get(UrlParam.START_CHECK) || '';
+    if (param === 'true' && !this.didCheckAutomatically_) {
+      this.didCheckAutomatically_ = true;
+      PasswordManagerImpl.getInstance().startBulkPasswordCheck().catch(
+          () => {});
+      PasswordManagerImpl.getInstance().recordPasswordCheckInteraction(
+          PasswordCheckInteraction.START_CHECK_AUTOMATICALLY);
+    }
   }
 
   private async onStatusChanged_(

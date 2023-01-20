@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {CheckupSubpage, Page, PasswordCheckInteraction, PasswordManagerImpl, Router} from 'chrome://password-manager/password_manager.js';
+import {CheckupSubpage, Page, PasswordCheckInteraction, PasswordManagerImpl, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {PluralStringProxy, PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -297,4 +297,23 @@ suite('CheckupSectionTest', function() {
                 assertEquals(
                     Page.CHECKUP, Router.getInstance().currentRoute.page);
               }));
+
+  test('Start check automatically', async function() {
+    const newParams = new URLSearchParams();
+    newParams.set(UrlParam.START_CHECK, 'true');
+    Router.getInstance().updateRouterParams(newParams);
+
+    passwordManager.data.checkStatus =
+        makePasswordCheckStatus({state: PasswordCheckState.IDLE});
+
+    const section = document.createElement('checkup-section');
+    document.body.appendChild(section);
+    await flushTasks();
+
+    await passwordManager.whenCalled('startBulkPasswordCheck');
+    const interaction =
+        await passwordManager.whenCalled('recordPasswordCheckInteraction');
+    assertEquals(
+        PasswordCheckInteraction.START_CHECK_AUTOMATICALLY, interaction);
+  });
 });

@@ -46,13 +46,11 @@ export class PasswordManagerToolbarElement extends RouteObserverMixin
   }
 
   private onSearchChanged_(event: CustomEvent<string>) {
-    const newParams = Router.getInstance().currentRoute.queryParameters;
+    const newParams = new URLSearchParams();
     if (event.detail) {
       newParams.set(UrlParam.SEARCH_TERM, event.detail);
       // Switch to passwords page, since search is supported only on passwords.
       Router.getInstance().navigateTo(Page.PASSWORDS);
-    } else {
-      newParams.delete(UrlParam.SEARCH_TERM);
     }
     Router.getInstance().updateRouterParams(newParams);
   }
