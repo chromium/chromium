@@ -56,6 +56,7 @@ public interface FeedActionsHandler {
     /**
      * Interface for handling snackbar exit conditions.
      */
+
     public interface SnackbarController {
         @Deprecated
         default void onAction() {}
