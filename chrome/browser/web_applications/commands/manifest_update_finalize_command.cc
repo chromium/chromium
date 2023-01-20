@@ -47,7 +47,7 @@ ManifestUpdateFinalizeCommand::ManifestUpdateFinalizeCommand(
 
 ManifestUpdateFinalizeCommand::~ManifestUpdateFinalizeCommand() = default;
 
-LockDescription& ManifestUpdateFinalizeCommand::lock_description() const {
+const LockDescription& ManifestUpdateFinalizeCommand::lock_description() const {
   return *lock_description_;
 }
 

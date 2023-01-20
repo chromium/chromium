@@ -152,7 +152,8 @@ FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
 
 FetchManifestAndInstallCommand::~FetchManifestAndInstallCommand() = default;
 
-LockDescription& FetchManifestAndInstallCommand::lock_description() const {
+const LockDescription& FetchManifestAndInstallCommand::lock_description()
+    const {
   DCHECK(noop_lock_description_ || app_lock_description_);
 
   if (app_lock_description_)

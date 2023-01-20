@@ -57,7 +57,7 @@ class TestUninstallAndReplaceJobCommand
         base::BindOnce(std::move(on_complete_), uninstall_triggered));
   }
 
-  LockDescription& lock_description() const override {
+  const LockDescription& lock_description() const override {
     return *lock_description_;
   }
 

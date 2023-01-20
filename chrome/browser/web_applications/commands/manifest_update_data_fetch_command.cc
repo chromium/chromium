@@ -197,7 +197,8 @@ ManifestUpdateDataFetchCommand::ManifestUpdateDataFetchCommand(
 
 ManifestUpdateDataFetchCommand::~ManifestUpdateDataFetchCommand() = default;
 
-LockDescription& ManifestUpdateDataFetchCommand::lock_description() const {
+const LockDescription& ManifestUpdateDataFetchCommand::lock_description()
+    const {
   return *lock_description_;
 }
 

@@ -136,7 +136,7 @@ void InstallFromSyncCommand::OnSyncSourceRemoved() {
                          webapps::InstallResultCode::kHaltedBySyncUninstall);
 }
 
-LockDescription& InstallFromSyncCommand::lock_description() const {
+const LockDescription& InstallFromSyncCommand::lock_description() const {
   return *lock_description_;
 }
 

@@ -105,7 +105,7 @@ void InstallIsolatedWebAppCommand::SetDataRetrieverForTesting(
 
 InstallIsolatedWebAppCommand::~InstallIsolatedWebAppCommand() = default;
 
-LockDescription& InstallIsolatedWebAppCommand::lock_description() const {
+const LockDescription& InstallIsolatedWebAppCommand::lock_description() const {
   return *lock_description_;
 }
 

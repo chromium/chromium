@@ -54,7 +54,7 @@ class MockCommand : public WebAppCommandTemplate<LockType> {
 
   ~MockCommand() override { OnDestruction(); }
 
-  LockDescription& lock_description() const override {
+  const LockDescription& lock_description() const override {
     return *lock_description_;
   }
 

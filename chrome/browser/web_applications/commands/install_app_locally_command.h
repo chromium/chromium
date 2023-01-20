@@ -26,7 +26,7 @@ class InstallAppLocallyCommand : public WebAppCommandTemplate<AppLock> {
                            base::OnceClosure install_callback);
   ~InstallAppLocallyCommand() override;
 
-  LockDescription& lock_description() const override;
+  const LockDescription& lock_description() const override;
 
   void StartWithLock(std::unique_ptr<AppLock> app_lock) override;
   void OnSyncSourceRemoved() override;

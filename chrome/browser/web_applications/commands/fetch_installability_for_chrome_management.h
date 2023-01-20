@@ -53,7 +53,7 @@ class FetchInstallabilityForChromeManagement
       FetchInstallabilityForChromeManagementCallback callback);
   ~FetchInstallabilityForChromeManagement() override;
 
-  LockDescription& lock_description() const override;
+  const LockDescription& lock_description() const override;
 
   void StartWithLock(std::unique_ptr<NoopLock>) override;
   void OnSyncSourceRemoved() override;

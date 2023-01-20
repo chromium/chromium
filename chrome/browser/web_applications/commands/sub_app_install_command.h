@@ -55,7 +55,7 @@ class SubAppInstallCommand
   SubAppInstallCommand(const SubAppInstallCommand&) = delete;
   SubAppInstallCommand& operator=(const SubAppInstallCommand&) = delete;
 
-  LockDescription& lock_description() const override;
+  const LockDescription& lock_description() const override;
   base::Value ToDebugValue() const override;
   void SetDialogNotAcceptedForTesting();
 

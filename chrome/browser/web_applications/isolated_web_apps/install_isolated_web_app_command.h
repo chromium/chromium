@@ -93,7 +93,7 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
 
   ~InstallIsolatedWebAppCommand() override;
 
-  LockDescription& lock_description() const override;
+  const LockDescription& lock_description() const override;
 
   base::Value ToDebugValue() const override;
 

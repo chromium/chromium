@@ -54,8 +54,8 @@ void CallbackCommand<LockType, DescriptionType>::StartWithLock(
 }
 
 template <class LockType, class DescriptionType>
-LockDescription& CallbackCommand<LockType, DescriptionType>::lock_description()
-    const {
+const LockDescription&
+CallbackCommand<LockType, DescriptionType>::lock_description() const {
   return *lock_description_;
 }
 

@@ -27,7 +27,8 @@ OsIntegrationSynchronizeCommand::OsIntegrationSynchronizeCommand(
 
 OsIntegrationSynchronizeCommand::~OsIntegrationSynchronizeCommand() = default;
 
-LockDescription& OsIntegrationSynchronizeCommand::lock_description() const {
+const LockDescription& OsIntegrationSynchronizeCommand::lock_description()
+    const {
   return *app_lock_description_;
 }
 

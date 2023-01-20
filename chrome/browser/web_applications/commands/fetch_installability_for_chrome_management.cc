@@ -47,8 +47,8 @@ FetchInstallabilityForChromeManagement::FetchInstallabilityForChromeManagement(
 FetchInstallabilityForChromeManagement::
     ~FetchInstallabilityForChromeManagement() = default;
 
-LockDescription& FetchInstallabilityForChromeManagement::lock_description()
-    const {
+const LockDescription&
+FetchInstallabilityForChromeManagement::lock_description() const {
   DCHECK(noop_lock_description_ || app_lock_description_);
   if (app_lock_description_)
     return *app_lock_description_;

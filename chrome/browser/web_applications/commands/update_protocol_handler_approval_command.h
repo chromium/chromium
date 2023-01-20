@@ -36,7 +36,7 @@ class UpdateProtocolHandlerApprovalCommand
 
   void StartWithLock(std::unique_ptr<AppLock> lock) override;
 
-  LockDescription& lock_description() const override;
+  const LockDescription& lock_description() const override;
 
   base::Value ToDebugValue() const override;
 

@@ -132,7 +132,7 @@ void UpdateProtocolHandlerApprovalCommand::
           weak_factory_.GetWeakPtr()));
 }
 
-LockDescription& UpdateProtocolHandlerApprovalCommand::lock_description()
+const LockDescription& UpdateProtocolHandlerApprovalCommand::lock_description()
     const {
   return *lock_description_;
 }

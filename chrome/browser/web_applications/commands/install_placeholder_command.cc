@@ -59,7 +59,7 @@ void InstallPlaceholderCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   FinalizeInstall(/*bitmaps=*/absl::nullopt);
 }
 
-LockDescription& InstallPlaceholderCommand::lock_description() const {
+const LockDescription& InstallPlaceholderCommand::lock_description() const {
   return *lock_description_;
 }
 

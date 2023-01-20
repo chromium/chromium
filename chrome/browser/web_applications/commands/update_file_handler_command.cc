@@ -141,7 +141,7 @@ void UpdateFileHandlerCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
 #endif
 }
 
-LockDescription& UpdateFileHandlerCommand::lock_description() const {
+const LockDescription& UpdateFileHandlerCommand::lock_description() const {
   return *lock_description_;
 }
 

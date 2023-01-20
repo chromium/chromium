@@ -56,7 +56,7 @@ RunOnOsLoginCommand::RunOnOsLoginCommand(
 
 RunOnOsLoginCommand::~RunOnOsLoginCommand() = default;
 
-LockDescription& RunOnOsLoginCommand::lock_description() const {
+const LockDescription& RunOnOsLoginCommand::lock_description() const {
   return *lock_description_;
 }
 

@@ -160,7 +160,7 @@ void WebAppUninstallCommand::OnShutdown() {
   return;
 }
 
-LockDescription& WebAppUninstallCommand::lock_description() const {
+const LockDescription& WebAppUninstallCommand::lock_description() const {
   return *lock_description_;
 }
 

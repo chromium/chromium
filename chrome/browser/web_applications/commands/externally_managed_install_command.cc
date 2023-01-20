@@ -61,7 +61,8 @@ ExternallyManagedInstallCommand::ExternallyManagedInstallCommand(
 
 ExternallyManagedInstallCommand::~ExternallyManagedInstallCommand() = default;
 
-LockDescription& ExternallyManagedInstallCommand::lock_description() const {
+const LockDescription& ExternallyManagedInstallCommand::lock_description()
+    const {
   DCHECK(noop_lock_description_ || app_lock_description_);
 
   if (app_lock_description_)

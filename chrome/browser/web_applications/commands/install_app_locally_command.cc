@@ -38,7 +38,7 @@ InstallAppLocallyCommand::InstallAppLocallyCommand(
 
 InstallAppLocallyCommand::~InstallAppLocallyCommand() = default;
 
-LockDescription& InstallAppLocallyCommand::lock_description() const {
+const LockDescription& InstallAppLocallyCommand::lock_description() const {
   return *app_lock_description_;
 }
 

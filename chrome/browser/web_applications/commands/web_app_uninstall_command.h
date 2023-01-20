@@ -55,7 +55,7 @@ class WebAppUninstallCommand : public WebAppCommandTemplate<FullSystemLock> {
   void OnSyncSourceRemoved() override;
   void OnShutdown() override;
 
-  LockDescription& lock_description() const override;
+  const LockDescription& lock_description() const override;
   base::Value ToDebugValue() const override;
 
   void SetRemoveManagementTypeCallbackForTesting(

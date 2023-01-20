@@ -131,7 +131,7 @@ SubAppInstallCommand::SubAppInstallCommand(
 
 SubAppInstallCommand::~SubAppInstallCommand() = default;
 
-LockDescription& SubAppInstallCommand::lock_description() const {
+const LockDescription& SubAppInstallCommand::lock_description() const {
   return *lock_description_;
 }
 

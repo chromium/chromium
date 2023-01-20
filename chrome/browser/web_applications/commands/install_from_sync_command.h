@@ -69,7 +69,7 @@ class InstallFromSyncCommand
       OnceInstallCallback install_callback);
   ~InstallFromSyncCommand() override;
 
-  LockDescription& lock_description() const override;
+  const LockDescription& lock_description() const override;
 
   base::Value ToDebugValue() const override;
 

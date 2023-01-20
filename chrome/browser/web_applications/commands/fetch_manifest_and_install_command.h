@@ -52,7 +52,7 @@ class FetchManifestAndInstallCommand : public WebAppCommandTemplate<NoopLock> {
 
   ~FetchManifestAndInstallCommand() override;
 
-  LockDescription& lock_description() const override;
+  const LockDescription& lock_description() const override;
 
   void StartWithLock(std::unique_ptr<NoopLock> lock) override;
   void OnSyncSourceRemoved() override;

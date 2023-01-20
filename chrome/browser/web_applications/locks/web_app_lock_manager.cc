@@ -112,7 +112,7 @@ bool WebAppLockManager::IsSharedWebContentsLockFree() {
 
 void WebAppLockManager::AcquireLock(
     base::WeakPtr<content::PartitionedLockHolder> holder,
-    LockDescription& lock_description,
+    const LockDescription& lock_description,
     base::OnceClosure on_lock_acquired) {
   std::vector<content::PartitionedLockManager::PartitionedLockRequest>
       requests = GetLockRequestsForLock(lock_description);
@@ -124,7 +124,7 @@ void WebAppLockManager::AcquireLock(
 
 template <>
 void WebAppLockManager::AcquireLock(
-    LockDescription& lock_description,
+    const LockDescription& lock_description,
     base::OnceCallback<void(std::unique_ptr<NoopLock>)> on_lock_acquired) {
   CHECK(lock_description.type() == LockDescription::Type::kNoOp);
 
@@ -138,7 +138,7 @@ void WebAppLockManager::AcquireLock(
 
 template <>
 void WebAppLockManager::AcquireLock(
-    LockDescription& lock_description,
+    const LockDescription& lock_description,
     base::OnceCallback<void(std::unique_ptr<SharedWebContentsLock>)>
         on_lock_acquired) {
   CHECK(lock_description.type() ==
@@ -156,7 +156,7 @@ void WebAppLockManager::AcquireLock(
 
 template <>
 void WebAppLockManager::AcquireLock(
-    LockDescription& lock_description,
+    const LockDescription& lock_description,
     base::OnceCallback<void(std::unique_ptr<AppLock>)> on_lock_acquired) {
   CHECK(lock_description.type() == LockDescription::Type::kApp);
 
@@ -175,7 +175,7 @@ void WebAppLockManager::AcquireLock(
 
 template <>
 void WebAppLockManager::AcquireLock(
-    LockDescription& lock_description,
+    const LockDescription& lock_description,
     base::OnceCallback<void(std::unique_ptr<SharedWebContentsWithAppLock>)>
         on_lock_acquired) {
   CHECK(lock_description.type() == LockDescription::Type::kAppAndWebContents);
@@ -196,7 +196,7 @@ void WebAppLockManager::AcquireLock(
 
 template <>
 void WebAppLockManager::AcquireLock(
-    LockDescription& lock_description,
+    const LockDescription& lock_description,
     base::OnceCallback<void(std::unique_ptr<FullSystemLock>)>
         on_lock_acquired) {
   CHECK(lock_description.type() == LockDescription::Type::kFullSystem);

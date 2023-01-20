@@ -50,7 +50,7 @@ InstallFromManifestCommand::InstallFromManifestCommand(
 
 InstallFromManifestCommand::~InstallFromManifestCommand() = default;
 
-LockDescription& InstallFromManifestCommand::lock_description() const {
+const LockDescription& InstallFromManifestCommand::lock_description() const {
   DCHECK(web_contents_lock_description_ || app_lock_description_);
 
   if (app_lock_description_) {

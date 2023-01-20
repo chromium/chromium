@@ -110,7 +110,7 @@ InstallFromInfoCommand::InstallFromInfoCommand(
 }
 InstallFromInfoCommand::~InstallFromInfoCommand() = default;
 
-LockDescription& InstallFromInfoCommand::lock_description() const {
+const LockDescription& InstallFromInfoCommand::lock_description() const {
   return *lock_description_;
 }
 
