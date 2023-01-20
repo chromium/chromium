@@ -716,6 +716,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
             PrivacySandboxSettingsFactory::GetForProfile(profile_)) {
       privacy_sandbox_settings->ClearFledgeJoiningAllowedSettings(delete_begin_,
                                                                   delete_end_);
+      privacy_sandbox_settings->ClearTopicSettings(delete_begin_, delete_end_);
     }
 
 #if !BUILDFLAG(IS_ANDROID)
