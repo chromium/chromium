@@ -43944,6 +43944,15 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Record format version with validation value"/>
 </enum>
 
+<enum name="FingerprintRetrievePrimarySessionResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown error"/>
+  <int value="2" label="DBus error - no reply"/>
+  <int value="3" label="DBus error - unknown service"/>
+  <int value="4" label="Missing response"/>
+  <int value="5" label="Parsing error"/>
+</enum>
+
 <enum name="FingerprintScanResult">
   <int value="0" label="Success"/>
   <int value="1" label="Partial"/>

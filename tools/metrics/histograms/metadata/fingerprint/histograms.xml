@@ -154,6 +154,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Fingerprint.Session.RetrievePrimarySessionDuration" units="ms"
+    expires_after="2023-04-17">
+  <owner>patrykd@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Measures the time it took SessionManager to respond to
+    RetrievePrimarySession DBus method call.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Session.RetrievePrimarySessionResult"
+    enum="FingerprintRetrievePrimarySessionResult" expires_after="2023-04-17">
+  <owner>patrykd@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    The result of retrieving primary session when Biometrics Daemon starts or
+    user logs in.
+
+    Retrieving primary session is successful when Session Manager responds to
+    RetrievePrimarySession DBus method call and the response was successfully
+    parsed. It means that success is reported also when user is not logged in.
+  </summary>
+</histogram>
+
 <histogram name="Fingerprint.SetContext.Success" enum="BooleanSuccess"
     expires_after="2023-06-04">
   <owner>hesling@chromium.org</owner>
