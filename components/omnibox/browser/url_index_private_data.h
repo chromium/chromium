@@ -130,6 +130,16 @@ class URLIndexPrivateData
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
 
+  // Break up the raw search string (complete with escaped URL elements) into
+  // 'terms' (as opposed to 'words'; see comment in HistoryItemsForTerms()).
+  // We only want to break up the search string on 'true' whitespace rather than
+  // escaped whitespace.  For example, when the user types
+  // "colspec=ID%20Mstone Release" we get two 'terms': "colspec=id%20mstone" and
+  // "release".
+  // Also returns word starts in each term.
+  static std::pair<String16Vector, WordStarts> GetTermsAndWordStartsOffsets(
+      const std::u16string& lower_raw_string);
+
  private:
   friend class base::RefCountedThreadSafe<URLIndexPrivateData>;
   ~URLIndexPrivateData();

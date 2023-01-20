@@ -475,6 +475,50 @@ TermMatches ScoredHistoryMatch::FilterTermMatchesByWordStarts(
 }
 
 // static
+size_t ScoredHistoryMatch::ComputeTotalMatchLength(
+    const WordStarts& terms_to_word_starts_offsets,
+    const TermMatches& matches,
+    const WordStarts& word_starts,
+    size_t num_words_to_allow) {
+  int total_match_length = 0;
+  auto next_word_starts = word_starts.begin();
+  auto end_word_starts = word_starts.end();
+  size_t word_num = 0;
+  for (const auto& match : matches) {
+    // Calculate the offset in the title string where the meaningful (word) part
+    // of the term starts.  This takes into account times when a term starts
+    // with punctuation such as "/foo".
+    const size_t term_word_offset =
+        match.offset + terms_to_word_starts_offsets[match.term_num];
+    // Advance next_word_starts until it's >= the position of the term we're
+    // considering (adjusted for where the word begins within the term).
+    while ((next_word_starts != end_word_starts) &&
+           (*next_word_starts < term_word_offset)) {
+      ++next_word_starts;
+      ++word_num;
+    }
+
+    // Only count up to the number of allowed words.
+    if (word_num >= num_words_to_allow) {
+      break;
+    }
+    total_match_length += match.length;
+  }
+  return total_match_length;
+}
+
+// static
+size_t ScoredHistoryMatch::CountUniqueMatchTerms(
+    const TermMatches& term_matches) {
+  // Find unique `term_num`s in term_matches
+  std::set<int> unique_term_nums;
+  for (const auto& match : term_matches) {
+    unique_term_nums.insert(match.term_num);
+  }
+  return unique_term_nums.size();
+}
+
+// static
 void ScoredHistoryMatch::Init() {
   static bool initialized = false;
 
@@ -552,7 +596,6 @@ float ScoredHistoryMatch::GetTopicalityScore(
   int32_t total_host_match_length = 0;
   int32_t total_path_match_length = 0;
   int32_t total_query_or_ref_match_length = 0;
-  int32_t total_title_match_length = 0;
 
   for (const auto& url_match : url_matches) {
     // Calculate the offset in the URL string where the meaningful (word) part
@@ -618,30 +661,15 @@ float ScoredHistoryMatch::GetTopicalityScore(
     total_url_match_length += url_match.length;
   }
   // Now do the analogous loop over all matches in the title.
-  next_word_starts = word_starts.title_word_starts_.begin();
-  end_word_starts = word_starts.title_word_starts_.end();
-  size_t word_num = 0;
   title_matches = FilterTermMatchesByWordStarts(
       title_matches, terms_to_word_starts_offsets,
       word_starts.title_word_starts_, 0, std::string::npos, true);
-  for (const auto& title_match : title_matches) {
-    // Calculate the offset in the title string where the meaningful (word) part
-    // of the term starts.  This takes into account times when a term starts
-    // with punctuation such as "/foo".
-    const size_t term_word_offset =
-        title_match.offset + terms_to_word_starts_offsets[title_match.term_num];
-    // Advance next_word_starts until it's >= the position of the term we're
-    // considering (adjusted for where the word begins within the term).
-    while ((next_word_starts != end_word_starts) &&
-           (*next_word_starts < term_word_offset)) {
-      ++next_word_starts;
-      ++word_num;
-    }
-    if (word_num >= num_title_words_to_allow_)
-      break;  // only count the first ten words
-    term_scores[title_match.term_num] += 8;
-    total_title_match_length += title_match.length;
-  }
+
+  size_t total_title_match_length = ComputeTotalMatchLength(
+      terms_to_word_starts_offsets, title_matches,
+      word_starts.title_word_starts_, num_title_words_to_allow_);
+  IncrementTitleMatchTermScores(terms_to_word_starts_offsets,
+                                word_starts.title_word_starts_, &term_scores);
 
   if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled()) {
     scoring_signals.set_total_url_match_length(total_url_match_length);
@@ -651,21 +679,10 @@ float ScoredHistoryMatch::GetTopicalityScore(
         total_query_or_ref_match_length);
     scoring_signals.set_total_title_match_length(total_title_match_length);
 
-    // The number of matching input terms is determined by finding the count of
-    // unique `term_num`s in the vector of TermMatches.  This is done after all
-    // filtering of discarded matches is done, and then recorded to
-    // `scoring_signals`.
-    const auto count_unique_term_nums = [&](const TermMatches& term_matches) {
-      std::set<int> unique_term_nums;
-      for (const auto& match : term_matches) {
-        unique_term_nums.insert(match.term_num);
-      }
-      return unique_term_nums.size();
-    };
     scoring_signals.set_num_input_terms_matched_by_title(
-        count_unique_term_nums(title_matches));
+        CountUniqueMatchTerms(title_matches));
     scoring_signals.set_num_input_terms_matched_by_url(
-        count_unique_term_nums(url_matches));
+        CountUniqueMatchTerms(url_matches));
   }
 
   // TODO(mpearson): Restore logic for penalizing out-of-order matches.
@@ -691,6 +708,36 @@ float ScoredHistoryMatch::GetTopicalityScore(
     return 0.0;
 
   return final_topicality_score;
+}
+
+void ScoredHistoryMatch::IncrementTitleMatchTermScores(
+    const WordStarts& terms_to_word_starts_offsets,
+    const WordStarts& title_word_starts,
+    std::vector<int>* term_scores) {
+  auto next_word_starts = title_word_starts.begin();
+  auto end_word_starts = title_word_starts.end();
+  size_t word_num = 0;
+  for (const auto& title_match : title_matches) {
+    // Calculate the offset in the title string where the meaningful (word) part
+    // of the term starts.  This takes into account times when a term starts
+    // with punctuation such as "/foo".
+    const size_t term_word_offset =
+        title_match.offset + terms_to_word_starts_offsets[title_match.term_num];
+    // Advance next_word_starts until it's >= the position of the term we're
+    // considering (adjusted for where the word begins within the term).
+    while ((next_word_starts != end_word_starts) &&
+           (*next_word_starts < term_word_offset)) {
+      ++next_word_starts;
+      ++word_num;
+    }
+    if (word_num >= num_title_words_to_allow_) {
+      break;  // only count the first ten words
+    }
+    if (term_scores &&
+        term_scores->size() > static_cast<size_t>(title_match.term_num)) {
+      (*term_scores)[title_match.term_num] += 8;
+    }
+  }
 }
 
 float ScoredHistoryMatch::GetRecencyScore(int last_visit_days_ago) const {

@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
@@ -41,6 +42,7 @@
 #include "components/omnibox/browser/document_provider.h"
 #include "components/omnibox/browser/history_fuzzy_provider.h"
 #include "components/omnibox/browser/history_quick_provider.h"
+#include "components/omnibox/browser/history_scoring_signals_annotator.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/local_history_zero_suggest_provider.h"
@@ -507,6 +509,16 @@ AutocompleteController::AutocompleteController(
         history_quick_provider_));
   }
 #endif
+
+  // Create URL scoring signal annotators.
+  if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled() &&
+      base::GetFieldTrialParamByFeatureAsBool(
+          omnibox::kLogUrlScoringSignals, "enable_scoring_signals_annotators",
+          /*default_value=*/false)) {
+    url_scoring_signals_annotators_.push_back(
+        std::make_unique<HistoryScoringSignalsAnnotator>(
+            provider_client_.get()));
+  }
 
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "AutocompleteController",
@@ -1031,7 +1043,7 @@ void AutocompleteController::UpdateScoringSignals() {
   // If enabled, update scoring signals of URL suggestions.
   if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled()) {
     for (const auto& annotator : url_scoring_signals_annotators_) {
-      annotator->AnnotateResult(&result_);
+      annotator->AnnotateResult(input_, &result_);
     }
   }
 }

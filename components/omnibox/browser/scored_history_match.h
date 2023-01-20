@@ -91,6 +91,22 @@ struct ScoredHistoryMatch : public history::HistoryMatch {
       size_t end_pos,
       bool allow_midword_continuations = false);
 
+  // Computes the total length of term matches for the first max allowed number
+  // of words from the text being matched against.
+  //
+  // `terms_to_word_starts_offsets` contains the offsets of word starts in the
+  // input text being searched for. `matches` are term matches from the text
+  // being searched in (i.e. suggestion title), and `word_starts` contains the
+  // word starts within the text.
+  static size_t ComputeTotalMatchLength(
+      const WordStarts& terms_to_word_starts_offsets,
+      const TermMatches& matches,
+      const WordStarts& word_starts,
+      size_t num_words_to_allow);
+
+  // Count the number of unique matching terms.
+  static size_t CountUniqueMatchTerms(const TermMatches& term_matches);
+
   // An interim score taking into consideration location and completeness
   // of the match.
   int raw_score = 0;
@@ -138,6 +154,13 @@ struct ScoredHistoryMatch : public history::HistoryMatch {
                            const base::OffsetAdjuster::Adjustments& adjustments,
                            const WordStarts& terms_to_word_starts_offsets,
                            const RowWordStarts& word_starts);
+
+  // Increment term scores based on title matches.
+  // Only uses the first `num_title_words_to_allow_` matches.
+  void IncrementTitleMatchTermScores(
+      const WordStarts& terms_to_word_starts_offsets,
+      const WordStarts& title_word_starts,
+      std::vector<int>* term_scores);
 
   // Returns a recency score based on |last_visit_days_ago|, which is
   // how many days ago the page was last visited.
