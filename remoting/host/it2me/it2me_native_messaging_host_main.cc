@@ -126,7 +126,7 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
 
   remoting::LoadResources("");
 
-#if BUILDFLAG(IS_CHROMEOS) && defined(REMOTING_USE_X11)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(REMOTING_USE_X11)
   // Required for any calls into GTK functions, such as the Disconnect and
   // Continue windows. Calling with nullptr arguments because we don't have
   // any command line arguments for gtk to consume.
@@ -139,7 +139,8 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
   // Need to prime the host OS version value for linux to prevent IO on the
   // network thread. base::GetLinuxDistro() caches the result.
   base::GetLinuxDistro();
-#endif  // BUILDFLAG(IS_CHROMEOS) && defined(REMOTING_USE_X11)
+#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
+        // defined(REMOTING_USE_X11)
 
   base::File read_file;
   base::File write_file;
