@@ -183,17 +183,26 @@ suite('AppListTest', () => {
     const openInWindow = appListElement.shadowRoot!.querySelector<HTMLElement>(
         '#open-in-window');
     assertTrue(!!openInWindow);
+    const checkbox = openInWindow.querySelector('cr-checkbox');
+    assertTrue(!!checkbox);
 
-    assertFalse(openInWindow!.querySelector('cr-checkbox')!.checked);
+    assertFalse(checkbox.checked);
     assertFalse(appInfo.openInWindow);
-    openInWindow!.click();
+    openInWindow.click();
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
-    assertTrue(openInWindow!.querySelector('cr-checkbox')!.checked);
+    assertTrue(checkbox.checked);
     assertTrue(appInfo.openInWindow);
-    openInWindow!.click();
+    openInWindow.click();
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
-    assertFalse(openInWindow!.querySelector('cr-checkbox')!.checked);
+    assertFalse(checkbox.checked);
     assertFalse(appInfo.openInWindow);
+
+    // Clicking the checkbox should have the same effect as click the parent
+    // menu item.
+    checkbox.click();
+    appItem.dispatchEvent(new CustomEvent('contextmenu'));
+    assertTrue(checkbox.checked);
+    assertTrue(appInfo.openInWindow);
   });
 
   test('toggle launch on startup', () => {
@@ -208,17 +217,26 @@ suite('AppListTest', () => {
         appListElement.shadowRoot!.querySelector<HTMLElement>(
             '#launch-on-startup');
     assertTrue(!!launchOnStartup);
+    const checkbox = launchOnStartup.querySelector('cr-checkbox');
+    assertTrue(!!checkbox);
 
-    assertFalse(launchOnStartup.querySelector('cr-checkbox')!.checked);
+    assertFalse(checkbox.checked);
     assertEquals(appInfo.runOnOsLoginMode, RunOnOsLoginMode.kNotRun);
     launchOnStartup.click();
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
-    assertTrue(launchOnStartup.querySelector('cr-checkbox')!.checked);
+    assertTrue(checkbox.checked);
     assertEquals(appInfo.runOnOsLoginMode, RunOnOsLoginMode.kWindowed);
     launchOnStartup.click();
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
-    assertFalse(launchOnStartup.querySelector('cr-checkbox')!.checked);
+    assertFalse(checkbox.checked);
     assertEquals(appInfo.runOnOsLoginMode, RunOnOsLoginMode.kNotRun);
+
+    // Clicking the checkbox should have the same effect as click the parent
+    // menu item.
+    checkbox.click();
+    appItem.dispatchEvent(new CustomEvent('contextmenu'));
+    assertTrue(checkbox.checked);
+    assertEquals(appInfo.runOnOsLoginMode, RunOnOsLoginMode.kWindowed);
   });
 
   test('click uninstall', () => {

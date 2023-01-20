@@ -45,7 +45,8 @@
     <div class="dropdown-item-label">
       Open in window
     </div>
-    <cr-checkbox checked="{{selectedActionMenuModel_.appInfo.openInWindow}}">
+    <cr-checkbox checked="{{selectedActionMenuModel_.appInfo.openInWindow}}"
+      on-click="onOpenInWindowItemClick_">
         Enable opening app in window
     </cr-checkbox>
   </div>
@@ -59,7 +60,7 @@
       checked="[[isLaunchOnStartUp_(selectedActionMenuModel_)]]"
       disabled=
         "[[isLaunchOnStartupDisabled_(selectedActionMenuModel_)]]"
-      on-change="onLaunchOnStartupItemClick_">
+      on-click="onLaunchOnStartupItemClick_">
         Enable launching app on startup
     </cr-checkbox>
   </div>
