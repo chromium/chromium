@@ -93,7 +93,8 @@ UpdaterState::StateReaderChromiumUpdater::StateReaderChromiumUpdater(
 
 base::Time UpdaterState::StateReaderChromiumUpdater::FindTimeKey(
     base::StringPiece key) const {
-  return base::ValueToTime(parsed_json_.FindKey(key)).value_or(base::Time());
+  return base::ValueToTime(parsed_json_.GetDict().Find(key))
+      .value_or(base::Time());
 }
 
 std::string UpdaterState::StateReaderChromiumUpdater::GetUpdaterName() const {
