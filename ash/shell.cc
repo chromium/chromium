@@ -74,7 +74,6 @@
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/glanceables_delegate.h"
-#include "ash/highlighter/highlighter_controller.h"
 #include "ash/host/ash_window_tree_host_init_params.h"
 #include "ash/hud_display/hud_display.h"
 #include "ash/ime/ime_controller_impl.h"
@@ -890,7 +889,6 @@ Shell::~Shell() {
   modality_filter_.reset();
 
   touch_transformer_controller_.reset();
-  highlighter_controller_.reset();
   key_accessibility_enabler_.reset();
 
   display_speaker_controller_.reset();
@@ -1395,7 +1393,6 @@ void Shell::Init(
   laser_pointer_controller_ = std::make_unique<LaserPointerController>();
   partial_magnifier_controller_ =
       std::make_unique<PartialMagnifierController>();
-  highlighter_controller_ = std::make_unique<HighlighterController>();
   if (::features::IsTouchTextEditingRedesignEnabled()) {
     touch_selection_magnifier_runner_ash_ =
         std::make_unique<TouchSelectionMagnifierRunnerAsh>();

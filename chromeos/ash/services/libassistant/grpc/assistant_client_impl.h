@@ -65,8 +65,6 @@ class AssistantClientImpl : public AssistantClientV1 {
       base::OnceCallback<void(bool)> on_done) override;
   void RegisterActionModule(
       assistant_client::ActionModule* action_module) override;
-  void SendScreenContextRequest(
-      const std::vector<std::string>& context_protos) override;
   void StartVoiceInteraction() override;
   void StopAssistantInteraction(bool cancel_conversation) override;
   void AddConversationStateEventObserver(

@@ -67,9 +67,6 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
                      bool allow_tts) override;
   void StartVoiceInteraction() override;
   void StartEditReminderInteraction(const std::string& client_id) override;
-  void StartScreenContextInteraction(
-      ax::mojom::AssistantStructurePtr assistant_structure,
-      const std::vector<uint8_t>& screenshot) override;
   void StopActiveInteraction(bool cancel_conversation) override;
   void RetrieveNotification(AssistantNotification notification,
                             int32_t action_index) override;
@@ -82,7 +79,6 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   void OnShowHtml(const std::string& html_content,
                   const std::string& fallback) override;
   void OnShowText(const std::string& text) override;
-  void OnShowContextualQueryFallback() override;
   void OnShowSuggestions(
       const std::vector<chromeos::assistant::action::Suggestion>& suggestions)
       override;

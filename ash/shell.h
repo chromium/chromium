@@ -145,7 +145,6 @@ class FullscreenMagnifierController;
 class GeolocationController;
 class GlanceablesController;
 class ColorEnhancementController;
-class HighlighterController;
 class HoldingSpaceController;
 class HumanPresenceOrientationController;
 class ImeControllerImpl;
@@ -508,9 +507,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   GlanceablesController* glanceables_controller() {
     return glanceables_controller_.get();
-  }
-  HighlighterController* highlighter_controller() {
-    return highlighter_controller_.get();
   }
   ColorEnhancementController* color_enhancement_controller() {
     return color_enhancement_controller_.get();
@@ -1068,7 +1064,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<ui::EventHandler> speech_feedback_handler_;
   std::unique_ptr<LaserPointerController> laser_pointer_controller_;
   std::unique_ptr<PartialMagnifierController> partial_magnifier_controller_;
-  std::unique_ptr<HighlighterController> highlighter_controller_;
 
   std::unique_ptr<DockedMagnifierController> docked_magnifier_controller_;
 

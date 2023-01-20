@@ -348,12 +348,6 @@ void AssistantManagerServiceImpl::StartEditReminderInteraction(
   conversation_controller().StartEditReminderInteraction(client_id);
 }
 
-void AssistantManagerServiceImpl::StartScreenContextInteraction(
-    const std::vector<uint8_t>& assistant_screenshot) {
-  conversation_controller().StartScreenContextInteraction(nullptr,
-                                                          assistant_screenshot);
-}
-
 void AssistantManagerServiceImpl::StartTextInteraction(
     const std::string& query,
     AssistantQuerySource source,
@@ -717,11 +711,6 @@ void AssistantManagerServiceImpl::SendAssistantFeedback(
 AssistantNotificationController*
 AssistantManagerServiceImpl::assistant_notification_controller() {
   return context_->assistant_notification_controller();
-}
-
-AssistantScreenContextController*
-AssistantManagerServiceImpl::assistant_screen_context_controller() {
-  return context_->assistant_screen_context_controller();
 }
 
 AssistantStateBase* AssistantManagerServiceImpl::assistant_state() {

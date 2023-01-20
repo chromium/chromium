@@ -322,11 +322,6 @@
       </message>
 
       <if expr="chromeos_ash">
-        <message name="IDS_ASSISTANT_SCREEN_CONTEXT_QUERY_FALLBACK_TEXT" desc="Message shown in Assistant UI when a query for content related to the screen context returns no results.">
-          I can't find anything on your screen I can help with.
-Try tapping the mic to ask me anything.
-        </message>
-
         <!-- The following strings are located here for accessibility from both //ash and //chrome -->
         <message name="IDS_ENABLE_BLUETOOTH" desc="The message to display in the network list when Tether is enabled but Bluetooth is disabled.">
           Turn on Bluetooth to discover nearby devices

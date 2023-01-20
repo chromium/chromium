@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/assistant/controller/assistant_screen_context_controller.h"
 #include "base/cancelable_callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
@@ -74,8 +73,8 @@ enum class AssistantQueryResponseType {
   // doesn't know what to do.
   kSearchFallback = 3,
   // Query results in specific actions (e.g. opening a web app such as YouTube
-  // or Facebook, some deeplink actions such as taking a screenshot or opening
-  // chrome settings page), indicating that Assistant knows what to do.
+  // or Facebook, some deeplink actions such as opening chrome settings page),
+  // indicating that Assistant knows what to do.
   kTargetedAction = 4,
   // Special enumerator value used by histogram macros.
   kMaxValue = kTargetedAction
@@ -141,8 +140,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
 
   // Assistant overrides:
   void StartEditReminderInteraction(const std::string& client_id) override;
-  void StartScreenContextInteraction(
-      const std::vector<uint8_t>& assistant_screenshot) override;
   void StartTextInteraction(const std::string& query,
                             AssistantQuerySource source,
                             bool allow_tts) override;
@@ -224,7 +221,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
                                 bool is_user_initiated);
 
   AssistantNotificationController* assistant_notification_controller();
-  AssistantScreenContextController* assistant_screen_context_controller();
   AssistantStateBase* assistant_state();
   DeviceActions* device_actions();
   scoped_refptr<base::SequencedTaskRunner> main_task_runner();

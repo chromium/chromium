@@ -15,7 +15,6 @@
 #include "ash/assistant/assistant_alarm_timer_controller_impl.h"
 #include "ash/assistant/assistant_interaction_controller_impl.h"
 #include "ash/assistant/assistant_notification_controller_impl.h"
-#include "ash/assistant/assistant_screen_context_controller_impl.h"
 #include "ash/assistant/assistant_setup_controller.h"
 #include "ash/assistant/assistant_state_controller.h"
 #include "ash/assistant/assistant_suggestions_controller_impl.h"
@@ -116,10 +115,6 @@ class ASH_EXPORT AssistantControllerImpl
     return &assistant_notification_controller_;
   }
 
-  AssistantScreenContextControllerImpl* screen_context_controller() {
-    return &assistant_screen_context_controller_;
-  }
-
   AssistantSetupController* setup_controller() {
     return &assistant_setup_controller_;
   }
@@ -164,7 +159,6 @@ class ASH_EXPORT AssistantControllerImpl
   AssistantInteractionControllerImpl assistant_interaction_controller_{this};
   AssistantNotificationControllerImpl assistant_notification_controller_;
   AssistantStateController assistant_state_controller_;
-  AssistantScreenContextControllerImpl assistant_screen_context_controller_;
   AssistantSetupController assistant_setup_controller_{this};
   AssistantSuggestionsControllerImpl assistant_suggestions_controller_;
   AssistantUiControllerImpl assistant_ui_controller_{this};

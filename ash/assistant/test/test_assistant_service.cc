@@ -213,9 +213,6 @@ TestAssistantService::current_interaction() {
 void TestAssistantService::StartEditReminderInteraction(
     const std::string& client_id) {}
 
-void TestAssistantService::StartScreenContextInteraction(
-    const std::vector<uint8_t>& assistant_screenshot) {}
-
 void TestAssistantService::StartTextInteraction(
     const std::string& query,
     assistant::AssistantQuerySource source,

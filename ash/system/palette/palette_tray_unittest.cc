@@ -9,8 +9,6 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/highlighter/highlighter_controller.h"
-#include "ash/highlighter/highlighter_controller_test_api.h"
 #include "ash/projector/model/projector_session_impl.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/stylus_utils.h"

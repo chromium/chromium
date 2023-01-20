@@ -45,7 +45,6 @@ PrefService* pref_service() {
 
 // Toast -----------------------------------------------------------------------
 
-constexpr char kStylusPromptToastId[] = "stylus_prompt_for_embedded_ui";
 constexpr char kUnboundServiceToastId[] =
     "assistant_controller_unbound_service";
 
@@ -65,8 +64,6 @@ AssistantUiControllerImpl::AssistantUiControllerImpl(
     : assistant_controller_(assistant_controller) {
   model_.AddObserver(this);
   assistant_controller_observation_.Observe(AssistantController::Get());
-  highlighter_controller_observation_.Observe(
-      Shell::Get()->highlighter_controller());
   overview_controller_observation_.Observe(Shell::Get()->overview_controller());
 }
 
@@ -213,10 +210,6 @@ void AssistantUiControllerImpl::OnUiVisibilityChanged(
   }
 
   if (old_visibility == AssistantVisibility::kVisible) {
-    // Metalayer should not be sticky. Disable when the UI is no longer visible.
-    if (exit_point != AssistantExitPoint::kStylus)
-      Shell::Get()->highlighter_controller()->AbortSession();
-
     // Only record the exit point when Assistant UI becomes invisible to
     // avoid recording duplicate events (e.g. pressing ESC key).
     assistant::util::RecordAssistantExitPoint(exit_point.value());
@@ -232,16 +225,6 @@ void AssistantUiControllerImpl::OnOnboardingShown() {
   // Update the number of user sessions in which Assistant onboarding was shown.
   pref_service()->SetInteger(prefs::kAssistantNumSessionsWhereOnboardingShown,
                              GetNumberOfSessionsWhereOnboardingShown() + 1);
-}
-
-void AssistantUiControllerImpl::OnHighlighterEnabledChanged(
-    HighlighterEnabledState state) {
-  if (state != HighlighterEnabledState::kEnabled)
-    return;
-
-  ShowToast(kStylusPromptToastId, ToastCatalogName::kStylusPrompt,
-            IDS_ASH_ASSISTANT_PROMPT_STYLUS);
-  CloseUi(AssistantExitPoint::kStylus);
 }
 
 void AssistantUiControllerImpl::OnOverviewModeWillStart() {

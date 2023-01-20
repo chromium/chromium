@@ -10,7 +10,6 @@
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
-#include "ash/highlighter/highlighter_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
@@ -39,7 +38,6 @@ class ASH_EXPORT AssistantUiControllerImpl
       public AssistantInteractionModelObserver,
       public AssistantUiModelObserver,
       public AssistantViewDelegateObserver,
-      public HighlighterController::Observer,
       public OverviewObserver {
  public:
   explicit AssistantUiControllerImpl(
@@ -88,9 +86,6 @@ class ASH_EXPORT AssistantUiControllerImpl
   // AssistantViewDelegateObserver:
   void OnOnboardingShown() override;
 
-  // HighlighterController::Observer:
-  void OnHighlighterEnabledChanged(HighlighterEnabledState state) override;
-
   // OverviewObserver:
   void OnOverviewModeWillStart() override;
 
@@ -106,10 +101,6 @@ class ASH_EXPORT AssistantUiControllerImpl
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};
-
-  base::ScopedObservation<HighlighterController,
-                          HighlighterController::Observer>
-      highlighter_controller_observation_{this};
 
   base::ScopedObservation<OverviewController, OverviewObserver>
       overview_controller_observation_{this};

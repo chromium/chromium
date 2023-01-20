@@ -8,7 +8,6 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/assistant/assistant_controller_impl.h"
-#include "ash/assistant/assistant_screen_context_controller_impl.h"
 #include "ash/assistant/model/assistant_interaction_model_observer.h"
 #include "ash/assistant/model/assistant_query.h"
 #include "ash/assistant/model/assistant_response.h"
@@ -90,8 +89,6 @@ AssistantInteractionControllerImpl::AssistantInteractionControllerImpl(
   model_.AddObserver(this);
 
   assistant_controller_observation_.Observe(AssistantController::Get());
-  highlighter_controller_observation_.Observe(
-      Shell::Get()->highlighter_controller());
   tablet_mode_controller_observation_.Observe(GetTabletModeController());
 }
 
@@ -256,23 +253,6 @@ void AssistantInteractionControllerImpl::OnUiVisibilityChanged(
   }
 }
 
-void AssistantInteractionControllerImpl::OnHighlighterSelectionRecognized(
-    const gfx::Rect& rect) {
-  DCHECK(AssistantState::Get()->IsScreenContextAllowed());
-
-  AssistantUiController::Get()->ShowUi(AssistantEntryPoint::kStylus);
-  StartScreenContextInteraction(rect, AssistantQuerySource::kStylus);
-}
-
-void AssistantInteractionControllerImpl::OnInteractionStateChanged(
-    InteractionState interaction_state) {
-  if (!HasActiveInteraction())
-    return;
-
-  // Metalayer mode should not be sticky. Disable it on interaction start.
-  Shell::Get()->highlighter_controller()->AbortSession();
-}
-
 void AssistantInteractionControllerImpl::OnInputModalityChanged(
     InputModality input_modality) {
   if (!IsVisible())
@@ -281,11 +261,6 @@ void AssistantInteractionControllerImpl::OnInputModalityChanged(
   if (input_modality == InputModality::kVoice)
     return;
 
-  // Metalayer interactions cause an input modality change that causes us to
-  // lose the pending query. We cache the source before stopping the active
-  // interaction so we can restore the pending query when using the stylus.
-  const auto source = model_.pending_query().source();
-
   // When switching to a non-voice input modality we instruct the underlying
   // service to terminate any pending query. We do not do this when switching to
   // voice input modality because initiation of a voice interaction will
@@ -293,12 +268,6 @@ void AssistantInteractionControllerImpl::OnInputModalityChanged(
   // interaction here for voice input modality would actually have the undesired
   // effect of stopping the voice interaction.
   StopActiveInteraction(false);
-
-  if (source == AssistantQuerySource::kStylus) {
-    model_.SetPendingQuery(std::make_unique<AssistantTextQuery>(
-        l10n_util::GetStringUTF8(IDS_ASH_ASSISTANT_CHIP_WHATS_ON_MY_SCREEN),
-        AssistantQuerySource::kStylus));
-  }
 }
 
 void AssistantInteractionControllerImpl::OnMicStateChanged(MicState mic_state) {
@@ -349,9 +318,6 @@ void AssistantInteractionControllerImpl::OnCommittedQueryChanged(
 void AssistantInteractionControllerImpl::OnInteractionStarted(
     const AssistantInteractionMetadata& metadata) {
   VLOG(1) << __func__;
-
-  // Abort any request in progress.
-  screen_context_request_factory_.InvalidateWeakPtrs();
 
   // Stop the interaction if the opt-in window is active.
   auto* assistant_setup = AssistantSetup::GetInstance();
@@ -789,28 +755,6 @@ void AssistantInteractionControllerImpl::OnUiVisible(
   }
 }
 
-void AssistantInteractionControllerImpl::StartScreenContextInteraction(
-    const gfx::Rect& region,
-    AssistantQuerySource query_source) {
-  StopActiveInteraction(false);
-
-  model_.SetPendingQuery(std::make_unique<AssistantTextQuery>(
-      l10n_util::GetStringUTF8(IDS_ASH_ASSISTANT_CHIP_WHATS_ON_MY_SCREEN),
-      query_source));
-
-  assistant_controller_->screen_context_controller()->RequestScreenshot(
-      region,
-      base::BindOnce(
-          [](const base::WeakPtr<AssistantInteractionControllerImpl>& self,
-             const std::vector<uint8_t>& screenshot) {
-            if (!self)
-              return;
-
-            self->assistant_->StartScreenContextInteraction(screenshot);
-          },
-          screen_context_request_factory_.GetWeakPtr()));
-}
-
 void AssistantInteractionControllerImpl::StartVoiceInteraction() {
   model_.SetPendingQuery(std::make_unique<AssistantVoiceQuery>());
 
@@ -825,9 +769,6 @@ void AssistantInteractionControllerImpl::StopActiveInteraction(
   // events belonging to the interaction being stopped.
   model_.SetInteractionState(InteractionState::kInactive);
   model_.ClearPendingQuery();
-
-  // Abort any request in progress.
-  screen_context_request_factory_.InvalidateWeakPtrs();
 
   if (AssistantState::Get()->assistant_status() ==
       assistant::AssistantStatus::READY) {

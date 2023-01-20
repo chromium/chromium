@@ -73,13 +73,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) Assistant {
   // to edit the specified reminder.
   virtual void StartEditReminderInteraction(const std::string& client_id) = 0;
 
-  // Starts a screen context interaction. Results related to the screen context
-  // will be returned through the |AssistantInteractionSubscriber| interface to
-  // registered subscribers.
-  // |assistant_screenshot| contains JPEG data.
-  virtual void StartScreenContextInteraction(
-      const std::vector<uint8_t>& assistant_screenshot) = 0;
-
   // Starts a new Assistant text interaction. If |allow_tts| is true, the
   // result will contain TTS. Otherwise TTS will not be present in the
   // generated server response. Results will be returned through registered

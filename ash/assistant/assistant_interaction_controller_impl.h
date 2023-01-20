@@ -14,7 +14,6 @@
 #include "ash/assistant/model/assistant_interaction_model_observer.h"
 #include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
-#include "ash/highlighter/highlighter_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
@@ -39,8 +38,7 @@ class AssistantInteractionControllerImpl
       public AssistantInteractionModelObserver,
       public AssistantUiModelObserver,
       public AssistantViewDelegateObserver,
-      public TabletModeObserver,
-      public HighlighterController::Observer {
+      public TabletModeObserver {
  public:
   using AssistantInteractionMetadata = assistant::AssistantInteractionMetadata;
   using AssistantInteractionResolution =
@@ -81,7 +79,6 @@ class AssistantInteractionControllerImpl
       const std::map<std::string, std::string>& params) override;
 
   // AssistantInteractionModelObserver:
-  void OnInteractionStateChanged(InteractionState interaction_state) override;
   void OnInputModalityChanged(InputModality input_modality) override;
   void OnMicStateChanged(MicState mic_state) override;
   void OnCommittedQueryChanged(const AssistantQuery& assistant_query) override;
@@ -92,9 +89,6 @@ class AssistantInteractionControllerImpl
       AssistantVisibility old_visibility,
       absl::optional<AssistantEntryPoint> entry_point,
       absl::optional<AssistantExitPoint> exit_point) override;
-
-  // HighlighterController::Observer:
-  void OnHighlighterSelectionRecognized(const gfx::Rect& rect) override;
 
   // assistant::AssistantInteractionSubscriber:
   void OnInteractionStarted(
@@ -132,8 +126,6 @@ class AssistantInteractionControllerImpl
   void OnTabletModeChanged();
   bool HasActiveInteraction() const;
   void OnUiVisible(AssistantEntryPoint entry_point);
-  void StartScreenContextInteraction(const gfx::Rect& region,
-                                     AssistantQuerySource query_source);
   void StartVoiceInteraction();
   void StopActiveInteraction(bool cancel_conversation);
 
@@ -152,15 +144,9 @@ class AssistantInteractionControllerImpl
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};
 
-  base::ScopedObservation<HighlighterController,
-                          HighlighterController::Observer>
-      highlighter_controller_observation_{this};
-
   base::ScopedObservation<TabletModeController, TabletModeObserver>
       tablet_mode_controller_observation_{this};
 
-  base::WeakPtrFactory<AssistantInteractionControllerImpl>
-      screen_context_request_factory_{this};
   base::WeakPtrFactory<AssistantInteractionControllerImpl> weak_factory_{this};
 };
 

@@ -236,11 +236,6 @@ void AssistantClientImpl::RegisterActionModule(
   grpc_services_.GetActionService()->RegisterActionModule(action_module);
 }
 
-void AssistantClientImpl::SendScreenContextRequest(
-    const std::vector<std::string>& context_protos) {
-  NOTIMPLEMENTED();
-}
-
 void AssistantClientImpl::StartVoiceInteraction() {
   libassistant_client_.CallServiceMethod(
       ::assistant::api::StartVoiceQueryRequest(),

@@ -23,12 +23,6 @@ interface ConversationController {
   // to edit the specified reminder.
   StartEditReminderInteraction(string client_id);
 
-  // Starts a screen context interaction.
-  // |screenshot| contains JPEG data.
-  StartScreenContextInteraction(
-      ax.mojom.AssistantStructure? assistant_structure,
-      array<uint8> screenshot);
-
   // Stops the ongoing interaction with a delay to give buffer time to
   // Libassistant when being forcefully stopped.
   StopActiveInteraction(bool cancel_conversation);

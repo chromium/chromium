@@ -26,10 +26,6 @@ class MockAssistant : public Assistant {
   MOCK_METHOD1(StartEditReminderInteraction, void(const std::string&));
 
   MOCK_METHOD(void,
-              StartScreenContextInteraction,
-              (const std::vector<uint8_t>&));
-
-  MOCK_METHOD(void,
               StartTextInteraction,
               (const std::string&, AssistantQuerySource, bool));
 

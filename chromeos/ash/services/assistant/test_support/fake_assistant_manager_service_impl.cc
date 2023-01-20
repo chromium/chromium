@@ -80,9 +80,6 @@ void FakeAssistantManagerServiceImpl::UpdateInternalMediaPlayerStatus(
 void FakeAssistantManagerServiceImpl::StartEditReminderInteraction(
     const std::string& client_id) {}
 
-void FakeAssistantManagerServiceImpl::StartScreenContextInteraction(
-    const std::vector<uint8_t>& assistant_screenshot) {}
-
 void FakeAssistantManagerServiceImpl::StartTextInteraction(
     const std::string& query,
     AssistantQuerySource source,

@@ -88,8 +88,6 @@ class TestAssistantService : public assistant::Assistant {
 
   // Assistant overrides:
   void StartEditReminderInteraction(const std::string& client_id) override;
-  void StartScreenContextInteraction(
-      const std::vector<uint8_t>& assistant_screenshot) override;
   void StartTextInteraction(const std::string& query,
                             assistant::AssistantQuerySource source,
                             bool allow_tts) override;

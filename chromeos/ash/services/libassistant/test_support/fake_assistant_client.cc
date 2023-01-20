@@ -84,9 +84,6 @@ void FakeAssistantClient::SendVoicelessInteraction(
 void FakeAssistantClient::RegisterActionModule(
     assistant_client::ActionModule* action_module) {}
 
-void FakeAssistantClient::SendScreenContextRequest(
-    const std::vector<std::string>& context_protos) {}
-
 void FakeAssistantClient::StartVoiceInteraction() {}
 
 void FakeAssistantClient::StopAssistantInteraction(bool cancel_conversation) {}

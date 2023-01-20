@@ -476,11 +476,6 @@ void AssistantClientV1::RegisterActionModule(
   assistant_manager_internal()->RegisterActionModule(action_module);
 }
 
-void AssistantClientV1::SendScreenContextRequest(
-    const std::vector<std::string>& context_protos) {
-  assistant_manager_internal()->SendScreenContextRequest(context_protos);
-}
-
 void AssistantClientV1::StartVoiceInteraction() {
   assistant_manager()->StartAssistantInteraction();
 }
