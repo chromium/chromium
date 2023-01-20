@@ -21,13 +21,20 @@
 ////////////////////////////////////////////////////////////////////////////////
 class IconLoader {
  public:
-  // An IconGroup is a class of files that all share the same icon. For all
-  // platforms but Windows, and for most files on Windows, it is the file type
-  // (e.g. all .mp3 files share an icon, all .html files share an icon). On
-  // Windows, for certain file types (.exe, .dll, etc), each file of that type
-  // is assumed to have a unique icon. In that case, each of those files is a
-  // group to itself.
+  // An IconGroup is a class of files that all share the same icon.
+#if BUILDFLAG(IS_MAC)
+  // On the Mac, it's the UTType's identifier. (Apps do have unique icons, just
+  // like in Windows, below, but `IconLoader` is never used to get their icons,
+  // so that case isn't handled.)
+  using IconGroup = std::string;
+#else
+  // On all other platforms except Windows, and for most files on Windows, it is
+  // the file type (e.g. all .mp3 files share an icon, all .html files share an
+  // icon). On Windows, for certain file types (.exe, .dll, etc), each file of
+  // that type is assumed to have a unique icon. In that case, each of those
+  // files is a group to itself.
   using IconGroup = base::FilePath::StringType;
+#endif
 
   enum IconSize {
     SMALL = 0,  // 16x16

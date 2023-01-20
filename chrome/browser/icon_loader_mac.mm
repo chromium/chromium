@@ -5,9 +5,11 @@
 #include "chrome/browser/icon_loader.h"
 
 #import <AppKit/AppKit.h>
+#include <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
@@ -17,7 +19,24 @@
 // static
 IconLoader::IconGroup IconLoader::GroupForFilepath(
     const base::FilePath& file_path) {
-  return file_path.Extension();
+  NSURL* file_url = base::mac::FilePathToNSURL(file_path);
+  if (@available(macOS 11, *)) {
+    UTType* type;
+    if (![file_url getResourceValue:&type
+                             forKey:NSURLContentTypeKey
+                              error:nil]) {
+      return {};
+    }
+    return base::SysNSStringToUTF8(type.identifier);
+  } else {
+    NSString* type;
+    if (![file_url getResourceValue:&type
+                             forKey:NSURLTypeIdentifierKey
+                              error:nil]) {
+      return {};
+    }
+    return base::SysNSStringToUTF8(type);
+  }
 }
 
 // static
@@ -27,31 +46,40 @@ scoped_refptr<base::TaskRunner> IconLoader::GetReadIconTaskRunner() {
 }
 
 void IconLoader::ReadIcon() {
-  NSString* group = base::SysUTF8ToNSString(group_);
-  NSWorkspace* workspace = [NSWorkspace sharedWorkspace];
-  NSImage* icon = [workspace iconForFileType:group];
-
   gfx::Image image;
 
-  if (icon_size_ == ALL) {
-    // The NSImage already has all sizes.
-    image = gfx::Image(icon);
-  } else {
-    NSSize size = NSZeroSize;
-    switch (icon_size_) {
-      case IconLoader::SMALL:
-        size = NSMakeSize(16, 16);
-        break;
-      case IconLoader::NORMAL:
-        size = NSMakeSize(32, 32);
-        break;
-      default:
-        NOTREACHED();
+  if (!group_.empty()) {
+    NSImage* icon;
+    if (@available(macOS 11, *)) {
+      UTType* type =
+          [UTType typeWithIdentifier:base::SysUTF8ToNSString(group_)];
+      icon = [NSWorkspace.sharedWorkspace iconForContentType:type];
+    } else {
+      NSString* type = base::SysUTF8ToNSString(group_);
+      icon = [NSWorkspace.sharedWorkspace iconForFileType:type];
     }
-    gfx::ImageSkia image_skia(gfx::ImageSkiaFromResizedNSImage(icon, size));
-    if (!image_skia.isNull()) {
-      image_skia.MakeThreadSafe();
-      image = gfx::Image(image_skia);
+
+    if (icon_size_ == ALL) {
+      // The NSImage already has all sizes.
+      image = gfx::Image(icon);
+    } else {
+      NSSize size = NSZeroSize;
+      switch (icon_size_) {
+        case IconLoader::SMALL:
+          size = NSMakeSize(16, 16);
+          break;
+        case IconLoader::NORMAL:
+          size = NSMakeSize(32, 32);
+          break;
+        default:
+          NOTREACHED();
+      }
+
+      gfx::ImageSkia image_skia = gfx::ImageSkiaFromResizedNSImage(icon, size);
+      if (!image_skia.isNull()) {
+        image_skia.MakeThreadSafe();
+        image = gfx::Image(image_skia);
+      }
     }
   }
 
