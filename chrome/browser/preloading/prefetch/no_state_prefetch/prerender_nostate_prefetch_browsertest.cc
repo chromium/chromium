@@ -1778,11 +1778,12 @@ class NoStatePrefetchOmniboxBrowserTest : public NoStatePrefetchBrowserTest {
 
  protected:
   void SetUp() override {
-    // kOmniboxTriggerForNoStatePrefetch or kOmniboxTriggerForPrerender2 can be
-    // enabled in the experiment. Explicitly enable and disable these flags.
-    feature_list_.InitWithFeatures(
-        {features::kOmniboxTriggerForNoStatePrefetch},
-        {features::kOmniboxTriggerForPrerender2});
+    // kOmniboxTriggerForPrerender2 or kOmniboxTriggerForNoStatePrefetch can be
+    // enabled in the experiment. Explicitly disable
+    // kOmniboxTriggerForPrerender2 as fieldtrial tests run with a config to
+    // enable it by default.
+    feature_list_.InitWithFeatures({},
+                                   {features::kOmniboxTriggerForPrerender2});
 
     NoStatePrefetchBrowserTest::SetUp();
   }
