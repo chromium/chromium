@@ -7171,6 +7171,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"page-info-store-info", flag_descriptions::kPageInfoStoreInfoName,
      flag_descriptions::kPageInfoStoreInfoDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(page_info::kPageInfoStoreInfo)},
+    {"page-info-about-this-site-improved-bottomsheet",
+     flag_descriptions::kPageInfoAboutThisSiteImprovedBottomSheetName,
+     flag_descriptions::kPageInfoAboutThisSiteImprovedBottomSheetDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(page_info::kPageInfoAboutThisSiteImprovedBottomSheet)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

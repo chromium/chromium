@@ -17,6 +17,8 @@ namespace page_info {
 BASE_DECLARE_FEATURE(kPageInfoHistory);
 // Enables the store info row for Page Info.
 BASE_DECLARE_FEATURE(kPageInfoStoreInfo);
+// Enables an improved "About this site" bottomsheet in Page Info.
+BASE_DECLARE_FEATURE(kPageInfoAboutThisSiteImprovedBottomSheet);
 #endif
 
 // Enables the "About this site" section in Page Info.

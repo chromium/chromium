@@ -108,9 +108,12 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
             GURL bottomSheetUrl = new GURL(builder.toString());
             GURL fullPageUrl = new GURL(url);
 
-            createEphemeralTabObserver(bottomSheetUrl);
+            if (ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_IMPROVED_BOTTOMSHEET)) {
+                createEphemeralTabObserver(bottomSheetUrl);
+                mEphemeralTabCoordinatorSupplier.get().addObserver(mEphemeralTabObserver);
+            }
 
-            mEphemeralTabCoordinatorSupplier.get().addObserver(mEphemeralTabObserver);
             mEphemeralTabCoordinatorSupplier.get().requestOpenSheetWithFullPageUrl(
                     bottomSheetUrl, fullPageUrl, getTitle(), /*isIncognito=*/false);
 

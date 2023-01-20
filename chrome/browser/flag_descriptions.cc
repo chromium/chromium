@@ -3770,6 +3770,12 @@ const char kPageInfoStoreInfoName[] = "Page info store info";
 const char kPageInfoStoreInfoDescription[] =
     "Enable a store info row to the page info menu on eligible pages.";
 
+const char kPageInfoAboutThisSiteImprovedBottomSheetName[] =
+    "Page info 'About this site' improved bottomsheet";
+const char kPageInfoAboutThisSiteImprovedBottomSheetDescription[] =
+    "Enable an improved 'About this site' bottomsheet, which includes a "
+    "less cluttered toolbar view and opening navigations in a new tab.";
+
 const char kPersistShareHubOnAppSwitchName[] = "Persist sharing hub";
 const char kPersistShareHubOnAppSwitchDescription[] =
     "Persist the sharing hub across app pauses/resumes.";

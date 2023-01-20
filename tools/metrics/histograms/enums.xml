@@ -61784,6 +61784,8 @@ from previous Chrome versions.
   <int value="422670720" label="ContextualSearchLongpressPanelHelp:disabled"/>
   <int value="423615350" label="enable-tab-audio-muting"/>
   <int value="423855924" label="enable-tab-switcher-theme-colors"/>
+  <int value="425026866"
+      label="PageInfoAboutThisSiteImprovedBottomSheet:disabled"/>
   <int value="425072496" label="GridLayoutForNtpShortcuts:enabled"/>
   <int value="425938961" label="DesksCloseAll:disabled"/>
   <int value="426199960" label="Commander:enabled"/>
@@ -63883,6 +63885,8 @@ from previous Chrome versions.
   <int value="1665430464" label="force-control-face-ae"/>
   <int value="1667533501" label="SameAppWindowCycle:disabled"/>
   <int value="1667584730" label="WebXR:disabled"/>
+  <int value="1667886516"
+      label="PageInfoAboutThisSiteImprovedBottomSheet:enabled"/>
   <int value="1668611601" label="enable-encrypted-media"/>
   <int value="1669522336"
       label="ExperimentalAccessibilityDictationContextChecking:disabled"/>

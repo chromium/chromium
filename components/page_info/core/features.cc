@@ -15,6 +15,9 @@ namespace page_info {
 BASE_FEATURE(kPageInfoStoreInfo,
              "PageInfoStoreInfo",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPageInfoAboutThisSiteImprovedBottomSheet,
+             "PageInfoAboutThisSiteImprovedBottomSheet",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 extern bool IsAboutThisSiteFeatureEnabled(const std::string& locale) {

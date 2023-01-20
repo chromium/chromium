@@ -5468,6 +5468,11 @@
     "expiry_milestone": 112
   },
   {
+    "name": "page-info-about-this-site-improved-bottomsheet",
+    "owners": [ "dullweber", "eokoyomon", "zalmashni@google.com" ],
+    "expiry_milestone": 114
+  },
+  {
     "name": "page-info-about-this-site-non-en",
     "owners": [ "dullweber" ],
     "expiry_milestone": 112
