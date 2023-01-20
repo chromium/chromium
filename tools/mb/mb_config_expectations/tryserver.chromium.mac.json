@@ -584,6 +584,15 @@
       "use_goma": true
     }
   },
+  "mac12-wpt-content-shell-fyi-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_remoteexec": true
+    }
+  },
   "mac_chromium_10.13_rel_ng": {
     "gn_args": {
       "dcheck_always_on": true,

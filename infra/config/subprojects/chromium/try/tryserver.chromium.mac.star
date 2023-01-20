@@ -187,6 +187,13 @@ try_.compilator_builder(
     grace_period = 4 * time.minute,
 )
 
+try_.builder(
+    name = "mac12-wpt-content-shell-fyi-rel",
+    mirrors = [
+        "ci/mac12-wpt-content-shell-fyi-rel",
+    ],
+)
+
 # NOTE: the following trybots aren't sensitive to Mac version on which
 # they are built, hence no additional dimension is specified.
 # The 10.xx version translates to which bots will run isolated tests.
