@@ -253,6 +253,12 @@ template("write_build_config") {
         rebase_path(invoker.ijar_path, root_build_dir),
       ]
     }
+    if (defined(invoker.kotlinc_jar_path)) {
+      args += [
+        "--kotlinc-jar-path",
+        rebase_path(invoker.kotlinc_jar_path, root_build_dir),
+      ]
+    }
     if (defined(invoker.java_resources_jar)) {
       args += [
         "--java-resources-jar-path",
@@ -474,10 +480,10 @@ template("write_build_config") {
       }
     }
 
-    if (defined(invoker.java_sources_file)) {
+    if (defined(invoker.target_sources_file)) {
       args += [
-        "--java-sources-file",
-        rebase_path(invoker.java_sources_file, root_build_dir),
+        "--target-sources-file",
+        rebase_path(invoker.target_sources_file, root_build_dir),
       ]
     }
     if (defined(invoker.srcjar)) {
@@ -1132,7 +1138,7 @@ if (enable_java_templates) {
 
           # Lint requires all source and all resource files to be passed in the
           # same invocation for checks like UnusedResources.
-          "--java-sources=@FileArg($_rebased_build_config:deps_info:lint_java_sources)",
+          "--sources=@FileArg($_rebased_build_config:deps_info:lint_sources)",
           "--aars=@FileArg($_rebased_build_config:deps_info:lint_aars)",
           "--srcjars=@FileArg($_rebased_build_config:deps_info:lint_srcjars)",
           "--resource-sources=@FileArg($_rebased_build_config:deps_info:lint_resource_sources)",
@@ -1719,7 +1725,7 @@ if (enable_java_templates) {
       _jacococli_jar = "//third_party/jacoco/lib/jacococli.jar"
 
       script = "//build/android/gyp/jacoco_instr.py"
-      inputs = invoker.java_files + [
+      inputs = invoker.source_files + [
                  _jacococli_jar,
                  invoker.input_jar_path,
                ]
@@ -1734,8 +1740,8 @@ if (enable_java_templates) {
         rebase_path(invoker.output_jar_path, root_build_dir),
         "--sources-json-file",
         rebase_path(_sources_json_file, root_build_dir),
-        "--java-sources-file",
-        rebase_path(invoker.java_sources_file, root_build_dir),
+        "--target-sources-file",
+        rebase_path(invoker.target_sources_file, root_build_dir),
         "--jacococli-jar",
         rebase_path(_jacococli_jar, root_build_dir),
       ]
@@ -1819,8 +1825,8 @@ if (enable_java_templates) {
         deps = [ ":$_filter_jar_target_name" ] + invoker.deps
         forward_variables_from(invoker,
                                [
-                                 "java_files",
-                                 "java_sources_file",
+                                 "source_files",
+                                 "target_sources_file",
                                ])
 
         input_jar_path = _filter_jar_output_jar
@@ -2820,22 +2826,23 @@ if (enable_java_templates) {
   # target that includes javac:processor_classes entries (i.e. there is no
   # variable here that can be used for this purpose).
   #
-  # Note also the peculiar use of java_files / java_sources_file. The content
-  # of the java_files list and the java_sources_file file must match exactly.
-  # This rule uses java_files only to list the inputs to the action that
-  # calls compile_java.py, but will pass the list of Java source files
-  # with the '@${java_sources_file}" command-line syntax. Not a problem in
-  # practice since this is only called from java_library_impl() that sets up
-  # the variables properly.
+  # Note also the peculiar use of java_files / target_sources_file. The content
+  # of the java_files list and the .java files in target_sources_file file must
+  # match exactly (extra .kt files in target_sources_file will be ignored by
+  # compile_java.py). This rule uses java_files only to list the inputs to the
+  # action that calls compile_java.py, but will pass the list of all target
+  # source files with the '@${target_sources_file}" command-line syntax. Not a
+  # problem in practice since this is only called from java_library_impl() that
+  # sets up the variables properly.
   #
   # Variables:
   #  main_target_name: Used when extracting srcjars for codesearch.
   #  java_files: Optional list of Java source file paths.
   #  srcjar_deps: Optional list of .srcjar dependencies (not file paths).
   #    The corresponding source files they contain will be compiled too.
-  #  java_sources_file: Optional path to file containing list of Java source
-  #    file paths. This must always be provided if java_files is not empty
-  #    and must match it exactly.
+  #  target_sources_file: Optional path to file containing list of source file
+  #    paths. This must always be provided if java_files is not empty and the
+  #    .java files in it must match the list of java_files exactly.
   #  build_config: Path to the .build_config.json file of the corresponding
   #    java_library_impl() target. The following entries will be used by this
   #    template: javac:srcjars, deps_info:javac_full_classpath,
@@ -2880,7 +2887,7 @@ if (enable_java_templates) {
 
     _srcjar_deps = []
     if (defined(invoker.srcjar_deps)) {
-      _srcjar_deps += invoker.srcjar_deps
+      _srcjar_deps = invoker.srcjar_deps
     }
 
     _java_srcjars = []
@@ -2924,7 +2931,7 @@ if (enable_java_templates) {
       }
       inputs = invoker.java_files + _java_srcjars + [ _build_config ]
       if (invoker.java_files != []) {
-        inputs += [ invoker.java_sources_file ]
+        inputs += [ invoker.target_sources_file ]
       }
 
       _rebased_build_config = rebase_path(_build_config, root_build_dir)
@@ -2958,6 +2965,16 @@ if (enable_java_templates) {
         _header_jar_classpath =
             [ rebase_path(invoker.header_jar_path, root_build_dir) ]
         args += [ "--classpath=$_header_jar_classpath" ]
+      }
+
+      if (defined(invoker.kotlin_jar_path)) {
+        inputs += [ invoker.kotlin_jar_path ]
+        _rebased_kotlin_jar_path =
+            rebase_path(invoker.kotlin_jar_path, root_build_dir)
+        args += [
+          "--kotlin-jar-path=$_rebased_kotlin_jar_path",
+          "--classpath=$_rebased_kotlin_jar_path",
+        ]
       }
 
       if (invoker.use_turbine) {
@@ -3041,11 +3058,101 @@ if (enable_java_templates) {
               rebase_path(file_tuple[0], root_build_dir) + ":" + file_tuple[1] ]
       }
       if (invoker.java_files != []) {
-        args += [ "@" + rebase_path(invoker.java_sources_file, root_build_dir) ]
+        args +=
+            [ "@" + rebase_path(invoker.target_sources_file, root_build_dir) ]
       }
       foreach(e, _javac_args) {
         args += [ "--javac-arg=" + e ]
       }
+    }
+  }
+
+  # Compile Kotlin source files into .class files and store them in a .jar.
+  # This explicitly does not run annotation processing on the Kotlin files.
+  # Java files and srcjars are also passed to kotlinc for reference, although
+  # no .class files will be generated for any Java files. A subsequent call to
+  # javac will be required to actually compile Java files into .class files.
+  #
+  # This action also creates a "header" .jar file for the Kotlin source files.
+  # It is similar to using turbine to create headers for Java files, but since
+  # turbine does not support Kotlin files, this is done via a plugin for
+  # kotlinc instead, at the same time as compilation (whereas turbine is run as
+  # a separate action before javac compilation).
+  template("compile_kt") {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+
+    _build_config = invoker.build_config
+    _chromium_code = invoker.chromium_code
+
+    _srcjar_deps = []
+    if (defined(invoker.srcjar_deps)) {
+      _srcjar_deps = invoker.srcjar_deps
+    }
+
+    _java_srcjars = []
+    foreach(dep, _srcjar_deps) {
+      _dep_gen_dir = get_label_info(dep, "target_gen_dir")
+      _dep_name = get_label_info(dep, "name")
+      _java_srcjars += [ "$_dep_gen_dir/$_dep_name.srcjar" ]
+    }
+
+    action_with_pydeps(target_name) {
+      script = "//build/android/gyp/compile_kt.py"
+      depfile = "$target_gen_dir/$target_name.d"
+      deps = _srcjar_deps
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      }
+
+      outputs = [
+        invoker.output_jar_path,
+        invoker.output_interface_jar_path,
+      ]
+      inputs = invoker.source_files + _java_srcjars + [
+                 _build_config,
+                 invoker.target_sources_file,
+               ]
+
+      _rebased_build_config = rebase_path(_build_config, root_build_dir)
+      _rebased_output_jar_path =
+          rebase_path(invoker.output_jar_path, root_build_dir)
+      _rebased_output_interface_jar_path =
+          rebase_path(invoker.output_interface_jar_path, root_build_dir)
+      _rebased_java_srcjars = rebase_path(_java_srcjars, root_build_dir)
+      _rebased_depfile = rebase_path(depfile, root_build_dir)
+      _rebased_generated_dir = rebase_path(
+              "$target_gen_dir/${invoker.main_target_name}/generated_java",
+              root_build_dir)
+      args = [
+        "--depfile=$_rebased_depfile",
+        "--generated-dir=$_rebased_generated_dir",
+        "--jar-path=$_rebased_output_jar_path",
+        "--interface-jar-path=$_rebased_output_interface_jar_path",
+        "--java-srcjars=$_rebased_java_srcjars",
+      ]
+
+      # SDK jar must be first on classpath.
+      if (invoker.include_android_sdk) {
+        args += [ "--classpath=@FileArg($_rebased_build_config:android:sdk_interface_jars)" ]
+      }
+
+      args += [ "--classpath=@FileArg($_rebased_build_config:deps_info:javac_full_interface_classpath)" ]
+
+      if (use_java_goma) {
+        args += [ "--gomacc-path=$goma_dir/gomacc" ]
+
+        # Override the default action_pool when goma is enabled.
+        pool = "//build/config/android:goma_javac_pool"
+      }
+
+      if (_chromium_code) {
+        args += [ "--chromium-code" ]
+        if (treat_warnings_as_errors) {
+          args += [ "--warnings-as-errors" ]
+        }
+      }
+
+      args += [ "@" + rebase_path(invoker.target_sources_file, root_build_dir) ]
     }
   }
 
@@ -3242,15 +3349,16 @@ if (enable_java_templates) {
       _main_target_name = invoker.main_target_name
     }
 
-    _java_files = []
+    _source_files = []
     if (defined(invoker.sources)) {
-      _java_files = invoker.sources
+      _source_files = invoker.sources
     }
+
     _srcjar_deps = []
     if (defined(invoker.srcjar_deps)) {
       _srcjar_deps = invoker.srcjar_deps
     }
-    _has_sources = _java_files != [] || _srcjar_deps != []
+    _has_sources = _source_files != [] || _srcjar_deps != []
 
     if (_is_prebuilt) {
       assert(!_has_sources)
@@ -3277,10 +3385,10 @@ if (enable_java_templates) {
       _chromium_code =
           filter_exclude([ get_label_info(":$_main_target_name", "dir") ],
                          [ "*\bthird_party\b*" ]) != []
-      if (!_chromium_code && !_is_prebuilt && _java_files != []) {
+      if (!_chromium_code && !_is_prebuilt && _source_files != []) {
         # Unless third_party code has an org.chromium file in it.
         _chromium_code =
-            filter_exclude(_java_files, [ "*\bchromium\b*" ]) != _java_files
+            filter_exclude(_source_files, [ "*\bchromium\b*" ]) != _source_files
       }
     }
 
@@ -3307,7 +3415,7 @@ if (enable_java_templates) {
       _build_device_jar = _type != "system_java_library" && _supports_android
 
       _jacoco_instrument =
-          use_jacoco_coverage && _chromium_code && _java_files != [] &&
+          use_jacoco_coverage && _chromium_code && _source_files != [] &&
           _build_device_jar && (!defined(invoker.testonly) || !invoker.testonly)
       if (defined(invoker.jacoco_never_instrument)) {
         _jacoco_instrument =
@@ -3452,12 +3560,10 @@ if (enable_java_templates) {
                  "_javac_classpath_deps",
                ])
 
-    if (_java_files != []) {
-      _java_sources_file = "$target_gen_dir/$_main_target_name.sources"
-      if (defined(invoker.java_sources_file)) {
-        _java_sources_file = invoker.java_sources_file
-      }
-      write_file(_java_sources_file, rebase_path(_java_files, root_build_dir))
+    if (_source_files != []) {
+      _target_sources_file = "$target_gen_dir/$_main_target_name.sources"
+      write_file(_target_sources_file,
+                 rebase_path(_source_files, root_build_dir))
     }
 
     write_build_config(_build_config_target_name) {
@@ -3559,8 +3665,8 @@ if (enable_java_templates) {
         device_jar_path = _device_processed_jar_path
         dex_path = _dex_path
       }
-      if (_java_files != []) {
-        java_sources_file = _java_sources_file
+      if (_source_files != []) {
+        target_sources_file = _target_sources_file
       }
 
       bundled_srcjars = []
@@ -3586,6 +3692,9 @@ if (enable_java_templates) {
     }
 
     if (_has_sources) {
+      _kt_files = filter_include(_source_files, [ "*.kt" ])
+      _java_files = filter_exclude(_source_files, [ "*.kt" ])
+
       if (defined(invoker.enable_errorprone)) {
         _enable_errorprone = invoker.enable_errorprone
       } else {
@@ -3617,6 +3726,25 @@ if (enable_java_templates) {
         _srcjar_deps += [ ":$_fake_rjava_target" ]
       }
 
+      if (_kt_files != []) {
+        _compile_kt_target_name = "${_main_target_name}__compile_kt"
+        _kotlinc_jar_path = "$target_out_dir/$_output_name.kotlinc.jar"
+        _kotlin_interface_jar_path =
+            "$target_out_dir/$_output_name.kt-jvm-abi.jar"
+        compile_kt(_compile_kt_target_name) {
+          deps = _header_classpath_deps
+          output_jar_path = _kotlinc_jar_path
+          output_interface_jar_path = _kotlin_interface_jar_path
+          main_target_name = _main_target_name
+          build_config = _build_config
+          srcjar_deps = _srcjar_deps
+          source_files = _source_files
+          target_sources_file = _target_sources_file
+          chromium_code = _chromium_code
+          include_android_sdk = _is_robolectric || _requires_android
+        }
+      }
+
       template("compile_java_helper") {
         _enable_errorprone =
             defined(invoker.enable_errorprone) && invoker.enable_errorprone
@@ -3642,6 +3770,10 @@ if (enable_java_templates) {
               deps += invoker.deps
             }
             output_jar_path = invoker.output_jar_path
+            if (defined(invoker.kotlin_jar_path)) {
+              deps += [ ":$_compile_kt_target_name" ]
+              kotlin_jar_path = invoker.kotlin_jar_path
+            }
             enable_errorprone = _enable_errorprone
             use_turbine = defined(invoker.use_turbine) && invoker.use_turbine
 
@@ -3656,7 +3788,7 @@ if (enable_java_templates) {
             }
 
             if (java_files != []) {
-              java_sources_file = _java_sources_file
+              target_sources_file = _target_sources_file
             }
             chromium_code = _chromium_code
             include_android_sdk = _is_robolectric || _requires_android
@@ -3682,6 +3814,9 @@ if (enable_java_templates) {
         output_jar_path = _final_ijar_path
         generated_jar_path = _generated_jar_path
         deps = _annotation_processor_deps
+        if (_kt_files != []) {
+          kotlin_jar_path = _kotlin_interface_jar_path
+        }
       }
 
       _compile_java_target = "${_main_target_name}__compile_java"
@@ -3691,6 +3826,9 @@ if (enable_java_templates) {
         deps = [ ":$_header_target_name" ]
         header_jar_path = _final_ijar_path
         generated_jar_path = _generated_jar_path
+        if (_kt_files != []) {
+          kotlin_jar_path = _kotlinc_jar_path
+        }
       }
       if (_enable_errorprone) {
         _compile_java_errorprone_target = "${_main_target_name}__errorprone"
@@ -3704,6 +3842,9 @@ if (enable_java_templates) {
             javac_args += invoker.errorprone_args
           }
           deps = [ ":$_header_target_name" ]
+          if (_kt_files != []) {
+            kotlin_jar_path = _kotlinc_jar_path
+          }
           header_jar_path = _final_ijar_path
           generated_jar_path = _generated_jar_path
           output_jar_path = "$target_out_dir/$target_name.errorprone.stamp"
@@ -3818,8 +3959,8 @@ if (enable_java_templates) {
           output_jar_path = _host_processed_jar_path
           jacoco_instrument = _jacoco_instrument
           if (_jacoco_instrument) {
-            java_files = _java_files
-            java_sources_file = _java_sources_file
+            source_files = _source_files
+            target_sources_file = _target_sources_file
           }
 
           # _java_host_deps isn't necessary for process_java_library(), but is
@@ -3853,8 +3994,8 @@ if (enable_java_templates) {
             output_jar_path = _device_processed_jar_path
             jacoco_instrument = _jacoco_instrument
             if (_jacoco_instrument) {
-              java_files = _java_files
-              java_sources_file = _java_sources_file
+              source_files = _source_files
+              target_sources_file = _target_sources_file
             }
           }
           _process_device_jar_deps = [ ":${_process_device_jar_target_name}" ]

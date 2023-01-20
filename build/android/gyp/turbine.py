@@ -9,6 +9,7 @@ import functools
 import logging
 import sys
 import time
+import zipfile
 
 import javac_output_processor
 from util import build_utils
@@ -55,6 +56,8 @@ def main(argv):
   parser.add_argument('--warnings-as-errors',
                       action='store_true',
                       help='Treat all warnings as errors.')
+  parser.add_argument('--kotlin-jar-path',
+                      help='Kotlin jar to be merged into the output jar.')
   options, unknown_args = parser.parse_known_args(argv)
 
   options.classpath = build_utils.ParseGnList(options.classpath)
@@ -67,6 +70,11 @@ def main(argv):
     # Interpret a path prefixed with @ as a file containing a list of sources.
     if arg.startswith('@'):
       files.extend(build_utils.ReadSourcesList(arg[1:]))
+
+  # The target's .sources file contains both Java and Kotlin files. We use
+  # compile_kt.py to compile the Kotlin files to .class and header jars.
+  # Turbine is run only on .java files.
+  java_files = [f for f in files if f.endswith('.java')]
 
   cmd = build_utils.JavaCmd(options.warnings_as_errors) + [
       '-classpath', options.turbine_jar_path, 'com.google.turbine.main.Main'
@@ -100,11 +108,11 @@ def main(argv):
     cmd += ['--source_jars']
     cmd += options.java_srcjars
 
-  if files:
+  if java_files:
     # Use jar_path to ensure paths are relative (needed for goma).
-    files_rsp_path = options.jar_path + '.files_list.txt'
+    files_rsp_path = options.jar_path + '.java_files_list.txt'
     with open(files_rsp_path, 'w') as f:
-      f.write(' '.join(files))
+      f.write(' '.join(java_files))
     # Pass source paths as response files to avoid extremely long command lines
     # that are tedius to debug.
     cmd += ['--sources']
@@ -132,6 +140,11 @@ def main(argv):
                             fail_on_output=options.warnings_as_errors)
     end = time.time() - start
     logging.info('Header compilation took %ss', end)
+    if options.kotlin_jar_path:
+      with zipfile.ZipFile(output_jar.name, 'a') as out_zip:
+        build_utils.MergeZips(
+            out_zip, [options.kotlin_jar_path],
+            path_transform=lambda p: p if p.endswith('.class') else None)
 
   if options.depfile:
     # GN already knows of the java files, so avoid listing individual java files

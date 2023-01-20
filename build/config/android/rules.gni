@@ -418,7 +418,7 @@ if (enable_java_templates && is_android) {
         inputs += [ _build_config ]
 
         if (defined(invoker.no_transitive_deps) && invoker.no_transitive_deps) {
-          args += [ "--sources-files=@FileArg($_rebased_build_config:deps_info:java_sources_file)" ]
+          args += [ "--sources-files=@FileArg($_rebased_build_config:deps_info:target_sources_file)" ]
         } else {
           args += [
             # This is a list of .sources files.

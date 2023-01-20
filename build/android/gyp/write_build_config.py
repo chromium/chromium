@@ -264,17 +264,18 @@ True to indicate that this target corresponds to a prebuilt `.jar` file.
 In this case, `deps_info['unprocessed_jar_path']` will point to the source
 `.jar` file. Otherwise, it will be point to a build-generated file.
 
-* `deps_info['java_sources_file']`:
-Path to a single `.sources` file listing all the Java sources that were used
-to generate the library (simple text format, one `.jar` path per line).
+* `deps_info['target_sources_file']`:
+Path to a single `.sources` file listing all the Java and Kotlin sources that
+were used to generate the library (simple text format, one `.jar` path per
+line).
 
 * `deps_info['lint_android_manifest']`:
 Path to an AndroidManifest.xml file to use for this lint target.
 
-* `deps_info['lint_java_sources']`:
-The list of all `deps_info['java_sources_file']` entries for all library
+* `deps_info['lint_sources']`:
+The list of all `deps_info['target_sources_file']` entries for all library
 dependencies that are chromium code. Note: this is a list of files, where each
-file contains a list of Java source files. This is used for lint.
+file contains a list of Java and Kotlin source files. This is used for lint.
 
 * `deps_info['lint_aars']`:
 List of all aars from transitive java dependencies. This allows lint to collect
@@ -431,9 +432,10 @@ into the final APK as-is.
 NOTE: This has nothing to do with *Android* resources.
 
 * `jni['all_source']`
-The list of all `deps_info['java_sources_file']` entries for all library
+The list of all `deps_info['target_sources_file']` entries for all library
 dependencies for this APK. Note: this is a list of files, where each file
-contains a list of Java source files. This is used for JNI registration.
+contains a list of Java and Kotlin source files. This is used for JNI
+registration.
 
 * `deps_info['proguard_all_configs']`:
 The collection of all 'deps_info['proguard_configs']` values from this target
@@ -1086,7 +1088,7 @@ def main(argv):
       help='Path to the interface .jar to use for javac classpath purposes.')
   parser.add_option('--is-prebuilt', action='store_true',
                     help='Whether the jar was compiled or pre-compiled.')
-  parser.add_option('--java-sources-file', help='Path to .sources file')
+  parser.add_option('--target-sources-file', help='Path to .sources file')
   parser.add_option('--bundled-srcjars',
       help='GYP-list of .srcjars that have been included in this java_library.')
   parser.add_option('--supports-android', action='store_true',
@@ -1423,8 +1425,8 @@ def main(argv):
     deps_info['bundled_srcjars'] = build_utils.ParseGnList(
         options.bundled_srcjars)
 
-  if options.java_sources_file:
-    deps_info['java_sources_file'] = options.java_sources_file
+  if options.target_sources_file:
+    deps_info['target_sources_file'] = options.target_sources_file
 
   if is_java_target:
     if options.main_class:
@@ -1456,10 +1458,12 @@ def main(argv):
                                                  'robolectric_binary',
                                                  'dist_aar'):
     deps_info['jni'] = {}
-    all_java_sources = [c['java_sources_file'] for c in all_library_deps
-                        if 'java_sources_file' in c]
-    if options.java_sources_file:
-      all_java_sources.append(options.java_sources_file)
+    all_target_sources = [
+        c['target_sources_file'] for c in all_library_deps
+        if 'target_sources_file' in c
+    ]
+    if options.target_sources_file:
+      all_target_sources.append(options.target_sources_file)
 
   if is_apk_or_module_target or options.type in ('group', 'java_library',
                                                  'robolectric_binary'):
@@ -1746,18 +1750,18 @@ def main(argv):
     # Collect all sources and resources at the apk/bundle_module level.
     lint_aars = set()
     lint_srcjars = set()
-    lint_java_sources = set()
+    lint_sources = set()
     lint_resource_sources = set()
     lint_resource_zips = set()
 
-    if options.java_sources_file:
-      lint_java_sources.add(options.java_sources_file)
+    if options.target_sources_file:
+      lint_sources.add(options.target_sources_file)
     if options.bundled_srcjars:
       lint_srcjars.update(deps_info['bundled_srcjars'])
     for c in all_library_deps:
       if c['chromium_code'] and c['requires_android']:
-        if 'java_sources_file' in c:
-          lint_java_sources.add(c['java_sources_file'])
+        if 'target_sources_file' in c:
+          lint_sources.add(c['target_sources_file'])
         lint_srcjars.update(c['bundled_srcjars'])
       if 'aar_path' in c:
         lint_aars.add(c['aar_path'])
@@ -1777,7 +1781,7 @@ def main(argv):
 
     deps_info['lint_aars'] = sorted(lint_aars)
     deps_info['lint_srcjars'] = sorted(lint_srcjars)
-    deps_info['lint_java_sources'] = sorted(lint_java_sources)
+    deps_info['lint_sources'] = sorted(lint_sources)
     deps_info['lint_resource_sources'] = sorted(lint_resource_sources)
     deps_info['lint_resource_zips'] = sorted(lint_resource_zips)
     deps_info['lint_extra_android_manifests'] = []
@@ -1797,7 +1801,7 @@ def main(argv):
     jni_all_source = set()
     lint_aars = set()
     lint_srcjars = set()
-    lint_java_sources = set()
+    lint_sources = set()
     lint_resource_sources = set()
     lint_resource_zips = set()
     lint_extra_android_manifests = set()
@@ -1816,7 +1820,7 @@ def main(argv):
       jni_all_source.update(c['jni']['all_source'])
       lint_aars.update(c['lint_aars'])
       lint_srcjars.update(c['lint_srcjars'])
-      lint_java_sources.update(c['lint_java_sources'])
+      lint_sources.update(c['lint_sources'])
       lint_resource_sources.update(c['lint_resource_sources'])
       lint_resource_zips.update(c['lint_resource_zips'])
       module = modules[n] = {}
@@ -1826,7 +1830,7 @@ def main(argv):
     deps_info['jni'] = {'all_source': sorted(jni_all_source)}
     deps_info['lint_aars'] = sorted(lint_aars)
     deps_info['lint_srcjars'] = sorted(lint_srcjars)
-    deps_info['lint_java_sources'] = sorted(lint_java_sources)
+    deps_info['lint_sources'] = sorted(lint_sources)
     deps_info['lint_resource_sources'] = sorted(lint_resource_sources)
     deps_info['lint_resource_zips'] = sorted(lint_resource_zips)
     deps_info['lint_extra_android_manifests'] = sorted(
@@ -1838,7 +1842,7 @@ def main(argv):
   if is_apk_or_module_target or options.type in ('group', 'java_library',
                                                  'robolectric_binary',
                                                  'dist_aar'):
-    deps_info['jni']['all_source'] = sorted(set(all_java_sources))
+    deps_info['jni']['all_source'] = sorted(set(all_target_sources))
 
   system_jars = [c['unprocessed_jar_path'] for c in system_library_deps]
   system_interface_jars = [c['interface_jar_path'] for c in system_library_deps]

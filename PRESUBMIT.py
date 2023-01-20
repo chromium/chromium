@@ -1525,6 +1525,7 @@ _GENERIC_PYDEPS_FILES = [
     'build/android/gyp/bytecode_rewriter.pydeps',
     'build/android/gyp/check_flag_expectations.pydeps',
     'build/android/gyp/compile_java.pydeps',
+    'build/android/gyp/compile_kt.pydeps',
     'build/android/gyp/compile_resources.pydeps',
     'build/android/gyp/copy_ex.pydeps',
     'build/android/gyp/create_apk_operations_script.pydeps',

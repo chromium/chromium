@@ -5,7 +5,6 @@
 # found in the LICENSE file.
 """Runs Android's lint tool."""
 
-
 import argparse
 import logging
 import os
@@ -423,8 +422,9 @@ def _ParseArgs(argv):
   parser.add_argument('--warnings-as-errors',
                       action='store_true',
                       help='Treat all warnings as errors.')
-  parser.add_argument('--java-sources',
-                      help='File containing a list of java sources files.')
+  parser.add_argument('--sources',
+                      help='A list of files containing java and kotlin source '
+                      'files.')
   parser.add_argument('--aars', help='GN list of included aars.')
   parser.add_argument('--srcjars', help='GN list of included srcjars.')
   parser.add_argument('--manifest-path',
@@ -450,7 +450,7 @@ def _ParseArgs(argv):
                       'on new errors.')
 
   args = parser.parse_args(build_utils.ExpandFileArgs(argv))
-  args.java_sources = build_utils.ParseGnList(args.java_sources)
+  args.sources = build_utils.ParseGnList(args.sources)
   args.aars = build_utils.ParseGnList(args.aars)
   args.srcjars = build_utils.ParseGnList(args.srcjars)
   args.resource_sources = build_utils.ParseGnList(args.resource_sources)
@@ -483,8 +483,8 @@ def main():
     return
 
   sources = []
-  for java_sources_file in args.java_sources:
-    sources.extend(build_utils.ReadSourcesList(java_sources_file))
+  for sources_file in args.sources:
+    sources.extend(build_utils.ReadSourcesList(sources_file))
   resource_sources = []
   for resource_sources_file in args.resource_sources:
     resource_sources.extend(build_utils.ReadSourcesList(resource_sources_file))

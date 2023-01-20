@@ -37,6 +37,8 @@ DIR_SOURCE_ROOT = os.path.relpath(
 JAVA_HOME = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'jdk', 'current')
 JAVAC_PATH = os.path.join(JAVA_HOME, 'bin', 'javac')
 JAVAP_PATH = os.path.join(JAVA_HOME, 'bin', 'javap')
+KOTLIN_HOME = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'kotlinc', 'current')
+KOTLINC_PATH = os.path.join(KOTLIN_HOME, 'bin', 'kotlinc')
 
 try:
   string_types = basestring

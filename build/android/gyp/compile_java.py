@@ -244,6 +244,34 @@ def ProcessJavacOutput(output, target_name):
   return '\n'.join(lines)
 
 
+def CreateJarFile(jar_path,
+                  classes_dir,
+                  service_provider_configuration_dir=None,
+                  additional_jar_files=None,
+                  extra_classes_jar=None):
+  """Zips files from compilation into a single jar."""
+  logging.info('Start creating jar file: %s', jar_path)
+  with build_utils.AtomicOutput(jar_path) as f:
+    with zipfile.ZipFile(f.name, 'w') as z:
+      build_utils.ZipDir(z, classes_dir)
+      if service_provider_configuration_dir:
+        config_files = build_utils.FindInDirectory(
+            service_provider_configuration_dir)
+        for config_file in config_files:
+          zip_path = os.path.relpath(config_file,
+                                     service_provider_configuration_dir)
+          build_utils.AddToZipHermetic(z, zip_path, src_path=config_file)
+
+      if additional_jar_files:
+        for src_path, zip_path in additional_jar_files:
+          build_utils.AddToZipHermetic(z, zip_path, src_path=src_path)
+      if extra_classes_jar:
+        build_utils.MergeZips(
+            z, [extra_classes_jar],
+            path_transform=lambda p: p if p.endswith('.class') else None)
+  logging.info('Completed jar file: %s', jar_path)
+
+
 def _ParsePackageAndClassNames(java_file):
   package_name = ''
   class_names = []
@@ -364,26 +392,6 @@ class _InfoFileContext:
     with build_utils.AtomicOutput(output_path, mode='wb') as f:
       jar_info_utils.WriteJarInfoFile(f, entries, self._srcjar_files)
     logging.info('Completed info file: %s', output_path)
-
-
-def _CreateJarFile(jar_path, service_provider_configuration_dir,
-                   additional_jar_files, classes_dir):
-  logging.info('Start creating jar file: %s', jar_path)
-  with build_utils.AtomicOutput(jar_path) as f:
-    with zipfile.ZipFile(f.name, 'w') as z:
-      build_utils.ZipDir(z, classes_dir)
-      if service_provider_configuration_dir:
-        config_files = build_utils.FindInDirectory(
-            service_provider_configuration_dir)
-        for config_file in config_files:
-          zip_path = os.path.relpath(config_file,
-                                     service_provider_configuration_dir)
-          build_utils.AddToZipHermetic(z, zip_path, src_path=config_file)
-
-      if additional_jar_files:
-        for src_path, zip_path in additional_jar_files:
-          build_utils.AddToZipHermetic(z, zip_path, src_path=src_path)
-  logging.info('Completed jar file: %s', jar_path)
 
 
 def _OnStaleMd5(changes, options, javac_cmd, javac_args, java_files):
@@ -567,8 +575,8 @@ def _RunCompiler(changes,
       end = time.time() - start
       logging.info('Java compilation took %ss', end)
 
-    _CreateJarFile(jar_path, service_provider_configuration,
-                   options.additional_jar_files, classes_dir)
+    CreateJarFile(jar_path, classes_dir, service_provider_configuration,
+                  options.additional_jar_files, options.kotlin_jar_path)
 
     if save_info_file:
       info_file_context.Commit(jar_info_path)
@@ -653,6 +661,10 @@ def _ParseOptions(argv):
       '--header-jar',
       help='This is the header jar for the current target that contains '
       'META-INF/services/* files to be included in the output jar.')
+  parser.add_option(
+      '--kotlin-jar-path',
+      help='Kotlin jar to be merged into the output jar. This contains the '
+      ".class files from this target's .kt files.")
 
   options, args = parser.parse_args(argv)
   build_utils.CheckOptions(options, parser, required=('jar_path', ))
@@ -669,13 +681,18 @@ def _ParseOptions(argv):
     additional_jar_files.append((filepath, jar_filepath))
   options.additional_jar_files = additional_jar_files
 
-  java_files = []
+  files = []
   for arg in args:
     # Interpret a path prefixed with @ as a file containing a list of sources.
     if arg.startswith('@'):
-      java_files.extend(build_utils.ReadSourcesList(arg[1:]))
+      files.extend(build_utils.ReadSourcesList(arg[1:]))
     else:
-      java_files.append(arg)
+      files.append(arg)
+
+  # The target's .sources file contains both Java and Kotlin files. We use
+  # compile_kt.py to compile the Kotlin files to .class and header jars. Javac
+  # is run only on .java files.
+  java_files = [f for f in files if f.endswith('.java')]
 
   return options, java_files
 
