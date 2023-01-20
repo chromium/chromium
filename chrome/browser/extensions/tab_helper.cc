@@ -92,19 +92,6 @@ std::string BlockedExtensionListForBFCache() {
   return extensions_blocked.Get();
 }
 
-bool AreAllExtensionsAllowedForPrerender2(content::WebContents* web_contents) {
-  static base::FeatureParam<bool> all_extensions_allowed(
-      &blink::features::kPrerender2, "all_extensions_allowed", true);
-  return all_extensions_allowed.Get();
-}
-
-std::string BlockedExtensionListForPrerender2(
-    content::WebContents* web_contents) {
-  static base::FeatureParam<std::string> extensions_blocked(
-      &blink::features::kPrerender2, "blocked_extensions", "");
-  return extensions_blocked.Get();
-}
-
 // Check `enabled_extensions` if any of them are specified in the
 // `blocked_extensions` or not.
 bool ProcessDisabledExtensions(const std::string& feature,
@@ -178,18 +165,6 @@ void DisableBackForwardCacheIfNecessary(
         navigation_handle->GetPreviousRenderFrameHostId(),
         back_forward_cache::DisabledReason(
             back_forward_cache::DisabledReasonId::kExtensions));
-  }
-}
-
-void MaybeDisablePrerender2(const ExtensionSet& enabled_extensions,
-                            content::WebContents* web_contents) {
-  if (ProcessDisabledExtensions(
-          "prerender2", enabled_extensions, web_contents->GetBrowserContext(),
-          AreAllExtensionsAllowedForPrerender2(web_contents),
-          BlockedExtensionListForPrerender2(web_contents))) {
-    web_contents->DisablePrerender2();
-  } else {
-    web_contents->ResetPrerender2Disabled();
   }
 }
 
@@ -427,11 +402,6 @@ void TabHelper::OnExtensionLoaded(content::BrowserContext* browser_context,
   // Clear the back forward cache for the associated tab to accommodate for any
   // side effects of loading/unloading the extension.
   web_contents()->GetController().GetBackForwardCache().Flush();
-
-  // Update a setting to disable Prerender2 based on loaded Extensions.
-  MaybeDisablePrerender2(
-      ExtensionRegistry::Get(browser_context)->enabled_extensions(),
-      web_contents());
 }
 
 void TabHelper::OnExtensionUnloaded(content::BrowserContext* browser_context,
@@ -440,11 +410,6 @@ void TabHelper::OnExtensionUnloaded(content::BrowserContext* browser_context,
   // Clear the back forward cache for the associated tab to accommodate for any
   // side effects of loading/unloading the extension.
   web_contents()->GetController().GetBackForwardCache().Flush();
-
-  // Update a setting to disable Prerender2 based on loaded Extensions.
-  MaybeDisablePrerender2(
-      ExtensionRegistry::Get(browser_context)->enabled_extensions(),
-      web_contents());
 
   if (!extension_app_)
     return;

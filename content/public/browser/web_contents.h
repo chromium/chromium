@@ -1390,14 +1390,6 @@ class WebContents : public PageNavigator,
       absl::optional<base::RepeatingCallback<bool(const GURL&)>>
           url_match_predicate = absl::nullopt) = 0;
 
-  // Disables Prerender2 for this WebContents.
-  // See
-  // https://docs.google.com/document/d/1P2VKCLpmnNm_cRAjUeE-bqLL0bslL_zKqiNeCzNom_w/
-  virtual void DisablePrerender2() = 0;
-  // Set Prerender2 disabled = false, but this does not imply Prerender2 is
-  // enabled.
-  virtual void ResetPrerender2Disabled() = 0;
-
  private:
   // This interface should only be implemented inside content.
   friend class WebContentsImpl;

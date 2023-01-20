@@ -29,7 +29,6 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
@@ -129,7 +128,10 @@ int PrerenderHostRegistry::CreateAndStartHost(
 
     // Check whether preloading is enabled. If it is not enabled, report the
     // reason.
-    if (auto reason = initiator_web_contents.IsPrerender2Disabled();
+    WebContentsDelegate* web_contents_delegate =
+        initiator_web_contents.GetDelegate();
+    if (auto reason = web_contents_delegate->IsPrerender2Supported(
+            initiator_web_contents);
         reason != PreloadingEligibility::kEligible) {
       switch (reason) {
         case PreloadingEligibility::kPreloadingDisabled:

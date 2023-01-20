@@ -581,12 +581,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void SetWebPreferences(const blink::web_pref::WebPreferences& prefs) override;
   void OnWebPreferencesChanged() override;
 
-  void DisablePrerender2() override;
-  void ResetPrerender2Disabled() override;
-  // Resets the bit to explicitly disable Prerender2 for this WebContents. Note
-  // that this may not equate to the feature being enabled.
-  PreloadingEligibility IsPrerender2Disabled();
-
   void AboutToBeDiscarded(WebContents* new_contents) override;
 
   // RenderFrameHostDelegate ---------------------------------------------------
@@ -2359,8 +2353,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // either DevTools is opened and consults this value or when a non-prerendered
   // navigation commits in the primary main frame.
   bool last_navigation_was_prerender_activation_for_devtools_ = false;
-
-  bool prerender2_disabled_ = false;
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};
