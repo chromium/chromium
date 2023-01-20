@@ -505,12 +505,12 @@
   {
     "name": "autofill-enable-ranking-formula",
     "owners": [ "alexandertekle@google.com", "koerber@google.com" ],
-    "expiry_milestone": 109
+    "expiry_milestone": 120
   },
   {
     "name": "autofill-enable-ranking-formula-address-profiles",
     "owners": [ "alexandertekle@google.com", "koerber@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 120
   },
   {
     "name": "autofill-enable-remade-downstream-metrics",
