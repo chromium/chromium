@@ -143,7 +143,7 @@ void InternetHandler::AddThirdPartyVpn(const base::Value::List& args) {
 
   // Request that the third-party VPN provider identified by |provider_id|
   // show its "add network" dialog.
-  VpnServiceFactory::GetForBrowserContext(GetProfileForPrimaryUser())
+  chromeos::VpnServiceFactory::GetForBrowserContext(GetProfileForPrimaryUser())
       ->SendShowAddDialogToExtension(app_id);
 }
 
@@ -178,7 +178,7 @@ void InternetHandler::ConfigureThirdPartyVpn(const base::Value::List& args) {
   if (network->GetVpnProviderType() == shill::kProviderThirdPartyVpn) {
     // Request that the third-party VPN provider used by the |network| show a
     // configuration dialog for it.
-    VpnServiceFactory::GetForBrowserContext(profile_)
+    chromeos::VpnServiceFactory::GetForBrowserContext(profile_)
         ->SendShowConfigureDialogToExtension(network->vpn_provider()->id,
                                              network->name());
     return;

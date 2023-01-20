@@ -15,8 +15,6 @@ test("chromeos_components_unittests") {
     "run_all_unittests.cc",
   ]
 
-  # TODO(https://crbug.com/1164001): unit_tests deps should be moved to
-  # the appropriate place during the code migration project.
   deps = [
     "//base",
     "//base/test:test_support",

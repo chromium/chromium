@@ -169,10 +169,4 @@ class ScopedTestCrosSettings {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace chromeos {
-using ::ash::CrosSettings;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_SETTINGS_CROS_SETTINGS_H_

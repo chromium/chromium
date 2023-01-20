@@ -202,10 +202,4 @@ class ProfileHelper {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::ProfileHelper;
-}
-
 #endif  // CHROME_BROWSER_ASH_PROFILES_PROFILE_HELPER_H_

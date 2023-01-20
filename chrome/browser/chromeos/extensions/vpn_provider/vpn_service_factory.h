@@ -48,9 +48,4 @@ class VpnServiceFactory : public ProfileKeyedServiceFactory {
 
 }  // namespace chromeos
 
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-using ::chromeos::VpnServiceFactory;
-}
-
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_VPN_PROVIDER_VPN_SERVICE_FACTORY_H_

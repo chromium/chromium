@@ -14,6 +14,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "chrome/browser/ash/extensions/external_cache.h"
 #include "chrome/browser/ash/extensions/external_cache_impl.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -26,6 +27,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
+
 namespace {
 
 // Arbitrary, but reasonable size limit in bytes for prefs file.
@@ -89,7 +91,7 @@ void DemoExtensionsExternalLoader::LoadApp(const std::string& app_id) {
     prefs.Set(app, std::move(app_dict));
   }
   if (!external_cache_) {
-    external_cache_ = std::make_unique<ExternalCacheImpl>(
+    external_cache_ = std::make_unique<chromeos::ExternalCacheImpl>(
         cache_dir_, g_browser_process->shared_url_loader_factory(),
         extensions::GetExtensionFileTaskRunner(), this,
         true /* always_check_updates */,

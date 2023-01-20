@@ -107,7 +107,7 @@ class VersionUpdaterCrosTest : public ::testing::Test {
 
   ash::MockUserManager* mock_user_manager_;  // Not owned.
   user_manager::ScopedUserManager user_manager_enabler_;
-  ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
 };
 
 // The test checks following behaviour:

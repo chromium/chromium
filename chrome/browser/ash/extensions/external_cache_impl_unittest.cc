@@ -31,6 +31,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace chromeos {
+
 namespace {
 
 using ::testing::Optional;
@@ -44,8 +46,6 @@ const char kExternalCrxPath[] = "/local/path/to/extension.crx";
 const char kExternalCrxVersion[] = "1.2.3.4";
 
 }  // namespace
-
-namespace chromeos {
 
 class ExternalCacheImplTest : public testing::Test,
                               public ExternalCacheDelegate {
@@ -140,7 +140,7 @@ class ExternalCacheImplTest : public testing::Test,
   absl::optional<base::Value::Dict> prefs_;
   std::set<extensions::ExtensionId> deleted_extension_files_;
 
-  ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
 };
 
 TEST_F(ExternalCacheImplTest, Basic) {

@@ -69,7 +69,7 @@ ExternalCacheImpl::ExternalCacheImpl(
       this, extensions::NOTIFICATION_EXTENSION_INSTALL_ERROR,
       content::NotificationService::AllBrowserContextsAndSources());
   kiosk_crx_updates_from_policy_subscription_ =
-      CrosSettings::Get()->AddSettingsObserver(
+      ash::CrosSettings::Get()->AddSettingsObserver(
           ash::kKioskCRXManifestUpdateURLIgnored,
           base::BindRepeating(&ExternalCacheImpl::MaybeScheduleNextCacheCheck,
                               weak_ptr_factory_.GetWeakPtr()));

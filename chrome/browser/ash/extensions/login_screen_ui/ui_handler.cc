@@ -24,12 +24,13 @@
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/permissions/permissions_data.h"
 
-namespace chromeos {
+namespace chromeos::login_screen_extension_ui {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-using ::ash::InstallAttributes;
+using ::ash::login_screen_extension_ui::CreateOptions;
+using ::ash::login_screen_extension_ui::Window;
+using ::ash::login_screen_extension_ui::WindowFactory;
 
 const char kErrorWindowAlreadyExists[] =
     "Login screen extension UI already in use.";
@@ -58,19 +59,18 @@ std::string GetHardcodedExtensionName(const extensions::Extension* extension) {
 }
 
 bool CanUseLoginScreenUiApi(const extensions::Extension* extension) {
-  return extensions::ExtensionRegistry::Get(ProfileHelper::GetSigninProfile())
+  return extensions::ExtensionRegistry::Get(
+             ash::ProfileHelper::GetSigninProfile())
              ->enabled_extensions()
              .Contains(extension->id()) &&
          extension->permissions_data()->HasAPIPermission(
              extensions::mojom::APIPermissionID::kLoginScreenUi) &&
-         InstallAttributes::Get()->IsEnterpriseManaged();
+         ash::InstallAttributes::Get()->IsEnterpriseManaged();
 }
 
 login_screen_extension_ui::UiHandler* g_instance = nullptr;
 
 }  // namespace
-
-namespace login_screen_extension_ui {
 
 ExtensionIdToWindowMapping::ExtensionIdToWindowMapping(
     const std::string& extension_id,
@@ -100,8 +100,8 @@ UiHandler::UiHandler(std::unique_ptr<WindowFactory> window_factory)
     : window_factory_(std::move(window_factory)) {
   UpdateSessionState();
   session_manager_observation_.Observe(session_manager::SessionManager::Get());
-  extension_registry_observation_.Observe(
-      extensions::ExtensionRegistry::Get(ProfileHelper::GetSigninProfile()));
+  extension_registry_observation_.Observe(extensions::ExtensionRegistry::Get(
+      ash::ProfileHelper::GetSigninProfile()));
 }
 
 UiHandler::~UiHandler() = default;
@@ -222,6 +222,4 @@ Window* UiHandler::GetWindowForTesting(const std::string& extension_id) {
   return current_window_->window.get();
 }
 
-}  // namespace login_screen_extension_ui
-
-}  // namespace chromeos
+}  // namespace chromeos::login_screen_extension_ui

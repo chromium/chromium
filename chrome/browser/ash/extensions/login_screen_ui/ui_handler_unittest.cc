@@ -26,12 +26,14 @@
 #include "extensions/common/features/feature_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using extensions::mojom::ManifestLocation;
+namespace chromeos::login_screen_extension_ui {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-using ::ash::StubInstallAttributes;
+using ::ash::login_screen_extension_ui::CreateOptions;
+using ::ash::login_screen_extension_ui::Window;
+using ::ash::login_screen_extension_ui::WindowFactory;
+using ::extensions::mojom::ManifestLocation;
 
 const char kErrorWindowAlreadyExists[] =
     "Login screen extension UI already in use.";
@@ -49,10 +51,6 @@ const char kAllowlistedExtensionID2[] =
 const char kPermissionName[] = "loginScreenUi";
 
 }  // namespace
-
-namespace chromeos {
-
-namespace login_screen_extension_ui {
 
 class FakeWindowFactory : public WindowFactory {
  public:
@@ -213,7 +211,7 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
 
   session_manager::SessionManager session_manager_;
   TestingProfileManager profile_manager_;
-  StubInstallAttributes* stub_install_attributes_ = nullptr;
+  ash::StubInstallAttributes* stub_install_attributes_ = nullptr;
   extensions::ExtensionRegistry* extension_registry_ = nullptr;
   scoped_refptr<const extensions::Extension> extension_;
 
@@ -407,6 +405,4 @@ TEST_F(LoginScreenExtensionUiHandlerDeathUnittest, NotAllowed) {
   CheckCannotUseAPI(extension_.get());
 }
 
-}  // namespace login_screen_extension_ui
-
-}  // namespace chromeos
+}  // namespace chromeos::login_screen_extension_ui

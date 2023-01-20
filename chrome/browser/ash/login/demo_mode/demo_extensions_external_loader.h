@@ -10,16 +10,18 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/ash/extensions/external_cache.h"
 #include "chrome/browser/ash/extensions/external_cache_delegate.h"
 #include "chrome/browser/extensions/external_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
 namespace base {
 class Value;
+}
+
+namespace chromeos {
+class ExternalCache;
 }
 
 namespace ash {
@@ -33,7 +35,7 @@ namespace ash {
 // extensions provider.
 // NOTE: The class is expected to be used on the UI thread exclusively.
 class DemoExtensionsExternalLoader : public extensions::ExternalLoader,
-                                     public ExternalCacheDelegate {
+                                     public chromeos::ExternalCacheDelegate {
  public:
   // Whether demo apps should be loaded for the profile - i.e. whether the
   // profile is the primary profile in a demo session.
@@ -51,7 +53,7 @@ class DemoExtensionsExternalLoader : public extensions::ExternalLoader,
   // extensions::ExternalLoader:
   void StartLoading() override;
 
-  // ExternalCacheDelegate:
+  // chromeos::ExternalCacheDelegate:
   void OnExtensionListsUpdated(const base::Value::Dict& prefs) override;
 
  protected:
@@ -68,7 +70,7 @@ class DemoExtensionsExternalLoader : public extensions::ExternalLoader,
   void DemoExternalExtensionsPrefsLoaded(
       absl::optional<base::Value::Dict> prefs);
 
-  std::unique_ptr<ExternalCache> external_cache_;
+  std::unique_ptr<chromeos::ExternalCache> external_cache_;
 
   const base::FilePath cache_dir_;
 

@@ -11,28 +11,31 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-// TODO(https://crbug.com/1164001): use forward declaration.
-#include "chrome/browser/ash/login/ui/login_screen_extension_ui/window.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 
+namespace ash::login_screen_extension_ui {
+class Window;
+class WindowFactory;
+}  // namespace ash::login_screen_extension_ui
+
 namespace extensions {
 class Extension;
 }  // namespace extensions
 
-namespace chromeos {
-namespace login_screen_extension_ui {
+namespace chromeos::login_screen_extension_ui {
 
 struct ExtensionIdToWindowMapping {
-  ExtensionIdToWindowMapping(const std::string& extension_id,
-                             std::unique_ptr<Window> window);
+  ExtensionIdToWindowMapping(
+      const std::string& extension_id,
+      std::unique_ptr<ash::login_screen_extension_ui::Window> window);
   ~ExtensionIdToWindowMapping();
 
   const std::string extension_id;
-  std::unique_ptr<Window> window;
+  std::unique_ptr<ash::login_screen_extension_ui::Window> window;
 };
 
 // This class receives calls from the chrome.loginScreenUi API and manages the
@@ -51,7 +54,9 @@ class UiHandler : public session_manager::SessionManagerObserver,
   static UiHandler* Get(bool can_create);
   static void Shutdown();
 
-  explicit UiHandler(std::unique_ptr<WindowFactory> window_factory);
+  explicit UiHandler(
+      std::unique_ptr<ash::login_screen_extension_ui::WindowFactory>
+          window_factory);
 
   UiHandler(const UiHandler&) = delete;
   UiHandler& operator=(const UiHandler&) = delete;
@@ -85,7 +90,8 @@ class UiHandler : public session_manager::SessionManagerObserver,
   // session_manager::SessionManagerObserver
   void OnSessionStateChanged() override;
 
-  Window* GetWindowForTesting(const std::string& extension_id);
+  ash::login_screen_extension_ui::Window* GetWindowForTesting(
+      const std::string& extension_id);
 
  private:
   void UpdateSessionState();
@@ -102,7 +108,8 @@ class UiHandler : public session_manager::SessionManagerObserver,
 
   void HandleExtensionUnloadOrUinstall(const extensions::Extension* extension);
 
-  std::unique_ptr<WindowFactory> window_factory_;
+  std::unique_ptr<ash::login_screen_extension_ui::WindowFactory>
+      window_factory_;
 
   bool login_or_lock_screen_active_ = false;
 
@@ -120,8 +127,6 @@ class UiHandler : public session_manager::SessionManagerObserver,
   base::WeakPtrFactory<UiHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace login_screen_extension_ui
-
-}  // namespace chromeos
+}  // namespace chromeos::login_screen_extension_ui
 
 #endif  // CHROME_BROWSER_ASH_EXTENSIONS_LOGIN_SCREEN_UI_UI_HANDLER_H_

@@ -62,7 +62,7 @@ SigninScreenExtensionsExternalLoader::SigninScreenExtensionsExternalLoader(
           /*always_check_updates=*/true,
           /*wait_for_cache_initialization=*/false,
           /*allow_scheduled_updates=*/false) {
-  DCHECK(ProfileHelper::IsSigninProfile(profile));
+  DCHECK(ash::ProfileHelper::IsSigninProfile(profile));
 }
 
 void SigninScreenExtensionsExternalLoader::StartLoading() {
