@@ -270,6 +270,11 @@ void PrivacySandboxService::PromptActionOccurred(
   InformSentimentService(action);
   RecordPromptActionMetrics(action);
 
+  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
+    PromptActionOccurredM1(action);
+    return;
+  }
+
   if (PromptAction::kNoticeShown == action &&
       PromptType::kNotice == GetRequiredPromptType()) {
     // The Privacy Sandbox pref can be enabled when the notice has been
@@ -283,6 +288,33 @@ void PrivacySandboxService::PromptActionOccurred(
   } else if (PromptAction::kConsentDeclined == action) {
     pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
     pref_service_->SetBoolean(prefs::kPrivacySandboxConsentDecisionMade, true);
+  }
+}
+
+void PrivacySandboxService::PromptActionOccurredM1(
+    PrivacySandboxService::PromptAction action) {
+  if (PromptAction::kNoticeAcknowledge == action ||
+      PromptAction::kNoticeOpenSettings == action) {
+    if (privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get()) {
+      pref_service_->SetBoolean(prefs::kPrivacySandboxM1EEANoticeAcknowledged,
+                                true);
+    } else {
+      DCHECK(privacy_sandbox::kPrivacySandboxSettings4NoticeRequired.Get());
+      pref_service_->SetBoolean(prefs::kPrivacySandboxM1RowNoticeAcknowledged,
+                                true);
+      pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
+    }
+    pref_service_->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
+    pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
+                              true);
+  } else if (PromptAction::kConsentAccepted == action) {
+    pref_service_->SetBoolean(prefs::kPrivacySandboxM1ConsentDecisionMade,
+                              true);
+    pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
+  } else if (PromptAction::kConsentDeclined == action) {
+    pref_service_->SetBoolean(prefs::kPrivacySandboxM1ConsentDecisionMade,
+                              true);
+    pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
   }
 }
 

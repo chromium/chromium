@@ -73,6 +73,7 @@ namespace {
 using browsing_topics::Topic;
 using privacy_sandbox::CanonicalTopic;
 using testing::ElementsAre;
+using PromptAction = PrivacySandboxService::PromptAction;
 using PromptSuppressedReason = PrivacySandboxService::PromptSuppressedReason;
 using PromptType = PrivacySandboxService::PromptType;
 
@@ -156,6 +157,9 @@ class TestPrivacySandboxService
   }
   int GetRequiredPromptType() const override {
     return static_cast<int>(service_->GetRequiredPromptType());
+  }
+  void PromptActionOccurred(int action) const override {
+    service_->PromptActionOccurred(static_cast<PromptAction>(action));
   }
 
  private:
@@ -3664,6 +3668,46 @@ TEST_F(PrivacySandboxServiceM1ConsentPromptTest,
                   static_cast<int>(PromptSuppressedReason::kNone)}});
 }
 
+TEST_F(PrivacySandboxServiceM1ConsentPromptTest, PromptAction_ConsentAccepted) {
+  // Confirm that when the service is informed that the consent prompt was
+  // accepted, it correctly adjusts the Privacy Sandbox prefs.
+  RunTestCase(TestState{},
+              TestInput{{InputKey::kPromptAction,
+                         static_cast<int>(PromptAction::kConsentAccepted)}},
+              TestOutput{{OutputKey::kM1ConsentDecisionMade, true},
+                         {OutputKey::kM1TopicsEnabled, true}});
+}
+
+TEST_F(PrivacySandboxServiceM1ConsentPromptTest, PromptAction_ConsentDeclined) {
+  // Confirm that when the service is informed that the consent prompt was
+  // declined, it correctly adjusts the Privacy Sandbox prefs.
+  RunTestCase(TestState{},
+              TestInput{{InputKey::kPromptAction,
+                         static_cast<int>(PromptAction::kConsentDeclined)}},
+              TestOutput{{OutputKey::kM1ConsentDecisionMade, true},
+                         {OutputKey::kM1TopicsEnabled, false}});
+}
+
+TEST_F(PrivacySandboxServiceM1ConsentPromptTest,
+       PromptAction_EEANoticeAcknowledged) {
+  // Confirm that when the service is informed that the eea notice was
+  // acknowledged, it correctly adjusts the Privacy Sandbox prefs.
+  RunTestCase(TestState{{StateKey::kM1ConsentDecisionMade, true},
+                        {StateKey::kM1EEANoticeAcknowledged, false}},
+              TestInput{{InputKey::kPromptAction,
+                         static_cast<int>(PromptAction::kNoticeAcknowledge)}},
+              TestOutput{{OutputKey::kM1EEANoticeAcknowledged, true},
+                         {OutputKey::kM1FledgeEnabled, true},
+                         {OutputKey::kM1AdMeasurementEnabled, true}});
+  RunTestCase(TestState{{StateKey::kM1ConsentDecisionMade, true},
+                        {StateKey::kM1EEANoticeAcknowledged, false}},
+              TestInput{{InputKey::kPromptAction,
+                         static_cast<int>(PromptAction::kNoticeOpenSettings)}},
+              TestOutput{{OutputKey::kM1EEANoticeAcknowledged, true},
+                         {OutputKey::kM1FledgeEnabled, true},
+                         {OutputKey::kM1AdMeasurementEnabled, true}});
+}
+
 class PrivacySandboxServiceM1NoticePromptTest
     : public PrivacySandboxServiceM1PromptTest {
  public:
@@ -3733,4 +3777,29 @@ TEST_F(PrivacySandboxServiceM1NoticePromptTest, M1NoticeAcknowledged) {
       TestOutput{{OutputKey::kPromptType, static_cast<int>(PromptType::kNone)},
                  {OutputKey::kM1PromptSuppressedReason,
                   static_cast<int>(PromptSuppressedReason::kNone)}});
+}
+
+TEST_F(PrivacySandboxServiceM1NoticePromptTest,
+       PromptAction_RowNoticeAcknowledged) {
+  // Confirm that when the service is informed that the row notice was
+  // acknowledged, it correctly adjusts the Privacy Sandbox prefs.
+  RunTestCase(TestState{},
+              TestInput{{InputKey::kPromptAction,
+                         static_cast<int>(PromptAction::kNoticeAcknowledge)}},
+              TestOutput{{OutputKey::kM1RowNoticeAcknowledged, true},
+                         {OutputKey::kM1TopicsEnabled, true},
+                         {OutputKey::kM1FledgeEnabled, true},
+                         {OutputKey::kM1AdMeasurementEnabled, true}});
+}
+
+TEST_F(PrivacySandboxServiceM1NoticePromptTest, PromptAction_OpenSettings) {
+  // Confirm that when the service is informed that the row notice was
+  // acknowledged, it correctly adjusts the Privacy Sandbox prefs.
+  RunTestCase(TestState{},
+              TestInput{{InputKey::kPromptAction,
+                         static_cast<int>(PromptAction::kNoticeOpenSettings)}},
+              TestOutput{{OutputKey::kM1RowNoticeAcknowledged, true},
+                         {OutputKey::kM1TopicsEnabled, true},
+                         {OutputKey::kM1FledgeEnabled, true},
+                         {OutputKey::kM1AdMeasurementEnabled, true}});
 }

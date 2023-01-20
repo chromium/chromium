@@ -550,6 +550,10 @@ class PrivacySandboxService : public KeyedService {
   // determined by |action|. Only a subset of actions has a corresponding area.
   void InformSentimentService(PrivacySandboxService::PromptAction action);
 
+  // Implementation of PrivacySandboxService::PromptActionOccurred, but for
+  // PrivacySandboxSettings4.
+  virtual void PromptActionOccurredM1(PromptAction action);
+
   // Record user action metrics based on the |action|.
   void RecordPromptActionMetrics(PrivacySandboxService::PromptAction action);
 

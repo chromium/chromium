@@ -39,6 +39,7 @@ class MockPrivacySandboxServiceTestInterface
   MOCK_METHOD(std::string, TopicsConsentLastUpdateText, (), (override, const));
   MOCK_METHOD(void, ForceChromeBuildForTests, (bool), (override, const));
   MOCK_METHOD(int, GetRequiredPromptType, (), (override, const));
+  MOCK_METHOD(void, PromptActionOccurred, (int), (override, const));
 };
 
 }  // namespace

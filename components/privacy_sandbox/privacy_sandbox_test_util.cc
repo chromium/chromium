@@ -558,6 +558,66 @@ void CheckOutput(
                     prefs::kPrivacySandboxM1PromptSuppressed));
       return;
     }
+    case (OutputKey::kM1ConsentDecisionMade): {
+      SCOPED_TRACE("Check Output: M1 consent decision made");
+      bool expected = GetItemValue<bool>(output_value);
+      int prompt_action =
+          GetItemValueForKey<int>(InputKey::kPromptAction, input);
+      privacy_sandbox_service->PromptActionOccurred(prompt_action);
+      EXPECT_EQ(expected, testing_pref_service->GetBoolean(
+                              prefs::kPrivacySandboxM1ConsentDecisionMade));
+      return;
+    }
+    case (OutputKey::kM1EEANoticeAcknowledged): {
+      SCOPED_TRACE("Check Output: M1 eea notice acknowledged");
+      bool expected = GetItemValue<bool>(output_value);
+      int prompt_action =
+          GetItemValueForKey<int>(InputKey::kPromptAction, input);
+      privacy_sandbox_service->PromptActionOccurred(prompt_action);
+      EXPECT_EQ(expected, testing_pref_service->GetBoolean(
+                              prefs::kPrivacySandboxM1EEANoticeAcknowledged));
+      return;
+    }
+    case (OutputKey::kM1RowNoticeAcknowledged): {
+      SCOPED_TRACE("Check Output: M1 row notice acknowledged");
+      bool expected = GetItemValue<bool>(output_value);
+      int prompt_action =
+          GetItemValueForKey<int>(InputKey::kPromptAction, input);
+      privacy_sandbox_service->PromptActionOccurred(prompt_action);
+      EXPECT_EQ(expected, testing_pref_service->GetBoolean(
+                              prefs::kPrivacySandboxM1RowNoticeAcknowledged));
+      return;
+    }
+    case (OutputKey::kM1TopicsEnabled): {
+      SCOPED_TRACE("Check Output: M1 topics enabled");
+      bool expected = GetItemValue<bool>(output_value);
+      int prompt_action =
+          GetItemValueForKey<int>(InputKey::kPromptAction, input);
+      privacy_sandbox_service->PromptActionOccurred(prompt_action);
+      EXPECT_EQ(expected, testing_pref_service->GetBoolean(
+                              prefs::kPrivacySandboxM1TopicsEnabled));
+      return;
+    }
+    case (OutputKey::kM1FledgeEnabled): {
+      SCOPED_TRACE("Check Output: M1 fledge enabled");
+      bool expected = GetItemValue<bool>(output_value);
+      int prompt_action =
+          GetItemValueForKey<int>(InputKey::kPromptAction, input);
+      privacy_sandbox_service->PromptActionOccurred(prompt_action);
+      EXPECT_EQ(expected, testing_pref_service->GetBoolean(
+                              prefs::kPrivacySandboxM1FledgeEnabled));
+      return;
+    }
+    case (OutputKey::kM1AdMeasurementEnabled): {
+      SCOPED_TRACE("Check Output: M1 ad measurement enabled");
+      bool expected = GetItemValue<bool>(output_value);
+      int prompt_action =
+          GetItemValueForKey<int>(InputKey::kPromptAction, input);
+      privacy_sandbox_service->PromptActionOccurred(prompt_action);
+      EXPECT_EQ(expected, testing_pref_service->GetBoolean(
+                              prefs::kPrivacySandboxM1AdMeasurementEnabled));
+      return;
+    }
   }
 }
 
