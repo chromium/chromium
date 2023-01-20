@@ -82,7 +82,7 @@ const base::FeatureParam<int>
 
 BASE_FEATURE(kBFCachePerformanceManagerPolicy,
              "BFCachePerformanceManagerPolicy",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUrgentPageDiscarding,
              "UrgentPageDiscarding",

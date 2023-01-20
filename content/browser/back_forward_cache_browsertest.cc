@@ -192,6 +192,10 @@ void BackForwardCacheBrowserTest::SetUpCommandLine(
 #endif
     // Allow BackForwardCache for all devices regardless of their memory.
     DisableFeature(features::kBackForwardCacheMemoryControls);
+    // Disables BackForwardCache cache size overwritten by
+    // `content::kBackForwardCacheSize`, as many browser tests here assume
+    // specific or smaller cache size (e.g. 1) rather than 6.
+    DisableFeature(kBackForwardCacheSize);
 
     SetupFeaturesAndParameters();
 

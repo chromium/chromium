@@ -217,7 +217,12 @@ TEST(TimeSmoother, ClockBackwardsJump) {
 class NavigationControllerTest : public RenderViewHostImplTestHarness,
                                  public WebContentsObserver {
  public:
-  NavigationControllerTest() = default;
+  NavigationControllerTest() {
+    // Disable BackForward cache size overwritten by
+    // `kBackForwardCacheSize` so that it won't break some tests assumption.
+    scoped_feature_list_.InitWithFeaturesAndParameters({},
+                                                       {kBackForwardCacheSize});
+  }
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
@@ -288,6 +293,9 @@ class NavigationControllerTest : public RenderViewHostImplTestHarness,
   size_t form_repost_counter_ = 0;
   PrunedDetails last_navigation_entry_pruned_details_;
   ReloadType last_reload_type_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class TestWebContentsDelegate : public WebContentsDelegate {

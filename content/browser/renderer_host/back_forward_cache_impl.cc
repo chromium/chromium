@@ -49,6 +49,27 @@ namespace content {
 
 class RenderProcessHostInternalObserver;
 
+// Allows overriding the sizes of back/forward cache.
+// Sizes set via this feature's parameters take precedence over others.
+BASE_FEATURE(kBackForwardCacheSize,
+             "BackForwardCacheSize",
+// Sets the BackForwardCache size for desktop.
+// See crbug.com/1291435.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+// Sets BackForwardCache cache_size=6 per crbug.com/1291435.
+const base::FeatureParam<int> kBackForwardCacheSizeCacheSize{
+    &kBackForwardCacheSize, "cache_size", 6};
+// Disables EnforceCacheSizeLimitInternal() with foreground_cache_size=0, as
+// the BFCachePolicy manager takes care of pruning for foreground tabs as well.
+const base::FeatureParam<int> kBackForwardCacheSizeForegroundCacheSize{
+    &kBackForwardCacheSize, "foreground_cache_size", 0};
+
 namespace {
 
 using blink::scheduler::WebSchedulerTrackedFeature;
@@ -568,10 +589,9 @@ base::TimeDelta BackForwardCacheImpl::GetTimeToLiveInBackForwardCache() {
 size_t BackForwardCacheImpl::GetCacheSize() {
   if (!IsBackForwardCacheEnabled())
     return 0;
-  auto cache_size = GetFieldTrialParamByFeatureAsOptionalInt(
-      kBackForwardCacheSize, "cache_size");
-  if (cache_size.has_value())
-    return cache_size.value();
+  if (base::FeatureList::IsEnabled(kBackForwardCacheSize)) {
+    return kBackForwardCacheSizeCacheSize.Get();
+  }
   return base::GetFieldTrialParamByFeatureAsInt(
       features::kBackForwardCache, "cache_size", kDefaultBackForwardCacheSize);
 }
@@ -580,10 +600,9 @@ size_t BackForwardCacheImpl::GetCacheSize() {
 size_t BackForwardCacheImpl::GetForegroundedEntriesCacheSize() {
   if (!IsBackForwardCacheEnabled())
     return 0;
-  auto foreground_cache_size = GetFieldTrialParamByFeatureAsOptionalInt(
-      kBackForwardCacheSize, "foreground_cache_size");
-  if (foreground_cache_size.has_value())
-    return foreground_cache_size.value();
+  if (base::FeatureList::IsEnabled(kBackForwardCacheSize)) {
+    return kBackForwardCacheSizeForegroundCacheSize.Get();
+  }
   return base::GetFieldTrialParamByFeatureAsInt(
       features::kBackForwardCache, "foreground_cache_size",
       kDefaultForegroundBackForwardCacheSize);
