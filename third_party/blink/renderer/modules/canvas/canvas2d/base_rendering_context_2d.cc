@@ -212,12 +212,16 @@ void BaseRenderingContext2D::beginLayer() {
     max_state_stack_depth_ =
         std::max(state_stack_.size(), max_state_stack_depth_);
 
-    cc::PaintFlags extra_flags;
-    extra_flags.setAlphaf(static_cast<float>(globalAlpha()));
-    if (GetState().ShouldDrawShadows())
+    if (GetState().ShouldDrawShadows()) {
+      cc::PaintFlags extra_flags;
+      extra_flags.setAlphaf(static_cast<float>(globalAlpha()));
       extra_flags.setImageFilter(StateGetFilter());
-    canvas->saveLayer(extra_flags);
-  } else {
+      canvas->saveLayer(extra_flags);
+    } else {
+      canvas->saveLayerAlphaf(globalAlpha());
+    }
+  } else if (StateHasFilter() || GetState().ShouldDrawShadows() ||
+             GetState().GlobalComposite() != SkBlendMode::kSrcOver) {
     cc::PaintFlags flags;
     flags.setBlendMode(GetState().GlobalComposite());
     // This ComposePaintFilter will work always, whether there is only
@@ -226,6 +230,8 @@ void BaseRenderingContext2D::beginLayer() {
         GetState().ShadowAndForegroundImageFilter(), StateGetFilter()));
     flags.setAlphaf(static_cast<float>(globalAlpha()));
     canvas->saveLayer(flags);
+  } else {
+    canvas->saveLayerAlphaf(globalAlpha());
   }
 
   ValidateStateStack();
