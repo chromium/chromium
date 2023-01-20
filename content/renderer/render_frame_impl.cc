@@ -5712,9 +5712,6 @@ void RenderFrameImpl::BeginNavigationInternal(
   // The extra data was created in WillSendRequestInternal if it didn't exist.
   DCHECK(info->url_request.GetURLRequestExtraData());
 
-  // TODO(clamy): Same-document navigations should not be sent back to the
-  // browser.
-  // TODO(clamy): Data urls should not be sent back to the browser either.
   // These values are assumed on the browser side for navigations. These checks
   // ensure the renderer has the correct values.
   DCHECK_EQ(network::mojom::RequestMode::kNavigate,
@@ -5753,12 +5750,13 @@ void RenderFrameImpl::BeginNavigationInternal(
       CloneBlobURLToken(info->blob_url_token));
 
   int load_flags = info->url_request.GetLoadFlagsForWebUrlRequest();
-  absl::optional<base::Value::Dict> initiator;
+  absl::optional<base::Value::Dict> devtools_initiator;
   if (!info->devtools_initiator_info.IsNull()) {
-    absl::optional<base::Value> initiator_value =
+    absl::optional<base::Value> devtools_initiator_value =
         base::JSONReader::Read(info->devtools_initiator_info.Utf8());
-    if (initiator_value && initiator_value->is_dict())
-      initiator = std::move(*initiator_value).TakeDict();
+    if (devtools_initiator_value && devtools_initiator_value->is_dict()) {
+      devtools_initiator = std::move(*devtools_initiator_value).TakeDict();
+    }
   }
 
   absl::optional<network::ResourceRequest::WebBundleTokenParams>
@@ -5785,7 +5783,7 @@ void RenderFrameImpl::BeginNavigationInternal(
           blink::GetMixedContentContextTypeForWebURLRequest(info->url_request),
           is_form_submission, was_initiated_by_link_click, searchable_form_url,
           searchable_form_encoding, client_side_redirect_url,
-          std::move(initiator),
+          std::move(devtools_initiator),
           info->url_request.TrustTokenParams()
               ? info->url_request.TrustTokenParams()->Clone()
               : nullptr,
