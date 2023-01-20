@@ -293,8 +293,8 @@ class ThreadPoolImplTestBase : public testing::Test {
   virtual bool GetUseResourceEfficientThreadGroup() const = 0;
 
   void set_worker_thread_observer(
-      WorkerThreadObserver* worker_thread_observer) {
-    worker_thread_observer_ = worker_thread_observer;
+      std::unique_ptr<WorkerThreadObserver> worker_thread_observer) {
+    worker_thread_observer_ = std::move(worker_thread_observer);
   }
 
   void StartThreadPool(
@@ -307,7 +307,7 @@ class ThreadPoolImplTestBase : public testing::Test {
                                                max_num_utility_threads);
     init_params.suggested_reclaim_time = reclaim_time;
 
-    thread_pool_->Start(init_params, worker_thread_observer_);
+    thread_pool_->Start(init_params, worker_thread_observer_.get());
   }
 
   void TearDown() override {
@@ -317,6 +317,7 @@ class ThreadPoolImplTestBase : public testing::Test {
     if (thread_pool_) {
       thread_pool_->FlushForTesting();
       thread_pool_->JoinForTesting();
+      thread_pool_.reset();
     }
     did_tear_down_ = true;
   }
@@ -336,7 +337,7 @@ class ThreadPoolImplTestBase : public testing::Test {
   }
 
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<WorkerThreadObserver> worker_thread_observer_ = nullptr;
+  std::unique_ptr<WorkerThreadObserver> worker_thread_observer_;
   bool did_tear_down_ = false;
 };
 
@@ -1152,8 +1153,10 @@ TEST_P(ThreadPoolImplTest, MAYBE_IdentifiableStacks) {
 }
 
 TEST_P(ThreadPoolImplTest, WorkerThreadObserver) {
-  testing::StrictMock<test::MockWorkerThreadObserver> observer;
-  set_worker_thread_observer(&observer);
+  auto owned_observer =
+      std::make_unique<testing::StrictMock<test::MockWorkerThreadObserver>>();
+  auto* observer = owned_observer.get();
+  set_worker_thread_observer(std::move(owned_observer));
 
   // A worker should be created for each thread group. After that, 4 threads
   // should be created for each SingleThreadTaskRunnerThreadMode (8 on Windows).
@@ -1195,7 +1198,7 @@ TEST_P(ThreadPoolImplTest, WorkerThreadObserver) {
       0;
 #endif
 
-  EXPECT_CALL(observer, OnWorkerThreadMainEntry())
+  EXPECT_CALL(*observer, OnWorkerThreadMainEntry())
       .Times(kExpectedNumPoolWorkers + kExpectedNumSharedSingleThreadedWorkers +
              kExpectedNumDedicatedSingleThreadedWorkers +
              kExpectedNumCOMSharedSingleThreadedWorkers +
@@ -1285,18 +1288,18 @@ TEST_P(ThreadPoolImplTest, WorkerThreadObserver) {
 
   // Release single-threaded workers. This should cause dedicated workers to
   // invoke OnWorkerThreadMainExit().
-  observer.AllowCallsOnMainExit(kExpectedNumDedicatedSingleThreadedWorkers +
-                                kExpectedNumCOMDedicatedSingleThreadedWorkers);
+  observer->AllowCallsOnMainExit(kExpectedNumDedicatedSingleThreadedWorkers +
+                                 kExpectedNumCOMDedicatedSingleThreadedWorkers);
   task_runners.clear();
-  observer.WaitCallsOnMainExit();
+  observer->WaitCallsOnMainExit();
 
   // Join all remaining workers. This should cause shared single-threaded
   // workers and thread pool workers to invoke OnWorkerThreadMainExit().
-  observer.AllowCallsOnMainExit(kExpectedNumPoolWorkers +
-                                kExpectedNumSharedSingleThreadedWorkers +
-                                kExpectedNumCOMSharedSingleThreadedWorkers);
+  observer->AllowCallsOnMainExit(kExpectedNumPoolWorkers +
+                                 kExpectedNumSharedSingleThreadedWorkers +
+                                 kExpectedNumCOMSharedSingleThreadedWorkers);
   TearDown();
-  observer.WaitCallsOnMainExit();
+  observer->WaitCallsOnMainExit();
 }
 
 // Verify a basic EnqueueJobTaskSource() runs the worker task.
