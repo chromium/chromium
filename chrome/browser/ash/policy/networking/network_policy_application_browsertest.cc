@@ -66,6 +66,8 @@ constexpr char kSharedProfilePath[] = "/profile/default";
 constexpr char kServiceEth[] = "/service/0";
 constexpr char kServiceWifi1[] = "/service/1";
 constexpr char kServiceWifi2[] = "/service/2";
+constexpr char kServiceWifi3[] = "/service/3";
+constexpr char kServiceWifi4[] = "/service/4";
 
 constexpr char kUIDataKeyUserSettings[] = "user_settings";
 
@@ -96,6 +98,8 @@ class ServiceConnectedWaiter {
   // If it has connected since the constructor has run, will return immediately.
   void Wait() {
     run_loop_.Run();
+    shill_service_client_test_->SetServiceProperty(
+        service_path_, shill::kStateProperty, base::Value(shill::kStateOnline));
     shill_service_client_test_->SetConnectBehavior(service_path_,
                                                    base::RepeatingClosure());
   }
@@ -415,6 +419,23 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
     return get_managed_properties_future.Take();
   }
 
+  network_mojom::GlobalPolicyPtr CrosNetworkConfigGetGlobalPolicy() {
+    ash::network_config::CrosNetworkConfig cros_network_config;
+    base::test::TestFuture<network_mojom::GlobalPolicyPtr> global_policy_ptr;
+    cros_network_config.GetGlobalPolicy(global_policy_ptr.GetCallback());
+    return global_policy_ptr.Take();
+  }
+
+  network_mojom::NetworkStatePropertiesPtr
+  CrosNetworkConfigGetNetworkStateProps(const std::string& guid) {
+    ash::network_config::CrosNetworkConfig cros_network_config;
+    base::test::TestFuture<network_mojom::NetworkStatePropertiesPtr>
+        network_state_props_ptr;
+    cros_network_config.GetNetworkState(guid,
+                                        network_state_props_ptr.GetCallback());
+    return network_state_props_ptr.Take();
+  }
+
   // Extracts the UIData dictionary from the shill UIData property of the
   // service `service_path`.
   absl::optional<base::Value::Dict> GetUIDataDict(
@@ -468,6 +489,50 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
 
   ash::LoginManagerMixin login_mixin_{&mixin_host_};
   AccountId test_account_id_;
+
+  const base::Value* GetWifiProps(const std::string& guid) {
+    absl::optional<std::string> wifi_service;
+    wifi_service = shill_service_client_test_->FindServiceMatchingGUID(guid);
+    if (wifi_service->empty()) {
+      ADD_FAILURE() << "No wifi service found for: " << guid;
+    }
+    return shill_service_client_test_->GetServiceProperties(
+        wifi_service.value());
+  }
+
+  const std::string GetTestUserHash() {
+    return user_manager::UserManager::Get()
+        ->FindUser(test_account_id_)
+        ->username_hash();
+  }
+
+  bool IsProhibitedByPolicyInCrosNetworkConfig(const std::string& guid) {
+    return CrosNetworkConfigGetNetworkStateProps(guid)->prohibited_by_policy;
+  }
+
+  const std::string GetWifiStateFromShillClient(const std::string& guid) {
+    const base::Value* wifi_properties = GetWifiProps(guid);
+    const std::string* wifi_state =
+        wifi_properties->FindStringKey(shill::kStateProperty);
+    if (!wifi_state) {
+      ADD_FAILURE() << "Network has no WiFi state properties: " << guid;
+      return "";
+    }
+    return *wifi_state;
+  }
+
+  void AddPskWiFiNetwork(const std::string& servicePath,
+                         const std::string& guid,
+                         const std::string& ssid) {
+    shill_service_client_test_->AddService(
+        servicePath, guid, ssid, shill::kTypeWifi, shill::kStateOnline,
+        /*visible=*/true);
+    shill_service_client_test_->SetServiceProperty(
+        servicePath, shill::kSSIDProperty, base::Value(ssid));
+    shill_service_client_test_->SetServiceProperty(
+        servicePath, shill::kSecurityClassProperty,
+        base::Value(shill::kSecurityClassPsk));
+  }
 
  private:
   testing::NiceMock<MockConfigurationPolicyProvider> policy_provider_;
@@ -685,6 +750,159 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
     EXPECT_THAT(*wifi_service_properties,
                 DictionaryHasValue(shill::kStateProperty,
                                    base::Value(shill::kStateOnline)));
+  }
+}
+
+// Verify that AllowOnlyPolicyNetworksToConnect is working correctly , so
+// non-policy-managed networks can be connected before user's login, but
+// they will be automatically disconnected after the user's login and they also
+// will be forbidden in CrosNetworkConfig.
+IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
+                       OnlyPolicyAllowedNetworkCanBeConected) {
+  ScopedNetworkPolicyApplicationObserver policy_observer;
+  ash::ShillServiceClient::TestInterface* shill_client =
+      shill_service_client_test_;
+  constexpr char kGuidWifi1[] = "wifi_orig_guid_1";
+  constexpr char kGuidWifi2[] = "wifi_orig_guid_2";
+  constexpr char kGuidWifi3[] = "wifi_orig_guid_3";
+  constexpr char kGuidWifi4[] = "wifi_orig_guid_4";
+
+  // Network 1 will be managed by device policy and it will have auto connect.
+  // Network 2 will be managed by user policy.
+  // Network 3 and 4 will be not managed. Network 4 is added just to make sure
+  // that we have more than one un-managed network.
+  AddPskWiFiNetwork(kServiceWifi1, kGuidWifi1, "WifiOne");
+  AddPskWiFiNetwork(kServiceWifi2, kGuidWifi2, "WifiTwo");
+  AddPskWiFiNetwork(kServiceWifi3, kGuidWifi3, "WifiThree");
+  AddPskWiFiNetwork(kServiceWifi4, kGuidWifi4, "WifiFour");
+  base::RunLoop().RunUntilIdle();
+
+  // Check that initially no policies applied and CrosNetworkStateProperties
+  // has no prohibited networks.
+  {
+    EXPECT_FALSE(CrosNetworkConfigGetGlobalPolicy()
+                     ->allow_only_policy_wifi_networks_to_connect);
+
+    EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi1));
+    EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi2));
+    EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi3));
+    EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi4));
+  }
+
+  // Apply device ONC policy and wait until it takes effect (1st network
+  // start auto connects). Those setting are not effective before user's login,
+  // but we can check that CrosNetworkStateProperties are updated correctly.
+  {
+    const char kDeviceONC[] = R"(
+        {
+          "GlobalNetworkConfiguration": {
+            "AllowOnlyPolicyNetworksToConnect": true
+          },
+          "NetworkConfigurations": [
+            {
+              "GUID": "wifi_orig_guid_1",
+              "Name": "DeviceLevelWifi",
+              "Type": "WiFi",
+              "WiFi": {
+                "AutoConnect": true,
+                "HiddenSSID": false,
+                "Passphrase": "DeviceLevelWifiPwd",
+                "SSID": "WifiOne",
+                "Security": "WPA-PSK"
+              }
+            }
+          ]
+        })";
+
+    ServiceConnectedWaiter wifi_one_connected_waiter(shill_client,
+                                                     kServiceWifi1);
+    shill_manager_client_test_->SetBestServiceToConnect(kServiceWifi1);
+    SetDeviceOpenNetworkConfiguration(kDeviceONC, /*wait_applied=*/true);
+    wifi_one_connected_waiter.Wait();
+  }
+
+  // Check before login that device can connect to any available network.
+  // This is because AllowOnlyPolicyNetworksToConnect only applies in user's
+  // sessions, even though it is a device-wide network policy.
+  // WiFi3 will be kept online and it should be disconnected automatically after
+  // the login because policy will take action, WiFi1 will become connected
+  // after the login because it has "autoconnect".
+  {
+    // Verify that GlobalPolicy from CrosNetworkConfig will allow connection
+    // only to networks defined and all networks are not prohibited.
+    EXPECT_TRUE(CrosNetworkConfigGetGlobalPolicy()
+                    ->allow_only_policy_wifi_networks_to_connect);
+
+    EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi1));
+    EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi2));
+    EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi3));
+    EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi4));
+
+    // Check that device is connected to WiFi1 while other networks (2,3,4)
+    // are "idle".
+    EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi1), shill::kStateOnline);
+    EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi2), shill::kStateIdle);
+    EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi3), shill::kStateIdle);
+    EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi4), shill::kStateIdle);
+
+    // Manually connect to the 2nd network and verify that it is "online"
+    // while network 1, 3, 4 are "idle".
+    ConnectToService(kServiceWifi2);
+    EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi1), shill::kStateIdle);
+    EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi2), shill::kStateOnline);
+    EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi3), shill::kStateIdle);
+    EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi4), shill::kStateIdle);
+
+    // Manually connect to the 3d network and verify that it is "online"
+    // network 1, 2, 4 are "idle".
+    ConnectToService(kServiceWifi3);
+    EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi1), shill::kStateIdle);
+    EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi2), shill::kStateIdle);
+    EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi3), shill::kStateOnline);
+    EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi4), shill::kStateIdle);
+  }
+
+  // Sign-in a user and apply user ONC policy for WiFi2.
+  {
+    LoginUser(test_account_id_);
+    const std::string user_hash = GetTestUserHash();
+    shill_profile_client_test_->AddProfile(kUserProfilePath, user_hash);
+
+    const char kUserONC[] = R"(
+        {
+          "NetworkConfigurations": [
+            {
+              "GUID": "wifi_orig_guid_2",
+              "Name": "UserLevelWifi",
+              "Type": "WiFi",
+              "WiFi": {
+                "AutoConnect": true,
+                "HiddenSSID": false,
+                "Passphrase": "UserLevelWifiPwd",
+                "SSID": "WifiTwo",
+                "Security": "WPA-PSK"
+              }
+            }
+          ]
+        })";
+
+    SetUserOpenNetworkConfiguration(user_hash, kUserONC,
+                                    /*wait_applied=*/true);
+  }
+
+  // Verify that WiFi3 is disconnected as it is not included into device or
+  // into user's policies. Also now WiFi3 and WiFi4 are prohibited
+  // by policy. WiFi1 should be connected (online) because it has auto connect.
+  {
+    EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi1), shill::kStateOnline);
+    EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi2), shill::kStateIdle);
+    EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi3), shill::kStateIdle);
+    EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi4), shill::kStateIdle);
+
+    EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi1));
+    EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi2));
+    EXPECT_TRUE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi3));
+    EXPECT_TRUE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi4));
   }
 }
 
