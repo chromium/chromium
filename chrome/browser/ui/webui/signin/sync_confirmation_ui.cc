@@ -247,10 +247,18 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
   if (isTangibleSync) {
     title_id = IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_TITLE;
     info_desc_id = IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_DESC;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // The sign-in intercept feature isn't enabled on Lacros. Revisit the title
+    // when enabling it.
+    DCHECK(!isSigninInterceptFre);
+    info_title_id = IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_LACROS;
+#else
     info_title_id =
         isSigninInterceptFre
             ? IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_SIGNIN_INTERCEPT_V2
             : IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE;
+#endif
 
     illustration_path = "images/tangible_sync_dialog_illustration.svg";
     illustration_dark_path =

@@ -125,6 +125,7 @@ TEST_F('TangibleSyncDefaultModalTest', 'Dialog', function() {
   mocha.run();
 });
 
+GEN('#if BUILDFLAG(ENABLE_DICE_SUPPORT)');
 /**
  * Test fixture for the Signin Intercept modal dialog version of
  * chrome/browser/resources/signin/sync_confirmation/sync_confirmation.html
@@ -150,6 +151,7 @@ var TangibleSyncSigninInterceptModalTest = class extends SigninBrowserTest {
 TEST_F('TangibleSyncSigninInterceptModalTest', 'Dialog', function() {
   mocha.run();
 });
+GEN('#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)');
 
 /**
  * Test fixture for the window version of
