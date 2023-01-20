@@ -19,10 +19,6 @@ template <typename T>
 struct DefaultSingletonTraits;
 }  // namespace base
 
-namespace content {
-class StoragePartition;
-}  // namespace content
-
 // BrowsingDataHistoryObserverService is listening for history deletions to
 // remove navigation, session and recent tab entries.
 class BrowsingDataHistoryObserverService
@@ -58,12 +54,8 @@ class BrowsingDataHistoryObserverService
     bool ServiceIsCreatedWithBrowserContext() const override;
   };
 
-  void OverrideStoragePartitionForTesting(content::StoragePartition* partition);
-
  private:
   raw_ptr<Profile> profile_;
-
-  raw_ptr<content::StoragePartition> storage_partition_for_testing_ = nullptr;
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
