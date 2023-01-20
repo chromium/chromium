@@ -745,36 +745,52 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherClearFetchedHints) {
-  const base::HistogramTester* histogram_tester = GetHistogramTester();
-  GURL url = https_url();
+  SetNetworkConnectionOnline();
 
-  // Allowlist NoScript for https_url()'s' host.
-  SetUpComponentUpdateHints(https_url());
+  GURL full_url("https://foo.com/test/");
+  {
+    base::HistogramTester histogram_tester;
+    // Navigate to a host not in the seeded site engagement service; it
+    // should be recorded as a race for both the host and the URL.
+    base::flat_set<std::string> expected_request;
+    expected_request.insert(full_url.host());
+    expected_request.insert(full_url.spec());
+    SetExpectedHintsRequestForHostsAndUrls(expected_request);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), full_url));
 
-  // Expect that the browser initialization will record at least one sample
-  // in each of the following histograms as OnePlatform Hints are enabled.
-  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
-                histogram_tester,
-                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
-            1);
+    optimization_guide::RetryForHistogramUntilCountReached(
+        &histogram_tester,
+        "OptimizationGuide.HintsManager."
+        "PageNavigationHintsReturnedBeforeDataFlushed",
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
+        optimization_guide::RaceNavigationFetchAttemptStatus::
+            kRaceNavigationFetchHostAndURL,
+        1);
+  }
 
-  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
-                histogram_tester,
-                "OptimizationGuide.HintsFetcher.GetHintsRequest.Status", 1),
-            1);
-  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
-                histogram_tester,
-                "OptimizationGuide.HintsFetcher.GetHintsRequest.HintCount", 1),
-            1);
+  // Navigate again to the same webpage, no race should occur.
+  {
+    base::HistogramTester histogram_tester;
 
-  LoadHintsForUrl(https_url());
+    // Navigate to a URL that was recently fetched. A fetch should not go out.
+    base::flat_set<std::string> expected_request;
+    SetExpectedHintsRequestForHostsAndUrls(expected_request);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), full_url));
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url()));
+    optimization_guide::RetryForHistogramUntilCountReached(
+        &histogram_tester,
+        "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus", 1);
 
-  // Verifies that the fetched hint is used in-memory and no hint is loaded
-  // from store.
-  histogram_tester->ExpectTotalCount(
-      "OptimizationGuide.HintCache.HintType.Loaded", 0);
+    // Only the host will be attempted to race, the fetcher should block the
+    // host from being fetched.
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
+        optimization_guide::RaceNavigationFetchAttemptStatus::
+            kRaceNavigationFetchNotAttempted,
+        1);
+  }
 
   // Wipe the browser history - clear all the fetched hints.
   browser()->profile()->Wipe();
@@ -783,16 +799,26 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherClearFetchedHints) {
   base::ThreadPoolInstance::Get()->FlushForTesting();
   base::RunLoop().RunUntilIdle();
 
-  // Try to load the same hint to confirm fetched hints are no longer there.
-  LoadHintsForUrl(https_url());
+  // It should refetch for the same URL since it should have been wiped.
+  {
+    base::HistogramTester histogram_tester;
+    base::flat_set<std::string> expected_request;
+    expected_request.insert(full_url.host());
+    expected_request.insert(full_url.spec());
+    SetExpectedHintsRequestForHostsAndUrls(expected_request);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), full_url));
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url()));
-
-  histogram_tester->ExpectUniqueSample(
-      "OptimizationGuide.HintCache.HintType.Loaded",
-      static_cast<int>(optimization_guide::OptimizationGuideStore::
-                           StoreEntryType::kComponentHint),
-      1);
+    optimization_guide::RetryForHistogramUntilCountReached(
+        &histogram_tester,
+        "OptimizationGuide.HintsManager."
+        "PageNavigationHintsReturnedBeforeDataFlushed",
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
+        optimization_guide::RaceNavigationFetchAttemptStatus::
+            kRaceNavigationFetchHostAndURL,
+        1);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherOverrideTimer) {
