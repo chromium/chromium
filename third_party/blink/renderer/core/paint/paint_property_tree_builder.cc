@@ -1384,8 +1384,15 @@ static bool NeedsEffectIgnoringClipPath(
 
   // A mask needs an effect node on the current LayoutObject to define the scope
   // of masked contents to be the current LayoutObject and its descendants.
-  if (object.StyleRef().HasMask())
+  if (style.HasMask()) {
     return true;
+  }
+
+  // The view-transition-name property when set creates a backdrop filter root.
+  // We do this by ensuring that this object needs an effect node.
+  if (style.ViewTransitionName()) {
+    return true;
+  }
 
   return false;
 }
