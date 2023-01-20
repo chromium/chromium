@@ -169,37 +169,6 @@ class SharingMessageCallbackChecker : public SingleClientStatusChangeChecker {
   base::WeakPtrFactory<SharingMessageCallbackChecker> weak_ptr_factory_{this};
 };
 
-// Used to wait until the sharing message commit was sent to the server
-// (regardless of the commit result). Waits until the last commit message has at
-// least one sharing message with the expected payload.
-class SharingMessageCommitChecker : public SingleClientStatusChangeChecker {
- public:
-  SharingMessageCommitChecker(syncer::SyncServiceImpl* service,
-                              fake_server::FakeServer* fake_server,
-                              const std::string& expected_payload)
-      : SingleClientStatusChangeChecker(service),
-        fake_server_(fake_server),
-        expected_payload_(expected_payload) {}
-
-  bool IsExitConditionSatisfied(std::ostream* os) override {
-    *os << "Waiting for sharing message to be committed.";
-
-    sync_pb::ClientToServerMessage message;
-    fake_server_->GetLastCommitMessage(&message);
-    for (const sync_pb::SyncEntity& entity : message.commit().entries()) {
-      if (entity.specifics().sharing_message().payload() == expected_payload_) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
- private:
-  const raw_ptr<fake_server::FakeServer> fake_server_ = nullptr;
-  const std::string expected_payload_;
-};
-
 class SingleClientSharingMessageSyncTest : public SyncTest {
  public:
   SingleClientSharingMessageSyncTest() : SyncTest(SINGLE_CLIENT) {}
@@ -332,10 +301,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(callback_checker.Wait());
 }
 
-// Disables, see http://crbug.com/1408550
 IN_PROC_BROWSER_TEST_F(
     SingleClientSharingMessageSyncTest,
-    DISABLED_ShouldRetrySendingSharingMessageDataTypeOnTransientAuthError) {
+    ShouldRetrySendingSharingMessageDataTypeOnTransientAuthError) {
   const std::string payload = "payload";
 
   ASSERT_TRUE(SetupSync());
@@ -354,9 +322,6 @@ IN_PROC_BROWSER_TEST_F(
       std::make_unique<SharingMessageSpecifics>(specifics),
       callback_checker.GetCommitFinishedCallback());
 
-  ASSERT_TRUE(
-      SharingMessageCommitChecker(GetSyncService(0), GetFakeServer(), payload)
-          .Wait());
   ASSERT_TRUE(RetryingAccessTokenFetchChecker(GetSyncService(0)).Wait());
   SetOAuth2TokenResponse(kValidOAuth2Token, net::HTTP_OK, net::OK);
   GetFakeServer()->ClearHttpError();
