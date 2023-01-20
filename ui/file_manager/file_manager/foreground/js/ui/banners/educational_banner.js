@@ -100,10 +100,16 @@ export class EducationalBanner extends Banner {
         this.shadowRoot.querySelector('#dismiss-button');
     if (overridenDismissButton) {
       overridenDismissButton.addEventListener(
-          'click', event => this.onDismissClickHandler_(event));
+          'click',
+          event => this.onDismissClickHandler_(
+              event,
+              Banner.DismissedForeverEventSource.OVERRIDEN_DISMISS_BUTTON));
     } else if (defaultDismissButton) {
       defaultDismissButton.addEventListener(
-          'click', event => this.onDismissClickHandler_(event));
+          'click',
+          event => this.onDismissClickHandler_(
+              event,
+              Banner.DismissedForeverEventSource.DEFAULT_DISMISS_BUTTON));
     }
 
     // Attach an onclick handler to the extra-button slot. This enables a new
@@ -119,7 +125,10 @@ export class EducationalBanner extends Banner {
               new CustomEvent(Banner.Event.BANNER_DISMISSED_FOREVER, {
                 bubbles: true,
                 composed: true,
-                detail: {banner: this.getBannerInstance_()},
+                detail: {
+                  banner: this.getBannerInstance_(),
+                  eventSource: Banner.DismissedForeverEventSource.EXTRA_BUTTON,
+                },
               }));
         }
         e.preventDefault();
@@ -150,13 +159,18 @@ export class EducationalBanner extends Banner {
    * Handler for the dismiss button on click, switches to the custom banner
    * dismissal event to ensure the controller can catch the event.
    * @param {!Event} event The click event.
+   * @param {!Banner.DismissedForeverEventSource} dismissedForeverEventSource A
+   *     source of this event.
    * @private
    */
-  onDismissClickHandler_(event) {
+  onDismissClickHandler_(event, dismissedForeverEventSource) {
     this.dispatchEvent(new CustomEvent(Banner.Event.BANNER_DISMISSED_FOREVER, {
       bubbles: true,
       composed: true,
-      detail: {banner: this.getBannerInstance_()},
+      detail: {
+        banner: this.getBannerInstance_(),
+        eventSource: dismissedForeverEventSource,
+      },
     }));
   }
 }

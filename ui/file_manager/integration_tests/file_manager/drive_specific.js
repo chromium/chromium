@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ENTRIES, EntryType, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {ENTRIES, EntryType, expectHistogramTotalCount, getCaller, getUserActionCount, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady, waitForMediaApp} from './background.js';
@@ -1196,4 +1196,73 @@ testcase.driveDeleteDialogDoesntMentionPermanentDelete = async () => {
 
   // Wait for completion of file deletion.
   await remoteCall.waitForElementLost(appId, helloTxtSelector);
+};
+
+/**
+ * Tests that Google One offer banner appears if a user navigates to Drive
+ * volume.
+ */
+testcase.driveGoogleOneOfferBannerEnabled = async () => {
+  const userActionShown = 'FileBrowser.GoogleOneOffer.Shown';
+  const userActionGetPerk = 'FileBrowser.GoogleOneOffer.GetPerk';
+  const userActionDismiss = 'FileBrowser.GoogleOneOffer.Dismiss';
+
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+
+  // Visibility of a banner is controlled with hidden attribute once it gets
+  // attached to the DOM.
+  await remoteCall.waitForElement(
+      appId, 'google-one-offer-banner:not([hidden])');
+  chrome.test.assertEq(1, await getUserActionCount(userActionShown));
+
+  // extra-button (get perk button) is provided by google-one-offer-banner.
+  await remoteCall.waitAndClickElement(
+      appId, ['google-one-offer-banner', '[slot="extra-button"]']);
+  chrome.test.assertEq(1, await getUserActionCount(userActionGetPerk));
+  // Check: dismiss event should not be recorded for dismiss caused by the get
+  // perk button click.
+  chrome.test.assertEq(0, await getUserActionCount(userActionDismiss));
+  await remoteCall.waitForLastOpenedBrowserTabUrl(
+      'https://www.google.com/chromebook/perks/?id=google.one.2019');
+  await remoteCall.waitForElement(appId, 'google-one-offer-banner[hidden]');
+  // Check: If Google One offer banner is shown, Drive welcome banner should not
+  // be shown. Holding space welcome banner is the next one after the Drive
+  // welcome banner.
+  await remoteCall.waitForElement(
+      appId, 'holding-space-welcome-banner:not([hidden])');
+};
+
+/**
+ * Tests that Google One offer banner does not appear if the flag is off, which
+ * is the default.
+ */
+testcase.driveGoogleOneOfferBannerDisabled = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+
+  // If Google One offer banner is not shown, Drive welcome banner should be
+  // shown. We cannot test google-one-offer-banner[hidden] here as it should not
+  // be in the DOM tree.
+  await remoteCall.waitForElement(appId, 'drive-welcome-banner:not([hidden])');
+};
+
+/**
+ * Test that Google One offer banner can get dismissed with a click of Dismiss
+ * button.
+ */
+testcase.driveGoogleOneOfferBannerDismiss = async () => {
+  const userActionDismiss = 'FileBrowser.GoogleOneOffer.Dismiss';
+
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+
+  // Visibility of a banner is controlled with hidden attribute once it gets
+  // attached to the DOM.
+  await remoteCall.waitForElement(
+      appId, 'google-one-offer-banner:not([hidden])');
+
+  // dismiss-button is provided by educational-banner.
+  await remoteCall.waitAndClickElement(
+      appId,
+      ['google-one-offer-banner', 'educational-banner', '#dismiss-button']);
+  chrome.test.assertEq(1, await getUserActionCount(userActionDismiss));
+  await remoteCall.waitForElement(appId, 'google-one-offer-banner[hidden]');
 };

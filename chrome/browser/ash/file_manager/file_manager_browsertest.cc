@@ -191,6 +191,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& EnableGoogleOneOfferFilesBanner() {
+    options.enable_google_one_offer_files_banner = true;
+    return *this;
+  }
+
   std::string GetFullName() const {
     std::string full_name = name;
 
@@ -239,6 +244,10 @@ struct TestCase {
 
     if (options.enable_os_feedback)
       full_name += "_OsFeedback";
+
+    if (options.enable_google_one_offer_files_banner) {
+      full_name += "_GoogleOneOfferFilesBanner";
+    }
 
     return full_name;
   }
@@ -1320,7 +1329,13 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveOfflineInfoBanner"),
         TestCase("driveDeleteDialogDoesntMentionPermanentDelete"),
         TestCase("driveInlineSyncStatusSingleFile").EnableInlineStatusSync(),
-        TestCase("driveInlineSyncStatusParentFolder").EnableInlineStatusSync()
+        TestCase("driveInlineSyncStatusParentFolder").EnableInlineStatusSync(),
+        TestCase("driveGoogleOneOfferBannerEnabled")
+            .EnableGoogleOneOfferFilesBanner(),
+        // Google One offer banner is disabled by default.
+        TestCase("driveGoogleOneOfferBannerDisabled"),
+        TestCase("driveGoogleOneOfferBannerDismiss")
+            .EnableGoogleOneOfferFilesBanner()
         // TODO(b/189173190): Enable
         // TestCase("driveEnableDocsOfflineDialog"),
         // TODO(b/189173190): Enable

@@ -1148,6 +1148,10 @@ util.isSearchV2Enabled = () => {
   return loadTimeData.getBoolean('FILES_SEARCH_V2');
 };
 
+util.isGoogleOneOfferFilesBannerEnabled = () => {
+  return loadTimeData.getBoolean('GOOGLE_ONE_OFFER_FILES_BANNER');
+};
+
 /**
  * Returns true if FilesSinglePartitionFormat flag is enabled.
  * @return {boolean}

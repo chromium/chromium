@@ -119,6 +119,17 @@ Banner.Event = {
 };
 
 /**
+ * Event source for BANNER_DISMISSED_FOREVER event.
+ * @enum {string}
+ * @const
+ */
+Banner.DismissedForeverEventSource = {
+  EXTRA_BUTTON: 'extra-button',
+  DEFAULT_DISMISS_BUTTON: 'default-dismiss-button',
+  OVERRIDEN_DISMISS_BUTTON: 'overriden-dismiss-button',
+};
+
+/**
  * Used to denote a banner that shows has an infinite time limit.
  * @const {number}
  */

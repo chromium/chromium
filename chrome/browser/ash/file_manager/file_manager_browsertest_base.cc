@@ -1993,6 +1993,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(ash::features::kOsFeedback);
   }
 
+  if (options.enable_google_one_offer_files_banner) {
+    enabled_features.push_back(ash::features::kGoogleOneOfferFilesBanner);
+  } else {
+    disabled_features.push_back(ash::features::kGoogleOneOfferFilesBanner);
+  }
+
   // This is destroyed in |TearDown()|. We cannot initialize this in the
   // constructor due to this feature values' above dependence on virtual
   // method calls, but by convention subclasses of this fixture may initialize
@@ -3236,7 +3242,8 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   FAIL() << "Unknown test message: " << name;
-}
+}  // NOLINT(readability/fn_size): Structure of OnCommand function should be
+   // easy to manage.
 
 bool FileManagerBrowserTestBase::HandleGuestOsCommands(
     const std::string& name,

@@ -8975,6 +8975,30 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="FileBrowser.GoogleOneOffer.Dismiss">
+  <owner>yawano@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <description>
+    Google One offer files banner gets dismissed by the user.
+  </description>
+</action>
+
+<action name="FileBrowser.GoogleOneOffer.GetPerk">
+  <owner>yawano@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <description>
+    Get perk button of Google One offer files banner gets activated.
+  </description>
+</action>
+
+<action name="FileBrowser.GoogleOneOffer.Shown">
+  <owner>yawano@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <description>
+    Google One offer files banner gets shown on Files app.
+  </description>
+</action>
+
 <action name="FileBrowser.PhotoEditor.Edit">
   <obsolete>Removed in M92.</obsolete>
   <owner>simmonsjosh@google.com</owner>

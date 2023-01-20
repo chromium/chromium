@@ -27,6 +27,7 @@ import {TAG_NAME as DriveOfflinePinningBannerTagName} from './ui/banners/drive_o
 import {TAG_NAME as DriveOutOfIndividualSpaceBanner} from './ui/banners/drive_out_of_individual_space_banner.js';
 import {TAG_NAME as DriveOutOfOrganizationSpaceBanner} from './ui/banners/drive_out_of_organization_space_banner.js';
 import {TAG_NAME as DriveWelcomeBannerTagName} from './ui/banners/drive_welcome_banner.js';
+import {TAG_NAME as GoogleOneOfferBannerTagName} from './ui/banners/google_one_offer_banner.js';
 import {TAG_NAME as HoldingSpaceWelcomeBannerTagName} from './ui/banners/holding_space_welcome_banner.js';
 import {TAG_NAME as InvalidUSBFileSystemBanner} from './ui/banners/invalid_usb_filesystem_banner.js';
 import {TAG_NAME as LocalDiskLowSpaceBannerTagName} from './ui/banners/local_disk_low_space_banner.js';
@@ -311,12 +312,15 @@ export class BannerController extends EventTarget {
         DriveOutOfIndividualSpaceBanner,
         DriveLowIndividualSpaceBanner,
       ]);
-      this.setEducationalBannersInOrder([
-        DriveWelcomeBannerTagName,
-        HoldingSpaceWelcomeBannerTagName,
-        DriveOfflinePinningBannerTagName,
-        PhotosWelcomeBannerTagName,
-      ]);
+
+      const educationalBanners = util.isGoogleOneOfferFilesBannerEnabled() ?
+          [GoogleOneOfferBannerTagName] :
+          [DriveWelcomeBannerTagName];
+      educationalBanners.push(
+          HoldingSpaceWelcomeBannerTagName, DriveOfflinePinningBannerTagName,
+          PhotosWelcomeBannerTagName);
+      this.setEducationalBannersInOrder(educationalBanners);
+
       this.setStateBannersInOrder([
         DlpRestrictedBannerName,
         InvalidUSBFileSystemBanner,
@@ -446,6 +450,10 @@ export class BannerController extends EventTarget {
         this.volumeSizeObservers_[this.currentVolume_.volumeType]) {
       this.pendingVolumeSizeUpdates_.add(this.currentVolume_);
       this.updateVolumeSizeStatsDebounced_.runImmediately();
+
+      // updateVolumeSizeStats will call reconcile at its end. Return here to
+      // avoid calling showBanner_ twice for a banner.
+      return;
     }
 
     /** @type {?Banner} */
@@ -573,7 +581,7 @@ export class BannerController extends EventTarget {
 
   /**
    * Check if the banner exists (add to DOM if not) and ensure it's visible.
-   * @param {!Banner} banner The banner to hide.
+   * @param {!Banner} banner The banner to show.
    * @private
    */
   async showBanner_(banner) {

@@ -1034,7 +1034,8 @@ void AddStringsGeneric(base::Value::Dict* dict) {
   SET_STRING("DLP_COMPONENT_PLAY", IDS_FILE_BROWSER_DLP_COMPONENT_PLAY);
   SET_STRING("DLP_COMPONENT_LINUX", IDS_FILE_BROWSER_DLP_COMPONENT_LINUX);
   SET_STRING("DLP_COMPONENT_VM", IDS_FILE_BROWSER_DLP_COMPONENT_VM);
-}
+}  // NOLINT(readability/fn_size): Structure of AddStringsGeneric function
+   // should be easy to manage.
 
 #undef SET_STRING
 
@@ -1164,4 +1165,8 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   // Lastly, set UI_LOCALE and locale-dependent settings.
   dict->Set("UI_LOCALE", locale);
   dict->Set("WEEK_START_FROM", GetLocaleBasedWeekStart());
+
+  dict->Set(
+      "GOOGLE_ONE_OFFER_FILES_BANNER",
+      base::FeatureList::IsEnabled(ash::features::kGoogleOneOfferFilesBanner));
 }

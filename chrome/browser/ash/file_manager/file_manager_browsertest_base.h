@@ -136,8 +136,11 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
     // Whether tests should enable V2 of search.
     bool enable_search_v2 = false;
 
-    // Whether testt should enable OS Feedback.
+    // Whether tests should enable OS Feedback.
     bool enable_os_feedback = false;
+
+    // Whether tests should enable Google One offer Files banner.
+    bool enable_google_one_offer_files_banner = false;
   };
 
   FileManagerBrowserTestBase(const FileManagerBrowserTestBase&) = delete;
