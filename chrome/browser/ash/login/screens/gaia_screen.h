@@ -14,7 +14,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/gaia_reauth_token_fetcher.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chromeos/ash/components/login/auth/auth_factor_editor.h"
+#include "chromeos/ash/components/login/auth/public/authentication_error.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {
@@ -69,12 +73,22 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
   void OnUserAction(const base::Value::List& args) override;
   bool HandleAccelerator(LoginAcceleratorAction action) override;
 
+  void OnGetAuthFactorsConfiguration(std::unique_ptr<UserContext> user_context,
+                                     absl::optional<AuthenticationError> error);
+  void OnGaiaReauthTokenFetched(const AccountId& account,
+                                const std::string& token);
+
+  AuthFactorEditor auth_factor_editor_;
+  std::unique_ptr<GaiaReauthTokenFetcher> gaia_reauth_token_fetcher_;
+
   base::WeakPtr<TView> view_;
 
   ScreenExitCallback exit_callback_;
 
   base::ScopedObservation<BacklightsForcedOffSetter, ScreenBacklightObserver>
       backlights_forced_off_observation_{this};
+
+  base::WeakPtrFactory<GaiaScreen> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

@@ -1069,7 +1069,7 @@ void ExistingUserController::OnPasswordChangeDetected(
   for (auto& auth_status_consumer : auth_status_consumers_)
     auth_status_consumer.OnPasswordChangeDetected(user_context);
 
-  if (features::IsCryptohomeRecoveryFlowUIEnabled()) {
+  if (features::IsCryptohomeRecoveryFlowEnabled()) {
     GetLoginDisplayHost()->GetSigninUI()->StartCryptohomeRecovery(
         std::make_unique<UserContext>(user_context));
   } else {

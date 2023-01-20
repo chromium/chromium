@@ -2392,7 +2392,7 @@ void LockContentsView::ShowAuthErrorMessage() {
   // Show gaia signin if this is login and the user has failed too many times.
   // Do not show on secondary login screen – even though it has type kLogin – as
   // there is no OOBE there.
-  if (!ash::features::IsCryptohomeRecoveryFlowUIEnabled()) {
+  if (!ash::features::IsCryptohomeRecoveryFlowEnabled()) {
     // Pin login attempt does not trigger Gaia dialog. Pin auth method will be
     // disabled after 5 failed attempts.
     int pin_unlock_attempt = pin_unlock_attempt_by_user_[account_id];
@@ -2454,7 +2454,7 @@ void LockContentsView::ShowAuthErrorMessage() {
   container->AddChildView(std::move(label));
   container->AddChildView(std::move(learn_more_button));
 
-  if (ash::features::IsCryptohomeRecoveryFlowUIEnabled()) {
+  if (ash::features::IsCryptohomeRecoveryFlowEnabled()) {
     // The forgot password flow is only accessible from the login screen but
     // not from the lock screen.
     if (screen_type_ == LockScreen::ScreenType::kLogin &&
@@ -2582,12 +2582,9 @@ void LockContentsView::ForgotPasswordButtonPressed() {
 
   const AccountId account_id =
       big_view->auth_user()->current_user().basic_user_info.account_id;
-  // TODO(b/240283185): check whether recovery key is configured.
-  if (ash::features::IsCryptohomeRecoveryFlowEnabled()) {
-    user_manager::KnownUser(Shell::Get()->local_state())
-        .UpdateReauthReason(account_id,
-                            static_cast<int>(ReauthReason::kForgotPassword));
-  }
+  user_manager::KnownUser(Shell::Get()->local_state())
+      .UpdateReauthReason(account_id,
+                          static_cast<int>(ReauthReason::kForgotPassword));
   RecordAndResetPasswordAttempts(
       AuthMetricsRecorder::AuthenticationOutcome::kRecovery, account_id);
   Shell::Get()->login_screen_controller()->ShowGaiaSignin(account_id);

@@ -310,34 +310,6 @@ base::Value::Dict MakeSecurityTokenPinDialogParameters(
   return params;
 }
 
-bool ShouldPrepareForRecovery(const AccountId& account_id) {
-  // Always return `true` if the testing switch is set. It will allow to test
-  // the recovery without triggering the real recovery conditions which may be
-  // difficult as of now.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceCryptohomeRecoveryForTesting))
-    return true;
-
-  if (!account_id.is_valid())
-    return false;
-  // Cryptohome recovery is probably needed when password is entered incorrectly
-  // for many times or password changed.
-  // TODO(b/197615068): Add metric to record the number of times we prepared for
-  // recovery and the number of times recovery is actually required.
-  static constexpr int kPossibleReasons[] = {
-      static_cast<int>(ReauthReason::kIncorrectPasswordEntered),
-      static_cast<int>(ReauthReason::kInvalidTokenHandle),
-      static_cast<int>(ReauthReason::kSyncFailed),
-      static_cast<int>(ReauthReason::kPasswordUpdateSkipped),
-      static_cast<int>(ReauthReason::kForgotPassword),
-      static_cast<int>(ReauthReason::kCryptohomeRecovery),
-  };
-  user_manager::KnownUser known_user(g_browser_process->local_state());
-  absl::optional<int> reauth_reason = known_user.FindReauthReason(account_id);
-  return reauth_reason.has_value() &&
-         base::Contains(kPossibleReasons, reauth_reason.value());
-}
-
 }  // namespace
 
 GaiaScreenHandler::GaiaScreenHandler() : BaseScreenHandler(kScreenId) {}
@@ -559,8 +531,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
     }
   }
 
-  if (features::IsCryptohomeRecoveryFlowEnabled() &&
-      !gaia_reauth_request_token_.empty()) {
+  if (is_reauth && !gaia_reauth_request_token_.empty()) {
     params.Set("rart", gaia_reauth_request_token_);
   }
 
@@ -1350,6 +1321,11 @@ void GaiaScreenHandler::ReloadGaiaAuthenticator() {
   CallExternalAPI("doReload");
 }
 
+void GaiaScreenHandler::SetReauthRequestToken(
+    const std::string& reauth_request_token) {
+  gaia_reauth_request_token_ = reauth_request_token;
+}
+
 void GaiaScreenHandler::LoadAuthExtension(bool force) {
   VLOG(1) << "LoadAuthExtension, force: " << force;
   if (frame_state_ == FRAME_STATE_LOADING && !force) {
@@ -1362,8 +1338,8 @@ void GaiaScreenHandler::LoadAuthExtension(bool force) {
   context.force_reload = force;
   context.email = populated_account_id_.GetUserEmail();
 
-  user_manager::KnownUser known_user(g_browser_process->local_state());
   if (!context.email.empty()) {
+    user_manager::KnownUser known_user(g_browser_process->local_state());
     if (const std::string* gaia_id =
             known_user.FindGaiaID(AccountId::FromUserEmail(context.email))) {
       context.gaia_id = *gaia_id;
@@ -1373,35 +1349,13 @@ void GaiaScreenHandler::LoadAuthExtension(bool force) {
         AccountId::FromUserEmail(gaia::CanonicalizeEmail(context.email)));
   }
 
-  if (features::IsCryptohomeRecoveryFlowEnabled() &&
-      ShouldPrepareForRecovery(populated_account_id_)) {
-    populated_account_id_.clear();
-    auto callback = base::BindOnce(&GaiaScreenHandler::OnGaiaReauthTokenFetched,
-                                   weak_factory_.GetWeakPtr(), context);
-    gaia_reauth_token_fetcher_ =
-        std::make_unique<GaiaReauthTokenFetcher>(std::move(callback));
-    gaia_reauth_token_fetcher_->Fetch();
-    return;
-  }
-
   populated_account_id_.clear();
-  gaia_reauth_token_fetcher_.reset();
-  gaia_reauth_request_token_.clear();
-
   LoadGaia(context);
 }
 
 void GaiaScreenHandler::UpdateState(NetworkError::ErrorReason reason) {
   if (signin_screen_handler_ && !hidden_)
     signin_screen_handler_->UpdateState(reason);
-}
-
-void GaiaScreenHandler::OnGaiaReauthTokenFetched(
-    const login::GaiaContext& context,
-    const std::string& token) {
-  gaia_reauth_request_token_ = token;
-  gaia_reauth_token_fetcher_.reset();
-  LoadGaia(context);
 }
 
 void GaiaScreenHandler::SAMLConfirmPassword(

@@ -1082,9 +1082,7 @@ TEST_F(LockContentsViewUnitTest, AuthErrorLockscreenLearnMoreButton) {
 TEST_F(LockContentsViewUnitTest, AuthErrorLoginScreenForgotPasswordButton) {
   // Enable the "forgot password" button.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kCryptohomeRecoveryFlowUI, features::kCryptohomeRecoveryFlow},
-      {});
+  feature_list.InitAndEnableFeature(features::kCryptohomeRecoveryFlow);
 
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
@@ -3385,7 +3383,7 @@ class LockContentsViewWithKioskLicenseTest : public LoginTestBase {
  protected:
   LockContentsViewWithKioskLicenseTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kCryptohomeRecoveryFlowUI);
+        ash::features::kCryptohomeRecoveryFlow);
   }
   LockContentsViewWithKioskLicenseTest(LockContentsViewWithKioskLicenseTest&) =
       delete;

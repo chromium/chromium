@@ -544,18 +544,13 @@ BASE_FEATURE(kCryptAuthV2Enrollment,
              "CryptAuthV2Enrollment",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the Cryptohome recovery feature, which allows users to recover access
-// to their profile and Cryptohome after performing an online authentication.
-BASE_FEATURE(kCryptohomeRecoveryFlow,
-             "CryptohomeRecoveryFlow",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables the UI for the cryptohome recovery feature:
-// - New UI for Gaia password changed screen.
+// Enables the cryptohome recovery feature:
+// - Enable recovery via the recovery service.
+// - New UI for Cryptohome recovery and Gaia password changed screen.
 // - Adds a "forgot password" button to the error bubble that opens when the
 //   user fails to enter their correct password.
-BASE_FEATURE(kCryptohomeRecoveryFlowUI,
-             "CryptohomeRecoveryFlowUI",
+BASE_FEATURE(kCryptohomeRecoveryFlow,
+             "CryptohomeRecoveryFlow",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the UI to enable or disable cryptohome recovery in the settings
@@ -2477,10 +2472,6 @@ bool IsCrosPrivacyHubV1Enabled() {
 
 bool IsCryptohomeRecoveryFlowEnabled() {
   return base::FeatureList::IsEnabled(kCryptohomeRecoveryFlow);
-}
-
-bool IsCryptohomeRecoveryFlowUIEnabled() {
-  return base::FeatureList::IsEnabled(kCryptohomeRecoveryFlowUI);
 }
 
 bool IsCryptohomeRecoverySetupEnabled() {

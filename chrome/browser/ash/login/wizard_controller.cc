@@ -837,7 +837,7 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnThemeSelectionScreenExit,
                           weak_factory_.GetWeakPtr())));
 
-  if (features::IsCryptohomeRecoveryFlowUIEnabled()) {
+  if (features::IsCryptohomeRecoveryFlowEnabled()) {
     append(std::make_unique<CryptohomeRecoveryScreen>(
         oobe_ui->GetView<CryptohomeRecoveryScreenHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnCryptohomeRecoveryScreenExit,
@@ -1118,7 +1118,7 @@ void WizardController::ShowGuestTosScreen() {
 
 void WizardController::ShowCryptohomeRecoveryScreen(
     std::unique_ptr<UserContext> user_context) {
-  DCHECK(features::IsCryptohomeRecoveryFlowUIEnabled());
+  DCHECK(features::IsCryptohomeRecoveryFlowEnabled());
   wizard_context_->user_context = std::move(user_context);
   SetCurrentScreen(GetScreen(CryptohomeRecoveryScreenView::kScreenId));
 }

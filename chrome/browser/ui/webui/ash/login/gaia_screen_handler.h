@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/gaia_reauth_token_fetcher.h"
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/certificate_provider/security_token_pin_dialog_host.h"
@@ -84,6 +83,10 @@ class GaiaView : public base::SupportsWeakPtr<GaiaView> {
   virtual void ShowAllowlistCheckFailedError() = 0;
   // Reloads authenticator.
   virtual void ReloadGaiaAuthenticator() = 0;
+  // Sets reauth request token in the URL, in order to get reauth proof token
+  // for recovery.
+  virtual void SetReauthRequestToken(
+      const std::string& reauth_request_token) = 0;
 
   // Show sign-in screen for the given credentials. `services` is a list of
   // services returned by userInfo call as JSON array. Should be an empty array
@@ -132,6 +135,7 @@ class GaiaScreenHandler : public BaseScreenHandler,
   void SetGaiaPath(GaiaPath gaia_path) override;
   void ShowAllowlistCheckFailedError() override;
   void ReloadGaiaAuthenticator() override;
+  void SetReauthRequestToken(const std::string& reauth_request_token) override;
 
   void ShowSigninScreenForTest(const std::string& username,
                                const std::string& password,
@@ -305,10 +309,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // `saml_challenge_key_handler_`.
   void CreateSamlChallengeKeyHandler();
 
-  // Callback method to load Gaia screen after reauth request token is fetched.
-  void OnGaiaReauthTokenFetched(const login::GaiaContext& context,
-                                const std::string& token);
-
   void SAMLConfirmPassword(::login::StringList scraped_saml_passwords,
                            std::unique_ptr<UserContext> user_context);
 
@@ -370,9 +370,7 @@ class GaiaScreenHandler : public BaseScreenHandler,
 
   std::unique_ptr<PublicSamlUrlFetcher> public_saml_url_fetcher_;
 
-  // Used to fetch and store the Gaia reauth request token for Cryptohome
-  // recovery flow.
-  std::unique_ptr<GaiaReauthTokenFetcher> gaia_reauth_token_fetcher_;
+  // Used to store the Gaia reauth request token for Cryptohome recovery flow.
   std::string gaia_reauth_request_token_;
 
   // State of the security token PIN dialogs:

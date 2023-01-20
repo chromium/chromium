@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chromeos/ash/components/login/auth/recovery/service_constants.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
@@ -28,9 +29,6 @@
 namespace ash {
 namespace {
 
-// TODO(b/197615068): Temporarily point to staging environment.
-const char kGetReauthTokenUrl[] =
-    "https://staging-chromeoslogin-pa.sandbox.googleapis.com/v1/rart";
 const char kApiKeyParameter[] = "key";
 
 constexpr base::TimeDelta kWaitTimeout = base::Seconds(5);
@@ -41,7 +39,7 @@ GURL GetFetchReauthTokenUrl() {
           switches::kCryptohomeRecoveryReauthUrl)
           ? GURL(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
                 switches::kCryptohomeRecoveryReauthUrl))
-          : GURL(kGetReauthTokenUrl);
+          : GetRecoveryServiceReauthTokenURL();
   return net::AppendQueryParameter(url, kApiKeyParameter,
                                    google_apis::GetAPIKey());
 }

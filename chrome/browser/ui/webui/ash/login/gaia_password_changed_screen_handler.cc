@@ -55,7 +55,7 @@ void GaiaPasswordChangedScreenHandler::DeclareLocalizedValues(
 void GaiaPasswordChangedScreenHandler::GetAdditionalParameters(
     base::Value::Dict* dict) {
   dict->Set("isCryptohomeRecoveryUIFlowEnabled",
-            features::IsCryptohomeRecoveryFlowUIEnabled());
+            features::IsCryptohomeRecoveryFlowEnabled());
   BaseScreenHandler::GetAdditionalParameters(dict);
 }
 

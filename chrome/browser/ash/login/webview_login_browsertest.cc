@@ -35,6 +35,7 @@
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/fake_recovery_service_mixin.h"
@@ -855,6 +856,27 @@ class ReauthTokenWebviewLoginTest : public ReauthWebviewLoginTest {
         features::kCryptohomeRecoveryFlow);
     login_manager_mixin_.AppendRegularUsers(1);
     user_with_invalid_token_ = login_manager_mixin_.users().back().account_id;
+    cryptohome_mixin_.MarkUserAsExisting(user_with_invalid_token_);
+  }
+
+  void ShowReauthDialog() {
+    TokenHandleUtil::StoreTokenHandle(user_with_invalid_token_,
+                                      kTestTokenHandle);
+    // Force to remain in OOBE after login instead of start session, so we could
+    // verify the value in UserContext.
+    user_manager::KnownUser(g_browser_process->local_state())
+        .SetPendingOnboardingScreen(user_with_invalid_token_,
+                                    MarketingOptInScreenView::kScreenId.name);
+    // Focus triggers token check and updates the user pod to online sign-in
+    // state.
+    EXPECT_TRUE(LoginScreenTestApi::FocusUser(user_with_invalid_token_));
+    EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
+    EXPECT_TRUE(
+        LoginScreenTestApi::IsForcedOnlineSignin(user_with_invalid_token_));
+    // Focus triggers online signin.
+    EXPECT_TRUE(LoginScreenTestApi::FocusUser(user_with_invalid_token_));
+    WaitForGaiaPageLoadAndPropertyUpdate();
+    EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   }
 
  protected:
@@ -869,28 +891,14 @@ class ReauthTokenWebviewLoginTest : public ReauthWebviewLoginTest {
   }
 
   AccountId user_with_invalid_token_;
+  CryptohomeMixin cryptohome_mixin_{&mixin_host_};
   FakeRecoveryServiceMixin fake_recovery_service_{&mixin_host_,
                                                   embedded_test_server()};
 };
 
 IN_PROC_BROWSER_TEST_F(ReauthTokenWebviewLoginTest, FetchSuccess) {
-  TokenHandleUtil::StoreTokenHandle(user_with_invalid_token_, kTestTokenHandle);
-  // Force to remain in OOBE after login instead of start session, so we could
-  // verify the value in UserContext.
-  user_manager::KnownUser(g_browser_process->local_state())
-      .SetPendingOnboardingScreen(user_with_invalid_token_,
-                                  MarketingOptInScreenView::kScreenId.name);
-  // Focus triggers token check and updates the user pod to online sign-in
-  // state.
-  EXPECT_TRUE(LoginScreenTestApi::FocusUser(user_with_invalid_token_));
-
-  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
-  EXPECT_TRUE(
-      LoginScreenTestApi::IsForcedOnlineSignin(user_with_invalid_token_));
-  // Focus triggers online signin.
-  EXPECT_TRUE(LoginScreenTestApi::FocusUser(user_with_invalid_token_));
-  WaitForGaiaPageLoadAndPropertyUpdate();
-  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
+  cryptohome_mixin_.AddRecoveryFactor(user_with_invalid_token_);
+  ShowReauthDialog();
 
   EXPECT_EQ(fake_gaia_.fake_gaia()->prefilled_email(),
             user_with_invalid_token_.GetUserEmail());
@@ -912,23 +920,8 @@ IN_PROC_BROWSER_TEST_F(ReauthTokenWebviewLoginTest, FetchSuccess) {
 IN_PROC_BROWSER_TEST_F(ReauthTokenWebviewLoginTest, FetchFailure) {
   fake_recovery_service_.SetErrorResponse("/v1/rart",
                                           net::HTTP_SERVICE_UNAVAILABLE);
-  TokenHandleUtil::StoreTokenHandle(user_with_invalid_token_, kTestTokenHandle);
-  // Force to remain in OOBE after login instead of start session, so we could
-  // verify the value in UserContext.
-  user_manager::KnownUser(g_browser_process->local_state())
-      .SetPendingOnboardingScreen(user_with_invalid_token_,
-                                  MarketingOptInScreenView::kScreenId.name);
-  // Focus triggers token check and updates the user pod to online sign-in
-  // state.
-  EXPECT_TRUE(LoginScreenTestApi::FocusUser(user_with_invalid_token_));
-
-  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
-  EXPECT_TRUE(
-      LoginScreenTestApi::IsForcedOnlineSignin(user_with_invalid_token_));
-  // Focus triggers online signin.
-  EXPECT_TRUE(LoginScreenTestApi::FocusUser(user_with_invalid_token_));
-  WaitForGaiaPageLoadAndPropertyUpdate();
-  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
+  cryptohome_mixin_.AddRecoveryFactor(user_with_invalid_token_);
+  ShowReauthDialog();
 
   EXPECT_EQ(fake_gaia_.fake_gaia()->prefilled_email(),
             user_with_invalid_token_.GetUserEmail());
@@ -943,6 +936,15 @@ IN_PROC_BROWSER_TEST_F(ReauthTokenWebviewLoginTest, FetchFailure) {
                                   ->GetWizardContext()
                                   ->extra_factors_auth_session.get();
   EXPECT_TRUE(user_context->GetReauthProofToken().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ReauthTokenWebviewLoginTest,
+                       SkipFetchTokenWhenRecoveryNotSetUp) {
+  TokenHandleUtil::StoreTokenHandle(user_with_invalid_token_, kTestTokenHandle);
+  ShowReauthDialog();
+  EXPECT_EQ(fake_gaia_.fake_gaia()->prefilled_email(),
+            user_with_invalid_token_.GetUserEmail());
+  EXPECT_TRUE(fake_gaia_.fake_gaia()->reauth_request_token().empty());
 }
 
 class ReauthEndpointWebviewLoginTest : public WebviewLoginTest {

@@ -5,13 +5,18 @@
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/reauth_reason.h"
 #include "ash/shell.h"
+#include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
@@ -23,6 +28,37 @@ constexpr char kUserActionCancel[] = "cancel";
 constexpr char kUserActionStartEnrollment[] = "startEnrollment";
 constexpr char kUserActionReloadDefault[] = "reloadDefault";
 constexpr char kUserActionRetry[] = "retry";
+
+bool ShouldPrepareForRecovery(const AccountId& account_id) {
+  if (!features::IsCryptohomeRecoveryFlowEnabled() || !account_id.is_valid()) {
+    return false;
+  }
+
+  // Always return `true` if the testing switch is set. It will allow to test
+  // the recovery without triggering the real recovery conditions which may be
+  // difficult as of now.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceCryptohomeRecoveryForTesting)) {
+    return true;
+  }
+
+  // Cryptohome recovery is probably needed when password is entered incorrectly
+  // for many times or password changed.
+  // TODO(b/197615068): Add metric to record the number of times we prepared for
+  // recovery and the number of times recovery is actually required.
+  static constexpr int kPossibleReasons[] = {
+      static_cast<int>(ReauthReason::kIncorrectPasswordEntered),
+      static_cast<int>(ReauthReason::kInvalidTokenHandle),
+      static_cast<int>(ReauthReason::kSyncFailed),
+      static_cast<int>(ReauthReason::kPasswordUpdateSkipped),
+      static_cast<int>(ReauthReason::kForgotPassword),
+      static_cast<int>(ReauthReason::kCryptohomeRecovery),
+  };
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  absl::optional<int> reauth_reason = known_user.FindReauthReason(account_id);
+  return reauth_reason.has_value() &&
+         base::Contains(kPossibleReasons, reauth_reason.value());
+}
 
 }  // namespace
 
@@ -61,7 +97,18 @@ void GaiaScreen::LoadOnline(const AccountId& account) {
       gaia_path = GaiaView::GaiaPath::kReauth;
   }
   view_->SetGaiaPath(gaia_path);
-  view_->LoadGaiaAsync(account);
+  view_->SetReauthRequestToken(std::string());
+
+  if (ShouldPrepareForRecovery(account)) {
+    auto user_context = std::make_unique<UserContext>();
+    user_context->SetAccountId(account);
+    auth_factor_editor_.GetAuthFactorsConfiguration(
+        std::move(user_context),
+        base::BindOnce(&GaiaScreen::OnGetAuthFactorsConfiguration,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    view_->LoadGaiaAsync(account);
+  }
 }
 
 void GaiaScreen::LoadOnlineForChildSignup() {
@@ -152,6 +199,38 @@ void GaiaScreen::OnScreenBacklightStateChanged(
   if (screen_backlight_state == ScreenBacklightState::ON)
     return;
   exit_callback_.Run(Result::CANCEL);
+}
+
+void GaiaScreen::OnGetAuthFactorsConfiguration(
+    std::unique_ptr<UserContext> user_context,
+    absl::optional<AuthenticationError> error) {
+  if (error.has_value()) {
+    LOG(WARNING) << "Failed to get auth factors configuration, code "
+                 << error->get_cryptohome_code()
+                 << ", skip fetching reauth request token";
+    view_->LoadGaiaAsync(user_context->GetAccountId());
+    return;
+  }
+
+  const auto& config = user_context->GetAuthFactorsConfiguration();
+  bool is_configured =
+      config.HasConfiguredFactor(cryptohome::AuthFactorType::kRecovery);
+  if (is_configured) {
+    gaia_reauth_token_fetcher_ =
+        std::make_unique<GaiaReauthTokenFetcher>(base::BindOnce(
+            &GaiaScreen::OnGaiaReauthTokenFetched,
+            weak_ptr_factory_.GetWeakPtr(), user_context->GetAccountId()));
+    gaia_reauth_token_fetcher_->Fetch();
+  } else {
+    view_->LoadGaiaAsync(user_context->GetAccountId());
+  }
+}
+
+void GaiaScreen::OnGaiaReauthTokenFetched(const AccountId& account,
+                                          const std::string& token) {
+  gaia_reauth_token_fetcher_.reset();
+  view_->SetReauthRequestToken(token);
+  view_->LoadGaiaAsync(account);
 }
 
 }  // namespace ash
