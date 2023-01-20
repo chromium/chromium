@@ -539,6 +539,11 @@ bool AXTreeSerializer<AXSourceNode>::IsInClientTree(AXSourceNode node) {
 template <typename AXSourceNode>
 void AXTreeSerializer<AXSourceNode>::InvalidateClientSubtree(
     ClientTreeNode* client_node) {
+  // Return early if already marked invalid, in order to avoid duplicate work in
+  // subtree, as the only method that marks nodes invalid is this one.
+  if (client_node->invalid) {
+    return;
+  }
   client_node->invalid = true;
   for (size_t i = 0; i < client_node->children.size(); ++i)
     InvalidateClientSubtree(client_node->children[i]);
