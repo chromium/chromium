@@ -1178,17 +1178,15 @@ class ExtensionPinningTest : public extensions::ExtensionBrowserTest {
     GURL update_url = embedded_test_server()->GetURL(update_url_suffix);
 
     PolicyMap policies;
-    base::Value dict(base::Value::Type::DICTIONARY),
-        key_dict(base::Value::Type::DICTIONARY);
-    key_dict.SetStringKey(extensions::schema_constants::kInstallationMode,
-                          extensions::schema_constants::kForceInstalled);
-    key_dict.SetStringKey(extensions::schema_constants::kUpdateUrl,
-                          update_url.spec());
-    key_dict.SetBoolKey(extensions::schema_constants::kOverrideUpdateUrl, true);
-    dict.SetKey(id, std::move(key_dict));
+    base::Value::Dict dict, key_dict;
+    key_dict.Set(extensions::schema_constants::kInstallationMode,
+                 extensions::schema_constants::kForceInstalled);
+    key_dict.Set(extensions::schema_constants::kUpdateUrl, update_url.spec());
+    key_dict.Set(extensions::schema_constants::kOverrideUpdateUrl, true);
+    dict.Set(id, std::move(key_dict));
     policies.Set(key::kExtensionSettings, POLICY_LEVEL_MANDATORY,
-                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, std::move(dict),
-                 nullptr);
+                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                 base::Value(std::move(dict)), nullptr);
     provider_.UpdateChromePolicy(policies);
   }
 
