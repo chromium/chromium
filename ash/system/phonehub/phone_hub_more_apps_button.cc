@@ -4,9 +4,11 @@
 
 #include "ash/system/phonehub/phone_hub_more_apps_button.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/phone_hub_small_app_icon.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/table_layout.h"
@@ -19,8 +21,13 @@ constexpr int kMoreAppsButtonColumnPadding = 2;
 constexpr int kMoreAppsButtonBackgroundRadius = 16;
 
 PhoneHubMoreAppsButton::PhoneHubMoreAppsButton(
-    phonehub::AppStreamLauncherDataModel* app_stream_launcher_data_model)
-    : app_stream_launcher_data_model_(app_stream_launcher_data_model) {
+    phonehub::AppStreamLauncherDataModel* app_stream_launcher_data_model,
+    views::Button::PressedCallback callback)
+    : views::Button(callback),
+      app_stream_launcher_data_model_(app_stream_launcher_data_model) {
+  SetFocusBehavior(FocusBehavior::ALWAYS);
+  SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_FULL_APPS_LIST_BUTTON_TITLE));
   InitLayout();
   app_stream_launcher_data_model_->AddObserver(this);
 }
@@ -45,6 +52,8 @@ void PhoneHubMoreAppsButton::InitLayout() {
                                kMoreAppsButtonColumnPadding);
   table_layout_->AddRows(1, kMoreAppsButtonRowPadding);
 
+  OnAppListChanged();
+
   SetBackground(views::CreateRoundedRectBackground(
       AshColorProvider::Get()->GetControlsLayerColor(
           AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive),
@@ -60,7 +69,7 @@ void PhoneHubMoreAppsButton::OnAppListChanged() {
 void PhoneHubMoreAppsButton::LoadAppList() {
   RemoveAllChildViews();
   const std::vector<phonehub::Notification::AppMetadata>* app_list =
-      app_stream_launcher_data_model_->GetAppsList();
+      app_stream_launcher_data_model_->GetAppsListSortedByName();
   if (!app_list->empty()) {
     auto app_count = std::min(app_list->size(), size_t{4});
     for (size_t i = 0; i < app_count; i++) {
@@ -69,7 +78,7 @@ void PhoneHubMoreAppsButton::LoadAppList() {
   }
 }
 
-BEGIN_METADATA(PhoneHubMoreAppsButton, views::View)
+BEGIN_METADATA(PhoneHubMoreAppsButton, views::Button)
 END_METADATA
 
 }  // namespace ash

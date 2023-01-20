@@ -505,6 +505,7 @@ TEST_F(PhoneStatusProcessorTest,
   expected_snapshot.add_notifications();
   InitializeNotificationProto(expected_snapshot.mutable_notifications(0),
                               /*id=*/0u);
+
   auto* streamable_apps = expected_snapshot.mutable_streamable_apps();
   auto* app = streamable_apps->add_apps();
   app->set_package_name("pkg1");
@@ -521,6 +522,19 @@ TEST_F(PhoneStatusProcessorTest,
 
   // Simulate receiving a proto message.
   fake_message_receiver_->NotifyPhoneStatusSnapshotReceived(expected_snapshot);
+
+  proto::AppListUpdate expected_all_apps;
+
+  auto* all_apps = expected_all_apps.mutable_all_apps();
+  auto* all_app1 = all_apps->add_apps();
+  all_app1->set_package_name("pkg1");
+  all_app1->set_visible_name("vis");
+
+  auto* all_app2 = all_apps->add_apps();
+  all_app2->set_package_name("pkg2");
+  all_app2->set_visible_name("a_vis");  // Test alphbetical sort.
+
+  fake_message_receiver_->NotifyAppListUpdateReceived(expected_all_apps);
 
   EXPECT_EQ(1u, fake_notification_manager_->num_notifications());
   EXPECT_EQ(base::UTF8ToUTF16(test_remote_device_.name()),

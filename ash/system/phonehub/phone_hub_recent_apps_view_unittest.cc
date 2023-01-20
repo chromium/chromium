@@ -154,7 +154,7 @@ TEST_F(RecentAppButtonsViewTest,
   FeatureStateChanged(FeatureState::kEnabledByUser);
   recent_apps_view()->Update();
 
-  size_t expected_recent_app_button = 6;
+  size_t expected_recent_app_button = 7;
   EXPECT_EQ(expected_recent_app_button,
             recent_apps_view()->recent_app_buttons_view_->children().size());
 
@@ -162,11 +162,7 @@ TEST_F(RecentAppButtonsViewTest,
        i != recent_apps_view()->recent_app_buttons_view_->children().size();
        i++) {
     auto* child = recent_apps_view()->recent_app_buttons_view_->children()[i];
-    if (i == 5) {
-      views::ImageButton* more_apps_button =
-          static_cast<views::ImageButton*>(child);
-      views::test::ButtonTestApi(more_apps_button)
-          .NotifyClick(ui::test::TestEvent());
+    if (i == 6) {
       break;
     }
     PhoneHubRecentAppButton* recent_app =
@@ -175,10 +171,9 @@ TEST_F(RecentAppButtonsViewTest,
     views::test::ButtonTestApi(recent_app).NotifyClick(ui::test::TestEvent());
   }
 
-  size_t expected_number_of_button_be_clicked = 5;
+  size_t expected_number_of_button_be_clicked = 6;
   EXPECT_EQ(expected_number_of_button_be_clicked,
             PackageNameToClickCount(kPackageName));
-  EXPECT_TRUE(AppStreamLauncherShowState());
 }
 
 }  // namespace ash

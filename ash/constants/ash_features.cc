@@ -2829,6 +2829,10 @@ bool IsEcheLauncherEnabled() {
          base::FeatureList::IsEnabled(kEcheSWA);
 }
 
+bool IsEcheLauncherIconsInMoreAppsButtonEnabled() {
+  return base::FeatureList::IsEnabled(kEcheLauncherIconsInMoreAppsButton);
+}
+
 bool IsEcheLauncherListViewEnabled() {
   return IsEcheLauncherEnabled() &&
          base::FeatureList::IsEnabled(kEcheLauncherListView);

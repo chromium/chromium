@@ -74,7 +74,7 @@ class ASH_EXPORT PhoneHubRecentAppsView
   void SwitchToFullAppsList();
 
   // Generate more apps button.
-  std::unique_ptr<views::ImageButton> GenerateMoreAppsButton();
+  std::unique_ptr<views::View> GenerateMoreAppsButton();
 
   RecentAppButtonsView* recent_app_buttons_view_ = nullptr;
   std::vector<views::View*> recent_app_button_list_;

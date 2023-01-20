@@ -438,33 +438,21 @@ TEST_F(RecentAppsInteractionHandlerTest, FetchRecentAppMetadataList) {
                                 /*icon_is_monochrome=*/true, expected_user_id5,
                                 proto::AppStreamabilityStatus::STREAMABLE);
 
-  const char16_t app_visible_name6[] = u"Fake App6";
-  const char package_name6[] = "com.fakeapp6";
-  const int64_t expected_user_id6 = 1;
-  auto app_metadata6 =
-      Notification::AppMetadata(app_visible_name6, package_name6, gfx::Image(),
-                                /*icon_color=*/absl::nullopt,
-                                /*icon_is_monochrome=*/true, expected_user_id6,
-                                proto::AppStreamabilityStatus::STREAMABLE);
-
   const base::Time next_two_hour = base::Time::Now() + base::Hours(2);
   const base::Time next_three_hour = base::Time::Now() + base::Hours(3);
-  const base::Time next_four_hour = base::Time::Now() + base::Hours(4);
 
   handler().NotifyRecentAppAddedOrUpdated(app_metadata4, next_two_hour);
   handler().NotifyRecentAppAddedOrUpdated(app_metadata5, next_three_hour);
-  handler().NotifyRecentAppAddedOrUpdated(app_metadata6, next_four_hour);
 
-  const size_t max_most_recent_apps = 6;
+  const size_t max_most_recent_apps = 5;
   recent_apps_metadata_result = handler().FetchRecentAppMetadataList();
   EXPECT_EQ(max_most_recent_apps, recent_apps_metadata_result.size());
 
-  EXPECT_EQ(package_name6, recent_apps_metadata_result[0].package_name);
-  EXPECT_EQ(package_name5, recent_apps_metadata_result[1].package_name);
-  EXPECT_EQ(package_name4, recent_apps_metadata_result[2].package_name);
-  EXPECT_EQ(package_name3, recent_apps_metadata_result[3].package_name);
-  EXPECT_EQ(package_name2, recent_apps_metadata_result[4].package_name);
-  EXPECT_EQ(package_name1, recent_apps_metadata_result[5].package_name);
+  EXPECT_EQ(package_name5, recent_apps_metadata_result[0].package_name);
+  EXPECT_EQ(package_name4, recent_apps_metadata_result[1].package_name);
+  EXPECT_EQ(package_name3, recent_apps_metadata_result[2].package_name);
+  EXPECT_EQ(package_name2, recent_apps_metadata_result[3].package_name);
+  EXPECT_EQ(package_name1, recent_apps_metadata_result[4].package_name);
 }
 
 TEST_F(RecentAppsInteractionHandlerTest,

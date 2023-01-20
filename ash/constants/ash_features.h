@@ -718,6 +718,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool ShouldForceEnableServerSideSpeechRecognitionForDev();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheLauncherEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheLauncherListViewEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsEcheLauncherIconsInMoreAppsButtonEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFullscreenAfterUnlockAllowed();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFullscreenAlertBubbleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGaiaReauthEndpointEnabled();

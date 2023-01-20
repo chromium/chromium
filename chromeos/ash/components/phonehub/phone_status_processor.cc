@@ -203,8 +203,7 @@ bool ShouldUpdateRecents(
 bool ShouldUpdateLauncher(
     PhoneStatusProcessor::AppListUpdateType app_list_update_type) {
   return app_list_update_type ==
-             PhoneStatusProcessor::AppListUpdateType::kOnlyLauncherApps ||
-         app_list_update_type == PhoneStatusProcessor::AppListUpdateType::kBoth;
+         PhoneStatusProcessor::AppListUpdateType::kOnlyLauncherApps;
 }
 
 }  // namespace
