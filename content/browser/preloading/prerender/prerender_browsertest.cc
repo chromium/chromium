@@ -8599,8 +8599,16 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                   ->has_received_user_gesture_before_nav());
 }
 
+// TODO(https://crbug.com/1408911): This test is flaky on Mac bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CancelPrerenderWhenIsOverridingUserAgentDiffers \
+  DISABLED_CancelPrerenderWhenIsOverridingUserAgentDiffers
+#else
+#define MAYBE_CancelPrerenderWhenIsOverridingUserAgentDiffers \
+  CancelPrerenderWhenIsOverridingUserAgentDiffers
+#endif
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
-                       CancelPrerenderWhenIsOverridingUserAgentDiffers) {
+                       MAYBE_CancelPrerenderWhenIsOverridingUserAgentDiffers) {
   const std::string user_agent_override = "foo";
 
   // Navigate to an initial page.
