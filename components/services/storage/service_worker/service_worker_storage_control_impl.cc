@@ -165,7 +165,7 @@ void ServiceWorkerStorageControlImpl::FindRegistrationForClientUrl(
 void ServiceWorkerStorageControlImpl::FindRegistrationForScope(
     const GURL& scope,
     const blink::StorageKey& key,
-    FindRegistrationForClientUrlCallback callback) {
+    FindRegistrationForScopeCallback callback) {
   storage_->FindRegistrationForScope(
       scope, key,
       base::BindOnce(&ServiceWorkerStorageControlImpl::DidFindRegistration,
@@ -175,7 +175,7 @@ void ServiceWorkerStorageControlImpl::FindRegistrationForScope(
 void ServiceWorkerStorageControlImpl::FindRegistrationForId(
     int64_t registration_id,
     const absl::optional<blink::StorageKey>& key,
-    FindRegistrationForClientUrlCallback callback) {
+    FindRegistrationForIdCallback callback) {
   if (key.has_value()) {
     storage_->FindRegistrationForId(
         registration_id, *key,
