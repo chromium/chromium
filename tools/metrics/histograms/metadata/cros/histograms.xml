@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Cros.AppsSyncOptinFileWriteAttempts"
+    enum="AppsSyncOptinFileWrite" expires_after="2024-01-30">
+  <owner>drmasquatch@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    Logs attempts to write a user's opt-in status for Apps Sync to disk, as well
+    as failures.
+  </summary>
+</histogram>
+
 <histogram name="Cros.CrOSActionRecorderEvent" enum="CrOSActionRecorderEvent"
     expires_after="2022-05-01">
   <owner>charleszhao@chromium.org</owner>

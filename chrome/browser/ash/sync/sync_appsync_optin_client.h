@@ -45,6 +45,14 @@ class SyncAppsyncOptinClient : public syncer::SyncServiceObserver {
   // syncer::SyncServiceObserver
   void OnStateChanged(syncer::SyncService* sync_service) override;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class AppsSyncOptinFileWrite {
+    kAttempt = 0,
+    kFailure = 1,
+    kMaxValue = kFailure,
+  };
+
  private:
   // Issues a write to the opt-in file, to reflect Profile state.
   void UpdateOptinFile(bool opted_in, const syncer::SyncService* sync_service);

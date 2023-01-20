@@ -3961,6 +3961,11 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="Outside of NTP (e.g. bookmarks bar)"/>
 </enum>
 
+<enum name="AppsSyncOptinFileWrite">
+  <int value="0" label="Attempt"/>
+  <int value="1" label="Failure"/>
+</enum>
+
 <enum name="AppStreamLaunchEntryPoint">
   <int value="0" label="Launched from full apps list"/>
   <int value="1" label="Launched from a notification"/>

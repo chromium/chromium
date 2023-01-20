@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -19,6 +20,8 @@ namespace ash {
 
 constexpr char kDaemonStorePath[] = "/run/daemon-store/appsync-optin";
 constexpr char kDaemonStoreFileName[] = "opted-in";
+constexpr char kAppsSyncOptinIOHistogram[] =
+    "Cros.AppsSyncOptinFileWriteAttempts";
 
 namespace {
 bool IsAppsSyncEnabledForSyncService(const syncer::SyncService& sync_service) {
@@ -29,9 +32,15 @@ bool IsAppsSyncEnabledForSyncService(const syncer::SyncService& sync_service) {
 void WriteOptinFile(base::FilePath filepath, bool opted_in) {
   const std::string file_contents = opted_in ? "1" : "0";
 
+  base::UmaHistogramEnumeration(
+      kAppsSyncOptinIOHistogram,
+      SyncAppsyncOptinClient::AppsSyncOptinFileWrite::kAttempt);
   if (!base::WriteFile(filepath, file_contents)) {
     DLOG(ERROR) << "Failed to persist opt-in change " << file_contents
                 << " to daemon-store. State on disk will be inaccurate!";
+    base::UmaHistogramEnumeration(
+        kAppsSyncOptinIOHistogram,
+        SyncAppsyncOptinClient::AppsSyncOptinFileWrite::kFailure);
   }
 }
 }  // namespace
@@ -94,8 +103,6 @@ void SyncAppsyncOptinClient::OnStateChanged(syncer::SyncService* sync_service) {
   bool new_is_apps_sync_enabled =
       IsAppsSyncEnabledForSyncService(*sync_service_);
   // Don't update file if we have a non-relevant state change reporter.
-  // NOTE: if we end up seeing writes fail for whatever reason, could add a
-  // random chance to update file on any time the function is fired anyhow?
   if (new_is_apps_sync_enabled != is_apps_sync_enabled_) {
     UpdateOptinFile(new_is_apps_sync_enabled, sync_service);
     is_apps_sync_enabled_ = new_is_apps_sync_enabled;
