@@ -157,12 +157,10 @@ class AutofillDownloadManagerWithCustomPayloadSize
     : public AutofillDownloadManager {
  public:
   AutofillDownloadManagerWithCustomPayloadSize(AutofillClient* client,
-                                               Observer* observer,
                                                const std::string& api_key,
                                                size_t length)
       : AutofillDownloadManager(
             client,
-            observer,
             api_key,
             AutofillDownloadManager::IsRawMetadataUploadingEnabled(false),
             /*log_manager=*/nullptr),
@@ -195,9 +193,13 @@ class AutofillDownloadManagerTest : public AutofillDownloadManager::Observer,
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
-        download_manager_(&client_, this),
+        download_manager_(&client_),
         pref_service_(test::PrefServiceForTesting()) {
     client_.set_shared_url_loader_factory(test_shared_loader_factory_);
+  }
+
+  base::WeakPtr<AutofillDownloadManagerTest> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
   void LimitCache(size_t cache_size) {
@@ -207,7 +209,8 @@ class AutofillDownloadManagerTest : public AutofillDownloadManager::Observer,
   bool StartQueryRequest(
       const std::vector<std::unique_ptr<FormStructure>>& form_structures) {
     return download_manager_.StartQueryRequest(
-        ToRawPointerVector(form_structures), driver_.IsolationInfo());
+        ToRawPointerVector(form_structures), driver_.IsolationInfo(),
+        weak_ptr_factory_.GetWeakPtr());
   }
 
   // AutofillDownloadManager::Observer implementation.
@@ -266,6 +269,9 @@ class AutofillDownloadManagerTest : public AutofillDownloadManager::Observer,
   TestAutofillDriver driver_;
   AutofillDownloadManager download_manager_;
   std::unique_ptr<PrefService> pref_service_;
+
+ private:
+  base::WeakPtrFactory<AutofillDownloadManagerTest> weak_ptr_factory_{this};
 };
 
 TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
@@ -359,14 +365,15 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
 
   // Make download manager.
   AutofillDownloadManager download_manager(
-      &client_, this, "dummykey",
+      &client_, "dummykey",
       AutofillDownloadManager::IsRawMetadataUploadingEnabled(false),
       /*log_manager=*/nullptr);
 
   // Request with id 0.
   base::HistogramTester histogram;
   EXPECT_TRUE(download_manager.StartQueryRequest(
-      ToRawPointerVector(form_structures), driver_.IsolationInfo()));
+      ToRawPointerVector(form_structures), driver_.IsolationInfo(),
+      GetWeakPtr()));
   histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
                                AutofillMetrics::QUERY_SENT, 1);
   histogram.ExpectUniqueSample("Autofill.Query.Method", METHOD_GET, 1);
@@ -382,16 +389,16 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
   // Request with id 1.
   EXPECT_TRUE(download_manager.StartUploadRequest(
       *(form_structures[0]), true, ServerFieldTypeSet(), std::string(), true,
-      pref_service_.get()));
+      pref_service_.get(), GetWeakPtr()));
   // Request with id 2.
   EXPECT_TRUE(download_manager.StartUploadRequest(
       *(form_structures[1]), false, ServerFieldTypeSet(), std::string(), true,
-      pref_service_.get()));
+      pref_service_.get(), GetWeakPtr()));
   // Request with id 3. Upload request with a non-empty additional password form
   // signature.
-  EXPECT_TRUE(download_manager.StartUploadRequest(*(form_structures[2]), false,
-                                                  ServerFieldTypeSet(), "42",
-                                                  true, pref_service_.get()));
+  EXPECT_TRUE(download_manager.StartUploadRequest(
+      *(form_structures[2]), false, ServerFieldTypeSet(), "42", true,
+      pref_service_.get(), GetWeakPtr()));
 
   const char* responses[] = {
       "<autofillqueryresponse>"
@@ -470,7 +477,8 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
 
   // Request with id 4, not successful.
   EXPECT_TRUE(download_manager.StartQueryRequest(
-      ToRawPointerVector(form_structures), driver_.IsolationInfo()));
+      ToRawPointerVector(form_structures), driver_.IsolationInfo(),
+      GetWeakPtr()));
   request = test_url_loader_factory_.GetPendingRequest(4);
   histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
                                AutofillMetrics::QUERY_SENT, 2);
@@ -491,7 +499,8 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
 
   // Request with id 5. Let's pretend we hit the cache.
   EXPECT_TRUE(download_manager.StartQueryRequest(
-      ToRawPointerVector(form_structures), driver_.IsolationInfo()));
+      ToRawPointerVector(form_structures), driver_.IsolationInfo(),
+      GetWeakPtr()));
   histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
                               AutofillMetrics::QUERY_SENT, 3);
   histogram.ExpectBucketCount("Autofill.Query.Method", METHOD_GET, 3);
@@ -529,7 +538,7 @@ TEST_F(AutofillDownloadManagerTest, QueryAPITest) {
   form_structures.push_back(std::make_unique<FormStructure>(form));
 
   AutofillDownloadManager download_manager(
-      &client_, this, "dummykey",
+      &client_, "dummykey",
       AutofillDownloadManager::IsRawMetadataUploadingEnabled(false),
       /*log_manager=*/nullptr);
 
@@ -537,7 +546,8 @@ TEST_F(AutofillDownloadManagerTest, QueryAPITest) {
   // received yet.
   base::HistogramTester histogram;
   EXPECT_TRUE(download_manager.StartQueryRequest(
-      ToRawPointerVector(form_structures), driver_.IsolationInfo()));
+      ToRawPointerVector(form_structures), driver_.IsolationInfo(),
+      GetWeakPtr()));
 
   // Verify if histograms are right.
   histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
@@ -626,13 +636,14 @@ TEST_F(AutofillDownloadManagerTest, QueryAPITestWhenTooLongUrl) {
   }
 
   AutofillDownloadManagerWithCustomPayloadSize download_manager(
-      &client_, this, "dummykey", kMaxQueryGetSize + 1);
+      &client_, "dummykey", kMaxQueryGetSize + 1);
 
   // Start the query request and look if it is successful. No response was
   // received yet.
   base::HistogramTester histogram;
   EXPECT_TRUE(download_manager.StartQueryRequest(
-      ToRawPointerVector(form_structures), driver_.IsolationInfo()));
+      ToRawPointerVector(form_structures), driver_.IsolationInfo(),
+      GetWeakPtr()));
 
   // Verify request.
   // Verify if histograms are right.
@@ -739,12 +750,12 @@ TEST_F(AutofillDownloadManagerTest, UploadToAPITest) {
 
   std::unique_ptr<PrefService> pref_service = test::PrefServiceForTesting();
   AutofillDownloadManager download_manager(
-      &client_, this, "dummykey",
+      &client_, "dummykey",
       AutofillDownloadManager::IsRawMetadataUploadingEnabled(false),
       /*log_manager=*/nullptr);
-  EXPECT_TRUE(download_manager.StartUploadRequest(form_structure, true,
-                                                  ServerFieldTypeSet(), "",
-                                                  true, pref_service.get()));
+  EXPECT_TRUE(download_manager.StartUploadRequest(
+      form_structure, true, ServerFieldTypeSet(), "", true, pref_service.get(),
+      GetWeakPtr()));
 
   // Inspect the request that the test URL loader sent.
   network::TestURLLoaderFactory::PendingRequest* request =
@@ -818,13 +829,13 @@ TEST_F(AutofillDownloadManagerTest, UploadWithRawMetadata) {
 
     std::unique_ptr<PrefService> pref_service = test::PrefServiceForTesting();
     AutofillDownloadManager download_manager(
-        &client_, this, "dummykey",
+        &client_, "dummykey",
         AutofillDownloadManager::IsRawMetadataUploadingEnabled(
             is_raw_metadata_uploading_enabled),
         /*log_manager=*/nullptr);
-    EXPECT_TRUE(download_manager.StartUploadRequest(form_structure, true,
-                                                    ServerFieldTypeSet(), "",
-                                                    true, pref_service.get()));
+    EXPECT_TRUE(download_manager.StartUploadRequest(
+        form_structure, true, ServerFieldTypeSet(), "", true,
+        pref_service.get(), GetWeakPtr()));
 
     // Inspect the request that the test URL loader sent.
     ASSERT_EQ(1, test_url_loader_factory_.NumPending());
@@ -967,7 +978,7 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Upload) {
   // Request with id 0.
   EXPECT_TRUE(download_manager_.StartUploadRequest(
       *form_structure, true, ServerFieldTypeSet(), std::string(), true,
-      pref_service_.get()));
+      pref_service_.get(), GetWeakPtr()));
 
   auto* request = test_url_loader_factory_.GetPendingRequest(0);
 
@@ -1011,7 +1022,7 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Upload) {
   base::HistogramTester histogram;
   EXPECT_TRUE(download_manager_.StartUploadRequest(
       *form_structure, true, ServerFieldTypeSet(), std::string(), true,
-      pref_service_.get()));
+      pref_service_.get(), GetWeakPtr()));
   request = test_url_loader_factory_.GetPendingRequest(2);
   test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
       request,
@@ -1135,7 +1146,7 @@ TEST_F(AutofillDownloadManagerTest, RetryLimit_Upload) {
   // Request with id 0.
   EXPECT_TRUE(download_manager_.StartUploadRequest(
       *form_structure, true, ServerFieldTypeSet(), std::string(), true,
-      pref_service_.get()));
+      pref_service_.get(), GetWeakPtr()));
 
   const int max_attempts = download_manager_.GetMaxServerAttempts();
   int attempt = 0;
@@ -1514,9 +1525,10 @@ class AutofillServerCommunicationTest
     run_loop_ = std::make_unique<base::RunLoop>();
 
     ScopedActiveAutofillExperiments scoped_active_autofill_experiments;
-    AutofillDownloadManager download_manager(client_.get(), this);
+    AutofillDownloadManager download_manager(client_.get());
     bool succeeded = download_manager.StartQueryRequest(
-        ToRawPointerVector(form_structures), driver_->IsolationInfo());
+        ToRawPointerVector(form_structures), driver_->IsolationInfo(),
+        weak_ptr_factory_.GetWeakPtr());
     if (succeeded)
       run_loop_->Run();
     run_loop_.reset();
@@ -1532,10 +1544,11 @@ class AutofillServerCommunicationTest
     run_loop_ = std::make_unique<base::RunLoop>();
 
     ScopedActiveAutofillExperiments scoped_active_autofill_experiments;
-    AutofillDownloadManager download_manager(client_.get(), this);
+    AutofillDownloadManager download_manager(client_.get());
     bool succeeded = download_manager.StartUploadRequest(
         form, form_was_autofilled, available_field_types, login_form_signature,
-        observed_submission, pref_service_.get());
+        observed_submission, pref_service_.get(),
+        weak_ptr_factory_.GetWeakPtr());
     if (succeeded)
       run_loop_->Run();
     run_loop_.reset();
@@ -1558,12 +1571,13 @@ class AutofillServerCommunicationTest
   std::unique_ptr<TestAutofillDriver> driver_;
   std::unique_ptr<PrefService> pref_service_;
   std::vector<std::string> payloads_;
+  base::WeakPtrFactory<AutofillServerCommunicationTest> weak_ptr_factory_{this};
 };
 
 }  // namespace
 
 TEST_P(AutofillServerCommunicationTest, IsEnabled) {
-  AutofillDownloadManager download_manager(client_.get(), this);
+  AutofillDownloadManager download_manager(client_.get());
   EXPECT_EQ(download_manager.IsEnabled(), GetParam() != DISABLED);
 }
 
@@ -1601,7 +1615,7 @@ TEST_P(AutofillServerCommunicationTest, Upload) {
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  AutofillDownloadManager download_manager(client_.get(), this);
+  AutofillDownloadManager download_manager(client_.get());
   EXPECT_EQ(GetParam() != DISABLED,
             SendUploadRequest(FormStructure(form), true, {}, "", true));
 }
@@ -1868,7 +1882,7 @@ TEST_P(AutofillQueryTest, Metadata) {
   form.fields.push_back(field);
 
   // Setup the form structures to query.
-  AutofillDownloadManager download_manager(client_.get(), this);
+  AutofillDownloadManager download_manager(client_.get());
   std::vector<std::unique_ptr<FormStructure>> form_structures;
   form_structures.push_back(std::make_unique<FormStructure>(form));
 
@@ -1951,7 +1965,7 @@ TEST_P(AutofillUploadTest, RichMetadata) {
   field.placeholder = u"field-placeholder";
   form.fields.push_back(field);
 
-  AutofillDownloadManager download_manager(client_.get(), this);
+  AutofillDownloadManager download_manager(client_.get());
   FormStructure form_structure(form);
   form_structure.set_current_page_language(LanguageCode("fr"));
   for (auto& fs_field : form_structure)
@@ -2032,7 +2046,7 @@ TEST_P(AutofillUploadTest, Throttling) {
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  AutofillDownloadManager download_manager(client_.get(), this);
+  AutofillDownloadManager download_manager(client_.get());
   FormStructure form_structure(form);
   for (int i = 0; i <= static_cast<int>(SubmissionSource::kMaxValue); ++i) {
     base::HistogramTester histogram_tester;
@@ -2091,7 +2105,7 @@ TEST_P(AutofillUploadTest, ThrottlingDisabled) {
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  AutofillDownloadManager download_manager(client_.get(), this);
+  AutofillDownloadManager download_manager(client_.get());
   FormStructure form_structure(form);
   FormStructure small_form_structure(small_form);
   for (auto& fs_field : form_structure)
@@ -2177,7 +2191,7 @@ TEST_P(AutofillUploadTest, PeriodicReset) {
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  AutofillDownloadManager download_manager(client_.get(), this);
+  AutofillDownloadManager download_manager(client_.get());
   SubmissionSource submission_source = SubmissionSource::FORM_SUBMISSION;
 
   FormStructure form_structure(form);
@@ -2235,7 +2249,7 @@ TEST_P(AutofillUploadTest, ResetOnClearUploadHisotry) {
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  AutofillDownloadManager download_manager(client_.get(), this);
+  AutofillDownloadManager download_manager(client_.get());
   SubmissionSource submission_source = SubmissionSource::FORM_SUBMISSION;
 
   FormStructure form_structure(form);

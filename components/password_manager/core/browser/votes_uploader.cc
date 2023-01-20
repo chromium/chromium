@@ -460,8 +460,8 @@ bool VotesUploader::UploadPasswordVote(
   // code duplication.
   bool success = download_manager->StartUploadRequest(
       form_structure, false /* was_autofilled */, available_field_types,
-      login_form_signature, true /* observed_submission */,
-      nullptr /* prefs */);
+      login_form_signature, true /* observed_submission */, nullptr /* prefs */,
+      nullptr /* observer */);
 
   UMA_HISTOGRAM_BOOLEAN("PasswordGeneration.UploadStarted", success);
   return success;
@@ -526,7 +526,8 @@ void VotesUploader::UploadFirstLoginVotes(
   // code duplication.
   download_manager->StartUploadRequest(
       form_structure, false /* was_autofilled */, available_field_types,
-      std::string(), true /* observed_submission */, nullptr /* prefs */);
+      std::string(), true /* observed_submission */, nullptr /* prefs */,
+      nullptr);
 }
 
 void VotesUploader::SetInitialHashValueOfUsernameField(
@@ -836,7 +837,8 @@ bool VotesUploader::StartUploadRequest(
 
   return download_manager->StartUploadRequest(
       *form_to_upload, false /* was_autofilled */, available_field_types,
-      std::string(), true /* observed_submission */, nullptr /* prefs */);
+      std::string(), true /* observed_submission */, nullptr /* prefs */,
+      nullptr);
 }
 
 void VotesUploader::SaveFieldVote(FormSignature form_signature,

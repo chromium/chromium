@@ -170,8 +170,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
 
 class MockAutofillDownloadManager : public autofill::AutofillDownloadManager {
  public:
-  MockAutofillDownloadManager()
-      : AutofillDownloadManager(nullptr, &fake_observer) {}
+  MockAutofillDownloadManager() : AutofillDownloadManager(nullptr) {}
   MockAutofillDownloadManager(const MockAutofillDownloadManager&) = delete;
   MockAutofillDownloadManager& operator=(const MockAutofillDownloadManager&) =
       delete;
@@ -183,17 +182,9 @@ class MockAutofillDownloadManager : public autofill::AutofillDownloadManager {
                const autofill::ServerFieldTypeSet&,
                const std::string&,
                bool,
-               PrefService*),
+               PrefService*,
+               base::WeakPtr<Observer>),
               (override));
-
- private:
-  class StubObserver : public AutofillDownloadManager::Observer {
-    void OnLoadedServerPredictions(
-        std::string response,
-        const std::vector<autofill::FormSignature>& form_signatures) override {}
-  };
-
-  StubObserver fake_observer;
 };
 
 }  // namespace
@@ -959,7 +950,7 @@ TEST_P(PasswordSaveManagerImplTest, UpdatePasswordValueMultiplePasswordFields) {
 
   EXPECT_CALL(*mock_autofill_download_manager(),
               StartUploadRequest(UploadedAutofillTypesAre(expected_types),
-                                 false, _, _, true, nullptr));
+                                 false, _, _, true, nullptr, _));
 
   // Check that the password which was chosen by the user is saved.
   PasswordForm saved_form;

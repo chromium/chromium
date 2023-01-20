@@ -571,6 +571,7 @@ bool GetAPIQueryPayload(const AutofillPageQueryRequest& query,
 }  // namespace
 
 struct AutofillDownloadManager::FormRequestData {
+  base::WeakPtr<Observer> observer;
   std::vector<FormSignature> form_signatures;
   RequestType request_type;
   absl::optional<net::IsolationInfo> isolation_info;
@@ -591,26 +592,20 @@ std::vector<variations::VariationID>*
 
 AutofillDownloadManager::AutofillDownloadManager(
     AutofillClient* client,
-    Observer* observer,
     const std::string& api_key,
     IsRawMetadataUploadingEnabled is_raw_metadata_uploading_enabled,
     LogManager* log_manager)
     : client_(client),
-      observer_(observer),
       api_key_(api_key),
       log_manager_(log_manager),
       autofill_server_url_(GetAutofillServerURL()),
       throttle_reset_period_(GetThrottleResetPeriod()),
       max_form_cache_size_(kAutofillDownloadManagerMaxFormCacheSize),
       loader_backoff_(&kAutofillBackoffPolicy),
-      is_raw_metadata_uploading_enabled_(is_raw_metadata_uploading_enabled) {
-  DCHECK(observer_);
-}
+      is_raw_metadata_uploading_enabled_(is_raw_metadata_uploading_enabled) {}
 
-AutofillDownloadManager::AutofillDownloadManager(AutofillClient* client,
-                                                 Observer* observer)
+AutofillDownloadManager::AutofillDownloadManager(AutofillClient* client)
     : AutofillDownloadManager(client,
-                              observer,
                               kDefaultAPIKey,
                               IsRawMetadataUploadingEnabled(false),
                               /*log_manager=*/nullptr) {}
@@ -619,7 +614,8 @@ AutofillDownloadManager::~AutofillDownloadManager() = default;
 
 bool AutofillDownloadManager::StartQueryRequest(
     const std::vector<FormStructure*>& forms,
-    net::IsolationInfo isolation_info) {
+    net::IsolationInfo isolation_info,
+    base::WeakPtr<Observer> observer) {
   if (!IsEnabled())
     return false;
 
@@ -655,6 +651,7 @@ bool AutofillDownloadManager::StartQueryRequest(
   }
 
   FormRequestData request_data = {
+      .observer = observer,
       .form_signatures = std::move(queried_form_signatures),
       .request_type = AutofillDownloadManager::REQUEST_QUERY,
       .isolation_info = std::move(isolation_info),
@@ -673,8 +670,10 @@ bool AutofillDownloadManager::StartQueryRequest(
                   }
                   return form_sigs;
                 }();
-    observer_->OnLoadedServerPredictions(std::move(query_data),
-                                         request_data.form_signatures);
+    if (request_data.observer) {
+      request_data.observer->OnLoadedServerPredictions(
+          std::move(query_data), request_data.form_signatures);
+    }
     return true;
   }
 
@@ -689,7 +688,8 @@ bool AutofillDownloadManager::StartUploadRequest(
     const ServerFieldTypeSet& available_field_types,
     const std::string& login_form_signature,
     bool observed_submission,
-    PrefService* prefs) {
+    PrefService* prefs,
+    base::WeakPtr<Observer> observer) {
   if (!IsEnabled())
     return false;
 
@@ -734,6 +734,7 @@ bool AutofillDownloadManager::StartUploadRequest(
     }
 
     FormRequestData request_data = {
+        .observer = observer,
         .form_signatures = {form.form_signature()},
         .request_type = AutofillDownloadManager::REQUEST_UPLOAD,
         .isolation_info = absl::nullopt,
@@ -974,8 +975,11 @@ void AutofillDownloadManager::OnSimpleLoaderComplete(
              << response_code << " and error message from the server "
              << error_message;
 
-    observer_->OnServerRequestError(request_data.form_signatures.front(),
-                                    request_data.request_type, response_code);
+    if (request_data.observer) {
+      request_data.observer->OnServerRequestError(
+          request_data.form_signatures.front(), request_data.request_type,
+          response_code);
+    }
 
     LogFailingPayloadSize(request_data.request_type,
                           request_data.payload.length());
@@ -1006,15 +1010,19 @@ void AutofillDownloadManager::OnSimpleLoaderComplete(
     CacheQueryRequest(request_data.form_signatures, *response_body);
     UMA_HISTOGRAM_BOOLEAN("Autofill.Query.WasInCache",
                           simple_loader->LoadedFromCache());
-    observer_->OnLoadedServerPredictions(std::move(*response_body),
-                                         request_data.form_signatures);
+    if (request_data.observer) {
+      request_data.observer->OnLoadedServerPredictions(
+          std::move(*response_body), request_data.form_signatures);
+    }
     return;
   }
 
   DCHECK_EQ(request_data.request_type, AutofillDownloadManager::REQUEST_UPLOAD);
   DVLOG(1) << "AutofillDownloadManager: upload request has succeeded.";
 
-  observer_->OnUploadedPossibleFieldTypes();
+  if (request_data.observer) {
+    request_data.observer->OnUploadedPossibleFieldTypes();
+  }
 }
 
 void AutofillDownloadManager::InitActiveExperiments() {

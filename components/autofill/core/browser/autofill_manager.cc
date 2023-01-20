@@ -146,7 +146,7 @@ AutofillManager::AutofillManager(AutofillDriver* driver,
       form_interactions_ukm_logger_(CreateFormInteractionsUkmLogger()) {
   if (enable_download_manager) {
     download_manager_ = std::make_unique<AutofillDownloadManager>(
-        client, this, GetAPIKeyForUrl(channel),
+        client, GetAPIKeyForUrl(channel),
         AutofillDownloadManager::IsRawMetadataUploadingEnabled(
             IsRawMetadataUploadingEnabled(channel)),
         log_manager_);
@@ -419,8 +419,8 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
 
   // Query the server if at least one of the forms was parsed.
   if (!queryable_forms.empty() && download_manager()) {
-    download_manager()->StartQueryRequest(queryable_forms,
-                                          driver()->IsolationInfo());
+    download_manager()->StartQueryRequest(
+        queryable_forms, driver()->IsolationInfo(), GetWeakPtr());
   }
 }
 

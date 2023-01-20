@@ -9,16 +9,15 @@
 
 namespace autofill {
 
-TestAutofillDownloadManager::TestAutofillDownloadManager(
-    AutofillClient* client,
-    AutofillDownloadManager::Observer* observer)
-    : AutofillDownloadManager(client, observer) {}
+TestAutofillDownloadManager::TestAutofillDownloadManager(AutofillClient* client)
+    : AutofillDownloadManager(client) {}
 
 TestAutofillDownloadManager::~TestAutofillDownloadManager() = default;
 
 bool TestAutofillDownloadManager::StartQueryRequest(
     const std::vector<FormStructure*>& forms,
-    net::IsolationInfo isolation_info) {
+    net::IsolationInfo isolation_info,
+    base::WeakPtr<Observer> observer) {
   last_queried_forms_ = forms;
   return true;
 }

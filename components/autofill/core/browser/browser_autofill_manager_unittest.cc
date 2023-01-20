@@ -156,9 +156,8 @@ class MockAutofillClient : public TestAutofillClient {
 
 class MockAutofillDownloadManager : public TestAutofillDownloadManager {
  public:
-  MockAutofillDownloadManager(AutofillClient* client,
-                              AutofillDownloadManager::Observer* observer)
-      : TestAutofillDownloadManager(client, observer) {}
+  explicit MockAutofillDownloadManager(AutofillClient* client)
+      : TestAutofillDownloadManager(client) {}
   MockAutofillDownloadManager(const MockAutofillDownloadManager&) = delete;
   MockAutofillDownloadManager& operator=(const MockAutofillDownloadManager&) =
       delete;
@@ -170,7 +169,8 @@ class MockAutofillDownloadManager : public TestAutofillDownloadManager {
                const ServerFieldTypeSet&,
                const std::string&,
                bool,
-               PrefService*),
+               PrefService*,
+               base::WeakPtr<Observer>),
               (override));
 };
 
@@ -432,8 +432,8 @@ class BrowserAutofillManagerTest : public testing::Test {
     browser_autofill_manager_->set_single_field_form_fill_router_for_test(
         std::move(single_field_form_fill_router));
 
-    auto download_manager = std::make_unique<MockAutofillDownloadManager>(
-        &autofill_client_, browser_autofill_manager_.get());
+    auto download_manager =
+        std::make_unique<MockAutofillDownloadManager>(&autofill_client_);
     download_manager_ = download_manager.get();
     browser_autofill_manager_->set_download_manager_for_test(
         std::move(download_manager));
@@ -10582,7 +10582,7 @@ class BrowserAutofillManagerVotingTest
     BrowserAutofillManagerTest::SetUp();
 
     // All uploads should be expected explicitly.
-    EXPECT_CALL(*download_manager_, StartUploadRequest(_, _, _, _, _, _))
+    EXPECT_CALL(*download_manager_, StartUploadRequest(_, _, _, _, _, _, _))
         .Times(0);
 
     form_.name = u"MyForm";
@@ -10628,7 +10628,7 @@ TEST_P(BrowserAutofillManagerVotingTest, Submission) {
       *download_manager_,
       StartUploadRequest(AllOf(SignatureIs(CalculateFormSignature(form_)),
                                UploadedAutofillTypesAre(expected_vote_types)),
-                         _, _, _, /*observed_submission=*/true, _))
+                         _, _, _, /*observed_submission=*/true, _, _))
       .Times(1);
   FormSubmitted(form_);
 }
@@ -10655,7 +10655,7 @@ TEST_P(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
         *download_manager_,
         StartUploadRequest(AllOf(SignatureIs(first_form_signature),
                                  UploadedAutofillTypesAre(expected_vote_types)),
-                           _, _, _, /*observed_submission=*/false, _))
+                           _, _, _, /*observed_submission=*/false, _, _))
         .Times(1);
   }
   browser_autofill_manager_->OnFocusNoLongerOnForm(true);
@@ -10678,7 +10678,7 @@ TEST_P(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
       *download_manager_,
       StartUploadRequest(AllOf(SignatureIs(first_form_signature),
                                UploadedAutofillTypesAre(expected_vote_types)),
-                         _, _, _, /*observed_submission=*/false, _))
+                         _, _, _, /*observed_submission=*/false, _, _))
       .Times(1);
   browser_autofill_manager_->OnFocusNoLongerOnForm(true);
 
@@ -10706,7 +10706,7 @@ TEST_P(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
       StartUploadRequest(AllOf(SignatureIs(second_form_signature),
                                UploadedAutofillTypesAre(expected_vote_types)),
                          _, _, _,
-                         /*observed_submission=*/true, _))
+                         /*observed_submission=*/true, _, _))
       .Times(1);
   FormSubmitted(form_);
 }
@@ -10725,7 +10725,7 @@ TEST_P(BrowserAutofillManagerVotingTest, BlurVoteOnNavigation) {
       *download_manager_,
       StartUploadRequest(AllOf(SignatureIs(CalculateFormSignature(form_)),
                                UploadedAutofillTypesAre(expected_vote_types)),
-                         _, _, _, /*observed_submission=*/false, _))
+                         _, _, _, /*observed_submission=*/false, _, _))
       .Times(1);
   browser_autofill_manager_->OnFocusNoLongerOnForm(true);
 
@@ -10753,7 +10753,7 @@ TEST_P(BrowserAutofillManagerVotingTest, NoBlurVoteOnSubmission) {
         *download_manager_,
         StartUploadRequest(AllOf(SignatureIs(CalculateFormSignature(form_)),
                                  UploadedAutofillTypesAre(expected_vote_types)),
-                           _, _, _, /*observed_submission=*/false, _))
+                           _, _, _, /*observed_submission=*/false, _, _))
         .Times(1);
   } else {
     // If kAutofillDelayBlurVotes is enabled, the blur vote will be ignored and
@@ -10765,7 +10765,7 @@ TEST_P(BrowserAutofillManagerVotingTest, NoBlurVoteOnSubmission) {
       *download_manager_,
       StartUploadRequest(AllOf(SignatureIs(CalculateFormSignature(form_)),
                                UploadedAutofillTypesAre(expected_vote_types)),
-                         _, _, _, /*observed_submission=*/true, _))
+                         _, _, _, /*observed_submission=*/true, _, _))
       .Times(1);
   FormSubmitted(form_);
 }
