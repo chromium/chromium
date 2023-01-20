@@ -184,7 +184,13 @@ TEST_F(HighestPmfReporterTest, ReportNoMetricBeforeNavigationStart) {
   EXPECT_EQ(0U, reporter_->GetReportedPeakRss().size());
 }
 
-TEST_F(HighestPmfReporterTest, ReportMetric) {
+// TODO(https://crbug.com/1408949): This test fails on ASAN bots.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_ReportMetric DISABLED_ReportMetric
+#else
+#define MAYBE_ReportMetric ReportMetric
+#endif
+TEST_F(HighestPmfReporterTest, MAYBE_ReportMetric) {
   EXPECT_TRUE(memory_usage_monitor_->TimerIsActive());
   Page::OrdinaryPages().insert(&GetPage());
   AdvanceClock(base::Seconds(1));
