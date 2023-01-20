@@ -41,7 +41,8 @@ class PhoneStatusProcessor
     kOnlyRecentApps = 0,
     kOnlyLauncherApps,
     kBoth,
-    kMaxValue = kBoth
+    kIncrementalAppUpdate,
+    kMaxValue = kIncrementalAppUpdate
   };
 
   PhoneStatusProcessor(
@@ -79,6 +80,9 @@ class PhoneStatusProcessor
       const proto::AppStreamUpdate app_stream_update) override;
   void OnAppListUpdateReceived(
       const proto::AppListUpdate app_list_update) override;
+  void OnAppListIncrementalUpdateReceived(
+      const proto::AppListIncrementalUpdate app_list_incremental_update)
+      override;
 
   // MultiDeviceSetupClient::Observer:
   void OnHostStatusChanged(
