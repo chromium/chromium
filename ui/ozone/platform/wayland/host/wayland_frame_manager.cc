@@ -174,7 +174,7 @@ void WaylandFrameManager::MaybeProcessPendingFrame() {
       fatal_error_message_ = kBoundsRectNanOrInf;
     } else {
       window_->OnSequencePoint(frame->seq);
-      // During a tab dragging session, UpdateVisualSize() can implicitly invoke
+      // During a tab dragging session, OnSequencePoint() can implicitly invoke
       // Hide(). |pending_frames_| will be cleared and we should return
       // directly.
       if (pending_frames_.empty())
@@ -270,7 +270,7 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
     if (!frame->presentation_acked)
       frame->feedback = gfx::PresentationFeedback::Failure();
   } else {
-    // Opaque region is set during UpdateVisualSize() no need to set it again.
+    // Opaque region is set during OnSequencePoint() no need to set it again.
     ApplySurfaceConfigure(frame.get(), root_surface, root_config, false);
     // A fatal error happened. Must stop the playback and terminate the gpu
     // process as it might have been compromised.

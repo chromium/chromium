@@ -1403,7 +1403,7 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditionsAckConfigured) {
 
 // Verifies toplevel surfaces do not have buffers attached until configured,
 // even when the initial configure sequence is not acked in response to
-// xdg_surface.configure event, i.e: done asynchronously when UpdateVisualSize()
+// xdg_surface.configure event, i.e: done asynchronously when OnSequencePoint()
 // is called by they FrameManager).
 //
 // Regression test for https://crbug.com/1313023.
@@ -1424,8 +1424,9 @@ TEST_P(WaylandBufferManagerTest,
   auto widget = window->GetWidget();
 
   // Set restored bounds to a value different from the initial window bounds in
-  // order to force WaylandWindow::ProcessPendingBoundsDip() to defer the very
-  // first configure ack to be done in the subsequent UpdateVisualSize() call.
+  // order to force WaylandWindow::ProcessPendingConfigureState() to defer the
+  // very first configure ack to be done in the subsequent OnSequencePoint()
+  // call.
   window->SetRestoredBoundsInDIP(kRestoredBounds);
   wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 

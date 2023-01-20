@@ -341,12 +341,12 @@ TEST_P(WaylandWindowTest, SetTitle) {
   });
 }
 
-TEST_P(WaylandWindowTest, UpdateVisualSizeConfiguresWaylandWindow) {
+TEST_P(WaylandWindowTest, OnSequencePointConfiguresWaylandWindow) {
   constexpr gfx::Rect kNormalBounds{500, 300};
 
   // Configure event makes Wayland update bounds, but does not change toplevel
   // input region, opaque region or window geometry immediately. Such actions
-  // are postponed to UpdateVisualSize();
+  // are postponed to OnSequencePoint();
   EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kDefaultBoundsChange)));
 
   PostToServerAndWait([id = surface_id_, bounds = kNormalBounds](
@@ -550,10 +550,9 @@ TEST_P(WaylandWindowTest, DisregardUnpassedWindowConfigure) {
   constexpr gfx::Rect kNormalBounds3{700, 400};
   uint32_t serial = 1;
 
-  // Send 3 configures, and call UpdateVisualSize out of order. The out-of-order
-  // UpdateVisualSize(kNormalBounds2) should disregarded b/c kNormalBounds2
-  // never reached UI Compositor when UpdateVisualSize(kNormalBounds2) is
-  // called.
+  // Send 3 configures, and skip OnSequencePoint for the result of the second
+  // configure. The second configure should not be acked or have its properties
+  // applied.
   PostToServerAndWait(
       [id = surface_id_, bounds1 = kNormalBounds1, bounds2 = kNormalBounds2,
        bounds3 = kNormalBounds3](wl::TestWaylandServerThread* server) {
@@ -609,17 +608,16 @@ TEST_P(WaylandWindowTest, MismatchedSequencePoints) {
   window_->OnSequencePoint(0);
 }
 
-TEST_P(WaylandWindowTest, UpdateVisualSizeClearsPreviousUnackedConfigures) {
+TEST_P(WaylandWindowTest, OnSequencePointClearsPreviousUnackedConfigures) {
   constexpr gfx::Rect kNormalBounds1{500, 300};
   constexpr gfx::Rect kNormalBounds2{800, 600};
   constexpr gfx::Rect kNormalBounds3{700, 400};
   uint32_t serial = 1;
   auto state = InitializeWlArrayWithActivatedState();
 
-  // Send 3 configures. Calling UpdateVisualSize(kNormalBounds3) will cause the
-  // kNormalBounds3 to be passed onto UI compositor. Hence, kNormalBounds1/2/3
-  // configs will be acknowledgeable. The next UpdateVisualSize(kNormalBounds3)
-  // will ack kNormalBounds3 and skip kNormalBounds1/2.
+  // Send 3 configures. Waiting to advance the frame (and call
+  // OnSequencePoint(3)) should mean acking and processing the completion of
+  // first two configures will be skipped.
   PostToServerAndWait([id = surface_id_, bounds = kNormalBounds1](
                           wl::TestWaylandServerThread* server) {
     wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
