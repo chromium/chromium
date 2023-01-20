@@ -258,11 +258,20 @@ const char kUserGestureRequiredPolicy[] = "user-gesture-required";
 // This provides a mechanism during testing to lock the decoder framerate
 // to a specific value.
 const char kHardwareVideoDecodeFrameRate[] = "hardware-video-decode-framerate";
-// Set the maximum number of decoder threads for hardware video decoders on
-// ChromeOS. This is intended to be used for development only.
+// Set the task runner strategy used for hardware video decoding on ChromeOS.
+// If the option value of --chromeos-decoder-task-runner is
+// * OneThreadPoolSequenceSharedByAllDecoders, then SequencedTaskRunner.
+// * OneThreadPoolThreadSharedByAllDecoders, then SingleThreadTaskRunner
+//   (one of the threads in ThreadPool).
+// * OneDedicatedThreadSharedByAllDecoders, then SingleThreadTaskRunner of
+//   base::Thread("VDdecThread"), which is unique and only used for video
+//   decoders.
+// * OneThreadPoolThreadPerDecoder (default), then SingleThreadTaskRunner
+//   of a dedicated thread newly created in ThreadPool per decoder.
 // TODO(b/195769334): Propagate this to Chrome utility process for
 // Out-of-Process video decoding.
-const char kMaxChromeOSDecoderThreads[] = "max-chromeos-decoder-threads";
+const char kChromeOSVideoDecoderTaskRunner[] =
+    "chromeos-video-decoder-task-runner";
 #endif
 
 const char kCastStreamingForceDisableHardwareH264[] =

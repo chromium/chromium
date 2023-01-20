@@ -4,7 +4,6 @@
 
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 
-#include <atomic>
 #include <memory>
 
 #include "base/command_line.h"
@@ -93,94 +92,83 @@ size_t EstimateRequiredRendererPipelineBuffers(bool low_delay) {
     return kExpectedNonLatencyPipelineDepth;
 }
 
-class DecoderThreadPool {
- public:
-  DecoderThreadPool(const DecoderThreadPool&) = delete;
-  DecoderThreadPool& operator=(const DecoderThreadPool&) = delete;
+enum class DecoderTaskRunnerType {
+  kOneThreadPoolSequenceSharedByAllDecoders,
+  kOneThreadPoolThreadSharedByAllDecoders,
+  kOneDedicatedThreadSharedByAllDecoders,
+  kOneThreadPoolThreadPerDecoder,
+  kDefault = kOneThreadPoolThreadPerDecoder,
+};
 
-  static scoped_refptr<base::SingleThreadTaskRunner> CreateTaskRunner() {
-    static base::NoDestructor<DecoderThreadPool> decoder_thread_pool;
-    return decoder_thread_pool->GetTaskRunner();
+DecoderTaskRunnerType GetDecoderTaskRunnerType() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(switches::kChromeOSVideoDecoderTaskRunner)) {
+    return DecoderTaskRunnerType::kDefault;
   }
 
- private:
-  friend class base::NoDestructor<DecoderThreadPool>;
-
-  DecoderThreadPool() {
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    if (!command_line->HasSwitch(switches::kMaxChromeOSDecoderThreads))
-      return;
-
-    const std::string& num_threads_switch =
-        command_line->GetSwitchValueASCII(switches::kMaxChromeOSDecoderThreads);
-    if (num_threads_switch.empty()) {
-      LOG(ERROR) << "Failed to read the value of "
-                 << switches::kMaxChromeOSDecoderThreads;
-      return;
-    }
-    size_t num_threads = 0;
-    if (!base::StringToSizeT(num_threads_switch, &num_threads)) {
-      LOG(ERROR) << "Failed to convert the value of "
-                 << switches::kMaxChromeOSDecoderThreads << ", "
-                 << num_threads_switch << ", to integer";
-      return;
-    }
-
-    for (size_t i = 0; i < num_threads; i++) {
-      const std::string thread_name =
-          "VDecThread" +
-          base::NumberToString(base::checked_cast<unsigned int>(i));
-      decoder_threads_.emplace_back(
-          std::make_unique<base::Thread>(thread_name));
-      auto& thread = decoder_threads_.back();
-      if (!thread->Start()) {
-        LOG(ERROR) << "Failed to start thread: " << thread->thread_name();
-        decoder_threads_.clear();
-        task_runners_.clear();
-        return;
-      }
-
-      CHECK(thread->task_runner());
-      task_runners_.emplace_back(thread->task_runner());
-    }
-    VLOGF(2) << decoder_threads_.size() << " VideoDecoder Threads are created";
+  const std::string task_runner_type = command_line->GetSwitchValueASCII(
+      switches::kChromeOSVideoDecoderTaskRunner);
+  if (task_runner_type.empty()) {
+    LOG(ERROR) << "Failed to read the value of "
+               << switches::kChromeOSVideoDecoderTaskRunner;
+    return DecoderTaskRunnerType::kDefault;
   }
 
-  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() {
-    if (task_runners_.empty()) {
-      // Note that the decoder thread is created with base::MayBlock(). This is
-      // because the underlying |decoder_| may need to allocate a dummy buffer
-      // to discover the most native modifier accepted by the hardware video
-      // decoder; this in turn may need to open the render node, and this is the
-      // operation that may block.
+  if (task_runner_type == "OneThreadPoolSequenceSharedByAllDecoders") {
+    return DecoderTaskRunnerType::kOneThreadPoolSequenceSharedByAllDecoders;
+  }
+  if (task_runner_type == "OneThreadPoolThreadSharedByAllDecoders") {
+    return DecoderTaskRunnerType::kOneThreadPoolThreadSharedByAllDecoders;
+  }
+  if (task_runner_type == "OneDedicatedThreadSharedByAllDecoders") {
+    return DecoderTaskRunnerType::kOneDedicatedThreadSharedByAllDecoders;
+  }
+  if (task_runner_type == "OneThreadPoolThreadPerDecoder") {
+    return DecoderTaskRunnerType::kOneThreadPoolThreadPerDecoder;
+  }
+  return DecoderTaskRunnerType::kDefault;
+}
+
+scoped_refptr<base::SequencedTaskRunner> GetDecoderTaskRunner() {
+  const static DecoderTaskRunnerType type = GetDecoderTaskRunnerType();
+  // Note that the decoder thread is created with base::MayBlock(). This is
+  // because the underlying |decoder_| may need to allocate a dummy buffer
+  // to discover the most native modifier accepted by the hardware video
+  // decoder; this in turn may need to open the render node, and this is the
+  // operation that may block.
+  switch (type) {
+    case DecoderTaskRunnerType::kOneThreadPoolSequenceSharedByAllDecoders:
+      return base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_VISIBLE, base::MayBlock()});
+    case DecoderTaskRunnerType::kOneThreadPoolThreadSharedByAllDecoders:
+      return base::ThreadPool::CreateSingleThreadTaskRunner(
+          {base::TaskPriority::USER_VISIBLE, base::MayBlock()});
+    case DecoderTaskRunnerType::kOneDedicatedThreadSharedByAllDecoders: {
+      class DecoderThread {
+       public:
+        DecoderThread() : thread_("VDecThread") {
+          if (!thread_.Start()) {
+            LOG(FATAL) << "Failed to start the decoder thread";
+          }
+        }
+        scoped_refptr<base::SequencedTaskRunner> task_runner() const {
+          return thread_.task_runner();
+        }
+
+       private:
+        base::Thread thread_;
+      };
+
+      static base::NoDestructor<DecoderThread> decoder_thread;
+      return decoder_thread->task_runner();
+    }
+    case DecoderTaskRunnerType::kOneThreadPoolThreadPerDecoder:
       return base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::WithBaseSyncPrimitives(), base::TaskPriority::USER_VISIBLE,
            base::MayBlock()},
           base::SingleThreadTaskRunnerThreadMode::DEDICATED);
-    }
-
-    // atomic unsigned integer may have undefined behavior on overflow.
-    // Use atomic signed integer, which is stated in the C++ specification;
-    // "Signed integer arithmetic is defined to use two's complement; there are
-    // no undefined results."
-    int atomic_index = counter_.fetch_add(1, std::memory_order_relaxed);
-    size_t index = 0;
-    if (atomic_index == INT_MIN) {
-      // Negating INT_MIN would cause an overflow, so just wrap around to
-      // INT_MAX.
-      atomic_index = INT_MAX;
-    }
-    index = base::checked_cast<size_t>(atomic_index >= 0 ? atomic_index
-                                                         : -atomic_index);
-    index %= task_runners_.size();
-    return task_runners_[index];
   }
-
-  std::vector<std::unique_ptr<base::Thread>> decoder_threads_;
-  std::vector<scoped_refptr<base::SingleThreadTaskRunner>> task_runners_;
-  std::atomic_int counter_{0};
-};
-
+}
 }  //  namespace
 
 VideoDecoderMixin::VideoDecoderMixin(
@@ -289,7 +277,7 @@ VideoDecoderPipeline::VideoDecoderPipeline(
     CreateDecoderFunctionCB create_decoder_function_cb)
     : gpu_workarounds_(gpu_workarounds),
       client_task_runner_(std::move(client_task_runner)),
-      decoder_task_runner_(DecoderThreadPool::CreateTaskRunner()),
+      decoder_task_runner_(GetDecoderTaskRunner()),
       main_frame_pool_(std::move(frame_pool)),
       frame_converter_(std::move(frame_converter)),
       media_log_(std::move(media_log)),
