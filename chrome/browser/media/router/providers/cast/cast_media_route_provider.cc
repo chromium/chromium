@@ -314,7 +314,7 @@ void CastMediaRouteProvider::EnableMdnsDiscovery() {
   NOTIMPLEMENTED();
 }
 
-void CastMediaRouteProvider::UpdateMediaSinks(const std::string& media_source) {
+void CastMediaRouteProvider::DiscoverSinksNow() {
   app_discovery_service_->Refresh();
 }
 

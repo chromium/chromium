@@ -715,9 +715,9 @@ void MediaRouterMojoImpl::SyncStateToMediaRouteProvider(
     provider->StartListeningForRouteMessages(it.first);
 }
 
-void MediaRouterMojoImpl::UpdateMediaSinks(const MediaSource::Id& source_id) {
+void MediaRouterMojoImpl::DiscoverSinksNow() {
   for (const auto& provider : media_route_providers_)
-    provider.second->UpdateMediaSinks(source_id);
+    provider.second->DiscoverSinksNow();
 }
 
 void MediaRouterMojoImpl::OnMediaControllerCreated(

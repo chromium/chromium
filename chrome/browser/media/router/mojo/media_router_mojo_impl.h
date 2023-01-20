@@ -105,7 +105,7 @@ class MediaRouterMojoImpl : public MediaRouterBase,
   void Initialize() override;
 
   // Requests MRPs to update media sinks.
-  void UpdateMediaSinks(const MediaSource::Id& source_id);
+  void DiscoverSinksNow();
 
   // Called when the Mojo pointer for |provider_id| has a connection error.
   // Removes the pointer from |media_route_providers_|.

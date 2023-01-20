@@ -75,7 +75,7 @@ class DualMediaSinkService {
 
   void RemoveLogger(LoggerImpl* logger_impl);
 
-  virtual void OnUserGesture();
+  virtual void DiscoverSinksNow();
 
 #if BUILDFLAG(IS_WIN)
   // Starts mDNS discovery on |cast_media_sink_service_| if it is not already

@@ -23,6 +23,9 @@ struct IssueInfo {
 
   // |title|: The title for the issue.
   // |severity|: The severity of the issue.
+  //
+  // TODO(crbug.com/1407333): Add sink_id as a ctor argument, as all issues have
+  // associated sinks.
   IssueInfo(const std::string& title, Severity severity);
   IssueInfo(const IssueInfo&);
   IssueInfo& operator=(const IssueInfo&);

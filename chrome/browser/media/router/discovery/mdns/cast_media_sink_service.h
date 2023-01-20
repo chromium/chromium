@@ -48,11 +48,7 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
   virtual void Start(const OnSinksDiscoveredCallback& sinks_discovered_cb,
                      MediaSinkServiceBase* dial_media_sink_service);
 
-  // Initiates discovery immediately in response to a user gesture
-  // (i.e., opening the Media Router dialog).
-  // TODO(imcheng): Rename to ManuallyInitiateDiscovery() or similar.
-  // Marked virtual for tests.
-  virtual void OnUserGesture();
+  virtual void DiscoverSinksNow();
 
   // Marked virtual for tests.
   virtual std::unique_ptr<CastMediaSinkServiceImpl, base::OnTaskRunnerDeleter>

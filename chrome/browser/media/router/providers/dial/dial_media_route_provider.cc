@@ -595,8 +595,8 @@ void DialMediaRouteProvider::EnableMdnsDiscovery() {
   NOTIMPLEMENTED();
 }
 
-void DialMediaRouteProvider::UpdateMediaSinks(const std::string& media_source) {
-  media_sink_service_->OnUserGesture();
+void DialMediaRouteProvider::DiscoverSinksNow() {
+  media_sink_service_->DiscoverSinksNow();
 }
 
 void DialMediaRouteProvider::CreateMediaRouteController(

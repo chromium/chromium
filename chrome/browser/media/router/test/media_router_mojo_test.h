@@ -106,7 +106,7 @@ class MockMediaRouteProvider : public mojom::MediaRouteProvider {
                void(const std::string& route_id));
   MOCK_METHOD0(StartObservingMediaRoutes, void());
   MOCK_METHOD0(EnableMdnsDiscovery, void());
-  MOCK_METHOD1(UpdateMediaSinks, void(const std::string& source));
+  MOCK_METHOD0(DiscoverSinksNow, void());
   void CreateMediaRouteController(
       const std::string& route_id,
       mojo::PendingReceiver<mojom::MediaController> media_controller,

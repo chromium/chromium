@@ -111,7 +111,7 @@ bool CastMediaSinkService::MdnsDiscoveryStarted() {
   return dns_sd_registry_ != nullptr;
 }
 
-void CastMediaSinkService::OnUserGesture() {
+void CastMediaSinkService::DiscoverSinksNow() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (dns_sd_registry_)
     dns_sd_registry_->ResetAndDiscover();

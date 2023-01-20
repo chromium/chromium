@@ -291,7 +291,7 @@ void CastMediaSinkServiceImpl::RecordDeviceCounts() {
                                       known_ip_endpoints_.size());
 }
 
-void CastMediaSinkServiceImpl::OnUserGesture() {
+void CastMediaSinkServiceImpl::DiscoverSinksNow() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!dial_media_sink_service_)
     return;

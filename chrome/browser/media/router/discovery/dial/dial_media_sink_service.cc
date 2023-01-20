@@ -38,12 +38,12 @@ void DialMediaSinkService::Start(
                                 base::Unretained(impl_.get())));
 }
 
-void DialMediaSinkService::OnUserGesture() {
+void DialMediaSinkService::DiscoverSinksNow() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(impl_);
 
   impl_->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&DialMediaSinkServiceImpl::OnUserGesture,
+      FROM_HERE, base::BindOnce(&DialMediaSinkServiceImpl::DiscoverSinksNow,
                                 base::Unretained(impl_.get())));
 }
 

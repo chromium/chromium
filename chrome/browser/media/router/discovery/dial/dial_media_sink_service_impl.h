@@ -58,7 +58,7 @@ class DialMediaSinkServiceImpl : public MediaSinkServiceBase,
   virtual void Start();
 
   // MediaSinkServiceBase implementation.
-  void OnUserGesture() override;
+  void DiscoverSinksNow() override;
 
   // Returns the SequencedTaskRunner that should be used to invoke methods on
   // this instance. Can be invoked on any thread.

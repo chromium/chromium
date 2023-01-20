@@ -20,7 +20,7 @@ class NoopDualMediaSinkService : public DualMediaSinkService {
   ~NoopDualMediaSinkService() override;
 
   // DualMediaSinkService
-  void OnUserGesture() override {}
+  void DiscoverSinksNow() override {}
 #if BUILDFLAG(IS_WIN)
   void StartMdnsDiscovery() override {}
 #endif

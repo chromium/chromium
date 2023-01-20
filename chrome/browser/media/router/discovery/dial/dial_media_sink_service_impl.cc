@@ -106,7 +106,7 @@ void DialMediaSinkServiceImpl::Start() {
       kLoggerComponent, "DialMediaSinkService has started.", "", "", "");
 }
 
-void DialMediaSinkServiceImpl::OnUserGesture() {
+void DialMediaSinkServiceImpl::DiscoverSinksNow() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(dial_registry_);
   dial_registry_->DiscoverNow();

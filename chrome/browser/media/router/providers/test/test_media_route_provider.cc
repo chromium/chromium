@@ -217,8 +217,7 @@ void TestMediaRouteProvider::DetachRoute(const std::string& route_id) {
 
 void TestMediaRouteProvider::EnableMdnsDiscovery() {}
 
-void TestMediaRouteProvider::UpdateMediaSinks(const std::string& media_source) {
-}
+void TestMediaRouteProvider::DiscoverSinksNow() {}
 
 void TestMediaRouteProvider::CreateMediaRouteController(
     const std::string& route_id,

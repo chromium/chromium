@@ -46,11 +46,8 @@ void MediaRouterDesktop::OnUserGesture() {
   if (!media_sink_service_)
     return;
 
-  // Allow MRPM to intelligently update sinks and observers by passing in a
-  // media source.
-  UpdateMediaSinks(MediaSource::ForUnchosenDesktop().id());
-
-  media_sink_service_->OnUserGesture();
+  DiscoverSinksNow();
+  media_sink_service_->DiscoverSinksNow();
   if (!media_sink_service_subscription_) {
     media_sink_service_subscription_ =
         media_sink_service_->AddSinksDiscoveredCallback(

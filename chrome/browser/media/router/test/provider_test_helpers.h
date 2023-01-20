@@ -39,7 +39,7 @@ class MockDialMediaSinkService : public DialMediaSinkService {
   ~MockDialMediaSinkService() override;
 
   MOCK_METHOD1(Start, void(const OnSinksDiscoveredCallback&));
-  MOCK_METHOD0(OnUserGesture, void());
+  MOCK_METHOD0(DiscoverSinksNow, void());
 };
 
 class MockCastMediaSinkService : public CastMediaSinkService {
@@ -49,7 +49,7 @@ class MockCastMediaSinkService : public CastMediaSinkService {
 
   MOCK_METHOD2(Start,
                void(const OnSinksDiscoveredCallback&, MediaSinkServiceBase*));
-  MOCK_METHOD0(OnUserGesture, void());
+  MOCK_METHOD0(DiscoverSinksNow, void());
   MOCK_METHOD0(StartMdnsDiscovery, void());
 };
 

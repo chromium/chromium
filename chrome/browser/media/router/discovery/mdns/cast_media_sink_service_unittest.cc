@@ -113,9 +113,9 @@ class CastMediaSinkServiceTest : public ::testing::Test {
   MockDnsSdRegistry test_dns_sd_registry_;
 };
 
-TEST_F(CastMediaSinkServiceTest, OnUserGesture) {
+TEST_F(CastMediaSinkServiceTest, DiscoverSinksNow) {
   EXPECT_CALL(test_dns_sd_registry_, ResetAndDiscover());
-  media_sink_service_->OnUserGesture();
+  media_sink_service_->DiscoverSinksNow();
 }
 
 TEST_F(CastMediaSinkServiceTest, TestOnDnsSdEvent) {

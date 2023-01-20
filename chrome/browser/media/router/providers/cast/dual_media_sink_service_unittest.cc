@@ -72,9 +72,9 @@ class DualMediaSinkServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment;
 };
 
-TEST_F(DualMediaSinkServiceTest, OnUserGesture) {
-  EXPECT_CALL(*cast_media_sink_service_, OnUserGesture());
-  dual_media_sink_service_->OnUserGesture();
+TEST_F(DualMediaSinkServiceTest, DiscoverSinksNow) {
+  EXPECT_CALL(*cast_media_sink_service_, DiscoverSinksNow());
+  dual_media_sink_service_->DiscoverSinksNow();
 }
 
 TEST_F(DualMediaSinkServiceTest, AddSinksDiscoveredCallback) {

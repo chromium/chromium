@@ -65,9 +65,8 @@ class MediaSinkServiceBase {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Overridden by subclass to initiate action triggered by user gesture, e.g.
-  // start one-off round of discovery.
-  virtual void OnUserGesture() {}
+  // Starts a new round of the discovery process as soon as possible.
+  virtual void DiscoverSinksNow() {}
 
   // Adds or updates, or removes a sink.
   // Notifies |observers_| that the sink has been added, updated, or removed.

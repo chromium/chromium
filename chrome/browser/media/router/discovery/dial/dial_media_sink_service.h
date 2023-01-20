@@ -43,7 +43,7 @@ class DialMediaSinkService {
   // Marked virtual for tests.
   virtual void Start(const OnSinksDiscoveredCallback& sink_discovery_cb);
 
-  virtual void OnUserGesture();
+  virtual void DiscoverSinksNow();
 
   // Returns a raw pointer to |impl_|. This method is only valid to call after
   // |Start()| has been called. Always returns non-null.
