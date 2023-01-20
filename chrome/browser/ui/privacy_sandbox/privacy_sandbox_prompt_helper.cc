@@ -9,14 +9,18 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt.h"
+#include "chrome/common/extensions/chrome_manifest_url_handlers.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/sync/driver/sync_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/browser/extension_registry.h"
 
 namespace {
 
@@ -33,6 +37,31 @@ PrivacySandboxService::PromptType GetRequiredPromptType(Profile* profile) {
 
   return privacy_sandbox_serivce->GetRequiredPromptType();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool HasExtensionNtpOverride(
+    extensions::ExtensionRegistry* extension_registry) {
+  for (const auto& extension : extension_registry->enabled_extensions()) {
+    const auto& overrides =
+        extensions::URLOverrides::GetChromeURLOverrides(extension.get());
+    if (overrides.find(chrome::kChromeUINewTabHost) != overrides.end()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Returns whether |url| is an NTP controlled entirely by Chrome.
+bool IsChromeControlledNtpUrl(const GURL& url) {
+  // Convert to origins for comparison, as any appended paths are irrelevant.
+  const auto ntp_origin = url::Origin::Create(url);
+
+  return ntp_origin ==
+             url::Origin::Create(GURL(chrome::kChromeUINewTabPageURL)) ||
+         ntp_origin == url::Origin::Create(
+                           GURL(chrome::kChromeUINewTabPageThirdPartyURL));
+}
+#endif
 
 }  // namespace
 
@@ -53,6 +82,30 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
       !navigation_handle->IsInPrimaryMainFrame()) {
     return;
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/1315580, crbug.com/1315579): When navigating to a NTP that
+  // isn't Chrome-controlled on ChromeOS, open an about blank tab to display the
+  // prompt. On other platforms, it's being handled during the startup. This
+  // logic can be removed when Lacros is ready.
+  if (web_contents()->GetLastCommittedURL() == chrome::kChromeUINewTabURL) {
+    const bool has_extention_override =
+        HasExtensionNtpOverride(extensions::ExtensionRegistry::Get(profile()));
+
+    const GURL new_tab_page = search::GetNewTabPageURL(profile());
+    const bool is_non_chrome_controlled_ntp =
+        navigation_handle->GetURL() == new_tab_page &&
+        !IsChromeControlledNtpUrl(new_tab_page);
+
+    if (has_extention_override || is_non_chrome_controlled_ntp) {
+      web_contents()->OpenURL(content::OpenURLParams(
+          GURL(url::kAboutBlankURL), content::Referrer(),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_AUTO_TOPLEVEL, /*is_renderer_initiated=*/false));
+      return;
+    }
+  }
+#endif
 
   // Check whether the navigation target is a suitable prompt location. The
   // navigation URL, rather than the visible or committed URL, is required to

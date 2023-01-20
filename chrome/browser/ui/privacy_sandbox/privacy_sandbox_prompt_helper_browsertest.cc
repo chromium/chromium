@@ -184,10 +184,13 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
       static_cast<base::HistogramBase::Sample>(base::Hash("history")), 1);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
                        NoPromptNonDefaultNtp) {
   // Check that navigations to the generic chrome://newtab, when a non default
-  // NTP is used, do not show a prompt.
+  // NTP is used, do not show a prompt. On ChromeOS, it opens an about blank
+  // tab to display the prompt because it cannot be handled during startup
+  // there.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               PromptOpenedForBrowser(browser()))
@@ -204,6 +207,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
   histogram_tester.ExpectTotalCount(kPrivacySandboxDialogDisplayHostHistogram,
                                     0);
 }
+#endif
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam, NoPromptSync) {
   // Check when sync setup is in progress, that no prompt is shown.
