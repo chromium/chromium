@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_pref_manager.h"
+#include "ui/events/devices/input_device.h"
 
 namespace ash {
 
@@ -18,6 +19,9 @@ class ASH_EXPORT InputDevicePrefManagerImpl : public InputDevicePrefManager {
   InputDevicePrefManagerImpl& operator=(const InputDevicePrefManagerImpl&) =
       delete;
   ~InputDevicePrefManagerImpl() override;
+
+  // Builds `device_key` for use in storing device settings in prefs.
+  static std::string BuildDeviceKey(const ui::InputDevice& device);
 
   // InputDevicePrefManager:
   void InitializeKeyboardSettings(mojom::Keyboard* keyboard) override;

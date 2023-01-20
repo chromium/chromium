@@ -5,34 +5,59 @@
 #ifndef ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_TRACKER_H_
 #define ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_TRACKER_H_
 
-#include "base/strings/string_piece.h"
+#include <memory>
+
+#include "ash/ash_export.h"
+#include "ash/public/cpp/input_device_settings_controller.h"
+#include "ash/public/cpp/session/session_observer.h"
+#include "ash/public/mojom/input_device_settings.mojom-forward.h"
+#include "components/prefs/pref_member.h"
 
 class PrefService;
+class PrefRegistrySimple;
 
 namespace ash {
-
-// Used to denote the category of a given input device.
-enum class InputDeviceCategory {
-  kMouse,
-  kTouchpad,
-  kPointingStick,
-  kKeyboard,
-};
 
 // Store observed connected input devices in prefs to be used during the
 // transition period from global settings to per-device input settings.
 // TODO(dpad@): Remove once transitioned to per-device settings.
-class InputDeviceTracker {
+class ASH_EXPORT InputDeviceTracker
+    : public InputDeviceSettingsController::Observer,
+      public SessionObserver {
  public:
-  virtual ~InputDeviceTracker() = default;
+  // Used to denote the category of a given input device.
+  enum class InputDeviceCategory {
+    kMouse,
+    kTouchpad,
+    kPointingStick,
+    kKeyboard,
+  };
 
-  // Initializes the tracker to write updates to a new `PrefService`.
-  virtual void Init(PrefService* pref_service) = 0;
+  InputDeviceTracker();
+  InputDeviceTracker(const InputDeviceTracker&) = delete;
+  InputDeviceTracker& operator=(const InputDeviceTracker&) = delete;
+  ~InputDeviceTracker() override;
 
-  // Records that the given `device_key` has been seen in the correct
-  // `category`.
-  virtual void RecordDeviceConnected(InputDeviceCategory category,
-                                     const base::StringPiece& device_key) = 0;
+  static void RegisterProfilePrefs(PrefRegistrySimple* pref_registry);
+
+  // InputDeviceSettingsController::Observer:
+  void OnKeyboardConnected(const mojom::Keyboard& keyboard) override;
+
+  // SessionObserver:
+  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
+
+ private:
+  void Init(PrefService* pref_service);
+  void RecordDeviceConnected(InputDeviceCategory category,
+                             const base::StringPiece& device_key);
+
+  void ResetPrefMembers();
+  void RecordConnectedDevices();
+
+  std::unique_ptr<StringListPrefMember> keyboard_observed_devices_;
+  std::unique_ptr<StringListPrefMember> mouse_observed_devices_;
+  std::unique_ptr<StringListPrefMember> touchpad_observed_devices_;
+  std::unique_ptr<StringListPrefMember> pointing_stick_observed_devices_;
 };
 
 }  // namespace ash

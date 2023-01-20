@@ -131,6 +131,8 @@
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/human_presence/human_presence_orientation_controller.h"
 #include "ash/system/human_presence/snooping_protection_controller.h"
+#include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
+#include "ash/system/input_device_settings/input_device_tracker.h"
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
 #include "ash/system/keyboard_brightness/keyboard_brightness_controller.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
@@ -736,6 +738,8 @@ Shell::~Shell() {
   wm_mode_controller_.reset();
 
   event_rewriter_controller_.reset();
+  input_device_tracker_.reset();
+  input_device_settings_controller_.reset();
 
   screen_orientation_controller_.reset();
   screen_layout_observer_.reset();
@@ -1233,6 +1237,11 @@ void Shell::Init(
   window_modality_controller_ =
       std::make_unique<::wm::WindowModalityController>(this, env);
 
+  // The `InputDeviceSettingsController` is a dependency of the
+  // `EventRewriterController` so it must be initialized first.
+  input_device_settings_controller_ =
+      std::make_unique<InputDeviceSettingsControllerImpl>();
+  input_device_tracker_ = std::make_unique<InputDeviceTracker>();
   event_rewriter_controller_ = std::make_unique<EventRewriterControllerImpl>();
 
   env_filter_ = std::make_unique<::wm::CompoundEventFilter>();

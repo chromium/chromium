@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_pref_manager.h"
 #include "ash/test/ash_test_base.h"
 #include "base/ranges/algorithm.h"
@@ -58,7 +59,7 @@ class FakeInputDeviceSettingsControllerObserver
   uint32_t num_keyboards_connected_;
 };
 
-class InputDeviceSettingsControllerTest : public AshTestBase {
+class InputDeviceSettingsControllerTest : public testing::Test {
  public:
   InputDeviceSettingsControllerTest() = default;
   InputDeviceSettingsControllerTest(const InputDeviceSettingsControllerTest&) =
@@ -69,8 +70,6 @@ class InputDeviceSettingsControllerTest : public AshTestBase {
 
   // testing::Test:
   void SetUp() override {
-    AshTestBase::SetUp();
-
     observer_ = std::make_unique<FakeInputDeviceSettingsControllerObserver>();
 
     std::unique_ptr<FakeInputDevicePrefManager> pref_manager =
@@ -91,7 +90,6 @@ class InputDeviceSettingsControllerTest : public AshTestBase {
 
     pref_manager_ = nullptr;
     controller_.reset();
-    AshTestBase::TearDown();
   }
 
  protected:

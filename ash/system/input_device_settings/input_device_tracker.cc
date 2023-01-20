@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/input_device_settings/input_device_tracker_impl.h"
+#include "ash/system/input_device_settings/input_device_tracker.h"
 
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_piece_forward.h"
@@ -16,10 +19,21 @@
 
 namespace ash {
 
-InputDeviceTrackerImpl::InputDeviceTrackerImpl() = default;
-InputDeviceTrackerImpl::~InputDeviceTrackerImpl() = default;
+InputDeviceTracker::InputDeviceTracker() {
+  if (!features::IsInputDeviceSettingsSplitEnabled()) {
+    Shell::Get()->session_controller()->AddObserver(this);
+    Shell::Get()->input_device_settings_controller()->AddObserver(this);
+  }
+}
 
-void InputDeviceTrackerImpl::RegisterProfilePrefs(
+InputDeviceTracker::~InputDeviceTracker() {
+  if (!features::IsInputDeviceSettingsSplitEnabled()) {
+    Shell::Get()->session_controller()->RemoveObserver(this);
+    Shell::Get()->input_device_settings_controller()->RemoveObserver(this);
+  }
+}
+
+void InputDeviceTracker::RegisterProfilePrefs(
     PrefRegistrySimple* pref_registry) {
   pref_registry->RegisterListPref(prefs::kMouseObservedDevicesPref);
   pref_registry->RegisterListPref(prefs::kKeyboardObservedDevicesPref);
@@ -27,14 +41,35 @@ void InputDeviceTrackerImpl::RegisterProfilePrefs(
   pref_registry->RegisterListPref(prefs::kPointingStickObservedDevicesPref);
 }
 
-void InputDeviceTrackerImpl::ResetPrefMembers() {
+void InputDeviceTracker::ResetPrefMembers() {
   mouse_observed_devices_ = std::make_unique<StringListPrefMember>();
   touchpad_observed_devices_ = std::make_unique<StringListPrefMember>();
   keyboard_observed_devices_ = std::make_unique<StringListPrefMember>();
   pointing_stick_observed_devices_ = std::make_unique<StringListPrefMember>();
 }
 
-void InputDeviceTrackerImpl::Init(PrefService* pref_service) {
+void InputDeviceTracker::OnKeyboardConnected(const mojom::Keyboard& keyboard) {
+  RecordDeviceConnected(InputDeviceCategory::kKeyboard, keyboard.device_key);
+}
+
+void InputDeviceTracker::OnActiveUserPrefServiceChanged(
+    PrefService* pref_service) {
+  // When the user's `pref_service` changes, we need to re-initialize our
+  // `StringListPrefMember`s and record that we have seen all currently
+  // connected devices.
+  Init(pref_service);
+  RecordConnectedDevices();
+}
+
+void InputDeviceTracker::RecordConnectedDevices() {
+  const auto keyboards =
+      Shell::Get()->input_device_settings_controller()->GetConnectedKeyboards();
+  for (const auto& keyboard : keyboards) {
+    OnKeyboardConnected(*keyboard);
+  }
+}
+
+void InputDeviceTracker::Init(PrefService* pref_service) {
   ResetPrefMembers();
 
   mouse_observed_devices_->Init(prefs::kMouseObservedDevicesPref, pref_service);
@@ -46,7 +81,7 @@ void InputDeviceTrackerImpl::Init(PrefService* pref_service) {
       prefs::kPointingStickObservedDevicesPref, pref_service);
 }
 
-void InputDeviceTrackerImpl::RecordDeviceConnected(
+void InputDeviceTracker::RecordDeviceConnected(
     InputDeviceCategory category,
     const base::StringPiece& device_key) {
   StringListPrefMember* observed_devices = nullptr;
@@ -64,7 +99,12 @@ void InputDeviceTrackerImpl::RecordDeviceConnected(
       observed_devices = touchpad_observed_devices_.get();
       break;
   }
-  DCHECK(observed_devices);
+
+  // If `observed_devices` is null, that means we are not yet in a valid chrome
+  // session.
+  if (!observed_devices) {
+    return;
+  }
 
   std::vector<std::string> previously_observed_devices =
       observed_devices->GetValue();

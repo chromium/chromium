@@ -25,6 +25,8 @@ mojom::KeyboardPtr BuildMojomKeyboard(const ui::InputDevice& keyboard) {
   mojom::KeyboardPtr mojom_keyboard = mojom::Keyboard::New();
   mojom_keyboard->id = keyboard.id;
   mojom_keyboard->name = keyboard.name;
+  mojom_keyboard->device_key =
+      InputDevicePrefManagerImpl::BuildDeviceKey(keyboard);
   return mojom_keyboard;
 }
 }  // namespace
