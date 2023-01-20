@@ -197,7 +197,7 @@ BASE_FEATURE(kSkipUndecryptablePasswords,
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPasswordEditDialogWithDetails,
              "PasswordEditDialogWithDetails",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShowUPMErrorNotification,
              "ShowUpmErrorNotification",
