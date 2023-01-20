@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION_DEFAULT;
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_CLOSE_BUTTON_POSITION;
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_TOOLBAR_CORNER_RADIUS_DP;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
@@ -23,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.TrustedWebUtils;
 import androidx.browser.trusted.ScreenOrientation;
@@ -242,17 +247,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      */
     public static final String EXTRA_TOOLBAR_CORNER_RADIUS_IN_PIXEL_LEGACY =
             "androidx.browser.customtabs.extra.TOOLBAR_CORNER_RADIUS_IN_PIXEL";
-
-    /** Extra that sets the toolbar's top corner radii in dp */
-    public static final String EXTRA_TOOLBAR_CORNER_RADIUS_DP =
-            "androidx.browser.customtabs.extra.TOOLBAR_CORNER_RADIUS_DP";
-
-    /**
-     * Extra that specifies the position of the close button on the toolbar. Default is
-     * {@link #CLOSE_BUTTON_POSITION_DEFAULT}.
-     */
-    public static final String EXTRA_CLOSE_BUTTON_POSITION =
-            "androidx.browser.customtabs.extra.CLOSE_BUTTON_POSITION";
 
     private static final String DEFAULT_POLICY_PARAM_NAME = "default_policy";
     private static final String DEFAULT_POLICY_USE_DENYLIST = "use-denylist";
@@ -798,10 +792,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             featureUsage.log(CustomTabsFeature.EXTRA_CALLING_ACTIVITY_PACKAGE);
         }
         if (getClientPackageName() != null) featureUsage.log(CustomTabsFeature.CTF_PACKAGE_NAME);
-        if (IntentUtils.safeHasExtra(
-                    intent, CustomTabIntentDataProvider.EXTRA_TOOLBAR_CORNER_RADIUS_IN_PIXEL_LEGACY)
-                || IntentUtils.safeHasExtra(
-                        intent, CustomTabIntentDataProvider.EXTRA_TOOLBAR_CORNER_RADIUS_DP)) {
+        if (IntentUtils.safeHasExtra(intent, EXTRA_TOOLBAR_CORNER_RADIUS_IN_PIXEL_LEGACY)
+                || IntentUtils.safeHasExtra(intent, EXTRA_TOOLBAR_CORNER_RADIUS_DP)) {
             featureUsage.log(CustomTabsFeature.EXTRA_TOOLBAR_CORNER_RADIUS_DP);
         }
         if (isPartialHeightCustomTab()) {

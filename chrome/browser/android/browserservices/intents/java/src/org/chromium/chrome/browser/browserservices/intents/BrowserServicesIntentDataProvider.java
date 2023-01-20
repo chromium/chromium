@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.browserservices.intents;
 
+import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION_DEFAULT;
+
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -15,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode;
 import androidx.browser.trusted.sharing.ShareData;
@@ -78,25 +81,6 @@ public abstract class BrowserServicesIntentDataProvider {
      * resized by the user.
      */
     public static final int ACTIVITY_HEIGHT_FIXED = 2;
-
-    @IntDef({CLOSE_BUTTON_POSITION_DEFAULT, CLOSE_BUTTON_POSITION_START, CLOSE_BUTTON_POSITION_END})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface CloseButtonPosition {}
-
-    /** Same as {@link #CLOSE_BUTTON_POSITION_START}. */
-    public static final int CLOSE_BUTTON_POSITION_DEFAULT = 0;
-
-    /** Positions the close button at the start of the toolbar. */
-    public static final int CLOSE_BUTTON_POSITION_START = 1;
-
-    /** Positions the close button at the end of the toolbar. */
-    public static final int CLOSE_BUTTON_POSITION_END = 2;
-
-    /**
-     * Maximum value for the CLOSE_BUTTON_POSITION_* configuration options. For validation purposes
-     * only.
-     */
-    public static final int CLOSE_BUTTON_POSITION_MAX = 2;
 
     /**
      * @return The type of the Activity;
