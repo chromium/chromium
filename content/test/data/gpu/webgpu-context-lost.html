@@ -92,8 +92,9 @@
         const renderPassDescriptor = {
           colorAttachments: [{
             view: textureView,
-            loadValue: { r: color[0], g: color[1], b: color[2], a: 1.0 },
-            storeOp: 'store'
+            loadOp: 'clear',
+            clearValue: { r: color[0], g: color[1], b: color[2], a: 1.0 },
+            storeOp: 'store',
           }],
         };
 

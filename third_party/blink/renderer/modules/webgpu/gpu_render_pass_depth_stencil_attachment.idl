@@ -16,8 +16,4 @@ dictionary GPURenderPassDepthStencilAttachment {
     GPULoadOp stencilLoadOp;
     GPUStoreOp stencilStoreOp;
     boolean stencilReadOnly = false;
-
-    // TODO(dawn:1269): Deprecated, prefer *LoadOp+*ClearValue instead.
-    (GPULoadOp or float) depthLoadValue;
-    (GPULoadOp or GPUStencilValue) stencilLoadValue;
 };

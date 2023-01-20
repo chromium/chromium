@@ -144,7 +144,9 @@ fn main(@location(0) fragUV : vec2<f32>) -> @location(0) vec4<f32> {
           colorAttachments: [
             {
               view: context.getCurrentTexture().createView(),
-              loadValue: {r: 0.0, g: 0.0, b: 0.0, a: 1.0},
+              loadOp: 'clear',
+              clearValue: {r: 0.0, g: 0.0, b: 0.0, a: 1.0},
+              storeOp: 'store',
             },
           ],
         };
@@ -252,7 +254,9 @@ fn main(@location(0) fragUV : vec2<f32>) -> @location(0) vec4<f32> {
         colorAttachments: [
           {
             view: context.getCurrentTexture().createView(),
-            loadValue: {r: 0.0, g: 0.0, b: 0.0, a: 1.0},
+            loadOp: 'clear',
+            clearValue: {r: 0.0, g: 0.0, b: 0.0, a: 1.0},
+            storeOp: 'store',
           },
         ],
       };
@@ -305,7 +309,9 @@ fn main(@location(0) fragUV : vec2<f32>) -> @location(0) vec4<f32> {
         colorAttachments: [
           {
             view: context.getCurrentTexture().createView(),
-            loadValue: {r: 0.0, g: 0.0, b: 0.0, a: 1.0},
+            loadOp: 'clear',
+            clearValue: {r: 0.0, g: 0.0, b: 0.0, a: 1.0},
+            storeOp: 'store',
           },
         ],
       };

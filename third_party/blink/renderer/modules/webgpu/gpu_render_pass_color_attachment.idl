@@ -9,12 +9,6 @@ dictionary GPURenderPassColorAttachment {
     GPUTextureView resolveTarget;
 
     GPUColor clearValue;
-
-    // TODO(dawn:1269): loadOp and storeOp should be required after deprecation
-    // period.
-    GPULoadOp loadOp;
-    GPUStoreOp storeOp;
-
-    // TODO(dawn:1269): Deprecated, prefer loadOp+clearValue instead.
-    (GPULoadOp or GPUColor) loadValue;
+    required GPULoadOp loadOp;
+    required GPUStoreOp storeOp;
 };
