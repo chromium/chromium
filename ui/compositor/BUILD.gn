@@ -145,6 +145,7 @@ static_library("test_support") {
     "test/multi_layer_animator_test_controller.cc",
     "test/multi_layer_animator_test_controller.h",
     "test/multi_layer_animator_test_controller_delegate.h",
+    "test/test_compositor_host.cc",
     "test/test_compositor_host.h",
     "test/test_context_factories.cc",
     "test/test_context_factories.h",

@@ -148,6 +148,9 @@ class LayerWithRealCompositorTest : public testing::Test {
   }
 
   Compositor* GetCompositor() { return compositor_host_->GetCompositor(); }
+  cc::LayerTreeHost* GetLayerTreeHost() {
+    return compositor_host_->GetLayerTreeHost();
+  }
 
   void ResetCompositor() {
     compositor_host_.reset();
@@ -3362,6 +3365,18 @@ TEST_F(LayerWithRealCompositorTest, CompositorAnimationObserverTest) {
   EXPECT_FALSE(animation_observer.shutdown());
   ResetCompositor();
   EXPECT_TRUE(animation_observer.shutdown());
+}
+
+TEST_F(LayerWithRealCompositorTest, NoContentNoDraw) {
+  std::unique_ptr<Layer> root =
+      CreateNoTextureLayer(gfx::Rect(0, 0, 1000, 1000));
+  WaitForDraw();
+  ASSERT_FALSE(GetLayerTreeHost()->CommitRequested());
+  TestCompositorAnimationObserver animation_observer(GetCompositor());
+  root->SetBounds({10, 10, 1000, 1000});
+  EXPECT_FALSE(GetLayerTreeHost()->CommitRequested());
+  root->SetBounds({100, 100});
+  EXPECT_FALSE(GetLayerTreeHost()->CommitRequested());
 }
 
 }  // namespace ui

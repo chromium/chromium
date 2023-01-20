@@ -488,6 +488,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
  private:
   friend class base::RefCounted<Compositor>;
   friend class TotalAnimationThroughputReporter;
+  friend class TestCompositorHost;
 
   static void SendDamagedRectsRecursive(Layer* layer);
 

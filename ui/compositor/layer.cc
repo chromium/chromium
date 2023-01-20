@@ -1198,8 +1198,8 @@ SkColor Layer::background_color() const {
 }
 
 bool Layer::SchedulePaint(const gfx::Rect& invalid_rect) {
-  if ((type_ == LAYER_SOLID_COLOR || type_ == LAYER_NOT_DRAWN) &&
-      !texture_layer_) {
+  if (type_ == LAYER_NOT_DRAWN ||
+      (type_ == LAYER_SOLID_COLOR && !texture_layer_)) {
     return false;
   }
   if (type_ == LAYER_NINE_PATCH) {
@@ -1218,9 +1218,14 @@ bool Layer::SchedulePaint(const gfx::Rect& invalid_rect) {
 }
 
 void Layer::ScheduleDraw() {
+  // Do not schedule draw if this layer does not contribute the content.
+  if (type_ == LAYER_NOT_DRAWN && children_.size() == 0) {
+    return;
+  }
   Compositor* compositor = GetCompositor();
-  if (compositor)
+  if (compositor) {
     compositor->ScheduleDraw();
+  }
 }
 
 void Layer::SendDamagedRects() {
@@ -1510,8 +1515,9 @@ void Layer::SetBoundsFromAnimation(const gfx::Rect& bounds,
   if (bounds.size() == old_bounds.size()) {
     // Don't schedule a draw if we're invisible. We'll schedule one
     // automatically when we get visible.
-    if (IsDrawn())
+    if (IsDrawn()) {
       ScheduleDraw();
+    }
   } else {
     // Always schedule a paint, even if we're invisible.
     SchedulePaint(gfx::Rect(bounds.size()));

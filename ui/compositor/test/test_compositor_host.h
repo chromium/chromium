@@ -5,6 +5,10 @@
 #ifndef UI_COMPOSITOR_TEST_TEST_COMPOSITOR_HOST_H_
 #define UI_COMPOSITOR_TEST_TEST_COMPOSITOR_HOST_H_
 
+namespace cc {
+class LayerTreeHost;
+}
+
 namespace gfx {
 class Rect;
 }
@@ -26,6 +30,8 @@ class TestCompositorHost {
   virtual void Show() = 0;
 
   virtual Compositor* GetCompositor() = 0;
+
+  cc::LayerTreeHost* GetLayerTreeHost();
 };
 
 }  // namespace ui
