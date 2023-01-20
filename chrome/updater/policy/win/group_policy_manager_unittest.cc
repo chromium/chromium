@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
-#include "chrome/updater/test_scope.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,7 +50,7 @@ void GroupPolicyManagerTests::DeletePolicyKey() {
 
 TEST_F(GroupPolicyManagerTests, NoPolicySet) {
   scoped_refptr<PolicyManagerInterface> policy_manager =
-      base::MakeRefCounted<GroupPolicyManager>(IsSystemInstall(GetTestScope()));
+      base::MakeRefCounted<GroupPolicyManager>(true);
   EXPECT_FALSE(policy_manager->HasActiveDevicePolicies());
 
   EXPECT_EQ(policy_manager->source(), "GroupPolicy");
@@ -121,7 +120,7 @@ TEST_F(GroupPolicyManagerTests, PolicyRead) {
             key.WriteValue(L"RollbackToTargetVersion" TEST_APP_ID, 1));
 
   scoped_refptr<PolicyManagerInterface> policy_manager =
-      base::MakeRefCounted<GroupPolicyManager>(IsSystemInstall(GetTestScope()));
+      base::MakeRefCounted<GroupPolicyManager>(true);
   EXPECT_EQ(policy_manager->HasActiveDevicePolicies(),
             base::win::IsEnrolledToDomain());
 
@@ -193,7 +192,7 @@ TEST_F(GroupPolicyManagerTests, WrongPolicyValueType) {
             key.WriteValue(L"RollbackToTargetVersion" TEST_APP_ID, L"1"));
 
   scoped_refptr<PolicyManagerInterface> policy_manager =
-      base::MakeRefCounted<GroupPolicyManager>(IsSystemInstall(GetTestScope()));
+      base::MakeRefCounted<GroupPolicyManager>(true);
 
   EXPECT_EQ(policy_manager->GetLastCheckPeriod(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), absl::nullopt);

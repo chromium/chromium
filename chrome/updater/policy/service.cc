@@ -58,8 +58,8 @@ PolicyService::PolicyManagers SortManagers(
 }
 
 PolicyService::PolicyManagerVector CreatePolicyManagerVector(
+    bool should_take_policy_critical_section,
     scoped_refptr<ExternalConstants> external_constants,
-    bool is_system_install_scenario,
     scoped_refptr<PolicyManagerInterface> dm_policy_manager) {
   PolicyService::PolicyManagerVector managers;
   if (external_constants) {
@@ -68,12 +68,10 @@ PolicyService::PolicyManagerVector CreatePolicyManagerVector(
   }
 
 #if BUILDFLAG(IS_WIN)
-  managers.push_back(
-      base::MakeRefCounted<GroupPolicyManager>(is_system_install_scenario));
+  managers.push_back(base::MakeRefCounted<GroupPolicyManager>(
+      should_take_policy_critical_section));
 #endif
 
-  if (!dm_policy_manager)
-    dm_policy_manager = CreateDMPolicyManager();
   if (dm_policy_manager)
     managers.push_back(std::move(dm_policy_manager));
 
@@ -100,51 +98,48 @@ PolicyService::PolicyService(PolicyManagerVector managers)
     : policy_managers_(SortManagers(std::move(managers))) {}
 
 // The policy managers are initialized without taking the Group Policy critical
-// section here, by passing `true` for `is_system_install_scenario`.
-// Later, if the scenario is user installs/updates or system updates (but not
-// system installs), the policies are reloaded with the critical section lock.
-// System installs may run under GPO that itself takes the critical section, so
-// to prevent a deadlock, updater does not attempt to take the critical section
-// in that scenario.
+// section here, by passing `false` for `should_take_policy_critical_section`,
+// to avoid blocking the main sequence. Later in `FetchPoliciesDone`, the
+// policies are reloaded with the critical section lock.
 PolicyService::PolicyService(
     scoped_refptr<ExternalConstants> external_constants)
-    : policy_managers_(SortManagers(
-          CreatePolicyManagerVector(external_constants,
-                                    /*is_system_install_scenario*/ true,
-                                    nullptr))),
+    : policy_managers_(SortManagers(CreatePolicyManagerVector(
+          /*should_take_policy_critical_section*/ false,
+          external_constants,
+          CreateDMPolicyManager()))),
       external_constants_(external_constants),
       policy_fetcher_(base::MakeRefCounted<PolicyFetcher>(this)) {}
 
 PolicyService::~PolicyService() = default;
 
-void PolicyService::FetchPolicies(base::OnceCallback<void(int)> callback,
-                                  bool is_system_install_scenario) {
+void PolicyService::FetchPolicies(base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  policy_fetcher_->FetchPolicies(
-      base::BindOnce(&PolicyService::FetchPoliciesDone, this,
-                     std::move(callback), is_system_install_scenario));
+  policy_fetcher_->FetchPolicies(base::BindOnce(
+      &PolicyService::FetchPoliciesDone, this, std::move(callback)));
 }
 
 void PolicyService::FetchPoliciesDone(
     base::OnceCallback<void(int)> callback,
-    bool is_system_install_scenario,
     int result,
     scoped_refptr<PolicyManagerInterface> dm_policy_manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
 
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
+      FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
       base::BindOnce(
           [](scoped_refptr<ExternalConstants> external_constants,
-             bool is_system_install_scenario,
              scoped_refptr<PolicyManagerInterface> dm_policy_manager) {
-            return CreatePolicyManagerVector(external_constants,
-                                             is_system_install_scenario,
-                                             std::move(dm_policy_manager));
+            return CreatePolicyManagerVector(
+                /*should_take_policy_critical_section*/ true,
+                external_constants, dm_policy_manager);
           },
-          external_constants_, is_system_install_scenario, dm_policy_manager),
+          external_constants_,
+          dm_policy_manager ? dm_policy_manager
+          : policy_managers_.name_map.count(kSourceDMPolicyManager)
+              ? policy_managers_.name_map[kSourceDMPolicyManager]
+              : nullptr),
       base::BindOnce(
           [](scoped_refptr<PolicyService> self,
              base::OnceCallback<void(int)> callback, int result,

@@ -418,6 +418,13 @@ inline constexpr int kPolicyForceInstallUser = 6;
 inline constexpr bool kInstallPolicyDefault = kPolicyEnabled;
 inline constexpr bool kUpdatePolicyDefault = kPolicyEnabled;
 
+// Policy manager `source()` constants.
+extern const char kSourceGroupPolicyManager[];
+extern const char kSourceDMPolicyManager[];
+extern const char kSourceManagedPreferencePolicyManager[];
+extern const char kSourceDefaultValuesPolicyManager[];
+extern const char kSourceDictValuesPolicyManager[];
+
 inline constexpr int kUninstallPingReasonUninstalled = 0;
 inline constexpr int kUninstallPingReasonUserNotAnOwner = 1;
 

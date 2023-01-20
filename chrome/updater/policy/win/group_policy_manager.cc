@@ -11,8 +11,17 @@
 
 #include "base/check.h"
 #include "base/enterprise_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/logging.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_generic.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "base/win/registry.h"
 #include "chrome/updater/win/win_constants.h"
@@ -34,24 +43,47 @@ struct ScopedHCriticalPolicySectionTraits {
 using scoped_hpolicy =
     base::ScopedGeneric<HANDLE, updater::ScopedHCriticalPolicySectionTraits>;
 
-base::Value::Dict LoadGroupPolicies(bool is_system_install_scenario) {
-  scoped_hpolicy policy_lock;
+struct PolicySectionEvents
+    : public base::RefCountedThreadSafe<PolicySectionEvents> {
+  base::WaitableEvent enter_policy_section;
+  base::WaitableEvent leave_policy_section;
 
-  if (!is_system_install_scenario && base::IsManagedDevice()) {
-    // GPO rules mandate a call to EnterCriticalPolicySection() before reading
-    // policies (and a matching LeaveCriticalPolicySection() call after read).
-    //
-    // The Group Policy critical section is taken for all user installs and
-    // updates, as well as all system updates. The Group Policy critical section
-    // is not taken for system install scenarios, because system installs could
-    // be running under GPO which takes the critical section, and this can cause
-    // a deadlock.
-    //
-    // Additionally, the Group Policy critical section is only taken for managed
-    // machines because group policies are applied only in this case, and the
-    // lock acquisition can take a long time in the worst case scenarios.
-    policy_lock.reset(::EnterCriticalPolicySection(true));
-    CHECK(policy_lock.is_valid()) << "Failed to get policy lock.";
+ private:
+  friend class base::RefCountedThreadSafe<PolicySectionEvents>;
+  virtual ~PolicySectionEvents() = default;
+};
+
+base::Value::Dict LoadGroupPolicies(bool should_take_policy_critical_section) {
+  base::ScopedClosureRunner leave_policy_section_closure;
+
+  if (should_take_policy_critical_section && base::IsManagedDevice()) {
+    // Only for managed machines, a best effort is made to take the Group Policy
+    // critical section. Lock acquisition can take a long time in the worst case
+    // scenarios, hence a short timed wait is used.
+
+    auto events = base::MakeRefCounted<PolicySectionEvents>();
+    leave_policy_section_closure.ReplaceClosure(base::BindOnce(
+        [](scoped_refptr<PolicySectionEvents> events) {
+          events->leave_policy_section.Signal();
+        },
+        events));
+
+    base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(
+                       [](scoped_refptr<PolicySectionEvents> events) {
+                         scoped_hpolicy policy_lock(
+                             ::EnterCriticalPolicySection(true));
+
+                         events->enter_policy_section.Signal();
+
+                         events->leave_policy_section.Wait();
+                       },
+                       events));
+
+    if (!events->enter_policy_section.TimedWait(base::Seconds(30))) {
+      VLOG(1) << "Timed out trying to get the policy critical section.";
+    }
   }
 
   base::Value::Dict policies;
@@ -80,8 +112,8 @@ base::Value::Dict LoadGroupPolicies(bool is_system_install_scenario) {
 
 }  // namespace
 
-GroupPolicyManager::GroupPolicyManager(bool is_system_install_scenario)
-    : PolicyManager(LoadGroupPolicies(is_system_install_scenario)) {}
+GroupPolicyManager::GroupPolicyManager(bool should_take_policy_critical_section)
+    : PolicyManager(LoadGroupPolicies(should_take_policy_critical_section)) {}
 
 GroupPolicyManager::~GroupPolicyManager() = default;
 
@@ -90,7 +122,7 @@ bool GroupPolicyManager::HasActiveDevicePolicies() const {
 }
 
 std::string GroupPolicyManager::source() const {
-  return std::string("GroupPolicy");
+  return kSourceGroupPolicyManager;
 }
 
 }  // namespace updater

@@ -85,7 +85,7 @@ bool PolicyManager::HasActiveDevicePolicies() const {
 }
 
 std::string PolicyManager::source() const {
-  return std::string("DictValuePolicy");
+  return kSourceDictValuesPolicyManager;
 }
 
 absl::optional<base::TimeDelta> PolicyManager::GetLastCheckPeriod() const {

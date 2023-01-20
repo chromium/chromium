@@ -14,7 +14,7 @@ namespace updater {
 // The GroupPolicyManager returns policies for domain-joined machines.
 class GroupPolicyManager : public PolicyManager {
  public:
-  explicit GroupPolicyManager(bool is_system_install_scenario);
+  explicit GroupPolicyManager(bool should_take_policy_critical_section);
   GroupPolicyManager(const GroupPolicyManager&) = delete;
   GroupPolicyManager& operator=(const GroupPolicyManager&) = delete;
 

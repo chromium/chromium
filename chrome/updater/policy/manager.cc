@@ -98,7 +98,7 @@ bool DefaultValuesPolicyManager::HasActiveDevicePolicies() const {
 }
 
 std::string DefaultValuesPolicyManager::source() const {
-  return std::string("default");
+  return kSourceDefaultValuesPolicyManager;
 }
 
 absl::optional<base::TimeDelta> DefaultValuesPolicyManager::GetLastCheckPeriod()

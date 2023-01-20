@@ -73,7 +73,7 @@ bool DMPolicyManager::HasActiveDevicePolicies() const {
 }
 
 std::string DMPolicyManager::source() const {
-  return std::string("DeviceManagement");
+  return kSourceDMPolicyManager;
 }
 
 absl::optional<base::TimeDelta> DMPolicyManager::GetLastCheckPeriod() const {

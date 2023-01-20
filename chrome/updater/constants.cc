@@ -109,6 +109,12 @@ const char kDownloadPreferenceCacheable[] = "cacheable";
 
 const char kUTF8BOM[] = "\xEF\xBB\xBF";
 
+const char kSourceGroupPolicyManager[] = "GroupPolicy";
+const char kSourceDMPolicyManager[] = "DeviceManagement";
+const char kSourceManagedPreferencePolicyManager[] = "ManagedPreference";
+const char kSourceDefaultValuesPolicyManager[] = "default";
+const char kSourceDictValuesPolicyManager[] = "DictValuePolicy";
+
 #if BUILDFLAG(IS_MAC)
 // The user defaults suite name.
 const char kUserDefaultsSuiteName[] = MAC_BUNDLE_IDENTIFIER_STRING ".defaults";
