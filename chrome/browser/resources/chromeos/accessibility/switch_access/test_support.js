@@ -17,7 +17,7 @@
   globalThis.Navigator = module.Navigator;
 
   module = await import('./switch_access_constants.js');
-  globalThis.SAConstants = module.SAConstants;
+  globalThis.Mode = module.Mode;
 
   module = await import('./switch_access.js');
   globalThis.SwitchAccess = module.SwitchAccess;
@@ -59,7 +59,7 @@
 
   globalThis.pointScanClick = function(x, y, callback) {
     transcript.push(`Clicking with point scanning at location x=${x} y=${y}`);
-    SwitchAccess.mode = SAConstants.Mode.POINT_SCAN;
+    SwitchAccess.mode = Mode.POINT_SCAN;
     Navigator.byPoint.point_ = {x, y};
     Navigator.byPoint.performMouseAction(
         chrome.accessibilityPrivate.SwitchAccessMenuAction.LEFT_CLICK);

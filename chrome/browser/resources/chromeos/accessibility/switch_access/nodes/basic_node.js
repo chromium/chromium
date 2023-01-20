@@ -9,7 +9,7 @@ import {SACache} from '../cache.js';
 import {FocusRingManager} from '../focus_ring_manager.js';
 import {Navigator} from '../navigator.js';
 import {SwitchAccess} from '../switch_access.js';
-import {SAConstants} from '../switch_access_constants.js';
+import {ActionResponse, ErrorType} from '../switch_access_constants.js';
 import {SwitchAccessPredicate} from '../switch_access_predicate.js';
 
 import {BackButtonNode} from './back_button_node.js';
@@ -163,37 +163,37 @@ export class BasicNode extends SAChildNode {
         } else {
           this.baseNode_.doDefault();
         }
-        return SAConstants.ActionResponse.CLOSE_MENU;
+        return ActionResponse.CLOSE_MENU;
       case MenuAction.SCROLL_DOWN:
         ancestor = this.getScrollableAncestor_();
         if (ancestor.scrollable) {
           ancestor.scrollDown();
         }
-        return SAConstants.ActionResponse.RELOAD_MENU;
+        return ActionResponse.RELOAD_MENU;
       case MenuAction.SCROLL_UP:
         ancestor = this.getScrollableAncestor_();
         if (ancestor.scrollable) {
           ancestor.scrollUp();
         }
-        return SAConstants.ActionResponse.RELOAD_MENU;
+        return ActionResponse.RELOAD_MENU;
       case MenuAction.SCROLL_RIGHT:
         ancestor = this.getScrollableAncestor_();
         if (ancestor.scrollable) {
           ancestor.scrollRight();
         }
-        return SAConstants.ActionResponse.RELOAD_MENU;
+        return ActionResponse.RELOAD_MENU;
       case MenuAction.SCROLL_LEFT:
         ancestor = this.getScrollableAncestor_();
         if (ancestor.scrollable) {
           ancestor.scrollLeft();
         }
-        return SAConstants.ActionResponse.RELOAD_MENU;
+        return ActionResponse.RELOAD_MENU;
       default:
         if (Object.values(chrome.automation.ActionType).includes(action)) {
           this.baseNode_.performStandardAction(
               /** @type {chrome.automation.ActionType} */ (action));
         }
-        return SAConstants.ActionResponse.CLOSE_MENU;
+        return ActionResponse.CLOSE_MENU;
     }
   }
 
@@ -396,7 +396,7 @@ export class BasicRootNode extends SARootNode {
 
     if (children.length < 1) {
       throw SwitchAccess.error(
-          SAConstants.ErrorType.NO_CHILDREN,
+          ErrorType.NO_CHILDREN,
           'Root node must have at least 1 interesting child.',
           true /* shouldRecover */);
     }

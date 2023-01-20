@@ -7,7 +7,7 @@ import {EventGenerator} from '../../common/event_generator.js';
 import {KeyCode} from '../../common/key_code.js';
 import {RepeatedEventHandler} from '../../common/repeated_event_handler.js';
 import {Navigator} from '../navigator.js';
-import {SAConstants} from '../switch_access_constants.js';
+import {ActionResponse} from '../switch_access_constants.js';
 
 import {BasicNode} from './basic_node.js';
 import {SAChildNode, SARootNode} from './switch_access_node.js';
@@ -69,10 +69,10 @@ class ComboBoxNode extends BasicNode {
     switch (action) {
       case MenuAction.DECREMENT:
         EventGenerator.sendKeyPress(KeyCode.UP);
-        return SAConstants.ActionResponse.REMAIN_OPEN;
+        return ActionResponse.REMAIN_OPEN;
       case MenuAction.INCREMENT:
         EventGenerator.sendKeyPress(KeyCode.DOWN);
-        return SAConstants.ActionResponse.REMAIN_OPEN;
+        return ActionResponse.REMAIN_OPEN;
     }
     return super.performAction(action);
   }

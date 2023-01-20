@@ -9,7 +9,7 @@ import {FocusRingManager} from '../focus_ring_manager.js';
 import {MenuManager} from '../menu_manager.js';
 import {Navigator} from '../navigator.js';
 import {SwitchAccess} from '../switch_access.js';
-import {SAConstants} from '../switch_access_constants.js';
+import {ActionResponse} from '../switch_access_constants.js';
 
 import {SAChildNode, SARootNode} from './switch_access_node.js';
 
@@ -125,9 +125,9 @@ export class BackButtonNode extends SAChildNode {
   performAction(action) {
     if (action === MenuAction.SELECT && this.automationNode) {
       BackButtonNode.onClick_();
-      return SAConstants.ActionResponse.CLOSE_MENU;
+      return ActionResponse.CLOSE_MENU;
     }
-    return SAConstants.ActionResponse.NO_ACTION_TAKEN;
+    return ActionResponse.NO_ACTION_TAKEN;
   }
 
   /** @override */

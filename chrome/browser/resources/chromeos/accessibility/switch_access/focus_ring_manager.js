@@ -7,7 +7,7 @@ import {RectUtil} from '../common/rect_util.js';
 import {MenuManager} from './menu_manager.js';
 import {SAChildNode, SANode, SARootNode} from './nodes/switch_access_node.js';
 import {SwitchAccess} from './switch_access.js';
-import {SAConstants} from './switch_access_constants.js';
+import {ErrorType, Mode} from './switch_access_constants.js';
 
 const FocusRingInfo = chrome.accessibilityPrivate.FocusRingInfo;
 const FocusType = chrome.accessibilityPrivate.FocusType;
@@ -19,14 +19,14 @@ export class FocusRingManager {
   constructor() {
     /**
      * A map of all the focus rings.
-     * @private {!Object<SAConstants.Focus.ID, FocusRingInfo>}
+     * @private {!Object<RingId, FocusRingInfo>}
      */
     this.rings_ = this.createRings_();
 
-    /** @private {!Object<SAConstants.Focus.ID, ?SANode>} */
+    /** @private {!Object<RingId, ?SANode>} */
     this.ringNodesForTesting_ = {
-      [SAConstants.Focus.ID.PRIMARY]: null,
-      [SAConstants.Focus.ID.PREVIEW]: null,
+      [RingId.PRIMARY]: null,
+      [RingId.PREVIEW]: null,
     };
   }
 
@@ -42,9 +42,9 @@ export class FocusRingManager {
    * @param {!string} color
    */
   static setColor(color) {
-    if (!FocusRingManager.colorPattern_.test(color)) {
+    if (!COLOR_PATTERN.test(color)) {
       console.error(SwitchAccess.error(
-          SAConstants.ErrorType.INVALID_COLOR,
+          ErrorType.INVALID_COLOR,
           'Problem setting focus ring color: ' + color + ' is not' +
               'a valid CSS color string.'));
       return;
@@ -64,7 +64,7 @@ export class FocusRingManager {
 
     if (!node.location) {
       throw SwitchAccess.error(
-          SAConstants.ErrorType.MISSING_LOCATION,
+          ErrorType.MISSING_LOCATION,
           'Cannot set focus rings if node location is undefined',
           true /* shouldRecover */);
     }
@@ -107,29 +107,29 @@ export class FocusRingManager {
 
   /**
    * Creates the map of focus rings.
-   * @return {!Object<SAConstants.Focus.ID, FocusRingInfo>}
+   * @return {!Object<RingId, FocusRingInfo>}
    * @private
    */
   createRings_() {
     const primaryRing = {
-      id: SAConstants.Focus.ID.PRIMARY,
+      id: RingId.PRIMARY,
       rects: [],
       type: FocusType.SOLID,
-      color: SAConstants.Focus.PRIMARY_COLOR,
-      secondaryColor: SAConstants.Focus.OUTER_COLOR,
+      color: PRIMARY_COLOR,
+      secondaryColor: OUTER_COLOR,
     };
 
     const previewRing = {
-      id: SAConstants.Focus.ID.PREVIEW,
+      id: RingId.PREVIEW,
       rects: [],
       type: FocusType.DASHED,
-      color: SAConstants.Focus.PREVIEW_COLOR,
-      secondaryColor: SAConstants.Focus.OUTER_COLOR,
+      color: PREVIEW_COLOR,
+      secondaryColor: OUTER_COLOR,
     };
 
     return {
-      [SAConstants.Focus.ID.PRIMARY]: primaryRing,
-      [SAConstants.Focus.ID.PREVIEW]: previewRing,
+      [RingId.PRIMARY]: primaryRing,
+      [RingId.PREVIEW]: previewRing,
     };
   }
 
@@ -161,7 +161,7 @@ export class FocusRingManager {
   setFocusedNodeGroup_(group, firstChild) {
     // Clear the dashed ring between transitions, as the animation is
     // distracting.
-    this.rings_[SAConstants.Focus.ID.PREVIEW].rects = [];
+    this.rings_[RingId.PREVIEW].rects = [];
 
     let focusRect = group.location;
     const childRect = firstChild ? firstChild.location : null;
@@ -169,11 +169,11 @@ export class FocusRingManager {
       // If the current element is not specialized in location handling, e.g.
       // the back button, the focus rect should expand to contain the child
       // rect.
-      focusRect = RectUtil.expandToFitWithPadding(
-          SAConstants.Focus.GROUP_BUFFER, focusRect, childRect);
-      this.rings_[SAConstants.Focus.ID.PREVIEW].rects = [childRect];
+      focusRect =
+          RectUtil.expandToFitWithPadding(GROUP_BUFFER, focusRect, childRect);
+      this.rings_[RingId.PREVIEW].rects = [childRect];
     }
-    this.rings_[SAConstants.Focus.ID.PRIMARY].rects = [focusRect];
+    this.rings_[RingId.PRIMARY].rects = [focusRect];
     this.updateNodesForTesting_(group, firstChild);
     this.updateFocusRings_();
   }
@@ -188,16 +188,16 @@ export class FocusRingManager {
     // Nodes of this type, e.g. the back button node, handles setting its own
     // focus, as it has special requirements (a round focus ring that has no
     // gap with the edges of the view).
-    this.rings_[SAConstants.Focus.ID.PRIMARY].rects = [];
+    this.rings_[RingId.PRIMARY].rects = [];
     // Clear the dashed ring between transitions, as the animation is
     // distracting.
-    this.rings_[SAConstants.Focus.ID.PREVIEW].rects = [];
+    this.rings_[RingId.PREVIEW].rects = [];
     this.updateFocusRings_();
 
     // Show the preview focus ring unless the menu is open (it has a custom exit
     // button).
     if (!MenuManager.isMenuOpen()) {
-      this.rings_[SAConstants.Focus.ID.PREVIEW].rects = [node.group.location];
+      this.rings_[RingId.PREVIEW].rects = [node.group.location];
     }
     this.updateNodesForTesting_(node, node.group);
     this.updateFocusRings_();
@@ -209,8 +209,8 @@ export class FocusRingManager {
    * @private
    */
   setFocusedNodeLeaf_(node) {
-    this.rings_[SAConstants.Focus.ID.PRIMARY].rects = [node.location];
-    this.rings_[SAConstants.Focus.ID.PREVIEW].rects = [];
+    this.rings_[RingId.PRIMARY].rects = [node.location];
+    this.rings_[RingId.PREVIEW].rects = [];
     this.updateNodesForTesting_(node, null);
     this.updateFocusRings_();
   }
@@ -221,8 +221,7 @@ export class FocusRingManager {
    * @private
    */
   updateFocusRings_() {
-    if (SwitchAccess.mode === SAConstants.Mode.POINT_SCAN &&
-        !MenuManager.isMenuOpen()) {
+    if (SwitchAccess.mode === Mode.POINT_SCAN && !MenuManager.isMenuOpen()) {
       return;
     }
 
@@ -240,8 +239,8 @@ export class FocusRingManager {
     // Keep track of the nodes associated with each focus ring for testing
     // purposes, since focus ring locations are not guaranteed to exactly match
     // node locations.
-    this.ringNodesForTesting_[SAConstants.Focus.ID.PRIMARY] = primary;
-    this.ringNodesForTesting_[SAConstants.Focus.ID.PREVIEW] = preview;
+    this.ringNodesForTesting_[RingId.PRIMARY] = primary;
+    this.ringNodesForTesting_[RingId.PREVIEW] = preview;
 
     const observer = FocusRingManager.instance.observer_;
     if (observer) {
@@ -254,6 +253,44 @@ export class FocusRingManager {
  * Regex pattern to verify valid colors. Checks that the first character
  * is '#', followed by 3, 4, 6, or 8 valid hex characters, and no other
  * characters (ignoring case).
- * @private {RegExp}
+ * @const {RegExp}
  */
-FocusRingManager.colorPattern_ = /^#([0-9A-F]{3,4}|[0-9A-F]{6}|[0-9A-F]{8})$/i;
+const COLOR_PATTERN = /^#([0-9A-F]{3,4}|[0-9A-F]{6}|[0-9A-F]{8})$/i;
+
+/**
+ * The buffer (in dip) between a child's focus ring and its parent's focus
+ * ring.
+ * @const {number}
+ */
+const GROUP_BUFFER = 2;
+
+/**
+ * The focus ring IDs used by Switch Access.
+ * Exported for testing.
+ * @enum {string}
+ */
+export const RingId = {
+  // The ID for the ring showing the user's current focus.
+  PRIMARY: 'primary',
+  // The ID for the ring showing a preview of the next focus, if the user
+  // selects the current element.
+  PREVIEW: 'preview',
+};
+
+/**
+ * The secondary color for both rings.
+ * @const {string|undefined}
+ */
+const OUTER_COLOR = '#174EA6';  // Google Blue 900
+
+/**
+ * The inner color of the preview focus ring
+ * @const {string}
+ */
+const PREVIEW_COLOR = '#8AB4F880';  // Google Blue 300, 50% opacity
+
+/**
+ * The inner color of the primary focus ring.
+ * @const {string}
+ */
+const PRIMARY_COLOR = '#8AB4F8';  // Google Blue 300

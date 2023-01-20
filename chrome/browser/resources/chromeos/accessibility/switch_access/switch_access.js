@@ -9,7 +9,7 @@ import {SACommands} from './commands.js';
 import {Navigator} from './navigator.js';
 import {KeyboardRootNode} from './nodes/keyboard_node.js';
 import {PreferenceManager} from './preference_manager.js';
-import {SAConstants} from './switch_access_constants.js';
+import {ErrorType, Mode} from './switch_access_constants.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 const EventType = chrome.automation.EventType;
@@ -77,8 +77,8 @@ export class SwitchAccess {
           this.enableImprovedTextInput_ = result;
         });
 
-    /* @private {!SAConstants.Mode} */
-    this.mode_ = SAConstants.Mode.ITEM_SCAN;
+    /* @private {!Mode} */
+    this.mode_ = Mode.ITEM_SCAN;
   }
 
   /**
@@ -90,12 +90,12 @@ export class SwitchAccess {
     return SwitchAccess.instance.enableImprovedTextInput_;
   }
 
-  /** @return {!SAConstants.Mode} */
+  /** @return {!Mode} */
   get mode() {
     return this.mode_;
   }
 
-  /** @param {!SAConstants.Mode} newMode */
+  /** @param {!Mode} newMode */
   set mode(newMode) {
     this.mode_ = newMode;
   }
@@ -141,7 +141,7 @@ export class SwitchAccess {
 
   /**
    * Creates and records the specified error.
-   * @param {SAConstants.ErrorType} errorType
+   * @param {ErrorType} errorType
    * @param {string} errorString
    * @param {boolean} shouldRecover
    * @return {!Error}
@@ -150,7 +150,7 @@ export class SwitchAccess {
     if (shouldRecover) {
       setTimeout(Navigator.byItem.moveToValidNode.bind(Navigator.byItem), 0);
     }
-    const errorTypeCountForUMA = Object.keys(SAConstants.ErrorType).length;
+    const errorTypeCountForUMA = Object.keys(ErrorType).length;
     chrome.metricsPrivate.recordEnumerationValue(
         'Accessibility.CrosSwitchAccess.Error',
         /** @type {number} */ (errorType), errorTypeCountForUMA);

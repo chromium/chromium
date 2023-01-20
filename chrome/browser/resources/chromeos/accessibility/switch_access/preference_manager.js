@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {AutoScanManager} from './auto_scan_manager.js';
-import {SAConstants} from './switch_access_constants.js';
 
 /**
  * Class to manage user preferences.
@@ -13,7 +12,7 @@ export class PreferenceManager {
   constructor() {
     /**
      * User preferences, initially set to the default preference values.
-     * @private {!Map<SAConstants.Preference,
+     * @private {!Map<Prefs,
      *                chrome.settingsPrivate.PrefObject>}
      */
     this.preferences_ = new Map();
@@ -33,7 +32,7 @@ export class PreferenceManager {
    * Get the boolean value for the given name, or |null| if the value is not a
    * boolean or does not exist.
    *
-   * @param  {SAConstants.Preference} name
+   * @param  {Prefs} name
    * @return {boolean|null}
    * @private
    */
@@ -50,7 +49,7 @@ export class PreferenceManager {
    * Get the number value for the given name, or |null| if the value is not a
    * number or does not exist.
    *
-   * @param {SAConstants.Preference} name
+   * @param {Prefs} name
    * @return {number|null}
    * @private
    */
@@ -66,7 +65,7 @@ export class PreferenceManager {
    * Get the preference value for the given name, or |null| if the value is not
    * a dictionary or does not exist.
    *
-   * @param {SAConstants.Preference} name
+   * @param {Prefs} name
    * @return {Object|null}
    * @private
    */
@@ -93,22 +92,19 @@ export class PreferenceManager {
    * @private
    */
   settingsAreConfigured_() {
-    const selectPref =
-        this.getDict_(SAConstants.Preference.SELECT_DEVICE_KEY_CODES);
+    const selectPref = this.getDict_(Prefs.SELECT_DEVICE_KEY_CODES);
     const selectSet = selectPref ? Object.keys(selectPref).length : false;
 
-    const nextPref =
-        this.getDict_(SAConstants.Preference.NEXT_DEVICE_KEY_CODES);
+    const nextPref = this.getDict_(Prefs.NEXT_DEVICE_KEY_CODES);
     const nextSet = nextPref ? Object.keys(nextPref).length : false;
 
-    const previousPref =
-        this.getDict_(SAConstants.Preference.PREVIOUS_DEVICE_KEY_CODES);
+    const previousPref = this.getDict_(Prefs.PREVIOUS_DEVICE_KEY_CODES);
     const previousSet = previousPref ? Object.keys(previousPref).length : false;
 
     const autoScanEnabled =
         // getBoolean_() returns null if a value is not found, so we force the
         // value to be a boolean (defaulting to false).
-        Boolean(this.getBoolean_(SAConstants.Preference.AUTO_SCAN_ENABLED));
+        Boolean(this.getBoolean_(Prefs.AUTO_SCAN_ENABLED));
 
     if (!selectSet) {
       return false;
@@ -134,23 +130,23 @@ export class PreferenceManager {
         continue;
       }
 
-      const key = /** @type {SAConstants.Preference} */ (pref.key);
+      const key = /** @type {Prefs} */ (pref.key);
       const oldPrefObject = this.preferences_.get(key);
       if (!oldPrefObject || oldPrefObject.value !== pref.value) {
         this.preferences_.set(key, pref);
         switch (key) {
-          case SAConstants.Preference.AUTO_SCAN_ENABLED:
+          case Prefs.AUTO_SCAN_ENABLED:
             if (pref.type === chrome.settingsPrivate.PrefType.BOOLEAN) {
               AutoScanManager.setEnabled(/** @type {boolean} */ (pref.value));
             }
             break;
-          case SAConstants.Preference.AUTO_SCAN_TIME:
+          case Prefs.AUTO_SCAN_TIME:
             if (pref.type === chrome.settingsPrivate.PrefType.NUMBER) {
               AutoScanManager.setPrimaryScanTime(
                   /** @type {number} */ (pref.value));
             }
             break;
-          case SAConstants.Preference.AUTO_SCAN_KEYBOARD_TIME:
+          case Prefs.AUTO_SCAN_KEYBOARD_TIME:
             if (pref.type === chrome.settingsPrivate.PrefType.NUMBER) {
               AutoScanManager.setKeyboardScanTime(
                   /** @type {number} */ (pref.value));
@@ -171,6 +167,22 @@ export class PreferenceManager {
    * @return {boolean}
    */
   usesPreference_(pref) {
-    return Object.values(SAConstants.Preference).includes(pref.key);
+    return Object.values(Prefs).includes(pref.key);
   }
 }
+
+/**
+ * Preferences that are configurable in Switch Access.
+ * @enum {string}
+ */
+const Prefs = {
+  AUTO_SCAN_ENABLED: 'settings.a11y.switch_access.auto_scan.enabled',
+  AUTO_SCAN_TIME: 'settings.a11y.switch_access.auto_scan.speed_ms',
+  AUTO_SCAN_KEYBOARD_TIME:
+      'settings.a11y.switch_access.auto_scan.keyboard.speed_ms',
+  NEXT_DEVICE_KEY_CODES: 'settings.a11y.switch_access.next.device_key_codes',
+  PREVIOUS_DEVICE_KEY_CODES:
+      'settings.a11y.switch_access.previous.device_key_codes',
+  SELECT_DEVICE_KEY_CODES:
+      'settings.a11y.switch_access.select.device_key_codes',
+};

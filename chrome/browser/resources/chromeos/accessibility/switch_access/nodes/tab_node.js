@@ -4,7 +4,7 @@
 
 import {RectUtil} from '../../common/rect_util.js';
 import {Navigator} from '../navigator.js';
-import {SAConstants} from '../switch_access_constants.js';
+import {ActionResponse} from '../switch_access_constants.js';
 
 import {BackButtonNode} from './back_button_node.js';
 import {BasicNode, BasicRootNode} from './basic_node.js';
@@ -54,10 +54,10 @@ export class TabNode extends BasicNode {
   /** @override */
   performAction(action) {
     if (action !== MenuAction.SELECT) {
-      return SAConstants.ActionResponse.NO_ACTION_TAKEN;
+      return ActionResponse.NO_ACTION_TAKEN;
     }
     Navigator.byItem.enterGroup();
-    return SAConstants.ActionResponse.CLOSE_MENU;
+    return ActionResponse.CLOSE_MENU;
   }
 
   // ================= Static methods =================

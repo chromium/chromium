@@ -7,7 +7,7 @@ import {EventHandler} from '../../common/event_handler.js';
 import {KeyCode} from '../../common/key_code.js';
 import {Navigator} from '../navigator.js';
 import {SwitchAccess} from '../switch_access.js';
-import {SAConstants} from '../switch_access_constants.js';
+import {ActionResponse} from '../switch_access_constants.js';
 import {SwitchAccessPredicate} from '../switch_access_predicate.js';
 import {TextNavigationManager} from '../text_navigation_manager.js';
 
@@ -82,7 +82,7 @@ export class EditableTextNode extends BasicNode {
     switch (action) {
       case MenuAction.KEYBOARD:
         Navigator.byItem.enterKeyboard();
-        return SAConstants.ActionResponse.CLOSE_MENU;
+        return ActionResponse.CLOSE_MENU;
       case MenuAction.DICTATION:
         if (this.automationNode.state[chrome.automation.StateType.FOCUSED]) {
           chrome.accessibilityPrivate.toggleDictation();
@@ -94,51 +94,51 @@ export class EditableTextNode extends BasicNode {
               .start();
           this.automationNode.focus();
         }
-        return SAConstants.ActionResponse.CLOSE_MENU;
+        return ActionResponse.CLOSE_MENU;
       case MenuAction.MOVE_CURSOR:
-        return SAConstants.ActionResponse.OPEN_TEXT_NAVIGATION_MENU;
+        return ActionResponse.OPEN_TEXT_NAVIGATION_MENU;
 
       case MenuAction.CUT:
         EventGenerator.sendKeyPress(KeyCode.X, {ctrl: true});
-        return SAConstants.ActionResponse.REMAIN_OPEN;
+        return ActionResponse.REMAIN_OPEN;
       case MenuAction.COPY:
         EventGenerator.sendKeyPress(KeyCode.C, {ctrl: true});
-        return SAConstants.ActionResponse.REMAIN_OPEN;
+        return ActionResponse.REMAIN_OPEN;
       case MenuAction.PASTE:
         EventGenerator.sendKeyPress(KeyCode.V, {ctrl: true});
-        return SAConstants.ActionResponse.REMAIN_OPEN;
+        return ActionResponse.REMAIN_OPEN;
 
       case MenuAction.START_TEXT_SELECTION:
         TextNavigationManager.saveSelectStart();
-        return SAConstants.ActionResponse.OPEN_TEXT_NAVIGATION_MENU;
+        return ActionResponse.OPEN_TEXT_NAVIGATION_MENU;
       case MenuAction.END_TEXT_SELECTION:
         TextNavigationManager.saveSelectEnd();
-        return SAConstants.ActionResponse.EXIT_SUBMENU;
+        return ActionResponse.EXIT_SUBMENU;
 
       case MenuAction.JUMP_TO_BEGINNING_OF_TEXT:
         TextNavigationManager.jumpToBeginning();
-        return SAConstants.ActionResponse.REMAIN_OPEN;
+        return ActionResponse.REMAIN_OPEN;
       case MenuAction.JUMP_TO_END_OF_TEXT:
         TextNavigationManager.jumpToEnd();
-        return SAConstants.ActionResponse.REMAIN_OPEN;
+        return ActionResponse.REMAIN_OPEN;
       case MenuAction.MOVE_BACKWARD_ONE_CHAR_OF_TEXT:
         TextNavigationManager.moveBackwardOneChar();
-        return SAConstants.ActionResponse.REMAIN_OPEN;
+        return ActionResponse.REMAIN_OPEN;
       case MenuAction.MOVE_BACKWARD_ONE_WORD_OF_TEXT:
         TextNavigationManager.moveBackwardOneWord();
-        return SAConstants.ActionResponse.REMAIN_OPEN;
+        return ActionResponse.REMAIN_OPEN;
       case MenuAction.MOVE_DOWN_ONE_LINE_OF_TEXT:
         TextNavigationManager.moveDownOneLine();
-        return SAConstants.ActionResponse.REMAIN_OPEN;
+        return ActionResponse.REMAIN_OPEN;
       case MenuAction.MOVE_FORWARD_ONE_CHAR_OF_TEXT:
         TextNavigationManager.moveForwardOneChar();
-        return SAConstants.ActionResponse.REMAIN_OPEN;
+        return ActionResponse.REMAIN_OPEN;
       case MenuAction.MOVE_UP_ONE_LINE_OF_TEXT:
         TextNavigationManager.moveUpOneLine();
-        return SAConstants.ActionResponse.REMAIN_OPEN;
+        return ActionResponse.REMAIN_OPEN;
       case MenuAction.MOVE_FORWARD_ONE_WORD_OF_TEXT:
         TextNavigationManager.moveForwardOneWord();
-        return SAConstants.ActionResponse.REMAIN_OPEN;
+        return ActionResponse.REMAIN_OPEN;
     }
     return super.performAction(action);
   }

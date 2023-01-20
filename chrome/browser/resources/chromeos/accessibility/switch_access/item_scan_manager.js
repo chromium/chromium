@@ -27,7 +27,7 @@ import {SliderNode} from './nodes/slider_node.js';
 import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
 import {TabNode} from './nodes/tab_node.js';
 import {SwitchAccess} from './switch_access.js';
-import {SAConstants} from './switch_access_constants.js';
+import {Mode} from './switch_access_constants.js';
 import {SwitchAccessPredicate} from './switch_access_predicate.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
@@ -257,7 +257,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
   /** @override */
   restart() {
     const point = Navigator.byPoint.currentPoint;
-    SwitchAccess.mode = SAConstants.Mode.ITEM_SCAN;
+    SwitchAccess.mode = Mode.ITEM_SCAN;
     this.desktop_.hitTestWithReply(
         point.x, point.y, node => this.moveTo_(node));
   }
@@ -300,7 +300,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
    * @private
    */
   onFocusChange_(event) {
-    if (SwitchAccess.mode === SAConstants.Mode.POINT_SCAN) {
+    if (SwitchAccess.mode === Mode.POINT_SCAN) {
       return;
     }
 
@@ -328,7 +328,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
    * @private
    */
   onScrollChange_() {
-    if (SwitchAccess.mode === SAConstants.Mode.POINT_SCAN) {
+    if (SwitchAccess.mode === Mode.POINT_SCAN) {
       return;
     }
 
@@ -346,7 +346,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
    * @private
    */
   onModalDialog_(event) {
-    if (SwitchAccess.mode === SAConstants.Mode.POINT_SCAN) {
+    if (SwitchAccess.mode === Mode.POINT_SCAN) {
       return;
     }
 
@@ -364,7 +364,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
    * @private
    */
   onTreeChange_(treeChange) {
-    if (SwitchAccess.mode === SAConstants.Mode.POINT_SCAN) {
+    if (SwitchAccess.mode === Mode.POINT_SCAN) {
       return;
     }
 

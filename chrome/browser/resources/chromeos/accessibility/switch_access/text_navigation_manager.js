@@ -9,7 +9,7 @@ import {KeyCode} from '../common/key_code.js';
 import {ActionManager} from './action_manager.js';
 import {Navigator} from './navigator.js';
 import {SwitchAccess} from './switch_access.js';
-import {SAConstants} from './switch_access_constants.js';
+import {ErrorType} from './switch_access_constants.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
@@ -340,7 +340,7 @@ export class TextNavigationManager {
     if (this.selectionStartIndex_ === TextNavigationManager.NO_SELECT_INDEX ||
         this.selectionEndIndex_ === TextNavigationManager.NO_SELECT_INDEX) {
       console.error(SwitchAccess.error(
-          SAConstants.ErrorType.INVALID_SELECTION_BOUNDS,
+          ErrorType.INVALID_SELECTION_BOUNDS,
           'Selection bounds are not set properly: ' +
               this.selectionStartIndex_ + ' ' + this.selectionEndIndex_));
     } else {

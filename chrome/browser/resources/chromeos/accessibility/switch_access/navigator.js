@@ -6,10 +6,9 @@ import {ItemScanManager} from './item_scan_manager.js';
 import {ItemNavigatorInterface, PointNavigatorInterface} from './navigator_interfaces.js';
 import {PointScanManager} from './point_scan_manager.js';
 import {SwitchAccess} from './switch_access.js';
-import {SAConstants} from './switch_access_constants.js';
+import {ErrorType} from './switch_access_constants.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
-const ErrorType = SAConstants.ErrorType;
 
 export class Navigator {
   /** @param {!AutomationNode} desktop */

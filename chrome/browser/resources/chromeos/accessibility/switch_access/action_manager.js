@@ -8,12 +8,9 @@ import {SwitchAccessMetrics} from './metrics.js';
 import {Navigator} from './navigator.js';
 import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
 import {SwitchAccess} from './switch_access.js';
-import {SAConstants} from './switch_access_constants.js';
+import {ActionResponse, MenuType, Mode} from './switch_access_constants.js';
 
-const ActionResponse = SAConstants.ActionResponse;
 const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
-const MenuType = SAConstants.MenuType;
-const Mode = SAConstants.Mode;
 
 /**
  * Class to handle performing actions with Switch Access, including determining

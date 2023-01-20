@@ -8,7 +8,7 @@ import {RectUtil} from '../../common/rect_util.js';
 import {AutoScanManager} from '../auto_scan_manager.js';
 import {Navigator} from '../navigator.js';
 import {SwitchAccess} from '../switch_access.js';
-import {SAConstants} from '../switch_access_constants.js';
+import {ActionResponse, ErrorType} from '../switch_access_constants.js';
 import {SwitchAccessPredicate} from '../switch_access_predicate.js';
 
 import {BackButtonNode} from './back_button_node.js';
@@ -71,21 +71,21 @@ export class KeyboardNode extends BasicNode {
   /** @override */
   performAction(action) {
     if (action !== MenuAction.SELECT) {
-      return SAConstants.ActionResponse.NO_ACTION_TAKEN;
+      return ActionResponse.NO_ACTION_TAKEN;
     }
 
     const keyLocation = this.location;
     if (!keyLocation) {
-      return SAConstants.ActionResponse.NO_ACTION_TAKEN;
+      return ActionResponse.NO_ACTION_TAKEN;
     }
 
     // doDefault() does nothing on Virtual Keyboard buttons, so we must
     // simulate a mouse click.
     const center = RectUtil.center(keyLocation);
     EventGenerator.sendMouseClick(
-        center.x, center.y, {delayMs: SAConstants.VK_KEY_PRESS_DURATION_MS});
+        center.x, center.y, {delayMs: VK_KEY_PRESS_DURATION_MS});
 
-    return SAConstants.ActionResponse.CLOSE_MENU;
+    return ActionResponse.CLOSE_MENU;
   }
 }
 
@@ -148,7 +148,7 @@ export class KeyboardRootNode extends BasicRootNode {
     const keyboard = KeyboardRootNode.getKeyboardObject();
     if (!keyboard) {
       throw SwitchAccess.error(
-          SAConstants.ErrorType.MISSING_KEYBOARD,
+          ErrorType.MISSING_KEYBOARD,
           'Could not find keyboard in the automation tree',
           true /* shouldRecover */);
     }
@@ -267,3 +267,10 @@ BasicRootNode.builders.push({
   predicate: rootNode => rootNode.role === chrome.automation.RoleType.KEYBOARD,
   builder: KeyboardRootNode.buildTree,
 });
+
+/**
+ * The delay between keydown and keyup events on the virtual keyboard,
+ * allowing the key press animation to display.
+ * @const {number}
+ */
+const VK_KEY_PRESS_DURATION_MS = 100;

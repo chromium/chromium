@@ -374,7 +374,10 @@ js_library("menu_manager") {
 }
 
 js_library("metrics") {
-  deps = [ ":switch_access_constants" ]
+  deps = [
+    ":switch_access_constants",
+    "../common:string_util",
+  ]
   externs_list = [ "$externs_path/metrics_private.js" ]
 }
 

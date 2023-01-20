@@ -4,7 +4,7 @@
 
 import {EventGenerator} from '../../common/event_generator.js';
 import {KeyCode} from '../../common/key_code.js';
-import {SAConstants} from '../switch_access_constants.js';
+import {ActionResponse} from '../switch_access_constants.js';
 
 import {BasicNode} from './basic_node.js';
 import {SAChildNode, SARootNode} from './switch_access_node.js';
@@ -37,10 +37,10 @@ export class SliderNode extends BasicNode {
     if (this.isCustomSlider_) {
       if (action === MenuAction.INCREMENT) {
         EventGenerator.sendKeyPress(KeyCode.RIGHT);
-        return SAConstants.ActionResponse.REMAIN_OPEN;
+        return ActionResponse.REMAIN_OPEN;
       } else if (action === MenuAction.DECREMENT) {
         EventGenerator.sendKeyPress(KeyCode.LEFT);
-        return SAConstants.ActionResponse.REMAIN_OPEN;
+        return ActionResponse.REMAIN_OPEN;
       }
     }
 

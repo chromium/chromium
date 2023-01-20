@@ -8,6 +8,17 @@
 
 export class StringUtil {
   /**
+   * @param {string} str
+   * @return {string}
+   */
+  static toUpperCamelCase(str) {
+    const wordRegex = /(?:^\w|[A-Z]|(?:\b|_)\w)/g;
+    const underscoreAndWhitespaceRegex = /(\s|_)+/g;
+    return str.replace(wordRegex, word => word.toUpperCase())
+        .replace(underscoreAndWhitespaceRegex, '');
+  }
+
+  /**
    * Returns the length of the longest common prefix of two strings.
    * @param {string} first The first string.
    * @param {string} second The second string.

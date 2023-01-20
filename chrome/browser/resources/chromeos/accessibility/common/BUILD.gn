@@ -165,6 +165,9 @@ js_library("sentence_utils") {
   externs_list = [ "$externs_path/automation.js" ]
 }
 
+js_library("string_util") {
+}
+
 js_library("word_utils") {
   deps = [ ":paragraph_utils" ]
   externs_list = [ "$externs_path/automation.js" ]
