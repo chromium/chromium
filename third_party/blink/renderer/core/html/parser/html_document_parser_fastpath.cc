@@ -579,6 +579,7 @@ class HTMLFastPathParser {
     pos_ = start;
     attribute_name_buffer_.resize(0);
     Char c;
+    // IsValidAttributeNameChar() returns false if end of input is reached.
     while (c = GetNext(), IsValidAttributeNameChar(c)) {
       if ('A' <= c && c <= 'Z') {
         c = c - ('A' - 'a');
@@ -596,12 +597,16 @@ class HTMLFastPathParser {
     const Char* start = pos_;
     if (Char quote_char = GetNext(); quote_char == '"' || quote_char == '\'') {
       start = ++pos_;
-      while (GetNext() != quote_char) {
+      while (pos_ != end_ && GetNext() != quote_char) {
         if (GetNext() == '&' || GetNext() == '\r') {
           pos_ = start - 1;
           return {Span{}, ScanEscapedAttrValue()};
         }
         ++pos_;
+      }
+      if (pos_ == end_) {
+        return Fail(HtmlFastPathResult::kFailedParsingQuotedAttributeValue,
+                    std::pair{Span{}, USpan{}});
       }
       result = Span{start, static_cast<size_t>(pos_ - start)};
       if (ConsumeNext() != quote_char) {
@@ -630,7 +635,7 @@ class HTMLFastPathParser {
     const Char* start = pos_;
     if (Char quote_char = GetNext(); quote_char == '"' || quote_char == '\'') {
       start = ++pos_;
-      while (GetNext() != quote_char) {
+      while (pos_ != end_ && GetNext() != quote_char) {
         if (failed_) {
           return USpan{};
         }
@@ -648,6 +653,11 @@ class HTMLFastPathParser {
           uchar_buffer_.push_back(*pos_);
           ++pos_;
         }
+      }
+      if (pos_ == end_) {
+        return Fail(
+            HtmlFastPathResult::kFailedParsingQuotedEscapedAttributeValue,
+            USpan());
       }
       result = Span{start, static_cast<size_t>(pos_ - start)};
       if (ConsumeNext() != quote_char) {
@@ -767,6 +777,7 @@ class HTMLFastPathParser {
   }
 
   Char GetNext() {
+    DCHECK_LE(pos_, end_);
     if (pos_ == end_) {
       Fail(HtmlFastPathResult::kFailedEndOfInputReached);
       return '\0';
