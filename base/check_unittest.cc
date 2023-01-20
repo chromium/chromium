@@ -453,7 +453,7 @@ TEST(CheckDeathTest, NotReached) {
 #if DCHECK_IS_ON()
   // Expect a DCHECK with streamed params intact.
   EXPECT_DCHECK("Check failed: false. foo", NOTREACHED() << "foo");
-#elif CHECK_WILL_STREAM()
+#elif CHECK_WILL_STREAM() || BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
   // Expect LOG(ERROR) that looks like CHECK(false) with streamed params intact.
   EXPECT_LOG_ERROR(__LINE__, NOTREACHED() << "foo",
                    "Check failed: false. foo\n");

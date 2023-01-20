@@ -21,7 +21,7 @@ namespace logging {
 // wild before always turning NOTREACHED()s FATAL.
 //
 // TODO(crbug.com/851128): Turn NOTREACHED() FATAL and mark them [[noreturn]].
-#if CHECK_WILL_STREAM()
+#if CHECK_WILL_STREAM() || BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
 #define NOTREACHED()   \
   CHECK_FUNCTION_IMPL( \
       ::logging::NotReachedError::NotReached(__FILE__, __LINE__), false)
