@@ -14,8 +14,6 @@ example_value: 1
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- chrome.win
 items:
 - caption: Disable Microsoft® cloud authentication
   name: Disabled
@@ -31,5 +29,7 @@ schema:
   - 0
   - 1
   type: integer
+supported_on:
+- chrome.win:111-
 tags: []
 type: int-enum
