@@ -63,6 +63,7 @@
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_error.h"
 #import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
+#import "ios/components/security_interstitials/ios_security_interstitial_java_script_feature.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_blocking_page.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_controller_client.h"
@@ -303,6 +304,9 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   SearchEngineJavaScriptFeature::GetInstance()->SetDelegate(
       SearchEngineTabHelperFactory::GetInstance());
   features.push_back(SearchEngineJavaScriptFeature::GetInstance());
+  features.push_back(
+      security_interstitials::IOSSecurityInterstitialJavaScriptFeature::
+          GetInstance());
   features.push_back(
       language::LanguageDetectionJavaScriptFeature::GetInstance());
   features.push_back(translate::TranslateJavaScriptFeature::GetInstance());

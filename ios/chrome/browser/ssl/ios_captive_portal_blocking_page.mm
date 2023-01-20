@@ -87,10 +87,7 @@ void IOSCaptivePortalBlockingPage::PopulateInterstitialStrings(
 }
 
 void IOSCaptivePortalBlockingPage::HandleCommand(
-    security_interstitials::SecurityInterstitialCommand command,
-    const GURL& origin_url,
-    bool user_is_interacting,
-    web::WebFrame* sender_frame) {
+    security_interstitials::SecurityInterstitialCommand command) {
   // Any command other than "open the login page" is ignored.
   if (command == security_interstitials::CMD_OPEN_LOGIN) {
     captive_portal::CaptivePortalMetrics::LogCaptivePortalBlockingPageEvent(

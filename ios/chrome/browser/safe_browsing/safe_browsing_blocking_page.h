@@ -62,10 +62,7 @@ class SafeBrowsingBlockingPage
   // security_interstitials::IOSSecurityInterstitialPage:
   std::string GetHtmlContents() const override;
   void HandleCommand(
-      security_interstitials::SecurityInterstitialCommand command,
-      const GURL& origin_url,
-      bool user_is_interacting,
-      web::WebFrame* sender_frame) override;
+      security_interstitials::SecurityInterstitialCommand command) override;
   bool ShouldCreateNewNavigation() const override;
   void PopulateInterstitialStrings(
       base::Value::Dict& load_time_data) const override;

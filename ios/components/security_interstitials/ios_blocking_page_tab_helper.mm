@@ -20,21 +20,10 @@ namespace security_interstitials {
 
 WEB_STATE_USER_DATA_KEY_IMPL(IOSBlockingPageTabHelper)
 
-namespace {
-// Script command prefix.
-const char kCommandPrefix[] = "blockingPage";
-}  // namespace
-
 #pragma mark - IOSBlockingPageTabHelper
 
 IOSBlockingPageTabHelper::IOSBlockingPageTabHelper(web::WebState* web_state)
-    : navigation_id_listener_(web_state, this) {
-  auto command_callback =
-      base::BindRepeating(&IOSBlockingPageTabHelper::OnBlockingPageCommand,
-                          weak_factory_.GetWeakPtr());
-  subscription_ =
-      web_state->AddScriptCommandCallback(command_callback, kCommandPrefix);
-}
+    : navigation_id_listener_(web_state, this) {}
 
 IOSBlockingPageTabHelper::~IOSBlockingPageTabHelper() = default;
 
@@ -58,36 +47,12 @@ IOSSecurityInterstitialPage* IOSBlockingPageTabHelper::GetCurrentBlockingPage()
   return blocking_page_for_currently_committed_navigation_.get();
 }
 
-void IOSBlockingPageTabHelper::OnBlockingPageCommand(
-    const base::Value& message,
-    const GURL& url,
-    bool user_is_interacting,
-    web::WebFrame* sender_frame) {
+void IOSBlockingPageTabHelper::OnBlockingPageCommandReceived(
+    SecurityInterstitialCommand command) {
   if (!blocking_page_for_currently_committed_navigation_)
     return;
 
-  const std::string* command = message.FindStringKey("command");
-  if (!command)
-    return;
-
-  // Remove the command prefix since it is ignored when converting the value
-  // to a SecurityInterstitialCommand.
-  const std::size_t pos = command->find('.');
-  if (pos == std::string::npos || pos + 1 == command->size())
-    return;
-
-  // Use a string piece to avoid creating a copy of the suffix (as calling
-  // std::string::substr would do). This is safe as `*command` is owned by
-  // the base::Value which stay in scope for the whole method.
-  const base::StringPiece suffix = base::StringPiece(*command).substr(pos + 1);
-
-  int command_id;
-  if (!base::StringToInt(suffix, &command_id))
-    return;
-
-  blocking_page_for_currently_committed_navigation_->HandleCommand(
-      static_cast<SecurityInterstitialCommand>(command_id), url,
-      user_is_interacting, sender_frame);
+  blocking_page_for_currently_committed_navigation_->HandleCommand(command);
 }
 
 void IOSBlockingPageTabHelper::UpdateForFinishedNavigation(

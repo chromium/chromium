@@ -19,6 +19,7 @@
 #include "components/ssl_errors/error_info.h"
 #include "components/strings/grit/components_strings.h"
 #import "components/translate/ios/browser/translate_java_script_feature.h"
+#import "ios/components/security_interstitials/ios_security_interstitial_java_script_feature.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_error.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_error.h"
@@ -97,6 +98,8 @@ std::vector<web::JavaScriptFeature*> WebViewWebClient::GetJavaScriptFeatures(
           autofill::FormHandlersJavaScriptFeature::GetInstance(),
           autofill::SuggestionControllerJavaScriptFeature::GetInstance(),
           password_manager::PasswordManagerJavaScriptFeature::GetInstance(),
+          security_interstitials::IOSSecurityInterstitialJavaScriptFeature::
+              GetInstance(),
           translate::TranslateJavaScriptFeature::GetInstance(),
           WebViewMessageHandlerJavaScriptFeature::GetInstance()};
 }

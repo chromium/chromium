@@ -109,7 +109,8 @@ function sendCommand(cmd) {
   // <if expr="is_ios">
   // Send commands for iOS committed interstitials.
   /** @suppress {undefinedVars|missingProperties} */ (function() {
-    __gCrWeb.message.invokeOnHost({'command': 'blockingPage.' + cmd});
+    window.webkit.messageHandlers['IOSInterstitialMessage'].postMessage(
+        {'command': cmd.toString()});
   })();
   // </if>
 }

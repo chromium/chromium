@@ -78,9 +78,7 @@ class LookalikeUrlBlockingPageTest : public PlatformTest {
   }
 
   void SendCommand(SecurityInterstitialCommand command) {
-    page_->HandleCommand(command, url_,
-                         /*user_is_interacting=*/true,
-                         /*sender_frame=*/nullptr);
+    page_->HandleCommand(command);
   }
 
   // Checks that UKM recorded an event with the given metric name and value.

@@ -53,10 +53,7 @@ class IOSSSLBlockingPage
 
  private:
   void HandleCommand(
-      security_interstitials::SecurityInterstitialCommand command,
-      const GURL& origin_url,
-      bool user_is_interacting,
-      web::WebFrame* sender_frame) override;
+      security_interstitials::SecurityInterstitialCommand command) override;
 
   // Returns true if `options_mask` refers to a soft-overridable SSL error.
   static bool IsOverridable(int options_mask);

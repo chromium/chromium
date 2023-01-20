@@ -358,6 +358,7 @@ source_set("web_view_sources") {
     "//ios/components/credential_provider_extension:password_spec_fetcher",
     "//ios/components/credential_provider_extension:password_util",
     "//ios/components/io_thread",
+    "//ios/components/security_interstitials",
     "//ios/components/security_interstitials/lookalikes",
     "//ios/components/security_interstitials/safe_browsing",
     "//ios/components/security_interstitials/safe_browsing:util",

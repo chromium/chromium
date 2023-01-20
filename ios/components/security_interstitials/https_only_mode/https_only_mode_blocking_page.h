@@ -42,10 +42,7 @@ class HttpsOnlyModeBlockingPage
 
  private:
   void HandleCommand(
-      security_interstitials::SecurityInterstitialCommand command,
-      const GURL& origin_url,
-      bool user_is_interacting,
-      web::WebFrame* sender_frame) override;
+      security_interstitials::SecurityInterstitialCommand command) override;
 
   web::WebState* web_state_ = nullptr;
   HttpsUpgradeService* service_ = nullptr;

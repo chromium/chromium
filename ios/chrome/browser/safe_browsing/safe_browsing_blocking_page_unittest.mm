@@ -64,9 +64,7 @@ class SafeBrowsingBlockingPageTest : public PlatformTest {
   }
 
   void SendCommand(SecurityInterstitialCommand command) {
-    page_->HandleCommand(command, url_,
-                         /*user_is_interacting=*/true,
-                         /*sender_frame=*/nullptr);
+    page_->HandleCommand(command);
   }
 
  protected:

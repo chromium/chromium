@@ -71,9 +71,7 @@ class HttpsOnlyModeBlockingPageTest : public PlatformTest {
   }
 
   void SendCommand(SecurityInterstitialCommand command) {
-    page_->HandleCommand(command, url_,
-                         /*user_is_interacting=*/true,
-                         /*sender_frame=*/nullptr);
+    page_->HandleCommand(command);
   }
 
   HttpsUpgradeService* service() { return service_.get(); }

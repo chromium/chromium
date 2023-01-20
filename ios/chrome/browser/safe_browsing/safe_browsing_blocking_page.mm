@@ -125,10 +125,7 @@ std::string SafeBrowsingBlockingPage::GetHtmlContents() const {
 }
 
 void SafeBrowsingBlockingPage::HandleCommand(
-    SecurityInterstitialCommand command,
-    const GURL& origin_url,
-    bool user_is_interacting,
-    web::WebFrame* sender_frame) {
+    SecurityInterstitialCommand command) {
   error_ui_->HandleCommand(command);
   if (command == security_interstitials::CMD_DONT_PROCEED) {
     // `error_ui_` handles recording PROCEED and

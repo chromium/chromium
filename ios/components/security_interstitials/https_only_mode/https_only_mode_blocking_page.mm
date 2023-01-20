@@ -75,10 +75,7 @@ bool HttpsOnlyModeBlockingPage::ShouldDisplayURL() const {
 }
 
 void HttpsOnlyModeBlockingPage::HandleCommand(
-    security_interstitials::SecurityInterstitialCommand command,
-    const GURL& origin_url,
-    bool user_is_interacting,
-    web::WebFrame* sender_frame) {
+    security_interstitials::SecurityInterstitialCommand command) {
   if (command == security_interstitials::CMD_DONT_PROCEED) {
     controller_->metrics_helper()->RecordUserDecision(
         security_interstitials::MetricsHelper::DONT_PROCEED);

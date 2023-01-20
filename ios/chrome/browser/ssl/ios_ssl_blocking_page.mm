@@ -94,10 +94,7 @@ bool IOSSSLBlockingPage::IsOverridable(int options_mask) {
 }
 
 void IOSSSLBlockingPage::HandleCommand(
-    security_interstitials::SecurityInterstitialCommand command,
-    const GURL& origin_url,
-    bool user_is_interacting,
-    web::WebFrame* sender_frame) {
+    security_interstitials::SecurityInterstitialCommand command) {
   // If a proceed command is received, allowlist the certificate and reload
   // the page to re-initiate the original navigation.
   if (command == security_interstitials::CMD_PROCEED) {

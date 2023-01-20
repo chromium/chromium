@@ -11,6 +11,8 @@ source_set("security_interstitials") {
     "ios_blocking_page_metrics_helper.mm",
     "ios_blocking_page_tab_helper.h",
     "ios_blocking_page_tab_helper.mm",
+    "ios_security_interstitial_java_script_feature.h",
+    "ios_security_interstitial_java_script_feature.mm",
     "ios_security_interstitial_page.h",
     "ios_security_interstitial_page.mm",
   ]
@@ -25,6 +27,7 @@ source_set("security_interstitials") {
     "//ios/web",
     "//ios/web/common",
     "//ios/web/public",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/security",
     "//ui/base",
     "//url",
