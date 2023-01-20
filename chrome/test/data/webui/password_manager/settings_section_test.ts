@@ -168,13 +168,13 @@ suite('SettingsSectionTest', function() {
     assertFalse(!!settings.shadowRoot!.querySelector('#addShortcutBanner'));
   });
 
-  test('Export dialog appears after clicking on banner', async function() {
+  test('Export dialog appears after clicking on button', async function() {
     const settings = document.createElement('settings-section');
     document.body.appendChild(settings);
     await flushTasks();
 
-    settings.$.exportPasswordsBanner.click();
-    await flushTasks();
+    settings.$.exportPasswordsButton.click();
+    await passwordManager.whenCalled('exportPasswords');
     const exportPasswordsDialog =
         settings!.shadowRoot!.querySelector('passwords-export-dialog');
     assertTrue(!!exportPasswordsDialog);

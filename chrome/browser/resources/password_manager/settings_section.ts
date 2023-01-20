@@ -7,7 +7,6 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './shared_style.css.js';
 import './prefs/pref_toggle_button.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -21,8 +20,7 @@ export interface SettingsSectionElement {
   $: {
     autosigninToggle: PrefToggleButtonElement,
     blockedSitesList: HTMLElement,
-    exportPasswordsBanner: HTMLElement,
-    exportDialogStart: CrDialogElement,
+    exportPasswordsButton: HTMLElement,
     passwordToggle: PrefToggleButtonElement,
   };
 }
