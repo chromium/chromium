@@ -25,7 +25,8 @@
     padding-inline-start: 20px;
   }
 
-  #subtitle {
+  #subtitle,
+  #expandMutedCompromisedCredentialsButton {
     color: var(--cr-secondary-text-color);
     font-weight: 500;
   }
@@ -65,6 +66,20 @@
         show-details="[[isCompromisedSection(insecurityType_)]]">
     </checkup-list-item>
   </template>
-  <!-- TODO(crbug.com/1401001): Display muted compromised credentials -->
+  <template is="dom-if" if="[[mutedCompromisedCredentials_.length]]">
+    <cr-expand-button id="expandMutedCompromisedCredentialsButton"
+        class="cr-row list-item" no-hover
+        expanded="{{mutedLeakedCredentialsExpanded_}}">
+      $i18n{mutedCompromisedCredentials}
+    </cr-expand-button>
+    <iron-collapse id="mutedCredentialsList"
+        opened="[[mutedLeakedCredentialsExpanded_]]">
+      <template is="dom-repeat" items="[[mutedCompromisedCredentials_]]">
+        <checkup-list-item item="[[item]]" first="[[!index]]"
+            show-details="[[isCompromisedSection(insecurityType_)]]">
+        </checkup-list-item>
+      </template>
+    </iron-collapse>
+  </template>
 </template>
 <!-- TODO(crbug.com/1401001): Display reused credentials -->

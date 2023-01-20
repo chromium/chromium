@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {CheckupSubpage, Page, PasswordManagerImpl, Router} from 'chrome://password-manager/password_manager.js';
+import {CheckupSubpage, CrExpandButtonElement, Page, PasswordManagerImpl, Router} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -181,5 +181,68 @@ suite('CheckupDetailsSectionTest', function() {
 
     assertFalse(!!weakItem.shadowRoot!.querySelector('#compromiseType'));
     assertFalse(!!weakItem.shadowRoot!.querySelector('#elapsedTime'));
+  });
+
+  test('Muted compromised issues shown correctly', async function() {
+    Router.getInstance().navigateTo(
+        Page.CHECKUP_DETAILS, CheckupSubpage.COMPROMISED);
+    passwordManager.data.insecureCredentials = [
+      makeInsecureCredential({
+        url: 'test.com',
+        username: 'viking',
+        types: [
+          CompromiseType.LEAKED,
+        ],
+        elapsedMinSinceCompromise: 1,
+        isMuted: false,
+      }),
+      makeInsecureCredential({
+        url: 'example.com',
+        username: 'admin',
+        types: [
+          CompromiseType.PHISHED,
+        ],
+        elapsedMinSinceCompromise: 1,
+        isMuted: false,
+      }),
+      makeInsecureCredential({
+        url: 'example.com',
+        username: 'justUser',
+        types: [
+          CompromiseType.PHISHED,
+        ],
+        elapsedMinSinceCompromise: 10,
+        isMuted: true,
+      }),
+    ];
+
+    const section = document.createElement('checkup-details-section');
+    document.body.appendChild(section);
+    await passwordManager.whenCalled('getInsecureCredentials');
+    const params = await pluralString.whenCalled('getPluralString');
+    await flushTasks();
+
+    assertEquals('compromisedPasswords', params.messageName);
+    assertEquals(2, params.itemCount);
+
+    const dismissedButton =
+        section.shadowRoot!.querySelector<CrExpandButtonElement>(
+            '#expandMutedCompromisedCredentialsButton');
+    assertTrue(!!dismissedButton);
+    assertTrue(isVisible(dismissedButton));
+
+    const mutedCredentialsList =
+        section.shadowRoot!.querySelector('#mutedCredentialsList');
+    assertTrue(!!mutedCredentialsList);
+
+    const listItemElements =
+        mutedCredentialsList.querySelectorAll<HTMLElement>('checkup-list-item');
+    assertEquals(1, listItemElements.length);
+    assertTrue(!!listItemElements[0]);
+    assertFalse(isVisible(listItemElements[0]));
+
+    dismissedButton.click();
+
+    assertTrue(isVisible(listItemElements[0]));
   });
 });

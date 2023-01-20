@@ -110,6 +110,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       {"localPasswordManager",
        IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE},
       {"moreActions", IDS_PASSWORD_MANAGER_UI_MORE_ACTIONS},
+      {"mutedCompromisedCredentials",
+       IDS_PASSWORD_MANAGER_UI_MUTED_COMPROMISED_PASSWORDS},
       {"notesLabel", IDS_PASSWORD_MANAGER_UI_NOTES_LABEL},
       {"passwordCopiedToClipboard",
        IDS_PASSWORD_MANAGER_UI_PASSWORD_COPIED_TO_CLIPBOARD},

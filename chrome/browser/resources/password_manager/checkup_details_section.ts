@@ -1,7 +1,9 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import './shared_style.css.js';
 import './checkup_list_item.js';
 
@@ -59,6 +61,8 @@ export class CheckupDetailsSectionElement extends
   private insecurityType_: CheckupSubpage|undefined;
   private allInsecureCredentials_: chrome.passwordsPrivate.PasswordUiEntry[];
   private shownInsecureCredentials_: chrome.passwordsPrivate.PasswordUiEntry[];
+  private mutedCompromisedCredentials_:
+      chrome.passwordsPrivate.PasswordUiEntry[];
   private insecureCredentialsChangedListener_: CredentialsChangedListener|null =
       null;
 
@@ -94,6 +98,13 @@ export class CheckupDetailsSectionElement extends
     this.shownInsecureCredentials_ =
         this.allInsecureCredentials_.filter(cred => {
           return !cred.compromisedInfo!.isMuted &&
+              cred.compromisedInfo!.compromiseTypes.some(type => {
+                return this.getInsecurityType_().includes(type);
+              });
+        });
+    this.mutedCompromisedCredentials_ =
+        this.allInsecureCredentials_.filter(cred => {
+          return cred.compromisedInfo!.isMuted &&
               cred.compromisedInfo!.compromiseTypes.some(type => {
                 return this.getInsecurityType_().includes(type);
               });
