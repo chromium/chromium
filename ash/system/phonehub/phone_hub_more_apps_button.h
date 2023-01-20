@@ -33,6 +33,7 @@ class VIEWS_EXPORT PhoneHubMoreAppsButton
  private:
   void InitLayout();
   void LoadAppList();
+  void InitGlimmer();
 
   views::TableLayout* table_layout_ = nullptr;
   phonehub::AppStreamLauncherDataModel* app_stream_launcher_data_model_;

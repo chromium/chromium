@@ -1630,6 +1630,8 @@ component("ash") {
     "system/phonehub/phone_hub_recent_apps_view.h",
     "system/phonehub/phone_hub_small_app_icon.cc",
     "system/phonehub/phone_hub_small_app_icon.h",
+    "system/phonehub/phone_hub_small_app_loading_icon.cc",
+    "system/phonehub/phone_hub_small_app_loading_icon.h",
     "system/phonehub/phone_hub_tray.cc",
     "system/phonehub/phone_hub_tray.h",
     "system/phonehub/phone_hub_ui_controller.cc",
