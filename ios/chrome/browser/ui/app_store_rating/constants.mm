@@ -12,3 +12,5 @@ NSString* const kAppStoreRatingTotalDaysOnChromeKey =
     @"AppStoreRatingTotalDaysOnChrome";
 NSString* const kAppStoreRatingActiveDaysInPastWeekKey =
     @"AppStoreRatingActiveDaysInPastWeek";
+NSString* const kAppStoreRatingLastShownPromoDayKey =
+    @"AppStoreRatingLastShownPromoDay";
