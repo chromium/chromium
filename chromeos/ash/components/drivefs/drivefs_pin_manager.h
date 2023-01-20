@@ -46,18 +46,17 @@ enum class SetupStage {
   kNotStarted,
 
   // In-progress stages.
-  kCalculatingFreeSpace,
-  kCalculatingRequiredSpace,
+  kGettingFreeSpace,
+  kListingFiles,
   kSyncing,
 
   // Final success stage.
   kSuccess,
 
   // Final error stages.
-  kDisabled,
   kStopped,
-  kCannotCalculateFreeSpace,
-  kCannotRetrieveSearchResults,
+  kCannotGetFreeSpace,
+  kCannotListFiles,
   kNotEnoughSpace,
 };
 

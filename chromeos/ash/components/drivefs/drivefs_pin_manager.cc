@@ -283,14 +283,13 @@ std::ostream& operator<<(std::ostream& out, const SetupStage stage) {
   case SetupStage::k##s: \
     return out << #s;
     PRINT(NotStarted)
-    PRINT(CalculatingFreeSpace)
-    PRINT(CalculatingRequiredSpace)
+    PRINT(GettingFreeSpace)
+    PRINT(ListingFiles)
     PRINT(Syncing)
     PRINT(Success)
-    PRINT(Disabled)
     PRINT(Stopped)
-    PRINT(CannotCalculateFreeSpace)
-    PRINT(CannotRetrieveSearchResults)
+    PRINT(CannotGetFreeSpace)
+    PRINT(CannotListFiles)
     PRINT(NotEnoughSpace)
 #undef PRINT
   }
@@ -482,7 +481,7 @@ void DriveFsPinManager::Start() {
 
   VLOG(1) << "Calculating free space...";
   timer_ = base::ElapsedTimer();
-  progress_.stage = SetupStage::kCalculatingFreeSpace;
+  progress_.stage = SetupStage::kGettingFreeSpace;
   NotifyProgress();
 
   space_getter_.Run(
@@ -521,7 +520,7 @@ void DriveFsPinManager::OnFreeSpaceRetrieved(const int64_t free_space) {
 
   if (free_space < 0) {
     LOG(ERROR) << "Cannot calculate free space";
-    return Complete(SetupStage::kCannotCalculateFreeSpace);
+    return Complete(SetupStage::kCannotGetFreeSpace);
   }
 
   progress_.free_space = free_space;
@@ -530,7 +529,7 @@ void DriveFsPinManager::OnFreeSpaceRetrieved(const int64_t free_space) {
 
   VLOG(1) << "Calculating required space...";
   timer_ = base::ElapsedTimer();
-  progress_.stage = SetupStage::kCalculatingRequiredSpace;
+  progress_.stage = SetupStage::kListingFiles;
   NotifyProgress();
 
   drivefs_->StartSearchQuery(search_query_.BindNewPipeAndPassReceiver(),
@@ -546,7 +545,7 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
 
   if (error != drive::FILE_ERROR_OK || !items) {
     LOG(ERROR) << "Cannot list files: " << error;
-    return Complete(SetupStage::kCannotRetrieveSearchResults);
+    return Complete(SetupStage::kCannotListFiles);
   }
 
   if (items->empty()) {

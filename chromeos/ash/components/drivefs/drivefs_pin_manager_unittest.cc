@@ -316,7 +316,7 @@ TEST_F(DriveFsPinManagerTest, CannotGetFreeSpace) {
 
   EXPECT_CALL(mock_drivefs_, OnStartSearchQuery(_)).Times(0);
   EXPECT_CALL(mock_drivefs_, OnGetNextPage(_)).Times(0);
-  EXPECT_CALL(mock_callback, Run(SetupStage::kCannotCalculateFreeSpace))
+  EXPECT_CALL(mock_callback, Run(SetupStage::kCannotGetFreeSpace))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(mock_free_space_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(-1));
@@ -328,7 +328,7 @@ TEST_F(DriveFsPinManagerTest, CannotGetFreeSpace) {
   run_loop.Run();
 
   const SetupProgress progress = manager.GetProgress();
-  EXPECT_EQ(progress.stage, SetupStage::kCannotCalculateFreeSpace);
+  EXPECT_EQ(progress.stage, SetupStage::kCannotGetFreeSpace);
   EXPECT_EQ(progress.free_space, 0);
   EXPECT_EQ(progress.required_space, 0);
   EXPECT_EQ(progress.transferred_bytes, 0);
@@ -344,7 +344,7 @@ TEST_F(DriveFsPinManagerTest, CannotListFiles) {
   EXPECT_CALL(mock_drivefs_, OnGetNextPage(_))
       .WillOnce(DoAll(PopulateNoSearchItems(),
                       Return(drive::FileError::FILE_ERROR_FAILED)));
-  EXPECT_CALL(mock_callback, Run(SetupStage::kCannotRetrieveSearchResults))
+  EXPECT_CALL(mock_callback, Run(SetupStage::kCannotListFiles))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(mock_free_space_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
@@ -356,7 +356,7 @@ TEST_F(DriveFsPinManagerTest, CannotListFiles) {
   run_loop.Run();
 
   const SetupProgress progress = manager.GetProgress();
-  EXPECT_EQ(progress.stage, SetupStage::kCannotRetrieveSearchResults);
+  EXPECT_EQ(progress.stage, SetupStage::kCannotListFiles);
   EXPECT_EQ(progress.free_space, 1 << 30);
   EXPECT_EQ(progress.required_space, 0);
   EXPECT_EQ(progress.transferred_bytes, 0);
@@ -371,7 +371,7 @@ TEST_F(DriveFsPinManagerTest, InvalidFileList) {
   EXPECT_CALL(mock_drivefs_, OnStartSearchQuery(_)).Times(1);
   EXPECT_CALL(mock_drivefs_, OnGetNextPage(_))
       .WillOnce(Return(drive::FileError::FILE_ERROR_OK));
-  EXPECT_CALL(mock_callback, Run(SetupStage::kCannotRetrieveSearchResults))
+  EXPECT_CALL(mock_callback, Run(SetupStage::kCannotListFiles))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(mock_free_space_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
@@ -383,7 +383,7 @@ TEST_F(DriveFsPinManagerTest, InvalidFileList) {
   run_loop.Run();
 
   const SetupProgress progress = manager.GetProgress();
-  EXPECT_EQ(progress.stage, SetupStage::kCannotRetrieveSearchResults);
+  EXPECT_EQ(progress.stage, SetupStage::kCannotListFiles);
   EXPECT_EQ(progress.free_space, 1 << 30);
   EXPECT_EQ(progress.required_space, 0);
   EXPECT_EQ(progress.transferred_bytes, 0);
