@@ -850,9 +850,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Incognito.BiometricAuthEnabled" enum="Boolean"
-    expires_after="2022-09-20">
-  <owner>stkhapugin@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
+    expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
+  <owner>andrewkamau@google.com</owner>
+  <owner>arabm@google.com</owner>
   <summary>
     Logged once per app launch. Logs whether the biometric incognito
     authentication setting is enabled. This metric is designed to measure % of
@@ -862,9 +864,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Incognito.BiometricReauthAttemptSuccessful" enum="Boolean"
-    expires_after="2022-09-20">
-  <owner>stkhapugin@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
+    expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
+  <owner>andrewkamau@google.com</owner>
+  <owner>arabm@google.com</owner>
   <summary>
     Logged when the user attempt to reauthenticate to display the incognito
     tabs. This metric is designed to measure the success of the reauth.
