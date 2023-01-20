@@ -41,6 +41,8 @@ component("attribution_reporting") {
     "source_registration.h",
     "suitable_origin.cc",
     "suitable_origin.h",
+    "trigger_attestation.cc",
+    "trigger_attestation.h",
     "trigger_registration.cc",
     "trigger_registration.h",
   ]
@@ -76,6 +78,7 @@ source_set("unit_tests") {
     "parsing_utils_unittest.cc",
     "source_registration_unittest.cc",
     "suitable_origin_unittest.cc",
+    "trigger_attestation_unittest.cc",
     "trigger_registration_unittest.cc",
   ]
 
@@ -227,6 +230,13 @@ mojom("registration_mojom") {
           mojom = "attribution_reporting.mojom.AggregatableTriggerData"
           cpp = "::attribution_reporting::AggregatableTriggerData"
           forward_declaration = "namespace attribution_reporting { struct AggregatableTriggerData; }"
+        },
+        {
+          mojom = "attribution_reporting.mojom.TriggerAttestation"
+          cpp = "::attribution_reporting::TriggerAttestation"
+          forward_declaration =
+              "namespace attribution_reporting { class TriggerAttestation; }"
+          move_only = true
         },
         {
           mojom = "attribution_reporting.mojom.TriggerRegistration"

@@ -18,5 +18,6 @@ interface AttributionDataHost {
   // Called when trigger data from the renderer is available for a given
   // attributionsrc request.
   TriggerDataAvailable(attribution_reporting.mojom.SuitableOrigin reporting_origin,
-                       attribution_reporting.mojom.TriggerRegistration data);
+                       attribution_reporting.mojom.TriggerRegistration data,
+                       attribution_reporting.mojom.TriggerAttestation? attestation);
 };

@@ -21,6 +21,7 @@
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/trigger_attestation.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-shared.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -708,8 +709,10 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
     return;
   }
 
-  data_host_->TriggerDataAvailable(std::move(reporting_origin),
-                                   std::move(*trigger_data));
+  data_host_->TriggerDataAvailable(
+      std::move(reporting_origin), std::move(*trigger_data),
+      // TODO(crbug.com/1405832): pass down response's `attestation`.
+      /*attestation=*/absl::nullopt);
 }
 
 }  // namespace blink

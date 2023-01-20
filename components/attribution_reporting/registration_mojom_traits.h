@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <vector>
 
 #include "base/component_export.h"
@@ -20,6 +21,7 @@
 #include "components/attribution_reporting/registration.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/trigger_attestation.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "mojo/public/cpp/base/int128_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
@@ -40,6 +42,25 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     *out = data.value();
     return true;
   }
+};
+
+template <>
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
+    StructTraits<attribution_reporting::mojom::TriggerAttestationDataView,
+                 attribution_reporting::TriggerAttestation> {
+  static const std::string& token(
+      const attribution_reporting::TriggerAttestation& attestation) {
+    return attestation.token();
+  }
+
+  static std::string aggregatable_report_id(
+      const attribution_reporting::TriggerAttestation& attestation) {
+    return attestation.aggregatable_report_id().AsLowercaseString();
+  }
+
+  static bool Read(
+      attribution_reporting::mojom::TriggerAttestationDataView data,
+      attribution_reporting::TriggerAttestation* out);
 };
 
 template <>

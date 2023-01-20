@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/guid.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/aggregation_service.mojom-shared.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
@@ -19,6 +20,7 @@
 #include "components/attribution_reporting/registration.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/trigger_attestation.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "mojo/public/cpp/base/int128_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
@@ -145,6 +147,31 @@ bool StructTraits<attribution_reporting::mojom::FiltersDataView,
   }
 
   *out = std::move(*filters);
+  return true;
+}
+
+// static
+bool StructTraits<attribution_reporting::mojom::TriggerAttestationDataView,
+                  attribution_reporting::TriggerAttestation>::
+    Read(attribution_reporting::mojom::TriggerAttestationDataView data,
+         attribution_reporting::TriggerAttestation* out) {
+  std::string token;
+  if (!data.ReadToken(&token)) {
+    return false;
+  }
+
+  std::string aggregatable_report_id;
+  if (!data.ReadAggregatableReportId(&aggregatable_report_id)) {
+    return false;
+  }
+
+  auto trigger_attesation = attribution_reporting::TriggerAttestation::Create(
+      std::move(token), aggregatable_report_id);
+  if (!trigger_attesation) {
+    return false;
+  }
+
+  *out = std::move(*trigger_attesation);
   return true;
 }
 
