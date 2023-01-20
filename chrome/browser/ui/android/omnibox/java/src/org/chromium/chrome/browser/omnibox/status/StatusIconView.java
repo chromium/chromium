@@ -36,8 +36,17 @@ public class StatusIconView extends LinearLayout {
     public void setVisibility(int visibility) {
         int iconViewFrameVisibility = getIconVisibility();
         if (iconViewFrameVisibility != visibility) {
+            boolean wasLayoutPreviouslyRequested = isLayoutRequested();
             mIconViewFrame.setVisibility(visibility);
             ViewUtils.requestLayout(this, "StatusIconView setVisibility");
+            // If the icon's visibility changes while layout is pending, we can end up in a bad
+            // state due to a stale measurement cache. Post a task to request layout to force this
+            // visibility change (https://crbug.com/1345552, https://crbug.com/1399457).
+            if (wasLayoutPreviouslyRequested && getHandler() != null) {
+                getHandler().post(()
+                                          -> ViewUtils.requestLayout(
+                                                  this, "StatusIconView.setVisibility Runnable"));
+            }
         }
         // The holding space should be only be VISIBLE if the icon is GONE. The size should be (the
         // background size - the icon size).
