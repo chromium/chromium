@@ -7195,6 +7195,26 @@
             ]
         }
     ],
+    "NaCLGPURefactorings": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "NewVideoDecoderAndSwapchain",
+                    "enable_features": [
+                        "PPAPISharedImagesSwapChain",
+                        "UseMojoVideoDecoderForPepper"
+                    ]
+                }
+            ]
+        }
+    ],
     "NaviOnboarding2": [
         {
             "platforms": [
