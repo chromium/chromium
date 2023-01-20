@@ -32,7 +32,7 @@
                 "config": "chromium"
               },
               "skylab_upload_location": {
-                "gs_bucket": "lacros-arm-generic-rel-skylab-try"
+                "gs_bucket": "chromium-ci-skylab"
               }
             }
           }

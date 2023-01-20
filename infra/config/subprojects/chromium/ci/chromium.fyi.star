@@ -317,7 +317,7 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
         skylab_upload_location = builder_config.skylab_upload_location(
-            gs_bucket = "lacros-amd64-generic-rel-skylab-try",
+            gs_bucket = "chromium-ci-skylab",
         ),
     ),
     os = os.LINUX_DEFAULT,
@@ -346,7 +346,7 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
         skylab_upload_location = builder_config.skylab_upload_location(
-            gs_bucket = "lacros-arm-generic-rel-skylab-try",
+            gs_bucket = "chromium-ci-skylab",
         ),
     ),
     os = os.LINUX_DEFAULT,
@@ -380,7 +380,7 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
         skylab_upload_location = builder_config.skylab_upload_location(
-            gs_bucket = "lacros-arm64-generic-rel-skylab-try",
+            gs_bucket = "chromium-ci-skylab",
         ),
     ),
     os = os.LINUX_DEFAULT,
