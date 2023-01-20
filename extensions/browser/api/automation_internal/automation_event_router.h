@@ -37,6 +37,8 @@ namespace extensions {
 struct AutomationListener;
 struct WorkerId;
 
+using RenderProcessHostId = int;
+
 class AutomationEventRouterObserver {
  public:
   virtual void AllAutomationExtensionsGone() = 0;
@@ -49,25 +51,26 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
  public:
   static AutomationEventRouter* GetInstance();
 
-  // Indicates that the listener at |listener_process_id| wants to receive
+  // Indicates that the listener at |listener_rph_id| wants to receive
   // automation events from the accessibility tree indicated by
   // |source_ax_tree_id|. Automation events are forwarded from now on until the
   // listener process dies.
   void RegisterListenerForOneTree(const ExtensionId& extension_id,
-                                  int listener_process_id,
+                                  const RenderProcessHostId& listener_rph_id,
                                   content::WebContents* web_contents,
                                   ui::AXTreeID source_ax_tree_id);
 
-  // Indicates that the listener at |listener_process_id| wants to receive
+  // Indicates that the listener at |listener_rph_id| wants to receive
   // automation events from all accessibility trees because it has Desktop
   // permission.
   void RegisterListenerWithDesktopPermission(
       const ExtensionId& extension_id,
-      int listener_process_id,
+      const RenderProcessHostId& listener_rph_id,
       content::WebContents* web_contents);
 
   // Undoes the Register call above. May result in disabling of automation.
-  void UnregisterListenerWithDesktopPermission(int listener_process_id);
+  void UnregisterListenerWithDesktopPermission(
+      const RenderProcessHostId& listener_rph_id);
 
   // Like the above function, but for all listeners. Definitely results in
   // disabling of automation.
@@ -115,7 +118,7 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
 
     raw_ptr<AutomationEventRouter> router;
     ExtensionId extension_id;
-    int process_id;
+    RenderProcessHostId render_process_host_id;
     bool desktop;
     std::set<ui::AXTreeID> tree_ids;
     bool is_active_context;
@@ -129,7 +132,7 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
   ~AutomationEventRouter() override;
 
   void Register(const ExtensionId& extension_id,
-                int listener_process_id,
+                const RenderProcessHostId& listener_rph_id,
                 content::WebContents* web_contents,
                 ui::AXTreeID source_ax_tree_id,
                 bool desktop);

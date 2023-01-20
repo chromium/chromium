@@ -56,25 +56,25 @@ AutomationEventRouter::~AutomationEventRouter() {
 
 void AutomationEventRouter::RegisterListenerForOneTree(
     const ExtensionId& extension_id,
-    int listener_process_id,
+    const RenderProcessHostId& listener_rph_id,
     content::WebContents* web_contents,
     ui::AXTreeID source_ax_tree_id) {
-  Register(extension_id, listener_process_id, web_contents, source_ax_tree_id,
+  Register(extension_id, listener_rph_id, web_contents, source_ax_tree_id,
            false);
 }
 
 void AutomationEventRouter::RegisterListenerWithDesktopPermission(
     const ExtensionId& extension_id,
-    int listener_process_id,
+    const RenderProcessHostId& listener_rph_id,
     content::WebContents* web_contents) {
-  Register(extension_id, listener_process_id, web_contents,
-           ui::AXTreeIDUnknown(), true);
+  Register(extension_id, listener_rph_id, web_contents, ui::AXTreeIDUnknown(),
+           true);
 }
 
 void AutomationEventRouter::UnregisterListenerWithDesktopPermission(
-    int listener_process_id) {
+    const RenderProcessHostId& listener_rph_id) {
   content::RenderProcessHost* host =
-      content::RenderProcessHost::FromID(listener_process_id);
+      content::RenderProcessHost::FromID(listener_rph_id);
   if (host)
     RemoveAutomationListener(host);
 }
@@ -121,7 +121,7 @@ void AutomationEventRouter::DispatchAccessibilityEventsInternal(
     }
 
     content::RenderProcessHost* rph =
-        content::RenderProcessHost::FromID(listener->process_id);
+        content::RenderProcessHost::FromID(listener->render_process_host_id);
     rph->Send(new ExtensionMsg_AccessibilityEventBundle(
         event_bundle, listener->is_active_context));
   }
@@ -137,7 +137,7 @@ void AutomationEventRouter::DispatchAccessibilityLocationChange(
     }
 
     content::RenderProcessHost* rph =
-        content::RenderProcessHost::FromID(listener->process_id);
+        content::RenderProcessHost::FromID(listener->render_process_host_id);
     rph->Send(new ExtensionMsg_AccessibilityLocationChange(params));
   }
 }
@@ -251,18 +251,18 @@ AutomationEventRouter::AutomationListener::~AutomationListener() = default;
 void AutomationEventRouter::AutomationListener::PrimaryPageChanged(
     content::Page& page) {
   router->RemoveAutomationListener(
-      content::RenderProcessHost::FromID(process_id));
+      content::RenderProcessHost::FromID(render_process_host_id));
 }
 
 void AutomationEventRouter::Register(const ExtensionId& extension_id,
-                                     int listener_process_id,
+                                     const RenderProcessHostId& listener_rph_id,
                                      content::WebContents* web_contents,
                                      ui::AXTreeID ax_tree_id,
                                      bool desktop) {
   DCHECK(desktop || ax_tree_id != ui::AXTreeIDUnknown());
 
-  const auto& iter = base::ranges::find(listeners_, listener_process_id,
-                                        &AutomationListener::process_id);
+  const auto& iter = base::ranges::find(
+      listeners_, listener_rph_id, &AutomationListener::render_process_host_id);
 
   // We have an entry with that process so update the set of tree ids it wants
   // to listen to, and update its desktop permission.
@@ -278,13 +278,13 @@ void AutomationEventRouter::Register(const ExtensionId& extension_id,
   auto listener = std::make_unique<AutomationListener>(web_contents);
   listener->router = this;
   listener->extension_id = extension_id;
-  listener->process_id = listener_process_id;
+  listener->render_process_host_id = listener_rph_id;
   listener->desktop = desktop;
   if (!desktop)
     listener->tree_ids.insert(ax_tree_id);
   listeners_.emplace_back(std::move(listener));
   content::RenderProcessHost* host =
-      content::RenderProcessHost::FromID(listener_process_id);
+      content::RenderProcessHost::FromID(listener_rph_id);
   rph_observers_.AddObservation(host);
   UpdateActiveProfile();
   for (AutomationEventRouterObserver& observer : observers_)
@@ -300,8 +300,9 @@ void AutomationEventRouter::Register(const ExtensionId& extension_id,
   std::vector<WorkerId> all_worker_ids =
       process_manager->GetServiceWorkersForExtension(extension_id);
   for (const WorkerId& worker_id : all_worker_ids) {
-    if (worker_id.render_process_id != listener_process_id)
+    if (worker_id.render_process_id != listener_rph_id) {
       continue;
+    }
 
     keepalive_request_uuid_for_worker_[worker_id] =
         process_manager->IncrementServiceWorkerKeepaliveCount(
@@ -344,10 +345,10 @@ void AutomationEventRouter::RenderProcessHostDestroyed(
 
 void AutomationEventRouter::RemoveAutomationListener(
     content::RenderProcessHost* host) {
-  int process_id = host->GetID();
+  RenderProcessHostId rph_id = host->GetID();
   ExtensionId extension_id;
   for (auto listener = listeners_.begin(); listener != listeners_.end();) {
-    if ((*listener)->process_id == process_id) {
+    if ((*listener)->render_process_host_id == rph_id) {
       // Copy the extension ID, as we're about to erase the source.
       extension_id = (*listener)->extension_id;
       listener = listeners_.erase(listener);
@@ -373,8 +374,9 @@ void AutomationEventRouter::RemoveAutomationListener(
       process_manager->GetServiceWorkersForExtension(extension_id);
 
   for (const WorkerId& worker_id : all_worker_ids) {
-    if (worker_id.render_process_id != process_id)
+    if (worker_id.render_process_id != rph_id) {
       continue;
+    }
     const auto& request_uuid_iter =
         keepalive_request_uuid_for_worker_.find(worker_id);
     if (request_uuid_iter == keepalive_request_uuid_for_worker_.end())
@@ -402,7 +404,7 @@ void AutomationEventRouter::UpdateActiveProfile() {
         extension_id_count++;
     }
     content::RenderProcessHost* rph =
-        content::RenderProcessHost::FromID(listener->process_id);
+        content::RenderProcessHost::FromID(listener->render_process_host_id);
 
     // The purpose of is_active_context is to ensure different instances of
     // the same extension running in different profiles don't interfere with
