@@ -789,7 +789,7 @@ TEST_F(OpenscreenSessionHostTest, Vp9CodecEnabledInOffer) {
 
 TEST_F(OpenscreenSessionHostTest, Av1CodecEnabledInOffer) {
 // Cast streaming of AV1 is desktop only.
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && defined(ENABLE_LIBAOM)
   base::test::ScopedFeatureList feature_list(media::kCastStreamingAv1);
   CreateSession(SessionType::VIDEO_ONLY);
 
