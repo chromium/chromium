@@ -68,18 +68,17 @@ base::Value::Dict LoadGroupPolicies(bool should_take_policy_critical_section) {
         },
         events));
 
-    base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
-        ->PostTask(FROM_HERE,
-                   base::BindOnce(
-                       [](scoped_refptr<PolicySectionEvents> events) {
-                         scoped_hpolicy policy_lock(
-                             ::EnterCriticalPolicySection(true));
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
+        base::BindOnce(
+            [](scoped_refptr<PolicySectionEvents> events) {
+              scoped_hpolicy policy_lock(::EnterCriticalPolicySection(true));
 
-                         events->enter_policy_section.Signal();
+              events->enter_policy_section.Signal();
 
-                         events->leave_policy_section.Wait();
-                       },
-                       events));
+              events->leave_policy_section.Wait();
+            },
+            events));
 
     if (!events->enter_policy_section.TimedWait(base::Seconds(30))) {
       VLOG(1) << "Timed out trying to get the policy critical section.";

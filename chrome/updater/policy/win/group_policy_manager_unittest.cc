@@ -9,6 +9,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/time/time.h"
 #include "base/win/registry.h"
@@ -30,6 +31,8 @@ class GroupPolicyManagerTests : public ::testing::Test {
 
  private:
   void DeletePolicyKey();
+
+  base::test::TaskEnvironment environment_;
 };
 
 void GroupPolicyManagerTests::SetUp() {
