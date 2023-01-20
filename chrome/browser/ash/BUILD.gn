@@ -5280,6 +5280,7 @@ source_set("unit_tests") {
     "sync/sync_explicit_passphrase_client_ash_unittest.cc",
     "sync/sync_mojo_service_ash_unittest.cc",
     "sync/sync_user_settings_client_ash_unittest.cc",
+    "sync/synced_session_client_ash_unittest.cc",
     "system/automatic_reboot_manager_unittest.cc",
     "system/device_disabling_manager_unittest.cc",
     "system/procfs_util_unittest.cc",
