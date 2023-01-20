@@ -191,5 +191,33 @@ export function GifTestSuite(category) {
                   .shadowRoot.querySelectorAll('.emoji-button');
           assertEquals(1, recentlyUsedEmoji.length);
         });
+
+    test(
+        `recently used ${category} group should not contain ` +
+            `duplicate ${category}s.`,
+        async () => {
+          emojiPicker.updateIncognitoState(false);
+
+          const emojiButton =
+              findEmojiFirstButton(categoryGroupSelector(category));
+          emojiButton.click();
+
+          const recentEmojiButton = await waitForCondition(
+              () => findEmojiFirstButton(historyGroupSelector(category)));
+          assert(recentEmojiButton);
+
+          const recentlyUsedEmoji1 =
+              findInEmojiPicker(historyGroupSelector(category))
+                  .shadowRoot.querySelectorAll('.emoji-button');
+          assertEquals(1, recentlyUsedEmoji1.length);
+
+          // Click the same emoji again
+          emojiButton.click();
+
+          const recentlyUsedEmoji2 =
+              findInEmojiPicker(historyGroupSelector(category))
+                  .shadowRoot.querySelectorAll('.emoji-button');
+          assertEquals(1, recentlyUsedEmoji2.length);
+        });
   });
 }

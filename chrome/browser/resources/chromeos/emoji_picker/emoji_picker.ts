@@ -94,6 +94,7 @@ export class EmojiPicker extends PolymerElement {
   private highlightBarMoving: boolean;
   private groupTabsMoving: boolean;
   private gifDataInitialised: boolean;
+  private previousGifValidation: Date;
 
   constructor() {
     super();
@@ -112,6 +113,7 @@ export class EmojiPicker extends PolymerElement {
     this.autoScrollingToGroup = false;
     this.highlightBarMoving = false;
     this.groupTabsMoving = false;
+    this.previousGifValidation = this.loadPreviousGifValidationTime();
 
     this.addEventListener(
         events.GROUP_BUTTON_CLICK,
@@ -302,6 +304,7 @@ export class EmojiPicker extends PolymerElement {
     );
 
     if (this.gifSupport) {
+      this.validateRecentlyUsedGifs();
       const categoriesFetchPromise =
           prevFetchPromise.then(() => this.apiProxy.getCategories());
 
@@ -1192,6 +1195,40 @@ export class EmojiPicker extends PolymerElement {
                           icon: data.icon,
                           active: data.name === category,
                         }));
+  }
+
+  /**
+   * Checks if recently used GIFs are still valid if we open the emoji picker
+   * and it has been 24 hours since the last validation.
+   */
+  async validateRecentlyUsedGifs() {
+    // This check ensures that we don't try and validate recently used GIFs
+    // if the validating process is already currently happening.
+    const currentTime = new Date();
+
+    if ((currentTime.getTime() - this.previousGifValidation.getTime()) >
+        constants.TWENTY_FOUR_HOURS) {
+      const updated = await this.categoriesHistory[CategoryEnum.GIF]?.validate(
+          this.apiProxy);
+
+      this.previousGifValidation = currentTime;
+      window.localStorage.setItem(
+          constants.GIF_VALIDATION_DATE, currentTime.toJSON());
+
+      if (updated) {
+        this.categoryHistoryUpdated(CategoryEnum.GIF);
+      }
+    }
+  }
+
+  private loadPreviousGifValidationTime(): Date {
+    const stored = window.localStorage.getItem(constants.GIF_VALIDATION_DATE);
+    if (!stored) {
+      // First time opening the Emoji Picker so there should be no recently used
+      // GIFs to render.
+      return new Date();
+    }
+    return new Date(stored);
   }
 
   private getTabs() {

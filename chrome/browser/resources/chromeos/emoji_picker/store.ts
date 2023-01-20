@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CategoryEnum, EmojiVariants} from './types.js';
+import {EmojiPickerApiProxy} from 'emoji_picker_api_proxy.js';
 
-const MAX_TEXT_RECENTS = 18;
-const MAX_GIF_RECENTS = 10;
+import {CategoryEnum, EmojiVariants, VisualContent} from './types.js';
+
+const MAX_RECENTS = 10;
 
 /**
  * @param {string} keyName Keyname of the object stored in storage
@@ -93,9 +94,6 @@ export class RecentlyUsedStore {
           x => (x.base.string && x.base.string === newItem.base.string));
     }
 
-    const MAX_RECENTS =
-        category === CategoryEnum.GIF ? MAX_GIF_RECENTS : MAX_TEXT_RECENTS;
-
     if (oldIndex !== -1) {
       this.data.history.splice(oldIndex, 1);
     }
@@ -107,5 +105,36 @@ export class RecentlyUsedStore {
       this.data.history.length = MAX_RECENTS;
     }
     save(this.storeName, this.data);
+  }
+
+  /**
+   * Removes invalid GIFs from history.
+   */
+  async validate(apiProxy: EmojiPickerApiProxy): Promise<boolean> {
+    if (this.data.history.length === 0) {
+      // No GIFs to validate.
+      return false;
+    }
+
+    // This function is only called on history items with visual content (i.e.
+    // GIFs) so we can be confident an id will always exist.
+    const ids = this.data.history.map(x => x.base.visualContent!.id);
+
+    const {selectedGifs} = await apiProxy.getGifsByIds(ids);
+    const map = new Map<string, VisualContent>();
+    selectedGifs.forEach(gif => {
+      map.set(gif.id, gif);
+    });
+
+    const validGifHistory =
+        this.data.history.filter(item => map.has(item.base.visualContent!.id));
+    const updated = (validGifHistory.length !== this.data.history.length);
+
+    if (updated) {
+      this.data.history = validGifHistory;
+      save(this.storeName, this.data);
+    }
+
+    return updated;
   }
 }
