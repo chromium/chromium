@@ -383,12 +383,9 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
   origin_label->SetBackgroundColor(background_color);
 
   // Finally, add the close button.
-  //
-  // TODO(crbug.com/1385136): Close button should always close, even if the
-  // browser sheet is present.
   container->AddChildView(
       std::make_unique<PaymentHandlerCloseButton>(base::BindRepeating(
-          &PaymentRequestSheetController::BackButtonPressed, GetWeakPtr())));
+          &PaymentRequestSheetController::CloseButtonPressed, GetWeakPtr())));
 }
 
 std::unique_ptr<views::View>

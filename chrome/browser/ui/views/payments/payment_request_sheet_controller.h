@@ -77,6 +77,9 @@ class PaymentRequestSheetController {
   // Called when the back button is pressed on the dialog.
   void BackButtonPressed();
 
+  // Called when the close button is pressed on the dialog.
+  void CloseButtonPressed();
+
  protected:
   // Clears the content part of the view represented by this view controller and
   // calls FillContentView again to re-populate it with updated views.
@@ -185,8 +188,6 @@ class PaymentRequestSheetController {
   // currently focused element). If a subclass returns true for this, it must
   // also return true for ShouldShowPrimaryButton.
   virtual bool ShouldAccelerateEnterKey();
-
-  void CloseButtonPressed();
 
   views::MdTextButton* primary_button() { return primary_button_; }
 

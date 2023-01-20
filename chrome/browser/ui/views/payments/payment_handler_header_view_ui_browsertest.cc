@@ -134,6 +134,59 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, HeaderWithoutIcon) {
   EXPECT_FALSE(IsViewVisible(DialogViewID::PAYMENT_APP_HEADER_ICON));
 }
 
+IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, CloseButtonPressed) {
+  std::string a_method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &a_method_name);
+  std::string b_method_name;
+  InstallPaymentApp("b.com", "/payment_handler_sw.js", &b_method_name);
+
+  // Trigger PaymentRequest. Since there are two payment apps this will show
+  // the browser sheet first, and we have to manually select the payment app to
+  // continue.
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace(
+              "launchWithoutWaitForResponseWithMethods([{supportedMethods:$1}"
+              ", {supportedMethods:$2}])",
+              a_method_name, b_method_name)));
+  WaitForObservedEvent();
+
+  // Select the installed payment app.
+  OpenPaymentMethodScreen();
+  ResetEventWaiter(DialogEvent::BACK_NAVIGATION);
+  views::View* list_view = dialog_view()->GetViewByID(
+      static_cast<int>(DialogViewID::PAYMENT_METHOD_SHEET_LIST_VIEW));
+  ASSERT_TRUE(list_view);
+  EXPECT_EQ(2u, list_view->children().size());
+  ClickOnDialogViewAndWait(list_view->children()[0]);
+
+  // The pay button should be enabled now.
+  ASSERT_TRUE(IsPayButtonEnabled());
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON);
+
+  if (minimal_header_ux_enabled_) {
+    // In the minimal header UX, the cancel button is shown and closes the
+    // dialog instead of returning to the payment handler sheet.
+    ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
+    ClickOnDialogViewAndWait(DialogViewID::CANCEL_BUTTON,
+                             /*wait_for_animation=*/false);
+  } else {
+    // Prior to the minimal header UX, the back button is shown and returns to
+    // the payment handler sheet.
+    ResetEventWaiter(DialogEvent::BACK_NAVIGATION);
+    ClickOnDialogViewAndWait(DialogViewID::BACK_BUTTON);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All, PaymentHandlerHeaderViewUITest, testing::Bool());
 
 }  // namespace

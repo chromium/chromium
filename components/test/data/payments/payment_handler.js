@@ -87,8 +87,18 @@ async function launch(methodNameOverride) {
 function launchWithoutWaitForResponse(methodNameOverride) {
   let method =
       (methodNameOverride !== undefined) ? methodNameOverride : methodName;
+  return launchWithoutWaitForResponseWithMethods([{supportedMethods: method}]);
+}
+
+/**
+ * Launches the payment handler without waiting for a response to be returned.
+ * @param {sequence<PaymentMethodData>} methodData An array of payment method
+ *        objects.
+ * @return {string} The 'success' or error message.
+ */
+function launchWithoutWaitForResponseWithMethods(methodData) {
   try {
-    request = new PaymentRequest([{supportedMethods: method}], {
+    request = new PaymentRequest(methodData, {
       total: {label: 'Total', amount: {currency: 'USD', value: '0.01'}},
     });
     request.show();
