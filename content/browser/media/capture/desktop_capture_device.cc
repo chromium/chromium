@@ -358,6 +358,16 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
   }
   DCHECK(frame);
 
+  // Continue capturing frames when there are no changes in updated regions
+  // since the last captured frame but don't send the same frame again to the
+  // client. Clients may call RequestRefreshFrame() to ask for a copy of the
+  // last captured frame. Check |output_frame_| to ensure that at least one
+  // valid frame has already been captured and delivered.
+  if (output_frame_ && frame->updated_region().is_empty()) {
+    ScheduleNextCaptureFrame();
+    return;
+  }
+
   // If the frame size has changed, drop the output frame (if any), and
   // determine the new output size.
   if (!last_frame_size_.equals(frame->size())) {
