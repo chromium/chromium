@@ -3279,17 +3279,6 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20230118",
-                    "params": {
-                        "launch_stage": "prod"
-                    },
-                    "enable_features": [
-                        "FederatedService",
-                        "FederatedServiceScheduleTasks",
-                        "FederatedTimezoneCodePhh"
-                    ]
-                },
-                {
                     "name": "Enabled_Dogfood",
                     "params": {
                         "launch_stage": "dogfood"
