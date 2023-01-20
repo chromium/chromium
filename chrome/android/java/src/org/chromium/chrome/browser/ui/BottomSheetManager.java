@@ -317,6 +317,14 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
             }
         };
         layoutStateProvider.addObserver(mLayoutStateObserver);
+        // It is possible that the observer missed the first layout change event due to the
+        // layoutStateProvider being initialized too late during the startup. Call the observer's
+        // handling function now.
+        @LayoutType
+        int layout = layoutStateProvider.getActiveLayoutType();
+        if (layout != LayoutType.NONE) {
+            mLayoutStateObserver.onFinishedShowing(layout);
+        }
     }
 
     @Override
