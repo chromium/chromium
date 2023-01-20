@@ -313,7 +313,8 @@ PP_Resource ResourceCreationImpl::CreateVideoDecoderDev(
     PP_Resource graphics3d_id,
     PP_VideoDecoder_Profile profile) {
   if (IsVideoDecoderDevAPIEnabled()) {
-    return PPB_VideoDecoder_Impl::Create(instance, graphics3d_id, profile);
+    return create_video_decoder_dev_impl_callback_.Run(instance, graphics3d_id,
+                                                       profile);
   }
 
   return 0;
