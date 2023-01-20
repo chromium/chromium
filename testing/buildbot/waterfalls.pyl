@@ -1265,7 +1265,7 @@
         }
       },
 
-      # Mirrors Mac Builder and Mac12 Tests, except that we don't run
+      # Mirrors "Mac Builder" and "Mac12 Tests", except that we don't run
       # 'mac_signing_tests' (it is removed in test_suite_exceptions.pyl),
       # which doesn't exist in the CfT config.
       'mac-rel-cft': {

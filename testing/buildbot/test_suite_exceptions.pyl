@@ -469,6 +469,17 @@
           '--flag-specific=enable-editing-ng',
         ],
       },
+      'mac-rel-cft': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'gpu': None,
+            },
+          ],
+          'shards': 12,
+          'inverse_quickrun_shards': 24,
+        },
+      },
       'mac10.13-blink-rel': {
         'swarming': {
           'shards': 1,
@@ -781,6 +792,20 @@
         'args': [
           '--flag-specific=enable-editing-ng',
         ],
+      },
+      'mac-rel-cft': {
+        'args': [
+          '--driver-logging',
+        ],
+        'swarming': {
+          'dimension_sets': [
+            {
+              'gpu': None,
+            },
+          ],
+          'shards': 18,
+          'inverse_quickrun_shards': 36,
+        },
       },
       'mac10.13-blink-rel': {
         'swarming': {
@@ -1111,6 +1136,7 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel-cft.browser_tests.filter',
         ],
+        'ci_only': True,
         'swarming': {
           'shards': 20,  # crbug.com/1361887
         },
@@ -1195,6 +1221,11 @@
   'check_static_initializers': {
     'modifications': {
       'Mac Builder': {
+        'args': [
+          '--allow-coverage-initializer',
+        ],
+      },
+      'mac-rel-cft': {
         'args': [
           '--allow-coverage-initializer',
         ],
@@ -1588,6 +1619,11 @@
           'inverse_quickrun_shards': 12,
         },
       },
+      'mac-rel-cft': {
+        'swarming': {
+          'inverse_quickrun_shards': 2,
+        },
+      },
       'win-asan': {
         # With a single shard seems to hit time limit.
         'swarming': {
@@ -1834,6 +1870,12 @@
         'args': [
           '--coverage-continuous-mode=1',
         ],
+      },
+      'mac-rel-cft': {
+        'swarming': {
+          'shards': 12,
+          'inverse_quickrun_shards': 24,
+        },
       },
       # https://crbug.com/1255940
       'mac-rel-swarming': {
@@ -2568,6 +2610,10 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel-cft.interactive_ui_tests.filter',
         ],
+        'swarming': {
+          'shards': 6,
+          'inverse_quickrun_shards': 12,
+        },
       },
       'win-rel-cft': {
         'args': [
@@ -3365,6 +3411,12 @@
           '--coverage-continuous-mode=1',
         ],
       },
+      'mac-rel-cft': {
+        'ci_only': True,
+        'swarming': {
+          'shards': 4,
+        },
+      },
       'win-rel-cft': {
         'swarming': {
           'shards': 3,
@@ -3464,6 +3516,9 @@
           '--xvfb',
           '--jobs=1',
         ],
+      },
+      'mac-rel-cft': {
+        'ci_only': True,
       },
     },
     'remove_from': [
@@ -3600,6 +3655,11 @@
       'linux-chromeos-rel': {
         'swarming': {
           'shards': 2,
+        },
+      },
+      'mac-rel-cft': {
+        'swarming': {
+          'inverse_quickrun_shards': 2,
         },
       },
     },

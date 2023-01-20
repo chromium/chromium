@@ -2520,6 +2520,7 @@
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel-cft.browser_tests.filter"
         ],
+        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [],
@@ -2689,6 +2690,7 @@
               "os": "Mac-12"
             }
           ],
+          "inverse_quickrun_shards": 2,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_unittests",
@@ -2708,8 +2710,9 @@
               "os": "Mac-12"
             }
           ],
+          "inverse_quickrun_shards": 24,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 8
+          "shards": 12
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
@@ -3111,8 +3114,9 @@
               "os": "Mac-12"
             }
           ],
+          "inverse_quickrun_shards": 12,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 3
+          "shards": 6
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -3593,6 +3597,7 @@
         "test_id_prefix": "ninja://storage:storage_unittests/"
       },
       {
+        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [],
@@ -3606,7 +3611,8 @@
               "os": "Mac-12"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test": "sync_integration_tests",
         "test_id_prefix": "ninja://chrome/test:sync_integration_tests/"
@@ -3663,6 +3669,7 @@
               "os": "Mac-12"
             }
           ],
+          "inverse_quickrun_shards": 2,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "unit_tests",
@@ -3860,8 +3867,9 @@
               "os": "Mac-12"
             }
           ],
+          "inverse_quickrun_shards": 24,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 5
+          "shards": 12
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
@@ -3869,7 +3877,8 @@
         "args": [
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--driver-logging"
         ],
         "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
@@ -3898,8 +3907,9 @@
               "os": "Mac-12"
             }
           ],
+          "inverse_quickrun_shards": 36,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 7
+          "shards": 18
         },
         "test_id_prefix": "ninja://:blink_wpt_tests/"
       },
@@ -4097,6 +4107,7 @@
         "args": [
           "--extra-browser-args=--enable-crashpad"
         ],
+        "ci_only": true,
         "isolate_name": "telemetry_perf_unittests",
         "isolate_profile_data": true,
         "merge": {
@@ -4178,6 +4189,9 @@
     ],
     "scripts": [
       {
+        "args": [
+          "--allow-coverage-initializer"
+        ],
         "isolate_profile_data": true,
         "name": "check_static_initializers",
         "script": "check_static_initializers.py",
