@@ -25,8 +25,6 @@
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -136,10 +134,9 @@ class OutOfMemoryReporterTest : public ChromeRenderViewHostTestHarness,
   }
 
   void SimulateRendererCreated() {
-    content::NotificationService::current()->Notify(
-        content::NOTIFICATION_RENDERER_PROCESS_CREATED,
-        content::Source<content::RenderProcessHost>(process()),
-        content::NotificationService::NoDetails());
+#if BUILDFLAG(IS_ANDROID)
+    child_exit_observer_->OnRenderProcessHostCreated(process());
+#endif
   }
 
   void SimulateOOM() {

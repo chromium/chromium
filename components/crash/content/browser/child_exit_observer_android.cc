@@ -45,9 +45,6 @@ operator=(const TerminationInfo& other) = default;
 ChildExitObserver::ChildExitObserver() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   notification_registrar_.Add(this,
-                              content::NOTIFICATION_RENDERER_PROCESS_CREATED,
-                              content::NotificationService::AllSources());
-  notification_registrar_.Add(this,
                               content::NOTIFICATION_RENDERER_PROCESS_TERMINATED,
                               content::NotificationService::AllSources());
   notification_registrar_.Add(this,
@@ -74,6 +71,13 @@ void ChildExitObserver::ChildReceivedCrashSignal(base::ProcessId pid,
   bool result =
       child_pid_to_crash_signal_.insert(std::make_pair(pid, signo)).second;
   DCHECK(result);
+}
+
+void ChildExitObserver::OnRenderProcessHostCreated(
+    content::RenderProcessHost* host) {
+  // The child process pid isn't available when process is gone, keep a mapping
+  // between process_host_id and pid, so we can find it later.
+  process_host_id_to_pid_[host->GetID()] = host->GetProcess().Handle();
 }
 
 void ChildExitObserver::OnChildExit(TerminationInfo* info) {
@@ -177,12 +181,6 @@ void ChildExitObserver::Observe(int type,
                .ptr();
       PopulateTerminationInfo(content_info, &info);
       break;
-    }
-    case content::NOTIFICATION_RENDERER_PROCESS_CREATED: {
-      // The child process pid isn't available when process is gone, keep a
-      // mapping between process_host_id and pid, so we can find it later.
-      process_host_id_to_pid_[rph->GetID()] = rph->GetProcess().Handle();
-      return;
     }
     default:
       NOTREACHED();
