@@ -1386,8 +1386,6 @@ static_library("ui") {
       "thumbnails/thumbnail_scheduler.h",
       "thumbnails/thumbnail_scheduler_impl.cc",
       "thumbnails/thumbnail_scheduler_impl.h",
-      "thumbnails/thumbnail_stats_tracker.cc",
-      "thumbnails/thumbnail_stats_tracker.h",
       "thumbnails/thumbnail_tab_helper.cc",
       "thumbnails/thumbnail_tab_helper.h",
       "toolbar/app_menu_icon_controller.cc",

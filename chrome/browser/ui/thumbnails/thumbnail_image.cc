@@ -13,7 +13,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/ui/thumbnails/thumbnail_stats_tracker.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -42,12 +41,10 @@ ThumbnailImage::ThumbnailImage(Delegate* delegate, CompressedThumbnailData data)
   DCHECK(delegate_);
   DCHECK(!delegate_->thumbnail_);
   delegate_->thumbnail_ = this;
-  ThumbnailStatsTracker::GetInstance().AddThumbnail(this);
 }
 
 ThumbnailImage::~ThumbnailImage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ThumbnailStatsTracker::GetInstance().RemoveThumbnail(this);
   if (delegate_)
     delegate_->thumbnail_ = nullptr;
 }

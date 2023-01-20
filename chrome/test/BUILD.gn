@@ -6922,7 +6922,6 @@ test("unit_tests") {
       "../browser/ui/thumbnails/thumbnail_capture_driver_unittest.cc",
       "../browser/ui/thumbnails/thumbnail_image_unittest.cc",
       "../browser/ui/thumbnails/thumbnail_scheduler_impl_unittest.cc",
-      "../browser/ui/thumbnails/thumbnail_stats_tracker_unittest.cc",
       "../browser/ui/toolbar/app_menu_icon_controller_unittest.cc",
       "../browser/ui/toolbar/app_menu_model_unittest.cc",
       "../browser/ui/toolbar/back_forward_menu_model_unittest.cc",
