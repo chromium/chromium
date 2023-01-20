@@ -233,6 +233,29 @@ TEST_F(KeyCommandsProviderTest, CanPerform_AlwaysAvailableActions) {
   EXPECT_TRUE(CanPerform(@"keyCommand_clearBrowsingData"));
 }
 
+// Checks whether KeyCommandsProvider can perform the actions that are always
+// available when there is a presented view controller.
+TEST_F(KeyCommandsProviderTest,
+       CanPerform_AlwaysAvailableActions_PresentedViewController) {
+  UIViewController* viewController = [[UIViewController alloc] init];
+  [GetAnyKeyWindow() addSubview:viewController.view];
+  [provider_ respondBetweenViewController:viewController andResponder:nil];
+  UIViewController* presentedViewController = [[UIViewController alloc] init];
+  [viewController presentViewController:presentedViewController
+                               animated:NO
+                             completion:nil];
+
+  EXPECT_FALSE(CanPerform(@"keyCommand_openNewTab"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_openNewRegularTab"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_openNewIncognitoTab"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_openNewWindow"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_openNewIncognitoWindow"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_showSettings"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_showReadingList"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_goToTabGrid"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_clearBrowsingData"));
+}
+
 // Checks whether KeyCommandsProvider can perform the actions that are only
 // available when there are tabs.
 TEST_F(KeyCommandsProviderTest, CanPerform_TabsActions) {

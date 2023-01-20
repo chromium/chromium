@@ -169,6 +169,16 @@ using base::UserMetricsAction;
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+  // BVC prevents KeyCommandsProvider from providing key commands when it has
+  // `presentedViewController` set. But there is an interval between presenting
+  // a view controller and having `presentedViewController` set. In that window,
+  // KeyCommandsProvider can register key commands while it shouldn't.
+  // To prevent actions from executing, check again if there is a
+  // `presentedViewController`.
+  if (_viewController.presentedViewController) {
+    return NO;
+  }
+
   if (sel_isEqual(action, @selector(keyCommand_back))) {
     BOOL canPerformBack =
         self.tabsCount > 0 && self.navigationAgent->CanGoBack();
