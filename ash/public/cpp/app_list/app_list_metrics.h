@@ -56,12 +56,12 @@ enum class AppListShowSource {
   kMaxValue = kBrowser,
 };
 
-// Tracks the result of each search session starting from the search box.
-enum class SearchSessionResult {
-  kLaunch = 0,
-  kAnswerCardImpression = 1,
-  kQuit = 2,
-  kMaxValue = kQuit,
+// Tracks the conclusion of each search session starting from the search box.
+enum class SearchSessionConclusion {
+  kQuit = 0,
+  kLaunch = 1,
+  kAnswerCardSeen = 2,
+  kMaxValue = kAnswerCardSeen,
 };
 
 // The type of the ChromeSearchResult. This is used for logging so do not

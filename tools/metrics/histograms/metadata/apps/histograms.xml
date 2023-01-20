@@ -878,20 +878,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppList.Search.Session.Error"
+<histogram name="Apps.AppList.Search.Session2.Error"
     enum="AppListUserEventError" expires_after="2024-01-31">
   <owner>yulunwu@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
-    Records errors in processing other Apps.AppList.Search.Session.* metrics.
+    Records errors in processing other Apps.AppList.Search.Session2.* metrics.
     These are expected to be rare and bucket proportion is not meaningful.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppList.Search.Session.{LauncherSearchEntryPoint}"
-    enum="LauncherSearchSessionResult" expires_after="2024-01-31">
+<histogram name="Apps.AppList.Search.Session2.{LauncherSearchEntryPoint}"
+    enum="LauncherSearchSessionConclusion" expires_after="2024-01-31">
   <owner>yulunwu@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>wrong@chromium.org</owner>

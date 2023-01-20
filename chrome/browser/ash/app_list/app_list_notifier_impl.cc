@@ -250,6 +250,17 @@ void AppListNotifierImpl::DoStateTransition(Location location,
     StopTimer(location);
   }
 
+  // Notify of seen on kShown -> {kSeen} when there is one or more result for
+  // `location`.
+  if (old_state == State::kShown && new_state == State::kSeen) {
+    auto results = ResultsForLocation(location);
+    if (results.size() > 0) {
+      for (auto& observer : observers_) {
+        observer.OnSeen(location, results, query_);
+      }
+    }
+  }
+
   // Notify of impression on kShown -> {kSeen, kIgnored, kLaunched}.
   if (old_state == State::kShown &&
       (new_state == State::kSeen || new_state == State::kLaunched ||

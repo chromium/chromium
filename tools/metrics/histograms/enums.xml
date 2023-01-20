@@ -55693,10 +55693,10 @@ chromeos/ash/components/language/language_packs/language_pack_manager.cc -->
   <int value="1003" label="LAUNCH_RESULT_FAILURE"/>
 </enum>
 
-<enum name="LauncherSearchSessionResult">
+<enum name="LauncherSearchSessionConclusion">
   <int value="0" label="Quit"/>
   <int value="1" label="Launch"/>
-  <int value="2" label="AnswerCardImpression"/>
+  <int value="2" label="AnswerCardSeen"/>
 </enum>
 
 <enum name="LauncherUserAction">

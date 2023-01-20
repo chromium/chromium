@@ -49,6 +49,12 @@ class ASH_PUBLIC_EXPORT AppListNotifier {
 
     // Called when |results| have been displayed for the length of the
     // impression timer.
+    virtual void OnSeen(Location location,
+                        const std::vector<Result>& results,
+                        const std::u16string& query) {}
+
+    // Called when |results| have been displayed for the length of the
+    // impression timer, launched, or ignored.
     virtual void OnImpression(Location location,
                               const std::vector<Result>& results,
                               const std::u16string& query) {}

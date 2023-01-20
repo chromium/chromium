@@ -36,7 +36,7 @@ void SearchSessionMetricsManager::EndSearchSession() {
   base::UmaHistogramEnumeration(
       base::StrCat({kSessionHistogramPrefix, show_source}), session_result_);
 
-  session_result_ = ash::SearchSessionResult::kQuit;
+  session_result_ = ash::SearchSessionConclusion::kQuit;
   session_active_ = false;
 }
 
@@ -48,13 +48,12 @@ void SearchSessionMetricsManager::OnSearchSessionEnded() {
   EndSearchSession();
 }
 
-void SearchSessionMetricsManager::OnImpression(
-    Location location,
-    const std::vector<Result>& results,
-    const std::u16string& query) {
+void SearchSessionMetricsManager::OnSeen(Location location,
+                                         const std::vector<Result>& results,
+                                         const std::u16string& query) {
   if (location == Location::kAnswerCard) {
     DCHECK(session_active_);
-    session_result_ = ash::SearchSessionResult::kAnswerCardImpression;
+    session_result_ = ash::SearchSessionConclusion::kAnswerCardSeen;
   }
 }
 
@@ -64,7 +63,7 @@ void SearchSessionMetricsManager::OnLaunch(Location location,
                                            const std::u16string& query) {
   if (location == Location::kList) {
     DCHECK(session_active_);
-    session_result_ = ash::SearchSessionResult::kLaunch;
+    session_result_ = ash::SearchSessionConclusion::kLaunch;
   }
 }
 
