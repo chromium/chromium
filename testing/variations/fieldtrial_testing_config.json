@@ -4103,6 +4103,21 @@
             ]
         }
     ],
+    "DisableIPH": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "EnableIPH"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableResourceScheduler": [
         {
             "platforms": [

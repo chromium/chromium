@@ -671,6 +671,9 @@ extern const char kEnableFencedFramesDescription[];
 extern const char kEnableGamepadButtonAxisEventsName[];
 extern const char kEnableGamepadButtonAxisEventsDescription[];
 
+extern const char kEnableIphName[];
+extern const char kEnableIphDescription[];
+
 extern const char kEnableIsolatedWebAppsName[];
 extern const char kEnableIsolatedWebAppsDescription[];
 

@@ -228,6 +228,7 @@ public final class WebFeedFollowIntroControllerTest {
         mBaseTestValues.addFieldTrialParamOverride(
                 ChromeFeatureList.WEB_FEED, "intro_style", "IPH");
         mBaseTestValues.addFeatureFlagOverride(ChromeFeatureList.SNOOZABLE_IPH, false);
+        mBaseTestValues.addFeatureFlagOverride(ChromeFeatureList.ENABLE_IPH, true);
         mBaseTestValues.addFeatureFlagOverride(
                 ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS, false);
         FeatureList.setTestValues(mBaseTestValues);
@@ -258,6 +259,7 @@ public final class WebFeedFollowIntroControllerTest {
         mBaseTestValues.addFieldTrialParamOverride(
                 ChromeFeatureList.WEB_FEED, "intro_style", "IPH");
         mBaseTestValues.addFeatureFlagOverride(ChromeFeatureList.SNOOZABLE_IPH, false);
+        mBaseTestValues.addFeatureFlagOverride(ChromeFeatureList.ENABLE_IPH, true);
         mBaseTestValues.addFeatureFlagOverride(
                 ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS, false);
         FeatureList.setTestValues(mBaseTestValues);
