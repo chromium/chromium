@@ -379,10 +379,6 @@ void AttributionInternalsHandlerImpl::OnDebugReportSent(
     const AttributionDebugReport& report,
     int status,
     base::Time time) {
-  if (observers_.empty()) {
-    return;
-  }
-
   auto web_report = WebUIDebugReport::New();
   web_report->url = report.ReportURL();
   web_report->time = time.ToJsTime();
