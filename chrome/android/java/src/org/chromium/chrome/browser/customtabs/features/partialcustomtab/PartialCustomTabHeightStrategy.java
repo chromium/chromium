@@ -12,16 +12,12 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.InsetDrawable;
 import android.os.Build;
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
@@ -37,7 +33,6 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import org.chromium.base.MathUtils;
-import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
@@ -48,7 +43,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.ColorUtils;
 
 import java.lang.annotation.Retention;
@@ -92,12 +86,9 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
     }
 
     private final AnimatorListener mSpinnerFadeoutAnimatorListener;
-    private final int mCachedHandleHeight;
 
     private @Px int mFullyExpandedAdjustmentHeight;
     private TabAnimator mTabAnimator;
-    private int mShadowOffset;
-    private boolean mDrawOutlineShadow;
     private BooleanSupplier mIsFullscreen;
 
     private @HeightStatus int mStatus = HeightStatus.INITIAL_HEIGHT;
@@ -110,9 +101,6 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
     private ImageView mSpinnerView;
     private LinearLayout mNavbar;
     private CircularProgressDrawable mSpinner;
-    private View mToolbarView;
-    private View mToolbarCoordinator;
-    private int mToolbarColor;
     private Runnable mSoftKeyboardRunnable;
     private boolean mStopShowingSpinner;
     private boolean mRestoreAfterFindPage;
@@ -154,9 +142,6 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
 
         mOrientation = mActivity.getResources().getConfiguration().orientation;
         mIsInMultiWindowMode = MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
-        mDrawOutlineShadow = SysUtils.isLowEndDevice();
-        mCachedHandleHeight =
-                mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_handle_height);
         mSpinnerFadeoutAnimatorListener = new AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animator) {}
@@ -174,7 +159,7 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
         mPositionUpdater = mVersionCompat::updatePosition;
 
         mIsFullscreen = fullscreenManager::getPersistentFullscreenMode;
-        mIsTablet = isTablet;
+
         mHeight = MATCH_PARENT;
         mWidth = MATCH_PARENT;
     }
@@ -267,10 +252,8 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
     @Override
     public void onToolbarInitialized(
             View coordinatorView, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
-        mToolbarCoordinator = coordinatorView;
-        mToolbarView = toolbar;
-        mToolbarColor = toolbar.getBackground().getColor();
-        roundCorners(coordinatorView, toolbar, toolbarCornerRadius);
+        super.onToolbarInitialized(coordinatorView, toolbar, toolbarCornerRadius);
+
         toolbar.setHandleStrategy(new PartialCustomTabHandleStrategy(
                 mActivity, this::isFullHeight, () -> mStatus, this));
         updateDragBarVisibility();
@@ -315,45 +298,8 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
         updateWindowPos(value, false);
     }
 
-    private void roundCorners(
-            View coordinator, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
-        // Inflate the handle View.
-        ViewStub handleViewStub = mActivity.findViewById(R.id.custom_tabs_handle_view_stub);
-        handleViewStub.inflate();
-        View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
-        handleView.setElevation(
-                mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation));
-        updateShadowOffset();
-
-        GradientDrawable cctBackground = (GradientDrawable) handleView.getBackground();
-        adjustCornerRadius(cctBackground, toolbarCornerRadius);
-        handleView.setBackground(cctBackground);
-
-        // Inner frame |R.id.drag_bar| is used for setting background color to match that of
-        // the toolbar. Outer frame |R.id.custom_tabs_handle_view| is not suitable since it
-        // covers the entire client area for rendering outline shadow around the CCT.
-        View dragBar = handleView.findViewById(R.id.drag_bar);
-        GradientDrawable dragBarBackground = (GradientDrawable) dragBar.getBackground();
-        adjustCornerRadius(dragBarBackground, toolbarCornerRadius);
-        if (mDrawOutlineShadow) {
-            int width = mActivity.getResources().getDimensionPixelSize(
-                    R.dimen.custom_tabs_outline_width);
-            cctBackground.setStroke(width, toolbar.getToolbarHairlineColor(mToolbarColor));
-
-            // We need an inset to make the outline shadow visible.
-            dragBar.setBackground(new InsetDrawable(dragBarBackground, width, width, width, 0));
-        } else {
-            dragBar.setBackground(dragBarBackground);
-        }
-
-        // Pass the drag bar portion to CustomTabToolbar for background color management.
-        toolbar.setHandleBackground(dragBarBackground);
-
-        // Having the transparent background is necessary for the shadow effect.
-        mActivity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-    }
-
-    private static void adjustCornerRadius(GradientDrawable d, int radius) {
+    @Override
+    protected void adjustCornerRadius(GradientDrawable d, int radius) {
         d.mutate();
         d.setCornerRadii(new float[] {radius, radius, radius, radius, 0, 0, 0, 0});
     }
@@ -472,19 +418,8 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
                 /*dragHandlebarVisibility*/ isFixedHeight() ? View.GONE : View.VISIBLE);
     }
 
-    private void updateShadowOffset() {
-        if (isFullHeight() || mDrawOutlineShadow || mStatus == HeightStatus.TOP) {
-            mShadowOffset = 0;
-        } else {
-            mShadowOffset = mActivity.getResources().getDimensionPixelSize(
-                    R.dimen.custom_tabs_shadow_offset);
-        }
-        setTopMargins(mShadowOffset, getHandleHeight() + mShadowOffset);
-        ViewUtils.requestLayout(
-                mToolbarCoordinator, "PartialCustomTabHeightStrategy.updateShadowOffet");
-    }
-
-    private void setTopMargins(int shadowOffset, int handleOffset) {
+    @Override
+    protected void setTopMargins(int shadowOffset, int handleOffset) {
         View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
         ViewGroup.MarginLayoutParams lp =
                 (ViewGroup.MarginLayoutParams) handleView.getLayoutParams();
@@ -496,8 +431,14 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
         mlp.setMargins(0, handleOffset, 0, 0);
     }
 
-    private int getHandleHeight() {
+    @Override
+    protected int getHandleHeight() {
         return isFullHeight() ? 0 : mCachedHandleHeight;
+    }
+
+    @Override
+    protected boolean shouldHaveNoShadowOffset() {
+        return mStatus == HeightStatus.TOP;
     }
 
     @Override

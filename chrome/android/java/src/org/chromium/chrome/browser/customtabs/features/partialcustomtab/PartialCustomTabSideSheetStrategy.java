@@ -10,8 +10,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.graphics.drawable.GradientDrawable;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
@@ -19,6 +21,7 @@ import android.view.animation.AccelerateInterpolator;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 
 /**
@@ -71,6 +74,23 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     }
 
     @Override
+    public void onToolbarInitialized(
+            View coordinatorView, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
+        super.onToolbarInitialized(coordinatorView, toolbar, toolbarCornerRadius);
+
+        toolbar.setHandleStrategy(null);
+        updateDragBarVisibility(/*dragHandlebarVisibility*/ View.GONE);
+    }
+
+    @Override
+    protected int getHandleHeight() {
+        // TODO(crbug.com/1408288) by default the side-sheet will have no round corners so this will
+        // just return 0. We will implement the handle height logic as part of adding customization
+        // support.
+        return 0;
+    }
+
+    @Override
     protected boolean isFullHeight() {
         return false;
     }
@@ -80,8 +100,34 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         if (mActivity.findViewById(android.R.id.content) == null) return;
 
         initializeSize();
-        // TODO(crbug.com/1406102): Update shadow offset
+        updateShadowOffset();
         // TODO(crbug.com/1406107): Check if we should invoke the resize callback
+    }
+
+    @Override
+    protected void setTopMargins(int shadowOffset, int handleOffset) {
+        View handleView = mActivity.findViewById(org.chromium.chrome.R.id.custom_tabs_handle_view);
+        ViewGroup.MarginLayoutParams lp =
+                (ViewGroup.MarginLayoutParams) handleView.getLayoutParams();
+        lp.setMargins(shadowOffset, 0, 0, 0);
+
+        // Make enough room for the handle View.
+        int topOffset = Math.max(handleOffset - shadowOffset, 0);
+        ViewGroup.MarginLayoutParams mlp =
+                (ViewGroup.MarginLayoutParams) mToolbarCoordinator.getLayoutParams();
+        mlp.setMargins(shadowOffset, topOffset, 0, 0);
+    }
+
+    @Override
+    protected boolean shouldHaveNoShadowOffset() {
+        return false;
+    }
+
+    @Override
+    protected void adjustCornerRadius(GradientDrawable d, int radius) {
+        d.mutate();
+        // Left top corner rounded.
+        d.setCornerRadii(new float[] {radius, radius, 0, 0, 0, 0, 0, 0});
     }
 
     private void setupCloseAnimation() {
@@ -124,8 +170,11 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     }
 
     @VisibleForTesting
-    void setMockViewForTesting() {
+    void setMockViewForTesting(View toolbar, View toolbarCoordinator) {
         mPositionUpdater = this::updatePosition;
+        mToolbarView = toolbar;
+        mToolbarCoordinator = toolbarCoordinator;
+
         onPostInflationStartup();
     }
 }

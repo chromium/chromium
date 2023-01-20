@@ -332,7 +332,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         return false;
     }
 
-    public void setHandleStrategy(HandleStrategy strategy) {
+    public void setHandleStrategy(@Nullable HandleStrategy strategy) {
+        // When the (P)CCT does not need to be resized the handle strategy can be null.
+        if (strategy == null) {
+            mHandleStrategy = null;
+            return;
+        }
+
         mHandleStrategy = strategy;
         mHandleStrategy.setCloseClickHandler(mCloseButton::callOnClick);
         if (!CustomTabsConnection.getInstance().isDynamicFeatureEnabled(

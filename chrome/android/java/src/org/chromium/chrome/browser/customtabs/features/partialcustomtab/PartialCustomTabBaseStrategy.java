@@ -5,8 +5,13 @@
 package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.InsetDrawable;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -14,8 +19,11 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 
+import org.chromium.base.SysUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.ui.base.ViewUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -30,10 +38,11 @@ public abstract class PartialCustomTabBaseStrategy
     protected final boolean mIsFixedHeight;
     protected final OnResizedCallback mOnResizedCallback;
     protected final FullscreenManager mFullscreenManager;
-    protected boolean mIsTablet;
+    protected final boolean mIsTablet;
     protected final boolean mInteractWithBackground;
-
+    protected final int mCachedHandleHeight;
     protected final PartialCustomTabVersionCompat mVersionCompat;
+
     protected @Px int mDisplayHeight;
     protected @Px int mDisplayWidth;
 
@@ -56,6 +65,13 @@ public abstract class PartialCustomTabBaseStrategy
     // The current height/width used to trigger onResizedCallback when it is resized.
     protected int mHeight;
     protected int mWidth;
+
+    protected View mToolbarView;
+    protected View mToolbarCoordinator;
+    protected int mToolbarColor;
+
+    protected int mShadowOffset;
+    protected boolean mDrawOutlineShadow;
 
     @IntDef({PartialCustomTabType.NONE, PartialCustomTabType.BOTTOM_SHEET,
             PartialCustomTabType.SIDE_SHEET, PartialCustomTabType.FULL_SIZE})
@@ -83,6 +99,10 @@ public abstract class PartialCustomTabBaseStrategy
 
         mFullscreenManager = fullscreenManager;
         mFullscreenManager.addObserver(this);
+
+        mDrawOutlineShadow = SysUtils.isLowEndDevice();
+        mCachedHandleHeight =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_handle_height);
     }
 
     @Override
@@ -101,6 +121,16 @@ public abstract class PartialCustomTabBaseStrategy
         mFullscreenManager.removeObserver(this);
     }
 
+    @Override
+    public void onToolbarInitialized(
+            View coordinatorView, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
+        mToolbarCoordinator = coordinatorView;
+        mToolbarView = toolbar;
+        mToolbarColor = toolbar.getBackground().getColor();
+
+        roundCorners(coordinatorView, toolbar, toolbarCornerRadius);
+    }
+
     @PartialCustomTabType
     public abstract int getStrategyType();
 
@@ -108,7 +138,15 @@ public abstract class PartialCustomTabBaseStrategy
 
     protected abstract void updatePosition();
 
+    protected abstract int getHandleHeight();
+
     protected abstract boolean isFullHeight();
+
+    protected abstract void adjustCornerRadius(GradientDrawable d, int radius);
+
+    protected abstract void setTopMargins(int shadowOffset, int handleOffset);
+
+    protected abstract boolean shouldHaveNoShadowOffset();
 
     protected boolean canInteractWithBackground() {
         return mInteractWithBackground;
@@ -143,5 +181,55 @@ public abstract class PartialCustomTabBaseStrategy
         if (dragHandlebar != null) {
             dragHandlebar.setVisibility(dragHandlebarVisibility);
         }
+    }
+
+    protected void updateShadowOffset() {
+        if (isFullHeight() || mDrawOutlineShadow || shouldHaveNoShadowOffset()) {
+            mShadowOffset = 0;
+        } else {
+            mShadowOffset = mActivity.getResources().getDimensionPixelSize(
+                    R.dimen.custom_tabs_shadow_offset);
+        }
+        setTopMargins(mShadowOffset, getHandleHeight() + mShadowOffset);
+        ViewUtils.requestLayout(
+                mToolbarCoordinator, "PartialCustomTabBaseStrategy.updateShadowOffset");
+    }
+
+    protected void roundCorners(
+            View coordinator, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
+        // Inflate the handle View.
+        ViewStub handleViewStub = mActivity.findViewById(R.id.custom_tabs_handle_view_stub);
+        handleViewStub.inflate();
+        View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
+        handleView.setElevation(
+                mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation));
+        updateShadowOffset();
+
+        GradientDrawable cctBackground = (GradientDrawable) handleView.getBackground();
+        adjustCornerRadius(cctBackground, toolbarCornerRadius);
+        handleView.setBackground(cctBackground);
+
+        // Inner frame |R.id.drag_bar| is used for setting background color to match that of
+        // the toolbar. Outer frame |R.id.custom_tabs_handle_view| is not suitable since it
+        // covers the entire client area for rendering outline shadow around the CCT.
+        View dragBar = handleView.findViewById(R.id.drag_bar);
+        GradientDrawable dragBarBackground = (GradientDrawable) dragBar.getBackground();
+        adjustCornerRadius(dragBarBackground, toolbarCornerRadius);
+        if (mDrawOutlineShadow) {
+            int width = mActivity.getResources().getDimensionPixelSize(
+                    R.dimen.custom_tabs_outline_width);
+            cctBackground.setStroke(width, toolbar.getToolbarHairlineColor(mToolbarColor));
+
+            // We need an inset to make the outline shadow visible.
+            dragBar.setBackground(new InsetDrawable(dragBarBackground, width, width, width, 0));
+        } else {
+            dragBar.setBackground(dragBarBackground);
+        }
+
+        // Pass the drag bar portion to CustomTabToolbar for background color management.
+        toolbar.setHandleBackground(dragBarBackground);
+
+        // Having the transparent background is necessary for the shadow effect.
+        mActivity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     }
 }
