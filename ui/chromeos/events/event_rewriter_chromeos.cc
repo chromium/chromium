@@ -12,11 +12,13 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "device/udev_linux/scoped_udev.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -769,11 +771,17 @@ EventDispatchDetails EventRewriterChromeOS::RewriteEvent(
     const Continuation continuation) {
   if ((event.type() == ET_KEY_PRESSED) || (event.type() == ET_KEY_RELEASED)) {
     std::unique_ptr<Event> rewritten_event;
-    EventRewriteStatus status =
+    const base::Time key_rewrite_start_time = base::Time::Now();
+    const EventRewriteStatus status =
         RewriteKeyEvent(*((&event)->AsKeyEvent()), &rewritten_event);
-    return RewriteKeyEventInContext(*((&event)->AsKeyEvent()),
-                                    std::move(rewritten_event), status,
-                                    continuation);
+    const EventDispatchDetails details = RewriteKeyEventInContext(
+        *((&event)->AsKeyEvent()), std::move(rewritten_event), status,
+        continuation);
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "ChromeOS.Inputs.EventRewriter.KeyRewriteLatency",
+        base::Time::Now() - key_rewrite_start_time, base::Microseconds(1),
+        base::Milliseconds(100), 100);
+    return details;
   }
   if ((event.type() == ET_MOUSE_PRESSED) ||
       (event.type() == ET_MOUSE_RELEASED)) {

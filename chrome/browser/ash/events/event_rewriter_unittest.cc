@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/events/event_rewriter_delegate_impl.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
@@ -386,6 +387,26 @@ class EventRewriterTest : public ChromeAshTestBase {
   DeprecationNotificationController* deprecation_controller_;  // Not owned.
   message_center::FakeMessageCenter message_center_;
 };
+
+// TestKeyRewriteLatency checks that the event rewriter
+// publishes a latency metric every time a key is pressed.
+TEST_F(EventRewriterTest, TestKeyRewriteLatency) {
+  base::HistogramTester histogram_tester;
+  CheckKeyTestCase(rewriter(),
+                   {ui::ET_KEY_PRESSED,
+                    {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
+                     ui::DomKey::Constant<'b'>::Character},
+                    {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
+                     ui::DomKey::Constant<'b'>::Character}});
+  CheckKeyTestCase(rewriter(),
+                   {ui::ET_KEY_PRESSED,
+                    {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
+                     ui::DomKey::Constant<'b'>::Character},
+                    {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
+                     ui::DomKey::Constant<'b'>::Character}});
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Inputs.EventRewriter.KeyRewriteLatency", 2);
+}
 
 TEST_F(EventRewriterTest, TestRewriteCommandToControl) {
   // First, test non Apple keyboards, they should all behave the same.

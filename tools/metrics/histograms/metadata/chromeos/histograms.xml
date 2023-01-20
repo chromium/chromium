@@ -1335,6 +1335,16 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Inputs.EventRewriter.KeyRewriteLatency" units="ms"
+    expires_after="2024-01-05">
+  <owner>wangdanny@chromium.org</owner>
+  <owner>dpad@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the event rewriter latency metric every time a key is pressed.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Intents.IntentPickerAction"
     enum="IntentPickerDialogAction" expires_after="2023-07-02">
   <owner>tsergeant@chromium.org</owner>
