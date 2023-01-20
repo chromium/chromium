@@ -40,10 +40,6 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper {
   bool HidePopup() override;
   ExtensionsContainer* GetExtensionsContainer() override;
   void WaitForExtensionsContainerLayout() override;
-  // TODO(devlin): Some of these popup methods have a common implementation
-  // between this and ExtensionActionTestHelperViews. It would make sense to
-  // extract them (since they aren't dependent on the extension action UI
-  // implementation).
   gfx::Size GetMinPopupSize() override;
   gfx::Size GetMaxPopupSize() override;
   gfx::Size GetToolbarActionSize() override;
