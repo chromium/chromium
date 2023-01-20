@@ -88,6 +88,7 @@ extern const char kUrnUuidPrefix[];
 GURL CONTENT_EXPORT GenerateUrnUuid();
 
 using AdAuctionData = blink::FencedFrame::AdAuctionData;
+using DeprecatedFencedFrameMode = blink::FencedFrame::DeprecatedFencedFrameMode;
 using ReportingMetadata = blink::FencedFrame::FencedFrameReporting;
 using SharedStorageBudgetMetadata =
     blink::FencedFrame::SharedStorageBudgetMetadata;
@@ -256,6 +257,14 @@ struct CONTENT_EXPORT FencedFrameConfig {
   // If reporting events from fenced frames are registered, then this
   // information gets filled here.
   absl::optional<FencedFrameProperty<ReportingMetadata>> reporting_metadata_;
+
+  // The mode for the resulting fenced frame: `kDefault` or `kOpaqueAds`.
+  // TODO(crbug.com/1347953): This field is currently unused. Replace the
+  // `mode` attribute of HTMLFencedFrameElement with this field in the config.
+  // TODO(crbug.com/1347953): Decompose this field into flags that directly
+  // control the behavior of the frame, e.g. sandbox flags. We do not want
+  // mode to exist as a concept going forward.
+  DeprecatedFencedFrameMode mode_ = DeprecatedFencedFrameMode::kDefault;
 };
 
 // Contains a set of fenced frame properties. These are generated at
@@ -327,6 +336,8 @@ struct CONTENT_EXPORT FencedFrameProperties {
   absl::optional<FencedFrameProperty<ReportingMetadata>> reporting_metadata_;
 
   absl::optional<FencedFrameProperty<base::UnguessableToken>> partition_nonce_;
+
+  DeprecatedFencedFrameMode mode_ = DeprecatedFencedFrameMode::kDefault;
 };
 
 }  // namespace content

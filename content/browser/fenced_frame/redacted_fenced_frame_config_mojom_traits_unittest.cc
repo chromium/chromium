@@ -305,6 +305,42 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsInternalUrnTest) {
   }
 }
 
+TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsModeTest) {
+  std::vector<blink::FencedFrame::DeprecatedFencedFrameMode> modes = {
+      blink::FencedFrame::DeprecatedFencedFrameMode::kDefault,
+      blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds,
+  };
+  std::vector<FencedFrameEntity> entities = {
+      FencedFrameEntity::kEmbedder,
+      FencedFrameEntity::kContent,
+  };
+  GURL test_url("test_url");
+  GURL test_urn = GenerateUrnUuid();
+  for (blink::FencedFrame::DeprecatedFencedFrameMode& mode : modes) {
+    FencedFrameConfig browser_config(test_urn, test_url);
+    browser_config.mode_ = mode;
+    FencedFrameProperties browser_properties(browser_config);
+    for (FencedFrameEntity& entity : entities) {
+      RedactedFencedFrameConfig input_config = browser_config.RedactFor(entity);
+      ASSERT_TRUE(browser_config.mode_ == input_config.mode());
+
+      RedactedFencedFrameConfig output_config;
+      mojo::test::SerializeAndDeserialize<blink::mojom::FencedFrameConfig>(
+          input_config, output_config);
+      ASSERT_TRUE(input_config.mode() == output_config.mode());
+
+      RedactedFencedFrameProperties input_properties =
+          browser_properties.RedactFor(entity);
+      ASSERT_TRUE(browser_properties.mode_ == input_properties.mode());
+
+      RedactedFencedFrameProperties output_properties;
+      mojo::test::SerializeAndDeserialize<blink::mojom::FencedFrameProperties>(
+          input_properties, output_properties);
+      ASSERT_TRUE(input_properties.mode() == output_properties.mode());
+    }
+  }
+}
+
 TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsNullInternalUrnTest) {
   FencedFrameConfig browser_config;
   RedactedFencedFrameConfig input_config =

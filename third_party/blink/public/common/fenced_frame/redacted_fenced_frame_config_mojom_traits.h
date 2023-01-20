@@ -36,6 +36,16 @@ struct BLINK_COMMON_EXPORT
 
 template <>
 struct BLINK_COMMON_EXPORT
+    EnumTraits<blink::mojom::DeprecatedFencedFrameMode,
+               blink::FencedFrame::DeprecatedFencedFrameMode> {
+  static blink::mojom::DeprecatedFencedFrameMode ToMojom(
+      blink::FencedFrame::DeprecatedFencedFrameMode input);
+  static bool FromMojom(blink::mojom::DeprecatedFencedFrameMode input,
+                        blink::FencedFrame::DeprecatedFencedFrameMode* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::FencedFrameReportingDataView,
                  blink::FencedFrame::FencedFrameReporting> {
   static const base::flat_map<blink::FencedFrame::ReportingDestination,
@@ -267,6 +277,11 @@ struct BLINK_COMMON_EXPORT
     return config.reporting_metadata_;
   }
 
+  static const blink::FencedFrame::DeprecatedFencedFrameMode& mode(
+      const blink::FencedFrame::RedactedFencedFrameConfig& config) {
+    return config.mode_;
+  }
+
   static bool Read(blink::mojom::FencedFrameConfigDataView data,
                    blink::FencedFrame::RedactedFencedFrameConfig* out_config);
 };
@@ -310,6 +325,10 @@ struct BLINK_COMMON_EXPORT
   reporting_metadata(
       const blink::FencedFrame::RedactedFencedFrameProperties& properties) {
     return properties.reporting_metadata_;
+  }
+  static const blink::FencedFrame::DeprecatedFencedFrameMode& mode(
+      const blink::FencedFrame::RedactedFencedFrameProperties& properties) {
+    return properties.mode_;
   }
 
   static bool Read(

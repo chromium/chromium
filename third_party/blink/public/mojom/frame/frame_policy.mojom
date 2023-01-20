@@ -13,6 +13,9 @@ import "third_party/blink/public/mojom/permissions_policy/policy_value.mojom";
 // These values represent the `mode` attribute of the fenced frame element. Keep
 // this values in sync with the conditions in `GetModeAttributeValue()` in
 // `html_fenced_frame_element.cc`.
+// TODO(crbug.com/1347953): Remove this type in favor of
+// `DeprecatedFencedFrameMode` in `fenced_frame_config.mojom`, which will
+// itself be removed at a later date.
 enum FencedFrameMode {
   kDefault = 0,
   kOpaqueAds = 1,

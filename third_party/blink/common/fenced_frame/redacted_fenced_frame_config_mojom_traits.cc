@@ -64,6 +64,38 @@ StructTraits<blink::mojom::FencedFrameReportingDataView,
 }
 
 // static
+blink::mojom::DeprecatedFencedFrameMode
+EnumTraits<blink::mojom::DeprecatedFencedFrameMode,
+           blink::FencedFrame::DeprecatedFencedFrameMode>::
+    ToMojom(blink::FencedFrame::DeprecatedFencedFrameMode input) {
+  switch (input) {
+    case blink::FencedFrame::DeprecatedFencedFrameMode::kDefault:
+      return blink::mojom::DeprecatedFencedFrameMode::kDefault;
+    case blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds:
+      return blink::mojom::DeprecatedFencedFrameMode::kOpaqueAds;
+  }
+  NOTREACHED();
+  return blink::mojom::DeprecatedFencedFrameMode::kDefault;
+}
+
+// static
+bool EnumTraits<blink::mojom::DeprecatedFencedFrameMode,
+                blink::FencedFrame::DeprecatedFencedFrameMode>::
+    FromMojom(blink::mojom::DeprecatedFencedFrameMode input,
+              blink::FencedFrame::DeprecatedFencedFrameMode* out) {
+  switch (input) {
+    case blink::mojom::DeprecatedFencedFrameMode::kDefault:
+      *out = blink::FencedFrame::DeprecatedFencedFrameMode::kDefault;
+      return true;
+    case blink::mojom::DeprecatedFencedFrameMode::kOpaqueAds:
+      *out = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
+      return true;
+  }
+  NOTREACHED();
+  return false;
+}
+
+// static
 bool StructTraits<blink::mojom::FencedFrameReportingDataView,
                   blink::FencedFrame::FencedFrameReporting>::
     Read(blink::mojom::FencedFrameReportingDataView data,
@@ -418,7 +450,7 @@ bool StructTraits<blink::mojom::FencedFrameConfigDataView,
     Read(blink::mojom::FencedFrameConfigDataView data,
          blink::FencedFrame::RedactedFencedFrameConfig* out_config) {
   GURL urn_uuid;
-  if (!data.ReadUrnUuid(&urn_uuid) ||
+  if (!data.ReadUrnUuid(&urn_uuid) || !data.ReadMode(&out_config->mode_) ||
       !data.ReadMappedUrl(&out_config->mapped_url_) ||
       !data.ReadContentSize(&out_config->content_size_) ||
       !data.ReadContainerSize(&out_config->container_size_) ||
@@ -470,6 +502,7 @@ bool StructTraits<blink::mojom::FencedFramePropertiesDataView,
          blink::FencedFrame::RedactedFencedFrameProperties* out_properties) {
   blink::mojom::PotentiallyOpaqueURNConfigVectorPtr nested_urn_config_pairs;
   if (!data.ReadMappedUrl(&out_properties->mapped_url_) ||
+      !data.ReadMode(&out_properties->mode_) ||
       !data.ReadContentSize(&out_properties->content_size_) ||
       !data.ReadContainerSize(&out_properties->container_size_) ||
       !data.ReadDeprecatedShouldFreezeInitialSize(

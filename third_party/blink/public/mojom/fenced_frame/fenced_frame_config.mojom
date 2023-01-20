@@ -27,6 +27,18 @@ struct FencedFrameReporting {
   map<ReportingDestination, map<string, url.mojom.Url>> metadata;
 };
 
+// The fenced frame config's "mode" describes a set of functionalities that it
+// should have. (In the future, the concept of a "mode" will be removed, and
+// replaced with individual fields controlling each functionality.)
+// The mode is a function of the API that creates the config. FLEDGE and
+// sharedStorage use kOpaqueAds mode, and the WebIDL FencedFrameConfig()
+// constructor uses kDefault mode.
+// https://github.com/WICG/fenced-frame/blob/master/explainer/modes.md
+enum DeprecatedFencedFrameMode {
+  kDefault = 0,
+  kOpaqueAds = 1,
+};
+
 // In order to represent that a value exists in a different process but is
 // hidden from this process, we use a union of a type T and this singleton enum
 // `Opaque`. (This is used by a more privileged process to censor information
@@ -135,6 +147,13 @@ struct FencedFrameConfig {
   // represents this instance of this struct. `blink::IsValidUrnUuidURL()` will
   // always be true when called with this urn.
   url.mojom.Url urn_uuid;
+
+  // The fenced frame's mode (default or opaque-ads).
+  // TODO(crbug.com/1347953): This field is not yet used.
+  // TODO(crbug.com/1347953): Decompose this field into flags that directly
+  // control the frame's behavior, e.g. sandbox flags. We don't want the
+  // concept of a mode to stick around in the future.
+  DeprecatedFencedFrameMode mode;
 };
 
 // The `FencedFrameProperties` struct is used to transfer a redacted version
@@ -174,4 +193,6 @@ struct FencedFrameProperties {
   // metadata which in turn is a map from the event type to the reporting url.
   // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
   PotentiallyOpaqueReportingMetadata? reporting_metadata;
+
+  DeprecatedFencedFrameMode mode;
 };

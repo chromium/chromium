@@ -552,6 +552,10 @@ mojom("mojom_platform") {
           cpp = "::blink::FencedFrame::FencedFrameReporting"
         },
         {
+          mojom = "blink.mojom.DeprecatedFencedFrameMode"
+          cpp = "::blink::FencedFrame::DeprecatedFencedFrameMode"
+        },
+        {
           mojom = "blink.mojom.PotentiallyOpaqueURL"
           cpp = "::blink::FencedFrame::RedactedFencedFrameProperty<GURL>"
         },

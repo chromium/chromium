@@ -40,6 +40,14 @@ enum ReportingDestination {
   kSharedStorageSelectUrl,
 };
 
+// TODO(crbug.com/1347953): Decompose this into flags that directly control the
+// behavior of the frame, e.g. sandbox flags. We do not want mode to exist as a
+// concept going forward.
+enum DeprecatedFencedFrameMode {
+  kDefault,
+  kOpaqueAds,
+};
+
 struct BLINK_COMMON_EXPORT FencedFrameReporting {
   // If this is an "opaque-ads" mode fenced frame, there might be an associated
   // reporting metadata. This is a map from destination type to reporting
@@ -130,6 +138,7 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
   reporting_metadata() const {
     return reporting_metadata_;
   }
+  const DeprecatedFencedFrameMode& mode() const { return mode_; }
 
  private:
   friend struct content::FencedFrameConfig;
@@ -154,6 +163,9 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
       shared_storage_budget_metadata_;
   absl::optional<RedactedFencedFrameProperty<FencedFrameReporting>>
       reporting_metadata_;
+
+  // TODO(crbug.com/1347953): Not yet used.
+  DeprecatedFencedFrameMode mode_ = DeprecatedFencedFrameMode::kDefault;
 };
 
 // Represents a set of fenced frame properties (instantiated from a config) that
@@ -199,6 +211,7 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
   reporting_metadata() const {
     return reporting_metadata_;
   }
+  const DeprecatedFencedFrameMode& mode() const { return mode_; }
 
  private:
   friend struct content::FencedFrameProperties;
@@ -222,6 +235,7 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
       shared_storage_budget_metadata_;
   absl::optional<RedactedFencedFrameProperty<FencedFrameReporting>>
       reporting_metadata_;
+  DeprecatedFencedFrameMode mode_ = DeprecatedFencedFrameMode::kDefault;
 };
 
 }  // namespace blink::FencedFrame
