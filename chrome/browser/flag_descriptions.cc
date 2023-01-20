@@ -2161,6 +2161,11 @@ const char kOmniboxMlRelevanceScoringName[] = "Omnibox ML Relevance Scoring";
 const char kOmniboxMlRelevanceScoringDescription[] =
     "Enables ML-based relevance scoring of Omnibox URL Suggestions.";
 
+const char kOmniboxMlUrlScoringModelName[] =
+    "Omnibox autocomplete URL scoring model.";
+const char kOmniboxMlUrlScoringModelDescription[] =
+    "Enables machine learning scoring model for Omnibox URL sugestions.";
+
 const char kOmniboxOnClobberFocusTypeOnContentName[] =
     "Omnibox On Clobber Focus Type On Content";
 const char kOmniboxOnClobberFocusTypeOnContentDescription[] =

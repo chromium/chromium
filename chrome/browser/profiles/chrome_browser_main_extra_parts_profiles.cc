@@ -12,6 +12,7 @@
 #include "chrome/browser/accessibility/page_colors_factory.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
+#include "chrome/browser/autocomplete/autocomplete_scoring_model_service_factory.h"
 #include "chrome/browser/autocomplete/in_memory_url_index_factory.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/autofill/autofill_image_fetcher_factory.h"
@@ -327,6 +328,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   apps::SupportedLinksInfoBarPrefsServiceFactory::GetInstance();
 #endif
   AutocompleteClassifierFactory::GetInstance();
+  AutocompleteScoringModelServiceFactory::GetInstance();
   autofill::AutofillImageFetcherFactory::GetInstance();
   autofill::PersonalDataManagerFactory::GetInstance();
   autofill::AutofillOfferManagerFactory::GetInstance();

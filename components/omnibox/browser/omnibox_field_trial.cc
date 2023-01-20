@@ -1025,9 +1025,16 @@ bool IsLogUrlScoringSignalsEnabled() {
 }
 
 bool IsMlRelevanceScoringEnabled() {
-  // TODO: This should check if the scoring model is enabled.
+  // Check both `omnibox::kMlRelevanceScoring` and
+  // `omnibox::kUrlScoringModel` feature flags.
   static bool enabled =
-      base::FeatureList::IsEnabled(omnibox::kMlRelevanceScoring);
+      base::FeatureList::IsEnabled(omnibox::kMlRelevanceScoring) &&
+      IsUrlScoringModelEnabled();
+  return enabled;
+}
+
+bool IsUrlScoringModelEnabled() {
+  static bool enabled = base::FeatureList::IsEnabled(omnibox::kUrlScoringModel);
   return enabled;
 }
 

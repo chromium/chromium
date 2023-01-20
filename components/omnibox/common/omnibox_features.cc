@@ -491,4 +491,9 @@ BASE_FEATURE(kMlRelevanceScoring,
              "MlRelevanceScoring",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, creates Omnibox autocompete URL scoring model.
+BASE_FEATURE(kUrlScoringModel,
+             "UrlScoringModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace omnibox

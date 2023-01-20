@@ -632,6 +632,9 @@ bool IsLogUrlScoringSignalsEnabled();
 // trimming results from the providers into the autocomplete controller.
 bool IsMlRelevanceScoringEnabled();
 
+// Whether the URL scoring model is enabled.
+bool IsUrlScoringModelEnabled();
+
 // New params should be inserted above this comment. They should be ordered
 // consistently with `omnibox_features.h`. They should be formatted as:
 // - Short comment categorizing the relevant features & params.

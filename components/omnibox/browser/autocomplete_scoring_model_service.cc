@@ -11,6 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "components/omnibox/browser/autocomplete_scoring_model_executor.h"
 #include "components/omnibox/browser/autocomplete_scoring_model_handler.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -20,12 +21,14 @@ AutocompleteScoringModelService::AutocompleteScoringModelService(
   model_executor_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 
-  // Create a URL scoring model handler.
-  url_scoring_model_handler_ =
-      std::make_unique<AutocompleteScoringModelHandler>(
-          model_provider, model_executor_task_runner_.get(),
-          optimization_guide::proto::OPTIMIZATION_TARGET_OMNIBOX_URL_SCORING,
-          /*model_metadata=*/absl::nullopt);
+  if (OmniboxFieldTrial::IsUrlScoringModelEnabled()) {
+    // Create a URL scoring model handler.
+    url_scoring_model_handler_ =
+        std::make_unique<AutocompleteScoringModelHandler>(
+            model_provider, model_executor_task_runner_.get(),
+            optimization_guide::proto::OPTIMIZATION_TARGET_OMNIBOX_URL_SCORING,
+            /*model_metadata=*/absl::nullopt);
+  }
 }
 
 AutocompleteScoringModelService::~AutocompleteScoringModelService() = default;
@@ -35,6 +38,8 @@ void AutocompleteScoringModelService::ScoreAutocompleteUrlMatch(
     base::OnceCallback<void(
         const absl::optional<AutocompleteScoringModelExecutor::ModelOutput>&)>
         scoring_callback) {
-  url_scoring_model_handler_->ExecuteModelWithInput(std::move(scoring_callback),
-                                                    input_signals);
+  if (url_scoring_model_handler_ != nullptr) {
+    url_scoring_model_handler_->ExecuteModelWithInput(
+        std::move(scoring_callback), input_signals);
+  }
 }
