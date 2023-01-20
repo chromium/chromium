@@ -176,7 +176,7 @@ export enum ZoomBehavior {
  * @return A promise to a BrowserApi instance constructed using the
  *     mimeHandlerPrivate API.
  */
-function createBrowserApiForMimeHandlerView(): Promise<BrowserApi> {
+export function createBrowserApi(): Promise<BrowserApi> {
   return new Promise<chrome.mimeHandlerPrivate.StreamInfo>(function(resolve) {
            chrome.mimeHandlerPrivate.getStreamInfo(resolve);
          })
@@ -216,7 +216,7 @@ function createBrowserApiForMimeHandlerView(): Promise<BrowserApi> {
  * Creates a BrowserApi instance for an extension not running as a mime handler.
  * @return A promise to a BrowserApi instance constructed from the URL.
  */
-function createBrowserApiForPrintPreview(): Promise<BrowserApi> {
+export function createBrowserApiForPrintPreview(): Promise<BrowserApi> {
   const url = window.location.search.substring(1);
   const streamInfo: StreamInfoWithExtras = {
     streamUrl: url,
@@ -240,15 +240,4 @@ function createBrowserApiForPrintPreview(): Promise<BrowserApi> {
       .then(function() {
         return BrowserApi.create(streamInfo, ZoomBehavior.NONE);
       });
-}
-
-/**
- * @return A promise to a BrowserApi instance for the current environment.
- */
-export function createBrowserApi(): Promise<BrowserApi> {
-  if (location.origin === 'chrome://print') {
-    return createBrowserApiForPrintPreview();
-  }
-
-  return createBrowserApiForMimeHandlerView();
 }

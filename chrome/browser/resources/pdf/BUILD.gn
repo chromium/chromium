@@ -21,14 +21,14 @@ tsc_folder = "tsc"
 preprocess_if_expr("preprocess") {
   out_folder = preprocess_folder
   defines = [ "enable_ink=$enable_ink" ]
-  in_files = ts_files + html_files + shared_icons_html_files + css_files
+  in_files = ts_files + html_files + icons_html_files + css_files
 }
 
 html_to_wrapper("html_wrapper_files") {
   deps = [ ":preprocess" ]
   in_folder = preprocess_folder
   out_folder = preprocess_folder
-  in_files = html_files + shared_icons_html_files
+  in_files = html_files + icons_html_files
   minify = optimize_webui
 }
 
@@ -40,25 +40,16 @@ css_to_wrapper("css_wrapper_files") {
   minify = optimize_webui
 }
 
-# Preprocess and build a manifest file for the Print Preview HTML/CSS files,
-# which aren't passed to ts_library().
-print_preview_html_css_manifest = "print_preview_html_css_manifest.json"
-preprocess_if_expr("preprocess_print_preview_html_css") {
-  out_folder = preprocess_folder
-  out_manifest = "$target_gen_dir/$print_preview_html_css_manifest"
-  in_files = [
-    "index_pp.html",
-    "index.css",
-  ]
-}
-
 if (optimize_webui) {
   build_manifest = "build_manifest.json"
 
   optimize_webui("build") {
     host = "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai"
     input = rebase_path("$target_gen_dir/$tsc_folder", root_build_dir)
-    js_module_in_files = [ "pdf_viewer_wrapper.js" ]
+    js_module_in_files = [
+      "pdf_viewer_wrapper.js",
+      "pdf_print_wrapper.js",
+    ]
     out_manifest = "$target_gen_dir/$build_manifest"
 
     deps = [
@@ -67,6 +58,10 @@ if (optimize_webui) {
     ]
     excludes = [
       "browser_api.js",
+
+      # Exclude pdf_scripting_api so that Print Preview can import
+      # pdfCreateOutOfProcessPlugin without importing the entire PDF bundle.
+      "pdf_scripting_api.js",
       "chrome://resources/js/cr.js",
     ]
     if (enable_ink) {
@@ -103,6 +98,8 @@ if (optimize_webui) {
     input_files = [
       "browser_api.js",
       "main.js",
+      "main_print.js",
+      "pdf_scripting_api.js",
     ]
     if (enable_ink) {
       input_files += [ "ink/ink_api.js" ]
@@ -141,8 +138,7 @@ ts_library("build_ts") {
 
   in_files = ts_files + html_wrapper_files + css_wrapper_files
 
-  manifest_excludes =
-      [ "pdf_internal_plugin_wrapper.js" ] + print_preview_only_files
+  manifest_excludes = [ "pdf_internal_plugin_wrapper.js" ]
 
   definitions = ts_definitions
 
@@ -157,36 +153,11 @@ ts_library("build_ts") {
   ]
 }
 
-# Build the grdp for Print Preview.
-generate_grd("build_print_preview_grdp") {
-  # Get all the shared files out of the tsc folder.
-  input_files = print_preview_grdp_input_files
-  input_files_base_dir =
-      rebase_path("$target_gen_dir/$tsc_folder", root_build_dir)
-
-  manifest_files = [ "$target_gen_dir/$print_preview_html_css_manifest" ]
-  deps = [
-    ":build_ts",
-    ":preprocess_print_preview_html_css",
-  ]
-  resource_path_rewrites = [
-    "index_pp.html|index.html",
-
-    # Expose pdf_viewer_pp.js as pdf_viewer_wrapper.js so that the PDF viewer
-    # and Print Preview viewer can use the same main.js source.
-    "pdf_viewer_pp.js|pdf_viewer_wrapper.js",
-  ]
-  grd_prefix = "print_preview_pdf"
-
-  # Print Preview expects to import from "pdf/" relative path
-  resource_path_prefix = "pdf"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
-}
-
 generate_grd("build_grd") {
   input_files = [
     "index.css",
     "index.html",
+    "index_print.html",
   ]
   if (enable_ink) {
     input_files += [ "ink/index.html" ]
@@ -198,8 +169,10 @@ generate_grd("build_grd") {
       ":build",
       ":build_excluded_grdp",
     ]
-    resource_path_rewrites =
-        [ "pdf_viewer_wrapper.rollup.js|pdf_viewer_wrapper.js" ]
+    resource_path_rewrites = [
+      "pdf_viewer_wrapper.rollup.js|pdf_viewer_wrapper.js",
+      "pdf_print_wrapper.rollup.js|pdf_print_wrapper.js",
+    ]
     manifest_files = [ "$target_gen_dir/$build_manifest" ]
     grdp_files = [ "$target_gen_dir/excluded_resources.grdp" ]
   } else {

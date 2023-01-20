@@ -2,12 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://print/pdf/elements/viewer-zoom-toolbar.js';
-
-import {FittingType} from 'chrome://print/pdf/constants.js';
-import {ViewerZoomButtonElement} from 'chrome://print/pdf/elements/viewer-zoom-button.js';
-import {ViewerZoomToolbarElement} from 'chrome://print/pdf/elements/viewer-zoom-toolbar.js';
-import {CrIconButtonElement} from 'chrome://print/print_preview.js';
+import {CrIconButtonElement, FittingType, ViewerZoomButtonElement, ViewerZoomToolbarElement} from 'chrome://print/pdf/pdf_print_wrapper.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 

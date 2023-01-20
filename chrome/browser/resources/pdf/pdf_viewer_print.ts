@@ -4,7 +4,6 @@
 
 import './elements/viewer-error-dialog.js';
 import './elements/viewer-page-indicator.js';
-import './elements/shared-vars.css.js';
 import './elements/viewer-zoom-toolbar.js';
 import './pdf_viewer_shared_style.css.js';
 
@@ -18,13 +17,13 @@ import {ViewerPageIndicatorElement} from './elements/viewer-page-indicator.js';
 import {ViewerZoomToolbarElement} from './elements/viewer-zoom-toolbar.js';
 import {deserializeKeyEvent, LoadState, serializeKeyEvent} from './pdf_scripting_api.js';
 import {KeyEventData, PdfViewerBaseElement} from './pdf_viewer_base.js';
-import {getTemplate} from './pdf_viewer_pp.html.js';
+import {getTemplate} from './pdf_viewer_print.html.js';
 import {DestinationMessageData, DocumentDimensionsMessageData, hasCtrlModifier, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 import {ToolbarManager} from './toolbar_manager.js';
 
 let pluginLoaderPolicy: TrustedTypePolicy|null = null;
 
-export interface PdfViewerPpElement {
+export interface PdfViewerPrintElement {
   $: {
     content: HTMLElement,
     pageIndicator: ViewerPageIndicatorElement,
@@ -33,9 +32,9 @@ export interface PdfViewerPpElement {
   };
 }
 
-export class PdfViewerPpElement extends PdfViewerBaseElement {
+export class PdfViewerPrintElement extends PdfViewerBaseElement {
   static get is() {
-    return 'pdf-viewer-pp';
+    return 'pdf-viewer-print';
   }
 
   static get template() {
@@ -385,8 +384,8 @@ const PRINT_PREVIEW_DARK_BACKGROUND_COLOR: number = 0xff5f6368;
 
 declare global {
   interface HTMLElementTagNameMap {
-    'pdf-viewer-pp': PdfViewerPpElement;
+    'pdf-viewer-print': PdfViewerPrintElement;
   }
 }
 
-customElements.define(PdfViewerPpElement.is, PdfViewerPpElement);
+customElements.define(PdfViewerPrintElement.is, PdfViewerPrintElement);

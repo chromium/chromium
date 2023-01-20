@@ -5,11 +5,10 @@
 /* Suite of tests verifying the PDF viewer as served by Print Preview's data
  * source works as expected. */
 
-import 'chrome://print/pdf/elements/viewer-page-indicator.js';
-import 'chrome://print/pdf/pdf_viewer_wrapper.js';
+import 'chrome://print/pdf/pdf_print_wrapper.js';
 
+import {PdfViewerPrintElement} from 'chrome://print/pdf/pdf_print_wrapper.js';
 import {pdfCreateOutOfProcessPlugin} from 'chrome://print/pdf/pdf_scripting_api.js';
-import {PdfViewerPpElement} from 'chrome://print/pdf/pdf_viewer_pp.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -31,14 +30,15 @@ suite(pdf_viewer_test.suiteName, function() {
 
   test(pdf_viewer_test.TestNames.Basic, async () => {
     const plugin = pdfCreateOutOfProcessPlugin(
-        'chrome-untrusted://print/test.pdf', 'chrome://print/pdf');
+        'chrome-untrusted://print/test.pdf',
+        'chrome://print/pdf/index_print.html');
 
     const loaded = eventToPromise('load', plugin);
     document.body.appendChild(plugin);
     await loaded;
     assertTrue(!!plugin.contentDocument);
-    const viewer: PdfViewerPpElement|null =
-        plugin.contentDocument.querySelector('pdf-viewer-pp');
+    const viewer: PdfViewerPrintElement|null =
+        plugin.contentDocument.querySelector('pdf-viewer-print');
     assertTrue(!!viewer);
     assertTrue(plugin.contentDocument.documentElement.hasAttribute(
         'is-print-preview'));

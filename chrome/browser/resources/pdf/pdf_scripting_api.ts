@@ -292,7 +292,8 @@ export function pdfCreateOutOfProcessPlugin(
     src: string, baseUrl: string): PdfPlugin {
   const client = new PdfScriptingApi(window, null);
   const iframe = window.document.createElement('iframe') as PdfPlugin;
-  iframe.setAttribute('src', baseUrl + '/index.html?' + src);
+  const url = baseUrl.endsWith('html') ? baseUrl : baseUrl + '/index.html';
+  iframe.setAttribute('src', `${url}?${src}`);
 
   iframe.onload = function() {
     client.setPlugin(iframe.contentWindow);

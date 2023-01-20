@@ -12,9 +12,6 @@ assert(enable_print_preview, "enable_print_preview check failed")
 build_webui("build") {
   grd_prefix = "print_preview"
 
-  extra_grdp_deps = [ "../pdf:build_print_preview_grdp" ]
-  extra_grdp_files = [ "$root_gen_dir/chrome/browser/resources/pdf/print_preview_pdf_resources.grdp" ]
-
   static_files = [ "print_preview.html" ]
 
   # Files holding a Polymer element definition and have an equivalent .html file.

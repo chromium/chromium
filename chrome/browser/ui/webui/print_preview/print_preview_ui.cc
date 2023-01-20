@@ -47,6 +47,8 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/pdf_resources.h"
+#include "chrome/grit/pdf_resources_map.h"
 #include "chrome/grit/print_preview_resources.h"
 #include "chrome/grit/print_preview_resources_map.h"
 #include "components/device_event_log/device_event_log.h"
@@ -371,6 +373,7 @@ void CreateAndAddPrintPreviewUISource(Profile* profile) {
       base::make_span(kPrintPreviewResources, kPrintPreviewResourcesSize),
       IDR_PRINT_PREVIEW_PRINT_PREVIEW_HTML);
   AddPrintPreviewStrings(source);
+  source->AddResourcePaths(base::make_span(kPdfResources, kPdfResourcesSize));
   SetupPrintPreviewPlugin(source);
   AddPrintPreviewFlags(source, profile);
 }
