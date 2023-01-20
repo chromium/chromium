@@ -295,6 +295,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
 
     String eagerness_str;
     if (!eagerness_value->AsString(&eagerness_str)) {
+      SetParseErrorMessage(out_error, "Eagerness value must be a string.");
       return nullptr;
     }
 
@@ -305,6 +306,8 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
     } else if (eagerness_str == "conservative") {
       eagerness = mojom::blink::SpeculationEagerness::kConservative;
     } else {
+      SetParseErrorMessage(
+          out_error, "Eagerness value: \"" + eagerness_str + "\" is invalid.");
       return nullptr;
     }
   }
