@@ -14,11 +14,6 @@ bool SetAsDefaultClientForScheme(const std::string& scheme) {
   return false;
 }
 
-DefaultWebClientSetPermission
-GetPlatformSpecificDefaultWebClientSetPermission() {
-  return SET_DEFAULT_NOT_ALLOWED;
-}
-
 std::u16string GetApplicationNameForScheme(const GURL& url) {
   return std::u16string();
 }
@@ -38,5 +33,14 @@ bool IsFirefoxDefaultBrowser() {
 DefaultWebClientState IsDefaultClientForScheme(const std::string& scheme) {
   return UNKNOWN_DEFAULT;
 }
+
+namespace internal {
+
+DefaultWebClientSetPermission
+GetPlatformSpecificDefaultWebClientSetPermission() {
+  return SET_DEFAULT_NOT_ALLOWED;
+}
+
+}  // namespace internal
 
 }  // namespace shell_integration

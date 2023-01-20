@@ -738,19 +738,6 @@ bool SetAsDefaultClientForScheme(const std::string& scheme) {
   return true;
 }
 
-DefaultWebClientSetPermission
-GetPlatformSpecificDefaultWebClientSetPermission() {
-  if (!install_static::SupportsSetAsDefaultBrowser())
-    return SET_DEFAULT_NOT_ALLOWED;
-  if (ShellUtil::CanMakeChromeDefaultUnattended())
-    return SET_DEFAULT_UNATTENDED;
-  if (CanSetAsDefaultDirectly())
-    return SET_DEFAULT_UNATTENDED;
-  // Setting the default web client generally requires user interaction in
-  // Windows 8+ with permitted exceptions above.
-  return SET_DEFAULT_INTERACTIVE;
-}
-
 std::u16string GetApplicationNameForScheme(const GURL& url) {
   std::u16string application_name = GetAppForSchemeUsingAssocQuery(url);
   if (!application_name.empty()) {
@@ -793,6 +780,26 @@ DefaultWebClientState IsDefaultClientForScheme(const std::string& scheme) {
   return GetDefaultWebClientStateFromShellUtilDefaultState(
       ShellUtil::GetChromeDefaultProtocolClientState(base::UTF8ToWide(scheme)));
 }
+
+namespace internal {
+
+DefaultWebClientSetPermission
+GetPlatformSpecificDefaultWebClientSetPermission() {
+  if (!install_static::SupportsSetAsDefaultBrowser()) {
+    return SET_DEFAULT_NOT_ALLOWED;
+  }
+  if (ShellUtil::CanMakeChromeDefaultUnattended()) {
+    return SET_DEFAULT_UNATTENDED;
+  }
+  if (CanSetAsDefaultDirectly()) {
+    return SET_DEFAULT_UNATTENDED;
+  }
+  // Setting the default web client generally requires user interaction in
+  // Windows 8+ with permitted exceptions above.
+  return SET_DEFAULT_INTERACTIVE;
+}
+
+}  // namespace internal
 
 namespace win {
 

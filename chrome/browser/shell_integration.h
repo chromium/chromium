@@ -58,15 +58,9 @@ enum DefaultWebClientSetPermission {
 };
 
 // Returns requirements for making the running browser either the default
-// browser or the default client application for a specific schemes for the
+// browser or the default client application for specific schemes for the
 // current user.
 DefaultWebClientSetPermission GetDefaultWebClientSetPermission();
-
-// Returns requirements for making the running browser either the default
-// browser or the default client application for a specific schemes for the
-// current user, according to a specific platform.
-DefaultWebClientSetPermission
-GetPlatformSpecificDefaultWebClientSetPermission();
 
 // Returns true if the running browser can be set as the default browser,
 // whether user interaction is needed or not. Use
@@ -318,6 +312,15 @@ class DefaultSchemeClientWorker : public DefaultWebClientWorker {
   const GURL url_;
 };
 
+namespace internal {
+
+// Returns requirements for making the running browser either the default
+// browser or the default client application for specific schemes for the
+// current user, according to a specific platform.
+DefaultWebClientSetPermission
+GetPlatformSpecificDefaultWebClientSetPermission();
+
+}  // namespace internal
 }  // namespace shell_integration
 
 #endif  // CHROME_BROWSER_SHELL_INTEGRATION_H_

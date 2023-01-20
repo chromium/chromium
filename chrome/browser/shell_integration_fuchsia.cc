@@ -21,11 +21,6 @@ bool SetAsDefaultClientForScheme(const std::string& scheme) {
   return false;
 }
 
-DefaultWebClientSetPermission
-GetPlatformSpecificDefaultWebClientSetPermission() {
-  return SET_DEFAULT_UNATTENDED;
-}
-
 std::u16string GetApplicationNameForScheme(const GURL& url) {
   NOTIMPLEMENTED_LOG_ONCE();
   return {};
@@ -47,5 +42,14 @@ DefaultWebClientState IsDefaultClientForScheme(const std::string& scheme) {
   NOTIMPLEMENTED_LOG_ONCE();
   return DefaultWebClientState::UNKNOWN_DEFAULT;
 }
+
+namespace internal {
+
+DefaultWebClientSetPermission
+GetPlatformSpecificDefaultWebClientSetPermission() {
+  return SET_DEFAULT_UNATTENDED;
+}
+
+}  // namespace internal
 
 }  // namespace shell_integration

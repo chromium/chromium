@@ -92,7 +92,7 @@ DefaultWebClientSetPermission GetDefaultWebClientSetPermission() {
 #if BUILDFLAG(CHROME_FOR_TESTING)
   return SET_DEFAULT_NOT_ALLOWED;
 #else
-  return GetPlatformSpecificDefaultWebClientSetPermission();
+  return internal::GetPlatformSpecificDefaultWebClientSetPermission();
 #endif
 }
 

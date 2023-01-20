@@ -806,11 +806,6 @@ bool SetAsDefaultClientForScheme(const std::string& scheme) {
   return shell_integration_linux::SetDefaultWebClient(scheme);
 }
 
-DefaultWebClientSetPermission
-GetPlatformSpecificDefaultWebClientSetPermission() {
-  return SET_DEFAULT_UNATTENDED;
-}
-
 std::u16string GetApplicationNameForScheme(const GURL& url) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
 
@@ -849,5 +844,14 @@ bool IsFirefoxDefaultBrowser() {
 DefaultWebClientState IsDefaultClientForScheme(const std::string& scheme) {
   return shell_integration_linux::GetIsDefaultWebClient(scheme);
 }
+
+namespace internal {
+
+DefaultWebClientSetPermission
+GetPlatformSpecificDefaultWebClientSetPermission() {
+  return SET_DEFAULT_UNATTENDED;
+}
+
+}  // namespace internal
 
 }  // namespace shell_integration
