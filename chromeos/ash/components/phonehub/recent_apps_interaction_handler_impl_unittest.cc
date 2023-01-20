@@ -372,6 +372,34 @@ TEST_F(RecentAppsInteractionHandlerTest, SetStreamableApps_EmptyList) {
   EXPECT_TRUE(handler().recent_app_metadata_list_for_testing()->empty());
 }
 
+TEST_F(RecentAppsInteractionHandlerTest, RemoveStreamableApp) {
+  std::vector<Notification::AppMetadata> streamable_apps;
+  streamable_apps.emplace_back(
+      Notification::AppMetadata(u"App1", "com.fakeapp1", gfx::Image(),
+                                /*icon_color=*/absl::nullopt,
+                                /*icon_is_monochrome=*/true, 1,
+                                proto::AppStreamabilityStatus::STREAMABLE));
+  streamable_apps.emplace_back(
+      Notification::AppMetadata(u"App2", "com.fakeapp2", gfx::Image(),
+                                /*icon_color=*/absl::nullopt,
+                                /*icon_is_monochrome=*/true, 1,
+                                proto::AppStreamabilityStatus::STREAMABLE));
+
+  handler().SetStreamableApps(streamable_apps);
+
+  EXPECT_EQ(2U, handler().recent_app_metadata_list_for_testing()->size());
+
+  auto app_to_remove = proto::App();
+  app_to_remove.set_package_name("com.fakeapp1");
+  app_to_remove.set_visible_name("App1");
+  handler().RemoveStreamableApp(app_to_remove);
+  EXPECT_EQ(1U, handler().recent_app_metadata_list_for_testing()->size());
+  EXPECT_EQ("com.fakeapp2", handler()
+                                .recent_app_metadata_list_for_testing()
+                                ->at(0)
+                                .first.package_name);
+}
+
 TEST_F(RecentAppsInteractionHandlerTest, FetchRecentAppMetadataList) {
   const char16_t app_visible_name1[] = u"Fake App";
   const char package_name1[] = "com.fakeapp";

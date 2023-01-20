@@ -68,6 +68,18 @@ void FakeRecentAppsInteractionHandler::SetStreamableApps(
   }
 }
 
+void FakeRecentAppsInteractionHandler::RemoveStreamableApp(
+    proto::App app_to_remove) {
+  recent_apps_metadata_.erase(
+      std::remove_if(
+          recent_apps_metadata_.begin(), recent_apps_metadata_.end(),
+          [&app_to_remove](
+              const std::pair<Notification::AppMetadata, base::Time>& app) {
+            return app.first.package_name == app_to_remove.package_name();
+          }),
+      recent_apps_metadata_.end());
+}
+
 void FakeRecentAppsInteractionHandler::ComputeAndUpdateUiState() {
   if (feature_state_ != FeatureState::kEnabledByUser) {
     ui_state_ = RecentAppsUiState::HIDDEN;

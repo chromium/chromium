@@ -65,6 +65,8 @@ class RecentAppsInteractionHandlerImpl
   void SetStreamableApps(
       const std::vector<Notification::AppMetadata>& streamable_apps) override;
 
+  void RemoveStreamableApp(const proto::App streamable_app) override;
+
   std::vector<std::pair<Notification::AppMetadata, base::Time>>*
   recent_app_metadata_list_for_testing() {
     return &recent_app_metadata_list_;
