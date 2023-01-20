@@ -59,6 +59,7 @@ class LayoutSVGResourceGradient : public LayoutSVGResourcePaintServer {
   gfx::PointF ResolvePoint(SVGUnitTypes::SVGUnitType,
                            const SVGLength& x,
                            const SVGLength& y) const;
+  float ResolveRadius(SVGUnitTypes::SVGUnitType type, const SVGLength& r) const;
   static GradientSpreadMethod PlatformSpreadMethodFromSVGType(
       SVGSpreadMethodType);
 

@@ -64,15 +64,13 @@ gfx::PointF LayoutSVGResourceRadialGradient::FocalPoint(
 float LayoutSVGResourceRadialGradient::Radius(
     const RadialGradientAttributes& attributes) const {
   NOT_DESTROYED();
-  return SVGLengthContext::ResolveLength(
-      GetElement(), attributes.GradientUnits(), *attributes.R());
+  return ResolveRadius(attributes.GradientUnits(), *attributes.R());
 }
 
 float LayoutSVGResourceRadialGradient::FocalRadius(
     const RadialGradientAttributes& attributes) const {
   NOT_DESTROYED();
-  return SVGLengthContext::ResolveLength(
-      GetElement(), attributes.GradientUnits(), *attributes.Fr());
+  return ResolveRadius(attributes.GradientUnits(), *attributes.Fr());
 }
 
 scoped_refptr<Gradient> LayoutSVGResourceRadialGradient::BuildGradient() const {

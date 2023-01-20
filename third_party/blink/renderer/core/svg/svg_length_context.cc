@@ -379,20 +379,6 @@ gfx::Vector2dF SVGLengthContext::ResolveLengthPair(
                         ValueForLength(y_length, zoom, viewport_size.height()));
 }
 
-float SVGLengthContext::ResolveLength(const SVGElement* context,
-                                      SVGUnitTypes::SVGUnitType type,
-                                      const SVGLength& x) {
-  DCHECK_NE(SVGUnitTypes::kSvgUnitTypeUnknown, type);
-  if (type == SVGUnitTypes::kSvgUnitTypeUserspaceonuse) {
-    SVGLengthContext length_context(context);
-    return x.Value(length_context);
-  }
-  // TODO(fs): ScaleByPercentage() won't be correct for eg. cm units. They need
-  // to be resolved in user space and then be considered in objectBoundingBox
-  // space.
-  return x.ScaleByPercentage(1);
-}
-
 float SVGLengthContext::ResolveValue(const CSSPrimitiveValue& primitive_value,
                                      SVGLengthMode mode) const {
   CSSToLengthConversionDataContext conversion_context(context_);

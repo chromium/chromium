@@ -45,6 +45,18 @@ gfx::SizeF MakeViewport(const SVGLengthContext& context,
   return context.ResolveViewport();
 }
 
+float MakeViewportDimension(const SVGLengthContext& context,
+                            const Length& radius,
+                            SVGUnitTypes::SVGUnitType type) {
+  if (!radius.IsPercentOrCalc()) {
+    return 0;
+  }
+  if (type == SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
+    return 1;
+  }
+  return context.ViewportDimension(SVGLengthMode::kOther);
+}
+
 }  // unnamed namespace
 
 struct GradientData {
@@ -166,6 +178,15 @@ gfx::PointF LayoutSVGResourceGradient::ResolvePoint(
   const SVGLengthContext context(GetElement());
   const LengthPoint& point = context.ConvertToLengthPoint(x, y);
   return PointForLengthPoint(point, MakeViewport(context, point, type));
+}
+
+float LayoutSVGResourceGradient::ResolveRadius(SVGUnitTypes::SVGUnitType type,
+                                               const SVGLength& r) const {
+  NOT_DESTROYED();
+  const SVGLengthContext context(GetElement());
+  const Length& radius = context.ConvertToLength(r);
+  return FloatValueForLength(radius,
+                             MakeViewportDimension(context, radius, type));
 }
 
 GradientSpreadMethod LayoutSVGResourceGradient::PlatformSpreadMethodFromSVGType(

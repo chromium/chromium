@@ -64,9 +64,6 @@ class CORE_EXPORT SVGLengthContext {
                                      const SVGLength& y,
                                      const SVGLength& width,
                                      const SVGLength& height);
-  static float ResolveLength(const SVGElement*,
-                             SVGUnitTypes::SVGUnitType,
-                             const SVGLength&);
   gfx::Vector2dF ResolveLengthPair(const Length& x_length,
                                    const Length& y_length,
                                    const ComputedStyle&) const;
@@ -92,10 +89,10 @@ class CORE_EXPORT SVGLengthContext {
                               float dimension);
 
   gfx::SizeF ResolveViewport() const;
+  float ViewportDimension(SVGLengthMode) const;
   float ResolveValue(const CSSPrimitiveValue&, SVGLengthMode) const;
 
  private:
-  float ViewportDimension(SVGLengthMode) const;
   float ValueForLength(const Length&, float zoom, SVGLengthMode) const;
   static float ValueForLength(const Length&, float zoom, float dimension);
 
