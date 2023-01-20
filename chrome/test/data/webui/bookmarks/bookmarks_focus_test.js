@@ -25,9 +25,7 @@ var BookmarksFolderNodeFocusTest = class extends BookmarksFocusTest {
   }
 };
 
-// http://crbug.com/1000950 : Flaky.
-GEN('#define MAYBE_All DISABLED_All');
-TEST_F('BookmarksFolderNodeFocusTest', 'MAYBE_All', function() {
+TEST_F('BookmarksFolderNodeFocusTest', 'All', function() {
   mocha.run();
 });
 
