@@ -65,7 +65,7 @@ std::ostream& operator<<(std::ostream& out, SetupStage stage);
 
 // When the manager is setting up, this struct maintains all the information
 // gathered.
-struct SetupProgress {
+struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) SetupProgress {
   // Number of free bytes on the stateful partition. Estimated at the beginning
   // of the setup process and left unchanged afterwards.
   int64_t free_space = 0;
@@ -79,16 +79,19 @@ struct SetupProgress {
   // Estimated number of bytes that are required to download the files to pin.
   // Estimated at the beginning of the setup process and updated if necessary
   // afterwards.
-  int64_t total_bytes = 0;
+  int64_t bytes_to_pin = 0;
 
   // Number of bytes that have been downloaded so far.
-  int64_t transferred_bytes = 0;
+  int64_t pinned_bytes = 0;
+
+  // Total number of files to pin.
+  int32_t files_to_pin = 0;
 
   // Number of pinned and downloaded files so far.
   int32_t pinned_files = 0;
 
   // Number of errors encountered so far.
-  int32_t errors = 0;
+  int32_t failed_files = 0;
 
   // Number of "useful" (ie non-duplicated) events received from DriveFS so far.
   int32_t useful_events = 0;
@@ -98,6 +101,10 @@ struct SetupProgress {
 
   // Stage of the setup process.
   SetupStage stage = SetupStage::kNotStarted;
+
+  SetupProgress();
+  SetupProgress(const SetupProgress&);
+  SetupProgress& operator=(const SetupProgress&);
 };
 
 // Manages bulk pinning of items via DriveFS. This class handles the following:

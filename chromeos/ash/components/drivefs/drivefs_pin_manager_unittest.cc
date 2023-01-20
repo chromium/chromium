@@ -237,8 +237,8 @@ TEST_F(DriveFsPinManagerTest, Add) {
   {
     const SetupProgress progress = manager.GetProgress();
     EXPECT_EQ(progress.pinned_files, 0);
-    EXPECT_EQ(progress.transferred_bytes, 0);
-    EXPECT_EQ(progress.total_bytes, 0);
+    EXPECT_EQ(progress.pinned_bytes, 0);
+    EXPECT_EQ(progress.bytes_to_pin, 0);
     EXPECT_EQ(progress.required_space, 0);
   }
 
@@ -279,8 +279,8 @@ TEST_F(DriveFsPinManagerTest, Add) {
   {
     const SetupProgress progress = manager.GetProgress();
     EXPECT_EQ(progress.pinned_files, 0);
-    EXPECT_EQ(progress.transferred_bytes, 0);
-    EXPECT_EQ(progress.total_bytes, size1);
+    EXPECT_EQ(progress.pinned_bytes, 0);
+    EXPECT_EQ(progress.bytes_to_pin, size1);
     EXPECT_EQ(progress.required_space, 698249216);
   }
 
@@ -303,8 +303,8 @@ TEST_F(DriveFsPinManagerTest, Add) {
   {
     const SetupProgress progress = manager.GetProgress();
     EXPECT_EQ(progress.pinned_files, 0);
-    EXPECT_EQ(progress.transferred_bytes, 0);
-    EXPECT_EQ(progress.total_bytes, size1 + size2);
+    EXPECT_EQ(progress.pinned_bytes, 0);
+    EXPECT_EQ(progress.bytes_to_pin, size1 + size2);
     EXPECT_EQ(progress.required_space, 777216000);
   }
 }
@@ -331,7 +331,7 @@ TEST_F(DriveFsPinManagerTest, CannotGetFreeSpace) {
   EXPECT_EQ(progress.stage, SetupStage::kCannotGetFreeSpace);
   EXPECT_EQ(progress.free_space, 0);
   EXPECT_EQ(progress.required_space, 0);
-  EXPECT_EQ(progress.transferred_bytes, 0);
+  EXPECT_EQ(progress.pinned_bytes, 0);
   EXPECT_EQ(progress.pinned_files, 0);
 }
 
@@ -359,7 +359,7 @@ TEST_F(DriveFsPinManagerTest, CannotListFiles) {
   EXPECT_EQ(progress.stage, SetupStage::kCannotListFiles);
   EXPECT_EQ(progress.free_space, 1 << 30);
   EXPECT_EQ(progress.required_space, 0);
-  EXPECT_EQ(progress.transferred_bytes, 0);
+  EXPECT_EQ(progress.pinned_bytes, 0);
   EXPECT_EQ(progress.pinned_files, 0);
 }
 
@@ -386,7 +386,7 @@ TEST_F(DriveFsPinManagerTest, InvalidFileList) {
   EXPECT_EQ(progress.stage, SetupStage::kCannotListFiles);
   EXPECT_EQ(progress.free_space, 1 << 30);
   EXPECT_EQ(progress.required_space, 0);
-  EXPECT_EQ(progress.transferred_bytes, 0);
+  EXPECT_EQ(progress.pinned_bytes, 0);
   EXPECT_EQ(progress.pinned_files, 0);
 }
 
@@ -421,7 +421,7 @@ TEST_F(DriveFsPinManagerTest, NotEnoughSpace) {
   EXPECT_EQ(progress.stage, SetupStage::kNotEnoughSpace);
   EXPECT_EQ(progress.free_space, 1 << 30);
   EXPECT_EQ(progress.required_space, (512 << 20) + (4 << 10));
-  EXPECT_EQ(progress.transferred_bytes, 0);
+  EXPECT_EQ(progress.pinned_bytes, 0);
   EXPECT_EQ(progress.pinned_files, 0);
 }
 
@@ -457,7 +457,7 @@ TEST_F(DriveFsPinManagerTest, JustCheckRequiredSpace) {
   EXPECT_EQ(progress.stage, SetupStage::kSuccess);
   EXPECT_EQ(progress.free_space, 1 << 30);
   EXPECT_EQ(progress.required_space, 512 << 20);
-  EXPECT_EQ(progress.transferred_bytes, 0);
+  EXPECT_EQ(progress.pinned_bytes, 0);
   EXPECT_EQ(progress.pinned_files, 0);
 }
 
@@ -725,7 +725,7 @@ TEST_F(DriveFsPinManagerTest,
   status->item_events.at(0)->bytes_transferred = 10;
   EXPECT_CALL(
       observer,
-      OnProgress(AllOf(Field(&SetupProgress::transferred_bytes, 10),
+      OnProgress(AllOf(Field(&SetupProgress::pinned_bytes, 10),
                        Field(&SetupProgress::stage, SetupStage::kSyncing))))
       .Times(1)
       .WillOnce(RunClosure(setup_progress_run_loop.QuitClosure()));
@@ -749,7 +749,7 @@ TEST_F(DriveFsPinManagerTest,
   status->item_events.at(0)->bytes_transferred = 128;
   EXPECT_CALL(
       observer,
-      OnProgress(AllOf(Field(&SetupProgress::transferred_bytes, 128),
+      OnProgress(AllOf(Field(&SetupProgress::pinned_bytes, 128),
                        Field(&SetupProgress::stage, SetupStage::kSuccess))))
       .Times(1)
       .WillOnce(RunClosure(setup_progress_run_loop.QuitClosure()));
