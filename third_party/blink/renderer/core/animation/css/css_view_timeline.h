@@ -41,9 +41,6 @@ class CORE_EXPORT CSSViewTimeline : public ViewTimeline {
   bool Matches(const Options&) const;
 };
 
-using CSSViewTimelineMap =
-    HeapHashMap<Member<const ScopedCSSName>, Member<CSSViewTimeline>>;
-
 template <>
 struct DowncastTraits<CSSViewTimeline> {
   static bool AllowFrom(const AnimationTimeline& value) {

@@ -633,10 +633,11 @@ size_t TreeScopeDistance(const TreeScope* outer, const TreeScope* inner) {
 
 // Update the matching timeline if the candidate is a more proximate match
 // than the existing match.
+template <typename TimelineType>
 void UpdateMatchingTimeline(const ScopedCSSName& target_name,
                             const ScopedCSSName& candidate_name,
-                            CSSViewTimeline* candidate,
-                            CSSViewTimeline*& matching_timeline,
+                            TimelineType* candidate,
+                            TimelineType*& matching_timeline,
                             size_t& matching_distance) {
   if (target_name.GetName() != candidate_name.GetName()) {
     return;
@@ -704,15 +705,28 @@ CSSViewTimeline* CSSAnimations::FindViewTimelineForElement(
     const ScopedCSSName& target_name,
     const CSSAnimationUpdate* update,
     const TimelineData* timeline_data) {
-  CSSViewTimeline* matching_timeline = nullptr;
+  const CSSViewTimelineMap* existing_timelines =
+      timeline_data ? &timeline_data->GetViewTimelines() : nullptr;
+  const CSSViewTimelineMap* changed_timelines =
+      update ? &update->ChangedViewTimelines() : nullptr;
+  return FindTimelineForElement<CSSViewTimeline>(
+      target_name, existing_timelines, changed_timelines);
+}
+
+template <typename TimelineType>
+TimelineType* CSSAnimations::FindTimelineForElement(
+    const ScopedCSSName& target_name,
+    const CSSTimelineMap<TimelineType>* existing_timelines,
+    const CSSTimelineMap<TimelineType>* changed_timelines) {
+  TimelineType* matching_timeline = nullptr;
   size_t matching_distance = std::numeric_limits<size_t>::max();
 
   // First, search through existing named timelines.
-  if (timeline_data) {
-    for (auto [name, value] : timeline_data->GetViewTimelines()) {
+  if (existing_timelines) {
+    for (auto [name, value] : *existing_timelines) {
       // Skip timelines affected by the current CSSAnimationUpdate:
       // they will be handled by the next for-loop.
-      if (update && update->ChangedViewTimeline(*name)) {
+      if (changed_timelines && changed_timelines->Contains(name)) {
         continue;
       }
       UpdateMatchingTimeline(target_name, *name, value.Get(), matching_timeline,
@@ -721,8 +735,8 @@ CSSViewTimeline* CSSAnimations::FindViewTimelineForElement(
   }
 
   // Search through timelines created or modified this CSSAnimationUpdate.
-  if (update) {
-    for (auto [name, value] : update->ChangedViewTimelines()) {
+  if (changed_timelines) {
+    for (auto [name, value] : *changed_timelines) {
       if (!value) {
         // A value of nullptr means that a currently existing timeline
         // was removed.

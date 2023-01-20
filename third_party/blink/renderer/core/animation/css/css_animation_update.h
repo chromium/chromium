@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/css/css_scroll_timeline.h"
+#include "third_party/blink/renderer/core/animation/css/css_timeline_map.h"
 #include "third_party/blink/renderer/core/animation/css/css_view_timeline.h"
 #include "third_party/blink/renderer/core/animation/effect_stack.h"
 #include "third_party/blink/renderer/core/animation/inert_effect.h"
@@ -232,14 +233,6 @@ class CORE_EXPORT CSSAnimationUpdate final {
     if (!scroll_timeline_changed_)
       return absl::nullopt;
     return changed_scroll_timeline_.Get();
-  }
-  absl::optional<CSSViewTimeline*> ChangedViewTimeline(
-      const ScopedCSSName& name) const {
-    auto i = changed_view_timelines_.find(&name);
-    if (i == changed_view_timelines_.end()) {
-      return absl::nullopt;
-    }
-    return i->value.Get();
   }
   const CSSViewTimelineMap& ChangedViewTimelines() const {
     return changed_view_timelines_;

@@ -62,6 +62,7 @@ blink_core_sources("animation") {
     "css/css_keyframe_effect_model.h",
     "css/css_scroll_timeline.cc",
     "css/css_scroll_timeline.h",
+    "css/css_timeline_map.h",
     "css/css_timing_data.cc",
     "css/css_timing_data.h",
     "css/css_transition.cc",
