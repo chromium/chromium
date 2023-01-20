@@ -118,7 +118,7 @@
       hide-back-button="[[!activeFolderPath_.length]]"
       disable-back-button="[[disableBackButton_(
           activeFolderPath_.*, editing_)]]">
-    <h1 slot="heading">[[getFolderLabel_(activeFolderPath_.*)]]</h1>
+    <h1 slot="heading">[[getActiveFolderLabel_(activeFolderPath_.*)]]</h1>
 
     <cr-button slot="buttons" class="sort-menu-button"
         aria-label="$i18n{sortMenuA11yLabel}"
@@ -158,8 +158,7 @@
             on-checkbox-change="onRowSelectedChange_"
             on-input-change="onRename_">
           <div slot="badges">
-            <template is="dom-if"
-                if="[[isPriceTracked_(item, showPriceTracking_)]]" restamp>
+            <template is="dom-if" if="[[isPriceTracked_(item)]]" restamp>
               <sp-list-item-badge updated="[[showDiscountedPrice_(item)]]">
                 <iron-icon icon="bookmarks:price-tracking"></iron-icon>
                 <div>[[getCurrentPrice_(item)]]</div>
