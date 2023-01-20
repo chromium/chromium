@@ -13,8 +13,11 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.AdapterView;
 import android.widget.PopupWindow;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.ui.DropdownItem;
 import org.chromium.ui.DropdownPopupWindow;
+import org.chromium.ui.widget.RectProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,12 +52,15 @@ public class AutofillPopup extends DropdownPopupWindow
 
     /**
      * Creates an AutofillWindow with specified parameters.
+     *
      * @param context Application context.
      * @param anchorView View anchored for popup.
      * @param autofillDelegate An object that handles the calls to the native AutofillPopupView.
+     * @param visibleWebContentsRectProvider The {@link RectProvider} for popup limits.
      */
-    public AutofillPopup(Context context, View anchorView, AutofillDelegate autofillDelegate) {
-        super(context, anchorView);
+    public AutofillPopup(Context context, View anchorView, AutofillDelegate autofillDelegate,
+            @Nullable RectProvider visibleWebContentsRectProvider) {
+        super(context, anchorView, visibleWebContentsRectProvider);
         mContext = context;
         mAutofillDelegate = autofillDelegate;
 

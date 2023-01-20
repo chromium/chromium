@@ -66,7 +66,7 @@ public class AwAutofillClient {
 
                     @Override
                     public void accessibilityFocusCleared() {}
-                });
+                }, null);
             } catch (RuntimeException e) {
                 // Deliberately swallowing exception because bad fraemwork implementation can
                 // throw exceptions in ListPopupWindow constructor.

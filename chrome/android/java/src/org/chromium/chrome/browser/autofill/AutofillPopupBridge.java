@@ -11,14 +11,16 @@ import android.content.res.Configuration;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.tab.Tab;
@@ -29,6 +31,7 @@ import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.DropdownItem;
+import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -41,7 +44,8 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
     private final AutofillPopup mAutofillPopup;
     private AlertDialog mDeletionDialog;
     private final Context mContext;
-    private WebContentsAccessibility mWebContentsAccessibility;
+    private final WebContentsAccessibility mWebContentsAccessibility;
+    private final WebContentsViewRectProvider mWebContentsViewRectProvider;
 
     public AutofillPopupBridge(@NonNull View anchorView, long nativeAutofillPopupViewAndroid,
             @NonNull WindowAndroid windowAndroid) {
@@ -56,13 +60,15 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
         if (activity == null || notEnoughScreenSpace(activity) || webContents == null) {
             mAutofillPopup = null;
             mContext = null;
+            mWebContentsViewRectProvider = null;
+            mWebContentsAccessibility = null;
         } else {
-            mAutofillPopup = new AutofillPopup(activity, anchorView, this);
             mContext = activity;
-
-            Supplier<ManualFillingComponent> manualFillingComponentSupplier =
+            ObservableSupplier<ManualFillingComponent> manualFillingComponentSupplier =
                     ManualFillingComponentSupplier.from(windowAndroid);
-            // Could be null if this ctor is called as the activity is being destroyed.
+            mWebContentsViewRectProvider = tryCreateRectProvider(webContents, windowAndroid);
+            mAutofillPopup =
+                    new AutofillPopup(activity, anchorView, this, mWebContentsViewRectProvider);
             if (manualFillingComponentSupplier != null
                     && manualFillingComponentSupplier.hasValue()) {
                 manualFillingComponentSupplier.get().notifyPopupAvailable(mAutofillPopup);
@@ -119,6 +125,7 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
         mNativeAutofillPopup = 0;
         if (mAutofillPopup != null) mAutofillPopup.dismiss();
         if (mDeletionDialog != null) mDeletionDialog.dismiss();
+        if (mWebContentsViewRectProvider != null) mWebContentsViewRectProvider.dismiss();
         mWebContentsAccessibility.onAutofillPopupDismissed();
     }
 
@@ -224,6 +231,16 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
                                                     R.dimen.autofill_dropdown_icon_height))));
         }
         array[index] = builder.build();
+    }
+
+    private @Nullable WebContentsViewRectProvider tryCreateRectProvider(
+            WebContents webContents, WindowAndroid windowAndroid) {
+        ObservableSupplier<ManualFillingComponent> manualFillingComponentSupplier =
+                ManualFillingComponentSupplier.from(windowAndroid);
+        ViewAndroidDelegate viewDelegate = webContents.getViewAndroidDelegate();
+        if (viewDelegate == null || viewDelegate.getContainerView() == null) return null;
+        return new WebContentsViewRectProvider(webContents,
+                BrowserControlsManagerSupplier.from(windowAndroid), manualFillingComponentSupplier);
     }
 
     @NativeMethods

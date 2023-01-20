@@ -64,7 +64,7 @@ public class AutofillUnitTest {
             viewDelegate.setViewPosition(anchorView, 50f, 500f, 500f, 500f, 10, 10);
 
             mAutofillPopup = new AutofillPopup(
-                    sActivityTestRule.getActivity(), anchorView, mMockAutofillCallback);
+                    sActivityTestRule.getActivity(), anchorView, mMockAutofillCallback, null);
             mAutofillPopup.filterAndShow(
                     new AutofillSuggestion[0], /* isRtl= */ false, /* isRefresh= */ false);
         });

@@ -15,6 +15,7 @@ import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.PopupWindow;
@@ -46,6 +47,8 @@ import org.chromium.ui.widget.UiWidgetFactory;
 @Config(manifest = Config.NONE, shadows = {ShadowPhoneWindow.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class ContextMenuDialogUnitTest {
+    private static final int DIALOG_SIZE_DIP = 50;
+
     @Rule
     public MockitoRule mockitoRule = MockitoJUnit.rule();
 
@@ -82,6 +85,11 @@ public class ContextMenuDialogUnitTest {
                 .when(mSpyPopupWindow)
                 .showAtLocation(any(View.class), anyInt(), anyInt(), anyInt());
         Mockito.doNothing().when(mSpyPopupWindow).dismiss();
+
+        View mockContentView = Mockito.mock(ViewGroup.class);
+        Mockito.when(mockContentView.getMeasuredHeight()).thenReturn(DIALOG_SIZE_DIP);
+        Mockito.when(mockContentView.getMeasuredWidth()).thenReturn(DIALOG_SIZE_DIP);
+        Mockito.doReturn(mockContentView).when(mSpyPopupWindow).getContentView();
     }
 
     @Test
