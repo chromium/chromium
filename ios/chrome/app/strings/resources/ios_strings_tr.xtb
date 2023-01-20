@@ -854,7 +854,7 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 <translation id="7554791636758816595">Yeni Sekme</translation>
 <translation id="7561196759112975576">Her zaman</translation>
 <translation id="7583004045319035904">Gizli sekmelerinizin kilidini açmak için <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> kullanın.</translation>
-<translation id="7600965453749440009"><ph name="LANGUAGE" /> dilini asla çevirme</translation>
+<translation id="7600965453749440009">Bu dili (<ph name="LANGUAGE" />) asla çevirme</translation>
 <translation id="7603852183842204213">Engellen Pop-up'lar (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Şifreyi Sil</translation>
 <translation id="7638584964844754484">Yanlış parola</translation>
