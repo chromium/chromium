@@ -40,6 +40,10 @@ version_info::Channel AutofillClient::GetChannel() const {
   return version_info::Channel::UNKNOWN;
 }
 
+bool AutofillClient::IsOffTheRecord() {
+  return false;
+}
+
 IBANManager* AutofillClient::GetIBANManager() {
   return nullptr;
 }

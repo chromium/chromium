@@ -27,6 +27,8 @@ class AutofillClientImpl
   ~AutofillClientImpl() override;
 
   // AutofillClient:
+  bool IsOffTheRecord() override;
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   autofill::PersonalDataManager* GetPersonalDataManager() override;
   autofill::AutocompleteHistoryManager* GetAutocompleteHistoryManager()
       override;

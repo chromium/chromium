@@ -84,6 +84,11 @@ class MockAutofillClient : public autofill::AutofillClient {
   ~MockAutofillClient() override = default;
 
   MOCK_METHOD(version_info::Channel, GetChannel, (), (const, override));
+  MOCK_METHOD(bool, IsOffTheRecord, (), (override));
+  MOCK_METHOD(scoped_refptr<network::SharedURLLoaderFactory>,
+              GetURLLoaderFactory,
+              (),
+              (override));
   MOCK_METHOD(autofill::PersonalDataManager*,
               GetPersonalDataManager,
               (),

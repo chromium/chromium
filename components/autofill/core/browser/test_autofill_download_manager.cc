@@ -10,11 +10,12 @@
 namespace autofill {
 
 TestAutofillDownloadManager::TestAutofillDownloadManager(
+    AutofillClient* client,
     AutofillDriver* driver,
     AutofillDownloadManager::Observer* observer)
-    : AutofillDownloadManager(driver, observer) {}
+    : AutofillDownloadManager(client, driver, observer) {}
 
-TestAutofillDownloadManager::~TestAutofillDownloadManager() {}
+TestAutofillDownloadManager::~TestAutofillDownloadManager() = default;
 
 bool TestAutofillDownloadManager::StartQueryRequest(
     const std::vector<FormStructure*>& forms) {

@@ -55,6 +55,8 @@ class ChromeAutofillClientIOS : public AutofillClient {
 
   // AutofillClient:
   version_info::Channel GetChannel() const override;
+  bool IsOffTheRecord() override;
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   PersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   CreditCardCVCAuthenticator* GetCVCAuthenticator() override;

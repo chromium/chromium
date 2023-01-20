@@ -26,6 +26,7 @@
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -48,6 +49,18 @@ void AwAutofillClient::SetSaveFormData(bool enabled) {
 
 bool AwAutofillClient::GetSaveFormData() const {
   return save_form_data_;
+}
+
+bool AwAutofillClient::IsOffTheRecord() {
+  return GetWebContents().GetBrowserContext()->IsOffTheRecord();
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+AwAutofillClient::GetURLLoaderFactory() {
+  return GetWebContents()
+      .GetBrowserContext()
+      ->GetDefaultStoragePartition()
+      ->GetURLLoaderFactoryForBrowserProcess();
 }
 
 autofill::PersonalDataManager* AwAutofillClient::GetPersonalDataManager() {

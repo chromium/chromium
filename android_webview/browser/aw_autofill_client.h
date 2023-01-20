@@ -64,6 +64,8 @@ class AwAutofillClient : public autofill::AutofillClient,
   bool GetSaveFormData() const;
 
   // AutofillClient:
+  bool IsOffTheRecord() override;
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   autofill::PersonalDataManager* GetPersonalDataManager() override;
   autofill::AutocompleteHistoryManager* GetAutocompleteHistoryManager()
       override;

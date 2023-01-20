@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_manager.h"
-#include "services/network/test/test_url_loader_factory.h"
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_IOS)
@@ -42,13 +41,11 @@ class TestAutofillDriver : public ContentAutofillDriver {
 #endif
 
   // AutofillDriver implementation overrides.
-  bool IsIncognito() const override;
   bool IsInActiveFrame() const override;
   bool IsInAnyMainFrame() const override;
   bool IsPrerendering() const override;
   bool CanShowAutofillUi() const override;
   ui::AXTreeID GetAxTreeId() const override;
-  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   bool RendererIsAvailable() override;
   // The return value contains the members (field, type) of `field_type_map` for
   // which `field_type_filter_.Run(triggered_origin, field, type)` is true.
@@ -82,7 +79,6 @@ class TestAutofillDriver : public ContentAutofillDriver {
   // Methods unique to TestAutofillDriver that tests can use to specialize
   // functionality.
 
-  void SetIsIncognito(bool is_incognito);
   void SetIsInActiveFrame(bool is_in_active_frame);
   void SetIsInAnyMainFrame(bool is_in_any_main_frame);
   void SetIsolationInfo(const net::IsolationInfo& isolation_info);
@@ -99,9 +95,6 @@ class TestAutofillDriver : public ContentAutofillDriver {
 #endif
 
  private:
-  network::TestURLLoaderFactory test_url_loader_factory_;
-  scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-  bool is_incognito_ = false;
   bool is_in_active_frame_ = true;
   bool is_in_any_main_frame_ = true;
   net::IsolationInfo isolation_info_;

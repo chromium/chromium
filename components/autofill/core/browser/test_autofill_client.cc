@@ -41,6 +41,15 @@ version_info::Channel TestAutofillClient::GetChannel() const {
   return channel_for_testing_;
 }
 
+bool TestAutofillClient::IsOffTheRecord() {
+  return is_off_the_record_;
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+TestAutofillClient::GetURLLoaderFactory() {
+  return test_shared_loader_factory_;
+}
+
 TestPersonalDataManager* TestAutofillClient::GetPersonalDataManager() {
   return test_personal_data_manager_.get();
 }

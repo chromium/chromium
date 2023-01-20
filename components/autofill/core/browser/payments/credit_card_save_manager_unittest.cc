@@ -191,7 +191,7 @@ class CreditCardSaveManagerTest : public testing::Test {
     personal_data().OnSyncServiceInitialized(&sync_service_);
     autofill_driver_ = std::make_unique<TestAutofillDriver>();
     payments_client_ = new payments::TestPaymentsClient(
-        autofill_driver_->GetURLLoaderFactory(),
+        autofill_client_.GetURLLoaderFactory(),
         autofill_client_.GetIdentityManager(), &personal_data());
     autofill_client_.set_test_payments_client(
         std::unique_ptr<payments::TestPaymentsClient>(payments_client_));

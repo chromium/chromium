@@ -146,7 +146,7 @@ AutofillManager::AutofillManager(AutofillDriver* driver,
       form_interactions_ukm_logger_(CreateFormInteractionsUkmLogger()) {
   if (enable_download_manager) {
     download_manager_ = std::make_unique<AutofillDownloadManager>(
-        driver, this, GetAPIKeyForUrl(channel),
+        client, driver, this, GetAPIKeyForUrl(channel),
         AutofillDownloadManager::IsRawMetadataUploadingEnabled(
             IsRawMetadataUploadingEnabled(channel)),
         log_manager_);

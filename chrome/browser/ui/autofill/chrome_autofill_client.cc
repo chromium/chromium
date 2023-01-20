@@ -89,6 +89,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/ssl_status.h"
+#include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
@@ -145,6 +146,18 @@ ChromeAutofillClient::~ChromeAutofillClient() {
 
 version_info::Channel ChromeAutofillClient::GetChannel() const {
   return chrome::GetChannel();
+}
+
+bool ChromeAutofillClient::IsOffTheRecord() {
+  return web_contents()->GetBrowserContext()->IsOffTheRecord();
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+ChromeAutofillClient::GetURLLoaderFactory() {
+  return web_contents()
+      ->GetBrowserContext()
+      ->GetDefaultStoragePartition()
+      ->GetURLLoaderFactoryForBrowserProcess();
 }
 
 PersonalDataManager* ChromeAutofillClient::GetPersonalDataManager() {
@@ -1094,19 +1107,19 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
           payments_client_.get(),
           GetPersonalDataManager(),
           GetPersonalDataManager()->app_locale())),
+      log_manager_(
+          // TODO(crbug.com/928595): Replace the closure with a callback to the
+          // renderer that indicates if log messages should be sent from the
+          // renderer.
+          LogManager::Create(AutofillLogRouterFactory::GetForBrowserContext(
+                                 web_contents->GetBrowserContext()),
+                             base::NullCallback())),
       unmask_controller_(
           user_prefs::UserPrefs::Get(web_contents->GetBrowserContext())),
       autofill_error_dialog_controller_(web_contents),
       autofill_progress_dialog_controller_(
           std::make_unique<AutofillProgressDialogControllerImpl>(
               web_contents)) {
-  // TODO(crbug.com/928595): Replace the closure with a callback to the
-  // renderer that indicates if log messages should be sent from the
-  // renderer.
-  log_manager_ =
-      LogManager::Create(AutofillLogRouterFactory::GetForBrowserContext(
-                             web_contents->GetBrowserContext()),
-                         base::NullCallback());
   // Initialize StrikeDatabase so its cache will be loaded and ready to use
   // when requested by other Autofill classes.
   GetStrikeDatabase();

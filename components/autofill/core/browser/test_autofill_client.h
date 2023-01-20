@@ -39,6 +39,8 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/version_info/channel.h"
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 
 #if !BUILDFLAG(IS_IOS)
 #include "components/webauthn/core/browser/internal_authenticator.h"
@@ -62,6 +64,8 @@ class TestAutofillClient : public AutofillClient {
 
   // AutofillClient:
   version_info::Channel GetChannel() const override;
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
+  bool IsOffTheRecord() override;
   TestPersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   IBANManager* GetIBANManager() override;
@@ -352,6 +356,15 @@ class TestAutofillClient : public AutofillClient {
     channel_for_testing_ = channel;
   }
 
+  void set_is_off_the_record(bool is_off_the_record) {
+    is_off_the_record_ = is_off_the_record;
+  }
+
+  void set_shared_url_loader_factory(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+    test_shared_loader_factory_ = url_loader_factory;
+  }
+
   GURL form_origin() { return form_origin_; }
 
   ukm::TestUkmRecorder* GetTestUkmRecorder();
@@ -413,6 +426,13 @@ class TestAutofillClient : public AutofillClient {
   absl::optional<bool> credit_card_name_fix_flow_bubble_was_shown_;
 
   version_info::Channel channel_for_testing_ = version_info::Channel::UNKNOWN;
+
+  bool is_off_the_record_ = false;
+
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_ =
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory_);
 
   // Populated if credit card local save or upload was offered.
   absl::optional<SaveCreditCardOptions> save_credit_card_options_;

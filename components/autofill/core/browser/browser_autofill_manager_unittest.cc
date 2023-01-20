@@ -156,9 +156,10 @@ class MockAutofillClient : public TestAutofillClient {
 
 class MockAutofillDownloadManager : public TestAutofillDownloadManager {
  public:
-  MockAutofillDownloadManager(AutofillDriver* driver,
+  MockAutofillDownloadManager(AutofillClient* client,
+                              AutofillDriver* driver,
                               AutofillDownloadManager::Observer* observer)
-      : TestAutofillDownloadManager(driver, observer) {}
+      : TestAutofillDownloadManager(client, driver, observer) {}
   MockAutofillDownloadManager(const MockAutofillDownloadManager&) = delete;
   MockAutofillDownloadManager& operator=(const MockAutofillDownloadManager&) =
       delete;
@@ -399,7 +400,7 @@ class BrowserAutofillManagerTest : public testing::Test {
 
     autofill_driver_ = std::make_unique<NiceMock<MockAutofillDriver>>();
     auto payments_client = std::make_unique<payments::TestPaymentsClient>(
-        autofill_driver_->GetURLLoaderFactory(),
+        autofill_client_.GetURLLoaderFactory(),
         autofill_client_.GetIdentityManager(), &personal_data());
     payments_client_ = payments_client.get();
     autofill_client_.set_test_payments_client(std::move(payments_client));
@@ -433,7 +434,8 @@ class BrowserAutofillManagerTest : public testing::Test {
         std::move(single_field_form_fill_router));
 
     auto download_manager = std::make_unique<MockAutofillDownloadManager>(
-        autofill_driver_.get(), browser_autofill_manager_.get());
+        &autofill_client_, autofill_driver_.get(),
+        browser_autofill_manager_.get());
     download_manager_ = download_manager.get();
     browser_autofill_manager_->set_download_manager_for_test(
         std::move(download_manager));
@@ -8164,12 +8166,12 @@ TEST_F(BrowserAutofillManagerTest, ShouldUploadForm) {
   EXPECT_TRUE(browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 
   // Is off the record.
-  autofill_driver_->SetIsIncognito(true);
+  autofill_client_.set_is_off_the_record(true);
   EXPECT_FALSE(
       browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 
   // Make sure it's reset for the next test case.
-  autofill_driver_->SetIsIncognito(false);
+  autofill_client_.set_is_off_the_record(false);
   EXPECT_TRUE(browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 
   // Has one field which is appears to be a password field.
@@ -9191,7 +9193,7 @@ TEST_F(BrowserAutofillManagerTest, ImportDataWhenValueDetected) {
 TEST_F(BrowserAutofillManagerTest, DontImportUpiIdWhenIncognito) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kAutofillSaveAndFillVPA);
-  autofill_driver_->SetIsIncognito(true);
+  autofill_client_.set_is_off_the_record(true);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   EXPECT_CALL(autofill_client_, ConfirmSaveUpiIdLocally(_, _)).Times(0);

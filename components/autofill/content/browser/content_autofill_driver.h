@@ -156,13 +156,11 @@ class ContentAutofillDriver : public AutofillDriver,
   // autofill::AutofillDriver:
   // These are the non-event functions from autofill::AutofillDriver. The events
   // are defined in the private part below.
-  bool IsIncognito() const override;
   bool IsInActiveFrame() const override;
   bool IsInAnyMainFrame() const override;
   bool IsPrerendering() const override;
   bool CanShowAutofillUi() const override;
   ui::AXTreeID GetAxTreeId() const override;
-  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   bool RendererIsAvailable() override;
   void HandleParsedForms(const std::vector<FormData>& forms) override {}
   void PopupHidden() override;

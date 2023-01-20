@@ -589,12 +589,14 @@ std::vector<variations::VariationID>*
     AutofillDownloadManager::active_experiments_ = nullptr;
 
 AutofillDownloadManager::AutofillDownloadManager(
+    AutofillClient* client,
     AutofillDriver* driver,
     Observer* observer,
     const std::string& api_key,
     IsRawMetadataUploadingEnabled is_raw_metadata_uploading_enabled,
     LogManager* log_manager)
-    : driver_(driver),
+    : client_(client),
+      driver_(driver),
       observer_(observer),
       api_key_(api_key),
       log_manager_(log_manager),
@@ -606,9 +608,11 @@ AutofillDownloadManager::AutofillDownloadManager(
   DCHECK(observer_);
 }
 
-AutofillDownloadManager::AutofillDownloadManager(AutofillDriver* driver,
+AutofillDownloadManager::AutofillDownloadManager(AutofillClient* client,
+                                                 AutofillDriver* driver,
                                                  Observer* observer)
-    : AutofillDownloadManager(driver,
+    : AutofillDownloadManager(client,
+                              driver,
                               observer,
                               kDefaultAPIKey,
                               IsRawMetadataUploadingEnabled(false),
@@ -798,10 +802,6 @@ std::tuple<GURL, std::string> AutofillDownloadManager::GetRequestURLAndMethod(
 }
 
 bool AutofillDownloadManager::StartRequest(FormRequestData request_data) {
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      driver_->GetURLLoaderFactory();
-  DCHECK(url_loader_factory);
-
   // Get the URL and method to use for this request.
   auto [request_url, method] = GetRequestURLAndMethod(request_data);
 
@@ -838,8 +838,8 @@ bool AutofillDownloadManager::StartRequest(FormRequestData request_data) {
   // Add Chrome experiment state to the request headers.
   variations::AppendVariationsHeaderUnknownSignedIn(
       request_url,
-      driver_->IsIncognito() ? variations::InIncognito::kYes
-                             : variations::InIncognito::kNo,
+      client_->IsOffTheRecord() ? variations::InIncognito::kYes
+                                : variations::InIncognito::kNo,
       resource_request.get());
 
   // Set headers specific to the API.
@@ -882,7 +882,7 @@ bool AutofillDownloadManager::StartRequest(FormRequestData request_data) {
   auto* raw_simple_loader = simple_loader.get();
   url_loaders_.push_back(std::move(simple_loader));
   raw_simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory.get(),
+      client_->GetURLLoaderFactory().get(),
       base::BindOnce(&AutofillDownloadManager::OnSimpleLoaderComplete,
                      base::Unretained(this), std::move(--url_loaders_.end()),
                      std::move(request_data), AutofillTickClock::NowTicks()));

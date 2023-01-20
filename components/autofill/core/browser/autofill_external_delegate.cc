@@ -296,7 +296,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
     default:
       if (suggestion.frontend_id > 0) {  // Denotes an Autofill suggestion.
         autofill_metrics::LogAutofillSuggestionAcceptedIndex(
-            position, popup_type_, driver_->IsIncognito());
+            position, popup_type_, manager_->client()->IsOffTheRecord());
       }
       FillAutofillFormData(suggestion.frontend_id, false);
       break;

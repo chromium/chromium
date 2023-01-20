@@ -29,6 +29,7 @@
 #include "components/security_state/core/security_state.h"
 #include "components/translate/core/browser/language_state.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/image/image.h"
@@ -338,6 +339,13 @@ class AutofillClient : public RiskDataLoader {
   // in branded builds when the channel cannot be determined, this will be
   // version_info::Channel::UNKNOWN.
   virtual version_info::Channel GetChannel() const;
+
+  // Returns whether the user is currently operating in an incognito context.
+  virtual bool IsOffTheRecord() = 0;
+
+  // Returns the URL loader factory associated with this driver.
+  virtual scoped_refptr<network::SharedURLLoaderFactory>
+  GetURLLoaderFactory() = 0;
 
   // Gets the PersonalDataManager instance associated with the client.
   virtual PersonalDataManager* GetPersonalDataManager() = 0;

@@ -33,6 +33,7 @@ class PrefService;
 
 namespace autofill {
 
+class AutofillClient;
 class AutofillDriver;
 class LogManager;
 
@@ -86,6 +87,7 @@ class AutofillDownloadManager {
   // |api_key| - API key to add to API request query parameters. Will only take
   //   effect if using API.
   AutofillDownloadManager(
+      AutofillClient* client,
       AutofillDriver* driver,
       Observer* observer,
       const std::string& api_key,
@@ -94,7 +96,9 @@ class AutofillDownloadManager {
   // |driver| must outlive this instance.
   // |observer| - observer to notify on successful completion or error.
   // Uses an API callback function that gives an empty string.
-  AutofillDownloadManager(AutofillDriver* driver, Observer* observer);
+  AutofillDownloadManager(AutofillClient* client,
+                          AutofillDriver* driver,
+                          Observer* observer);
   virtual ~AutofillDownloadManager();
 
   // Starts a query request to Autofill servers. The observer is called with the
@@ -192,6 +196,10 @@ class AutofillDownloadManager {
 
   static void InitActiveExperiments();
   static void ResetActiveExperiments();
+
+  // The AutofillClient that this instance will use. Must not be null, and must
+  // outlive this instance.
+  const raw_ptr<AutofillClient> client_;
 
   // The AutofillDriver that this instance will use. Must not be null, and must
   // outlive this instance.

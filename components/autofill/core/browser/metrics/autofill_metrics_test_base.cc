@@ -51,7 +51,7 @@ void AutofillMetricsBaseTest::SetUp() {
   autofill_driver_->SetIsInAnyMainFrame(is_in_any_main_frame_);
 
   payments::TestPaymentsClient* payments_client =
-      new payments::TestPaymentsClient(autofill_driver_->GetURLLoaderFactory(),
+      new payments::TestPaymentsClient(autofill_client_->GetURLLoaderFactory(),
                                        autofill_client_->GetIdentityManager(),
                                        &personal_data());
   autofill_client_->set_test_payments_client(

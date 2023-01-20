@@ -124,9 +124,9 @@ class CreditCardFIDOAuthenticatorTest : public testing::Test {
     autofill_driver_->SetAuthenticator(new TestInternalAuthenticator());
 
     payments::TestPaymentsClient* payments_client =
-        new payments::TestPaymentsClient(
-            autofill_driver_->GetURLLoaderFactory(),
-            autofill_client_.GetIdentityManager(), &personal_data_manager_);
+        new payments::TestPaymentsClient(autofill_client_.GetURLLoaderFactory(),
+                                         autofill_client_.GetIdentityManager(),
+                                         &personal_data_manager_);
     autofill_client_.set_test_payments_client(
         std::unique_ptr<payments::TestPaymentsClient>(payments_client));
     autofill_client_.set_test_strike_database(

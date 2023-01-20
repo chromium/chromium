@@ -102,7 +102,7 @@ MakeSimpleSingleUsernameData() {
 class MockAutofillDownloadManager : public AutofillDownloadManager {
  public:
   MockAutofillDownloadManager()
-      : AutofillDownloadManager(nullptr, &fake_observer) {}
+      : AutofillDownloadManager(nullptr, nullptr, &fake_observer) {}
 
   MockAutofillDownloadManager(const MockAutofillDownloadManager&) = delete;
   MockAutofillDownloadManager& operator=(const MockAutofillDownloadManager&) =

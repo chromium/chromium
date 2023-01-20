@@ -65,10 +65,9 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
         /*strike_database=*/nullptr,
         /*image_fetcher=*/nullptr,
         /*is_off_the_record=*/false);
-    autofill_driver_ = std::make_unique<TestAutofillDriver>();
     autofill_client_->set_test_payments_client(
         std::make_unique<payments::TestPaymentsClient>(
-            autofill_driver_->GetURLLoaderFactory(),
+            autofill_client_->GetURLLoaderFactory(),
             autofill_client_->GetIdentityManager(),
             personal_data_manager_.get()));
     auto test_strike_database = std::make_unique<TestStrikeDatabase>();
@@ -79,12 +78,6 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
         std::make_unique<TestVirtualCardEnrollmentManager>(
             personal_data_manager_.get(), payments_client_,
             autofill_client_.get());
-  }
-
-  void TearDown() override {
-    // Order of destruction is important as AutofillDriver relies on
-    // PersonalDataManager to be around when it gets destroyed.
-    autofill_driver_.reset();
   }
 
   void SetUpCard() {
@@ -169,7 +162,6 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestAutofillClient> autofill_client_;
-  std::unique_ptr<TestAutofillDriver> autofill_driver_;
   raw_ptr<payments::TestPaymentsClient> payments_client_;
   std::unique_ptr<TestPersonalDataManager> personal_data_manager_;
   std::unique_ptr<TestVirtualCardEnrollmentManager>

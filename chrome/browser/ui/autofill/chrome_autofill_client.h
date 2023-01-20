@@ -71,6 +71,8 @@ class ChromeAutofillClient
 
   // AutofillClient:
   version_info::Channel GetChannel() const override;
+  bool IsOffTheRecord() override;
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   PersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   IBANManager* GetIBANManager() override;

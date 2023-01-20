@@ -16,10 +16,6 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "url/origin.h"
 
-namespace network {
-class SharedURLLoaderFactory;
-}
-
 namespace autofill {
 
 class FormStructure;
@@ -55,9 +51,6 @@ class AutofillDriver {
  public:
   virtual ~AutofillDriver() = default;
 
-  // Returns whether the user is currently operating in an incognito context.
-  virtual bool IsIncognito() const = 0;
-
   // Returns whether the AutofillDriver instance is associated with an active
   // frame in the MPArch sense.
   virtual bool IsInActiveFrame() const = 0;
@@ -77,10 +70,6 @@ class AutofillDriver {
 
   // Returns the ax tree id associated with this driver.
   virtual ui::AXTreeID GetAxTreeId() const = 0;
-
-  // Returns the URL loader factory associated with this driver.
-  virtual scoped_refptr<network::SharedURLLoaderFactory>
-  GetURLLoaderFactory() = 0;
 
   // Returns true iff the renderer is available for communication.
   virtual bool RendererIsAvailable() = 0;

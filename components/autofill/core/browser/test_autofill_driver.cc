@@ -5,9 +5,6 @@
 #include "components/autofill/core/browser/test_autofill_driver.h"
 
 #include "build/build_config.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/test/test_url_loader_factory.h"
 
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -15,21 +12,14 @@
 namespace autofill {
 
 TestAutofillDriver::TestAutofillDriver()
-    :
 #if !BUILDFLAG(IS_IOS)
-      ContentAutofillDriver(/*render_frame_host=*/nullptr,
-                            /*autofill_router=*/nullptr),
+    : ContentAutofillDriver(/*render_frame_host=*/nullptr,
+                            /*autofill_router=*/nullptr)
 #endif
-      test_shared_loader_factory_(
-          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-              &test_url_loader_factory_)) {
+{
 }
 
 TestAutofillDriver::~TestAutofillDriver() = default;
-
-bool TestAutofillDriver::IsIncognito() const {
-  return is_incognito_;
-}
 
 bool TestAutofillDriver::IsInActiveFrame() const {
   return is_in_active_frame_;
@@ -50,11 +40,6 @@ bool TestAutofillDriver::CanShowAutofillUi() const {
 ui::AXTreeID TestAutofillDriver::GetAxTreeId() const {
   NOTIMPLEMENTED() << "See https://crbug.com/985933";
   return ui::AXTreeIDUnknown();
-}
-
-scoped_refptr<network::SharedURLLoaderFactory>
-TestAutofillDriver::GetURLLoaderFactory() {
-  return test_shared_loader_factory_;
 }
 
 bool TestAutofillDriver::RendererIsAvailable() {
@@ -80,10 +65,6 @@ net::IsolationInfo TestAutofillDriver::IsolationInfo() {
   return isolation_info_;
 }
 
-void TestAutofillDriver::SetIsIncognito(bool is_incognito) {
-  is_incognito_ = is_incognito;
-}
-
 void TestAutofillDriver::SetIsInActiveFrame(bool is_in_active_frame) {
   is_in_active_frame_ = is_in_active_frame;
 }
@@ -101,11 +82,6 @@ void TestAutofillDriver::SetFieldTypeMapFilter(
     base::RepeatingCallback<
         bool(const url::Origin&, FieldGlobalId, ServerFieldType)> callback) {
   field_type_map_filter_ = callback;
-}
-
-void TestAutofillDriver::SetSharedURLLoaderFactory(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  test_shared_loader_factory_ = url_loader_factory;
 }
 
 #if !BUILDFLAG(IS_IOS)

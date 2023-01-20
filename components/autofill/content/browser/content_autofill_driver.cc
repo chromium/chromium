@@ -85,14 +85,6 @@ void ContentAutofillDriver::BindPendingReceiver(
   receiver_.Bind(std::move(pending_receiver));
 }
 
-// TODO(https://crbug.com/1225171): Consider renaming this function to
-// |IsOffTheRecord| if off-the-record Guest mode is not deprecated.
-bool ContentAutofillDriver::IsIncognito() const {
-  return render_frame_host_->GetSiteInstance()
-      ->GetBrowserContext()
-      ->IsOffTheRecord();
-}
-
 bool ContentAutofillDriver::IsInActiveFrame() const {
   return render_frame_host_->IsActive();
 }
@@ -115,14 +107,6 @@ bool ContentAutofillDriver::CanShowAutofillUi() const {
 
 ui::AXTreeID ContentAutofillDriver::GetAxTreeId() const {
   return render_frame_host_->GetAXTreeID();
-}
-
-scoped_refptr<network::SharedURLLoaderFactory>
-ContentAutofillDriver::GetURLLoaderFactory() {
-  return render_frame_host_->GetSiteInstance()
-      ->GetBrowserContext()
-      ->GetDefaultStoragePartition()
-      ->GetURLLoaderFactoryForBrowserProcess();
 }
 
 bool ContentAutofillDriver::RendererIsAvailable() {

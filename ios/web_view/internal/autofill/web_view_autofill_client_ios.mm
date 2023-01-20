@@ -99,6 +99,16 @@ WebViewAutofillClientIOS::~WebViewAutofillClientIOS() {
   HideAutofillPopup(PopupHidingReason::kTabGone);
 }
 
+bool WebViewAutofillClientIOS::IsOffTheRecord() {
+  return web_state_->GetBrowserState()->IsOffTheRecord();
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+WebViewAutofillClientIOS::GetURLLoaderFactory() {
+  return base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+      web_state_->GetBrowserState()->GetURLLoaderFactory());
+}
+
 PersonalDataManager* WebViewAutofillClientIOS::GetPersonalDataManager() {
   return personal_data_manager_;
 }

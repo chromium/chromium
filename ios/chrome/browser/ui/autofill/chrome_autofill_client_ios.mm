@@ -97,10 +97,10 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
           browser_state->GetOriginalChromeBrowserState())),
       payments_client_(std::make_unique<payments::PaymentsClient>(
           base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-              web_state_->GetBrowserState()->GetURLLoaderFactory()),
+              browser_state_->GetURLLoaderFactory()),
           identity_manager_,
           personal_data_manager_,
-          web_state_->GetBrowserState()->IsOffTheRecord())),
+          browser_state_->IsOffTheRecord())),
       form_data_importer_(std::make_unique<FormDataImporter>(
           this,
           payments_client_.get(),
@@ -127,6 +127,16 @@ void ChromeAutofillClientIOS::SetBaseViewController(
 
 version_info::Channel ChromeAutofillClientIOS::GetChannel() const {
   return ::GetChannel();
+}
+
+bool ChromeAutofillClientIOS::IsOffTheRecord() {
+  return web_state_->GetBrowserState()->IsOffTheRecord();
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+ChromeAutofillClientIOS::GetURLLoaderFactory() {
+  return base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+      web_state_->GetBrowserState()->GetURLLoaderFactory());
 }
 
 PersonalDataManager* ChromeAutofillClientIOS::GetPersonalDataManager() {

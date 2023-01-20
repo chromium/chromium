@@ -16,7 +16,8 @@ class FormStructure;
 
 class TestAutofillDownloadManager : public AutofillDownloadManager {
  public:
-  TestAutofillDownloadManager(AutofillDriver* driver,
+  TestAutofillDownloadManager(AutofillClient* client,
+                              AutofillDriver* driver,
                               AutofillDownloadManager::Observer* observer);
 
   TestAutofillDownloadManager(const TestAutofillDownloadManager&) = delete;

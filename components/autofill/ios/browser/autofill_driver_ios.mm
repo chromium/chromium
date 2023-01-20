@@ -12,7 +12,6 @@
 #include "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/web_state.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -65,10 +64,6 @@ AutofillDriverIOS::AutofillDriverIOS(
 
 AutofillDriverIOS::~AutofillDriverIOS() = default;
 
-bool AutofillDriverIOS::IsIncognito() const {
-  return web_state_->GetBrowserState()->IsOffTheRecord();
-}
-
 // Return true as iOS has no MPArch.
 bool AutofillDriverIOS::IsInActiveFrame() const {
   return true;
@@ -90,12 +85,6 @@ bool AutofillDriverIOS::CanShowAutofillUi() const {
 ui::AXTreeID AutofillDriverIOS::GetAxTreeId() const {
   NOTIMPLEMENTED() << "See https://crbug.com/985933";
   return ui::AXTreeIDUnknown();
-}
-
-scoped_refptr<network::SharedURLLoaderFactory>
-AutofillDriverIOS::GetURLLoaderFactory() {
-  return base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-      web_state_->GetBrowserState()->GetURLLoaderFactory());
 }
 
 bool AutofillDriverIOS::RendererIsAvailable() {

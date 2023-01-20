@@ -52,13 +52,11 @@ class AutofillDriverIOS : public AutofillDriver {
                                                     web::WebFrame* web_frame);
 
   // AutofillDriver:
-  bool IsIncognito() const override;
   bool IsInActiveFrame() const override;
   bool IsInAnyMainFrame() const override;
   bool IsPrerendering() const override;
   bool CanShowAutofillUi() const override;
   ui::AXTreeID GetAxTreeId() const override;
-  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   bool RendererIsAvailable() override;
   std::vector<FieldGlobalId> FillOrPreviewForm(
       mojom::RendererFormDataAction action,

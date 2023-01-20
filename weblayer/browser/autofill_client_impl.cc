@@ -19,6 +19,17 @@ namespace weblayer {
 
 AutofillClientImpl::~AutofillClientImpl() = default;
 
+bool AutofillClientImpl::IsOffTheRecord() {
+  NOTREACHED();
+  return false;
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+AutofillClientImpl::GetURLLoaderFactory() {
+  NOTREACHED();
+  return nullptr;
+}
+
 autofill::PersonalDataManager* AutofillClientImpl::GetPersonalDataManager() {
   NOTREACHED();
   return nullptr;

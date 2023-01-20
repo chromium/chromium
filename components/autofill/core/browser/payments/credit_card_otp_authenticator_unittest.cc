@@ -48,10 +48,9 @@ class CreditCardOtpAuthenticatorTest : public testing::Test {
     personal_data_manager_.SetPrefService(autofill_client_.GetPrefs());
 
     requester_ = std::make_unique<TestAuthenticationRequester>();
-    autofill_driver_ = std::make_unique<TestAutofillDriver>();
 
     payments_client_ = new payments::TestPaymentsClient(
-        autofill_driver_->GetURLLoaderFactory(),
+        autofill_client_.GetURLLoaderFactory(),
         autofill_client_.GetIdentityManager(), &personal_data_manager_);
     autofill_client_.set_test_payments_client(
         std::unique_ptr<payments::TestPaymentsClient>(payments_client_));
@@ -70,7 +69,6 @@ class CreditCardOtpAuthenticatorTest : public testing::Test {
   void TearDown() override {
     // Order of destruction is important as AutofillDriver relies on
     // PersonalDataManager to be around when it gets destroyed.
-    autofill_driver_.reset();
     personal_data_manager_.SetPrefService(nullptr);
   }
 
@@ -127,7 +125,6 @@ class CreditCardOtpAuthenticatorTest : public testing::Test {
   std::unique_ptr<TestAuthenticationRequester> requester_;
   base::test::TaskEnvironment task_environment_;
   TestAutofillClient autofill_client_;
-  std::unique_ptr<TestAutofillDriver> autofill_driver_;
   TestPersonalDataManager personal_data_manager_;
   raw_ptr<payments::TestPaymentsClient> payments_client_;
   std::unique_ptr<CreditCardOtpAuthenticator> authenticator_;

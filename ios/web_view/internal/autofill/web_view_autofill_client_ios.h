@@ -50,6 +50,8 @@ class WebViewAutofillClientIOS : public AutofillClient {
   ~WebViewAutofillClientIOS() override;
 
   // AutofillClient:
+  bool IsOffTheRecord() override;
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   PersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   CreditCardCVCAuthenticator* GetCVCAuthenticator() override;
