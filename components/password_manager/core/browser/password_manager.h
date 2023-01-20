@@ -206,9 +206,6 @@ class PasswordManager : public PasswordManagerInterface {
   // Notifies that Credential Management API function store() is called.
   void NotifyStorePasswordCalled();
 
-  // Resets pending credentials.
-  void ResetPendingCredentials();
-
   // Returns true if a form manager is processing a password update.
   bool IsFormManagerPendingPasswordUpdate() const;
 

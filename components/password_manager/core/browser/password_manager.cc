@@ -1425,12 +1425,6 @@ bool PasswordManager::NewFormsParsed(PasswordManagerDriver* driver,
   });
 }
 
-void PasswordManager::ResetPendingCredentials() {
-  for (auto& form_manager : form_managers_)
-    form_manager->ResetState();
-  owned_submitted_form_manager_.reset();
-}
-
 bool PasswordManager::IsFormManagerPendingPasswordUpdate() const {
   for (const auto& form_manager : form_managers_) {
     if (form_manager->IsPasswordUpdate())
