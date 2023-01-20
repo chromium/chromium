@@ -26,7 +26,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
-#include "ui/chromeos/events/keyboard_layout_util.h"
+#include "ui/chromeos/events/keyboard_capability.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -278,8 +278,9 @@ std::unique_ptr<views::View> CreateClipboardShortcutView() {
       views::BoxLayout::Orientation::kHorizontal));
 
   const std::u16string shortcut_key = l10n_util::GetStringUTF16(
-      ui::DeviceUsesKeyboardLayout2() ? IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER
-                                      : IDS_ASH_SHORTCUT_MODIFIER_SEARCH);
+      Shell::Get()->keyboard_capability()->HasLauncherButton()
+          ? IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER
+          : IDS_ASH_SHORTCUT_MODIFIER_SEARCH);
 
   const std::u16string label_text = l10n_util::GetStringFUTF16(
       IDS_ASH_MULTIPASTE_SCREENSHOT_NOTIFICATION_NUDGE, shortcut_key);
