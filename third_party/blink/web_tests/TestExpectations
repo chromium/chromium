@@ -6810,7 +6810,7 @@ crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-nested-cr
 
 # Test is not yet supported in Chrome.
 crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-cross-origin-sibling-iframes.sub.https.window.html [ Failure Pass ]
-crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-cross-origin-iframe-navigation.sub.https.window.html [ Failure Pass ]
+crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-cross-origin-iframe-navigation.sub.https.window.html [ Failure Pass Timeout ]
 
 # Missing priority hints interfaces.
 crbug.com/1345601 external/wpt/priority-hints/iframe-attr-fetchpriority.tentative.html [ Failure ]
