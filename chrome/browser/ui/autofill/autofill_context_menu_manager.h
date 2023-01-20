@@ -81,6 +81,8 @@ struct ContextMenuItem {
 //                                                      2025
 //                     ______________________________
 //                     Manage payment methods
+//
+// Provide Autofill feedback
 // ....
 // ....
 // ....
@@ -88,7 +90,7 @@ struct ContextMenuItem {
 // From the example, there are 3 layers:
 // 1. Outermost layer that distinguishes between address or payment method
 // filling. Refer to `AppendItems` and `AddAddressOrCreditCardItemsToMenu` for
-// more info.
+// more info. It also includes an option to submit user feedback on Autofill.
 // 2. Profile description layer to identify which profile to use for filling.
 // Refer to `AddAddressOrCreditCardItemsToMenu` for more info.
 // 3. Profile data layer that would be used for filling a single field. See
@@ -202,6 +204,13 @@ class AutofillContextMenuManager {
           profile_or_credit_card,
       base::span<const FieldsToShow> field_types_to_show,
       base::span<const FieldsToShow> other_fields_to_show);
+
+  // Triggers the feedback flow for Autofill command.
+  void ExecuteAutofillFeedbackCommand();
+
+  // Triggers the corresponding menu manager command.
+  void ExecuteMenuManagerCommand(CommandId command_id,
+                                 content::RenderFrameHost* rfh);
 
   // Returns a map of the addresses along with the title to be shown in the
   // context menu.

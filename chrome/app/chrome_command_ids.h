@@ -473,6 +473,8 @@
 #define IDC_DEBUG_PRINT_VIEW_TREE_DETAILS 52512
 // Please leave a gap here for new debug commands.
 
+// Autofill feedback.
+#define IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK 52990
 // Autofill context menu commands
 #define IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_FIRST 53000
 #define IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_LAST 53250

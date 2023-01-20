@@ -458,13 +458,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_PDF_OCR, 126},
        {IDC_CONTENT_CONTEXT_PDF_OCR_ALWAYS, 127},
        {IDC_CONTENT_CONTEXT_PDF_OCR_ONCE, 128},
+       {IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK, 129},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 129}});
+       {0, 130}});
 
   // These UMA values are for the the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.

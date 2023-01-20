@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
@@ -19,6 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using testing::_;
 
@@ -62,8 +64,10 @@ class MockAutofillDriver : public TestAutofillDriver {
 class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
  public:
   AutofillContextMenuManagerTest() {
-    feature_.InitAndEnableFeature(
-        features::kAutofillShowManualFallbackInContextMenu);
+    feature_.InitWithFeatures(
+        {features::kAutofillShowManualFallbackInContextMenu,
+         features::kAutofillFeedback},
+        {});
   }
 
   AutofillContextMenuManagerTest(const AutofillContextMenuManagerTest&) =
@@ -142,11 +146,14 @@ TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
   std::vector<std::u16string> all_added_strings;
 
   // Check for top level menu with autofill options.
-  ASSERT_EQ(2u, menu_model()->GetItemCount());
+  ASSERT_EQ(3u, menu_model()->GetItemCount());
   ASSERT_EQ(u"Fill Address Info", menu_model()->GetLabelAt(0));
   ASSERT_EQ(u"Fill Payment", menu_model()->GetLabelAt(1));
+  ASSERT_EQ(l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK),
+            menu_model()->GetLabelAt(2));
   ASSERT_EQ(menu_model()->GetTypeAt(0), ui::MenuModel::ItemType::TYPE_SUBMENU);
   ASSERT_EQ(menu_model()->GetTypeAt(1), ui::MenuModel::ItemType::TYPE_SUBMENU);
+  ASSERT_EQ(menu_model()->GetTypeAt(2), ui::MenuModel::ItemType::TYPE_COMMAND);
 
   // Check for submenu with address descriptions.
   auto* address_menu_model = menu_model()->GetSubmenuModelAt(0);

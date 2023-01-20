@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -30,6 +31,8 @@ static constexpr int kAutofillContextCustomFirst =
     IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_FIRST;
 static constexpr int kAutofillContextCustomLast =
     IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_LAST;
+static constexpr int kAutofillContextFeedback =
+    IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK;
 
 }  // namespace
 
@@ -43,6 +46,9 @@ AutofillContextMenuManager::ConvertToAutofillCustomCommandId(int offset) {
 // static
 bool AutofillContextMenuManager::IsAutofillCustomCommandId(
     CommandId command_id) {
+  if (command_id.value() == kAutofillContextFeedback) {
+    return true;
+  }
   return command_id.value() >= kAutofillContextCustomFirst &&
          command_id.value() <= kAutofillContextCustomLast;
 }
@@ -107,38 +113,42 @@ void AutofillContextMenuManager::AppendItems() {
         {frame_token, FieldRendererId(*params_.field_renderer_id)});
   }
 
-  if (!base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           features::kAutofillShowManualFallbackInContextMenu)) {
-    return;
+    DCHECK(personal_data_manager_);
+    DCHECK(menu_model_);
+
+    content::WebContents* web_contents = delegate_->GetWebContents();
+    AutofillClient* autofill_client =
+        autofill::ChromeAutofillClient::FromWebContents(web_contents);
+    // If the autofill popup is shown and the user double clicks from within the
+    // bounds of the initiating field, it is assumed that the context menu would
+    // overlap with the autofill popup. In that case, hide the autofill popup.
+    if (autofill_client) {
+      autofill_client->HideAutofillPopup(
+          PopupHidingReason::kOverlappingWithAutofillContextMenu);
+    }
+
+    // Stores all the profile values added to the context menu along with the
+    // command id of the row.
+    std::vector<std::pair<CommandId, ContextMenuItem>>
+        detail_items_added_to_context_menu;
+
+    AddAddressOrCreditCardItemsToMenu(detail_items_added_to_context_menu,
+                                      GetAddressProfilesWithTitles());
+    AddAddressOrCreditCardItemsToMenu(detail_items_added_to_context_menu,
+                                      GetCreditCardProfilesWithTitles());
+
+    command_id_to_menu_item_value_mapper_ =
+        base::flat_map<CommandId, ContextMenuItem>(
+            std::move(detail_items_added_to_context_menu));
   }
 
-  DCHECK(personal_data_manager_);
-  DCHECK(menu_model_);
-
-  content::WebContents* web_contents = delegate_->GetWebContents();
-  AutofillClient* autofill_client =
-      autofill::ChromeAutofillClient::FromWebContents(web_contents);
-  // If the autofill popup is shown and the user double clicks from within the
-  // bounds of the initiating field, it is assumed that the context menu would
-  // overlap with the autofill popup. In that case, hide the autofill popup.
-  if (autofill_client) {
-    autofill_client->HideAutofillPopup(
-        PopupHidingReason::kOverlappingWithAutofillContextMenu);
+  // Includes the option of submitting feedback on Autofill.
+  if (base::FeatureList::IsEnabled(features::kAutofillFeedback)) {
+    menu_model_->AddItemWithStringId(IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
+                                     IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK);
   }
-
-  // Stores all the profile values added to the context menu along with the
-  // command id of the row.
-  std::vector<std::pair<CommandId, ContextMenuItem>>
-      detail_items_added_to_context_menu;
-
-  AddAddressOrCreditCardItemsToMenu(detail_items_added_to_context_menu,
-                                    GetAddressProfilesWithTitles());
-  AddAddressOrCreditCardItemsToMenu(detail_items_added_to_context_menu,
-                                    GetCreditCardProfilesWithTitles());
-
-  command_id_to_menu_item_value_mapper_ =
-      base::flat_map<CommandId, ContextMenuItem>(
-          std::move(detail_items_added_to_context_menu));
 }
 
 bool AutofillContextMenuManager::IsCommandIdChecked(
@@ -161,17 +171,35 @@ void AutofillContextMenuManager::ExecuteCommand(CommandId command_id) {
   if (!rfh)
     return;
 
-  auto it = command_id_to_menu_item_value_mapper_.find(command_id);
-  if (it == command_id_to_menu_item_value_mapper_.end())
-    return;
-
   DCHECK(IsAutofillCustomCommandId(command_id));
+
+  if (command_id.value() == kAutofillContextFeedback) {
+    ExecuteAutofillFeedbackCommand();
+    return;
+  }
+
+  ExecuteMenuManagerCommand(command_id, rfh);
+}
+
+void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand() {
+  // TODO(crbug.com/1407646) Implement.
+  NOTIMPLEMENTED();
+}
+
+void AutofillContextMenuManager::ExecuteMenuManagerCommand(
+    CommandId command_id,
+    content::RenderFrameHost* rfh) {
+  auto it = command_id_to_menu_item_value_mapper_.find(command_id);
+  if (it == command_id_to_menu_item_value_mapper_.end()) {
+    return;
+  }
 
   // Field Renderer id should be present because the context menu is triggered
   // on a input field. Otherwise, Autofill context menu models would not have
   // been added to the context menu.
-  if (!params_.field_renderer_id)
+  if (!params_.field_renderer_id) {
     return;
+  }
 
   if (it->second.is_manage_item) {
     DCHECK(browser_);
