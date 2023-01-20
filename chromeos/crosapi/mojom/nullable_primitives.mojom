@@ -19,6 +19,12 @@ struct Int64Value {
   int64 value@0;
 };
 
+[Stable]
+struct UInt8Value {
+  // The value of the uint8.
+  uint8 value@0;
+};
+
 [Stable, RenamedFrom="ash.health.mojom.UInt32Value"]
 struct UInt32Value {
   // The value of the uint32.

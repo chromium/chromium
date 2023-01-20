@@ -14,6 +14,7 @@
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::converters {
 
@@ -136,7 +137,9 @@ TEST(ProbeServiceConverters, AudioNodeInputInfoPtr) {
 
   EXPECT_EQ(ConvertAudioInputNodePtr(std::move(input_node)),
             crosapi::mojom::ProbeAudioInputNodeInfo::New(
-                kId, kName, kDeviceName, kActive, kInputNodeGain));
+                crosapi::mojom::UInt64Value::New(kId), kName, kDeviceName,
+                crosapi::mojom::BoolValue::New(kActive),
+                crosapi::mojom::UInt8Value::New(kInputNodeGain)));
 
   EXPECT_EQ(ConvertAudioInputNodePtr(nullptr),
             crosapi::mojom::ProbeAudioInputNodeInfoPtr());
@@ -157,7 +160,9 @@ TEST(ProbeServiceConverters, AudioNodeOutputInfoPtr) {
   output_node->node_volume = kNodeVolume;
   EXPECT_EQ(ConvertAudioOutputNodePtr(std::move(output_node)),
             crosapi::mojom::ProbeAudioOutputNodeInfo::New(
-                kId, kName, kDeviceName, kActive, kNodeVolume));
+                crosapi::mojom::UInt64Value::New(kId), kName, kDeviceName,
+                crosapi::mojom::BoolValue::New(kActive),
+                crosapi::mojom::UInt8Value::New(kNodeVolume)));
 
   EXPECT_EQ(ConvertAudioOutputNodePtr(nullptr),
             crosapi::mojom::ProbeAudioOutputNodeInfoPtr());
@@ -210,26 +215,31 @@ TEST(ProbeServiceConverters, AudioInfoPtr) {
   std::vector<crosapi::mojom::ProbeAudioInputNodeInfoPtr>
       expected_input_node_info;
   auto expected_input = crosapi::mojom::ProbeAudioInputNodeInfo::New();
-  expected_input->id = kIdInput;
+  expected_input->id = crosapi::mojom::UInt64Value::New(kIdInput);
   expected_input->name = kNameInput;
   expected_input->device_name = kDeviceNameInput;
-  expected_input->active = kActiveInput;
-  expected_input->node_gain = kInputNodeGainInput;
+  expected_input->active = crosapi::mojom::BoolValue::New(kActiveInput);
+  expected_input->node_gain =
+      crosapi::mojom::UInt8Value::New(kInputNodeGainInput);
   expected_input_node_info.push_back(std::move(expected_input));
 
   std::vector<crosapi::mojom::ProbeAudioOutputNodeInfoPtr>
       expected_output_node_info;
   auto expected_output = crosapi::mojom::ProbeAudioOutputNodeInfo::New();
-  expected_output->id = kIdOutput;
+  expected_output->id = crosapi::mojom::UInt64Value::New(kIdOutput);
   expected_output->name = kNameOutput;
   expected_output->device_name = kDeviceNameOutput;
-  expected_output->active = kActiveOutput;
-  expected_output->node_volume = kNodeVolumeOutput;
+  expected_output->active = crosapi::mojom::BoolValue::New(kActiveOutput);
+  expected_output->node_volume =
+      crosapi::mojom::UInt8Value::New(kNodeVolumeOutput);
   expected_output_node_info.push_back(std::move(expected_output));
 
   EXPECT_EQ(ConvertProbePtr(std::move(input)),
             crosapi::mojom::ProbeAudioInfo::New(
-                kOutputMute, kInputMute, kUnderruns, kSevereUnderruns,
+                crosapi::mojom::BoolValue::New(kOutputMute),
+                crosapi::mojom::BoolValue::New(kInputMute),
+                crosapi::mojom::UInt32Value::New(kUnderruns),
+                crosapi::mojom::UInt32Value::New(kSevereUnderruns),
                 std::move(expected_output_node_info),
                 std::move(expected_input_node_info)));
 }
@@ -1217,7 +1227,12 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
           crosapi::mojom::ProbeTpmResult::NewTpmInfo(
               crosapi::mojom::ProbeTpmInfo::New()),
           crosapi::mojom::ProbeAudioResult::NewAudioInfo(
-              crosapi::mojom::ProbeAudioInfo::New())));
+              crosapi::mojom::ProbeAudioInfo::New(
+                  crosapi::mojom::BoolValue::New(false),
+                  crosapi::mojom::BoolValue::New(false),
+                  crosapi::mojom::UInt32Value::New(0),
+                  crosapi::mojom::UInt32Value::New(0), absl::nullopt,
+                  absl::nullopt))));
 }
 
 TEST(ProbeServiceConverters, TelemetryInfoPtrWithNullFields) {

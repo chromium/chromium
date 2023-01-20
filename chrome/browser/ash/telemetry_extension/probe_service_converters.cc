@@ -96,8 +96,11 @@ crosapi::mojom::ProbeAudioInfoPtr UncheckedConvertPtr(
   }
 
   return crosapi::mojom::ProbeAudioInfo::New(
-      input->output_mute, input->input_mute, input->underruns,
-      input->severe_underruns, std::move(output_nodes), std::move(input_nodes));
+      crosapi::mojom::BoolValue::New(input->output_mute),
+      crosapi::mojom::BoolValue::New(input->input_mute),
+      crosapi::mojom::UInt32Value::New(input->underruns),
+      crosapi::mojom::UInt32Value::New(input->severe_underruns),
+      std::move(output_nodes), std::move(input_nodes));
 }
 
 crosapi::mojom::ProbeAudioResultPtr UncheckedConvertPtr(
@@ -548,11 +551,11 @@ crosapi::mojom::ProbeAudioInputNodeInfoPtr ConvertAudioInputNodePtr(
 
   auto result = crosapi::mojom::ProbeAudioInputNodeInfo::New();
 
-  result->id = input->id;
+  result->id = crosapi::mojom::UInt64Value::New(input->id);
   result->name = input->name;
   result->device_name = input->device_name;
-  result->active = input->active;
-  result->node_gain = input->input_node_gain;
+  result->active = crosapi::mojom::BoolValue::New(input->active);
+  result->node_gain = crosapi::mojom::UInt8Value::New(input->input_node_gain);
 
   return result;
 }
@@ -565,11 +568,11 @@ crosapi::mojom::ProbeAudioOutputNodeInfoPtr ConvertAudioOutputNodePtr(
 
   auto result = crosapi::mojom::ProbeAudioOutputNodeInfo::New();
 
-  result->id = input->id;
+  result->id = crosapi::mojom::UInt64Value::New(input->id);
   result->name = input->name;
   result->device_name = input->device_name;
-  result->active = input->active;
-  result->node_volume = input->node_volume;
+  result->active = crosapi::mojom::BoolValue::New(input->active);
+  result->node_volume = crosapi::mojom::UInt8Value::New(input->node_volume);
 
   return result;
 }

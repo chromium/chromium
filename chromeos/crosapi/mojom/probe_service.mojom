@@ -597,17 +597,17 @@ union ProbeNetworkResult {
 [Stable]
 struct ProbeAudioInputNodeInfo {
   // Node id.
-  uint64 id@0;
+  UInt64Value? id@0;
   // The name of this node. For example, "Internal Mic".
-  string name@1;
+  string? name@1;
   // The name of the device that this node belongs to. For example,
   // "HDA Intel PCH: CA0132 Analog:0,0"
-  string device_name@2;
+  string? device_name@2;
   // Whether this node is currently used for input. There is one active
   // node for input.
-  bool active@3;
+  BoolValue? active@3;
   // The input node gain set by UI, the value is in [0, 100].
-  uint8 node_gain@4;
+  UInt8Value? node_gain@4;
 };
 
 // Audio output node information.
@@ -616,17 +616,17 @@ struct ProbeAudioInputNodeInfo {
 [Stable]
 struct ProbeAudioOutputNodeInfo {
   // Node id.
-  uint64 id@0;
+  UInt64Value? id@0;
   // The name of this node. For example, "Speaker".
-  string name@1;
+  string? name@1;
   // The name of the device that this node belongs to. For example,
   // "HDA Intel PCH: CA0132 Analog:0,0"
-  string device_name@2;
+  string? device_name@2;
   // Whether this node is currently used for output. There is one active
   // node for output.
-  bool active@3;
+  BoolValue? active@3;
   // The node volume in [0, 100].
-  uint8 node_volume@4;
+  UInt8Value? node_volume@4;
 };
 
 // Audio information.
@@ -635,13 +635,13 @@ struct ProbeAudioOutputNodeInfo {
 [Stable]
 struct ProbeAudioInfo {
   // Is the active output device mute or not.
-  bool output_mute@0;
+  BoolValue? output_mute@0;
   // Is the active input device mute or not.
-  bool input_mute@1;
+  BoolValue? input_mute@1;
   // Number of underruns.
-  uint32 underruns@2;
+  UInt32Value? underruns@2;
   // Number of severe underruns.
-  uint32 severe_underruns@3;
+  UInt32Value? severe_underruns@3;
   // Output nodes.
   array<ProbeAudioOutputNodeInfo>? output_nodes@4;
   // Input nodes.
