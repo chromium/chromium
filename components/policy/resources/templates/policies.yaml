@@ -1056,6 +1056,7 @@ policies:
   1055: DeviceLoginScreenExtensionManifestV2Availability
   1056: KioskTroubleshootingToolsEnabled
   1057: ForceEnablePepperVideoDecoderDevAPI
+  1058: DomainReliabilityAllowed
 atomic_groups:
   1: Homepage
   2: RemoteAccess

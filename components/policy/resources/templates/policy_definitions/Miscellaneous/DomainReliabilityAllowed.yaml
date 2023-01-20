@@ -1,0 +1,29 @@
+caption: Allow reporting of domain reliability related data
+desc: |-
+  If this policy is set false, domain reliability diagnostic data reporting is disabled and no data is sent to Google.
+  If this policy is set true or not set, domain reliability diagnostic data reporting will follow the behavior of MetricsReportingEnabled for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> or DeviceMetricsReportingEnabled for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
+default: true
+example_value: true
+features:
+  can_be_recommended: true
+  dynamic_refresh: false
+  per_profile: false
+future_on:
+- fuchsia
+items:
+- caption: Domain Reliability data may be sent to Google depending on Chrome User Metrics (UMA) policy
+  value: true
+- caption: Never send domain reliability data to Google
+  value: false
+owners:
+- alexwchen@chromium.org
+- file://components/policy/OWNERS
+schema:
+  type: boolean
+supported_on:
+- android:111-
+- chrome.*:111-
+- chrome_os:111-
+tags:
+- google-sharing
+type: main

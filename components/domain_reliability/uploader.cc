@@ -112,7 +112,20 @@ class DomainReliabilityUploaderImpl : public DomainReliabilityUploader,
               "to Google' in Chromium's settings under Privacy. On ChromeOS, "
               "the setting is named 'Automatically send diagnostic and usage "
               "data to Google'."
-            policy_exception_justification: "Not implemented."
+            chrome_policy {
+              subProto1 {
+                DomainReliabilityAllowed {
+                  policy_options {mode: MANDATORY}
+                  DomainReliabilityAllowed: false
+                }
+              }
+            }
+            chrome_policy {
+              MetricsReportingEnabled {
+                policy_options {mode: MANDATORY}
+                MetricsReportingEnabled: false
+              }
+            }
           })");
     std::unique_ptr<net::URLRequest> request =
         url_request_context_->CreateRequest(

@@ -7,13 +7,20 @@
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/values_test_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/net/profile_network_context_service.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/domain_reliability/domain_reliability_prefs.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
@@ -93,15 +100,84 @@ class DomainReliabilityDisabledBrowserTest
   }
 };
 
+class DomainReliabilityPolicyTest : public policy::PolicyTest {
+ protected:
+  void SetAndUpdateDomainReliabilityAllowedPolicy(bool value) {
+    policy::PolicyMap policies;
+    policies.Set(policy::key::kDomainReliabilityAllowed,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(value), nullptr);
+    provider_.UpdateChromePolicy(policies);
+  }
+
+  void SetAndUpdateIsMetricsReporting(bool value) {
+    is_metrics_reporting_enabled_ = value;
+    ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
+        &is_metrics_reporting_enabled_);
+  }
+
+ private:
+  bool is_metrics_reporting_enabled_ = false;
+};
+
+IN_PROC_BROWSER_TEST_F(DomainReliabilityPolicyTest, PolicyOverride) {
+  // Confirm that DomainReliabilityAllowed enterprise policy overrides existing
+  // prefs
+  PrefService* prefs = g_browser_process->local_state();
+  prefs->SetBoolean(prefs::kDomainReliabilityAllowedByPolicy, true);
+
+  // Set policy to false and check pref
+  SetAndUpdateDomainReliabilityAllowedPolicy(false);
+  EXPECT_FALSE(prefs->GetBoolean(prefs::kDomainReliabilityAllowedByPolicy));
+
+  // Set policy to true and check pref
+  SetAndUpdateDomainReliabilityAllowedPolicy(true);
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kDomainReliabilityAllowedByPolicy));
+}
+
+IN_PROC_BROWSER_TEST_F(DomainReliabilityPolicyTest,
+                       PolicyEnabledMetricsEnabled) {
+  // Confirm behavior with policy true and metrics enabled
+  SetAndUpdateDomainReliabilityAllowedPolicy(true);
+  SetAndUpdateIsMetricsReporting(true);
+  EXPECT_TRUE(domain_reliability::ShouldCreateService());
+  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(DomainReliabilityPolicyTest,
+                       PolicyEnabledMetricsDisabled) {
+  // Confirm behavior with policy true and metrics disabled
+  SetAndUpdateDomainReliabilityAllowedPolicy(true);
+  SetAndUpdateIsMetricsReporting(false);
+  EXPECT_FALSE(domain_reliability::ShouldCreateService());
+  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(DomainReliabilityPolicyTest,
+                       PolicyDisabledMetricsEnabled) {
+  // Confirm behavior with policy false and metrics enabled
+  SetAndUpdateDomainReliabilityAllowedPolicy(false);
+  SetAndUpdateIsMetricsReporting(true);
+  EXPECT_FALSE(domain_reliability::ShouldCreateService());
+  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(DomainReliabilityPolicyTest,
+                       PolicyDisabledMetricsDisabled) {
+  // Confirm behavior with policy false and metrics disabled
+  SetAndUpdateDomainReliabilityAllowedPolicy(false);
+  SetAndUpdateIsMetricsReporting(false);
+  EXPECT_FALSE(domain_reliability::ShouldCreateService());
+  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
+}
+
 IN_PROC_BROWSER_TEST_F(DomainReliabilityDisabledBrowserTest,
                        ServiceNotCreated) {
-  EXPECT_FALSE(domain_reliability::DomainReliabilityServiceFactory::
-                   ShouldCreateService());
+  EXPECT_FALSE(domain_reliability::ShouldCreateService());
 }
 
 IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, ServiceCreated) {
-  EXPECT_TRUE(domain_reliability::DomainReliabilityServiceFactory::
-                  ShouldCreateService());
+  EXPECT_TRUE(domain_reliability::ShouldCreateService());
 }
 
 static const char kUploadPath[] = "/domainreliability/upload";

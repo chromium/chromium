@@ -79,6 +79,7 @@ component("domain_reliability") {
 
   deps = [
     ":bake_in_configs",
+    ":prefs",
     "//base",
     "//net",
     "//url",
@@ -106,5 +107,18 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//net:test_support",
     "//testing/gtest",
+  ]
+}
+
+source_set("prefs") {
+  sources = [
+    "domain_reliability_prefs.cc",
+    "domain_reliability_prefs.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/pref_registry:pref_registry",
+    "//components/prefs:prefs",
   ]
 }

@@ -4,5 +4,5 @@
 
 include_rules = [
   "+net",
+  "+components/prefs",
 ]
-

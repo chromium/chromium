@@ -1387,6 +1387,7 @@ if (!is_android) {
       "//components/dom_distiller/content/browser:test_support",
       "//components/dom_distiller/content/renderer",
       "//components/dom_distiller/core:test_support",
+      "//components/domain_reliability:prefs",
       "//components/drive:test_support",
       "//components/embedder_support",
       "//components/embedder_support:browser_util",

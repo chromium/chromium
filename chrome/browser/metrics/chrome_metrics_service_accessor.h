@@ -34,7 +34,7 @@ class ChromeCameraAppUIDelegate;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace domain_reliability {
-class DomainReliabilityServiceFactory;
+bool ShouldCreateService();
 }
 
 namespace extensions {
@@ -115,7 +115,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class ChromeBrowserMainParts;
   friend class ChromeContentBrowserClient;
   friend class ChromeMetricsServicesManagerClient;
-  friend class domain_reliability::DomainReliabilityServiceFactory;
+  friend bool domain_reliability::ShouldCreateService();
   friend class extensions::ChromeGuestViewManagerDelegate;
   friend class extensions::ChromeMetricsPrivateDelegate;
   friend void ChangeMetricsReportingStateWithReply(
@@ -178,9 +178,6 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   // For Ash Chrome, if a user is logged in and the device has an owner or is
   // managed, the current user's consent (if applicable) will be used if metrics
   // reporting for the device has been enabled.
-  //
-  // TODO(gayane): Consolidate metric prefs on all platforms.
-  // http://crbug.com/362192,  http://crbug.com/532084
   static bool IsMetricsAndCrashReportingEnabled();
 
   // This is identical to the function without the |local_state| param but can

@@ -21815,5 +21815,50 @@
         }
       }
     ]
+  },
+  "DomainReliabilityAllowed": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android"
+    ],
+    "official_only": true,
+    "can_be_recommended": true,
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "domain_reliability.allowed_by_policy": {
+            "location": "local_state",
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "DomainReliabilityAllowed": true
+        },
+        "prefs": {
+          "domain_reliability.allowed_by_policy": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "DomainReliabilityAllowed": false
+        },
+        "prefs": {
+          "domain_reliability.allowed_by_policy": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      }
+    ]
   }
 }
