@@ -4368,13 +4368,6 @@ const char kSharingDesktopShareToGoogleCollectionsName[] =
 const char kSharingDesktopShareToGoogleCollectionsDescription[] =
     "Adds an item to the sharing hub to allow sharing to Google Collections.";
 
-const char kWebAppManifestImmediateUpdatingName[] =
-    "Web App Manifest Immediate Updating";
-const char kWebAppManifestImmediateUpdatingDescription[] =
-    "Enables web app manifest updates to apply to running web app windows as "
-    "soon as a change has been detected instead of waiting for all app windows "
-    "to be closed.";
-
 const char kWebAuthenticationPermitEnterpriseAttestationName[] =
     "Web Authentication Enterprise Attestation";
 const char kWebAuthenticationPermitEnterpriseAttestationDescription[] =

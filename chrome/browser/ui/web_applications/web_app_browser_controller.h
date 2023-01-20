@@ -115,13 +115,9 @@ class WebAppBrowserController : public AppBrowserController,
 
   // WebAppInstallManagerObserver:
   void OnWebAppUninstalled(const AppId& app_id) override;
-  void OnWebAppManifestUpdated(const AppId& app_id,
-                               base::StringPiece old_name) override;
   void OnWebAppInstallManagerDestroyed() override;
 
   static void SetIconLoadCallbackForTesting(base::OnceClosure callback);
-  static void SetManifestUpdateAppliedCallbackForTesting(
-      base::OnceClosure callback);
 
  protected:
   // AppBrowserController:

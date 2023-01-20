@@ -285,9 +285,7 @@ void ManifestUpdateManager::OnManifestDataFetchAwaitAppWindowClose(
         profile, ProfileKeepAliveOrigin::kWebAppUpdate);
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kWebAppManifestImmediateUpdating) ||
-      BypassWindowCloseWaitingForTesting()) {
+  if (BypassWindowCloseWaitingForTesting()) {
     StartManifestWriteAfterWindowsClosed(
         url, app_id, std::move(keep_alive), std::move(profile_keep_alive),
         std::move(install_info.value()), app_identity_update_allowed);

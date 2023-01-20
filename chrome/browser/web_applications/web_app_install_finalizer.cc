@@ -607,7 +607,6 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
   }
 
   if (!ShouldUpdateOsHooks(app_id)) {
-    install_manager_->NotifyWebAppManifestUpdated(app_id, old_name);
     std::move(callback).Run(
         app_id, webapps::InstallResultCode::kSuccessAlreadyInstalled,
         OsHooksErrors());
