@@ -73,19 +73,8 @@ NSString* const kEnterpriseIconName = @"enterprise_icon";
     case SigninScreenConsumerSigninStatusAvailable: {
       switch (fre_field_trial::GetNewMobileIdentityConsistencyFRE()) {
         case NewMobileIdentityConsistencyFRE::kTangibleSyncA:
-        case NewMobileIdentityConsistencyFRE::kTangibleSyncB:
-        case NewMobileIdentityConsistencyFRE::kTangibleSyncC:
-        case NewMobileIdentityConsistencyFRE::kTangibleSyncF:
           self.titleText =
               l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
-          break;
-        case NewMobileIdentityConsistencyFRE::kTangibleSyncD:
-          self.titleText = l10n_util::GetNSString(
-              IDS_IOS_FIRST_RUN_SIGNIN_TITLE_TANGIBLE_SYNC_D);
-          break;
-        case NewMobileIdentityConsistencyFRE::kTangibleSyncE:
-          self.titleText = l10n_util::GetNSString(
-              IDS_IOS_FIRST_RUN_SIGNIN_TITLE_TANGIBLE_SYNC_E);
           break;
         case NewMobileIdentityConsistencyFRE::kOld:
           NOTREACHED();

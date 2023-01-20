@@ -12,17 +12,8 @@ enum class NewMobileIdentityConsistencyFRE {
   // Strings in TangibleSyncViewController are set according to the A, B or C
   // variants.
   kTangibleSyncA = 0,
-  kTangibleSyncB,
-  kTangibleSyncC,
   // Old FRE.
   kOld,
-  // New MICE FRE with tangible sync (welcome with sign-in + tangible sync
-  // screens).
-  // Strings in TangibleSyncViewController are set according to the D, E or F
-  // variants.
-  kTangibleSyncD,
-  kTangibleSyncE,
-  kTangibleSyncF,
 };
 
 namespace fre_field_trial {

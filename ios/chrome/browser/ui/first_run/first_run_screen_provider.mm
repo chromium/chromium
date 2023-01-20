@@ -20,11 +20,6 @@
 
   switch (fre_field_trial::GetNewMobileIdentityConsistencyFRE()) {
     case NewMobileIdentityConsistencyFRE::kTangibleSyncA:
-    case NewMobileIdentityConsistencyFRE::kTangibleSyncB:
-    case NewMobileIdentityConsistencyFRE::kTangibleSyncC:
-    case NewMobileIdentityConsistencyFRE::kTangibleSyncD:
-    case NewMobileIdentityConsistencyFRE::kTangibleSyncE:
-    case NewMobileIdentityConsistencyFRE::kTangibleSyncF:
       [screens addObject:@(kSignIn)];
       [screens addObject:@(kTangibleSync)];
       break;

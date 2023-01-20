@@ -64,12 +64,7 @@
 - (WKWebView*)newWebViewDisplayingTOS {
   NSURL* TOSURL = nil;
   switch (fre_field_trial::GetNewMobileIdentityConsistencyFRE()) {
-    case NewMobileIdentityConsistencyFRE::kTangibleSyncA:
-    case NewMobileIdentityConsistencyFRE::kTangibleSyncB:
-    case NewMobileIdentityConsistencyFRE::kTangibleSyncC:
-    case NewMobileIdentityConsistencyFRE::kTangibleSyncD:
-    case NewMobileIdentityConsistencyFRE::kTangibleSyncE:
-    case NewMobileIdentityConsistencyFRE::kTangibleSyncF: {
+    case NewMobileIdentityConsistencyFRE::kTangibleSyncA: {
       TOSURL =
           net::NSURLWithGURL(GetUnifiedTermsOfServiceURL(/*embbeded=*/true));
       break;

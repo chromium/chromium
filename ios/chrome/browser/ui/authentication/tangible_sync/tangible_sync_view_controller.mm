@@ -86,31 +86,6 @@ UIView* IconViewWithImage(NSString* image_name, BOOL custom_symbol) {
       subtitleStringID = IDS_IOS_TANGIBLE_SYNC_SUBTITLE_BACK_UP;
       _activateSyncButtonID = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
       break;
-    case NewMobileIdentityConsistencyFRE::kTangibleSyncB:
-      titleStringID = IDS_IOS_TANGIBLE_SYNC_TITLE_SYNC;
-      subtitleStringID = IDS_IOS_TANGIBLE_SYNC_SUBTITLE_BACK_UP;
-      _activateSyncButtonID = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
-      break;
-    case NewMobileIdentityConsistencyFRE::kTangibleSyncC:
-      titleStringID = IDS_IOS_TANGIBLE_SYNC_TITLE_TURN_ON_SYNC;
-      subtitleStringID = IDS_IOS_TANGIBLE_SYNC_SUBTITLE_SYNC;
-      _activateSyncButtonID = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
-      break;
-    case NewMobileIdentityConsistencyFRE::kTangibleSyncD:
-      titleStringID = IDS_IOS_TANGIBLE_SYNC_TITLE_TURN_ON_SYNC;
-      subtitleStringID = IDS_IOS_TANGIBLE_SYNC_SUBTITLE_BACK_UP;
-      _activateSyncButtonID = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
-      break;
-    case NewMobileIdentityConsistencyFRE::kTangibleSyncE:
-      titleStringID = IDS_IOS_TANGIBLE_SYNC_TITLE_TURN_ON_SYNC;
-      subtitleStringID = IDS_IOS_TANGIBLE_SYNC_SUBTITLE_BACK_UP;
-      _activateSyncButtonID = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
-      break;
-    case NewMobileIdentityConsistencyFRE::kTangibleSyncF:
-      titleStringID = IDS_IOS_TANGIBLE_SYNC_TITLE_TURN_ON_SYNC;
-      subtitleStringID = IDS_IOS_TANGIBLE_SYNC_SUBTITLE_BACK_UP;
-      _activateSyncButtonID = IDS_IOS_TANGIBLE_SYNC_TURN_ON_SYNC;
-      break;
     case NewMobileIdentityConsistencyFRE::kOld:
       NOTREACHED();
       break;
