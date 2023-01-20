@@ -621,8 +621,6 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   }
 
   if (!complement_country_early) {
-    // For multi-step imports, this can set `did_complement_country` twice. But
-    // as the metric is only logged if it wasn't present before, this is fine.
     import_metadata.did_complement_country =
         should_complement_country &&
         ComplementCountry(candidate_profile, predicted_country_code);

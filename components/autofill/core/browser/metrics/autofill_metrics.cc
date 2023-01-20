@@ -2972,13 +2972,6 @@ void AutofillMetrics::LogNewProfileImportDecision(
                                 decision);
 }
 
-void AutofillMetrics::LogNewProfileWithComplementedCountryImportDecision(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
-  base::UmaHistogramEnumeration(
-      "Autofill.ProfileImport.NewProfileWithComplementedCountryDecision",
-      decision);
-}
-
 void AutofillMetrics::LogNewProfileWithIgnoredCountryImportDecision(
     AutofillClient::SaveAddressProfileOfferUserDecision decision) {
   base::UmaHistogramEnumeration(
@@ -2998,12 +2991,6 @@ void AutofillMetrics::LogNewProfileEditedType(ServerFieldType edited_type) {
       ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
 }
 
-void AutofillMetrics::LogNewProfileEditedComplementedCountry() {
-  base::UmaHistogramEnumeration(
-      "Autofill.ProfileImport.NewProfileEditedComplementedCountry",
-      AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kCountry);
-}
-
 void AutofillMetrics::LogNewProfileNumberOfEditedFields(
     int number_of_edited_fields) {
   base::UmaHistogramExactLinear(
@@ -3015,13 +3002,6 @@ void AutofillMetrics::LogProfileUpdateImportDecision(
     AutofillClient::SaveAddressProfileOfferUserDecision decision) {
   base::UmaHistogramEnumeration("Autofill.ProfileImport.UpdateProfileDecision",
                                 decision);
-}
-
-void AutofillMetrics::LogProfileUpdateWithComplementedCountryImportDecision(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
-  base::UmaHistogramEnumeration(
-      "Autofill.ProfileImport.UpdateProfileWithComplementedCountryDecision",
-      decision);
 }
 
 void AutofillMetrics::LogProfileUpdateWithIgnoredCountryImportDecision(
@@ -3057,12 +3037,6 @@ void AutofillMetrics::LogProfileUpdateEditedType(ServerFieldType edited_type) {
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.UpdateProfileEditedType",
       ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
-}
-
-void AutofillMetrics::LogProfileUpdateEditedComplementedCountry() {
-  base::UmaHistogramEnumeration(
-      "Autofill.ProfileImport.UpdateProfileEditedComplementedCountry",
-      AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kCountry);
 }
 
 void AutofillMetrics::LogUpdateProfileNumberOfEditedFields(

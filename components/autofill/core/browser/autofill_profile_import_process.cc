@@ -419,16 +419,8 @@ void ProfileImportProcess::CollectMetrics(ukm::UkmRecorder* ukm_recorder,
     for (const auto& difference : edit_difference) {
       if (import_type_ == AutofillProfileImportType::kNewProfile) {
         AutofillMetrics::LogNewProfileEditedType(difference.type);
-        if (import_metadata_.did_complement_country &&
-            difference.type == ServerFieldType::ADDRESS_HOME_COUNTRY) {
-          AutofillMetrics::LogNewProfileEditedComplementedCountry();
-        }
       } else {
         AutofillMetrics::LogProfileUpdateEditedType(difference.type);
-        if (import_metadata_.did_complement_country &&
-            difference.type == ServerFieldType::ADDRESS_HOME_COUNTRY) {
-          AutofillMetrics::LogProfileUpdateEditedComplementedCountry();
-        }
       }
     }
     num_edited_fields = edit_difference.size();
@@ -443,10 +435,6 @@ void ProfileImportProcess::CollectMetrics(ukm::UkmRecorder* ukm_recorder,
   // decision.
   if (import_type_ == AutofillProfileImportType::kNewProfile) {
     AutofillMetrics::LogNewProfileImportDecision(user_decision_);
-    if (import_metadata_.did_complement_country) {
-      AutofillMetrics::LogNewProfileWithComplementedCountryImportDecision(
-          user_decision_);
-    }
     if (import_metadata_.did_ignore_invalid_country) {
       AutofillMetrics::LogNewProfileWithIgnoredCountryImportDecision(
           user_decision_);
@@ -476,17 +464,9 @@ void ProfileImportProcess::CollectMetrics(ukm::UkmRecorder* ukm_recorder,
         AutofillProfileComparator::GetSettingsVisibleProfileDifference(
             import_candidate_.value(), merge_candidate_.value(), app_locale_);
 
-    bool difference_in_country = false;
     for (const auto& difference : merge_difference) {
       AutofillMetrics::LogProfileUpdateAffectedType(difference.type,
                                                     user_decision_);
-      difference_in_country |= difference.type == ADDRESS_HOME_COUNTRY;
-    }
-    // If the country was complemented, but already stored, it didn't make a
-    // difference and we should not count it in the metrics.
-    if (import_metadata_.did_complement_country && difference_in_country) {
-      AutofillMetrics::LogProfileUpdateWithComplementedCountryImportDecision(
-          user_decision_);
     }
     // Ignoring an invalid country made the update possible, so this should be
     // logged in any case.

@@ -3010,19 +3010,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.ProfileImport.NewProfileEditedComplementedCountry"
-    enum="AutofillSettingsVisibleTypes" expires_after="2023-01-15">
-  <owner>fleimgruber@google.com</owner>
-  <owner>chrome-autofill-team@google.com</owner>
-  <summary>
-    Logs that the country field was edited in a new profile save prompt that was
-    shown to the user when a new address profile is observed in a form
-    submission. The edited country was complemented based on the predicted
-    country on import. This metric is emitted once the user-provided import
-    decision is final.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.ProfileImport.NewProfileEditedType"
     enum="AutofillSettingsVisibleTypes" expires_after="2023-06-04">
   <owner>koerber@google.com</owner>
@@ -3042,20 +3029,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logs the number of fields that have been edited by the user in the process
     of succesfully importing a new profile after an observed form submission.
-  </summary>
-</histogram>
-
-<histogram
-    name="Autofill.ProfileImport.NewProfileWithComplementedCountryDecision"
-    enum="AutofillProfileImportDecision" expires_after="2023-07-02">
-  <owner>fleimgruber@google.com</owner>
-  <owner>chrome-autofill-team@google.com</owner>
-  <summary>
-    Logs the user's decision for storing a new address profile observed in a
-    form submission, which had it's country complemented based on the predicted
-    country on import. This metric is emitted at the end of an import process
-    once the user-provided import decision is final. It is collected in addition
-    to Autofill.ProfileImport.NewProfileDecision.
   </summary>
 </histogram>
 
@@ -3190,19 +3163,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.ProfileImport.UpdateProfileEditedComplementedCountry"
-    enum="AutofillSettingsVisibleTypes" expires_after="2023-01-15">
-  <owner>fleimgruber@google.com</owner>
-  <owner>chrome-autofill-team@google.com</owner>
-  <summary>
-    Logs that the country field was edited in a a profile update prompt that was
-    shown to the user when a profile similar to an already existing profile was
-    observed in a form submission. The edited country was complemented based on
-    the predicted country on import. This metric is emitted once the
-    user-provided import decision is final.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.ProfileImport.UpdateProfileEditedType"
     enum="AutofillSettingsVisibleTypes" expires_after="2023-06-11">
   <owner>koerber@google.com</owner>
@@ -3265,21 +3225,6 @@ chromium-metrics-reviews@google.com.
     Logs the number of fields that have been edited by the user in the process
     of succesfully updating an existing profile after an observed form
     submission.
-  </summary>
-</histogram>
-
-<histogram
-    name="Autofill.ProfileImport.UpdateProfileWithComplementedCountryDecision"
-    enum="AutofillProfileImportDecision" expires_after="2023-02-26">
-  <owner>fleimgruber@google.com</owner>
-  <owner>chrome-autofill-team@google.com</owner>
-  <summary>
-    Logs the user's decision for editing an already existing address after a
-    similar profile was observed in a form submission. The new profile had it's
-    country complemented based on the predicted country on import. This metric
-    is emitted at the end of an import process once the user-provided import
-    decision is final. It is collected in addition to
-    Autofill.ProfileImport.UpdateProfileDecision.
   </summary>
 </histogram>
 
