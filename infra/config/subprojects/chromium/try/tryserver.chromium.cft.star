@@ -9,6 +9,7 @@ load("//lib/consoles.star", "consoles")
 
 try_.defaults.set(
     builder_group = "tryserver.chromium.cft",
+    check_for_flakiness = True,
     cores = 8,
     executable = try_.DEFAULT_EXECUTABLE,
     builderless = True,

@@ -37,6 +37,9 @@
       ]
     }
   },
+  "$build/flakiness": {
+    "check_for_flakiness": true
+  },
   "$build/goma": {
     "enable_ats": false,
     "jobs": 150,
