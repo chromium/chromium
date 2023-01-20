@@ -5,12 +5,12 @@
 import './descriptor_list.js';
 import './expandable_list_item.js';
 import './object_fieldset.js';
+import './value_control.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {getTemplate} from './characteristic_list_item.html.js';
 import {CharacteristicInfo, Property} from './device.mojom-webui.js';
-import {ValueControl} from './value_control.js';
 
 /** Property names for the CharacteristicInfo fieldset */
 const INFO_PROPERTY_NAMES = {
