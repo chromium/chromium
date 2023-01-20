@@ -3405,7 +3405,7 @@
 <translation id="4115002065223188701">偵測不到網路</translation>
 <translation id="4115378294792113321">洋紅色</translation>
 <translation id="4116704186509653070">重新開啟</translation>
-<translation id="4117714603282104018">觸控板觸動回饋</translation>
+<translation id="4117714603282104018">觸控板觸覺回饋</translation>
 <translation id="4118579674665737931">請重新啟動裝置，然後再試一次。</translation>
 <translation id="412022815379960229">只要在登入狀態下，就能開始透過 Google 相簿探索你的回憶集錦。</translation>
 <translation id="4120388883569225797">無法重設這個安全金鑰</translation>
@@ -7575,7 +7575,7 @@
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064279191081105977">「<ph name="GROUP_NAME" />」群組 - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">連線對話方塊</translation>
-<translation id="8070662218171013510">觸動回饋</translation>
+<translation id="8070662218171013510">觸覺回饋</translation>
 <translation id="8071432093239591881">以圖片形式列印</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />應用程式資料泛指應用程式依據開發人員設定所儲存的任何資料，包括聯絡人、訊息和相片等。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />備份資料不會計入貴子女帳戶的雲端硬碟儲存空間配額。<ph name="END_PARAGRAPH2" />
