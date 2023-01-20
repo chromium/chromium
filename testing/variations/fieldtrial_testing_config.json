@@ -13517,24 +13517,6 @@
             ]
         }
     ],
-    "WhatsNewPageExperiment": [
-        {
-            "platforms": [
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ChromeWhatsNewUI"
-                    ]
-                }
-            ]
-        }
-    ],
     "Win10UnattendedDefault": [
         {
             "platforms": [

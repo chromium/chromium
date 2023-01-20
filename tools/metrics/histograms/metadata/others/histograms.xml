@@ -15376,7 +15376,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WhatsNew.LoadResponseCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-01-15">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-06-18">
   <owner>rbpotter@chromium.org</owner>
   <owner>mahmadi@chromium.org</owner>
   <summary>
