@@ -11,9 +11,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/system/diagnostics/diagnostics_browser_delegate.h"
-#include "ash/system/diagnostics/diagnostics_log_controller.h"
-#include "ash/test/ash_test_base.h"
 #include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
 #include "base/files/file_path.h"
@@ -33,13 +30,11 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
-#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
-#include "ui/base/resource/resource_bundle.h"
 
 namespace ash {
 namespace shimless_rma {
@@ -122,40 +117,19 @@ class FakeShimlessRmaDelegate : public ShimlessRmaDelegate {
   }
 };
 
-// A fake DiagnosticsBrowserDelegate.
-class FakeDiagnosticsBrowserDelegate
-    : public diagnostics::DiagnosticsBrowserDelegate {
- public:
-  FakeDiagnosticsBrowserDelegate() = default;
-  ~FakeDiagnosticsBrowserDelegate() override = default;
-
-  base::FilePath GetActiveUserProfileDir() override { return base::FilePath(); }
-};
-
 }  // namespace
 
-// Test class using NoSessionAshTestBase to ensure shell is available for
-// tests requiring DiagnosticsLogController singleton.
-class ShimlessRmaServiceTest : public NoSessionAshTestBase {
+class ShimlessRmaServiceTest : public testing::Test {
  public:
   ShimlessRmaServiceTest() {}
 
   ~ShimlessRmaServiceTest() override {}
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kShimlessRMAOsUpdate,
-         features::kEnableLogControllerForDiagnosticsApp},
-        {});
+    scoped_feature_list_.InitWithFeatures({features::kShimlessRMAOsUpdate}, {});
     chromeos::PowerManagerClient::InitializeFake();
     // VersionUpdater depends on UpdateEngineClient.
     UpdateEngineClient::InitializeFake();
-
-    ui::ResourceBundle::CleanupSharedInstance();
-    AshTestSuite::LoadTestResources();
-    NoSessionAshTestBase::SetUp();
-    diagnostics::DiagnosticsLogController::Initialize(
-        std::make_unique<FakeDiagnosticsBrowserDelegate>());
 
     SetupFakeNetwork();
     FakeRmadClientForTest::Initialize();
@@ -179,13 +153,14 @@ class ShimlessRmaServiceTest : public NoSessionAshTestBase {
     RmadClient::Shutdown();
     NetworkHandler::Shutdown();
     cros_network_config_test_helper_.reset();
+    LoginState::Shutdown();
     UpdateEngineClient::Shutdown();
-
-    task_environment()->RunUntilIdle();
-    NoSessionAshTestBase::TearDown();
+    chromeos::PowerManagerClient::Shutdown();
   }
 
   void SetupFakeNetwork() {
+    LoginState::Initialize();
+
     cros_network_config_test_helper_ =
         std::make_unique<network_config::CrosNetworkConfigTestHelper>(false);
     network_configuration_handler_ =
@@ -339,6 +314,7 @@ class ShimlessRmaServiceTest : public NoSessionAshTestBase {
   std::unique_ptr<ManagedNetworkConfigurationHandler>
       managed_network_configuration_handler_;
   std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
+  base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -3105,7 +3081,6 @@ TEST_F(ShimlessRmaServiceTest, SaveLog) {
       std::make_unique<base::FilePath>(
           FILE_PATH_LITERAL("log/save/path/for/testing"));
 
-  EXPECT_TRUE(fake_rmad_client_()->GetDiagnosticsLogsText().empty());
   fake_rmad_client_()->SetSaveLogReply(expected_save_path->value(),
                                        rmad::RMAD_ERROR_OK);
   base::RunLoop run_loop;
@@ -3120,11 +3095,8 @@ TEST_F(ShimlessRmaServiceTest, SaveLog) {
       [&](const base::FilePath& save_path, rmad::RmadErrorCode error) {
         EXPECT_EQ(save_path, *expected_save_path.get());
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
-        run_loop.Quit();
       }));
-  run_loop.Run();
-
-  EXPECT_FALSE(fake_rmad_client_()->GetDiagnosticsLogsText().empty());
+  run_loop.RunUntilIdle();
 }
 
 TEST_F(ShimlessRmaServiceTest, GetPowerwashRequired) {

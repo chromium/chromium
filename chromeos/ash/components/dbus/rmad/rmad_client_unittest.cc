@@ -715,14 +715,13 @@ TEST_F(RmadClientTest, SaveLog) {
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
-  client_->SaveLog("Diagnostics log text",
-                   base::BindLambdaForTesting(
-                       [&](absl::optional<rmad::SaveLogReply> response) {
-                         EXPECT_TRUE(response.has_value());
-                         EXPECT_EQ(response->save_path(), expected_save_path);
-                         EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
-                         run_loop.Quit();
-                       }));
+  client_->SaveLog(base::BindLambdaForTesting(
+      [&](absl::optional<rmad::SaveLogReply> response) {
+        EXPECT_TRUE(response.has_value());
+        EXPECT_EQ(response->save_path(), expected_save_path);
+        EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
+        run_loop.Quit();
+      }));
   run_loop.RunUntilIdle();
 }
 
@@ -734,12 +733,11 @@ TEST_F(RmadClientTest, SaveLog_NullResponse) {
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
-  client_->SaveLog("Diagnostics log text",
-                   base::BindLambdaForTesting(
-                       [&](absl::optional<rmad::SaveLogReply> response) {
-                         EXPECT_FALSE(response.has_value());
-                         run_loop.Quit();
-                       }));
+  client_->SaveLog(base::BindLambdaForTesting(
+      [&](absl::optional<rmad::SaveLogReply> response) {
+        EXPECT_FALSE(response.has_value());
+        run_loop.Quit();
+      }));
   run_loop.RunUntilIdle();
 }
 
@@ -753,12 +751,11 @@ TEST_F(RmadClientTest, SaveLog_EmptyResponse) {
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
-  client_->SaveLog("Diagnostics log text",
-                   base::BindLambdaForTesting(
-                       [&](absl::optional<rmad::SaveLogReply> response) {
-                         EXPECT_FALSE(response.has_value());
-                         run_loop.Quit();
-                       }));
+  client_->SaveLog(base::BindLambdaForTesting(
+      [&](absl::optional<rmad::SaveLogReply> response) {
+        EXPECT_FALSE(response.has_value());
+        run_loop.Quit();
+      }));
   run_loop.RunUntilIdle();
 }
 
