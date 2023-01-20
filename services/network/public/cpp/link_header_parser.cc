@@ -54,15 +54,15 @@ absl::optional<mojom::LinkAsAttribute> ParseAsAttribute(
     return absl::nullopt;
 
   std::string value = base::ToLowerASCII(attr.value());
-  if (value == "font")
+  if (value == "font") {
     return mojom::LinkAsAttribute::kFont;
-  else if (value == "image")
+  } else if (value == "image") {
     return mojom::LinkAsAttribute::kImage;
-  else if (value == "script")
+  } else if (value == "script") {
     return mojom::LinkAsAttribute::kScript;
-  // TODO(crbug.com/671310): Disallow "stylesheet", it was allowed accidentally.
-  else if (value == "style" || value == "stylesheet")
+  } else if (value == "style") {
     return mojom::LinkAsAttribute::kStyleSheet;
+  }
   return absl::nullopt;
 }
 
