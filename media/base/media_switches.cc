@@ -457,6 +457,48 @@ const base::FeatureParam<bool> kChromeWideEchoCancellationAllowAllSampleRates{
     &kChromeWideEchoCancellation, "allow_all_sample_rates", true};
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+// To control running audio communication effect on Chrome OS Audio Server.
+BASE_FEATURE(kCrOSSystemAEC,
+             "CrOSSystemAECWithBoardTuningsAllowed",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCrOSSystemAECDeactivatedGroups,
+             "CrOSSystemAECDeactivatedGroups",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCrOSEnforceSystemAecNsAgc,
+             "CrOSEnforceSystemAecNsAgc",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCrOSEnforceSystemAecNs,
+             "CrOSEnforceSystemAecNs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCrOSEnforceSystemAecAgc,
+             "CrOSEnforceSystemAecAgc",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCrOSEnforceSystemAec,
+             "CrOSEnforceSystemAec",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCrOSDspBasedAecDeactivatedGroups,
+             "CrOSDspBasedAecDeactivatedGroups",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCrOSDspBasedNsDeactivatedGroups,
+             "CrOSDspBasedNsDeactivatedGroups",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCrOSDspBasedAgcDeactivatedGroups,
+             "CrOSDspBasedAgcDeactivatedGroups",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCrOSDspBasedAecAllowed,
+             "CrOSDspBasedAecAllowed",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCrOSDspBasedNsAllowed,
+             "CrOSDspBasedNsAllowed",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCrOSDspBasedAgcAllowed,
+             "CrOSDspBasedAgcAllowed",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 // Make MSE garbage collection algorithm more aggressive when we are under
 // moderate or critical memory pressure. This will relieve memory pressure by
 // releasing stale data from MSE buffers.
@@ -1309,6 +1351,14 @@ BASE_FEATURE(kFuchsiaMediacodecVideoEncoder,
 
 bool IsChromeWideEchoCancellationEnabled() {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+  if (base::FeatureList::IsEnabled(kCrOSEnforceSystemAecNsAgc) ||
+      base::FeatureList::IsEnabled(kCrOSEnforceSystemAecNs) ||
+      base::FeatureList::IsEnabled(kCrOSEnforceSystemAecAgc) ||
+      base::FeatureList::IsEnabled(kCrOSEnforceSystemAec)) {
+    return false;
+  }
+#endif
   return base::FeatureList::IsEnabled(kChromeWideEchoCancellation);
 #else
   return false;

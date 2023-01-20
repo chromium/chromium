@@ -75,7 +75,7 @@ SyncReader::SyncReader(
   maximum_wait_time_for_mixing_ = maximum_wait_time_;
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  if (base::FeatureList::IsEnabled(media::kChromeWideEchoCancellation)) {
+  if (media::IsChromeWideEchoCancellationEnabled()) {
     double mixing_timeout_percent =
         media::kChromeWideEchoCancellationDynamicMixingTimeout.Get();
 

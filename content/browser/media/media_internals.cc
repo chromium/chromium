@@ -497,7 +497,7 @@ void MediaInternals::SendGeneralAudioInformation() {
       GetContentClient()->browser()->ShouldSandboxAudioService());
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   std::string chrome_wide_echo_cancellation_value_string =
-      base::FeatureList::IsEnabled(media::kChromeWideEchoCancellation)
+      media::IsChromeWideEchoCancellationEnabled()
           ? base::StrCat(
                 {"Enabled, processing_fifo_size = ",
                  base::NumberToString(

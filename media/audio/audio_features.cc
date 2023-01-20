@@ -23,48 +23,6 @@ BASE_FEATURE(kUseAAudioDriver,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kCrOSSystemAEC,
-             "CrOSSystemAECWithBoardTuningsAllowed",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kCrOSSystemAECDeactivatedGroups,
-             "CrOSSystemAECDeactivatedGroups",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kCrOSEnforceSystemAecNsAgc,
-             "CrOSEnforceSystemAecNsAgc",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kCrOSEnforceSystemAecNs,
-             "CrOSEnforceSystemAecNs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kCrOSEnforceSystemAecAgc,
-             "CrOSEnforceSystemAecAgc",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kCrOSEnforceSystemAec,
-             "CrOSEnforceSystemAec",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCrOSDspBasedAecDeactivatedGroups,
-             "CrOSDspBasedAecDeactivatedGroups",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kCrOSDspBasedNsDeactivatedGroups,
-             "CrOSDspBasedNsDeactivatedGroups",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kCrOSDspBasedAgcDeactivatedGroups,
-             "CrOSDspBasedAgcDeactivatedGroups",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCrOSDspBasedAecAllowed,
-             "CrOSDspBasedAecAllowed",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kCrOSDspBasedNsAllowed,
-             "CrOSDspBasedNsAllowed",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kCrOSDspBasedAgcAllowed,
-             "CrOSDspBasedAgcAllowed",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-#endif
-
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kAllowIAudioClient3,
              "AllowIAudioClient3",

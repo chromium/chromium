@@ -259,7 +259,7 @@ void InputController::MaybeSetUpAudioProcessing(
     return;
 
   int fifo_size =
-      base::FeatureList::IsEnabled(media::kChromeWideEchoCancellation)
+      media::IsChromeWideEchoCancellationEnabled()
           ? media::kChromeWideEchoCancellationProcessingFifoSize.Get()
           : 0;
 
