@@ -19,6 +19,7 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_split.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -551,6 +552,86 @@ void AudioManagerMac::ShutdownOnAudioThread() {
   AudioManagerBase::ShutdownOnAudioThread();
 }
 
+std::vector<AudioObjectID> AudioManagerMac::GetAllAudioDeviceIDs() {
+  DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
+  return core_audio_mac::GetAllAudioDeviceIDs();
+}
+
+std::vector<AudioObjectID> AudioManagerMac::GetRelatedNonBluetoothDeviceIDs(
+    AudioObjectID device_id) {
+  DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
+  return core_audio_mac::GetRelatedDeviceIDs(device_id);
+}
+
+std::vector<AudioObjectID> AudioManagerMac::GetRelatedBluetoothDeviceIDs(
+    AudioObjectID device_id) {
+  DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
+  std::vector<AudioObjectID> result_ids;
+
+  // Get unique ID of input device which would be used to match with unique IDs
+  // of all other devices.
+  absl::optional<std::string> input_unique_id = GetDeviceUniqueID(device_id);
+  if (!input_unique_id) {
+    return result_ids;
+  }
+
+  // Get the base name from the unique ID by removing :input/:output from it.
+  // A bluetooth audio input device uniqueID is of the format
+  // "F3-A2-14-A9-1D-F8:input", while the corresponding output device uniqueID
+  // is of the format "F3-A2-14-A9-1D-F8:output".
+  std::vector<std::string> trimmed_input_vector =
+      SplitString(input_unique_id.value(), ":", base::TRIM_WHITESPACE,
+                  base::SPLIT_WANT_NONEMPTY);
+  if (trimmed_input_vector.empty()) {
+    return result_ids;
+  }
+  std::string& trimmed_input_unique_id = trimmed_input_vector[0];
+
+  // Iterate through all device IDs and match the unique IDs base to find the
+  // related devices.
+  for (const auto& id : GetAllAudioDeviceIDs()) {
+    absl::optional<std::string> unique_id = GetDeviceUniqueID(id);
+    if (!unique_id) {
+      continue;
+    }
+
+    std::vector<std::string> trimmed_vector =
+        SplitString(unique_id.value(), ":", base::TRIM_WHITESPACE,
+                    base::SPLIT_WANT_NONEMPTY);
+    if (trimmed_vector.empty()) {
+      continue;
+    }
+
+    std::string& trimmed_id = trimmed_vector[0];
+    if (trimmed_id == trimmed_input_unique_id) {
+      result_ids.push_back(id);
+    }
+  }
+  return result_ids;
+}
+
+std::vector<AudioObjectID> AudioManagerMac::GetRelatedDeviceIDs(
+    AudioObjectID device_id) {
+  DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
+  absl::optional<uint32_t> transport_type = GetDeviceTransportType(device_id);
+  if (transport_type && *transport_type == kAudioDeviceTransportTypeBluetooth) {
+    return GetRelatedBluetoothDeviceIDs(device_id);
+  }
+  return GetRelatedNonBluetoothDeviceIDs(device_id);
+}
+
+absl::optional<std::string> AudioManagerMac::GetDeviceUniqueID(
+    AudioObjectID device_id) {
+  DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
+  return core_audio_mac::GetDeviceUniqueID(device_id);
+}
+
+absl::optional<uint32_t> AudioManagerMac::GetDeviceTransportType(
+    AudioObjectID device_id) {
+  DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
+  return core_audio_mac::GetDeviceTransportType(device_id);
+}
+
 bool AudioManagerMac::HasAudioOutputDevices() {
   return HasAudioHardware(kAudioHardwarePropertyDefaultOutputDevice);
 }
@@ -654,8 +735,7 @@ AudioParameters AudioManagerMac::GetInputStreamParameters(
   // cancellation or mono with echo cancellation.
   if ((params.channel_layout() == CHANNEL_LAYOUT_MONO ||
        params.channel_layout() == CHANNEL_LAYOUT_STEREO) &&
-      core_audio_mac::GetDeviceTransportType(device) !=
-          kAudioDeviceTransportTypeAggregate) {
+      GetDeviceTransportType(device) != kAudioDeviceTransportTypeAggregate) {
     params.set_effects(params.effects() |
                        AudioParameters::EXPERIMENTAL_ECHO_CANCELLER);
   }
@@ -672,7 +752,7 @@ std::string AudioManagerMac::GetAssociatedOutputDeviceID(
     return std::string();
 
   std::vector<AudioObjectID> related_device_ids =
-      core_audio_mac::GetRelatedDeviceIDs(input_device_id);
+      GetRelatedDeviceIDs(input_device_id);
 
   // Defined as a set as device IDs might be duplicated in
   // GetRelatedDeviceIDs().
@@ -688,7 +768,7 @@ std::string AudioManagerMac::GetAssociatedOutputDeviceID(
   // to an endpoint, so we cannot randomly pick a device.
   if (related_output_device_ids.size() == 1) {
     absl::optional<std::string> related_unique_id =
-        core_audio_mac::GetDeviceUniqueID(*related_output_device_ids.begin());
+        GetDeviceUniqueID(*related_output_device_ids.begin());
     if (related_unique_id)
       return std::move(*related_unique_id);
   }

@@ -431,6 +431,7 @@ source_set("unit_tests") {
       "mac/audio_auhal_mac_unittest.cc",
       "mac/audio_device_listener_mac_unittest.cc",
       "mac/audio_low_latency_input_mac_unittest.cc",
+      "mac/audio_manager_mac_unittest.cc",
     ]
   }
 

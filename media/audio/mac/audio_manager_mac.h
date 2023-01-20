@@ -85,6 +85,11 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase {
   static AudioDeviceID GetAudioDeviceIdByUId(bool is_input,
                                              const std::string& device_id);
 
+  // Returns a vector with the IDs of all devices related to the given
+  // |device_id|. The vector is empty if there are no related devices or
+  // if there is an error.
+  std::vector<AudioObjectID> GetRelatedDeviceIDs(AudioObjectID device_id);
+
   // OSX has issues with starting streams as the system goes into suspend and
   // immediately after it wakes up from resume.  See http://crbug.com/160920.
   // As a workaround we delay Start() when it occurs after suspend and for a
@@ -154,6 +159,34 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase {
   AudioParameters GetPreferredOutputStreamParameters(
       const std::string& output_device_id,
       const AudioParameters& input_params) override;
+
+  // Returns a vector with the IDs of all bluetooth devices related to the given
+  // |device_id|, which is also a bluetooth device. The vector is empty if there
+  // are no related devices or if there is an error.
+  std::vector<AudioObjectID> GetRelatedBluetoothDeviceIDs(
+      AudioObjectID device_id);
+
+  // Virtual for testing.
+
+  // Returns a vector with the IDs of all audio devices in the system.
+  // The vector is empty if there are no devices or if there is an error.
+  virtual std::vector<AudioObjectID> GetAllAudioDeviceIDs();
+
+  // Returns a vector with the IDs of all non-bluetooth devices related to the
+  // given |device_id|, which is also a non-bluetooth device. The vector is
+  // empty if there are no related devices or if there is an error.
+  virtual std::vector<AudioObjectID> GetRelatedNonBluetoothDeviceIDs(
+      AudioObjectID device_id);
+
+  // Returns a string with a unique device ID for the given |device_id|, or no
+  // value if there is an error.
+  virtual absl::optional<std::string> GetDeviceUniqueID(
+      AudioObjectID device_id);
+
+  // Returns the transport type of the given |device_id|, or no value if
+  // |device_id| has no source or if there is an error.
+  virtual absl::optional<uint32_t> GetDeviceTransportType(
+      AudioObjectID device_id);
   void ShutdownOnAudioThread() override;
 
  private:
