@@ -132,10 +132,11 @@ bool CommandService::GetNamedCommands(const std::string& extension_id,
                                       QueryType type,
                                       CommandScope scope,
                                       CommandMap* command_map) const {
-  const ExtensionSet& extensions =
-      ExtensionRegistry::Get(profile_)->enabled_extensions();
-  const Extension* extension = extensions.GetByID(extension_id);
-  CHECK(extension);
+  const Extension* extension =
+      GetExtensionInEnabledOrDisabledExtensions(extension_id);
+  if (!extension) {
+    return false;
+  }
 
   command_map->clear();
   const CommandMap* commands = CommandsInfo::GetNamedCommands(extension);
@@ -323,13 +324,33 @@ void CommandService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void CommandService::UpdateKeybindings(const Extension* extension) {
-  const ExtensionSet& extensions =
+const Extension* CommandService::GetExtensionInEnabledOrDisabledExtensions(
+    const ExtensionId& extension_id) const {
+  const ExtensionSet& enabled_extensions =
       ExtensionRegistry::Get(profile_)->enabled_extensions();
-  // The extension is not added to the profile by this point on first install,
-  // so don't try to check for existing keybindings.
-  if (extensions.GetByID(extension->id()))
+  const Extension* enabled_extension = enabled_extensions.GetByID(extension_id);
+  if (enabled_extension) {
+    return enabled_extension;
+  }
+  const ExtensionSet& disabled_extensions =
+      ExtensionRegistry::Get(profile_)->disabled_extensions();
+  return disabled_extensions.GetByID(extension_id);
+}
+
+bool CommandService::IsUpgradeFromMV2ToMV3(
+    const Extension* extension,
+    const std::string& existing_command_name) const {
+  bool browser_or_page_action_command_in_bindings =
+      existing_command_name == manifest_values::kBrowserActionCommandEvent ||
+      existing_command_name == manifest_values::kPageActionCommandEvent;
+  return browser_or_page_action_command_in_bindings &&
+         CommandsInfo::GetActionCommand(extension);
+}
+
+void CommandService::UpdateKeybindings(const Extension* extension) {
+  if (GetExtensionInEnabledOrDisabledExtensions(extension->id())) {
     RemoveRelinquishedKeybindings(extension);
+  }
   AssignKeybindings(extension);
   UpdateExtensionSuggestedCommandPrefs(extension);
   RemoveDefunctExtensionSuggestedCommandPrefs(extension);
@@ -364,9 +385,19 @@ void CommandService::RemoveRelinquishedKeybindings(const Extension* extension) {
       return;
     }
 
-    if (IsCommandShortcutUserModified(extension,
-                                      existing_command.command_name())) {
-      // Don't relinquish user-modified shortcuts.
+    const std::string& existing_command_name = existing_command.command_name();
+    bool is_shortcut_user_modified =
+        IsCommandShortcutUserModified(extension, existing_command_name);
+    bool is_upgrade_from_mv2_to_mv3 =
+        IsUpgradeFromMV2ToMV3(extension, existing_command_name);
+    if (is_shortcut_user_modified && is_upgrade_from_mv2_to_mv3) {
+      // TODO(jlulejian): Could this be an out param to IsUpgradeFromMV2ToMV3?
+      const Command* action_command = CommandsInfo::GetActionCommand(extension);
+      AddKeybindingPref(existing_command.accelerator(), extension->id(),
+                        action_command->command_name(), true,
+                        action_command->global());
+    } else if (is_shortcut_user_modified) {
+      // Don't relinquish user-modified shortcuts otherwise.
       return;
     }
 
@@ -397,7 +428,7 @@ void CommandService::RemoveRelinquishedKeybindings(const Extension* extension) {
     if (!should_relinquish)
       return;
 
-    RemoveKeybindingPrefs(extension->id(), existing_command.command_name());
+    RemoveKeybindingPrefs(extension->id(), existing_command_name);
   };
 
   // TODO(https://crbug.com/1067130): Extensions shouldn't be able to specify
@@ -657,10 +688,11 @@ bool CommandService::GetExtensionActionCommand(const std::string& extension_id,
                                                QueryType query_type,
                                                Command* command,
                                                bool* active) const {
-  const ExtensionSet& extensions =
-      ExtensionRegistry::Get(profile_)->enabled_extensions();
-  const Extension* extension = extensions.GetByID(extension_id);
-  CHECK(extension);
+  const Extension* extension =
+      GetExtensionInEnabledOrDisabledExtensions(extension_id);
+  if (!extension) {
+    return false;
+  }
 
   if (active)
     *active = false;

@@ -1,0 +1,11 @@
+{
+  "name": "A page action command to test if upgrading from MV2 to MV3 succeeds. (MV2)",
+  "version": "1.0",
+  "manifest_version": 2,
+  "commands": {
+    "_execute_page_action": {
+      "suggested_key": "Alt+N"
+    }
+  },
+  "page_action": {}
+}

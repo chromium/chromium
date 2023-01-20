@@ -1,0 +1,11 @@
+{
+  "name": "An action command (unmodified suggested_key) to test if upgrading from MV2 to MV3 succeeds. (MV3)",
+  "version": "1.1",
+  "manifest_version": 3,
+  "commands": {
+    "_execute_action": {
+      "suggested_key": "Alt+N"
+    }
+  },
+  "action": {}
+}

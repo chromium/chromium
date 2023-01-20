@@ -167,6 +167,14 @@ class CommandService : public BrowserContextKeyedAPI,
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Retrieves an extension with `extension_id` if it is enabled or disabled.
+  const Extension* GetExtensionInEnabledOrDisabledExtensions(
+      const ExtensionId& extension_id) const;
+
+  // True if we are upgrading the extension from MV2->MV3.
+  bool IsUpgradeFromMV2ToMV3(const Extension* extension,
+                             const std::string& existing_command_name) const;
+
   void UpdateKeybindingsForTest(const Extension* extension) {
     UpdateKeybindings(extension);
   }
@@ -197,7 +205,9 @@ class CommandService : public BrowserContextKeyedAPI,
   void UpdateKeybindings(const Extension* extension);
 
   // On update, removes keybindings that the extension previously suggested but
-  // now no longer does, as long as the user has not modified them.
+  // now no longer does, as long as the user has not modified them. If a user
+  // has modified an action command, transfer it to the new action command if
+  // we're upgrading (MV2->MV3) before relinquishing.
   void RemoveRelinquishedKeybindings(const Extension* extension);
 
   // Assigns keybindings that the extension suggests, as long as they are not
