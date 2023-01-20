@@ -6306,6 +6306,25 @@
             ]
         }
     ],
+    "InnerHTMLParserFastpath": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InnerHTMLParserFastpath"
+                    ]
+                }
+            ]
+        }
+    ],
     "InstallAndroidUnwindDfm": [
         {
             "platforms": [
