@@ -415,20 +415,10 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   device_->GetImmediateContext(&device_context_);
 
-  HRESULT hr;
-
   // TODO(liberato): Handle cleanup better.  Also consider being less chatty in
   // the logs, since this will fall back.
 
-  ComD3D11Multithread multi_threaded;
-  hr = device_->QueryInterface(IID_PPV_ARGS(&multi_threaded));
-
-  if (FAILED(hr))
-    return NotifyError({D3D11Status::Codes::kQueryID3D11MultithreadFailed, hr});
-
-  multi_threaded->SetMultithreadProtected(TRUE);
-
-  hr = device_.As(&video_device_);
+  auto hr = device_.As(&video_device_);
   if (FAILED(hr))
     return NotifyError({D3D11Status::Codes::kFailedToGetVideoDevice, hr});
 
