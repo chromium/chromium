@@ -180,7 +180,7 @@ views::Button* SideSearchBrowserTest::GetSidePanelButtonFor(Browser* browser) {
 void SideSearchBrowserTest::TestSidePanelOpenEntrypointState(Browser* browser) {
   // If the side panel is visible and DSE support is enabled then the
   // entrypoint should be hidden. Otherwise the entrypoint should be visible.
-  if (side_search::IsDSESupportEnabled(browser->profile())) {
+  if (IsSideSearchEnabled(browser->profile())) {
     EXPECT_FALSE(GetSideSearchButtonFor(browser)->GetVisible());
   } else {
     EXPECT_TRUE(GetSideSearchButtonFor(browser)->GetVisible());

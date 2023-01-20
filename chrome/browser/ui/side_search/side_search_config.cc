@@ -105,13 +105,6 @@ void ApplyGoogleSearchConfiguration(SideSearchConfig& config) {
 }  // namespace
 
 SideSearchConfig::SideSearchConfig(Profile* profile) : profile_(profile) {
-  // Only allow ChromeOS to toggle between DSE and non-DSE configurations.
-#if BUILDFLAG(IS_CHROMEOS)
-  if (!side_search::IsDSESupportEnabled(profile_)) {
-    ApplyGoogleSearchConfiguration(*this);
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
   // `template_url_service` may be null in tests.
   if (auto* template_url_service =
           TemplateURLServiceFactory::GetForProfile(profile_)) {

@@ -296,7 +296,7 @@ void ToolbarView::Init() {
   // The side search button (if enabled) should sit between the location bar and
   // the other navigation buttons.
   if (browser_view_->side_search_controller() &&
-      !side_search::IsDSESupportEnabled(browser_->profile())) {
+      !IsSideSearchEnabled(browser_->profile())) {
     left_side_panel_button_ = AddChildView(
         browser_view_->side_search_controller()->CreateToolbarButton());
   }

@@ -42,10 +42,6 @@ void SetSideSearchTabStateFromRestoreData(
 // side search feature.
 bool IsSidePanelWebContents(content::WebContents* web_contents);
 
-// Returns true if side search with DSE support for participating search engines
-// is enabled.
-bool IsDSESupportEnabled(const Profile* profile);
-
 // Returns true if side search is enabled and is supported for `browser`.
 bool IsEnabledForBrowser(const Browser* browser);
 

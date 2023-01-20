@@ -297,8 +297,7 @@ void LocationBarView::Init() {
     // icons and determine a way to handle simultaneous icon animations.
     params.types_enabled.push_back(PageActionIconType::kPriceTracking);
 
-    if (side_search::IsDSESupportEnabled(profile_) &&
-        side_search::IsEnabledForBrowser(browser_)) {
+    if (side_search::IsEnabledForBrowser(browser_)) {
       params.types_enabled.push_back(PageActionIconType::kSideSearch);
     }
 
