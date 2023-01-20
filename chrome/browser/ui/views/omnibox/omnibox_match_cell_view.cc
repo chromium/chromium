@@ -254,6 +254,9 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
   };
   if (match.type == AutocompleteMatchType::CALCULATOR) {
     apply_vector_icon(omnibox::kAnswerCalculatorIcon);
+    if (OmniboxFieldTrial::IsUniformRowHeightEnabled()) {
+      separator_view_->SetSize(gfx::Size());
+    }
   } else if (!has_image_) {
     answer_image_view_->SetImage(gfx::ImageSkia());
     answer_image_view_->SetSize(gfx::Size());

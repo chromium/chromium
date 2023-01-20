@@ -247,4 +247,8 @@
   <message name="IDS_OMNIBOX_TAB_SEARCH_NO_RESULTS_FOUND" desc = "The string displayed as the first row in the Omnibox when no results are found in Tab Search mode.">
     No results found
   </message>
+
+  <message name="IDS_OMNIBOX_ONE_LINE_CALCULATOR_SUGGESTION_TEMPLATE" desc = "The string displayed when a calculator answer is suggested.">
+    <ph name="EXPRESSION">$1</ph> = <ph name="ANSWER">$2</ph>
+  </message>
 </grit-part>

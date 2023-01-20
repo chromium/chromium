@@ -31,6 +31,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/url_prefix.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/url_formatter/url_formatter.h"
 #include "net/http/http_response_headers.h"
@@ -38,6 +39,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
 #include "ui/base/device_form_factor.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"
 
 namespace {
@@ -785,8 +787,16 @@ bool SearchSuggestionParser::ParseSuggestResults(
             continue;
         }
         if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
-          annotation = has_equals_prefix ? suggestion : match_contents;
-          match_contents = query;
+          if (OmniboxFieldTrial::IsUniformRowHeightEnabled()) {
+            // If calculator results are going to be displayed on 1 line,
+            // keep everything in the match contents
+            match_contents = l10n_util::GetStringFUTF16(
+                IDS_OMNIBOX_ONE_LINE_CALCULATOR_SUGGESTION_TEMPLATE, query,
+                suggestion);
+          } else {
+            annotation = has_equals_prefix ? suggestion : match_contents;
+            match_contents = query;
+          }
         }
       }
 
