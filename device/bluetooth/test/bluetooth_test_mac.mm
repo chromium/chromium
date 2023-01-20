@@ -58,7 +58,7 @@ scoped_nsobject<NSDictionary> CreateAdvertisementData(
     NSNumber* tx_power) {
   NSMutableDictionary* advertisement_data(
       [NSMutableDictionary dictionaryWithDictionary:@{
-        CBAdvertisementDataIsConnectable : @(YES)
+        CBAdvertisementDataIsConnectable : @YES
       }]);
 
   if (name) {

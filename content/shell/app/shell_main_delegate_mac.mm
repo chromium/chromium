@@ -32,9 +32,11 @@ void EnsureCorrectResolutionSettings() {
           initWithContentsOfFile:base::mac::FilePathToNSString(info_plist)]);
 
   bool running_web_tests = switches::IsRunWebTestsSwitchPresent();
+  NSNumber* high_resolution_capable_from_info_dict =
+      [info_dict objectForKey:kHighResolutionCapable];
   bool not_high_resolution_capable =
-      [info_dict objectForKey:kHighResolutionCapable] &&
-      [[info_dict objectForKey:kHighResolutionCapable] isEqualToNumber:@(NO)];
+      high_resolution_capable_from_info_dict &&
+      !high_resolution_capable_from_info_dict.boolValue;
   if (running_web_tests == not_high_resolution_capable)
     return;
 

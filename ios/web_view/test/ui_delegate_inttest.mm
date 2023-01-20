@@ -101,8 +101,8 @@ TEST_F(UIDelegateTest, RunJavaScriptConfirmPanel) {
 
   ASSERT_TRUE(test::LoadUrl(web_view_, GetEchoURL()));
   NSError* error = nil;
-  EXPECT_NSEQ(@(YES), test::EvaluateJavaScript(web_view_, @"confirm('message')",
-                                               &error));
+  EXPECT_TRUE([test::EvaluateJavaScript(web_view_, @"confirm('message')",
+                                        &error) boolValue]);
   EXPECT_FALSE(error);
 
   [(id)mock_delegate_ verify];

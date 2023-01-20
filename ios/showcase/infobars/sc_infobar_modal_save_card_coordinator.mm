@@ -110,8 +110,8 @@ class GURL;
     kExpirationMonthPrefKey : @"09",
     kExpirationYearPrefKey : @"2023",
     kLegalMessagesPrefKey : [NSMutableArray arrayWithObject:message],
-    kCurrentCardSavedPrefKey : @(NO),
-    kSupportsEditingPrefKey : @(YES)
+    kCurrentCardSavedPrefKey : @NO,
+    kSupportsEditingPrefKey : @YES
   };
   [self.modalConsumer setupModalViewControllerWithPrefs:prefs];
 

@@ -51,7 +51,7 @@ bool g_needs_set_up_for_test_case = true;
   // animations are tracked, and these sometimes cause flake. Set to YES so
   // tracking *should not* happen for hidden animations.
   [[GREYConfiguration sharedConfiguration]
-          setValue:@(YES)
+          setValue:@YES
       forConfigKey:kGREYConfigKeyIgnoreHiddenAnimations];
 }
 

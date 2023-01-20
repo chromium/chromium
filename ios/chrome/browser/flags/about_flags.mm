@@ -1381,11 +1381,11 @@ NSMutableDictionary* CreateExperimentalTestingPolicies() {
   switch ([defaults integerForKey:metrics_reporting_key]) {
     case 1:
       // Metrics reporting forced.
-      [testing_policies setValue:@(YES) forKey:metrics_reporting_key];
+      [testing_policies setValue:@YES forKey:metrics_reporting_key];
       break;
     case 2:
       // Metrics reporting disabled.
-      [testing_policies setValue:@(NO) forKey:metrics_reporting_key];
+      [testing_policies setValue:@NO forKey:metrics_reporting_key];
       break;
     default:
       // Metrics reporting not managed.

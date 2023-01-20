@@ -53,12 +53,10 @@ char kAssociatedProtocolNameKey;
 
 - (NSMethodSignature*)methodSignatureForSelector:(SEL)sel {
   for (Protocol* protocol in _protocols) {
-    for (NSNumber* required in @[ @(YES), @(NO) ]) {
-      struct objc_method_description method =
-          protocol_getMethodDescription(protocol,
-                                        sel,
-                                        required.boolValue,
-                                        YES /* an instance method */);
+    const BOOL kYesAndNoArray[] = {YES, NO};
+    for (BOOL required : kYesAndNoArray) {
+      struct objc_method_description method = protocol_getMethodDescription(
+          protocol, sel, required, YES /* an instance method */);
       if (method.name != NULL) {
         NSMethodSignature* signature =
             [NSMethodSignature signatureWithObjCTypes:method.types];

@@ -59,7 +59,7 @@ void CreateSentinelFileAsync(const base::FilePath sentinel_path,
     }
     NSURL* url = [NSURL fileURLWithPath:path_string];
     NSError* error = nil;
-    [url setResourceValue:@(YES)
+    [url setResourceValue:@YES
                    forKey:NSURLIsExcludedFromBackupKey
                     error:&error];
     DLOG_IF(ERROR, error != nil) << "Error setting excluded backup key, error: "
