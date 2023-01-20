@@ -36,6 +36,10 @@ void SyncRecordModelTypeMemoryHistogram(ModelType model_type, size_t bytes);
 // entities.
 void SyncRecordModelTypeCountHistogram(ModelType model_type, size_t count);
 
+// Records sync entity size `bytes` in `model_type` related histogram for
+// distribution of entity sizes.
+void SyncRecordModelTypeEntitySizeHistogram(ModelType model_type, size_t bytes);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_DATA_TYPE_HISTOGRAM_H_

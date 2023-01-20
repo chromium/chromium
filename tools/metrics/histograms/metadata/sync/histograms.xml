@@ -481,6 +481,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Sync.EntitySizeOnCommit.{SyncModelType}" units="bytes"
+    expires_after="2023-11-30">
+  <owner>ankushkush@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Size of individual sync entities in bytes. Recorded right before an entity
+    is committed to the server.
+  </summary>
+  <token key="SyncModelType" variants="SyncModelType"/>
+</histogram>
+
 <histogram name="Sync.FCMInstanceIdTokenRetrievalStatus"
     enum="InstanceIDResult" expires_after="2023-06-18">
   <owner>rushans@google.com</owner>

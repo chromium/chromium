@@ -11,6 +11,7 @@
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
@@ -101,6 +102,10 @@ void CommitContributionImpl::AddToCommitMessage(
     // sending password in plain text.
     CHECK(
         !sync_entity->specifics().password().has_client_only_encrypted_data());
+
+    // Record the size of the sync entity being committed.
+    syncer::SyncRecordModelTypeEntitySizeHistogram(
+        type_, sync_entity->specifics().ByteSizeLong());
 
     if (commit_request->entity->is_deleted()) {
       RecordEntityChangeMetrics(type_, ModelTypeEntityChange::kLocalDeletion);
