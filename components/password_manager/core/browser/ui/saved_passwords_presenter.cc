@@ -392,17 +392,27 @@ std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetSavedCredentials()
     const {
   std::vector<CredentialUIEntry> credentials;
 
-  auto it = sort_key_to_password_forms_.begin();
-  while (it != sort_key_to_password_forms_.end()) {
-    auto current_key = it->first;
-    // Aggregate all passwords for the current key.
-    std::vector<PasswordForm> current_passwords_group;
-    while (it != sort_key_to_password_forms_.end() &&
-           it->first == current_key) {
-      current_passwords_group.push_back(it->second);
-      ++it;
+  if (!base::FeatureList::IsEnabled(features::kPasswordsGrouping)) {
+    auto it = sort_key_to_password_forms_.begin();
+    while (it != sort_key_to_password_forms_.end()) {
+      auto current_key = it->first;
+      // Aggregate all passwords for the current key.
+      std::vector<PasswordForm> current_passwords_group;
+      while (it != sort_key_to_password_forms_.end() &&
+             it->first == current_key) {
+        current_passwords_group.push_back(it->second);
+        ++it;
+      }
+      credentials.emplace_back(current_passwords_group);
     }
-    credentials.emplace_back(current_passwords_group);
+    return credentials;
+  }
+
+  for (const auto& [group_id, affiliated_credentials] :
+       password_grouping_info_.map_group_id_to_forms) {
+    for (const auto& [username_password_key, forms] : affiliated_credentials) {
+      credentials.emplace_back(forms);
+    }
   }
   return credentials;
 }
