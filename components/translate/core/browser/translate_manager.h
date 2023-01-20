@@ -355,11 +355,6 @@ class TranslateManager {
 
   std::unique_ptr<metrics::TranslateEventProto> translate_event_;
 
-  // Language code of current page. Code is stored when translation is disabled
-  // by Autofill Assistant. This code is later used to translate page when
-  // Autofill Assistant finishes run.
-  std::string page_language_code_;
-
   base::WeakPtrFactory<TranslateManager> weak_method_factory_{this};
 
   // By default, don't offer to translate in builds lacking an API key. For
