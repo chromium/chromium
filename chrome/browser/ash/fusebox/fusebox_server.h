@@ -84,9 +84,15 @@ class Server {
   // library functions of the same name. For example, the Stat method here
   // corresponds to the standard stat function described by "man 2 stat".
   //
-  // These methods take a fs_url_as_string argument, roughly equivalent to a
-  // POSIX filename that identifies a file or directory, but are a
-  // storage::FileSystemURL (in string form).
+  // These methods all take a protobuf argument and return (via a callback)
+  // another protobuf. Many of the request protos have a string-typed
+  // file_system_url field, roughly equivalent to a POSIX filename for a file
+  // or directory. These used to be full storage::FileSystemURL strings (e.g.
+  // "filesystem:chrome://file-manager/external/foo/com.bar/baz/p/q.txt") but
+  // today look like "subdir/p/q.txt". The PrefixMap is used to resolve the
+  // "subdir" prefix to recreate the storage::FileSystemURL.
+  //
+  // See system_api/dbus/fusebox/fusebox.proto for more commentary.
 
   // Close2 closes a virtual file opened by Open2.
   using Close2Callback =
@@ -113,16 +119,7 @@ class Server {
       base::OnceCallback<void(const Read2ResponseProto& response)>;
   void Read2(const Read2RequestProto& request, Read2Callback callback);
 
-  // ReadDir2 lists the directory's children. The results will be sent back in
-  // the responses of one or more request-response RPC pairs. The first request
-  // and last response have a zero cookie value. The remaining RPCs will have
-  // the same server-chosen, non-zero cookie value.
-  //
-  // The request's cancel_error_code is typically zero but if not, it is echoed
-  // in the response (which becomes the final response) and indicates that the
-  // D-Bus client is cancelling the overall "read a directory" operation.
-  //
-  // TODO(crbug.com/1363861): document the D-Bus protocol separately.
+  // ReadDir2 lists the directory's children.
   using ReadDir2Callback =
       base::OnceCallback<void(const ReadDir2ResponseProto& response)>;
   void ReadDir2(const ReadDir2RequestProto& request, ReadDir2Callback callback);
