@@ -18,6 +18,7 @@ class MockVideoCaptureDeviceClient : public VideoCaptureDevice::Client {
   MockVideoCaptureDeviceClient();
   ~MockVideoCaptureDeviceClient() override;
 
+  MOCK_METHOD0(OnCaptureConfigurationChanged, void(void));
   MOCK_METHOD9(OnIncomingCapturedData,
                void(const uint8_t* data,
                     int length,

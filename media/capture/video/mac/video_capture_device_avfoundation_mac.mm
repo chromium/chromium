@@ -243,6 +243,9 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     [self stopPhotoOutput];
     if (_captureDeviceInput) {
       DCHECK(_captureDevice);
+      if (@available(macOS 12.0, *)) {
+        [_captureDevice removeObserver:self forKeyPath:@"portraitEffectActive"];
+      }
       [_captureSession stopRunning];
       [_captureSession removeInput:_captureDeviceInput];
       _captureDeviceInput.reset();
@@ -286,6 +289,13 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
   [_captureVideoDataOutput setSampleBufferDelegate:self queue:_sampleQueue];
   [_captureSession addOutput:_captureVideoDataOutput];
+
+  if (@available(macOS 12.0, *)) {
+    [_captureDevice addObserver:self
+                     forKeyPath:@"portraitEffectActive"
+                        options:0
+                        context:_captureDevice.get()];
+  }
 
   return YES;
 }
@@ -1154,7 +1164,12 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
 - (void)setIsPortraitEffectActiveForTesting:
     (bool)isPortraitEffectActiveForTesting {
+  if (_isPortraitEffectActiveForTesting.has_value() &&
+      _isPortraitEffectActiveForTesting == isPortraitEffectActiveForTesting) {
+    return;
+  }
   _isPortraitEffectActiveForTesting = isPortraitEffectActiveForTesting;
+  [self captureConfigurationChanged];
 }
 
 - (bool)isPortraitEffectActive {
@@ -1166,6 +1181,24 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     return [_captureDevice isPortraitEffectActive];
   }
   return false;
+}
+
+- (void)observeValueForKeyPath:(NSString*)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary*)change
+                       context:(void*)context {
+  if (@available(macOS 12.0, *)) {
+    if ([keyPath isEqual:@"portraitEffectActive"]) {
+      [self captureConfigurationChanged];
+    }
+  }
+}
+
+- (void)captureConfigurationChanged {
+  base::AutoLock lock(_lock);
+  if (_frameReceiver) {
+    _frameReceiver->ReceiveCaptureConfigurationChanged();
+  }
 }
 
 - (void)onVideoError:(NSNotification*)errorNotification {

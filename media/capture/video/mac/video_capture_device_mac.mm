@@ -887,6 +887,20 @@ void VideoCaptureDeviceMac::LogMessage(const std::string& message) {
     client_->OnLog(message);
 }
 
+void VideoCaptureDeviceMac::ReceiveCaptureConfigurationChanged() {
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&VideoCaptureDeviceMac::OnCaptureConfigurationChanged,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void VideoCaptureDeviceMac::OnCaptureConfigurationChanged() {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  if (client_) {
+    client_->OnCaptureConfigurationChanged();
+  }
+}
+
 void VideoCaptureDeviceMac::SetIsPortraitEffectSupportedForTesting(
     bool isPortraitEffectSupported) {
   [capture_device_

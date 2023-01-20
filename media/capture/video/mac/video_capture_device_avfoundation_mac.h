@@ -58,6 +58,9 @@ class CAPTURE_EXPORT VideoCaptureDeviceAVFoundationFrameReceiver {
   virtual void ReceiveError(VideoCaptureError error,
                             const base::Location& from_here,
                             const std::string& reason) = 0;
+
+  // Forwarder to VideoCaptureDevice::Client::OnCaptureConfigurationChanged().
+  virtual void ReceiveCaptureConfigurationChanged() = 0;
 };
 
 // When this feature is enabled, the capturer can be configured using

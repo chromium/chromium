@@ -49,6 +49,8 @@ class MockVideoCaptureDeviceAVFoundationFrameReceiver
                const base::Location& from_here,
                const std::string& reason),
               (override));
+
+  MOCK_METHOD(void, ReceiveCaptureConfigurationChanged, (), (override));
 };
 
 }  // namespace media

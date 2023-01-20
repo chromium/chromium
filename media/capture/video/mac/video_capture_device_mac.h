@@ -96,6 +96,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceMac
   void ReceiveError(VideoCaptureError error,
                     const base::Location& from_here,
                     const std::string& reason) override;
+  void ReceiveCaptureConfigurationChanged() override;
 
   // Forwarder to VideoCaptureDevice::Client::OnLog().
   void LogMessage(const std::string& message);
@@ -115,6 +116,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceMac
                      const base::Location& from_here,
                      const std::string& reason);
   bool UpdateCaptureResolution();
+  void OnCaptureConfigurationChanged();
 
   // Flag indicating the internal state.
   enum InternalState { kNotInitialized, kIdle, kCapturing, kError };

@@ -12,7 +12,9 @@
 
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
+#import "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -149,6 +151,7 @@ class MockImageCaptureClient
 class VideoCaptureDeviceMacWithImageCaptureTest : public ::testing::Test {
  public:
   void RunCheckBackgroundBlurTestCase();
+  void RunCaptureConfigurationChangeTestCase();
 
  protected:
   VideoCaptureDeviceMacWithImageCaptureTest()
@@ -226,6 +229,50 @@ void VideoCaptureDeviceMacWithImageCaptureTest::
     EXPECT_EQ(photo_state->background_blur_mode,
               mojom::BackgroundBlurMode::BLUR);
   }
+}
+
+TEST_F(VideoCaptureDeviceMacWithImageCaptureTest,
+       CheckCaptureConfigurationChange) {
+  RunTestCase(base::BindOnce(&VideoCaptureDeviceMacWithImageCaptureTest::
+                                 RunCaptureConfigurationChangeTestCase,
+                             base::Unretained(this)));
+}
+
+void VideoCaptureDeviceMacWithImageCaptureTest::
+    RunCaptureConfigurationChangeTestCase() {
+  auto* device = GetFirstAvailableDevice();
+  if (!device) {
+    DVLOG(1) << "No camera available. Exiting test.";
+    return;
+  }
+
+  VideoCaptureParams arbitrary_params;
+  arbitrary_params.requested_format.frame_size = gfx::Size(1280, 720);
+  arbitrary_params.requested_format.frame_rate = 30.0f;
+  arbitrary_params.requested_format.pixel_format = PIXEL_FORMAT_I420;
+  auto client = std::make_unique<NiceMockVideoCaptureDeviceClient>();
+  MockVideoCaptureDeviceClient* client_ptr = client.get();
+
+  device->AllocateAndStart(arbitrary_params, std::move(client));
+
+  {
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    EXPECT_CALL(*client_ptr, OnCaptureConfigurationChanged())
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+    device->SetIsPortraitEffectActiveForTesting(false);
+    run_loop.Run();
+  }
+  {
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    EXPECT_CALL(*client_ptr, OnCaptureConfigurationChanged())
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+    device->SetIsPortraitEffectActiveForTesting(true);
+    run_loop.Run();
+  }
+
+  device->StopAndDeAllocate();
 }
 
 }  // namespace media
