@@ -108,12 +108,6 @@ class Arrow : public Button {
     canvas->ClipRect(GetContentsBounds());
     gfx::Rect arrow_bounds = GetLocalBounds();
     arrow_bounds.ClampToCenteredSize(ComboboxArrowSize());
-    if (features::IsChromeRefresh2023()) {
-      PaintComboboxArrowBackground(
-          GetColorProvider()->GetColor(ui::kColorAlertHighSeverity), canvas,
-          gfx::PointF(arrow_bounds.x() - kComboboxArrowPaddingWidth,
-                      (height() - kComboboxArrowContainerWidth) / 2.0f));
-    }
     // Make sure the arrow use the same color as the text in the combobox.
     PaintComboboxArrow(style::GetColor(*this, style::CONTEXT_TEXTFIELD,
                                        GetEnabled() ? style::STYLE_PRIMARY
@@ -367,8 +361,12 @@ EditableCombobox::EditableCombobox(
                                    : ui::TEXT_INPUT_TYPE_TEXT);
   AddChildView(textfield_.get());
   if (display_arrow) {
-    textfield_->SetExtraInsets(gfx::Insets::TLBR(
-        0, 0, 0, kComboboxArrowContainerWidth - kComboboxArrowPaddingWidth));
+    textfield_->SetExtraInsets(
+        gfx::Insets::TLBR(0, 0, 0,
+                          GetComboboxArrowContainerWidthAndMargins() -
+                              (features::IsChromeRefresh2023()
+                                   ? kComboboxArrowPaddingWidthChromeRefresh2023
+                                   : kComboboxArrowPaddingWidth)));
     arrow_ = AddChildView(std::make_unique<Arrow>(base::BindRepeating(
         &EditableCombobox::ArrowButtonPressed, base::Unretained(this))));
   }
@@ -431,7 +429,7 @@ void EditableCombobox::Layout() {
   if (arrow_) {
     gfx::Rect arrow_bounds(
         /*x=*/width() - GetComboboxArrowContainerWidthAndMargins(),
-        /*y=*/0, kComboboxArrowContainerWidth, height());
+        /*y=*/0, GetComboboxArrowContainerWidth(), height());
     arrow_->SetBoundsRect(arrow_bounds);
   }
 }

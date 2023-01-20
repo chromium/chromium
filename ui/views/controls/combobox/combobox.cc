@@ -145,12 +145,7 @@ Combobox::Combobox(ui::ComboboxModel* model, int text_context, int text_style)
   SetFocusBehavior(FocusBehavior::ALWAYS);
 #endif
 
-  if (features::IsChromeRefresh2023()) {
-    // TODO(crbug.com/1392549): Replace placeholder color id.
-    SetBackgroundColorId(ui::kColorSubtleAccent);
-  } else {
-    SetBackgroundColorId(ui::kColorTextfieldBackground);
-  }
+  SetBackgroundColorId(ui::kColorTextfieldBackground);
   UpdateBorder();
 
   arrow_button_ =
@@ -601,16 +596,10 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
   // ChromeRefresh2023.
   if (should_show_arrow_) {
     gfx::Rect arrow_bounds(width() - GetComboboxArrowContainerWidthAndMargins(),
-                           0, kComboboxArrowContainerWidth, height());
+                           0, GetComboboxArrowContainerWidth(), height());
     arrow_bounds.ClampToCenteredSize(ComboboxArrowSize());
     AdjustBoundsForRTLUI(&arrow_bounds);
 
-    if (features::IsChromeRefresh2023()) {
-      PaintComboboxArrowBackground(
-          GetColorProvider()->GetColor(ui::kColorAlertHighSeverity), canvas,
-          gfx::PointF(width() - GetComboboxArrowContainerWidthAndMargins(),
-                      (height() - kComboboxArrowContainerWidth) / 2.0f));
-    }
     PaintComboboxArrow(text_color, arrow_bounds, canvas);
   }
 }

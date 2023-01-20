@@ -117,7 +117,7 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_TABLE_CELL_HORIZONTAL_MARGIN:
       return 12;
     case DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING:
-      return 8;
+      return features::IsChromeRefresh2023() ? 10 : 8;
     case DISTANCE_UNRELATED_CONTROL_VERTICAL:
       return 16;
     case VIEWS_DISTANCE_END:

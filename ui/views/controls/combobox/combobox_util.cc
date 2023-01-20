@@ -16,36 +16,23 @@
 namespace views {
 
 const int kComboboxArrowPaddingWidth = 8;
-const int kComboboxArrowContainerWidth =
-    ComboboxArrowSize().width() + kComboboxArrowPaddingWidth * 2;
+const int kComboboxArrowPaddingWidthChromeRefresh2023 = 4;
 
 int GetComboboxArrowContainerWidthAndMargins() {
-  // Since the container will be visible, we need some extra margins for the
-  // ChromeRefresh case.
-  // TODO(crbug.com/1392549): Replace placeholder values and potentially combine
-  // use cases with INSETS_VECTOR_IMAGE_BUTTON.
-  gfx::Insets margins_chromerefresh2023 =
-      LayoutProvider::Get()->GetInsetsMetric(INSETS_VECTOR_IMAGE_BUTTON);
+  // For ChromeRefresh2023, add extra margins between combobox arrow container
+  // and edge of the combobox.
   return features::IsChromeRefresh2023()
-             ? kComboboxArrowContainerWidth + margins_chromerefresh2023.left() +
-                   margins_chromerefresh2023.right()
-             : kComboboxArrowContainerWidth;
+             ? GetComboboxArrowContainerWidth() +
+                   LayoutProvider::Get()->GetDistanceMetric(
+                       DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING)
+             : GetComboboxArrowContainerWidth();
 }
 
-void PaintComboboxArrowBackground(SkColor color,
-                                  gfx::Canvas* canvas,
-                                  gfx::PointF origin) {
-  cc::PaintFlags flags;
-  gfx::RectF background_bounds(
-      origin,
-      gfx::SizeF(kComboboxArrowContainerWidth, kComboboxArrowContainerWidth));
-  flags.setColor(color);
-  // TODO(crbug.com/1392549): Replace placeholder value for corner radius.
-  int background_corner_radius_chromerefresh2023 =
-      views::LayoutProvider::Get()->GetCornerRadiusMetric(
-          views::Emphasis::kLow);
-  canvas->DrawRoundRect(background_bounds,
-                        background_corner_radius_chromerefresh2023, flags);
+int GetComboboxArrowContainerWidth() {
+  int padding = features::IsChromeRefresh2023()
+                    ? kComboboxArrowPaddingWidthChromeRefresh2023 * 2
+                    : kComboboxArrowPaddingWidth * 2;
+  return ComboboxArrowSize().width() + padding;
 }
 
 void PaintComboboxArrow(SkColor color,
