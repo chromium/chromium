@@ -247,16 +247,5 @@ body {
     </div>
 </div>
 
-<script>
-// All the vertical-lr cases are off by 4px in the x direction. See http://webkit.org/b/71193.
-// Fix it up if !LayoutNG.
-if (window.internals && !internals.runtimeFlags.layoutNGEnabled) {
-  for (let div of document.querySelectorAll('.vertical-lr > div')) {
-    div.style.marginLeft = '-4px';
-    div.style.marginRight = '4px';
-  }
-}
-</script>
-
 </body>
 </html>

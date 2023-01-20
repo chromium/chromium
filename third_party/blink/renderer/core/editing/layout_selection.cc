@@ -924,8 +924,6 @@ static NewPaintRangeAndSelectedNodes CalcSelectionRangeAndSetSelectionState(
 
   SelectionPaintRange* new_range = MakeGarbageCollected<SelectionPaintRange>(
       *start_node, start_offset, *end_node, end_offset);
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return {new_range, std::move(selected_objects)};
   return {ComputeNewPaintRange(*new_range), std::move(selected_objects)};
 }
 

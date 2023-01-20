@@ -732,7 +732,6 @@
     {
         // http://crbug.com/1276900
         name: "CSSInitialLetter",
-        depends_on: ["LayoutNG"],
         status: "stable",
         base_feature: "CSSInitialLetter",
     },
@@ -965,7 +964,6 @@
     {
       // crbug.com/1259085
       name: "DeferredShaping",
-      depends_on: ["LayoutNG"],
       status: "test",
       base_feature: "DeferredShaping",
     },
@@ -1431,7 +1429,6 @@
     },
     {
       name: "FormattedText",
-      depends_on: ["LayoutNG"],
       status: "experimental",
     },
     {
@@ -1630,17 +1627,6 @@
       base_feature: "LayoutMediaNGContainer",
     },
     {
-      // LayoutNG has been enabled in M76, but we still keep this flag for
-      // testing. See web_tests/FlagExpectations/disable-layout-ng for more
-      // details about running web tests with LayoutNG disabled. This flag also
-      // provides a convenient way for testing legacy layout code path in blink
-      // unit tests.
-      name: "LayoutNG",
-      implied_by: ["BidiCaretAffinity"],
-      status: "stable",
-      base_feature: "LayoutNG",
-    },
-    {
       // A kill-switch for a fix of crbug.com/1366268.
       name: "LayoutNGDelayScrollOffsetClamping",
       base_feature: "LayoutNGDelayScrollOffsetClamping",
@@ -1655,7 +1641,6 @@
     },
     {
       name: "LayoutNGPrinting",
-      depends_on: ["LayoutNG"],
       status: "stable",
       base_feature: "LayoutNGPrinting",
     },
@@ -1670,7 +1655,6 @@
     },
     {
       name: "LayoutNGSubgrid",
-      depends_on: ["LayoutNG"],
       status: "test"
     },
     {
@@ -1738,7 +1722,6 @@
     {
       name: "MathMLCore",
       status: "stable",
-      depends_on: ["LayoutNG"],
       base_feature: "MathMLCore",
     },
     {

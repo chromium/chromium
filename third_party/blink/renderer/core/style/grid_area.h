@@ -164,9 +164,7 @@ struct GridSpan {
 
   template <typename T>
   GridSpan(T start_line, T end_line, GridSpanType type) : type_(type) {
-    const int grid_max_tracks = RuntimeEnabledFeatures::LayoutNGEnabled()
-                                    ? kGridMaxTracks
-                                    : kLegacyGridMaxTracks;
+    const int grid_max_tracks = kGridMaxTracks;
     start_line_ =
         ClampTo<int>(start_line, -grid_max_tracks, grid_max_tracks - 1);
     end_line_ = ClampTo<int>(end_line, start_line_ + 1, grid_max_tracks);

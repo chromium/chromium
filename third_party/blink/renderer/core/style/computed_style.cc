@@ -353,15 +353,9 @@ bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
     return true;
   }
 
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    return false;
-  }
-
   // We use LayoutNGTextCombine only for vertical writing mode.
-  if (RuntimeEnabledFeatures::LayoutNGEnabled() &&
-      new_style->HasTextCombine() &&
-      old_style->IsHorizontalWritingMode() !=
-          new_style->IsHorizontalWritingMode()) {
+  if (new_style->HasTextCombine() && old_style->IsHorizontalWritingMode() !=
+                                         new_style->IsHorizontalWritingMode()) {
     DCHECK_EQ(old_style->HasTextCombine(), new_style->HasTextCombine());
     return true;
   }
@@ -2433,8 +2427,7 @@ bool ComputedStyle::ShouldApplyAnyContainment(const Element& element) const {
 }
 
 bool ComputedStyle::CanMatchSizeContainerQueries(const Element& element) const {
-  return RuntimeEnabledFeatures::LayoutNGEnabled() &&
-         IsContainerForSizeContainerQueries() &&
+  return IsContainerForSizeContainerQueries() &&
          !element.ShouldForceLegacyLayout() &&
          (RuntimeEnabledFeatures::LayoutNGPrintingEnabled() ||
           !element.GetDocument().Printing()) &&

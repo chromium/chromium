@@ -1581,7 +1581,6 @@ PhysicalRect LayoutInline::VisualRectInDocument(VisualRectFlags flags) const {
 PhysicalRect LayoutInline::LocalVisualRectIgnoringVisibility() const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
-    DCHECK(RuntimeEnabledFeatures::LayoutNGEnabled());
     return NGFragmentItem::LocalVisualRectFor(*this);
   }
 

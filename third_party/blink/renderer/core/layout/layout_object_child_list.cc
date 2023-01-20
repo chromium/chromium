@@ -106,10 +106,9 @@ LayoutObject* LayoutObjectChildList::RemoveChildNode(
     if (notify_layout_object && old_child->EverHadLayout()) {
       old_child->SetNeedsLayoutAndIntrinsicWidthsRecalc(
           layout_invalidation_reason::kRemovedFromLayout);
-      if ((old_child->IsOutOfFlowPositioned() ||
-           old_child->IsColumnSpanAll()) &&
-          RuntimeEnabledFeatures::LayoutNGEnabled())
+      if (old_child->IsOutOfFlowPositioned() || old_child->IsColumnSpanAll()) {
         old_child->MarkParentForSpannerOrOutOfFlowPositionedChange();
+      }
     }
     InvalidatePaintOnRemoval(*old_child);
   }
@@ -244,9 +243,9 @@ void LayoutObjectChildList::InsertChildNode(LayoutObject* owner,
 
   new_child->SetNeedsLayoutAndIntrinsicWidthsRecalc(
       layout_invalidation_reason::kAddedToLayout);
-  if ((new_child->IsOutOfFlowPositioned() || new_child->IsColumnSpanAll()) &&
-      RuntimeEnabledFeatures::LayoutNGEnabled())
+  if (new_child->IsOutOfFlowPositioned() || new_child->IsColumnSpanAll()) {
     new_child->MarkParentForSpannerOrOutOfFlowPositionedChange();
+  }
   new_child->SetShouldDoFullPaintInvalidation(
       PaintInvalidationReason::kAppeared);
   new_child->AddSubtreePaintPropertyUpdateReason(

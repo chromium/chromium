@@ -1478,21 +1478,21 @@ static bool PrepareOrthogonalWritingModeRootForLayout(LayoutObject& root) {
       root.IsLayoutFlowThread())
     return false;
 
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    // Do not pre-layout objects that are fully managed by LayoutNG; it is not
-    // necessary and may lead to double layouts. We do need to pre-layout
-    // objects whose containing block is a legacy object so that it can
-    // properly compute its intrinsic size.
-    if (IsManagedByLayoutNG(root))
-      return false;
+  // Do not pre-layout objects that are fully managed by LayoutNG; it is not
+  // necessary and may lead to double layouts. We do need to pre-layout objects
+  // whose containing block is a legacy object so that it can properly compute
+  // its intrinsic size.
+  if (IsManagedByLayoutNG(root)) {
+    return false;
+  }
 
-    // If the root is legacy but has |CachedLayoutResult|, its parent is NG,
-    // which called |RunLegacyLayout()|. This parent not only needs to run
-    // pre-layout, but also clearing |NeedsLayout()| without updating
-    // |CachedLayoutResult| is harmful.
-    if (const auto* box = DynamicTo<LayoutBox>(root)) {
-      if (box->GetSingleCachedLayoutResult())
-        return false;
+  // If the root is legacy but has |CachedLayoutResult|, its parent is NG, which
+  // called |RunLegacyLayout()|. This parent not only needs to run pre-layout,
+  // but also clearing |NeedsLayout()| without updating |CachedLayoutResult| is
+  // harmful.
+  if (const auto* box = DynamicTo<LayoutBox>(root)) {
+    if (box->GetSingleCachedLayoutResult()) {
+      return false;
     }
   }
 

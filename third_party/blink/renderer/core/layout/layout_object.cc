@@ -1199,8 +1199,6 @@ LayoutBlockFlow* LayoutObject::FragmentItemsContainer() const {
 
 LayoutBox* LayoutObject::ContainingNGBox() const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return nullptr;
   if (RuntimeEnabledFeatures::LayoutMediaNGContainerEnabled() && Parent() &&
       Parent()->IsMedia())
     return To<LayoutBox>(Parent());
@@ -1387,9 +1385,6 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
 // pay attention whether it should mark its inner context or outer.
 void LayoutObject::SetNeedsCollectInlines() {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-
   if (NeedsCollectInlines())
     return;
 
@@ -1407,9 +1402,6 @@ void LayoutObject::SetNeedsCollectInlines() {
 
 void LayoutObject::SetChildNeedsCollectInlines() {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-
   LayoutObject* object = this;
   do {
     // Should not stop at |LayoutFlowThread| as |CollectInlines()| skips them.
@@ -1631,8 +1623,6 @@ static inline bool NGKeepInvalidatingBeyond(LayoutObject* o) {
   // in this context.
   // There's a similar issue for flow thread objects, as they are invisible to
   // LayoutNG.
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return false;
   if (o->IsLayoutInline() || o->IsText() || o->IsLayoutFlowThread())
     return true;
   return false;
@@ -3078,10 +3068,8 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
     // anchoring on the containing scroller.
     if (old_style->HasOutOfFlowPosition() != style_->HasOutOfFlowPosition()) {
       SetScrollAnchorDisablingStyleChangedOnAncestor();
-      if (RuntimeEnabledFeatures::LayoutNGEnabled())
-        MarkParentForSpannerOrOutOfFlowPositionedChange();
-    } else if (old_style->GetColumnSpan() != style_->GetColumnSpan() &&
-               RuntimeEnabledFeatures::LayoutNGEnabled()) {
+      MarkParentForSpannerOrOutOfFlowPositionedChange();
+    } else if (old_style->GetColumnSpan() != style_->GetColumnSpan()) {
       MarkParentForSpannerOrOutOfFlowPositionedChange();
     }
 

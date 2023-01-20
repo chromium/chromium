@@ -593,9 +593,6 @@ void EnqueueAutofocus(Element& element) {
 // `NGBlockNode::Layout`, then we recalc the skipped descendants during
 // layout-tree building instead.
 bool IsGuaranteedToEnterNGBlockNodeLayout(const LayoutObject& layout_object) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    return false;
-  }
   auto* box = DynamicTo<LayoutBox>(layout_object);
   if (!box) {
     return false;
@@ -3782,10 +3779,8 @@ StyleRecalcChange Element::RecalcOwnStyle(
         old_style->HasChildDependentFlags()) {
       new_style->CopyChildDependentFlagsFrom(*old_style);
     }
-    if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-      if (UpdateForceLegacyLayout(*new_style, old_style.get())) {
-        child_change = child_change.ForceReattachLayoutTree();
-      }
+    if (UpdateForceLegacyLayout(*new_style, old_style.get())) {
+      child_change = child_change.ForceReattachLayoutTree();
     }
     auto* evaluator =
         ComputeContainerQueryEvaluator(*this, old_style.get(), *new_style);
@@ -6743,9 +6738,7 @@ PseudoElement* Element::CreatePseudoElementIfNeeded(
   // that we don't get to RecalcOwnStyle() (regular DOM nodes do get there,
   // since their style isn't calculated directly upon insertion). Need to check
   // now if the element requires legacy layout.
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    pseudo_element->UpdateForceLegacyLayout(*pseudo_style, nullptr);
-  }
+  pseudo_element->UpdateForceLegacyLayout(*pseudo_style, nullptr);
 
   probe::PseudoElementCreated(pseudo_element);
 

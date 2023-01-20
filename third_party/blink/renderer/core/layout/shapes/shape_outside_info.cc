@@ -137,8 +137,6 @@ void ShapeOutsideInfo::SetReferenceBoxLogicalSize(
 
 void ShapeOutsideInfo::SetPercentageResolutionInlineSize(
     LayoutUnit percentage_resolution_inline_size) {
-  DCHECK(RuntimeEnabledFeatures::LayoutNGEnabled());
-
   if (percentage_resolution_inline_size_ == percentage_resolution_inline_size)
     return;
 

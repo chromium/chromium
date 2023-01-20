@@ -2351,7 +2351,6 @@ PhysicalRect LayoutText::PhysicalLinesBoundingBox() const {
 PhysicalRect LayoutText::PhysicalVisualOverflowRect() const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
-    DCHECK(RuntimeEnabledFeatures::LayoutNGEnabled());
     return NGFragmentItem::LocalVisualRectFor(*this);
   }
 
@@ -2468,8 +2467,6 @@ void LayoutText::InvalidateVisualOverflow() {
 
 const NGOffsetMapping* LayoutText::GetNGOffsetMapping() const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return nullptr;
   return NGOffsetMapping::GetFor(this);
 }
 

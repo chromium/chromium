@@ -175,18 +175,13 @@ GridTrackList::GridTrackList(const GridTrackList& other) {
 }
 
 GridTrackList::GridTrackList(const GridTrackSize& default_track_size) {
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    ng_track_list_.AddRepeater({default_track_size});
-  }
-
+  ng_track_list_.AddRepeater({default_track_size});
   legacy_track_list_.push_back(default_track_size);
 }
 
 GridTrackList::GridTrackList(Vector<GridTrackSize, 1>& legacy_tracks)
     : legacy_track_list_(std::move(legacy_tracks)) {
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    ng_track_list_.AddRepeater(legacy_track_list_);
-  }
+  ng_track_list_.AddRepeater(legacy_track_list_);
 }
 
 Vector<GridTrackSize, 1>& GridTrackList::LegacyTrackList() {
@@ -198,16 +193,13 @@ const Vector<GridTrackSize, 1>& GridTrackList::LegacyTrackList() const {
 }
 
 NGGridTrackList& GridTrackList::NGTrackList() {
-  DCHECK(RuntimeEnabledFeatures::LayoutNGEnabled());
   return ng_track_list_;
 }
 const NGGridTrackList& GridTrackList::NGTrackList() const {
-  DCHECK(RuntimeEnabledFeatures::LayoutNGEnabled());
   return ng_track_list_;
 }
 
 void GridTrackList::SetNGGridTrackList(const NGGridTrackList& other) {
-  DCHECK(RuntimeEnabledFeatures::LayoutNGEnabled());
   ng_track_list_ = other;
 }
 
@@ -216,11 +208,7 @@ void GridTrackList::operator=(const GridTrackList& other) {
 }
 
 bool GridTrackList::operator==(const GridTrackList& other) const {
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    return ng_track_list_ == other.ng_track_list_;
-  }
-
-  return LegacyTrackList() == other.LegacyTrackList();
+  return ng_track_list_ == other.ng_track_list_;
 }
 
 bool GridTrackList::operator!=(const GridTrackList& other) const {
@@ -228,10 +216,7 @@ bool GridTrackList::operator!=(const GridTrackList& other) const {
 }
 
 void GridTrackList::AssignFrom(const GridTrackList& other) {
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    ng_track_list_ = other.ng_track_list_;
-  }
-
+  ng_track_list_ = other.ng_track_list_;
   legacy_track_list_ = other.legacy_track_list_;
 }
 

@@ -1658,7 +1658,6 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
     const LayoutObject* layout_object,
     const ComputedStyle& style) {
   const bool is_for_columns = direction == kForColumns;
-  const bool is_layout_ng = RuntimeEnabledFeatures::LayoutNGEnabled();
   const ComputedGridTrackList& computed_grid_track_list =
       is_for_columns ? style.GridTemplateColumns() : style.GridTemplateRows();
   const Vector<GridTrackSize, 1>& legacy_track_sizes =
@@ -1671,9 +1670,7 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
 
   // Handle the 'none' case.
   bool is_track_list_empty =
-      is_layout_ng
-          ? !computed_grid_track_list.TrackList().RepeaterCount()
-          : (legacy_track_sizes.empty() && auto_repeat_track_sizes.empty());
+      !computed_grid_track_list.TrackList().RepeaterCount();
   if (is_layout_grid && is_track_list_empty) {
     // For grids we should consider every listed track, whether implicitly or
     // explicitly created. Empty grids have a sole grid line per axis.
@@ -1756,13 +1753,6 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
   };
 
   if (auto_repeat_track_sizes.empty()) {
-    if (!is_layout_ng) {
-      // If it's legacy grid or there's no repeat(), just add all the line names
-      // and track sizes.
-      PopulateGridTrackList(list, collector, legacy_track_sizes, getTrackSize);
-      return list;
-    }
-
     // TODO(ansollan): Add support for track lists with auto and integer
     // repeaters.
     wtf_size_t track_index = 0;

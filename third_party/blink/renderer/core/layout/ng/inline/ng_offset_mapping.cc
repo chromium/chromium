@@ -67,8 +67,6 @@ std::pair<const Node&, unsigned> ToNodeOffsetPair(const Position& position) {
 }  // namespace
 
 LayoutBlockFlow* NGInlineFormattingContextOf(const Position& position) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return nullptr;
   LayoutBlockFlow* block_flow =
       NGOffsetMapping::GetInlineFormattingContextOf(position);
   if (!block_flow || !block_flow->IsLayoutNGObject())
@@ -226,8 +224,6 @@ bool NGOffsetMapping::AcceptsPosition(const Position& position) {
 
 // static
 const NGOffsetMapping* NGOffsetMapping::GetFor(const Position& position) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return nullptr;
   return ForceGetFor(position);
 }
 
@@ -244,8 +240,6 @@ const NGOffsetMapping* NGOffsetMapping::ForceGetFor(const Position& position) {
 // static
 const NGOffsetMapping* NGOffsetMapping::GetFor(
     const LayoutObject* layout_object) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return nullptr;
   if (!layout_object)
     return nullptr;
   LayoutBlockFlow* context = layout_object->FragmentItemsContainer();
