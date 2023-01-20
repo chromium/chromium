@@ -28,7 +28,7 @@ namespace bruschetta {
 
 struct BruschettaLauncher::Files {
   base::ScopedFD firmware;
-  base::ScopedFD pflash;
+  absl::optional<base::ScopedFD> pflash;
 };
 
 namespace {
@@ -39,13 +39,27 @@ namespace {
 // people following the instructions will have (base64 encoded "bru").
 const char kDiskName[] = "YnJ1.img";
 
+const char kOldBiosPath[] = "Downloads/bios";
+
 std::unique_ptr<BruschettaLauncher::Files> OpenFdsBlocking(
     base::FilePath profile_path) {
   base::File firmware(profile_path.Append(kBiosPath),
                       base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!firmware.IsValid()) {
-    PLOG(ERROR) << "Failed to open firmware";
-    return nullptr;
+    // TODO(b/265096855): In order to not break existing alpha users, keep on
+    // supporting the old BIOS path with no pflash. Remove this fallback once
+    // users are migrated.
+    firmware = base::File(profile_path.Append(kOldBiosPath),
+                          base::File::FLAG_OPEN | base::File::FLAG_READ);
+    if (!firmware.IsValid()) {
+      PLOG(ERROR) << "Failed to open firmware";
+      return nullptr;
+    }
+    BruschettaLauncher::Files files = {
+        .firmware = base::ScopedFD(firmware.TakePlatformFile()),
+        .pflash = absl::nullopt,
+    };
+    return std::make_unique<BruschettaLauncher::Files>(std::move(files));
   }
 
   base::File pflash(profile_path.Append(kPflashPath),
@@ -143,8 +157,13 @@ void BruschettaLauncher::StartVm(
   std::vector<base::ScopedFD> fds;
   request.add_fds(vm_tools::concierge::StartVmRequest::BIOS);
   fds.push_back(std::move(files->firmware));
-  request.add_fds(vm_tools::concierge::StartVmRequest::PFLASH);
-  fds.push_back(std::move(files->pflash));
+  if (files->pflash) {
+    // TODO(b/265096855): In order to not break existing alpha users, keep on
+    // supporting the old BIOS path with no pflash. Remove this fallback once
+    // users are migrated.
+    request.add_fds(vm_tools::concierge::StartVmRequest::PFLASH);
+    fds.push_back(std::move(*files->pflash));
+  }
   files.reset();
 
   auto* disk = request.mutable_disks()->Add();
