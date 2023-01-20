@@ -44,8 +44,7 @@ class AttributionDataHostManager {
   virtual bool RegisterNavigationDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
       const blink::AttributionSrcToken& attribution_src_token,
-      AttributionInputEvent input_event,
-      blink::mojom::AttributionNavigationType nav_type) = 0;
+      AttributionInputEvent input_event) = 0;
 
   // Notifies the manager that an attribution enabled navigation has registered
   // a source header. May be called multiple times for the same navigation.

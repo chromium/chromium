@@ -508,8 +508,7 @@ TEST_F(AttributionDataHostManagerImplTest,
                                         raw_ref(task_environment_)};
     data_host_manager_.RegisterNavigationDataHost(
         data_host_remote.data_host.BindNewPipeAndPassReceiver(),
-        attribution_src_token, AttributionInputEvent(),
-        AttributionNavigationType::kContextMenu);
+        attribution_src_token, AttributionInputEvent());
 
     task_environment_.FastForwardBy(base::Milliseconds(1));
 
@@ -688,8 +687,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
   data_host_manager_.RegisterNavigationDataHost(
       source_data_host_remote.BindNewPipeAndPassReceiver(),
-      attribution_src_token, AttributionInputEvent(),
-      AttributionNavigationType::kAnchor);
+      attribution_src_token, AttributionInputEvent());
 
   mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -1055,8 +1053,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
   data_host_manager_.RegisterNavigationDataHost(
       source_data_host_remote.BindNewPipeAndPassReceiver(),
-      attribution_src_token, AttributionInputEvent(),
-      AttributionNavigationType::kAnchor);
+      attribution_src_token, AttributionInputEvent());
 
   mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -1317,7 +1314,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   data_host_manager_.RegisterNavigationDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(), attribution_src_token,
-      AttributionInputEvent(), AttributionNavigationType::kAnchor);
+      AttributionInputEvent());
 
   data_host_manager_.NotifyNavigationForDataHost(
       attribution_src_token, *SuitableOrigin::Deserialize("https://s.test"),
@@ -1351,13 +1348,13 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     EXPECT_TRUE(data_host_manager_.RegisterNavigationDataHost(
         data_host_remote1.BindNewPipeAndPassReceiver(), attribution_src_token,
-        AttributionInputEvent(), AttributionNavigationType::kAnchor));
+        AttributionInputEvent()));
 
     // This one should not be registered, as `attribution_src_token` is already
     // associated with a receiver.
     EXPECT_FALSE(data_host_manager_.RegisterNavigationDataHost(
         data_host_remote2.BindNewPipeAndPassReceiver(), attribution_src_token,
-        AttributionInputEvent(), AttributionNavigationType::kAnchor));
+        AttributionInputEvent()));
 
     // kRegistered = 0.
     histograms.ExpectUniqueSample("Conversions.NavigationDataHostStatus2", 0,
@@ -1447,7 +1444,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   data_host_manager_.RegisterNavigationDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(), attribution_src_token,
-      AttributionInputEvent(), AttributionNavigationType::kAnchor);
+      AttributionInputEvent());
 
   data_host_manager_.NotifyNavigationForDataHost(
       attribution_src_token,

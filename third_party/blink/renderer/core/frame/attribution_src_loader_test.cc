@@ -162,8 +162,7 @@ class MockAttributionHost : public mojom::blink::ConversionHost {
 
   void RegisterNavigationDataHost(
       mojo::PendingReceiver<mojom::blink::AttributionDataHost> data_host,
-      const blink::AttributionSrcToken& attribution_src_token,
-      blink::mojom::AttributionNavigationType type) override {}
+      const blink::AttributionSrcToken& attribution_src_token) override {}
 
   mojo::AssociatedReceiver<mojom::blink::ConversionHost> receiver_{this};
   base::OnceClosure quit_;

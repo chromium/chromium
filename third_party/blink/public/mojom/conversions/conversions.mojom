@@ -35,6 +35,5 @@ interface ConversionHost {
   // `attribution_src_token` can be used to associate `data_host` with an
   // `Impression` object in the browser process.
   RegisterNavigationDataHost(pending_receiver<AttributionDataHost> data_host,
-                             AttributionSrcToken attribution_src_token,
-                             AttributionNavigationType nav_type);
+                             AttributionSrcToken attribution_src_token);
 };

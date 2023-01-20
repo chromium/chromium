@@ -248,12 +248,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_CALL(mock_attribution_host(), RegisterNavigationDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
-              const blink::AttributionSrcToken& attribution_src_token,
-              blink::mojom::AttributionNavigationType nav_type) {
+              const blink::AttributionSrcToken& attribution_src_token) {
             data_host = GetRegisteredDataHost(std::move(host));
             expected_token = attribution_src_token;
-            EXPECT_EQ(nav_type,
-                      blink::mojom::AttributionNavigationType::kAnchor);
           });
 
   GURL register_url =
@@ -292,12 +289,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_CALL(mock_attribution_host(), RegisterNavigationDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
-              const blink::AttributionSrcToken& attribution_src_token,
-              blink::mojom::AttributionNavigationType nav_type) {
+              const blink::AttributionSrcToken& attribution_src_token) {
             data_host = GetRegisteredDataHost(std::move(host));
             expected_token = attribution_src_token;
-            EXPECT_EQ(nav_type,
-                      blink::mojom::AttributionNavigationType::kWindowOpen);
           });
 
   GURL register_url =
@@ -468,8 +462,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_CALL(mock_attribution_host(), RegisterNavigationDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
-              const blink::AttributionSrcToken& attribution_src_token,
-              blink::mojom::AttributionNavigationType nav_type) {
+              const blink::AttributionSrcToken& attribution_src_token) {
             data_host = GetRegisteredDataHost(std::move(host));
             expected_token = attribution_src_token;
           });

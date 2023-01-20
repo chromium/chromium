@@ -77,8 +77,7 @@ class MockDataHostManager : public AttributionDataHostManager {
       RegisterNavigationDataHost,
       (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
        const blink::AttributionSrcToken& attribution_src_token,
-       AttributionInputEvent input_event,
-       AttributionNavigationType),
+       AttributionInputEvent input_event),
       (override));
 
   MOCK_METHOD(void,
@@ -421,7 +420,7 @@ TEST_F(AttributionHostTest,
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   conversion_host_mojom()->RegisterNavigationDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
-      blink::AttributionSrcToken(), AttributionNavigationType::kAnchor);
+      blink::AttributionSrcToken());
 
   EXPECT_EQ(
       "blink.mojom.ConversionHost can only be used with a secure top-level "
@@ -443,7 +442,7 @@ TEST_F(AttributionHostTest, DuplicateAttributionSrcToken_BadMessage) {
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   conversion_host_mojom()->RegisterNavigationDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
-      blink::AttributionSrcToken(), AttributionNavigationType::kAnchor);
+      blink::AttributionSrcToken());
 
   EXPECT_EQ(
       "Renderer attempted to register a data host with a duplicate "

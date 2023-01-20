@@ -116,8 +116,7 @@ class MockAttributionHost : public AttributionHost {
       void,
       RegisterNavigationDataHost,
       (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-       const blink::AttributionSrcToken& attribution_src_token,
-       blink::mojom::AttributionNavigationType),
+       const blink::AttributionSrcToken& attribution_src_token),
       (override));
 
  private:

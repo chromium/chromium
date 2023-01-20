@@ -191,7 +191,6 @@ struct AttributionDataHostManagerImpl::NavigationDataHost {
   mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host;
   base::TimeTicks register_time;
   AttributionInputEvent input_event;
-  AttributionNavigationType nav_type;
 };
 
 struct AttributionDataHostManagerImpl::NavigationRedirectSourceRegistrations {
@@ -253,14 +252,12 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
 bool AttributionDataHostManagerImpl::RegisterNavigationDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
     const blink::AttributionSrcToken& attribution_src_token,
-    AttributionInputEvent input_event,
-    AttributionNavigationType nav_type) {
+    AttributionInputEvent input_event) {
   auto [it, inserted] = navigation_data_host_map_.try_emplace(
       attribution_src_token,
       NavigationDataHost{.data_host = std::move(data_host),
                          .register_time = base::TimeTicks::Now(),
-                         .input_event = input_event,
-                         .nav_type = nav_type});
+                         .input_event = input_event});
   // Should only be possible with a misbehaving renderer.
   if (!inserted) {
     return false;

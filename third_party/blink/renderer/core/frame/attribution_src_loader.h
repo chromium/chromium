@@ -91,7 +91,7 @@ class CORE_EXPORT AttributionSrcLoader
   ResourceClient* DoRegistration(
       const KURL& src_url,
       attribution_reporting::mojom::blink::RegistrationType,
-      absl::optional<mojom::blink::AttributionNavigationType> nav_type);
+      bool associated_with_navigation);
 
   // Returns the reporting origin corresponding to `url` if its protocol is in
   // the HTTP family, its origin is potentially trustworthy, and attribution is
@@ -107,7 +107,7 @@ class CORE_EXPORT AttributionSrcLoader
       const KURL& src_url,
       HTMLElement* element,
       attribution_reporting::mojom::blink::RegistrationType,
-      absl::optional<mojom::blink::AttributionNavigationType> nav_type);
+      bool associated_with_navigation);
 
   // Returns whether OS-level attribution is supported.
   bool HasOsSupport() const;
