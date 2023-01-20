@@ -514,18 +514,6 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
   }
 
   if (event->IsMouseEvent()) {
-    // Generate motion event if location changed. We need to check location
-    // here as mouse movement can generate both "moved" and "entered" events
-    // but OnPointerMotion should only be called if location changed since
-    // OnPointerEnter was called.
-    // For synthesized events, they typically lack floating point precision
-    // so to avoid generating mouse event jitter we consider the location of
-    // these events to be the same as |location| if floored values match.
-    bool same_location = !event->IsSynthesized()
-                             ? SameLocation(location_in_root, location_in_root_)
-                             : gfx::ToFlooredPoint(location_in_root) ==
-                                   gfx::ToFlooredPoint(location_in_root_);
-
     // Ordinal motion is sent only on platforms that support it, which is
     // indicated by the presence of a flag.
     absl::optional<gfx::Vector2dF> ordinal_motion = absl::nullopt;
@@ -534,7 +522,12 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
       ordinal_motion = event->movement();
     }
 
-    if (!same_location) {
+    // Generate motion event if location changed. We need to check location
+    // here as mouse movement can generate both "moved" and "entered" events
+    // but OnPointerMotion should only be called if location changed since
+    // OnPointerEnter was called.
+    if (!CheckIfSameLocation(event->IsSynthesized(), location_in_root,
+                             location_in_target)) {
       bool ignore_motion = false;
       if (expected_next_mouse_location_) {
         const gfx::Point& expected = *expected_next_mouse_location_;
@@ -560,6 +553,7 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
         needs_frame |= true;
       }
       location_in_root_ = location_in_root;
+      location_in_surface_ = location_in_target;
     }
   }
   switch (event->type()) {
@@ -860,6 +854,7 @@ void Pointer::SetFocus(Surface* surface,
     delegate_->OnPointerEnter(surface, surface_location, button_flags);
     delegate_->OnPointerFrame();
     location_in_root_ = root_location;
+    location_in_surface_ = surface_location;
     focus_surface_ = surface;
     if (!focus_surface_->HasSurfaceObserver(this))
       focus_surface_->AddSurfaceObserver(this);
@@ -1047,6 +1042,29 @@ void Pointer::MaybeRemoveSurfaceObserver(Surface* surface) {
   if (!ShouldObserveSurface(surface)) {
     surface->RemoveSurfaceObserver(this);
   }
+}
+
+bool Pointer::CheckIfSameLocation(bool is_synthesized,
+                                  const gfx::PointF& location_in_root,
+                                  const gfx::PointF& location_in_target) {
+  // There is a specific case that location_in_root is the same
+  // but location_in_target is updated with SynthesizeMouseMove
+  // without the actual mouse movement when the window bounds changes.
+  // To handle this case, PointerMotion event should be delievered to
+  // delegate to update the current pointer location properly.
+  // Hence, check either target or root has changed.
+  if (!is_synthesized) {
+    return SameLocation(location_in_root, location_in_root_) &&
+           SameLocation(location_in_target, location_in_surface_);
+  }
+
+  // For synthesized events, they typically lack floating point precision
+  // so to avoid generating mouse event jitter we consider the location of
+  // these events to be the same as |location| if floored values match.
+  return (gfx::ToFlooredPoint(location_in_root) ==
+          gfx::ToFlooredPoint(location_in_root_)) &&
+         (gfx::ToFlooredPoint(location_in_target) ==
+          gfx::ToFlooredPoint(location_in_surface_));
 }
 
 }  // namespace exo

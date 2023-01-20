@@ -204,6 +204,11 @@ class Pointer : public SurfaceTreeHost,
   // Stop observing |surface| if it's no longer relevant.
   void MaybeRemoveSurfaceObserver(Surface* surface);
 
+  // Return true if location is same.
+  bool CheckIfSameLocation(bool is_synthesized,
+                           const gfx::PointF& location_in_root,
+                           const gfx::PointF& location_in_target);
+
   // The delegate instance that all events are dispatched to.
   PointerDelegate* const delegate_;
 
@@ -230,6 +235,9 @@ class Pointer : public SurfaceTreeHost,
 
   // The location of the pointer in the root window.
   gfx::PointF location_in_root_;
+
+  // The location of the pointer converted to the target.
+  gfx::PointF location_in_surface_;
 
   // The location of the pointer when pointer capture is first enabled.
   absl::optional<gfx::Point> location_when_pointer_capture_enabled_;
