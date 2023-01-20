@@ -336,7 +336,8 @@
     </ntp-realbox>
     <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
       <ntp-lens-upload-dialog id="lensUploadDialog"
-          on-close-lens-search="onCloseLensSearch_">
+          on-close-lens-search="onCloseLensSearch_"
+          on-bind-open-dialog="bindOpenLensDialog_">
       </ntp-lens-upload-dialog>
     </template>
   </div>
