@@ -1608,6 +1608,8 @@ component("ash") {
     "system/phonehub/phone_connecting_view.h",
     "system/phonehub/phone_disconnected_view.cc",
     "system/phonehub/phone_disconnected_view.h",
+    "system/phonehub/phone_hub_app_count_icon.cc",
+    "system/phonehub/phone_hub_app_count_icon.h",
     "system/phonehub/phone_hub_content_view.cc",
     "system/phonehub/phone_hub_content_view.h",
     "system/phonehub/phone_hub_interstitial_view.cc",

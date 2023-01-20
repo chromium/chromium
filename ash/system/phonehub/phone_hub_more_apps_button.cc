@@ -6,6 +6,7 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/phonehub/phone_hub_app_count_icon.h"
 #include "ash/system/phonehub/phone_hub_small_app_icon.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -71,11 +72,13 @@ void PhoneHubMoreAppsButton::LoadAppList() {
   const std::vector<phonehub::Notification::AppMetadata>* app_list =
       app_stream_launcher_data_model_->GetAppsListSortedByName();
   if (!app_list->empty()) {
-    auto app_count = std::min(app_list->size(), size_t{4});
+    auto app_count = std::min(app_list->size(), size_t{3});
     for (size_t i = 0; i < app_count; i++) {
       AddChildView(std::make_unique<SmallAppIcon>(app_list->at(i).icon));
     }
   }
+
+  AddChildView(std::make_unique<AppCountIcon>(app_list->size()));
 }
 
 BEGIN_METADATA(PhoneHubMoreAppsButton, views::Button)
