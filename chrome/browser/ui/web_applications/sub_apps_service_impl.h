@@ -22,8 +22,8 @@ namespace web_app {
 class SubAppsServiceImpl
     : public content::DocumentService<blink::mojom::SubAppsService> {
  public:
-  using AddResults = std::vector<
-      std::pair<UnhashedAppId, blink::mojom::SubAppsServiceAddResultCode>>;
+  using AddResults =
+      std::vector<std::pair<UnhashedAppId, blink::mojom::SubAppsServiceResult>>;
   using AddResultsMojo = std::vector<blink::mojom::SubAppsServiceAddResultPtr>;
 
   SubAppsServiceImpl(const SubAppsServiceImpl&) = delete;

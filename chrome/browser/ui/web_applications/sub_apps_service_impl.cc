@@ -32,7 +32,6 @@
 using blink::mojom::SubAppsService;
 using blink::mojom::SubAppsServiceAddInfoPtr;
 using blink::mojom::SubAppsServiceAddResult;
-using blink::mojom::SubAppsServiceAddResultCode;
 using blink::mojom::SubAppsServiceAddResultPtr;
 using blink::mojom::SubAppsServiceListInfo;
 using blink::mojom::SubAppsServiceListInfoPtr;
@@ -174,8 +173,7 @@ void SubAppsServiceImpl::Add(
     std::vector<SubAppsServiceAddResultPtr> result;
     for (const auto& sub_app : sub_apps_to_add) {
       result.emplace_back(SubAppsServiceAddResult::New(
-          sub_app->unhashed_app_id_path,
-          SubAppsServiceAddResultCode::kParentAppUninstalled));
+          sub_app->unhashed_app_id_path, SubAppsServiceResult::kFailure));
     }
     return std::move(result_callback).Run(/*mojom_results=*/std::move(result));
   }

@@ -19,23 +19,9 @@ struct SubAppsServiceAddInfo {
   string install_url_path;
 };
 
-enum SubAppsServiceAddResultCode {
-  // Success category:
-  kSuccessNewInstall,
-  kSuccessAlreadyInstalled,
-
-  // Failure category:
-  kUserInstallDeclined,
-  kExpectedAppIdCheckFailed,
-  kParentAppUninstalled,
-  kInstallUrlInvalid,
-  kNotValidManifestForWebApp,
-  kFailure,
-};
-
 struct SubAppsServiceAddResult {
   string unhashed_app_id_path;
-  SubAppsServiceAddResultCode result_code;
+  SubAppsServiceResult result_code;
 };
 
 struct SubAppsServiceListResult {

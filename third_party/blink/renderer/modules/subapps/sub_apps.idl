@@ -2,20 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(crbug.com/1408099): Update once we publish the spec.
 // https://github.com/ivansandrk/multi-apps/blob/main/explainer.md
 
-
-enum SubAppsServiceAddResultCode {
-  // Success category:
-  "success-new-install",
-  "success-already-installed",
-
-  // // Failure category:
-  "user-install-declined",
-  "expected-app-id-check-failed",
-  "parent-app-uninstalled",
-  "install-url-invalid",
-  "invalid-manifest-for-web-app",
+enum SubAppsResultCode {
+  "success",
   "failure",
 };
 
@@ -24,7 +15,7 @@ enum SubAppsServiceAddResultCode {
   SecureContext,
   RuntimeEnabled=DesktopPWAsSubApps
 ] interface SubApps {
-  [CallWith=ScriptState, RaisesException] Promise<record<DOMString, SubAppsServiceAddResultCode>> add(record<DOMString, SubAppsAddOptions> sub_apps_to_add);
+  [CallWith=ScriptState, RaisesException] Promise<record<DOMString, SubAppsResultCode>> add(record<DOMString, SubAppsAddOptions> sub_apps_to_add);
   [CallWith=ScriptState, RaisesException] Promise<record<DOMString, SubAppsListInfo>> list();
   [CallWith=ScriptState, RaisesException] Promise<void> remove(DOMString app_id);
 };

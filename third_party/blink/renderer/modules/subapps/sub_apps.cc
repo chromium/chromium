@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sub_apps_add_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sub_apps_list_info.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_sub_apps_result_code.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -28,7 +29,6 @@ namespace blink {
 using mojom::blink::SubAppsService;
 using mojom::blink::SubAppsServiceAddInfo;
 using mojom::blink::SubAppsServiceAddInfoPtr;
-using mojom::blink::SubAppsServiceAddResultCode;
 using mojom::blink::SubAppsServiceAddResultPtr;
 using mojom::blink::SubAppsServiceListInfoPtr;
 using mojom::blink::SubAppsServiceListResultPtr;
@@ -38,39 +38,15 @@ namespace {
 
 const int kMaximumNumberOfSubappsPerAddCall = 7;
 
-Vector<std::pair<String, String>> AddResultsFromMojo(
+Vector<std::pair<String, V8SubAppsResultCode>> AddResultsFromMojo(
     Vector<SubAppsServiceAddResultPtr> add_results_mojo) {
-  Vector<std::pair<String, String>> add_results_idl;
+  Vector<std::pair<String, V8SubAppsResultCode>> add_results_idl;
   for (auto& add_result : add_results_mojo) {
-    std::string result;
-
-    switch (add_result->result_code) {
-      case SubAppsServiceAddResultCode::kSuccessNewInstall:
-        result = "success-new-install";
-        break;
-      case SubAppsServiceAddResultCode::kSuccessAlreadyInstalled:
-        result = "success-already-installed";
-        break;
-      case SubAppsServiceAddResultCode::kUserInstallDeclined:
-        result = "user-install-declined";
-        break;
-      case SubAppsServiceAddResultCode::kExpectedAppIdCheckFailed:
-        result = "expected-app-id-check-failed";
-        break;
-      case SubAppsServiceAddResultCode::kParentAppUninstalled:
-        result = "parent-app-uninstalled";
-        break;
-      case SubAppsServiceAddResultCode::kInstallUrlInvalid:
-        result = "install-url-invalid";
-        break;
-      case SubAppsServiceAddResultCode::kNotValidManifestForWebApp:
-        result = "invalid-manifest-for-web-app";
-        break;
-      case SubAppsServiceAddResultCode::kFailure:
-        result = "failure";
-        break;
-    }
-    add_results_idl.emplace_back(add_result->unhashed_app_id_path, result);
+    auto result_code =
+        add_result->result_code == SubAppsServiceResult::kSuccess
+            ? V8SubAppsResultCode(V8SubAppsResultCode::Enum::kSuccess)
+            : V8SubAppsResultCode(V8SubAppsResultCode::Enum::kFailure);
+    add_results_idl.emplace_back(add_result->unhashed_app_id_path, result_code);
   }
   return add_results_idl;
 }
@@ -195,10 +171,7 @@ ScriptPromise SubApps::add(
           WTF::BindOnce([](ScriptPromiseResolver* resolver,
                            Vector<SubAppsServiceAddResultPtr> results_mojo) {
             for (const auto& add_result : results_mojo) {
-              if (add_result->result_code !=
-                      SubAppsServiceAddResultCode::kSuccessNewInstall &&
-                  add_result->result_code !=
-                      SubAppsServiceAddResultCode::kSuccessAlreadyInstalled) {
+              if (add_result->result_code == SubAppsServiceResult::kFailure) {
                 return resolver->Reject(
                     AddResultsFromMojo(std::move(results_mojo)));
               }

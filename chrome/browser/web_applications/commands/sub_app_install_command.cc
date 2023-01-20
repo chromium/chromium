@@ -45,28 +45,23 @@ std::string StreamableToString(const Streamable& value) {
   return ss.str();
 }
 
-blink::mojom::SubAppsServiceAddResultCode InstallResultCodeToMojo(
+blink::mojom::SubAppsServiceResult InstallResultCodeToMojo(
     webapps::InstallResultCode install_result_code) {
   switch (install_result_code) {
+    // Success result codes.
     case webapps::InstallResultCode::kSuccessNewInstall:
-      return blink::mojom::SubAppsServiceAddResultCode::kSuccessNewInstall;
     case webapps::InstallResultCode::kSuccessAlreadyInstalled:
-      return blink::mojom::SubAppsServiceAddResultCode::
-          kSuccessAlreadyInstalled;
+      return blink::mojom::SubAppsServiceResult::kSuccess;
+    // Failure result codes.
     case webapps::InstallResultCode::kUserInstallDeclined:
-      return blink::mojom::SubAppsServiceAddResultCode::kUserInstallDeclined;
     case webapps::InstallResultCode::kExpectedAppIdCheckFailed:
-      return blink::mojom::SubAppsServiceAddResultCode::
-          kExpectedAppIdCheckFailed;
     case webapps::InstallResultCode::kInstallURLRedirected:
     case webapps::InstallResultCode::kInstallURLLoadTimeOut:
     case webapps::InstallResultCode::kInstallURLLoadFailed:
-      return blink::mojom::SubAppsServiceAddResultCode::kInstallUrlInvalid;
     case webapps::InstallResultCode::kNotValidManifestForWebApp:
-      return blink::mojom::SubAppsServiceAddResultCode::
-          kNotValidManifestForWebApp;
+      return blink::mojom::SubAppsServiceResult::kFailure;
     default:
-      return blink::mojom::SubAppsServiceAddResultCode::kFailure;
+      return blink::mojom::SubAppsServiceResult::kFailure;
   }
 }
 
@@ -165,9 +160,8 @@ void SubAppInstallCommand::StartWithLock(
     base::ranges::transform(
         requested_installs_, std::inserter(results_, results_.begin()),
         [](auto const& pair) {
-          return std::pair{
-              pair.first,
-              blink::mojom::SubAppsServiceAddResultCode::kParentAppUninstalled};
+          return std::pair{pair.first,
+                           blink::mojom::SubAppsServiceResult::kFailure};
         });
     SignalCompletionAndSelfDestruct(
         CommandResult::kFailure,
@@ -432,10 +426,11 @@ void SubAppInstallCommand::MaybeShowDialog() {
   // acceptance below with a permissions dialog shown to the user.
   for (auto& [unhashed_app_id, web_app_info, acceptance_callback] :
        acceptance_callbacks_) {
-    if (dialog_not_accepted_for_testing_)
+    if (dialog_not_accepted_for_testing_) {
       std::move(acceptance_callback).Run(false, std::move(web_app_info));
-    else
+    } else {
       std::move(acceptance_callback).Run(true, std::move(web_app_info));
+    }
   }
   acceptance_callbacks_.clear();
   // This needs to happen to measure the state where all acceptance
@@ -461,7 +456,8 @@ void SubAppInstallCommand::AddResultAndRemoveFromPendingInstalls(
   auto mojo_result = InstallResultCodeToMojo(result);
   std::pair result_pair(unhashed_app_id, mojo_result);
   AddResultToDebugData(unhashed_app_id, pending_installs_map_[unhashed_app_id],
-                       GenerateAppIdFromUnhashed(unhashed_app_id), mojo_result);
+                       GenerateAppIdFromUnhashed(unhashed_app_id), result,
+                       mojo_result);
   results_.emplace_back(result_pair);
   pending_installs_map_.erase(unhashed_app_id);
 }
@@ -474,10 +470,12 @@ void SubAppInstallCommand::AddResultToDebugData(
     const UnhashedAppId& unhashed_app_id,
     const GURL& install_url,
     const AppId& installed_app_id,
-    const blink::mojom::SubAppsServiceAddResultCode& code) {
+    webapps::InstallResultCode detailed_code,
+    const blink::mojom::SubAppsServiceResult& code) {
   base::Value::Dict install_info;
   install_info.Set("unhashed_app_id", unhashed_app_id);
   install_info.Set("install_url", install_url.spec());
+  install_info.Set("detailed_result_code", StreamableToString(detailed_code));
   install_info.Set("result_code", StreamableToString(code));
   debug_install_results_.Set(installed_app_id,
                              base::Value(std::move(install_info)));
