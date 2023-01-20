@@ -442,13 +442,13 @@ const std::string* GetIccidFromONC(const base::Value& onc_config) {
 const std::string* GetSMDPAddressFromONC(const base::Value& onc_config) {
   const std::string* type =
       onc_config.FindStringKey(::onc::network_config::kType);
-  const base::Value* cellular_dict =
-      onc_config.FindKey(::onc::network_config::kCellular);
+  const base::Value::Dict* cellular_dict =
+      onc_config.GetDict().FindDict(::onc::network_config::kCellular);
   const std::string* smdp_address = nullptr;
 
-  if (type && (*type == ::onc::network_type::kCellular) && cellular_dict &&
-      cellular_dict->is_dict())
-    smdp_address = cellular_dict->FindStringKey(::onc::cellular::kSMDPAddress);
+  if (type && (*type == ::onc::network_type::kCellular) && cellular_dict) {
+    smdp_address = cellular_dict->FindString(::onc::cellular::kSMDPAddress);
+  }
 
   return smdp_address;
 }

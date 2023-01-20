@@ -104,7 +104,7 @@ net::ProxyServer ConvertOncProxyLocationToHostPort(
 void AppendProxyServerForScheme(const base::Value& onc_manual,
                                 const std::string& onc_scheme,
                                 std::string* spec) {
-  const base::Value* onc_proxy_location = onc_manual.FindKey(onc_scheme);
+  const base::Value* onc_proxy_location = onc_manual.GetDict().Find(onc_scheme);
   if (!onc_proxy_location)
     return;
 
@@ -386,7 +386,7 @@ base::Value::Dict ConvertOncProxySettingsToProxyConfig(
   }
   if (type == ::onc::proxy::kManual) {
     const base::Value* manual_dict =
-        onc_proxy_settings.FindKey(::onc::proxy::kManual);
+        onc_proxy_settings.GetDict().Find(::onc::proxy::kManual);
     if (!manual_dict) {
       NET_LOG(ERROR) << "Manual proxy missing dictionary";
       return base::Value::Dict();

@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <set>
+#include <string>
 
 #include "ash/constants/ash_features.h"
 #include "base/i18n/encoding_detection.h"
@@ -61,8 +62,8 @@ bool CopyStringFromDictionary(const base::Value& source,
 }
 
 std::string GetStringFromDictionary(const base::Value* dict, const char* key) {
-  const base::Value* v = dict ? dict->FindKey(key) : nullptr;
-  return v ? v->GetString() : std::string();
+  const std::string* v = dict ? dict->GetDict().FindString(key) : nullptr;
+  return v ? *v : std::string();
 }
 
 }  // namespace
@@ -205,7 +206,7 @@ std::unique_ptr<NetworkUIData> GetUIDataFromValue(
 std::unique_ptr<NetworkUIData> GetUIDataFromProperties(
     const base::Value& shill_dictionary) {
   const base::Value* ui_data_value =
-      shill_dictionary.FindKey(shill::kUIDataProperty);
+      shill_dictionary.GetDict().Find(shill::kUIDataProperty);
   if (!ui_data_value) {
     VLOG(2) << "Dictionary has no UIData entry.";
     return nullptr;

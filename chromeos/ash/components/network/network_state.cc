@@ -234,7 +234,7 @@ bool NetworkState::PropertyChanged(const std::string& key,
 bool NetworkState::InitialPropertiesReceived(const base::Value& properties) {
   NET_LOG(EVENT) << "InitialPropertiesReceived: " << NetworkId(this)
                  << " State: " << connection_state_ << " Visible: " << visible_;
-  if (!properties.FindKey(shill::kTypeProperty)) {
+  if (!properties.GetDict().contains(shill::kTypeProperty)) {
     NET_LOG(ERROR) << "NetworkState has no type: " << NetworkId(this);
     return false;
   }
