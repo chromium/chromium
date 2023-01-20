@@ -136,6 +136,7 @@ source_set("browser_tests") {
     ]
 
     deps += [
+      "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/telemetry_extension",
       "//components/user_manager",
     ]

@@ -408,7 +408,6 @@ static_library("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  check_includes = false
 
   sources = [
     "app_mode/app_session_policies_unittest.cc",
@@ -548,6 +547,7 @@ source_set("unit_tests") {
           [ "extensions/printing_metrics/printing_metrics_api_unittest.cc" ]
       deps += [
         "//chrome/browser/ash:print_job_info_proto",
+        "//chrome/browser/ash:test_support",
         "//chrome/browser/chromeos/extensions/printing_metrics",
         "//chrome/common/extensions/api",
       ]
