@@ -6,6 +6,7 @@ module media.mojom;
 
 import "media/mojo/mojom/audio_data.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Corresponds to the LangIdEvent.ConfidenceInterval defined in
 // http://google3/speech/soda/public/soda_event.proto.
@@ -155,6 +156,34 @@ interface SpeechRecognitionBrowserObserver {
   // Notify the speech recognition client when the speech recognition language
   // changes.
   SpeechRecognitionLanguageChanged@1(string language);
+};
+
+// The user-facing source of recognized speech; typically a tab. The remote
+// lives in the Ash browser process and is used to trigger behavior in lacros
+// (like focusing the tab). The receiver lives in the lacros browser process.
+[Stable]
+interface SpeechRecognitionSurface {
+  // "Activate" the surface - i.e. bring it to the front and focus it.
+  Activate@0();
+
+  // Fetch the bounds of the surface in screen coordinates. A nullopt is
+  // returned if no bounds could be fetched.
+  GetBounds@1() => (gfx.mojom.Rect? bounds);
+};
+
+// The OS-side observer of a lacros-side speech surface. Used to close or
+// re-render a live caption bubble based on user interaction with the
+// lacros-side surface. The remote lives in the lacros browser process, and the
+// receiver lives in the Ash browser process.
+[Stable]
+interface SpeechRecognitionSurfaceClient {
+  // Called when the user navigates away or refreshes the current tab. This
+  // comprises the end of a live caption "session", after which the caption
+  // bubble can be shown even if it was explicitly dismissed by the user.
+  OnSessionEnded@0();
+
+  // Called when the user fullscreens or un-fullscreens the speech surface.
+  OnFullscreenToggled@1();
 };
 
 // This interface between the speech recognition client and the browser.

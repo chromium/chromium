@@ -4818,6 +4818,7 @@ if (is_chromeos_lacros) {
     ]
 
     sources = [
+      "../browser/accessibility/live_caption_surface_browsertest.cc",
       "../browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager_lacros_browsertest.cc",
 
       # dlp_content_manager_lacros_browsertest.cc should become a unit test.
@@ -4858,6 +4859,7 @@ if (is_chromeos_lacros) {
     ]
 
     data = [
+      "//content/test/data/",
       "data/media/",
       "data/extensions/api_test/shared_storage_private/",
       "data/extensions/api_test/login_screen_apis/",

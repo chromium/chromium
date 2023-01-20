@@ -768,6 +768,7 @@ mojom("speech_recognition") {
     ":audio_data",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
+    "//ui/gfx/geometry/mojom",
   ]
 }
 
