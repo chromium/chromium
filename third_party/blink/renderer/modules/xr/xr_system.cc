@@ -213,8 +213,7 @@ bool IsFeatureValidForMode(device::mojom::XRSessionFeature feature,
     case device::mojom::XRSessionFeature::LIGHT_ESTIMATION:
     case device::mojom::XRSessionFeature::CAMERA_ACCESS:
     case device::mojom::XRSessionFeature::PLANE_DETECTION:
-      // Fallthrough - light estimation, camera access, and plane detection are
-      // all valid only for immersive AR mode for now.
+    case device::mojom::XRSessionFeature::FRONT_FACING:
       return mode == device::mojom::blink::XRSessionMode::kImmersiveAr;
     case device::mojom::XRSessionFeature::DEPTH:
       if (!session_init->hasDepthSensing()) {
@@ -250,6 +249,7 @@ bool HasRequiredPermissionsPolicy(ExecutionContext* context,
     case device::mojom::XRSessionFeature::HAND_INPUT:
     case device::mojom::XRSessionFeature::SECONDARY_VIEWS:
     case device::mojom::XRSessionFeature::LAYERS:
+    case device::mojom::XRSessionFeature::FRONT_FACING:
       return context->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kWebXr,
           ReportOptions::kReportOnFailure);

@@ -585,6 +585,7 @@ void ArCoreGl::RecalculateUvsAndProjection() {
   float bottom =
       depth_near * (projection_.rc(2, 1) - 1.f) / projection_.rc(1, 1);
   float top = depth_near * (projection_.rc(2, 1) + 1.f) / projection_.rc(1, 1);
+  DVLOG(3) << __func__ << ": projection_=" << projection_.ToString();
 
   // Also calculate the inverse projection which is needed for converting
   // screen touches to world rays.

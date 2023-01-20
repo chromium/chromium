@@ -1245,6 +1245,12 @@ by a child template that "extends" this file.
       <!-- ARCore APK integration -->
       <!-- This tag indicates that this application optionally uses ARCore. -->
       <meta-data android:name="com.google.ar.core" android:value="optional" />
+
+      {% block base_application_extra_arcore_definitions %}
+      <meta-data android:name="com.google.ar.core.session_settings"
+          android:value="allow_front_facing_motion_tracking_6dof," />
+      {% endblock base_application_extra_arcore_definitions %}
+
       {% endif %}
 
       <!-- Cast support -->

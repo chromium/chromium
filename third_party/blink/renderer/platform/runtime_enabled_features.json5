@@ -3309,6 +3309,12 @@
       base_feature: "WebXREnabledFeatures",
     },
     {
+      name: "WebXRFrontFacing",
+      depends_on: ["WebXR"],
+      public: true,
+      status: "experimental",
+    },
+    {
       name: "WebXRHandInput",
       depends_on: ["WebXR"],
       public: true,

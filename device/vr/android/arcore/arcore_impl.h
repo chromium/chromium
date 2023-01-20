@@ -298,15 +298,24 @@ class ArCoreImpl : public ArCore {
 
   // Helper, attempts to configure ArSession's camera for use. Note that this is
   // happening during initialization, before arcore_session_ is set.
-  // Returns true if configuration succeeded, false otherwise.
-  bool ConfigureCamera(ArSession* ar_session);
+  // Returns `true` if configuration succeeded, false otherwise.
+  // It can modify `enabled_features` if the camera was configured such that
+  // some features have been disabled.
+  bool ConfigureCamera(
+      ArSession* ar_session,
+      const std::unordered_set<device::mojom::XRSessionFeature>&
+          required_features,
+      const std::unordered_set<device::mojom::XRSessionFeature>&
+          optional_features,
+      std::unordered_set<device::mojom::XRSessionFeature>& enabled_features);
 
   // Helper, attempts to configure ArSession's features based on required and
   // optional features. Note that this is happening during initialization,
-  // before arcore_session_ is set. Returns a collection of features that were
-  // successfully enabled on a session or a nullopt on failure.
-  absl::optional<std::unordered_set<device::mojom::XRSessionFeature>>
-  ConfigureFeatures(
+  // before arcore_session_ is set. Returns `true` if feature configuration
+  // succeeded (i.e. all required features have been configured), `false`
+  // otherwise. It can modify `enabled_features` if some optional features could
+  // not have been configured.
+  bool ConfigureFeatures(
       ArSession* ar_session,
       const std::unordered_set<device::mojom::XRSessionFeature>&
           required_features,
@@ -314,7 +323,8 @@ class ArCoreImpl : public ArCore {
           optional_features,
       const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
       const absl::optional<ArCore::DepthSensingConfiguration>&
-          depth_sensing_config);
+          depth_sensing_config,
+      std::unordered_set<device::mojom::XRSessionFeature>& enabled_features);
 
   // Configures depth sensing API - selects depth sensing usage and mode that is
   // compatible with the device. Returns false if it was unable to pick a

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/geometry/dom_point_read_only.h"
 #include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace blink {
@@ -217,6 +218,9 @@ absl::optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
   } else if (RuntimeEnabledFeatures::WebXRLayersEnabled(context) &&
              feature_string == "layers") {
     return device::mojom::XRSessionFeature::LAYERS;
+  } else if (RuntimeEnabledFeatures::WebXRFrontFacingEnabled(context) &&
+             feature_string == "front-facing") {
+    return device::mojom::XRSessionFeature::FRONT_FACING;
   }
 
   return absl::nullopt;
@@ -256,6 +260,8 @@ String XRSessionFeatureToString(device::mojom::XRSessionFeature feature) {
       return "secondary-views";
     case device::mojom::XRSessionFeature::LAYERS:
       return "layers";
+    case device::mojom::XRSessionFeature::FRONT_FACING:
+      return "front-facing";
   }
 
   return "";

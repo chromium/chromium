@@ -204,7 +204,6 @@ test("vr_android_unittests") {
     "//components/translate/core/language_detection:language_detection",
     "//components/webxr:webxr",
     "//device/vr:vr_fakes",
-    "//device/vr/android/arcore",
     "//device/vr/public/mojom:isolated_xr_service",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
@@ -216,4 +215,8 @@ test("vr_android_unittests") {
     "//ui/android:ui_java",  # TODO: Remove once http://crbug.com/951419 is
                              # fixed!
   ]
+
+  if (enable_arcore) {
+    deps += [ "//device/vr/android/arcore" ]
+  }
 }

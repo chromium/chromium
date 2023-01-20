@@ -48,13 +48,18 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         <p>
           This sample demonstrates use of hit testing to place AR objects on real-world surfaces.
           <a class="back" href="./index.html">Back</a>
+
           <br/>
           <hr/>
+
           <input id="useReticle" type="checkbox" checked>
           <label for="useReticle">Use reticle for placement</label><br/>
 
           <input id="useDomOverlay" type="checkbox" checked>
           <label for="useDomOverlay">Enable DOM Overlay</label><br/>
+
+          <input id="useFrontFacing" type="checkbox">
+          <label for="useFrontFacing">Enable front-facing camera</label>
         </p>
       </details>
     </header>
@@ -90,6 +95,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
       let useReticle = document.getElementById('useReticle');
       const useDomOverlay = document.getElementById('useDomOverlay');
+      const useFrontFacing = document.getElementById('useFrontFacing');
 
       // Debugging constants.
       const unsubscribeAfterTouch = false; // unsubscribe from hit test after first touch if in reticle mode?
@@ -106,6 +112,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
       // XR globals.
       let xrSession = null;
+      let xrFrontFacingEnabled = null;
       let xrButton = null;
       let xrRefSpace = null;
       let xrLocalFloor = null;
@@ -211,10 +218,16 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           requiredFeatures: ['local-floor', 'hit-test'],
           optionalFeatures: ['anchors'],
         };
+
         if (useDomOverlay.checked) {
           options.optionalFeatures.push('dom-overlay');
           options.domOverlay = {root: document.body};
         }
+
+        if (useFrontFacing.checked) {
+          options.optionalFeatures.push('front-facing');
+        }
+
         navigator.xr.requestSession('immersive-ar', options).then((session) => {
               session.mode = 'immersive-ar';
               xrButton.setSession(session);
@@ -240,7 +253,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
       function onSessionStarted(session) {
         useDomOverlay.disabled = true;
+        useFrontFacing.disabled = true;
+
         xrSession = session;
+        xrFrontFacingEnabled = xrSession.enabledFeatures.includes("front-facing");
+
         session.addEventListener('end', onSessionEnded);
         session.addEventListener('select', onSelect);
         session.addEventListener('inputsourceschange', onInputSourcesChange);
@@ -295,6 +312,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
       function onSessionEnded(event) {
         useDomOverlay.disabled = false;
+        useFrontFacing.disabled = false;
         xrButton.setSession(null);
         xrSession = null;
       }
@@ -503,6 +521,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         }
 
         scene.startFrame();
+
+        if (xrFrontFacingEnabled) {
+          gl.frontFace(gl.CW);
+        }
 
         scene.drawXRFrame(frame, pose);
 

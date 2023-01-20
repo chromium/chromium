@@ -68,7 +68,8 @@ enum XRSessionFeature {
   IMAGE_TRACKING = 13,
   HAND_INPUT = 14,
   SECONDARY_VIEWS = 15,
-  LAYERS = 16
+  LAYERS = 16,
+  FRONT_FACING = 17,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

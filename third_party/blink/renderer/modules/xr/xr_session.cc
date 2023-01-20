@@ -297,6 +297,7 @@ void XRSession::MetricsReporter::ReportFeatureUsed(
     case XRSessionFeature::HAND_INPUT:
     case XRSessionFeature::SECONDARY_VIEWS:
     case XRSessionFeature::LAYERS:
+    case XRSessionFeature::FRONT_FACING:
       // Not recording metrics for these features currently.
       break;
   }

@@ -27,6 +27,9 @@ android:requestLegacyExternalStorage="true"
 {% endblock %}
 
 {% block base_application_definitions %}
+{% endblock %}
+
+{% block base_application_extra_arcore_definitions %}
     <meta-data android:name="com.google.ar.core.session_settings"
-      android:value="dataset_path,/sdcard/chromium_tests_root/chrome/test/data/xr/dataset.mp4"/>
+        android:value="dataset_path,/sdcard/chromium_tests_root/chrome/test/data/xr/dataset.mp4,allow_front_facing_motion_tracking_6dof,"/>
 {% endblock %}

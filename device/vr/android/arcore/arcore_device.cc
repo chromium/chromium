@@ -42,7 +42,8 @@ const std::vector<mojom::XRSessionFeature>& GetSupportedFeatures() {
                           mojom::XRSessionFeature::PLANE_DETECTION,
                           mojom::XRSessionFeature::DEPTH,
                           mojom::XRSessionFeature::IMAGE_TRACKING,
-                          mojom::XRSessionFeature::HIT_TEST}};
+                          mojom::XRSessionFeature::HIT_TEST,
+                          mojom::XRSessionFeature::FRONT_FACING}};
 
   return *kSupportedFeatures;
 }

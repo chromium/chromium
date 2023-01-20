@@ -58,6 +58,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           This sample demonstrates use of a depth API in immersive-ar session.
           The data will be uploaded to the GPU & accessed from a shader.
           <a class="back" href="./index.html">Back</a>
+
+          <br/>
+          <hr/>
+
+          <input id="useFrontFacing" type="checkbox">
+          <label for="useFrontFacing">Enable front-facing camera</label>
         </p>
       </details>
     </header>
@@ -81,6 +87,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     <script id="turboFragment" type="x-shader/x-fragment" src="../shaders/turbo.glsl"></script>
     <script type="module">
       import {mat4, vec3, mat3, vec2} from '../js/cottontail/src/math/gl-matrix.js';
+
+      const useFrontFacing = document.getElementById('useFrontFacing');
 
       // XR globals.
       let xrButton = null;
@@ -126,12 +134,17 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
         let options = {
           requiredFeatures: ['depth-sensing', 'dom-overlay'],
+          optionalFeatures: [],
           domOverlay: { root: textOverlayElement },
           depthSensing: {
             usagePreference: ["cpu-optimized"],
             dataFormatPreference: ["luminance-alpha"],
           }
         };
+
+        if (useFrontFacing.checked) {
+          options.optionalFeatures.push('front-facing');
+        }
 
         navigator.xr.requestSession('immersive-ar', options).then((session) => {
             session.mode = 'immersive-ar';
@@ -144,6 +157,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       }
 
       function onSessionStarted(session) {
+        useFrontFacing.disabled = true;
+
         session.addEventListener('end', onSessionEnded);
 
         let canvas = document.createElement('canvas');
@@ -173,6 +188,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       }
 
       function onSessionEnded(event) {
+        useFrontFacing.disabled = false;
         xrButton.setSession(null);
       }
 

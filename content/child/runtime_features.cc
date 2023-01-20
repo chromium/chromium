@@ -284,6 +284,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      features::kWebOTPAssertionFeaturePolicy, kSetOnlyIfOverridden},
     {wf::EnableWebUSB, features::kWebUsb},
     {wf::EnableWebXR, features::kWebXr},
+    {wf::EnableWebXRFrontFacing, device::features::kWebXrIncubations},
     {wf::EnableWebXRHandInput, device::features::kWebXrHandInput},
     {wf::EnableWebXRImageTracking, device::features::kWebXrIncubations},
     {wf::EnableWebXRLayers, device::features::kWebXrLayers},
