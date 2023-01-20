@@ -44,7 +44,7 @@ Canvas log:
         method : "drawRect"
         params : {
             paint : {
-                color : "#7F000000"
+                color : "#80000000"
                 flags : "AntiAlias"
                 strokeCap : "Butt"
                 strokeJoin : "Miter"

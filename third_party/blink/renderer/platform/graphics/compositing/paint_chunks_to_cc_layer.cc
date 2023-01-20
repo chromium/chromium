@@ -593,17 +593,13 @@ void ConversionContext<Result>::StartEffect(
   // Apply effects.
   result_.StartPaint();
   if (!has_filter) {
-    // TODO(ajuma): This should really be rounding instead of flooring the
-    // alpha value, but that breaks slimming paint reftests.
-    auto alpha = base::ClampFloor<uint8_t>(255 * effect.Opacity());
     if (has_other_effects) {
       cc::PaintFlags flags;
       flags.setBlendMode(effect.BlendMode());
-      flags.setAlphaf(alpha / 255.0f);
+      flags.setAlphaf(effect.Opacity());
       save_layer_id = push<cc::SaveLayerOp>(flags);
     } else {
-      save_layer_id =
-          push<cc::SaveLayerAlphaOp>(static_cast<float>(alpha / 255.0f));
+      save_layer_id = push<cc::SaveLayerAlphaOp>(effect.Opacity());
     }
   } else {
     // Handle filter effect.

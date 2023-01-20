@@ -124,10 +124,10 @@ TEST_P(PaintChunksToCcLayerTest, EffectGroupingSimple) {
   EXPECT_THAT(
       output,
       ElementsAre(PaintOpEq(cc::SaveLayerAlphaOp(SkRect::MakeXYWH(0, 0, 90, 90),
-                                                 127 / 255.f)),  // <e1>
-                  PaintOpIs<cc::DrawRecordOp>(),                 // <p0/>
-                  PaintOpIs<cc::DrawRecordOp>(),                 // <p1/>
-                  PaintOpIs<cc::RestoreOp>()));                  // </e1>
+                                                 0.5f)),  // <e1>
+                  PaintOpIs<cc::DrawRecordOp>(),          // <p0/>
+                  PaintOpIs<cc::DrawRecordOp>(),          // <p1/>
+                  PaintOpIs<cc::RestoreOp>()));           // </e1>
 }
 
 TEST_P(PaintChunksToCcLayerTest, EffectGroupingNested) {
@@ -145,16 +145,16 @@ TEST_P(PaintChunksToCcLayerTest, EffectGroupingNested) {
       output,
       ElementsAre(
           PaintOpEq(cc::SaveLayerAlphaOp(SkRect::MakeXYWH(0, 0, 444, 666),
-                                         127 / 255.f)),  // <e1>
+                                         0.5f)),  // <e1>
           PaintOpEq(cc::SaveLayerAlphaOp(SkRect::MakeXYWH(0, 0, 100, 100),
-                                         127 / 255.f)),  // <e2>
-          PaintOpIs<cc::DrawRecordOp>(),                 // <p0/>
-          PaintOpIs<cc::RestoreOp>(),                    // </e2>
+                                         0.5f)),  // <e2>
+          PaintOpIs<cc::DrawRecordOp>(),          // <p0/>
+          PaintOpIs<cc::RestoreOp>(),             // </e2>
           PaintOpEq(cc::SaveLayerAlphaOp(SkRect::MakeXYWH(111, 222, 333, 444),
-                                         127 / 255.f)),  // <e3>
-          PaintOpIs<cc::DrawRecordOp>(),                 // <p1/>
-          PaintOpIs<cc::RestoreOp>(),                    // </e3>
-          PaintOpIs<cc::RestoreOp>()));                  // </e1>
+                                         0.5f)),  // <e3>
+          PaintOpIs<cc::DrawRecordOp>(),          // <p1/>
+          PaintOpIs<cc::RestoreOp>(),             // </e3>
+          PaintOpIs<cc::RestoreOp>()));           // </e1>
 }
 
 TEST_P(PaintChunksToCcLayerTest, EffectFilterGroupingNestedWithTransforms) {
@@ -184,8 +184,8 @@ TEST_P(PaintChunksToCcLayerTest, EffectFilterGroupingNestedWithTransforms) {
               gfx::TransformToSkM44(t1->Matrix() * t2->Matrix()))),  // <t1*t2>
           // chunk1.bounds + e2(t2^-1(chunk2.bounds))
           PaintOpEq(cc::SaveLayerAlphaOp(SkRect::MakeXYWH(0, 0, 155, 155),
-                                         127 / 255.f)),  // <e1>
-          PaintOpIs<cc::DrawRecordOp>(),                 // <p1/>
+                                         0.5f)),  // <e1>
+          PaintOpIs<cc::DrawRecordOp>(),          // <p1/>
           // t2^-1(chunk2.bounds)
           PaintOpEq(cc::SaveLayerOp(SkRect::MakeXYWH(70, 70, 70, 70),
                                     expected_flags)),  // <e2>
@@ -231,14 +231,14 @@ TEST_P(PaintChunksToCcLayerTest, InterleavedClipEffect) {
                   PaintOpIs<cc::DrawRecordOp>(),  // <p1/>
                   PaintOpIs<cc::RestoreOp>(),     // </c3>
                   PaintOpEq(cc::SaveLayerAlphaOp(SkRect::MakeXYWH(0, 0, 90, 90),
-                                                 127 / 255.f)),  // <e1>
+                                                 0.5f)),  // <e1>
                   PaintOpIs<cc::SaveOp>(),
                   PaintOpIs<cc::ClipRectOp>(),  // <c3+c4>
                   PaintOpEq(cc::SaveLayerAlphaOp(SkRect::MakeXYWH(0, 0, 50, 50),
-                                                 127 / 255.f)),  // <e2>
-                  PaintOpIs<cc::DrawRecordOp>(),                 // <p2/>
-                  PaintOpIs<cc::RestoreOp>(),                    // </e2>
-                  PaintOpIs<cc::RestoreOp>(),                    // </c3+c4>
+                                                 0.5f)),  // <e2>
+                  PaintOpIs<cc::DrawRecordOp>(),          // <p2/>
+                  PaintOpIs<cc::RestoreOp>(),             // </e2>
+                  PaintOpIs<cc::RestoreOp>(),             // </c3+c4>
                   PaintOpIs<cc::SaveOp>(),
                   PaintOpIs<cc::ClipRectOp>(),    // <c3>
                   PaintOpIs<cc::DrawRecordOp>(),  // <p3/>
@@ -296,7 +296,7 @@ TEST_P(PaintChunksToCcLayerTest, OpacityEffectSpaceInversion) {
           PaintOpIs<cc::SaveOp>(),
           PaintOpEq(cc::ConcatOp(gfx::TransformToSkM44(t1->Matrix()))),  // <t1>
           PaintOpEq(cc::SaveLayerAlphaOp(SkRect::MakeXYWH(0, 0, 100, 100),
-                                         127 / 255.f)),  // <e1>
+                                         0.5f)),  // <e1>
           PaintOpIs<cc::SaveOp>(),
           PaintOpEq(cc::ConcatOp(gfx::TransformToSkM44(
               t1->Matrix().GetCheckedInverse()))),  // <t1^-1>
@@ -388,7 +388,7 @@ TEST_P(PaintChunksToCcLayerTest, EffectWithNoOutputClip) {
       chunks.Build(), PropertyTreeState(t0(), *c1, e0()));
   EXPECT_THAT(output, ElementsAre(PaintOpEq(cc::SaveLayerAlphaOp(
                                       SkRect::MakeXYWH(0, 0, 100, 100),
-                                      127 / 255.f)),  // <e1>
+                                      0.5f)),  // <e1>
                                   PaintOpIs<cc::SaveOp>(),
                                   PaintOpIs<cc::ClipRectOp>(),    // <c2>
                                   PaintOpIs<cc::DrawRecordOp>(),  // <p0/>
@@ -411,9 +411,9 @@ TEST_P(PaintChunksToCcLayerTest,
       output,
       ElementsAre(
           PaintOpEq(cc::SaveLayerAlphaOp(SkRect::MakeXYWH(0, 0, 100, 100),
-                                         127 / 255.f)),  // <e1>
+                                         0.5f)),  // <e1>
           PaintOpEq(cc::SaveLayerAlphaOp(SkRect::MakeXYWH(0, 0, 100, 100),
-                                         127 / 255.f)),  // <e2>
+                                         0.5f)),  // <e2>
           PaintOpIs<cc::SaveOp>(),
           PaintOpIs<cc::ClipRectOp>(),    // <c1>
           PaintOpIs<cc::DrawRecordOp>(),  // <p0/>
@@ -435,7 +435,7 @@ TEST_P(PaintChunksToCcLayerTest,
       chunks.Build(), PropertyTreeState(t0(), c0(), *e1));
   EXPECT_THAT(output, ElementsAre(PaintOpEq(cc::SaveLayerAlphaOp(
                                       SkRect::MakeXYWH(0, 0, 100, 100),
-                                      127 / 255.f)),  // <e2>
+                                      0.5f)),  // <e2>
                                   PaintOpIs<cc::SaveOp>(),
                                   PaintOpIs<cc::ClipRectOp>(),    // <c1>
                                   PaintOpIs<cc::DrawRecordOp>(),  // <p0/>
@@ -456,7 +456,7 @@ TEST_P(PaintChunksToCcLayerTest,
       chunks.Build(), PropertyTreeState(t0(), *c1, *e1));
   EXPECT_THAT(output, ElementsAre(PaintOpEq(cc::SaveLayerAlphaOp(
                                       SkRect::MakeXYWH(0, 0, 100, 100),
-                                      127 / 255.f)),              // <e2>
+                                      0.5f)),                     // <e2>
                                   PaintOpIs<cc::DrawRecordOp>(),  // <p0/>
                                   PaintOpIs<cc::RestoreOp>()));   // </e2>
 }
@@ -566,7 +566,7 @@ TEST_P(PaintChunksToCcLayerTest, EmptyEffectsAreStored) {
 
   EXPECT_THAT(output, ElementsAre(PaintOpEq(cc::SaveLayerAlphaOp(
                                       SkRect::MakeXYWH(0, 0, 100, 100),
-                                      127 / 255.f)),          // <e1>
+                                      0.5f)),                 // <e1>
                                   PaintOpIs<cc::RestoreOp>()  // </e1>
                                   ));
 }
