@@ -376,10 +376,18 @@ BindNotificationService(ServiceWorkerHost* host) {
         DCHECK_CURRENTLY_ON(BrowserThread::UI);
         auto* process_host = static_cast<RenderProcessHostImpl*>(
             RenderProcessHost::FromID(host->worker_process_id()));
-        process_host->CreateNotificationService(
-            GlobalRenderFrameHostId(),
-            RenderProcessHost::NotificationServiceCreatorType::kServiceWorker,
-            info.storage_key, std::move(receiver));
+
+        // It's possible that the callback is run between the destruction of the
+        // RenderProcessHost and the disconnection of the ServiceWorkerHost, so
+        // we should add the check here to avoid unexpected behaviour if the
+        // `process_host` is cast from a nullptr.
+        // See `ServiceWorkerHost::GetStoragePartition()`.
+        if (process_host) {
+          process_host->CreateNotificationService(
+              GlobalRenderFrameHostId(),
+              RenderProcessHost::NotificationServiceCreatorType::kServiceWorker,
+              info.storage_key, std::move(receiver));
+        }
       },
       base::Unretained(host));
 }
