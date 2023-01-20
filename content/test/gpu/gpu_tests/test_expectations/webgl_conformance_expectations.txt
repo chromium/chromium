@@ -294,6 +294,7 @@ crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/webgl-comp
 crbug.com/1175371 [ android angle-opengles passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ angle-opengles chromeos passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ angle-opengl display-server-x linux passthrough renderer-skia-gl ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
+crbug.com/1175371 [ angle-opengles display-server-wayland linux passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ angle-metal monterey no-asan oop-c release ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ angle-opengl mac ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ win ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
@@ -310,6 +311,7 @@ crbug.com/849572 [ win angle-d3d11 passthrough ] conformance/extensions/angle-in
 crbug.com/849572 [ angle-opengl display-server-x no-asan oop-c passthrough ubuntu ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/849572 [ angle-vulkan passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/849572 [ angle-swiftshader passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
+crbug.com/849572 [ angle-opengles display-server-wayland linux passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 
 # Nvidia bugs fixed in latest driver
 # TODO(http://crbug.com/887241): Upgrade the drivers on the bots.
@@ -569,10 +571,9 @@ crbug.com/angleproject/5038 [ chromeos no-passthrough ] conformance/extensions/e
 ###########################
 
 crbug.com/1185344 [ linux display-server-wayland intel angle-disabled ] WebglExtension_EXT_sRGB [ Failure ]
-crbug.com/1185344 [ linux display-server-wayland intel angle-disabled ] WebglExtension_EXT_shader_texture_lod [ Failure ]
+crbug.com/1185344 [ angle-opengles linux display-server-wayland intel ] WebglExtension_EXT_shader_texture_lod [ Failure ]
 
-# Failures on validating command decoder only; won't fix.
-crbug.com/angleproject/5038 [ linux intel display-server-wayland no-passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
+crbug.com/angleproject/5038 [ linux intel display-server-wayland ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 crbug.com/1357064 [ linux intel display-server-wayland no-passthrough ] conformance/rendering/blending.html [ Failure ]
 

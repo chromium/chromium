@@ -27,7 +27,8 @@ declare_args() {
   build_dawn_tests = is_mac || is_win || is_linux || is_chromeos || is_android
 
   enable_validating_command_decoder =
-      !is_win && !is_mac && !(is_linux && !is_castos) && !is_fuchsia
+      !is_win && !is_mac && !(is_linux && !is_castos && !is_chromeos_lacros) &&
+      !is_fuchsia
 }
 
 declare_args() {

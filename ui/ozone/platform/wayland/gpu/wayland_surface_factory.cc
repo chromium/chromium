@@ -197,13 +197,10 @@ std::vector<gl::GLImplementationParts>
 WaylandSurfaceFactory::GetAllowedGLImplementations() {
   std::vector<gl::GLImplementationParts> impls;
   if (egl_implementation_) {
-    // TODO(crbug.com/1231934): Ensure the passthrough is supported on Lacros
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
     // Add only supported ANGLE implementations. Otherwise, angle-vulkan might
     // be requested, which is not supported with this backend yet.
     impls.emplace_back(gl::ANGLEImplementation::kOpenGL);
     impls.emplace_back(gl::ANGLEImplementation::kOpenGLES);
-#endif
     impls.emplace_back(gl::ANGLEImplementation::kSwiftShader);
     impls.emplace_back(gl::kGLImplementationEGLGLES2);
   }

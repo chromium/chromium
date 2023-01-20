@@ -3710,6 +3710,13 @@
         'android_args': [
           '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
         ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
+        ],
         'mixins': [
           'has_native_resultdb_integration',
         ],
@@ -6183,6 +6190,20 @@
       'gpu_webgl2_conformance_gles_passthrough_telemetry_tests',
       'gpu_webgl2_conformance_validating_telemetry_tests',
       # 'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
+    ],
+
+
+    # The same as gpu_fyi_chromeos_release_telemetry_tests, but using
+    # passthrough instead of validating since the Lacros bots are actually
+    # Lacros-like Linux bots, and Linux uses the passthrough decoder.
+    # Additionally, we use GLES instead of GL since that's what is supported.
+    'gpu_fyi_lacros_release_telemetry_tests': [
+      'gpu_common_and_optional_telemetry_tests',
+      'gpu_mediapipe_passthrough_telemetry_tests',
+      'gpu_passthrough_telemetry_tests',
+      'gpu_webcodecs_telemetry_test',
+      'gpu_webgl2_conformance_gles_passthrough_telemetry_tests',
+      'gpu_webgl_conformance_gles_passthrough_telemetry_tests',
     ],
 
     'gpu_fyi_linux_debug_gtests': [

@@ -4343,7 +4343,7 @@
           'linux_intel_uhd_630_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_fyi_chromeos_release_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fyi_lacros_release_telemetry_tests',
         },
       },
       'Linux FYI Debug (NVIDIA)': {
