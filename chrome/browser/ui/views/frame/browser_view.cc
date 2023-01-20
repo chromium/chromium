@@ -751,13 +751,6 @@ class BrowserView::SidePanelVisibilityController : public views::ViewObserver {
       : side_search_panel_(side_search_panel) {
     if (rhs_panel)
       global_panels_.push_back({rhs_panel, absl::nullopt});
-
-    // Observing the side search panel is only necessary when enabling the
-    // improved clobbering functionality.
-    if (side_search_panel_ &&
-        base::FeatureList::IsEnabled(features::kSidePanelImprovedClobbering)) {
-      side_search_panel_observation_.Observe(side_search_panel_);
-    }
   }
   ~SidePanelVisibilityController() override = default;
 
@@ -3626,16 +3619,6 @@ void BrowserView::MaybeClobberAllSideSearchSidePanels() {
 
   if (side_search_controller_) {
     side_search_controller_->ClobberAllInCurrentBrowser();
-  }
-}
-
-void BrowserView::RightAlignedSidePanelWasClosed() {
-  // For the improved side panel clobbering experience we must close all side
-  // panels for the window when the user explicitly closes a participating side
-  // panel.
-  if (base::FeatureList::IsEnabled(features::kSidePanelImprovedClobbering)) {
-    CloseOpenRightAlignedSidePanel();
-    MaybeClobberAllSideSearchSidePanels();
   }
 }
 

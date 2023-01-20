@@ -80,7 +80,6 @@ void SidePanelToolbarButton::HideSidePanel() {
     browser_view->unified_side_panel()->RemoveChildViewT(
         side_panel_webview_.get());
     side_panel_webview_ = nullptr;
-    browser_view->RightAlignedSidePanelWasClosed();
   }
 }
 

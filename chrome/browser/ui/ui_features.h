@@ -71,10 +71,6 @@ extern const char kTabScrollingButtonPositionParameterName[];
 BASE_DECLARE_FEATURE(kScrollableTabStripOverflow);
 extern const char kScrollableTabStripOverflowModeName[];
 
-// TODO(pbos): Once kReadLater is cleaned up on Desktop, move definition into
-// ui_features.cc. This is currently temporarily in reading_list_switches.h.
-BASE_DECLARE_FEATURE(kSidePanelImprovedClobbering);
-
 BASE_DECLARE_FEATURE(kSidePanelWebView);
 
 BASE_DECLARE_FEATURE(kSidePanelJourneysQueryless);

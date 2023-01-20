@@ -772,11 +772,6 @@ class BrowserView : public BrowserWindow,
   // kClobberAllSideSearchSidePanels is enabled.
   void MaybeClobberAllSideSearchSidePanels();
 
-  // Called by right aligned side panels when they are explicitly closed by
-  // users. This is used to implement improved clobbering logic for the
-  // right aligned side panels.
-  void RightAlignedSidePanelWasClosed();
-
   bool should_show_window_controls_overlay_toggle() const {
     return should_show_window_controls_overlay_toggle_;
   }

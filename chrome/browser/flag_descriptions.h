@@ -1501,9 +1501,6 @@ extern const char kSecurePaymentConfirmationDebugDescription[];
 extern const char kSendTabToSelfSigninPromoName[];
 extern const char kSendTabToSelfSigninPromoDescription[];
 
-extern const char kSidePanelImprovedClobberingName[];
-extern const char kSidePanelImprovedClobberingDescription[];
-
 extern const char kSidePanelJourneysFlagId[];
 extern const char kSidePanelJourneysName[];
 extern const char kSidePanelJourneysDescription[];

@@ -5650,11 +5650,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSplitTabStripDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSplitTabStrip)},
 
-    {"side-panel-improved-clobbering",
-     flag_descriptions::kSidePanelImprovedClobberingName,
-     flag_descriptions::kSidePanelImprovedClobberingDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSidePanelImprovedClobbering)},
-
     {flag_descriptions::kSidePanelJourneysFlagId,
      flag_descriptions::kSidePanelJourneysName,
      flag_descriptions::kSidePanelJourneysDescription, kOsDesktop,

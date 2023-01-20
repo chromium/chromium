@@ -124,13 +124,6 @@ BASE_FEATURE(kSideSearchAutoTriggering,
 const base::FeatureParam<int> kSideSearchAutoTriggeringReturnCount{
     &kSideSearchAutoTriggering, "SideSearchAutoTriggeringReturnCount", 2};
 
-// Adds improved support for handling multiple contextual and global RHS browser
-// side panels. Designed specifically to handle the interim state before the v2
-// side panel project launches.
-BASE_FEATURE(kSidePanelImprovedClobbering,
-             "SidePanelImprovedClobbering",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSidePanelWebView,
              "SidePanelWebView",
              base::FEATURE_DISABLED_BY_DEFAULT);

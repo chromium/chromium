@@ -453,7 +453,6 @@ bool SideSearchBrowserController::GetSidePanelToggledOpen() const {
 
 void SideSearchBrowserController::SidePanelCloseButtonPressed() {
   CloseSidePanel(SideSearchCloseActionType::kTapOnSideSearchCloseButton);
-  browser_view_->RightAlignedSidePanelWasClosed();
 }
 
 void SideSearchBrowserController::OpenSidePanel() {
@@ -553,8 +552,7 @@ void SideSearchBrowserController::UpdateSidePanel() {
   // When side search is shown we only need to close other side panels for the
   // basic clobbering experience. The improved experience leverages a
   // SidePanelVisibilityController on the browser view.
-  if (!base::FeatureList::IsEnabled(features::kSidePanelImprovedClobbering) &&
-      will_show_side_panel) {
+  if (will_show_side_panel) {
     browser_view_->CloseOpenRightAlignedSidePanel(/*exclude_side_search=*/true);
   }
 

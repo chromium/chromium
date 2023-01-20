@@ -2674,11 +2674,6 @@ const char kSendTabToSelfSigninPromoDescription[] =
     "Enables a sign-in promo if the user attempts to share a tab while being "
     "signed out";
 
-const char kSidePanelImprovedClobberingName[] =
-    "Side panel improved clobbering";
-const char kSidePanelImprovedClobberingDescription[] =
-    "Improves the side panel clobbering experience for RHS side panels.";
-
 const char kSidePanelJourneysFlagId[] = "side-panel-journeys";
 const char kSidePanelJourneysName[] = "Side panel journeys";
 const char kSidePanelJourneysDescription[] =
