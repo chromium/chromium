@@ -12,22 +12,16 @@
 namespace WTF {
 
 template <>
-struct DefaultHash<gfx::SizeF> {
-  STATIC_ONLY(DefaultHash);
-  static unsigned GetHash(const gfx::SizeF& key) {
-    return HashInts(DefaultHash<float>::GetHash(key.width()),
-                    DefaultHash<float>::GetHash(key.height()));
-  }
-  static bool Equal(const gfx::SizeF& a, const gfx::SizeF& b) {
-    return DefaultHash<float>::Equal(a.width(), b.width()) &&
-           DefaultHash<float>::Equal(a.height(), b.height());
-  }
-  static const bool safe_to_compare_to_empty_or_deleted = true;
-};
-
-template <>
 struct HashTraits<gfx::SizeF> : GenericHashTraits<gfx::SizeF> {
   STATIC_ONLY(HashTraits);
+  static unsigned GetHash(const gfx::SizeF& key) {
+    return HashInts(WTF::GetHash(key.width()), WTF::GetHash(key.height()));
+  }
+  static bool Equal(const gfx::SizeF& a, const gfx::SizeF& b) {
+    return HashTraits<float>::Equal(a.width(), b.width()) &&
+           HashTraits<float>::Equal(a.height(), b.height());
+  }
+
   static constexpr bool kEmptyValueIsZero = false;
   static constexpr gfx::SizeF EmptyValue() {
     return gfx::SizeF(std::numeric_limits<float>::infinity(), 0);
@@ -38,19 +32,13 @@ struct HashTraits<gfx::SizeF> : GenericHashTraits<gfx::SizeF> {
 };
 
 template <>
-struct DefaultHash<SkIRect> {
-  STATIC_ONLY(DefaultHash);
+struct HashTraits<SkIRect> : GenericHashTraits<SkIRect> {
+  STATIC_ONLY(HashTraits);
   static unsigned GetHash(const SkIRect& key) {
     return HashInts(HashInts(key.x(), key.y()),
                     HashInts(key.right(), key.bottom()));
   }
-  static bool Equal(const SkIRect& a, const SkIRect& b) { return a == b; }
-  static const bool safe_to_compare_to_empty_or_deleted = true;
-};
 
-template <>
-struct HashTraits<SkIRect> : GenericHashTraits<SkIRect> {
-  STATIC_ONLY(HashTraits);
   static constexpr bool kEmptyValueIsZero = false;
   static SkIRect EmptyValue() { return SkIRect::MakeWH(-1, 0); }
   static SkIRect DeletedValue() { return SkIRect::MakeWH(0, -1); }

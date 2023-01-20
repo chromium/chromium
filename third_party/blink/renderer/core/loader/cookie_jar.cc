@@ -164,9 +164,9 @@ bool CookieJar::RequestRestrictedCookieManagerIfNeeded() {
 
 void CookieJar::UpdateCacheAfterGetRequest(const KURL& cookie_url,
                                            const String& cookie_string) {
-  absl::optional<unsigned> new_hash = WTF::HashInts(
-      KURLHash::GetHash(cookie_url),
-      cookie_string.IsNull() ? 0 : StringHash::GetHash(cookie_string));
+  absl::optional<unsigned> new_hash =
+      WTF::HashInts(WTF::GetHash(cookie_url),
+                    cookie_string.IsNull() ? 0 : WTF::GetHash(cookie_string));
 
   CookieCacheLookupResult result =
       CookieCacheLookupResult::kCacheMissFirstAccess;

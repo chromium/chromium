@@ -79,7 +79,7 @@ class IntWrapper : public GarbageCollected<IntWrapper> {
     return other.Value() == Value();
   }
 
-  unsigned GetHash() { return IntHash<int>::GetHash(x_); }
+  unsigned GetHash() { return WTF::GetHash(x_); }
 
   IntWrapper(int x) : x_(x) {}
 
@@ -1653,7 +1653,7 @@ class ThingWithDestructor {
 
   static int live_things_with_destructor_;
 
-  unsigned GetHash() { return IntHash<int>::GetHash(x_); }
+  unsigned GetHash() { return WTF::GetHash(x_); }
 
  private:
   static const int kEmptyValue = 0;
@@ -2566,7 +2566,7 @@ class OffHeapInt : public RefCounted<OffHeapInt> {
     return other.Value() == Value();
   }
 
-  unsigned GetHash() { return IntHash<int>::GetHash(x_); }
+  unsigned GetHash() { return WTF::GetHash(x_); }
   void VoidFunction() {}
 
   OffHeapInt() = delete;

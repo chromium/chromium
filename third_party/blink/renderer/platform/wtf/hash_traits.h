@@ -55,6 +55,8 @@ struct ClearMemoryAtomicallyIfNeeded<T, true> {
 
 template <typename T>
 struct GenericHashTraitsBase {
+  STATIC_ONLY(GenericHashTraitsBase);
+
   using TraitType = T;
 
   // Type for functions that do not take ownership, such as contains.
@@ -218,6 +220,8 @@ struct GenericHashTraits<T, std::enable_if_t<std::is_enum_v<T>>>
 template <typename T>
 struct GenericHashTraits<T, std::enable_if_t<std::is_floating_point_v<T>>>
     : internal::GenericHashTraitsBase<T> {
+  static unsigned GetHash(T key) { return FloatHash<T>::GetHash(key); }
+  static bool Equal(T a, T b) { return FloatHash<T>::Equal(a, b); }
   static constexpr T EmptyValue() { return std::numeric_limits<T>::infinity(); }
   static constexpr T DeletedValue() {
     return -std::numeric_limits<T>::infinity();
@@ -242,6 +246,7 @@ struct AlreadyHashedWithZeroKeyTraits : IntWithZeroKeyHashTraits<unsigned> {
 
 template <typename P>
 struct GenericHashTraits<P*> : internal::GenericHashTraitsBase<P*> {
+  static unsigned GetHash(P* key) { return PtrHash<P>::GetHash(key); }
   static constexpr bool kEmptyValueIsZero = true;
   static constexpr P* DeletedValue() { return reinterpret_cast<P*>(-1); }
 };
@@ -252,6 +257,17 @@ struct GenericHashTraits<scoped_refptr<P>>
   static_assert(sizeof(void*) == sizeof(scoped_refptr<P>),
                 "Unexpected RefPtr size."
                 " RefPtr needs to be single pointer to support deleted value.");
+
+  static unsigned GetHash(P* key) { return PtrHash<P>::GetHash(key); }
+  static unsigned GetHash(const scoped_refptr<P>& key) {
+    return PtrHash<P>::GetHash(key.get());
+  }
+
+  static bool Equal(const scoped_refptr<P>& a, const scoped_refptr<P>& b) {
+    return a == b;
+  }
+  static bool Equal(P* a, const scoped_refptr<P>& b) { return a == b; }
+  static bool Equal(const scoped_refptr<P>& a, P* b) { return a == b; }
 
   class RefPtrValuePeeker {
     DISALLOW_NEW();
@@ -301,6 +317,21 @@ struct GenericHashTraits<scoped_refptr<P>>
 template <typename T>
 struct GenericHashTraits<std::unique_ptr<T>>
     : internal::GenericHashTraitsBase<std::unique_ptr<T>> {
+  static unsigned GetHash(T* key) { return PtrHash<T>::GetHash(key); }
+  static unsigned GetHash(const std::unique_ptr<T>& key) {
+    return GetHash(key.get());
+  }
+
+  static bool Equal(const std::unique_ptr<T>& a, const std::unique_ptr<T>& b) {
+    return a == b;
+  }
+  static bool Equal(const std::unique_ptr<T>& a, const T* b) {
+    return a.get() == b;
+  }
+  static bool Equal(const T* a, const std::unique_ptr<T>& b) {
+    return a == b.get();
+  }
+
   static constexpr bool kEmptyValueIsZero = true;
   static bool IsEmptyValue(const std::unique_ptr<T>& value) { return !value; }
 
@@ -364,13 +395,9 @@ struct SimpleClassHashTraits : GenericHashTraits<T> {
   }
 };
 
+// Defined in string_hash.h.
 template <>
-struct HashTraits<String> : SimpleClassHashTraits<String> {
-  // Defined in string_hash.h.
-  static bool IsEmptyValue(const String&);
-  static bool IsDeletedValue(const String& value);
-  static void ConstructDeletedValue(String& slot, bool zero_value);
-};
+struct HashTraits<String>;
 
 namespace internal {
 
@@ -622,6 +649,12 @@ struct HashTraitsAdapter<Key,
                          KeyTraits,
                          std::void_t<typename KeyTraits::TraitType>>
     : KeyTraits {};
+
+// Shortcut of HashTraits<T>::GetHash(), which can deduct T automatically.
+template <typename T>
+unsigned GetHash(const T& key) {
+  return HashTraits<T>::GetHash(key);
+}
 
 }  // namespace WTF
 

@@ -35,24 +35,14 @@
 
 namespace WTF {
 
-struct AtomicStringHash {
+template <>
+struct HashTraits<AtomicString> : SimpleClassHashTraits<AtomicString> {
   static unsigned GetHash(const AtomicString& key) {
     return key.Impl()->ExistingHash();
   }
 
-  static bool Equal(const AtomicString& a, const AtomicString& b) {
-    return a == b;
-  }
+  static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 
-  static const bool safe_to_compare_to_empty_or_deleted = false;
-};
-
-// AtomicStringHash is the default hash for AtomicString
-template <>
-struct DefaultHash<AtomicString> : AtomicStringHash {};
-
-template <>
-struct HashTraits<AtomicString> : SimpleClassHashTraits<AtomicString> {
   // Unlike other types, we can return a const reference for AtomicString's
   // empty value (g_null_atom).
   typedef const AtomicString& PeekOutType;
@@ -72,7 +62,5 @@ struct HashTraits<AtomicString> : SimpleClassHashTraits<AtomicString> {
 };
 
 }  // namespace WTF
-
-using WTF::AtomicStringHash;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ATOMIC_STRING_HASH_H_

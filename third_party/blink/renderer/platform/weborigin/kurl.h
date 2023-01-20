@@ -320,7 +320,7 @@ namespace WTF {
 
 // Defined in kurl_hash.h.
 template <>
-struct DefaultHash<blink::KURL>;
+struct HashTraits<blink::KURL>;
 
 template <>
 struct CrossThreadCopier<blink::KURL>

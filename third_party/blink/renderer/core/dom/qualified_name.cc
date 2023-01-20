@@ -40,8 +40,7 @@ struct SameSizeAsQualifiedNameImpl
 
 ASSERT_SIZE(QualifiedName::QualifiedNameImpl, SameSizeAsQualifiedNameImpl);
 
-using QualifiedNameCache =
-    HashSet<QualifiedName::QualifiedNameImpl*, QualifiedNameHash>;
+using QualifiedNameCache = HashSet<QualifiedName::QualifiedNameImpl*>;
 
 static QualifiedNameCache& GetQualifiedNameCache() {
   // This code is lockless and thus assumes it all runs on one thread!

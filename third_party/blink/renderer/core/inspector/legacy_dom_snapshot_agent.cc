@@ -61,9 +61,9 @@ std::unique_ptr<protocol::DOM::Rect> LegacyBuildRectForPhysicalRect(
 struct LegacyDOMSnapshotAgent::VectorStringHashTraits
     : public WTF::GenericHashTraits<Vector<String>> {
   static unsigned GetHash(const Vector<String>& vec) {
-    unsigned h = DefaultHash<size_t>::GetHash(vec.size());
+    unsigned h = WTF::GetHash(vec.size());
     for (const String& s : vec) {
-      h = WTF::HashInts(h, DefaultHash<String>::GetHash(s));
+      h = WTF::HashInts(h, WTF::GetHash(s));
     }
     return h;
   }
@@ -89,8 +89,8 @@ struct LegacyDOMSnapshotAgent::VectorStringHashTraits
 
   static bool IsEmptyValue(const Vector<String>& vec) { return vec.empty(); }
 
-  static const bool kEmptyValueIsZero = false;
-  static const bool safe_to_compare_to_empty_or_deleted = false;
+  static constexpr bool kEmptyValueIsZero = false;
+  static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 };
 
 LegacyDOMSnapshotAgent::LegacyDOMSnapshotAgent(

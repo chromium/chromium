@@ -31,34 +31,24 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace blink {
+namespace WTF {
 
 // KURLHash doesn't support null KURLs.  get(), contains(), and add() on
 // HashMap<KURL,..., KURLHash> cause a null-pointer dereference when passed null
 // KURLs.
-
-struct KURLHash {
-  STATIC_ONLY(KURLHash);
-  static unsigned GetHash(const KURL& key) {
-    return key.GetString().Impl()->GetHash();
-  }
-
-  static bool Equal(const KURL& a, const KURL& b) {
-    return StringHash::Equal(a.GetString(), b.GetString());
-  }
-
-  static const bool safe_to_compare_to_empty_or_deleted = false;
-};
-
-}  // namespace blink
-
-namespace WTF {
-
-template <>
-struct DefaultHash<blink::KURL> : blink::KURLHash {};
-
 template <>
 struct HashTraits<blink::KURL> : SimpleClassHashTraits<blink::KURL> {
+  static unsigned GetHash(const blink::KURL& key) {
+    return WTF::GetHash(key.GetString());
+  }
+
+  static bool Equal(const blink::KURL& a, const blink::KURL& b) {
+    return HashTraits<String>::Equal(a.GetString(), b.GetString());
+  }
+
+  static constexpr bool kSafeToCompareToEmptyOrDeleted =
+      HashTraits<String>::kSafeToCompareToEmptyOrDeleted;
+
   static bool IsDeletedValue(const blink::KURL& value) {
     return HashTraits<String>::IsDeletedValue(value.GetString());
   }

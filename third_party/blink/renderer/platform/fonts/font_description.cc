@@ -410,8 +410,7 @@ unsigned FontDescription::GetHash() const {
     if (family->FamilyName().empty())
       continue;
     WTF::AddIntToHash(hash, family->FamilyIsGeneric());
-    WTF::AddIntToHash(hash,
-                      WTF::AtomicStringHash::GetHash(family->FamilyName()));
+    WTF::AddIntToHash(hash, WTF::GetHash(family->FamilyName()));
   }
   return hash;
 }

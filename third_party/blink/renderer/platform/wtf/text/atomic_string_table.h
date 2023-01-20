@@ -115,6 +115,7 @@ class WTF_EXPORT AtomicStringTable final {
 
   base::Lock lock_;
   HashSet<StringImpl*> table_ GUARDED_BY(lock_);
+  static_assert(HashTraits<StringImpl*>::x == 10);
 };
 
 inline bool operator==(const AtomicStringTable::WeakResult& lhs,

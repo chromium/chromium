@@ -27,7 +27,6 @@
 #include "base/bit_cast.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace WTF {
@@ -124,7 +123,6 @@ struct FloatHash {
   static bool Equal(T a, T b) {
     return base::bit_cast<Bits>(a) == base::bit_cast<Bits>(b);
   }
-  static const bool safe_to_compare_to_empty_or_deleted = true;
 };
 
 // pointer identity hash function
@@ -148,37 +146,6 @@ struct PtrHash {
   static const bool safe_to_compare_to_empty_or_deleted = true;
 };
 
-template <typename T>
-struct RefPtrHash : PtrHash<T> {
-  using PtrHash<T>::GetHash;
-  static unsigned GetHash(const scoped_refptr<T>& key) {
-    return GetHash(key.get());
-  }
-  using PtrHash<T>::Equal;
-  static bool Equal(const scoped_refptr<T>& a, const scoped_refptr<T>& b) {
-    return a == b;
-  }
-  static bool Equal(T* a, const scoped_refptr<T>& b) { return a == b; }
-  static bool Equal(const scoped_refptr<T>& a, T* b) { return a == b; }
-};
-
-template <typename T>
-struct UniquePtrHash : PtrHash<T> {
-  using PtrHash<T>::GetHash;
-  static unsigned GetHash(const std::unique_ptr<T>& key) {
-    return GetHash(key.get());
-  }
-  static bool Equal(const std::unique_ptr<T>& a, const std::unique_ptr<T>& b) {
-    return a == b;
-  }
-  static bool Equal(const std::unique_ptr<T>& a, const T* b) {
-    return a.get() == b;
-  }
-  static bool Equal(const T* a, const std::unique_ptr<T>& b) {
-    return a == b.get();
-  }
-};
-
 // Useful compounding hash functions.
 inline void AddIntToHash(unsigned& hash, unsigned key) {
   hash = ((hash << 5) + hash) + key;  // Djb2
@@ -188,90 +155,17 @@ inline void AddFloatToHash(unsigned& hash, float value) {
   AddIntToHash(hash, FloatHash<float>::GetHash(value));
 }
 
-// Default hash function for each type.
+// This is temporary before DefaultHash and HashTraits are fully merged.
 template <typename T>
-struct DefaultHash;
-
-// Actual implementation of DefaultHash. This is kept temporarily before we
-// combine all DefaultHash into HashTraits.
-//
-// The case of |isIntegral| == false is not implemented by default.
-template <typename T, bool isIntegral>
-struct DefaultHashImpl {
+struct DefaultHash {
   // If DefaultHash<T> falls back to this, the hash traits type is supposed to
   // be completely implemented. See hash_traits.h.
   using Undefined = void;
 };
 
-template <typename T>
-struct DefaultHashImpl<T, true> : IntHash<T> {};
-
-// Canonical implementation of DefaultHash.
-template <typename T>
-struct DefaultHash
-    : DefaultHashImpl<T, std::is_integral<T>::value || std::is_enum<T>::value> {
-};
-
-// Specializations of DefaultHash follow.
-template <>
-struct DefaultHash<float> : FloatHash<float> {};
-template <>
-struct DefaultHash<double> : FloatHash<double> {};
-
-// Specializations for pointer types.
-template <typename T>
-struct DefaultHash<T*> : PtrHash<T> {};
-template <typename T>
-struct DefaultHash<scoped_refptr<T>> : RefPtrHash<T> {};
-template <typename T>
-struct DefaultHash<std::unique_ptr<T>> : UniquePtrHash<T> {};
-
-// Specializations for pairs.
-
-// Generic case (T or U is non-integral):
-template <typename T, typename U, bool areBothIntegral>
-struct PairHashImpl {
-  static unsigned GetHash(const std::pair<T, U>& p) {
-    return HashInts(DefaultHash<T>::GetHash(p.first),
-                    DefaultHash<U>::GetHash(p.second));
-  }
-  static bool Equal(const std::pair<T, U>& a, const std::pair<T, U>& b) {
-    return DefaultHash<T>::Equal(a.first, b.first) &&
-           DefaultHash<U>::Equal(a.second, b.second);
-  }
-  static const bool safe_to_compare_to_empty_or_deleted =
-      DefaultHash<T>::safe_to_compare_to_empty_or_deleted &&
-      DefaultHash<U>::safe_to_compare_to_empty_or_deleted;
-};
-
-// Special version for pairs of integrals:
-template <typename T, typename U>
-struct PairHashImpl<T, U, true> {
-  static unsigned GetHash(const std::pair<T, U>& p) {
-    return HashInts(p.first, p.second);
-  }
-  static bool Equal(const std::pair<T, U>& a, const std::pair<T, U>& b) {
-    return PairHashImpl<T, U, false>::Equal(
-        a, b);  // Refer to the generic version.
-  }
-  static const bool safe_to_compare_to_empty_or_deleted =
-      PairHashImpl<T, U, false>::safe_to_compare_to_empty_or_deleted;
-};
-
-// Combined version:
-template <typename T, typename U>
-struct PairHash
-    : PairHashImpl<T,
-                   U,
-                   std::is_integral<T>::value && std::is_integral<U>::value> {};
-
-template <typename T, typename U>
-struct DefaultHash<std::pair<T, U>> : PairHash<T, U> {};
-
 }  // namespace WTF
 
 using WTF::DefaultHash;
-using WTF::IntHash;
 using WTF::PtrHash;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_FUNCTIONS_H_

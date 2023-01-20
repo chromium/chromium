@@ -90,7 +90,7 @@ struct FontCacheKey {
       options_,
       device_scale_factor_hash,
 #if BUILDFLAG(IS_ANDROID)
-      (locale_.empty() ? 0 : AtomicStringHash::GetHash(locale_)) ^
+      (locale_.empty() ? 0 : WTF::GetHash(locale_)) ^
 #endif  // BUILDFLAG(IS_ANDROID)
           (variation_settings_ ? variation_settings_->GetHash() : 0),
       palette_ ? palette_->GetHash() : 0,
@@ -152,31 +152,9 @@ struct FontCacheKey {
   bool is_unique_match_ = false;
 };
 
-struct FontCacheKeyHash {
-  STATIC_ONLY(FontCacheKeyHash);
-  static unsigned GetHash(const FontCacheKey& key) { return key.GetHash(); }
-
-  static bool Equal(const FontCacheKey& a, const FontCacheKey& b) {
-    return a == b;
-  }
-
-  static const bool safe_to_compare_to_empty_or_deleted = true;
-};
-
-struct FontCacheKeyTraits : WTF::SimpleClassHashTraits<FontCacheKey> {
-  STATIC_ONLY(FontCacheKeyTraits);
-
-  // std::string's empty state need not be zero in all implementations,
-  // and it is held within FontFaceCreationParams.
-  static const bool kEmptyValueIsZero = false;
-};
-
 }  // namespace blink
 
 namespace WTF {
-template <>
-struct DefaultHash<blink::FontCacheKey> : blink::FontCacheKeyHash {};
-
 template <>
 struct HashTraits<blink::FontCacheKey>
     : WTF::SimpleClassHashTraits<blink::FontCacheKey> {

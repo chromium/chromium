@@ -36,7 +36,7 @@ class IntWrapper : public blink::GarbageCollected<IntWrapper> {
     return other.Value() == Value();
   }
 
-  unsigned GetHash() { return IntHash<int>::GetHash(x_); }
+  unsigned GetHash() { return WTF::GetHash(x_); }
 
   explicit IntWrapper(int x) : x_(x) {}
 

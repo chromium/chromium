@@ -31,12 +31,10 @@ unsigned FontPalette::GetHash() const {
   if (palette_keyword_ != kCustomPalette)
     return computed_hash;
 
-  WTF::AddIntToHash(computed_hash,
-                    AtomicStringHash::GetHash(palette_values_name_));
-  WTF::AddIntToHash(computed_hash,
-                    match_font_family_.empty()
-                        ? 0
-                        : AtomicStringHash::GetHash(match_font_family_));
+  WTF::AddIntToHash(computed_hash, WTF::GetHash(palette_values_name_));
+  WTF::AddIntToHash(computed_hash, match_font_family_.empty()
+                                       ? 0
+                                       : WTF::GetHash(match_font_family_));
   WTF::AddIntToHash(computed_hash, base_palette_.type);
   WTF::AddIntToHash(computed_hash, base_palette_.index);
 

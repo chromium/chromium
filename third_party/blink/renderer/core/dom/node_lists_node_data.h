@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/html/collection_type.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 
@@ -59,25 +60,21 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
   }
 
   using NamedNodeListKey = std::pair<CollectionType, AtomicString>;
-  struct NodeListAtomicCacheMapEntryHash {
-    STATIC_ONLY(NodeListAtomicCacheMapEntryHash);
+  struct NodeListAtomicCacheMapEntryHashTraits
+      : HashTraits<std::pair<CollectionType, AtomicString>> {
     static unsigned GetHash(const NamedNodeListKey& entry) {
-      return DefaultHash<AtomicString>::GetHash(
-                 entry.second == CSSSelector::UniversalSelectorAtom()
-                     ? g_star_atom
-                     : entry.second) +
+      return WTF::GetHash(entry.second == CSSSelector::UniversalSelectorAtom()
+                              ? g_star_atom
+                              : entry.second) +
              entry.first;
     }
-    static bool Equal(const NamedNodeListKey& a, const NamedNodeListKey& b) {
-      return a == b;
-    }
-    static const bool safe_to_compare_to_empty_or_deleted =
-        DefaultHash<AtomicString>::safe_to_compare_to_empty_or_deleted;
+    static constexpr bool kSafeToCompareToEmptyOrDeleted =
+        HashTraits<AtomicString>::kSafeToCompareToEmptyOrDeleted;
   };
 
   typedef HeapHashMap<NamedNodeListKey,
                       Member<LiveNodeListBase>,
-                      NodeListAtomicCacheMapEntryHash>
+                      NodeListAtomicCacheMapEntryHashTraits>
       NodeListAtomicNameCacheMap;
   typedef HeapHashMap<QualifiedName, Member<TagCollectionNS>>
       TagCollectionNSCache;

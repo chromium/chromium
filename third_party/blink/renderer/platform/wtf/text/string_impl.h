@@ -947,12 +947,12 @@ inline void StringImpl::PrependTo(BufferType& result,
 }
 
 template <typename T>
-struct DefaultHash;
+struct HashTraits;
 // Defined in string_hash.h.
 template <>
-struct DefaultHash<StringImpl*>;
+struct HashTraits<StringImpl*>;
 template <>
-struct DefaultHash<scoped_refptr<StringImpl>>;
+struct HashTraits<scoped_refptr<StringImpl>>;
 
 }  // namespace WTF
 

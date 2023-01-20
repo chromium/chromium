@@ -672,10 +672,10 @@ void String::PrependTo(BufferType& result,
 }
 
 template <typename T>
-struct DefaultHash;
+struct HashTraits;
 // Defined in string_hash.h.
 template <>
-struct DefaultHash<String>;
+struct HashTraits<String>;
 
 // Shared global empty string.
 WTF_EXPORT extern const String& g_empty_string;

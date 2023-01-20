@@ -18,9 +18,7 @@ struct CSSNumericSumValue {
   // A UnitMap maps units to exponents. e.g. the term
   // 1m/s^2 would have a unit map of { m: 1, s: -2 }.
   // UnitMaps must not contain entries with a zero value.
-  using UnitMap = WTF::HashMap<CSSPrimitiveValue::UnitType,
-                               int,
-                               WTF::IntHash<CSSPrimitiveValue::UnitType>>;
+  using UnitMap = WTF::HashMap<CSSPrimitiveValue::UnitType, int>;
 
   // A term is a number and a unit map e.g. 1px is represented as
   // (1, { px: 1 })

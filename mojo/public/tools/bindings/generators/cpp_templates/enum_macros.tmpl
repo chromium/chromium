@@ -136,39 +136,19 @@ struct hash<{{enum_name}}>
 {%- macro enum_hash_blink(enum) %}
 {%-   set enum_name = enum|get_qualified_name_for_kind(
           flatten_nested_kind=True, include_variant=False) %}
-{%-   set hash_fn_name = enum|wtf_hash_fn_name_for_enum %}
 {#    We need two unused enum values: #}
 {%-   set empty_value = -1000000 %}
 {%-   set deleted_value = -1000001 %}
 {%-   set empty_value_unused = "false" if empty_value in enum|all_enum_values else "true" %}
 {%-   set deleted_value_unused = "false" if empty_value in enum|all_enum_values else "true" %}
 namespace WTF {
-struct {{hash_fn_name}} {
-  static unsigned GetHash(const {{enum_name}}& value) {
-    using utype = std::underlying_type<{{enum_name}}>::type;
-    return DefaultHash<utype>::GetHash(static_cast<utype>(value));
-  }
-  static bool Equal(const {{enum_name}}& left, const {{enum_name}}& right) {
-    return left == right;
-  }
-  static const bool safe_to_compare_to_empty_or_deleted = true;
-};
-
 template <>
 struct HashTraits<{{enum_name}}>
-    : public GenericHashTraits<{{enum_name}}> {
+    : EnumHashTraits<{{enum_name}}, {{empty_value}}, {{deleted_value}}> {
   static_assert({{empty_value_unused}},
                 "{{empty_value}} is a reserved enum value");
   static_assert({{deleted_value_unused}},
                 "{{deleted_value}} is a reserved enum value");
-  static const bool kEmptyValueIsZero = false;
-  static {{enum_name}} EmptyValue() { return static_cast<{{enum_name}}>({{empty_value}}); }
-  static void ConstructDeletedValue({{enum_name}}& slot, bool) {
-    slot = static_cast<{{enum_name}}>({{deleted_value}});
-  }
-  static bool IsDeletedValue(const {{enum_name}}& value) {
-    return value == static_cast<{{enum_name}}>({{deleted_value}});
-  }
 };
 }  // namespace WTF
 {%- endmacro %}

@@ -206,7 +206,7 @@ PerformanceMeasure* UserTiming::Measure(ScriptState* script_state,
         GetPerformanceMarkUnsafeTimeForTraces(start_time, start);
     base::TimeTicks unsafe_end_time =
         GetPerformanceMarkUnsafeTimeForTraces(end_time, end);
-    unsigned hash = WTF::StringHash::GetHash(measure_name);
+    unsigned hash = WTF::GetHash(measure_name);
     WTF::AddFloatToHash(hash, start_time);
     WTF::AddFloatToHash(hash, end_time);
 

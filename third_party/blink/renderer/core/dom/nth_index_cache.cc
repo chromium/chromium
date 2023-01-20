@@ -38,7 +38,7 @@ unsigned NthIndexCache::Key::GetHash() const {
     WTF::AddIntToHash(hash, WTF::MemberHash<CSSSelectorList>::GetHash(filter));
   }
   if (!child_tag_name.empty()) {
-    WTF::AddIntToHash(hash, DefaultHash<String>::GetHash(child_tag_name));
+    WTF::AddIntToHash(hash, WTF::GetHash(child_tag_name));
   }
   return hash;
 }

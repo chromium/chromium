@@ -200,29 +200,23 @@ scoped_refptr<FontVariantAlternates> FontVariantAlternates::Resolve(
 
 unsigned FontVariantAlternates::GetHash() const {
   unsigned computed_hash = 0;
-  WTF::AddIntToHash(computed_hash, stylistic_.has_value()
-                                       ? AtomicStringHash::GetHash(*stylistic_)
-                                       : -1);
+  WTF::AddIntToHash(computed_hash,
+                    stylistic_.has_value() ? WTF::GetHash(*stylistic_) : -1);
   WTF::AddIntToHash(computed_hash, historical_forms_);
-  WTF::AddIntToHash(computed_hash, swash_.has_value()
-                                       ? AtomicStringHash::GetHash(*swash_)
-                                       : -1);
-  WTF::AddIntToHash(computed_hash, ornaments_.has_value()
-                                       ? AtomicStringHash::GetHash(*ornaments_)
-                                       : -1);
-  WTF::AddIntToHash(computed_hash, annotation_.has_value()
-                                       ? AtomicStringHash::GetHash(*annotation_)
-                                       : -1);
+  WTF::AddIntToHash(computed_hash,
+                    swash_.has_value() ? WTF::GetHash(*swash_) : -1);
+  WTF::AddIntToHash(computed_hash,
+                    ornaments_.has_value() ? WTF::GetHash(*ornaments_) : -1);
+  WTF::AddIntToHash(computed_hash,
+                    annotation_.has_value() ? WTF::GetHash(*annotation_) : -1);
   if (!styleset_.empty()) {
     for (const AtomicString& styleset_alias : styleset_) {
-      WTF::AddIntToHash(computed_hash,
-                        AtomicStringHash::GetHash(styleset_alias));
+      WTF::AddIntToHash(computed_hash, WTF::GetHash(styleset_alias));
     }
   }
   if (!character_variant_.empty()) {
     for (const AtomicString& character_variant_alias : character_variant_) {
-      WTF::AddIntToHash(computed_hash,
-                        AtomicStringHash::GetHash(character_variant_alias));
+      WTF::AddIntToHash(computed_hash, WTF::GetHash(character_variant_alias));
     }
   }
   WTF::AddIntToHash(computed_hash, resolved_features_.size());

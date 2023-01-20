@@ -130,10 +130,6 @@ def NamespaceToArray(namespace):
   return namespace.split(".") if namespace else []
 
 
-def GetWtfHashFnNameForEnum(enum):
-  return _NameFormatter(enum, None).Format("_", internal=True,
-                                           flatten_nested_kind=True) + "HashFn"
-
 def GetEnumNameWithoutNamespace(enum):
   full_enum_name = _NameFormatter(enum, None).Format(
         "::", prefixed=True,
@@ -438,7 +434,6 @@ class Generator(generator.Generator):
         "under_to_camel": self._UnderToCamel,
         "unmapped_type_for_serializer": self._GetUnmappedTypeForSerializer,
         "use_custom_serializer": UseCustomSerializer,
-        "wtf_hash_fn_name_for_enum": GetWtfHashFnNameForEnum,
     }
     return cpp_filters
 

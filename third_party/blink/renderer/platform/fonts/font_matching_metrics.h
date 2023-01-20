@@ -56,9 +56,8 @@ struct IdentifiableTokenKey {
 struct IdentifiableTokenKeyHashTraits
     : WTF::SimpleClassHashTraits<IdentifiableTokenKey> {
   static unsigned GetHash(const IdentifiableTokenKey& key) {
-    IntHash<int64_t> hasher;
-    return hasher.GetHash(key.token.ToUkmMetricValue()) ^
-           hasher.GetHash((key.is_deleted_value << 1) + key.is_empty_value);
+    return WTF::GetHash(key.token.ToUkmMetricValue()) ^
+           WTF::GetHash((key.is_deleted_value << 1) + key.is_empty_value);
   }
   static const bool kEmptyValueIsZero = false;
   static IdentifiableTokenKey EmptyValue() { return IdentifiableTokenKey(); }

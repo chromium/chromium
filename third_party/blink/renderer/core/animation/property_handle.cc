@@ -30,11 +30,11 @@ unsigned PropertyHandle::GetHash() const {
     case kHandleCSSProperty:
       return static_cast<int>(css_property_->PropertyID());
     case kHandleCSSCustomProperty:
-      return AtomicStringHash::GetHash(property_name_);
+      return WTF::GetHash(property_name_);
     case kHandlePresentationAttribute:
       return -static_cast<int>(css_property_->PropertyID());
     case kHandleSVGAttribute:
-      return QualifiedNameHash::GetHash(*svg_attribute_);
+      return WTF::GetHash(*svg_attribute_);
     default:
       NOTREACHED();
       return 0;

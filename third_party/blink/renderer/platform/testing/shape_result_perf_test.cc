@@ -71,7 +71,7 @@ class ShapeResultPerfTest {
 
   Font font;
 
-  HashMap<FontName, String, WTF::IntHash<FontName>> font_path = {
+  HashMap<FontName, String> font_path = {
       {kAhem, "Ahem.woff"},
       {kAmiri, "third_party/Amiri/amiri_arabic.woff2"},
       {kMegalopolis, "third_party/MEgalopolis/MEgalopolisExtra.woff"},

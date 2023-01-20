@@ -435,7 +435,7 @@ double NetworkStateNotifier::GetRandomMultiplier(const String& host) const {
   if (!host)
     return 1.0;
 
-  unsigned hash = StringHash::GetHash(host) + RandomizationSalt();
+  unsigned hash = WTF::GetHash(host) + RandomizationSalt();
   double random_multiplier = 0.9 + static_cast<double>((hash % 21)) * 0.01;
   DCHECK_LE(0.90, random_multiplier);
   DCHECK_GE(1.10, random_multiplier);

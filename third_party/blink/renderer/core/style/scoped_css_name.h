@@ -41,9 +41,8 @@ class CORE_EXPORT ScopedCSSName : public GarbageCollected<ScopedCSSName> {
   }
 
   unsigned GetHash() const {
-    unsigned hash = WTF::AtomicStringHash::GetHash(name_);
-    WTF::AddIntToHash(
-        hash, WTF::PtrHash<const TreeScope>::GetHash(tree_scope_.Get()));
+    unsigned hash = WTF::GetHash(name_);
+    WTF::AddIntToHash(hash, WTF::GetHash(tree_scope_.Get()));
     return hash;
   }
 

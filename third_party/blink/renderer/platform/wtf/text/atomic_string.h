@@ -284,10 +284,10 @@ WTF_EXPORT extern const AtomicString& g_http_atom;
 WTF_EXPORT extern const AtomicString& g_https_atom;
 
 template <typename T>
-struct DefaultHash;
+struct HashTraits;
 // Defined in atomic_string_hash.h.
 template <>
-struct DefaultHash<AtomicString>;
+struct HashTraits<AtomicString>;
 
 // Pretty printer for gtest and base/logging.*.  It prepends and appends
 // double-quotes, and escapes characters other than ASCII printables.

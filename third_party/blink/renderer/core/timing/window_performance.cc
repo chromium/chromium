@@ -587,7 +587,7 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
     base::TimeTicks unsafe_start_time =
         GetTimeOriginInternal() + base::Milliseconds(entry->startTime());
     base::TimeTicks unsafe_end_time = entry->unsafePresentationTimestamp();
-    unsigned hash = WTF::StringHash::GetHash(entry->name());
+    unsigned hash = WTF::GetHash(entry->name());
     WTF::AddFloatToHash(hash, entry->startTime());
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
         "devtools.timeline", "EventTiming", hash, unsafe_start_time, "data",

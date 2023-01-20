@@ -133,8 +133,7 @@ TEST_F(ScreenOrientationControllerTest, CancelPending_DoubleLock) {
 // Test that when a LockError message is received, the request is set as failed
 // with the correct values.
 TEST_F(ScreenOrientationControllerTest, LockRequest_Error) {
-  HashMap<LockResult, blink::WebLockOrientationError, WTF::IntHash<LockResult>>
-      errors;
+  HashMap<LockResult, blink::WebLockOrientationError> errors;
   errors.insert(LockResult::SCREEN_ORIENTATION_LOCK_RESULT_ERROR_NOT_AVAILABLE,
                 blink::kWebLockOrientationErrorNotAvailable);
   errors.insert(

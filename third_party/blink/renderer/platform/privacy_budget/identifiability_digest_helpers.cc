@@ -21,7 +21,7 @@ IdentifiableToken IdentifiabilityBenignStringToken(const String& in) {
 
   // Return the precomputed hash for the string. This makes this method O(1)
   // instead of O(n), at the cost of only using the lower 32 bits of the hash.
-  return IdentifiableToken(StringHash::GetHash(in));
+  return IdentifiableToken(WTF::GetHash(in));
 }
 
 IdentifiableToken IdentifiabilitySensitiveStringToken(const String& in) {
@@ -30,7 +30,7 @@ IdentifiableToken IdentifiabilitySensitiveStringToken(const String& in) {
 
   // Take the precomputed 32-bit hash, and xor the top and bottom halves to
   // produce a 16-bit hash.
-  const uint32_t original_hash = StringHash::GetHash(in);
+  const uint32_t original_hash = WTF::GetHash(in);
   return IdentifiableToken(((original_hash & 0xFFFF0000) >> 16) ^
                            (original_hash & 0xFFFF));
 }

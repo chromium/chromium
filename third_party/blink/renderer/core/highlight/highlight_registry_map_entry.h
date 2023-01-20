@@ -42,13 +42,14 @@ struct DefaultHash<blink::Member<blink::HighlightRegistryMapEntry>> {
   static inline unsigned GetHash(
       const blink::Member<blink::HighlightRegistryMapEntry>& key) {
     DCHECK(key);
-    return AtomicStringHash::GetHash(key->highlight_name);
+    return WTF::GetHash(key->highlight_name);
   }
   static inline bool Equal(
       const blink::Member<blink::HighlightRegistryMapEntry>& a,
       const blink::Member<blink::HighlightRegistryMapEntry>& b) {
     DCHECK(a && b);
-    return AtomicStringHash::Equal(a->highlight_name, b->highlight_name);
+    return HashTraits<AtomicString>::Equal(a->highlight_name,
+                                           b->highlight_name);
   }
 
   static const bool safe_to_compare_to_empty_or_deleted = false;

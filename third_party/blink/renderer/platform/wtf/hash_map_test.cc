@@ -91,12 +91,10 @@ struct TestDoubleHashTraits : HashTraits<double> {
   static const unsigned kMinimumTableSize = 8;
 };
 
-using DoubleHashMap =
-    HashMap<double, int64_t, DefaultHash<double>, TestDoubleHashTraits>;
+using DoubleHashMap = HashMap<double, int64_t, TestDoubleHashTraits>;
 
 int BucketForKey(double key) {
-  return DefaultHash<double>::GetHash(key) &
-         (TestDoubleHashTraits::kMinimumTableSize - 1);
+  return WTF::GetHash(key) & (TestDoubleHashTraits::kMinimumTableSize - 1);
 }
 
 TEST(HashMapTest, DoubleHashCollisions) {
@@ -627,15 +625,15 @@ TEST(HashMapTest, InitializerList) {
 }
 
 TEST(HashMapTest, IsValidKey) {
-  static_assert(DefaultHash<int>::safe_to_compare_to_empty_or_deleted,
+  static_assert(HashTraits<int>::kSafeToCompareToEmptyOrDeleted,
                 "type should be comparable to empty or deleted");
-  static_assert(DefaultHash<int*>::safe_to_compare_to_empty_or_deleted,
+  static_assert(HashTraits<int*>::kSafeToCompareToEmptyOrDeleted,
                 "type should be comparable to empty or deleted");
   static_assert(
-      DefaultHash<
-          scoped_refptr<DummyRefCounted>>::safe_to_compare_to_empty_or_deleted,
+      HashTraits<
+          scoped_refptr<DummyRefCounted>>::kSafeToCompareToEmptyOrDeleted,
       "type should be comparable to empty or deleted");
-  static_assert(!DefaultHash<AtomicString>::safe_to_compare_to_empty_or_deleted,
+  static_assert(!HashTraits<AtomicString>::kSafeToCompareToEmptyOrDeleted,
                 "type should not be comparable to empty or deleted");
 
   EXPECT_FALSE((HashMap<int, int>::IsValidKey(0)));

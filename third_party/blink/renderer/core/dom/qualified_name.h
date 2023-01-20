@@ -197,29 +197,6 @@ inline unsigned HashComponents(const QualifiedNameComponents& buf) {
   return StringHasher::HashMemory<sizeof(QualifiedNameComponents)>(&buf);
 }
 
-struct CORE_EXPORT QualifiedNameHash {
-  STATIC_ONLY(QualifiedNameHash);
-  static unsigned GetHash(const QualifiedName& name) {
-    return GetHash(name.Impl());
-  }
-
-  static unsigned GetHash(const QualifiedName::QualifiedNameImpl* name) {
-    if (!name->existing_hash_)
-      name->existing_hash_ = name->ComputeHash();
-    return name->existing_hash_;
-  }
-
-  static bool Equal(const QualifiedName& a, const QualifiedName& b) {
-    return a == b;
-  }
-  static bool Equal(const QualifiedName::QualifiedNameImpl* a,
-                    const QualifiedName::QualifiedNameImpl* b) {
-    return a == b;
-  }
-
-  static const bool safe_to_compare_to_empty_or_deleted = false;
-};
-
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const QualifiedName&);
 
 }  // namespace blink
@@ -229,28 +206,37 @@ WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::QualifiedName)
 namespace WTF {
 
 template <>
-struct DefaultHash<blink::QualifiedName> : blink::QualifiedNameHash {};
+struct HashTraits<blink::QualifiedName::QualifiedNameImpl*>
+    : GenericHashTraits<blink::QualifiedName::QualifiedNameImpl*> {
+  static unsigned GetHash(const blink::QualifiedName::QualifiedNameImpl* name) {
+    if (!name->existing_hash_) {
+      name->existing_hash_ = name->ComputeHash();
+    }
+    return name->existing_hash_;
+  }
+  static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
+};
 
 template <>
 struct HashTraits<blink::QualifiedName>
-    : SimpleClassHashTraits<blink::QualifiedName> {
-  static const bool kEmptyValueIsZero = false;
-  static bool IsEmptyValue(const blink::QualifiedName& value) {
-    return value == EmptyValue();
+    : GenericHashTraits<blink::QualifiedName> {
+  using QualifiedNameImpl = blink::QualifiedName::QualifiedNameImpl;
+  static unsigned GetHash(const blink::QualifiedName& name) {
+    return WTF::GetHash(name.Impl());
   }
+  static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
+
+  static constexpr bool kEmptyValueIsZero = false;
   static const blink::QualifiedName& EmptyValue() {
     return blink::QualifiedName::Null();
   }
 
   static bool IsDeletedValue(const blink::QualifiedName& value) {
-    using QualifiedNameImpl = blink::QualifiedName::QualifiedNameImpl;
     return HashTraits<scoped_refptr<QualifiedNameImpl>>::IsDeletedValue(
         value.impl_);
   }
-
   static void ConstructDeletedValue(blink::QualifiedName& slot,
                                     bool zero_value) {
-    using QualifiedNameImpl = blink::QualifiedName::QualifiedNameImpl;
     HashTraits<scoped_refptr<QualifiedNameImpl>>::ConstructDeletedValue(
         slot.impl_, zero_value);
   }

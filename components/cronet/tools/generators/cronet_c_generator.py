@@ -132,11 +132,6 @@ def NamespaceToArray(namespace):
   return namespace.split(".") if namespace else []
 
 
-def GetWtfHashFnNameForEnum(enum):
-  return _NameFormatter(enum, None).Format("_", internal=True,
-                                           flatten_nested_kind=True) + "HashFn"
-
-
 def IsNativeOnlyKind(kind):
   return (mojom.IsStructKind(kind) or mojom.IsEnumKind(kind)) and \
       kind.native_only
@@ -376,7 +371,6 @@ class Generator(generator.Generator):
       "struct_constructors": self._GetStructConstructors,
       "under_to_camel": generator.ToCamel,
       "unmapped_type_for_serializer": self._GetUnmappedTypeForSerializer,
-      "wtf_hash_fn_name_for_enum": GetWtfHashFnNameForEnum,
     }
     return cpp_filters
 
