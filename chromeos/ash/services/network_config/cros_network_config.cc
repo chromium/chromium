@@ -616,23 +616,23 @@ mojom::DeviceStatePropertiesPtr DeviceStateToMojo(
 void SetValueIfKeyPresent(const base::Value* dict,
                           const char* key,
                           base::Value* out) {
-  const base::Value* v = dict->FindKey(key);
+  const base::Value* v = dict->GetDict().Find(key);
   if (v)
     *out = v->Clone();
 }
 
 absl::optional<std::string> GetString(const base::Value* dict,
                                       const char* key) {
-  const base::Value* v = dict->FindKey(key);
+  const base::Value* v = dict->GetDict().Find(key);
   if (v && !v->is_string()) {
     NET_LOG(ERROR) << "Expected string, found: " << *v;
     return absl::nullopt;
   }
-  return v ? absl::make_optional<std::string>(v->GetString()) : absl::nullopt;
+  return v ? absl::make_optional(v->GetString()) : absl::nullopt;
 }
 
 std::string GetRequiredString(const base::Value* dict, const char* key) {
-  const base::Value* v = dict->FindKey(key);
+  const base::Value* v = dict->GetDict().Find(key);
   if (!v) {
     NOTREACHED() << "Required key missing: " << key;
     return std::string();
@@ -647,7 +647,7 @@ std::string GetRequiredString(const base::Value* dict, const char* key) {
 bool GetBoolean(const base::Value* dict,
                 const char* key,
                 bool value_if_key_missing_from_dict = false) {
-  const base::Value* v = dict->FindKey(key);
+  const base::Value* v = dict->GetDict().Find(key);
   if (v && !v->is_bool()) {
     NET_LOG(ERROR) << "Expected bool, found: " << *v;
     return false;
@@ -656,7 +656,7 @@ bool GetBoolean(const base::Value* dict,
 }
 
 int32_t GetInt32(const base::Value* dict, const char* key) {
-  const base::Value* v = dict->FindKey(key);
+  const base::Value* v = dict->GetDict().Find(key);
   if (v && !v->is_int()) {
     NET_LOG(ERROR) << "Expected int, found: " << *v;
     return 0;
@@ -666,7 +666,7 @@ int32_t GetInt32(const base::Value* dict, const char* key) {
 
 std::vector<int32_t> GetInt32List(const base::Value* dict, const char* key) {
   std::vector<int32_t> result;
-  const base::Value* v = dict->FindKey(key);
+  const base::Value* v = dict->GetDict().Find(key);
   if (v && !v->is_list()) {
     NET_LOG(ERROR) << "Expected list, found: " << *v;
     return result;
@@ -679,7 +679,7 @@ std::vector<int32_t> GetInt32List(const base::Value* dict, const char* key) {
 }
 
 const base::Value* GetDictionary(const base::Value* dict, const char* key) {
-  const base::Value* v = dict->FindKey(key);
+  const base::Value* v = dict->GetDict().Find(key);
   if (v && !v->is_dict()) {
     NET_LOG(ERROR) << "Expected dictionary, found: " << *v;
     return nullptr;
@@ -689,7 +689,7 @@ const base::Value* GetDictionary(const base::Value* dict, const char* key) {
 
 absl::optional<std::vector<std::string>> GetStringList(const base::Value* dict,
                                                        const char* key) {
-  const base::Value* v = dict->FindKey(key);
+  const base::Value* v = dict->GetDict().Find(key);
   if (!v)
     return absl::nullopt;
   if (!v->is_list()) {
@@ -704,7 +704,7 @@ absl::optional<std::vector<std::string>> GetStringList(const base::Value* dict,
 
 std::vector<std::string> GetRequiredStringList(const base::Value* dict,
                                                const char* key) {
-  const base::Value* v = dict->FindKey(key);
+  const base::Value* v = dict->GetDict().Find(key);
   if (!v) {
     NOTREACHED() << "Required key missing: " << key;
     return {};
@@ -839,9 +839,9 @@ ManagedDictionary GetManagedDictionary(const base::Value* onc_dict) {
   // Set policy properties based on the effective source and policies.
   // NOTE: This does not enforce valid ONC. See onc_merger.cc for details.
   const base::Value* user_policy =
-      onc_dict->FindKey(::onc::kAugmentationUserPolicy);
+      onc_dict->GetDict().Find(::onc::kAugmentationUserPolicy);
   const base::Value* device_policy =
-      onc_dict->FindKey(::onc::kAugmentationDevicePolicy);
+      onc_dict->GetDict().Find(::onc::kAugmentationDevicePolicy);
   bool user_enforced = !GetBoolean(onc_dict, ::onc::kAugmentationUserEditable);
   bool device_enforced =
       !GetBoolean(onc_dict, ::onc::kAugmentationDeviceEditable);
@@ -880,7 +880,7 @@ ManagedDictionary GetManagedDictionary(const base::Value* onc_dict) {
 
 mojom::ManagedStringPtr GetManagedString(const base::Value* dict,
                                          const char* key) {
-  const base::Value* v = dict->FindKey(key);
+  const base::Value* v = dict->GetDict().Find(key);
   if (!v)
     return nullptr;
   if (v->is_string()) {
@@ -917,7 +917,7 @@ mojom::ManagedStringPtr GetRequiredManagedString(const base::Value* dict,
 
 mojom::ManagedStringListPtr GetManagedStringList(const base::Value* dict,
                                                  const char* key) {
-  const base::Value* v = dict->FindKey(key);
+  const base::Value* v = dict->GetDict().Find(key);
   if (!v)
     return nullptr;
   if (v->is_list()) {
@@ -951,7 +951,7 @@ mojom::ManagedStringListPtr GetManagedStringList(const base::Value* dict,
 
 mojom::ManagedBooleanPtr GetManagedBoolean(const base::Value* dict,
                                            const char* key) {
-  const base::Value* v = dict->FindKey(key);
+  const base::Value* v = dict->GetDict().Find(key);
   if (!v)
     return nullptr;
   if (v->is_bool()) {
@@ -978,7 +978,7 @@ mojom::ManagedBooleanPtr GetManagedBoolean(const base::Value* dict,
 
 mojom::ManagedInt32Ptr GetManagedInt32(const base::Value* dict,
                                        const char* key) {
-  const base::Value* v = dict->FindKey(key);
+  const base::Value* v = dict->GetDict().Find(key);
   if (!v)
     return nullptr;
   if (v->is_int()) {
@@ -1026,7 +1026,7 @@ mojom::ManagedSubjectAltNameMatchListPtr GetManagedSubjectAltNameMatchList(
     const base::Value* dict,
     const char* key) {
   auto result = mojom::ManagedSubjectAltNameMatchList::New();
-  const base::Value* value = dict->FindKey(key);
+  const base::Value* value = dict->GetDict().Find(key);
   if (!value)
     return result;
 
@@ -1231,7 +1231,7 @@ std::vector<std::string> MojoApnTypesToOnc(
 
 mojom::ManagedApnPropertiesPtr GetManagedApnProperties(const base::Value* dict,
                                                        const char* key) {
-  const base::Value* apn_dict = dict->FindKey(key);
+  const base::Value* apn_dict = dict->GetDict().Find(key);
   if (!apn_dict)
     return nullptr;
   if (!apn_dict->is_dict()) {
@@ -1305,7 +1305,7 @@ std::vector<mojom::FoundNetworkPropertiesPtr> GetFoundNetworksList(
     const base::Value* dict,
     const char* key) {
   std::vector<mojom::FoundNetworkPropertiesPtr> result;
-  const base::Value* v = dict->FindKey(key);
+  const base::Value* v = dict->GetDict().Find(key);
   if (!v)
     return result;
   if (!v->is_list()) {
@@ -1332,7 +1332,7 @@ std::vector<mojom::FoundNetworkPropertiesPtr> GetFoundNetworksList(
 mojom::CellularProviderPropertiesPtr GetCellularProviderProperties(
     const base::Value* dict,
     const char* key) {
-  const base::Value* provider_dict = dict->FindKey(key);
+  const base::Value* provider_dict = dict->GetDict().Find(key);
   if (!provider_dict)
     return nullptr;
   auto provider = mojom::CellularProviderProperties::New();
@@ -1348,7 +1348,7 @@ mojom::CellularProviderPropertiesPtr GetCellularProviderProperties(
 mojom::ManagedIssuerSubjectPatternPtr GetManagedIssuerSubjectPattern(
     const base::Value* dict,
     const char* key) {
-  const base::Value* pattern_dict = dict->FindKey(key);
+  const base::Value* pattern_dict = dict->GetDict().Find(key);
   if (!pattern_dict)
     return nullptr;
   if (!pattern_dict->is_dict()) {
@@ -1370,7 +1370,7 @@ mojom::ManagedIssuerSubjectPatternPtr GetManagedIssuerSubjectPattern(
 mojom::ManagedCertificatePatternPtr GetManagedCertificatePattern(
     const base::Value* dict,
     const char* key) {
-  const base::Value* pattern_dict = dict->FindKey(key);
+  const base::Value* pattern_dict = dict->GetDict().Find(key);
   if (!pattern_dict)
     return nullptr;
   if (!pattern_dict->is_dict()) {
@@ -1392,7 +1392,7 @@ mojom::ManagedCertificatePatternPtr GetManagedCertificatePattern(
 mojom::ManagedEAPPropertiesPtr GetManagedEAPProperties(const base::Value* dict,
                                                        const char* key) {
   auto eap = mojom::ManagedEAPProperties::New();
-  const base::Value* eap_dict = dict->FindKey(key);
+  const base::Value* eap_dict = dict->GetDict().Find(key);
   if (!eap_dict)
     return eap;
   if (!eap_dict->is_dict()) {
@@ -1437,7 +1437,7 @@ mojom::ManagedIPSecPropertiesPtr GetManagedIPSecProperties(
     const base::Value* dict,
     const char* key) {
   auto ipsec = mojom::ManagedIPSecProperties::New();
-  const base::Value* ipsec_dict = dict->FindKey(key);
+  const base::Value* ipsec_dict = dict->GetDict().Find(key);
   if (!ipsec_dict)
     return ipsec;
   if (!ipsec_dict->is_dict()) {
@@ -1477,7 +1477,7 @@ mojom::ManagedL2TPPropertiesPtr GetManagedL2TPProperties(
     const base::Value* dict,
     const char* key) {
   auto l2tp = mojom::ManagedL2TPProperties::New();
-  const base::Value* l2tp_dict = dict->FindKey(key);
+  const base::Value* l2tp_dict = dict->GetDict().Find(key);
   if (!l2tp_dict)
     return l2tp;
   if (!l2tp_dict->is_dict()) {
@@ -1497,7 +1497,7 @@ mojom::ManagedOpenVPNPropertiesPtr GetManagedOpenVPNProperties(
     const base::Value* dict,
     const char* key) {
   auto openvpn = mojom::ManagedOpenVPNProperties::New();
-  const base::Value* openvpn_dict = dict->FindKey(key);
+  const base::Value* openvpn_dict = dict->GetDict().Find(key);
   if (!openvpn_dict)
     return openvpn;
   if (!openvpn_dict->is_dict()) {
@@ -1568,7 +1568,7 @@ mojom::ManagedOpenVPNPropertiesPtr GetManagedOpenVPNProperties(
   openvpn->verify_hash =
       GetManagedString(openvpn_dict, ::onc::openvpn::kVerifyHash);
   const base::Value* verify_x509_dict =
-      openvpn_dict->FindKey(::onc::openvpn::kVerifyX509);
+      openvpn_dict->GetDict().Find(::onc::openvpn::kVerifyX509);
   if (verify_x509_dict) {
     auto verify_x509 = mojom::ManagedVerifyX509Properties::New();
     verify_x509->name =
@@ -1596,7 +1596,7 @@ mojom::ManagedWireGuardPeerListPtr GetManagedWireGuardPeerList(
     const base::Value* dict,
     const char* key) {
   auto result = mojom::ManagedWireGuardPeerList::New();
-  const base::Value* value = dict->FindKey(key);
+  const base::Value* value = dict->GetDict().Find(key);
   if (!value)
     return result;
   if (value->is_list()) {
@@ -1630,7 +1630,7 @@ mojom::ManagedWireGuardPropertiesPtr GetManagedWireGuardProperties(
     const base::Value* dict,
     const char* key) {
   auto wg = mojom::ManagedWireGuardProperties::New();
-  const base::Value* wg_dict = dict->FindKey(key);
+  const base::Value* wg_dict = dict->GetDict().Find(key);
   if (!wg_dict) {
     NET_LOG(ERROR) << "Missing WireGuard properties element";
     return wg;
@@ -1687,12 +1687,13 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       GetBoolean(properties, ::onc::network_config::kConnectable);
   result->error_state =
       GetString(properties, ::onc::network_config::kErrorState);
-  const base::Value* ip_configs_list =
-      properties->FindKey(::onc::network_config::kIPConfigs);
+  const base::Value::List* ip_configs_list =
+      properties->GetDict().FindList(::onc::network_config::kIPConfigs);
   if (ip_configs_list) {
     std::vector<mojom::IPConfigPropertiesPtr> ip_configs;
-    for (const base::Value& ip_config_value : ip_configs_list->GetList())
+    for (const base::Value& ip_config_value : *ip_configs_list) {
       ip_configs.push_back(GetIPConfig(&ip_config_value));
+    }
     result->ip_configs = std::move(ip_configs);
   }
   result->portal_state = GetMojoPortalState(network_state->GetPortalState());
@@ -1748,8 +1749,8 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
           GetManagedBoolean(cellular_dict, ::onc::cellular::kAutoConnect);
       cellular->selected_apn =
           GetManagedApnProperties(cellular_dict, ::onc::cellular::kAPN);
-      cellular->apn_list =
-          GetManagedApnList(cellular_dict->FindKey(::onc::cellular::kAPNList));
+      cellular->apn_list = GetManagedApnList(
+          cellular_dict->GetDict().Find(::onc::cellular::kAPNList));
       cellular->allow_roaming =
           GetManagedBoolean(cellular_dict, ::onc::cellular::kAllowRoaming);
       cellular->esn = GetString(cellular_dict, ::onc::cellular::kESN);
@@ -1795,7 +1796,7 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       cellular->network_technology =
           GetString(cellular_dict, ::onc::cellular::kNetworkTechnology);
       const base::Value* payment_portal_dict =
-          cellular_dict->FindKey(::onc::cellular::kPaymentPortal);
+          cellular_dict->GetDict().Find(::onc::cellular::kPaymentPortal);
       if (payment_portal_dict) {
         auto payment_portal = mojom::PaymentPortalProperties::New();
         payment_portal->method = GetRequiredString(
@@ -1892,7 +1893,7 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
         case mojom::VpnType::kExtension:
         case mojom::VpnType::kArc:
           const base::Value* third_party_dict =
-              vpn_dict->FindKey(::onc::vpn::kThirdPartyVpn);
+              vpn_dict->GetDict().Find(::onc::vpn::kThirdPartyVpn);
           if (third_party_dict) {
             vpn->provider_id = GetManagedString(
                 third_party_dict, ::onc::third_party_vpn::kExtensionID);
@@ -1968,12 +1969,13 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
 
   // Traffic Counter Properties
   auto traffic_counter_properties = mojom::TrafficCounterProperties::New();
-  const base::Value* last_reset_time =
-      properties->FindKey(::onc::network_config::kTrafficCounterResetTime);
-  if (last_reset_time && last_reset_time->is_double()) {
+  const absl::optional<double> last_reset_time =
+      properties->GetDict().FindDouble(
+          ::onc::network_config::kTrafficCounterResetTime);
+  if (last_reset_time) {
     traffic_counter_properties->last_reset_time =
         base::Time::FromDeltaSinceWindowsEpoch(
-            base::Milliseconds(last_reset_time->GetDouble()));
+            base::Milliseconds(last_reset_time.value()));
     traffic_counter_properties->friendly_date =
         base::UTF16ToUTF8(base::TimeFormatFriendlyDate(
             traffic_counter_properties->last_reset_time.value()));
@@ -3369,12 +3371,11 @@ void CrosNetworkConfig::OnGetSupportedVpnTypes(
     std::move(callback).Run(result);
     return;
   }
-  const base::Value* value =
-      properties->FindKey(shill::kSupportedVPNTypesProperty);
+  const std::string* value =
+      properties->GetDict().FindString(shill::kSupportedVPNTypesProperty);
   if (value) {
-    result =
-        base::SplitString(*value->GetIfString(), ",", base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
+    result = base::SplitString(*value, ",", base::TRIM_WHITESPACE,
+                               base::SPLIT_WANT_NONEMPTY);
   }
   std::move(callback).Run(result);
 }
@@ -3414,7 +3415,7 @@ void CrosNetworkConfig::PopulateTrafficCounters(
     // uint32_t, we must check whether it was implicitly converted to a double
     // during D-Bus deserialization.
     uint64_t rx_bytes;
-    const base::Value* rb = tc.FindKey("rx_bytes");
+    const base::Value* rb = tc.GetDict().Find("rx_bytes");
     DCHECK(rb);
     if (rb->type() == base::Value::Type::INTEGER) {
       rx_bytes = rb->GetInt();
@@ -3428,7 +3429,7 @@ void CrosNetworkConfig::PopulateTrafficCounters(
     // uint32_t, we must check whether it was implicitly converted to a double
     // during D-Bus deserialization.
     uint64_t tx_bytes;
-    const base::Value* tb = tc.FindKey("tx_bytes");
+    const base::Value* tb = tc.GetDict().Find("tx_bytes");
     DCHECK(tb);
     if (tb->type() == base::Value::Type::INTEGER) {
       tx_bytes = tb->GetInt();
