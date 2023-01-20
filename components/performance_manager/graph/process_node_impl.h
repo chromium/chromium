@@ -33,7 +33,10 @@ class FrameNodeImpl;
 class ProcessNodeImpl;
 class WorkerNodeImpl;
 
-// A process node follows the lifetime of a RenderProcessHost.
+// Tag used to create a process node for the browser process.
+struct BrowserProcessNodeTag {};
+
+// A process node follows the lifetime of a chrome process.
 // It may reference zero or one processes at a time, but during its lifetime, it
 // may reference more than one process. This can happen if the associated
 // renderer crashes, and an associated frame is then reloaded or re-navigated.
@@ -52,8 +55,14 @@ class ProcessNodeImpl
 
   static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kProcess; }
 
-  ProcessNodeImpl(content::ProcessType process_type,
-                  RenderProcessHostProxy render_process_proxy);
+  // Constructor for the browser process.
+  explicit ProcessNodeImpl(BrowserProcessNodeTag tag);
+
+  // Constructor for a renderer process.
+  explicit ProcessNodeImpl(RenderProcessHostProxy render_process_host_proxy);
+
+  // Constructor for a non-renderer child process.
+  explicit ProcessNodeImpl(content::ProcessType process_type);
 
   ProcessNodeImpl(const ProcessNodeImpl&) = delete;
   ProcessNodeImpl& operator=(const ProcessNodeImpl&) = delete;

@@ -48,10 +48,24 @@ void FireBackgroundTracingTriggerOnUI(
 
 }  // namespace
 
-ProcessNodeImpl::ProcessNodeImpl(content::ProcessType process_type,
-                                 RenderProcessHostProxy render_process_proxy)
-    : process_type_(process_type),
-      render_process_host_proxy_(std::move(render_process_proxy)) {
+ProcessNodeImpl::ProcessNodeImpl(BrowserProcessNodeTag tag)
+    : process_type_(content::PROCESS_TYPE_BROWSER) {
+  weak_this_ = weak_factory_.GetWeakPtr();
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
+
+ProcessNodeImpl::ProcessNodeImpl(
+    RenderProcessHostProxy render_process_host_proxy)
+    : process_type_(content::PROCESS_TYPE_RENDERER),
+      render_process_host_proxy_(std::move(render_process_host_proxy)) {
+  weak_this_ = weak_factory_.GetWeakPtr();
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
+
+ProcessNodeImpl::ProcessNodeImpl(content::ProcessType process_type)
+    : process_type_(process_type) {
+  DCHECK_NE(process_type, content::PROCESS_TYPE_BROWSER);
+  DCHECK_NE(process_type, content::PROCESS_TYPE_RENDERER);
   weak_this_ = weak_factory_.GetWeakPtr();
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -370,10 +384,12 @@ base::TaskPriority ProcessNodeImpl::GetPriority() const {
 }
 
 ProcessNode::ContentTypes ProcessNodeImpl::GetHostedContentTypes() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return hosted_content_types();
 }
 
 void ProcessNodeImpl::OnAllFramesInProcessFrozen() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto* observer : GetObservers())
     observer->OnAllFramesInProcessFrozen(this);
 }

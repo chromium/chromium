@@ -33,8 +33,7 @@ TEST_F(GraphImplTest, GetSystemNodeImpl) {
 }
 
 TEST_F(GraphImplTest, GetProcessNodeByPid) {
-  TestNodeWrapper<ProcessNodeImpl> process =
-      TestNodeWrapper<ProcessNodeImpl>::Create(graph());
+  TestNodeWrapper<ProcessNodeImpl> process = CreateNode<ProcessNodeImpl>();
   EXPECT_EQ(base::kNullProcessId, process->process_id());
   EXPECT_FALSE(process->process().IsValid());
 
@@ -64,10 +63,8 @@ TEST_F(GraphImplTest, PIDReuse) {
   // PID has been reused for a new process.
   static base::Process self = base::Process::Current();
 
-  TestNodeWrapper<ProcessNodeImpl> process1 =
-      TestNodeWrapper<ProcessNodeImpl>::Create(graph());
-  TestNodeWrapper<ProcessNodeImpl> process2 =
-      TestNodeWrapper<ProcessNodeImpl>::Create(graph());
+  TestNodeWrapper<ProcessNodeImpl> process1 = CreateNode<ProcessNodeImpl>();
+  TestNodeWrapper<ProcessNodeImpl> process2 = CreateNode<ProcessNodeImpl>();
 
   process1->SetProcess(self.Duplicate(),
                        /* launch_time=*/base::TimeTicks::Now());

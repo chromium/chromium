@@ -199,21 +199,40 @@ TEST_F(ProcessNodeImplTest, ObserverWorks) {
   graph()->RemoveProcessNodeObserver(&obs);
 }
 
-TEST_F(ProcessNodeImplTest, ConstructionArguments) {
+TEST_F(ProcessNodeImplTest, ConstructionArguments_Browser) {
+  auto process_node = CreateNode<ProcessNodeImpl>(BrowserProcessNodeTag{});
+
+  const ProcessNode* public_process_node = process_node.get();
+
+  EXPECT_EQ(content::PROCESS_TYPE_BROWSER, process_node->process_type());
+  EXPECT_EQ(content::PROCESS_TYPE_BROWSER,
+            public_process_node->GetProcessType());
+}
+
+TEST_F(ProcessNodeImplTest, ConstructionArguments_Renderer) {
   constexpr RenderProcessHostId kRenderProcessHostId =
       RenderProcessHostId(0xF0B);
   auto process_node = CreateNode<ProcessNodeImpl>(
-      content::PROCESS_TYPE_GPU,
       RenderProcessHostProxy::CreateForTesting(kRenderProcessHostId));
+
+  const ProcessNode* public_process_node = process_node.get();
+
+  EXPECT_EQ(content::PROCESS_TYPE_RENDERER, process_node->process_type());
+  EXPECT_EQ(content::PROCESS_TYPE_RENDERER,
+            public_process_node->GetProcessType());
+
+  EXPECT_EQ(kRenderProcessHostId,
+            public_process_node->GetRenderProcessHostProxy()
+                .render_process_host_id());
+}
+
+TEST_F(ProcessNodeImplTest, ConstructionArguments_NonRenderer) {
+  auto process_node = CreateNode<ProcessNodeImpl>(content::PROCESS_TYPE_GPU);
 
   const ProcessNode* public_process_node = process_node.get();
 
   EXPECT_EQ(content::PROCESS_TYPE_GPU, process_node->process_type());
   EXPECT_EQ(content::PROCESS_TYPE_GPU, public_process_node->GetProcessType());
-
-  EXPECT_EQ(kRenderProcessHostId,
-            public_process_node->GetRenderProcessHostProxy()
-                .render_process_host_id());
 }
 
 TEST_F(ProcessNodeImplTest, PublicInterface) {

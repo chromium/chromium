@@ -155,10 +155,23 @@ std::unique_ptr<PageNodeImpl> PerformanceManagerImpl::CreatePageNode(
 
 // static
 std::unique_ptr<ProcessNodeImpl> PerformanceManagerImpl::CreateProcessNode(
-    content::ProcessType process_type,
-    RenderProcessHostProxy proxy) {
+    BrowserProcessNodeTag tag) {
   return CreateNodeImpl<ProcessNodeImpl>(
-      base::OnceCallback<void(ProcessNodeImpl*)>(), process_type, proxy);
+      base::OnceCallback<void(ProcessNodeImpl*)>(), tag);
+}
+
+// static
+std::unique_ptr<ProcessNodeImpl> PerformanceManagerImpl::CreateProcessNode(
+    RenderProcessHostProxy render_process_host_proxy) {
+  return CreateNodeImpl<ProcessNodeImpl>(
+      base::OnceCallback<void(ProcessNodeImpl*)>(), render_process_host_proxy);
+}
+
+// static
+std::unique_ptr<ProcessNodeImpl> PerformanceManagerImpl::CreateProcessNode(
+    content::ProcessType process_type) {
+  return CreateNodeImpl<ProcessNodeImpl>(
+      base::OnceCallback<void(ProcessNodeImpl*)>(), process_type);
 }
 
 // static

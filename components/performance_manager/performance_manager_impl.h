@@ -32,6 +32,7 @@ class GURL;
 namespace performance_manager {
 
 class PageNodeImpl;
+struct BrowserProcessNodeTag;
 
 // The performance manager is a rendezvous point for binding to performance
 // manager interfaces.
@@ -111,8 +112,11 @@ class PerformanceManagerImpl : public PerformanceManager {
       base::TimeTicks visibility_change_time,
       PageNode::PageState page_state);
   static std::unique_ptr<ProcessNodeImpl> CreateProcessNode(
-      content::ProcessType process_type,
+      BrowserProcessNodeTag tag);
+  static std::unique_ptr<ProcessNodeImpl> CreateProcessNode(
       RenderProcessHostProxy proxy);
+  static std::unique_ptr<ProcessNodeImpl> CreateProcessNode(
+      content::ProcessType process_type);
   static std::unique_ptr<WorkerNodeImpl> CreateWorkerNode(
       const std::string& browser_context_id,
       WorkerNode::WorkerType worker_type,

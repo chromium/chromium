@@ -55,8 +55,7 @@ TEST_F(PerformanceManagerImplTest, InstantiateNodes) {
   int next_render_frame_id = 0;
 
   std::unique_ptr<ProcessNodeImpl> process_node =
-      PerformanceManagerImpl::CreateProcessNode(content::PROCESS_TYPE_RENDERER,
-                                                RenderProcessHostProxy());
+      PerformanceManagerImpl::CreateProcessNode(RenderProcessHostProxy());
   EXPECT_NE(nullptr, process_node.get());
   std::unique_ptr<PageNodeImpl> page_node =
       PerformanceManagerImpl::CreatePageNode(
@@ -81,8 +80,7 @@ TEST_F(PerformanceManagerImplTest, BatchDeleteNodes) {
   int next_render_frame_id = 0;
   // Create a page node and a small hierarchy of frames.
   std::unique_ptr<ProcessNodeImpl> process_node =
-      PerformanceManagerImpl::CreateProcessNode(content::PROCESS_TYPE_RENDERER,
-                                                RenderProcessHostProxy());
+      PerformanceManagerImpl::CreateProcessNode(RenderProcessHostProxy());
   std::unique_ptr<PageNodeImpl> page_node =
       PerformanceManagerImpl::CreatePageNode(
           WebContentsProxy(), std::string(), GURL(), false, false,
