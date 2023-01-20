@@ -308,12 +308,12 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   DCHECK(self.imageLayoutGuide);
   DCHECK(self.textLayoutGuide);
 
-  // The text stack view should extend to the end of the omnibox, except if
-  // there is a trailing button. Make this constraint non-required so that it is
-  // ignored in that conflicting case.
-  NSLayoutConstraint* constraint = [self.textStackView.trailingAnchor
-      constraintEqualToAnchor:self.textLayoutGuide.trailingAnchor];
-  constraint.priority = UILayoutPriorityDefaultHigh;
+  // The text should extend to the cell's trailing edge when there is no
+  // trailing button.
+  NSLayoutConstraint* stackViewToCellTrailing =
+      [self.textStackView.trailingAnchor
+          constraintEqualToAnchor:self.contentView.trailingAnchor];
+  stackViewToCellTrailing.priority = UILayoutPriorityDefaultHigh;
 
   // These constraints need to be removed when freezing the position of these
   // views. See -freezeLayoutGuidePositions for the reason why.
@@ -326,7 +326,7 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
         constraintEqualToAnchor:self.imageLayoutGuide.widthAnchor],
     [self.textStackView.leadingAnchor
         constraintEqualToAnchor:self.textLayoutGuide.leadingAnchor],
-    constraint,
+    stackViewToCellTrailing,
   ];
 
   [NSLayoutConstraint
