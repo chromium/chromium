@@ -211,8 +211,14 @@ ScreenAIService::~ScreenAIService() = default;
 
 LibraryFunctions::LibraryFunctions(const base::FilePath& library_path) {
   library_ = base::ScopedNativeLibrary(library_path);
-  std::string library_error = library_.GetError()->ToString();
-  DCHECK(library_error.empty()) << library_error;
+  DCHECK(library_.GetError());
+#if BUILDFLAG(IS_WIN)
+  DCHECK_EQ(0u, library_.GetError()->code)
+      << "Library load error: " << library_.GetError()->code;
+#else
+  DCHECK(library_.GetError()->message.empty())
+      << "Library load error: " << library_.GetError()->message;
+#endif
 
   // General functions.
   get_library_version_ = reinterpret_cast<GetLibraryVersionFn>(
