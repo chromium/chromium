@@ -4,6 +4,7 @@
 
 #include "chrome/updater/util/unittest_util.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -42,7 +43,6 @@
 
 #include "base/strings/string_number_conversions_win.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/windows_version.h"
 #include "chrome/test/base/process_inspector_win.h"
 #include "chrome/updater/util/win_util.h"
 #endif
@@ -246,11 +246,6 @@ void MaybeExcludePathsFromWindowsDefender() {
   if (!command_line->HasSwitch(kTestLauncherExcludePathsFromWindowDefender))
     return;
 
-  if (base::win::GetVersion() <= base::win::Version::WIN7) {
-    VLOG(1) << "Skip changing Windows Defender settings for Win7 and below.";
-    return;
-  }
-
   if (!IsServiceRunning(L"WinDefend")) {
     VLOG(1) << "WinDefend is not running, no need to add exclusion paths.";
     return;
@@ -285,11 +280,6 @@ void MaybeExcludePathsFromWindowsDefender() {
 }
 
 base::FilePath StartProcmonLogging() {
-  if (base::win::GetVersion() <= base::win::Version::WIN7) {
-    LOG(WARNING) << __func__ << ": skipping procmon logging on Win7.";
-    return {};
-  }
-
   if (!::IsUserAnAdmin()) {
     LOG(WARNING) << __func__
                  << ": user is not an admin, skipping procmon logging";
