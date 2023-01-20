@@ -95,7 +95,7 @@ std::atomic_bool g_explicit_high_resolution_timer_win{false};
 TaskQueueImpl::GuardedTaskPoster::GuardedTaskPoster(TaskQueueImpl* outer)
     : outer_(outer) {
   if (recordreplay::IsRecordingOrReplaying()) {
-    recordreplay::AutoDisallowEvents disallow;
+    recordreplay::AutoDisallowEvents disallow("TaskQueueImpl::GuardedTaskPoster::GuardedTaskPoster");
     record_replay_unordered_operations_controller_.emplace();
   }
 }

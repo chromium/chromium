@@ -180,7 +180,7 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
 
   absl::optional<recordreplay::AutoDisallowEvents> disallow;
   if (kernel_->record_replay_unordered_)
-    disallow.emplace();
+    disallow.emplace("WaitableEvent::TimedWait");
 
   if (wait_delta <= TimeDelta()) {
     return IsSignaled();
@@ -283,7 +283,7 @@ size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables,
                                size_t count) NO_THREAD_SAFETY_ANALYSIS {
   absl::optional<recordreplay::AutoDisallowEvents> disallow;
   if (count && raw_waitables[0]->kernel_->record_replay_unordered_)
-    disallow.emplace();
+    disallow.emplace("WaitableEvent::WaitMany");
 
   DCHECK(count) << "Cannot wait on no events";
   internal::ScopedBlockingCallWithBaseSyncPrimitives scoped_blocking_call(

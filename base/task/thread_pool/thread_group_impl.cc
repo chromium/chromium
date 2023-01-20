@@ -1009,7 +1009,7 @@ ThreadGroupImpl::CreateAndRegisterWorkerLockRequired(
 
   absl::optional<recordreplay::AutoDisallowEvents> disallow;
   if (record_replay_unordered_)
-    disallow.emplace();
+    disallow.emplace("ThreadGroupImpl::CreateAndRegisterWorkerLockRequired");
 
   // WorkerThread needs |lock_| as a predecessor for its thread lock
   // because in WakeUpOneWorker, |lock_| is first acquired and then

@@ -42,6 +42,7 @@ extern "C" void V8RecordReplayOnNetworkStreamData(const char* id, size_t offset,
 extern "C" void V8RecordReplayOnNetworkStreamEnd(const char* id, size_t length);
 extern "C" bool V8RecordReplayAreEventsDisallowed();
 extern "C" void V8RecordReplayBeginDisallowEvents();
+extern "C" void V8RecordReplayBeginDisallowEventsWithLabel(const char* label);
 extern "C" void V8RecordReplayEndDisallowEvents();
 extern "C" bool V8RecordReplayAreEventsPassedThrough();
 extern "C" void V8RecordReplayBeginPassThroughEvents();
@@ -166,6 +167,10 @@ bool AreEventsDisallowed() {
 
 void BeginDisallowEvents() {
   OP(V8RecordReplayBeginDisallowEvents());
+}
+
+void BeginDisallowEventsWithLabel(const char* label) {
+  OP(V8RecordReplayBeginDisallowEventsWithLabel(label));
 }
 
 void EndDisallowEvents() {

@@ -58,6 +58,8 @@ void EndPassThroughEvents();
 bool AreEventsPassedThrough();
 
 void BeginDisallowEvents();
+void BeginDisallowEventsWithLabel(const char* label);
+
 void EndDisallowEvents();
 bool AreEventsDisallowed();
 
@@ -71,7 +73,7 @@ struct AutoPassThroughEvents {
 };
 
 struct AutoDisallowEvents {
-  AutoDisallowEvents() { BeginDisallowEvents(); }
+  AutoDisallowEvents(const char* label) { BeginDisallowEventsWithLabel(label); }
   ~AutoDisallowEvents() { EndDisallowEvents(); }
 };
 

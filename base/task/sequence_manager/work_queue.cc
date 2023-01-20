@@ -216,7 +216,7 @@ void WorkQueue::PushNonNestableTaskToFront(Task task) {
 }
 
 void WorkQueue::RecordReplayRunUnorderedTasks(TaskQueueImpl::TaskDeque* queue) {
-  recordreplay::AutoDisallowEvents disallow;
+  recordreplay::AutoDisallowEvents disallow("WorkQueue::RecordReplayRunUnorderedTasks");
   while (!queue->empty()) {
     Task pending_task = std::move(queue->front());
     queue->pop_front();
