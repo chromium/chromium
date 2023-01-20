@@ -314,11 +314,12 @@ class AddRemoveObserverTestThread : public NetLogTestThread {
 // to completion.
 template <class ThreadType>
 void RunTestThreads(NetLog* net_log) {
-  ThreadType threads[kThreads];
+  // Must outlive `threads`.
   base::WaitableEvent start_event(
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
 
+  ThreadType threads[kThreads];
   for (size_t i = 0; i < std::size(threads); ++i) {
     threads[i].Init(net_log, &start_event);
     threads[i].Start();
