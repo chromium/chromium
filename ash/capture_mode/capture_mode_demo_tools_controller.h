@@ -76,7 +76,7 @@ class CaptureModeDemoToolsController : public ui::InputMethodObserver {
   // `modifiers_` and `last_non_modifier_key_`.
   void RefreshKeyComboViewer();
 
-  gfx::Rect CalculateBounds() const;
+  gfx::Rect CalculateKeyComboWidgetBounds() const;
 
   // Returns true if there is no modifier keys pressed and the non-modifier key
   // can not be displayed independently.

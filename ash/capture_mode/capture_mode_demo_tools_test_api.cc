@@ -16,19 +16,23 @@ CaptureModeDemoToolsTestApi::CaptureModeDemoToolsTestApi(
     CaptureModeDemoToolsController* demo_tools_controller)
     : demo_tools_controller_(demo_tools_controller) {}
 
-views::Widget* CaptureModeDemoToolsTestApi::GetDemoToolsWidget() {
+views::Widget* CaptureModeDemoToolsTestApi::GetKeyComboWidget() {
+  DCHECK(demo_tools_controller_);
   return demo_tools_controller_->demo_tools_widget_.get();
 }
 
 KeyComboView* CaptureModeDemoToolsTestApi::GetKeyComboView() {
+  DCHECK(demo_tools_controller_);
   return demo_tools_controller_->key_combo_view_;
 }
 
 int CaptureModeDemoToolsTestApi::GetCurrentModifiersFlags() {
+  DCHECK(demo_tools_controller_);
   return demo_tools_controller_->modifiers_;
 }
 
 ui::KeyboardCode CaptureModeDemoToolsTestApi::GetLastNonModifierKey() {
+  DCHECK(demo_tools_controller_);
   return demo_tools_controller_->last_non_modifier_key_;
 }
 

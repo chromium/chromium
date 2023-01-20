@@ -38,9 +38,9 @@ class CaptureModeDemoToolsTestApi {
   CaptureModeDemoToolsTestApi& operator=(CaptureModeDemoToolsTestApi) = delete;
   ~CaptureModeDemoToolsTestApi() = default;
 
-  views::Widget* GetDemoToolsWidget();
+  views::Widget* GetKeyComboWidget();
 
-  // Returns the contents view for the `demo_tools_widget_`.
+  // Returns the contents view for the `key_combo_widget_`.
   KeyComboView* GetKeyComboView();
 
   // Returns the state of modifier keys in the `CaptureModeDemoToolsController`.
