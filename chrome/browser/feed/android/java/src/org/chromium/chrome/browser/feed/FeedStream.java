@@ -77,7 +77,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -362,62 +361,6 @@ public class FeedStream implements Stream {
         }
     }
 
-    // Tracks in-progress work, primarily for work done by xsurface.
-    class InProgressWorkTracker {
-        private int mNextWorkId;
-        private final HashSet<Integer> mActiveWork = new HashSet<>();
-        private final ObservableSupplierImpl<Boolean> mWorkPending = new ObservableSupplierImpl<>();
-
-        InProgressWorkTracker() {
-            // ObservableSupplierImpl holds null by default.
-            mWorkPending.set(false);
-        }
-
-        /**
-         * Record that background work has begun, returns a runnable to be called when work is
-         * complete.
-         */
-        Runnable addWork() {
-            int id = mNextWorkId++;
-            mActiveWork.add(id);
-            mWorkPending.set(true);
-            return () -> finishWork(id);
-        }
-
-        /** postTask to call runnable after all in-progress work is complete. */
-        void postTaskAfterWorkComplete(Runnable runnable) {
-            if (!mWorkPending.get()) {
-                PostTask.postTask(UiThreadTaskTraits.DEFAULT, runnable);
-            } else {
-                new DoneWatcher(runnable);
-            }
-        }
-
-        /** Calls a runnable with postTask when mWorkPending is false. */
-        private class DoneWatcher implements Callback<Boolean> {
-            private final Runnable mDelegate;
-
-            DoneWatcher(Runnable runnable) {
-                mDelegate = runnable;
-                mWorkPending.addObserver(this);
-            }
-
-            @Override
-            public void onResult(Boolean workPending) {
-                if (!workPending) {
-                    PostTask.postTask(UiThreadTaskTraits.DEFAULT, mDelegate);
-                    mWorkPending.removeObserver(this);
-                };
-            }
-        }
-        private void finishWork(int workId) {
-            mActiveWork.remove(workId);
-            if (mActiveWork.isEmpty()) {
-                mWorkPending.set(false);
-            }
-        }
-    }
-
     /**
      * Implementation of FeedActionsHandler methods.
      */
@@ -506,11 +449,11 @@ public class FeedStream implements Stream {
                     new SnackbarManager.SnackbarController() {
                         @Override
                         public void onAction(Object actionData) {
-                            delegateController.onAction(mInProgressWorkTracker.addWork());
+                            delegateController.onAction();
                         }
                         @Override
                         public void onDismissNoAction(Object actionData) {
-                            delegateController.onDismissNoAction(mInProgressWorkTracker.addWork());
+                            delegateController.onDismissNoAction();
                         }
                     };
 
@@ -662,7 +605,6 @@ public class FeedStream implements Stream {
     // Snackbar (and post-Follow dialog) controller used exclusively for handling in-feed
     // post-Follow and post-Unfollow UX.
     WebFeedSnackbarController mWebFeedSnackbarController;
-    InProgressWorkTracker mInProgressWorkTracker = new InProgressWorkTracker();
 
     // For loading more content.
     private int mAccumulatedDySinceLastLoadMore;
@@ -867,17 +809,13 @@ public class FeedStream implements Stream {
         }
     }
 
-    // Dismiss any snackbars. Note that dismissal of snackbars sometimes triggers work in
-    // xsurface.
-    private void dismissSnackbars() {
+    @Override
+    public void unbind(boolean shouldPlaceSpacer) {
+        // Dismiss any snackbars. It's important we do this now so that xsurface can respond to
+        // these events before the content is removed.
         for (SnackbarManager.SnackbarController controller : mSnackbarControllers) {
             mSnackManager.dismissSnackbars(controller);
         }
-    }
-
-    @Override
-    public void unbind(boolean shouldPlaceSpacer) {
-        dismissSnackbars();
         mSnackbarControllers.clear();
         mWebFeedSnackbarController.dismissSnackbars();
 
@@ -929,8 +867,7 @@ public class FeedStream implements Stream {
 
     @Override
     public void triggerRefresh(Callback<Boolean> callback) {
-        dismissSnackbars();
-        mInProgressWorkTracker.postTaskAfterWorkComplete(() -> {
+        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
             if (mRenderer != null) {
                 mRenderer.onPullToRefreshStarted();
             }
@@ -1384,10 +1321,6 @@ public class FeedStream implements Stream {
     @VisibleForTesting
     UnreadContentObserver getUnreadContentObserverForTest() {
         return mUnreadContentObserver;
-    }
-
-    InProgressWorkTracker getInProgressWorkTrackerForTesting() {
-        return mInProgressWorkTracker;
     }
 
     // Scroll state can't be restored until enough items are added to the recycler view adapter.

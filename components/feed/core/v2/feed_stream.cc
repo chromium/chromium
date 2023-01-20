@@ -600,9 +600,8 @@ void FeedStream::ManualRefresh(const StreamType& stream_type,
                                base::OnceCallback<void(bool)> callback) {
   Stream& stream = GetStream(stream_type);
 
-  // Bail out immediately if loading in progress, or if no surfaces are
-  // attached.
-  if (stream.model_loading_in_progress || stream.surfaces.empty()) {
+  // Bail out immediately if loading in progress.
+  if (stream.model_loading_in_progress) {
     return std::move(callback).Run(false);
   }
   stream.model_loading_in_progress = true;
