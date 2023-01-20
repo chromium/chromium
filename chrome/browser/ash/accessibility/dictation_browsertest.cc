@@ -110,6 +110,10 @@ constexpr char kPumpkinTestFilePath[] =
     "pumpkin";
 constexpr char kContentEditableUrl[] =
     "data:text/html;charset=utf-8,<div id='input' contenteditable></div>";
+constexpr char kFormattedContentEditableUrl[] = R"(
+    data:text/html;charset=utf-8,<div id='input' contenteditable>
+    <p><strong>This</strong> <b>is</b> a <em>test</em></p></div>
+)";
 constexpr char kInputUrl[] =
     "data:text/html;charset=utf-8,<input id='input' type='text'></input>";
 constexpr char kTextAreaUrl[] =
@@ -159,7 +163,12 @@ void EnableChromeVox() {
 }
 
 // The type of editable field to use in tests.
-enum class EditableType { kContentEditable, kInput, kTextArea };
+enum class EditableType {
+  kContentEditable,
+  kFormattedContentEditable,
+  kInput,
+  kTextArea
+};
 
 // A class used to define the parameters of a test case.
 class TestConfig {
@@ -329,6 +338,9 @@ class DictationTestBase : public InProcessBrowserTest,
       case EditableType::kTextArea:
         url = kTextAreaUrl;
         break;
+      case EditableType::kFormattedContentEditable:
+        url = kFormattedContentEditableUrl;
+        break;
       case EditableType::kInput:
         url = kInputUrl;
         break;
@@ -399,7 +411,7 @@ class DictationTestBase : public InProcessBrowserTest,
       return;
     }
 
-    std::string script = "testSupport.WaitForPumpkinTaggerReady();";
+    std::string script = "testSupport.waitForPumpkinTaggerReady();";
     ExecuteAccessibilityCommonScript(script);
   }
 
@@ -483,9 +495,13 @@ class DictationTestBase : public InProcessBrowserTest,
             "document.getElementById('input').value)";
         break;
       case EditableType::kContentEditable:
+      case EditableType::kFormattedContentEditable:
+        // Replace all non-breaking spaces with regular spaces. Otherwise,
+        // string comparisons will unexpectedly fail.
         script =
             "window.domAutomationController.send("
-            "document.getElementById('input').innerText)";
+            "document.getElementById('input').innerText.replaceAll("
+            "'\u00a0', ' '));";
         break;
     }
     CHECK(ExecuteScriptAndExtractString(
@@ -556,9 +572,12 @@ class DictationTestBase : public InProcessBrowserTest,
   }
 
   bool RunOnMultilineContent() {
+    // TODO(b:259353252): Contenteditables have an error where inserting a \n
+    // actually inserts two \n characters.
     // <input> represents a one-line plain text control, so multiline test cases
-    // should be skipped.
-    return editable_type() != EditableType::kInput;
+    // should be skipped. Run multiline test cases only on <textarea> for these
+    // reasons.
+    return editable_type() == EditableType::kTextArea;
   }
 
   speech::SpeechRecognitionType speech_recognition_type() {
@@ -1121,9 +1140,6 @@ class DictationRegexCommandsTest : public DictationTest {
     WaitForRecognitionStopped();
     DictationTest::TearDownOnMainThread();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1137,6 +1153,12 @@ INSTANTIATE_TEST_SUITE_P(
     DictationRegexCommandsTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kInput)));
+
+INSTANTIATE_TEST_SUITE_P(
+    NetworkContentEditable,
+    DictationRegexCommandsTest,
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kContentEditable)));
 
 IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, TypesCommands) {
   std::string expected_text = "";
@@ -1394,18 +1416,36 @@ IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, SmartReplacePhrase) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, SmartInsertBefore) {
+  if (editable_type() == EditableType::kContentEditable) {
+    // TODO(b:259353252): Remove this once this command is supported in
+    // contenteditables.
+    return;
+  }
+
   SendFinalResultAndWaitForEditableValue("This is a test.", "This is a test.");
   SendFinalResultAndWaitForEditableValue("insert simple before test",
                                          "This is a simple test.");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, SmartSelectBetween) {
+  if (editable_type() == EditableType::kContentEditable) {
+    // TODO(b:259353252): Remove this once this command is supported in
+    // contenteditables.
+    return;
+  }
+
   SendFinalResultAndWaitForEditableValue("This is a test.", "This is a test.");
   SendFinalResultAndWaitForSelectionChanged("select from this to test");
   SendFinalResultAndWaitForEditableValue("Hello world", "Hello world.");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, MoveBySentence) {
+  if (editable_type() == EditableType::kContentEditable) {
+    // TODO(b:259353252): Remove this once this command is supported in
+    // contenteditables.
+    return;
+  }
+
   SendFinalResultAndWaitForEditableValue("Hello world! Goodnight world?",
                                          "Hello world! Goodnight world?");
   SendFinalResultAndWaitForCaretBoundsChanged("move to the previous sentence");
@@ -1451,6 +1491,12 @@ IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest,
 
 IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest,
                        CursorPositionSmartInsertBefore) {
+  if (editable_type() == EditableType::kContentEditable) {
+    // TODO(b:259353252): Remove this once this command is supported in
+    // contenteditables.
+    return;
+  }
+
   SendFinalResultAndWaitForEditableValue("This is a test", "This is a test");
   SendFinalResultAndWaitForEditableValue("insert simple before test",
                                          "This is a simple test");
@@ -1786,11 +1832,6 @@ class DictationPumpkinTest : public DictationTest {
     WaitForRecognitionStopped();
     DictationTest::TearDownOnMainThread();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  base::ScopedTempDir pumpkin_root_dir_;
-  std::vector<std::unique_ptr<base::ScopedTempDir>> sub_dirs_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1805,8 +1846,11 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kInput)));
 
-// TODO(b:259353252): Add NetworkContentEditable test once commands are working
-// in content editables.
+INSTANTIATE_TEST_SUITE_P(
+    NetworkContentEditable,
+    DictationPumpkinTest,
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kContentEditable)));
 
 // TODO(crbug.com/1368843): Test is flaky on MSAN builds.
 #if defined(MEMORY_SANITIZER)
@@ -1904,12 +1948,24 @@ IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, SmartReplacePhrase) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, SmartInsertBefore) {
+  if (editable_type() == EditableType::kContentEditable) {
+    // TODO(b:259353252): Remove this once this command is supported in
+    // contenteditables.
+    return;
+  }
+
   SendFinalResultAndWaitForEditableValue("This is a test.", "This is a test.");
   SendFinalResultAndWaitForEditableValue("insert simple in front of test",
                                          "This is a simple test.");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, SmartSelectBetween) {
+  if (editable_type() == EditableType::kContentEditable) {
+    // TODO(b:259353252): Remove this once this command is supported in
+    // contenteditables.
+    return;
+  }
+
   SendFinalResultAndWaitForEditableValue("This is a test.", "This is a test.");
   SendFinalResultAndWaitForSelectionChanged(
       "highlight everything between is and test");
@@ -1917,6 +1973,12 @@ IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, SmartSelectBetween) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, MoveBySentence) {
+  if (editable_type() == EditableType::kContentEditable) {
+    // TODO(b:259353252): Remove this once this command is supported in
+    // contenteditables.
+    return;
+  }
+
   SendFinalResultAndWaitForEditableValue("Hello world! Goodnight world?",
                                          "Hello world! Goodnight world?");
   SendFinalResultAndWaitForCaretBoundsChanged("one sentence back");
@@ -2117,6 +2179,12 @@ class NotificationCenterDictationTest : public DictationTest {
   std::unique_ptr<NotificationCenterTestApi> test_api_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    NetworkTextArea,
+    NotificationCenterDictationTest,
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kTextArea)));
+
 // Tests that clicking the notification center tray does not crash when
 // dictation is enabled.
 IN_PROC_BROWSER_TEST_P(NotificationCenterDictationTest, OpenBubble) {
@@ -2130,10 +2198,58 @@ IN_PROC_BROWSER_TEST_P(NotificationCenterDictationTest, OpenBubble) {
   EXPECT_TRUE(test_api()->IsBubbleShown());
 }
 
+// A test class that only runs on formatted content editables.
+class DictationFormattedContentEditableTest : public DictationPumpkinTest {
+ public:
+  DictationFormattedContentEditableTest() = default;
+  ~DictationFormattedContentEditableTest() override = default;
+  DictationFormattedContentEditableTest(
+      const DictationFormattedContentEditableTest&) = delete;
+  DictationFormattedContentEditableTest& operator=(
+      const DictationFormattedContentEditableTest&) = delete;
+
+ protected:
+  void SetUpOnMainThread() override {
+    DictationPumpkinTest::SetUpOnMainThread();
+
+    // Place the selection at the end of the content editable (the pre-populated
+    // editable value has a length of 14).
+    std::string script = "testSupport.setSelection(14, 14);";
+    ExecuteAccessibilityCommonScript(script);
+  }
+};
+
+// Note: For these tests, the content editable comes pre-populated with a value
+// of "This is a test". See `kFormattedContentEditableUrl` for more details.
 INSTANTIATE_TEST_SUITE_P(
-    NetworkTextArea,
-    NotificationCenterDictationTest,
+    NetworkFormattedContentEditable,
+    DictationFormattedContentEditableTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
-                                 EditableType::kTextArea)));
+                                 EditableType::kFormattedContentEditable)));
+
+IN_PROC_BROWSER_TEST_P(DictationFormattedContentEditableTest, DeletePhrase) {
+  SendFinalResultAndWaitForEditableValue("delete a", "This is test");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationFormattedContentEditableTest,
+                       ReplacePhraseMultipleWords) {
+  std::string command = "replace the phrase is a test with was just one exam";
+  std::string expected_value = "This was just one exam";
+  SendFinalResultAndWaitForEditableValue(command, expected_value);
+}
+
+IN_PROC_BROWSER_TEST_P(DictationFormattedContentEditableTest,
+                       ReplacePhraseFirstWord) {
+  std::string command = "replace this with it";
+  std::string expected_value = "It is a test";
+  SendFinalResultAndWaitForEditableValue(command, expected_value);
+}
+
+IN_PROC_BROWSER_TEST_P(DictationFormattedContentEditableTest,
+                       ReplacePhraseLastWord) {
+  std::string command = "replace test with quiz";
+  std::string expected_value = "This is a quiz";
+  SendFinalResultAndWaitForEditableValue(command, expected_value);
+}
 
 }  // namespace ash

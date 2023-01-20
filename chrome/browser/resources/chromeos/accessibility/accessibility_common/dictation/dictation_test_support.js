@@ -61,7 +61,7 @@ class DictationTestSupport {
   }
 
   /** Waits for the SandboxedPumpkinTagger to initialize. */
-  async WaitForPumpkinTaggerReady() {
+  async waitForPumpkinTaggerReady() {
     const strategy = this.dictation_.speechParser_.pumpkinParseStrategy_;
     const isReady = () => {
       return strategy.pumpkinTaggerReady_;
@@ -126,6 +126,15 @@ class DictationTestSupport {
           onEditableValueChanged);
     });
 
+    this.notifyCcTests_();
+  }
+
+  /**
+   * @param {number} selStart
+   * @param {number} selEnd
+   */
+  async setSelection(selStart, selEnd) {
+    await this.dictation_.inputController_.setSelection_(selStart, selEnd);
     this.notifyCcTests_();
   }
 }

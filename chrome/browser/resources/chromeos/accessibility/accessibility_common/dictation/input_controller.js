@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {EventHandler} from '../../common/event_handler.js';
+
 import {EditingUtil} from './editing_util.js';
 import {FocusHandler} from './focus_handler.js';
 import {LocaleInfo} from './locale_info.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 const EventType = chrome.automation.EventType;
+const PositionType = chrome.automation.PositionType;
+const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
 
 /**
@@ -29,6 +33,58 @@ let SurroundingInfo;
  * }}
  */
 let EditableNodeData;
+
+/** A helper class that waits for automation and IME events. */
+class AutomationImeEventWaiter {
+  /**
+   * @param {!AutomationNode} node
+   * @param {!EventType} event
+   */
+  constructor(node, event) {
+    /** @private {!AutomationNode} */
+    this.node_ = node;
+    /** @private {!EventType} */
+    this.event_ = event;
+  }
+
+  /**
+   * Calls |doAction|, then waits for |this.event_| and a
+   * chrome.input.ime.onSurroundingTextChanged event. We need to wait for both
+   * since we use the automation and IME APIs to retrieve the editable node
+   * data.
+   * @param {!function(): void} doAction
+   * @return {!Promise}
+   */
+  async doActionAndWait(doAction) {
+    let surroundingTextChanged = false;
+    let eventSeen = false;
+    return new Promise(resolve => {
+      const onSurroundingTextChanged = () => {
+        surroundingTextChanged = true;
+        chrome.input.ime.onSurroundingTextChanged.removeListener(
+            onSurroundingTextChanged);
+        if (eventSeen) {
+          resolve();
+        }
+      };
+
+      let handler = new EventHandler([this.node_], this.event_, () => {
+        eventSeen = true;
+        handler.stop();
+        handler = null;
+        if (surroundingTextChanged) {
+          resolve();
+        }
+      });
+
+      handler.start();
+      chrome.input.ime.onSurroundingTextChanged.addListener(
+          onSurroundingTextChanged);
+
+      doAction();
+    });
+  }
+}
 
 /** InputController handles interaction with input fields for Dictation. */
 export class InputController {
@@ -240,15 +296,28 @@ export class InputController {
    * @param {number} length The number of characters to be deleted.
    * @param {number} offset The offset from the caret position where deletion
    * will start. This value can be negative.
+   * @return {!Promise}
    * @private
    */
-  deleteSurroundingText_(length, offset) {
-    chrome.input.ime.deleteSurroundingText({
-      contextID: this.activeImeContextId_,
-      engineID: InputController.IME_ENGINE_ID,
-      length,
-      offset,
-    });
+  async deleteSurroundingText_(length, offset) {
+    const editableNode = this.focusHandler_.getEditableNode();
+    if (!editableNode) {
+      throw new Error('deleteSurroundingText_ requires a valid editable node');
+    }
+
+    const deleteSurroundingText = () => {
+      chrome.input.ime.deleteSurroundingText({
+        contextID: this.activeImeContextId_,
+        engineID: InputController.IME_ENGINE_ID,
+        length,
+        offset,
+      });
+    };
+
+    // Delete the surrounding text and wait for events to propagate.
+    const waiter = new AutomationImeEventWaiter(
+        editableNode, EventType.VALUE_IN_TEXT_FIELD_CHANGED);
+    await waiter.doActionAndWait(deleteSurroundingText);
   }
 
   /**
@@ -266,19 +335,75 @@ export class InputController {
    * replace the one closest to the text caret.
    * @param {string} deletePhrase The phrase to be deleted.
    * @param {string} insertPhrase The phrase to be inserted.
+   * @return {!Promise}
    */
-  replacePhrase(deletePhrase, insertPhrase) {
-    let data = this.getEditableNodeData();
+  async replacePhrase(deletePhrase, insertPhrase) {
+    const data = this.getEditableNodeData();
     if (!this.checkEditableNodeData_(data)) {
       return;
     }
 
-    const {value, selStart, selEnd} = data;
-    data =
-        EditingUtil.replacePhrase(value, selStart, deletePhrase, insertPhrase);
-    const newValue = data.value;
-    const newIndex = data.caretIndex;
-    this.setEditableValueAndUpdateCaretPosition_(newValue, newIndex);
+    const {value, selStart} = data;
+    const replacePhraseData =
+        EditingUtil.getReplacePhraseData(value, selStart, deletePhrase);
+    if (!replacePhraseData) {
+      return;
+    }
+
+    const {newIndex, deleteLength} = replacePhraseData;
+    await this.setSelection_(newIndex, newIndex);
+    await this.deleteSurroundingText_(deleteLength, deleteLength);
+    if (insertPhrase) {
+      this.commitText(insertPhrase);
+    }
+  }
+
+  /**
+   * Sets the selection within the editable node. `selStart` and `selEnd` are
+   * relative to the value of the editable node. Works in all types of text
+   * fields, including content editables.
+   * @param {number} selStart
+   * @param {number} selEnd
+   * @return {!Promise}
+   * @private
+   */
+  async setSelection_(selStart, selEnd) {
+    const editableNode = this.focusHandler_.getEditableNode();
+    if (!editableNode) {
+      return;
+    }
+
+    let anchorObject = editableNode;
+    let anchorOffset = selStart;
+    let focusObject = editableNode;
+    let focusOffset = selEnd;
+
+    const isContentEditable = editableNode.state[StateType.RICHLY_EDITABLE];
+    if (isContentEditable) {
+      // Contenteditables can contain multiple inline text nodes, so we need to
+      // translate `selStart` and `selEnd` to a node and index within the
+      // contenteditable.
+      let data = this.textNodeAndIndex_(selStart);
+      if (data) {
+        anchorObject = data.node;
+        anchorOffset = data.index;
+      }
+      data = this.textNodeAndIndex_(selEnd);
+      if (data) {
+        focusObject = data.node;
+        focusOffset = data.index;
+      }
+    }
+
+    const setDocumentSelection = () => {
+      chrome.automation.setDocumentSelection(
+          {anchorObject, anchorOffset, focusObject, focusOffset});
+    };
+
+    // Set selection and wait for events to propagate.
+    const waiter = new AutomationImeEventWaiter(
+        editableNode, EventType.TEXT_SELECTION_CHANGED);
+    await waiter.doActionAndWait(setDocumentSelection);
   }
 
   /**
@@ -434,6 +559,32 @@ export class InputController {
     }
 
     return true;
+  }
+
+  /**
+   * Translates `index`, which is relative to the editable's value, to an inline
+   * text node and index within the editable. Only returns valid data when the
+   * editable node is a contenteditable.
+   * @param {number} index
+   * @return {?{node: !AutomationNode, index: number}}
+   * @private
+   */
+  textNodeAndIndex_(index) {
+    const editableNode = this.focusHandler_.getEditableNode();
+    if (!editableNode || !editableNode.state[StateType.RICHLY_EDITABLE]) {
+      throw new Error('textNodeAndIndex_ requires a content editable node');
+    }
+
+    const position = editableNode.createPosition(PositionType.TEXT, index);
+    position.asLeafTextPosition();
+    if (!position || !position.node || position.textOffset === undefined) {
+      return null;
+    }
+
+    return {
+      node: position.node,
+      index: position.textOffset,
+    };
   }
 }
 

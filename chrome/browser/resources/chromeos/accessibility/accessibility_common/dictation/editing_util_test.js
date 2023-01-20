@@ -14,161 +14,130 @@ DictationEditingUtilTest = class extends DictationE2ETestBase {
   }
 };
 
-AX_TEST_F('DictationEditingUtilTest', 'ReplacePhrase', function() {
+AX_TEST_F('DictationEditingUtilTest', 'GetReplacePhraseData', function() {
   let value;
   let caretIndex;
   let deletePhrase;
-  let insertPhrase;
   let result;
   const f = () =>
-      EditingUtil.replacePhrase(value, caretIndex, deletePhrase, insertPhrase);
+      EditingUtil.getReplacePhraseData(value, caretIndex, deletePhrase);
 
   // Simple delete.
   value = 'This is a difficult test';
   caretIndex = value.length;
   deletePhrase = 'difficult';
-  insertPhrase = '';
   result = f();
-  assertEquals('This is a test', result.value);
-  assertEquals(9, result.caretIndex);
+  assertEquals(9, result.newIndex);
+  assertEquals(deletePhrase.length + 1, result.deleteLength);
 
   // Case-insensitive delete.
   value = 'This is a DIFFICULT test';
   caretIndex = value.length;
   deletePhrase = 'difficult';
-  insertPhrase = '';
   result = f();
-  assertEquals('This is a test', result.value);
-  assertEquals(9, result.caretIndex);
+  assertEquals(9, result.newIndex);
+  assertEquals(deletePhrase.length + 1, result.deleteLength);
 
   // Delete when there are multiple instances of `deletePhrase`.
   value = 'The cow jumped over the moon';
   caretIndex = value.length;
   deletePhrase = 'the';
-  insertPhrase = '';
   result = f();
-  assertEquals('The cow jumped over moon', result.value);
-  assertEquals(19, result.caretIndex);
+  assertEquals(19, result.newIndex);
+  assertEquals(deletePhrase.length + 1, result.deleteLength);
 
   // Delete only content to the left of the caret.
   // "The cow| jumped over the moon"
   value = 'The cow jumped over the moon';
   caretIndex = 7;
   deletePhrase = 'the';
-  insertPhrase = '';
   result = f();
-  assertEquals('cow jumped over the moon', result.value);
-  assertEquals(0, result.caretIndex);
+  assertEquals(0, result.newIndex);
+  assertEquals(deletePhrase.length + 1, result.deleteLength);
 
   // Delete last word.
   value = 'The cow jumped over the moon.';
   caretIndex = value.length;
   deletePhrase = 'moon';
-  insertPhrase = '';
   result = f();
-  assertEquals('The cow jumped over the.', result.value);
-  assertEquals(23, result.caretIndex);
+  assertEquals(23, result.newIndex);
+  assertEquals(deletePhrase.length + 1, result.deleteLength);
 
   // Delete only at word boundaries.
   value = 'A square is also a rectangle';
   caretIndex = value.length;
   deletePhrase = 'a';
-  insertPhrase = '';
   result = f();
-  assertEquals('A square is also rectangle', result.value);
-  assertEquals(16, result.caretIndex);
+  assertEquals(16, result.newIndex);
+  assertEquals(deletePhrase.length + 1, result.deleteLength);
 
   // Nothing is deleted if we can't find `deletePhrase`.
   value = 'This is a test';
   caretIndex = value.length;
   deletePhrase = 'coconut';
-  insertPhrase = '';
   result = f();
-  assertEquals('This is a test', result.value);
-  assertEquals(caretIndex, result.caretIndex);
+  assertEquals(null, result);
 
   // Nothing is deleted if the caret is at index 0.
   value = 'This is a test';
   caretIndex = 0;
   deletePhrase = 'test';
-  insertPhrase = '';
   result = f();
-  assertEquals('This is a test', result.value);
-  assertEquals(caretIndex, result.caretIndex);
+  assertEquals(null, result);
 
   // Nothing is deleted if the caret is in the middle of the matched phrase.
   // "A squ|are is also a rectangle".
   value = 'A square is also a rectangle';
   caretIndex = 5;
   deletePhrase = 'square';
-  insertPhrase = '';
   result = f();
-  assertEquals('A square is also a rectangle', result.value);
-  assertEquals(caretIndex, result.caretIndex);
+  assertEquals(null, result);
 
   // Verify that we don't unexpectedly remove punctuation.
   value = 'Hello world.';
   caretIndex = value.length;
   deletePhrase = 'world';
-  insertPhrase = '';
   result = f();
-  assertEquals('Hello.', result.value);
-  assertEquals(5, result.caretIndex);
+  assertEquals(5, result.newIndex);
+  assertEquals(deletePhrase.length + 1, result.deleteLength);
 
   // Nothing is deleted if `deletePhrase` includes punctuation.
   value = 'Hello world.';
   caretIndex = value.length;
   deletePhrase = 'world.';
-  insertPhrase = '';
   result = f();
-  assertEquals('Hello world.', result.value);
-  assertEquals(caretIndex, result.caretIndex);
-
-  // Simple replacement.
-  value = 'This is a difficult test';
-  caretIndex = value.length;
-  deletePhrase = 'difficult';
-  insertPhrase = 'simple';
-  result = f();
-  assertEquals('This is a simple test', result.value);
-  assertEquals(16, result.caretIndex);
+  assertEquals(null, result);
 
   // Replace multiple words.
   value = 'The cow jumped over the moon';
   caretIndex = value.length;
   deletePhrase = 'jumped over the moon';
-  insertPhrase = 'went to bed early';
   result = f();
-  assertEquals('The cow went to bed early', result.value);
-  assertEquals(25, result.caretIndex);
+  assertEquals(7, result.newIndex);
+  assertEquals(deletePhrase.length + 1, result.deleteLength);
 
   // Edge case: value is empty.
   value = '';
   caretIndex = 0;
   deletePhrase = 'coconut';
-  insertPhrase = '';
   result = f();
-  assertEquals('', result.value);
-  assertEquals(caretIndex, result.caretIndex);
+  assertEquals(null, result);
 
   // Edge case: caretIndex is negative.
   value = 'This is a test';
   caretIndex = -1;
   deletePhrase = 'test';
-  insertPhrase = '';
   result = f();
-  assertEquals('This is a test', result.value);
-  assertEquals(caretIndex, result.caretIndex);
+  assertEquals(null, result);
 
   // Edge case: caretIndex is larger than `value.length`. We treat this as
   // if the text caret is at the end of value.
   value = 'Hello';
   caretIndex = 5000;
   deletePhrase = 'Hello';
-  insertPhrase = '';
   result = f();
-  assertEquals('', result.value);
-  assertEquals(0, result.caretIndex);
+  assertEquals(0, result.newIndex);
+  assertEquals(deletePhrase.length, result.deleteLength);
 });
 
 AX_TEST_F('DictationEditingUtilTest', 'InsertBefore', function() {
