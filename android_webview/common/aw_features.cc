@@ -155,5 +155,11 @@ BASE_FEATURE(kWebViewImageDrag,
              "WebViewImageDrag",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// This enables uploading UMA data with a higher frequency.
+// This Feature is checked and used in downstream internal code.
+BASE_FEATURE(kWebViewUmaUploadQualityOfServiceSetToDefault,
+             "WebViewUmaUploadQualityOfServiceSetToDefault",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace android_webview
