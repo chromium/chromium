@@ -291,7 +291,7 @@ void XShmImagePool::OnEvent(const x11::Event& xev) {
 void XShmImagePool::Cleanup() {
   for (FrameState& state : frame_states_) {
     if (state.shmaddr)
-      shmdt(state.shmaddr);
+      shmdt(state.shmaddr.ExtractAsDangling());
     if (state.shmem_attached_to_server)
       connection_->shm().Detach({state.shmseg});
     state.shmem_attached_to_server = false;
