@@ -209,7 +209,6 @@ class CORE_EXPORT CSSAnimations final {
       return scroll_timeline_.Get();
     }
     void SetViewTimeline(const ScopedCSSName& name, CSSViewTimeline*);
-    CSSViewTimeline* GetViewTimeline(const ScopedCSSName& name) const;
     const CSSViewTimelineMap& GetViewTimelines() const {
       return view_timelines_;
     }
@@ -296,6 +295,10 @@ class CORE_EXPORT CSSAnimations final {
   static void CalculateViewTimelineUpdate(CSSAnimationUpdate&,
                                           Element& animating_element,
                                           const ComputedStyleBuilder&);
+  static CSSViewTimelineMap CalculateChangedViewTimelines(
+      Element& animating_element,
+      const CSSViewTimelineMap* existing_view_timelines,
+      const ComputedStyleBuilder&);
 
   static const TimelineData* GetTimelineData(const Element&);
 

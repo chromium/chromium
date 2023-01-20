@@ -32,6 +32,7 @@
 
 #include <algorithm>
 #include <bitset>
+#include <tuple>
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_computed_effect_timing.h"
@@ -500,6 +501,113 @@ const CSSAnimationUpdate* GetPendingAnimationUpdate(Node& node) {
   return &element_animations->CssAnimations().PendingUpdate();
 }
 
+// SpecifiedTimelines "zips" together name/axis/inset vectors such that
+// individual name/axis/inset values can be accessed as a tuple.
+//
+// SpecifiedTimelines skips over entries with nullptr-names (which
+// represents "none"), because such entries should not yield timelines.
+class SpecifiedTimelines {
+  STACK_ALLOCATED();
+
+ public:
+  explicit SpecifiedTimelines(const ScopedCSSNameList* names,
+                              const Vector<TimelineAxis>& axes,
+                              const Vector<TimelineInset>& insets)
+      : names_(names ? &names->GetNames() : nullptr),
+        axes_(axes),
+        insets_(insets) {}
+
+  class Iterator {
+    STACK_ALLOCATED();
+
+   public:
+    Iterator(wtf_size_t index, const SpecifiedTimelines& timelines)
+        : index_(index), timelines_(timelines) {}
+
+    std::tuple<Member<const ScopedCSSName>, TimelineAxis, TimelineInset>
+    operator*() const {
+      const HeapVector<Member<const ScopedCSSName>>& names = *timelines_.names_;
+      const Vector<TimelineAxis>& axes = timelines_.axes_;
+      const Vector<TimelineInset>& insets = timelines_.insets_;
+
+      Member<const ScopedCSSName> name = names[index_];
+      TimelineAxis axis = axes.empty()
+                              ? TimelineAxis::kBlock
+                              : axes[std::min(index_, axes.size() - 1)];
+      const TimelineInset& inset =
+          insets.empty() ? TimelineInset()
+                         : insets[std::min(index_, insets.size() - 1)];
+
+      return std::make_tuple(name, axis, inset);
+    }
+
+    void operator++() { index_ = timelines_.SkipPastNullptr(index_ + 1); }
+
+    bool operator==(const Iterator& o) const { return index_ == o.index_; }
+    bool operator!=(const Iterator& o) const { return index_ != o.index_; }
+
+   private:
+    wtf_size_t index_;
+    const SpecifiedTimelines& timelines_;
+  };
+
+  Iterator begin() const { return Iterator(SkipPastNullptr(0), *this); }
+
+  Iterator end() const { return Iterator(Size(), *this); }
+
+ private:
+  wtf_size_t Size() const { return names_ ? names_->size() : 0; }
+
+  wtf_size_t SkipPastNullptr(wtf_size_t start) const {
+    wtf_size_t size = Size();
+    wtf_size_t index = start;
+    DCHECK_LE(index, size);
+    while (index < size && !(*names_)[index]) {
+      ++index;
+    }
+    return index;
+  }
+
+  const HeapVector<Member<const ScopedCSSName>>* names_;
+  const Vector<TimelineAxis>& axes_;
+  const Vector<TimelineInset>& insets_;
+};
+
+class SpecifiedViewTimelines : public SpecifiedTimelines {
+  STACK_ALLOCATED();
+
+ public:
+  explicit SpecifiedViewTimelines(const ComputedStyleBuilder& style_builder)
+      : SpecifiedTimelines(style_builder.ViewTimelineName(),
+                           style_builder.ViewTimelineAxis(),
+                           style_builder.ViewTimelineInset()) {}
+};
+
+// When calculating timeline updates, we initially assume that all timelines
+// are going to be removed, and then erase the nullptr entries for timelines
+// where we discover that this doesn't apply.
+template <typename TimelineType>
+CSSTimelineMap<TimelineType> NullifyExistingTimelines(
+    const CSSTimelineMap<TimelineType>* existing_timelines) {
+  CSSTimelineMap<TimelineType> map;
+  if (existing_timelines) {
+    for (const Member<const ScopedCSSName>& name : existing_timelines->Keys()) {
+      map.Set(name, nullptr);
+    }
+  }
+  return map;
+}
+
+template <typename TimelineType>
+TimelineType* GetTimeline(const CSSTimelineMap<TimelineType>* timelines,
+                          const ScopedCSSName& name) {
+  if (!timelines) {
+    return nullptr;
+  }
+  auto i = timelines->find(&name);
+  return i != timelines->end() ? i->value.Get() : nullptr;
+}
+
 }  // namespace
 
 void CSSAnimations::CalculateScrollTimelineUpdate(
@@ -549,56 +657,38 @@ void CSSAnimations::CalculateViewTimelineUpdate(
     const ComputedStyleBuilder& style_builder) {
   const CSSAnimations::TimelineData* timeline_data =
       GetTimelineData(animating_element);
-
-  if (!style_builder.ViewTimelineName() &&
-      (!timeline_data || timeline_data->IsEmpty())) {
-    return;
+  const CSSViewTimelineMap* existing_view_timelines =
+      (timeline_data && !timeline_data->GetViewTimelines().empty())
+          ? &timeline_data->GetViewTimelines()
+          : nullptr;
+  if (style_builder.ViewTimelineName() || existing_view_timelines) {
+    update.SetChangedViewTimelines(CalculateChangedViewTimelines(
+        animating_element, existing_view_timelines, style_builder));
   }
+}
 
-  CSSViewTimelineMap changed_timelines;
+CSSViewTimelineMap CSSAnimations::CalculateChangedViewTimelines(
+    Element& animating_element,
+    const CSSViewTimelineMap* existing_view_timelines,
+    const ComputedStyleBuilder& style_builder) {
+  CSSViewTimelineMap changed_timelines =
+      NullifyExistingTimelines(existing_view_timelines);
 
-  // We initially assume that all timelines will be removed, and then un-remove
-  // for matching timelines in the for-loop below.
-  if (timeline_data) {
-    for (const Member<const ScopedCSSName>& name :
-         timeline_data->GetViewTimelines().Keys()) {
-      changed_timelines.Set(name, nullptr);
-    }
-  }
-
-  const HeapVector<Member<const ScopedCSSName>>& names =
-      style_builder.ViewTimelineName()
-          ? style_builder.ViewTimelineName()->GetNames()
-          : HeapVector<Member<const ScopedCSSName>>();
-  const Vector<TimelineAxis>& axes = style_builder.ViewTimelineAxis();
-  const Vector<TimelineInset>& insets = style_builder.ViewTimelineInset();
-
-  for (wtf_size_t i = 0; i < names.size(); ++i) {
-    if (!names[i]) {
-      // A value of nullptr means "none".
-      continue;
-    }
-    const ScopedCSSName& name = *names[i];
-    TimelineAxis axis = axes.empty() ? TimelineAxis::kBlock
-                                     : axes[std::min(i, axes.size() - 1)];
-    const TimelineInset& inset = insets.empty()
-                                     ? TimelineInset()
-                                     : insets[std::min(i, insets.size() - 1)];
+  for (auto [name, axis, inset] : SpecifiedViewTimelines(style_builder)) {
     CSSViewTimeline* existing_timeline =
-        timeline_data ? timeline_data->GetViewTimeline(name) : nullptr;
+        GetTimeline(existing_view_timelines, *name);
     CSSViewTimeline::Options options(&animating_element, axis, inset);
     if (existing_timeline && existing_timeline->Matches(options)) {
-      // Don't clear this timeline after all.
-      changed_timelines.erase(&name);
+      changed_timelines.erase(name);
       continue;
     }
     CSSViewTimeline* new_timeline = MakeGarbageCollected<CSSViewTimeline>(
         &animating_element.GetDocument(), std::move(options));
     new_timeline->ServiceAnimations(kTimingUpdateOnDemand);
-    changed_timelines.Set(&name, new_timeline);
+    changed_timelines.Set(name, new_timeline);
   }
 
-  update.SetChangedViewTimelines(std::move(changed_timelines));
+  return changed_timelines;
 }
 
 const CSSAnimations::TimelineData* CSSAnimations::GetTimelineData(
@@ -2129,12 +2219,6 @@ void CSSAnimations::TimelineData::SetViewTimeline(const ScopedCSSName& name,
   } else {
     view_timelines_.Set(&name, timeline);
   }
-}
-
-CSSViewTimeline* CSSAnimations::TimelineData::GetViewTimeline(
-    const ScopedCSSName& name) const {
-  auto i = view_timelines_.find(&name);
-  return i != view_timelines_.end() ? i->value.Get() : nullptr;
 }
 
 void CSSAnimations::TimelineData::Trace(blink::Visitor* visitor) const {
