@@ -265,6 +265,24 @@ void FilterAccountsWithLoginHint(
   }
 }
 
+bool HasSingleReturningAccount(const std::vector<IdentityProviderData>& idps) {
+  bool has_single_returning_account = false;
+  for (const auto& idp : idps) {
+    for (const auto& account : idp.accounts) {
+      if (account.login_state != LoginState::kSignIn) {
+        continue;
+      }
+
+      if (has_single_returning_account) {
+        // More than one returning account
+        return false;
+      }
+      has_single_returning_account = true;
+    }
+  }
+  return has_single_returning_account;
+}
+
 }  // namespace
 
 FederatedAuthRequestImpl::IdentityProviderGetInfo::IdentityProviderGetInfo(
@@ -763,6 +781,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
                                                start_time_);
   std::string rp_url_for_display = FormatOriginForDisplay(GetEmbeddingOrigin());
 
+  // TODO(crbug.com/1383384): Handle prefer_auto_sign_in for multi IDP.
   bool prefer_auto_signin = true;
   std::vector<IdentityProviderData> idp_data_for_display;
   for (const auto& idp : idp_order_) {
@@ -780,15 +799,14 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
 
   bool screen_reader_is_on = rp_web_contents->GetAccessibilityMode().has_mode(
       ui::AXMode::kScreenReader);
-  // Auto signs in returning users if they have a single account and are
-  // signing in.
+  // Auto signs in returning users if they have a single returning account and
+  // are signing in.
   // TODO(yigu): Add additional controls for RP/IDP/User for this flow.
   // https://crbug.com/1236678.
-  bool is_auto_sign_in =
-      prefer_auto_signin && !screen_reader_is_on &&
-      idp_data_for_display.size() == 1 &&
-      idp_data_for_display[0].accounts.size() == 1 &&
-      idp_data_for_display[0].accounts[0].login_state == LoginState::kSignIn;
+  // TODO(crbug.com/1408880): Enable auto sign-in regardless of whether screen
+  // reader is on.
+  bool is_auto_sign_in = prefer_auto_signin && !screen_reader_is_on &&
+                         HasSingleReturningAccount(idp_data_for_display);
 
   // TODO(crbug.com/1382863): Handle UI where some IDPs are successful and some
   // IDPs are failing in the multi IDP case.
