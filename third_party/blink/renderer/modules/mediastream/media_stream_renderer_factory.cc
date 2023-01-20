@@ -136,7 +136,6 @@ MediaStreamRendererFactory::GetAudioRenderer(
         audio_track->is_local_track() ? "local" : "remote"));
 
     return new TrackAudioRenderer(audio_components[0].Get(), *frame,
-                                  /*session_id=*/base::UnguessableToken(),
                                   String(device_id),
                                   std::move(on_render_error_callback));
   }

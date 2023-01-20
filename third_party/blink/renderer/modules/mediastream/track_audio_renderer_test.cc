@@ -119,8 +119,7 @@ class TrackAudioRendererTest : public testing::TestWithParam<bool> {
         ->ConnectToInitializedTrack(audio_component);
 
     track_renderer_ = base::MakeRefCounted<TrackAudioRenderer>(
-        audio_component, dummy_page_.GetFrame(), base::UnguessableToken::Null(),
-        String(),
+        audio_component, dummy_page_.GetFrame(), String(),
         base::BindRepeating(&TrackAudioRendererTest::OnRenderError,
                             base::Unretained(this)));
   }
