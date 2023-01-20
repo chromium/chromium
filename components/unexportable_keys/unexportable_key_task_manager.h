@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "components/unexportable_keys/background_long_task_scheduler.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
 #include "crypto/signature_verifier.h"
@@ -32,6 +33,9 @@ namespace unexportable_keys {
 // WARNING: This might break the assumption about the signature being
 // non-deterministic for some algorithms (like ECDSA). Let the OWNERS know if
 // you want to disable this feature for your use case.
+//
+// Read documentation to `BackgroundLongTaskScheduler` for details on how the
+// tasks are getting scheduled.
 class UnexportableKeyTaskManager {
  public:
   UnexportableKeyTaskManager();
@@ -75,6 +79,10 @@ class UnexportableKeyTaskManager {
       base::span<const uint8_t> data,
       BackgroundTaskPriority priority,
       base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)> callback);
+
+ private:
+  // Scheduler to run long tasks in background.
+  BackgroundLongTaskScheduler task_scheduler_;
 };
 
 }  // namespace unexportable_keys

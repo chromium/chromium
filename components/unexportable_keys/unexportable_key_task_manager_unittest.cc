@@ -20,10 +20,15 @@ class UnexportableKeyTaskManagerTest : public testing::Test {
   UnexportableKeyTaskManagerTest() = default;
   ~UnexportableKeyTaskManagerTest() override = default;
 
+  void RunBackgroundTasks() { task_environment_.RunUntilIdle(); }
+
   UnexportableKeyTaskManager& task_manager() { return task_manager_; }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::ThreadPoolExecutionMode::
+          QUEUED};  // QUEUED - tasks don't run until `RunUntilIdle()` is
+                    // called.
   crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
   UnexportableKeyTaskManager task_manager_;
 };
@@ -35,6 +40,9 @@ TEST_F(UnexportableKeyTaskManagerTest, GenerateKeyAsync) {
   task_manager().GenerateSigningKeySlowlyAsync(
       supported_algorithm, BackgroundTaskPriority::kBestEffort,
       future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  RunBackgroundTasks();
+  EXPECT_TRUE(future.IsReady());
   EXPECT_NE(future.Get(), nullptr);
 }
 
@@ -47,6 +55,7 @@ TEST_F(UnexportableKeyTaskManagerTest, GenerateKeyAsync_Failure) {
   task_manager().GenerateSigningKeySlowlyAsync(
       unsupported_algorithm, BackgroundTaskPriority::kBestEffort,
       future.GetCallback());
+  RunBackgroundTasks();
   EXPECT_EQ(future.Get(), nullptr);
 }
 
@@ -58,6 +67,7 @@ TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync) {
   task_manager().GenerateSigningKeySlowlyAsync(
       supported_algorithm, BackgroundTaskPriority::kBestEffort,
       generate_key_future.GetCallback());
+  RunBackgroundTasks();
   auto key = generate_key_future.Get();
   std::vector<uint8_t> wrapped_key = key->key().GetWrappedKey();
 
@@ -67,6 +77,9 @@ TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync) {
   task_manager().FromWrappedSigningKeySlowlyAsync(
       wrapped_key, BackgroundTaskPriority::kBestEffort,
       unwrap_key_future.GetCallback());
+  EXPECT_FALSE(unwrap_key_future.IsReady());
+  RunBackgroundTasks();
+  EXPECT_TRUE(unwrap_key_future.IsReady());
   auto unwrapped_key = unwrap_key_future.Get();
   EXPECT_NE(unwrapped_key, nullptr);
   // Keys should have different ids since they point to different objects.
@@ -83,6 +96,7 @@ TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync_Failure) {
   task_manager().FromWrappedSigningKeySlowlyAsync(
       empty_wrapped_key, BackgroundTaskPriority::kBestEffort,
       future.GetCallback());
+  RunBackgroundTasks();
   EXPECT_EQ(future.Get(), nullptr);
 }
 
@@ -94,6 +108,7 @@ TEST_F(UnexportableKeyTaskManagerTest, SignAsync) {
   task_manager().GenerateSigningKeySlowlyAsync(
       supported_algorithm, BackgroundTaskPriority::kBestEffort,
       generate_key_future.GetCallback());
+  RunBackgroundTasks();
   auto key = generate_key_future.Get();
 
   // Second, sign some data with the key.
@@ -101,6 +116,9 @@ TEST_F(UnexportableKeyTaskManagerTest, SignAsync) {
   std::vector<const uint8_t> data = {4, 8, 15, 16, 23, 42};
   task_manager().SignSlowlyAsync(key, data, BackgroundTaskPriority::kBestEffort,
                                  sign_future.GetCallback());
+  EXPECT_FALSE(sign_future.IsReady());
+  RunBackgroundTasks();
+  EXPECT_TRUE(sign_future.IsReady());
   const auto& signed_data = sign_future.Get();
   ASSERT_TRUE(signed_data.has_value());
 
@@ -118,6 +136,7 @@ TEST_F(UnexportableKeyTaskManagerTest, SignAsync_NullKey) {
   task_manager().SignSlowlyAsync(nullptr, data,
                                  BackgroundTaskPriority::kBestEffort,
                                  sign_future.GetCallback());
+  RunBackgroundTasks();
   EXPECT_FALSE(sign_future.Get().has_value());
 }
 

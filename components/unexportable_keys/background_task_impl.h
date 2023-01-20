@@ -16,9 +16,11 @@ namespace unexportable_keys::internal {
 // A template class implementing `BackgroundTask`. Background task is
 // represented by a `task_` callback with a specific `ReturnType` that is passed
 // from the background thread to a `reply_` callback.
-template <typename ReturnType>
+template <typename T>
 class BackgroundTaskImpl : public BackgroundTask {
  public:
+  using ReturnType = T;
+
   // `task` is a callback that runs on the background thread and returns a
   // value.
   // `reply` is invoked on the posting thread with the return result of

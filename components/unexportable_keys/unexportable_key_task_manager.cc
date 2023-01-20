@@ -7,9 +7,15 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner_thread_mode.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "components/unexportable_keys/background_long_task_scheduler.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
+#include "components/unexportable_keys/unexportable_key_tasks.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -27,7 +33,15 @@ scoped_refptr<RefCountedUnexportableSigningKey> MakeSigningKeyRefCounted(
 }
 }  // namespace
 
-UnexportableKeyTaskManager::UnexportableKeyTaskManager() = default;
+UnexportableKeyTaskManager::UnexportableKeyTaskManager()
+    : task_scheduler_(base::ThreadPool::CreateSingleThreadTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+          base::SingleThreadTaskRunnerThreadMode::
+              DEDICATED  // Using a dedicated thread to run long and blocking
+                         // TPM tasks.
+          )) {}
+
 UnexportableKeyTaskManager::~UnexportableKeyTaskManager() = default;
 
 void UnexportableKeyTaskManager::GenerateSigningKeySlowlyAsync(
@@ -44,9 +58,10 @@ void UnexportableKeyTaskManager::GenerateSigningKeySlowlyAsync(
     return;
   }
 
-  // TODO(b/263249728): run this on a background thread.
-  std::move(callback).Run(MakeSigningKeyRefCounted(
-      key_provider->GenerateSigningKeySlowly(acceptable_algorithms)));
+  auto task = std::make_unique<GenerateKeyTask>(
+      std::move(key_provider), acceptable_algorithms,
+      base::BindOnce(&MakeSigningKeyRefCounted).Then(std::move(callback)));
+  task_scheduler_.PostTask(std::move(task), priority);
 }
 
 void UnexportableKeyTaskManager::FromWrappedSigningKeySlowlyAsync(
@@ -62,9 +77,10 @@ void UnexportableKeyTaskManager::FromWrappedSigningKeySlowlyAsync(
     return;
   }
 
-  // TODO(b/263249728): run this on a background thread.
-  std::move(callback).Run(MakeSigningKeyRefCounted(
-      key_provider->FromWrappedSigningKeySlowly(wrapped_key)));
+  auto task = std::make_unique<FromWrappedKeyTask>(
+      std::move(key_provider), wrapped_key,
+      base::BindOnce(&MakeSigningKeyRefCounted).Then(std::move(callback)));
+  task_scheduler_.PostTask(std::move(task), priority);
 }
 
 void UnexportableKeyTaskManager::SignSlowlyAsync(
@@ -72,15 +88,11 @@ void UnexportableKeyTaskManager::SignSlowlyAsync(
     base::span<const uint8_t> data,
     BackgroundTaskPriority priority,
     base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)> callback) {
-  // TODO(b/263249728): run this on a background thread.
   // TODO(b/263249728): deduplicate tasks with the same parameters.
   // TODO(b/263249728): implement a cache of recent signings.
-  if (!signing_key) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-
-  std::move(callback).Run(signing_key->key().SignSlowly(data));
+  auto task = std::make_unique<SignTask>(std::move(signing_key), data,
+                                         std::move(callback));
+  task_scheduler_.PostTask(std::move(task), priority);
 }
 
 }  // namespace unexportable_keys

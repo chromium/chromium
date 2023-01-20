@@ -13,6 +13,8 @@ static_library("unexportable_keys") {
     "ref_counted_unexportable_signing_key.h",
     "unexportable_key_task_manager.cc",
     "unexportable_key_task_manager.h",
+    "unexportable_key_tasks.cc",
+    "unexportable_key_tasks.h",
   ]
 
   public_deps = [
