@@ -45,8 +45,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * These tests render screenshots of touch to fill for credit cards sheet and compare them
- * to a gold standard.
+ * These tests render screenshots of touch to fill for credit cards sheet and compare them to a gold
+ * standard.
  */
 @RunWith(ParameterizedRunner.class)
 @Batch(Batch.PER_CLASS)
@@ -101,6 +101,7 @@ public class TouchToFillCreditCardRenderTest {
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.waitForActivityCompletelyLoaded();
         mBottomSheetController = mActivityTestRule.getActivity()
                                          .getRootUiCoordinatorForTesting()
                                          .getBottomSheetController();

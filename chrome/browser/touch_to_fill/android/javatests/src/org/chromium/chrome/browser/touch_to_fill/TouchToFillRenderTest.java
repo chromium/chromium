@@ -119,6 +119,7 @@ public class TouchToFillRenderTest {
     public void setUp() throws InterruptedException {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.waitForActivityCompletelyLoaded();
         mBottomSheetController = mActivityTestRule.getActivity()
                                          .getRootUiCoordinatorForTesting()
                                          .getBottomSheetController();
