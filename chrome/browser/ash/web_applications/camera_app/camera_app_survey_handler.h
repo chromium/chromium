@@ -9,7 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
-#include "chrome/browser/profiles/profile.h"
 
 // Used to show a Happiness Tracking Survey when the camera app sends a trigger
 // event.

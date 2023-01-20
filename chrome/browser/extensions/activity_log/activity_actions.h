@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/activity_log_private.h"
 #include "url/gurl.h"
 

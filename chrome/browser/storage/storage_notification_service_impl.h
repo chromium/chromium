@@ -7,7 +7,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/storage_notification_service.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"

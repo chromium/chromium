@@ -17,6 +17,7 @@
 #include "net/base/host_port_pair.h"
 
 class ChromeDevToolsSession;
+class Profile;
 class ScopedKeepAlive;
 using RemoteLocations = std::set<net::HostPortPair>;
 

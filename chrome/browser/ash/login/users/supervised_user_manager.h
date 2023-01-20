@@ -9,7 +9,6 @@
 
 #include "base/functional/callback.h"
 #include "base/values.h"
-#include "chrome/browser/profiles/profile.h"
 
 class PrefRegistrySimple;
 

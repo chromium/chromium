@@ -18,6 +18,7 @@ class RSAPrivateKey;
 }
 
 class AndroidUsbDevice;
+class Profile;
 
 class UsbDeviceProvider : public AndroidDeviceManager::DeviceProvider {
  public:

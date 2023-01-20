@@ -23,6 +23,7 @@
 #include "ui/views/test/ax_event_counter.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands_mac.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #endif

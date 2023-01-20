@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"

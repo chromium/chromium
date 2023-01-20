@@ -14,7 +14,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/power/ml/boot_clock.h"
 #include "chrome/browser/ash/power/smart_charging/smart_charging_ukm_logger.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/charge_history_state.pb.h"
 #include "chromeos/dbus/power_manager/user_charging_event.pb.h"

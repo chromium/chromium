@@ -10,7 +10,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_change_registrar.h"
 
 namespace ash {

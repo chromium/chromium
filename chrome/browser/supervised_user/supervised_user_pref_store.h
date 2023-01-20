@@ -11,7 +11,6 @@
 #include "base/observer_list.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_users.h"
 #include "components/prefs/pref_store.h"
 
