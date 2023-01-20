@@ -39,6 +39,21 @@ template("html_to_wrapper") {
       wrapper_file = get_path_info(html_file, "dir") + "/" +
                      get_path_info(html_file, "file") + wrapper_extension
       inputs += [ "$in_folder/" + html_file ]
+
+      # When in "detect" mode, need to declare the file holding the web
+      # component's definition as an input dependency, since the script needs
+      # to look into it to determine the type of wrapper to use.
+      if (defined(invoker.template) && invoker.template == "detect") {
+        # Exclude non-web component "*_icons.html" or "icons.html" files.
+        is_icons_template =
+            get_path_info(html_file, "file") == "icons.html" ||
+            string_replace(html_file, "_icons.html", "") != html_file
+        if (!is_icons_template) {
+          inputs += [ "$in_folder/" +
+                      string_replace(html_file, ".html", wrapper_extension) ]
+        }
+      }
+
       outputs += [ "$out_folder/" + wrapper_file ]
     }
 

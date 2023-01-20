@@ -51,6 +51,26 @@ const template = html`%(content)s`;
 document.head.appendChild(template.content);
 """
 
+# Token used to detect whether the underlying custom element is based on
+# Polymer.
+POLYMER_TOKEN = '//resources/polymer/v3_0/polymer/polymer_bundled.min.js'
+
+
+# Detects whether the element to be wrapped is using Polymer or native APIs.
+def get_wrapper_element_template(template_type, extension, in_file):
+  if template_type == 'native':
+    return _NON_POLYMER_ELEMENT_TEMPLATE
+
+  if template_type == 'polymer':
+    return _ELEMENT_TEMPLATE
+
+  if template_type == 'detect':
+    definition_file = path.splitext(in_file)[0] + extension
+    with io.open(definition_file, encoding='utf-8', mode='r') as f:
+      content = f.read()
+      return _ELEMENT_TEMPLATE if POLYMER_TOKEN in content else \
+          _NON_POLYMER_ELEMENT_TEMPLATE
+
 
 def main(argv):
   parser = argparse.ArgumentParser()
@@ -60,7 +80,7 @@ def main(argv):
   parser.add_argument('--minify', action='store_true')
   parser.add_argument('--use_js', action='store_true')
   parser.add_argument('--template',
-                      choices=['polymer', 'native'],
+                      choices=['polymer', 'native', 'detect'],
                       default='polymer')
   parser.add_argument('--scheme',
                       choices=['chrome', 'relative'],
@@ -101,6 +121,8 @@ def main(argv):
       shutil.rmtree(tmp_out_dir)
       raise err
 
+  out_files = []
+
   # Wrap the input files (minified or not) with an enclosing .ts file.
   for in_file in args.in_files:
     wrapper_in_file = path.join(wrapper_in_folder, in_file)
@@ -108,13 +130,15 @@ def main(argv):
     with io.open(wrapper_in_file, encoding='utf-8', mode='r') as f:
       html_content = f.read()
 
-      wrapper = None
-      template = _ELEMENT_TEMPLATE \
-          if args.template == 'polymer' else _NON_POLYMER_ELEMENT_TEMPLATE
-
+      template = None
       filename = path.basename(in_file)
       if filename == 'icons.html' or filename.endswith('_icons.html'):
+        assert args.template != 'native', (
+            'Polymer icons files not supported with template="native"')
         template = _ICONS_TEMPLATE
+      else:
+        template = get_wrapper_element_template(args.template, extension,
+                                                wrapper_in_file)
 
       wrapper = template % {
           'content': html_content,
@@ -123,7 +147,9 @@ def main(argv):
 
       out_folder_for_file = path.join(out_folder, path.dirname(in_file))
       makedirs(out_folder_for_file, exist_ok=True)
-      with io.open(path.join(out_folder, in_file) + extension, mode='wb') as f:
+      out_file = path.join(out_folder, in_file) + extension
+      out_files.append(out_file)
+      with io.open(out_file, mode='wb') as f:
         f.write(wrapper.encode('utf-8'))
 
   if args.minify:

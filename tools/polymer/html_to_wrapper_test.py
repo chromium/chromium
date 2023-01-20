@@ -66,28 +66,47 @@ class HtmlToWrapperTest(unittest.TestCase):
     self._run_test('html_to_wrapper/foo.html', 'html_to_wrapper/foo.html.ts',
                    'html_to_wrapper/foo_expected.html.ts')
 
+  def testHtmlToWrapperPolymerElement_Detect(self):
+    self._run_test('html_to_wrapper/foo.html',
+                   'html_to_wrapper/foo.html.ts',
+                   'html_to_wrapper/foo_expected.html.ts',
+                   template='detect')
+
   def testHtmlToWrapperNativeElement(self):
     self._run_test('html_to_wrapper/foo_native.html',
                    'html_to_wrapper/foo_native.html.ts',
                    'html_to_wrapper/foo_native_expected.html.ts',
                    template='native')
 
+  def testHtmlToWrapperNativeElement_Detect(self):
+    self._run_test('html_to_wrapper/foo_native.html',
+                   'html_to_wrapper/foo_native.html.ts',
+                   'html_to_wrapper/foo_native_expected.html.ts',
+                   template='detect')
+
   def testHtmlToWrapperIcons(self):
     self._run_test('html_to_wrapper/icons.html',
                    'html_to_wrapper/icons.html.ts',
                    'html_to_wrapper/icons_expected.html.ts')
 
-  def testHtmlToWrapperMinify(self):
+  def testHtmlToWrapper_Minify(self):
     self._run_test('html_to_wrapper/foo.html',
                    'html_to_wrapper/foo.html.ts',
                    'html_to_wrapper/foo_expected.min.html.ts',
                    minify=True)
 
-  def testHtmlToWrapperUseJs(self):
+  def testHtmlToWrapper_UseJs(self):
     self._run_test('html_to_wrapper/foo.html',
                    'html_to_wrapper/foo.html.js',
                    'html_to_wrapper/foo_expected.html.ts',
                    use_js=True)
+
+  def testHtmlToWrapper_UseJsDetect(self):
+    self._run_test('html_to_wrapper/foo.html',
+                   'html_to_wrapper/foo.html.js',
+                   'html_to_wrapper/foo_expected.html.ts',
+                   use_js=True,
+                   template='detect')
 
   def testHtmlToWrapperSchemeRelative(self):
     self._run_test('html_to_wrapper/foo.html',
