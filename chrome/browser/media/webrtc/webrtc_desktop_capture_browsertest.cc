@@ -351,9 +351,17 @@ IN_PROC_BROWSER_TEST_F(WebRtcDesktopCaptureBrowserTest,
   ASSERT_GE(average_fps, kFps / 3);
 }
 
+// TODO(crbug.com/1395498): Fails on Linux ASan LSan builder
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_TabCaptureProvides0HzWith0MinFpsConstraintAndStaticContent \
+  DISABLED_TabCaptureProvides0HzWith0MinFpsConstraintAndStaticContent
+#else
+#define MAYBE_TabCaptureProvides0HzWith0MinFpsConstraintAndStaticContent \
+  TabCaptureProvides0HzWith0MinFpsConstraintAndStaticContent
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebRtcDesktopCaptureBrowserTest,
-    TabCaptureProvides0HzWith0MinFpsConstraintAndStaticContent) {
+    MAYBE_TabCaptureProvides0HzWith0MinFpsConstraintAndStaticContent) {
   constexpr base::TimeDelta kTestTime = base::Seconds(2);
   InitializeTabSharingForFirstTab(
       base::BindOnce(GetDesktopMediaIDForTab, base::Unretained(browser()), 1),
