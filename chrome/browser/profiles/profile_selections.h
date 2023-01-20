@@ -21,6 +21,14 @@ BASE_DECLARE_FEATURE(kSystemProfileSelectionDefaultNone);
 
 // Similar experiment to `kSystemProfileSelectionDefaultNone` described above
 // affecting Guest Profile.
+// However the experiment will be conducted slightly differently.
+// All force_guest values are by default true, bypassing the experiment and
+// keeping the old behavior. Only force_guest values that will be explicitly set
+// to false will trigger the experiment and activating the
+// `ProfileSelection::kNone` for that service.
+// This is done in more conservative approach (activating all services by
+// default) because of the uncertainty of the need of services for the Guest
+// Profile.
 BASE_DECLARE_FEATURE(kGuestProfileSelectionDefaultNone);
 
 class Profile;
@@ -222,7 +230,7 @@ class ProfileSelections {
   // Parameters: (used during the experiment)
   // - force_guest: true, force Guest with `ProfileSelection::kOriginalOnly`.
   // - force_system: true, force System with `ProfileSelection::kOriginalOnly`.
-  static ProfileSelections BuildDefault(bool force_guest = false,
+  static ProfileSelections BuildDefault(bool force_guest = true,
                                         bool force_system = false);
 
   // Without the experiment:
@@ -261,7 +269,7 @@ class ProfileSelections {
   // - force_system: true, force System with
   // `ProfileSelecion::kRedirectedToOriginal`.
   static ProfileSelections BuildRedirectedInIncognito(
-      bool force_guest = false,
+      bool force_guest = true,
       bool force_system = false);
 
   // Without the experiment:
@@ -288,7 +296,7 @@ class ProfileSelections {
   // - force_guest: true, force Guest with `ProfileSelecion::kOwnInstance`.
   // - force_system: true, force System with `ProfileSelecion::kOwnInstance`.
   static ProfileSelections BuildForRegularAndIncognito(
-      bool force_guest = false,
+      bool force_guest = true,
       bool force_system = false);
 
   // Given a Profile and a ProfileSelection enum, returns the right profile

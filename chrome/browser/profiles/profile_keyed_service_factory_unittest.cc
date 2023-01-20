@@ -147,9 +147,10 @@ TEST_P(ProfileKeyedServiceFactoryUnittest, DefaultFactoryTest) {
   TestProfileToUse(factory, regular_profile(), regular_profile());
   TestProfileToUse(factory, incognito_profile(), nullptr);
 
-  bool guest_experiment = IsGuestExperimentActive();
-  TestProfileToUse(factory, guest_profile(),
-                   guest_experiment ? nullptr : guest_profile());
+  // Since force_guest = true by default and the value is not overridden by the
+  // ProfileSelections created, the profile selected will not depend on the
+  // `kGuestProfileSelectionDefaultNone` experiment.
+  TestProfileToUse(factory, guest_profile(), guest_profile());
   TestProfileToUse(factory, guest_profile_otr(), nullptr);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
@@ -164,15 +165,37 @@ TEST_P(ProfileKeyedServiceFactoryUnittest, DefaultFactoryTest) {
 class PredefinedProfileSelectionsFactoryTest
     : public ProfileKeyedServiceFactoryTest {
  public:
-  PredefinedProfileSelectionsFactoryTest()
+  // Simulates the normal default value for Guest Profile.
+  explicit PredefinedProfileSelectionsFactoryTest(bool force_guest = true)
       : ProfileKeyedServiceFactoryTest(
             "PredefinedProfileSelectionsFactoryTest",
-            ProfileSelections::BuildRedirectedInIncognito()) {}
+            ProfileSelections::BuildRedirectedInIncognito(force_guest)) {}
 };
 
 TEST_P(ProfileKeyedServiceFactoryUnittest,
        PredefinedProfileSelectionsFactoryTest) {
   PredefinedProfileSelectionsFactoryTest factory;
+  TestProfileToUse(factory, regular_profile(), regular_profile());
+  TestProfileToUse(factory, incognito_profile(), regular_profile());
+
+  // Since force_guest = true by default and the value is not overridden by the
+  // ProfileSelections created, the profile selected will not depend on the
+  // `kGuestProfileSelectionDefaultNone` experiment.
+  TestProfileToUse(factory, guest_profile(), guest_profile());
+  TestProfileToUse(factory, guest_profile_otr(), guest_profile());
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+  bool system_experiment = IsSystemExperimentActive();
+  TestProfileToUse(factory, system_profile(),
+                   system_experiment ? nullptr : system_profile());
+  TestProfileToUse(factory, system_profile_otr(),
+                   system_experiment ? nullptr : system_profile());
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+}
+
+TEST_P(ProfileKeyedServiceFactoryUnittest,
+       PredefinedProfileSelectionsFactoryTest_WithForceGuestFalse) {
+  PredefinedProfileSelectionsFactoryTest factory(/*force_guest=*/false);
   TestProfileToUse(factory, regular_profile(), regular_profile());
   TestProfileToUse(factory, incognito_profile(), regular_profile());
 
@@ -235,9 +258,10 @@ TEST_P(ProfileKeyedServiceFactoryUnittest, DefaultRefcountedFactoryTest) {
   TestProfileToUse(factory, regular_profile(), regular_profile());
   TestProfileToUse(factory, incognito_profile(), nullptr);
 
-  bool guest_experiment = IsGuestExperimentActive();
-  TestProfileToUse(factory, guest_profile(),
-                   guest_experiment ? nullptr : guest_profile());
+  // Since force_guest = true by default and the value is not overridden by the
+  // ProfileSelections created, the profile selected will not depend on the
+  // `kGuestProfileSelectionDefaultNone` experiment.
+  TestProfileToUse(factory, guest_profile(), guest_profile());
   TestProfileToUse(factory, guest_profile_otr(), nullptr);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
@@ -264,11 +288,11 @@ TEST_P(ProfileKeyedServiceFactoryUnittest,
   TestProfileToUse(factory, regular_profile(), regular_profile());
   TestProfileToUse(factory, incognito_profile(), incognito_profile());
 
-  bool guest_experiment = IsGuestExperimentActive();
-  TestProfileToUse(factory, guest_profile(),
-                   guest_experiment ? nullptr : guest_profile());
-  TestProfileToUse(factory, guest_profile_otr(),
-                   guest_experiment ? nullptr : guest_profile_otr());
+  // Since force_guest = true by default and the value is not overridden by the
+  // ProfileSelections created, the profile selected will not depend on the
+  // `kGuestProfileSelectionDefaultNone` experiment.
+  TestProfileToUse(factory, guest_profile(), guest_profile());
+  TestProfileToUse(factory, guest_profile_otr(), guest_profile_otr());
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   bool system_experiment = IsSystemExperimentActive();

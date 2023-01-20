@@ -272,6 +272,38 @@ class ProfileSelectionsTestWithParams
   base::test::ScopedFeatureList feature_list_;
 };
 
+TEST_P(ProfileSelectionsTestWithParams, BuildDefault_WithDefaultValues) {
+  ProfileSelections selections = ProfileSelections::BuildDefault();
+
+  TestProfileSelection(selections, regular_profile(), regular_profile());
+  TestProfileSelection(selections, incognito_profile(), nullptr);
+
+  // Since force_guest = true by default and the value is not overridden by the
+  // ProfileSelections created, the profile selected will not depend on the
+  // `kGuestProfileSelectionDefaultNone` experiment.
+  TestProfileSelection(selections, guest_profile(), guest_profile());
+  TestProfileSelection(selections, guest_profile_otr(), nullptr);
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+  bool system_experiment = IsSystemExperimentActive();
+  TestProfileSelection(selections, system_profile(),
+                       system_experiment ? nullptr : system_profile());
+  TestProfileSelection(selections, system_profile_otr(), nullptr);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  TestProfileSelection(selections, signin_profile(), signin_profile());
+  TestProfileSelection(selections, signin_profile_otr(), nullptr);
+
+  TestProfileSelection(selections, lockscreen_profile(), lockscreen_profile());
+  TestProfileSelection(selections, lockscreen_profile_otr(), nullptr);
+
+  TestProfileSelection(selections, lockscreenapp_profile(),
+                       lockscreenapp_profile());
+  TestProfileSelection(selections, lockscreenapp_profile_otr(), nullptr);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
 TEST_P(ProfileSelectionsTestWithParams, BuildDefault) {
   bool force_guest = std::get<0>(GetParam());
   bool force_system = std::get<1>(GetParam());
