@@ -1182,10 +1182,11 @@ HQPOrderingTest::GetTestData() {
 
 TEST_F(HQPOrderingTest, TEMatch) {
   std::vector<std::string> expected_urls;
-  expected_urls.push_back("http://techmeme.com/");
   expected_urls.push_back("http://www.teamliquid.net/");
+  expected_urls.push_back("http://techmeme.com/");
   expected_urls.push_back("http://www.teamliquid.net/tlpd");
-  RunTest(u"te", false, expected_urls, true, u"techmeme.com", u"chmeme.com");
+  RunTest(u"te", false, expected_urls, true, u"www.teamliquid.net",
+          u"amliquid.net");
 }
 
 TEST_F(HQPOrderingTest, TEAMatch) {

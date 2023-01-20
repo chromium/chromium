@@ -60,7 +60,7 @@ BASE_FEATURE(kOmniboxRemoveSuggestionsFromClipboard,
 // tweaks specifically are enabled. Enabling this feature without params is a
 // no-op.
 // TODO(manukh) Enabled by default on 10/20/22 m109. Clean up feature code
-//  2/7/22, when m110 reaches stable.
+//  2/7/23, when m110 reaches stable.
 BASE_FEATURE(kAutocompleteStability,
              "OmniboxAutocompleteStability",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -68,7 +68,7 @@ BASE_FEATURE(kAutocompleteStability,
 // Feature to enable memoizing and filtering non-doc hosts for
 // `DocumentProvider::GetURLForDeduping()`.
 // TODO(manukh) Enabled by default on 10/20/22 m109. Clean up feature code
-//  2/7/22, when m110 reaches stable.
+//  2/7/23, when m110 reaches stable.
 BASE_FEATURE(kDocumentProviderDedupingOptimization,
              "OmniboxDocumentProviderDedupingOptimization",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -110,7 +110,7 @@ BASE_FEATURE(kSingleSortAndCullPass,
 // Feature to enable memoizing URLs when replacing search terms in
 // `AutocompleteMatch::GURLToStrippedGURL()`.
 // TODO(manukh) Enabled by default on 10/20/22 m109. Clean up feature code
-//  2/7/22, when m110 reaches stable.
+//  2/7/23, when m110 reaches stable.
 BASE_FEATURE(kStrippedGurlOptimization,
              "OmniboxStrippedGurlOptimization",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -329,9 +329,10 @@ BASE_FEATURE(kStoreTitleInContentsAndUrlInDescription,
 // HQP scores suggestions higher when it finds fewer matches. When enabled,
 // HQP will consider the count of unique hosts, rather than the total count of
 // matches.
+// TODO(manukh): Clean up 3/7/23 when m111 reaches stable.
 BASE_FEATURE(kHistoryQuickProviderSpecificityScoreCountUniqueHosts,
              "OmniboxHistoryQuickProviderSpecificityScoreCountUniqueHosts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature used to fetch document suggestions.
 BASE_FEATURE(kDocumentProvider,
