@@ -30,7 +30,7 @@ class SimpleNetworkHintsHandlerImpl : public mojom::NetworkHintsHandler {
       mojo::PendingReceiver<mojom::NetworkHintsHandler> receiver);
 
   // mojom::NetworkHintsHandler methods:
-  void PrefetchDNS(const std::vector<std::string>& names) override;
+  void PrefetchDNS(const std::vector<GURL>& urls) override;
   void Preconnect(const GURL& url, bool allow_credentials) override;
 
  private:

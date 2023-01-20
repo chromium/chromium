@@ -861,7 +861,7 @@ TEST_F(PreconnectManagerTest, TestStartPreresolveHosts) {
 
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(cdn.host()));
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(fonts.host()));
-  preconnect_manager_->StartPreresolveHosts({cdn.host(), fonts.host()},
+  preconnect_manager_->StartPreresolveHosts({cdn, fonts},
                                             network_anonymization_key);
   mock_network_context_->CompleteHostLookup(cdn.host(),
                                             network_anonymization_key, net::OK);
@@ -879,7 +879,7 @@ TEST_F(PreconnectManagerTest, TestStartPreresolveHostsDisabledViaUI) {
 
   // mock_network_context_.ResolveHostProxy shouldn't be called. The StrictMock
   // will raise an error if it happens.
-  preconnect_manager_->StartPreresolveHosts({cdn.host(), fonts.host()},
+  preconnect_manager_->StartPreresolveHosts({cdn, fonts},
                                             network_anonymization_key);
 }
 

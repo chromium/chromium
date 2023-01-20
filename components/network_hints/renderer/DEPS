@@ -3,4 +3,5 @@ include_rules = [
   "+content/public/renderer",
   "+mojo",
   "+third_party/blink/public",
+  "+services/network/public/cpp",
 ]

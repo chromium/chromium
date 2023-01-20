@@ -41,19 +41,15 @@ net::NetworkAnonymizationKey GetPendingNetworkAnonymizationKey(
       .network_anonymization_key();
 }
 
-const int kDefaultPort = 80;
-
 // This class contains a std::unique_ptr of itself, it is passed in through
 // Start() method, and will be freed by the OnComplete() method when resolving
 // has completed or mojo connection error has happened.
 class DnsLookupRequest : public network::ResolveHostClientBase {
  public:
-  DnsLookupRequest(int render_process_id,
-                   int render_frame_id,
-                   const std::string& hostname)
+  DnsLookupRequest(int render_process_id, int render_frame_id, const GURL& url)
       : render_process_id_(render_process_id),
         render_frame_id_(render_frame_id),
-        hostname_(hostname) {}
+        url_(url) {}
 
   DnsLookupRequest(const DnsLookupRequest&) = delete;
   DnsLookupRequest& operator=(const DnsLookupRequest&) = delete;
@@ -76,7 +72,7 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
     }
 
     DCHECK(!receiver_.is_bound());
-    net::HostPortPair host_port_pair(hostname_, kDefaultPort);
+    url::SchemeHostPort scheme_host_port(url_);
     network::mojom::ResolveHostParametersPtr resolve_host_parameters =
         network::mojom::ResolveHostParameters::New();
     // Lets the host resolver know it can be de-prioritized.
@@ -91,8 +87,8 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
     render_frame_host->GetProcess()
         ->GetStoragePartition()
         ->GetNetworkContext()
-        ->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
-                          std::move(host_port_pair)),
+        ->ResolveHost(network::mojom::HostResolverHost::NewSchemeHostPort(
+                          std::move(scheme_host_port)),
                       GetPendingNetworkAnonymizationKey(render_frame_host),
                       std::move(resolve_host_parameters),
                       receiver_.BindNewPipeAndPassRemote());
@@ -110,7 +106,7 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
                   const absl::optional<net::AddressList>& resolved_addresses,
                   const absl::optional<net::HostResolverEndpointResults>&
                       endpoint_results_with_metadata) override {
-    VLOG(2) << __FUNCTION__ << ": " << hostname_
+    VLOG(2) << __FUNCTION__ << ": " << url_.spec()
             << ", result=" << resolve_error_info.error;
     request_.reset();
   }
@@ -118,7 +114,7 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
   mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
   const int render_process_id_;
   const int render_frame_id_;
-  const std::string hostname_;
+  const GURL url_;
   std::unique_ptr<DnsLookupRequest> request_;
 };
 
@@ -144,12 +140,11 @@ void SimpleNetworkHintsHandlerImpl::Create(
       std::move(receiver));
 }
 
-void SimpleNetworkHintsHandlerImpl::PrefetchDNS(
-    const std::vector<std::string>& names) {
-  for (const std::string& hostname : names) {
+void SimpleNetworkHintsHandlerImpl::PrefetchDNS(const std::vector<GURL>& urls) {
+  for (const GURL& url : urls) {
     std::unique_ptr<DnsLookupRequest> request =
         std::make_unique<DnsLookupRequest>(render_process_id_, render_frame_id_,
-                                           hostname);
+                                           url);
     DnsLookupRequest* request_ptr = request.get();
     request_ptr->Start(std::move(request));
   }

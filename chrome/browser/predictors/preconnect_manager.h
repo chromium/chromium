@@ -182,7 +182,7 @@ class PreconnectManager {
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key);
   virtual void StartPreresolveHosts(
-      const std::vector<std::string>& hostnames,
+      const std::vector<GURL>& urls,
       const net::NetworkAnonymizationKey& network_anonymization_key);
   virtual void StartPreconnectUrl(
       const GURL& url,

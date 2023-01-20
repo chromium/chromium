@@ -132,15 +132,15 @@ void PreconnectManager::StartPreresolveHost(
 }
 
 void PreconnectManager::StartPreresolveHosts(
-    const std::vector<std::string>& hostnames,
+    const std::vector<GURL>& urls,
     const net::NetworkAnonymizationKey& network_anonymization_key) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!IsEnabled())
     return;
   // Push jobs in front of the queue due to higher priority.
-  for (const std::string& hostname : base::Reversed(hostnames)) {
+  for (const GURL& url : base::Reversed(urls)) {
     PreresolveJobId job_id = preresolve_jobs_.Add(
-        std::make_unique<PreresolveJob>(GURL("http://" + hostname), 0,
+        std::make_unique<PreresolveJob>(url.DeprecatedGetOriginAsURL(), 0,
                                         kAllowCredentialsOnPreconnectByDefault,
                                         network_anonymization_key, nullptr));
     queued_jobs_.push_front(job_id);

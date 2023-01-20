@@ -42,7 +42,7 @@ class WebPrescientNetworking {
 
   // When a page navigation is speculated, DNS prefetch is triggered to hide
   // the host resolution latency.
-  virtual void PrefetchDNS(const WebString& hostname) {}
+  virtual void PrefetchDNS(const WebURL& url) {}
 
   virtual void Preconnect(const WebURL& url, bool allow_credentials) {}
 };

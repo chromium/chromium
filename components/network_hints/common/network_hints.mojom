@@ -8,9 +8,9 @@ import "url/mojom/url.mojom";
 
 // This interface is used by the renderer to provide hints to the browser.
 interface NetworkHintsHandler {
-  // This method is called periodically with a hint to prefetch a batch set of
-  // hostnames.
-  PrefetchDNS(array<string> hostname_list);
+  // This method is called periodically with a hint to perform DNS lookups for
+  // a batch set of urls.
+  PrefetchDNS(array<url.mojom.Url> url_list);
 
   // This method is called periodically with a hint to preconnect to the origin
   // of the specified url.

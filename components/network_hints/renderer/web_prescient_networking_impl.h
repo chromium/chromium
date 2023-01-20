@@ -29,7 +29,7 @@ class WebPrescientNetworkingImpl : public blink::WebPrescientNetworking {
   ~WebPrescientNetworkingImpl() override;
 
   // blink::WebPrescientNetworking methods:
-  void PrefetchDNS(const blink::WebString& hostname) override;
+  void PrefetchDNS(const blink::WebURL& url) override;
   void Preconnect(const blink::WebURL& url, bool allow_credentials) override;
 
  private:
