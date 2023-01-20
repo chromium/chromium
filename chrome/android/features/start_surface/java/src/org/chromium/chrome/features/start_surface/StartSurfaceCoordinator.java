@@ -543,6 +543,11 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     @Override
+    public boolean isHomepageShown() {
+        return mStartSurfaceMediator.isHomepageShown();
+    }
+
+    @Override
     public TabSwitcher.TabListDelegate getGridTabListDelegate() {
         if (mIsStartSurfaceEnabled) {
             if (mSecondaryTasksSurface == null) {

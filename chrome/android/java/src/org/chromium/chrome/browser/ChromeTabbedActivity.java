@@ -1451,8 +1451,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
              * enabled.
              */
             if (mStartSurfaceSupplier.get() == null
-                    || mStartSurfaceSupplier.get().getStartSurfaceState()
-                            != StartSurfaceState.SHOWN_HOMEPAGE
+                    || !mStartSurfaceSupplier.get().isHomepageShown()
                     || !ReturnToChromeUtil.shouldShowStartSurfaceHomeAsNewTab(
                             this, getCurrentTabModel().isIncognito(), isTablet())) {
                 mLayoutManager.showLayout(LayoutType.BROWSING, true);

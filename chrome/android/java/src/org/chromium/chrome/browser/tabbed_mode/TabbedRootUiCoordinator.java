@@ -111,7 +111,6 @@ import org.chromium.chrome.browser.ui.tablet.emptybackground.EmptyBackgroundView
 import org.chromium.chrome.browser.webapps.AddToHomescreenIPHController;
 import org.chromium.chrome.browser.webapps.AddToHomescreenMostVisitedTileClickObserver;
 import org.chromium.chrome.features.start_surface.StartSurface;
-import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
@@ -603,9 +602,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private boolean isShowingStartSurfaceHomepage() {
-        return mStartSurfaceSupplier.get() != null
-                && mStartSurfaceSupplier.get().getStartSurfaceState()
-                == StartSurfaceState.SHOWN_HOMEPAGE;
+        return mStartSurfaceSupplier.get() != null && mStartSurfaceSupplier.get().isHomepageShown();
     }
 
     // Protected class methods
