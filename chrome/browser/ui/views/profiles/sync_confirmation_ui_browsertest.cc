@@ -163,6 +163,8 @@ void InitFeatures(const SyncConfirmationTestParam& params,
   std::vector<base::test::FeatureRef> disabled_features = {};
   if (params.use_tangible_sync) {
     enabled_features.push_back(switches::kTangibleSync);
+  } else {
+    disabled_features.push_back(switches::kTangibleSync);
   }
   if (params.sync_style == SyncConfirmationStyle::kSigninInterceptModal) {
     enabled_features.push_back(kSyncPromoAfterSigninIntercept);
