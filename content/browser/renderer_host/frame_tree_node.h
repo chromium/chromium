@@ -275,12 +275,16 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   const network::mojom::ContentSecurityPolicy* csp_attribute() const {
     return attributes_->parsed_csp_attribute.get();
   }
-  const std::string& html_id() const { return attributes_->id; }
+  const absl::optional<std::string> html_id() const { return attributes_->id; }
   // This tracks iframe's 'name' attribute instead of window.name, which is
   // tracked in FrameReplicationState. See the comment for frame_name() for
   // more details.
-  const std::string& html_name() const { return attributes_->name; }
-  const std::string& html_src() const { return attributes_->src; }
+  const absl::optional<std::string> html_name() const {
+    return attributes_->name;
+  }
+  const absl::optional<std::string> html_src() const {
+    return attributes_->src;
+  }
 
   void SetAttributes(blink::mojom::IframeAttributesPtr attributes);
 

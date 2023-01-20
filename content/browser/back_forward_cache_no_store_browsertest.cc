@@ -978,15 +978,16 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheAuthorizationHeaderBrowserTest,
                                     /*url=*/url_a_2.spec(),
                                     /*reasons=*/{"AuthorizationHeader"},
                                     /*children=*/{}));
-  EXPECT_THAT(current_frame_host()->NotRestoredReasonsForTesting(),
-              MatchesNotRestoredReasons(
-                  blink::mojom::BFCacheBlocked::kYes,
-                  /*id=*/"", /*name=*/"", /*src=*/"",
-                  MatchesSameOriginDetails(
-                      /*url=*/url_a_no_store.spec(),
-                      /*reasons=*/{"MainResourceHasCacheControlNoStore"},
-                      /*children=*/
-                      {subframe_result})));
+  EXPECT_THAT(
+      current_frame_host()->NotRestoredReasonsForTesting(),
+      MatchesNotRestoredReasons(
+          blink::mojom::BFCacheBlocked::kYes,
+          /*id=*/absl::nullopt, /*name=*/absl::nullopt, /*src=*/absl::nullopt,
+          MatchesSameOriginDetails(
+              /*url=*/url_a_no_store.spec(),
+              /*reasons=*/{"MainResourceHasCacheControlNoStore"},
+              /*children=*/
+              {subframe_result})));
 }
 
 // Test that a page with CCNS that makes a request with the "Authorization"

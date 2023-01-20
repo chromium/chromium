@@ -306,9 +306,9 @@ ScriptValue PerformanceNavigationTiming::NotRestoredReasonsBuilder(
       builder.AddNull("blocked");
       break;
   }
-  builder.AddString("src", AtomicString(reasons->src));
-  builder.AddString("id", AtomicString(reasons->id));
-  builder.AddString("name", AtomicString(reasons->name));
+  builder.AddStringOrNull("src", AtomicString(reasons->src));
+  builder.AddStringOrNull("id", AtomicString(reasons->id));
+  builder.AddStringOrNull("name", AtomicString(reasons->name));
   Vector<AtomicString> reason_strings;
   Vector<v8::Local<v8::Value>> children_result;
   if (reasons->same_origin_details) {

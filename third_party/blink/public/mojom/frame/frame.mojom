@@ -172,14 +172,13 @@ struct IframeAttributes {
   network.mojom.ContentSecurityPolicy? parsed_csp_attribute;
   // 'credentialless' attribute of the iframe.
   bool credentialless;
-  // TODO(crbug.com/1402594): Make the attributes optional.
-  // 'id' attribute of the iframe.
-  string id;
+  // 'id' attribute of the iframe. This can be optional because id might not be set.
+  string? id;
   // 'name' attribute of the iframe. This is different from window.name, which is
-  // tracked in FrameReplicationState.
-  string name;
-  // 'src' attribute of the iframe.
-  string src;
+  // tracked in FrameReplicationState. Optional because it might not be set.
+  string? name;
+  // 'src' attribute of the iframe. Optional because it might not be set.
+  string? src;
 };
 
 // An opaque handle that keeps alive the associated render process even after

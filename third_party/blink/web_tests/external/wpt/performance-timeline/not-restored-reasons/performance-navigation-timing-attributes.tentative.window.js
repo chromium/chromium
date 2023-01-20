@@ -9,19 +9,30 @@
 
 'use strict';
 
-// Ensure that notRestoredReasons is populated when not restored.
+// Ensure that empty attributes are reported as empty strings and missing
+// attributes are reported as null.
 promise_test(async t => {
   const rcHelper = new RemoteContextHelper();
   // Open a window with noopener so that BFCache will work.
   const rc1 = await rcHelper.addWindow(
       /*config=*/ null, /*options=*/ {features: 'noopener'});
-  // Use WebSocket to block BFCache.
-  await useWebSocket(rc1);
-
   const rc1_url = await rc1.executeScript(() => {
     return location.href;
   });
-
+  // Add a cross-origin iframe and use BroadcastChannel.
+  const rc1_child = await rc1.addIframe(
+      /*extraConfig=*/ {
+        origin: 'HTTP_REMOTE_ORIGIN',
+        scripts: [],
+        headers: [],
+      },
+      /*attributes=*/ {id: '', name: ''},
+  );
+  // Use WebSocket to block BFCache.
+  await useWebSocket(rc1);
+  const rc1_child_url = await rc1_child.executeScript(() => {
+    return location.href;
+  });
   // Check the BFCache result and the reported reasons.
   await assertBFCache(rc1, /*shouldRestoreFromBFCache=*/ false);
   await assertNotRestoredReasonsEquals(
@@ -32,5 +43,14 @@ promise_test(async t => {
       /*id=*/ null,
       /*name=*/ null,
       /*reasons=*/['WebSocket'],
-      /*children=*/[]);
+      /*children=*/[{
+        'blocked': false,
+        'url': null,
+        'src': rc1_child_url,
+        // Id and name should be empty.
+        'id': '',
+        'name': '',
+        'reasons': [],
+        'children': []
+      }]);
 });
