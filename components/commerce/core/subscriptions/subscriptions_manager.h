@@ -126,27 +126,18 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
   };
 
   struct Request {
-    Request(SubscriptionType type,
-            AsyncOperation operation,
-            SubscriptionsRequestCallback callback);
-    Request(SubscriptionType type,
-            AsyncOperation operation,
-            std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
-            SubscriptionsRequestCallback callback);
+    Request(AsyncOperation operation, base::OnceCallback<void()> callback);
     Request(const Request&) = delete;
     Request& operator=(const Request&) = delete;
     Request(Request&&);
     Request& operator=(Request&&) = default;
     ~Request();
 
-    SubscriptionType type;
     AsyncOperation operation;
-    std::unique_ptr<std::vector<CommerceSubscription>> subscriptions;
-    SubscriptionsRequestCallback callback;
+    base::OnceCallback<void()> callback;
   };
 
-  // Fetch all backend subscriptions and sync with local storage. This should
-  // only be called on manager instantiation and user primary account changed.
+  // Fetch all backend subscriptions and sync with local storage.
   void SyncSubscriptions();
 
   // Check if there is any request running. If not, process the next request in
@@ -157,11 +148,37 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
   // request. This is chained to the main callback when Request object is built.
   void OnRequestCompletion();
 
-  void ProcessSubscribeRequest(Request request);
+  void HandleSync();
 
-  void ProcessUnsubscribeRequest(Request request);
+  void OnSyncStatusFetched(SubscriptionsRequestStatus result);
 
-  void ProcessSyncRequest(Request request);
+  void HandleSubscribe(
+      std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
+      base::OnceCallback<void(bool)> callback);
+
+  void OnSubscribeStatusFetched(
+      std::vector<CommerceSubscription> notified_subscriptions,
+      base::OnceCallback<void(bool)> callback,
+      SubscriptionsRequestStatus result);
+
+  void OnIncomingSubscriptionsFilteredForSubscribe(
+      SubscriptionType type,
+      SubscriptionsRequestCallback callback,
+      std::unique_ptr<std::vector<CommerceSubscription>> unique_subscriptions);
+
+  void HandleUnsubscribe(
+      std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
+      base::OnceCallback<void(bool)> callback);
+
+  void OnUnsubscribeStatusFetched(
+      std::vector<CommerceSubscription> notified_subscriptions,
+      base::OnceCallback<void(bool)> callback,
+      SubscriptionsRequestStatus result);
+
+  void OnIncomingSubscriptionsFilteredForUnsubscribe(
+      SubscriptionType type,
+      SubscriptionsRequestCallback callback,
+      std::unique_ptr<std::vector<CommerceSubscription>> unique_subscriptions);
 
   void GetRemoteSubscriptionsAndUpdateStorage(
       SubscriptionType type,
