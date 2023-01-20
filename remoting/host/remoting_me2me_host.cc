@@ -1762,8 +1762,10 @@ void HostProcess::StartHost() {
         enable_user_interface_);
   }
 
-  // The feature is enabled for all Googlers using a supported platform.
-  desktop_environment_options_.set_enable_remote_open_url(is_googler_);
+  // Always enable remote open URL when the platform supports it. There is an
+  // additional IsRemoteOpenUrlSupported() check that makes sure the capability
+  // won't be advertised if it's missing a registry key or something.
+  desktop_environment_options_.set_enable_remote_open_url(true);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   desktop_environment_options_.set_enable_remote_webauthn(is_googler_);
