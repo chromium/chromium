@@ -116,27 +116,27 @@ enum MaliciousContentStatus {
 // histogram enum naming conventions
 // (https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#usage).
 enum class SafetyTipStatus {
-  // Safety tip status is not applicable, e.g. there is no current navigation.
+  // Safety tip status is not applicable, e.g. there is no current navigation:
   kUnknown = 0,
-  // The current page did not trigger any Safety Tip.
+  // The current page did not trigger any Safety Tip:
   kNone = 1,
-  // The current page triggered a Safety Tip because it was bad reputation.
-  kBadReputation = 2,
-  // The current page triggered a Safety Tip because it had a lookalike URL.
+  // The current page triggered a Safety Tip because it was bad reputation:
+  // kBadReputation = 2, // no longer used, heuristic removed.
+  // The current page triggered a Safety Tip because it had a lookalike URL:
   kLookalike = 3,
   // The current page triggered a Safety Tip because a suspicious keyword was
-  // found in its hostname.
-  kBadKeyword = 4,
+  // found in its hostname:
+  // kBadKeyword = 4, // no longer used, heuristic removed.
   // The current page had bad reputation, but a Safety Tip was not shown since
-  // it had been previously ignored by the user.
-  kBadReputationIgnored = 5,
+  // it had been previously ignored by the user:
+  // kBadReputationIgnored = 5, // no longer used, heuristic removed.
   // The current page had a lookalike URL, but a Safety Tip was not shown since
-  // it had been previously ignored by the user.
+  // it had been previously ignored by the user:
   kLookalikeIgnored = 6,
   // Safety tip UI was ignored because of the lookalike's digital asset link
-  // manifest matched the target's.
-  kDigitalAssetLinkMatch = 7,
-  kMaxValue = kDigitalAssetLinkMatch,
+  // manifest matched the target's:
+  // kDigitalAssetLinkMatch = 7, // no longer used, DAL checks removed.
+  kMaxValue = kLookalikeIgnored,
 };
 
 // Information about the last safety tip shown in the UI. This is used in page

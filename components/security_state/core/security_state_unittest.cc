@@ -323,9 +323,7 @@ TEST(SecurityStateTest, SafetyTipSometimesRemovesSecure) {
   const SafetyTipCase kTestCases[] = {
       {SafetyTipStatus::kUnknown, SECURE},
       {SafetyTipStatus::kNone, SECURE},
-      {SafetyTipStatus::kBadReputation, NONE},
       {SafetyTipStatus::kLookalike, SECURE},
-      {SafetyTipStatus::kBadKeyword, SECURE},
   };
 
   for (auto testcase : kTestCases) {

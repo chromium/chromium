@@ -72,18 +72,12 @@ std::u16string GetSafetyTipTitle(
     security_state::SafetyTipStatus safety_tip_status,
     const GURL& suggested_url) {
   switch (safety_tip_status) {
-    case security_state::SafetyTipStatus::kBadReputation:
-      return l10n_util::GetStringUTF16(
-          IDS_PAGE_INFO_SAFETY_TIP_BAD_REPUTATION_TITLE);
     case security_state::SafetyTipStatus::kLookalike:
       return l10n_util::GetStringFUTF16(
           IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_TITLE,
           security_interstitials::common_string_util::GetFormattedHostName(
               suggested_url));
-    case security_state::SafetyTipStatus::kDigitalAssetLinkMatch:
-    case security_state::SafetyTipStatus::kBadReputationIgnored:
     case security_state::SafetyTipStatus::kLookalikeIgnored:
-    case security_state::SafetyTipStatus::kBadKeyword:
     case security_state::SafetyTipStatus::kUnknown:
     case security_state::SafetyTipStatus::kNone:
       NOTREACHED();
@@ -97,13 +91,9 @@ std::u16string GetSafetyTipDescription(
     security_state::SafetyTipStatus warning_type,
     const GURL& suggested_url) {
   switch (warning_type) {
-    case security_state::SafetyTipStatus::kBadReputation:
     case security_state::SafetyTipStatus::kLookalike:
       return l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_DESCRIPTION);
-    case security_state::SafetyTipStatus::kDigitalAssetLinkMatch:
-    case security_state::SafetyTipStatus::kBadReputationIgnored:
     case security_state::SafetyTipStatus::kLookalikeIgnored:
-    case security_state::SafetyTipStatus::kBadKeyword:
     case security_state::SafetyTipStatus::kNone:
     case security_state::SafetyTipStatus::kUnknown:
       NOTREACHED();
@@ -114,14 +104,9 @@ std::u16string GetSafetyTipDescription(
 
 int GetSafetyTipLeaveButtonId(security_state::SafetyTipStatus warning_type) {
   switch (warning_type) {
-    case security_state::SafetyTipStatus::kBadReputation:
-      return IDS_PAGE_INFO_SAFETY_TIP_BAD_REPUTATION_LEAVE_BUTTON;
     case security_state::SafetyTipStatus::kLookalike:
       return IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_LEAVE_BUTTON;
-    case security_state::SafetyTipStatus::kDigitalAssetLinkMatch:
-    case security_state::SafetyTipStatus::kBadReputationIgnored:
     case security_state::SafetyTipStatus::kLookalikeIgnored:
-    case security_state::SafetyTipStatus::kBadKeyword:
     case security_state::SafetyTipStatus::kUnknown:
     case security_state::SafetyTipStatus::kNone:
       NOTREACHED();

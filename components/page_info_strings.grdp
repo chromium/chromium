@@ -45,12 +45,6 @@
   </message>
 
   <!-- Safety Tip summary strings -->
-  <message name="IDS_PAGE_INFO_SAFETY_TIP_BAD_REPUTATION_TITLE" desc="Message to display in the page info bubble when the page you are on triggered a safety tip.">
-    Suspicious site
-  </message>
-  <message name="IDS_PAGE_INFO_SAFETY_TIP_BAD_REPUTATION_LEAVE_BUTTON" desc="Text of button to leave a suspicious page. Shown on the safety tip page info bubble.">
-    Leave site
-  </message>
   <message name="IDS_PAGE_INFO_SAFETY_TIP_MORE_INFO_LINK" desc="Text of link to Help Center page on safety tip page info bubble.">
     Learn more
   </message>

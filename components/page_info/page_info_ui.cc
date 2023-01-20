@@ -243,18 +243,11 @@ CreateSecurityDescriptionForSafetyTip(
       std::make_unique<PageInfoUI::SecurityDescription>();
   security_description->summary_style = PageInfoUI::SecuritySummaryColor::RED;
 
-  if (safety_tip_status == security_state::SafetyTipStatus::kBadReputation ||
-      safety_tip_status ==
-          security_state::SafetyTipStatus::kBadReputationIgnored) {
-    security_description->summary = l10n_util::GetStringUTF16(
-        IDS_PAGE_INFO_SAFETY_TIP_BAD_REPUTATION_TITLE);
-  } else {
-    const std::u16string safe_host =
-        security_interstitials::common_string_util::GetFormattedHostName(
-            safe_url);
-    security_description->summary = l10n_util::GetStringFUTF16(
-        IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_TITLE, safe_host);
-  }
+  const std::u16string safe_host =
+      security_interstitials::common_string_util::GetFormattedHostName(
+          safe_url);
+  security_description->summary = l10n_util::GetStringFUTF16(
+      IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_TITLE, safe_host);
   security_description->details =
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_DESCRIPTION);
   security_description->type = PageInfoUI::SecurityDescriptionType::SAFETY_TIP;
@@ -991,18 +984,10 @@ std::unique_ptr<PageInfoUI::SecurityDescription>
 PageInfoUI::CreateSafetyTipSecurityDescription(
     const security_state::SafetyTipInfo& info) {
   switch (info.status) {
-    case security_state::SafetyTipStatus::kBadReputation:
-    case security_state::SafetyTipStatus::kBadReputationIgnored:
     case security_state::SafetyTipStatus::kLookalike:
     case security_state::SafetyTipStatus::kLookalikeIgnored:
       return CreateSecurityDescriptionForSafetyTip(info.status, info.safe_url);
 
-    case security_state::SafetyTipStatus::kBadKeyword:
-      // Keyword safety tips are only used to collect metrics for now and are
-      // not visible to the user, so don't affect Page Info.
-      break;
-
-    case security_state::SafetyTipStatus::kDigitalAssetLinkMatch:
     case security_state::SafetyTipStatus::kNone:
     case security_state::SafetyTipStatus::kUnknown:
       break;

@@ -1270,8 +1270,6 @@ TEST_F(PageInfoTest, MAYBE_SafetyTipMetrics) {
   const TestCase kTestCases[] = {
       {{security_state::SafetyTipStatus::kNone, GURL()},
        "Security.SafetyTips.PageInfo.Action.SafetyTip_None"},
-      {{security_state::SafetyTipStatus::kBadReputation, GURL()},
-       "Security.SafetyTips.PageInfo.Action.SafetyTip_BadReputation"},
       {{security_state::SafetyTipStatus::kLookalike, GURL()},
        "Security.SafetyTips.PageInfo.Action.SafetyTip_Lookalike"},
   };
@@ -1319,14 +1317,10 @@ TEST_F(PageInfoTest, SafetyTipTimeOpenMetrics) {
        PageInfo::PAGE_INFO_OPENED},
       {security_state::SafetyTipStatus::kLookalike, "SafetyTip_Lookalike",
        PageInfo::PAGE_INFO_OPENED},
-      {security_state::SafetyTipStatus::kBadReputation,
-       "SafetyTip_BadReputation", PageInfo::PAGE_INFO_OPENED},
       {security_state::SafetyTipStatus::kNone, "SafetyTip_None",
        PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
       {security_state::SafetyTipStatus::kLookalike, "SafetyTip_Lookalike",
        PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
-      {security_state::SafetyTipStatus::kBadReputation,
-       "SafetyTip_BadReputation", PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
   };
 
   for (const auto& test : kTestCases) {

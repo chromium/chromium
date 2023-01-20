@@ -105,38 +105,32 @@ SafetyTipPageInfoBubbleView::SafetyTipPageInfoBubbleView(
                             views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
                         insets.left() - insets.right());
 
-  // Suspicious site safety tips don't have a call to action, as they are used
-  // for drawing users' attention to the omnibox to see if they leave the site
-  // on their own once they notice the omnibox. (https://crbug.com/1146471)
-  if (safety_tip_status != security_state::SafetyTipStatus::kBadReputation) {
-    auto* button_view = AddChildView(std::make_unique<views::BoxLayoutView>());
-    button_view->SetCrossAxisAlignment(
-        views::BoxLayout::CrossAxisAlignment::kCenter);
+  auto* button_view = AddChildView(std::make_unique<views::BoxLayoutView>());
+  button_view->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
-    // Learn more link.
-    info_link_ = button_view->AddChildView(std::make_unique<views::Link>(
-        l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_MORE_INFO_LINK)));
-    info_link_->SetCallback(base::BindRepeating(
-        &SafetyTipPageInfoBubbleView::OpenHelpCenter, base::Unretained(this)));
+  // Learn more link.
+  info_link_ = button_view->AddChildView(std::make_unique<views::Link>(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_MORE_INFO_LINK)));
+  info_link_->SetCallback(base::BindRepeating(
+      &SafetyTipPageInfoBubbleView::OpenHelpCenter, base::Unretained(this)));
 
-    auto* flex_view =
-        button_view->AddChildView(std::make_unique<views::View>());
-    button_view->SetFlexForView(flex_view, 1);
+  auto* flex_view = button_view->AddChildView(std::make_unique<views::View>());
+  button_view->SetFlexForView(flex_view, 1);
 
-    // Leave site button.
-    leave_button_ =
-        button_view->AddChildView(std::make_unique<views::MdTextButton>(
-            base::BindRepeating(
-                [](SafetyTipPageInfoBubbleView* view) {
-                  view->ExecuteLeaveCommand();
-                },
-                this),
-            l10n_util::GetStringUTF16(
-                GetSafetyTipLeaveButtonId(safety_tip_status))));
-    leave_button_->SetProminent(true);
-    leave_button_->SetID(
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_LEAVE_SITE);
-  }
+  // Leave site button.
+  leave_button_ =
+      button_view->AddChildView(std::make_unique<views::MdTextButton>(
+          base::BindRepeating(
+              [](SafetyTipPageInfoBubbleView* view) {
+                view->ExecuteLeaveCommand();
+              },
+              this),
+          l10n_util::GetStringUTF16(
+              GetSafetyTipLeaveButtonId(safety_tip_status))));
+  leave_button_->SetProminent(true);
+  leave_button_->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_LEAVE_SITE);
 }
 
 SafetyTipPageInfoBubbleView::~SafetyTipPageInfoBubbleView() {}

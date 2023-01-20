@@ -65,7 +65,7 @@ class SafetyTipPageInfoBubbleViewTest : public testing::Test {
 
     bubble_ = CreateSafetyTipBubbleForTesting(
         parent_window_->GetNativeView(), web_contents,
-        security_state::SafetyTipStatus::kBadReputation,
+        security_state::SafetyTipStatus::kLookalike,
         GURL("https://www.google.tld"), base::DoNothing());
   }
 

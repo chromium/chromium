@@ -118,7 +118,7 @@ void SafetyTipMessageDelegateAndroidTest::TriggerSecondaryButtonClick() {
 TEST_F(SafetyTipMessageDelegateAndroidTest, DismissOnNoAction) {
   base::MockOnceCallback<void(SafetyTipInteraction)> mock_callback_receiver;
   EnqueueMessage(mock_callback_receiver.Get(), true,
-                 security_state::SafetyTipStatus::kBadReputation);
+                 security_state::SafetyTipStatus::kLookalike);
   EXPECT_CALL(mock_callback_receiver, Run(SafetyTipInteraction::kNoAction));
   DismissMessage();
 }
@@ -126,11 +126,11 @@ TEST_F(SafetyTipMessageDelegateAndroidTest, DismissOnNoAction) {
 TEST_F(SafetyTipMessageDelegateAndroidTest, DoNotReplaceCurrentMessage) {
   base::MockOnceCallback<void(SafetyTipInteraction)> mock_callback_receiver;
   EnqueueMessage(mock_callback_receiver.Get(), true,
-                 security_state::SafetyTipStatus::kBadReputation);
+                 security_state::SafetyTipStatus::kLookalike);
   EXPECT_CALL(mock_callback_receiver, Run(SafetyTipInteraction::kNoAction))
       .Times(0);
   EnqueueMessage(mock_callback_receiver.Get(), false,
-                 security_state::SafetyTipStatus::kBadReputation);
+                 security_state::SafetyTipStatus::kLookalike);
   EXPECT_CALL(mock_callback_receiver, Run(SafetyTipInteraction::kNoAction))
       .Times(1);
   DismissMessage();
@@ -139,7 +139,7 @@ TEST_F(SafetyTipMessageDelegateAndroidTest, DoNotReplaceCurrentMessage) {
 TEST_F(SafetyTipMessageDelegateAndroidTest, PrimaryActionCallback) {
   base::MockOnceCallback<void(SafetyTipInteraction)> mock_callback_receiver;
   EnqueueMessage(mock_callback_receiver.Get(), true,
-                 security_state::SafetyTipStatus::kBadReputation);
+                 security_state::SafetyTipStatus::kLookalike);
 
   web_contents()->SetDelegate(GetTestNavigationDelegate());
   TriggerPrimaryButtonClick();
@@ -151,36 +151,12 @@ TEST_F(SafetyTipMessageDelegateAndroidTest, PrimaryActionCallback) {
 TEST_F(SafetyTipMessageDelegateAndroidTest, SecondaryActionCallback) {
   base::MockOnceCallback<void(SafetyTipInteraction)> mock_callback_receiver;
   EnqueueMessage(mock_callback_receiver.Get(), true,
-                 security_state::SafetyTipStatus::kBadReputation);
+                 security_state::SafetyTipStatus::kLookalike);
 
   web_contents()->SetDelegate(GetTestNavigationDelegate());
   TriggerSecondaryButtonClick();
   EXPECT_EQ(GetTestNavigationDelegate()->opened(), 1);
 
-  DismissMessage();
-}
-
-TEST_F(SafetyTipMessageDelegateAndroidTest,
-       MessagePropertyValuesBadReputation) {
-  base::MockOnceCallback<void(SafetyTipInteraction)> mock_callback_receiver;
-  security_state::SafetyTipStatus status =
-      security_state::SafetyTipStatus::kBadReputation;
-  EnqueueMessage(mock_callback_receiver.Get(), true, status);
-
-  EXPECT_EQ(GetSafetyTipTitle(status, GURL(kSuggestUrl)),
-            GetMessageWrapper()->GetTitle());
-  EXPECT_EQ(GetSafetyTipDescription(status, GURL(kSuggestUrl)),
-            GetMessageWrapper()->GetDescription());
-
-  EXPECT_EQ(l10n_util::GetStringUTF16(GetSafetyTipLeaveButtonId(status)),
-            GetMessageWrapper()->GetPrimaryButtonText());
-  EXPECT_EQ(
-      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_SAFETYTIP_SHIELD),
-      GetMessageWrapper()->GetIconResourceId());
-  EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS),
-            GetMessageWrapper()->GetSecondaryIconResourceId());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_MORE_INFO_LINK),
-            GetMessageWrapper()->GetSecondaryButtonMenuText());
   DismissMessage();
 }
 

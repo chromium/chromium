@@ -89441,15 +89441,19 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 <enum name="SafetyTipStatus">
   <int value="0" label="Safety Tip status unknown/not applicable"/>
   <int value="1" label="No Safety Tip"/>
-  <int value="2" label="Safety Tip for bad reputation"/>
+  <int value="2" label="Safety Tip for bad reputation (deprecated)"/>
   <int value="3" label="Safety Tip for lookalike URL"/>
-  <int value="4" label="Safety Tip for a URL with a suspicious keyword"/>
+  <int value="4"
+      label="Safety Tip for a URL with a suspicious keyword (deprecated)"/>
   <int value="5"
       label="Safety Tip for bad reputation, but the user has explicitly
-             dismissed the Safety Tip on a previous navigation"/>
+             dismissed the Safety Tip on a previous navigation (deprecated)"/>
   <int value="6"
       label="Safety Tip for a lookalike URL, but the user has explicitly
              dismissed the Safety Tip on a previous navigation"/>
+  <int value="7"
+      label="The lookalike URL for the Safety Tip has a Digital Asset Link
+             match (deprecated)"/>
 </enum>
 
 <enum name="SameSiteCookieContext">

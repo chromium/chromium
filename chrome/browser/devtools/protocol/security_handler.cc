@@ -152,13 +152,6 @@ CreateCertificateSecurityState(
 std::unique_ptr<protocol::Security::SafetyTipInfo> CreateSafetyTipInfo(
     const security_state::SafetyTipInfo& safety_tip_info) {
   switch (safety_tip_info.status) {
-    case security_state::SafetyTipStatus::kBadReputation:
-    case security_state::SafetyTipStatus::kBadReputationIgnored:
-      return protocol::Security::SafetyTipInfo::Create()
-          .SetSafetyTipStatus(
-              protocol::Security::SafetyTipStatusEnum::BadReputation)
-          .Build();
-
     case security_state::SafetyTipStatus::kLookalike:
     case security_state::SafetyTipStatus::kLookalikeIgnored:
       return protocol::Security::SafetyTipInfo::Create()
@@ -167,11 +160,6 @@ std::unique_ptr<protocol::Security::SafetyTipInfo> CreateSafetyTipInfo(
           .SetSafeUrl(safety_tip_info.safe_url.spec())
           .Build();
 
-    case security_state::SafetyTipStatus::kBadKeyword:
-      NOTREACHED();
-      return nullptr;
-
-    case security_state::SafetyTipStatus::kDigitalAssetLinkMatch:
     case security_state::SafetyTipStatus::kNone:
     case security_state::SafetyTipStatus::kUnknown:
       return nullptr;

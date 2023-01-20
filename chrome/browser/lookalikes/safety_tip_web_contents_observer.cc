@@ -278,18 +278,14 @@ void SafetyTipWebContentsObserver::HandleSafetyTipCheckResult(
     web_contents()->DidChangeVisibleSecurityState();
   }
 
-  if (result.safety_tip_status == security_state::SafetyTipStatus::kNone ||
-      result.safety_tip_status ==
-          security_state::SafetyTipStatus::kBadKeyword) {
+  if (result.safety_tip_status == security_state::SafetyTipStatus::kNone) {
     FinalizeSafetyTipCheckWhenTipNotShown(record_ukm_if_tip_not_shown, result,
                                           navigation_source_id);
     return;
   }
 
   if (result.safety_tip_status ==
-          security_state::SafetyTipStatus::kLookalikeIgnored ||
-      result.safety_tip_status ==
-          security_state::SafetyTipStatus::kBadReputationIgnored) {
+      security_state::SafetyTipStatus::kLookalikeIgnored) {
     UMA_HISTOGRAM_ENUMERATION("Security.SafetyTips.SafetyTipIgnoredPageLoad",
                               result.safety_tip_status);
     FinalizeSafetyTipCheckWhenTipNotShown(record_ukm_if_tip_not_shown, result,

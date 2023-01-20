@@ -327,13 +327,6 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(page_info);
 
     switch (expected_safety_tip_status) {
-      case security_state::SafetyTipStatus::kBadReputation:
-      case security_state::SafetyTipStatus::kBadReputationIgnored:
-        EXPECT_EQ(GetSafetyTipSummaryText(),
-                  l10n_util::GetStringUTF16(
-                      IDS_PAGE_INFO_SAFETY_TIP_BAD_REPUTATION_TITLE));
-        break;
-
       case security_state::SafetyTipStatus::kLookalike:
       case security_state::SafetyTipStatus::kLookalikeIgnored:
         EXPECT_EQ(GetSafetyTipSummaryText(),
@@ -343,8 +336,6 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
                           GetFormattedHostName(expected_safe_url)));
         break;
 
-      case security_state::SafetyTipStatus::kDigitalAssetLinkMatch:
-      case security_state::SafetyTipStatus::kBadKeyword:
       case security_state::SafetyTipStatus::kUnknown:
       case security_state::SafetyTipStatus::kNone:
         NOTREACHED();
@@ -1753,21 +1744,15 @@ class SafetyTipPageInfoBubbleViewDialogTest : public DialogBrowserTest {
 
   void ShowUi(const std::string& name) override {
     auto status = security_state::SafetyTipStatus::kUnknown;
-    if (name == "BadReputation")
-      status = security_state::SafetyTipStatus::kBadReputation;
-    else if (name == "Lookalike")
+    if (name == "Lookalike") {
       status = security_state::SafetyTipStatus::kLookalike;
+    }
 
     ShowSafetyTipDialog(browser()->tab_strip_model()->GetActiveWebContents(),
                         status, GURL("https://www.google.tld"),
                         base::DoNothing());
   }
 };
-
-IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewDialogTest,
-                       InvokeUi_BadReputation) {
-  ShowAndVerifyUi();
-}
 
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewDialogTest,
                        InvokeUi_Lookalike) {
