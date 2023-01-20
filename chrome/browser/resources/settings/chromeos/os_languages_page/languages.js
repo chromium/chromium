@@ -284,10 +284,8 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
             lists.componentExtensionImes.concat(
                 lists.thirdPartyExtensionImes)));
 
-
-    promises.push(new Promise(resolve => {
-                    this.inputMethodPrivate_.getCurrentInputMethod(resolve);
-                  }).then(result => args.currentInputMethodId = result));
+    promises.push(this.inputMethodPrivate_.getCurrentInputMethod().then(
+        result => args.currentInputMethodId = result));
 
     // Get the list of language-codes to always translate.
     promises.push(

@@ -15,11 +15,9 @@
 export function FakeInputMethodPrivate() {}
 
 FakeInputMethodPrivate.prototype = {
-  getCurrentInputMethod: function(callback) {
-    callback(null);
-  },
+  getCurrentInputMethod: () => Promise.resolve(null),
 
-  setCurrentInputMethod: () => {},
+  setCurrentInputMethod: () => Promise.resolve(),
 
   get onChanged() {
     return {
