@@ -732,6 +732,12 @@ BASE_FEATURE(kKAnonymityServiceOHTTPRequests,
              "KAnonymityServiceOHTTPRequests",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the k-Anonymity Service can use a persistent storage to cache
+// public keys.
+BASE_FEATURE(kKAnonymityServiceStorage,
+             "KAnonymityServiceStorage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, removes any entry points to the history UI from Incognito mode.
 BASE_FEATURE(kUpdateHistoryEntryPointsInIncognito,
              "UpdateHistoryEntryPointsInIncognito",

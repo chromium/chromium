@@ -452,7 +452,8 @@ class KAnonymityServiceClientJoinQueryTest
               {"KAnonymityServiceJoinRelayServer", kJoinRelayURL},
               {"KAnonymityServiceQueryRelayServer", kQueryRelayURL},
           }},
-         {features::kKAnonymityServiceOHTTPRequests, {}}},
+         {features::kKAnonymityServiceOHTTPRequests, {}},
+         {features::kKAnonymityServiceStorage, {}}},
         {});
     TestingProfile::Builder builder;
     builder.SetSharedURLLoaderFactory(

@@ -42,11 +42,10 @@ constexpr base::TimeDelta kKeyCacheDuration = base::Hours(4);
 constexpr int kMaxRetries = 5;
 constexpr size_t kMaxQueueSize = 100;
 
+// TODO(behamilton): Allow the KAnonType to be specified by the client.
 const char kKAnonType[] = "fledge";
 const char kKAnonymityServiceStoragePath[] = "KAnonymityService";
 
-// TODO(behamilton): Change description once indirect (OHTTP) requests are
-// supported.
 constexpr net::NetworkTrafficAnnotationTag
     kKAnonymityServiceJoinSetTrafficAnnotation =
         net::DefineNetworkTrafficAnnotation("k_anonymity_service_join_set",
@@ -76,8 +75,6 @@ constexpr net::NetworkTrafficAnnotationTag
       ""
     )");
 
-// TODO(behamilton): Change description once indirect (OHTTP) requests are
-// supported.
 constexpr net::NetworkTrafficAnnotationTag
     kKAnonymityServiceQuerySetTrafficAnnotation =
         net::DefineNetworkTrafficAnnotation("k_anonymity_service_query_set",
@@ -163,12 +160,14 @@ KAnonymityServiceClient::KAnonymityServiceClient(Profile* profile)
     : url_loader_factory_(profile->GetURLLoaderFactory()),
       enable_ohttp_requests_(base::FeatureList::IsEnabled(
           features::kKAnonymityServiceOHTTPRequests)),
-      storage_((profile && !profile->IsOffTheRecord())
-                   ? CreateKAnonymitySqlStorageForPath(
-                         profile->GetDefaultStoragePartition()
-                             ->GetPath()
-                             .AppendASCII(kKAnonymityServiceStoragePath))
-                   : std::make_unique<KAnonymityServiceMemoryStorage>()),
+      storage_(
+          (base::FeatureList::IsEnabled(features::kKAnonymityServiceStorage) &&
+           profile && !profile->IsOffTheRecord())
+              ? CreateKAnonymitySqlStorageForPath(
+                    profile->GetDefaultStoragePartition()
+                        ->GetPath()
+                        .AppendASCII(kKAnonymityServiceStoragePath))
+              : std::make_unique<KAnonymityServiceMemoryStorage>()),
       // Pass the auth server origin as if it is our "top frame".
       trust_token_answerer_(url::Origin::Create(GURL(
                                 features::kKAnonymityServiceAuthServer.Get())),
