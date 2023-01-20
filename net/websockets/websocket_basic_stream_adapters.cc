@@ -75,9 +75,11 @@ int WebSocketSpdyStreamAdapter::Read(IOBuffer* buf,
   DCHECK(!read_callback_);
   DCHECK_LT(0, buf_len);
 
+  DCHECK(!read_buffer_);
   read_buffer_ = buf;
   // |read_length_| is size_t and |buf_len| is a non-negative int, therefore
   // conversion is always valid.
+  DCHECK(!read_length_);
   read_length_ = buf_len;
 
   if (!read_data_.IsEmpty())
@@ -210,7 +212,11 @@ NetLogSource WebSocketSpdyStreamAdapter::source_dependency() const {
 }
 
 int WebSocketSpdyStreamAdapter::CopySavedReadDataIntoBuffer() {
+  DCHECK(read_buffer_);
+  DCHECK(read_length_);
   int rv = read_data_.Dequeue(read_buffer_->data(), read_length_);
+  read_buffer_ = nullptr;
+  read_length_ = 0u;
 
   // Stream has been destroyed earlier but delegate_->OnClose() call was
   // delayed until all buffered data are read.  PostTask so that Read() can
