@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -315,10 +317,14 @@ StartupTabs StartupTabProviderImpl::GetPrivacySandboxTabs(
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // static
 bool StartupTabProviderImpl::CanShowWelcome(bool is_signin_allowed,
                                             bool is_child_account,
                                             bool is_force_signin_enabled) {
+  if (base::FeatureList::IsEnabled(kForYouFre)) {
+    return false;
+  }
   return is_signin_allowed && !is_child_account && !is_force_signin_enabled;
 }
 
@@ -328,17 +334,22 @@ bool StartupTabProviderImpl::ShouldShowWelcomeForOnboarding(
     bool is_signed_in) {
   return !has_seen_welcome_page && !is_signed_in;
 }
+#endif
 
 // static
 StartupTabs StartupTabProviderImpl::GetStandardOnboardingTabsForState(
     const StandardOnboardingTabsParams& params) {
   StartupTabs tabs;
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (CanShowWelcome(params.is_signin_allowed, params.is_child_account,
                      params.is_force_signin_enabled) &&
       ShouldShowWelcomeForOnboarding(params.has_seen_welcome_page,
                                      params.is_signed_in)) {
     tabs.emplace_back(GetWelcomePageUrl(!params.is_first_run));
   }
+#endif
+
   return tabs;
 }
 
@@ -355,10 +366,18 @@ StartupTabs StartupTabProviderImpl::GetInitialPrefsTabsForState(
   if (is_first_run) {
     tabs.reserve(first_run_tabs.size());
     for (GURL url : first_run_tabs) {
-      if (url.host_piece() == kNewTabUrlHost)
+      if (url.host_piece() == kNewTabUrlHost) {
         url = GURL(chrome::kChromeUINewTabURL);
-      else if (url.host_piece() == kWelcomePageUrlHost)
-        url = GetWelcomePageUrl(false);
+      } else if (url.host_piece() == kWelcomePageUrlHost) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+        if (base::FeatureList::IsEnabled(kForYouFre)) {
+          // Do not show the in-tab welcome experience when the FRE is enabled.
+          continue;
+        } else {
+          url = GetWelcomePageUrl(false);
+        }
+#endif
+      }
       tabs.emplace_back(url);
     }
   }
@@ -465,13 +484,17 @@ StartupTabs StartupTabProviderImpl::GetPrivacySandboxTabsForState(
 
 #endif
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // static
 GURL StartupTabProviderImpl::GetWelcomePageUrl(bool use_later_run_variant) {
+  DCHECK(!base::FeatureList::IsEnabled(kForYouFre));
+
   GURL url(chrome::kChromeUIWelcomeURL);
   return use_later_run_variant
              ? net::AppendQueryParameter(url, "variant", "everywhere")
              : url;
 }
+#endif
 
 // static
 void StartupTabProviderImpl::AddIncompatibleApplicationsUrl(StartupTabs* tabs) {

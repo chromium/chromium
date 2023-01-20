@@ -67,9 +67,6 @@ namespace {
 // occur before an observer can be registered in the test.
 uint16_t g_auto_import_state = first_run::AUTO_IMPORT_NONE;
 
-// Flags for functions of similar name.
-bool g_should_show_welcome_page = false;
-
 // Indicates whether this is first run. Populated when IsChromeFirstRun
 // is invoked, then used as a cache on subsequent calls.
 first_run::internal::FirstRunState g_first_run =
@@ -363,16 +360,6 @@ void ResetCachedSentinelDataForTesting() {
   g_first_run = first_run::internal::FIRST_RUN_UNKNOWN;
 }
 
-void SetShouldShowWelcomePage() {
-  g_should_show_welcome_page = true;
-}
-
-bool ShouldShowWelcomePage() {
-  bool retval = g_should_show_welcome_page;
-  g_should_show_welcome_page = false;
-  return retval;
-}
-
 bool IsOnWelcomePage(content::WebContents* contents) {
   return contents->GetVisibleURL().GetWithEmptyPath() ==
          GURL(chrome::kChromeUIWelcomeURL);
@@ -504,8 +491,6 @@ void DoPostImportTasks(bool make_chrome_default_for_user) {
   // Only set default browser after import as auto import relies on the current
   // default browser to know what to import from.
   ProcessDefaultBrowserPolicy(make_chrome_default_for_user);
-
-  SetShouldShowWelcomePage();
 
   internal::DoPostImportPlatformSpecificTasks();
 }

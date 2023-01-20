@@ -11,8 +11,12 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
-#include "chrome/browser/ui/startup/startup_types.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/ui/startup/startup_types.h"
+#endif
 
 class Profile;
 class StartupBrowserCreator;
@@ -130,6 +134,7 @@ class StartupTabProviderImpl : public StartupTabProvider {
   // system state relating to making those policy decisions. Exposed for
   // testing.
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Returns true if showing the standard welcome page is permissible.
   static bool CanShowWelcome(bool is_signin_allowed,
                              bool is_supervised_user,
@@ -139,6 +144,7 @@ class StartupTabProviderImpl : public StartupTabProvider {
   // should only be used following a positive result from CanShowWelcome.
   static bool ShouldShowWelcomeForOnboarding(bool has_seen_welcome_page,
                                              bool is_signed_in);
+#endif
 
   // Determines which tabs should be shown according to onboarding/first
   // run policy.
@@ -192,12 +198,14 @@ class StartupTabProviderImpl : public StartupTabProvider {
       const StartupTabs& other_startup_tabs);
 #endif
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Gets the URL for the Welcome page. If |use_later_run_variant| is true, a
   // URL parameter will be appended so as to access the variant page used when
   // onboarding occurs after the first Chrome execution (e.g., when creating an
   // additional profile).
   // TODO(hcarmona): it might be possible to deprecate use_later_run_variant.
   static GURL GetWelcomePageUrl(bool use_later_run_variant);
+#endif
 
   // In branded Windows builds, adds the URL for the Incompatible Applications
   // subpage of the Chrome settings.

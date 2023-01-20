@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -32,7 +34,11 @@
 using StandardOnboardingTabsParams =
     StartupTabProviderImpl::StandardOnboardingTabsParams;
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST(StartupTabProviderTest, GetStandardOnboardingTabsForState) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kForYouFre);
+
   {
     // Show welcome page to new unauthenticated profile on first run.
     StandardOnboardingTabsParams params;
@@ -57,6 +63,31 @@ TEST(StartupTabProviderTest, GetStandardOnboardingTabsForState) {
     EXPECT_EQ(output[0].type, StartupTab::Type::kNormal);
   }
 }
+
+TEST(StartupTabProviderTest, GetStandardOnboardingTabsForState_WithFre) {
+  base::test::ScopedFeatureList scoped_feature_list{kForYouFre};
+
+  {
+    // No welcome page for new unauthenticated profile on first run.
+    StandardOnboardingTabsParams params;
+    params.is_first_run = true;
+    params.is_signin_allowed = true;
+    StartupTabs output =
+        StartupTabProviderImpl::GetStandardOnboardingTabsForState(params);
+
+    ASSERT_EQ(0U, output.size());
+  }
+  {
+    // No welcome page after first run.
+    StandardOnboardingTabsParams params;
+    params.is_signin_allowed = true;
+    StartupTabs output =
+        StartupTabProviderImpl::GetStandardOnboardingTabsForState(params);
+
+    ASSERT_EQ(0U, output.size());
+  }
+}
+#endif
 
 TEST(StartupTabProviderTest, GetStandardOnboardingTabsForState_Negative) {
   {
@@ -113,6 +144,24 @@ TEST(StartupTabProviderTest, GetStandardOnboardingTabsForState_Negative) {
 
 TEST(StartupTabProviderTest, GetInitialPrefsTabsForState) {
   std::vector<GURL> input = {GURL(u"https://new_tab_page"),
+                             GURL(u"https://www.google.com")};
+
+  StartupTabs output =
+      StartupTabProviderImpl::GetInitialPrefsTabsForState(true, input);
+
+  ASSERT_EQ(2U, output.size());
+  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL), output[0].url);
+  EXPECT_EQ(output[0].type, StartupTab::Type::kNormal);
+  EXPECT_EQ(input[1], output[1].url);
+  EXPECT_EQ(output[1].type, StartupTab::Type::kNormal);
+}
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST(StartupTabProviderTest, GetInitialPrefsTabsForState_WelcomeWithoutFre) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kForYouFre);
+  ASSERT_FALSE(base::FeatureList::IsEnabled(kForYouFre));
+  std::vector<GURL> input = {GURL(u"https://new_tab_page"),
                              GURL(u"https://www.google.com"),
                              GURL(u"https://welcome_page")};
 
@@ -127,6 +176,25 @@ TEST(StartupTabProviderTest, GetInitialPrefsTabsForState) {
   EXPECT_EQ(StartupTabProviderImpl::GetWelcomePageUrl(false), output[2].url);
   EXPECT_EQ(output[2].type, StartupTab::Type::kNormal);
 }
+
+TEST(StartupTabProviderTest, GetInitialPrefsTabsForState_WelcomeWithFre) {
+  base::test::ScopedFeatureList scoped_feature_list{kForYouFre};
+  ASSERT_TRUE(base::FeatureList::IsEnabled(kForYouFre));
+
+  std::vector<GURL> input = {GURL(u"https://new_tab_page"),
+                             GURL(u"https://www.google.com"),
+                             GURL(u"https://welcome_page")};
+
+  StartupTabs output =
+      StartupTabProviderImpl::GetInitialPrefsTabsForState(true, input);
+
+  ASSERT_EQ(2U, output.size());
+  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL), output[0].url);
+  EXPECT_EQ(output[0].type, StartupTab::Type::kNormal);
+  EXPECT_EQ(input[1], output[1].url);
+  EXPECT_EQ(output[1].type, StartupTab::Type::kNormal);
+}
+#endif
 
 TEST(StartupTabProviderTest, GetInitialPrefsTabsForState_FirstRunOnly) {
   std::vector<GURL> input = {GURL(u"https://www.google.com")};

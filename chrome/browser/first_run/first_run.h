@@ -108,17 +108,6 @@ base::Time GetFirstRunSentinelCreationTime();
 // This is needed for unit tests which are runned in the same process.
 void ResetCachedSentinelDataForTesting();
 
-// Sets a flag that will cause ShouldShowWelcomePage to return true
-// exactly once, so that the browser loads the welcome tab once the
-// message loop gets going.
-void SetShouldShowWelcomePage();
-
-// Returns true if the welcome page should be shown.
-//
-// This will return true only once: The first time it is called after
-// SetShouldShowWelcomePage() is called.
-bool ShouldShowWelcomePage();
-
 // Returns true if |contents| hosts one of the welcome pages.
 bool IsOnWelcomePage(content::WebContents* contents);
 

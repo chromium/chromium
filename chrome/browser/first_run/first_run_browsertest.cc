@@ -51,13 +51,6 @@ typedef InProcessBrowserTest FirstRunBrowserTest;
 
 namespace first_run {
 
-IN_PROC_BROWSER_TEST_F(FirstRunBrowserTest, SetShouldShowWelcomePage) {
-  EXPECT_FALSE(ShouldShowWelcomePage());
-  SetShouldShowWelcomePage();
-  EXPECT_TRUE(ShouldShowWelcomePage());
-  EXPECT_FALSE(ShouldShowWelcomePage());
-}
-
 #if !BUILDFLAG(IS_CHROMEOS)
 namespace {
 

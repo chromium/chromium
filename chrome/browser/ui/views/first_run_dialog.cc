@@ -124,7 +124,6 @@ bool FirstRunDialog::Accept() {
 }
 
 void FirstRunDialog::WindowClosing() {
-  first_run::SetShouldShowWelcomePage();
   Done();
 }
 
