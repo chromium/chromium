@@ -165,6 +165,12 @@ class MockFreeSpace {
               (const base::FilePath&, DriveFsPinManager::SpaceResult));
 };
 
+class MockObserver : public DriveFsPinManager::Observer {
+ public:
+  MOCK_METHOD(void, OnProgress, (const SetupProgress&), (override));
+  MOCK_METHOD(void, OnDrop, (), (override));
+};
+
 }  // namespace
 
 class DriveFsPinManagerTest : public testing::Test {
@@ -648,17 +654,21 @@ TEST_F(DriveFsPinManagerTest,
   new_run_loop.Run();
 }
 
-class TestBulkPinObserver : public DriveFsPinManager::Observer {
- public:
-  TestBulkPinObserver() = default;
-
-  TestBulkPinObserver(const TestBulkPinObserver&) = delete;
-  TestBulkPinObserver& operator=(const TestBulkPinObserver&) = delete;
-
-  ~TestBulkPinObserver() override = default;
-
-  MOCK_METHOD(void, OnProgress, (const SetupProgress&), (override));
-};
+TEST_F(DriveFsPinManagerTest, OnDrop) {
+  {
+    MockObserver observer;
+    DriveFsPinManager manager(temp_dir_.GetPath(), &mock_drivefs_);
+    manager.AddObserver(&observer);
+    EXPECT_CALL(observer, OnDrop()).Times(1);
+  }
+  {
+    MockObserver observer;
+    EXPECT_CALL(observer, OnDrop()).Times(0);
+    DriveFsPinManager manager(temp_dir_.GetPath(), &mock_drivefs_);
+    manager.AddObserver(&observer);
+    manager.RemoveObserver(&observer);
+  }
+}
 
 TEST_F(DriveFsPinManagerTest,
        DISABLED_SyncingStatusUpdateProgressIsReportedBackToObserver) {
@@ -694,12 +704,12 @@ TEST_F(DriveFsPinManagerTest,
             run_loop.QuitClosure().Run();
           });
 
-  TestBulkPinObserver mock_pin_observer;
-  EXPECT_CALL(mock_pin_observer, OnProgress(_)).Times(AnyNumber());
+  MockObserver observer;
+  EXPECT_CALL(observer, OnProgress(_)).Times(AnyNumber());
 
   DriveFsPinManager manager(temp_dir_.GetPath(), &mock_drivefs_);
   manager.SetSpaceGetter(GetSpaceGetter());
-  manager.AddObserver(&mock_pin_observer);
+  manager.AddObserver(&observer);
   manager.SetCompletionCallback(mock_callback.Get());
   manager.Start();
   run_loop.Run();
@@ -714,7 +724,7 @@ TEST_F(DriveFsPinManagerTest,
   SetState(status->item_events, mojom::ItemEvent::State::kInProgress);
   status->item_events.at(0)->bytes_transferred = 10;
   EXPECT_CALL(
-      mock_pin_observer,
+      observer,
       OnProgress(AllOf(Field(&SetupProgress::transferred_bytes, 10),
                        Field(&SetupProgress::stage, SetupStage::kSyncing))))
       .Times(1)
@@ -738,7 +748,7 @@ TEST_F(DriveFsPinManagerTest,
   SetState(status->item_events, mojom::ItemEvent::State::kCompleted);
   status->item_events.at(0)->bytes_transferred = 128;
   EXPECT_CALL(
-      mock_pin_observer,
+      observer,
       OnProgress(AllOf(Field(&SetupProgress::transferred_bytes, 128),
                        Field(&SetupProgress::stage, SetupStage::kSuccess))))
       .Times(1)

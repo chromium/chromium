@@ -469,6 +469,7 @@ DriveFsPinManager::~DriveFsPinManager() {
   for (Observer& observer : observers_) {
     observer.OnDrop();
   }
+  observers_.Clear();
 }
 
 void DriveFsPinManager::Start() {
