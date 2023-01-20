@@ -39,30 +39,6 @@ namespace {
 constexpr base::FilePath::CharType kFirstPartySetsDatabase[] =
     FILE_PATH_LITERAL("first_party_sets.db");
 
-using ClearSiteDataOutcomeType =
-    FirstPartySetsHandlerImpl::ClearSiteDataOutcomeType;
-
-// `failed_data_types` is a bitmask used to indicate data types from
-// BrowsingDataRemover::DataType enum that were failed to remove.
-ClearSiteDataOutcomeType ComputeClearSiteDataOutcome(
-    uint64_t failed_data_types) {
-  ClearSiteDataOutcomeType outcome = ClearSiteDataOutcomeType::kSuccess;
-  if (failed_data_types & BrowsingDataRemover::DATA_TYPE_COOKIES) {
-    outcome = ClearSiteDataOutcomeType::kCookieFailed;
-  }
-  if (failed_data_types & BrowsingDataRemover::DATA_TYPE_DOM_STORAGE) {
-    outcome = outcome == ClearSiteDataOutcomeType::kCookieFailed
-                  ? ClearSiteDataOutcomeType::kCookieAndStorageFailed
-                  : ClearSiteDataOutcomeType::kStorageFailed;
-  }
-  return outcome;
-}
-
-void RecordClearSiteDataOutcome(ClearSiteDataOutcomeType outcome) {
-  base::UmaHistogramEnumeration(
-      "FirstPartySets.Initialization.ClearSiteDataOutcomeType", outcome);
-}
-
 // Global FirstPartySetsHandler instance for testing.
 FirstPartySetsHandler* g_test_instance = nullptr;
 
@@ -410,10 +386,14 @@ void FirstPartySetsHandlerImpl::DidClearSiteDataOnChangedSetsForContext(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!db_helper_.is_null());
 
-  ClearSiteDataOutcomeType outcome =
-      ComputeClearSiteDataOutcome(failed_data_types);
-  RecordClearSiteDataOutcome(outcome);
-  if (outcome == ClearSiteDataOutcomeType::kSuccess) {
+  // Only measures the successful rate without parsing the failed types, since
+  // `failed_data_types` only has value if the failure is related to passwords
+  // or is for all data types if the task is dropped at shutdown, which is not
+  // for our interest.
+  bool success = failed_data_types == 0;
+  base::UmaHistogramBoolean(
+      "FirstPartySets.Initialization.ClearSiteDataOutcome", success);
+  if (success) {
     db_helper_
         .AsyncCall(
             &FirstPartySetsHandlerDatabaseHelper::UpdateClearStatusForContext)

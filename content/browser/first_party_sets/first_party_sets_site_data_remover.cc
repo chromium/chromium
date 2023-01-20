@@ -8,6 +8,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "net/base/schemeful_site.h"
 #include "url/origin.h"
 
@@ -48,16 +49,15 @@ class ClearingTask : public BrowsingDataRemover::Observer {
       origin_filter_builder->AddOrigin(url::Origin::Create(site.GetURL()));
     }
 
-    uint64_t remove_mask = BrowsingDataRemover::DATA_TYPE_COOKIES;
     task_count_++;
     remover_->RemoveWithFilterAndReply(
-        base::Time(), base::Time::Max(), remove_mask,
+        base::Time(), base::Time::Max(), BrowsingDataRemover::DATA_TYPE_COOKIES,
         content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
             content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
         std::move(cookie_filter_builder), this);
 
-    // TODO(crbug.com/1318161)): maybe we should clear PrivacySandbox API data.
-    remove_mask = BrowsingDataRemover::DATA_TYPE_DOM_STORAGE;
+    uint64_t remove_mask = BrowsingDataRemover::DATA_TYPE_DOM_STORAGE |
+                           BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX;
     task_count_++;
     remover_->RemoveWithFilterAndReply(
         base::Time(), base::Time::Max(), remove_mask,
