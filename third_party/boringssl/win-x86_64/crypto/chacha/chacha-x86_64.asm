@@ -29,12 +29,12 @@ $L$incy:
 $L$eight:
 	DD	8,8,8,8,8,8,8,8
 $L$rot16:
-DB	0x2,0x3,0x0,0x1,0x6,0x7,0x4,0x5,0xa,0xb,0x8,0x9,0xe,0xf,0xc,0xd
+	DB	0x2,0x3,0x0,0x1,0x6,0x7,0x4,0x5,0xa,0xb,0x8,0x9,0xe,0xf,0xc,0xd
 $L$rot24:
-DB	0x3,0x0,0x1,0x2,0x7,0x4,0x5,0x6,0xb,0x8,0x9,0xa,0xf,0xc,0xd,0xe
+	DB	0x3,0x0,0x1,0x2,0x7,0x4,0x5,0x6,0xb,0x8,0x9,0xa,0xf,0xc,0xd,0xe
 $L$sigma:
-DB	101,120,112,97,110,100,32,51,50,45,98,121,116,101,32,107
-DB	0
+	DB	101,120,112,97,110,100,32,51,50,45,98,121,116,101,32,107
+	DB	0
 ALIGN	64
 $L$zeroz:
 	DD	0,0,0,0,1,0,0,0,2,0,0,0,3,0,0,0
@@ -44,10 +44,10 @@ $L$incz:
 	DD	0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 $L$sixteen:
 	DD	16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16
-DB	67,104,97,67,104,97,50,48,32,102,111,114,32,120,56,54
-DB	95,54,52,44,32,67,82,89,80,84,79,71,65,77,83,32
-DB	98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115
-DB	108,46,111,114,103,62,0
+	DB	67,104,97,67,104,97,50,48,32,102,111,114,32,120,56,54
+	DB	95,54,52,44,32,67,82,89,80,84,79,71,65,77,83,32
+	DB	98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115
+	DB	108,46,111,114,103,62,0
 global	ChaCha20_ctr32
 
 ALIGN	64
@@ -1909,20 +1909,20 @@ ALIGN	4
 section	.xdata rdata align=8
 ALIGN	8
 $L$SEH_info_ChaCha20_ctr32:
-DB	9,0,0,0
+	DB	9,0,0,0
 	DD	se_handler wrt ..imagebase
 
 $L$SEH_info_ChaCha20_ssse3:
-DB	9,0,0,0
+	DB	9,0,0,0
 	DD	ssse3_handler wrt ..imagebase
 	DD	$L$ssse3_body wrt ..imagebase,$L$ssse3_epilogue wrt ..imagebase
 
 $L$SEH_info_ChaCha20_4x:
-DB	9,0,0,0
+	DB	9,0,0,0
 	DD	full_handler wrt ..imagebase
 	DD	$L$4x_body wrt ..imagebase,$L$4x_epilogue wrt ..imagebase
 $L$SEH_info_ChaCha20_8x:
-DB	9,0,0,0
+	DB	9,0,0,0
 	DD	full_handler wrt ..imagebase
 	DD	$L$8x_body wrt ..imagebase,$L$8x_epilogue wrt ..imagebase
 %endif

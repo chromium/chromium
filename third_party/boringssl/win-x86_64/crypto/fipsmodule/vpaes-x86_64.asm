@@ -1333,11 +1333,11 @@ $L$ctr_add_one:
 $L$ctr_add_two:
 	DQ	0x0000000000000000,0x0000000200000000
 
-DB	86,101,99,116,111,114,32,80,101,114,109,117,116,97,116,105
-DB	111,110,32,65,69,83,32,102,111,114,32,120,56,54,95,54
-DB	52,47,83,83,83,69,51,44,32,77,105,107,101,32,72,97
-DB	109,98,117,114,103,32,40,83,116,97,110,102,111,114,100,32
-DB	85,110,105,118,101,114,115,105,116,121,41,0
+	DB	86,101,99,116,111,114,32,80,101,114,109,117,116,97,116,105
+	DB	111,110,32,65,69,83,32,102,111,114,32,120,56,54,95,54
+	DB	52,47,83,83,83,69,51,44,32,77,105,107,101,32,72,97
+	DB	109,98,117,114,103,32,40,83,116,97,110,102,111,114,100,32
+	DB	85,110,105,118,101,114,115,105,116,121,41,0
 ALIGN	64
 
 EXTERN	__imp_RtlVirtualUnwind
@@ -1448,27 +1448,27 @@ ALIGN	4
 section	.xdata rdata align=8
 ALIGN	8
 $L$SEH_info_vpaes_set_encrypt_key:
-DB	9,0,0,0
+	DB	9,0,0,0
 	DD	se_handler wrt ..imagebase
 	DD	$L$enc_key_body wrt ..imagebase,$L$enc_key_epilogue wrt ..imagebase
 $L$SEH_info_vpaes_set_decrypt_key:
-DB	9,0,0,0
+	DB	9,0,0,0
 	DD	se_handler wrt ..imagebase
 	DD	$L$dec_key_body wrt ..imagebase,$L$dec_key_epilogue wrt ..imagebase
 $L$SEH_info_vpaes_encrypt:
-DB	9,0,0,0
+	DB	9,0,0,0
 	DD	se_handler wrt ..imagebase
 	DD	$L$enc_body wrt ..imagebase,$L$enc_epilogue wrt ..imagebase
 $L$SEH_info_vpaes_decrypt:
-DB	9,0,0,0
+	DB	9,0,0,0
 	DD	se_handler wrt ..imagebase
 	DD	$L$dec_body wrt ..imagebase,$L$dec_epilogue wrt ..imagebase
 $L$SEH_info_vpaes_cbc_encrypt:
-DB	9,0,0,0
+	DB	9,0,0,0
 	DD	se_handler wrt ..imagebase
 	DD	$L$cbc_body wrt ..imagebase,$L$cbc_epilogue wrt ..imagebase
 $L$SEH_info_vpaes_ctr32_encrypt_blocks:
-DB	9,0,0,0
+	DB	9,0,0,0
 	DD	se_handler wrt ..imagebase
 	DD	$L$ctr32_body wrt ..imagebase,$L$ctr32_epilogue wrt ..imagebase
 %endif

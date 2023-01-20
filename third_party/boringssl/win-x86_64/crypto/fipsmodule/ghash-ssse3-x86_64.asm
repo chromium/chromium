@@ -440,7 +440,7 @@ ALIGN	16
 
 
 $L$reverse_bytes:
-DB	15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0
+	DB	15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0
 
 $L$low4_mask:
 	DQ	0x0f0f0f0f0f0f0f0f,0x0f0f0f0f0f0f0f0f
@@ -457,41 +457,41 @@ ALIGN	4
 section	.xdata rdata align=8
 ALIGN	8
 $L$gmult_seh_info:
-DB	1
-DB	$L$gmult_seh_prolog_end-$L$gmult_seh_begin
-DB	5
-DB	0
+	DB	1
+	DB	$L$gmult_seh_prolog_end-$L$gmult_seh_begin
+	DB	5
+	DB	0
 
-DB	$L$gmult_seh_save_xmm10-$L$gmult_seh_begin
-DB	168
+	DB	$L$gmult_seh_save_xmm10-$L$gmult_seh_begin
+	DB	168
 	DW	1
 
-DB	$L$gmult_seh_save_xmm6-$L$gmult_seh_begin
-DB	104
+	DB	$L$gmult_seh_save_xmm6-$L$gmult_seh_begin
+	DB	104
 	DW	0
 
-DB	$L$gmult_seh_allocstack-$L$gmult_seh_begin
-DB	66
+	DB	$L$gmult_seh_allocstack-$L$gmult_seh_begin
+	DB	66
 
 ALIGN	8
 $L$ghash_seh_info:
-DB	1
-DB	$L$ghash_seh_prolog_end-$L$ghash_seh_begin
-DB	7
-DB	0
+	DB	1
+	DB	$L$ghash_seh_prolog_end-$L$ghash_seh_begin
+	DB	7
+	DB	0
 
-DB	$L$ghash_seh_save_xmm11-$L$ghash_seh_begin
-DB	184
+	DB	$L$ghash_seh_save_xmm11-$L$ghash_seh_begin
+	DB	184
 	DW	2
 
-DB	$L$ghash_seh_save_xmm10-$L$ghash_seh_begin
-DB	168
+	DB	$L$ghash_seh_save_xmm10-$L$ghash_seh_begin
+	DB	168
 	DW	1
 
-DB	$L$ghash_seh_save_xmm6-$L$ghash_seh_begin
-DB	104
+	DB	$L$ghash_seh_save_xmm6-$L$ghash_seh_begin
+	DB	104
 	DW	0
 
-DB	$L$ghash_seh_allocstack-$L$ghash_seh_begin
-DB	98
+	DB	$L$ghash_seh_allocstack-$L$ghash_seh_begin
+	DB	98
 %endif

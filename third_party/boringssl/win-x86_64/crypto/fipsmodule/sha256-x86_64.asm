@@ -1791,11 +1791,11 @@ K256:
 	DD	0x03020100,0x0b0a0908,0xffffffff,0xffffffff
 	DD	0xffffffff,0xffffffff,0x03020100,0x0b0a0908
 	DD	0xffffffff,0xffffffff,0x03020100,0x0b0a0908
-DB	83,72,65,50,53,54,32,98,108,111,99,107,32,116,114,97
-DB	110,115,102,111,114,109,32,102,111,114,32,120,56,54,95,54
-DB	52,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121
-DB	32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46
-DB	111,114,103,62,0
+	DB	83,72,65,50,53,54,32,98,108,111,99,107,32,116,114,97
+	DB	110,115,102,111,114,109,32,102,111,114,32,120,56,54,95,54
+	DB	52,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121
+	DB	32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46
+	DB	111,114,103,62,0
 
 ALIGN	64
 sha256_block_data_order_shaext:
@@ -1842,169 +1842,169 @@ DB	102,15,56,0,223
 	paddd	xmm0,xmm3
 DB	102,15,56,0,231
 	movdqa	xmm10,xmm2
-DB	15,56,203,209
+	DB	15,56,203,209
 	pshufd	xmm0,xmm0,0x0e
 	nop
 	movdqa	xmm9,xmm1
-DB	15,56,203,202
+	DB	15,56,203,202
 
 	movdqa	xmm0,XMMWORD[((32-128))+rcx]
 	paddd	xmm0,xmm4
 DB	102,15,56,0,239
-DB	15,56,203,209
+	DB	15,56,203,209
 	pshufd	xmm0,xmm0,0x0e
 	lea	rsi,[64+rsi]
-DB	15,56,204,220
-DB	15,56,203,202
+	DB	15,56,204,220
+	DB	15,56,203,202
 
 	movdqa	xmm0,XMMWORD[((64-128))+rcx]
 	paddd	xmm0,xmm5
 DB	102,15,56,0,247
-DB	15,56,203,209
+	DB	15,56,203,209
 	pshufd	xmm0,xmm0,0x0e
 	movdqa	xmm7,xmm6
 DB	102,15,58,15,253,4
 	nop
 	paddd	xmm3,xmm7
-DB	15,56,204,229
-DB	15,56,203,202
+	DB	15,56,204,229
+	DB	15,56,203,202
 
 	movdqa	xmm0,XMMWORD[((96-128))+rcx]
 	paddd	xmm0,xmm6
-DB	15,56,205,222
-DB	15,56,203,209
+	DB	15,56,205,222
+	DB	15,56,203,209
 	pshufd	xmm0,xmm0,0x0e
 	movdqa	xmm7,xmm3
 DB	102,15,58,15,254,4
 	nop
 	paddd	xmm4,xmm7
-DB	15,56,204,238
-DB	15,56,203,202
+	DB	15,56,204,238
+	DB	15,56,203,202
 	movdqa	xmm0,XMMWORD[((128-128))+rcx]
 	paddd	xmm0,xmm3
-DB	15,56,205,227
-DB	15,56,203,209
+	DB	15,56,205,227
+	DB	15,56,203,209
 	pshufd	xmm0,xmm0,0x0e
 	movdqa	xmm7,xmm4
 DB	102,15,58,15,251,4
 	nop
 	paddd	xmm5,xmm7
-DB	15,56,204,243
-DB	15,56,203,202
+	DB	15,56,204,243
+	DB	15,56,203,202
 	movdqa	xmm0,XMMWORD[((160-128))+rcx]
 	paddd	xmm0,xmm4
-DB	15,56,205,236
-DB	15,56,203,209
+	DB	15,56,205,236
+	DB	15,56,203,209
 	pshufd	xmm0,xmm0,0x0e
 	movdqa	xmm7,xmm5
 DB	102,15,58,15,252,4
 	nop
 	paddd	xmm6,xmm7
-DB	15,56,204,220
-DB	15,56,203,202
+	DB	15,56,204,220
+	DB	15,56,203,202
 	movdqa	xmm0,XMMWORD[((192-128))+rcx]
 	paddd	xmm0,xmm5
-DB	15,56,205,245
-DB	15,56,203,209
+	DB	15,56,205,245
+	DB	15,56,203,209
 	pshufd	xmm0,xmm0,0x0e
 	movdqa	xmm7,xmm6
 DB	102,15,58,15,253,4
 	nop
 	paddd	xmm3,xmm7
-DB	15,56,204,229
-DB	15,56,203,202
+	DB	15,56,204,229
+	DB	15,56,203,202
 	movdqa	xmm0,XMMWORD[((224-128))+rcx]
 	paddd	xmm0,xmm6
-DB	15,56,205,222
-DB	15,56,203,209
+	DB	15,56,205,222
+	DB	15,56,203,209
 	pshufd	xmm0,xmm0,0x0e
 	movdqa	xmm7,xmm3
 DB	102,15,58,15,254,4
 	nop
 	paddd	xmm4,xmm7
-DB	15,56,204,238
-DB	15,56,203,202
+	DB	15,56,204,238
+	DB	15,56,203,202
 	movdqa	xmm0,XMMWORD[((256-128))+rcx]
 	paddd	xmm0,xmm3
-DB	15,56,205,227
-DB	15,56,203,209
+	DB	15,56,205,227
+	DB	15,56,203,209
 	pshufd	xmm0,xmm0,0x0e
 	movdqa	xmm7,xmm4
 DB	102,15,58,15,251,4
 	nop
 	paddd	xmm5,xmm7
-DB	15,56,204,243
-DB	15,56,203,202
+	DB	15,56,204,243
+	DB	15,56,203,202
 	movdqa	xmm0,XMMWORD[((288-128))+rcx]
 	paddd	xmm0,xmm4
-DB	15,56,205,236
-DB	15,56,203,209
+	DB	15,56,205,236
+	DB	15,56,203,209
 	pshufd	xmm0,xmm0,0x0e
 	movdqa	xmm7,xmm5
 DB	102,15,58,15,252,4
 	nop
 	paddd	xmm6,xmm7
-DB	15,56,204,220
-DB	15,56,203,202
+	DB	15,56,204,220
+	DB	15,56,203,202
 	movdqa	xmm0,XMMWORD[((320-128))+rcx]
 	paddd	xmm0,xmm5
-DB	15,56,205,245
-DB	15,56,203,209
+	DB	15,56,205,245
+	DB	15,56,203,209
 	pshufd	xmm0,xmm0,0x0e
 	movdqa	xmm7,xmm6
 DB	102,15,58,15,253,4
 	nop
 	paddd	xmm3,xmm7
-DB	15,56,204,229
-DB	15,56,203,202
+	DB	15,56,204,229
+	DB	15,56,203,202
 	movdqa	xmm0,XMMWORD[((352-128))+rcx]
 	paddd	xmm0,xmm6
-DB	15,56,205,222
-DB	15,56,203,209
+	DB	15,56,205,222
+	DB	15,56,203,209
 	pshufd	xmm0,xmm0,0x0e
 	movdqa	xmm7,xmm3
 DB	102,15,58,15,254,4
 	nop
 	paddd	xmm4,xmm7
-DB	15,56,204,238
-DB	15,56,203,202
+	DB	15,56,204,238
+	DB	15,56,203,202
 	movdqa	xmm0,XMMWORD[((384-128))+rcx]
 	paddd	xmm0,xmm3
-DB	15,56,205,227
-DB	15,56,203,209
+	DB	15,56,205,227
+	DB	15,56,203,209
 	pshufd	xmm0,xmm0,0x0e
 	movdqa	xmm7,xmm4
 DB	102,15,58,15,251,4
 	nop
 	paddd	xmm5,xmm7
-DB	15,56,204,243
-DB	15,56,203,202
+	DB	15,56,204,243
+	DB	15,56,203,202
 	movdqa	xmm0,XMMWORD[((416-128))+rcx]
 	paddd	xmm0,xmm4
-DB	15,56,205,236
-DB	15,56,203,209
+	DB	15,56,205,236
+	DB	15,56,203,209
 	pshufd	xmm0,xmm0,0x0e
 	movdqa	xmm7,xmm5
 DB	102,15,58,15,252,4
-DB	15,56,203,202
+	DB	15,56,203,202
 	paddd	xmm6,xmm7
 
 	movdqa	xmm0,XMMWORD[((448-128))+rcx]
 	paddd	xmm0,xmm5
-DB	15,56,203,209
+	DB	15,56,203,209
 	pshufd	xmm0,xmm0,0x0e
-DB	15,56,205,245
+	DB	15,56,205,245
 	movdqa	xmm7,xmm8
-DB	15,56,203,202
+	DB	15,56,203,202
 
 	movdqa	xmm0,XMMWORD[((480-128))+rcx]
 	paddd	xmm0,xmm6
 	nop
-DB	15,56,203,209
+	DB	15,56,203,209
 	pshufd	xmm0,xmm0,0x0e
 	dec	rdx
 	nop
-DB	15,56,203,202
+	DB	15,56,203,202
 
 	paddd	xmm2,xmm10
 	paddd	xmm1,xmm9
@@ -4401,18 +4401,18 @@ ALIGN	4
 section	.xdata rdata align=8
 ALIGN	8
 $L$SEH_info_sha256_block_data_order:
-DB	9,0,0,0
+	DB	9,0,0,0
 	DD	se_handler wrt ..imagebase
 	DD	$L$prologue wrt ..imagebase,$L$epilogue wrt ..imagebase
 $L$SEH_info_sha256_block_data_order_shaext:
-DB	9,0,0,0
+	DB	9,0,0,0
 	DD	shaext_handler wrt ..imagebase
 $L$SEH_info_sha256_block_data_order_ssse3:
-DB	9,0,0,0
+	DB	9,0,0,0
 	DD	se_handler wrt ..imagebase
 	DD	$L$prologue_ssse3 wrt ..imagebase,$L$epilogue_ssse3 wrt ..imagebase
 $L$SEH_info_sha256_block_data_order_avx:
-DB	9,0,0,0
+	DB	9,0,0,0
 	DD	se_handler wrt ..imagebase
 	DD	$L$prologue_avx wrt ..imagebase,$L$epilogue_avx wrt ..imagebase
 %endif

@@ -1047,7 +1047,7 @@ $L$mulx4x_body:
 	mulx	r11,rax,QWORD[8+rcx]
 	adcx	r10,rax
 	adox	r11,r12
-DB	0xc4,0x62,0xfb,0xf6,0xa1,0x10,0x00,0x00,0x00
+	DB	0xc4,0x62,0xfb,0xf6,0xa1,0x10,0x00,0x00,0x00
 	mov	rdi,QWORD[48+rsp]
 	mov	QWORD[((-32))+rbx],r10
 	adcx	r11,rax
@@ -1072,7 +1072,7 @@ $L$mulx4x_1st:
 	mulx	rax,r12,QWORD[16+rsi]
 	adcx	r12,r14
 	mulx	r14,r13,QWORD[24+rsi]
-DB	0x67,0x67
+	DB	0x67,0x67
 	mov	rdx,r8
 	adcx	r13,rax
 	adcx	r14,rbp
@@ -1306,11 +1306,11 @@ $L$mulx4x_epilogue:
 	DB	0F3h,0C3h		;repret
 
 $L$SEH_end_bn_mulx4x_mont:
-DB	77,111,110,116,103,111,109,101,114,121,32,77,117,108,116,105
-DB	112,108,105,99,97,116,105,111,110,32,102,111,114,32,120,56
-DB	54,95,54,52,44,32,67,82,89,80,84,79,71,65,77,83
-DB	32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115
-DB	115,108,46,111,114,103,62,0
+	DB	77,111,110,116,103,111,109,101,114,121,32,77,117,108,116,105
+	DB	112,108,105,99,97,116,105,111,110,32,102,111,114,32,120,56
+	DB	54,95,54,52,44,32,67,82,89,80,84,79,71,65,77,83
+	DB	32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115
+	DB	115,108,46,111,114,103,62,0
 ALIGN	16
 EXTERN	__imp_RtlVirtualUnwind
 
@@ -1463,20 +1463,20 @@ ALIGN	4
 section	.xdata rdata align=8
 ALIGN	8
 $L$SEH_info_bn_mul_mont:
-DB	9,0,0,0
+	DB	9,0,0,0
 	DD	mul_handler wrt ..imagebase
 	DD	$L$mul_body wrt ..imagebase,$L$mul_epilogue wrt ..imagebase
 $L$SEH_info_bn_mul4x_mont:
-DB	9,0,0,0
+	DB	9,0,0,0
 	DD	mul_handler wrt ..imagebase
 	DD	$L$mul4x_body wrt ..imagebase,$L$mul4x_epilogue wrt ..imagebase
 $L$SEH_info_bn_sqr8x_mont:
-DB	9,0,0,0
+	DB	9,0,0,0
 	DD	sqr_handler wrt ..imagebase
 	DD	$L$sqr8x_prologue wrt ..imagebase,$L$sqr8x_body wrt ..imagebase,$L$sqr8x_epilogue wrt ..imagebase
 ALIGN	8
 $L$SEH_info_bn_mulx4x_mont:
-DB	9,0,0,0
+	DB	9,0,0,0
 	DD	sqr_handler wrt ..imagebase
 	DD	$L$mulx4x_prologue wrt ..imagebase,$L$mulx4x_body wrt ..imagebase,$L$mulx4x_epilogue wrt ..imagebase
 ALIGN	8

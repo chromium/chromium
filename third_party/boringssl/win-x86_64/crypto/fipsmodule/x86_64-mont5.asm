@@ -102,7 +102,7 @@ $L$mul_body:
 	movdqa	xmm2,xmm1
 	paddd	xmm1,xmm0
 	pcmpeqd	xmm0,xmm5
-DB	0x67
+	DB	0x67
 	movdqa	xmm3,xmm4
 	paddd	xmm2,xmm1
 	pcmpeqd	xmm1,xmm5
@@ -166,7 +166,7 @@ DB	0x67
 	movdqa	XMMWORD[304+r10],xmm0
 
 	paddd	xmm3,xmm2
-DB	0x67
+	DB	0x67
 	pcmpeqd	xmm2,xmm5
 	movdqa	XMMWORD[320+r10],xmm1
 
@@ -487,7 +487,7 @@ $L$SEH_begin_bn_mul4x_mont_gather5:
 
 
 
-DB	0x67
+	DB	0x67
 	mov	rax,rsp
 
 $L$mul4x_enter:
@@ -508,7 +508,7 @@ $L$mul4x_enter:
 
 $L$mul4x_prologue:
 
-DB	0x67
+	DB	0x67
 	shl	r9d,3
 	lea	r10,[r9*2+r9]
 	neg	r9
@@ -607,11 +607,11 @@ mul4x_internal:
 
 	pshufd	xmm5,xmm5,0
 	movdqa	xmm4,xmm1
-DB	0x67,0x67
+	DB	0x67,0x67
 	movdqa	xmm2,xmm1
 	paddd	xmm1,xmm0
 	pcmpeqd	xmm0,xmm5
-DB	0x67
+	DB	0x67
 	movdqa	xmm3,xmm4
 	paddd	xmm2,xmm1
 	pcmpeqd	xmm1,xmm5
@@ -675,7 +675,7 @@ DB	0x67
 	movdqa	XMMWORD[304+r10],xmm0
 
 	paddd	xmm3,xmm2
-DB	0x67
+	DB	0x67
 	pcmpeqd	xmm2,xmm5
 	movdqa	XMMWORD[320+r10],xmm1
 
@@ -1538,7 +1538,7 @@ $L$sqr4x_inner:
 	add	r13,QWORD[rcx*1+rdi]
 	adc	r12,0
 
-DB	0x67
+	DB	0x67
 	mul	r14
 	add	r11,rax
 	mov	rax,rbx
@@ -1570,7 +1570,7 @@ DB	0x67
 	cmp	rcx,0
 	jne	NEAR $L$sqr4x_inner
 
-DB	0x67
+	DB	0x67
 	mul	r15
 	add	r13,rax
 	adc	rdx,0
@@ -1763,7 +1763,7 @@ $L$sqr4x_shift_n_add:
 	jnz	NEAR $L$sqr4x_shift_n_add
 
 	lea	r12,[r10*2+r14]
-DB	0x67
+	DB	0x67
 	shr	r10,63
 	lea	r13,[r11*2+rcx]
 	shr	r11,63
@@ -1805,7 +1805,7 @@ __bn_sqr8x_reduction:
 ALIGN	32
 $L$8x_reduction_loop:
 	lea	rdi,[r9*1+rdi]
-DB	0x66
+	DB	0x66
 	mov	rbx,QWORD[rdi]
 	mov	r9,QWORD[8+rdi]
 	mov	r10,QWORD[16+rdi]
@@ -1817,7 +1817,7 @@ DB	0x66
 	mov	QWORD[rdx],rax
 	lea	rdi,[64+rdi]
 
-DB	0x67
+	DB	0x67
 	mov	r8,rbx
 	imul	rbx,QWORD[((32+8))+rsp]
 	mov	rax,QWORD[rbp]
@@ -1901,7 +1901,7 @@ $L$8x_reduce:
 	cmp	rbp,QWORD[((0+8))+rsp]
 	jae	NEAR $L$8x_no_tail
 
-DB	0x66
+	DB	0x66
 	add	r8,QWORD[rdi]
 	adc	r9,QWORD[8+rdi]
 	adc	r10,QWORD[16+rdi]
@@ -2258,9 +2258,9 @@ mulx4x_internal:
 
 	pshufd	xmm5,xmm5,0
 	movdqa	xmm4,xmm1
-DB	0x67
+	DB	0x67
 	movdqa	xmm2,xmm1
-DB	0x67
+	DB	0x67
 	paddd	xmm1,xmm0
 	pcmpeqd	xmm0,xmm5
 	movdqa	xmm3,xmm4
@@ -2321,7 +2321,7 @@ DB	0x67
 	pcmpeqd	xmm0,xmm5
 	movdqa	XMMWORD[288+r10],xmm3
 	movdqa	xmm3,xmm4
-DB	0x67
+	DB	0x67
 	paddd	xmm2,xmm1
 	pcmpeqd	xmm1,xmm5
 	movdqa	XMMWORD[304+r10],xmm0
@@ -2434,7 +2434,7 @@ $L$mulx4x_1st:
 	mulx	rax,r12,QWORD[16+rsi]
 	adcx	r12,r14
 	mulx	r14,r13,QWORD[24+rsi]
-DB	0x67,0x67
+	DB	0x67,0x67
 	mov	rdx,r8
 	adcx	r13,rax
 	adcx	r14,rbp
@@ -2477,7 +2477,7 @@ ALIGN	32
 $L$mulx4x_outer:
 	lea	r10,[((16-256))+rbx]
 	pxor	xmm4,xmm4
-DB	0x67,0x67
+	DB	0x67,0x67
 	pxor	xmm5,xmm5
 	movdqa	xmm0,XMMWORD[((-128))+rdi]
 	movdqa	xmm1,XMMWORD[((-112))+rdi]
@@ -2863,9 +2863,9 @@ __bn_sqrx8x_internal:
 	jmp	NEAR $L$sqr8x_zero_start
 
 ALIGN	32
-DB	0x66,0x66,0x66,0x2e,0x0f,0x1f,0x84,0x00,0x00,0x00,0x00,0x00
+	DB	0x66,0x66,0x66,0x2e,0x0f,0x1f,0x84,0x00,0x00,0x00,0x00,0x00
 $L$sqrx8x_zero:
-DB	0x3e
+	DB	0x3e
 	movdqa	XMMWORD[rdi],xmm0
 	movdqa	XMMWORD[16+rdi],xmm0
 	movdqa	XMMWORD[32+rdi],xmm0
@@ -2899,10 +2899,10 @@ $L$sqrx8x_outer_loop:
 	mulx	rax,r9,QWORD[16+rsi]
 	adcx	r9,r10
 	adox	r11,rax
-DB	0xc4,0xe2,0xab,0xf6,0x86,0x18,0x00,0x00,0x00
+	DB	0xc4,0xe2,0xab,0xf6,0x86,0x18,0x00,0x00,0x00
 	adcx	r10,r11
 	adox	r12,rax
-DB	0xc4,0xe2,0xa3,0xf6,0x86,0x20,0x00,0x00,0x00
+	DB	0xc4,0xe2,0xa3,0xf6,0x86,0x20,0x00,0x00,0x00
 	adcx	r11,r12
 	adox	r13,rax
 	mulx	rax,r12,QWORD[40+rsi]
@@ -2929,13 +2929,13 @@ DB	0xc4,0xe2,0xa3,0xf6,0x86,0x20,0x00,0x00,0x00
 	mulx	rbx,r10,QWORD[32+rsi]
 	adcx	r9,r11
 	adox	r10,rax
-DB	0xc4,0xe2,0xa3,0xf6,0x86,0x28,0x00,0x00,0x00
+	DB	0xc4,0xe2,0xa3,0xf6,0x86,0x28,0x00,0x00,0x00
 	adcx	r10,r12
 	adox	r11,rbx
-DB	0xc4,0xe2,0x9b,0xf6,0x9e,0x30,0x00,0x00,0x00
+	DB	0xc4,0xe2,0x9b,0xf6,0x9e,0x30,0x00,0x00,0x00
 	adcx	r11,r13
 	adox	r12,r14
-DB	0xc4,0x62,0x93,0xf6,0xb6,0x38,0x00,0x00,0x00
+	DB	0xc4,0x62,0x93,0xf6,0xb6,0x38,0x00,0x00,0x00
 	mov	rdx,QWORD[16+rsi]
 	adcx	r12,rax
 	adox	r13,rbx
@@ -2953,11 +2953,11 @@ DB	0xc4,0x62,0x93,0xf6,0xb6,0x38,0x00,0x00,0x00
 	mulx	rbx,r10,QWORD[40+rsi]
 	adcx	r9,r11
 	adox	r10,rax
-DB	0xc4,0xe2,0xa3,0xf6,0x86,0x30,0x00,0x00,0x00
+	DB	0xc4,0xe2,0xa3,0xf6,0x86,0x30,0x00,0x00,0x00
 	adcx	r10,r12
 	adox	r11,r13
-DB	0xc4,0x62,0x9b,0xf6,0xae,0x38,0x00,0x00,0x00
-DB	0x3e
+	DB	0xc4,0x62,0x9b,0xf6,0xae,0x38,0x00,0x00,0x00
+	DB	0x3e
 	mov	rdx,QWORD[24+rsi]
 	adcx	r11,rbx
 	adox	r12,rax
@@ -3009,7 +3009,7 @@ DB	0x3e
 	adcx	r12,rax
 	adox	r13,rbp
 
-DB	0x67,0x67
+	DB	0x67,0x67
 	mulx	r14,r8,r8
 	adcx	r13,r8
 	adcx	r14,rbp
@@ -3059,7 +3059,7 @@ $L$sqrx8x_loop:
 	adcx	r10,rax
 	adox	r11,r12
 
-DB	0xc4,0x62,0xfb,0xf6,0xa5,0x20,0x00,0x00,0x00
+	DB	0xc4,0x62,0xfb,0xf6,0xa5,0x20,0x00,0x00,0x00
 	adcx	r11,rax
 	adox	r12,r13
 
@@ -3073,13 +3073,13 @@ DB	0xc4,0x62,0xfb,0xf6,0xa5,0x20,0x00,0x00,0x00
 	adcx	r13,rax
 	adox	r14,r15
 
-DB	0xc4,0x62,0xfb,0xf6,0xbd,0x38,0x00,0x00,0x00
+	DB	0xc4,0x62,0xfb,0xf6,0xbd,0x38,0x00,0x00,0x00
 	mov	rdx,QWORD[8+rcx*8+rsi]
 	adcx	r14,rax
 	adox	r15,rbx
 	adcx	r15,rbx
 
-DB	0x67
+	DB	0x67
 	inc	rcx
 	jnz	NEAR $L$sqrx8x_loop
 
@@ -3089,7 +3089,7 @@ DB	0x67
 	je	NEAR $L$sqrx8x_break
 
 	sub	rbx,QWORD[((16+8))+rsp]
-DB	0x66
+	DB	0x66
 	mov	rdx,QWORD[((-64))+rsi]
 	adcx	r8,QWORD[rdi]
 	adcx	r9,QWORD[8+rdi]
@@ -3100,7 +3100,7 @@ DB	0x66
 	adc	r14,QWORD[48+rdi]
 	adc	r15,QWORD[56+rdi]
 	lea	rdi,[64+rdi]
-DB	0x67
+	DB	0x67
 	sbb	rax,rax
 	xor	ebx,ebx
 	mov	QWORD[((16+8))+rsp],rax
@@ -3166,8 +3166,8 @@ $L$sqrx4x_shift_n_add:
 	mulx	rbx,rax,rdx
 	adox	r12,r12
 	adcx	rax,r10
-DB	0x48,0x8b,0x94,0x0e,0x08,0x00,0x00,0x00
-DB	0x4c,0x8b,0x97,0x20,0x00,0x00,0x00
+	DB	0x48,0x8b,0x94,0x0e,0x08,0x00,0x00,0x00
+	DB	0x4c,0x8b,0x97,0x20,0x00,0x00,0x00
 	adox	r13,r13
 	adcx	rbx,r11
 	mov	r11,QWORD[40+rdi]
@@ -3201,7 +3201,7 @@ DB	0x4c,0x8b,0x97,0x20,0x00,0x00,0x00
 	adox	r10,r10
 	adcx	rax,r12
 	jrcxz	$L$sqrx4x_shift_n_add_break
-DB	0x48,0x8b,0x94,0x0e,0x00,0x00,0x00,0x00
+	DB	0x48,0x8b,0x94,0x0e,0x00,0x00,0x00,0x00
 	adox	r11,r11
 	adcx	rbx,r13
 	mov	r12,QWORD[80+rdi]
@@ -3268,7 +3268,7 @@ $L$sqrx8x_reduce:
 	adcx	r10,rbx
 	adox	r11,r12
 
-DB	0xc4,0x62,0xe3,0xf6,0xa5,0x20,0x00,0x00,0x00
+	DB	0xc4,0x62,0xe3,0xf6,0xa5,0x20,0x00,0x00,0x00
 	mov	rax,rdx
 	mov	rdx,r8
 	adcx	r11,rbx
@@ -3292,7 +3292,7 @@ DB	0xc4,0x62,0xe3,0xf6,0xa5,0x20,0x00,0x00,0x00
 	adox	r15,rsi
 	adcx	r15,rsi
 
-DB	0x67,0x67,0x67
+	DB	0x67,0x67,0x67
 	inc	rcx
 	jnz	NEAR $L$sqrx8x_reduce
 
@@ -3337,7 +3337,7 @@ $L$sqrx8x_tail:
 	adcx	r10,rax
 	adox	r11,r12
 
-DB	0xc4,0x62,0xfb,0xf6,0xa5,0x20,0x00,0x00,0x00
+	DB	0xc4,0x62,0xfb,0xf6,0xa5,0x20,0x00,0x00,0x00
 	adcx	r11,rax
 	adox	r12,r13
 
@@ -3518,9 +3518,9 @@ bn_gather5:
 
 $L$SEH_begin_bn_gather5:
 
-DB	0x4c,0x8d,0x14,0x24
+	DB	0x4c,0x8d,0x14,0x24
 
-DB	0x48,0x81,0xec,0x08,0x01,0x00,0x00
+	DB	0x48,0x81,0xec,0x08,0x01,0x00,0x00
 	lea	rax,[$L$inc]
 	and	rsp,-16
 
@@ -3683,12 +3683,12 @@ ALIGN	64
 $L$inc:
 	DD	0,0,1,1
 	DD	2,2,2,2
-DB	77,111,110,116,103,111,109,101,114,121,32,77,117,108,116,105
-DB	112,108,105,99,97,116,105,111,110,32,119,105,116,104,32,115
-DB	99,97,116,116,101,114,47,103,97,116,104,101,114,32,102,111
-DB	114,32,120,56,54,95,54,52,44,32,67,82,89,80,84,79
-DB	71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111
-DB	112,101,110,115,115,108,46,111,114,103,62,0
+	DB	77,111,110,116,103,111,109,101,114,121,32,77,117,108,116,105
+	DB	112,108,105,99,97,116,105,111,110,32,119,105,116,104,32,115
+	DB	99,97,116,116,101,114,47,103,97,116,104,101,114,32,102,111
+	DB	114,32,120,56,54,95,54,52,44,32,67,82,89,80,84,79
+	DB	71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111
+	DB	112,101,110,115,115,108,46,111,114,103,62,0
 EXTERN	__imp_RtlVirtualUnwind
 
 ALIGN	16
@@ -3819,33 +3819,33 @@ ALIGN	4
 section	.xdata rdata align=8
 ALIGN	8
 $L$SEH_info_bn_mul_mont_gather5:
-DB	9,0,0,0
+	DB	9,0,0,0
 	DD	mul_handler wrt ..imagebase
 	DD	$L$mul_body wrt ..imagebase,$L$mul_body wrt ..imagebase,$L$mul_epilogue wrt ..imagebase
 ALIGN	8
 $L$SEH_info_bn_mul4x_mont_gather5:
-DB	9,0,0,0
+	DB	9,0,0,0
 	DD	mul_handler wrt ..imagebase
 	DD	$L$mul4x_prologue wrt ..imagebase,$L$mul4x_body wrt ..imagebase,$L$mul4x_epilogue wrt ..imagebase
 ALIGN	8
 $L$SEH_info_bn_power5:
-DB	9,0,0,0
+	DB	9,0,0,0
 	DD	mul_handler wrt ..imagebase
 	DD	$L$power5_prologue wrt ..imagebase,$L$power5_body wrt ..imagebase,$L$power5_epilogue wrt ..imagebase
 ALIGN	8
 $L$SEH_info_bn_mulx4x_mont_gather5:
-DB	9,0,0,0
+	DB	9,0,0,0
 	DD	mul_handler wrt ..imagebase
 	DD	$L$mulx4x_prologue wrt ..imagebase,$L$mulx4x_body wrt ..imagebase,$L$mulx4x_epilogue wrt ..imagebase
 ALIGN	8
 $L$SEH_info_bn_powerx5:
-DB	9,0,0,0
+	DB	9,0,0,0
 	DD	mul_handler wrt ..imagebase
 	DD	$L$powerx5_prologue wrt ..imagebase,$L$powerx5_body wrt ..imagebase,$L$powerx5_epilogue wrt ..imagebase
 ALIGN	8
 $L$SEH_info_bn_gather5:
-DB	0x01,0x0b,0x03,0x0a
-DB	0x0b,0x01,0x21,0x00
-DB	0x04,0xa3,0x00,0x00
+	DB	0x01,0x0b,0x03,0x0a
+	DB	0x0b,0x01,0x21,0x00
+	DB	0x04,0xa3,0x00,0x00
 ALIGN	8
 %endif

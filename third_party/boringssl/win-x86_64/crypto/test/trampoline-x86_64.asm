@@ -589,96 +589,96 @@ section	.xdata rdata align=8
 ALIGN	8
 $L$abi_test_trampoline_seh_info:
 
-DB	1
-DB	$L$abi_test_trampoline_seh_prolog_end-$L$abi_test_trampoline_seh_begin
-DB	38
-DB	0
-DB	$L$abi_test_trampoline_seh_prolog_xmm15-$L$abi_test_trampoline_seh_begin
-DB	248
+	DB	1
+	DB	$L$abi_test_trampoline_seh_prolog_end-$L$abi_test_trampoline_seh_begin
+	DB	38
+	DB	0
+	DB	$L$abi_test_trampoline_seh_prolog_xmm15-$L$abi_test_trampoline_seh_begin
+	DB	248
 	DW	20
-DB	$L$abi_test_trampoline_seh_prolog_xmm14-$L$abi_test_trampoline_seh_begin
-DB	232
+	DB	$L$abi_test_trampoline_seh_prolog_xmm14-$L$abi_test_trampoline_seh_begin
+	DB	232
 	DW	19
-DB	$L$abi_test_trampoline_seh_prolog_xmm13-$L$abi_test_trampoline_seh_begin
-DB	216
+	DB	$L$abi_test_trampoline_seh_prolog_xmm13-$L$abi_test_trampoline_seh_begin
+	DB	216
 	DW	18
-DB	$L$abi_test_trampoline_seh_prolog_xmm12-$L$abi_test_trampoline_seh_begin
-DB	200
+	DB	$L$abi_test_trampoline_seh_prolog_xmm12-$L$abi_test_trampoline_seh_begin
+	DB	200
 	DW	17
-DB	$L$abi_test_trampoline_seh_prolog_xmm11-$L$abi_test_trampoline_seh_begin
-DB	184
+	DB	$L$abi_test_trampoline_seh_prolog_xmm11-$L$abi_test_trampoline_seh_begin
+	DB	184
 	DW	16
-DB	$L$abi_test_trampoline_seh_prolog_xmm10-$L$abi_test_trampoline_seh_begin
-DB	168
+	DB	$L$abi_test_trampoline_seh_prolog_xmm10-$L$abi_test_trampoline_seh_begin
+	DB	168
 	DW	15
-DB	$L$abi_test_trampoline_seh_prolog_xmm9-$L$abi_test_trampoline_seh_begin
-DB	152
+	DB	$L$abi_test_trampoline_seh_prolog_xmm9-$L$abi_test_trampoline_seh_begin
+	DB	152
 	DW	14
-DB	$L$abi_test_trampoline_seh_prolog_xmm8-$L$abi_test_trampoline_seh_begin
-DB	136
+	DB	$L$abi_test_trampoline_seh_prolog_xmm8-$L$abi_test_trampoline_seh_begin
+	DB	136
 	DW	13
-DB	$L$abi_test_trampoline_seh_prolog_xmm7-$L$abi_test_trampoline_seh_begin
-DB	120
+	DB	$L$abi_test_trampoline_seh_prolog_xmm7-$L$abi_test_trampoline_seh_begin
+	DB	120
 	DW	12
-DB	$L$abi_test_trampoline_seh_prolog_xmm6-$L$abi_test_trampoline_seh_begin
-DB	104
+	DB	$L$abi_test_trampoline_seh_prolog_xmm6-$L$abi_test_trampoline_seh_begin
+	DB	104
 	DW	11
-DB	$L$abi_test_trampoline_seh_prolog_r15-$L$abi_test_trampoline_seh_begin
-DB	244
+	DB	$L$abi_test_trampoline_seh_prolog_r15-$L$abi_test_trampoline_seh_begin
+	DB	244
 	DW	21
-DB	$L$abi_test_trampoline_seh_prolog_r14-$L$abi_test_trampoline_seh_begin
-DB	228
+	DB	$L$abi_test_trampoline_seh_prolog_r14-$L$abi_test_trampoline_seh_begin
+	DB	228
 	DW	20
-DB	$L$abi_test_trampoline_seh_prolog_r13-$L$abi_test_trampoline_seh_begin
-DB	212
+	DB	$L$abi_test_trampoline_seh_prolog_r13-$L$abi_test_trampoline_seh_begin
+	DB	212
 	DW	19
-DB	$L$abi_test_trampoline_seh_prolog_r12-$L$abi_test_trampoline_seh_begin
-DB	196
+	DB	$L$abi_test_trampoline_seh_prolog_r12-$L$abi_test_trampoline_seh_begin
+	DB	196
 	DW	18
-DB	$L$abi_test_trampoline_seh_prolog_rsi-$L$abi_test_trampoline_seh_begin
-DB	100
+	DB	$L$abi_test_trampoline_seh_prolog_rsi-$L$abi_test_trampoline_seh_begin
+	DB	100
 	DW	17
-DB	$L$abi_test_trampoline_seh_prolog_rdi-$L$abi_test_trampoline_seh_begin
-DB	116
+	DB	$L$abi_test_trampoline_seh_prolog_rdi-$L$abi_test_trampoline_seh_begin
+	DB	116
 	DW	16
-DB	$L$abi_test_trampoline_seh_prolog_rbp-$L$abi_test_trampoline_seh_begin
-DB	84
+	DB	$L$abi_test_trampoline_seh_prolog_rbp-$L$abi_test_trampoline_seh_begin
+	DB	84
 	DW	15
-DB	$L$abi_test_trampoline_seh_prolog_rbx-$L$abi_test_trampoline_seh_begin
-DB	52
+	DB	$L$abi_test_trampoline_seh_prolog_rbx-$L$abi_test_trampoline_seh_begin
+	DB	52
 	DW	14
-DB	$L$abi_test_trampoline_seh_prolog_alloc-$L$abi_test_trampoline_seh_begin
-DB	1
+	DB	$L$abi_test_trampoline_seh_prolog_alloc-$L$abi_test_trampoline_seh_begin
+	DB	1
 	DW	43
 
 
 ALIGN	8
 $L$abi_test_bad_unwind_wrong_register_seh_info:
-DB	1
-DB	$L$abi_test_bad_unwind_wrong_register_seh_push_r13-$L$abi_test_bad_unwind_wrong_register_seh_begin
-DB	1
-DB	0
+	DB	1
+	DB	$L$abi_test_bad_unwind_wrong_register_seh_push_r13-$L$abi_test_bad_unwind_wrong_register_seh_begin
+	DB	1
+	DB	0
 
-DB	$L$abi_test_bad_unwind_wrong_register_seh_push_r13-$L$abi_test_bad_unwind_wrong_register_seh_begin
-DB	208
+	DB	$L$abi_test_bad_unwind_wrong_register_seh_push_r13-$L$abi_test_bad_unwind_wrong_register_seh_begin
+	DB	208
 
 ALIGN	8
 $L$abi_test_bad_unwind_temporary_seh_info:
-DB	1
-DB	$L$abi_test_bad_unwind_temporary_seh_push_r12-$L$abi_test_bad_unwind_temporary_seh_begin
-DB	1
-DB	0
+	DB	1
+	DB	$L$abi_test_bad_unwind_temporary_seh_push_r12-$L$abi_test_bad_unwind_temporary_seh_begin
+	DB	1
+	DB	0
 
-DB	$L$abi_test_bad_unwind_temporary_seh_push_r12-$L$abi_test_bad_unwind_temporary_seh_begin
-DB	192
+	DB	$L$abi_test_bad_unwind_temporary_seh_push_r12-$L$abi_test_bad_unwind_temporary_seh_begin
+	DB	192
 
 ALIGN	8
 $L$abi_test_bad_unwind_epilog_seh_info:
-DB	1
-DB	$L$abi_test_bad_unwind_epilog_seh_push_r12-$L$abi_test_bad_unwind_epilog_seh_begin
-DB	1
-DB	0
+	DB	1
+	DB	$L$abi_test_bad_unwind_epilog_seh_push_r12-$L$abi_test_bad_unwind_epilog_seh_begin
+	DB	1
+	DB	0
 
-DB	$L$abi_test_bad_unwind_epilog_seh_push_r12-$L$abi_test_bad_unwind_epilog_seh_begin
-DB	192
+	DB	$L$abi_test_bad_unwind_epilog_seh_push_r12-$L$abi_test_bad_unwind_epilog_seh_begin
+	DB	192
 %endif

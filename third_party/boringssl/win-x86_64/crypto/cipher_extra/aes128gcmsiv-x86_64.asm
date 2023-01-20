@@ -42,7 +42,7 @@ con1:
 con2:
 	DD	0x1b,0x1b,0x1b,0x1b
 con3:
-DB	-1,-1,-1,-1,-1,-1,-1,-1,4,5,6,7,4,5,6,7
+	DB	-1,-1,-1,-1,-1,-1,-1,-1,4,5,6,7,4,5,6,7
 and_mask:
 	DD	0,0xffffffff,0xffffffff,0xffffffff
 section	.text code align=64
