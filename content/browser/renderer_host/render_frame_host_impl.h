@@ -3525,11 +3525,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // - Non-pending commit NavigationRequest owned by the FrameTreeNode that
   // intends to commit in this RFH
   // - Pending commit NavigationRequest owned by the RenderFrameHost
-  // In this RenderFrameHost's children, calls
-  // `ResetAllNavigationsInSubtreeForFrameDetach()` to cancel all navigations
-  // that are ongoing in the descendant FrameTreeNodes.
   // This function should only be called on swapped out RenderFrameHosts.
-  void ResetNavigationsUsingSwappedOutRFHAndAllNavigationsInSubtree();
+  void ResetNavigationsUsingSwappedOutRFH();
 
   // Called on an unloading frame when its unload timeout is reached. This
   // immediately deletes the RenderFrameHost.
