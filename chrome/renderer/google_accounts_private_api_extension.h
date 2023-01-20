@@ -5,8 +5,15 @@
 #ifndef CHROME_RENDERER_GOOGLE_ACCOUNTS_PRIVATE_API_EXTENSION_H_
 #define CHROME_RENDERER_GOOGLE_ACCOUNTS_PRIVATE_API_EXTENSION_H_
 
+#include "base/memory/weak_ptr.h"
+#include "chrome/common/google_accounts_private_api_extension.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "v8/include/v8-forward.h"
+
+namespace gin {
+class Arguments;
+}  // namespace gin
 
 // This class allows the addition of functions to the Google Accounts page;
 // accounts.google.com.
@@ -31,6 +38,15 @@ class GoogleAccountsPrivateApiExtension : public content::RenderFrameObserver {
   explicit GoogleAccountsPrivateApiExtension(content::RenderFrame* frame);
 
   void InjectScript();
+
+#if !BUILDFLAG(IS_ANDROID)
+  void SetConsentResult(gin::Arguments* args);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  mojo::AssociatedRemote<chrome::mojom::GoogleAccountsPrivateApiExtension>
+      remote_;
+  base::WeakPtrFactory<GoogleAccountsPrivateApiExtension> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_RENDERER_GOOGLE_ACCOUNTS_PRIVATE_API_EXTENSION_H_
