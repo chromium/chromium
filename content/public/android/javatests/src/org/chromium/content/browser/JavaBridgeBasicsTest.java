@@ -23,7 +23,6 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content.browser.JavaBridgeActivityTestRule.Controller;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -864,10 +863,10 @@ public class JavaBridgeBasicsTest {
             }
 
             private void method() {};
-        }, "testObject");
+        }, "testObject", null);
         assertRaisesException("testObject.myGetClass().getMethod('method', null)");
-        // getDeclaredMethod() is able to access a private method, but invoke()
-        // throws a Java exception.
+        // getDeclaredMethod() is able to get a reference to a private method, but actually invoking
+        // the method throws.
         assertRaisesException(
                 "testObject.myGetClass().getDeclaredMethod('method', null)."
                 + "invoke(testObject, null)");
@@ -876,7 +875,6 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @DisabledTest(message = "https://crbug.com/795378")
     @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testReflectPrivateFieldRaisesException(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
@@ -886,11 +884,11 @@ public class JavaBridgeBasicsTest {
             }
 
             private int mField;
-        }, "testObject");
+        }, "testObject", null);
         String fieldName = "mField";
         assertRaisesException("testObject.myGetClass().getField('" + fieldName + "')");
-        // getDeclaredField() is able to access a private field, but getInt()
-        // throws a Java exception.
+        // getDeclaredField() is able to get a reference to a private field, but actually retrieving
+        // the value of the field throws.
         assertNoRaisedException("testObject.myGetClass().getDeclaredField('" + fieldName + "')");
         assertRaisesException(
                 "testObject.myGetClass().getDeclaredField('" + fieldName + "').getInt(testObject)");
