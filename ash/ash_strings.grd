@@ -5334,6 +5334,14 @@ Here are some things you can try to get started.
         Linux files
       </message>
 
+      <!-- Snap Group -->
+      <message name="IDS_ASH_SNAP_GROUP_CLICK_TO_LOCK_WINDOWS" desc="Click to lock the windows.">
+        Lock the windows
+      </message>
+      <message name="IDS_ASH_SNAP_GROUP_CLICK_TO_UNLOCK_WINDOWS" desc="Click to unlock the locked windows.">
+        Unlock the windows
+      </message>
+
       <!-- Switch Between TABLET/LAPTOP MODE-->
       <message name="IDS_ASH_SWITCH_TO_TABLET_MODE" desc="Alert of switching to tablet mode.">
         Switched to tablet mode

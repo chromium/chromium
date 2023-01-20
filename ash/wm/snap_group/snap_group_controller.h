@@ -20,7 +20,7 @@ namespace ash {
 class SnapGroup;
 
 // Works as the centralized place to manage the `SnapGroup`. A single instance
-// of this class will be created and owned by `Shell`. it controls the creation
+// of this class will be created and owned by `Shell`. It controls the creation
 // and destruction of the `SnapGroup`. TODO: It also implements the
 // `OverviewObserver` and `TabletObserver`.
 class ASH_EXPORT SnapGroupController {
@@ -33,6 +33,10 @@ class ASH_EXPORT SnapGroupController {
   SnapGroupController& operator=(const SnapGroupController&) = delete;
   ~SnapGroupController();
 
+  // Returns true if `window1` and `window2` are in the same snap group.
+  bool AreWindowsInSnapGroup(aura::Window* window1,
+                             aura::Window* window2) const;
+
   // Returns true if the corresponding SnapGroup for the given `window1` and
   // `window2` gets created, added to the `snap_groups_` and updated
   // `window_to_snap_group_map_` successfully. False otherwise.
@@ -43,12 +47,21 @@ class ASH_EXPORT SnapGroupController {
   // `window_to_snap_group_map_`. False otherwise.
   bool RemoveSnapGroup(SnapGroup* snap_group);
 
+  // Returns true if the corresponding snap group that contains the
+  // given `window` has been removed successfully. Returns false otherwise.
+  bool RemoveSnapGroupContainingWindow(aura::Window* window);
+
   const SnapGroups& snap_groups_for_testing() const { return snap_groups_; }
   const WindowToSnapGroupMap& window_to_snap_group_map_for_testing() const {
     return window_to_snap_group_map_;
   }
 
  private:
+  // Retrieves the other window that is in the same snap group if any. Returns
+  // nullptr if such window can't be found i.e. the window is not in a snap
+  // group.
+  aura::Window* RetrieveTheOtherWindowInSnapGroup(aura::Window* window) const;
+
   // Contains all the `SnapGroup`, we will have one `SnapGroup` globally for the
   // first iteration but will have multiple in the future iteration.
   SnapGroups snap_groups_;

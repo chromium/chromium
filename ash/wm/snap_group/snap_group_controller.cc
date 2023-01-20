@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/shell.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
@@ -16,6 +17,12 @@ namespace ash {
 SnapGroupController::SnapGroupController() = default;
 
 SnapGroupController::~SnapGroupController() = default;
+
+bool SnapGroupController::AreWindowsInSnapGroup(aura::Window* window1,
+                                                aura::Window* window2) const {
+  return window1 == RetrieveTheOtherWindowInSnapGroup(window2) &&
+         window2 == RetrieveTheOtherWindowInSnapGroup(window1);
+}
 
 bool SnapGroupController::AddSnapGroup(aura::Window* window1,
                                        aura::Window* window2) {
@@ -47,6 +54,29 @@ bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group) {
   window_to_snap_group_map_.erase(window2);
   base::EraseIf(snap_groups_, base::MatchesUniquePtr(snap_group));
   return true;
+}
+
+bool SnapGroupController::RemoveSnapGroupContainingWindow(
+    aura::Window* window) {
+  if (window_to_snap_group_map_.find(window) ==
+      window_to_snap_group_map_.end()) {
+    return false;
+  }
+
+  SnapGroup* snap_group = window_to_snap_group_map_.find(window)->second;
+  return RemoveSnapGroup(snap_group);
+}
+
+aura::Window* SnapGroupController::RetrieveTheOtherWindowInSnapGroup(
+    aura::Window* window) const {
+  if (window_to_snap_group_map_.find(window) ==
+      window_to_snap_group_map_.end()) {
+    return nullptr;
+  }
+
+  SnapGroup* snap_group = window_to_snap_group_map_.find(window)->second;
+  return window == snap_group->window1() ? snap_group->window2()
+                                         : snap_group->window1();
 }
 
 }  // namespace ash

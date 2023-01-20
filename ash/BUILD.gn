@@ -2268,6 +2268,8 @@ component("ash") {
     "wm/snap_group/snap_group.h",
     "wm/snap_group/snap_group_controller.cc",
     "wm/snap_group/snap_group_controller.h",
+    "wm/snap_group/snap_group_lock_button.cc",
+    "wm/snap_group/snap_group_lock_button.h",
     "wm/splitview/split_view_constants.h",
     "wm/splitview/split_view_controller.cc",
     "wm/splitview/split_view_controller.h",

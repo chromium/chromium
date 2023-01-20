@@ -69,6 +69,7 @@ class MultiWindowResizeControllerTest : public AshTestBase {
 
   ~MultiWindowResizeControllerTest() override = default;
 
+  // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
     WorkspaceController* wc = ShellTestApi().workspace_controller();
