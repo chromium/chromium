@@ -19,11 +19,6 @@ namespace web {
 class FindInPageManagerImpl : public FindInPageManager,
                               public web::WebStateObserver {
  public:
-  // Need to overload as the default implementation inherited from
-  // WebStateUserData<FindInPageManager> would create a
-  // FindInPageManager which is a pure abstract class.
-  static void CreateForWebState(WebState* web_state, bool use_find_interaction);
-
   explicit FindInPageManagerImpl(web::WebState* web_state,
                                  bool use_find_interaction);
   ~FindInPageManagerImpl() override;

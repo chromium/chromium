@@ -16,12 +16,11 @@ namespace web {
 class FindInPageManager : public AbstractFindInPageManager,
                           public web::WebStateUserData<FindInPageManager> {
  public:
-  // Lazily creates the `FindInPageManager`. If `use_find_interaction` is
-  // `true`, then the instantiated manager will use a Find interaction, else it
-  // will use its own `UIFindSession` instance. Should only be called on a
-  // realized web state.
-  static FindInPageManager* GetOrCreateForWebState(WebState* web_state,
-                                                   bool use_find_interaction);
+  // Need to overload as the default implementation inherited from
+  // WebStateUserData<FindInPageManager> would create a
+  // FindInPageManager which is a pure abstract class. Should only be called if
+  // the web state is realized.
+  static void CreateForWebState(WebState* web_state, bool use_find_interaction);
 
   FindInPageManager() = default;
 

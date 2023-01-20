@@ -23,18 +23,6 @@ auto kPollActiveFindSessionDelay = base::Milliseconds(100);
 
 namespace web {
 
-void FindInPageManagerImpl::CreateForWebState(WebState* web_state,
-                                              bool use_find_interaction) {
-  DCHECK(web_state);
-  // Should not create this if the web state is not realized.
-  DCHECK(web_state->IsRealized());
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(UserDataKey(),
-                           std::make_unique<FindInPageManagerImpl>(
-                               web_state, use_find_interaction));
-  }
-}
-
 FindInPageManagerImpl::FindInPageManagerImpl(web::WebState* web_state,
                                              bool use_find_interaction)
     : use_find_interaction_(use_find_interaction),
