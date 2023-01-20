@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 221 tests; 211 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 221 tests; 213 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL [["stylewithcss","false"],["fontname","sans-serif"]] "fo[o<listing>b]ar</listing>" queryCommandValue("fontname") after assert_equals: Wrong result returned expected "sans-serif" but got "serif"
 PASS [["stylewithcss","true"],["fontname","sans-serif"]] "fo[o<pre>b]ar</pre>": execCommand("stylewithcss", false, "true") return value
 PASS [["stylewithcss","true"],["fontname","sans-serif"]] "fo[o<pre>b]ar</pre>": execCommand("fontname", false, "sans-serif") return value
@@ -164,7 +164,7 @@ PASS [["stylewithcss","false"],["fontname","sans-serif"]] "<pre>fo[o</pre><samp>
 PASS [["stylewithcss","true"],["fontname","sans-serif"]] "<span style=font-family:monospace>fo[o</span><kbd>b]ar</kbd>": execCommand("stylewithcss", false, "true") return value
 PASS [["stylewithcss","true"],["fontname","sans-serif"]] "<span style=font-family:monospace>fo[o</span><kbd>b]ar</kbd>": execCommand("fontname", false, "sans-serif") return value
 PASS [["stylewithcss","true"],["fontname","sans-serif"]] "<span style=font-family:monospace>fo[o</span><kbd>b]ar</kbd>" checks for modifications to non-editable content
-FAIL [["stylewithcss","true"],["fontname","sans-serif"]] "<span style=font-family:monospace>fo[o</span><kbd>b]ar</kbd>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\"font-family:monospace\">fo<span style=\"font-family:sans-serif\">o</span></span><kbd><span style=\"font-family:sans-serif\">b</span>ar</kbd>" but got "<span style=\"font-family:monospace\">fo</span><span style=\"font-family:sans-serif\">o</span><kbd><span style=\"font-family:sans-serif\">b</span>ar</kbd>"
+PASS [["stylewithcss","true"],["fontname","sans-serif"]] "<span style=font-family:monospace>fo[o</span><kbd>b]ar</kbd>" compare innerHTML
 PASS [["stylewithcss","true"],["fontname","sans-serif"]] "<span style=font-family:monospace>fo[o</span><kbd>b]ar</kbd>" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","true"],["fontname","sans-serif"]] "<span style=font-family:monospace>fo[o</span><kbd>b]ar</kbd>" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","true"],["fontname","sans-serif"]] "<span style=font-family:monospace>fo[o</span><kbd>b]ar</kbd>" queryCommandValue("stylewithcss") before
@@ -180,7 +180,7 @@ PASS [["stylewithcss","true"],["fontname","sans-serif"]] "<span style=font-famil
 PASS [["stylewithcss","false"],["fontname","sans-serif"]] "<span style=font-family:monospace>fo[o</span><kbd>b]ar</kbd>": execCommand("stylewithcss", false, "false") return value
 PASS [["stylewithcss","false"],["fontname","sans-serif"]] "<span style=font-family:monospace>fo[o</span><kbd>b]ar</kbd>": execCommand("fontname", false, "sans-serif") return value
 PASS [["stylewithcss","false"],["fontname","sans-serif"]] "<span style=font-family:monospace>fo[o</span><kbd>b]ar</kbd>" checks for modifications to non-editable content
-FAIL [["stylewithcss","false"],["fontname","sans-serif"]] "<span style=font-family:monospace>fo[o</span><kbd>b]ar</kbd>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\"font-family:monospace\">fo<font face=\"sans-serif\">o</font></span><kbd><font face=\"sans-serif\">b</font>ar</kbd>" but got "<span style=\"font-family:monospace\">fo</span><font face=\"sans-serif\">o</font><kbd><font face=\"sans-serif\">b</font>ar</kbd>"
+PASS [["stylewithcss","false"],["fontname","sans-serif"]] "<span style=font-family:monospace>fo[o</span><kbd>b]ar</kbd>" compare innerHTML
 PASS [["stylewithcss","false"],["fontname","sans-serif"]] "<span style=font-family:monospace>fo[o</span><kbd>b]ar</kbd>" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","false"],["fontname","sans-serif"]] "<span style=font-family:monospace>fo[o</span><kbd>b]ar</kbd>" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","false"],["fontname","sans-serif"]] "<span style=font-family:monospace>fo[o</span><kbd>b]ar</kbd>" queryCommandValue("stylewithcss") before

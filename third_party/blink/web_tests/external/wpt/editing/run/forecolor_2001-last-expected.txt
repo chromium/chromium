@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 275 tests; 262 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 275 tests; 269 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandValue("stylewithcss") after
 FAIL [["stylewithcss","true"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandIndeterm("forecolor") before assert_equals: Wrong result returned expected true but got false
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandState("forecolor") before
@@ -26,7 +26,7 @@ PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>b
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz": execCommand("stylewithcss", false, "true") return value
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz": execCommand("forecolor", false, "#0000FF") return value
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" checks for modifications to non-editable content
-FAIL [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font color=\"brown\"><span style=\"color:rgb(0, 0, 255)\">b</span>ar</font>baz" but got "foo<span style=\"color:rgb(0, 0, 255)\">b</span><font color=\"brown\">ar</font>baz"
+PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" compare innerHTML
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandValue("stylewithcss") before
@@ -42,7 +42,7 @@ PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz": execCommand("stylewithcss", false, "false") return value
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz": execCommand("forecolor", false, "#0000FF") return value
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" checks for modifications to non-editable content
-FAIL [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font color=\"brown\"><font color=\"#0000ff\">b</font>ar</font>baz" but got "foo<font color=\"#0000ff\">b</font><font color=\"brown\">ar</font>baz"
+PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" compare innerHTML
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandValue("stylewithcss") before
@@ -58,7 +58,7 @@ PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz": execCommand("stylewithcss", false, "true") return value
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz": execCommand("forecolor", false, "#0000FF") return value
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" checks for modifications to non-editable content
-FAIL [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font color=\"brown\">ba<span style=\"color:rgb(0, 0, 255)\">r</span></font>baz" but got "foo<font color=\"brown\">ba</font><span style=\"color:rgb(0, 0, 255)\">r</span>baz"
+PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" compare innerHTML
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandValue("stylewithcss") before
@@ -74,7 +74,7 @@ PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz": execCommand("stylewithcss", false, "false") return value
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz": execCommand("forecolor", false, "#0000FF") return value
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" checks for modifications to non-editable content
-FAIL [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font color=\"brown\">ba<font color=\"#0000ff\">r</font></font>baz" but got "foo<font color=\"brown\">ba</font><font color=\"#0000ff\">r</font>baz"
+PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" compare innerHTML
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandValue("stylewithcss") before
@@ -186,7 +186,7 @@ PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>b
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>": execCommand("stylewithcss", false, "true") return value
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>": execCommand("forecolor", false, "#0000FF") return value
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" checks for modifications to non-editable content
-FAIL [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<font color=\"brown\">fo<span style=\"color:rgb(0, 0, 255)\">o</span></font><span style=\"color:rgb(165, 42, 42)\"><span style=\"color:rgb(0, 0, 255)\">b</span>ar</span>" but got "<font color=\"brown\">fo</font><span style=\"color:rgb(0, 0, 255)\">ob</span><span style=\"color:rgb(165, 42, 42)\">ar</span>"
+PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" compare innerHTML
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandValue("stylewithcss") before
@@ -202,7 +202,7 @@ PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>": execCommand("stylewithcss", false, "false") return value
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>": execCommand("forecolor", false, "#0000FF") return value
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" checks for modifications to non-editable content
-FAIL [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<font color=\"brown\">fo<font color=\"#0000ff\">o</font></font><span style=\"color:rgb(165, 42, 42)\"><font color=\"#0000ff\">b</font>ar</span>" but got "<font color=\"brown\">fo</font><font color=\"#0000ff\">ob</font><span style=\"color:rgb(165, 42, 42)\">ar</span>"
+PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" compare innerHTML
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandValue("stylewithcss") before
@@ -218,7 +218,7 @@ PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o<
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>": execCommand("stylewithcss", false, "true") return value
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>": execCommand("forecolor", false, "#0000FF") return value
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" checks for modifications to non-editable content
-FAIL [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\"color:rgb(165, 42, 42)\">fo<span style=\"color:rgb(0, 0, 255)\">o</span></span><span style=\"color:rgb(0, 0, 255)\">bar</span>" but got "<span style=\"color:rgb(165, 42, 42)\">fo</span><span style=\"color:rgb(0, 0, 255)\">ob</span><span style=\"color:rgb(0, 0, 255)\">ar</span>"
+FAIL [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\"color:rgb(165, 42, 42)\">fo</span><span style=\"color:rgb(0, 0, 255)\">obar</span>" but got "<span style=\"color:rgb(165, 42, 42)\">fo</span><span style=\"color:rgb(0, 0, 255)\">ob</span><span style=\"color:rgb(0, 0, 255)\">ar</span>"
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandValue("stylewithcss") before
@@ -234,7 +234,7 @@ PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>": execCommand("stylewithcss", false, "false") return value
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>": execCommand("forecolor", false, "#0000FF") return value
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" checks for modifications to non-editable content
-FAIL [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\"color:rgb(165, 42, 42)\">fo<font color=\"#0000ff\">o</font></span><span style=\"color:rgb(0, 0, 255)\">bar</span>" but got "<span style=\"color:rgb(165, 42, 42)\">fo</span><font color=\"#0000ff\">ob</font><span style=\"color:rgb(0, 0, 255)\">ar</span>"
+PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" compare innerHTML
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandValue("stylewithcss") before
