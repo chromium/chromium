@@ -3,23 +3,13 @@
     margin-inline-end: var(--settings-control-label-spacing);
   }
 
-  .audio-mute-button-container {
-    border-inline-end: 1px solid var(--cros-app-shield-color);
-    margin-inline-end: var(--settings-control-label-spacing);
-  }
-
-  .audio-output-options-container {
+  .audio-options-container {
     display: flex;
     flex-direction: row;
   }
 
-  .audio-output-slider {
+  .audio-slider {
     width: 100px;
-  }
-
-  .audio-slider-wrapper {
-    align-items: center;
-    display: flex;
   }
 
   h2 {
@@ -35,7 +25,7 @@
     padding-inline-start: var(--cr-section-indent-padding);
   }
 
-  .subsection > .settings-box  {
+  .subsection > .settings-box {
     padding-inline-end: 0;
     padding-inline-start: 0;
   }
@@ -105,68 +95,69 @@
         <div class="start settings-box-text" id="audioOutputVolumeLabel">
           $i18n{audioVolumeTitle}
         </div>
-        <!-- TODO(crbug.com/1092970): Update to new UI once approved. -->
-        <div class="audio-output-options-container">
-          <div class="audio-mute-button-container">
-            <cr-icon-button class="audio-mute-button"
-                id="audioOutputMuteButton" iron-icon="settings:volume-up-off"
-                on-click="onOutputMuteButtonClicked">
-            </cr-icon-button>
-          </div>
-          <div class="audio-slider-wrapper" id="audioOutputSliderWrapper">
-            <cr-slider class="audio-output-slider"
-                id ="outputVolumeSlider"
-                min="0"
-                max="100"
-                disabled="[[isOutputVolumeSliderDisabled_(
-                    audioSystemProperties_.outputMuteState
-                  )]]"
-                value="[[audioSystemProperties_.outputVolumePercent]]"
-                on-cr-slider-value-changed="onOutputVolumeSliderChanged_">
-            </cr-slider>
-          </div>
+        <div class="audio-options-container">
+          <cr-icon-button class="audio-mute-button"
+              id="audioOutputMuteButton" iron-icon="settings:volume-up-off"
+              on-click="onOutputMuteButtonClicked">
+          </cr-icon-button>
+          <cr-slider class="audio-slider"
+              id ="outputVolumeSlider"
+              min="0"
+              max="100"
+              disabled="[[isOutputVolumeSliderDisabled_(
+                  audioSystemProperties_.outputMuteState
+                )]]"
+              value="[[audioSystemProperties_.outputVolumePercent]]"
+              on-cr-slider-value-changed="onOutputVolumeSliderChanged_">
+          </cr-slider>
         </div>
       </div>
     </div>
-    <!--TODO(b/260277007): Replace placeholder text when localization strings
+  </div>
+  <!--TODO(b/260277007): Replace placeholder text when localization strings
       available. Add styling. -->
-    <div id="input">
-      <h2 id="audioInputTitle">Input</h2>
-      <div id="audioInputSection">
-        <div id="audioInputDeviceSubsection">
-          <div id="audioInputDeviceLabel">Device</div>
-          <select id="audioInputDeviceDropdown"
-              on-change="onInputDeviceChanged">
-            <template is="dom-repeat"
+  <div id="input">
+    <h2 id="audioInputTitle">Input</h2>
+    <div id="audioInputSection" class="subsection">
+      <div id="audioInputDeviceSubsection" class="settings-box">
+        <div id="audioInputDeviceLabel" class="start settings-box-text">
+          Device
+        </div>
+        <select id="audioInputDeviceDropdown" on-change="onInputDeviceChanged">
+          <template is="dom-repeat"
               items="[[audioSystemProperties_.inputDevices]]">
-              <option value="[[item.id]]" selected="[[item.isActive]]">
-                [[item.displayName]]
-              </option>
-            </template>
-          </select>
+            <option value="[[item.id]]" selected="[[item.isActive]]">
+              [[item.displayName]]
+            </option>
+          </template>
+        </select>
+      </div>
+      <div id="audioInputDeviceSubsection" class="settings-box">
+        <div id="audioInputGainLabel" class="start settings-box-text">
+          Volume
         </div>
-        <div id="audioInputDeviceSubsection">
-          <div id="audioInputGainLabel">Volume</div>
-          <div>
-            <!--TODO(b/260277007): Replace icon once mic-on and mic-off icons
-                available. -->
-            <cr-icon-button id="audioInputGainMuteButton"
-                iron-icon="[[getInputIcon_(isInputMuted_)]]"
-                on-click="onInputMuteClicked">
-            </cr-icon-button>
-            <cr-slider id ="audioInputGainVolumeSlider" min="0" max="100"
-                value="[[audioSystemProperties_.inputGainPercent]]"
-                on-cr-slider-value-changed="onInputVolumeSliderChanged">
-            </cr-slider>
-          </div>
+        <div class="audio-options-container">
+          <cr-icon-button id="audioInputGainMuteButton"
+              iron-icon="[[getInputIcon_(isInputMuted_)]]"
+              on-click="onInputMuteClicked">
+          </cr-icon-button>
+          <cr-slider id="audioInputGainVolumeSlider" min="0" max="100"
+              iron-icon="[[getInputIcon_(isInputMuted_)]]"
+              value="[[audioSystemProperties_.inputGainPercent]]"
+              on-cr-slider-value-changed="onInputVolumeSliderChanged"
+              class="audio-slider">
+          </cr-slider>
         </div>
-        <div id="audioInputNoiseCancellationSubsection"
-            hidden="[[!isNoiseCancellationSupported_]]">
-          <div id="audioInputNoiseCancellationLabel">Noise Cancellation</div>
-          <cr-toggle id="audioInputNoiseCancellationToggle"
-              checked="{{isNoiseCancellationEnabled_}}">
-          </cr-toggle>
+      </div>
+      <div id="audioInputNoiseCancellationSubsection" class="settings-box"
+          hidden="[[!isNoiseCancellationSupported_]]">
+        <div id="audioInputNoiseCancellationLabel"
+            class="settings-box-text start">
+          Noise Cancellation
         </div>
+        <cr-toggle id="audioInputNoiseCancellationToggle"
+            checked="{{isNoiseCancellationEnabled_}}">
+        </cr-toggle>
       </div>
     </div>
   </div>
