@@ -49,7 +49,7 @@ namespace WTF {
 //
 // Note: empty/deleted values as defined in HashTraits are not allowed.
 template <typename ValueArg,
-          typename TraitsArg = DefaultHashAndTraits<ValueArg>,
+          typename TraitsArg = HashTraits<ValueArg>,
           typename Allocator = PartitionAllocator>
 class LinkedHashSet {
   USE_ALLOCATOR(LinkedHashSet, Allocator);
@@ -127,8 +127,7 @@ class LinkedHashSet {
   using reverse_iterator = IteratorWrapper<BackingReverseIterator>;
   using const_reverse_iterator = IteratorWrapper<BackingReverseIterator>;
 
-  typedef typename HashTraitsAdapter<ValueArg, TraitsArg>::PeekInType
-      ValuePeekInType;
+  typedef typename TraitsArg::PeekInType ValuePeekInType;
 
   LinkedHashSet();
   LinkedHashSet(const LinkedHashSet&) = default;

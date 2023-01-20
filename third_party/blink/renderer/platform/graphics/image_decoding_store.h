@@ -173,27 +173,18 @@ class DecoderCacheEntry final : public CacheEntry {
 namespace WTF {
 
 template <>
-struct DefaultHash<blink::DecoderCacheKey> {
-  STATIC_ONLY(DefaultHash);
+struct HashTraits<blink::DecoderCacheKey>
+    : GenericHashTraits<blink::DecoderCacheKey> {
+  STATIC_ONLY(HashTraits);
   static unsigned GetHash(const blink::DecoderCacheKey& p) {
     auto first =
-        HashInts(WTF::GetHash(p.gen_), DefaultHash<SkISize>::GetHash(p.size_));
+        HashInts(WTF::GetHash(const_cast<blink::ImageFrameGenerator*>(p.gen_)),
+                 WTF::GetHash(p.size_));
     auto second = HashInts(WTF::GetHash(static_cast<uint8_t>(p.alpha_option_)),
                            p.client_id_);
     return HashInts(first, second);
   }
-  static bool Equal(const blink::DecoderCacheKey& a,
-                    const blink::DecoderCacheKey& b) {
-    return a.gen_ == b.gen_ && a.size_ == b.size_ &&
-           a.alpha_option_ == b.alpha_option_ && a.client_id_ == b.client_id_;
-  }
-  static const bool safe_to_compare_to_empty_or_deleted = true;
-};
 
-template <>
-struct HashTraits<blink::DecoderCacheKey>
-    : GenericHashTraits<blink::DecoderCacheKey> {
-  STATIC_ONLY(HashTraits);
   static const bool kEmptyValueIsZero = true;
   static blink::DecoderCacheKey EmptyValue() {
     return blink::DecoderCacheEntry::MakeCacheKey(
@@ -201,14 +192,11 @@ struct HashTraits<blink::DecoderCacheKey>
         static_cast<blink::ImageDecoder::AlphaOption>(0),
         cc::PaintImage::kDefaultGeneratorClientId);
   }
-  static void ConstructDeletedValue(blink::DecoderCacheKey& slot, bool) {
-    slot = blink::DecoderCacheEntry::MakeCacheKey(
+  static blink::DecoderCacheKey DeletedValue() {
+    return blink::DecoderCacheEntry::MakeCacheKey(
         nullptr, SkISize::Make(-1, -1),
         static_cast<blink::ImageDecoder::AlphaOption>(0),
         cc::PaintImage::kDefaultGeneratorClientId);
-  }
-  static bool IsDeletedValue(const blink::DecoderCacheKey& value) {
-    return value.size_ == SkISize::Make(-1, -1);
   }
 };
 

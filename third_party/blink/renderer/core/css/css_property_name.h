@@ -81,7 +81,6 @@ class CORE_EXPORT CSSPropertyName {
   AtomicString custom_property_name_;
 
   friend class CSSPropertyNameTest;
-  friend struct ::WTF::DefaultHash<blink::CSSPropertyName>;
   friend struct ::WTF::HashTraits<blink::CSSPropertyName>;
 };
 
@@ -90,26 +89,14 @@ class CORE_EXPORT CSSPropertyName {
 namespace WTF {
 
 template <>
-struct DefaultHash<blink::CSSPropertyName> {
-  STATIC_ONLY(DefaultHash);
+struct HashTraits<blink::CSSPropertyName>
+    : SimpleClassHashTraits<blink::CSSPropertyName> {
   static unsigned GetHash(const blink::CSSPropertyName& name) {
     return name.GetHash();
   }
 
-  static bool Equal(const blink::CSSPropertyName& a,
-                    const blink::CSSPropertyName& b) {
-    return a == b;
-  }
-
-  static const bool safe_to_compare_to_empty_or_deleted = true;
-};
-
-template <>
-struct HashTraits<blink::CSSPropertyName>
-    : SimpleClassHashTraits<blink::CSSPropertyName> {
   using CSSPropertyName = blink::CSSPropertyName;
   static const bool kEmptyValueIsZero = false;
-  static const bool kNeedsDestruction = true;
   static void ConstructDeletedValue(CSSPropertyName& slot, bool) {
     new (NotNullTag::kNotNull, &slot)
         CSSPropertyName(CSSPropertyName::kDeletedValue);

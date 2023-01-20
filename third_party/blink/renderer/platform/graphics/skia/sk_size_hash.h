@@ -32,36 +32,20 @@
 namespace WTF {
 
 template <>
-struct DefaultHash<SkSize> {
-  STATIC_ONLY(DefaultHash);
+struct HashTraits<SkSize> : GenericHashTraits<SkSize> {
   static unsigned GetHash(const SkSize& key) {
     return HashInts(key.width(), key.height());
   }
-  static bool Equal(const SkSize& a, const SkSize& b) { return a == b; }
-  static const bool safe_to_compare_to_empty_or_deleted = true;
-};
-
-template <>
-struct HashTraits<SkSize> : GenericHashTraits<SkSize> {
-  STATIC_ONLY(HashTraits);
   static constexpr bool kEmptyValueIsZero = true;
   static SkSize EmptyValue() { return SkSize::Make(0, 0); }
   static SkSize DeletedValue() { return SkSize::Make(-1, -1); }
 };
 
 template <>
-struct DefaultHash<SkISize> {
-  STATIC_ONLY(DefaultHash);
+struct HashTraits<SkISize> : GenericHashTraits<SkISize> {
   static unsigned GetHash(const SkISize& key) {
     return HashInts(key.width(), key.height());
   }
-  static bool Equal(const SkISize& a, const SkISize& b) { return a == b; }
-  static const bool safe_to_compare_to_empty_or_deleted = true;
-};
-
-template <>
-struct HashTraits<SkISize> : GenericHashTraits<SkISize> {
-  STATIC_ONLY(HashTraits);
   static constexpr bool kEmptyValueIsZero = true;
   static SkISize EmptyValue() { return SkISize::Make(0, 0); }
   static SkISize DeletedValue() { return SkISize::Make(-1, -1); }

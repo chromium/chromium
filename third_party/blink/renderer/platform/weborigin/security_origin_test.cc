@@ -719,9 +719,9 @@ TEST_F(SecurityOriginTest, OpaqueIsolatedCopy) {
   scoped_refptr<const SecurityOrigin> copied = origin->IsolatedCopy();
   EXPECT_TRUE(origin->CanAccess(copied.get()));
   EXPECT_TRUE(origin->IsSameOriginWith(copied.get()));
-  EXPECT_EQ(SecurityOriginHash::GetHash(origin),
-            SecurityOriginHash::GetHash(copied));
-  EXPECT_TRUE(SecurityOriginHash::Equal(origin, copied));
+  EXPECT_EQ(SecurityOriginHashTraits::GetHash(origin),
+            SecurityOriginHashTraits::GetHash(copied));
+  EXPECT_TRUE(SecurityOriginHashTraits::Equal(origin, copied));
 }
 
 TEST_F(SecurityOriginTest, EdgeCases) {

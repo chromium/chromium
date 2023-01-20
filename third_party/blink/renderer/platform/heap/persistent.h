@@ -90,7 +90,15 @@ struct VectorTraits<blink::WeakPersistent<T>>
 
 template <typename T, typename PersistentType>
 struct BasePersistentHashTraits : SimpleClassHashTraits<PersistentType> {
-  STATIC_ONLY(BasePersistentHashTraits);
+  template <typename U>
+  static unsigned GetHash(const U& key) {
+    return WTF::GetHash<T*>(key);
+  }
+
+  template <typename U, typename V>
+  static bool Equal(const U& a, const V& b) {
+    return a == b;
+  }
 
   // TODO: Implement proper const'ness for iterator types. Requires support
   // in the marking Visitor.
@@ -125,28 +133,6 @@ struct HashTraits<blink::Persistent<T>>
 template <typename T>
 struct HashTraits<blink::WeakPersistent<T>>
     : BasePersistentHashTraits<T, blink::WeakPersistent<T>> {};
-
-// Default hash for hash tables with Persistent<>-derived elements.
-template <typename T>
-struct PersistentHashBase : PtrHash<T> {
-  STATIC_ONLY(PersistentHashBase);
-
-  template <typename U>
-  static unsigned GetHash(const U& key) {
-    return PtrHash<T>::GetHash(key);
-  }
-
-  template <typename U, typename V>
-  static bool Equal(const U& a, const V& b) {
-    return a == b;
-  }
-};
-
-template <typename T>
-struct DefaultHash<blink::Persistent<T>> : PersistentHashBase<T> {};
-
-template <typename T>
-struct DefaultHash<blink::WeakPersistent<T>> : PersistentHashBase<T> {};
 
 }  // namespace WTF
 

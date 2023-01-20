@@ -34,32 +34,17 @@ struct AttributionGroup {
   bool is_deleted_value = false;
 };
 
-struct AttributionGroupHash {
-  STATIC_ONLY(AttributionGroupHash);
-
-  static unsigned GetHash(const AttributionGroup& group) {
-    return static_cast<unsigned>(group.attribution.GetHash());
-  }
-
-  static bool Equal(const AttributionGroup& a, const AttributionGroup& b) {
-    return a == b;
-  }
-
-  static const bool safe_to_compare_to_empty_or_deleted = true;
-};
-
 }  // namespace scheduler
 }  // namespace blink
 
 namespace WTF {
 
 template <>
-struct DefaultHash<blink::scheduler::AttributionGroup>
-    : blink::scheduler::AttributionGroupHash {};
-
-template <>
 struct HashTraits<blink::scheduler::AttributionGroup>
     : SimpleClassHashTraits<blink::scheduler::AttributionGroup> {
+  static unsigned GetHash(const blink::scheduler::AttributionGroup& group) {
+    return static_cast<unsigned>(group.attribution.GetHash());
+  }
   static const bool kEmptyValueIsZero = false;
 };
 

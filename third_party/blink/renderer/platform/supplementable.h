@@ -211,8 +211,7 @@ class Supplementable : public GarbageCollectedMixin {
   void Trace(Visitor* visitor) const override { visitor->Trace(supplements_); }
 
  protected:
-  using SupplementMap =
-      HeapHashMap<const char*, Member<Supplement<T>>, PtrHash<const char>>;
+  using SupplementMap = HeapHashMap<const char*, Member<Supplement<T>>>;
   SupplementMap supplements_;
 
   Supplementable()

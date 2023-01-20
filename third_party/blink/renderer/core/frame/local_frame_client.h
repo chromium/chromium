@@ -232,7 +232,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   // optimizations can be preloaded.
   virtual void PreloadSubresourceOptimizationsForOrigins(
       const WTF::HashSet<scoped_refptr<const SecurityOrigin>,
-                         SecurityOriginHash>& origins) {}
+                         SecurityOriginHashTraits>& origins) {}
 
   // Transmits the change in the set of watched CSS selectors property that
   // match any element on the frame.

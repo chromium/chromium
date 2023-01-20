@@ -41,30 +41,17 @@ namespace blink {
 enum ShouldRetain { kRetain, kDoNotRetain };
 enum PurgeSeverity { kPurgeIfNeeded, kForcePurge };
 
-struct FontDataCacheKeyHash {
-  STATIC_ONLY(FontDataCacheKeyHash);
+struct FontDataCacheKeyHashTraits : GenericHashTraits<const FontPlatformData*> {
+  STATIC_ONLY(FontDataCacheKeyHashTraits);
   static unsigned GetHash(const FontPlatformData* platform_data) {
     return platform_data->GetHash();
   }
 
   static bool Equal(const FontPlatformData* a, const FontPlatformData* b) {
-    const FontPlatformData* empty_value =
-        reinterpret_cast<FontPlatformData*>(-1);
-
-    if (a == empty_value)
-      return b == empty_value;
-    if (b == empty_value)
-      return a == empty_value;
-
-    if (!a || !b)
-      return a == b;
-
-    CHECK(a && b);
-
     return *a == *b;
   }
 
-  static const bool safe_to_compare_to_empty_or_deleted = true;
+  static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 };
 
 class FontDataCache final {
@@ -92,7 +79,7 @@ class FontDataCache final {
 
   typedef HashMap<const FontPlatformData*,
                   std::pair<scoped_refptr<SimpleFontData>, unsigned>,
-                  FontDataCacheKeyHash>
+                  FontDataCacheKeyHashTraits>
       Cache;
 
   Cache cache_;

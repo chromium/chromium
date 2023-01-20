@@ -57,7 +57,7 @@ struct KeyValuePairKeyExtractor {
 // can be lifted if you supply custom key traits.
 template <typename KeyArg,
           typename MappedArg,
-          typename KeyTraitsArg = DefaultHashAndTraits<KeyArg>,
+          typename KeyTraitsArg = HashTraits<KeyArg>,
           typename MappedTraitsArg = HashTraits<MappedArg>,
           typename Allocator = PartitionAllocator>
 class HashMap {
@@ -66,7 +66,7 @@ class HashMap {
   friend class HashCountedSet;
 
  private:
-  typedef HashTraitsAdapter<KeyArg, KeyTraitsArg> KeyTraits;
+  typedef KeyTraitsArg KeyTraits;
   typedef MappedTraitsArg MappedTraits;
   typedef HashMapValueTraits<KeyTraits, MappedTraits> ValueTraits;
 

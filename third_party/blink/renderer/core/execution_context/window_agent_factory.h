@@ -87,7 +87,7 @@ class WindowAgentFactory final : public GarbageCollected<WindowAgentFactory> {
   // Use the SecurityOrigin itself as the key for opaque origins.
   HeapHashMap<scoped_refptr<const SecurityOrigin>,
               WeakMember<WindowAgent>,
-              SecurityOriginHash>
+              SecurityOriginHashTraits>
       opaque_origin_agents_;
 
   // Use the SecurityOrigin itself as the key for origin-keyed origins.
@@ -96,7 +96,7 @@ class WindowAgentFactory final : public GarbageCollected<WindowAgentFactory> {
   // origin-keyed isolation relies on a single mechanism.
   HeapHashMap<scoped_refptr<const SecurityOrigin>,
               WeakMember<WindowAgent>,
-              SecurityOriginHash>
+              SecurityOriginHashTraits>
       origin_keyed_agent_cluster_agents_;
 
   // Use registerable domain as the key for general tuple origins.

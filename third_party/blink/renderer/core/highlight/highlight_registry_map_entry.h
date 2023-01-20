@@ -32,9 +32,8 @@ struct HighlightRegistryMapEntry final
 namespace WTF {
 
 template <>
-struct DefaultHash<blink::Member<blink::HighlightRegistryMapEntry>> {
-  STATIC_ONLY(DefaultHash);
-
+struct HashTraits<blink::Member<blink::HighlightRegistryMapEntry>>
+    : MemberHashTraits<blink::HighlightRegistryMapEntry> {
   // Note that GetHash and Equal only take into account the |highlight_name|
   // because |HighlightRegistryMapEntry| is used for storing map entries
   // inside a set (i.e. there can only be one map entry in the set with the
@@ -52,7 +51,7 @@ struct DefaultHash<blink::Member<blink::HighlightRegistryMapEntry>> {
                                            b->highlight_name);
   }
 
-  static const bool safe_to_compare_to_empty_or_deleted = false;
+  static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 };
 
 }  // namespace WTF

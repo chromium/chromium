@@ -81,22 +81,21 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
   bool element_definition_is_running_;
 
   // Hashes Member<V8CustomElementConstructor> by their v8 callback objects.
-  struct V8CustomElementConstructorHash {
-    STATIC_ONLY(V8CustomElementConstructorHash);
+  struct V8CustomElementConstructorHashTraits
+      : WTF::MemberHashTraits<V8CustomElementConstructor> {
     static unsigned GetHash(
         const Member<V8CustomElementConstructor>& constructor) {
       return constructor->CallbackObject()->GetIdentityHash();
     }
     static bool Equal(const Member<V8CustomElementConstructor>& a,
                       const Member<V8CustomElementConstructor>& b) {
-      return (!a && !b) ||
-             (a && b && a->CallbackObject() == b->CallbackObject());
+      return a->CallbackObject() == b->CallbackObject();
     }
-    static const bool safe_to_compare_to_empty_or_deleted = true;
+    static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
   };
   using ConstructorMap = HeapHashMap<Member<V8CustomElementConstructor>,
                                      Member<CustomElementDefinition>,
-                                     V8CustomElementConstructorHash>;
+                                     V8CustomElementConstructorHashTraits>;
   ConstructorMap constructor_map_;
 
   using NameMap = HeapHashMap<AtomicString, Member<CustomElementDefinition>>;

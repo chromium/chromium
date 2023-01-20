@@ -117,8 +117,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   friend class CanvasResourceDispatcherTest;
   struct FrameResource;
 
-  using ResourceMap =
-      HashMap<viz::ResourceId, std::unique_ptr<FrameResource>, ResourceIdHash>;
+  using ResourceMap = HashMap<viz::ResourceId, std::unique_ptr<FrameResource>>;
 
   bool PrepareFrame(scoped_refptr<CanvasResource>&&,
                     base::TimeTicks commit_start_time,

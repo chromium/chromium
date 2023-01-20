@@ -33,9 +33,9 @@ void NthIndexCache::Key::Trace(Visitor* visitor) const {
 }
 
 unsigned NthIndexCache::Key::GetHash() const {
-  unsigned hash = WTF::MemberHash<Node>::GetHash(parent);
+  unsigned hash = WTF::GetHash(parent);
   if (filter != nullptr) {
-    WTF::AddIntToHash(hash, WTF::MemberHash<CSSSelectorList>::GetHash(filter));
+    WTF::AddIntToHash(hash, WTF::GetHash(filter));
   }
   if (!child_tag_name.empty()) {
     WTF::AddIntToHash(hash, WTF::GetHash(child_tag_name));
@@ -239,7 +239,7 @@ unsigned NthIndexCache::NthLastOfTypeIndex(Element& element) {
 void NthIndexCache::EnsureCache() {
   if (!cache_) {
     cache_ = MakeGarbageCollected<
-        HeapHashMap<Member<Key>, Member<NthIndexData>, KeyHash>>();
+        HeapHashMap<Member<Key>, Member<NthIndexData>, KeyHashTraits>>();
   }
 }
 

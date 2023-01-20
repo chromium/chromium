@@ -30,11 +30,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBORIGIN_SECURITY_ORIGIN_HASH_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 
 namespace blink {
 
@@ -42,8 +39,8 @@ namespace blink {
 // As such it ignores the domain that might or might not be set on the origin.
 // If you need "same origin-domain" equality you'll need to use a different hash
 // function.
-struct SecurityOriginHash {
-  STATIC_ONLY(SecurityOriginHash);
+struct SecurityOriginHashTraits
+    : GenericHashTraits<scoped_refptr<const SecurityOrigin>> {
   static unsigned GetHash(const SecurityOrigin* origin) {
     const base::UnguessableToken* nonce = origin->GetNonceForSerialization();
     size_t nonce_hash = nonce ? base::UnguessableTokenHash()(*nonce) : 0;
@@ -86,7 +83,7 @@ struct SecurityOriginHash {
     return Equal(a.get(), b.get());
   }
 
-  static const bool safe_to_compare_to_empty_or_deleted = false;
+  static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 };
 
 }  // namespace blink

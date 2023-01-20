@@ -177,7 +177,7 @@ struct GenericHashTraitsBase {
 template <typename T, auto empty_value, auto deleted_value>
 struct IntOrEnumHashTraits : internal::GenericHashTraitsBase<T> {
   static_assert(std::is_integral_v<T> || std::is_enum_v<T>);
-  static unsigned GetHash(T key) { return IntHash<T>::GetHash(key); }
+  static unsigned GetHash(T key) { return WTF::HashInt(key); }
   static constexpr bool kEmptyValueIsZero =
       static_cast<int64_t>(empty_value) == 0;
   static constexpr T EmptyValue() { return static_cast<T>(empty_value); }
@@ -220,8 +220,8 @@ struct GenericHashTraits<T, std::enable_if_t<std::is_enum_v<T>>>
 template <typename T>
 struct GenericHashTraits<T, std::enable_if_t<std::is_floating_point_v<T>>>
     : internal::GenericHashTraitsBase<T> {
-  static unsigned GetHash(T key) { return FloatHash<T>::GetHash(key); }
-  static bool Equal(T a, T b) { return FloatHash<T>::Equal(a, b); }
+  static unsigned GetHash(T key) { return HashFloat(key); }
+  static bool Equal(T a, T b) { return FloatEqualForHash(a, b); }
   static constexpr T EmptyValue() { return std::numeric_limits<T>::infinity(); }
   static constexpr T DeletedValue() {
     return -std::numeric_limits<T>::infinity();
@@ -246,7 +246,7 @@ struct AlreadyHashedWithZeroKeyTraits : IntWithZeroKeyHashTraits<unsigned> {
 
 template <typename P>
 struct GenericHashTraits<P*> : internal::GenericHashTraitsBase<P*> {
-  static unsigned GetHash(P* key) { return PtrHash<P>::GetHash(key); }
+  static unsigned GetHash(P* key) { return HashPointer(key); }
   static constexpr bool kEmptyValueIsZero = true;
   static constexpr P* DeletedValue() { return reinterpret_cast<P*>(-1); }
 };
@@ -258,9 +258,9 @@ struct GenericHashTraits<scoped_refptr<P>>
                 "Unexpected RefPtr size."
                 " RefPtr needs to be single pointer to support deleted value.");
 
-  static unsigned GetHash(P* key) { return PtrHash<P>::GetHash(key); }
+  static unsigned GetHash(P* key) { return HashPointer(key); }
   static unsigned GetHash(const scoped_refptr<P>& key) {
-    return PtrHash<P>::GetHash(key.get());
+    return GetHash(key.get());
   }
 
   static bool Equal(const scoped_refptr<P>& a, const scoped_refptr<P>& b) {
@@ -317,7 +317,7 @@ struct GenericHashTraits<scoped_refptr<P>>
 template <typename T>
 struct GenericHashTraits<std::unique_ptr<T>>
     : internal::GenericHashTraitsBase<std::unique_ptr<T>> {
-  static unsigned GetHash(T* key) { return PtrHash<T>::GetHash(key); }
+  static unsigned GetHash(T* key) { return HashPointer(key); }
   static unsigned GetHash(const std::unique_ptr<T>& key) {
     return GetHash(key.get());
   }
@@ -619,37 +619,6 @@ template <typename Key, typename Value>
 struct HashTraits<KeyValuePair<Key, Value>>
     : public KeyValuePairHashTraits<HashTraits<Key>, HashTraits<Value>> {};
 
-// Temporary adapters during combining HashFunctions and HashTraits.
-template <typename HashFunctions, typename KeyTraits, typename Enable = void>
-struct CombinedHashTraits : HashFunctions, KeyTraits {
-  using HashFunctions::Equal;
-  using HashFunctions::GetHash;
-  // Note the name change.
-  static constexpr bool kSafeToCompareToEmptyOrDeleted =
-      HashFunctions::safe_to_compare_to_empty_or_deleted;
-};
-// If HashFunctions is not explicitly defined, we assume KeyTraits is already a
-// full hash traits type.
-template <typename HashFunctions, typename KeyTraits>
-struct CombinedHashTraits<HashFunctions,
-                          KeyTraits,
-                          std::void_t<typename HashFunctions::Undefined>>
-    : KeyTraits {};
-template <typename Key, typename Enable = void>
-struct DefaultHashAndTraits
-    : CombinedHashTraits<DefaultHash<Key>, HashTraits<Key>> {};
-// Use HashFunctions + HashTraits<Key> if the second argument (i.e. the third
-// argument of HashMap) is a legacy hash functions type.
-template <typename Key, typename HashFunctions, typename Enable = void>
-struct HashTraitsAdapter : CombinedHashTraits<HashFunctions, HashTraits<Key>> {
-};
-// Use KeyTraits if it's already a full hash traits type.
-template <typename Key, typename KeyTraits>
-struct HashTraitsAdapter<Key,
-                         KeyTraits,
-                         std::void_t<typename KeyTraits::TraitType>>
-    : KeyTraits {};
-
 // Shortcut of HashTraits<T>::GetHash(), which can deduct T automatically.
 template <typename T>
 unsigned GetHash(const T& key) {
@@ -657,11 +626,6 @@ unsigned GetHash(const T& key) {
 }
 
 }  // namespace WTF
-
-// Temporary hash traits adapters.
-using WTF::CombinedHashTraits;
-using WTF::DefaultHashAndTraits;
-using WTF::HashTraitsAdapter;
 
 using WTF::AlreadyHashedTraits;
 using WTF::AlreadyHashedWithZeroKeyTraits;

@@ -126,15 +126,12 @@ class CORE_EXPORT NthIndexCache final {
 
   // Helper needed to make sure Key is compared by value and not by pointer,
   // even though the hash map key is a Member<> (which Oilpan forces us to).
-  struct KeyHash {
-    STATIC_ONLY(KeyHash);
-
+  struct KeyHashTraits : WTF::MemberHashTraits<Key> {
     static unsigned GetHash(const Member<Key>& key) { return key->GetHash(); }
     static bool Equal(const Member<Key>& a, const Member<Key>& b) {
-      return (!a && !b) || (a && b && *a == *b);
+      return *a == *b;
     }
-
-    static const bool safe_to_compare_to_empty_or_deleted = true;
+    static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
   };
 
   // Helper needed to allow calling Find() with a Key instead of Member<Key>
@@ -177,7 +174,8 @@ class CORE_EXPORT NthIndexCache final {
 
   // Effectively maps (parent, optional tag name, child) → index.
   // (The child part of the key is in NthIndexData.)
-  HeapHashMap<Member<Key>, Member<NthIndexData>, KeyHash>* cache_ = nullptr;
+  HeapHashMap<Member<Key>, Member<NthIndexData>, KeyHashTraits>* cache_ =
+      nullptr;
 
 #if DCHECK_IS_ON()
   uint64_t dom_tree_version_;

@@ -75,7 +75,6 @@ class PLATFORM_EXPORT BlinkSchemefulSite {
   }
 
  private:
-  friend struct WTF::DefaultHash<BlinkSchemefulSite>;
   friend struct WTF::HashTraits<BlinkSchemefulSite>;
 
   // IPC serialization code needs to access internal origin.
@@ -119,25 +118,21 @@ class PLATFORM_EXPORT BlinkSchemefulSite {
 namespace WTF {
 
 template <>
-struct DefaultHash<blink::BlinkSchemefulSite> {
-  STATIC_ONLY(DefaultHash);
-
+struct HashTraits<blink::BlinkSchemefulSite>
+    : SimpleClassHashTraits<blink::BlinkSchemefulSite> {
   static unsigned GetHash(const blink::BlinkSchemefulSite& schemeful_site) {
-    return blink::SecurityOriginHash::GetHash(schemeful_site.site_as_origin_);
+    return blink::SecurityOriginHashTraits::GetHash(
+        schemeful_site.site_as_origin_);
   }
 
   static bool Equal(const blink::BlinkSchemefulSite& a,
                     const blink::BlinkSchemefulSite& b) {
-    return blink::SecurityOriginHash::Equal(a.site_as_origin_,
-                                            b.site_as_origin_);
+    return blink::SecurityOriginHashTraits::Equal(a.site_as_origin_,
+                                                  b.site_as_origin_);
   }
 
-  static const bool safe_to_compare_to_empty_or_deleted = false;
-};
+  static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 
-template <>
-struct HashTraits<blink::BlinkSchemefulSite>
-    : SimpleClassHashTraits<blink::BlinkSchemefulSite> {
   static bool IsEmptyValue(const blink::BlinkSchemefulSite& value) {
     return !value.site_as_origin_;
   }

@@ -12,15 +12,14 @@
 
 namespace blink {
 
-struct BlinkStorageKeyHash {
-  STATIC_ONLY(BlinkStorageKeyHash);
-
+struct BlinkStorageKeyHashTraits
+    : GenericHashTraits<std::unique_ptr<const BlinkStorageKey>> {
   static unsigned GetHash(const BlinkStorageKey* storage_key) {
     absl::optional<base::UnguessableToken> nonce = storage_key->GetNonce();
     size_t nonce_hash = nonce ? base::UnguessableTokenHash()(*nonce) : 0;
     unsigned hash_codes[] = {
-      SecurityOriginHash::GetHash(storage_key->GetSecurityOrigin()),
-      DefaultHash<BlinkSchemefulSite>::GetHash(storage_key->GetTopLevelSite()),
+      SecurityOriginHashTraits::GetHash(storage_key->GetSecurityOrigin()),
+      WTF::GetHash(storage_key->GetTopLevelSite()),
       static_cast<unsigned>(storage_key->GetAncestorChainBit()),
 #if ARCH_CPU_32_BITS
       nonce_hash,
@@ -58,7 +57,7 @@ struct BlinkStorageKeyHash {
     return Equal(a.get(), b.get());
   }
 
-  static const bool safe_to_compare_to_empty_or_deleted = false;
+  static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 };
 
 }  // namespace blink

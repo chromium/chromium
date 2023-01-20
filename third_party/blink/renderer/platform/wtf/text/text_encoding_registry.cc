@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_utf16.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_utf8.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
-
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace WTF {
@@ -55,7 +54,7 @@ namespace WTF {
 const size_t kMaxEncodingNameLength = 63;
 
 // Hash for all-ASCII strings that does case folding.
-struct TextEncodingNameHash {
+struct TextEncodingNameHashTraits : GenericHashTraits<const char*> {
   static bool Equal(const char* s1, const char* s2) {
     char c1;
     char c2;
@@ -87,7 +86,7 @@ struct TextEncodingNameHash {
     }
   }
 
-  static const bool safe_to_compare_to_empty_or_deleted = false;
+  static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 };
 
 struct TextCodecFactory {
@@ -97,7 +96,7 @@ struct TextCodecFactory {
       : function(f), additional_data(d) {}
 };
 
-typedef HashMap<const char*, const char*, TextEncodingNameHash>
+typedef HashMap<const char*, const char*, TextEncodingNameHashTraits>
     TextEncodingNameMap;
 typedef HashMap<const char*, TextCodecFactory> TextCodecMap;
 

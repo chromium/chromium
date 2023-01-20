@@ -40,15 +40,9 @@
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "url/origin.h"
 
-namespace mojo {
-struct UrlOriginAdapter;
-}  // namespace mojo
-
 namespace blink {
 
 class KURL;
-struct SecurityOriginHash;
-class SecurityOriginTest;
 
 // An identifier which defines the source of content (e.g. a document) and
 // restricts what other objects it is permitted to access (based on their
@@ -387,9 +381,9 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
 
  private:
   // Various serialisation and test routines that need direct nonce access.
-  friend mojo::UrlOriginAdapter;
-  friend SecurityOriginHash;
-  friend SecurityOriginTest;
+  friend struct mojo::UrlOriginAdapter;
+  friend struct SecurityOriginHashTraits;
+  friend class SecurityOriginTest;
 
   // For calling GetNonceForSerialization().
   friend class BlobURLOpaqueOriginNonceMap;

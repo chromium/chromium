@@ -402,16 +402,4 @@ PLATFORM_EXPORT RGBA32 PremultipliedARGBFromColor(const Color&);
 
 }  // namespace blink
 
-namespace WTF {
-template <>
-struct DefaultHash<blink::Color> {
-  STATIC_ONLY(DefaultHash);
-  static unsigned GetHash(const blink::Color& key) { return key.GetHash(); }
-  static bool Equal(const blink::Color& a, const blink::Color& b) {
-    return a == b;
-  }
-  static const bool safe_to_compare_to_empty_or_deleted = true;
-};
-}  // namespace WTF
-
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COLOR_H_

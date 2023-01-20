@@ -22,39 +22,37 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_FUNCTIONS_H_
 
 #include <stdint.h>
-#include <memory>
 #include <type_traits>
+
 #include "base/bit_cast.h"
-#include "base/memory/scoped_refptr.h"
-#include "build/build_config.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace WTF {
+
+namespace internal {
 
 template <size_t size>
 struct IntTypes;
 template <>
 struct IntTypes<1> {
-  typedef int8_t SignedType;
   typedef uint8_t UnsignedType;
 };
 template <>
 struct IntTypes<2> {
-  typedef int16_t SignedType;
   typedef uint16_t UnsignedType;
 };
 template <>
 struct IntTypes<4> {
-  typedef int32_t SignedType;
   typedef uint32_t UnsignedType;
 };
 template <>
 struct IntTypes<8> {
-  typedef int64_t SignedType;
   typedef uint64_t UnsignedType;
 };
 
-// integer hash function
+template <typename T>
+using IntHashBits = typename IntTypes<sizeof(T)>::UnsignedType;
+
+// Hash functions for integral and enum types.
 
 // Thomas Wang's 32 Bit Mix Function:
 // http://www.cris.com/~Ttwang/tech/inthash.htm
@@ -92,6 +90,8 @@ inline unsigned HashInt(uint64_t key) {
   return static_cast<unsigned>(key);
 }
 
+}  // namespace internal
+
 // Compound integer hash method:
 // http://opendatastructures.org/versions/edition-0.1d/ods-java/node33.html#SECTION00832000000000000000
 inline unsigned HashInts(unsigned key1, unsigned key2) {
@@ -107,44 +107,28 @@ inline unsigned HashInts(unsigned key1, unsigned key2) {
 }
 
 template <typename T>
-struct IntHash {
-  static unsigned GetHash(T key) {
-    return HashInt(
-        static_cast<typename IntTypes<sizeof(T)>::UnsignedType>(key));
-  }
-  static bool Equal(T a, T b) { return a == b; }
-  static const bool safe_to_compare_to_empty_or_deleted = true;
-};
+unsigned HashInt(T key) {
+  static_assert(std::is_integral_v<T> || std::is_enum_v<T>);
+  return internal::HashInt(static_cast<internal::IntHashBits<T>>(key));
+}
 
 template <typename T>
-struct FloatHash {
-  typedef typename IntTypes<sizeof(T)>::UnsignedType Bits;
-  static unsigned GetHash(T key) { return HashInt(base::bit_cast<Bits>(key)); }
-  static bool Equal(T a, T b) {
-    return base::bit_cast<Bits>(a) == base::bit_cast<Bits>(b);
-  }
-};
-
-// pointer identity hash function
+unsigned HashFloat(T key) {
+  static_assert(std::is_floating_point_v<T>);
+  return internal::HashInt(base::bit_cast<internal::IntHashBits<T>>(key));
+}
 
 template <typename T>
-struct PtrHash {
-  static unsigned GetHash(T* key) {
-#if defined(COMPILER_MSVC)
-#pragma warning(push)
-// work around what seems to be a bug in MSVC's conversion warnings
-#pragma warning(disable : 4244)
-#endif
-    return IntHash<uintptr_t>::GetHash(reinterpret_cast<uintptr_t>(key));
-#if defined(COMPILER_MSVC)
-#pragma warning(pop)
-#endif
-  }
-  static bool Equal(T* a, T* b) { return a == b; }
-  static bool Equal(std::nullptr_t, T* b) { return !b; }
-  static bool Equal(T* a, std::nullptr_t) { return !a; }
-  static const bool safe_to_compare_to_empty_or_deleted = true;
-};
+bool FloatEqualForHash(T a, T b) {
+  static_assert(std::is_floating_point_v<T>);
+  return base::bit_cast<internal::IntHashBits<T>>(a) ==
+         base::bit_cast<internal::IntHashBits<T>>(b);
+}
+
+template <typename T>
+unsigned HashPointer(T* key) {
+  return HashInt(base::bit_cast<internal::IntHashBits<T*>>(key));
+}
 
 // Useful compounding hash functions.
 inline void AddIntToHash(unsigned& hash, unsigned key) {
@@ -152,20 +136,9 @@ inline void AddIntToHash(unsigned& hash, unsigned key) {
 }
 
 inline void AddFloatToHash(unsigned& hash, float value) {
-  AddIntToHash(hash, FloatHash<float>::GetHash(value));
+  AddIntToHash(hash, HashFloat(value));
 }
 
-// This is temporary before DefaultHash and HashTraits are fully merged.
-template <typename T>
-struct DefaultHash {
-  // If DefaultHash<T> falls back to this, the hash traits type is supposed to
-  // be completely implemented. See hash_traits.h.
-  using Undefined = void;
-};
-
 }  // namespace WTF
-
-using WTF::DefaultHash;
-using WTF::PtrHash;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_FUNCTIONS_H_

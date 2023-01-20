@@ -135,7 +135,7 @@ class MODULES_EXPORT StorageNamespace final
   // TODO(https://crbug.com/1212808) Migrate hash map and function.
   HashMap<std::unique_ptr<const BlinkStorageKey>,
           scoped_refptr<CachedStorageArea>,
-          BlinkStorageKeyHash>
+          BlinkStorageKeyHashTraits>
       cached_areas_;
 };
 

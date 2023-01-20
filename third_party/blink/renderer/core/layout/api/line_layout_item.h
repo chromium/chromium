@@ -284,17 +284,7 @@ class LineLayoutItem {
 
   bool EverHadLayout() const { return layout_object_->EverHadLayout(); }
 
-  struct LineLayoutItemHash {
-    STATIC_ONLY(LineLayoutItemHash);
-    static unsigned GetHash(const LineLayoutItem& key) {
-      return WTF::PtrHash<LayoutObject>::GetHash(key.layout_object_);
-    }
-    static bool Equal(const LineLayoutItem& a, const LineLayoutItem& b) {
-      return WTF::PtrHash<LayoutObject>::Equal(a.layout_object_,
-                                               b.layout_object_);
-    }
-    static const bool safe_to_compare_to_empty_or_deleted = true;
-  };
+  unsigned GetHash() const { return WTF::GetHash(layout_object_); }
 
 #if DCHECK_IS_ON()
 
@@ -326,10 +316,6 @@ class LineLayoutItem {
 }  // namespace blink
 
 namespace WTF {
-
-template <>
-struct DefaultHash<blink::LineLayoutItem>
-    : blink::LineLayoutItem::LineLayoutItemHash {};
 
 template <>
 struct HashTraits<blink::LineLayoutItem>

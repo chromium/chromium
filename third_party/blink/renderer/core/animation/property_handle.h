@@ -132,24 +132,12 @@ class CORE_EXPORT PropertyHandle {
 namespace WTF {
 
 template <>
-struct DefaultHash<blink::PropertyHandle> {
-  STATIC_ONLY(DefaultHash);
+struct HashTraits<blink::PropertyHandle>
+    : SimpleClassHashTraits<blink::PropertyHandle> {
   static unsigned GetHash(const blink::PropertyHandle& handle) {
     return handle.GetHash();
   }
 
-  static bool Equal(const blink::PropertyHandle& a,
-                    const blink::PropertyHandle& b) {
-    return a == b;
-  }
-
-  static const bool safe_to_compare_to_empty_or_deleted = true;
-};
-
-template <>
-struct HashTraits<blink::PropertyHandle>
-    : SimpleClassHashTraits<blink::PropertyHandle> {
-  static const bool kNeedsDestruction = true;
   static void ConstructDeletedValue(blink::PropertyHandle& slot, bool) {
     new (NotNullTag::kNotNull, &slot) blink::PropertyHandle(
         blink::PropertyHandle::DeletedValueForHashTraits());

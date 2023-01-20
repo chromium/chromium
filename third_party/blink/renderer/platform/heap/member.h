@@ -63,43 +63,6 @@ static constexpr bool kBlinkMemberGCHasDebugChecks =
 
 namespace WTF {
 
-// Default hash for hash tables with Member<>-derived elements.
-template <typename T>
-struct MemberHash
-    : IntHash<cppgc::internal::MemberBase::RawStorage::IntegralType> {
-  using Base = IntHash<cppgc::internal::MemberBase::RawStorage::IntegralType>;
-  STATIC_ONLY(MemberHash);
-  // Heap hash containers allow to operate with raw pointers, e.g.
-  //   HeapHashSet<Member<GCed>> set;
-  //   set.find(raw_ptr);
-  // Therefore, provide two hashing functions, one for raw pointers, another for
-  // Member. Prefer compressing raw pointers instead of decompressing Members,
-  // assuming the former is cheaper.
-  static unsigned GetHash(const T* key) {
-    cppgc::internal::MemberBase::RawStorage st(key);
-    return Base::GetHash(st.GetAsInteger());
-  }
-  template <typename Member,
-            std::enable_if_t<WTF::IsAnyMemberType<Member>::value>* = nullptr>
-  static unsigned GetHash(const Member& m) {
-    return Base::GetHash(m.GetRawStorage().GetAsInteger());
-  }
-
-  template <typename U, typename V>
-  static bool Equal(const U& a, const V& b) {
-    return a == b;
-  }
-};
-
-template <typename T>
-struct DefaultHash<blink::Member<T>> : MemberHash<T> {};
-
-template <typename T>
-struct DefaultHash<blink::WeakMember<T>> : MemberHash<T> {};
-
-template <typename T>
-struct DefaultHash<blink::UntracedMember<T>> : MemberHash<T> {};
-
 template <typename T>
 struct IsTraceable<blink::Member<T>> {
   STATIC_ONLY(IsTraceable);
@@ -115,9 +78,28 @@ struct IsTraceable<blink::WeakMember<T>> {
   static const bool value = true;
 };
 
+// Default hash for hash tables with Member<>-derived elements.
 template <typename T, typename MemberType>
 struct BaseMemberHashTraits : SimpleClassHashTraits<MemberType> {
   STATIC_ONLY(BaseMemberHashTraits);
+
+  // Heap hash containers allow to operate with raw pointers, e.g.
+  //   HeapHashSet<Member<GCed>> set;
+  //   set.find(raw_ptr);
+  // Therefore, provide two hashing functions, one for raw pointers, another for
+  // Member. Prefer compressing raw pointers instead of decompressing Members,
+  // assuming the former is cheaper.
+  static unsigned GetHash(const T* key) {
+    cppgc::internal::MemberBase::RawStorage st(key);
+    return WTF::GetHash(st.GetAsInteger());
+  }
+  template <typename Member,
+            std::enable_if_t<WTF::IsAnyMemberType<Member>::value>* = nullptr>
+  static unsigned GetHash(const Member& m) {
+    return WTF::GetHash(m.GetRawStorage().GetAsInteger());
+  }
+
+  static constexpr bool kEmptyValueIsZero = true;
 
   using PeekInType = T*;
   using PeekOutType = T*;
@@ -142,21 +124,28 @@ struct BaseMemberHashTraits : SimpleClassHashTraits<MemberType> {
   }
 };
 
+// Custom HashTraits<Member<Type>> can inherit this type.
 template <typename T>
-struct HashTraits<blink::Member<T>>
-    : BaseMemberHashTraits<T, blink::Member<T>> {
+struct MemberHashTraits : BaseMemberHashTraits<T, blink::Member<T>> {
   static constexpr bool kCanTraceConcurrently = true;
 };
-
 template <typename T>
-struct HashTraits<blink::WeakMember<T>>
-    : BaseMemberHashTraits<T, blink::WeakMember<T>> {
+struct HashTraits<blink::Member<T>> : MemberHashTraits<T> {};
+
+// Custom HashTraits<WeakMember<Type>> can inherit this type.
+template <typename T>
+struct WeakMemberHashTraits : BaseMemberHashTraits<T, blink::WeakMember<T>> {
   static constexpr bool kCanTraceConcurrently = true;
 };
-
 template <typename T>
-struct HashTraits<blink::UntracedMember<T>>
+struct HashTraits<blink::WeakMember<T>> : WeakMemberHashTraits<T> {};
+
+// Custom HashTraits<UntracedMember<Type>> can inherit this type.
+template <typename T>
+struct UntracedMemberHashTraits
     : BaseMemberHashTraits<T, blink::UntracedMember<T>> {};
+template <typename T>
+struct HashTraits<blink::UntracedMember<T>> : UntracedMemberHashTraits<T> {};
 
 template <typename T>
 class MemberConstructTraits {

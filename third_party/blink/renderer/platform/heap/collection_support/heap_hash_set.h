@@ -12,8 +12,7 @@
 
 namespace blink {
 
-template <typename ValueArg,
-          typename TraitsArg = DefaultHashAndTraits<ValueArg>>
+template <typename ValueArg, typename TraitsArg = HashTraits<ValueArg>>
 class HeapHashSet final
     : public GarbageCollected<HeapHashSet<ValueArg, TraitsArg>>,
       public HashSet<ValueArg, TraitsArg, HeapAllocator> {

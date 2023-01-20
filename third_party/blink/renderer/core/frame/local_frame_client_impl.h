@@ -160,7 +160,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
   void PreloadSubresourceOptimizationsForOrigins(
       const WTF::HashSet<scoped_refptr<const SecurityOrigin>,
-                         SecurityOriginHash>& origins) override;
+                         SecurityOriginHashTraits>& origins) override;
   void SelectorMatchChanged(const Vector<String>& added_selectors,
                             const Vector<String>& removed_selectors) override;
 

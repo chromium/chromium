@@ -34,31 +34,7 @@ class CORE_EXPORT BoxedV8Module final : public GarbageCollected<BoxedV8Module> {
  private:
   TraceWrapperV8Reference<v8::Module> record_;
   const unsigned identity_hash_;
-  friend struct BoxedV8ModuleHash;
-};
-
-struct BoxedV8ModuleHash {
- public:
-  static unsigned GetHash(const Member<BoxedV8Module>& key) {
-    return key->identity_hash_;
-  }
-
-  static bool Equal(const Member<BoxedV8Module>& a,
-                    const Member<BoxedV8Module>& b) {
-    if (IsHashTableDeletedValue(a) && IsHashTableDeletedValue(b))
-      return true;
-    if (IsHashTableDeletedValue(a) || IsHashTableDeletedValue(b))
-      return false;
-
-    if (!a && !b)
-      return true;
-    if (!a || !b)
-      return false;
-
-    return a->record_ == b->record_;
-  }
-
-  static constexpr bool safe_to_compare_to_empty_or_deleted = true;
+  friend struct HashTraits<Member<BoxedV8Module>>;
 };
 
 }  // namespace blink
@@ -66,8 +42,19 @@ struct BoxedV8ModuleHash {
 namespace WTF {
 
 template <>
-struct DefaultHash<blink::Member<blink::BoxedV8Module>>
-    : blink::BoxedV8ModuleHash {};
+struct HashTraits<blink::Member<blink::BoxedV8Module>>
+    : MemberHashTraits<blink::BoxedV8Module> {
+  static unsigned GetHash(const blink::Member<blink::BoxedV8Module>& key) {
+    return key->identity_hash_;
+  }
+
+  static bool Equal(const blink::Member<blink::BoxedV8Module>& a,
+                    const blink::Member<blink::BoxedV8Module>& b) {
+    return a->record_ == b->record_;
+  }
+
+  static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
+};
 
 }  // namespace WTF
 

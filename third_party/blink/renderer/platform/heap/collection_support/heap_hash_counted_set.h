@@ -12,7 +12,7 @@
 
 namespace blink {
 
-template <typename Value, typename Traits = DefaultHashAndTraits<Value>>
+template <typename Value, typename Traits = HashTraits<Value>>
 class HeapHashCountedSet final
     : public GarbageCollected<HeapHashCountedSet<Value, Traits>>,
       public HashCountedSet<Value, Traits, HeapAllocator> {
