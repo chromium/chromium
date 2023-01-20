@@ -161,7 +161,7 @@ found in the LICENSE file.
                 android:layout_gravity="center_horizontal"
                 android:layout_marginEnd="@dimen/privacy_sandbox_consent_button_margin_between"
                 android:text="@string/privacy_sandbox_m1_notice_eea_settings_button"
-                style="@style/TextButton" />
+                style="@style/OutlinedButton" />
 
             <org.chromium.ui.widget.ButtonCompat
                 android:id="@+id/ack_button"
