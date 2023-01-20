@@ -36,6 +36,8 @@ component("device_activity") {
   ]
 
   sources = [
+    "churn_active_status.cc",
+    "churn_active_status.h",
     "daily_use_case_impl.cc",
     "daily_use_case_impl.h",
     "device_active_use_case.cc",

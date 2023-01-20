@@ -16,6 +16,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/private_computing/private_computing_client.h"
 #include "chromeos/ash/components/dbus/private_computing/private_computing_service.pb.h"
+#include "chromeos/ash/components/device_activity/churn_active_status.h"
 #include "chromeos/ash/components/device_activity/fresnel_service.pb.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
@@ -180,6 +181,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   void OnGetLastPingDatesStatusFetched(
       private_computing::GetStatusResponse response);
 
+  // Get the |churn_active_status_| object.
+  ChurnActiveStatus* GetChurnActiveStatus();
+
+  // Set the |churn_active_status_| object with the newest value from either
+  // local state or the preserved files.
+  void SetChurnActiveStatus(int value);
+
  private:
   // |report_timer_| triggers method to retry reporting device actives if
   // necessary.
@@ -299,6 +307,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // API key used to authenticate with the Fresnel server. This key is read from
   // the chrome-internal repository and is not publicly exposed in Chromium.
   const std::string api_key_;
+
+  // ChurnActiveStatus object stores the active history for the device.
+  // This bit value will be persisted in local state and preserved files.
+  std::unique_ptr<ChurnActiveStatus> churn_active_status_;
 
   // Vector of supported use cases containing the methods and metadata required
   // to counting device actives.

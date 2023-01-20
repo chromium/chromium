@@ -509,6 +509,16 @@ void DeviceActivityClient::OnGetLastPingDatesStatusFetched(
   DefaultNetworkChanged(network_state_handler_->DefaultNetwork());
 }
 
+ChurnActiveStatus* DeviceActivityClient::GetChurnActiveStatus() {
+  DCHECK(churn_active_status_);
+  return churn_active_status_.get();
+}
+
+void DeviceActivityClient::SetChurnActiveStatus(int value) {
+  DCHECK(!churn_active_status_);
+  churn_active_status_ = std::make_unique<ChurnActiveStatus>(value);
+}
+
 void DeviceActivityClient::ReportingTriggeredByTimer() {
   RecordDeviceActivityMethodCalled(
       DeviceActivityClient::DeviceActivityMethod::
