@@ -26,10 +26,9 @@ UpdatedProgressMarkerChecker::UpdatedProgressMarkerChecker(
 UpdatedProgressMarkerChecker::~UpdatedProgressMarkerChecker() = default;
 
 bool UpdatedProgressMarkerChecker::IsExitConditionSatisfied(std::ostream* os) {
-  *os << "Waiting for progress markers... ";
+  *os << "Waiting for progress markers";
 
   if (!has_unsynced_items_.has_value()) {
-    *os << "Unknown synced values state.";
     return false;
   }
 
@@ -43,22 +42,9 @@ bool UpdatedProgressMarkerChecker::IsExitConditionSatisfied(std::ostream* os) {
   //    by the test-only 'self-notify' cycle).
   // 3. No pending local changes (which will ultimately generate new progress
   //    markers once submitted to the server).
-  if (snap.download_progress_markers().empty()) {
-    *os << "Progress markers are empty.";
-    return false;
-  }
-
-  if (snap.model_neutral_state().num_successful_commits > 0) {
-    *os << "Last sync cycle wasn't empty.";
-    return false;
-  }
-
-  if (has_unsynced_items_.value()) {
-    *os << "Has unsynced items.";
-    return false;
-  }
-
-  return true;
+  return !snap.download_progress_markers().empty() &&
+         snap.model_neutral_state().num_successful_commits == 0 &&
+         !has_unsynced_items_.value();
 }
 
 void UpdatedProgressMarkerChecker::GotHasUnsyncedItems(
