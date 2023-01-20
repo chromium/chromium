@@ -375,7 +375,7 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_TraceEvent_Candidate) {
   base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
   EXPECT_GT(arg_dict.FindInt("DOMNodeId").value_or(-1), 0);
   EXPECT_GT(arg_dict.FindInt("size").value_or(-1), 0);
-  EXPECT_EQ(arg_dict.FindInt("candidateIndex").value_or(-1), 2);
+  EXPECT_EQ(arg_dict.FindInt("candidateIndex").value_or(-1), 1);
   absl::optional<bool> isMainFrame = arg_dict.FindBool("isMainFrame");
   EXPECT_TRUE(isMainFrame.has_value());
   EXPECT_EQ(true, isMainFrame.value());
@@ -428,7 +428,7 @@ TEST_P(ImagePaintTimingDetectorTest,
   base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
   EXPECT_GT(arg_dict.FindInt("DOMNodeId").value_or(-1), 0);
   EXPECT_GT(arg_dict.FindInt("size").value_or(-1), 0);
-  EXPECT_EQ(arg_dict.FindInt("candidateIndex").value_or(-1), 2);
+  EXPECT_EQ(arg_dict.FindInt("candidateIndex").value_or(-1), 1);
   absl::optional<bool> isMainFrame = arg_dict.FindBool("isMainFrame");
   EXPECT_TRUE(isMainFrame.has_value());
   EXPECT_EQ(false, isMainFrame.value());
@@ -449,36 +449,6 @@ TEST_P(ImagePaintTimingDetectorTest,
   EXPECT_EQ(arg_dict.FindInt("root_height").value_or(-1), 200);
 }
 
-TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_TraceEvent_NoCandidate) {
-  using trace_analyzer::Query;
-  trace_analyzer::Start("*");
-  {
-    SetBodyInnerHTML(R"HTML(
-      <img id="target"></img>
-    )HTML");
-    SetImageAndPaint("target", 5, 5);
-    UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
-    GetDocument().getElementById("target")->remove();
-    UpdateAllLifecyclePhases();
-    // LCP size still 25, not affected by removal.
-    EXPECT_EQ(LargestPaintSize(), 25ul);
-  }
-  auto analyzer = trace_analyzer::Stop();
-  trace_analyzer::TraceEventVector events;
-  Query q = Query::EventNameIs("LargestImagePaint::NoCandidate");
-  analyzer->FindEvents(q, &events);
-  EXPECT_EQ(1u, events.size());
-
-  EXPECT_EQ("loading", events[0]->category);
-  EXPECT_TRUE(events[0]->HasStringArg("frame"));
-  ASSERT_TRUE(events[0]->HasDictArg("data"));
-  base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
-  EXPECT_EQ(arg_dict.FindInt("candidateIndex").value_or(-1), 1);
-  EXPECT_THAT(arg_dict.FindBool("isMainFrame"), Optional(true));
-  EXPECT_THAT(arg_dict.FindBool("isOutermostMainFrame"), Optional(true));
-  EXPECT_THAT(arg_dict.FindBool("isEmbeddedFrame"), Optional(false));
-}
-
 TEST_P(ImagePaintTimingDetectorTest, UpdatePerformanceTiming) {
   EXPECT_EQ(
       GetPerformanceTimingForReporting().LargestImagePaintSizeForMetrics(), 0u);
@@ -493,24 +463,6 @@ TEST_P(ImagePaintTimingDetectorTest, UpdatePerformanceTiming) {
       GetPerformanceTimingForReporting().LargestImagePaintSizeForMetrics(),
       25u);
   EXPECT_GT(GetPerformanceTimingForReporting().LargestImagePaintForMetrics(),
-            0u);
-}
-
-TEST_P(ImagePaintTimingDetectorTest,
-       PerformanceTimingHasZeroTimeNonZeroSizeWhenTheLargestIsNotPainted) {
-  EXPECT_EQ(
-      GetPerformanceTimingForReporting().LargestImagePaintSizeForMetrics(), 0u);
-  EXPECT_EQ(GetPerformanceTimingForReporting().LargestImagePaintForMetrics(),
-            0u);
-  SetBodyInnerHTML(R"HTML(
-    <img id="target"></img>
-  )HTML");
-  SetImageAndPaint("target", 5, 5);
-  UpdateAllLifecyclePhases();
-  EXPECT_EQ(
-      GetPerformanceTimingForReporting().LargestImagePaintSizeForMetrics(),
-      25u);
-  EXPECT_EQ(GetPerformanceTimingForReporting().LargestImagePaintForMetrics(),
             0u);
 }
 

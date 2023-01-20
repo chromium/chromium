@@ -208,9 +208,7 @@ void ImagePaintTimingDetector::OnPaintFinished() {
     return;
 
   added_entry_in_latest_frame_ = false;
-  // TODO(npm): can we remove this update in favor of updating only during
-  // presentation callback?
-  frame_view_->GetPaintTimingDetector().UpdateLargestContentfulPaintCandidate();
+
   last_registered_frame_index_ = frame_index_++;
   RegisterNotifyPresentationTime();
 }
