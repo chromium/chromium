@@ -2,36 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {changeFolderOpen, Command, selectFolder} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarkManagerApiProxyImpl, BookmarksFolderNodeElement, changeFolderOpen, Command, selectFolder, SelectFolderAction} from 'chrome://bookmarks/bookmarks.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertDeepEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
+import {TestBookmarkManagerApiProxy} from './test_bookmark_manager_api_proxy.js';
 import {TestCommandManager} from './test_command_manager.js';
 import {TestStore} from './test_store.js';
 import {createFolder, createItem, findFolderNode, getAllFoldersOpenState, replaceBody, testTree} from './test_util.js';
 
 suite('<bookmarks-folder-node>', function() {
-  let rootNode;
-  let store;
+  let rootNode: BookmarksFolderNodeElement;
+  let store: TestStore;
 
-  function getFolderNode(id) {
-    return findFolderNode(rootNode, id);
+  function getFolderNode(id: string) {
+    return findFolderNode(rootNode, id) as BookmarksFolderNodeElement;
   }
 
-  function assertHasFocusAndNotSelected(id) {
+  function assertHasFocusAndNotSelected(id: string) {
     const node = getFolderNode(id);
-    const activeElement = node.shadowRoot.activeElement;
+    const activeElement = node.shadowRoot!.activeElement;
     assertTrue(
         activeElement != null && activeElement === getDeepActiveElement());
     const badAction = selectFolder(id);
+    assertTrue(!!badAction);
     if (store.lastAction != null && badAction.name === store.lastAction.name) {
-      assertNotEquals(badAction.id, store.lastAction.id);
+      assertNotEquals(
+          badAction.id, (store.lastAction as SelectFolderAction).id);
     }
   }
 
-  function keydown(id, key) {
-    keyDownOn(getFolderNode(id).$.container, '', [], key);
+  function keydown(id: string, key: string) {
+    keyDownOn(getFolderNode(id).$.container, 0, [], key);
   }
 
   setup(function() {
@@ -56,6 +60,9 @@ suite('<bookmarks-folder-node>', function() {
     store.setReducersEnabled(true);
     store.replaceSingleton();
 
+    const proxy = new TestBookmarkManagerApiProxy();
+    BookmarkManagerApiProxyImpl.setInstance(proxy);
+
     rootNode = document.createElement('bookmarks-folder-node');
     rootNode.itemId = '0';
     rootNode.depth = -1;
@@ -64,14 +71,14 @@ suite('<bookmarks-folder-node>', function() {
   });
 
   test('keyboard selection', function() {
-    function assertFocused(oldFocus, newFocus) {
+    function assertFocused(oldFocus: string, newFocus: string) {
       assertEquals(
           '-1', getFolderNode(oldFocus).$.container.getAttribute('tabindex'));
       assertEquals(
           '0', getFolderNode(newFocus).$.container.getAttribute('tabindex'));
       assertEquals(
           getFolderNode(newFocus).$.container,
-          getFolderNode(newFocus).root.activeElement);
+          getFolderNode(newFocus).shadowRoot!.activeElement);
     }
 
     store.data.folderOpenState.set('2', false);
@@ -181,12 +188,12 @@ suite('<bookmarks-folder-node>', function() {
     keydown('2', 'ArrowLeft');
     assertDeepEquals(changeFolderOpen('2', false), store.lastAction);
 
-    // RTL flips left and right.
+    // RTL does not flip left and right.
     document.body.style.direction = 'rtl';
-    keydown('2', 'ArrowLeft');
+    keydown('2', 'ArrowRight');
     assertDeepEquals(changeFolderOpen('2', true), store.lastAction);
 
-    keydown('2', 'ArrowRight');
+    keydown('2', 'ArrowLeft');
     assertDeepEquals(changeFolderOpen('2', false), store.lastAction);
 
     document.body.style.direction = 'ltr';
@@ -195,7 +202,6 @@ suite('<bookmarks-folder-node>', function() {
   test('keyboard commands are passed to command manager', function() {
     const testCommandManager = new TestCommandManager();
     document.body.appendChild(testCommandManager.getCommandManager());
-    chrome.bookmarkManagerPrivate.removeTrees = function() {};
 
     store.data.selection.items = new Set(['3', '4']);
     store.data.selectedFolder = '2';
