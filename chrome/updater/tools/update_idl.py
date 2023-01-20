@@ -65,19 +65,21 @@ class IDLUpdater:
         proc = subprocess.run(
             ['autoninja.bat', '-C', self.output_dir, self.idl_gn_target],
             capture_output=True,
-            check=False)
+            check=False,
+            universal_newlines=True)
         if proc.returncode == 0:
             print('No update is needed.\n')
             return
 
-        cmd = self._extract_update_command(proc.stdout.decode('utf-8'))
-        cmd = cmd.replace('..\\..\\', '')
-        print('Updating IDL COM headers/TLB by [', cmd, ']...')
+        cmd = self._extract_update_command(proc.stdout)
+        print('Updating IDL COM headers/TLB by running: [', cmd, ']...')
         subprocess.run(cmd, shell=True, capture_output=True, check=True)
         print('Done.\n')
 
     def _extract_update_command(self, stdout: str) -> str:
-        lines = stdout.splitlines()
+        # Exclude blank lines.
+        lines = list(filter(None, stdout.splitlines()))
+
         if (len(lines) < 3
                 or 'ninja: build stopped: subcommand failed.' not in lines[-1]
                 or 'copy /y' not in lines[-2]
@@ -91,7 +93,7 @@ class IDLUpdater:
                 'Unexpected autoninja error, or update this tool if the output '
                 'format is changed.')
 
-        return lines[-2].strip()
+        return lines[-2].strip().replace('..\\..\\', '')
 
 
 def check_running_environment() -> None:
@@ -127,10 +129,9 @@ def main():
             'updater_legacy_idl_idl'
     ]:
         for target_cpu in ['arm64', 'x64', 'x86']:
-            for is_chrome_branded in [True, False]:
-                IDLUpdater(
-                    'chrome/updater/app/server/win:' + idl_target +
-                    '_idl_action', target_cpu, is_chrome_branded).update()
+            IDLUpdater(
+                'chrome/updater/app/server/win:' + idl_target + '_idl_action',
+                target_cpu, False).update()
 
 
 if __name__ == '__main__':
