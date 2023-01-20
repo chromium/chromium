@@ -132,7 +132,7 @@ interface URLLoaderClient {
   // The loader should only call this after it has finished the load or
   // errored, as the client could potentially close the Mojo connection upon
   // receiving this which may delete the loader. For example, if it passed a
-  // data pipe to OnStartLoadingResponseBody(), the loader should only call
+  // data pipe to OnReceiveResponse(), the loader should only call
   // OnComplete() after it has finished writing to the data pipe (or errored).
   // Note that the client might not have finished reading the body by the time
   // it receives this message, and only knows it is done when the data pipe is
