@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "cc/trees/layer_tree_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -33,10 +35,17 @@ class CompositorLockTest : public testing::Test {
 
   void DestroyLockManager() { lock_manager_.reset(); }
 
+  base::OnceClosure CreateReleaseCallback() {
+    return base::BindOnce(
+        [](CompositorLockTest* self) { self->num_releases_++; },
+        base::Unretained(this));
+  }
+
  protected:
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   std::unique_ptr<CompositorLockManager> lock_manager_;
   bool is_locked_ = false;
+  uint32_t num_releases_ = 0u;
 };
 
 class MockCompositorLockClient : public ui::CompositorLockClient {
@@ -54,24 +63,27 @@ TEST_F(CompositorLockTest, LocksTimeOut) {
   {
     testing::StrictMock<MockCompositorLockClient> lock_client;
     // This lock has a timeout.
-    lock = lock_manager()->GetCompositorLock(&lock_client, timeout, nullptr);
+    lock = lock_manager()->GetCompositorLock(&lock_client, timeout,
+                                             CreateReleaseCallback());
     EXPECT_TRUE(lock_manager()->IsLocked());
     EXPECT_CALL(lock_client, CompositorLockTimedOut()).Times(1);
     task_runner()->FastForwardBy(timeout);
     task_runner()->RunUntilIdle();
     EXPECT_FALSE(lock_manager()->IsLocked());
+    EXPECT_EQ(1u, num_releases_);
   }
 
   {
     testing::StrictMock<MockCompositorLockClient> lock_client;
     // This lock has no timeout.
     lock = lock_manager()->GetCompositorLock(&lock_client, base::TimeDelta(),
-                                             nullptr);
+                                             CreateReleaseCallback());
     EXPECT_TRUE(lock_manager()->IsLocked());
     EXPECT_CALL(lock_client, CompositorLockTimedOut()).Times(0);
     task_runner()->FastForwardBy(timeout);
     task_runner()->RunUntilIdle();
     EXPECT_TRUE(lock_manager()->IsLocked());
+    EXPECT_EQ(1u, num_releases_);
   }
 }
 
@@ -83,8 +95,10 @@ TEST_F(CompositorLockTest, MultipleLockClients) {
 
   base::TimeDelta timeout = base::Milliseconds(1);
   // Both locks are grabbed from the Compositor with a separate client.
-  lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout, nullptr);
-  lock2 = lock_manager()->GetCompositorLock(&lock_client2, timeout, nullptr);
+  lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout,
+                                            CreateReleaseCallback());
+  lock2 = lock_manager()->GetCompositorLock(&lock_client2, timeout,
+                                            CreateReleaseCallback());
   EXPECT_TRUE(lock_manager()->IsLocked());
   // Both clients get notified of timeout.
   EXPECT_CALL(lock_client1, CompositorLockTimedOut()).Times(1);
@@ -92,6 +106,7 @@ TEST_F(CompositorLockTest, MultipleLockClients) {
   task_runner()->FastForwardBy(timeout);
   task_runner()->RunUntilIdle();
   EXPECT_FALSE(lock_manager()->IsLocked());
+  EXPECT_EQ(2u, num_releases_);
 }
 
 TEST_F(CompositorLockTest, ExtendingLifeOfLockDoesntUseDeadClient) {
@@ -104,13 +119,16 @@ TEST_F(CompositorLockTest, ExtendingLifeOfLockDoesntUseDeadClient) {
 
   // One lock is grabbed from the compositor with a client. The other
   // extends its lifetime past that of the first.
-  lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout, nullptr);
+  lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout,
+                                            CreateReleaseCallback());
   EXPECT_TRUE(lock_manager()->IsLocked());
 
   // This also locks the compositor and will do so past |lock1| ending.
-  lock2 = lock_manager()->GetCompositorLock(&lock_client2, timeout, nullptr);
+  lock2 = lock_manager()->GetCompositorLock(&lock_client2, timeout,
+                                            CreateReleaseCallback());
   // |lock1| is destroyed, so it won't timeout but |lock2| will.
   lock1 = nullptr;
+  EXPECT_EQ(1u, num_releases_);
 
   EXPECT_CALL(lock_client1, CompositorLockTimedOut()).Times(0);
   EXPECT_CALL(lock_client2, CompositorLockTimedOut()).Times(1);
@@ -118,6 +136,7 @@ TEST_F(CompositorLockTest, ExtendingLifeOfLockDoesntUseDeadClient) {
   task_runner()->RunUntilIdle();
 
   EXPECT_FALSE(lock_manager()->IsLocked());
+  EXPECT_EQ(2u, num_releases_);
 }
 
 TEST_F(CompositorLockTest, AddingLocksDoesNotExtendTimeout) {
@@ -130,18 +149,21 @@ TEST_F(CompositorLockTest, AddingLocksDoesNotExtendTimeout) {
   base::TimeDelta timeout2 = base::Milliseconds(10);
 
   // The first lock has a short timeout.
-  lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout1, nullptr);
+  lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout1,
+                                            CreateReleaseCallback());
   EXPECT_TRUE(lock_manager()->IsLocked());
 
   // The second lock has a longer timeout, but since a lock is active,
   // the first one is used for both.
-  lock2 = lock_manager()->GetCompositorLock(&lock_client2, timeout2, nullptr);
+  lock2 = lock_manager()->GetCompositorLock(&lock_client2, timeout2,
+                                            CreateReleaseCallback());
 
   EXPECT_CALL(lock_client1, CompositorLockTimedOut()).Times(1);
   EXPECT_CALL(lock_client2, CompositorLockTimedOut()).Times(1);
   task_runner()->FastForwardBy(timeout1);
   task_runner()->RunUntilIdle();
   EXPECT_FALSE(lock_manager()->IsLocked());
+  EXPECT_EQ(2u, num_releases_);
 }
 
 TEST_F(CompositorLockTest, AllowAndExtendTimeout) {
@@ -154,13 +176,15 @@ TEST_F(CompositorLockTest, AllowAndExtendTimeout) {
   base::TimeDelta timeout2 = base::Milliseconds(10);
 
   // The first lock has a short timeout.
-  lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout1, nullptr);
+  lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout1,
+                                            CreateReleaseCallback());
   EXPECT_TRUE(lock_manager()->IsLocked());
 
   // Allow locks to extend timeout.
   lock_manager()->set_allow_locks_to_extend_timeout(true);
   // The second lock has a longer timeout, so the second one is used for both.
-  lock2 = lock_manager()->GetCompositorLock(&lock_client2, timeout2, nullptr);
+  lock2 = lock_manager()->GetCompositorLock(&lock_client2, timeout2,
+                                            CreateReleaseCallback());
   lock_manager()->set_allow_locks_to_extend_timeout(false);
 
   EXPECT_CALL(lock_client1, CompositorLockTimedOut()).Times(0);
@@ -168,12 +192,14 @@ TEST_F(CompositorLockTest, AllowAndExtendTimeout) {
   task_runner()->FastForwardBy(timeout1);
   task_runner()->RunUntilIdle();
   EXPECT_TRUE(lock_manager()->IsLocked());
+  EXPECT_EQ(0u, num_releases_);
 
   EXPECT_CALL(lock_client1, CompositorLockTimedOut()).Times(1);
   EXPECT_CALL(lock_client2, CompositorLockTimedOut()).Times(1);
   task_runner()->FastForwardBy(timeout2 - timeout1);
   task_runner()->RunUntilIdle();
   EXPECT_FALSE(lock_manager()->IsLocked());
+  EXPECT_EQ(2u, num_releases_);
 }
 
 TEST_F(CompositorLockTest, ExtendingTimeoutStartingCreatedTime) {
@@ -186,7 +212,8 @@ TEST_F(CompositorLockTest, ExtendingTimeoutStartingCreatedTime) {
   base::TimeDelta timeout2 = base::Milliseconds(10);
 
   // The first lock has a short timeout.
-  lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout1, nullptr);
+  lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout1,
+                                            CreateReleaseCallback());
   EXPECT_TRUE(lock_manager()->IsLocked());
 
   base::TimeDelta time_elapse = base::Milliseconds(1);
@@ -197,7 +224,8 @@ TEST_F(CompositorLockTest, ExtendingTimeoutStartingCreatedTime) {
   lock_manager()->set_allow_locks_to_extend_timeout(true);
   // The second lock has a longer timeout, so the second one is used for both
   // and start from the time second lock created.
-  lock2 = lock_manager()->GetCompositorLock(&lock_client2, timeout2, nullptr);
+  lock2 = lock_manager()->GetCompositorLock(&lock_client2, timeout2,
+                                            CreateReleaseCallback());
   lock_manager()->set_allow_locks_to_extend_timeout(false);
 
   EXPECT_CALL(lock_client1, CompositorLockTimedOut()).Times(0);
@@ -205,12 +233,14 @@ TEST_F(CompositorLockTest, ExtendingTimeoutStartingCreatedTime) {
   task_runner()->FastForwardBy(timeout1 - time_elapse);
   task_runner()->RunUntilIdle();
   EXPECT_TRUE(lock_manager()->IsLocked());
+  EXPECT_EQ(0u, num_releases_);
 
   EXPECT_CALL(lock_client1, CompositorLockTimedOut()).Times(1);
   EXPECT_CALL(lock_client2, CompositorLockTimedOut()).Times(1);
   task_runner()->FastForwardBy(timeout2 - (timeout1 - time_elapse));
   task_runner()->RunUntilIdle();
   EXPECT_FALSE(lock_manager()->IsLocked());
+  EXPECT_EQ(2u, num_releases_);
 }
 
 TEST_F(CompositorLockTest, AllowButNotExtendTimeout) {
@@ -223,13 +253,15 @@ TEST_F(CompositorLockTest, AllowButNotExtendTimeout) {
   base::TimeDelta timeout2 = base::Milliseconds(1);
 
   // The first lock has a longer timeout.
-  lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout1, nullptr);
+  lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout1,
+                                            CreateReleaseCallback());
   EXPECT_TRUE(lock_manager()->IsLocked());
 
   // Allow locks to extend timeout.
   lock_manager()->set_allow_locks_to_extend_timeout(true);
   // The second lock has a short timeout, so the first one is used for both.
-  lock2 = lock_manager()->GetCompositorLock(&lock_client2, timeout2, nullptr);
+  lock2 = lock_manager()->GetCompositorLock(&lock_client2, timeout2,
+                                            CreateReleaseCallback());
   lock_manager()->set_allow_locks_to_extend_timeout(false);
 
   EXPECT_CALL(lock_client1, CompositorLockTimedOut()).Times(0);
@@ -237,12 +269,14 @@ TEST_F(CompositorLockTest, AllowButNotExtendTimeout) {
   task_runner()->FastForwardBy(timeout2);
   task_runner()->RunUntilIdle();
   EXPECT_TRUE(lock_manager()->IsLocked());
+  EXPECT_EQ(0u, num_releases_);
 
   EXPECT_CALL(lock_client1, CompositorLockTimedOut()).Times(1);
   EXPECT_CALL(lock_client2, CompositorLockTimedOut()).Times(1);
   task_runner()->FastForwardBy(timeout1 - timeout2);
   task_runner()->RunUntilIdle();
   EXPECT_FALSE(lock_manager()->IsLocked());
+  EXPECT_EQ(2u, num_releases_);
 }
 
 TEST_F(CompositorLockTest, AllowingExtendDoesNotUseDeadClient) {
@@ -254,18 +288,21 @@ TEST_F(CompositorLockTest, AllowingExtendDoesNotUseDeadClient) {
   base::TimeDelta timeout1 = base::Milliseconds(1);
   base::TimeDelta timeout2 = base::Milliseconds(10);
 
-  lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout1, nullptr);
+  lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout1,
+                                            CreateReleaseCallback());
   EXPECT_TRUE(lock_manager()->IsLocked());
   EXPECT_CALL(lock_client1, CompositorLockTimedOut()).Times(1);
   EXPECT_CALL(lock_client2, CompositorLockTimedOut()).Times(0);
   task_runner()->FastForwardBy(timeout1);
   task_runner()->RunUntilIdle();
   EXPECT_FALSE(lock_manager()->IsLocked());
+  EXPECT_EQ(1u, num_releases_);
 
   // Allow locks to extend timeout.
   lock_manager()->set_allow_locks_to_extend_timeout(true);
   // |lock1| is timed out already. The second lock can timeout on its own.
-  lock2 = lock_manager()->GetCompositorLock(&lock_client2, timeout2, nullptr);
+  lock2 = lock_manager()->GetCompositorLock(&lock_client2, timeout2,
+                                            CreateReleaseCallback());
   lock_manager()->set_allow_locks_to_extend_timeout(false);
   EXPECT_TRUE(lock_manager()->IsLocked());
   EXPECT_CALL(lock_client1, CompositorLockTimedOut()).Times(0);
@@ -273,6 +310,7 @@ TEST_F(CompositorLockTest, AllowingExtendDoesNotUseDeadClient) {
   task_runner()->FastForwardBy(timeout2);
   task_runner()->RunUntilIdle();
   EXPECT_FALSE(lock_manager()->IsLocked());
+  EXPECT_EQ(2u, num_releases_);
 }
 
 TEST_F(CompositorLockTest, LockIsDestroyedDoesntTimeout) {
@@ -280,10 +318,12 @@ TEST_F(CompositorLockTest, LockIsDestroyedDoesntTimeout) {
 
   testing::StrictMock<MockCompositorLockClient> lock_client1;
   std::unique_ptr<CompositorLock> lock1;
-  lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout, nullptr);
+  lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout,
+                                            CreateReleaseCallback());
   EXPECT_TRUE(lock_manager()->IsLocked());
   // The CompositorLockClient is destroyed when |lock1| is released.
   lock1 = nullptr;
+  EXPECT_EQ(1u, num_releases_);
   // The client isn't called as a result.
   EXPECT_CALL(lock_client1, CompositorLockTimedOut()).Times(0);
   task_runner()->FastForwardBy(timeout);
@@ -301,15 +341,18 @@ TEST_F(CompositorLockTest, TimeoutEndsWhenLockEnds) {
   base::TimeDelta timeout2 = base::Milliseconds(10);
 
   // The first lock has a short timeout.
-  lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout1, nullptr);
+  lock1 = lock_manager()->GetCompositorLock(&lock_client1, timeout1,
+                                            CreateReleaseCallback());
   EXPECT_TRUE(lock_manager()->IsLocked());
   // But the first lock is ended before timeout.
   lock1 = nullptr;
   EXPECT_FALSE(lock_manager()->IsLocked());
+  EXPECT_EQ(1u, num_releases_);
 
   // The second lock has a longer timeout, and it should use that timeout,
   // since the first lock is done.
-  lock2 = lock_manager()->GetCompositorLock(&lock_client2, timeout2, nullptr);
+  lock2 = lock_manager()->GetCompositorLock(&lock_client2, timeout2,
+                                            CreateReleaseCallback());
   EXPECT_TRUE(lock_manager()->IsLocked());
 
   {
@@ -327,6 +370,7 @@ TEST_F(CompositorLockTest, TimeoutEndsWhenLockEnds) {
   }
 
   EXPECT_FALSE(lock_manager()->IsLocked());
+  EXPECT_EQ(2u, num_releases_);
 }
 
 TEST_F(CompositorLockTest, CompositorLockOutlivesManager) {
@@ -334,11 +378,12 @@ TEST_F(CompositorLockTest, CompositorLockOutlivesManager) {
   std::unique_ptr<CompositorLock> lock1;
 
   lock1 = lock_manager()->GetCompositorLock(&lock_client1, base::TimeDelta(),
-                                            nullptr);
+                                            CreateReleaseCallback());
   // The compositor is destroyed before the lock.
   DestroyLockManager();
   // This doesn't crash.
   lock1 = nullptr;
+  EXPECT_EQ(1u, num_releases_);
 }
 
 }  // namespace ui

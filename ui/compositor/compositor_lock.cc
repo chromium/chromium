@@ -6,8 +6,8 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
-#include "cc/trees/layer_tree_host.h"
 
 namespace ui {
 
@@ -20,13 +20,11 @@ CompositorLockManager::~CompositorLockManager() = default;
 std::unique_ptr<CompositorLock> CompositorLockManager::GetCompositorLock(
     CompositorLockClient* client,
     base::TimeDelta timeout,
-    std::unique_ptr<cc::ScopedDeferMainFrameUpdate>
-        scoped_defer_main_frame_update) {
+    base::OnceClosure release_callback) {
   // This uses the main WeakPtrFactory to break the connection from the lock to
   // the CompositorLockManager when the CompositorLockManager is destroyed.
   auto lock = std::make_unique<CompositorLock>(
-      client, weak_ptr_factory_.GetWeakPtr(),
-      std::move(scoped_defer_main_frame_update));
+      client, weak_ptr_factory_.GetWeakPtr(), std::move(release_callback));
   bool was_empty = active_locks_.empty();
   active_locks_.push_back(lock.get());
 
@@ -74,21 +72,24 @@ void CompositorLockManager::TimeoutLocks() {
 
 CompositorLock::CompositorLock(CompositorLockClient* client,
                                base::WeakPtr<CompositorLockManager> manager,
-                               std::unique_ptr<cc::ScopedDeferMainFrameUpdate>
-                                   scoped_defer_main_frame_update)
+                               base::OnceClosure release_callback)
     : client_(client),
-      scoped_defer_main_frame_update_(
-          std::move(scoped_defer_main_frame_update)),
+      release_callback_(std::move(release_callback)),
       manager_(std::move(manager)) {}
 
 CompositorLock::~CompositorLock() {
-  scoped_defer_main_frame_update_ = nullptr;
-  if (manager_)
+  if (release_callback_) {
+    std::move(release_callback_).Run();
+  }
+  if (manager_) {
     manager_->RemoveCompositorLock(this);
+  }
 }
 
 void CompositorLock::TimeoutLock() {
-  scoped_defer_main_frame_update_ = nullptr;
+  if (release_callback_) {
+    std::move(release_callback_).Run();
+  }
   manager_->RemoveCompositorLock(this);
   manager_ = nullptr;
   if (client_)

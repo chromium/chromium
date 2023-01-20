@@ -19,6 +19,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -743,8 +744,9 @@ std::unique_ptr<ui::CompositorLock> CompositorImpl::GetCompositorLock(
   if (!host_) {
     return nullptr;
   }
-  return lock_manager_.GetCompositorLock(/*client=*/nullptr, timeout,
-                                         host_->DeferMainFrameUpdate());
+  return lock_manager_.GetCompositorLock(
+      /*client=*/nullptr, timeout,
+      base::DoNothingWithBoundArgs(host_->DeferMainFrameUpdate()));
 }
 
 void CompositorImpl::PostRequestPresentationTimeForNextFrame(

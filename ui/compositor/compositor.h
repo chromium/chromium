@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
@@ -335,8 +336,9 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   std::unique_ptr<CompositorLock> GetCompositorLock(
       CompositorLockClient* client,
       base::TimeDelta timeout = base::Milliseconds(kCompositorLockTimeoutMs)) {
-    return lock_manager_.GetCompositorLock(client, timeout,
-                                           host_->DeferMainFrameUpdate());
+    return lock_manager_.GetCompositorLock(
+        client, timeout,
+        base::DoNothingWithBoundArgs(host_->DeferMainFrameUpdate()));
   }
 
   // Registers a callback that is run when the presentation feedback for the
