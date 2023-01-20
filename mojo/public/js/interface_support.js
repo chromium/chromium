@@ -396,8 +396,6 @@ mojo.internal.interfaceSupport.PipeControlMessageHandler = class {
    * @param {!mojo.pipeControl.RunOrClosePipeInput} input
    */
   send(input) {
-    const spec = /** @type {!mojo.internal.StructSpec} */ (
-        mojo.pipeControl.RunOrClosePipeMessageParamsSpec.$.$.structSpec);
     const message = new mojo.internal.Message(
         null, 0xffffffff, 0, mojo.pipeControl.RUN_OR_CLOSE_PIPE_MESSAGE_ID, 0,
         /** @type {!mojo.internal.StructSpec} */
