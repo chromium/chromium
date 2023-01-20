@@ -50,6 +50,10 @@ class FakeObserver : public MessageReceiver::Observer {
 
   size_t app_list_update_calls() const { return app_list_update_calls_; }
 
+  size_t app_list_incremental_update_calls() const {
+    return app_list_incremental_update_calls_;
+  }
+
   proto::PhoneStatusSnapshot last_snapshot() const { return last_snapshot_; }
 
   proto::PhoneStatusUpdate last_status_update() const {
@@ -66,6 +70,10 @@ class FakeObserver : public MessageReceiver::Observer {
 
   proto::AppListUpdate last_app_list_update() const {
     return last_app_list_update_;
+  }
+
+  proto::AppListIncrementalUpdate last_app_list_incremental_update() const {
+    return last_app_list_incremental_update_;
   }
 
   proto::FetchCameraRollItemsResponse last_fetch_camera_roll_items_response()
@@ -122,6 +130,12 @@ class FakeObserver : public MessageReceiver::Observer {
     ++app_list_update_calls_;
   }
 
+  void OnAppListIncrementalUpdateReceived(
+      proto::AppListIncrementalUpdate app_list_incremental_update) override {
+    last_app_list_incremental_update_ = app_list_incremental_update;
+    ++app_list_incremental_update_calls_;
+  }
+
  private:
   size_t phone_status_snapshot_updated_num_calls_ = 0;
   size_t phone_status_updated_num_calls_ = 0;
@@ -131,11 +145,13 @@ class FakeObserver : public MessageReceiver::Observer {
   size_t ping_response_num_calls_ = 0;
   size_t app_stream_update_calls_ = 0;
   size_t app_list_update_calls_ = 0;
+  size_t app_list_incremental_update_calls_ = 0;
   proto::PhoneStatusSnapshot last_snapshot_;
   proto::PhoneStatusUpdate last_status_update_;
   proto::FeatureSetupResponse last_feature_setup_response_;
   proto::AppStreamUpdate last_app_stream_update_;
   proto::AppListUpdate last_app_list_update_;
+  proto::AppListIncrementalUpdate last_app_list_incremental_update_;
   proto::FetchCameraRollItemsResponse last_fetch_camera_roll_items_response_;
   proto::FetchCameraRollItemDataResponse
       last_fetch_camera_roll_item_data_response_;
@@ -206,6 +222,10 @@ class MessageReceiverImplTest : public testing::Test {
     return fake_observer_.app_list_update_calls();
   }
 
+  size_t GetNumAppListIncrementalUpdateCalls() const {
+    return fake_observer_.app_list_incremental_update_calls();
+  }
+
   proto::PhoneStatusSnapshot GetLastSnapshot() const {
     return fake_observer_.last_snapshot();
   }
@@ -234,6 +254,10 @@ class MessageReceiverImplTest : public testing::Test {
 
   proto::AppListUpdate GetLastAppListUpdate() const {
     return fake_observer_.last_app_list_update();
+  }
+
+  proto::AppListIncrementalUpdate GetLastAppListIncrementalUpdate() const {
+    return fake_observer_.last_app_list_incremental_update();
   }
 
   FakeObserver fake_observer_;
@@ -557,6 +581,50 @@ TEST_F(MessageReceiverImplTest, OnAppListUpdateReceivedFlagDisabled) {
   fake_connection_manager_->NotifyMessageReceived(expected_message);
 
   EXPECT_EQ(0u, GetNumAppListUpdateCalls());
+}
+
+TEST_F(MessageReceiverImplTest, OnAppListIncremenatlUpdateReceived) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEcheSWA);
+
+  proto::AppListIncrementalUpdate expected_app_list_incremental_update;
+  auto* installed_app =
+      expected_app_list_incremental_update.mutable_installed_apps();
+  installed_app->add_apps();
+
+  // Simulate receiving a message.
+  const std::string expected_message =
+      SerializeMessage(proto::APP_LIST_INCREMENTAL_UPDATE,
+                       &expected_app_list_incremental_update);
+  fake_connection_manager_->NotifyMessageReceived(expected_message);
+
+  proto::AppListIncrementalUpdate actual_app_list_incremental_update =
+      GetLastAppListIncrementalUpdate();
+
+  EXPECT_EQ(1u, GetNumAppListIncrementalUpdateCalls());
+  EXPECT_TRUE(expected_app_list_incremental_update.has_installed_apps());
+  EXPECT_FALSE(expected_app_list_incremental_update.has_removed_apps());
+  EXPECT_EQ(1,
+            expected_app_list_incremental_update.installed_apps().apps_size());
+}
+
+TEST_F(MessageReceiverImplTest,
+       OnAppListIncremenatlUpdateReceivedFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kEcheSWA);
+
+  proto::AppListIncrementalUpdate expected_app_list_incremental_update;
+  auto* installed_app =
+      expected_app_list_incremental_update.mutable_installed_apps();
+  installed_app->add_apps();
+
+  // Simulate receiving a message.
+  const std::string expected_message =
+      SerializeMessage(proto::APP_LIST_INCREMENTAL_UPDATE,
+                       &expected_app_list_incremental_update);
+  fake_connection_manager_->NotifyMessageReceived(expected_message);
+
+  EXPECT_EQ(0u, GetNumAppListIncrementalUpdateCalls());
 }
 
 }  // namespace phonehub

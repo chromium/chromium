@@ -43,6 +43,7 @@ enum MessageType {
   PING_RESPONSE = 27;
   APP_STREAM_UPDATE = 28;
   APP_LIST_UPDATE = 29;
+  APP_LIST_INCREMENTAL_UPDATE = 30;
 }
 
 enum NotificationSetting {
@@ -408,6 +409,13 @@ message AppListUpdate {
   // List of apps available to stream, sorted by recency.
   optional StreamableApps all_apps = 1;
   optional StreamableApps recent_apps = 2;
+}
+
+message AppListIncrementalUpdate {
+  // For removed apps, only package_names and user_ids are populated in the
+  // apps.
+  optional StreamableApps removed_apps = 3;
+  optional StreamableApps installed_apps = 4;
 }
 
 // When adding new fields to this message, update CameraRollItem#operator==

@@ -67,5 +67,12 @@ void MessageReceiver::NotifyAppListUpdateReceived(
     observer.OnAppListUpdateReceived(app_list_update);
 }
 
+void MessageReceiver::NotifyAppListIncrementalUpdateReceived(
+    const proto::AppListIncrementalUpdate app_list_incremental_update) {
+  for (auto& observer : observer_list_) {
+    observer.OnAppListIncrementalUpdateReceived(app_list_incremental_update);
+  }
+}
+
 }  // namespace phonehub
 }  // namespace ash

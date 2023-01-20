@@ -16,6 +16,7 @@ class FakeMessageReceiver : public MessageReceiver {
   FakeMessageReceiver() = default;
   ~FakeMessageReceiver() override = default;
 
+  using MessageReceiver::NotifyAppListIncrementalUpdateReceived;
   using MessageReceiver::NotifyAppListUpdateReceived;
   using MessageReceiver::NotifyAppStreamUpdateReceived;
   using MessageReceiver::NotifyFeatureSetupResponseReceived;

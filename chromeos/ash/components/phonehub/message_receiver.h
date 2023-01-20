@@ -55,6 +55,11 @@ class MessageReceiver {
     // Called when there is an update of streamable apps.
     virtual void OnAppListUpdateReceived(
         const proto::AppListUpdate app_list_update) {}
+
+    // Called when there is an incremental update to apps list, i.e. app added
+    // and app removal.
+    virtual void OnAppListIncrementalUpdateReceived(
+        const proto::AppListIncrementalUpdate app_list_incremental_update) {}
   };
 
   MessageReceiver(const MessageReceiver&) = delete;
@@ -80,6 +85,8 @@ class MessageReceiver {
   void NotifyAppStreamUpdateReceived(
       const proto::AppStreamUpdate app_stream_update);
   void NotifyAppListUpdateReceived(const proto::AppListUpdate app_list_update);
+  void NotifyAppListIncrementalUpdateReceived(
+      const proto::AppListIncrementalUpdate app_list_incremental_update);
 
  private:
   base::ObserverList<Observer> observer_list_;
