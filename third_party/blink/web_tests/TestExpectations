@@ -5792,9 +5792,6 @@ crbug.com/1288264 [ Win ] http/tests/security/aboutBlank/xss-DENIED-navigate-ope
 # Flakiness of WIP MediaStreamTrack on workers.
 crbug.com/1290767 external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-pipes-data-in-worker.https.html [ Crash Pass ]
 
-# Temporarily disable tests to land branded types related changes.
-crbug.com/1253323 http/tests/devtools/sources/debugger/navigator-view.js [ Crash Failure Pass Timeout ]
-
 # Sheriff 2022-01-26
 crbug.com/1290978 [ Win ] external/wpt/css/CSS2/normal-flow/crashtests/block-in-inline-ax-crash.html [ Crash Failure Pass Timeout ]
 crbug.com/1290978 [ Mac ] external/wpt/css/CSS2/normal-flow/crashtests/block-in-inline-ax-crash.html [ Crash Failure Pass Timeout ]
