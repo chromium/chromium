@@ -178,11 +178,10 @@ void Length::DecrementCalculatedRef() const {
 }
 
 float Length::NonNanCalculatedValue(
-    LayoutUnit max_value,
+    float max_value,
     const AnchorEvaluator* anchor_evaluator) const {
   DCHECK(IsCalculated());
-  float result =
-      GetCalculationValue().Evaluate(max_value.ToFloat(), anchor_evaluator);
+  float result = GetCalculationValue().Evaluate(max_value, anchor_evaluator);
   if (std::isnan(result))
     return 0;
   return result;

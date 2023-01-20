@@ -307,7 +307,7 @@ class PLATFORM_EXPORT Length {
     virtual absl::optional<LayoutUnit> Evaluate(
         const CalculationExpressionNode&) const = 0;
   };
-  float NonNanCalculatedValue(LayoutUnit max_value,
+  float NonNanCalculatedValue(float max_value,
                               const AnchorEvaluator* = nullptr) const;
 
   Length SubtractFromOneHundredPercent() const;

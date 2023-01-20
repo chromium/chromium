@@ -47,8 +47,7 @@ float FloatValueForLength(const Length& length,
     case Length::kAuto:
       return static_cast<float>(maximum_value);
     case Length::kCalculated:
-      return length.NonNanCalculatedValue(LayoutUnit(maximum_value),
-                                          anchor_evaluator);
+      return length.NonNanCalculatedValue(maximum_value, anchor_evaluator);
     case Length::kMinContent:
     case Length::kMaxContent:
     case Length::kMinIntrinsic:
