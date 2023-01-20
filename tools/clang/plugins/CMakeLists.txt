@@ -7,6 +7,7 @@ set(plugin_sources
   CheckIPCVisitor.cpp
   CheckLayoutObjectMethodsVisitor.cpp
   RawPtrHelpers.cpp
+  StackAllocatedChecker.cpp
   Util.cpp
 )
 

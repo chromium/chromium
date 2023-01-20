@@ -1,0 +1,34 @@
+stack_allocated.cpp:27:22: error: Non-stack-allocated type 'StackAllocatedField' has a field 'stack_allocated' which is a stack-allocated type, pointer/reference to a stack-allocated type, or template instantiation with a stack-allocated type as template parameter.
+  StackAllocatedType stack_allocated;  // Error 1
+                     ^
+stack_allocated.cpp:29:34: error: Non-stack-allocated type 'StackAllocatedField' has a field 'stack_allocated_subclass' which is a stack-allocated type, pointer/reference to a stack-allocated type, or template instantiation with a stack-allocated type as template parameter.
+  InheritsFromStackAllocatedType stack_allocated_subclass;  // Error 2
+                                 ^
+stack_allocated.cpp:53:22: error: Non-stack-allocated type 'TemplatedClass' has a field 'stack_allocated' which is a stack-allocated type, pointer/reference to a stack-allocated type, or template instantiation with a stack-allocated type as template parameter.
+  StackAllocatedType stack_allocated;  // Error 3
+                     ^
+stack_allocated.cpp:60:24: error: Non-stack-allocated type '' has a field 'stack_allocated' which is a stack-allocated type, pointer/reference to a stack-allocated type, or template instantiation with a stack-allocated type as template parameter.
+    StackAllocatedType stack_allocated;  // Error 4
+                       ^
+stack_allocated.cpp:67:23: error: Non-stack-allocated type 'StackAllocatedPointerField' has a field 'stack_allocated' which is a stack-allocated type, pointer/reference to a stack-allocated type, or template instantiation with a stack-allocated type as template parameter.
+  StackAllocatedType* stack_allocated;  // Error 5
+                      ^
+stack_allocated.cpp:73:23: error: Non-stack-allocated type 'StackAllocatedReferenceField' has a field 'stack_allocated' which is a stack-allocated type, pointer/reference to a stack-allocated type, or template instantiation with a stack-allocated type as template parameter.
+  StackAllocatedType& stack_allocated;  // Error 6
+                      ^
+stack_allocated.cpp:80:24: error: Non-stack-allocated type '' has a field 'stack_allocated' which is a stack-allocated type, pointer/reference to a stack-allocated type, or template instantiation with a stack-allocated type as template parameter.
+    StackAllocatedType stack_allocated;  // Error 7
+                       ^
+stack_allocated.cpp:87:39: error: Non-stack-allocated type 'StackAllocatedSharedPointerField' has a field 'stack_allocated' which is a stack-allocated type, pointer/reference to a stack-allocated type, or template instantiation with a stack-allocated type as template parameter.
+  std::shared_ptr<StackAllocatedType> stack_allocated;  // Error 8
+                                      ^
+stack_allocated.cpp:94:36: error: Non-stack-allocated type 'StackAllocatedPointerVectorField' has a field 'stack_allocated' which is a stack-allocated type, pointer/reference to a stack-allocated type, or template instantiation with a stack-allocated type as template parameter.
+  std::vector<StackAllocatedType*> stack_allocated;  // Error 9
+                                   ^
+stack_allocated.cpp:100:52: error: Non-stack-allocated type 'NestedTemplateParameter' has a field 'stack_allocated' which is a stack-allocated type, pointer/reference to a stack-allocated type, or template instantiation with a stack-allocated type as template parameter.
+  std::shared_ptr<std::vector<StackAllocatedType>> stack_allocated;  // Error 10
+                                                   ^
+stack_allocated.cpp:106:22: error: Non-stack-allocated type 'StackAllocatedArrayField' has a field 'stack_allocated' which is a stack-allocated type, pointer/reference to a stack-allocated type, or template instantiation with a stack-allocated type as template parameter.
+  StackAllocatedType stack_allocated[2];  // Error 11
+                     ^
+11 errors generated.

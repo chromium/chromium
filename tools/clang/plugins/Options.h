@@ -17,6 +17,7 @@ struct Options {
   bool raw_ref_template_as_trivial_member = false;
   bool check_bad_raw_ptr_cast = false;
   bool check_raw_ptr_fields = false;
+  bool check_stack_allocated = false;
   std::string exclude_fields_file;
   std::string exclude_paths_file;
 };

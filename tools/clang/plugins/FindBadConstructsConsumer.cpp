@@ -129,6 +129,9 @@ FindBadConstructsConsumer::FindBadConstructsConsumer(CompilerInstance& instance,
   if (options.check_layout_object_methods) {
     layout_visitor_.reset(new CheckLayoutObjectMethodsVisitor(instance));
   }
+  if (options.check_stack_allocated) {
+    stack_allocated_checker_.reset(new StackAllocatedChecker(instance));
+  }
 
   // Messages for virtual methods.
   diag_method_requires_override_ = diagnostic().getCustomDiagID(
@@ -241,6 +244,14 @@ bool FindBadConstructsConsumer::TraverseDecl(Decl* decl) {
   if (ipc_visitor_)
     ipc_visitor_->EndDecl();
   return result;
+}
+
+bool FindBadConstructsConsumer::VisitCXXRecordDecl(
+    clang::CXXRecordDecl* cxx_record_decl) {
+  if (stack_allocated_checker_) {
+    stack_allocated_checker_->Check(cxx_record_decl);
+  }
+  return true;
 }
 
 bool FindBadConstructsConsumer::VisitEnumDecl(clang::EnumDecl* decl) {

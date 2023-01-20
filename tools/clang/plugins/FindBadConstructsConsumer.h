@@ -36,6 +36,7 @@
 #include "CheckLayoutObjectMethodsVisitor.h"
 #include "ChromeClassTester.h"
 #include "Options.h"
+#include "StackAllocatedChecker.h"
 #include "SuppressibleDiagnosticBuilder.h"
 
 namespace chrome_checker {
@@ -52,6 +53,7 @@ class FindBadConstructsConsumer
 
   // RecursiveASTVisitor:
   bool TraverseDecl(clang::Decl* decl);
+  bool VisitCXXRecordDecl(clang::CXXRecordDecl* cxx_record_decl);
   bool VisitEnumDecl(clang::EnumDecl* enum_decl);
   bool VisitTagDecl(clang::TagDecl* tag_decl);
   bool VisitVarDecl(clang::VarDecl* var_decl);
@@ -139,6 +141,7 @@ class FindBadConstructsConsumer
   std::unique_ptr<BlinkDataMemberTypeChecker> blink_data_member_type_checker_;
   std::unique_ptr<CheckIPCVisitor> ipc_visitor_;
   std::unique_ptr<CheckLayoutObjectMethodsVisitor> layout_visitor_;
+  std::unique_ptr<StackAllocatedChecker> stack_allocated_checker_;
 };
 
 }  // namespace chrome_checker
