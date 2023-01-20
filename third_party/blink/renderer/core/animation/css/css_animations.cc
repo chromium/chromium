@@ -129,9 +129,8 @@ StringKeyframeVector ProcessKeyframesRule(
       has_named_range_keyframes = true;
 
       if (timeline && timeline->IsViewTimeline()) {
-        Timing::TimelineOffset timeline_offset;
-        timeline_offset.name = offsets[0].name;
-        timeline_offset.relative_offset = offsets[0].percent;
+        Timing::TimelineOffset timeline_offset(
+            offsets[0].name, Length::Percent(100 * offsets[0].percent));
         double fractional_offset =
             To<ViewTimeline>(timeline)->ToFractionalOffset(timeline_offset);
         keyframe->SetOffset(fractional_offset);
@@ -184,9 +183,8 @@ StringKeyframeVector ProcessKeyframesRule(
       } else {
         has_named_range_keyframes = true;
         if (timeline && timeline->IsViewTimeline()) {
-          Timing::TimelineOffset timeline_offset;
-          timeline_offset.name = offsets[j].name;
-          timeline_offset.relative_offset = offsets[j].percent;
+          Timing::TimelineOffset timeline_offset(
+              offsets[j].name, Length::Percent(100 * offsets[j].percent));
           double fractional_offset =
               To<ViewTimeline>(timeline)->ToFractionalOffset(timeline_offset);
           keyframes.push_back(

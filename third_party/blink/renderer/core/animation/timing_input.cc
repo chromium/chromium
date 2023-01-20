@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -54,23 +55,58 @@ Timing::TimelineOffset ConvertRangeOffset(
   if (range_offset->IsString()) {
     // TODO(kevers): Implement once we have CSS support for animation-range.
     result.name = Timing::TimelineNamedRange::kNone;
-    result.relative_offset = 0.01 * default_percent;
+    result.offset = Length(default_percent, Length::Type::kPercent);
   } else {
     TimelineRangeOffset* value = range_offset->GetAsTimelineRangeOffset();
     result.name = value->hasRangeName() ? value->rangeName().AsEnum()
                                         : Timing::TimelineNamedRange::kNone;
     if (value->hasOffset()) {
       CSSNumericValue* offset = value->offset();
-      CSSUnitValue* unit_value =
-          offset->to(CSSPrimitiveValue::UnitType::kPercentage);
-      if (!unit_value) {
+      const CSSPrimitiveValue* css_value =
+          DynamicTo<CSSPrimitiveValue>(offset->ToCSSValue());
+
+      if (!css_value || (!css_value->IsPx() && !css_value->IsPercentage() &&
+                         !css_value->IsCalculatedPercentageWithLength())) {
         exception_state.ThrowTypeError(
-            "CSSNumericValue must be a percentage for animation delay.");
+            "CSSNumericValue must be a length or percentage for animation "
+            "range.");
         return result;
       }
-      result.relative_offset = unit_value->value() / 100;
+
+      if (css_value->IsPx()) {
+        result.offset = Length::Fixed(css_value->GetDoubleValue());
+      } else if (css_value->IsPercentage()) {
+        result.offset = Length::Percent(css_value->GetDoubleValue());
+      } else {
+        // TODO(kevers): Resolve if we need to handle style-dependent lengths
+        // such as em. If so, what is the reference element for resolving the
+        // style?
+        DCHECK(css_value->IsCalculatedPercentageWithLength());
+        CSSLengthArray length_array;
+        css_value->AccumulateLengthArray(length_array);
+        double percent = 0;
+        double px = 0;
+        for (wtf_size_t i = 0; i < length_array.values.size(); ++i) {
+          double array_value = length_array.values[i];
+          if (array_value == 0) {
+            continue;
+          }
+          if (i == CSSPrimitiveValue::kUnitTypePercentage) {
+            percent = array_value;
+          } else if (i == CSSPrimitiveValue::kUnitTypePixels) {
+            px = array_value;
+          } else {
+            exception_state.ThrowDOMException(
+                DOMExceptionCode::kNotSupportedError,
+                "Unsupported range offset");
+            return result;
+          }
+        }
+        result.offset = Length(CalculationValue::Create(
+            PixelsAndPercent(px, percent), Length::ValueRange::kAll));
+      }
     } else {
-      result.relative_offset = 0.01 * default_percent;
+      result.offset = Length::Percent(default_percent);
     }
   }
   return result;

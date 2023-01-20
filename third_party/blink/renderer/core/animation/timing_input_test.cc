@@ -24,14 +24,15 @@ using animation_test_helpers::SetV8ObjectPropertyAsString;
 
 bool TimelineRangeEquals(const absl::optional<Timing::TimelineOffset>& offset,
                          Timing::TimelineNamedRange rangeName,
-                         double relative_offset) {
+                         double percent_offset,
+                         double pixel_offset = 0) {
   if (!offset) {
     return false;
   }
-  // TODO(https://github.com/w3c/csswg-drafts/issues/7575): Support fixed
-  // offsets as well.
+  PixelsAndPercent pixels_and_percent = offset->offset.GetPixelsAndPercent();
   return offset->name == rangeName &&
-         std::abs(offset->relative_offset - relative_offset) < 1e-6;
+         std::abs(pixels_and_percent.pixels - pixel_offset) < 1e-6 &&
+         std::abs(pixels_and_percent.percent - percent_offset) < 1e-6;
 }
 
 class AnimationTimingInputTest : public testing::Test {
@@ -234,15 +235,15 @@ TEST_F(AnimationTimingInputTest, TimingInputRangeStart) {
                                   Timing::TimelineNamedRange::kEnter, 0));
   timing = ApplyTimingInputRange("rangeStart", "exit", -50);
   EXPECT_TRUE(TimelineRangeEquals(timing.range_start,
-                                  Timing::TimelineNamedRange::kExit, -0.5));
+                                  Timing::TimelineNamedRange::kExit, -50));
 
   timing = ApplyTimingInputRange("rangeStart", "cover", 50.5);
   EXPECT_TRUE(TimelineRangeEquals(timing.range_start,
-                                  Timing::TimelineNamedRange::kCover, 0.505));
+                                  Timing::TimelineNamedRange::kCover, 50.5));
 
   timing = ApplyTimingInputRange("rangeStart", "contain", 110);
   EXPECT_TRUE(TimelineRangeEquals(timing.range_start,
-                                  Timing::TimelineNamedRange::kContain, 1.1));
+                                  Timing::TimelineNamedRange::kContain, 110));
 
   timing = ApplyTimingInputRange("rangeStart", "contain", absl::nullopt);
   EXPECT_TRUE(TimelineRangeEquals(timing.range_start,
@@ -250,7 +251,7 @@ TEST_F(AnimationTimingInputTest, TimingInputRangeStart) {
 
   timing = ApplyTimingInputRange("rangeStart", absl::nullopt, 10);
   EXPECT_TRUE(TimelineRangeEquals(timing.range_start,
-                                  Timing::TimelineNamedRange::kNone, 0.1));
+                                  Timing::TimelineNamedRange::kNone, 10));
 }
 
 TEST_F(AnimationTimingInputTest,
@@ -308,7 +309,7 @@ TEST_F(AnimationTimingInputTest, TimingInputRangeEnd) {
   V8TestingScope scope;
   Timing timing = ApplyTimingInputRange("rangeEnd", "enter", absl::nullopt);
   EXPECT_TRUE(TimelineRangeEquals(timing.range_end,
-                                  Timing::TimelineNamedRange::kEnter, 1));
+                                  Timing::TimelineNamedRange::kEnter, 100));
 }
 
 TEST_F(AnimationTimingInputTest, TimingInputFillMode) {

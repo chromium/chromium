@@ -2145,12 +2145,9 @@ CSSValue* ComputedStyleUtils::ValueForAnimationRangeStart(
   if (!offset.has_value()) {
     return MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kAuto);
   }
-  // TODO(crbug.com/1407923): Support <length-percentage>.
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*MakeGarbageCollected<CSSIdentifierValue>(offset->name));
-  list->Append(*CSSNumericLiteralValue::Create(
-      offset->relative_offset * 100.0,
-      CSSPrimitiveValue::UnitType::kPercentage));
+  list->Append(*CSSValue::Create(offset->offset, 1));
   return list;
 }
 

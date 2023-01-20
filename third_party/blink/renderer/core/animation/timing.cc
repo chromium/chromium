@@ -53,9 +53,9 @@ Timing::V8TimelineRangeOffset* Timing::TimelineOffset::ToV8TimelineRangeOffset()
   TimelineRangeOffset* timeline_range =
       MakeGarbageCollected<TimelineRangeOffset>();
   timeline_range->setRangeName(name);
-  // TODO(https://github.com/w3c/csswg-drafts/issues/7575):
-  // Support fixed offsets as well as percentage.
-  timeline_range->setOffset(CSSUnitValues::percent(100 * relative_offset));
+  const CSSPrimitiveValue* primitive_value =
+      CSSPrimitiveValue::CreateFromLength(offset, 1);
+  timeline_range->setOffset(CSSNumericValue::FromCSSValue(*primitive_value));
   return MakeGarbageCollected<V8TimelineRangeOffset>(timeline_range);
 }
 

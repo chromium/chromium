@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -95,23 +96,18 @@ struct CORE_EXPORT Timing {
 
   struct TimelineOffset {
     TimelineOffset() = default;
-    explicit TimelineOffset(double relative_offset)
-        : relative_offset(relative_offset) {}
-    TimelineOffset(TimelineNamedRange name, double relative_offset)
-        : name(name), relative_offset(relative_offset) {}
+    TimelineOffset(TimelineNamedRange name, Length offset)
+        : name(name), offset(offset) {}
 
     V8TimelineRangeOffset* ToV8TimelineRangeOffset() const;
 
     void UpdateOffset();
 
     TimelineNamedRange name = TimelineNamedRange::kNone;
-    // TODO(https://github.com/w3c/csswg-drafts/issues/7575):
-    // Add support for fixed as well as relative offsets. Consider storing as a
-    // length similar to ViewTimeline insets.
-    double relative_offset = 0;
+    Length offset = Length::Fixed();
 
     bool operator==(const TimelineOffset& other) const {
-      return name == other.name && relative_offset == other.relative_offset;
+      return name == other.name && offset == other.offset;
     }
 
     bool operator!=(const TimelineOffset& other) const {

@@ -450,7 +450,8 @@ const CSSValue* AnimationRange::CSSValueFromComputedStyleInternal(
 
     // E.g. "enter 0% enter 100%" must be shortened to just "enter".
     if (start.has_value() && end.has_value() && start->name == end->name &&
-        start->relative_offset == 0.0 && end->relative_offset == 1.0) {
+        start->offset == Length::Percent(0) &&
+        end->offset == Length::Percent(100)) {
       outer_list->Append(
           *MakeGarbageCollected<CSSIdentifierValue>(start->name));
       continue;

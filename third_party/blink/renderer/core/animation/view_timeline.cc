@@ -257,13 +257,13 @@ AnimationTimeDelta ViewTimeline::CalculateIntrinsicIterationDuration(
   if (duration && timing.iteration_count > 0) {
     double active_interval = 1;
 
-    double start = ToFractionalOffset(
-        timing.range_start.value_or(Timing::TimelineOffset(0)));
-    double end = ToFractionalOffset(
-        timing.range_end.value_or(Timing::TimelineOffset(1)));
+    double start =
+        ToFractionalOffset(timing.range_start.value_or(Timing::TimelineOffset(
+            Timing::TimelineNamedRange::kCover, Length::Percent(0))));
+    double end =
+        ToFractionalOffset(timing.range_end.value_or(Timing::TimelineOffset(
+            Timing::TimelineNamedRange::kCover, Length::Percent(100))));
 
-    // TODO(https://github.com/w3c/csswg-drafts/issues/7575): Accommodate fixed
-    // offsets.
     // TODO(crbug.com1216527): Delays will also need to be incorporated once we
     // support % delays.
     active_interval -= start;
@@ -356,9 +356,9 @@ CSSNumericValue* ViewTimeline::getCurrentTime(const String& rangeName) {
     return nullptr;
   }
 
-  range_start.relative_offset = 0;
+  range_start.offset = Length::Percent(0);
   range_end.name = range_start.name;
-  range_end.relative_offset = 1;
+  range_end.offset = Length::Percent(100);
 
   double relative_start_offset = ToFractionalOffset(range_start);
   double relative_end_offset = ToFractionalOffset(range_end);
@@ -460,8 +460,10 @@ double ViewTimeline::ToFractionalOffset(
 
   DCHECK(range_end >= range_start);
   DCHECK_GT(range, 0);
+
   double offset =
-      range_start + (range_end - range_start) * timeline_offset.relative_offset;
+      range_start + MinimumValueForLength(timeline_offset.offset,
+                                          LayoutUnit(range_end - range_start));
   return (offset - align_subject_start_view_end) / range;
 }
 
@@ -471,12 +473,12 @@ AnimationTimeline::TimeDelayPair ViewTimeline::TimelineOffsetsToTimeDelays(
   if (!duration)
     return std::make_pair(AnimationTimeDelta(), AnimationTimeDelta());
 
-  // TODO(https://github.com/w3c/csswg-drafts/issues/7575):
-  // Accommodate fixed range offsets as well as percentage based.
-  double start_fraction = ToFractionalOffset(
-      timing.range_start.value_or(Timing::TimelineOffset(0)));
+  double start_fraction =
+      ToFractionalOffset(timing.range_start.value_or(Timing::TimelineOffset(
+          Timing::TimelineNamedRange::kCover, Length::Percent(0))));
   double end_fraction =
-      ToFractionalOffset(timing.range_end.value_or(Timing::TimelineOffset(1)));
+      ToFractionalOffset(timing.range_end.value_or(Timing::TimelineOffset(
+          Timing::TimelineNamedRange::kCover, Length::Percent(100))));
   return std::make_pair(start_fraction * duration.value(),
                         (1 - end_fraction) * duration.value());
 }

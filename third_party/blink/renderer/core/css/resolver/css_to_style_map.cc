@@ -491,7 +491,7 @@ absl::optional<Timing::TimelineOffset> MapAnimationRange(
   DCHECK(percentage.IsPercentage());
   return Timing::TimelineOffset(
       range_name.ConvertTo<Timing::TimelineNamedRange>(),
-      percentage.GetValue<double>() / 100.0);
+      Length::Percent(percentage.GetValue<double>()));
 }
 
 }  // namespace
