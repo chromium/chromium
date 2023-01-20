@@ -4062,24 +4062,6 @@
             ]
         }
     ],
-    "DifferentWorkQueueCapacities": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "StackCapacity": "24"
-                    },
-                    "enable_features": [
-                        "DifferentWorkQueueCapacities"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableGles2ForOopR": [
         {
             "platforms": [

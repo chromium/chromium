@@ -27,7 +27,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/sequence_manager/work_queue.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -589,8 +588,6 @@ void FeatureList::SetInstance(std::unique_ptr<FeatureList> instance) {
 
   g_cache_override_state =
       base::FeatureList::IsEnabled(kCacheFeatureOverrideState);
-
-  base::sequence_manager::internal::WorkQueue::ConfigureCapacityFieldTrial();
 
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
   // Update the behaviour of LOGGING_DCHECK to match the Feature configuration.
