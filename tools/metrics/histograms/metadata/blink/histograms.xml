@@ -223,6 +223,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Canvas.CanvasColorCache.Effectiveness." units="%"
+    expires_after="2023-06-01">
+  <owner>sky@chromium.org</owner>
+  <owner>junov@chromium.org</owner>
+  <summary>
+    Records the effectiveness of the canvas color cache. The value is a
+    percentage of requests for a color where the color was in the cache. For
+    example, a value of 25% means 1 out of every 4 requests for a color was
+    available. As this code may be called extensively, the value is logged on
+    every 1000th request to the cache. This means the last 0-999 values are not
+    recorded, and similarly, if the cache is accessed less than 1000 times
+    nothing is logged.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Canvas.ContentChangeMode"
     enum="BooleanContentChangeMode" expires_after="2023-04-01">
   <owner>aaronhk@chromium.org</owner>

@@ -9,6 +9,8 @@ blink_modules_sources("canvas") {
   sources = [
     "canvas2d/base_rendering_context_2d.cc",
     "canvas2d/base_rendering_context_2d.h",
+    "canvas2d/canvas_color_cache.cc",
+    "canvas2d/canvas_color_cache.h",
     "canvas2d/canvas_filter.cc",
     "canvas2d/canvas_filter.h",
     "canvas2d/canvas_filter_operation_resolver.cc",

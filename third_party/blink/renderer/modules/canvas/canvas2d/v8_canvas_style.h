@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -36,7 +36,7 @@ struct MODULES_EXPORT V8CanvasStyle {
   CanvasPattern* pattern = nullptr;
   CanvasGradient* gradient = nullptr;
   RGBA32 css_color_value = 0;
-  String string;
+  AtomicString string;
 };
 
 // Sets `style` from v8. Returns true on success, false if there is a conversion

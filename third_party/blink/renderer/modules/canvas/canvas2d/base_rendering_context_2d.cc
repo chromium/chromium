@@ -25,11 +25,13 @@
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_color_cache.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/path_2d.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/v8_canvas_style.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
+#include "third_party/blink/renderer/platform/bindings/string_resource.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -106,6 +108,7 @@ BaseRenderingContext2D::BaseRenderingContext2D(
               ? UsePaintCache::kEnabled
               : UsePaintCache::kDisabled) {
   state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>());
+  color_cache_ = CanvasColorCache::Create();
 }
 
 BaseRenderingContext2D::~BaseRenderingContext2D() {
@@ -429,6 +432,35 @@ void BaseRenderingContext2D::
   }
 }
 
+bool BaseRenderingContext2D::ExtractColorFromV8ValueAndUpdateCache(
+    const V8CanvasStyle& v8_style,
+    Color& color) {
+  // This should only be called for string styles.
+  DCHECK_EQ(v8_style.type, V8CanvasStyleType::kString);
+  if (color_cache_) {
+    const CachedColor* cached_color =
+        color_cache_->GetCachedColor(v8_style.string);
+    if (cached_color) {
+      if (cached_color->parse_result == ColorParseResult::kColor) {
+        color = cached_color->color;
+        return true;
+      }
+      if (cached_color->parse_result == ColorParseResult::kCurrentColor) {
+        color = GetCurrentColor();
+        return true;
+      }
+      DCHECK_EQ(cached_color->parse_result, ColorParseResult::kParseFailed);
+      return false;
+    }
+  }
+  const ColorParseResult parse_result =
+      ParseColorOrCurrentColor(v8_style.string, color);
+  if (color_cache_) {
+    color_cache_->SetCachedColor(v8_style.string, color, parse_result);
+  }
+  return parse_result != ColorParseResult::kParseFailed;
+}
+
 void BaseRenderingContext2D::setStrokeStyle(v8::Isolate* isolate,
                                             v8::Local<v8::Value> value,
                                             ExceptionState& exception_state) {
@@ -457,7 +489,7 @@ void BaseRenderingContext2D::setStrokeStyle(v8::Isolate* isolate,
       if (v8_style.string == GetState().UnparsedStrokeColor())
         return;
       Color parsed_color = Color::kTransparent;
-      if (!ParseColorOrCurrentColor(v8_style.string, parsed_color)) {
+      if (!ExtractColorFromV8ValueAndUpdateCache(v8_style, parsed_color)) {
         return;
       }
       if (GetState().StrokeStyle()->IsEquivalentColor(parsed_color)) {
@@ -473,20 +505,15 @@ void BaseRenderingContext2D::setStrokeStyle(v8::Isolate* isolate,
   GetState().ClearResolvedFilter();
 }
 
-bool BaseRenderingContext2D::ParseColorOrCurrentColor(
+ColorParseResult BaseRenderingContext2D::ParseColorOrCurrentColor(
     const String& color_string,
     Color& color) const {
   const ColorParseResult parse_result =
       ParseCanvasColorString(color_string, color_scheme_, color);
-  switch (parse_result) {
-    case ColorParseResult::kColor:
-      return true;
-    case ColorParseResult::kCurrentColor:
-      color = GetCurrentColor();
-      return true;
-    case ColorParseResult::kParseFailed:
-      return false;
+  if (parse_result == ColorParseResult::kCurrentColor) {
+    color = GetCurrentColor();
   }
+  return parse_result;
 }
 
 v8::Local<v8::Value> BaseRenderingContext2D::fillStyle(
@@ -524,7 +551,7 @@ void BaseRenderingContext2D::setFillStyle(v8::Isolate* isolate,
       if (v8_style.string == GetState().UnparsedFillColor())
         return;
       Color parsed_color = Color::kTransparent;
-      if (!ParseColorOrCurrentColor(v8_style.string, parsed_color)) {
+      if (!ExtractColorFromV8ValueAndUpdateCache(v8_style, parsed_color)) {
         return;
       }
       if (GetState().FillStyle()->IsEquivalentColor(parsed_color)) {
@@ -660,7 +687,8 @@ String BaseRenderingContext2D::shadowColor() const {
 
 void BaseRenderingContext2D::setShadowColor(const String& color_string) {
   Color color;
-  if (!ParseColorOrCurrentColor(color_string, color)) {
+  if (ParseColorOrCurrentColor(color_string, color) ==
+      ColorParseResult::kParseFailed) {
     return;
   }
   if (GetState().ShadowColor() == color) {
