@@ -80,6 +80,9 @@ public interface LocationBar {
     @Nullable
     OmniboxStub getOmniboxStub();
 
+    /** Returns the UrlBarData currently in use by the URL bar inside this location bar. */
+    UrlBarData getUrlBarData();
+
     /** Destroys the LocationBar. */
     void destroy();
 }

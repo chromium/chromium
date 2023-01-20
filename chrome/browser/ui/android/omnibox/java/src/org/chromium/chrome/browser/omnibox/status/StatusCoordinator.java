@@ -193,6 +193,11 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         updateVerboseStatusVisibility();
     }
 
+    /** Returns the resource identifier of the current security icon drawable. */
+    public @DrawableRes int getSecurityIconResource() {
+        return mMediator.getSecurityIconResource();
+    }
+
     /** Updates the security icon displayed in the LocationBar. */
     private void updateSecurityIcon() {
         mMediator.updateSecurityIcon(mLocationBarDataProvider.getSecurityIconResource(mIsTablet),

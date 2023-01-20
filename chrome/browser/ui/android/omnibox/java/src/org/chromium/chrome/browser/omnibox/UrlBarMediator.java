@@ -128,6 +128,10 @@ class UrlBarMediator
         return true;
     }
 
+    UrlBarData getUrlBarData() {
+        return mUrlBarData;
+    }
+
     private void pushTextToModel() {
         CharSequence text =
                 !mHasFocus ? mUrlBarData.displayText : mUrlBarData.getEditingOrDisplayText();
