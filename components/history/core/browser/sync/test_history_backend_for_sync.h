@@ -72,6 +72,7 @@ class TestHistoryBackendForSync : public HistoryBackendForSync {
   void AddVisitToSyncedCluster(const ClusterVisit& cluster_visit,
                                const std::string& originator_cache_guid,
                                int64_t originator_cluster_id) override;
+  int64_t GetClusterIdContainingVisit(VisitID visit_id) override;
   std::vector<GURL> GetFaviconURLsForURL(const GURL& page_url) override;
   void MarkVisitAsKnownToSync(VisitID visit_id) override;
   void DeleteAllForeignVisitsAndResetIsKnownToSync() override;

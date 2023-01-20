@@ -4092,7 +4092,9 @@ TEST_F(HistoryBackendTest, ReserveNextClusterId_GetCluster) {
   EXPECT_FALSE(cluster.triggerability_calculated);
 }
 
-TEST_F(HistoryBackendTest, ReserveNextClusterId_AddVisitsToCluster_GetCluster) {
+TEST_F(
+    HistoryBackendTest,
+    ReserveNextClusterId_AddVisitsToCluster_GetCluster_GetClusterIdContainingVisit) {
   int64_t cluster_id = backend_->ReserveNextClusterId();
 
   AddAnnotatedVisit(1);
@@ -4106,6 +4108,9 @@ TEST_F(HistoryBackendTest, ReserveNextClusterId_AddVisitsToCluster_GetCluster) {
   backend_->AddVisitsToCluster(cluster_id, {visit_1, visit_2});
 
   VerifyCluster(backend_->GetCluster(cluster_id, false), {cluster_id, {2, 1}});
+
+  int64_t received_cluster_id = backend_->GetClusterIdContainingVisit(2);
+  EXPECT_EQ(received_cluster_id, cluster_id);
 }
 
 TEST_F(

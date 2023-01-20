@@ -544,6 +544,11 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   Cluster GetCluster(int64_t cluster_id,
                      bool include_keywords_and_duplicates = true);
 
+  // Returns the ID of the cluster containing `visit_id`. Returns 0 if
+  // `visit_id` is not in a cluster.
+  // HistoryBackendForSync:
+  int64_t GetClusterIdContainingVisit(VisitID visit_id) override;
+
   // Finds the 1st visit in the redirect chain containing `visit`.
   // Unlike `GetRedirectsToSpecificVisit()`, this only considers actual
   // redirects, not referrals.

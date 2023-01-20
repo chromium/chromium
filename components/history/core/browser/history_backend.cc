@@ -2272,6 +2272,12 @@ Cluster HistoryBackend::GetCluster(int64_t cluster_id,
   return cluster;
 }
 
+int64_t HistoryBackend::GetClusterIdContainingVisit(VisitID visit_id) {
+  TRACE_EVENT0("browser", "HistoryBackend::GetClusterIdContainingVisit");
+
+  return db_ ? db_->GetClusterIdContainingVisit(visit_id) : 0;
+}
+
 VisitRow HistoryBackend::GetRedirectChainStart(VisitRow visit) {
   VisitVector redirect_chain = GetRedirectChain(visit);
   if (redirect_chain.empty())

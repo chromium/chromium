@@ -888,6 +888,7 @@ TEST_F(HistorySyncBridgeTest, UploadsReferrerURL) {
   ASSERT_TRUE(entity2.specifics.has_history());
   const sync_pb::HistorySpecifics& history2 = entity2.specifics.history();
   EXPECT_EQ(history2.originator_referring_visit_id(), visit_row1.visit_id);
+  EXPECT_NE(history2.originator_cluster_id(), 0);
   EXPECT_EQ(history2.referrer_url(), url_row1.url());
 }
 
@@ -1194,6 +1195,7 @@ TEST_F(HistorySyncBridgeTest, SplitsRedirectChainWithDifferentTimestamps) {
   EXPECT_EQ(history2.redirect_entries(0).url(), url_row3.url());
   EXPECT_EQ(history2.redirect_entries(1).url(), url_row4.url());
   EXPECT_EQ(history2.originator_referring_visit_id(), visit_row2.visit_id);
+  EXPECT_NE(history2.originator_cluster_id(), 0);
   EXPECT_TRUE(history2.redirect_chain_start_incomplete());
   EXPECT_FALSE(history2.redirect_chain_end_incomplete());
 }
