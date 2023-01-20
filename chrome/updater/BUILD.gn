@@ -459,6 +459,8 @@ if (is_win || is_mac || is_linux) {
       "-e",
       "HELP_CENTER_URL=\"$help_center_url\"",
       "-e",
+      "APP_LOGO_URL=\"$app_logo_url\"",
+      "-e",
       "KEYSTONE_NAME=\"$keystone_app_name\"",
       "-e",
       "PRIVILEGED_HELPER_NAME=\"$privileged_helper_name\"",

@@ -856,12 +856,23 @@ void AppInstallControllerImpl::InitializeUI() {
     progress_wnd->Initialize();
     progress_wnd->Show();
 
-    // TODO(crbug/1406963): Provide the url for the logo here based on the
-    // `app_id_`.
+    // The app logo is expected to be hosted at `{APP_LOGO_URL}{url escaped
+    // app_id_}.bmp`. If `{url escaped app_id_}.bmp` exists, a logo is shown in
+    // the updater UI for that app install.
+    //
+    // For example, if `app_id_` is `{8A69D345-D564-463C-AFF1-A69D9E530F96}`,
+    // the `{url escaped app_id_}.bmp` is
+    // `%7b8A69D345-D564-463C-AFF1-A69D9E530F96%7d.bmp`.
+    //
+    // `APP_LOGO_URL` is specified in chrome/updater/branding.gni.
     base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})
         ->PostTask(FROM_HERE,
-                   base::BindOnce(&AppInstallControllerImpl::LoadLogo, this,
-                                  L"", progress_wnd->m_hWnd));
+                   base::BindOnce(
+                       &AppInstallControllerImpl::LoadLogo, this,
+                       base::SysUTF8ToWide(base::StringPrintf(
+                           "%s%s.bmp", APP_LOGO_URL,
+                           base::EscapeUrlEncodedData(app_id_, false).c_str())),
+                       progress_wnd->m_hWnd));
 
     observer_.reset(progress_wnd.release());
   }

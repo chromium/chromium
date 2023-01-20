@@ -661,6 +661,20 @@ The updater does not delete this file.
 * This installerdata is not persisted anywhere else, and it is not sent as a
 part of pings to the update server.
 
+#### Application logo shown in the UI
+
+The app logo is expected to be hosted at
+`{APP_LOGO_URL}{url escaped app_id_}.bmp`.
+
+If `{url escaped app_id_}.bmp` exists, a logo is shown in the updater UI for
+that app install.
+
+For example, if `app_id_` is `{8A69D345-D564-463C-AFF1-A69D9E530F96}`, the
+`{url escaped app_id_}.bmp` is `%7b8A69D345-D564-463C-AFF1-A69D9E530F96%7d.bmp`.
+
+`APP_LOGO_URL` is specified in chrome/updater/branding.gni.
+[branding.gni](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/branding.gni?q=APP_LOGO_URL)
+
 ### Update Formats
 The updater accepts updates packaged as CRX₃ files. All files are signed with a
 publisher key. The corresponding public key is hardcoded into the updater.
