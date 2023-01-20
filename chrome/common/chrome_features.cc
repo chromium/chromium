@@ -1303,7 +1303,19 @@ BASE_FEATURE(kUserActivityEventLogging,
 BASE_FEATURE(kWebAppManifestIconUpdating,
              "WebAppManifestIconUpdating",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
+
+BASE_FEATURE(
+    kWebAppManifestImmediateUpdating,
+    "WebAppManifestImmediateUpdating",
+#if BUILDFLAG(IS_MAC)
+    // TODO(crbug.com/1344367): Enable on Mac. Currently disabled due to
+    // WebAppIntegration test failures likely due to app shim problems.
+    base::FEATURE_DISABLED_BY_DEFAULT
+#else
+    base::FEATURE_ENABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_MAC)
+);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kWebAppManifestPolicyAppIdentityUpdate,
              "WebAppManifestPolicyAppIdentityUpdate",

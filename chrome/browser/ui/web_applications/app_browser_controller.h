@@ -261,11 +261,11 @@ class AppBrowserController
   // Gets the icon to use if the app icon is not available.
   ui::ImageModel GetFallbackAppIcon() const;
 
+  void UpdateThemePack();
+
  private:
   // Sets the url that the app browser controller was created with.
   void SetInitialURL(const GURL& initial_url);
-
-  void UpdateThemePack();
 
   const raw_ptr<Browser> browser_;
   const AppId app_id_;

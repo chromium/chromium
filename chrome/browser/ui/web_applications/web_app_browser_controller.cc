@@ -63,13 +63,11 @@
 #include "chromeos/startup/browser_params_proxy.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
 namespace {
-constexpr char kRelationship[] = "delegate_permission/common.handle_all_urls";
-}
-#endif
 
-namespace {
+#if BUILDFLAG(IS_CHROMEOS)
+constexpr char kRelationship[] = "delegate_permission/common.handle_all_urls";
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // SystemWebAppDelegate provides menu.
@@ -97,6 +95,11 @@ class SystemAppTabMenuModelFactory : public TabMenuModelFactory {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 base::OnceClosure& IconLoadCallbackForTesting() {
+  static base::NoDestructor<base::OnceClosure> callback;
+  return *callback;
+}
+
+base::OnceClosure& ManifestUpdateAppliedCallbackForTesting() {
   static base::NoDestructor<base::OnceClosure> callback;
   return *callback;
 }
@@ -291,6 +294,20 @@ void WebAppBrowserController::OnWebAppUninstalled(
     const AppId& uninstalled_app_id) {
   if (uninstalled_app_id == app_id())
     chrome::CloseWindow(browser());
+}
+
+void WebAppBrowserController::OnWebAppManifestUpdated(
+    const AppId& updated_app_id,
+    base::StringPiece old_name) {
+  if (updated_app_id == app_id()) {
+    UpdateThemePack();
+    app_icon_.reset();
+    browser()->window()->UpdateTitleBar();
+
+    if (ManifestUpdateAppliedCallbackForTesting()) {
+      std::move(ManifestUpdateAppliedCallbackForTesting()).Run();
+    }
+  }
 }
 
 void WebAppBrowserController::OnWebAppInstallManagerDestroyed() {
@@ -504,6 +521,11 @@ bool WebAppBrowserController::IsInstalled() const {
 void WebAppBrowserController::SetIconLoadCallbackForTesting(
     base::OnceClosure callback) {
   IconLoadCallbackForTesting() = std::move(callback);
+}
+
+void WebAppBrowserController::SetManifestUpdateAppliedCallbackForTesting(
+    base::OnceClosure callback) {
+  ManifestUpdateAppliedCallbackForTesting() = std::move(callback);
 }
 
 void WebAppBrowserController::OnTabInserted(content::WebContents* contents) {
