@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/style_recalc_context.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
@@ -19,8 +20,10 @@ Element* ClosestInclusiveAncestorContainer(Element& element,
     const ComputedStyle* style = container->GetComputedStyle();
     if (!style) {
       // TODO(crbug.com/1400631): Eliminate all invalid calls to
-      // StyleRecalcContext::From[Inclusive]Ancestors.
-      NOTREACHED();
+      // StyleRecalcContext::From[Inclusive]Ancestors, then either turn
+      // if (!style) into CHECK(style) or simplify into checking:
+      // container->GetComputedStyle()->IsContainerForSizeContainerQueries()
+      base::debug::DumpWithoutCrashing();
       return nullptr;
     }
     if (style->IsContainerForSizeContainerQueries()) {
