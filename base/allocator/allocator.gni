@@ -12,10 +12,6 @@ if (is_ios) {
 declare_args() {
   # Causes all the allocations to be routed via allocator_shim.cc.
   use_allocator_shim = use_allocator_shim_default
-
-  # RAW_PTR_EXCLUSION macro is disabled on official builds because it increased
-  # binary size. This flag can be used to enable it for official builds too.
-  force_enable_raw_ptr_exclusion = false
 }
 
 assert(

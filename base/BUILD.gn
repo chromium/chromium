@@ -1497,6 +1497,7 @@ component("base") {
   deps = [
     ":message_pump_buildflags",
     "//base/allocator:buildflags",
+    "//base/allocator/partition_allocator:raw_ptr",
     "//base/third_party/double_conversion",
     "//base/third_party/dynamic_annotations",
     "//build:branding_buildflags",

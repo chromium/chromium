@@ -69,6 +69,10 @@ declare_args() {
       use_partition_alloc && enable_backup_ref_ptr_support_default
   enable_mte_checked_ptr_support =
       use_partition_alloc && enable_mte_checked_ptr_support_default
+
+  # RAW_PTR_EXCLUSION macro is disabled on official builds because it increased
+  # binary size. This flag can be used to enable it for official builds too.
+  force_enable_raw_ptr_exclusion = false
 }
 
 assert(!(enable_backup_ref_ptr_support && enable_mte_checked_ptr_support),

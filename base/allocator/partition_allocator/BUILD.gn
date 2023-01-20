@@ -367,6 +367,14 @@ component("partition_alloc") {
   }
 }
 
+source_set("raw_ptr") {
+  public = [ "pointers/raw_ptr_exclusion.h" ]
+  if (use_partition_alloc) {
+    public_deps = [ ":partition_alloc" ]
+  }
+  deps = [ ":buildflags" ]
+}
+
 buildflag_header("partition_alloc_buildflags") {
   header = "partition_alloc_buildflags.h"
 
@@ -396,6 +404,8 @@ buildflag_header("partition_alloc_buildflags") {
     "USE_ASAN_UNOWNED_PTR=$use_asan_unowned_ptr",
     "USE_HOOKABLE_RAW_PTR=$use_hookable_raw_ptr",
     "ENABLE_GWP_ASAN_SUPPORT=$_enable_gwp_asan_support",
+
+    "FORCE_ENABLE_RAW_PTR_EXCLUSION=$force_enable_raw_ptr_exclusion",
 
     # Not to be used directly - instead use
     # PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
