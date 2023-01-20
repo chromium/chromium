@@ -1,0 +1,107 @@
+#!/usr/bin/env python3
+# Copyright (c) 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+"""
+Create a JSON bundle containing a snapshot of any webpage
+(HTML and stylesheets), suitable for the style perftest
+(style_perftest.cc).
+
+Use e.g. as:
+
+  third_party/blink/renderer/core/css/scripts/style_perftest_snap_page
+      --browser=content-shell-default \
+      --url=https://www.sesse.net/ \
+      --snapshot-path=whatever.json
+
+The file can then be put in third_party/blink/renderer/core/css/perftest_data/
+and/or be uploaded to the cloud buckets.
+
+User stylesheets are not included due to JavaScript limitations.
+
+Note that some pages with CORS profiles will deny getting stylesheets;
+if so, you may need to hack CSSStyleSheet::CanAccessRules()
+in your local build.
+"""
+
+import os
+import sys
+import codecs
+
+TELEMETRY_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../../../../../catapult/telemetry')
+sys.path.append(TELEMETRY_DIR)
+
+from telemetry.util import wpr_modes
+from telemetry.internal.browser import browser_options
+from telemetry.internal.browser import browser_finder
+from telemetry.internal.util import binary_manager
+
+JSON_SUFFIX = '.json'
+EXPENSIVE_JS_TIMEOUT_SECONDS = 240
+
+def _CreateBrowser(finder_options):
+  possible_browser = browser_finder.FindBrowser(finder_options)
+  return possible_browser.BrowserSession(finder_options.browser_options)
+
+def SnapPageToFile(finder_options, url, snapshot_path):
+  """ Save the HTML snapshot of the page whose address is |url| to
+  |snapshot_file|. If there are multiple iframes, only the first
+  (numerically lowest ID) will be saved.
+  """
+  with _CreateBrowser(finder_options) as browser:
+    tab = browser.tabs[0]
+    tab.Navigate(url)
+
+    print('Snapshotting content of %s. This could take a while...' % url)
+    tab.WaitForDocumentReadyStateToBeComplete()
+    tab.action_runner.WaitForNetworkQuiescence(
+        timeout_in_seconds=EXPENSIVE_JS_TIMEOUT_SECONDS)
+
+    context_id = list(tab.EnableAllContexts())[0]
+    tab.ExecuteJavaScript(
+       '''
+       var serializedDom = {
+         "html": document.documentElement.outerHTML,
+         "stylesheets": [],
+       };
+       for (let i = 0; i < document.styleSheets.length; ++i) {
+         let sheet = document.styleSheets[i];
+         let text = "";
+         for (let j = 0; j < sheet.rules.length; ++j) {
+           text += sheet.rules[j].cssText + '\\n';
+         }
+         serializedDom.stylesheets.push({
+           "type": "author",
+           "text": text
+         });
+       }
+       ''', context_id=context_id,
+       timeout=EXPENSIVE_JS_TIMEOUT_SECONDS)
+
+    page_snapshot = tab.EvaluateJavaScript('JSON.stringify(serializedDom)',
+                                           context_id=context_id)
+
+    print('Writing page snapshot [path=%s].' % snapshot_path)
+    with codecs.open(snapshot_path, 'w', 'utf-8') as f:
+      f.write(page_snapshot)
+
+def main(args):
+  options = browser_options.BrowserFinderOptions()
+  parser = options.CreateParser(
+      usage='Create a snapshot of the page, suitable for the style perftest')
+  parser.add_option('--url', help='URL of the web page to record')
+  parser.add_option('--snapshot-path', help='Where to save the snapshot',
+      default='snapshot.json')
+  parser.parse_args(args)
+
+  binary_manager.InitDependencyManager([])
+
+  if not options.snapshot_path.endswith(JSON_SUFFIX):
+    raise ValueError('Snapshot path should end with \'%s\' [value=\'%s\'].' % (
+        JSON_SUFFIX, options.snapshot_path))
+
+  SnapPageToFile(options, options.url, options.snapshot_path)
+
+if __name__ == '__main__':
+  sys.exit(main(sys.argv[1:]))
