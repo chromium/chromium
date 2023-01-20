@@ -1358,10 +1358,12 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithCleanup",
+                    "name": "EnabledWithoutCleanup2022-01-20",
                     "enable_features": [
-                        "AutofillDontPreserveAutofillState",
                         "AutofillRetrieveOverallPredictionsFromCache"
+                    ],
+                    "disable_features": [
+                        "AutofillDontPreserveAutofillState"
                     ]
                 }
             ]
