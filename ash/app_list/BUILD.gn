@@ -20,6 +20,8 @@ source_set("app_list") {
     "app_list_event_targeter.h",
     "app_list_feature_usage_metrics.cc",
     "app_list_feature_usage_metrics.h",
+    "app_list_item_util.cc",
+    "app_list_item_util.h",
     "app_list_metrics.cc",
     "app_list_metrics.h",
     "app_list_model_provider.cc",

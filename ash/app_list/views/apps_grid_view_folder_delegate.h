@@ -49,6 +49,9 @@ class ASH_EXPORT AppsGridViewFolderDelegate {
       bool cancel_drag,
       std::unique_ptr<AppDragIconProxy> drag_icon_proxy) = 0;
 
+  // Close the associated folder and goes back to top level page grid.
+  virtual void Close() = 0;
+
   // Returns whether |drag_point| in the folder apps grid bounds is within the
   // folder view's bounds.
   virtual bool IsDragPointOutsideOfFolder(const gfx::Point& drag_point) = 0;

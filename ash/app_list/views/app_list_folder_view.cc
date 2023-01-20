@@ -25,6 +25,7 @@
 #include "ash/controls/scroll_view_gradient_helper.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -1078,6 +1079,8 @@ void AppListFolderView::ReparentItem(
     AppsGridView::Pointer pointer,
     AppListItemView* original_drag_view,
     const gfx::Point& drag_point_in_folder_grid) {
+  DCHECK(!app_list_features::IsDragAndDropRefactorEnabled());
+
   // Convert the drag point relative to the root level AppsGridView.
   gfx::Point to_root_level_grid = drag_point_in_folder_grid;
   ConvertPointToTarget(items_grid_view_, root_apps_grid_view_,
@@ -1095,6 +1098,8 @@ void AppListFolderView::ReparentItem(
 void AppListFolderView::DispatchDragEventForReparent(
     AppsGridView::Pointer pointer,
     const gfx::Point& drag_point_in_folder_grid) {
+  DCHECK(!app_list_features::IsDragAndDropRefactorEnabled());
+
   gfx::Point drag_point_in_root_grid = drag_point_in_folder_grid;
   // Temporarily reset the transform of the contents container so that the point
   // can be correctly converted to the root grid's coordinates.
@@ -1112,6 +1117,8 @@ void AppListFolderView::DispatchEndDragEventForReparent(
     bool events_forwarded_to_drag_drop_host,
     bool cancel_drag,
     std::unique_ptr<AppDragIconProxy> drag_icon_proxy) {
+  DCHECK(!app_list_features::IsDragAndDropRefactorEnabled());
+
   folder_item_->NotifyOfDraggedItem(nullptr);
   folder_controller_->ReparentDragEnded();
 
@@ -1125,6 +1132,12 @@ void AppListFolderView::DispatchEndDragEventForReparent(
   root_apps_grid_view_->EndDragFromReparentItemInRootLevel(
       folder_item_view, events_forwarded_to_drag_drop_host, cancel_drag,
       std::move(drag_icon_proxy));
+}
+
+void AppListFolderView::Close() {
+  DCHECK(app_list_features::IsDragAndDropRefactorEnabled());
+
+  CloseFolderPage();
 }
 
 void AppListFolderView::HideViewImmediately() {

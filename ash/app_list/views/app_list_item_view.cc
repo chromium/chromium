@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/app_list/app_list_item_util.h"
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
@@ -18,6 +19,7 @@
 #include "ash/app_list/views/apps_grid_context_menu.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -28,9 +30,11 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -533,6 +537,10 @@ void AppListItemView::OnImplicitAnimationsCompleted() {
 }
 
 void AppListItemView::SetTouchDragging(bool touch_dragging) {
+  // Drag and drop refactor handles all drag operations as Mouse Dragging.
+  // TODO(b/261985897): Figure out a way to correctly direct drag operations.
+  DCHECK(!app_list_features::IsDragAndDropRefactorEnabled());
+
   if (touch_dragging_ == touch_dragging)
     return;
 
@@ -557,6 +565,7 @@ void AppListItemView::SetMouseDragging(bool mouse_dragging) {
 }
 
 void AppListItemView::OnMouseDragTimer() {
+  DCHECK(!app_list_features::IsDragAndDropRefactorEnabled());
   // Show scaled up app icon to indicate draggable state.
   SetMouseDragging(true);
 }
@@ -564,14 +573,18 @@ void AppListItemView::OnMouseDragTimer() {
 void AppListItemView::OnTouchDragTimer(
     const gfx::Point& tap_down_location,
     const gfx::Point& tap_down_root_location) {
+  DCHECK(!app_list_features::IsDragAndDropRefactorEnabled());
   // Show scaled up app icon to indicate draggable state.
   if (!InitiateDrag(tap_down_location, tap_down_root_location))
     return;
+
   SetTouchDragging(true);
 }
 
 bool AppListItemView::InitiateDrag(const gfx::Point& location,
                                    const gfx::Point& root_location) {
+  DCHECK(!app_list_features::IsDragAndDropRefactorEnabled());
+
   if (!grid_delegate_->InitiateDrag(
           this, location, root_location,
           base::BindOnce(&AppListItemView::OnDragStarted,
@@ -585,8 +598,6 @@ bool AppListItemView::InitiateDrag(const gfx::Point& location,
 }
 
 void AppListItemView::OnDragStarted() {
-  DCHECK_EQ(DragState::kInitialized, drag_state_);
-
   mouse_drag_timer_.Stop();
   touch_drag_timer_.Stop();
   drag_state_ = DragState::kStarted;
@@ -595,8 +606,6 @@ void AppListItemView::OnDragStarted() {
 }
 
 void AppListItemView::OnDragEnded() {
-  DCHECK_NE(drag_state_, DragState::kNone);
-
   mouse_dragging_ = false;
   mouse_drag_timer_.Stop();
 
@@ -831,7 +840,11 @@ void AppListItemView::PaintButtonContents(gfx::Canvas* canvas) {
 }
 
 bool AppListItemView::OnMousePressed(const ui::MouseEvent& event) {
-  Button::OnMousePressed(event);
+  bool return_value = Button::OnMousePressed(event);
+
+  if (app_list_features::IsDragAndDropRefactorEnabled()) {
+    return return_value;
+  }
 
   if (!ShouldEnterPushedState(event))
     return true;
@@ -910,6 +923,10 @@ void AppListItemView::OnMouseReleased(const ui::MouseEvent& event) {
   if (!weak_this)
     return;
 
+  if (app_list_features::IsDragAndDropRefactorEnabled()) {
+    return;
+  }
+
   SetMouseDragging(false);
 
   // EndDrag may delete |this|.
@@ -920,12 +937,21 @@ void AppListItemView::OnMouseCaptureLost() {
   Button::OnMouseCaptureLost();
   SetMouseDragging(false);
 
+  if (app_list_features::IsDragAndDropRefactorEnabled()) {
+    return;
+  }
+
   // EndDrag may delete |this|.
   grid_delegate_->EndDrag(/*cancel=*/true);
 }
 
 bool AppListItemView::OnMouseDragged(const ui::MouseEvent& event) {
-  Button::OnMouseDragged(event);
+  bool return_value = Button::OnMouseDragged(event);
+
+  if (app_list_features::IsDragAndDropRefactorEnabled()) {
+    return return_value;
+  }
+
   if (drag_state_ != DragState::kNone && mouse_dragging_) {
     // Update the drag location of the drag proxy if it has been created.
     // If the drag is no longer happening, it could be because this item
@@ -960,7 +986,35 @@ void AppListItemView::OnBlur() {
   views::FocusRing::Get(this)->SchedulePaint();
 }
 
+int AppListItemView::GetDragOperations(const gfx::Point& press_pt) {
+  return app_list_features::IsDragAndDropRefactorEnabled()
+             ? ui::DragDropTypes::DRAG_MOVE
+             : views::View::GetDragOperations(press_pt);
+}
+
+void AppListItemView::WriteDragData(const gfx::Point& press_pt,
+                                    OSExchangeData* data) {
+  if (!app_list_features::IsDragAndDropRefactorEnabled()) {
+    views::View::WriteDragData(press_pt, data);
+    return;
+  }
+
+  SetMouseDragging(true);
+  if (item_weak_) {
+    data->provider().SetDragImage(icon_image_, press_pt.OffsetFromOrigin());
+    base::Pickle data_pickle;
+    data_pickle.WriteString(item_weak_->id());
+    data->SetPickledData(GetAppItemFormatType(), data_pickle);
+  }
+}
+
 void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
+  if (app_list_features::IsDragAndDropRefactorEnabled() &&
+      event->type() != ui::ET_GESTURE_TAP_DOWN) {
+    Button::OnGestureEvent(event);
+    return;
+  }
+
   switch (event->type()) {
     case ui::ET_GESTURE_SCROLL_BEGIN:
       if (touch_dragging_) {
@@ -1303,6 +1357,12 @@ void AppListItemView::ItemBeingDestroyed() {
   DCHECK(item_weak_);
   item_weak_->RemoveObserver(this);
   item_weak_ = nullptr;
+
+  // TODO(b/261985897): Consider canceling drag when the item is being
+  // destroyed.
+  if (app_list_features::IsDragAndDropRefactorEnabled()) {
+    return;
+  }
 
   // `EndDrag()` may delete this.
   if (drag_state_ != DragState::kNone)

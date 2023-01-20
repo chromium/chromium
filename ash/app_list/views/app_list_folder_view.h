@@ -184,6 +184,7 @@ class ASH_EXPORT AppListFolderView : public views::View,
       bool events_forwarded_to_drag_drop_host,
       bool cancel_drag,
       std::unique_ptr<AppDragIconProxy> drag_icon_proxy) override;
+  void Close() override;
   bool IsDragPointOutsideOfFolder(const gfx::Point& drag_point) override;
   bool IsOEMFolder() const override;
   void HandleKeyboardReparent(AppListItemView* reparented_view,

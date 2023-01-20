@@ -72,7 +72,7 @@ bool IsArrowKey(const ui::KeyboardCode& key_code) {
 }
 
 bool IsFolderItem(AppListItem* item) {
-  return item->GetItemType() == AppListFolderItem::kItemType;
+  return item && item->GetItemType() == AppListFolderItem::kItemType;
 }
 
 bool LeftRightKeyEventShouldExitText(views::Textfield* textfield,

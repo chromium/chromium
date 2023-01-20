@@ -243,6 +243,10 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // dot for new install.
   gfx::Rect GetDefaultTitleBoundsForTest();
 
+  // Called when the drag registered for this view ends.
+  // `drag_end_callback` passed to `GridDelegate::InitiateDrag()`.
+  void OnDragEnded();
+
   // Sets the most recent grid index for this item view. Also sets
   // `has_pending_row_change_` based on whether the grid index change is
   // considered a row change for the purposes of animating item views between
@@ -323,14 +327,6 @@ class ASH_EXPORT AppListItemView : public views::Button,
   bool InitiateDrag(const gfx::Point& location,
                     const gfx::Point& root_location);
 
-  // Called when the drag registered for this view starts moving.
-  // `drag_start_callback` passed to `GridDelegate::InitiateDrag()`.
-  void OnDragStarted();
-
-  // Called when the drag registered for this view ends.
-  // `drag_end_callback` passed to `GridDelegate::InitiateDrag()`.
-  void OnDragEnded();
-
   // Callback invoked when a context menu is received after calling
   // |AppListViewDelegate::GetContextMenuModel|.
   void OnContextMenuModelReceived(
@@ -358,6 +354,12 @@ class ASH_EXPORT AppListItemView : public views::Button,
   bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) override;
   void OnFocus() override;
   void OnBlur() override;
+  int GetDragOperations(const gfx::Point& press_pt) override;
+  void WriteDragData(const gfx::Point& press_pt, OSExchangeData* data) override;
+
+  // Called when the drag registered for this view starts moving.
+  // `drag_start_callback` passed to `GridDelegate::InitiateDrag()`.
+  void OnDragStarted();
 
   // AppListItemObserver overrides:
   void ItemIconChanged(AppListConfigType config_type) override;
