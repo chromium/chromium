@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 397 tests; 227 PASS, 170 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 407 tests; 223 PASS, 184 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL idl_test setup promise_test: Unhandled rejection with value: object "TypeError: builder.buildSync is not a function"
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
@@ -72,6 +72,10 @@ PASS Partial interface MLGraphBuilder[31]: original interface defined
 PASS Partial interface MLGraphBuilder[31]: member names are unique
 PASS Partial interface MLGraphBuilder[32]: original interface defined
 PASS Partial interface MLGraphBuilder[32]: member names are unique
+PASS Partial interface MLGraphBuilder[33]: original interface defined
+PASS Partial interface MLGraphBuilder[33]: member names are unique
+PASS Partial interface MLGraphBuilder[34]: original interface defined
+PASS Partial interface MLGraphBuilder[34]: member names are unique
 PASS Partial interface MLCommandEncoder: original interface defined
 PASS Partial interface MLCommandEncoder: member names are unique
 PASS Partial interface MLCommandEncoder[2]: original interface defined
@@ -148,14 +152,12 @@ PASS MLOperand must be primary interface of filter
 PASS Stringification of filter
 PASS MLOperand must be primary interface of output
 PASS Stringification of output
-PASS MLOperator interface: existence and properties of interface object
-PASS MLOperator interface object length
-PASS MLOperator interface object name
-PASS MLOperator interface: existence and properties of interface prototype object
-PASS MLOperator interface: existence and properties of interface prototype object's "constructor" property
-PASS MLOperator interface: existence and properties of interface prototype object's @@unscopables property
-PASS MLOperator must be primary interface of relu
-PASS Stringification of relu
+FAIL MLActivation interface: existence and properties of interface object assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
+FAIL MLActivation interface object length assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
+FAIL MLActivation interface object name assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
+FAIL MLActivation interface: existence and properties of interface prototype object assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
+FAIL MLActivation interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
+FAIL MLActivation interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
 PASS MLGraphBuilder interface: existence and properties of interface object
 PASS MLGraphBuilder interface object length
 PASS MLGraphBuilder interface object name
@@ -192,8 +194,8 @@ FAIL MLGraphBuilder interface: operation tan(MLOperand) assert_own_property: int
 FAIL MLGraphBuilder interface: operation elu(MLOperand, optional MLEluOptions) assert_own_property: interface prototype object missing non-static operation expected property "elu" missing
 FAIL MLGraphBuilder interface: operation elu(optional MLEluOptions) assert_own_property: interface prototype object missing non-static operation expected property "elu" missing
 PASS MLGraphBuilder interface: operation gemm(MLOperand, MLOperand, optional MLGemmOptions)
-FAIL MLGraphBuilder interface: operation gru(MLOperand, MLOperand, MLOperand, long, long, optional MLGruOptions) assert_own_property: interface prototype object missing non-static operation expected property "gru" missing
-FAIL MLGraphBuilder interface: operation gruCell(MLOperand, MLOperand, MLOperand, MLOperand, long, optional MLGruCellOptions) assert_own_property: interface prototype object missing non-static operation expected property "gruCell" missing
+FAIL MLGraphBuilder interface: operation gru(MLOperand, MLOperand, MLOperand, unsigned long, unsigned long, optional MLGruOptions) assert_own_property: interface prototype object missing non-static operation expected property "gru" missing
+FAIL MLGraphBuilder interface: operation gruCell(MLOperand, MLOperand, MLOperand, MLOperand, unsigned long, optional MLGruCellOptions) assert_own_property: interface prototype object missing non-static operation expected property "gruCell" missing
 FAIL MLGraphBuilder interface: operation hardSigmoid(MLOperand, optional MLHardSigmoidOptions) assert_own_property: interface prototype object missing non-static operation expected property "hardSigmoid" missing
 FAIL MLGraphBuilder interface: operation hardSigmoid(optional MLHardSigmoidOptions) assert_own_property: interface prototype object missing non-static operation expected property "hardSigmoid" missing
 PASS MLGraphBuilder interface: operation hardSwish(MLOperand)
@@ -201,9 +203,11 @@ PASS MLGraphBuilder interface: operation hardSwish()
 FAIL MLGraphBuilder interface: operation instanceNormalization(MLOperand, optional MLInstanceNormalizationOptions) assert_own_property: interface prototype object missing non-static operation expected property "instanceNormalization" missing
 FAIL MLGraphBuilder interface: operation leakyRelu(MLOperand, optional MLLeakyReluOptions) assert_own_property: interface prototype object missing non-static operation expected property "leakyRelu" missing
 FAIL MLGraphBuilder interface: operation leakyRelu(optional MLLeakyReluOptions) assert_own_property: interface prototype object missing non-static operation expected property "leakyRelu" missing
-FAIL MLGraphBuilder interface: operation matmul(MLOperand, MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "matmul" missing
 FAIL MLGraphBuilder interface: operation linear(MLOperand, optional MLLinearOptions) assert_own_property: interface prototype object missing non-static operation expected property "linear" missing
 FAIL MLGraphBuilder interface: operation linear(optional MLLinearOptions) assert_own_property: interface prototype object missing non-static operation expected property "linear" missing
+FAIL MLGraphBuilder interface: operation lstm(MLOperand, MLOperand, MLOperand, unsigned long, unsigned long, optional MLLstmOptions) assert_own_property: interface prototype object missing non-static operation expected property "lstm" missing
+FAIL MLGraphBuilder interface: operation lstmCell(MLOperand, MLOperand, MLOperand, MLOperand, MLOperand, unsigned long, optional MLLstmCellOptions) assert_own_property: interface prototype object missing non-static operation expected property "lstmCell" missing
+FAIL MLGraphBuilder interface: operation matmul(MLOperand, MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "matmul" missing
 FAIL MLGraphBuilder interface: operation pad(MLOperand, MLOperand, optional MLPadOptions) assert_own_property: interface prototype object missing non-static operation expected property "pad" missing
 PASS MLGraphBuilder interface: operation averagePool2d(MLOperand, optional MLPool2dOptions)
 FAIL MLGraphBuilder interface: operation l2Pool2d(MLOperand, optional MLPool2dOptions) assert_own_property: interface prototype object missing non-static operation expected property "l2Pool2d" missing
@@ -225,7 +229,8 @@ PASS MLGraphBuilder interface: operation reshape(MLOperand, sequence<unsigned lo
 PASS MLGraphBuilder interface: operation sigmoid(MLOperand)
 PASS MLGraphBuilder interface: operation sigmoid()
 FAIL MLGraphBuilder interface: operation slice(MLOperand, sequence<long>, sequence<long>, optional MLSliceOptions) assert_own_property: interface prototype object missing non-static operation expected property "slice" missing
-PASS MLGraphBuilder interface: operation softmax(MLOperand)
+FAIL MLGraphBuilder interface: operation softmax(MLOperand) assert_equals: property has wrong .length expected 0 but got 1
+FAIL MLGraphBuilder interface: operation softmax() assert_equals: property has wrong .length expected 0 but got 1
 FAIL MLGraphBuilder interface: operation softplus(MLOperand, optional MLSoftplusOptions) assert_own_property: interface prototype object missing non-static operation expected property "softplus" missing
 FAIL MLGraphBuilder interface: operation softplus(optional MLSoftplusOptions) assert_own_property: interface prototype object missing non-static operation expected property "softplus" missing
 FAIL MLGraphBuilder interface: operation softsign(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "softsign" missing
@@ -297,10 +302,10 @@ FAIL MLGraphBuilder interface: builder must inherit property "elu(optional MLElu
 FAIL MLGraphBuilder interface: calling elu(optional MLEluOptions) on builder with too few arguments must throw TypeError assert_inherits: property "elu" not found in prototype chain
 PASS MLGraphBuilder interface: builder must inherit property "gemm(MLOperand, MLOperand, optional MLGemmOptions)" with the proper type
 PASS MLGraphBuilder interface: calling gemm(MLOperand, MLOperand, optional MLGemmOptions) on builder with too few arguments must throw TypeError
-FAIL MLGraphBuilder interface: builder must inherit property "gru(MLOperand, MLOperand, MLOperand, long, long, optional MLGruOptions)" with the proper type assert_inherits: property "gru" not found in prototype chain
-FAIL MLGraphBuilder interface: calling gru(MLOperand, MLOperand, MLOperand, long, long, optional MLGruOptions) on builder with too few arguments must throw TypeError assert_inherits: property "gru" not found in prototype chain
-FAIL MLGraphBuilder interface: builder must inherit property "gruCell(MLOperand, MLOperand, MLOperand, MLOperand, long, optional MLGruCellOptions)" with the proper type assert_inherits: property "gruCell" not found in prototype chain
-FAIL MLGraphBuilder interface: calling gruCell(MLOperand, MLOperand, MLOperand, MLOperand, long, optional MLGruCellOptions) on builder with too few arguments must throw TypeError assert_inherits: property "gruCell" not found in prototype chain
+FAIL MLGraphBuilder interface: builder must inherit property "gru(MLOperand, MLOperand, MLOperand, unsigned long, unsigned long, optional MLGruOptions)" with the proper type assert_inherits: property "gru" not found in prototype chain
+FAIL MLGraphBuilder interface: calling gru(MLOperand, MLOperand, MLOperand, unsigned long, unsigned long, optional MLGruOptions) on builder with too few arguments must throw TypeError assert_inherits: property "gru" not found in prototype chain
+FAIL MLGraphBuilder interface: builder must inherit property "gruCell(MLOperand, MLOperand, MLOperand, MLOperand, unsigned long, optional MLGruCellOptions)" with the proper type assert_inherits: property "gruCell" not found in prototype chain
+FAIL MLGraphBuilder interface: calling gruCell(MLOperand, MLOperand, MLOperand, MLOperand, unsigned long, optional MLGruCellOptions) on builder with too few arguments must throw TypeError assert_inherits: property "gruCell" not found in prototype chain
 FAIL MLGraphBuilder interface: builder must inherit property "hardSigmoid(MLOperand, optional MLHardSigmoidOptions)" with the proper type assert_inherits: property "hardSigmoid" not found in prototype chain
 FAIL MLGraphBuilder interface: calling hardSigmoid(MLOperand, optional MLHardSigmoidOptions) on builder with too few arguments must throw TypeError assert_inherits: property "hardSigmoid" not found in prototype chain
 FAIL MLGraphBuilder interface: builder must inherit property "hardSigmoid(optional MLHardSigmoidOptions)" with the proper type assert_inherits: property "hardSigmoid" not found in prototype chain
@@ -314,12 +319,16 @@ FAIL MLGraphBuilder interface: builder must inherit property "leakyRelu(MLOperan
 FAIL MLGraphBuilder interface: calling leakyRelu(MLOperand, optional MLLeakyReluOptions) on builder with too few arguments must throw TypeError assert_inherits: property "leakyRelu" not found in prototype chain
 FAIL MLGraphBuilder interface: builder must inherit property "leakyRelu(optional MLLeakyReluOptions)" with the proper type assert_inherits: property "leakyRelu" not found in prototype chain
 FAIL MLGraphBuilder interface: calling leakyRelu(optional MLLeakyReluOptions) on builder with too few arguments must throw TypeError assert_inherits: property "leakyRelu" not found in prototype chain
-FAIL MLGraphBuilder interface: builder must inherit property "matmul(MLOperand, MLOperand)" with the proper type assert_inherits: property "matmul" not found in prototype chain
-FAIL MLGraphBuilder interface: calling matmul(MLOperand, MLOperand) on builder with too few arguments must throw TypeError assert_inherits: property "matmul" not found in prototype chain
 FAIL MLGraphBuilder interface: builder must inherit property "linear(MLOperand, optional MLLinearOptions)" with the proper type assert_inherits: property "linear" not found in prototype chain
 FAIL MLGraphBuilder interface: calling linear(MLOperand, optional MLLinearOptions) on builder with too few arguments must throw TypeError assert_inherits: property "linear" not found in prototype chain
 FAIL MLGraphBuilder interface: builder must inherit property "linear(optional MLLinearOptions)" with the proper type assert_inherits: property "linear" not found in prototype chain
 FAIL MLGraphBuilder interface: calling linear(optional MLLinearOptions) on builder with too few arguments must throw TypeError assert_inherits: property "linear" not found in prototype chain
+FAIL MLGraphBuilder interface: builder must inherit property "lstm(MLOperand, MLOperand, MLOperand, unsigned long, unsigned long, optional MLLstmOptions)" with the proper type assert_inherits: property "lstm" not found in prototype chain
+FAIL MLGraphBuilder interface: calling lstm(MLOperand, MLOperand, MLOperand, unsigned long, unsigned long, optional MLLstmOptions) on builder with too few arguments must throw TypeError assert_inherits: property "lstm" not found in prototype chain
+FAIL MLGraphBuilder interface: builder must inherit property "lstmCell(MLOperand, MLOperand, MLOperand, MLOperand, MLOperand, unsigned long, optional MLLstmCellOptions)" with the proper type assert_inherits: property "lstmCell" not found in prototype chain
+FAIL MLGraphBuilder interface: calling lstmCell(MLOperand, MLOperand, MLOperand, MLOperand, MLOperand, unsigned long, optional MLLstmCellOptions) on builder with too few arguments must throw TypeError assert_inherits: property "lstmCell" not found in prototype chain
+FAIL MLGraphBuilder interface: builder must inherit property "matmul(MLOperand, MLOperand)" with the proper type assert_inherits: property "matmul" not found in prototype chain
+FAIL MLGraphBuilder interface: calling matmul(MLOperand, MLOperand) on builder with too few arguments must throw TypeError assert_inherits: property "matmul" not found in prototype chain
 FAIL MLGraphBuilder interface: builder must inherit property "pad(MLOperand, MLOperand, optional MLPadOptions)" with the proper type assert_inherits: property "pad" not found in prototype chain
 FAIL MLGraphBuilder interface: calling pad(MLOperand, MLOperand, optional MLPadOptions) on builder with too few arguments must throw TypeError assert_inherits: property "pad" not found in prototype chain
 PASS MLGraphBuilder interface: builder must inherit property "averagePool2d(MLOperand, optional MLPool2dOptions)" with the proper type
@@ -362,6 +371,7 @@ FAIL MLGraphBuilder interface: builder must inherit property "slice(MLOperand, s
 FAIL MLGraphBuilder interface: calling slice(MLOperand, sequence<long>, sequence<long>, optional MLSliceOptions) on builder with too few arguments must throw TypeError assert_inherits: property "slice" not found in prototype chain
 PASS MLGraphBuilder interface: builder must inherit property "softmax(MLOperand)" with the proper type
 PASS MLGraphBuilder interface: calling softmax(MLOperand) on builder with too few arguments must throw TypeError
+PASS MLGraphBuilder interface: builder must inherit property "softmax()" with the proper type
 FAIL MLGraphBuilder interface: builder must inherit property "softplus(MLOperand, optional MLSoftplusOptions)" with the proper type assert_inherits: property "softplus" not found in prototype chain
 FAIL MLGraphBuilder interface: calling softplus(MLOperand, optional MLSoftplusOptions) on builder with too few arguments must throw TypeError assert_inherits: property "softplus" not found in prototype chain
 FAIL MLGraphBuilder interface: builder must inherit property "softplus(optional MLSoftplusOptions)" with the proper type assert_inherits: property "softplus" not found in prototype chain
