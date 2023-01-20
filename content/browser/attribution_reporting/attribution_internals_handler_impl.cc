@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
@@ -202,7 +203,11 @@ void ForwardReportsToWebUI(
 AttributionInternalsHandlerImpl::AttributionInternalsHandlerImpl(
     WebUI* web_ui,
     mojo::PendingReceiver<attribution_internals::mojom::Handler> receiver)
-    : web_ui_(web_ui), receiver_(this, std::move(receiver)) {}
+    : web_ui_(web_ui), receiver_(this, std::move(receiver)) {
+  observers_.set_disconnect_handler(base::BindRepeating(
+      &AttributionInternalsHandlerImpl::OnObserverDisconnected,
+      base::Unretained(this)));
+}
 
 AttributionInternalsHandlerImpl::~AttributionInternalsHandlerImpl() = default;
 
@@ -536,6 +541,13 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
     for (auto& observer : observers_) {
       observer->OnReportDropped(web_ui_report.Clone());
     }
+  }
+}
+
+void AttributionInternalsHandlerImpl::OnObserverDisconnected(
+    mojo::RemoteSetElementId) {
+  if (observers_.empty()) {
+    manager_observation_.Reset();
   }
 }
 

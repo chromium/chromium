@@ -94,6 +94,8 @@ class AttributionInternalsHandlerImpl
       const attribution_reporting::SuitableOrigin& reporting_origin,
       attribution_reporting::mojom::SourceRegistrationError) override;
 
+  void OnObserverDisconnected(mojo::RemoteSetElementId);
+
   raw_ptr<WebUI> web_ui_;
 
   mojo::Receiver<attribution_internals::mojom::Handler> receiver_;
