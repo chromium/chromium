@@ -443,9 +443,6 @@ TEST_F(PrimaryAccountManagerTest,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PrimaryAccountManagerTest, GaiaIdMigration) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(switches::kAccountIdMigration);
-
   ASSERT_EQ(AccountTrackerService::MIGRATION_DONE,
             account_tracker()->GetMigrationState());
   std::string email = "user@gmail.com";
@@ -474,9 +471,6 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigration) {
 }
 
 TEST_F(PrimaryAccountManagerTest, GaiaIdMigrationCrashInTheMiddle) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(switches::kAccountIdMigration);
-
   ASSERT_EQ(AccountTrackerService::MIGRATION_DONE,
             account_tracker()->GetMigrationState());
   std::string email = "user@gmail.com";

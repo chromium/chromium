@@ -42,10 +42,6 @@ const char kPdfUseSkiaRendererName[] = "Use Skia Renderer";
 const char kPdfUseSkiaRendererDescription[] = "Use Skia as the PDF renderer.";
 #endif
 
-const char kAccountIdMigrationName[] = "Account ID migration";
-const char kAccountIdMigrationDescription[] =
-    "Migrate to use Gaia ID instead of the email as the account identifer for "
-    "the Identity Manager.";
 extern const char kAddEduAccountFromAccountSettingsForSupervisedUsersName[] =
     "Add Edu Account From Account Settings For Supervised Users";
 extern const char

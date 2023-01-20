@@ -7116,12 +7116,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableCardProductNameDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardProductName)},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"account-id-migration", flag_descriptions::kAccountIdMigrationName,
-     flag_descriptions::kAccountIdMigrationDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(switches::kAccountIdMigration)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(ENABLE_PAINT_PREVIEW) && BUILDFLAG(IS_ANDROID)
     {"paint-preview-demo", flag_descriptions::kPaintPreviewDemoName,
      flag_descriptions::kPaintPreviewDemoDescription, kOsAndroid,

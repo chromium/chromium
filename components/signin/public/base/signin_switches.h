@@ -19,10 +19,6 @@ namespace switches {
 // All switches in alphabetical order. The switches should be documented
 // alongside the definition of their values in the .cc file.
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-BASE_DECLARE_FEATURE(kAccountIdMigration);
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kGaiaIdCacheInAccountManagerFacade);
 #endif

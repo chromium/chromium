@@ -57,9 +57,6 @@ extern const char kPdfUseSkiaRendererName[];
 extern const char kPdfUseSkiaRendererDescription[];
 #endif
 
-extern const char kAccountIdMigrationName[];
-extern const char kAccountIdMigrationDescription[];
-
 extern const char kAddEduAccountFromAccountSettingsForSupervisedUsersName[];
 extern const char
     kAddEduAccountFromAccountSettingsForSupervisedUsersDescription[];

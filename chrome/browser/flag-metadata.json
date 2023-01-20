@@ -39,11 +39,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "account-id-migration",
-    "owners": [ "msarda" ],
-    "expiry_milestone": 111
-  },
-  {
     "name": "activate-metrics-reporting-enabled-policy",
     "owners": [ "ftirelo" ],
     "expiry_milestone": 115

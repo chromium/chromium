@@ -9,12 +9,6 @@ namespace switches {
 
 // All switches in alphabetical order.
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-BASE_FEATURE(kAccountIdMigration,
-             "AccountIdMigration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 // If enabled, starts gaia id fetching process from android accounts in
 // AccountManagerFacade (AMF). Thus clients can get gaia id from AMF directly.

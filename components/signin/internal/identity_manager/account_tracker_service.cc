@@ -484,13 +484,6 @@ AccountTrackerService::ComputeNewMigrationState() const {
     return MIGRATION_DONE;
   }
 
-  // Migration on ChromeOS is not started by default due to the following risks:
-  // * a lot more data than on desktop is keyed by the account id
-  // * bugs in the migration flow can lead to user not being able to sign in
-  //   to their device which makes the device unusable.
-  if (!base::FeatureList::IsEnabled(switches::kAccountIdMigration))
-    return MIGRATION_NOT_STARTED;
-
   bool migration_required = false;
   for (const auto& pair : accounts_) {
     // If there is any non-migratable account, skip migration.
