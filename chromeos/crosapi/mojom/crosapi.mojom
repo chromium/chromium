@@ -1296,12 +1296,6 @@ struct BrowserInitParams {
   // VideoConferenceManager in ash.
   [MinVersion=56]
   bool vc_controls_ui_enabled@56;
-
-  // App service block list for extension apps and extensions to be blocked
-  // for app service in lacros.
-  [MinVersion=57]
-  StandaloneBrowserAppServiceBlockList?
-      standalone_browser_app_service_blocklist@57;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams
