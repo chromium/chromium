@@ -25,6 +25,7 @@ class CableRegistrationData;
 class Credential;
 class IdentityCredentialLogoutRPsRequest;
 class IdentityProviderConfig;
+class IdentityUserInfo;
 class PublicKeyCredentialCreationOptions;
 class PublicKeyCredentialDescriptor;
 class PublicKeyCredentialParameters;
@@ -209,6 +210,13 @@ struct MODULES_EXPORT
                   blink::V8IdentityCredentialRequestOptionsContext> {
   static blink::mojom::blink::RpContext Convert(
       const blink::V8IdentityCredentialRequestOptionsContext&);
+};
+
+template <>
+struct TypeConverter<blink::mojom::blink::IdentityUserInfoPtr,
+                     blink::IdentityUserInfo> {
+  static blink::mojom::blink::IdentityUserInfoPtr Convert(
+      const blink::IdentityUserInfo&);
 };
 
 template <>

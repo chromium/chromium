@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_WEBID_WEBID_UTILS_H_
 #define CONTENT_BROWSER_WEBID_WEBID_UTILS_H_
 
+#include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -16,6 +17,8 @@ enum class IdpSigninStatus;
 
 namespace content {
 class BrowserContext;
+class FedCmMetrics;
+class FederatedIdentityPermissionContextDelegate;
 enum class IdpSigninStatus;
 
 namespace webid {
@@ -37,12 +40,32 @@ absl::optional<std::string> ComputeConsoleMessageForHttpResponseCode(
 bool IsEndpointUrlValid(const GURL& identity_provider_config_url,
                         const GURL& endpoint_url);
 
+// Returns whether FedCM should fail/skip the accounts endpoint request because
+// the user is not signed-in to the IdP.
+bool ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
+    const GURL& identity_provider_config_url,
+    FederatedIdentityPermissionContextDelegate* permission_delegate);
+
+// Updates the IdP sign-in status based on the accounts endpoint response. Also
+// logs IdP sign-in status related UMA metrics.
+//
+// `does_idp_have_failing_idp_signin_status` indicates whether the accounts
+// endpoint request would have been failed/skipped had the IdP signin-status
+// been FedCmIdpSigninStatusMode::ENABLED.
+void UpdateIdpSigninStatusForAccountsEndpointResponse(
+    const GURL& identity_provider_config_url,
+    IdpNetworkRequestManager::FetchStatus account_endpoint_fetch_status,
+    bool does_idp_have_failing_idp_signin_status,
+    FederatedIdentityPermissionContextDelegate* permission_delegate,
+    FedCmMetrics* metrics);
+
 // Returns a string to be used as the console error message from a
 // FederatedAuthRequestResult.
 CONTENT_EXPORT std::string GetConsoleErrorMessageFromResult(
     blink::mojom::FederatedAuthRequestResult result);
 
 }  // namespace webid
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_WEBID_UTILS_H_

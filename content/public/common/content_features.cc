@@ -413,9 +413,10 @@ BASE_FEATURE(kFedCmRpContext,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables usage of the FedCM API with the User Info API at the same time.
-BASE_FEATURE(kFedCmUserInfo,
-             "FedCmUserInfo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// Note that actual exposure of the FedCM API to web content is controlled
+// by the flag in RuntimeEnabledFeatures on the blink side. See also
+// the use of kSetOnlyIfOverridden in content/child/runtime_features.cc.
+BASE_FEATURE(kFedCmUserInfo, "FedCmUserInfo", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables usage of the FedCM API with the Selective Disclosure API at the same
 // time.

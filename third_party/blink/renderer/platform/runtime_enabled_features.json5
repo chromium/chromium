@@ -1287,6 +1287,7 @@
       name: "FedCmUserInfo",
       depends_on: ["FedCm"],
       public: true,
+      status: "test",
     },
     {
       name: "FencedFrames",

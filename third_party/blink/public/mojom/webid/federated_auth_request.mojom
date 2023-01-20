@@ -7,9 +7,9 @@ module blink.mojom;
 import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
 
-// Implementation of the proposed WebID API.
+// Implementation of the proposed FedCM API.
 //
-// Proposal: https://github.com/WICG/WebID
+// Proposal: https://fedidcg.github.io/FedCM/
 
 // Represents the fetch result from a federated authentication request. It is
 // used to determine whether a JavaScript exception should be thrown, and what
@@ -21,6 +21,15 @@ enum RequestTokenStatus {
   kApprovalDeclined,
   kErrorTooManyRequests,
   kErrorCanceled,
+  kError,
+};
+
+// Represents the fetch result from a federated user info request. It is
+// used to determine whether a JavaScript exception should be thrown, and what
+// the error message of such exception should say.
+enum RequestUserInfoStatus {
+  kSuccess,
+  kErrorTooManyRequests,
   kError,
 };
 
@@ -83,6 +92,14 @@ struct IdentityProviderConfig {
   IdentityProviderLoginHint login_hint;
 };
 
+// The list of user information that can be returned to an identity provider during a UserInfo API call.
+struct IdentityUserInfo {
+  string email;
+  string given_name;
+  string name;
+  string picture;
+};
+
 // The parameters for a get call for identity provider(s).
 struct IdentityProviderGetParameters {
   // Details of identity provider(s).
@@ -113,6 +130,11 @@ interface FederatedAuthRequest {
       (RequestTokenStatus status,
       url.mojom.Url? selected_identity_provider_config_url,
       string? token);
+
+  // Requests user info to be generated, given an IDP config.
+  // Returns an IdentityUserInfo for each of the user's accounts.
+  RequestUserInfo(IdentityProviderConfig provider) =>
+      (RequestUserInfoStatus status, array<IdentityUserInfo>? user_info);
 
   // Cancels the pending token request, if any.
   CancelTokenRequest();

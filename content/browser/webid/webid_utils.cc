@@ -5,6 +5,8 @@
 #include "content/browser/webid/webid_utils.h"
 
 #include "base/strings/stringprintf.h"
+#include "content/browser/webid/fedcm_metrics.h"
+#include "content/browser/webid/flags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
 #include "content/public/common/web_identity.h"
@@ -54,6 +56,55 @@ bool IsEndpointUrlValid(const GURL& identity_provider_config_url,
                         const GURL& endpoint_url) {
   return url::Origin::Create(identity_provider_config_url)
       .IsSameOriginWith(endpoint_url);
+}
+
+bool ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
+    const GURL& identity_provider_config_url,
+    FederatedIdentityPermissionContextDelegate* permission_delegate) {
+  if (GetFedCmIdpSigninStatusMode() == FedCmIdpSigninStatusMode::DISABLED) {
+    return false;
+  }
+
+  const url::Origin idp_origin =
+      url::Origin::Create(identity_provider_config_url);
+  const absl::optional<bool> idp_signin_status =
+      permission_delegate->GetIdpSigninStatus(idp_origin);
+  return !idp_signin_status.value_or(true);
+}
+
+void UpdateIdpSigninStatusForAccountsEndpointResponse(
+    const GURL& identity_provider_config_url,
+    IdpNetworkRequestManager::FetchStatus fetch_status,
+    bool does_idp_have_failing_signin_status,
+    FederatedIdentityPermissionContextDelegate* permission_delegate,
+    FedCmMetrics* metrics) {
+  if (GetFedCmIdpSigninStatusMode() == FedCmIdpSigninStatusMode::DISABLED) {
+    return;
+  }
+
+  url::Origin idp_origin = url::Origin::Create(identity_provider_config_url);
+
+  // Record metrics on effect of IDP sign-in status API.
+  const absl::optional<bool> idp_signin_status =
+      permission_delegate->GetIdpSigninStatus(idp_origin);
+  metrics->RecordIdpSigninMatchStatus(idp_signin_status,
+                                      fetch_status.parse_status);
+
+  if (fetch_status.parse_status ==
+      IdpNetworkRequestManager::ParseStatus::kSuccess) {
+    // `does_idp_have_failing_signin_status` fails the request prior to fetching
+    // the accounts endpoint for FedCmIdpSigninStatusMode::ENABLED mode but not
+    // FedCmIdpSigninStatusMode::METRICS_ONLY mode. Do not set the IdP sign-in
+    // status here if `does_idp_have_failing_signin_status` in
+    // FedCmIdpSigninStatusMode::METRICS_ONLY mode in order to better emulate
+    // FedCmIdpSigninStatusMode::ENABLED behavior.
+    if (!does_idp_have_failing_signin_status) {
+      permission_delegate->SetIdpSigninStatus(idp_origin, true);
+    }
+  } else {
+    // Ensures that we only fetch accounts unconditionally once.
+    permission_delegate->SetIdpSigninStatus(idp_origin, false);
+  }
 }
 
 std::string GetConsoleErrorMessageFromResult(

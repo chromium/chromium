@@ -90,7 +90,7 @@ enum class FedCmIdpSigninMatchStatus {
   kMaxValue = kMismatchWithUnexpectedAccounts
 };
 
-class FedCmMetrics {
+class CONTENT_EXPORT FedCmMetrics {
  public:
   FedCmMetrics(const GURL& provider,
                const ukm::SourceId page_source_id,

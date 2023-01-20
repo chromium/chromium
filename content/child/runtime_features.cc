@@ -220,7 +220,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableFedCmMultipleIdentityProviders,
      features::kFedCmMultipleIdentityProviders, kDefault},
     {wf::EnableFedCmRpContext, features::kFedCmRpContext, kDefault},
-    {wf::EnableFedCmUserInfo, features::kFedCmUserInfo, kDefault},
+    {wf::EnableFedCmUserInfo, features::kFedCmUserInfo, kSetOnlyIfOverridden},
     {wf::EnableFedCmSelectiveDisclosure, features::kFedCmSelectiveDisclosure,
      kDefault},
     {wf::EnableFencedFrames, features::kPrivacySandboxAdsAPIsOverride,

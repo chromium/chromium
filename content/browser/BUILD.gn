@@ -2237,6 +2237,8 @@ source_set("browser") {
     "webid/federated_auth_request_impl.h",
     "webid/federated_auth_request_page_data.cc",
     "webid/federated_auth_request_page_data.h",
+    "webid/federated_auth_user_info_request.cc",
+    "webid/federated_auth_user_info_request.h",
     "webid/federated_provider_fetcher.cc",
     "webid/federated_provider_fetcher.h",
     "webid/flags.cc",

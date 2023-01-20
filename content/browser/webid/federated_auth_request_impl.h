@@ -26,6 +26,7 @@
 
 namespace content {
 
+class FederatedAuthUserInfoRequest;
 class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
 class RenderFrameHost;
@@ -58,6 +59,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void RequestToken(std::vector<blink::mojom::IdentityProviderGetParametersPtr>
                         idp_get_params_ptrs,
                     RequestTokenCallback) override;
+  void RequestUserInfo(blink::mojom::IdentityProviderConfigPtr provider,
+                       RequestUserInfoCallback) override;
   void CancelTokenRequest() override;
   void LogoutRps(std::vector<blink::mojom::LogoutRpsRequestPtr> logout_requests,
                  LogoutRpsCallback) override;
@@ -145,6 +148,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // failure UI if applicable.
   void HandleAccountsFetchFailure(
       std::unique_ptr<IdentityProviderInfo> idp_info,
+      absl::optional<bool> old_idp_signin_status,
       blink::mojom::FederatedAuthRequestResult result,
       absl::optional<content::FedCmRequestIdTokenStatus> token_status);
 
@@ -182,6 +186,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       const std::string& token,
       bool should_delay_callback);
   void CompleteLogoutRequest(blink::mojom::LogoutRpsStatus);
+  void CompleteUserInfoRequest(
+      RequestUserInfoCallback callback,
+      blink::mojom::RequestUserInfoStatus status,
+      absl::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info);
 
   // Notifies metrics endpoint that either the user did not select the IDP in
   // the prompt or that there was an error in fetching data for the IDP.
@@ -253,9 +261,24 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   base::TimeTicks token_response_time_;
   base::TimeDelta token_request_delay_;
   bool errors_logged_to_console_{false};
-  RequestTokenCallback auth_request_callback_;
+  // While there could be both token request and user info request when a user
+  // visits a site, it's worth noting that they must be from different render
+  // frames. e.g. one top frame rp.example and one iframe idp.example.
+  // Therefore,
+  // 1. if one of the requests exists, the other one shouldn't. e.g. if the
+  // iframe requests user info, it cannot request token at the same time.
+  // 2. the user info request should not set "HasPendingRequest" on the page
+  // (multiple per page). It's OK to have multiple concurrent user info requests
+  // since there's no browser UI involved. e.g. rp.example embeds
+  // iframe1.example and iframe2.example. Both iframes can request user info
+  // simultaneously.
+  RequestTokenCallback auth_request_token_callback_;
 
   std::unique_ptr<FederatedProviderFetcher> provider_fetcher_;
+
+  // Only one user info request allowed at a time per frame. Can be done in
+  // parallel with token requests.
+  std::unique_ptr<FederatedAuthUserInfoRequest> user_info_request_;
 
   base::queue<blink::mojom::LogoutRpsRequestPtr> logout_requests_;
   LogoutRpsCallback logout_callback_;

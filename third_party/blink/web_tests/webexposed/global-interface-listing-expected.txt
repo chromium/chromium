@@ -4892,6 +4892,7 @@ interface IdentityCredential : Credential
     getter token
     method constructor
 interface IdentityProvider
+    static method getUserInfo
     static method login
     static method logout
     attribute @@toStringTag

@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_logout_r_ps_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_context.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_user_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_login_hint.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_descriptor.h"
@@ -62,6 +63,8 @@ using blink::mojom::blink::DevicePublicKeyRequestPtr;
 using blink::mojom::blink::IdentityProviderConfig;
 using blink::mojom::blink::IdentityProviderConfigPtr;
 using blink::mojom::blink::IdentityProviderLoginHint;
+using blink::mojom::blink::IdentityUserInfo;
+using blink::mojom::blink::IdentityUserInfoPtr;
 using blink::mojom::blink::LargeBlobSupport;
 using blink::mojom::blink::LogoutRpsRequest;
 using blink::mojom::blink::LogoutRpsRequestPtr;
@@ -779,6 +782,19 @@ TypeConverter<RpContext, blink::V8IdentityCredentialRequestOptionsContext>::
     case blink::V8IdentityCredentialRequestOptionsContext::Enum::kContinue:
       return RpContext::kContinue;
   }
+}
+
+IdentityUserInfoPtr
+TypeConverter<IdentityUserInfoPtr, blink::IdentityUserInfo>::Convert(
+    const blink::IdentityUserInfo& user_info) {
+  DCHECK(blink::RuntimeEnabledFeatures::FedCmUserInfoEnabled());
+  auto mojo_user_info = IdentityUserInfo::New();
+
+  mojo_user_info->email = user_info.email();
+  mojo_user_info->given_name = user_info.givenName();
+  mojo_user_info->name = user_info.name();
+  mojo_user_info->picture = user_info.picture();
+  return mojo_user_info;
 }
 
 // static
