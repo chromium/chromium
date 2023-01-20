@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"

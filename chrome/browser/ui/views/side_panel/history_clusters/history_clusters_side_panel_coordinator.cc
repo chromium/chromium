@@ -10,6 +10,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"

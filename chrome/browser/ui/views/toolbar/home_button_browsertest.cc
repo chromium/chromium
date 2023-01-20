@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"

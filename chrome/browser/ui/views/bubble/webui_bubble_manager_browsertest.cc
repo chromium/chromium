@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"

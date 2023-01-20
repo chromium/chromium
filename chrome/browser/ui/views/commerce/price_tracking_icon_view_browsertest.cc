@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"

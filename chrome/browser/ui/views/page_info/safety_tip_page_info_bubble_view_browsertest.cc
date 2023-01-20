@@ -20,6 +20,7 @@
 #include "chrome/browser/lookalikes/safety_tip_ui.h"
 #include "chrome/browser/lookalikes/safety_tip_ui_helper.h"
 #include "chrome/browser/lookalikes/safety_tip_web_contents_observer.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"

@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/high_efficiency_bubble_delegate.h"
 #include "chrome/browser/ui/performance_controls/high_efficiency_bubble_observer.h"

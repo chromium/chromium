@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
-#include "base/strings/string_piece_forward.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
+
+#include <string>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/base_i18n_switches.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ui/browser.h"

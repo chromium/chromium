@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "math.h"
+#include <math.h>
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -10,6 +10,7 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/accessibility/accessibility_focus_highlight.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"

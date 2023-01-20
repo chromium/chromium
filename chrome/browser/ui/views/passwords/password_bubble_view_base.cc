@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 
 #include "base/notreached.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"

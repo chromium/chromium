@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"

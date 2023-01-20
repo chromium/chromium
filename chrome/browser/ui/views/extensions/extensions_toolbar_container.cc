@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"

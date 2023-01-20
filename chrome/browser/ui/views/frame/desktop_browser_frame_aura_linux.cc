@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host_linux.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"

@@ -19,6 +19,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/browser_list.h"

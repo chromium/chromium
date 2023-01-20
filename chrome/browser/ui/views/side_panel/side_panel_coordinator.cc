@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
