@@ -34,8 +34,17 @@ namespace ash {
 // Max time floating workspace service can wait after user login.
 // After that even a more recent foreign session change is detected
 // restore will not take place.
+// TODO(b/263417467): let the following parameters be controlled by Finch or
+// policy override.
 constexpr base::TimeDelta kMaxTimeAvaliableForRestoreAfterLogin =
     base::Seconds(3);
+
+constexpr base::TimeDelta kMaxTimeAvaliableForRestoreAfterLoginV2 =
+    base::Seconds(15);
+
+// Time interval to capture current desk as desk template
+// and upload template to server.
+constexpr base::TimeDelta kPeriodicJobIntervalInSeconds = base::Seconds(30);
 
 // Static
 FloatingWorkspaceService* FloatingWorkspaceService::GetForProfile(
@@ -162,6 +171,16 @@ void FloatingWorkspaceService::OnDeskModelDestroying() {
   desk_sync_service_->GetDeskModel()->RemoveObserver(this);
 }
 
+void FloatingWorkspaceService::EntriesAddedOrUpdatedRemotely(
+    const std::vector<const DeskTemplate*>& new_entries) {
+  for (const DeskTemplate* desk_template : new_entries) {
+    if (desk_template &&
+        desk_template->type() == DeskTemplateType::kFloatingWorkspace) {
+      RestoreFloatingWorkspaceTemplate(desk_template);
+    }
+  }
+}
+
 void FloatingWorkspaceService::InitForV1() {
   session_sync_service_ =
       SessionSyncServiceFactory::GetInstance()->GetForProfile(profile_);
@@ -230,42 +249,11 @@ void FloatingWorkspaceService::StopCaptureAndUploadActiveDesk() {
   timer_.Stop();
 }
 
-// TODO(b/258692868): Add a method in DesksClient to capture but not save
-// current desk for floating workspace; we can attach our own callback with the
-// prev/current comparison method to see if a upload/save is necessary.
 void FloatingWorkspaceService::CaptureAndUploadActiveDesk() {
   DesksClient::Get()->CaptureActiveDeskAndSaveTemplate(
       base::BindOnce(&FloatingWorkspaceService::OnTemplateCaptured,
                      weak_pointer_factory_.GetWeakPtr()),
       DeskTemplateType::kFloatingWorkspace);
-}
-
-void FloatingWorkspaceService::OnTemplateCaptured(
-    absl::optional<DesksClient::DeskActionError> error,
-    std::unique_ptr<DeskTemplate> desk_template) {
-  // Desk capture was not successful, nothing to upload.
-  if (!desk_template)
-    return;
-
-  // If successfully captured desk, remove old entry and record new uuid.
-  if (!FloatingWorkspaceService::IsCurrentDeskSameAsPrevious(
-          desk_template.get())) {
-    // Upload and save the template.
-    desk_sync_service_->GetDeskModel()->AddOrUpdateEntry(
-        std::move(desk_template),
-        base::BindOnce(&FloatingWorkspaceService::OnTemplateUploaded,
-                       weak_pointer_factory_.GetWeakPtr()));
-  }
-}
-
-void FloatingWorkspaceService::EntriesAddedOrUpdatedRemotely(
-    const std::vector<const DeskTemplate*>& new_entries) {
-  for (const DeskTemplate* desk_template : new_entries) {
-    if (desk_template &&
-        desk_template->type() == DeskTemplateType::kFloatingWorkspace) {
-      RestoreFloatingWorkspaceTemplate(desk_template);
-    }
-  }
 }
 
 void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
@@ -275,10 +263,10 @@ void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
     return;
   }
 
-  // Check if template has been downloaded after 3 seconds.
+  // Check if template has been downloaded after 15 seconds (TBD).
   if (base::TimeTicks::Now() >
-      initialization_timestamp_ + kMaxTimeAvaliableForRestoreAfterLogin) {
-    // No need to restore any remote session 3 seconds (TBD) after login.
+      initialization_timestamp_ + kMaxTimeAvaliableForRestoreAfterLoginV2) {
+    // No need to restore any remote session 15 seconds (TBD) after login.
     should_run_restore_ = false;
     return;
   }
@@ -290,17 +278,6 @@ void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
       desk_template->template_name());
 }
 
-void FloatingWorkspaceService::OnTemplateLaunched(
-    absl::optional<DesksClient::DeskActionError> error,
-    const base::GUID& desk_uuid) {
-  // Disable future floating workspace restore.
-  should_run_restore_ = false;
-}
-
-// TODO(b/256874545): Implement comparison where all apps/ browsers are checked.
-// As of right now, a return of false indicates that both templates
-// are different, thus periodic checks will happen every 30 seconds
-// regardless of if no changes exist.
 bool FloatingWorkspaceService::IsCurrentDeskSameAsPrevious(
     DeskTemplate* current_desk_template) const {
   if (!previously_captured_desk_template_) {
@@ -343,6 +320,32 @@ bool FloatingWorkspaceService::IsCurrentDeskSameAsPrevious(
     }
   }
   return true;
+}
+
+void FloatingWorkspaceService::OnTemplateLaunched(
+    absl::optional<DesksClient::DeskActionError> error,
+    const base::GUID& desk_uuid) {
+  // Disable future floating workspace restore.
+  should_run_restore_ = false;
+}
+
+void FloatingWorkspaceService::OnTemplateCaptured(
+    absl::optional<DesksClient::DeskActionError> error,
+    std::unique_ptr<DeskTemplate> desk_template) {
+  // Desk capture was not successful, nothing to upload.
+  if (!desk_template) {
+    return;
+  }
+
+  // If successfully captured desk, remove old entry and record new uuid.
+  if (!FloatingWorkspaceService::IsCurrentDeskSameAsPrevious(
+          desk_template.get())) {
+    // Upload and save the template.
+    desk_sync_service_->GetDeskModel()->AddOrUpdateEntry(
+        std::move(desk_template),
+        base::BindOnce(&FloatingWorkspaceService::OnTemplateUploaded,
+                       weak_pointer_factory_.GetWeakPtr()));
+  }
 }
 
 void FloatingWorkspaceService::OnTemplateUploaded(

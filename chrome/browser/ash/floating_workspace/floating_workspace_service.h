@@ -111,8 +111,6 @@ class FloatingWorkspaceService : public KeyedService,
   // If no difference is recorded no upload job will be triggered.
   bool IsCurrentDeskSameAsPrevious(DeskTemplate* current_desk_template) const;
 
-  const base::TimeDelta kPeriodicJobIntervalInSeconds = base::Seconds(30);
-
   // Callback function that is run after a floating workspace template
   // is downloaded and launched.
   void OnTemplateLaunched(absl::optional<DesksClient::DeskActionError> error,
@@ -146,10 +144,10 @@ class FloatingWorkspaceService : public KeyedService,
   // null for the duration of `this`.
   raw_ptr<desks_storage::DeskSyncService> desk_sync_service_ = nullptr;
 
+  std::unique_ptr<DeskTemplate> previously_captured_desk_template_;
+
   // Indicate if it is a testing class.
   bool is_testing_ = false;
-
-  std::unique_ptr<DeskTemplate> previously_captured_desk_template_;
 
   // Weak pointer factory used to provide references to this service.
   base::WeakPtrFactory<FloatingWorkspaceService> weak_pointer_factory_{this};
