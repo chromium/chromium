@@ -157,19 +157,8 @@ IN_PROC_BROWSER_TEST_F(AppMenuFullscreenInteractiveTest, Notification) {
 }
 #endif
 
-// TODO (crbug.com/1408248): This test is failing on Lacros version skew test.
-// The BrowserView is not immediately accepting mouse event after fullscreen.
-// Trace event showing there were BrowserView::Layout and Composite happened
-// after being full screen. And the right mouse click doesn't work during this
-// period.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_ContextMenu DISABLED_ContextMenu
-#else
-#define MAYBE_ContextMenu ContextMenu
-#endif
-
 // Check Context menu in full screen mode
-IN_PROC_BROWSER_TEST_F(AppMenuFullscreenInteractiveTest, MAYBE_ContextMenu) {
+IN_PROC_BROWSER_TEST_F(AppMenuFullscreenInteractiveTest, ContextMenu) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabId);
   RunTestSequence(
       // 1. Wait for the default page to load.
