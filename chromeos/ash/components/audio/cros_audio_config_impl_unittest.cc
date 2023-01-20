@@ -36,6 +36,8 @@ constexpr uint64_t kInternalSpeakerId = 10001;
 constexpr uint64_t kMicJackId = 10010;
 constexpr uint64_t kHDMIOutputId = 10020;
 constexpr uint64_t kUsbMicId = 10030;
+constexpr uint64_t kInternalMicFrontId = 10040;
+constexpr uint64_t kInternalMicRearId = 10050;
 
 struct AudioNodeInfo {
   bool is_input;
@@ -63,6 +65,12 @@ constexpr AudioNodeInfo kHDMIOutput[] = {
 
 constexpr AudioNodeInfo kUsbMic[] = {
     {true, kUsbMicId, "Fake USB Mic", "USB", "USB Mic"}};
+
+constexpr AudioNodeInfo kInternalMicFront[] = {
+    {true, kInternalMicFrontId, "Front Mic", "FRONT_MIC", "FrontMic"}};
+
+constexpr AudioNodeInfo kInternalMicRear[] = {
+    {true, kInternalMicRearId, "Rear Mic", "REAR_MIC", "RearMic"}};
 
 class FakeAudioSystemPropertiesObserver
     : public mojom::AudioSystemPropertiesObserver {
@@ -739,6 +747,51 @@ TEST_F(CrosAudioConfigImplTest, SetInputMuted) {
   ASSERT_EQ(
       mojom::MuteState::kMutedExternally,
       fake_observer->last_audio_system_properties_.value()->input_mute_state);
+}
+
+// Verify merging front and rear mic into a single device returns expected
+// device and updates correctly.
+TEST_F(CrosAudioConfigImplTest, StubInternalMicHandlesDualMicUpdates) {
+  std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
+  SetAudioNodes(
+      {kInternalSpeaker, kInternalMicFront, kInternalMicRear, kUsbMic});
+  SetActiveInputNodes({kUsbMicId});
+
+  size_t expected_input_device_count = 2u;
+  EXPECT_EQ(expected_input_device_count,
+            fake_observer->last_audio_system_properties_.value()
+                ->input_devices.size());
+  mojom::AudioDevicePtr internal_mic =
+      fake_observer->last_audio_system_properties_.value()
+          ->input_devices[1]
+          .Clone();
+  const std::string expected_display_name = "Internal Mic";
+  EXPECT_EQ(expected_display_name, internal_mic->display_name);
+  EXPECT_FALSE(internal_mic->is_active);
+
+  SimulateSetActiveDevice(kInternalMicFrontId);
+
+  EXPECT_EQ(expected_input_device_count,
+            fake_observer->last_audio_system_properties_.value()
+                ->input_devices.size());
+  internal_mic = fake_observer->last_audio_system_properties_.value()
+                     ->input_devices[1]
+                     .Clone();
+  EXPECT_EQ(expected_display_name, internal_mic->display_name);
+  EXPECT_TRUE(internal_mic->is_active);
+
+  // Verify rear device ID will also set internal mic to active.
+  SetActiveInputNodes({kUsbMicId});
+  SimulateSetActiveDevice(kInternalMicRearId);
+
+  EXPECT_EQ(expected_input_device_count,
+            fake_observer->last_audio_system_properties_.value()
+                ->input_devices.size());
+  internal_mic = fake_observer->last_audio_system_properties_.value()
+                     ->input_devices[1]
+                     .Clone();
+  EXPECT_EQ(expected_display_name, internal_mic->display_name);
+  EXPECT_TRUE(internal_mic->is_active);
 }
 
 }  // namespace ash::audio_config
