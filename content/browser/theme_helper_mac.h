@@ -8,8 +8,7 @@
 #include "base/containers/span.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
 #include "third_party/blink/public/common/sandbox_support/sandbox_support_mac.h"
 #include "third_party/blink/public/platform/mac/web_scrollbar_theme.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -25,7 +24,7 @@ namespace content {
 // This class is used to monitor macOS system appearance changes and to notify
 // sandboxed child processes when they change. This class lives on the UI
 // thread.
-class ThemeHelperMac : public NotificationObserver {
+class ThemeHelperMac : public content::RenderProcessHostCreationObserver {
  public:
   // Return pointer to the singleton instance for the current process, or NULL
   // if none.
@@ -53,10 +52,8 @@ class ThemeHelperMac : public NotificationObserver {
   // be stored.
   void LoadSystemColorsForCurrentAppearance(base::span<SkColor> values);
 
-  // Overridden from NotificationObserver:
-  void Observe(int type,
-               const NotificationSource& source,
-               const NotificationDetails& details) override;
+  // Overridden from content::RenderProcessHostCreationObserver:
+  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
 
   // ObjC object that observes notifications from the system.
   SystemThemeObserver* theme_observer_;  // strong
@@ -69,8 +66,6 @@ class ThemeHelperMac : public NotificationObserver {
   // Read-only handle to the |writable_color_map_| that can be duplicated for
   // sharing to child processes.
   base::ReadOnlySharedMemoryRegion read_only_color_map_;
-
-  NotificationRegistrar registrar_;
 };
 
 }  // namespace content

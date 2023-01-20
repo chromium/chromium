@@ -284,9 +284,6 @@ ThemeHelperMac::ThemeHelperMac() {
       initWithColorsChangedCallback:base::BindRepeating(
                                         &ThemeHelperMac::LoadSystemColors,
                                         base::Unretained(this))];
-  registrar_.Add(this,
-                 NOTIFICATION_RENDERER_PROCESS_CREATED,
-                 NotificationService::AllSources());
 }
 
 ThemeHelperMac::~ThemeHelperMac() {
@@ -382,11 +379,8 @@ void ThemeHelperMac::LoadSystemColors() {
   }
 }
 
-void ThemeHelperMac::Observe(int type,
-                             const NotificationSource& source,
-                             const NotificationDetails& details) {
-  DCHECK_EQ(NOTIFICATION_RENDERER_PROCESS_CREATED, type);
-
+void ThemeHelperMac::OnRenderProcessHostCreated(
+    content::RenderProcessHost* host) {
   // When a new RenderProcess is created, send it the initial preference
   // parameters.
   content::mojom::UpdateScrollbarThemeParamsPtr params =
@@ -395,7 +389,7 @@ void ThemeHelperMac::Observe(int type,
   params->redraw = false;
 
   RenderProcessHostImpl* rphi =
-      Source<content::RenderProcessHostImpl>(source).ptr();
+      static_cast<content::RenderProcessHostImpl*>(host);
   content::mojom::Renderer* renderer = rphi->GetRendererInterface();
   renderer->UpdateScrollbarTheme(std::move(params));
   SendSystemColorsChangedMessage(renderer);
