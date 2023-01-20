@@ -1454,6 +1454,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
   virtual LayoutUnit IntrinsicContentLogicalHeight() const {
     NOT_DESTROYED();
+    DCHECK(!RuntimeEnabledFeatures::LayoutNGPrintingEnabled());
     return HasOverrideIntrinsicContentLogicalHeight()
                ? OverrideIntrinsicContentLogicalHeight()
                : intrinsic_content_logical_height_;
