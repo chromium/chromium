@@ -7,6 +7,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
+import {setErrorAction} from '../personalization_actions.js';
 import {GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperLayout, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 import {isNonEmptyArray} from '../utils.js';
@@ -14,6 +15,7 @@ import {isNonEmptyArray} from '../utils.js';
 import {DisplayableImage} from './constants.js';
 import {isDefaultImage, isFilePath, isGooglePhotosPhoto, isImageEqualToSelected, isWallpaperImage} from './utils.js';
 import * as action from './wallpaper_actions.js';
+import {DailyRefreshType} from './wallpaper_state.js';
 
 /**
  * @fileoverview contains all of the functions to interact with C++ side through
@@ -431,10 +433,15 @@ export async function selectGooglePhotosAlbum(
   // Only trigger the pending UI if this call successfully enables daily refresh
   // and the wallpaper is going to be refreshed. Otherwise, update the daily
   // refresh state immediately to prevent the users from seeing unnecessary
-  // loading UI.
+  // loading UI. If the call fails due to Google Photos API call failure,
+  // displays an error message.
   if (!!albumId && response.success && response.forceRefresh) {
     store.dispatch(action.beginUpdateDailyRefreshImageAction());
   } else {
+    if (!response.success && response.forceRefresh) {
+      store.dispatch(setErrorAction(
+          {message: loadTimeData.getString('googlePhotosError')}));
+    }
     getDailyRefreshState(provider, store);
   }
 }
@@ -472,6 +479,21 @@ export async function updateDailyRefreshWallpaper(
   const {success} = await provider.updateDailyRefreshWallpaper();
   if (success) {
     store.dispatch(action.setUpdatedDailyRefreshImageAction());
+  } else {
+    const currentWallpaper = store.data.wallpaper.currentSelected;
+    const dailyRefresh = store.data.wallpaper.dailyRefresh;
+    // Displays error if daily refresh is activated for Google Photos album
+    // and refresh failed to fetch a new Google Photo wallpaper.
+    // Also dispatches setUpdatedDailyRefreshImageAction() and
+    // setSelectedImageAction() to avoid pending UI.
+    // TODO (b/266257678): displays error message when daily refresh fails for
+    // online wallpaper collections.
+    if (!!dailyRefresh && dailyRefresh.type == DailyRefreshType.GOOGLE_PHOTOS) {
+      store.dispatch(action.setUpdatedDailyRefreshImageAction());
+      store.dispatch(action.setSelectedImageAction(currentWallpaper));
+      store.dispatch(setErrorAction(
+          {message: loadTimeData.getString('googlePhotosError')}));
+    }
   }
 }
 

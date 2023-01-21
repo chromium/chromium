@@ -105,6 +105,10 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
       key: '1',
       type: WallpaperType.kOnline,
     };
+
+    this.albumId = '';
+
+    this.collectionId = this.collections_![0]!.id;
   }
 
   private collections_: WallpaperCollection[]|null;
@@ -126,6 +130,8 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
   defaultImageThumbnail:
       Url = {url: 'data:image/png;base64,default_image_thumbnail'};
   currentWallpaper: CurrentWallpaper;
+  albumId: string;
+  collectionId: string;
   selectWallpaperResponse = true;
   selectGooglePhotosPhotoResponse = true;
   selectGooglePhotosAlbumResponse: SetDailyRefreshResponse = {
@@ -257,7 +263,7 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
 
   getGooglePhotosDailyRefreshAlbumId() {
     this.methodCalled('getGooglePhotosDailyRefreshAlbumId');
-    return Promise.resolve({albumId: ''});
+    return Promise.resolve({albumId: this.albumId});
   }
 
   selectLocalImage(
@@ -280,7 +286,7 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
 
   getDailyRefreshCollectionId() {
     this.methodCalled('getDailyRefreshCollectionId');
-    return Promise.resolve({collectionId: this.collections_![0]!.id});
+    return Promise.resolve({collectionId: this.collectionId});
   }
 
   updateDailyRefreshWallpaper() {
