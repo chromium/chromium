@@ -30,6 +30,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/tracing_controller.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace heap_profiling {
 
@@ -88,8 +89,8 @@ int NumProcessesWithName(base::Value* dump_json,
                          std::string name,
                          std::vector<int>* pids) {
   int num_processes = 0;
-  base::Value* events = dump_json->FindKey("traceEvents");
-  for (const base::Value& event : events->GetList()) {
+  base::Value::List* events = dump_json->GetDict().FindList("traceEvents");
+  for (const base::Value& event : *events) {
     const base::Value* found_name =
         event.FindKeyOfType("name", base::Value::Type::STRING);
     if (!found_name)
@@ -125,10 +126,10 @@ int NumProcessesWithName(base::Value* dump_json,
 base::Value* FindArgDump(base::ProcessId pid,
                          base::Value* dump_json,
                          const char* arg) {
-  base::Value* events = dump_json->FindKey("traceEvents");
+  base::Value::List* events = dump_json->GetDict().FindList("traceEvents");
   base::Value* dumps = nullptr;
   base::Value* heaps_v2 = nullptr;
-  for (base::Value& event : events->GetList()) {
+  for (base::Value& event : *events) {
     const base::Value* found_name =
         event.FindKeyOfType("name", base::Value::Type::STRING);
     if (!found_name)
@@ -161,29 +162,30 @@ using NodeMap = std::unordered_map<uint64_t, Node>;
 bool ParseTypes(base::Value* heaps_v2, NodeMap* output) {
   base::Value* types = heaps_v2->FindPath({"maps", "types"});
   for (const base::Value& type_value : types->GetList()) {
-    const base::Value* id = type_value.FindKey("id");
-    const base::Value* name_sid = type_value.FindKey("name_sid");
+    const absl::optional<int> id = type_value.GetDict().FindInt("id");
+    const absl::optional<int> name_sid =
+        type_value.GetDict().FindInt("name_sid");
     if (!id || !name_sid) {
       LOG(ERROR) << "Node missing id or name_sid field";
       return false;
     }
 
     Node node;
-    node.name_id = name_sid->GetInt();
-    (*output)[id->GetInt()] = node;
+    node.name_id = *name_sid;
+    (*output)[*id] = node;
   }
 
   base::Value* strings = heaps_v2->FindPath({"maps", "strings"});
-  for (const base::Value& string_value : strings->GetList()) {
-    const base::Value* id = string_value.FindKey("id");
-    const base::Value* string = string_value.FindKey("string");
+  for (const base::Value& string_dict : strings->GetList()) {
+    const absl::optional<int> id = string_dict.GetDict().FindInt("id");
+    const std::string* string = string_dict.GetDict().FindString("string");
     if (!id || !string) {
       LOG(ERROR) << "String struct missing id or string field";
       return false;
     }
     for (auto& pair : *output) {
-      if (pair.second.name_id == id->GetInt()) {
-        pair.second.name = string->GetString();
+      if (pair.second.name_id == id.value()) {
+        pair.second.name = *string;
         break;
       }
     }
@@ -295,11 +297,11 @@ bool ValidateSamplingAllocations(base::Value* heaps_v2,
 
 bool ValidateProcessMmaps(base::Value* process_mmaps,
                           bool should_have_contents) {
-  base::Value* vm_regions = nullptr;
+  base::Value::List* vm_regions = nullptr;
   size_t count = 0;
   if (process_mmaps) {
-    vm_regions = process_mmaps->FindKey("vm_regions");
-    count = vm_regions->GetList().size();
+    vm_regions = process_mmaps->GetDict().FindList("vm_regions");
+    count = vm_regions->size();
   }
   if (!should_have_contents) {
     if (count != 0) {
@@ -316,10 +318,10 @@ bool ValidateProcessMmaps(base::Value* process_mmaps,
 
   // File paths may contain PII. Make sure that "mf" entries only contain the
   // basename, rather than a full path.
-  for (const base::Value& vm_region : vm_regions->GetList()) {
-    const base::Value* file_path_value = vm_region.FindKey("mf");
+  for (const base::Value& vm_region : *vm_regions) {
+    const std::string* file_path_value = vm_region.GetDict().FindString("mf");
     if (file_path_value) {
-      std::string file_path = file_path_value->GetString();
+      const std::string& file_path = *file_path_value;
 
       base::FilePath::StringType path(file_path.begin(), file_path.end());
       if (base::FilePath(path).BaseName().AsUTF8Unsafe() != file_path) {
