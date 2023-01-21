@@ -79,11 +79,13 @@ bool CreateThread(size_t stack_size,
   pthread_attr_init(&attributes);
 
   // Get a better default if available.
-  if (stack_size == 0)
+  if (stack_size == 0) {
     stack_size = base::GetDefaultThreadStackSize(attributes);
+  }
 
-  if (stack_size > 0)
+  if (stack_size > 0) {
     pthread_attr_setstacksize(&attributes, stack_size);
+  }
 
   std::unique_ptr<ThreadParams> params(new ThreadParams);
   params->delegate = delegate;

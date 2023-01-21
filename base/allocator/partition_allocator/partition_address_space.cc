@@ -53,13 +53,15 @@ bool IsLegacyWindowsVersion() {
   using RtlGetVersion = LONG(WINAPI*)(OSVERSIONINFOEX*);
   const RtlGetVersion rtl_get_version = reinterpret_cast<RtlGetVersion>(
       ::GetProcAddress(::GetModuleHandle(L"ntdll.dll"), "RtlGetVersion"));
-  if (!rtl_get_version)
+  if (!rtl_get_version) {
     return true;
+  }
 
   OSVERSIONINFOEX version_info = {};
   version_info.dwOSVersionInfoSize = sizeof(version_info);
-  if (rtl_get_version(&version_info) != ERROR_SUCCESS)
+  if (rtl_get_version(&version_info) != ERROR_SUCCESS) {
     return true;
+  }
 
   // Anything prior to Windows 8.1 is considered legacy for the allocator.
   // Windows 8.1 is major 6 with minor 3.
@@ -140,8 +142,9 @@ bool IsIOSTestProcess() {
 
   auto has_suffix = [&](const char* suffix) -> bool {
     size_t suffix_length = std::char_traits<char>::length(suffix);
-    if (executable_path_length < suffix_length)
+    if (executable_path_length < suffix_length) {
       return false;
+    }
     return std::char_traits<char>::compare(
                executable_path + (executable_path_length - suffix_length),
                suffix, suffix_length) == 0;
@@ -170,8 +173,9 @@ PA_ALWAYS_INLINE size_t PartitionAddressSpace::BRPPoolSize() {
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 
 void PartitionAddressSpace::Init() {
-  if (IsInitialized())
+  if (IsInitialized()) {
     return;
+  }
 
   size_t regular_pool_size = RegularPoolSize();
   size_t brp_pool_size = BRPPoolSize();
@@ -193,8 +197,9 @@ void PartitionAddressSpace::Init() {
                  PageAccessibilityConfiguration(
                      PageAccessibilityConfiguration::kInaccessible),
                  PageTag::kPartitionAlloc, pools_fd);
-  if (!setup_.regular_pool_base_address_)
+  if (!setup_.regular_pool_base_address_) {
     HandlePoolAllocFailure();
+  }
   setup_.brp_pool_base_address_ =
       setup_.regular_pool_base_address_ + regular_pool_size;
 #else  // PA_CONFIG(GLUE_CORE_POOLS)
@@ -208,8 +213,9 @@ void PartitionAddressSpace::Init() {
                  PageAccessibilityConfiguration(
                      PageAccessibilityConfiguration::kInaccessible),
                  PageTag::kPartitionAlloc, regular_pool_fd);
-  if (!setup_.regular_pool_base_address_)
+  if (!setup_.regular_pool_base_address_) {
     HandlePoolAllocFailure();
+  }
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 #endif
 
@@ -229,8 +235,9 @@ void PartitionAddressSpace::Init() {
       PageAccessibilityConfiguration(
           PageAccessibilityConfiguration::kInaccessible),
       PageTag::kPartitionAlloc, brp_pool_fd);
-  if (!base_address)
+  if (!base_address) {
     HandlePoolAllocFailure();
+  }
   setup_.brp_pool_base_address_ = base_address + kForbiddenZoneSize;
 #endif  // PA_CONFIG(GLUE_CORE_POOLS)
 
@@ -326,8 +333,9 @@ void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
   // It's possible that the pkey pool has been initialized first, in which case
   // the setup_ memory has been made read-only. Remove the protection
   // temporarily.
-  if (IsPkeyPoolInitialized())
+  if (IsPkeyPoolInitialized()) {
     TagGlobalsWithPkey(kDefaultPkey);
+  }
 #endif
 
   PA_CHECK(pool_base);
@@ -344,8 +352,9 @@ void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
 
 #if BUILDFLAG(ENABLE_PKEYS)
   // Put the pkey protection back in place.
-  if (IsPkeyPoolInitialized())
+  if (IsPkeyPoolInitialized()) {
     TagGlobalsWithPkey(setup_.pkey_);
+  }
 #endif
 }
 
@@ -363,8 +372,9 @@ void PartitionAddressSpace::InitPkeyPool(int pkey) {
                  PageAccessibilityConfiguration(
                      PageAccessibilityConfiguration::kInaccessible),
                  PageTag::kPartitionAlloc);
-  if (!setup_.pkey_pool_base_address_)
+  if (!setup_.pkey_pool_base_address_) {
     HandlePoolAllocFailure();
+  }
 
   PA_DCHECK(!(setup_.pkey_pool_base_address_ & (pool_size - 1)));
   setup_.pkey_ = pkey;
@@ -413,16 +423,18 @@ void PartitionAddressSpace::UninitConfigurablePoolForTesting() {
   // It's possible that the pkey pool has been initialized first, in which case
   // the setup_ memory has been made read-only. Remove the protection
   // temporarily.
-  if (IsPkeyPoolInitialized())
+  if (IsPkeyPoolInitialized()) {
     TagGlobalsWithPkey(kDefaultPkey);
+  }
 #endif
   AddressPoolManager::GetInstance().Remove(kConfigurablePoolHandle);
   setup_.configurable_pool_base_address_ = kUninitializedPoolBaseAddress;
   setup_.configurable_pool_base_mask_ = 0;
 #if BUILDFLAG(ENABLE_PKEYS)
   // Put the pkey protection back in place.
-  if (IsPkeyPoolInitialized())
+  if (IsPkeyPoolInitialized()) {
     TagGlobalsWithPkey(setup_.pkey_);
+  }
 #endif
 }
 

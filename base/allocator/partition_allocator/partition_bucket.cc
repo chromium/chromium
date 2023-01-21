@@ -129,8 +129,9 @@ uintptr_t ReserveMemoryFromPool(pool_handle pool,
     for (int i = 0; i < kMaxRandomAddressTries; ++i) {
       if (!reserved_address ||
           AreAllowedSuperPagesForBRPPool(reserved_address,
-                                         reserved_address + requested_size))
+                                         reserved_address + requested_size)) {
         break;
+      }
       AddressPoolManager::GetInstance().UnreserveAndDecommit(
           pool, reserved_address, requested_size);
       // No longer try to honor |requested_address|, because it didn't work for
@@ -151,8 +152,9 @@ uintptr_t ReserveMemoryFromPool(pool_handle pool,
          address_to_try += kSuperPageSize) {
       if (!reserved_address ||
           AreAllowedSuperPagesForBRPPool(reserved_address,
-                                         reserved_address + requested_size))
+                                         reserved_address + requested_size)) {
         break;
+      }
       AddressPoolManager::GetInstance().UnreserveAndDecommit(
           pool, reserved_address, requested_size);
       // Reserve() can return a different pointer than attempted.
@@ -179,9 +181,10 @@ uintptr_t ReserveMemoryFromPool(pool_handle pool,
   // raw_ptr<T> object that points to non-PA memory in another thread.
   // If `MarkUsed` was called earlier, the other thread could incorrectly
   // determine that the allocation had come form PartitionAlloc.
-  if (reserved_address)
+  if (reserved_address) {
     AddressPoolManager::GetInstance().MarkUsed(pool, reserved_address,
                                                requested_size);
+  }
 #endif
 
   PA_DCHECK(!(reserved_address % kSuperPageSize));
@@ -203,8 +206,9 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
 
   const bool return_null = flags & AllocFlags::kReturnNull;
   if (PA_UNLIKELY(raw_size > MaxDirectMapped())) {
-    if (return_null)
+    if (return_null) {
       return nullptr;
+    }
 
     // The lock is here to protect PA from:
     // 1. Concurrent calls
@@ -286,8 +290,9 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
       reservation_start = ReserveMemoryFromPool(pool, 0, reservation_size);
     }
     if (PA_UNLIKELY(!reservation_start)) {
-      if (return_null)
+      if (return_null) {
         return nullptr;
+      }
 
       PartitionOutOfMemoryMappingFailure(root, reservation_size);
     }
@@ -460,8 +465,9 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
 
   // Maintain the doubly-linked list of all direct mappings.
   map_extent->next_extent = root->direct_map_list;
-  if (map_extent->next_extent)
+  if (map_extent->next_extent) {
     map_extent->next_extent->prev_extent = map_extent;
+  }
   map_extent->prev_extent = nullptr;
   root->direct_map_list = map_extent;
 
@@ -504,8 +510,9 @@ uint8_t ComputeSystemPagesPerSlotSpanPreferSmall(size_t slot_size) {
        partition_page_count++) {
     size_t candidate_size = partition_page_count * PartitionPageSize();
     size_t waste = candidate_size % slot_size;
-    if (waste <= .02 * SystemPageSize())
+    if (waste <= .02 * SystemPageSize()) {
       return partition_page_count * NumSystemPagesPerPartitionPage();
+    }
   }
 
   size_t best_count = 0;
@@ -591,8 +598,9 @@ uint8_t ComputeSystemPagesPerSlotSpan(size_t slot_size,
     // In case the waste is too large (more than 5% of a page), don't try to use
     // the "small" slot span formula. This happens when we have a lot of
     // buckets, in some cases the formula doesn't find a nice, small size.
-    if (waste <= .05 * SystemPageSize())
+    if (waste <= .05 * SystemPageSize()) {
       return system_page_count;
+    }
   }
 
   return ComputeSystemPagesPerSlotSpanInternal(slot_size);
@@ -736,8 +744,9 @@ uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPageSpan(
   uintptr_t super_page_span_start = ReserveMemoryFromPool(
       pool, requested_address, super_page_count * kSuperPageSize);
   if (PA_UNLIKELY(!super_page_span_start)) {
-    if (flags & AllocFlags::kReturnNull)
+    if (flags & AllocFlags::kReturnNull) {
       return 0;
+    }
 
     // Didn't manage to get a new uncommitted super page -> address space issue.
     ::partition_alloc::internal::ScopedUnlockGuard unlock{root->lock_};
@@ -848,8 +857,9 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::InitializeSuperPage(
   // distributions will allocate the mapping directly before the last
   // successful mapping, which is far from random. So we just get fresh
   // randomness for the next mapping attempt.
-  if (requested_address && requested_address != super_page)
+  if (requested_address && requested_address != super_page) {
     root->next_super_page = 0;
+  }
 
   // We allocated a new super page so update super page metadata.
   // First check if this is a new extent or not.
@@ -1080,8 +1090,9 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
 template <bool thread_safe>
 bool PartitionBucket<thread_safe>::SetNewActiveSlotSpan() {
   SlotSpanMetadata<thread_safe>* slot_span = active_slot_spans_head;
-  if (slot_span == SlotSpanMetadata<thread_safe>::get_sentinel_slot_span())
+  if (slot_span == SlotSpanMetadata<thread_safe>::get_sentinel_slot_span()) {
     return false;
+  }
 
   SlotSpanMetadata<thread_safe>* next_slot_span;
 
@@ -1131,10 +1142,12 @@ bool PartitionBucket<thread_safe>::SetNewActiveSlotSpan() {
         break;
       } else {
         // Keeping head and tail because we don't want to reverse the list.
-        if (!to_provision_head)
+        if (!to_provision_head) {
           to_provision_head = slot_span;
-        if (to_provision_tail)
+        }
+        if (to_provision_tail) {
           to_provision_tail->next_slot_span = slot_span;
+        }
         to_provision_tail = slot_span;
         slot_span->next_slot_span = nullptr;
       }
@@ -1188,8 +1201,9 @@ bool PartitionBucket<thread_safe>::SetNewActiveSlotSpan() {
 template <bool thread_safe>
 void PartitionBucket<thread_safe>::MaintainActiveList() {
   SlotSpanMetadata<thread_safe>* slot_span = active_slot_spans_head;
-  if (slot_span == SlotSpanMetadata<thread_safe>::get_sentinel_slot_span())
+  if (slot_span == SlotSpanMetadata<thread_safe>::get_sentinel_slot_span()) {
     return;
+  }
 
   SlotSpanMetadata<thread_safe>* new_active_slot_spans_head = nullptr;
   SlotSpanMetadata<thread_safe>* new_active_slot_spans_tail = nullptr;
@@ -1200,10 +1214,12 @@ void PartitionBucket<thread_safe>::MaintainActiveList() {
 
     if (slot_span->is_active()) {
       // Ordering in the active slot span list matters, don't reverse it.
-      if (!new_active_slot_spans_head)
+      if (!new_active_slot_spans_head) {
         new_active_slot_spans_head = slot_span;
-      if (new_active_slot_spans_tail)
+      }
+      if (new_active_slot_spans_tail) {
         new_active_slot_spans_tail->next_slot_span = slot_span;
+      }
       new_active_slot_spans_tail = slot_span;
       slot_span->next_slot_span = nullptr;
     } else if (slot_span->is_empty()) {
@@ -1243,8 +1259,10 @@ void PartitionBucket<thread_safe>::SortSlotSpanFreelists() {
     //
     // Besides saving CPU, this also avoids touching memory of fully idle slot
     // spans, which may required paging.
-    if (slot_span->num_allocated_slots > 0 && !slot_span->freelist_is_sorted())
+    if (slot_span->num_allocated_slots > 0 &&
+        !slot_span->freelist_is_sorted()) {
       slot_span->SortFreelist();
+    }
   }
 }
 
@@ -1378,13 +1396,15 @@ uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
               SlotSpanMetadata<thread_safe>::get_sentinel_slot_span());
 
     // No fast path for direct-mapped allocations.
-    if (flags & AllocFlags::kFastPathOrReturnNull)
+    if (flags & AllocFlags::kFastPathOrReturnNull) {
       return 0;
+    }
 
     new_slot_span =
         PartitionDirectMap(root, flags, raw_size, slot_span_alignment);
-    if (new_slot_span)
+    if (new_slot_span) {
       new_bucket = new_slot_span->bucket;
+    }
     // Memory from PageAllocator is always zeroed.
     *is_already_zeroed = true;
   } else if (PA_LIKELY(!allocate_aligned_slot_span && SetNewActiveSlotSpan())) {
@@ -1422,8 +1442,9 @@ uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
     if (PA_UNLIKELY(!new_slot_span) &&
         PA_LIKELY(decommitted_slot_spans_head != nullptr)) {
       // Commit can be expensive, don't do it.
-      if (flags & AllocFlags::kFastPathOrReturnNull)
+      if (flags & AllocFlags::kFastPathOrReturnNull) {
         return 0;
+      }
 
       new_slot_span = decommitted_slot_spans_head;
       PA_DCHECK(new_slot_span->bucket == this);
@@ -1451,8 +1472,9 @@ uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
     PA_DCHECK(new_slot_span);
   } else {
     // Getting a new slot span is expensive, don't do it.
-    if (flags & AllocFlags::kFastPathOrReturnNull)
+    if (flags & AllocFlags::kFastPathOrReturnNull) {
       return 0;
+    }
 
     // Third. If we get here, we need a brand new slot span.
     // TODO(bartekn): For single-slot slot spans, we can use rounded raw_size
@@ -1466,8 +1488,9 @@ uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
   if (PA_UNLIKELY(!new_slot_span)) {
     PA_DCHECK(active_slot_spans_head ==
               SlotSpanMetadata<thread_safe>::get_sentinel_slot_span());
-    if (flags & AllocFlags::kReturnNull)
+    if (flags & AllocFlags::kReturnNull) {
       return 0;
+    }
     // See comment in PartitionDirectMap() for unlocking.
     ScopedUnlockGuard unlock{root->lock_};
     root->OutOfMemory(raw_size);
@@ -1476,8 +1499,9 @@ uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
 
   PA_DCHECK(new_bucket != &root->sentinel_bucket);
   new_bucket->active_slot_spans_head = new_slot_span;
-  if (new_slot_span->CanStoreRawSize())
+  if (new_slot_span->CanStoreRawSize()) {
     new_slot_span->SetRawSize(raw_size);
+  }
 
   // If we found an active slot span with free slots, or an empty slot span, we
   // have a usable freelist head.

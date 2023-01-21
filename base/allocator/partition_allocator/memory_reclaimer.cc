@@ -81,12 +81,14 @@ void MemoryReclaimer::Reclaim(int flags) {
   // Don't completely empty the thread cache outside of low memory situations,
   // as there is periodic purge which makes sure that it doesn't take too much
   // space.
-  if (flags & PurgeFlags::kAggressiveReclaim)
+  if (flags & PurgeFlags::kAggressiveReclaim) {
     ThreadCacheRegistry::Instance().PurgeAll();
+  }
 #endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED)
 
-  for (auto* partition : partitions_)
+  for (auto* partition : partitions_) {
     partition->PurgeMemory(flags);
+  }
 }
 
 void MemoryReclaimer::ResetForTesting() {
