@@ -506,7 +506,9 @@ void DemoSetupController::Enroll(
 
   SetCurrentSetupStep(DemoSetupStep::kDownloadResources);
 
-  SetRetailerAndStoreIdInPref();
+  PrefService* prefs = g_browser_process->local_state();
+  prefs->SetString(prefs::kDemoModeRetailerId, retailer_name_);
+  prefs->SetString(prefs::kDemoModeStoreId, store_number_);
 
   switch (demo_config_) {
     case DemoSession::DemoModeConfig::kOnline:
@@ -685,18 +687,6 @@ void DemoSetupController::Reset() {
   // `demo_config_` is not reset here, because it is needed for retrying setup.
   enrollment_helper_.reset();
   ClearDemoRequisition();
-}
-
-void DemoSetupController::SetRetailerAndStoreIdInPref() {
-  std::vector<std::string> retailer_and_store_id_list =
-      base::SplitString(retailer_store_id_input_, "-", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY);
-  if (retailer_and_store_id_list.size() != 2)
-    return;
-
-  PrefService* prefs = g_browser_process->local_state();
-  prefs->SetString(prefs::kDemoModeRetailerId, retailer_and_store_id_list[0]);
-  prefs->SetString(prefs::kDemoModeStoreId, retailer_and_store_id_list[1]);
 }
 
 }  //  namespace ash

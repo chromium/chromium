@@ -373,11 +373,12 @@ TEST_F(DemoSetupControllerTest, GetSubOrganizationEmailForCustomOU) {
   EXPECT_EQ(email, "test-user-name@cros-demo-mode.com");
 }
 
-TEST_F(DemoSetupControllerTest, OnlineSuccessWithValidRetailerAndStoreId) {
+TEST_F(DemoSetupControllerTest, OnlineSuccessWithValidRetailerAndStore) {
   SetupMockDemoModeOnlineEnrollmentHelper(DemoModeSetupResult::SUCCESS);
 
   tested_controller_->set_demo_config(DemoSession::DemoModeConfig::kOnline);
-  tested_controller_->set_retailer_store_id_input("ABC-1234");
+  tested_controller_->set_retailer_name("Retailer");
+  tested_controller_->set_store_number("1234");
   tested_controller_->Enroll(
       base::BindOnce(&DemoSetupControllerTestHelper::OnSetupSuccess,
                      base::Unretained(helper_.get())),
@@ -389,32 +390,10 @@ TEST_F(DemoSetupControllerTest, OnlineSuccessWithValidRetailerAndStoreId) {
   EXPECT_TRUE(
       helper_->WaitResult(true, DemoSetupController::DemoSetupStep::kComplete));
   EXPECT_EQ("", GetDeviceRequisition());
-  EXPECT_EQ("ABC", g_browser_process->local_state()->GetString(
-                       prefs::kDemoModeRetailerId));
+  EXPECT_EQ("Retailer", g_browser_process->local_state()->GetString(
+                            prefs::kDemoModeRetailerId));
   EXPECT_EQ("1234", g_browser_process->local_state()->GetString(
                         prefs::kDemoModeStoreId));
-}
-
-TEST_F(DemoSetupControllerTest, OnlineSuccessWithInvalidRetailerAndStoreId) {
-  SetupMockDemoModeOnlineEnrollmentHelper(DemoModeSetupResult::SUCCESS);
-  tested_controller_->set_retailer_store_id_input("ABC");
-
-  tested_controller_->set_demo_config(DemoSession::DemoModeConfig::kOnline);
-  tested_controller_->Enroll(
-      base::BindOnce(&DemoSetupControllerTestHelper::OnSetupSuccess,
-                     base::Unretained(helper_.get())),
-      base::BindOnce(&DemoSetupControllerTestHelper::OnSetupError,
-                     base::Unretained(helper_.get())),
-      base::BindRepeating(&DemoSetupControllerTestHelper::SetCurrentSetupStep,
-                          base::Unretained(helper_.get())));
-
-  EXPECT_TRUE(
-      helper_->WaitResult(true, DemoSetupController::DemoSetupStep::kComplete));
-  EXPECT_EQ("", GetDeviceRequisition());
-  EXPECT_EQ("", g_browser_process->local_state()->GetString(
-                    prefs::kDemoModeRetailerId));
-  EXPECT_EQ(
-      "", g_browser_process->local_state()->GetString(prefs::kDemoModeStoreId));
 }
 
 }  // namespace

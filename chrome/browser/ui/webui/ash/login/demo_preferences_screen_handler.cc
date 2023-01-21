@@ -28,16 +28,18 @@ void DemoPreferencesScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_DEMO_SETUP_PREFERENCES_SCREEN_NEXT_BUTTON_LABEL);
   builder->Add("countryDropdownTitle", IDS_COUNTRY_DROPDOWN_TITLE);
   builder->Add("countryDropdownLabel", IDS_COUNTRY_DROPDOWN_LABEL);
-  builder->Add("retailerIdInputLabel",
-               IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_ID_INPUT_LABEL);
-  builder->Add("retailerIdInputPlaceholder",
-               IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_ID_INPUT_PLACEHOLDER);
-  builder->Add("retailerIdInputHelpText",
-               IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_ID_INPUT_HELP_TEXT);
-  builder->Add("retailerIdInputPrivacyDisclaimer",
-               IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_ID_PRIVACY_DISCLAIMER);
-  builder->Add("retailerIdInputErrorText",
-               IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_ID_INPUT_ERROR_TEXT);
+  builder->Add("retailerNameInputLabel",
+               IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_NAME_INPUT_LABEL);
+  builder->Add("retailerNameInputPlaceholder",
+               IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_NAME_INPUT_PLACEHOLDER);
+  builder->Add("retailerPrivacyDisclaimer",
+               IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_PRIVACY_DISCLAIMER);
+  builder->Add("storeNumberInputLabel",
+               IDS_OOBE_DEMO_SETUP_PREFERENCES_STORE_NUMBER_INPUT_LABEL);
+  builder->Add("storeNumberInputPlaceholder",
+               IDS_OOBE_DEMO_SETUP_PREFERENCES_STORE_NUMBER_INPUT_PLACEHOLDER);
+  builder->Add("storeNumberInputHelpText",
+               IDS_OOBE_DEMO_SETUP_PREFERENCES_STORE_NUMBER_INPUT_HELP_TEXT);
 }
 
 }  // namespace ash

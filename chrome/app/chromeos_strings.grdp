@@ -833,22 +833,25 @@
   <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_SCREEN_NEXT_BUTTON_LABEL" desc="The label of the button that is shown on preferences screen and that confirms chosen configuration and shows next demo setup screen.">
     Continue
   </message>
-  <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_ID_INPUT_LABEL" desc="Label for retailer id input field on the demo mode setup screen. User should provide the retailer id if assigned.">
-    Retailer-store ID code (optional)
+  <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_NAME_INPUT_LABEL" desc="Label for required retailer name input field on the demo mode setup screen.">
+    Retailer Name
   </message>
-  <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_ID_INPUT_PLACEHOLDER" desc="Placeholder for retailer id input field on the demo mode setup screen.">
-    Retailer-store ID code
+  <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_NAME_INPUT_PLACEHOLDER" desc="Placeholder for retailer name input field on the demo mode setup screen.">
+    Retailer Name
   </message>
-  <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_ID_INPUT_ERROR_TEXT" desc="Help text for retailer id input field on the demo mode setup screen.">
-    Invalid ID. The format you entered is incorrect. Please check the instructions you received to ensure you are entering the ID in the correct format. If you’re unable to resolve this issue, please leave the field blank and continue with installation.
+  <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_PRIVACY_DISCLAIMER" desc="Instructions and privacy disclaimer text for the retailer and store number input fields on the demo mode setup screen.">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Enter the name of the retailer and the store number that this demo device is being configured for*. <ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>If you don't know the store number, you can enter "0000" to continue with Demo Mode installation. <ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>*Note: Google uses this information to identify which version of Demo Mode the device should receive and to measure usage of Demo Mode.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
   </message>
-  <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_ID_INPUT_HELP_TEXT" desc="Help text for retailer id input field on the demo mode setup screen.">
-    The retailer-store ID format is ABC-1234
+  <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_STORE_NUMBER_INPUT_LABEL" desc="Label for store number input field on the demo mode setup screen. Input is required.">
+  Store Number
   </message>
-  <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_ID_PRIVACY_DISCLAIMER" desc="Privacy disclaimer text for retailer id input field on the demo mode setup screen.">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>If you received instructions to enter a retailer-store ID code during Demo Mode installation, please enter it on the right*.  Otherwise, you can leave this field blank and continue.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You will still be able to install Demo Mode without a code, but it’s important to enter this code if it’s applicable to your store.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>*Note: Google uses these codes to identify which version of Demo Mode the device should receive and to measure usage of Demo Mode.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
+  <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_STORE_NUMBER_INPUT_PLACEHOLDER" desc="Placeholder for store number input field on the demo mode setup screen">
+  Store Number
+  </message>
+  <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_STORE_NUMBER_INPUT_HELP_TEXT" desc="Help text for store number input field on the demo mode setup screen">
+  Use numerical digits only
   </message>
   <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_SCREEN_COUNTRY_NOT_SELECTED_TITLE" desc="The title of country not selected option for demo mode preference screen.">
     Please select a country

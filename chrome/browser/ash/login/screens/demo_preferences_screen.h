@@ -33,8 +33,6 @@ class DemoPreferencesScreen : public BaseScreen {
   ~DemoPreferencesScreen() override;
 
   void SetDemoModeCountry(const std::string& country_id);
-  void SetDemoModeRetailerAndStoreIdInput(
-      const std::string& retailer_store_id_input);
 
  protected:
   // BaseScreen:

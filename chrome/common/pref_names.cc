@@ -2505,10 +2505,14 @@ const char kDemoModeConfig[] = "demo_mode.config";
 // A string pref holding the value of the current country for demo sessions.
 const char kDemoModeCountry[] = "demo_mode.country";
 
-// A string pref holding the value of the retailer id input for demo sessions.
+// A string pref holding the value of the retailer name input for demo sessions.
+// This is now mostly called "retailer_name" in code other than in this pref and
+// in Omaha request attributes
 const char kDemoModeRetailerId[] = "demo_mode.retailer_id";
 
-// A string pref holding the value of the store id input for demo sessions.
+// A string pref holding the value of the store number input for demo sessions.
+// This is now mostly called "store_number" in code other than in this pref and
+// in Omaha request attributes
 const char kDemoModeStoreId[] = "demo_mode.store_id";
 
 // A string pref holding the value of the default locale for demo sessions.

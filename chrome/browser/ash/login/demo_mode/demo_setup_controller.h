@@ -202,14 +202,12 @@ class DemoSetupController
     demo_config_ = demo_config;
   }
 
-  std::string& get_retailer_store_id_input() {
-    return retailer_store_id_input_;
+  void set_retailer_name(const std::string& retailer_name) {
+    retailer_name_ = retailer_name;
   }
 
-  // Sets demo mode retailer id input by the user. It will be saved as local
-  // prefs when enrollment completes.
-  void set_retailer_store_id_input(const std::string& retailer_store_id_input) {
-    retailer_store_id_input_ = retailer_store_id_input;
+  void set_store_number(const std::string& store_number) {
+    store_number_ = store_number;
   }
 
   // Initiates enrollment that sets up the device in the demo mode domain. The
@@ -260,9 +258,6 @@ class DemoSetupController
   // Sets current setup step.
   void SetCurrentSetupStep(DemoSetupStep current_step);
 
-  // Sets retailer and store id in local pref.
-  void SetRetailerAndStoreIdInPref();
-
   // Finish the flow with an error.
   void SetupFailed(const DemoSetupError& error);
 
@@ -279,7 +274,12 @@ class DemoSetupController
   // setup.
   int num_setup_retries_ = 0;
 
-  std::string retailer_store_id_input_;
+  // Name of retailer entered during setup flow. Corresponds to the
+  // kDemoModeRetailerId pref.
+  std::string retailer_name_;
+  // Store number entered during setup flow. Corresponds to the kDemoModeStoreId
+  // pref.
+  std::string store_number_;
 
   // Demo mode configuration type that will be setup when Enroll() is called.
   // Should be set explicitly.

@@ -73,24 +73,41 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
         value: false,
       },
 
-      is_input_invalid_: {
+      /**
+       * Indicates whether the next button is enabled and the user can continue.
+       * @private {boolean}
+       */
+      user_can_continue_: {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
-        observer: 'isInputInvalidObserver_',
+        computed: `userCanContinue_(retailer_name_input_,
+                                    store_number_input_,
+                                    is_country_selected_)`,
       },
 
-      retailer_id_input_: {
+      retailer_name_input_: {
         type: String,
         value: '',
-        observer: 'retailerIdObserver_',
       },
 
-      retailer_id_input_pattern_: {
+      store_number_input_: {
         type: String,
-        value: '^[A-Z]{3}-[0-9]{4}$',
+        value: '',
       },
 
+      /**
+       * Indicates whether the string entered for store_number_input_ is
+       * invalid. Note that we have to use a negative boolean here so that we
+       * can style the helper text based on this value.
+       * @private {boolean}
+       */
+      store_number_input_invalid_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+        computed: 'isStoreNumberInputInvalid_(store_number_input_)',
+      },
     };
   }
 
@@ -189,28 +206,28 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
     }
   }
 
-  getRetailerIdInputDisplayText_() {
-    if (this.is_input_invalid_) {
-      return this.i18n('retailerIdInputErrorText');
-    }
-    return this.i18n('retailerIdInputHelpText');
+  /**
+   * Determines whether the Next button is enabled and the user may continue.
+   * Based on the country, retailer name, and store number preferences being
+   * correctly set.
+   *
+   * @private
+   */
+  userCanContinue_(
+      retailer_name_input_, store_number_input_, is_country_selected_) {
+    return retailer_name_input_ &&
+        RegExp('^[0-9]+$').test(store_number_input_) && is_country_selected_;
   }
 
-  retailerIdObserver_() {
-    if (!this.retailer_id_input_) {
-      this.is_input_invalid_ = false;
-    } else {
-      this.is_input_invalid_ = !RegExp(this.retailer_id_input_pattern_)
-                                    .test(this.retailer_id_input_);
-    }
-  }
-
-  isInputInvalidObserver_() {
-    if (this.is_input_invalid_) {
-      this.$.nextButton.disabled = true;
-    } else {
-      this.$.nextButton.disabled = false;
-    }
+  /**
+   * Validates store number input for styling the input helper text. Note we
+   * only consider the input invalid if it's nonempty, thus the different
+   * pattern than in {@link userCanContinue_}
+   *
+   * @private
+   */
+  isStoreNumberInputInvalid_(store_number_input_) {
+    return !RegExp('^[0-9]*$').test(store_number_input_);
   }
 
   /**
@@ -224,8 +241,11 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
         event.detail.value !== this.country_not_selected_id_;
   }
 
-  onKeydownRetailerIdInput_(e) {
-    if (e.key == 'Enter') {
+  onInputKeyDown_(e) {
+    if (e.key == 'Enter' &&
+        this.userCanContinue_(
+            this.retailer_name_input_, this.store_number_input_,
+            this.is_country_selected_)) {
       this.onNextClicked_();
     }
   }
@@ -243,7 +263,11 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
    * @private
    */
   onNextClicked_() {
-    this.userActed(['continue-setup', this.retailer_id_input_]);
+    this.userActed([
+      'continue-setup',
+      this.retailer_name_input_,
+      this.store_number_input_,
+    ]);
   }
 }
 
