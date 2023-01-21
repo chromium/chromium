@@ -40,6 +40,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/features.h"
 #include "content/common/frame_messages.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -22171,22 +22172,61 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(b1_navigation.GetNavigationHandle());
 
   // 4) Start a same-RFH navigation to A3 after B1 gets to "pending commit"
-  // stage, which won't cancel the previous cross-RFH navigation to B1, as B1's
-  // NavigationRequest had moved.
+  // stage. The behavior depends on whether
+  // the kAvoidUnnecessaryNavigationCancellations flag is enabled or not:
+  // - If the flag is enabled, A3's navigation won't cancel the previous
+  //  cross-RFH navigation to B1, as B1's NavigationRequest had moved.
+  // - If the flag is disabled,  A3's navigation will cancel the previous
+  // cross-RFH navigation to B1, because when a same-RFH navigation starts
+  // it will delete the speculative RFH.
   TestNavigationManager a3_navigation(shell()->web_contents(), url_a3);
   EXPECT_TRUE(b1_navigation.WaitForResponse());
   StartNavigationOnReadyToCommit(shell(), b1_navigation, url_a3);
 
-  // Assert that the navigation to B1 didn't get cancelled, and finish
-  // committing B1. This shouldn't cancel the navigation to A3.
-  ASSERT_TRUE(b1_navigation.WaitForNavigationFinished());
-  EXPECT_TRUE(b1_navigation.was_successful());
+  if (base::FeatureList::IsEnabled(kAvoidUnnecessaryNavigationCancellations)) {
+    // Assert that the navigation to B1 didn't get cancelled, and finish
+    // committing B1. This shouldn't cancel the navigation to A3.
+    ASSERT_TRUE(b1_navigation.WaitForNavigationFinished());
+    EXPECT_TRUE(b1_navigation.was_successful());
 
-  // B1's navigation commit didn't cancel A3's navigation.
-  EXPECT_TRUE(a3_navigation.WaitForResponse());
-  EXPECT_TRUE(a3_navigation.GetNavigationHandle());
-  ASSERT_TRUE(a3_navigation.WaitForNavigationFinished());
-  EXPECT_TRUE(a3_navigation.was_successful());
+    // B1's navigation commit didn't cancel A3's navigation.
+    EXPECT_TRUE(a3_navigation.WaitForResponse());
+    EXPECT_TRUE(a3_navigation.GetNavigationHandle());
+    ASSERT_TRUE(a3_navigation.WaitForNavigationFinished());
+    EXPECT_TRUE(a3_navigation.was_successful());
+  } else {
+    EXPECT_TRUE(a3_navigation.WaitForResponse());
+    EXPECT_EQ(url_a3, a3_navigation.GetNavigationHandle()->GetURL());
+    EXPECT_EQ(root->navigation_request(), a3_navigation.GetNavigationHandle());
+
+    // Assert that the navigation to B1 gets cancelled.
+    EXPECT_TRUE(b1_navigation.WaitForNavigationFinished());
+    EXPECT_FALSE(b1_navigation.was_committed());
+
+    // 5) Start a cross-RFH navigation to B2 after A3 gets to "pending commit"
+    // stage, which will cancel the previous same-RFH navigation to A3 when B2
+    // commits first, because when the previous RFH gets unloaded it will
+    // cancel all ongoing navigations in the pending deletion RFH.
+    TestNavigationManager b2_navigation(shell()->web_contents(), url_b2);
+    // Ignore A3's commit so that B2's navigation can start and finish
+    // committing before A3 finishes committing.
+    DidCommitNavigationCanceller ignore_a3_commit(
+        shell()->web_contents(), url_a3,
+        base::BindLambdaForTesting([&]() { shell()->LoadURL(url_b2); }));
+    // Continue the A3 navigation, but its commit will be dropped.
+    a3_navigation.ResumeNavigation();
+    // The navigation to B2 will start, but won't cancel A3's navigation just
+    // yet.
+    EXPECT_TRUE(b2_navigation.WaitForResponse());
+    EXPECT_TRUE(a3_navigation.GetNavigationHandle());
+
+    // The navigation to B2 finished committing, and cancels A3's navigation.
+    EXPECT_TRUE(b2_navigation.WaitForNavigationFinished());
+    EXPECT_TRUE(b2_navigation.was_successful());
+    // Assert A3's navigation finished but didn't get committed.
+    EXPECT_TRUE(a3_navigation.WaitForNavigationFinished());
+    EXPECT_FALSE(a3_navigation.was_committed());
+  }
 }
 
 // Tests that calling FrameTreeNode::ResetNavigationRequest() cancels the
@@ -22252,6 +22292,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 // cancel other navigations happening in the same FrameTreeNode.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        UnloadingPreviousRFHOnCommitWontCancelNavigation) {
+  if (!base::FeatureList::IsEnabled(kAvoidUnnecessaryNavigationCancellations)) {
+    return;
+  }
   GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b1(embedded_test_server()->GetURL("b.com", "/title1.html"));
   GURL url_b2(embedded_test_server()->GetURL("b.com", "/title2.html"));

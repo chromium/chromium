@@ -1043,10 +1043,17 @@ void RenderFrameHostManager::RestorePage(
   // in the long run. For now, and to avoid complex edge cases, we simply reuse
   // it to preserve the understood logic in CommitPending.
 
-  // There should be no speculative RFH at this point. With BackForwardCache, it
+  // When the kAvoidUnnecessaryNavigationCancellations flag is disabled, there
+  // should be no speculative RFH at this point. With BackForwardCache, it
   // should have never been created, and with prerender activation, it should
   // have been cleared out earlier.
-  DCHECK(!speculative_render_frame_host_);
+  // TODO(https://crbug.com/1220337): Ensure we aren't deleting a pending commit
+  // RFH.
+  DCHECK(
+      base::FeatureList::IsEnabled(kAvoidUnnecessaryNavigationCancellations) ||
+      !speculative_render_frame_host_);
+  SCOPED_CRASH_KEY_BOOL("Bug1407526", "spec_rfh_exists",
+                        !!speculative_render_frame_host_);
   speculative_render_frame_host_ = stored_page->TakeRenderFrameHost();
   // Now |stored_page| is destroyed and thus does not monitor cookie changes any
   // more. This is okay as eviction would not happen from this point.
