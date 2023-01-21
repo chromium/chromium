@@ -37,21 +37,11 @@
   }
 
   :host([is-output-muted_]) #audioOutputMuteButton {
-    --cr-icon-button-fill-color: var(--cros-color-prominent);
-    background-color: var(--cros-ripple-color-prominent);
-  }
-
-  :host([is-output-muted_]) #audioOutputMuteButton:hover {
-    --cr-icon-button-fill-color: var(--cros-color-prominent);
-    background-color: var(--cros-highlight-color);
+    --cr-icon-button-fill-color: var(--cros-color-secondary);
   }
 
   :host(:not([is-output-muted_])) #audioOutputMuteButton {
-    --cr-icon-button-fill-color: var(--cros-color-primary);
-  }
-
-  :host(:not([is-output-muted_])) #audioOutputMuteButton:hover {
-    --cr-icon-button-fill-color: var(--cros-color-primary);
+    --cr-icon-button-fill-color: var(--cros-color-prominent);
   }
 
   :host([is-input-muted_]) #audioInputGainVolumeSlider {
@@ -97,7 +87,8 @@
         </div>
         <div class="audio-options-container">
           <cr-icon-button class="audio-mute-button"
-              id="audioOutputMuteButton" iron-icon="settings:volume-up-off"
+              id="audioOutputMuteButton"
+              iron-icon="[[getOutputIcon_(isOutputMuted_, outputVolume_)]]"
               on-click="onOutputMuteButtonClicked">
           </cr-icon-button>
           <cr-slider class="audio-slider"
