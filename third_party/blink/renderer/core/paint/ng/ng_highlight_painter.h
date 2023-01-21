@@ -203,9 +203,8 @@ class CORE_EXPORT NGHighlightPainter {
 
    public:
     LayerPaintState(NGHighlightOverlay::HighlightLayer id,
-                    scoped_refptr<const ComputedStyle> style,
-                    TextPaintStyle text_style)
-        : id(id), style(std::move(style)), text_style(text_style) {}
+                    const ComputedStyle* style,
+                    TextPaintStyle text_style);
 
     // Equality on HighlightLayer id only, for Vector::Find.
     bool operator==(const LayerPaintState&) const = delete;
@@ -214,12 +213,16 @@ class CORE_EXPORT NGHighlightPainter {
     bool operator!=(const NGHighlightOverlay::HighlightLayer&) const;
 
     const NGHighlightOverlay::HighlightLayer id;
-    const scoped_refptr<const ComputedStyle> style;
+    const ComputedStyle* style;
     const TextPaintStyle text_style;
-    // TextDecorationInfo is stack allocated only type, but we're using it
-    // as a stored type here, which shouldn't be permitted.
-    GC_PLUGIN_IGNORE("crbug.com/1404921")
-    absl::optional<TextDecorationInfo> decoration_info{};
+    const TextDecorationLine decorations_in_effect;
+  };
+  struct CachedDecorationInfo {
+    STACK_ALLOCATED();
+
+   public:
+    absl::optional<NGHighlightOverlay::HighlightLayer> id{};
+    absl::optional<TextDecorationInfo> info{};
   };
 
   Case ComputePaintCase() const;
@@ -248,6 +251,9 @@ class CORE_EXPORT NGHighlightPainter {
       const NGHighlightOverlay::HighlightPart&);
   void PaintSpellingGrammarDecorations(
       const NGHighlightOverlay::HighlightPart&);
+  TextDecorationInfo& DecorationInfoForLayer(
+      const LayerPaintState&,
+      absl::optional<TextDecorationInfo>&);
 
   const NGTextFragmentPaintInfo& fragment_paint_info_;
   NGTextPainter& text_painter_;
@@ -272,6 +278,7 @@ class CORE_EXPORT NGHighlightPainter {
   DocumentMarkerVector custom_;
   Vector<LayerPaintState> layers_;
   Vector<NGHighlightOverlay::HighlightPart> parts_;
+  CachedDecorationInfo decoration_cache_[2];
   const bool skip_backgrounds_;
   Case paint_case_;
 };

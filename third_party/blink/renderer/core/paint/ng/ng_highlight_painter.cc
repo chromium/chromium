@@ -554,7 +554,7 @@ NGHighlightPainter::NGHighlightPainter(
       if (layers[i].type == HighlightLayerType::kOriginating) {
         layers_.push_back(LayerPaintState{
             layers[i],
-            WrapRefCounted(&originating_style_),
+            &originating_style_,
             originating_text_style_,
         });
       } else {
@@ -562,17 +562,33 @@ NGHighlightPainter::NGHighlightPainter(
             layers[i],
             HighlightPaintingUtils::HighlightPseudoStyle(
                 node_, originating_style_, layers[i].PseudoId(),
-                layers[i].PseudoArgument()),
+                layers[i].PseudoArgument())
+                .get(),
             HighlightPaintingUtils::HighlightPaintingStyle(
                 document, originating_style_, node_, layers[i].PseudoId(),
                 layers_[i - 1].text_style, paint_info_,
                 layers[i].PseudoArgument()),
         });
       }
-      if (layers_[i].style) {
-        decoration_painter_.UpdateDecorationInfo(layers_[i].decoration_info,
-                                                 *layers_[i].style,
-                                                 layers_[i].text_style);
+      if (layers_[i].decorations_in_effect != TextDecorationLine::kNone) {
+        // Cache the TextDecorationInfo for up to two highlight layers that have
+        // line decorations, e.g. originating content might have a line-through
+        // and underline, and spelling error might have a spelling decoration.
+        //
+        // Since highlights can break text into many parts that are painted in
+        // overlay order, and within each part the decorations are ordered by
+        // type *then* by overlay, computing TextDecorationInfo on the fly can
+        // be very wasteful.
+        for (CachedDecorationInfo& cached_decorations : decoration_cache_) {
+          if (!cached_decorations.id.has_value()) {
+            cached_decorations.id = layers_[i].id;
+            decoration_painter_.UpdateDecorationInfo(cached_decorations.info,
+                                                     *layers_[i].style,
+                                                     layers_[i].text_style);
+            DCHECK(cached_decorations.info);
+            break;
+          }
+        }
       }
     }
   }
@@ -1116,9 +1132,9 @@ void NGHighlightPainter::PaintDecorationsExceptLineThrough(
 
     // Clipping the canvas unnecessarily is expensive, so avoid doing it if
     // there are no decorations of the given |lines_to_paint|.
-    if (!decoration_layer.decoration_info ||
-        !decoration_layer.decoration_info->HasAnyLine(lines_to_paint))
+    if (!EnumHasFlags(decoration_layer.decorations_in_effect, lines_to_paint)) {
       continue;
+    }
 
     // SVG painting currently ignores ::selection styles, and will malfunction
     // or crash if asked to paint decorations introduced by highlight pseudos.
@@ -1129,6 +1145,10 @@ void NGHighlightPainter::PaintDecorationsExceptLineThrough(
       continue;
     }
 
+    absl::optional<TextDecorationInfo> decoration_info_if_cache_miss{};
+    TextDecorationInfo& decoration_info =
+        DecorationInfoForLayer(decoration_layer, decoration_info_if_cache_miss);
+
     if (!state_saver.Saved()) {
       state_saver.Save();
       ClipToPartDecorations(part);
@@ -1137,13 +1157,13 @@ void NGHighlightPainter::PaintDecorationsExceptLineThrough(
     if (part.layer.type != HighlightLayerType::kOriginating) {
       if (decoration_layer_id.type == HighlightLayerType::kOriginating) {
         wtf_size_t part_layer_index = layers_.Find(part.layer);
-        decoration_layer.decoration_info->SetHighlightOverrideColor(
+        decoration_info.SetHighlightOverrideColor(
             layers_[part_layer_index].text_style.current_color);
       } else {
-        decoration_layer.decoration_info->SetHighlightOverrideColor(
+        decoration_info.SetHighlightOverrideColor(
             HighlightPaintingUtils::ResolveColor(
                 layout_object_->GetDocument(), originating_style_,
-                decoration_layer.style.get(), decoration_layer.id.PseudoId(),
+                decoration_layer.style, decoration_layer.id.PseudoId(),
                 GetCSSPropertyTextDecorationColor(),
                 layers_[decoration_layer_index - 1].text_style.current_color));
       }
@@ -1152,7 +1172,7 @@ void NGHighlightPainter::PaintDecorationsExceptLineThrough(
     text_painter_.PaintDecorationsExceptLineThrough(
         fragment_paint_info_.Slice(part.from, part.to), fragment_item_,
         paint_info_, *decoration_layer.style, decoration_layer.text_style,
-        *decoration_layer.decoration_info, lines_to_paint, decoration_rect_);
+        decoration_info, lines_to_paint, decoration_rect_);
   }
 }
 
@@ -1168,10 +1188,10 @@ void NGHighlightPainter::PaintDecorationsOnlyLineThrough(
 
     // Clipping the canvas unnecessarily is expensive, so avoid doing it if
     // there are no ‘line-through’ decorations.
-    if (!decoration_layer.decoration_info ||
-        !decoration_layer.decoration_info->HasAnyLine(
-            TextDecorationLine::kLineThrough))
+    if (!EnumHasFlags(decoration_layer.decorations_in_effect,
+                      TextDecorationLine::kLineThrough)) {
       continue;
+    }
 
     // SVG painting currently ignores ::selection styles, and will malfunction
     // or crash if asked to paint decorations introduced by highlight pseudos.
@@ -1182,6 +1202,10 @@ void NGHighlightPainter::PaintDecorationsOnlyLineThrough(
       continue;
     }
 
+    absl::optional<TextDecorationInfo> decoration_info_if_cache_miss{};
+    TextDecorationInfo& decoration_info =
+        DecorationInfoForLayer(decoration_layer, decoration_info_if_cache_miss);
+
     if (!state_saver.Saved()) {
       state_saver.Save();
       ClipToPartDecorations(part);
@@ -1190,13 +1214,13 @@ void NGHighlightPainter::PaintDecorationsOnlyLineThrough(
     if (part.layer.type != HighlightLayerType::kOriginating) {
       if (decoration_layer_id.type == HighlightLayerType::kOriginating) {
         wtf_size_t part_layer_index = layers_.Find(part.layer);
-        decoration_layer.decoration_info->SetHighlightOverrideColor(
+        decoration_info.SetHighlightOverrideColor(
             layers_[part_layer_index].text_style.current_color);
       } else {
-        decoration_layer.decoration_info->SetHighlightOverrideColor(
+        decoration_info.SetHighlightOverrideColor(
             HighlightPaintingUtils::ResolveColor(
                 layout_object_->GetDocument(), originating_style_,
-                decoration_layer.style.get(), decoration_layer.id.PseudoId(),
+                decoration_layer.style, decoration_layer.id.PseudoId(),
                 GetCSSPropertyTextDecorationColor(),
                 layers_[decoration_layer_index - 1].text_style.current_color));
       }
@@ -1204,8 +1228,7 @@ void NGHighlightPainter::PaintDecorationsOnlyLineThrough(
 
     text_painter_.PaintDecorationsOnlyLineThrough(
         fragment_item_, paint_info_, *decoration_layer.style,
-        decoration_layer.text_style, *decoration_layer.decoration_info,
-        decoration_rect_);
+        decoration_layer.text_style, decoration_info, decoration_rect_);
   }
 }
 
@@ -1256,6 +1279,29 @@ void NGHighlightPainter::PaintSpellingGrammarDecorations(
     }
   }
 }
+
+TextDecorationInfo& NGHighlightPainter::DecorationInfoForLayer(
+    const LayerPaintState& layer,
+    absl::optional<TextDecorationInfo>& result_if_cache_miss) {
+  for (CachedDecorationInfo& cached_decorations : decoration_cache_) {
+    if (cached_decorations.id == layer.id) {
+      return cached_decorations.info.value();
+    }
+  }
+  decoration_painter_.UpdateDecorationInfo(result_if_cache_miss, *layer.style,
+                                           layer.text_style);
+  return result_if_cache_miss.value();
+}
+
+NGHighlightPainter::LayerPaintState::LayerPaintState(
+    NGHighlightOverlay::HighlightLayer id,
+    const ComputedStyle* style,
+    TextPaintStyle text_style)
+    : id(id),
+      style(style),
+      text_style(text_style),
+      decorations_in_effect(style ? style->TextDecorationsInEffect()
+                                  : TextDecorationLine::kNone) {}
 
 bool NGHighlightPainter::LayerPaintState::operator==(
     const HighlightLayer& other) const {
