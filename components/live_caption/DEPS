@@ -16,6 +16,8 @@ include_rules = [
   "+net/http/http_request_headers.h",
   "+services/data_decoder/public",
   "+services/network/public",
+  "+testing/gmock",
+  "+testing/gtest",
   "+third_party/re2",
   "+ui/accessibility",
   "+ui/base",

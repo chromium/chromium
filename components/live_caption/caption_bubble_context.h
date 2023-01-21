@@ -53,9 +53,14 @@ class CaptionBubbleContext {
   // in child classes, the child classes must set this to be true.
   virtual bool IsActivatable() const = 0;
 
-  // Gets the session observer for the caption bubble context. On Chrome
+  // Gets a session observer for the caption bubble context. On Chrome
   // browser, a caption bubble session is per-tab and resets when a user
   // navigates away or reloads the page.
+  //
+  // When this method is called, previously-created session observers are
+  // invalidated (i.e. they might not execute their session-end callback) but
+  // not destroyed.
+  //
   // TODO(launch/4200463): Implement this for Ash if necessary.
   virtual std::unique_ptr<CaptionBubbleSessionObserver>
   GetCaptionBubbleSessionObserver() = 0;
