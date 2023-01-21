@@ -507,6 +507,43 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragSingleBookmark) {
   run_loop->Run();
 }
 
+// A favicon update during drag shouldn't trigger the drag flow again. The test
+// passes if the favicon update does not cause a crash. (see
+// https://crbug.com/1364056)
+IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, FaviconChangeDuringBookmarkDrag) {
+  BookmarkModel* model = WaitForBookmarkModel(browser()->profile());
+  const std::u16string kPageTitle(u"foo");
+  const GURL kPageUrl("http://www.google.com");
+  const GURL kFaviconUrl("http://www.google.com/favicon.ico");
+  const BookmarkNode* root = model->bookmark_bar_node();
+  const BookmarkNode* node = model->AddURL(root, 0, kPageTitle, kPageUrl);
+  constexpr gfx::Point kExpectedPoint(100, 100);
+
+  auto run_loop = std::make_unique<base::RunLoop>();
+
+  chrome::DoBookmarkDragCallback cb = base::BindLambdaForTesting(
+      [&run_loop, model, kPageUrl, kFaviconUrl](
+          std::unique_ptr<ui::OSExchangeData> drag_data,
+          gfx::NativeView native_view, ui::mojom::DragEventSource source,
+          gfx::Point point, int operation) {
+        // Simulate a favicon change during the drag operation.
+        model->OnFaviconsChanged({kPageUrl}, kFaviconUrl);
+        run_loop->Quit();
+      });
+
+  constexpr int kDragNodeIndex = 0;
+  chrome::DragBookmarksForTest(
+      browser()->profile(),
+      {{node},
+       kDragNodeIndex,
+       browser()->tab_strip_model()->GetActiveWebContents(),
+       ui::mojom::DragEventSource::kMouse,
+       kExpectedPoint},
+      std::move(cb));
+
+  run_loop->Run();
+}
+
 // Provides coverage for the Bookmark Manager bookmark drag and drag image
 // generation for dragging multiple bookmarks.
 IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragMultipleBookmarks) {

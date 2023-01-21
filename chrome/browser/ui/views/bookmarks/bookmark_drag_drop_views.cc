@@ -257,6 +257,11 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
 
   void OnBookmarkIconLoaded(const BookmarkNode* drag_node,
                             const ui::ImageModel& icon) {
+    // This function should not be called a second time, even if the icon
+    // changes repeatedly.
+    DCHECK(!icon_loaded_);
+    icon_loaded_ = true;
+
     auto weak_this = GetWeakPtr();
     if (web_contents_) {
       const auto& color_provider = web_contents_->GetColorProvider();
@@ -295,8 +300,9 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
 
   void BookmarkNodeFaviconChanged(BookmarkModel* model,
                                   const BookmarkNode* node) override {
-    if (node->id() != drag_node_id_)
+    if (icon_loaded_ || node->id() != drag_node_id_) {
       return;
+    }
 
     const ui::ImageModel& image =
         ui::ImageModel::FromImage(model_->GetFavicon(node));
@@ -313,6 +319,7 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
   ui::mojom::DragEventSource source_;
   const gfx::Point start_point_;
   int operation_;
+  bool icon_loaded_ = false;
 
   DoBookmarkDragCallback do_drag_callback_;
 
