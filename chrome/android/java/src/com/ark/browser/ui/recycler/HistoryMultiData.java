@@ -86,6 +86,7 @@ public class HistoryMultiData extends BaseHeaderMultiData<HistoryItem>
         FaviconUtil.with(holder.getContext(), url)
                 .setCallback(result -> holder.setImageDrawable(R.id.iv_icon, result))
                 .start();
+        holder.setOnItemClickListener(view -> LoadUrlEvent.post(item.getUrl().getSpec()));
         ClickHelper.with(holder.getItemView())
                 .setOnLongClickListener((v, x, y) -> {
                     showMenu(holder, item, x, y);
@@ -158,6 +159,14 @@ public class HistoryMultiData extends BaseHeaderMultiData<HistoryItem>
     @Override
     public void hasOtherFormsOfBrowsingData(boolean hasOtherForms) {
 
+    }
+
+    @Override
+    public void onDestroy() {
+        if (historyProvider != null) {
+            historyProvider.destroy();
+            historyProvider = null;
+        }
     }
 }
 

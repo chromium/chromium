@@ -22,6 +22,7 @@ import com.zpj.fragmentation.dialog.ZDialog;
 import com.zpj.fragmentation.dialog.impl.InputDialogFragment;
 import com.zpj.recyclerview.EasyViewHolder;
 import com.zpj.statemanager.State;
+import com.zpj.toast.ZToast;
 import com.zpj.utils.ClickHelper;
 import com.zpj.utils.ContextUtils;
 
@@ -143,6 +144,14 @@ public class BookmarkMultiData extends BaseHeaderMultiData<BookmarkId> {
                         }
                     });
         }
+        holder.setOnItemClickListener(v -> {
+            if (bookmarkItem.isFolder()) {
+                ZToast.warning("TODO show folder");
+//                addScrollChild(item.getId(), bookmarkItem.getTitle());
+            } else {
+                LoadUrlEvent.post(bookmarkItem.getUrl().getSpec());
+            }
+        });
         ClickHelper.with(holder.getItemView())
                 .setOnLongClickListener((v, x, y) -> {
                     showMenu(holder, bookmarkItem, bookmarkItem.isFolder(), x, y);
@@ -162,6 +171,14 @@ public class BookmarkMultiData extends BaseHeaderMultiData<BookmarkId> {
             return 0;
         }
         return super.getCount();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (bookmarkModel != null) {
+            bookmarkModel.destroy();
+            bookmarkModel = null;
+        }
     }
 
     private void refresh() {

@@ -1,5 +1,7 @@
 package com.ark.browser.ui.fragment.collection.password;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,12 +22,17 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.ark.browser.ui.fragment.base.BaseSwipeBackFragment;
 import com.ark.browser.utils.KeyguardUtil;
+import com.zpj.fragmentation.SupportActivity;
 import com.zpj.fragmentation.dialog.ZDialog;
 import com.zpj.skin.SkinEngine;
 import com.zpj.toast.ZToast;
+import com.zpj.utils.ContextUtils;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -97,6 +104,22 @@ public class PasswordEntryEditor extends BaseSwipeBackFragment {
         PasswordEntryEditor fragment = new PasswordEntryEditor();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public void show(Context context) {
+        Activity activity = ContextUtils.getActivity(context);
+        if (activity instanceof SupportActivity) {
+            ((SupportActivity)activity).start(this);
+        } else {
+            if (!(activity instanceof FragmentActivity)) {
+                throw new RuntimeException("the context is not a FragmentActivity object!");
+            }
+
+            FragmentManager manager = ((FragmentActivity)activity).getSupportFragmentManager();
+            FragmentTransaction ft = manager.beginTransaction();
+            ft.add(this, "tag");
+            ft.commit();
+        }
     }
 
     public void setRemoveRunnable(Runnable runnable) {

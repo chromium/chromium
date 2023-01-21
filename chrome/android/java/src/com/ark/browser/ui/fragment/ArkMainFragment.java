@@ -30,6 +30,7 @@ import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.ui.fragment.base.BaseFragment;
 import com.ark.browser.ui.fragment.dialog.DownloadDialog;
+import com.ark.browser.ui.fragment.dialog.ExitDialog;
 import com.ark.browser.ui.widget.BottomControlBar;
 import com.ark.browser.ui.widget.BottomController;
 import com.ark.browser.ui.widget.homepage.TabSwitcherLayout;
@@ -284,7 +285,16 @@ public class ArkMainFragment extends BaseFragment implements
         if (mSwitcherManager != null && mSwitcherManager.onBackPressed()) {
             return true;
         }
-        return super.onBackPressedSupport();
+
+
+        if (mViewHolder != null && mViewHolder.onBackPressed()) {
+            return true;
+        }
+
+        new ExitDialog().show(context);
+
+
+        return true;
     }
 
     @Override
@@ -344,57 +354,6 @@ public class ArkMainFragment extends BaseFragment implements
 
         mViewHolder.setFocusable(false);
         mViewHolder.initCompositor(getWindowAndroid(), new ArkCompositorViewHolder.Callback() {
-
-            private final TabObserver observer = new EmptyTabObserver() {
-
-                @Override
-                public void onLoadProgressChanged(Tab tab, float progress) {
-                    super.onLoadProgressChanged(tab, progress);
-//                    ArkLogger.d(TAG, "onLoadProgressChanged tab=" + tab.getId() + " progress=" + progress);
-//                    if (progress >= 1f) {
-//                        mProgressBar.setVisibility(View.GONE);
-//                    } else {
-//                        mProgressBar.setVisibility(View.VISIBLE);
-//                        mProgressBar.setProgress((int) (progress * 100));
-//                    }
-                }
-
-                @Override
-                public void onUrlUpdated(Tab tab) {
-                    super.onUrlUpdated(tab);
-//                    if (tab == null) {
-//                        return;
-//                    }
-//                    mUrlBar.setText(tab.getUrl().getSpec());
-                }
-
-                @Override
-                public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
-                    super.onLoadStarted(tab, toDifferentDocument);
-//                    ArkLogger.d(TAG, "onLoadStarted tab=" + tab.getId());
-//                    mProgressBar.setVisibility(View.VISIBLE);
-//                    mProgressBar.setProgress(0);
-                }
-
-                @Override
-                public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
-//                    mProgressBar.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onPageLoadStarted(Tab tab, GURL url) {
-                    super.onPageLoadStarted(tab, url);
-//                    ArkLogger.d(TAG, "onPageLoadStarted tab=" + tab.getId());
-//                    mProgressBar.setVisibility(View.VISIBLE);
-//                    mProgressBar.setProgress(0);
-                }
-
-                @Override
-                public void onPageLoadFinished(Tab tab, GURL url) {
-//                    mProgressBar.setVisibility(View.GONE);
-                }
-            };
-
 
 //            @Override
 //            public boolean openNewPage(@NonNull Tab current, @TabLaunchType int type, String url) {

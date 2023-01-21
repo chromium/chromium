@@ -197,6 +197,7 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/recycler/FlowLayoutManager.java",
   "java/src/com/ark/browser/ui/recycler/HistoryMultiData.java",
   "java/src/com/ark/browser/ui/recycler/OfflinePageMultiData.java",
+  "java/src/com/ark/browser/ui/recycler/SavedPasswordMultiData.java",
 
   "java/src/com/ark/browser/ui/widget/AnimProgressBar.java",
   "java/src/com/ark/browser/ui/widget/BlockGraphView.java",

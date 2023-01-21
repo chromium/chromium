@@ -58,5 +58,13 @@ public abstract class BaseHeaderMultiData<T> extends ExpandableMultiData<T>
 
     }
 
+    public void onResume() {
+
+    }
+
+    public void onDestroy() {
+
+    }
+
 }
 

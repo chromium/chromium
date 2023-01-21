@@ -30,7 +30,8 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
-public class OfflinePageMultiData extends BaseHeaderMultiData<OfflinePageItem> implements Callback<List<OfflinePageItem>> {
+public class OfflinePageMultiData extends BaseHeaderMultiData<OfflinePageItem>
+        implements Callback<List<OfflinePageItem>> {
 
     private static final String TAG = "BookmarkMultiData";
 

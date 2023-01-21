@@ -1,6 +1,5 @@
 package com.ark.browser.ui.fragment.collection;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -120,6 +119,14 @@ public class CollectionFragment extends BaseSwipeBackFragment implements CustomH
             }
         });
         mViewPager.setCurrentItem(position);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mHeaderLayout != null) {
+            mHeaderLayout.onResume();
+        }
     }
 
     @Override

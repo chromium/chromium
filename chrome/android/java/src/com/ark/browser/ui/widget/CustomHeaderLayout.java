@@ -26,12 +26,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.ark.browser.ui.fragment.dialog.RecyclerPartShadowDialogFragment;
+import com.ark.browser.ui.recycler.BaseHeaderMultiData;
 import com.ark.browser.ui.recycler.BookmarkMultiData;
 import com.ark.browser.ui.recycler.HistoryMultiData;
 import com.ark.browser.ui.recycler.OfflinePageMultiData;
+import com.ark.browser.ui.recycler.SavedPasswordMultiData;
 import com.zpj.recyclerview.MultiData;
 import com.zpj.recyclerview.MultiRecycler;
-import com.zpj.recyclerview.decoration.StickyHeaderItemDecoration;
 import com.zpj.recyclerview.manager.MultiLayoutManager;
 import com.zpj.skin.SkinEngine;
 import com.zpj.utils.KeyboardUtils;
@@ -244,21 +245,24 @@ public class CustomHeaderLayout extends ViewGroup implements NestedScrollingPare
                     String keyword = s.toString();
                     if (TextUtils.isEmpty(keyword)) {
                         if (mProgress == 0f) {
-                            post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    multiDataList.clear();
-                                    mRecycler.notifyDataSetChanged();
-                                }
+                            post(() -> {
+                                multiDataList.clear();
+                                mRecycler.notifyDataSetChanged();
                             });
                         }
                         return;
+                    }
+                    for (MultiData<?> multiData : multiDataList) {
+                        if (multiData instanceof BaseHeaderMultiData) {
+                            ((BaseHeaderMultiData<?>) multiData).onDestroy();
+                        }
                     }
                     multiDataList.clear();
 
                     multiDataList.add(new BookmarkMultiData(keyword));
                     multiDataList.add(new HistoryMultiData(keyword));
                     multiDataList.add(new OfflinePageMultiData(keyword));
+                    multiDataList.add(new SavedPasswordMultiData(keyword));
                     mRecycler.notifyDataSetChanged();
                 }
             }
@@ -531,6 +535,14 @@ public class CustomHeaderLayout extends ViewGroup implements NestedScrollingPare
 
     public void setOnProgressChangeListener(OnProgressChangeListener onProgressChangeListener) {
         this.onProgressChangeListener = onProgressChangeListener;
+    }
+
+    public void onResume() {
+        for (MultiData<?> multiData : multiDataList) {
+            if (multiData instanceof BaseHeaderMultiData) {
+                ((BaseHeaderMultiData<?>) multiData).onResume();
+            }
+        }
     }
 
     public void enterSearch() {
