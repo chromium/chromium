@@ -252,7 +252,7 @@ TEST(LegacyCOMClassesTest, CheckLegacyInterfaceIDs) {
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(GoogleUpdate3WebSystemClass)),
             L"{8A1D4361-2C08-4700-A351-3EAA9CBFF5E4}");
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(GoogleUpdate3WebServiceClass)),
-            L"{534F5323-3569-4f42-919D-1E1CF93E5BF6}");
+            L"{534F5323-3569-4F42-919D-1E1CF93E5BF6}");
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(PolicyStatusUserClass)),
             L"{6DDCE70D-A4AE-4E97-908C-BE7B2DB750AD}");
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(PolicyStatusSystemClass)),
