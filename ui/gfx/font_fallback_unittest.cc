@@ -19,10 +19,6 @@
 #include "ui/gfx/platform_font.h"
 #include "ui/gfx/test/font_fallback_test_data.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
 namespace gfx {
 
 namespace {
@@ -169,15 +165,6 @@ TEST_P(GetFallbackFontTest, GetFallbackFont) {
         base_font.Derive(base_font_option_.delta, base_font_option_.style,
                          base_font_option_.weight);
   }
-
-#if BUILDFLAG(IS_WIN)
-  // Skip testing this call to GetFallbackFont on older windows versions. Some
-  // fonts only got introduced on windows 10 and the test will fail on previous
-  // versions.
-  const bool is_win10 = base::win::GetVersion() >= base::win::Version::WIN10;
-  if (test_case_.is_win10 && !is_win10)
-    return;
-#endif
 
   // Retrieve the name of the current script.
   script_name_ = uscript_getName(test_case_.script);

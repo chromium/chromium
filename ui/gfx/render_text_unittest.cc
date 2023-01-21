@@ -10,6 +10,8 @@
 
 #include <memory>
 #include <numeric>
+#include <set>
+#include <tuple>
 
 #include "base/format_macros.h"
 #include "base/i18n/break_iterator.h"
@@ -55,8 +57,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
-
-#include "base/win/windows_version.h"
 #endif
 
 #if BUILDFLAG(IS_APPLE)
@@ -3451,7 +3451,8 @@ TEST_F(RenderTextTest, GetDisplayTextDirection) {
     for (size_t j = 0; j < std::size(cases); j++) {
       render_text->SetText(cases[j].text);
       render_text->SetDirectionalityMode(DIRECTIONALITY_FROM_TEXT);
-      EXPECT_EQ(render_text->GetDisplayTextDirection(),cases[j].text_direction);
+      EXPECT_EQ(render_text->GetDisplayTextDirection(),
+                cases[j].text_direction);
       render_text->SetDirectionalityMode(DIRECTIONALITY_FROM_UI);
       EXPECT_EQ(render_text->GetDisplayTextDirection(), ui_direction);
       render_text->SetDirectionalityMode(DIRECTIONALITY_FORCE_LTR);
@@ -6442,11 +6443,7 @@ TEST_F(RenderTextTest, MicrosoftSpecificPrivateUseCharacterReplacement) {
     RenderText* render_text = GetRenderText();
     render_text->SetText(codepoint);
 #if BUILDFLAG(IS_WIN)
-    if (base::win::GetVersion() >= base::win::Version::WIN10) {
-      EXPECT_EQ(codepoint, render_text->GetDisplayText());
-    } else {
-      EXPECT_EQ(u"\uFFFD", render_text->GetDisplayText());
-    }
+    EXPECT_EQ(codepoint, render_text->GetDisplayText());
 #else
     EXPECT_EQ(u"\uFFFD", render_text->GetDisplayText());
 #endif
@@ -6932,11 +6929,8 @@ TEST_F(RenderTextTest, HarfBuzz_ShapeRunsWithMultipleFonts) {
   EXPECT_EQ("[0->2][3][4->6]", GetRunListStructureString());
 
 #if BUILDFLAG(IS_WIN)
-  std::vector<std::string> expected_fonts;
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    expected_fonts = {"Segoe UI", "Segoe UI", "Segoe UI Symbol"};
-  else
-    expected_fonts = {"Segoe UI Emoji", "Segoe UI", "Segoe UI Symbol"};
+  const std::vector<std::string> expected_fonts = {"Segoe UI Emoji", "Segoe UI",
+                                                   "Segoe UI Symbol"};
 
   std::vector<std::string> mapped_fonts;
   for (const auto& font_span : GetFontSpans())

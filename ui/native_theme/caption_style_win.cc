@@ -280,12 +280,10 @@ absl::optional<CaptionStyle> InitializeFromSystemSettings() {
 }  // namespace
 
 absl::optional<CaptionStyle> CaptionStyle::FromSystemSettings() {
-  if (base::win::GetVersion() >= base::win::Version::WIN10 &&
-      base::FeatureList::IsEnabled(features::kSystemCaptionStyle)) {
+  if (base::FeatureList::IsEnabled(features::kSystemCaptionStyle)) {
     return InitializeFromSystemSettings();
   }
-  // Return default CaptionStyle for pre Win10 versions since system settings
-  // don't allow caption styling.
+  // Return default CaptionStyle if kSystemCaptionStyle is not enabled.
   return absl::nullopt;
 }
 

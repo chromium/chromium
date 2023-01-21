@@ -9,11 +9,9 @@
 #include <string>
 
 #include "base/debug/alias.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "base/win/windows_version.h"
 #include "skia/ext/fontmgr_default.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/ports/SkTypeface_win.h"
@@ -62,37 +60,11 @@ void InitializeDirectWrite() {
   CHECK(!!factory);
   SetDirectWriteFactory(factory.Get());
 
-  // The skia call to create a new DirectWrite font manager instance can fail
-  // if we are unable to get the system font collection from the DirectWrite
-  // factory. The GetSystemFontCollection method in the IDWriteFactory
-  // interface fails with E_INVALIDARG on certain Windows 7 gold versions
-  // (6.1.7600.*).
   sk_sp<SkFontMgr> direct_write_font_mgr =
       SkFontMgr_New_DirectWrite(factory.Get());
-  int iteration = 0;
-  if (!direct_write_font_mgr &&
-      base::win::GetVersion() == base::win::Version::WIN7) {
-    // Windows (win7_rtm) may fail to map the service sections
-    // (crbug.com/956064).
-    constexpr int kMaxRetries = 5;
-    constexpr base::TimeDelta kRetrySleepTime = base::Microseconds(500);
-    while (iteration < kMaxRetries) {
-      base::PlatformThread::Sleep(kRetrySleepTime);
-      direct_write_font_mgr = SkFontMgr_New_DirectWrite(factory.Get());
-      if (direct_write_font_mgr)
-        break;
-      ++iteration;
-    }
-  }
-  if (!direct_write_font_mgr)
-    iteration = -1;
-  base::UmaHistogramSparse("DirectWrite.Fonts.Gfx.InitializeLoopCount",
-                           iteration);
-  // TODO(crbug.com/956064): Move to a CHECK when the cause of the crash is
-  // fixed and remove the if statement that fallback to GDI font manager.
-  DCHECK(!!direct_write_font_mgr);
-  if (!direct_write_font_mgr)
+  if (!direct_write_font_mgr) {
     direct_write_font_mgr = SkFontMgr_New_GDI();
+  }
 
   // Override the default skia font manager. This must be called before any
   // use of the skia font manager is done (e.g. before any call to

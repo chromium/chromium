@@ -16,7 +16,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
-#include "base/win/windows_version.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/direct_composition_support.h"
@@ -53,9 +52,7 @@ bool IsVerifyDrawOffsetEnabled() {
 }
 
 bool IsWaitableSwapChainEnabled() {
-  // Waitable swap chains were first enabled in Win 8.1/DXGI 1.3
-  return (base::win::GetVersion() >= base::win::Version::WIN8_1) &&
-         base::FeatureList::IsEnabled(features::kDXGIWaitableSwapChain);
+  return base::FeatureList::IsEnabled(features::kDXGIWaitableSwapChain);
 }
 
 UINT GetMaxWaitableQueuedFrames() {

@@ -42,10 +42,6 @@
 #include "ui/gfx/text_utils.h"
 #include "ui/gfx/utf16_indexing.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
 namespace gfx {
 
 namespace {
@@ -257,25 +253,23 @@ UChar32 ReplaceControlCharacter(UChar32 codepoint) {
     // Support Microsoft defined PUA on Windows.
     // see:
     // https://docs.microsoft.com/en-us/windows/uwp/design/style/segoe-ui-symbol-font
-    if (base::win::GetVersion() >= base::win::Version::WIN10) {
-      switch (codepoint) {
-        case 0xF093:  // ButtonA
-        case 0xF094:  // ButtonB
-        case 0xF095:  // ButtonY
-        case 0xF096:  // ButtonX
-        case 0xF108:  // LeftStick
-        case 0xF109:  // RightStick
-        case 0xF10A:  // TriggerLeft
-        case 0xF10B:  // TriggerRight
-        case 0xF10C:  // BumperLeft
-        case 0xF10D:  // BumperRight
-        case 0xF10E:  // Dpad
-        case 0xEECA:  // ButtonView2
-        case 0xEDE3:  // ButtonMenu
-          return codepoint;
-        default:
-          break;
-      }
+    switch (codepoint) {
+      case 0xF093:  // ButtonA
+      case 0xF094:  // ButtonB
+      case 0xF095:  // ButtonY
+      case 0xF096:  // ButtonX
+      case 0xF108:  // LeftStick
+      case 0xF109:  // RightStick
+      case 0xF10A:  // TriggerLeft
+      case 0xF10B:  // TriggerRight
+      case 0xF10C:  // BumperLeft
+      case 0xF10D:  // BumperRight
+      case 0xF10E:  // Dpad
+      case 0xEECA:  // ButtonView2
+      case 0xEDE3:  // ButtonMenu
+        return codepoint;
+      default:
+        break;
     }
 #endif
     const int8_t codepoint_category = u_charType(codepoint);

@@ -212,10 +212,10 @@ TEST_F(SnapshotAuraTest, MAYBE_FullScreenWindow) {
         // BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/850556): Make work on Win10.
-  base::win::Version version = base::win::GetVersion();
-  if (version >= base::win::Version::WIN10)
-    return;
+  // TODO(https://crbug.com/850556): Make work on Windows.
+  if (::testing::internal::AlwaysTrue()) {
+    GTEST_SKIP();
+  }
 #endif
   SetupTestWindow(root_window()->bounds());
   WaitForDraw();
@@ -228,10 +228,10 @@ TEST_F(SnapshotAuraTest, MAYBE_FullScreenWindow) {
 
 TEST_F(SnapshotAuraTest, PartialBounds) {
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/850556): Make work on Win10.
-  base::win::Version version = base::win::GetVersion();
-  if (version >= base::win::Version::WIN10)
-    return;
+  // TODO(https://crbug.com/850556): Make work on Windows.
+  if (::testing::internal::AlwaysTrue()) {
+    GTEST_SKIP();
+  }
 #endif
   gfx::Rect test_bounds(100, 100, 300, 200);
   SetupTestWindow(test_bounds);
@@ -244,10 +244,10 @@ TEST_F(SnapshotAuraTest, PartialBounds) {
 
 TEST_F(SnapshotAuraTest, Rotated) {
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/850556): Make work on Win10.
-  base::win::Version version = base::win::GetVersion();
-  if (version >= base::win::Version::WIN10)
-    return;
+  // TODO(https://crbug.com/850556): Make work on Windows.
+  if (::testing::internal::AlwaysTrue()) {
+    GTEST_SKIP();
+  }
 #endif
   test_screen()->SetDisplayRotation(display::Display::ROTATE_90);
 
@@ -262,10 +262,10 @@ TEST_F(SnapshotAuraTest, Rotated) {
 
 TEST_F(SnapshotAuraTest, UIScale) {
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/850556): Make work on Win10.
-  base::win::Version version = base::win::GetVersion();
-  if (version >= base::win::Version::WIN10)
-    return;
+  // TODO(https://crbug.com/850556): Make work on Windows.
+  if (::testing::internal::AlwaysTrue()) {
+    GTEST_SKIP();
+  }
 #endif
   const float kUIScale = 0.5f;
   test_screen()->SetUIScale(kUIScale);
@@ -286,10 +286,10 @@ TEST_F(SnapshotAuraTest, UIScale) {
 
 TEST_F(SnapshotAuraTest, DeviceScaleFactor) {
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/850556): Make work on Win10.
-  base::win::Version version = base::win::GetVersion();
-  if (version >= base::win::Version::WIN10)
-    return;
+  // TODO(https://crbug.com/850556): Make work on Windows.
+  if (::testing::internal::AlwaysTrue()) {
+    GTEST_SKIP();
+  }
 #endif
   test_screen()->SetDeviceScaleFactor(2.0f);
 
@@ -309,10 +309,10 @@ TEST_F(SnapshotAuraTest, DeviceScaleFactor) {
 
 TEST_F(SnapshotAuraTest, RotateAndUIScale) {
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/850556): Make work on Win10.
-  base::win::Version version = base::win::GetVersion();
-  if (version >= base::win::Version::WIN10)
-    return;
+  // TODO(https://crbug.com/850556): Make work on Windows.
+  if (::testing::internal::AlwaysTrue()) {
+    GTEST_SKIP();
+  }
 #endif
   const float kUIScale = 0.5f;
   test_screen()->SetUIScale(kUIScale);
@@ -334,10 +334,10 @@ TEST_F(SnapshotAuraTest, RotateAndUIScale) {
 
 TEST_F(SnapshotAuraTest, RotateAndUIScaleAndScaleFactor) {
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/850556): Make work on Win10.
-  base::win::Version version = base::win::GetVersion();
-  if (version >= base::win::Version::WIN10)
-    return;
+  // TODO(https://crbug.com/850556): Make work on Windows.
+  if (::testing::internal::AlwaysTrue()) {
+    GTEST_SKIP();
+  }
 #endif
   test_screen()->SetDeviceScaleFactor(2.0f);
   const float kUIScale = 0.5f;

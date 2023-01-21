@@ -10,10 +10,6 @@
 
 namespace gfx {
 
-#if BUILDFLAG(IS_WIN)
-constexpr bool kWin10Only = true;
-#endif
-
 FallbackFontTestCase::FallbackFontTestCase() = default;
 FallbackFontTestCase::FallbackFontTestCase(const FallbackFontTestCase& other) =
     default;
@@ -22,13 +18,11 @@ FallbackFontTestCase::FallbackFontTestCase(
     UScriptCode script_arg,
     std::string language_tag_arg,
     std::u16string text_arg,
-    std::vector<std::string> fallback_fonts_arg,
-    bool is_win10_arg)
+    std::vector<std::string> fallback_fonts_arg)
     : script(script_arg),
       language_tag(language_tag_arg),
       text(text_arg),
-      fallback_fonts(fallback_fonts_arg),
-      is_win10(is_win10_arg) {}
+      fallback_fonts(fallback_fonts_arg) {}
 
 FallbackFontTestCase::~FallbackFontTestCase() = default;
 
@@ -39,7 +33,7 @@ FallbackFontTestCase::~FallbackFontTestCase() = default;
 // TODO(drott): Some of the test cases lack a valid language tag as it's unclear
 // which language in particular would be expressed with the respective ancient
 // script. Ideally we'd find a meaningful language tag for those.
-std::vector<FallbackFontTestCase> kGetFontFallbackTests = {
+const std::vector<FallbackFontTestCase> kGetFontFallbackTests = {
     {USCRIPT_ARABIC,
      "ar",
      u"\u062A\u062D",
@@ -50,55 +44,31 @@ std::vector<FallbackFontTestCase> kGetFontFallbackTests = {
      {"Segoe UI", "Tahoma", "Sylfaen", "Times New Roman"}},
     {USCRIPT_BENGALI, "bn", u"\u09B8\u09AE", {"Nirmala UI", "Vrinda"}},
     {USCRIPT_BRAILLE, "en-us-brai", u"\u2870\u2871", {"Segoe UI Symbol"}},
-    {USCRIPT_BUGINESE, "bug", u"\u1A00\u1A01", {"Leelawadee UI"}, kWin10Only},
+    {USCRIPT_BUGINESE, "bug", u"\u1A00\u1A01", {"Leelawadee UI"}},
     {USCRIPT_CANADIAN_ABORIGINAL,
      "cans",
      u"\u1410\u1411",
      {"Gadugi", "Euphemia"}},
 
-    {USCRIPT_CARIAN,
-     "xcr",
-     u"\U000102A0\U000102A1",
-     {"Segoe UI Historic"},
-     kWin10Only},
+    {USCRIPT_CARIAN, "xcr", u"\U000102A0\U000102A1", {"Segoe UI Historic"}},
 
     {USCRIPT_CHEROKEE,
      "chr",
      u"\u13A1\u13A2",
      {"Gadugi", "Plantagenet Cherokee"}},
 
-    {USCRIPT_COPTIC,
-     "copt",
-     u"\u2C81\u2C82",
-     {"Segoe UI Historic"},
-     kWin10Only},
+    {USCRIPT_COPTIC, "copt", u"\u2C81\u2C82", {"Segoe UI Historic"}},
 
-    {USCRIPT_CUNEIFORM,
-     "akk",
-     u"\U00012000\U0001200C",
-     {"Segoe UI Historic"},
-     kWin10Only},
+    {USCRIPT_CUNEIFORM, "akk", u"\U00012000\U0001200C", {"Segoe UI Historic"}},
 
-    {USCRIPT_CYPRIOT,
-     "ecy",
-     u"\U00010800\U00010801",
-     {"Segoe UI Historic"},
-     kWin10Only},
+    {USCRIPT_CYPRIOT, "ecy", u"\U00010800\U00010801", {"Segoe UI Historic"}},
 
     {USCRIPT_CYRILLIC, "ru", u"\u0410\u0411\u0412", {"Times New Roman"}},
 
-    {USCRIPT_DESERET,
-     "en",
-     u"\U00010400\U00010401",
-     {"Segoe UI Symbol"},
-     kWin10Only},
+    {USCRIPT_DESERET, "en", u"\U00010400\U00010401", {"Segoe UI Symbol"}},
 
     {USCRIPT_ETHIOPIC, "am", u"\u1201\u1202", {"Ebrima", "Nyala"}},
-    {USCRIPT_GEORGIAN,
-     "ka",
-     u"\u10A0\u10A1",
-     {"Sylfaen", "Segoe UI"},
-     kWin10Only},
+    {USCRIPT_GEORGIAN, "ka", u"\u10A0\u10A1", {"Sylfaen", "Segoe UI"}},
     {USCRIPT_GREEK, "el", u"\u0391\u0392", {"Times New Roman"}},
     {USCRIPT_GURMUKHI, "pa", u"\u0A21\u0A22", {"Raavi", "Nirmala UI"}},
     {USCRIPT_HAN,
@@ -118,11 +88,7 @@ std::vector<FallbackFontTestCase> kGetFontFallbackTests = {
      u"\u6211",
      {"Microsoft JhengHei", "Microsoft JhengHei UI"}},
     {USCRIPT_HAN, "ja", u"\u6211", {"Meiryo UI", "Yu Gothic UI", "Yu Gothic"}},
-    {USCRIPT_HANGUL,
-     "ko",
-     u"\u1100\u1101",
-     {"Malgun Gothic", "Gulim"},
-     kWin10Only},
+    {USCRIPT_HANGUL, "ko", u"\u1100\u1101", {"Malgun Gothic", "Gulim"}},
     {USCRIPT_HEBREW,
      "he",
      u"\u05D1\u05D2",
@@ -135,57 +101,39 @@ std::vector<FallbackFontTestCase> kGetFontFallbackTests = {
     {USCRIPT_IMPERIAL_ARAMAIC,
      "arc",
      u"\U00010841\U00010842",
-     {"Segoe UI Historic"},
-     kWin10Only},
+     {"Segoe UI Historic"}},
 
     {USCRIPT_INSCRIPTIONAL_PAHLAVI,
      "pal",
      u"\U00010B61\U00010B62",
-     {"Segoe UI Historic"},
-     kWin10Only},
+     {"Segoe UI Historic"}},
 
     {USCRIPT_INSCRIPTIONAL_PARTHIAN,
      "xpr",
      u"\U00010B41\U00010B42",
-     {"Segoe UI Historic"},
-     kWin10Only},
+     {"Segoe UI Historic"}},
 
-    {USCRIPT_JAVANESE, "jv", u"\uA991\uA992", {"Javanese Text"}, kWin10Only},
-    {USCRIPT_KANNADA, "kn", u"\u0CA1\u0CA2", {"Nirmala UI", "Tunga"}},
-
-    {USCRIPT_KHAROSHTHI,
-     "sa",
-     u"\U00010A10\U00010A11",
-     {"Segoe UI Historic"},
-     kWin10Only},
+    {USCRIPT_JAVANESE, "jv", u"\uA991\uA992", {"Javanese Text"}},
+    {USCRIPT_KHAROSHTHI, "sa", u"\U00010A10\U00010A11", {"Segoe UI Historic"}},
 
     {USCRIPT_LAO,
      "lo",
      u"\u0ED0\u0ED1",
      {"Lao UI", "Leelawadee UI", "Segoe UI"}},
-    {USCRIPT_LISU, "lis", u"\uA4D0\uA4D1", {"Segoe UI"}, kWin10Only},
+    {USCRIPT_LISU, "lis", u"\uA4D0\uA4D1", {"Segoe UI"}},
 
-    {USCRIPT_LYCIAN,
-     "xlc",
-     u"\U00010281\U00010282",
-     {"Segoe UI Historic"},
-     kWin10Only},
+    {USCRIPT_LYCIAN, "xlc", u"\U00010281\U00010282", {"Segoe UI Historic"}},
 
-    {USCRIPT_LYDIAN,
-     "xld",
-     u"\U00010921\U00010922",
-     {"Segoe UI Historic"},
-     kWin10Only},
+    {USCRIPT_LYDIAN, "xld", u"\U00010921\U00010922", {"Segoe UI Historic"}},
 
     {USCRIPT_MALAYALAM, "ml", u"\u0D21\u0D22", {"Kartika", "Nirmala UI"}},
 
     {USCRIPT_MEROITIC_CURSIVE,
      "",
      u"\U000109A1\U000109A2",
-     {"Segoe UI Historic"},
-     kWin10Only},
+     {"Segoe UI Historic"}},
 
-    {USCRIPT_MYANMAR, "my", u"\u1000\u1001", {"Myanmar Text"}, kWin10Only},
+    {USCRIPT_MYANMAR, "my", u"\u1000\u1001", {"Myanmar Text"}},
     {USCRIPT_NEW_TAI_LUE, "", u"\u1981\u1982", {"Microsoft New Tai Lue"}},
     {USCRIPT_NKO, "nko", u"\u07C1\u07C2", {"Ebrima", "Segoe UI"}},
 
@@ -194,7 +142,7 @@ std::vector<FallbackFontTestCase> kGetFontFallbackTests = {
      u"\u1680\u1681",
      {"Segoe UI Symbol", "Segoe UI Historic"}},
 
-    {USCRIPT_OL_CHIKI, "", u"\u1C51\u1C52", {"Nirmala UI"}, kWin10Only},
+    {USCRIPT_OL_CHIKI, "", u"\u1C51\u1C52", {"Nirmala UI"}},
 
     {USCRIPT_OLD_ITALIC,
      "",
@@ -204,14 +152,12 @@ std::vector<FallbackFontTestCase> kGetFontFallbackTests = {
     {USCRIPT_OLD_PERSIAN,
      "peo",
      u"\U000103A1\U000103A2",
-     {"Segoe UI Historic"},
-     kWin10Only},
+     {"Segoe UI Historic"}},
 
     {USCRIPT_OLD_SOUTH_ARABIAN,
      "",
      u"\U00010A61\U00010A62",
-     {"Segoe UI Historic"},
-     kWin10Only},
+     {"Segoe UI Historic"}},
 
     {USCRIPT_ORIYA, "or", u"\u0B21\u0B22", {"Kalinga", "Nirmala UI"}},
     {USCRIPT_PHAGS_PA, "", u"\uA841\uA842", {"Microsoft PhagsPa"}},
@@ -224,16 +170,11 @@ std::vector<FallbackFontTestCase> kGetFontFallbackTests = {
     {USCRIPT_SHAVIAN,
      "",
      u"\U00010451\U00010452",
-     {"Segoe UI", "Segoe UI Historic"},
-     kWin10Only},
+     {"Segoe UI", "Segoe UI Historic"}},
 
     {USCRIPT_SINHALA, "si", u"\u0D91\u0D92", {"Iskoola Pota", "Nirmala UI"}},
 
-    {USCRIPT_SORA_SOMPENG,
-     "",
-     u"\U000110D1\U000110D2",
-     {"Nirmala UI"},
-     kWin10Only},
+    {USCRIPT_SORA_SOMPENG, "", u"\U000110D1\U000110D2", {"Nirmala UI"}},
 
     {USCRIPT_SYRIAC,
      "syr",
@@ -247,8 +188,7 @@ std::vector<FallbackFontTestCase> kGetFontFallbackTests = {
     {USCRIPT_THAI,
      "th",
      u"\u0e01\u0e02",
-     {"Tahoma", "Leelawadee UI", "Leelawadee"},
-     kWin10Only},
+     {"Tahoma", "Leelawadee UI", "Leelawadee"}},
     {USCRIPT_TIBETAN, "bo", u"\u0F01\u0F02", {"Microsoft Himalaya"}},
     {USCRIPT_TIFINAGH, "", u"\u2D31\u2D32", {"Ebrima"}},
     {USCRIPT_VAI, "vai", u"\uA501\uA502", {"Ebrima"}},
@@ -260,7 +200,7 @@ std::vector<FallbackFontTestCase> kGetFontFallbackTests = {
 // On linux, font-config configuration and fonts are mock. The config
 // can be found in '${build}/etc/fonts/fonts.conf' and the test fonts
 // can be found in '${build}/test_fonts/*'.
-std::vector<FallbackFontTestCase> kGetFontFallbackTests = {
+const std::vector<FallbackFontTestCase> kGetFontFallbackTests = {
     {USCRIPT_BENGALI, "bn", u"\u09B8\u09AE", {"Mukti Narrow"}},
     {USCRIPT_DEVANAGARI, "hi", u"\u0905\u0906", {"Lohit Devanagari"}},
     {USCRIPT_GURMUKHI, "pa", u"\u0A21\u0A22", {"Lohit Gurmukhi"}},
@@ -273,7 +213,7 @@ std::vector<FallbackFontTestCase> kGetFontFallbackTests = {
 #else
 
 // No fallback font tests are defined on that platform.
-std::vector<FallbackFontTestCase> kGetFontFallbackTests = {};
+const std::vector<FallbackFontTestCase> kGetFontFallbackTests = {};
 
 #endif
 

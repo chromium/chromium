@@ -18,18 +18,16 @@ struct FallbackFontTestCase {
   FallbackFontTestCase(UScriptCode script_arg,
                        std::string language_tag_arg,
                        std::u16string text_arg,
-                       std::vector<std::string> fallback_fonts_arg,
-                       bool is_win10_arg = false);
+                       std::vector<std::string> fallback_fonts_arg);
   FallbackFontTestCase(const FallbackFontTestCase& other);
   ~FallbackFontTestCase();
   UScriptCode script;
   std::string language_tag;
   std::u16string text;
   std::vector<std::string> fallback_fonts;
-  bool is_win10 = false;
 };
 
-extern std::vector<FallbackFontTestCase> kGetFontFallbackTests;
+extern const std::vector<FallbackFontTestCase> kGetFontFallbackTests;
 
 }  // namespace gfx
 

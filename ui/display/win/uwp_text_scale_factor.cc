@@ -10,6 +10,8 @@
 #include <wrl/client.h>
 #include <wrl/event.h>
 
+#include <memory>
+
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
@@ -17,10 +19,8 @@
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_hstring.h"
-#include "base/win/windows_version.h"
 
-namespace display {
-namespace win {
+namespace display::win {
 
 namespace {
 
@@ -89,11 +89,6 @@ class UwpTextScaleFactorImpl : public UwpTextScaleFactor {
  public:
   UwpTextScaleFactorImpl()
       : text_scale_factor_changed_token_(kInvalidEventRegistrationToken) {
-    // There's no point in doing this initialization if we're earlier than
-    // Windows 10, since UWP is a Win10 feature.
-    if (base::win::GetVersion() < base::win::Version::WIN10)
-      return;
-
     // We want to bracket all use of our COM object with COM initialization
     // in order to be sure we don't leak COM listeners into the OS. This may
     // extend the lifetime of COM on this thread but we do not expect it to be
@@ -233,5 +228,4 @@ void UwpTextScaleFactor::Observer::OnUwpTextScaleFactorCleanup(
   source->RemoveObserver(this);
 }
 
-}  // namespace win
-}  // namespace display
+}  // namespace display::win
