@@ -243,10 +243,7 @@ template("build_webui") {
       out_manifest = "$target_gen_dir/$bundle_manifest"
       excludes = invoker.optimize_webui_excludes
 
-      deps = [
-        ":build_ts",
-        "//ui/webui/resources:preprocess",
-      ]
+      deps = [ ":build_ts" ]
     }
   }
 

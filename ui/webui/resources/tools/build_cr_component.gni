@@ -146,6 +146,7 @@ template("build_cr_component") {
       in_folder = preprocess_dir
       out_folder = preprocess_dir
       in_files = html_files
+      scheme = "relative"
       minify = optimize
 
       if (defined(invoker.html_to_wrapper_template)) {

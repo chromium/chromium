@@ -228,10 +228,7 @@ if (optimize_webui) {
     js_module_in_files = [ "js/personalization_app.js" ]
     out_manifest = "$target_gen_dir/$build_manifest"
 
-    deps = [
-      ":build_ts",
-      "//ui/webui/resources:preprocess",
-    ]
+    deps = [ ":build_ts" ]
 
     excludes = [ "chrome://resources/mojo/mojo/public/js/bindings.js" ]
   }

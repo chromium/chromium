@@ -211,6 +211,6 @@ files_webui_bundle("build") {
     "//ui/file_manager:preprocess_generated",
     "//ui/file_manager:preprocess_static",
     "//ui/file_manager:preprocess_static_image_loader",
-    "//ui/webui/resources:preprocess",
+    "//ui/webui/resources:library",
   ]
 }

@@ -37,7 +37,6 @@ if (optimize_webui) {
       ":preprocess",
       ":preprocess_generated",
       "../../../../../ui/webui/resources:library",
-      "../../../../../ui/webui/resources:preprocess",
     ]
   }
 }

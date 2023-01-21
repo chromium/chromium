@@ -39,7 +39,6 @@ if (optimize_webui) {
     deps = [
       ":build_ts",
       "//chrome/browser/resources/nearby_share/shared:preprocess_v3",
-      "//ui/webui/resources:preprocess",
     ]
     excludes = [
       "chrome://resources/cr_components/app_management/app_management.mojom-webui.js",

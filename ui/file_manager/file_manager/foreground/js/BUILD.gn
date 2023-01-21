@@ -1284,7 +1284,6 @@ files_webui_bundle("build") {
     ":main",
     "//ui/file_manager:build_ts",
     "//ui/webui/resources:library",
-    "//ui/webui/resources:preprocess",
   ]
 }
 
@@ -1304,6 +1303,5 @@ files_webui_bundle("build_worker") {
   deps = [
     "metadata:metadata_dispatcher",
     "//ui/file_manager:build_ts",
-    "//ui/webui/resources:preprocess",
   ]
 }

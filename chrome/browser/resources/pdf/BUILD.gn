@@ -52,10 +52,7 @@ if (optimize_webui) {
     ]
     out_manifest = "$target_gen_dir/$build_manifest"
 
-    deps = [
-      ":build_ts",
-      "../../../../ui/webui/resources:preprocess",
-    ]
+    deps = [ ":build_ts" ]
     excludes = [
       "browser_api.js",
 
@@ -82,10 +79,7 @@ optimize_webui("build_internal_plugin") {
   js_module_in_files = [ "pdf_internal_plugin_wrapper.js" ]
   out_manifest = "$target_gen_dir/$build_internal_plugin_manifest"
 
-  deps = [
-    ":build_ts",
-    "../../../../ui/webui/resources:preprocess",
-  ]
+  deps = [ ":build_ts" ]
   excludes = [
     "browser_api.js",
     "chrome://resources/js/cr.js",
