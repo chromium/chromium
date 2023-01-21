@@ -202,9 +202,6 @@ crbug.com/949003 http/tests/printing/cross-site-frame.html [ Failure Pass ]
 
 # The tests happened to pass with two bugs canceled each other. Now they fail
 # with the first bug fixed. Will be fixed when the second bug is fixed (crrev.com/c/3752748).
-crbug.com/881555 [ Debug Mac12 ] external/wpt/css/css-position/sticky/position-sticky-fixed-ancestor.html [ Failure ]
-crbug.com/881555 [ Mac11-arm64 Release ] external/wpt/css/css-position/sticky/position-sticky-fixed-ancestor.html [ Failure ]
-crbug.com/881555 [ Mac12-arm64 Release ] external/wpt/css/css-position/sticky/position-sticky-fixed-ancestor.html [ Failure ]
 
 # --- Skia roll test suppressions
 # --- END Skia roll test suppresions
@@ -492,7 +489,6 @@ crbug.com/1303091 [ Linux ] compositing/overflow/paint-neg-z-order-descendants-i
 
 crbug.com/980969 http/tests/input/discard-events-to-unstable-iframe.html [ Failure Pass ]
 
-crbug.com/1002049 [ Mac12-arm64 Release ] external/wpt/css/mediaqueries/aspect-ratio-006.html [ Failure ]
 crbug.com/1343368 external/wpt/css/mediaqueries/viewport-script-dynamic.html [ Failure ]
 
 crbug.com/815111 external/wpt/css/css-fill-stroke/paint-order-001.tentative.html [ Failure ]
@@ -3076,7 +3072,6 @@ crbug.com/626703 [ Linux ] external/wpt/webxr/hit-test/ar_hittest_subscription_r
 crbug.com/626703 [ Linux ] external/wpt/webxr/hit-test/ar_hittest_subscription_transientInputSources.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/light-estimation/xrWebGLBinding_getReflectionCubeMap.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/render_state_update.https.html [ Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/webxr/render_state_vertical_fov_immersive.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/webxr_feature_policy.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/xrDevice_requestSession_optionalFeatures.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/xrInputSource_getPose_targetRay_grip.https.html [ Timeout ]
