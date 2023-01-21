@@ -114,6 +114,23 @@ const char* kJSONInvalidMissingManifest = R"()]}'
    ]
   }})";
 
+// `manifest` is supposed to be a dictionary. It is a list here.
+const char* kJSONInvalidManifest = R"()]}'
+  {"response":{
+   "protocol":"3.1",
+   "app":[
+    {
+      "appid":"12345",
+      "status":"ok",
+      "updatecheck":{
+        "status":"ok",
+        "urls":{"url":[{"codebase":"http://localhost/download/"}]},
+        "manifest": []
+      }
+    }
+   ]
+  }})";
+
 const char* kJSONMissingAppId = R"()]}'
   {"response":{
    "protocol":"3.1",
@@ -404,6 +421,10 @@ TEST(UpdateClientProtocolParserJSONTest, Parse) {
   EXPECT_FALSE(parser->errors().empty());
 
   EXPECT_TRUE(parser->Parse(kJSONInvalidMissingManifest));
+  EXPECT_TRUE(parser->results().list.empty());
+  EXPECT_FALSE(parser->errors().empty());
+
+  EXPECT_TRUE(parser->Parse(kJSONInvalidManifest));
   EXPECT_TRUE(parser->results().list.empty());
   EXPECT_FALSE(parser->errors().empty());
 

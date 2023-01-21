@@ -4,6 +4,7 @@
 
 #include "components/update_client/protocol_parser_json.h"
 
+#include <string>
 #include <utility>
 
 #include "base/json/json_reader.h"
@@ -13,29 +14,32 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "components/update_client/protocol_definition.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace update_client {
 
 namespace {
 
-std::string GetValueString(const base::Value& node, const char* key) {
-  const auto* value = node.FindKey(key);
-  return (value && value->is_string()) ? value->GetString() : std::string();
+std::string GetValueString(const base::Value::Dict& node, const char* key) {
+  const std::string* value = node.FindString(key);
+  return value ? *value : std::string();
 }
 
-bool ParseManifest(const base::Value& manifest_node,
+bool ParseManifest(const base::Value& manifest_node_val,
                    ProtocolParser::Result* result,
                    std::string* error) {
-  if (!manifest_node.is_dict()) {
+  if (!manifest_node_val.is_dict()) {
     *error = "'manifest' is not a dictionary.";
+    return false;
   }
-  const auto* version = manifest_node.FindKey("version");
-  if (!version || !version->is_string()) {
+  const base::Value::Dict& manifest_node = manifest_node_val.GetDict();
+  const std::string* version = manifest_node.FindString("version");
+  if (!version) {
     *error = "Missing version for manifest.";
     return false;
   }
 
-  result->manifest.version = version->GetString();
+  result->manifest.version = *version;
   if (!base::Version(result->manifest.version).IsValid()) {
     *error =
         base::StrCat({"Invalid version: '", result->manifest.version, "'."});
@@ -43,9 +47,10 @@ bool ParseManifest(const base::Value& manifest_node,
   }
 
   // Get the optional minimum browser version.
-  const auto* browser_min_version = manifest_node.FindKey("prodversionmin");
-  if (browser_min_version && browser_min_version->is_string()) {
-    result->manifest.browser_min_version = browser_min_version->GetString();
+  const std::string* browser_min_version =
+      manifest_node.FindString("prodversionmin");
+  if (browser_min_version) {
+    result->manifest.browser_min_version = *browser_min_version;
     if (!base::Version(result->manifest.browser_min_version).IsValid()) {
       *error = base::StrCat({"Invalid prodversionmin: '",
                              result->manifest.browser_min_version, "'."});
@@ -56,47 +61,48 @@ bool ParseManifest(const base::Value& manifest_node,
   result->manifest.run = GetValueString(manifest_node, "run");
   result->manifest.arguments = GetValueString(manifest_node, "arguments");
 
-  const auto* packages_node = manifest_node.FindKey("packages");
-  if (!packages_node || !packages_node->is_dict()) {
+  const base::Value::Dict* packages_node = manifest_node.FindDict("packages");
+  if (!packages_node) {
     *error = "Missing packages in manifest or 'packages' is not a dictionary.";
     return false;
   }
-  const auto* package_node = packages_node->FindKey("package");
-  if (!package_node || !package_node->is_list()) {
+  const base::Value::List* package_node = packages_node->FindList("package");
+  if (!package_node) {
     *error = "Missing package in packages.";
     return false;
   }
 
-  for (const auto& package : package_node->GetList()) {
-    if (!package.is_dict()) {
+  for (const auto& package_val : *package_node) {
+    if (!package_val.is_dict()) {
       *error = "'package' is not a dictionary.";
       return false;
     }
+    const base::Value::Dict& package = package_val.GetDict();
     ProtocolParser::Result::Manifest::Package p;
-    const auto* name = package.FindKey("name");
-    if (!name || !name->is_string()) {
+    const std::string* name = package.FindString("name");
+    if (!name) {
       *error = "Missing name for package.";
       return false;
     }
-    p.name = name->GetString();
+    p.name = *name;
 
     p.namediff = GetValueString(package, "namediff");
     p.fingerprint = GetValueString(package, "fp");
     p.hash_sha256 = GetValueString(package, "hash_sha256");
     p.hashdiff_sha256 = GetValueString(package, "hashdiff_sha256");
 
-    const auto* size = package.FindKey("size");
-    if (size && (size->is_int() || size->is_double())) {
-      const auto val = size->GetDouble();
+    const absl::optional<double> size = package.FindDouble("size");
+    if (size) {
+      const double val = size.value();
       if (0 <= val && val < kProtocolMaxInt)
-        p.size = size->GetDouble();
+        p.size = val;
     }
 
-    const auto* sizediff = package.FindKey("sizediff");
-    if (sizediff && (sizediff->is_int() || sizediff->is_double())) {
-      const auto val = sizediff->GetDouble();
+    const absl::optional<double> sizediff = package.FindDouble("sizediff");
+    if (sizediff) {
+      const double val = sizediff.value();
       if (0 <= val && val < kProtocolMaxInt)
-        p.sizediff = sizediff->GetDouble();
+        p.sizediff = val;
     }
 
     result->manifest.packages.push_back(std::move(p));
@@ -110,44 +116,51 @@ void ParseActions(const base::Value& actions_node,
   if (!actions_node.is_dict())
     return;
 
-  const auto* action_node = actions_node.FindKey("action");
-  if (!action_node || !action_node->is_list())
+  const base::Value::List* action_node =
+      actions_node.GetDict().FindList("action");
+  if (!action_node) {
     return;
+  }
 
-  const auto& action_list = action_node->GetList();
+  const base::Value::List& action_list = *action_node;
   if (action_list.empty() || !action_list[0].is_dict())
     return;
 
-  result->action_run = GetValueString(action_list[0], "run");
+  result->action_run = GetValueString(action_list[0].GetDict(), "run");
 }
 
-bool ParseUrls(const base::Value& urls_node,
+bool ParseUrls(const base::Value& urls_node_val,
                ProtocolParser::Result* result,
                std::string* error) {
-  if (!urls_node.is_dict()) {
+  if (!urls_node_val.is_dict()) {
     *error = "'urls' is not a dictionary.";
     return false;
   }
-  const auto* url_node = urls_node.FindKey("url");
-  if (!url_node || !url_node->is_list()) {
+  const base::Value::Dict& urls_node = urls_node_val.GetDict();
+  const base::Value::List* url_node = urls_node.FindList("url");
+  if (!url_node) {
     *error = "Missing url on urls.";
     return false;
   }
 
-  for (const auto& url : url_node->GetList()) {
-    if (!url.is_dict())
+  for (const base::Value& url_val : *url_node) {
+    if (!url_val.is_dict()) {
       continue;
-    const auto* codebase = url.FindKey("codebase");
-    if (codebase && codebase->is_string()) {
-      GURL crx_url(codebase->GetString());
-      if (crx_url.is_valid())
-        result->crx_urls.push_back(std::move(crx_url));
     }
-    const auto* codebasediff = url.FindKey("codebasediff");
-    if (codebasediff && codebasediff->is_string()) {
-      GURL crx_diffurl(codebasediff->GetString());
-      if (crx_diffurl.is_valid())
+    const base::Value::Dict& url = url_val.GetDict();
+    const std::string* codebase = url.FindString("codebase");
+    if (codebase) {
+      GURL crx_url(*codebase);
+      if (crx_url.is_valid()) {
+        result->crx_urls.push_back(std::move(crx_url));
+      }
+    }
+    const std::string* codebasediff = url.FindString("codebasediff");
+    if (codebasediff) {
+      GURL crx_diffurl(*codebasediff);
+      if (crx_diffurl.is_valid()) {
         result->crx_diffurls.push_back(std::move(crx_diffurl));
+      }
     }
   }
 
@@ -160,49 +173,53 @@ bool ParseUrls(const base::Value& urls_node,
   return true;
 }
 
-void ParseData(const base::Value& data_node, ProtocolParser::Result* result) {
-  if (!data_node.is_dict())
+void ParseData(const base::Value& data_node_val,
+               ProtocolParser::Result* result) {
+  if (!data_node_val.is_dict()) {
     return;
+  }
+  const base::Value::Dict& data_node = data_node_val.GetDict();
 
   result->data.emplace_back(ProtocolParser::Result::Data(
       GetValueString(data_node, "status"), GetValueString(data_node, "name"),
       GetValueString(data_node, "index"), GetValueString(data_node, "#text")));
 }
 
-bool ParseUpdateCheck(const base::Value& updatecheck_node,
+bool ParseUpdateCheck(const base::Value& updatecheck_node_val,
                       ProtocolParser::Result* result,
                       std::string* error) {
-  if (!updatecheck_node.is_dict()) {
+  if (!updatecheck_node_val.is_dict()) {
     *error = "'updatecheck' is not a dictionary.";
     return false;
   }
+  const base::Value::Dict& updatecheck_node = updatecheck_node_val.GetDict();
 
-  for (auto kv : updatecheck_node.DictItems()) {
+  for (auto kv : updatecheck_node) {
     if (kv.first.front() == '_' && kv.second.is_string()) {
       result->custom_attributes[kv.first] = kv.second.GetString();
     }
   }
 
-  const auto* status = updatecheck_node.FindKey("status");
-  if (!status || !status->is_string()) {
+  const std::string* status = updatecheck_node.FindString("status");
+  if (!status) {
     *error = "Missing status on updatecheck node";
     return false;
   }
 
-  result->status = status->GetString();
+  result->status = *status;
   if (result->status == "noupdate") {
-    const auto* actions_node = updatecheck_node.FindKey("actions");
+    const auto* actions_node = updatecheck_node.Find("actions");
     if (actions_node)
       ParseActions(*actions_node, result);
     return true;
   }
 
   if (result->status == "ok") {
-    const auto* actions_node = updatecheck_node.FindKey("actions");
+    const auto* actions_node = updatecheck_node.Find("actions");
     if (actions_node)
       ParseActions(*actions_node, result);
 
-    const auto* urls_node = updatecheck_node.FindKey("urls");
+    const auto* urls_node = updatecheck_node.Find("urls");
     if (!urls_node) {
       *error = "Missing urls on updatecheck.";
       return false;
@@ -211,7 +228,7 @@ bool ParseUpdateCheck(const base::Value& updatecheck_node,
     if (!ParseUrls(*urls_node, result, error))
       return false;
 
-    const auto* manifest_node = updatecheck_node.FindKey("manifest");
+    const auto* manifest_node = updatecheck_node.Find("manifest");
     if (!manifest_node) {
       *error = "Missing manifest on updatecheck.";
       return false;
@@ -224,23 +241,26 @@ bool ParseUpdateCheck(const base::Value& updatecheck_node,
   return false;
 }
 
-bool ParseApp(const base::Value& app_node,
+bool ParseApp(const base::Value& app_node_val,
               ProtocolParser::Result* result,
               std::string* error) {
-  if (!app_node.is_dict()) {
+  if (!app_node_val.is_dict()) {
     *error = "'app' is not a dictionary.";
     return false;
   }
+  const base::Value::Dict& app_node = app_node_val.GetDict();
   for (const auto* cohort_key :
        {ProtocolParser::Result::kCohort, ProtocolParser::Result::kCohortHint,
         ProtocolParser::Result::kCohortName}) {
-    const auto* cohort_value = app_node.FindKey(cohort_key);
-    if (cohort_value && cohort_value->is_string())
-      result->cohort_attrs[cohort_key] = cohort_value->GetString();
+    const std::string* cohort_value = app_node.FindString(cohort_key);
+    if (cohort_value) {
+      result->cohort_attrs[cohort_key] = *cohort_value;
+    }
   }
-  const auto* appid = app_node.FindKey("appid");
-  if (appid && appid->is_string())
-    result->extension_id = appid->GetString();
+  const std::string* appid = app_node.FindString("appid");
+  if (appid) {
+    result->extension_id = *appid;
+  }
   if (result->extension_id.empty()) {
     *error = "Missing appid on app node";
     return false;
@@ -250,9 +270,9 @@ bool ParseApp(const base::Value& app_node,
   // If the status is one of the defined app status error literals, then return
   // it in the result as if it were an updatecheck status, then stop parsing,
   // and return success.
-  const auto* status = app_node.FindKey("status");
-  if (status && status->is_string()) {
-    result->status = status->GetString();
+  const std::string* status = app_node.FindString("status");
+  if (status) {
+    result->status = *status;
     if (result->status == "restricted" ||
         result->status == "error-unknownApplication" ||
         result->status == "error-invalidAppId")
@@ -268,15 +288,13 @@ bool ParseApp(const base::Value& app_node,
 
   DCHECK(result->status.empty() || result->status == "ok");
 
-  if (const auto* data_node = app_node.FindKey("data")) {
-    if (const auto* data_list = data_node->GetIfList()) {
-      base::ranges::for_each(*data_list, [&result](const base::Value& data) {
-        ParseData(data, result);
-      });
-    }
+  if (const base::Value::List* data_node = app_node.FindList("data")) {
+    base::ranges::for_each(*data_node, [&result](const base::Value& data) {
+      ParseData(data, result);
+    });
   }
 
-  const auto* updatecheck_node = app_node.FindKey("updatecheck");
+  const auto* updatecheck_node = app_node.Find("updatecheck");
   if (!updatecheck_node) {
     *error = "Missing updatecheck on app.";
     return false;
@@ -314,50 +332,58 @@ bool ProtocolParserJSON::DoParse(const std::string& response_json,
     ParseError("JSON document is not a dictionary.");
     return false;
   }
-  const auto* response_node = doc->FindKey("response");
-  if (!response_node || !response_node->is_dict()) {
+  const base::Value::Dict* response_node = doc->GetDict().FindDict("response");
+  if (!response_node) {
     ParseError("Missing 'response' element or 'response' is not a dictionary.");
     return false;
   }
-  const auto* protocol = response_node->FindKey("protocol");
-  if (!protocol || !protocol->is_string()) {
+  const std::string* protocol = response_node->FindString("protocol");
+  if (!protocol) {
     ParseError("Missing/non-string protocol.");
     return false;
   }
-  if (protocol->GetString() != kProtocolVersion) {
+  if (*protocol != kProtocolVersion) {
     ParseError("Incorrect protocol. (expected '%s', found '%s')",
-               kProtocolVersion, protocol->GetString().c_str());
+               kProtocolVersion, protocol->c_str());
     return false;
   }
 
-  const auto* daystart_node = response_node->FindKey("daystart");
-  if (daystart_node && daystart_node->is_dict()) {
-    const auto* elapsed_seconds = daystart_node->FindKey("elapsed_seconds");
-    if (elapsed_seconds && elapsed_seconds->is_int())
-      results->daystart_elapsed_seconds = elapsed_seconds->GetInt();
-    const auto* elapsed_days = daystart_node->FindKey("elapsed_days");
-    if (elapsed_days && elapsed_days->is_int())
-      results->daystart_elapsed_days = elapsed_days->GetInt();
+  const base::Value::Dict* daystart_node = response_node->FindDict("daystart");
+  if (daystart_node) {
+    const absl::optional<int> elapsed_seconds =
+        daystart_node->FindInt("elapsed_seconds");
+    if (elapsed_seconds) {
+      results->daystart_elapsed_seconds = elapsed_seconds.value();
+    }
+    const absl::optional<int> elapsed_days =
+        daystart_node->FindInt("elapsed_days");
+    if (elapsed_days) {
+      results->daystart_elapsed_days = elapsed_days.value();
+    }
   }
 
-  const auto* systemrequirements_node =
-      response_node->FindKey("systemrequirements");
-  if (systemrequirements_node && systemrequirements_node->is_dict()) {
-    const auto* platform = systemrequirements_node->FindKey("platform");
-    if (platform && platform->is_string())
-      results->system_requirements.platform = platform->GetString();
-    const auto* arch = systemrequirements_node->FindKey("arch");
-    if (arch && arch->is_string())
-      results->system_requirements.arch = arch->GetString();
-    const auto* min_os_version =
-        systemrequirements_node->FindKey("min_os_version");
-    if (min_os_version && min_os_version->is_string())
-      results->system_requirements.min_os_version = min_os_version->GetString();
+  const base::Value::Dict* systemrequirements_node =
+      response_node->FindDict("systemrequirements");
+  if (systemrequirements_node) {
+    const std::string* platform =
+        systemrequirements_node->FindString("platform");
+    if (platform) {
+      results->system_requirements.platform = *platform;
+    }
+    const std::string* arch = systemrequirements_node->FindString("arch");
+    if (arch) {
+      results->system_requirements.arch = *arch;
+    }
+    const std::string* min_os_version =
+        systemrequirements_node->FindString("min_os_version");
+    if (min_os_version) {
+      results->system_requirements.min_os_version = *min_os_version;
+    }
   }
 
-  const auto* app_node = response_node->FindKey("app");
-  if (app_node && app_node->is_list()) {
-    for (const auto& app : app_node->GetList()) {
+  const base::Value::List* app_node = response_node->FindList("app");
+  if (app_node) {
+    for (const auto& app : *app_node) {
       Result result;
       std::string error;
       if (ParseApp(app, &result, &error))
