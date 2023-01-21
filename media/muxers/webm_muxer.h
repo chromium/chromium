@@ -14,7 +14,6 @@
 #include "base/numerics/safe_math.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/media_export.h"
 #include "media/base/video_codecs.h"
@@ -131,33 +130,6 @@ class MEDIA_EXPORT WebmMuxer : public Muxer {
  private:
   friend class WebmMuxerTest;
 
-  struct EncodedFrame {
-    // Audio or Video frame data.
-    std::string data;
-    // Alpha frame data if Video, empty if Audio.
-    std::string alpha_data;
-    // Timestamp of frame minus the total time in pause at the time.
-    base::TimeTicks timestamp_minus_paused_;
-    // Always true for Audio.
-    bool is_keyframe;
-  };
-
-  // Class for ensuring a monotonically increasing timestamp sequence, despite
-  // incoming non-monotonically increasing timestamps.
-  class MonotonicTimestampSequence {
-   public:
-    MonotonicTimestampSequence(base::TimeTicks first_timestamp,
-                               bool& did_adjust_timestamp);
-
-    // Returns the next timestamp. This may be adjusted to enforce a
-    // monotonically increasing history.
-    base::TimeTicks UpdateAndGetNext(base::TimeTicks timestamp);
-
-   private:
-    base::TimeTicks last_timestamp_;
-    bool& did_adjust_timestamp_;
-  };
-
   // Methods for creating and adding video and audio tracks, called upon
   // receiving the first frame of a given Track.
   // AddVideoTrack adds |frame_size| and |frame_rate| to the Segment
@@ -185,6 +157,13 @@ class MEDIA_EXPORT WebmMuxer : public Muxer {
   //
   // Note: it's assumed that at least one video or audio frame is queued.
   bool FlushNextFrame();
+  // Calculates a monotonically increasing timestamp from an input |timestamp|
+  // and a pointer to a previously stored |last_timestamp| by taking the maximum
+  // of |timestamp| and *|last_timestamp|. Updates *|last_timestamp| if
+  // |timestamp| is greater.
+  base::TimeTicks UpdateLastTimestampMonotonically(
+      base::TimeTicks timestamp,
+      base::TimeTicks* last_timestamp);
   // Forces data output from |segment_| on the next frame if recording video,
   // and |min_data_output_interval_| was configured and has passed since the
   // last received video frame.
@@ -200,15 +179,14 @@ class MEDIA_EXPORT WebmMuxer : public Muxer {
   uint8_t video_track_index_;
   uint8_t audio_track_index_;
 
-  absl::optional<MonotonicTimestampSequence> video_timestamp_source_;
-  absl::optional<MonotonicTimestampSequence> audio_timestamp_source_;
-
-  // The timestamp of the lowest timestamp audio or video sample, compensated
-  // for the total time in pause at the time.
-  base::TimeTicks first_timestamp_;
+  // Origin of times for frame timestamps.
+  base::TimeTicks first_frame_timestamp_video_;
+  base::TimeTicks last_frame_timestamp_video_;
+  base::TimeTicks first_frame_timestamp_audio_;
+  base::TimeTicks last_frame_timestamp_audio_;
 
   // Variables to measure and accumulate, respectively, the time in pause state.
-  absl::optional<base::ElapsedTimer> elapsed_time_in_pause_;
+  std::unique_ptr<base::ElapsedTimer> elapsed_time_in_pause_;
   base::TimeDelta total_time_in_pause_;
 
   // TODO(ajose): Change these when support is added for multiple tracks.
@@ -233,6 +211,14 @@ class MEDIA_EXPORT WebmMuxer : public Muxer {
   // Flag to force the next call to a |segment_| method to return false.
   bool force_one_libwebm_error_;
 
+  struct EncodedFrame {
+    std::string data;
+    std::string alpha_data;
+    base::TimeDelta
+        relative_timestamp;  // relative to first_frame_timestamp_xxx_
+    bool is_keyframe;
+  };
+
   // The following two queues hold frames to ensure that monotonically
   // increasing timestamps are stored in the resulting webm file without
   // modifying the timestamps.
@@ -240,11 +226,6 @@ class MEDIA_EXPORT WebmMuxer : public Muxer {
   // If muxing audio and video, this queue holds frames until the first audio
   // frame appears.
   base::circular_deque<EncodedFrame> video_frames_;
-
-  // Source data for UMA histograms.
-  bool did_adjust_muxer_timestamp_ = false;
-  bool did_adjust_video_timestamp_ = false;
-  bool did_adjust_audio_timestamp_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
