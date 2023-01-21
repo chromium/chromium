@@ -9,8 +9,7 @@
 #include "base/no_destructor.h"
 #include "components/metrics/structured/event.h"
 
-namespace metrics {
-namespace structured {
+namespace metrics::structured {
 
 StructuredMetricsClient::StructuredMetricsClient() = default;
 StructuredMetricsClient::~StructuredMetricsClient() = default;
@@ -23,14 +22,8 @@ StructuredMetricsClient* StructuredMetricsClient::Get() {
 
 void StructuredMetricsClient::Record(Event&& event) {
   if (delegate_ && delegate_->IsReadyToRecord()) {
-    delegating_events_processor_.OnEventsRecord(&event);
     delegate_->RecordEvent(std::move(event));
   }
-}
-
-void StructuredMetricsClient::AddEventsProcessor(
-    std::unique_ptr<EventsProcessorInterface> events_processor) {
-  delegating_events_processor_.AddEventsProcessor(std::move(events_processor));
 }
 
 void StructuredMetricsClient::SetDelegate(RecordingDelegate* delegate) {
@@ -41,5 +34,4 @@ void StructuredMetricsClient::UnsetDelegate() {
   delegate_ = nullptr;
 }
 
-}  // namespace structured
-}  // namespace metrics
+}  // namespace metrics::structured

@@ -19,8 +19,7 @@ namespace base {
 class FilePath;
 }
 
-namespace metrics {
-namespace structured {
+namespace metrics::structured {
 
 // Recorder is a singleton to help communicate with the
 // StructuredMetricsProvider. It serves three purposes:
@@ -88,6 +87,11 @@ class Recorder {
   void AddObserver(RecorderImpl* observer);
   void RemoveObserver(RecorderImpl* observer);
 
+  // Adds |events_processor| to further add metadata to recorded events or
+  // listen to recorded events.
+  void AddEventsProcessor(
+      std::unique_ptr<EventsProcessorInterface> events_processor);
+
  private:
   friend class base::NoDestructor<Recorder>;
 
@@ -97,9 +101,10 @@ class Recorder {
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
   base::ObserverList<RecorderImpl> observers_;
+
+  DelegatingEventsProcessor delegating_events_processor_;
 };
 
-}  // namespace structured
-}  // namespace metrics
+}  // namespace metrics::structured
 
 #endif  // COMPONENTS_METRICS_STRUCTURED_RECORDER_H_

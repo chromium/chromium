@@ -75,6 +75,14 @@ IN_PROC_BROWSER_TEST_F(AshStructuredMetricsRecorderTest,
 
   // Wait for the test messages to have been received.
   base::RunLoop run_loop;
+
+  // TODO(crbug/1350322): Replace this with a mixin once mixin is ready to use.
+  // There is currently no way to test structured metrics E2E in a browser test.
+  // This delegate intercepts the event to ensure that the mojo interface is
+  // working correctly.
+  //
+  // A better way to test this would be to verify that the events are persisted
+  // correctly using a mixin.
   EventDelegate event_handler =
       base::BindLambdaForTesting([&run_loop](const Event& event) {
         EXPECT_THAT(event.project_name(), Eq("TestProjectOne"));

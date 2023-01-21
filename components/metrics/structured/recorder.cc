@@ -13,8 +13,7 @@
 #include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics/structured/structured_metrics_validator.h"
 
-namespace metrics {
-namespace structured {
+namespace metrics::structured {
 
 Recorder::Recorder() = default;
 Recorder::~Recorder() = default;
@@ -42,10 +41,13 @@ void Recorder::RecordEvent(Event&& event) {
 
   DCHECK(base::CurrentUIThread::IsSet());
 
+  delegating_events_processor_.OnEventsRecord(&event);
+
   // Make a copy of an event that all observers can share.
   const auto event_clone = event.Clone();
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnEventRecord(event_clone);
+  }
 
   if (observers_.empty()) {
     // Other values of EventRecordingState are recorded in
@@ -60,14 +62,16 @@ void Recorder::ProfileAdded(const base::FilePath& profile_path) {
   DCHECK(base::CurrentUIThread::IsSet());
   // TODO(crbug.com/1016655 ): investigate whether we can verify that
   // |profile_path| corresponds to a valid (non-guest, non-signin) profile.
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnProfileAdded(profile_path);
+  }
 }
 
 absl::optional<int> Recorder::LastKeyRotation(const Event& event) {
   auto project_validator = validator::GetProjectValidator(event.project_name());
-  if (!project_validator.has_value())
+  if (!project_validator.has_value()) {
     return absl::nullopt;
+  }
 
   auto project_name_hash = project_validator.value()->project_hash();
 
@@ -105,5 +109,9 @@ void Recorder::RemoveObserver(RecorderImpl* observer) {
   observers_.RemoveObserver(observer);
 }
 
-}  // namespace structured
-}  // namespace metrics
+void Recorder::AddEventsProcessor(
+    std::unique_ptr<EventsProcessorInterface> events_processor) {
+  delegating_events_processor_.AddEventsProcessor(std::move(events_processor));
+}
+
+}  // namespace metrics::structured

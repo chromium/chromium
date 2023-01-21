@@ -10,10 +10,11 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/metrics/structured/cros_events_processor.h"
 #include "components/metrics/structured/histogram_util.h"
+#include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/browser_process.h" // nogncheck
+#include "chrome/browser/browser_process.h"  // nogncheck
 #include "chrome/browser/metrics/structured/ash_structured_metrics_recorder.h"  // nogncheck
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/task/current_thread.h"
@@ -68,16 +69,17 @@ void ChromeStructuredMetricsRecorder::RegisterLocalStatePrefs(
 
 void ChromeStructuredMetricsRecorder::Initialize() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto* ash_recorder =
+      static_cast<AshStructuredMetricsRecorder*>(delegate_.get());
+  ash_recorder->Initialize();
+
   // Adds CrOSEvents processor if feature is enabled.
   if (base::FeatureList::IsEnabled(kEventSequenceLogging)) {
-    StructuredMetricsClient::Get()->AddEventsProcessor(
+    Recorder::GetInstance()->AddEventsProcessor(
         std::make_unique<cros_event::CrOSEventsProcessor>(
             g_browser_process->local_state()));
   }
 
-  auto* ash_recorder =
-      static_cast<AshStructuredMetricsRecorder*>(delegate_.get());
-  ash_recorder->Initialize();
   LogInitializationInStructuredMetrics(StructuredMetricsPlatform::kAshChrome);
 
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
