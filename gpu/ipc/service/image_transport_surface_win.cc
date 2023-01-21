@@ -63,8 +63,8 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeGLSurface(
       auto settings = CreateDirectCompositionSurfaceSettings(
           delegate->GetFeatureInfo()->workarounds());
       auto dc_surface = base::MakeRefCounted<gl::DirectCompositionSurfaceWin>(
-          display->GetAs<gl::GLDisplayEGL>(), surface_handle,
-          std::move(vsync_callback), settings);
+          display->GetAs<gl::GLDisplayEGL>(), std::move(vsync_callback),
+          settings);
       if (!dc_surface->Initialize(gl::GLSurfaceFormat()))
         return nullptr;
 

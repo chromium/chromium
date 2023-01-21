@@ -480,7 +480,6 @@ class DCompImageBackingFactoryVisualTreeTest
   DCompImageBackingFactoryVisualTreeTest()
       : window_size_(100, 100),
         window_(&platform_delegate_, gfx::Rect(window_size_)),
-        child_window_(window_.hwnd()),
         dcomp_device_(gl::GetDirectCompositionDevice()) {}
 
   void SetUp() override {
@@ -488,6 +487,10 @@ class DCompImageBackingFactoryVisualTreeTest
 
     static_cast<ui::PlatformWindow*>(&window_)->Show();
     child_window_.Initialize();
+    ::SetWindowPos(child_window_.window(), nullptr, 0, 0, window_size_.width(),
+                   window_size_.height(),
+                   SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS |
+                       SWP_NOOWNERZORDER | SWP_NOZORDER);
     ::SetParent(child_window_.window(), window_.hwnd());
   }
 

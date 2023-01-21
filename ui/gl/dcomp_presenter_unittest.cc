@@ -152,7 +152,7 @@ class DCompPresenterTest : public testing::Test {
     DirectCompositionSurfaceWin::Settings settings;
     scoped_refptr<DCompPresenter> surface =
         base::MakeRefCounted<DCompPresenter>(
-            gl::GLSurfaceEGL::GetGLDisplayEGL(), parent_window_,
+            gl::GLSurfaceEGL::GetGLDisplayEGL(),
             DCompPresenter::VSyncCallback(), settings);
     EXPECT_TRUE(surface->Initialize(GLSurfaceFormat()));
 

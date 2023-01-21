@@ -57,7 +57,6 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
 
   DirectCompositionSurfaceWin(
       GLDisplayEGL* display,
-      HWND parent_window,
       VSyncCallback vsync_callback,
       const DirectCompositionSurfaceWin::Settings& settings);
 
@@ -113,7 +112,7 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
       mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
           pending_receiver) override;
 
-  HWND window() const { return window_; }
+  HWND window() const { return child_window_.window(); }
 
   scoped_refptr<base::TaskRunner> GetWindowTaskRunnerForTesting();
 
@@ -161,7 +160,6 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
   void HandleVSyncOnMainThread(base::TimeTicks vsync_time,
                                base::TimeDelta interval);
 
-  HWND window_ = nullptr;
   ChildWindowWin child_window_;
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;

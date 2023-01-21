@@ -27,7 +27,6 @@ class SkiaOutputDeviceDawn : public SkiaOutputDevice {
  public:
   SkiaOutputDeviceDawn(
       DawnContextProvider* context_provider,
-      gfx::AcceleratedWidget widget,
       gfx::SurfaceOrigin origin,
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);

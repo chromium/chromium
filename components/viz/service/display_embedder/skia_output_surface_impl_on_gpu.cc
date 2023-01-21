@@ -1922,8 +1922,8 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
 #elif BUILDFLAG(IS_WIN)
     std::unique_ptr<SkiaOutputDeviceDawn> output_device =
         std::make_unique<SkiaOutputDeviceDawn>(
-            dawn_context_provider_, dependency_->GetSurfaceHandle(),
-            gfx::SurfaceOrigin::kTopLeft, shared_gpu_deps_->memory_tracker(),
+            dawn_context_provider_, gfx::SurfaceOrigin::kTopLeft,
+            shared_gpu_deps_->memory_tracker(),
             GetDidSwapBuffersCompleteCallback());
     const gpu::SurfaceHandle child_window_handle =
         output_device->GetChildSurfaceHandle();

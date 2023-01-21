@@ -79,8 +79,7 @@ class HiddenPopupWindow : public gfx::WindowImpl {
 };
 
 // This runs on the window owner thread.
-void CreateWindowsOnThread(const gfx::Size& size,
-                           base::WaitableEvent* event,
+void CreateWindowsOnThread(base::WaitableEvent* event,
                            HWND* child_window,
                            HWND* parent_window) {
   InitializeWindowClass();
@@ -93,12 +92,14 @@ void CreateWindowsOnThread(const gfx::Size& size,
   // input. WS_EX_NOREDIRECTIONBITMAP avoids allocating a
   // bitmap that would otherwise be allocated with WS_EX_LAYERED, the bitmap is
   // only necessary if using Gdi objects with the window.
-  HWND window = CreateWindowEx(
+  // Using a size of 1x1 is fine because the window will be subsequently resized
+  // using SetWindowPos whenever the parent window size changes.
+  const HWND window = CreateWindowEx(
       WS_EX_NOPARENTNOTIFY | WS_EX_LAYERED | WS_EX_TRANSPARENT |
           WS_EX_NOREDIRECTIONBITMAP,
       reinterpret_cast<wchar_t*>(g_window_class), L"",
-      WS_CHILDWINDOW | WS_DISABLED | WS_VISIBLE, 0, 0, size.width(),
-      size.height(), *parent_window, nullptr, nullptr, nullptr);
+      WS_CHILDWINDOW | WS_DISABLED | WS_VISIBLE, 0, 0, /*width*/ 1,
+      /*height*/ 1, *parent_window, nullptr, nullptr, nullptr);
   if (!window) {
     logging::SystemErrorCode error = logging::GetLastSystemErrorCode();
     base::debug::Alias(&error);
@@ -122,8 +123,7 @@ void DestroyWindowsOnThread(HWND child_window, HWND hidden_popup_window) {
 
 }  // namespace
 
-ChildWindowWin::ChildWindowWin(HWND parent_window)
-    : parent_window_(parent_window) {}
+ChildWindowWin::ChildWindowWin() = default;
 
 void ChildWindowWin::Initialize() {
   if (window_)
@@ -136,13 +136,9 @@ void ChildWindowWin::Initialize() {
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
 
-  RECT window_rect;
-  GetClientRect(parent_window_, &window_rect);
-
   thread_->task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CreateWindowsOnThread, gfx::Rect(window_rect).size(),
-                     &event, &window_, &initial_parent_window_));
+      FROM_HERE, base::BindOnce(&CreateWindowsOnThread, &event, &window_,
+                                &initial_parent_window_));
   event.Wait();
 }
 

@@ -32,15 +32,13 @@ constexpr wgpu::TextureUsage kUsage =
 
 SkiaOutputDeviceDawn::SkiaOutputDeviceDawn(
     DawnContextProvider* context_provider,
-    gfx::AcceleratedWidget widget,
     gfx::SurfaceOrigin origin,
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
     : SkiaOutputDevice(context_provider->GetGrContext(),
                        memory_tracker,
                        did_swap_buffer_complete_callback),
-      context_provider_(context_provider),
-      child_window_(widget) {
+      context_provider_(context_provider) {
   capabilities_.output_surface_origin = origin;
   capabilities_.uses_default_gl_framebuffer = false;
   capabilities_.supports_post_sub_buffer = false;
@@ -54,8 +52,9 @@ SkiaOutputDeviceDawn::SkiaOutputDeviceDawn(
       kSurfaceColorType;
   capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::BGRX_8888)] =
       kSurfaceColorType;
-  vsync_provider_ = std::make_unique<gl::VSyncProviderWin>(widget);
   child_window_.Initialize();
+  vsync_provider_ =
+      std::make_unique<gl::VSyncProviderWin>(child_window_.window());
 }
 
 SkiaOutputDeviceDawn::~SkiaOutputDeviceDawn() = default;

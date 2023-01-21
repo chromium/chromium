@@ -134,7 +134,7 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
   void CreateDirectCompositionSurfaceWin() {
     DirectCompositionSurfaceWin::Settings settings;
     surface_ = base::MakeRefCounted<DirectCompositionSurfaceWin>(
-        gl::GLSurfaceEGL::GetGLDisplayEGL(), parent_window_,
+        gl::GLSurfaceEGL::GetGLDisplayEGL(),
         DirectCompositionSurfaceWin::VSyncCallback(), settings);
     EXPECT_TRUE(surface_->Initialize(GLSurfaceFormat()));
 

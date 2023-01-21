@@ -154,7 +154,7 @@ class DirectCompositionSurfaceTest : public testing::Test {
     DirectCompositionSurfaceWin::Settings settings;
     scoped_refptr<DirectCompositionSurfaceWin> surface =
         base::MakeRefCounted<DirectCompositionSurfaceWin>(
-            gl::GLSurfaceEGL::GetGLDisplayEGL(), parent_window_,
+            gl::GLSurfaceEGL::GetGLDisplayEGL(),
             DirectCompositionSurfaceWin::VSyncCallback(), settings);
     EXPECT_TRUE(surface->Initialize(GLSurfaceFormat()));
 
