@@ -77,17 +77,26 @@ found in the LICENSE file.
                     android:id="@+id/instructions"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginTop="20dp"
                     android:textAppearance="@style/TextAppearance.AutofillCardInstructionsText"
                     android:lineSpacingMultiplier="1.25"
                     android:gravity="start" />
 
+                <include
+                    android:id="@+id/card_details_container"
+                    layout="@layout/autofill_card_unmask_prompt_card_details"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="9dp"
+                    android:layout_marginHorizontal="20dp"
+                    android:visibility="gone" />
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:layout_marginStart="4dp"
                     android:orientation="horizontal">
 
