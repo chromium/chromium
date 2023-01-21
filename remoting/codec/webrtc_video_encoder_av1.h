@@ -64,7 +64,7 @@ class WebrtcVideoEncoderAV1 : public WebrtcVideoEncoder {
   // This timestamp is monotonically increased using the current frame duration.
   // It's only used for rate control and is not related to the timestamps on the
   // incoming frames to encode.
-  aom_codec_pts_t artificial_timestamp_us_ = 0;
+  aom_codec_pts_t artificial_timestamp_ms_ = 0;
 
   EncoderBitrateFilter bitrate_filter_;
 };
