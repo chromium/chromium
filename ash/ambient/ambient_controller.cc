@@ -467,11 +467,53 @@ void AmbientController::OnAuthScanDone(
 }
 
 void AmbientController::OnUserActivity(const ui::Event* event) {
+  // The following events are handled separately so that we can consume them.
+  if (event->IsMouseEvent() || event->IsTouchEvent() || event->IsKeyEvent() ||
+      event->IsFlingScrollEvent()) {
+    return;
+  }
+  // While |kPreview| is loading, don't |DismissUI| on user activity.
+  // Users can still |DismissUI| with mouse, touch, key or assistant events.
+  if (ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kPreview &&
+      !Shell::GetPrimaryRootWindowController()->HasAmbientWidget()) {
+    return;
+  }
   DismissUI();
 }
 
 void AmbientController::OnKeyEvent(ui::KeyEvent* event) {
   // Prevent dispatching key press event to the login UI.
+  event->StopPropagation();
+  // |DismissUI| only on |ET_KEY_PRESSED|. Otherwise it won't be possible to
+  // start the preview by pressing "enter" key. It'll be cancelled immediately
+  // on |ET_KEY_RELEASED|.
+  if (event->type() == ui::ET_KEY_PRESSED) {
+    DismissUI();
+  }
+}
+
+void AmbientController::OnMouseEvent(ui::MouseEvent* event) {
+  // Prevent dispatching mouse event to the windows behind screen saver.
+  event->StopPropagation();
+  // |DismissUI| on actual mouse move only if the screen saver widget is shown
+  // (images are downloaded).
+  if (event->type() == ui::ET_MOUSE_MOVED) {
+    if (last_mouse_event_was_move_ &&
+        Shell::GetPrimaryRootWindowController()->HasAmbientWidget()) {
+      DismissUI();
+    }
+    last_mouse_event_was_move_ = true;
+    return;
+  }
+
+  if (event->IsAnyButton()) {
+    DismissUI();
+  }
+  last_mouse_event_was_move_ = false;
+}
+
+void AmbientController::OnTouchEvent(ui::TouchEvent* event) {
+  // Prevent dispatching touch event to the windows behind screen saver.
   event->StopPropagation();
   DismissUI();
 }
@@ -783,7 +825,10 @@ void AmbientController::DismissUI() {
   }
 
   if (ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kHidden) {
-    inactivity_timer_.Reset();
+    // Double resetting crashes the UI, make sure it is running.
+    if (inactivity_timer_.IsRunning()) {
+      inactivity_timer_.Reset();
+    }
     return;
   }
 

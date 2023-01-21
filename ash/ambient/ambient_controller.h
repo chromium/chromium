@@ -114,6 +114,8 @@ class ASH_EXPORT AmbientController
 
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
+  void OnMouseEvent(ui::MouseEvent* event) override;
+  void OnTouchEvent(ui::TouchEvent* event) override;
 
   // AssistantInteractionModelObserver:
   void OnInteractionStateChanged(InteractionState interaction_state) override;
@@ -266,6 +268,12 @@ class ASH_EXPORT AmbientController
   bool is_screen_off_ = false;
 
   bool close_widgets_immediately_ = false;
+
+  // ui::ET_MOUSE_MOVE is fired before many mouse events. An event is an actual
+  // mouse move event only if the last event was ui::ET_MOUSE_MOVE too. Used
+  // to keep track of the last event and identify a true mouse move event.
+  // TODO(safarli): Remove this workaround when b/266234711 is fixed.
+  bool last_mouse_event_was_move_ = false;
 
   // Not set until the AmbientAnimationTheme is initially read from pref
   // storage when ambient mode is enabled.

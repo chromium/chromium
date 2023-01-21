@@ -662,12 +662,12 @@ TEST_P(AmbientControllerTestForAnyTheme, ShouldDismissContainerViewOnEvents) {
   for (auto mouse_event_type : {ui::ET_MOUSE_PRESSED, ui::ET_MOUSE_MOVED}) {
     events.emplace_back(std::make_unique<ui::MouseEvent>(
         mouse_event_type, gfx::Point(), gfx::Point(), base::TimeTicks(),
-        ui::EF_NONE, ui::EF_NONE));
+        ui::EF_LEFT_MOUSE_BUTTON, ui::EF_NONE));
   }
 
   events.emplace_back(std::make_unique<ui::MouseWheelEvent>(
       gfx::Vector2d(), gfx::PointF(), gfx::PointF(), base::TimeTicks(),
-      ui::EF_NONE, ui::EF_NONE));
+      ui::EF_MIDDLE_MOUSE_BUTTON, ui::EF_NONE));
 
   events.emplace_back(std::make_unique<ui::ScrollEvent>(
       ui::ET_SCROLL, gfx::PointF(), gfx::PointF(), base::TimeTicks(),
@@ -685,7 +685,13 @@ TEST_P(AmbientControllerTestForAnyTheme, ShouldDismissContainerViewOnEvents) {
     FastForwardTiny();
     EXPECT_TRUE(WidgetsVisible());
 
-    ambient_controller()->OnUserActivity(event.get());
+    if (event.get()->IsMouseEvent()) {
+      ambient_controller()->OnMouseEvent(event.get()->AsMouseEvent());
+    } else if (event.get()->IsTouchEvent()) {
+      ambient_controller()->OnTouchEvent(event.get()->AsTouchEvent());
+    } else {
+      ambient_controller()->OnUserActivity(event.get());
+    }
 
     FastForwardTiny();
     EXPECT_TRUE(GetContainerViews().empty());
@@ -701,9 +707,7 @@ TEST_P(AmbientControllerTestForAnyTheme, ShouldDismissAndThenComesBack) {
   FastForwardTiny();
   EXPECT_TRUE(WidgetsVisible());
 
-  ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             base::TimeTicks(), ui::EF_NONE, ui::EF_NONE);
-  ambient_controller()->OnUserActivity(&mouse_event);
+  GetEventGenerator()->PressLeftButton();
   FastForwardTiny();
   EXPECT_TRUE(GetContainerViews().empty());
 
@@ -1450,6 +1454,81 @@ TEST_P(AmbientControllerTestForAnyTheme, MetricsStartupTimeFailedToStart) {
   histogram_tester.ExpectUniqueTimeSample(
       base::StrCat({"Ash.AmbientMode.StartupTime.", ToString(GetParam())}),
       base::Minutes(1), 1);
+}
+
+TEST_F(AmbientControllerTest, ShouldStartScreenSaverPreview) {
+  ambient_controller()->StartScreenSaverPreview();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+  EXPECT_TRUE(ambient_controller()->IsShown());
+  EXPECT_FALSE(IsLocked());
+}
+
+TEST_F(AmbientControllerTest,
+       ShouldNotDismissScreenSaverPreviewOnUserActivity) {
+  ambient_controller()->StartScreenSaverPreview();
+  EXPECT_TRUE(ambient_controller()->IsShown());
+
+  ui::MouseEvent mouse_event(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
+                             base::TimeTicks(), ui::EF_NONE, ui::EF_NONE);
+  ambient_controller()->OnUserActivity(&mouse_event);
+  FastForwardTiny();
+
+  EXPECT_TRUE(ambient_controller()->IsShown());
+}
+
+TEST_F(AmbientControllerTest, ShouldDismissScreenSaverPreviewOnKeyReleased) {
+  ambient_controller()->StartScreenSaverPreview();
+  EXPECT_TRUE(ambient_controller()->IsShown());
+
+  GetEventGenerator()->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
+  EXPECT_TRUE(ambient_controller()->IsShown());
+
+  GetEventGenerator()->PressKey(ui::VKEY_A, ui::EF_NONE);
+  EXPECT_FALSE(ambient_controller()->IsShown());
+}
+
+TEST_F(AmbientControllerTest,
+       ShouldNotDismissScreenSaverPreviewOnSomeMouseEvents) {
+  ambient_controller()->StartScreenSaverPreview();
+  EXPECT_TRUE(ambient_controller()->IsShown());
+
+  GetEventGenerator()->MoveMouseWheel(10, 10);
+  EXPECT_TRUE(ambient_controller()->IsShown());
+
+  GetEventGenerator()->SendMouseEnter();
+  EXPECT_TRUE(ambient_controller()->IsShown());
+
+  GetEventGenerator()->SendMouseExit();
+  EXPECT_TRUE(ambient_controller()->IsShown());
+}
+
+TEST_F(AmbientControllerTest, ShouldDismissScreenSaverPreviewOnMouseClick) {
+  ambient_controller()->StartScreenSaverPreview();
+  EXPECT_TRUE(ambient_controller()->IsShown());
+
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_FALSE(ambient_controller()->IsShown());
+
+  ambient_controller()->StartScreenSaverPreview();
+  EXPECT_TRUE(ambient_controller()->IsShown());
+
+  GetEventGenerator()->ClickRightButton();
+  EXPECT_FALSE(ambient_controller()->IsShown());
+}
+
+TEST_F(AmbientControllerTest, ShouldDismissScreenSaverPreviewOnTouch) {
+  ambient_controller()->StartScreenSaverPreview();
+  EXPECT_TRUE(ambient_controller()->IsShown());
+
+  GetEventGenerator()->PressTouch();
+  EXPECT_FALSE(ambient_controller()->IsShown());
+
+  ambient_controller()->StartScreenSaverPreview();
+  EXPECT_TRUE(ambient_controller()->IsShown());
+
+  GetEventGenerator()->ReleaseTouch();
+  EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
 }  // namespace ash
