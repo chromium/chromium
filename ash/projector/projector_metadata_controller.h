@@ -35,6 +35,8 @@ class ASH_EXPORT ProjectorMetadataController {
   // Records the transcript in metadata. Virtual for testing.
   virtual void RecordTranscription(
       const media::SpeechRecognitionResult& speech_result);
+  // Records the state of the transcription. Virtual for testing.
+  virtual void SetSpeechRecognitionStatus(RecognitionStatus status);
   // Marks the next transcript as the beginning of a key idea.
   // Virtual for testing.
   virtual void RecordKeyIdea();

@@ -19,6 +19,18 @@ class Value;
 
 namespace ash {
 
+// The speech recognition status.
+enum class ASH_EXPORT RecognitionStatus : int {
+  // Speech recognition was incomplete by the time the metadata
+  // was written.
+  kIncomplete = 0,
+  // Speech recognition was completed by the time the metadata was
+  // written to file.
+  kComplete = 1,
+  // Speech recognition had encountered an error.
+  kError = 2
+};
+
 // Base class to describe a metadata item.
 class MetadataItem {
  public:
@@ -91,6 +103,8 @@ class ASH_EXPORT ProjectorMetadata {
 
   // Adds the transcript to the metadata.
   void AddTranscript(std::unique_ptr<ProjectorTranscript> transcript);
+  // Notifies the metadata that transcription has completed.
+  void SetSpeechRecognitionStatus(RecognitionStatus status);
   // Marks a beginning of a key idea. The timing info of the next transcript
   // will be used as the timing of the key idea.
   void MarkKeyIdea();
@@ -109,6 +123,9 @@ class ASH_EXPORT ProjectorMetadata {
   // True if user mark the transcript as a key idea. It will be reset to false
   // when the final recognition result is received and recorded as a key idea.
   bool should_mark_key_idea_ = false;
+
+  // The speech recognition status.
+  RecognitionStatus speech_recognition_status_ = RecognitionStatus::kIncomplete;
 };
 
 }  // namespace ash

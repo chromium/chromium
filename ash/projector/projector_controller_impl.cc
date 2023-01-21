@@ -38,6 +38,8 @@ namespace ash {
 
 namespace {
 
+constexpr base::TimeDelta kForceEndRecognitionSessionTimer = base::Seconds(90);
+
 // Create directory. Returns true if saving succeeded, or false otherwise.
 bool CreateDirectory(const base::FilePath& path) {
   DCHECK(!base::CurrentUIThread::IsSet());
@@ -235,15 +237,19 @@ void ProjectorControllerImpl::OnTranscription(
 }
 
 void ProjectorControllerImpl::OnTranscriptionError() {
-  is_speech_recognition_on_ = false;
+  force_stop_recognition_timer_.AbandonAndStop();
 
   // TODO(b/261093550) Investigate the real reason why
   // we get a speech recognition error after we notify it to
   // stop.
-  if (!pending_speech_recognition_stop_) {
+  if (speech_recognition_state_ !=
+      SpeechRecognitionState::kRecognitionStopping) {
     ProjectorUiController::ShowFailureNotification(
         IDS_ASH_PROJECTOR_FAILURE_MESSAGE_TRANSCRIPTION);
   }
+
+  speech_recognition_state_ = SpeechRecognitionState::kRecognitionError;
+  metadata_controller_->SetSpeechRecognitionStatus(RecognitionStatus::kError);
 
   auto* capture_mode_controller = CaptureModeController::Get();
   if (capture_mode_controller->is_recording_in_progress()) {
@@ -252,15 +258,18 @@ void ProjectorControllerImpl::OnTranscriptionError() {
   } else {
     MaybeWrapUpRecording();
   }
-
-  pending_speech_recognition_stop_ = false;
 }
 
-void ProjectorControllerImpl::OnSpeechRecognitionStopped() {
-  is_speech_recognition_on_ = false;
-  pending_speech_recognition_stop_ = false;
+void ProjectorControllerImpl::OnSpeechRecognitionStopped(bool forced) {
+  speech_recognition_state_ = SpeechRecognitionState::kRecognitionNotStarted;
+
+  const auto metadata_recognition_status =
+      forced ? RecognitionStatus::kIncomplete : RecognitionStatus::kComplete;
+  metadata_controller_->SetSpeechRecognitionStatus(metadata_recognition_status);
+
   // Try to wrap up recording. This can be no-op if DLP check is not completed.
   MaybeWrapUpRecording();
+  force_stop_recognition_timer_.AbandonAndStop();
 }
 
 NewScreencastPrecondition
@@ -400,8 +409,7 @@ void ProjectorControllerImpl::OnDlpRestrictionCheckedAtVideoEnd(
     SaveThumbnailFile(thumbnail);
   }
 
-  // Try to wrap up recording. This can be no-op if speech recognition is not
-  // completely stopped.
+  // Try to wrap up recording.
   MaybeWrapUpRecording();
 
   // At this point, the screencast might not synced to Drive yet. Open
@@ -498,24 +506,48 @@ void ProjectorControllerImpl::StartSpeechRecognition() {
     return;
 
   DCHECK(client_->GetSpeechRecognitionAvailability().IsAvailable());
+  DCHECK(speech_recognition_state_ !=
+         SpeechRecognitionState::kRecognitionStarted);
 
-  DCHECK(!is_speech_recognition_on_);
   client_->StartSpeechRecognition();
-  is_speech_recognition_on_ = true;
-  pending_speech_recognition_stop_ = false;
+  speech_recognition_state_ = SpeechRecognitionState::kRecognitionStarted;
 }
 
 void ProjectorControllerImpl::MaybeStopSpeechRecognition() {
   if (ProjectorController::AreExtendedProjectorFeaturesDisabled() ||
-      !is_speech_recognition_on_ || !client_) {
-    OnSpeechRecognitionStopped();
+      speech_recognition_state_ ==
+          SpeechRecognitionState::kRecognitionNotStarted ||
+      !client_) {
+    OnSpeechRecognitionStopped(/*forced=*/false);
     return;
   }
 
   DCHECK(client_->GetSpeechRecognitionAvailability().IsAvailable());
 
+  // We are already stopping.
+  if (speech_recognition_state_ ==
+      SpeechRecognitionState::kRecognitionStopping) {
+    return;
+  }
+
+  speech_recognition_state_ = SpeechRecognitionState::kRecognitionStopping;
   client_->StopSpeechRecognition();
-  pending_speech_recognition_stop_ = true;
+
+  force_stop_recognition_timer_.Start(
+      FROM_HERE, kForceEndRecognitionSessionTimer,
+      base::BindOnce(&ProjectorControllerImpl::ForceEndSpeechRecognition,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void ProjectorControllerImpl::ForceEndSpeechRecognition() {
+  if (!client_) {
+    return;
+  }
+
+  DCHECK_EQ(speech_recognition_state_,
+            SpeechRecognitionState::kRecognitionStopping);
+
+  client_->ForceEndSpeechRecognition();
 }
 
 void ProjectorControllerImpl::OnContainerFolderCreated(
@@ -547,11 +579,17 @@ void ProjectorControllerImpl::SaveScreencast() {
 }
 
 void ProjectorControllerImpl::MaybeWrapUpRecording() {
-  // Only wrap up the recording if speech recognition session and DLP check are
-  // completed.
-  if (is_speech_recognition_on_ || !dlp_restriction_checked_completed_)
+  // Speech recognition could stopped before DLP check is completed, only wrap
+  // up the recording if DLP check is completed.
+  if (!dlp_restriction_checked_completed_) {
     return;
+  }
 
+  // We reach this stage in the following scenarios:
+  // 1. Recording has stopped but speech recognition is not yet complete.
+  // 2. Both recording and speech recognition have completed.
+  // In both cases, we save the screencast. However, we will end the session
+  // when both speech recognition and recording have completed.
   if (!user_deleted_video_file_ &&
       projector_session_->screencast_container_path().has_value()) {
     // Finish saving the screencast if the container is available. The container
@@ -560,7 +598,13 @@ void ProjectorControllerImpl::MaybeWrapUpRecording() {
     SaveScreencast();
   }
 
-  projector_session_->Stop();
+  if ((speech_recognition_state_ ==
+           SpeechRecognitionState::kRecognitionNotStarted ||
+       speech_recognition_state_ ==
+           SpeechRecognitionState::kRecognitionError) &&
+      projector_session_->is_active()) {
+    projector_session_->Stop();
+  }
 }
 
 void ProjectorControllerImpl::SaveThumbnailFile(

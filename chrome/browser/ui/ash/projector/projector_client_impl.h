@@ -51,6 +51,7 @@ class ProjectorClientImpl : public ash::ProjectorClient,
       const override;
   void StartSpeechRecognition() override;
   void StopSpeechRecognition() override;
+  void ForceEndSpeechRecognition() override;
   bool GetBaseStoragePath(base::FilePath* result) const override;
   bool IsDriveFsMounted() const override;
   bool IsDriveFsMountFailed() const override;
@@ -93,6 +94,8 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   void MaybeSwitchDriveIntegrationServiceObservation();
 
  private:
+  void SpeechRecognitionEnded(bool forced);
+
   // Called when any of the policies change that control whether the Projector
   // app is enabled.
   void OnEnablementPolicyChanged();

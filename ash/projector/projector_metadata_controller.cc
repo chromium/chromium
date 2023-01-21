@@ -67,6 +67,12 @@ void ProjectorMetadataController::RecordTranscription(
       speech_result.transcription, timing->hypothesis_parts.value()));
 }
 
+void ProjectorMetadataController::SetSpeechRecognitionStatus(
+    RecognitionStatus status) {
+  DCHECK(metadata_);
+  metadata_->SetSpeechRecognitionStatus(status);
+}
+
 void ProjectorMetadataController::RecordKeyIdea() {
   DCHECK(metadata_);
   metadata_->MarkKeyIdea();

@@ -33,6 +33,7 @@ class MockProjectorClient : public ProjectorClient,
                      SpeechRecognitionAvailability());
   MOCK_METHOD0(StartSpeechRecognition, void());
   MOCK_METHOD0(StopSpeechRecognition, void());
+  MOCK_METHOD0(ForceEndSpeechRecognition, void());
   bool GetBaseStoragePath(base::FilePath* result) const override;
   MOCK_CONST_METHOD0(IsDriveFsMounted, bool());
   MOCK_CONST_METHOD0(IsDriveFsMountFailed, bool());

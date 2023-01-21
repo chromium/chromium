@@ -48,8 +48,10 @@ class ASH_PUBLIC_EXPORT ProjectorController {
   // Called when there is an error in transcription.
   virtual void OnTranscriptionError() = 0;
 
-  // Called when speech recognition stopped.
-  virtual void OnSpeechRecognitionStopped() = 0;
+  // Called when speech recognition stopped. `forced` is set to true
+  // if the recognition session was forced to stop before it finishes
+  // processing.
+  virtual void OnSpeechRecognitionStopped(bool forced) = 0;
 
   // Returns true if we can start a new Projector session.
   virtual NewScreencastPrecondition GetNewScreencastPrecondition() const = 0;

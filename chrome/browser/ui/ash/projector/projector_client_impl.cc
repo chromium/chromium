@@ -196,6 +196,10 @@ void ProjectorClientImpl::StopSpeechRecognition() {
   speech_recognizer_->Stop();
 }
 
+void ProjectorClientImpl::ForceEndSpeechRecognition() {
+  SpeechRecognitionEnded(/*forced=*/true);
+}
+
 bool ProjectorClientImpl::GetBaseStoragePath(base::FilePath* result) const {
   if (!IsDriveFsMounted())
     return false;
@@ -293,9 +297,7 @@ void ProjectorClientImpl::OnSpeechRecognitionStateChanged(
 }
 
 void ProjectorClientImpl::OnSpeechRecognitionStopped() {
-  speech_recognizer_.reset();
-  recognizer_status_ = SPEECH_RECOGNIZER_OFF;
-  controller_->OnSpeechRecognitionStopped();
+  SpeechRecognitionEnded(/*forced=*/false);
 }
 
 void ProjectorClientImpl::SetTool(const ash::AnnotatorTool& tool) {
@@ -352,6 +354,12 @@ void ProjectorClientImpl::MaybeSwitchDriveIntegrationServiceObservation() {
 
   drive_observation_.Reset();
   drive_observation_.Observe(drive_service);
+}
+
+void ProjectorClientImpl::SpeechRecognitionEnded(bool forced) {
+  speech_recognizer_.reset();
+  recognizer_status_ = SPEECH_RECOGNIZER_OFF;
+  controller_->OnSpeechRecognitionStopped(forced);
 }
 
 void ProjectorClientImpl::OnEnablementPolicyChanged() {
