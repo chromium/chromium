@@ -58159,6 +58159,7 @@ from previous Chrome versions.
   <int value="-1639631778"
       label="EnableWebHidOnExtensionServiceWorker:enabled"/>
   <int value="-1639534120" label="VaapiVp9kSVCHWEncoding:enabled"/>
+  <int value="-1639522154" label="GoogleOneOfferFilesBanner:enabled"/>
   <int value="-1639211162" label="CodeBasedRBD:enabled"/>
   <int value="-1639050182" label="NavigationPredictorRendererWarmup:enabled"/>
   <int value="-1638815914" label="enable-experimental-productivity-features"/>
@@ -61029,6 +61030,7 @@ from previous Chrome versions.
   <int value="-13918890" label="disable-download-notification"/>
   <int value="-13180015" label="WebUsbDeviceDetection:disabled"/>
   <int value="-13062128" label="IsolateSandboxedIframes:disabled"/>
+  <int value="-12338441" label="GoogleOneOfferFilesBanner:disabled"/>
   <int value="-12225998" label="ShareButtonInTopToolbar:disabled"/>
   <int value="-11983392"
       label="MagnifierContinuousMouseFollowingModeSetting:enabled"/>

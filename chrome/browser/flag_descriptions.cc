@@ -1554,6 +1554,10 @@ const char kGlobalMediaControlsModernUIDescription[] =
     "Use a redesigned version of the Global Media Controls UI. Requires "
     "#global-media-controls to also be enabled.";
 
+const char kGoogleOneOfferFilesBannerName[] = "Google One offer Files banner";
+const char kGoogleOneOfferFilesBannerDescription[] =
+    "Shows a Files banner about Google One offer.";
+
 const char kOpenscreenCastStreamingSessionName[] =
     "Enable Open Screen Library (libcast) as the Mirroring Service's Cast "
     "Streaming implementation";

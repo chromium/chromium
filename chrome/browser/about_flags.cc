@@ -9274,6 +9274,13 @@ const FeatureEntry kFeatureEntries[] = {
          "GalleryAppPdfEditNotification")},
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"google-one-offer-files-banner",
+     flag_descriptions::kGoogleOneOfferFilesBannerName,
+     flag_descriptions::kGoogleOneOfferFilesBannerDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kGoogleOneOfferFilesBanner)},
+#endif
+
     {"sync-autofill-wallet-usage-data",
      flag_descriptions::kSyncAutofillWalletUsageDataName,
      flag_descriptions::kSyncAutofillWalletUsageDataDescription, kOsAll,

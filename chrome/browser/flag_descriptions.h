@@ -866,6 +866,9 @@ extern const char kGlobalMediaControlsCrOSUpdatedUIDescription[];
 extern const char kGlobalMediaControlsModernUIName[];
 extern const char kGlobalMediaControlsModernUIDescription[];
 
+extern const char kGoogleOneOfferFilesBannerName[];
+extern const char kGoogleOneOfferFilesBannerDescription[];
+
 extern const char kOpenscreenCastStreamingSessionName[];
 extern const char kOpenscreenCastStreamingSessionDescription[];
 
