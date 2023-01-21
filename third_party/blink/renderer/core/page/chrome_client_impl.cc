@@ -44,7 +44,6 @@
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/widget/constants.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
-#include "third_party/blink/public/mojom/window_features/window_features.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/blink.h"
@@ -57,6 +56,7 @@
 #include "third_party/blink/public/web/web_popup_menu_info.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view_client.h"
+#include "third_party/blink/public/web/web_window_features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -353,11 +353,12 @@ void ChromeClientImpl::SetOverscrollBehavior(
 void ChromeClientImpl::Show(LocalFrame& frame,
                             LocalFrame& opener_frame,
                             NavigationPolicy navigation_policy,
-                            const mojom::blink::WindowFeatures& window_features,
                             bool user_gesture) {
   DCHECK(web_view_);
+  const WebWindowFeatures& features = frame.GetPage()->GetWindowFeatures();
+  gfx::Rect bounds(features.x, features.y, features.width, features.height);
   const gfx::Rect rect_adjusted_for_minimum =
-      AdjustWindowRectForMinimum(window_features.bounds);
+      AdjustWindowRectForMinimum(bounds);
   const gfx::Rect adjusted_rect =
       AdjustWindowRectForDisplay(rect_adjusted_for_minimum, frame);
   // Request the unadjusted rect if the browser may honor cross-screen bounds.

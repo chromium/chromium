@@ -33,7 +33,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
-#include "third_party/blink/public/mojom/window_features/window_features.mojom-blink.h"
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/public/web/web_window_features.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
@@ -373,21 +372,8 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
 
   frame.View()->SetCanHaveScrollbars(!features.is_popup);
 
-  mojom::blink::WindowFeaturesPtr window_features =
-      mojom::blink::WindowFeatures::New();
-  window_features->bounds = page->GetChromeClient().RootWindowRect(frame);
-  gfx::Rect& window_rect = window_features->bounds;
-  if (features.x_set)
-    window_rect.set_x(features.x);
-  if (features.y_set)
-    window_rect.set_y(features.y);
-  if (features.width_set)
-    window_rect.set_width(features.width);
-  if (features.height_set)
-    window_rect.set_height(features.height);
-
   page->GetChromeClient().Show(frame, opener_frame,
-                               request.GetNavigationPolicy(), *window_features,
+                               request.GetNavigationPolicy(),
                                consumed_user_gesture);
   MaybeLogWindowOpen(opener_frame);
   return &frame;
