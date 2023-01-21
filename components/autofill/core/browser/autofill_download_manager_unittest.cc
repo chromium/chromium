@@ -189,6 +189,34 @@ class AutofillDownloadManagerWithCustomPayloadSize
 class AutofillDownloadManagerTest : public AutofillDownloadManager::Observer,
                                     public ::testing::Test {
  public:
+  enum ResponseType {
+    QUERY_SUCCESSFULL,
+    UPLOAD_SUCCESSFULL,
+    REQUEST_QUERY_FAILED,
+    REQUEST_UPLOAD_FAILED,
+  };
+
+  struct ResponseData {
+    ResponseType type_of_response = REQUEST_QUERY_FAILED;
+    int error = 0;
+    std::string signature;
+    std::string response;
+  };
+
+  class TestAutofillDownloadManager : public AutofillDownloadManager {
+   public:
+    explicit TestAutofillDownloadManager(
+        AutofillClient* client,
+        std::string api_key = "",
+        bool is_raw_metadata_uploading_enabled = false)
+        : AutofillDownloadManager(
+              client,
+              /*api_key=*/std::move(api_key),
+              AutofillDownloadManager::IsRawMetadataUploadingEnabled(
+                  is_raw_metadata_uploading_enabled),
+              /*log_manager=*/nullptr) {}
+  };
+
   AutofillDownloadManagerTest()
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -241,22 +269,6 @@ class AutofillDownloadManagerTest : public AutofillDownloadManager::Observer,
             : REQUEST_UPLOAD_FAILED;
     responses_.push_back(response);
   }
-
-  enum ResponseType {
-    QUERY_SUCCESSFULL,
-    UPLOAD_SUCCESSFULL,
-    REQUEST_QUERY_FAILED,
-    REQUEST_UPLOAD_FAILED,
-  };
-
-  struct ResponseData {
-    ResponseType type_of_response;
-    int error;
-    std::string signature;
-    std::string response;
-
-    ResponseData() : type_of_response(REQUEST_QUERY_FAILED), error(0) {}
-  };
 
   ScopedActiveAutofillExperiments scoped_active_autofill_experiments;
   base::test::TaskEnvironment task_environment_;

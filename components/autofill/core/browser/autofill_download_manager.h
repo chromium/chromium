@@ -38,7 +38,7 @@ namespace autofill {
 class AutofillClient;
 class LogManager;
 
-const size_t kMaxQueryGetSize = 10240;  // 10 KiB
+constexpr size_t kMaxQueryGetSize = 10240;  // 10 KiB
 
 // A helper to make sure that tests which modify the set of active autofill
 // experiments do not interfere with one another.

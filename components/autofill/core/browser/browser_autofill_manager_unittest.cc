@@ -52,7 +52,6 @@
 #include "components/autofill/core/browser/payments/test_payments_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_download_manager.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_autofill_external_delegate.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
@@ -154,10 +153,15 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(void, HideFastCheckout, (bool), (override));
 };
 
-class MockAutofillDownloadManager : public TestAutofillDownloadManager {
+class MockAutofillDownloadManager : public AutofillDownloadManager {
  public:
   explicit MockAutofillDownloadManager(AutofillClient* client)
-      : TestAutofillDownloadManager(client) {}
+      : AutofillDownloadManager(
+            client,
+            /*api_key=*/"",
+            AutofillDownloadManager::IsRawMetadataUploadingEnabled(false),
+            /*log_manager=*/nullptr) {}
+
   MockAutofillDownloadManager(const MockAutofillDownloadManager&) = delete;
   MockAutofillDownloadManager& operator=(const MockAutofillDownloadManager&) =
       delete;
@@ -172,6 +176,25 @@ class MockAutofillDownloadManager : public TestAutofillDownloadManager {
                PrefService*,
                base::WeakPtr<Observer>),
               (override));
+
+  bool StartQueryRequest(const std::vector<FormStructure*>& forms,
+                         net::IsolationInfo isolation_info,
+                         base::WeakPtr<Observer> observer) override {
+    last_queried_forms_ = forms;
+    return true;
+  }
+
+  // Verify that the last queried forms equal |expected_forms|.
+  void VerifyLastQueriedForms(const std::vector<FormData>& expected_forms) {
+    ASSERT_EQ(expected_forms.size(), last_queried_forms_.size());
+    for (size_t i = 0; i < expected_forms.size(); ++i) {
+      EXPECT_EQ(last_queried_forms_[i]->global_id().renderer_id,
+                expected_forms[i].global_id().renderer_id);
+    }
+  }
+
+ private:
+  std::vector<FormStructure*> last_queried_forms_;
 };
 
 class MockTouchToFillDelegateImpl : public TouchToFillDelegateImpl {

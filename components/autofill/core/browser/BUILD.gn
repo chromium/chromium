@@ -690,8 +690,6 @@ static_library("test_support") {
     "test_autofill_client.h",
     "test_autofill_clock.cc",
     "test_autofill_clock.h",
-    "test_autofill_download_manager.cc",
-    "test_autofill_download_manager.h",
     "test_autofill_driver.cc",
     "test_autofill_driver.h",
     "test_autofill_external_delegate.cc",
