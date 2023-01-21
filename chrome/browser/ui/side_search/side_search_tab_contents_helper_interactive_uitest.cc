@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/bind.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
 
 #include "base/strings/strcat.h"
@@ -14,6 +16,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/result_codes.h"
@@ -26,8 +29,12 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "ui/base/interaction/element_identifier.h"
 
 namespace {
+
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabElementId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSideSearchElementId);
 
 constexpr char kSearchMatchPath[] = "/search-match";
 constexpr char kNonMatchPath[] = "/non-match";
@@ -41,7 +48,7 @@ bool IsSearchURLMatch(const GURL& url) {
 
 }  // namespace
 
-class SideSearchSideContentsHelperBrowsertest : public InProcessBrowserTest {
+class SideSearchSideContentsHelperBrowsertest : public InteractiveBrowserTest {
  public:
   // InProcessBrowserTest:
   void SetUp() override {
@@ -57,9 +64,14 @@ class SideSearchSideContentsHelperBrowsertest : public InProcessBrowserTest {
         base::Unretained(this)));
     embedded_test_server()->StartAcceptingConnections();
 
-    InProcessBrowserTest::SetUpOnMainThread();
+    InteractiveBrowserTest::SetUpOnMainThread();
 
     auto* config = SideSearchConfig::Get(browser()->profile());
+
+    // TODO(crbug.com/1399570): this is a workaround for a side search bug that
+    // can randomly close the side panel.
+    config->set_skip_on_template_url_changed_for_testing(true);
+
     // Basic configuration for testing that allows navigations to URLs with
     // paths prefixed with `kSearchMatchPath` to proceed within the side panel,
     // and only allows showing the side panel on non-matching pages.
@@ -77,7 +89,7 @@ class SideSearchSideContentsHelperBrowsertest : public InProcessBrowserTest {
 
   void TearDownOnMainThread() override {
     EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
-    InProcessBrowserTest::TearDownOnMainThread();
+    InteractiveBrowserTest::TearDownOnMainThread();
   }
 
   // Navigates the active tab to `url`.
@@ -105,6 +117,35 @@ class SideSearchSideContentsHelperBrowsertest : public InProcessBrowserTest {
       tab_observer.Wait();
       EXPECT_EQ(url, tab_contents->GetLastCommittedURL());
     }
+  }
+
+  auto OpenAndInstrumentSideSearch(GURL url) {
+    return Steps(
+        Do(base::BindLambdaForTesting([this, url]() {
+          GetTabContentsHelper()->OpenSidePanelFromContextMenuSearch(url);
+        })),
+        InstrumentNonTabWebView(kSideSearchElementId,
+                                kSideSearchWebViewElementId));
+  }
+
+  // Navigates the active tab's side panel web contents.
+  // Verb version for InteractiveBrowserTests.
+  auto DoNavigateInSideContents(ui::ElementIdentifier current_tab_id,
+                                const GURL& url) {
+    return Steps(
+        std::move(WithElement(kSideSearchElementId,
+                              base::BindOnce(
+                                  [](GURL url, ui::TrackedElement* el) {
+                                    AsInstrumentedWebContents(el)->LoadPage(
+                                        url);
+                                  },
+                                  url))
+                      .SetMustRemainVisible(false)),
+        WaitForWebContentsNavigation(SideSearchConfig::Get(browser()->profile())
+                                             ->ShouldNavigateInSidePanel(url)
+                                         ? kSideSearchElementId
+                                         : current_tab_id,
+                                     url));
   }
 
   GURL GetMatchingSearchUrl() {
@@ -176,43 +217,43 @@ IN_PROC_BROWSER_TEST_F(SideSearchSideContentsHelperBrowsertest,
   const GURL b1_url = embedded_test_server()->GetURL("/B1.html");
   const GURL b2_url = embedded_test_server()->GetURL("/B2.html");
 
-  // Start the tab contents at the initial url.
-  NavigateTab(initial_url);
-  auto* tab_contents = GetTabContents();
-  EXPECT_EQ(initial_url, tab_contents->GetLastCommittedURL());
+  RunTestSequence(
+      // Start the tab contents at the initial url.
+      InstrumentTab(kPrimaryTabElementId),
+      NavigateWebContents(kPrimaryTabElementId, initial_url),
 
-  // Have the side panel open page A in the tab contents.
-  NavigateInSideContents(a_url);
-  EXPECT_EQ(a_url, tab_contents->GetLastCommittedURL());
+      // Make sure the side search is open and instrument it.
+      OpenAndInstrumentSideSearch(GetMatchingSearchUrl()),
 
-  // Have the side panel open page B1 in the tab contents. Immediately redirect
-  // this to page B2.
-  NavigateInSideContents(b1_url);
-  EXPECT_EQ(b1_url, tab_contents->GetLastCommittedURL());
-  {
-    content::TestNavigationObserver tab_observer(tab_contents);
-    EXPECT_TRUE(content::ExecJs(tab_contents,
-                                "location = '" + b2_url.spec() + "';",
-                                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-    tab_observer.Wait();
-    EXPECT_EQ(b2_url, tab_contents->GetLastCommittedURL());
-  }
+      // Have the side panel open page A in the tab contents.
+      DoNavigateInSideContents(kPrimaryTabElementId, a_url),
 
-  // Go back from page B2. B1 should be skippable and we should return to A.
-  {
-    content::TestNavigationObserver tab_observer(tab_contents);
-    tab_contents->GetController().GoBack();
-    tab_observer.Wait();
-    EXPECT_EQ(a_url, tab_contents->GetLastCommittedURL());
-  }
+      // Have the side panel open page B1 in the tab contents. Immediately
+      // redirect this to page B2.
+      DoNavigateInSideContents(kPrimaryTabElementId, b1_url),
+      CheckElement(kPrimaryTabElementId,
+                   base::BindOnce(
+                       [](GURL url, ui::TrackedElement* el) {
+                         const auto result = content::ExecJs(
+                             AsInstrumentedWebContents(el)->web_contents(),
+                             "location = '" + url.spec() + "';",
+                             content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+                         if (!result) {
+                           LOG(ERROR) << result.failure_message();
+                           return false;
+                         }
+                         return true;
+                       },
+                       b2_url)),
+      WaitForWebContentsNavigation(kPrimaryTabElementId, b2_url),
 
-  // Go back from page A. We should return to the initial page.
-  {
-    content::TestNavigationObserver tab_observer(tab_contents);
-    tab_contents->GetController().GoBack();
-    tab_observer.Wait();
-    EXPECT_EQ(initial_url, tab_contents->GetLastCommittedURL());
-  }
+      // Go back from page B2. B1 should be skippable and we should return to A.
+      PressButton(kBackButtonElementId),
+      WaitForWebContentsNavigation(kPrimaryTabElementId, a_url),
+
+      // Go back from page A. We should return to the initial page.
+      PressButton(kBackButtonElementId),
+      WaitForWebContentsNavigation(kPrimaryTabElementId, initial_url));
 }
 
 // This interaction tests that only the final page in the tab frame arrived at
