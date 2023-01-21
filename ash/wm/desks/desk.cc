@@ -892,7 +892,12 @@ void Desk::RemoveAllDeskWindow(aura::Window* window) {
   auto& adw_data = all_desk_window_stacking_[root];
   auto it =
       base::ranges::find(adw_data, window, &AllDeskWindowStackingData::window);
-  DCHECK(it != adw_data.end());
+  if (it == adw_data.end()) {
+    // This will happen when the desk was created after the window was made into
+    // an all desk window. In this case, there's nothing to do since this desk
+    // doesn't have any stacking info for this window.
+    return;
+  }
 
   it = adw_data.erase(it);
   // Raise all remaining windows up.
