@@ -159,6 +159,7 @@
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
+#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
@@ -6779,6 +6780,10 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   ready_to_commit_time_ = base::TimeTicks::Now();
   RestartCommitTimeout();
 
+  if (!IsSameDocument()) {
+    MaybeRegisterOriginForUnpartitionedSessionStorageAccess();
+  }
+
   if (!IsSameDocument() && !IsPageActivation())
     UpdatePrivateNetworkRequestPolicy();
 
@@ -8660,6 +8665,23 @@ void NavigationRequest::ResumeCommitIfNeeded() {
     base::SequencedTaskRunner::GetCurrentDefault()->PostNonNestableTask(
         FROM_HERE, std::move(resume_commit_closure_));
   }
+}
+
+void NavigationRequest::
+    MaybeRegisterOriginForUnpartitionedSessionStorageAccess() {
+  if (!common_params_ || !response_head_ || !response_head_->headers) {
+    return;
+  }
+  if (!blink::TrialTokenValidator().RequestEnablesFeature(
+          common_params_->url, response_head_->headers.get(),
+          "DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning",
+          base::Time::Now())) {
+    return;
+  }
+  frame_tree_node()
+      ->frame_tree()
+      .RegisterOriginForUnpartitionedSessionStorageAccess(
+          url::Origin::Create(common_params_->url));
 }
 
 }  // namespace content

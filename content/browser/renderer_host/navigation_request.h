@@ -1726,6 +1726,16 @@ class CONTENT_EXPORT NavigationRequest
   // NavigationRequest associated with the same FrameTreeNode is destroyed.
   void ResumeCommitIfNeeded();
 
+  // Used to detect if the page being navigated to is participating in the
+  // related deprecation trial and recording that in NavigationControllerImpl.
+  //
+  // Not called for same-document navigation requests nor for requests served
+  // from the back-forward cache or from prerendered pages as work would be
+  // redundant.
+  //
+  // TODO(crbug.com/1407150): Remove this when deprecation trial is complete.
+  void MaybeRegisterOriginForUnpartitionedSessionStorageAccess();
+
   // Never null. The pointee node owns this navigation request instance.
   FrameTreeNode* const frame_tree_node_;
 

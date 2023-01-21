@@ -31,6 +31,7 @@
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-forward.h"
+#include "url/origin.h"
 
 namespace blink {
 namespace mojom {
@@ -39,6 +40,7 @@ enum class TreeScopeType;
 }  // namespace mojom
 
 struct FramePolicy;
+class StorageKey;
 }  // namespace blink
 
 namespace content {
@@ -537,6 +539,20 @@ class CONTENT_EXPORT FrameTree {
   // each inner FrameTree is attached.
   void FocusOuterFrameTrees();
 
+  // This should only be called by NavigationRequest when it detects that an
+  // origin is participating in the deprecation trial.
+  //
+  // TODO(crbug.com/1407150): Remove this when deprecation trial is complete.
+  void RegisterOriginForUnpartitionedSessionStorageAccess(
+      const url::Origin& origin);
+
+  // This should be used for all session storage related bindings as it adjusts
+  // the storage key used depending on the deprecation trial.
+  //
+  // TODO(crbug.com/1407150): Remove this when deprecation trial is complete.
+  const blink::StorageKey GetSessionStorageKey(
+      const blink::StorageKey& storage_key);
+
  private:
   friend class FrameTreeTest;
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest, RemoveFocusedFrame);
@@ -634,6 +650,13 @@ class CONTENT_EXPORT FrameTree {
   // `root()` method, even while `root_` is running its destructor.
   // For that reason, we want to destroy |root_| before any other fields.
   FrameTreeNode root_;
+
+  // Origins in this set have enabled a deprecation trial that prevents the
+  // partitioning of session storage when embedded as a third-party iframe.
+  // This list persists for the lifetime of the associated tab.
+  //
+  // TODO(crbug.com/1407150): Remove this when deprecation trial is complete.
+  std::set<url::Origin> unpartitioned_session_storage_origins_;
 
   base::WeakPtrFactory<FrameTree> weak_ptr_factory_{this};
 };

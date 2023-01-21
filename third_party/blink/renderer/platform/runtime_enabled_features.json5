@@ -1064,8 +1064,8 @@
     // trial it isn't possible to set a `depends_on`.
     {
       name: "DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning",
+      origin_trial_feature_name: "DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning",
       status: "experimental",
-      browser_process_read_write_access: true,
     },
     // This feature will represent the deprecation trial that allows first
     // parties to temporarily use unpartitioned storage in embeds loaded
