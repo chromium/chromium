@@ -6293,11 +6293,6 @@ const char kRevampedPasswordManagementBubbleDescription[] =
     "Enable the new password managment bubble triggered by clicking the key "
     "icon in the omnibox.";
 
-const char kSideSearchName[] = "Side search";
-const char kSideSearchDescription[] =
-    "Enables an easily accessible way to access your most recent Google search "
-    "results page embedded in a browser side panel";
-
 const char kSearchWebInSidePanelName[] = "Search web in side panel";
 const char kSearchWebInSidePanelDescription[] =
     "Displays right-click search results of a highlighted text in side panel";

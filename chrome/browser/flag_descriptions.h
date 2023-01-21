@@ -3626,9 +3626,6 @@ extern const char kZeroCopyVideoCaptureDescription[];
 extern const char kRevampedPasswordManagementBubbleName[];
 extern const char kRevampedPasswordManagementBubbleDescription[];
 
-extern const char kSideSearchName[];
-extern const char kSideSearchDescription[];
-
 extern const char kSearchWebInSidePanelName[];
 extern const char kSearchWebInSidePanelDescription[];
 #endif  // defined(TOOLKIT_VIEWS)

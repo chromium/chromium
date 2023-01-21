@@ -131,6 +131,5 @@ bool IsSearchWebInSidePanelSupported(const Browser* browser) {
 
 bool IsSideSearchEnabled(const Profile* profile) {
   return !profile->IsOffTheRecord() &&
-         base::FeatureList::IsEnabled(features::kSideSearch) &&
          profile->GetPrefs()->GetBoolean(side_search_prefs::kSideSearchEnabled);
 }

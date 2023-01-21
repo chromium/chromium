@@ -42,8 +42,8 @@
 class SideSearchV2Test : public SideSearchBrowserTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kSideSearch, features::kSearchWebInSidePanel}, {});
+    scoped_feature_list_.InitWithFeatures({features::kSearchWebInSidePanel},
+                                          {});
     SideSearchBrowserTest::SetUp();
   }
 
@@ -884,7 +884,6 @@ class SideSearchAutoTriggeringBrowserTest
     base::FieldTrialParams params = {{kParam, kTriggerCount}};
 
     feature_list_.InitAndEnableFeaturesWithParameters({
-        {features::kSideSearch, {}},
         {features::kSideSearchAutoTriggering, params},
         {feature_engagement::kIPHSideSearchAutoTriggeringFeature,
          GetFeatureEngagementParams()},
@@ -1014,7 +1013,6 @@ class SideSearchPageActionLabelTriggerBrowserTest
  public:
   SideSearchPageActionLabelTriggerBrowserTest() {
     feature_list_.InitAndEnableFeaturesWithParameters({
-        {features::kSideSearch, {}},
         {feature_engagement::kIPHSideSearchPageActionLabelFeature,
          GetFeatureEngagementParams()},
     });
