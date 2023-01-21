@@ -768,7 +768,6 @@ source_set("presence_types") {
     "src/presence/data_types.h",
     "src/presence/device_motion.h",
     "src/presence/discovery_filter.h",
-    "src/presence/listeners.h",
     "src/presence/power_mode.h",
     "src/presence/presence_action.h",
     "src/presence/presence_device.h",
