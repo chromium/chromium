@@ -458,8 +458,8 @@ class TestPrintRenderFrame
   }
 
  private:
-  raw_ptr<content::RenderFrameHost, DanglingUntriaged> frame_host_;
-  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
+  raw_ptr<content::RenderFrameHost> frame_host_;
+  raw_ptr<content::WebContents> web_contents_;
   const int document_cookie_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::RepeatingClosure msg_callback_;
@@ -879,6 +879,9 @@ class PrintBrowserTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
+    // Remove map of objects pointing to //content objects before they go away.
+    frame_content_.clear();
+
     SetShowPrintErrorDialogForTest(base::NullCallback());
     InProcessBrowserTest::TearDownOnMainThread();
   }
