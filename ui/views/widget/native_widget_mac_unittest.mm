@@ -1364,7 +1364,7 @@ TEST_F(NativeWidgetMacTest, MAYBE_WindowModalSheet) {
 
   sheet_widget->SetBounds(gfx::Rect(50, 50, 200, 150));
   EXPECT_FALSE(sheet_widget->IsVisible());
-  EXPECT_FALSE(sheet_widget->GetLayer()->IsDrawn());
+  EXPECT_FALSE(sheet_widget->GetLayer()->IsVisible());
 
   NSButton* parent_close_button =
       [native_parent standardWindowButton:NSWindowCloseButton];
@@ -1381,7 +1381,7 @@ TEST_F(NativeWidgetMacTest, MAYBE_WindowModalSheet) {
                 // Ensure that before the sheet runs, the window contents would
                 // be drawn.
                 EXPECT_TRUE(sheet_widget->IsVisible());
-                EXPECT_TRUE(sheet_widget->GetLayer()->IsDrawn());
+                EXPECT_TRUE(sheet_widget->GetLayer()->IsVisible());
                 *did_observe_ptr = true;
               }];
 

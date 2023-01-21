@@ -329,10 +329,10 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   Layer* layer_mask_layer() { return layer_mask_; }
   const Layer* layer_mask_layer() const { return layer_mask_; }
 
-  // Sets the visibility of the Layer. A Layer may be visible but not drawn.
-  // This happens if any ancestor of a Layer is not visible.
-  // Any changes made to this in the source layer will override the visibility
-  // of its mirror layer.
+  // Sets the visibility of the Layer. A Layer itself may be visible but not
+  // fully visible in the layer tree.  This happens if any ancestor of a
+  // Layer is not visible.  Any changes made to this in the source layer will
+  // override the visibility of its mirror layer.
   void SetVisible(bool visible);
   bool visible() const { return visible_; }
 
@@ -340,9 +340,9 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // returns the current visibility.
   bool GetTargetVisibility() const;
 
-  // Returns true if this Layer is drawn. A Layer is drawn only if all ancestors
-  // are visible.
-  bool IsDrawn() const;
+  // Returns true if this Layer is visible. A Layer is visible only if
+  // all ancestors are visible.
+  bool IsVisible() const;
 
   // If set to true, this layer can receive hit test events, this property does
   // not affect the layer's descendants.
@@ -720,7 +720,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
 
   std::unique_ptr<SubpixelPositionOffsetCache> subpixel_position_offset_;
 
-  // Visibility of this layer. See SetVisible/IsDrawn for more details.
+  // Visibility of this layer. See SetVisible/IsVisible for more details.
   bool visible_;
 
   // Whether or not the layer wants to receive hit testing events. When set to

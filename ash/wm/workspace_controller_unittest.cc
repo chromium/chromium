@@ -286,13 +286,13 @@ TEST_F(WorkspaceControllerTest, MinimizeSingleWindow) {
   w1->Show();
 
   w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MINIMIZED);
-  EXPECT_FALSE(w1->layer()->IsDrawn());
+  EXPECT_FALSE(w1->layer()->IsVisible());
   EXPECT_TRUE(w1->layer()->GetTargetTransform().IsIdentity());
 
   // Show the window.
   w1->Show();
   EXPECT_TRUE(WindowState::Get(w1.get())->IsNormalStateType());
-  EXPECT_TRUE(w1->layer()->IsDrawn());
+  EXPECT_TRUE(w1->layer()->IsVisible());
 }
 
 // Assertions around minimizing a fullscreen window.
@@ -311,22 +311,22 @@ TEST_F(WorkspaceControllerTest, MinimizeFullscreenWindow) {
 
   // Minimize w2.
   w2->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MINIMIZED);
-  EXPECT_TRUE(w1->layer()->IsDrawn());
-  EXPECT_FALSE(w2->layer()->IsDrawn());
+  EXPECT_TRUE(w1->layer()->IsVisible());
+  EXPECT_FALSE(w2->layer()->IsVisible());
 
   // Show the window, which should trigger unminimizing.
   w2->Show();
   w2_state->Activate();
 
   EXPECT_TRUE(w2_state->IsFullscreen());
-  EXPECT_TRUE(w1->layer()->IsDrawn());
-  EXPECT_TRUE(w2->layer()->IsDrawn());
+  EXPECT_TRUE(w1->layer()->IsVisible());
+  EXPECT_TRUE(w2->layer()->IsVisible());
 
   // Minimize the window, which should hide the window.
   EXPECT_TRUE(w2_state->IsActive());
   w2_state->Minimize();
   EXPECT_FALSE(w2_state->IsActive());
-  EXPECT_FALSE(w2->layer()->IsDrawn());
+  EXPECT_FALSE(w2->layer()->IsVisible());
   EXPECT_TRUE(w1_state->IsActive());
   EXPECT_EQ(w2.get(), GetDesktop()->children()[0]);
   EXPECT_EQ(w1.get(), GetDesktop()->children()[1]);
@@ -338,7 +338,7 @@ TEST_F(WorkspaceControllerTest, MinimizeFullscreenWindow) {
   EXPECT_TRUE(w1_state->IsActive());
   EXPECT_EQ(w2.get(), GetDesktop()->children()[0]);
   EXPECT_EQ(w1.get(), GetDesktop()->children()[1]);
-  EXPECT_TRUE(w2->layer()->IsDrawn());
+  EXPECT_TRUE(w2->layer()->IsVisible());
 }
 
 // Verifies ShelfLayoutManager's visibility/auto-hide state is correctly

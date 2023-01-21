@@ -20,7 +20,7 @@ void AppendLayerPropertiesMatchedStyle(
                     std::string(LayerTypeToString(layer->type())));
   ret->emplace_back("has-layer-mask",
                     layer->layer_mask_layer() ? "true" : "false");
-  ret->emplace_back("layer-is-drawn", layer->IsDrawn() ? "true" : "false");
+  ret->emplace_back("layer-is-visible", layer->IsVisible() ? "true" : "false");
   ret->emplace_back("layer-opacity", base::NumberToString((layer->opacity())));
   ret->emplace_back("layer-combined-opacity",
                     base::NumberToString(layer->GetCombinedOpacity()));

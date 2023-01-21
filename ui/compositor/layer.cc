@@ -773,7 +773,7 @@ bool Layer::GetTargetVisibility() const {
   return visible_;
 }
 
-bool Layer::IsDrawn() const {
+bool Layer::IsVisible() const {
   const Layer* layer = this;
   while (layer && layer->visible_)
     layer = layer->parent_;
@@ -1515,7 +1515,7 @@ void Layer::SetBoundsFromAnimation(const gfx::Rect& bounds,
   if (bounds.size() == old_bounds.size()) {
     // Don't schedule a draw if we're invisible. We'll schedule one
     // automatically when we get visible.
-    if (IsDrawn()) {
+    if (IsVisible()) {
       ScheduleDraw();
     }
   } else {

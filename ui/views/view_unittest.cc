@@ -133,13 +133,13 @@ bool ViewAndLayerTreeAreConsistent(const views::View* view,
       return false;
 
     // Check if the visibility states of the View and the Layer are in sync.
-    EXPECT_EQ(l->IsDrawn(), v->IsDrawn());
-    if (v->IsDrawn() != l->IsDrawn()) {
+    EXPECT_EQ(l->IsVisible(), v->IsDrawn());
+    if (v->IsDrawn() != l->IsVisible()) {
       for (const views::View* vv = v; vv; vv = vv->parent())
         LOG(ERROR) << "V: " << vv << " " << vv->GetVisible() << " "
                    << vv->IsDrawn() << " " << vv->layer();
       for (const ui::Layer* ll = l; ll; ll = ll->parent())
-        LOG(ERROR) << "L: " << ll << " " << ll->IsDrawn();
+        LOG(ERROR) << "L: " << ll << " " << ll->IsVisible();
       return false;
     }
 
@@ -4304,19 +4304,19 @@ TEST_F(ViewLayerTest, ToggleVisibilityWithLayer) {
   content_view->AddChildView(v1);
   EXPECT_TRUE(
       LayerIsAncestor(widget()->GetCompositor()->root_layer(), v1->layer()));
-  EXPECT_TRUE(v1->layer()->IsDrawn());
+  EXPECT_TRUE(v1->layer()->IsVisible());
 
   v1->SetVisible(false);
-  EXPECT_FALSE(v1->layer()->IsDrawn());
+  EXPECT_FALSE(v1->layer()->IsVisible());
 
   v1->SetVisible(true);
-  EXPECT_TRUE(v1->layer()->IsDrawn());
+  EXPECT_TRUE(v1->layer()->IsVisible());
 
   widget()->Hide();
-  EXPECT_FALSE(v1->layer()->IsDrawn());
+  EXPECT_FALSE(v1->layer()->IsVisible());
 
   widget()->Show();
-  EXPECT_TRUE(v1->layer()->IsDrawn());
+  EXPECT_TRUE(v1->layer()->IsVisible());
 }
 
 // Tests that the layers in the subtree are orphaned after a View is removed
@@ -4332,7 +4332,7 @@ TEST_F(ViewLayerTest, OrphanLayerAfterViewRemove) {
   v2->SetPaintToLayer();
   EXPECT_TRUE(
       LayerIsAncestor(widget()->GetCompositor()->root_layer(), v2->layer()));
-  EXPECT_TRUE(v2->layer()->IsDrawn());
+  EXPECT_TRUE(v2->layer()->IsVisible());
 
   content_view->RemoveChildView(v1);
 
@@ -4346,7 +4346,7 @@ TEST_F(ViewLayerTest, OrphanLayerAfterViewRemove) {
   v1 = nullptr;
   EXPECT_TRUE(
       LayerIsAncestor(widget()->GetCompositor()->root_layer(), v2->layer()));
-  EXPECT_TRUE(v2->layer()->IsDrawn());
+  EXPECT_TRUE(v2->layer()->IsVisible());
 }
 
 class PaintTrackingView : public View {
@@ -4447,32 +4447,32 @@ TEST_F(ViewLayerTest, VisibilityChildLayers) {
   View* v4 = v3->AddChildView(std::make_unique<View>());
   v4->SetPaintToLayer();
 
-  EXPECT_TRUE(v1->layer()->IsDrawn());
-  EXPECT_FALSE(v4->layer()->IsDrawn());
+  EXPECT_TRUE(v1->layer()->IsVisible());
+  EXPECT_FALSE(v4->layer()->IsVisible());
 
   v2->SetVisible(false);
-  EXPECT_TRUE(v1->layer()->IsDrawn());
-  EXPECT_FALSE(v4->layer()->IsDrawn());
+  EXPECT_TRUE(v1->layer()->IsVisible());
+  EXPECT_FALSE(v4->layer()->IsVisible());
 
   v2->SetVisible(true);
-  EXPECT_TRUE(v1->layer()->IsDrawn());
-  EXPECT_FALSE(v4->layer()->IsDrawn());
+  EXPECT_TRUE(v1->layer()->IsVisible());
+  EXPECT_FALSE(v4->layer()->IsVisible());
 
   v2->SetVisible(false);
-  EXPECT_TRUE(v1->layer()->IsDrawn());
-  EXPECT_FALSE(v4->layer()->IsDrawn());
+  EXPECT_TRUE(v1->layer()->IsVisible());
+  EXPECT_FALSE(v4->layer()->IsVisible());
   EXPECT_TRUE(ViewAndLayerTreeAreConsistent(v1, v1->layer()));
 
   v3->SetVisible(true);
-  EXPECT_TRUE(v1->layer()->IsDrawn());
-  EXPECT_FALSE(v4->layer()->IsDrawn());
+  EXPECT_TRUE(v1->layer()->IsVisible());
+  EXPECT_FALSE(v4->layer()->IsVisible());
   EXPECT_TRUE(ViewAndLayerTreeAreConsistent(v1, v1->layer()));
 
   // Reparent |v3| to |v1|.
   v2->RemoveChildView(v3);
   v1->AddChildView(v3);
-  EXPECT_TRUE(v1->layer()->IsDrawn());
-  EXPECT_TRUE(v4->layer()->IsDrawn());
+  EXPECT_TRUE(v1->layer()->IsVisible());
+  EXPECT_TRUE(v4->layer()->IsVisible());
   EXPECT_TRUE(ViewAndLayerTreeAreConsistent(v1, v1->layer()));
 }
 

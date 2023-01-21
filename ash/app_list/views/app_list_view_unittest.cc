@@ -185,8 +185,9 @@ void CheckView(views::View* subview) {
 bool IsViewVisibleOnScreen(views::View* view) {
   if (!view->IsDrawn())
     return false;
-  if (view->layer() && !view->layer()->IsDrawn())
+  if (view->layer() && !view->layer()->IsVisible()) {
     return false;
+  }
   if (view->layer() && view->layer()->opacity() == 0.0f)
     return false;
 
