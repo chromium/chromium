@@ -1,5 +1,12 @@
 (function() {
   "use strict";
+
+  if (navigator.webdriver) {
+    // Only add the bespoke automation below when running with `content_shell`
+    // in protocol mode (i.e., not webdriver).
+    return;
+  }
+
   // Define functions one by one and do not override the whole
   // test_driver_internal as it masks the new testing fucntions
   // that will be added in the future.
