@@ -68,9 +68,8 @@ struct HashTraits<String> : SimpleClassHashTraits<String> {
   static bool IsDeletedValue(const String& s) {
     return HashTraits<scoped_refptr<StringImpl>>::IsDeletedValue(s.impl_);
   }
-  static void ConstructDeletedValue(String& slot, bool zero_value) {
-    HashTraits<scoped_refptr<StringImpl>>::ConstructDeletedValue(slot.impl_,
-                                                                 zero_value);
+  static void ConstructDeletedValue(String& slot) {
+    HashTraits<scoped_refptr<StringImpl>>::ConstructDeletedValue(slot.impl_);
   }
 };
 

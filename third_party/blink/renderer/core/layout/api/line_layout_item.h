@@ -27,7 +27,7 @@ class LineLayoutItem {
 
   explicit LineLayoutItem(WTF::HashTableDeletedValueType) {
     WTF::ConstructHashTraitsDeletedValue<HashTraits<decltype(layout_object_)>>(
-        layout_object_, false);
+        layout_object_);
   }
 
   LineLayoutItem(std::nullptr_t) : layout_object_(nullptr) {}

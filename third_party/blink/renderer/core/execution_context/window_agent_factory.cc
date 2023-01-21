@@ -135,8 +135,8 @@ bool WindowAgentFactory::SchemeAndRegistrableDomainTraits::IsDeletedValue(
 
 // static
 void WindowAgentFactory::SchemeAndRegistrableDomainTraits::
-    ConstructDeletedValue(SchemeAndRegistrableDomain& slot, bool zero_value) {
-  HashTraits<String>::ConstructDeletedValue(slot.scheme, zero_value);
+    ConstructDeletedValue(SchemeAndRegistrableDomain& slot) {
+  HashTraits<String>::ConstructDeletedValue(slot.scheme);
 }
 
 }  // namespace blink

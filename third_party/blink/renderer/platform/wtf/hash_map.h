@@ -26,6 +26,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
+#include "third_party/blink/renderer/platform/wtf/atomic_operations.h"
 #include "third_party/blink/renderer/platform/wtf/construct_traits.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table.h"
 
@@ -37,17 +38,30 @@ struct HashMapValueTraits;
 template <typename Value, typename Traits, typename Allocator>
 class HashCountedSet;
 
-struct KeyValuePairKeyExtractor {
-  STATIC_ONLY(KeyValuePairKeyExtractor);
+struct KeyValuePairExtractor {
+  STATIC_ONLY(KeyValuePairExtractor);
   template <typename T>
-  static const typename T::KeyType& Extract(const T& p) {
+  static const typename T::KeyType& ExtractKey(const T& p) {
+    return p.key;
+  }
+  template <typename T>
+  static typename T::KeyType& ExtractKey(T& p) {
     return p.key;
   }
   // Assumes out points to a buffer of size at least sizeof(T::KeyType).
   template <typename T>
-  static void ExtractSafe(const T& p, void* out) {
+  static void ExtractKeyToMemory(const T& p, void* out) {
     AtomicReadMemcpy<sizeof(typename T::KeyType), alignof(typename T::KeyType)>(
         out, &p.key);
+  }
+  template <typename T>
+  static void ClearValue(T& p) {
+    using ValueType = typename T::ValueType;
+    if (IsTraceable<ValueType>::value) {
+      AtomicMemzero<sizeof(ValueType), alignof(ValueType)>(&p.value);
+    } else {
+      memset(static_cast<void*>(&p.value), 0, sizeof(p.value));
+    }
   }
 };
 
@@ -82,7 +96,7 @@ class HashMap {
 
   typedef HashTable<KeyType,
                     ValueType,
-                    KeyValuePairKeyExtractor,
+                    KeyValuePairExtractor,
                     ValueTraits,
                     KeyTraits,
                     Allocator>

@@ -138,7 +138,7 @@ struct HashTraits<blink::PropertyHandle>
     return handle.GetHash();
   }
 
-  static void ConstructDeletedValue(blink::PropertyHandle& slot, bool) {
+  static void ConstructDeletedValue(blink::PropertyHandle& slot) {
     new (NotNullTag::kNotNull, &slot) blink::PropertyHandle(
         blink::PropertyHandle::DeletedValueForHashTraits());
   }

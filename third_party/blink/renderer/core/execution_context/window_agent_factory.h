@@ -72,8 +72,7 @@ class WindowAgentFactory final : public GarbageCollected<WindowAgentFactory> {
 
     static bool IsEmptyValue(const SchemeAndRegistrableDomain&);
     static bool IsDeletedValue(const SchemeAndRegistrableDomain& value);
-    static void ConstructDeletedValue(SchemeAndRegistrableDomain& slot,
-                                      bool zero_value);
+    static void ConstructDeletedValue(SchemeAndRegistrableDomain& slot);
   };
 
   // Use a shared instance of Agent for all frames if a frame may have the

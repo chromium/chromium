@@ -701,7 +701,7 @@ class HashTable final
   template <typename IncomingValueType>
   AddResult insert(IncomingValueType&& value) {
     return insert<IdentityTranslatorType>(
-        Extractor::Extract(value), std::forward<IncomingValueType>(value));
+        Extractor::ExtractKey(value), std::forward<IncomingValueType>(value));
   }
 
   // A special version of insert() that finds the object by hashing and
@@ -746,14 +746,14 @@ class HashTable final
   void clear();
 
   static bool IsEmptyBucket(const ValueType& value) {
-    return IsHashTraitsEmptyValue<KeyTraits>(Extractor::Extract(value));
+    return IsHashTraitsEmptyValue<KeyTraits>(Extractor::ExtractKey(value));
   }
   static bool IsDeletedBucket(const ValueType& value) {
-    return IsHashTraitsDeletedValue<KeyTraits>(Extractor::Extract(value));
+    return IsHashTraitsDeletedValue<KeyTraits>(Extractor::ExtractKey(value));
   }
   static bool IsEmptyOrDeletedBucket(const ValueType& value) {
     return IsHashTraitsEmptyOrDeletedValue<KeyTraits>(
-        Extractor::Extract(value));
+        Extractor::ExtractKey(value));
   }
 
   ValueType* Lookup(KeyPeekInType key) {
@@ -845,10 +845,19 @@ class HashTable final
 
   static void InitializeBucket(ValueType& bucket);
   static void ReinitializeBucket(ValueType& bucket);
-  static void DeleteBucket(const ValueType& bucket) {
+  static void DeleteBucket(ValueType& bucket) {
     bucket.~ValueType();
-    ConstructHashTraitsDeletedValue<Traits>(const_cast<ValueType&>(bucket),
-                                            Allocator::kIsGarbageCollected);
+    ConstructHashTraitsDeletedValue<KeyTraits>(Extractor::ExtractKey(bucket));
+    // For GC collections the memory for the backing is zeroed when it is
+    // allocated, and the constructors may take advantage of that,
+    // especially if a GC occurs during insertion of an entry into the
+    // table. This slot is being marked deleted, but If the slot is reused
+    // at a later point, the same assumptions around memory zeroing must
+    // hold as they did at the initial allocation.  Therefore we zero the
+    // value part of the slot here for GC collections.
+    if (Allocator::kIsGarbageCollected) {
+      Extractor::ClearValue(bucket);
+    }
   }
 
   FullLookupType MakeLookupResult(ValueType* position,
@@ -1047,8 +1056,9 @@ HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::Lookup(
     const ValueType* entry = table + i;
 
     if (KeyTraits::kSafeToCompareToEmptyOrDeleted) {
-      if (HashTranslator::Equal(Extractor::Extract(*entry), key))
+      if (HashTranslator::Equal(Extractor::ExtractKey(*entry), key)) {
         return entry;
+      }
 
       if (IsEmptyBucket(*entry))
         return nullptr;
@@ -1057,8 +1067,9 @@ HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::Lookup(
         return nullptr;
 
       if (!IsDeletedBucket(*entry) &&
-          HashTranslator::Equal(Extractor::Extract(*entry), key))
+          HashTranslator::Equal(Extractor::ExtractKey(*entry), key)) {
         return entry;
+      }
     }
     ++probe_count;
     UPDATE_PROBE_COUNTS();
@@ -1098,16 +1109,18 @@ inline typename HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
       return LookupType(deleted_entry ? deleted_entry : entry, false);
 
     if (KeyTraits::kSafeToCompareToEmptyOrDeleted) {
-      if (HashTranslator::Equal(Extractor::Extract(*entry), key))
+      if (HashTranslator::Equal(Extractor::ExtractKey(*entry), key)) {
         return LookupType(entry, true);
+      }
 
       if (IsDeletedBucket(*entry))
         deleted_entry = entry;
     } else {
-      if (IsDeletedBucket(*entry))
+      if (IsDeletedBucket(*entry)) {
         deleted_entry = entry;
-      else if (HashTranslator::Equal(Extractor::Extract(*entry), key))
+      } else if (HashTranslator::Equal(Extractor::ExtractKey(*entry), key)) {
         return LookupType(entry, true);
+      }
     }
 
     ++probe_count;
@@ -1148,16 +1161,18 @@ inline typename HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
       return MakeLookupResult(deleted_entry ? deleted_entry : entry, false, h);
 
     if (KeyTraits::kSafeToCompareToEmptyOrDeleted) {
-      if (HashTranslator::Equal(Extractor::Extract(*entry), key))
+      if (HashTranslator::Equal(Extractor::ExtractKey(*entry), key)) {
         return MakeLookupResult(entry, true, h);
+      }
 
       if (IsDeletedBucket(*entry))
         deleted_entry = entry;
     } else {
-      if (IsDeletedBucket(*entry))
+      if (IsDeletedBucket(*entry)) {
         deleted_entry = entry;
-      else if (HashTranslator::Equal(Extractor::Extract(*entry), key))
+      } else if (HashTranslator::Equal(Extractor::ExtractKey(*entry), key)) {
         return MakeLookupResult(entry, true, h);
+      }
     }
     ++probe_count;
     UPDATE_PROBE_COUNTS();
@@ -1322,16 +1337,18 @@ typename HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
       break;
 
     if (KeyTraits::kSafeToCompareToEmptyOrDeleted) {
-      if (HashTranslator::Equal(Extractor::Extract(*entry), key))
+      if (HashTranslator::Equal(Extractor::ExtractKey(*entry), key)) {
         return AddResult(this, entry, false);
+      }
 
       if (IsDeletedBucket(*entry) && can_reuse_deleted_entry)
         deleted_entry = entry;
     } else {
-      if (IsDeletedBucket(*entry) && can_reuse_deleted_entry)
+      if (IsDeletedBucket(*entry) && can_reuse_deleted_entry) {
         deleted_entry = entry;
-      else if (HashTranslator::Equal(Extractor::Extract(*entry), key))
+      } else if (HashTranslator::Equal(Extractor::ExtractKey(*entry), key)) {
         return AddResult(this, entry, false);
+      }
     }
     ++probe_count;
     UPDATE_PROBE_COUNTS();
@@ -1435,9 +1452,9 @@ Value* HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::Reinsert(
     ValueType&& entry) {
   DCHECK(table_);
   RegisterModification();
-  DCHECK(!LookupForWriting(Extractor::Extract(entry)).second);
-  DCHECK(
-      !IsDeletedBucket(*(LookupForWriting(Extractor::Extract(entry)).first)));
+  DCHECK(!LookupForWriting(Extractor::ExtractKey(entry)).second);
+  DCHECK(!IsDeletedBucket(
+      *(LookupForWriting(Extractor::ExtractKey(entry)).first)));
 #if DUMP_HASHTABLE_STATS
   HashTableStats::instance().numReinserts.fetch_add(1,
                                                     std::memory_order_relaxed);
@@ -1445,7 +1462,7 @@ Value* HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::Reinsert(
 #if DUMP_HASHTABLE_STATS_PER_TABLE
   stats_->numReinserts.fetch_add(1, std::memory_order_relaxed);
 #endif
-  Value* new_entry = LookupForWriting(Extractor::Extract(entry)).first;
+  Value* new_entry = LookupForWriting(Extractor::ExtractKey(entry)).first;
   Mover<ValueType, Allocator, Traits,
         Traits::template NeedsToForbidGCOnMove<>::value>::Move(std::move(entry),
                                                                *new_entry);
@@ -1519,7 +1536,7 @@ void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::erase(
 #endif
 
   EnterAccessForbiddenScope();
-  DeleteBucket(*pos);
+  DeleteBucket(const_cast<ValueType&>(*pos));
   LeaveAccessForbiddenScope();
   ++deleted_count_;
   --key_count_;

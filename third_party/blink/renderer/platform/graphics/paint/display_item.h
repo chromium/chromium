@@ -376,7 +376,7 @@ struct HashTraits<blink::DisplayItem::Id::HashKey>
     : GenericHashTraits<blink::DisplayItem::Id::HashKey> {
   using Key = blink::DisplayItem::Id::HashKey;
   static constexpr bool kEmptyValueIsZero = true;
-  static void ConstructDeletedValue(Key& slot, bool) {
+  static void ConstructDeletedValue(Key& slot) {
     const_cast<wtf_size_t&>(slot.fragment) = kNotFound;
   }
   static bool IsDeletedValue(const Key& id) { return id.fragment == kNotFound; }

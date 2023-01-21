@@ -115,7 +115,7 @@ struct BaseMemberHashTraits : SimpleClassHashTraits<MemberType> {
     storage = value;
   }
 
-  static void ConstructDeletedValue(MemberType& slot, bool) {
+  static void ConstructDeletedValue(MemberType& slot) {
     slot = cppgc::kSentinelPointer;
   }
 

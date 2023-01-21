@@ -142,10 +142,9 @@ struct HashTraits<blink::BlinkSchemefulSite>
         IsDeletedValue(value.site_as_origin_);
   }
 
-  static void ConstructDeletedValue(blink::BlinkSchemefulSite& slot,
-                                    bool zero_value) {
+  static void ConstructDeletedValue(blink::BlinkSchemefulSite& slot) {
     HashTraits<scoped_refptr<const blink::SecurityOrigin>>::
-        ConstructDeletedValue(slot.site_as_origin_, zero_value);
+        ConstructDeletedValue(slot.site_as_origin_);
   }
 };
 

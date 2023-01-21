@@ -26,8 +26,7 @@ class CORE_EXPORT ContainerSelector {
  public:
   ContainerSelector() = default;
   explicit ContainerSelector(WTF::HashTableDeletedValueType) {
-    WTF::HashTraits<AtomicString>::ConstructDeletedValue(
-        name_, false /* zero_value */);
+    WTF::HashTraits<AtomicString>::ConstructDeletedValue(name_);
   }
   explicit ContainerSelector(PhysicalAxes physical_axes)
       : physical_axes_(physical_axes) {}

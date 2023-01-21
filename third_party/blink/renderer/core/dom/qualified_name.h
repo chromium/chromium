@@ -235,10 +235,9 @@ struct HashTraits<blink::QualifiedName>
     return HashTraits<scoped_refptr<QualifiedNameImpl>>::IsDeletedValue(
         value.impl_);
   }
-  static void ConstructDeletedValue(blink::QualifiedName& slot,
-                                    bool zero_value) {
+  static void ConstructDeletedValue(blink::QualifiedName& slot) {
     HashTraits<scoped_refptr<QualifiedNameImpl>>::ConstructDeletedValue(
-        slot.impl_, zero_value);
+        slot.impl_);
   }
 };
 

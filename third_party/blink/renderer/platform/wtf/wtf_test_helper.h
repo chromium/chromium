@@ -94,7 +94,7 @@ struct MoveOnlyHashTraits : public GenericHashTraits<MoveOnlyHashValue> {
   static bool IsEmptyValue(const MoveOnlyHashValue& value) {
     return value.Value() == MoveOnlyHashValue::kEmpty;
   }
-  static void ConstructDeletedValue(MoveOnlyHashValue& slot, bool) {
+  static void ConstructDeletedValue(MoveOnlyHashValue& slot) {
     slot = MoveOnlyHashValue(MoveOnlyHashValue::kDeleted);
   }
   static bool IsDeletedValue(const MoveOnlyHashValue& value) {
@@ -139,7 +139,7 @@ class CountCopy final {
 struct CountCopyHashTraits : public GenericHashTraits<CountCopy> {
   static const bool kEmptyValueIsZero = false;
   static bool IsEmptyValue(const CountCopy& value) { return !value.Counter(); }
-  static void ConstructDeletedValue(CountCopy& slot, bool) {
+  static void ConstructDeletedValue(CountCopy& slot) {
     slot = CountCopy(CountCopy::kDeletedValue);
   }
   static bool IsDeletedValue(const CountCopy& value) {
@@ -201,7 +201,7 @@ struct ValueInstanceCountHashTraits
   static bool IsEmptyValue(const ValueInstanceCount<T>& value) {
     return !value.Counter();
   }
-  static void ConstructDeletedValue(ValueInstanceCount<T>& slot, bool) {
+  static void ConstructDeletedValue(ValueInstanceCount<T>& slot) {
     slot = ValueInstanceCount<T>(ValueInstanceCount<T>::kDeletedValue);
   }
   static bool IsDeletedValue(const ValueInstanceCount<T>& value) {

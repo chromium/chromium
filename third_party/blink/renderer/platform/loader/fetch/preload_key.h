@@ -57,8 +57,8 @@ struct HashTraits<blink::PreloadKey>
     return HashTraits<blink::KURL>::IsDeletedValue(value.url);
   }
 
-  static void ConstructDeletedValue(blink::PreloadKey& slot, bool zero_value) {
-    HashTraits<blink::KURL>::ConstructDeletedValue(slot.url, zero_value);
+  static void ConstructDeletedValue(blink::PreloadKey& slot) {
+    HashTraits<blink::KURL>::ConstructDeletedValue(slot.url);
   }
 };
 

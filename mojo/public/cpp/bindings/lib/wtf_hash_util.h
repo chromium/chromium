@@ -76,7 +76,7 @@ struct HashTraits<mojo::StructPtr<T>>
   static bool IsEmptyValue(const mojo::StructPtr<T>& value) {
     return value.is_null();
   }
-  static void ConstructDeletedValue(mojo::StructPtr<T>& slot, bool) {
+  static void ConstructDeletedValue(mojo::StructPtr<T>& slot) {
     mojo::internal::StructPtrWTFHelper<T>::ConstructDeletedValue(slot);
   }
   static bool IsDeletedValue(const mojo::StructPtr<T>& value) {
@@ -99,7 +99,7 @@ struct HashTraits<mojo::InlinedStructPtr<T>>
   static bool IsEmptyValue(const mojo::InlinedStructPtr<T>& value) {
     return value.is_null();
   }
-  static void ConstructDeletedValue(mojo::InlinedStructPtr<T>& slot, bool) {
+  static void ConstructDeletedValue(mojo::InlinedStructPtr<T>& slot) {
     mojo::internal::InlinedStructPtrWTFHelper<T>::ConstructDeletedValue(slot);
   }
   static bool IsDeletedValue(const mojo::InlinedStructPtr<T>& value) {

@@ -30,7 +30,6 @@
 #include <utility>
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/atomic_operations.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
@@ -43,15 +42,6 @@ template <typename T>
 struct HashTraits;
 
 namespace internal {
-
-template <typename T, bool = IsTraceable<T>::value>
-struct ClearMemoryAtomicallyIfNeeded {
-  static void Clear(T* slot) { memset(static_cast<void*>(slot), 0, sizeof(T)); }
-};
-template <typename T>
-struct ClearMemoryAtomicallyIfNeeded<T, true> {
-  static void Clear(T* slot) { AtomicMemzero<sizeof(T), alignof(T)>(slot); }
-};
 
 template <typename T>
 struct GenericHashTraitsBase {
@@ -131,11 +121,10 @@ struct GenericHashTraitsBase {
   static bool IsDeletedValue(const T& v) = delete;
 
   // Constructs a deleted value in-place in the given memory space.
-  // |zero_value| is true if the memory has been filled with zero.
   // This must be defined if IsDeletedValue() is defined, and will be called
   // through ConstructHashTraitsDeletedValue(). Otherwise
   // `slot = DeletedValue()` will be used.
-  static void ConstructDeletedValue(T& slot, bool zero_value) = delete;
+  static void ConstructDeletedValue(T& slot) = delete;
 
   // The starting table size. Can be overridden when we know beforehand that a
   // hash table will have at least N entries.
@@ -291,7 +280,7 @@ struct GenericHashTraits<scoped_refptr<P>>
            reinterpret_cast<const void*>(-1);
   }
 
-  static void ConstructDeletedValue(scoped_refptr<P>& slot, bool zero_value) {
+  static void ConstructDeletedValue(scoped_refptr<P>& slot) {
     *reinterpret_cast<void**>(&slot) = reinterpret_cast<void*>(-1);
   }
 
@@ -346,7 +335,7 @@ struct GenericHashTraits<std::unique_ptr<T>>
     return value.get();
   }
 
-  static void ConstructDeletedValue(std::unique_ptr<T>& slot, bool) {
+  static void ConstructDeletedValue(std::unique_ptr<T>& slot) {
     // Dirty trick: implant an invalid pointer to unique_ptr. Destructor isn't
     // called for deleted buckets, so this is okay.
     new (NotNullTag::kNotNull, &slot)
@@ -387,7 +376,7 @@ struct SimpleClassHashTraits : GenericHashTraits<T> {
   struct NeedsToForbidGCOnMove {
     static constexpr bool value = false;
   };
-  static void ConstructDeletedValue(T& slot, bool) {
+  static void ConstructDeletedValue(T& slot) {
     new (NotNullTag::kNotNull, &slot) T(kHashTableDeletedValue);
   }
   static bool IsDeletedValue(const T& value) {
@@ -428,7 +417,7 @@ struct HashTraitsDeletedValueHelper {
     return value == Traits::DeletedValue();
   }
   template <typename T>
-  static void ConstructDeletedValue(T& slot, bool) {
+  static void ConstructDeletedValue(T& slot) {
     slot = Traits::DeletedValue();
   }
 };
@@ -446,8 +435,8 @@ struct HashTraitsDeletedValueHelper<
   // Traits must also define ConstructDeletedValue() if it defines
   // IsDeletedValue().
   template <typename T>
-  static void ConstructDeletedValue(T& slot, bool zero_value) {
-    Traits::ConstructDeletedValue(slot, zero_value);
+  static void ConstructDeletedValue(T& slot) {
+    Traits::ConstructDeletedValue(slot);
   }
 };
 
@@ -470,9 +459,8 @@ inline bool IsHashTraitsDeletedValue(const T& value) {
 // This function selects either the DeletedValue() function or the
 // ConstructDeletedValue() function to construct a deleted value.
 template <typename Traits, typename T>
-inline void ConstructHashTraitsDeletedValue(T& slot, bool zero_value) {
-  internal::HashTraitsDeletedValueHelper<Traits>::ConstructDeletedValue(
-      slot, zero_value);
+inline void ConstructHashTraitsDeletedValue(T& slot) {
+  internal::HashTraitsDeletedValueHelper<Traits>::ConstructDeletedValue(slot);
 }
 
 template <typename Traits, typename T>
@@ -519,19 +507,8 @@ struct PairHashTraitsBase
 
   static constexpr unsigned kMinimumTableSize = FirstTraits::kMinimumTableSize;
 
-  static void ConstructDeletedValue(TraitType& slot, bool zero_value) {
-    ConstructHashTraitsDeletedValue<FirstTraits>(slot.*first_field, zero_value);
-    // For GC collections the memory for the backing is zeroed when it is
-    // allocated, and the constructors may take advantage of that,
-    // especially if a GC occurs during insertion of an entry into the
-    // table. This slot is being marked deleted, but If the slot is reused
-    // at a later point, the same assumptions around memory zeroing must
-    // hold as they did at the initial allocation.  Therefore we zero the
-    // value part of the slot here for GC collections.
-    if (zero_value) {
-      internal::ClearMemoryAtomicallyIfNeeded<
-          typename SecondTraits::TraitType>::Clear(&(slot.*second_field));
-    }
+  static void ConstructDeletedValue(TraitType& slot) {
+    ConstructHashTraitsDeletedValue<FirstTraits>(slot.*first_field);
   }
   static bool IsDeletedValue(const TraitType& value) {
     return IsHashTraitsDeletedValue<FirstTraits>(value.*first_field);
@@ -583,6 +560,7 @@ struct HashTraits<std::pair<First, Second>>
 template <typename KeyTypeArg, typename ValueTypeArg>
 struct KeyValuePair {
   typedef KeyTypeArg KeyType;
+  typedef ValueTypeArg ValueType;
 
   template <typename IncomingKeyType, typename IncomingValueType>
   KeyValuePair(IncomingKeyType&& key, IncomingValueType&& value)

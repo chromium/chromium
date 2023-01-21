@@ -27,9 +27,8 @@ struct HashTraits<blink::CustomElementDescriptor>
     return HashTraits<AtomicString>::IsDeletedValue(value.name_);
   }
 
-  static void ConstructDeletedValue(blink::CustomElementDescriptor& slot,
-                                    bool zero_value) {
-    HashTraits<AtomicString>::ConstructDeletedValue(slot.name_, zero_value);
+  static void ConstructDeletedValue(blink::CustomElementDescriptor& slot) {
+    HashTraits<AtomicString>::ConstructDeletedValue(slot.name_);
   }
 };
 

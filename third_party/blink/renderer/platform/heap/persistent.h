@@ -117,7 +117,7 @@ struct BasePersistentHashTraits : SimpleClassHashTraits<PersistentType> {
 
   static PeekOutType Peek(const PersistentType& value) { return value; }
 
-  static void ConstructDeletedValue(PersistentType& slot, bool) {
+  static void ConstructDeletedValue(PersistentType& slot) {
     new (&slot) PersistentType(cppgc::kSentinelPointer);
   }
 

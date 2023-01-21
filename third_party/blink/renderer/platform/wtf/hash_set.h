@@ -155,14 +155,20 @@ class HashSet {
 struct IdentityExtractor {
   STATIC_ONLY(IdentityExtractor);
   template <typename T>
-  static const T& Extract(const T& t) {
+  static const T& ExtractKey(const T& t) {
+    return t;
+  }
+  template <typename T>
+  static T& ExtractKey(T& t) {
     return t;
   }
   // Assumes out points to a buffer of size at least sizeof(T).
   template <typename T>
-  static void ExtractSafe(const T& t, void* out) {
+  static void ExtractKeyToMemory(const T& t, void* out) {
     AtomicReadMemcpy<sizeof(T), alignof(T)>(out, &t);
   }
+  template <typename T>
+  static void ClearValue(const T&) {}
 };
 
 template <typename Translator>

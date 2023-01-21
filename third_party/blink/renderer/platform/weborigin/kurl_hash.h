@@ -53,8 +53,8 @@ struct HashTraits<blink::KURL> : SimpleClassHashTraits<blink::KURL> {
     return HashTraits<String>::IsDeletedValue(value.GetString());
   }
 
-  static void ConstructDeletedValue(blink::KURL& slot, bool zero_value) {
-    HashTraits<String>::ConstructDeletedValue(slot.string_, zero_value);
+  static void ConstructDeletedValue(blink::KURL& slot) {
+    HashTraits<String>::ConstructDeletedValue(slot.string_);
   }
 };
 
