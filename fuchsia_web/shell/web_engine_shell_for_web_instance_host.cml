@@ -1,0 +1,52 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+{
+  include: [
+    "//fuchsia_web/webinstance_host/web_instance_host.shard.cml",
+    "syslog/client.shard.cml",
+    "vulkan/client.shard.cml",
+  ],
+  program: {
+    runner: "elf",
+    binary: "web_engine_shell_exec",
+    args: [
+      // Inform web_engine_shell that it is running as the sub-process in which
+      // WebInstanceHost may be used. In this scenario, the main test component
+      // is running only as a launcher of this child.
+      "--from-launcher",
+    ],
+
+    // Required to allow JIT in child processes such as renderers.
+    // Known as 'deprecated-ambient-replace-as-executable' in CFv1.
+    job_policy_ambient_mark_vmo_exec: "true",
+  },
+  use: [
+    // Required if not run with --headless.
+    {
+      protocol: [
+        "fuchsia.element.GraphicalPresenter",
+        "fuchsia.ui.policy.Presenter",
+      ],
+      availability: "optional",
+    },
+
+    // Used to hold the cdm_data directory passed to web_instance.
+    {
+      storage: "data",
+      path: "/data",
+    },
+
+    // Needed when launched with --enable-web-instance-tmp.
+    {
+      storage: "tmp",
+      path: "/tmp",
+    },
+  ],
+  facets: {
+    "fuchsia.test.deprecated-allowed-packages": [
+      "web_engine",
+      "web_engine_with_webui",
+    ],
+  },
+}

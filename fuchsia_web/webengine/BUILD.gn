@@ -512,6 +512,7 @@ fuchsia_package("web_engine_with_webui") {
   # TODO(fxbug.dev/100944): Add appropriate visibility when fixed.
   deps = [
     ":context_provider_v1_with_webui_component",
+    ":web_instance_component",
     ":web_instance_component_cfv1",
     ":webui_resources",
   ]
