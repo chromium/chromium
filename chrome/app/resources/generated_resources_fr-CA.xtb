@@ -8448,7 +8448,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8786824282808281903">Lorsque votre enfant voit cette icône, il peut utiliser son empreinte digitale pour s'identifier ou pour autoriser des achats.</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{Groupe sans nom : 1 onglet}one{Groupe sans nom : # onglet}other{Groupe sans nom : # onglets}}</translation>
 <translation id="8791157330927639737">En savoir plus sur la mise à jour</translation>
-<translation id="8791534160414513928">Envoyer une demande d'interdiction de suivi avec les transferts liés à votre navigation</translation>
+<translation id="8791534160414513928">Envoyer une demande « Do Not Track » avec votre trafic de navigation</translation>
 <translation id="879413103056696865">Lors de l'utilisation du point d'accès, votre <ph name="PHONE_NAME" /> :</translation>
 <translation id="8795916974678578410">Nouvelle fenêtre</translation>
 <translation id="8797459392481275117">Ne jamais traduire ce site</translation>
