@@ -212,7 +212,13 @@ struct AttributionDataHostManagerImpl::NavigationRedirectSourceRegistrations {
 
   // Input event associated with the navigation.
   AttributionInputEvent input_event;
+
+  // Will not change over the course of the redirect chain.
   AttributionNavigationType nav_type;
+
+  // Whether the navigation is initiated within a fenced frame. Will not
+  // change over the course of the redirect chain.
+  bool is_within_fenced_frame;
 };
 
 AttributionDataHostManagerImpl::AttributionDataHostManagerImpl(
@@ -287,11 +293,13 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
   }
 
   auto [it, inserted] = redirect_registrations_.try_emplace(
-      attribution_src_token, NavigationRedirectSourceRegistrations{
-                                 .source_origin = source_origin,
-                                 .register_time = base::TimeTicks::Now(),
-                                 .input_event = input_event,
-                                 .nav_type = nav_type});
+      attribution_src_token,
+      NavigationRedirectSourceRegistrations{
+          .source_origin = source_origin,
+          .register_time = base::TimeTicks::Now(),
+          .input_event = input_event,
+          .nav_type = nav_type,
+          .is_within_fenced_frame = is_within_fenced_frame});
   DCHECK(!it->second.navigation_complete);
 
   // Treat ongoing redirect registrations within a chain as a data host for the
@@ -308,8 +316,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
       header_value,
       base::BindOnce(&AttributionDataHostManagerImpl::OnRedirectSourceParsed,
                      weak_factory_.GetWeakPtr(), attribution_src_token,
-                     std::move(reporting_origin), header_value, nav_type,
-                     is_within_fenced_frame));
+                     std::move(reporting_origin), header_value));
 }
 
 void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
@@ -569,8 +576,6 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
     const blink::AttributionSrcToken& attribution_src_token,
     const SuitableOrigin& reporting_origin,
     const std::string& header_value,
-    AttributionNavigationType nav_type,
-    bool is_within_fenced_frame,
     data_decoder::DataDecoder::ValueOrError result) {
   auto it = redirect_registrations_.find(attribution_src_token);
 
@@ -591,7 +596,8 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
       source = ParseSourceRegistration(
           std::move(*result).TakeDict(), /*source_time=*/base::Time::Now(),
           reporting_origin, registrations.source_origin,
-          AttributionSourceType::kNavigation, is_within_fenced_frame);
+          AttributionSourceType::kNavigation,
+          registrations.is_within_fenced_frame);
     } else {
       source = base::unexpected(SourceRegistrationError::kRootWrongType);
     }
@@ -599,7 +605,8 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
 
   if (source.has_value()) {
     base::UmaHistogramEnumeration(
-        "Conversions.SourceRegistration.NavigationType.Foreground", nav_type);
+        "Conversions.SourceRegistration.NavigationType.Foreground",
+        registrations.nav_type);
     attribution_manager_->HandleSource(std::move(*source));
   } else {
     attribution_manager_->NotifyFailedSourceRegistration(

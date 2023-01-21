@@ -108,8 +108,6 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       const blink::AttributionSrcToken& attribution_src_token,
       const attribution_reporting::SuitableOrigin& reporting_origin,
       const std::string& header_value,
-      blink::mojom::AttributionNavigationType nav_type,
-      bool is_within_fenced_frame,
       data_decoder::DataDecoder::ValueOrError result);
 
   void SetTriggerTimer(base::TimeDelta delay);
