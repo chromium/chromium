@@ -1690,4 +1690,38 @@ TEST_F(TabletWindowFloatSplitviewTest, FloatToSnapped) {
   EXPECT_EQ(split_view_controller->secondary_window(), other_window.get());
 }
 
+// When reset a floated window that's previously snapped, maximize instead of
+// snap.
+TEST_F(TabletWindowFloatSplitviewTest, ResetFloatToMaximize) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  // Create two windows and snap one on each side.
+  std::unique_ptr<aura::Window> window_1 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window_2 = CreateAppWindow();
+
+  auto* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+
+  const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  WindowState::Get(window_1.get())->OnWMEvent(&snap_left);
+  const WMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
+  WindowState::Get(window_2.get())->OnWMEvent(&snap_right);
+  EXPECT_TRUE(split_view_controller->BothSnapped());
+  EXPECT_EQ(split_view_controller->primary_window(), window_1.get());
+  EXPECT_EQ(split_view_controller->secondary_window(), window_2.get());
+
+  // Float `window_1`, `window_2` should be maximized.
+  wm::ActivateWindow(window_1.get());
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(window_1.get())->IsFloated());
+  ASSERT_TRUE(WindowState::Get(window_2.get())->IsMaximized());
+
+  // Float `window_2`, previously floated `window_1` should be maximized instead
+  // of restoring back to snapped.
+  wm::ActivateWindow(window_2.get());
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(window_2.get())->IsFloated());
+  ASSERT_TRUE(WindowState::Get(window_1.get())->IsMaximized());
+}
+
 }  // namespace ash

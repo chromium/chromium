@@ -785,8 +785,17 @@ WindowStateType WindowState::GetRestoreWindowState() const {
   // kMaximized window state for a maximize-able window, and also should be able
   // to support restoring a fullscreen/minimized/maximized window to snapped
   // window states.
-  if (IsTabletModeEnabled() && restore_state == WindowStateType::kNormal)
-    restore_state = GetMaximizedOrCenteredWindowType();
+  if (IsTabletModeEnabled()) {
+    // In tablet mode, if we reset a floated window that's previously snapped
+    // (float another window will reset currently floated window), maximize
+    // floated window instead of restore floated window back to snapped state.
+    if (restore_state == WindowStateType::kNormal ||
+        (IsFloated() &&
+         (restore_state == WindowStateType::kPrimarySnapped ||
+          restore_state == WindowStateType::kSecondarySnapped))) {
+      restore_state = GetMaximizedOrCenteredWindowType();
+    }
+  }
 
   return restore_state;
 }
