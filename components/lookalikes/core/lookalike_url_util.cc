@@ -16,7 +16,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
@@ -726,13 +725,12 @@ std::string GetConsoleMessage(const GURL& lookalike_url,
                               bool is_new_heuristic) {
   const char* const kNewHeuristicMessage =
       "Future Chrome versions will show a warning on this domain name.\n";
-  return base::StringPrintf(
-      "Chrome has determined that %s could be fake or fraudulent.\n\n"
-      "%s"
-      "If you believe this is shown in error please visit "
-      "https://g.co/chrome/lookalike-warnings",
-      lookalike_url.host().c_str(),
-      is_new_heuristic ? kNewHeuristicMessage : "");
+  return base::StrCat({"Chrome has determined that ",
+                       lookalike_url.host_piece(),
+                       " could be fake or fraudulent.\n\n",
+                       is_new_heuristic ? kNewHeuristicMessage : "",
+                       "If you believe this is shown in error please visit "
+                       "https://g.co/chrome/lookalike-warnings"});
 }
 
 DomainInfo::DomainInfo(
