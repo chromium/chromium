@@ -429,7 +429,6 @@ component("base") {
     "memory/platform_shared_memory_region.cc",
     "memory/platform_shared_memory_region.h",
     "memory/ptr_util.h",
-    "memory/raw_ptr.cc",
     "memory/raw_ptr.h",
     "memory/raw_ptr_asan_bound_arg_tracker.cc",
     "memory/raw_ptr_asan_bound_arg_tracker.h",
@@ -1475,13 +1474,7 @@ component("base") {
   }
 
   all_dependent_configs = []
-  defines = [
-    "BASE_IMPLEMENTATION",
-
-    # Temporary placement for `raw_ptr` using PA's `component_export.h`;
-    # will be moved: crbug.com/1371729
-    "IS_RAW_PTR_IMPL",
-  ]
+  defines = [ "BASE_IMPLEMENTATION" ]
   data = []
   data_deps = []
   libs = []
@@ -2079,7 +2072,10 @@ component("base") {
     # BUILDFLAG(USE_PARTITION_ALLOC). A linker will remove all
     # partition_alloc code if use_partition_alloc = false because no code uses
     # partition_alloc.
-    public_deps += [ "allocator/partition_allocator:partition_alloc" ]
+    public_deps += [
+      "allocator/partition_allocator:partition_alloc",
+      "allocator/partition_allocator:raw_ptr",
+    ]
   }
 
   # Windows.
