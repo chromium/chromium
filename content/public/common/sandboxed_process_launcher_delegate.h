@@ -13,9 +13,9 @@
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "sandbox/policy/sandbox_delegate.h"
 
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
 #include "content/public/common/zygote/zygote_handle.h"  // nogncheck
-#endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
+#endif  // BUILDFLAG(USE_ZYGOTE)
 
 namespace content {
 
@@ -43,10 +43,10 @@ class CONTENT_EXPORT SandboxedProcessLauncherDelegate
   virtual bool ShouldLaunchElevated();
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
   // Returns the zygote used to launch the process.
   virtual ZygoteCommunication* GetZygote();
-#endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
+#endif  // BUILDFLAG(USE_ZYGOTE)
 
 #if BUILDFLAG(IS_POSIX)
   // Override this if the process needs a non-empty environment map.

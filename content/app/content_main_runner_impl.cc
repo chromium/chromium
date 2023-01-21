@@ -173,7 +173,7 @@
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
 #include "base/stack_canary_linux.h"
 #include "content/browser/sandbox_host_linux.h"
 #include "content/browser/zygote_host/zygote_host_impl_linux.h"
@@ -291,7 +291,7 @@ void LoadV8SnapshotIfNeeded(const base::CommandLine& command_line,
 #endif  // V8_USE_EXTERNAL_STARTUP_DATA
 }
 
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
 pid_t LaunchZygoteHelper(base::CommandLine* cmd_line,
                          base::ScopedFD* control_fd) {
   // Append any switches from the browser process that need to be forwarded on
@@ -368,7 +368,7 @@ void InitializeZygoteSandboxForBrowserProcess(
   ZygoteHostImpl::GetInstance()->SetRendererSandboxStatus(
       generic_zygote->GetSandboxStatus());
 }
-#endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
+#endif  // BUILDFLAG(USE_ZYGOTE)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
@@ -406,7 +406,7 @@ void PreloadLibraryCdms() {
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
 void PreSandboxInit() {
   // Pre-acquire resources needed by BoringSSL. See
   // https://boringssl.googlesource.com/boringssl/+/HEAD/SANDBOXING.md
@@ -472,7 +472,7 @@ void PreSandboxInit() {
   base::internal::CanUseBackgroundThreadTypeForWorkerThread();
   base::internal::CanUseUtilityThreadTypeForWorkerThread();
 }
-#endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
+#endif  // BUILDFLAG(USE_ZYGOTE)
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
@@ -599,7 +599,7 @@ struct MainFunction {
   int (*function)(MainFunctionParams);
 };
 
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
 // On platforms that use the zygote, we have a special subset of
 // subprocesses that are launched via the zygote.  This function
 // fills in some process-launching bits around ZygoteMain().
@@ -683,7 +683,7 @@ int NO_STACK_PROTECTOR RunZygote(ContentMainDelegate* delegate) {
   DCHECK_GE(absl::get<int>(exit_code), 0);
   return absl::get<int>(exit_code);
 }
-#endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
+#endif  // BUILDFLAG(USE_ZYGOTE)
 
 static void RegisterMainThreadFactories() {
   UtilityProcessHost::RegisterUtilityMainThreadFactory(
@@ -753,12 +753,12 @@ RunOtherNamedProcessTypeMain(const std::string& process_type,
     }
   }
 
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
   // Zygote startup is special -- see RunZygote comments above
   // for why we don't use ZygoteMain directly.
   if (process_type == switches::kZygoteProcess)
     return RunZygote(delegate);
-#endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
+#endif  // BUILDFLAG(USE_ZYGOTE)
 
   // If it's a process we don't know about, the embedder should know.
   auto exit_code =
@@ -889,13 +889,13 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
   // Startup tracing flags are not (and should not be) passed to Zygote
   // processes. We will enable tracing when forked, if needed.
   bool enable_startup_tracing = process_type != switches::kZygoteProcess;
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
   // In the browser process, we have to enable startup tracing after
   // InitializeZygoteSandboxForBrowserProcess() is run below, because that
   // function forks and may call trace macros in the forked process.
   if (process_type.empty())
     enable_startup_tracing = false;
-#endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
+#endif  // BUILDFLAG(USE_ZYGOTE)
   if (enable_startup_tracing)
     tracing::EnableStartupTracingIfNeeded();
 
@@ -1005,7 +1005,7 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
 
   delegate_->SandboxInitialized(process_type);
 
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
   if (process_type.empty()) {
     // The sandbox host needs to be initialized before forking a thread to
     // start IPC support, and after setting up the sandbox and invoking
@@ -1020,7 +1020,7 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
     // from two processes).
     tracing::EnableStartupTracingIfNeeded();
   }
-#endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
+#endif  // BUILDFLAG(USE_ZYGOTE)
 
   // Return -1 to indicate no early termination.
   return -1;

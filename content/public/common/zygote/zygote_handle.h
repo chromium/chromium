@@ -12,8 +12,8 @@
 #include "content/common/content_export.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
 
-#if !BUILDFLAG(USE_ZYGOTE_HANDLE)
-#error "Can not use zygote handles without USE_ZYGOTE_HANDLE"
+#if !BUILDFLAG(USE_ZYGOTE)
+#error "Can not use zygote without USE_ZYGOTE"
 #endif
 
 namespace content {
@@ -21,8 +21,8 @@ namespace content {
 #if BUILDFLAG(IS_POSIX)
 class ZygoteCommunication;
 #else
-// Perhaps other ports may USE_ZYGOTE_HANDLE here somdeday.
-#error "Can not use zygote handles on this platform"
+// Perhaps other ports may USE_ZYGOTE here somdeday.
+#error "Can not use zygote on this platform"
 #endif  // BUILDFLAG(IS_POSIX)
 
 // Gets the generic global zygote used to launch sandboxed children.

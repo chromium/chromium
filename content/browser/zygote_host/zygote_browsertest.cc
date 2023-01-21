@@ -16,7 +16,7 @@
 #include "content/shell/browser/shell.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 #include "sandbox/policy/switches.h"
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
 #include "content/browser/zygote_host/zygote_host_impl_linux.h"
 #include "content/common/zygote/zygote_communication_linux.h"
 #include "content/common/zygote/zygote_handle_impl_linux.h"
@@ -47,7 +47,7 @@ IN_PROC_BROWSER_TEST_F(LinuxZygoteBrowserTest, GetLocalTimeHasTimeZone) {
   EXPECT_TRUE(parts[2].empty());
 }
 
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
 IN_PROC_BROWSER_TEST_F(LinuxZygoteBrowserTest, ZygoteSandboxes) {
   // We need zygotes and the standard sandbox config to run this test.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kNoZygote) ||
@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(LinuxZygoteDisabledBrowserTest,
 }
 #endif
 
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
 IN_PROC_BROWSER_TEST_F(LinuxZygoteDisabledBrowserTest,
                        NoZygoteWhenZygoteDisabled) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,start page")));

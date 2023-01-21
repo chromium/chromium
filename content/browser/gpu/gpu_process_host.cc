@@ -107,7 +107,7 @@
 #include "ui/ozone/public/ozone_switches.h"
 #endif
 
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
 #include "content/common/zygote/zygote_handle_impl_linux.h"
 #endif
 
@@ -464,7 +464,7 @@ class GpuSandboxedProcessLauncherDelegate
   void DisableAppContainer() { enable_appcontainer_ = false; }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
   ZygoteCommunication* GetZygote() override {
     if (sandbox::policy::IsUnsandboxedSandboxType(GetSandboxType()))
       return nullptr;
@@ -473,7 +473,7 @@ class GpuSandboxedProcessLauncherDelegate
     // zygote and then apply the actual sandboxes in the forked process.
     return GetUnsandboxedZygote();
   }
-#endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
+#endif  // BUILDFLAG(USE_ZYGOTE)
 
   sandbox::mojom::Sandbox GetSandboxType() override {
     if (cmd_line_.HasSwitch(sandbox::policy::switches::kDisableGpuSandbox)) {

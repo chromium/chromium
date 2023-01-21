@@ -64,7 +64,7 @@ bool PpapiPluginSandboxedProcessLauncherDelegate::PreSpawnTarget(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
 ZygoteCommunication* PpapiPluginSandboxedProcessLauncherDelegate::GetZygote() {
   const base::CommandLine& browser_command_line =
       *base::CommandLine::ForCurrentProcess();
@@ -74,7 +74,7 @@ ZygoteCommunication* PpapiPluginSandboxedProcessLauncherDelegate::GetZygote() {
     return nullptr;
   return GetGenericZygote();
 }
-#endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
+#endif  // BUILDFLAG(USE_ZYGOTE)
 
 sandbox::mojom::Sandbox
 PpapiPluginSandboxedProcessLauncherDelegate::GetSandboxType() {

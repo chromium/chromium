@@ -24,14 +24,14 @@
 #include "third_party/blink/public/common/switches.h"
 #endif
 
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
 #include "content/public/common/content_switches.h"
 #include "content/public/common/zygote/zygote_handle.h"  // nogncheck
 #endif
 
 namespace content {
 
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
 ZygoteCommunication* RendererSandboxedProcessLauncherDelegate::GetZygote() {
   const base::CommandLine& browser_command_line =
       *base::CommandLine::ForCurrentProcess();
@@ -41,7 +41,7 @@ ZygoteCommunication* RendererSandboxedProcessLauncherDelegate::GetZygote() {
     return nullptr;
   return GetGenericZygote();
 }
-#endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
+#endif  // BUILDFLAG(USE_ZYGOTE)
 
 #if BUILDFLAG(IS_MAC)
 bool RendererSandboxedProcessLauncherDelegate::EnableCpuSecurityMitigations() {

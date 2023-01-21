@@ -7,5 +7,5 @@ import("//content/public/common/zygote/features.gni")
 
 buildflag_header("buildflags") {
   header = "zygote_buildflags.h"
-  flags = [ "USE_ZYGOTE_HANDLE=$use_zygote_handle" ]
+  flags = [ "USE_ZYGOTE=$use_zygote" ]
 }

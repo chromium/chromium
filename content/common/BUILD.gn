@@ -358,7 +358,7 @@ source_set("common") {
     ]
   }
 
-  if (use_zygote_handle) {
+  if (use_zygote) {
     sources += [
       "zygote/zygote_handle_impl_linux.h",
       "zygote/zygote_handle_linux.cc",

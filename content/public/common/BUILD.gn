@@ -315,7 +315,7 @@ source_set("common_sources") {
     ]
   }
 
-  if (use_zygote_handle) {
+  if (use_zygote) {
     sources += [ "zygote/zygote_handle.h" ]
   }
 

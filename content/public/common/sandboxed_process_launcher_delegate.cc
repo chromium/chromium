@@ -45,13 +45,13 @@ bool SandboxedProcessLauncherDelegate::CetCompatible() {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
 ZygoteCommunication* SandboxedProcessLauncherDelegate::GetZygote() {
   // Default to the sandboxed zygote. If a more lax sandbox is needed, then the
   // child class should override this method and use the unsandboxed zygote.
   return GetGenericZygote();
 }
-#endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
+#endif  // BUILDFLAG(USE_ZYGOTE)
 
 #if BUILDFLAG(IS_POSIX)
 base::EnvironmentMap SandboxedProcessLauncherDelegate::GetEnvironment() {

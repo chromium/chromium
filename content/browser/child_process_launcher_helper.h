@@ -52,7 +52,7 @@
 #include "sandbox/policy/fuchsia/sandbox_policy_fuchsia.h"
 #endif
 
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
 #include "content/public/common/zygote/zygote_handle.h"  // nogncheck
 #endif
 
@@ -97,9 +97,9 @@ class ChildProcessLauncherHelper
 
     base::Process process;
 
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
     ZygoteCommunication* zygote = nullptr;
-#endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
+#endif  // BUILDFLAG(USE_ZYGOTE)
 
 #if BUILDFLAG(IS_FUCHSIA)
     // Store `sandbox_policy` within `Process` to ensure that the sandbox policy
@@ -232,10 +232,10 @@ class ChildProcessLauncherHelper
 
   void LaunchOnLauncherThread();
 
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
   // Returns the zygote handle for this particular launch, if any.
   ZygoteCommunication* GetZygoteForLaunch();
-#endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
+#endif  // BUILDFLAG(USE_ZYGOTE)
 
   base::CommandLine* command_line() { return command_line_.get(); }
   int child_process_id() const { return child_process_id_; }

@@ -20,9 +20,9 @@ class CONTENT_EXPORT RendererSandboxedProcessLauncherDelegate
 
   ~RendererSandboxedProcessLauncherDelegate() override = default;
 
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
   ZygoteCommunication* GetZygote() override;
-#endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
+#endif  // BUILDFLAG(USE_ZYGOTE)
 
 #if BUILDFLAG(IS_MAC)
   bool EnableCpuSecurityMitigations() override;

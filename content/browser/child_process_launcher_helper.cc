@@ -55,7 +55,7 @@ ChildProcessLauncherHelper::Process::~Process() = default;
 
 ChildProcessLauncherHelper::Process::Process(Process&& other)
     : process(std::move(other.process))
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
       ,
       zygote(other.zygote)
 #endif

@@ -12,9 +12,9 @@
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
 #include "content/common/zygote/zygote_handle_impl_linux.h"
-#endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
+#endif  // BUILDFLAG(USE_ZYGOTE)
 
 #if BUILDFLAG(IS_WIN)
 #include "sandbox/win/src/sandbox_policy.h"
@@ -41,9 +41,9 @@ class UtilitySandboxedProcessLauncherDelegate
   bool CetCompatible() override;
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#if BUILDFLAG(USE_ZYGOTE)
   ZygoteCommunication* GetZygote() override;
-#endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
+#endif  // BUILDFLAG(USE_ZYGOTE)
 
 #if BUILDFLAG(IS_POSIX)
   base::EnvironmentMap GetEnvironment() override;
