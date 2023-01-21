@@ -215,7 +215,6 @@ crbug.com/1008535 [ android android-pixel-2 passthrough ] conformance2/textures/
 
 crbug.com/891953 [ mac ] WebglExtension_OVR_multiview2 [ Failure ]
 crbug.com/891953 [ android ] WebglExtension_OVR_multiview2 [ Failure ]
-crbug.com/891953 [ linux display-server-wayland ] WebglExtension_OVR_multiview2 [ Failure ]
 
 # ========================
 # Conformance expectations
@@ -229,7 +228,6 @@ crbug.com/1276153 conformance/context/context-attributes-alpha-depth-stencil-ant
 # Failing at least on Pixel 4, both validating and passthrough
 crbug.com/1336010 [ android angle-disabled no-passthrough ] conformance2/extensions/oes-draw-buffers-indexed.html [ Failure ]
 # Failing on at least NVIDIA and Intel
-crbug.com/1336010 [ angle-disabled display-server-wayland intel-0x9bc5 linux no-passthrough ] conformance2/extensions/oes-draw-buffers-indexed.html [ Failure ]
 crbug.com/1336010 [ angle-disabled chromeos chromeos-board-amd64-generic no-passthrough ] conformance2/extensions/oes-draw-buffers-indexed.html [ Failure ]
 
 # The validating command decoder suppressions here will not be fixed.
@@ -549,8 +547,6 @@ crbug.com/1403824 [ mac asan passthrough ] deqp/functional/gles3/vertexarrays/si
 # Linux failures   #
 ####################
 
-crbug.com/1060012 [ linux no-passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
-crbug.com/angleproject/4417 [ linux no-passthrough ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
 
 # Mesa issues
 # Driver tag doesn't work on the passthrough command decoder because the detected driver version is ANGLE's version.
@@ -686,18 +682,10 @@ crbug.com/angleproject/5038 [ chromeos no-passthrough ] conformance/extensions/e
 # Lacros-like Linux Failures #
 ##############################
 
-crbug.com/1210240 [ linux intel display-server-wayland no-passthrough ] conformance2/textures/canvas_sub_rectangle/tex-3d* [ Failure ]
-crbug.com/1210240 [ linux intel display-server-wayland no-passthrough ] conformance2/textures/webgl_canvas/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
-crbug.com/1210240 [ linux intel display-server-wayland no-passthrough ] conformance2/textures/canvas_sub_rectangle/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
-crbug.com/1210240 [ linux intel display-server-wayland no-passthrough ] conformance2/textures/webgl_canvas/tex-3d* [ Failure ]
-crbug.com/1215700 [ linux intel display-server-wayland no-passthrough ] deqp/functional/gles3/negativetextureapi.html [ Failure ]
-crbug.com/1218607 [ linux intel display-server-wayland no-passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
-crbug.com/1231736 [ linux intel display-server-wayland no-passthrough ] deqp/functional/gles3/clipping.html [ Failure ]
 crbug.com/1399117 [ linux intel display-server-wayland no-passthrough ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
 
 
 # Failures on validating command decoder only; won't fix.
-crbug.com/angleproject/5038 [ linux intel display-server-wayland no-passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 # Conflicting expectations to test that the
 # "Expectations have no collisions" unittest works.
