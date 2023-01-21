@@ -34,6 +34,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace gfx {
+class FontList;
+}  // namespace gfx
+
 // This class is an abstraction for common UI tasks and properties associated
 // with a download.
 class DownloadUIModel {
@@ -220,6 +224,10 @@ class DownloadUIModel {
 
   // Returns a short one-line status string for the download.
   std::u16string GetStatusText() const;
+#if !BUILDFLAG(IS_ANDROID)
+  std::u16string GetStatusTextForLabel(const gfx::FontList& font_list,
+                                       float available_pixel_width) const;
+#endif
 
   // Returns a string suitable for use as a tooltip. For a regular download, the
   // tooltip is the filename. For an interrupted download, the string states the

@@ -34,6 +34,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
+#include "components/url_formatter/elide_url.h"
 #include "ui/views/vector_icons.h"
 #endif
 
@@ -239,6 +240,21 @@ DownloadUIModel::BubbleStatusTextBuilder::GetProgressSizesString() const {
 std::u16string DownloadUIModel::GetStatusText() const {
   return status_text_builder_->GetStatusText(GetState());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+std::u16string DownloadUIModel::GetStatusTextForLabel(
+    const gfx::FontList& font_list,
+    float available_pixel_width) const {
+  if (!ShouldPromoteOrigin()) {
+    return GetStatusText();
+  }
+  // TODO(crbug.com/1409167): Avoid calling the deprecated function.
+  const GURL url = GetOriginalURL().DeprecatedGetOriginAsURL();
+  return url.is_valid()
+             ? url_formatter::ElideUrl(url, font_list, available_pixel_width)
+             : GetStatusText();
+}
+#endif
 
 std::u16string DownloadUIModel::StatusTextBuilderBase::GetStatusText(
     download::DownloadItem::DownloadState state) const {
