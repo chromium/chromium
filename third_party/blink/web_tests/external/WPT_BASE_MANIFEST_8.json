@@ -262818,16 +262818,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "acd6b2dc1a240671faac1002cba7c04b4ab577e4",
-     []
-    ],
-    "mtime.json": [
-     "252d9aead0f478d6e091bc7874f97704ab6279ce",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -270142,10 +270132,14 @@
       "token.py": [
        "867dab9592f89a36fd2ef6d3656046318673cf5b",
        []
+      ],
+      "userinfo-iframe.html": [
+       "1a38c405af12cf3b42bf3137dab0f15fa1539d6f",
+       []
       ]
      },
      "fedcm-helper.sub.js": [
-      "87a1337a06cbd63f7302fd4f93298d9ffcf072ab",
+      "0b7db94e0a77902a89b0725a89f2d8cc1a2f02f1",
       []
      ],
      "fedcm-iframe-level2.html": [
@@ -270157,7 +270151,7 @@
       []
      ],
      "fedcm-mock.js": [
-      "f52bd6e0e70d73782ea1618c3c694599536761e9",
+      "7b399af2ce3810dc28cbc4715a2f832c01a937e0",
       []
      ],
      "fedcm-mojojs-helper.js": [
@@ -284370,7 +284364,7 @@
        []
       ],
       "color-computed-color-mix-function-expected.txt": [
-       "585e3cf29dda255c638e32720e2f1bd4fd76ce65",
+       "9fc84406d5e1fe4b64e49e150b923684c2419779",
        []
       ],
       "color-computed-color-mix-function.html.ini": [
@@ -301992,7 +301986,7 @@
      ],
      "image-set": {
       "image-set-computed.sub-expected.txt": [
-       "4ba9aa045758d8051ff283d856e7d9306609c043",
+       "46d6992a524bb73d04ea4be731eef7b0d7da7a92",
        []
       ],
       "image-set-computed.sub.html.ini": [
@@ -302024,7 +302018,7 @@
        []
       ],
       "image-set-parsing-expected.txt": [
-       "0039d9dfa0010e4d9dcbd8533cb80dd293f28558",
+       "c824af728a48ed8bf7287076bae50f8233c3e2d7",
        []
       ],
       "image-set-parsing.html.ini": [
@@ -325999,14 +325993,6 @@
       []
      ],
      "parsing": {
-      "cursor-valid-expected.txt": [
-       "c14f52fc219e5668f1d29b0f3dc0536b84e7029f",
-       []
-      ],
-      "cursor-valid.html.ini": [
-       "91d58955dbe994f10608743a04a00ec39c95727b",
-       []
-      ],
       "outline-color-valid-optional-expected.txt": [
        "ddbde423753384c7fa6f12e96141480222d71ee0",
        []
@@ -341489,10 +341475,6 @@
      "89fce3af5f45a24479e5d44a20acf97bb5d594b2",
      []
     ],
-    "idlharness.any-expected.txt": [
-     "6e6763ddef7801866f506fff3ca335ca68fe046b",
-     []
-    ],
     "idlharness.any.js.ini": [
      "10efdbe7dca5f15f365b74ffafa69bb0180eec63",
      []
@@ -341515,7 +341497,7 @@
       []
      ],
      "event-timing-test-utils.js": [
-      "fc4d1aee72627644d9257cb7a220b682c0ab4bb4",
+      "66aa05a165a918dbf34ff2326018a8ca620cb7d1",
       []
      ],
      "slow-image.py": [
@@ -385475,7 +385457,7 @@
     ],
     "resources": {
      "subapps-helpers.js": [
-      "e923db01f3305005f7cf754f3ec2ad7b58b8ef57",
+      "9158d15c6c89b7cb328ca9a378a7753deb4d5e91",
       []
      ]
     }
@@ -433339,7 +433321,7 @@
      ]
     },
     "fedcm-network-requests.https.html": [
-     "ebcf61ba18edc008b58678339a6726fb84364e68",
+     "2212a435377814bf56a4c97b739585b74363f98e",
      [
       null,
       {}
@@ -439026,7 +439008,7 @@
        ]
       ],
       "content-visibility-068.html": [
-       "90762f3345029d7fc88381faca6410f00dbf5c9d",
+       "844f04e6b26e84546b160297b422f997b323b3e7",
        [
         null,
         {}
@@ -461324,7 +461306,7 @@
        ]
       ],
       "cursor-valid.html": [
-       "8b3c478391b917d7d1233c8a7b49b816100ed1f4",
+       "a31a7aed519d96ec77a005cd706655b9e065f782",
        [
         null,
         {}
@@ -489198,6 +489180,33 @@
          "/resources/idlharness.js"
         ]
        ]
+      }
+     ]
+    ],
+    "interaction-count-click.html": [
+     "73d748c7bdadd3f06db3581d8d2513dd29dee731",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "interaction-count-press-key.html": [
+     "d0d55321a160188ff5e1fe6d94fd51068df22cd8",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "interaction-count-tap.html": [
+     "561bf5f917b6f0dadb247b670cc3152c2a30f934",
+     [
+      null,
+      {
+       "testdriver": true
       }
      ]
     ],
@@ -606630,7 +606639,7 @@
    },
    "subapps": {
     "add-error.tentative.https.html": [
-     "3dafdcd5aca11819808c393a22bb15fcb14b4e1f",
+     "8b83afccf2c97854c12eba88bbe6fbc910c97ec9",
      [
       null,
       {
@@ -606639,7 +606648,7 @@
      ]
     ],
     "add-success.tentative.https.html": [
-     "fee7c6605c626c68bc591ce885cadff7cd294ee8",
+     "b482982f28a8f5d90f5bb2542a57dd5a26306b78",
      [
       null,
       {
