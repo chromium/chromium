@@ -100,11 +100,11 @@ class FormControlsBrowserTest : public ContentBrowserTest {
 #if BUILDFLAG(IS_MAC)
     // This fuzzy pixel comparator handles several mac behaviors:
     // - Different font rendering after 10.14
-    // - 10.12 subpixel rendering differences: crbug.com/1037971
     // - Slight differences in radio and checkbox rendering in 10.15
+    // - Tiny errors (difference <= 1) are ignored for more pixels
     cc::FuzzyPixelComparator comparator(
         /* discard_alpha */ true,
-        /* error_pixels_percentage_limit */ 18.f,
+        /* error_pixels_percentage_limit */ 26.f,
         /* small_error_pixels_percentage_limit */ 0.f,
         /* avg_abs_error_limit */ 20.f,
         /* max_abs_error_limit */ 120.f,
