@@ -21,17 +21,20 @@ const slotInput = process.env.INPUT_SLOT;
 console.log("Slot", slotInput);
 const slot = slotInput ? +slotInput : undefined;
 
-const runTestsInput = process.env.INPUT_RUN_TESTS;
-console.log("RunTests", runTestsInput);
-const runTests = runTestsInput == "true";
+const runStaticTestsInput = process.env.INPUT_RUN_STATIC_TESTS;
+console.log("RunStaticTests", runStaticTestsInput);
+const runStaticTests = runStaticTestsInput == "true";
 
-const numTestsInput = process.env.INPUT_NUM_TESTS;
-console.log("NumTests", numTestsInput);
-const numTests = numTestsInput ? +numTestsInput : undefined;
+const numStaticTestsInput = process.env.INPUT_NUM_STATIC_TESTS;
+console.log("NumStaticTests", numStaticTestsInput);
+const numStaticTests = numStaticTestsInput ? +numStaticTestsInput : undefined;
 
-const cypressTestsInput = process.env.INPUT_CYPRESS_TESTS;
-console.log("CypressTests", cypressTestsInput);
-const runCypressTests = cypressTestsInput == "true";
+const runTestSuitesInput = process.env.INPUT_RUN_TEST_SUITES;
+console.log("RunTestSuites", runTestSuitesInput);
+const runTestSuites = runTestSuitesInput == "true";
+
+const testSuitesFilterInput = process.env.INPUT_TEST_SUITES_FILTER;
+console.log("TestSuitesFilter", testSuitesFilterInput);
 
 let requestName = `Chromium Build/Test Branch ${branchName} ${chromiumRevision}`;
 if (driverRevision) {
@@ -65,7 +68,7 @@ function platformTasks(platform) {
 
   const tasks = [buildTask];
 
-  if (runTests) {
+  if (runStaticTests) {
     const testStaticTask = newTask(
       `Chromium Static Tests ${platform}`,
       {
@@ -73,7 +76,7 @@ function platformTasks(platform) {
         runtime: "chromium",
         revision: chromiumRevision,
         driverRevision,
-        numTests,
+        numTests: numStaticTests,
       },
       platform,
       [buildTask]
@@ -81,19 +84,20 @@ function platformTasks(platform) {
     tasks.push(testStaticTask);
   }
 
-  if (runCypressTests) {
-    const testCypressTask = newTask(
-      `Chromium Cypress Tests ${platform}`,
+  if (runTestSuites) {
+    const testSuitesTask = newTask(
+      `Chromium Test Suites ${platform}`,
       {
         kind: "CypressTests",
         runtime: "chromium",
         revision: chromiumRevision,
         driverRevision,
+        filter: testSuitesFilterInput,
       },
       platform,
       [buildTask]
     );
-    tasks.push(testCypressTask);
+    tasks.push(testSuitesTask);
   }
 
   return tasks;
