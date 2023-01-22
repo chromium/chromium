@@ -269,9 +269,12 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
 }
 
 DefaultTexture2DWrapper::GpuResources::~GpuResources() {
-  // Destroy shared images with a current context.
-  if (!helper_ || !helper_->MakeContextCurrent())
-    return;
+  // Destroy shared images with a current context, otherwise mark context lost.
+  if (!helper_ || !helper_->MakeContextCurrent()) {
+    for (auto& shared_image_rep : shared_images_) {
+      shared_image_rep->OnContextLost();
+    }
+  }
   shared_images_.clear();
 }
 
