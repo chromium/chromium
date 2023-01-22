@@ -5791,7 +5791,6 @@ crbug.com/1290978 [ Linux ] external/wpt/css/CSS2/normal-flow/crashtests/block-i
 # Sheriff 2022-02-01
 # Flaky test on Mac
 crbug.com/1292843 [ Mac11-arm64 Release ] external/wpt/css/css-transforms/animation/perspective-origin-interpolation.html [ Failure Pass ]
-crbug.com/1292865 [ Mac11-arm64 Release ] external/wpt/resource-timing/iframe-sequence-of-events.html [ Failure Pass ]
 crbug.com/1292869 [ Mac11-arm64 Release ] external/wpt/webaudio/the-audio-api/the-audioparam-interface/audioparam-cancel-and-hold.html [ Failure Pass ]
 crbug.com/1292871 [ Mac11-arm64 Release ] external/wpt/webaudio/the-audio-api/the-audioparam-interface/k-rate-dynamics-compressor-connections.html [ Failure Pass ]
 crbug.com/1292873 [ Debug Mac12 ] html/selectmenu/selectmenu-slot-warning-button.html [ Failure Pass ]
