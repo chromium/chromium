@@ -5,9 +5,15 @@
 package org.chromium.chrome.browser.contextmenu;
 
 import android.content.Context;
+import android.util.Pair;
 
+import org.chromium.base.Callback;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.MVCListAdapter;
+
+import java.util.List;
 
 /**
  * Factory interface for creating {@link ContextMenuPopulator}s.
@@ -22,6 +28,13 @@ public interface ContextMenuPopulatorFactory {
      */
     ContextMenuPopulator createContextMenuPopulator(
             WindowAndroid windowAndroid, ContextMenuParams params, ContextMenuNativeDelegate nativeDelegate);
+
+    default boolean show(WindowAndroid windowAndroid, WebContents webContents,
+                      ContextMenuParams params, List<Pair<Integer, MVCListAdapter.ModelList>> items,
+                      Callback<Integer> onItemClicked, final Runnable onMenuShown,
+                      final Runnable onMenuClosed) {
+        return false;
+    }
 
     void onDestroy();
 }

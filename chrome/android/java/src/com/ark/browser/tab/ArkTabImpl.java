@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.text.TextUtils;
+import android.util.Pair;
 import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
 import android.view.accessibility.AccessibilityEvent;
@@ -31,6 +32,7 @@ import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
@@ -72,6 +74,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -1411,6 +1414,20 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             return new TabContextMenuPopulator(mPopulatorFactory.createContextMenuPopulator(
                     windowAndroid, params, nativeDelegate
             ), mTab);
+        }
+
+        @Override
+        public boolean show(WindowAndroid windowAndroid, WebContents webContents,
+                            ContextMenuParams params,
+                            List<Pair<Integer, MVCListAdapter.ModelList>> items,
+                            Callback<Integer> onItemClicked,
+                            Runnable onMenuShown,
+                            Runnable onMenuClosed) {
+            if (mPopulatorFactory != null) {
+                return mPopulatorFactory.show(windowAndroid, webContents, params, items,
+                        onItemClicked, onMenuShown, onMenuClosed);
+            }
+            return false;
         }
     }
 

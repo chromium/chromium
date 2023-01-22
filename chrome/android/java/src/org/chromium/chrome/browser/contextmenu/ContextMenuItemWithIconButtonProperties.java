@@ -12,7 +12,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-class ContextMenuItemWithIconButtonProperties extends ContextMenuItemProperties {
+public class ContextMenuItemWithIconButtonProperties extends ContextMenuItemProperties {
     public static final WritableObjectPropertyKey<Drawable> BUTTON_IMAGE =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<CharSequence> BUTTON_CONTENT_DESC =
