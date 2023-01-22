@@ -73961,7 +73961,7 @@
       ]
      ],
      "root-element-opacity.html": [
-      "4885d805ad3f3b59d60ccbf3047e8694d7be0f18",
+      "a8195bc552e5270c45716cc34ad6063769fd5581",
       [
        null,
        [
@@ -73970,7 +73970,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            480000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "svg": {
@@ -95637,7 +95653,7 @@
       ]
      ],
      "t32-opacity-offscreen-with-alpha-c.xht": [
-      "57e5e3cc860cd2600dd4723831d29fb39f684782",
+      "035609e8a46aea92633b7b71f9bc40ba58a13569",
       [
        null,
        [
@@ -95646,7 +95662,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            5120
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "t32-opacity-zorder-c.xht": [
@@ -158017,7 +158049,7 @@
       ]
      ],
      "backdrop-animate-002.html": [
-      "6fd153becdee39018031586d82186cd2bac67f11",
+      "910807a7a63081e0bedaffd262bb261bccf611aa",
       [
        null,
        [
@@ -158037,7 +158069,7 @@
            ],
            [
             0,
-            472272
+            472500
            ]
           ]
          ]
@@ -284364,7 +284396,7 @@
        []
       ],
       "color-computed-color-mix-function-expected.txt": [
-       "9fc84406d5e1fe4b64e49e150b923684c2419779",
+       "7a0db87255b80b88aa5feb9cbd439085cedf1028",
        []
       ],
       "color-computed-color-mix-function.html.ini": [
@@ -372876,7 +372908,7 @@
        []
       ],
       "mime-charset.py": [
-       "46d8252e0c90a7a63c5a814c4332ad18a2c7e19e",
+       "bcc3dc3a838d0ded351a3628058c5dcc0c50c7fd",
        []
       ],
       "mime-groups.json": [
@@ -379667,7 +379699,7 @@
       []
      ],
      "orientation-utils.js": [
-      "630aca2d1f9facf245f7f1d062474c5d8bf2e611",
+      "95383750f16e1a47d39e514627e03f2ba8c3b8ca",
       []
      ],
      "sandboxed-iframe-locking.html": [
@@ -437704,7 +437736,7 @@
        ]
       ],
       "color-computed-color-mix-function.html": [
-       "a2682eaacafc8322f1ead865083cd8fd2c904fde",
+       "50f01bcc35f1e1c4205be9d4c4070433ead1a82c",
        [
         null,
         {}
@@ -592059,7 +592091,7 @@
      ]
     ],
     "hidden_document.html": [
-     "4d018a882a114aa6a29db60c2403e78734cdd034",
+     "349539628a3718920384ae6faca36844041ecdc8",
      [
       null,
       {
