@@ -44,6 +44,10 @@ declare_args() {
   # <home dir>/.rustup/toolchains/nightly-<something>-<something>
   rust_sysroot_absolute = ""
 
+  # If you're using a Rust toolchain as specified by rust_sysroot_absolute,
+  # you can specify whether it supports nacl here.
+  rust_toolchain_supports_nacl = false
+
   # Any extra std rlibs in your Rust toolchain, relative to the standard
   # Rust toolchain. Typically used with 'use_unverified_rust_toolchain' = true
   added_rust_stdlib_libs = []
@@ -93,12 +97,13 @@ android_toolchain_supports_platform =
     (is_linux && current_cpu == "x64")
 chromium_toolchain_supports_platform =
     !is_nacl && is_linux && current_cpu == "x64"
+custom_toolchain_supports_platform = !is_nacl || rust_toolchain_supports_nacl
 
 toolchain_has_rust =
     enable_rust &&
     ((use_chromium_rust_toolchain && chromium_toolchain_supports_platform) ||
      (!use_chromium_rust_toolchain && android_toolchain_supports_platform) ||
-     rust_sysroot_absolute != "")
+     (rust_sysroot_absolute != "" && custom_toolchain_supports_platform))
 
 # We use the Rust linker for building test executables, so we only build them
 # if we're able to use the Rust linker. We could use the C++ linker for this
