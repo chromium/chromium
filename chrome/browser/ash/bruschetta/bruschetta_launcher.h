@@ -51,6 +51,7 @@ class BruschettaLauncher {
   void OnContainerRunning(guest_os::GuestInfo info);
 
   void OnTimeout();
+  void Finish(BruschettaResult result);
 
   std::string vm_name_;
   Profile* profile_;

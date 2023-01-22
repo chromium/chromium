@@ -49,6 +49,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/bluetooth/histograms.xml",
       "//tools/metrics/histograms/metadata/bookmarks/histograms.xml",
       "//tools/metrics/histograms/metadata/borealis/histograms.xml",
+      "//tools/metrics/histograms/metadata/bruschetta/histograms.xml",
       "//tools/metrics/histograms/metadata/browser/histograms.xml",
       "//tools/metrics/histograms/metadata/browsing_topics/histograms.xml",
       "//tools/metrics/histograms/metadata/chrome/histograms.xml",

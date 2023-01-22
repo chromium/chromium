@@ -17,6 +17,7 @@ tools/metrics/histograms/metadata/bookmarks/histograms.xml
 tools/metrics/histograms/metadata/borealis/histograms.xml
 tools/metrics/histograms/metadata/browser/histograms.xml
 tools/metrics/histograms/metadata/browsing_topics/histograms.xml
+tools/metrics/histograms/metadata/bruschetta/histograms.xml
 tools/metrics/histograms/metadata/chrome/histograms.xml
 tools/metrics/histograms/metadata/chromeos/histograms.xml
 tools/metrics/histograms/metadata/chromeos_hps/histograms.xml

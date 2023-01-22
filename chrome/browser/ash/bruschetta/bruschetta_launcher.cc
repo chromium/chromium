@@ -9,6 +9,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -116,7 +117,7 @@ void BruschettaLauncher::OnMountDlc(
     const ash::DlcserviceClient::InstallResult& install_result) {
   if (install_result.error != dlcservice::kErrorNone) {
     LOG(ERROR) << "Error installing DLC: " << install_result.error;
-    callbacks_.Notify(BruschettaResult::kDlcInstallError);
+    Finish(BruschettaResult::kDlcInstallError);
     return;
   }
 
@@ -132,14 +133,14 @@ void BruschettaLauncher::StartVm(
     std::unique_ptr<BruschettaLauncher::Files> files) {
   if (!files) {
     LOG(ERROR) << "Error opening BIOS or pflash files";
-    callbacks_.Notify(BruschettaResult::kBiosNotAccessible);
+    Finish(BruschettaResult::kBiosNotAccessible);
     return;
   }
 
   auto* client = ash::ConciergeClient::Get();
   if (!client) {
     LOG(ERROR) << "Error connecting to concierge. Client is NULL.";
-    callbacks_.Notify(BruschettaResult::kStartVmFailed);
+    Finish(BruschettaResult::kStartVmFailed);
     return;
   }
 
@@ -181,7 +182,7 @@ void BruschettaLauncher::OnStartVm(
     absl::optional<vm_tools::concierge::StartVmResponse> response) {
   if (!response) {
     LOG(ERROR) << "Error starting VM: no response from Concierge";
-    callbacks_.Notify(BruschettaResult::kStartVmFailed);
+    Finish(BruschettaResult::kStartVmFailed);
     return;
   }
 
@@ -189,7 +190,7 @@ void BruschettaLauncher::OnStartVm(
       response->status() != vm_tools::concierge::VM_STATUS_STARTING) {
     LOG(ERROR) << "Error starting VM, got status: " << response->status()
                << " and reason " << response->failure_reason();
-    callbacks_.Notify(BruschettaResult::kStartVmFailed);
+    Finish(BruschettaResult::kStartVmFailed);
     return;
   }
 
@@ -201,17 +202,22 @@ void BruschettaLauncher::OnStartVm(
 }
 
 void BruschettaLauncher::OnContainerRunning(guest_os::GuestInfo info) {
-  callbacks_.Notify(BruschettaResult::kSuccess);
+  Finish(BruschettaResult::kSuccess);
 }
 
 void BruschettaLauncher::OnTimeout() {
   // These are no-ops if empty so safe to always call.
   subscription_.reset();
-  callbacks_.Notify(BruschettaResult::kTimeout);
+  Finish(BruschettaResult::kTimeout);
 
   // We don't actually abort or cancel the launch, let it keep going in the
   // background in case it's really slow for some reason then the next time they
   // try it might succeed.
+}
+
+void BruschettaLauncher::Finish(BruschettaResult result) {
+  base::UmaHistogramEnumeration("Bruschetta.LaunchResult", result);
+  callbacks_.Notify(result);
 }
 
 base::WeakPtr<BruschettaLauncher> BruschettaLauncher::GetWeakPtr() {

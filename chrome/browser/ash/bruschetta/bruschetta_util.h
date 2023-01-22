@@ -20,13 +20,16 @@ extern const char kBruschettaDisplayName[];
 extern const char kBiosPath[];
 extern const char kPflashPath[];
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class BruschettaResult {
-  kUnknown,
-  kSuccess,
-  kDlcInstallError,
-  kBiosNotAccessible,
-  kStartVmFailed,
-  kTimeout,
+  kUnknown = 0,
+  kSuccess = 1,
+  kDlcInstallError = 2,
+  kBiosNotAccessible = 3,
+  kStartVmFailed = 4,
+  kTimeout = 5,
+  kMaxValue = kTimeout,
 };
 
 // Returns the string name of the BruschettaResult.
