@@ -28,6 +28,9 @@ on:
       test_suites_filter:
         description: "Filter for test suites to run"
         required: false
+      test_suite_runs:
+        description: "Number of times to run test suites"
+        required: false
 
 jobs:
   build-test:
@@ -54,3 +57,4 @@ jobs:
           INPUT_NUM_STATIC_TESTS: ${{ github.event.inputs.num_static_tests }}
           INPUT_RUN_TEST_SUITES: ${{ github.event.inputs.run_test_suites }}
           INPUT_TEST_SUITES_FILTER: ${{ github.event.inputs.test_suites_filter }}
+          INPUT_TEST_SUITE_RUNS: ${{ github.event.inputs.test_suite_runs }}

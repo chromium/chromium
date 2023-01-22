@@ -177,16 +177,16 @@ void MessagePort::start() {
 }
 
 void MessagePort::close() {
-  recordreplay::Assert("[RUN-1123] MessagePort::close %d", closed_);
-
   if (closed_)
     return;
   // A closed port should not be neutered, so rather than merely disconnecting
   // from the mojo message pipe, also entangle with a new dangling message pipe.
   if (!IsNeutered()) {
     // Refuse to entangle the port at non-deterministic points, as this requires
-    // creating mojo resources.
-    if (recordreplay::AreEventsDisallowed())
+    // creating mojo resources. close() calls are always treated as non-deterministic
+    // because the port's lifetime is managed by the GC and on destruction the
+    // port is detached from the connector.
+    if (recordreplay::IsRecordingOrReplaying("disallow-events"))
       return;
 
     Disentangle().ReleaseHandle();

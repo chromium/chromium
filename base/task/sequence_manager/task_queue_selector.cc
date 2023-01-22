@@ -8,7 +8,6 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
-#include "base/record_replay.h"
 #include "base/task/sequence_manager/associated_thread_id.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/work_queue.h"
@@ -174,9 +173,8 @@ WorkQueue* TaskQueueSelector::SelectWorkQueueToService(
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
 
   auto highest_priority = GetHighestPendingPriority(option);
-  if (!highest_priority.has_value()) {
+  if (!highest_priority.has_value())
     return nullptr;
-  }
 
   // Select the priority from which we will select a task. Usually this is
   // the highest priority for which we have work, unless we are starving a lower
@@ -214,7 +212,6 @@ WorkQueue* TaskQueueSelector::SelectWorkQueueToService(
   } else {
     immediate_starvation_count_ = 0;
   }
-
   return queue;
 }
 
@@ -237,9 +234,8 @@ TaskQueueSelector::GetHighestPendingPriority(SelectTaskOption option) const {
 
   TaskQueue::QueuePriority highest_priority =
       active_priority_tracker_.HighestActivePriority();
-  if (option != SelectTaskOption::kSkipDelayedTask) {
+  if (option != SelectTaskOption::kSkipDelayedTask)
     return highest_priority;
-  }
 
   for (; highest_priority != TaskQueue::kQueuePriorityCount;
        highest_priority = NextPriority(highest_priority)) {

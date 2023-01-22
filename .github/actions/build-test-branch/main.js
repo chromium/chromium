@@ -36,6 +36,10 @@ const runTestSuites = runTestSuitesInput == "true";
 const testSuitesFilterInput = process.env.INPUT_TEST_SUITES_FILTER;
 console.log("TestSuitesFilter", testSuitesFilterInput);
 
+const testSuiteRunsInput = process.env.INPUT_TEST_SUITE_RUNS;
+console.log("TestSuiteRuns", testSuiteRunsInput);
+const testSuiteRuns = testSuiteRunsInput ? +testSuiteRunsInput : undefined;
+
 let requestName = `Chromium Build/Test Branch ${branchName} ${chromiumRevision}`;
 if (driverRevision) {
   requestName += ` driver ${driverRevision}`;
@@ -93,6 +97,7 @@ function platformTasks(platform) {
         revision: chromiumRevision,
         driverRevision,
         filter: testSuitesFilterInput,
+        numRuns: testSuiteRuns,
       },
       platform,
       [buildTask]

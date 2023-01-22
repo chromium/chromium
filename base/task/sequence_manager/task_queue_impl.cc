@@ -457,7 +457,7 @@ void TaskQueueImpl::PostImmediateTaskImpl(PostedTask task,
       // https://linear.app/replay/issue/RUN-1145
       if (!events_disallowed)
         recordreplay::Assert("[RUN-1145] TaskQueueImpl::PostImmediateTaskImpl #1");
-      queue_time = sequence_manager_->any_thread_clock()->NowTicks();
+      queue_time = sequence_manager_->any_thread_clock_maybe_events_disallowed()->NowTicks();
     }
 
     // The sequence number must be incremented atomically with pushing onto the
@@ -1346,7 +1346,7 @@ void TaskQueueImpl::SetThrottler(TaskQueue::Throttler* throttler) {
 
 void TaskQueueImpl::ResetThrottler() {
   main_thread_only().throttler = nullptr;
-  LazyNow lazy_now(sequence_manager_->main_thread_clock());
+  LazyNow lazy_now(sequence_manager_->any_thread_clock_maybe_events_disallowed());
   // The current delayed wake up may have been determined by the Throttler.
   // Update it now that there is no Throttler.
   UpdateWakeUp(&lazy_now);
