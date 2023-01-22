@@ -263,8 +263,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(uuid(
     void SetStart(AXPositionInstance new_start);
     void SetEnd(AXPositionInstance new_end);
 
-    void AddObserver(const AXTreeID tree_id);
-    void RemoveObserver(const AXTreeID tree_id);
     void OnSubtreeWillBeDeleted(AXTree* tree, AXNode* node) override;
     void OnNodeDeleted(AXTree* tree, AXNodeID node_id) override;
     void OnTreeManagerWillBeRemoved(AXTreeID previous_tree_id) override;

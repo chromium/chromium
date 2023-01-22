@@ -536,6 +536,11 @@ class AXPosition {
     return nullptr;
   }
 
+  AXTree* GetTree() const {
+    AXNode* anchor = GetAnchor();
+    return anchor ? anchor->tree() : nullptr;
+  }
+
   int GetAnchorSiblingCount() const {
     if (IsNullPosition())
       return 0;
