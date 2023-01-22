@@ -687,7 +687,7 @@ void TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(
 #endif
     static const GLuint tx_ids[] = {101, 102};
     static const GLuint fb_ids[] = {103, 104};
-    const GLsizei width = 1;
+    const GLsizei width = 8;
     EXPECT_CALL(*gl, GetIntegerv(GL_FRAMEBUFFER_BINDING, _))
         .WillOnce(SetArgPointee<1>(fb_ids[0]))
         .RetiresOnSaturation();

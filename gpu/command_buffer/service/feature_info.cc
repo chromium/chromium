@@ -290,9 +290,15 @@ bool IsGL_REDSupportedOnFBOs() {
   GLuint textureId = 0;
   glGenTextures(1, &textureId);
   glBindTexture(GL_TEXTURE_2D, textureId);
-  GLubyte data[1] = {0};
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RED_EXT, 1, 1, 0, GL_RED_EXT,
-               GL_UNSIGNED_BYTE, data);
+  // Attach an 8x8 texture to the framebuffer to try to work around
+  // crashes in MediaTek and PowerVR drivers on Android, presumably
+  // because of implicit minimum framebuffer sizes. crbug.com/1406096
+  //
+  // Also, don't pass data in, to avoid having to set/reset
+  // GL_UNPACK_ALIGNMENT and other state. The contents of the
+  // framebuffer are unimportant for the completeness check.
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RED_EXT, 8, 8, 0, GL_RED_EXT,
+               GL_UNSIGNED_BYTE, nullptr);
   GLuint textureFBOID = 0;
   glGenFramebuffersEXT(1, &textureFBOID);
   glBindFramebufferEXT(GL_FRAMEBUFFER, textureFBOID);
