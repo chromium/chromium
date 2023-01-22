@@ -72,45 +72,19 @@ export class EditingUtil {
 
   /**
    * TODO(https://crbug.com/1331351): Add RTL support.
-   * Inserts `insertPhrase` directly before `beforePhrase` (and separates them
-   * with a space). This function operates on the text to the left of the caret.
-   * If multiple instances of `beforePhrase` are present, this function will
-   * use the one closest to the text caret. Returns an object that contains
-   * the new value and the new text caret position.
+   * Calculates the new caret index for `inputController.insertBefore`. Only
+   * operates on the text to the left of the text caret. If multiple instances
+   * of `beforePhrase` are present, this function will operate on the one
+   * closest one to the text caret.
    * @param {string} value The current value of the text field.
    * @param {number} caretIndex
-   * @param {string} insertPhrase
    * @param {string} beforePhrase
-   * @return {!{
-   *  value: string,
-   *  caretIndex: number
-   * }}
+   * @return {number}
    */
-  static insertBefore(value, caretIndex, insertPhrase, beforePhrase) {
-    const leftOfCaret = value.substring(0, caretIndex);
-    const rightOfCaret = value.substring(caretIndex);
-    insertPhrase = insertPhrase.trim();
-    beforePhrase = beforePhrase.trim();
-
-    let re;
-    let replacer;
-    if (LocaleInfo.considerSpaces()) {
-      re = EditingUtil.getPhraseRegex_(beforePhrase);
-      replacer = () => `${insertPhrase} ${beforePhrase}`;
-    } else {
-      re = EditingUtil.getPhraseRegexNoWordBoundaries_(beforePhrase);
-      replacer = () => `${insertPhrase}${beforePhrase}`;
-    }
-
-    const newLeft = leftOfCaret.replace(re, replacer);
-    const newIndex = re.test(leftOfCaret) ?
-        re.exec(leftOfCaret).index + insertPhrase.length :
-        caretIndex;
-
-    return {
-      value: newLeft + rightOfCaret,
-      caretIndex: newIndex,
-    };
+  static getInsertBeforeIndex(value, caretIndex, beforePhrase) {
+    const result =
+        EditingUtil.getReplacePhraseData(value, caretIndex, beforePhrase);
+    return result ? result.newIndex : -1;
   }
 
   /**

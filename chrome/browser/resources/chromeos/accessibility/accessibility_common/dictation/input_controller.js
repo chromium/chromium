@@ -414,18 +414,21 @@ export class InputController {
    * @param {string} insertPhrase
    * @param {string} beforePhrase
    */
-  insertBefore(insertPhrase, beforePhrase) {
-    let data = this.getEditableNodeData();
+  async insertBefore(insertPhrase, beforePhrase) {
+    const data = this.getEditableNodeData();
     if (!this.checkEditableNodeData_(data)) {
       return;
     }
 
-    const {value, selStart, selEnd} = data;
-    data =
-        EditingUtil.insertBefore(value, selStart, insertPhrase, beforePhrase);
-    const newValue = data.value;
-    const newIndex = data.caretIndex;
-    this.setEditableValueAndUpdateCaretPosition_(newValue, newIndex);
+    const {value, selStart} = data;
+    const newIndex =
+        EditingUtil.getInsertBeforeIndex(value, selStart, beforePhrase);
+    if (newIndex === -1) {
+      return;
+    }
+
+    await this.setSelection_(newIndex, newIndex);
+    this.commitText(insertPhrase);
   }
 
   /**

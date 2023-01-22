@@ -140,41 +140,34 @@ AX_TEST_F('DictationEditingUtilTest', 'GetReplacePhraseData', function() {
   assertEquals(deletePhrase.length, result.deleteLength);
 });
 
-AX_TEST_F('DictationEditingUtilTest', 'InsertBefore', function() {
+AX_TEST_F('DictationEditingUtilTest', 'GetInsertBeforeIndex', function() {
   let value;
   let caretIndex;
-  let insertPhrase;
   let beforePhrase;
   let result;
   const f = () =>
-      EditingUtil.insertBefore(value, caretIndex, insertPhrase, beforePhrase);
+      EditingUtil.getInsertBeforeIndex(value, caretIndex, beforePhrase);
 
   // Simple insert.
   value = 'This is a test.';
   caretIndex = value.length;
-  insertPhrase = 'simple';
   beforePhrase = 'test';
   result = f();
-  assertEquals('This is a simple test.', result.value);
-  assertEquals(16, result.caretIndex);
+  assertEquals(9, result);
 
   // Insert and match multiple words.
   value = 'This is a test';
   caretIndex = value.length;
-  insertPhrase = 'This is a drill';
   beforePhrase = 'This is a test';
   result = f();
-  assertEquals('This is a drill This is a test', result.value);
-  assertEquals(insertPhrase.length, result.caretIndex);
+  assertEquals(0, result);
 
   // Nothing is inserted if `beforePhrase` isn't present.
   value = 'This is a test';
   caretIndex = value.length;
-  insertPhrase = 'pineapple';
   beforePhrase = 'coconut';
   result = f();
-  assertEquals('This is a test', result.value);
-  assertEquals(caretIndex, result.caretIndex);
+  assertEquals(-1, result);
 });
 
 AX_TEST_F('DictationEditingUtilTest', 'SelectBetween', function() {

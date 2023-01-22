@@ -1416,12 +1416,6 @@ IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, SmartReplacePhrase) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, SmartInsertBefore) {
-  if (editable_type() == EditableType::kContentEditable) {
-    // TODO(b:259353252): Remove this once this command is supported in
-    // contenteditables.
-    return;
-  }
-
   SendFinalResultAndWaitForEditableValue("This is a test.", "This is a test.");
   SendFinalResultAndWaitForEditableValue("insert simple before test",
                                          "This is a simple test.");
@@ -1491,12 +1485,6 @@ IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest,
 
 IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest,
                        CursorPositionSmartInsertBefore) {
-  if (editable_type() == EditableType::kContentEditable) {
-    // TODO(b:259353252): Remove this once this command is supported in
-    // contenteditables.
-    return;
-  }
-
   SendFinalResultAndWaitForEditableValue("This is a test", "This is a test");
   SendFinalResultAndWaitForEditableValue("insert simple before test",
                                          "This is a simple test");
@@ -1948,12 +1936,6 @@ IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, SmartReplacePhrase) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, SmartInsertBefore) {
-  if (editable_type() == EditableType::kContentEditable) {
-    // TODO(b:259353252): Remove this once this command is supported in
-    // contenteditables.
-    return;
-  }
-
   SendFinalResultAndWaitForEditableValue("This is a test.", "This is a test.");
   SendFinalResultAndWaitForEditableValue("insert simple in front of test",
                                          "This is a simple test.");
@@ -2249,6 +2231,12 @@ IN_PROC_BROWSER_TEST_P(DictationFormattedContentEditableTest,
                        ReplacePhraseLastWord) {
   std::string command = "replace test with quiz";
   std::string expected_value = "This is a quiz";
+  SendFinalResultAndWaitForEditableValue(command, expected_value);
+}
+
+IN_PROC_BROWSER_TEST_P(DictationFormattedContentEditableTest, InsertBefore) {
+  std::string command = "insert the phrase simple before test";
+  std::string expected_value = "This is a simple test";
   SendFinalResultAndWaitForEditableValue(command, expected_value);
 }
 
