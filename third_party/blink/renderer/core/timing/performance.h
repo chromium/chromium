@@ -32,7 +32,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_H_
 
-#include <list>
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
@@ -75,7 +74,6 @@ class PerformanceMeasure;
 class PerformanceNavigation;
 class PerformanceObserver;
 class PerformanceTiming;
-class ResourceResponse;
 class ResourceTimingInfo;
 class ScriptPromise;
 class ScriptState;
@@ -311,17 +309,6 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
   void SuspendObserver(PerformanceObserver&);
 
   bool HasObserverFor(PerformanceEntry::EntryType) const;
-
-  static bool IsResponseSameOriginWithInitiator(
-      const ResourceResponse& response,
-      const SecurityOrigin& initiator_security_origin);
-
-  static bool PassesCORSConditions(
-      const ResourceResponse& final_response,
-      const SecurityOrigin& initiator_security_origin,
-      const network::mojom::RequestMode request_mode,
-      const Vector<ResourceResponse>& redirect_chain);
-
   // Determine whether a given Node can be exposed via a Web Perf API.
   static bool CanExposeNode(Node*);
 

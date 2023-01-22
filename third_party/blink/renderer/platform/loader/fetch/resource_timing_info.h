@@ -99,9 +99,6 @@ class PLATFORM_EXPORT ResourceTimingInfo
   void AddRedirect(const ResourceResponse& redirect_response,
                    const KURL& new_url);
 
-  const Vector<ResourceResponse>& RedirectChain() const {
-    return redirect_chain_;
-  }
   mojom::blink::CacheState CacheState() const { return cache_state_; }
 
   const AtomicString& ContentType() const { return content_type_; }
@@ -136,7 +133,9 @@ class PLATFORM_EXPORT ResourceTimingInfo
 
   network::mojom::RequestMode RequestMode() const { return request_mode_; }
 
-  base::TimeTicks LastRedirectEndTime() { return last_redirect_end_time_; }
+  base::TimeTicks LastRedirectEndTime() const {
+    return last_redirect_end_time_;
+  }
 
   base::TimeTicks ResponseEnd() const { return load_response_end_; }
 
@@ -159,6 +158,8 @@ class PLATFORM_EXPORT ResourceTimingInfo
   bool AllowTimingDetails() { return allow_timing_details_; }
 
   bool AllowRedirectDetails() { return allow_redirect_details_; }
+
+  bool HasCrossOriginRedirects() const { return has_cross_origin_redirects_; }
 
   bool IsSecureTransport() { return is_secure_transport_; }
 
@@ -230,8 +231,7 @@ class PLATFORM_EXPORT ResourceTimingInfo
   KURL initial_url_;
   ResourceResponse final_response_;
   uint16_t response_status_ = 0;
-  Vector<ResourceResponse> redirect_chain_;
-  bool has_cross_origin_redirect_ = false;
+  bool has_cross_origin_redirects_ = false;
   bool negative_allowed_ = false;
 
   AtomicString delivery_type_;

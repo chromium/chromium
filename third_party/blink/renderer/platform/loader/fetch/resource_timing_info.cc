@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "services/network/public/mojom/url_response_head.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/loader/fetch/delivery_type_names.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 using network::mojom::blink::NavigationDeliveryType;
@@ -35,7 +36,7 @@ ResourceTimingInfo::ResourceTimingInfo(
       render_blocking_status_(info.render_blocking_status
                                   ? RenderBlockingStatusType::kBlocking
                                   : RenderBlockingStatusType::kNonBlocking),
-      content_type_(static_cast<String>(info.content_type)),
+      content_type_(info.content_type),
       context_type_(info.context_type),
       request_destination_(info.request_destination),
       load_response_end_(info.response_end),
@@ -55,9 +56,17 @@ ResourceTimingInfo::ResourceTimingInfo(
       allow_timing_details_(info.allow_timing_details),
       allow_redirect_details_(info.allow_redirect_details),
       is_secure_transport_(info.is_secure_transport) {}
+
 void ResourceTimingInfo::AddRedirect(const ResourceResponse& redirect_response,
                                      const KURL& new_url) {
-  redirect_chain_.push_back(redirect_response);
+  const ResourceLoadTiming* timing = redirect_response.GetResourceLoadTiming();
+  if (timing) {
+    last_redirect_end_time_ = timing->ReceiveHeadersEnd();
+  }
+  if (!SecurityOrigin::Create(new_url)->CanAccess(
+          SecurityOrigin::Create(redirect_response.CurrentRequestUrl()))) {
+    has_cross_origin_redirects_ = true;
+  }
 }
 
 void ResourceTimingInfo::SetDeliveryType(

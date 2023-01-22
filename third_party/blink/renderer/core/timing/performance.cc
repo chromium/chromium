@@ -554,35 +554,6 @@ void Performance::setBackForwardCacheRestorationBufferSizeForTest(
   back_forward_cache_restoration_buffer_size_limit_ = size;
 }
 
-bool Performance::IsResponseSameOriginWithInitiator(
-    const ResourceResponse& response,
-    const SecurityOrigin& initiator_security_origin) {
-  scoped_refptr<const SecurityOrigin> response_origin =
-      SecurityOrigin::Create(response.ResponseUrl());
-  bool is_same_origin =
-      response_origin->IsSameOriginWith(&initiator_security_origin);
-  return is_same_origin;
-}
-
-bool Performance::PassesCORSConditions(
-    const ResourceResponse& final_response,
-    const SecurityOrigin& initiator_security_origin,
-    const network::mojom::RequestMode request_mode,
-    const Vector<ResourceResponse>& redirect_chain) {
-  if (request_mode != network::mojom::RequestMode::kNavigate) {
-    return final_response.IsCorsSameOrigin();
-  }
-
-  for (const ResourceResponse& response : redirect_chain) {
-    if (!IsResponseSameOriginWithInitiator(response,
-                                           initiator_security_origin)) {
-      return false;
-    }
-  }
-  return IsResponseSameOriginWithInitiator(final_response,
-                                           initiator_security_origin);
-}
-
 void Performance::GenerateAndAddResourceTiming(
     const ResourceTimingInfo& info,
     const AtomicString& initiator_type) {
@@ -625,23 +596,8 @@ mojom::blink::ResourceTimingInfoPtr Performance::GenerateResourceTiming(
 
   result->allow_timing_details = final_response.TimingAllowPassed();
 
-  const Vector<ResourceResponse>& redirect_chain = info.RedirectChain();
-  if (!redirect_chain.empty()) {
-    result->allow_redirect_details = result->allow_timing_details;
-
-    // TODO(https://crbug.com/817691): is |last_chained_timing| being null a bug
-    // or is this if statement reasonable?
-    if (ResourceLoadTiming* last_chained_timing =
-            redirect_chain.back().GetResourceLoadTiming()) {
-      result->last_redirect_end_time = last_chained_timing->ReceiveHeadersEnd();
-    } else {
-      result->allow_redirect_details = false;
-      result->last_redirect_end_time = base::TimeTicks();
-    }
-  } else {
-    result->allow_redirect_details = false;
-    result->last_redirect_end_time = base::TimeTicks();
-  }
+  result->last_redirect_end_time = info.LastRedirectEndTime();
+  result->allow_redirect_details = result->allow_timing_details;
 
   result->cache_state = info.CacheState();
   result->did_reuse_connection = final_response.ConnectionReused();
@@ -665,12 +621,18 @@ mojom::blink::ResourceTimingInfoPtr Performance::GenerateResourceTiming(
 
   result->content_type = g_empty_string;
 
-  bool passes_cors = PassesCORSConditions(final_response, destination_origin,
-                                          info.RequestMode(), redirect_chain);
+  bool passes_cors =
+      info.RequestMode() == network::mojom::RequestMode::kNavigate
+          ? (!info.HasCrossOriginRedirects() &&
+             destination_origin.CanAccess(
+                 SecurityOrigin::Create(final_response.ResponseUrl())))
+          : final_response.IsCorsSameOrigin();
 
   if (passes_cors) {
     result->response_status = final_response.HttpStatusCode();
-    result->content_type = final_response.HttpContentType();
+    if (!final_response.HttpContentType().IsNull()) {
+      result->content_type = final_response.HttpContentType();
+    }
   }
 
   bool expose_body_sizes =

@@ -22,35 +22,6 @@
 
 namespace blink {
 
-namespace {
-
-bool PassesSameOriginCheck(const ResourceResponse& response,
-                           const SecurityOrigin& initiator_security_origin) {
-  const KURL& response_url = response.ResponseUrl();
-  scoped_refptr<const SecurityOrigin> resource_origin =
-      SecurityOrigin::Create(response_url);
-  return resource_origin->IsSameOriginWith(&initiator_security_origin);
-}
-
-bool AllowNavigationTimingRedirect(
-    const Vector<ResourceResponse>& redirect_chain,
-    const ResourceResponse& final_response,
-    const SecurityOrigin& initiator_security_origin) {
-  if (!PassesSameOriginCheck(final_response, initiator_security_origin)) {
-    return false;
-  }
-
-  for (const ResourceResponse& response : redirect_chain) {
-    if (!PassesSameOriginCheck(response, initiator_security_origin)) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-}  // namespace
-
 PerformanceNavigationTiming::PerformanceNavigationTiming(
     LocalDOMWindow& window,
     ResourceTimingInfo& info,
@@ -64,7 +35,8 @@ PerformanceNavigationTiming::PerformanceNavigationTiming(
                                 std::move(server_timing),
                                 window),
       ExecutionContextClient(&window) {
-  Info()->SetAllowRedirectDetails(AllowNavigationRedirectDetails());
+  Info()->SetAllowRedirectDetails(
+      !GetDocumentLoadTiming()->HasCrossOriginRedirect());
 }
 
 PerformanceNavigationTiming::~PerformanceNavigationTiming() = default;
@@ -115,19 +87,6 @@ AtomicString PerformanceNavigationTiming::GetNavigationType(
   }
   NOTREACHED();
   return "navigate";
-}
-
-bool PerformanceNavigationTiming::AllowNavigationRedirectDetails() const {
-  if (!GetExecutionContext()) {
-    return false;
-  }
-  // TODO(sunjian): Think about how to make this flag deterministic.
-  // crbug/693183.
-  const blink::SecurityOrigin* security_origin =
-      GetExecutionContext()->GetSecurityOrigin();
-
-  return AllowNavigationTimingRedirect(
-      Info()->RedirectChain(), Info()->FinalResponse(), *security_origin);
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::unloadEventStart() const {

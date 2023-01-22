@@ -75,8 +75,6 @@ class CORE_EXPORT PerformanceNavigationTiming final
 
   DocumentLoadTiming* GetDocumentLoadTiming() const;
 
-  bool AllowNavigationRedirectDetails() const;
-
   ScriptValue NotRestoredReasonsBuilder(
       ScriptState* script_state,
       const mojom::blink::BackForwardCacheNotRestoredReasonsPtr& reasons) const;
