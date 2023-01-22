@@ -45,6 +45,8 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#include "base/record_replay_ordered_atomic.h"
+
 namespace base {
 
 namespace trace_event {
@@ -481,7 +483,7 @@ class BASE_EXPORT SequenceManagerImpl
   // |clock_| either refers to the TickClock representation of |time_domain|
   // (same object) if any, or to |default_clock| otherwise. It is maintained as
   // an atomic pointer here for multi-threaded usage.
-  std::atomic<const base::TickClock*> clock_;
+  recordreplay::OrderedAtomic<const base::TickClock*> clock_;
   const base::TickClock* main_thread_clock() const {
     DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
     return clock_.load(std::memory_order_relaxed);

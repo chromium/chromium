@@ -11,6 +11,8 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/scheduler/common/scheduler_helper.h"
 
+#include "base/record_replay.h"
+
 namespace blink {
 namespace scheduler {
 
@@ -52,6 +54,10 @@ AutoAdvancingVirtualTimeDomain::~AutoAdvancingVirtualTimeDomain() {
 }
 
 base::TimeTicks AutoAdvancingVirtualTimeDomain::NowTicks() const {
+  // https://linear.app/replay/issue/RUN-1145
+  if (!recordreplay::AreEventsDisallowed())
+    recordreplay::Assert("[RUN-1145] AutoAdvancingVirtualTimeDomain::NowTicks");
+
   base::AutoLock lock(now_ticks_lock_);
   return now_ticks_;
 }
