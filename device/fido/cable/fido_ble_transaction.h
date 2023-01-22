@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "device/fido/cable/fido_ble_frames.h"
@@ -49,7 +50,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleTransaction {
   void StopTimeout();
   void OnError(absl::optional<FidoBleFrame> response_frame);
 
-  FidoBleConnection* connection_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION FidoBleConnection* connection_;
   uint16_t control_point_length_;
 
   absl::optional<FidoBleFrame> request_frame_;

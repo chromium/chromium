@@ -13,6 +13,7 @@
 #include "base/bits.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "gpu/command_buffer/client/fenced_allocator.h"
 #include "gpu/command_buffer/common/buffer.h"
@@ -277,13 +278,19 @@ class GPU_EXPORT ScopedMappedMemoryPtr {
   void Reset(uint32_t new_size);
 
  private:
-  void* buffer_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION void* buffer_;
   uint32_t size_;
   int32_t shm_id_;
   uint32_t shm_offset_;
   bool flush_after_release_;
-  CommandBufferHelper* helper_;
-  MappedMemoryManager* mapped_memory_manager_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION CommandBufferHelper* helper_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION MappedMemoryManager* mapped_memory_manager_;
 };
 
 }  // namespace gpu

@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/unguessable_token.h"
 #include "gpu/command_buffer/client/ring_buffer.h"
 #include "gpu/command_buffer/common/buffer.h"
@@ -239,10 +240,16 @@ class GPU_EXPORT ScopedTransferBufferPtr {
   void Shrink(unsigned int new_size);
 
  private:
-  void* buffer_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION void* buffer_;
   unsigned int size_;
-  CommandBufferHelper* helper_;
-  TransferBufferInterface* transfer_buffer_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION CommandBufferHelper* helper_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION TransferBufferInterface* transfer_buffer_;
 };
 
 template <typename T>

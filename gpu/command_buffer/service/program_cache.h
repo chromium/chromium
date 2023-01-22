@@ -14,6 +14,7 @@
 
 #include "base/hash/sha1.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "gpu/command_buffer/common/gl2_types.h"
 #include "gpu/gpu_gles2_export.h"
 
@@ -53,7 +54,9 @@ class GPU_GLES2_EXPORT ProgramCache {
     ScopedCacheUse& operator=(ScopedCacheUse&& other) = default;
 
    private:
-    ProgramCache* cache_;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union, #constexpr-ctor-field-initializer
+    RAW_PTR_EXCLUSION ProgramCache* cache_;
   };
 
   explicit ProgramCache(size_t max_cache_size_bytes);

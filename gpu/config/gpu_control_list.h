@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/values.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/gpu_export.h"
@@ -153,7 +154,9 @@ class GPU_EXPORT GpuControlList {
 
   struct GPU_EXPORT MachineModelInfo {
     size_t machine_model_name_size;
-    const char* const* machine_model_names;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #global-scope
+    RAW_PTR_EXCLUSION const char* const* machine_model_names;
     Version machine_model_version;
 
     bool Contains(const GPUInfo& gpu_info) const;
@@ -196,16 +199,28 @@ class GPU_EXPORT GpuControlList {
     Version os_version;
     uint32_t vendor_id;
     size_t device_size;
-    const Device* devices;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #global-scope
+    RAW_PTR_EXCLUSION const Device* devices;
     MultiGpuCategory multi_gpu_category;
     MultiGpuStyle multi_gpu_style;
-    const DriverInfo* driver_info;
-    const GLStrings* gl_strings;
-    const MachineModelInfo* machine_model_info;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #global-scope
+    RAW_PTR_EXCLUSION const DriverInfo* driver_info;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #global-scope
+    RAW_PTR_EXCLUSION const GLStrings* gl_strings;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #global-scope
+    RAW_PTR_EXCLUSION const MachineModelInfo* machine_model_info;
     size_t intel_gpu_series_list_size;
-    const IntelGpuSeriesType* intel_gpu_series_list;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #global-scope
+    RAW_PTR_EXCLUSION const IntelGpuSeriesType* intel_gpu_series_list;
     Version intel_gpu_generation;
-    const More* more;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #global-scope
+    RAW_PTR_EXCLUSION const More* more;
 
     bool Contains(OsType os_type,
                   const std::string& os_version,
@@ -220,16 +235,26 @@ class GPU_EXPORT GpuControlList {
     uint32_t id;
     const char* description;
     size_t feature_size;
-    const int* features;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #reinterpret-cast-trivial-type, #global-scope
+    RAW_PTR_EXCLUSION const int* features;
     size_t disabled_extension_size;
-    const char* const* disabled_extensions;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #reinterpret-cast-trivial-type, #global-scope
+    RAW_PTR_EXCLUSION const char* const* disabled_extensions;
     size_t disabled_webgl_extension_size;
-    const char* const* disabled_webgl_extensions;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #reinterpret-cast-trivial-type, #global-scope
+    RAW_PTR_EXCLUSION const char* const* disabled_webgl_extensions;
     size_t cr_bug_size;
-    const uint32_t* cr_bugs;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #reinterpret-cast-trivial-type, #global-scope
+    RAW_PTR_EXCLUSION const uint32_t* cr_bugs;
     Conditions conditions;
     size_t exception_size;
-    const Conditions* exceptions;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #reinterpret-cast-trivial-type, #global-scope
+    RAW_PTR_EXCLUSION const Conditions* exceptions;
 
     bool Contains(OsType os_type,
                   const std::string& os_version,

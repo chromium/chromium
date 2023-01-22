@@ -6,6 +6,7 @@
 #define GIN_ARGUMENTS_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "gin/converter.h"
 #include "gin/gin_export.h"
 
@@ -118,8 +119,14 @@ class GIN_EXPORT Arguments {
  private:
   raw_ptr<v8::Isolate> isolate_;
   union {
-    const v8::FunctionCallbackInfo<v8::Value>* info_for_function_;
-    const v8::PropertyCallbackInfo<v8::Value>* info_for_property_;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION const v8::FunctionCallbackInfo<v8::Value>*
+        info_for_function_;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION const v8::PropertyCallbackInfo<v8::Value>*
+        info_for_property_;
   };
   int next_ = 0;
   bool insufficient_arguments_ = false;

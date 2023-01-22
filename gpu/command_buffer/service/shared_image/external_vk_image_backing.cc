@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
@@ -103,7 +104,9 @@ class ScopedDedicatedMemoryObject {
   GLuint id() const { return id_; }
 
  private:
-  gl::GLApi* const api_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION gl::GLApi* const api_;
   GLuint id_;
 };
 
