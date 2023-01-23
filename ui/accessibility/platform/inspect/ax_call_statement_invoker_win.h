@@ -55,6 +55,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXCallStatementInvokerWin final {
   AXOptionalObject InvokeForIA2TableCell(
       IA2TableCellComPtr target,
       const AXPropertyNode& property_node) const;
+  AXOptionalObject InvokeForIA2TextSelectionContainer(
+      IA2TextSelectionContainerComPtr target,
+      const AXPropertyNode& property_node) const;
   AXOptionalObject InvokeForIA2Text(IA2TextComPtr target,
                                     const AXPropertyNode& property_node) const;
   AXOptionalObject InvokeForIA2Value(IA2ValueComPtr target,
@@ -79,6 +82,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXCallStatementInvokerWin final {
 
   // AccessibleTable functionality
   AXOptionalObject GetSelectedColumns(const IA2TableComPtr target) const;
+
+  // IAccessibleSelectionContainer functionality.
+  AXOptionalObject GetSelections(
+      const IA2TextSelectionContainerComPtr target) const;
 
   bool IsIAccessibleAndNotNull(const Target& target) const;
 

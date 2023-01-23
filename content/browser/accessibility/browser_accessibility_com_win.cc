@@ -1418,6 +1418,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::QueryService(REFGUID guid_service,
       guid_service == IID_IAccessibleTable2 ||
       guid_service == IID_IAccessibleTableCell ||
       guid_service == IID_IAccessibleText ||
+      guid_service == IID_IAccessibleTextSelectionContainer ||
       guid_service == IID_IAccessibleValue ||
       guid_service == IID_ISimpleDOMDocument ||
       guid_service == IID_ISimpleDOMNode ||

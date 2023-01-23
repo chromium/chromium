@@ -37,6 +37,10 @@ std::string AXTargetWin::ToString() const {
   if (Is<IA2TextComPtr>())
     return "IAccessible2TextInterface";
 
+  if (Is<IA2TextSelectionContainerComPtr>()) {
+    return "IA2TextSelectionContainerComPtr";
+  }
+
   if (Is<IA2ValueComPtr>())
     return "IAccessible2ValueInterface";
 
@@ -53,6 +57,26 @@ std::string AXTargetWin::ToString() const {
         str += ", ";
       }
       str += base::NumberToString(value);
+    }
+    return '[' + str + ']';
+  }
+
+  if (Is<ScopedCoMemArray<IA2TextSelection>>()) {
+    std::string str;
+    for (const IA2TextSelection& selection :
+         As<ScopedCoMemArray<IA2TextSelection>>()) {
+      if (!str.empty()) {
+        str += ", ";
+      }
+      // TODO(alexs): replace <obj> on something more useful.
+      // It could be a line number the accessible object is placed at in
+      // the stringified accessible tree, potentially including additional
+      // properties making the accessible object identification easier such as
+      // DOM id or accessible role/name, for instance, :3.textbox.
+      str += "{startObj: <obj>, startOffset: " +
+             base::NumberToString(selection.startOffset) +
+             ", endObj: <obj>, endOffset: " +
+             base::NumberToString(selection.endOffset) + "}";
     }
     return '[' + str + ']';
   }

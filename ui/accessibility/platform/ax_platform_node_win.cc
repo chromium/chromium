@@ -5597,6 +5597,7 @@ IFACEMETHODIMP AXPlatformNodeWin::QueryService(REFGUID guidService,
       guidService == IID_IAccessibleTable2 ||
       guidService == IID_IAccessibleTableCell ||
       guidService == IID_IAccessibleText ||
+      guidService == IID_IAccessibleTextSelectionContainer ||
       guidService == IID_IAccessibleValue) {
     return QueryInterface(riid, object);
   }

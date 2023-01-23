@@ -22,6 +22,8 @@ using IA2HypertextComPtr = Microsoft::WRL::ComPtr<IAccessibleHypertext>;
 using IA2TableComPtr = Microsoft::WRL::ComPtr<IAccessibleTable>;
 using IA2TableCellComPtr = Microsoft::WRL::ComPtr<IAccessibleTableCell>;
 using IA2TextComPtr = Microsoft::WRL::ComPtr<IAccessibleText>;
+using IA2TextSelectionContainerComPtr =
+    Microsoft::WRL::ComPtr<IAccessibleTextSelectionContainer>;
 using IA2ValueComPtr = Microsoft::WRL::ComPtr<IAccessibleValue>;
 
 class COMPONENT_EXPORT(AX_PLATFORM) AXTargetWin final {
@@ -66,8 +68,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTargetWin final {
                                     IA2TableComPtr,
                                     IA2TableCellComPtr,
                                     IA2TextComPtr,
+                                    IA2TextSelectionContainerComPtr,
                                     IA2ValueComPtr,
-                                    ScopedCoMemArray<LONG>>;
+                                    ScopedCoMemArray<LONG>,
+                                    ScopedCoMemArray<IA2TextSelection>>;
 
   // Keep the value const to prevent accidental change of the value shared
   // between multiple instances of AXTargetWin.

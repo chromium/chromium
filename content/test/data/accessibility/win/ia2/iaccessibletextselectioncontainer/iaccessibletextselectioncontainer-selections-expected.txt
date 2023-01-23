@@ -1,0 +1,1 @@
+input.QueryInterface(IAccessibleTextSelectionContainer).selections=[{startObj: <obj>, startOffset: 3, endObj: <obj>, endOffset: 5}]

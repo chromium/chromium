@@ -1,0 +1,11 @@
+<!--
+@SCRIPT:
+  input.QueryInterface(IAccessibleTextSelectionContainer).selections
+-->
+<!DOCTYPE html>
+<input id="input" value="My name is Petya">
+<script>
+  let input = document.getElementById("input");
+  input.focus();
+  input.setSelectionRange(3, 5);
+</script>

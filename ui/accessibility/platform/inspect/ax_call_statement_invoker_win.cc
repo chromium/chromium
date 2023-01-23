@@ -10,11 +10,16 @@
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
 
-#define DEFINE_IA2_QI_ENTRY(ia2_interface)                                \
-  if (interface_name == #ia2_interface) {                                 \
-    Microsoft::WRL::ComPtr<ia2_interface> obj;                            \
-    if (S_OK == ui::IA2QueryInterface<ia2_interface>(target.Get(), &obj)) \
-      return AXOptionalObject(Target(obj));                               \
+#define DEFINE_IA2_QI_ENTRY(ia2_interface)                                    \
+  if (interface_name == #ia2_interface) {                                     \
+    Microsoft::WRL::ComPtr<ia2_interface> obj;                                \
+    HRESULT hr = ui::IA2QueryInterface<ia2_interface>(target.Get(), &obj);    \
+    if (hr == S_OK)                                                           \
+      return AXOptionalObject({obj});                                         \
+    if (hr == E_NOINTERFACE)                                                  \
+      return AXOptionalObject::Error(interface_name + " is not implemented"); \
+    return AXOptionalObject::Error("Unexpected error when querying " +        \
+                                   interface_name);                           \
   }
 
 namespace ui {
@@ -22,7 +27,14 @@ namespace ui {
 // static
 std::string AXCallStatementInvokerWin::ToString(
     const AXOptionalObject& optional) {
-  return optional.HasValue() ? optional->ToString() : optional.StateToString();
+  if (optional.HasValue()) {
+    return optional->ToString();
+  }
+
+  if (optional.IsError()) {
+    return "Error:\"" + optional.StateText() + "\"";
+  }
+  return optional.StateToString();
 }
 
 AXCallStatementInvokerWin::AXCallStatementInvokerWin(
@@ -123,6 +135,11 @@ AXOptionalObject AXCallStatementInvokerWin::InvokeFor(
 
   if (target.Is<IA2TextComPtr>())
     return InvokeForIA2Text(target.As<IA2TextComPtr>(), property_node);
+
+  if (target.Is<IA2TextSelectionContainerComPtr>()) {
+    return InvokeForIA2TextSelectionContainer(
+        target.As<IA2TextSelectionContainerComPtr>(), property_node);
+  }
 
   if (target.Is<IA2ValueComPtr>())
     return InvokeForIA2Value(target.As<IA2ValueComPtr>(), property_node);
@@ -238,6 +255,16 @@ AXOptionalObject AXCallStatementInvokerWin::InvokeForIA2TableCell(
   // - [ ] test.getInterface(IAccessibleTableCell).get_columnExtent
 }
 
+AXOptionalObject AXCallStatementInvokerWin::InvokeForIA2TextSelectionContainer(
+    IA2TextSelectionContainerComPtr target,
+    const AXPropertyNode& property_node) const {
+  if (property_node.name_or_value == "selections") {
+    return GetSelections(target);
+  }
+
+  return AXOptionalObject::Error();
+}
+
 AXOptionalObject AXCallStatementInvokerWin::InvokeForIA2Text(
     IA2TextComPtr target,
     const AXPropertyNode& property_node) const {
@@ -320,10 +347,12 @@ AXOptionalObject AXCallStatementInvokerWin::QueryInterface(
   DEFINE_IA2_QI_ENTRY(IAccessibleHypertext)
   DEFINE_IA2_QI_ENTRY(IAccessibleTable)
   DEFINE_IA2_QI_ENTRY(IAccessibleTableCell)
+  DEFINE_IA2_QI_ENTRY(IAccessibleTextSelectionContainer)
   DEFINE_IA2_QI_ENTRY(IAccessibleText)
   DEFINE_IA2_QI_ENTRY(IAccessibleValue)
 
-  return AXOptionalObject::Error();
+  return AXOptionalObject::Error("Unsupported " + interface_name +
+                                 " interface");
 }
 
 AXOptionalObject AXCallStatementInvokerWin::GetIA2Role(IA2ComPtr target) const {
@@ -331,6 +360,7 @@ AXOptionalObject AXCallStatementInvokerWin::GetIA2Role(IA2ComPtr target) const {
   if (SUCCEEDED(target->role(&role)))
     return AXOptionalObject(
         Target(base::WideToUTF8(IAccessible2RoleToString(role))));
+
   return AXOptionalObject::Error();
 }
 
@@ -368,6 +398,16 @@ AXOptionalObject AXCallStatementInvokerWin::GetSelectedColumns(
   if (target->get_selectedColumns(INT_MAX, columns.Receive(),
                                   columns.ReceiveSize()) == S_OK) {
     return AXOptionalObject({std::move(columns)});
+  }
+  return AXOptionalObject::Error();
+}
+
+AXOptionalObject AXCallStatementInvokerWin::GetSelections(
+    IA2TextSelectionContainerComPtr target) const {
+  ScopedCoMemArray<IA2TextSelection> selections;
+  if (target->get_selections(selections.Receive(), selections.ReceiveSize()) ==
+      S_OK) {
+    return AXOptionalObject({std::move(selections)});
   }
   return AXOptionalObject::Error();
 }
