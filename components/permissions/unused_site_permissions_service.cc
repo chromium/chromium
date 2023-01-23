@@ -23,6 +23,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
@@ -273,10 +274,9 @@ void UnusedSitePermissionsService::RevokeUnusedPermissions() {
          permission_itr != unused_site_permissions.end();) {
       const ContentSettingEntry& entry = *permission_itr;
       // Check if the current permission can be auto revoked.
-      auto setting = entry.source.setting_value.GetIfInt();
-      if (!setting.has_value() ||
-          !content_settings::CanBeAutoRevoked(
-              entry.type, IntToContentSetting(setting.value()))) {
+      ContentSetting setting =
+          content_settings::ValueToContentSetting(entry.source.setting_value);
+      if (!content_settings::CanBeAutoRevoked(entry.type, setting)) {
         continue;
       }
 

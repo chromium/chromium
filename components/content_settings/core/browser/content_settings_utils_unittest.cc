@@ -11,6 +11,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -133,6 +135,40 @@ TEST(ContentSettingsUtilsTest, IsMorePermissive) {
     EXPECT_FALSE(IsMorePermissive(s, s));
   }
 }
+
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+TEST(ContentSettingsUtilsTest, CanBeAutoRevoked) {
+  EXPECT_TRUE(CanBeAutoRevoked(ContentSettingsType::GEOLOCATION,
+                               ContentSetting::CONTENT_SETTING_ALLOW));
+
+  // One-time grants should not be auto revoked.
+  EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::GEOLOCATION,
+                                ContentSetting::CONTENT_SETTING_ALLOW, true));
+
+  // Only allowed permissions should be auto revoked.
+  EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::GEOLOCATION,
+                                ContentSetting::CONTENT_SETTING_DEFAULT));
+
+  EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::GEOLOCATION,
+                                ContentSetting::CONTENT_SETTING_ASK));
+
+  EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::GEOLOCATION,
+                                ContentSetting::CONTENT_SETTING_BLOCK));
+
+  // Notification permissions should not be auto revoked.
+  EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::NOTIFICATIONS,
+                                ContentSetting::CONTENT_SETTING_ALLOW));
+
+  // Permissions that are not ask by default should not be auto revoked. IMAGES
+  // permission is allowed by default, and ADS  permission is blocked by
+  // default.
+  EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::IMAGES,
+                                ContentSetting::CONTENT_SETTING_ALLOW));
+
+  EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::ADS,
+                                ContentSetting::CONTENT_SETTING_ALLOW));
+}
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 class ContentSettingsUtilsFlagTest : public testing::TestWithParam<bool> {
  public:
