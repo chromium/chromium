@@ -457,8 +457,9 @@ std::unique_ptr<BackgroundTracingConfig> CreateReactiveConfig() {
   base::Value::List rules_list;
   {
     base::Value::Dict rules_dict;
-    rules_dict.Set("rule", "TRACE_ON_NAVIGATION_UNTIL_TRIGGER_OR_FULL");
+    rules_dict.Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
     rules_dict.Set("trigger_name", "reactive_test");
+    rules_dict.Set("trigger_delay", 15);
     rules_list.Append(std::move(rules_dict));
   }
   dict.Set("configs", std::move(rules_list));
@@ -1062,7 +1063,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   base::Value::List rules_list;
   {
     base::Value::Dict rules_dict;
-    rules_dict.Set("rule", "TRACE_ON_NAVIGATION_UNTIL_TRIGGER_OR_FULL");
+    rules_dict.Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
     rules_dict.Set("trigger_name", "reactive_test1");
     rules_dict.Set("trigger_chance", 0.0);
 
