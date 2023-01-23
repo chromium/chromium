@@ -28,6 +28,10 @@ class DeviceTrustTestEnvironment {
   // key already exists on the device.
   virtual void SetUpExistingKey() = 0;
 
+  // Set up an existing device trust key on the device, to test the case where a
+  // key already exists on the device.
+  virtual std::vector<uint8_t> GetWrappedKey() = 0;
+
   // Set the result of key upload to test different behaviours of
   // KeyNetworkDelegate.
   void SetUploadResult(HttpResponseCode upload_response_code);

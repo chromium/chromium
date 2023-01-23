@@ -30,6 +30,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/device_signals/test/signals_contract.h"
+#include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
@@ -69,6 +70,8 @@ using content::NavigationHandle;
 using content::TestNavigationManager;
 
 namespace enterprise_connectors {
+
+using KeyRotationResult = DeviceTrustKeyManager::KeyRotationResult;
 
 namespace {
 
@@ -135,6 +138,7 @@ constexpr char kLatencyFailureHistogramName[] =
     "Enterprise.DeviceTrust.Attestation.ResponseLatency.Failure";
 
 #if BUILDFLAG(IS_WIN)
+constexpr char kFakeNonce[] = "fake nonce";
 constexpr int kSuccessCode = 200;
 constexpr int kHardFailureCode = 400;
 #endif  // BUILDFLAG(IS_WIN)
@@ -709,6 +713,54 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest,
   AttestationFullFlowKeyExistsTest(/*key_exists=*/false);
   VerifyAttestationFlowSuccessful(/*failed_attempts=*/2);
   ASSERT_TRUE(device_trust_test_environment_win_->KeyExists());
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest,
+                       RemoteCommandKeyRotationSuccess) {
+  // Create Key before remote command.
+  device_trust_test_environment_win_->SetUpExistingKey();
+
+  // Make sure key presents and stores its current value.
+  std::vector<uint8_t> current_key_pair =
+      device_trust_test_environment_win_->GetWrappedKey();
+
+  auto* key_manager = g_browser_process->browser_policy_connector()
+                          ->chrome_browser_cloud_management_controller()
+                          ->GetDeviceTrustKeyManager();
+
+  base::test::TestFuture<KeyRotationResult> future_result;
+  key_manager->RotateKey(kFakeNonce, future_result.GetCallback());
+  ASSERT_EQ(future_result.Get(), KeyRotationResult::SUCCESS);
+
+  // Check that key still exists & is replaced with new value.
+  ASSERT_TRUE(device_trust_test_environment_win_->KeyExists());
+  EXPECT_NE(device_trust_test_environment_win_->GetWrappedKey(),
+            current_key_pair);
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest,
+                       RemoteCommandKeyRotationFailure) {
+  // Create Key before remote command.
+  device_trust_test_environment_win_->SetUpExistingKey();
+  // Make sure key presents and stores its current value.
+  std::vector<uint8_t> current_key_pair =
+      device_trust_test_environment_win_->GetWrappedKey();
+
+  // Force key upload to fail, in turn failing the key rotation
+  device_trust_test_environment_win_->SetUploadResult(kHardFailureCode);
+
+  auto* key_manager = g_browser_process->browser_policy_connector()
+                          ->chrome_browser_cloud_management_controller()
+                          ->GetDeviceTrustKeyManager();
+
+  base::test::TestFuture<KeyRotationResult> future_result;
+  key_manager->RotateKey(kFakeNonce, future_result.GetCallback());
+  ASSERT_EQ(future_result.Get(), KeyRotationResult::FAILURE);
+
+  // Check that key still exists & has the same value since rotation failed.
+  ASSERT_TRUE(device_trust_test_environment_win_->KeyExists());
+  EXPECT_EQ(device_trust_test_environment_win_->GetWrappedKey(),
+            current_key_pair);
 }
 #endif
 

@@ -29,6 +29,9 @@ class DeviceTrustTestEnvironmentWin : public DeviceTrustTestEnvironment,
   // DeviceTrustTestEnvironment:
   void SetUpExistingKey() override;
 
+  // DeviceTrustTestEnvironment:
+  std::vector<uint8_t> GetWrappedKey() override;
+
  private:
   // RegistryOverrideManager for testing with registry
   registry_util::RegistryOverrideManager registry_override_manager_;
