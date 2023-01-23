@@ -6,6 +6,7 @@
 
 #import "base/mac/foundation_util.h"
 #import "components/grit/components_scaled_resources.h"
+#import "ios/chrome/browser/ui/autofill/cells/cvc_item+private.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -13,10 +14,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-@interface CVCCell (Private)
-@property(nonatomic, strong) UIView* dateContainerView;
-@end
 
 namespace {
 

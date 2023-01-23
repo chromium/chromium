@@ -9,6 +9,7 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/ui/autofill/cells/cvc_item+private.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -38,7 +39,6 @@ const CGFloat kGooglePayBadgeHeight = 22;
 
 @interface CVCCell ()<UITextFieldDelegate>
 @property(nonatomic, strong) UILabel* dateSeparator;
-@property(nonatomic, strong) UIView* dateContainerView;
 @property(nonatomic, strong) UIView* CVCContainerView;
 @property(nonatomic, strong)
     NSLayoutConstraint* CVCContainerLeadingConstraintWithDate;

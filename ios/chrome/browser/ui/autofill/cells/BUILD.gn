@@ -13,6 +13,7 @@ source_set("cells") {
     "autofill_edit_item.mm",
     "cvc_header_item.h",
     "cvc_header_item.mm",
+    "cvc_item+private.h",
     "cvc_item.h",
     "cvc_item.mm",
     "expiration_date_edit_item+private.h",
