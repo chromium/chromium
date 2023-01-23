@@ -24,6 +24,14 @@ SharedStoragePageLoadMetricsObserver::OnStart(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+SharedStoragePageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // TODO(https://crbug.com/1317494): Handle Prerendering cases.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 SharedStoragePageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {

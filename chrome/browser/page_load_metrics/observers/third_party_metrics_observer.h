@@ -40,6 +40,8 @@ class ThirdPartyMetricsObserver
 
   // page_load_metrics::PageLoadMetricsObserver:
   const char* GetObserverName() const override;
+  ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
+                                 const GURL& currently_committed_url) override;
   ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override;

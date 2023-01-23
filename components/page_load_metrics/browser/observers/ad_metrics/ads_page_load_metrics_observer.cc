@@ -281,6 +281,14 @@ PageLoadMetricsObserver::ObservePolicy AdsPageLoadMetricsObserver::OnStart(
 }
 
 PageLoadMetricsObserver::ObservePolicy
+AdsPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // TODO(https://crbug.com/1317494): Handle Prerendering cases.
+  return STOP_OBSERVING;
+}
+
+PageLoadMetricsObserver::ObservePolicy
 AdsPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {

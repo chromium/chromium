@@ -49,6 +49,11 @@ class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
     return CONTINUE_OBSERVING;
   }
 
+  ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
+                                 const GURL& currently_committed_url) override {
+    return STOP_OBSERVING;
+  }
+
   ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override {

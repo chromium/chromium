@@ -122,8 +122,6 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
                         const GURL& currently_committed_url,
                         bool started_in_foreground) override;
-  ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
-                                 const GURL& currently_committed_url) override;
   ObservePolicy OnRedirect(
       content::NavigationHandle* navigation_handle) override;
   ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;

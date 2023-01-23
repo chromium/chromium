@@ -22,6 +22,8 @@ class OmniboxSuggestionUsedMetricsObserver
   ~OmniboxSuggestionUsedMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
+  ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
+                                 const GURL& currently_committed_url) override;
   ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override;
