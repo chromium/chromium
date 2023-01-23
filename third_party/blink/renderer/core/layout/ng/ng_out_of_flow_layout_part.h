@@ -350,14 +350,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
 
   const NGLayoutResult* GenerateFragment(
       const NodeToLayout& oof_node_to_layout,
-      const LogicalSize& container_content_size_in_candidate_writing_mode,
-      const absl::optional<LayoutUnit>& block_estimate,
-      const NGLogicalOutOfFlowDimensions& node_dimensions,
-      const LayoutUnit block_offset,
-      const NGBlockBreakToken* break_token,
       const NGConstraintSpace* fragmentainer_constraint_space,
-      bool should_use_fixed_block_size,
-      bool requires_content_before_breaking,
       bool is_last_fragmentainer_so_far);
 
   // Performs layout on the OOFs stored in |pending_descendants| and
