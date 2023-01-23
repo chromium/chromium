@@ -192,6 +192,11 @@ void HashRealTimeService::StartLookup(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(url.is_valid());
 
+  // If |Shutdown| has been called, return early.
+  if (is_shutdown_) {
+    return;
+  }
+
   // Search local cache.
   std::vector<std::string> hash_prefixes_to_request;
   std::vector<V5::FullHash> cached_full_hashes;
@@ -387,6 +392,7 @@ HashRealTimeService::GetResourceRequest(
 }
 
 void HashRealTimeService::Shutdown() {
+  is_shutdown_ = true;
   for (auto& pending : pending_requests_) {
     // Pending requests are not posted back to the IO thread during shutdown,
     // because it is too late to post a task to the IO thread when the UI

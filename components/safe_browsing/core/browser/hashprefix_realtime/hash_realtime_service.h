@@ -211,6 +211,10 @@ class HashRealTimeService : public KeyedService {
   // Helper object that manages backoff state.
   std::unique_ptr<BackoffOperator> backoff_operator_;
 
+  // Indicates whether |Shutdown| has been called. If so, |StartLookup| returns
+  // early.
+  bool is_shutdown_ = false;
+
   base::WeakPtrFactory<HashRealTimeService> weak_factory_{this};
 };
 

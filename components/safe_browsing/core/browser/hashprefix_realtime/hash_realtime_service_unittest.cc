@@ -911,22 +911,41 @@ TEST_F(HashRealTimeServiceNoCacheManagerTest, TestNoCaching) {
 }
 
 TEST_F(HashRealTimeServiceTest, TestShutdown) {
-  GURL url = GURL("https://example.test");
-  // Set up request response.
-  auto request = std::make_unique<V5::SearchHashesRequest>();
-  for (const auto& hash_prefix : UrlToHashPrefixesAsSet(url)) {
-    request->add_hash_prefixes(hash_prefix);
+  {
+    GURL url = GURL("https://example.test");
+    // Set up request response.
+    auto request = std::make_unique<V5::SearchHashesRequest>();
+    for (const auto& hash_prefix : UrlToHashPrefixesAsSet(url)) {
+      request->add_hash_prefixes(hash_prefix);
+    }
+    std::string expected_url = GetExpectedRequestUrl(request);
+    SetUpLookupResponse(/*request_url=*/expected_url,
+                        /*full_hashes=*/{});
+    // Start lookup, setting up the expectation that the response_callback is
+    // not called due to shutdown. It should still send the initial request
+    // since it happens before Shutdown.
+    base::MockCallback<HPRTLookupResponseCallback> response_callback;
+    EXPECT_CALL(response_callback, Run(testing::_, testing::_)).Times(0);
+    service_->StartLookup(url, response_callback.Get(),
+                          base::SequencedTaskRunner::GetCurrentDefault());
+    histogram_tester_->ExpectTotalCount(
+        /*name=*/"SafeBrowsing.HPRT.Request.CountOfPrefixes",
+        /*expected_count=*/1);
   }
-  std::string expected_url = GetExpectedRequestUrl(request);
-  SetUpLookupResponse(/*request_url=*/expected_url,
-                      /*full_hashes=*/{});
-  // Start lookup, setting up the expectation that the response_callback is
-  // not called due to shutdown.
-  base::MockCallback<HPRTLookupResponseCallback> response_callback;
-  EXPECT_CALL(response_callback, Run(testing::_, testing::_)).Times(0);
-  service_->StartLookup(url, response_callback.Get(),
-                        base::SequencedTaskRunner::GetCurrentDefault());
+  ResetMetrics();
   service_->Shutdown();
+  {
+    // A new lookup should also not have the response_callback called (due to
+    // shutdown). It should not even trigger a request.
+    GURL url = GURL("https://example.test");
+    base::MockCallback<HPRTLookupResponseCallback> response_callback;
+    EXPECT_CALL(response_callback, Run(testing::_, testing::_)).Times(0);
+    service_->StartLookup(url, response_callback.Get(),
+                          base::SequencedTaskRunner::GetCurrentDefault());
+    histogram_tester_->ExpectTotalCount(
+        /*name=*/"SafeBrowsing.HPRT.Request.CountOfPrefixes",
+        /*expected_count=*/0);
+  }
   task_environment_.RunUntilIdle();
 }
 
