@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chrome/browser/printing/print_job_worker.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "printing/buildflags/buildflags.h"
@@ -97,7 +98,8 @@ class PrintJobWorkerOop : public PrintJobWorker {
 
   // Client ID with the print backend service manager for this print job.
   // Used only from UI thread.
-  absl::optional<uint32_t> service_manager_client_id_;
+  absl::optional<PrintBackendServiceManager::ClientId>
+      service_manager_client_id_;
 
   // The device name used when printing via a service.  Used only from the UI
   // thread.

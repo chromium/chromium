@@ -116,21 +116,23 @@ void PrintBackendServiceManager::SetCrashKeys(const std::string& printer_name) {
       print_backend->GetPrinterDriverInfo(printer_name));
 }
 
-uint32_t PrintBackendServiceManager::RegisterQueryClient() {
+PrintBackendServiceManager::ClientId
+PrintBackendServiceManager::RegisterQueryClient() {
   return *RegisterClient(ClientType::kQuery, kEmptyPrinterName);
 }
 
-absl::optional<uint32_t>
+absl::optional<PrintBackendServiceManager::ClientId>
 PrintBackendServiceManager::RegisterQueryWithUiClient() {
   return RegisterClient(ClientType::kQueryWithUi, kEmptyPrinterName);
 }
-uint32_t PrintBackendServiceManager::RegisterPrintDocumentClient(
+PrintBackendServiceManager::ClientId
+PrintBackendServiceManager::RegisterPrintDocumentClient(
     const std::string& printer_name) {
   DCHECK_NE(printer_name, kEmptyPrinterName);
   return *RegisterClient(ClientType::kPrintDocument, printer_name);
 }
 
-void PrintBackendServiceManager::UnregisterClient(uint32_t id) {
+void PrintBackendServiceManager::UnregisterClient(ClientId id) {
   // Determine which client type has this ID, and remove it once found.
   absl::optional<ClientType> client_type;
   RemoteId remote_id = GetRemoteIdForPrinterName(kEmptyPrinterName);
@@ -519,10 +521,10 @@ PrintBackendServiceManager::GetRemoteIdForPrinterName(
   return RemoteId(1);
 }
 
-absl::optional<uint32_t> PrintBackendServiceManager::RegisterClient(
-    ClientType client_type,
-    const std::string& printer_name) {
-  uint32_t client_id = ++last_client_id_;
+absl::optional<PrintBackendServiceManager::ClientId>
+PrintBackendServiceManager::RegisterClient(ClientType client_type,
+                                           const std::string& printer_name) {
+  ClientId client_id = ClientId(++last_client_id_);
   RemoteId remote_id = GetRemoteIdForPrinterName(printer_name);
 
   VLOG(1) << "Registering a client with ID " << client_id

@@ -25,6 +25,10 @@
 #include "components/services/print_compositor/public/mojom/print_compositor.mojom.h"
 #include "printing/buildflags/buildflags.h"
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "chrome/browser/printing/print_backend_service_manager.h"
+#endif
+
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
@@ -352,7 +356,8 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   // Client ID with the print backend service manager for this print job.
-  absl::optional<uint32_t> service_manager_client_id_;
+  absl::optional<PrintBackendServiceManager::ClientId>
+      service_manager_client_id_;
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)

@@ -3774,7 +3774,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
       TestPrintViewManager::CreateForWebContents(web_contents);
 
   // Pretend that a window has started a system print.
-  absl::optional<uint32_t> client_id =
+  absl::optional<PrintBackendServiceManager::ClientId> client_id =
       PrintBackendServiceManager::GetInstance().RegisterQueryWithUiClient();
   ASSERT_TRUE(client_id.has_value());
 

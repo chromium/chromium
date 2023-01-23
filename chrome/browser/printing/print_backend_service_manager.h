@@ -45,9 +45,10 @@ class PrintedPage;
 class PrintBackendServiceManager {
  public:
   using RemoteId = base::StrongAlias<class RemoteIdTag, uint32_t>;
+  using ClientId = base::StrongAlias<class ClientIdTag, uint32_t>;
 
   // Contains set of client IDs.
-  using ClientsSet = base::flat_set<uint32_t>;
+  using ClientsSet = base::flat_set<ClientId>;
 
   // Mapping of clients to each remote ID that is for printing.
   using PrintClientsMap = base::flat_map<RemoteId, ClientsSet>;
@@ -68,21 +69,21 @@ class PrintBackendServiceManager {
   // completed their printing activity.
 
   // Register as a client of PrintBackendServiceManager for print queries.
-  uint32_t RegisterQueryClient();
+  ClientId RegisterQueryClient();
 
   // Register as a client of PrintBackendServiceManager for print queries which
   // require a system print dialog UI.  If a platform cannot support concurrent
   // queries of this type then this will return `absl::nullopt` if another
   // client is already registered.
-  absl::optional<uint32_t> RegisterQueryWithUiClient();
+  absl::optional<ClientId> RegisterQueryWithUiClient();
 
   // Register as a client of PrintBackendServiceManager for printing a document
   // to a specific printer.
-  uint32_t RegisterPrintDocumentClient(const std::string& printer_name);
+  ClientId RegisterPrintDocumentClient(const std::string& printer_name);
 
   // Notify the manager that this client is no longer needing print backend
   // services.  This signal might alter the manager's internal optimizations.
-  void UnregisterClient(uint32_t id);
+  void UnregisterClient(ClientId id);
 
   // Wrappers around mojom::PrintBackendService call.
   void EnumeratePrinters(
@@ -281,7 +282,7 @@ class PrintBackendServiceManager {
   RemoteId GetRemoteIdForPrinterName(const std::string& printer_name);
 
   // Common helper for registering clients.
-  absl::optional<uint32_t> RegisterClient(ClientType client_type,
+  absl::optional<ClientId> RegisterClient(ClientType client_type,
                                           const std::string& printer_name);
 
   // Get the total number of clients registered.
@@ -484,6 +485,9 @@ class PrintBackendServiceManager {
   // Map of remote ID to the set of clients printing documents to it.
   PrintClientsMap print_document_clients_;
 
+  // Simple counter for incrementing ClientId.  All ClientId objects are used
+  // only within the browser process, so need for this to be a more complicated
+  // token.
   uint32_t last_client_id_ = 0;
 
   // Track the saved callbacks for each remote.

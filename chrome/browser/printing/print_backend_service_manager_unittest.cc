@@ -15,6 +15,7 @@
 
 namespace printing {
 
+using ClientId = PrintBackendServiceManager::ClientId;
 using ClientsSet = PrintBackendServiceManager::ClientsSet;
 using PrintClientsMap = PrintBackendServiceManager::PrintClientsMap;
 using RemoteId = PrintBackendServiceManager::RemoteId;
@@ -24,26 +25,38 @@ namespace {
 const RemoteId kRemoteIdEmpty{1};
 const RemoteId kRemoteIdTestPrinter{2};
 
+// ClientId values should not repeat for different types.
+const ClientId kClientIdQuery1{1};
+const ClientId kClientIdQuery2{2};
+const ClientId kClientIdQueryWithUi1{5};
+#if BUILDFLAG(IS_LINUX)
+const ClientId kClientIdQueryWithUi2{6};
+#endif
+const ClientId kClientIdPrintDocument1{10};
+const ClientId kClientIdPrintDocument2{11};
+const ClientId kClientIdPrintDocument3{20};
+
 const ClientsSet kTestQueryNoClients;
-const ClientsSet kTestQueryWithOneClient{1};
-const ClientsSet kTestQueryWithTwoClients{1, 2};
+const ClientsSet kTestQueryWithOneClient{kClientIdQuery1};
+const ClientsSet kTestQueryWithTwoClients{kClientIdQuery1, kClientIdQuery2};
 
 const ClientsSet kTestQueryWithUiNoClients;
-const ClientsSet kTestQueryWithUiOneClient{5};
+const ClientsSet kTestQueryWithUiOneClient{kClientIdQueryWithUi1};
 #if BUILDFLAG(IS_LINUX)
-const ClientsSet kTestQueryWithUiTwoClients{5, 6};
+const ClientsSet kTestQueryWithUiTwoClients{kClientIdQueryWithUi1,
+                                            kClientIdQueryWithUi2};
 #endif
 
 const PrintClientsMap kTestPrintDocumentNoClients;
 const PrintClientsMap kTestPrintDocumentOnePrinterWithOneClient{
-    {kRemoteIdEmpty, {10}},
+    {kRemoteIdEmpty, {kClientIdPrintDocument1}},
 };
 const PrintClientsMap kTestPrintDocumentOnePrinterWithTwoClients{
-    {kRemoteIdEmpty, {10, 11}},
+    {kRemoteIdEmpty, {kClientIdPrintDocument1, kClientIdPrintDocument2}},
 };
 const PrintClientsMap kTestPrintDocumentTwoPrintersWithOneClientEach{
-    {kRemoteIdEmpty, {10}},
-    {kRemoteIdTestPrinter, {20}},
+    {kRemoteIdEmpty, {kClientIdPrintDocument1}},
+    {kRemoteIdTestPrinter, {kClientIdPrintDocument3}},
 };
 
 constexpr absl::optional<base::TimeDelta> kNoNewTimeoutNeeded;
