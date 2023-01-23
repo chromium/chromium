@@ -27,17 +27,24 @@ class MediaBrowserTest : public InProcessBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
   // Runs a html page with a list of URL query parameters.
-  // If http is true, the test starts a local http test server to load the test
-  // page, otherwise a local file URL is loaded inside the content shell.
+  // If `http` is true, the test starts a local http test server to load the
+  // test page, otherwise a local file URL is loaded inside the content shell.
+  // If `with_transient_activation` is true, the runTest() javascript function
+  // will be called after page has been loaded. It is useful when testing APIs
+  // that require transient activation. If false, the runTest() javascript
+  // function is called on page load.
   // It uses RunTest() to check for expected test output.
   void RunMediaTestPage(const std::string& html_page,
                         const base::StringPairs& query_params,
                         const std::string& expected,
-                        bool http);
+                        bool http,
+                        bool with_transient_activation = false);
 
   // Opens a URL and waits for the document title to match either one of the
   // default strings or the expected string. Returns the matching title value.
-  std::string RunTest(const GURL& gurl, const std::string& expected);
+  std::string RunTest(const GURL& gurl,
+                      const std::string& expected,
+                      bool with_transient_activation);
 
   virtual void AddWaitForTitles(content::TitleWatcher* title_watcher);
 

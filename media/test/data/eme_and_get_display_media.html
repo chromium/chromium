@@ -103,27 +103,25 @@
   }
 
   async function runTest() {
-    Utils.resetTitleChange();
+    try {
+      Utils.resetTitleChange();
 
-    if (createMediaRecorderBeforeMediaKeys) {
-      // Create the MediaRecorder before setting up EME.
-      await setUpRecorder();
+      if (createMediaRecorderBeforeMediaKeys) {
+        // Create the MediaRecorder before setting up EME.
+        await setUpRecorder();
+      }
+
+      var mediaKeys = await setUpEME();
+
+      if (!createMediaRecorderBeforeMediaKeys) {
+        // Create the MediaRecorder after a delay of 1/2 second.
+        await sleep(500);
+        await setUpRecorder();
+      }
+    } catch (error) {
+      Utils.timeLog(error);
+      Utils.failTest('Failed test.');
     }
-
-    var mediaKeys = await setUpEME();
-
-    if (!createMediaRecorderBeforeMediaKeys) {
-      // Create the MediaRecorder after a delay of 1/2 second.
-      await sleep(500);
-      await setUpRecorder();
-    }
-  }
-
-  try {
-    runTest();
-  } catch (error) {
-    Utils.timeLog(error);
-    Utils.failTest('Failed test.');
   }
 </script>
 </html>

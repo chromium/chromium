@@ -504,13 +504,6 @@ ScriptPromise MediaDevices::getDisplayMedia(
     return ScriptPromise();
   }
 
-  // Measure calls without transient activation as required by spec in
-  // https://github.com/w3c/mediacapture-screen-share/pull/106
-  if (!LocalFrame::HasTransientUserActivation(window->GetFrame())) {
-    UseCounter::Count(window,
-                      WebFeature::kGetDisplayMediaWithoutUserActivation);
-  }
-
   const bool capture_allowed_by_permissions_policy = window->IsFeatureEnabled(
       mojom::blink::PermissionsPolicyFeature::kDisplayCapture,
       ReportOptions::kReportOnFailure);
@@ -525,6 +518,15 @@ ScriptPromise MediaDevices::getDisplayMedia(
     resolver->RecordAndThrowDOMException(
         exception_state, DOMExceptionCode::kNotAllowedError,
         kFeaturePolicyBlocked, UserMediaRequestResult::kNotAllowedError);
+    return ScriptPromise();
+  }
+
+  if (!LocalFrame::HasTransientUserActivation(window->GetFrame())) {
+    UseCounter::Count(window,
+                      WebFeature::kGetDisplayMediaWithoutUserActivation);
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "getDisplayMedia() requires transient activation (user gesture).");
     return ScriptPromise();
   }
 

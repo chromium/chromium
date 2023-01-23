@@ -388,7 +388,8 @@ class ECKEncryptedMediaOutputProtectionTest
     if (create_recorder_before_media_keys)
       query_params.emplace_back("createMediaRecorderBeforeMediaKeys", "1");
     RunMediaTestPage("eme_and_get_display_media.html", query_params,
-                     expected_title, true);
+                     expected_title, /*http=*/true,
+                     /*with_transient_activation=*/true);
   }
 
  protected:
