@@ -109,38 +109,6 @@ ObjectNavigationFallbackBodyLoader::ObjectNavigationFallbackBodyLoader(
                      base::Unretained(this)));
 }
 
-void ObjectNavigationFallbackBodyLoader::MaybeComplete() {
-  // Completion requires receiving the completion status from the `URLLoader`,
-  // as well as the response body being completely drained.
-  if (!status_ || response_body_drainer_)
-    return;
-
-  // At this point, `this` is done and the associated NavigationRequest and
-  // `this` must be cleaned up, no matter what else happens. Running
-  // `completion_closure_` will delete the NavigationRequest, which will delete
-  // `this`.
-  base::ScopedClosureRunner cleanup(std::move(completion_closure_));
-
-  timing_info_->response_end = status_->completion_time;
-  timing_info_->encoded_body_size = status_->encoded_body_length;
-  timing_info_->decoded_body_size = status_->decoded_body_length;
-
-  RenderFrameHostManager* render_manager =
-      navigation_request_->frame_tree_node()->render_manager();
-  if (RenderFrameProxyHost* proxy = render_manager->GetProxyToParent()) {
-    if (proxy->is_render_frame_proxy_live()) {
-      proxy->GetAssociatedRemoteFrame()
-          ->RenderFallbackContentWithResourceTiming(std::move(timing_info_),
-                                                    server_timing_value_);
-    }
-  } else {
-    render_manager->current_frame_host()
-        ->GetAssociatedLocalFrame()
-        ->RenderFallbackContentWithResourceTiming(std::move(timing_info_),
-                                                  server_timing_value_);
-  }
-}
-
 void ObjectNavigationFallbackBodyLoader::BodyLoadFailed() {
   // At this point, `this` is done and the associated NavigationRequest and
   // `this` must be cleaned up, no matter what else happens. Running
@@ -192,16 +160,36 @@ void ObjectNavigationFallbackBodyLoader::OnTransferSizeUpdated(
 
 void ObjectNavigationFallbackBodyLoader::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
-  status_ = status;
-  MaybeComplete();
+  response_body_drainer_.reset();
+  // At this point, `this` is done and the associated NavigationRequest and
+  // `this` must be cleaned up, no matter what else happens. Running
+  // `completion_closure_` will delete the NavigationRequest, which will delete
+  // `this`.
+  base::ScopedClosureRunner cleanup(std::move(completion_closure_));
+
+  timing_info_->response_end = status.completion_time;
+  timing_info_->encoded_body_size = status.encoded_body_length;
+  timing_info_->decoded_body_size = status.decoded_body_length;
+
+  RenderFrameHostManager* render_manager =
+      navigation_request_->frame_tree_node()->render_manager();
+  if (RenderFrameProxyHost* proxy = render_manager->GetProxyToParent()) {
+    if (proxy->is_render_frame_proxy_live()) {
+      proxy->GetAssociatedRemoteFrame()
+          ->RenderFallbackContentWithResourceTiming(std::move(timing_info_),
+                                                    server_timing_value_);
+    }
+  } else {
+    render_manager->current_frame_host()
+        ->GetAssociatedLocalFrame()
+        ->RenderFallbackContentWithResourceTiming(std::move(timing_info_),
+                                                  server_timing_value_);
+  }
 }
 
 void ObjectNavigationFallbackBodyLoader::OnDataAvailable(const void* data,
                                                          size_t num_bytes) {}
 
-void ObjectNavigationFallbackBodyLoader::OnDataComplete() {
-  response_body_drainer_.reset();
-  MaybeComplete();
-}
+void ObjectNavigationFallbackBodyLoader::OnDataComplete() {}
 
 }  // namespace content
