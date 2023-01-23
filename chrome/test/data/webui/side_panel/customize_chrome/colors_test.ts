@@ -5,7 +5,8 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {ColorElement} from 'chrome://customize-chrome-side-panel.top-chrome/color.js';
-import {Color, ColorsElement, DARK_DEFAULT_COLOR, LIGHT_DEFAULT_COLOR} from 'chrome://customize-chrome-side-panel.top-chrome/colors.js';
+import {Color, DARK_DEFAULT_COLOR, LIGHT_DEFAULT_COLOR} from 'chrome://customize-chrome-side-panel.top-chrome/color_utils.js';
+import {ColorsElement} from 'chrome://customize-chrome-side-panel.top-chrome/colors.js';
 import {ChromeColor, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote, Theme} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {ManagedDialogElement} from 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';

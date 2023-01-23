@@ -1,5 +1,6 @@
 <style>
   :host {
+    --customize-chrome-color-border-radius: 50%;
     box-sizing: border-box;
     cursor: pointer;
     display: block;
@@ -13,7 +14,9 @@
   }
 
   svg {
-    border-radius: 50%;
+    border: 1px solid var(--customize-chrome-color-foreground-color);
+    border-radius: var(--customize-chrome-color-border-radius);
+    box-sizing: border-box;
     display: block;
     width: 100%;
   }
@@ -30,8 +33,8 @@
     fill: var(--customize-chrome-color-background-color);
   }
 
-  :host([checked]) #background {
-    r: 25px;
+  :host([checked]) svg {
+    border: none;
   }
 
   :host([background-color-hidden]) #background {
@@ -45,12 +48,9 @@
 <customize-chrome-check-mark-wrapper checked="[[checked]]">
   <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink">
-    <circle id="foreground" cx="25" cy="25" r="25">
-    </circle>
-    <clipPath id="bottomHalf">
-      <rect x="1" y="25" width="50" height="25"></rect>
-    </clipPath>
-    <circle id="background" cx="25" cy="25" r="24"
-        clip-path="url(#bottomHalf)"></circle>
+    <rect id="foreground" x="0" y="0" width="50" height="50">
+    </rect>
+    <rect id="background" x="0" y="25" width="50" height="25">
+    </rect>
   </svg>
 </customize-chrome-check-mark-wrapper>

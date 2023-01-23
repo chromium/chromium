@@ -12,37 +12,10 @@ import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-w
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ColorElement} from './color.js';
+import {Color, ColorType, DARK_DEFAULT_COLOR, LIGHT_DEFAULT_COLOR, SelectedColor} from './color_utils.js';
 import {getTemplate} from './colors.html.js';
 import {ChromeColor, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
-
-export interface Color {
-  background: SkColor;
-  foreground: SkColor;
-}
-
-export const LIGHT_DEFAULT_COLOR: Color = {
-  background: {value: 0xffffffff},
-  foreground: {value: 0xffdee1e6},
-};
-
-export const DARK_DEFAULT_COLOR: Color = {
-  background: {value: 0xff323639},
-  foreground: {value: 0xff202124},
-};
-
-enum ColorType {
-  NONE,
-  DEFAULT,
-  MAIN,
-  CHROME,
-  CUSTOM,
-}
-
-interface SelectedColor {
-  type: ColorType;
-  chromeColor?: SkColor;
-}
 
 export interface ColorsElement {
   $: {

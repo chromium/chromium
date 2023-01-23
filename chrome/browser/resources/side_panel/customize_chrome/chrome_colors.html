@@ -1,8 +1,100 @@
-<button on-click="onBackClick_" id="backButton"
-    title="$i18n{backButton}">
-  Go Back
-</button>
-<h1>$i18n{chromeColors}</h1>
-<template id="chromeColors" is="dom-repeat" items="[[colors_]]">
-  <p class="color">[[item.name]]</p>
-</template>
+<style include="cr-hidden-style cr-icons">
+  #headerContainer {
+    align-items: center;
+    display: flex;
+    margin: 16px 16px 0;
+  }
+
+  cr-icon-button {
+    --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+    --cr-icon-button-margin-start: -8px;
+  }
+
+  h1 {
+    color: var(--cr-primary-text-color);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    margin: 0;
+    margin-inline-start: 6px;
+  }
+
+  cr-grid {
+    --cr-column-width: 1fr;
+    --cr-grid-gap: 16px 12px;
+    --cr-grid-width: 100%;
+    display: block;
+    padding: 16px 16px 32px;
+  }
+
+  .tile {
+    cursor: pointer;
+    outline-width: 0;
+    place-self: stretch;
+  }
+
+  :host-context(.focus-outline-visible) .tile:focus {
+    box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
+  }
+
+  #customColorContainer {
+    position: relative;
+  }
+
+  #colorPickerIcon {
+    -webkit-mask-image: url(chrome://resources/cr_components/customize_themes/colorize.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background-color: var(--google-grey-700);
+    height: 20px;
+    left: calc(50% - 10px);
+    pointer-events: none;
+    position: absolute;
+    top: calc(50% - 10px);
+    width: 20px;
+  }
+
+  customize-chrome-color {
+    --customize-chrome-color-border-radius: 12px;
+    padding: 0;
+  }
+</style>
+<div id="headerContainer">
+  <cr-icon-button on-click="onBackClick_" id="backButton"
+      class="icon-arrow-back" title="$i18n{backButton}">
+  </cr-icon-button>
+  <h1 id="header">$i18n{chromeColors}</h1>
+</div>
+<cr-grid columns="3">
+  <div id="customColorContainer"
+      class="tile"
+      title="$i18n{colorPickerLabel}"
+      aria-label="$i18n{colorPickerLabel}"
+      tabindex="0">
+    <customize-chrome-color
+        id="customColor"
+        background-color="[[customColor_.background]]"
+        foreground-color="[[customColor_.foreground]]">
+    </customize-chrome-color>
+    <div id="colorPickerIcon"></div>
+  </div>
+  <customize-chrome-color
+      id="defaultColor"
+      class="tile"
+      background-color="[[defaultColor_.background]]"
+      foreground-color="[[defaultColor_.foreground]]"
+      title="$i18n{defaultColorName}"
+      aria-label="$i18n{defaultColorName}"
+      tabindex="0">
+  </customize-chrome-color>
+  <template is="dom-repeat" id="chromeColorsRepeat" items="[[colors_]]">
+    <customize-chrome-color
+        class="chrome-color tile"
+        background-color="[[item.background]]"
+        foreground-color="[[item.foreground]]"
+        title="[[item.name]]"
+        aria-label$="[[item.name]]"
+        tabindex="0">
+    </customize-chrome-color>
+  </template>
+</cr-grid>
