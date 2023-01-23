@@ -131,8 +131,9 @@ class FakeV4Database : public V4Database {
       StoreAndHashPrefixes* store_and_hash_prefixes) override {
     store_and_hash_prefixes->clear();
     for (const StoreAndHashPrefix& stored_sahp : store_and_hash_prefixes_) {
-      if (stores_to_check.count(stored_sahp.list_id) == 0)
+      if (stores_to_check.count(stored_sahp.list_id) == 0) {
         continue;
+      }
       const PrefixSize& prefix_size = stored_sahp.hash_prefix.size();
       if (!full_hash.compare(0, prefix_size, stored_sahp.hash_prefix)) {
         store_and_hash_prefixes->push_back(stored_sahp);
@@ -461,6 +462,19 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
     WaitForTasksOnTaskRunner();
   }
 
+  void ValidateHighConfidenceAllowlistHistograms(
+      bool expected_all_stores_available_sample,
+      bool expected_allowlist_too_small_sample) {
+    histogram_tester_.ExpectUniqueSample(
+        "SafeBrowsing.HPRT.AllStoresAvailable",
+        /*sample=*/expected_all_stores_available_sample,
+        /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample(
+        "SafeBrowsing.HPRT.AllowlistSizeTooSmall",
+        /*sample=*/expected_allowlist_too_small_sample,
+        /*expected_bucket_count=*/1);
+  }
+
   const SBThreatTypeSet usual_threat_types_ = CreateSBThreatTypeSet(
       {SB_THREAT_TYPE_URL_PHISHING, SB_THREAT_TYPE_URL_MALWARE,
        SB_THREAT_TYPE_URL_UNWANTED});
@@ -472,6 +486,7 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
   ExtendedReportingLevelCallback erl_callback_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
   scoped_refptr<V4LocalDatabaseManager> v4_local_database_manager_;
 };
 
@@ -685,7 +700,11 @@ TEST_F(V4LocalDatabaseManagerTest,
   // Confirm there is no match and the full hash check is not performed.
   const GURL url_check("https://" + url_safe_no_scheme);
   EXPECT_FALSE(v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
-      url_check));
+      url_check, "HPRT"));
+  ValidateHighConfidenceAllowlistHistograms(
+      /*expected_all_stores_available_sample=*/true,
+      /*expected_allowlist_too_small_sample=*/false);
+
   WaitForTasksOnTaskRunner();
   EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
       v4_local_database_manager_));
@@ -708,7 +727,10 @@ TEST_F(V4LocalDatabaseManagerTest,
   // Confirm there is a match and the full hash check is not performed.
   const GURL url_check("https://" + url_safe_no_scheme);
   EXPECT_TRUE(v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
-      url_check));
+      url_check, "HPRT"));
+  ValidateHighConfidenceAllowlistHistograms(
+      /*expected_all_stores_available_sample=*/true,
+      /*expected_allowlist_too_small_sample=*/false);
   WaitForTasksOnTaskRunner();
   EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
       v4_local_database_manager_));
@@ -730,7 +752,10 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistWithNoMatch) {
   // Confirm there is no match and the full hash check is not performed.
   const GURL url_check("https://example.com/other/");
   EXPECT_FALSE(v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
-      url_check));
+      url_check, "HPRT"));
+  ValidateHighConfidenceAllowlistHistograms(
+      /*expected_all_stores_available_sample=*/true,
+      /*expected_allowlist_too_small_sample=*/false);
   WaitForTasksOnTaskRunner();
   EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
       v4_local_database_manager_));
@@ -747,7 +772,10 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistUnavailable) {
   // Confirm there is a match and the full hash check is not performed.
   const GURL url_check("https://example.com/safe");
   EXPECT_TRUE(v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
-      url_check));
+      url_check, "HPRT"));
+  ValidateHighConfidenceAllowlistHistograms(
+      /*expected_all_stores_available_sample=*/false,
+      /*expected_allowlist_too_small_sample=*/false);
   WaitForTasksOnTaskRunner();
   EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
       v4_local_database_manager_));
@@ -767,14 +795,16 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistSmallSize) {
   // Confirm there is a match and the full hash check is not performed.
   const GURL url_check("https://example.com/safe");
   EXPECT_TRUE(v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
-      url_check));
+      url_check, "HPRT"));
+  ValidateHighConfidenceAllowlistHistograms(
+      /*expected_all_stores_available_sample=*/true,
+      /*expected_allowlist_too_small_sample=*/true);
   WaitForTasksOnTaskRunner();
   EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
       v4_local_database_manager_));
 }
 
 TEST_F(V4LocalDatabaseManagerTest, TestGetSeverestThreatTypeAndMetadata) {
-  base::HistogramTester histograms;
   WaitForTasksOnTaskRunner();
 
   FullHashStr fh_malware("Malware");
@@ -820,7 +850,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestGetSeverestThreatTypeAndMetadata) {
   EXPECT_EQ("malware_popid", metadata.population_id);
   EXPECT_EQ(fh_malware, matching_full_hash);
 
-  histograms.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize",
       /* sample */ 2, /* expected_count */ 2);
 }
@@ -1402,8 +1432,9 @@ TEST_F(V4LocalDatabaseManagerTest, SyncedLists) {
 
   std::vector<ListIdentifier> synced_lists;
   for (const auto& info : v4_local_database_manager_->list_infos_) {
-    if (info.fetch_updates())
+    if (info.fetch_updates()) {
       synced_lists.push_back(info.list_id());
+    }
   }
   EXPECT_EQ(expected_lists, synced_lists);
 }
@@ -1420,11 +1451,10 @@ TEST_F(V4LocalDatabaseManagerTest, RenameStoreFile_RenameSuccess) {
   const std::string rename_status_histogram =
       "SafeBrowsing.V4Store.RenameStatus." + new_store_name;
 
-  base::HistogramTester histograms;
-  histograms.ExpectTotalCount(old_name_in_use_histogram, 0);
-  histograms.ExpectTotalCount(old_name_exists_histogram, 0);
-  histograms.ExpectTotalCount(new_name_exists_histogram, 0);
-  histograms.ExpectTotalCount(rename_status_histogram, 0);
+  histogram_tester_.ExpectTotalCount(old_name_in_use_histogram, 0);
+  histogram_tester_.ExpectTotalCount(old_name_exists_histogram, 0);
+  histogram_tester_.ExpectTotalCount(new_name_exists_histogram, 0);
+  histogram_tester_.ExpectTotalCount(rename_status_histogram, 0);
 
   auto old_store_path =
       base_dir_.GetPath().AppendASCII(old_store_name + ".store");
@@ -1441,17 +1471,17 @@ TEST_F(V4LocalDatabaseManagerTest, RenameStoreFile_RenameSuccess) {
       base_dir_.GetPath().AppendASCII(new_store_name + ".store");
   ASSERT_TRUE(base::PathExists(new_store_path));
 
-  histograms.ExpectTotalCount(old_name_in_use_histogram, 1);
-  histograms.ExpectBucketCount(old_name_in_use_histogram, false, 1);
+  histogram_tester_.ExpectTotalCount(old_name_in_use_histogram, 1);
+  histogram_tester_.ExpectBucketCount(old_name_in_use_histogram, false, 1);
 
-  histograms.ExpectTotalCount(old_name_exists_histogram, 1);
-  histograms.ExpectBucketCount(old_name_exists_histogram, true, 1);
+  histogram_tester_.ExpectTotalCount(old_name_exists_histogram, 1);
+  histogram_tester_.ExpectBucketCount(old_name_exists_histogram, true, 1);
 
-  histograms.ExpectTotalCount(new_name_exists_histogram, 1);
-  histograms.ExpectBucketCount(new_name_exists_histogram, false, 1);
+  histogram_tester_.ExpectTotalCount(new_name_exists_histogram, 1);
+  histogram_tester_.ExpectBucketCount(new_name_exists_histogram, false, 1);
 
-  histograms.ExpectTotalCount(rename_status_histogram, 1);
-  histograms.ExpectBucketCount(rename_status_histogram, 0, 1);
+  histogram_tester_.ExpectTotalCount(rename_status_histogram, 1);
+  histogram_tester_.ExpectBucketCount(rename_status_histogram, 0, 1);
 
   // Cleanup
   base::DeleteFile(new_store_path);
@@ -1469,20 +1499,19 @@ TEST_F(V4LocalDatabaseManagerTest, RenameStoreFile_RenameSuccessMultiple) {
           {"UrlCsdWhitelist", "UrlCsdAllowlist"},
       });
 
-  base::HistogramTester histograms;
   for (auto const& pair : kStoreFilesToRename) {
     const std::string& old_store_name = pair.first;
     const std::string& new_store_name = pair.second;
 
     std::string old_name_in_use_histogram = old_name_in_use + old_store_name;
-    histograms.ExpectTotalCount(old_name_in_use_histogram, 0);
+    histogram_tester_.ExpectTotalCount(old_name_in_use_histogram, 0);
     std::string old_name_exists_histogram = old_name_exists + old_store_name;
-    histograms.ExpectTotalCount(old_name_exists_histogram, 0);
+    histogram_tester_.ExpectTotalCount(old_name_exists_histogram, 0);
 
     std::string new_name_exists_histogram = new_name_exists + new_store_name;
-    histograms.ExpectTotalCount(new_name_exists_histogram, 0);
+    histogram_tester_.ExpectTotalCount(new_name_exists_histogram, 0);
     std::string rename_status_histogram = rename_status + new_store_name;
-    histograms.ExpectTotalCount(rename_status_histogram, 0);
+    histogram_tester_.ExpectTotalCount(rename_status_histogram, 0);
 
     auto old_store_path =
         base_dir_.GetPath().AppendASCII(old_store_name + ".store");
@@ -1511,20 +1540,20 @@ TEST_F(V4LocalDatabaseManagerTest, RenameStoreFile_RenameSuccessMultiple) {
     ASSERT_TRUE(base::PathExists(new_store_path));
 
     std::string old_name_in_use_histogram = old_name_in_use + old_store_name;
-    histograms.ExpectTotalCount(old_name_in_use_histogram, 1);
-    histograms.ExpectBucketCount(old_name_in_use_histogram, false, 1);
+    histogram_tester_.ExpectTotalCount(old_name_in_use_histogram, 1);
+    histogram_tester_.ExpectBucketCount(old_name_in_use_histogram, false, 1);
 
     std::string old_name_exists_histogram = old_name_exists + old_store_name;
-    histograms.ExpectTotalCount(old_name_exists_histogram, 1);
-    histograms.ExpectBucketCount(old_name_exists_histogram, true, 1);
+    histogram_tester_.ExpectTotalCount(old_name_exists_histogram, 1);
+    histogram_tester_.ExpectBucketCount(old_name_exists_histogram, true, 1);
 
     std::string new_name_exists_histogram = new_name_exists + new_store_name;
-    histograms.ExpectTotalCount(new_name_exists_histogram, 1);
-    histograms.ExpectBucketCount(new_name_exists_histogram, false, 1);
+    histogram_tester_.ExpectTotalCount(new_name_exists_histogram, 1);
+    histogram_tester_.ExpectBucketCount(new_name_exists_histogram, false, 1);
 
     std::string rename_status_histogram = rename_status + new_store_name;
-    histograms.ExpectTotalCount(rename_status_histogram, 1);
-    histograms.ExpectBucketCount(rename_status_histogram, 0, 1);
+    histogram_tester_.ExpectTotalCount(rename_status_histogram, 1);
+    histogram_tester_.ExpectBucketCount(rename_status_histogram, 0, 1);
 
     // Cleanup
     base::DeleteFile(new_store_path);
@@ -1544,11 +1573,10 @@ TEST_F(V4LocalDatabaseManagerTest,
   const std::string rename_status_histogram =
       "SafeBrowsing.V4Store.RenameStatus." + new_store_name;
 
-  base::HistogramTester histograms;
-  histograms.ExpectTotalCount(old_name_in_use_histogram, 0);
-  histograms.ExpectTotalCount(old_name_exists_histogram, 0);
-  histograms.ExpectTotalCount(new_name_exists_histogram, 0);
-  histograms.ExpectTotalCount(rename_status_histogram, 0);
+  histogram_tester_.ExpectTotalCount(old_name_in_use_histogram, 0);
+  histogram_tester_.ExpectTotalCount(old_name_exists_histogram, 0);
+  histogram_tester_.ExpectTotalCount(new_name_exists_histogram, 0);
+  histogram_tester_.ExpectTotalCount(rename_status_histogram, 0);
 
   auto old_store_path =
       base_dir_.GetPath().AppendASCII(old_store_name + ".store");
@@ -1556,14 +1584,14 @@ TEST_F(V4LocalDatabaseManagerTest,
 
   WaitForTasksOnTaskRunner();
 
-  histograms.ExpectTotalCount(old_name_in_use_histogram, 1);
-  histograms.ExpectBucketCount(old_name_in_use_histogram, false, 1);
+  histogram_tester_.ExpectTotalCount(old_name_in_use_histogram, 1);
+  histogram_tester_.ExpectBucketCount(old_name_in_use_histogram, false, 1);
 
-  histograms.ExpectTotalCount(old_name_exists_histogram, 1);
-  histograms.ExpectBucketCount(old_name_exists_histogram, false, 1);
+  histogram_tester_.ExpectTotalCount(old_name_exists_histogram, 1);
+  histogram_tester_.ExpectBucketCount(old_name_exists_histogram, false, 1);
 
-  histograms.ExpectTotalCount(new_name_exists_histogram, 0);
-  histograms.ExpectTotalCount(rename_status_histogram, 0);
+  histogram_tester_.ExpectTotalCount(new_name_exists_histogram, 0);
+  histogram_tester_.ExpectTotalCount(rename_status_histogram, 0);
 
   // Cleanup
   base::DeleteFile(old_store_path);
@@ -1581,11 +1609,10 @@ TEST_F(V4LocalDatabaseManagerTest, RenameStoreNewFileExists_DoesNotRename) {
   const std::string rename_status_histogram =
       "SafeBrowsing.V4Store.RenameStatus." + new_store_name;
 
-  base::HistogramTester histograms;
-  histograms.ExpectTotalCount(old_name_in_use_histogram, 0);
-  histograms.ExpectTotalCount(old_name_exists_histogram, 0);
-  histograms.ExpectTotalCount(new_name_exists_histogram, 0);
-  histograms.ExpectTotalCount(rename_status_histogram, 0);
+  histogram_tester_.ExpectTotalCount(old_name_in_use_histogram, 0);
+  histogram_tester_.ExpectTotalCount(old_name_exists_histogram, 0);
+  histogram_tester_.ExpectTotalCount(new_name_exists_histogram, 0);
+  histogram_tester_.ExpectTotalCount(rename_status_histogram, 0);
 
   auto old_store_path =
       base_dir_.GetPath().AppendASCII(old_store_name + ".store");
@@ -1605,16 +1632,16 @@ TEST_F(V4LocalDatabaseManagerTest, RenameStoreNewFileExists_DoesNotRename) {
 
   WaitForTasksOnTaskRunner();
 
-  histograms.ExpectTotalCount(old_name_in_use_histogram, 1);
-  histograms.ExpectBucketCount(old_name_in_use_histogram, false, 1);
+  histogram_tester_.ExpectTotalCount(old_name_in_use_histogram, 1);
+  histogram_tester_.ExpectBucketCount(old_name_in_use_histogram, false, 1);
 
-  histograms.ExpectTotalCount(old_name_exists_histogram, 1);
-  histograms.ExpectBucketCount(old_name_exists_histogram, true, 1);
+  histogram_tester_.ExpectTotalCount(old_name_exists_histogram, 1);
+  histogram_tester_.ExpectBucketCount(old_name_exists_histogram, true, 1);
 
-  histograms.ExpectTotalCount(new_name_exists_histogram, 1);
-  histograms.ExpectBucketCount(new_name_exists_histogram, true, 1);
+  histogram_tester_.ExpectTotalCount(new_name_exists_histogram, 1);
+  histogram_tester_.ExpectBucketCount(new_name_exists_histogram, true, 1);
 
-  histograms.ExpectTotalCount(rename_status_histogram, 0);
+  histogram_tester_.ExpectTotalCount(rename_status_histogram, 0);
 
   // Cleanup
   base::DeleteFile(old_store_path);

@@ -89166,6 +89166,17 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
       label="User pasted something on the page and the warning was shown."/>
 </enum>
 
+<enum name="SafeBrowsingHPRTOperationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Parse response error"/>
+  <int value="2" label="No cache duration in response"/>
+  <int value="3" label="Incorrect full hash length in response"/>
+  <int value="4" label="Retriable error"/>
+  <int value="5" label="Network error"/>
+  <int value="6" label="HTTP error"/>
+  <int value="7" label="Bug: Reached NOTREACHED code"/>
+</enum>
+
 <enum name="SafeBrowsingMalwareDeepScanningVerdict">
   <int value="0" label="Verdict unspecified"/>
   <int value="1" label="Clean"/>

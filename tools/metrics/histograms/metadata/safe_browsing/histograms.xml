@@ -826,6 +826,181 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.HPRT.AllowlistSizeTooSmall"
+    enum="BooleanUnavailable" expires_after="2023-07-20">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether the size of the high confidence allowlist is too small. It can
+    happen if it is misconfigured on the server-side, or the local file is
+    corrupted on the disk. If too small, the allowlist is considered as
+    unavailable. Logged each time a top frame URL navigation happens for users
+    who have hash-prefix real-time lookups enabled.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRT.AllStoresAvailable" enum="BooleanAvailable"
+    expires_after="2023-07-20">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether the local Safe Browsing stores are available. If not, all URLs
+    are marked as safe during the lookup. Logged each time a top frame URL
+    navigation happens for users who have hash-prefix real-time lookups enabled.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRT.Backoff.State" enum="BooleanEnabled"
+    expires_after="2023-07-20">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs if the hash-prefix real-time lookup service is currently in backoff
+    state due to previous errors. Logged whenever the hash-prefix real-time
+    check is enabled and is run for a particular URL.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRT.Cache.FullHashCount" units="entries"
+    expires_after="2023-07-20">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the number of full hashes in the local hash-prefix real-time lookup
+    cache for this profile. Logged each time cleanup of expired entries is
+    performed on the cache, which happens every 30 minutes. The value represents
+    the count before cleanup and includes expired entries.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRT.Cache.HashPrefixCount" units="entries"
+    expires_after="2023-07-20">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the number of hash prefixes in the local hash-prefix real-time
+    lookup cache for this profile. Logged each time cleanup of expired entries
+    is performed on the cache, which happens every 30 minutes. The value
+    represents the count before cleanup and includes expired entries.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRT.CacheHit" enum="BooleanCacheHit"
+    expires_after="2023-07-20">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether there was a cache hit when a hash prefix was searched for in
+    the local cache for hash-prefix real-time lookups. A cache hit means the
+    prefix was found in the cache (whether or not it has associated full
+    hashes), which allows for that prefix not to be re-requested. This histogram
+    is false in the case of a cache miss for the hash prefix. This is logged for
+    each hash prefix in a lookup when the cache is searched.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRT.CacheHitAllPrefixes" enum="BooleanCacheHit"
+    expires_after="2023-07-20">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether all hash prefixes were found in the hash-prefix real-time
+    lookups local cache. It indicates that as a result of the cache, there was
+    no need to send a request to Safe Browsing servers. This is logged each time
+    a lookup occurs, when the cache is searched.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRT.GetCache.Time" units="ms"
+    expires_after="2023-07-20">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the latency between the start of getting a result from the cache and
+    when the cached item is actually obtained for hash-prefix real-time lookups.
+    This is an indicator of the efficiency of retrieving from the cache.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRT.IsLookupServiceAvailable"
+    enum="BooleanAvailable" expires_after="2023-07-20">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether the hash-prefix real-time lookup service is available when a
+    hash-prefix real-time check is needed. The lookup service is available if it
+    is not nullptr and it is not in backoff mode. Logged when the hash-prefix
+    real-time check is enabled and the URL doesn't match the allowlist.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRT.LocalMatch.Result"
+    enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2023-07-20">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the result of checking the URL against the local Safe Browsing high
+    confidence allowlist. Logged each time a top frame URL navigation happens
+    for users who have hash-prefix real-time lookups enabled.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRT.Network.Result"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-07-20">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Response or error codes from SafeBrowsing hash-prefix real-time lookups.
+    Logged on each resource check for which a lookup request is sent to the
+    server.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRT.Network.Time" units="ms"
+    expires_after="2023-07-20">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the roundtrip time it took to perform a Safe Browsing hash-prefix
+    real-time lookup. Logged on each resource check for which a lookup request
+    is sent to the server.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRT.OperationResult"
+    enum="SafeBrowsingHPRTOperationResult" expires_after="2023-07-20">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the return status for hash-prefix real-time lookups. This is logged
+    after network request for the lookup returns.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRT.Request.CountOfPrefixes" units="prefixes"
+    expires_after="2023-07-20">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The number of prefixes included in a hash-prefix real-time lookup request
+    sent to the Google Safe Browsing servers. This excludes any prefixes found
+    in the local cache.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRT.ThreatInfoSize" units="verdicts"
+    expires_after="2023-07-20">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the number of unsafe threat type verdicts received in the check
+    response (including cached results) that are relevant to hash-prefix
+    real-time checks. Logged each time a lookup request completes without errors
+    or when the request does not need to be sent because all the results are in
+    the local cache.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.LocalBinaryUploadRequest.DlpResult"
     enum="BooleanSuccess" expires_after="2023-10-20">
   <owner>rogerta@chromium.org</owner>
@@ -1373,7 +1548,8 @@ chromium-metrics-reviews@google.com.
     Logs the result of checking the {IsMainframe} URL against the local Safe
     Browsing high confidence allowlist for {UserCategory} real time URL check
     request. Logged each time a top frame URL navigation happens for users who
-    have the real time URL lookups enabled.
+    have the real time URL lookups enabled. It can also be logged for
+    non-mainframe URL hits for EnhancedProtection users.
   </summary>
   <token key="IsMainframe">
     <variant name="Mainframe" summary="mainframe"/>

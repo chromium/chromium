@@ -77,7 +77,9 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   bool CheckExtensionIDs(const std::set<FullHashStr>& extension_ids,
                          Client* client) override;
   bool CheckResourceUrl(const GURL& url, Client* client) override;
-  bool CheckUrlForHighConfidenceAllowlist(const GURL& url) override;
+  bool CheckUrlForHighConfidenceAllowlist(
+      const GURL& url,
+      const std::string& metric_variation) override;
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
   bool MatchDownloadAllowlistUrl(const GURL& url) override;
   bool MatchMalwareIP(const std::string& ip_address) override;

@@ -21,6 +21,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/task/sequenced_task_runner.h"
@@ -222,13 +223,27 @@ enum StoreAvailabilityResult {
 };
 
 void RecordTimeSinceLastUpdateHistograms(const base::Time& last_response_time) {
-  if (last_response_time.is_null())
+  if (last_response_time.is_null()) {
     return;
+  }
 
   base::TimeDelta time_since_update = base::Time::Now() - last_response_time;
   UMA_HISTOGRAM_LONG_TIMES_100(
       "SafeBrowsing.V4LocalDatabaseManager.TimeSinceLastUpdateResponse",
       time_since_update);
+}
+
+void RecordCheckUrlForHighConfidenceAllowlistBoolean(
+    const std::string& metric_name,
+    const std::string& metric_variation,
+    bool value) {
+  auto histogram_name =
+      base::StrCat({"SafeBrowsing.", metric_variation, ".", metric_name});
+  DCHECK(histogram_name == "SafeBrowsing.RT.AllStoresAvailable" ||
+         histogram_name == "SafeBrowsing.HPRT.AllStoresAvailable" ||
+         histogram_name == "SafeBrowsing.RT.AllowlistSizeTooSmall" ||
+         histogram_name == "SafeBrowsing.HPRT.AllowlistSizeTooSmall");
+  base::UmaHistogramBoolean(histogram_name, value);
 }
 
 // Renames the file at |old_path| to |new_path|. Executes on a task runner.
@@ -498,20 +513,21 @@ bool V4LocalDatabaseManager::CheckResourceUrl(const GURL& url, Client* client) {
 }
 
 bool V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
-    const GURL& url) {
+    const GURL& url,
+    const std::string& metric_variation) {
   DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
   StoresToCheck stores_to_check({GetUrlHighConfidenceAllowlistId()});
   bool all_stores_available = AreAllStoresAvailableNow(stores_to_check);
-  UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.RT.AllStoresAvailable",
-                        all_stores_available);
+  RecordCheckUrlForHighConfidenceAllowlistBoolean(
+      "AllStoresAvailable", metric_variation, all_stores_available);
   bool is_artificial_prefix_empty =
       artificially_marked_store_and_hash_prefixes_.empty();
   bool is_allowlist_too_small =
       IsStoreTooSmall(GetUrlHighConfidenceAllowlistId(), kBytesPerFullHashEntry,
                       kHighConfidenceAllowlistMinimumEntryCount);
-  UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.RT.AllowlistSizeTooSmall",
-                        is_allowlist_too_small);
+  RecordCheckUrlForHighConfidenceAllowlistBoolean(
+      "AllowlistSizeTooSmall", metric_variation, is_allowlist_too_small);
   if (!enabled_ || (is_allowlist_too_small && is_artificial_prefix_empty) ||
       !CanCheckUrl(url) ||
       (!all_stores_available && is_artificial_prefix_empty)) {
@@ -643,8 +659,9 @@ void V4LocalDatabaseManager::StopOnIOThread(bool shutdown) {
   // Delete the V4Database. Any pending writes to disk are completed.
   // This operation happens on the task_runner on which v4_database_ operates
   // and doesn't block the IO thread.
-  if (v4_database_)
+  if (v4_database_) {
     v4_database_->StopOnIO();
+  }
   v4_database_.reset();
 
   // Delete the V4UpdateProtocolManager.

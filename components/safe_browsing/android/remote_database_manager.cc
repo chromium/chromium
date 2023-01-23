@@ -78,8 +78,9 @@ void RemoteSafeBrowsingDatabaseManager::ClientRequest::OnRequestDoneWeak(
     SBThreatType matched_threat_type,
     const ThreatMetadata& metadata) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (!req)
+  if (!req) {
     return;  // Previously canceled
+  }
   req->OnRequestDone(matched_threat_type, metadata);
 }
 
@@ -197,13 +198,15 @@ bool RemoteSafeBrowsingDatabaseManager::CheckBrowseUrl(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!threat_types.empty());
   DCHECK(SBThreatTypeSetIsValidForCheckBrowseUrl(threat_types));
-  if (!enabled_)
+  if (!enabled_) {
     return true;
+  }
 
   bool can_check_url = CanCheckUrl(url);
   UMA_HISTOGRAM_BOOLEAN("SB2.RemoteCall.CanCheckUrl", can_check_url);
-  if (!can_check_url)
+  if (!can_check_url) {
     return true;  // Safe, continue right away.
+  }
 
   std::unique_ptr<ClientRequest> req(new ClientRequest(client, this, url));
 
@@ -241,11 +244,13 @@ bool RemoteSafeBrowsingDatabaseManager::CheckResourceUrl(const GURL& url,
 }
 
 bool RemoteSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
-    const GURL& url) {
+    const GURL& url,
+    const std::string& metric_variation) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  if (!enabled_ || !CanCheckUrl(url))
+  if (!enabled_ || !CanCheckUrl(url)) {
     return false;
+  }
 
   if (base::FeatureList::IsEnabled(kComponentUpdaterAndroidProtegoAllowlist)) {
     // SafeBrowsingComponentUpdaterAndroidProtegoAllowlist is enabled.
@@ -265,8 +270,9 @@ bool RemoteSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
     Client* client) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  if (!enabled_ || !CanCheckUrl(url))
+  if (!enabled_ || !CanCheckUrl(url)) {
     return true;
+  }
 
   std::unique_ptr<ClientRequest> req(new ClientRequest(client, this, url));
 

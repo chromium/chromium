@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_cache.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
@@ -40,6 +41,27 @@ class HashRealTimeCacheTest : public PlatformTest {
       details->add_attributes(attribute);
     }
   }
+  void CheckAndResetCacheHitsAndMisses(int num_hits, int num_misses) {
+    histogram_tester_->ExpectBucketCount("SafeBrowsing.HPRT.CacheHit",
+                                         /*sample=*/true,
+                                         /*expected_count=*/num_hits);
+    histogram_tester_->ExpectBucketCount("SafeBrowsing.HPRT.CacheHit",
+                                         /*sample=*/false,
+                                         /*expected_count=*/num_misses);
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+  }
+  void CheckAndResetCacheSizeOnClear(int num_hash_prefixes,
+                                     int num_full_hashes) {
+    histogram_tester_->ExpectBucketCount(
+        "SafeBrowsing.HPRT.Cache.HashPrefixCount",
+        /*sample=*/num_hash_prefixes,
+        /*expected_count=*/1);
+    histogram_tester_->ExpectBucketCount(
+        "SafeBrowsing.HPRT.Cache.FullHashCount",
+        /*sample=*/num_full_hashes,
+        /*expected_count=*/1);
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+  }
   int GetNumCacheEntries(std::unique_ptr<HashRealTimeCache>& cache) {
     // This includes expired entries that have not yet been cleaned up too.
     return cache->cache_.size();
@@ -55,16 +77,22 @@ class HashRealTimeCacheTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<base::HistogramTester> histogram_tester_ =
+      std::make_unique<base::HistogramTester>();
 };
 
 TEST_F(HashRealTimeCacheTest, TestCacheMatching_EmptyCache) {
   auto cache = std::make_unique<HashRealTimeCache>();
   EXPECT_TRUE(cache->SearchCache({}).empty());
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/0);
   EXPECT_TRUE(cache->SearchCache({"aaaa"}).empty());
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/1);
   EXPECT_TRUE(cache->SearchCache({"aaaa", "bbbb"}).empty());
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/2);
 }
 
 TEST_F(HashRealTimeCacheTest, TestCacheMatching_BasicFunctionality) {
+  base::HistogramTester histogram_tester;
   auto cache = std::make_unique<HashRealTimeCache>();
   // The below is done within a block to ensure that the cache works even once
   // the inputs to CacheSearchHashesResponse have been destructed.
@@ -96,12 +124,16 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_BasicFunctionality) {
   // Searching for no prefix or for prefixes not in the request should yield
   // empty cache results.
   EXPECT_TRUE(cache->SearchCache({}).empty());
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/0);
   EXPECT_TRUE(cache->SearchCache({"eeee"}).empty());
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/1);
   EXPECT_TRUE(cache->SearchCache({"eeee", "ffff"}).empty());
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/2);
 
   std::set<std::string> hash_prefixes_to_search = {"aaaa", "bbbb", "cccc",
                                                    "dddd", "eeee", "ffff"};
   auto cache_results = cache->SearchCache(hash_prefixes_to_search);
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/4, /*num_misses=*/2);
 
   // Don't expect cache results for eeee and ffff, since they are not in the
   // cache. Expect cache results for all other prefixes.
@@ -176,23 +208,35 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_Expiration) {
   // aaaa expires at 300 seconds. cccc expires at 599 seconds.
   // Current time = 299 seconds. aaaa and cccc have not expired.
   EXPECT_FALSE(cache->SearchCache({"aaaa"}).empty());
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/1, /*num_misses=*/0);
   EXPECT_FALSE(cache->SearchCache({"cccc"}).empty());
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/1, /*num_misses=*/0);
   EXPECT_EQ(cache->SearchCache({"aaaa", "cccc"}).size(), 2u);
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/2, /*num_misses=*/0);
   // Current time = 300 seconds. aaaa has expired. cccc has not expired.
   task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(cache->SearchCache({"aaaa"}).empty());
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/1);
   EXPECT_FALSE(cache->SearchCache({"cccc"}).empty());
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/1, /*num_misses=*/0);
   EXPECT_EQ(cache->SearchCache({"aaaa", "cccc"}).size(), 1u);
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/1, /*num_misses=*/1);
   // Current time = 598 seconds. aaaa has expired. cccc has not expired.
   task_environment_.FastForwardBy(base::Seconds(298));
   EXPECT_TRUE(cache->SearchCache({"aaaa"}).empty());
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/1);
   EXPECT_FALSE(cache->SearchCache({"cccc"}).empty());
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/1, /*num_misses=*/0);
   EXPECT_EQ(cache->SearchCache({"aaaa", "cccc"}).size(), 1u);
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/1, /*num_misses=*/1);
   // Current time = 599 seconds. aaaa and cccc have expired.
   task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(cache->SearchCache({"aaaa"}).empty());
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/1);
   EXPECT_TRUE(cache->SearchCache({"cccc"}).empty());
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/1);
   EXPECT_TRUE(cache->SearchCache({"aaaa", "cccc"}).empty());
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/2);
 }
 
 TEST_F(HashRealTimeCacheTest, TestCacheMatching_ExpirationNanos) {
@@ -216,9 +260,11 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_ExpirationNanos) {
   // aaaa expires at 300.5 seconds.
   // Current time = 300.0 seconds. aaaa has not expired.
   EXPECT_FALSE(cache->SearchCache({"aaaa"}).empty());
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/1, /*num_misses=*/0);
   // Current time = 300.5 seconds. aaaa has expired.
   task_environment_.FastForwardBy(base::Nanoseconds(500000000));
   EXPECT_TRUE(cache->SearchCache({"aaaa"}).empty());
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/1);
 }
 
 TEST_F(HashRealTimeCacheTest, TestCacheMatching_Attributes) {
@@ -249,6 +295,7 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_Attributes) {
 
   std::set<std::string> hash_prefixes_to_search = {"aaaa", "bbbb"};
   auto cache_results = cache->SearchCache(hash_prefixes_to_search);
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/2, /*num_misses=*/0);
 
   // Sanity check that adding attributes for aaaa hashes does not change the
   // fact that there should be no bbbb full hashes / associated attributes.
@@ -302,6 +349,7 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_OverwrittenEntry) {
   }
   // Confirm the cache has the expected results.
   auto cache_results_1 = cache->SearchCache({"aaaa"});
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/1, /*num_misses=*/0);
   EXPECT_EQ(cache_results_1.size(), 1u);
   EXPECT_EQ(cache_results_1["aaaa"].size(), 1u);
   EXPECT_EQ(cache_results_1["aaaa"][0].full_hash(),
@@ -325,6 +373,7 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_OverwrittenEntry) {
   // earlier-responding result. In practice, the two results are expected to be
   // the same almost always, but if they are not, this is how the cache behaves.
   auto cache_results_2 = cache->SearchCache({"aaaa"});
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/1, /*num_misses=*/0);
   EXPECT_EQ(cache_results_2.size(), 1u);
   EXPECT_EQ(cache_results_2["aaaa"].size(), 1u);
   EXPECT_EQ(cache_results_2["aaaa"][0].full_hash(),
@@ -350,12 +399,15 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_OverwrittenEntry) {
   // the results of Request #2 would already have expired.
   task_environment_.FastForwardBy(base::Seconds(150));
   EXPECT_FALSE(cache->SearchCache({"aaaa"}).empty());
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/1, /*num_misses=*/0);
 
   // Confirm Request #3's cache duration is respected.
   task_environment_.FastForwardBy(base::Seconds(149));
   EXPECT_FALSE(cache->SearchCache({"aaaa"}).empty());
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/1, /*num_misses=*/0);
   task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(cache->SearchCache({"aaaa"}).empty());
+  CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/1);
 }
 
 TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_EmptyCache) {
@@ -484,6 +536,57 @@ TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_AllExpiredResults) {
   EXPECT_EQ(GetNumCacheEntries(cache), 0);
   EXPECT_FALSE(base::Contains(cache->SearchCache({"aaaa"}), "aaaa"));
   EXPECT_FALSE(base::Contains(cache->SearchCache({"cccc"}), "cccc"));
+}
+
+TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_Logging) {
+  auto cache = std::make_unique<HashRealTimeCache>();
+
+  // Cache is empty.
+  cache->ClearExpiredResults();
+  CheckAndResetCacheSizeOnClear(/*num_hash_prefixes=*/0, /*num_full_hashes=*/0);
+
+  // Cache has 1 hash prefix with 1 full hash in it.
+  cache->CacheSearchHashesResponse(
+      {"aaaa"},
+      {CreateBasicFullHash("aaaa1111111111111111111111111111",
+                           {V5::ThreatType::MALWARE})},
+      CreateCacheDuration(300, 0));
+  cache->ClearExpiredResults();
+  CheckAndResetCacheSizeOnClear(/*num_hash_prefixes=*/1, /*num_full_hashes=*/1);
+
+  // Cache has 2 hash prefixes and 3 full hashes (aaaa entry from above remains
+  // included).
+  cache->CacheSearchHashesResponse(
+      {"bbbb"},
+      {CreateBasicFullHash("bbbb1111111111111111111111111111",
+                           {V5::ThreatType::MALWARE}),
+       CreateBasicFullHash("bbbb2222222222222222222222222222",
+                           {V5::ThreatType::MALWARE})},
+      CreateCacheDuration(500, 0));
+  cache->ClearExpiredResults();
+  CheckAndResetCacheSizeOnClear(/*num_hash_prefixes=*/2, /*num_full_hashes=*/3);
+
+  // 400 seconds later, the first addition to the cache has expired. The logs
+  // should still report 2 hash prefixes and 3 full hashes, because they report
+  // the size at the time the cache started being cleared, not afterwards.
+  task_environment_.FastForwardBy(base::Seconds(400));
+  cache->ClearExpiredResults();
+  CheckAndResetCacheSizeOnClear(/*num_hash_prefixes=*/2, /*num_full_hashes=*/3);
+
+  // Clearing the expired results again now displays the size with just the
+  // second addition to the cache.
+  cache->ClearExpiredResults();
+  CheckAndResetCacheSizeOnClear(/*num_hash_prefixes=*/1, /*num_full_hashes=*/2);
+
+  // 100 seconds later, the second addition to the cache has expired. The log
+  // still includes it in the size (same rationale as above).
+  task_environment_.FastForwardBy(base::Seconds(100));
+  cache->ClearExpiredResults();
+  CheckAndResetCacheSizeOnClear(/*num_hash_prefixes=*/1, /*num_full_hashes=*/2);
+
+  // Clearing the expired results again now logs that the cache is empty.
+  cache->ClearExpiredResults();
+  CheckAndResetCacheSizeOnClear(/*num_hash_prefixes=*/0, /*num_full_hashes=*/0);
 }
 
 }  // namespace safe_browsing

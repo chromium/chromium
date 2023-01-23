@@ -69,7 +69,8 @@ bool TestSafeBrowsingDatabaseManager::CheckResourceUrl(const GURL& url,
 }
 
 bool TestSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
-    const GURL& url) {
+    const GURL& url,
+    const std::string& metric_variation) {
   NOTIMPLEMENTED();
   return false;
 }

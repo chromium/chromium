@@ -53,6 +53,28 @@ class HashRealTimeService : public KeyedService {
 
   ~HashRealTimeService() override;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class OperationResult {
+    // The lookup was successful.
+    kSuccess = 0,
+    // Parsing the response to a string failed.
+    kParseError = 1,
+    // There was no cache duration in the parsed response.
+    kNoCacheDurationError = 2,
+    // At least one full hash in the parsed response had the wrong length.
+    kIncorrectFullHashLengthError = 3,
+    // There was a retriable error.
+    kRetriableError = 4,
+    // There was an error in the network stack.
+    kNetworkError = 5,
+    // There was an error in the HTTP response code.
+    kHttpError = 6,
+    // There is a bug in the code leading to a NOTREACHED branch.
+    kNotReached = 7,
+    kMaxValue = kNotReached,
+  };
+
   // Returns whether the |url| is eligible for hash-prefix real-time checks.
   // It's never eligible if the |request_destination| is not mainframe.
   static bool CanCheckUrl(
@@ -103,6 +125,8 @@ class HashRealTimeService : public KeyedService {
   //    server response as well, and then uses the combined results to determine
   //    the most severe threat type.
   //  - |url_loader| is the loader that was used to send the request.
+  //  - |request_start_time| represents when the request was sent, and is used
+  //    for logging.
   //  - |response_callback_task_runner| is the callback the original caller
   //    passed through that will be called when the method completes.
   //  - |response_body| is the unparsed response from the server.
@@ -111,6 +135,7 @@ class HashRealTimeService : public KeyedService {
       const std::vector<std::string>& hash_prefixes_in_request,
       std::vector<V5::FullHash> result_full_hashes,
       network::SimpleURLLoader* url_loader,
+      base::TimeTicks request_start_time,
       scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
       std::unique_ptr<std::string> response_body);
 
@@ -133,22 +158,25 @@ class HashRealTimeService : public KeyedService {
   static bool IsThreatTypeMoreSevere(const V5::ThreatType& threat_type,
                                      int baseline_severity);
 
+  // Logs whether the lookup succeeded, and if not, why not.
+  void LogOperationResult(OperationResult operation_result) const;
+
   // In addition to attempting to parse the |response_body| as described in the
   // |ParseResponse| function comments, this updates the backoff state depending
   // on the lookup success.
-  base::expected<std::unique_ptr<V5::SearchHashesResponse>, bool>
+  base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationResult>
   ParseResponseAndUpdateBackoff(
       int net_error,
       int http_error,
       std::unique_ptr<std::string> response_body) const;
 
   // Tries to parse the |response_body| into a |SearchHashesResponse|, and
-  // returns either the response proto or a bool representing whether the error
-  // encountered was retriable.
-  base::expected<std::unique_ptr<V5::SearchHashesResponse>, bool> ParseResponse(
-      int net_error,
-      int http_error,
-      std::unique_ptr<std::string> response_body) const;
+  // returns either the response proto or an |OperationResult| with details on
+  // why the parsing was unsuccessful.
+  base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationResult>
+  ParseResponse(int net_error,
+                int http_error,
+                std::unique_ptr<std::string> response_body) const;
 
   // Removes any |FullHashDetail| within the |response| that has invalid
   // |ThreatType| or |ThreatAttribute| enums. This is for forward compatibility,

@@ -4,12 +4,21 @@
 
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_cache.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
 
 namespace safe_browsing {
+
+namespace {
+
+void LogCacheHitOrMiss(bool is_hit) {
+  base::UmaHistogramBoolean("SafeBrowsing.HPRT.CacheHit", is_hit);
+}
+
+}  // namespace
 
 HashRealTimeCache::HashRealTimeCache() = default;
 
@@ -27,6 +36,9 @@ HashRealTimeCache::SearchCache(
     if (cached_result_it != cache_.end() &&
         cached_result_it->second.expiration_time > base::Time::Now()) {
       results[hash_prefix] = cached_result_it->second.full_hash_and_details;
+      LogCacheHitOrMiss(/*is_hit=*/true);
+    } else {
+      LogCacheHitOrMiss(/*is_hit=*/false);
     }
   }
   return results;
@@ -82,14 +94,21 @@ void HashRealTimeCache::CacheSearchHashesResponse(
 }
 
 void HashRealTimeCache::ClearExpiredResults() {
+  int num_hash_prefixes = cache_.size();
+  int num_full_hashes = 0;
   auto it = cache_.begin();
   while (it != cache_.end()) {
+    num_full_hashes += it->second.full_hash_and_details.size();
     if (it->second.expiration_time <= base::Time::Now()) {
       it = cache_.erase(it);
     } else {
       ++it;
     }
   }
+  base::UmaHistogramCounts10000("SafeBrowsing.HPRT.Cache.HashPrefixCount",
+                                num_hash_prefixes);
+  base::UmaHistogramCounts10000("SafeBrowsing.HPRT.Cache.FullHashCount",
+                                num_full_hashes);
 }
 
 }  // namespace safe_browsing

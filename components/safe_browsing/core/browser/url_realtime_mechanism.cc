@@ -77,7 +77,7 @@ UrlRealTimeMechanism::StartCheckInternal() {
   bool check_allowlist = can_check_db_ && can_check_high_confidence_allowlist_;
   bool has_allowlist_match =
       check_allowlist &&
-      database_manager_->CheckUrlForHighConfidenceAllowlist(url_);
+      database_manager_->CheckUrlForHighConfidenceAllowlist(url_, "RT");
   RecordLocalMatchResult(has_allowlist_match, request_destination_,
                          url_lookup_service_metric_suffix_);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

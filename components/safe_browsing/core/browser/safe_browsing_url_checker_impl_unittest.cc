@@ -86,7 +86,9 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   // Returns the allowlist match result previously set by
   // |SetAllowlistResultForUrl|. It crashes if the allowlist match result for
   // the |gurl| is not set in advance.
-  bool CheckUrlForHighConfidenceAllowlist(const GURL& gurl) override {
+  bool CheckUrlForHighConfidenceAllowlist(
+      const GURL& gurl,
+      const std::string& metric_variation) override {
     std::string url = gurl.spec();
     DCHECK(base::Contains(urls_allowlist_match_, url));
     return urls_allowlist_match_[url];

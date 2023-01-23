@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/core/browser/hash_realtime_mechanism.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/util.h"
@@ -40,7 +41,10 @@ HashRealTimeMechanism::StartCheckInternal() {
   }
 
   bool has_allowlist_match =
-      database_manager_->CheckUrlForHighConfidenceAllowlist(url_);
+      database_manager_->CheckUrlForHighConfidenceAllowlist(url_, "HPRT");
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.HPRT.LocalMatch.Result",
+      has_allowlist_match ? AsyncMatch::MATCH : AsyncMatch::NO_MATCH);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -78,6 +82,8 @@ void HashRealTimeMechanism::StartLookupOnUIThread(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner) {
   bool is_lookup_service_available =
       lookup_service_on_ui && !lookup_service_on_ui->IsInBackoffMode();
+  base::UmaHistogramBoolean("SafeBrowsing.HPRT.IsLookupServiceAvailable",
+                            is_lookup_service_available);
   if (!is_lookup_service_available) {
     io_task_runner->PostTask(
         FROM_HERE, base::BindOnce(&HashRealTimeMechanism::PerformHashBasedCheck,
