@@ -13,6 +13,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/starscan/stack/stack.h"
@@ -577,14 +578,14 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceFromNonScannablePartition) {
 
 // Death tests misbehave on Android, http://crbug.com/643760.
 #if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
-#if PA_STARSCAN_EAGER_DOUBLE_FREE_DETECTION_ENABLED
+#if PA_CONFIG(STARSCAN_EAGER_DOUBLE_FREE_DETECTION_ENABLED)
 TEST_F(PartitionAllocPCScanTest, DoubleFree) {
   auto* list = List<1>::Create(root());
   List<1>::Destroy(root(), list);
   EXPECT_DEATH(List<1>::Destroy(root(), list), "");
 }
-#endif
-#endif
+#endif  // PA_CONFIG(STARSCAN_EAGER_DOUBLE_FREE_DETECTION_ENABLED)
+#endif  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 namespace {
 template <typename SourceList, typename ValueList>

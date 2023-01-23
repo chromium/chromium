@@ -10,16 +10,12 @@
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
 #include "base/allocator/partition_allocator/tagging.h"
-
-// Double free detection comes with expensive cmpxchg (with the loop around it).
-// We currently disable it to improve the runtime.
-#define PA_STARSCAN_EAGER_DOUBLE_FREE_DETECTION_ENABLED 0
-
 namespace partition_alloc {
 
 class StatsReporter;
@@ -253,12 +249,12 @@ PA_ALWAYS_INLINE void PCScan::MoveToQuarantine(void* object,
   // the clearing to avoid racing with *Scan Sweeper.
   [[maybe_unused]] const bool succeeded =
       state_bitmap->Quarantine(slot_start, instance.epoch());
-#if PA_STARSCAN_EAGER_DOUBLE_FREE_DETECTION_ENABLED
+#if PA_CONFIG(STARSCAN_EAGER_DOUBLE_FREE_DETECTION_ENABLED)
   if (PA_UNLIKELY(!succeeded))
     DoubleFreeAttempt();
 #else
   // The compiler is able to optimize cmpxchg to a lock-prefixed and.
-#endif
+#endif  // PA_CONFIG(STARSCAN_EAGER_DOUBLE_FREE_DETECTION_ENABLED)
 
   const bool is_limit_reached = instance.scheduler_.AccountFreed(slot_size);
   if (PA_UNLIKELY(is_limit_reached)) {

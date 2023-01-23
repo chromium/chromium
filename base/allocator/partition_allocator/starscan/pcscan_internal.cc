@@ -1068,7 +1068,7 @@ void PCScanTask::SweepQuarantine() {
       [this, &stat, should_discard](uintptr_t super_page) {
         auto* root = ThreadSafePartitionRoot::FromFirstSuperPage(super_page);
 
-#if PA_STARSCAN_BATCHED_FREE
+#if PA_CONFIG(STARSCAN_BATCHED_FREE)
         SweepSuperPageWithBatchedFree(root, super_page, pcscan_epoch_, stat);
         (void)should_discard;
 #else
@@ -1077,7 +1077,7 @@ void PCScanTask::SweepQuarantine() {
                                                    pcscan_epoch_, stat);
         else
           SweepSuperPage(root, super_page, pcscan_epoch_, stat);
-#endif
+#endif  // PA_CONFIG(STARSCAN_BATCHED_FREE)
       });
 
   stats_.IncreaseSweptSize(stat.swept_bytes);

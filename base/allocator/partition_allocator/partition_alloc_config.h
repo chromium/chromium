@@ -118,6 +118,10 @@ static_assert(sizeof(void*) != 8, "");
 // cause significant jank.
 #define PA_CONFIG_STARSCAN_ENABLE_STARSCAN_ON_RECLAIM() 0
 
+// Double free detection comes with expensive cmpxchg (with the loop around it).
+// We currently disable it to improve the runtime.
+#define PA_CONFIG_STARSCAN_EAGER_DOUBLE_FREE_DETECTION_ENABLED() 0
+
 // POSIX is not only UNIX, e.g. macOS and other OSes. We do use Linux-specific
 // features such as futex(2).
 #define PA_CONFIG_HAS_LINUX_KERNEL() \
