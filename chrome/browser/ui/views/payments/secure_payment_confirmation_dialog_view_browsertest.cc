@@ -21,10 +21,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/test/mock_input_event_activation_protector.h"
+#include "ui/views/window/dialog_client_view.h"
 
 namespace payments {
 namespace {
@@ -133,6 +136,17 @@ class SecurePaymentConfirmationDialogViewTest
             web_modal::WebContentsModalDialogManager::FromWebContents(
                 web_contents);
     EXPECT_TRUE(web_contents_modal_dialog_manager->IsDialogActive());
+
+    // By default, disable the input event protector for testing purposes.
+    // However, see the AcceptButtonIgnoresAccidentalInputs test, which
+    // explicitly checks that the protector is able to block unintended inputs.
+    auto mock_input_protector =
+        std::make_unique<views::MockInputEventActivationProtector>();
+    EXPECT_CALL(*mock_input_protector, IsPossiblyUnintendedInteraction)
+        .WillRepeatedly(testing::Return(false));
+    test_delegate_->dialog_view()
+        ->GetDialogClientView()
+        ->SetInputProtectorForTesting(std::move(mock_input_protector));
   }
 
   void ExpectLabelText(
@@ -233,6 +247,15 @@ class SecurePaymentConfirmationDialogViewTest
                      model_.opt_out_link_label());
   }
 
+  void ClickButton(views::View* button) {
+    gfx::Point center(button->width() / 2, button->height() / 2);
+    const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, center, center,
+                               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+    button->OnMousePressed(event);
+    button->OnMouseReleased(event);
+  }
+
   void ResetEventWaiter(DialogEvent event) {
     event_waiter_ = std::make_unique<autofill::EventWaiter<DialogEvent>>(
         std::list<DialogEvent>{event});
@@ -294,13 +317,56 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   InvokeSecurePaymentConfirmationUI();
 
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-  test_delegate_->dialog_view()->AcceptDialog();
+  ClickButton(test_delegate_->dialog_view()->GetOkButton());
   event_waiter_->Wait();
 
   EXPECT_TRUE(confirm_pressed_);
   EXPECT_FALSE(cancel_pressed_);
   EXPECT_FALSE(opt_out_clicked_);
 
+  histogram_tester_.ExpectTotalCount(
+      "PaymentRequest.SecurePaymentConfirmation.Funnel."
+      "AuthenticationDialogResult",
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "PaymentRequest.SecurePaymentConfirmation.Funnel."
+      "AuthenticationDialogResult",
+      SecurePaymentConfirmationAuthenticationDialogResult::kAccepted, 1);
+}
+
+// Test that the 'Accept' button is protected against accidental inputs.
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
+                       AcceptButtonIgnoresAccidentalInputs) {
+  CreateModel();
+  InvokeSecurePaymentConfirmationUI();
+
+  // Insert a mock input protector that will ignore the first input and then
+  // accepts all subsequent inputs.
+  auto mock_input_protector =
+      std::make_unique<views::MockInputEventActivationProtector>();
+  EXPECT_CALL(*mock_input_protector, IsPossiblyUnintendedInteraction)
+      .WillOnce(testing::Return(true))
+      .WillRepeatedly(testing::Return(false));
+  test_delegate_->dialog_view()
+      ->GetDialogClientView()
+      ->SetInputProtectorForTesting(std::move(mock_input_protector));
+
+  // Because of the input protector, the first press of the button should be
+  // ignored.
+  ClickButton(test_delegate_->dialog_view()->GetOkButton());
+  EXPECT_FALSE(confirm_pressed_);
+  histogram_tester_.ExpectTotalCount(
+      "PaymentRequest.SecurePaymentConfirmation.Funnel."
+      "AuthenticationDialogResult",
+      0);
+  histogram_tester_.ExpectBucketCount(
+      "PaymentRequest.SecurePaymentConfirmation.Funnel."
+      "AuthenticationDialogResult",
+      SecurePaymentConfirmationAuthenticationDialogResult::kAccepted, 0);
+
+  // However a subsequent press should be accepted.
+  ClickButton(test_delegate_->dialog_view()->GetOkButton());
+  EXPECT_TRUE(confirm_pressed_);
   histogram_tester_.ExpectTotalCount(
       "PaymentRequest.SecurePaymentConfirmation.Funnel."
       "AuthenticationDialogResult",
@@ -319,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   InvokeSecurePaymentConfirmationUI();
 
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-  test_delegate_->dialog_view()->CancelDialog();
+  ClickButton(test_delegate_->dialog_view()->GetCancelButton());
   event_waiter_->Wait();
 
   EXPECT_TRUE(cancel_pressed_);

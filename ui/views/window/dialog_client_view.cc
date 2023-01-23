@@ -84,7 +84,9 @@ END_METADATA
 DialogClientView::DialogClientView(Widget* owner, View* contents_view)
     : ClientView(owner, contents_view),
       button_row_insets_(
-          LayoutProvider::Get()->GetInsetsMetric(INSETS_DIALOG_BUTTON_ROW)) {
+          LayoutProvider::Get()->GetInsetsMetric(INSETS_DIALOG_BUTTON_ROW)),
+      input_protector_(
+          std::make_unique<views::InputEventActivationProtector>()) {
   // Doing this now ensures this accelerator will have lower priority than
   // one set by the contents view.
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
@@ -154,7 +156,7 @@ gfx::Size DialogClientView::GetMaximumSize() const {
 
 void DialogClientView::VisibilityChanged(View* starting_from, bool is_visible) {
   ClientView::VisibilityChanged(starting_from, is_visible);
-  input_protector_.VisibilityChanged(is_visible);
+  input_protector_->VisibilityChanged(is_visible);
 }
 
 void DialogClientView::Layout() {
@@ -227,11 +229,11 @@ void DialogClientView::OnThemeChanged() {
 }
 
 void DialogClientView::UpdateInputProtectorTimeStamp() {
-  input_protector_.UpdateViewShownTimeStamp();
+  input_protector_->UpdateViewShownTimeStamp();
 }
 
 void DialogClientView::ResetViewShownTimeStampForTesting() {
-  input_protector_.ResetForTesting();
+  input_protector_->ResetForTesting();  // IN-TEST
 }
 
 DialogDelegate* DialogClientView::GetDialogDelegate() const {
@@ -246,7 +248,7 @@ void DialogClientView::ChildVisibilityChanged(View* child) {
 }
 
 void DialogClientView::TriggerInputProtection() {
-  input_protector_.UpdateViewShownTimeStamp();
+  input_protector_->UpdateViewShownTimeStamp();
 }
 
 void DialogClientView::OnDialogChanged() {
@@ -302,7 +304,7 @@ void DialogClientView::UpdateDialogButton(LabelButton** member,
 void DialogClientView::ButtonPressed(ui::DialogButton type,
                                      const ui::Event& event) {
   DialogDelegate* const delegate = GetDialogDelegate();
-  if (delegate && !input_protector_.IsPossiblyUnintendedInteraction(event)) {
+  if (delegate && !input_protector_->IsPossiblyUnintendedInteraction(event)) {
     (type == ui::DIALOG_BUTTON_OK) ? delegate->AcceptDialog()
                                    : delegate->CancelDialog();
   }

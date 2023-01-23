@@ -5,6 +5,9 @@
 #ifndef UI_VIEWS_WINDOW_DIALOG_CLIENT_VIEW_H_
 #define UI_VIEWS_WINDOW_DIALOG_CLIENT_VIEW_H_
 
+#include <memory>
+#include <utility>
+
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/ui_base_types.h"
@@ -84,6 +87,13 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   // See IsPossiblyUnintendedInteraction().
   void ResetViewShownTimeStampForTesting();
 
+  // Override the internal input protector for testing; usually to inject a mock
+  // version whose return value can be controlled.
+  void SetInputProtectorForTesting(
+      std::unique_ptr<views::InputEventActivationProtector> input_protector) {
+    input_protector_ = std::move(input_protector);
+  }
+
  private:
   enum {
     // The number of buttons that DialogClientView can support.
@@ -155,7 +165,7 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   // SetupLayout(). Everything will be manually updated afterwards.
   bool adding_or_removing_views_ = false;
 
-  InputEventActivationProtector input_protector_;
+  std::unique_ptr<InputEventActivationProtector> input_protector_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, DialogClientView, ClientView)
