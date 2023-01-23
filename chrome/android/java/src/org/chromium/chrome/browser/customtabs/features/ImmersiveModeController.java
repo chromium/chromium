@@ -148,6 +148,8 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
         }
     }
 
+    // BEHAVIOR_SHOW_BARS_BY_SWIPE is deprecated.
+    @SuppressWarnings("WrongConstant")
     private void updateImmersiveFlagsOnAndroidNot11() {
         Window window = mActivity.getWindow();
         View decor = window.getDecorView();
