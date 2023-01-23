@@ -51,12 +51,16 @@ CRUBIT_SUB_REVISION = 1
 #
 # This should almost always be None. When a breakage happens the fallback should
 # be temporary. Once fixed, the applicable revision(s) above should be updated
-# and FALLBACK_CLANG_VERSION should be reset to None.
+# and FALLBACK_REVISION should be reset to None.
 #
 # Rust builds (for Linux) that worked are found at:
 # https://commondatastorage.googleapis.com/chromium-browser-clang/index.html?path=Linux_x64/rust-toolchain-
 # The latest builds are prefixed with a date, such as `20230101-1`.
-FALLBACK_CLANG_VERSION = 'llvmorg-16-init-13328-g110fe4f4-1'
+#
+# TODO(lukasza): Include CRUBIT_REVISION and CRUBIT_SUB_REVISION once we
+# include Crubit binaries in the generated package.  See also a TODO comment
+# in BuildCrubit in package_rust.py.
+FALLBACK_REVISION = '20221209-1-llvmorg-16-init-13328-g110fe4f4-1'
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
@@ -70,15 +74,6 @@ RUST_TOOLCHAIN_OUT_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-toolchain')
 VERSION_STAMP_PATH = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'VERSION')
 
 
-# Get the package version for the RUST_[SUB_]REVISION above with the specified
-# clang_version.
-def GetPackageVersion(clang_version):
-    # TODO(lukasza): Include CRUBIT_REVISION and CRUBIT_SUB_REVISION once we
-    # include Crubit binaries in the generated package.  See also a TODO comment
-    # in BuildCrubit in package_rust.py.
-    return f'{RUST_REVISION}-{RUST_SUB_REVISION}-{clang_version}'
-
-
 # Package version built in build_rust.py, which is always built against the
 # latest Clang and never uses the FALLBACK_CLANG_VERSION.
 def GetPackageVersionForBuild():
@@ -89,10 +84,8 @@ def GetPackageVersionForBuild():
 # Package version for download, which may differ from GetUploadPackageVersion()
 # if FALLBACK_CLANG_VERSION is set.
 def GetDownloadPackageVersion():
-    if FALLBACK_CLANG_VERSION:
-        return GetPackageVersion(FALLBACK_CLANG_VERSION)
-    else:
-        return GetPackageVersionForBuild()
+    return FALLBACK_REVISION \
+        if FALLBACK_REVISION else GetPackageVersionForBuild()
 
 
 # Get the version of the toolchain package we already have.
