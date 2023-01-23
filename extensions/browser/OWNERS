@@ -1,5 +1,4 @@
 # Please talk to the apps shell team before adding DEPS.
-per-file DEPS=benwells@chromium.org
 per-file DEPS=rdevlin.cronin@chromium.org
 
 per-file extension_event_histogram_value.h=set noparent

@@ -51,7 +51,6 @@ items:
   value: platform_app
 label: Types of extensions/apps that are allowed to be installed
 owners:
-- benwells@chromium.org
 - file://extensions/OWNERS
 schema:
   $ref: ExtensionAllowedTypes

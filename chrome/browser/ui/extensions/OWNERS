@@ -1,5 +1,5 @@
 # App-y stuff
-benwells@chromium.org
+dominickn@chromium.org
 per-file hosted_app_*=file://chrome/browser/web_applications/UI_OWNERS
 
 # Extension-y stuff
