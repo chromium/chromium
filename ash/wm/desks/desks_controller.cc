@@ -1899,8 +1899,6 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
     views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
     DCHECK(widget);
 
-    widget->Close();
-
     // `widget->Close();` calls the underlying `native_widget_->Close()` which
     // will schedule `native_widget_->CloseNow()` as an async task. Only
     // when `native_widget_->CloseNow()` finishes running, the window will
@@ -1925,6 +1923,11 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
           ->GetChildById(kShellWindowId_UnparentedContainer)
           ->AddChild(window);
     }
+
+    // We need to ensure that `widget->Close()` is called after we move the
+    // windows to the unparented container because some windows lose access to
+    // their root window immediately when their widget starts closing.
+    widget->Close();
   }
 
   // Schedules a delayed task to forcefully close all windows that have not
