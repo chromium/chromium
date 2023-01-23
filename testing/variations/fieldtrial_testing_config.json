@@ -3318,6 +3318,21 @@
             ]
         }
     ],
+    "CrOSEventSequenceLogging": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableEventSequenceLogging"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSFederatedServiceV0Task": [
         {
             "platforms": [
