@@ -5,8 +5,8 @@
 #ifndef ASH_APP_LIST_VIEWS_APP_LIST_PAGE_H_
 #define ASH_APP_LIST_VIEWS_APP_LIST_PAGE_H_
 
-#include "ash/app_list/model/app_list_model.h"
 #include "ash/ash_export.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -89,27 +89,6 @@ class ASH_EXPORT AppListPage : public views::View {
 
   // Returns the last focusable view in this page.
   views::View* GetLastFocusableView();
-
-  // Called when the app list view state changes to |target_view_state| to
-  // animate the app list page opacity.
-  // |animator| - callback that when run starts the opacity animation.
-  using OpacityAnimator =
-      base::RepeatingCallback<void(views::View* view, bool target_visibility)>;
-  virtual void AnimateOpacity(AppListViewState current_view_state,
-                              AppListViewState target_view_state,
-                              const OpacityAnimator& animator);
-
-  // Called when the app list view state changes to |target_view_state| to
-  // animate the app list page vertical offset from the app list view top.
-  // |animator| - The callback that runs the transform animation to update the
-  // page's vertical position.
-  // |default_offset| - the default transform offset that can be passed to
-  //     |animator| to follow the search box position animation.
-  using TransformAnimator =
-      base::RepeatingCallback<void(float offset, ui::Layer* layer)>;
-  virtual void AnimateYPosition(AppListViewState target_view_state,
-                                const TransformAnimator& animator,
-                                float default_offset);
 
   // Returns the default bounds of pages inside the contents view, in the
   // contents view's coordinate space. This is the area of the contents view

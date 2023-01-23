@@ -5,7 +5,6 @@
 #include "ash/app_list/views/app_list_page.h"
 
 #include "ash/app_list/views/contents_view.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/views/focus/focus_manager.h"
 
 namespace ash {
@@ -45,18 +44,6 @@ views::View* AppListPage::GetFirstFocusableView() {
 views::View* AppListPage::GetLastFocusableView() {
   return GetFocusManager()->GetNextFocusableView(
       this, GetWidget(), true /* reverse */, false /* dont_loop */);
-}
-
-void AppListPage::AnimateOpacity(AppListViewState current_view_state,
-                                 AppListViewState target_view_state,
-                                 const OpacityAnimator& animator) {
-  animator.Run(this, target_view_state != AppListViewState::kClosed);
-}
-
-void AppListPage::AnimateYPosition(AppListViewState target_view_state,
-                                   const TransformAnimator& animator,
-                                   float default_offset) {
-  animator.Run(default_offset, layer());
 }
 
 gfx::Rect AppListPage::GetDefaultContentsBounds() const {

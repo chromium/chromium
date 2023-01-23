@@ -137,12 +137,6 @@ class ASH_EXPORT AppsContainerView
       AppListState state,
       const gfx::Rect& contents_bounds,
       const gfx::Rect& search_box_bounds) const override;
-  void AnimateOpacity(AppListViewState current_view_state,
-                      AppListViewState target_view_state,
-                      const OpacityAnimator& animator) override;
-  void AnimateYPosition(AppListViewState target_view_state,
-                        const TransformAnimator& animator,
-                        float default_offset) override;
 
   // AppListModelProvider::Observer:
   void OnActiveAppListModelsChanged(AppListModel* model,

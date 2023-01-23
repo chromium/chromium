@@ -54,9 +54,6 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
       AppListState state,
       const gfx::Rect& contents_bounds,
       const gfx::Rect& search_box_bounds) const override;
-  void AnimateYPosition(AppListViewState target_view_state,
-                        const TransformAnimator& animator,
-                        float default_offset) override;
 
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;

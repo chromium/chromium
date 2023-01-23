@@ -41,9 +41,6 @@ class ASH_EXPORT SearchResultPageView : public AppListPage {
   // AppListPage overrides:
   void OnHidden() override;
   void OnShown() override;
-  void AnimateYPosition(AppListViewState target_view_state,
-                        const TransformAnimator& animator,
-                        float default_offset) override;
   void UpdatePageOpacityForState(AppListState state,
                                  float search_box_opacity) override;
   void UpdatePageBoundsForState(AppListState state,

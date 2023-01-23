@@ -36,7 +36,6 @@
 #include "base/time/time.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
@@ -816,34 +815,6 @@ void AppsContainerView::UpdateControlVisibility(
   page_switcher_->SetVisible(
       app_list_state == AppListViewState::kFullscreenAllApps ||
       app_list_state == AppListViewState::kFullscreenSearch);
-}
-
-void AppsContainerView::AnimateOpacity(AppListViewState current_view_state,
-                                       AppListViewState target_view_state,
-                                       const OpacityAnimator& animator) {
-  if (!apps_grid_view_->layer()->GetAnimator()->IsAnimatingProperty(
-          ui::LayerAnimationElement::OPACITY)) {
-    apps_grid_view_->layer()->SetOpacity(
-        current_view_state != AppListViewState::kClosed ? 1.0f : 0.0f);
-  }
-
-  const bool target_grid_visibility =
-      target_view_state == AppListViewState::kFullscreenAllApps ||
-      target_view_state == AppListViewState::kFullscreenSearch;
-  animator.Run(apps_grid_view_, target_grid_visibility);
-  animator.Run(page_switcher_, target_grid_visibility);
-}
-
-void AppsContainerView::AnimateYPosition(AppListViewState target_view_state,
-                                         const TransformAnimator& animator,
-                                         float default_offset) {
-  const int target_app_list_y = GetAppListY(target_view_state);
-
-  scrollable_container_->SetY(target_app_list_y +
-                              scrollable_container_y_distance_);
-  animator.Run(default_offset, scrollable_container_->layer());
-  page_switcher_->SetY(target_app_list_y + scrollable_container_y_distance_);
-  animator.Run(default_offset, page_switcher_->layer());
 }
 
 void AppsContainerView::Layout() {
