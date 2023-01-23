@@ -1,7 +1,6 @@
 EXPORTS
     ?$TSS0@?1??CrcAndCopy@CrcMemcpy@crc_internal@absl@@SA?AVcrc32c_t@3@PEIAXPEIBX_KV43@_N@Z@4HA
     ??$?0AEBVCord@absl@@@?$optional_data_dtor_base@VCord@absl@@$0A@@optional_internal@absl@@IEAA@Uin_place_t@2@AEBVCord@2@@Z
-    ??$?0PEAI@?$SaltedSeedSeq@Vseed_seq@Cr@std@@@random_internal@absl@@QEAA@PEAI0@Z
     ??$?0V?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@$0A@@Cord@absl@@QEAA@$$QEAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@Z
     ??$?6C$0A@@LogMessage@log_internal@absl@@QEAAAEAV012@AEBC@Z
     ??$?6D$0A@@LogMessage@log_internal@absl@@QEAAAEAV012@AEBD@Z
@@ -1183,9 +1182,6 @@ EXPORTS
     ?push_back@?$__split_buffer@PEAUPrefixCrc@CrcCordState@crc_internal@absl@@V?$allocator@PEAUPrefixCrc@CrcCordState@crc_internal@absl@@@Cr@std@@@Cr@std@@QEAAXAEBQEAUPrefixCrc@CrcCordState@crc_internal@absl@@@Z
     ?push_back@?$deque@PEBVImpl@time_zone@cctz@time_internal@absl@@V?$allocator@PEBVImpl@time_zone@cctz@time_internal@absl@@@Cr@std@@@Cr@std@@QEAAXAEBQEBVImpl@time_zone@cctz@time_internal@absl@@@Z
     ?push_back@?$deque@UPrefixCrc@CrcCordState@crc_internal@absl@@V?$allocator@UPrefixCrc@CrcCordState@crc_internal@absl@@@Cr@std@@@Cr@std@@QEAAX$$QEAUPrefixCrc@CrcCordState@crc_internal@absl@@@Z
-    ?push_back@?$vector@PEAVCordzHandle@cord_internal@absl@@V?$allocator@PEAVCordzHandle@cord_internal@absl@@@Cr@std@@@Cr@std@@QEAAXAEBQEAVCordzHandle@cord_internal@absl@@@Z
-    ?push_back@?$vector@PEAVLogSink@absl@@V?$allocator@PEAVLogSink@absl@@@Cr@std@@@Cr@std@@QEAAXAEBQEAVLogSink@absl@@@Z
-    ?push_back@?$vector@PEBVCordzHandle@cord_internal@absl@@V?$allocator@PEBVCordzHandle@cord_internal@absl@@@Cr@std@@@Cr@std@@QEAAXAEBQEBVCordzHandle@cord_internal@absl@@@Z
     ?push_front@?$__split_buffer@PEAPEBVImpl@time_zone@cctz@time_internal@absl@@AEAV?$allocator@PEAPEBVImpl@time_zone@cctz@time_internal@absl@@@Cr@std@@@Cr@std@@QEAAXAEBQEAPEBVImpl@time_zone@cctz@time_internal@absl@@@Z
     ?push_front@?$__split_buffer@PEAPEBVImpl@time_zone@cctz@time_internal@absl@@V?$allocator@PEAPEBVImpl@time_zone@cctz@time_internal@absl@@@Cr@std@@@Cr@std@@QEAAX$$QEAPEAPEBVImpl@time_zone@cctz@time_internal@absl@@@Z
     ?push_front@?$__split_buffer@PEAUPrefixCrc@CrcCordState@crc_internal@absl@@AEAV?$allocator@PEAUPrefixCrc@CrcCordState@crc_internal@absl@@@Cr@std@@@Cr@std@@QEAAXAEBQEAUPrefixCrc@CrcCordState@crc_internal@absl@@@Z
