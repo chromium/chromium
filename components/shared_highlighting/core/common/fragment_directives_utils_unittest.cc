@@ -64,9 +64,9 @@ TEST(TextFragmentsUtilsTest, ParseTextFragments) {
   base::Value result = ParseTextFragments(url_with_fragment);
   ASSERT_EQ(2u, result.GetList().size());
   EXPECT_EQ("text 1",
-            result.GetList()[0].FindKey(kFragmentTextStartKey)->GetString());
+            *result.GetList()[0].GetDict().FindString(kFragmentTextStartKey));
   EXPECT_EQ("text 2",
-            result.GetList()[1].FindKey(kFragmentTextStartKey)->GetString());
+            *result.GetList()[1].GetDict().FindString(kFragmentTextStartKey));
 
   GURL url_no_fragment("www.example.com");
   base::Value empty_result = ParseTextFragments(url_no_fragment);
