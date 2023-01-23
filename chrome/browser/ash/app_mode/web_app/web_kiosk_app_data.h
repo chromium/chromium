@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/account_id/account_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -52,10 +53,6 @@ class WebKioskAppData : public KioskAppDataBase {
   // Get a proper URL to launch according to the app status.
   GURL GetLaunchableUrl() const;
 
-  // KioskAppDataBase overrides:
-  void OnIconLoadSuccess(const gfx::ImageSkia& icon) override;
-  void OnIconLoadFailure() override;
-
   // Updates |status_|. Based on |notify|, we will notify |delegate_| about data
   // update.
   void SetStatus(Status status, bool notify = true);
@@ -75,6 +72,7 @@ class WebKioskAppData : public KioskAppDataBase {
  private:
   class IconFetcher;
   void OnDidDownloadIcon(const SkBitmap& icon);
+  void OnIconLoadDone(absl::optional<gfx::ImageSkia> icon);
 
   bool LoadLaunchUrlFromDictionary(const base::Value::Dict& dict);
 

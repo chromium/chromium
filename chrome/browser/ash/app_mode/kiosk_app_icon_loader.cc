@@ -70,8 +70,8 @@ void LoadOnBlockingPool(
   ImageDecoder::Start(image_request, std::move(data));
 }
 
-KioskAppIconLoader::KioskAppIconLoader(Delegate* delegate)
-    : delegate_(delegate) {}
+KioskAppIconLoader::KioskAppIconLoader(ResultCallback callback)
+    : callback_(std::move(callback)) {}
 
 KioskAppIconLoader::~KioskAppIconLoader() = default;
 
@@ -91,11 +91,7 @@ void KioskAppIconLoader::OnImageDecodingFinished(
     absl::optional<gfx::ImageSkia> result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (result.has_value()) {
-    delegate_->OnIconLoadSuccess(result.value());
-  } else {
-    delegate_->OnIconLoadFailure();
-  }
+  std::move(callback_).Run(result);
 }
 
 }  // namespace ash

@@ -12,6 +12,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_icon_loader.h"
 #include "chrome/browser/browser_process.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -56,8 +57,9 @@ void RemoveDictionaryPath(base::Value::Dict& dict, base::StringPiece path) {
   if (delimiter_position != base::StringPiece::npos) {
     current_dictionary =
         dict.FindDictByDottedPath(current_path.substr(0, delimiter_position));
-    if (!current_dictionary)
+    if (!current_dictionary) {
       return;
+    }
     current_path = current_path.substr(delimiter_position + 1);
   }
   current_dictionary->Remove(current_path);
@@ -95,8 +97,7 @@ void KioskAppDataBase::SaveIconToDictionary(ScopedDictPrefUpdate& dict_update) {
   dict_update->SetByDottedPath(icon_path_key, icon_path_.value());
 }
 
-bool KioskAppDataBase::LoadFromDictionary(const base::Value::Dict& dict,
-                                          bool lazy_icon_load) {
+bool KioskAppDataBase::LoadFromDictionary(const base::Value::Dict& dict) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const std::string app_key =
       std::string(KioskAppDataBase::kKeyApps) + '.' + app_id_;
@@ -105,8 +106,9 @@ bool KioskAppDataBase::LoadFromDictionary(const base::Value::Dict& dict,
 
   // If there is no title stored, do not stop, sometimes only icon is cached.
   const std::string* maybe_name = dict.FindStringByDottedPath(name_key);
-  if (maybe_name)
+  if (maybe_name) {
     name_ = *maybe_name;
+  }
 
   const std::string* icon_path_string =
       dict.FindStringByDottedPath(icon_path_key);
@@ -116,16 +118,13 @@ bool KioskAppDataBase::LoadFromDictionary(const base::Value::Dict& dict,
 
   icon_path_ = base::FilePath(*icon_path_string);
 
-  if (!lazy_icon_load) {
-    DecodeIcon();
-  }
-
   return true;
 }
 
-void KioskAppDataBase::DecodeIcon() {
+void KioskAppDataBase::DecodeIcon(KioskAppIconLoader::ResultCallback callback) {
   DLOG_IF(ERROR, icon_path_.empty()) << "Icon path is empty";
-  kiosk_app_icon_loader_ = std::make_unique<KioskAppIconLoader>(this);
+  kiosk_app_icon_loader_ =
+      std::make_unique<KioskAppIconLoader>(std::move(callback));
   kiosk_app_icon_loader_->Start(icon_path_);
 }
 

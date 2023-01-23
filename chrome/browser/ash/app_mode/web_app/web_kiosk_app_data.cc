@@ -91,8 +91,9 @@ class WebKioskAppData::IconFetcher : public ImageDecoder::ImageRequest {
         base::BindOnce(
             [](base::WeakPtr<WebKioskAppData> client,
                std::unique_ptr<std::string> response_body) {
-              if (!client)
+              if (!client) {
                 return;
+              }
               client->icon_fetcher_->OnSimpleLoaderComplete(
                   std::move(response_body));
             },
@@ -113,8 +114,9 @@ class WebKioskAppData::IconFetcher : public ImageDecoder::ImageRequest {
  private:
   // ImageDecoder::ImageRequest:
   void OnImageDecoded(const SkBitmap& decoded_image) override {
-    if (!client_)
+    if (!client_) {
       return;
+    }
 
     // Icons have to be square shaped.
     if (decoded_image.width() != decoded_image.height()) {
@@ -168,8 +170,9 @@ bool WebKioskAppData::LoadFromCache() {
   PrefService* local_state = g_browser_process->local_state();
   const base::Value::Dict& dict = local_state->GetDict(dictionary_name());
 
-  if (!LoadFromDictionary(dict, /* lazy_icon_load= */ true))
+  if (!LoadFromDictionary(dict)) {
     return false;
+  }
 
   if (LoadLaunchUrlFromDictionary(dict)) {
     SetStatus(Status::kInstalled);
@@ -178,27 +181,32 @@ bool WebKioskAppData::LoadFromCache() {
 
   // If the icon was previously downloaded using a different url and the app has
   // not been installed earlier, do not use that icon.
-  if (GetLastIconUrl(dict) != icon_url_)
+  if (GetLastIconUrl(dict) != icon_url_) {
     return false;
+  }
 
   // Wait while icon is loaded.
-  if (status_ == Status::kInit)
+  if (status_ == Status::kInit) {
     SetStatus(Status::kLoading);
+  }
   return true;
 }
 
 void WebKioskAppData::LoadIcon() {
-  if (!icon_.isNull())
-    return;
-
-  // Decode the icon if one is already cached.
-  if (status_ != Status::kInit) {
-    DecodeIcon();
+  if (!icon_.isNull()) {
     return;
   }
 
-  if (!icon_url_.is_valid())
+  // Decode the icon if one is already cached.
+  if (status_ != Status::kInit) {
+    DecodeIcon(base::BindOnce(&WebKioskAppData::OnIconLoadDone,
+                              weak_ptr_factory_.GetWeakPtr()));
     return;
+  }
+
+  if (!icon_url_.is_valid()) {
+    return;
+  }
 
   DCHECK(!icon_fetcher_);
 
@@ -225,8 +233,9 @@ void WebKioskAppData::UpdateAppInfo(const std::string& title,
   name_ = title;
 
   base::FilePath cache_dir;
-  if (delegate_)
+  if (delegate_) {
     delegate_->GetKioskAppIconCacheDir(&cache_dir);
+  }
 
   auto it = icon_bitmaps.any.find(kWebKioskIconSize);
   if (it != icon_bitmaps.any.end()) {
@@ -260,8 +269,9 @@ void WebKioskAppData::SetStatus(Status status, bool notify) {
     std::move(on_loaded_closure_for_testing_).Run();
   }
 
-  if (delegate_ && notify)
+  if (delegate_ && notify) {
     delegate_->OnKioskAppDataChanged(app_id());
+  }
 }
 
 bool WebKioskAppData::LoadLaunchUrlFromDictionary(
@@ -273,8 +283,9 @@ bool WebKioskAppData::LoadLaunchUrlFromDictionary(
           ->FindDict(app_id())
           ->FindString(kKeyLaunchUrl);
 
-  if (!launch_url_string)
+  if (!launch_url_string) {
     return false;
+  }
 
   launch_url_ = GURL(*launch_url_string);
   return true;
@@ -300,8 +311,9 @@ void WebKioskAppData::OnDidDownloadIcon(const SkBitmap& icon) {
   }
 
   base::FilePath cache_dir;
-  if (delegate_)
+  if (delegate_) {
     delegate_->GetKioskAppIconCacheDir(&cache_dir);
+  }
 
   SaveIcon(icon, cache_dir);
 
@@ -316,20 +328,22 @@ void WebKioskAppData::OnDidDownloadIcon(const SkBitmap& icon) {
   SetStatus(Status::kLoaded);
 }
 
-void WebKioskAppData::OnIconLoadSuccess(const gfx::ImageSkia& icon) {
+void WebKioskAppData::OnIconLoadDone(absl::optional<gfx::ImageSkia> icon) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   kiosk_app_icon_loader_.reset();
-  icon_ = icon;
-  if (status_ != Status::kInstalled)
-    SetStatus(Status::kLoaded);
-  else
-    SetStatus(Status::kInstalled);  // To notify menu controller.
-}
 
-void WebKioskAppData::OnIconLoadFailure() {
-  kiosk_app_icon_loader_.reset();
-  LOG(ERROR) << "Icon Load Failure";
-  SetStatus(Status::kLoaded, /*notify=*/false);
+  if (!icon.has_value()) {
+    LOG(ERROR) << "Icon Load Failure";
+    SetStatus(Status::kLoaded, /*notify=*/false);
+    return;
+  }
+
+  icon_ = icon.value();
+  if (status_ != Status::kInstalled) {
+    SetStatus(Status::kLoaded);
+  } else {
+    SetStatus(Status::kInstalled);  // To notify menu controller.
+  }
 }
 
 }  // namespace ash

@@ -39,15 +39,15 @@ class ArcKioskAppData : public KioskAppDataBase {
   // Sets the cached data.
   void SetCache(const std::string& name, const gfx::ImageSkia& icon);
 
-  // Callbacks for KioskAppIconLoader.
-  void OnIconLoadSuccess(const gfx::ImageSkia& icon) override;
-  void OnIconLoadFailure() override;
-
  private:
+  void OnIconLoadDone(absl::optional<gfx::ImageSkia> icon);
+
   // Not cached, always provided in ctor.
   const std::string package_name_;
   const std::string activity_;
   const std::string intent_;
+
+  base::WeakPtrFactory<ArcKioskAppData> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

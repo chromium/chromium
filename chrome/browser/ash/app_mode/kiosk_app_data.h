@@ -21,7 +21,7 @@ class Profile;
 namespace extensions {
 class Extension;
 class WebstoreDataFetcher;
-}
+}  // namespace extensions
 
 namespace gfx {
 class Image;
@@ -31,7 +31,7 @@ namespace network {
 namespace mojom {
 class URLLoaderFactory;
 }
-}
+}  // namespace network
 
 namespace ash {
 
@@ -90,10 +90,6 @@ class KioskAppData : public KioskAppDataBase,
       const GURL& update_url,
       const std::string& required_platform_version);
 
-  // Callbacks for KioskAppIconLoader.
-  void OnIconLoadSuccess(const gfx::ImageSkia& icon) override;
-  void OnIconLoadFailure() override;
-
   // Tests do not always fake app data download.
   // This allows to ignore download errors.
   static void SetIgnoreKioskAppDataLoadFailuresForTesting(bool value);
@@ -147,6 +143,8 @@ class KioskAppData : public KioskAppDataBase,
   void LoadFromCrx();
 
   void OnCrxLoadFinished(const CrxLoader* crx_loader);
+
+  void OnIconLoadDone(absl::optional<gfx::ImageSkia> icon);
 
   KioskAppDataDelegate* delegate_;  // not owned.
   Status status_;

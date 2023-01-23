@@ -7,10 +7,8 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/path_service.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/common/chrome_paths.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_thread.h"
@@ -44,7 +42,13 @@ bool ArcKioskAppData::LoadFromCache() {
   PrefService* local_state = g_browser_process->local_state();
   const base::Value::Dict& dict = local_state->GetDict(dictionary_name());
 
-  return LoadFromDictionary(dict);
+  if (!LoadFromDictionary(dict)) {
+    return false;
+  }
+
+  DecodeIcon(base::BindOnce(&ArcKioskAppData::OnIconLoadDone,
+                            weak_ptr_factory_.GetWeakPtr()));
+  return true;
 }
 
 void ArcKioskAppData::SetCache(const std::string& name,
@@ -65,16 +69,16 @@ void ArcKioskAppData::SetCache(const std::string& name,
   SaveToDictionary(dict_update);
 }
 
-void ArcKioskAppData::OnIconLoadSuccess(const gfx::ImageSkia& icon) {
+void ArcKioskAppData::OnIconLoadDone(absl::optional<gfx::ImageSkia> icon) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   kiosk_app_icon_loader_.reset();
-  icon_ = icon;
-}
 
-void ArcKioskAppData::OnIconLoadFailure() {
-  kiosk_app_icon_loader_.reset();
-  LOG(ERROR) << "Icon Load Failure";
-  // Do nothing
+  if (!icon.has_value()) {
+    LOG(ERROR) << "Icon Load Failure";
+    return;
+  }
+
+  icon_ = icon.value();
 }
 
 }  // namespace ash
