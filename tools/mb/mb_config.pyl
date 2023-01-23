@@ -891,10 +891,10 @@
       'linux-blink-rel': 'release_bot_blink_minimal_symbols_reclient',
       'mac10.13-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl',
       'mac10.14-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl',
-      'mac10.15-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl',
+      'mac10.15-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl_reclient',
       'mac11.0-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl',
-      'mac11.0.arm64-blink-rel': 'release_bot_blink_arm64_minimal_symbols',
-      'mac12.0-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl',
+      'mac11.0.arm64-blink-rel': 'release_bot_blink_arm64_minimal_symbols_reclient',
+      'mac12.0-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl_reclient',
       'mac12.0.arm64-blink-rel': 'release_bot_blink_arm64_minimal_symbols',
       'win10.20h2-blink-rel': 'release_bot_blink_x86_minimal_symbols_reclient',
       'win11-blink-rel': 'release_bot_blink_x64_minimal_symbols_reclient',
@@ -1246,11 +1246,11 @@
       'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64',
       'ios-m1-simulator': 'ios_simulator_debug_static_bot_xctest_arm64',
       'ios-m1-simulator-cronet': 'ios_cronet_xctest_arm64',
-      'ios-simulator': 'ios_simulator_code_coverage_partial_instrumentation_xctest',
+      'ios-simulator': 'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient',
       'ios-simulator-code-coverage': 'clang_code_coverage_ios_xctest',
       'ios-simulator-cr-recipe': 'ios_simulator_debug_static_bot_xctest',
       'ios-simulator-cronet': 'ios_cronet_xctest',
-      'ios-simulator-full-configs': 'ios_simulator_code_coverage_partial_instrumentation_xctest',
+      'ios-simulator-full-configs': 'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient',
       'ios-simulator-inverse-fieldtrials-fyi': 'ios_simulator_debug_static_bot_invert_fieldtrials_xctest',
       'ios-simulator-multi-window': 'ios_simulator_debug_static_bot_xctest',
       'ios-simulator-noncq': 'ios_simulator_debug_static_bot_xctest',
@@ -1266,8 +1266,8 @@
       'mac-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_invert_fieldtrials',
       'mac-osxbeta-rel': 'gpu_tests_debug_trybot',
       'mac-perfetto-rel': 'perfetto_release_trybot',
-      'mac-rel': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage',
-      'mac-rel-inverse-fyi': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage',
+      'mac-rel': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_reclient',
+      'mac-rel-inverse-fyi': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_reclient',
       'mac11-arm64-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols_reclient',
       'mac12-arm64-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols',
       'mac12-tests': 'release_trybot',
@@ -1278,7 +1278,7 @@
       'mac_chromium_11.0_rel_ng': 'release_trybot_reclient',
       'mac_chromium_archive_rel_ng': 'release_bot_mac_strip_minimal_symbols',
       'mac_chromium_asan_rel_ng': 'asan_dcheck_disable_nacl_release_bot_reclient',
-      'mac_chromium_compile_dbg_ng': 'gpu_tests_debug_bot',
+      'mac_chromium_compile_dbg_ng': 'gpu_tests_debug_bot_reclient',
       'mac_chromium_compile_rel_ng': 'gpu_tests_release_trybot',
       'mac_chromium_dbg_ng': 'gpu_tests_debug_bot',
       'mac_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_reclient',
@@ -2788,8 +2788,8 @@
       'chrome_for_testing',
     ],
 
-    'gpu_tests_release_trybot_no_symbols_mac_code_coverage': [
-      'gpu_tests', 'release_trybot', 'no_symbols',
+    'gpu_tests_release_trybot_no_symbols_mac_code_coverage_reclient': [
+      'gpu_tests', 'release_trybot_reclient', 'no_symbols',
       'use_clang_coverage', 'partial_code_coverage_instrumentation'
     ],
 
@@ -2943,6 +2943,10 @@
 
     'ios_simulator_code_coverage_partial_instrumentation_xctest': [
       'use_clang_coverage', 'debug_static_bot', 'x64', 'ios', 'ios_simulator', 'partial_code_coverage_instrumentation', 'xctest',
+    ],
+
+    'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient': [
+      'use_clang_coverage', 'debug_static_bot_reclient', 'x64', 'ios', 'ios_simulator', 'partial_code_coverage_instrumentation', 'xctest',
     ],
 
     'ios_simulator_debug_static_bot_invert_fieldtrials_xctest': [
@@ -3425,8 +3429,18 @@
       'release_bot_blink', 'arm64', 'minimal_symbols',
     ],
 
+    'release_bot_blink_arm64_minimal_symbols_reclient': [
+      'release_bot_blink_reclient', 'arm64', 'minimal_symbols',
+    ],
+
     'release_bot_blink_minimal_symbols_no_nacl': [
       'release_bot_blink',
+      'minimal_symbols',
+      'disable_nacl',
+    ],
+
+    'release_bot_blink_minimal_symbols_no_nacl_reclient': [
+      'release_bot_blink_reclient',
       'minimal_symbols',
       'disable_nacl',
     ],

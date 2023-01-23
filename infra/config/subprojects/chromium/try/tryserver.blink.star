@@ -16,6 +16,8 @@ try_.defaults.set(
     pool = try_.DEFAULT_POOL,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 consoles.list_view(
@@ -57,7 +59,6 @@ try_.builder(
     os = os.LINUX_DEFAULT,
     main_list_view = "try",
     goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     tryjob = try_.job(
         location_filters = [
             "cc/.+",
@@ -91,8 +92,6 @@ try_.builder(
     builderless = True,
     os = os.WINDOWS_ANY,
     goma_backend = None,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -116,8 +115,6 @@ try_.builder(
     ),
     builderless = True,
     os = os.WINDOWS_ANY,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 blink_mac_builder(
@@ -178,6 +175,7 @@ blink_mac_builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = True,
     ),
+    goma_backend = None,
 )
 
 blink_mac_builder(
@@ -220,6 +218,7 @@ blink_mac_builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = True,
     ),
+    goma_backend = None,
 )
 
 blink_mac_builder(
@@ -240,6 +239,7 @@ blink_mac_builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
+    goma_backend = None,
 )
 
 blink_mac_builder(

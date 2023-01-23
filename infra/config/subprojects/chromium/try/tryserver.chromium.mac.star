@@ -150,7 +150,7 @@ try_.compilator_builder(
     os = os.MAC_DEFAULT,
     main_list_view = "try",
     check_for_flakiness = True,
-    goma_jobs = goma.jobs.J300,
+    goma_backend = None,
 )
 
 try_.builder(
@@ -268,7 +268,7 @@ try_.builder(
     ),
     os = os.MAC_DEFAULT,
     main_list_view = "try",
-    goma_jobs = goma.jobs.J150,
+    goma_backend = None,
     tryjob = try_.job(),
 )
 
@@ -385,6 +385,7 @@ try_.compilator_builder(
     xcode = xcode.x14main,
     main_list_view = "try",
     check_for_flakiness = True,
+    goma_backend = None,
 )
 
 ios_builder(
@@ -421,6 +422,7 @@ ios_builder(
         ],
     ),
     use_clang_coverage = True,
+    goma_backend = None,
 )
 
 ios_builder(
