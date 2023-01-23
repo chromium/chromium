@@ -17,7 +17,6 @@
 #include "ash/components/arc/mojom/bluetooth.mojom.h"
 #include "ash/components/arc/mojom/boot_phase_monitor.mojom.h"
 #include "ash/components/arc/mojom/camera.mojom.h"
-#include "ash/components/arc/mojom/cert_store.mojom.h"
 #include "ash/components/arc/mojom/clipboard.mojom.h"
 #include "ash/components/arc/mojom/compatibility_mode.mojom.h"
 #include "ash/components/arc/mojom/crash_collector.mojom.h"
@@ -150,12 +149,6 @@ void ArcBridgeHostImpl::OnBootPhaseMonitorInstanceReady(
 void ArcBridgeHostImpl::OnCameraInstanceReady(
     mojo::PendingRemote<mojom::CameraInstance> camera_remote) {
   OnInstanceReady(arc_bridge_service_->camera(), std::move(camera_remote));
-}
-
-void ArcBridgeHostImpl::OnCertStoreInstanceReady(
-    mojo::PendingRemote<mojom::CertStoreInstance> instance_remote) {
-  OnInstanceReady(arc_bridge_service_->cert_store(),
-                  std::move(instance_remote));
 }
 
 void ArcBridgeHostImpl::OnClipboardInstanceReady(
@@ -369,13 +362,6 @@ void ArcBridgeHostImpl::OnSharesheetInstanceReady(
     mojo::PendingRemote<mojom::SharesheetInstance> sharesheet_remote) {
   OnInstanceReady(arc_bridge_service_->sharesheet(),
                   std::move(sharesheet_remote));
-}
-
-void ArcBridgeHostImpl::OnSmartCardManagerInstanceReady(
-    mojo::PendingRemote<mojom::SmartCardManagerInstance>
-        smart_card_manager_remote) {
-  OnInstanceReady(arc_bridge_service_->smart_card_manager(),
-                  std::move(smart_card_manager_remote));
 }
 
 void ArcBridgeHostImpl::OnStorageManagerInstanceReady(

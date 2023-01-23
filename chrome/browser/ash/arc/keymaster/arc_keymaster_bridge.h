@@ -5,18 +5,18 @@
 #ifndef CHROME_BROWSER_ASH_ARC_KEYMASTER_ARC_KEYMASTER_BRIDGE_H_
 #define CHROME_BROWSER_ASH_ARC_KEYMASTER_ARC_KEYMASTER_BRIDGE_H_
 
-#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/mojom/keymaster.mojom.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/keymaster/cert_store_bridge.h"
-#include "chrome/services/keymaster/public/mojom/cert_store.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 class BrowserContext;
 }  // namespace content
+
+class BrowserContextKeyedServiceFactory;
 
 namespace arc {
 
