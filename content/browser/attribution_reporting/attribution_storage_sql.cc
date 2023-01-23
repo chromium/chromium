@@ -619,6 +619,15 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
     }
   }
 
+  if (attribution_logic != StoredSource::AttributionLogic::kTruthfully) {
+    if (!rate_limit_table_.AddRateLimitForAttribution(
+            db_.get(), AttributionInfo(std::move(stored_source),
+                                       /*time=*/common_info.source_time(),
+                                       /*debug_key=*/absl::nullopt))) {
+      return StoreSourceResult(StorableSource::Result::kInternalError);
+    }
+  }
+
   if (!transaction.Commit()) {
     return StoreSourceResult(StorableSource::Result::kInternalError);
   }
