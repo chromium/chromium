@@ -2,36 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_OMNIBOX_EDIT_CONTROLLER_IMPL_H_
-#define IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_OMNIBOX_EDIT_CONTROLLER_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_OMNIBOX_EDIT_MODEL_DELEGATE_IMPL_H_
+#define IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_OMNIBOX_EDIT_MODEL_DELEGATE_IMPL_H_
 
-#include "ios/chrome/browser/ui/omnibox/web_omnibox_edit_controller.h"
+#include "ios/chrome/browser/ui/omnibox/web_omnibox_edit_model_delegate.h"
 
 @protocol LocationBarURLLoader;
 @protocol OmniboxControllerDelegate;
 @protocol OmniboxFocusDelegate;
 
-// A minimal implementation of WebOmniboxEditController. Designed to work with
-// LocationBarMediator and LocationBarCoordinator.
-// TODO(crbug.com/818641): downgrade from WebOmniboxEditController subclass
-// straight to OmniboxEditController subclass once OmniboxViewIOS doesn't need
-// it.
-class WebOmniboxEditControllerImpl : public WebOmniboxEditController {
+// A minimal implementation of WebOmniboxEditModelDelegate. Designed to work
+// with LocationBarMediator and LocationBarCoordinator.
+// TODO(crbug.com/818641): downgrade from WebOmniboxEditModelDelegate subclass
+// straight to OmniboxEditModelDelegate subclass once OmniboxViewIOS doesn't
+// need it.
+class WebOmniboxEditModelDelegateImpl : public WebOmniboxEditModelDelegate {
  public:
-  WebOmniboxEditControllerImpl(id<OmniboxControllerDelegate> delegate,
-                               id<OmniboxFocusDelegate> focus_delegate);
-  ~WebOmniboxEditControllerImpl() override;
+  WebOmniboxEditModelDelegateImpl(id<OmniboxControllerDelegate> delegate,
+                                  id<OmniboxFocusDelegate> focus_delegate);
+  ~WebOmniboxEditModelDelegateImpl() override;
 
   void SetURLLoader(id<LocationBarURLLoader> URLLoader) {
     URLLoader_ = URLLoader;
   }
 
-  // WebOmniboxEditController methods.
+  // WebOmniboxEditModelDelegate methods.
   web::WebState* GetWebState() override;
   void OnKillFocus() override;
   void OnSetFocus() override;
 
-  // OmniboxEditController methods.
+  // OmniboxEditModelDelegate methods.
   void OnAutocompleteAccept(
       const GURL& destination_url,
       TemplateURLRef::PostContent* post_content,
@@ -56,4 +56,4 @@ class WebOmniboxEditControllerImpl : public WebOmniboxEditController {
   __weak id<LocationBarURLLoader> URLLoader_;
 };
 
-#endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_OMNIBOX_EDIT_CONTROLLER_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_OMNIBOX_EDIT_MODEL_DELEGATE_IMPL_H_

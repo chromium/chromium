@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/omnibox/web_omnibox_edit_controller_impl.h"
+#import "ios/chrome/browser/ui/omnibox/web_omnibox_edit_model_delegate_impl.h"
 
 #import "components/omnibox/browser/location_bar_model.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_url_loader.h"
@@ -14,30 +14,30 @@
 #error "This file requires ARC support."
 #endif
 
-WebOmniboxEditControllerImpl::WebOmniboxEditControllerImpl(
+WebOmniboxEditModelDelegateImpl::WebOmniboxEditModelDelegateImpl(
     id<OmniboxControllerDelegate> delegate,
     id<OmniboxFocusDelegate> focus_delegate)
     : delegate_(delegate), focus_delegate_(focus_delegate) {
   // TODO(crbug.com/818645): add security icon and its a11y labels
 }
 
-WebOmniboxEditControllerImpl::~WebOmniboxEditControllerImpl() {}
+WebOmniboxEditModelDelegateImpl::~WebOmniboxEditModelDelegateImpl() {}
 
-web::WebState* WebOmniboxEditControllerImpl::GetWebState() {
+web::WebState* WebOmniboxEditModelDelegateImpl::GetWebState() {
   return [delegate_ webState];
 }
 
-void WebOmniboxEditControllerImpl::OnKillFocus() {
+void WebOmniboxEditModelDelegateImpl::OnKillFocus() {
   // TODO(crbug.com/818648): disable fullscreen in LocationBarMediator.
   [focus_delegate_ omniboxDidResignFirstResponder];
 }
 
-void WebOmniboxEditControllerImpl::OnSetFocus() {
+void WebOmniboxEditModelDelegateImpl::OnSetFocus() {
   // TODO(crbug.com/818648): reenable fullscreen in LocationBarMediator.
   [focus_delegate_ omniboxDidBecomeFirstResponder];
 }
 
-void WebOmniboxEditControllerImpl::OnAutocompleteAccept(
+void WebOmniboxEditModelDelegateImpl::OnAutocompleteAccept(
     const GURL& destination_url,
     TemplateURLRef::PostContent* post_content,
     WindowOpenDisposition disposition,
@@ -61,17 +61,17 @@ void WebOmniboxEditControllerImpl::OnAutocompleteAccept(
   }
 }
 
-void WebOmniboxEditControllerImpl::OnChanged() {
+void WebOmniboxEditModelDelegateImpl::OnChanged() {
   // Called when anything is changed. Since the Mediator already observes the
   // WebState for security status changes, no need to do anything.
   // TODO(crbug.com/818645): update the security icon in LocationBarMediator.
 }
 
-LocationBarModel* WebOmniboxEditControllerImpl::GetLocationBarModel() {
+LocationBarModel* WebOmniboxEditModelDelegateImpl::GetLocationBarModel() {
   return [delegate_ locationBarModel];
 }
 
-const LocationBarModel* WebOmniboxEditControllerImpl::GetLocationBarModel()
+const LocationBarModel* WebOmniboxEditModelDelegateImpl::GetLocationBarModel()
     const {
   return [delegate_ locationBarModel];
 }

@@ -19,8 +19,8 @@
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
-#include "components/omnibox/browser/test_omnibox_edit_controller.h"
 #include "components/omnibox/browser/test_omnibox_edit_model.h"
+#include "components/omnibox/browser/test_omnibox_edit_model_delegate.h"
 #include "components/omnibox/browser/test_omnibox_view.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,10 +39,10 @@ namespace {
 class OmniboxViewTest : public testing::Test {
  public:
   OmniboxViewTest() {
-    controller_ = std::make_unique<TestOmniboxEditController>();
-    view_ = std::make_unique<TestOmniboxView>(controller_.get());
+    edit_model_delegate_ = std::make_unique<TestOmniboxEditModelDelegate>();
+    view_ = std::make_unique<TestOmniboxView>(edit_model_delegate_.get());
     view_->SetModel(std::make_unique<TestOmniboxEditModel>(
-        view_.get(), controller_.get(), nullptr));
+        view_.get(), edit_model_delegate_.get(), nullptr));
 
     bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
     client()->SetBookmarkModel(bookmark_model_.get());
@@ -62,7 +62,7 @@ class OmniboxViewTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestOmniboxEditController> controller_;
+  std::unique_ptr<TestOmniboxEditModelDelegate> edit_model_delegate_;
   std::unique_ptr<TestOmniboxView> view_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };

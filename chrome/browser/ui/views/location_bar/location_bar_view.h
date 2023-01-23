@@ -19,7 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
-#include "chrome/browser/ui/omnibox/chrome_omnibox_edit_controller.h"
+#include "chrome/browser/ui/omnibox/chrome_omnibox_edit_model_delegate.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/dropdown_bar_host.h"
 #include "chrome/browser/ui/views/dropdown_bar_host_delegate.h"
@@ -71,7 +71,7 @@ class LocationBarView : public LocationBar,
                         public views::View,
                         public views::DragController,
                         public views::AnimationDelegateViews,
-                        public ChromeOmniboxEditController,
+                        public ChromeOmniboxEditModelDelegate,
                         public DropdownBarHostDelegate,
                         public IconLabelBubbleView::Delegate,
                         public LocationIconView::Delegate,
@@ -195,7 +195,7 @@ class LocationBarView : public LocationBar,
   void OnThemeChanged() override;
   void ChildPreferredSizeChanged(views::View* child) override;
 
-  // ChromeOmniboxEditController:
+  // ChromeOmniboxEditModelDelegate:
   void UpdateWithoutTabRestore() override;
   LocationBarModel* GetLocationBarModel() override;
   content::WebContents* GetWebContents() override;
@@ -368,7 +368,7 @@ class LocationBarView : public LocationBar,
   void AnimationCanceled(const gfx::Animation* animation) override;
   void OnChildViewRemoved(View* observed_view, View* child) override;
 
-  // ChromeOmniboxEditController:
+  // ChromeOmniboxEditModelDelegate:
   void OnChanged() override;
   void OnPopupVisibilityChanged() override;
   const LocationBarModel* GetLocationBarModel() const override;

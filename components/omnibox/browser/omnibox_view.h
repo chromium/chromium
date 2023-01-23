@@ -30,7 +30,7 @@
 #include "ui/gfx/range/range.h"
 
 class GURL;
-class OmniboxEditController;
+class OmniboxEditModelDelegate;
 class OmniboxViewMacTest;
 class OmniboxEditModel;
 
@@ -282,7 +282,7 @@ class OmniboxView {
     State(const State& state);
   };
 
-  OmniboxView(OmniboxEditController* controller,
+  OmniboxView(OmniboxEditModelDelegate* edit_model_delegate,
               std::unique_ptr<OmniboxClient> client);
 
   // Fills |state| with the current text state.
@@ -302,8 +302,12 @@ class OmniboxView {
   // Try to parse the current text as a URL and colorize the components.
   virtual void EmphasizeURLComponents() = 0;
 
-  OmniboxEditController* controller() { return controller_; }
-  const OmniboxEditController* controller() const { return controller_; }
+  OmniboxEditModelDelegate* edit_model_delegate() {
+    return edit_model_delegate_;
+  }
+  const OmniboxEditModelDelegate* edit_model_delegate() const {
+    return edit_model_delegate_;
+  }
 
   // Marks part (or, if |range| is invalid, all) of the current text as
   // emphasized or de-emphasized, by changing its color.
@@ -330,7 +334,7 @@ class OmniboxView {
 
   // |model_| can be NULL in tests.
   std::unique_ptr<OmniboxEditModel> model_;
-  raw_ptr<OmniboxEditController> controller_;
+  raw_ptr<OmniboxEditModelDelegate> edit_model_delegate_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_VIEW_H_

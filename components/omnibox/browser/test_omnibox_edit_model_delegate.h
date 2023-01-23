@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_EDIT_CONTROLLER_H_
-#define COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_EDIT_CONTROLLER_H_
+#ifndef COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_EDIT_MODEL_DELEGATE_H_
+#define COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_EDIT_MODEL_DELEGATE_H_
 
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/omnibox_edit_controller.h"
+#include "components/omnibox/browser/omnibox_edit_model_delegate.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
 #include "ui/base/window_open_disposition.h"
 
-class TestOmniboxEditController : public OmniboxEditController {
+class TestOmniboxEditModelDelegate : public OmniboxEditModelDelegate {
  public:
-  TestOmniboxEditController() = default;
-  TestOmniboxEditController(const TestOmniboxEditController&) = delete;
-  TestOmniboxEditController& operator=(const TestOmniboxEditController&) =
+  TestOmniboxEditModelDelegate() = default;
+  TestOmniboxEditModelDelegate(const TestOmniboxEditModelDelegate&) = delete;
+  TestOmniboxEditModelDelegate& operator=(const TestOmniboxEditModelDelegate&) =
       delete;
 
-  // OmniboxEditController:
+  // OmniboxEditModelDelegate:
   TestLocationBarModel* GetLocationBarModel() override;
   const TestLocationBarModel* GetLocationBarModel() const override;
   void OnAutocompleteAccept(
@@ -46,4 +46,4 @@ class TestOmniboxEditController : public OmniboxEditController {
   AutocompleteMatch alternate_nav_match_;
 };
 
-#endif  // COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_EDIT_CONTROLLER_H_
+#endif  // COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_EDIT_MODEL_DELEGATE_H_

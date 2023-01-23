@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/omnibox/browser/test_omnibox_edit_controller.h"
+#include "components/omnibox/browser/test_omnibox_edit_model_delegate.h"
 
-TestLocationBarModel* TestOmniboxEditController::GetLocationBarModel() {
+TestLocationBarModel* TestOmniboxEditModelDelegate::GetLocationBarModel() {
   return &location_bar_model_;
 }
 
-const TestLocationBarModel* TestOmniboxEditController::GetLocationBarModel()
+const TestLocationBarModel* TestOmniboxEditModelDelegate::GetLocationBarModel()
     const {
   return &location_bar_model_;
 }
 
-void TestOmniboxEditController::OnAutocompleteAccept(
+void TestOmniboxEditModelDelegate::OnAutocompleteAccept(
     const GURL& destination_url,
     TemplateURLRef::PostContent* post_content,
     WindowOpenDisposition disposition,

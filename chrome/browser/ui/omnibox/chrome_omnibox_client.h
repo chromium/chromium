@@ -19,13 +19,13 @@
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/on_device_tail_model_observer.h"
 
-class ChromeOmniboxEditController;
+class ChromeOmniboxEditModelDelegate;
 class GURL;
 class Profile;
 
 class ChromeOmniboxClient : public OmniboxClient {
  public:
-  ChromeOmniboxClient(ChromeOmniboxEditController* controller,
+  ChromeOmniboxClient(ChromeOmniboxEditModelDelegate* edit_model_delegate,
                       Profile* profile);
 
   ChromeOmniboxClient(const ChromeOmniboxClient&) = delete;
@@ -108,7 +108,7 @@ class ChromeOmniboxClient : public OmniboxClient {
                        int result_index,
                        const SkBitmap& bitmap);
 
-  raw_ptr<ChromeOmniboxEditController> controller_;
+  raw_ptr<ChromeOmniboxEditModelDelegate> edit_model_delegate_;
   raw_ptr<Profile> profile_;
   ChromeAutocompleteSchemeClassifier scheme_classifier_;
   std::vector<BitmapFetcherService::RequestId> request_ids_;

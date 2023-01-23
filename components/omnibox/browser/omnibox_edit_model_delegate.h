@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_EDIT_CONTROLLER_H_
-#define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_EDIT_CONTROLLER_H_
+#ifndef COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_EDIT_MODEL_DELEGATE_H_
+#define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_EDIT_MODEL_DELEGATE_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -17,13 +17,13 @@
 
 class LocationBarModel;
 
-class OmniboxEditController
-    : public base::SupportsWeakPtr<OmniboxEditController> {
+class OmniboxEditModelDelegate
+    : public base::SupportsWeakPtr<OmniboxEditModelDelegate> {
  public:
-  OmniboxEditController() = default;
-  OmniboxEditController(const OmniboxEditController&) = delete;
-  OmniboxEditController& operator=(const OmniboxEditController&) = delete;
-  virtual ~OmniboxEditController() = default;
+  OmniboxEditModelDelegate() = default;
+  OmniboxEditModelDelegate(const OmniboxEditModelDelegate&) = delete;
+  OmniboxEditModelDelegate& operator=(const OmniboxEditModelDelegate&) = delete;
+  virtual ~OmniboxEditModelDelegate() = default;
 
   virtual void OnAutocompleteAccept(
       const GURL& destination_url,
@@ -73,4 +73,4 @@ class OmniboxEditController
   bool destination_url_entered_without_scheme_;
 };
 
-#endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_EDIT_CONTROLLER_H_
+#endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_EDIT_MODEL_DELEGATE_H_

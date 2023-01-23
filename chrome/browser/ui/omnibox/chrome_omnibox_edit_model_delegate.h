@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_EDIT_CONTROLLER_H_
-#define CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_EDIT_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_EDIT_MODEL_DELEGATE_H_
+#define CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_EDIT_MODEL_DELEGATE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/omnibox/browser/omnibox_edit_controller.h"
+#include "components/omnibox/browser/omnibox_edit_model_delegate.h"
 
 class Browser;
 class CommandUpdater;
@@ -16,18 +16,19 @@ namespace content {
 class WebContents;
 }
 
-// Chrome-specific extension of the OmniboxEditController base class.
-class ChromeOmniboxEditController : public OmniboxEditController {
+// Chrome-specific extension of the OmniboxEditModelDelegate base class.
+class ChromeOmniboxEditModelDelegate : public OmniboxEditModelDelegate {
  public:
-  ChromeOmniboxEditController(Browser* browser,
-                              Profile* profile,
-                              CommandUpdater* command_updater);
-  ChromeOmniboxEditController(const ChromeOmniboxEditController&) = delete;
-  ChromeOmniboxEditController& operator=(const ChromeOmniboxEditController&) =
+  ChromeOmniboxEditModelDelegate(Browser* browser,
+                                 Profile* profile,
+                                 CommandUpdater* command_updater);
+  ChromeOmniboxEditModelDelegate(const ChromeOmniboxEditModelDelegate&) =
       delete;
-  ~ChromeOmniboxEditController() override;
+  ChromeOmniboxEditModelDelegate& operator=(
+      const ChromeOmniboxEditModelDelegate&) = delete;
+  ~ChromeOmniboxEditModelDelegate() override;
 
-  // OmniboxEditController:
+  // OmniboxEditModelDelegate:
   void OnAutocompleteAccept(
       const GURL& destination_url,
       TemplateURLRef::PostContent* post_content,
@@ -58,4 +59,4 @@ class ChromeOmniboxEditController : public OmniboxEditController {
   const raw_ptr<CommandUpdater, DanglingUntriaged> command_updater_;
 };
 
-#endif  // CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_EDIT_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_EDIT_MODEL_DELEGATE_H_

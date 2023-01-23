@@ -22,8 +22,8 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/location_bar_model.h"
-#include "components/omnibox/browser/omnibox_edit_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_edit_model_delegate.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "extensions/buildflags/buildflags.h"
@@ -208,7 +208,8 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
   }
 
   if (model_->ShouldShowCurrentPageIcon()) {
-    LocationBarModel* location_bar_model = controller_->GetLocationBarModel();
+    LocationBarModel* location_bar_model =
+        edit_model_delegate_->GetLocationBarModel();
     return ui::ImageModel::FromVectorIcon(location_bar_model->GetVectorIcon(),
                                           color_current_page_icon, dip_size);
   }
@@ -334,13 +335,13 @@ OmniboxView::StateChanges OmniboxView::GetStateChanges(const State& before,
   return state_changes;
 }
 
-OmniboxView::OmniboxView(OmniboxEditController* controller,
+OmniboxView::OmniboxView(OmniboxEditModelDelegate* edit_model_delegate,
                          std::unique_ptr<OmniboxClient> client)
-    : controller_(controller) {
+    : edit_model_delegate_(edit_model_delegate) {
   // |client| can be null in tests.
   if (client) {
-    model_ =
-        std::make_unique<OmniboxEditModel>(this, controller, std::move(client));
+    model_ = std::make_unique<OmniboxEditModel>(this, edit_model_delegate,
+                                                std::move(client));
   }
 }
 

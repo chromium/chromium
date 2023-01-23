@@ -25,8 +25,8 @@
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
-#include "components/omnibox/browser/test_omnibox_edit_controller.h"
 #include "components/omnibox/browser/test_omnibox_edit_model.h"
+#include "components/omnibox/browser/test_omnibox_edit_model_delegate.h"
 #include "components/omnibox/browser/test_omnibox_view.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -81,15 +81,15 @@ class OmniboxEditModelTest : public testing::Test {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(omnibox::kSiteSearchStarterPack);
 
-    controller_ = std::make_unique<TestOmniboxEditController>();
-    view_ = std::make_unique<TestOmniboxView>(controller_.get());
+    edit_model_delegate_ = std::make_unique<TestOmniboxEditModelDelegate>();
+    view_ = std::make_unique<TestOmniboxView>(edit_model_delegate_.get());
     view_->SetModel(std::make_unique<TestOmniboxEditModel>(
-        view_.get(), controller_.get(), nullptr));
+        view_.get(), edit_model_delegate_.get(), nullptr));
   }
 
   TestOmniboxView* view() { return view_.get(); }
   TestLocationBarModel* location_bar_model() {
-    return controller_->GetLocationBarModel();
+    return edit_model_delegate_->GetLocationBarModel();
   }
   TestOmniboxEditModel* model() {
     return static_cast<TestOmniboxEditModel*>(view_->model());
@@ -97,7 +97,7 @@ class OmniboxEditModelTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestOmniboxEditController> controller_;
+  std::unique_ptr<TestOmniboxEditModelDelegate> edit_model_delegate_;
   std::unique_ptr<TestOmniboxView> view_;
 };
 
@@ -371,13 +371,13 @@ TEST_F(OmniboxEditModelTest, AlternateNavHasHTTP) {
   model()->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB,
                      alternate_nav_url, std::u16string(), 0);
   EXPECT_TRUE(AutocompleteInput::HasHTTPScheme(
-      controller_->alternate_nav_match().fill_into_edit));
+      edit_model_delegate_->alternate_nav_match().fill_into_edit));
 
   model()->SetUserText(u"abcd");
   model()->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB,
                      alternate_nav_url, std::u16string(), 0);
   EXPECT_TRUE(AutocompleteInput::HasHTTPScheme(
-      controller_->alternate_nav_match().fill_into_edit));
+      edit_model_delegate_->alternate_nav_match().fill_into_edit));
 }
 
 TEST_F(OmniboxEditModelTest, CurrentMatch) {
@@ -628,7 +628,8 @@ TEST_F(OmniboxEditModelTest,
 class OmniboxEditModelPopupTest : public ::testing::Test {
  public:
   OmniboxEditModelPopupTest()
-      : view_(&controller_), model_(&view_, &controller_, &pref_service_) {
+      : view_(&edit_model_delegate_),
+        model_(&view_, &edit_model_delegate_, &pref_service_) {
     omnibox::RegisterProfilePrefs(pref_service_.registry());
     model_.set_popup_view(&popup_view_);
     model_.SetPopupIsOpen(true);
@@ -642,7 +643,7 @@ class OmniboxEditModelPopupTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  TestOmniboxEditController controller_;
+  TestOmniboxEditModelDelegate edit_model_delegate_;
   TestingPrefServiceSimple pref_service_;
 
   TestOmniboxView view_;
@@ -1328,19 +1329,22 @@ TEST_F(OmniboxEditModelTest, OpenTabMatch) {
   model()->SetUserText(u"http://abcd");
   model()->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB, GURL(),
                      std::u16string(), 0);
-  EXPECT_EQ(controller_->disposition(), WindowOpenDisposition::SWITCH_TO_TAB);
+  EXPECT_EQ(edit_model_delegate_->disposition(),
+            WindowOpenDisposition::SWITCH_TO_TAB);
 
   // Suggestions not from the Open Tab Provider or not from keyword mode should
   // not change the disposition.
   match.from_keyword = false;
   model()->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB, GURL(),
                      std::u16string(), 0);
-  EXPECT_EQ(controller_->disposition(), WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_EQ(edit_model_delegate_->disposition(),
+            WindowOpenDisposition::CURRENT_TAB);
 
   match.provider = model()->autocomplete_controller()->search_provider();
   match.from_keyword = true;
   model()->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB, GURL(),
                      std::u16string(), 0);
-  EXPECT_EQ(controller_->disposition(), WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_EQ(edit_model_delegate_->disposition(),
+            WindowOpenDisposition::CURRENT_TAB);
 }
 #endif  // !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))

@@ -168,7 +168,7 @@ LocationBarView::LocationBarView(Browser* browser,
                                  Delegate* delegate,
                                  bool is_popup_mode)
     : AnimationDelegateViews(this),
-      ChromeOmniboxEditController(browser, profile, command_updater),
+      ChromeOmniboxEditModelDelegate(browser, profile, command_updater),
       browser_(browser),
       profile_(profile),
       delegate_(delegate),

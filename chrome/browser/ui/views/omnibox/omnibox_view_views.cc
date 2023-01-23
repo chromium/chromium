@@ -48,8 +48,8 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_client.h"
-#include "components/omnibox/browser/omnibox_edit_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_edit_model_delegate.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -165,12 +165,13 @@ bool IsClipboardDataMarkedAsConfidential() {
 
 // OmniboxViewViews -----------------------------------------------------------
 
-OmniboxViewViews::OmniboxViewViews(OmniboxEditController* controller,
-                                   std::unique_ptr<OmniboxClient> client,
-                                   bool popup_window_mode,
-                                   LocationBarView* location_bar,
-                                   const gfx::FontList& font_list)
-    : OmniboxView(controller, std::move(client)),
+OmniboxViewViews::OmniboxViewViews(
+    OmniboxEditModelDelegate* edit_model_delegate,
+    std::unique_ptr<OmniboxClient> client,
+    bool popup_window_mode,
+    LocationBarView* location_bar,
+    const gfx::FontList& font_list)
+    : OmniboxView(edit_model_delegate, std::move(client)),
       popup_window_mode_(popup_window_mode),
       location_bar_view_(location_bar),
       latency_histogram_state_(NOT_ACTIVE),
@@ -586,15 +587,16 @@ void OmniboxViewViews::UpdateSchemeStyle(const gfx::Range& range) {
   // in about:blank URLs. Or in blob: or filesystem: URLs, which have an inner
   // origin, the URL is likely too syntax-y to be able to meaningfully draw
   // attention to any part of it.
-  auto* const location_bar_model = controller()->GetLocationBarModel();
+  auto* const location_bar_model = edit_model_delegate()->GetLocationBarModel();
   if (!location_bar_model->GetURL().SchemeIsHTTPOrHTTPS())
     return;
 
   if (net::IsCertStatusError(location_bar_model->GetCertStatus())) {
     if (location_bar_view_) {
-      ApplyColor(location_bar_view_->GetSecurityChipColor(
-                     controller()->GetLocationBarModel()->GetSecurityLevel()),
-                 range);
+      ApplyColor(
+          location_bar_view_->GetSecurityChipColor(
+              edit_model_delegate()->GetLocationBarModel()->GetSecurityLevel()),
+          range);
     }
     ApplyStyle(gfx::TEXT_STYLE_STRIKE, true, range);
   }
@@ -1115,7 +1117,7 @@ bool OmniboxViewViews::OnMousePressed(const ui::MouseEvent& event) {
         SelectWordAt(event.location());
         std::u16string shown_url = GetText();
         std::u16string full_url =
-            controller()->GetLocationBarModel()->GetFormattedFullURL();
+            edit_model_delegate()->GetLocationBarModel()->GetFormattedFullURL();
         size_t offset = full_url.find(shown_url);
         if (offset != std::u16string::npos) {
           next_double_click_selection_len_ = GetSelectedText().length();
@@ -1347,7 +1349,8 @@ void OmniboxViewViews::OnFocus() {
 
   // TODO(oshima): Get control key state.
   model()->OnSetFocus(false);
-  // Don't call controller()->OnSetFocus, this view has already acquired focus.
+  // Don't call edit_model_delegate()->OnSetFocus, this view has already
+  // acquired focus.
 
   // Restore the selection we saved in OnBlur() if it's still valid.
   if (!saved_selection_for_focus_change_.empty()) {

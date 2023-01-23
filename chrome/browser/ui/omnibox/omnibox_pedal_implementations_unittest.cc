@@ -17,7 +17,7 @@
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
-#include "components/omnibox/browser/test_omnibox_edit_controller.h"
+#include "components/omnibox/browser/test_omnibox_edit_model_delegate.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
@@ -25,8 +25,8 @@
 class OmniboxPedalImplementationsTest : public testing::Test {
  protected:
   OmniboxPedalImplementationsTest()
-      : omnibox_edit_controller_(
-            std::make_unique<TestOmniboxEditController>()) {}
+      : omnibox_edit_model_delegate_(
+            std::make_unique<TestOmniboxEditModelDelegate>()) {}
 
   void SetUp() override {
     feature_list_.InitWithFeatures({}, {});
@@ -57,11 +57,11 @@ class OmniboxPedalImplementationsTest : public testing::Test {
   GURL ExecuteContextAndReturnResult(const OmniboxPedal* pedal) {
     OmniboxPedal::ExecutionContext context(
         autocomplete_provider_client_,
-        base::BindOnce(&OmniboxEditController::OnAutocompleteAccept,
-                       omnibox_edit_controller_->AsWeakPtr()),
+        base::BindOnce(&OmniboxEditModelDelegate::OnAutocompleteAccept,
+                       omnibox_edit_model_delegate_->AsWeakPtr()),
         {}, WindowOpenDisposition::CURRENT_TAB);
     pedal->Execute(context);
-    return omnibox_edit_controller_->destination_url();
+    return omnibox_edit_model_delegate_->destination_url();
   }
 
   // Exhaustive test of unordered synonym groups for concept matches; this is
@@ -17953,7 +17953,7 @@ class OmniboxPedalImplementationsTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestOmniboxClient> omnibox_client_;
-  std::unique_ptr<TestOmniboxEditController> omnibox_edit_controller_;
+  std::unique_ptr<TestOmniboxEditModelDelegate> omnibox_edit_model_delegate_;
   MockAutocompleteProviderClient autocomplete_provider_client_;
 };
 

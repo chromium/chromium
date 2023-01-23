@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/omnibox/chrome_omnibox_edit_controller.h"
+#include "chrome/browser/ui/omnibox/chrome_omnibox_edit_model_delegate.h"
 
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
@@ -25,15 +25,15 @@
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #endif
 
-ChromeOmniboxEditController::ChromeOmniboxEditController(
+ChromeOmniboxEditModelDelegate::ChromeOmniboxEditModelDelegate(
     Browser* browser,
     Profile* profile,
     CommandUpdater* command_updater)
     : browser_(browser), profile_(profile), command_updater_(command_updater) {}
 
-ChromeOmniboxEditController::~ChromeOmniboxEditController() = default;
+ChromeOmniboxEditModelDelegate::~ChromeOmniboxEditModelDelegate() = default;
 
-void ChromeOmniboxEditController::OnAutocompleteAccept(
+void ChromeOmniboxEditModelDelegate::OnAutocompleteAccept(
     const GURL& destination_url,
     TemplateURLRef::PostContent* post_content,
     WindowOpenDisposition disposition,
@@ -45,7 +45,7 @@ void ChromeOmniboxEditController::OnAutocompleteAccept(
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternative_nav_match,
     IDNA2008DeviationCharacter deviation_char_in_hostname) {
-  TRACE_EVENT("omnibox", "ChromeOmniboxEditController::OnAutocompleteAccept",
+  TRACE_EVENT("omnibox", "ChromeOmniboxEditModelDelegate::OnAutocompleteAccept",
               "text", text, "match", match, "alternative_nav_match",
               alternative_nav_match);
 
@@ -75,11 +75,11 @@ void ChromeOmniboxEditController::OnAutocompleteAccept(
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  extensions::MaybeShowExtensionControlledSearchNotification(
-      GetWebContents(), match_type);
+  extensions::MaybeShowExtensionControlledSearchNotification(GetWebContents(),
+                                                             match_type);
 #endif
 }
 
-void ChromeOmniboxEditController::OnInputInProgress(bool in_progress) {
+void ChromeOmniboxEditModelDelegate::OnInputInProgress(bool in_progress) {
   UpdateWithoutTabRestore();
 }

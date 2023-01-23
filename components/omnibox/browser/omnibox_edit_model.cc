@@ -41,7 +41,7 @@
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "components/omnibox/browser/omnibox_client.h"
-#include "components/omnibox/browser/omnibox_edit_controller.h"
+#include "components/omnibox/browser/omnibox_edit_model_delegate.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_log.h"
@@ -236,12 +236,13 @@ OmniboxEditModel::State::~State() = default;
 
 // OmniboxEditModel -----------------------------------------------------------
 
-OmniboxEditModel::OmniboxEditModel(OmniboxView* view,
-                                   OmniboxEditController* controller,
-                                   std::unique_ptr<OmniboxClient> client)
+OmniboxEditModel::OmniboxEditModel(
+    OmniboxView* view,
+    OmniboxEditModelDelegate* edit_model_delegate,
+    std::unique_ptr<OmniboxClient> client)
     : client_(std::move(client)),
       view_(view),
-      controller_(controller),
+      edit_model_delegate_(edit_model_delegate),
       focus_state_(OMNIBOX_FOCUS_NONE),
       user_input_in_progress_(false),
       user_input_since_focus_(true),
@@ -276,7 +277,7 @@ OmniboxPopupView* OmniboxEditModel::get_popup_view() {
 
 metrics::OmniboxEventProto::PageClassification
 OmniboxEditModel::GetPageClassification() const {
-  return controller()->GetLocationBarModel()->GetPageClassification(
+  return delegate()->GetLocationBarModel()->GetPageClassification(
       focus_source_);
 }
 
@@ -374,7 +375,7 @@ AutocompleteMatch OmniboxEditModel::CurrentMatch(
 bool OmniboxEditModel::ResetDisplayTexts() {
   const std::u16string old_display_text = GetPermanentDisplayText();
 
-  LocationBarModel* location_bar_model = controller()->GetLocationBarModel();
+  LocationBarModel* location_bar_model = delegate()->GetLocationBarModel();
   url_for_editing_ = location_bar_model->GetFormattedFullURL();
 
 #if BUILDFLAG(IS_IOS)
@@ -421,7 +422,7 @@ bool OmniboxEditModel::Unelide() {
     return false;
 
   // No need to unelide if we are already displaying the full URL.
-  LocationBarModel* location_bar_model = controller()->GetLocationBarModel();
+  LocationBarModel* location_bar_model = delegate()->GetLocationBarModel();
   if (view_->GetText() == location_bar_model->GetFormattedFullURL())
     return false;
 
@@ -446,7 +447,7 @@ void OmniboxEditModel::OnChanged() {
 
   client_->OnTextChanged(current_match, user_input_in_progress_, user_text_,
                          result(), has_focus());
-  controller_->OnChanged();
+  edit_model_delegate_->OnChanged();
 }
 
 void OmniboxEditModel::GetDataForURLExport(GURL* url,
@@ -485,7 +486,7 @@ void OmniboxEditModel::AdjustTextForCopy(int sel_min,
   // contents as a hyperlink to the current page.
   if (!user_input_in_progress_ &&
       (*text == display_text_ || *text == url_for_editing_)) {
-    *url_from_text = controller()->GetLocationBarModel()->GetURL();
+    *url_from_text = delegate()->GetLocationBarModel()->GetURL();
     *write_url = true;
 
     // Don't let users copy Reader Mode page URLs.
@@ -518,7 +519,7 @@ void OmniboxEditModel::AdjustTextForCopy(int sel_min,
   *url_from_text = match_from_text.destination_url;
 
   // Get the current page GURL (or the GURL of the currently selected match).
-  GURL current_page_url = controller()->GetLocationBarModel()->GetURL();
+  GURL current_page_url = delegate()->GetLocationBarModel()->GetURL();
   if (PopupIsOpen()) {
     AutocompleteMatch current_match = CurrentMatch(nullptr);
     if (!AutocompleteMatch::IsSearchType(current_match.type) &&
@@ -693,7 +694,7 @@ void OmniboxEditModel::StartAutocomplete(bool has_selected_text,
 
 void OmniboxEditModel::StartPrefetch() {
   auto page_classification =
-      controller()->GetLocationBarModel()->GetPageClassification(
+      delegate()->GetLocationBarModel()->GetPageClassification(
           OmniboxFocusSource::OMNIBOX, /*is_prefetch=*/true);
   if (!OmniboxFieldTrial::IsZeroSuggestPrefetchingEnabledInContext(
           page_classification)) {
@@ -814,8 +815,7 @@ void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,
 
   if (ui::PageTransitionCoreTypeIs(match.transition,
                                    ui::PAGE_TRANSITION_TYPED) &&
-      (match.destination_url ==
-       controller()->GetLocationBarModel()->GetURL())) {
+      (match.destination_url == delegate()->GetLocationBarModel()->GetURL())) {
     // When the user hit enter on the existing permanent URL, treat it like a
     // reload for scoring purposes.  We could detect this by just checking
     // user_input_in_progress_, but it seems better to treat "edits" that end
@@ -879,8 +879,8 @@ void OmniboxEditModel::ExecuteAction(const AutocompleteMatch& match,
   RecordActionShownForAllActions(result(), match_position);
   OmniboxAction::ExecutionContext context(
       *(autocomplete_controller()->autocomplete_provider_client()),
-      base::BindOnce(&OmniboxEditController::OnAutocompleteAccept,
-                     controller_->AsWeakPtr()),
+      base::BindOnce(&OmniboxEditModelDelegate::OnAutocompleteAccept,
+                     edit_model_delegate_->AsWeakPtr()),
       match_selection_timestamp, disposition);
   match.action->Execute(context);
 
@@ -1135,7 +1135,7 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
     // This calls RevertAll again.
     base::AutoReset<bool> tmp(&in_revert_, true);
 
-    controller_->OnAutocompleteAccept(
+    edit_model_delegate_->OnAutocompleteAccept(
         match.destination_url, match.post_content.get(), disposition,
         ui::PageTransitionFromInt(match.transition |
                                   ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -1939,7 +1939,7 @@ void OmniboxEditModel::RevertTemporaryTextAndPopup() {
 }
 
 bool OmniboxEditModel::ShouldPreventElision() const {
-  return controller()->GetLocationBarModel()->ShouldPreventElision();
+  return delegate()->GetLocationBarModel()->ShouldPreventElision();
 }
 
 bool OmniboxEditModel::IsStarredMatch(const AutocompleteMatch& match) const {
@@ -2354,7 +2354,7 @@ void OmniboxEditModel::OnPopupResultChanged() {
     bool popup_was_open = popup_view_->IsOpen();
     popup_view_->UpdatePopupAppearance();
     if (popup_view_->IsOpen() != popup_was_open) {
-      controller()->OnPopupVisibilityChanged();
+      delegate()->OnPopupVisibilityChanged();
     }
   }
 }
@@ -2472,7 +2472,7 @@ bool OmniboxEditModel::SetInputInProgressNoNotify(bool in_progress) {
 }
 
 void OmniboxEditModel::NotifyObserversInputInProgress(bool in_progress) {
-  controller_->OnInputInProgress(in_progress);
+  edit_model_delegate_->OnInputInProgress(in_progress);
 
   if (user_input_in_progress_ || !in_revert_)
     client_->OnInputStateChanged();

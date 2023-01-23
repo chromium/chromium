@@ -36,8 +36,8 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
-#include "components/omnibox/browser/omnibox_edit_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_edit_model_delegate.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
@@ -618,15 +618,15 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, NavigateFromOmniboxIntoNewTab) {
   // Focus the omnibox.
   chrome::FocusLocationBar(browser());
 
-  OmniboxEditController* controller = browser()
-                                          ->window()
-                                          ->GetLocationBar()
-                                          ->GetOmniboxView()
-                                          ->model()
-                                          ->controller();
+  OmniboxEditModelDelegate* edit_model_delegate = browser()
+                                                      ->window()
+                                                      ->GetLocationBar()
+                                                      ->GetOmniboxView()
+                                                      ->model()
+                                                      ->delegate();
 
   // Simulate an alt-enter.
-  controller->OnAutocompleteAccept(
+  edit_model_delegate->OnAutocompleteAccept(
       url2, nullptr, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::URL_WHAT_YOU_TYPED,
       base::TimeTicks(), false, std::u16string(), AutocompleteMatch(),

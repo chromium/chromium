@@ -33,7 +33,7 @@
 
 class AutocompleteResult;
 class OmniboxClient;
-class OmniboxEditController;
+class OmniboxEditModelDelegate;
 class OmniboxPopupView;
 
 namespace gfx {
@@ -68,7 +68,7 @@ class OmniboxEditModel {
   };
 
   OmniboxEditModel(OmniboxView* view,
-                   OmniboxEditController* controller,
+                   OmniboxEditModelDelegate* edit_model_delegate,
                    std::unique_ptr<OmniboxClient> client);
   virtual ~OmniboxEditModel();
   OmniboxEditModel(const OmniboxEditModel&) = delete;
@@ -89,7 +89,7 @@ class OmniboxEditModel {
   void set_popup_view(OmniboxPopupView* popup_view);
   OmniboxPopupView* get_popup_view();
 
-  OmniboxEditController* controller() const { return controller_; }
+  OmniboxEditModelDelegate* delegate() const { return edit_model_delegate_; }
 
   OmniboxClient* client() const { return client_.get(); }
 
@@ -620,7 +620,7 @@ class OmniboxEditModel {
 
   raw_ptr<OmniboxView> view_;
 
-  raw_ptr<OmniboxEditController> controller_;
+  raw_ptr<OmniboxEditModelDelegate> edit_model_delegate_;
 
   OmniboxFocusState focus_state_;
 

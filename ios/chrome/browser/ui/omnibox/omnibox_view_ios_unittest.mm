@@ -25,7 +25,7 @@ class OmniboxViewIOSTest : public PlatformTest {
     browser_state_ = test_cbs_builder.Build();
     mockOmniboxTextfield_ = OCMClassMock([OmniboxTextFieldLegacy class]);
     view_ = std::make_unique<OmniboxViewIOS>(
-        mockOmniboxTextfield_, /* WebOmniboxEditController*/ nullptr,
+        mockOmniboxTextfield_, /* WebOmniboxEditModelDelegate*/ nullptr,
         browser_state_.get(),
         /*id<OmniboxCommands>*/ nil);
   }

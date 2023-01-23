@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "components/omnibox/browser/omnibox_client.h"
-#include "components/omnibox/browser/omnibox_edit_controller.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/resources/grit/omnibox_pedal_synonyms.h"
 #include "components/strings/grit/components_strings.h"

@@ -48,7 +48,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/omnibox/chrome_omnibox_edit_controller.h"
+#include "chrome/browser/ui/omnibox/chrome_omnibox_edit_model_delegate.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "components/favicon/content/content_favicon_driver.h"
@@ -79,9 +79,9 @@
 using predictors::AutocompleteActionPredictor;
 
 ChromeOmniboxClient::ChromeOmniboxClient(
-    ChromeOmniboxEditController* controller,
+    ChromeOmniboxEditModelDelegate* edit_model_delegate,
     Profile* profile)
-    : controller_(controller),
+    : edit_model_delegate_(edit_model_delegate),
       profile_(profile),
       scheme_classifier_(profile),
       favicon_cache_(FaviconServiceFactory::GetForProfile(
@@ -114,31 +114,34 @@ ChromeOmniboxClient::CreateAutocompleteProviderClient() {
 }
 
 bool ChromeOmniboxClient::CurrentPageExists() const {
-  return (controller_->GetWebContents() != nullptr);
+  return (edit_model_delegate_->GetWebContents() != nullptr);
 }
 
 const GURL& ChromeOmniboxClient::GetURL() const {
-  return CurrentPageExists() ? controller_->GetWebContents()->GetVisibleURL()
-                             : GURL::EmptyGURL();
+  return CurrentPageExists()
+             ? edit_model_delegate_->GetWebContents()->GetVisibleURL()
+             : GURL::EmptyGURL();
 }
 
 const std::u16string& ChromeOmniboxClient::GetTitle() const {
-  return CurrentPageExists() ? controller_->GetWebContents()->GetTitle()
-                             : base::EmptyString16();
+  return CurrentPageExists()
+             ? edit_model_delegate_->GetWebContents()->GetTitle()
+             : base::EmptyString16();
 }
 
 gfx::Image ChromeOmniboxClient::GetFavicon() const {
   return favicon::ContentFaviconDriver::FromWebContents(
-             controller_->GetWebContents())
+             edit_model_delegate_->GetWebContents())
       ->GetFavicon();
 }
 
 bool ChromeOmniboxClient::IsLoading() const {
-  return controller_->GetWebContents()->IsLoading();
+  return edit_model_delegate_->GetWebContents()->IsLoading();
 }
 
 bool ChromeOmniboxClient::IsPasteAndGoEnabled() const {
-  return controller_->command_updater()->IsCommandEnabled(IDC_OPEN_CURRENT_URL);
+  return edit_model_delegate_->command_updater()->IsCommandEnabled(
+      IDC_OPEN_CURRENT_URL);
 }
 
 bool ChromeOmniboxClient::IsDefaultSearchProviderEnabled() const {
@@ -150,7 +153,7 @@ bool ChromeOmniboxClient::IsDefaultSearchProviderEnabled() const {
 
 const SessionID& ChromeOmniboxClient::GetSessionID() const {
   return sessions::SessionTabHelper::FromWebContents(
-             controller_->GetWebContents())
+             edit_model_delegate_->GetWebContents())
       ->session_id();
 }
 
@@ -244,7 +247,7 @@ bool ChromeOmniboxClient::ProcessExtensionKeyword(
   size_t prefix_length =
       std::min(match.keyword.length() + 1, match.fill_into_edit.length());
   extensions::ExtensionOmniboxEventRouter::OnInputEntered(
-      controller_->GetWebContents(), template_url->GetExtensionId(),
+      edit_model_delegate_->GetWebContents(), template_url->GetExtensionId(),
       base::UTF16ToUTF8(match.fill_into_edit.substr(prefix_length)),
       disposition);
 
@@ -253,20 +256,22 @@ bool ChromeOmniboxClient::ProcessExtensionKeyword(
 }
 
 void ChromeOmniboxClient::OnInputStateChanged() {
-  if (!controller_->GetWebContents())
+  if (!edit_model_delegate_->GetWebContents()) {
     return;
-  if (auto* helper =
-          OmniboxTabHelper::FromWebContents(controller_->GetWebContents())) {
+  }
+  if (auto* helper = OmniboxTabHelper::FromWebContents(
+          edit_model_delegate_->GetWebContents())) {
     helper->OnInputStateChanged();
   }
 }
 
 void ChromeOmniboxClient::OnFocusChanged(OmniboxFocusState state,
                                          OmniboxFocusChangeReason reason) {
-  if (!controller_->GetWebContents())
+  if (!edit_model_delegate_->GetWebContents()) {
     return;
-  if (auto* helper =
-          OmniboxTabHelper::FromWebContents(controller_->GetWebContents())) {
+  }
+  if (auto* helper = OmniboxTabHelper::FromWebContents(
+          edit_model_delegate_->GetWebContents())) {
     helper->OnFocusChanged(state, reason);
   }
 }
@@ -279,8 +284,8 @@ void ChromeOmniboxClient::OnResultChanged(
   if (should_preload) {
     if (SearchPrefetchService* search_prefetch_service =
             SearchPrefetchServiceFactory::GetForProfile(profile_)) {
-      search_prefetch_service->OnResultChanged(controller_->GetWebContents(),
-                                               result);
+      search_prefetch_service->OnResultChanged(
+          edit_model_delegate_->GetWebContents(), result);
     }
   }
 
@@ -343,7 +348,7 @@ void ChromeOmniboxClient::OnTextChanged(const AutocompleteMatch& current_match,
   AutocompleteActionPredictor::Action recommended_action =
       AutocompleteActionPredictor::ACTION_NONE;
   if (user_input_in_progress) {
-    content::WebContents* web_contents = controller_->GetWebContents();
+    content::WebContents* web_contents = edit_model_delegate_->GetWebContents();
     AutocompleteActionPredictor* action_predictor =
         predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_);
     action_predictor->RegisterTransitionalMatches(user_text, result);
@@ -388,7 +393,7 @@ void ChromeOmniboxClient::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   // Record the value if prerender for search suggestion was not started. Other
   // values (kHitFinished, kUnused, kCancelled) are recorded in
   // PrerenderManager.
-  content::WebContents* web_contents = controller_->GetWebContents();
+  content::WebContents* web_contents = edit_model_delegate_->GetWebContents();
   if (web_contents) {
     if (SearchPrefetchService* search_prefetch_service =
             SearchPrefetchServiceFactory::GetForProfile(profile_)) {
@@ -414,11 +419,13 @@ void ChromeOmniboxClient::OnBookmarkLaunched() {
 }
 
 void ChromeOmniboxClient::DiscardNonCommittedNavigations() {
-  controller_->GetWebContents()->GetController().DiscardNonCommittedEntries();
+  edit_model_delegate_->GetWebContents()
+      ->GetController()
+      .DiscardNonCommittedEntries();
 }
 
 void ChromeOmniboxClient::OpenUpdateChromeDialog() {
-  const content::WebContents* contents = controller_->GetWebContents();
+  const content::WebContents* contents = edit_model_delegate_->GetWebContents();
   if (contents) {
     Browser* browser = chrome::FindBrowserWithWebContents(contents);
     if (browser) {
@@ -436,8 +443,9 @@ void ChromeOmniboxClient::OpenUpdateChromeDialog() {
 }
 
 void ChromeOmniboxClient::FocusWebContents() {
-  if (controller_->GetWebContents())
-    controller_->GetWebContents()->Focus();
+  if (edit_model_delegate_->GetWebContents()) {
+    edit_model_delegate_->GetWebContents()->Focus();
+  }
 }
 
 void ChromeOmniboxClient::OnNavigationLikely(
@@ -447,12 +455,13 @@ void ChromeOmniboxClient::OnNavigationLikely(
   if (SearchPrefetchService* search_prefetch_service =
           SearchPrefetchServiceFactory::GetForProfile(profile_)) {
     search_prefetch_service->OnNavigationLikely(
-        index, match, navigation_predictor, controller_->GetWebContents());
+        index, match, navigation_predictor,
+        edit_model_delegate_->GetWebContents());
   }
 }
 
 void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {
-  content::WebContents* web_contents = controller_->GetWebContents();
+  content::WebContents* web_contents = edit_model_delegate_->GetWebContents();
 
   // Don't prerender when DevTools is open in this tab.
   if (content::DevToolsAgentHost::IsDebuggerAttached(web_contents))

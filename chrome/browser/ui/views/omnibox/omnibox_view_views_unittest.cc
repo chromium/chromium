@@ -32,7 +32,7 @@
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
-#include "chrome/browser/ui/omnibox/chrome_omnibox_edit_controller.h"
+#include "chrome/browser/ui/omnibox/chrome_omnibox_edit_model_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
@@ -80,7 +80,7 @@ class TestingOmniboxView;
 
 class TestingOmniboxView : public OmniboxViewViews {
  public:
-  TestingOmniboxView(OmniboxEditController* controller,
+  TestingOmniboxView(OmniboxEditModelDelegate* edit_model_delegate,
                      TestLocationBarModel* location_bar_model,
                      std::unique_ptr<OmniboxClient> client);
   TestingOmniboxView(const TestingOmniboxView&) = delete;
@@ -156,10 +156,11 @@ class TestingOmniboxView : public OmniboxViewViews {
   bool base_text_emphasis_;
 };
 
-TestingOmniboxView::TestingOmniboxView(OmniboxEditController* controller,
-                                       TestLocationBarModel* location_bar_model,
-                                       std::unique_ptr<OmniboxClient> client)
-    : OmniboxViewViews(controller,
+TestingOmniboxView::TestingOmniboxView(
+    OmniboxEditModelDelegate* edit_model_delegate,
+    TestLocationBarModel* location_bar_model,
+    std::unique_ptr<OmniboxClient> client)
+    : OmniboxViewViews(edit_model_delegate,
                        std::move(client),
                        false,
                        nullptr,
@@ -255,24 +256,25 @@ void TestingOmniboxView::ApplyStyle(gfx::TextStyle style,
   OmniboxViewViews::ApplyStyle(style, value, range);
 }
 
-// TestingOmniboxEditController -----------------------------------------------
+// TestingOmniboxEditModelDelegate ---------------------------------------------
 
-class TestingOmniboxEditController : public ChromeOmniboxEditController {
+class TestingOmniboxEditModelDelegate : public ChromeOmniboxEditModelDelegate {
  public:
-  TestingOmniboxEditController(Browser* browser,
-                               Profile* profile,
-                               CommandUpdater* command_updater,
-                               LocationBarModel* location_bar_model)
-      : ChromeOmniboxEditController(browser, profile, command_updater),
+  TestingOmniboxEditModelDelegate(Browser* browser,
+                                  Profile* profile,
+                                  CommandUpdater* command_updater,
+                                  LocationBarModel* location_bar_model)
+      : ChromeOmniboxEditModelDelegate(browser, profile, command_updater),
         location_bar_model_(location_bar_model) {}
-  TestingOmniboxEditController(const TestingOmniboxEditController&) = delete;
-  TestingOmniboxEditController& operator=(const TestingOmniboxEditController&) =
+  TestingOmniboxEditModelDelegate(const TestingOmniboxEditModelDelegate&) =
       delete;
+  TestingOmniboxEditModelDelegate& operator=(
+      const TestingOmniboxEditModelDelegate&) = delete;
 
   void set_omnibox_view(OmniboxViewViews* view) { omnibox_view_ = view; }
 
  private:
-  // ChromeOmniboxEditController:
+  // ChromeOmniboxEditModelDelegate:
   LocationBarModel* GetLocationBarModel() override {
     return location_bar_model_;
   }
@@ -358,8 +360,8 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
  protected:
   Browser* browser() { return browser_.get(); }
   Profile* profile() { return profile_.get(); }
-  TestingOmniboxEditController* omnibox_edit_controller() {
-    return &omnibox_edit_controller_;
+  TestingOmniboxEditModelDelegate* edit_model_delegate() {
+    return &omnibox_edit_model_delegate_;
   }
 
   // Updates the models' URL and display text to |new_url|.
@@ -387,7 +389,7 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
   std::unique_ptr<TemplateURLServiceFactoryTestUtil> util_;
   CommandUpdaterImpl command_updater_;
   TestLocationBarModel location_bar_model_;
-  TestingOmniboxEditController omnibox_edit_controller_;
+  TestingOmniboxEditModelDelegate omnibox_edit_model_delegate_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
 
   std::unique_ptr<views::Widget> widget_;
@@ -406,10 +408,10 @@ OmniboxViewViewsTest::OmniboxViewViewsTest(
                                disabled_features,
                                is_rtl_ui_test),
       command_updater_(nullptr),
-      omnibox_edit_controller_(browser(),
-                               profile(),
-                               &command_updater_,
-                               &location_bar_model_) {}
+      omnibox_edit_model_delegate_(browser(),
+                                   profile(),
+                                   &command_updater_,
+                                   &location_bar_model_) {}
 
 void OmniboxViewViewsTest::SetAndEmphasizeText(const std::string& new_text,
                                                bool accept_input) {
@@ -450,8 +452,8 @@ void OmniboxViewViewsTest::SetUp() {
       profile_.get(),
       base::BindRepeating(&AutocompleteClassifierFactory::BuildInstanceFor));
   auto omnibox_view = std::make_unique<TestingOmniboxView>(
-      &omnibox_edit_controller_, location_bar_model(),
-      std::make_unique<ChromeOmniboxClient>(&omnibox_edit_controller_,
+      &omnibox_edit_model_delegate_, location_bar_model(),
+      std::make_unique<ChromeOmniboxClient>(&omnibox_edit_model_delegate_,
                                             profile_.get()));
   test_api_ = std::make_unique<views::TextfieldTestApi>(omnibox_view.get());
   omnibox_view->Init();
@@ -823,7 +825,7 @@ TEST_F(OmniboxViewViewsTest, SelectAllCommand) {
 // Verifies |OmniboxEditModel::State::needs_revert_and_select_all|, and verifies
 // a recent regression in this logic (see https://crbug.com/923290).
 TEST_F(OmniboxViewViewsTest, SelectAllOnReactivateTabAfterDeleteAll) {
-  omnibox_edit_controller()->set_omnibox_view(omnibox_view());
+  edit_model_delegate()->set_omnibox_view(omnibox_view());
 
   auto web_contents1 =
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);

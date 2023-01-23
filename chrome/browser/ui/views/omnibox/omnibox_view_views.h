@@ -69,7 +69,7 @@ class OmniboxViewViews
   // Max width of the gradient mask used to smooth ElideAnimation edges.
   static const int kSmoothingGradientMaxWidth = 15;
 
-  OmniboxViewViews(OmniboxEditController* controller,
+  OmniboxViewViews(OmniboxEditModelDelegate* edit_model_delegate,
                    std::unique_ptr<OmniboxClient> client,
                    bool popup_window_mode,
                    LocationBarView* location_bar,

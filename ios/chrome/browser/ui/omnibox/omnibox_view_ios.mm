@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/ui/omnibox/chrome_omnibox_client_ios.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
-#import "ios/chrome/browser/ui/omnibox/web_omnibox_edit_controller.h"
+#import "ios/chrome/browser/ui/omnibox/web_omnibox_edit_model_delegate.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -50,16 +50,17 @@ using base::UserMetricsAction;
 #pragma mark - OminboxViewIOS
 
 OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
-                               WebOmniboxEditController* controller,
+                               WebOmniboxEditModelDelegate* edit_model_delegate,
                                ChromeBrowserState* browser_state,
                                id<OmniboxCommands> omnibox_focuser)
-    : OmniboxView(controller,
-                  controller
-                      ? std::make_unique<ChromeOmniboxClientIOS>(controller,
-                                                                 browser_state)
-                      : nullptr),
+    : OmniboxView(
+          edit_model_delegate,
+          edit_model_delegate
+              ? std::make_unique<ChromeOmniboxClientIOS>(edit_model_delegate,
+                                                         browser_state)
+              : nullptr),
       field_(field),
-      controller_(controller),
+      edit_model_delegate_(edit_model_delegate),
       omnibox_focuser_(omnibox_focuser),
       ignore_popup_updates_(false),
       popup_provider_(nullptr) {
@@ -379,11 +380,11 @@ void OmniboxViewIOS::OnDidBeginEditing() {
   if (!popup_was_open_before_editing_began)
     [field_ enterPreEditState];
 
-  // `controller_` is only forwarding the call to the BVC. This should only
-  // happen when the omnibox is being focused and it starts showing the popup;
-  // if the popup was already open, no need to call this.
+  // `edit_model_delegate_` is only forwarding the call to the BVC. This should
+  // only happen when the omnibox is being focused and it starts showing the
+  // popup; if the popup was already open, no need to call this.
   if (!popup_was_open_before_editing_began)
-    controller_->OnSetFocus();
+    edit_model_delegate_->OnSetFocus();
 }
 
 void OmniboxViewIOS::OnWillEndEditing() {
@@ -674,7 +675,7 @@ void OmniboxViewIOS::ClearText() {
 }
 
 void OmniboxViewIOS::RemoveQueryRefinementChip() {
-  controller_->OnChanged();
+  edit_model_delegate_->OnChanged();
 }
 
 void OmniboxViewIOS::EndEditing() {
@@ -688,7 +689,7 @@ void OmniboxViewIOS::EndEditing() {
 
     // The controller looks at the current pre-edit state, so the call to
     // OnKillFocus() must come after exiting pre-edit.
-    controller_->OnKillFocus();
+    edit_model_delegate_->OnKillFocus();
 
     // Blow away any in-progress edits.
     RevertAll();
