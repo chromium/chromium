@@ -104,19 +104,19 @@ void CreateRestoreSessionUrl(
   // The URLs and titles of the restored entries are stored in two separate
   // lists instead of a single list of objects to reduce the size of the JSON
   // string to be included in the query parameter.
-  base::Value restored_urls(base::Value::Type::LIST);
-  base::Value restored_titles(base::Value::Type::LIST);
+  base::Value::List restored_urls;
+  base::Value::List restored_titles;
   for (int i = first_restored_item_offset;
        i < new_size + first_restored_item_offset; i++) {
     NavigationItem* item = items[i].get();
     restored_urls.Append(item->GetURL().spec());
     restored_titles.Append(item->GetTitle());
   }
-  base::Value session(base::Value::Type::DICTIONARY);
+  base::Value::Dict session;
   int committed_item_offset = new_last_committed_item_index + 1 - new_size;
-  session.SetKey("offset", base::Value(committed_item_offset));
-  session.SetKey("urls", std::move(restored_urls));
-  session.SetKey("titles", std::move(restored_titles));
+  session.Set("offset", committed_item_offset);
+  session.Set("urls", std::move(restored_urls));
+  session.Set("titles", std::move(restored_titles));
 
   std::string session_json;
   base::JSONWriter::Write(session, &session_json);
