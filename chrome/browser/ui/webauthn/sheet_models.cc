@@ -103,7 +103,7 @@ bool AuthenticatorSheetModelBase::IsCancelButtonVisible() const {
 bool AuthenticatorSheetModelBase::IsOtherMechanismButtonVisible() const {
   return other_mechanism_button_visibility_ ==
              OtherMechanismButtonVisibility::kVisible &&
-         dialog_model_->mechanisms().size() > 1;
+         dialog_model_ && dialog_model_->mechanisms().size() > 1;
 }
 
 std::u16string AuthenticatorSheetModelBase::GetCancelButtonLabel() const {

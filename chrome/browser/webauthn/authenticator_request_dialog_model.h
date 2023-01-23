@@ -248,7 +248,7 @@ class AuthenticatorRequestDialogModel {
   AuthenticatorRequestDialogModel& operator=(
       const AuthenticatorRequestDialogModel&) = delete;
 
-  ~AuthenticatorRequestDialogModel();
+  virtual ~AuthenticatorRequestDialogModel();
 
   Step current_step() const { return current_step_; }
 
@@ -512,7 +512,7 @@ class AuthenticatorRequestDialogModel {
 
   void SetSelectedAuthenticatorForTesting(AuthenticatorReference authenticator);
 
-  base::span<const Mechanism> mechanisms() const;
+  virtual base::span<const Mechanism> mechanisms() const;
 
   // current_mechanism returns the index into |mechanisms| of the most recently
   // activated mechanism, or nullopt if there isn't one.
