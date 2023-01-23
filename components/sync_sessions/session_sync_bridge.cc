@@ -272,6 +272,11 @@ std::string SessionSyncBridge::GetStorageKey(
   return SessionStore::GetStorageKey(entity_data.specifics.session());
 }
 
+bool SessionSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  return SessionStore::AreValidSpecifics(entity_data.specifics.session());
+}
+
 void SessionSyncBridge::ApplyStopSyncChanges(
     std::unique_ptr<MetadataChangeList> delete_metadata_change_list) {
   DCHECK(store_);

@@ -20,7 +20,9 @@ enum class UpdateDropReason {
   kTombstoneForNonexistentInIncrementalUpdate,
   kDecryptionPending,
   kDecryptionPendingForTooLong,
-  kFailedToDecrypt
+  kFailedToDecrypt,
+  // This should effectively replace kCannotGenerateStorageKey in the long run.
+  kDroppedByBridge
 };
 
 // Records that a remote update of an entity of type |type| got dropped into a

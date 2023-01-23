@@ -135,9 +135,6 @@ class ModelTypeSyncBridge {
   // type should strive to keep these keys as small as possible.
   // Returning an empty string means the remote creation should be ignored (i.e.
   // it contains invalid data).
-  // TODO(crbug.com/1057947): introduce a dedicated method to validate data from
-  // the server to solve the inconsistency with bridges that don't support
-  // GetStorageKey() and with remote updates which are not creations.
   virtual std::string GetStorageKey(const EntityData& entity_data) = 0;
 
   // Whether or not the bridge is capable of producing a client tag from
@@ -214,6 +211,13 @@ class ModelTypeSyncBridge {
   // By default, empty EntitySpecifics is returned.
   virtual sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
       const sync_pb::EntitySpecifics& entity_specifics) const;
+
+  // Returns true if the provided `entity_data` is valid. This method should be
+  // implemented by the bridges and can be used to validate the incoming remote
+  // updates.
+  // TODO(crbug.com/1057947): Mark this method as pure virtual to force all the
+  // bridges to implement this.
+  virtual bool IsEntityDataValid(const EntityData& entity_data) const;
 
   // Needs to be informed about any model change occurring via Delete() and
   // Put(). The changing metadata should be stored to persistent storage

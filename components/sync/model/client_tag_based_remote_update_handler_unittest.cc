@@ -346,6 +346,20 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
   EXPECT_EQ(0U, ProcessorEntityCount());
 }
 
+TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
+       ShouldIgnoreInvalidRemoteUpdates) {
+  // To ensure the update is not ignored because of empty storage key.
+  bridge()->SetSupportsGetStorageKey(false);
+  // Force flag next remote update as invalid.
+  bridge()->TreatRemoteUpdateAsInvalid(GetPrefHash(kKey1));
+
+  ASSERT_EQ(0U, ProcessorEntityCount());
+  ProcessSingleUpdate(GenerateUpdate(GetPrefHash(kKey1), kKey1, kValue1));
+  EXPECT_EQ(0U, db()->data_count());
+  EXPECT_EQ(0U, db()->metadata_count());
+  EXPECT_EQ(0U, ProcessorEntityCount());
+}
+
 }  // namespace
 
 }  // namespace syncer

@@ -3018,6 +3018,52 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
       /*expected_count=*/2);
 }
 
+TEST_F(ClientTagBasedModelTypeProcessorTest,
+       ShouldNotProcessInvalidRemoteIncrementalUpdate) {
+  // To ensure the update is not ignored because of empty storage key.
+  bridge()->SetSupportsGetStorageKey(false);
+
+  InitializeToReadyState();
+  UpdateResponseDataList updates;
+  updates.push_back(worker()->GenerateUpdateData(
+      GetPrefHash(kKey1), GeneratePrefSpecifics(kKey1, kValue1)));
+
+  // Force invalidate the next remote update.
+  bridge()->TreatRemoteUpdateAsInvalid(GetPrefHash(kKey1));
+
+  worker()->UpdateFromServer(std::move(updates));
+
+  // Verify that the data wasn't actually stored.
+  EXPECT_EQ(0U, db()->metadata_count());
+  EXPECT_EQ(0U, db()->data_count());
+}
+
+TEST_F(ClientTagBasedModelTypeProcessorTest,
+       ShouldNotProcessInvalidRemoteFullUpdate) {
+  InitializeToMetadataLoaded(/*initial_sync_done=*/false);
+  OnSyncStarting();
+
+  UpdateResponseDataList updates;
+  updates.push_back(worker()->GenerateUpdateData(
+      GetPrefHash(kKey1), GeneratePrefSpecifics(kKey1, kValue1)));
+
+  // Force invalidate the next remote update.
+  bridge()->TreatRemoteUpdateAsInvalid(GetPrefHash(kKey1));
+
+  base::HistogramTester histogram_tester;
+  worker()->UpdateFromServer(std::move(updates));
+
+  // Verify that the data wasn't actually stored.
+  EXPECT_EQ(0U, db()->metadata_count());
+  EXPECT_EQ(0U, db()->data_count());
+
+  // Update was dropped by the bridge.
+  histogram_tester.ExpectBucketCount(
+      "Sync.ModelTypeUpdateDrop.DroppedByBridge",
+      /*bucket=*/ModelTypeHistogramValue(GetModelType()),
+      /*count=*/1);
+}
+
 // The param indicates whether the password notes feature is enabled.
 class PasswordsClientTagBasedModelTypeProcessorTest
     : public testing::WithParamInterface<bool>,

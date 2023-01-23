@@ -916,9 +916,20 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
       continue;
     }
 
+    if (!bridge_->IsEntityDataValid(update.entity)) {
+      SyncRecordModelTypeUpdateDropReason(UpdateDropReason::kDroppedByBridge,
+                                          type_);
+      DLOG(WARNING) << "Received entity with invalid update for "
+                    << ModelTypeToDebugString(type_);
+      continue;
+    }
+
     std::string storage_key;
     if (bridge_->SupportsGetStorageKey()) {
       storage_key = bridge_->GetStorageKey(update.entity);
+      // TODO(crbug.com/1057947): Make this a DCHECK as storage keys should not
+      // be empty after IsEntityDataValid() has been implemented by all
+      // bridges.
       if (storage_key.empty()) {
         SyncRecordModelTypeUpdateDropReason(
             UpdateDropReason::kCannotGenerateStorageKey, type_);

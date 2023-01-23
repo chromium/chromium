@@ -382,6 +382,12 @@ FakeModelTypeSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
   return trimmed_specifics;
 }
 
+bool FakeModelTypeSyncBridge::IsEntityDataValid(
+    const EntityData& entity_data) const {
+  return invalid_remote_updates_.find(entity_data.client_tag_hash) ==
+         invalid_remote_updates_.end();
+}
+
 void FakeModelTypeSyncBridge::SetConflictResolution(
     ConflictResolution resolution) {
   conflict_resolution_ = resolution;
@@ -427,6 +433,11 @@ std::string FakeModelTypeSyncBridge::GetLastGeneratedStorageKey() const {
 void FakeModelTypeSyncBridge::AddPrefValueToIgnore(const std::string& value) {
   DCHECK_EQ(type_, PREFERENCES);
   values_to_ignore_.insert(value);
+}
+
+void FakeModelTypeSyncBridge::TreatRemoteUpdateAsInvalid(
+    const ClientTagHash& client_tag_hash) {
+  invalid_remote_updates_.insert(client_tag_hash);
 }
 
 }  // namespace syncer

@@ -969,6 +969,8 @@ chromium-metrics-reviews@google.com.
     <variant name="DecryptionPendingForTooLong"
         summary="Decryption keys were missing for so long that the update was
                  ignored."/>
+    <variant name="DroppedByBridge"
+        summary="The bridge classified the data as bad/invalid."/>
     <variant name="FailedToDecrypt"
         summary="Decryption is not successful (maybe the data is corrupt)."/>
     <variant name="InconsistentClientTag"

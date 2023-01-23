@@ -76,6 +76,11 @@ ModelTypeSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
   return sync_pb::EntitySpecifics();
 }
 
+bool ModelTypeSyncBridge::IsEntityDataValid(
+    const EntityData& entity_data) const {
+  return true;
+}
+
 ModelTypeChangeProcessor* ModelTypeSyncBridge::change_processor() {
   return change_processor_.get();
 }

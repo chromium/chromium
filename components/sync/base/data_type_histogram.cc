@@ -32,6 +32,8 @@ std::string GetHistogramSuffixForUpdateDropReason(UpdateDropReason reason) {
       return "DecryptionPendingForTooLong";
     case UpdateDropReason::kFailedToDecrypt:
       return "FailedToDecrypt";
+    case UpdateDropReason::kDroppedByBridge:
+      return "DroppedByBridge";
   }
 }
 

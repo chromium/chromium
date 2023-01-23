@@ -307,9 +307,14 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::CreateEntity(
               ClientTagHash::FromUnhashed(
                   type_, bridge_->GetClientTag(update.entity)));
   }
+  if (!bridge_->IsEntityDataValid(update.entity)) {
+    return nullptr;
+  }
   std::string storage_key;
   if (bridge_->SupportsGetStorageKey()) {
     storage_key = bridge_->GetStorageKey(update.entity);
+    // TODO(crbug.com/1057947): Remove this as storage keys should not be
+    // empty after ValidateRemoteUpdate() has been implemented by all bridges.
     if (storage_key.empty()) {
       return nullptr;
     }
