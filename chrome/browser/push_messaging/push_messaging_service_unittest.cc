@@ -523,8 +523,6 @@ class FCMRevocationTest : public PushMessagingServiceTest {
 };
 
 TEST_F(FCMRevocationTest, ResetPrefs) {
-  base::HistogramTester histogram_tester;
-
   content::PermissionController* permission_controller =
       profile()->GetPermissionController();
 
@@ -560,10 +558,6 @@ TEST_F(FCMRevocationTest, ResetPrefs) {
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
       blink::PermissionType::NOTIFICATIONS, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
-
-  histogram_tester.ExpectBucketCount(
-      "Permissions.FCM.Revocation",
-      static_cast<int>(FcmTokenRevocation::kResetGracePeriod), 1);
 }
 
 // This test verifies that if the grace period is not started, and there is no
@@ -608,8 +602,6 @@ TEST_F(FCMRevocationTest, NoAppLevelPermissionInitGracePeriodPrefsTest) {
 // Notifications permissions, site-level Notifications permission will be
 // revoked.
 TEST_F(FCMRevocationTest, NoAppLevelPermissionRevocationTest) {
-  base::HistogramTester histogram_tester;
-
   content::PermissionController* permission_controller =
       profile()->GetPermissionController();
 
@@ -650,18 +642,12 @@ TEST_F(FCMRevocationTest, NoAppLevelPermissionRevocationTest) {
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
       blink::PermissionType::NOTIFICATIONS, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::ASK);
-
-  histogram_tester.ExpectBucketCount(
-      "Permissions.FCM.Revocation",
-      static_cast<int>(FcmTokenRevocation::kRevokePermission), 1);
 }
 
 // This test verifies that if the grace period is not over and there is no
 // app-level Notifications permissions, site-level Notifications permission will
 // not be revoked.
 TEST_F(FCMRevocationTest, NoAppLevelPermissionIgnoreTest) {
-  base::HistogramTester histogram_tester;
-
   content::PermissionController* permission_controller =
       profile()->GetPermissionController();
 
@@ -701,17 +687,11 @@ TEST_F(FCMRevocationTest, NoAppLevelPermissionIgnoreTest) {
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
       blink::PermissionType::NOTIFICATIONS, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
-
-  histogram_tester.ExpectBucketCount(
-      "Permissions.FCM.Revocation",
-      static_cast<int>(FcmTokenRevocation::kGracePeriodIsNotOver), 1);
 }
 
 // This test verifies that if the grace period is not over and there is
 // app-level Notifications permissions, the grace period reset will be tracked.
 TEST_F(FCMRevocationTest, ResetAndRecordGracePeriodTest) {
-  base::HistogramTester histogram_tester;
-
   content::PermissionController* permission_controller =
       profile()->GetPermissionController();
 
@@ -751,9 +731,6 @@ TEST_F(FCMRevocationTest, ResetAndRecordGracePeriodTest) {
   result = permission_controller->GetPermissionResultForOriginWithoutContext(
       blink::PermissionType::NOTIFICATIONS, GetOrigin());
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
-
-  histogram_tester.ExpectTimeBucketCount(
-      "Permissions.FCM.Revocation.ResetGracePeriod", base::Days(2), 1);
 }
 
 #endif

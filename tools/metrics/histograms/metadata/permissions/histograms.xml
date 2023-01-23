@@ -510,6 +510,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Permissions.FCM.Revocation" enum="FcmTokenRevocation"
     expires_after="2023-10-31">
+  <obsolete>
+    Removed in 2023/01, as it's no longer needed. To track Notification
+    revocation use `Notifications.AppNotificationStatus` and
+    `PushMessaging.DeliveryStatus`.
+  </obsolete>
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -520,6 +525,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Permissions.FCM.Revocation.ResetGracePeriod" units="ms"
     expires_after="2023-10-31">
+  <obsolete>
+    Removed in 2023/01, as it's no longer needed. To track Notification
+    revocation use `Notifications.AppNotificationStatus` and
+    `PushMessaging.DeliveryStatus`.
+  </obsolete>
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>

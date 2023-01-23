@@ -70,13 +70,6 @@ class InstanceIDDriver;
 
 namespace {
 
-enum class FcmTokenRevocation {
-  kResetGracePeriod = 0,
-  kRevokePermission = 1,
-  kGracePeriodIsNotOver = 2,
-  kMaxValue = kGracePeriodIsNotOver,
-};
-
 struct PendingMessage {
   PendingMessage(std::string app_id, gcm::IncomingMessage message);
   PendingMessage(const PendingMessage& other);

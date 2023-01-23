@@ -945,20 +945,6 @@ void PushMessagingServiceImpl::RevokePermissionIfPossible(
     PrefService* prefs,
     Profile* profile) {
   if (app_level_notifications_enabled) {
-    if (prefs->GetTime(kNotificationsPermissionRevocationGracePeriodDate) !=
-        base::Time()) {
-      // Record when the grace period was started so we can adjust the grace
-      // period duration.
-      base::UmaHistogramLongTimes(
-          "Permissions.FCM.Revocation.ResetGracePeriod",
-          base::Time::Now() -
-              prefs->GetTime(
-                  kNotificationsPermissionRevocationGracePeriodDate));
-    }
-
-    base::UmaHistogramEnumeration("Permissions.FCM.Revocation",
-                                  FcmTokenRevocation::kResetGracePeriod);
-
     // Chrome has app-level Notifications permission. Reset the grace period
     // flag and continue as normal.
     prefs->ClearPref(kNotificationsPermissionRevocationGracePeriodDate);
@@ -985,12 +971,6 @@ void PushMessagingServiceImpl::RevokePermissionIfPossible(
     // revokes a push message registration token.
     permission_controller->ResetPermission(blink::PermissionType::NOTIFICATIONS,
                                            url::Origin::Create(origin));
-
-    base::UmaHistogramEnumeration("Permissions.FCM.Revocation",
-                                  FcmTokenRevocation::kRevokePermission);
-  } else {
-    base::UmaHistogramEnumeration("Permissions.FCM.Revocation",
-                                  FcmTokenRevocation::kGracePeriodIsNotOver);
   }
 }
 

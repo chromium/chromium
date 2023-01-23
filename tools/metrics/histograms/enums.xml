@@ -37111,6 +37111,9 @@ Called by update_extension_permission.py.-->
 </enum>
 
 <enum name="FcmTokenRevocation">
+  <obsolete>
+    Removed 2023/01 with the removal of the relevant histogram.
+  </obsolete>
   <int value="0" label="Reset grace period"/>
   <int value="1" label="Revoke permission"/>
   <int value="2" label="Grace period is not over"/>
