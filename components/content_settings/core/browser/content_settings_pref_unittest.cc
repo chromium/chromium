@@ -5,6 +5,7 @@
 #include "components/content_settings/core/browser/content_settings_pref.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
@@ -66,15 +67,16 @@ base::Value CreateDummyContentSettingValue(base::StringPiece tag,
 
 // Given the JSON dictionary representing the "setting" stored under a content
 // setting exception value, returns the tag.
-std::string GetTagFromDummyContentSetting(const base::Value& setting) {
-  const auto* tag = setting.FindKey(kTagKey);
-  return tag ? tag->GetString() : std::string();
+std::string GetTagFromDummyContentSetting(const base::Value::Dict& setting) {
+  const std::string* tag = setting.FindString(kTagKey);
+  return tag ? *tag : std::string();
 }
 
 // Given the JSON dictionary representing a content setting exception value,
 // returns the tag.
-std::string GetTagFromDummyContentSettingValue(const base::Value& pref_value) {
-  const auto* setting = pref_value.FindKey(kSettingKey);
+std::string GetTagFromDummyContentSettingValue(
+    const base::Value::Dict& pref_value) {
+  const base::Value::Dict* setting = pref_value.FindDict(kSettingKey);
   return setting ? GetTagFromDummyContentSetting(*setting) : std::string();
 }
 
@@ -142,7 +144,7 @@ TEST(ContentSettingsPref, CanonicalizationWhileReadingFromPrefs) {
     auto rule = rule_iterator->Next();
     patterns_to_tags_in_memory.emplace_back(
         CreatePatternString(rule.primary_pattern, rule.secondary_pattern),
-        GetTagFromDummyContentSetting(rule.value));
+        GetTagFromDummyContentSetting(rule.value.GetDict()));
   }
 
   EXPECT_THAT(patterns_to_tags_in_memory,
@@ -156,7 +158,8 @@ TEST(ContentSettingsPref, CanonicalizationWhileReadingFromPrefs) {
   ASSERT_TRUE(canonical_pref_value->is_dict());
   for (auto key_value : canonical_pref_value->DictItems()) {
     patterns_to_tags_in_prefs.emplace_back(
-        key_value.first, GetTagFromDummyContentSettingValue(key_value.second));
+        key_value.first,
+        GetTagFromDummyContentSettingValue(key_value.second.GetDict()));
   }
 
   EXPECT_THAT(patterns_to_tags_in_prefs,
@@ -209,7 +212,7 @@ TEST(ContentSettingsPref, ExpirationWhileReadingFromPrefs) {
     auto rule = rule_iterator->Next();
     patterns_to_tags_in_memory.emplace_back(
         CreatePatternString(rule.primary_pattern, rule.secondary_pattern),
-        GetTagFromDummyContentSetting(rule.value));
+        GetTagFromDummyContentSetting(rule.value.GetDict()));
   }
 
   EXPECT_THAT(patterns_to_tags_in_memory,
@@ -222,7 +225,8 @@ TEST(ContentSettingsPref, ExpirationWhileReadingFromPrefs) {
   ASSERT_TRUE(canonical_pref_value->is_dict());
   for (auto key_value : canonical_pref_value->DictItems()) {
     patterns_to_tags_in_prefs.emplace_back(
-        key_value.first, GetTagFromDummyContentSettingValue(key_value.second));
+        key_value.first,
+        GetTagFromDummyContentSettingValue(key_value.second.GetDict()));
   }
 
   EXPECT_THAT(patterns_to_tags_in_prefs,

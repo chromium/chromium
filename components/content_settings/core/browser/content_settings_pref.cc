@@ -5,6 +5,7 @@
 #include "components/content_settings/core/browser/content_settings_pref.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -56,31 +57,36 @@ bool IsValueAllowedForType(const base::Value& value, ContentSettingsType type) {
   return value.is_dict();
 }
 
-// Extract a timestamp from |dictionary[kLastModifiedKey]|.
+// Extract a timestamp from `dict[key]`.
 // Will return base::Time() if no timestamp exists.
-base::Time GetLastModified(const base::Value& dictionary) {
-  return base::ValueToTime(dictionary.FindKey(kLastModifiedKey))
-      .value_or(base::Time());
+base::Time GetTimeFromDictKey(const base::Value::Dict& dict,
+                              const std::string& key) {
+  return base::ValueToTime(dict.Find(key)).value_or(base::Time());
 }
 
-// Extract a timestamp from |dictionary[kExpirationKey]|. Will return
-// base::Time() if no timestamp exists.
-base::Time GetExpiration(const base::Value& dictionary) {
-  return base::ValueToTime(dictionary.FindKey(kExpirationKey))
-      .value_or(base::Time());
+// Extract a timestamp from `dictionary[kLastModifiedKey]`.
+// Will return base::Time() if no timestamp exists.
+base::Time GetLastModified(const base::Value::Dict& dictionary) {
+  return GetTimeFromDictKey(dictionary, kLastModifiedKey);
 }
 
-// Extract a timestamp from |dictionary[kLastVisit]|.
+// Extract a timestamp from `dictionary[kExpirationKey]`.
 // Will return base::Time() if no timestamp exists.
-base::Time GetLastVisit(const base::Value& dictionary) {
-  return base::ValueToTime(dictionary.FindKey(kLastVisitKey))
-      .value_or(base::Time());
+base::Time GetExpiration(const base::Value::Dict& dictionary) {
+  return GetTimeFromDictKey(dictionary, kExpirationKey);
+}
+
+// Extract a timestamp from `dictionary[kLastVisit]`.
+// Will return base::Time() if no timestamp exists.
+base::Time GetLastVisit(const base::Value::Dict& dictionary) {
+  return GetTimeFromDictKey(dictionary, kLastVisitKey);
 }
 
 // Extract a SessionModel from |dictionary[kSessionModelKey]|. Will return
 // SessionModel::Durable if no model exists.
-content_settings::SessionModel GetSessionModel(const base::Value& dictionary) {
-  int model_int = dictionary.FindIntKey(kSessionModelKey).value_or(0);
+content_settings::SessionModel GetSessionModel(
+    const base::Value::Dict& dictionary) {
+  int model_int = dictionary.FindInt(kSessionModelKey).value_or(0);
   if ((model_int >
        static_cast<int>(content_settings::SessionModel::kMaxValue)) ||
       (model_int < 0)) {
@@ -283,15 +289,15 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
         // multiple non-canonical patterns map to the same canonical pattern,
         // the Preferences updating logic after this loop will preserve the same
         // value in Prefs that this loop ultimately leaves in |value_map_|.
-        non_canonical_patterns_to_canonical_pattern.push_back(
-            {pattern_str, canonicalized_pattern_str});
+        non_canonical_patterns_to_canonical_pattern.emplace_back(
+            pattern_str, canonicalized_pattern_str);
       }
     }
 
     // Get settings dictionary for the current pattern string, and read
     // settings from the dictionary.
     DCHECK(i.second.is_dict());
-    const base::Value& settings_dictionary = i.second;
+    const base::Value::Dict& settings_dictionary = i.second.GetDict();
 
     // Check to see if the setting is expired or not. This may be due to a past
     // expiration date or a SessionModel of UserSession.
@@ -303,7 +309,7 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
       continue;
     }
 
-    const base::Value* value = settings_dictionary.FindKey(kSettingKey);
+    const base::Value* value = settings_dictionary.Find(kSettingKey);
     if (value) {
       base::Time last_modified;
       base::Time last_visited;
