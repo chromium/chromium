@@ -146,7 +146,7 @@ TEST_F(BrowserLoaderTest, OnLoadVersionSelectionRootfsIsUnavailable) {
   EXPECT_CALL(mock_component_update_service_, GetComponents())
       .WillOnce(Return(std::vector<component_updater::ComponentInfo>{
           {kLacrosComponentId, "", lacros_component_name,
-           base::Version("1.0.0")}}));
+           base::Version("1.0.0"), ""}}));
 
   // Use stateful when a rootfs lacros-chrome version is invalid.
   bool callback_called = false;
@@ -176,7 +176,7 @@ TEST_F(BrowserLoaderTest, OnLoadVersionSelectionRootfsIsNewer) {
   EXPECT_CALL(mock_component_update_service_, GetComponents())
       .WillOnce(Return(std::vector<component_updater::ComponentInfo>{
           {kLacrosComponentId, "", lacros_component_name,
-           base::Version("1.0.0")}}));
+           base::Version("1.0.0"), ""}}));
 
   bool callback_called = false;
   fake_upstart_client_.set_start_job_cb(base::BindRepeating(
@@ -206,7 +206,7 @@ TEST_F(BrowserLoaderTest, OnLoadVersionSelectionRootfsIsOlder) {
   EXPECT_CALL(mock_component_update_service_, GetComponents())
       .WillOnce(Return(std::vector<component_updater::ComponentInfo>{
           {kLacrosComponentId, "", lacros_component_name,
-           base::Version("3.0.0")}}));
+           base::Version("3.0.0"), ""}}));
 
   bool callback_called = false;
   fake_upstart_client_.set_start_job_cb(base::BindRepeating(

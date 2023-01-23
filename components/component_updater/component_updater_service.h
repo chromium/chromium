@@ -59,7 +59,8 @@ struct ComponentInfo {
   ComponentInfo(const std::string& id,
                 const std::string& fingerprint,
                 const std::u16string& name,
-                const base::Version& version);
+                const base::Version& version,
+                const std::string& cohort_id);
   ComponentInfo(const ComponentInfo& other);
   ComponentInfo& operator=(const ComponentInfo& other);
   ComponentInfo(ComponentInfo&& other);
@@ -70,6 +71,7 @@ struct ComponentInfo {
   std::string fingerprint;
   std::u16string name;
   base::Version version;
+  std::string cohort_id;
 };
 
 struct ComponentRegistration {

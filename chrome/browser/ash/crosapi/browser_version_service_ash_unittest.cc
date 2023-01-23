@@ -77,7 +77,7 @@ TEST_F(BrowserVersionServiceAshTest,
   sample_components.emplace_back(
       sample_browser_component_id, "",
       base::UTF8ToUTF16(browser_util::kLacrosDogfoodDevInfo.name),
-      base::Version(sample_browser_version_str));
+      base::Version(sample_browser_version_str), "");
   ON_CALL(mock_component_update_service, GetComponents())
       .WillByDefault(Return(sample_components));
 
@@ -110,7 +110,7 @@ TEST_F(BrowserVersionServiceAshTest, GetInstalledBrowserVersion) {
   sample_components.emplace_back(
       sample_browser_component_id, "",
       base::UTF8ToUTF16(browser_util::kLacrosDogfoodDevInfo.name),
-      base::Version(sample_browser_version_str));
+      base::Version(sample_browser_version_str), "");
   ON_CALL(mock_component_update_service, GetComponents())
       .WillByDefault(Return(sample_components));
 

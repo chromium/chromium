@@ -46,9 +46,8 @@ std::vector<ComponentInfo> AwComponentMetricsProviderDelegate::GetComponents() {
   absl::optional<AppPackageNameLoggingRule> record =
       client_->GetCachedAppPackageNameLoggingRule();
   if (record.has_value()) {
-    components.push_back(
-        ComponentInfo(kWebViewAppsPackageNamesAllowlistComponentId, "",
-                      std::u16string(), record.value().GetVersion()));
+    components.emplace_back(kWebViewAppsPackageNamesAllowlistComponentId, "",
+                            std::u16string(), record.value().GetVersion(), "");
   }
 
   return components;

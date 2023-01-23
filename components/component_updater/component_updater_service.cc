@@ -56,8 +56,13 @@ namespace component_updater {
 ComponentInfo::ComponentInfo(const std::string& id,
                              const std::string& fingerprint,
                              const std::u16string& name,
-                             const base::Version& version)
-    : id(id), fingerprint(fingerprint), name(name), version(version) {}
+                             const base::Version& version,
+                             const std::string& cohort_id)
+    : id(id),
+      fingerprint(fingerprint),
+      name(name),
+      version(version),
+      cohort_id(cohort_id) {}
 ComponentInfo::ComponentInfo(const ComponentInfo& other) = default;
 ComponentInfo& ComponentInfo::operator=(const ComponentInfo& other) = default;
 ComponentInfo::ComponentInfo(ComponentInfo&& other) = default;
@@ -249,10 +254,12 @@ std::vector<std::string> CrxUpdateService::GetComponentIDs() const {
 std::vector<ComponentInfo> CrxUpdateService::GetComponents() const {
   DCHECK(thread_checker_.CalledOnValidThread());
   std::vector<ComponentInfo> result;
+  auto data = std::make_unique<update_client::PersistedData>(
+      config_->GetPrefService(), config_->GetActivityDataService());
   for (const auto& it : components_) {
-    result.push_back(ComponentInfo(it.first, it.second.fingerprint,
-                                   base::UTF8ToUTF16(it.second.name),
-                                   it.second.version));
+    result.push_back(ComponentInfo(
+        it.first, it.second.fingerprint, base::UTF8ToUTF16(it.second.name),
+        it.second.version, data->GetCohort(it.second.app_id)));
   }
   return result;
 }

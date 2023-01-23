@@ -5,6 +5,7 @@
 #include "components/metrics/component_metrics_provider.h"
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/hash/hash.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "components/component_updater/component_updater_service.h"
@@ -180,6 +181,8 @@ void ComponentMetricsProvider::ProvideSystemProfileMetrics(
     proto->set_component_id(id);
     proto->set_version(component.version.GetString());
     proto->set_omaha_fingerprint(Trim(component.fingerprint));
+    proto->set_cohort_hash(base::PersistentHash(
+        component.cohort_id.substr(0, component.cohort_id.find_last_of(":"))));
   }
 }
 

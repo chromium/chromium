@@ -33,7 +33,7 @@ std::vector<ComponentInfo> ComponentsInfoHolder::GetComponents() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<ComponentInfo> components_info;
   for (const auto& it : components_) {
-    components_info.emplace_back(it.first, "", std::u16string(), it.second);
+    components_info.emplace_back(it.first, "", std::u16string(), it.second, "");
   }
   return components_info;
 }
