@@ -364,26 +364,18 @@ TEST_F(IOSChromePasswordCheckManagerTest,
   AddIssueToForm(&form2, InsecureType::kWeak, base::Minutes(1));
   store().AddLogin(form2);
   RunUntilIdle();
-  // TODO(crbug.com/1406540): Verify that the "weak passwords" warning becomes
-  // the highest priority warning once the weak passwords are going to be
-  // returned in InsecureCredentialsManager::GetInsecureCredentialEntries() (as
-  // of now, we don't take them into account and filter them out). Until then,
-  // the "dismissed warnings" warning stays the highest priority warning.
+
   EXPECT_THAT(manager().GetWarningOfHighestPriority(),
-              WarningType::kNoInsecurePasswordsWarning);
+              WarningType::kWeakPasswordsWarning);
 
   // Add a reused password.
   PasswordForm form3 = MakeSavedPassword(kExampleCom, kUsername216);
   AddIssueToForm(&form3, InsecureType::kReused, base::Minutes(1));
   store().AddLogin(form3);
   RunUntilIdle();
-  // TODO(crbug.com/1406540): Verify that the "reused passwords" warning becomes
-  // the highest priority warning once the reused passwords are going to be
-  // returned in InsecureCredentialsManager::GetInsecureCredentialEntries() (as
-  // of now, we don't take them into account and filter them out). Until then,
-  // the "dismissed warnings" warning stays the highest priority warning.
+
   EXPECT_THAT(manager().GetWarningOfHighestPriority(),
-              WarningType::kNoInsecurePasswordsWarning);
+              WarningType::kReusedPasswordsWarning);
 
   // Add an unmuted compromised password.
   PasswordForm form4 = MakeSavedPassword(kExampleCom, kUsername216);

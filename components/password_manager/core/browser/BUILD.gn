@@ -368,15 +368,19 @@ static_library("browser") {
     sources += [
       "password_strength_calculation.cc",
       "password_strength_calculation.h",
+    ]
+    deps +=
+        [ "//components/password_manager/services/password_strength:service" ]
+  }
+
+  if (!is_android) {
+    sources += [
       "ui/reuse_check_utility.cc",
       "ui/reuse_check_utility.h",
       "ui/weak_check_utility.cc",
       "ui/weak_check_utility.h",
     ]
-    deps += [
-      "//components/password_manager/services/password_strength:service",
-      "//third_party/zxcvbn-cpp",
-    ]
+    deps += [ "//third_party/zxcvbn-cpp" ]
   }
 
   if ((is_posix && !is_apple) || is_fuchsia) {
@@ -807,12 +811,15 @@ source_set("unit_tests") {
   ]
 
   if (!is_android && !is_ios) {
+    sources += [ "password_strength_calculation_unittest.cc" ]
+    deps += [ "//components/password_manager/services/password_strength:lib" ]
+  }
+
+  if (!is_android) {
     sources += [
-      "password_strength_calculation_unittest.cc",
       "ui/reuse_check_utility_unittest.cc",
       "ui/weak_check_utility_unittest.cc",
     ]
-    deps += [ "//components/password_manager/services/password_strength:lib" ]
   }
 
   if (!is_ios) {

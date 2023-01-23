@@ -28,7 +28,7 @@
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/password_manager/core/browser/ui/reuse_check_utility.h"
 #include "components/password_manager/core/browser/ui/weak_check_utility.h"
 #endif
@@ -42,8 +42,7 @@ bool SupportsMuteOperation(InsecureType insecure_type) {
           insecure_type == InsecureType::kPhished);
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-// The function is only used by the weak check.
+#if !BUILDFLAG(IS_ANDROID)
 base::flat_set<std::u16string> ExtractPasswords(
     const std::vector<CredentialUIEntry>& credentials) {
   return base::MakeFlatSet<std::u16string>(credentials, {},
@@ -51,10 +50,27 @@ base::flat_set<std::u16string> ExtractPasswords(
 }
 
 bool IsCheckForReusedPasswordsEnabled() {
+#if BUILDFLAG(IS_IOS)
+  // Weak and reused checks are controlled by the Password Checkup feature.
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kIOSPasswordCheckup);
+#else
   return base::FeatureList::IsEnabled(
       password_manager::features::kPasswordManagerRedesign);
+#endif
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+bool IsCheckForWeakPasswordsEnabled() {
+#if BUILDFLAG(IS_IOS)
+  // Weak and reused checks are controlled by the Password Checkup feature.
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kIOSPasswordCheckup);
+#else
+  return true;
+#endif
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 }  // namespace
 
 InsecureCredentialsManager::InsecureCredentialsManager(
@@ -69,7 +85,7 @@ InsecureCredentialsManager::InsecureCredentialsManager(
 
 InsecureCredentialsManager::~InsecureCredentialsManager() = default;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
 void InsecureCredentialsManager::StartReuseCheck(
     base::OnceClosure on_check_done) {
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -90,7 +106,7 @@ void InsecureCredentialsManager::StartWeakCheck(
                      weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer())
           .Then(std::move(on_check_done)));
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void InsecureCredentialsManager::SaveInsecureCredential(
     const LeakCheckCredential& leak) {
@@ -142,7 +158,8 @@ InsecureCredentialsManager::GetInsecureCredentialEntries() const {
   DCHECK(presenter_);
   std::vector<CredentialUIEntry> credentials =
       presenter_->GetSavedCredentials();
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_ANDROID)
   // Otherwise erase entries which aren't leaked and phished.
   base::EraseIf(credentials, [](const auto& credential) {
     return !credential.IsLeaked() && !credential.IsPhished();
@@ -163,6 +180,7 @@ InsecureCredentialsManager::GetInsecureCredentialEntries() const {
                base::Time(), password_manager::IsMuted(false))});
     }
   }
+
   base::EraseIf(credentials, [](const auto& credential) {
     return credential.password_issues.empty();
   });
@@ -195,23 +213,25 @@ void InsecureCredentialsManager::OnWeakCheckDone(
 }
 
 void InsecureCredentialsManager::OnEdited(const CredentialUIEntry& credential) {
-  // The WeakCheck is a Desktop only feature for now. Disable on Mobile to
-  // avoid pulling in a big dependency on zxcvbn.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // The WeakCheck feature is not available on Android yet. Disable on Android
+  // to avoid pulling in a big dependency on zxcvbn.
+#if !BUILDFLAG(IS_ANDROID)
   if (IsCheckForReusedPasswordsEnabled()) {
     // Re-run reused check since user might have changed reused password.
     StartReuseCheck();
   }
 
-  const std::u16string& password = credential.password;
-  if (weak_passwords_.contains(password) || !IsWeak(password)) {
-    // Either the password is already known to be weak, or it is not weak at
-    // all. In both cases there is nothing to do.
-    return;
-  }
+  if (IsCheckForWeakPasswordsEnabled()) {
+    const std::u16string& password = credential.password;
+    if (weak_passwords_.contains(password) || !IsWeak(password)) {
+      // Either the password is already known to be weak, or it is not weak at
+      // all. In both cases there is nothing to do.
+      return;
+    }
 
-  weak_passwords_.insert(password);
-  NotifyInsecureCredentialsChanged();
+    weak_passwords_.insert(password);
+    NotifyInsecureCredentialsChanged();
+  }
 #endif
 }
 

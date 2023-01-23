@@ -55,7 +55,7 @@ class InsecureCredentialsManager : public SavedPasswordsPresenter::Observer {
       scoped_refptr<PasswordStoreInterface> account_store);
   ~InsecureCredentialsManager() override;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
   // Computes reused credentials in a separate thread and then passes the result
   // to OnReuseCheckDone.
   void StartReuseCheck(base::OnceClosure on_check_done = base::DoNothing());
