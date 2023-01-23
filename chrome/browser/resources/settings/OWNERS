@@ -13,3 +13,6 @@ per-file icons.html=jimmyxgong@chromium.org
 
 # Happiness Tracking Surveys (HaTS)
 per-file hats_browser_proxy.ts=sauski@google.com
+
+# Metrics browser proxy
+per-file metrics_browser_proxy.ts=sauski@google.com,rainhard@chromium.org,msramek@chromium.org
