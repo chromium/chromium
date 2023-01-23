@@ -56,7 +56,10 @@ enum class Site {
   kFileHandler,
   kNoServiceWorker,
   kNotInstalled,
-  kScreenshots
+  kScreenshots,
+  kHasSubApps,
+  kSubApp1,
+  kSubApp2,
 };
 
 enum class InstallableSite {
@@ -69,7 +72,10 @@ enum class InstallableSite {
   kFileHandler,
   kNoServiceWorker,
   kNotInstalled,
-  kScreenshots
+  kScreenshots,
+  kHasSubApps,
+  kSubApp1,
+  kSubApp2,
 };
 
 enum class Title { kStandaloneOriginal, kStandaloneUpdated };
@@ -112,6 +118,12 @@ enum class UpdateDialogResponse {
   kAcceptUpdate,
   kCancelDialogAndUninstall,
   kSkipUpdate
+};
+
+enum class SubAppInstallDialogOptions {
+  kUserAllow,
+  kUserDeny,
+  kPolicyOverride
 };
 
 // These structs are used to store the current state of the world before & after
@@ -242,6 +254,10 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
                         ShortcutOptions shortcut,
                         WindowOptions window,
                         InstallMode mode);
+  void InstallSubApp(Site parentapp,
+                     Site subapp,
+                     SubAppInstallDialogOptions option);
+  void RemoveSubApp(Site parentapp, Site subapp);
   // These functions install apps which are tabbed and creates shortcuts.
   void ApplyRunOnOsLoginPolicyAllowed(Site site);
   void ApplyRunOnOsLoginPolicyBlocked(Site site);
@@ -330,6 +346,9 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckWindowDisplayBrowser();
   void CheckWindowDisplayMinimal();
   void CheckWindowDisplayStandalone();
+  void CheckNotHasSubApp(Site subapp);
+  void CheckHasSubApp(Site subapp);
+  void CheckNoSubApps();
 
  protected:
   // WebAppInstallManagerObserver:

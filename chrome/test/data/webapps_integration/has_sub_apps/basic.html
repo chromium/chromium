@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Site With Sub Apps</title>
+    <script src="/web_apps/test_utils.js"></script>
+    <script src="/webapps_integration/has_sub_apps/app.js"></script>
+    <script>
+      // If a "manifest=/path/to/manifest.json" query argument is provided to
+      // the URL accessing this page, that path is injected as the manifest tag.
+      // Otherwise, "basic.json" is used as the manifest tag.
+      addManifestLinkTag();
+    </script>
+</head>
+<body onload="startWorker('/webapps_integration/has_sub_apps/service_worker.js', { scope: '/webapps_integration/has_sub_apps/' })">
+  <h1>Site With Sub Apps</h1>
+  <div>
+    <p>
+      This site is used for dPWA integration tests, and is subject to modification to support that framework. See
+      <a
+        href="https://chromium.googlesource.com/chromium/src/+/main/docs/webapps/integration-testing-framework.md">https://chromium.googlesource.com/chromium/src/+/main/docs/webapps/integration-testing-framework.md</a>
+    </p>
+    <p>
+      These buttons below are for manual debugging, the framework is
+      calling the APIs-under-test directly.
+    </p>
+    <p>
+      Subapp to add/remove: <input id="subAppUrl" value="/sub_app_url"></input>
+    </p>
+    <p>
+      <button id="addButton" onclick="callAdd()">add()</button>
+    </p>
+    <p>
+      <button id="removeButton" onclick="callRemove()">remove()</button>
+    </p>
+    <p>
+      <button id="list" onclick="callList()">list()</button>
+    </p>
+    <p>
+      list() output:
+      <input id="listOutput" value="list wasn't called yet"></input>
+    </p>
+  </div>
+</body>
+</html>

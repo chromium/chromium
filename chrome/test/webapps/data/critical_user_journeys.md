@@ -324,3 +324,20 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 | # Policy approval |
 | WMLC | install_or_shortcut(FileHandler) | add_file_handling_policy_approval(FileHandler) | launch_file_expect_no_dialog(FileHandler, OneFooFile) | check_pwa_window_created(FileHandler, One) |
 | WMLC | install_or_shortcut(FileHandler) | add_file_handling_policy_approval(FileHandler) | remove_file_handling_policy_approval(FileHandler) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, AskAgain) |
+
+## Sub Apps
+
+| #Platforms | Test -> | | | | | | | | | | | | | | | | |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| #WMLC | install_or_shortcut(HasSubApps) | install_sub_app(HasSubApps, SubApp1, UserAllow) | check_app_in_list_windowed(SubApp1) | check_has_sub_app(SubApp1) | check_has_shortcuts(SubApp1) |
+| #WMLC | install_or_shortcut(HasSubApps) | install_sub_app(HasSubApps, SubApp1, UserDeny) | check_app_is not_in_list(SubApp1) | check_platform_shortcut_not_exists(SubApp1) |
+| #WMLC | install_or_shortcut_by_user(HasSubApps) | install_sub_app(HasSubApps, SubApp1, UserAllow) | uninstall_by_user(HasSubApps) | check_app_not_in_list(SubApp1) | check_platform_shortcut_not_exists(SubApp1) |
+| #WMLC | install_or_shortcut_by_policy(HasSubApps) | install_sub_app(HasSubApps, SubApp1, UserAllow) | uninstall_by_policy(HasSubApps) | check_app_not_in_list(SubApp1) | check_platform_shortcut_not_exists(SubApp1) |
+| #WMLC | install_or_shortcut(HasSubApps) | install_sub_app(HasSubApps, SubApp1, UserAllow) | install_sub_app(HasSubApps, SubApp2, UserAllow) | check_has_sub_app(SubApp1) | check_has_sub_app(SubApp2) |
+| #WMLC | install_or_shortcut(HasSubApps) | check_no_sub_apps() |
+| #WMLC | install_or_shortcut_by_user(HasSubApps) | install_sub_app(HasSubApps, SubApp1, UserAllow) | remove_sub_app(HasSubApps, SubApp1) | check_app_not_in_list(SubApp1) | check_platform_shortcut_not_exists(SubApp1) | check_no_sub_apps() |
+| #WMLC | install_or_shortcut_by_policy(HasSubApps) | launch(HasSubApps) | install_sub_app(HasSubApps, SubApp1, UserAllow) | remove_sub_app(HasSubApps, SubApp1) | check_app_not_in_list(SubApp1) | check_platform_shortcut_not_exists(SubApp1) | check_no_sub_apps() |
+| #WMLC | install_or_shortcut(SubApp1) | check_app_in_list(SubApp1) | check_has_shortcut(SubApp1)
+| #WMLC | install_or_shortcut(HasSubApps) | install_or_shortcut(SubApp1) | check_not_has_sub_app(SubApp1)
+| #WMLC | install_or_shortcut(HasSubApps) | install_or_shortcut(SubApp1) | install_sub_app(HasSubApps, SubApp1, UserAllow) | check_has_sub_app(SubApp1)
+| #WMLC | install_or_shortcut(HasSubApps) | install_or_shortcut(SubApp1) | install_sub_app(HasSubApps, SubApp1, UserAllow) | remove_sub_app(HasSubApps, SubApp1) | check_not_has_sub_app(SubApp1) | check_app_in_list_windowed(SubApp1) | check_has_shortcut(SubApp1)

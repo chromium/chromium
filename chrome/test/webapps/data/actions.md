@@ -20,7 +20,7 @@ The tables in this file are parsed as action templates for critical user journey
 
 TODO(dmurph): Possibly this table up into markdown-header section.
 
-| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 138) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
+| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 143) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
 | --- | --- | --- | --- | --- | --- | --- |
 | # Badging |
 | check_app_badge_empty | Site |  | 2 | Not Implemented | Check that the 'badge' on the app icon is empty |  |
@@ -161,3 +161,9 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | check_window_controls_overlay | Site, IsOn |  | 113 | WIP |  |  |
 | enable_window_controls_overlay | Site |  | 114 | WIP |  |  |
 | disable_window_controls_overlay | Site |  | 115 | WIP |  |  |
+| #Subapps |
+| install_sub_app | Site, Site, SubAppInstallDialogOptions |  | 138 | WIP | Navigate to the first site, call subApps.add() to install the second site. |  |
+| remove_sub_app | Site, Site |  | 139 | Implemented | Navigate to the first site, call subApps.remove() to uninstall the second site. |  |
+| check_has_sub_app | Site |  | 140 | Implemented | Assuming we have the active browser window on the (potential) parent site, call subApps.list() and check if the given site is listed. |  |
+| check_not_has_sub_app | Site |  | 141 | Implemented | Assuming we have the active browser window on the (potential) parent site, call subApps.list() and check if the given site is not listed. |  |
+| check_no_sub_apps |  |  | 142 | Implemented | Assuming we navigated to the (potential) parent site, call subApps.list() and check if the list is empty. |  |

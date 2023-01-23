@@ -118,6 +118,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -195,6 +196,12 @@ Site InstallableSiteToSite(InstallableSite site) {
       return Site::kNotInstalled;
     case InstallableSite::kScreenshots:
       return Site::kScreenshots;
+    case InstallableSite::kHasSubApps:
+      return Site::kHasSubApps;
+    case InstallableSite::kSubApp1:
+      return Site::kSubApp1;
+    case InstallableSite::kSubApp2:
+      return Site::kSubApp2;
   }
 }
 
@@ -308,6 +315,26 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
       .app_name = "Site With Screenshots",
       .wco_not_enabled_title = u"Site With Screenshots",
       .icon_color = SK_ColorGREEN}},
+    {Site::kHasSubApps,
+     {.relative_url = "/webapps_integration/has_sub_apps/basic.html",
+      .relative_manifest_id = "webapps_integration/has_sub_apps/basic.html",
+      .app_name = "Site With Sub Apps",
+      .wco_not_enabled_title = u"Site With Sub Apps",
+      .icon_color = SK_ColorGREEN}},
+    {Site::kSubApp1,
+     {.relative_url = "/webapps_integration/has_sub_apps/sub_app1/basic.html",
+      .relative_manifest_id =
+          "webapps_integration/has_sub_apps/sub_app1/basic.html",
+      .app_name = "Sub App 1",
+      .wco_not_enabled_title = u"Sub App 1",
+      .icon_color = SK_ColorBLUE}},
+    {Site::kSubApp2,
+     {.relative_url = "/webapps_integration/has_sub_apps/sub_app2/basic.html",
+      .relative_manifest_id =
+          "webapps_integration/has_sub_apps/sub_app2/basic.html",
+      .app_name = "Sub App 2",
+      .wco_not_enabled_title = u"Sub App 2",
+      .icon_color = SK_ColorBLUE}},
 };
 
 struct DisplayConfig {
@@ -831,6 +858,13 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
     for (auto& app_id : app_ids) {
       LOG(INFO) << "TearDownOnMainThread: Uninstalling " << app_id << ".";
       const WebApp* app = provider->registrar_unsafe().GetAppById(app_id);
+      if (!app) {
+        // This might happen if |app_id| was a sub-app of a previously
+        // uninstalled app.
+        LOG(INFO) << "TearDownOnMainThread: " << app_id
+                  << " was already removed.";
+        continue;
+      }
       if (app->IsPolicyInstalledApp())
         UninstallPolicyAppById(app_id);
       if (provider->registrar_unsafe().IsInstalled(app_id)) {
@@ -1111,6 +1145,58 @@ void WebAppIntegrationTestDriver::InstallPolicyApp(Site site,
       site, std::move(container),
       /*create_shortcut=*/shortcut == ShortcutOptions::kWithShortcut,
       /*install_as_shortcut=*/mode == InstallMode::kWebShortcut);
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::InstallSubApp(
+    Site parentapp,
+    Site subapp,
+    SubAppInstallDialogOptions option) {
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+  MaybeNavigateTabbedBrowserInScope(parentapp);
+  content::WebContents* web_contents = GetCurrentTab(browser());
+
+  std::string sub_url = GetSiteConfiguration(subapp).relative_url;
+  // The argument of add() is a dictionary-valued dictionary:
+  // { $unhashed_app_id : {'install_url' : $install_url} }
+  // In our case, both $unhashed_app_id and $install_url are sub_url.
+  base::Value::Dict inner_dict;
+  inner_dict.Set("install_url", sub_url);
+  base::Value::Dict outer_dict;
+  outer_dict.Set(sub_url, std::move(inner_dict));
+
+  const base::Value& add_result =
+      content::EvalJs(web_contents,
+                      content::JsReplace("navigator.subApps.add($1)",
+                                         std::move(outer_dict)))
+          .value;
+
+  base::Value::Dict expected_output;
+  expected_output.Set(sub_url, "success");
+  EXPECT_EQ(expected_output, add_result);
+  // TODO: Use |option| after the dialog was implemented.
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::RemoveSubApp(Site parentapp, Site subapp) {
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+  MaybeNavigateTabbedBrowserInScope(parentapp);
+  content::WebContents* web_contents = GetCurrentTab(browser());
+  std::string sub_url = GetSiteConfiguration(subapp).relative_url;
+
+  const base::Value& remove_result =
+      content::EvalJs(
+          web_contents,
+          content::JsReplace("navigator.subApps.remove($1)", sub_url))
+          .value;
+
+  // remove() returns void.
+  EXPECT_TRUE(remove_result.is_none());
+
   AfterStateChangeAction();
 }
 
@@ -2710,6 +2796,61 @@ void WebAppIntegrationTestDriver::CheckWindowDisplayStandalone() {
   AfterStateCheckAction();
 }
 
+void WebAppIntegrationTestDriver::CheckHasSubApp(Site subapp) {
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
+  content::WebContents* web_contents =
+      app_browser()->tab_strip_model()->GetActiveWebContents();
+
+  auto subapp_url = GetSiteConfiguration(subapp).relative_url;
+
+  const base::Value& list_result =
+      content::EvalJs(web_contents, "navigator.subApps.list()").value;
+
+  const base::Value::Dict& list_result_dict = list_result.GetDict();
+
+  // Check that list() contained the subapp_url key.
+  EXPECT_NE(nullptr, list_result_dict.FindDict(subapp_url));
+
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckNotHasSubApp(Site subapp) {
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
+  content::WebContents* web_contents =
+      app_browser()->tab_strip_model()->GetActiveWebContents();
+
+  auto subapp_url = GetSiteConfiguration(subapp).relative_url;
+
+  const base::Value& list_result =
+      content::EvalJs(web_contents, "navigator.subApps.list()").value;
+
+  const base::Value::Dict& list_result_dict = list_result.GetDict();
+
+  // Check that list() did not contain the subapp_url key.
+  EXPECT_EQ(nullptr, list_result_dict.FindDict(subapp_url));
+
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckNoSubApps() {
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
+  content::WebContents* web_contents =
+      app_browser()->tab_strip_model()->GetActiveWebContents();
+
+  const base::Value& result =
+      content::EvalJs(web_contents, "navigator.subApps.list()").value;
+
+  // Check that list() returned an empty dictionary.
+  EXPECT_EQ(base::Value(base::Value::Type::DICT), result);
+  AfterStateCheckAction();
+}
+
 void WebAppIntegrationTestDriver::OnWebAppManifestUpdated(
     const AppId& app_id,
     base::StringPiece old_name) {
@@ -3420,6 +3561,7 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   enabled_features.push_back(features::kPwaUpdateDialogForName);
   enabled_features.push_back(features::kDesktopPWAsEnforceWebAppSettingsPolicy);
   enabled_features.push_back(features::kRecordWebAppDebugInfo);
+  enabled_features.push_back(blink::features::kDesktopPWAsSubApps);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   disabled_features.push_back(features::kWebAppsCrosapi);
   disabled_features.push_back(ash::features::kLacrosPrimary);
