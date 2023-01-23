@@ -374,7 +374,6 @@
                         "CacheSiteIsolationMemoryThreshold",
                         "MojoAvoidRandomPipeId",
                         "NewSigninRequestHeaderCheckOrder",
-                        "ToolbarPhoneOptimizations",
                         "UseGetrandomForRandBytes"
                     ]
                 }

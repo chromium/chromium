@@ -50,7 +50,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -270,7 +269,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     private boolean mOptionalButtonAnimationRunning;
     private int mUrlFocusTranslationX;
 
-    private boolean mOptimizationsEnabled;
     private boolean mDropdownListScrolled;
 
     // The following are some properties used during animation.  We use explicit property classes
@@ -486,9 +484,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     protected void onNativeLibraryReady() {
         super.onNativeLibraryReady();
 
-        mOptimizationsEnabled =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_PHONE_OPTIMIZATIONS);
-
         enableTabSwitchingResources();
         mHomeButton.setOnClickListener(this);
 
@@ -575,20 +570,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         if (!mDisableLocationBarRelayout) {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-            boolean changed;
-            if (mOptimizationsEnabled) {
-                // Without optimizations, layoutLocationBar sometimes calls
-                // updateLocationBarLayoutForExpansionAnimation, followed always by a second call to
-                // updateLocationBarLayoutForExpansionAnimation. The location bar shouldn't change
-                // between these two calls, so we can optimize by removing the call that is made
-                // sometimes.
-                changed = layoutLocationBarWithoutAnimationExpansion(
-                        MeasureSpec.getSize(widthMeasureSpec));
-                updateUrlExpansionAnimation();
-            } else {
-                changed = layoutLocationBar(MeasureSpec.getSize(widthMeasureSpec));
-                if (!isInTabSwitcherMode()) updateUrlExpansionAnimation();
-            }
+            boolean changed = layoutLocationBarWithoutAnimationExpansion(
+                    MeasureSpec.getSize(widthMeasureSpec));
+            updateUrlExpansionAnimation();
             if (!changed) return;
         } else {
             updateUnfocusedLocationBarLayoutParams();
@@ -1015,7 +999,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
      */
     private void updateLocationBarLayoutForExpansionAnimation() {
         TraceEvent.begin("ToolbarPhone.updateLocationBarLayoutForExpansionAnimation");
-        if (mOptimizationsEnabled && isInTabSwitcherMode()) return;
+        if (isInTabSwitcherMode()) return;
 
         boolean isLocationBarShownInNTP = isLocationBarShownInNTP();
         FrameLayout.LayoutParams locationBarLayoutParams =
@@ -1826,12 +1810,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                 // so that the final translation position is correct (since onMeasure updates
                 // won't happen in tab switcher mode). crbug.com/518795.
                 layoutLocationBar(getMeasuredWidth());
-                if (!mOptimizationsEnabled) {
-                    // We're in tab switcher mode here. updateUrlExpansionAnimation doesn't need to
-                    // get called because we don't see the url bar, and that this gets called as
-                    // soon as we exit tab switcher mode.
-                    updateUrlExpansionAnimation();
-                }
             }
 
             updateViewsForTabSwitcherMode();

@@ -286,7 +286,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
     &kToolbarMicIphAndroid,
-    &kToolbarPhoneOptimizations,
     &kToolbarScrollAblationAndroid,
     &kTrustedWebActivityPostMessage,
     &kTrustedWebActivityQualityEnforcement,
@@ -922,10 +921,6 @@ BASE_FEATURE(kTestDefaultEnabled,
 BASE_FEATURE(kToolbarMicIphAndroid,
              "ToolbarMicIphAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kToolbarPhoneOptimizations,
-             "ToolbarPhoneOptimizations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kToolbarScrollAblationAndroid,
              "ToolbarScrollAblationAndroid",

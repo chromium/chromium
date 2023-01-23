@@ -500,7 +500,6 @@ public abstract class ChromeFeatureList {
     public static final String TEST_DEFAULT_DISABLED = "TestDefaultDisabled";
     public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";
     public static final String TOOLBAR_MIC_IPH_ANDROID = "ToolbarMicIphAndroid";
-    public static final String TOOLBAR_PHONE_OPTIMIZATIONS = "ToolbarPhoneOptimizations";
     public static final String TOOLBAR_SCROLL_ABLATION_ANDROID = "ToolbarScrollAblationAndroid";
     public static final String TOOLBAR_USE_HARDWARE_BITMAP_DRAW = "ToolbarUseHardwareBitmapDraw";
     public static final String TRANSLATE_ASSIST_CONTENT = "TranslateAssistContent";
