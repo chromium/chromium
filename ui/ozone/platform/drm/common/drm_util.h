@@ -29,6 +29,10 @@ namespace display {
 class DisplayMode;
 }  // namespace display
 
+namespace gfx {
+class Point;
+}
+
 namespace ui {
 
 // It is safe to assume there will be no more than 256 connected DRM devices.
@@ -135,7 +139,8 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     HardwareDisplayControllerInfo* info,
     int fd,
     const base::FilePath& sys_path,
-    uint8_t device_index);
+    uint8_t device_index,
+    const gfx::Point& origin);
 
 int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format);
 
