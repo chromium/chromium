@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_forward.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_download_client.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
@@ -30,6 +31,9 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace bruschetta {
+
+// Also referenced by BruschettaInstallerTest.
+extern const char kInstallResultMetric[] = "Bruschetta.InstallResult";
 
 namespace {
 
@@ -132,7 +136,7 @@ void BruschettaInstallerImpl::Install(std::string vm_name,
     InstallToolsDlc();
   } else {
     install_running_ = false;
-    NotifyObserverError(BruschettaInstallError::kInstallationProhibited);
+    Error(BruschettaInstallResult::kInstallationProhibited);
     LOG(ERROR) << "Installation prohibited by policy";
     return;
   }
@@ -159,7 +163,7 @@ void BruschettaInstallerImpl::OnToolsDlcInstalled(
 
   if (install_result.error != dlcservice::kErrorNone) {
     install_running_ = false;
-    NotifyObserverError(BruschettaInstallError::kDlcInstallError);
+    Error(BruschettaInstallResult::kDlcInstallError);
     LOG(ERROR) << "Failed to install tools dlc: " << install_result.error;
     return;
   }
@@ -220,7 +224,7 @@ void BruschettaInstallerImpl::DownloadFailed() {
   }
 
   install_running_ = false;
-  NotifyObserverError(BruschettaInstallError::kDownloadError);
+  Error(BruschettaInstallResult::kDownloadError);
 }
 
 void BruschettaInstallerImpl::DownloadSucceeded(
@@ -254,7 +258,7 @@ void BruschettaInstallerImpl::OnFirmwareDownloaded(
   if (!base::EqualsCaseInsensitiveASCII(completion_info.hash256,
                                         *expected_hash)) {
     install_running_ = false;
-    NotifyObserverError(BruschettaInstallError::kInvalidFirmware);
+    Error(BruschettaInstallResult::kInvalidFirmware);
     LOG(ERROR) << "Downloaded firmware image has incorrect hash";
     LOG(ERROR) << "Actual   " << completion_info.hash256;
     LOG(ERROR) << "Expected " << *expected_hash;
@@ -291,7 +295,7 @@ void BruschettaInstallerImpl::OnBootDiskDownloaded(
   if (!base::EqualsCaseInsensitiveASCII(completion_info.hash256,
                                         *expected_hash)) {
     install_running_ = false;
-    NotifyObserverError(BruschettaInstallError::kInvalidBootDisk);
+    Error(BruschettaInstallResult::kInvalidBootDisk);
     LOG(ERROR) << "Downloaded boot disk has incorrect hash";
     LOG(ERROR) << "Actual   " << completion_info.hash256;
     LOG(ERROR) << "Expected " << *expected_hash;
@@ -328,7 +332,7 @@ void BruschettaInstallerImpl::OnPflashDownloaded(
   if (!base::EqualsCaseInsensitiveASCII(completion_info.hash256,
                                         *expected_hash)) {
     install_running_ = false;
-    NotifyObserverError(BruschettaInstallError::kInvalidPflash);
+    Error(BruschettaInstallResult::kInvalidPflash);
     LOG(ERROR) << "Downloaded pflash has incorrect hash";
     LOG(ERROR) << "Actual   " << completion_info.hash256;
     LOG(ERROR) << "Expected " << *expected_hash;
@@ -405,7 +409,7 @@ void BruschettaInstallerImpl::OnOpenFds(std::unique_ptr<Fds> fds) {
 
   if (!fds) {
     install_running_ = false;
-    NotifyObserverError(BruschettaInstallError::kUnableToOpenImages);
+    Error(BruschettaInstallResult::kUnableToOpenImages);
     LOG(ERROR) << "Failed to open image files";
     return;
   }
@@ -446,7 +450,7 @@ void BruschettaInstallerImpl::OnCreateVmDisk(
       result->status() !=
           vm_tools::concierge::DiskImageStatus::DISK_STATUS_CREATED) {
     install_running_ = false;
-    NotifyObserverError(BruschettaInstallError::kCreateDiskError);
+    Error(BruschettaInstallResult::kCreateDiskError);
     if (result) {
       LOG(ERROR) << "Create VM failed: " << result->failure_reason();
     } else {
@@ -468,7 +472,7 @@ void BruschettaInstallerImpl::StartVm() {
     // Policy has changed to prohibit installation, so bail out before actually
     // starting the VM.
     install_running_ = false;
-    NotifyObserverError(BruschettaInstallError::kInstallationProhibited);
+    Error(BruschettaInstallResult::kInstallationProhibited);
     LOG(ERROR) << "Installation prohibited by policy";
     return;
   }
@@ -516,7 +520,7 @@ void BruschettaInstallerImpl::OnStartVm(
 
   if (!result || !result->success()) {
     install_running_ = false;
-    NotifyObserverError(BruschettaInstallError::kStartVmFailed);
+    Error(BruschettaInstallResult::kStartVmFailed);
     if (result) {
       LOG(ERROR) << "VM failed to start: " << result->failure_reason();
     } else {
@@ -544,6 +548,8 @@ void BruschettaInstallerImpl::LaunchTerminal() {
   guest_os::LaunchTerminal(profile_, display::kInvalidDisplayId, guest_id);
 
   // Close dialog.
+  base::UmaHistogramEnumeration(kInstallResultMetric,
+                                BruschettaInstallResult::kSuccess);
   std::move(close_closure_).Run();
 }
 
@@ -553,9 +559,9 @@ void BruschettaInstallerImpl::NotifyObserver(State state) {
   }
 }
 
-void BruschettaInstallerImpl::NotifyObserverError(
-    BruschettaInstallError error) {
-  VLOG(2) << "Error installing: " << BruschettaInstallErrorString(error);
+void BruschettaInstallerImpl::Error(BruschettaInstallResult error) {
+  VLOG(2) << "Error installing: " << BruschettaInstallResultString(error);
+  base::UmaHistogramEnumeration(kInstallResultMetric, error);
   if (observer_) {
     observer_->Error(error);
   }

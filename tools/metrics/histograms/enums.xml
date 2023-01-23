@@ -13590,6 +13590,20 @@ Called by update_bad_message_reasons.py.-->
   <int value="3" label="Candicate topics filtered"/>
 </enum>
 
+<enum name="BruschettaInstallResult">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kSuccess"/>
+  <int value="2" label="kInstallationProhibited"/>
+  <int value="3" label="kDlcInstallError"/>
+  <int value="4" label="kDownloadError"/>
+  <int value="5" label="kInvalidFirmware"/>
+  <int value="6" label="kInvalidBootDisk"/>
+  <int value="7" label="kInvalidPflash"/>
+  <int value="8" label="kUnableToOpenImages"/>
+  <int value="9" label="kCreateDiskError"/>
+  <int value="10" label="kStartVmFailed"/>
+</enum>
+
 <enum name="BruschettaResult">
   <int value="0" label="kUnknown"/>
   <int value="1" label="kSuccess"/>

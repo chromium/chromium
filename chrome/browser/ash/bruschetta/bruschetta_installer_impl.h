@@ -71,7 +71,7 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
   void LaunchTerminal();
 
   void NotifyObserver(State state);
-  void NotifyObserverError(BruschettaInstallError error);
+  void Error(BruschettaInstallResult error);
 
   bool install_running_ = false;
 

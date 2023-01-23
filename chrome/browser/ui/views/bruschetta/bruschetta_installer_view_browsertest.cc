@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(BruschettaInstallerViewBrowserTest, InstallThenError) {
   EXPECT_EQ(view_->GetPrimaryMessage(),
             l10n_util::GetStringUTF16(IDS_BRUSCHETTA_INSTALLER_ONGOING_TITLE));
 
-  view_->Error(BruschettaInstallError::kStartVmFailed);
+  view_->Error(BruschettaInstallResult::kStartVmFailed);
   EXPECT_EQ(nullptr, view_->GetOkButton());
   EXPECT_NE(nullptr, view_->GetCancelButton());
   EXPECT_EQ(view_->GetPrimaryMessage(),

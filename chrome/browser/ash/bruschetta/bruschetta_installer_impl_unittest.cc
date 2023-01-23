@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_download_client.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
@@ -31,6 +32,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace bruschetta {
+
+// Defined in bruschetta_installer_impl.cc
+extern const char kInstallResultMetric[];
 
 namespace {
 
@@ -58,7 +62,7 @@ class MockObserver : public BruschettaInstaller::Observer {
               StateChanged,
               (BruschettaInstaller::State state),
               (override));
-  MOCK_METHOD(void, Error, (BruschettaInstallError), (override));
+  MOCK_METHOD(void, Error, (BruschettaInstallResult), (override));
 };
 
 class BruschettaInstallerTest : public testing::TestWithParam<int>,
@@ -220,13 +224,20 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
   // Generate expectations and actions for a test that runs the install and
   // stops at the nth point where stopping is possible, returning true if the
   // stop is due to an error and false if the stop is a cancel. Passing in
-  // kMaxSteps means letting the install run to completion.
+  // kMaxSteps means letting the install run to completion. If out_reuslt is
+  // passed in, will set it to the expected result (as reported to the observer
+  // + metrics).
   //
   // Takes an optional Sequence to order these expectations before/after other
   // things.
-  bool ExpectStopOnStepN(int n, Sequence seq = {}) {
+  bool ExpectStopOnStepN(int n,
+                         Sequence seq = {},
+                         BruschettaInstallResult* out_result = nullptr) {
     // Policy check step
     {
+      if (out_result) {
+        *out_result = BruschettaInstallResult::kInstallationProhibited;
+      }
       auto& expectation =
           EXPECT_CALL(observer_,
                       StateChanged(BruschettaInstaller::State::kInstallStarted))
@@ -243,6 +254,9 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
 
     // DLC install step
     {
+      if (out_result) {
+        *out_result = BruschettaInstallResult::kDlcInstallError;
+      }
       auto& expectation =
           EXPECT_CALL(observer_,
                       StateChanged(BruschettaInstaller::State::kDlcInstall))
@@ -264,6 +278,9 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
 
     // Firmware image download step
     {
+      if (out_result) {
+        *out_result = BruschettaInstallResult::kDownloadError;
+      }
       auto& expectation =
           EXPECT_CALL(
               observer_,
@@ -283,6 +300,9 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
         MakeErrorPoint(expectation, seq, DownloadErrorCallback(false));
         return true;
       }
+      if (out_result) {
+        *out_result = BruschettaInstallResult::kInvalidFirmware;
+      }
       if (!n--) {
         MakeErrorPoint(expectation, seq, DownloadBadHashCallback());
         return true;
@@ -293,6 +313,9 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
 
     // Boot disk download step
     {
+      if (out_result) {
+        *out_result = BruschettaInstallResult::kDownloadError;
+      }
       auto& expectation =
           EXPECT_CALL(
               observer_,
@@ -312,6 +335,9 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
         MakeErrorPoint(expectation, seq, DownloadErrorCallback(false));
         return true;
       }
+      if (out_result) {
+        *out_result = BruschettaInstallResult::kInvalidBootDisk;
+      }
       if (!n--) {
         MakeErrorPoint(expectation, seq, DownloadBadHashCallback());
         return true;
@@ -322,6 +348,9 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
 
     // pflash download step
     {
+      if (out_result) {
+        *out_result = BruschettaInstallResult::kDownloadError;
+      }
       auto& expectation =
           EXPECT_CALL(observer_,
                       StateChanged(BruschettaInstaller::State::kPflashDownload))
@@ -340,6 +369,9 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
         MakeErrorPoint(expectation, seq, DownloadErrorCallback(false));
         return true;
       }
+      if (out_result) {
+        *out_result = BruschettaInstallResult::kInvalidPflash;
+      }
       if (!n--) {
         MakeErrorPoint(expectation, seq, DownloadBadHashCallback());
         return true;
@@ -350,6 +382,9 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
 
     // Open files step
     {
+      if (out_result) {
+        *out_result = BruschettaInstallResult::kUnableToOpenImages;
+      }
       auto& expectation =
           EXPECT_CALL(observer_,
                       StateChanged(BruschettaInstaller::State::kOpenFiles))
@@ -364,6 +399,9 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
 
     // Create VM disk step
     {
+      if (out_result) {
+        *out_result = BruschettaInstallResult::kCreateDiskError;
+      }
       auto& expectation =
           EXPECT_CALL(observer_,
                       StateChanged(BruschettaInstaller::State::kCreateVmDisk))
@@ -392,6 +430,9 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
 
     // Start VM step
     {
+      if (out_result) {
+        *out_result = BruschettaInstallResult::kInstallationProhibited;
+      }
       auto& expectation =
           EXPECT_CALL(observer_,
                       StateChanged(BruschettaInstaller::State::kStartVm))
@@ -405,6 +446,9 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
       if (!n--) {
         MakeErrorPoint(expectation, seq, PrefsCallback(prefs_not_installable_));
         return true;
+      }
+      if (out_result) {
+        *out_result = BruschettaInstallResult::kStartVmFailed;
       }
       if (!n--) {
         MakeErrorPoint(expectation, seq, StartVmCallback(absl::nullopt));
@@ -452,6 +496,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
   download::test::TestDownloadService* download_service_;
   BruschettaDownloadClient download_client_{&profile_};
   bool destroy_installer_on_completion_ = true;
+  base::HistogramTester histogram_tester_;
 
  private:
   // Called when the installer exists, suitable for base::BindOnce.
@@ -479,6 +524,8 @@ TEST_F(BruschettaInstallerTest, InstallSuccess) {
   installer_->Install(kVmName, kVmConfigId);
   run_loop_.Run();
 
+  histogram_tester_.ExpectBucketCount(kInstallResultMetric,
+                                      BruschettaInstallResult::kSuccess, 1);
   EXPECT_FALSE(installer_);
 }
 
@@ -504,7 +551,8 @@ TEST_F(BruschettaInstallerTest, MultipleCancelsNoOp) {
 }
 
 TEST_P(BruschettaInstallerTest, StopDuringInstall) {
-  bool is_error = ExpectStopOnStepN(GetParam());
+  BruschettaInstallResult expected_result;
+  bool is_error = ExpectStopOnStepN(GetParam(), {}, &expected_result);
 
   installer_->Install(kVmName, kVmConfigId);
   run_loop_.Run();
@@ -514,8 +562,10 @@ TEST_P(BruschettaInstallerTest, StopDuringInstall) {
     EXPECT_TRUE(installer_);
     installer_->Cancel();
     run_loop_2_.Run();
-  }
 
+    histogram_tester_.ExpectBucketCount(kInstallResultMetric, expected_result,
+                                        1);
+  }
   EXPECT_FALSE(installer_);
 }
 

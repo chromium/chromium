@@ -6,14 +6,15 @@
 
 namespace bruschetta {
 
-const char16_t* BruschettaInstallErrorString(
-    const BruschettaInstallError error) {
+const char16_t* BruschettaInstallResultString(
+    const BruschettaInstallResult error) {
 #define USTR(s) u##s
-#define ENTRY(name)                  \
-  case BruschettaInstallError::name: \
+#define ENTRY(name)                   \
+  case BruschettaInstallResult::name: \
     return USTR(#name)
   switch (error) {
     ENTRY(kUnknown);
+    ENTRY(kSuccess);
     ENTRY(kInstallationProhibited);
     ENTRY(kDlcInstallError);
     ENTRY(kDownloadError);

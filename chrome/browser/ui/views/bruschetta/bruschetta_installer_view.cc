@@ -211,7 +211,7 @@ void BruschettaInstallerView::StateChanged(InstallerState new_state) {
   OnStateUpdated();
 }
 
-void BruschettaInstallerView::Error(bruschetta::BruschettaInstallError error) {
+void BruschettaInstallerView::Error(bruschetta::BruschettaInstallResult error) {
   error_ = error;
   state_ = State::kFailed;
   OnStateUpdated();
@@ -274,7 +274,7 @@ std::u16string BruschettaInstallerView::GetSecondaryMessage() const {
   } else if (state_ == State::kFailed) {
     return l10n_util::GetStringFUTF16(
         IDS_BRUSCHETTA_INSTALLER_ERROR_MESSAGE,
-        bruschetta::BruschettaInstallErrorString(error_));
+        bruschetta::BruschettaInstallResultString(error_));
   }
   return {};
 }

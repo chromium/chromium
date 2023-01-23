@@ -52,7 +52,7 @@ class BruschettaInstallerView
 
   // bruschetta::BruschettaInstaller::Observer implementation.
   void StateChanged(InstallerState state) override;
-  void Error(bruschetta::BruschettaInstallError error) override;
+  void Error(bruschetta::BruschettaInstallResult error) override;
 
   // Public for testing purposes.
   std::u16string GetPrimaryMessage() const;
@@ -111,8 +111,8 @@ class BruschettaInstallerView
 
   std::unique_ptr<bruschetta::BruschettaInstaller> installer_;
   guest_os::GuestId guest_id_;
-  bruschetta::BruschettaInstallError error_ =
-      bruschetta::BruschettaInstallError::kUnknown;
+  bruschetta::BruschettaInstallResult error_ =
+      bruschetta::BruschettaInstallResult::kUnknown;
   bool is_destroying_ = false;
 
   base::WeakPtrFactory<BruschettaInstallerView> weak_factory_{this};

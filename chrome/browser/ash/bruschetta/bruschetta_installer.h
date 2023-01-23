@@ -11,22 +11,26 @@
 
 namespace bruschetta {
 
-enum class BruschettaInstallError {
-  kUnknown,
-  kInstallationProhibited,
-  kDlcInstallError,
-  kDownloadError,
-  kInvalidFirmware,
-  kInvalidBootDisk,
-  kInvalidPflash,
-  kUnableToOpenImages,
-  kCreateDiskError,
-  kStartVmFailed,
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class BruschettaInstallResult {
+  kUnknown = 0,
+  kSuccess = 1,
+  kInstallationProhibited = 2,
+  kDlcInstallError = 3,
+  kDownloadError = 4,
+  kInvalidFirmware = 5,
+  kInvalidBootDisk = 6,
+  kInvalidPflash = 7,
+  kUnableToOpenImages = 8,
+  kCreateDiskError = 9,
+  kStartVmFailed = 10,
+  kMaxValue = kStartVmFailed,
 };
 
 // Returns the string name of the BruschettaResult.
-const char16_t* BruschettaInstallErrorString(
-    const BruschettaInstallError error);
+const char16_t* BruschettaInstallResultString(
+    const BruschettaInstallResult error);
 
 class BruschettaInstaller {
  public:
@@ -45,7 +49,7 @@ class BruschettaInstaller {
   class Observer {
    public:
     virtual void StateChanged(State state) = 0;
-    virtual void Error(BruschettaInstallError error) = 0;
+    virtual void Error(BruschettaInstallResult error) = 0;
   };
 
   virtual ~BruschettaInstaller() = default;
