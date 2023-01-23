@@ -71,6 +71,8 @@ class BLINK_COMMON_EXPORT AssociatedInterfaceProvider {
     GetInterface(remote->BindNewEndpointAndPassReceiver(task_runner_));
   }
 
+  // If there is an override for `name`, passing in a null `binder` removes the
+  // override.
   void OverrideBinderForTesting(
       const std::string& name,
       const base::RepeatingCallback<void(mojo::ScopedInterfaceEndpointHandle)>&

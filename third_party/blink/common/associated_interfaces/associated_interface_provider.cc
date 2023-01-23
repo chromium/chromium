@@ -33,6 +33,8 @@ class AssociatedInterfaceProvider::LocalProvider
     binders_[name] = binder;
   }
 
+  void ResetBinderForName(const std::string& name) { binders_.erase(name); }
+
   bool HasInterface(const std::string& name) const {
     return binders_.find(name) != binders_.end();
   }
@@ -93,9 +95,14 @@ void AssociatedInterfaceProvider::OverrideBinderForTesting(
     const std::string& name,
     const base::RepeatingCallback<void(mojo::ScopedInterfaceEndpointHandle)>&
         binder) {
-  if (!local_provider_)
-    local_provider_ = std::make_unique<LocalProvider>(task_runner_);
-  local_provider_->SetBinderForName(name, binder);
+  if (binder) {
+    if (!local_provider_) {
+      local_provider_ = std::make_unique<LocalProvider>(task_runner_);
+    }
+    local_provider_->SetBinderForName(name, binder);
+  } else if (local_provider_) {
+    local_provider_->ResetBinderForName(name);
+  }
 }
 
 AssociatedInterfaceProvider*

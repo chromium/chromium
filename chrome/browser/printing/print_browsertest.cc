@@ -48,6 +48,7 @@
 #include "components/printing/browser/print_manager_utils.h"
 #include "components/printing/common/print.mojom-test-utils.h"
 #include "components/printing/common/print.mojom.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -517,6 +518,62 @@ class KillPrintRenderFrame
  private:
   const raw_ptr<content::RenderProcessHost> rph_;
   mojo::AssociatedReceiver<mojom::PrintRenderFrame> receiver_{this};
+};
+
+class PrintPreviewDoneObserver
+    : public mojom::PrintRenderFrameInterceptorForTesting {
+ public:
+  PrintPreviewDoneObserver(content::RenderFrameHost* render_frame_host,
+                           mojom::PrintRenderFrame* print_render_frame)
+      : render_frame_host_(render_frame_host),
+        print_render_frame_(print_render_frame) {
+    OverrideBinderForTesting();
+  }
+  ~PrintPreviewDoneObserver() override {
+    render_frame_host_->GetRemoteAssociatedInterfaces()
+        ->OverrideBinderForTesting(mojom::PrintRenderFrame::Name_,
+                                   base::NullCallback());
+  }
+
+  void WaitForPrintPreviewDialogClosed() { run_loop_.Run(); }
+
+  // mojom::PrintRenderFrameInterceptorForTesting:
+  mojom::PrintRenderFrame* GetForwardingInterface() override {
+    return print_render_frame_;
+  }
+  void OnPrintPreviewDialogClosed() override {
+    GetForwardingInterface()->OnPrintPreviewDialogClosed();
+    run_loop_.Quit();
+  }
+
+ private:
+  void OverrideBinderForTesting() {
+    // Safe to use base::Unretained() below because:
+    // 1) Normally, Bind() will unregister the override after it gets called.
+    // 2) If Bind() does not get called, the dtor will unregister the override.
+    render_frame_host_->GetRemoteAssociatedInterfaces()
+        ->OverrideBinderForTesting(
+            mojom::PrintRenderFrame::Name_,
+            base::BindRepeating(&PrintPreviewDoneObserver::Bind,
+                                base::Unretained(this)));
+  }
+
+  void Bind(mojo::ScopedInterfaceEndpointHandle handle) {
+    receiver_.Bind(mojo::PendingAssociatedReceiver<mojom::PrintRenderFrame>(
+        std::move(handle)));
+
+    // After the initial binding, reset the binder override. Otherwise,
+    // PrintPreviewDoneObserver will also try to bind the remote passed by
+    // SetPrintPreviewUI(), which will fail since `receiver_` is already bound.
+    render_frame_host_->GetRemoteAssociatedInterfaces()
+        ->OverrideBinderForTesting(mojom::PrintRenderFrame::Name_,
+                                   base::NullCallback());
+  }
+
+  raw_ptr<content::RenderFrameHost> const render_frame_host_;
+  raw_ptr<mojom::PrintRenderFrame> const print_render_frame_;
+  mojo::AssociatedReceiver<mojom::PrintRenderFrame> receiver_{this};
+  base::RunLoop run_loop_;
 };
 
 }  // namespace
@@ -2052,6 +2109,39 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, WindowDotPrint) {
   content::ExecuteScriptAsync(web_contents->GetPrimaryMainFrame(),
                               "window.print();");
   print_preview_observer.WaitUntilPreviewIsReady();
+}
+
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
+                       WindowDotPrintTriggersBeforeAfterEvents) {
+  // Load test page and check the initial state.
+  const GURL kUrl(
+      embedded_test_server()->GetURL("/printing/on_before_after_events.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+  EXPECT_EQ(false, content::EvalJs(rfh, "firedBeforePrint"));
+  EXPECT_EQ(false, content::EvalJs(rfh, "firedAfterPrint"));
+
+  // Set up the PrintPreviewDoneObserver early, as it needs to intercept Mojo
+  // IPCs before they start.
+  PrintPreviewDoneObserver done_observer(rfh, GetPrintRenderFrame(rfh).get());
+
+  // Load Print Preview and make sure the beforeprint event fired.
+  PrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false);
+  content::ExecuteScriptAsync(rfh, "window.print();");
+  print_preview_observer.WaitUntilPreviewIsReady();
+  EXPECT_EQ(true, content::EvalJs(rfh, "firedBeforePrint"));
+  EXPECT_EQ(false, content::EvalJs(rfh, "firedAfterPrint"));
+
+  // Close the Print Preview dialog and make sure the afterprint event fired.
+  auto* web_contents_modal_dialog_manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
+  ASSERT_TRUE(web_contents_modal_dialog_manager);
+  web_contents_modal_dialog_manager->CloseAllDialogs();
+  done_observer.WaitForPrintPreviewDialogClosed();
+  EXPECT_EQ(true, content::EvalJs(rfh, "firedBeforePrint"));
+  EXPECT_EQ(true, content::EvalJs(rfh, "firedAfterPrint"));
 }
 
 class PrintPrerenderBrowserTest : public PrintBrowserTest {
