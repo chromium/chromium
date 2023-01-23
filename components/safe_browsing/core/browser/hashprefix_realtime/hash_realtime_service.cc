@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 
 #include "base/base64url.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/escape.h"
@@ -264,7 +265,8 @@ void HashRealTimeService::OnURLLoaderComplete(
                                 response_code);
 
   auto response = ParseResponseAndUpdateBackoff(net_error, response_code,
-                                                std::move(response_body));
+                                                std::move(response_body),
+                                                hash_prefixes_in_request);
   absl::optional<SBThreatType> sb_threat_type;
   if (response.has_value()) {
     if (cache_manager_) {
@@ -296,9 +298,11 @@ base::expected<std::unique_ptr<V5::SearchHashesResponse>,
 HashRealTimeService::ParseResponseAndUpdateBackoff(
     int net_error,
     int response_code,
-    std::unique_ptr<std::string> response_body) const {
+    std::unique_ptr<std::string> response_body,
+    const std::vector<std::string>& requested_hash_prefixes) const {
   auto response =
-      ParseResponse(net_error, response_code, std::move(response_body));
+      ParseResponse(net_error, response_code, std::move(response_body),
+                    requested_hash_prefixes);
   LogOperationResult(response.has_value() ? OperationResult::kSuccess
                                           : response.error());
   if (response.has_value()) {
@@ -307,6 +311,28 @@ HashRealTimeService::ParseResponseAndUpdateBackoff(
     backoff_operator_->ReportError();
   }
   return response;
+}
+
+void HashRealTimeService::RemoveUnmatchedFullHashes(
+    std::unique_ptr<V5::SearchHashesResponse>& response,
+    const std::vector<std::string>& requested_hash_prefixes) const {
+  size_t initial_full_hashes_count = response->full_hashes_size();
+  std::set<std::string> requested_hash_prefixes_set(
+      requested_hash_prefixes.begin(), requested_hash_prefixes.end());
+  auto* mutable_full_hashes = response->mutable_full_hashes();
+  mutable_full_hashes->erase(
+      std::remove_if(
+          mutable_full_hashes->begin(), mutable_full_hashes->end(),
+          [requested_hash_prefixes_set](const V5::FullHash& full_hash) {
+            return !base::Contains(
+                requested_hash_prefixes_set,
+                hash_realtime_utils::GetHashPrefix(full_hash.full_hash()));
+          }),
+      mutable_full_hashes->end());
+  size_t final_full_hashes_count = response->full_hashes_size();
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.HPRT.FoundUnmatchedFullHashes",
+      initial_full_hashes_count != final_full_hashes_count);
 }
 
 void HashRealTimeService::RemoveFullHashDetailsWithInvalidEnums(
@@ -336,7 +362,8 @@ base::expected<std::unique_ptr<V5::SearchHashesResponse>,
 HashRealTimeService::ParseResponse(
     int net_error,
     int response_code,
-    std::unique_ptr<std::string> response_body) const {
+    std::unique_ptr<std::string> response_body,
+    const std::vector<std::string>& requested_hash_prefixes) const {
   auto response = std::make_unique<V5::SearchHashesResponse>();
   bool net_and_http_ok = net_error == net::OK && response_code == net::HTTP_OK;
   if (net_and_http_ok && response->ParseFromString(*response_body)) {
@@ -349,6 +376,7 @@ HashRealTimeService::ParseResponse(
         return base::unexpected(OperationResult::kIncorrectFullHashLengthError);
       }
     }
+    RemoveUnmatchedFullHashes(response, requested_hash_prefixes);
     RemoveFullHashDetailsWithInvalidEnums(response);
     return std::move(response);
   } else if (net_and_http_ok) {

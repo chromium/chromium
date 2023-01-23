@@ -153,7 +153,8 @@ class HashRealTimeServiceTest : public PlatformTest {
   void CheckRequestMetrics(
       int expected_prefix_count,
       int expected_network_result,
-      HashRealTimeService::OperationResult expected_operation_result) {
+      HashRealTimeService::OperationResult expected_operation_result,
+      absl::optional<bool> expected_found_unmatched_full_hashes) {
     histogram_tester_->ExpectUniqueSample(
         /*name=*/"SafeBrowsing.HPRT.Request.CountOfPrefixes",
         /*sample=*/expected_prefix_count,
@@ -168,6 +169,16 @@ class HashRealTimeServiceTest : public PlatformTest {
         /*name=*/"SafeBrowsing.HPRT.OperationResult",
         /*sample=*/expected_operation_result,
         /*expected_bucket_count=*/1);
+    if (expected_found_unmatched_full_hashes.has_value()) {
+      histogram_tester_->ExpectUniqueSample(
+          /*name=*/"SafeBrowsing.HPRT.FoundUnmatchedFullHashes",
+          /*sample=*/expected_found_unmatched_full_hashes.value(),
+          /*expected_bucket_count=*/1);
+    } else {
+      histogram_tester_->ExpectTotalCount(
+          /*name=*/"SafeBrowsing.HPRT.FoundUnmatchedFullHashes",
+          /*expected_count=*/0);
+    }
   }
   V5::FullHash CreateFullHashProto(
       std::vector<V5::ThreatType> threat_types,
@@ -233,7 +244,8 @@ class HashRealTimeServiceTest : public PlatformTest {
                              std::vector<V5::FullHash> response_full_hashes,
                              SBThreatType expected_threat_type,
                              int expected_prefix_count,
-                             int expected_threat_info_size) {
+                             int expected_threat_info_size,
+                             bool expected_found_unmatched_full_hashes) {
     auto num_requests = test_url_loader_factory_->total_requests();
     base::MockCallback<HPRTLookupResponseCallback> response_callback;
     StartSuccessRequest(url, cached_hash_prefixes, response_callback,
@@ -245,7 +257,9 @@ class HashRealTimeServiceTest : public PlatformTest {
         /*expected_prefix_count=*/expected_prefix_count,
         /*expected_network_result=*/200,
         /*expected_operation_result=*/
-        HashRealTimeService::OperationResult::kSuccess);
+        HashRealTimeService::OperationResult::kSuccess,
+        /*expected_found_unmatched_full_hashes=*/
+        expected_found_unmatched_full_hashes);
     CheckPostRequestMetrics(expected_threat_info_size);
     ResetMetrics();
 
@@ -296,7 +310,8 @@ class HashRealTimeServiceTest : public PlatformTest {
         /*expected_prefix_count=*/expected_prefix_count,
         /*expected_network_result=*/status,
         /*expected_operation_result=*/
-        expected_operation_result);
+        expected_operation_result, /*expected_found_unmatched_full_hashes=*/
+        absl::nullopt);
     ResetMetrics();
 
     EXPECT_EQ(test_url_loader_factory_->total_requests(), num_requests + 1u);
@@ -411,7 +426,8 @@ TEST_F(HashRealTimeServiceTest, TestLookup_OneHash_Safe) {
       /*url=*/url, /*cached_hash_prefixes=*/{}, /*response_full_hashes=*/{},
       /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_SAFE,
       /*expected_prefix_count=*/1,
-      /*expected_threat_info_size=*/0);
+      /*expected_threat_info_size=*/0,
+      /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(HashRealTimeServiceTest, TestLookup_OneHash_Phishing) {
@@ -422,7 +438,8 @@ TEST_F(HashRealTimeServiceTest, TestLookup_OneHash_Phishing) {
                            UrlToSingleFullHash(url))},
       /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
       /*expected_prefix_count=*/1,
-      /*expected_threat_info_size=*/1);
+      /*expected_threat_info_size=*/1,
+      /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(HashRealTimeServiceTest, TestLookup_OneHash_Malware) {
@@ -433,7 +450,8 @@ TEST_F(HashRealTimeServiceTest, TestLookup_OneHash_Malware) {
                            UrlToSingleFullHash(url))},
       /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
       /*expected_prefix_count=*/1,
-      /*expected_threat_info_size=*/1);
+      /*expected_threat_info_size=*/1,
+      /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(HashRealTimeServiceTest, TestLookup_OneHash_UnwantedSoftware) {
@@ -444,7 +462,8 @@ TEST_F(HashRealTimeServiceTest, TestLookup_OneHash_UnwantedSoftware) {
                            UrlToSingleFullHash(url))},
       /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_URL_UNWANTED,
       /*expected_prefix_count=*/1,
-      /*expected_threat_info_size=*/1);
+      /*expected_threat_info_size=*/1,
+      /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(HashRealTimeServiceTest, TestLookup_OneHash_Suspicious) {
@@ -455,7 +474,8 @@ TEST_F(HashRealTimeServiceTest, TestLookup_OneHash_Suspicious) {
                            UrlToSingleFullHash(url))},
       /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_SUSPICIOUS_SITE,
       /*expected_prefix_count=*/1,
-      /*expected_threat_info_size=*/1);
+      /*expected_threat_info_size=*/1,
+      /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(HashRealTimeServiceTest, TestLookup_OneHash_Billing) {
@@ -466,7 +486,8 @@ TEST_F(HashRealTimeServiceTest, TestLookup_OneHash_Billing) {
                            UrlToSingleFullHash(url))},
       /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_BILLING,
       /*expected_prefix_count=*/1,
-      /*expected_threat_info_size=*/1);
+      /*expected_threat_info_size=*/1,
+      /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(HashRealTimeServiceTest, TestLookup_OneHash_IrrelevantThreatType) {
@@ -477,7 +498,8 @@ TEST_F(HashRealTimeServiceTest, TestLookup_OneHash_IrrelevantThreatType) {
                            UrlToSingleFullHash(url))},
       /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_SAFE,
       /*expected_prefix_count=*/1,
-      /*expected_threat_info_size=*/0);
+      /*expected_threat_info_size=*/0,
+      /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(HashRealTimeServiceTest, TestLookup_OverlappingHashPrefixes) {
@@ -492,7 +514,8 @@ TEST_F(HashRealTimeServiceTest, TestLookup_OverlappingHashPrefixes) {
                            UrlToSingleFullHash(url2))},
       /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_SAFE,
       /*expected_prefix_count=*/1,
-      /*expected_threat_info_size=*/0);
+      /*expected_threat_info_size=*/0,
+      /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(HashRealTimeServiceTest, TestLookup_MaxHashes_Phishing) {
@@ -508,7 +531,8 @@ TEST_F(HashRealTimeServiceTest, TestLookup_MaxHashes_Phishing) {
                            UrlToFullHashes(url)[15])},
       /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
       /*expected_prefix_count=*/30,
-      /*expected_threat_info_size=*/2);
+      /*expected_threat_info_size=*/2,
+      /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(HashRealTimeServiceTest,
@@ -542,7 +566,8 @@ TEST_F(HashRealTimeServiceTest,
            non_matching_full_hash)},
       /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
       /*expected_prefix_count=*/30,
-      /*expected_threat_info_size=*/9);
+      /*expected_threat_info_size=*/9,
+      /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(HashRealTimeServiceTest, TestLookup_MaxHashes_OnlyIrrelevant) {
@@ -572,7 +597,8 @@ TEST_F(HashRealTimeServiceTest, TestLookup_MaxHashes_OnlyIrrelevant) {
                            UrlToHashPrefixes(url)[15] + rest_of_hash)},
       /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_SAFE,
       /*expected_prefix_count=*/30,
-      /*expected_threat_info_size=*/0);
+      /*expected_threat_info_size=*/0,
+      /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(HashRealTimeServiceTest, TestLookup_CompetingSeverities) {
@@ -585,7 +611,8 @@ TEST_F(HashRealTimeServiceTest, TestLookup_CompetingSeverities) {
           UrlToSingleFullHash(url))},
       /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
       /*expected_prefix_count=*/1,
-      /*expected_threat_info_size=*/3);
+      /*expected_threat_info_size=*/3,
+      /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(HashRealTimeServiceTest, TestLookup_Attributes) {
@@ -603,7 +630,8 @@ TEST_F(HashRealTimeServiceTest, TestLookup_Attributes) {
           UrlToSingleFullHash(url), attributes)},
       /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
       /*expected_prefix_count=*/1,
-      /*expected_threat_info_size=*/3);
+      /*expected_threat_info_size=*/3,
+      /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(HashRealTimeServiceTest, TestLookup_InvalidThreatTypes) {
@@ -615,7 +643,8 @@ TEST_F(HashRealTimeServiceTest, TestLookup_InvalidThreatTypes) {
         {CreateFullHashProto(threat_types, UrlToSingleFullHash(url))},
         /*expected_threat_type=*/expected_threat_type,
         /*expected_prefix_count=*/1,
-        /*expected_threat_info_size=*/expected_threat_info_size);
+        /*expected_threat_info_size=*/expected_threat_info_size,
+        /*expected_found_unmatched_full_hashes=*/false);
   };
   // Sanity check the static casting on a valid threat type is not filtered out.
   run_test(GURL("https://example.test1"), {static_cast<V5::ThreatType>(2)},
@@ -658,7 +687,8 @@ TEST_F(HashRealTimeServiceTest, TestLookup_InvalidAttributes) {
             UrlToSingleFullHash(url), attributes)},
         /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_URL_UNWANTED,
         /*expected_prefix_count=*/1,
-        /*expected_threat_info_size=*/1);
+        /*expected_threat_info_size=*/1,
+        /*expected_found_unmatched_full_hashes=*/false);
   }
   // Threat types are the same.
   {
@@ -678,7 +708,41 @@ TEST_F(HashRealTimeServiceTest, TestLookup_InvalidAttributes) {
                              UrlToSingleFullHash(url), attributes)},
         /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_URL_UNWANTED,
         /*expected_prefix_count=*/1,
-        /*expected_threat_info_size=*/2);
+        /*expected_threat_info_size=*/2,
+        /*expected_found_unmatched_full_hashes=*/false);
+  }
+}
+
+TEST_F(HashRealTimeServiceTest, TestLookup_UnmatchedFullHashesInResponse) {
+  // The code should still function properly even if the server sends back
+  // FullHash objects that don't match the requested hash prefixes.
+  {
+    GURL url = GURL("https://example.test1");
+    GURL other_url = GURL("https://example.test2");
+    RunRequestSuccessTest(
+        /*url=*/url,
+        /*cached_hash_prefixes=*/{}, /*response_full_hashes=*/
+        {CreateFullHashProto({V5::ThreatType::MALWARE},
+                             UrlToSingleFullHash(other_url))},
+        /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_SAFE,
+        /*expected_prefix_count=*/1,
+        /*expected_threat_info_size=*/0,
+        /*expected_found_unmatched_full_hashes=*/true);
+  }
+  {
+    GURL url = GURL("https://example.test3");
+    GURL other_url = GURL("https://example.test4");
+    RunRequestSuccessTest(
+        /*url=*/url,
+        /*cached_hash_prefixes=*/{}, /*response_full_hashes=*/
+        {CreateFullHashProto({V5::ThreatType::MALWARE},
+                             UrlToSingleFullHash(other_url)),
+         CreateFullHashProto({V5::ThreatType::UNWANTED_SOFTWARE},
+                             UrlToSingleFullHash(url))},
+        /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_URL_UNWANTED,
+        /*expected_prefix_count=*/1,
+        /*expected_threat_info_size=*/1,
+        /*expected_found_unmatched_full_hashes=*/true);
   }
 }
 
@@ -695,7 +759,8 @@ TEST_F(HashRealTimeServiceTest, TestLookup_DuplicateFullHashesInResponse) {
                            UrlToSingleFullHash(url1))},
       /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
       /*expected_prefix_count=*/1,
-      /*expected_threat_info_size=*/2);
+      /*expected_threat_info_size=*/2,
+      /*expected_found_unmatched_full_hashes=*/false);
   // Run it with the server responses backwards as well to confirm order doesn't
   // matter.
   GURL url2 = GURL("https://example.test2");
@@ -708,7 +773,8 @@ TEST_F(HashRealTimeServiceTest, TestLookup_DuplicateFullHashesInResponse) {
                            UrlToSingleFullHash(url2))},
       /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
       /*expected_prefix_count=*/1,
-      /*expected_threat_info_size=*/2);
+      /*expected_threat_info_size=*/2,
+      /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(HashRealTimeServiceTest, TestLookup_DuplicateFullHashDetailsInResponse) {
@@ -724,7 +790,8 @@ TEST_F(HashRealTimeServiceTest, TestLookup_DuplicateFullHashDetailsInResponse) {
           UrlToSingleFullHash(url))},
       /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
       /*expected_prefix_count=*/1,
-      /*expected_threat_info_size=*/4);
+      /*expected_threat_info_size=*/4,
+      /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_Error) {
@@ -827,7 +894,8 @@ TEST_F(HashRealTimeServiceTest, TestFullyCached_OverlappingHashPrefixes) {
       {CreateFullHashProto({V5::ThreatType::SOCIAL_ENGINEERING},
                            UrlToSingleFullHash(url1))},
       /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
-      /*expected_prefix_count=*/1, /*expected_threat_info_size=*/1);
+      /*expected_prefix_count=*/1, /*expected_threat_info_size=*/1,
+      /*expected_found_unmatched_full_hashes=*/false);
   ResetMetrics();
   // Start a lookup for url2. This has the same hash prefix as url1, so the
   // results are fully cached, and no request is sent.
@@ -844,16 +912,17 @@ TEST_F(HashRealTimeServiceTest, TestPartiallyCached_RequestResultsUsed) {
   RunSimpleRequest(
       /*url=*/url1, /*response_full_hashes=*/
       {CreateFullHashProto({V5::ThreatType::UNWANTED_SOFTWARE},
-                           UrlToFullHashes(url1)[0])});
+                           UrlToFullHashes(url1).back())});
   ResetMetrics();
   GURL url2 = GURL("https://a.b.c.d.e.f.g/1/2/3/4/5/6?param=x");
   RunRequestSuccessTest(
       /*url=*/url2, /*cached_hash_prefixes=*/UrlToHashPrefixesAsSet(url1),
       /*response_full_hashes=*/
       {CreateFullHashProto({V5::ThreatType::SOCIAL_ENGINEERING},
-                           UrlToFullHashes(url2)[0])},
+                           UrlToFullHashes(url2).back())},
       /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
-      /*expected_prefix_count=*/24, /*expected_threat_info_size=*/2);
+      /*expected_prefix_count=*/24, /*expected_threat_info_size=*/2,
+      /*expected_found_unmatched_full_hashes=*/false);
 }
 
 // Since phishing is more severe than unwanted software, the cached results
@@ -863,16 +932,17 @@ TEST_F(HashRealTimeServiceTest, TestPartiallyCached_CachedResultsUsed) {
   RunSimpleRequest(
       /*url=*/url1, /*response_full_hashes=*/
       {CreateFullHashProto({V5::ThreatType::SOCIAL_ENGINEERING},
-                           UrlToFullHashes(url1)[0])});
+                           UrlToFullHashes(url1).back())});
   ResetMetrics();
   GURL url2 = GURL("https://a.b.c.d.e.f.g/1/2/3/4/5/6?param=x");
   RunRequestSuccessTest(
       /*url=*/url2, /*cached_hash_prefixes=*/UrlToHashPrefixesAsSet(url1),
       /*response_full_hashes=*/
       {CreateFullHashProto({V5::ThreatType::UNWANTED_SOFTWARE},
-                           UrlToFullHashes(url2)[0])},
+                           UrlToFullHashes(url2).back())},
       /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
-      /*expected_prefix_count=*/24, /*expected_threat_info_size=*/2);
+      /*expected_prefix_count=*/24, /*expected_threat_info_size=*/2,
+      /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(HashRealTimeServiceTest, TestCacheDuration) {
@@ -893,7 +963,8 @@ TEST_F(HashRealTimeServiceTest, TestCacheDuration) {
       /*url=*/url, /*cached_hash_prefixes=*/{}, /*response_full_hashes=*/{},
       /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_SAFE,
       /*expected_prefix_count=*/1,
-      /*expected_threat_info_size=*/0);
+      /*expected_threat_info_size=*/0,
+      /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(HashRealTimeServiceNoCacheManagerTest, TestNoCaching) {
@@ -907,7 +978,8 @@ TEST_F(HashRealTimeServiceNoCacheManagerTest, TestNoCaching) {
       /*url=*/url, /*cached_hash_prefixes=*/{}, /*response_full_hashes=*/{},
       /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_SAFE,
       /*expected_prefix_count=*/1,
-      /*expected_threat_info_size=*/0);
+      /*expected_threat_info_size=*/0,
+      /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(HashRealTimeServiceTest, TestShutdown) {

@@ -168,15 +168,25 @@ class HashRealTimeService : public KeyedService {
   ParseResponseAndUpdateBackoff(
       int net_error,
       int http_error,
-      std::unique_ptr<std::string> response_body) const;
+      std::unique_ptr<std::string> response_body,
+      const std::vector<std::string>& requested_hash_prefixes) const;
 
   // Tries to parse the |response_body| into a |SearchHashesResponse|, and
   // returns either the response proto or an |OperationResult| with details on
-  // why the parsing was unsuccessful.
+  // why the parsing was unsuccessful. |requested_hash_prefixes| is used for a
+  // sanitization call into |RemoveUnmatchedFullHashes|.
   base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationResult>
   ParseResponse(int net_error,
                 int http_error,
-                std::unique_ptr<std::string> response_body) const;
+                std::unique_ptr<std::string> response_body,
+                const std::vector<std::string>& requested_hash_prefixes) const;
+
+  // Removes any |FullHash| within the |response| whose hash prefix is not found
+  // within |requested_hash_prefixes|. This is not expected to occur, but is
+  // handled out of caution.
+  void RemoveUnmatchedFullHashes(
+      std::unique_ptr<V5::SearchHashesResponse>& response,
+      const std::vector<std::string>& requested_hash_prefixes) const;
 
   // Removes any |FullHashDetail| within the |response| that has invalid
   // |ThreatType| or |ThreatAttribute| enums. This is for forward compatibility,

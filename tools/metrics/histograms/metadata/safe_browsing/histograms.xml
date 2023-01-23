@@ -911,6 +911,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.HPRT.FoundUnmatchedFullHashes"
+    enum="BooleanFound" expires_after="2023-07-20">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the response from the hash-prefix real-time lookup contained
+    any full hashes that did not match the requested hash prefixes. This is
+    logged after the network request for the lookup returns.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.HPRT.GetCache.Time" units="ms"
     expires_after="2023-07-20">
   <owner>thefrog@chromium.org</owner>
