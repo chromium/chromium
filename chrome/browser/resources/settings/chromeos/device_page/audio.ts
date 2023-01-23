@@ -267,6 +267,14 @@ class SettingsAudioElement extends SettingsAudioElementBase {
 
     return SETTINGS_20PX_ICON_PREFIX + 'volume-up';
   }
+
+  /**
+   * Handles the case when there are no output devices. The output section
+   * should be hidden in this case.
+   */
+  protected getOutputHidden_(): boolean {
+    return this.audioSystemProperties_.outputDevices.length === 0;
+  }
 }
 
 declare global {

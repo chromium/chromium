@@ -893,7 +893,9 @@ suite('SettingsDevicePage', function() {
       outputDevices: [],
 
       /** @type {!Array<!AudioDevice>} */
-      inputDevices: [],
+      inputDevices: [
+        fakeCrosAudioConfig.fakeInternalMicActive,
+      ],
     };
 
     /** @type {!AudioSystemProperties} */
@@ -1102,6 +1104,12 @@ suite('SettingsDevicePage', function() {
       assertEquals(
           emptyOutputDevicesFakeAudioSystemProperties.outputDevices.length,
           outputDeviceDropdown.length);
+
+      // If the output devices are empty, the output section should be hidden.
+      const outputDeviceSection = audioPage.shadowRoot.querySelector('#output');
+      assertFalse(isVisible(outputDeviceSection));
+      const inputDeviceSection = audioPage.shadowRoot.querySelector('#input');
+      assertTrue(isVisible(inputDeviceSection));
 
       // Test active speaker case.
       crosAudioConfig.setAudioSystemProperties(

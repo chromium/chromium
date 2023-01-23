@@ -61,9 +61,8 @@
 
 <!-- Output section -->
 <template is="dom-if" if="[[showAudioInfo]]">
-  <!-- TODO(crbug.com/1092970): Output section should be hidden if there are no
-  output devices. -->
-  <div id="output">
+  <div id="output"
+      hidden="[[getOutputHidden_(audioSystemProperties_.outputDevices)]]">
     <h2 id="audioOutputTitle">$i18n{audioOutputTitle}</h2>
     <div id="audioOutputSubsection" class="subsection">
       <div id="outputDeviceSubsection" class="settings-box">
