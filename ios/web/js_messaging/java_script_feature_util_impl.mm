@@ -18,7 +18,6 @@
 #import "ios/web/js_features/error_page/error_page_java_script_feature.h"
 #import "ios/web/js_features/scroll_helper/scroll_helper_java_script_feature.h"
 #import "ios/web/js_features/window_error/window_error_java_script_feature.h"
-#import "ios/web/js_messaging/script_command_java_script_feature.h"
 #import "ios/web/js_messaging/web_frames_manager_java_script_feature.h"
 #import "ios/web/navigation/navigation_java_script_feature.h"
 #import "ios/web/navigation/session_restore_java_script_feature.h"
@@ -135,7 +134,6 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
       GetShareWorkaroundJavaScriptFeature(),
       GetWindowErrorJavaScriptFeature(),
       NavigationJavaScriptFeature::GetInstance(),
-      ScriptCommandJavaScriptFeature::GetInstance(),
       SessionRestoreJavaScriptFeature::FromBrowserState(browser_state),
       TextFragmentsJavaScriptFeature::GetInstance(),
       WebFramesManagerJavaScriptFeature::FromBrowserState(browser_state),

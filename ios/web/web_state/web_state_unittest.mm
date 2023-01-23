@@ -106,31 +106,6 @@ TEST_F(WebStateTest, LoadingProgress) {
   });
 }
 
-// Tests that page which overrides window.webkit object does not break the
-// messaging system.
-TEST_F(WebStateTest, OverridingWebKitObject) {
-  // Add a script command handler.
-  __block bool message_received = false;
-  const web::WebState::ScriptCommandCallback callback = base::BindRepeating(
-      ^(const base::Value&, const GURL&,
-        /*interacted*/ bool, /*is_main_frame*/ web::WebFrame*) {
-        message_received = true;
-      });
-  auto subscription = web_state()->AddScriptCommandCallback(callback, "test");
-
-  // Load the page which overrides window.webkit object and wait until the
-  // test message is received.
-  ASSERT_TRUE(LoadHtml(
-      "<script>"
-      "  webkit = undefined;"
-      "  __gCrWeb.message.invokeOnHost({'command': 'test.webkit-overriding'});"
-      "</script>"));
-
-  WaitForCondition(^{
-    return message_received;
-  });
-}
-
 // Tests that reload with web::ReloadType::NORMAL is no-op when navigation
 // manager is empty.
 TEST_F(WebStateTest, ReloadWithNormalTypeWithEmptyNavigationManager) {
@@ -364,74 +339,6 @@ TEST_F(WebStateTest, CreateFullPagePdfWebStatePdfContent) {
   }));
 
   ASSERT_FALSE(callback_data);
-}
-
-// Tests that message sent from main frame triggers the ScriptCommandCallback
-// with `is_main_frame` = true.
-TEST_F(WebStateTest, MessageFromMainFrame) {
-  // Add a script command handler.
-  __block bool message_received = false;
-  __block bool message_from_main_frame = false;
-  __block base::Value message_value;
-  const web::WebState::ScriptCommandCallback callback =
-      base::BindRepeating(^(const base::Value& value, const GURL&,
-                            bool user_interacted, WebFrame* sender_frame) {
-        message_received = true;
-        message_from_main_frame = sender_frame->IsMainFrame();
-        message_value = value.Clone();
-      });
-  auto subscription = web_state()->AddScriptCommandCallback(callback, "test");
-
-  ASSERT_TRUE(LoadHtml(
-      "<script>"
-      "  __gCrWeb.message.invokeOnHost({'command': 'test.from-main-frame'});"
-      "</script>"));
-
-  WaitForCondition(^{
-    return message_received;
-  });
-  EXPECT_TRUE(message_from_main_frame);
-  EXPECT_TRUE(message_value.is_dict());
-  EXPECT_EQ(message_value.DictSize(), size_t(1));
-  base::Value* command = message_value.FindKey("command");
-  EXPECT_NE(command, nullptr);
-  EXPECT_TRUE(command->is_string());
-  EXPECT_EQ(command->GetString(), "test.from-main-frame");
-}
-
-// Tests that message sent from main frame triggers the ScriptCommandCallback
-// with `is_main_frame` = false.
-TEST_F(WebStateTest, MessageFromIFrame) {
-  // Add a script command handler.
-  __block bool message_received = false;
-  __block bool message_from_main_frame = false;
-  __block base::Value message_value;
-  const web::WebState::ScriptCommandCallback callback =
-      base::BindRepeating(^(const base::Value& value, const GURL&,
-                            bool user_interacted, WebFrame* sender_frame) {
-        message_received = true;
-        message_from_main_frame = sender_frame->IsMainFrame();
-        message_value = value.Clone();
-      });
-  auto subscription = web_state()->AddScriptCommandCallback(callback, "test");
-
-  ASSERT_TRUE(LoadHtml(
-      "<iframe srcdoc='"
-      "<script>"
-      "  __gCrWeb.message.invokeOnHost({\"command\": \"test.from-iframe\"});"
-      "</script>"
-      "'/>"));
-
-  WaitForCondition(^{
-    return message_received;
-  });
-  EXPECT_FALSE(message_from_main_frame);
-  EXPECT_TRUE(message_value.is_dict());
-  EXPECT_EQ(message_value.DictSize(), size_t(1));
-  base::Value* command = message_value.FindKey("command");
-  EXPECT_NE(command, nullptr);
-  EXPECT_TRUE(command->is_string());
-  EXPECT_EQ(command->GetString(), "test.from-iframe");
 }
 
 // Tests that the web state has an opener after calling SetHasOpener().

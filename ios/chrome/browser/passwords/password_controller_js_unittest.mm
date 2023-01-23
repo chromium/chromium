@@ -544,7 +544,7 @@ TEST_F(PasswordControllerJsTest, TouchendAsSubmissionIndicator) {
        "document.getElementsByTagName('button')[0].dispatchEvent(e);",
       web_state());
 
-  // Check that there was only 1 call for invokeOnHost.
+  // Check that there was only 1 call for sendWebKitMessage.
   EXPECT_NSEQ(@1, web::test::ExecuteJavaScript(@"submittedFormMessageCalls",
                                                web_state()));
 
@@ -575,7 +575,7 @@ TEST_F(PasswordControllerJsTest, TouchendAsSubmissionIndicator) {
           @"\"value\":\"password1\",\"label\":\"Password:\"}]}",
           BaseUrl().c_str(), mainFrameID.c_str()];
 
-  // Check that invokeOnHost was called with the correct argument.
+  // Check that sendWebKitMessage was called with the correct argument.
   EXPECT_NSEQ(expected_command,
               web::test::ExecuteJavaScript(
                   @"__gCrWeb.stringify(submittedFormData)", web_state()));

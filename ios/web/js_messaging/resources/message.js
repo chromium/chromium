@@ -20,98 +20,11 @@ __gCrWeb.message = {};
 __gCrWeb['message'] = __gCrWeb.message;
 
 /**
- * Boolean to track if messaging is suspended. While suspended, messages will be
- * queued and sent once messaging is no longer suspended.
- * @type {boolean}
- * @private
- */
-var messaging_suspended_ = true;
-
-/**
- * Object to manage queue of messages waiting to be sent to the main
- * application for asynchronous processing.
- * @type {Object}
- * @private
- */
-var messageQueue_ = {
-  scheme: 'crwebinvoke',
-  reset: function() {
-    messageQueue_.queue = [];
-    // Since the array will be JSON serialized, protect against non-standard
-    // custom versions of Array.prototype.toJSON.
-    delete messageQueue_.queue.toJSON;
-  }
-};
-messageQueue_.reset();
-
-/**
  * Unique identifier for this frame.
  * @type {?string}
  * @private
  */
 var frameId_ = null;
-
-/**
- * Invokes a command on the Objective-C side.
- * @param {Object} command The command in a JavaScript object.
- * @public
- */
-__gCrWeb.message.invokeOnHost = function(command) {
-  messageQueue_.queue.push(command);
-  sendQueue_(messageQueue_);
-};
-
-/**
- * Sends both queues if they contain messages.
- */
-__gCrWeb.message.invokeQueues = function() {
-  if (messageQueue_.queue.length > 0) sendQueue_(messageQueue_);
-};
-
-function sendQueue_(queueObject) {
-  if (messaging_suspended_) {
-    // Leave messages queued if messaging is suspended.
-    return;
-  }
-
-  var windowId = null;
-  try {
-    windowId = window.top.__gCrWeb['windowId'];
-    // Do nothing if windowId has not been set.
-    if (typeof windowId != 'string') {
-      return;
-    }
-  } catch (e) {
-    // A SecurityError will be thrown if this is a cross origin iframe. Allow
-    // sending the message in this case and it will be filtered by frameID.
-    if (e.name !== 'SecurityError') {
-      throw e;
-    }
-  }
-
-  // Some pages/plugins implement Object.prototype.toJSON, which can result
-  // in serializing messageQueue_ to an invalid format.
-  var originalObjectToJSON = Object.prototype.toJSON;
-  if (originalObjectToJSON) delete Object.prototype.toJSON;
-
-  queueObject.queue.forEach(function(command) {
-    var message = {
-      'crwCommand': command,
-      'crwFrameId': __gCrWeb.message['getFrameId']()
-    };
-    if (windowId) {
-      message['crwWindowId'] = windowId;
-    }
-    __gCrWeb.common.sendWebKitMessage(queueObject.scheme, message);
-  });
-  queueObject.reset();
-
-  if (originalObjectToJSON) {
-    // Restore Object.prototype.toJSON to prevent from breaking any
-    // functionality on the page that depends on its custom implementation.
-    Object.prototype.toJSON = originalObjectToJSON;
-  }
-}
 
 /**
  * Returns the frameId associated with this frame. A new value will be created
@@ -140,10 +53,6 @@ __gCrWeb.message['getFrameId'] = function() {
 __gCrWeb.message['registerFrame'] = function() {
   __gCrWeb.common.sendWebKitMessage(
       'FrameBecameAvailable', {'crwFrameId': __gCrWeb.message['getFrameId']()});
-  // Allow messaging now that the frame has been registered and send any
-  // already queued messages.
-  messaging_suspended_ = false;
-  __gCrWeb.message.invokeQueues();
 };
 
 /**

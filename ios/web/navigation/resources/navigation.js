@@ -118,8 +118,3 @@ window.history.replaceState = function(stateObject, pageTitle, pageUrl) {
 window.addEventListener('__gCrWebWindowIdInjected', function() {
   sendQueuedMessages();
 });
-
-/** Flush the message queue. */
-if (__gCrWeb.message) {
-  __gCrWeb.message.invokeQueues();
-}

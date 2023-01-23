@@ -465,22 +465,6 @@ TEST_F(CRWWebControllerInvalidUrlTest, IFrameWithInvalidURL) {
   EXPECT_EQ(url, web_state()->GetLastCommittedURL());
 }
 
-// Real WKWebView is required for CRWWebControllerMessageFromIFrame.
-typedef WebTestWithWebState CRWWebControllerMessageFromIFrame;
-
-// Tests that invalid message from iframe does not cause a crash.
-TEST_F(CRWWebControllerMessageFromIFrame, InvalidMessage) {
-  static NSString* const kHTMLIFrameSendsInvalidMessage =
-      @"<body><iframe name='f'></iframe></body>";
-
-  LoadHtml(kHTMLIFrameSendsInvalidMessage);
-
-  // Sending unknown command from iframe should not cause a crash.
-  ExecuteJavaScript(
-      @"var bad_message = {'command' : 'unknown.command'};"
-       "frames['f'].__gCrWeb.message.invokeOnHost(bad_message);");
-}
-
 // Real WKWebView is required for CRWWebControllerJSExecutionTest.
 typedef WebTestWithWebController CRWWebControllerJSExecutionTest;
 

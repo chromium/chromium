@@ -104,6 +104,65 @@ TEST_F(JavaScriptFeaturePageContentWorldTest,
   EXPECT_STREQ(kFakeJavaScriptFeaturePostMessageReplyValue, reply->c_str());
 }
 
+// Tests that a page which overrides the window.webkit object does not break the
+// JavaScriptFeature JS->native messaging system when the feature script is
+// using `sendWebKitMessage` from ios/web/public/js_messaging/resources/utils.ts
+TEST_F(JavaScriptFeaturePageContentWorldTest,
+       MessagingWithOverriddenWebkitObject) {
+  LoadHtml(kPageHTML);
+  ExecuteJavaScript(@"webkit = undefined;");
+
+  ASSERT_FALSE(feature()->last_received_web_state());
+  ASSERT_FALSE(feature()->last_received_message());
+
+  std::vector<base::Value> parameters;
+  parameters.push_back(
+      base::Value(kFakeJavaScriptFeaturePostMessageReplyValue));
+  feature()->ReplyWithPostMessage(GetMainFrame(web_state()), parameters);
+
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return feature()->last_received_web_state();
+  }));
+
+  EXPECT_EQ(web_state(), feature()->last_received_web_state());
+
+  ASSERT_TRUE(feature()->last_received_message()->body());
+  const std::string* reply =
+      feature()->last_received_message()->body()->GetIfString();
+  ASSERT_TRUE(reply);
+  EXPECT_STREQ(kFakeJavaScriptFeaturePostMessageReplyValue, reply->c_str());
+}
+
+// Tests that a page which overrides the window.webkit object does not break the
+// JavaScriptFeature JS->native messaging system when the feature script is
+// using `__gCrWeb.common.sendWebKitMessage`
+TEST_F(JavaScriptFeaturePageContentWorldTest,
+       MessagingWithOverriddenWebkitObjectCommonJS) {
+  LoadHtml(kPageHTML);
+  ExecuteJavaScript(@"webkit = undefined;");
+
+  ASSERT_FALSE(feature()->last_received_web_state());
+  ASSERT_FALSE(feature()->last_received_message());
+
+  std::vector<base::Value> parameters;
+  parameters.push_back(
+      base::Value(kFakeJavaScriptFeaturePostMessageReplyValue));
+  feature()->ReplyWithPostMessageCommonJS(GetMainFrame(web_state()),
+                                          parameters);
+
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return feature()->last_received_web_state();
+  }));
+
+  EXPECT_EQ(web_state(), feature()->last_received_web_state());
+
+  ASSERT_TRUE(feature()->last_received_message()->body());
+  const std::string* reply =
+      feature()->last_received_message()->body()->GetIfString();
+  ASSERT_TRUE(reply);
+  EXPECT_STREQ(kFakeJavaScriptFeaturePostMessageReplyValue, reply->c_str());
+}
+
 // Tests that a JavaScriptFeature with
 // ReinjectionBehavior::kReinjectOnDocumentRecreation re-injects JavaScript in
 // the page content world.

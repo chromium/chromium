@@ -112,6 +112,8 @@ optimize_js("java_script_feature_test_inject_once_js") {
 
   primary_script = "resources/java_script_feature_test_inject_once.js"
   sources = [ "resources/java_script_feature_test_inject_once.js" ]
+
+  deps = [ "//ios/web/public/js_messaging:util_scripts" ]
 }
 
 optimize_js("java_script_feature_test_reinject_js") {
