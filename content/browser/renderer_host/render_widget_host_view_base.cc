@@ -672,7 +672,7 @@ void RenderWidgetHostViewBase::SetInsets(const gfx::Insets& insets) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-void RenderWidgetHostViewBase::DisplayCursor(const WebCursor& cursor) {
+void RenderWidgetHostViewBase::DisplayCursor(const ui::Cursor& cursor) {
   return;
 }
 

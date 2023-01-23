@@ -50,7 +50,7 @@ void WebCursor::SetDisplayInfo(const display::Display& display) {
     return;
 
   device_scale_factor_ = display.device_scale_factor();
-  CleanupPlatformData();
+  custom_cursor_.reset();
 }
 
 // ozone also has extra calculations for scale factor (taking max cursor size
@@ -60,9 +60,5 @@ float WebCursor::GetCursorScaleFactor(SkBitmap* bitmap) {
   return device_scale_factor_ / cursor_.image_scale_factor();
 }
 #endif
-
-void WebCursor::CleanupPlatformData() {
-  custom_cursor_.reset();
-}
 
 }  // namespace content

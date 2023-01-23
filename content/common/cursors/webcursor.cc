@@ -4,9 +4,6 @@
 
 #include "content/common/cursors/webcursor.h"
 
-#include <algorithm>
-
-#include "build/build_config.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 
 namespace content {
@@ -18,8 +15,6 @@ WebCursor::~WebCursor() = default;
 WebCursor::WebCursor(const ui::Cursor& cursor) {
   SetCursor(cursor);
 }
-
-WebCursor::WebCursor(const WebCursor& other) = default;
 
 bool WebCursor::SetCursor(const ui::Cursor& cursor) {
   // This value is just large enough to accommodate:
@@ -40,7 +35,9 @@ bool WebCursor::SetCursor(const ui::Cursor& cursor) {
     return false;
   }
 
-  CleanupPlatformData();
+#if defined(USE_AURA)
+  custom_cursor_.reset();
+#endif
   cursor_ = cursor;
 
   // Clamp the hotspot to the custom image's dimensions.
@@ -53,18 +50,6 @@ bool WebCursor::SetCursor(const ui::Cursor& cursor) {
   }
 
   return true;
-}
-
-bool WebCursor::operator==(const WebCursor& other) const {
-  return
-#if defined(USE_AURA) || BUILDFLAG(IS_OZONE)
-      rotation_ == other.rotation_ &&
-#endif
-      cursor_ == other.cursor_;
-}
-
-bool WebCursor::operator!=(const WebCursor& other) const {
-  return !(*this == other);
 }
 
 }  // namespace content

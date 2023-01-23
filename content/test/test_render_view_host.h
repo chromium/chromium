@@ -23,6 +23,7 @@
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_renderer_host.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/layout.h"
 #include "ui/base/page_transition_types.h"
@@ -108,7 +109,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
                    const gfx::Rect& anchor_rect) override {}
   void Focus() override {}
   void SetIsLoading(bool is_loading) override {}
-  void UpdateCursor(const WebCursor& cursor) override;
+  void UpdateCursor(const ui::Cursor& cursor) override;
   void RenderProcessGone() override;
   void ShowWithVisibility(PageVisibilityState page_visibility) override;
   void Destroy() override;
@@ -135,7 +136,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   void OnFrameTokenChanged(uint32_t frame_token,
                            base::TimeTicks activation_time) override;
 
-  const WebCursor& last_cursor() const { return last_cursor_; }
+  const ui::Cursor& last_cursor() const { return last_cursor_; }
 
   void SetCompositor(ui::Compositor* compositor) { compositor_ = compositor; }
 
@@ -169,7 +170,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   bool is_occluded_;
   PageVisibilityState page_visibility_ = PageVisibilityState::kHidden;
   ui::DummyTextInputClient text_input_client_;
-  WebCursor last_cursor_;
+  ui::Cursor last_cursor_;
 
   // Latest capture sequence number which is incremented when the caller
   // requests surfaces be synchronized via

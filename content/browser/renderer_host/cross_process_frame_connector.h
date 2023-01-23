@@ -33,6 +33,10 @@ namespace cc {
 class RenderFrameMetadata;
 }
 
+namespace ui {
+class Cursor;
+}
+
 namespace viz {
 class SurfaceId;
 class SurfaceInfo;
@@ -43,7 +47,6 @@ class RenderFrameHostImpl;
 class RenderFrameProxyHost;
 class RenderWidgetHostViewBase;
 class RenderWidgetHostViewChildFrame;
-class WebCursor;
 
 // CrossProcessFrameConnector provides the platform view abstraction for
 // RenderWidgetHostViewChildFrame allowing RWHVChildFrame to remain ignorant
@@ -145,7 +148,7 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
 
   // Request that the platform change the mouse cursor when the mouse is
   // positioned over this view's content.
-  void UpdateCursor(const WebCursor& cursor);
+  void UpdateCursor(const ui::Cursor& cursor);
 
   // Given a point in the current view's coordinate space, return the same
   // point transformed into the coordinate space of the top-level view's

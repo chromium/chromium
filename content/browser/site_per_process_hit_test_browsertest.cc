@@ -4340,7 +4340,7 @@ void CursorUpdateReceivedFromCrossSiteIframeHelper(
   // This should only return nullptr on Android.
   EXPECT_TRUE(root_view->GetCursorManager());
 
-  WebCursor cursor;
+  ui::Cursor cursor;
   EXPECT_FALSE(
       root_view->GetCursorManager()->GetCursorForTesting(root_view, cursor));
   EXPECT_FALSE(
@@ -4388,7 +4388,7 @@ void CursorUpdateReceivedFromCrossSiteIframeHelper(
   EXPECT_TRUE(
       root_view->GetCursorManager()->GetCursorForTesting(child_view, cursor));
   // Since this moused over a text box, this should not be the default cursor.
-  EXPECT_EQ(cursor.cursor().type(), ui::mojom::CursorType::kIBeam);
+  EXPECT_EQ(cursor.type(), ui::mojom::CursorType::kIBeam);
 }
 
 }  // namespace

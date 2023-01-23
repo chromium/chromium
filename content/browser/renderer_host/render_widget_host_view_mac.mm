@@ -61,6 +61,7 @@
 #include "ui/base/cocoa/remote_accessibility_api.h"
 #import "ui/base/cocoa/secure_password_input.h"
 #include "ui/base/cocoa/text_services_context_menu.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
 #include "ui/base/mojom/attributed_string.mojom.h"
 #include "ui/base/ui_base_features.h"
@@ -581,12 +582,12 @@ bool RenderWidgetHostViewMac::IsMouseLocked() {
   return mouse_locked_;
 }
 
-void RenderWidgetHostViewMac::UpdateCursor(const WebCursor& cursor) {
+void RenderWidgetHostViewMac::UpdateCursor(const ui::Cursor& cursor) {
   GetCursorManager()->UpdateCursor(this, cursor);
 }
 
-void RenderWidgetHostViewMac::DisplayCursor(const WebCursor& cursor) {
-  ns_view_->DisplayCursor(cursor.cursor());
+void RenderWidgetHostViewMac::DisplayCursor(const ui::Cursor& cursor) {
+  ns_view_->DisplayCursor(cursor);
 }
 
 CursorManager* RenderWidgetHostViewMac::GetCursorManager() {

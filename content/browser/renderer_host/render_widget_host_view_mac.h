@@ -61,7 +61,6 @@ class CursorManager;
 class RenderWidgetHost;
 class RenderWidgetHostViewMac;
 class WebContents;
-class WebCursor;
 
 ///////////////////////////////////////////////////////////////////////////////
 // RenderWidgetHostViewMac
@@ -131,8 +130,8 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
                    const gfx::Rect& pos,
                    const gfx::Rect& anchor_rect) override;
   void Focus() override;
-  void UpdateCursor(const WebCursor& cursor) override;
-  void DisplayCursor(const WebCursor& cursor) override;
+  void UpdateCursor(const ui::Cursor& cursor) override;
+  void DisplayCursor(const ui::Cursor& cursor) override;
   CursorManager* GetCursorManager() override;
   void OnDidNavigateMainFrameToNewPage() override;
   void SetIsLoading(bool is_loading) override;

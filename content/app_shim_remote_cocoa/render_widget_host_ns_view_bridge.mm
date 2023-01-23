@@ -8,12 +8,12 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #include "content/app_shim_remote_cocoa/render_widget_host_ns_view_host_helper.h"
-#include "content/common/cursors/webcursor.h"
 #include "content/common/mac/attributed_string_type_converters.h"
 #import "skia/ext/skia_utils_mac.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #import "ui/base/cocoa/animation_utils.h"
+#import "ui/base/cocoa/cursor_utils.h"
 #include "ui/base/mojom/attributed_string.mojom.h"
 #include "ui/display/screen.h"
 #include "ui/events/blink/did_overscroll_params.h"
@@ -242,7 +242,7 @@ void RenderWidgetHostNSViewBridge::OnDisplayMetricsChanged(
 }
 
 void RenderWidgetHostNSViewBridge::DisplayCursor(const ui::Cursor& cursor) {
-  [cocoa_view_ updateCursor:content::WebCursor(cursor).GetNativeCursor()];
+  [cocoa_view_ updateCursor:ui::GetNativeCursor(cursor)];
 }
 
 void RenderWidgetHostNSViewBridge::SetCursorLocked(bool locked) {

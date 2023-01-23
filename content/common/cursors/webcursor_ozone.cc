@@ -30,7 +30,7 @@ void WebCursor::SetDisplayInfo(const display::Display& display) {
   // the kDefaultMaxSize constants to a single place. crbug.com/603512
   if (maximum_cursor_size_.width() == 0 || maximum_cursor_size_.height() == 0)
     maximum_cursor_size_ = gfx::Size(kDefaultMaxSize, kDefaultMaxSize);
-  CleanupPlatformData();
+  custom_cursor_.reset();
 }
 
 float WebCursor::GetCursorScaleFactor(SkBitmap* bitmap) {

@@ -64,6 +64,7 @@
 #include "third_party/blink/public/mojom/drag/drag.mojom.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/display/display_util.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
@@ -2425,7 +2426,7 @@ TEST_F(RenderWidgetHostTest, SetCursorWithBitmap) {
   cursor.set_custom_bitmap(bitmap);
 
   host_->SetCursor(cursor);
-  EXPECT_EQ(WebCursor(cursor), view_->last_cursor());
+  EXPECT_EQ(cursor, view_->last_cursor());
 }
 
 }  // namespace content

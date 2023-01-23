@@ -5,6 +5,8 @@
 #include "content/browser/renderer_host/cursor_manager.h"
 
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "ui/base/cursor/cursor.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 
 namespace content {
 
@@ -14,7 +16,7 @@ CursorManager::CursorManager(RenderWidgetHostViewBase* root)
 CursorManager::~CursorManager() {}
 
 void CursorManager::UpdateCursor(RenderWidgetHostViewBase* view,
-                                 const WebCursor& cursor) {
+                                 const ui::Cursor& cursor) {
   cursor_map_[view] = cursor;
   if (view == view_under_cursor_)
     root_view_->DisplayCursor(cursor);
@@ -31,7 +33,7 @@ void CursorManager::UpdateViewUnderCursor(RenderWidgetHostViewBase* view) {
   // ignored.
   root_view_->UpdateTooltip(std::u16string());
   view_under_cursor_ = view;
-  WebCursor cursor(ui::mojom::CursorType::kPointer);
+  ui::Cursor cursor(ui::mojom::CursorType::kPointer);
 
   auto it = cursor_map_.find(view);
   if (it != cursor_map_.end())
@@ -54,7 +56,7 @@ bool CursorManager::IsViewUnderCursor(RenderWidgetHostViewBase* view) const {
 }
 
 bool CursorManager::GetCursorForTesting(RenderWidgetHostViewBase* view,
-                                        WebCursor& cursor) {
+                                        ui::Cursor& cursor) {
   if (cursor_map_.find(view) == cursor_map_.end())
     return false;
 

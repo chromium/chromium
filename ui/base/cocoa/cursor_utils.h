@@ -5,14 +5,16 @@
 #ifndef UI_BASE_COCOA_CURSOR_UTILS_H_
 #define UI_BASE_COCOA_CURSOR_UTILS_H_
 
+#import <AppKit/AppKit.h>
+
 #include "base/component_export.h"
-#include "ui/base/cursor/cursor.h"
-#include "ui/gfx/native_widget_types.h"
 
 namespace ui {
 
+class Cursor;
+
 COMPONENT_EXPORT(UI_BASE)
-gfx::NativeCursor GetNativeCursor(const ui::Cursor& cursor);
+NSCursor* GetNativeCursor(const ui::Cursor& cursor);
 
 }  // namespace ui
 

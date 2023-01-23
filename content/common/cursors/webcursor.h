@@ -19,6 +19,9 @@
 
 namespace content {
 
+// NOTE(https://crbug.com/1149906): This class is deprecated and ui::Cursor
+// should be used instead.
+//
 // This class encapsulates a cross-platform description of a cursor.  Platform
 // specific methods are provided to translate the cross-platform cursor into a
 // platform specific cursor.  It is also possible to serialize / de-serialize a
@@ -27,17 +30,12 @@ class CONTENT_EXPORT WebCursor {
  public:
   WebCursor();
   explicit WebCursor(const ui::Cursor& info);
-  explicit WebCursor(const WebCursor& other);
   ~WebCursor();
 
   const ui::Cursor& cursor() const { return cursor_; }
 
   // Sets the ui::Cursor |cursor|; returns whether it has reasonable values.
   bool SetCursor(const ui::Cursor& cursor);
-
-  // Equality operator; performs bitmap content comparison as needed.
-  bool operator==(const WebCursor& other) const;
-  bool operator!=(const WebCursor& other) const;
 
   // Returns a native cursor representing the current WebCursor instance.
   gfx::NativeCursor GetNativeCursor();
@@ -54,9 +52,6 @@ class CONTENT_EXPORT WebCursor {
 #endif
 
  private:
-  // Platform specific cleanup.
-  void CleanupPlatformData();
-
   float GetCursorScaleFactor(SkBitmap* bitmap);
 
   // The basic cursor info.

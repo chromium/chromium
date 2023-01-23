@@ -158,7 +158,7 @@ NSCursor* CreateCustomCursor(const ui::Cursor& cursor) {
 namespace ui {
 
 // Match Safari's cursor choices; see platform/mac/CursorMac.mm .
-gfx::NativeCursor GetNativeCursor(const ui::Cursor& cursor) {
+NSCursor* GetNativeCursor(const ui::Cursor& cursor) {
   switch (cursor.type()) {
     case ui::mojom::CursorType::kPointer:
       return [NSCursor arrowCursor];

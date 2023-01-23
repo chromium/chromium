@@ -86,7 +86,6 @@
 #include "content/browser/scheduler/browser_ui_thread_scheduler.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/content_constants_internal.h"
-#include "content/common/cursors/webcursor.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -127,6 +126,7 @@
 #include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom.h"
 #include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
 #include "ui/base/ui_base_features.h"
@@ -2046,7 +2046,7 @@ void RenderWidgetHostImpl::FilterDropData(DropData* drop_data) {
 
 void RenderWidgetHostImpl::SetCursor(const ui::Cursor& cursor) {
   if (view_)
-    view_->UpdateCursor(WebCursor(cursor));
+    view_->UpdateCursor(cursor);
 }
 
 void RenderWidgetHostImpl::ShowContextMenuAtPoint(

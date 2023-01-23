@@ -18,6 +18,4 @@ gfx::NativeCursor WebCursor::GetNativeCursor() {
 void WebCursor::SetDisplayInfo(const display::Display& display) {}
 #endif
 
-void WebCursor::CleanupPlatformData() {}
-
 }  // namespace content

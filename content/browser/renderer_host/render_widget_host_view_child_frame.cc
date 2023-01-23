@@ -35,6 +35,7 @@
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
 #include "ui/display/display_util.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -361,7 +362,7 @@ void RenderWidgetHostViewChildFrame::InitAsPopup(
   NOTREACHED();
 }
 
-void RenderWidgetHostViewChildFrame::UpdateCursor(const WebCursor& cursor) {
+void RenderWidgetHostViewChildFrame::UpdateCursor(const ui::Cursor& cursor) {
   if (frame_connector_)
     frame_connector_->UpdateCursor(cursor);
 }

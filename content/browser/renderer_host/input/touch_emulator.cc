@@ -160,12 +160,13 @@ bool TouchEmulator::InitCursors(float device_scale_factor, bool force) {
       use_2x ? IDR_DEVTOOLS_PINCH_CURSOR_ICON_2X :
           IDR_DEVTOOLS_PINCH_CURSOR_ICON);
 
-  pointer_cursor_ = WebCursor(ui::mojom::CursorType::kPointer);
+  pointer_cursor_ = ui::Cursor(ui::mojom::CursorType::kPointer);
   return true;
 }
 
-gfx::SizeF TouchEmulator::InitCursorFromResource(
-    WebCursor* cursor, float scale, int resource_id) {
+gfx::SizeF TouchEmulator::InitCursorFromResource(ui::Cursor* cursor,
+                                                 float scale,
+                                                 int resource_id) {
   gfx::Image& cursor_image =
       content::GetContentClient()->GetNativeImageNamed(resource_id);
   ui::Cursor cursor_info(ui::mojom::CursorType::kCustom);
@@ -174,7 +175,7 @@ gfx::SizeF TouchEmulator::InitCursorFromResource(
   cursor_info.set_custom_hotspot(
       gfx::Point(cursor_image.Width() / 2, cursor_image.Height() / 2));
 
-  *cursor = WebCursor(cursor_info);
+  *cursor = cursor_info;
   return gfx::ScaleSize(gfx::SizeF(cursor_image.Size()), 1.f / scale);
 }
 

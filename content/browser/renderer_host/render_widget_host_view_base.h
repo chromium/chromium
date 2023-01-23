@@ -58,11 +58,12 @@ class WebMouseWheelEvent;
 
 namespace ui {
 class Compositor;
-enum class DomCode;
+class Cursor;
 class LatencyInfo;
 class TouchEvent;
+enum class DomCode;
 struct DidOverscrollParams;
-}
+}  // namespace ui
 
 namespace content {
 
@@ -73,7 +74,6 @@ class RenderWidgetHostViewBaseObserver;
 class SyntheticGestureTarget;
 class TextInputManager;
 class TouchSelectionControllerClientManager;
-class WebCursor;
 class WebContentsAccessibility;
 class DelegatedFrameHost;
 
@@ -430,13 +430,12 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
                            const gfx::Rect& bounds,
                            const gfx::Rect& anchor_rect) = 0;
 
-  // Sets the cursor for this view to the one associated with the specified
-  // cursor_type.
-  virtual void UpdateCursor(const WebCursor& cursor) = 0;
+  // Sets the cursor for this view to the one specified.
+  virtual void UpdateCursor(const ui::Cursor& cursor) = 0;
 
   // Changes the cursor that is displayed on screen. This may or may not match
   // the current cursor's view which was set by UpdateCursor.
-  virtual void DisplayCursor(const WebCursor& cursor);
+  virtual void DisplayCursor(const ui::Cursor& cursor);
 
   // Views that manage cursors for window return a CursorManager. Other views
   // return nullptr.
