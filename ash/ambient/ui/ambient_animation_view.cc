@@ -30,6 +30,7 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_id.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -290,8 +291,7 @@ void AmbientAnimationView::Init(
       views::BoxLayout::CrossAxisAlignment::kStart);
   glanceable_info_container_->SetBorder(CreateGlanceableInfoBorder());
   glanceable_info_container_->AddChildView(std::make_unique<GlanceableInfoView>(
-      view_delegate_.get(), kTimeFontSizeDip,
-      /*time_temperature_font_color=*/gfx::kGoogleGrey900));
+      view_delegate_.get(), this, kTimeFontSizeDip));
 
   // Media string should appear in the top-right corner of the
   // AmbientAnimationView's bounds.
@@ -389,6 +389,10 @@ void AmbientAnimationView::OnViewAddedToWidget(View* observed_view) {
   }
   frame_rate_controller_->AddWindowToThrottle(
       window_to_throttle, animated_image_view_->animated_image());
+}
+
+SkColor AmbientAnimationView::GetTimeTemperatureFontColor() {
+  return gfx::kGoogleGrey900;
 }
 
 void AmbientAnimationView::StartPlayingAnimation() {

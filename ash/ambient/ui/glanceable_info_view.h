@@ -9,6 +9,7 @@
 #include "ash/ambient/model/ambient_weather_model_observer.h"
 #include "base/scoped_observation.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -25,11 +26,20 @@ class TimeView;
 class GlanceableInfoView : public views::View,
                            public AmbientWeatherModelObserver {
  public:
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Returns the color for time and temperature text in |GlanceableInfoView|.
+    virtual SkColor GetTimeTemperatureFontColor() = 0;
+  };
+
   METADATA_HEADER(GlanceableInfoView);
 
-  GlanceableInfoView(AmbientViewDelegate* delegate,
-                     int time_font_size_dip,
-                     SkColor time_temperature_font_color);
+  GlanceableInfoView(
+      AmbientViewDelegate* delegate,
+      GlanceableInfoView::Delegate* glanceable_info_view_delegate,
+      int time_font_size_dip);
   GlanceableInfoView(const GlanceableInfoView&) = delete;
   GlanceableInfoView& operator=(const GlanceableInfoView&) = delete;
   ~GlanceableInfoView() override;
@@ -57,8 +67,11 @@ class GlanceableInfoView : public views::View,
   // Owned by |AmbientController|.
   AmbientViewDelegate* const delegate_ = nullptr;
 
+  // Unowned. Must out live |GlancealeInfoView|.
+  base::raw_ptr<GlanceableInfoView::Delegate> const
+      glanceable_info_view_delegate_ = nullptr;
+
   const int time_font_size_dip_;
-  const SkColor time_temperature_font_color_;
 
   base::ScopedObservation<AmbientWeatherModel, AmbientWeatherModelObserver>
       scoped_weather_model_observer_{this};

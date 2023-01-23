@@ -9,6 +9,7 @@
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/utility/lottie_util.h"
 #include "base/no_destructor.h"
@@ -26,6 +27,29 @@ namespace util {
 
 bool IsShowing(LockScreen::ScreenType type) {
   return LockScreen::HasInstance() && LockScreen::Get()->screen_type() == type;
+}
+
+SkColor GetColor(const ui::ColorProvider* color_provider,
+                 ui::ColorId color_id) {
+  return GetColor(color_provider, color_id,
+                  DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
+}
+
+SkColor GetColor(const ui::ColorProvider* color_provider,
+                 ui::ColorId color_id,
+                 bool dark_mode_enabled) {
+  switch (color_id) {
+    case kColorAshTextColorPrimary:
+    case kColorAshTextColorSecondary:
+    case kColorAshIconColorPrimary:
+    case kColorAshIconColorSecondary:
+      return dark_mode_enabled ? color_provider->GetColor(color_id)
+                               : SK_ColorWHITE;
+    default:
+      NOTREACHED() << "Unsupported content layer type";
+      // Return a very bright color so it's obvious there is a mistake.
+      return gfx::kPlaceholderColor;
+  }
 }
 
 SkColor GetContentLayerColor(

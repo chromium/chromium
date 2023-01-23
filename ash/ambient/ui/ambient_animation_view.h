@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ambient/model/ambient_animation_photo_provider.h"
+#include "ash/ambient/ui/glanceable_info_view.h"
 #include "ash/ambient/ui/jitter_calculator.h"
 #include "ash/ash_export.h"
 #include "base/memory/weak_ptr.h"
@@ -39,7 +40,8 @@ class AmbientViewDelegateImpl;
 
 class ASH_EXPORT AmbientAnimationView : public views::View,
                                         public lottie::AnimationObserver,
-                                        public views::ViewObserver {
+                                        public views::ViewObserver,
+                                        public GlanceableInfoView::Delegate {
  public:
   METADATA_HEADER(AmbientAnimationView);
 
@@ -62,6 +64,9 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
 
   void OnViewBoundsChanged(View* observed_view) override;
   void OnViewAddedToWidget(View* observed_view) override;
+
+  // GlanceableInfoView::Delegate:
+  SkColor GetTimeTemperatureFontColor() override;
 
   void StartPlayingAnimation();
   void StartThroughputTracking();

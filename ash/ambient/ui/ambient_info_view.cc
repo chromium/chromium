@@ -10,6 +10,7 @@
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/ui/glanceable_info_view.h"
 #include "ash/ambient/util/ambient_util.h"
+#include "ash/style/ash_color_id.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -33,8 +34,6 @@ constexpr int kTimeFontSizeDip = 64;
 views::Label* AddLabel(views::View* parent) {
   auto* label = parent->AddChildView(std::make_unique<views::Label>());
   label->SetAutoColorReadabilityEnabled(false);
-  label->SetEnabledColor(ambient::util::GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary));
   label->SetFontList(ambient::util::GetDefaultFontlist().DeriveWithSizeDelta(
       kDetailsFontSizeDip - kDefaultFontSizeDip));
   label->SetPaintToLayer();
@@ -58,8 +57,16 @@ void AmbientInfoView::OnThemeChanged() {
   const auto* color_provider = GetColorProvider();
   details_label_->SetShadows(
       ambient::util::GetTextShadowValues(color_provider));
+  details_label_->SetEnabledColor(
+      ambient::util::GetColor(color_provider, kColorAshTextColorSecondary));
   related_details_label_->SetShadows(
       ambient::util::GetTextShadowValues(color_provider));
+  related_details_label_->SetEnabledColor(
+      ambient::util::GetColor(color_provider, kColorAshTextColorSecondary));
+}
+
+SkColor AmbientInfoView::GetTimeTemperatureFontColor() {
+  return ambient::util::GetColor(GetColorProvider(), kColorAshTextColorPrimary);
 }
 
 void AmbientInfoView::UpdateImageDetails(
@@ -96,10 +103,8 @@ void AmbientInfoView::InitLayout() {
   layout->set_between_child_spacing(kSpacingDip + shadow_insets.top() +
                                     shadow_insets.bottom());
 
-  glanceable_info_view_ = AddChildView(std::make_unique<GlanceableInfoView>(
-      delegate_, kTimeFontSizeDip, /*time_temperature_font_color=*/
-      ambient::util::GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPrimary)));
+  glanceable_info_view_ = AddChildView(
+      std::make_unique<GlanceableInfoView>(delegate_, this, kTimeFontSizeDip));
   glanceable_info_view_->SetPaintToLayer();
 
   details_label_ = AddLabel(this);

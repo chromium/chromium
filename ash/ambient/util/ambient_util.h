@@ -31,6 +31,17 @@ inline constexpr int kDefaultTextShadowElevation = 2;
 ASH_EXPORT bool IsShowing(LockScreen::ScreenType type);
 
 // Ambient mode uses non-standard colors for some text and the media icon, so
+// provides a wrapper for |ColorProvider::GetColor|. This is currently only
+// supported for primary and secondary text and icons.
+ASH_EXPORT SkColor GetColor(const ui::ColorProvider* color_provider,
+                            ui::ColorId color_id,
+                            bool dark_mode_enabled);
+
+// Version of the above that uses AshColorProvider::IsDarkModeEnabled().
+ASH_EXPORT SkColor GetColor(const ui::ColorProvider* color_provider,
+                            ui::ColorId color_id);
+
+// Ambient mode uses non-standard colors for some text and the media icon, so
 // provides a wrapper for |AshColorProvider::GetContentLayerColor|. This is
 // currently only supported for primary and secondary text and icons.
 // TODO(b/262012604) rework to use ui::ColorProvider.
