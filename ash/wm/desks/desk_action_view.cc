@@ -35,9 +35,7 @@ DeskActionView::DeskActionView(
                                         CloseButton::Type::kMediumFloating))) {
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetBetweenChildSpacing(kButtonSpacing);
-  SetBackground(
-      views::CreateSolidBackground(AshColorProvider::Get()->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent80)));
+  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
 
   close_all_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_DESKS_CLOSE_ALL_DESCRIPTION));
@@ -67,13 +65,6 @@ void DeskActionView::SetCombineDesksButtonVisibility(bool visible) {
   // `close_all_button_`. Otherwise, the desk action view will appear lopsided
   // when the `combine_desks_button_` isn't visible.
   SetBetweenChildSpacing(visible ? kButtonSpacing : 0);
-}
-
-void DeskActionView::OnThemeChanged() {
-  views::BoxLayoutView::OnThemeChanged();
-  background()->SetNativeControlColor(
-      AshColorProvider::Get()->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent80));
 }
 
 BEGIN_METADATA(DeskActionView, views::BoxLayoutView)

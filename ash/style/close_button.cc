@@ -127,6 +127,8 @@ void CloseButton::OnThemeChanged() {
   // added separately so its easier to monitor performance.
   StyleUtil::ConfigureInkDropAttributes(
       this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
+
+  SchedulePaint();
 }
 
 gfx::Size CloseButton::CalculatePreferredSize() const {
