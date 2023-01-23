@@ -17,15 +17,11 @@
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
-#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_package {
 class SignedWebBundleId;
@@ -33,13 +29,13 @@ class SignedWebBundleId;
 
 namespace web_app {
 
-// A registry to create and keep track of `SignedWebBundleReader` instances used
-// to read Isolated Web Apps. At its core, it contains a map from file paths to
-// `SignedWebBundleReader`s to cache them for repeated calls. On non-ChromeOS
-// devices, the first request for a particular file path will also check the
-// integrity of the Signed Web Bundle. On ChromeOS, it is assumed that the
-// Signed Web Bundle has not been corrupted due to its location inside
-// cryptohome, and signatures are not checked.
+// A registry to create and keep track of `IsolatedWebAppResponseReader`
+// instances used to read Isolated Web Apps. At its core, it contains a map from
+// file paths to `IsolatedWebAppResponseReader`s to cache them for repeated
+// calls. On non-ChromeOS devices, the first request for a particular file path
+// will also check the integrity of the Signed Web Bundle. On ChromeOS, it is
+// assumed that the Signed Web Bundle has not been corrupted due to its location
+// inside cryptohome, and signatures are not checked.
 class IsolatedWebAppReaderRegistry : public KeyedService {
  public:
   explicit IsolatedWebAppReaderRegistry(
@@ -60,10 +56,7 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
     };
 
     static ReadResponseError ForError(
-        const SignedWebBundleReader::ReadIntegrityBlockAndMetadataError& error);
-
-    static ReadResponseError ForMetadataValidationError(
-        const std::string& error);
+        const IsolatedWebAppResponseReaderFactory::Error& error);
 
     static ReadResponseError ForError(
         const IsolatedWebAppResponseReader::Error& error);
@@ -97,31 +90,6 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
                     const network::ResourceRequest& resource_request,
                     ReadResponseCallback callback);
 
-  // This enum represents every error type that can occur during integrity block
-  // and metadata parsing, before responses are read from Signed Web Bundles.
-  //
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class ReadIntegrityBlockAndMetadataStatus {
-    kSuccess = 0,
-    // Integrity Block-related errors
-    kIntegrityBlockParserInternalError = 1,
-    kIntegrityBlockParserFormatError = 2,
-    kIntegrityBlockParserVersionError = 3,
-    kIntegrityBlockValidationError = 4,
-
-    // Signature verification errors
-    kSignatureVerificationError = 5,
-
-    // Metadata-related errors
-    kMetadataParserInternalError = 6,
-    kMetadataParserFormatError = 7,
-    kMetadataParserVersionError = 8,
-    kMetadataValidationError = 9,
-
-    kMaxValue = kMetadataValidationError
-  };
-
   // This enum represents every error type that can occur during response head
   // parsing, after integrity block and metadata have been read successfully.
   //
@@ -139,26 +107,11 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppReaderRegistryTest,
                            TestConcurrentRequests);
 
-  void OnIntegrityBlockRead(
+  void OnResponseReaderCreated(
       const base::FilePath& web_bundle_path,
       const web_package::SignedWebBundleId& web_bundle_id,
-      const web_package::SignedWebBundleIntegrityBlock integrity_block,
-      base::OnceCallback<
-          void(SignedWebBundleReader::SignatureVerificationAction)> callback);
-
-  void OnIntegrityBlockValidated(
-      const base::FilePath& web_bundle_path,
-      const web_package::SignedWebBundleId& web_bundle_id,
-      base::OnceCallback<
-          void(SignedWebBundleReader::SignatureVerificationAction)>
-          integrity_callback,
-      absl::optional<std::string> integrity_block_error);
-
-  void OnIntegrityBlockAndMetadataRead(
-      const base::FilePath& web_bundle_path,
-      const web_package::SignedWebBundleId& web_bundle_id,
-      absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>
-          read_integrity_block_and_metadata_error);
+      base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
+                     IsolatedWebAppResponseReaderFactory::Error> reader);
 
   void DoReadResponse(IsolatedWebAppResponseReader& reader,
                       network::ResourceRequest resource_request,
@@ -169,9 +122,6 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       base::expected<IsolatedWebAppResponseReader::Response,
                      IsolatedWebAppResponseReader::Error> response);
 
-  ReadIntegrityBlockAndMetadataStatus GetStatusFromError(
-      const SignedWebBundleReader::ReadIntegrityBlockAndMetadataError& error);
-
   ReadResponseHeadStatus GetStatusFromError(
       const IsolatedWebAppResponseReader::Error& error);
 
@@ -179,8 +129,8 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
 
   // A thin wrapper around `base::flat_map<base::FilePath, Cache::Entry>` that
   // automatically removes entries from the cache if they have not been accessed
-  // for some time. This makes sure that `SignedWebBundleReader`s are not kept
-  // alive indefinitely, since each of them holds an open file handle and
+  // for some time. This makes sure that `IsolatedWebAppResponseReader`s are not
+  // kept alive indefinitely, since each of them holds an open file handle and
   // memory.
   class Cache {
    public:
@@ -204,14 +154,13 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
     void Erase(base::flat_map<base::FilePath, Entry>::iterator iterator);
 
     // A cache `Entry` has two states: In its initial `kPending` state, it
-    // caches requests made to a Signed Web Bundle and holds a
-    // `SignedWebBundleReader` in `reader_`. Once the `SignedWebBundleReader` is
-    // ready to serve responses, it is converted into an
-    // `IsolatedWebAppResponseReader`, all queued requests are run, and the
-    // state is updated to `kReady`.
+    // caches requests made to a Signed Web Bundle until an
+    // `IsolatedWebAppResponseReader` is ready. Once the
+    // `IsolatedWebAppResponseReader` is ready and set via `set_reader`, all
+    // queued requests are run and the state is updated to `kReady`.
     class Entry {
      public:
-      explicit Entry(std::unique_ptr<SignedWebBundleReader> reader);
+      Entry();
       ~Entry();
 
       Entry(const Entry& other) = delete;
@@ -220,11 +169,10 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       Entry(Entry&& other);
       Entry& operator=(Entry&& other);
 
-      absl::variant<std::unique_ptr<SignedWebBundleReader>,
-                    std::unique_ptr<IsolatedWebAppResponseReader>>&
-      GetReader() {
+      IsolatedWebAppResponseReader& GetReader() {
+        DCHECK(reader_);
         last_access_ = base::TimeTicks::Now();
-        return reader_;
+        return *reader_;
       }
 
       const base::TimeTicks last_access() const { return last_access_; }
@@ -239,11 +187,10 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       }
 
       enum class State { kPending, kReady };
-      State state() const {
-        return absl::holds_alternative<
-                   std::unique_ptr<IsolatedWebAppResponseReader>>(reader_)
-                   ? State::kReady
-                   : State::kPending;
+      State state() const { return reader_ ? State::kReady : State::kPending; }
+
+      void set_reader(std::unique_ptr<IsolatedWebAppResponseReader> reader) {
+        reader_ = std::move(reader);
       }
 
       std::vector<std::pair<network::ResourceRequest,
@@ -251,9 +198,7 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
           pending_requests;
 
      private:
-      absl::variant<std::unique_ptr<SignedWebBundleReader>,
-                    std::unique_ptr<IsolatedWebAppResponseReader>>
-          reader_;
+      std::unique_ptr<IsolatedWebAppResponseReader> reader_;
       // The point in time when the `reader` was last accessed.
       base::TimeTicks last_access_;
     };
@@ -286,10 +231,7 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
   // if their corresponding `CacheEntry` is cleaned up and later re-created.
   base::flat_set<base::FilePath> verified_files_;
 
-  std::unique_ptr<IsolatedWebAppValidator> validator_;
-  base::RepeatingCallback<
-      std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>()>
-      signature_verifier_factory_;
+  std::unique_ptr<IsolatedWebAppResponseReaderFactory> reader_factory_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<IsolatedWebAppReaderRegistry> weak_ptr_factory_{this};

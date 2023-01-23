@@ -17,15 +17,13 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "chrome/common/url_constants.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/url_constants.h"
 
 namespace web_app {
@@ -54,8 +52,9 @@ IsolatedWebAppReaderRegistry::IsolatedWebAppReaderRegistry(
     base::RepeatingCallback<
         std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>()>
         signature_verifier_factory)
-    : validator_(std::move(validator)),
-      signature_verifier_factory_(std::move(signature_verifier_factory)) {}
+    : reader_factory_(std::make_unique<IsolatedWebAppResponseReaderFactory>(
+          std::move(validator),
+          std::move(signature_verifier_factory))) {}
 
 IsolatedWebAppReaderRegistry::~IsolatedWebAppReaderRegistry() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -91,10 +90,8 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
         case Cache::Entry::State::kReady:
           // If integrity block and metadata have already been read, read
           // the response from the cached `SignedWebBundleReader`.
-          DoReadResponse(
-              *absl::get<std::unique_ptr<IsolatedWebAppResponseReader>>(
-                  cache_entry_it->second.GetReader()),
-              resource_request, std::move(callback));
+          DoReadResponse(cache_entry_it->second.GetReader(), resource_request,
+                         std::move(callback));
           return;
       }
     }
@@ -104,121 +101,48 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
       base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
                     web_bundle_id.id()}));
 
-  std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
-      signature_verifier = signature_verifier_factory_.Run();
-  std::unique_ptr<SignedWebBundleReader> reader = SignedWebBundleReader::Create(
-      web_bundle_path, base_url, std::move(signature_verifier));
-
   auto [cache_entry_it, was_insertion] =
-      reader_cache_.Emplace(web_bundle_path, Cache::Entry(std::move(reader)));
+      reader_cache_.Emplace(web_bundle_path, Cache::Entry());
   DCHECK(was_insertion);
   cache_entry_it->second.pending_requests.emplace_back(resource_request,
                                                        std::move(callback));
 
-  absl::get<std::unique_ptr<SignedWebBundleReader>>(
-      cache_entry_it->second.GetReader())
-      ->StartReading(
-          base::BindOnce(
-              &IsolatedWebAppReaderRegistry::OnIntegrityBlockRead,
-              // `base::Unretained` can be used here since `this` owns `reader`.
-              base::Unretained(this), web_bundle_path, web_bundle_id),
-          base::BindOnce(
-              &IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead,
-              // `base::Unretained` can be used here since `this` owns `reader`.
-              base::Unretained(this), web_bundle_path, web_bundle_id));
-}
-
-void IsolatedWebAppReaderRegistry::OnIntegrityBlockRead(
-    const base::FilePath& web_bundle_path,
-    const web_package::SignedWebBundleId& web_bundle_id,
-    const web_package::SignedWebBundleIntegrityBlock integrity_block,
-    base::OnceCallback<void(SignedWebBundleReader::SignatureVerificationAction)>
-        integrity_callback) {
-  validator_->ValidateIntegrityBlock(
-      web_bundle_id, integrity_block,
-      base::BindOnce(&IsolatedWebAppReaderRegistry::OnIntegrityBlockValidated,
-                     weak_ptr_factory_.GetWeakPtr(), web_bundle_path,
-                     web_bundle_id, std::move(integrity_callback)));
-}
-
-void IsolatedWebAppReaderRegistry::OnIntegrityBlockValidated(
-    const base::FilePath& web_bundle_path,
-    const web_package::SignedWebBundleId& web_bundle_id,
-    base::OnceCallback<void(SignedWebBundleReader::SignatureVerificationAction)>
-        integrity_callback,
-    absl::optional<std::string> integrity_block_error) {
-  if (integrity_block_error.has_value()) {
-    // Aborting parsing will trigger a call to `OnIntegrityBlockAndMetadataRead`
-    // with a `SignedWebBundleReader::AbortedByCaller` error.
-    std::move(integrity_callback)
-        .Run(SignedWebBundleReader::SignatureVerificationAction::Abort(
-            *integrity_block_error));
-    return;
-  }
-
+  // If we already verified the signatures of this Signed Web Bundle during
+  // the current browser session, we trust that the Signed Web Bundle has not
+  // been tampered with and don't re-verify signatures.
+  //
   // TODO(crbug.com/1366309): On ChromeOS, we should only verify signatures at
   // install-time. Until this is implemented, we will verify signatures on
   // ChromeOS once per session.
-  if (verified_files_.contains(web_bundle_path)) {
-    // If we already verified the signatures of this Signed Web Bundle during
-    // the current browser session, we trust that the Signed Web Bundle has not
-    // been tampered with and don't re-verify signatures.
-    std::move(integrity_callback)
-        .Run(SignedWebBundleReader::SignatureVerificationAction::
-                 ContinueAndSkipSignatureVerification());
-  } else {
-    std::move(integrity_callback)
-        .Run(SignedWebBundleReader::SignatureVerificationAction::
-                 ContinueAndVerifySignatures());
-  }
+  bool skip_signature_verification = verified_files_.contains(web_bundle_path);
+
+  reader_factory_->CreateResponseReader(
+      web_bundle_path, web_bundle_id, skip_signature_verification,
+      base::BindOnce(&IsolatedWebAppReaderRegistry::OnResponseReaderCreated,
+                     // `base::Unretained` can be used here since `this` owns
+                     // `reader_factory`.
+                     base::Unretained(this), web_bundle_path, web_bundle_id));
 }
 
-void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
+void IsolatedWebAppReaderRegistry::OnResponseReaderCreated(
     const base::FilePath& web_bundle_path,
     const web_package::SignedWebBundleId& web_bundle_id,
-    absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>
-        read_integrity_block_and_metadata_error) {
+    base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
+                   IsolatedWebAppResponseReaderFactory::Error> reader) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto cache_entry_it = reader_cache_.Find(web_bundle_path);
   DCHECK(cache_entry_it != reader_cache_.End());
   DCHECK_EQ(cache_entry_it->second.state(), Cache::Entry::State::kPending);
 
-  absl::optional<
-      std::pair<ReadResponseError, ReadIntegrityBlockAndMetadataStatus>>
-      error_and_status;
-  if (read_integrity_block_and_metadata_error.has_value()) {
-    error_and_status = std::make_pair(
-        ReadResponseError::ForError(*read_integrity_block_and_metadata_error),
-        GetStatusFromError(*read_integrity_block_and_metadata_error));
-  }
-
-  auto reader = std::move(absl::get<std::unique_ptr<SignedWebBundleReader>>(
-      cache_entry_it->second.GetReader()));
-
-  if (!error_and_status.has_value()) {
-    if (auto error_message = validator_->ValidateMetadata(
-            web_bundle_id, reader->GetPrimaryURL(), reader->GetEntries());
-        error_message.has_value()) {
-      error_and_status = std::make_pair(
-          ReadResponseError::ForMetadataValidationError(*error_message),
-          ReadIntegrityBlockAndMetadataStatus::kMetadataValidationError);
-    }
-  }
-
-  base::UmaHistogramEnumeration(
-      "WebApp.Isolated.ReadIntegrityBlockAndMetadataStatus",
-      error_and_status.has_value()
-          ? error_and_status->second
-          : ReadIntegrityBlockAndMetadataStatus::kSuccess);
-
   std::vector<std::pair<network::ResourceRequest, ReadResponseCallback>>
       pending_requests =
           std::exchange(cache_entry_it->second.pending_requests, {});
 
-  if (error_and_status.has_value()) {
+  if (!reader.has_value()) {
     for (auto& [resource_request, callback] : pending_requests) {
-      std::move(callback).Run(base::unexpected(error_and_status->first));
+      std::move(callback).Run(
+          base::unexpected(ReadResponseError::ForError(reader.error())));
     }
     reader_cache_.Erase(cache_entry_it);
     return;
@@ -228,12 +152,10 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
   // consumers that were waiting for this `SignedWebBundleReader` to become
   // available.
   verified_files_.insert(cache_entry_it->first);
-  cache_entry_it->second.GetReader() =
-      std::make_unique<IsolatedWebAppResponseReader>(std::move(reader));
+  cache_entry_it->second.set_reader(std::move(*reader));
   for (auto& [resource_request, callback] : pending_requests) {
-    DoReadResponse(*absl::get<std::unique_ptr<IsolatedWebAppResponseReader>>(
-                       cache_entry_it->second.GetReader()),
-                   resource_request, std::move(callback));
+    DoReadResponse(cache_entry_it->second.GetReader(), resource_request,
+                   std::move(callback));
   }
 }
 
@@ -286,52 +208,6 @@ void IsolatedWebAppReaderRegistry::OnResponseRead(
   std::move(callback).Run(std::move(*response));
 }
 
-IsolatedWebAppReaderRegistry::ReadIntegrityBlockAndMetadataStatus
-IsolatedWebAppReaderRegistry::GetStatusFromError(
-    const SignedWebBundleReader::ReadIntegrityBlockAndMetadataError& error) {
-  return absl::visit(
-      base::Overloaded{
-          [](const web_package::mojom::BundleIntegrityBlockParseErrorPtr&
-                 error) {
-            switch (error->type) {
-              case web_package::mojom::BundleParseErrorType::
-                  kParserInternalError:
-                return ReadIntegrityBlockAndMetadataStatus::
-                    kIntegrityBlockParserInternalError;
-              case web_package::mojom::BundleParseErrorType::kFormatError:
-                return ReadIntegrityBlockAndMetadataStatus::
-                    kIntegrityBlockParserFormatError;
-              case web_package::mojom::BundleParseErrorType::kVersionError:
-                return ReadIntegrityBlockAndMetadataStatus::
-                    kIntegrityBlockParserVersionError;
-            }
-          },
-          [](const SignedWebBundleReader::AbortedByCaller& error) {
-            return ReadIntegrityBlockAndMetadataStatus::
-                kIntegrityBlockValidationError;
-          },
-          [](const web_package::SignedWebBundleSignatureVerifier::Error&
-                 error) {
-            return ReadIntegrityBlockAndMetadataStatus::
-                kSignatureVerificationError;
-          },
-          [](const web_package::mojom::BundleMetadataParseErrorPtr& error) {
-            switch (error->type) {
-              case web_package::mojom::BundleParseErrorType::
-                  kParserInternalError:
-                return ReadIntegrityBlockAndMetadataStatus::
-                    kMetadataParserInternalError;
-              case web_package::mojom::BundleParseErrorType::kFormatError:
-                return ReadIntegrityBlockAndMetadataStatus::
-                    kMetadataParserFormatError;
-              case web_package::mojom::BundleParseErrorType::kVersionError:
-                return ReadIntegrityBlockAndMetadataStatus::
-                    kMetadataParserVersionError;
-            }
-          }},
-      error);
-}
-
 IsolatedWebAppReaderRegistry::ReadResponseHeadStatus
 IsolatedWebAppReaderRegistry::GetStatusFromError(
     const IsolatedWebAppResponseReader::Error& error) {
@@ -348,7 +224,7 @@ IsolatedWebAppReaderRegistry::GetStatusFromError(
 // static
 IsolatedWebAppReaderRegistry::ReadResponseError
 IsolatedWebAppReaderRegistry::ReadResponseError::ForError(
-    const SignedWebBundleReader::ReadIntegrityBlockAndMetadataError& error) {
+    const IsolatedWebAppResponseReaderFactory::Error& error) {
   return ForOtherError(absl::visit(
       base::Overloaded{
           [](const web_package::mojom::BundleIntegrityBlockParseErrorPtr&
@@ -356,7 +232,7 @@ IsolatedWebAppReaderRegistry::ReadResponseError::ForError(
             return base::StringPrintf("Failed to parse integrity block: %s",
                                       error->message.c_str());
           },
-          [](const SignedWebBundleReader::AbortedByCaller& error) {
+          [](const IntegrityBlockError& error) {
             return base::StringPrintf("Failed to validate integrity block: %s",
                                       error.message.c_str());
           },
@@ -368,16 +244,12 @@ IsolatedWebAppReaderRegistry::ReadResponseError::ForError(
           [](const web_package::mojom::BundleMetadataParseErrorPtr& error) {
             return base::StringPrintf("Failed to parse metadata: %s",
                                       error->message.c_str());
+          },
+          [](const MetadataError& error) {
+            return base::StringPrintf("Failed to validate metadata: %s",
+                                      error.message.c_str());
           }},
       error));
-}
-
-// static
-IsolatedWebAppReaderRegistry::ReadResponseError
-IsolatedWebAppReaderRegistry::ReadResponseError::ForMetadataValidationError(
-    const std::string& error) {
-  return ForOtherError(
-      base::StringPrintf("Failed to validate metadata: %s", error.c_str()));
 }
 
 // static
@@ -480,9 +352,7 @@ void IsolatedWebAppReaderRegistry::Cache::CleanupOldEntries() {
   StopCleanupTimerIfCacheIsEmpty();
 }
 
-IsolatedWebAppReaderRegistry::Cache::Entry::Entry(
-    std::unique_ptr<SignedWebBundleReader> reader)
-    : reader_(std::move(reader)) {}
+IsolatedWebAppReaderRegistry::Cache::Entry::Entry() = default;
 
 IsolatedWebAppReaderRegistry::Cache::Entry::~Entry() = default;
 

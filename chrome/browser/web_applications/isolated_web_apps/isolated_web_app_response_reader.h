@@ -21,7 +21,9 @@ namespace web_app {
 
 // This class is used to read responses for requests from Isolated Web Apps. It
 // is constructed from a `SignedWebBundleReader` instance, which must have
-// already read and validated integrity block and metadata.
+// already read and validated integrity block and metadata. Usually, this class
+// should be constructed via the `IsolatedWebAppResponseReaderFactory`, which
+// will take care of the necessary validation and verification steps.
 class IsolatedWebAppResponseReader {
  public:
   explicit IsolatedWebAppResponseReader(

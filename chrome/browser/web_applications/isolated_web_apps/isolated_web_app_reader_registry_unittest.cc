@@ -234,7 +234,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSingleRequest) {
 
   histogram_tester.ExpectBucketCount(
       "WebApp.Isolated.ReadIntegrityBlockAndMetadataStatus",
-      IsolatedWebAppReaderRegistry::ReadIntegrityBlockAndMetadataStatus::
+      IsolatedWebAppResponseReaderFactory::ReadIntegrityBlockAndMetadataStatus::
           kSuccess,
       1);
 
@@ -439,10 +439,10 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
 
 class IsolatedWebAppReaderRegistryIntegrityBlockParserErrorTest
     : public IsolatedWebAppReaderRegistryTest,
-      public ::testing::WithParamInterface<std::pair<
-          web_package::mojom::BundleParseErrorType,
-          IsolatedWebAppReaderRegistry::ReadIntegrityBlockAndMetadataStatus>> {
-};
+      public ::testing::WithParamInterface<
+          std::pair<web_package::mojom::BundleParseErrorType,
+                    IsolatedWebAppResponseReaderFactory::
+                        ReadIntegrityBlockAndMetadataStatus>> {};
 
 TEST_P(IsolatedWebAppReaderRegistryIntegrityBlockParserErrorTest,
        TestIntegrityBlockParserError) {
@@ -478,16 +478,17 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         std::make_pair(
             web_package::mojom::BundleParseErrorType::kParserInternalError,
-            IsolatedWebAppReaderRegistry::ReadIntegrityBlockAndMetadataStatus::
-                kIntegrityBlockParserInternalError),
-        std::make_pair(
-            web_package::mojom::BundleParseErrorType::kVersionError,
-            IsolatedWebAppReaderRegistry::ReadIntegrityBlockAndMetadataStatus::
-                kIntegrityBlockParserVersionError),
-        std::make_pair(
-            web_package::mojom::BundleParseErrorType::kFormatError,
-            IsolatedWebAppReaderRegistry::ReadIntegrityBlockAndMetadataStatus::
-                kIntegrityBlockParserFormatError)));
+            IsolatedWebAppResponseReaderFactory::
+                ReadIntegrityBlockAndMetadataStatus::
+                    kIntegrityBlockParserInternalError),
+        std::make_pair(web_package::mojom::BundleParseErrorType::kVersionError,
+                       IsolatedWebAppResponseReaderFactory::
+                           ReadIntegrityBlockAndMetadataStatus::
+                               kIntegrityBlockParserVersionError),
+        std::make_pair(web_package::mojom::BundleParseErrorType::kFormatError,
+                       IsolatedWebAppResponseReaderFactory::
+                           ReadIntegrityBlockAndMetadataStatus::
+                               kIntegrityBlockParserFormatError)));
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidIntegrityBlockContents) {
   base::HistogramTester histogram_tester;
@@ -518,7 +519,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidIntegrityBlockContents) {
 
   histogram_tester.ExpectBucketCount(
       "WebApp.Isolated.ReadIntegrityBlockAndMetadataStatus",
-      IsolatedWebAppReaderRegistry::ReadIntegrityBlockAndMetadataStatus::
+      IsolatedWebAppResponseReaderFactory::ReadIntegrityBlockAndMetadataStatus::
           kIntegrityBlockValidationError,
       1);
 }
@@ -559,7 +560,7 @@ TEST_P(IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
 
   histogram_tester.ExpectBucketCount(
       "WebApp.Isolated.ReadIntegrityBlockAndMetadataStatus",
-      IsolatedWebAppReaderRegistry::ReadIntegrityBlockAndMetadataStatus::
+      IsolatedWebAppResponseReaderFactory::ReadIntegrityBlockAndMetadataStatus::
           kSignatureVerificationError,
       1);
 }
@@ -575,10 +576,10 @@ INSTANTIATE_TEST_SUITE_P(
 
 class IsolatedWebAppReaderRegistryMetadataParserErrorTest
     : public IsolatedWebAppReaderRegistryTest,
-      public ::testing::WithParamInterface<std::pair<
-          web_package::mojom::BundleParseErrorType,
-          IsolatedWebAppReaderRegistry::ReadIntegrityBlockAndMetadataStatus>> {
-};
+      public ::testing::WithParamInterface<
+          std::pair<web_package::mojom::BundleParseErrorType,
+                    IsolatedWebAppResponseReaderFactory::
+                        ReadIntegrityBlockAndMetadataStatus>> {};
 
 TEST_P(IsolatedWebAppReaderRegistryMetadataParserErrorTest,
        TestMetadataParserError) {
@@ -615,16 +616,17 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         std::make_pair(
             web_package::mojom::BundleParseErrorType::kParserInternalError,
-            IsolatedWebAppReaderRegistry::ReadIntegrityBlockAndMetadataStatus::
-                kMetadataParserInternalError),
-        std::make_pair(
-            web_package::mojom::BundleParseErrorType::kVersionError,
-            IsolatedWebAppReaderRegistry::ReadIntegrityBlockAndMetadataStatus::
-                kMetadataParserVersionError),
-        std::make_pair(
-            web_package::mojom::BundleParseErrorType::kFormatError,
-            IsolatedWebAppReaderRegistry::ReadIntegrityBlockAndMetadataStatus::
-                kMetadataParserFormatError)));
+            IsolatedWebAppResponseReaderFactory::
+                ReadIntegrityBlockAndMetadataStatus::
+                    kMetadataParserInternalError),
+        std::make_pair(web_package::mojom::BundleParseErrorType::kVersionError,
+                       IsolatedWebAppResponseReaderFactory::
+                           ReadIntegrityBlockAndMetadataStatus::
+                               kMetadataParserVersionError),
+        std::make_pair(web_package::mojom::BundleParseErrorType::kFormatError,
+                       IsolatedWebAppResponseReaderFactory::
+                           ReadIntegrityBlockAndMetadataStatus::
+                               kMetadataParserFormatError)));
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataPrimaryUrl) {
   base::HistogramTester histogram_tester;
@@ -653,7 +655,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataPrimaryUrl) {
 
   histogram_tester.ExpectBucketCount(
       "WebApp.Isolated.ReadIntegrityBlockAndMetadataStatus",
-      IsolatedWebAppReaderRegistry::ReadIntegrityBlockAndMetadataStatus::
+      IsolatedWebAppResponseReaderFactory::ReadIntegrityBlockAndMetadataStatus::
           kMetadataValidationError,
       1);
 }
