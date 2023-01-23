@@ -30,17 +30,18 @@ const char kTrialGroupMICeAndDefaultBrowserVersionPrefName[] =
 // enrolled in the experiment.
 const int kPlaceholderTrialVersion = -1;
 // The current trial version; should be updated when the experiment is modified.
-const int kCurrentTrialVersion = 4;
+const int kCurrentTrialVersion = 5;
 
 // Group names for the FRE redesign permissions trial.
 const char kDefaultGroup[] = "Default";
 // Group name for the FRE control group.
-const char kControlGroup[] = "Control-V4";
+const char kControlGroup[] = "Control-V5";
 // Group names for the MICe FRE and TangibleSync FRE trial.
-const char kTangibleSyncDFREGroup[] = "kTangibleSyncD-V4";
-const char kTangibleSyncEFREGroup[] = "kTangibleSyncE-V4";
-const char kTangibleSyncFFREGroup[] = "kTangibleSyncF-V4";
-const char kTwoStepsMICEFREGroup[] = "kTwoStepsMICEFRE-V4";
+const char kTangibleSyncAFREGroup[] = "kTangibleSyncA-V5";
+const char kTangibleSyncDFREGroup[] = "kTangibleSyncD-V5";
+const char kTangibleSyncEFREGroup[] = "kTangibleSyncE-V5";
+const char kTangibleSyncFFREGroup[] = "kTangibleSyncF-V5";
+const char kTwoStepsMICEFREGroup[] = "kTwoStepsMICEFRE-V5";
 
 // Options for kkNewMobileIdentityConsistencyFREParam.
 constexpr base::FeatureParam<NewMobileIdentityConsistencyFRE>::Option
@@ -114,26 +115,15 @@ NewMobileIdentityConsistencyFRE GetNewMobileIdentityConsistencyFRE() {
 // Returns the weight for each trial group according to the FRE variations.
 std::map<variations::VariationID, int> GetGroupWeightsForFREVariations() {
   // It would probably be more efficient to use a fixed_flat_map.
+  // kTangibleSyncAFRETrialID is launched to 100% of the users.
   std::map<variations::VariationID, int> weight_by_id = {
-      {kControlTrialID, 0},          {kTangibleSyncDFRETrialID, 0},
-      {kTangibleSyncEFRETrialID, 0}, {kTangibleSyncFFRETrialID, 0},
-      {kTwoStepsMICEFRETrialID, 0},
+      {kControlTrialID, 0},          {kTangibleSyncAFRETrialID, 0},
+      {kTangibleSyncDFRETrialID, 0}, {kTangibleSyncEFRETrialID, 0},
+      {kTangibleSyncFFRETrialID, 0}, {kTwoStepsMICEFRETrialID, 0},
   };
-  switch (GetChannel()) {
-    case version_info::Channel::UNKNOWN:
-    case version_info::Channel::CANARY:
-    case version_info::Channel::DEV:
-    case version_info::Channel::BETA:
-      for (auto& [id, weight] : weight_by_id) {
-        weight = 20;
-      };
-      break;
-    case version_info::Channel::STABLE:
-      for (auto& [id, weight] : weight_by_id) {
-        weight = 4;
-      };
-      break;
-  }
+
+  // `kTangibleSyncAFRETrialID` launched to 100% of users.
+  weight_by_id[kTangibleSyncAFRETrialID] = 100;
   return weight_by_id;
 }
 
@@ -154,7 +144,10 @@ int CreateNewMICeFRETrial(
 
   // Control group.
   AddGroupToConfig(kControlGroup, kControlTrialID, weight_by_id, config);
+
   // MICe FRE and TangibleSync FRE groups.
+  AddGroupToConfig(kTangibleSyncAFREGroup, kTangibleSyncAFRETrialID,
+                   weight_by_id, config);
   AddGroupToConfig(kTangibleSyncDFREGroup, kTangibleSyncDFRETrialID,
                    weight_by_id, config);
   AddGroupToConfig(kTangibleSyncEFREGroup, kTangibleSyncEFRETrialID,
@@ -165,6 +158,9 @@ int CreateNewMICeFRETrial(
                    config);
 
   // Associate field trial params to each group.
+  AssociateFieldTrialParamsForNewMobileIdentityConsistency(
+      kTangibleSyncAFREGroup,
+      kNewMobileIdentityConsistencyFREParamTangibleSyncA);
   AssociateFieldTrialParamsForNewMobileIdentityConsistency(
       kTangibleSyncDFREGroup,
       kNewMobileIdentityConsistencyFREParamTangibleSyncD);
