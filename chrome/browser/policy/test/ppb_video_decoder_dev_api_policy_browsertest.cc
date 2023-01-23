@@ -67,6 +67,10 @@ class ChromeContentBrowserClientForPolicyTests
 
 }  // namespace
 
+// NOTE: This test is templated rather than parameterized in the interests of
+// readability: while a parameterized test would be shorter, it was the author's
+// judgment that it would be significantly harder to read and comprehend the
+// meaning of what was being tested across the different permutations.
 template <PolicySetting policy_setting, FeatureSetting feature_setting>
 class PPBVideoDecoderDevAPIPolicyBrowserTest : public PlatformBrowserTest {
  public:
