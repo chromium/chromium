@@ -181,8 +181,8 @@ export class XfConflictDialog extends HTMLElement {
       this.getReplaceButton().innerText = str('CONFLICT_DIALOG_REPLACE');
     }
 
-    this.toggleAttribute('checked', checked);
     this.getCheckboxElement().focus();
+    this.toggleAttribute('checked', checked);
   }
 
   /**

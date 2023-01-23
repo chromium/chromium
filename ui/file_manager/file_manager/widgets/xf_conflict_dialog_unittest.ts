@@ -198,6 +198,9 @@ export async function testDialogCheckboxChangesCheckedState(done: () => void) {
   assertEquals('Keep all', keepboth.innerText);
   assertEquals('Replace all', replace.innerText);
 
+  // Check: the checkbox should gain the focus.
+  await waitUntil(() => element.shadowRoot!.activeElement === checkbox);
+
   // Check: clicking the checkbox should change the checked state.
   checkbox.click();
   await waitUntil(() => !element.hasAttribute('checked'));
@@ -205,6 +208,9 @@ export async function testDialogCheckboxChangesCheckedState(done: () => void) {
   assertFalse(checkbox.checked);
   assertEquals('Keep both', keepboth.innerText);
   assertEquals('Replace', replace.innerText);
+
+  // Check: the checkbox should retain the focus.
+  await waitUntil(() => element.shadowRoot!.activeElement === checkbox);
 
   done();
 }
