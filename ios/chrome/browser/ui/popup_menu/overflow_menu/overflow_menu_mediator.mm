@@ -1232,12 +1232,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     self.helpActionsGroup.footer = nil;
   }
 
-  if (IsPinnedTabsOverflowEnabled()) {
-    // Enable/disable items based on page state.
-    self.pinTabAction.enabled = [self isCurrentURLWebURL];
-    self.unpinTabAction.enabled = [self isCurrentURLWebURL];
-  }
-
   // The "Add to Reading List" functionality requires JavaScript execution,
   // which is paused while overlays are displayed over the web content area.
   self.readLaterAction.enabled =

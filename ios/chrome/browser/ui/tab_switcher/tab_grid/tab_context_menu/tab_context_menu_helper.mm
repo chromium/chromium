@@ -106,18 +106,6 @@
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
-  if (!IsURLNewTabPage(item.URL)) {
-    if ([self.contextMenuDelegate
-            respondsToSelector:@selector(shareURL:title:scenario:fromView:)]) {
-      [menuElements addObject:[actionFactory actionToShareWithBlock:^{
-                      [self.contextMenuDelegate
-                          shareURL:item.URL
-                             title:item.title
-                          scenario:ActivityScenario::TabGridItem
-                          fromView:cell];
-                    }]];
-    }
-
     if (IsPinnedTabsEnabled()) {
       if (pinned) {
         if ([self.contextMenuDelegate
@@ -138,47 +126,59 @@
       }
     }
 
-    if (item.URL.SchemeIsHTTPOrHTTPS() &&
-        [self.contextMenuDelegate
-            respondsToSelector:@selector(addToReadingListURL:title:)]) {
-      [menuElements
-          addObject:[actionFactory actionToAddToReadingListWithBlock:^{
-            [self.contextMenuDelegate addToReadingListURL:item.URL
-                                                    title:item.title];
-          }]];
-    }
+    if (!IsURLNewTabPage(item.URL)) {
+      if ([self.contextMenuDelegate respondsToSelector:@selector
+                                    (shareURL:title:scenario:fromView:)]) {
+        [menuElements addObject:[actionFactory actionToShareWithBlock:^{
+                        [self.contextMenuDelegate
+                            shareURL:item.URL
+                               title:item.title
+                            scenario:ActivityScenario::TabGridItem
+                            fromView:cell];
+                      }]];
+      }
 
-    UIAction* bookmarkAction;
-    const BOOL currentlyBookmarked = [self isTabItemBookmarked:item];
-    if (currentlyBookmarked) {
-      if ([self.contextMenuDelegate
-              respondsToSelector:@selector(editBookmarkWithURL:)]) {
-        bookmarkAction = [actionFactory actionToEditBookmarkWithBlock:^{
-          [self.contextMenuDelegate editBookmarkWithURL:item.URL];
-        }];
+      if (item.URL.SchemeIsHTTPOrHTTPS() &&
+          [self.contextMenuDelegate
+              respondsToSelector:@selector(addToReadingListURL:title:)]) {
+        [menuElements
+            addObject:[actionFactory actionToAddToReadingListWithBlock:^{
+              [self.contextMenuDelegate addToReadingListURL:item.URL
+                                                      title:item.title];
+            }]];
       }
-    } else {
-      if ([self.contextMenuDelegate
-              respondsToSelector:@selector(bookmarkURL:title:)]) {
-        bookmarkAction = [actionFactory actionToBookmarkWithBlock:^{
-          [self.contextMenuDelegate bookmarkURL:item.URL title:item.title];
-        }];
+
+      UIAction* bookmarkAction;
+      const BOOL currentlyBookmarked = [self isTabItemBookmarked:item];
+      if (currentlyBookmarked) {
+        if ([self.contextMenuDelegate
+                respondsToSelector:@selector(editBookmarkWithURL:)]) {
+          bookmarkAction = [actionFactory actionToEditBookmarkWithBlock:^{
+            [self.contextMenuDelegate editBookmarkWithURL:item.URL];
+          }];
+        }
+      } else {
+        if ([self.contextMenuDelegate
+                respondsToSelector:@selector(bookmarkURL:title:)]) {
+          bookmarkAction = [actionFactory actionToBookmarkWithBlock:^{
+            [self.contextMenuDelegate bookmarkURL:item.URL title:item.title];
+          }];
+        }
+      }
+      // Bookmarking can be disabled from prefs (from an enterprise policy),
+      // if that's the case grey out the option in the menu.
+      if (self.browser) {
+        BOOL isEditBookmarksEnabled =
+            self.browser->GetBrowserState()->GetPrefs()->GetBoolean(
+                bookmarks::prefs::kEditBookmarksEnabled);
+        if (!isEditBookmarksEnabled && bookmarkAction) {
+          bookmarkAction.attributes = UIMenuElementAttributesDisabled;
+        }
+        if (bookmarkAction) {
+          [menuElements addObject:bookmarkAction];
+        }
       }
     }
-    // Bookmarking can be disabled from prefs (from an enterprise policy),
-    // if that's the case grey out the option in the menu.
-    if (self.browser) {
-      BOOL isEditBookmarksEnabled =
-          self.browser->GetBrowserState()->GetPrefs()->GetBoolean(
-              bookmarks::prefs::kEditBookmarksEnabled);
-      if (!isEditBookmarksEnabled && bookmarkAction) {
-        bookmarkAction.attributes = UIMenuElementAttributesDisabled;
-      }
-      if (bookmarkAction) {
-        [menuElements addObject:bookmarkAction];
-      }
-    }
-  }
 
   // Thumb strip, pinned tabs and search results menus don't support tab
   // selection.
