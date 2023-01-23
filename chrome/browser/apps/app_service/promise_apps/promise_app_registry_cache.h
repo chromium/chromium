@@ -5,6 +5,7 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_PROMISE_APPS_PROMISE_APP_REGISTRY_CACHE_H_
 
 #include <map>
+#include <memory>
 
 namespace apps {
 
