@@ -828,6 +828,28 @@ class PolicyTemplateChecker(object):
 
     return False
 
+  # Checks if the policy supported on a specific platform via 'supported_on'
+  # field. Does not take into account the 'future_on' field.
+  def _SupportedOnPlatformPolicy(self, policy, current_version, platform):
+    for s in policy.get('supported_on', []):
+      (
+          supported_on_platform,
+          supported_on_from,
+          supported_on_to,
+      ) = _GetSupportedVersionPlatformAndRange(s)
+
+      # Skip other platforms.
+      if supported_on_platform != platform:
+        continue
+
+      # If supported_on_to isn't given, this policy is still supported.
+      if supported_on_to is None:
+        return True
+
+      return current_version <= int(supported_on_to)
+
+    return False
+
   def _CheckPolicyDefinition(self,
                              policy,
                              current_version,
@@ -1568,4 +1590,39 @@ class PolicyTemplateChecker(object):
         self._PolicyError(
             'Schema compatible errors.\n'
             f'  {schema_compatible_error_message}', policy)
+
+      # Check that defaults have not changed for a launched policy.
+      if policy_change['old_policy'] is not None:
+        old_policy = policy_change['old_policy']
+        supported_on = self._CheckContains(policy,
+                                           'supported_on',
+                                           list,
+                                           optional=True)
+        for key in [
+            'default', 'default_for_enterprise_users', 'default_policy_level'
+        ]:
+          # Nothing changed.
+          if old_policy.get(key) == policy.get(key):
+            continue
+          if key == 'default':
+            if not supported_on:
+              continue
+            self._Warning(
+                'You seem to change a default value for a launched policy '
+                '\'%s\'. This will certainly break the contract if the policy '
+                'is already supported in the Admin Console. Please consider '
+                'contacting cros-policy-muc-eng@google.com for guidance.' %
+                policy['name'])
+            continue
+
+          # Handle default_for_enterprise_users and default_policy_level
+          if self._SupportedOnPlatformPolicy(old_policy, current_version,
+                                             'chrome_os'):
+            self._Warning(
+                'You seem to change defaults for enterprise users on ChromeOS '
+                'for a launched policy \'%s\'. This will certainly break the '
+                ' contract if the policy is already supported in the Admin '
+                'Console. Please consider contacting '
+                'cros-policy-muc-eng@google.com for guidance' % policy['name'])
+
     return self.errors, self.warnings
