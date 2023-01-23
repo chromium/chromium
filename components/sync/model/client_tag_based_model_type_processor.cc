@@ -957,6 +957,12 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
       metadata_changes->UpdateMetadata(storage_key, entity->metadata());
   }
 
+  // If there is already an error (this can happen if one of the metadata
+  // writes failed), don't even send the data to the bridge.
+  if (model_error_) {
+    return model_error_;
+  }
+
   // Let the bridge handle associating and merging the data.
   // For ApplyUpdatesImmediatelyTypes(), no merge is necessary or supported, so
   // call ApplySyncChanges() instead.

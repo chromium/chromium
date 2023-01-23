@@ -179,12 +179,6 @@ AutofillWalletSyncBridge::CreateMetadataChangeList() {
 absl::optional<syncer::ModelError> AutofillWalletSyncBridge::MergeSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
-  // All metadata changes have been already written, return early for an error.
-  absl::optional<syncer::ModelError> error = change_processor()->GetError();
-  if (error) {
-    return error;
-  }
-
   // We want to notify the metadata bridge about all changes so that the
   // metadata bridge can track changes in the data bridge and react accordingly.
   SetSyncData(entity_data, /*notify_metadata_bridge=*/true);
