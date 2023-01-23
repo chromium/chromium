@@ -30,28 +30,6 @@ android_library("java") {
   resources_package = "org.chromium.chrome.browser.user_education"
 }
 
-android_library("unit_device_javatests") {
-  testonly = true
-  sources = [ "java/src/org/chromium/chrome/browser/user_education/UserEducationHelperTest.java" ]
-  deps = [
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//chrome/browser/feature_engagement:java",
-    "//chrome/browser/flags:java",
-    "//chrome/browser/profiles/android:java",
-    "//chrome/browser/user_education:java",
-    "//components/browser_ui/widget/android:java",
-    "//components/feature_engagement/public:public_java",
-    "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:espresso_java",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/hamcrest:hamcrest_library_java",
-    "//third_party/junit",
-    "//third_party/mockito:mockito_java",
-    "//ui/android:ui_java_test_support",
-  ]
-}
-
 android_resources("java_resources") {
   sources = [ "java/res/values/dimens.xml" ]
 }

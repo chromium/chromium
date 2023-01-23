@@ -280,10 +280,8 @@ public final class ShareSheetBottomSheetContentTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures(
-            {ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS, ChromeFeatureList.SNOOZABLE_IPH})
-    public void
-    createRecyclerViews_toggleOff_showsIph() {
+    @Features.DisableFeatures({ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS})
+    public void createRecyclerViews_toggleOff_showsIph() {
         String fileContentType = "image/gif";
         ShareSheetBottomSheetContent shareSheetBottomSheetContent =
                 new ShareSheetBottomSheetContent(mActivity, new MockLargeIconBridge(), null,

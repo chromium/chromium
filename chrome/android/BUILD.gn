@@ -3043,7 +3043,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/searchactivityutils:unit_device_javatests",
       "//chrome/browser/ui/android/signin:unit_device_javatests",
       "//chrome/browser/ui/messages/android:unit_device_javatests",
-      "//chrome/browser/user_education:unit_device_javatests",
       "//chrome/browser/video_tutorials/internal:unit_device_javatests",
       "//components/browser_ui/bottomsheet/android/internal:unit_device_javatests",
       "//components/browser_ui/contacts_picker/android:unit_device_javatests",

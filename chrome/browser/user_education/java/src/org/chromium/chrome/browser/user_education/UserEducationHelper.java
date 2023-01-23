@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
-import org.chromium.components.feature_engagement.SnoozeAction;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerDetails;
 import org.chromium.ui.widget.RectProvider;
@@ -92,10 +91,8 @@ public class UserEducationHelper {
 
         HighlightParams highlightParams = iphCommand.highlightParams;
         TextBubble textBubble = null;
-        TriggerDetails triggerDetails = ChromeFeatureList.isEnabled(ChromeFeatureList.SNOOZABLE_IPH)
-                ? tracker.shouldTriggerHelpUIWithSnooze(featureName)
-                : new TriggerDetails(
-                        tracker.shouldTriggerHelpUI(featureName), /*shouldShowSnooze=*/false);
+        TriggerDetails triggerDetails = new TriggerDetails(
+                tracker.shouldTriggerHelpUI(featureName), /*shouldShowSnooze=*/false);
 
         assert (triggerDetails != null);
         if (!triggerDetails.shouldTriggerIph) {
@@ -114,32 +111,10 @@ public class UserEducationHelper {
         assert (!contentString.isEmpty());
         assert (!accessibilityString.isEmpty());
 
-        // Automatic snoozes are handled separately. If automatic snoozing is enabled, we won't show
-        // snooze UI in the IPH, but we will treat the dismiss as an implicit snooze action.
-        boolean shouldShowSnoozeButton = triggerDetails.shouldShowSnooze;
-        if (shouldShowSnoozeButton) {
-            // TODO(crbug.com/1243973): Implement explicit dismiss.
-            boolean showExplicitDismiss = false;
-            Runnable snoozeRunnable = showExplicitDismiss
-                    ? null
-                    : () -> tracker.dismissedWithSnooze(featureName, SnoozeAction.SNOOZED);
-            Runnable snoozeDismissRunnable = showExplicitDismiss ? ()
-                    -> tracker.dismissedWithSnooze(featureName, SnoozeAction.DISMISSED)
-                    : null;
-
-            textBubble = new TextBubble(mActivity, anchorView, contentString, accessibilityString,
-                    iphCommand.removeArrow ? false : true,
-                    viewRectProvider != null ? viewRectProvider : rectProvider, null, false, false,
-                    ChromeAccessibilityUtil.get().isAccessibilityEnabled(), snoozeRunnable,
-                    snoozeDismissRunnable);
-
-        } else {
-            textBubble = new TextBubble(mActivity, anchorView, contentString, accessibilityString,
-                    iphCommand.removeArrow ? false : true,
-                    viewRectProvider != null ? viewRectProvider : rectProvider,
-                    ChromeAccessibilityUtil.get().isAccessibilityEnabled());
-        }
-
+        textBubble = new TextBubble(mActivity, anchorView, contentString, accessibilityString,
+                iphCommand.removeArrow ? false : true,
+                viewRectProvider != null ? viewRectProvider : rectProvider,
+                ChromeAccessibilityUtil.get().isAccessibilityEnabled());
         textBubble.setPreferredVerticalOrientation(iphCommand.preferredVerticalOrientation);
         textBubble.setDismissOnTouchInteraction(iphCommand.dismissOnTouch);
         textBubble.addOnDismissListener(() -> mHandler.postDelayed(() -> {

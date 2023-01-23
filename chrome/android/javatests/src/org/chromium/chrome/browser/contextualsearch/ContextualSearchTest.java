@@ -17,10 +17,8 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
@@ -87,7 +85,6 @@ public class ContextualSearchTest extends ContextualSearchInstrumentationBase {
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    @Features.DisableFeatures(ChromeFeatureList.SNOOZABLE_IPH)
     public void testTextTapFollowedByNonTextTap() {
         Assert.assertEquals(0, mPanelManager.getRequestPanelShowCount());
 

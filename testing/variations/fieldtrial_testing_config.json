@@ -10874,8 +10874,7 @@
                         "snooze_params": "max_limit:3,snooze_interval:7"
                     },
                     "enable_features": [
-                        "IPH_DownloadHome",
-                        "IPH_Snooze"
+                        "IPH_DownloadHome"
                     ]
                 }
             ]
