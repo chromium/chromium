@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/enrollment_ui_mixin.h"
+#include "chrome/browser/ash/login/test/feature_parameter_interface.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -2140,30 +2141,13 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, TimeoutError) {
   ASSERT_FALSE(fake_saml_idp()->IsLastChallengeResponseExists());
 }
 
-class SAMLDeviceTrustTest
-    : public SAMLDeviceAttestationTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+// Similar to SamlTestWithFeatures, this class runs for all possible scenarios
+// of the features kDeviceTrustConnectorEnabled &
+// kLoginScreenDeviceTrustConnectorEnabled.
+class SAMLDeviceTrustTest : public SAMLDeviceAttestationTest,
+                            public FeatureAsParameterInterface<2> {
  public:
   SAMLDeviceTrustTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (std::get<0>(GetParam())) {
-      enabled_features.push_back(
-          enterprise_connectors::kDeviceTrustConnectorEnabled);
-    } else {
-      disabled_features.push_back(
-          enterprise_connectors::kDeviceTrustConnectorEnabled);
-    }
-
-    if (std::get<1>(GetParam())) {
-      enabled_features.push_back(
-          features::kLoginScreenDeviceTrustConnectorEnabled);
-    } else {
-      disabled_features.push_back(
-          features::kLoginScreenDeviceTrustConnectorEnabled);
-    }
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     device_state_.SetState(
         DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED);
   }
@@ -2185,11 +2169,13 @@ class SAMLDeviceTrustTest
   }
 
   bool login_screen_device_trust_enabled() {
-    return std::get<0>(GetParam()) && std::get<1>(GetParam());
+    return IsFeatureEnabledInThisTestCase(
+               enterprise_connectors::kDeviceTrustConnectorEnabled) &&
+           IsFeatureEnabledInThisTestCase(
+               features::kLoginScreenDeviceTrustConnectorEnabled);
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -2337,14 +2323,19 @@ IN_PROC_BROWSER_TEST_P(SAMLDeviceTrustEnrolledTest, PolicyTwoEntriesSuccess) {
 
 INSTANTIATE_TEST_SUITE_P(All, SamlTestWithFeatures, ::testing::Bool());
 
+const auto kDeviceTrustFeatureVariations =
+    FeatureAsParameterInterface<2>::Generator(
+        {&enterprise_connectors::kDeviceTrustConnectorEnabled,
+         &features::kLoginScreenDeviceTrustConnectorEnabled});
+
 INSTANTIATE_TEST_SUITE_P(All,
                          SAMLDeviceTrustTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool()));
+                         testing::ValuesIn(kDeviceTrustFeatureVariations),
+                         FeatureAsParameterInterface<2>::ParamInfoToString);
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SAMLDeviceTrustEnrolledTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool()));
+                         testing::ValuesIn(kDeviceTrustFeatureVariations),
+                         FeatureAsParameterInterface<2>::ParamInfoToString);
 
 }  // namespace ash
