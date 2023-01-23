@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Test suite for chrome://cloud-upload. Tests the entire page
- * instead of individual components.
+ * @fileoverview Test suite for chrome://cloud-upload/cloud_upload_dialog.js.
+ * Tests the entire page instead of individual components.
  */
 
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
@@ -12,10 +12,10 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-var CloudUploadAppBrowserTest = class extends PolymerTest {
+var CloudUploadDialogTest = class extends PolymerTest {
   get browsePreload() {
     return 'chrome://cloud-upload/test_loader.html?module=chromeos/' +
-        'cloud_upload/cloud_upload_app_test.js';
+        'cloud_upload/cloud_upload_dialog_test.js';
   }
 
   get featureList() {
@@ -23,4 +23,4 @@ var CloudUploadAppBrowserTest = class extends PolymerTest {
   }
 };
 
-TEST_F('CloudUploadAppBrowserTest', 'All', () => mocha.run());
+TEST_F('CloudUploadDialogTest', 'All', () => mocha.run());
