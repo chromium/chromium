@@ -93,7 +93,6 @@ NGLayoutResult::NGLayoutResult(NGBoxFragmentBuilderPassKey passkey,
     bitfields_.is_block_size_for_fragmentation_clamped =
         builder->is_block_size_for_fragmentation_clamped_;
 
-    bitfields_.break_appeal = builder->break_appeal_;
     bitfields_.has_forced_break = builder->has_forced_break_;
   }
   bitfields_.disable_simplified_layout = builder->disable_simplified_layout;
@@ -274,6 +273,8 @@ NGLayoutResult::NGLayoutResult(const NGPhysicalFragment* physical_fragment,
         builder->column_spanner_path_;
     bitfields_.is_empty_spanner_parent = builder->is_empty_spanner_parent_;
   }
+
+  bitfields_.break_appeal = builder->break_appeal_;
 
   bitfields_.should_force_same_fragmentation_flow =
       builder->should_force_same_fragmentation_flow_;

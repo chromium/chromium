@@ -341,6 +341,12 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
     should_force_same_fragmentation_flow_ = true;
   }
 
+  // Downgrade the break appeal if the specified break appeal is lower than any
+  // found so far.
+  void ClampBreakAppeal(NGBreakAppeal appeal) {
+    break_appeal_ = std::min(break_appeal_, appeal);
+  }
+
   // Specify that all child break tokens be added manually, instead of being
   // added automatically as part of adding child fragments.
   void SetShouldAddBreakTokensManually() {
@@ -437,6 +443,9 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   const NGColumnSpannerPath* column_spanner_path_ = nullptr;
 
   const NGEarlyBreak* early_break_ = nullptr;
+
+  // The appeal of breaking inside this container.
+  NGBreakAppeal break_appeal_ = kBreakAppealPerfect;
 
   // See NGLayoutResult::AnnotationOverflow().
   LayoutUnit annotation_overflow_;

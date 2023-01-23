@@ -495,12 +495,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     return *early_break_;
   }
 
-  // Downgrade the break appeal if the specified break appeal is lower than any
-  // found so far.
-  void ClampBreakAppeal(NGBreakAppeal appeal) {
-    break_appeal_ = std::min(break_appeal_, appeal);
-  }
-
   // Creates the fragment. Can only be called once.
   const NGLayoutResult* ToBoxFragment() {
     DCHECK_NE(BoxType(), NGPhysicalFragment::kInlineBox);
@@ -800,9 +794,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   AtomicString previous_page_name_;
 
   AtomicString page_name_;
-
-  // The appeal of breaking inside this container.
-  NGBreakAppeal break_appeal_ = kBreakAppealPerfect;
 
   absl::optional<LayoutUnit> first_baseline_;
   absl::optional<LayoutUnit> last_baseline_;
