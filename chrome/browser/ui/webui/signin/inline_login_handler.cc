@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
@@ -182,27 +183,28 @@ void InlineLoginHandler::HandleCompleteLoginMessageWithCookies(
     const base::Value::List& args,
     const net::CookieAccessResultList& cookies,
     const net::CookieAccessResultList& excluded_cookies) {
-  const base::Value& dict = args[0];
+  CHECK_EQ(args.size(), 1u);
+  const base::Value::Dict& dict = args[0].GetDict();
 
   CompleteLoginParams params;
-  params.email = dict.FindKey("email")->GetString();
-  params.password = dict.FindKey("password")->GetString();
-  params.gaia_id = dict.FindKey("gaiaId")->GetString();
+  params.email = CHECK_DEREF(dict.FindString("email"));
+  params.password = CHECK_DEREF(dict.FindString("password"));
+  params.gaia_id = CHECK_DEREF(dict.FindString("gaiaId"));
 
   for (const auto& cookie_with_access_result : cookies) {
     if (cookie_with_access_result.cookie.Name() == "oauth_code")
       params.auth_code = cookie_with_access_result.cookie.Value();
   }
 
-  params.skip_for_now = dict.FindBoolKey("skipForNow").value_or(false);
-  absl::optional<bool> trusted = dict.FindBoolKey("trusted");
+  params.skip_for_now = dict.FindBool("skipForNow").value_or(false);
+  absl::optional<bool> trusted = dict.FindBool("trusted");
   params.trusted_value = trusted.value_or(false);
   params.trusted_found = trusted.has_value();
 
   params.choose_what_to_sync =
-      dict.FindBoolKey("chooseWhatToSync").value_or(false);
+      dict.FindBool("chooseWhatToSync").value_or(false);
   params.is_available_in_arc =
-      dict.FindBoolKey("isAvailableInArc").value_or(false);
+      dict.FindBool("isAvailableInArc").value_or(false);
 
   CompleteLogin(params);
 }
