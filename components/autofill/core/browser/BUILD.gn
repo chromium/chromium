@@ -141,8 +141,6 @@ static_library("browser") {
     "data_model/autofill_structured_address_utils.h",
     "data_model/autofill_wallet_usage_data.cc",
     "data_model/autofill_wallet_usage_data.h",
-    "data_model/autofillable_data.cc",
-    "data_model/autofillable_data.h",
     "data_model/birthdate.cc",
     "data_model/birthdate.h",
     "data_model/borrowed_transliterator.cc",
