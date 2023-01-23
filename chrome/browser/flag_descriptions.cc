@@ -5654,10 +5654,6 @@ const char kLockScreenNotificationName[] = "Lock screen notification";
 const char kLockScreenNotificationDescription[] =
     "Enable notifications on the lock screen.";
 
-const char kMediaAppCustomColorsName[] = "Media App Custom Colors";
-const char kMediaAppCustomColorsDescription[] =
-    "Within Gallery, enable the custom color chooser and recent colors.";
-
 const char kMeteredShowToggleName[] = "Show Metered Toggle";
 const char kMeteredShowToggleDescription[] =
     "Shows a Metered toggle in the Network settings UI for WiFI and Cellular. "

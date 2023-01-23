@@ -4610,11 +4610,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "media-app-custom-colors",
-    "owners": [ "//ash/webui/media_app_ui/OWNERS" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "media-remoting-without-fullscreen",
     "owners": [ "muyaoxu@google.com", "openscreen-eng@google.com" ],
     "expiry_milestone": 120
