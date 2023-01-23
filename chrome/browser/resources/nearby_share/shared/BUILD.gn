@@ -10,7 +10,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 assert(is_chromeos, "Nearby Share is CrOS only")
 
 os_settings_dir = "$root_gen_dir/chrome/browser/resources/settings/chromeos"
-preprocess_folder = "tsc/shared"
+preprocessed_folder = "tsc_input/shared"
 preprocess_gen_v3_manifest = "preprocessed_gen_v3_manifest.json"
 preprocess_v3_manifest = "preprocessed_v3_manifest.json"
 
@@ -54,10 +54,7 @@ non_web_component_files = [
 generate_grd("build_v3_grdp") {
   grd_prefix = "nearby_share"
   out_grd = "$target_gen_dir/${grd_prefix}_resources_v3.grdp"
-  deps = [
-    ":preprocess_gen_v3",
-    ":preprocess_v3",
-  ]
+  deps = [ ":preprocess" ]
   manifest_files = [
     "$target_gen_dir/$preprocess_gen_v3_manifest",
     "$target_gen_dir/$preprocess_v3_manifest",
@@ -65,17 +62,24 @@ generate_grd("build_v3_grdp") {
   resource_path_prefix = "shared"
 }
 
+group("preprocess") {
+  public_deps = [
+    ":preprocess_gen_v3",
+    ":preprocess_v3",
+  ]
+}
+
 preprocess_if_expr("preprocess_gen_v3") {
   deps = [ ":html_wrapper_files" ]
   in_folder = target_gen_dir
   in_files = html_wrapper_files
-  out_folder = "$os_settings_dir/$preprocess_folder"
+  out_folder = "$os_settings_dir/$preprocessed_folder"
   out_manifest = "$target_gen_dir/$preprocess_gen_v3_manifest"
 }
 
 preprocess_if_expr("preprocess_v3") {
   in_files = web_component_files + non_web_component_files
-  out_folder = "$os_settings_dir/$preprocess_folder"
+  out_folder = "$os_settings_dir/$preprocessed_folder"
   out_manifest = "$target_gen_dir/$preprocess_v3_manifest"
 }
 
