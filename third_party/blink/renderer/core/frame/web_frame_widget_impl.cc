@@ -2136,6 +2136,11 @@ void WebFrameWidgetImpl::Resize(const gfx::Size& new_size) {
 }
 
 void WebFrameWidgetImpl::OnCommitRequested() {
+  // This can be called during shutdown, in which case local_root_ will be
+  // nullptr.
+  if (!LocalRootImpl() || !LocalRootImpl()->GetFrame()) {
+    return;
+  }
   if (auto* view = LocalRootImpl()->GetFrame()->View())
     view->OnCommitRequested();
 }
