@@ -66,7 +66,8 @@ void GetEGLInitDisplays(bool supports_angle_d3d,
   // }
 
   if (supports_angle_null &&
-      requested_renderer == kANGLEImplementationNullName) {
+      (requested_renderer == kANGLEImplementationNullName ||
+       gl::GetANGLEImplementation() == ANGLEImplementation::kNull)) {
     AddInitDisplay(init_displays, ANGLE_NULL);
     return;
   }

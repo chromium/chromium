@@ -29,6 +29,12 @@ const SurfaceHandle kFakeSurfaceHandle = 1;
 #endif
 
 TEST_F(GpuChannelTest, CreateViewCommandBufferAllowed) {
+  // TODO(crbug/1406585): Currently it's not possible to create onscreen
+  // GLSurface with Null binding with angle.
+  if (channel_manager()->use_passthrough_cmd_decoder()) {
+    GTEST_SKIP();
+  }
+
   int32_t kClientId = 1;
   bool is_gpu_host = true;
   GpuChannel* channel = CreateChannel(kClientId, is_gpu_host);

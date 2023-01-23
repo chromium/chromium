@@ -25,11 +25,19 @@
 #include "gpu/ipc/service/gpu_channel_manager_delegate.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/init/gl_factory.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 #include "url/gurl.h"
 
 namespace gpu {
+namespace {
+GpuPreferences CreateGpuPreferences() {
+  GpuPreferences prefs;
+  prefs.use_passthrough_cmd_decoder = features::UsePassthroughCommandDecoder();
+  return prefs;
+}
+}  // namespace
 
 class TestGpuChannelManagerDelegate : public GpuChannelManagerDelegate {
  public:
@@ -77,7 +85,8 @@ GpuChannelTestCommon::GpuChannelTestCommon(
           base::trace_event::MemoryDumpManager::CreateInstanceForTesting()),
       sync_point_manager_(new SyncPointManager()),
       shared_image_manager_(new SharedImageManager(false /* thread_safe */)),
-      scheduler_(new Scheduler(sync_point_manager_.get(), GpuPreferences())),
+      scheduler_(
+          new Scheduler(sync_point_manager_.get(), CreateGpuPreferences())),
       channel_manager_delegate_(
           new TestGpuChannelManagerDelegate(scheduler_.get())) {
   // We need GL bindings to actually initialize command buffers.
@@ -92,7 +101,8 @@ GpuChannelTestCommon::GpuChannelTestCommon(
       std::move(enabled_workarounds);
 
   channel_manager_ = std::make_unique<GpuChannelManager>(
-      GpuPreferences(), channel_manager_delegate_.get(), nullptr, /* watchdog */
+      CreateGpuPreferences(), channel_manager_delegate_.get(),
+      nullptr, /* watchdog */
       task_environment_.GetMainThreadTaskRunner(),
       task_environment_.GetMainThreadTaskRunner(), scheduler_.get(),
       sync_point_manager_.get(), shared_image_manager_.get(),
