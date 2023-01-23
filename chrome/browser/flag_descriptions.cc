@@ -5694,10 +5694,6 @@ const char kNearbySharingSelfShareUIDescription[] =
     "Enables UI features for Self Share to allow seamless sharing between a "
     "user's own devices.";
 
-const char kNearbySharingWifiLanName[] = "Nearby Sharing WifiLan";
-const char kNearbySharingWifiLanDescription[] =
-    "Enables WifiLan as a Nearby Share transfer medium.";
-
 const char kOobeHidDetectionRevampName[] = "OOBE HID Detection Revamp";
 const char kOobeHidDetectionRevampDescription[] =
     "Enables the ChromeOS HID Detection Revamp, which updates OOBE HID "

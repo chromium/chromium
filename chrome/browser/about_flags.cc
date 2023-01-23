@@ -7241,9 +7241,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNearbySharingSelfShareUIName,
      flag_descriptions::kNearbySharingSelfShareUIDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kNearbySharingSelfShareUI)},
-    {"nearby-sharing-wifilan", flag_descriptions::kNearbySharingWifiLanName,
-     flag_descriptions::kNearbySharingWifiLanDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kNearbySharingWifiLan)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

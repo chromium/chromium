@@ -3266,9 +3266,6 @@ extern const char kNearbySharingSelfShareAutoAcceptDescription[];
 extern const char kNearbySharingSelfShareUIName[];
 extern const char kNearbySharingSelfShareUIDescription[];
 
-extern const char kNearbySharingWifiLanName[];
-extern const char kNearbySharingWifiLanDescription[];
-
 extern const char kOobeHidDetectionRevampName[];
 extern const char kOobeHidDetectionRevampDescription[];
 

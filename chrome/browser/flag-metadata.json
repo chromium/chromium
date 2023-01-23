@@ -4811,11 +4811,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "nearby-sharing-wifilan",
-    "owners": [ "nohle@google.com", "chromeos-cross-device-eng@google.com" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "network-service-in-process",
     "owners": [ "yhirano", "network-service-dev" ],
     "expiry_milestone": 120
