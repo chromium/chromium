@@ -323,19 +323,6 @@ IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, DISABLED_OriginFlagEnabled) {
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(kSwitchName));
 }
 
-class AboutFlagsUnexpiredBrowserTest : public AboutFlagsBrowserTest {
- public:
-  AboutFlagsUnexpiredBrowserTest() {
-    const base::Feature* unexpire =
-        flags::GetUnexpireFeatureForMilestone(CHROME_VERSION_MAJOR - 1);
-    feature_list_.InitWithFeatures({*unexpire}, {});
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AboutFlagsUnexpiredBrowserTest,
-                         ::testing::Values(true));
-
 // Crashes on Win.  http://crbug.com/1108357
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ExpiryHidesFlag DISABLED_ExpiryHidesFlag
@@ -348,14 +335,6 @@ IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, MAYBE_ExpiryHidesFlag) {
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(IsFlagPresent(contents, kFlagName));
   EXPECT_FALSE(IsFlagPresent(contents, kExpiredFlagName));
-}
-
-IN_PROC_BROWSER_TEST_P(AboutFlagsUnexpiredBrowserTest, MAYBE_ExpiryHidesFlag) {
-  NavigateToFlagsPage();
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(IsFlagPresent(contents, kFlagName));
-  EXPECT_TRUE(IsFlagPresent(contents, kExpiredFlagName));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

@@ -102,17 +102,12 @@ bool IsFlagExpired(const flags_ui::FlagsStorage* storage,
   // This still has a problem: during browser startup, if the unexpire feature
   // will be configured by some other mechanism (group policy, etc), that
   // feature's value won't apply in time here and the bug described will happen.
-  // TODO(ellyjones): Figure out how to fix that.
+  // In fact, that is a design behavior of the feature system, since flag
+  // unexpiry happens during FeatureList initialization.
+  // TODO(ellyjones): what might we do about that?
   std::set<int> unexpired_milestones = UnexpiredMilestonesFromStorage(storage);
   if (base::Contains(unexpired_milestones, mstone)) {
     return false;
-  }
-
-  // If there's an unexpiry feature, and the unexpiry feature is *disabled*,
-  // then the flag is expired. The double-negative is very unfortunate.
-  const base::Feature* expiry_feature = GetUnexpireFeatureForMilestone(mstone);
-  if (expiry_feature) {
-    return !base::FeatureList::IsEnabled(*expiry_feature);
   }
 
   // Otherwise, the flag is expired if its expiration mstone is less than the
