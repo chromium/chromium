@@ -26,8 +26,9 @@ function getConflictDialogElement(): XfConflictDialog {
 }
 
 /*
- * Tests that the <dialog> element has the focus when the dialog opens. Child
- * UI elements should not be focused by design.
+ * Tests that the message element has the focus when the dialog opens. Child
+ * UI elements (the dialog buttons, checkbox) must not be focused by design,
+ * and ARIA will announce the focused element (the message).
  */
 export async function testDialogShowFocus(done: () => void) {
   const element = getConflictDialogElement();
@@ -48,8 +49,19 @@ export async function testDialogShowFocus(done: () => void) {
   assertNotEquals('none', window.getComputedStyle(dialog).display);
   assertFalse(dialog.hidden);
 
-  // Check: the <dialog> must have the focus, never its child UI elements.
-  await waitUntil(() => element.shadowRoot!.activeElement === dialog);
+  // Check: the message element should have the focus.
+  const message = element.getMessageElement();
+  await waitUntil(() => element.shadowRoot!.activeElement === message);
+
+  // Check: the child <dialog> title element should be removed.
+  const child = element.getHtmlDialogElement();
+  assertEquals(null, child.querySelector('#title'));
+
+  // Check: the child <dialog> has the correct ARIA attributes.
+  assertEquals('true', child.getAttribute('aria-modal'));
+  assertFalse(child.hasAttribute('aria-describedby'));
+  assertFalse(child.hasAttribute('aria-labelledby'));
+  assertFalse(child.hasAttribute('aria-label'));
 
   done();
 }
