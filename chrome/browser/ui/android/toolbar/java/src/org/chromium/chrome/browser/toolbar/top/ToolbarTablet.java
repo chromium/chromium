@@ -17,10 +17,12 @@ import android.graphics.drawable.LevelListDrawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
@@ -83,6 +85,8 @@ public class ToolbarTablet
         void downloadPage(Context context, Tab tab);
     }
 
+    private static final int HOME_BUTTON_POSITION_FOR_TAB_STRIP_REDESIGN = 3;
+
     private HomeButton mHomeButton;
     private ImageButton mBackButton;
     private ImageButton mForwardButton;
@@ -136,10 +140,13 @@ public class ToolbarTablet
         mForwardButton = findViewById(R.id.forward_button);
         mReloadButton = findViewById(R.id.refresh_button);
 
-        // Disable home button reposition that aligns with desktop ordering when TSR disabled.
-        if (!ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-            // Bring home button to the top when TSR is disabled.
-            mHomeButton.bringToFront();
+        // Reposition home button to align with desktop ordering when TSR enabled.
+        if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            // Remove home button view added in XML and adding back with different ordering
+            // programmatically.
+            ((ViewGroup) mHomeButton.getParent()).removeView(mHomeButton);
+            LinearLayout linearlayout = (LinearLayout) findViewById(R.id.toolbar_tablet_layout);
+            linearlayout.addView(mHomeButton, HOME_BUTTON_POSITION_FOR_TAB_STRIP_REDESIGN);
         }
 
         // ImageView tinting doesn't work with LevelListDrawable, use Drawable tinting instead.
