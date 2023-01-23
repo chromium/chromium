@@ -84126,6 +84126,11 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1" label="PriorityChanged"/>
 </enum>
 
+<enum name="PrivacyHubLearnMoreSensor">
+  <int value="0" label="Microphone"/>
+  <int value="1" label="Camera"/>
+</enum>
+
 <enum name="PrivacyHubNavigationOrigin">
   <int value="0" label="System settings"/>
   <int value="1" label="Notification"/>

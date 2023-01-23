@@ -19,6 +19,13 @@ enum class PrivacyHubNavigationOrigin {
   kMaxValue = kNotification
 };
 
+// These values are persisted to logs and should not be renumbered or re-used.
+enum class PrivacyHubLearnMoreSensor {
+  kMicrophone = 0,
+  kCamera = 1,
+  kMaxValue = kCamera
+};
+
 static constexpr char kPrivacyHubMicrophoneEnabledFromSettingsHistogram[] =
     "ChromeOS.PrivacyHub.Microphone.Settings.Enabled";
 static constexpr char kPrivacyHubMicrophoneEnabledFromNotificationHistogram[] =
@@ -29,6 +36,8 @@ static constexpr char kPrivacyHubCameraEnabledFromNotificationHistogram[] =
     "ChromeOS.PrivacyHub.Camera.Notification.Enabled";
 static constexpr char kPrivacyHubOpenedHistogram[] =
     "ChromeOS.PrivacyHub.Opened";
+static constexpr char kPrivacyHubLearnMorePageOpenedHistogram[] =
+    "ChromeOS.PrivacyHub.LearnMorePage.Opened";
 
 // Report microphone mute events from system and notifications.
 ASH_EXPORT void LogMicrophoneEnabledFromSettings(bool enabled);
@@ -40,6 +49,11 @@ ASH_EXPORT void LogCameraEnabledFromNotification(bool enabled);
 
 // Report that Privacy Hub has been opened from a notification.
 ASH_EXPORT void LogPrivacyHubOpenedFromNotification();
+
+// Report that the user opened the learn more page for Privacy Hub from a
+// microphone notification.
+ASH_EXPORT void LogPrivacyHubLearnMorePageOpened(
+    PrivacyHubLearnMoreSensor sensor);
 
 }  // namespace ash::privacy_hub_metrics
 

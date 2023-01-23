@@ -9,8 +9,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/sensor_disabled_notification_delegate.h"
+#include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
-#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
@@ -63,6 +63,16 @@ class RemoveNotificationWaiter : public message_center::MessageCenterObserver {
   base::RunLoop run_loop_;
 };
 
+class MockNewWindowDelegate
+    : public testing::NiceMock<ash::TestNewWindowDelegate> {
+ public:
+  // TestNewWindowDelegate:
+  MOCK_METHOD(void,
+              OpenUrl,
+              (const GURL& url, OpenUrlFrom from, Disposition disposition),
+              (override));
+};
+
 }  // namespace
 
 using Sensor = PrivacyHubNotificationController::Sensor;
@@ -72,6 +82,11 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
   PrivacyHubNotificationControllerTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitAndEnableFeature(features::kCrosPrivacyHubV2);
+    auto delegate = std::make_unique<MockNewWindowDelegate>();
+    new_window_delegate_ = delegate.get();
+    window_delegate_provider_ =
+        std::make_unique<ash::TestNewWindowDelegateProvider>(
+            std::move(delegate));
   }
 
   ~PrivacyHubNotificationControllerTest() override = default;
@@ -158,11 +173,15 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
     notification_waiter.Wait();
   }
 
+  MockNewWindowDelegate* new_window_delegate() { return new_window_delegate_; }
+
  private:
   base::raw_ptr<PrivacyHubNotificationController> controller_;
   const FakeSensorDisabledNotificationDelegate delegate_;
   const base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::raw_ptr<MockNewWindowDelegate> new_window_delegate_ = nullptr;
+  std::unique_ptr<ash::TestNewWindowDelegateProvider> window_delegate_provider_;
 };
 
 TEST_F(PrivacyHubNotificationControllerTest, ShowCameraNotification) {
@@ -348,6 +367,37 @@ TEST_F(PrivacyHubNotificationControllerTest, OpenPrivacyHubSettingsPage) {
                 privacy_hub_metrics::kPrivacyHubOpenedHistogram,
                 privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
             1);
+}
+
+TEST_F(PrivacyHubNotificationControllerTest, OpenPrivacyHubSupportPage) {
+  using privacy_hub_metrics::PrivacyHubLearnMoreSensor;
+
+  auto test_sensor = [histogram_tester = &histogram_tester()](
+                         Sensor privacy_hub_sensor,
+                         PrivacyHubLearnMoreSensor lean_more_sensor) {
+    EXPECT_EQ(histogram_tester->GetBucketCount(
+                  privacy_hub_metrics::kPrivacyHubLearnMorePageOpenedHistogram,
+                  lean_more_sensor),
+              0);
+
+    PrivacyHubNotificationController::OpenSupportUrl(privacy_hub_sensor);
+
+    EXPECT_EQ(histogram_tester->GetBucketCount(
+                  privacy_hub_metrics::kPrivacyHubLearnMorePageOpenedHistogram,
+                  lean_more_sensor),
+              1);
+  };
+
+  EXPECT_CALL(*new_window_delegate(), OpenUrl).Times(2);
+
+  test_sensor(Sensor::kMicrophone, PrivacyHubLearnMoreSensor::kMicrophone);
+  test_sensor(Sensor::kCamera, PrivacyHubLearnMoreSensor::kCamera);
+
+  if (DCHECK_IS_ON()) {
+    EXPECT_DEATH(
+        PrivacyHubNotificationController::OpenSupportUrl(Sensor::kLocation),
+        "");
+  }
 }
 
 }  // namespace ash

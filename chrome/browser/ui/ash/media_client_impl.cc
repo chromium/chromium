@@ -281,7 +281,8 @@ MediaClientImpl::MediaClientImpl()
           ash::PrivacyHubNotification::SensorSet{},
           base::MakeRefCounted<ash::PrivacyHubNotificationClickDelegate>(
               base::BindRepeating(
-                  ash::PrivacyHubNotificationController::OpenSupportUrl)),
+                  ash::PrivacyHubNotificationController::OpenSupportUrl,
+                  ash::PrivacyHubNotificationController::Sensor::kCamera)),
           ash::NotificationCatalogName::kCameraPrivacySwitch,
           IDS_ASH_LEARN_MORE) {
   MediaCaptureDevicesDispatcher::GetInstance()->AddObserver(this);

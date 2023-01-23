@@ -33,4 +33,9 @@ void LogPrivacyHubOpenedFromNotification() {
                                 PrivacyHubNavigationOrigin::kNotification);
 }
 
+void LogPrivacyHubLearnMorePageOpened(PrivacyHubLearnMoreSensor sensor) {
+  base::UmaHistogramEnumeration(kPrivacyHubLearnMorePageOpenedHistogram,
+                                sensor);
+}
+
 }  // namespace ash::privacy_hub_metrics

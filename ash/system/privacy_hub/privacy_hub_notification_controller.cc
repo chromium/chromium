@@ -121,7 +121,20 @@ void PrivacyHubNotificationController::OpenPrivacyHubSettingsPage() {
   Shell::Get()->system_tray_model()->client()->ShowPrivacyHubSettings();
 }
 
-void PrivacyHubNotificationController::OpenSupportUrl() {
+void PrivacyHubNotificationController::OpenSupportUrl(Sensor sensor) {
+  switch (sensor) {
+    case Sensor::kMicrophone:
+      privacy_hub_metrics::LogPrivacyHubLearnMorePageOpened(
+          privacy_hub_metrics::PrivacyHubLearnMoreSensor::kMicrophone);
+      break;
+    case Sensor::kCamera:
+      privacy_hub_metrics::LogPrivacyHubLearnMorePageOpened(
+          privacy_hub_metrics::PrivacyHubLearnMoreSensor::kCamera);
+      break;
+    case Sensor::kLocation:
+      LOG(DFATAL) << "Location doesn't have a learn more button";
+      return;
+  }
   NewWindowDelegate::GetPrimary()->OpenUrl(
       GURL(kLearnMoreUrl), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);

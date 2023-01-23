@@ -56,7 +56,8 @@ MicrophonePrivacySwitchController::MicrophonePrivacySwitchController()
           {SensorDisabledNotificationDelegate::Sensor::kMicrophone},
           base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
               base::BindRepeating(
-                  PrivacyHubNotificationController::OpenSupportUrl)),
+                  PrivacyHubNotificationController::OpenSupportUrl,
+                  PrivacyHubNotificationController::Sensor::kMicrophone)),
           ash::NotificationCatalogName::kMicrophoneMute,
           IDS_ASH_LEARN_MORE) {
   Shell::Get()->session_controller()->AddObserver(this);
