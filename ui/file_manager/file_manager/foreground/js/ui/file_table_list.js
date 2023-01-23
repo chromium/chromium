@@ -365,6 +365,7 @@ filelist.decorateListItem = (li, entry, metadataModel, volumeManager) => {
     'pinned',
     'syncStatus',
     'progress',
+    'contentMimeType',
   ])[0];
   filelist.updateListItemExternalProps(
       li, externalProps, util.isTeamDriveRoot(entry));
@@ -504,6 +505,12 @@ filelist.updateListItemExternalProps = (li, externalProps, isTeamDriveRoot) => {
     li.classList.toggle(
         'dim-offline', externalProps.availableOffline === false);
     li.classList.toggle('dim-hosted', !!externalProps.hosted);
+    if (externalProps.contentMimeType !== undefined) {
+      li.classList.toggle(
+          'dim-encrypted',
+          externalProps.contentMimeType.startsWith(
+              'application/vnd.google-gsuite.encrypted'));
+    }
   }
 
   const inlineStatusIcon = li.querySelector('.inline-status xf-icon');

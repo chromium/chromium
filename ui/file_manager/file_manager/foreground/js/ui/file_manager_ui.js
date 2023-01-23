@@ -405,6 +405,7 @@ export class FileManagerUI {
     this.element.setAttribute('type', this.dialogType_);
     if (launchParam.allowedPaths !== AllowedPaths.ANY_PATH_OR_URL) {
       this.element.setAttribute('block-hosted-docs', '');
+      this.element.setAttribute('block-encrypted', '');
     }
 
     // Modify UI default behavior.

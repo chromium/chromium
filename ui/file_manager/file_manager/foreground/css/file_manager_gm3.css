@@ -1890,6 +1890,7 @@ body[type='folder'] .file,
 body[type='upload-folder'] .file,
 .dialog-container[connection='OFFLINE'] .dim-offline,
 body[block-hosted-docs] .file.dim-hosted,
+body[block-encrypted] .file.dim-encrypted,
 .thumbnail-grid [disabled],
 #detail-table [disabled],
 #directory-tree .tree-item[disabled] > .tree-row {

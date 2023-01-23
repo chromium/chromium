@@ -66,8 +66,13 @@ async function unloadOpenFileDialog(
 async function setUpFileEntrySet(volume) {
   const localEntryPromise = addEntries(['local'], BASIC_LOCAL_ENTRY_SET);
 
-  const driveEntries =
-      [ENTRIES.hello, ENTRIES.pinned, ENTRIES.testDocument, ENTRIES.docxFile];
+  const driveEntries = [
+    ENTRIES.hello,
+    ENTRIES.pinned,
+    ENTRIES.testCSEFile,
+    ENTRIES.testDocument,
+    ENTRIES.docxFile,
+  ];
   const driveEntryPromise = addEntries(['drive'], driveEntries);
 
   await Promise.all([localEntryPromise, driveEntryPromise]);
@@ -181,6 +186,31 @@ async function openFileDialogExpectOkButtonDisabled(
     await remoteCall.waitForElement(dialog, okButton);
     await remoteCall.waitUntilSelected(dialog, name);
     await remoteCall.waitForElement(dialog, disabledOkButton);
+    clickOpenFileDialogButton(name, cancelButton, dialog);
+  };
+
+  const entrySet = await setUpFileEntrySet(volume);
+  chrome.test.assertEq(
+      undefined,
+      await openAndWaitForClosingDialog({type}, volume, entrySet, closer));
+}
+
+/**
+ * Adds the basic file entry sets then opens the file dialog on the volume.
+ * Once file |name| is shown, verifies that it's dimmed according to added
+ * classes.
+ *
+ * @param {!string} volume Volume name for openAndWaitForClosingDialog.
+ * @param {!string} name File name to check for being dimmed in the dialog.
+ * @return {!Promise} Promise to be fulfilled on success.
+ */
+async function openFileDialogExpectEntryDimmed(volume, name) {
+  const type = 'openFile';
+  const cancelButton = '.button-panel button.cancel';
+  const fileEntry = `#file-list [file-name="${name}"]`;
+  const closer = async (dialog) => {
+    const element = await remoteCall.waitForElement(dialog, fileEntry);
+    chrome.test.assertTrue(element.attributes['class'].includes('dim'));
     clickOpenFileDialogButton(name, cancelButton, dialog);
   };
 
@@ -474,6 +504,14 @@ testcase.openFileDialogDriveHostedNeedsFile = () => {
 testcase.saveFileDialogDriveHostedNeedsFile = () => {
   return openFileDialogExpectOkButtonDisabled(
       'drive', ENTRIES.testDocument.nameText, TEST_DRIVE_FILE, 'saveFile');
+};
+
+/**
+ * Test that an encrypted (via CSE) file will be marked as grey in a dialog
+ * requiring a read file.
+ */
+testcase.openFileDialogDriveCSEGrey = () => {
+  return openFileDialogExpectEntryDimmed('drive', ENTRIES.testCSEFile.nameText);
 };
 
 /**

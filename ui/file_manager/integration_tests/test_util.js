@@ -713,6 +713,16 @@ export const ENTRIES = {
     typeText: 'Folder',
   }),
 
+  testCSEFile: new TestEntryInfo({
+    type: EntryType.FILE,
+    targetPath: 'test-encrypted.txt',
+    mimeType: 'application/vnd.google-gsuite.encrypted; content="text/plain"',
+    lastModifiedTime: 'Apr 10, 2013, 4:20 PM',
+    nameText: 'test-encrypted.txt',
+    sizeText: '0 bytes',
+    typeText: 'Plain text',
+  }),
+
   testDocument: new TestEntryInfo({
     type: EntryType.FILE,
     targetPath: 'Test Document',
