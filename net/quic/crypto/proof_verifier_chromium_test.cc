@@ -723,6 +723,8 @@ TEST_F(ProofVerifierChromiumTest, PKPReport) {
   EXPECT_EQ(report_uri, report_sender.latest_report_uri());
   EXPECT_EQ(network_anonymization_key,
             report_sender.latest_network_anonymization_key());
+
+  transport_security_state_.SetReportSender(nullptr);
 }
 
 // Test that when CT is required (in this case, by the delegate), the
@@ -775,6 +777,8 @@ TEST_F(ProofVerifierChromiumTest, CTIsRequired) {
   verify_details = static_cast<ProofVerifyDetailsChromium*>(details_.get());
   EXPECT_TRUE(verify_details->cert_verify_result.cert_status &
               CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED);
+
+  transport_security_state_.SetRequireCTDelegate(nullptr);
 }
 
 // Test that CT is considered even when PKP fails.
@@ -838,6 +842,8 @@ TEST_F(ProofVerifierChromiumTest, PKPAndCTBothTested) {
               CERT_STATUS_PINNED_KEY_MISSING);
   EXPECT_TRUE(verify_details->cert_verify_result.cert_status &
               CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED);
+
+  transport_security_state_.SetRequireCTDelegate(nullptr);
 }
 
 TEST_F(ProofVerifierChromiumTest, UnknownRootRejected) {
