@@ -7660,6 +7660,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "EnableSuggestionsScrollingOnIPad",
                         "OmniboxFocusTriggersContextualWebZeroSuggest",
                         "OmniboxFocusTriggersSRPZeroSuggest",
                         "OmniboxMostVisitedTiles"
