@@ -90,7 +90,10 @@ class ServerSharedBitmap : public SharedBitmap {
             static_cast<uint8_t*>(const_cast<void*>(bitmap_data->GetMemory()))),
         bitmap_data_(std::move(bitmap_data)) {}
 
-  ~ServerSharedBitmap() override = default;
+  ~ServerSharedBitmap() override {
+    // Drop unowned reference before destroying `bitmap_data_`.
+    pixels_ = nullptr;
+  }
 
  private:
   scoped_refptr<BitmapData> bitmap_data_;
