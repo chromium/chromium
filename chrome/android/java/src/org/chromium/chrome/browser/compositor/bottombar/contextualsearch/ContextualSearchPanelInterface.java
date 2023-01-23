@@ -8,7 +8,6 @@ import android.graphics.Rect;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
@@ -42,7 +41,7 @@ public interface ContextualSearchPanelInterface {
     void onSearchTermResolved(String searchTerm, @Nullable String pronunciation,
             String thumbnailUrl, String quickActionUri, int quickActionCategory,
             @CardTag int cardTagEnum, @Nullable List<String> inBarRelatedSearches,
-            boolean showDefaultSearchInBar, @Px int defaultQueryInBarTextMaxWidthPx);
+            boolean showDefaultSearchInBar);
     void setCaption(String caption);
     void ensureCaption();
     void hideCaption();

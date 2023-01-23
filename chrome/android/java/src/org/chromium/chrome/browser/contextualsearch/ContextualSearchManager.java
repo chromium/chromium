@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -16,7 +15,6 @@ import android.view.ViewTreeObserver.OnGlobalFocusChangeListener;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -811,7 +809,6 @@ public class ContextualSearchManager
         boolean showDefaultSearchInBar = ContextualSearchFieldTrial.showDefaultChipInBar();
         List<String> inBarRelatedSearches =
                 buildRelatedSearches(searchTerm, showDefaultSearchInBar);
-        int defaultQueryWidthSpInBar = ContextualSearchFieldTrial.getDefaultChipWidthSpInBar();
 
         // Check if the searchTerm is a composite (used for Definitions for pronunciation).
         // The middle-dot character is returned by the server and marks the beginning of the
@@ -832,8 +829,7 @@ public class ContextualSearchManager
 
         mSearchPanel.onSearchTermResolved(message, pronunciation, resolvedSearchTerm.thumbnailUrl(),
                 resolvedSearchTerm.quickActionUri(), resolvedSearchTerm.quickActionCategory(),
-                resolvedSearchTerm.cardTagEnum(), inBarRelatedSearches, showDefaultSearchInBar,
-                spToPx(defaultQueryWidthSpInBar));
+                resolvedSearchTerm.cardTagEnum(), inBarRelatedSearches, showDefaultSearchInBar);
         if (!TextUtils.isEmpty(resolvedSearchTerm.caption())) {
             setCaption(resolvedSearchTerm.caption());
         }
@@ -1863,18 +1859,6 @@ public class ContextualSearchManager
         relatedSearches.addAll(queries);
 
         return relatedSearches;
-    }
-
-    /**
-     *  Converts scale-independent pixels (sp) to pixels on the screen (px).
-     *
-     *  @param sp Scale-independent pixels.
-     *  @return   The physical pixels on the screen which correspond to the
-     *            scale-independent pixels.
-     */
-    private @Px int spToPx(int sp) {
-        return (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP, sp, mActivity.getResources().getDisplayMetrics());
     }
 
     /**

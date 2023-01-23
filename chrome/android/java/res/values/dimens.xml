@@ -50,6 +50,8 @@ found in the LICENSE file.
     <dimen name="contextual_search_padded_button_width">
       @dimen/overlay_panel_padded_button_width
     </dimen>
+    <!-- This is in sp because we want the chip width to scale with the font it holds. -->
+    <dimen name="contextual_search_chip_max_width">115sp</dimen>
     <dimen name="contextual_search_chip_list_chip_spacing">4dp</dimen>
     <dimen name="contextual_search_chip_list_side_padding">16dp</dimen>
     <!-- Padding at the end of the Bar. -->

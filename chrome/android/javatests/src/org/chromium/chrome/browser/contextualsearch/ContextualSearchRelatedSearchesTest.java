@@ -182,10 +182,6 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
         testValues.addFieldTrialParamOverride(ChromeFeatureList.RELATED_SEARCHES_IN_BAR,
                 ContextualSearchFieldTrial.RELATED_SEARCHES_SHOW_DEFAULT_QUERY_CHIP_PARAM_NAME,
                 "true");
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.RELATED_SEARCHES_IN_BAR,
-                ContextualSearchFieldTrial
-                        .RELATED_SEARCHES_DEFAULT_QUERY_CHIP_MAX_WIDTH_SP_PARAM_NAME,
-                "60");
         FeatureList.setTestValues(testValues);
         mFakeServer.reset();
 

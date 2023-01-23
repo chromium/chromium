@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -74,8 +73,6 @@ public class RelatedSearchesControl {
 
     /** Whether the first query is the default query. */
     private boolean mDisplayDefaultQuery;
-
-    private @Px int mDefaultQueryTextMaxWidthPx = ChipProperties.SHOW_WHOLE_TEXT;
 
     /** Whether the view is visible. */
     private boolean mIsVisible;
@@ -208,10 +205,9 @@ public class RelatedSearchesControl {
      * Sets the Related Searches suggestions to show in this view.
      * @param relatedSearches An {@code List} of suggested queries or {@code null} when none.
      * @param firstQueryIsDefault Whether the first query is the default query.
-     * @param defaultQueryTextMaxWidthPx The default query text max width in pixels.
      */
-    void setRelatedSearchesSuggestions(@Nullable List<String> relatedSearches,
-            boolean displayDefaultQuery, @Px int defaultQueryTextMaxWidthPx) {
+    void setRelatedSearchesSuggestions(
+            @Nullable List<String> relatedSearches, boolean displayDefaultQuery) {
         if (mControlView == null) {
             mControlView = new RelatedSearchesControlView(mOverlayPanel, mContext, mViewContainer,
                     mResourceLoader, R.layout.contextual_search_related_searches_view,
@@ -222,7 +218,6 @@ public class RelatedSearchesControl {
         mRelatedSearchesSuggestions = relatedSearches;
         mChips.clear();
         mDisplayDefaultQuery = displayDefaultQuery;
-        mDefaultQueryTextMaxWidthPx = defaultQueryTextMaxWidthPx;
         if (hasReleatedSearchesToShow()) {
             show();
         } else {
@@ -493,7 +488,9 @@ public class RelatedSearchesControl {
                         ChipsCoordinator.buildChipListItem(index, suggestion, selectedCallback);
 
                 if (index == 0 && mDisplayDefaultQuery) {
-                    chip.model.set(ChipProperties.TEXT_MAX_WIDTH_PX, mDefaultQueryTextMaxWidthPx);
+                    chip.model.set(ChipProperties.TEXT_MAX_WIDTH_PX,
+                            mContext.getResources().getDimensionPixelSize(
+                                    R.dimen.contextual_search_chip_max_width));
                 }
                 mChips.add(chip);
             }
