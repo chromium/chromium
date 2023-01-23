@@ -291,7 +291,7 @@ TEST_F(TestObliviousHttpRequestHandler, TestInvalidArguments) {
     mojo::test::BadMessageObserver obs;
     TestOhttpClient client(absl::nullopt, net::ERR_INVALID_ARGUMENT);
     network::mojom::ObliviousHttpRequestPtr request = CreateRequest();
-    request->request_body->content = std::string(10 * 1024 + 1, ' ');
+    request->request_body->content = std::string(5 * 1024 * 1024 + 1, ' ');
 
     handler->StartRequest(std::move(request), client.CreatePendingRemote());
     EXPECT_EQ("Request body too large", obs.WaitForBadMessage());

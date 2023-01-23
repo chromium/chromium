@@ -32,12 +32,14 @@ namespace network {
 
 namespace {
 
-constexpr size_t kMaxResponseSize = 10 * 1024;  // Response size limit is 10kB
+constexpr size_t kMaxResponseSize =
+    5 * 1024 * 1024;  // Response size limit is 5MB
 constexpr base::TimeDelta kRequestTimeout = base::Minutes(1);
 constexpr char kObliviousHttpRequestMimeType[] = "message/ohttp-req";
 
 constexpr size_t kMaxMethodSize = 16;
-constexpr size_t kMaxRequestBodySize = 10 * 1024;  // Request size limit is 10kB
+constexpr size_t kMaxRequestBodySize =
+    5 * 1024 * 1024;                               // Request size limit is 5MB
 constexpr size_t kMaxContentTypeSize = 256;        // Per RFC6838
 
 const std::array<char, 2> kHeaderForbiddenChars = {'\n', '\r'};
