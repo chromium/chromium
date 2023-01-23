@@ -12,7 +12,6 @@
 #include "chrome/browser/accessibility/page_colors_factory.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
-#include "chrome/browser/autocomplete/autocomplete_scoring_model_service_factory.h"
 #include "chrome/browser/autocomplete/in_memory_url_index_factory.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/autofill/autofill_image_fetcher_factory.h"
@@ -253,6 +252,7 @@
 #endif
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "chrome/browser/autocomplete/autocomplete_scoring_model_service_factory.h"
 #include "chrome/browser/permissions/prediction_model_handler_provider_factory.h"
 #endif
 
@@ -328,7 +328,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   apps::SupportedLinksInfoBarPrefsServiceFactory::GetInstance();
 #endif
   AutocompleteClassifierFactory::GetInstance();
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   AutocompleteScoringModelServiceFactory::GetInstance();
+#endif
   autofill::AutofillImageFetcherFactory::GetInstance();
   autofill::PersonalDataManagerFactory::GetInstance();
   autofill::AutofillOfferManagerFactory::GetInstance();

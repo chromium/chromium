@@ -164,8 +164,6 @@ static_library("browser") {
     "assist_ranker/assist_ranker_service_factory.h",
     "autocomplete/autocomplete_classifier_factory.cc",
     "autocomplete/autocomplete_classifier_factory.h",
-    "autocomplete/autocomplete_scoring_model_service_factory.cc",
-    "autocomplete/autocomplete_scoring_model_service_factory.h",
     "autocomplete/chrome_autocomplete_provider_client.cc",
     "autocomplete/chrome_autocomplete_provider_client.h",
     "autocomplete/chrome_autocomplete_scheme_classifier.cc",
@@ -7560,6 +7558,8 @@ static_library("browser") {
 
   if (build_with_tflite_lib) {
     sources += [
+      "autocomplete/autocomplete_scoring_model_service_factory.cc",
+      "autocomplete/autocomplete_scoring_model_service_factory.h",
       "permissions/prediction_model_handler_provider_factory.cc",
       "permissions/prediction_model_handler_provider_factory.h",
     ]
