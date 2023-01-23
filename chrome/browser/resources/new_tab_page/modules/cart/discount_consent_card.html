@@ -94,6 +94,10 @@
     right: 0;
     top: 2px;
   }
+
+  .action-button:focus-visible {
+    outline: var(--color-new-tab-page-focus-ring) 1px auto;
+  }
 </style>
 
 <div id="consentCardContainer">
@@ -113,7 +117,7 @@
       <template id="consentStepRepeat" is="dom-repeat" items="[[steps_]]"
           as="step">
         <div class="step-container" id="[[step.id]]">
-          <div class="content-container truncate" tabindex="0">
+          <div class="content-container truncate">
             <span class="content">
               [[step.content]]
             </span>

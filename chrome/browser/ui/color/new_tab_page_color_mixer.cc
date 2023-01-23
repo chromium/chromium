@@ -129,6 +129,10 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
                    /* 10% opacity */ 0.1 * SK_AlphaOPAQUE),
       ui::SetAlpha({gfx::kGoogleGrey900},
                    /* 10% opacity */ 0.1 * SK_AlphaOPAQUE));
+  mixer[kColorNewTabPageFocusRing] = PickGoogleColorTwoBackgrounds(
+      ui::kColorFocusableBorderFocused, element_background_color,
+      kColorNewTabPageBackground, color_utils::kMinimumVisibleContrastRatio);
+
   mixer[kColorNewTabPageLogo] = element_background_color;
   mixer[kColorNewTabPageLink] = themed_foreground_color;
   mixer[kColorNewTabPageFirstRunBackground] = {kColorNewTabPageBackground};
@@ -417,7 +421,7 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
                    /* 10% opacity */ 0.1 * SK_AlphaOPAQUE);
   mixer[kColorNewTabPageFirstRunBackground] = {
       kColorNewTabPageBackgroundOverride};
-  mixer[kColorNewTabPageFocusShadow] =
+  mixer[kColorNewTabPageFocusRing] =
       dark_mode ? ui::SetAlpha({gfx::kGoogleBlue300},
                                /* 50% opacity */ 0.5 * SK_AlphaOPAQUE)
                 : ui::SetAlpha({gfx::kGoogleBlue600},

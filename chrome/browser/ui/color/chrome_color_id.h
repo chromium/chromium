@@ -159,7 +159,7 @@
   E_CPONLY(kColorNewTabPageDialogForeground) \
   E_CPONLY(kColorNewTabPageDialogSecondaryForeground) \
   E_CPONLY(kColorNewTabPageFirstRunBackground) \
-  E_CPONLY(kColorNewTabPageFocusShadow) \
+  E_CPONLY(kColorNewTabPageFocusRing) \
   E_CPONLY(kColorNewTabPageHeader) \
   E_CPONLY(kColorNewTabPagePromoBackground) \
   E_CPONLY(kColorNewTabPagePromoImageBackground) \

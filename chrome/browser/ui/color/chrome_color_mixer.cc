@@ -93,32 +93,6 @@ ui::ColorTransform GetToolbarTopSeparatorColorTransform(
                              std::move(frame_color_transform));
 }
 
-ui::ColorTransform PickGoogleColorTwoBackgrounds(
-    ui::ColorTransform fg_transform,
-    ui::ColorTransform bg_a_transform,
-    ui::ColorTransform bg_b_transform,
-    float contrast_threshold) {
-  const auto generator =
-      [](ui::ColorTransform fg_transform, ui::ColorTransform bg_a_transform,
-         ui::ColorTransform bg_b_transform, float contrast_threshold,
-         SkColor input_color, const ui::ColorMixer& mixer) {
-    const SkColor fg_color = fg_transform.Run(input_color, mixer);
-    const SkColor bg_a_color = bg_a_transform.Run(input_color, mixer);
-    const SkColor bg_b_color = bg_b_transform.Run(input_color, mixer);
-    const SkColor result_color = color_utils::PickGoogleColor(
-        fg_color, bg_a_color, bg_b_color, contrast_threshold);
-    DVLOG(2) << "ColorTransform PickGoogleColorTwoBackgrounds:"
-             << " Foreground Color: " << ui::SkColorName(fg_color)
-             << " Background Color A: " << ui::SkColorName(bg_a_color)
-             << " Background Color B: " << ui::SkColorName(bg_b_color)
-             << " Result Color: " << ui::SkColorName(result_color);
-    return result_color;
-  };
-  return base::BindRepeating(generator, std::move(fg_transform),
-                             std::move(bg_a_transform),
-                             std::move(bg_b_transform), contrast_threshold);
-}
-
 // Default toolbar colors.
 constexpr SkColor kDarkToolbarColor = SkColorSetRGB(0x35, 0x36, 0x3A);
 constexpr SkColor kLightToolbarColor = SK_ColorWHITE;
