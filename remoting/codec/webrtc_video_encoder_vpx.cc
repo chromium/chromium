@@ -57,7 +57,7 @@ void SetCommonCodecParameters(vpx_codec_enc_cfg_t* config,
                               const webrtc::DesktopSize& size) {
   // Use millisecond granularity time base.
   config->g_timebase.num = 1;
-  config->g_timebase.den = base::Time::kMicrosecondsPerSecond;
+  config->g_timebase.den = base::Time::kMillisecondsPerSecond;
 
   config->g_w = size.width();
   config->g_h = size.height();
@@ -481,7 +481,7 @@ void WebrtcVideoEncoderVpx::PrepareImage(
     updated_region->IntersectWith(
         webrtc::DesktopRect::MakeWH(image_->d_w, image_->d_h));
   } else {
-    vpx_img_fmt_t fmt = lossless_color_ ? VPX_IMG_FMT_I444 : VPX_IMG_FMT_YV12;
+    vpx_img_fmt_t fmt = lossless_color_ ? VPX_IMG_FMT_I444 : VPX_IMG_FMT_I420;
     image_.reset(vpx_img_alloc(nullptr, fmt, frame->size().width(),
                                frame->size().height(),
                                GetSimdMemoryAlignment()));
@@ -513,7 +513,7 @@ void WebrtcVideoEncoderVpx::PrepareImage(
                            rect.width(), rect.height());
       }
       break;
-    case VPX_IMG_FMT_YV12:
+    case VPX_IMG_FMT_I420:
       for (webrtc::DesktopRegion::Iterator r(*updated_region); !r.IsAtEnd();
            r.Advance()) {
         webrtc::DesktopRect rect = GetRowAlignedRect(r.rect(), image_->d_w);
