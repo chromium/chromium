@@ -9,9 +9,15 @@ source_set("credential_provider_promo") {
     "credential_provider_promo_coordinator.mm",
     "credential_provider_promo_display_handler.h",
     "credential_provider_promo_display_handler.mm",
+    "credential_provider_promo_mediator.h",
+    "credential_provider_promo_mediator.mm",
   ]
   deps = [
+    ":credential_provider_promo_ui",
     "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/credential_provider_promo:features",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
@@ -27,7 +33,12 @@ source_set("credential_provider_promo_ui") {
     "credential_provider_promo_view_controller.h",
     "credential_provider_promo_view_controller.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/password_manager/core/browser",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/common/ui/confirmation_alert",
+  ]
   frameworks = [
     "Foundation.framework",
     "UIKit.framework",

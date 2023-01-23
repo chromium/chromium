@@ -9,9 +9,16 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
+
 // Container view controller for the Credential Provider Extension promo. Can be
 // configured to display the half-sheet or full-screen promo.
-@interface CredentialProviderPromoViewController : UIViewController
+@interface CredentialProviderPromoViewController
+    : UIViewController <CredentialProviderPromoConsumer>
+
+// Child view controller used to display the alert screen for the half-screen
+// and full-screen promos.
+@property(nonatomic, strong) ConfirmationAlertViewController* alertScreen;
 
 @end
 
