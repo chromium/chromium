@@ -39,3 +39,20 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_endpoint_fetcher.cc",
+    "mock_endpoint_fetcher.h",
+  ]
+
+  deps = [
+    ":endpoint_fetcher",
+    "//base",
+    "//net",
+    "//net/traffic_annotation:test_support",
+    "//testing/gmock",
+  ]
+}

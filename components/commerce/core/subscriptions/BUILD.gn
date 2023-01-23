@@ -43,10 +43,11 @@ source_set("subscriptions_unit_tests") {
   deps = [
     ":subscriptions",
     "//base/test:test_support",
+    "//components/commerce/core:account_checker",
     "//components/commerce/core:account_checker_test_support",
     "//components/commerce/core:commerce_subscription_db_content_proto",
     "//components/commerce/core:feature_list",
-    "//components/endpoint_fetcher:endpoint_fetcher",
+    "//components/endpoint_fetcher:test_support",
     "//components/leveldb_proto",
     "//components/session_proto_db:core",
     "//components/signin/public/identity_manager:test_support",

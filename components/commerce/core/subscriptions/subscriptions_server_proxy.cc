@@ -11,6 +11,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
+#include "components/commerce/core/account_checker.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/subscriptions/subscriptions_server_proxy.h"
@@ -23,13 +24,6 @@
 namespace {
 
 // For creating endpoint fetcher.
-const char kOAuthScope[] = "https://www.googleapis.com/auth/chromememex";
-const char kOAuthName[] = "subscriptions_svc";
-const char kGetHttpMethod[] = "GET";
-const char kPostHttpMethod[] = "POST";
-const char kContentType[] = "application/json; charset=UTF-8";
-const char kEmptyPostData[] = "";
-
 const int kDefaultTimeoutMs = 5000;
 const char kTimeoutParam[] = "subscriptions_server_request_timeout";
 constexpr base::FeatureParam<int> kTimeoutMs{&commerce::kShoppingList,
