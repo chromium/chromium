@@ -97,6 +97,7 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"menuRename", IDS_BOOKMARKS_RENAME},
       {"newFolderTitle", IDS_BOOKMARK_EDITOR_NEW_FOLDER_NAME},
       {"undoBookmarkDeletion", IDS_UNDO_BOOKMARK_DELETION},
+      {"urlFolderDescription", IDS_BOOKMARKS_URL_FOLDER_DESCRIPTION},
   };
   for (const auto& str : kLocalizedStrings)
     webui::AddLocalizedString(source, str.name, str.id);
