@@ -87,6 +87,11 @@ void HlsDemuxer::Seek(base::TimeDelta time, PipelineStatusCallback status_cb) {
   // and give it `status_cb`.
 }
 
+bool HlsDemuxer::IsSeekable() const {
+  // The underlying wrapping ChunkDemuxer is seekable.
+  return true;
+}
+
 void HlsDemuxer::Stop() {
   DVLOG(1) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());

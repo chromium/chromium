@@ -46,6 +46,7 @@ class MEDIA_EXPORT HlsDemuxer final : public Demuxer {
   void StartWaitingForSeek(base::TimeDelta seek_time) override;
   void CancelPendingSeek(base::TimeDelta seek_time) override;
   void Seek(base::TimeDelta time, PipelineStatusCallback status_cb) override;
+  bool IsSeekable() const override;
   void Stop() override;
   base::TimeDelta GetStartTime() const override;
   base::Time GetTimelineOffset() const override;
