@@ -347,16 +347,29 @@
   </div>
   <div class="divider"></div>
   <div class="side-padding" id="groups" on-scroll="onEmojiScroll">
-    <template is="dom-repeat" items="[[categoriesGroupElements]]">
-      <div data-group$="[[item.groupId]]">
-        <emoji-group data="[[item.emoji]]"
-          group="[[item.name]]"
-          preferred="[[item.preferences]]"
-          clearable$="[[item.isHistory]]"
-          category$="[[item.category]]"
-          class$="[[getEmojiGroupClassNames(item.isHistory,item.emoji)]]">
-        </emoji-group>
-      </div>
+    <template is="dom-if" if="[[!isInfinite(category)]]">
+      <template is="dom-repeat" items="[[categoriesGroupElements]]">
+        <div data-group$="[[item.groupId]]">
+          <emoji-group data="[[item.emoji]]"
+            group="[[item.name]]"
+            preferred="[[item.preferences]]"
+            clearable$="[[item.isHistory]]"
+            category$="[[item.category]]"
+            class$="[[getEmojiGroupClassNames(item.isHistory,item.emoji)]]">
+          </emoji-group>
+        </div>
+      </template>
+    </template>
+    <template is="dom-if" if="[[isInfinite(category)]]">
+        <div data-group$="[[activeInfiniteGroupElements]]">
+          <emoji-group data="[[activeInfiniteGroupElements.emoji]]"
+            group="[[activeInfiniteGroupElements.name]]"
+            preferred="[[activeInfiniteGroupElements.preferences]]"
+            clearable$="[[activeInfiniteGroupElements.isHistory]]"
+            category$="[[activeInfiniteGroupElements.category]]"
+            class$="[[getEmojiGroupClassNames(activeInfiniteGroupElements.isHistory,activeInfiniteGroupElements.emoji)]]">
+          </emoji-group>
+        </div>
     </template>
   </div>
   <!-- Render invisible dummy tab to temporarily calculate width of a tab. -->
