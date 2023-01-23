@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/sharing/sharing_app.h"
 #include "chrome/browser/sharing/sharing_metrics.h"
 #include "components/sync_device_info/device_info.h"
@@ -29,8 +30,12 @@ struct SharingDialogData {
   // work on any background color.
   struct HeaderIcons {
     HeaderIcons(const gfx::VectorIcon* light, const gfx::VectorIcon* dark);
-    const gfx::VectorIcon* light;
-    const gfx::VectorIcon* dark;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION const gfx::VectorIcon* light;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION const gfx::VectorIcon* dark;
   };
   SharingDialogData();
   ~SharingDialogData();

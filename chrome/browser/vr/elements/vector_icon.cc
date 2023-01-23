@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/vr/elements/ui_texture.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
@@ -46,7 +47,9 @@ class VectorIconTexture : public UiTexture {
   }
 
   gfx::SizeF size_;
-  const gfx::VectorIcon* icon_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION const gfx::VectorIcon* icon_ = nullptr;
   SkColor color_ = SK_ColorWHITE;
 };
 

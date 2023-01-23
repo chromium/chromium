@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/test/base/testing_profile.h"
@@ -258,7 +259,9 @@ class DownloadMetadataManagerTestBase : public ::testing::Test {
 
   // The DownloadMetadataManager's content::DownloadManager::Observer. Captured
   // by download_manager_'s AddObserver action.
-  content::DownloadManager::Observer* dm_observer_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION content::DownloadManager::Observer* dm_observer_ = nullptr;
 };
 
 // A parameterized test that exercises GetDownloadDetails. The parameters

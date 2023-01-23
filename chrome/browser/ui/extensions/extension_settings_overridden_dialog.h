@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/ui/extensions/settings_overridden_dialog_controller.h"
 #include "extensions/common/extension_id.h"
 
@@ -50,7 +51,9 @@ class ExtensionSettingsOverriddenDialog
     std::u16string dialog_message;
 
     // The icon to display in the dialog, if any.
-    const gfx::VectorIcon* icon = nullptr;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION const gfx::VectorIcon* icon = nullptr;
   };
 
   ExtensionSettingsOverriddenDialog(Params params, Profile* profile);

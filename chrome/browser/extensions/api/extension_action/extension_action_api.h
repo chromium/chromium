@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
@@ -143,7 +144,9 @@ class ExtensionActionFunction : public ExtensionFunction {
   int tab_id_;
 
   // WebContents for |tab_id_| if one exists.
-  content::WebContents* contents_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION content::WebContents* contents_;
 
   // The extension action for the current extension.
   raw_ptr<ExtensionAction> extension_action_;

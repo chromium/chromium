@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_MANAGER_UITEST_UTIL_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_MANAGER_UITEST_UTIL_H_
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -44,7 +45,9 @@ class TestGenerationPopupObserver : public PasswordGenerationPopupObserver {
   void MaybeQuitRunLoop();
 
   // The loop to be stopped after the popup state change.
-  base::RunLoop* run_loop_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION base::RunLoop* run_loop_ = nullptr;
   GenerationPopup popup_showing_ = GenerationPopup::kHidden;
   GenerationUIState state_ =
       PasswordGenerationPopupController::kOfferGeneration;

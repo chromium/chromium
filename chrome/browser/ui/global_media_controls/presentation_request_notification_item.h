@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
@@ -105,7 +106,10 @@ class PresentationRequestNotificationItem final
   void OnFaviconBitmap(const SkBitmap& bitmap);
 
   const std::string id_;
-  global_media_controls::MediaItemManager* const item_manager_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION global_media_controls::MediaItemManager* const
+      item_manager_;
 
   // True if the item is created from a default PresentationRequest, which means
   // |context_| is set to nullptr in the constructor.
@@ -130,7 +134,10 @@ class PresentationRequestNotificationItem final
   absl::optional<gfx::ImageSkia> artwork_image_;
   absl::optional<gfx::ImageSkia> favicon_image_;
 
-  media_message_center::MediaNotificationView* view_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION media_message_center::MediaNotificationView* view_ =
+      nullptr;
 
   base::WeakPtrFactory<PresentationRequestNotificationItem> weak_ptr_factory_{
       this};

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_VIEW_VIEWS_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/extensions/extension_view.h"
@@ -86,7 +87,9 @@ class ExtensionViewViews : public views::WebView,
 
   // The container this view is in (not necessarily its direct superview).
   // Note: the view does not own its container.
-  Container* container_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION Container* container_ = nullptr;
 
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.

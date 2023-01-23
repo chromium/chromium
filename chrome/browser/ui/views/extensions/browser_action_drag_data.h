@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 
 class Profile;
@@ -53,7 +54,9 @@ class BrowserActionDragData {
   bool ReadFromPickle(base::Pickle* pickle);
 
   // The profile we originated from.
-  void* profile_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION void* profile_;
 
   // The id of the view being dragged.
   std::string id_;

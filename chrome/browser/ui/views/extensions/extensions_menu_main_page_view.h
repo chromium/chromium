@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_MAIN_PAGE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_MAIN_PAGE_VIEW_H_
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_page_view.h"
 
@@ -65,7 +66,9 @@ class ExtensionsMenuMainPageView : public ExtensionsMenuPageView {
   // The view containing the menu items. This is separated for easy insertion
   // and iteration of menu items. The children are guaranteed to only be
   // InstalledExtensionMenuItemViews.
-  views::View* menu_items_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION views::View* menu_items_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

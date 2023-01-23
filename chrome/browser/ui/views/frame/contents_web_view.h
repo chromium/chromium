@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/ui/views/frame/web_contents_close_handler_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -54,7 +55,9 @@ class ContentsWebView
 
  private:
   void UpdateBackgroundColor();
-  StatusBubbleViews* status_bubble_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION StatusBubbleViews* status_bubble_;
 
   bool background_visible_ = true;
 

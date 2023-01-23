@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
@@ -222,7 +223,9 @@ class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {
  private:
   net::EmbeddedTestServer https_test_server_;
   // A tab with some hooks injected.
-  content::WebContents* web_contents_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION content::WebContents* web_contents_;
 
   base::CallbackListSubscription create_services_subscription_;
 };

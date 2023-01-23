@@ -4,6 +4,7 @@
 #ifndef CHROME_BROWSER_METRICS_SHUTDOWN_WATCHER_HELPER_H_
 #define CHROME_BROWSER_METRICS_SHUTDOWN_WATCHER_HELPER_H_
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/watchdog.h"
 #include "base/time/time.h"
@@ -35,7 +36,9 @@ class ShutdownWatcherHelper {
 
  private:
   // shutdown_watchdog_ watches for hangs during shutdown.
-  base::Watchdog* shutdown_watchdog_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION base::Watchdog* shutdown_watchdog_;
 
   // The |thread_id_| on which this object is constructed.
   const base::PlatformThreadId thread_id_;

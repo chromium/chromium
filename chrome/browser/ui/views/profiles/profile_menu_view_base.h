@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -76,7 +77,9 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     EditButtonParams(const EditButtonParams&);
     ~EditButtonParams();
 
-    const gfx::VectorIcon* edit_icon;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION const gfx::VectorIcon* edit_icon;
     std::u16string edit_tooltip_text;
     base::RepeatingClosure edit_action;
   };

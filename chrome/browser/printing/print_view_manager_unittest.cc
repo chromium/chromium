@@ -8,6 +8,7 @@
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -287,7 +288,9 @@ class TestPrintViewManager : public PrintViewManagerBase {
     return static_cast<TestPrintJob*>(print_job_.get());
   }
 
-  base::RunLoop* run_loop_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION base::RunLoop* run_loop_ = nullptr;
 };
 
 TEST_F(PrintViewManagerTest, PrintSubFrameAndDestroy) {

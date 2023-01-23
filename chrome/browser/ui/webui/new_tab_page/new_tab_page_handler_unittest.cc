@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -287,9 +288,16 @@ class NewTabPageHandlerTest : public testing::Test {
   raw_ptr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
   base::HistogramTester histogram_tester_;
   std::unique_ptr<NewTabPageHandler> handler_;
-  ThemeServiceObserver* theme_service_observer_;
-  NtpCustomBackgroundServiceObserver* ntp_custom_background_service_observer_;
-  PromoServiceObserver* promo_service_observer_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION ThemeServiceObserver* theme_service_observer_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION NtpCustomBackgroundServiceObserver*
+      ntp_custom_background_service_observer_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION PromoServiceObserver* promo_service_observer_;
 
  private:
   raw_ptr<MockHatsService> mock_hats_service_;

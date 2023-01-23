@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -115,7 +116,9 @@ class CommanderWebView : public views::WebView {
 
  private:
   views::UnhandledKeyboardEventHandler event_handler_;
-  views::View* owner_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION views::View* owner_ = nullptr;
 };
 
 BEGIN_METADATA(CommanderWebView, views::WebView)

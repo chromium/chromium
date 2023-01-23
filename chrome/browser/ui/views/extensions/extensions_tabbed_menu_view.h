@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TABBED_MENU_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -207,10 +208,14 @@ class ExtensionsTabbedMenuView
   // The view containing the installed menu items in the extensions tab. This is
   // separated for easy insertion and iteration of menu items. The children are
   // guaranteed to only be ExtensionMenuItemViews.
-  views::View* installed_items_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION views::View* installed_items_ = nullptr;
 
   // The button used to open the webstore page in the extensions tab.
-  HoverButton* discover_more_button_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION HoverButton* discover_more_button_ = nullptr;
 
   // The view containing a message in the site access tab.
   raw_ptr<views::Label> site_access_message_ = nullptr;

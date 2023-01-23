@@ -10,6 +10,7 @@
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 
 class Browser;
@@ -74,7 +75,9 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper {
   std::unique_ptr<ExtensionsMenuView> owned_menu_view_;
 
   // The actual pointer to an ExtensionsMenuView, non-null if alive.
-  ExtensionsMenuView* menu_view_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION ExtensionsMenuView* menu_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_TEST_UTIL_H_

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -55,7 +56,9 @@ class NavigationPredictorKeyedService : public KeyedService {
     // The WebContents from where the navigation may happen. Do not use this
     // pointer outside the observer's call stack unless its destruction is also
     // observed.
-    content::WebContents* web_contents_;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION content::WebContents* web_contents_;
 
     // TODO(spelchat): this no longer needs to be optional. Optionality was
     // required because external app predictions didn't provide this field, but

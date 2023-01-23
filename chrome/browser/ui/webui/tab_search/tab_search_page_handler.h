@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_TAB_SEARCH_TAB_SEARCH_PAGE_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -95,8 +96,12 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
     TabDetails(Browser* browser, TabStripModel* tab_strip_model, int index)
         : browser(browser), tab_strip_model(tab_strip_model), index(index) {}
 
-    Browser* browser;
-    TabStripModel* tab_strip_model;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION Browser* browser;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION TabStripModel* tab_strip_model;
     int index;
   };
 

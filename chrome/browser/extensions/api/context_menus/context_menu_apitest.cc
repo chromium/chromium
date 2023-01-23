@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -209,7 +210,9 @@ class ExtensionContextMenuVisibilityApiTest
 
   const Extension* extension() { return extension_; }
 
-  ui::MenuModel* top_level_model_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION ui::MenuModel* top_level_model_ = nullptr;
 
  private:
   content::WebContents* GetBackgroundPage(const std::string& extension_id) {

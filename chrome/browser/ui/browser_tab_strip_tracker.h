@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_TAB_STRIP_TRACKER_H_
 #define CHROME_BROWSER_UI_BROWSER_TAB_STRIP_TRACKER_H_
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 
 class BrowserTabStripTrackerDelegate;
@@ -52,8 +53,12 @@ class BrowserTabStripTracker : public BrowserListObserver {
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
 
-  TabStripModelObserver* const tab_strip_model_observer_;
-  BrowserTabStripTrackerDelegate* const delegate_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION TabStripModelObserver* const tab_strip_model_observer_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION BrowserTabStripTrackerDelegate* const delegate_;
   bool is_processing_initial_browsers_;
 };
 

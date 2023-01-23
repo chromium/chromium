@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -387,7 +388,9 @@ class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
 
   const bool wait_for_loaded_;
   raw_ptr<content::WebContents, DanglingUntriaged> preview_dialog_ = nullptr;
-  base::RunLoop* run_loop_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION base::RunLoop* run_loop_ = nullptr;
 };
 
 class TestPrintRenderFrame
@@ -578,7 +581,9 @@ class TestPrintViewManager : public PrintViewManager {
   }
 
  protected:
-  base::RunLoop* run_loop_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION base::RunLoop* run_loop_ = nullptr;
 
  private:
   void PrintPreviewAllowedForTesting() override {

@@ -19,6 +19,7 @@
 #include "base/json/values_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -421,7 +422,9 @@ class RemoveHistoryTester {
 
  private:
   // TestingProfile owns the history service; we shouldn't delete it.
-  history::HistoryService* history_service_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION history::HistoryService* history_service_ = nullptr;
 };
 
 class RemoveFaviconTester {
