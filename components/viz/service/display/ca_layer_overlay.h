@@ -62,7 +62,8 @@ class VIZ_SERVICE_EXPORT CALayerOverlay {
   scoped_refptr<CALayerOverlaySharedState> shared_state;
 
   // Texture that corresponds to an IOSurface to set as the content of the
-  // CALayer. If this is 0 then the CALayer is a solid color.
+  // CALayer. If this is 0 then the CALayer is a solid color, or it's the root
+  // render pass if |is_root_render_pass| = true.
   ResourceId contents_resource_id = kInvalidResourceId;
   // Mailbox from contents_resource_id. It is used by SkiaRenderer.
   gpu::Mailbox mailbox;
@@ -88,6 +89,8 @@ class VIZ_SERVICE_EXPORT CALayerOverlay {
   // If |rpdq| is present, then the renderer must draw the filter effects and
   // copy the result into an IOSurface.
   const AggregatedRenderPassDrawQuad* rpdq = nullptr;
+  // Whether this overlay candidate represents the root render pass.
+  bool is_root_render_pass = false;
 };
 
 typedef std::vector<CALayerOverlay> CALayerOverlayList;
