@@ -176,7 +176,7 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
       test_system_web_app_installation_;
 };
 
-IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, DISABLED_TabsTest) {
+IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, TabsTest) {
   InstallAndLaunchMockApp();
 
   EXPECT_TRUE(app_browser_->SupportsWindowFeature(Browser::FEATURE_TABSTRIP));
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, DISABLED_TabsTest) {
   EXPECT_FALSE(app_browser_->SupportsWindowFeature(Browser::FEATURE_TABSTRIP));
 }
 
-IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, DISABLED_NonAppUrl) {
+IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, NonAppUrl) {
   InstallAndLaunchMockApp();
 
   // Check we have 2 browsers: |browser()| and |app_browser_|.
@@ -258,8 +258,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, DISABLED_NonAppUrl) {
   EXPECT_EQ(GetActiveTabURL(), tabbed_app_url_);
 }
 
-IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
-                       DISABLED_TabLoadNoThemeChange) {
+IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, TabLoadNoThemeChange) {
   InstallAndLaunchMockApp();
   EXPECT_EQ(app_browser_->tab_strip_model()->count(), 1);
   // Frame gets manifest theme immediately.
@@ -296,12 +295,12 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
 // App Popups are only used on Chrome OS. See https://crbug.com/1060917.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
-                       DISABLED_WhiteThemeForSystemAppPopup) {
+                       WhiteThemeForSystemAppPopup) {
   InstallAndLaunchMockPopup();
   EXPECT_FALSE(app_browser_->app_controller()->GetThemeColor().has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, DISABLED_Shutdown) {
+IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, Shutdown) {
   // Cache profile before browser() closes.
   profile();
   InstallMockSystemWebApp();
@@ -315,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, DISABLED_Shutdown) {
 }
 
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
-                       DISABLED_ReuseBrowserForSystemAppPopup) {
+                       ReuseBrowserForSystemAppPopup) {
   InstallAndLaunchMockPopup();
   // We should have the original browser for this BrowserTest, plus new popup.
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
@@ -324,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
-                       DISABLED_OpenMultipleBrowsersForMultiWindowSWA) {
+                       OpenMultipleBrowsersForMultiWindowSWA) {
   Browser* first_browser = InstallAndLaunchMockSWA();
   // We should have the original browser for this BrowserTest, plus a new one,
   // offset by a tasteful amount.
@@ -355,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
-                       DISABLED_NoExtensionsContainerExists) {
+                       NoExtensionsContainerExists) {
   InstallAndLaunchMockPopup();
   EXPECT_EQ(app_browser_->window()->GetExtensionsContainer(), nullptr);
 }
