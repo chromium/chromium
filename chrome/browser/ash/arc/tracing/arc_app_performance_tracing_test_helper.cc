@@ -14,7 +14,6 @@
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
-#include "components/exo/wm_helper_chromeos.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -31,7 +30,7 @@ void ArcAppPerformanceTracingTestHelper::SetUp(Profile* profile) {
   DCHECK(!profile_ && profile);
   DCHECK(IsArcAllowedForProfile(profile));
   profile_ = profile;
-  wm_helper_ = std::make_unique<exo::WMHelperChromeOS>();
+  wm_helper_ = std::make_unique<exo::WMHelper>();
   // Make sure it is accessible in test.
   if (!GetTracing()) {
     ArcAppPerformanceTracing::GetForBrowserContextForTesting(profile_);

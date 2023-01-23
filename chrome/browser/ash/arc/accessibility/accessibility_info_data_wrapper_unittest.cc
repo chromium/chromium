@@ -14,7 +14,7 @@
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/surface.h"
 #include "components/exo/test/shell_surface_builder.h"
-#include "components/exo/wm_helper_chromeos.h"
+#include "components/exo/wm_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -64,8 +64,7 @@ class AccessibilityInfoDataWrapperTest : public ash::AshTestBase {
  public:
   AccessibilityInfoDataWrapperTest() = default;
 
-  std::unique_ptr<exo::WMHelper> wm_helper =
-      std::make_unique<exo::WMHelperChromeOS>();
+  std::unique_ptr<exo::WMHelper> wm_helper = std::make_unique<exo::WMHelper>();
 };
 
 TEST_F(AccessibilityInfoDataWrapperTest, NonRootNodeBounds) {

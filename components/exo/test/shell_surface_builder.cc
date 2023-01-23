@@ -309,8 +309,7 @@ ShellSurfaceBuilder::BuildClientControlledShellSurface() {
   auto holder = std::make_unique<Holder>();
   holder->AddRootSurface(root_buffer_size_, root_buffer_format_);
   auto shell_surface = Display().CreateOrGetClientControlledShellSurface(
-      holder->root_surface, GetContainer(),
-      WMHelper::GetInstance()->GetDefaultDeviceScaleFactor(),
+      holder->root_surface, GetContainer(), GetDefaultDeviceScaleFactor(),
       default_scale_cancellation_);
   shell_surface->host_window()->SetProperty(kBuilderResourceHolderKey,
                                             std::move(holder));

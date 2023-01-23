@@ -25,7 +25,6 @@
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
-#include "components/exo/wm_helper_chromeos.h"
 #include "components/fullscreen_control/fullscreen_control_popup.h"
 #include "components/fullscreen_control/subtle_notification_view.h"
 #include "components/strings/grit/components_strings.h"

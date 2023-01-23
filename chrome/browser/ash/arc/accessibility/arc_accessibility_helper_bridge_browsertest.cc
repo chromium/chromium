@@ -32,7 +32,6 @@
 #include "components/exo/surface.h"
 #include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/wm_helper.h"
-#include "components/exo/wm_helper_chromeos.h"
 #include "components/viz/common/features.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/automation_internal/automation_event_router_interface.h"
@@ -104,7 +103,7 @@ class ArcAccessibilityHelperBridgeBrowserTest : public InProcessBrowserTest {
 
     AccessibilityManager::Get()->SetProfileForTest(browser()->profile());
 
-    wm_helper_ = std::make_unique<exo::WMHelperChromeOS>();
+    wm_helper_ = std::make_unique<exo::WMHelper>();
     wm_helper_->RegisterAppPropertyResolver(
         std::make_unique<ExoAppTypeResolver>());
   }

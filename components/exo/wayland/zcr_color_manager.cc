@@ -19,7 +19,7 @@
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/wayland_display_observer.h"
 #include "components/exo/wayland/wayland_display_output.h"
-#include "components/exo/wm_helper_chromeos.h"
+#include "components/exo/wm_helper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/modules/skcms/skcms.h"
@@ -139,7 +139,7 @@ class ColorManagerSurface final : public SurfaceObserver {
     if (!display_resource)
       return;
 
-    const auto* wm_helper = WMHelperChromeOS::GetInstance();
+    const auto* wm_helper = WMHelper::GetInstance();
 
     if (old_display != display::kInvalidDisplayId) {
       const auto& old_display_info = wm_helper->GetDisplayInfo(old_display);

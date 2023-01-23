@@ -41,7 +41,6 @@
 #include "components/exo/wayland/wl_output.h"
 #include "components/exo/wayland/xdg_shell.h"
 #include "components/exo/wm_helper.h"
-#include "components/exo/wm_helper_chromeos.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_occlusion_tracker.h"
@@ -1098,7 +1097,7 @@ class WaylandAuraShell : public ash::DesksController::Observer,
  public:
   WaylandAuraShell(wl_resource* aura_shell_resource, Display* display)
       : aura_shell_resource_(aura_shell_resource), seat_(display->seat()) {
-    WMHelperChromeOS* helper = WMHelperChromeOS::GetInstance();
+    WMHelper* helper = WMHelper::GetInstance();
     helper->AddTabletModeObserver(this);
     ash::DesksController::Get()->AddObserver(this);
     if (wl_resource_get_version(aura_shell_resource_) >=
@@ -1122,7 +1121,7 @@ class WaylandAuraShell : public ash::DesksController::Observer,
   WaylandAuraShell(const WaylandAuraShell&) = delete;
   WaylandAuraShell& operator=(const WaylandAuraShell&) = delete;
   ~WaylandAuraShell() override {
-    WMHelperChromeOS* helper = WMHelperChromeOS::GetInstance();
+    WMHelper* helper = WMHelper::GetInstance();
     helper->RemoveTabletModeObserver(this);
     ash::DesksController::Get()->RemoveObserver(this);
     if (seat_)

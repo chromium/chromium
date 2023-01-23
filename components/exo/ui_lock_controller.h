@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/exo/seat_observer.h"
-#include "components/exo/wm_helper_chromeos.h"
+#include "components/exo/wm_helper.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 #include "ui/events/event_handler.h"
 
@@ -33,7 +33,7 @@ extern const base::TimeDelta kLongPressEscapeDuration;
 class UILockController : public ui::EventHandler,
                          public SeatObserver,
                          public ash::SessionObserver,
-                         public WMHelperChromeOS::PowerObserver,
+                         public WMHelper::PowerObserver,
                          public ui::UserActivityObserver {
  public:
   // Interface for classes that display notifications based on UI lock states.

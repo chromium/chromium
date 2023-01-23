@@ -69,7 +69,7 @@
 #include "components/exo/shell_surface.h"
 #include "components/exo/surface.h"
 #include "components/exo/test/shell_surface_builder.h"
-#include "components/exo/wm_helper_chromeos.h"
+#include "components/exo/wm_helper.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -1011,8 +1011,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   SetShouldRestore(app_launch_handler.get());
 
   // Create a WMHelper instance for Surface to set in the constructor.
-  std::unique_ptr<exo::WMHelper> wm_helper =
-      std::make_unique<exo::WMHelperChromeOS>();
+  std::unique_ptr<exo::WMHelper> wm_helper = std::make_unique<exo::WMHelper>();
 
   // Create the Lacros window surface and restore it.
   auto shell_surface =

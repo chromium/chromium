@@ -18,7 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/app_restore/features.h"
-#include "components/exo/wm_helper_chromeos.h"
+#include "components/exo/wm_helper.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -40,7 +40,7 @@ class FullRestorePolicyBrowserTest
   void SetUpInProcessBrowserTestFixture() override {
     PolicyTest::SetUpInProcessBrowserTestFixture();
     arc::ArcSessionManager::SetUiEnabledForTesting(false);
-    wm_helper_ = std::make_unique<exo::WMHelperChromeOS>();
+    wm_helper_ = std::make_unique<exo::WMHelper>();
 
     policy::PolicyMap policies;
     policies.Set(policy::key::kFullRestoreEnabled,

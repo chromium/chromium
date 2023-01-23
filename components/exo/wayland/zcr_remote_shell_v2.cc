@@ -8,7 +8,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/zcr_remote_shell_impl.h"
-#include "components/exo/wm_helper_chromeos.h"
+#include "components/exo/wm_helper.h"
 
 namespace exo {
 namespace wayland {

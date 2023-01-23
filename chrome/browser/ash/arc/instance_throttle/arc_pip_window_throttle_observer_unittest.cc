@@ -12,7 +12,6 @@
 #include "base/test/task_environment.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/exo/wm_helper.h"
-#include "components/exo/wm_helper_chromeos.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
@@ -23,7 +22,7 @@ namespace arc {
 
 namespace {
 
-class FakeWMHelper : public exo::WMHelperChromeOS {
+class FakeWMHelper : public exo::WMHelper {
  public:
   FakeWMHelper() = default;
   ~FakeWMHelper() override = default;

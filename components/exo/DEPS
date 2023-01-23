@@ -37,7 +37,7 @@ specific_include_rules = {
     "+chromeos/dbus/power",
     "+chromeos/dbus/power_manager",
   ],
-  "wm_helper_chromeos\..*": [
+  "wm_helper\..*": [
     "+chromeos/dbus/power",
     "+chromeos/dbus/power_manager",
   ]

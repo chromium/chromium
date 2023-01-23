@@ -9,7 +9,12 @@
 #include <string>
 #include <vector>
 
+#include "ash/display/window_tree_host_manager.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chromeos/dbus/power/power_manager_client.h"
+#include "components/exo/vsync_timing_manager.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
@@ -23,6 +28,10 @@ class DragDropClient;
 class FocusChangeObserver;
 }  // namespace client
 }  // namespace aura
+
+namespace ash {
+class TabletModeObserver;
+}
 
 namespace wm {
 class ActivationChangeObserver;
@@ -48,7 +57,9 @@ namespace exo {
 class VSyncTimingManager;
 
 // Helper interface for accessing WindowManager related features.
-class WMHelper : public aura::client::DragDropDelegate {
+class WMHelper : public chromeos::PowerManagerClient::Observer,
+                 public aura::client::DragDropDelegate,
+                 public VSyncTimingManager::Delegate {
  public:
 
   class DragDropObserver {
@@ -87,6 +98,8 @@ class WMHelper : public aura::client::DragDropDelegate {
 
     void AddObserver(Observer* observer);
     void RemoveObserver(Observer* observer);
+
+    void NotifyDestroyed();
 
    private:
     base::ObserverList<Observer> observers_;
@@ -134,62 +147,8 @@ class WMHelper : public aura::client::DragDropDelegate {
   static WMHelper* GetInstance();
   static bool HasInstance();
 
-  virtual void AddActivationObserver(
-      wm::ActivationChangeObserver* observer) = 0;
-  virtual void RemoveActivationObserver(
-      wm::ActivationChangeObserver* observer) = 0;
-  virtual void AddTooltipObserver(wm::TooltipObserver* observer) = 0;
-  virtual void RemoveTooltipObserver(wm::TooltipObserver* observer) = 0;
-  virtual void AddFocusObserver(
-      aura::client::FocusChangeObserver* observer) = 0;
-  virtual void RemoveFocusObserver(
-      aura::client::FocusChangeObserver* observer) = 0;
-  void AddExoWindowObserver(ExoWindowObserver* observer);
-  void RemoveExoWindowObserver(ExoWindowObserver* observer);
-
-  virtual void AddPowerObserver(PowerObserver* observer);
-  virtual void RemovePowerObserver(PowerObserver* observer);
-
-  virtual void AddDragDropObserver(DragDropObserver* observer) = 0;
-  virtual void RemoveDragDropObserver(DragDropObserver* observer) = 0;
-  virtual void SetDragDropDelegate(aura::Window*) = 0;
-  virtual void ResetDragDropDelegate(aura::Window*) = 0;
-  virtual VSyncTimingManager& GetVSyncTimingManager() = 0;
-
-  virtual const display::ManagedDisplayInfo& GetDisplayInfo(
-      int64_t display_id) const = 0;
-  virtual const std::vector<uint8_t>& GetDisplayIdentificationData(
-      int64_t display_id) const = 0;
-  virtual bool GetActiveModeForDisplayId(
-      int64_t display_id,
-      display::ManagedDisplayMode* mode) const = 0;
-
-  virtual aura::Window* GetPrimaryDisplayContainer(int container_id) = 0;
-  virtual aura::Window* GetActiveWindow() const = 0;
-  virtual aura::Window* GetFocusedWindow() const = 0;
-  virtual aura::Window* GetRootWindowForNewWindows() const = 0;
-  virtual aura::client::CursorClient* GetCursorClient() = 0;
-  virtual aura::client::DragDropClient* GetDragDropClient() = 0;
-  virtual void AddPreTargetHandler(ui::EventHandler* handler) = 0;
-  virtual void PrependPreTargetHandler(ui::EventHandler* handler) = 0;
-  virtual void RemovePreTargetHandler(ui::EventHandler* handler) = 0;
-  virtual void AddPostTargetHandler(ui::EventHandler* handler) = 0;
-  virtual void RemovePostTargetHandler(ui::EventHandler* handler) = 0;
-  virtual bool InTabletMode() const = 0;
-  virtual double GetDefaultDeviceScaleFactor() const = 0;
-  virtual double GetDeviceScaleFactorForWindow(aura::Window* window) const = 0;
-  virtual void SetDefaultScaleCancellation(bool default_scale_cancellation) = 0;
-
-  virtual LifetimeManager* GetLifetimeManager() = 0;
-  virtual aura::client::CaptureClient* GetCaptureClient() = 0;
-
-  // Overridden from aura::client::DragDropDelegate:
-  void OnDragEntered(const ui::DropTargetEvent& event) override = 0;
-  aura::client::DragUpdateInfo OnDragUpdated(
-      const ui::DropTargetEvent& event) override = 0;
-  void OnDragExited() override = 0;
-  aura::client::DragDropDelegate::DropCallback GetDropCallback(
-      const ui::DropTargetEvent& event) override = 0;
+  // A virtual ulitity function to return the container window for unit test.
+  virtual aura::Window* GetPrimaryDisplayContainer(int container_id);
 
   // Registers an AppPropertyResolver. Multiple resolver can be registered and
   // all resolvers are called in the registration order by the method below.
@@ -203,15 +162,97 @@ class WMHelper : public aura::client::DragDropDelegate {
   void PopulateAppProperties(const AppPropertyResolver::Params& params,
                              ui::PropertyHandler& out_properties_container);
 
+  void AddExoWindowObserver(ExoWindowObserver* observer);
+  void RemoveExoWindowObserver(ExoWindowObserver* observer);
+
   // Notifies observers that |window| has been created by exo and is ready for
   // to receive content.
   void NotifyExoWindowCreated(aura::Window* window);
 
- protected:
+  void AddActivationObserver(wm::ActivationChangeObserver* observer);
+  void RemoveActivationObserver(wm::ActivationChangeObserver* observer);
+  void AddTooltipObserver(wm::TooltipObserver* observer);
+  void RemoveTooltipObserver(wm::TooltipObserver* observer);
+  void AddFocusObserver(aura::client::FocusChangeObserver* observer);
+  void RemoveFocusObserver(aura::client::FocusChangeObserver* observer);
+  void AddDragDropObserver(DragDropObserver* observer);
+  void RemoveDragDropObserver(DragDropObserver* observer);
+  void SetDragDropDelegate(aura::Window*);
+  void ResetDragDropDelegate(aura::Window*);
+  void AddPowerObserver(WMHelper::PowerObserver* observer);
+  void RemovePowerObserver(WMHelper::PowerObserver* observer);
+  VSyncTimingManager& GetVSyncTimingManager();
+  const display::ManagedDisplayInfo& GetDisplayInfo(int64_t display_id) const;
+  const std::vector<uint8_t>& GetDisplayIdentificationData(
+      int64_t display_id) const;
+  bool GetActiveModeForDisplayId(int64_t display_id,
+                                 display::ManagedDisplayMode* mode) const;
+  aura::Window* GetActiveWindow() const;
+  aura::Window* GetFocusedWindow() const;
+  aura::Window* GetRootWindowForNewWindows() const;
+  aura::client::CursorClient* GetCursorClient();
+  aura::client::DragDropClient* GetDragDropClient();
+  void AddPreTargetHandler(ui::EventHandler* handler);
+  void PrependPreTargetHandler(ui::EventHandler* handler);
+  void RemovePreTargetHandler(ui::EventHandler* handler);
+  void AddPostTargetHandler(ui::EventHandler* handler);
+  void RemovePostTargetHandler(ui::EventHandler* handler);
+  bool InTabletMode() const;
+  double GetDeviceScaleFactorForWindow(aura::Window* window) const;
+  void SetDefaultScaleCancellation(bool default_scale_cancellation);
+  void AddTabletModeObserver(ash::TabletModeObserver* observer);
+  void RemoveTabletModeObserver(ash::TabletModeObserver* observer);
+  void AddDisplayConfigurationObserver(
+      ash::WindowTreeHostManager::Observer* observer);
+  void RemoveDisplayConfigurationObserver(
+      ash::WindowTreeHostManager::Observer* observer);
+  void AddFrameThrottlingObserver();
+  void RemoveFrameThrottlingObserver();
+
+  LifetimeManager* GetLifetimeManager();
+  aura::client::CaptureClient* GetCaptureClient();
+
+  // Overridden from aura::client::DragDropDelegate:
+  void OnDragEntered(const ui::DropTargetEvent& event) override;
+  aura::client::DragUpdateInfo OnDragUpdated(
+      const ui::DropTargetEvent& event) override;
+  void OnDragExited() override;
+  aura::client::DragDropDelegate::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event) override;
+
+  // Overridden from chromeos::PowerManagerClient::Observer:
+  void SuspendDone(base::TimeDelta sleep_duration) override;
+  void ScreenBrightnessChanged(
+      const power_manager::BacklightBrightnessChange& change) override;
+  void LidEventReceived(chromeos::PowerManagerClient::LidState state,
+                        base::TimeTicks timestamp) override;
+
+  // Overridden from VSyncTimingManager::Delegate:
+  void AddVSyncParameterObserver(
+      mojo::PendingRemote<viz::mojom::VSyncParameterObserver> observer)
+      override;
+
+ private:
+  void PerformDrop(
+      std::vector<WMHelper::DragDropObserver::DropCallback> drop_callbacks,
+      std::unique_ptr<ui::OSExchangeData> data,
+      ui::mojom::DragOperation& output_drag_op);
+
   base::ObserverList<ExoWindowObserver> exo_window_observers_;
 
   std::vector<std::unique_ptr<AppPropertyResolver>> resolver_list_;
+
+  base::ObserverList<DragDropObserver>::Unchecked drag_drop_observers_;
+  base::ObserverList<PowerObserver> power_observers_;
+  LifetimeManager lifetime_manager_;
+  VSyncTimingManager vsync_timing_manager_;
+  bool default_scale_cancellation_ = true;
+  base::WeakPtrFactory<WMHelper> weak_ptr_factory_{this};
 };
+
+// Returnsn the default device scale factor used for
+// ClientControlledShellSurface (ARC).
+float GetDefaultDeviceScaleFactor();
 
 }  // namespace exo
 

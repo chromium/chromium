@@ -13,7 +13,7 @@
 #include "chromeos/ui/base/window_pin_type.h"
 #include "components/exo/display.h"
 #include "components/exo/wayland/server_util.h"
-#include "components/exo/wm_helper_chromeos.h"
+#include "components/exo/wm_helper.h"
 #include "ui/display/screen.h"
 #include "ui/views/window/caption_button_types.h"
 #include "ui/wm/core/window_animations.h"
@@ -454,7 +454,7 @@ WaylandRemoteShell::WaylandRemoteShell(
       output_provider_(output_provider),
       use_default_scale_cancellation_(use_default_scale_cancellation_default),
       seat_(display->seat()) {
-  WMHelperChromeOS* helper = WMHelperChromeOS::GetInstance();
+  WMHelper* helper = WMHelper::GetInstance();
   helper->AddTabletModeObserver(this);
   helper->AddFrameThrottlingObserver();
   helper->SetDefaultScaleCancellation(use_default_scale_cancellation_);
@@ -485,7 +485,7 @@ WaylandRemoteShell::WaylandRemoteShell(
 }
 
 WaylandRemoteShell::~WaylandRemoteShell() {
-  WMHelperChromeOS* helper = WMHelperChromeOS::GetInstance();
+  WMHelper* helper = WMHelper::GetInstance();
   helper->RemoveTabletModeObserver(this);
   helper->RemoveFrameThrottlingObserver();
   if (seat_)
@@ -938,7 +938,7 @@ double GetDefaultDeviceScaleFactor() {
     if (base::StringToDouble(value, &scale))
       return std::max(1.0, scale);
   }
-  return WMHelper::GetInstance()->GetDefaultDeviceScaleFactor();
+  return ::exo::GetDefaultDeviceScaleFactor();
 }
 
 // Scale the |child_bounds| in such a way that if it should fill the

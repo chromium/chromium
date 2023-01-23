@@ -23,7 +23,7 @@
 #include "components/exo/notification_surface_manager.h"
 #include "components/exo/toast_surface_manager.h"
 #include "components/exo/wayland/server.h"
-#include "components/exo/wm_helper_chromeos.h"
+#include "components/exo/wm_helper.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/wm/core/cursor_manager.h"
 #include "ui/wm/core/wm_core_switches.h"
@@ -86,7 +86,7 @@ void WaylandClientTestHelper::SetUpOnUIThread(base::WaitableEvent* event) {
   ash_test_helper_ = std::make_unique<ash::AshTestHelper>();
   ash_test_helper_->SetUp();
 
-  wm_helper_ = std::make_unique<WMHelperChromeOS>();
+  wm_helper_ = std::make_unique<WMHelper>();
   display_ = std::make_unique<Display>(nullptr, nullptr, nullptr, nullptr);
   wayland_server_ = exo::wayland::Server::Create(display_.get());
   DCHECK(wayland_server_);

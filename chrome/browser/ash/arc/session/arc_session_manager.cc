@@ -65,7 +65,7 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/account_id/account_id.h"
-#include "components/exo/wm_helper_chromeos.h"
+#include "components/exo/wm_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/session_manager/core/session_manager.h"

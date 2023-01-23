@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/app_restore/features.h"
 #include "components/exo/wm_helper.h"
-#include "components/exo/wm_helper_chromeos.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,9 +47,7 @@ class ArcWindowUtilsTest : public testing::Test {
     display::Screen::SetScreenInstance(nullptr);
   }
 
-  void SetUp() override {
-    wm_helper_ = std::make_unique<exo::WMHelperChromeOS>();
-  }
+  void SetUp() override { wm_helper_ = std::make_unique<exo::WMHelper>(); }
 
   void TearDown() override { wm_helper_.reset(); }
 

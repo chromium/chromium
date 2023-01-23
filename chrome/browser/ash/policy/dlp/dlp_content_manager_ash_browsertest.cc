@@ -47,7 +47,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/test/shell_surface_builder.h"
-#include "components/exo/wm_helper_chromeos.h"
+#include "components/exo/wm_helper.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/desktop_streams_registry.h"
 #include "content/public/browser/media_stream_request.h"
@@ -400,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(ScreenshotTest, CheckRestriction_Blocked_Lacros) {
   SetupReporting();
 
   // Create a Lacros-like Exo surface.
-  exo::WMHelperChromeOS wm_helper;
+  exo::WMHelper wm_helper;
   std::unique_ptr<exo::ShellSurface> shell_surface =
       exo::test::ShellSurfaceBuilder({640, 480}).BuildShellSurface();
   shell_surface->root_surface()->window()->TrackOcclusionState();
@@ -1010,7 +1010,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
   SetupReporting();
 
   // Create a Lacros-like Exo surface.
-  exo::WMHelperChromeOS wm_helper;
+  exo::WMHelper wm_helper;
   std::unique_ptr<exo::ShellSurface> shell_surface =
       exo::test::ShellSurfaceBuilder({640, 480}).BuildShellSurface();
   shell_surface->root_surface()->window()->TrackOcclusionState();

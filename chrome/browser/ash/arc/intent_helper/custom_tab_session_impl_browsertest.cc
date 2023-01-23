@@ -15,7 +15,6 @@
 #include "components/exo/shell_surface.h"
 #include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/wm_helper.h"
-#include "components/exo/wm_helper_chromeos.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/web_contents_tester.h"
@@ -35,7 +34,7 @@ class CustomTabSessionImplTest : public InProcessBrowserTest,
   }
 
   void SetUpOnMainThread() override {
-    wm_helper_ = std::make_unique<exo::WMHelperChromeOS>();
+    wm_helper_ = std::make_unique<exo::WMHelper>();
     DCHECK(exo::WMHelper::HasInstance());
   }
 

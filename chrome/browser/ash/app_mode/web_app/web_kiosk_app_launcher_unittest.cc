@@ -26,7 +26,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "components/exo/shell_surface_util.h"
-#include "components/exo/wm_helper_chromeos.h"
+#include "components/exo/wm_helper.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/test/browser_task_environment.h"
@@ -349,7 +349,7 @@ class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
       : browser_manager_(std::make_unique<crosapi::FakeBrowserManager>()),
         fake_user_manager_(new FakeChromeUserManager()),
         scoped_user_manager_(base::WrapUnique(fake_user_manager_)),
-        wm_helper_(std::make_unique<exo::WMHelperChromeOS>()) {
+        wm_helper_(std::make_unique<exo::WMHelper>()) {
     scoped_feature_list_.InitAndEnableFeature(features::kWebKioskEnableLacros);
   }
 

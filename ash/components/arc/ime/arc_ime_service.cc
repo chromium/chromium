@@ -809,7 +809,7 @@ double ArcImeService::GetDefaultDeviceScaleFactor() const {
     return g_override_default_device_scale_factor.value();
   if (!exo::WMHelper::HasInstance())
     return 1.0;
-  return exo::WMHelper::GetInstance()->GetDefaultDeviceScaleFactor();
+  return exo::GetDefaultDeviceScaleFactor();
 }
 
 gfx::Point ArcImeService::GetDisplayOriginForFocusedWindow() const {

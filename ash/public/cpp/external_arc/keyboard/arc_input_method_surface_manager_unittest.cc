@@ -8,7 +8,6 @@
 #include "components/exo/input_method_surface.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
-#include "components/exo/wm_helper_chromeos.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 
 namespace ash {
@@ -50,7 +49,7 @@ class ArcInputMethodSurfaceManagerTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    wm_helper_ = std::make_unique<exo::WMHelperChromeOS>();
+    wm_helper_ = std::make_unique<exo::WMHelper>();
   }
 
   void TearDown() override {

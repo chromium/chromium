@@ -19,7 +19,6 @@
 #include "components/exo/toast_surface_manager.h"
 #include "components/exo/wayland/server.h"
 #include "components/exo/wm_helper.h"
-#include "components/exo/wm_helper_chromeos.h"
 
 namespace exo {
 
@@ -60,7 +59,7 @@ WaylandServerController::WaylandServerController(
     std::unique_ptr<NotificationSurfaceManager> notification_surface_manager,
     std::unique_ptr<InputMethodSurfaceManager> input_method_surface_manager,
     std::unique_ptr<ToastSurfaceManager> toast_surface_manager)
-    : wm_helper_(std::make_unique<WMHelperChromeOS>()),
+    : wm_helper_(std::make_unique<WMHelper>()),
       display_(
           std::make_unique<Display>(std::move(notification_surface_manager),
                                     std::move(input_method_surface_manager),

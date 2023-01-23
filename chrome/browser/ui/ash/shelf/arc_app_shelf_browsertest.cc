@@ -43,7 +43,6 @@
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/wm_helper.h"
-#include "components/exo/wm_helper_chromeos.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/display/types/display_constants.h"
@@ -222,7 +221,7 @@ class ArcAppShelfBrowserTest : public extensions::ExtensionBrowserTest {
     run_loop.Run();
 
     // Allows creation of windows.
-    wm_helper_ = std::make_unique<exo::WMHelperChromeOS>();
+    wm_helper_ = std::make_unique<exo::WMHelper>();
   }
 
   void TearDownOnMainThread() override { wm_helper_.reset(); }

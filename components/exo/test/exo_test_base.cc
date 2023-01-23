@@ -10,7 +10,6 @@
 #include "components/exo/shell_surface.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
-#include "components/exo/wm_helper_chromeos.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "ui/aura/client/aura_constants.h"
@@ -61,7 +60,7 @@ void ExoTestBase::TearDown() {
 void ExoTestBase::SetUp(
     std::unique_ptr<ash::TestShellDelegate> shell_delegate) {
   AshTestBase::SetUp(std::move(shell_delegate));
-  wm_helper_ = std::make_unique<WMHelperChromeOS>();
+  wm_helper_ = std::make_unique<WMHelper>();
   wm_helper_->RegisterAppPropertyResolver(
       base::WrapUnique(new TestPropertyResolver()));
 }

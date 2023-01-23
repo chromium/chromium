@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/exo/wm_helper_chromeos.h"
+#include "components/exo/wm_helper.h"
 
 #include <memory>
 #include <vector>
@@ -59,11 +59,10 @@ class MockDragDropObserver : public WMHelper::DragDropObserver {
 
 }  // namespace
 
-using WMHelperChromeOSTest = test::ExoTestBase;
+using WMHelperTest = test::ExoTestBase;
 
-TEST_F(WMHelperChromeOSTest, FrameThrottling) {
-  WMHelperChromeOS* wm_helper_chromeos =
-      static_cast<WMHelperChromeOS*>(wm_helper());
+TEST_F(WMHelperTest, FrameThrottling) {
+  WMHelper* wm_helper_chromeos = static_cast<WMHelper*>(wm_helper());
   wm_helper_chromeos->AddFrameThrottlingObserver();
   VSyncTimingManager& vsync_timing_manager =
       wm_helper_chromeos->GetVSyncTimingManager();
@@ -105,9 +104,8 @@ TEST_F(WMHelperChromeOSTest, FrameThrottling) {
   wm_helper_chromeos->RemoveFrameThrottlingObserver();
 }
 
-TEST_F(WMHelperChromeOSTest, MultipleDragDropObservers) {
-  WMHelperChromeOS* wm_helper_chromeos =
-      static_cast<WMHelperChromeOS*>(wm_helper());
+TEST_F(WMHelperTest, MultipleDragDropObservers) {
+  WMHelper* wm_helper_chromeos = static_cast<WMHelper*>(wm_helper());
   MockDragDropObserver observer_no_drop(DragOperation::kNone);
   MockDragDropObserver observer_copy_drop(DragOperation::kCopy);
 
@@ -131,7 +129,7 @@ TEST_F(WMHelperChromeOSTest, MultipleDragDropObservers) {
   wm_helper_chromeos->RemoveDragDropObserver(&observer_copy_drop);
 }
 
-TEST_F(WMHelperChromeOSTest, DockedModeShouldUseInternalAsDefault) {
+TEST_F(WMHelperTest, DockedModeShouldUseInternalAsDefault) {
   UpdateDisplay("1920x1080*2, 600x400");
   display::test::DisplayManagerTestApi(display_manager())
       .SetFirstDisplayAsInternalDisplay();
