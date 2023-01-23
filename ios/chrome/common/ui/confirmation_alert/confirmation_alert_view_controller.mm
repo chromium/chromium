@@ -116,11 +116,11 @@ const CGFloat kFaviconBadgeSideLength = 24;
   }
 
   UILabel* title = [self createTitleLabel];
-  UILabel* subtitle = [self createSubtitleLabel];
+  UITextView* subtitle = [self createSubtitleView];
 
   NSArray* stackSubviews = nil;
   if ([self.secondaryTitleString length] != 0) {
-    UILabel* secondaryTitle = [self createSecondaryTitleLabel];
+    UITextView* secondaryTitle = [self createSecondaryTitleView];
     stackSubviews =
         @[ self.imageContainerView, title, secondaryTitle, subtitle ];
   } else {
@@ -355,14 +355,12 @@ const CGFloat kFaviconBadgeSideLength = 24;
   [super updateViewConstraints];
 }
 
-- (void)updateStylingForSecondaryTitleLabel:(UILabel*)secondaryTitleLabel {
-  // The subclass needs to overwrite this method if it wants a different style
-  // than the default.
+- (void)customizeSecondaryTitle:(UITextView*)secondaryTitle {
+  // Do nothing by default. Subclasses can override this.
 }
 
-- (void)updateStylingForSubtitleLabel:(UILabel*)subtitleLabel {
-  // The subclass need to overwrite this method if it wants a different style
-  // than the default.
+- (void)customizeSubtitle:(UITextView*)subtitle {
+  // Do nothing by default. Subclasses can override this.
 }
 
 #pragma mark - Private
@@ -533,14 +531,16 @@ const CGFloat kFaviconBadgeSideLength = 24;
   return containerView;
 }
 
-// Creates a label with subtitle label defaults.
-- (UILabel*)createLabel {
-  UILabel* label = [[UILabel alloc] init];
-  label.numberOfLines = 0;
-  label.textAlignment = NSTextAlignmentCenter;
-  label.translatesAutoresizingMaskIntoConstraints = NO;
-  label.adjustsFontForContentSizeCategory = YES;
-  return label;
+// Creates a UITextView with subtitle defaults.
+- (UITextView*)createTextView {
+  UITextView* view = [[UITextView alloc] init];
+  view.textAlignment = NSTextAlignmentCenter;
+  view.translatesAutoresizingMaskIntoConstraints = NO;
+  view.adjustsFontForContentSizeCategory = YES;
+  view.editable = NO;
+  view.selectable = NO;
+  view.scrollEnabled = NO;
+  return view;
 }
 
 // Helper to create the title label.
@@ -567,28 +567,28 @@ const CGFloat kFaviconBadgeSideLength = 24;
   return title;
 }
 
-// Helper to create the title description label.
-- (UILabel*)createSecondaryTitleLabel {
-  UILabel* secondaryTitle = [self createLabel];
+// Helper to create the title description view.
+- (UITextView*)createSecondaryTitleView {
+  UITextView* secondaryTitle = [self createTextView];
   secondaryTitle.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
   secondaryTitle.text = self.secondaryTitleString;
   secondaryTitle.textColor = [UIColor colorNamed:kTextPrimaryColor];
   secondaryTitle.accessibilityIdentifier =
       kConfirmationAlertSecondaryTitleAccessibilityIdentifier;
-  [self updateStylingForSecondaryTitleLabel:secondaryTitle];
+  [self customizeSecondaryTitle:secondaryTitle];
   return secondaryTitle;
 }
 
-// Helper to create the subtitle label.
-- (UILabel*)createSubtitleLabel {
-  UILabel* subtitle = [self createLabel];
+// Helper to create the subtitle view.
+- (UITextView*)createSubtitleView {
+  UITextView* subtitle = [self createTextView];
   subtitle.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   subtitle.text = self.subtitleString;
   subtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
   subtitle.accessibilityIdentifier =
       kConfirmationAlertSubtitleAccessibilityIdentifier;
-  [self updateStylingForSubtitleLabel:subtitle];
+  [self customizeSubtitle:subtitle];
   return subtitle;
 }
 

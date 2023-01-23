@@ -86,16 +86,14 @@ constexpr CGFloat customSpacingAfterImage = 24;
 
 #pragma mark - ConfirmationAlertViewController
 
-- (void)updateStylingForSecondaryTitleLabel:(UILabel*)secondaryTitleLabel {
-  secondaryTitleLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  secondaryTitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+- (void)customizeSecondaryTitle:(UITextView*)secondaryTitle {
+  secondaryTitle.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  secondaryTitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
 }
 
-- (void)updateStylingForSubtitleLabel:(UILabel*)subtitleLabel {
-  subtitleLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-  subtitleLabel.textColor = [UIColor colorNamed:kTextTertiaryColor];
+- (void)customizeSubtitle:(UITextView*)subtitle {
+  subtitle.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  subtitle.textColor = [UIColor colorNamed:kTextTertiaryColor];
 }
 
 @end

@@ -95,13 +95,15 @@ extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
 // The action handler for interactions in this View Controller.
 @property(nonatomic, weak) id<ConfirmationAlertActionHandler> actionHandler;
 
-// Updates the style of the secondary title label. The default implementation
-// does nothing, but subclasses can override to customize the styling if needed.
-- (void)updateStylingForSecondaryTitleLabel:(UILabel*)secondaryTitleLabel;
+// Can be overridden by subclasses to customize the secondary title, e.g. set a
+// different style, or a UITextViewDelegate. The default implementation does
+// nothing.
+- (void)customizeSecondaryTitle:(UITextView*)secondaryTitle;
 
-// Updates the style of the subtitle label. The default implementation does
-// nothing, but subclasses can override to customize the styling if needed.
-- (void)updateStylingForSubtitleLabel:(UILabel*)subtitleLabel;
+// Can be overridden by subclasses to customize the subtitle, e.g. set a
+// different style, or a UITextViewDelegate. The default implementation does
+// nothing.
+- (void)customizeSubtitle:(UITextView*)subtitle;
 
 @end
 
