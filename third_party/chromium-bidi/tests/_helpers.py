@@ -162,6 +162,7 @@ def any_string(actual):
 
 
 def string_containing(expected_substring):
+
     def _(actual):
         any_string(actual)
         assert expected_substring in actual, f"'{actual}' should contain " \
@@ -175,6 +176,7 @@ def any_shared_id(actual):
 
 
 def not_one_of(not_expected_list):
+
     def _not_one_of(actual):
         for not_expected in not_expected_list:
             assert actual != not_expected
@@ -183,6 +185,7 @@ def not_one_of(not_expected_list):
 
 
 def compare_sorted(key_name, expected):
+
     def _compare_sorted(actual):
         recursive_compare(sorted(expected, key=lambda x: x[key_name]),
                           sorted(actual, key=lambda x: x[key_name]))

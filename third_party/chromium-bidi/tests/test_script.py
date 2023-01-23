@@ -636,7 +636,7 @@ async def test_script_callFunctionWithClassicFunctionAndThisParameter_thisIsUsed
 @pytest.mark.asyncio
 # TODO(sadym): fix test. Serialize Number, String etc classes properly.
 async def _ignore_test_script_callFunctionWithClassicFunctionAndThisParameter_thisIsUsed(
-    websocket, context_id):
+        websocket, context_id):
     result = await execute_command(
         websocket, {
             "method": "script.callFunction",

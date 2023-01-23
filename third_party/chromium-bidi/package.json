@@ -17,12 +17,12 @@
     "format": "npm run format:eslint && npm run format:prettier && npm run yapf",
     "format:eslint": "eslint --ext js --ext ts --fix .",
     "format:prettier": "prettier --write .",
+    "format:yapf": "yapf --in-place --parallel --recursive --exclude=wpt examples/ tests/",
     "rollup": "rollup --config configs/rollup.config.js",
     "server-no-build": "node lib/cjs/bidiServer/index.js",
     "server": "npm run build && npm run server-no-build --",
     "test": "npm run build && npm run unit",
-    "unit": "cross-env TS_NODE_PROJECT='src/tsconfig.json' mocha",
-    "yapf": "yapf --in-place --parallel --recursive --verbose --exclude=wpt examples/ tests/"
+    "unit": "cross-env TS_NODE_PROJECT='src/tsconfig.json' mocha"
   },
   "files": [
     "lib"

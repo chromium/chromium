@@ -1,10 +1,11 @@
 {
-  "python.testing.pytestArgs": ["tests"],
-  "python.testing.unittestEnabled": false,
-  "python.testing.nosetestsEnabled": false,
-  "python.testing.pytestEnabled": true,
-  "typescript.tsdk": "node_modules/typescript/lib",
   "files.associations": {
     "**/*.es": "javascript"
-  }
+  },
+  "python.formatting.provider": "yapf",
+  "python.testing.nosetestsEnabled": false,
+  "python.testing.pytestArgs": ["tests"],
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
