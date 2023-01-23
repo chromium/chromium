@@ -179,3 +179,22 @@ available as CAS outputs. The logs for `updater_tests_system` and
 
 Non-bot systems can set up this environment variable to collect logs for
 debugging when the tests are run locally.
+
+## Testing src changes with trybots
+
+In some cases, you will want to test the changes you make within
+[chromium/src](https://chromium.googlesource.com/chromium/src.git) on
+specific builders/testers before landing these changes. It is possible
+to do this with the use of the trybots available on the
+[tryserver.chromium.updater](https://ci.chromium.org/ui/p/chromium/g/tryserver.chromium.updater/builders)
+ waterfall. The steps are as follows:
+
+1. Find a trybot to run your tests with. All of the trybots on the
+tryserver.chromium.updater waterfall have a corresponding builder and
+tester, so find one that runs a workflow to test your changes.
+2. Apply your configuration changes to chromium/src and upload a CL
+using the typical workflow: `git cl upload`
+3. Run `git cl try -B luci.chromium.try -b {TRYBOT_NAME}` with the
+name of the trybot you found.
+4. Monitor and debug any failures as you normally would for any
+builder or tester.
