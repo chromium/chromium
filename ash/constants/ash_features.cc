@@ -1666,6 +1666,12 @@ BASE_FEATURE(kProjectorExcludeTranscript,
              "ProjectorExcludeTranscript",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether to fold short gap between transcript into the previous
+// transcript.
+BASE_FEATURE(kProjectorFoldShortGapIntoPreviousTranscript,
+             "ProjectorFoldShortGapIntoPreviousTranscript",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether Projector's tutorial videos are displayed.
 BASE_FEATURE(kProjectorTutorialVideoView,
              "ProjectorTutorialVideoView",
@@ -3040,6 +3046,11 @@ bool IsProjectorViewerUseSecondaryAccountEnabled() {
 
 bool IsProjectorAccountSwitchNotificationEnabled() {
   return base::FeatureList::IsEnabled(kProjectorAccountSwitchNotification);
+}
+
+bool IsProjectorFoldShortGapIntoPreviousTranscriptEnabled() {
+  return base::FeatureList::IsEnabled(
+      kProjectorFoldShortGapIntoPreviousTranscript);
 }
 
 bool IsQuickDimEnabled() {

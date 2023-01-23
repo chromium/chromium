@@ -57,6 +57,9 @@ void ChromeUntrustedProjectorUIDelegate::PopulateLoadTimeData(
   source->AddBoolean(
       "isInternalServerSideSpeechRecognitionEnabled",
       ash::features::IsInternalServerSideSpeechRecognitionEnabled());
+  source->AddBoolean(
+      "isFoldShortGapIntoPreviousTranscriptEnabled",
+      ash::features::IsProjectorFoldShortGapIntoPreviousTranscriptEnabled());
   source->AddString("appLocale", g_browser_process->GetApplicationLocale());
 }
 
