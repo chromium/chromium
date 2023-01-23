@@ -660,6 +660,16 @@
     'enabled': True,
     'identifier': 'OCTOPUS_FULL',
   },
+  'CROS_OCTOPUS_RELEASE_CHROME_FROM_TLS': {
+    'skylab': {
+      'cros_board': 'octopus',
+      'cros_chrome_version': '110.0.5423.0',
+      'cros_img': 'octopus-release/R110-15249.0.0',
+      'autotest_name': 'tast.chrome-from-tls',
+    },
+    'enabled': True,
+    'identifier': 'OCTOPUS_RELEASE_CHROME_FROM_TLS',
+  },
   'CROS_OCTOPUS_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'octopus',

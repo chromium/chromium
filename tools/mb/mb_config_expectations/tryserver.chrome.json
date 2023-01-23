@@ -190,6 +190,19 @@
       "use_goma": true
     }
   },
+  "chromeos-octopus-chrome-skylab": {
+    "args_file": "//build/args/chromeos/octopus.gni",
+    "gn_args": {
+      "dcheck_always_on": true,
+      "exclude_unwind_tables": false,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "is_skylab": true,
+      "ozone_platform_headless": true,
+      "use_goma": true
+    }
+  },
   "chromeos-octopus-compile-chrome": {
     "args_file": "//build/args/chromeos/octopus.gni",
     "gn_args": {

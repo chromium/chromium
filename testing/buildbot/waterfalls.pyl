@@ -168,6 +168,17 @@
         },
         'os_type': 'chromeos'
       },
+      'chromeos-octopus-chrome-skylab': {
+        'additional_compile_targets': [
+          "chrome",
+          "linux_symbols",
+          "symupload",
+        ],
+        'test_suites': {
+          'skylab_tests': 'chromeos_octopus_skylab_tests',
+        },
+        'os_type': 'chromeos',
+      },
       'chromeos-reven-chrome': {
         'additional_compile_targets': [
           'chromiumos_preflight',

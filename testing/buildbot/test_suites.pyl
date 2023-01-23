@@ -6557,6 +6557,14 @@
       'webview_ui_instrumentation_tests': {},
     },
 
+    'chromeos_octopus_skylab_tests': {
+      'chromeos_chrome_all_tast_tests': {
+        'variants': [
+          'CROS_OCTOPUS_RELEASE_CHROME_FROM_TLS',
+        ]
+      },
+    },
+
     'chromeos_trogdor64_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
         'variants': [
