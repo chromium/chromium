@@ -25,7 +25,7 @@ class TouchToFillDelegate {
   virtual void OnCreditCardScanned(const CreditCard& card) = 0;
   virtual void ShowCreditCardSettings() = 0;
   virtual void SuggestionSelected(std::string unique_id) = 0;
-  virtual void OnDismissed() = 0;
+  virtual void OnDismissed(bool dismissed_by_user) = 0;
 };
 
 }  // namespace autofill

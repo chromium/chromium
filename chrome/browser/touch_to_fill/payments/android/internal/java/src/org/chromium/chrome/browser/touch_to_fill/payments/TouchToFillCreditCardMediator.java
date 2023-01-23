@@ -110,8 +110,10 @@ class TouchToFillCreditCardMediator {
     public void onDismissed(@StateChangeReason int reason) {
         if (!mModel.get(VISIBLE)) return; // Dismiss only if not dismissed yet.
         mModel.set(VISIBLE, false);
-        mDelegate.onDismissed();
-        if (reason == StateChangeReason.SWIPE) {
+        boolean dismissedByUser =
+                reason == StateChangeReason.SWIPE || reason == StateChangeReason.BACK_PRESS;
+        mDelegate.onDismissed(dismissedByUser);
+        if (dismissedByUser) {
             RecordHistogram.recordEnumeratedHistogram(TOUCH_TO_FILL_OUTCOME_HISTOGRAM,
                     TouchToFillCreditCardOutcome.DISMISS,
                     TouchToFillCreditCardOutcome.MAX_VALUE + 1);

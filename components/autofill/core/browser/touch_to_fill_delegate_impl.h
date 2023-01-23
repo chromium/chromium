@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -88,7 +89,9 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
   void OnCreditCardScanned(const CreditCard& card) override;
   void ShowCreditCardSettings() override;
   void SuggestionSelected(std::string unique_id) override;
-  void OnDismissed() override;
+  void OnDismissed(bool dismissed_by_user) override;
+
+  void LogMetricsAfterSubmission(const FormStructure& submitted_form) const;
 
   base::WeakPtr<TouchToFillDelegateImpl> GetWeakPtr();
 
@@ -99,11 +102,14 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
     kWasShown,
   };
 
+  bool HasAnyAutofilledFields(const FormStructure& submitted_form) const;
+
   TouchToFillState ttf_credit_card_state_ = TouchToFillState::kShouldShow;
 
   const raw_ptr<BrowserAutofillManager> manager_;
   FormData query_form_;
   FormFieldData query_field_;
+  bool dismissed_by_user_;
 
   base::WeakPtrFactory<TouchToFillDelegateImpl> weak_ptr_factory_{this};
 };

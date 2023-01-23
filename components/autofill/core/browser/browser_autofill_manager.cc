@@ -862,6 +862,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   if (IsAutofillCreditCardEnabled()) {
     credit_card_form_event_logger_->OnFormSubmitted(sync_state_,
                                                     *submitted_form);
+    touch_to_fill_delegate_->LogMetricsAfterSubmission(*submitted_form);
   }
 }
 

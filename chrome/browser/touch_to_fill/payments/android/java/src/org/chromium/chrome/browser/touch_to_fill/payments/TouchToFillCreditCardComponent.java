@@ -21,7 +21,7 @@ interface TouchToFillCreditCardComponent {
         /**
          * Called whenever the sheet is dismissed (by user or native).
          */
-        void onDismissed();
+        void onDismissed(boolean dismissedByUser);
 
         /**
          * Called when user requests to scan a new credit card.

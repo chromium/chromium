@@ -7,6 +7,7 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
@@ -154,7 +155,7 @@ class TouchToFillDelegateImplUnitTest : public testing::Test {
     ON_CALL(autofill_client_, HideTouchToFillCreditCard)
         .WillByDefault([delegate = touch_to_fill_delegate_weak]() -> void {
           if (delegate) {
-            delegate->OnDismissed();
+            delegate->OnDismissed(/*dismissed_by_user=*/false);
           }
         });
   }
@@ -472,7 +473,7 @@ TEST_F(TouchToFillDelegateImplUnitTest, SafelyHideTouchToFillInDtor) {
 TEST_F(TouchToFillDelegateImplUnitTest,
        OnDismissSetsTouchToFillToNotShowingState) {
   TryToShowTouchToFill(/*expected_success=*/true);
-  touch_to_fill_delegate_->OnDismissed();
+  touch_to_fill_delegate_->OnDismissed(false);
 
   EXPECT_EQ(touch_to_fill_delegate_->IsShowingTouchToFill(), false);
 }
@@ -535,6 +536,22 @@ TEST_F(TouchToFillDelegateImplUnitTest, CardSelectionFillsCardForm) {
   EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewCreditCardForm);
   EXPECT_CALL(*browser_autofill_manager_, SetSuggestionOriginMetricState);
   touch_to_fill_delegate_->SuggestionSelected(credit_card.server_id());
+}
+
+TEST_F(TouchToFillDelegateImplUnitTest, SubmissionMetricsAreTracked) {
+  TryToShowTouchToFill(/*expected_success=*/true);
+  touch_to_fill_delegate_->OnDismissed(/*dismissed_by_user=*/true);
+
+  // Simulate that the form was autofilled by other means
+  FormStructure submitted_form(form_);
+  for (const std::unique_ptr<AutofillField>& field : submitted_form) {
+    field->is_autofilled = true;
+  }
+
+  touch_to_fill_delegate_->LogMetricsAfterSubmission(submitted_form);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.TouchToFill.CreditCard.AutofillUsedAfterTouchToFillDismissal",
+      true, 1);
 }
 
 }  // namespace autofill

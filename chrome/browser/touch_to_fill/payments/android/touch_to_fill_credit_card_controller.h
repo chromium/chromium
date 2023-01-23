@@ -45,7 +45,7 @@ class TouchToFillCreditCardController
   void Hide();
 
   // TouchToFillCreditCardViewController:
-  void OnDismissed(JNIEnv* env) override;
+  void OnDismissed(JNIEnv* env, bool dismissed_by_user) override;
   void ScanCreditCard(JNIEnv* env) override;
   void ShowCreditCardSettings(JNIEnv* env) override;
   void SuggestionSelected(

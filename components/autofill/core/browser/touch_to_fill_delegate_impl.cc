@@ -147,10 +147,30 @@ void TouchToFillDelegateImpl::SuggestionSelected(std::string unique_id) {
       AutofillSuggestionMethod::KTouchToFillCreditCard);
 }
 
-void TouchToFillDelegateImpl::OnDismissed() {
+void TouchToFillDelegateImpl::OnDismissed(bool dismissed_by_user) {
   if (IsShowingTouchToFill()) {
     ttf_credit_card_state_ = TouchToFillState::kWasShown;
+    dismissed_by_user_ = dismissed_by_user;
   }
+}
+
+void TouchToFillDelegateImpl::LogMetricsAfterSubmission(
+    const FormStructure& submitted_form) const {
+  // Log whether autofill was used after dismissing the touch to fill (without
+  // selecting any credit card for filling)
+  if (ttf_credit_card_state_ == TouchToFillState::kWasShown &&
+      query_form_.global_id() == submitted_form.global_id() &&
+      HasAnyAutofilledFields(submitted_form)) {
+    base::UmaHistogramBoolean(
+        "Autofill.TouchToFill.CreditCard.AutofillUsedAfterTouchToFillDismissal",
+        dismissed_by_user_);
+  }
+}
+
+bool TouchToFillDelegateImpl::HasAnyAutofilledFields(
+    const FormStructure& submitted_form) const {
+  return base::ranges::any_of(
+      submitted_form, [](const auto& field) { return field->is_autofilled; });
 }
 
 base::WeakPtr<TouchToFillDelegateImpl> TouchToFillDelegateImpl::GetWeakPtr() {

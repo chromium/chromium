@@ -31,10 +31,10 @@ class TouchToFillCreditCardControllerBridge implements TouchToFillCreditCardComp
     }
 
     @Override
-    public void onDismissed() {
+    public void onDismissed(boolean dismissedByUser) {
         if (mNativeTouchToFillCreditCardViewController != 0) {
             TouchToFillCreditCardControllerBridgeJni.get().onDismissed(
-                    mNativeTouchToFillCreditCardViewController);
+                    mNativeTouchToFillCreditCardViewController, dismissedByUser);
         }
     }
 
@@ -64,7 +64,7 @@ class TouchToFillCreditCardControllerBridge implements TouchToFillCreditCardComp
 
     @NativeMethods
     interface Natives {
-        void onDismissed(long nativeTouchToFillCreditCardViewController);
+        void onDismissed(long nativeTouchToFillCreditCardViewController, boolean dismissedByUser);
         void scanCreditCard(long nativeTouchToFillCreditCardViewController);
         void showCreditCardSettings(long nativeTouchToFillCreditCardViewController);
         void suggestionSelected(long nativeTouchToFillCreditCardViewController, String uniqueId);

@@ -3933,6 +3933,24 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Autofill.TouchToFill.CreditCard.AutofillUsedAfterTouchToFillDismissal"
+    enum="Boolean" expires_after="2023-06-01">
+  <owner>atsvirhckova@google.com</owner>
+  <owner>izuzic@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records whether a user has still used autofill after dismissing the payments
+    bottom sheet. There is a fallback to still allow the user to autofill the
+    form after dismissing the bottom sheet, that is to use the keyboard
+    accessory suggestion. This metric is recorded when submitting the form: true
+    - if there is at least one autofilled field in the submitted form and the
+    payments bottom sheet was shown and dismissed by user, false - otherwise.
+    The metrics is recorded only if the payments bottom sheet was displayed for
+    the form submitted.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.TouchToFill.CreditCard.NumberOfCardsShown"
     units="cards" expires_after="2023-06-01">
   <owner>atsvirhckova@google.com</owner>
