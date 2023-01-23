@@ -155,6 +155,20 @@ $ out/Default/bin/run_webview_instrumentation_test_apk \ # Any test runner
     -f=AwContentsTest#testClearCacheInQuickSuccession
 ```
 
+A bash for loop can be used instead if the flake seems to happen during
+specific conditions that need to be configured before each test run:
+
+```sh
+$ for (( c=1; c<100; c++ ))
+$ do
+$   echo "\n\n\nTest $c/100 \n\n\n"
+$   <Any setup command you need to do - eg: adb reboot>
+$   out/Default/bin/run_webview_instrumentation_test_apk \ # Any test runner
+        --num_retries=0 \ # Tests normally retry-on-failure; disable for easier repo
+        -f=
+$ done
+```
+
 #### Enable a Feature for a local run
 
 ```sh
