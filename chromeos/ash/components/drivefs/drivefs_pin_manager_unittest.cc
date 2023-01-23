@@ -309,6 +309,205 @@ TEST_F(DriveFsPinManagerTest, Add) {
   }
 }
 
+// Tests DriveFsPinManagerTest::Update().
+TEST_F(DriveFsPinManagerTest, Update) {
+  DriveFsPinManager manager(temp_dir_.GetPath(), &mock_drivefs_);
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  manager.progress_.pinned_bytes = 5000;
+  manager.progress_.bytes_to_pin = 10000;
+  manager.progress_.required_space = 20480;
+
+  {
+    const SetupProgress progress = manager.GetProgress();
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.pinned_bytes, 5000);
+    EXPECT_EQ(progress.bytes_to_pin, 10000);
+    EXPECT_EQ(progress.required_space, 20480);
+  }
+
+  const DriveFsPinManager::StableId id1 = DriveFsPinManager::StableId(549);
+  const std::string path1 = "Path 1";
+  const int64_t size1 = 2000;
+
+  const DriveFsPinManager::StableId id2 = DriveFsPinManager::StableId(17);
+  const std::string path2 = "Path 2";
+  const int64_t size2 = 5000;
+
+  // Put in place a file to track.
+  {
+    const auto [it, ok] = manager.files_to_track_.try_emplace(
+        id1, DriveFsPinManager::Progress{.path = path1, .total = size1});
+    ASSERT_TRUE(ok);
+  }
+
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+
+  // Try to update an unknown file.
+  EXPECT_FALSE(manager.Update(id2, path2, size2, size2));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+
+  {
+    const auto it = manager.files_to_track_.find(id1);
+    ASSERT_NE(it, manager.files_to_track_.end());
+    const auto& [got_id, progress] = *it;
+    EXPECT_EQ(got_id, id1);
+    EXPECT_EQ(progress.path, path1);
+    EXPECT_EQ(progress.total, size1);
+    EXPECT_EQ(progress.transferred, 0);
+    EXPECT_FALSE(progress.in_progress);
+  }
+
+  {
+    const SetupProgress progress = manager.GetProgress();
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.pinned_bytes, 5000);
+    EXPECT_EQ(progress.bytes_to_pin, 10000);
+    EXPECT_EQ(progress.required_space, 20480);
+  }
+
+  // Mark file as in progress.
+  EXPECT_TRUE(manager.Update(id1, path1, -1, -1));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+
+  {
+    const auto it = manager.files_to_track_.find(id1);
+    ASSERT_NE(it, manager.files_to_track_.end());
+    const auto& [got_id, progress] = *it;
+    EXPECT_EQ(got_id, id1);
+    EXPECT_EQ(progress.path, path1);
+    EXPECT_EQ(progress.total, size1);
+    EXPECT_EQ(progress.transferred, 0);
+    EXPECT_TRUE(progress.in_progress);
+  }
+
+  {
+    const SetupProgress progress = manager.GetProgress();
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.pinned_bytes, 5000);
+    EXPECT_EQ(progress.bytes_to_pin, 10000);
+    EXPECT_EQ(progress.required_space, 20480);
+  }
+
+  // These updates should not modify anything.
+  EXPECT_FALSE(manager.Update(id1, path1, -1, -1));
+  EXPECT_FALSE(manager.Update(id1, path1, 0, -1));
+  EXPECT_FALSE(manager.Update(id1, path1, -1, size1));
+  EXPECT_FALSE(manager.Update(id1, path1, 0, size1));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+
+  {
+    const auto it = manager.files_to_track_.find(id1);
+    ASSERT_NE(it, manager.files_to_track_.end());
+    const auto& [got_id, progress] = *it;
+    EXPECT_EQ(got_id, id1);
+    EXPECT_EQ(progress.path, path1);
+    EXPECT_EQ(progress.total, size1);
+    EXPECT_EQ(progress.transferred, 0);
+    EXPECT_TRUE(progress.in_progress);
+  }
+
+  {
+    const SetupProgress progress = manager.GetProgress();
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.pinned_bytes, 5000);
+    EXPECT_EQ(progress.bytes_to_pin, 10000);
+    EXPECT_EQ(progress.required_space, 20480);
+  }
+
+  // Update total size.
+  EXPECT_TRUE(manager.Update(id1, path1, -1, size2));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+
+  {
+    const auto it = manager.files_to_track_.find(id1);
+    ASSERT_NE(it, manager.files_to_track_.end());
+    const auto& [got_id, progress] = *it;
+    EXPECT_EQ(got_id, id1);
+    EXPECT_EQ(progress.path, path1);
+    EXPECT_EQ(progress.total, size2);
+    EXPECT_EQ(progress.transferred, 0);
+    EXPECT_TRUE(progress.in_progress);
+  }
+
+  {
+    const SetupProgress progress = manager.GetProgress();
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.pinned_bytes, 5000);
+    EXPECT_EQ(progress.bytes_to_pin, 13000);
+    EXPECT_EQ(progress.required_space, 24576);
+  }
+
+  // Update transferred bytes.
+  EXPECT_TRUE(manager.Update(id1, path1, size1, -1));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+
+  {
+    const auto it = manager.files_to_track_.find(id1);
+    ASSERT_NE(it, manager.files_to_track_.end());
+    const auto& [got_id, progress] = *it;
+    EXPECT_EQ(got_id, id1);
+    EXPECT_EQ(progress.path, path1);
+    EXPECT_EQ(progress.total, size2);
+    EXPECT_EQ(progress.transferred, size1);
+    EXPECT_TRUE(progress.in_progress);
+  }
+
+  {
+    const SetupProgress progress = manager.GetProgress();
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.pinned_bytes, 7000);
+    EXPECT_EQ(progress.bytes_to_pin, 13000);
+    EXPECT_EQ(progress.required_space, 24576);
+  }
+
+  // Update path.
+  EXPECT_TRUE(manager.Update(id1, path2, -1, -1));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+
+  {
+    const auto it = manager.files_to_track_.find(id1);
+    ASSERT_NE(it, manager.files_to_track_.end());
+    const auto& [got_id, progress] = *it;
+    EXPECT_EQ(got_id, id1);
+    EXPECT_EQ(progress.path, path2);
+    EXPECT_EQ(progress.total, size2);
+    EXPECT_EQ(progress.transferred, size1);
+    EXPECT_TRUE(progress.in_progress);
+  }
+
+  {
+    const SetupProgress progress = manager.GetProgress();
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.pinned_bytes, 7000);
+    EXPECT_EQ(progress.bytes_to_pin, 13000);
+    EXPECT_EQ(progress.required_space, 24576);
+  }
+
+  // Progress goes backwards.
+  EXPECT_TRUE(manager.Update(id1, path2, 1000, -1));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+
+  {
+    const auto it = manager.files_to_track_.find(id1);
+    ASSERT_NE(it, manager.files_to_track_.end());
+    const auto& [got_id, progress] = *it;
+    EXPECT_EQ(got_id, id1);
+    EXPECT_EQ(progress.path, path2);
+    EXPECT_EQ(progress.total, size2);
+    EXPECT_EQ(progress.transferred, 1000);
+    EXPECT_TRUE(progress.in_progress);
+  }
+
+  {
+    const SetupProgress progress = manager.GetProgress();
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.pinned_bytes, 6000);
+    EXPECT_EQ(progress.bytes_to_pin, 13000);
+    EXPECT_EQ(progress.required_space, 24576);
+  }
+}
+
 TEST_F(DriveFsPinManagerTest, CannotGetFreeSpace) {
   base::MockOnceCallback<void(SetupStage)> mock_callback;
 

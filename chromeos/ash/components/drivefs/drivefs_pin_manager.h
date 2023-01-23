@@ -213,17 +213,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
               int64_t bytes_transferred = -1);
 
   // Updates an item in the map. Does nothing if the item is not in the map.
-  // Updates the total number of bytes transferred so far.
-  // Returns whether anything has actually been updated.
+  // Updates the total number of bytes transferred so far. Updates the required
+  // space. If `transferred` or `total` is less than zero, then the matching
+  // argument is ignored. Returns whether anything has actually been updated.
   bool Update(StableId id,
               const std::string& path,
               int64_t transferred,
               int64_t total);
-
-  // Updates an item to mark it in progress.
-  // Does nothing if the item is not in the map.
-  // Returns whether anything has actually been updated.
-  bool MarkInProgress(StableId id, const std::string& path);
 
   // Struct keeping track of the progress of a file being synced.
   struct Progress {
@@ -323,6 +319,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   base::WeakPtrFactory<DriveFsPinManager> weak_ptr_factory_{this};
 
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, Add);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, Update);
 };
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
