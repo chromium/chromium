@@ -63,14 +63,26 @@ export class OutputFormatter {
       return true;
     }
 
-    if (token === 'value') {
-      this.formatValue_(this.params_, token, options);
-    } else if (token === 'name') {
-      this.formatName_(this.params_, token, options);
+    if (token === 'cellIndexText') {
+      this.formatCellIndexText_(this.params_, token, options);
+    } else if (token === 'checked') {
+      this.formatChecked_(this.params_, token);
+    } else if (token === 'descendants') {
+      this.formatDescendants_(this.params_, token);
     } else if (token === 'description') {
       this.formatDescription_(this.params_, token, options);
-    } else if (token === 'urlFilename') {
-      this.formatUrlFilename_(this.params_, token, options);
+    } else if (token === 'find') {
+      this.formatFind_(this.params_, token, tree);
+    } else if (token === 'inputType') {
+      this.formatInputType_(this.params_, token, options);
+    } else if (token === 'indexInParent') {
+      this.formatIndexInParent_(this.params_, token, tree, options);
+    } else if (token === 'joinedDescendants') {
+      this.formatJoinedDescendants_(this.params_, token, options);
+    } else if (token === 'listNestedLevel') {
+      this.formatListNestedLevel_(this.params_);
+    } else if (token === 'name') {
+      this.formatName_(this.params_, token, options);
     } else if (token === 'nameFromNode') {
       this.formatNameFromNode_(this.params_, token, options);
     } else if (token === 'nameOrDescendants') {
@@ -79,22 +91,18 @@ export class OutputFormatter {
       // override the descendants text if |node| has only static text
       // children.
       this.formatNameOrDescendants_(this.params_, token, options);
-    } else if (token === 'indexInParent') {
-      this.formatIndexInParent_(this.params_, token, tree, options);
-    } else if (token === 'restriction') {
-      this.formatRestriction_(this.params_, token);
-    } else if (token === 'checked') {
-      this.formatChecked_(this.params_, token);
+    } else if (token === 'nameOrTextContent' || token === 'textContent') {
+      this.formatTextContent_(this.params_, token, options);
+    } else if (token === 'node') {
+      this.formatNode_(this.params_, token, tree, options);
+    } else if (token === 'phoneticReading') {
+      this.formatPhoneticReading_(this.params_);
+    } else if (token === 'precedingBullet') {
+      this.formatPrecedingBullet_(this.params_);
     } else if (token === 'pressed') {
       this.formatPressed_(this.params_, token);
-    } else if (token === 'state') {
-      this.formatState_(this.params_, token);
-    } else if (token === 'find') {
-      this.formatFind_(this.params_, token, tree);
-    } else if (token === 'descendants') {
-      this.formatDescendants_(this.params_, token);
-    } else if (token === 'joinedDescendants') {
-      this.formatJoinedDescendants_(this.params_, token, options);
+    } else if (token === 'restriction') {
+      this.formatRestriction_(this.params_, token);
     } else if (token === 'role') {
       if (LocalStorage.get('useVerboseMode') === false) {
         return true;
@@ -105,27 +113,19 @@ export class OutputFormatter {
       }
 
       this.formatRole_(this.params_, token, options);
-    } else if (token === 'inputType') {
-      this.formatInputType_(this.params_, token, options);
+    } else if (token === 'state') {
+      this.formatState_(this.params_, token);
     } else if (
         token === 'tableCellRowIndex' || token === 'tableCellColumnIndex') {
       this.formatTableCellIndex_(this.params_, token, options);
-    } else if (token === 'cellIndexText') {
-      this.formatCellIndexText_(this.params_, token, options);
-    } else if (token === 'node') {
-      this.formatNode_(this.params_, token, tree, options);
-    } else if (token === 'nameOrTextContent' || token === 'textContent') {
-      this.formatTextContent_(this.params_, token, options);
+    } else if (token === 'urlFilename') {
+      this.formatUrlFilename_(this.params_, token, options);
+    } else if (token === 'value') {
+      this.formatValue_(this.params_, token, options);
     } else if (this.params_.node[token] !== undefined) {
       this.formatAsFieldAccessor_(this.params_, token, options);
     } else if (outputTypes.OUTPUT_STATE_INFO[token]) {
       this.formatAsStateValue_(this.params_, token, options);
-    } else if (token === 'phoneticReading') {
-      this.formatPhoneticReading_(this.params_);
-    } else if (token === 'listNestedLevel') {
-      this.formatListNestedLevel_(this.params_);
-    } else if (token === 'precedingBullet') {
-      this.formatPrecedingBullet_(this.params_);
     } else if (tree.firstChild) {
       this.formatCustomFunction_(this.params_, token, tree, options);
     }
