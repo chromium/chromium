@@ -194,6 +194,39 @@ const CSSValue* AnchorScroll::CSSValueFromComputedStyleInternal(
       style.AnchorScroll()->GetName().GetName());
 }
 
+const CSSValue* AnimationComposition::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  DCHECK(RuntimeEnabledFeatures::CSSAnimationCompositionEnabled());
+  return css_parsing_utils::ConsumeCommaSeparatedList(
+      css_parsing_utils::ConsumeIdent<CSSValueID::kReplace, CSSValueID::kAdd,
+                                      CSSValueID::kAccumulate>,
+      range);
+}
+
+const CSSValue* AnimationComposition::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  DCHECK(RuntimeEnabledFeatures::CSSAnimationCompositionEnabled());
+  if (!style.Animations()) {
+    return InitialValue();
+  }
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  const auto& composition_list = style.Animations()->CompositionList();
+  for (const auto& composition : composition_list) {
+    list->Append(*CSSIdentifierValue::Create(composition));
+  }
+  return list;
+}
+
+const CSSValue* AnimationComposition::InitialValue() const {
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  list->Append(*CSSIdentifierValue::Create(CSSValueID::kReplace));
+  return list;
+}
+
 const CSSValue* AnimationDelay::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,

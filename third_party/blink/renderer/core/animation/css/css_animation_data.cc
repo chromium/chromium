@@ -15,6 +15,7 @@ CSSAnimationData::CSSAnimationData() {
   direction_list_.push_back(InitialDirection());
   fill_mode_list_.push_back(InitialFillMode());
   play_state_list_.push_back(InitialPlayState());
+  composition_list_.push_back(InitialComposition());
 }
 
 CSSAnimationData::CSSAnimationData(const CSSAnimationData& other) = default;

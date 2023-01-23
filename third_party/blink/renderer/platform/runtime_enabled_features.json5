@@ -614,6 +614,10 @@
       status: "experimental",
     },
     {
+      name: "CSSAnimationComposition",
+      status: "experimental"
+    },
+    {
       // Whether <image> values are allowed as counter style <symbol>
       name: "CSSAtRuleCounterStyleImageSymbols",
     },

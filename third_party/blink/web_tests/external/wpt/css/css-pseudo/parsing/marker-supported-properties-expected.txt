@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 62 tests; 60 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 62 tests; 61 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Property font value 'italic small-caps 900 expanded 25px / 50px Ahem' in ::marker
 PASS Property font-family value 'Ahem' in ::marker
 PASS Property font-feature-settings value '"smcp"' in ::marker
@@ -35,7 +35,7 @@ PASS Property animation-iteration-count value 'infinite' in ::marker
 PASS Property animation-name value 'anim' in ::marker
 PASS Property animation-play-state value 'paused' in ::marker
 PASS Property animation-timing-function value 'linear' in ::marker
-FAIL Property animation-composition value 'add' in ::marker assert_true: animation-composition doesn't seem to be supported in the computed style expected true got false
+PASS Property animation-composition value 'add' in ::marker
 PASS Property transition value 'display 1s linear 2s' in ::marker
 PASS Property transition-delay value '1s' in ::marker
 PASS Property transition-duration value '2s' in ::marker

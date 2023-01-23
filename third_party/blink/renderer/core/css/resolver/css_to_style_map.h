@@ -91,6 +91,9 @@ class CSSToStyleMap {
   static absl::optional<Timing::TimelineOffset> MapAnimationRangeEnd(
       StyleResolverState&,
       const CSSValue&);
+  static EffectModel::CompositeOperation MapAnimationComposition(
+      StyleResolverState&,
+      const CSSValue&);
   static CSSTransitionData::TransitionProperty MapAnimationProperty(
       StyleResolverState&,
       const CSSValue&);

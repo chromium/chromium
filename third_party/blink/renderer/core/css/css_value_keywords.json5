@@ -859,6 +859,12 @@
     "visual",
 
     //
+    // animation-composition
+    //
+    "replace",
+    "accumulate",
+
+    //
     // animation-direction
     //
     "alternate",

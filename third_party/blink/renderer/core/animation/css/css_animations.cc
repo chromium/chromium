@@ -97,7 +97,7 @@ namespace {
 
 // Processes keyframe rules, extracting the timing function and properties being
 // animated for each keyframe. The extraction process is doing more work that
-// strictly required for the setup to step 5 in the spec
+// strictly required for the setup to step 6 in the spec
 // (https://drafts.csswg.org/css-animations-2/#keyframes) as an optimization
 // to avoid needing to process each rule multiple times to extract different
 // properties.
@@ -150,7 +150,18 @@ StringKeyframeVector ProcessKeyframesRule(
           properties.PropertyAt(j);
       CSSPropertyRef ref(property_reference.Name(), document);
       const CSSProperty& property = ref.GetProperty();
-      if (property.PropertyID() == CSSPropertyID::kAnimationTimingFunction) {
+      if (RuntimeEnabledFeatures::CSSAnimationCompositionEnabled() &&
+          property.PropertyID() == CSSPropertyID::kAnimationComposition) {
+        if (const auto* value_list =
+                DynamicTo<CSSValueList>(property_reference.Value())) {
+          if (const auto* identifier_value =
+                  DynamicTo<CSSIdentifierValue>(value_list->Item(0))) {
+            keyframe->SetComposite(
+                identifier_value->ConvertTo<EffectModel::CompositeOperation>());
+          }
+        }
+      } else if (property.PropertyID() ==
+                 CSSPropertyID::kAnimationTimingFunction) {
         const CSSValue& value = property_reference.Value();
         scoped_refptr<TimingFunction> timing_function;
         if (value.IsInheritedValue() && parent_style->Animations()) {
@@ -206,7 +217,8 @@ absl::optional<int> FindIndexOfMatchingKeyframe(
     const StringKeyframeVector& keyframes,
     wtf_size_t start_index,
     double offset,
-    const TimingFunction& easing) {
+    const TimingFunction& easing,
+    const absl::optional<EffectModel::CompositeOperation>& composite) {
   for (wtf_size_t i = start_index; i < keyframes.size(); i++) {
     StringKeyframe* keyframe = keyframes[i];
 
@@ -215,20 +227,26 @@ absl::optional<int> FindIndexOfMatchingKeyframe(
     if (offset < keyframe->CheckedOffset())
       break;
 
-    if (easing.ToString() == keyframe->Easing().ToString())
+    if (easing.ToString() != keyframe->Easing().ToString()) {
+      continue;
+    }
+
+    if (composite == keyframe->Composite()) {
       return i;
+    }
   }
   return absl::nullopt;
 }
 
 // Tests conditions for inserting a bounding keyframe, which are outlined in
-// steps 6 and 7 of the spec for keyframe construction.
+// steps 7 and 8 of the spec for keyframe construction.
 // https://drafts.csswg.org/css-animations-2/#keyframes
 bool NeedsBoundaryKeyframe(StringKeyframe* candidate,
                            double offset,
                            const PropertySet& animated_properties,
                            const PropertySet& bounding_properties,
-                           TimingFunction* default_timing_function) {
+                           TimingFunction* default_timing_function,
+                           const EffectModel::CompositeOperation composite) {
   if (!candidate)
     return true;
 
@@ -237,6 +255,14 @@ bool NeedsBoundaryKeyframe(StringKeyframe* candidate,
 
   if (bounding_properties.size() == animated_properties.size())
     return false;
+
+  // consider no keyframe composite (auto) +
+  // target's animation_composite = replace to be equal to keyframe's composite
+  // to be replace.
+  if (candidate->Composite().value_or(composite) !=
+      EffectModel::kCompositeReplace) {
+    return true;
+  }
 
   return candidate->Easing().ToString() != default_timing_function->ToString();
 }
@@ -249,6 +275,7 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
     const ComputedStyle* parent_style,
     const AtomicString& name,
     TimingFunction* default_timing_function,
+    EffectModel::CompositeOperation composite,
     size_t animation_index,
     AnimationTimeline* timeline) {
   // The algorithm for constructing string keyframes for a CSS animation is
@@ -264,7 +291,9 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
   //    repeating the list as necessary as described in CSS Animations 1 §4.2
   //    The animation-name property.
 
-  // 2. Find the last @keyframes at-rule in document order with <keyframes-name>
+  // 2. Let default composite be replace.
+
+  // 3. Find the last @keyframes at-rule in document order with <keyframes-name>
   //    matching name.
   //    If there is no @keyframes at-rule with <keyframes-name> matching name,
   //    abort this procedure. In this case no animation is generated, and any
@@ -274,10 +303,10 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
       resolver->FindKeyframesRule(&element, &animating_element, name);
   DCHECK(keyframes_rule);
 
-  // 3. Let keyframes be an empty sequence of keyframe objects.
+  // 4. Let keyframes be an empty sequence of keyframe objects.
   StringKeyframeVector keyframes;
 
-  // 4. Let animated properties be an empty set of longhand CSS property names.
+  // 5. Let animated properties be an empty set of longhand CSS property names.
   PropertySet animated_properties;
 
   // Start and end properties are also tracked to simplify the process of
@@ -288,7 +317,7 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
   // Properties that have already been processed at the current keyframe.
   PropertySet current_offset_properties;
 
-  // 5. Perform a stable sort of the keyframe blocks in the @keyframes rule by
+  // 6. Perform a stable sort of the keyframe blocks in the @keyframes rule by
   //    the offset specified in the keyframe selector, and iterate over the
   //    result in reverse applying the following steps:
   bool has_named_range_keyframes = false;
@@ -300,19 +329,25 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
   double last_offset = 1;
   wtf_size_t merged_frame_count = 0;
   for (wtf_size_t i = keyframes.size(); i > 0; --i) {
-    // 5.1 Let keyframe offset be the value of the keyframe selector converted
+    // 6.1 Let keyframe offset be the value of the keyframe selector converted
     //     to a value in the range 0 ≤ keyframe offset ≤ 1.
     int source_index = i - 1;
     StringKeyframe* rule_keyframe = keyframes[source_index];
     double keyframe_offset = rule_keyframe->CheckedOffset();
 
-    // 5.2 Let keyframe timing function be the value of the last valid
+    // 6.2 Let keyframe timing function be the value of the last valid
     //     declaration of animation-timing-function specified on the keyframe
     //     block, or, if there is no such valid declaration, default timing
     //     function.
     const TimingFunction& easing = rule_keyframe->Easing();
 
-    // 5.3 After converting keyframe timing function to its canonical form (e.g.
+    // 6.3 Let keyframe composite be the value of the last valid declaration of
+    // animation-composition specified on the keyframe block,
+    // or, if there is no such valid declaration, default composite.
+    absl::optional<EffectModel::CompositeOperation> keyframe_composite =
+        rule_keyframe->Composite();
+
+    // 6.4 After converting keyframe timing function to its canonical form (e.g.
     //     such that step-end becomes steps(1, end)) let keyframe refer to the
     //     existing keyframe in keyframes with matching keyframe offset and
     //     timing function, if any.
@@ -327,11 +362,13 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
       last_offset = keyframe_offset;
     }
 
+    // TODO(crbug.com/1408702): we should merge keyframes to the most left one,
+    // not the most right one.
     // Avoid unnecessary creation of extra keyframes by merging into
     // existing keyframes.
     absl::optional<int> existing_keyframe_index = FindIndexOfMatchingKeyframe(
         keyframes, source_index + merged_frame_count + 1, keyframe_offset,
-        easing);
+        easing, keyframe_composite);
     int target_index;
     if (existing_keyframe_index) {
       // Merge keyframe propoerties.
@@ -346,7 +383,7 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
       }
     }
 
-    // 5.4 Iterate over all declarations in the keyframe block and add them to
+    // 6.5 Iterate over all declarations in the keyframe block and add them to
     //     keyframe such that:
     //     * All variable references are resolved to their current values.
     //     * Each shorthand property is expanded to its longhand subproperties.
@@ -360,7 +397,7 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
     //       have already added at this same keyframe offset, they should be
     //       skipped.
     //     * All property values are replaced with their computed values.
-    // 5.5 Add each physical longhand property name that was added to keyframe
+    // 6.6 Add each property name that was added to keyframe
     //     to animated properties.
     StringKeyframe* keyframe = keyframes[target_index];
     for (const auto& property : rule_keyframe->Properties()) {
@@ -390,45 +427,49 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
   // Compact the vector of keyframes if any keyframes have been merged.
   keyframes.EraseAt(0, merged_frame_count);
 
-  // 6.  If there is no keyframe in keyframes with offset 0, or if amongst the
+  // 7.  If there is no keyframe in keyframes with offset 0, or if amongst the
   //     keyframes in keyframes with offset 0 not all of the properties in
   //     animated properties are present,
   //
-  // 6.1 Let initial keyframe be the keyframe in keyframes with offset 0 and
+  // 7.1 Let initial keyframe be the keyframe in keyframes with offset 0 and
   //     timing function default timing function.
-  // 6.2 If there is no such keyframe, let initial keyframe be a new empty
+  // 7.2 If there is no such keyframe, let initial keyframe be a new empty
   //     keyframe with offset 0, and timing function default timing function,
   //     and add it to keyframes after the last keyframe with offset 0.
-  // 6.3 For each property in animated properties that is not present in some
+  // 7.3 For each property in animated properties that is not present in some
   //     other keyframe with offset 0, add the computed value of that property
   //     for element to the keyframe.
   StringKeyframe* start_keyframe = keyframes.empty() ? nullptr : keyframes[0];
   if (NeedsBoundaryKeyframe(start_keyframe, 0, animated_properties,
-                            start_properties, default_timing_function)) {
+                            start_properties, default_timing_function,
+                            composite)) {
     start_keyframe = MakeGarbageCollected<StringKeyframe>();
     start_keyframe->SetOffset(0);
     start_keyframe->SetEasing(default_timing_function);
+    start_keyframe->SetComposite(EffectModel::kCompositeReplace);
     keyframes.push_front(start_keyframe);
   }
 
-  // 7.  Similarly, if there is no keyframe in keyframes with offset 1, or if
+  // 8.  Similarly, if there is no keyframe in keyframes with offset 1, or if
   //     amongst the keyframes in keyframes with offset 1 not all of the
   //     properties in animated properties are present,
   //
-  // 7.1 Let final keyframe be the keyframe in keyframes with offset 1 and
+  // 8.1 Let final keyframe be the keyframe in keyframes with offset 1 and
   //     timing function default timing function.
-  // 7.2 If there is no such keyframe, let final keyframe be a new empty
+  // 8.2 If there is no such keyframe, let final keyframe be a new empty
   //     keyframe with offset 1, and timing function default timing function,
   //     and add it to keyframes after the last keyframe with offset 1.
-  // 7.3 For each property in animated properties that is not present in some
+  // 8.3 For each property in animated properties that is not present in some
   //     other keyframe with offset 1, add the computed value of that property
   //     for element to the keyframe.
   StringKeyframe* end_keyframe = keyframes[keyframes.size() - 1];
   if (NeedsBoundaryKeyframe(end_keyframe, 1, animated_properties,
-                            end_properties, default_timing_function)) {
+                            end_properties, default_timing_function,
+                            composite)) {
     end_keyframe = MakeGarbageCollected<StringKeyframe>();
     end_keyframe->SetOffset(1);
     end_keyframe->SetEasing(default_timing_function);
+    end_keyframe->SetComposite(EffectModel::kCompositeReplace);
     keyframes.push_back(end_keyframe);
   }
 
@@ -437,7 +478,7 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
   DCHECK_EQ(keyframes.back()->CheckedOffset(), 1);
 
   auto* model = MakeGarbageCollected<CssKeyframeEffectModel>(
-      keyframes, EffectModel::kCompositeReplace, &start_keyframe->Easing(),
+      keyframes, composite, &start_keyframe->Easing(),
       has_named_range_keyframes);
   if (animation_index > 0 && model->HasSyntheticKeyframes()) {
     UseCounter::Count(element.GetDocument(),
@@ -1172,6 +1213,9 @@ void CSSAnimations::CalculateAnimationUpdate(
 
       const StyleTimeline& style_timeline = animation_data->GetTimeline(i);
 
+      const EffectModel::CompositeOperation composite =
+          animation_data->GetComposition(i);
+
       const RunningAnimation* existing_animation = nullptr;
       wtf_size_t existing_animation_index = 0;
 
@@ -1250,8 +1294,16 @@ void CSSAnimations::CalculateAnimationUpdate(
               existing_animation->scroll_offsets !=
               To<ViewTimeline>(timeline)->GetResolvedScrollOffsets();
         }
+        bool composite_changed = false;
+        if (animation->effect()) {
+          if (const auto* model =
+                  To<KeyframeEffect>(animation->effect())->Model()) {
+            composite_changed = model->Composite() != composite;
+          }
+        }
         bool needs_keyframe_model_recalc =
-            has_named_range_keyframes && scroll_offsets_changed;
+            (has_named_range_keyframes && scroll_offsets_changed) ||
+            composite_changed;
 
         if (needs_keyframe_model_recalc ||
             keyframes_rule != existing_animation->style_rule ||
@@ -1309,8 +1361,8 @@ void CSSAnimations::CalculateAnimationUpdate(
               *MakeGarbageCollected<InertEffect>(
                   CreateKeyframeEffectModel(
                       resolver, element, animating_element, writing_direction,
-                      parent_style, name, keyframe_timing_function.get(), i,
-                      timeline),
+                      parent_style, name, keyframe_timing_function.get(),
+                      composite, i, timeline),
                   timing, is_paused, inherited_time, timeline_duration,
                   animation->playbackRate()),
               specified_timing, keyframes_rule, timeline,
@@ -1337,8 +1389,8 @@ void CSSAnimations::CalculateAnimationUpdate(
             *MakeGarbageCollected<InertEffect>(
                 CreateKeyframeEffectModel(resolver, element, animating_element,
                                           writing_direction, parent_style, name,
-                                          keyframe_timing_function.get(), i,
-                                          timeline),
+                                          keyframe_timing_function.get(),
+                                          composite, i, timeline),
                 timing, is_paused, inherited_time, timeline_duration, 1.0),
             specified_timing, keyframes_rule, timeline,
             animation_data->PlayStateList());
@@ -2558,6 +2610,7 @@ bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
     case CSSPropertyID::kAlternativeAnimation:
     case CSSPropertyID::kAnimationDelay:
     case CSSPropertyID::kAlternativeAnimationDelay:
+    case CSSPropertyID::kAnimationComposition:
     case CSSPropertyID::kAnimationDelayEnd:
     case CSSPropertyID::kAnimationDelayStart:
     case CSSPropertyID::kAnimationDirection:

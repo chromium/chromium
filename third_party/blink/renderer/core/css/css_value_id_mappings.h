@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VALUE_ID_MAPPINGS_H_
 
 #include "base/notreached.h"
+#include "third_party/blink/renderer/core/animation/effect_model.h"
 #include "third_party/blink/renderer/core/css/css_value_id_mappings_generated.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 
@@ -68,6 +69,35 @@ inline ETextAlign CssValueIDToPlatformEnum(CSSValueID v) {
     return ETextAlign::kCenter;
   }
   return detail::cssValueIDToPlatformEnumGenerated<ETextAlign>(v);
+}
+
+template <>
+inline CSSValueID PlatformEnumToCSSValueID(EffectModel::CompositeOperation v) {
+  switch (v) {
+    case EffectModel::kCompositeReplace:
+      return CSSValueID::kReplace;
+    case EffectModel::kCompositeAdd:
+      return CSSValueID::kAdd;
+    case EffectModel::kCompositeAccumulate:
+      return CSSValueID::kAccumulate;
+  }
+  NOTREACHED();
+  return CSSValueID::kReplace;
+}
+
+template <>
+inline EffectModel::CompositeOperation CssValueIDToPlatformEnum(CSSValueID v) {
+  switch (v) {
+    case CSSValueID::kReplace:
+      return EffectModel::kCompositeReplace;
+    case CSSValueID::kAdd:
+      return EffectModel::kCompositeAdd;
+    case CSSValueID::kAccumulate:
+      return EffectModel::kCompositeAccumulate;
+    default:
+      NOTREACHED();
+      return EffectModel::kCompositeReplace;
+  }
 }
 
 template <>

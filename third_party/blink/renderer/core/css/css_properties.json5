@@ -732,6 +732,22 @@
 
     // Animation Priority properties
     {
+      name: "animation-composition",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
+      keywords: ["replace", "add", "accumulate"],
+      style_builder_template: "animation",
+      style_builder_template_args: {
+        attribute: "Composition",
+      },
+      typedom_types: ["Keyword"],
+      separator: ",",
+      include_paths: ["third_party/blink/renderer/core/animation/effect_model.h"],
+      default_value: "EffectModel::kCompositeReplace",
+      type_name: "EffectModel::CompositeOperation",
+      valid_for_marker: true,
+      runtime_flag: "CSSAnimationComposition"
+    },
+    {
       name: "animation-delay",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_template: "animation",

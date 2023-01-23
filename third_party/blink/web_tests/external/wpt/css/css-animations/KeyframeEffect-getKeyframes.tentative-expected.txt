@@ -5,8 +5,8 @@ PASS KeyframeEffect.getKeyframes() returns frames with expected easing values, w
 PASS KeyframeEffect.getKeyframes() returns frames with expected easing values, when the easing is specified on each keyframe
 PASS KeyframeEffect.getKeyframes() returns frames with expected easing values, when the easing is specified on some keyframes
 PASS KeyframeEffect.getKeyframes() returns frames with expected composite values, when the composite is set on the effect using animation-composition on the element
-FAIL KeyframeEffect.getKeyframes() returns frames with expected composite values, when the composite is specified on each keyframe assert_equals: value of 'composite' on ComputedKeyframe #0 expected "replace" but got "auto"
-FAIL KeyframeEffect.getKeyframes() returns frames with expected composite values, when the composite is specified on some keyframes assert_equals: value of 'composite' on ComputedKeyframe #0 expected "add" but got "auto"
+PASS KeyframeEffect.getKeyframes() returns frames with expected composite values, when the composite is specified on each keyframe
+PASS KeyframeEffect.getKeyframes() returns frames with expected composite values, when the composite is specified on some keyframes
 PASS KeyframeEffect.getKeyframes() returns expected frames for a simple animation that specifies a single shorthand property
 PASS KeyframeEffect.getKeyframes() returns expected frames for an animation with a 0% keyframe and no 100% keyframe
 PASS KeyframeEffect.getKeyframes() returns expected frames for an animation with a 100% keyframe and no 0% keyframe
@@ -17,8 +17,8 @@ PASS KeyframeEffect.getKeyframes() returns expected frames for an animation with
 PASS KeyframeEffect.getKeyframes() returns expected frames for an animation with multiple keyframes for the same time, and all with the same easing function
 PASS KeyframeEffect.getKeyframes() returns expected frames for an animation with multiple keyframes for the same time and with different easing functions
 PASS KeyframeEffect.getKeyframes() returns expected frames for an animation with multiple keyframes for the same time and with different but equivalent easing functions
-FAIL KeyframeEffect.getKeyframes() returns expected frames for an animation with multiple keyframes for the same time and with different composite operations assert_equals: Number of keyframes should match expected 3 but got 2
-FAIL KeyframeEffect.getKeyframes() returns expected frames for an animation with multiple keyframes for the same time and with different easing functions and composite operations assert_equals: Number of keyframes should match expected 4 but got 3
+PASS KeyframeEffect.getKeyframes() returns expected frames for an animation with multiple keyframes for the same time and with different composite operations
+FAIL KeyframeEffect.getKeyframes() returns expected frames for an animation with multiple keyframes for the same time and with different easing functions and composite operations assert_array_equals: properties on Keyframe #1 should match lengths differ, expected array ["composite", "computedOffset", "easing", "marginTop", "offset", "paddingLeft"] length 6, got ["composite", "computedOffset", "easing", "fontSize", "offset"] length 5
 PASS KeyframeEffect.getKeyframes() returns expected frames for overlapping keyframes
 FAIL KeyframeEffect.getKeyframes() returns expected values for animations with filter properties and missing keyframes assert_equals: value for 'filter' on Keyframe #1 should match expected "blur(5px) sepia(60%) saturate(30%)" but got "blur(5px) sepia(0.6) saturate(0.3)"
 PASS KeyframeEffect.getKeyframes() returns expected values for animation with drop-shadow of filter property
