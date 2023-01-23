@@ -189,13 +189,14 @@ void SerializeContentType(const chrome_screen_ai::ContentType& content_type,
 void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
                       ui::AXNodeData& inline_text_box) {
   DCHECK_NE(inline_text_box.id, ui::kInvalidAXNodeID);
-  // TODO(nektar): What if the angles of orientation are different, would the
-  // following DCHECK unnecessarily? Do we need to apply the related transform,
-  // or is the fact that the transform is the same between line and word boxes
-  // results in no difference?
-  DCHECK(inline_text_box.relative_bounds.bounds.Contains(gfx::RectF(
+  // The boundaries of each `inline_text_box` is computed as the union of the
+  // boundaries of all `word_box`es that are inside.
+  // TODO(crbug.com/1278249): What if the angles of orientation are different?
+  // Do we need to apply the related transform, or is the fact that the
+  // transform is the same between line and word boxes results in no difference?
+  inline_text_box.relative_bounds.bounds.Union(gfx::RectF(
       word_box.bounding_box().x(), word_box.bounding_box().y(),
-      word_box.bounding_box().width(), word_box.bounding_box().height())));
+      word_box.bounding_box().width(), word_box.bounding_box().height()));
 
   std::vector<int32_t> character_offsets;
   // TODO(nektar): Handle writing directions other than LEFT_TO_RIGHT.
@@ -291,10 +292,9 @@ size_t SerializeWordBoxes(const google::protobuf::RepeatedPtrField<
   DCHECK_EQ(inline_text_box_node.role, ax::mojom::Role::kUnknown);
   inline_text_box_node.role = ax::mojom::Role::kInlineTextBox;
   inline_text_box_node.id = GetNextNodeID();
-  // TODO(nektar): Find the union of the bounding boxes in this formatting
-  // context and set it as the bounding box of `inline_text_box_node`.
-  inline_text_box_node.relative_bounds.bounds =
-      static_text_node.relative_bounds.bounds;
+  // The union of the bounding boxes in this formatting context is set as the
+  // bounding box of `inline_text_box_node`.
+  DCHECK(inline_text_box_node.relative_bounds.bounds.IsEmpty());
 
   std::string language;
   if (static_text_node.GetStringAttribute(ax::mojom::StringAttribute::kLanguage,
