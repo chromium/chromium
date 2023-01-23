@@ -85,9 +85,8 @@ class FakeConsentAuditor : public ConsentAuditor {
  private:
   CoreAccountId account_id_;
 
-  // Holds specific consent information for assistant activity control consent,
-  // account password consent and autofill assistant consent. Does not (yet)
-  // contain recorded sync consent.
+  // Holds specific consent information for assistant activity control consent
+  // and account password consent. Does not (yet) contain recorded sync consent.
   std::vector<sync_pb::UserConsentSpecifics> recorded_consents_;
 
   std::vector<std::vector<int>> recorded_id_vectors_;
