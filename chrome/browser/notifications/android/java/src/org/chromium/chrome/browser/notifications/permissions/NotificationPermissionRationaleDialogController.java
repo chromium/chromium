@@ -8,14 +8,13 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.TextView;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.NotificationRationaleResult;
 import org.chromium.chrome.browser.notifications.R;
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController.RationaleDelegate;
+import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController.RationaleUiResult;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -28,8 +27,6 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Dialog to explain the advantages of Chrome notifications.
  */
 public class NotificationPermissionRationaleDialogController implements RationaleDelegate {
-    public static final String DIALOG_TEXT_VARIANT_2 =
-            "notification_permission_dialog_text_variant_2";
     private final ModalDialogManager mModalDialogManager;
     private final Context mContext;
 
@@ -50,23 +47,12 @@ public class NotificationPermissionRationaleDialogController implements Rational
      * notifications.
      */
     @Override
-    public void showRationaleUi(Callback<Boolean> rationaleCallback) {
+    public void showRationaleUi(Callback<Integer> rationaleCallback) {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         Resources resources = mContext.getResources();
 
         View dialogView = inflater.inflate(R.layout.notification_permission_rationale_dialog,
                 /* root= */ null);
-        TextView titleView = dialogView.findViewById(R.id.notification_permission_rationale_title);
-        TextView descriptionView =
-                dialogView.findViewById(R.id.notification_permission_rationale_message);
-        boolean shouldShowVariant2 = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT, DIALOG_TEXT_VARIANT_2, false);
-        titleView.setText(shouldShowVariant2
-                        ? R.string.notification_permission_rationale_dialog_title_variation_2
-                        : R.string.notification_permission_rationale_dialog_title);
-        descriptionView.setText(shouldShowVariant2
-                        ? R.string.notification_permission_rationale_dialog_message_variation_2
-                        : R.string.notification_permission_rationale_dialog_message);
 
         PropertyModel.Builder dialogModelBuilder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
@@ -87,7 +73,7 @@ public class NotificationPermissionRationaleDialogController implements Rational
         mModalDialogManager.showDialog(dialogModel, ModalDialogType.APP);
     }
 
-    private Callback<Integer> wrapDialogDismissalCallback(Callback<Boolean> rationaleCallback) {
+    private Callback<Integer> wrapDialogDismissalCallback(Callback<Integer> rationaleCallback) {
         return result -> {
             @NotificationRationaleResult
             int resultEnumValue;
@@ -112,7 +98,9 @@ public class NotificationPermissionRationaleDialogController implements Rational
 
             NotificationUmaTracker.getInstance().onNotificationPermissionRationaleResult(
                     resultEnumValue);
-            rationaleCallback.onResult(result == DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+            rationaleCallback.onResult(result == DialogDismissalCause.POSITIVE_BUTTON_CLICKED
+                            ? RationaleUiResult.ACCEPTED
+                            : RationaleUiResult.REJECTED);
         };
     }
 }

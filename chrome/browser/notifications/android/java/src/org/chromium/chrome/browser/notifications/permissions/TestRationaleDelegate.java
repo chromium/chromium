@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.notifications.permissions;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController.RationaleDelegate;
+import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController.RationaleUiResult;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 
 /**
@@ -16,13 +17,13 @@ class TestRationaleDelegate implements RationaleDelegate {
     private int mCallCount;
 
     @Override
-    public void showRationaleUi(Callback<Boolean> callback) {
+    public void showRationaleUi(Callback<Integer> callback) {
         assert mDialogAction != null;
         mCallCount++;
         if (mDialogAction == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
-            callback.onResult(true);
+            callback.onResult(RationaleUiResult.ACCEPTED);
         } else {
-            callback.onResult(false);
+            callback.onResult(RationaleUiResult.REJECTED);
         }
     }
 

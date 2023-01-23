@@ -51,6 +51,14 @@ public class NotificationPermissionController implements UnownedUserData {
     public static final String FIELD_TRIAL_PERMISSION_REQUEST_MAX_COUNT =
             "permission_request_max_count";
 
+    /**
+     * Returns whether the bottom sheet rationale UI should be used.
+     * @return true if the bottom sheet UI should be used, false if the dialog UI should be used.
+     */
+    public static boolean shouldUseBottomSheetRationaleUi() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.NOTIFICATION_PERMISSION_BOTTOM_SHEET);
+    }
+
     /** Refers to what type of permission UI should be shown. */
     @IntDef({PermissionRequestMode.DO_NOT_REQUEST, PermissionRequestMode.REQUEST_ANDROID_PERMISSION,
             PermissionRequestMode.REQUEST_PERMISSION_WITH_RATIONALE})
@@ -69,13 +77,27 @@ public class NotificationPermissionController implements UnownedUserData {
         int REQUEST_PERMISSION_WITH_RATIONALE = 2;
     }
 
+    /**
+     * Refers to the result of trying to show the rationale UI.
+     */
+    @IntDef({RationaleUiResult.ACCEPTED, RationaleUiResult.REJECTED, RationaleUiResult.NOT_SHOWN})
+    public @interface RationaleUiResult {
+        /** Rationale UI was shown and user accepted. */
+        int ACCEPTED = 0;
+        /** Rationale UI was shown and user rejected or dismissed. */
+        int REJECTED = 1;
+        /** Rationale UI couldn't be shown. */
+        int NOT_SHOWN = 2;
+    }
+
     /** A delegate to show an in-app UI demonstrating rationale behind the permission request. */
-    interface RationaleDelegate {
+    public interface RationaleDelegate {
         /**
          * Called to show the in-app UI.
          * @param callback The callback to be invoked as part of the user action on the dialog UI.
+         *         Its argument is a value from {@code RationaleUiResult}.
          */
-        void showRationaleUi(Callback<Boolean> callback);
+        void showRationaleUi(Callback<Integer> callback);
     }
 
     private static final UnownedUserDataKey<NotificationPermissionController> KEY =
@@ -153,23 +175,35 @@ public class NotificationPermissionController implements UnownedUserData {
         int requestMode = shouldRequestPermission();
         if (requestMode == PermissionRequestMode.DO_NOT_REQUEST) return false;
 
-        SharedPreferencesManager.getInstance().incrementInt(
-                ChromePreferenceKeys.NOTIFICATION_PERMISSION_REQUEST_COUNT);
-        NotificationUmaTracker.getInstance().onNotificationPermissionRequested();
-
         if (requestMode == PermissionRequestMode.REQUEST_ANDROID_PERMISSION) {
             requestAndroidPermission();
+            recordOsPromptShown();
         } else if (requestMode == PermissionRequestMode.REQUEST_PERMISSION_WITH_RATIONALE) {
-            SharedPreferencesManager.getInstance().writeLong(
-                    ChromePreferenceKeys.NOTIFICATION_PERMISSION_RATIONALE_TIMESTAMP_KEY,
-                    System.currentTimeMillis());
-            mRationaleDelegate.showRationaleUi(accept -> {
-                if (accept) {
+            mRationaleDelegate.showRationaleUi(rationaleResult -> {
+                if (rationaleResult != RationaleUiResult.NOT_SHOWN) {
+                    recordRationaleUiShown();
+                }
+                if (rationaleResult == RationaleUiResult.ACCEPTED) {
                     requestAndroidPermission();
                 }
             });
         }
         return true;
+    }
+
+    private void recordOsPromptShown() {
+        SharedPreferencesManager.getInstance().incrementInt(
+                ChromePreferenceKeys.NOTIFICATION_PERMISSION_REQUEST_COUNT);
+        NotificationUmaTracker.getInstance().onNotificationPermissionRequested();
+    }
+
+    private void recordRationaleUiShown() {
+        SharedPreferencesManager.getInstance().incrementInt(
+                ChromePreferenceKeys.NOTIFICATION_PERMISSION_REQUEST_COUNT);
+        NotificationUmaTracker.getInstance().onNotificationPermissionRequested();
+        SharedPreferencesManager.getInstance().writeLong(
+                ChromePreferenceKeys.NOTIFICATION_PERMISSION_RATIONALE_TIMESTAMP_KEY,
+                System.currentTimeMillis());
     }
 
     @PermissionRequestMode

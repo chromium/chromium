@@ -4865,9 +4865,14 @@
     "expiry_milestone": 115
   },
   {
+    "name": "notification-permission-rationale-bottom-sheet",
+    "owners": ["shaktisahu", "salg"],
+    "expiry_milestone": 114
+  },
+  {
     "name": "notification-permission-rationale-dialog",
     "owners": ["shaktisahu", "salg"],
-    "expiry_milestone": 110
+    "expiry_milestone": 114
   },
   {
     "name": "notification-scheduler",

@@ -194,6 +194,13 @@ public class NotificationUmaTracker {
             NotificationRationaleResult.NAVIGATE_BACK_OR_TOUCH_OUTSIDE,
             NotificationRationaleResult.NOT_ATTACHED_TO_WINDOW,
             NotificationRationaleResult.ACTIVITY_DESTROYED,
+            NotificationRationaleResult.BOTTOM_SHEET_BACK_PRESS,
+            NotificationRationaleResult.BOTTOM_SHEET_SWIPE,
+            NotificationRationaleResult.BOTTOM_SHEET_TAP_SCRIM,
+            NotificationRationaleResult.BOTTOM_SHEET_FAILED_TO_OPEN,
+            NotificationRationaleResult.BOTTOM_SHEET_DESTROYED,
+            NotificationRationaleResult.BOTTOM_SHEET_CLOSED_UNKNOWN,
+            NotificationRationaleResult.BOTTOM_SHEET_NEVER_OPENED,
             NotificationRationaleResult.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     public @interface NotificationRationaleResult {
@@ -202,8 +209,15 @@ public class NotificationUmaTracker {
         int NAVIGATE_BACK_OR_TOUCH_OUTSIDE = 2;
         int ACTIVITY_DESTROYED = 3;
         int NOT_ATTACHED_TO_WINDOW = 4;
+        int BOTTOM_SHEET_BACK_PRESS = 5;
+        int BOTTOM_SHEET_SWIPE = 6;
+        int BOTTOM_SHEET_TAP_SCRIM = 7;
+        int BOTTOM_SHEET_FAILED_TO_OPEN = 8;
+        int BOTTOM_SHEET_DESTROYED = 9;
+        int BOTTOM_SHEET_CLOSED_UNKNOWN = 10;
+        int BOTTOM_SHEET_NEVER_OPENED = 11;
 
-        int NUM_ENTRIES = 5;
+        int NUM_ENTRIES = 12;
     }
 
     /**

@@ -66,6 +66,8 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceIphController;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageController;
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController;
+import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController.RationaleDelegate;
+import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionRationaleBottomSheet;
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionRationaleDialogController;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
@@ -676,11 +678,22 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (!didTriggerPromo) {
-            mNotificationPermissionController = new NotificationPermissionController(mWindowAndroid,
-                    new NotificationPermissionRationaleDialogController(
-                            mActivity, mModalDialogManagerSupplier.get()));
+            RationaleDelegate rationaleUIDelegate;
+
+            if (NotificationPermissionController.shouldUseBottomSheetRationaleUi()) {
+                rationaleUIDelegate = new NotificationPermissionRationaleBottomSheet(
+                        mActivity, getBottomSheetController());
+            } else {
+                rationaleUIDelegate = new NotificationPermissionRationaleDialogController(
+                        mActivity, mModalDialogManagerSupplier.get());
+            }
+
+            mNotificationPermissionController =
+                    new NotificationPermissionController(mWindowAndroid, rationaleUIDelegate);
+
             NotificationPermissionController.attach(
                     mWindowAndroid, mNotificationPermissionController);
+
             didTriggerPromo = mNotificationPermissionController.requestPermissionIfNeeded(
                     false /* contextual */);
         }

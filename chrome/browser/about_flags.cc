@@ -2170,29 +2170,16 @@ const FeatureEntry::FeatureVariation kFeatureNotificationGuideVariations[] = {
 };
 
 const FeatureEntry::FeatureParam
-    kNotificationPermissionRationale_show_dialog_next_start_text_variant[] = {
-        {"always_show_rationale_before_requesting_permission", "true"},
-        {"notification_permission_dialog_text_variant_2", "true"},
-        {"permission_request_interval_days", "0"},
-};
-
-const FeatureEntry::FeatureParam
     kNotificationPermissionRationale_show_dialog_next_start[] = {
         {"always_show_rationale_before_requesting_permission", "true"},
-        {"notification_permission_dialog_text_variant_2", "false"},
         {"permission_request_interval_days", "0"},
 };
 
 const FeatureEntry::FeatureVariation
     kNotificationPermissionRationaleVariations[] = {
-        {"- Show rationale dialog on next startup",
+        {"- Show rationale UI on next startup",
          kNotificationPermissionRationale_show_dialog_next_start,
          std::size(kNotificationPermissionRationale_show_dialog_next_start),
-         nullptr},
-        {"- Show rationale dialog on next startup - alternative copy",
-         kNotificationPermissionRationale_show_dialog_next_start_text_variant,
-         std::size(
-             kNotificationPermissionRationale_show_dialog_next_start_text_variant),
          nullptr},
 };
 
@@ -4446,6 +4433,11 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kNotificationPermissionVariant,
          kNotificationPermissionRationaleVariations,
          "NotificationPermissionVariant")},
+    {"notification-permission-rationale-bottom-sheet",
+     flag_descriptions::kNotificationPermissionRationaleBottomSheetName,
+     flag_descriptions::kNotificationPermissionRationaleBottomSheetDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kNotificationPermissionBottomSheet)},
     {"feature-notification-guide-skip-check-for-low-engaged-users",
      flag_descriptions::
          kFeatureNotificationGuideSkipCheckForLowEngagedUsersName,

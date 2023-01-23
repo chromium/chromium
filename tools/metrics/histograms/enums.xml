@@ -62028,6 +62028,7 @@ from previous Chrome versions.
   <int value="550387510" label="NTPAssetDownloadSuggestions:disabled"/>
   <int value="550411207" label="enable-webgpu-developer-features"/>
   <int value="550741462" label="WebAppBorderless:disabled"/>
+  <int value="552158955" label="NotificationPermissionBottomSheet:enabled"/>
   <int value="552317551" label="MediaAppHandlesPdf:disabled"/>
   <int value="552421509" label="AssistMultiWordExpanded:enabled"/>
   <int value="553197994" label="FedCmMetricsEndpoint:enabled"/>
@@ -63131,6 +63132,7 @@ from previous Chrome versions.
   <int value="1192894768" label="NetworkServiceInProcess2:disabled"/>
   <int value="1192913630" label="OfflinePagesBackgroundLoading:disabled"/>
   <int value="1193385506" label="OmniboxLooseMaxLimitOnDedicatedRows:enabled"/>
+  <int value="1193940165" label="NotificationPermissionBottomSheet:disabled"/>
   <int value="1194496204" label="NewWallpaperPicker:enabled"/>
   <int value="1194896796" label="PdfHonorJsContentSettings:disabled"/>
   <int value="1194964049" label="AutofillFixOfferInIncognito:enabled"/>
@@ -73139,9 +73141,25 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Negative: User rejected the dialog"/>
   <int value="2"
       label="Dismissed: User dismissed the dialog, either tapped outside of
-             it or hit the back button"/>
-  <int value="3" label="Activity was destroyed before user could respond"/>
-  <int value="4" label="Dialog view no longer attached to window"/>
+             it or hit the back button [Dialog]"/>
+  <int value="3"
+      label="Activity was destroyed before user could respond [Dialog]"/>
+  <int value="4" label="Dialog view no longer attached to window [Dialog]"/>
+  <int value="5"
+      label="Dismissed: Back was pressed on bottom sheet [Bottom Sheet]"/>
+  <int value="6"
+      label="Dismissed: Bottom sheet was swiped away [Bottom Sheet]"/>
+  <int value="7"
+      label="Dismissed: Bottom sheet scrim was tapped [Bottom Sheet]"/>
+  <int value="8" label="Failed to open bottom sheet [Bottom Sheet]"/>
+  <int value="9"
+      label="Bottom sheet was destroyed before user could respond [Bottom
+             Sheet]"/>
+  <int value="10"
+      label="Dismissed: Bottom sheet closed, reason unknown [Bottom Sheet]"/>
+  <int value="11"
+      label="Dismissed: Bottom sheet destroyed before it could be opened
+             [Bottom Sheet]"/>
 </enum>
 
 <enum name="NotificationSchedulerActionButtonEvent">

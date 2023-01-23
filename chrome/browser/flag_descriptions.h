@@ -2150,6 +2150,9 @@ extern const char kNetworkServiceInProcessDescription[];
 extern const char kNotificationPermissionRationaleName[];
 extern const char kNotificationPermissionRationaleDescription[];
 
+extern const char kNotificationPermissionRationaleBottomSheetName[];
+extern const char kNotificationPermissionRationaleBottomSheetDescription[];
+
 extern const char kOfflinePagesLivePageSharingName[];
 extern const char kOfflinePagesLivePageSharingDescription[];
 

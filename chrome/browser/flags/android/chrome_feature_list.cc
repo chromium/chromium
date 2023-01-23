@@ -235,6 +235,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kLensCameraAssistedSearch,
     &kLensOnQuickActionSearchWidget,
     &kNotificationPermissionVariant,
+    &kNotificationPermissionBottomSheet,
     &kPageAnnotationsService,
     &kBookmarksImprovedSaveFlow,
     &kBookmarksRefresh,
@@ -723,6 +724,10 @@ BASE_FEATURE(kIsVoiceSearchEnabledCache,
 
 BASE_FEATURE(kNotificationPermissionVariant,
              "NotificationPermissionVariant",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kNotificationPermissionBottomSheet,
+             "NotificationPermissionBottomSheet",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kInstanceSwitcher,

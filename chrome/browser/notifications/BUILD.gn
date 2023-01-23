@@ -59,6 +59,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/notifications/channels/SiteChannelsManager.java",
       "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionChangeReceiver.java",
       "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionController.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionRationaleBottomSheet.java",
       "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionRationaleDialogController.java",
     ]
 
@@ -70,6 +71,7 @@ if (is_android) {
       "//chrome/browser/offline_pages/android:java",
       "//chrome/browser/preferences:java",
       "//chrome/browser/profiles/android:java",
+      "//components/browser_ui/bottomsheet/android:java",
       "//components/browser_ui/notifications/android:java",
       "//components/browser_ui/settings/android:java",
       "//components/browser_ui/site_settings/android:java",
@@ -112,6 +114,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/notifications/channels/ChromeChannelDefinitionsTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionChangeReceiverTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionControllerTest.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionRationaleBottomSheetTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionRationaleDialogControllerTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/permissions/TestRationaleDelegate.java",
     ]
@@ -124,6 +127,7 @@ if (is_android) {
       "//chrome/browser/flags:java",
       "//chrome/browser/preferences:java",
       "//chrome/test/android:chrome_java_unit_test_support",
+      "//components/browser_ui/bottomsheet/android:java",
       "//components/browser_ui/notifications/android:java",
       "//components/embedder_support/android:junit_test_support",
       "//components/url_formatter/android:url_formatter_java",
@@ -175,6 +179,7 @@ if (is_android) {
     sources = [
       "android/java/res/drawable-ldrtl/notification_permission_rationale_dialog_header.xml",
       "android/java/res/drawable/notification_permission_rationale_dialog_header.xml",
+      "android/java/res/layout/notification_permission_rationale_bottom_sheet.xml",
       "android/java/res/layout/notification_permission_rationale_dialog.xml",
       "android/java/res/values-night/colors.xml",
       "android/java/res/values/colors.xml",
