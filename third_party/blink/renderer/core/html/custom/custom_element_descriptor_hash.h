@@ -14,23 +14,9 @@ namespace WTF {
 
 template <>
 struct HashTraits<blink::CustomElementDescriptor>
-    : SimpleClassHashTraits<blink::CustomElementDescriptor> {
-  STATIC_ONLY(HashTraits);
-  static unsigned GetHash(const blink::CustomElementDescriptor& descriptor) {
-    return WTF::HashInts(WTF::GetHash(descriptor.GetName()),
-                         WTF::GetHash(descriptor.LocalName()));
-  }
-  static const bool kEmptyValueIsZero =
-      HashTraits<AtomicString>::kEmptyValueIsZero;
-
-  static bool IsDeletedValue(const blink::CustomElementDescriptor& value) {
-    return HashTraits<AtomicString>::IsDeletedValue(value.name_);
-  }
-
-  static void ConstructDeletedValue(blink::CustomElementDescriptor& slot) {
-    HashTraits<AtomicString>::ConstructDeletedValue(slot.name_);
-  }
-};
+    : TwoFieldsHashTraits<blink::CustomElementDescriptor,
+                          &blink::CustomElementDescriptor::name_,
+                          &blink::CustomElementDescriptor::local_name_> {};
 
 }  // namespace WTF
 

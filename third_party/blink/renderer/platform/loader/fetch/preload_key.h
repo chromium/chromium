@@ -42,25 +42,9 @@ namespace WTF {
 
 template <>
 struct HashTraits<blink::PreloadKey>
-    : public SimpleClassHashTraits<blink::PreloadKey> {
-  static unsigned GetHash(const blink::PreloadKey& key) {
-    return WTF::GetHash(key.url);
-  }
-  static constexpr bool kSafeToCompareToEmptyOrDeleted =
-      HashTraits<blink::KURL>::kSafeToCompareToEmptyOrDeleted;
-
-  // This doesn't delegate to KURL because the `type` field of PreloadKey() is
-  // not zero.
-  static constexpr bool kEmptyValueIsZero = false;
-
-  static bool IsDeletedValue(const blink::PreloadKey& value) {
-    return HashTraits<blink::KURL>::IsDeletedValue(value.url);
-  }
-
-  static void ConstructDeletedValue(blink::PreloadKey& slot) {
-    HashTraits<blink::KURL>::ConstructDeletedValue(slot.url);
-  }
-};
+    : TwoFieldsHashTraits<blink::PreloadKey,
+                          &blink::PreloadKey::url,
+                          &blink::PreloadKey::type> {};
 
 }  // namespace WTF
 

@@ -469,24 +469,67 @@ inline bool IsHashTraitsEmptyOrDeletedValue(const T& value) {
          IsHashTraitsDeletedValue<Traits, T>(value);
 }
 
-namespace internal {
-
-template <template <typename, typename> typename T,
-          typename FirstTraits,
-          typename SecondTraits,
-          auto first_field,
-          auto second_field>
-struct PairHashTraitsBase
-    : GenericHashTraits<T<typename FirstTraits::TraitType,
-                          typename SecondTraits::TraitType>> {
-  using TraitType =
-      T<typename FirstTraits::TraitType, typename SecondTraits::TraitType>;
-
-  static unsigned GetHash(const TraitType& p) {
-    return HashInts(FirstTraits::GetHash(p.first),
-                    SecondTraits::GetHash(p.second));
+// A HashTraits type for T to delegate all HashTraits API to a field.
+template <typename T,
+          auto T::*field,
+          typename FieldTraits = HashTraits<
+              std::remove_reference_t<decltype(std::declval<T>().*field)>>>
+struct OneFieldHashTraits : GenericHashTraits<T> {
+  using TraitType = T;
+  static unsigned GetHash(const T& p) { return FieldTraits::GetHash(p.*field); }
+  static bool Equal(const T& a, const T& b) {
+    return FieldTraits::Equal(a.*field, b.*field);
   }
-  static bool Equal(const TraitType& a, const TraitType& b) {
+  static constexpr bool kSafeToCompareToEmptyOrDeleted =
+      FieldTraits::kSafeToCompareToEmptyOrDeleted;
+
+  static constexpr bool kEmptyValueIsZero = FieldTraits::kEmptyValueIsZero;
+  static T EmptyValue() { return T(FieldTraits::EmptyValue()); }
+
+  static bool IsEmptyValue(const T& value) {
+    return IsHashTraitsEmptyValue<FieldTraits>(value.*field);
+  }
+
+  static void ConstructDeletedValue(T& slot) {
+    ConstructHashTraitsDeletedValue<FieldTraits>(slot.*field);
+  }
+  static bool IsDeletedValue(const T& value) {
+    return IsHashTraitsDeletedValue<FieldTraits>(value.*field);
+  }
+
+  static constexpr unsigned kMinimumTableSize = FieldTraits::kMinimumTableSize;
+
+  template <typename U = void>
+  struct IsTraceableInCollection {
+    static const bool value = IsTraceableInCollectionTrait<FieldTraits>::value;
+  };
+
+  template <typename U = void>
+  struct NeedsToForbidGCOnMove {
+    static const bool value =
+        FieldTraits::template NeedsToForbidGCOnMove<>::value;
+  };
+
+  static constexpr bool kCanTraceConcurrently =
+      FieldTraits::kCanTraceConcurrently;
+};
+
+// A HashTraits type for T to delegate all HashTraits API to two fields.
+template <
+    typename T,
+    auto T::*first_field,
+    auto T::*second_field,
+    typename FirstTraits = HashTraits<
+        std::remove_reference_t<decltype(std::declval<T>().*first_field)>>,
+    typename SecondTraits = HashTraits<
+        std::remove_reference_t<decltype(std::declval<T>().*second_field)>>>
+struct TwoFieldsHashTraits : OneFieldHashTraits<T, first_field, FirstTraits> {
+  using TraitType = T;
+  static unsigned GetHash(const T& p) {
+    return HashInts(FirstTraits::GetHash(p.*first_field),
+                    SecondTraits::GetHash(p.*second_field));
+  }
+  static bool Equal(const T& a, const T& b) {
     return FirstTraits::Equal(a.*first_field, b.*first_field) &&
            SecondTraits::Equal(a.*second_field, b.*second_field);
   }
@@ -496,8 +539,8 @@ struct PairHashTraitsBase
 
   static constexpr bool kEmptyValueIsZero =
       FirstTraits::kEmptyValueIsZero && SecondTraits::kEmptyValueIsZero;
-  static TraitType EmptyValue() {
-    return TraitType(FirstTraits::EmptyValue(), SecondTraits::EmptyValue());
+  static T EmptyValue() {
+    return T(FirstTraits::EmptyValue(), SecondTraits::EmptyValue());
   }
 
   static bool IsEmptyValue(const TraitType& value) {
@@ -505,14 +548,8 @@ struct PairHashTraitsBase
            IsHashTraitsEmptyValue<SecondTraits>(value.*second_field);
   }
 
-  static constexpr unsigned kMinimumTableSize = FirstTraits::kMinimumTableSize;
-
-  static void ConstructDeletedValue(TraitType& slot) {
-    ConstructHashTraitsDeletedValue<FirstTraits>(slot.*first_field);
-  }
-  static bool IsDeletedValue(const TraitType& value) {
-    return IsHashTraitsDeletedValue<FirstTraits>(value.*first_field);
-  }
+  // ConstructDeletedValue(), IsDeletedValue(), kMinimumTableSize delegate to
+  // the first field, inherited from OneFieldHashTraits.
 
   template <typename U = void>
   struct IsTraceableInCollection {
@@ -537,17 +574,15 @@ struct PairHashTraitsBase
        !IsTraceable<typename SecondTraits::TraitType>::value);
 };
 
-}  // namespace internal
-
 template <typename FirstTraitsArg,
           typename SecondTraitsArg,
           typename P = std::pair<typename FirstTraitsArg::TraitType,
                                  typename SecondTraitsArg::TraitType>>
-struct PairHashTraits : internal::PairHashTraitsBase<std::pair,
-                                                     FirstTraitsArg,
-                                                     SecondTraitsArg,
-                                                     &P::first,
-                                                     &P::second> {
+struct PairHashTraits : TwoFieldsHashTraits<P,
+                                            &P::first,
+                                            &P::second,
+                                            FirstTraitsArg,
+                                            SecondTraitsArg> {
   using TraitType = P;
   using FirstTraits = FirstTraitsArg;
   using SecondTraits = SecondTraitsArg;
@@ -583,11 +618,8 @@ template <typename KeyTraitsArg,
           typename ValueTraitsArg,
           typename P = KeyValuePair<typename KeyTraitsArg::TraitType,
                                     typename ValueTraitsArg::TraitType>>
-struct KeyValuePairHashTraits : internal::PairHashTraitsBase<KeyValuePair,
-                                                             KeyTraitsArg,
-                                                             ValueTraitsArg,
-                                                             &P::key,
-                                                             &P::value> {
+struct KeyValuePairHashTraits
+    : TwoFieldsHashTraits<P, &P::key, &P::value, KeyTraitsArg, ValueTraitsArg> {
   using TraitType = P;
   using KeyTraits = KeyTraitsArg;
   using ValueTraits = ValueTraitsArg;
@@ -612,7 +644,9 @@ using WTF::GenericHashTraits;
 using WTF::HashTraits;
 using WTF::IntHashTraits;
 using WTF::IntWithZeroKeyHashTraits;
+using WTF::OneFieldHashTraits;
 using WTF::PairHashTraits;
 using WTF::SimpleClassHashTraits;
+using WTF::TwoFieldsHashTraits;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_TRAITS_H_

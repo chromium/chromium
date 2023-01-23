@@ -119,34 +119,9 @@ namespace WTF {
 
 template <>
 struct HashTraits<blink::BlinkSchemefulSite>
-    : SimpleClassHashTraits<blink::BlinkSchemefulSite> {
-  static unsigned GetHash(const blink::BlinkSchemefulSite& schemeful_site) {
-    return blink::SecurityOriginHashTraits::GetHash(
-        schemeful_site.site_as_origin_);
-  }
-
-  static bool Equal(const blink::BlinkSchemefulSite& a,
-                    const blink::BlinkSchemefulSite& b) {
-    return blink::SecurityOriginHashTraits::Equal(a.site_as_origin_,
-                                                  b.site_as_origin_);
-  }
-
-  static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
-
-  static bool IsEmptyValue(const blink::BlinkSchemefulSite& value) {
-    return !value.site_as_origin_;
-  }
-
-  static bool IsDeletedValue(const blink::BlinkSchemefulSite& value) {
-    return HashTraits<scoped_refptr<const blink::SecurityOrigin>>::
-        IsDeletedValue(value.site_as_origin_);
-  }
-
-  static void ConstructDeletedValue(blink::BlinkSchemefulSite& slot) {
-    HashTraits<scoped_refptr<const blink::SecurityOrigin>>::
-        ConstructDeletedValue(slot.site_as_origin_);
-  }
-};
+    : OneFieldHashTraits<blink::BlinkSchemefulSite,
+                         &blink::BlinkSchemefulSite::site_as_origin_,
+                         blink::SecurityOriginHashTraits> {};
 
 }  // namespace WTF
 

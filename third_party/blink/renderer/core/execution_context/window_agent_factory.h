@@ -64,16 +64,9 @@ class WindowAgentFactory final : public GarbageCollected<WindowAgentFactory> {
   };
 
   struct SchemeAndRegistrableDomainTraits
-      : SimpleClassHashTraits<SchemeAndRegistrableDomain> {
-    static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
-    static unsigned GetHash(const SchemeAndRegistrableDomain&);
-    static bool Equal(const SchemeAndRegistrableDomain&,
-                      const SchemeAndRegistrableDomain&);
-
-    static bool IsEmptyValue(const SchemeAndRegistrableDomain&);
-    static bool IsDeletedValue(const SchemeAndRegistrableDomain& value);
-    static void ConstructDeletedValue(SchemeAndRegistrableDomain& slot);
-  };
+      : TwoFieldsHashTraits<SchemeAndRegistrableDomain,
+                            &SchemeAndRegistrableDomain::scheme,
+                            &SchemeAndRegistrableDomain::registrable_domain> {};
 
   // Use a shared instance of Agent for all frames if a frame may have the
   // universal access privilege.

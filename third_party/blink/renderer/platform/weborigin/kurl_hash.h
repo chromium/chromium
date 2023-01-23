@@ -37,26 +37,8 @@ namespace WTF {
 // HashMap<KURL,..., KURLHash> cause a null-pointer dereference when passed null
 // KURLs.
 template <>
-struct HashTraits<blink::KURL> : SimpleClassHashTraits<blink::KURL> {
-  static unsigned GetHash(const blink::KURL& key) {
-    return WTF::GetHash(key.GetString());
-  }
-
-  static bool Equal(const blink::KURL& a, const blink::KURL& b) {
-    return HashTraits<String>::Equal(a.GetString(), b.GetString());
-  }
-
-  static constexpr bool kSafeToCompareToEmptyOrDeleted =
-      HashTraits<String>::kSafeToCompareToEmptyOrDeleted;
-
-  static bool IsDeletedValue(const blink::KURL& value) {
-    return HashTraits<String>::IsDeletedValue(value.GetString());
-  }
-
-  static void ConstructDeletedValue(blink::KURL& slot) {
-    HashTraits<String>::ConstructDeletedValue(slot.string_);
-  }
-};
+struct HashTraits<blink::KURL>
+    : OneFieldHashTraits<blink::KURL, &blink::KURL::string_> {};
 
 }  // namespace WTF
 
