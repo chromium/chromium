@@ -373,6 +373,13 @@ void StylePropertyMap::append(
 
   CSSValueList* current_value = nullptr;
   if (const CSSValue* css_value = GetProperty(property_id)) {
+    if (css_value->IsVariableReferenceValue()) {
+      // https://drafts.css-houdini.org/css-typed-om/#dom-stylepropertymap-append
+      // 8. If props[property] contains a var() reference, throw a TypeError.
+      exception_state.ThrowTypeError(
+          "Cannot append to a list containing a variable reference");
+      return;
+    }
     current_value = To<CSSValueList>(css_value)->Copy();
   } else {
     current_value = CssValueListForPropertyID(property_id);
