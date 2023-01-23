@@ -27,6 +27,7 @@ import org.chromium.components.version_info.VersionConstants;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
@@ -75,17 +76,23 @@ public class ServiceTracingProxyProvider {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            if (!ThreadUtils.runningOnUiThread()) return method.invoke(mSystemImpl, args);
+            try {
+                if (!ThreadUtils.runningOnUiThread()) return method.invoke(mSystemImpl, args);
 
-            long start = SystemClock.elapsedRealtime();
-            Object result = method.invoke(mSystemImpl, args);
-            long durationMs = SystemClock.elapsedRealtime() - start;
+                long start = SystemClock.elapsedRealtime();
+                Object result = method.invoke(mSystemImpl, args);
+                long durationMs = SystemClock.elapsedRealtime() - start;
 
-            if (durationMs >= MINIMUM_IPC_TRACE_DURATION_MS) {
-                TraceEvent.instantAndroidIPC(
-                        mSystemImpl.getClass().getName() + "#" + method.getName(), durationMs);
+                if (durationMs >= MINIMUM_IPC_TRACE_DURATION_MS) {
+                    TraceEvent.instantAndroidIPC(
+                            mSystemImpl.getClass().getName() + "#" + method.getName(), durationMs);
+                }
+                return result;
+            } catch (InvocationTargetException e) {
+                // Need to rethrow the cause or the proxy will generate
+                // UndeclaredThrowableExceptions that callers won't be expecting.
+                throw e.getCause();
             }
-            return result;
         }
     }
 
