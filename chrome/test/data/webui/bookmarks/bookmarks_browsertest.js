@@ -64,14 +64,8 @@ var BookmarksDNDManagerTest = class extends BookmarksBrowserTest {
   }
 };
 
-// http://crbug.com/803570 : Flaky on Win 7 (dbg)
-GEN('#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)');
-GEN('#define MAYBE_All DISABLED_All');
-GEN('#else');
-GEN('#define MAYBE_All All');
-GEN('#endif');
-
-TEST_F('BookmarksDNDManagerTest', 'MAYBE_All', function() {
+// TODO(https://crbug.com/1409439): Test is flaky.
+TEST_F('BookmarksDNDManagerTest', 'DISABLED_All', function() {
   mocha.run();
 });
 
