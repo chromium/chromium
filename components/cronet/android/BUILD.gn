@@ -6,6 +6,7 @@ import("//build/android/resource_sizes.gni")
 import("//build/buildflag_header.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
+import("//build/config/cronet/config.gni")
 import("//build/config/zip.gni")
 import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
@@ -19,6 +20,7 @@ import("//tools/binary_size/sizes.gni")
 import("//url/features.gni")
 
 _templates_dir = "$target_gen_dir/templates"
+_gn_path = "//buildtools/linux64/gn"
 
 declare_args() {
   # In integrated mode, CronetEngine will use the shared network task runner by
@@ -1644,6 +1646,29 @@ if (!is_component_build) {
     ]
   }
 
+  action("dependencies_checks") {
+    script = "//components/cronet/tools/check_cronet_dependencies.py"
+    inputs = [ "//components/cronet/android/dependencies.txt" ]
+    sources = [
+      "$_gn_path",
+      "//components/cronet/tools/check_cronet_dependencies.sh",
+    ]
+    outputs = [ "$target_gen_dir/$target_name.stamp" ]
+    args = [
+      "--new_dependencies_script",
+      rebase_path("//components/cronet/tools/check_cronet_dependencies.sh",
+                  root_build_dir),
+      "--old_dependencies",
+      rebase_path(inputs[0], root_build_dir),
+      "--stamp",
+      rebase_path(outputs[0], root_build_dir),
+    ]
+    if (is_cronet_build) {
+      args += [ "--is_cronet_build" ]
+    }
+    deps = [ ":cronet" ]
+  }
+
   group("cronet_package_android") {
     # Marked as testonly as it contains test-only targets too.
     testonly = true
@@ -1662,6 +1687,7 @@ if (!is_component_build) {
         ":cronet_package_copy_resources",
         ":cronet_sizes",
         ":cronet_test_package",
+        ":dependencies_checks",
         ":generate_javadoc",
         ":generate_licenses",
         ":jar_cronet_api_source",
