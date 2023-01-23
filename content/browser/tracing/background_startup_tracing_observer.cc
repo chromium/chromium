@@ -15,6 +15,7 @@ namespace content {
 namespace {
 
 const char kStartupTracingConfig[] = "startup-config";
+const char kStartupTracingRuleId[] = "org.chromium.background_tracing.startup";
 
 class PreferenceManagerImpl
     : public BackgroundStartupTracingObserver::PreferenceManager {
@@ -45,8 +46,7 @@ const BackgroundTracingRule*
 BackgroundStartupTracingObserver::FindStartupRuleInConfig(
     const BackgroundTracingConfigImpl& config) {
   for (const auto& rule : config.rules()) {
-    if (rule->category_preset() ==
-        BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_STARTUP) {
+    if (rule->rule_id() == kStartupTracingRuleId) {
       return rule.get();
     }
   }
@@ -122,12 +122,10 @@ BackgroundStartupTracingObserver::IncludeStartupConfigIfNeeded(
   rules_dict.Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
   rules_dict.Set("trigger_name", kStartupTracingConfig);
   rules_dict.Set("trigger_delay", 30);
-  rules_dict.Set("category", "BENCHMARK_STARTUP");
+  rules_dict.Set("rule_id", kStartupTracingRuleId);
 
   if (config) {
-    config->AddReactiveRule(
-        rules_dict,
-        BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_STARTUP);
+    config->AddReactiveRule(rules_dict);
   } else {
     base::Value::Dict dict;
     base::Value::List rules_list;

@@ -1691,10 +1691,9 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   {
     base::Value::Dict rules_dict;
     rules_dict.Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
-    rules_dict.Set("trigger_name", "startup-config");
+    rules_dict.Set("trigger_name", "startup");
     rules_dict.Set("stop_tracing_on_repeated_reactive", false);
     rules_dict.Set("trigger_delay", 600);
-    rules_dict.Set("category", "BENCHMARK_STARTUP");
     rules_list.Append(std::move(rules_dict));
   }
   dict.Set("configs", std::move(rules_list));

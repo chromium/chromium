@@ -138,12 +138,8 @@ void BackgroundTracingConfigImpl::AddPreemptiveRule(
 }
 
 void BackgroundTracingConfigImpl::AddReactiveRule(
-    const base::Value::Dict& dict,
-    BackgroundTracingConfigImpl::CategoryPreset category_preset) {
-  BackgroundTracingRule* rule = AddRule(dict);
-  if (rule) {
-    rule->set_category_preset(category_preset);
-  }
+    const base::Value::Dict& dict) {
+  AddRule(dict);
 }
 
 void BackgroundTracingConfigImpl::AddSystemRule(const base::Value::Dict& dict) {
@@ -322,7 +318,7 @@ BackgroundTracingConfigImpl::ReactiveFromDict(const base::Value::Dict& dict) {
       }
     }
 
-    config->AddReactiveRule(config_dict.GetDict(), config->category_preset_);
+    config->AddReactiveRule(config_dict.GetDict());
   }
 
   if (config->rules().empty())

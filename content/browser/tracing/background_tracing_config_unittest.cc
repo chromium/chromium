@@ -349,14 +349,13 @@ TEST_F(BackgroundTracingConfigTest, ReactiveConfigFromValidString) {
   config = ReadFromJSONString(
       "{\"mode\":\"REACTIVE_TRACING_MODE\",\"configs\": [{\"rule\": "
       "\"MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED\", "
-      "\"category\": \"BENCHMARK_STARTUP\",\"trigger_delay\":30,"
+      "\"trigger_delay\":30,"
       "\"trigger_name\": \"foo\"}]}");
   EXPECT_TRUE(config);
   EXPECT_EQ(config->tracing_mode(), BackgroundTracingConfig::REACTIVE);
   EXPECT_EQ(config->rules().size(), 1u);
   EXPECT_EQ(RuleToString(config->rules()[0]),
-            "{\"category\":\"BENCHMARK_STARTUP\","
-            "\"rule\":\"MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED\","
+            "{\"rule\":\"MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED\","
             "\"trigger_delay\":30,\"trigger_name\":\"foo\"}");
 }
 
@@ -540,11 +539,10 @@ TEST_F(BackgroundTracingConfigTest, ValidReactiveConfigToString) {
     base::Value::Dict dict;
     dict.Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
     dict.Set("trigger_name", "foo");
-    config->AddReactiveRule(dict,
-                            BackgroundTracingConfigImpl::BENCHMARK_STARTUP);
+    config->AddReactiveRule(dict);
 
     EXPECT_EQ(ConfigToString(config.get()),
-              "{\"configs\":[{\"category\":\"BENCHMARK_STARTUP\",\"rule\":\""
+              "{\"configs\":[{\"rule\":\""
               "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED\","
               "\"trigger_name\":\"foo\"}],\"mode\":\"REACTIVE_TRACING_MODE\"}");
   }
@@ -556,20 +554,17 @@ TEST_F(BackgroundTracingConfigTest, ValidReactiveConfigToString) {
     base::Value::Dict dict;
     dict.Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
     dict.Set("trigger_name", "foo1");
-    config->AddReactiveRule(dict,
-                            BackgroundTracingConfigImpl::BENCHMARK_STARTUP);
+    config->AddReactiveRule(dict);
 
     dict.Set("trigger_name", "foo2");
-    config->AddReactiveRule(dict,
-                            BackgroundTracingConfigImpl::BENCHMARK_STARTUP);
+    config->AddReactiveRule(dict);
 
     EXPECT_EQ(
         ConfigToString(config.get()),
-        "{\"configs\":[{\"category\":\"BENCHMARK_STARTUP\",\"rule\":"
+        "{\"configs\":[{\"rule\":"
         "\"MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED\","
-        "\"trigger_name\":\"foo1\"},{\"category\":\"BENCHMARK_STARTUP\","
-        "\"rule\":"
-        "\"MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED\","
+        "\"trigger_name\":\"foo1\"},{"
+        "\"rule\":\"MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED\","
         "\"trigger_name\":\"foo2\"}],\"mode\":\"REACTIVE_TRACING_MODE\"}");
   }
 }

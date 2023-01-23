@@ -27,14 +27,6 @@ class BackgroundTracingRule {
 
   virtual ~BackgroundTracingRule();
 
-  BackgroundTracingConfigImpl::CategoryPreset category_preset() const {
-    return category_preset_;
-  }
-  void set_category_preset(
-      BackgroundTracingConfigImpl::CategoryPreset category_preset) {
-    category_preset_ = category_preset;
-  }
-
   virtual void Install() {}
   virtual base::Value::Dict ToDict() const;
   virtual void GenerateMetadataProto(MetadataProto* out) const;
@@ -62,8 +54,6 @@ class BackgroundTracingRule {
   double trigger_chance_ = 1.0;
   int trigger_delay_ = -1;
   std::string rule_id_;
-  BackgroundTracingConfigImpl::CategoryPreset category_preset_ =
-      BackgroundTracingConfigImpl::CATEGORY_PRESET_UNSET;
   bool is_crash_ = false;
 };
 

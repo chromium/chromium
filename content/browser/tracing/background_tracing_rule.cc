@@ -31,7 +31,6 @@
 namespace {
 
 const char kConfigRuleKey[] = "rule";
-const char kConfigCategoryKey[] = "category";
 const char kConfigRuleTriggerNameKey[] = "trigger_name";
 const char kConfigRuleTriggerDelay[] = "trigger_delay";
 const char kConfigRuleTriggerChance[] = "trigger_chance";
@@ -84,12 +83,6 @@ base::Value::Dict BackgroundTracingRule::ToDict() const {
 
   if (rule_id_ != GetDefaultRuleId()) {
     dict.Set(kConfigRuleIdKey, rule_id_);
-  }
-
-  if (category_preset_ != BackgroundTracingConfigImpl::CATEGORY_PRESET_UNSET) {
-    dict.Set(
-        kConfigCategoryKey,
-        BackgroundTracingConfigImpl::CategoryPresetToString(category_preset_));
   }
 
   if (is_crash_) {

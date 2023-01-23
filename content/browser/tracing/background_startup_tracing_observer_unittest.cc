@@ -31,8 +31,7 @@ void TestStartupRuleExists(const BackgroundTracingConfigImpl& config,
       BackgroundStartupTracingObserver::FindStartupRuleInConfig(config);
   if (exists) {
     ASSERT_TRUE(rule);
-    EXPECT_EQ(BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_STARTUP,
-              rule->category_preset());
+    EXPECT_EQ("org.chromium.background_tracing.startup", rule->rule_id());
     EXPECT_EQ(30, rule->GetTraceDelay());
   } else {
     EXPECT_FALSE(rule);

@@ -51,9 +51,7 @@ class CONTENT_EXPORT BackgroundTracingConfigImpl
   }
 
   void AddPreemptiveRule(const base::Value::Dict& dict);
-  void AddReactiveRule(
-      const base::Value::Dict& dict,
-      BackgroundTracingConfigImpl::CategoryPreset category_preset);
+  void AddReactiveRule(const base::Value::Dict& dict);
   void AddSystemRule(const base::Value::Dict& dict);
 
   base::trace_event::TraceConfig GetTraceConfig() const;
