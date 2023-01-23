@@ -78,14 +78,11 @@ class GCMProfileService : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
-  // For testing purposes.
-  void SetDriverForTesting(std::unique_ptr<GCMDriver> driver);
-
   GCMDriver* driver() const { return driver_.get(); }
 
  protected:
   // Used for constructing fake GCMProfileService for testing purpose.
-  GCMProfileService();
+  explicit GCMProfileService(std::unique_ptr<GCMDriver> driver);
 
  private:
   std::unique_ptr<GCMDriver> driver_;

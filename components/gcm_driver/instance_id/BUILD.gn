@@ -53,6 +53,7 @@ static_library("test_support") {
   deps = [
     "//base",
     "//components/gcm_driver",
+    "//net",
     "//testing/gtest",
   ]
 

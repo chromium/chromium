@@ -23,7 +23,6 @@
 #include "chrome/browser/sync/test/integration/fake_server_invalidation_sender.h"
 #include "chrome/browser/sync/test/integration/invalidations/fake_server_sync_invalidation_sender.h"
 #include "chrome/common/buildflags.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/fake_server.h"
@@ -59,6 +58,7 @@
 #define E2E_ONLY(test_name) MACRO_CONCAT(DISABLED_E2ETest, test_name)
 #define E2E_ENABLED(test_name) MACRO_CONCAT(test_name, E2ETest)
 
+class FakeSyncGCMDriver;
 class SyncServiceImplHarness;
 
 namespace arc {
@@ -75,7 +75,6 @@ class FakeServer;
 }  // namespace fake_server
 
 namespace syncer {
-class FCMHandler;
 class SyncServiceImpl;
 }  // namespace syncer
 
@@ -327,6 +326,10 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
           profile_to_fcm_network_handler_map,
       content::BrowserContext* context);
 
+  // Creates a fake GCMProfileService to simulate sync invalidations.
+  std::unique_ptr<KeyedService> CreateGCMProfileService(
+      content::BrowserContext* context);
+
 #if !BUILDFLAG(IS_ANDROID)
   // Called when the |browser| was removed externally. This just marks the
   // |browser| in the |browsers_| list as nullptr to keep indexes in |browsers_|
@@ -446,7 +449,10 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   std::map<const Profile*, invalidation::FCMNetworkHandler*>
       profile_to_fcm_network_handler_map_;
 
-  std::map<const Profile*, syncer::FCMHandler*> profile_to_fcm_handler_map_;
+  // Used to deliver invalidations to different profiles within
+  // FakeSyncServerInvalidationSender.
+  std::map<raw_ptr<Profile>, raw_ptr<FakeSyncGCMDriver>>
+      profile_to_fake_gcm_driver_;
 
   // Triggers a GetUpdates via refresh after a configuration.
   std::unique_ptr<ConfigurationRefresher> configuration_refresher_;

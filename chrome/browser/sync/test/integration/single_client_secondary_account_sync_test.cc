@@ -11,7 +11,6 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
-#include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/common/chrome_paths.h"
@@ -53,6 +52,8 @@ class SingleClientSecondaryAccountSyncTest : public SyncTest {
   ~SingleClientSecondaryAccountSyncTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
+    SyncTest::SetUpInProcessBrowserTestFixture();
+
     test_signin_client_subscription_ =
         secondary_account_helper::SetUpSigninClient(&test_url_loader_factory_);
   }

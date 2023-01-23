@@ -1311,6 +1311,8 @@ class SingleClientWalletSecondaryAccountSyncTest
   ~SingleClientWalletSecondaryAccountSyncTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
+    SingleClientWalletSyncTest::SetUpInProcessBrowserTestFixture();
+
     test_signin_client_subscription_ =
         secondary_account_helper::SetUpSigninClient(&test_url_loader_factory_);
   }
