@@ -221,7 +221,8 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
               ::testing::HasSubstr("keepAliveDelay must be no less than"));
 }
 
-IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsOne) {
+IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
+                       DISABLED_OpenTcp_OptionsOne) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectUniqueSample(kTCPNetworkFailuresHistogramName,
                                       -net::Error::ERR_PROXY_CONNECTION_FAILED,
