@@ -14045,6 +14045,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_VERIFY_SHEET_TITLE" desc="Header shown to the user while signing in happens.">
       Verifying…
     </message>
+    <message name="IDS_VERIFY_SHEET_TITLE_AUTO_SIGNIN" desc="Header for auto sign-in sheet. Sheet is shown to notify the user that they are signing in to a website using an account from an identity provider." translateable="false">
+      Signing in to <ph name="SITE_ETLD_PLUS_ONE">$1<ex>rp.example</ex></ph> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$2<ex>idp.example</ex></ph>
+    </message>
 
     <!-- Input overlay strings -->
     <if expr="chromeos_ash">

@@ -39,14 +39,17 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
    public:
     enum class LinkType { PRIVACY_POLICY, TERMS_OF_SERVICE };
 
-    // Called when the user either selects the account from the multi-account
-    // chooser or clicks the "continue" button.
+    // Called when:
+    // 1. A user either selects the account from the multi-account chooser or
+    // clicks the "continue" button. (auto_signin == false)
+    // 2. Auto sign-in is triggered. (auto_signin == true)
     // Takes `account` as well as `idp_data` since passing `account_id` is
     // insufficient in the multiple IDP case. The caller should pass a cref, as
     // these objects are owned by the observer.
     virtual void OnAccountSelected(
         const content::IdentityRequestAccount& account,
-        const IdentityProviderDisplayData& idp_data) = 0;
+        const IdentityProviderDisplayData& idp_data,
+        bool auto_signin) = 0;
 
     // Called when the user clicks "privacy policy" or "terms of service" link.
     virtual void OnLinkClicked(LinkType link_type, const GURL& url) = 0;
@@ -73,7 +76,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
       const std::vector<IdentityProviderDisplayData>& idp_data_list,
       bool show_back_button) override;
   void ShowVerifyingSheet(const content::IdentityRequestAccount& account,
-                          const IdentityProviderDisplayData& idp_data) override;
+                          const IdentityProviderDisplayData& idp_data,
+                          const std::u16string& title) override;
 
   void ShowSingleAccountConfirmDialog(
       const std::u16string& rp_for_display,

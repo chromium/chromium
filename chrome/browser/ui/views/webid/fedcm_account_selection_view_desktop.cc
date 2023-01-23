@@ -9,7 +9,9 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 using DismissReason = content::IdentityRequestDialogController::DismissReason;
@@ -86,8 +88,26 @@ void FedCmAccountSelectionView::Show(
   rp_for_display_ = base::UTF8ToUTF16(rp_etld_plus_one);
   bubble_widget_ = CreateBubble(browser, rp_for_display_, idp_title, rp_context)
                        ->GetWeakPtr();
-  GetBubbleView()->ShowAccountPicker(idp_data_list_,
-                                     /*show_back_button=*/false);
+  if (sign_in_mode == Account::SignInMode::kExplicit) {
+    GetBubbleView()->ShowAccountPicker(idp_data_list_,
+                                       /*show_back_button=*/false);
+  } else {
+    DCHECK_EQ(sign_in_mode, Account::SignInMode::kAuto);
+
+    for (const auto& idp_data : idp_data_list_) {
+      for (const auto& account : idp_data.accounts_) {
+        if (account.login_state != Account::LoginState::kSignIn) {
+          continue;
+        }
+        // When auto sign-in UX flow is triggered, there will be one and only
+        // only account that's returning with LoginStatus::kSignIn.
+        OnAccountSelected(account, idp_data, /*auto_signin=*/true);
+        bubble_widget_->Show();
+        bubble_widget_->AddObserver(this);
+        return;
+      }
+    }
+  }
   bubble_widget_->Show();
   bubble_widget_->AddObserver(this);
 }
@@ -194,7 +214,8 @@ void FedCmAccountSelectionView::OnWidgetDestroying(views::Widget* widget) {
 
 void FedCmAccountSelectionView::OnAccountSelected(
     const Account& account,
-    const IdentityProviderDisplayData& idp_data) {
+    const IdentityProviderDisplayData& idp_data,
+    bool auto_signin) {
   state_ = (state_ == State::ACCOUNT_PICKER &&
             account.login_state == Account::LoginState::kSignUp)
                ? State::PERMISSION
@@ -210,7 +231,12 @@ void FedCmAccountSelectionView::OnAccountSelected(
     if (!weak_ptr)
       return;
 
-    GetBubbleView()->ShowVerifyingSheet(account, idp_data);
+    const std::u16string title =
+        auto_signin ? l10n_util::GetStringFUTF16(
+                          IDS_VERIFY_SHEET_TITLE_AUTO_SIGNIN, rp_for_display_,
+                          idp_data.idp_etld_plus_one_)
+                    : l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE);
+    GetBubbleView()->ShowVerifyingSheet(account, idp_data, title);
     return;
   }
   GetBubbleView()->ShowSingleAccountConfirmDialog(rp_for_display_, account,

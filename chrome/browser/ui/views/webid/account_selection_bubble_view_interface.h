@@ -27,7 +27,8 @@ class AccountSelectionBubbleViewInterface {
   // Updates the FedCM bubble to show the "verifying" sheet.
   virtual void ShowVerifyingSheet(
       const content::IdentityRequestAccount& account,
-      const IdentityProviderDisplayData& idp_data) = 0;
+      const IdentityProviderDisplayData& idp_data,
+      const std::u16string& title) = 0;
 
   // Updates to show single account plus a confirm dialog. Used when showing the
   // account confirmation dialog after the user picks one of multiple accounts.

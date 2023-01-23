@@ -458,9 +458,8 @@ void AccountSelectionBubbleView::ShowAccountPicker(
 
 void AccountSelectionBubbleView::ShowVerifyingSheet(
     const content::IdentityRequestAccount& account,
-    const IdentityProviderDisplayData& idp_data) {
-  const std::u16string title =
-      l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE);
+    const IdentityProviderDisplayData& idp_data,
+    const std::u16string& title) {
   UpdateHeader(idp_data.idp_metadata_, title, /*show_back_button=*/false);
 
   RemoveNonHeaderChildViews();
@@ -650,7 +649,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   auto button = std::make_unique<ContinueButton>(
       base::BindRepeating(&Observer::OnAccountSelected,
                           base::Unretained(observer_), std::cref(account),
-                          std::cref(idp_data)),
+                          std::cref(idp_data), /*auto_signin=*/false),
       l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_CONTINUE,
                                  base::UTF8ToUTF16(display_name)),
       this, idp_metadata.brand_background_color, idp_metadata.brand_text_color);
@@ -788,7 +787,7 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountRow(
     auto row = std::make_unique<HoverButton>(
         base::BindRepeating(&Observer::OnAccountSelected,
                             base::Unretained(observer_), std::cref(account),
-                            std::cref(idp_data)),
+                            std::cref(idp_data), /*auto_signin=*/false),
         std::move(image_view), base::UTF8ToUTF16(account.name),
         base::UTF8ToUTF16(account.email));
     row->SetBorder(views::CreateEmptyBorder(

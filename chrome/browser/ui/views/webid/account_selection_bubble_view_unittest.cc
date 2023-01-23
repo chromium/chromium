@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/webid/fake_delegate.h"
 #include "chrome/browser/ui/views/webid/identity_provider_display_data.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/browser/web_contents.h"
@@ -25,6 +26,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
@@ -43,6 +45,8 @@ const std::u16string kTitleSignIn =
     u"Sign in to rp-example.com with idp-example.com";
 const std::u16string kTitleSignInWithoutIdp = u"Sign in to rp-example.com";
 const std::u16string kTitleSigningIn = u"Verifying…";
+const std::u16string kTitleSigningInWithAutoSignin =
+    u"Signing in to rp-example.com with idp-example.com";
 
 constexpr char kIdBase[] = "id";
 constexpr char kEmailBase[] = "email";
@@ -464,11 +468,35 @@ TEST_F(AccountSelectionBubbleViewTest, Verifying) {
       content::ClientMetadata(GURL(), GURL()), {account});
 
   CreateAccountSelectionBubble();
-  dialog_->ShowVerifyingSheet(account, idp_data);
+  dialog_->ShowVerifyingSheet(
+      account, idp_data, l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE));
 
   const std::vector<views::View*> children = dialog()->children();
   ASSERT_EQ(children.size(), 3u);
   PerformHeaderChecks(children[0], kTitleSigningIn,
+                      /*expect_idp_brand_icon_in_header=*/true);
+
+  views::View* row_container = dialog()->children()[2];
+  ASSERT_EQ(row_container->children().size(), 1u);
+  CheckAccountRow(row_container->children()[0], kAccountSuffix);
+}
+
+TEST_F(AccountSelectionBubbleViewTest, VerifyingForAutoSignin) {
+  const std::string kAccountSuffix = "suffix";
+  content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
+      kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignIn);
+  IdentityProviderDisplayData idp_data(
+      kIdpETLDPlusOne, content::IdentityProviderMetadata(),
+      content::ClientMetadata(GURL(), GURL()), {account});
+
+  CreateAccountSelectionBubble();
+  const auto title = l10n_util::GetStringFUTF16(
+      IDS_VERIFY_SHEET_TITLE_AUTO_SIGNIN, kRpETLDPlusOne, kIdpETLDPlusOne);
+  dialog_->ShowVerifyingSheet(account, idp_data, title);
+
+  const std::vector<views::View*> children = dialog()->children();
+  ASSERT_EQ(children.size(), 3u);
+  PerformHeaderChecks(children[0], kTitleSigningInWithAutoSignin,
                       /*expect_idp_brand_icon_in_header=*/true);
 
   views::View* row_container = dialog()->children()[2];
