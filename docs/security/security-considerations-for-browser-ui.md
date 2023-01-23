@@ -138,6 +138,14 @@ If multiple clicks/gestures aren't feasible, consider introducing a short delay
 between when the browser UI is shown and the call-to-action activates. For
 example, if the user must click a button to grant a permission, introduce a
 delay before the button becomes active once the permission prompt is
-shown. Three seconds is typically considered a delay that is long enough to let
-the user notice that some security-sensitive browser UI is showing without being
-too disruptive to the typical user experience.
+shown. Chrome uses short and long delays in various UI:
+
+- For large security-sensitive browser surfaces like interstitials, three
+seconds is typically considered a delay that is long enough to let the user
+notice that the UI is showing without being too disruptive to the typical user
+experience.
+
+- For smaller UI surfaces such as dialog boxes, a shorter delay like 500ms can
+be more practical. [`InputEventActivationProtector`](
+ui/views/input_event_activation_protector.h) is a helper class that ignores UI
+events that happen within 500ms of the sensitive UI being displayed.
