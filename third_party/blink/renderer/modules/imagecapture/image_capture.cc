@@ -426,7 +426,18 @@ void ImageCapture::GetMediaTrackCapabilities(
 // inside the method, https://crbug.com/708723.
 void ImageCapture::SetMediaTrackConstraints(
     ScriptPromiseResolver* resolver,
-    const HeapVector<Member<MediaTrackConstraintSet>>& constraints_vector) {
+    const MediaTrackConstraints* all_constraints) {
+  DCHECK(all_constraints);
+  if (!all_constraints->hasAdvanced() || all_constraints->advanced().empty()) {
+    // TODO(crbug.com/1408091): This is not spec compliant.
+    // If there are no advanced constraints (but only required and optional
+    // constraints), the required and optional constraints should be applied.
+    ClearMediaTrackConstraints();
+    resolver->Resolve();
+    return;
+  }
+
+  const auto& constraints_vector = all_constraints->advanced();
   DCHECK_GT(constraints_vector.size(), 0u);
   // TODO(mcasas): add support more than one single advanced constraint.
   const MediaTrackConstraintSet* constraints = constraints_vector[0];

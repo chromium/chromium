@@ -159,8 +159,6 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   void SourceChangedCaptureHandle() override;
 
   void PropagateTrackEnded();
-  void applyConstraintsImageCapture(ScriptPromiseResolver*,
-                                    const MediaTrackConstraints*);
 
   void SendLogMessage(const WTF::String& message);
 

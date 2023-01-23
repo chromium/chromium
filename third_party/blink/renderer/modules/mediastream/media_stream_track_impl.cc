@@ -759,7 +759,7 @@ void MediaStreamTrackImpl::applyConstraints(
       // implementation.
       image_capture_->ClearMediaTrackConstraints();
     } else if (ConstraintsHaveImageCapture(constraints)) {
-      applyConstraintsImageCapture(resolver, constraints);
+      image_capture_->SetMediaTrackConstraints(resolver, constraints);
       return;
     }
   }
@@ -786,18 +786,6 @@ void MediaStreamTrackImpl::applyConstraints(
       MakeGarbageCollected<ApplyConstraintsRequest>(this, web_constraints,
                                                     resolver));
   return;
-}
-
-void MediaStreamTrackImpl::applyConstraintsImageCapture(
-    ScriptPromiseResolver* resolver,
-    const MediaTrackConstraints* constraints) {
-  // |constraints| empty means "remove/clear all current constraints".
-  if (!constraints->hasAdvanced() || constraints->advanced().empty()) {
-    image_capture_->ClearMediaTrackConstraints();
-    resolver->Resolve();
-  } else {
-    image_capture_->SetMediaTrackConstraints(resolver, constraints->advanced());
-  }
 }
 
 bool MediaStreamTrackImpl::Ended() const {
