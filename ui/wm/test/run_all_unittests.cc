@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/test/launcher/unit_test_launcher.h"
@@ -14,6 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/env.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/ui_base_paths.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
@@ -33,6 +35,13 @@ class WMTestSuite : public base::TestSuite {
     base::FilePath ui_test_pak_path;
     ASSERT_TRUE(base::PathService::Get(ui::UI_TEST_PAK, &ui_test_pak_path));
     ui::ResourceBundle::InitSharedInstanceWithPakPath(ui_test_pak_path);
+
+    if (ui::ResourceBundle::IsScaleFactorSupported(ui::k200Percent)) {
+      base::FilePath ui_test_resources_200 = ui_test_pak_path.DirName().Append(
+          FILE_PATH_LITERAL("ui_test_200_percent.pak"));
+      ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+          ui_test_resources_200, ui::k200Percent);
+    }
 
     env_ = aura::Env::CreateInstance();
 

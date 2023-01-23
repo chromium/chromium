@@ -28,8 +28,6 @@ component("wm") {
     "core/cursor_manager.h",
     "core/cursor_util.cc",
     "core/cursor_util.h",
-    "core/cursors_aura.cc",
-    "core/cursors_aura.h",
     "core/default_activation_client.cc",
     "core/default_activation_client.h",
     "core/default_screen_position_client.cc",
@@ -176,13 +174,17 @@ test("wm_unittests") {
     "//ui/gfx:gfx_skia",
     "//ui/gfx/animation",
     "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
     "//ui/gl:test_support",
     "//ui/platform_window",
     "//ui/resources",
     "//ui/wm/public",
   ]
 
-  data_deps = [ "//ui/resources:ui_test_pak_data" ]
+  data_deps = [
+    "//ui/resources:ui_test_pak_data",
+    "//ui/resources:ui_test_pak_data_200_percent",
+  ]
 
   if (is_chromeos_ash) {
     sources += [ "core/ime_util_chromeos_unittest.cc" ]

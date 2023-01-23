@@ -38,9 +38,10 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/widget/widget.h"
-#include "ui/wm/core/cursors_aura.h"
+#include "ui/wm/core/cursor_util.h"
 
 namespace ash {
+
 namespace {
 
 const int kMinLargeCursorSize = 25;
