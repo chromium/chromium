@@ -30,12 +30,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GoogleUpdate.InstallDetails.UpdateCohort" units="units"
-    expires_after="2019-06-01">
-  <owner>nikunjb@chromium.org</owner>
+    expires_after="2024-06-01">
+  <owner>waffles@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
+  <owner>omaha-team@google.com</owner>
   <summary>
     Store the hash of update cohort name as reported by Chrome Updater on
-    Windows. Recorded at the start of metrics service.
+    Windows. Recorded at the start of metrics service. Warning: this histogram
+    was expired from 2019-06-01 to 2023-01-23; data may be missing.
   </summary>
 </histogram>
 
