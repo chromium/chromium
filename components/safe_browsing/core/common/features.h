@@ -85,6 +85,10 @@ BASE_DECLARE_FEATURE(kEsbIphBubbleAndCollapseSettings);
 // of telemetry reports to SB servers.
 BASE_DECLARE_FEATURE(kExtensionTelemetry);
 
+// Allows the Extension Telemetry Service to accept and use configurations
+// sent by the server.
+BASE_DECLARE_FEATURE(kExtensionTelemetryConfiguration);
+
 // Enables data collected by the kExtensionTelemetry to be written and read to
 // disk. This data will be uploaded for analysis.
 BASE_DECLARE_FEATURE(kExtensionTelemetryPersistence);

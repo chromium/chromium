@@ -270,6 +270,8 @@ static_library("safe_browsing") {
         "extension_telemetry/extension_signal_processor.h",
         "extension_telemetry/extension_signal_util.cc",
         "extension_telemetry/extension_signal_util.h",
+        "extension_telemetry/extension_telemetry_config_manager.cc",
+        "extension_telemetry/extension_telemetry_config_manager.h",
         "extension_telemetry/extension_telemetry_file_processor.cc",
         "extension_telemetry/extension_telemetry_file_processor.h",
         "extension_telemetry/extension_telemetry_persister.cc",

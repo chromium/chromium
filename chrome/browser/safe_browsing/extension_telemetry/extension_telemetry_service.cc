@@ -23,6 +23,7 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_all_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_signal.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_config_manager.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_persister.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_uploader.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/potential_password_theft_signal_processor.h"
@@ -194,7 +195,6 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
     return;
 
   enabled_ = enable;
-
   if (enabled_) {
     // Create signal processors.
     // Map the processors to the signals they eventually generate.
@@ -240,14 +240,16 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
         std::move(subscribers_for_remote_host_contacted));
     signal_subscribers_.emplace(ExtensionSignalType::kPasswordReuse,
                                 std::move(subscribers_for_password_reuse));
-
+    if (base::FeatureList::IsEnabled(kExtensionTelemetryConfiguration)) {
+      config_manager_ =
+          std::make_unique<ExtensionTelemetryConfigManager>(pref_service_);
+      config_manager_->LoadConfig();
+    }
     if (current_reporting_interval_.is_positive()) {
       int max_files_supported =
           ExtensionTelemetryPersister::MaxFilesSupported();
       int writes_per_interval = std::min(
           max_files_supported, kExtensionTelemetryWritesPerInterval.Get());
-      if (writes_per_interval < 1)
-        writes_per_interval = 1;
       // Configure persister for the maximum number of reports to be persisted
       // on disk. This number is the sum of reports written at every
       // write interval plus an additional allocation (3) for files written at
@@ -319,6 +321,12 @@ bool ExtensionTelemetryService::SignalDataPresent() {
   return (extension_store_.size() > 0);
 }
 
+bool ExtensionTelemetryService::IsSignalEnabled(
+    const extensions::ExtensionId& extension_id,
+    ExtensionSignalType signal_type) {
+  return config_manager_->IsSignalEnabled(extension_id, signal_type);
+}
+
 void ExtensionTelemetryService::AddSignal(
     std::unique_ptr<ExtensionSignal> signal) {
   ExtensionSignalType signal_type = signal->GetType();
@@ -368,6 +376,8 @@ void ExtensionTelemetryService::CreateAndUploadReport() {
 }
 
 void ExtensionTelemetryService::OnUploadComplete(bool success) {
+  // TODO(https://crbug.com/1408126): Add `config_manager_` implementation
+  // to check server response and update config.
   if (success) {
     SetLastUploadTimeForExtensionTelemetry(*pref_service_, base::Time::Now());
   }

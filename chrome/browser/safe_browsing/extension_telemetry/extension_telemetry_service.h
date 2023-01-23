@@ -42,6 +42,7 @@ class ExtensionTelemetryReportRequest_ExtensionInfo;
 class ExtensionTelemetryUploader;
 class ExtensionTelemetryPersister;
 class SafeBrowsingTokenFetcher;
+class ExtensionTelemetryConfigManager;
 
 // This class process extension signals and reports telemetry for a given
 // profile (regular profile only). It is used exclusively on the UI thread.
@@ -84,6 +85,11 @@ class ExtensionTelemetryService : public KeyedService {
 
   // Accepts extension telemetry signals for processing.
   void AddSignal(std::unique_ptr<ExtensionSignal> signal);
+
+  // Checks the `extension_id` and `signal_type` against the
+  // configuration and reports true if the signal should be created.
+  bool IsSignalEnabled(const extensions::ExtensionId& extension_id,
+                       ExtensionSignalType signal_type);
 
   base::TimeDelta current_reporting_interval() {
     return current_reporting_interval_;
@@ -139,6 +145,12 @@ class ExtensionTelemetryService : public KeyedService {
   // the UI thread. It also allows the `persister_` object to be
   // destroyed cleanly while running tasks during Chrome shutdown.
   base::SequenceBound<ExtensionTelemetryPersister> persister_;
+
+  // The `config_manager_` manages all configurable variables of the
+  // Extension Telemetry Service. Variables are stored in Chrome Prefs
+  // between sessions.
+  std::unique_ptr<safe_browsing::ExtensionTelemetryConfigManager>
+      config_manager_;
 
   // The profile with which this instance of the service is associated.
   const raw_ptr<Profile> profile_;
