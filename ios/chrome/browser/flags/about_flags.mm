@@ -1219,6 +1219,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"promos-manager-uses-fet", flag_descriptions::kPromosManagerUsesFETName,
      flag_descriptions::kPromosManagerUsesFETDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kPromosManagerUsesFET)},
+    {"enable-accessibility-identifier-to-omnibox-leading-image",
+     flag_descriptions::kEnableAccessibilityIdentifierToOmniboxLeadingImageName,
+     flag_descriptions::
+         kEnableAccessibilityIdentifierToOmniboxLeadingImageDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableAccessibilityIdentifierToOmniboxLeadingImage)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

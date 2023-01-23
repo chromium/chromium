@@ -138,6 +138,12 @@ extern const char kAppleCalendarExperienceKitDescription[];
 extern const char kEmailName[];
 extern const char kEmailDescription[];
 
+// Title and description for enable accessibility identifier to omnibox leading
+// image.
+extern const char kEnableAccessibilityIdentifierToOmniboxLeadingImageName[];
+extern const char
+    kEnableAccessibilityIdentifierToOmniboxLeadingImageDescription[];
+
 // Title and description for the flag to enable phone numbers detection and
 // processing.
 extern const char kPhoneNumberName[];

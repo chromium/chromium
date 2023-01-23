@@ -236,6 +236,11 @@ const char kDetectMainThreadFreezeDescription[] =
     "A crash report will be uploaded if the main thread is frozen more than "
     "the time specified by this flag.";
 
+const char kEnableAccessibilityIdentifierToOmniboxLeadingImageName[] =
+    "Enable accessibility identifier leading image";
+const char kEnableAccessibilityIdentifierToOmniboxLeadingImageDescription[] =
+    "Enable accessibility identifier to Omnibox leading image";
+
 const char kEnableDiscoverFeedTopSyncPromoName[] =
     "Enable the sync promo on top of the feed.";
 const char kEnableDiscoverFeedTopSyncPromoDescription[] =

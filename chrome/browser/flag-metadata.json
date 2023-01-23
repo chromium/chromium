@@ -1675,6 +1675,11 @@
     "expiry_milestone": 120
   },
   {
+      "name": "enable-accessibility-identifier-to-omnibox-leading-image",
+      "owners":["ameurhosni@google.com","bling-flags@google.com"],
+      "expiry_milestone": 114
+  },
+  {
     "name": "enable-accessibility-live-caption",
     "owners": [ "abigailbklein@google.com", "evliu@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 120

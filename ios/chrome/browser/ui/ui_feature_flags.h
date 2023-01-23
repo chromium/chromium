@@ -125,6 +125,9 @@ BASE_DECLARE_FEATURE(kEnableNewBookmarksImplementation);
 // Feature to enable multiline gradient support in fade truncating label.
 BASE_DECLARE_FEATURE(kMultilineFadeTruncatingLabel);
 
+// Flag to enable accessibility identifier to omnibox leading image.
+BASE_DECLARE_FEATURE(kEnableAccessibilityIdentifierToOmniboxLeadingImage);
+
 // Whether the tab grid tabs should be sorted by recency.
 bool IsTabGridSortedByRecency();
 
