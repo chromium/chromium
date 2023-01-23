@@ -9187,6 +9187,8 @@
                         "FencedFrames",
                         "FencedFramesAPIChanges",
                         "InterestGroupStorage",
+                        "KAnonymityService",
+                        "KAnonymityServiceOHTTPRequests",
                         "NoncedPartitionedCookies",
                         "PrivacySandboxAdsAPIs",
                         "PrivateAggregationApi",
