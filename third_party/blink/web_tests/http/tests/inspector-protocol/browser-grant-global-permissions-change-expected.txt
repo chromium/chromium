@@ -1,0 +1,14 @@
+Test that change callback is invoked during permission emulation
+[
+    [0] : denied
+]
+[
+    [0] : denied
+    [1] : granted
+]
+[
+    [0] : denied
+    [1] : granted
+    [2] : denied
+]
+
