@@ -105,6 +105,9 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
  private:
   class WindowsHider;
   friend class DragWindowFromShelfControllerTestApi;
+  // TODO(sammiequon): Refactor `DragWindowFromShelfControllerTestApi` so that
+  // we can fetch `other_window_copy_` using it.
+  friend class FloatDragWindowFromShelfControllerTest;
 
   void OnDragStarted(const gfx::PointF& location_in_screen);
   void OnDragEnded(const gfx::PointF& location_in_screen,
@@ -172,7 +175,15 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
   // function is supposed to be called with an active overview session.
   void OnWindowDragStartedInOverview();
 
+  // Cleans up `other_window_` and `other_window_copy`.
+  void ResetOtherWindow();
+
   aura::Window* window_ = nullptr;
+  // The `other_window_` refers to the window other than `window_` that is
+  // visible while `window_` is being dragged. This happens when there is a
+  // floated window.
+  aura::Window* other_window_ = nullptr;
+  std::unique_ptr<ui::LayerTreeOwner> other_window_copy_;
   gfx::PointF initial_location_in_screen_;
   gfx::PointF previous_location_in_screen_;
   bool drag_started_ = false;

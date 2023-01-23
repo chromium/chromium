@@ -20,6 +20,7 @@
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_view.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -81,13 +82,14 @@ constexpr char kDragWindowFromShelfMaxLatencyHistogram[] =
 class DragWindowFromShelfController::WindowsHider
     : public aura::WindowObserver {
  public:
-  explicit WindowsHider(aura::Window* dragged_window)
+  WindowsHider(aura::Window* dragged_window, aura::Window* other_window)
       : dragged_window_(dragged_window) {
     std::vector<aura::Window*> windows =
         Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
     for (auto* window : windows) {
-      if (window == dragged_window_)
+      if (window == dragged_window_ || window == other_window) {
         continue;
+      }
       if (wm::HasTransientAncestor(window, dragged_window_))
         continue;
       if (!window->IsVisible())
@@ -161,6 +163,42 @@ DragWindowFromShelfController::DragWindowFromShelfController(
     const gfx::PointF& location_in_screen)
     : window_(window) {
   window_->AddObserver(this);
+
+  // Find the other window that is visible while `window_` is being dragged.
+  // There will only be another window if there is a float window (splitview has
+  // two visible windows but is handled separately).
+  if (auto* float_controller = Shell::Get()->float_controller()) {
+    if (auto* floated_window = float_controller->FindFloatedWindowOfDesk(
+            DesksController::Get()->GetTargetActiveDesk())) {
+      // If the floated window is the dragged window, then the other window is
+      // the top most non floated window, if it exists. Otherwise the floated
+      // window is the active window.
+      if (floated_window == window_) {
+        aura::Window* candidate_other_window =
+            window_util::GetTopNonFloatedWindow();
+        if (candidate_other_window &&
+            !WindowState::Get(candidate_other_window)->IsMinimized()) {
+          other_window_ = candidate_other_window;
+        }
+      } else {
+        other_window_ = floated_window;
+      }
+
+      // Create a copy of the other window. This will be stacked on top and
+      // faded out as we drag. The original window will be placed immediately
+      // into overview mode on a successful drag, or return to its original
+      // position on a canceled drag.
+      if (other_window_) {
+        other_window_->AddObserver(this);
+        other_window_copy_ = wm::RecreateLayers(other_window_);
+        other_window_copy_->root()->SetVisible(true);
+        other_window_copy_->root()->SetOpacity(1.f);
+        other_window_->layer()->parent()->StackAbove(other_window_copy_->root(),
+                                                     other_window_->layer());
+      }
+    }
+  }
+
   OnDragStarted(location_in_screen);
 
   presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
@@ -172,6 +210,7 @@ DragWindowFromShelfController::~DragWindowFromShelfController() {
   CancelDrag();
   if (window_)
     window_->RemoveObserver(this);
+  ResetOtherWindow();
 }
 
 void DragWindowFromShelfController::Drag(const gfx::PointF& location_in_screen,
@@ -343,6 +382,11 @@ void DragWindowFromShelfController::FinalizeDraggedWindow() {
 }
 
 void DragWindowFromShelfController::OnWindowDestroying(aura::Window* window) {
+  if (window == other_window_) {
+    ResetOtherWindow();
+    return;
+  }
+
   DCHECK_EQ(window_, window);
 
   CancelDrag();
@@ -364,7 +408,7 @@ void DragWindowFromShelfController::OnDragStarted(
   WindowBackdrop::Get(window_)->DisableBackdrop();
 
   // Hide all visible windows behind the dragged window during dragging.
-  windows_hider_ = std::make_unique<WindowsHider>(window_);
+  windows_hider_ = std::make_unique<WindowsHider>(window_, other_window_);
 
   // Hide the home launcher until it's eligible to show it.
   Shell::Get()->app_list_controller()->OnWindowDragStarted();
@@ -462,12 +506,14 @@ void DragWindowFromShelfController::OnDragEnded(
   }
   window_drag_result_.reset();
   started_in_overview_ = false;
+
+  ResetOtherWindow();
 }
 
 void DragWindowFromShelfController::UpdateDraggedWindow(
     const gfx::PointF& location_in_screen) {
   gfx::Rect bounds = window_->bounds();
-  ::wm::ConvertRectToScreen(window_->parent(), &bounds);
+  wm::ConvertRectToScreen(window_->parent(), &bounds);
 
   // Calculate the window's transform based on the location.
   // For scale, at |initial_location_in_screen_| or bounds.bottom(), the scale
@@ -508,7 +554,7 @@ void DragWindowFromShelfController::UpdateDraggedWindow(
       TransformAboutPivot(gfx::PointF(window_->bounds().origin()), transform);
   gfx::RectF transformed_bounds =
       new_tranform.MapRect(gfx::RectF(window_->bounds()));
-  ::wm::TranslateRectToScreen(window_->parent(), &transformed_bounds);
+  wm::TranslateRectToScreen(window_->parent(), &transformed_bounds);
   if (transformed_bounds.y() < display_bounds.y()) {
     transform.Translate(0,
                         (display_bounds.y() - transformed_bounds.y()) / scale);
@@ -519,6 +565,17 @@ void DragWindowFromShelfController::UpdateDraggedWindow(
   }
 
   SetTransform(window_, transform);
+
+  if (other_window_copy_) {
+    // TODO(b/252504142): Figure out the opacity once motion specs are ready.
+    // For now, the opacity will become zero once we have dragged more than one
+    // eighth of the display.
+    float opacity = (initial_location_in_screen_.y() - location_in_screen.y()) /
+                    (display_bounds.height() / 8.f);
+
+    opacity = base::clamp(opacity, 0.f, 1.f);
+    other_window_copy_->root()->SetOpacity(1.f - opacity);
+  }
 }
 
 SplitViewController::SnapPosition
@@ -743,6 +800,14 @@ void DragWindowFromShelfController::OnWindowDragStartedInOverview() {
   // Hide overview windows first and fade in the windows after delaying
   // kShowOverviewTimeWhenDragSuspend.
   HideOverviewDuringDrag();
+}
+
+void DragWindowFromShelfController::ResetOtherWindow() {
+  if (other_window_) {
+    other_window_->RemoveObserver(this);
+    other_window_ = nullptr;
+  }
+  other_window_copy_.reset();
 }
 
 }  // namespace ash

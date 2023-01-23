@@ -90,6 +90,10 @@ void HideFloatedWindow(aura::Window* floated_window) {
 // Shows the given floated window.
 void ShowFloatedWindow(aura::Window* floated_window) {
   DCHECK(floated_window);
+  if (floated_window->IsVisible()) {
+    return;
+  }
+
   ScopedAnimationDisabler disabler(floated_window);
   floated_window->Show();
 }
@@ -403,7 +407,7 @@ void FloatController::OnDragCompletedForTablet(
           ->GetDisplayNearestWindow(floated_window->GetRootWindow())
           .bounds());
 
-  // Check which corner to magnetize to based on which quadrent of the display
+  // Check which corner to magnetize to based on which quadrant of the display
   // the mouse/touch was released. If it somehow falls outside, then magnetize
   // to the previous location.
   gfx::RectF display_bounds_left, display_bounds_right;

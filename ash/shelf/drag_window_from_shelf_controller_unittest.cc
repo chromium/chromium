@@ -35,6 +35,8 @@
 #include "ash/wm/window_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/compositor/layer.h"
@@ -1464,6 +1466,123 @@ TEST_F(DragWindowFromShelfControllerTest,
   window.reset();
 
   EndDrag(shelf_bounds.CenterPoint(), /*velocity_y=*/absl::nullopt);
+}
+
+class FloatDragWindowFromShelfControllerTest
+    : public DragWindowFromShelfControllerTest {
+ public:
+  FloatDragWindowFromShelfControllerTest()
+      : scoped_feature_list_(chromeos::wm::features::kFloatWindow) {}
+  FloatDragWindowFromShelfControllerTest(
+      const FloatDragWindowFromShelfControllerTest&) = delete;
+  FloatDragWindowFromShelfControllerTest& operator=(
+      const FloatDragWindowFromShelfControllerTest&) = delete;
+  ~FloatDragWindowFromShelfControllerTest() override = default;
+
+  ui::Layer* GetOtherWindowCopyLayer() {
+    ui::LayerTreeOwner* layer_tree_owner =
+        window_drag_controller()->other_window_copy_.get();
+    return layer_tree_owner ? layer_tree_owner->root() : nullptr;
+  }
+
+  // Creates a floated application window.
+  std::unique_ptr<aura::Window> CreateFloatedWindow() {
+    std::unique_ptr<aura::Window> floated_window = CreateAppWindow();
+    PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+    DCHECK(WindowState::Get(floated_window.get())->IsFloated());
+    return floated_window;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(FloatDragWindowFromShelfControllerTest, DragFloatedWindow) {
+  const gfx::Rect shelf_bounds =
+      Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
+
+  // Create one maximized and one floated window.
+  auto maximized_window = CreateTestWindow();
+  auto floated_window = CreateFloatedWindow();
+  wm::ActivateWindow(floated_window.get());
+
+  const gfx::Point start_drag_point(
+      floated_window->GetBoundsInScreen().CenterPoint().x(),
+      shelf_bounds.CenterPoint().y());
+  // Try to drag the window from shelf.
+  StartDrag(floated_window.get(), start_drag_point);
+  ui::Layer* other_window_copy_layer = GetOtherWindowCopyLayer();
+  ASSERT_TRUE(other_window_copy_layer);
+
+  // To check if the copy is of the maximized window, we check the parent and
+  // bounds.
+  EXPECT_EQ(maximized_window->layer()->parent(),
+            other_window_copy_layer->parent());
+  EXPECT_EQ(maximized_window->layer()->bounds(),
+            other_window_copy_layer->bounds());
+
+  Drag(gfx::Point(0, 200), 1.f, 1.f);
+  EndDrag(shelf_bounds.CenterPoint(), /*velocity_y=*/absl::nullopt);
+  EXPECT_FALSE(GetOtherWindowCopyLayer());
+}
+
+TEST_F(FloatDragWindowFromShelfControllerTest, DragMaximizedWindow) {
+  const gfx::Rect shelf_bounds =
+      Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
+
+  // Create one maximized and one floated window.
+  auto maximized_window = CreateTestWindow();
+  auto floated_window = CreateFloatedWindow();
+  wm::ActivateWindow(maximized_window.get());
+
+  const gfx::Point start_drag_point(
+      maximized_window->GetBoundsInScreen().CenterPoint().x(),
+      shelf_bounds.CenterPoint().y());
+  // Try to drag the window from shelf.
+  StartDrag(maximized_window.get(), start_drag_point);
+  ui::Layer* other_window_copy_layer = GetOtherWindowCopyLayer();
+  ASSERT_TRUE(other_window_copy_layer);
+
+  // To check if the copy is of the floated window, we check the parent and
+  // bounds.
+  EXPECT_EQ(floated_window->layer()->parent(),
+            other_window_copy_layer->parent());
+  EXPECT_EQ(floated_window->layer()->bounds(),
+            other_window_copy_layer->bounds());
+
+  Drag(gfx::Point(0, 200), 1.f, 1.f);
+  EndDrag(shelf_bounds.CenterPoint(), /*velocity_y=*/absl::nullopt);
+  EXPECT_FALSE(GetOtherWindowCopyLayer());
+}
+
+// Tests that when dragging from shelf with a floated window into overview, the
+// window state does not change on overview exit.
+TEST_F(FloatDragWindowFromShelfControllerTest, WindowStatePreserved) {
+  const gfx::Rect shelf_bounds =
+      Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
+
+  // Create one maximized and one floated window.
+  auto maximized_window = CreateTestWindow();
+  auto floated_window = CreateFloatedWindow();
+  wm::ActivateWindow(maximized_window.get());
+
+  // Perform a drag such that we end up in overview.
+  const gfx::Point start_drag_point(
+      floated_window->GetBoundsInScreen().CenterPoint().x(),
+      shelf_bounds.CenterPoint().y());
+  StartDrag(floated_window.get(), start_drag_point);
+  Drag(gfx::Point(200, 200), 1.f, 1.f);
+  DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
+      window_drag_controller());
+  EndDrag(gfx::Point(200, 200), /*velocity_y=*/absl::nullopt);
+
+  // Verify that on exiting overview, the original window state is preserved
+  // (neither window is minimized).
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+  ExitOverview();
+  EXPECT_TRUE(WindowState::Get(maximized_window.get())->IsMaximized());
+  EXPECT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
 }
 
 }  // namespace ash
