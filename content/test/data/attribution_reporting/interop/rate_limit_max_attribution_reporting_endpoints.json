@@ -152,7 +152,7 @@
         }]
       },
       {
-        "timestamp": "1645827574000",
+        "timestamp": "1645827573000",
         "registration_request": {
           "attribution_src_url": "https://another-reporter.test/register-trigger",
           "destination_origin": "https://destination.test"
