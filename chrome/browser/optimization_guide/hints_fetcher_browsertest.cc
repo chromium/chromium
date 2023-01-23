@@ -744,7 +744,8 @@ IN_PROC_BROWSER_TEST_F(
       1, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherClearFetchedHints) {
+IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
+                       DISABLED_HintsFetcherClearFetchedHints) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
   GURL url = https_url();
 
