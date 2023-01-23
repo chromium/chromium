@@ -91,13 +91,8 @@ void PrivacyHubNotification::Show() {
     remove_timer_.Stop();
     RemoveNotification(id_);
   }
-  const std::vector<std::u16string> apps = GetAppsAccessingSensors();
 
-  if (const size_t num_apps = apps.size(); num_apps < message_ids_.size()) {
-    builder_.SetMessageWithArgs(message_ids_.at(num_apps), apps);
-  } else {
-    builder_.SetMessageId(message_ids_.at(0));
-  }
+  SetNotificationMessage();
 
   message_center::MessageCenter::Get()->AddNotification(builder_.BuildPtr());
   last_time_shown_ = last_time_shown_.value_or(base::Time::Now());
@@ -118,6 +113,14 @@ void PrivacyHubNotification::Hide() {
   }
 
   last_time_shown_.reset();
+}
+
+void PrivacyHubNotification::Update() {
+  if (message_center::MessageCenter::Get()->FindNotificationById(id_)) {
+    SetNotificationMessage();
+    message_center::MessageCenter::Get()->UpdateNotification(
+        id_, builder_.BuildPtr());
+  }
 }
 
 std::vector<std::u16string> PrivacyHubNotification::GetAppsAccessingSensors()
@@ -141,6 +144,16 @@ std::vector<std::u16string> PrivacyHubNotification::GetAppsAccessingSensors()
   }
 
   return app_names;
+}
+
+void PrivacyHubNotification::SetNotificationMessage() {
+  const std::vector<std::u16string> apps = GetAppsAccessingSensors();
+
+  if (const size_t num_apps = apps.size(); num_apps < message_ids_.size()) {
+    builder_.SetMessageWithArgs(message_ids_.at(num_apps), apps);
+  } else {
+    builder_.SetMessageId(message_ids_.at(0));
+  }
 }
 
 }  // namespace ash

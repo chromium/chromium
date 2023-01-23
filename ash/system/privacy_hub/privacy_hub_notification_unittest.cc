@@ -26,7 +26,16 @@ class FakeSensorDisabledNotificationDelegate
     return apps_;
   }
 
-  void LaunchApp(const std::u16string& app_name) { apps_.push_back(app_name); }
+  void LaunchApp(const std::u16string& app_name) {
+    apps_.insert(apps_.begin(), app_name);
+  }
+
+  void CloseApp(const std::u16string& app_name) {
+    auto it = std::find(apps_.begin(), apps_.end(), app_name);
+    if (it != apps_.end()) {
+      apps_.erase(it);
+    }
+  }
 
  private:
   std::vector<std::u16string> apps_;
@@ -54,6 +63,43 @@ class RemoveNotificationWaiter : public message_center::MessageCenterObserver {
  private:
   base::RunLoop run_loop_;
 };
+
+// A waiter class, once `Wait()` is invoked, waits until a pop up of the
+// notification with id `kNotificationId` is closed.
+class NotificationPopupWaiter : public message_center::MessageCenterObserver {
+ public:
+  NotificationPopupWaiter() {
+    message_center::MessageCenter::Get()->AddObserver(this);
+  }
+  ~NotificationPopupWaiter() override {
+    message_center::MessageCenter::Get()->RemoveObserver(this);
+  }
+  NotificationPopupWaiter& operator=(const NotificationPopupWaiter&) = delete;
+  NotificationPopupWaiter(const NotificationPopupWaiter&) = delete;
+
+  void Wait() { run_loop_.Run(); }
+
+  // message_center::MessageCenterObserver:
+  void OnNotificationPopupShown(const std::string& notification_id,
+                                bool mark_notification_as_read) override {
+    if (notification_id == kNotificationId) {
+      run_loop_.Quit();
+    }
+  }
+
+ private:
+  base::RunLoop run_loop_;
+};
+
+message_center::Notification* GetNotification() {
+  return message_center::MessageCenter::Get()->FindNotificationById(
+      kNotificationId);
+}
+
+message_center::Notification* GetPopupNotification() {
+  return message_center::MessageCenter::Get()->FindPopupNotificationById(
+      kNotificationId);
+}
 
 }  // namespace
 
@@ -133,35 +179,52 @@ TEST_F(PrivacyHubNotificationClickDelegateTest, Click) {
 }
 
 TEST_F(PrivacyHubNotificationTest, ShowAndHide) {
-  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
-      kNotificationId));
+  EXPECT_FALSE(GetNotification());
 
   notification().Show();
 
-  EXPECT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
-      kNotificationId));
+  EXPECT_TRUE(GetNotification());
 
   notification().Hide();
 
-  EXPECT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
-      kNotificationId));
+  EXPECT_TRUE(GetNotification());
 
   RemoveNotificationWaiter waiter;
 
   waiter.Wait();
 
-  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
-      kNotificationId));
+  EXPECT_FALSE(GetNotification());
+}
+
+TEST_F(PrivacyHubNotificationTest, UpdateNotification) {
+  // No notification initially.
+  EXPECT_FALSE(GetNotification());
+  EXPECT_FALSE(GetPopupNotification());
+
+  notification().Show();
+  // The notification should pop up.
+  EXPECT_TRUE(GetPopupNotification());
+
+  // Wait until pop up of the notification is closed.
+  NotificationPopupWaiter waiter;
+  waiter.Wait();
+  // The notification pop up should close by now. But the notification should
+  // stay in the message center.
+  EXPECT_TRUE(GetNotification());
+  EXPECT_FALSE(GetPopupNotification());
+
+  notification().Update();
+  // The update should be silent. The notification should not pop up but stay in
+  // the message center.
+  EXPECT_TRUE(GetNotification());
+  EXPECT_FALSE(GetPopupNotification());
 }
 
 TEST_F(PrivacyHubNotificationTest, WithApps) {
   // No apps -> generic notification text.
   notification().Show();
 
-  message_center::Notification* notification_ptr =
-      message_center::MessageCenter::Get()->FindNotificationById(
-          kNotificationId);
-
+  message_center::Notification* notification_ptr = GetNotification();
   ASSERT_TRUE(notification_ptr);
   EXPECT_EQ(
       notification_ptr->message(),
@@ -171,10 +234,10 @@ TEST_F(PrivacyHubNotificationTest, WithApps) {
   // Launch a single app -> notification with message for one app.
   const std::u16string app1 = u"test1";
   sensor_delegate().LaunchApp(app1);
-
   notification().Show();
-  notification_ptr = message_center::MessageCenter::Get()->FindNotificationById(
-      kNotificationId);
+
+  notification_ptr = GetNotification();
+  ASSERT_TRUE(notification_ptr);
   EXPECT_EQ(
       notification_ptr->message(),
       l10n_util::GetStringFUTF16(
@@ -184,24 +247,38 @@ TEST_F(PrivacyHubNotificationTest, WithApps) {
   // Launch a second app -> notification with message for two apps.
   const std::u16string app2 = u"test2";
   sensor_delegate().LaunchApp(app2);
-
   notification().Show();
-  notification_ptr = message_center::MessageCenter::Get()->FindNotificationById(
-      kNotificationId);
-  EXPECT_TRUE(base::Contains(notification_ptr->message(), app1));
-  EXPECT_TRUE(base::Contains(notification_ptr->message(), app2));
+
+  notification_ptr = GetNotification();
+  ASSERT_TRUE(notification_ptr);
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(
+          IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES,
+          app2, app1),
+      notification_ptr->message());
 
   // More than two apps -> generic notification text.
   const std::u16string app3 = u"test3";
   sensor_delegate().LaunchApp(app3);
-
   notification().Show();
-  notification_ptr = message_center::MessageCenter::Get()->FindNotificationById(
-      kNotificationId);
+
+  notification_ptr = GetNotification();
+  ASSERT_TRUE(notification_ptr);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE),
+            notification_ptr->message());
+
+  // Close one of the applications -> notification with message for two apps.
+  sensor_delegate().CloseApp(app2);
+  notification().Update();
+
+  notification_ptr = GetNotification();
+  ASSERT_TRUE(notification_ptr);
   EXPECT_EQ(
-      notification_ptr->message(),
-      l10n_util::GetStringUTF16(
-          IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE));
+      l10n_util::GetStringFUTF16(
+          IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES,
+          app3, app1),
+      notification_ptr->message());
 }
 
 }  // namespace ash

@@ -110,6 +110,12 @@ void PrivacyHubNotificationController::RemoveSensorDisabledNotification(
   ShowAllActiveNotifications(sensor);
 }
 
+void PrivacyHubNotificationController::UpdateSensorDisabledNotification(
+    const Sensor sensor) {
+  sw_notifications_.at(sensor)->Update();
+  combined_notification_->Update();
+}
+
 void PrivacyHubNotificationController::OpenPrivacyHubSettingsPage() {
   privacy_hub_metrics::LogPrivacyHubOpenedFromNotification();
   Shell::Get()->system_tray_model()->client()->ShowPrivacyHubSettings();

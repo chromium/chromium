@@ -135,10 +135,13 @@ void MicrophonePrivacySwitchController::
   const bool stream_count_increased = input_stream_count > input_stream_count_;
   input_stream_count_ = input_stream_count;
 
-  if (stream_count_increased) {
-    SetMicrophoneNotificationVisible(input_stream_count_ && mic_mute_on_);
-  } else if (!input_stream_count_) {
+  if (!input_stream_count_) {
     SetMicrophoneNotificationVisible(false);
+  } else if (stream_count_increased) {
+    SetMicrophoneNotificationVisible(input_stream_count_ && mic_mute_on_);
+  } else if (mic_mute_on_) {
+    // Microphone is muted and stream count has decreased.
+    UpdateMicrophoneNotification();
   }
 }
 
@@ -186,6 +189,19 @@ void MicrophonePrivacySwitchController::SetMicrophoneNotificationVisible(
     privacy_hub_notification_controller->RemoveSensorDisabledNotification(
         PrivacyHubNotificationController::Sensor::kMicrophone);
   }
+}
+
+void MicrophonePrivacySwitchController::UpdateMicrophoneNotification() {
+  if (mic_muted_by_mute_switch_) {
+    mute_switch_notification_.Update();
+    return;
+  }
+
+  Shell::Get()
+      ->system_notification_controller()
+      ->privacy_hub()
+      ->UpdateSensorDisabledNotification(
+          PrivacyHubNotificationController::Sensor::kMicrophone);
 }
 
 }  // namespace ash

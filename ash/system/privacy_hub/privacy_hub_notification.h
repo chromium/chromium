@@ -87,6 +87,12 @@ class ASH_EXPORT PrivacyHubNotification {
   // remaining time and then hidden.
   void Hide();
 
+  // Silently updates the notification when needed, for example, when an
+  // application stops accessing a sensor and the name of that application needs
+  // to be removed from the notification without letting the notification pop up
+  // again.
+  void Update();
+
   // Get the underlying `SystemNotificationBuilder` to do modifications beyond
   // what this wrapper allows you to do. If you change the ID of the message
   // `Show()` and `Hide()` are not going to work reliably.
@@ -96,6 +102,10 @@ class ASH_EXPORT PrivacyHubNotification {
   // Get names of apps accessing the `sensors_for_apps_`. At most
   // `message_ids_.size()` elements will be returned.
   std::vector<std::u16string> GetAppsAccessingSensors() const;
+
+  // Sets the notification message depending on the list of apps accessing the
+  // `sensors_for_apps_`.
+  void SetNotificationMessage();
 
   std::string id_;
   SystemNotificationBuilder builder_;

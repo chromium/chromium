@@ -57,6 +57,14 @@ class FakeSensorDisabledNotificationDelegate
     }
   }
 
+  void CloseAppAccessingMicrophone(const std::u16string& app_name) {
+    auto it = std::find(apps_accessing_microphone_.begin(),
+                        apps_accessing_microphone_.end(), app_name);
+    if (it != apps_accessing_microphone_.end()) {
+      apps_accessing_microphone_.erase(it);
+    }
+  }
+
  private:
   std::vector<std::u16string> apps_accessing_microphone_;
 };
@@ -171,6 +179,10 @@ class PrivacyHubMicrophoneControllerTest : public AshTestBase {
 
   void LaunchApp(absl::optional<std::u16string> app_name) {
     delegate_.LaunchAppAccessingMicrophone(app_name);
+  }
+
+  void CloseApp(const std::u16string& app_name) {
+    delegate_.CloseAppAccessingMicrophone(app_name);
   }
 
   const base::HistogramTester& histogram_tester() const {
@@ -636,6 +648,76 @@ TEST_F(PrivacyHubMicrophoneControllerTest, NotificationText) {
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_MICROPHONE_MUTED_BY_HW_SWITCH_NOTIFICATION_TITLE),
             GetNotification()->title());
+}
+
+TEST_F(PrivacyHubMicrophoneControllerTest, NotificationUpdatedWhenAppClosed) {
+  // No notification initially.
+  EXPECT_FALSE(GetNotification());
+
+  // Mute the mic using sw switch, still no notification.
+  MuteMicrophone();
+  EXPECT_FALSE(GetNotification());
+
+  // Launch app1 that's accessing the mic, a notification should be displayed
+  // with the application name in the notification body.
+  const std::u16string app1 = u"app1";
+  LaunchApp(app1);
+  SetNumberOfActiveInputStreams(1);
+  message_center::Notification* notification_ptr = GetNotification();
+  ASSERT_TRUE(notification_ptr);
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(
+          IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME, app1),
+      notification_ptr->message());
+
+  // Launch app2 that's also accessing the mic, the microphone mute notification
+  // should be displayed again with both the application names in the
+  // notification body.
+  const std::u16string app2 = u"app2";
+  LaunchApp(app2);
+  SetNumberOfActiveInputStreams(2);
+  notification_ptr = GetNotification();
+  ASSERT_TRUE(notification_ptr);
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES,
+                app2, app1),
+            notification_ptr->message());
+
+  // Close one of the applications. The notification message should be updated
+  // to only contain the name of the other application.
+  CloseApp(app1);
+  SetNumberOfActiveInputStreams(1);
+  notification_ptr = GetNotification();
+  ASSERT_TRUE(notification_ptr);
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(
+          IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME, app2),
+      notification_ptr->message());
+
+  // Test the HW switch notification case.
+  // HW switch is turned ON.
+  SetMicrophoneMuteSwitchState(/*muted=*/true);
+
+  // Launch the closed app (app1) again.
+  LaunchApp(app1);
+  SetNumberOfActiveInputStreams(2);
+  notification_ptr = GetNotification();
+  ASSERT_TRUE(notification_ptr);
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES,
+                app1, app2),
+            notification_ptr->message());
+
+  // Closing one of the applications should remove the name of that application
+  // from the hw switch notification message.
+  CloseApp(app2);
+  SetNumberOfActiveInputStreams(1);
+  notification_ptr = GetNotification();
+  ASSERT_TRUE(notification_ptr);
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(
+          IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME, app1),
+      notification_ptr->message());
 }
 
 }  // namespace ash

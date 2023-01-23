@@ -54,6 +54,10 @@ class ASH_EXPORT MicrophonePrivacySwitchController
   // notification should be shown.
   void SetMicrophoneNotificationVisible(bool visible);
 
+  // Silently updates the message of the exiting microphone mute notification
+  // with the appropriate application names(s).
+  void UpdateMicrophoneNotification();
+
   size_t input_stream_count_ = 0;
   bool mic_mute_on_ = false;
   bool mic_muted_by_mute_switch_ = false;
