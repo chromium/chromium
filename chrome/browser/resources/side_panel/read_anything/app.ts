@@ -86,11 +86,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   private buildSubtree_(nodeId: number): Node {
     let htmlTag = chrome.readAnything.getHtmlTag(nodeId);
+
     // Text nodes do not have an html tag.
     if (!htmlTag.length) {
-      const textContent = chrome.readAnything.getTextContent(nodeId);
-      return document.createTextNode(textContent);
+      return this.createTextNode_(nodeId);
     }
+
     // getHtmlTag might return '#document' which is not a valid to pass to
     // createElement.
     if (htmlTag === '#document') {
@@ -113,6 +114,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (language) {
       element.setAttribute('lang', language);
     }
+
     this.appendChildSubtrees_(element, nodeId);
     return element;
   }
@@ -122,6 +124,25 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       const childNode = this.buildSubtree_(childNodeId);
       node.appendChild(childNode);
     }
+  }
+
+  private createTextNode_(nodeId: number): Node {
+    const textContent = chrome.readAnything.getTextContent(nodeId);
+    const textNode = document.createTextNode(textContent);
+    const shouldBold = chrome.readAnything.shouldBold(nodeId);
+    const isOverline = chrome.readAnything.isOverline(nodeId);
+
+    if (!shouldBold && !isOverline) {
+      return textNode;
+    }
+
+    const htmlTag = shouldBold ? 'b' : 'span';
+    const parentElement = document.createElement(htmlTag);
+    if (isOverline) {
+      parentElement.style.textDecoration = 'overline';
+    }
+    parentElement.appendChild(textNode);
+    return parentElement;
   }
 
   updateContent() {

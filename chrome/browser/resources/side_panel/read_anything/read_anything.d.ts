@@ -44,6 +44,12 @@ declare namespace chrome {
     // Returns the url of the AXNode for the provided AXNodeID.
     function getUrl(nodeId: number): string;
 
+    // Returns true if the text node / element should be bolded.
+    function shouldBold(nodeId: number): boolean;
+
+    // Returns true if the element has overline text styling.
+    function isOverline(nodeId: number): boolean;
+
     // Connects to the browser process. Called by ts when the read anything
     // element is added to the document.
     function onConnected(): void;

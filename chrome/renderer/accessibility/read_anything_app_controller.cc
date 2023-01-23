@@ -25,6 +25,7 @@
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
+#include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_serializable_tree.h"
@@ -124,6 +125,27 @@ void SetAXNodeDataTextDirection(v8::Isolate* isolate,
                                 direction);
 }
 
+void SetAXNodeDataTextStyle(v8::Isolate* isolate,
+                            gin::Dictionary* v8_dict,
+                            ui::AXNodeData* ax_node_data) {
+  v8::Local<v8::Value> v8_text_style;
+  v8_dict->Get("textStyle", &v8_text_style);
+  std::string text_style;
+  gin::ConvertFromV8(isolate, v8_text_style, &text_style);
+  if (text_style.find("underline") != std::string::npos) {
+    ax_node_data->AddTextStyle(ax::mojom::TextStyle::kUnderline);
+  }
+  if (text_style.find("overline") != std::string::npos) {
+    ax_node_data->AddTextStyle(ax::mojom::TextStyle::kOverline);
+  }
+  if (text_style.find("italic") != std::string::npos) {
+    ax_node_data->AddTextStyle(ax::mojom::TextStyle::kItalic);
+  }
+  if (text_style.find("bold") != std::string::npos) {
+    ax_node_data->AddTextStyle(ax::mojom::TextStyle::kBold);
+  }
+}
+
 void SetAXNodeDataUrl(v8::Isolate* isolate,
                       gin::Dictionary* v8_dict,
                       ui::AXNodeData* ax_node_data) {
@@ -216,6 +238,7 @@ ui::AXTreeUpdate GetSnapshotFromV8SnapshotLite(
     SetAXNodeDataHtmlTag(isolate, &v8_node_dict, &ax_node_data);
     SetAXNodeDataLanguage(isolate, &v8_node_dict, &ax_node_data);
     SetAXNodeDataTextDirection(isolate, &v8_node_dict, &ax_node_data);
+    SetAXNodeDataTextStyle(isolate, &v8_node_dict, &ax_node_data);
     SetAXNodeDataUrl(isolate, &v8_node_dict, &ax_node_data);
     snapshot.nodes.push_back(ax_node_data);
   }
@@ -604,6 +627,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("getLanguage", &ReadAnythingAppController::GetLanguage)
       .SetMethod("getTextContent", &ReadAnythingAppController::GetTextContent)
       .SetMethod("getUrl", &ReadAnythingAppController::GetUrl)
+      .SetMethod("shouldBold", &ReadAnythingAppController::ShouldBold)
+      .SetMethod("isOverline", &ReadAnythingAppController::IsOverline)
       .SetMethod("onConnected", &ReadAnythingAppController::OnConnected)
       .SetMethod("onLinkClicked", &ReadAnythingAppController::OnLinkClicked)
       .SetMethod("setContentForTesting",
@@ -660,7 +685,11 @@ std::string ReadAnythingAppController::GetHtmlTag(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  return ax_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
+
+  // Replace mark element with bold element for readability
+  std::string html_tag =
+      ax_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
+  return html_tag == ui::ToString(ax::mojom::Role::kMark) ? "b" : html_tag;
 }
 
 std::string ReadAnythingAppController::GetLanguage(
@@ -716,6 +745,21 @@ std::string ReadAnythingAppController::GetUrl(ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = GetAXNode(ax_node_id);
   DCHECK(ax_node);
   return ax_node->GetStringAttribute(ax::mojom::StringAttribute::kUrl);
+}
+
+bool ReadAnythingAppController::ShouldBold(ui::AXNodeID ax_node_id) const {
+  ui::AXNode* ax_node = GetAXNode(ax_node_id);
+  DCHECK(ax_node);
+  bool isBold = ax_node->HasTextStyle(ax::mojom::TextStyle::kBold);
+  bool isItalic = ax_node->HasTextStyle(ax::mojom::TextStyle::kItalic);
+  bool isUnderline = ax_node->HasTextStyle(ax::mojom::TextStyle::kUnderline);
+  return isBold || isItalic || isUnderline;
+}
+
+bool ReadAnythingAppController::IsOverline(ui::AXNodeID ax_node_id) const {
+  ui::AXNode* ax_node = GetAXNode(ax_node_id);
+  DCHECK(ax_node);
+  return ax_node->HasTextStyle(ax::mojom::TextStyle::kOverline);
 }
 
 void ReadAnythingAppController::OnConnected() {

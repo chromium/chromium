@@ -138,6 +138,14 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     return controller_->GetUrl(ax_node_id);
   }
 
+  bool ShouldBold(ui::AXNodeID ax_node_id) {
+    return controller_->ShouldBold(ax_node_id);
+  }
+
+  bool IsOverline(ui::AXNodeID ax_node_id) {
+    return controller_->IsOverline(ax_node_id);
+  }
+
   size_t GetNumTrees() { return controller_->trees_.size(); }
 
   size_t GetNumPendingUpdates() { return controller_->pending_updates_.size(); }
@@ -419,6 +427,37 @@ TEST_F(ReadAnythingAppControllerTest, GetUrl) {
   EXPECT_EQ(url, GetUrl(2));
   EXPECT_EQ(invalid_url, GetUrl(3));
   EXPECT_EQ(missing_url, GetUrl(4));
+}
+
+TEST_F(ReadAnythingAppControllerTest, ShouldBold) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(3);
+  update.nodes[0].id = 2;
+  update.nodes[1].id = 3;
+  update.nodes[2].id = 4;
+  update.nodes[0].AddTextStyle(ax::mojom::TextStyle::kOverline);
+  update.nodes[1].AddTextStyle(ax::mojom::TextStyle::kUnderline);
+  update.nodes[2].AddTextStyle(ax::mojom::TextStyle::kItalic);
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
+  EXPECT_EQ(false, ShouldBold(2));
+  EXPECT_EQ(true, ShouldBold(3));
+  EXPECT_EQ(true, ShouldBold(4));
+}
+
+TEST_F(ReadAnythingAppControllerTest, IsOverline) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(2);
+  update.nodes[0].id = 2;
+  update.nodes[1].id = 3;
+  update.nodes[0].AddTextStyle(ax::mojom::TextStyle::kOverline);
+  update.nodes[1].AddTextStyle(ax::mojom::TextStyle::kUnderline);
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
+  EXPECT_EQ(true, IsOverline(2));
+  EXPECT_EQ(false, IsOverline(3));
 }
 
 TEST_F(ReadAnythingAppControllerTest, DisplayNodeIdsContains_Selection) {

@@ -109,6 +109,8 @@ class ReadAnythingAppController
   std::string GetTextContent(ui::AXNodeID ax_node_id) const;
   std::string GetTextDirection(ui::AXNodeID ax_node_id) const;
   std::string GetUrl(ui::AXNodeID ax_node_id) const;
+  bool ShouldBold(ui::AXNodeID ax_node_id) const;
+  bool IsOverline(ui::AXNodeID ax_node_id) const;
   void OnConnected();
   void OnLinkClicked(ui::AXNodeID ax_node_id) const;
 
