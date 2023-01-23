@@ -9,10 +9,9 @@ source_set("text_selection") {
     "text_classifier_model_service.mm",
     "text_classifier_model_service_factory.h",
     "text_classifier_model_service_factory.mm",
-    "text_selection_util.h",
-    "text_selection_util.mm",
   ]
   deps = [
+    ":text_selection_utils",
     "//base",
     "//components/keyed_service/ios",
     "//components/optimization_guide/core",
@@ -20,6 +19,15 @@ source_set("text_selection") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/optimization_guide",
   ]
+}
+
+source_set("text_selection_utils") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "text_selection_util.h",
+    "text_selection_util.mm",
+  ]
+  deps = [ "//base" ]
 }
 
 source_set("test_support") {

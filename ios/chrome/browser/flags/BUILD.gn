@@ -64,7 +64,7 @@ source_set("flags") {
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/screen_time:buildflags",
     "//ios/chrome/browser/sessions:features",
-    "//ios/chrome/browser/text_selection",
+    "//ios/chrome/browser/text_selection:text_selection_utils",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/app_store_rating:features",
     "//ios/chrome/browser/ui/autofill:features",
