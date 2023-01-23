@@ -56,7 +56,7 @@ struct BlinkGCPluginOptions {
 
   // Checks that GCed classes or their embedded objects do not contain
   // forbidden classes (e.g. TaskRunnerTimer).
-  bool enable_forbidden_fields_check = false;
+  bool enable_forbidden_fields_check = true;
 
   std::set<std::string> ignored_classes;
   std::set<std::string> checked_namespaces;
