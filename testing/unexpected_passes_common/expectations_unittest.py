@@ -444,8 +444,6 @@ crbug.com/1234 [ win ] do_not_remove [ Failure ]
 # finder:disable-stale
 crbug.com/2345 [ win ] disabled_stale [ Failure ]
 # finder:enable-stale
-# finder:disable-unused
-# finder:enable-unused
 crbug.com/4567 [ win ] also_do_not_remove [ Failure ]
 """
     with open(self.filename, 'w') as f:
@@ -458,8 +456,6 @@ crbug.com/4567 [ win ] also_do_not_remove [ Failure ]
 
     expected_contents = self.header + """
 crbug.com/1234 [ win ] do_not_remove [ Failure ]
-# finder:disable-stale
-# finder:enable-stale
 # finder:disable-unused
 crbug.com/3456 [ win ] disabled_unused [ Failure ]
 # finder:enable-unused
@@ -571,6 +567,7 @@ crbug.com/3456 [ win ] unused_disabled [ Failure ]  # finder:disable-unused
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 
 # Another comment
+
 # finder:group-start some group name
 [ linux ] bar/test [ RetryOnFailure ]
 crbug.com/1234 [ win ] foo/test [ Failure ]
@@ -590,6 +587,7 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 
 # Another comment
+
 [ win ] bar/test [ RetryOnFailure ]
 """
 
@@ -640,6 +638,7 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 
 # Another comment
+
 # finder:group-start some group name
 [ linux ] bar/test [ RetryOnFailure ]
 # finder:group-end
@@ -662,6 +661,7 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 
 # Another comment
+
 
 [ win ] bar/test [ RetryOnFailure ]
 """
@@ -716,6 +716,7 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 
 # Another comment
+
 # finder:group-start some group name
 [ linux ] bar/test [ RetryOnFailure ]
 # finder:group-end
@@ -739,6 +740,7 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 
 # Another comment
 
+
 [ win ] bar/test [ RetryOnFailure ]
 """
 
@@ -759,6 +761,7 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 
 # Another comment
+
 # finder:group-start some group name
 [ linux ] bar/test [ RetryOnFailure ]
 # finder:group-end
@@ -782,6 +785,7 @@ crbug.com/1234 [ linux ] foo/test [ Failure ]
 crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 
 # Another comment
+
 
 # finder:group-start another group name
 crbug.com/1234 [ win ] foo/test [ Failure ]
@@ -863,6 +867,314 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
     with self.assertRaisesRegex(RuntimeError, 'did not have a group name'):
       self.instance.RemoveExpectationsFromFile([], self.filename,
                                                expectations.RemovalType.STALE)
+
+  def testRemoveCommentBlockSimpleTrailingWhitespace(self):
+    """Tests stale comment removal in a simple case with trailing whitespace."""
+    contents = self.header + """
+# Comment line 1
+# Comment line 2
+crbug.com/1234 [ linux ] foo/test [ Failure ]
+
+crbug.com/2345 [ win ] bar/test [ Failure ]
+"""
+
+    stale_expectations = [
+        data_types.Expectation('foo/test', ['linux'], ['Failure'],
+                               'crbug.com/1234'),
+    ]
+
+    expected_contents = self.header + """
+
+crbug.com/2345 [ win ] bar/test [ Failure ]
+"""
+
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+
+    removed_urls = self.instance.RemoveExpectationsFromFile(
+        stale_expectations, self.filename, expectations.RemovalType.STALE)
+    self.assertEqual(removed_urls, {'crbug.com/1234'})
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
+
+  def testRemoveCommentBlockSimpleTrailingComment(self):
+    """Tests stale comment removal in a simple case with trailing comment."""
+    contents = self.header + """
+# Comment line 1
+# Comment line 2
+crbug.com/1234 [ linux ] foo/test [ Failure ]
+# Comment line 3
+crbug.com/2345 [ win ] bar/test [ Failure ]
+"""
+
+    stale_expectations = [
+        data_types.Expectation('foo/test', ['linux'], ['Failure'],
+                               'crbug.com/1234'),
+    ]
+
+    expected_contents = self.header + """
+# Comment line 3
+crbug.com/2345 [ win ] bar/test [ Failure ]
+"""
+
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+
+    removed_urls = self.instance.RemoveExpectationsFromFile(
+        stale_expectations, self.filename, expectations.RemovalType.STALE)
+    self.assertEqual(removed_urls, {'crbug.com/1234'})
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
+
+  def testRemoveCommentBlockSimpleEndOfFile(self):
+    """Tests stale comment removal in a simple case at file end."""
+    contents = self.header + """
+crbug.com/2345 [ win ] bar/test [ Failure ]
+
+# Comment line 1
+# Comment line 2
+crbug.com/1234 [ linux ] foo/test [ Failure ]"""
+
+    stale_expectations = [
+        data_types.Expectation('foo/test', ['linux'], ['Failure'],
+                               'crbug.com/1234'),
+    ]
+
+    expected_contents = self.header + """
+crbug.com/2345 [ win ] bar/test [ Failure ]
+
+"""
+
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+
+    removed_urls = self.instance.RemoveExpectationsFromFile(
+        stale_expectations, self.filename, expectations.RemovalType.STALE)
+    self.assertEqual(removed_urls, {'crbug.com/1234'})
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
+
+  def testRemoveCommentBlockWithAnnotations(self):
+    """Tests stale comment removal with annotations on both ends."""
+    contents = self.header + """
+# Comment line 1
+# Comment line 2
+# finder:disable-unused
+crbug.com/1234 [ linux ] foo/test [ Failure ]
+# finder:enable-unused
+# Comment line 3
+crbug.com/2345 [ win ] bar/test [ Failure ]
+"""
+
+    stale_expectations = [
+        data_types.Expectation('foo/test', ['linux'], ['Failure'],
+                               'crbug.com/1234'),
+    ]
+
+    expected_contents = self.header + """
+# Comment line 3
+crbug.com/2345 [ win ] bar/test [ Failure ]
+"""
+
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+
+    removed_urls = self.instance.RemoveExpectationsFromFile(
+        stale_expectations, self.filename, expectations.RemovalType.STALE)
+    self.assertEqual(removed_urls, {'crbug.com/1234'})
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
+
+  def testRemoveCommentBlockWithMissingTrailingAnnotation(self):
+    """Tests stale comment removal with a missing trailing annotation."""
+    contents = self.header + """
+# Comment line 1
+# Comment line 2
+# finder:disable-unused
+crbug.com/1234 [ linux ] foo/test [ Failure ]
+
+crbug.com/1234 [ win ] foo/test [ Failure ]
+# finder:enable-unused
+
+# Comment line 3
+crbug.com/2345 [ win ] bar/test [ Failure ]
+"""
+
+    stale_expectations = [
+        data_types.Expectation('foo/test', ['linux'], ['Failure'],
+                               'crbug.com/1234'),
+    ]
+
+    expected_contents = self.header + """
+# Comment line 1
+# Comment line 2
+# finder:disable-unused
+
+crbug.com/1234 [ win ] foo/test [ Failure ]
+# finder:enable-unused
+
+# Comment line 3
+crbug.com/2345 [ win ] bar/test [ Failure ]
+"""
+
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+
+    removed_urls = self.instance.RemoveExpectationsFromFile(
+        stale_expectations, self.filename, expectations.RemovalType.STALE)
+    self.assertEqual(removed_urls, {'crbug.com/1234'})
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
+
+  def testRemoveCommentBlockWithMissingStartAnnotation(self):
+    """Tests stale comment removal with a missing start annotation."""
+    contents = self.header + """
+# finder:disable-unused
+crbug.com/1234 [ win ] foo/test [ Failure ]
+# Comment line 1
+# Comment line 2
+crbug.com/1234 [ linux ] foo/test [ Failure ]
+# finder:enable-unused
+# Comment line 3
+crbug.com/2345 [ win ] bar/test [ Failure ]
+"""
+
+    stale_expectations = [
+        data_types.Expectation('foo/test', ['linux'], ['Failure'],
+                               'crbug.com/1234'),
+    ]
+
+    expected_contents = self.header + """
+# finder:disable-unused
+crbug.com/1234 [ win ] foo/test [ Failure ]
+# finder:enable-unused
+# Comment line 3
+crbug.com/2345 [ win ] bar/test [ Failure ]
+"""
+
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+
+    removed_urls = self.instance.RemoveExpectationsFromFile(
+        stale_expectations, self.filename, expectations.RemovalType.STALE)
+    self.assertEqual(removed_urls, {'crbug.com/1234'})
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
+
+  def testRemoveCommentBlockMultipleExpectations(self):
+    """Tests stale comment removal with multiple expectations in a block."""
+    contents = self.header + """
+# Comment line 1
+# Comment line 2
+# finder:disable-unused
+crbug.com/1234 [ linux ] foo/test [ Failure ]
+crbug.com/3456 [ mac ] foo/test [ Failure ]
+# finder:enable-unused
+
+# Comment line 3
+crbug.com/2345 [ win ] bar/test [ Failure ]
+"""
+
+    stale_expectations = [
+        data_types.Expectation('foo/test', ['linux'], ['Failure'],
+                               'crbug.com/1234'),
+        data_types.Expectation('foo/test', ['mac'], ['Failure'],
+                               'crbug.com/3456'),
+    ]
+
+    expected_contents = self.header + """
+
+# Comment line 3
+crbug.com/2345 [ win ] bar/test [ Failure ]
+"""
+
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+
+    removed_urls = self.instance.RemoveExpectationsFromFile(
+        stale_expectations, self.filename, expectations.RemovalType.STALE)
+    self.assertEqual(removed_urls, {'crbug.com/1234', 'crbug.com/3456'})
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
+
+  def testRemoveCommentBlockMultipleBlocks(self):
+    """Tests stale comment removal with expectations in multiple blocks."""
+    contents = self.header + """
+# Comment line 1
+# Comment line 2
+# finder:disable-unused
+crbug.com/1234 [ linux ] foo/test [ Failure ]
+# finder:enable-unused
+
+# Comment line 4
+# finder:disable-unused
+crbug.com/3456 [ mac ] foo/test [ Failure ]
+# finder:enable-unused
+# Comment line 3
+crbug.com/2345 [ win ] bar/test [ Failure ]
+"""
+
+    stale_expectations = [
+        data_types.Expectation('foo/test', ['linux'], ['Failure'],
+                               'crbug.com/1234'),
+        data_types.Expectation('foo/test', ['mac'], ['Failure'],
+                               'crbug.com/3456'),
+    ]
+
+    expected_contents = self.header + """
+
+# Comment line 3
+crbug.com/2345 [ win ] bar/test [ Failure ]
+"""
+
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+
+    removed_urls = self.instance.RemoveExpectationsFromFile(
+        stale_expectations, self.filename, expectations.RemovalType.STALE)
+    self.assertEqual(removed_urls, {'crbug.com/1234', 'crbug.com/3456'})
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
+
+  def testRemoveStaleAnnotationBlocks(self):
+    """Tests removal of annotation blocks not associated with removals."""
+    contents = self.header + """
+# finder:disable-general
+# finder:enable-general
+
+# finder:disable-stale
+
+# finder:enable-stale
+
+# finder:disable-unused
+# comment
+# finder:enable-unused
+
+# finder:disable-narrowing description
+# comment
+# finder:enable-narrowing
+
+# finder:group-start name
+# finder:group-end
+"""
+
+    stale_expectations = []
+
+    expected_contents = self.header + """
+
+
+
+
+"""
+
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+
+    removed_urls = self.instance.RemoveExpectationsFromFile(
+        stale_expectations, self.filename, expectations.RemovalType.STALE)
+    self.assertEqual(removed_urls, set())
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
 
   def testGroupNameExtraction(self):
     """Tests that group names are properly extracted."""
@@ -955,6 +1267,7 @@ crbug.com/1234 [ mac ] bar/test [ Failure ]
 
   def testInlineComments(self) -> None:
     """Tests that inline disable comments are properly parsed."""
+    # pylint: disable=line-too-long
     contents = """
 crbug.com/1234 [ win ] foo/test [ Failure ]  # finder:disable-general general-reason
 
@@ -966,6 +1279,7 @@ crbug.com/1234 [ win ] bar/test [ Failure ]  # finder:disable-narrowing
 
 crbug.com/1234 [ mac ] bar/test [ Failure ]
 """
+    # pylint: enable=line-too-long
     annotated_expectations = (
         self.instance._GetDisableAnnotatedExpectationsFromFile(
             'expectation_file', contents))

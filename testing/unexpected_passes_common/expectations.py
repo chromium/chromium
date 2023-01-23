@@ -31,6 +31,16 @@ FINDER_COMMENT_SUFFIX_NARROWING = '-narrowing'
 FINDER_GROUP_COMMENT_START = 'finder:group-start'
 FINDER_GROUP_COMMENT_END = 'finder:group-end'
 
+ALL_FINDER_START_ANNOTATION_BASES = frozenset([
+    FINDER_DISABLE_COMMENT_BASE,
+    FINDER_GROUP_COMMENT_START,
+])
+
+ALL_FINDER_END_ANNOTATION_BASES = frozenset([
+    FINDER_ENABLE_COMMENT_BASE,
+    FINDER_GROUP_COMMENT_END,
+])
+
 ALL_FINDER_DISABLE_SUFFIXES = frozenset([
     FINDER_COMMENT_SUFFIX_GENERAL,
     FINDER_COMMENT_SUFFIX_STALE,
@@ -69,6 +79,13 @@ FINDER_ENABLE_COMMENTS = frozenset([
     FINDER_ENABLE_COMMENT_NARROWING,
 ])
 
+FINDER_ENABLE_DISABLE_PAIRS = frozenset([
+    (FINDER_DISABLE_COMMENT_GENERAL, FINDER_ENABLE_COMMENT_GENERAL),
+    (FINDER_DISABLE_COMMENT_STALE, FINDER_ENABLE_COMMENT_STALE),
+    (FINDER_DISABLE_COMMENT_UNUSED, FINDER_ENABLE_COMMENT_UNUSED),
+    (FINDER_DISABLE_COMMENT_NARROWING, FINDER_ENABLE_COMMENT_NARROWING),
+])
+
 FINDER_GROUP_COMMENTS = frozenset([
     FINDER_GROUP_COMMENT_START,
     FINDER_GROUP_COMMENT_END,
@@ -82,11 +99,32 @@ GIT_BLAME_REGEX = re.compile(
     r'^[\w\s]+\(.+(?P<date>\d\d\d\d-\d\d-\d\d)[^\)]+\)(?P<content>.*)$',
     re.DOTALL)
 TAG_GROUP_REGEX = re.compile(r'# tags: \[([^\]]*)\]', re.MULTILINE | re.DOTALL)
+
+# Annotation comment start (with optional leading whitespace) pattern.
+ANNOTATION_COMMENT_START_PATTERN = r' *# '
+# Pattern for matching optional description text after an annotation.
+ANNOTATION_OPTIONAL_TRAILING_TEXT_PATTERN = r'[^\n]*\n'
+# Pattern for matching required description text after an annotation.
+ANNOTATION_REQUIRED_TRAILING_TEXT_PATTERN = r'[^\n]+\n'
+# Pattern for matching blank or comment lines.
+BLANK_OR_COMMENT_LINES_PATTERN = r'(?:\s*| *#[^\n]*\n)*'
 # Looks for cases of the group start and end comments with nothing but optional
 # whitespace between them.
-STALE_GROUP_COMMENT_REGEX = re.compile(
-    r'# ' + FINDER_GROUP_COMMENT_START + r'[^\n]+\s*# ' +
-    FINDER_GROUP_COMMENT_END + r'\n', re.MULTILINE | re.DOTALL)
+ALL_STALE_COMMENT_REGEXES = set()
+for start_comment, end_comment in FINDER_ENABLE_DISABLE_PAIRS:
+  ALL_STALE_COMMENT_REGEXES.add(
+      re.compile(
+          ANNOTATION_COMMENT_START_PATTERN + start_comment +
+          ANNOTATION_OPTIONAL_TRAILING_TEXT_PATTERN +
+          BLANK_OR_COMMENT_LINES_PATTERN + ANNOTATION_COMMENT_START_PATTERN +
+          end_comment + r'\n', re.MULTILINE | re.DOTALL))
+ALL_STALE_COMMENT_REGEXES.add(
+    re.compile(
+        ANNOTATION_COMMENT_START_PATTERN + FINDER_GROUP_COMMENT_START +
+        ANNOTATION_REQUIRED_TRAILING_TEXT_PATTERN +
+        BLANK_OR_COMMENT_LINES_PATTERN + ANNOTATION_COMMENT_START_PATTERN +
+        FINDER_GROUP_COMMENT_END + r'\n', re.MULTILINE | re.DOTALL))
+ALL_STALE_COMMENT_REGEXES = frozenset(ALL_STALE_COMMENT_REGEXES)
 
 # pylint: disable=useless-object-inheritance
 
@@ -270,7 +308,8 @@ class Expectations(object):
 
     output_contents = ''
     removed_urls = set()
-    for line in input_contents.splitlines(True):
+    removed_lines = set()
+    for line_number, line in enumerate(input_contents.splitlines(True)):
       # Auto-add any comments or empty lines
       stripped_line = line.strip()
       if _IsCommentOrBlankLine(stripped_line):
@@ -310,10 +349,19 @@ class Expectations(object):
             # It's possible to have multiple whitespace-separated bugs per
             # expectation, so treat each one separately.
             removed_urls |= set(bug.split())
+          # Record that we've removed this line. By subtracting the number of
+          # lines we've already removed, we keep the line numbers relative to
+          # the content we're outputting rather than relative to the input
+          # content. This also has the effect of automatically compressing
+          # contiguous blocks of removal into a single line number.
+          removed_lines.add(line_number - len(removed_lines))
       else:
         output_contents += line
 
-    output_contents = _RemoveStaleComments(output_contents)
+    header_length = len(
+        self._GetExpectationFileTagHeader(expectation_file).splitlines(True))
+    output_contents = _RemoveStaleComments(output_contents, removed_lines,
+                                           header_length)
 
     with open(expectation_file, 'w') as f:
       f.write(output_contents)
@@ -899,17 +947,77 @@ def _ExpectationPartOfNonRemovableGroup(
   return not (all_expectations_in_group <= removable_expectations)
 
 
-def _RemoveStaleComments(content: str) -> str:
+def _RemoveStaleComments(content: str, removed_lines: Set[int],
+                         header_length: int) -> str:
   """Attempts to remove stale contents from the given expectation file content.
 
   Args:
     content: A string containing the contents of an expectation file.
+    removed_lines: A set of ints denoting which line numbers were removed in
+        the process of creating |content|.
+    header_length: An int denoting how many lines long the tag header is.
 
   Returns:
     A copy of |content| with various stale comments removed, e.g. group blocks
     if the group has been removed.
   """
-  for match in STALE_GROUP_COMMENT_REGEX.findall(content):
-    content = content.replace(match, '')
+  # Look for the case where we've removed an entire block of expectations that
+  # were preceded by a comment, which we should remove.
+  comment_line_numbers_to_remove = []
+  split_content = content.splitlines(True)
+  for rl in removed_lines:
+    found_trailing_annotation = False
+    found_starting_annotation = False
+    # Check for the end of the file, a blank line, or a comment after the block
+    # we've removed.
+    if rl < len(split_content):
+      stripped_line = split_content[rl].strip()
+      if stripped_line and not stripped_line.startswith('#'):
+        # We found an expectation, so the entire expectation block wasn't
+        # removed.
+        continue
+      if any(annotation in stripped_line
+             for annotation in ALL_FINDER_END_ANNOTATION_BASES):
+        found_trailing_annotation = True
+    # Look for a comment block immediately preceding the block we removed.
+    comment_line_number = rl - 1
+    while comment_line_number != header_length - 1:
+      stripped_line = split_content[comment_line_number].strip()
+      if stripped_line.startswith('#'):
+        # If we find what should be a trailing annotation, stop immediately so
+        # we don't accidentally remove it and create an orphan earlier in the
+        # file.
+        if any(annotation in stripped_line
+               for annotation in ALL_FINDER_END_ANNOTATION_BASES):
+          break
+        if any(annotation in stripped_line
+               for annotation in ALL_FINDER_START_ANNOTATION_BASES):
+          found_starting_annotation = True
+          # If we found a starting annotation but not a trailing annotation, we
+          # shouldn't remove the starting one, as that would cause the trailing
+          # one that is later in the file to be orphaned. We also don't want to
+          # continue and remove comments above that since it is assumedly still
+          # valid.
+          if found_starting_annotation and not found_trailing_annotation:
+            break
+        comment_line_numbers_to_remove.append(comment_line_number)
+        comment_line_number -= 1
+      else:
+        break
+    # In the event that we found both a start and trailing annotation, we need
+    # to also remove the trailing one.
+    if found_trailing_annotation and found_starting_annotation:
+      comment_line_numbers_to_remove.append(rl)
+
+  # Actually remove the comments we found above.
+  for i in comment_line_numbers_to_remove:
+    split_content[i] = ''
+  if comment_line_numbers_to_remove:
+    content = ''.join(split_content)
+
+  # Remove any lingering cases of stale annotations that we can easily detect.
+  for regex in ALL_STALE_COMMENT_REGEXES:
+    for match in regex.findall(content):
+      content = content.replace(match, '')
 
   return content

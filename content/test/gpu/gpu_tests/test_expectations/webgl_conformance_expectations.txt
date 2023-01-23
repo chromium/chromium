@@ -273,6 +273,11 @@ crbug.com/1043953 [ chromeos chromeos-board-amd64-generic ] conformance/textures
 # SwiftShader is disabled on Mac M1
 crbug.com/1378476 [ mac mac-arm64 angle-swiftshader ] conformance/rendering/gl-drawelements.html [ Skip ]
 
+# Old hardware + use of validating decoder. Can be removed once the validating
+# decoder has been unshipped on Mac.
+crbug.com/1321312 [ mac nvidia-0xfe9 no-passthrough ] conformance/glsl/bugs/gl-fragcoord-multisampling-bug.html [ Skip ]
+crbug.com/1321312 [ mac nvidia-0xfe9 no-passthrough ] conformance/ogles/GL/array/array_001_to_006.html [ Skip ]
+
 ###################
 # Failures/Flakes #
 ###################
@@ -328,9 +333,6 @@ crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test
 # Technically flaky, but flake rate is too high for RetryOnFailure.
 # TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
 # crbug.com/angleproject/4922 [ win intel angle-vulkan passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
-# Bug where RelaxedPrecision applied to normalize() produces 0
-
-# Flaky timeouts on multiple platforms - at least Linux/Mac/Win
 
 ####################
 # Fuchsia failures #
@@ -342,8 +344,6 @@ crbug.com/1371306 [ fuchsia fuchsia-board-sherlock ] conformance/textures/misc/t
 # Flaky tests
 [ fuchsia fuchsia-board-astro ] WebglExtension_EXT_float_blend [ Failure ]
 [ fuchsia fuchsia-board-sherlock ] WebglExtension_EXT_float_blend [ Failure ]
-
-# Flaky tests
 
 # Anti-aliasing disabled on Fuchsia
 # TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
@@ -357,14 +357,16 @@ crbug.com/1371306 [ fuchsia fuchsia-board-sherlock ] conformance/textures/misc/t
 # Possible HLSL compiler bug.
 crbug.com/478572 [ win angle-d3d9 passthrough ] deqp/data/gles2/shaders/functions.html [ Failure ]
 
-# Win / AMD RX 5500 XT failures
-crbug.com/1152597 [ win amd-0x7340 angle-d3d11 ] conformance/renderbuffers/framebuffer-state-restoration.html [ Failure ]
-crbug.com/1152599 [ win amd-0x7340 angle-d3d11 ] conformance/rendering/polygon-offset.html [ Failure ]
-
 # The functions test have been persistently flaky on D3D9
 crbug.com/956134 [ win angle-d3d9 ] conformance/extensions/webgl-depth-texture.html [ Failure ]
 
-# D3D9 / AMD RX 5500 XT / Passthrough command decoder
+## Win / AMD RX 5500 XT failures ##
+
+crbug.com/1152597 [ win amd-0x7340 angle-d3d11 ] conformance/renderbuffers/framebuffer-state-restoration.html [ Failure ]
+crbug.com/1152599 [ win amd-0x7340 angle-d3d11 ] conformance/rendering/polygon-offset.html [ Failure ]
+
+## D3D9 / AMD RX 5500 XT / Passthrough command decoder ##
+
 crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/ogles/GL/* [ RetryOnFailure ]
 crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/more/glsl/arrayOutOfBounds.html [ RetryOnFailure ]
 crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/uniforms/* [ RetryOnFailure ]
@@ -375,11 +377,13 @@ crbug.com/1362937 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/uniforms
 crbug.com/1362937 [ win amd-0x7340 angle-d3d9 passthrough ] deqp/data/gles2/shaders/conditionals.html [ Failure ]
 crbug.com/1362937 [ win amd-0x7340 angle-d3d9 passthrough ] deqp/data/gles2/shaders/conversions_matrix_combine.html [ Failure ]
 
-# win10 / angle-d3d11 / Passthrough command decoder failures.
+## win10 / angle-d3d11 / Passthrough command decoder failures ##
+
 crbug.com/1378372 [ win10 angle-d3d11 passthrough ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Failure ]
 crbug.com/1378372 [ win10 angle-d3d11 passthrough ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Failure ]
 
-# Vulkan / Win / NVIDIA / Passthrough command decoder
+## Vulkan / Win / NVIDIA / Passthrough command decoder ##
+
 crbug.com/1209189 [ win nvidia angle-vulkan passthrough ] conformance/glsl/constructors/glsl-construct-vec-mat-index.html [ Failure ]
 crbug.com/1242454 [ win nvidia angle-vulkan passthrough ] conformance/glsl/bugs/pow-with-constant-exponent-should-not-crash.html [ Failure ]
 crbug.com/1259977 [ win nvidia-0x2184 angle-vulkan passthrough ] conformance/glsl/functions/glsl-function-abs.html [ Failure ]
@@ -388,15 +392,14 @@ crbug.com/1259977 [ win nvidia-0x2184 angle-vulkan passthrough ] conformance/gls
 
 crbug.com/1291276 [ win nvidia angle-vulkan passthrough ] conformance/ogles/GL/mod/mod_001_to_008.html [ Failure ]
 
-# Fail when ANGLE GLES3 is requested for OOPR and SkiaRenderer.
-
 ####################
 # Mac failures     #
 ####################
 
 crbug.com/844311 [ angle-opengl mac ] conformance/glsl/misc/fragcolor-fragdata-invariant.html [ Failure ]
 
-# Mac AMD failures
+## Mac AMD failures ##
+
 crbug.com/642822 [ mac amd ] conformance/rendering/clipping-wide-points.html [ Failure ]
 crbug.com/1230781 [ mac amd-0x679e ] conformance/canvas/to-data-url-test.html [ Failure ]
 crbug.com/1240443 [ mac amd-0x679e angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
@@ -407,24 +410,26 @@ crbug.com/1276186 [ mac amd-0x679e angle-opengl ] conformance/rendering/clear-de
 # been made more robust.
 # crbug.com/735483 [ mac amd release ] conformance/rendering/texture-switch-performance.html [ Failure ]
 
-# Mac Retina NVidia failures / flakes
+## Mac Retina NVidia failures / flakes ##
+
 crbug.com/996344 [ mac nvidia-0xfe9 ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop.html [ Failure ]
-crbug.com/1321312 [ mac nvidia-0xfe9 no-passthrough ] conformance/glsl/bugs/gl-fragcoord-multisampling-bug.html [ Skip ]
-crbug.com/1321312 [ mac nvidia-0xfe9 no-passthrough ] conformance/ogles/GL/array/array_001_to_006.html [ Skip ]
 crbug.com/784817 [ mac nvidia-0xfe9 ] conformance/glsl/bugs/init-array-with-loop.html [ Failure ]
 
-# Mac / Passthrough command decoder / OpenGL / NVIDIA
+## Mac / Passthrough command decoder / OpenGL / NVIDIA ##
+
 crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/renderbuffers/framebuffer-object-attachment.html [ Failure ]
 crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/textures/misc/tex-input-validation.html [ Failure ]
 crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ RetryOnFailure ]
 
-# Mac / Passthrough command decoder / Metal
+## Mac / Passthrough command decoder / Metal ##
 
-# Mac / M1 / OpenGL
+## Mac / M1 / OpenGL ##
+
 # No active browser window, but no crash stack.
 crbug.com/1240443 [ mac apple-apple-m1 passthrough angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 
-# Mac / M1 / Metal
+## Mac / M1 / Metal ##
+
 # Introduced by upstreaming Apple's direct-to-metal backend
 # TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
 # crbug.com/angleproject/5505 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
@@ -433,13 +438,16 @@ crbug.com/1240443 [ mac apple-apple-m1 passthrough angle-opengl ] conformance/re
 # Linux failures   #
 ####################
 
-# Linux / Vulkan / Passthrough command decoder
+## Linux / Vulkan / Passthrough command decoder ##
+
 crbug.com/1021428 [ linux angle-vulkan passthrough intel ] WebglExtension_WEBGL_depth_texture [ Failure ]  # finder:disable-unused Not tested in Chromium, but tested by Intel.
 
-# Linux AMD RX 5500 XT
+## Linux AMD RX 5500 XT ##
+
 crbug.com/1147232 [ linux amd-0x7340 angle-opengl passthrough ] conformance/textures/misc/texture-size-limit.html [ Failure ]
 
-# Linux NVIDIA / VANGLE - bot NVIDIA driver is too old.
+## Linux NVIDIA / VANGLE - bot NVIDIA driver is too old. ##
+
 crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/glsl/constructors/glsl-construct-vec-mat-index.html [ Failure ]
 crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/glsl/functions/glsl-function-abs.html [ Failure ]
 crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/glsl/functions/glsl-function-ceil.html [ Failure ]
@@ -465,18 +473,15 @@ crbug.com/angleproject/5038 [ android-pie android-shield-android-tv no-passthrou
 # Was too difficult to suppress these failures on individual bots.
 crbug.com/1165751 [ android-nougat ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 
-# Also flaky on nexus9 non-webview (bug=834933) but can't specify both.
-
 # These video tests appear to be flaky.
-# TODO(crbug.com/1178518): This crbug caused the test to fail consistently. It
-# should be probably back to flaky once the bug is fixed. So uncomment below test once the bug is fixed.
-# crbug.com/834933 [ android android-chromium ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ RetryOnFailure ]
+crbug.com/834933 [ android android-chromium ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ RetryOnFailure ]
 
 # These video tests are flakey on many configurations.
 crbug.com/1347077 [ android-nexus-5x android-nougat angle-opengles passthrough qualcomm renderer-skia-gl target-cpu-64 ] conformance/textures/misc/video-rotation.html [ Failure ]
 crbug.com/1347077 [ android-s android-sm-a235m angle-disabled no-passthrough qualcomm renderer-skia-gl target-cpu-32 ] conformance/textures/misc/video-rotation.html [ Failure ]
 
-# Nexus 5X
+## Nexus 5X ##
+
 # Was timing out randomly on android_optional_gpu_tests_rel, but became so
 # flaky (2018-09-10) that it had to be upgraded to Fail.
 crbug.com/609883 [ android android-nexus-5x ] conformance/glsl/bugs/sampler-struct-function-arg.html [ Failure ]
@@ -487,16 +492,19 @@ crbug.com/1122644 [ android android-nexus-5x angle-opengles passthrough ] confor
 # Flakily returning RGBA(0,0,0,0) for pixels in video related tests
 crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/textures/video/* [ Failure ]
 
-# Android NVIDIA Shield TV
+## Android NVIDIA Shield TV ##
+
 crbug.com/1294071 [ android-pie android-shield-android-tv ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 # Flakily returning RGBA(0,0,0,0) for all pixels
 crbug.com/1357064 [ android android-shield-android-tv no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
-# Pixel 4
+## Pixel 4 ##
+
 crbug.com/1175223 [ android android-pixel-4 angle-opengles passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/1175226 [ android android-pixel-4 no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
-# Pixel 6
+## Pixel 6 ##
+
 crbug.com/1286830 [ android android-pixel-6 arm ] WebglExtension_EXT_shader_texture_lod [ Failure ]
 crbug.com/1286830 [ android android-pixel-6 arm ] WebglExtension_WEBGL_draw_buffers [ Failure ]
 crbug.com/1286924 [ android android-pixel-6 arm passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
@@ -510,12 +518,12 @@ crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_OES_
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_OES_texture_half_float_linear [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_WEBGL_color_buffer_float [ Failure ]
 crbug.com/1288590 [ android android-pixel-6 ] conformance/misc/shader-precision-format.html [ Failure ]
-# This can be re-added once the general Android suppression due to DrDc (crbug.com/1289303) is removed.
-# crbug.com/1288595 [ android android-pixel-6 passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
 crbug.com/1288603 [ android android-pixel-6 passthrough angle-opengles ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/1357064 [ android android-pixel-6 no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
-# Misc failures
+crbug.com/1288595 [ android android-pixel-6 passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
+
+## Misc failures ##
 
 # Failing webgl passthrough test on nexus 5x.
 crbug.com/1209254 [ android android-nexus-5x android-chromium passthrough ] conformance/textures/misc/texture-npot-video.html [ Failure ]
@@ -526,7 +534,8 @@ crbug.com/1276552 [ android-pixel-4 android-r passthrough qualcomm renderer-skia
 # Failing test when experiment DrDc is enabled via fieldtrial_testing_config.json.
 crbug.com/1289303 [ android qualcomm renderer-skia-gl target-cpu-32 ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 
-# Samsung failures
+## Samsung failures ##
+
 crbug.com/1372155 [ android android-sm-a135m ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
 crbug.com/1372155 [ android android-sm-a135m ] conformance/misc/shader-precision-format.html [ Failure ]
 crbug.com/1372155 [ android android-sm-a135m ] conformance/offscreencanvas/context-lost-restored-worker.html [ Failure ]
@@ -544,9 +553,11 @@ crbug.com/1383609 [ android android-sm-a235m ] WebglExtension_* [ RetryOnFailure
 # ChromeOS #
 ############
 
-# ChromeOS: affecting all devices.
+## ChromeOS: affecting all devices. ##
+
 # TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
 # crbug.com/957807 [ chromeos ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
+
 crbug.com/957807 [ angle-opengles chromeos passthrough ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
 
 # finder:disable-unused Reported by Intel but not currently testable in Chromium
@@ -554,17 +565,19 @@ crbug.com/1237319 [ chromeos chromeos-board-eve passthrough intel ] conformance/
 crbug.com/1237319 [ chromeos angle-opengles passthrough intel ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 # finder:enable-unused
 
-# Arm-based issues.
-
-# Failing on chromeos-amd64-generic-rel.
-crbug.com/1232446 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
-crbug.com/1357064 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/rendering/blending.html [ Failure ]
-
 # Need to investigate failure on basically all devices with passthrough on CrOS.
 crbug.com/angleproject/5038 [ chromeos passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 # Failures on validating command decoder only; won't fix.
 crbug.com/angleproject/5038 [ chromeos no-passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
+
+## Arm-based issues. ##
+
+## VM Issues ##
+
+# Failing on chromeos-amd64-generic-rel.
+crbug.com/1232446 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
+crbug.com/1357064 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
 ###########################
 # Lacros/Wayland failures #

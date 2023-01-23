@@ -139,12 +139,30 @@ crbug.com/1356246 TraceTest_SVGHuge [ Skip ]
 # This test was mainly meant to run as a pixel test, so skipping in this test suite.
 TraceTest_MediaFoundationClearDirectComposition [ Skip ]
 
+# WebGPU is only supported on Win10, Mac, and Linux+SkiaRenderer+Vulkan.
+crbug.com/852089 [ linux ] WebGPUTraceTest_* [ Skip ]
+crbug.com/852089 [ chromeos ] WebGPUTraceTest_* [ Skip ]
+crbug.com/852089 [ fuchsia ] WebGPUTraceTest_* [ Skip ]
+crbug.com/dawn/549 [ chromeos ] WebGPUCachingTraceTest_* [ Skip ]
+crbug.com/dawn/549 [ fuchsia ] WebGPUCachingTraceTest_* [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################
 # The "Skip" expectations in this section are expected to be removable at some
 # point. This is for things like tests that fail in a way that negatively and
 # significantly impacts other tests, e.g. killing the test device.
+
+crbug.com/1345777 [ android ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas* [ Skip ]
+
+crbug.com/852089 [ android ] WebGPUTraceTest_* [ Skip ]
+
+# WebGPU caching is currently only supporting Win10 and Linux (without
+# SkiaRenderer GL). (D3D12 and Vulkan). Android WebGPU support is a work in
+# progress.
+crbug.com/dawn/549 [ android ] WebGPUCachingTraceTest_* [ Skip ]
+crbug.com/dawn/549 [ linux renderer-skia-gl ] WebGPUCachingTraceTest_* [ Skip ]
+crbug.com/dawn/549 [ mac ] WebGPUCachingTraceTest_* [ Skip ]
 
 ###################
 # Failures/Flakes #
@@ -154,16 +172,9 @@ TraceTest_MediaFoundationClearDirectComposition [ Skip ]
 # VP9 videos fail to trigger zero copy video presentation path.
 crbug.com/1385486 [ win10 intel-0x9bc5 ] VideoPathTraceTest_DirectComposition_Video_VP9_Fullsize [ Failure ]
 
-# Incorrectly reporting SCALING instead of DIRECT on Windows 10 UHD 630 GPUs.
-
-# VP scaling tests are also flaky.
-
 # Zero copy also needs scaling to work.
 crbug.com/1385486 [ win10 intel-0x9bc5 ] VideoPathTraceTest_DirectComposition_Underlay_Fullsize [ Failure ]
 crbug.com/1385486 [ win10 intel-0x9bc5 ] VideoPathTraceTest_DirectComposition_Video_MP4_Fullsize [ Failure ]
-
-# Using YUY2 instead of NV12 on Windows 10 HD 630 GPUs due to NV12 support
-# showing up as SOFTWARE which causes zero copy to fail.
 
 # Hardware overlay promotion fails on Win10 AMD.
 crbug.com/1246268 [ win10 amd-0x7340 ] OverlayModeTraceTest_DirectComposition_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
@@ -172,31 +183,11 @@ crbug.com/1246268 [ win10 amd-0x7340 ] OverlayModeTraceTest_DirectComposition_Vi
 crbug.com/1151767 [ win10 amd-0x7340 ] VideoPathTraceTest_DirectComposition_Video_MP4_YUY2 [ Failure ]
 crbug.com/1151767 [ win10 amd-0x7340 ] VideoPathTraceTest_DirectComposition_Video_VP9_YUY2 [ Failure ]
 
-# Flakes on linux-rel.
-
 # WebGL's accelerated canvas capture is currently only supported on Win, Mac, ChromeOS.
-crbug.com/1345777 [ android ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas* [ Skip ]
 crbug.com/1201009 [ linux ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
 crbug.com/1201009 [ linux ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
 crbug.com/1201009 [ fuchsia ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
 crbug.com/1201009 [ fuchsia ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
-
-# Timeout on Nexus 5
-
-# WebGL's accelerated canvas capture is failing on ChromeOS
-
-# WebGPU is only supported on Win10, Mac, and Linux+SkiaRenderer+Vulkan.
-crbug.com/852089 [ android ] WebGPUTraceTest_* [ Skip ]
-crbug.com/852089 [ linux ] WebGPUTraceTest_* [ Skip ]
-crbug.com/852089 [ chromeos ] WebGPUTraceTest_* [ Skip ]
-crbug.com/852089 [ fuchsia ] WebGPUTraceTest_* [ Skip ]
-
-# WebGPU caching is currently only supporting Win10 and Linux (without SkiaRenderer GL). (D3D12 and Vulkan)
-crbug.com/dawn/549 [ android ] WebGPUCachingTraceTest_* [ Skip ]
-crbug.com/dawn/549 [ linux renderer-skia-gl ] WebGPUCachingTraceTest_* [ Skip ]
-crbug.com/dawn/549 [ mac ] WebGPUCachingTraceTest_* [ Skip ]
-crbug.com/dawn/549 [ chromeos ] WebGPUCachingTraceTest_* [ Skip ]
-crbug.com/dawn/549 [ fuchsia ] WebGPUCachingTraceTest_* [ Skip ]
 
 # finder:group-start crbug.com/1382796 failures happen in many tests, so can be classified as stale for one specific test
 crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_2DCanvasWebGL [ RetryOnFailure ]

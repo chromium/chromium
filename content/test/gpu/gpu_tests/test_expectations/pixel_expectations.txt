@@ -239,7 +239,6 @@ crbug.com/1203317 [ mac ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Skip ]
 # WebGPU pixel tests fail on Linux+SkiaRenderer+Vulkan
 crbug.com/1213657 [ linux renderer-skia-vulkan ] Pixel_WebGPU* [ Skip ]
 
-
 # WebGPU canvas capture hang on mac ASAN bot (also see crbug.com/1213170)
 crbug.com/1345767 [ mac asan ] Pixel_WebGPUCanvasOneCopyCapture [ Skip ]
 crbug.com/1345767 [ mac asan ] Pixel_WebGPUCanvasDisableOneCopyCapture* [ Skip ]
@@ -263,12 +262,8 @@ crbug.com/1353952 [ chromeos chromeos-board-kevin ] Pixel_WebGLContextRestored [
 
 crbug.com/624256 [ android ] Pixel_SolidColorBackground [ Failure ]
 
-# Failing on Nexus 5; haven't investigated why yet.
-
 crbug.com/1213674 [ mac amd-0x6821 passthrough ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 crbug.com/1213674 [ mac nvidia passthrough ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
-
-# Fails on Nexus 5 - old hardware, won't fix.
 
 # Mark all webview tests as RetryOnFailure due to Nexus 5x driver bug.
 crbug.com/950932 [ android-webview-instrumentation android-nexus-5x ] * [ RetryOnFailure ]
@@ -300,21 +295,11 @@ crbug.com/1230619 [ android android-SM-A135M ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android android-SM-A235M ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ angle-disabled display-server-wayland intel linux no-passthrough ] Pixel_WebGLFloat [ Failure ]
 
-# HDR rendering with PQ color space appears to be broken on Windows RS2.
-# TODO(sunnyps): Revert this temporary suppression after ensuring pixel tests
-# always run on Windows RS3 or above.
-
-# Flakes on gpu-fyi-try-chromeos-kevin and fuchsia-x64, produces notably different image.
-
 # Flakes on gpu-fyi-try-chromeos-amd64-generic, times out.
 crbug.com/1338173 [ chromeos chromeos-board-amd64-generic ] Pixel_PrecisionRoundedCorner [ Failure ]
 
-# Flaky hang.
-
 # Flaky on Fuchsia.
 crbug.com/1368748 [ fuchsia ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Failure ]
-
-# Still fails on Nexus 5 after all other Pixel_CanvasLowLatency* pass.
 
 # Fails on Fuchsia emulators
 crbug.com/1302427 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
@@ -333,14 +318,8 @@ crbug.com/1392819 [ mac nvidia no-asan ] Pixel_WebGPUDisplayP3 [ Failure ]
 crbug.com/1268144 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] Pixel_BackgroundImage [ Skip ]
 crbug.com/1268144 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] Pixel_SolidColorBackground [ Skip ]
 
-# Pixel_Video_Media_Stream_Incompatible_Stride flakes with SkiaRenderer GL
-
 # Flaky failures on Win10 AMD RX 5500 XT
 crbug.com/1288134 [ win10 amd-0x7340 renderer-skia-gl ] Pixel_DirectComposition_Video_VP9_YUY2 [ Failure ]
-
-# Pixel 4 Flaky Failures - Passthrough, WebView and Validating
-
-# Pixel 4 Flaky Failures - Passthrough and Validating on Chromium
 
 # Pixel 6 failures.
 crbug.com/1286915 [ android android-pixel-6 angle-disabled no-passthrough ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
@@ -356,10 +335,6 @@ crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pi
 
 # Vulkan Swiftshader WebGPU interop - flipped destination image
 crbug.com/1307787 [ linux renderer-skia-vulkan ] Pixel_VulkanSwiftShader_WebGPUCopyExternalImage* [ Failure ]
-
-# Vulkan Swiftshader WebGPU interop - missing destination image
-
-# Vulkan Swiftshader WebGPU interop - missing source and destination images
 
 # Vulkan Swiftshader WebGPU interop - missing source image
 crbug.com/1307787 [ linux renderer-skia-vulkan ] Pixel_VulkanSwiftShader_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
