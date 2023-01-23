@@ -3475,6 +3475,8 @@ if (enable_java_templates) {
                                "public_target_label",
                                "r_text_path",
                                "type",
+                               "version_code",
+                               "version_name",
                              ])
       if (_type == "android_apk" || _type == "android_app_bundle_module") {
         forward_variables_from(
@@ -3511,8 +3513,6 @@ if (enable_java_templates) {
                                  "is_base_module",
                                  "module_pathmap_path",
                                  "proto_resources_path",
-                                 "version_name",
-                                 "version_code",
                                ])
       }
       chromium_code = _chromium_code
