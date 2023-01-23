@@ -356,6 +356,7 @@ public final class ProductionSupportedFlagList {
                     "If enabled, the frequency to upload UMA is increased."),
             Flag.baseFeature(ContentFeatures.AVOID_UNNECESSARY_NAVIGATION_CANCELLATIONS,
                     "If enabled, avoids unnecessary navigation cancellations."),
+            Flag.baseFeature("CanvasColorCache"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
