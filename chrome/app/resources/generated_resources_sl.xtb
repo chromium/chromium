@@ -8326,7 +8326,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="8785680469435073309">Branje omrežnih podatkov za ChromeOS Flex.</translation>
 <translation id="8786824282808281903">Ko otrok vidi to ikono, se lahko prstni odtis uporabi za identifikacijo ali odobritev nakupov.</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{Neimenovana skupina – 1 zavihek}one{Neimenovana skupina – # zavihek}two{Neimenovana skupina – # zavihka}few{Neimenovana skupina – # zavihki}other{Neimenovana skupina – # zavihkov}}</translation>
-<translation id="8791534160414513928">S prometom brskanja pošlji zahtevo »Ne sledi«</translation>
+<translation id="8791534160414513928">S prometom brskanja pošlji zahtevo »Do Not Track«</translation>
 <translation id="879413103056696865">Medtem ko je dostopna točka vklopljena, bo telefon <ph name="PHONE_NAME" />:</translation>
 <translation id="8795916974678578410">Novo okno</translation>
 <translation id="8797459392481275117">Nikoli ne prevedi tega spletnega mesta</translation>

@@ -88,7 +88,7 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="13931502444227376">I barhau, bydd <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> yn rhannu eich enw, eich e-bost, eich cyfeiriad, a'ch llun proffil gyda'r wefan. Gweler <ph name="BEGIN_LINK1" />telerau gwasanaeth<ph name="END_LINK1" /> y wefan hon.</translation>
 <translation id="1397811292916898096">Chwilio gyda <ph name="PRODUCT_NAME" /></translation>
 <translation id="139993653570221430">Gallwch newid eich meddwl ar unrhyw bryd yng ngosodiadau Chrome. Mae'r profion yn rhedeg ochr yn ochr â'r ffordd bresennol o gyflwyno hysbysebion, felly ni fyddwch yn gweld newidiadau ar unwaith.</translation>
-<translation id="1406000523432664303">“Peidiwch ag Olrhain”</translation>
+<translation id="1406000523432664303">“Do Not Track”</translation>
 <translation id="1407069428457324124">Thema dywyll</translation>
 <translation id="1407135791313364759">Agor pob un</translation>
 <translation id="1409879593029778104">Ataliwyd lawrlwytho <ph name="FILE_NAME" /> oherwydd bod y ffeil eisoes yn bodoli.</translation>
@@ -953,7 +953,7 @@ Mae treialon Privacy Sandbox yn dal i gael eu datblygu ac maent ar gael mewn rha
 <translation id="6210748933810148297">Nid <ph name="EMAIL" /> ydych chi?</translation>
 <translation id="6211386937064921208">Wrthi'n dangos rhagolwg o'r dudalen hon</translation>
 <translation id="6221633008163990886">Datglowch i allforio'ch cyfrineiriau</translation>
-<translation id="6232535412751077445">Mae galluogi “Peidio ag Olrhain” yn golygu y bydd cais yn cael ei gynnwys gyda'ch traffig pori. Mae unrhyw effaith yn dibynnu a yw gwefan yn ymateb i'r cais, a sut mae'r cais yn cael ei ddehongli.
+<translation id="6232535412751077445">Mae galluogi “Do Not Track” yn golygu y bydd cais yn cael ei gynnwys gyda'ch traffig pori. Mae unrhyw effaith yn dibynnu a yw gwefan yn ymateb i'r cais, a sut mae'r cais yn cael ei ddehongli.
 
 Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion i chi nad ydynt seiliedig ar wefannau eraill rydych wedi ymweld â nhw. Bydd llawer o wefannau yn dal i gasglu a defnyddio'ch data pori - er enghraifft i wella diogelwch, i ddarparu cynnwys, hysbysebion ac argymhellion, ac i gynhyrchu ystadegau adrodd.</translation>
 <translation id="6264376385120300461">Lawrlwytho beth bynnag</translation>

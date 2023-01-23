@@ -8310,7 +8310,7 @@
 <translation id="8785680469435073309">讀取 ChromeOS Flex 網絡資料。</translation>
 <translation id="8786824282808281903">當子女看到此圖示時，可以使用指紋識別身份或核准購物交易。</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{未命名的群組 - 1 個分頁}other{未命名的群組 - # 個分頁}}</translation>
-<translation id="8791534160414513928">將「不追蹤」要求與瀏覽流量一併傳送</translation>
+<translation id="8791534160414513928">與瀏覽流量一併傳送「Do Not Track」要求</translation>
 <translation id="879413103056696865">開啟熱點時，您的 <ph name="PHONE_NAME" /> 將會：</translation>
 <translation id="8795916974678578410">開啟新視窗</translation>
 <translation id="8797459392481275117">永不翻譯此網站的內容</translation>
