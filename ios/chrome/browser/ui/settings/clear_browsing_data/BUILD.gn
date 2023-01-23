@@ -17,6 +17,7 @@ source_set("clear_browsing_data") {
     "clear_browsing_data_ui_constants.h",
     "clear_browsing_data_ui_constants.mm",
     "clear_browsing_data_ui_delegate.h",
+    "time_range_selector_table_view_controller+private.h",
     "time_range_selector_table_view_controller.h",
     "time_range_selector_table_view_controller.mm",
   ]
