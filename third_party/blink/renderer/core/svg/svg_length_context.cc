@@ -63,49 +63,35 @@ const ComputedStyle* ComputedStyleForLengthResolving(
   return nullptr;
 }
 
-const ComputedStyle* RootElementStyle(const Node* context) {
-  if (!context) {
-    return nullptr;
+const ComputedStyle* RootElementStyle(const SVGElement& element) {
+  if (auto* document_element = element.GetDocument().documentElement()) {
+    if (element != document_element) {
+      return document_element->GetComputedStyle();
+    }
   }
-
-  const Document& document = context->GetDocument();
-  Node* document_element = document.documentElement();
-  const ComputedStyle* document_style = document.GetComputedStyle();
-  const ComputedStyle* style = document_element && context != document_element
-                                   ? document_element->GetComputedStyle()
-                                   : document_style;
-  if (!style) {
-    style = document_style;
-  }
-  return style;
+  return nullptr;
 }
 
-class CSSToLengthConversionDataContext {
+const ComputedStyle* RootElementStyle(const SVGElement* element) {
+  return element ? RootElementStyle(*element) : nullptr;
+}
+
+class SVGLengthConversionData : public CSSToLengthConversionData {
   STACK_ALLOCATED();
 
  public:
-  explicit CSSToLengthConversionDataContext(const SVGElement* context)
-      : context_(context),
-        style_(ComputedStyleForLengthResolving(context)),
-        root_style_(RootElementStyle(context)) {}
-
-  bool HasStyle() const { return style_; }
-
-  CSSToLengthConversionData MakeConversionData() const {
-    DCHECK(context_);
-    DCHECK(HasStyle());
-    return CSSToLengthConversionData(style_, style_, root_style_,
-                                     context_->GetDocument().GetLayoutView(),
-                                     CSSToLengthConversionData::ContainerSizes(
-                                         context_->ParentOrShadowHostElement()),
-                                     1.0f, ignored_flags_);
-  }
+  SVGLengthConversionData(const SVGElement& context, const ComputedStyle& style)
+      : CSSToLengthConversionData(&style,
+                                  &style,
+                                  RootElementStyle(context),
+                                  context.GetDocument().GetLayoutView(),
+                                  CSSToLengthConversionData::ContainerSizes(
+                                      context.ParentOrShadowHostElement()),
+                                  1.0f,
+                                  ignored_flags_) {}
 
  private:
-  const SVGElement* context_ = nullptr;
-  const ComputedStyle* style_ = nullptr;
-  const ComputedStyle* root_style_ = nullptr;
-  mutable CSSToLengthConversionData::Flags ignored_flags_ = 0;
+  CSSToLengthConversionData::Flags ignored_flags_ = 0;
 };
 
 float ObjectBoundingBoxUnitToUserUnits(const Length& length,
@@ -316,12 +302,11 @@ gfx::RectF SVGLengthContext::ResolveRectangle(const SVGElement* context,
                                               const SVGLength& width,
                                               const SVGLength& height) {
   DCHECK_NE(SVGUnitTypes::kSvgUnitTypeUnknown, type);
-  CSSToLengthConversionDataContext conversion_context(context);
-  if (!conversion_context.HasStyle()) {
+  const ComputedStyle* style = ComputedStyleForLengthResolving(context);
+  if (!style) {
     return gfx::RectF(0, 0, 0, 0);
   }
-  const CSSToLengthConversionData conversion_data =
-      conversion_context.MakeConversionData();
+  const SVGLengthConversionData conversion_data(*context, *style);
   // Convert SVGLengths to Lengths (preserves percentages).
   const LengthPoint point(
       x.AsCSSPrimitiveValue().ConvertToLength(conversion_data),
@@ -381,32 +366,31 @@ gfx::Vector2dF SVGLengthContext::ResolveLengthPair(
 
 float SVGLengthContext::ResolveValue(const CSSPrimitiveValue& primitive_value,
                                      SVGLengthMode mode) const {
-  CSSToLengthConversionDataContext conversion_context(context_);
-  if (!conversion_context.HasStyle()) {
+  const ComputedStyle* style = ComputedStyleForLengthResolving(context_);
+  if (!style) {
     return 0;
   }
-  const Length& length =
-      primitive_value.ConvertToLength(conversion_context.MakeConversionData());
+  const SVGLengthConversionData conversion_data(*context_, *style);
+  const Length& length = primitive_value.ConvertToLength(conversion_data);
   return ValueForLength(length, 1.0f, mode);
 }
 
 Length SVGLengthContext::ConvertToLength(const SVGLength& length) const {
-  CSSToLengthConversionDataContext conversion_context(context_);
-  if (!conversion_context.HasStyle()) {
+  const ComputedStyle* style = ComputedStyleForLengthResolving(context_);
+  if (!style) {
     return Length::Fixed(0);
   }
-  return length.AsCSSPrimitiveValue().ConvertToLength(
-      conversion_context.MakeConversionData());
+  const SVGLengthConversionData conversion_data(*context_, *style);
+  return length.AsCSSPrimitiveValue().ConvertToLength(conversion_data);
 }
 
 LengthPoint SVGLengthContext::ConvertToLengthPoint(const SVGLength& x,
                                                    const SVGLength& y) const {
-  CSSToLengthConversionDataContext conversion_context(context_);
-  if (!conversion_context.HasStyle()) {
+  const ComputedStyle* style = ComputedStyleForLengthResolving(context_);
+  if (!style) {
     return LengthPoint(Length::Fixed(0), Length::Fixed(0));
   }
-  const CSSToLengthConversionData conversion_data =
-      conversion_context.MakeConversionData();
+  const SVGLengthConversionData conversion_data(*context_, *style);
   return LengthPoint(x.AsCSSPrimitiveValue().ConvertToLength(conversion_data),
                      y.AsCSSPrimitiveValue().ConvertToLength(conversion_data));
 }
