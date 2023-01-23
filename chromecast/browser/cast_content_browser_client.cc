@@ -115,7 +115,6 @@
 #include "components/cdm/browser/cdm_message_filter_android.h"
 #include "components/crash/core/app/crashpad.h"
 #include "media/audio/android/audio_manager_android.h"
-#include "media/audio/audio_features.h"
 #else
 #include "chromecast/browser/memory_pressure_controller_impl.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -160,13 +159,6 @@ CastContentBrowserClient::CastContentBrowserClient(
         &::media::kVaapiVideoDecodeLinux,
 #endif  // BUILDFLAG(USE_V4L2_CODEC)
   });
-
-#if BUILDFLAG(IS_ANDROID)
-  cast_feature_list_creator_->SetExtraDisableFeatures({
-      // Disable AAudio improve AV sync performance.
-      &::features::kUseAAudioDriver,
-  });
-#endif
 }
 
 CastContentBrowserClient::~CastContentBrowserClient() {
