@@ -136,7 +136,11 @@ void InteractiveDetector::StartOrPostponeCITimer(
     // the API contract. nullptr should work fine.
     TimeToInteractiveTimerFired(nullptr);
   } else {
-    time_to_interactive_timer_.StartOneShot(delay, FROM_HERE);
+    // The interactive timer can behave non-deterministically when replaying,
+    // for an unknown reason but which may be related to the use of weak pointers
+    // in the timer. Avoid this problem by not setting the timer at all.
+    if (!recordreplay::IsRecordingOrReplaying("no-interactive-detector"))
+      time_to_interactive_timer_.StartOneShot(delay, FROM_HERE);
   }
 }
 
