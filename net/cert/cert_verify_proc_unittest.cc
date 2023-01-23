@@ -1713,62 +1713,6 @@ TEST_P(CertVerifyProcInternalTest, PublicKeyHashes) {
               testing::UnorderedElementsAreArray(public_key_hash_strings));
 }
 
-// A regression test for http://crbug.com/70293.
-// The certificate in question has a key purpose of clientAuth, and also lacks
-// the required key usage for serverAuth.
-// TODO(mattm): This cert fails for many reasons, replace with a generated one
-// that tests only the desired case.
-//
-// Disabled on Android, crbug.com/1167663.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_WrongKeyPurpose DISABLED_WrongKeyPurpose
-#else
-#define MAYBE_WrongKeyPurpose WrongKeyPurpose
-#endif
-TEST_P(CertVerifyProcInternalTest, MAYBE_WrongKeyPurpose) {
-  base::FilePath certs_dir = GetTestCertsDirectory();
-
-  scoped_refptr<X509Certificate> server_cert =
-      ImportCertFromFile(certs_dir, "invalid_key_usage_cert.der");
-  ASSERT_NE(static_cast<X509Certificate*>(nullptr), server_cert.get());
-
-  int flags = 0;
-  CertVerifyResult verify_result;
-  int error =
-      Verify(server_cert.get(), "jira.aquameta.com", flags,
-             CRLSet::BuiltinCRLSet().get(), CertificateList(), &verify_result);
-
-  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_COMMON_NAME_INVALID);
-
-#if BUILDFLAG(IS_IOS)
-  if (verify_proc_type() == CERT_VERIFY_PROC_IOS) {
-    if (base::ios::IsRunningOnIOS13OrLater() ||
-        !base::ios::IsRunningOnIOS12OrLater()) {
-      EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
-    } else {
-      EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
-    }
-    return;
-  }
-#endif
-
-  // TODO(crbug.com/649017): Don't special-case builtin verifier.
-  if (!VerifyProcTypeIsBuiltin())
-    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_INVALID);
-
-  if (verify_proc_type() != CERT_VERIFY_PROC_ANDROID) {
-    // The certificate is issued by an unknown CA.
-    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_AUTHORITY_INVALID);
-  }
-
-  // TODO(crbug.com/649017): Don't special-case builtin verifier.
-  if (VerifyProcTypeIsBuiltin()) {
-    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
-  } else {
-    EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
-  }
-}
-
 // Tests that a Netscape Server Gated crypto is accepted in place of a
 // serverAuth EKU.
 // TODO(crbug.com/843735): Deprecate support for this.
