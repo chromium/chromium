@@ -338,7 +338,8 @@ class PLATFORM_EXPORT FontDescription {
   float EffectiveFontSize()
       const;  // Returns either the computedSize or the computedPixelSize
   FontCacheKey CacheKey(const FontFaceCreationParams&,
-                        bool is_unique_match) const;
+                        bool is_unique_match,
+                        bool is_generic_family) const;
 
   void SetFamily(const FontFamily& family) { family_list_ = family; }
   void SetComputedSize(float s) { computed_size_ = ClampTo<float>(s); }

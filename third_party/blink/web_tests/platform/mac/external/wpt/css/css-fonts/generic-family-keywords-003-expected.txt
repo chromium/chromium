@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+PASS @font-face matching for quoted and unquoted serif (drawing text in a canvas)
+PASS @font-face matching for quoted and unquoted sans-serif (drawing text in a canvas)
+PASS @font-face matching for quoted and unquoted cursive (drawing text in a canvas)
+PASS @font-face matching for quoted and unquoted fantasy (drawing text in a canvas)
+PASS @font-face matching for quoted and unquoted monospace (drawing text in a canvas)
+PASS @font-face matching for quoted and unquoted system-ui (drawing text in a canvas)
+FAIL @font-face matching for quoted and unquoted emoji (drawing text in a canvas) assert_equals: unquoted emoji does not match @font-face rule expected 25.0244140625 but got 125
+PASS @font-face matching for quoted and unquoted math (drawing text in a canvas)
+FAIL @font-face matching for quoted and unquoted fangsong (drawing text in a canvas) assert_equals: unquoted fangsong does not match @font-face rule expected 25.0244140625 but got 125
+FAIL @font-face matching for quoted and unquoted ui-serif (drawing text in a canvas) assert_equals: unquoted ui-serif does not match @font-face rule expected 25.0244140625 but got 125
+FAIL @font-face matching for quoted and unquoted ui-sans-serif (drawing text in a canvas) assert_equals: unquoted ui-sans-serif does not match @font-face rule expected 25.0244140625 but got 125
+FAIL @font-face matching for quoted and unquoted ui-monospace (drawing text in a canvas) assert_equals: unquoted ui-monospace does not match @font-face rule expected 25.0244140625 but got 125
+FAIL @font-face matching for quoted and unquoted ui-rounded (drawing text in a canvas) assert_equals: unquoted ui-rounded does not match @font-face rule expected 25.0244140625 but got 125
+Harness: the test ran to completion.
+

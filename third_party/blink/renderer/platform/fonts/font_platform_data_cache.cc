@@ -65,8 +65,9 @@ FontPlatformData* FontPlatformDataCache::GetOrCreateFontPlatformData(
     AlternateFontName alternate_font_name) {
   const bool is_unique_match =
       alternate_font_name == AlternateFontName::kLocalUniqueFace;
-  FontCacheKey key =
-      font_description.CacheKey(creation_params, is_unique_match);
+  const bool is_generic_family = false;
+  FontCacheKey key = font_description.CacheKey(creation_params, is_unique_match,
+                                               is_generic_family);
   DCHECK(!key.IsHashTableDeletedValue());
 
   if (no_size_in_key_) {

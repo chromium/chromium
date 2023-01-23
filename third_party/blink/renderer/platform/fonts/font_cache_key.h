@@ -62,7 +62,8 @@ struct FontCacheKey {
                scoped_refptr<FontVariationSettings> variation_settings,
                scoped_refptr<FontPalette> palette,
                scoped_refptr<FontVariantAlternates> font_variant_alternates,
-               bool is_unique_match)
+               bool is_unique_match,
+               bool is_generic_family)
       : creation_params_(creation_params),
         font_size_(font_size * kFontSizePrecisionMultiplier),
         options_(options),
@@ -70,7 +71,8 @@ struct FontCacheKey {
         variation_settings_(std::move(variation_settings)),
         palette_(palette),
         font_variant_alternates_(font_variant_alternates),
-        is_unique_match_(is_unique_match) {}
+        is_unique_match_(is_unique_match),
+        is_generic_family_(is_generic_family) {}
 
   FontCacheKey(WTF::HashTableDeletedValueType)
       : font_size_(std::numeric_limits<unsigned>::max()),
@@ -84,7 +86,7 @@ struct FontCacheKey {
   unsigned GetHash() const {
     // Convert from float with 3 digit precision before hashing.
     unsigned device_scale_factor_hash = device_scale_factor_ * 1000;
-    unsigned hash_codes[8] = {
+    unsigned hash_codes[9] = {
       creation_params_.GetHash(),
       font_size_,
       options_,
@@ -95,7 +97,8 @@ struct FontCacheKey {
           (variation_settings_ ? variation_settings_->GetHash() : 0),
       palette_ ? palette_->GetHash() : 0,
       font_variant_alternates_ ? font_variant_alternates_->GetHash() : 0,
-      is_unique_match_
+      is_unique_match_,
+      is_generic_family_
     };
     return StringHasher::HashMemory<sizeof(hash_codes)>(hash_codes);
   }
@@ -117,7 +120,8 @@ struct FontCacheKey {
            variation_settings_equal && palette_equal &&
            base::ValuesEquivalent(font_variant_alternates_,
                                   other.font_variant_alternates_) &&
-           is_unique_match_ == other.is_unique_match_;
+           is_unique_match_ == other.is_unique_match_ &&
+           is_generic_family_ == other.is_generic_family_;
   }
 
   bool operator!=(const FontCacheKey& other) const { return !(*this == other); }
@@ -150,6 +154,7 @@ struct FontCacheKey {
   scoped_refptr<FontPalette> palette_;
   scoped_refptr<FontVariantAlternates> font_variant_alternates_;
   bool is_unique_match_ = false;
+  bool is_generic_family_ = false;
 };
 
 }  // namespace blink

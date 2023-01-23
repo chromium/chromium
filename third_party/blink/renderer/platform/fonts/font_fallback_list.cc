@@ -228,7 +228,9 @@ FallbackListCompositeKey FontFallbackList::CompositeKey(
       }
       if (result) {
         bool is_unique_match = false;
-        key.Add(font_description.CacheKey(params, is_unique_match));
+        bool is_generic_family = current_family->FamilyIsGeneric();
+        key.Add(font_description.CacheKey(params, is_unique_match,
+                                          is_generic_family));
         auto* font_data = DynamicTo<SimpleFontData>(result.get());
         if (!font_data && !result->IsCustomFont())
           FontCache::Get().ReleaseFontData(font_data);

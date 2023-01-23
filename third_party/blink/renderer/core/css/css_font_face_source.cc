@@ -61,8 +61,9 @@ scoped_refptr<SimpleFontData> CSSFontFaceSource::GetFontData(
   }
 
   bool is_unique_match = false;
-  FontCacheKey key =
-      font_description.CacheKey(FontFaceCreationParams(), is_unique_match);
+  bool is_generic_family = false;
+  FontCacheKey key = font_description.CacheKey(
+      FontFaceCreationParams(), is_unique_match, is_generic_family);
 
   // Get or create the font data. Take care to avoid dangling references into
   // font_data_table_, because it is modified below during pruning.
