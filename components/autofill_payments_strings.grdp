@@ -779,17 +779,17 @@
     <message name="IDS_AUTOFILL_CREDIT_CARD_CONTINUE_BUTTON" desc="The label of the button, which would fill in the web form with card credentials." formatter_data="android_java">
       Continue
     </message>
-    <message name="IDS_AUTOFILL_CREDIT_CARD_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string read when the bottom sheet is opened. It describes the bottom sheet where a user can pick a credit card to fill into a form." formatter_data="android_java">
-      List of credit cards to be filled on touch.
+    <message name="IDS_AUTOFILL_CREDIT_CARD_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string read when the bottom sheet is opened. It describes the bottom sheet where a user can pick a payment method to fill into a form." formatter_data="android_java">
+      Payment methods available to be filled on touch. Keyboard hidden.
     </message>
-    <message name="IDS_AUTOFILL_CREDIT_CARD_BOTTOM_SHEET_HALF_HEIGHT" desc="Accessibility string read when the bottom sheet showing a list of the user's credit cards is opened at half height. The sheet will occupy the bottom half the screen." formatter_data="android_java">
-      List of credit cards to be filled on touch opened at half height.
+    <message name="IDS_AUTOFILL_CREDIT_CARD_BOTTOM_SHEET_HALF_HEIGHT" desc="Accessibility string read when the bottom sheet showing a list of the user's payment methods is opened at half height. The sheet will occupy the bottom half the screen." formatter_data="android_java">
+      Payment methods available to be filled on touch opened at half height.
     </message>
-    <message name="IDS_AUTOFILL_CREDIT_CARD_BOTTOM_SHEET_FULL_HEIGHT" desc="Accessibility string read when the bottom sheet showing a list of the user's credit cards is opened at full height. The sheet will occupy the entire screen." formatter_data="android_java">
-      List of credit cards to be filled on touch opened at full height.
+    <message name="IDS_AUTOFILL_CREDIT_CARD_BOTTOM_SHEET_FULL_HEIGHT" desc="Accessibility string read when the bottom sheet showing a list of the user's payment methods is opened at full height. The sheet will occupy the entire screen." formatter_data="android_java">
+      Payment methods available to be filled on touch opened at full height.
     </message>
-    <message name="IDS_AUTOFILL_CREDIT_CARD_BOTTOM_SHEET_CLOSED" desc="Accessibility string read when the bottom sheet showing a list of the user's credit cards is closed." formatter_data="android_java">
-      List of credit cards is closed.
+    <message name="IDS_AUTOFILL_CREDIT_CARD_BOTTOM_SHEET_CLOSED" desc="Accessibility string read when the bottom sheet showing a list of the user's payment methods is closed." formatter_data="android_java">
+      List of payment methods is closed.
     </message>
   </if>
 
