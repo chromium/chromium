@@ -275,6 +275,14 @@ class SettingsAudioElement extends SettingsAudioElementBase {
   protected getOutputHidden_(): boolean {
     return this.audioSystemProperties_.outputDevices.length === 0;
   }
+
+  /**
+   * Handles the case when there are no input devices. The input section should
+   * be hidden in this case.
+   */
+  protected getInputHidden_(): boolean {
+    return this.audioSystemProperties_.inputDevices.length === 0;
+  }
 }
 
 declare global {

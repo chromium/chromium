@@ -697,18 +697,18 @@ suite('SettingsDevicePage', function() {
       const sectionHeader =
           audioPage.shadowRoot.querySelector('#audioInputTitle');
       assertTrue(isVisible(sectionHeader));
-      assertEquals('Input', sectionHeader.textContent);
+      assertEquals('Input', sectionHeader.textContent.trim());
       const deviceSubsectionHeader =
           audioPage.shadowRoot.querySelector('#audioInputDeviceLabel');
       assertTrue(isVisible(deviceSubsectionHeader));
-      assertEquals('Device', deviceSubsectionHeader.textContent);
+      assertEquals('Device', deviceSubsectionHeader.textContent.trim());
       const deviceSubsectionDropdown =
           audioPage.shadowRoot.querySelector('#audioInputDeviceDropdown');
       assertTrue(isVisible(deviceSubsectionDropdown));
       const inputGainSubsectionHeader =
           audioPage.shadowRoot.querySelector('#audioInputGainLabel');
       assertTrue(isVisible(inputGainSubsectionHeader), 'audioInputGainLabel');
-      assertEquals('Volume', inputGainSubsectionHeader.textContent);
+      assertEquals('Volume', inputGainSubsectionHeader.textContent.trim());
       const inputVolumeButton =
           audioPage.shadowRoot.querySelector('#audioInputGainMuteButton');
       assertTrue(isVisible(inputVolumeButton), 'audioInputGainMuteButton');
@@ -720,7 +720,8 @@ suite('SettingsDevicePage', function() {
               '#audioInputNoiseCancellationLabel');
       assertTrue(isVisible(noiseCancellationSubsectionHeader));
       assertEquals(
-          'Noise Cancellation', noiseCancellationSubsectionHeader.textContent);
+          'Noise Cancellation',
+          noiseCancellationSubsectionHeader.textContent.trim());
       const noiseCancellationToggle = audioPage.shadowRoot.querySelector(
           '#audioInputNoiseCancellationToggle');
       assertTrue(isVisible(noiseCancellationToggle));
@@ -896,6 +897,23 @@ suite('SettingsDevicePage', function() {
       inputDevices: [
         fakeCrosAudioConfig.fakeInternalMicActive,
       ],
+    };
+
+    /** @type {!AudioSystemProperties} */
+    const emptyInputDevicesFakeAudioSystemProperties = {
+      outputVolumePercent: 75,
+
+      /** @type {!MuteState} */
+      outputMuteState: crosAudioConfigMojomWebui.MuteState.kNotMuted,
+
+      /** @type {!Array<!AudioDevice>} */
+      outputDevices: [
+        fakeCrosAudioConfig.fakeSpeakerActive,
+        fakeCrosAudioConfig.fakeMicJackInactive,
+      ],
+
+      /** @type {!Array<!AudioDevice>} */
+      inputDevices: [],
     };
 
     /** @type {!AudioSystemProperties} */
@@ -1165,6 +1183,21 @@ suite('SettingsDevicePage', function() {
           fakeCrosAudioConfig.defaultFakeAudioSystemProperties.inputDevices
               .length,
           inputDeviceDropdown.length);
+
+      // Test empty input devices case.
+      crosAudioConfig.setAudioSystemProperties(
+          emptyInputDevicesFakeAudioSystemProperties);
+      await flushTasks();
+      assertTrue(!inputDeviceDropdown.value);
+      assertEquals(
+          emptyInputDevicesFakeAudioSystemProperties.inputDevices.length,
+          inputDeviceDropdown.length);
+
+      // If the input devices are empty, the input section should be hidden.
+      const inputDeviceSection = audioPage.shadowRoot.querySelector('#input');
+      assertFalse(isVisible(inputDeviceSection));
+      const outputDeviceSection = audioPage.shadowRoot.querySelector('#output');
+      assertTrue(isVisible(outputDeviceSection));
     });
 
     test('simulate setting active input device', async function() {
