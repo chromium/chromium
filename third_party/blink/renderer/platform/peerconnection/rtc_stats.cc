@@ -24,12 +24,12 @@
 
 namespace blink {
 
-// TODO(https://crbug.com/webrtc/14554): When there exists a flag in WebRTC to
-// not collect deprecated stats in the first place, make use of that flag and
-// unship the filtering mechanism controlled by `WebRtcUnshipDeprecatedStats`.
+// TODO(https://crbug.com/webrtc/14175): When "track" stats no longer exist in
+// the lower layer, delete all the filtering mechanisms gated by this flag since
+// that filtering will become a NO-OP when "track" no longer exists.
 BASE_FEATURE(WebRtcUnshipDeprecatedStats,
              "WebRtcUnshipDeprecatedStats",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
