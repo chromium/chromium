@@ -12,8 +12,7 @@
 
 class Profile;
 
-namespace drive {
-namespace internal {
+namespace drive::internal {
 
 // The implementation of storage::AsyncFileUtil for DriveFS File System. This
 // forwards to a AsyncFileUtil for native files by default.
@@ -45,7 +44,6 @@ class DriveFsAsyncFileUtil : public storage::AsyncFileUtilAdapter {
   base::WeakPtrFactory<DriveFsAsyncFileUtil> weak_factory_{this};
 };
 
-}  // namespace internal
-}  // namespace drive
+}  // namespace drive::internal
 
 #endif  // CHROME_BROWSER_ASH_DRIVE_FILEAPI_DRIVEFS_ASYNC_FILE_UTIL_H_
