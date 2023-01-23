@@ -5130,11 +5130,6 @@ const char kDisableDnsProxyDescription[] =
     "Turns off DNS proxying and SecureDNS for ChromeOS (only). Does not impact "
     "Chrome browser.";
 
-const char kEnableDnsProxyName[] = "Enable DNS proxy service";
-const char kEnableDnsProxyDescription[] =
-    "When enabled, standard DNS queries will be proxied through the system "
-    "service";
-
 const char kEnableEdidBasedDisplayIdsName[] = "Enable EDID-based display IDs";
 const char kEnableEdidBasedDisplayIdsDescription[] =
     "When enabled, a display's ID will be produced by hashing certain values "
@@ -5142,12 +5137,6 @@ const char kEnableEdidBasedDisplayIdsDescription[] =
     "consistently identify previously connected displays, regardless of the "
     "physical port they were connected to, and load user display layouts more "
     "accurately.";
-
-const char kDnsProxyEnableDOHName[] =
-    "Enable DNS-over-HTTPS in the DNS proxy service";
-const char kDnsProxyEnableDOHDescription[] =
-    "When enabled, the DNS proxy will perform DNS-over-HTTPS in accordance "
-    "with the ChromeOS SecureDNS settings.";
 
 const char kEnableExternalKeyboardsInDiagnosticsAppName[] =
     "Enable external keyboards in the Diagnostics App";

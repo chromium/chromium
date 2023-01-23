@@ -2937,14 +2937,8 @@ extern const char kEnableCrOSActionRecorderDescription[];
 extern const char kDisableDnsProxyName[];
 extern const char kDisableDnsProxyDescription[];
 
-extern const char kEnableDnsProxyName[];
-extern const char kEnableDnsProxyDescription[];
-
 extern const char kEnableEdidBasedDisplayIdsName[];
 extern const char kEnableEdidBasedDisplayIdsDescription[];
-
-extern const char kDnsProxyEnableDOHName[];
-extern const char kDnsProxyEnableDOHDescription[];
 
 extern const char kEnableExternalKeyboardsInDiagnosticsAppName[];
 extern const char kEnableExternalKeyboardsInDiagnosticsAppDescription[];

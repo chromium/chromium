@@ -365,13 +365,6 @@ const base::FeatureParam<bool> kDnsOverHttpsShowUiParam {
 const base::FeatureParam<std::string> kDnsOverHttpsTemplatesParam{
     &kDnsOverHttps, "Templates", ""};
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables the DNS-Over-HTTPS in the DNS proxy.
-BASE_FEATURE(kDnsProxyEnableDOH,
-             "DnsProxyEnableDOH",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 // Enable loading native libraries earlier in startup on Android.
 BASE_FEATURE(kEarlyLibraryLoad,

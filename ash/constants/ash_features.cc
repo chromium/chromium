@@ -705,13 +705,6 @@ BASE_FEATURE(kEnableBackgroundBlur,
              "EnableBackgroundBlur",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the DNS proxy service providing support split and secure DNS
-// for ChromeOS.
-// TODO(b/265091596): Remove.
-BASE_FEATURE(kEnableDnsProxy,
-             "EnableDnsProxy",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables external keyboard testers in the diagnostics app.
 BASE_FEATURE(kEnableExternalKeyboardsInDiagnostics,
              "EnableExternalKeyboardsInDiagnosticsApp",
