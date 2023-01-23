@@ -864,10 +864,15 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   attribution_info.emplace(std::move(source_to_attribute->source), trigger_time,
                            trigger_registration.debug_key);
 
+  if (!top_level_filters_match) {
+    return assemble_report_result(
+        EventLevelResult::kNoMatchingSourceFilterData,
+        AggregatableResult::kNoMatchingSourceFilterData);
+  }
+
   absl::optional<uint64_t> dedup_key;
   if (EventLevelResult create_event_level_status = MaybeCreateEventLevelReport(
-          *attribution_info, trigger, top_level_filters_match,
-          new_event_level_report, dedup_key,
+          *attribution_info, trigger, new_event_level_report, dedup_key,
           limits.max_event_level_reports_per_destination);
       create_event_level_status != EventLevelResult::kSuccess) {
     event_level_status = create_event_level_status;
@@ -876,8 +881,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   if (!aggregatable_status.has_value()) {
     if (AggregatableResult create_aggregatable_status =
             MaybeCreateAggregatableAttributionReport(
-                *attribution_info, trigger, top_level_filters_match,
-                new_aggregatable_report,
+                *attribution_info, trigger, new_aggregatable_report,
                 limits.max_aggregatable_reports_per_destination);
         create_aggregatable_status != AggregatableResult::kSuccess) {
       aggregatable_status = create_aggregatable_status;
@@ -1056,7 +1060,6 @@ bool AttributionStorageSql::FindMatchingSourceForTrigger(
 EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
     const AttributionInfo& attribution_info,
     const AttributionTrigger& trigger,
-    const bool top_level_filters_match,
     absl::optional<AttributionReport>& report,
     absl::optional<uint64_t>& dedup_key,
     absl::optional<int>& max_event_level_reports_per_destination) {
@@ -1065,10 +1068,6 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
     DCHECK_EQ(attribution_info.source.active_state(),
               StoredSource::ActiveState::kReachedEventLevelAttributionLimit);
     return EventLevelResult::kFalselyAttributedSource;
-  }
-
-  if (!top_level_filters_match) {
-    return EventLevelResult::kNoMatchingSourceFilterData;
   }
 
   const CommonSourceInfo& common_info = attribution_info.source.common_info();
@@ -2664,13 +2663,8 @@ AggregatableResult
 AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
     const AttributionInfo& attribution_info,
     const AttributionTrigger& trigger,
-    bool top_level_filters_match,
     absl::optional<AttributionReport>& report,
     absl::optional<int>& max_aggregatable_reports_per_destination) {
-  if (!top_level_filters_match) {
-    return AggregatableResult::kNoMatchingSourceFilterData;
-  }
-
   const attribution_reporting::TriggerRegistration& trigger_registration =
       trigger.registration();
 
