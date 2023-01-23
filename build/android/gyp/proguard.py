@@ -254,9 +254,6 @@ def _OptimizeWithR8(options,
         # Restricts horizontal class merging to apply only to classes that
         # share a .java file (nested classes). https://crbug.com/1363709
         '-Dcom.android.tools.r8.enableSameFilePolicy=1',
-        # Enables API modelling for all classes that need it. Breaks reflection
-        # on SDK versions that we no longer support. http://b/259076765
-        '-Dcom.android.tools.r8.stubNonThrowableClasses=1',
     ]
     if options.dump_inputs:
       cmd += ['-Dcom.android.tools.r8.dumpinputtofile=r8inputs.zip']
