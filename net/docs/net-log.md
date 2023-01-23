@@ -124,7 +124,7 @@ at all capture modes.
 ```
 net_log.AddEvent(NetLogEventType::SSL_CERTIFICATES_RECEIVED, [&] {
   base::Value::Dict dict;
-  base::Value certs(base::Value::Type::LIST);
+  base::Value::List certs;
   std::vector<std::string> encoded_chain;
   server_cert_->GetPEMEncodedChain(&encoded_chain);
   for (auto& pem : encoded_chain)

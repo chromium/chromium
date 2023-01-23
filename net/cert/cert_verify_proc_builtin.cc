@@ -82,13 +82,13 @@ base::Value NetLogChromeRootStoreVersion(int64_t chrome_root_store_version) {
 }
 #endif
 
-base::Value PEMCertListValue(const ParsedCertificateList& certs) {
-  base::Value value(base::Value::Type::LIST);
+base::Value::List PEMCertValueList(const ParsedCertificateList& certs) {
+  base::Value::List value;
   for (const auto& cert : certs) {
     std::string pem;
     X509Certificate::GetPEMEncodedFromDER(cert->der_cert().AsStringPiece(),
                                           &pem);
-    value.GetList().Append(std::move(pem));
+    value.Append(std::move(pem));
   }
   return value;
 }
@@ -98,7 +98,7 @@ base::Value NetLogPathBuilderResultPath(
   base::Value::Dict dict;
   dict.Set("is_valid", result_path.IsValid());
   dict.Set("last_cert_trust", result_path.last_cert_trust.ToDebugString());
-  dict.Set("certificates", PEMCertListValue(result_path.certs));
+  dict.Set("certificates", PEMCertValueList(result_path.certs));
   // TODO(crbug.com/634484): netlog user_constrained_policy_set.
   std::string errors_string =
       result_path.errors.ToDebugString(result_path.certs);

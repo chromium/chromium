@@ -58,11 +58,11 @@ base::Value SCTToDictionary(const ct::SignedCertificateTimestamp& sct,
 
 // Given a list of SCTs and their statuses, return a list Value where each item
 // is a dictionary created by SCTToDictionary.
-base::Value SCTListToPrintableValues(
+base::Value::List SCTListToPrintableValues(
     const SignedCertificateTimestampAndStatusList& sct_and_status_list) {
-  base::Value output_scts(base::Value::Type::LIST);
+  base::Value::List output_scts;
   for (const auto& sct_and_status : sct_and_status_list) {
-    output_scts.GetList().Append(
+    output_scts.Append(
         SCTToDictionary(*(sct_and_status.sct.get()), sct_and_status.status));
   }
 

@@ -71,11 +71,11 @@ base::Value AvailableContentToValue(const AvailableOfflineContentPtr& content) {
 
 base::Value AvailableContentListToValue(
     const std::vector<AvailableOfflineContentPtr>& content_list) {
-  base::Value value(base::Value::Type::LIST);
+  base::Value::List value;
   for (const auto& content : content_list) {
     value.Append(AvailableContentToValue(content));
   }
-  return value;
+  return base::Value(std::move(value));
 }
 
 void RecordSuggestionPresented(

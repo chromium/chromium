@@ -271,7 +271,7 @@ base::Value ProxyConfig::ToValue() const {
       if (proxy_rules_.reverse_bypass)
         dict.Set("reverse_bypass", true);
 
-      base::Value list(base::Value::Type::LIST);
+      base::Value::List list;
 
       for (const auto& bypass_rule : bypass.rules())
         list.Append(bypass_rule->ToString());

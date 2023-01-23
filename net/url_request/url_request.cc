@@ -286,7 +286,7 @@ base::Value URLRequest::GetStateAsValue() const {
   dict.Set("url", original_url().possibly_invalid_spec());
 
   if (url_chain_.size() > 1) {
-    base::Value list(base::Value::Type::LIST);
+    base::Value::List list;
     for (const GURL& url : url_chain_) {
       list.Append(url.possibly_invalid_spec());
     }

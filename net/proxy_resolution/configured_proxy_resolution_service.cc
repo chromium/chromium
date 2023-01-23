@@ -302,7 +302,7 @@ base::Value NetLogProxyConfigChangedParams(
 
 base::Value NetLogBadProxyListParams(const ProxyRetryInfoMap* retry_info) {
   base::Value::Dict dict;
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
 
   for (const auto& retry_info_pair : *retry_info)
     list.Append(retry_info_pair.first);
@@ -1320,7 +1320,7 @@ base::Value::Dict ConfiguredProxyResolutionService::GetProxyNetLogValues() {
 
   // Log Bad Proxies.
   {
-    base::Value list(base::Value::Type::LIST);
+    base::Value::List list;
 
     for (const auto& it : proxy_retry_info_) {
       const std::string& proxy_uri = it.first;
