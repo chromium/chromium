@@ -186,12 +186,11 @@ void MessagePort::close() {
     // creating mojo resources. close() calls are always treated as non-deterministic
     // because the port's lifetime is managed by the GC and on destruction the
     // port is detached from the connector.
-    if (recordreplay::IsRecordingOrReplaying("disallow-events"))
-      return;
-
-    Disentangle().ReleaseHandle();
-    MessagePortDescriptorPair pipe;
-    Entangle(pipe.TakePort0());
+    if (!recordreplay::IsRecordingOrReplaying("disallow-events")) {
+      Disentangle().ReleaseHandle();
+      MessagePortDescriptorPair pipe;
+      Entangle(pipe.TakePort0());
+    }
   }
   closed_ = true;
 }
@@ -322,6 +321,9 @@ bool MessagePort::Accept(mojo::Message* mojo_message) {
   }
 
   ExecutionContext* context = GetExecutionContext();
+  if (!context)
+    return true;
+
   // WorkerGlobalScope::close() in Worker onmessage handler should prevent
   // the next message from dispatching.
   if (auto* scope = DynamicTo<WorkerGlobalScope>(context)) {
