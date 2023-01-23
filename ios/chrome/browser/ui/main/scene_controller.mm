@@ -2506,6 +2506,14 @@ void InjectNTP(Browser* browser) {
   // they are not visible.
   ios::provider::HideModalViewStack();
 
+  // Exit fullscreen mode for web page when we re-enter app through external
+  // intents.
+  web::WebState* webState =
+      self.mainInterface.browser->GetWebStateList()->GetActiveWebState();
+  if (webState && webState->IsWebPageInFullscreenMode()) {
+    webState->CloseMediaPresentations();
+  }
+
   // ChromeIdentityService is responsible for the dialogs displayed by the
   // services it wraps.
   GetApplicationContext()->GetSystemIdentityManager()->DismissDialogs();
