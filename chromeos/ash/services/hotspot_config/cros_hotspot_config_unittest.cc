@@ -76,24 +76,25 @@ class CrosHotspotConfigTest : public testing::Test {
   }
 
   void SetValidHotspotCapabilities() {
-    base::Value capabilities_dict(base::Value::Type::DICTIONARY);
-    base::Value upstream_list(base::Value::Type::LIST);
-    upstream_list.Append(base::Value(shill::kTypeCellular));
-    capabilities_dict.GetDict().Set(shill::kTetheringCapUpstreamProperty,
-                                    std::move(upstream_list));
+    base::Value::Dict capabilities_dict;
+    base::Value::List upstream_list;
+    upstream_list.Append(shill::kTypeCellular);
+    capabilities_dict.Set(shill::kTetheringCapUpstreamProperty,
+                          std::move(upstream_list));
     // Add WiFi to the downstream technology list in Shill
-    base::Value downstream_list(base::Value::Type::LIST);
-    downstream_list.Append(base::Value(shill::kTypeWifi));
-    capabilities_dict.GetDict().Set(shill::kTetheringCapDownstreamProperty,
-                                    std::move(downstream_list));
+    base::Value::List downstream_list;
+    downstream_list.Append(shill::kTypeWifi);
+    capabilities_dict.Set(shill::kTetheringCapDownstreamProperty,
+                          std::move(downstream_list));
     // Add allowed WiFi security mode in Shill
-    base::Value security_list(base::Value::Type::LIST);
-    security_list.Append(base::Value(shill::kSecurityWpa2));
-    security_list.Append(base::Value(shill::kSecurityWpa3));
-    capabilities_dict.GetDict().Set(shill::kTetheringCapSecurityProperty,
-                                    std::move(security_list));
+    base::Value::List security_list;
+    security_list.Append(shill::kSecurityWpa2);
+    security_list.Append(shill::kSecurityWpa3);
+    capabilities_dict.Set(shill::kTetheringCapSecurityProperty,
+                          std::move(security_list));
     network_handler_test_helper_->manager_test()->SetManagerProperty(
-        shill::kTetheringCapabilitiesProperty, capabilities_dict);
+        shill::kTetheringCapabilitiesProperty,
+        base::Value(std::move(capabilities_dict)));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -106,11 +107,10 @@ class CrosHotspotConfigTest : public testing::Test {
 
   void SetHotspotStateInShill(const std::string& state) {
     // Update tethering status to active in Shill.
-    base::Value status_dict(base::Value::Type::DICTIONARY);
-    status_dict.GetDict().Set(shill::kTetheringStatusStateProperty,
-                              base::Value(state));
+    base::Value::Dict status_dict;
+    status_dict.Set(shill::kTetheringStatusStateProperty, state);
     network_handler_test_helper_->manager_test()->SetManagerProperty(
-        shill::kTetheringStatusProperty, status_dict);
+        shill::kTetheringStatusProperty, base::Value(std::move(status_dict)));
     base::RunLoop().RunUntilIdle();
   }
 
