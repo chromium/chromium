@@ -21,6 +21,7 @@ public class PrivacySandboxSettingsFragmentV4 extends PrivacySandboxSettingsBase
     public static final String TOPICS_PREF = "topics";
     public static final String FLEDGE_PREF = "fledge";
     public static final String AD_MEASUREMENT_PREF = "ad_measurement";
+    public static final String HELP_CENTER_URL = "https://support.google.com/chrome/?p=ad_privacy";
 
     private ChromeBasePreference mTopicsPref;
     private ChromeBasePreference mFledgePref;
