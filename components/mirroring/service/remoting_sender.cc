@@ -13,19 +13,51 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "components/cast_streaming/public/decoder_buffer_reader.h"
+#include "media/base/decoder_buffer.h"
 #include "media/base/media_switches.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
 #include "media/cast/sender/openscreen_frame_sender.h"
-#include "media/mojo/common/mojo_data_pipe_read_write.h"
 #include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 #include "third_party/openscreen/src/cast/streaming/sender.h"
 
 using Dependency = openscreen::cast::EncodedFrame::Dependency;
 
 namespace mirroring {
+namespace {
+
+std::unique_ptr<media::cast::SenderEncodedFrame> CreateEncodedFrame(
+    const media::DecoderBuffer& decoder_buffer,
+    media::cast::FrameId frame_id) {
+  auto remoting_frame = std::make_unique<media::cast::SenderEncodedFrame>();
+  remoting_frame->frame_id = frame_id;
+  remoting_frame->dependency = decoder_buffer.is_key_frame()
+                                   ? Dependency::kKeyFrame
+                                   : Dependency::kDependent;
+  remoting_frame->referenced_frame_id =
+      remoting_frame->dependency == Dependency::kKeyFrame ? frame_id
+                                                          : frame_id - 1;
+  remoting_frame->data =
+      std::string(reinterpret_cast<const char*>(decoder_buffer.data()),
+                  decoder_buffer.data_size());
+
+  // TODO(crbug.com/1409620): Use duration for reference_time and
+  // encode_completion_time instead of timestamp.
+  const auto timestamp = base::TimeTicks() + decoder_buffer.timestamp();
+  remoting_frame->reference_time = timestamp;
+  remoting_frame->encode_completion_time = timestamp;
+  remoting_frame->rtp_timestamp =
+      media::cast::RtpTimeTicks() +
+      ToRtpTimeDelta(decoder_buffer.timestamp(),
+                     media::cast::kRemotingRtpTimebase);
+
+  return remoting_frame;
+}
+
+}  // namespace
 
 RemotingSender::RemotingSender(
     scoped_refptr<media::cast::CastEnvironment> cast_environment,
@@ -73,35 +105,47 @@ RemotingSender::RemotingSender(
     : frame_sender_(std::move(frame_sender)),
       clock_(cast_environment->Clock()),
       error_callback_(std::move(error_callback)),
-      data_pipe_reader_(new media::MojoDataPipeReader(std::move(pipe))),
-      stream_sender_(this, std::move(stream_sender)),
-      input_queue_discards_remaining_(0),
-      is_reading_(false),
-      flow_restart_pending_(true) {
+      decoder_buffer_reader_(
+          std::make_unique<cast_streaming::DecoderBufferReader>(
+              base::BindRepeating(&RemotingSender::OnFrameRead,
+                                  base::Unretained(this)),
+              std::move(pipe))),
+      stream_sender_(this, std::move(stream_sender)) {
   stream_sender_.set_disconnect_handler(base::BindOnce(
       &RemotingSender::OnRemotingDataStreamError, base::Unretained(this)));
+
+  // Eventually calls OnBufferRead().
+  decoder_buffer_reader_->ReadBufferAsync();
 }
 
 RemotingSender::~RemotingSender() {}
 
-void RemotingSender::SendFrame(uint32_t frame_size) {
+void RemotingSender::SendFrame(media::mojom::DecoderBufferPtr buffer,
+                               SendFrameCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const bool need_to_start_processing = input_queue_.empty();
-  input_queue_.push(base::BindRepeating(&RemotingSender::ReadFrame,
-                                        base::Unretained(this), frame_size));
-  input_queue_.push(base::BindRepeating(&RemotingSender::TrySendFrame,
-                                        base::Unretained(this)));
-  if (need_to_start_processing)
-    ProcessNextInputTask();
+  DCHECK(decoder_buffer_reader_);
+
+  if (read_complete_cb_ || next_frame_) {
+    // This should never occur if the API is being used as intended, as only
+    // one SendFrame() call should be ongoing at a time.
+    mojo::ReportBadMessage(
+        "Multiple calls made to RemotingDataStreamSender::SendFrame()");
+    return;
+  }
+
+  read_complete_cb_ = std::move(callback);
+  decoder_buffer_reader_->ProvideBuffer(std::move(buffer));
 }
 
 void RemotingSender::CancelInFlightData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Flag that all pending input operations should discard data.
-  input_queue_discards_remaining_ = input_queue_.size();
   flow_restart_pending_ = true;
-  VLOG(1) << "Now restarting because in-flight data was just canceled.";
+  if (next_frame_) {
+    DCHECK(read_complete_cb_);
+    next_frame_.reset();
+    std::move(read_complete_cb_).Run();
+  }
 }
 
 int RemotingSender::GetNumberOfFramesInEncoder() const {
@@ -115,51 +159,15 @@ base::TimeDelta RemotingSender::GetEncoderBacklogDuration() const {
 }
 
 void RemotingSender::OnFrameCanceled(media::cast::FrameId frame_id) {
-  // The frame cancellation may allow for the next input task to complete.
-  ProcessNextInputTask();
-}
-
-void RemotingSender::ProcessNextInputTask() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (input_queue_.empty() || is_reading_)
-    return;
-
-  input_queue_.front().Run();
-}
-
-void RemotingSender::ReadFrame(uint32_t size) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!is_reading_);
-
-  if (HadError()) {
-    return;
-  }
-  if (!data_pipe_reader_->IsPipeValid()) {
-    VLOG(1) << "Data pipe handle no longer valid.";
-    OnRemotingDataStreamError();
-    return;
-  }
-
-  is_reading_ = true;
-  if (input_queue_discards_remaining_ > 0) {
-    data_pipe_reader_->Read(
-        nullptr, size,
-        base::BindOnce(&RemotingSender::OnFrameRead, base::Unretained(this)));
-  } else {
-    next_frame_data_.resize(size);
-    data_pipe_reader_->Read(
-        reinterpret_cast<uint8_t*>(std::data(next_frame_data_)), size,
-        base::BindOnce(&RemotingSender::OnFrameRead, base::Unretained(this)));
+  if (next_frame_) {
+    TrySendFrame();
   }
 }
 
 void RemotingSender::TrySendFrame() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!is_reading_);
-  if (input_queue_discards_remaining_ > 0) {
-    OnInputTaskComplete();
-    return;
-  }
+  DCHECK(next_frame_);
+  DCHECK(read_complete_cb_);
 
   // If there would be too many frames in-flight, do not proceed.
   if (frame_sender_->GetUnacknowledgedFrameCount() >=
@@ -168,45 +176,17 @@ void RemotingSender::TrySendFrame() {
     return;
   }
 
-  const bool is_first_frame = (next_frame_id_ == media::cast::FrameId::first());
-  auto remoting_frame = std::make_unique<media::cast::SenderEncodedFrame>();
-  remoting_frame->frame_id = next_frame_id_;
+  DCHECK(flow_restart_pending_ ||
+         (next_frame_id_ != media::cast::FrameId::first()));
+
+  auto remoting_frame = CreateEncodedFrame(*next_frame_, next_frame_id_);
   if (flow_restart_pending_) {
     remoting_frame->dependency = Dependency::kKeyFrame;
+    remoting_frame->referenced_frame_id = remoting_frame->frame_id;
     flow_restart_pending_ = false;
-  } else {
-    DCHECK(!is_first_frame);
-    remoting_frame->dependency = Dependency::kDependent;
-  }
-  remoting_frame->referenced_frame_id =
-      remoting_frame->dependency == Dependency::kKeyFrame ? next_frame_id_
-                                                          : next_frame_id_ - 1;
-  remoting_frame->reference_time = clock_->NowTicks();
-  remoting_frame->encode_completion_time = remoting_frame->reference_time;
-
-  base::TimeTicks last_frame_reference_time;
-  media::cast::RtpTimeTicks last_frame_rtp_timestamp;
-  if (is_first_frame) {
-    last_frame_reference_time = remoting_frame->reference_time;
-    last_frame_rtp_timestamp =
-        media::cast::RtpTimeTicks() - media::cast::RtpTimeDelta::FromTicks(1);
-  } else {
-    last_frame_reference_time = frame_sender_->LastSendTime();
-    last_frame_rtp_timestamp =
-        frame_sender_->GetRecordedRtpTimestamp(next_frame_id_ - 1);
   }
 
-  // Ensure each successive frame's RTP timestamp is unique, but otherwise just
-  // base it on the reference time.
-  const media::cast::RtpTimeTicks rtp_timestamp =
-      last_frame_rtp_timestamp +
-      std::max(media::cast::RtpTimeDelta::FromTicks(1),
-               ToRtpTimeDelta(
-                   remoting_frame->reference_time - last_frame_reference_time,
-                   media::cast::kRemotingRtpTimebase));
-  remoting_frame->rtp_timestamp = rtp_timestamp;
-  remoting_frame->data.swap(next_frame_data_);
-
+  const auto rtp_timestamp = remoting_frame->rtp_timestamp;
   if (frame_sender_->EnqueueFrame(std::move(remoting_frame))) {
     // Only increment if we successfully enqueued.
     next_frame_id_++;
@@ -216,44 +196,34 @@ void RemotingSender::TrySendFrame() {
                          rtp_timestamp.lower_32_bits(), "reason",
                          "openscreen sender did not accept the frame");
   }
-  OnInputTaskComplete();
+
+  next_frame_.reset();
+  decoder_buffer_reader_->ReadBufferAsync();
+  std::move(read_complete_cb_).Run();
 }
 
-void RemotingSender::OnFrameRead(bool success) {
+void RemotingSender::OnFrameRead(scoped_refptr<media::DecoderBuffer> buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(is_reading_);
-  is_reading_ = false;
-  if (!success) {
-    OnRemotingDataStreamError();
-    return;
-  }
-  OnInputTaskComplete();
-}
+  DCHECK(!next_frame_);
+  DCHECK(read_complete_cb_);
+  DCHECK(decoder_buffer_reader_);
 
-void RemotingSender::OnInputTaskComplete() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!input_queue_.empty());
-  input_queue_.pop();
-  if (input_queue_discards_remaining_ > 0)
-    --input_queue_discards_remaining_;
+  next_frame_ = std::move(buffer);
 
-  // Always force a post task to prevent the stack from growing too deep.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&RemotingSender::ProcessNextInputTask,
-                                weak_factory_.GetWeakPtr()));
+  TrySendFrame();
 }
 
 void RemotingSender::OnRemotingDataStreamError() {
   // NOTE: This method must be idemptotent as it may be called more than once.
-  data_pipe_reader_.reset();
+  decoder_buffer_reader_.reset();
   stream_sender_.reset();
   if (!error_callback_.is_null())
     std::move(error_callback_).Run();
 }
 
 bool RemotingSender::HadError() const {
-  DCHECK_EQ(!data_pipe_reader_, !stream_sender_.is_bound());
-  return !data_pipe_reader_;
+  DCHECK_EQ(!decoder_buffer_reader_, !stream_sender_.is_bound());
+  return !decoder_buffer_reader_;
 }
 
 }  // namespace mirroring

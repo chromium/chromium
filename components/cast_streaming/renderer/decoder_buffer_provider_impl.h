@@ -12,7 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/cast_streaming/renderer/decoder_buffer_reader.h"
+#include "components/cast_streaming/public/decoder_buffer_reader.h"
 #include "components/cast_streaming/renderer/public/decoder_buffer_provider.h"
 #include "media/base/decoder_buffer.h"
 #include "media/mojo/mojom/media_types.mojom-forward.h"

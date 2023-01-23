@@ -13,7 +13,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/cast_streaming/public/decoder_buffer_reader.h"
 #include "components/cast_streaming/public/remoting_proto_utils.h"
+#include "media/base/decoder_buffer.h"
 #include "media/base/demuxer_stream.h"
 #include "media/mojo/common/mojo_data_pipe_read_write.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
@@ -42,17 +44,23 @@ class TestStreamSender final : public mojom::RemotingDataStreamSender {
  public:
   using SendFrameToSinkCallback =
       base::RepeatingCallback<void(uint32_t frame_count,
-                                   const std::vector<uint8_t>& data,
-                                   DemuxerStream::Type type)>;
+                                   scoped_refptr<media::DecoderBuffer>,
+                                   DemuxerStream::Type)>;
   TestStreamSender(
       mojo::PendingReceiver<mojom::RemotingDataStreamSender> receiver,
       mojo::ScopedDataPipeConsumerHandle handle,
       DemuxerStream::Type type,
       SendFrameToSinkCallback callback)
       : receiver_(this, std::move(receiver)),
-        data_pipe_reader_(std::move(handle)),
+        decoder_buffer_reader_(
+            std::make_unique<cast_streaming::DecoderBufferReader>(
+                base::BindRepeating(&TestStreamSender::OnFrameRead,
+                                    base::Unretained(this)),
+                std::move(handle))),
         type_(type),
-        send_frame_to_sink_cb_(std::move(callback)) {}
+        send_frame_to_sink_cb_(std::move(callback)) {
+    decoder_buffer_reader_->ReadBufferAsync();
+  }
 
   TestStreamSender(const TestStreamSender&) = delete;
   TestStreamSender& operator=(const TestStreamSender&) = delete;
@@ -60,30 +68,36 @@ class TestStreamSender final : public mojom::RemotingDataStreamSender {
   ~TestStreamSender() override = default;
 
   // mojom::RemotingDataStreamSender implementation.
-  void SendFrame(uint32_t frame_size) override {
-    next_frame_data_.resize(frame_size);
-    data_pipe_reader_.Read(
-        next_frame_data_.data(), frame_size,
-        base::BindOnce(&TestStreamSender::OnFrameRead, base::Unretained(this),
-                       frame_count_++));
+  void SendFrame(media::mojom::DecoderBufferPtr buffer,
+                 SendFrameCallback callback) override {
+    DCHECK(decoder_buffer_reader_);
+    DCHECK(!read_complete_cb_);
+    read_complete_cb_ = std::move(callback);
+    decoder_buffer_reader_->ProvideBuffer(std::move(buffer));
   }
 
-  void CancelInFlightData() override { next_frame_data_.resize(0); }
+  void CancelInFlightData() override {}
 
  private:
-  void OnFrameRead(uint32_t count, bool success) {
-    DCHECK(success);
-    if (send_frame_to_sink_cb_)
-      send_frame_to_sink_cb_.Run(count, next_frame_data_, type_);
-    next_frame_data_.resize(0);
+  void OnFrameRead(scoped_refptr<media::DecoderBuffer> buffer) {
+    DCHECK(decoder_buffer_reader_);
+    DCHECK(read_complete_cb_);
+    DCHECK(buffer);
+
+    std::move(read_complete_cb_).Run();
+
+    if (send_frame_to_sink_cb_) {
+      send_frame_to_sink_cb_.Run(frame_count_++, std::move(buffer), type_);
+    }
+    decoder_buffer_reader_->ReadBufferAsync();
   }
 
   uint32_t frame_count_ = 0;
   mojo::Receiver<RemotingDataStreamSender> receiver_;
-  MojoDataPipeReader data_pipe_reader_;
+  std::unique_ptr<cast_streaming::DecoderBufferReader> decoder_buffer_reader_;
+  SendFrameCallback read_complete_cb_;
   const DemuxerStream::Type type_;
   const SendFrameToSinkCallback send_frame_to_sink_cb_;
-  std::vector<uint8_t> next_frame_data_;
 };
 
 class TestRemoter final : public mojom::Remoter {
@@ -178,6 +192,7 @@ class End2EndTestRenderer::TestRemotee : public mojom::Remotee {
 
   void OnAudioFrame(uint32_t frame_count,
                     scoped_refptr<DecoderBuffer> decoder_buffer) {
+    DCHECK(decoder_buffer);
     ::media::mojom::DecoderBufferPtr mojo_buffer =
         audio_buffer_writer_->WriteDecoderBuffer(std::move(decoder_buffer));
     audio_stream_->ReceiveFrame(frame_count, std::move(mojo_buffer));
@@ -185,6 +200,7 @@ class End2EndTestRenderer::TestRemotee : public mojom::Remotee {
 
   void OnVideoFrame(uint32_t frame_count,
                     scoped_refptr<DecoderBuffer> decoder_buffer) {
+    DCHECK(decoder_buffer);
     ::media::mojom::DecoderBufferPtr mojo_buffer =
         video_buffer_writer_->WriteDecoderBuffer(std::move(decoder_buffer));
     video_stream_->ReceiveFrame(frame_count, std::move(mojo_buffer));
@@ -409,12 +425,12 @@ void End2EndTestRenderer::SendMessageToSink(
   media_remotee_->OnMessage(message);
 }
 
-void End2EndTestRenderer::SendFrameToSink(uint32_t frame_count,
-                                          const std::vector<uint8_t>& frame,
-                                          DemuxerStream::Type type) {
-  scoped_refptr<DecoderBuffer> decoder_buffer =
-      cast_streaming::remoting::ByteArrayToDecoderBuffer(frame.data(),
-                                                         frame.size());
+void End2EndTestRenderer::SendFrameToSink(
+    uint32_t frame_count,
+    scoped_refptr<media::DecoderBuffer> decoder_buffer,
+    DemuxerStream::Type type) {
+  DCHECK(decoder_buffer);
+
   if (type == DemuxerStream::Type::AUDIO) {
     media_remotee_->OnAudioFrame(frame_count, decoder_buffer);
   } else if (type == DemuxerStream::Type::VIDEO) {

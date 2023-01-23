@@ -22,8 +22,12 @@ namespace base {
 class TickClock;
 }  // namespace base
 
+namespace cast_streaming {
+class DecoderBufferReader;
+}  // namespace cast_streaming
+
 namespace media {
-class MojoDataPipeReader;
+class DecoderBuffer;
 }  // namespace media
 
 namespace openscreen::cast {
@@ -85,7 +89,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RemotingSender final
   // available or the CastTransport can accept more frames. CancelInFlightData()
   // is processed immediately, and will cause all pending operations to discard
   // data when they are processed later.
-  void SendFrame(uint32_t frame_size) override;
+  void SendFrame(media::mojom::DecoderBufferPtr buffer,
+                 SendFrameCallback callback) override;
   void CancelInFlightData() override;
 
   // FrameSender::Client overrides.
@@ -97,14 +102,11 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RemotingSender final
   // as each task succeeds.
   void ProcessNextInputTask();
 
-  // These are called via callbacks run from the input queue.
-  // Consumes a frame of |size| from the associated Mojo data pipe.
-  void ReadFrame(uint32_t size);
   // Sends out the frame to the receiver over network.
   void TrySendFrame();
 
   // Called when a frame is completely read/discarded from the data pipe.
-  void OnFrameRead(bool success);
+  void OnFrameRead(scoped_refptr<media::DecoderBuffer> buffer);
 
   // Called when an input task completes.
   void OnInputTaskComplete();
@@ -124,30 +126,25 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RemotingSender final
   // Callback that is run to notify when a fatal error occurs.
   base::OnceClosure error_callback_;
 
-  std::unique_ptr<media::MojoDataPipeReader> data_pipe_reader_;
+  // Reads media::DecoderBuffer instances and passes them to OnFrameRead().
+  std::unique_ptr<cast_streaming::DecoderBufferReader> decoder_buffer_reader_;
 
   // Mojo receiver for this instance. Implementation at the other end of the
   // message pipe uses the RemotingDataStreamSender remote to control when
   // this RemotingSender consumes from |pipe_|.
   mojo::Receiver<media::mojom::RemotingDataStreamSender> stream_sender_;
 
-  // The next frame's payload data. Populated by call to OnFrameRead() when
-  // reading succeeded.
-  std::string next_frame_data_;
+  // The next frame. Populated by call to OnFrameRead() when reading succeeded.
+  scoped_refptr<media::DecoderBuffer> next_frame_;
 
-  // Queue of pending input operations. |input_queue_discards_remaining_|
-  // indicates the number of operations where data should be discarded (due to
-  // CancelInFlightData()).
-  base::queue<base::RepeatingClosure> input_queue_;
-  size_t input_queue_discards_remaining_;
-
-  // Indicates whether the |data_pipe_reader_| is processing a reading request.
-  bool is_reading_;
+  // To be called once a frame has been successfully read and this instance is
+  // ready to process a new one.
+  SendFrameCallback read_complete_cb_;
 
   // Set to true if the first frame has not yet been sent, or if a
   // CancelInFlightData() operation just completed. This causes TrySendFrame()
   // to mark the next frame as the start of a new sequence.
-  bool flow_restart_pending_;
+  bool flow_restart_pending_ = true;
 
   // The next frame's ID. Before any frames are sent, this will be the ID of
   // the first frame.
