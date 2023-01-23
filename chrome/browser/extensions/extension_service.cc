@@ -817,11 +817,11 @@ bool ExtensionService::UninstallExtension(
     if (!GetExtensionFileTaskRunner()->PostTaskAndReply(
             FROM_HERE,
             base::BindOnce(&ExtensionService::UninstallExtensionOnFileThread,
-                           extension->id(),
-                           base::UnsafeDanglingUntriaged(profile_),
+                           extension->id(), profile_->GetProfileUserName(),
                            install_directory_, extension->path()),
-            subtask_done_callback))
+            subtask_done_callback)) {
       NOTREACHED();
+    }
   }
 
   DataDeleter::StartDeleting(profile_, extension.get(), subtask_done_callback);
@@ -842,12 +842,13 @@ bool ExtensionService::UninstallExtension(
 // static
 void ExtensionService::UninstallExtensionOnFileThread(
     const std::string& id,
-    Profile* profile,
+    const std::string& profile_user_name,
     const base::FilePath& install_dir,
     const base::FilePath& extension_path) {
   ExtensionAssetsManager* assets_manager =
       ExtensionAssetsManager::GetInstance();
-  assets_manager->UninstallExtension(id, profile, install_dir, extension_path);
+  assets_manager->UninstallExtension(id, profile_user_name, install_dir,
+                                     extension_path);
 }
 
 bool ExtensionService::IsExtensionEnabled(

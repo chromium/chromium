@@ -618,7 +618,7 @@ class ExtensionService : public ExtensionServiceInterface,
   // Called on file task runner thread to uninstall extension.
   static void UninstallExtensionOnFileThread(
       const std::string& id,
-      Profile* profile,
+      const std::string& profile_user_name,
       const base::FilePath& install_dir,
       const base::FilePath& extension_path);
 
