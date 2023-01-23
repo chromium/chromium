@@ -206,6 +206,20 @@
         line-height: 154%;
       }
 
+      :host-context([chrome-refresh-2023]):host(.tonal-button) {
+        background-color: var(--color-button-background-tonal,
+            var(--cr-color-token-secondary-container));
+        color: var(--color-button-foreground-tonal,
+            var(--cr-color-token-on-secondary-container));
+      }
+
+      :host-context([chrome-refresh-2023]):host(.tonal-button[disabled]) {
+        background-color: var(--color-button-background-tonal-disabled,
+            rgba(var(--cr-color-token-on-surface-rgb), .12));
+        border: none;
+        color: var(--disabled-text-color);
+      }
+
       paper-ripple {
         color: var(--ink-color);
         height: var(--paper-ripple-height);

@@ -17,6 +17,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/ui_base_features.h"
 
 UserNotesSidePanelUI::UserNotesSidePanelUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui) {
@@ -35,6 +36,10 @@ UserNotesSidePanelUI::UserNotesSidePanelUI(content::WebUI* web_ui)
   for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
   }
+
+  source->AddString(
+      "chromeRefresh2023Attribute",
+      features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
 
   webui::SetupWebUIDataSource(source,
                               base::make_span(kSidePanelUserNotesResources,

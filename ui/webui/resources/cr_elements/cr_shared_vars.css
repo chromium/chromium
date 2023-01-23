@@ -238,6 +238,8 @@ html[chrome-refresh-2023] {
   --cr-color-token-on-primary: rgb(255, 255, 255);
   --cr-color-token-primary-container: rgb(211, 227, 253);
   --cr-color-token-on-primary-container: rgb(4, 30, 73);
+  --cr-color-token-secondary-container: rgb(194, 231, 255);
+  --cr-color-token-on-secondary-container: rgb(0, 29, 53);
   --cr-color-token-on-surface-rgb: 31, 31, 31;
   --cr-color-token-on-surface: rgb(var(--cr-color-token-on-surface-rgb));
 
@@ -252,6 +254,8 @@ html[chrome-refresh-2023] {
     --cr-color-token-on-primary: rgb(6, 46, 111);
     --cr-color-token-primary-container: rgb(8, 66, 160);
     --cr-color-token-on-primary-container: rgb(211, 227, 253);
+    --cr-color-token-secondary-container: rgb(0, 74, 119);
+    --cr-color-token-on-secondary-container: rgb(194, 231, 255);
     --cr-color-token-on-surface-rgb: 227, 227, 227;
   }
 }

@@ -116,7 +116,7 @@
 <template is="dom-if" if="[[editing_]]" restamp>
   <div id="editingFooter">
     <span id="characterCounter">[[characterCounter_]]/176</span>
-    <cr-button id="cancelButton" on-click="onCancelClick_">
+    <cr-button id="cancelButton" class="tonal-button" on-click="onCancelClick_">
       $i18n{cancel}
     </cr-button>
     <cr-button id="addButton" class="action-button" on-click="onAddClick_">
