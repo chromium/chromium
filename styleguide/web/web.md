@@ -341,10 +341,10 @@ if (!enterKey) {
   feature when the code needs to handle null/undefined gracefully.
 
 
-### Closure compiler
+### Closure compiler (ChromeOS Ash code only)
 
-* Closure compiler should only be used by legacy code that has not yet been
-  converted to use TypeScript.
+* Closure compiler can only be used on ChromeOS Ash. All other platforms
+  are required to use TypeScript to add type checking.
 
 * Use the [closure
   compiler](https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md)

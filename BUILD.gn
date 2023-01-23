@@ -115,7 +115,7 @@ group("gn_all") {
     deps += [ "//third_party/abseil-cpp:absl_tests" ]
   }
 
-  if (enable_js_type_check) {
+  if (is_chromeos_ash && enable_js_type_check) {
     deps += [ ":webui_closure_compile" ]
   }
 

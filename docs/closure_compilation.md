@@ -1,5 +1,9 @@
 # Closure Compilation
 
+**Important: Closure Compilation is only supported on ChromeOS Ash. On all
+other platforms, Closure Compiler is deprecated; TypeScript should be used
+for type checking.** See [bug](https://www.crbug.com/1316438)
+
 ## What is type safety?
 
 [Statically-typed languages](https://en.wikipedia.org/wiki/Type_system#Static_type_checking)
