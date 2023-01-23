@@ -31,7 +31,6 @@ source_set("browser_tests") {
   testonly = true
 
   sources = [
-    "app_browser_controller_browsertest.cc",
     "commands/launch_web_app_command_browsertest.cc",
     "create_shortcut_browsertest.cc",
     "pwa_mixed_content_browsertest.cc",

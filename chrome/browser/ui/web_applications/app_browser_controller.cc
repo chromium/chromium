@@ -377,13 +377,6 @@ void AppBrowserController::OnBackgroundColorChanged() {
 }
 
 absl::optional<SkColor> AppBrowserController::GetThemeColor() const {
-  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  if (native_theme->InForcedColorsMode()) {
-    // use system [Window ThemeColor] when enable high contrast
-    return native_theme->GetSystemThemeColor(
-        ui::NativeTheme::SystemThemeColor::kWindow);
-  }
-
   absl::optional<SkColor> result;
   // HTML meta theme-color tag overrides manifest theme_color, see spec:
   // https://www.w3.org/TR/appmanifest/#theme_color-member
