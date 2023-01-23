@@ -565,8 +565,19 @@ bool Connector::DispatchMessage(ScopedMessageHandle handle) {
 
   if (connection_group_)
     message.set_receiver_connection_group(&connection_group_);
-  bool receiver_result =
-      incoming_receiver_ && incoming_receiver_->Accept(&message);
+
+  // Whether there is a receiver or not can vary when replaying due to different
+  // MessagePort GC behavior. For now we hack around this by only notifying the
+  // receiver if it was present while recording.
+  bool recorded_has_receiver =
+    recordreplay::RecordReplayValue("Connector::DispatchMessage has_receiver", !!incoming_receiver_);
+
+  bool receiver_result = false;
+  if (recorded_has_receiver) {
+    recordreplay::Assert("Connector::DispatchMessage has_receiver %d", !!incoming_receiver_);
+    receiver_result = incoming_receiver_ && incoming_receiver_->Accept(&message);
+  }
+
   if (!weak_self)
     return receiver_result;
 
@@ -624,9 +635,8 @@ void Connector::ReadAllAvailableMessages() {
 
     switch (rv) {
       case MOJO_RESULT_OK:
-        if (!DispatchMessage(std::move(message)) || !weak_self || paused_) {
+        if (!DispatchMessage(std::move(message)) || !weak_self || paused_)
           return;
-        }
         break;
 
       case MOJO_RESULT_SHOULD_WAIT:

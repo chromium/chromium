@@ -415,10 +415,6 @@ void SequenceManagerImpl::CompleteInitializationOnBoundThread() {
 }
 
 void SequenceManagerImpl::SetTimeDomain(TimeDomain* time_domain) {
-  // https://linear.app/replay/issue/RUN-1145
-  recordreplay::Assert("[RUN-1145] SequenceManagerImpl::SetTimeDomain %d",
-                       recordreplay::PointerId(this));
-
   DCHECK(!main_thread_only().time_domain);
   DCHECK(time_domain);
   time_domain->OnAssignedToSequenceManager(this);
@@ -428,10 +424,6 @@ void SequenceManagerImpl::SetTimeDomain(TimeDomain* time_domain) {
 }
 
 void SequenceManagerImpl::ResetTimeDomain() {
-  // https://linear.app/replay/issue/RUN-1145
-  recordreplay::Assert("[RUN-1145] SequenceManagerImpl::ResetTimeDomain %d",
-                       recordreplay::PointerId(this));
-
   controller_->SetTickClock(main_thread_only().default_clock);
   clock_.store(main_thread_only().default_clock.get(),
                std::memory_order_release);

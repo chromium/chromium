@@ -13,10 +13,6 @@ namespace base {
 DefaultTickClock::~DefaultTickClock() = default;
 
 TimeTicks DefaultTickClock::NowTicks() const {
-  // https://linear.app/replay/issue/RUN-1145
-  if (!recordreplay::AreEventsDisallowed())
-    recordreplay::Assert("[RUN-1145] DefaultTickClock::NowTicks");
-
   return TimeTicks::Now();
 }
 

@@ -54,10 +54,6 @@ AutoAdvancingVirtualTimeDomain::~AutoAdvancingVirtualTimeDomain() {
 }
 
 base::TimeTicks AutoAdvancingVirtualTimeDomain::NowTicks() const {
-  // https://linear.app/replay/issue/RUN-1145
-  if (!recordreplay::AreEventsDisallowed())
-    recordreplay::Assert("[RUN-1145] AutoAdvancingVirtualTimeDomain::NowTicks");
-
   base::AutoLock lock(now_ticks_lock_);
   return now_ticks_;
 }
