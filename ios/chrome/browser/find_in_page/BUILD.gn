@@ -14,6 +14,8 @@ source_set("find_in_page") {
     "find_in_page_model.h",
     "find_in_page_model.mm",
     "find_in_page_response_delegate.h",
+    "find_tab_helper.h",
+    "find_tab_helper.mm",
     "java_script_find_in_page_controller.h",
     "java_script_find_in_page_controller.mm",
     "java_script_find_tab_helper.h",
