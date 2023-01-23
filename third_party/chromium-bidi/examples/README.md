@@ -1,13 +1,13 @@
 # Examples
 
-The examples are stored in this folder and are intended to show how the
+The examples are stored in this folder and are intended to demonstrate how the
 BiDi protocol can be used. Examples are based on
 [Puppeteer's examples](https://github.com/puppeteer/puppeteer/tree/main/examples).
 
 ## Installation
 
-The examples are written using Python, in order to align with E2E tests. Python 3.6+ and some
-dependencies are required:
+The examples are written using Python, in order to align with E2E tests.
+Python 3.6+ and some dependencies are required:
 
 ```sh
 python -m pip install --user -r requirements.txt
@@ -35,7 +35,7 @@ Firefox can be run by:
 $FIREFOX_BINARY_PATH [--remote-debugging-port=8080]
 ```
 
-After running BiDi server, examples can be simply run, for example:
+After running the BiDi server, examples can be simply executed, for example:
 
 ```sh
 python3 console_log_example.py

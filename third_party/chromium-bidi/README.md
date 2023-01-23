@@ -11,12 +11,11 @@ for Chromium, implemented as a JavaScript layer translating between BiDi and CDP
 running inside a Chrome tab.
 
 Current status can be checked
-in [WPT WebDriver BiDi status](https://wpt.fyi/results/webdriver/tests/bidi).
+at [WPT WebDriver BiDi status](https://wpt.fyi/results/webdriver/tests/bidi).
 
 ## BiDi+
 
-**"BiDi+"** is an extension of the WebDriver BiDi protocol. In addition to
-the [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) it has:
+**"BiDi+"** is an extension of the WebDriver BiDi protocol. In addition to [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) it has:
 
 ### Command `cdp.sendCommand`
 
@@ -78,7 +77,7 @@ CdpEventReceivedParameters = {
 
 The event contains a CDP event.
 
-## Field `channel`
+### Field `channel`
 
 Each command can be extended with a `channel`:
 
@@ -125,7 +124,7 @@ Event = {
 }
 ```
 
-# Setup
+## Dev Setup
 
 This is a Node.js project, so install dependencies as usual:
 
@@ -133,7 +132,7 @@ This is a Node.js project, so install dependencies as usual:
 npm install
 ```
 
-# Starting the Server
+### Starting the Server
 
 This will run the server on port `8080`:
 
@@ -171,7 +170,7 @@ CHANNEL=chrome-dev npm run server
 npm run server -- --channel=chrome-dev
 ```
 
-## Starting on Linux and Mac
+### Starting on Linux and Mac
 
 TODO: verify if it works on Windows.
 
@@ -182,9 +181,9 @@ output to the file `log.txt`:
 ./runBiDiServer.sh --port=8081 --headless=false
 ```
 
-# Running
+## Running
 
-## Unit tests
+### Unit tests
 
 Running:
 
@@ -192,10 +191,10 @@ Running:
 npm run unit
 ```
 
-## e2e tests
+### E2E tests
 
-The e2e tests are written using Python, in order to learn how to eventually do this
-in web-platform-tests.
+The E2E tests are written using Python, in order to learn how to eventually do
+this in web-platform-tests.
 
 ### Installation
 
@@ -207,8 +206,8 @@ python3 -m pip install --user -r tests/requirements.txt
 
 ### Running
 
-The e2e tests require BiDi server running on the same host. By default, tests try to
-connect to the port `8080`. The server can be run from the project root:
+The E2E tests require BiDi server running on the same host. By default, tests
+try to connect to the port `8080`. The server can be run from the project root:
 
 ```sh
 npm run e2e
@@ -220,45 +219,17 @@ Use the `PORT` environment variable to connect to another port:
 PORT=8081 npm run e2e
 ```
 
-## Examples
+### Examples
 
-The examples are stored in the `/examples` folder and are intended to show who the
-BiDi protocol can be used. Examples are based on
-[Puppeteer's examples](https://github.com/puppeteer/puppeteer/tree/main/examples)
-.
+Refer to [examples/README.md](examples/README.md).
 
-### Installation
-
-The examples are written using Python, to align with e2e test. Python 3.6+ and some
-dependencies are required:
-
-```sh
-python3 -m pip install --user -r tests/requirements.txt
-```
-
-### Running
-
-The examples require BiDi server running on the same host on the port `8080`. The
-server can be run from the project root:
-
-```sh
-npm run server
-```
-
-After running server, examples can be simply run:
-
-```sh
-python3 examples/console_log_example.py
-python3 examples/script_example.py
-```
-
-## WPT
+## WPT (Web Platform Tests)
 
 WPT is added as
 a [git submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules). To get run
 WPT tests:
 
-### Check out WPT and setup
+### Check out and setup WPT
 
 #### 1. Check out WPT
 
@@ -284,13 +255,13 @@ Follow
 the [`hosts` File Setup](https://web-platform-tests.org/running-tests/from-local-system.html#hosts-file-setup)
 instructions.
 
-##### On Linux, macOS or other UNIX-like system
+##### 4.a On Linux, macOS or other UNIX-like system
 
 ```sh
 ./wpt make-hosts-file | sudo tee -a /etc/hosts
 ```
 
-##### And on **Windows**
+##### 4.b On **Windows**
 
 This must be run in a PowerShell session with Administrator privileges:
 
@@ -301,12 +272,22 @@ python wpt make-hosts-file | Out-File $env:SystemRoot\System32\drivers\etc\hosts
 If you are behind a proxy, you also need to make sure the domains above are excluded
 from your proxy lookups.
 
-#### 5. Set the `WPT_BROWSER_PATH` environment variable to a Chrome, Edge or Chromium binary to launch. For example, on macOS:
+#### 5. Set `WPT_BROWSER_PATH`
+
+Set the `WPT_BROWSER_PATH` environment variable to a Chrome, Edge or Chromium binary to launch.
+For example, on macOS:
 
 ```sh
+# Chrome
 export WPT_BROWSER_PATH="/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary"
-export WPT_BROWSER_PATH="/Applications/Microsoft Edge Canary.app/Contents/MacOS/Microsoft Edge Canary"
+export WPT_BROWSER_PATH="/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev"
+export WPT_BROWSER_PATH="/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta"
+export WPT_BROWSER_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 export WPT_BROWSER_PATH="/Applications/Chromium.app/Contents/MacOS/Chromium"
+
+# Edge
+export WPT_BROWSER_PATH="/Applications/Microsoft Edge Canary.app/Contents/MacOS/Microsoft Edge Canary"
+export WPT_BROWSER_PATH="/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge"
 ```
 
 ### Run WPT tests
@@ -315,13 +296,13 @@ export WPT_BROWSER_PATH="/Applications/Chromium.app/Contents/MacOS/Chromium"
 
 https://www.google.com/chrome/dev/
 
-#### 1. Build ChromeDriver BiDi
+#### 2. Build ChromeDriver BiDi
 
 ```sh
 npm run build
 ```
 
-#### 2. Run
+#### 3. Run
 
 ```sh
 ./wpt/wpt run \
@@ -358,7 +339,7 @@ npm run build
   ./wptreport.json
 ```
 
-# How does it work?
+## How does it work?
 
 The architecture is described in the
 [WebDriver BiDi in Chrome Context implementation plan](https://docs.google.com/document/d/1VfQ9tv0wPSnb5TI-MOobjoQ5CXLnJJx9F_PxOMQc8kY)
@@ -371,12 +352,12 @@ There are 2 main modules:
 2. front-end BiDi Mapper in `src/bidiMapper`. Gets BiDi commands from the backend,
    and map them to CDP commands.
 
-## Contributing
+### Contributing
 
 The BiDi commands are processed in the `src/bidiMapper/commandProcessor.ts`. To add a
 new command, add it to `_processCommand`, write and call processor for it.
 
-## Publish new `npm` release
+### Publish new `npm` release
 
 1. On the `main` branch, bump the chromium-bidi version number in `package.json`:
 
