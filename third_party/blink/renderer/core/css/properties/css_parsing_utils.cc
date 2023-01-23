@@ -1952,6 +1952,10 @@ static CSSValue* ConsumeColorMixFunction(CSSParserTokenRange& range,
     return nullptr;
   }
 
+  if (!args.AtEnd()) {
+    return nullptr;
+  }
+
   cssvalue::CSSColorMixValue* result =
       MakeGarbageCollected<cssvalue::CSSColorMixValue>(
           color1, color2, p1, p2, color_space, hue_interpolation_method);
