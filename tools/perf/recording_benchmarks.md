@@ -27,23 +27,24 @@ export $ID=<serial>
 
 # To update or add a story
 
-1. Look in [The WPR Playbook (Googlers Only)]() to see if the story has any maintenance instructions defined. If it doesn’t, create an entry and fill it out (you will likely update it as you record).
-2. If you are updating a story, find the story class definition in src/tools/perf/page_sets (codesearching the test name will likely be easiest).
+1. Look in [The WPR Playbook (Googlers Only)](http://go/wpr-playbook) to see if the story has any maintenance instructions defined. If it doesn’t, create an entry and fill it out (you will likely update it as you record).
+2. If you are updating a story, find the story class definition in [`src/tools/perf/page_sets`](https://source.chromium.org/chromium/chromium/src/+/main:tools/perf/page_sets/) (codesearching the test name will likely be easiest).
 Copy the story class and add this year as the suffix to the class and the story name.
-Example: CnnStory2019 and NAME='browse:news:cnn:2019'
-Set the tag for this year: TAGS = [ ... , story_tags.YEAR_2019]
+Example: `CnnStory2019` and `NAME='browse:news:cnn:2019'`
+Set the tag for this year: `TAGS = [ ... , story_tags.YEAR_2019]`
 
 ## Guided Process (Recommended)
 
 The following command will guide you through all of the steps required to record, validate, and upload a new recording.
 
-* NOTE: BSS stands for Benchmark or Story Set. If you’re recording a system health benchmark, use desktop_system_health_story_set or mobile_system_health_story_set. Otherwise, use the actual name of the benchmark.
+* NOTE: BSS stands for Benchmark or Story Set. If you’re recording a system health benchmark, use `desktop_system_health_story_set` or `mobile_system_health_story_set`. 
+Otherwise, use the actual name of the benchmark.
 
 ```
 # Desktop:
-vpython3 tools/perf/update_wpr -s "$NAME"  -bss "$BSS" auto
+tools/perf/update_wpr --story="$NAME" --benchmark-or-story-set="$BSS" auto
 # Mobile:
-vpython3 tools/perf/update_wpr -s "$NAME" -d=$ID  -bss "$BSS" auto
+tools/perf/update_wpr --story="$NAME" --device-id=$ID --benchmark-or-story-set="$BSS" auto
 ```
 ## Manual Process (via update_wpr)
 
@@ -53,9 +54,9 @@ You can run specific steps from the guided process described above with the foll
 
 ```
 # Desktop:
-vpython3 tools/perf/update_wpr -s "$NAME"  -bss "$BSS" live
+tools/perf/update_wpr --story="$NAME" --benchmark-or-story-set="$BSS" live
 # Mobile:
-vpython3 tools/perf/update_wpr -s "$NAME" -d=$ID  -bss "$BSS" live
+tools/perf/update_wpr --story="$NAME" --device-id=$ID --benchmark-or-story-set="$BSS" live
 ```
 
 
@@ -63,21 +64,21 @@ vpython3 tools/perf/update_wpr -s "$NAME" -d=$ID  -bss "$BSS" live
 
 ```
 # Desktop:
-vpython3 tools/perf/update_wpr -s "$NAME"  -bss "$BSS" record
+tools/perf/update_wpr --story="$NAME" --benchmark-or-story-set="$BSS" record
 # Mobile:
-vpython3 tools/perf/update_wpr -s "$NAME" -d=$ID  -bss "$BSS" record
+tools/perf/update_wpr --story="$NAME" --device-dd=$ID --benchmark-or-story-set="$BSS" record
 ```
 
-If the story requires login, then you need to add SKIP_LOGIN = False to the story class definition while recording and remove it after recording (crbug.com/882479). In order to make the WPR archive more robust, temporarily add pauses using action_runner.Wait(10) between the user interactions like page navigation and at the end of the story.
+If the story requires login, then you need to add `SKIP_LOGIN = False` to the story class definition while recording and remove it after recording (crbug.com/882479). In order to make the WPR archive more robust, temporarily add pauses using `action_runner.Wait(10)` between the user interactions like page navigation and at the end of the story.
 
 
 ### Replay using the recorded WPR
 
 ```
 # Desktop:
-vpython3 tools/perf/update_wpr -s "$NAME"  -bss "$BSS" replay
+tools/perf/update_wpr --story="$NAME" --benchmark-or-story-set="$BSS" replay
 # Mobile:
-vpython3 tools/perf/update_wpr -s "$NAME" -d=$ID  -bss "$BSS" replay
+tools/perf/update_wpr --story="$NAME" --device-dd=$ID --benchmark-or-story-set="$BSS" replay
 ```
 
 Check that the console:error:all metrics have low values and are similar to the live run.
@@ -97,9 +98,9 @@ After updating the archive, go back to the previous replay step and iterate.
 
 ```
 # Desktop:
-vpython3 tools/perf/update_wpr --story="$NAME" upload
+tools/perf/update_wpr --story="$NAME" upload
 # Mobile:
-vpython3 tools/perf/update_wpr --story="$NAME" -d=$ID upload
+tools/perf/update_wpr --story="$NAME" --device-dd=$ID upload
 ```
 
 ### Final Steps
@@ -112,13 +113,13 @@ Commit all changes and upload a CL with the following description:
 Bug:878390
 ```
 
-Run a pinpoint job and check that there are the same low number of console:error:all metrics.
+Run a pinpoint job and check that there are the same low number of `console:error:all` metrics.
 
 ```
 # Desktop:
-vpython3 tools/perf/update_wpr --story="$NAME" --pageset-repeat=20 pinpoint
+tools/perf/update_wpr --story="$NAME" --pageset-repeat=20 pinpoint
 # Mobile:
-vpython3 tools/perf/update_wpr --story="$NAME" --pageset-repeat=20 -d=$ID pinpoint
+tools/perf/update_wpr --story="$NAME" --pageset-repeat=20 --device-dd=$ID pinpoint
 ```
 
 Or manually test the newly created story by using a pinpoint job
@@ -166,7 +167,7 @@ tools/perf/record_wpr --browser-executable=$(pwd)/out/Release/chrome --story-fil
 tools/perf/record_wpr --device=YOUR_DEVICE_ID --browser-executable=$(pwd)/out/Release/apks/ChromePublic.apk --story-filter="$NAME" mobile_system_health_story_set
 ```
 
-In order to reduce HTTP 404 errors, add action_runner.Wait(10) commands in story interaction before pages navigations and the story end.
+In order to reduce HTTP 404 errors, add `action_runner.Wait(10)` commands in story interaction before page navigations and the story end.
 
 To test a recording:
 
