@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry_factory.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 #include "chrome/browser/web_applications/isolation_data.h"
@@ -207,7 +208,7 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
 
  private:
   void OnResponseRead(
-      base::expected<IsolatedWebAppReaderRegistry::Response,
+      base::expected<IsolatedWebAppResponseReader::Response,
                      IsolatedWebAppReaderRegistry::ReadResponseError>
           response) {
     if (!loader_client_.is_connected()) {

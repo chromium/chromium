@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -24,6 +25,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_package {
 class SignedWebBundleId;
@@ -51,40 +53,6 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
   IsolatedWebAppReaderRegistry& operator=(const IsolatedWebAppReaderRegistry&) =
       delete;
 
-  // A `Response` object contains the response head, as well as a `ReadBody`
-  // function to read the response's body. It holds weakly onto a
-  // `SignedWebBundleReader` for reading the response body. This reference will
-  // remain valid until the reader is evicted from the cache of the
-  // `IsolatedWebAppReaderRegistry`.
-  class Response {
-   public:
-    Response(web_package::mojom::BundleResponsePtr head,
-             base::WeakPtr<SignedWebBundleReader> reader);
-
-    Response(const Response&) = delete;
-    Response& operator=(const Response&) = delete;
-
-    Response(Response&&);
-    Response& operator=(Response&&);
-
-    ~Response();
-
-    // Returns the head of the response, which includes status code and response
-    // headers.
-    const web_package::mojom::BundleResponsePtr& head() { return head_; }
-
-    // Reads the body of the response into `producer_handle`, calling `callback`
-    // with `net::OK` on success, and another error code on failure. A failure
-    // may also occur if the `SignedWebBundleReader` that was used to read the
-    // response head has since been evicted from the cache.
-    void ReadBody(mojo::ScopedDataPipeProducerHandle producer_handle,
-                  base::OnceCallback<void(net::Error net_error)> callback);
-
-   private:
-    web_package::mojom::BundleResponsePtr head_;
-    base::WeakPtr<SignedWebBundleReader> reader_;
-  };
-
   struct ReadResponseError {
     enum class Type {
       kOtherError,
@@ -98,7 +66,7 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
         const std::string& error);
 
     static ReadResponseError ForError(
-        const SignedWebBundleReader::ReadResponseError& error);
+        const IsolatedWebAppResponseReader::Error& error);
 
     Type type;
     std::string message;
@@ -117,7 +85,8 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
   };
 
   using ReadResponseCallback = base::OnceCallback<void(
-      base::expected<Response, ReadResponseError> response)>;
+      base::expected<IsolatedWebAppResponseReader::Response, ReadResponseError>
+          response)>;
 
   // Given a path to a Signed Web Bundle, the expected Signed Web Bundle ID, and
   // a request, read the corresponding response from it. The `callback` receives
@@ -191,21 +160,20 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>
           read_integrity_block_and_metadata_error);
 
-  void DoReadResponse(SignedWebBundleReader& reader,
+  void DoReadResponse(IsolatedWebAppResponseReader& reader,
                       network::ResourceRequest resource_request,
                       ReadResponseCallback callback);
 
   void OnResponseRead(
-      base::WeakPtr<SignedWebBundleReader> reader,
       ReadResponseCallback callback,
-      base::expected<web_package::mojom::BundleResponsePtr,
-                     SignedWebBundleReader::ReadResponseError> response_head);
+      base::expected<IsolatedWebAppResponseReader::Response,
+                     IsolatedWebAppResponseReader::Error> response);
 
   ReadIntegrityBlockAndMetadataStatus GetStatusFromError(
       const SignedWebBundleReader::ReadIntegrityBlockAndMetadataError& error);
 
   ReadResponseHeadStatus GetStatusFromError(
-      const SignedWebBundleReader::ReadResponseError& error);
+      const IsolatedWebAppResponseReader::Error& error);
 
   enum class ReaderCacheState;
 
@@ -236,10 +204,11 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
     void Erase(base::flat_map<base::FilePath, Entry>::iterator iterator);
 
     // A cache `Entry` has two states: In its initial `kPending` state, it
-    // caches requests made to a Signed Web Bundle until the
-    // `SignedWebBundleReader` is ready. Once the `SignedWebBundleReader` is
-    // ready to serve responses, all queued requests are run and the state is
-    // updated to `kReady`.
+    // caches requests made to a Signed Web Bundle and holds a
+    // `SignedWebBundleReader` in `reader_`. Once the `SignedWebBundleReader` is
+    // ready to serve responses, it is converted into an
+    // `IsolatedWebAppResponseReader`, all queued requests are run, and the
+    // state is updated to `kReady`.
     class Entry {
      public:
       explicit Entry(std::unique_ptr<SignedWebBundleReader> reader);
@@ -251,15 +220,17 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       Entry(Entry&& other);
       Entry& operator=(Entry&& other);
 
-      SignedWebBundleReader& GetReader() {
+      absl::variant<std::unique_ptr<SignedWebBundleReader>,
+                    std::unique_ptr<IsolatedWebAppResponseReader>>&
+      GetReader() {
         last_access_ = base::TimeTicks::Now();
-        return *reader_;
+        return reader_;
       }
 
       const base::TimeTicks last_access() const { return last_access_; }
 
       ReaderCacheState AsReaderCacheState() {
-        switch (state) {
+        switch (state()) {
           case State::kPending:
             return ReaderCacheState::kCachedPending;
           case State::kReady:
@@ -268,14 +239,21 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       }
 
       enum class State { kPending, kReady };
+      State state() const {
+        return absl::holds_alternative<
+                   std::unique_ptr<IsolatedWebAppResponseReader>>(reader_)
+                   ? State::kReady
+                   : State::kPending;
+      }
 
-      State state = State::kPending;
       std::vector<std::pair<network::ResourceRequest,
                             IsolatedWebAppReaderRegistry::ReadResponseCallback>>
           pending_requests;
 
      private:
-      std::unique_ptr<SignedWebBundleReader> reader_;
+      absl::variant<std::unique_ptr<SignedWebBundleReader>,
+                    std::unique_ptr<IsolatedWebAppResponseReader>>
+          reader_;
       // The point in time when the `reader` was last accessed.
       base::TimeTicks last_access_;
     };

@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "chrome/common/url_constants.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
@@ -79,7 +80,7 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
               : ReaderCacheState::kNotCached);
 
     if (found) {
-      switch (cache_entry_it->second.state) {
+      switch (cache_entry_it->second.state()) {
         case Cache::Entry::State::kPending:
           // If integrity block and metadata are still being read, then the
           // `SignedWebBundleReader` is not yet ready to be used for serving
@@ -90,8 +91,10 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
         case Cache::Entry::State::kReady:
           // If integrity block and metadata have already been read, read
           // the response from the cached `SignedWebBundleReader`.
-          DoReadResponse(cache_entry_it->second.GetReader(), resource_request,
-                         std::move(callback));
+          DoReadResponse(
+              *absl::get<std::unique_ptr<IsolatedWebAppResponseReader>>(
+                  cache_entry_it->second.GetReader()),
+              resource_request, std::move(callback));
           return;
       }
     }
@@ -112,15 +115,17 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
   cache_entry_it->second.pending_requests.emplace_back(resource_request,
                                                        std::move(callback));
 
-  cache_entry_it->second.GetReader().StartReading(
-      base::BindOnce(
-          &IsolatedWebAppReaderRegistry::OnIntegrityBlockRead,
-          // `base::Unretained` can be used here since `this` owns `reader`.
-          base::Unretained(this), web_bundle_path, web_bundle_id),
-      base::BindOnce(
-          &IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead,
-          // `base::Unretained` can be used here since `this` owns `reader`.
-          base::Unretained(this), web_bundle_path, web_bundle_id));
+  absl::get<std::unique_ptr<SignedWebBundleReader>>(
+      cache_entry_it->second.GetReader())
+      ->StartReading(
+          base::BindOnce(
+              &IsolatedWebAppReaderRegistry::OnIntegrityBlockRead,
+              // `base::Unretained` can be used here since `this` owns `reader`.
+              base::Unretained(this), web_bundle_path, web_bundle_id),
+          base::BindOnce(
+              &IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead,
+              // `base::Unretained` can be used here since `this` owns `reader`.
+              base::Unretained(this), web_bundle_path, web_bundle_id));
 }
 
 void IsolatedWebAppReaderRegistry::OnIntegrityBlockRead(
@@ -177,7 +182,7 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
 
   auto cache_entry_it = reader_cache_.Find(web_bundle_path);
   DCHECK(cache_entry_it != reader_cache_.End());
-  DCHECK_EQ(cache_entry_it->second.state, Cache::Entry::State::kPending);
+  DCHECK_EQ(cache_entry_it->second.state(), Cache::Entry::State::kPending);
 
   absl::optional<
       std::pair<ReadResponseError, ReadIntegrityBlockAndMetadataStatus>>
@@ -188,11 +193,12 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
         GetStatusFromError(*read_integrity_block_and_metadata_error));
   }
 
-  SignedWebBundleReader& reader = cache_entry_it->second.GetReader();
+  auto reader = std::move(absl::get<std::unique_ptr<SignedWebBundleReader>>(
+      cache_entry_it->second.GetReader()));
 
   if (!error_and_status.has_value()) {
     if (auto error_message = validator_->ValidateMetadata(
-            web_bundle_id, reader.GetPrimaryURL(), reader.GetEntries());
+            web_bundle_id, reader->GetPrimaryURL(), reader->GetEntries());
         error_message.has_value()) {
       error_and_status = std::make_pair(
           ReadResponseError::ForMetadataValidationError(*error_message),
@@ -222,14 +228,17 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
   // consumers that were waiting for this `SignedWebBundleReader` to become
   // available.
   verified_files_.insert(cache_entry_it->first);
-  cache_entry_it->second.state = Cache::Entry::State::kReady;
+  cache_entry_it->second.GetReader() =
+      std::make_unique<IsolatedWebAppResponseReader>(std::move(reader));
   for (auto& [resource_request, callback] : pending_requests) {
-    DoReadResponse(reader, resource_request, std::move(callback));
+    DoReadResponse(*absl::get<std::unique_ptr<IsolatedWebAppResponseReader>>(
+                       cache_entry_it->second.GetReader()),
+                   resource_request, std::move(callback));
   }
 }
 
 void IsolatedWebAppReaderRegistry::DoReadResponse(
-    SignedWebBundleReader& reader,
+    IsolatedWebAppResponseReader& reader,
     network::ResourceRequest resource_request,
     ReadResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -257,28 +266,24 @@ void IsolatedWebAppReaderRegistry::DoReadResponse(
       base::BindOnce(
           &IsolatedWebAppReaderRegistry::OnResponseRead,
           // `base::Unretained` can be used here since `this` owns `reader`.
-          base::Unretained(this), reader.AsWeakPtr(), std::move(callback)));
+          base::Unretained(this), std::move(callback)));
 }
 
 void IsolatedWebAppReaderRegistry::OnResponseRead(
-    base::WeakPtr<SignedWebBundleReader> reader,
     ReadResponseCallback callback,
-    base::expected<web_package::mojom::BundleResponsePtr,
-                   SignedWebBundleReader::ReadResponseError> response_head) {
-  base::UmaHistogramEnumeration(
-      "WebApp.Isolated.ReadResponseHeadStatus",
-      response_head.has_value() ? ReadResponseHeadStatus::kSuccess
-                                : GetStatusFromError(response_head.error()));
+    base::expected<IsolatedWebAppResponseReader::Response,
+                   IsolatedWebAppResponseReader::Error> response) {
+  base::UmaHistogramEnumeration("WebApp.Isolated.ReadResponseHeadStatus",
+                                response.has_value()
+                                    ? ReadResponseHeadStatus::kSuccess
+                                    : GetStatusFromError(response.error()));
 
-  if (!response_head.has_value()) {
+  if (!response.has_value()) {
     std::move(callback).Run(
-        base::unexpected(ReadResponseError::ForError(response_head.error())));
+        base::unexpected(ReadResponseError::ForError(response.error())));
     return;
   }
-  // Since `this` owns `reader`, we only pass a weak reference to it to the
-  // `Response` object. If `this` deletes `reader`, it makes sense that the
-  // reference contained in `Response` also becomes invalid.
-  std::move(callback).Run(Response(std::move(*response_head), reader));
+  std::move(callback).Run(std::move(*response));
 }
 
 IsolatedWebAppReaderRegistry::ReadIntegrityBlockAndMetadataStatus
@@ -329,40 +334,15 @@ IsolatedWebAppReaderRegistry::GetStatusFromError(
 
 IsolatedWebAppReaderRegistry::ReadResponseHeadStatus
 IsolatedWebAppReaderRegistry::GetStatusFromError(
-    const SignedWebBundleReader::ReadResponseError& error) {
+    const IsolatedWebAppResponseReader::Error& error) {
   switch (error.type) {
-    case SignedWebBundleReader::ReadResponseError::Type::kParserInternalError:
+    case IsolatedWebAppResponseReader::Error::Type::kParserInternalError:
       return ReadResponseHeadStatus::kResponseHeadParserInternalError;
-    case SignedWebBundleReader::ReadResponseError::Type::kFormatError:
+    case IsolatedWebAppResponseReader::Error::Type::kFormatError:
       return ReadResponseHeadStatus::kResponseHeadParserFormatError;
-    case SignedWebBundleReader::ReadResponseError::Type::kResponseNotFound:
+    case IsolatedWebAppResponseReader::Error::Type::kResponseNotFound:
       return ReadResponseHeadStatus::kResponseNotFoundError;
   }
-}
-
-IsolatedWebAppReaderRegistry::Response::Response(
-    web_package::mojom::BundleResponsePtr head,
-    base::WeakPtr<SignedWebBundleReader> reader)
-    : head_(std::move(head)), reader_(std::move(reader)) {}
-
-IsolatedWebAppReaderRegistry::Response::Response(Response&&) = default;
-
-IsolatedWebAppReaderRegistry::Response&
-IsolatedWebAppReaderRegistry::Response::operator=(Response&&) = default;
-
-IsolatedWebAppReaderRegistry::Response::~Response() = default;
-
-void IsolatedWebAppReaderRegistry::Response::ReadBody(
-    mojo::ScopedDataPipeProducerHandle producer_handle,
-    base::OnceCallback<void(net::Error net_error)> callback) {
-  if (!reader_) {
-    // The weak pointer to `reader_` might no longer be valid when this is
-    // called.
-    std::move(callback).Run(net::ERR_FAILED);
-    return;
-  }
-  reader_->ReadResponseBody(head_->Clone(), std::move(producer_handle),
-                            std::move(callback));
 }
 
 // static
@@ -403,15 +383,15 @@ IsolatedWebAppReaderRegistry::ReadResponseError::ForMetadataValidationError(
 // static
 IsolatedWebAppReaderRegistry::ReadResponseError
 IsolatedWebAppReaderRegistry::ReadResponseError::ForError(
-    const SignedWebBundleReader::ReadResponseError& error) {
+    const IsolatedWebAppResponseReader::Error& error) {
   switch (error.type) {
-    case SignedWebBundleReader::ReadResponseError::Type::kParserInternalError:
+    case IsolatedWebAppResponseReader::Error::Type::kParserInternalError:
       return ForOtherError(base::StringPrintf(
           "Failed to parse response head: %s", error.message.c_str()));
-    case SignedWebBundleReader::ReadResponseError::Type::kFormatError:
+    case IsolatedWebAppResponseReader::Error::Type::kFormatError:
       return ForOtherError(base::StringPrintf(
           "Failed to parse response head: %s", error.message.c_str()));
-    case SignedWebBundleReader::ReadResponseError::Type::kResponseNotFound:
+    case IsolatedWebAppResponseReader::Error::Type::kResponseNotFound:
       return ForResponseNotFound(base::StringPrintf(
           "Failed to read response: %s", error.message.c_str()));
   }
@@ -490,7 +470,7 @@ void IsolatedWebAppReaderRegistry::Cache::CleanupOldEntries() {
             // If a `SignedWebBundleReader` is ready to read responses and has
             // not been used for at least `kCleanupInterval`, remove it from the
             // cache.
-            return cache_entry.state == Entry::State::kReady &&
+            return cache_entry.state() == Entry::State::kReady &&
                    now - cache_entry.last_access() > kCleanupInterval;
           },
           [](const std::pair<base::FilePath, Entry>& entry) -> const Entry& {

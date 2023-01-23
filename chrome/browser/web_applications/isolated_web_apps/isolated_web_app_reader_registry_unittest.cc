@@ -22,6 +22,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
@@ -205,7 +206,7 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
 };
 
 using ReadResult =
-    base::expected<IsolatedWebAppReaderRegistry::Response,
+    base::expected<IsolatedWebAppResponseReader::Response,
                    IsolatedWebAppReaderRegistry::ReadResponseError>;
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestSingleRequest) {
@@ -239,7 +240,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSingleRequest) {
 
   std::string response_body = ReadAndFulfillResponseBody(
       result->head()->payload_length,
-      base::BindOnce(&IsolatedWebAppReaderRegistry::Response::ReadBody,
+      base::BindOnce(&IsolatedWebAppResponseReader::Response::ReadBody,
                      base::Unretained(&*result)));
   EXPECT_EQ(kResponseBody, response_body);
 }
@@ -263,7 +264,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest,
 
   std::string response_body = ReadAndFulfillResponseBody(
       result->head()->payload_length,
-      base::BindOnce(&IsolatedWebAppReaderRegistry::Response::ReadBody,
+      base::BindOnce(&IsolatedWebAppResponseReader::Response::ReadBody,
                      base::Unretained(&*result)));
   EXPECT_EQ(kResponseBody, response_body);
 }
@@ -293,7 +294,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest,
   base::test::TestFuture<net::Error> error_future;
   ReadResponseBody(
       result->head()->payload_length,
-      base::BindOnce(&IsolatedWebAppReaderRegistry::Response::ReadBody,
+      base::BindOnce(&IsolatedWebAppResponseReader::Response::ReadBody,
                      base::Unretained(&*result)),
       error_future.GetCallback());
   EXPECT_EQ(net::ERR_FAILED, error_future.Take());
@@ -771,7 +772,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
 
     std::string response_body = ReadAndFulfillResponseBody(
         result->head()->payload_length,
-        base::BindOnce(&IsolatedWebAppReaderRegistry::Response::ReadBody,
+        base::BindOnce(&IsolatedWebAppResponseReader::Response::ReadBody,
                        base::Unretained(&*result)));
     EXPECT_EQ(kResponseBody, response_body);
   }
@@ -784,7 +785,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
 
     std::string response_body = ReadAndFulfillResponseBody(
         result->head()->payload_length,
-        base::BindOnce(&IsolatedWebAppReaderRegistry::Response::ReadBody,
+        base::BindOnce(&IsolatedWebAppResponseReader::Response::ReadBody,
                        base::Unretained(&*result)));
     EXPECT_EQ(kResponseBody, response_body);
   }
@@ -806,7 +807,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
 
     std::string response_body = ReadAndFulfillResponseBody(
         result->head()->payload_length,
-        base::BindOnce(&IsolatedWebAppReaderRegistry::Response::ReadBody,
+        base::BindOnce(&IsolatedWebAppResponseReader::Response::ReadBody,
                        base::Unretained(&*result)));
     EXPECT_EQ(kResponseBody, response_body);
   }
