@@ -874,19 +874,16 @@ export class Output {
       rule.populateOutput(this.formatOptions_.braille);
       if (eventBlock[rule.role][formatName]) {
         if (this.formatOptions_.braille) {
-          buff = [];
+          buff = /** @type {!Array<Spannable>} */ ([]);
           formatLog.bufferClear();
         }
 
         excludeRoles.add(formatNode.role);
         formatLog.writeRule(rule.specifier);
-        const enterFormat = rule.output ?
-            eventBlock[rule.role][formatName][rule.output] :
-            eventBlock[rule.role][formatName];
         this.formattedAncestors_.add(formatNode);
         OutputFormatter.format(this, {
           node: formatNode,
-          outputFormat: enterFormat,
+          outputFormat: rule.enterFormat,
           outputBuffer: buff,
           outputFormatLogger: formatLog,
           opt_prevNode: prevNode,

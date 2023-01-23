@@ -141,6 +141,15 @@ export class AncestryOutputRule extends OutputRule {
       this.output_ = OutputFormatType.BRAILLE;
     }
   }
+
+  /** @return {string} */
+  get enterFormat() {
+    const rule = OutputRule.RULES[this.event_][this.role_][this.formatName_];
+    if (this.output_) {
+      return rule[this.output_];
+    }
+    return rule || '';
+  }
 }
 
 /**
