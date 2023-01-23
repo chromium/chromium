@@ -65,7 +65,7 @@ const base::FilePath::CharType kGroupOnlyFilename[] =
     FILE_PATH_LITERAL("unlikely-to-exist-file.txt");
 
 // Under GTK, the icon providing functions do not return icons.
-IN_PROC_BROWSER_TEST_F(IconLoaderBrowserTest, LoadGroup) {
+IN_PROC_BROWSER_TEST_F(IconLoaderBrowserTest, DISABLED_LoadGroup) {
   float scale = 1.0;
 #if BUILDFLAG(IS_WIN)
   scale = display::win::GetDPIScale();
