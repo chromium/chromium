@@ -204,7 +204,41 @@ void RasterImplementationGLES::ConvertYUVAMailboxesToRGB(
     SkYUVAInfo::PlaneConfig plane_config,
     SkYUVAInfo::Subsampling subsampling,
     const gpu::Mailbox yuva_plane_mailboxes[]) {
-  NOTREACHED();
+  skcms_Matrix3x3 primaries = {{{0}}};
+  skcms_TransferFunction transfer = {0};
+  if (planes_rgb_color_space) {
+    planes_rgb_color_space->toXYZD50(&primaries);
+    planes_rgb_color_space->transferFn(&transfer);
+  } else {
+    // Specify an invalid transfer function exponent, to ensure that when
+    // SkColorSpace::MakeRGB is called in the decoder, the result is nullptr.
+    transfer.g = -99;
+  }
+
+  constexpr size_t kByteSize =
+      sizeof(gpu::Mailbox) * (SkYUVAInfo::kMaxPlanes + 1) +
+      sizeof(skcms_TransferFunction) + sizeof(skcms_Matrix3x3);
+  // 144 is the count in build_gles2_cmd_buffer.py for GL_MAILBOX_SIZE_CHROMIUM
+  // x5 + 16 floats.
+  static_assert(kByteSize == 144);
+  GLbyte bytes[kByteSize] = {0};
+  size_t offset = 0;
+  for (int i = 0; i < SkYUVAInfo::NumPlanes(plane_config); ++i) {
+    memcpy(bytes + offset, yuva_plane_mailboxes + i, sizeof(gpu::Mailbox));
+    offset += sizeof(gpu::Mailbox);
+  }
+  offset = SkYUVAInfo::kMaxPlanes * sizeof(gpu::Mailbox);
+  memcpy(bytes + offset, &dest_mailbox, sizeof(gpu::Mailbox));
+  offset += sizeof(gpu::Mailbox);
+  memcpy(bytes + offset, &transfer, sizeof(transfer));
+  offset += sizeof(transfer);
+  memcpy(bytes + offset, &primaries, sizeof(primaries));
+  offset += sizeof(primaries);
+  DCHECK_EQ(offset, kByteSize);
+
+  gl_->ConvertYUVAMailboxesToRGBINTERNAL(
+      planes_yuv_color_space, static_cast<GLenum>(plane_config),
+      static_cast<GLenum>(subsampling), reinterpret_cast<GLbyte*>(bytes));
 }
 
 void RasterImplementationGLES::ConvertRGBAToYUVAMailboxes(
@@ -213,7 +247,14 @@ void RasterImplementationGLES::ConvertRGBAToYUVAMailboxes(
     SkYUVAInfo::Subsampling subsampling,
     const gpu::Mailbox yuva_plane_mailboxes[],
     const gpu::Mailbox& source_mailbox) {
-  NOTREACHED();
+  gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes + 1];
+  for (int i = 0; i < SkYUVAInfo::NumPlanes(plane_config); ++i) {
+    mailboxes[i] = yuva_plane_mailboxes[i];
+  }
+  mailboxes[SkYUVAInfo::kMaxPlanes] = source_mailbox;
+  gl_->ConvertRGBAToYUVAMailboxesINTERNAL(
+      planes_yuv_color_space, static_cast<GLenum>(plane_config),
+      static_cast<GLenum>(subsampling), reinterpret_cast<GLbyte*>(mailboxes));
 }
 
 void RasterImplementationGLES::BeginRasterCHROMIUM(

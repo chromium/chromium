@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
+#include "gpu/command_buffer/service/copy_shared_image_helper.h"
 #include "gpu/command_buffer/service/decoder_client.h"
 #include "gpu/command_buffer/service/gpu_fence_manager.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
@@ -27,6 +28,7 @@
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
+#include "ui/gl/scoped_make_current.h"
 
 namespace gpu {
 namespace gles2 {
@@ -4955,7 +4957,18 @@ error::Error GLES2DecoderPassthroughImpl::DoConvertRGBAToYUVAMailboxesINTERNAL(
     GLenum plane_config,
     GLenum subsampling,
     const volatile GLbyte* mailboxes_in) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  if (!lazy_context_) {
+    lazy_context_ = std::make_unique<LazySharedContextState>(this);
+  }
+  ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
+                            lazy_context_->shared_context_state()->surface());
+  CopySharedImageHelper helper(group_->shared_image_representation_factory(),
+                               lazy_context_->shared_context_state());
+  auto result = helper.ConvertRGBAToYUVAMailboxes(yuv_color_space, plane_config,
+                                                  subsampling, mailboxes_in);
+  if (!result.has_value()) {
+    InsertError(result.error().gl_error, result.error().msg);
+  }
   return error::kNoError;
 }
 
@@ -4964,7 +4977,18 @@ error::Error GLES2DecoderPassthroughImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
     GLenum plane_config,
     GLenum subsampling,
     const volatile GLbyte* mailboxes_in) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  if (!lazy_context_) {
+    lazy_context_ = std::make_unique<LazySharedContextState>(this);
+  }
+  ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
+                            lazy_context_->shared_context_state()->surface());
+  CopySharedImageHelper helper(group_->shared_image_representation_factory(),
+                               lazy_context_->shared_context_state());
+  auto result = helper.ConvertYUVAMailboxesToRGB(yuv_color_space, plane_config,
+                                                 subsampling, mailboxes_in);
+  if (!result.has_value()) {
+    InsertError(result.error().gl_error, result.error().msg);
+  }
   return error::kNoError;
 }
 

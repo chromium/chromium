@@ -26,9 +26,12 @@
 #include "gpu/command_buffer/service/program_cache.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/gpu_switching_manager.h"
+#include "ui/gl/init/gl_factory.h"
 #include "ui/gl/progress_reporter.h"
+#include "ui/gl/scoped_make_current.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing_factory.h"
@@ -2461,6 +2464,55 @@ GLES2DecoderPassthroughImpl::PatchGetFramebufferAttachmentParameter(
   }
 
   return error::kNoError;
+}
+
+GLES2DecoderPassthroughImpl::LazySharedContextState::LazySharedContextState(
+    GLES2DecoderPassthroughImpl* impl)
+    : impl_(impl) {
+  auto gl_surface = gl::init::CreateOffscreenGLSurface(
+      impl_->context_->GetGLDisplayEGL(), gfx::Size());
+  DCHECK(gl_surface);
+
+  gl::GLContextAttribs attribs;
+  attribs.global_texture_share_group = true;
+  attribs.global_semaphore_share_group = true;
+  auto gl_context = gl::init::CreateGLContext(impl_->context_->share_group(),
+                                              gl_surface.get(), attribs);
+  DCHECK(gl_context);
+
+  // Make current context using `gl_context` and `gl_surface`
+  ui::ScopedMakeCurrent smc(gl_context.get(), gl_surface.get());
+
+  ContextGroup* group = impl_->GetContextGroup();
+  const GpuPreferences& gpu_preferences = group->gpu_preferences();
+  const GpuDriverBugWorkarounds& workarounds =
+      group->feature_info()->workarounds();
+
+  shared_context_state_ = base::MakeRefCounted<SharedContextState>(
+      impl_->context_->share_group(), std::move(gl_surface),
+      std::move(gl_context),
+      /*use_virtualized_gl_contexts=*/false, base::DoNothing());
+  auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
+      workarounds, group->gpu_feature_info());
+  if (!shared_context_state_->InitializeGL(gpu_preferences, feature_info)) {
+    impl_->InsertError(GL_INVALID_OPERATION,
+                       "ContextResult::kFatalFailure: Failed to Initialize GL "
+                       "for SharedContextState");
+    return;
+  }
+  if (!shared_context_state_->InitializeGrContext(gpu_preferences, workarounds,
+                                                  /*cache=*/nullptr)) {
+    impl_->InsertError(GL_INVALID_OPERATION,
+                       "ContextResult::kFatalFailure: Failed to Initialize "
+                       "GrContext for SharedContextState");
+    return;
+  }
+}
+
+GLES2DecoderPassthroughImpl::LazySharedContextState::~LazySharedContextState() {
+  ui::ScopedMakeCurrent smc(shared_context_state_->context(),
+                            shared_context_state_->surface());
+  shared_context_state_.reset();
 }
 
 void GLES2DecoderPassthroughImpl::InsertError(GLenum error,

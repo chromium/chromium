@@ -28,6 +28,7 @@
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/logger.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "ui/gl/gl_bindings.h"
@@ -603,6 +604,26 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
   // A table of CommandInfo for all the commands.
   static const CommandInfo command_info[kNumCommands - kFirstGLES2Command];
+
+  // Creates lazily and holds a SharedContextState on a GLContext that is in the
+  // same share group as the command decoder's context. This is done so that
+  // skia operations can be performed on textures from the context and not worry
+  // about state tracking.
+  class LazySharedContextState {
+   public:
+    explicit LazySharedContextState(GLES2DecoderPassthroughImpl* impl);
+    ~LazySharedContextState();
+
+    SharedContextState* shared_context_state() {
+      return shared_context_state_.get();
+    }
+
+   private:
+    raw_ptr<GLES2DecoderPassthroughImpl> impl_ = nullptr;
+    scoped_refptr<SharedContextState> shared_context_state_;
+  };
+
+  std::unique_ptr<LazySharedContextState> lazy_context_;
 
   // The GLApi to make the gl calls on.
   raw_ptr<gl::GLApi> api_ = nullptr;
