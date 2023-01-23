@@ -976,150 +976,107 @@ std::ostream& operator<<(std::ostream& out,
                          AttributionTrigger::EventLevelResult status) {
   switch (status) {
     case AttributionTrigger::EventLevelResult::kSuccess:
-      out << "success";
-      break;
+      return out << "success";
     case AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority:
-      out << "successDroppedLowerPriority";
-      break;
+      return out << "successDroppedLowerPriority";
     case AttributionTrigger::EventLevelResult::kInternalError:
-      out << "internalError";
-      break;
+      return out << "internalError";
     case AttributionTrigger::EventLevelResult::
         kNoCapacityForConversionDestination:
-      out << "insufficientDestinationCapacity";
-      break;
+      return out << "insufficientDestinationCapacity";
     case AttributionTrigger::EventLevelResult::kNoMatchingImpressions:
-      out << "noMatchingSources";
-      break;
+      return out << "noMatchingSources";
     case AttributionTrigger::EventLevelResult::kDeduplicated:
-      out << "deduplicated";
-      break;
+      return out << "deduplicated";
     case AttributionTrigger::EventLevelResult::kExcessiveAttributions:
-      out << "excessiveAttributions";
-      break;
+      return out << "excessiveAttributions";
     case AttributionTrigger::EventLevelResult::kPriorityTooLow:
-      out << "priorityTooLow";
-      break;
+      return out << "priorityTooLow";
     case AttributionTrigger::EventLevelResult::kDroppedForNoise:
-      out << "noised";
-      break;
+      return out << "noised";
     case AttributionTrigger::EventLevelResult::kExcessiveReportingOrigins:
-      out << "excessiveReportingOrigins";
-      break;
+      return out << "excessiveReportingOrigins";
     case AttributionTrigger::EventLevelResult::kNoMatchingSourceFilterData:
-      out << "noMatchingSourceFilterData";
-      break;
+      return out << "noMatchingSourceFilterData";
     case AttributionTrigger::EventLevelResult::kProhibitedByBrowserPolicy:
-      out << "prohibitedByBrowserPolicy";
-      break;
+      return out << "prohibitedByBrowserPolicy";
     case AttributionTrigger::EventLevelResult::kNoMatchingConfigurations:
-      out << "noMatchingConfigurations";
-      break;
+      return out << "noMatchingConfigurations";
     case AttributionTrigger::EventLevelResult::kExcessiveReports:
-      out << "excessiveReports";
-      break;
+      return out << "excessiveReports";
     case AttributionTrigger::EventLevelResult::kFalselyAttributedSource:
-      out << "falselyAttributedSource";
-      break;
+      return out << "falselyAttributedSource";
     case AttributionTrigger::EventLevelResult::kReportWindowPassed:
-      out << "reportWindowPassed";
-      break;
+      return out << "reportWindowPassed";
   }
-  return out;
 }
 
 std::ostream& operator<<(std::ostream& out,
                          AttributionTrigger::AggregatableResult status) {
   switch (status) {
     case AttributionTrigger::AggregatableResult::kSuccess:
-      out << "success";
-      break;
+      return out << "success";
     case AttributionTrigger::AggregatableResult::kInternalError:
-      out << "internalError";
-      break;
+      return out << "internalError";
     case AttributionTrigger::AggregatableResult::
         kNoCapacityForConversionDestination:
-      out << "insufficientDestinationCapacity";
-      break;
+      return out << "insufficientDestinationCapacity";
     case AttributionTrigger::AggregatableResult::kNoMatchingImpressions:
-      out << "noMatchingSources";
-      break;
+      return out << "noMatchingSources";
     case AttributionTrigger::AggregatableResult::kExcessiveAttributions:
-      out << "excessiveAttributions";
-      break;
+      return out << "excessiveAttributions";
     case AttributionTrigger::AggregatableResult::kExcessiveReportingOrigins:
-      out << "excessiveReportingOrigins";
-      break;
+      return out << "excessiveReportingOrigins";
     case AttributionTrigger::AggregatableResult::kNoHistograms:
-      out << "noHistograms";
-      break;
+      return out << "noHistograms";
     case AttributionTrigger::AggregatableResult::kInsufficientBudget:
-      out << "insufficientBudget";
-      break;
+      return out << "insufficientBudget";
     case AttributionTrigger::AggregatableResult::kNoMatchingSourceFilterData:
-      out << "noMatchingSourceFilterData";
-      break;
+      return out << "noMatchingSourceFilterData";
     case AttributionTrigger::AggregatableResult::kNotRegistered:
-      out << "notRegistered";
-      break;
+      return out << "notRegistered";
     case AttributionTrigger::AggregatableResult::kProhibitedByBrowserPolicy:
-      out << "prohibitedByBrowserPolicy";
-      break;
+      return out << "prohibitedByBrowserPolicy";
     case AttributionTrigger::AggregatableResult::kDeduplicated:
-      out << "deduplicated";
-      break;
+      return out << "deduplicated";
     case AttributionTrigger::AggregatableResult::kReportWindowPassed:
-      out << "reportWindowPassed";
-      break;
+      return out << "reportWindowPassed";
   }
-  return out;
 }
 
 std::ostream& operator<<(std::ostream& out, RateLimitResult result) {
   switch (result) {
     case RateLimitResult::kAllowed:
-      out << "kAllowed";
-      break;
+      return out << "kAllowed";
     case RateLimitResult::kNotAllowed:
-      out << "kNotAllowed";
-      break;
+      return out << "kNotAllowed";
     case RateLimitResult::kError:
-      out << "kError";
-      break;
+      return out << "kError";
   }
-  return out;
 }
 
 std::ostream& operator<<(std::ostream& out,
                          StoredSource::AttributionLogic attribution_logic) {
   switch (attribution_logic) {
     case StoredSource::AttributionLogic::kNever:
-      out << "kNever";
-      break;
+      return out << "kNever";
     case StoredSource::AttributionLogic::kTruthfully:
-      out << "kTruthfully";
-      break;
+      return out << "kTruthfully";
     case StoredSource::AttributionLogic::kFalsely:
-      out << "kFalsely";
-      break;
+      return out << "kFalsely";
   }
-  return out;
 }
 
 std::ostream& operator<<(std::ostream& out,
                          StoredSource::ActiveState active_state) {
   switch (active_state) {
     case StoredSource::ActiveState::kActive:
-      out << "kActive";
-      break;
+      return out << "kActive";
     case StoredSource::ActiveState::kInactive:
-      out << "kInactive";
-      break;
+      return out << "kInactive";
     case StoredSource::ActiveState::kReachedEventLevelAttributionLimit:
-      out << "kReachedEventLevelAttributionLimit";
-      break;
+      return out << "kReachedEventLevelAttributionLimit";
   }
-  return out;
 }
 
 std::ostream& operator<<(std::ostream& out,
@@ -1250,34 +1207,25 @@ std::ostream& operator<<(std::ostream& out,
                          AttributionReport::Type report_type) {
   switch (report_type) {
     case AttributionReport::Type::kEventLevel:
-      out << "kEventLevel";
-      break;
+      return out << "kEventLevel";
     case AttributionReport::Type::kAggregatableAttribution:
-      out << "kAggregatableAttribution";
-      break;
+      return out << "kAggregatableAttribution";
   }
-  return out;
 }
 
 std::ostream& operator<<(std::ostream& out, SendResult::Status status) {
   switch (status) {
     case SendResult::Status::kSent:
-      out << "kSent";
-      break;
+      return out << "kSent";
     case SendResult::Status::kTransientFailure:
-      out << "kTransientFailure";
-      break;
+      return out << "kTransientFailure";
     case SendResult::Status::kFailure:
-      out << "kFailure";
-      break;
+      return out << "kFailure";
     case SendResult::Status::kDropped:
-      out << "kDropped";
-      break;
+      return out << "kDropped";
     case SendResult::Status::kFailedToAssemble:
-      out << "kFailedToAssemble";
-      break;
+      return out << "kFailedToAssemble";
   }
-  return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const SendResult& info) {
