@@ -5869,6 +5869,40 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_WEB_APP_WINDOW_CONTROLS_OVERLAY_DISABLED_ALERT" desc="Status change notification that the title bar is showing after window controls overlay is disabled">
         Title bar is now showing
       </message>
+ 
+     <!-- App Home WebUI strings. -->
+      <message name="IDS_APP_HOME_TITLE" desc="Title of the new App Home page">
+        Apps
+      </message>
+
+      <message name="IDS_APP_HOME_OPEN_IN_WINDOW" desc="Label of menu entry for toggling an app to open in window from App Home context menu">
+        Open in window
+      </message>
+
+      <message name="IDS_ACCNAME_APP_HOME_OPEN_IN_WINDOW_CHECKBOX" desc="Accessibility label for the Open in window checkbox for App Home">
+        Enable opening app in window
+      </message>
+
+      <message name="IDS_APP_HOME_LAUNCH_AT_STARTUP" desc="Label of menu entry for toggling an app to run on startup from App Home context menu">
+        Launch at startup
+      </message>
+
+      <message name="IDS_ACCNAME_APP_HOME_LAUNCH_AT_STARTUP_CHECKBOX" desc="Accessibility label for the Launch at startup checkbox for App Home">
+        Enable launching app at startup
+      </message>
+
+      <message name="IDS_APP_HOME_CREATE_SHORTCUT" desc="Menu entry label for creating a shortcut for an app from context menu on App Home">
+        Create shortcut
+      </message>
+
+      <message name="IDS_APP_HOME_UNINSTALL_APP" desc="Menu entry label for uninstalling an app from context menu on App Home">
+        Uninstall
+      </message>
+
+      <message name="IDS_APP_HOME_APP_SETTINGS" desc="Menu entry label for navigation to App Settings page for an app from context menu on App Home">
+        App settings
+      </message>
+      <!-- End App Home WebUI strings. -->
 
       <message name="IDS_WEB_APP_SETTINGS_TITLE" desc="Title of web app settings page">
         App Settings

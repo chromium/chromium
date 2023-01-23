@@ -43,38 +43,38 @@
       on-click="onOpenInWindowItemClick_"
       hidden="[[isOpenInWindowHidden_(selectedActionMenuModel_)]]">
     <div class="dropdown-item-label">
-      Open in window
+      $i18n{appWindowOpenLabel}
     </div>
     <cr-checkbox checked="{{selectedActionMenuModel_.appInfo.openInWindow}}"
       on-click="onOpenInWindowItemClick_">
-        Enable opening app in window
+      $i18n{appWindowOpenCheckboxLabel}
     </cr-checkbox>
   </div>
   <div id="launch-on-startup" tabindex="0" class="dropdown-item"
       on-click="onLaunchOnStartupItemClick_"
       hidden="[[isLaunchOnStartupHidden_(selectedActionMenuModel_)]]">
     <div class="dropdown-item-label">
-      Launch on startup
+      $i18n{appLaunchAtStartupLabel}
     </div>
     <cr-checkbox
       checked="[[isLaunchOnStartUp_(selectedActionMenuModel_)]]"
       disabled=
         "[[isLaunchOnStartupDisabled_(selectedActionMenuModel_)]]"
       on-click="onLaunchOnStartupItemClick_">
-        Enable launching app on startup
+      $i18n{appLaunchAtStartupCheckboxLabel}
     </cr-checkbox>
   </div>
   <button id="create-shortcut" class="dropdown-item"
       on-click="onCreateShortcutItemClick_">
-    Create a shortcut
+    $i18n{createShortcutForAppLabel}
   </button>
   <hr>
   <button id="uninstall" class="dropdown-item"
       on-click="onUninstallItemClick_">
-    Uninstall
+    $i18n{uninstallAppLabel}
   </button>
   <button id="app-settings" class="dropdown-item"
       on-click="onAppSettingsItemClick_">
-    App settings
+    $i18n{appSettingsLabel}
   </button>
 </cr-action-menu>
