@@ -1,8 +1,8 @@
-// Copyright 2013 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 
 #import <stdint.h>
 
@@ -22,12 +22,12 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_path_cache.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_home_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller.h"
@@ -68,7 +68,7 @@ enum class PresentedState {
 
 }  // namespace
 
-@interface BookmarkInteractionController () <
+@interface BookmarksCoordinator () <
     BookmarksEditorViewControllerDelegate,
     BookmarksFolderEditorViewControllerDelegate,
     BookmarksFolderChooserViewControllerDelegate,
@@ -148,9 +148,10 @@ enum class PresentedState {
 
 @end
 
-@implementation BookmarkInteractionController
+@implementation BookmarksCoordinator
 @synthesize applicationCommandsHandler = _applicationCommandsHandler;
 @synthesize snackbarCommandsHandler = _snackbarCommandsHandler;
+@synthesize baseViewController = _baseViewController;
 @synthesize bookmarkBrowser = _bookmarkBrowser;
 @synthesize bookmarkEditor = _bookmarkEditor;
 @synthesize bookmarkModel = _bookmarkModel;
@@ -163,7 +164,7 @@ enum class PresentedState {
 @synthesize mediator = _mediator;
 
 - (instancetype)initWithBrowser:(Browser*)browser {
-  self = [super init];
+  self = [super initWithBaseViewController:nil browser:browser];
   if (self) {
     _browser = browser;
     // Bookmarks are always opened with the main browser state, even in
@@ -223,7 +224,7 @@ enum class PresentedState {
     return;
   }
 
-  __weak BookmarkInteractionController* weakSelf = self;
+  __weak BookmarksCoordinator* weakSelf = self;
   // Copy of `URL` to be captured in block.
   GURL bookmarkedURL(URL);
   void (^editAction)() = ^{
@@ -381,9 +382,9 @@ enum class PresentedState {
              newTab:newTab];
   };
 
-  if (_parentController.presentedViewController) {
-    [_parentController dismissViewControllerAnimated:animated
-                                          completion:completion];
+  if (self.baseViewController.presentedViewController) {
+    [self.baseViewController dismissViewControllerAnimated:animated
+                                                completion:completion];
   } else {
     completion();
   }
@@ -481,7 +482,7 @@ enum class PresentedState {
 
 - (void)bookmarkEditorWillCommitTitleOrUrlChange:
     (BookmarksEditorViewController*)controller {
-  [self.delegate bookmarkInteractionControllerWillCommitTitleOrUrlChange:self];
+  [self.delegate bookmarksCoordinatorWillCommitTitleOrURLChange:self];
 }
 
 #pragma mark - BookmarksFolderEditorViewControllerDelegate
@@ -504,7 +505,7 @@ enum class PresentedState {
 
 - (void)bookmarkFolderEditorWillCommitTitleChange:
     (BookmarksFolderEditorViewController*)controller {
-  [self.delegate bookmarkInteractionControllerWillCommitTitleOrUrlChange:self];
+  [self.delegate bookmarksCoordinatorWillCommitTitleOrURLChange:self];
 }
 
 #pragma mark - BookmarksFolderChooserViewControllerDelegate
@@ -615,10 +616,10 @@ enum class PresentedState {
     return;
   }
 
-  __weak BookmarkInteractionController* weakSelf = self;
+  __weak BookmarksCoordinator* weakSelf = self;
   [self presentFolderPickerWithCompletion:^(
             const bookmarks::BookmarkNode* folder) {
-    BookmarkInteractionController* strongSelf = weakSelf;
+    BookmarksCoordinator* strongSelf = weakSelf;
     if (folder && strongSelf) {
       [strongSelf.snackbarCommandsHandler
           showSnackbarMessage:[strongSelf.mediator addBookmarks:command.URLs
@@ -655,9 +656,9 @@ enum class PresentedState {
 
   [navController setModalPresentationStyle:UIModalPresentationFormSheet];
 
-  [_parentController presentViewController:navController
-                                  animated:YES
-                                completion:nil];
+  [self.baseViewController presentViewController:navController
+                                        animated:YES
+                                      completion:nil];
 }
 
 - (void)openURLInCurrentTab:(const GURL&)url {

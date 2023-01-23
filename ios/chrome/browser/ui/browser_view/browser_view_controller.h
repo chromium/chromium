@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/web/web_state_container_view_provider.h"
 
 class Browser;
-@class BookmarkInteractionController;
+@class BookmarksCoordinator;
 @class BrowserContainerViewController;
 @class BubblePresenter;
 @class CommandDispatcher;
@@ -64,7 +64,7 @@ typedef struct {
   TabStripCoordinator* tabStripCoordinator;
   TabStripLegacyCoordinator* legacyTabStripCoordinator;
   SideSwipeController* sideSwipeController;
-  BookmarkInteractionController* bookmarkInteractionController;
+  BookmarksCoordinator* bookmarksCoordinator;
   FullscreenController* fullscreenController;
   id<TextZoomCommands> textZoomHandler;
   id<HelpCommands> helpHandler;

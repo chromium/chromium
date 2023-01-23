@@ -1,15 +1,16 @@
-// Copyright 2013 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_INTERACTION_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_INTERACTION_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARKS_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARKS_COORDINATOR_H_
 
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
+#import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
 class Browser;
-@protocol BookmarkInteractionControllerDelegate;
+@protocol BookmarksCoordinatorDelegate;
 
 namespace bookmarks {
 class BookmarkNode;
@@ -17,22 +18,22 @@ class BookmarkNode;
 
 class GURL;
 
-namespace web {
-class WebState;
-}
-
-// The BookmarkInteractionController abstracts the management of the various
-// UIViewControllers used to create, remove and edit a bookmark.
-@interface BookmarkInteractionController : NSObject <BookmarksCommands>
+// The BookmarksCoordinator abstracts the management of the various
+// pieces of UI used to create, remove and edit a bookmark.
+@interface BookmarksCoordinator : ChromeCoordinator <BookmarksCommands>
 
 // This object's delegate.
-@property(nonatomic, weak) id<BookmarkInteractionControllerDelegate> delegate;
+@property(nonatomic, weak) id<BookmarksCoordinatorDelegate> delegate;
 
-// The parent controller on top of which the UI needs to be presented.
-@property(nonatomic, weak) UIViewController* parentController;
+// The base view controller for this coordinator
+@property(nonatomic, weak, readwrite) UIViewController* baseViewController;
 
+// Initializes this Coordinator with its `browser` and a nil base view
+// controller.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
 
 // Called before the instance is deallocated.
 - (void)shutdown;
@@ -58,4 +59,4 @@ class WebState;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_INTERACTION_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARKS_COORDINATOR_H_

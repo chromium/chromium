@@ -55,7 +55,7 @@
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_coordinator.h"
 #import "ios/chrome/browser/ui/badges/badge_popup_menu_coordinator.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/browser_coordinator+private.h"
@@ -435,7 +435,7 @@ enum class ToolbarKind {
   FullscreenController* _fullscreenController;
   // The coordinator that shows the Send Tab To Self UI.
   SendTabToSelfCoordinator* _sendTabToSelfCoordinator;
-  BookmarkInteractionController* _bookmarkInteractionController;
+  BookmarksCoordinator* _bookmarksCoordinator;
   id<TextZoomCommands> _textZoomHandler;
   id<HelpCommands> _helpHandler;
   id<PopupMenuCommands> _popupMenuCommandsHandler;
@@ -724,8 +724,8 @@ enum class ToolbarKind {
   _sideSwipeController.secondaryToolbarSnapshotProvider =
       _secondaryToolbarCoordinator;
 
-  _bookmarkInteractionController =
-      [[BookmarkInteractionController alloc] initWithBrowser:self.browser];
+  _bookmarksCoordinator =
+      [[BookmarksCoordinator alloc] initWithBrowser:self.browser];
 
   self.browserContainerCoordinator = [[BrowserContainerCoordinator alloc]
       initWithBaseViewController:nil
@@ -799,8 +799,7 @@ enum class ToolbarKind {
   _viewControllerDependencies.legacyTabStripCoordinator =
       _legacyTabStripCoordinator;
   _viewControllerDependencies.sideSwipeController = _sideSwipeController;
-  _viewControllerDependencies.bookmarkInteractionController =
-      _bookmarkInteractionController;
+  _viewControllerDependencies.bookmarksCoordinator = _bookmarksCoordinator;
   _viewControllerDependencies.fullscreenController = _fullscreenController;
   _viewControllerDependencies.textZoomHandler = _textZoomHandler;
   _viewControllerDependencies.helpHandler = _helpHandler;
@@ -811,7 +810,7 @@ enum class ToolbarKind {
 }
 
 - (void)updateViewControllerDependencies {
-  _bookmarkInteractionController.parentController = self.viewController;
+  _bookmarksCoordinator.baseViewController = self.viewController;
 
   _bubblePresenter.delegate = self.viewController;
   _bubblePresenter.rootViewController = self.viewController;
@@ -854,10 +853,10 @@ enum class ToolbarKind {
   _viewControllerDependencies.sideSwipeController = nil;
   _viewControllerDependencies.textZoomHandler = nil;
   _viewControllerDependencies.helpHandler = nil;
-  _viewControllerDependencies.bookmarkInteractionController = nil;
+  _viewControllerDependencies.bookmarksCoordinator = nil;
 
-  [_bookmarkInteractionController shutdown];
-  _bookmarkInteractionController = nil;
+  [_bookmarksCoordinator shutdown];
+  _bookmarksCoordinator = nil;
 
   _textZoomHandler = nil;
   _helpHandler = nil;
@@ -1281,7 +1280,7 @@ enum class ToolbarKind {
 }
 
 - (void)showBookmarksManager {
-  [_bookmarkInteractionController presentBookmarks];
+  [_bookmarksCoordinator presentBookmarks];
 }
 
 - (void)showFollowWhileBrowsingIPH {

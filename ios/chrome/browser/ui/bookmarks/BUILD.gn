@@ -5,15 +5,15 @@
 source_set("bookmarks") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "bookmark_interaction_controller.h",
-    "bookmark_interaction_controller.mm",
-    "bookmark_interaction_controller_delegate.h",
     "bookmark_navigation_controller.h",
     "bookmark_navigation_controller.mm",
     "bookmark_navigation_controller_delegate.h",
     "bookmark_navigation_controller_delegate.mm",
     "bookmark_promo_controller.h",
     "bookmark_promo_controller.mm",
+    "bookmarks_coordinator.h",
+    "bookmarks_coordinator.mm",
+    "bookmarks_coordinator_delegate.h",
     "bookmarks_home_consumer.h",
     "bookmarks_home_mediator.h",
     "bookmarks_home_mediator.mm",
@@ -65,6 +65,7 @@ source_set("bookmarks") {
     "//ios/chrome/browser/ui/bookmarks/folder_chooser",
     "//ios/chrome/browser/ui/bookmarks/folder_editor",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",

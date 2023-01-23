@@ -34,12 +34,12 @@
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_path_cache.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_home_consumer.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_home_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_home_shared_state.h"
@@ -124,10 +124,10 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 }  // namespace
 
 @interface BookmarksHomeViewController () <
+    BookmarksCoordinatorDelegate,
     BookmarksFolderChooserViewControllerDelegate,
     BookmarksHomeConsumer,
     BookmarksHomeSharedStateObserver,
-    BookmarkInteractionControllerDelegate,
     BookmarkModelBridgeObserver,
     BookmarkTableCellTitleEditDelegate,
     TableViewURLDragDataSource,
@@ -207,8 +207,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 // The action sheet coordinator, if one is currently being shown.
 @property(nonatomic, strong) AlertCoordinator* actionSheetCoordinator;
 
-@property(nonatomic, strong)
-    BookmarkInteractionController* bookmarkInteractionController;
+@property(nonatomic, strong) BookmarksCoordinator* bookmarksCoordinator;
 
 @property(nonatomic, assign) WebStateList* webStateList;
 
@@ -250,8 +249,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 }
 
 - (void)shutdown {
-  [_bookmarkInteractionController shutdown];
-  _bookmarkInteractionController = nil;
+  [_bookmarksCoordinator shutdown];
+  _bookmarksCoordinator = nil;
 
   [self.mediator disconnect];
   _sharedState.tableView.dataSource = nil;
@@ -662,14 +661,14 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 // Opens the editor on the given node.
 - (void)editNode:(const BookmarkNode*)node {
-  if (!self.bookmarkInteractionController) {
-    self.bookmarkInteractionController =
-        [[BookmarkInteractionController alloc] initWithBrowser:self.browser];
-    self.bookmarkInteractionController.parentController = self;
-    self.bookmarkInteractionController.delegate = self;
+  if (!self.bookmarksCoordinator) {
+    self.bookmarksCoordinator =
+        [[BookmarksCoordinator alloc] initWithBrowser:self.browser];
+    self.bookmarksCoordinator.baseViewController = self;
+    self.bookmarksCoordinator.delegate = self;
   }
 
-  [self.bookmarkInteractionController presentEditorForNode:node];
+  [self.bookmarksCoordinator presentEditorForNode:node];
 }
 
 - (void)openAllURLs:(std::vector<GURL>)urls
@@ -917,17 +916,16 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   self.folderSelector = nil;
 }
 
-#pragma mark - BookmarkInteractionControllerDelegate
+#pragma mark - BookmarksCoordinatorDelegate
 
-- (void)bookmarkInteractionControllerWillCommitTitleOrUrlChange:
-    (BookmarkInteractionController*)controller {
+- (void)bookmarksCoordinatorWillCommitTitleOrURLChange:
+    (BookmarksCoordinator*)coordinator {
   [self setTableViewEditing:NO];
 }
 
-- (void)bookmarkInteractionControllerDidStop:
-    (BookmarkInteractionController*)controller {
+- (void)bookmarksCoordinatorDidStop:(BookmarksCoordinator*)coordinator {
   // TODO(crbug.com/805182): Use this method to tear down
-  // `self.bookmarkInteractionController`.
+  // `self.bookmarksCoordinator`.
 }
 
 #pragma mark - BookmarkModelBridgeObserver

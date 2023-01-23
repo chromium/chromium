@@ -46,7 +46,7 @@
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/authentication/re_signin_infobar_delegate.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
@@ -290,9 +290,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // The time at which `_lastTapPoint` was most recently set.
   CFTimeInterval _lastTapTime;
 
-  // The controller that shows the bookmarking UI after the user taps the star
+  // The coordinator that shows the bookmarking UI after the user taps the star
   // button.
-  BookmarkInteractionController* _bookmarkInteractionController;
+  BookmarksCoordinator* _bookmarksCoordinator;
 
   // Toolbar state that broadcasts changes to min and max heights.
   ToolbarUIState* _toolbarUIState;
@@ -478,7 +478,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _prerenderService = dependencies.prerenderService;
     _sideSwipeController = dependencies.sideSwipeController;
     [_sideSwipeController setSwipeDelegate:self];
-    _bookmarkInteractionController = dependencies.bookmarkInteractionController;
+    _bookmarksCoordinator = dependencies.bookmarksCoordinator;
     self.bubblePresenter = dependencies.bubblePresenter;
     self.toolbarAccessoryPresenter = dependencies.toolbarAccessoryPresenter;
     self.ntpCoordinator = dependencies.ntpCoordinator;
@@ -905,8 +905,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // TODO(crbug.com/1329111): Federate ClearPresentedState.
 - (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox {
-  [_bookmarkInteractionController dismissBookmarkModalControllerAnimated:NO];
-  [_bookmarkInteractionController dismissSnackbar];
+  [_bookmarksCoordinator dismissBookmarkModalControllerAnimated:NO];
+  [_bookmarksCoordinator dismissSnackbar];
   if (dismissOmnibox) {
     [self.omniboxHandler cancelOmniboxEdit];
   }
@@ -1019,7 +1019,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   _fullscreenDisabler = nullptr;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
-  _bookmarkInteractionController = nil;
+  _bookmarksCoordinator = nil;
 }
 
 #pragma mark - NSObject
@@ -1197,7 +1197,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       activeWebState->SetKeepRenderProcessAlive(false);
   }
 
-  [_bookmarkInteractionController dismissSnackbar];
+  [_bookmarksCoordinator dismissSnackbar];
   [super viewWillDisappear:animated];
 }
 
@@ -2626,7 +2626,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (void)tabWillLoadURL:(GURL)URL
         transitionType:(ui::PageTransition)transitionType {
-  [_bookmarkInteractionController dismissBookmarkModalControllerAnimated:YES];
+  [_bookmarksCoordinator dismissBookmarkModalControllerAnimated:YES];
 
   WebStateList* webStateList = self.browser->GetWebStateList();
   web::WebState* current_web_state = webStateList->GetActiveWebState();

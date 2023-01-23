@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/tabs/tab_helper_util.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
@@ -240,8 +240,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     side_swipe_controller_ =
         [[SideSwipeController alloc] initWithBrowser:browser_.get()];
 
-    bookmark_interaction_controller_ =
-        [[BookmarkInteractionController alloc] initWithBrowser:browser_.get()];
+    bookmarks_coordinator_ =
+        [[BookmarksCoordinator alloc] initWithBrowser:browser_.get()];
 
     fullscreen_controller_ = FullscreenController::FromBrowser(browser_.get());
 
@@ -254,8 +254,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.tabStripCoordinator = tab_strip_coordinator_;
     dependencies.legacyTabStripCoordinator = legacy_tab_strip_coordinator_;
     dependencies.sideSwipeController = side_swipe_controller_;
-    dependencies.bookmarkInteractionController =
-        bookmark_interaction_controller_;
+    dependencies.bookmarksCoordinator = bookmarks_coordinator_;
     dependencies.fullscreenController = fullscreen_controller_;
 
     bvc_ = [[BrowserViewController alloc] initWithBrowser:browser_.get()
@@ -333,7 +332,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   TabStripCoordinator* tab_strip_coordinator_;
   TabStripLegacyCoordinator* legacy_tab_strip_coordinator_;
   SideSwipeController* side_swipe_controller_;
-  BookmarkInteractionController* bookmark_interaction_controller_;
+  BookmarksCoordinator* bookmarks_coordinator_;
   FullscreenController* fullscreen_controller_;
 };
 
