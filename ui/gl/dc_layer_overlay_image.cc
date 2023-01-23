@@ -18,11 +18,13 @@ namespace gl {
 DCLayerOverlayImage::DCLayerOverlayImage(
     const gfx::Size& size,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> nv12_texture,
-    size_t array_slice)
+    size_t array_slice,
+    Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex)
     : type_(DCLayerOverlayType::kNV12Texture),
       size_(size),
       nv12_texture_(std::move(nv12_texture)),
-      texture_array_slice_(array_slice) {}
+      texture_array_slice_(array_slice),
+      keyed_mutex_(std::move(keyed_mutex)) {}
 
 DCLayerOverlayImage::DCLayerOverlayImage(const gfx::Size& size,
                                          const uint8_t* nv12_pixmap,

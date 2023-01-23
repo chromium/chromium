@@ -13,6 +13,7 @@
 
 class ID3D11Texture2D;
 class IDCompositionSurface;
+class IDXGIKeyedMutex;
 class IDXGISwapChain1;
 class IUnknown;
 
@@ -32,9 +33,11 @@ enum class DCLayerOverlayType {
 // Holds DComp content needed to update the DComp layer tree
 class GL_EXPORT DCLayerOverlayImage {
  public:
-  DCLayerOverlayImage(const gfx::Size& size,
-                      Microsoft::WRL::ComPtr<ID3D11Texture2D> nv12_texture,
-                      size_t array_slice = 0u);
+  DCLayerOverlayImage(
+      const gfx::Size& size,
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> nv12_texture,
+      size_t array_slice = 0u,
+      Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex = nullptr);
   DCLayerOverlayImage(const gfx::Size& size,
                       const uint8_t* nv12_pixmap,
                       size_t stride);
@@ -52,6 +55,8 @@ class GL_EXPORT DCLayerOverlayImage {
 
   ID3D11Texture2D* nv12_texture() const { return nv12_texture_.Get(); }
   size_t texture_array_slice() const { return texture_array_slice_; }
+  // TODO(sunnyps): Remove after removing GLImage usage in DXVA decoder.
+  IDXGIKeyedMutex* keyed_mutex() const { return keyed_mutex_.Get(); }
 
   const uint8_t* nv12_pixmap() const { return nv12_pixmap_; }
   size_t pixmap_stride() const { return pixmap_stride_; }
@@ -65,12 +70,14 @@ class GL_EXPORT DCLayerOverlayImage {
 
   bool operator==(const DCLayerOverlayImage& other) const {
     return std::tie(type_, size_, nv12_texture_, texture_array_slice_,
-                    nv12_pixmap_, pixmap_stride_, dcomp_visual_content_,
-                    dcomp_surface_serial_, dcomp_surface_proxy_) ==
+                    keyed_mutex_, nv12_pixmap_, pixmap_stride_,
+                    dcomp_visual_content_, dcomp_surface_serial_,
+                    dcomp_surface_proxy_) ==
            std::tie(other.type_, other.size_, other.nv12_texture_,
-                    other.texture_array_slice_, other.nv12_pixmap_,
-                    other.pixmap_stride_, other.dcomp_visual_content_,
-                    other.dcomp_surface_serial_, other.dcomp_surface_proxy_);
+                    other.texture_array_slice_, other.keyed_mutex_,
+                    other.nv12_pixmap_, other.pixmap_stride_,
+                    other.dcomp_visual_content_, other.dcomp_surface_serial_,
+                    other.dcomp_surface_proxy_);
   }
 
  private:
@@ -82,6 +89,8 @@ class GL_EXPORT DCLayerOverlayImage {
   Microsoft::WRL::ComPtr<ID3D11Texture2D> nv12_texture_;
   // Array slice/index if |texture_| is a texture array.
   size_t texture_array_slice_ = 0;
+  // Set if the consumer should synchronize texture access using a keyed mutex.
+  Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex_;
   // Software decoder NV12 frame pixmap.
   const uint8_t* nv12_pixmap_ = nullptr;
   // Software video pixmap stride. Y and UV planes have the same stride in NV12.

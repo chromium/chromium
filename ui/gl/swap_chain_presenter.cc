@@ -1192,9 +1192,9 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
     input_level = 0;
   }
 
-  // Keyed mutex may not exist.
-  Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex;
-  input_texture.As(&keyed_mutex);
+  // Keyed mutex is not present if access is synchronized by the shared image.
+  Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex =
+      params.overlay_image->keyed_mutex();
 
   absl::optional<DXGI_HDR_METADATA_HDR10> stream_metadata;
   if (params.hdr_metadata.IsValid()) {
@@ -1202,9 +1202,9 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
         gl::HDRMetadataHelperWin::HDRMetadataToDXGI(params.hdr_metadata);
   }
 
-  if (!VideoProcessorBlt(input_texture, input_level, keyed_mutex,
-                         params.content_rect, input_color_space, content_is_hdr,
-                         stream_metadata)) {
+  if (!VideoProcessorBlt(std::move(input_texture), input_level,
+                         std::move(keyed_mutex), params.content_rect,
+                         input_color_space, content_is_hdr, stream_metadata)) {
     return false;
   }
 
