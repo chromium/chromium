@@ -99,7 +99,7 @@ public class ChromeBasePreferenceTest {
         ChromeBasePreference preference = new ChromeBasePreference(mActivity);
         preference.setTitle(TITLE);
         preference.setSummary(SUMMARY);
-        preference.setManagedPreferenceDelegate(ManagedPreferencesUtilsTest.UNMANAGED_DELEGATE);
+        preference.setManagedPreferenceDelegate(ManagedPreferenceTestDelegates.UNMANAGED_DELEGATE);
         mPreferenceScreen.addPreference(preference);
 
         Assert.assertTrue(preference.isEnabled());
@@ -118,7 +118,7 @@ public class ChromeBasePreferenceTest {
     public void testPolicyManagedPreferenceWithoutSummary() {
         ChromeBasePreference preference = new ChromeBasePreference(mActivity);
         preference.setTitle(TITLE);
-        preference.setManagedPreferenceDelegate(ManagedPreferencesUtilsTest.POLICY_DELEGATE);
+        preference.setManagedPreferenceDelegate(ManagedPreferenceTestDelegates.POLICY_DELEGATE);
         mPreferenceScreen.addPreference(preference);
 
         Assert.assertFalse(preference.isEnabled());
@@ -145,7 +145,7 @@ public class ChromeBasePreferenceTest {
         ChromeBasePreference preference = new ChromeBasePreference(mActivity);
         preference.setTitle(TITLE);
         preference.setSummary(SUMMARY);
-        preference.setManagedPreferenceDelegate(ManagedPreferencesUtilsTest.POLICY_DELEGATE);
+        preference.setManagedPreferenceDelegate(ManagedPreferenceTestDelegates.POLICY_DELEGATE);
         mPreferenceScreen.addPreference(preference);
         Assert.assertFalse(preference.isEnabled());
 
@@ -174,7 +174,7 @@ public class ChromeBasePreferenceTest {
         ChromeBasePreference preference = new ChromeBasePreference(mActivity);
         preference.setTitle(TITLE);
         preference.setManagedPreferenceDelegate(
-                ManagedPreferencesUtilsTest.SINGLE_CUSTODIAN_DELEGATE);
+                ManagedPreferenceTestDelegates.SINGLE_CUSTODIAN_DELEGATE);
         mPreferenceScreen.addPreference(preference);
 
         Assert.assertFalse(preference.isEnabled());
@@ -196,7 +196,7 @@ public class ChromeBasePreferenceTest {
         ChromeBasePreference preference = new ChromeBasePreference(mActivity);
         preference.setTitle(TITLE);
         preference.setManagedPreferenceDelegate(
-                ManagedPreferencesUtilsTest.MULTI_CUSTODIAN_DELEGATE);
+                ManagedPreferenceTestDelegates.MULTI_CUSTODIAN_DELEGATE);
         mPreferenceScreen.addPreference(preference);
 
         Assert.assertFalse(preference.isEnabled());
@@ -223,7 +223,8 @@ public class ChromeBasePreferenceTest {
                     fragment.findPreference("preference_with_custom_layout");
             preference.setTitle(TITLE);
             preference.setSummary(SUMMARY);
-            preference.setManagedPreferenceDelegate(ManagedPreferencesUtilsTest.UNMANAGED_DELEGATE);
+            preference.setManagedPreferenceDelegate(
+                    ManagedPreferenceTestDelegates.UNMANAGED_DELEGATE);
         });
 
         ChromeBasePreference preference = fragment.findPreference("preference_with_custom_layout");
@@ -248,7 +249,7 @@ public class ChromeBasePreferenceTest {
                     fragment.findPreference("preference_with_custom_layout");
             preference.setTitle(TITLE);
             preference.setSummary(SUMMARY);
-            preference.setManagedPreferenceDelegate(ManagedPreferencesUtilsTest.POLICY_DELEGATE);
+            preference.setManagedPreferenceDelegate(ManagedPreferenceTestDelegates.POLICY_DELEGATE);
         });
 
         ChromeBasePreference preference = fragment.findPreference("preference_with_custom_layout");
@@ -275,7 +276,7 @@ public class ChromeBasePreferenceTest {
             ChromeBasePreference preference =
                     fragment.findPreference("preference_with_custom_layout");
             preference.setTitle(TITLE);
-            preference.setManagedPreferenceDelegate(ManagedPreferencesUtilsTest.POLICY_DELEGATE);
+            preference.setManagedPreferenceDelegate(ManagedPreferenceTestDelegates.POLICY_DELEGATE);
         });
 
         ChromeBasePreference preference = fragment.findPreference("preference_with_custom_layout");
@@ -301,7 +302,7 @@ public class ChromeBasePreferenceTest {
                     fragment.findPreference("preference_with_custom_layout");
             preference.setTitle(TITLE);
             preference.setManagedPreferenceDelegate(
-                    ManagedPreferencesUtilsTest.SINGLE_CUSTODIAN_DELEGATE);
+                    ManagedPreferenceTestDelegates.SINGLE_CUSTODIAN_DELEGATE);
         });
 
         ChromeBasePreference preference = fragment.findPreference("preference_with_custom_layout");

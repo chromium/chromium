@@ -82,7 +82,7 @@ public class ChromeImageViewPreferenceTest {
         ChromeImageViewPreference preference = new ChromeImageViewPreference(mActivity);
         preference.setTitle(TITLE);
         preference.setImageView(DRAWABLE_RES, CONTENT_DESCRIPTION_RES, null);
-        preference.setManagedPreferenceDelegate(ManagedPreferencesUtilsTest.POLICY_DELEGATE);
+        preference.setManagedPreferenceDelegate(ManagedPreferenceTestDelegates.POLICY_DELEGATE);
         mPreferenceScreen.addPreference(preference);
 
         Assert.assertFalse(preference.isEnabled());

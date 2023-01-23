@@ -100,7 +100,7 @@ public class ChromeSwitchPreferenceTest {
         ChromeSwitchPreference preference = new ChromeSwitchPreference(mActivity);
         preference.setTitle(TITLE);
         preference.setSummary(SUMMARY);
-        preference.setManagedPreferenceDelegate(ManagedPreferencesUtilsTest.UNMANAGED_DELEGATE);
+        preference.setManagedPreferenceDelegate(ManagedPreferenceTestDelegates.UNMANAGED_DELEGATE);
         mPreferenceScreen.addPreference(preference);
 
         Assert.assertTrue(preference.isEnabled());
@@ -120,7 +120,7 @@ public class ChromeSwitchPreferenceTest {
     public void testPolicyManagedPreferenceWithoutSummary() {
         ChromeSwitchPreference preference = new ChromeSwitchPreference(mActivity);
         preference.setTitle(TITLE);
-        preference.setManagedPreferenceDelegate(ManagedPreferencesUtilsTest.POLICY_DELEGATE);
+        preference.setManagedPreferenceDelegate(ManagedPreferenceTestDelegates.POLICY_DELEGATE);
         mPreferenceScreen.addPreference(preference);
 
         Assert.assertFalse(preference.isEnabled());
@@ -148,7 +148,7 @@ public class ChromeSwitchPreferenceTest {
         ChromeSwitchPreference preference = new ChromeSwitchPreference(mActivity);
         preference.setTitle(TITLE);
         preference.setSummary(SUMMARY);
-        preference.setManagedPreferenceDelegate(ManagedPreferencesUtilsTest.POLICY_DELEGATE);
+        preference.setManagedPreferenceDelegate(ManagedPreferenceTestDelegates.POLICY_DELEGATE);
         mPreferenceScreen.addPreference(preference);
 
         Assert.assertFalse(preference.isEnabled());
@@ -179,7 +179,7 @@ public class ChromeSwitchPreferenceTest {
         ChromeSwitchPreference preference = new ChromeSwitchPreference(mActivity);
         preference.setTitle(TITLE);
         preference.setManagedPreferenceDelegate(
-                ManagedPreferencesUtilsTest.SINGLE_CUSTODIAN_DELEGATE);
+                ManagedPreferenceTestDelegates.SINGLE_CUSTODIAN_DELEGATE);
         mPreferenceScreen.addPreference(preference);
 
         Assert.assertFalse(preference.isEnabled());
@@ -202,7 +202,7 @@ public class ChromeSwitchPreferenceTest {
         ChromeSwitchPreference preference = new ChromeSwitchPreference(mActivity);
         preference.setTitle(TITLE);
         preference.setManagedPreferenceDelegate(
-                ManagedPreferencesUtilsTest.MULTI_CUSTODIAN_DELEGATE);
+                ManagedPreferenceTestDelegates.MULTI_CUSTODIAN_DELEGATE);
         mPreferenceScreen.addPreference(preference);
 
         Assert.assertFalse(preference.isEnabled());
@@ -230,7 +230,8 @@ public class ChromeSwitchPreferenceTest {
                     fragment.findPreference("preference_with_custom_layout");
             preference.setTitle(TITLE);
             preference.setSummary(SUMMARY);
-            preference.setManagedPreferenceDelegate(ManagedPreferencesUtilsTest.UNMANAGED_DELEGATE);
+            preference.setManagedPreferenceDelegate(
+                    ManagedPreferenceTestDelegates.UNMANAGED_DELEGATE);
         });
 
         ChromeSwitchPreference preference =
@@ -257,7 +258,7 @@ public class ChromeSwitchPreferenceTest {
                     fragment.findPreference("preference_with_custom_layout");
             preference.setTitle(TITLE);
             preference.setSummary(SUMMARY);
-            preference.setManagedPreferenceDelegate(ManagedPreferencesUtilsTest.POLICY_DELEGATE);
+            preference.setManagedPreferenceDelegate(ManagedPreferenceTestDelegates.POLICY_DELEGATE);
         });
 
         ChromeSwitchPreference preference =
@@ -286,7 +287,7 @@ public class ChromeSwitchPreferenceTest {
             ChromeSwitchPreference preference =
                     fragment.findPreference("preference_with_custom_layout");
             preference.setTitle(TITLE);
-            preference.setManagedPreferenceDelegate(ManagedPreferencesUtilsTest.POLICY_DELEGATE);
+            preference.setManagedPreferenceDelegate(ManagedPreferenceTestDelegates.POLICY_DELEGATE);
         });
 
         ChromeSwitchPreference preference =
@@ -314,7 +315,7 @@ public class ChromeSwitchPreferenceTest {
                     fragment.findPreference("preference_with_custom_layout");
             preference.setTitle(TITLE);
             preference.setManagedPreferenceDelegate(
-                    ManagedPreferencesUtilsTest.SINGLE_CUSTODIAN_DELEGATE);
+                    ManagedPreferenceTestDelegates.SINGLE_CUSTODIAN_DELEGATE);
         });
 
         ChromeSwitchPreference preference =

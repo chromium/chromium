@@ -1060,6 +1060,7 @@ if (is_android) {
       "//components/browser_ui/client_certificate/android:junit",
       "//components/browser_ui/media/android:junit",
       "//components/browser_ui/photo_picker/android:junit",
+      "//components/browser_ui/settings/android:junit",
       "//components/browser_ui/util/android:junit",
       "//components/browser_ui/webshare/android:junit",
       "//components/browser_ui/widget/android:junit",

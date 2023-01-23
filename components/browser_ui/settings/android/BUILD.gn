@@ -113,8 +113,6 @@ android_library("unit_device_javatests") {
     "widget/javatests/src/org/chromium/components/browser_ui/settings/ChromeBasePreferenceTest.java",
     "widget/javatests/src/org/chromium/components/browser_ui/settings/ChromeImageViewPreferenceTest.java",
     "widget/javatests/src/org/chromium/components/browser_ui/settings/ChromeSwitchPreferenceTest.java",
-    "widget/javatests/src/org/chromium/components/browser_ui/settings/ManagedPreferencesUtilsTest.java",
-    "widget/javatests/src/org/chromium/components/browser_ui/settings/Matchers.java",
   ]
   deps = [
     ":java",
@@ -127,19 +125,36 @@ android_library("unit_device_javatests") {
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
     "//third_party/android_deps:guava_android_java",
-    "//third_party/android_support_test_runner:rules_java",
-    "//third_party/android_support_test_runner:runner_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
-    "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
-    "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
-    "//ui/android:ui_no_recycler_view_java",
   ]
+  resources_package = "org.chromium.components.browser_ui.settings.test"
+}
+
+robolectric_library("junit") {
+  testonly = true
+
+  sources = [ "java/src/org/chromium/components/browser_ui/settings/ManagedPreferencesUtilsTest.java" ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    ":managed_prefs_java_resources",
+    ":test_support_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//ui/android:ui_java_test_support",
+  ]
+
   resources_package = "org.chromium.components.browser_ui.settings.test"
 }
 
@@ -148,10 +163,14 @@ android_library("test_support_java") {
 
   sources = [
     "widget/javatests/src/org/chromium/components/browser_ui/settings/BlankUiTestActivitySettingsTestRule.java",
+    "widget/javatests/src/org/chromium/components/browser_ui/settings/ManagedPreferenceTestDelegates.java",
+    "widget/javatests/src/org/chromium/components/browser_ui/settings/Matchers.java",
     "widget/javatests/src/org/chromium/components/browser_ui/settings/PlaceholderSettingsForTest.java",
   ]
 
   deps = [
+    ":java",
+    ":managed_prefs_java_resources",
     "//base:base_java_test_support",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -160,6 +179,8 @@ android_library("test_support_java") {
     "//third_party/hamcrest:hamcrest_java",
     "//ui/android:ui_java_test_support",
   ]
+
+  resources_package = "org.chromium.components.browser_ui.settings.test"
 }
 
 android_resources("java_test_resources") {
