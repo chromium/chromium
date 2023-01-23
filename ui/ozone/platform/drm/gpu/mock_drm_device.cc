@@ -52,6 +52,11 @@ constexpr uint32_t kCommitModesetFlags = DRM_MODE_ATOMIC_ALLOW_MODESET;
 // pageflip, or other atomic property changes that do not require modesetting.
 constexpr uint32_t kSeamlessModesetFlags = 0;
 
+template <class Object>
+Object* DrmAllocator() {
+  return static_cast<Object*>(drmMalloc(sizeof(Object)));
+}
+
 const std::map<uint32_t, std::string> kCrtcRequiredPropertyNames = {
     {kActivePropId, "ACTIVE"},
     {kModePropId, "MODE_ID"},

@@ -72,11 +72,6 @@ constexpr uint32_t kInFormatsPropId = 5001;
 constexpr uint32_t kPlaneCtmId = 5002;
 constexpr uint32_t kRotationPropId = 5003;
 
-template <class Object>
-Object* DrmAllocator(size_t num_of_objects = 1) {
-  return static_cast<Object*>(drmMalloc(num_of_objects * sizeof(Object)));
-}
-
 // The real DrmDevice makes actual DRM calls which we can't use in unit tests.
 class MockDrmDevice : public DrmDevice {
  public:
