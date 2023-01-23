@@ -3130,6 +3130,8 @@ if (enable_java_templates && is_android) {
                                "library_always_compress",
                                "library_renames",
                              ])
+      version_code = _version_code
+      version_name = _version_name
       if (_uses_static_library_synchronized_proguard) {
         if (!defined(jar_excluded_patterns)) {
           jar_excluded_patterns = []
@@ -3147,11 +3149,6 @@ if (enable_java_templates && is_android) {
         type = "android_app_bundle_module"
         res_size_info_path = _res_size_info_path
         is_base_module = _is_base_module
-        forward_variables_from(invoker,
-                               [
-                                 "version_code",
-                                 "version_name",
-                               ])
         add_view_trace_events = _add_view_trace_events
       } else {
         type = "android_apk"
