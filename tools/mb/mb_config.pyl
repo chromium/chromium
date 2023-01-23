@@ -1278,6 +1278,7 @@
       'mac-perfetto-rel': 'perfetto_release_trybot',
       'mac-rel': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_reclient',
       'mac-rel-inverse-fyi': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_reclient',
+      'mac10.15-wpt-content-shell-fyi-rel': 'release_trybot_minimal_symbols_reclient',
       'mac11-arm64-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols_reclient',
       'mac12-arm64-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols',
       'mac12-tests': 'release_trybot',

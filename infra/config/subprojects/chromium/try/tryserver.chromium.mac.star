@@ -154,6 +154,13 @@ try_.compilator_builder(
 )
 
 try_.builder(
+    name = "mac10.15-wpt-content-shell-fyi-rel",
+    mirrors = [
+        "ci/mac10.15-wpt-content-shell-fyi-rel",
+    ],
+)
+
+try_.builder(
     name = "mac11-arm64-rel",
     mirrors = [
         "ci/mac-arm64-rel",
