@@ -741,6 +741,7 @@ TEST_F(ThreadGroupTest, JoinJobTaskSource) {
   thread_group_->JoinForTesting();
   EXPECT_EQ(1U, task_source->HasOneRef());
   // Prevent TearDown() from calling JoinForTesting() again.
+  mock_pooled_task_runner_delegate_.SetThreadGroup(nullptr);
   thread_group_ = nullptr;
 }
 
