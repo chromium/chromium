@@ -216,8 +216,6 @@ void PartitionAddressSpace::Init() {
   if (!setup_.regular_pool_base_address_) {
     HandlePoolAllocFailure();
   }
-#if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-#endif
 
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
   int brp_pool_fd = memfd_create("/brp_pool", MFD_CLOEXEC);
