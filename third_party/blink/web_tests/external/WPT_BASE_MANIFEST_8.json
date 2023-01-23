@@ -83691,6 +83691,19 @@
        {}
       ]
      ],
+     "block-in-inline-004.html": [
+      "338f4ad52ccb87ba5e164efda3a60cac82e9c82f",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "block-max-height-001.html": [
       "acb4316d13eee6d791e8c27e5e1b8ab2be03e0ac",
       [
@@ -122839,6 +122852,19 @@
         [
          "/css/css-fonts/font-weight-normal-001-ref.xht",
          "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "hiragana-katakana-kerning.html": [
+      "9d72378581a0e5d96b0611c9bcd9228721030e64",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/hiragana-katakana-kerning-notref.html",
+         "!="
         ]
        ],
        {}
@@ -262850,16 +262876,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "daa62d6d0d934d1e59e5ca8eb5dcb709cef13182",
-     []
-    ],
-    "mtime.json": [
-     "200ec7bb8d676a173280f8f612a32a48a4a175b9",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -278910,10 +278926,6 @@
       "7c7430e8fba093d1284c8d9dcc30868df592c69a",
       []
      ],
-     "CSSAnimation-effect.tentative-expected.txt": [
-      "aa98c773694103c8dc59882bf72c6474ab3a75f0",
-      []
-     ],
      "CSSAnimation-effect.tentative.html.ini": [
       "7f6aa9adec5c3839653859f5fbd2cdc966f456ab",
       []
@@ -278931,7 +278943,7 @@
       []
      ],
      "KeyframeEffect-getKeyframes.tentative-expected.txt": [
-      "51b5c2105d9bfe0f76db2922d623a60312a38ac0",
+      "e7d3535d47b4cd21aea7cd243531b5ec5482f67f",
       []
      ],
      "KeyframeEffect-getKeyframes.tentative.html.ini": [
@@ -279003,22 +279015,6 @@
       []
      ],
      "parsing": {
-      "animation-composition-computed.tentative-expected.txt": [
-       "44d81d1bb976a15e39e2e7db734efc3c6ebeeac8",
-       []
-      ],
-      "animation-composition-computed.tentative.html.ini": [
-       "05eb67ba3c000f95c107fb26d393b432c45bc401",
-       []
-      ],
-      "animation-composition-valid.tentative-expected.txt": [
-       "0f58883c97448d970d76b822f26f36efe3f14489",
-       []
-      ],
-      "animation-composition-valid.tentative.html.ini": [
-       "749e6bae389b9279875f7c1df551566ada9c36ea",
-       []
-      ],
       "animation-computed-expected.txt": [
        "7cf62fe5bbfce3752012ad4adfe7773b7ce127ce",
        []
@@ -291946,6 +291942,10 @@
       "eff564952cf02d3ed0aae91f17615c5bcccc1b81",
       []
      ],
+     "hiragana-katakana-kerning-notref.html": [
+      "89d41d42252b0998174bd77f47fbaca12984f2bd",
+      []
+     ],
      "idlharness-expected.txt": [
       "8f0bdf05f436428fb3493a5200d0e64c7cbc28fb",
       []
@@ -292185,6 +292185,10 @@
       ],
       "COLR-palettes-test-font.ttf": [
        "0f28caf21e6fde2660c251471f528e4ed21b82a3",
+       []
+      ],
+      "NotoSansJP-kana_test-subset.otf": [
+       "9be3823c3e4ab297f8ef2652fdfa47b710761cc8",
        []
       ],
       "ahem-ex-250.otf": [
@@ -310682,7 +310686,7 @@
      ],
      "parsing": {
       "marker-supported-properties-expected.txt": [
-       "042120083ba2a2893a41b89056940590459bb8f1",
+       "20bd48882d836ca57b9a1070b7f69c0637ca4494",
        []
       ],
       "marker-supported-properties-in-animation-expected.txt": [
@@ -310694,7 +310698,7 @@
        []
       ],
       "marker-supported-properties.html.ini": [
-       "db2d9ceafe3a6cb762903215b95dccf6ae8b7c5d",
+       "255a365b845a7941453f6ffc9d1223a8e62097e2",
        []
       ]
      },
@@ -393406,7 +393410,7 @@
      []
     ],
     "RTCRtpParameters-encodings-expected.txt": [
-     "e849fa74b33545e79894cc64b9604ace49fa5c32",
+     "b0b528e4136e5c13924f0cbb0f502fe08e4263e5",
      []
     ],
     "RTCRtpParameters-encodings.html.ini": [
@@ -393611,7 +393615,7 @@
       []
      ],
      "setParameters-encodings.https-expected.txt": [
-      "04ed2bc75f47b7ab8a47912a3a3d68f35102a985",
+      "8b89cfda8cbb8c67b08660afaa23a1e8d7e0802c",
       []
      ],
      "setParameters-encodings.https.html.ini": [
@@ -393833,10 +393837,6 @@
     ],
     "RTCRtpParameters-adaptivePtime.html.ini": [
      "7ba755bdbd8739f98bcb0ca97dccd77bc30c678f",
-     []
-    ],
-    "RTCRtpParameters-maxFramerate-expected.txt": [
-     "71a5976c5ef3e2d911e2a28e42cb7b3a909cb65d",
      []
     ],
     "RTCRtpParameters-maxFramerate.html.ini": [
@@ -435387,7 +435387,7 @@
       ]
      ],
      "KeyframeEffect-getKeyframes.tentative.html": [
-      "a716745c8431520a7fef856178a9f44b3007bd3e",
+      "4547cae0d202d85720f6f961e06047874acfb61b",
       [
        null,
        {}
@@ -459182,7 +459182,7 @@
       },
       "declared": {
        "append.tentative.html": [
-        "ced6e81aaad39031adb68e87e7f2b20babaccb58",
+        "2ff92b22c21d6c7547ebce63de93543f9e4acdd3",
         [
          null,
          {}
@@ -600840,6 +600840,15 @@
       [
        "speculation-rules/prefetch/prefetch-status.https.html?status=500&should_prefetch=false",
        {}
+      ]
+     ],
+     "prefetch-traverse-reload.sub.html": [
+      "3f1312ed1222ad78b9f752e190f75e3275929c60",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
       ]
      ],
      "redirect-url.https.html": [
