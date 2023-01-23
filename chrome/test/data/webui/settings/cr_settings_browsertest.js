@@ -669,7 +669,8 @@ var CrSettingsCookiesPageTest = class extends CrSettingsBrowserTest {
   }
 };
 
-TEST_F('CrSettingsCookiesPageTest', 'CookiesPageTest', function() {
+// TODO(crbug.com/1409653): fix flakiness and re-enable.
+TEST_F('CrSettingsCookiesPageTest', 'DISABLED_CookiesPageTest', function() {
   runMochaSuite('CrSettingsCookiesPageTest');
 });
 
@@ -683,8 +684,10 @@ TEST_F('CrSettingsCookiesPageTest', 'LacrosSecondaryProfile', function() {
 });
 GEN('#endif');
 
+// TODO(crbug.com/1409653): fix flakiness and re-enable.
 TEST_F(
-    'CrSettingsCookiesPageTest', 'PrivacySandboxSettings4Disabled', function() {
+    'CrSettingsCookiesPageTest', 'DISABLED_PrivacySandboxSettings4Disabled',
+    function() {
       runMochaSuite(
           'CrSettingsCookiesPageTest_PrivacySandboxSettings4Disabled');
     });
