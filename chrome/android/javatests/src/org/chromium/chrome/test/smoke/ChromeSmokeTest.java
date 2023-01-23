@@ -31,7 +31,6 @@ import org.chromium.chrome.test.pagecontroller.utils.Ui2Locators;
 import org.chromium.chrome.test.pagecontroller.utils.UiAutomatorUtils;
 import org.chromium.chrome.test.pagecontroller.utils.UiLocatorHelper;
 
-import java.util.Arrays;
 import java.util.concurrent.Callable;
 
 /**
@@ -78,7 +77,9 @@ public class ChromeSmokeTest {
                             }
                             return false;
                         },
-                        "One of " + Arrays.toString(locators) + " should have been visible."),
+                        "No Chrome views on screen. (i.e. Chrome has crashed "
+                                + "on startup). Look at earlier logs for the actual "
+                                + "crash stacktrace."),
                 TIMEOUT_MS, UI_CHECK_INTERVAL);
     }
 
