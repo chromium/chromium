@@ -213,6 +213,33 @@ fyi_reclient_test_builder(
     reclient_profiler_service = "reclient-mac",
 )
 
+fyi_reclient_test_builder(
+    name = "Mac Builder reclient scandeps test",
+    builder_spec = builder_config.copy_from(
+        "ci/Mac Builder",
+        lambda spec: structs.evolve(
+            spec,
+            gclient_config = structs.extend(
+                spec.gclient_config,
+                apply_configs = [
+                    "reclient_test",
+                ],
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
+    builderless = True,
+    cores = None,
+    os = os.MAC_DEFAULT,
+    console_view_category = "mac",
+    priority = 35,
+    reclient_bootstrap_env = {
+        "GLOG_vmodule": "bridge*=2",
+    },
+    reclient_profiler_service = "reclient-mac",
+    reclient_scandeps_server = True,
+)
+
 fyi_reclient_staging_builder(
     name = "Win x64 Builder reclient staging",
     builder_spec = builder_config.copy_from(
@@ -325,6 +352,33 @@ fyi_reclient_test_builder(
     },
 )
 
+fyi_reclient_test_builder(
+    name = "ios-simulator reclient scandeps test",
+    builder_spec = builder_config.copy_from(
+        "ci/ios-simulator",
+        lambda spec: structs.evolve(
+            spec,
+            gclient_config = structs.extend(
+                spec.gclient_config,
+                apply_configs = [
+                    "reclient_test",
+                ],
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
+    builderless = True,
+    cores = None,
+    os = os.MAC_DEFAULT,
+    xcode = xcode.x14main,
+    console_view_category = "ios",
+    priority = 35,
+    reclient_bootstrap_env = {
+        "GLOG_vmodule": "bridge*=2",
+    },
+    reclient_scandeps_server = True,
+)
+
 fyi_reclient_staging_builder(
     name = "ios-simulator reclient staging",
     builder_spec = builder_config.copy_from(
@@ -399,6 +453,32 @@ fyi_reclient_test_builder(
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
     },
+)
+
+fyi_reclient_test_builder(
+    name = "mac-arm64-rel reclient scandeps test",
+    builder_spec = builder_config.copy_from(
+        "ci/mac-arm64-rel",
+        lambda spec: structs.evolve(
+            spec,
+            gclient_config = structs.extend(
+                spec.gclient_config,
+                apply_configs = [
+                    "reclient_test",
+                ],
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
+    builderless = True,
+    cores = None,
+    os = os.MAC_DEFAULT,
+    console_view_category = "mac",
+    priority = 35,
+    reclient_bootstrap_env = {
+        "GLOG_vmodule": "bridge*=2",
+    },
+    reclient_scandeps_server = True,
 )
 
 ci.builder(
