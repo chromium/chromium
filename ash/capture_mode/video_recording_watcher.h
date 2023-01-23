@@ -81,13 +81,13 @@ class ASH_EXPORT VideoRecordingWatcher
 
   // Returns the current parent window for the on-capture-surface widgets such
   // as `CaptureModeCameraController::camera_preview_widget_` and
-  // `CaptureModeDemoToolsController::demo_tools_widget_` when recording is in
+  // `CaptureModeDemoToolsController::key_combo_widget_` when recording is in
   // progress.
   aura::Window* GetOnCaptureSurfaceWidgetParentWindow() const;
 
-  // Returns the bounds within which the on-capture-surface widgets such as
-  // capture mode preview and capture mode demo tools will be confined when
-  // recording is in progress.
+  // Returns the bounds within which the on-capture-surface widgets (such as
+  // capture mode camera preview widget and key combo widget) will be confined
+  // when recording is in progress.
   gfx::Rect GetCaptureSurfaceConfineBounds() const;
 
   // aura::WindowObserver:

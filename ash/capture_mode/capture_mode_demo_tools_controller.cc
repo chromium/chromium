@@ -164,7 +164,7 @@ void CaptureModeDemoToolsController::PerformMousePressAnimation(
 }
 
 void CaptureModeDemoToolsController::RefreshBounds() {
-  demo_tools_widget_->SetBounds(CalculateKeyComboWidgetBounds());
+  key_combo_widget_->SetBounds(CalculateKeyComboWidgetBounds());
 }
 
 void CaptureModeDemoToolsController::OnTouchEvent(
@@ -220,8 +220,9 @@ void CaptureModeDemoToolsController::OnKeyUpEvent(ui::KeyEvent* event) {
   }
 
   const auto& target_delay =
-      ShouldResetWidget() ? capture_mode::kRefreshKeyComboWidgetLongDelay
-                          : capture_mode::kRefreshKeyComboWidgetShortDelay;
+      ShouldResetKeyComboWidget()
+          ? capture_mode::kRefreshKeyComboWidgetLongDelay
+          : capture_mode::kRefreshKeyComboWidgetShortDelay;
 
   key_up_refresh_timer_.Start(
       FROM_HERE, target_delay, this,
@@ -255,22 +256,22 @@ void CaptureModeDemoToolsController::OnKeyDownEvent(ui::KeyEvent* event) {
 }
 
 void CaptureModeDemoToolsController::RefreshKeyComboViewer() {
-  if (ShouldResetWidget()) {
-    AnimateToResetTheWidget();
+  if (ShouldResetKeyComboWidget()) {
+    AnimateToResetKeyComboWidget();
     return;
   }
 
-  if (!demo_tools_widget_) {
-    demo_tools_widget_ = std::make_unique<views::Widget>();
-    demo_tools_widget_->Init(CreateWidgetParams(video_recording_watcher_));
+  if (!key_combo_widget_) {
+    key_combo_widget_ = std::make_unique<views::Widget>();
+    key_combo_widget_->Init(CreateWidgetParams(video_recording_watcher_));
     key_combo_view_ =
-        demo_tools_widget_->SetContentsView(std::make_unique<KeyComboView>());
-    demo_tools_widget_->SetVisibilityAnimationTransition(
+        key_combo_widget_->SetContentsView(std::make_unique<KeyComboView>());
+    key_combo_widget_->SetVisibilityAnimationTransition(
         views::Widget::ANIMATE_NONE);
-    ui::Layer* layer = demo_tools_widget_->GetLayer();
+    ui::Layer* layer = key_combo_widget_->GetLayer();
     layer->SetFillsBoundsOpaquely(false);
     layer->SetMasksToBounds(true);
-    demo_tools_widget_->Show();
+    key_combo_widget_->Show();
   }
 
   key_combo_view_->RefreshView(modifiers_, last_non_modifier_key_);
@@ -293,14 +294,14 @@ gfx::Rect CaptureModeDemoToolsController::CalculateKeyComboWidgetBounds()
   return gfx::Rect(gfx::Point(key_combo_x, key_combo_y), preferred_size);
 }
 
-bool CaptureModeDemoToolsController::ShouldResetWidget() const {
+bool CaptureModeDemoToolsController::ShouldResetKeyComboWidget() const {
   return (modifiers_ == 0) && !ShouldConsiderKey(last_non_modifier_key_);
 }
 
-void CaptureModeDemoToolsController::AnimateToResetTheWidget() {
+void CaptureModeDemoToolsController::AnimateToResetKeyComboWidget() {
   // TODO(http://b/258349669): apply animation to the hide process when the
   // specs are ready.
-  demo_tools_widget_.reset();
+  key_combo_widget_.reset();
   key_combo_view_ = nullptr;
 }
 

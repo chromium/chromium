@@ -18,7 +18,7 @@ CaptureModeDemoToolsTestApi::CaptureModeDemoToolsTestApi(
 
 views::Widget* CaptureModeDemoToolsTestApi::GetKeyComboWidget() {
   DCHECK(demo_tools_controller_);
-  return demo_tools_controller_->demo_tools_widget_.get();
+  return demo_tools_controller_->key_combo_widget_.get();
 }
 
 KeyComboView* CaptureModeDemoToolsTestApi::GetKeyComboView() {

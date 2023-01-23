@@ -166,12 +166,12 @@ class ASH_EXPORT CaptureModeSession
 
   // Returns the current parent window for the on-capture-surface widgets such
   // as `CaptureModeCameraController::camera_preview_widget_` and
-  // `CaptureModeDemoToolsController::demo_tools_widget_` when capture mode
+  // `CaptureModeDemoToolsController::key_combo_widget_` when capture mode
   // session is active.
   aura::Window* GetOnCaptureSurfaceWidgetParentWindow() const;
 
   // Returns the confine bounds for the on-capture-surface widgets (such as the
-  // camera preview and demo tools widgets) when capture session is active.
+  // camera preview widget and key combo widget) when capture session is active.
   gfx::Rect GetCaptureSurfaceConfineBounds() const;
 
   // Returns the in-session target value that should be used for the visibility

@@ -201,7 +201,7 @@ class CaptureModeDemoToolsTest : public AshTestBase {
   std::unique_ptr<ui::FakeTextInputClient> fake_text_input_client_;
 };
 
-// Tests that the key event is considered to generate the `demo_tools_widget_`
+// Tests that the key event is considered to generate the `key_combo_widget_`
 // or ignored otherwise in a correct way.
 TEST_F(CaptureModeDemoToolsTest, ConsiderKeyEvent) {
   CaptureModeController* controller = StartCaptureSession(
@@ -757,23 +757,23 @@ class CaptureModeDemoToolsTestWithAllSources
     return confined_bounds_in_screen;
   }
 
-  // Verifies that the `demo_tools_widget` is positioned in the middle
+  // Verifies that the `key_combo_widget_` is positioned in the middle
   // horizontally within the confined bounds and that the distance between the
   // bottom of the widget and the bottom of the confined bounds is always equal
   // to `capture_mode::kKeyWidgetDistanceFromBottom`.
   void VerifyKeyComboWidgetPosition() {
     CaptureModeDemoToolsTestApi demo_tools_test_api(
         GetCaptureModeDemoToolsController());
-    auto* demo_tools_widget = demo_tools_test_api.GetKeyComboWidget();
-    ASSERT_TRUE(demo_tools_widget);
+    auto* key_combo_widget = demo_tools_test_api.GetKeyComboWidget();
+    ASSERT_TRUE(key_combo_widget);
     auto confined_bounds_in_screen =
         GetDemoToolsConfinedBoundsInScreenCoordinates();
-    const gfx::Rect demo_tools_widget_bounds =
-        demo_tools_widget->GetWindowBoundsInScreen();
+    const gfx::Rect key_combo_widget_bounds =
+        key_combo_widget->GetWindowBoundsInScreen();
     EXPECT_NEAR(confined_bounds_in_screen.CenterPoint().x(),
-                demo_tools_widget_bounds.CenterPoint().x(), /*abs_error=*/1);
+                key_combo_widget_bounds.CenterPoint().x(), /*abs_error=*/1);
     EXPECT_EQ(
-        confined_bounds_in_screen.bottom() - demo_tools_widget_bounds.bottom(),
+        confined_bounds_in_screen.bottom() - key_combo_widget_bounds.bottom(),
         capture_mode::kKeyWidgetDistanceFromBottom);
   }
 };

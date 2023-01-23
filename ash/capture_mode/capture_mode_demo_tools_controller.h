@@ -80,10 +80,10 @@ class CaptureModeDemoToolsController : public ui::InputMethodObserver {
 
   // Returns true if there is no modifier keys pressed and the non-modifier key
   // can not be displayed independently.
-  bool ShouldResetWidget() const;
+  bool ShouldResetKeyComboWidget() const;
 
-  // Resets the `demo_tools_widget_` when the `hide_timer_` expires.
-  void AnimateToResetTheWidget();
+  // Resets the `key_combo_widget_` when the `hide_timer_` expires.
+  void AnimateToResetKeyComboWidget();
 
   void UpdateTextInputType(const ui::TextInputClient* client);
 
@@ -109,7 +109,7 @@ class CaptureModeDemoToolsController : public ui::InputMethodObserver {
                       const gfx::PointF& event_location_in_window);
 
   VideoRecordingWatcher* const video_recording_watcher_;
-  views::UniqueWidgetPtr demo_tools_widget_;
+  views::UniqueWidgetPtr key_combo_widget_;
   KeyComboView* key_combo_view_ = nullptr;
 
   // The state of the modifier keys i.e. Shift/Ctrl/Alt/Launcher keys.
