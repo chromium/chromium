@@ -5488,8 +5488,6 @@ static_library("ui") {
       sources += [
         "bookmarks/bookmark_bubble_sign_in_delegate.cc",
         "bookmarks/bookmark_bubble_sign_in_delegate.h",
-        "dialogs/outdated_upgrade_bubble.cc",
-        "dialogs/outdated_upgrade_bubble.h",
         "views/accessibility/accessibility_focus_highlight.cc",
         "views/accessibility/accessibility_focus_highlight.h",
         "views/policy/enterprise_startup_dialog_view.cc",
@@ -5512,6 +5510,8 @@ static_library("ui") {
 
     if (!is_chromeos) {
       sources += [
+        "dialogs/outdated_upgrade_bubble.cc",
+        "dialogs/outdated_upgrade_bubble.h",
         "idle_dialog.h",
         "sharing_hub/sharing_hub_bubble_controller_desktop_impl.cc",
         "sharing_hub/sharing_hub_bubble_controller_desktop_impl.h",

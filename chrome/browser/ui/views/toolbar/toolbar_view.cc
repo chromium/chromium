@@ -122,6 +122,9 @@
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/bookmarks/bookmark_bubble_sign_in_delegate.h"
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/dialogs/outdated_upgrade_bubble.h"
 #endif
 
@@ -925,7 +928,11 @@ void ToolbarView::ShowCriticalNotification() {
 }
 
 void ToolbarView::ShowOutdatedInstallNotification(bool auto_update_enabled) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
+  // The outdated upgrade notification is not relevant on ChromeOS, for either
+  // ash-chrome or lacros-chrome, as browser upgrades are managed via a
+  // different process to the rest of the desktop platforms (see
+  // crbug.com/1406873).
   // TODO(pbos): Can this move outside ToolbarView completely?
   ShowOutdatedUpgradeBubble(browser_, auto_update_enabled);
 #endif
