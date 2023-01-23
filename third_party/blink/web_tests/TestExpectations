@@ -6151,9 +6151,6 @@ crbug.com/1347675 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/fragment
 # Offscreen GPU canvas test flaky
 crbug.com/1286883 [ Linux ] virtual/gpu/fast/canvas/OffscreenCanvas-Bitmaprenderer-toBlob.html [ Failure Pass ]
 
-# Temporarily disabled to unblock https://crrev.com/c/4183652
-crbug.com/1408033 http/tests/devtools/persistence/automapping-sourcemap-nameclash.js [ Pass Timeout ]
-
 # Sheriff 2022-08-01
 # TODO(crbug.com/1225773): Re-enable this test
 crbug.com/1225773 [ Linux ] external/wpt/html/webappapis/scripting/processing-model-2/unhandled-promise-rejections/promise-rejection-event-during-parse.html [ Crash Failure Pass Timeout ]

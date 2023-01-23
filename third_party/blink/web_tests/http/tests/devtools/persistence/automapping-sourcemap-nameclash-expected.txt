@@ -1,7 +1,7 @@
 Verify that sourcemap sources are mapped event when sourcemap compiled url matches with one of the source urls.
 
 Binding created: {
-       network: http://127.0.0.1:8000/devtools/persistence/resources/sourcemap-name-clash/out.js? [sm]
+       network: http://127.0.0.1:8000/devtools/persistence/resources/sourcemap-name-clash/out.js
     fileSystem: file:///var/www/src/out.js
     exactMatch: true
 }
