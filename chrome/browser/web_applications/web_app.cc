@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/values.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
@@ -115,6 +116,7 @@ base::Value OsStatesDebugValue(
   }
 
   if (current_states.has_shortcut_menus()) {
+    base::Value::List shortcut_menus_list;
     for (const auto& shortcut_menu :
          current_states.shortcut_menus().shortcut_menu_info()) {
       base::Value::Dict icon_data_any_dict;
@@ -147,9 +149,34 @@ base::Value OsStatesDebugValue(
                              base::Value(std::move(icon_data_maskable_dict)));
       shortcut_menu_dict.Set("icon_data_monochrome",
                              base::Value(std::move(icon_data_monochrome_dict)));
-      debug_dict.Set("shortcut_menus",
-                     base::Value(std::move(shortcut_menu_dict)));
+      shortcut_menus_list.Append(std::move(shortcut_menu_dict));
     }
+    debug_dict.Set("shortcut_menus",
+                   base::Value(std::move(shortcut_menus_list)));
+  }
+
+  if (current_states.has_file_handling()) {
+    base::Value::List file_handlers_list;
+    for (const auto& file_handler :
+         current_states.file_handling().file_handlers()) {
+      base::Value::Dict file_handler_dict;
+      file_handler_dict.Set("action", base::Value(file_handler.action()));
+      file_handler_dict.Set("display_name", file_handler.display_name());
+      base::Value::List accept_list;
+      for (const auto& accept : file_handler.accept()) {
+        base::Value::Dict accept_dict;
+        accept_dict.Set("mimetype", accept.mimetype());
+        base::Value::List file_extensions_list;
+        for (const auto& file_extension : accept.file_extensions()) {
+          file_extensions_list.Append(file_extension);
+        }
+        accept_dict.Set("file_extensions", std::move(file_extensions_list));
+        accept_list.Append(std::move(accept_dict));
+      }
+      file_handler_dict.Set("accept", std::move(accept_list));
+      file_handlers_list.Append(std::move(file_handler_dict));
+    }
+    debug_dict.Set("file_handling", std::move(file_handlers_list));
   }
 
   return base::Value(std::move(debug_dict));
