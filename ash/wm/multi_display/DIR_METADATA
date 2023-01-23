@@ -1,0 +1,10 @@
+team_email: "chromeos-wm-corexp@google.com"
+buganizer: {
+  component_id:1252581
+}
+buganizer_public: {
+  component_id:1253107
+}
+monorail {
+  component: "UI>Shell>WindowManager>MultiDisplay"
+}

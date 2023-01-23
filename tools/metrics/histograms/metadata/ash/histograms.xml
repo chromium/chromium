@@ -3087,6 +3087,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.MultiDisplay.WindowsMovedAfterRemap.DisplayRotated"
+    units="Boolean" expires_after="2024-01-20">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>yunchengs@google.com</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    After a display rotation, the existing app windows will get remapped. A one
+    minute timer then runs. If any of the app windows are moved or resized by
+    the user, then this histogram records true. If the timer ends without an app
+    window being moved or resized, then this histogram records false. Used to
+    determine if the user is satisfied with the window manager auto remap.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ash.MultiDisplay.WindowsMovedAfterRemap.DisplayWorkAreaChanged"
+    units="Boolean" expires_after="2024-01-20">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>yunchengs@google.com</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    After a display work area change, the existing app windows will get
+    remapped. A one minute timer then runs. If any of the app windows are moved
+    or resized by the user, then this histogram records true. If the timer ends
+    without an app window being moved or resized, then this histogram records
+    false. Used to determine if the user is satisfied with the window manager
+    auto remap.
+  </summary>
+</histogram>
+
 <histogram
     name="Ash.NavigationWidget.AnimationSmoothness{HotseatTransitionType}"
     units="%" expires_after="2023-04-20">

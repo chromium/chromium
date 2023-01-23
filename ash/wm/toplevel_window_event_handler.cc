@@ -7,6 +7,7 @@
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/wm/multi_display/multi_display_metrics_controller.h"
 #include "ash/wm/multitask_menu_nudge_controller.h"
 #include "ash/wm/resize_shadow.h"
 #include "ash/wm/resize_shadow_controller.h"
@@ -661,6 +662,8 @@ bool ToplevelWindowEventHandler::PrepareForDrag(
     return false;
   window_resizer_ = std::make_unique<ScopedWindowResizer>(
       this, std::move(resizer), grab_capture);
+  Shell::Get()->multi_display_metrics_controller()->OnWindowMovedOrResized(
+      window);
   return true;
 }
 

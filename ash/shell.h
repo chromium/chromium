@@ -169,6 +169,7 @@ class MicrophonePrivacySwitchController;
 class MouseCursorEventFilter;
 class MruWindowTracker;
 class MultiDeviceNotificationPresenter;
+class MultiDisplayMetricsController;
 class MultitaskMenuNudgeController;
 class NearbyShareControllerImpl;
 class NearbyShareDelegate;
@@ -565,6 +566,9 @@ class ASH_EXPORT Shell : public SessionObserver,
     return mouse_cursor_filter_.get();
   }
   MruWindowTracker* mru_window_tracker() { return mru_window_tracker_.get(); }
+  MultiDisplayMetricsController* multi_display_metrics_controller() {
+    return multi_display_metrics_controller_.get();
+  }
   MultitaskMenuNudgeController* multitask_menu_nudge_controller() {
     return multitask_menu_nudge_controller_.get();
   }
@@ -927,6 +931,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<MicrophonePrivacySwitchController>
       microphone_privacy_switch_controller_;
   std::unique_ptr<MruWindowTracker> mru_window_tracker_;
+  std::unique_ptr<MultiDisplayMetricsController>
+      multi_display_metrics_controller_;
   std::unique_ptr<MultiDeviceNotificationPresenter>
       multidevice_notification_presenter_;
   std::unique_ptr<MultitaskMenuNudgeController>
