@@ -514,7 +514,7 @@ void LoadArmGpuLibraries() {
     // Preload mesa related libraries for devices which use mesa
     // (ie. not mali or tegra):
     if (!is_mali && !is_tegra &&
-        (nullptr != dlopen("libglapi.so", dlopen_flag))) {
+        (nullptr != dlopen("libglapi.so.0", dlopen_flag))) {
       const char* driver_paths[] = {
 #if defined(DRI_DRIVER_DIR)
         DRI_DRIVER_DIR "/msm_dri.so",
@@ -616,19 +616,18 @@ void LoadChromecastV4L2Libraries() {
 bool LoadLibrariesForGpu(
     const sandbox::policy::SandboxSeccompBPF::Options& options) {
   LoadVulkanLibraries();
+  if (IsArchitectureArm()) {
+    LoadArmGpuLibraries();
+  }
   if (IsChromeOS()) {
     if (UseV4L2Codec())
       LoadV4L2Libraries(options);
-    if (IsArchitectureArm()) {
-      LoadArmGpuLibraries();
-    }
     if (options.use_amd_specific_policies) {
       if (!LoadAmdGpuLibraries())
         return false;
     }
   } else {
     if (UseChromecastSandboxAllowlist() && IsArchitectureArm()) {
-      LoadArmGpuLibraries();
       if (UseV4L2Codec())
         LoadChromecastV4L2Libraries();
     }
