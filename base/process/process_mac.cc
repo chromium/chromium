@@ -6,6 +6,7 @@
 
 #include <mach/mach.h>
 #include <stddef.h>
+#include <sys/resource.h>
 #include <sys/sysctl.h>
 #include <sys/time.h>
 #include <unistd.h>
@@ -14,10 +15,17 @@
 #include <memory>
 
 #include "base/cxx17_backports.h"
+#include "base/feature_list.h"
 #include "base/mac/mach_logging.h"
 #include "base/memory/free_deleter.h"
 
 namespace base {
+
+// Enables setting the task role of every child process to
+// TASK_DEFAULT_APPLICATION.
+BASE_FEATURE(kMacSetDefaultTaskRole,
+             "MacSetDefaultTaskRole",
+             FEATURE_DISABLED_BY_DEFAULT);
 
 Time Process::CreationTime() const {
   int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, Pid()};
@@ -89,6 +97,19 @@ bool Process::SetProcessBackgrounded(PortProvider* port_provider,
   }
 
   return true;
+}
+
+// static
+void Process::SetCurrentTaskDefaultRole() {
+  if (!base::FeatureList::IsEnabled(kMacSetDefaultTaskRole)) {
+    return;
+  }
+
+  task_category_policy category_policy;
+  category_policy.role = TASK_DEFAULT_APPLICATION;
+  task_policy_set(mach_task_self(), TASK_CATEGORY_POLICY,
+                  reinterpret_cast<task_policy_t>(&category_policy),
+                  TASK_CATEGORY_POLICY_COUNT);
 }
 
 }  // namespace base

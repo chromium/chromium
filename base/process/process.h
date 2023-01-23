@@ -248,6 +248,13 @@ class BASE_EXPORT Process {
   void InitializePriority();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_MAC)
+  // Sets the `task_role_t` of the current task (the calling process) to
+  // TASK_DEFAULT_APPLICATION, if the MacSetDefaultTaskRole feature is
+  // enabled.
+  static void SetCurrentTaskDefaultRole();
+#endif  // BUILDFLAG(IS_MAC)
+
  private:
 #if BUILDFLAG(IS_CHROMEOS)
   // Cleans up process state. If OneGroupPerRenderer is enabled, it cleans up
