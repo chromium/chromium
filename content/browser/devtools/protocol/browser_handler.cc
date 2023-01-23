@@ -82,6 +82,7 @@ Response BrowserHandler::Disable() {
   }
   contexts_with_overridden_downloads_.clear();
   SetDownloadEventsEnabled(false);
+  histograms_snapshots_.clear();
 
   return Response::Success();
 }
@@ -105,44 +106,6 @@ Response BrowserHandler::GetVersion(std::string* protocol_version,
 }
 
 namespace {
-
-// Converts an histogram.
-std::unique_ptr<Browser::Histogram> Convert(base::HistogramBase& in_histogram,
-                                            bool in_delta) {
-  std::unique_ptr<const base::HistogramSamples> in_buckets;
-  if (!in_delta) {
-    in_buckets = in_histogram.SnapshotSamples();
-  } else {
-    // TODO(crbug/1377433): Remove this call, as SnapshotDelta() should not be
-    // called outside the metrics collection system.
-    in_buckets = in_histogram.SnapshotDelta();
-  }
-  DCHECK(in_buckets);
-
-  auto out_buckets = std::make_unique<Array<Browser::Bucket>>();
-
-  for (const std::unique_ptr<base::SampleCountIterator> bucket_it =
-           in_buckets->Iterator();
-       !bucket_it->Done(); bucket_it->Next()) {
-    base::HistogramBase::Count count;
-    base::HistogramBase::Sample low;
-    int64_t high;
-    bucket_it->Get(&low, &high, &count);
-    out_buckets->emplace_back(Browser::Bucket::Create()
-                                  .SetLow(low)
-                                  .SetHigh(high)
-                                  .SetCount(count)
-                                  .Build());
-  }
-
-  return Browser::Histogram::Create()
-      .SetName(in_histogram.histogram_name())
-      .SetSum(in_buckets->sum())
-      .SetCount(in_buckets->TotalCount())
-      .SetBuckets(std::move(out_buckets))
-      .Build();
-}
-
 // Parses PermissionDescriptors (|descriptor|) into their appropriate
 // PermissionType |permission_type| by duplicating the logic in the methods
 // //third_party/blink/renderer/modules/permissions:permissions
@@ -314,24 +277,6 @@ Response PermissionSettingToPermissionStatus(
 }
 
 }  // namespace
-
-Response BrowserHandler::GetHistograms(
-    const Maybe<std::string> in_query,
-    const Maybe<bool> in_delta,
-    std::unique_ptr<Array<Browser::Histogram>>* const out_histograms) {
-  // Convert histograms.
-  DCHECK(out_histograms);
-  *out_histograms = std::make_unique<Array<Browser::Histogram>>();
-  for (base::HistogramBase* const h :
-       base::StatisticsRecorder::Sort(base::StatisticsRecorder::WithName(
-           base::StatisticsRecorder::GetHistograms(),
-           in_query.fromMaybe("")))) {
-    DCHECK(h);
-    (*out_histograms)->emplace_back(Convert(*h, in_delta.fromMaybe(false)));
-  }
-
-  return Response::Success();
-}
 
 // static
 Response BrowserHandler::FindBrowserContext(
@@ -544,6 +489,24 @@ Response BrowserHandler::CancelDownload(const std::string& guid,
   return Response::Success();
 }
 
+Response BrowserHandler::GetHistograms(
+    const Maybe<std::string> in_query,
+    const Maybe<bool> in_delta,
+    std::unique_ptr<Array<Browser::Histogram>>* const out_histograms) {
+  DCHECK(out_histograms);
+  bool get_deltas = in_delta.fromMaybe(false);
+  *out_histograms = std::make_unique<Array<Browser::Histogram>>();
+  for (base::HistogramBase* const h :
+       base::StatisticsRecorder::Sort(base::StatisticsRecorder::WithName(
+           base::StatisticsRecorder::GetHistograms(),
+           in_query.fromMaybe("")))) {
+    DCHECK(h);
+    (*out_histograms)->emplace_back(GetHistogramData(*h, get_deltas));
+  }
+
+  return Response::Success();
+}
+
 Response BrowserHandler::GetHistogram(
     const std::string& in_name,
     const Maybe<bool> in_delta,
@@ -554,9 +517,8 @@ Response BrowserHandler::GetHistogram(
   if (!in_histogram)
     return Response::InvalidParams("Cannot find histogram: " + in_name);
 
-  // Convert histogram.
   DCHECK(out_histogram);
-  *out_histogram = Convert(*in_histogram, in_delta.fromMaybe(false));
+  *out_histogram = GetHistogramData(*in_histogram, in_delta.fromMaybe(false));
 
   return Response::Success();
 }
@@ -648,6 +610,52 @@ void BrowserHandler::SetDownloadEventsEnabled(bool enabled) {
     pending_downloads_.clear();
   }
   download_events_enabled_ = enabled;
+}
+
+std::unique_ptr<Browser::Histogram> BrowserHandler::GetHistogramData(
+    const base::HistogramBase& histogram,
+    bool get_delta) {
+  std::unique_ptr<base::HistogramSamples> data = histogram.SnapshotSamples();
+  std::unique_ptr<base::HistogramSamples> previous_data;
+  if (get_delta) {
+    auto it = histograms_snapshots_.find(histogram.histogram_name());
+    if (it != histograms_snapshots_.end()) {
+      previous_data = std::move(it->second);
+      data->Subtract(*previous_data);
+    }
+  }
+
+  auto out_buckets = std::make_unique<Array<Browser::Bucket>>();
+  for (const std::unique_ptr<base::SampleCountIterator> it = data->Iterator();
+       !it->Done(); it->Next()) {
+    base::HistogramBase::Count count;
+    base::HistogramBase::Sample low;
+    int64_t high;
+    it->Get(&low, &high, &count);
+    out_buckets->emplace_back(Browser::Bucket::Create()
+                                  .SetLow(low)
+                                  .SetHigh(high)
+                                  .SetCount(count)
+                                  .Build());
+  }
+
+  auto result = Browser::Histogram::Create()
+                    .SetName(histogram.histogram_name())
+                    .SetSum(data->sum())
+                    .SetCount(data->TotalCount())
+                    .SetBuckets(std::move(out_buckets))
+                    .Build();
+
+  // Keep track of the data we returned for future delta requests.
+  if (get_delta) {
+    if (previous_data) {
+      // If we had subtracted previous data, re-add it to get the full snapshot.
+      data->Add(*previous_data);
+    }
+    histograms_snapshots_[histogram.histogram_name()] = std::move(data);
+  }
+
+  return result;
 }
 
 }  // namespace protocol

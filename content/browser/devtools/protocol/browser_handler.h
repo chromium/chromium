@@ -5,7 +5,10 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_BROWSER_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_BROWSER_HANDLER_H_
 
+#include <map>
+
 #include "base/containers/flat_set.h"
+#include "base/metrics/histogram.h"
 #include "components/download/public/common/download_item.h"
 #include "content/browser/devtools/protocol/browser.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
@@ -95,12 +98,23 @@ class BrowserHandler : public DevToolsDomainHandler,
  private:
   void SetDownloadEventsEnabled(bool enabled);
 
+  // Retrieves the data for the given histogram, returning it in the converted
+  // format. If `get_delta` is true, returns the only the new data since the
+  // last `get_delta` true call for the given histogram, or all data if it's
+  // the first such call.
+  std::unique_ptr<Browser::Histogram> GetHistogramData(
+      const base::HistogramBase& histogram,
+      bool get_delta);
+
   std::unique_ptr<Browser::Frontend> frontend_;
   base::flat_set<std::string> contexts_with_overridden_permissions_;
   base::flat_set<std::string> contexts_with_overridden_downloads_;
   bool download_events_enabled_;
   const bool allow_set_download_behavior_;
   base::flat_set<download::DownloadItem*> pending_downloads_;
+  // Stores past histogram snapshots for producing histogram deltas.
+  std::map<std::string, std::unique_ptr<base::HistogramSamples>>
+      histograms_snapshots_;
 };
 
 }  // namespace protocol

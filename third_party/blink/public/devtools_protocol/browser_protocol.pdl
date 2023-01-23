@@ -1273,7 +1273,7 @@ domain Browser
       # substring in their name are extracted. An empty or absent query returns
       # all histograms.
       optional string query
-      # If true, retrieve delta since last call.
+      # If true, retrieve delta since last delta call.
       optional boolean delta
 
     returns
@@ -1285,7 +1285,7 @@ domain Browser
     parameters
       # Requested histogram name.
       string name
-      # If true, retrieve delta since last call.
+      # If true, retrieve delta since last delta call.
       optional boolean delta
     returns
       # Histogram.
