@@ -1747,3 +1747,16 @@ crbug.com/1378476 [ Mac12-arm64 ] virtual/webgl-oversized-printing/printing/webg
 # which often fails, so skip it on this configuration.
 # Use the same reason as the Mac suppressions to avoid an incorrect presubmit check.
 crbug.com/1378476 [ Win ] virtual/webgl-oversized-printing/printing/webgl-oversized-printing.html [ Skip ]
+
+# This test is Mac specific, since it checks cases when hyphen character is
+# being synthesized in Arial font on recent Mac vesrions and therefore should
+# be skipped on other platforms.
+crbug.com/1267606 [ Linux ] wpt_internal/css/css-fonts/font-glyph-synthesis-mac.html [ Skip ]
+crbug.com/1267606 [ Win ] wpt_internal/css/css-fonts/font-glyph-synthesis-mac.html [ Skip ]
+crbug.com/1267606 [ Fuchsia ] wpt_internal/css/css-fonts/font-glyph-synthesis-mac.html [ Skip ]
+crbug.com/1267606 [ Android ] wpt_internal/css/css-fonts/font-glyph-synthesis-mac.html [ Skip ]
+crbug.com/1267606 [ Mac10.13 ] wpt_internal/css/css-fonts/font-glyph-synthesis-mac.html [ Skip ]
+crbug.com/1267606 [ Mac10.14 ] wpt_internal/css/css-fonts/font-glyph-synthesis-mac.html [ Skip ]
+crbug.com/1267606 [ Mac10.15 ] wpt_internal/css/css-fonts/font-glyph-synthesis-mac.html [ Skip ]
+crbug.com/1267606 [ Mac11 ] wpt_internal/css/css-fonts/font-glyph-synthesis-mac.html [ Skip ]
+crbug.com/1267606 [ Mac11-arm64 ] wpt_internal/css/css-fonts/font-glyph-synthesis-mac.html [ Skip ]

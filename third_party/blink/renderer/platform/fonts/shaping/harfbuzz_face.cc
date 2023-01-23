@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/platform/resolution_units.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPoint.h"
@@ -91,8 +92,30 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
   if (hb_font_data->range_set_ && !hb_font_data->range_set_->Contains(unicode))
     return false;
 
-  return hb_font_get_glyph(hb_font_get_parent(hb_font), unicode,
-                           variation_selector, glyph);
+  hb_bool_t hb_has_glyph = hb_font_get_glyph(
+      hb_font_get_parent(hb_font), unicode, variation_selector, glyph);
+// MacOS CoreText API synthesizes GlyphID for several unicode codepoints,
+// for example, hyphens and separators for some fonts. HarfBuzz does not
+// synthesize such glyphs, and as it's not found from the last resort font, we
+// end up with displaying tofu, see https://crbug.com/1267606 for details.
+// Chrome uses Times as last resort fallback font and in Times the only visible
+// synthesizing characters are hyphen (0x2010) and non-breaking hyphen (0x2011).
+// For performance reasons, we limit this fallback lookup to the specific
+// missing glyphs for hyphens and only to Mac OS, where we're facing this issue.
+#if BUILDFLAG(IS_MAC)
+  if (!hb_has_glyph) {
+    SkTypeface* typeface = hb_font_data->font_.getTypeface();
+    if (!typeface) {
+      return false;
+    }
+    if (unicode == kHyphenCharacter || unicode == kNonBreakingHyphen) {
+      SkGlyphID sk_glyph_id = typeface->unicharToGlyph(unicode);
+      *glyph = sk_glyph_id;
+      return sk_glyph_id;
+    }
+  }
+#endif
+  return hb_has_glyph;
 }
 
 static hb_bool_t HarfBuzzGetNominalGlyph(hb_font_t* hb_font,
