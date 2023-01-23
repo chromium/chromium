@@ -18,7 +18,6 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence.h"
-#include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gl/gl_export.h"
@@ -113,10 +112,6 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   // An identifier for subclasses. Necessary for safe downcasting.
   enum class Type { NONE, EGL_STREAM, D3D, PBUFFER };
   virtual Type GetType() const;
-
-  // Returns the NativePixmap backing the GLImage. If not backed by a
-  // NativePixmap, returns null.
-  virtual scoped_refptr<gfx::NativePixmap> GetNativePixmap();
 
   virtual void* GetEGLImage() const;
 

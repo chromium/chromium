@@ -58,10 +58,6 @@ GLImage::Type GLImage::GetType() const {
   return Type::NONE;
 }
 
-scoped_refptr<gfx::NativePixmap> GLImage::GetNativePixmap() {
-  return nullptr;
-}
-
 void* GLImage::GetEGLImage() const {
   return nullptr;
 }
