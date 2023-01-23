@@ -10,17 +10,6 @@
 
 namespace power_bookmarks {
 
-namespace {
-class EmptyDatabaseTransaction : public Transaction {
- public:
-  bool Commit() override;
-};
-
-bool EmptyDatabaseTransaction::Commit() {
-  return true;
-}
-}  // namespace
-
 EmptyPowerBookmarkDatabase::EmptyPowerBookmarkDatabase() = default;
 
 EmptyPowerBookmarkDatabase::~EmptyPowerBookmarkDatabase() = default;
@@ -61,9 +50,8 @@ bool EmptyPowerBookmarkDatabase::CreatePower(std::unique_ptr<Power> power) {
   return false;
 }
 
-std::unique_ptr<Power> EmptyPowerBookmarkDatabase::UpdatePower(
-    std::unique_ptr<Power> power) {
-  return nullptr;
+bool EmptyPowerBookmarkDatabase::UpdatePower(std::unique_ptr<Power> power) {
+  return false;
 }
 
 bool EmptyPowerBookmarkDatabase::DeletePower(const base::GUID& guid) {
@@ -72,8 +60,7 @@ bool EmptyPowerBookmarkDatabase::DeletePower(const base::GUID& guid) {
 
 bool EmptyPowerBookmarkDatabase::DeletePowersForURL(
     const GURL& url,
-    const sync_pb::PowerBookmarkSpecifics::PowerType& power_type,
-    std::vector<std::string>* deleted_guids) {
+    const sync_pb::PowerBookmarkSpecifics::PowerType& power_type) {
   return false;
 }
 
@@ -90,24 +77,6 @@ EmptyPowerBookmarkDatabase::GetPowersForGUIDs(
 std::unique_ptr<Power> EmptyPowerBookmarkDatabase::GetPowerForGUID(
     const std::string& guid) {
   return nullptr;
-}
-
-bool EmptyPowerBookmarkDatabase::CreateOrMergePowerFromSync(
-    const Power& power) {
-  return false;
-}
-
-bool EmptyPowerBookmarkDatabase::DeletePowerFromSync(const std::string& guid) {
-  return false;
-}
-
-syncer::SyncMetadataStore*
-EmptyPowerBookmarkDatabase::GetSyncMetadataDatabase() {
-  return nullptr;
-}
-
-std::unique_ptr<Transaction> EmptyPowerBookmarkDatabase::BeginTransaction() {
-  return std::make_unique<EmptyDatabaseTransaction>();
 }
 
 }  // namespace power_bookmarks
