@@ -24,7 +24,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SideSearch.AutoTrigger.NavigationCommittedWithinSideSearchCountPerJourney"
-    units="navigations" expires_after="2023-06-18">
+    units="navigations" expires_after="2023-12-13">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.AutoTrigger.RedirectionToTabCountPerJourney"
-    units="navigations" expires_after="2023-06-18">
+    units="navigations" expires_after="2023-12-13">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
@@ -48,7 +48,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.AvailabilityChanged"
-    enum="SideSearchAvailabilityChangeType" expires_after="2023-06-18">
+    enum="SideSearchAvailabilityChangeType" expires_after="2023-12-13">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -60,7 +60,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.CloseAction" enum="SideSearchCloseActionType"
-    expires_after="2023-04-16">
+    expires_after="2023-12-13">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.LoadCompletedTime" units="ms"
-    expires_after="2023-06-18">
+    expires_after="2023-12-13">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.LoadDocumentTime" units="ms"
-    expires_after="2023-06-18">
+    expires_after="2023-12-13">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.Navigation" enum="SideSearchNavigationType"
-    expires_after="2023-06-18">
+    expires_after="2023-12-13">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -107,7 +107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.NavigationCommittedWithinSideSearchCountPerJourney"
-    units="navigations" expires_after="2023-02-05">
+    units="navigations" expires_after="2023-12-13">
   <obsolete>
     Removed in M107
   </obsolete>
@@ -123,7 +123,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SideSearch.NavigationCommittedWithinSideSearchCountPerJourney2"
-    units="navigations" expires_after="2023-06-11">
+    units="navigations" expires_after="2023-12-13">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -136,7 +136,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SideSearch.NavigationCommittedWithinSideSearchCountPerJourneyFromMenuOption"
-    units="navigations" expires_after="2023-06-04">
+    units="navigations" expires_after="2023-12-13">
   <owner>pengchaocai@chromium.org</owner>
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
@@ -149,7 +149,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.OpenAction" enum="SideSearchOpenActionType"
-    expires_after="2023-06-11">
+    expires_after="2023-12-13">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -160,7 +160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.PageActionIcon.LabelVisibleWhenToggled"
-    enum="SideSearchPageActionLabelVisibility" expires_after="2023-02-12">
+    enum="SideSearchPageActionLabelVisibility" expires_after="2023-12-13">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
@@ -171,7 +171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.RedirectionToTabCountPerJourney2"
-    units="navigations" expires_after="2023-02-05">
+    units="navigations" expires_after="2023-12-13">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -183,7 +183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.RedirectionToTabCountPerJourneyFromMenuOption"
-    units="navigations" expires_after="2023-06-04">
+    units="navigations" expires_after="2023-12-13">
   <owner>pengchaocai@chromium.org</owner>
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
@@ -196,7 +196,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.SidePanel.TimeShownOpenedVia{OpenAction}"
-    units="ms" expires_after="2023-02-12">
+    units="ms" expires_after="2023-12-13">
   <owner>tluk@chromium.org</owner>
   <owner>yuhengh@chromium.org</owner>
   <summary>
@@ -211,7 +211,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.TimeSinceSidePanelAvailableToFirstOpen" units="ms"
-    expires_after="2023-06-25">
+    expires_after="2023-12-13">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
@@ -222,7 +222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.TimesReturnedBackToSRP" units="navigations"
-    expires_after="2023-06-25">
+    expires_after="2023-12-13">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
