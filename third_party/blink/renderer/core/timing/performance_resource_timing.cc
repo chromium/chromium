@@ -107,7 +107,6 @@ PerformanceResourceTiming::PerformanceResourceTiming(
     base::TimeTicks time_origin,
     bool cross_origin_isolated_capability,
     const AtomicString& initiator_type,
-    ExecutionContext* context,
     LocalDOMWindow* source)
     : PerformanceEntry(AtomicString(info.name),
                        Performance::MonotonicTimeToDOMHighResTimeStamp(
@@ -120,7 +119,6 @@ PerformanceResourceTiming::PerformanceResourceTiming(
                            info.response_end,
                            info.allow_negative_values,
                            cross_origin_isolated_capability),
-                       PerformanceEntry::GetNavigationId(context),
                        source),
       initiator_type_(initiator_type.empty()
                           ? fetch_initiator_type_names::kOther
@@ -131,7 +129,6 @@ PerformanceResourceTiming::PerformanceResourceTiming(
       resource_load_timing_(ResourceLoadTiming::FromMojo(info.timing.get())),
       server_timing_(
           PerformanceServerTiming::FromParsedServerTiming(info.server_timing)) {
-  DCHECK(context);
 }
 
 // This constructor is for PerformanceNavigationTiming.
@@ -150,7 +147,6 @@ PerformanceResourceTiming::PerformanceResourceTiming(
               : g_empty_atom,
           0.0,
           0.0,
-          kNavigationIdDefaultValue,
           &source_window),
       initiator_type_(initiator_type),
       time_origin_(time_origin),

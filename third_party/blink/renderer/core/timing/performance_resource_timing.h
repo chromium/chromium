@@ -59,7 +59,6 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
                             base::TimeTicks time_origin,
                             bool cross_origin_isolated_capability,
                             const AtomicString& initiator_type,
-                            ExecutionContext* context,
                             LocalDOMWindow* source);
   ~PerformanceResourceTiming() override;
 

@@ -16,11 +16,9 @@ LayoutShift* LayoutShift::Create(double start_time,
                                  bool input_detected,
                                  double input_timestamp,
                                  AttributionList sources,
-                                 uint32_t navigation_id,
                                  DOMWindow* source) {
   return MakeGarbageCollected<LayoutShift>(start_time, value, input_detected,
-                                           input_timestamp, sources,
-                                           navigation_id, source);
+                                           input_timestamp, sources, source);
 }
 
 LayoutShift::LayoutShift(double start_time,
@@ -28,13 +26,8 @@ LayoutShift::LayoutShift(double start_time,
                          bool input_detected,
                          double input_timestamp,
                          AttributionList sources,
-                         uint32_t navigation_id,
                          DOMWindow* source)
-    : PerformanceEntry(g_empty_atom,
-                       start_time,
-                       start_time,
-                       navigation_id,
-                       source),
+    : PerformanceEntry(g_empty_atom, start_time, start_time, source),
       value_(value),
       had_recent_input_(input_detected),
       most_recent_input_timestamp_(input_timestamp),

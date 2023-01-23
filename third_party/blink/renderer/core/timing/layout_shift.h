@@ -31,7 +31,6 @@ class CORE_EXPORT LayoutShift final : public PerformanceEntry {
                              bool input_detected,
                              double input_timestamp,
                              AttributionList sources,
-                             uint32_t navigation_id,
                              DOMWindow* source);
 
   explicit LayoutShift(double start_time,
@@ -39,7 +38,6 @@ class CORE_EXPORT LayoutShift final : public PerformanceEntry {
                        bool input_detected,
                        double input_timestamp,
                        AttributionList sources,
-                       uint32_t navigation_id,
                        DOMWindow* source);
 
   ~LayoutShift() override;

@@ -48,25 +48,27 @@ static base::AtomicSequenceNumber index_seq;
 PerformanceEntry::PerformanceEntry(const AtomicString& name,
                                    double start_time,
                                    double finish_time,
-                                   uint32_t navigation_id,
                                    DOMWindow* source)
     : duration_(finish_time - start_time),
       name_(name),
       start_time_(start_time),
       index_(index_seq.GetNext()),
-      navigation_id_(navigation_id),
+      navigation_id_(DynamicTo<LocalDOMWindow>(source)
+                         ? DynamicTo<LocalDOMWindow>(source)->GetNavigationId()
+                         : kNavigationIdDefaultValue),
       source_(source) {}
 
 PerformanceEntry::PerformanceEntry(double duration,
                                    const AtomicString& name,
                                    double start_time,
-                                   uint32_t navigation_id,
                                    DOMWindow* source)
     : duration_(duration),
       name_(name),
       start_time_(start_time),
       index_(index_seq.GetNext()),
-      navigation_id_(navigation_id),
+      navigation_id_(DynamicTo<LocalDOMWindow>(source)
+                         ? DynamicTo<LocalDOMWindow>(source)->GetNavigationId()
+                         : kNavigationIdDefaultValue),
       source_(source) {
   DCHECK_GE(duration_, 0.0);
 }
@@ -146,15 +148,6 @@ uint32_t PerformanceEntry::GetNavigationId(ScriptState* script_state) {
   // local_dom_window is null in some browser tests and unit tests.
   // The navigation_id starts from 1. Without a window, there would be no
   // subsequent navigations.
-  if (!local_dom_window)
-    return kNavigationIdDefaultValue;
-
-  return local_dom_window->GetNavigationId();
-}
-
-// static
-uint32_t PerformanceEntry::GetNavigationId(ExecutionContext* context) {
-  const auto* local_dom_window = DynamicTo<LocalDOMWindow>(context);
   if (!local_dom_window)
     return kNavigationIdDefaultValue;
 

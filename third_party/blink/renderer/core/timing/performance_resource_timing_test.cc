@@ -47,9 +47,7 @@ class PerformanceResourceTimingTest : public testing::Test {
         dummy_page_holder->GetDocument()
             .GetExecutionContext()
             ->CrossOriginIsolatedCapability(),
-        /*initiator_type=*/"",
-        dummy_page_holder->GetDocument().GetExecutionContext(),
-        LocalDOMWindow::From(GetScriptState()));
+        /*initiator_type=*/"", LocalDOMWindow::From(GetScriptState()));
   }
 
   Persistent<ScriptState> script_state_;

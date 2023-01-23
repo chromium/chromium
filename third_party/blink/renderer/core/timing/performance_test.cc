@@ -236,7 +236,7 @@ TEST_F(PerformanceTest, InsertEntryOnEmptyBuffer) {
   PerformanceEntryVector test_buffer_;
 
   PerformanceEventTiming* test_entry = PerformanceEventTiming::Create(
-      "event", 0.0, 0.0, 0.0, false, nullptr, 0,
+      "event", 0.0, 0.0, 0.0, false, nullptr,
       LocalDOMWindow::From(scope.GetScriptState()));
 
   base_->InsertEntryIntoSortedBuffer(test_buffer_, *test_entry,
@@ -259,13 +259,13 @@ TEST_F(PerformanceTest, InsertEntryOnExistingBuffer) {
   for (int i = 0; i < 3; i++) {
     double tmp = 1.0;
     PerformanceEventTiming* entry = PerformanceEventTiming::Create(
-        "event", tmp * i, 0.0, 0.0, false, nullptr, 0,
+        "event", tmp * i, 0.0, 0.0, false, nullptr,
         LocalDOMWindow::From(scope.GetScriptState()));
     test_buffer_.push_back(*entry);
   }
 
   PerformanceEventTiming* test_entry = PerformanceEventTiming::Create(
-      "event", 1.0, 0.0, 0.0, false, nullptr, 0,
+      "event", 1.0, 0.0, 0.0, false, nullptr,
       LocalDOMWindow::From(scope.GetScriptState()));
 
   // Create copy of the test_buffer_.
@@ -292,13 +292,13 @@ TEST_F(PerformanceTest, InsertEntryToFrontOfBuffer) {
   for (int i = 0; i < 3; i++) {
     double tmp = 1.0;
     PerformanceEventTiming* entry = PerformanceEventTiming::Create(
-        "event", tmp * i, 0.0, 0.0, false, nullptr, 0,
+        "event", tmp * i, 0.0, 0.0, false, nullptr,
         LocalDOMWindow::From(scope.GetScriptState()));
     test_buffer_.push_back(*entry);
   }
 
   PerformanceEventTiming* test_entry = PerformanceEventTiming::Create(
-      "event", 0.0, 0.0, 0.0, false, nullptr, 0,
+      "event", 0.0, 0.0, 0.0, false, nullptr,
       LocalDOMWindow::From(scope.GetScriptState()));
 
   // Create copy of the test_buffer_.
@@ -326,7 +326,7 @@ TEST_F(PerformanceTest, MergePerformanceEntryVectorsTest) {
   for (int i = 0; i < 6; i += 2) {
     double tmp = 1.0;
     PerformanceEventTiming* entry = PerformanceEventTiming::Create(
-        "event", tmp * i, 0.0, 0.0, false, nullptr, 0,
+        "event", tmp * i, 0.0, 0.0, false, nullptr,
         LocalDOMWindow::From(scope.GetScriptState()));
     first_vector.push_back(*entry);
     test_vector.push_back(*entry);
@@ -335,7 +335,7 @@ TEST_F(PerformanceTest, MergePerformanceEntryVectorsTest) {
   for (int i = 1; i < 6; i += 2) {
     double tmp = 1.0;
     PerformanceEventTiming* entry = PerformanceEventTiming::Create(
-        "event", tmp * i, 0.0, 0.0, false, nullptr, 0,
+        "event", tmp * i, 0.0, 0.0, false, nullptr,
         LocalDOMWindow::From(scope.GetScriptState()));
     second_vector.push_back(*entry);
     test_vector.push_back(*entry);

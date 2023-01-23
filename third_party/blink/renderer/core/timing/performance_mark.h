@@ -62,7 +62,6 @@ class CORE_EXPORT PerformanceMark final : public PerformanceEntry {
                   base::TimeTicks unsafe_time_for_traces,
                   scoped_refptr<SerializedScriptValue>,
                   ExceptionState& exception_state,
-                  uint32_t navigation_count,
                   DOMWindow* source);
 
   ~PerformanceMark() override = default;

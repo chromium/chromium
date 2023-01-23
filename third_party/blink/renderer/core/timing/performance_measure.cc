@@ -21,11 +21,7 @@ PerformanceMeasure::PerformanceMeasure(
     scoped_refptr<SerializedScriptValue> serialized_detail,
     ExceptionState& exception_state,
     DOMWindow* source)
-    : PerformanceEntry(name,
-                       start_time,
-                       end_time,
-                       PerformanceEntry::GetNavigationId(script_state),
-                       source),
+    : PerformanceEntry(name, start_time, end_time, source),
       serialized_detail_(serialized_detail) {}
 
 // static

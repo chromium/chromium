@@ -18,6 +18,6 @@ TEST(PerformanceEntryTest, GetNavigationId) {
   EXPECT_EQ(1u, PerformanceEntry::GetNavigationId(scope.GetScriptState()));
 
   scope.GetFrame().DomWindow()->IncrementNavigationId();
-  EXPECT_EQ(2u, PerformanceEntry::GetNavigationId(scope.GetExecutionContext()));
+  EXPECT_EQ(2u, PerformanceEntry::GetNavigationId(scope.GetScriptState()));
 }
 }  // namespace blink

@@ -653,7 +653,7 @@ void Performance::AddResourceTiming(mojom::blink::ResourceTimingInfoPtr info,
                                     ExecutionContext* context) {
   auto* entry = MakeGarbageCollected<PerformanceResourceTiming>(
       *info, time_origin_, cross_origin_isolated_capability_, initiator_type,
-      context, DynamicTo<LocalDOMWindow>(context));
+      DynamicTo<LocalDOMWindow>(context));
   NotifyObserversOfEntry(*entry);
   // https://w3c.github.io/resource-timing/#dfn-add-a-performanceresourcetiming-entry
   if (CanAddResourceTimingEntry() &&
@@ -795,7 +795,6 @@ void Performance::AddPaintTiming(PerformancePaintTiming::PaintType type,
                                  base::TimeTicks start_time) {
   PerformanceEntry* entry = MakeGarbageCollected<PerformancePaintTiming>(
       type, MonotonicTimeToDOMHighResTimeStamp(start_time),
-      PerformanceEntry::GetNavigationId(GetExecutionContext()),
       DynamicTo<LocalDOMWindow>(GetExecutionContext()));
   DCHECK((type == PerformancePaintTiming::PaintType::kFirstPaint) ||
          (type == PerformancePaintTiming::PaintType::kFirstContentfulPaint));
@@ -830,7 +829,6 @@ void Performance::AddLongTaskTiming(base::TimeTicks start_time,
       static_cast<int>(MonotonicTimeToDOMHighResTimeStamp(end_time) -
                        dom_high_res_start_time),
       name, container_type, container_src, container_id, container_name,
-      PerformanceEntry::GetNavigationId(execution_context),
       DynamicTo<LocalDOMWindow>(execution_context));
   if (longtask_buffer_.size() < kDefaultLongTaskBufferSize) {
     InsertEntryIntoSortedBuffer(longtask_buffer_, *entry, kRecordSwaps);
@@ -854,7 +852,6 @@ void Performance::AddBackForwardCacheRestoration(
       MonotonicTimeToDOMHighResTimeStamp(start_time),
       MonotonicTimeToDOMHighResTimeStamp(pageshow_start_time),
       MonotonicTimeToDOMHighResTimeStamp(pageshow_end_time),
-      PerformanceEntry::GetNavigationId(GetExecutionContext()),
       DynamicTo<LocalDOMWindow>(GetExecutionContext()));
   if (back_forward_cache_restoration_buffer_.size() <
       back_forward_cache_restoration_buffer_size_limit_) {

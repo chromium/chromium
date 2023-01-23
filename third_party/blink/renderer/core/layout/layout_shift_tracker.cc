@@ -594,8 +594,7 @@ void LayoutShiftTracker::SubmitPerformanceEntry(double score_delta,
   double input_timestamp = LastInputTimestamp();
   LayoutShift* entry =
       LayoutShift::Create(performance->now(), score_delta, had_recent_input,
-                          input_timestamp, CreateAttributionList(),
-                          PerformanceEntry::GetNavigationId(window), window);
+                          input_timestamp, CreateAttributionList(), window);
 
   // Add WPT for LayoutShift. See crbug.com/1320878.
 

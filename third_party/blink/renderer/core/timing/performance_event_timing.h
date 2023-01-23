@@ -24,7 +24,6 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
                                         DOMHighResTimeStamp processing_end,
                                         bool cancelable,
                                         Node* target,
-                                        uint32_t navigation_id,
                                         DOMWindow* source);
 
   static PerformanceEventTiming* CreateFirstInputTiming(
@@ -37,7 +36,6 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
                          DOMHighResTimeStamp processing_end,
                          bool cancelable,
                          Node* target,
-                         uint32_t navigation_id,
                          DOMWindow* source);
   ~PerformanceEventTiming() override;
 

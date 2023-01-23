@@ -134,7 +134,7 @@ class WindowPerformanceTest : public testing::Test {
   PerformanceEventTiming* CreatePerformanceEventTiming(
       const AtomicString& name) {
     return PerformanceEventTiming::Create(
-        name, 0.0, 0.0, 0.0, false, nullptr, 1,
+        name, 0.0, 0.0, 0.0, false, nullptr,
         LocalDOMWindow::From(GetScriptState()));
   }
 

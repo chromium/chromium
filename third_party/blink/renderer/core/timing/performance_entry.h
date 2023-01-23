@@ -45,7 +45,6 @@ namespace blink {
 class ScriptState;
 class ScriptValue;
 class V8ObjectBuilder;
-class ExecutionContext;
 
 using PerformanceEntryType = unsigned;
 using PerformanceEntryTypeMask = unsigned;
@@ -124,7 +123,6 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   }
 
   static uint32_t GetNavigationId(ScriptState* script_state);
-  static uint32_t GetNavigationId(ExecutionContext* context);
 
   // PerformanceMark/Measure override this and it returns Mojo structure pointer
   // which has all members of PerformanceMark/Measure. Common data members are
@@ -139,12 +137,10 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   PerformanceEntry(const AtomicString& name,
                    double start_time,
                    double finish_time,
-                   uint32_t navigation_id,
                    DOMWindow* source);
   PerformanceEntry(double duration,
                    const AtomicString& name,
                    double start_time,
-                   uint32_t navigation_id,
                    DOMWindow* source);
 
   virtual void BuildJSONValue(V8ObjectBuilder&) const;
