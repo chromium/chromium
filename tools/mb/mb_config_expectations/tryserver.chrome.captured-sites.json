@@ -1,0 +1,18 @@
+{
+  "linux-autofill-captured-sites-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "use_goma": true
+    }
+  },
+  "linux-password-manager-captured-sites-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "use_goma": true
+    }
+  }
+}
