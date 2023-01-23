@@ -1044,7 +1044,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   NSMutableArray<OverflowMenuDestination*>* newDestinations =
       [[NSMutableArray alloc] init];
 
-  if (IsWhatsNewOverflowMenuUsed()) {
+  if (WasWhatsNewUsed()) {
     // Place What's New at the bottom of the overflow menu carousel.
     [newDestinations addObjectsFromArray:destinations];
     [newDestinations addObject:self.whatsNewDestination];
@@ -1836,7 +1836,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
 // Dismisses the menu and opens What's New.
 - (void)openWhatsNew {
-  SetWhatsNewOverflowMenuUsed();
+  if (!WasWhatsNewUsed()) {
+    SetWhatsNewUsed();
+  }
+
   if (self.engagementTracker) {
     self.engagementTracker->NotifyEvent(
         feature_engagement::events::kViewedWhatsNew);

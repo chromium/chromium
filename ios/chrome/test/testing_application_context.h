@@ -16,6 +16,8 @@ class TestNetworkConnectionTracker;
 class TestURLLoaderFactory;
 }  // namespace network
 
+class MockPromosManager;
+
 class TestingApplicationContext : public ApplicationContext {
  public:
   TestingApplicationContext();
@@ -87,6 +89,7 @@ class TestingApplicationContext : public ApplicationContext {
   // hard dependency on the policy infrastructure. In order to outlive the pref
   // service, the policy connector must live outside the keyed services.
   std::unique_ptr<BrowserPolicyConnectorIOS> browser_policy_connector_;
+  std::unique_ptr<MockPromosManager> promos_manager_;
 
   ios::ChromeBrowserStateManager* chrome_browser_state_manager_;
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;

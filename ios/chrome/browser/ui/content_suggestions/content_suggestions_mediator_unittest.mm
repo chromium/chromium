@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -77,6 +78,7 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
     dispatcher_ =
         OCMProtocolMock(@protocol(ContentSuggestionsMediatorDispatcher));
     consumer_ = OCMProtocolMock(@protocol(ContentSuggestionsConsumer));
+    TestingApplicationContext::GetGlobal()->SetLocalState(local_state_.Get());
 
     favicon::LargeIconService* largeIconService =
         IOSChromeLargeIconServiceFactory::GetForBrowserState(
@@ -288,6 +290,7 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenWhatsNew) {
   histogram_tester_->ExpectUniqueSample(
       "IOS.ContentSuggestions.ActionOnNTP",
       IOSContentSuggestionsActionType::kShortcuts, 0);
+
   // Action.
   ContentSuggestionsMostVisitedActionItem* whatsNew = WhatsNewActionItem();
   [mediator_ openMostVisitedItem:whatsNew atIndex:1];

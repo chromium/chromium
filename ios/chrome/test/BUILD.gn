@@ -64,6 +64,8 @@ source_set("test_support") {
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/policy:policy",
     "//ios/chrome/browser/prefs:browser_prefs",
+    "//ios/chrome/browser/promos_manager:features",
+    "//ios/chrome/browser/promos_manager:test_support",
     "//ios/chrome/browser/ui/util",
     "//ios/components/security_interstitials/safe_browsing:test_support",
     "//ios/components/webui:url_constants",

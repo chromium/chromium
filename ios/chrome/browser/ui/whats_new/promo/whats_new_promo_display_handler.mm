@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
+#import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -17,7 +18,13 @@
 #pragma mark - StandardPromoDisplayHandler
 
 - (void)handleDisplay {
+  // Don't show the promo if What's New has been previously open.
+  if (WasWhatsNewUsed()) {
+    return;
+  }
+
   DCHECK(self.handler);
+  SetWhatsNewUsed();
   [self.handler showWhatsNewPromo];
 }
 

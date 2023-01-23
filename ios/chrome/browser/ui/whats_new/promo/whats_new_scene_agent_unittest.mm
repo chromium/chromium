@@ -22,7 +22,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-// #import "base/values.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -49,6 +48,8 @@ void ClearWhatsNewUserData() {
                                              forKey:kWhatsNewLaunchesAfterFre];
   [[NSUserDefaults standardUserDefaults] setBool:NO
                                           forKey:kWhatsNewPromoRegistrationKey];
+  [[NSUserDefaults standardUserDefaults] setBool:NO
+                                          forKey:kWhatsNewUsageEntryKey];
 }
 
 }  // namespace

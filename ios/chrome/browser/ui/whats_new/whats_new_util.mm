@@ -6,6 +6,10 @@
 
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/promos_manager/constants.h"
+#import "ios/chrome/browser/promos_manager/features.h"
+#import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/whats_new/feature_flags.h"
 
@@ -14,10 +18,6 @@
 #endif
 
 namespace {
-
-// Key to store whether a user interacted with What's New from the overflow
-// menu.
-NSString* const kOverflowMenuEntryKey = @"userHasInteractedWithWhatsNew";
 
 // Time interval of 6 days. This is used to calculate 6 days after FRE to
 // trigger What's New Promo.
@@ -71,17 +71,27 @@ NSString* const kWhatsNewDaysAfterFre = @"whatsNewDaysAfterFre";
 
 NSString* const kWhatsNewLaunchesAfterFre = @"whatsNewLaunchesAfterFre";
 
-bool IsWhatsNewOverflowMenuUsed() {
+NSString* const kWhatsNewUsageEntryKey = @"userHasInteractedWithWhatsNew";
+
+bool WasWhatsNewUsed() {
   return
-      [[NSUserDefaults standardUserDefaults] boolForKey:kOverflowMenuEntryKey];
+      [[NSUserDefaults standardUserDefaults] boolForKey:kWhatsNewUsageEntryKey];
 }
 
-void SetWhatsNewOverflowMenuUsed() {
-  if (IsWhatsNewOverflowMenuUsed())
+void SetWhatsNewUsed() {
+  if (WasWhatsNewUsed()) {
     return;
+  }
+
+  // Deregister What's New promo.
+  if (IsFullscreenPromosManagerEnabled()) {
+    PromosManager* promosManager = GetApplicationContext()->GetPromosManager();
+    DCHECK(promosManager);
+    promosManager->DeregisterPromo(promos_manager::Promo::WhatsNew);
+  }
 
   [[NSUserDefaults standardUserDefaults] setBool:YES
-                                          forKey:kOverflowMenuEntryKey];
+                                          forKey:kWhatsNewUsageEntryKey];
 }
 
 bool IsWhatsNewEnabled() {
