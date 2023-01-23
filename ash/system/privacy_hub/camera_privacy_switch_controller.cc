@@ -50,6 +50,10 @@ void VCDPrivacyAdapter::SetCameraSWPrivacySwitch(
   }
 }
 
+PrivacyHubNotificationController* GetPrivacyHubNotificationController() {
+  return Shell::Get()->system_notification_controller()->privacy_hub();
+}
+
 }  // namespace
 
 CameraPrivacySwitchController::CameraPrivacySwitchController()
@@ -124,18 +128,12 @@ void CameraPrivacySwitchController::OnPreferenceChanged(
 
   if (pref_val == CameraSWPrivacySwitchSetting::kDisabled) {
     camera_used_while_deactivated_ = true;
-    Shell::Get()
-        ->system_notification_controller()
-        ->privacy_hub()
-        ->ShowSensorDisabledNotification(
-            PrivacyHubNotificationController::Sensor::kCamera);
+    GetPrivacyHubNotificationController()->ShowSensorDisabledNotification(
+        PrivacyHubNotificationController::Sensor::kCamera);
   } else {
     camera_used_while_deactivated_ = false;
-    Shell::Get()
-        ->system_notification_controller()
-        ->privacy_hub()
-        ->RemoveSensorDisabledNotification(
-            PrivacyHubNotificationController::Sensor::kCamera);
+    GetPrivacyHubNotificationController()->RemoveSensorDisabledNotification(
+        PrivacyHubNotificationController::Sensor::kCamera);
   }
 }
 
@@ -220,28 +218,22 @@ void CameraPrivacySwitchController::ActiveApplicationsChanged(
     active_applications_using_camera_count_--;
   }
 
-  // Notification should pop up when an application starts using the camera but
-  // the camera is disabled by the software switch.
-  if (application_added &&
-      GetUserSwitchPreference() == CameraSWPrivacySwitchSetting::kDisabled) {
-    camera_used_while_deactivated_ = true;
-    Shell::Get()
-        ->system_notification_controller()
-        ->privacy_hub()
-        ->ShowSensorDisabledNotification(
-            PrivacyHubNotificationController::Sensor::kCamera);
+  if (GetUserSwitchPreference() != CameraSWPrivacySwitchSetting::kDisabled) {
+    return;
   }
 
-  // Remove existing software switch notification when no application is using
-  // the camera anymore.
   if (active_applications_using_camera_count_ == 0 &&
       camera_used_while_deactivated_) {
     camera_used_while_deactivated_ = false;
-    Shell::Get()
-        ->system_notification_controller()
-        ->privacy_hub()
-        ->RemoveSensorDisabledNotification(
-            PrivacyHubNotificationController::Sensor::kCamera);
+    GetPrivacyHubNotificationController()->RemoveSensorDisabledNotification(
+        PrivacyHubNotificationController::Sensor::kCamera);
+  } else if (application_added) {
+    camera_used_while_deactivated_ = true;
+    GetPrivacyHubNotificationController()->ShowSensorDisabledNotification(
+        PrivacyHubNotificationController::Sensor::kCamera);
+  } else {
+    GetPrivacyHubNotificationController()->UpdateSensorDisabledNotification(
+        PrivacyHubNotificationController::Sensor::kCamera);
   }
 }
 
