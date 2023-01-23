@@ -19,12 +19,14 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -87,6 +89,15 @@ public class SelectionPopupBackPressTest {
                 "Selection popup should be triggered after long press.", controller.hasSelection());
         Assert.assertTrue("Selection popup should be triggered after long press.",
                 controller.isSelectActionBarShowingSupplier().get());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BackPressManager backPressManager =
+                    mActivityTestRule.getActivity().getBackPressManagerForTesting();
+            if (backPressManager.has(BackPressHandler.Type.TEXT_BUBBLE)) {
+                mActivityTestRule.getActivity().getBackPressManagerForTesting().removeHandler(
+                        BackPressHandler.Type.TEXT_BUBBLE);
+            }
+        });
 
         Espresso.pressBack();
 

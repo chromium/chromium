@@ -71,7 +71,6 @@ public final class SectionHeaderViewTest {
     private void setFeatureOverridesForIPH() {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFeatureFlagOverride(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS, false);
-        testValues.addFeatureFlagOverride(ChromeFeatureList.ENABLE_IPH, true);
         testValues.addFeatureFlagOverride(ChromeFeatureList.WEB_FEED, true);
         testValues.addFeatureFlagOverride(ChromeFeatureList.WEB_FEED_ONBOARDING, true);
         testValues.addFieldTrialParamOverride(

@@ -84,7 +84,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
 @DisableFeatures(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS)
-@EnableFeatures(ChromeFeatureList.ENABLE_IPH)
 public class StartSurfaceToolbarMediatorUnitTest {
     private PropertyModel mPropertyModel;
     private StartSurfaceToolbarMediator mMediator;

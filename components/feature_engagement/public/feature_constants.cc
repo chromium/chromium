@@ -12,7 +12,6 @@ namespace feature_engagement {
 // Features used by the In-Product Help system.
 BASE_FEATURE(kIPHDemoMode, "IPH_DemoMode", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHSnooze, "IPH_Snooze", base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kEnableIPH, "EnableIPH", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kUseClientConfigIPH,
              "UseClientConfigIPH",
              base::FEATURE_DISABLED_BY_DEFAULT);
