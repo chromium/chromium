@@ -148,6 +148,8 @@ void PrivateAggregationManagerImpl::OnConsumeBudgetReturned(
     PrivateAggregationBudgeter::RequestResult request_result) {
   RecordBudgeterResultHistogram(request_result);
 
+  // TODO(alexmt): Consider allowing a subset of contributions to be sent if
+  // there's insufficient budget for them all.
   if (request_result != PrivateAggregationBudgeter::RequestResult::kApproved) {
     return;
   }

@@ -706,10 +706,11 @@ reviewer.
   <owner>linnan@chromium.org</owner>
   <summary>
     Records whether a call to PrivateAggregationHost::SendHistogramReport()
-    successfully resulted in a report request being forwarded to the manager
-    and, if not, the reason for failure. Note that, even if successfully
-    forwarded, the report may still be rejected by the budgeter or in the
-    aggregation_service layer. Recorded for every call.
+    successfully resulted in the report request being forwarded to the manager
+    and, if not, the reason for failure. Further, breaks out the case of too
+    many contributions, where the request is forwarded but is truncated. Note
+    that, even if successfully forwarded, the report may still be rejected by
+    the budgeter or in the aggregation_service layer. Recorded for every call.
   </summary>
 </histogram>
 

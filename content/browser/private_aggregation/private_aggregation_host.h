@@ -36,7 +36,7 @@ class CONTENT_EXPORT PrivateAggregationHost
   enum class SendHistogramReportResult {
     kSuccess = 0,
     kApiDisabledInSettings = 1,
-    kTooManyContributions = 2,
+    kSuccessButTruncatedDueToTooManyContributions = 2,
     kDebugKeyPresentWithoutDebugMode = 3,
     kReportRequestCreationFailed = 4,
     kMaxValue = kReportRequestCreationFailed,

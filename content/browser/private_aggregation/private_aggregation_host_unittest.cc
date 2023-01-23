@@ -4,6 +4,8 @@
 
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 
+#include <stddef.h>
+
 #include <memory>
 #include <utility>
 #include <vector>
@@ -395,15 +397,6 @@ TEST_F(PrivateAggregationHostTest, InvalidRequest_Rejected) {
           /*bucket=*/123, /*value=*/-1));
 
   std::vector<mojom::AggregatableReportHistogramContributionPtr>
-      too_many_contributions;
-  for (int i = 0; i < PrivateAggregationHost::kMaxNumberOfContributions + 1;
-       ++i) {
-    too_many_contributions.push_back(
-        mojom::AggregatableReportHistogramContribution::New(
-            /*bucket=*/123, /*value=*/1));
-  }
-
-  std::vector<mojom::AggregatableReportHistogramContributionPtr>
       valid_contributions;
   valid_contributions.push_back(
       mojom::AggregatableReportHistogramContribution::New(
@@ -426,19 +419,6 @@ TEST_F(PrivateAggregationHostTest, InvalidRequest_Rejected) {
   {
     base::HistogramTester histogram;
 
-    remote->SendHistogramReport(std::move(too_many_contributions),
-                                mojom::AggregationServiceMode::kDefault,
-                                mojom::DebugModeDetails::New());
-    remote.FlushForTesting();
-    histogram.ExpectUniqueSample(
-        kSendHistogramReportResultHistogram,
-        PrivateAggregationHost::SendHistogramReportResult::
-            kTooManyContributions,
-        1);
-  }
-  {
-    base::HistogramTester histogram;
-
     remote->SendHistogramReport(
         std::move(valid_contributions), mojom::AggregationServiceMode::kDefault,
         // Debug mode must be enabled for a debug key to be set.
@@ -451,6 +431,46 @@ TEST_F(PrivateAggregationHostTest, InvalidRequest_Rejected) {
             kDebugKeyPresentWithoutDebugMode,
         1);
   }
+}
+
+TEST_F(PrivateAggregationHostTest, TooManyContributions_Truncated) {
+  const url::Origin kExampleOrigin =
+      url::Origin::Create(GURL("https://example.com"));
+  const url::Origin kMainFrameOrigin =
+      url::Origin::Create(GURL("https://main_frame.com"));
+
+  mojo::Remote<mojom::PrivateAggregationHost> remote;
+  EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
+                                     PrivateAggregationBudgetKey::Api::kFledge,
+                                     remote.BindNewPipeAndPassReceiver()));
+  std::vector<mojom::AggregatableReportHistogramContributionPtr>
+      too_many_contributions;
+  for (int i = 0; i < PrivateAggregationHost::kMaxNumberOfContributions + 1;
+       ++i) {
+    too_many_contributions.push_back(
+        mojom::AggregatableReportHistogramContribution::New(
+            /*bucket=*/123, /*value=*/1));
+  }
+
+  base::HistogramTester histogram;
+
+  absl::optional<AggregatableReportRequest> validated_request;
+  EXPECT_CALL(mock_callback_, Run).WillOnce(MoveArg<0>(&validated_request));
+
+  remote->SendHistogramReport(std::move(too_many_contributions),
+                              mojom::AggregationServiceMode::kDefault,
+                              mojom::DebugModeDetails::New());
+  remote.FlushForTesting();
+  histogram.ExpectUniqueSample(
+      kSendHistogramReportResultHistogram,
+      PrivateAggregationHost::SendHistogramReportResult::
+          kSuccessButTruncatedDueToTooManyContributions,
+      1);
+
+  ASSERT_TRUE(validated_request);
+  EXPECT_EQ(
+      validated_request->payload_contents().contributions.size(),
+      static_cast<size_t>(PrivateAggregationHost::kMaxNumberOfContributions));
 }
 
 TEST_F(PrivateAggregationHostTest, PrivateAggregationAllowed_RequestSucceeds) {

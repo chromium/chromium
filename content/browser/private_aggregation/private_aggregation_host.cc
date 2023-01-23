@@ -118,13 +118,10 @@ void PrivateAggregationHost::SendHistogramReport(
              contribution_ptr) { return contribution_ptr.is_null(); }));
   DCHECK(!debug_mode_details.is_null());
 
-  if (contribution_ptrs.size() > kMaxNumberOfContributions) {
-    // TODO(crbug.com/1323324): Add histograms for monitoring failures here,
-    // possibly broken out by failure reason.
-    mojo::ReportBadMessage("Too many contributions");
-    RecordSendHistogramReportResultHistogram(
-        SendHistogramReportResult::kTooManyContributions);
-    return;
+  bool too_many_contributions =
+      contribution_ptrs.size() > kMaxNumberOfContributions;
+  if (too_many_contributions) {
+    contribution_ptrs.resize(kMaxNumberOfContributions);
   }
 
   std::vector<mojom::AggregatableReportHistogramContribution> contributions;
@@ -194,7 +191,11 @@ void PrivateAggregationHost::SendHistogramReport(
 
   on_report_request_received_.Run(std::move(report_request.value()),
                                   std::move(budget_key.value()));
-  RecordSendHistogramReportResultHistogram(SendHistogramReportResult::kSuccess);
+
+  RecordSendHistogramReportResultHistogram(
+      too_many_contributions ? SendHistogramReportResult::
+                                   kSuccessButTruncatedDueToTooManyContributions
+                             : SendHistogramReportResult::kSuccess);
 }
 
 }  // namespace content
