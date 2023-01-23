@@ -36,9 +36,8 @@ class PasswordChangeSuccessTracker : public KeyedService {
   static constexpr base::TimeDelta kFlowTypeRefinementTimeout =
       base::Seconds(30);
 
-  // Start and end events for automated (i.e. Autofill Assistant-driven) and
-  // manual flows (i.e. Chrome opens a CCT and a user updates a password on
-  // their own).
+  // Start and end events for flows (i.e. Chrome opens a CCT and a user updates
+  // a password on their own).
   // These values are persisted to prefs and used in enums.xml; do not reorder
   // or renumber entries!
   enum class StartEvent {

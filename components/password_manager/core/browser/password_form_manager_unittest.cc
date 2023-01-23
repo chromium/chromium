@@ -717,20 +717,6 @@ TEST_P(PasswordFormManagerTest, SetSubmittedMultipleTimes) {
   EXPECT_EQ(PasswordForm(), form_manager_->GetPendingCredentials());
 }
 
-TEST_P(PasswordFormManagerTest, ResetState) {
-  EXPECT_TRUE(
-      form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr));
-  EXPECT_TRUE(form_manager_->is_submitted());
-  EXPECT_TRUE(form_manager_->GetSubmittedForm());
-  EXPECT_NE(PasswordForm(), form_manager_->GetPendingCredentials());
-
-  form_manager_->ResetState();
-
-  EXPECT_FALSE(form_manager_->is_submitted());
-  EXPECT_FALSE(form_manager_->GetSubmittedForm());
-  EXPECT_EQ(PasswordForm(), form_manager_->GetPendingCredentials());
-}
-
 // Tests that when PasswordFormManager receives saved matches it waits for
 // server predictions and fills on receiving them.
 TEST_P(PasswordFormManagerTest, ServerPredictionsWithinDelay) {

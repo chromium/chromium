@@ -747,13 +747,6 @@ void PasswordFormManager::CreatePendingCredentials() {
       IsCredentialAPISave());
 }
 
-void PasswordFormManager::ResetState() {
-  parsed_submitted_form_.reset();
-  submitted_form_ = FormData();
-  password_save_manager_->ResetPendingCredentials();
-  is_submitted_ = false;
-}
-
 bool PasswordFormManager::ProvisionallySave(
     const FormData& submitted_form,
     const PasswordManagerDriver* driver,
@@ -768,10 +761,12 @@ bool PasswordFormManager::ProvisionallySave(
   bool have_password_to_save =
       parsed_submitted_form &&
       parsed_submitted_form->HasNonEmptyPasswordValue();
-
   if (!have_password_to_save) {
     // In case of error during parsing, reset the state.
-    ResetState();
+    parsed_submitted_form_.reset();
+    submitted_form_ = FormData();
+    password_save_manager_->ResetPendingCredentials();
+    is_submitted_ = false;
     return false;
   }
 
