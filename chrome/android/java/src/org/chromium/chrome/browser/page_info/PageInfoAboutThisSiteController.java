@@ -36,6 +36,7 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.LayoutInflaterUtils;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
 /**
@@ -157,7 +158,7 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
 
     private void openInNewTab(String url) {
         new TabDelegate(/*incognito=*/false)
-                .createNewTab(new LoadUrlParams(url), TabLaunchType.FROM_CHROME_UI,
+                .createNewTab(new LoadUrlParams(url, PageTransition.LINK), TabLaunchType.FROM_LINK,
                         TabUtils.fromWebContents(mWebContents));
     }
 
