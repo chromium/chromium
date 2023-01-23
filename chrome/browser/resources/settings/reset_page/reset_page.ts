@@ -12,7 +12,6 @@ import '../settings_page/settings_animated_pages.js';
 import '../settings_shared.css.js';
 import './reset_profile_dialog.js';
 // <if expr="_google_chrome and is_win">
-import '../chrome_cleanup_page/chrome_cleanup_page.js';
 import '../incompatible_applications_page/incompatible_applications_page.js';
 
 // </if>

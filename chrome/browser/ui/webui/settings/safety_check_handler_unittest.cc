@@ -53,10 +53,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_impl_win.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/chromeos/devicetype_utils.h"
 #endif
@@ -71,9 +67,6 @@ constexpr char kUpdates[] = "updates";
 constexpr char kPasswords[] = "passwords";
 constexpr char kSafeBrowsing[] = "safe-browsing";
 constexpr char kExtensions[] = "extensions";
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-constexpr char kChromeCleaner[] = "chrome-cleaner";
-#endif
 
 namespace {
 using Enabled = base::StrongAlias<class EnabledTag, bool>;
@@ -136,13 +129,6 @@ class TestTimestampDelegate : public TimestampDelegate {
     return base::Time::FromDoubleT(1609459199).LocalMidnight() -
            base::Seconds(1);
   }
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  base::Time FetchChromeCleanerScanCompletionTimestamp() override {
-    // 2 seconds before midnight Dec 31st 2020.
-    return base::Time::FromDoubleT(1609459199).LocalMidnight() -
-           base::Seconds(2);
-  }
-#endif
 };
 
 bool TestDestructionVersionUpdater::destructor_invoked_ = false;
@@ -304,14 +290,6 @@ class TestSafetyCheckExtensionService : public TestExtensionService {
   std::unordered_map<std::string, ExtensionState> state_map_;
 };
 
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-class TestChromeCleanerControllerDelegate
-    : public safe_browsing::ChromeCleanerControllerDelegate {
- public:
-  bool IsAllowedByPolicy() override { return false; }
-};
-#endif
-
 }  // namespace
 
 class SafetyCheckHandlerTest : public testing::Test {
@@ -352,9 +330,6 @@ class SafetyCheckHandlerTest : public testing::Test {
   std::unique_ptr<TestingSafetyCheckHandler> safety_check_;
   base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList feature_list_;
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  TestChromeCleanerControllerDelegate test_chrome_cleaner_controller_delegate_;
-#endif
 };
 
 void SafetyCheckHandlerTest::SetUp() {
@@ -1425,270 +1400,6 @@ TEST_F(SafetyCheckHandlerTest, CheckExtensions_BlocklistedReenabledSomeByUser) {
       SafetyCheckHandler::ExtensionsStatus::kBlocklistedReenabledSomeByUser, 1);
 }
 
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-class SafetyCheckHandlerChromeCleanerIdleTest
-    : public SafetyCheckHandlerTest,
-      public testing::WithParamInterface<
-          std::tuple<safe_browsing::ChromeCleanerController::IdleReason,
-                     SafetyCheckHandler::ChromeCleanerStatus,
-                     std::u16string>> {
- protected:
-  void SetUp() override {
-    SafetyCheckHandlerTest::SetUp();
-    idle_reason_ = testing::get<0>(GetParam());
-    expected_cct_status_ = testing::get<1>(GetParam());
-    expected_display_string_ = testing::get<2>(GetParam());
-  }
-
-  safe_browsing::ChromeCleanerController::IdleReason idle_reason_;
-  SafetyCheckHandler::ChromeCleanerStatus expected_cct_status_;
-  std::u16string expected_display_string_;
-};
-
-TEST_P(SafetyCheckHandlerChromeCleanerIdleTest, CheckChromeCleanerIdleStates) {
-  safe_browsing::ChromeCleanerControllerImpl::ResetInstanceForTesting();
-  safe_browsing::ChromeCleanerControllerImpl::GetInstance()->SetIdleForTesting(
-      idle_reason_);
-  safety_check_->PerformSafetyCheck();
-  // Ensure WebUI event is sent.
-  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
-      kChromeCleaner, static_cast<int>(expected_cct_status_));
-  ASSERT_TRUE(event);
-  VerifyDisplayString(event, expected_display_string_);
-  // Ensure UMA is logged.
-  if (expected_cct_status_ ==
-          SafetyCheckHandler::ChromeCleanerStatus::kHidden ||
-      expected_cct_status_ ==
-          SafetyCheckHandler::ChromeCleanerStatus::kChecking) {
-    // Hidden and checking state should not get recorded.
-    histogram_tester_.ExpectTotalCount(
-        "Settings.SafetyCheck.ChromeCleanerResult", 0);
-  } else {
-    histogram_tester_.ExpectBucketCount(
-        "Settings.SafetyCheck.ChromeCleanerResult", expected_cct_status_, 1);
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    CheckChromeCleaner_Initial,
-    SafetyCheckHandlerChromeCleanerIdleTest,
-    ::testing::Values(std::make_tuple(
-        safe_browsing::ChromeCleanerController::IdleReason::kInitial,
-        SafetyCheckHandler::ChromeCleanerStatus::kNoUwsFoundWithTimestamp,
-        u"Browser didn't find harmful software on your computer • Checked just "
-        u"now")));
-
-INSTANTIATE_TEST_SUITE_P(
-    CheckChromeCleaner_ReporterFoundNothing,
-    SafetyCheckHandlerChromeCleanerIdleTest,
-    ::testing::Values(std::make_tuple(
-        safe_browsing::ChromeCleanerController::IdleReason::
-            kReporterFoundNothing,
-        SafetyCheckHandler::ChromeCleanerStatus::kNoUwsFoundWithTimestamp,
-        u"Browser didn't find harmful software on your computer • Checked just "
-        u"now")));
-
-INSTANTIATE_TEST_SUITE_P(
-    CheckChromeCleaner_ReporterFailed,
-    SafetyCheckHandlerChromeCleanerIdleTest,
-    ::testing::Values(std::make_tuple(
-        safe_browsing::ChromeCleanerController::IdleReason::kReporterFailed,
-        SafetyCheckHandler::ChromeCleanerStatus::kError,
-        u"Something went wrong. Click for more details.")));
-
-INSTANTIATE_TEST_SUITE_P(
-    CheckChromeCleaner_ScanningFoundNothing,
-    SafetyCheckHandlerChromeCleanerIdleTest,
-    ::testing::Values(std::make_tuple(
-        safe_browsing::ChromeCleanerController::IdleReason::
-            kScanningFoundNothing,
-        SafetyCheckHandler::ChromeCleanerStatus::kNoUwsFoundWithTimestamp,
-        u"Browser didn't find harmful software on your computer • Checked just "
-        u"now")));
-
-INSTANTIATE_TEST_SUITE_P(
-    CheckChromeCleaner_ScanningFailed,
-    SafetyCheckHandlerChromeCleanerIdleTest,
-    ::testing::Values(std::make_tuple(
-        safe_browsing::ChromeCleanerController::IdleReason::kScanningFailed,
-        SafetyCheckHandler::ChromeCleanerStatus::kError,
-        u"Something went wrong. Click for more details.")));
-
-INSTANTIATE_TEST_SUITE_P(
-    CheckChromeCleaner_ConnectionLost,
-    SafetyCheckHandlerChromeCleanerIdleTest,
-    ::testing::Values(std::make_tuple(
-        safe_browsing::ChromeCleanerController::IdleReason::kConnectionLost,
-        SafetyCheckHandler::ChromeCleanerStatus::kInfected,
-        u"Browser found harmful software on your computer")));
-
-INSTANTIATE_TEST_SUITE_P(
-    CheckChromeCleaner_UserDeclinedCleanup,
-    SafetyCheckHandlerChromeCleanerIdleTest,
-    ::testing::Values(
-        std::make_tuple(safe_browsing::ChromeCleanerController::IdleReason::
-                            kUserDeclinedCleanup,
-                        SafetyCheckHandler::ChromeCleanerStatus::kInfected,
-                        u"Browser found harmful software on your computer")));
-
-INSTANTIATE_TEST_SUITE_P(
-    CheckChromeCleaner_CleaningFailed,
-    SafetyCheckHandlerChromeCleanerIdleTest,
-    ::testing::Values(std::make_tuple(
-        safe_browsing::ChromeCleanerController::IdleReason::kCleaningFailed,
-        SafetyCheckHandler::ChromeCleanerStatus::kError,
-        u"Something went wrong. Click for more details.")));
-
-INSTANTIATE_TEST_SUITE_P(
-    CheckChromeCleaner_CleaningSucceed,
-    SafetyCheckHandlerChromeCleanerIdleTest,
-    ::testing::Values(std::make_tuple(
-        safe_browsing::ChromeCleanerController::IdleReason::kCleaningSucceeded,
-        SafetyCheckHandler::ChromeCleanerStatus::kNoUwsFoundWithTimestamp,
-        u"Browser didn't find harmful software on your computer • Checked just "
-        u"now")));
-
-INSTANTIATE_TEST_SUITE_P(
-    CheckChromeCleaner_CleanerDownloadFailed,
-    SafetyCheckHandlerChromeCleanerIdleTest,
-    ::testing::Values(
-        std::make_tuple(safe_browsing::ChromeCleanerController::IdleReason::
-                            kCleanerDownloadFailed,
-                        SafetyCheckHandler::ChromeCleanerStatus::kError,
-                        u"Something went wrong. Click for more details.")));
-
-class SafetyCheckHandlerChromeCleanerNonIdleTest
-    : public SafetyCheckHandlerTest,
-      public testing::WithParamInterface<
-          std::tuple<safe_browsing::ChromeCleanerController::State,
-                     SafetyCheckHandler::ChromeCleanerStatus,
-                     std::u16string>> {
- protected:
-  void SetUp() override {
-    SafetyCheckHandlerTest::SetUp();
-    state_ = testing::get<0>(GetParam());
-    expected_cct_status_ = testing::get<1>(GetParam());
-    expected_display_string_ = testing::get<2>(GetParam());
-  }
-
-  safe_browsing::ChromeCleanerController::State state_;
-  SafetyCheckHandler::ChromeCleanerStatus expected_cct_status_;
-  std::u16string expected_display_string_;
-};
-
-TEST_P(SafetyCheckHandlerChromeCleanerNonIdleTest,
-       CheckChromeCleanerNonIdleStates) {
-  safe_browsing::ChromeCleanerControllerImpl::ResetInstanceForTesting();
-  safe_browsing::ChromeCleanerControllerImpl::GetInstance()->SetStateForTesting(
-      state_);
-  safety_check_->PerformSafetyCheck();
-  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
-      kChromeCleaner, static_cast<int>(expected_cct_status_));
-  ASSERT_TRUE(event);
-  VerifyDisplayString(event, expected_display_string_);
-  // Ensure UMA is logged.
-  if (expected_cct_status_ ==
-          SafetyCheckHandler::ChromeCleanerStatus::kHidden ||
-      expected_cct_status_ ==
-          SafetyCheckHandler::ChromeCleanerStatus::kChecking) {
-    // Hidden and checking state should not get recorded.
-    histogram_tester_.ExpectTotalCount(
-        "Settings.SafetyCheck.ChromeCleanerResult", 0);
-  } else {
-    histogram_tester_.ExpectBucketCount(
-        "Settings.SafetyCheck.ChromeCleanerResult", expected_cct_status_, 1);
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    CheckChromeCleaner_ReporterRunning,
-    SafetyCheckHandlerChromeCleanerNonIdleTest,
-    ::testing::Values(std::make_tuple(
-        safe_browsing::ChromeCleanerController::State::kReporterRunning,
-        SafetyCheckHandler::ChromeCleanerStatus::kScanningForUws,
-        u"Browser is checking your computer for harmful software…")));
-
-INSTANTIATE_TEST_SUITE_P(
-    CheckChromeCleaner_Scanning,
-    SafetyCheckHandlerChromeCleanerNonIdleTest,
-    ::testing::Values(std::make_tuple(
-        safe_browsing::ChromeCleanerController::State::kScanning,
-        SafetyCheckHandler::ChromeCleanerStatus::kScanningForUws,
-        u"Browser is checking your computer for harmful software…")));
-
-INSTANTIATE_TEST_SUITE_P(
-    CheckChromeCleaner_Cleaning,
-    SafetyCheckHandlerChromeCleanerNonIdleTest,
-    ::testing::Values(std::make_tuple(
-        safe_browsing::ChromeCleanerController::State::kCleaning,
-        SafetyCheckHandler::ChromeCleanerStatus::kRemovingUws,
-        u"Browser is removing harmful software from your computer…")));
-
-INSTANTIATE_TEST_SUITE_P(
-    CheckChromeCleaner_Infected,
-    SafetyCheckHandlerChromeCleanerNonIdleTest,
-    ::testing::Values(std::make_tuple(
-        safe_browsing::ChromeCleanerController::State::kInfected,
-        SafetyCheckHandler::ChromeCleanerStatus::kInfected,
-        u"Browser found harmful software on your computer")));
-
-INSTANTIATE_TEST_SUITE_P(
-    CheckChromeCleaner_RebootRequired,
-    SafetyCheckHandlerChromeCleanerNonIdleTest,
-    ::testing::Values(std::make_tuple(
-        safe_browsing::ChromeCleanerController::State::kRebootRequired,
-        SafetyCheckHandler::ChromeCleanerStatus::kRebootRequired,
-        u"To finish removing harmful software, restart your computer")));
-
-TEST_F(SafetyCheckHandlerTest, CheckChromeCleaner_DisabledByAdmin) {
-  safe_browsing::ChromeCleanerControllerImpl::ResetInstanceForTesting();
-  safe_browsing::ChromeCleanerControllerImpl::GetInstance()
-      ->SetDelegateForTesting(&test_chrome_cleaner_controller_delegate_);
-
-  safety_check_->PerformSafetyCheck();
-  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
-      kChromeCleaner,
-      static_cast<int>(
-          SafetyCheckHandler::ChromeCleanerStatus::kDisabledByAdmin));
-  ASSERT_TRUE(event);
-  VerifyDisplayString(
-      event,
-      "<a target=\"_blank\" "
-      "href=\"https://support.google.com/chrome?p=your_administrator\">Your "
-      "administrator</a> has turned off checking for harmful software");
-}
-
-TEST_F(SafetyCheckHandlerTest, CheckChromeCleaner_ObserverUpdateLogging) {
-  safe_browsing::ChromeCleanerControllerImpl::ResetInstanceForTesting();
-  safe_browsing::ChromeCleanerControllerImpl::GetInstance()->SetIdleForTesting(
-      safe_browsing::ChromeCleanerController::IdleReason::
-          kReporterFoundNothing);
-  // We expect a user triggering a safety check to log the Chrome cleaner
-  // result.
-  safety_check_->PerformSafetyCheck();
-  histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.ChromeCleanerResult",
-      SafetyCheckHandler::ChromeCleanerStatus::kNoUwsFoundWithTimestamp, 1);
-  // Subsequent Chrome cleaner status updates without the user running safety
-  // check again should not trigger logging.
-  safety_check_->OnIdle(safe_browsing::ChromeCleanerController::IdleReason::
-                            kReporterFoundNothing);
-  safety_check_->OnReporterRunning();
-  safety_check_->OnScanning();
-  safety_check_->OnRebootRequired();
-  safety_check_->OnRebootFailed();
-  histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.ChromeCleanerResult",
-      SafetyCheckHandler::ChromeCleanerStatus::kNoUwsFoundWithTimestamp, 1);
-  histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.ChromeCleanerResult",
-      SafetyCheckHandler::ChromeCleanerStatus::kRebootRequired, 0);
-  histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.ChromeCleanerResult",
-      SafetyCheckHandler::ChromeCleanerStatus::kScanningForUws, 0);
-}
-#endif
-
 TEST_F(SafetyCheckHandlerTest, CheckParentRanDisplayString) {
   // 1 second before midnight Dec 31st 2020, so that -(24h-1s) is still on the
   // same day. This test time is hard coded to prevent DST flakiness, see
@@ -1720,51 +1431,6 @@ TEST_F(SafetyCheckHandlerTest, CheckParentRanDisplayString) {
               display_string);
   }
 }
-
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-TEST_F(SafetyCheckHandlerTest, CheckChromeCleanerRanDisplayString) {
-  // Test string without timestamp.
-  base::Time null_time;
-  std::u16string display_string =
-      safety_check_->GetStringForChromeCleanerRan(null_time, null_time);
-  ReplaceBrowserName(&display_string);
-  EXPECT_EQ(display_string,
-            u"Browser can check your computer for harmful software");
-  // Test strings with timestamp.
-  // 1 second before midnight Dec 31st 2020, so that -(24h-1s) is still on the
-  // same day. This test time is hard coded to prevent DST flakiness, see
-  // crbug.com/1066576.
-  const base::Time system_time =
-      base::Time::FromDoubleT(1609459199).LocalMidnight() - base::Seconds(1);
-  // Display strings for given time deltas in seconds.
-  std::vector<std::tuple<std::u16string, int>> tuples{
-      std::make_tuple(u"just now", 1),
-      std::make_tuple(u"just now", 59),
-      std::make_tuple(u"1 minute ago", 60),
-      std::make_tuple(u"2 minutes ago", 60 * 2),
-      std::make_tuple(u"59 minutes ago", 60 * 60 - 1),
-      std::make_tuple(u"1 hour ago", 60 * 60),
-      std::make_tuple(u"2 hours ago", 60 * 60 * 2),
-      std::make_tuple(u"23 hours ago", 60 * 60 * 23),
-      std::make_tuple(u"yesterday", 60 * 60 * 24),
-      std::make_tuple(u"yesterday", 60 * 60 * 24 * 2 - 1),
-      std::make_tuple(u"2 days ago", 60 * 60 * 24 * 2),
-      std::make_tuple(u"2 days ago", 60 * 60 * 24 * 3 - 1),
-      std::make_tuple(u"3 days ago", 60 * 60 * 24 * 3),
-      std::make_tuple(u"3 days ago", 60 * 60 * 24 * 4 - 1)};
-  // Test that above time deltas produce the corresponding display strings.
-  for (auto tuple : tuples) {
-    const base::Time time = system_time - base::Seconds(std::get<1>(tuple));
-    display_string =
-        safety_check_->GetStringForChromeCleanerRan(time, system_time);
-    ReplaceBrowserName(&display_string);
-    EXPECT_EQ(base::StrCat({u"Browser didn't find harmful software on your "
-                            u"computer • Checked ",
-                            std::get<0>(tuple)}),
-              display_string);
-  }
-}
-#endif
 
 TEST_F(SafetyCheckHandlerTest, CheckSafetyCheckStartedWebUiEvents) {
   safety_check_->SendSafetyCheckStartedWebUiUpdates();
@@ -1810,30 +1476,12 @@ TEST_F(SafetyCheckHandlerTest, CheckSafetyCheckCompletedWebUiEvents) {
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kSignedOut);
 
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Set the Chrome cleaner mock response.
-  safe_browsing::ChromeCleanerControllerImpl::ResetInstanceForTesting();
-  safe_browsing::ChromeCleanerControllerImpl::GetInstance()->SetStateForTesting(
-      safe_browsing::ChromeCleanerController::State::kInfected);
-#endif
-
   // Check that the parent update is sent after all children checks completed.
   const base::Value::Dict* event_parent =
       GetSafetyCheckStatusChangedWithDataIfExists(
           kParent, static_cast<int>(SafetyCheckHandler::ParentStatus::kAfter));
   ASSERT_TRUE(event_parent);
   VerifyDisplayString(event_parent, u"Safety check ran a moment ago");
-
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Subsequent Chrome cleaner status updates without the user running safety
-  // check again should not trigger further parent element completion events.
-  safety_check_->OnIdle(safe_browsing::ChromeCleanerController::IdleReason::
-                            kReporterFoundNothing);
-  safety_check_->OnReporterRunning();
-  safety_check_->OnScanning();
-  safety_check_->OnRebootRequired();
-  safety_check_->OnRebootFailed();
-#endif
 
   // Check that there is no new parent completion event.
   const base::Value::Dict* event_parent2 =

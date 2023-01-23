@@ -351,20 +351,6 @@ TEST_F('CrSettingsSafetyCheckPermissionsTest', 'All', function() {
   mocha.run();
 });
 
-GEN('#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)');
-var CrSettingsSafetyCheckChromeCleanerTest =
-    class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/safety_check_chrome_cleaner_test.js';
-  }
-};
-
-TEST_F('CrSettingsSafetyCheckChromeCleanerTest', 'All', function() {
-  mocha.run();
-});
-GEN('#endif');
-
 var CrSettingsSiteListTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -980,12 +966,6 @@ GEN('#endif');
 
 GEN('#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)');
 [['PasskeysSubpage', 'passkeys_subpage_test.js'],
-].forEach(test => registerTest(...test));
-GEN('#endif');
-
-GEN('#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)');
-[['ChromeCleanupPage', 'chrome_cleanup_page_test.js'],
- ['IncompatibleApplicationsPage', 'incompatible_applications_page_test.js'],
 ].forEach(test => registerTest(...test));
 GEN('#endif');
 

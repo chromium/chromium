@@ -29,19 +29,11 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
-#include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_scanner_results_win.h"
-#endif
-
 // Delegate for accessing external timestamps, overridden for tests.
 class TimestampDelegate {
  public:
   virtual ~TimestampDelegate() = default;
   virtual base::Time GetSystemTime();
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  virtual base::Time FetchChromeCleanerScanCompletionTimestamp();
-#endif
 };
 
 // Settings page UI handler that checks four areas of browser safety:
@@ -49,9 +41,6 @@ class TimestampDelegate {
 // software.
 class SafetyCheckHandler
     : public settings::SettingsPageUIHandler,
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      public safe_browsing::ChromeCleanerController::Observer,
-#endif
       public password_manager::BulkLeakCheckServiceInterface::Observer,
       public password_manager::InsecureCredentialsManager::Observer {
  public:
@@ -134,28 +123,6 @@ class SafetyCheckHandler
   std::u16string GetStringForParentRan(base::Time safety_check_completion_time,
                                        base::Time system_time);
 
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Constructs the string for the Chrome cleaner 'safe' state which depicts
-  // how long ago its last check ran.
-  std::u16string GetStringForChromeCleanerRan();
-  std::u16string GetStringForChromeCleanerRan(base::Time cct_completion_time,
-                                              base::Time system_time);
-
-  // safe_browsing::ChromeCleanerController::Observer overrides.
-  void OnIdle(
-      safe_browsing::ChromeCleanerController::IdleReason idle_reason) override;
-  void OnReporterRunning() override;
-  void OnScanning() override;
-  void OnInfected(bool is_powered_by_partner,
-                  const safe_browsing::ChromeCleanerScannerResults&
-                      scanner_results) override;
-  void OnCleaning(bool is_powered_by_partner,
-                  const safe_browsing::ChromeCleanerScannerResults&
-                      scanner_results) override;
-  void OnRebootRequired() override;
-  void OnRebootFailed() override;
-#endif
-
  protected:
   SafetyCheckHandler(
       std::unique_ptr<safety_check::UpdateCheckHelper> update_helper,
@@ -207,11 +174,6 @@ class SafetyCheckHandler
   // that case, if any of those were re-enabled.
   void CheckExtensions();
 
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Checks for unwanted software via the Chrome Cleanup Tool. Only on Windows.
-  void CheckChromeCleaner();
-#endif
-
   // Callbacks that get triggered when each check completes.
   void OnUpdateCheckResult(UpdateStatus status);
   void OnPasswordsCheckResult(PasswordsStatus status,
@@ -223,9 +185,6 @@ class SafetyCheckHandler
                                Blocklisted blocklisted,
                                ReenabledUser reenabled_user,
                                ReenabledAdmin reenabled_admin);
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  void OnChromeCleanerCheckResult(ChromeCleanerResult result);
-#endif
 
   // Methods for building user-visible strings based on the safety check
   // state.
@@ -241,11 +200,6 @@ class SafetyCheckHandler
                                         Blocklisted blocklisted,
                                         ReenabledUser reenabled_user,
                                         ReenabledAdmin reenabled_admin);
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  std::u16string GetStringForChromeCleaner(ChromeCleanerStatus status,
-                                           base::Time cct_completion_time,
-                                           base::Time system_time);
-#endif
 
   // A generic error state often includes the offline state. This method is used
   // as a callback for |UpdateCheckHelper| to check connectivity.

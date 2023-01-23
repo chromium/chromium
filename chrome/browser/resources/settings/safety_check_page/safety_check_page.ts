@@ -20,10 +20,6 @@ import './safety_check_extensions_child.js';
 import './safety_check_passwords_child.js';
 import './safety_check_safe_browsing_child.js';
 import './safety_check_updates_child.js';
-// <if expr="_google_chrome and is_win">
-import './safety_check_chrome_cleaner_child.js';
-
-// </if>
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';

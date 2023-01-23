@@ -22,7 +22,6 @@ export enum SafetyCheckCallbackConstants {
   PASSWORDS_CHANGED = 'safety-check-passwords-status-changed',
   SAFE_BROWSING_CHANGED = 'safety-check-safe-browsing-status-changed',
   EXTENSIONS_CHANGED = 'safety-check-extensions-status-changed',
-  CHROME_CLEANER_CHANGED = 'safety-check-chrome-cleaner-status-changed',
 }
 
 /**

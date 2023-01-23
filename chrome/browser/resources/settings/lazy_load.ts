@@ -116,11 +116,6 @@ export {PasswordsSectionElement} from './autofill_page/passwords_section.js';
 export {PaymentsManagerImpl, PaymentsManagerProxy} from './autofill_page/payments_manager_proxy.js';
 export {SettingsPaymentsSectionElement} from './autofill_page/payments_section.js';
 export {SettingsVirtualCardUnenrollDialogElement} from './autofill_page/virtual_card_unenroll_dialog.js';
-// <if expr="_google_chrome and is_win">
-export {ChromeCleanerScannerResults, ChromeCleanupFilePath, ChromeCleanupIdleReason, SettingsChromeCleanupPageElement} from './chrome_cleanup_page/chrome_cleanup_page.js';
-export {ChromeCleanupProxy, ChromeCleanupProxyImpl} from './chrome_cleanup_page/chrome_cleanup_proxy.js';
-export {CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW, ItemsToRemoveListElement} from './chrome_cleanup_page/items_to_remove_list.js';
-// </if>
 export {ClearBrowsingDataBrowserProxy, ClearBrowsingDataBrowserProxyImpl, ClearBrowsingDataResult, UpdateSyncStateEvent} from './clear_browsing_data_dialog/clear_browsing_data_browser_proxy.js';
 export {SettingsClearBrowsingDataDialogElement} from './clear_browsing_data_dialog/clear_browsing_data_dialog.js';
 export {SettingsHistoryDeletionDialogElement} from './clear_browsing_data_dialog/history_deletion_dialog.js';

@@ -183,12 +183,7 @@ build_webui_tests("build") {
   }
 
   if (is_win && is_chrome_branded) {
-    files += [
-      "chrome_cleanup_page_test.ts",
-      "incompatible_applications_page_test.ts",
-      "safety_check_chrome_cleaner_test.ts",
-      "test_chrome_cleanup_proxy.ts",
-    ]
+    files += [ "incompatible_applications_page_test.ts" ]
   }
 
   ts_path_mappings = [

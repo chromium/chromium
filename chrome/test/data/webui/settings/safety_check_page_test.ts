@@ -5,7 +5,7 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {HatsBrowserProxyImpl, LifetimeBrowserProxyImpl, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PasswordCheckReferrer, PasswordManagerImpl, Router, routes, SafetyCheckBrowserProxy, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckChromeCleanerStatus, SafetyCheckExtensionsStatus, SafetyCheckIconStatus, SafetyCheckInteractions, SafetyCheckParentStatus, SafetyCheckPasswordsStatus, SafetyCheckSafeBrowsingStatus, SafetyCheckUpdatesStatus, SettingsSafetyCheckChildElement, SettingsSafetyCheckExtensionsChildElement, SettingsSafetyCheckPageElement, SettingsSafetyCheckPasswordsChildElement, SettingsSafetyCheckSafeBrowsingChildElement ,SettingsSafetyCheckUpdatesChildElement, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import {HatsBrowserProxyImpl, LifetimeBrowserProxyImpl, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PasswordCheckReferrer, PasswordManagerImpl, Router, routes, SafetyCheckBrowserProxy, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckExtensionsStatus, SafetyCheckIconStatus, SafetyCheckInteractions, SafetyCheckParentStatus, SafetyCheckPasswordsStatus, SafetyCheckSafeBrowsingStatus, SafetyCheckUpdatesStatus, SettingsSafetyCheckChildElement, SettingsSafetyCheckExtensionsChildElement, SettingsSafetyCheckPageElement, SettingsSafetyCheckPasswordsChildElement, SettingsSafetyCheckSafeBrowsingChildElement ,SettingsSafetyCheckUpdatesChildElement, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -77,19 +77,6 @@ function fireSafetyCheckExtensionsEvent(state: SafetyCheckExtensionsStatus) {
     displayString: testDisplayString,
   };
   webUIListenerCallback(SafetyCheckCallbackConstants.EXTENSIONS_CHANGED, event);
-}
-
-/**
- * Fire a safety check Chrome cleaner event.
- */
-function fireSafetyCheckChromeCleanerEvent(
-    state: SafetyCheckChromeCleanerStatus) {
-  const event = {
-    newState: state,
-    displayString: testDisplayString,
-  };
-  webUIListenerCallback(
-      SafetyCheckCallbackConstants.CHROME_CLEANER_CHANGED, event);
 }
 
 class TestSafetyCheckBrowserProxy extends TestBrowserProxy implements
@@ -168,7 +155,6 @@ suite('SafetyCheckPageUiTests', function() {
     fireSafetyCheckPasswordsEvent(SafetyCheckPasswordsStatus.CHECKING);
     fireSafetyCheckSafeBrowsingEvent(SafetyCheckSafeBrowsingStatus.CHECKING);
     fireSafetyCheckExtensionsEvent(SafetyCheckExtensionsStatus.CHECKING);
-    fireSafetyCheckChromeCleanerEvent(SafetyCheckChromeCleanerStatus.CHECKING);
     fireSafetyCheckParentEvent(SafetyCheckParentStatus.CHECKING);
 
     flush();
@@ -185,7 +171,6 @@ suite('SafetyCheckPageUiTests', function() {
         SafetyCheckSafeBrowsingStatus.ENABLED_STANDARD);
     fireSafetyCheckExtensionsEvent(
         SafetyCheckExtensionsStatus.NO_BLOCKLISTED_EXTENSIONS);
-    fireSafetyCheckChromeCleanerEvent(SafetyCheckChromeCleanerStatus.INFECTED);
     fireSafetyCheckParentEvent(SafetyCheckParentStatus.AFTER);
 
     flush();

@@ -256,9 +256,6 @@ build_webui("build") {
 
   if (is_win) {
     web_component_files += [
-      "safety_check_page/safety_check_chrome_cleaner_child.ts",
-      "chrome_cleanup_page/chrome_cleanup_page.ts",
-      "chrome_cleanup_page/items_to_remove_list.ts",
       "incompatible_applications_page/incompatible_application_item.ts",
       "incompatible_applications_page/incompatible_applications_page.ts",
     ]
@@ -370,10 +367,7 @@ build_webui("build") {
   }
 
   if (is_win) {
-    non_web_component_files += [
-      "chrome_cleanup_page/chrome_cleanup_proxy.ts",
-      "incompatible_applications_page/incompatible_applications_browser_proxy.ts",
-    ]
+    non_web_component_files += [ "incompatible_applications_page/incompatible_applications_browser_proxy.ts" ]
   }
   if (is_win || is_mac) {
     non_web_component_files += [ "autofill_page/passkeys_browser_proxy.ts" ]

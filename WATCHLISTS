@@ -697,7 +697,6 @@
     },
     'chrome_cleaner': {
       'filepath': 'chrome/browser/component_updater/sw_reporter_'\
-                  '|chrome/browser/resources/settings/chrome_cleanup_page/'\
                   '|chrome/browser/safe_browsing/chrome_cleaner/'\
                   '|chrome/browser/ui/views/chrome_cleaner_'\
                   '|chrome/browser/ui/webui/settings/chrome_cleanup_'\
