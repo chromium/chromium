@@ -28,11 +28,11 @@ using ::testing::UnorderedElementsAre;
 // list.
 base::Value NetworkConfigsList(
     std::initializer_list<const base::Value*> network_configs) {
-  base::Value result(base::Value::Type::LIST);
+  base::Value::List result;
   for (const auto* network_config : network_configs) {
     result.Append(network_config->Clone());
   }
-  return result;
+  return base::Value(std::move(result));
 }
 
 // Creates a very basic for-testing NetworkConfig, essentially

@@ -1100,6 +1100,7 @@ void ManagedNetworkConfigurationHandlerImpl::GetDeviceStateProperties(
   }
   if (!network->IsConnectedState())
     return;  // No (non saved) IP Configs for non connected networks.
+  base::Value::Dict& properties_dict = properties->GetDict();
 
   const DeviceState* device_state =
       network->device_path().empty()
@@ -1108,15 +1109,14 @@ void ManagedNetworkConfigurationHandlerImpl::GetDeviceStateProperties(
 
   // Get the hardware MAC address from the DeviceState.
   if (device_state && !device_state->mac_address().empty()) {
-    properties->SetKey(shill::kAddressProperty,
-                       base::Value(device_state->mac_address()));
+    properties_dict.Set(shill::kAddressProperty, device_state->mac_address());
   }
 
   // Get the IPConfig properties from the device and store them in "IPConfigs"
   // (plural) in the properties dictionary. (Note: Shill only provides a single
   // "IPConfig" property for a network service, but a consumer of this API may
   // want information about all ipv4 and ipv6 IPConfig properties.
-  base::Value ip_configs(base::Value::Type::LIST);
+  base::Value::List ip_configs;
 
   if (!device_state || device_state->ip_configs().empty()) {
     // Shill may not provide IPConfigs for external Cellular devices/dongles
@@ -1133,8 +1133,8 @@ void ManagedNetworkConfigurationHandlerImpl::GetDeviceStateProperties(
     for (const auto iter : device_state->ip_configs())
       ip_configs.Append(iter.second.Clone());
   }
-  if (!ip_configs.GetList().empty()) {
-    properties->SetKey(shill::kIPConfigsProperty, std::move(ip_configs));
+  if (!ip_configs.empty()) {
+    properties_dict.Set(shill::kIPConfigsProperty, std::move(ip_configs));
   }
 }
 

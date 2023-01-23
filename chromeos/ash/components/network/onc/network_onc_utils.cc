@@ -167,8 +167,7 @@ std::string SchemeToString(net::ProxyServer::Scheme scheme) {
 void SetProxyForScheme(const net::ProxyConfig::ProxyRules& proxy_rules,
                        const std::string& scheme,
                        const std::string& onc_scheme,
-                       base::Value* dict) {
-  DCHECK(dict->is_dict());
+                       base::Value::Dict& dict) {
   const net::ProxyList* proxy_list = nullptr;
   if (proxy_rules.type == net::ProxyConfig::ProxyRules::Type::PROXY_LIST) {
     proxy_list = &proxy_rules.single_proxies;
@@ -189,11 +188,10 @@ void SetProxyForScheme(const net::ProxyConfig::ProxyRules& proxy_rules,
   // Only prefix the host with a non-default scheme.
   if (server.scheme() != default_scheme)
     host = SchemeToString(server.scheme()) + "://" + host;
-  base::Value url_dict(base::Value::Type::DICTIONARY);
-  url_dict.SetKey(::onc::proxy::kHost, base::Value(host));
-  url_dict.SetKey(::onc::proxy::kPort,
-                  base::Value(server.host_port_pair().port()));
-  dict->SetKey(onc_scheme, std::move(url_dict));
+  base::Value::Dict url_dict;
+  url_dict.Set(::onc::proxy::kHost, host);
+  url_dict.Set(::onc::proxy::kPort, server.host_port_pair().port());
+  dict.Set(onc_scheme, std::move(url_dict));
 }
 
 // Returns the NetworkConfiugration with |guid| from |network_configs|, or
@@ -419,59 +417,55 @@ base::Value ConvertProxyConfigToOncProxySettings(
   ProxyConfigDictionary proxy_config(proxy_config_value.GetDict().Clone());
 
   // Create the result Value and populate it.
-  base::Value proxy_settings(base::Value::Type::DICTIONARY);
+  base::Value::Dict proxy_settings;
   ProxyPrefs::ProxyMode mode;
   if (!proxy_config.GetMode(&mode))
     return base::Value();
   switch (mode) {
     case ProxyPrefs::MODE_DIRECT: {
-      proxy_settings.SetKey(::onc::proxy::kType,
-                            base::Value(::onc::proxy::kDirect));
+      proxy_settings.Set(::onc::proxy::kType, ::onc::proxy::kDirect);
       break;
     }
     case ProxyPrefs::MODE_AUTO_DETECT: {
-      proxy_settings.SetKey(::onc::proxy::kType,
-                            base::Value(::onc::proxy::kWPAD));
+      proxy_settings.Set(::onc::proxy::kType, ::onc::proxy::kWPAD);
       break;
     }
     case ProxyPrefs::MODE_PAC_SCRIPT: {
-      proxy_settings.SetKey(::onc::proxy::kType,
-                            base::Value(::onc::proxy::kPAC));
+      proxy_settings.Set(::onc::proxy::kType, ::onc::proxy::kPAC);
       std::string pac_url;
       proxy_config.GetPacUrl(&pac_url);
-      proxy_settings.SetKey(::onc::proxy::kPAC, base::Value(pac_url));
+      proxy_settings.Set(::onc::proxy::kPAC, pac_url);
       break;
     }
     case ProxyPrefs::MODE_FIXED_SERVERS: {
-      proxy_settings.SetKey(::onc::proxy::kType,
-                            base::Value(::onc::proxy::kManual));
-      base::Value manual(base::Value::Type::DICTIONARY);
+      proxy_settings.Set(::onc::proxy::kType, ::onc::proxy::kManual);
+      base::Value::Dict manual;
       std::string proxy_rules_string;
       if (proxy_config.GetProxyServer(&proxy_rules_string)) {
         net::ProxyConfig::ProxyRules proxy_rules;
         proxy_rules.ParseFromString(proxy_rules_string);
         SetProxyForScheme(proxy_rules, url::kFtpScheme, ::onc::proxy::kFtp,
-                          &manual);
+                          manual);
         SetProxyForScheme(proxy_rules, url::kHttpScheme, ::onc::proxy::kHttp,
-                          &manual);
+                          manual);
         SetProxyForScheme(proxy_rules, url::kHttpsScheme, ::onc::proxy::kHttps,
-                          &manual);
+                          manual);
         SetProxyForScheme(proxy_rules, kSocksScheme, ::onc::proxy::kSocks,
-                          &manual);
+                          manual);
       }
-      proxy_settings.SetKey(::onc::proxy::kManual, std::move(manual));
+      proxy_settings.Set(::onc::proxy::kManual, std::move(manual));
 
       // Convert the 'bypass_list' string into dictionary entries.
       std::string bypass_rules_string;
       if (proxy_config.GetBypassList(&bypass_rules_string)) {
         net::ProxyBypassRules bypass_rules;
         bypass_rules.ParseFromString(bypass_rules_string);
-        base::Value exclude_domains(base::Value::Type::LIST);
+        base::Value::List exclude_domains;
         for (const auto& rule : bypass_rules.rules())
           exclude_domains.Append(rule->ToString());
-        if (!exclude_domains.GetList().empty()) {
-          proxy_settings.SetKey(::onc::proxy::kExcludeDomains,
-                                std::move(exclude_domains));
+        if (!exclude_domains.empty()) {
+          proxy_settings.Set(::onc::proxy::kExcludeDomains,
+                             std::move(exclude_domains));
         }
       }
       break;
@@ -481,7 +475,7 @@ base::Value ConvertProxyConfigToOncProxySettings(
       return base::Value();
     }
   }
-  return proxy_settings;
+  return base::Value(std::move(proxy_settings));
 }
 
 base::flat_map<std::string, std::string> GetVariableExpansionsForUser(

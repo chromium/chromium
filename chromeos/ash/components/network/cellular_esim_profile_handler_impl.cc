@@ -229,14 +229,14 @@ void CellularESimProfileHandlerImpl::AddNewlyRefreshedEuiccPathToPrefs(
       GetAutoRefreshedEuiccPathsFromPrefs();
 
   // Keep all paths which were already in prefs.
-  base::Value euicc_paths(base::Value::Type::LIST);
+  base::Value::List euicc_paths;
   for (const auto& path : auto_refreshed_euicc_paths)
     euicc_paths.Append(path);
 
   // Add new path.
   euicc_paths.Append(new_path);
 
-  device_prefs_->Set(prefs::kESimRefreshedEuiccs, std::move(euicc_paths));
+  device_prefs_->SetList(prefs::kESimRefreshedEuiccs, std::move(euicc_paths));
 }
 
 void CellularESimProfileHandlerImpl::UpdateProfilesFromHermes() {
@@ -273,12 +273,12 @@ void CellularESimProfileHandlerImpl::UpdateProfilesFromHermes() {
   ss << "New set of eSIM profiles have been fetched from Hermes: ";
 
   // Store the updated list of profiles in prefs.
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   for (const auto& profile : profiles_from_hermes) {
     list.Append(profile.ToDictionaryValue());
     ss << "{iccid: " << profile.iccid() << ", eid: " << profile.eid() << "}, ";
   }
-  device_prefs_->Set(prefs::kESimProfiles, std::move(list));
+  device_prefs_->SetList(prefs::kESimProfiles, std::move(list));
 
   if (profiles_from_hermes.empty())
     ss << "<empty>";

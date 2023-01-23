@@ -489,12 +489,12 @@ TEST_F(ShillPropertyHandlerTest, ShillPropertyHandlerIPConfigPropertyChanged) {
   ShillIPConfigClient::Get()->SetProperty(dbus::ObjectPath(kTestIPConfigPath),
                                           shill::kAddressProperty, ip_address,
                                           base::DoNothing());
-  base::Value dns_servers(base::Value::Type::LIST);
+  base::Value::List dns_servers;
   dns_servers.Append("192.168.1.100");
   dns_servers.Append("192.168.1.101");
-  ShillIPConfigClient::Get()->SetProperty(dbus::ObjectPath(kTestIPConfigPath),
-                                          shill::kNameServersProperty,
-                                          dns_servers, base::DoNothing());
+  ShillIPConfigClient::Get()->SetProperty(
+      dbus::ObjectPath(kTestIPConfigPath), shill::kNameServersProperty,
+      base::Value(std::move(dns_servers)), base::DoNothing());
   base::Value prefixlen(8);
   ShillIPConfigClient::Get()->SetProperty(dbus::ObjectPath(kTestIPConfigPath),
                                           shill::kPrefixlenProperty, prefixlen,

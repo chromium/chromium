@@ -304,25 +304,29 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
       return;
     }
     ASSERT_TRUE(validated_policy.is_dict());
+    const base::Value::Dict& validated_policy_dict = validated_policy.GetDict();
 
-    base::Value network_configs(base::Value::Type::LIST);
-    const base::Value* found_network_configs = validated_policy.FindListKey(
-        ::onc::toplevel_config::kNetworkConfigurations);
+    base::Value::List network_configs;
+    const base::Value::List* found_network_configs =
+        validated_policy_dict.FindList(
+            ::onc::toplevel_config::kNetworkConfigurations);
     if (found_network_configs) {
-      for (const auto& network_config : found_network_configs->GetList()) {
+      for (const auto& network_config : *found_network_configs) {
         network_configs.Append(network_config.Clone());
       }
     }
 
-    base::Value global_config(base::Value::Type::DICTIONARY);
-    const base::Value* found_global_config = validated_policy.FindDictKey(
-        ::onc::toplevel_config::kGlobalNetworkConfiguration);
+    base::Value::Dict global_config;
+    const base::Value::Dict* found_global_config =
+        validated_policy_dict.FindDict(
+            ::onc::toplevel_config::kGlobalNetworkConfiguration);
     if (found_global_config) {
       global_config = found_global_config->Clone();
     }
 
     managed_network_configuration_handler_->SetPolicy(
-        onc_source, userhash, network_configs, global_config);
+        onc_source, userhash, base::Value(std::move(network_configs)),
+        base::Value(std::move(global_config)));
   }
 
   void SetUpEntry(const std::string& path_to_shill_json,

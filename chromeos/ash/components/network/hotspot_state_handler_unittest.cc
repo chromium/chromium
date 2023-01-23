@@ -193,14 +193,11 @@ TEST_F(HotspotStateHandlerTest, GetHotspotActiveClientCount) {
   EXPECT_EQ(1u, observer_.hotspot_status_changed_count());
 
   // Update tethering status with one active client.
-  base::Value active_clients_list(base::Value::Type::LIST);
-  base::Value client(base::Value::Type::DICTIONARY);
-  client.GetDict().Set(shill::kTetheringStatusClientIPv4Property,
-                       base::Value("IPV4:001"));
-  client.GetDict().Set(shill::kTetheringStatusClientHostnameProperty,
-                       base::Value("hostname1"));
-  client.GetDict().Set(shill::kTetheringStatusClientMACProperty,
-                       base::Value("persist"));
+  base::Value::List active_clients_list;
+  base::Value::Dict client;
+  client.Set(shill::kTetheringStatusClientIPv4Property, "IPV4:001");
+  client.Set(shill::kTetheringStatusClientHostnameProperty, "hostname1");
+  client.Set(shill::kTetheringStatusClientMACProperty, "persist");
   active_clients_list.Append(std::move(client));
   status_dict.GetDict().Set(shill::kTetheringStatusClientsProperty,
                             std::move(active_clients_list));
@@ -244,8 +241,8 @@ TEST_F(HotspotStateHandlerTest, GetHotspotCapabilities) {
       hotspot_state_handler_->GetHotspotCapabilities().allow_status);
   EXPECT_EQ(0u, observer_.hotspot_capabilities_changed_count());
 
-  base::Value upstream_list(base::Value::Type::LIST);
-  upstream_list.Append(base::Value(shill::kTypeCellular));
+  base::Value::List upstream_list;
+  upstream_list.Append(shill::kTypeCellular);
   capabilities_dict.GetDict().Set(shill::kTetheringCapUpstreamProperty,
                                   std::move(upstream_list));
   network_state_test_helper_.manager_test()->SetManagerProperty(
@@ -258,14 +255,14 @@ TEST_F(HotspotStateHandlerTest, GetHotspotCapabilities) {
   EXPECT_EQ(1u, observer_.hotspot_capabilities_changed_count());
 
   // Add WiFi to the downstream technology list in Shill
-  base::Value downstream_list(base::Value::Type::LIST);
-  downstream_list.Append(base::Value(shill::kTypeWifi));
+  base::Value::List downstream_list;
+  downstream_list.Append(shill::kTypeWifi);
   capabilities_dict.GetDict().Set(shill::kTetheringCapDownstreamProperty,
                                   std::move(downstream_list));
   // Add allowed WiFi security mode in Shill
-  base::Value security_list(base::Value::Type::LIST);
-  security_list.Append(base::Value(shill::kSecurityWpa2));
-  security_list.Append(base::Value(shill::kSecurityWpa3));
+  base::Value::List security_list;
+  security_list.Append(shill::kSecurityWpa2);
+  security_list.Append(shill::kSecurityWpa3);
   capabilities_dict.GetDict().Set(shill::kTetheringCapSecurityProperty,
                                   std::move(security_list));
   network_state_test_helper_.manager_test()->SetManagerProperty(

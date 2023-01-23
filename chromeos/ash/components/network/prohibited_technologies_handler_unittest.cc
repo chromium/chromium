@@ -70,16 +70,16 @@ class ProhibitedTechnologiesHandlerTest : public testing::Test {
 
   void PreparePolicies() {
     {
-      base::Value val(base::Value::Type::LIST);
+      base::Value::List val;
       val.Append("WiFi");
-      global_config_disable_wifi.SetKey("DisableNetworkTypes", std::move(val));
+      global_config_disable_wifi.Set("DisableNetworkTypes", std::move(val));
     }
     {
-      base::Value val(base::Value::Type::LIST);
+      base::Value::List val;
       val.Append("WiFi");
       val.Append("Cellular");
-      global_config_disable_wifi_and_cell.SetKey("DisableNetworkTypes",
-                                                 std::move(val));
+      global_config_disable_wifi_and_cell.Set("DisableNetworkTypes",
+                                              std::move(val));
     }
   }
 
@@ -98,16 +98,17 @@ class ProhibitedTechnologiesHandlerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void SetupPolicy(const base::Value& global_config, bool user_policy) {
+  void SetupPolicy(const base::Value::Dict& global_config, bool user_policy) {
     if (user_policy) {
-      managed_config_handler_->SetPolicy(
-          ::onc::ONC_SOURCE_USER_POLICY, helper_.UserHash(),
-          base::Value(base::Value::Type::LIST), global_config);
+      managed_config_handler_->SetPolicy(::onc::ONC_SOURCE_USER_POLICY,
+                                         helper_.UserHash(),
+                                         base::Value(base::Value::Type::LIST),
+                                         base::Value(global_config.Clone()));
     } else {
       managed_config_handler_->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY,
                                          std::string(),  // no username hash
                                          base::Value(base::Value::Type::LIST),
-                                         global_config);
+                                         base::Value(global_config.Clone()));
     }
     base::RunLoop().RunUntilIdle();
   }
@@ -116,9 +117,8 @@ class ProhibitedTechnologiesHandlerTest : public testing::Test {
     return helper_.network_state_handler();
   }
 
-  base::Value global_config_disable_wifi{base::Value::Type::DICTIONARY};
-  base::Value global_config_disable_wifi_and_cell{
-      base::Value::Type::DICTIONARY};
+  base::Value::Dict global_config_disable_wifi;
+  base::Value::Dict global_config_disable_wifi_and_cell;
   std::unique_ptr<ProhibitedTechnologiesHandler>
       prohibited_technologies_handler_;
 
@@ -159,7 +159,7 @@ TEST_F(ProhibitedTechnologiesHandlerTest,
   EXPECT_TRUE(network_state_handler()->IsTechnologyEnabled(
       NetworkTypePattern::Cellular()));
 
-  SetupPolicy(base::Value(base::Value::Type::DICTIONARY),
+  SetupPolicy(base::Value::Dict(),
               true);  // wait for user policy
 
   // Should be disabled after logged in
@@ -195,7 +195,7 @@ TEST_F(ProhibitedTechnologiesHandlerTest,
 TEST_F(ProhibitedTechnologiesHandlerTest,
        IsGloballyProhibitedTechnologyWorksAfterReenabling) {
   LoginToRegularUser();
-  SetupPolicy(base::Value(base::Value::Type::DICTIONARY),
+  SetupPolicy(base::Value::Dict(),
               true);  // wait for user policy
 
   EXPECT_TRUE(
@@ -223,7 +223,7 @@ TEST_F(ProhibitedTechnologiesHandlerTest,
       NetworkTypePattern::Cellular()));
 
   LoginToRegularUser();
-  SetupPolicy(base::Value(base::Value::Type::DICTIONARY),
+  SetupPolicy(base::Value::Dict(),
               true);  // receive user policy
   // Cellular should be prohibited
   EXPECT_FALSE(network_state_handler()->IsTechnologyEnabled(

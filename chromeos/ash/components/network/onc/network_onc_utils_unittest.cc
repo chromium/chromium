@@ -33,7 +33,7 @@ TEST(ONCUtils, ProxySettingsToProxyConfig) {
       test_utils::ReadTestJson("proxy_config_from_onc.json");
   ASSERT_TRUE(additional_tests.is_list());
   for (const base::Value& value : additional_tests.GetList())
-    list_of_tests.Append(value.Clone());
+    list_of_tests.GetList().Append(value.Clone());
 
   int index = 0;
   for (const base::Value& test_case : list_of_tests.GetList()) {
