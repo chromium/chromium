@@ -257,6 +257,7 @@
           class="emoji-button"
           is="cr-auto-img"
           auto-src$="[[getUrl(item)]]]"
+          on-mouseenter="showTooltip" on-focus="showTooltip"
           alt$="[[item.base.name]]">
       </template>
     </div>
@@ -266,6 +267,7 @@
           class="emoji-button"
           is="cr-auto-img"
           auto-src$="[[getUrl(item)]]"
+          on-mouseenter="showTooltip" on-focus="showTooltip"
           alt$="[[item.base.name]]">
       </template>
     </div>
