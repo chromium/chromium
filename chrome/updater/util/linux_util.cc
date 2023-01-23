@@ -42,15 +42,6 @@ base::FilePath GetExecutableRelativePath() {
   return base::FilePath(kExecutableName);
 }
 
-absl::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope) {
-  absl::optional<base::FilePath> path = GetVersionedInstallDirectory(scope);
-  if (!path) {
-    return absl::nullopt;
-  }
-
-  return path->AppendASCII(kExecutableName);
-}
-
 absl::optional<base::FilePath> GetBaseInstallDirectory(UpdaterScope scope) {
   absl::optional<base::FilePath> path = GetApplicationDataDirectory(scope);
   return path ? absl::optional<base::FilePath>(

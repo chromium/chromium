@@ -214,15 +214,36 @@ action("browser_install_script") {
   ]
 }
 
+process_version("launcher_version") {
+  sources = [ "//chrome/VERSION" ]
+  template_file = "launcher_version.h.in"
+  output = "$target_gen_dir/launcher_version.h"
+}
+
+source_set("launcher_sources") {
+  sources = [
+    "launcher_constants.h",
+    "launcher_main.c",
+  ]
+
+  public_deps = [
+    "//chrome/updater:branding_header",
+    "//chrome/updater/mac:launcher_version",
+  ]
+}
+
 executable("launcher") {
   output_name = "launcher"
-  sources = [ "launcher_main.cc" ]
+  sources = [ "launcher_constants_prod.c" ]
+
+  frameworks = [
+    "CoreFoundation.framework",
+    "Security.framework",
+  ]
 
   deps = [
+    ":launcher_sources",
     ":updater_plist",
-    "//base",
-    "//chrome/updater:base",
-    "//chrome/updater:constants_prod",
   ]
 
   inputs = [ "$target_gen_dir/updater_plist_tweaked.plist" ]
@@ -235,9 +256,14 @@ executable("launcher") {
   ]
 
   if (is_asan) {
-    # ASAN injects a dylib that we package in ../MacOS.
+    # ASAN toolchain injects libclang_rt.asan_osx_dynamic.dylib into
+    # ./VERSION/GoogleUpdater.app/Contents/MacOS/. Adjust the rpaths so that
+    # this executable can find it.
     ldflags += [
+      # When run from ./VERSION/GoogleUpdater.app/Contents/Helpers/launcher.
       "-Wl,-rpath,@executable_path/../MacOS",
+
+      # When run from ./launcher.
       "-Wl,-rpath,@executable_path/${chrome_version_full}/${updater_product_full_name}.app/Contents/MacOS",
     ]
   }
@@ -245,13 +271,16 @@ executable("launcher") {
 
 executable("launcher_test") {
   output_name = "launcher_test"
-  sources = [ "launcher_main.cc" ]
+  sources = [ "launcher_constants_test.c" ]
 
   deps = [
+    ":launcher_sources",
     ":updater_plist",
-    "//base",
-    "//chrome/updater:base",
-    "//chrome/updater:constants_test",
+  ]
+
+  frameworks = [
+    "CoreFoundation.framework",
+    "Security.framework",
   ]
 
   inputs = [ "$target_gen_dir/updater_plist_tweaked.plist" ]
@@ -264,10 +293,15 @@ executable("launcher_test") {
   ]
 
   if (is_asan) {
-    # ASAN injects a dylib that we package in ../MacOS.
+    # ASAN toolchain injects libclang_rt.asan_osx_dynamic.dylib into
+    # ./VERSION/GoogleUpdater.app/Contents/MacOS/. Adjust the rpaths so that
+    # this executable can find it.
     ldflags += [
+      # When run from ./VERSION/GoogleUpdater.app/Contents/Helpers/launcher.
       "-Wl,-rpath,@executable_path/../MacOS",
-      "-Wl,-rpath,@executable_path/${chrome_version_full}/${updater_product_full_name}_test.app/Contents/MacOS",
+
+      # When run from ./launcher.
+      "-Wl,-rpath,@executable_path/${chrome_version_full}/${updater_product_full_name}.app/Contents/MacOS",
     ]
   }
 }

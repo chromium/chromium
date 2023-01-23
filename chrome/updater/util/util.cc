@@ -170,6 +170,14 @@ absl::optional<base::FilePath> GetVersionedInstallDirectory(
   return GetVersionedInstallDirectory(scope, base::Version(kUpdaterVersion));
 }
 
+absl::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope) {
+  absl::optional<base::FilePath> path = GetVersionedInstallDirectory(scope);
+  if (!path) {
+    return absl::nullopt;
+  }
+  return path->Append(GetExecutableRelativePath());
+}
+
 TagParsingResult::TagParsingResult() = default;
 TagParsingResult::TagParsingResult(absl::optional<tagging::TagArgs> tag_args,
                                    tagging::ErrorCode error)

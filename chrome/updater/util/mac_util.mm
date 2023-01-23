@@ -167,14 +167,6 @@ absl::optional<base::FilePath> GetUpdaterAppBundlePath(UpdaterScope scope) {
       base::StrCat({PRODUCT_FULLNAME_STRING, kExecutableSuffix, ".app"}));
 }
 
-absl::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope) {
-  absl::optional<base::FilePath> path = GetVersionedInstallDirectory(scope);
-  if (!path)
-    return absl::nullopt;
-  return path->Append(ExecutableFolderPath())
-      .AppendASCII(base::StrCat({PRODUCT_FULLNAME_STRING, kExecutableSuffix}));
-}
-
 base::FilePath GetExecutableRelativePath() {
   return ExecutableFolderPath().Append(
       base::StrCat({PRODUCT_FULLNAME_STRING, kExecutableSuffix}));

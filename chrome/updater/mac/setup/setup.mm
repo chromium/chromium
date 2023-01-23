@@ -267,7 +267,15 @@ int PromoteCandidate(UpdaterScope scope) {
              install_dir->Append("launcher").value().c_str())) {
     return kErrorFailedToRenameLauncher;
   }
-  // TODO(crbug.com/1339108): If kSystem, mark setuid on the launcher.
+  if (scope == UpdaterScope::kSystem) {
+    base::FilePath path = install_dir->Append("launcher");
+    struct stat info;
+    if (stat(path.value().c_str(), &info) || info.st_uid ||
+        lchmod(path.value().c_str(),
+               S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH | S_ISUID)) {
+      VPLOG(1) << "Launcher lchmod failed. Cross-user on-demand will not work";
+    }
+  }
 
   if (!CreateWakeLaunchdJobPlist(scope, *updater_executable_path)) {
     return kErrorFailedToCreateWakeLaunchdJobPlist;
