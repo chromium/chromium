@@ -43,9 +43,9 @@ void WebTestStorageAccessManager::SetStorageAccess(
     return;
   }
 
-  content_settings_for_automation_.push_back(
-      ContentSettingPatternSource(primary_pattern, secondary_pattern,
-                                  base::Value(setting), std::string(), false));
+  content_settings_for_automation_.emplace_back(
+      primary_pattern, secondary_pattern, base::Value(setting), std::string(),
+      false);
 
   // TODO(https://crbug.com/1106098) - Storage Access API should support all
   // storage types in content shell
@@ -64,18 +64,17 @@ void WebTestStorageAccessManager::SetStorageAccess(
   // Content Shell, then we should update this class to handle those other
   // types are well.
 
-  auto* storage_partition = browser_context_->GetDefaultStoragePartition();
-  auto* cookie_manager = storage_partition->GetCookieManagerForBrowserProcess();
-
-  // Enable third-party cookies blocking if we have not done so yet. This will
-  // cause the content settings to take effect.
-  if (!third_party_cookies_blocked_) {
-    cookie_manager->BlockThirdPartyCookies(true);
-    third_party_cookies_blocked_ = true;
-  }
+  auto* cookie_manager = browser_context_->GetDefaultStoragePartition()
+                             ->GetCookieManagerForBrowserProcess();
 
   // Update the cookie manager's copy of the content settings.
   cookie_manager->SetContentSettings(content_settings_for_automation_);
+
+  // Enable third-party cookies blocking if needed, otherwise disable. This will
+  // cause the content settings to take effect.
+  cookie_manager->BlockThirdPartyCookies(blocked);
+  browser_context_->GetDefaultStoragePartition()
+      ->FlushNetworkInterfaceForTesting();
   std::move(callback).Run(true);
 }
 

@@ -47,7 +47,6 @@ class WebTestStorageAccessManager
   mojo::ReceiverSet<blink::test::mojom::StorageAccessAutomation> receivers_;
 
   ContentSettingsForOneType content_settings_for_automation_;
-  bool third_party_cookies_blocked_ = false;
 };
 
 }  // namespace content
