@@ -4,6 +4,8 @@
 ![Unit Tests](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/unit.js.yml/badge.svg)
 ![WPT Tests](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/wpt.yml/badge.svg)
 
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
+
 This is an implementation of the
 [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) protocol with some
 extensions (**BiDi+**)
@@ -126,11 +128,17 @@ Event = {
 
 ## Dev Setup
 
+### `npm`
+
 This is a Node.js project, so install dependencies as usual:
 
 ```sh
 npm install
 ```
+
+### pre-commit.com integration
+
+Refer to the documentation at [.pre-commit-config.yaml](.pre-commit-config.yaml).
 
 ### Starting the Server
 

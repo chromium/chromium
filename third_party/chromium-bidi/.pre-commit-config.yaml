@@ -1,0 +1,39 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+#
+# Install pre-commit itself:
+#   $ pip install pre-commit
+#     OR
+#   $ brew install pre-commit
+#
+# Install pre-commit hooks locally:
+#   $ pre-commit install
+#
+# Apply pre-commit hooks to all files:
+#   $ pre-commit run --all-files
+#
+# Update pre-commit hooks to latest version:
+#   $ pre-commit autoupdate
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-docstring-first
+      - id: check-executables-have-shebangs
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: requirements-txt-fixer
+      - id: trailing-whitespace
+  # - repo: https://github.com/pre-commit/mirrors-eslint
+  #   rev: v8.32.0
+  #   hooks:
+  #     - id: eslint
+  # - repo: https://github.com/pre-commit/mirrors-prettier
+  #   rev: v2.7.1
+  #   hooks:
+  #     - id: prettier
+  # TODO(tperrotta): Investigate why the execution of pre-commit yapf is different from npm run yapf.
+  # - repo: https://github.com/pre-commit/mirrors-yapf
+  #   rev: v0.32.0
+  #   hooks:
+  #     - id: yapf
