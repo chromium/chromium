@@ -142,6 +142,8 @@ class PageStateSerializationTest : public testing::Test {
     frame_state->scroll_anchor_selector = u"#selector";
     frame_state->scroll_anchor_offset = gfx::PointF(2.5, 3.5);
     frame_state->scroll_anchor_simhash = 12345;
+    frame_state->initiator_origin =
+        url::Origin::Create(GURL("https://initiator.example.com"));
     frame_state->navigation_api_key = u"abcd";
     frame_state->navigation_api_id = u"wxyz";
     frame_state->navigation_api_state = absl::nullopt;
@@ -376,6 +378,10 @@ TEST_F(PageStateSerializationTest, BasicFrameSet) {
     ExplodedFrameState child_state;
     PopulateFrameState(&child_state);
     input.top.children.push_back(child_state);
+
+    // Ensure `child_state` made it into `input` successfully, to catch any
+    // cases where ExplodedFrameState::assign may have been missed.
+    ExpectEquality(child_state, input.top.children[i]);
   }
 
   std::string encoded;
