@@ -38,17 +38,15 @@ std::string GetSourceString(
   return ss.str();
 }
 
-base::Value ParseTrafficCounters(
+base::Value::List ParseTrafficCounters(
     const std::vector<chromeos::network_config::mojom::TrafficCounterPtr>&
         traffic_counters) {
-  auto traffic_counters_list = base::Value(base::Value::Type::LIST);
+  base::Value::List traffic_counters_list;
   for (const auto& tc : traffic_counters) {
-    auto traffic_counter = base::Value(base::Value::Type::DICTIONARY);
-    traffic_counter.SetKey(kSource, base::Value(GetSourceString(tc->source)));
-    traffic_counter.SetKey(kRxBytes,
-                           base::Value(static_cast<double>(tc->rx_bytes)));
-    traffic_counter.SetKey(kTxBytes,
-                           base::Value(static_cast<double>(tc->tx_bytes)));
+    base::Value::Dict traffic_counter;
+    traffic_counter.Set(kSource, GetSourceString(tc->source));
+    traffic_counter.Set(kRxBytes, static_cast<double>(tc->rx_bytes));
+    traffic_counter.Set(kTxBytes, static_cast<double>(tc->tx_bytes));
     traffic_counters_list.Append(std::move(traffic_counter));
   }
   return traffic_counters_list;
@@ -70,7 +68,7 @@ void TrafficCountersLogSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!callback.is_null());
   callback_ = std::move(callback);
-  traffic_counters_ = base::Value(base::Value::Type::DICTIONARY);
+  traffic_counters_.clear();
   network_health_service_->GetRecentlyActiveNetworks(
       base::BindOnce(&TrafficCountersLogSource::OnGetRecentlyActiveNetworks,
                      weak_factory_.GetWeakPtr()));
@@ -102,18 +100,18 @@ void TrafficCountersLogSource::OnGetManagedProperties(
     std::vector<chromeos::network_config::mojom::TrafficCounterPtr>
         traffic_counters,
     chromeos::network_config::mojom::ManagedPropertiesPtr managed_properties) {
-  auto tc_dict = base::Value(base::Value::Type::DICTIONARY);
-  tc_dict.SetKey(kTrafficCountersKey, ParseTrafficCounters(traffic_counters));
+  base::Value::Dict tc_dict;
+  tc_dict.Set(kTrafficCountersKey, ParseTrafficCounters(traffic_counters));
   if (managed_properties && managed_properties->traffic_counter_properties &&
       managed_properties->traffic_counter_properties->friendly_date
           .has_value()) {
-    tc_dict.SetKey(kLastResetTimeKey,
-                   base::Value(managed_properties->traffic_counter_properties
-                                   ->friendly_date.value()));
+    tc_dict.Set(
+        kLastResetTimeKey,
+        managed_properties->traffic_counter_properties->friendly_date.value());
   } else {
-    tc_dict.SetKey(kLastResetTimeKey, base::Value(kNotAvailable));
+    tc_dict.Set(kLastResetTimeKey, kNotAvailable);
   }
-  traffic_counters_.SetKey(guid, tc_dict.Clone());
+  traffic_counters_.Set(guid, std::move(tc_dict));
   SendResponseIfDone();
 }
 

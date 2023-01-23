@@ -26,16 +26,16 @@ FakeRecommendAppsFetcher::FakeRecommendAppsFetcher(
 FakeRecommendAppsFetcher::~FakeRecommendAppsFetcher() = default;
 
 void FakeRecommendAppsFetcher::OnTimer() {
-  base::Value apps(base::Value::Type::LIST);
+  base::Value::List apps;
   for (int i = 0; i < base::clamp(fake_apps_count_, 0, kMaxAppCount); i++) {
-    base::Value app(base::Value::Type::DICTIONARY);
-    app.SetKey("name", base::Value(base::StringPrintf("Fake App %d", (i + 1))));
-    app.SetKey("package_name", base::Value(base::StringPrintf(
-                                   "com.example.fake.app%d", (i + 1))));
+    base::Value::Dict app;
+    app.Set("name", base::StringPrintf("Fake App %d", (i + 1)));
+    app.Set("package_name",
+            base::StringPrintf("com.example.fake.app%d", (i + 1)));
     apps.Append(std::move(app));
   }
 
-  delegate_->OnLoadSuccess(std::move(apps));
+  delegate_->OnLoadSuccess(base::Value(std::move(apps)));
 }
 
 void FakeRecommendAppsFetcher::Start() {

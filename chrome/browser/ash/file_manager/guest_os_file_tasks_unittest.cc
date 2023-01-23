@@ -61,21 +61,21 @@ class GuestOsFileTasksTest : public testing::Test {
     ScopedDictPrefUpdate update(profile_.GetPrefs(),
                                 guest_os::prefs::kGuestOsRegistry);
     base::Value::Dict& registry = update.Get();
-    base::Value app(base::Value::Type::DICTIONARY);
-    app.SetKey("container_name", base::Value("penguin"));
-    base::Value mime_list(base::Value::Type::LIST);
+    base::Value::Dict app;
+    app.Set("container_name", "penguin");
+    base::Value::List mime_list;
     for (const auto& mime : mimes)
       mime_list.Append(mime);
-    app.SetKey("mime_types", std::move(mime_list));
-    base::Value extension_list(base::Value::Type::LIST);
+    app.Set("mime_types", std::move(mime_list));
+    base::Value::List extension_list;
     for (const auto& extension : extensions)
       extension_list.Append(extension);
-    app.SetKey("extensions", std::move(extension_list));
-    base::Value name_dict(base::Value::Type::DICTIONARY);
-    name_dict.SetKey("", base::Value(name));
-    app.SetKey("name", std::move(name_dict));
-    app.SetKey("vm_name", base::Value("termina"));
-    app.SetIntKey("vm_type", static_cast<int>(vm_type));
+    app.Set("extensions", std::move(extension_list));
+    base::Value::Dict name_dict;
+    name_dict.Set("", name);
+    app.Set("name", std::move(name_dict));
+    app.Set("vm_name", "termina");
+    app.Set("vm_type", static_cast<int>(vm_type));
     registry.Set(id, std::move(app));
   }
 

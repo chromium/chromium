@@ -232,15 +232,15 @@ base::Value SessionFlagsManager::GetSwitchesValueFromArgv(
   base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
   cmd_line.InitFromArgv(argv);
 
-  base::Value flag_list(base::Value::Type::LIST);
+  base::Value::List flag_list;
   for (const auto& flag : cmd_line.GetSwitches()) {
-    base::Value flag_value(base::Value::Type::DICTIONARY);
-    flag_value.SetKey(kFlagNameKey, base::Value(flag.first));
-    flag_value.SetKey(kFlagValueKey, base::Value(flag.second));
+    base::Value::Dict flag_value;
+    flag_value.Set(kFlagNameKey, flag.first);
+    flag_value.Set(kFlagValueKey, flag.second);
 
     flag_list.Append(std::move(flag_value));
   }
-  return flag_list;
+  return base::Value(std::move(flag_list));
 }
 
 }  // namespace test

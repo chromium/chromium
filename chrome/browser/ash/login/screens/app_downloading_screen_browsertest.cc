@@ -113,10 +113,10 @@ IN_PROC_BROWSER_TEST_F(AppDownloadingScreenTest, SingleAppSelected) {
       ->defer_oobe_flow_finished_for_tests = true;
 
   Login();
-  base::Value apps(base::Value::Type::LIST);
+  base::Value::List apps;
   apps.Append("app.test.package.1");
 
-  ProfileManager::GetActiveUserProfile()->GetPrefs()->Set(
+  ProfileManager::GetActiveUserProfile()->GetPrefs()->SetList(
       arc::prefs::kArcFastAppReinstallPackages, std::move(apps));
   ShowAppDownloadingScreen();
 
@@ -136,11 +136,11 @@ IN_PROC_BROWSER_TEST_F(AppDownloadingScreenTest, MultipleAppsSelected) {
       ->defer_oobe_flow_finished_for_tests = true;
 
   Login();
-  base::Value apps(base::Value::Type::LIST);
+  base::Value::List apps;
   apps.Append("app.test.package.1");
   apps.Append("app.test.package.2");
 
-  ProfileManager::GetActiveUserProfile()->GetPrefs()->Set(
+  ProfileManager::GetActiveUserProfile()->GetPrefs()->SetList(
       arc::prefs::kArcFastAppReinstallPackages, std::move(apps));
 
   ShowAppDownloadingScreen();

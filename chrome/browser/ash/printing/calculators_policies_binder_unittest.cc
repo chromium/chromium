@@ -92,16 +92,16 @@ constexpr char kBulkPolicyContentsJson[] = R"json(
 ])json";
 
 template <class Container>
-std::unique_ptr<base::Value> StringsToList(Container container) {
+base::Value StringsToList(Container container) {
   auto first = container.begin();
   auto last = container.end();
-  auto list = std::make_unique<base::Value>(base::Value::Type::LIST);
+  base::Value::List list;
 
   while (first != last) {
-    list->Append(*first);
+    list.Append(*first);
     first++;
   }
-  return list;
+  return base::Value(std::move(list));
 }
 
 class CalculatorsPoliciesBinderTest : public testing::Test {
@@ -146,9 +146,9 @@ TEST_F(CalculatorsPoliciesBinderTest, PrefsAllAccess) {
   auto calculator = UserCalculator();
 
   // Set prefs to complete computation
-  prefs_.SetManagedPref(prefs::kRecommendedPrintersAccessMode,
-                        std::make_unique<base::Value>(
-                            BulkPrintersCalculator::AccessMode::ALL_ACCESS));
+  prefs_.SetManagedPref(
+      prefs::kRecommendedPrintersAccessMode,
+      base::Value(BulkPrintersCalculator::AccessMode::ALL_ACCESS));
 
   env_.RunUntilIdle();
   EXPECT_TRUE(calculator->IsComplete());
@@ -161,8 +161,7 @@ TEST_F(CalculatorsPoliciesBinderTest, PrefsAllowlist) {
   // Set prefs to complete computation
   prefs_.SetManagedPref(
       prefs::kRecommendedPrintersAccessMode,
-      std::make_unique<base::Value>(
-          BulkPrintersCalculator::AccessMode::ALLOWLIST_ONLY));
+      base::Value(BulkPrintersCalculator::AccessMode::ALLOWLIST_ONLY));
   prefs_.SetManagedPref(prefs::kRecommendedPrintersAllowlist,
                         StringsToList(kAllowlistIds));
 
@@ -177,8 +176,7 @@ TEST_F(CalculatorsPoliciesBinderTest, PrefsBlocklist) {
   // Set prefs to complete computation
   prefs_.SetManagedPref(
       prefs::kRecommendedPrintersAccessMode,
-      std::make_unique<base::Value>(
-          BulkPrintersCalculator::AccessMode::BLOCKLIST_ONLY));
+      base::Value(BulkPrintersCalculator::AccessMode::BLOCKLIST_ONLY));
   prefs_.SetManagedPref(prefs::kRecommendedPrintersBlocklist,
                         StringsToList(kBlocklistIds));
 
@@ -192,8 +190,7 @@ TEST_F(CalculatorsPoliciesBinderTest, PrefsBeforeBind) {
   // calculator is still properly populated.
   prefs_.SetManagedPref(
       prefs::kRecommendedPrintersAccessMode,
-      std::make_unique<base::Value>(
-          BulkPrintersCalculator::AccessMode::ALLOWLIST_ONLY));
+      base::Value(BulkPrintersCalculator::AccessMode::ALLOWLIST_ONLY));
   prefs_.SetManagedPref(prefs::kRecommendedPrintersAllowlist,
                         StringsToList(kAllowlistIds));
 
@@ -221,7 +218,7 @@ TEST_F(CalculatorsPoliciesBinderTest, SettingsAllowlist) {
   SetDeviceSetting(
       kDevicePrintersAccessMode,
       base::Value(BulkPrintersCalculator::AccessMode::ALLOWLIST_ONLY));
-  SetDeviceSetting(kDevicePrintersAllowlist, *StringsToList(kAllowlistIds));
+  SetDeviceSetting(kDevicePrintersAllowlist, StringsToList(kAllowlistIds));
 
   env_.RunUntilIdle();
   EXPECT_TRUE(calculator->IsComplete());
@@ -234,7 +231,7 @@ TEST_F(CalculatorsPoliciesBinderTest, SettingsBlocklist) {
   SetDeviceSetting(
       kDevicePrintersAccessMode,
       base::Value(BulkPrintersCalculator::AccessMode::BLOCKLIST_ONLY));
-  SetDeviceSetting(kDevicePrintersBlocklist, *StringsToList(kBlocklistIds));
+  SetDeviceSetting(kDevicePrintersBlocklist, StringsToList(kBlocklistIds));
 
   env_.RunUntilIdle();
   EXPECT_TRUE(calculator->IsComplete());

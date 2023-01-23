@@ -51,30 +51,26 @@ Registry::~Registry() {
 void Registry::RememberFileSystem(
     const ProvidedFileSystemInfo& file_system_info,
     const Watchers& watchers) {
-  base::Value file_system(base::Value::Type::DICTIONARY);
-  file_system.SetKey(kPrefKeyFileSystemId,
-                     base::Value(file_system_info.file_system_id()));
-  file_system.SetKey(kPrefKeyDisplayName,
-                     base::Value(file_system_info.display_name()));
-  file_system.SetKey(kPrefKeyWritable,
-                     base::Value(file_system_info.writable()));
-  file_system.SetKey(kPrefKeySupportsNotifyTag,
-                     base::Value(file_system_info.supports_notify_tag()));
-  file_system.SetKey(kPrefKeyOpenedFilesLimit,
-                     base::Value(file_system_info.opened_files_limit()));
+  base::Value::Dict file_system;
+  file_system.Set(kPrefKeyFileSystemId, file_system_info.file_system_id());
+  file_system.Set(kPrefKeyDisplayName, file_system_info.display_name());
+  file_system.Set(kPrefKeyWritable, file_system_info.writable());
+  file_system.Set(kPrefKeySupportsNotifyTag,
+                  file_system_info.supports_notify_tag());
+  file_system.Set(kPrefKeyOpenedFilesLimit,
+                  file_system_info.opened_files_limit());
   // We don't need to write and read "persistent" field (in MountOptions) to
   // and from preference because all filesystems which are remembered must be
   // persistent.
 
-  base::Value watchers_value(base::Value::Type::DICTIONARY);
+  base::Value::Dict watchers_dict;
 
   for (const auto& it : watchers) {
-    base::Value watcher(base::Value::Type::DICTIONARY);
-    watcher.SetKey(kPrefKeyWatcherEntryPath,
-                   base::Value(it.second.entry_path.value()));
-    watcher.SetKey(kPrefKeyWatcherRecursive, base::Value(it.second.recursive));
-    watcher.SetKey(kPrefKeyWatcherLastTag, base::Value(it.second.last_tag));
-    base::Value persistent_origins_value(base::Value::Type::LIST);
+    base::Value::Dict watcher;
+    watcher.Set(kPrefKeyWatcherEntryPath, it.second.entry_path.value());
+    watcher.Set(kPrefKeyWatcherRecursive, it.second.recursive);
+    watcher.Set(kPrefKeyWatcherLastTag, it.second.last_tag);
+    base::Value::List persistent_origins_value;
     for (const auto& subscriber_it : it.second.subscribers) {
       // Only persistent subscribers should be stored in persistent storage.
       // Other ones should not be restired after a restart.
@@ -82,11 +78,11 @@ void Registry::RememberFileSystem(
         persistent_origins_value.Append(subscriber_it.first.spec());
       }
     }
-    watcher.SetKey(kPrefKeyWatcherPersistentOrigins,
-                   std::move(persistent_origins_value));
-    watchers_value.SetKey(it.second.entry_path.value(), std::move(watcher));
+    watcher.Set(kPrefKeyWatcherPersistentOrigins,
+                std::move(persistent_origins_value));
+    watchers_dict.Set(it.second.entry_path.value(), std::move(watcher));
   }
-  file_system.SetKey(kPrefKeyWatchers, std::move(watchers_value));
+  file_system.Set(kPrefKeyWatchers, std::move(watchers_dict));
 
   PrefService* const pref_service = profile_->GetPrefs();
   DCHECK(pref_service);

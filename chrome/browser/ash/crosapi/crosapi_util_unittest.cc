@@ -165,14 +165,14 @@ TEST_F(CrosapiUtilTest, DeviceSettingsWithData) {
       ->SetInteger(ash::kReportDeviceNetworkTelemetryCollectionRateMs,
                    kReportDeviceNetworkTelemetryCollectionRateMs);
 
-  base::Value allowlist(base::Value::Type::LIST);
-  base::Value ids(base::Value::Type::DICTIONARY);
-  ids.SetIntKey(ash::kUsbDetachableAllowlistKeyVid, 2);
-  ids.SetIntKey(ash::kUsbDetachableAllowlistKeyPid, 3);
+  base::Value::List allowlist;
+  base::Value::Dict ids;
+  ids.Set(ash::kUsbDetachableAllowlistKeyVid, 2);
+  ids.Set(ash::kUsbDetachableAllowlistKeyPid, 3);
   allowlist.Append(std::move(ids));
 
   testing_profile_.ScopedCrosSettingsTestHelper()->GetStubbedProvider()->Set(
-      ash::kUsbDetachableAllowlist, std::move(allowlist));
+      ash::kUsbDetachableAllowlist, base::Value(std::move(allowlist)));
 
   auto settings = browser_util::GetDeviceSettings();
   testing_profile_.ScopedCrosSettingsTestHelper()

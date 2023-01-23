@@ -97,9 +97,10 @@ class KioskCrashRestoreTest : public MixinBasedInProcessBrowserTest,
     g_browser_process->local_state()->SetString(prefs::kDeviceSettingsCache,
                                                 encoded);
 
-    base::Value accounts(base::Value::Type::LIST);
+    base::Value::List accounts;
     accounts.Append(GetTestAppUserId());
-    g_browser_process->local_state()->Set("PublicAccounts", accounts);
+    g_browser_process->local_state()->SetList("PublicAccounts",
+                                              std::move(accounts));
   }
 
   policy::DevicePolicyBuilder device_policy_;
