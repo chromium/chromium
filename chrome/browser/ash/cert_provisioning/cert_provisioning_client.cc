@@ -215,12 +215,15 @@ void CertProvisioningClientImpl::OnNextActionResponse(
     policy::DeviceManagementStatus status,
     const em::ClientCertificateProvisioningResponse& response) {
   absl::optional<CertProvisioningResponseErrorType> response_error;
-  absl::optional<int64_t> try_later;
 
   // Single step loop for convenience.
   do {
-    if (!CheckCommonClientCertProvisioningResponse(response, status,
-                                                   response_error, try_later)) {
+    if (status != policy::DM_STATUS_SUCCESS) {
+      break;
+    }
+
+    if (response.has_error()) {
+      response_error = response.error();
       break;
     }
 
@@ -230,8 +233,6 @@ void CertProvisioningClientImpl::OnNextActionResponse(
     }
 
     // One of the oneof fields must be set.
-    // If the server wants to indicate that there is no work to be done yet, it
-    // should fill the `try_again_later` field instead.
     if (response.next_action_response().instruction_case() ==
         em::CertProvNextActionResponse::INSTRUCTION_NOT_SET) {
       status = policy::DM_STATUS_RESPONSE_DECODING_ERROR;
@@ -239,15 +240,13 @@ void CertProvisioningClientImpl::OnNextActionResponse(
     }
 
     // Everything is ok, run |callback| with data.
-    std::move(callback).Run(status, response_error, try_later,
+    std::move(callback).Run(status, response_error,
                             response.next_action_response());
     return;
   } while (false);
 
-  // Something went wrong. Return error via |status|, |response_error|,
-  // |try_later|.
-  std::move(callback).Run(status, response_error, try_later,
-                          CertProvNextActionResponse());
+  // Something went wrong. Return error via |status|, |response_error|.
+  std::move(callback).Run(status, response_error, CertProvNextActionResponse());
 }
 
 void CertProvisioningClientImpl::OnStartCsrResponse(

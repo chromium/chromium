@@ -68,14 +68,12 @@ class NextActionFuture
     : public base::test::TestFuture<
           policy::DeviceManagementStatus,
           absl::optional<em::ClientCertificateProvisioningResponse::Error>,
-          absl::optional<int64_t>,
           CertProvisioningClient::CertProvNextActionResponse> {
  public:
   CertProvisioningClient::NextActionCallback GetNextActionCallback() {
     return GetCallback<
         policy::DeviceManagementStatus,
         absl::optional<em::ClientCertificateProvisioningResponse::Error>,
-        absl::optional<int64_t>,
         const CertProvisioningClient::CertProvNextActionResponse&>();
   }
 
@@ -85,11 +83,9 @@ class NextActionFuture
     return Get<1>();
   }
 
-  absl::optional<int64_t> GetTryLater() { return Get<2>(); }
-
   const CertProvisioningClient::CertProvNextActionResponse&
   GetNextActionResponse() {
-    return Get<3>();
+    return Get<2>();
   }
 };
 
@@ -665,7 +661,6 @@ TEST_P(CertProvisioningClientNextActionProcessingTest, Success) {
   ASSERT_TRUE(next_action_future.Wait());
   EXPECT_EQ(next_action_future.GetStatus(), policy::DM_STATUS_SUCCESS);
   EXPECT_EQ(next_action_future.GetError(), absl::nullopt);
-  EXPECT_EQ(next_action_future.GetTryLater(), absl::nullopt);
   EXPECT_THAT(next_action_future.GetNextActionResponse(),
               EqualsProto(response.next_action_response()));
 }
@@ -699,7 +694,6 @@ TEST_P(CertProvisioningClientNextActionProcessingTest, CertProvError) {
   ASSERT_TRUE(next_action_future.Wait());
   EXPECT_EQ(next_action_future.GetStatus(), policy::DM_STATUS_SUCCESS);
   EXPECT_EQ(next_action_future.GetError(), absl::make_optional(error));
-  EXPECT_EQ(next_action_future.GetTryLater(), absl::nullopt);
   EXPECT_THAT(
       next_action_future.GetNextActionResponse(),
       EqualsProto(CertProvisioningClient::CertProvNextActionResponse()));
@@ -733,7 +727,6 @@ TEST_P(CertProvisioningClientNextActionProcessingTest, DeviceManagementError) {
   EXPECT_EQ(next_action_future.GetStatus(),
             policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND);
   EXPECT_EQ(next_action_future.GetError(), absl::nullopt);
-  EXPECT_EQ(next_action_future.GetTryLater(), absl::nullopt);
   EXPECT_THAT(
       next_action_future.GetNextActionResponse(),
       EqualsProto(CertProvisioningClient::CertProvNextActionResponse()));
@@ -768,7 +761,6 @@ TEST_P(CertProvisioningClientNextActionProcessingTest,
   EXPECT_EQ(next_action_future.GetStatus(),
             policy::DM_STATUS_RESPONSE_DECODING_ERROR);
   EXPECT_EQ(next_action_future.GetError(), absl::nullopt);
-  EXPECT_EQ(next_action_future.GetTryLater(), absl::nullopt);
   EXPECT_THAT(
       next_action_future.GetNextActionResponse(),
       EqualsProto(CertProvisioningClient::CertProvNextActionResponse()));
@@ -804,14 +796,13 @@ TEST_P(CertProvisioningClientNextActionProcessingTest, NoInstructionFilled) {
   EXPECT_EQ(next_action_future.GetStatus(),
             policy::DM_STATUS_RESPONSE_DECODING_ERROR);
   EXPECT_EQ(next_action_future.GetError(), absl::nullopt);
-  EXPECT_EQ(next_action_future.GetTryLater(), absl::nullopt);
   EXPECT_THAT(
       next_action_future.GetNextActionResponse(),
       EqualsProto(CertProvisioningClient::CertProvNextActionResponse()));
 }
 
-// Checks that all "Dynamic flow" API calls forward an explicit
-// `try_again_later` instruction correctly.
+// Checks that all "Dynamic flow" API calls forward a `try_again_later_ms`
+// instruction correctly.
 TEST_P(CertProvisioningClientNextActionProcessingTest, ExplicitTryLater) {
   CertProvisioningClientImpl cert_provisioning_client(cloud_policy_client_);
 
@@ -829,7 +820,11 @@ TEST_P(CertProvisioningClientNextActionProcessingTest, ExplicitTryLater) {
       cloud_policy_client_.cert_prov_calls().back();
   // Make CloudPolicyClient answer the request.
   em::ClientCertificateProvisioningResponse response;
-  response.set_try_again_later(3000);
+  {
+    auto* next_action_response = response.mutable_next_action_response();
+    next_action_response->set_invalidation_topic(kInvalidationTopic);
+    next_action_response->mutable_try_later_instruction()->set_delay_ms(3000);
+  }
   std::move(cert_prov_call.callback).Run(policy::DM_STATUS_SUCCESS, response);
 
   // Expect that the CertProvisioningClient provides the error and an empty
@@ -837,10 +832,8 @@ TEST_P(CertProvisioningClientNextActionProcessingTest, ExplicitTryLater) {
   ASSERT_TRUE(next_action_future.Wait());
   EXPECT_EQ(next_action_future.GetStatus(), policy::DM_STATUS_SUCCESS);
   EXPECT_EQ(next_action_future.GetError(), absl::nullopt);
-  EXPECT_EQ(next_action_future.GetTryLater(), absl::make_optional(3000));
-  EXPECT_THAT(
-      next_action_future.GetNextActionResponse(),
-      EqualsProto(CertProvisioningClient::CertProvNextActionResponse()));
+  EXPECT_THAT(next_action_future.GetNextActionResponse(),
+              EqualsProto(response.next_action_response()));
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -88,7 +88,6 @@ class CertProvisioningClient {
       policy::DeviceManagementStatus status,
       absl::optional<enterprise_management::
                          ClientCertificateProvisioningResponse::Error> error,
-      absl::optional<int64_t> try_later,
       const CertProvNextActionResponse& next_action_response)>;
 
   virtual void StartOrContinue(ProvisioningProcess provisioning_process,

@@ -4009,6 +4009,14 @@ message CertProvUploadProofOfPossessionRequest {
   optional bytes signature = 1;
 }
 
+// The client should try again later.
+message CertProvTryLaterInstruction {
+  // The delay after which the client should retry on its own.
+  // It should also be observing the invalidation for the certificate
+  // provisioning process.
+  optional int64 delay_ms = 1;
+}
+
 // The client should perform an authorization step.
 message CertProvAuthorizeInstruction {
   // The verified access challenge.
@@ -4048,8 +4056,12 @@ message CertProvNextActionResponse {
 
   // One of the instructions must be filled.
   // If no instruction is available yet, the server should fill
-  // `ClientCertificateProvisioningResponse.try_again_later instead`.
+  // `try_again_later_ms`.
   oneof instruction {
+    // If filled, the request can currently not be processed and the client
+    // is supposed to continue later using StartOrContinueRequest.
+    CertProvTryLaterInstruction try_later_instruction = 5;
+
     CertProvAuthorizeInstruction authorize_instruction = 2;
     CertProvProofOfPossessionInstruction proof_of_possession_instruction = 3;
     CertProvImportCertificateInstruction import_certificate_instruction = 4;
@@ -4131,6 +4143,8 @@ message ClientCertificateProvisioningResponse {
   // is supposed to try again later using the same data.
   // The value is the number of milliseconds when the client should
   // automatically retry.
+  // Used in "Static" flow only. The "Dynamic" flow uses the
+  // `try_again_later_ms` field in `CertProvNextActionResponse`.
   optional int64 try_again_later = 1;
 
   oneof response {
