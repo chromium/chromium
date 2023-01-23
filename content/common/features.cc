@@ -8,10 +8,6 @@ namespace content {
 
 // Please keep features in alphabetical order.
 
-BASE_FEATURE(kAvoidUnnecessaryNavigationCancellations,
-             "AvoidUnnecessaryNavigationCancellations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kOnShowWithPageVisibility,
              "OnShowWithPageVisibility",

@@ -13,13 +13,6 @@ namespace content {
 
 // Please keep features in alphabetical order.
 
-// When enabled, stops canceling navigation when another navigation commits or
-// starts. This supports the same goal as kQueueNavigationsWhileWaitingForCommit
-// but for the non-queueing parts, and is disabled by default.
-// See https://crbug.com/838348 and https://crbug.com/1220337.
-// Exported for tests.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kAvoidUnnecessaryNavigationCancellations);
-
 #if BUILDFLAG(IS_ANDROID)
 // Unifies RenderWidgetHostViewAndroid with the other platforms in their usage
 // of OnShowWithPageVisibility. Disabling will revert the refactor and use the

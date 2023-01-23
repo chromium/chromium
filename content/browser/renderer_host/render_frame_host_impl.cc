@@ -8884,7 +8884,8 @@ void RenderFrameHostImpl::StartPendingDeletionOnSubtree(
   DCHECK(IsPendingDeletion());
 
   if (pending_deletion_reason == PendingDeletionReason::kFrameDetach ||
-      !base::FeatureList::IsEnabled(kAvoidUnnecessaryNavigationCancellations)) {
+      !base::FeatureList::IsEnabled(
+          features::kAvoidUnnecessaryNavigationCancellations)) {
     // Reset all navigations happening in the FrameTreeNode only when entering
     // "pending deletion" state due to frame detach if the
     // kStopCancellingNavigationsOnCommitAndNewNavigation flag is enabled, or
@@ -8896,9 +8897,9 @@ void RenderFrameHostImpl::StartPendingDeletionOnSubtree(
         .DiscardSpeculativeRFH(reason);
     ResetOwnedNavigationRequests(reason);
   } else {
-    CHECK(
-        pending_deletion_reason == PendingDeletionReason::kSwappedOut ||
-        base::FeatureList::IsEnabled(kAvoidUnnecessaryNavigationCancellations));
+    CHECK(pending_deletion_reason == PendingDeletionReason::kSwappedOut ||
+          base::FeatureList::IsEnabled(
+              features::kAvoidUnnecessaryNavigationCancellations));
     // The pending deletion state is caused by swapping out the RFH. Reset only
     // the navigations that are owned by or will be using the swapped out RFH,
     // and also reset all navigations happening in the descendant frames.

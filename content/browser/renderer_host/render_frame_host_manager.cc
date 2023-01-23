@@ -638,7 +638,7 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
                   std::move(stored_page_to_restore_), clear_proxies_on_commit);
 
     if (base::FeatureList::IsEnabled(
-            kAvoidUnnecessaryNavigationCancellations)) {
+            features::kAvoidUnnecessaryNavigationCancellations)) {
       // When kAvoidUnnecessaryNavigationCancellations is enabled, if there are
       // other navigation requests that are ongoing, set their "associated
       // RenderFrameHost type" NONE, as the old type may no longer be accurate:
@@ -1049,9 +1049,9 @@ void RenderFrameHostManager::RestorePage(
   // have been cleared out earlier.
   // TODO(https://crbug.com/1220337): Ensure we aren't deleting a pending commit
   // RFH.
-  DCHECK(
-      base::FeatureList::IsEnabled(kAvoidUnnecessaryNavigationCancellations) ||
-      !speculative_render_frame_host_);
+  DCHECK(base::FeatureList::IsEnabled(
+             features::kAvoidUnnecessaryNavigationCancellations) ||
+         !speculative_render_frame_host_);
   SCOPED_CRASH_KEY_BOOL("Bug1407526", "spec_rfh_exists",
                         !!speculative_render_frame_host_);
   speculative_render_frame_host_ = stored_page->TakeRenderFrameHost();
@@ -1122,7 +1122,7 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
     // calling that method for navigations which will be forced into the current
     // document.
     if (base::FeatureList::IsEnabled(
-            kAvoidUnnecessaryNavigationCancellations)) {
+            features::kAvoidUnnecessaryNavigationCancellations)) {
       // When kAvoidUnnecessaryNavigationCancellations is enabled, only delete
       // the speculative RFH if it is unused. In particular, this means that a
       // speculative RFH with a pending-commit navigation won't be deleted
@@ -1318,7 +1318,7 @@ RenderFrameHostManager::GetFrameHostForNavigation(
     request->SetAssociatedRFHType(
         NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
     if (base::FeatureList::IsEnabled(
-            kAvoidUnnecessaryNavigationCancellations)) {
+            features::kAvoidUnnecessaryNavigationCancellations)) {
       // When kAvoidUnnecessaryNavigationCancellations is enabled, only delete
       // the speculative RFH if it is unused.
       DiscardSpeculativeRFHIfUnused(NavigationDiscardReason::kNewNavigation);

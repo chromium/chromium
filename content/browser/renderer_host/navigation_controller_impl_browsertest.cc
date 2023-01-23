@@ -40,7 +40,6 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/common/content_navigation_policy.h"
-#include "content/common/features.h"
 #include "content/common/frame_messages.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -22183,7 +22182,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(b1_navigation.WaitForResponse());
   StartNavigationOnReadyToCommit(shell(), b1_navigation, url_a3);
 
-  if (base::FeatureList::IsEnabled(kAvoidUnnecessaryNavigationCancellations)) {
+  if (base::FeatureList::IsEnabled(
+          features::kAvoidUnnecessaryNavigationCancellations)) {
     // Assert that the navigation to B1 didn't get cancelled, and finish
     // committing B1. This shouldn't cancel the navigation to A3.
     ASSERT_TRUE(b1_navigation.WaitForNavigationFinished());
@@ -22292,7 +22292,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 // cancel other navigations happening in the same FrameTreeNode.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        UnloadingPreviousRFHOnCommitWontCancelNavigation) {
-  if (!base::FeatureList::IsEnabled(kAvoidUnnecessaryNavigationCancellations)) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAvoidUnnecessaryNavigationCancellations)) {
     return;
   }
   GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));

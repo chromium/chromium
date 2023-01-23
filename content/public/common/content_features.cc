@@ -78,6 +78,14 @@ BASE_FEATURE(kAvoidUnnecessaryBeforeUnloadCheckSync,
              "AvoidUnnecessaryBeforeUnloadCheckSync",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, stops canceling navigation when another navigation commits or
+// starts. This supports the same goal as kQueueNavigationsWhileWaitingForCommit
+// but for the non-queueing parts, and is disabled by default.
+// See https://crbug.com/838348 and https://crbug.com/1220337.
+BASE_FEATURE(kAvoidUnnecessaryNavigationCancellations,
+             "AvoidUnnecessaryNavigationCancellations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Kill switch for Background Fetch.
 BASE_FEATURE(kBackgroundFetch,
              "BackgroundFetch",

@@ -354,6 +354,8 @@ public final class ProductionSupportedFlagList {
                     "When enabled runs the main thread at compositing priority."),
             Flag.baseFeature(AwFeatures.WEBVIEW_UMA_UPLOAD_QUALITY_OF_SERVICE_SET_TO_DEFAULT,
                     "If enabled, the frequency to upload UMA is increased."),
+            Flag.baseFeature(ContentFeatures.AVOID_UNNECESSARY_NAVIGATION_CANCELLATIONS,
+                    "If enabled, avoids unnecessary navigation cancellations."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
