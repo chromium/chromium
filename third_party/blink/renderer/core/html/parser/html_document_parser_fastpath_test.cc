@@ -9,7 +9,9 @@
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
+#include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 namespace {
@@ -57,6 +59,33 @@ TEST(HTMLDocumentParserFastpathTest, SetInnerHTMLUsesFastPathFailure) {
   histogram_tester.ExpectTotalCount("Blink.HTMLFastPathParser.ParseResult", 1);
   histogram_tester.ExpectBucketCount("Blink.HTMLFastPathParser.ParseResult",
                                      HtmlFastPathResult::kSucceeded, 0);
+}
+
+TEST(HTMLDocumentParserFastpathTest, MaximumHTMLParserDOMTreeDepth) {
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
+  document->write("<body></body>");
+  auto* div = MakeGarbageCollected<HTMLDivElement>(*document);
+  StringBuilder string_builder;
+  const unsigned depth =
+      HTMLConstructionSite::kMaximumHTMLParserDOMTreeDepth + 2;
+  // Create a very nested tree, with the deepest containing the id `deepest`.
+  for (unsigned i = 0; i < depth - 1; ++i) {
+    string_builder.Append("<div>");
+  }
+  string_builder.Append("<div id='deepest'>");
+  string_builder.Append("</div>");
+  for (unsigned i = 0; i < depth - 1; ++i) {
+    string_builder.Append("</div>");
+  }
+  div->setInnerHTML(string_builder.ToString());
+
+  // Because kMaximumHTMLParserDOMTreeDepth was encountered, the deepest
+  // node should have siblings.
+  Element* deepest = div->getElementById("deepest");
+  ASSERT_TRUE(deepest);
+  EXPECT_EQ(deepest->parentNode()->CountChildren(), 3u);
 }
 
 }  // namespace
