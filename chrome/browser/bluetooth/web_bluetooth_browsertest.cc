@@ -198,7 +198,7 @@ class FakeBluetoothGattCharacteristic
     auto fake_notify_session =
         std::make_unique<testing::NiceMock<MockBluetoothGattNotifySession>>(
             GetWeakPtr());
-    active_notify_sessions_.insert(fake_notify_session.get());
+    active_notify_sessions_.insert(fake_notify_session->unique_id());
 
     if (deferred_read_callback_) {
       // A new value as a result of calling readValue().
@@ -224,7 +224,7 @@ class FakeBluetoothGattCharacteristic
     EXPECT_TRUE(IsNotifying());
   }
 
-  void StopNotifySession(BluetoothGattNotifySession* session,
+  void StopNotifySession(BluetoothGattNotifySession::Id session,
                          base::OnceClosure callback) override {
     EXPECT_TRUE(base::Contains(active_notify_sessions_, session));
     std::move(callback).Run();
@@ -251,7 +251,7 @@ class FakeBluetoothGattCharacteristic
   ValueCallback deferred_read_callback_;
   bool defer_read_until_notification_start_ = false;
   bool emit_value_change_at_notification_start_ = false;
-  std::set<BluetoothGattNotifySession*> active_notify_sessions_;
+  std::set<BluetoothGattNotifySession::Id> active_notify_sessions_;
 };
 
 class FakeBluetoothGattConnection

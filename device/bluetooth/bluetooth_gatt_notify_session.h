@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/id_type.h"
 #include "device/bluetooth/bluetooth_export.h"
 
 namespace device {
@@ -21,12 +22,16 @@ class BluetoothRemoteGattCharacteristic;
 // BluetoothRemoteGattCharacteristic::StartNotifySession.
 class DEVICE_BLUETOOTH_EXPORT BluetoothGattNotifySession {
  public:
+  using Id = base::IdTypeU64<BluetoothGattNotifySession>;
+
   explicit BluetoothGattNotifySession(
       base::WeakPtr<BluetoothRemoteGattCharacteristic> characteristic);
 
   BluetoothGattNotifySession(const BluetoothGattNotifySession&) = delete;
   BluetoothGattNotifySession& operator=(const BluetoothGattNotifySession&) =
       delete;
+
+  Id unique_id() { return unique_id_; }
 
   // Destructor automatically stops this session.
   virtual ~BluetoothGattNotifySession();
@@ -50,10 +55,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattNotifySession {
   virtual void Stop(base::OnceClosure callback);
 
  private:
+  static Id GetNextId();
+
   // The associated characteristic.
   base::WeakPtr<BluetoothRemoteGattCharacteristic> characteristic_;
   std::string characteristic_id_;
   bool active_;
+  const Id unique_id_;
 };
 
 }  // namespace device
