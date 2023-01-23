@@ -120,8 +120,7 @@ using OnDidAskUserForSettingsCallback =
     base::RepeatingCallback<void(mojom::ResultCode result)>;
 #endif
 using OnDidStartPrintingCallback =
-    base::RepeatingCallback<void(mojom::ResultCode result,
-                                 PrintJob* print_job)>;
+    base::RepeatingCallback<void(mojom::ResultCode result)>;
 #if BUILDFLAG(IS_WIN)
 using OnDidRenderPrintedPageCallback =
     base::RepeatingCallback<void(uint32_t page_number,
@@ -2415,7 +2414,7 @@ class TestPrintJobWorkerOop : public PrintJobWorkerOop {
     DVLOG(1) << "Observed: start printing of document";
     callbacks_->error_check_callback.Run(result);
     PrintJobWorkerOop::OnDidStartPrinting(result);
-    callbacks_->did_start_printing_callback.Run(result, print_job());
+    callbacks_->did_start_printing_callback.Run(result);
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -2858,9 +2857,8 @@ class SystemAccessProcessPrintBrowserTestBase
   }
 #endif
 
-  void OnDidStartPrinting(mojom::ResultCode result, PrintJob* print_job) {
+  void OnDidStartPrinting(mojom::ResultCode result) {
     start_printing_result_ = result;
-    print_job_ = print_job;
     CheckForQuit();
   }
 
@@ -2922,7 +2920,6 @@ class SystemAccessProcessPrintBrowserTestBase
   mojo::Remote<mojom::PrintBackendService> test_remote_;
   std::unique_ptr<PrintBackendServiceTestImpl> print_backend_service_;
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
-  raw_ptr<PrintJob, DanglingUntriaged> print_job_ = nullptr;
   bool reset_errors_after_check_ = true;
   int did_print_document_count_ = 0;
   mojom::ResultCode use_default_settings_result_ = mojom::ResultCode::kFailed;
