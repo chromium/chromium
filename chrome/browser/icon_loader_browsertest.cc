@@ -59,14 +59,15 @@ class TestIconLoader {
   base::OnceClosure quit_closure_;
 };
 
+// Under GTK, the icon providing functions do not return icons.
 #if !((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
       defined(MEMORY_SANITIZER))
-const base::FilePath::CharType kGroupOnlyFilename[] =
-    FILE_PATH_LITERAL("unlikely-to-exist-file.txt");
 
-// Under GTK, the icon providing functions do not return icons.
-IN_PROC_BROWSER_TEST_F(IconLoaderBrowserTest, DISABLED_LoadGroup) {
+IN_PROC_BROWSER_TEST_F(IconLoaderBrowserTest, LoadGroup) {
   float scale = 1.0;
+  constexpr base::FilePath::CharType kGroupOnlyFilename[] =
+      FILE_PATH_LITERAL("unlikely-to-exist-file.txt");
+
 #if BUILDFLAG(IS_WIN)
   scale = display::win::GetDPIScale();
 #endif
@@ -81,6 +82,7 @@ IN_PROC_BROWSER_TEST_F(IconLoaderBrowserTest, DISABLED_LoadGroup) {
   runner.Run();
   EXPECT_TRUE(test_loader.load_succeeded());
 }
+
 #endif  // !((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
         // defined(MEMORY_SANITIZER))
 

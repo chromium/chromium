@@ -5,11 +5,13 @@
 #include "chrome/browser/icon_loader.h"
 
 #import <AppKit/AppKit.h>
-#include <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+#import <CoreServices/CoreServices.h>                      // pre-macOS 11
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>  // macOS 11
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/mac/foundation_util.h"
+#include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
@@ -19,23 +21,59 @@
 // static
 IconLoader::IconGroup IconLoader::GroupForFilepath(
     const base::FilePath& file_path) {
-  NSURL* file_url = base::mac::FilePathToNSURL(file_path);
+  // The best option is to get the type directly from the file. The next best
+  // option is to pull the extension from the file and get the type from that.
+  // The last and worst option is to fall back to `public.content` which will
+  // give a generic file icon.
+
   if (@available(macOS 11, *)) {
     UTType* type;
-    if (![file_url getResourceValue:&type
-                             forKey:NSURLContentTypeKey
-                              error:nil]) {
-      return {};
+    NSURL* file_url = base::mac::FilePathToNSURL(file_path);
+    if (file_url && [file_url getResourceValue:&type
+                                        forKey:NSURLContentTypeKey
+                                         error:nil]) {
+      return base::SysNSStringToUTF8(type.identifier);
     }
-    return base::SysNSStringToUTF8(type.identifier);
+
+    std::string extension_string = file_path.FinalExtension();
+    if (!extension_string.empty()) {
+      // Remove the leading dot.
+      extension_string.erase(extension_string.begin());
+
+      type = [UTType
+          typeWithFilenameExtension:base::SysUTF8ToNSString(extension_string)];
+      if (type) {
+        return base::SysNSStringToUTF8(type.identifier);
+      }
+    }
+
+    return base::SysNSStringToUTF8(UTTypeContent.identifier);
   } else {
     NSString* type;
-    if (![file_url getResourceValue:&type
-                             forKey:NSURLTypeIdentifierKey
-                              error:nil]) {
-      return {};
+    NSURL* file_url = base::mac::FilePathToNSURL(file_path);
+    if (file_url && [file_url getResourceValue:&type
+                                        forKey:NSURLTypeIdentifierKey
+                                         error:nil]) {
+      return base::SysNSStringToUTF8(type);
     }
-    return base::SysNSStringToUTF8(type);
+
+    std::string extension_string = file_path.FinalExtension();
+    if (!extension_string.empty()) {
+      // Remove the leading dot.
+      extension_string.erase(extension_string.begin());
+
+      base::ScopedCFTypeRef<CFStringRef> extension_cf =
+          base::SysUTF8ToCFStringRef(extension_string);
+      base::ScopedCFTypeRef<CFStringRef> cftype(
+          UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension,
+                                                extension_cf,
+                                                /*inConformingToUTI=*/nullptr));
+      if (cftype) {
+        return base::SysCFStringRefToUTF8(cftype);
+      }
+    }
+
+    return base::SysCFStringRefToUTF8(kUTTypeContent);
   }
 }
 
@@ -46,40 +84,36 @@ scoped_refptr<base::TaskRunner> IconLoader::GetReadIconTaskRunner() {
 }
 
 void IconLoader::ReadIcon() {
-  gfx::Image image;
+  NSImage* icon;
+  if (@available(macOS 11, *)) {
+    UTType* type = [UTType typeWithIdentifier:base::SysUTF8ToNSString(group_)];
+    icon = [NSWorkspace.sharedWorkspace iconForContentType:type];
+  } else {
+    NSString* type = base::SysUTF8ToNSString(group_);
+    icon = [NSWorkspace.sharedWorkspace iconForFileType:type];
+  }
 
-  if (!group_.empty()) {
-    NSImage* icon;
-    if (@available(macOS 11, *)) {
-      UTType* type =
-          [UTType typeWithIdentifier:base::SysUTF8ToNSString(group_)];
-      icon = [NSWorkspace.sharedWorkspace iconForContentType:type];
-    } else {
-      NSString* type = base::SysUTF8ToNSString(group_);
-      icon = [NSWorkspace.sharedWorkspace iconForFileType:type];
+  gfx::Image image;
+  if (icon_size_ == ALL) {
+    // The NSImage already has all sizes.
+    image = gfx::Image(icon);
+  } else {
+    NSSize size = NSZeroSize;
+    switch (icon_size_) {
+      case IconLoader::SMALL:
+        size = NSMakeSize(16, 16);
+        break;
+      case IconLoader::NORMAL:
+        size = NSMakeSize(32, 32);
+        break;
+      default:
+        NOTREACHED();
     }
 
-    if (icon_size_ == ALL) {
-      // The NSImage already has all sizes.
-      image = gfx::Image(icon);
-    } else {
-      NSSize size = NSZeroSize;
-      switch (icon_size_) {
-        case IconLoader::SMALL:
-          size = NSMakeSize(16, 16);
-          break;
-        case IconLoader::NORMAL:
-          size = NSMakeSize(32, 32);
-          break;
-        default:
-          NOTREACHED();
-      }
-
-      gfx::ImageSkia image_skia = gfx::ImageSkiaFromResizedNSImage(icon, size);
-      if (!image_skia.isNull()) {
-        image_skia.MakeThreadSafe();
-        image = gfx::Image(image_skia);
-      }
+    gfx::ImageSkia image_skia = gfx::ImageSkiaFromResizedNSImage(icon, size);
+    if (!image_skia.isNull()) {
+      image_skia.MakeThreadSafe();
+      image = gfx::Image(image_skia);
     }
   }
 
