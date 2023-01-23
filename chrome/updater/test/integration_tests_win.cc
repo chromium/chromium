@@ -222,13 +222,15 @@ void CheckInstallation(UpdaterScope scope,
   const HKEY root = UpdaterScopeToHKeyRoot(scope);
 
   if (is_active_and_sxs) {
-    for (const wchar_t* key : {CLIENT_STATE_KEY, CLIENTS_KEY, UPDATER_KEY}) {
+    for (const wchar_t* key : {CLIENTS_KEY, UPDATER_KEY}) {
       EXPECT_EQ(is_installed, RegKeyExists(root, key));
     }
 
     EXPECT_EQ(is_installed, base::PathExists(*GetGoogleUpdateExePath(scope)));
 
     if (is_installed) {
+      EXPECT_TRUE(RegKeyExists(root, CLIENT_STATE_KEY));
+
       std::wstring pv;
       EXPECT_EQ(ERROR_SUCCESS,
                 base::win::RegKey(
