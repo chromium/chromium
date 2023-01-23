@@ -11,6 +11,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(PrefetchPrefsTest, GetPreloadPagesState) {
@@ -72,7 +73,16 @@ TEST(PrefetchPrefsTest, SetPreloadPagesState) {
             static_cast<int>(prefetch::NetworkPredictionOptions::kExtended));
 }
 
-TEST(PrefetchPrefsTest, IsSomePreloadingEnabled) {
+class PrefetchPrefsPreloadingTest : public ::testing::Test {
+ public:
+  PrefetchPrefsPreloadingTest() = default;
+  ~PrefetchPrefsPreloadingTest() override = default;
+
+  // IsSomePreloadingEnabled[IgnoringFinch]() requires a threaded environment.
+  base::test::TaskEnvironment task_environment_;
+};
+
+TEST_F(PrefetchPrefsPreloadingTest, IsSomePreloadingEnabled) {
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterIntegerPref(
       prefs::kNetworkPredictionOptions,
@@ -104,7 +114,8 @@ TEST(PrefetchPrefsTest, IsSomePreloadingEnabled) {
             content::PreloadingEligibility::kEligible);
 }
 
-TEST(PrefetchPrefsTest, IsSomePreloadingEnabled_PreloadingHoldback) {
+TEST_F(PrefetchPrefsPreloadingTest,
+       IsSomePreloadingEnabled_PreloadingHoldback) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kPreloadingHoldback);
   TestingPrefServiceSimple prefs;
@@ -138,7 +149,7 @@ TEST(PrefetchPrefsTest, IsSomePreloadingEnabled_PreloadingHoldback) {
             content::PreloadingEligibility::kPreloadingDisabled);
 }
 
-TEST(PrefetchPrefsTest, IsSomePreloadingEnabledIgnoringFinch) {
+TEST_F(PrefetchPrefsPreloadingTest, IsSomePreloadingEnabledIgnoringFinch) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kPreloadingHoldback);
   TestingPrefServiceSimple prefs;
@@ -178,6 +189,9 @@ class PrefetchPrefsWithBatterySaverTest : public ::testing::Test {
   ~PrefetchPrefsWithBatterySaverTest() override = default;
 
   void TearDown() override { battery::ResetIsBatterySaverEnabledForTesting(); }
+
+  // IsSomePreloadingEnabled[IgnoringFinch]() requires a threaded environment.
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(PrefetchPrefsWithBatterySaverTest,

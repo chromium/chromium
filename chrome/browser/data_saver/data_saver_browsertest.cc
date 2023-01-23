@@ -9,18 +9,21 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "data_saver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -175,6 +178,21 @@ class TestRTTAndThroughputEstimatesObserver
 }  // namespace
 
 class DataSaverBrowserTest : public InProcessBrowserTest {
+ public:
+  DataSaverBrowserTest()
+      : prerender_helper_(
+            base::BindRepeating(&DataSaverBrowserTest::GetActiveWebContents,
+                                base::Unretained(this))) {}
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    InProcessBrowserTest::SetUp();
+  }
+
+  content::test::PrerenderTestHelper* prerender_helper() {
+    return &prerender_helper_;
+  }
+
  protected:
   void VerifySaveDataHeader(const std::string& expected_header_value,
                             Browser* browser = nullptr) {
@@ -187,10 +205,18 @@ class DataSaverBrowserTest : public InProcessBrowserTest {
         content::EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
                         "document.body.textContent;"));
   }
+
   void TearDown() override {
     data_saver::ResetIsDataSaverEnabledForTesting();
     InProcessBrowserTest::TearDown();
   }
+
+  content::WebContents* GetActiveWebContents() {
+    return chrome_test_utils::GetActiveWebContents(this);
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(DataSaverBrowserTest, DataSaverEnabled) {
@@ -209,6 +235,30 @@ IN_PROC_BROWSER_TEST_F(DataSaverBrowserTest, DataSaverDisabledInIncognito) {
   ASSERT_TRUE(embedded_test_server()->Start());
   data_saver::OverrideIsDataSaverEnabledForTesting(true);
   VerifySaveDataHeader("None", CreateIncognitoBrowser());
+}
+
+IN_PROC_BROWSER_TEST_F(DataSaverBrowserTest,
+                       DataSaverEnabledDisablesPrerendering) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(embedded_test_server()->Start());
+  data_saver::OverrideIsDataSaverEnabledForTesting(true);
+
+  const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  const GURL prerendering_url =
+      embedded_test_server()->GetURL("/empty.html?prerender");
+
+  content::test::PrerenderHostRegistryObserver observer(
+      *GetActiveWebContents());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  prerender_helper()->AddPrerenderAsync(prerendering_url);
+  observer.WaitForTrigger(prerendering_url);
+
+  int host_id = prerender_helper()->GetHostForUrl(prerendering_url);
+  EXPECT_EQ(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      /*PrerenderFinalStatus::kDataSaverEnabled=*/38, 1);
 }
 
 class DataSaverWithServerBrowserTest : public InProcessBrowserTest {

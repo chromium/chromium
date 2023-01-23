@@ -49,7 +49,6 @@
 #include "content/browser/renderer_host/navigation_type.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
-#include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
@@ -63,8 +62,6 @@
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/background_color_change_waiter.h"
@@ -6184,46 +6181,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // Allow the activation navigation to complete.
   activation_observer.WaitForNavigationFinished();
   EXPECT_TRUE(activation_observer.was_activated());
-}
-
-class ScopedDataSaverTestContentBrowserClient
-    : public TestContentBrowserClient {
- public:
-  ScopedDataSaverTestContentBrowserClient()
-      : old_client(SetBrowserClientForTesting(this)) {}
-  ~ScopedDataSaverTestContentBrowserClient() override {
-    SetBrowserClientForTesting(old_client);
-  }
-
-  // ContentBrowserClient overrides:
-  bool IsDataSaverEnabled(BrowserContext* context) override { return true; }
-
-  void OverrideWebkitPrefs(WebContents* web_contents,
-                           blink::web_pref::WebPreferences* prefs) override {
-    prefs->data_saver_enabled = true;
-  }
-
- private:
-  raw_ptr<ContentBrowserClient> old_client;
-};
-
-// Tests that prerender doesn't run when Data Saver mode is enabled.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DataSaver) {
-  const GURL kInitialUrl = GetUrl("/empty.html");
-  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
-
-  // Enable data saver.
-  ScopedDataSaverTestContentBrowserClient scoped_content_browser_client;
-  shell()->web_contents()->OnWebPreferencesChanged();
-
-  test::PrerenderHostRegistryObserver observer(*web_contents_impl());
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  AddPrerenderAsync(kPrerenderingUrl);
-  observer.WaitForTrigger(kPrerenderingUrl);
-
-  // Prerendering should fail.
-  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kDataSaverEnabled);
-  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
 }
 
 // Tests that loading=lazy doesn't prevent image load in a prerendered page.

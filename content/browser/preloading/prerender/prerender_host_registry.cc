@@ -34,7 +34,6 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "content/public/common/content_client.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -142,6 +141,12 @@ int PrerenderHostRegistry::CreateAndStartHost(
           // TODO(crbug.com/1382315): add
           // PrerenderFinalStatus::kBatterySaverEnabled
           break;
+        case PreloadingEligibility::kDataSaverEnabled:
+          RecordFailedPrerenderFinalStatus(
+              PrerenderCancellationReason(
+                  PrerenderFinalStatus::kDataSaverEnabled),
+              attributes);
+          break;
         default:
           NOTREACHED();
       }
@@ -168,17 +173,6 @@ int PrerenderHostRegistry::CreateAndStartHost(
           attributes);
       if (attempt)
         attempt->SetEligibility(PreloadingEligibility::kLowMemory);
-      return RenderFrameHost::kNoFrameTreeNodeId;
-    }
-
-    // Don't prerender when the Data Saver setting is enabled.
-    if (GetContentClient()->browser()->IsDataSaverEnabled(
-            prerender_web_contents.GetBrowserContext())) {
-      RecordFailedPrerenderFinalStatus(
-          PrerenderCancellationReason(PrerenderFinalStatus::kDataSaverEnabled),
-          attributes);
-      if (attempt)
-        attempt->SetEligibility(PreloadingEligibility::kDataSaverEnabled);
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
 

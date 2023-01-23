@@ -4,6 +4,7 @@
 
 #include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/battery/battery_saver.h"
+#include "chrome/browser/data_saver/data_saver.h"
 #include "chrome/browser/prefetch/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -75,6 +76,9 @@ content::PreloadingEligibility IsSomePreloadingEnabledIgnoringFinch(
   // Arrange the results roughly in order of decreasing transience.
   if (GetPreloadPagesState(prefs) == PreloadPagesState::kNoPreloading) {
     return content::PreloadingEligibility::kPreloadingDisabled;
+  }
+  if (data_saver::IsDataSaverEnabled()) {
+    return content::PreloadingEligibility::kDataSaverEnabled;
   }
   if (battery::IsBatterySaverEnabled()) {
     return content::PreloadingEligibility::kBatterySaverEnabled;
