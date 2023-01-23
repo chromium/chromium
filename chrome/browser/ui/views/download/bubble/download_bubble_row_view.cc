@@ -597,6 +597,7 @@ void DownloadBubbleRowView::Layout() {
                                quick_actions_size.width() - insets.right(),
                            insets.top()),
                 quick_actions_size));
+  inkdrop_container_->SetBoundsRect(GetLocalBounds());
 }
 
 void DownloadBubbleRowView::OnMainButtonPressed() {
