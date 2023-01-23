@@ -1820,6 +1820,8 @@ source_set("ash") {
     "login/screens/terms_of_service_screen.h",
     "login/screens/theme_selection_screen.cc",
     "login/screens/theme_selection_screen.h",
+    "login/screens/touchpad_scroll_screen.cc",
+    "login/screens/touchpad_scroll_screen.h",
     "login/screens/tpm_error_screen.cc",
     "login/screens/tpm_error_screen.h",
     "login/screens/update_required_screen.cc",

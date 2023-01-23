@@ -61,6 +61,7 @@ js_type_check("closure_compile_local") {
     ":smart_privacy_protection",
     ":sync_consent",
     ":theme_selection",
+    ":touchpad_scroll",
     ":tpm_error",
     ":user_creation",
     ":wrong_hwid",
@@ -626,6 +627,18 @@ js_library("theme_selection") {
   extra_deps = [ ":web_components" ]
 }
 
+js_library("touchpad_scroll") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/touchpad_scroll.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior",
+    "../../components/behaviors:oobe_dialog_host_behavior",
+    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/buttons:oobe_text_button",
+    "../../components/dialogs:oobe_adaptive_dialog",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
 js_library("tpm_error") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/tpm_error.js" ]
   deps = [
@@ -721,6 +734,7 @@ html_to_js("web_components") {
     "smart_privacy_protection.js",
     "sync_consent.js",
     "theme_selection.js",
+    "touchpad_scroll.js",
     "tpm_error.js",
     "user_creation.js",
     "wrong_hwid.js",

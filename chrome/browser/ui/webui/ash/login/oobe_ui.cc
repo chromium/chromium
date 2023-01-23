@@ -103,6 +103,7 @@
 #include "chrome/browser/ui/webui/ash/login/terms_of_service_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/testapi/oobe_test_api_handler.h"
 #include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/touchpad_scroll_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/tpm_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_required_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
@@ -279,6 +280,10 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean(
       "isArcVmDataMigrationEnabled",
       base::FeatureList::IsEnabled(arc::kEnableArcVmDataMigration));
+
+  source->AddBoolean("isTouchpadScrollEnabled",
+                     (features::IsOobeChoobeEnabled() &&
+                      features::IsOobeTouchpadScrollEnabled()));
 
   // Configure shared resources
   AddProductLogoResources(source);
@@ -474,6 +479,11 @@ void OobeUI::ConfigureOobeDisplay() {
 
   if (features::IsOobeChoobeEnabled()) {
     AddScreenHandler(std::make_unique<ChoobeScreenHandler>());
+  }
+
+  if (features::IsOobeChoobeEnabled() &&
+      features::IsOobeTouchpadScrollEnabled()) {
+    AddScreenHandler(std::make_unique<TouchpadScrollScreenHandler>());
   }
 
   AddScreenHandler(std::make_unique<LocalStateErrorScreenHandler>());

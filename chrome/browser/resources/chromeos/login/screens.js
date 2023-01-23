@@ -41,6 +41,7 @@ import './screens/common/signin_fatal_error.js';
 import './screens/common/smart_privacy_protection.js';
 import './screens/common/sync_consent.js';
 import './screens/common/theme_selection.js';
+import './screens/common/touchpad_scroll.js';
 import './screens/common/tpm_error.js';
 import './screens/common/user_creation.js';
 import './screens/common/wrong_hwid.js';
@@ -119,6 +120,11 @@ export const commonScreensList = [
   {tag: 'smart-privacy-protection-element', id: 'smart-privacy-protection'},
   {tag: 'sync-consent-element', id: 'sync-consent'},
   {tag: 'theme-selection-element', id: 'theme-selection'},
+  {
+    tag: 'touchpad-scroll-element',
+    id: 'touchpad-scroll',
+    condition: 'isTouchpadScrollEnabled',
+  },
   {tag: 'tpm-error-message-element', id: 'tpm-error-message'},
   {tag: 'user-creation-element', id: 'user-creation'},
   {tag: 'wrong-hwid-element', id: 'wrong-hwid'},

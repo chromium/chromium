@@ -2852,6 +2852,8 @@ static_library("ui") {
       "webui/ash/login/testapi/oobe_test_api_handler.h",
       "webui/ash/login/theme_selection_screen_handler.cc",
       "webui/ash/login/theme_selection_screen_handler.h",
+      "webui/ash/login/touchpad_scroll_screen_handler.cc",
+      "webui/ash/login/touchpad_scroll_screen_handler.h",
       "webui/ash/login/tpm_error_screen_handler.cc",
       "webui/ash/login/tpm_error_screen_handler.h",
       "webui/ash/login/update_required_screen_handler.cc",
