@@ -700,7 +700,7 @@ RTCInsertableStreams* RTCRtpSender::createEncodedAudioStreams(
         "Encoded audio streams not requested at PC initialization");
     return nullptr;
   }
-  if (encoded_video_streams_) {
+  if (encoded_audio_streams_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Encoded audio streams already created");
     return nullptr;
