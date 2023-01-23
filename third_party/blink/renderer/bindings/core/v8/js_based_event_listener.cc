@@ -84,6 +84,9 @@ void JSBasedEventListener::Invoke(
     recordreplay::Diagnostic("[RUN-1084] JSBasedEventListener::Invoke %p %p",
                              raw, raw ? *raw : nullptr);
     bool zapped = raw && *raw == (void*)0x1baffed00baffedf;
+    bool recordedZapped = recordreplay::RecordReplayValue("JSBasedEventListener::Invoke zapped", zapped);
+    if (recordedZapped)
+      return;
     recordreplay::Assert("[RUN-1084] JSBasedEventListener::Invoke %d", zapped);
     if (zapped)
       return;
