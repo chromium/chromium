@@ -3006,7 +3006,13 @@ void vpx_highbd_comp_avg_pred_c(uint16_t* comp_pred,
                                 int height,
                                 const uint16_t* ref,
                                 int ref_stride);
-#define vpx_highbd_comp_avg_pred vpx_highbd_comp_avg_pred_c
+void vpx_highbd_comp_avg_pred_sse2(uint16_t* comp_pred,
+                                   const uint16_t* pred,
+                                   int width,
+                                   int height,
+                                   const uint16_t* ref,
+                                   int ref_stride);
+#define vpx_highbd_comp_avg_pred vpx_highbd_comp_avg_pred_sse2
 
 void vpx_highbd_convolve8_c(const uint16_t* src,
                             ptrdiff_t src_stride,
@@ -5155,7 +5161,24 @@ void vpx_highbd_subtract_block_c(int rows,
                                  const uint8_t* pred8_ptr,
                                  ptrdiff_t pred_stride,
                                  int bd);
-#define vpx_highbd_subtract_block vpx_highbd_subtract_block_c
+void vpx_highbd_subtract_block_avx2(int rows,
+                                    int cols,
+                                    int16_t* diff_ptr,
+                                    ptrdiff_t diff_stride,
+                                    const uint8_t* src8_ptr,
+                                    ptrdiff_t src_stride,
+                                    const uint8_t* pred8_ptr,
+                                    ptrdiff_t pred_stride,
+                                    int bd);
+RTCD_EXTERN void (*vpx_highbd_subtract_block)(int rows,
+                                              int cols,
+                                              int16_t* diff_ptr,
+                                              ptrdiff_t diff_stride,
+                                              const uint8_t* src8_ptr,
+                                              ptrdiff_t src_stride,
+                                              const uint8_t* pred8_ptr,
+                                              ptrdiff_t pred_stride,
+                                              int bd);
 
 void vpx_highbd_tm_predictor_16x16_c(uint16_t* dst,
                                      ptrdiff_t stride,
@@ -7961,6 +7984,9 @@ static void setup_rtcd_internal(void) {
   vpx_highbd_satd = vpx_highbd_satd_c;
   if (flags & HAS_AVX2)
     vpx_highbd_satd = vpx_highbd_satd_avx2;
+  vpx_highbd_subtract_block = vpx_highbd_subtract_block_c;
+  if (flags & HAS_AVX2)
+    vpx_highbd_subtract_block = vpx_highbd_subtract_block_avx2;
   vpx_idct32x32_135_add = vpx_idct32x32_135_add_sse2;
   if (flags & HAS_SSSE3)
     vpx_idct32x32_135_add = vpx_idct32x32_135_add_ssse3;
