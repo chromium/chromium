@@ -17,6 +17,7 @@
 #include "components/performance_manager/graph/node_attached_data.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/graph/properties.h"
+#include "components/performance_manager/public/browser_child_process_host_proxy.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/v8_contexts.mojom.h"
@@ -25,6 +26,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace performance_manager {
@@ -62,7 +64,9 @@ class ProcessNodeImpl
   explicit ProcessNodeImpl(RenderProcessHostProxy render_process_host_proxy);
 
   // Constructor for a non-renderer child process.
-  explicit ProcessNodeImpl(content::ProcessType process_type);
+  ProcessNodeImpl(
+      content::ProcessType process_type,
+      BrowserChildProcessHostProxy browser_child_process_host_proxy);
 
   ProcessNodeImpl(const ProcessNodeImpl&) = delete;
   ProcessNodeImpl& operator=(const ProcessNodeImpl&) = delete;
@@ -157,7 +161,11 @@ class ProcessNodeImpl
   }
 
   const RenderProcessHostProxy& render_process_host_proxy() const {
-    return render_process_host_proxy_;
+    return absl::get<RenderProcessHostProxy>(child_process_host_proxy_);
+  }
+
+  const BrowserChildProcessHostProxy& browser_child_process_host_proxy() const {
+    return absl::get<BrowserChildProcessHostProxy>(child_process_host_proxy_);
   }
 
   base::TaskPriority priority() const {
@@ -223,6 +231,8 @@ class ProcessNodeImpl
   uint64_t GetResidentSetKb() const override;
   RenderProcessHostId GetRenderProcessHostId() const override;
   const RenderProcessHostProxy& GetRenderProcessHostProxy() const override;
+  const BrowserChildProcessHostProxy& GetBrowserChildProcessHostProxy()
+      const override;
   base::TaskPriority GetPriority() const override;
   ContentTypes GetHostedContentTypes() const override;
 
@@ -252,9 +262,11 @@ class ProcessNodeImpl
   const content::ProcessType process_type_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // This is used during frame node initialization.
-  // TODO(siggi): It seems unnecessary to initialize this at creation time?
-  const RenderProcessHostProxy render_process_host_proxy_;
+  // The proxy that allows access to either the RenderProcessHost or the
+  // BrowserChildProcessHost associated with this process, if `this` is a
+  // process node for a child process (process_type() != PROCESS_TYPE_BROWSER).
+  const absl::variant<RenderProcessHostProxy, BrowserChildProcessHostProxy>
+      child_process_host_proxy_;
 
   ObservedProperty::NotifiesOnlyOnChanges<
       bool,

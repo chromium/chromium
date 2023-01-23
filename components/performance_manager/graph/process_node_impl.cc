@@ -57,13 +57,16 @@ ProcessNodeImpl::ProcessNodeImpl(BrowserProcessNodeTag tag)
 ProcessNodeImpl::ProcessNodeImpl(
     RenderProcessHostProxy render_process_host_proxy)
     : process_type_(content::PROCESS_TYPE_RENDERER),
-      render_process_host_proxy_(std::move(render_process_host_proxy)) {
+      child_process_host_proxy_(std::move(render_process_host_proxy)) {
   weak_this_ = weak_factory_.GetWeakPtr();
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-ProcessNodeImpl::ProcessNodeImpl(content::ProcessType process_type)
-    : process_type_(process_type) {
+ProcessNodeImpl::ProcessNodeImpl(
+    content::ProcessType process_type,
+    BrowserChildProcessHostProxy browser_child_process_host_proxy)
+    : process_type_(process_type),
+      child_process_host_proxy_(std::move(browser_child_process_host_proxy)) {
   DCHECK_NE(process_type, content::PROCESS_TYPE_BROWSER);
   DCHECK_NE(process_type, content::PROCESS_TYPE_RENDERER);
   weak_this_ = weak_factory_.GetWeakPtr();
@@ -225,7 +228,7 @@ PageNodeImpl* ProcessNodeImpl::GetPageNodeIfExclusive() const {
 RenderProcessHostId ProcessNodeImpl::GetRenderProcessId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return RenderProcessHostId(
-      render_process_host_proxy_.render_process_host_id());
+      render_process_host_proxy().render_process_host_id());
 }
 
 void ProcessNodeImpl::AddFrame(FrameNodeImpl* frame_node) {
@@ -376,6 +379,14 @@ const RenderProcessHostProxy& ProcessNodeImpl::GetRenderProcessHostProxy()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return render_process_host_proxy();
+}
+
+const BrowserChildProcessHostProxy&
+ProcessNodeImpl::GetBrowserChildProcessHostProxy() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_NE(process_type_, content::PROCESS_TYPE_BROWSER);
+  DCHECK_NE(process_type_, content::PROCESS_TYPE_RENDERER);
+  return browser_child_process_host_proxy();
 }
 
 base::TaskPriority ProcessNodeImpl::GetPriority() const {

@@ -59,7 +59,8 @@ void BrowserChildProcessWatcher::BrowserChildProcessLaunchedAndConnected(
       data.process_type == content::PROCESS_TYPE_UTILITY) {
     std::unique_ptr<ProcessNodeImpl> process_node =
         PerformanceManagerImpl::CreateProcessNode(
-            static_cast<content::ProcessType>(data.process_type));
+            static_cast<content::ProcessType>(data.process_type),
+            BrowserChildProcessHostProxy(BrowserChildProcessHostId(data.id)));
     OnProcessLaunched(data.GetProcess(), data.metrics_name, process_node.get());
     tracked_process_nodes_[data.id] = std::move(process_node);
   }

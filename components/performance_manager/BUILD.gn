@@ -11,6 +11,7 @@ proto_library("site_data_proto") {
 static_library("performance_manager") {
   sources = [
     "binders.cc",
+    "browser_child_process_host_proxy.cc",
     "decorators/frame_visibility_decorator.cc",
     "decorators/frame_visibility_decorator.h",
     "decorators/freezing_vote_decorator.cc",
@@ -112,6 +113,8 @@ static_library("performance_manager") {
     "power/battery_level_provider_creator.cc",
     "process_node_source.cc",
     "process_node_source.h",
+    "public/browser_child_process_host_id.h",
+    "public/browser_child_process_host_proxy.h",
     "public/decorators/page_live_state_decorator.h",
     "public/decorators/page_load_tracker_decorator_helper.h",
     "public/decorators/process_metrics_decorator.h",

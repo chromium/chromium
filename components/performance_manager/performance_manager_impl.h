@@ -16,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/graph/graph_impl.h"
+#include "components/performance_manager/public/browser_child_process_host_proxy.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/worker_node.h"
@@ -116,7 +117,8 @@ class PerformanceManagerImpl : public PerformanceManager {
   static std::unique_ptr<ProcessNodeImpl> CreateProcessNode(
       RenderProcessHostProxy proxy);
   static std::unique_ptr<ProcessNodeImpl> CreateProcessNode(
-      content::ProcessType process_type);
+      content::ProcessType process_type,
+      BrowserChildProcessHostProxy proxy);
   static std::unique_ptr<WorkerNodeImpl> CreateWorkerNode(
       const std::string& browser_context_id,
       WorkerNode::WorkerType worker_type,

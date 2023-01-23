@@ -24,6 +24,7 @@ class FrameNode;
 class WorkerNode;
 class ProcessNodeObserver;
 class RenderProcessHostProxy;
+class BrowserChildProcessHostProxy;
 
 // A process node follows the lifetime of a RenderProcessHost.
 // It may reference zero or one processes at a time, but during its lifetime, it
@@ -133,8 +134,15 @@ class ProcessNode : public Node {
   virtual RenderProcessHostId GetRenderProcessHostId() const = 0;
 
   // Returns a proxy to the RenderProcessHost associated with this node. The
-  // proxy may only be dereferenced on the UI thread.
+  // proxy may only be dereferenced on the UI thread. The proxy is only valid
+  // for renderer processes.
   virtual const RenderProcessHostProxy& GetRenderProcessHostProxy() const = 0;
+
+  // Returns a proxy to the BrowserChildProcessHost associated with this node.
+  // The proxy may only be dereferenced on the UI thread. The proxy is only
+  // valid for non-renderer child processes.
+  virtual const BrowserChildProcessHostProxy& GetBrowserChildProcessHostProxy()
+      const = 0;
 
   // Returns the current priority of the process.
   virtual base::TaskPriority GetPriority() const = 0;

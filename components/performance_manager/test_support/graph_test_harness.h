@@ -104,8 +104,10 @@ struct TestNodeWrapper<ProcessNodeImpl>::Factory {
     return std::make_unique<ProcessNodeImpl>(std::move(proxy));
   }
   static std::unique_ptr<ProcessNodeImpl> Create(
-      content::ProcessType process_type) {
-    return std::make_unique<ProcessNodeImpl>(process_type);
+      content::ProcessType process_type,
+      BrowserChildProcessHostProxy proxy = BrowserChildProcessHostProxy()) {
+    // Provide an empty BrowserChildProcessHostProxy by default.
+    return std::make_unique<ProcessNodeImpl>(process_type, std::move(proxy));
   }
 };
 

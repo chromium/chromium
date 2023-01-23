@@ -164,14 +164,17 @@ std::unique_ptr<ProcessNodeImpl> PerformanceManagerImpl::CreateProcessNode(
 std::unique_ptr<ProcessNodeImpl> PerformanceManagerImpl::CreateProcessNode(
     RenderProcessHostProxy render_process_host_proxy) {
   return CreateNodeImpl<ProcessNodeImpl>(
-      base::OnceCallback<void(ProcessNodeImpl*)>(), render_process_host_proxy);
+      base::OnceCallback<void(ProcessNodeImpl*)>(),
+      std::move(render_process_host_proxy));
 }
 
 // static
 std::unique_ptr<ProcessNodeImpl> PerformanceManagerImpl::CreateProcessNode(
-    content::ProcessType process_type) {
+    content::ProcessType process_type,
+    BrowserChildProcessHostProxy browser_child_process_host_proxy) {
   return CreateNodeImpl<ProcessNodeImpl>(
-      base::OnceCallback<void(ProcessNodeImpl*)>(), process_type);
+      base::OnceCallback<void(ProcessNodeImpl*)>(), process_type,
+      std::move(browser_child_process_host_proxy));
 }
 
 // static

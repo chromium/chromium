@@ -227,12 +227,20 @@ TEST_F(ProcessNodeImplTest, ConstructionArguments_Renderer) {
 }
 
 TEST_F(ProcessNodeImplTest, ConstructionArguments_NonRenderer) {
-  auto process_node = CreateNode<ProcessNodeImpl>(content::PROCESS_TYPE_GPU);
+  constexpr BrowserChildProcessHostId kBrowserChildProcessHostId =
+      BrowserChildProcessHostId(0xF0B);
+  auto process_node = CreateNode<ProcessNodeImpl>(
+      content::PROCESS_TYPE_GPU, BrowserChildProcessHostProxy::CreateForTesting(
+                                     kBrowserChildProcessHostId));
 
   const ProcessNode* public_process_node = process_node.get();
 
   EXPECT_EQ(content::PROCESS_TYPE_GPU, process_node->process_type());
   EXPECT_EQ(content::PROCESS_TYPE_GPU, public_process_node->GetProcessType());
+
+  EXPECT_EQ(kBrowserChildProcessHostId,
+            public_process_node->GetBrowserChildProcessHostProxy()
+                .browser_child_process_host_id());
 }
 
 TEST_F(ProcessNodeImplTest, PublicInterface) {

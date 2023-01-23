@@ -32,8 +32,8 @@ class RenderProcessHostProxy {
   content::RenderProcessHost* Get() const;
 
   // Returns the routing id of the render process (from
-  // RenderProcessHost::GetID), or ChildProcessHost::kInvalidUniqueID if this is
-  // not a renderer.
+  // RenderProcessHost::GetID). Can be ChildProcessHost::kInvalidUniqueID
+  // in unit tests.
   RenderProcessHostId render_process_host_id() const {
     return render_process_host_id_;
   }

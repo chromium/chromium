@@ -22,7 +22,7 @@ content::RenderProcessHost* RenderProcessHostProxy::Get() const {
 RenderProcessHostProxy::RenderProcessHostProxy(
     RenderProcessHostId render_process_host_id)
     : render_process_host_id_(render_process_host_id) {
-  DCHECK(render_process_host_id_.value() >= 0);
+  DCHECK_GE(render_process_host_id_.value(), 0);
 }
 
 // static
