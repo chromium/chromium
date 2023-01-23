@@ -685,7 +685,9 @@ WTF_EXPORT extern const String& g_xmlns_with_colon;
 // Table representing common HTML strings of type '\n<space>*'.
 class WTF_EXPORT NewlineThenWhitespaceStringsTable {
  public:
-  static constexpr size_t kTableSize = 128;
+  // The constant is kept small to minimize the overhead of the table (496
+  // bytes).
+  static constexpr size_t kTableSize = 32;
 
   static void Init();
 
