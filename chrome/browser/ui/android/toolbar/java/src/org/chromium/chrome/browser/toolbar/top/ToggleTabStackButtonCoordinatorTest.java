@@ -24,9 +24,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
@@ -36,41 +33,21 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.user_education.IPHCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.components.feature_engagement.FeatureConstants;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
  * Unit tests for ToggleTabStackButtonCoordinator.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ToggleTabStackButtonCoordinatorTest.ShadowChromeFeatureList.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 @DisableFeatures(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS)
 public class ToggleTabStackButtonCoordinatorTest {
-    private static final ToolbarIntentMetadata DEFAULT_INTENT_METADATA =
-            new ToolbarIntentMetadata(/*isMainIntent*/ true, /*isIntentWithEffect*/ false);
-
-    @Implements(ChromeFeatureList.class)
-    static class ShadowChromeFeatureList {
-        static Map<String, String> sParamMap;
-        @Implementation
-        public static String getFieldTrialParamByFeature(String featureName, String paramName) {
-            Assert.assertEquals("Wrong feature name", FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE,
-                    featureName);
-            if (sParamMap.containsKey(paramName)) return sParamMap.get(paramName);
-            return "";
-        }
-    }
-
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
@@ -92,8 +69,6 @@ public class ToggleTabStackButtonCoordinatorTest {
 
     private boolean mIsIncognito;
     private boolean mOverviewOpen;
-    private final OneshotSupplierImpl<ToolbarIntentMetadata> mIntentMetadataOneshotSupplier =
-            new OneshotSupplierImpl<>();
     private final OneshotSupplierImpl<Boolean> mPromoShownOneshotSupplier =
             new OneshotSupplierImpl<>();
     private Set<LayoutStateProvider.LayoutStateObserver> mLayoutStateObserverSet;
@@ -126,7 +101,6 @@ public class ToggleTabStackButtonCoordinatorTest {
 
         // Defaults most test cases expect, can be overridden by each test though.
         when(mToggleTabStackButton.isShown()).thenReturn(true);
-        ShadowChromeFeatureList.sParamMap = new HashMap<>();
         mIsIncognito = false;
     }
 
@@ -134,7 +108,7 @@ public class ToggleTabStackButtonCoordinatorTest {
             ToggleTabStackButton toggleTabStackButton) {
         // clang-format off
         return new ToggleTabStackButtonCoordinator(mContext, toggleTabStackButton,
-                mUserEducationHelper, () -> mIsIncognito, mIntentMetadataOneshotSupplier,
+                mUserEducationHelper, () -> mIsIncognito,
                 mPromoShownOneshotSupplier, mLayoutSateProviderOneshotSupplier,
                 mSetNewTabButtonHighlightCallback, new ObservableSupplierImpl<>());
         // clang-format on
@@ -210,7 +184,6 @@ public class ToggleTabStackButtonCoordinatorTest {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
-        mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
         mPromoShownOneshotSupplier.set(false);
 
         toggleTabStackButtonCoordinator.handlePageLoadFinished();
@@ -228,7 +201,6 @@ public class ToggleTabStackButtonCoordinatorTest {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
-        mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
         mPromoShownOneshotSupplier.set(false);
 
         toggleTabStackButtonCoordinator.handlePageLoadFinished();
@@ -255,7 +227,6 @@ public class ToggleTabStackButtonCoordinatorTest {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
-        mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
         mPromoShownOneshotSupplier.set(false);
 
         toggleTabStackButtonCoordinator.handlePageLoadFinished();
@@ -283,7 +254,6 @@ public class ToggleTabStackButtonCoordinatorTest {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
-        mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
         mPromoShownOneshotSupplier.set(false);
 
         showOverviewMode();
@@ -300,7 +270,6 @@ public class ToggleTabStackButtonCoordinatorTest {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
-        mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
         mPromoShownOneshotSupplier.set(false);
 
         verifyIphNotShown();
@@ -311,7 +280,6 @@ public class ToggleTabStackButtonCoordinatorTest {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ null);
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
-        mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
         mPromoShownOneshotSupplier.set(false);
 
         toggleTabStackButtonCoordinator.handlePageLoadFinished();
@@ -322,7 +290,6 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void testIphWithNoOverviewModeBehavior() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
-        mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
         mPromoShownOneshotSupplier.set(false);
 
         toggleTabStackButtonCoordinator.handlePageLoadFinished();
@@ -350,7 +317,6 @@ public class ToggleTabStackButtonCoordinatorTest {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
-        mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
         mPromoShownOneshotSupplier.set(false);
 
         mIsIncognito = true;
@@ -367,7 +333,6 @@ public class ToggleTabStackButtonCoordinatorTest {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
-        mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
         mPromoShownOneshotSupplier.set(false);
 
         when(mToggleTabStackButton.isShown()).thenReturn(false);
@@ -380,61 +345,10 @@ public class ToggleTabStackButtonCoordinatorTest {
     }
 
     @Test
-    public void testIphMainIntentFalse() {
-        ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
-                newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
-        mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
-        mIntentMetadataOneshotSupplier.set(
-                new ToolbarIntentMetadata(/*isMainIntent*/ false, /*isIntentWithEffect*/ false));
-        mPromoShownOneshotSupplier.set(false);
-
-        ShadowChromeFeatureList.sParamMap.put(
-                HomeButtonCoordinator.MAIN_INTENT_FROM_LAUNCHER_PARAM_NAME, "");
-        toggleTabStackButtonCoordinator.handlePageLoadFinished();
-        verifyIphShown();
-
-        ShadowChromeFeatureList.sParamMap.put(
-                HomeButtonCoordinator.MAIN_INTENT_FROM_LAUNCHER_PARAM_NAME, "false");
-        toggleTabStackButtonCoordinator.handlePageLoadFinished();
-        verifyIphShown();
-
-        ShadowChromeFeatureList.sParamMap.put(
-                HomeButtonCoordinator.MAIN_INTENT_FROM_LAUNCHER_PARAM_NAME, "true");
-        toggleTabStackButtonCoordinator.handlePageLoadFinished();
-        verifyIphNotShown();
-    }
-
-    @Test
-    public void testIphIntentWithEffectTrue() {
-        ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
-                newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
-        mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
-        mIntentMetadataOneshotSupplier.set(
-                new ToolbarIntentMetadata(/*isMainIntent*/ true, /*isIntentWithEffect*/ true));
-        mPromoShownOneshotSupplier.set(false);
-
-        ShadowChromeFeatureList.sParamMap.put(
-                HomeButtonCoordinator.INTENT_WITH_EFFECT_PARAM_NAME, "");
-        toggleTabStackButtonCoordinator.handlePageLoadFinished();
-        verifyIphShown();
-
-        ShadowChromeFeatureList.sParamMap.put(
-                HomeButtonCoordinator.INTENT_WITH_EFFECT_PARAM_NAME, "false");
-        toggleTabStackButtonCoordinator.handlePageLoadFinished();
-        verifyIphNotShown();
-
-        ShadowChromeFeatureList.sParamMap.put(
-                HomeButtonCoordinator.INTENT_WITH_EFFECT_PARAM_NAME, "true");
-        toggleTabStackButtonCoordinator.handlePageLoadFinished();
-        verifyIphShown();
-    }
-
-    @Test
     public void testIphShowedPromo() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
-        mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
         mPromoShownOneshotSupplier.set(true);
 
         toggleTabStackButtonCoordinator.handlePageLoadFinished();
@@ -442,26 +356,10 @@ public class ToggleTabStackButtonCoordinatorTest {
     }
 
     @Test
-    public void testIphDelayedIntentMetadata() {
-        ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
-                newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
-        mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
-        mPromoShownOneshotSupplier.set(false);
-
-        toggleTabStackButtonCoordinator.handlePageLoadFinished();
-        verifyIphNotShown();
-
-        mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
-        toggleTabStackButtonCoordinator.handlePageLoadFinished();
-        verifyIphShown();
-    }
-
-    @Test
     public void testIphDelayedPromoShown() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
                 newToggleTabStackButtonCoordinator(/*view*/ mToggleTabStackButton);
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
-        mIntentMetadataOneshotSupplier.set(DEFAULT_INTENT_METADATA);
 
         toggleTabStackButtonCoordinator.handlePageLoadFinished();
         verifyIphNotShown();

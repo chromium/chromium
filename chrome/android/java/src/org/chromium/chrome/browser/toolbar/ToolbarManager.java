@@ -1408,11 +1408,11 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 mActivityTabProvider);
         ToggleTabStackButton toggleTabStackButton =
                 mControlContainer.findViewById(R.id.tab_switcher_button);
-        mToggleTabStackButtonCoordinator = new ToggleTabStackButtonCoordinator(mActivity,
-                toggleTabStackButton, userEducationHelper,
-                mIncognitoStateProvider::isIncognitoSelected, mIntentMetadataOneshotSupplier,
-                mPromoShownOneshotSupplier, mLayoutStateProviderSupplier,
-                mToolbar::setNewTabButtonHighlight, mActivityTabProvider);
+        mToggleTabStackButtonCoordinator =
+                new ToggleTabStackButtonCoordinator(mActivity, toggleTabStackButton,
+                        userEducationHelper, mIncognitoStateProvider::isIncognitoSelected,
+                        mPromoShownOneshotSupplier, mLayoutStateProviderSupplier,
+                        mToolbar::setNewTabButtonHighlight, mActivityTabProvider);
         TraceEvent.end("ToolbarManager.initializeWithNative");
     }
 
