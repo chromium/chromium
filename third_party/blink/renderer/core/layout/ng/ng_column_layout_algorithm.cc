@@ -1165,10 +1165,12 @@ void NGColumnLayoutAlgorithm::PropagateBaselineFromChild(
     LayoutUnit block_offset) {
   NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(), child);
 
-  // Only propagate the first-baseline from the first-column.
-  if (child.IsFirstForNode() && !container_builder_.FirstBaseline()) {
-    if (auto first_baseline = fragment.FirstBaseline())
-      container_builder_.SetFirstBaseline(block_offset + *first_baseline);
+  // The first-baseline is the highest first-baseline of all fragments.
+  if (auto first_baseline = fragment.FirstBaseline()) {
+    LayoutUnit baseline = std::min(
+        block_offset + *first_baseline,
+        container_builder_.FirstBaseline().value_or(LayoutUnit::Max()));
+    container_builder_.SetFirstBaseline(baseline);
   }
 
   // The last-baseline is the lowest last-baseline of all fragments.
