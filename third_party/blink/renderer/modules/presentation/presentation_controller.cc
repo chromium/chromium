@@ -17,6 +17,7 @@ namespace blink {
 
 PresentationController::PresentationController(LocalDOMWindow& window)
     : Supplement<LocalDOMWindow>(window),
+      presentation_service_remote_(&window),
       presentation_controller_receiver_(this, &window) {}
 
 PresentationController::~PresentationController() = default;
@@ -44,6 +45,7 @@ PresentationController* PresentationController::FromContext(
 }
 
 void PresentationController::Trace(Visitor* visitor) const {
+  visitor->Trace(presentation_service_remote_);
   visitor->Trace(presentation_controller_receiver_);
   visitor->Trace(presentation_);
   visitor->Trace(connections_);
@@ -139,9 +141,9 @@ PresentationController::FindExistingConnection(
   return nullptr;
 }
 
-mojo::Remote<mojom::blink::PresentationService>&
+HeapMojoRemote<mojom::blink::PresentationService>&
 PresentationController::GetPresentationService() {
-  if (!presentation_service_remote_ && GetSupplementable()) {
+  if (!presentation_service_remote_.is_bound() && GetSupplementable()) {
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
         GetSupplementable()->GetTaskRunner(TaskType::kPresentation);
     GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
