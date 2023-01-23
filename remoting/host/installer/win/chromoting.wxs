@@ -98,9 +98,11 @@
     <PropertyRef Id="WIX_ACCOUNT_LOCALSYSTEM" />
     <PropertyRef Id="WIX_ACCOUNT_ADMINISTRATORS" />
 
+    <!-- Note that Windows10 reports its version as 6.3 rather than 10.0 via
+        the VersionNT WXS var for back-compat reasons. -->
     <Condition
       Message="$(var.ChromotingHost) is only supported on Windows 10 and above.">
-      <![CDATA[Installed OR (VersionNT >= 1000)]]>
+      <![CDATA[Installed OR (VersionNT >= 603)]]>
     </Condition>
 
     <!-- The upgrade rules below could be expressed with MajorUpgrade element.
