@@ -87,4 +87,9 @@ interface UserNotesPage {
   // If the WebUI is in the background we can delay reloading until it is
   // foregrounded.
   NotesChanged();
+
+  // Called when the URL of the current tab has changed.
+  // This could be triggered by either switching tab or navigating to
+  // a new URL.
+  CurrentTabUrlChanged();
 };

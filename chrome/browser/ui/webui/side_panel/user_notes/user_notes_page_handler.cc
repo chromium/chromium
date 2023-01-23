@@ -106,11 +106,7 @@ UserNotesPageHandler::UserNotesPageHandler(
   DCHECK(browser_);
   browser_->tab_strip_model()->AddObserver(this);
   Observe(browser_->tab_strip_model()->GetActiveWebContents());
-  if (browser_->tab_strip_model()->GetActiveWebContents()) {
-    current_tab_url_ = browser_->tab_strip_model()
-                           ->GetActiveWebContents()
-                           ->GetLastCommittedURL();
-  }
+  UpdateCurrentTabUrl();
 }
 
 UserNotesPageHandler::~UserNotesPageHandler() {
@@ -221,13 +217,18 @@ void UserNotesPageHandler::OnTabStripModelChanged(
     return;
   }
   Observe(selection.new_contents);
-  current_tab_url_ = selection.new_contents
-                         ? selection.new_contents->GetLastCommittedURL()
-                         : GURL();
+  UpdateCurrentTabUrl();
 }
 
 void UserNotesPageHandler::PrimaryPageChanged(content::Page& page) {
-  current_tab_url_ = browser_->tab_strip_model()
-                         ->GetActiveWebContents()
-                         ->GetLastCommittedURL();
+  UpdateCurrentTabUrl();
+}
+
+void UserNotesPageHandler::UpdateCurrentTabUrl() {
+  content::WebContents* web_contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
+  if (web_contents && current_tab_url_ != web_contents->GetLastCommittedURL()) {
+    current_tab_url_ = web_contents->GetLastCommittedURL();
+    page_->CurrentTabUrlChanged();
+  }
 }

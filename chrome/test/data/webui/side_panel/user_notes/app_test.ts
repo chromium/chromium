@@ -163,4 +163,14 @@ suite('UserNotesAppTest', () => {
     deleteButton.click();
     await testProxy.whenCalled('deleteNote');
   });
+
+  test('refresh notes when url changes', async () => {
+    let notesElements = queryNotes();
+    assertEquals(notesElements.length, 3);
+    testProxy.setNotes([]);
+    testProxy.getCallbackRouterRemote().currentTabUrlChanged();
+    await flushTasks();
+    notesElements = queryNotes();
+    assertEquals(notesElements.length, 1);
+  });
 });

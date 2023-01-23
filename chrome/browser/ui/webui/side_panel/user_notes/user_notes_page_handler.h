@@ -70,6 +70,8 @@ class UserNotesPageHandler : public side_panel::mojom::UserNotesPageHandler,
   // WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
 
+  void UpdateCurrentTabUrl();
+
   mojo::Receiver<side_panel::mojom::UserNotesPageHandler> receiver_;
   mojo::Remote<side_panel::mojom::UserNotesPage> page_;
   const raw_ptr<Profile> profile_;

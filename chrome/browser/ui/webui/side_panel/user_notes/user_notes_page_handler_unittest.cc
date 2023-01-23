@@ -43,6 +43,7 @@ class MockUserNotesPage : public side_panel::mojom::UserNotesPage {
   mojo::Receiver<side_panel::mojom::UserNotesPage> receiver_{this};
 
   MOCK_METHOD0(NotesChanged, void());
+  MOCK_METHOD0(CurrentTabUrlChanged, void());
 };
 
 struct Note {

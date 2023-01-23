@@ -10,6 +10,8 @@ export class TestUserNotesApiProxy extends TestBrowserProxy implements
     UserNotesApiProxy {
   private callbackRouter_: UserNotesPageCallbackRouter =
       new UserNotesPageCallbackRouter();
+  private callbackRouterRemote_ =
+      this.callbackRouter_.$.bindNewPipeAndPassRemote();
   private notes_: Note[];
 
   constructor() {
@@ -50,6 +52,10 @@ export class TestUserNotesApiProxy extends TestBrowserProxy implements
 
   getCallbackRouter() {
     return this.callbackRouter_;
+  }
+
+  getCallbackRouterRemote() {
+    return this.callbackRouterRemote_;
   }
 
   setNotes(notes: Note[]) {
