@@ -25,6 +25,7 @@
 #include "chromecast/browser/mojom/cast_web_service.mojom.h"
 #include "chromecast/browser/named_message_port_connector_cast.h"
 #include "chromecast/mojo/remote_interfaces.h"
+#include "components/media_control/browser/media_blocker.h"
 #include "components/on_load_script_injector/browser/on_load_script_injector_host.h"
 #include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -64,6 +65,7 @@ class CastWebContentsImpl : public CastWebContents,
   PageState page_state() const override;
   url_rewrite::UrlRequestRewriteRulesManager* url_rewrite_rules_manager()
       override;
+  const media_control::MediaBlocker* media_blocker() const override;
 
   // CastWebContents implementation:
   int tab_id() const override;

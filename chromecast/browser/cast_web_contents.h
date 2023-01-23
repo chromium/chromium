@@ -36,6 +36,10 @@ class NavigationHandle;
 class WebContents;
 }  // namespace content
 
+namespace media_control {
+class MediaBlocker;
+}  // namespace media_control
+
 namespace url_rewrite {
 class UrlRequestRewriteRulesManager;
 }  // namespace url_rewrite
@@ -184,6 +188,7 @@ class CastWebContents : public mojom::CastWebContents {
   virtual PageState page_state() const = 0;
   virtual url_rewrite::UrlRequestRewriteRulesManager*
   url_rewrite_rules_manager() = 0;
+  virtual const media_control::MediaBlocker* media_blocker() const = 0;
 
   // mojom::CastWebContents implementation:
   void SetAppProperties(const std::string& app_id,

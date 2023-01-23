@@ -33,7 +33,9 @@ public class CastWebContentsComponent {
      * Callback interface for when the associated component is closed or the
      * WebContents is detached.
      */
-    public interface OnComponentClosedHandler { void onComponentClosed(); }
+    public interface OnComponentClosedHandler {
+        void onComponentClosed();
+    }
 
     /**
      * Callback interface for when UI events occur.
@@ -49,11 +51,14 @@ public class CastWebContentsComponent {
         public final Context context;
         public final WebContents webContents;
         public final String appId;
+        public final boolean shouldRequestAudioFocus;
 
-        public StartParams(Context context, WebContents webContents, String appId) {
+        public StartParams(Context context, WebContents webContents, String appId,
+                boolean shouldRequestAudioFocus) {
             this.context = context;
             this.webContents = webContents;
             this.appId = appId;
+            this.shouldRequestAudioFocus = shouldRequestAudioFocus;
         }
 
         @Override
@@ -88,7 +93,7 @@ public class CastWebContentsComponent {
             if (mStarted) return; // No-op if already started.
             if (DEBUG) Log.d(TAG, "start: SHOW_WEB_CONTENT in activity");
             startCastActivity(params.context, params.webContents, mEnableTouchInput,
-                    mShouldRequestAudioFocus, mTurnOnScreen);
+                    params.shouldRequestAudioFocus, mTurnOnScreen);
             mStarted = true;
         }
 
@@ -160,26 +165,23 @@ public class CastWebContentsComponent {
     private boolean mStarted;
     private boolean mEnableTouchInput;
     private boolean mMediaPlaying;
-    private final boolean mShouldRequestAudioFocus;
     private final boolean mTurnOnScreen;
     private final boolean mKeepScreenOn;
 
     public CastWebContentsComponent(String sessionId,
             OnComponentClosedHandler onComponentClosedHandler,
-            SurfaceEventHandler surfaceEventHandler, boolean enableTouchInput,
-            boolean shouldRequestAudioFocus, boolean turnOnScreen, boolean keepScreenOn) {
+            SurfaceEventHandler surfaceEventHandler, boolean enableTouchInput, boolean turnOnScreen,
+            boolean keepScreenOn) {
         if (DEBUG) {
             Log.d(TAG,
                     "New CastWebContentsComponent. Instance ID: " + sessionId
-                            + "; enableTouchInput:" + enableTouchInput
-                            + "; shouldRequestAudioFocus:" + shouldRequestAudioFocus);
+                            + "; enableTouchInput:" + enableTouchInput);
         }
 
         mComponentClosedHandler = onComponentClosedHandler;
         mEnableTouchInput = enableTouchInput;
         mSessionId = sessionId;
         mSurfaceEventHandler = surfaceEventHandler;
-        mShouldRequestAudioFocus = shouldRequestAudioFocus;
         mTurnOnScreen = turnOnScreen;
         mKeepScreenOn = keepScreenOn;
 
@@ -192,7 +194,7 @@ public class CastWebContentsComponent {
             filter.addAction(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED);
             filter.addAction(CastWebContentsIntentUtils.ACTION_ON_VISIBILITY_CHANGE);
             filter.addAction(CastWebContentsIntentUtils.ACTION_REQUEST_MEDIA_PLAYING_STATUS);
-            return new LocalBroadcastReceiverScope(filter, this ::onReceiveIntent);
+            return new LocalBroadcastReceiverScope(filter, this::onReceiveIntent);
         });
     }
 
@@ -240,7 +242,8 @@ public class CastWebContentsComponent {
         if (DEBUG) {
             Log.d(TAG,
                     "Starting WebContents with delegate: " + mDelegate.getClass().getSimpleName()
-                            + "; Instance ID: " + mSessionId + "; App ID: " + params.appId);
+                            + "; Instance ID: " + mSessionId + "; App ID: " + params.appId
+                            + "; shouldRequestAudioFocus: " + params.shouldRequestAudioFocus);
         }
         mHasWebContentsState.set(params.webContents);
         mDelegate.start(params);

@@ -27,6 +27,10 @@ class MockCastWebContents : public CastWebContents {
               url_rewrite_rules_manager,
               (),
               (override));
+  MOCK_METHOD(const media_control::MediaBlocker*,
+              media_blocker,
+              (),
+              (const override));
   MOCK_METHOD(void, AddRendererFeatures, (base::Value), (override));
   MOCK_METHOD(void,
               SetInterfacesForRenderer,

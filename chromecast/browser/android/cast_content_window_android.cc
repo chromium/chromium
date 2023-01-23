@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "chromecast/browser/jni_headers/CastContentWindowAndroid_jni.h"
+#include "components/media_control/browser/media_blocker.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace chromecast {
@@ -21,16 +22,26 @@ namespace {
 base::android::ScopedJavaLocalRef<jobject> CreateJavaWindow(
     jlong native_window,
     bool enable_touch_input,
-    bool should_request_audio_focus,
     bool turn_on_screen,
     bool keep_screen_on,
     const std::string& session_id,
     const std::string& display_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_CastContentWindowAndroid_create(
-      env, native_window, enable_touch_input, should_request_audio_focus,
-      turn_on_screen, keep_screen_on, ConvertUTF8ToJavaString(env, session_id),
+      env, native_window, enable_touch_input, turn_on_screen, keep_screen_on,
+      ConvertUTF8ToJavaString(env, session_id),
       ConvertUTF8ToJavaString(env, display_id));
+}
+
+bool ShouldRequestAudioFocus(bool is_remote_control_mode,
+                             const media_control::MediaBlocker* media_blocker) {
+  if (is_remote_control_mode) {
+    return false;
+  }
+  if (!media_blocker) {
+    return true;
+  }
+  return !media_blocker->media_loading_blocked();
 }
 
 }  // namespace
@@ -41,7 +52,6 @@ CastContentWindowAndroid::CastContentWindowAndroid(
       web_contents_attached_(false),
       java_window_(CreateJavaWindow(reinterpret_cast<jlong>(this),
                                     params_->enable_touch_input,
-                                    params_->should_request_audio_focus,
                                     params_->turn_on_screen,
                                     params_->keep_screen_on,
                                     params_->session_id,
@@ -67,7 +77,9 @@ void CastContentWindowAndroid::CreateWindow(
 
   Java_CastContentWindowAndroid_createWindowForWebContents(
       env, java_window_, java_web_contents,
-      ConvertUTF8ToJavaString(env, params_->activity_id));
+      ConvertUTF8ToJavaString(env, params_->activity_id),
+      ShouldRequestAudioFocus(params_->is_remote_control_mode,
+                              cast_web_contents()->media_blocker()));
   web_contents_attached_ = true;
   cast_web_contents()->web_contents()->Focus();
 }
