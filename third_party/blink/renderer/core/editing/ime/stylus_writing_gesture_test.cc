@@ -6,7 +6,9 @@
 #include <gtest/gtest.h>
 #include "third_party/blink/public/mojom/input/stylus_writing_gesture.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -45,6 +47,8 @@ class StylusWritingGestureTest : public SimTest {
   }
 
   HTMLInputElement* SetUpSingleInput();
+
+  HTMLTextAreaElement* SetUpMultilineInput();
 
   WebFrameWidgetImpl* WidgetImpl() {
     return static_cast<WebFrameWidgetImpl*>(LocalFrameRoot().FrameWidget());
@@ -93,6 +97,42 @@ HTMLInputElement* StylusWritingGestureTest::SetUpSingleInput() {
   return input_element;
 }
 
+HTMLTextAreaElement* StylusWritingGestureTest::SetUpMultilineInput() {
+  SimRequest main_resource("https://example.com", "text/html");
+  SimSubresourceRequest font_resource("https://example.com/Ahem.woff2",
+                                      "font/woff2");
+
+  LoadURL("https://example.com");
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <style>
+      @font-face {
+        font-family: custom-font;
+        src: url(https://example.com/Ahem.woff2) format("woff2");
+      }
+      body {
+        margin: 0;
+      }
+      #target {
+        font: 10px/1 custom-font, monospace;
+        padding: none;
+        border: none;
+      }
+    </style>
+    <textarea type='text' id='target' rows='4'/>
+  )HTML");
+
+  Compositor().BeginFrame();
+  // Finish font loading, and trigger invalidations.
+  font_resource.Complete(ReadAhemWoff2());
+  GetDocument().GetStyleEngine().InvalidateStyleAndLayoutForFontUpdates();
+  Compositor().BeginFrame();
+  HTMLTextAreaElement* input_element =
+      DynamicTo<HTMLTextAreaElement>(*GetDocument().getElementById("target"));
+  input_element->Focus();
+  return input_element;
+}
+
 TEST_F(StylusWritingGestureTest, TestGestureDelete) {
   auto* input = SetUpSingleInput();
   input->SetValue("ABCD EFGH");
@@ -127,8 +167,6 @@ TEST_F(StylusWritingGestureTest, TestGestureDelete) {
   EXPECT_EQ(3, range.EndOffset());
 }
 
-// Re-enable once https://crbug.com/1404969 is fixed and the middle of word
-// logic is implemented in stylus_writing_gesture.cc.
 TEST_F(StylusWritingGestureTest, TestGestureDeleteWithWordGranularity) {
   auto* input = SetUpSingleInput();
 
@@ -164,6 +202,28 @@ TEST_F(StylusWritingGestureTest, TestGestureDeleteWithWordGranularity) {
     WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data));
     EXPECT_EQ(test_case.expected, input->Value());
   }
+}
+
+// https://crbug.com/1407262
+TEST_F(StylusWritingGestureTest, TestGestureAtEndOfLineWithWordGranularity) {
+  auto* input = SetUpMultilineInput();
+  auto* inner_editor = input->InnerEditorElement();
+  Document& doc = GetDocument();
+  inner_editor->appendChild(Text::Create(doc, "ABCD"));
+  inner_editor->appendChild(Text::Create(doc, "\n"));
+  inner_editor->appendChild(Text::Create(doc, "EFGH"));
+
+  mojom::blink::StylusWritingGestureDataPtr gesture_data(
+      mojom::blink::StylusWritingGestureData::New());
+  gesture_data->action = mojom::blink::StylusWritingGestureAction::DELETE_TEXT;
+  gesture_data->granularity =
+      mojom::blink::StylusWritingGestureGranularity::WORD;
+  gesture_data->start_point = gfx::Point(0, 6);
+  gesture_data->end_point = gfx::Point(60, 6);
+  gesture_data->text_alternative = text_alternative;
+
+  WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data));
+  EXPECT_EQ("\nEFGH", input->Value());
 }
 
 TEST_F(StylusWritingGestureTest, TestGestureRemoveSpaces) {

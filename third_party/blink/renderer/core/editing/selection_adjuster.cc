@@ -205,7 +205,7 @@ class GranularityAdjuster final {
               passed_end.GetPosition(), ChooseWordSide(original_end));
           const PositionTemplate<Strategy> word_middle =
               MiddleOfWordPosition(word_start, word_end.DeepEquivalent());
-          if (word_middle > passed_end.GetPosition()) {
+          if (word_middle.IsNull() or word_middle > passed_end.GetPosition()) {
             return word_start;
           }
         }

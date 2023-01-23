@@ -347,6 +347,9 @@ Position StartOfWordPosition(const Position& position, WordSide side) {
 
 PositionInFlatTree MiddleOfWordPosition(const PositionInFlatTree& word_start,
                                         const PositionInFlatTree& word_end) {
+  if (word_start >= word_end) {
+    return PositionInFlatTree(nullptr, 0);
+  }
   unsigned middle =
       TextIteratorAlgorithm<EditingInFlatTreeStrategy>::RangeLength(word_start,
                                                                     word_end) /
@@ -363,7 +366,7 @@ PositionInFlatTree MiddleOfWordPosition(const PositionInFlatTree& word_start,
     middle -= length;
   }
   NOTREACHED();
-  return PositionInFlatTree(nullptr, -1);
+  return PositionInFlatTree(nullptr, 0);
 }
 
 Position MiddleOfWordPosition(const Position& word_start,
