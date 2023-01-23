@@ -2429,11 +2429,12 @@ config("symbols") {
 
     # The gcc-based nacl compilers don't support -fdebug-compilation-dir (see
     # elsewhere in this file), so they can't have build-dir-independent output.
+    # Moreover pnacl does not support newer flags such as -fdebug-prefix-map
     # Disable symbols for nacl object files to get deterministic,
-    # build-directory-independent output. pnacl and nacl-clang do support that
-    # flag, so we can use use -g1 for pnacl and nacl-clang compiles.
-    # gcc nacl is is_nacl && !is_clang, pnacl and nacl-clang are && is_clang.
-    if ((!is_nacl || is_clang) && current_os != "zos") {
+    # build-directory-independent output.
+    # Keeping -g2 for saigo as it's the only toolchain whose artifacts that are
+    # part of chromium release (other nacl toolchains are used only for tests).
+    if ((!is_nacl || is_nacl_saigo) && current_os != "zos") {
       cflags += [ "-g2" ]
     }
 
@@ -2560,11 +2561,12 @@ config("minimal_symbols") {
 
     # The gcc-based nacl compilers don't support -fdebug-compilation-dir (see
     # elsewhere in this file), so they can't have build-dir-independent output.
+    # Moreover pnacl does not support newer flags such as -fdebug-prefix-map
     # Disable symbols for nacl object files to get deterministic,
-    # build-directory-independent output. pnacl and nacl-clang do support that
-    # flag, so we can use use -g1 for pnacl and nacl-clang compiles.
-    # gcc nacl is is_nacl && !is_clang, pnacl and nacl-clang are && is_clang.
-    if (!is_nacl || is_clang) {
+    # build-directory-independent output.
+    # Keeping -g1 for saigo as it's the only toolchain whose artifacts that are
+    # part of chromium release (other nacl toolchains are used only for tests).
+    if (!is_nacl || is_nacl_saigo) {
       cflags += [ "-g1" ]
     }
 
