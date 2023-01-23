@@ -13553,6 +13553,24 @@
             ]
         }
     ],
+    "WhatsNewIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Module_Based_UI",
+                    "params": {
+                        "whats_new_module_based_layout": "true"
+                    },
+                    "enable_features": [
+                        "WhatsNewIOS"
+                    ]
+                }
+            ]
+        }
+    ],
     "Win10UnattendedDefault": [
         {
             "platforms": [

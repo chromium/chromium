@@ -169,7 +169,7 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
   [ChromeEarlGreyUI openToolsMenu];
 
   [[[EarlGrey selectElementWithMatcher:ReadingListTextBadge()]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionRight, 150)
       onElementWithMatcher:grey_accessibilityID(kPopupMenuToolsMenuTableViewId)]
       assertWithMatcher:grey_notNil()];
 
@@ -182,7 +182,7 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(
                                               kToolsMenuReadingListId),
                                           grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionRight, 150)
       onElementWithMatcher:grey_accessibilityID(kPopupMenuToolsMenuTableViewId)]
       assertWithMatcher:grey_notNil()];
 
