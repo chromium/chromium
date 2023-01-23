@@ -856,13 +856,6 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
                                   AggregatableResult::kInternalError);
   }
 
-  if (source_to_attribute->source.common_info()
-          .aggregation_keys()
-          .keys()
-          .empty()) {
-    aggregatable_status = AggregatableResult::kNotRegistered;
-  }
-
   const bool top_level_filters_match = AttributionFiltersMatch(
       source_to_attribute->source.common_info().filter_data(),
       source_to_attribute->source.common_info().source_type(),

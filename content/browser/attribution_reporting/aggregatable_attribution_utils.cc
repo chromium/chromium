@@ -100,10 +100,11 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
             aggregatable_trigger_data.vec().size());
   }
 
-  DCHECK(!buckets.empty());
-  base::UmaHistogramPercentage(
-      "Conversions.AggregatableReport.DroppedKeysPercentage",
-      100 * (buckets.size() - contributions.size()) / buckets.size());
+  if (!buckets.empty()) {
+    base::UmaHistogramPercentage(
+        "Conversions.AggregatableReport.DroppedKeysPercentage",
+        100 * (buckets.size() - contributions.size()) / buckets.size());
+  }
 
   const int kExclusiveMaxHistogramValue = 101;
 

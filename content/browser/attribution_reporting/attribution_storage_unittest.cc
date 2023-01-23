@@ -58,6 +58,7 @@ namespace {
 
 using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::Ge;
 using ::testing::IsEmpty;
 using ::testing::IsTrue;
@@ -2924,6 +2925,25 @@ TEST_F(AttributionStorageTest,
             NewEventLevelReportIs(absl::nullopt),
             NewAggregatableReportIs(absl::nullopt)));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), IsEmpty());
+}
+
+TEST_F(AttributionStorageTest,
+       AggregatableAttributionNoAggregationKeys_NoContributions) {
+  storage()->StoreSource(SourceBuilder().Build());
+
+  AttributionTrigger trigger =
+      DefaultAggregatableTriggerBuilder(/*histogram_values=*/{5})
+          .SetTriggerData(5)
+          .Build();
+
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(trigger),
+      AllOf(CreateReportEventLevelStatusIs(
+                AttributionTrigger::EventLevelResult::kSuccess),
+            CreateReportAggregatableStatusIs(
+                AttributionTrigger::AggregatableResult::kNoHistograms),
+            NewEventLevelReportIs(Optional(EventLevelDataIs(TriggerDataIs(5)))),
+            NewAggregatableReportIs(Eq(absl::nullopt))));
 }
 
 TEST_F(AttributionStorageTest, AggregatableAttribution_ReportsScheduled) {
