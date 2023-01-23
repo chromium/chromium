@@ -79,7 +79,7 @@
       BOOL isUserEngaged = [self isUserEngaged];
       base::UmaHistogramBoolean("IOS.AppStoreRating.UserIsEligible",
                                 isUserEngaged);
-      if (isUserEngaged) {
+      if (isUserEngaged && [self promoShownOver365DaysAgo]) {
         [self requestPromoDisplay];
       }
       break;
@@ -120,6 +120,7 @@
   }
   _promosManager->RegisterPromoForSingleDisplay(
       promos_manager::Promo::AppStoreRating);
+  [self recordPromoRequested];
 }
 
 // Returns an array of user's active days in the past week, not including the
@@ -181,4 +182,26 @@
   [self storeActiveDaysInPastWeek:activeDaysInPastWeek];
 }
 
+// Called when promo is registered with promos manager. Saves today's date to
+// NSUserDefaults.
+- (void)recordPromoRequested {
+  base::Time today = base::Time::Now().UTCMidnight();
+  [[NSUserDefaults standardUserDefaults]
+      setObject:today.ToNSDate()
+         forKey:kAppStoreRatingLastShownPromoDayKey];
+}
+
+// Checks if the the promo was already requested for the user within the past
+// 365 days.
+- (BOOL)promoShownOver365DaysAgo {
+  NSDate* lastShown =
+      base::mac::ObjCCastStrict<NSDate>([[NSUserDefaults standardUserDefaults]
+          objectForKey:kAppStoreRatingLastShownPromoDayKey]);
+  if (!lastShown) {
+    return YES;
+  }
+  base::TimeDelta daysSincePromoLastShown =
+      base::Time::Now().UTCMidnight() - base::Time::FromNSDate(lastShown);
+  return daysSincePromoLastShown > base::Days(365);
+}
 @end

@@ -97,11 +97,20 @@ class AppStoreRatingSceneAgentTest : public PlatformTest {
            forKey:kAppStoreRatingActiveDaysInPastWeekKey];
   }
 
+  // Set kAppStoreRatingLastShownPromoDayKey in NSUserDefaults.
+  void SetPromoLastShownDaysAgo(int daysAgo) {
+    NSDate* date = CreateDateFromToday(-daysAgo);
+    [[NSUserDefaults standardUserDefaults]
+        setObject:date
+           forKey:kAppStoreRatingLastShownPromoDayKey];
+  }
+
   // Remove the keys added to NSUserDefaults.
   void ClearUserDefaults() {
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
     [defaults removeObjectForKey:kAppStoreRatingActiveDaysInPastWeekKey];
     [defaults removeObjectForKey:kAppStoreRatingTotalDaysOnChromeKey];
+    [defaults removeObjectForKey:kAppStoreRatingLastShownPromoDayKey];
     ClearDefaultBrowserPromoData();
   }
 
@@ -149,6 +158,7 @@ TEST_F(AppStoreRatingSceneAgentTest, TestChromeNotUsed3DaysInPastWeek) {
   SetTotalDaysOnChrome(16);
   EnableCPE();
   SetTrueChromeLikelyDefaultBrowser();
+  SetPromoLastShownDaysAgo(366);
 
   // Simulating the user launching or resuming the app.
   [test_scene_agent_ sceneState:fake_scene_state_
@@ -166,6 +176,7 @@ TEST_F(AppStoreRatingSceneAgentTest, TestChromeNotUsed15Days) {
   SetTotalDaysOnChrome(10);
   EnableCPE();
   SetTrueChromeLikelyDefaultBrowser();
+  SetPromoLastShownDaysAgo(366);
 
   // Simulating the user launching or resuming the app.
   [test_scene_agent_ sceneState:fake_scene_state_
@@ -182,6 +193,7 @@ TEST_F(AppStoreRatingSceneAgentTest, TestCPENotEnabled) {
   SetTotalDaysOnChrome(17);
   DisableCPE();
   SetTrueChromeLikelyDefaultBrowser();
+  SetPromoLastShownDaysAgo(366);
 
   // Simulating the user launching or resuming the app.
   [test_scene_agent_ sceneState:fake_scene_state_
@@ -199,6 +211,7 @@ TEST_F(AppStoreRatingSceneAgentTest, TestChromeNotDefaultBrowser) {
   SetTotalDaysOnChrome(15);
   EnableCPE();
   SetFalseChromeLikelyDefaultBrowser();
+  SetPromoLastShownDaysAgo(366);
 
   // Simulating the user launching or resuming the app.
   [test_scene_agent_ sceneState:fake_scene_state_
@@ -215,9 +228,27 @@ TEST_F(AppStoreRatingSceneAgentTest, TestPolicyDisabled) {
   SetTotalDaysOnChrome(16);
   EnableCPE();
   SetTrueChromeLikelyDefaultBrowser();
+  SetPromoLastShownDaysAgo(366);
 
   // Disabling the policy.
   local_state_.Get()->SetBoolean(prefs::kAppStoreRatingPolicyEnabled, false);
+
+  // Simulating the user launching or resuming the app.
+  [test_scene_agent_ sceneState:fake_scene_state_
+      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
+}
+
+// Tests that promo display is not requested when the promo has already been
+// registered in the past 365 days.
+TEST_F(AppStoreRatingSceneAgentTest, TestPromoRegisteredLessThan365DaysAgo) {
+  EXPECT_CALL(*promos_manager_.get(), RegisterPromoForSingleDisplay(_))
+      .Times(0);
+
+  SetActiveDaysInPastWeek(3);
+  SetTotalDaysOnChrome(15);
+  EnableCPE();
+  SetTrueChromeLikelyDefaultBrowser();
+  SetPromoLastShownDaysAgo(360);
 
   // Simulating the user launching or resuming the app.
   [test_scene_agent_ sceneState:fake_scene_state_
@@ -237,6 +268,7 @@ TEST_F(AppStoreRatingSceneAgentTest, TestPromoCorrectlyRequested) {
   SetTotalDaysOnChrome(15);
   EnableCPE();
   SetTrueChromeLikelyDefaultBrowser();
+  SetPromoLastShownDaysAgo(366);
 
   // Simulating the user launching or resuming the app.
   [test_scene_agent_ sceneState:fake_scene_state_
