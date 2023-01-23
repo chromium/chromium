@@ -5472,6 +5472,37 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, UnknownSignatureAlgorithm) {
   }
 }
 
+TEST_P(CertVerifyProcConstraintsTrustedLeafTest, WeakSignatureAlgorithm) {
+  chain_[0]->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha1);
+
+  if (VerifyProcTypeIsBuiltin()) {
+    // Since no chain is found, signature is not checked, fails with generic
+    // error for untrusted chain.
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
+
+    // Valid since signature on directly trusted leaf is not checked.
+    EXPECT_THAT(VerifyAsTrustedLeaf(), IsOk());
+
+    // Cert is not self-signed so directly trusted leaf with
+    // require_leaf_selfsigned should fail.
+    EXPECT_THAT(
+        VerifyWithTrust(
+            CertificateTrust::ForTrustedLeaf().WithRequireLeafSelfSigned()),
+        IsError(ERR_CERT_AUTHORITY_INVALID));
+  } else if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
+  } else if (verify_proc_type() == CERT_VERIFY_PROC_MAC ||
+             verify_proc_type() == CERT_VERIFY_PROC_IOS) {
+    if (VerifyProcTypeIsMacAtMostOS10_14()) {
+      EXPECT_THAT(Verify(), IsOk());
+    } else {
+      EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+    }
+  } else {
+    EXPECT_THAT(Verify(), IsOk());
+  }
+}
+
 TEST_P(CertVerifyProcConstraintsTrustedLeafTest, UnknownExtension) {
   for (bool critical : {true, false}) {
     SCOPED_TRACE(critical);
@@ -5741,6 +5772,28 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,
                 IsError(ERR_CERT_INVALID));
   } else if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+  } else {
+    EXPECT_THAT(Verify(), IsOk());
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest, WeakSignatureAlgorithm) {
+  cert_->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha1);
+  if (VerifyProcTypeIsBuiltin()) {
+    // Attempts to verify as anchor of itself, which fails due to the weak
+    // signature algorithm.
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
+
+    // Signature not checked when verified as a directly trusted leaf without
+    // require_leaf_selfsigned.
+    EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForTrustedLeaf()), IsOk());
+
+    // require_leaf_selfsigned allows any supported signature algorithm when
+    // doing the self-signed check, so this is okay.
+    EXPECT_THAT(VerifyAsTrustedSelfSignedLeaf(), IsOk());
+    EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForTrustAnchorOrLeaf()
+                                    .WithRequireLeafSelfSigned()),
+                IsOk());
   } else {
     EXPECT_THAT(Verify(), IsOk());
   }
