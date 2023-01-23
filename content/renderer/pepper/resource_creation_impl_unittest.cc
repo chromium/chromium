@@ -92,11 +92,11 @@ class ResourceCreationImplTest : public testing::Test {
   bool was_video_decoder_impl_created_ = false;
 };
 
-TEST_F(ResourceCreationImplTest, APISupportedByDefault) {
+TEST_F(ResourceCreationImplTest, APIUnsupportedByDefault) {
   resource_creation_impl()->CreateVideoDecoderDev(
       0, 0, static_cast<PP_VideoDecoder_Profile>(-1));
 
-  EXPECT_TRUE(was_video_decoder_impl_created());
+  EXPECT_FALSE(was_video_decoder_impl_created());
 }
 
 TEST_F(ResourceCreationImplTest,
