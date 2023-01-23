@@ -515,27 +515,8 @@ test("gpu_unittests") {
     "command_buffer/service/gl_context_virtual_unittest.cc",
     "command_buffer/service/gl_surface_mock.cc",
     "command_buffer/service/gl_surface_mock.h",
-    "command_buffer/service/gles2_cmd_decoder_unittest.cc",
-    "command_buffer/service/gles2_cmd_decoder_unittest.h",
-    "command_buffer/service/gles2_cmd_decoder_unittest_1.cc",
-    "command_buffer/service/gles2_cmd_decoder_unittest_1_autogen.h",
-    "command_buffer/service/gles2_cmd_decoder_unittest_2.cc",
-    "command_buffer/service/gles2_cmd_decoder_unittest_2_autogen.h",
-    "command_buffer/service/gles2_cmd_decoder_unittest_3.cc",
-    "command_buffer/service/gles2_cmd_decoder_unittest_3_autogen.h",
-    "command_buffer/service/gles2_cmd_decoder_unittest_4.cc",
-    "command_buffer/service/gles2_cmd_decoder_unittest_4_autogen.h",
-    "command_buffer/service/gles2_cmd_decoder_unittest_attribs.cc",
     "command_buffer/service/gles2_cmd_decoder_unittest_base.cc",
     "command_buffer/service/gles2_cmd_decoder_unittest_base.h",
-    "command_buffer/service/gles2_cmd_decoder_unittest_buffers.cc",
-    "command_buffer/service/gles2_cmd_decoder_unittest_context_lost.cc",
-    "command_buffer/service/gles2_cmd_decoder_unittest_context_state.cc",
-    "command_buffer/service/gles2_cmd_decoder_unittest_drawing.cc",
-    "command_buffer/service/gles2_cmd_decoder_unittest_extensions.cc",
-    "command_buffer/service/gles2_cmd_decoder_unittest_framebuffers.cc",
-    "command_buffer/service/gles2_cmd_decoder_unittest_programs.cc",
-    "command_buffer/service/gles2_cmd_decoder_unittest_textures.cc",
     "command_buffer/service/gpu_service_test.cc",
     "command_buffer/service/gpu_service_test.h",
     "command_buffer/service/gpu_tracer_unittest.cc",
@@ -602,6 +583,30 @@ test("gpu_unittests") {
     "ipc/service/gpu_channel_unittest.cc",
     "ipc/service/gpu_watchdog_thread_unittest.cc",
   ]
+
+  if (enable_validating_command_decoder) {
+    sources += [
+      "command_buffer/service/gles2_cmd_decoder_unittest.cc",
+      "command_buffer/service/gles2_cmd_decoder_unittest.h",
+      "command_buffer/service/gles2_cmd_decoder_unittest_1.cc",
+      "command_buffer/service/gles2_cmd_decoder_unittest_1_autogen.h",
+      "command_buffer/service/gles2_cmd_decoder_unittest_2.cc",
+      "command_buffer/service/gles2_cmd_decoder_unittest_2_autogen.h",
+      "command_buffer/service/gles2_cmd_decoder_unittest_3.cc",
+      "command_buffer/service/gles2_cmd_decoder_unittest_3_autogen.h",
+      "command_buffer/service/gles2_cmd_decoder_unittest_4.cc",
+      "command_buffer/service/gles2_cmd_decoder_unittest_4_autogen.h",
+      "command_buffer/service/gles2_cmd_decoder_unittest_attribs.cc",
+      "command_buffer/service/gles2_cmd_decoder_unittest_buffers.cc",
+      "command_buffer/service/gles2_cmd_decoder_unittest_context_lost.cc",
+      "command_buffer/service/gles2_cmd_decoder_unittest_context_state.cc",
+      "command_buffer/service/gles2_cmd_decoder_unittest_drawing.cc",
+      "command_buffer/service/gles2_cmd_decoder_unittest_extensions.cc",
+      "command_buffer/service/gles2_cmd_decoder_unittest_framebuffers.cc",
+      "command_buffer/service/gles2_cmd_decoder_unittest_programs.cc",
+      "command_buffer/service/gles2_cmd_decoder_unittest_textures.cc",
+    ]
+  }
 
   if (is_chromeos_ash) {
     # Image decode acceleration with hardware is only supported in Chrome OS.
