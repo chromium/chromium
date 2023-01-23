@@ -129,6 +129,7 @@
     "libs/org_checkerframework_checker_util",
     "libs/org_checkerframework_dataflow_errorprone",
     "libs/org_codehaus_mojo_animal_sniffer_annotations",
+    "libs/org_conscrypt_conscrypt_openjdk_uber",
     "libs/org_eclipse_jgit_org_eclipse_jgit",
     "libs/org_hamcrest_hamcrest",
     "libs/org_jetbrains_annotations",
