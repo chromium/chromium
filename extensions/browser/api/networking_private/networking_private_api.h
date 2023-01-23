@@ -243,7 +243,7 @@ class NetworkingPrivateGetEnabledNetworkTypesFunction
   ResponseAction Run() override;
 
  private:
-  void Result(std::unique_ptr<base::Value> enabled_networks_onc_types);
+  void Result(base::Value::List enabled_networks_onc_types);
 };
 
 // Implements the chrome.networkingPrivate.getDeviceStates method.

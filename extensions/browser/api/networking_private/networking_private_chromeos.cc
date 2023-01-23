@@ -675,7 +675,7 @@ void NetworkingPrivateChromeOS::GetEnabledNetworkTypes(
     EnabledNetworkTypesCallback callback) {
   NetworkStateHandler* state_handler = GetStateHandler();
 
-  base::Value network_list(base::Value::Type::LIST);
+  base::Value::List network_list;
 
   if (state_handler->IsTechnologyEnabled(NetworkTypePattern::Ethernet()))
     network_list.Append(::onc::network_type::kEthernet);
@@ -684,8 +684,7 @@ void NetworkingPrivateChromeOS::GetEnabledNetworkTypes(
   if (state_handler->IsTechnologyEnabled(NetworkTypePattern::Cellular()))
     network_list.Append(::onc::network_type::kCellular);
 
-  std::move(callback).Run(
-      base::Value::ToUniquePtrValue(std::move(network_list)));
+  std::move(callback).Run(std::move(network_list));
 }
 
 void NetworkingPrivateChromeOS::GetDeviceStateList(

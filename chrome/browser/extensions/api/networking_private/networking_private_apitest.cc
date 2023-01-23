@@ -165,7 +165,7 @@ class TestNetworkingPrivateDelegate : public NetworkingPrivateDelegate {
     if (!fail_) {
       result.Append(::onc::network_config::kEthernet);
     }
-    std::move(callback).Run(std::make_unique<base::Value>(std::move(result)));
+    std::move(callback).Run(std::move(result));
   }
 
   void GetDeviceStateList(DeviceStateListCallback callback) override {

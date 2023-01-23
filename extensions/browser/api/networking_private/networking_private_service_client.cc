@@ -330,10 +330,9 @@ void NetworkingPrivateServiceClient::SelectCellularMobileNetwork(
 
 void NetworkingPrivateServiceClient::GetEnabledNetworkTypes(
     EnabledNetworkTypesCallback callback) {
-  base::Value network_list(base::Value::Type::LIST);
+  base::Value::List network_list;
   network_list.Append(::onc::network_type::kWiFi);
-  std::move(callback).Run(
-      base::Value::ToUniquePtrValue(std::move(network_list)));
+  std::move(callback).Run(std::move(network_list));
 }
 
 void NetworkingPrivateServiceClient::GetDeviceStateList(

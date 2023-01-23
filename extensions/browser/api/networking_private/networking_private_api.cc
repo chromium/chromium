@@ -474,11 +474,12 @@ NetworkingPrivateGetEnabledNetworkTypesFunction::Run() {
 }
 
 void NetworkingPrivateGetEnabledNetworkTypesFunction::Result(
-    std::unique_ptr<base::Value> enabled_networks_onc_types) {
-  if (enabled_networks_onc_types->GetList().empty())
+    base::Value::List enabled_networks_onc_types) {
+  if (enabled_networks_onc_types.empty()) {
     return Respond(Error(networking_private::kErrorNotSupported));
-  base::Value enabled_networks_list(base::Value::Type::LIST);
-  for (const auto& entry : enabled_networks_onc_types->GetList()) {
+  }
+  base::Value::List enabled_networks_list;
+  for (const auto& entry : enabled_networks_onc_types) {
     const std::string& type = entry.GetString();
     if (type == ::onc::network_type::kEthernet) {
       enabled_networks_list.Append(
@@ -493,7 +494,7 @@ void NetworkingPrivateGetEnabledNetworkTypesFunction::Result(
       LOG(ERROR) << "networkingPrivate: Unexpected type: " << type;
     }
   }
-  return Respond(OneArgument(std::move(enabled_networks_list)));
+  return Respond(OneArgument(base::Value(std::move(enabled_networks_list))));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

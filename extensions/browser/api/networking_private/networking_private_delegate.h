@@ -30,7 +30,7 @@ class NetworkingPrivateDelegate : public KeyedService {
   using StringCallback = base::OnceCallback<void(const std::string&)>;
   using NetworkListCallback = base::OnceCallback<void(base::Value::List)>;
   using EnabledNetworkTypesCallback =
-      base::OnceCallback<void(std::unique_ptr<base::Value>)>;
+      base::OnceCallback<void(base::Value::List)>;
   using FailureCallback = base::OnceCallback<void(const std::string&)>;
   using DeviceStateList = std::vector<
       std::unique_ptr<api::networking_private::DeviceStateProperties>>;

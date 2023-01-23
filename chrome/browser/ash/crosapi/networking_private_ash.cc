@@ -166,15 +166,13 @@ ValueDelegateCallback ValueAdapterCallback(ValueMojoCallback result_callback) {
 // This adapter will handle the case where a list get returned.
 using ValueListMojoCallback =
     base::OnceCallback<void(absl::optional<base::Value::List>)>;
-ValueDelegateCallback ValueListAdapterCallback(
+using ValueListDelegateCallback =
+    base::OnceCallback<void(base::Value::List result)>;
+ValueListDelegateCallback ValueListAdapterCallback(
     ValueListMojoCallback result_callback) {
   return base::BindOnce(
-      [](ValueListMojoCallback callback, std::unique_ptr<base::Value> result) {
-        if (result) {
-          std::move(callback).Run(std::move(*result).TakeList());
-        } else {
-          std::move(callback).Run(absl::nullopt);
-        }
+      [](ValueListMojoCallback callback, base::Value::List result) {
+        std::move(callback).Run(std::move(result));
       },
       std::move(result_callback));
 }
