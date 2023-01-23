@@ -648,10 +648,15 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
       // Ignore outside list markers because they are already set to
       // |container_builder_.UnpositionedListMarker| in the constructor, unless
       // |ListMarkerOccupiesWholeLine|, which is handled like a regular child.
-    } else if (child.IsColumnSpanAll() && ConstraintSpace().IsInColumnBfc()) {
+    } else if (child.IsColumnSpanAll() && ConstraintSpace().IsInColumnBfc() &&
+               ConstraintSpace().HasBlockFragmentation()) {
       // The child is a column spanner. If we have no breaks inside (in parallel
       // flows), we now need to finish this fragmentainer, then abort and let
-      // the column layout algorithm handle the spanner as a child.
+      // the column layout algorithm handle the spanner as a child. The
+      // HasBlockFragmentation() check above may seem redundant, but this is
+      // important if we're overflowing a clipped container. In such cases, we
+      // won't treat the spanner as one, since we shouldn't insert any breaks in
+      // that mode.
       DCHECK(!container_builder_.DidBreakSelf());
       DCHECK(!container_builder_.FoundColumnSpanner());
       DCHECK(!IsBreakInside(To<NGBlockBreakToken>(child_break_token)));
