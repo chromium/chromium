@@ -3254,6 +3254,9 @@ extern const char kMicrophoneMuteNotificationsDescription[];
 extern const char kMicrophoneMuteSwitchDeviceName[];
 extern const char kMicrophoneMuteSwitchDeviceDescription[];
 
+extern const char kMultiZoneRgbKeyboardName[];
+extern const char kMultiZoneRgbKeyboardDescription[];
+
 extern const char kMultilingualTypingName[];
 extern const char kMultilingualTypingDescription[];
 

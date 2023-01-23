@@ -1421,6 +1421,11 @@ BASE_FEATURE(kEcheLauncherIconsInMoreAppsButton,
              "EcheLauncherIconsInMoreAppsButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables multi-zone rgb keyboard customization.
+BASE_FEATURE(kMultiZoneRgbKeyboard,
+             "MultiZoneRgbKeyboard",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables support for multilingual assistive typing on ChromeOS.
 BASE_FEATURE(kMultilingualTyping,
              "MultilingualTyping",
@@ -2814,6 +2819,10 @@ bool IsMicMuteNotificationsEnabled() {
 
 bool IsMinimumChromeVersionEnabled() {
   return base::FeatureList::IsEnabled(kMinimumChromeVersion);
+}
+
+bool IsMultiZoneRgbKeyboardEnabled() {
+  return base::FeatureList::IsEnabled(kMultiZoneRgbKeyboard);
 }
 
 bool IsEcheLauncherEnabled() {

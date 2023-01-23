@@ -4781,6 +4781,11 @@
     "expiry_milestone": 84
   },
   {
+    "name": "multi-zone-rgb-keyboard",
+    "owners": [ "jasontt", "assistive-eng@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "multiline-fade-truncating-label",
     "owners": [ "christianxu", "stkhapugin", "bling-flags@google.com"],
     "expiry_milestone": 120

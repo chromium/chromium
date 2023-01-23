@@ -5674,6 +5674,11 @@ const char kMicrophoneMuteSwitchDeviceDescription[] =
     "flag does not affect the toggle functionality, it only affects how the "
     "System UI handles the mute toggle state.";
 
+const char kMultiZoneRgbKeyboardName[] =
+    "Enable multi-zone RGB keyboard customization";
+const char kMultiZoneRgbKeyboardDescription[] =
+    "Enable multi-zone RGB keyboard customization on supported devices.";
+
 const char kMultilingualTypingName[] = "Multilingual typing on CrOS";
 const char kMultilingualTypingDescription[] =
     "Enables support for multilingual assistive typing on ChromeOS.";

@@ -3782,6 +3782,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"screen-saver-preview", flag_descriptions::kScreenSaverPreviewName,
      flag_descriptions::kScreenSaverPreviewDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kScreenSaverPreview)},
+    {"multi-zone-rgb-keyboard", flag_descriptions::kMultiZoneRgbKeyboardName,
+     flag_descriptions::kMultiZoneRgbKeyboardDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kMultiZoneRgbKeyboard)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
