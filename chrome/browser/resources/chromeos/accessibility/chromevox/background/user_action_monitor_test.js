@@ -236,7 +236,7 @@ AX_TEST_F('ChromeVoxUserActionMonitorTest', 'Output', async function() {
 // since we don't directly call a UserActionMonitor function.
 AX_TEST_F('ChromeVoxUserActionMonitorTest', 'SingleKey', async function() {
   await this.runWithLoadedTree(this.simpleDoc);
-  const keyboardHandler = new BackgroundKeyboardHandler();
+  const keyboardHandler = BackgroundKeyboardHandler.instance;
   let finished = false;
   const actions =
       [{type: 'key_sequence', value: {'keys': {'keyCode': [KeyCode.SPACE]}}}];
@@ -258,7 +258,7 @@ AX_TEST_F('ChromeVoxUserActionMonitorTest', 'SingleKey', async function() {
 // since we don't directly call a UserActionMonitor function.
 AX_TEST_F('ChromeVoxUserActionMonitorTest', 'MultipleKeys', async function() {
   await this.runWithLoadedTree(this.simpleDoc);
-  const keyboardHandler = new BackgroundKeyboardHandler();
+  const keyboardHandler = BackgroundKeyboardHandler.instance;
   let finished = false;
   const actions = [{
     type: 'key_sequence',
@@ -341,7 +341,7 @@ AX_TEST_F(
 AX_TEST_F('ChromeVoxUserActionMonitorTest', 'BlockCommands', async function() {
   const mockFeedback = this.createMockFeedback();
   await this.runWithLoadedTree(this.paragraphDoc);
-  const keyboardHandler = new BackgroundKeyboardHandler();
+  const keyboardHandler = BackgroundKeyboardHandler.instance;
   let finished = false;
   const actions = [
     {
@@ -402,7 +402,7 @@ AX_TEST_F('ChromeVoxUserActionMonitorTest', 'BlockCommands', async function() {
 // is active.
 AX_TEST_F('ChromeVoxUserActionMonitorTest', 'CloseChromeVox', async function() {
   await this.runWithLoadedTree(this.simpleDoc);
-  const keyboardHandler = new BackgroundKeyboardHandler();
+  const keyboardHandler = BackgroundKeyboardHandler.instance;
   let finished = false;
   let closed = false;
   const actions =

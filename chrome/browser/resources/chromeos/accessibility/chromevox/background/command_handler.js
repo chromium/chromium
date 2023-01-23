@@ -44,6 +44,7 @@ import {DesktopAutomationInterface} from './desktop_automation_interface.js';
 import {TypingEcho} from './editing/editable_text_base.js';
 import {EventSource} from './event_source.js';
 import {GestureInterface} from './gesture_interface.js';
+import {BackgroundKeyboardHandler} from './keyboard_handler.js';
 import {LogStore} from './logging/log_store.js';
 import {Output} from './output/output.js';
 import {OutputCustomEvent} from './output/output_types.js';
@@ -120,8 +121,7 @@ export class CommandHandler extends CommandHandlerInterface {
         SmartStickyMode.instance.toggle();
         return false;
       case Command.PASS_THROUGH_MODE:
-        ChromeVox.passThroughMode = true;
-        ChromeVox.tts.speak(Msgs.getMsg('pass_through_key'), QueueMode.QUEUE);
+        BackgroundKeyboardHandler.enablePassThroughMode();
         return true;
       case Command.SHOW_LEARN_MODE_PAGE:
         this.showLearnModePage_();
