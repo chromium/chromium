@@ -33,7 +33,7 @@ export class CdpClient extends EventEmitter<Mapping> {
   }
 
   /**
-   * Returns command promise, which will be resolved wth the command result after receiving CDP result.
+   * Returns command promise, which will be resolved with the command result after receiving CDP result.
    * @param method Name of the CDP command to call.
    * @param params Parameters to pass to the CDP command.
    */

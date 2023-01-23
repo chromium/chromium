@@ -300,7 +300,7 @@ export WPT_BROWSER_PATH="/Applications/Microsoft Edge.app/Contents/MacOS/Microso
 
 ### Run WPT tests
 
-#### 1. Make sure you have Chrome Dev instaled
+#### 1. Make sure you have Chrome Dev installed
 
 https://www.google.com/chrome/dev/
 
