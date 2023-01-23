@@ -12,6 +12,7 @@
 #include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -403,6 +404,16 @@ TEST_F(SessionStorageMetadataTest, DeleteArea) {
   EXPECT_TRUE(base::Contains(contents, StdStringToUint8Vector("map-1-key1")));
   EXPECT_TRUE(base::Contains(contents, StdStringToUint8Vector("map-3-key1")));
   EXPECT_FALSE(base::Contains(contents, StdStringToUint8Vector("map-4-key1")));
+}
+
+TEST_F(SessionStorageMetadataTest, DatabaseVersionTooNew) {
+  SessionStorageMetadata metadata;
+  std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> migration_tasks;
+  auto version_str = base::NumberToString(
+      SessionStorageMetadata::kLatestSessionStorageSchemaVersion + 1);
+  EXPECT_FALSE(metadata.ParseDatabaseVersion(
+      std::vector<uint8_t>(version_str.begin(), version_str.end()),
+      &migration_tasks));
 }
 
 class SessionStorageMetadataMigrationTest : public testing::Test {

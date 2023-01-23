@@ -112,9 +112,14 @@ bool SessionStorageMetadata::ParseDatabaseVersion(
       initial_database_version_from_disk_ = kInvalidDatabaseVersion;
       return false;
     }
+    if (initial_database_version_from_disk_ >
+        kLatestSessionStorageSchemaVersion) {
+      return false;
+    }
     if (initial_database_version_from_disk_ ==
-        kLatestSessionStorageSchemaVersion)
+        kLatestSessionStorageSchemaVersion) {
       return true;
+    }
   }
   if (initial_database_version_from_disk_ < kMinSessionStorageSchemaVersion)
     return false;
