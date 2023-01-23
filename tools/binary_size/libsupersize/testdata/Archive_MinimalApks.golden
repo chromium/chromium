@@ -240,11 +240,11 @@ Section .bss: 0 bytes from 0 symbols.
 * 0 have source paths. Accounts for 0 bytes (0.0%).
 * 0 have a component assigned. Accounts for 0 bytes (0.0%).
 * 0 symbols have shared ownership.
-Section .dex: has 100.0% of 1446 bytes accounted for from 13 symbols. 0 bytes are unaccounted for.
+Section .dex: has 100.0% of 1446 bytes accounted for from 16 symbols. 0 bytes are unaccounted for.
 * Padding accounts for 0 bytes (0.0%)
 * 4 have source paths. Accounts for 67 bytes (4.6%).
 * 0 have a component assigned. Accounts for 0 bytes (0.0%).
-* 1 placeholders exist (symbols that start with **). Accounts for 1260 bytes (87.1%).
+* 4 placeholders exist (symbols that start with **). Accounts for 1260 bytes (87.1%).
 * 0 symbols have shared ownership.
 Section .dex.method: has 100.0% of 570 bytes accounted for from 14 symbols. 0 bytes are unaccounted for.
 * Padding accounts for 0 bytes (0.0%)
@@ -477,7 +477,10 @@ Section .other: has 100.0% of 695 bytes accounted for from 2 symbols. 0 bytes ar
 <Bundle.minimal.apks/base.apk>.dex@0(size_without_padding=0,padding=0,full_name=java.lang.Math,object_path=$APK/java/lang/Math,source_path=,flags={},num_aliases=1,component=)
 <Bundle.minimal.apks/base.apk>.dex@0(size_without_padding=0,padding=0,full_name=java.lang.Object,object_path=$APK/java/lang/Object,source_path=,flags={},num_aliases=1,component=)
 <Bundle.minimal.apks/base.apk>.dex@0(size_without_padding=0,padding=0,full_name=java.lang.StringBuilder,object_path=$APK/java/lang/StringBuilder,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.dex@0(size_without_padding=1260,padding=0,full_name=** .dex (unattributed),object_path=,source_path=,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.dex@0(size_without_padding=146,padding=0,full_name=** .dex (method and field strings),object_path=,source_path=,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.dex@0(size_without_padding=58,padding=0,full_name=** .dex (prototype strings),object_path=,source_path=,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.dex@0(size_without_padding=244,padding=0,full_name=** .dex (type strings),object_path=,source_path=,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.dex@0(size_without_padding=812,padding=0,full_name=** .dex (unattributed),object_path=,source_path=,flags={},num_aliases=1,component=)
 <Bundle.minimal.apks/base.apk>.dex.method@0(size_without_padding=42,padding=0,full_name=AuxClass#<init>(int),object_path=$APK/AuxClass,source_path=,flags={},num_aliases=1,component=)
 <Bundle.minimal.apks/base.apk>.dex.method@0(size_without_padding=90,padding=0,full_name=AuxClass#repeatString(java.lang.String): java.lang.String,object_path=$APK/AuxClass,source_path=,flags={},num_aliases=1,component=)
 <Bundle.minimal.apks/base.apk>.dex.method@0(size_without_padding=62,padding=0,full_name=AuxClass#reverse(int[]): int[],object_path=$APK/AuxClass,source_path=,flags={},num_aliases=1,component=)

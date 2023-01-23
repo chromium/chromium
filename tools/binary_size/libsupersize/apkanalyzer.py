@@ -354,6 +354,7 @@ def _GenDexStringsUsedByClasses(dexfile, class_deobfuscation_map):
     class_deobfuscation_map: Map from obfuscated names to class names.
 
   Yields:
+    string_idx: DEX string index.
     size: Number of bytes taken by string, including pointer.
     decoded_string: The decoded string.
     class_names: List of class names
@@ -415,7 +416,7 @@ def _GenDexStringsUsedByClasses(dexfile, class_deobfuscation_map):
     decoded_string = string_item.data
     class_idxs = string_idx_to_class_idxs[string_idx]
     class_names = sorted(LookupDeobfuscatedClassNames(i) for i in class_idxs)
-    yield size, decoded_string, class_names
+    yield string_idx, size, decoded_string, class_names
 
   logging.info('Deobfuscated %d / %d classes (%d failures)', num_deobfus_names,
                len(dexfile.class_def_item_list), num_failed_deobfus)
@@ -433,12 +434,17 @@ def _StringSymbolsFromDexFile(apk_path, dexfile, source_map,
   if not dexfile:
     return [], 0
   logging.info('Extractng string symbols from %s', apk_path)
+
+  # Code strings: Strings accessed via class -> method -> code -> string.
+  # These are extracted into separate symbols ,aliases among referring classes.
+  fresh_string_idx_set = set(range(len(dexfile.string_data_item_list)))
   lambda_normalizer = LambdaNormalizer()
   object_path = str(apk_path)
   dex_string_data_size = 0
   dex_string_symbols = []
   string_iter = _GenDexStringsUsedByClasses(dexfile, class_deobfuscation_map)
-  for size, decoded_string, string_user_class_names in string_iter:
+  for string_idx, size, decoded_string, string_user_class_names in string_iter:
+    fresh_string_idx_set.remove(string_idx)
     dex_string_data_size += size
     num_aliases = len(string_user_class_names)
     aliases = []
@@ -458,6 +464,52 @@ def _StringSymbolsFromDexFile(apk_path, dexfile, source_map,
       aliases.append(sym)
     assert num_aliases == len(aliases)
     dex_string_symbols += aliases
+
+  logging.info('Counted %d class -> method -> code strings',
+               len(dexfile.string_data_item_list) - len(fresh_string_idx_set))
+
+  # Extract aggregate string symbols for {types, methods, fields, prototypes}.
+  # Due to significant overlap (coincidental or induced by R8), {method, field}
+  # string symbols share a common aggregate. Other overlap sare resolved by
+  # applying the priority:
+  #   code > type > {method, field} > prototype,
+  # i.e., bytes from code strings are not counted in aggregates; bytes from type
+  # string aggregate are not counted by {{method, field}, prototype}, etc.
+
+  def _AddAggregateStringSymbol(name, string_idx_set):
+    nonlocal fresh_string_idx_set
+    old_count = len(string_idx_set)
+    string_idx_set &= fresh_string_idx_set
+    fresh_string_idx_set -= string_idx_set
+    logging.info('Counted %d %s strings among %d found', len(string_idx_set),
+                 name, old_count)
+    total_size = 0
+    if string_idx_set:
+      # Each string has +4 for pointer.
+      size = sum(dexfile.string_data_item_list[string_idx].byte_size
+                 for string_idx in string_idx_set) + 4 * len(string_idx_set)
+      total_size += size
+      sym = models.Symbol(models.SECTION_DEX,
+                          size,
+                          full_name=f'** .dex ({name} strings)')
+      dex_string_symbols.append(sym)
+    return total_size
+
+  # Type strings.
+  type_string_idx_set = {i.descriptor_idx for i in dexfile.type_id_item_list}
+  dex_string_data_size += _AddAggregateStringSymbol('type', type_string_idx_set)
+
+  # Method and field strings.
+  method_string_idx_set = {i.name_idx for i in dexfile.method_id_item_list}
+  field_string_idx_set = {i.name_idx for i in dexfile.field_id_item_list}
+  dex_string_data_size += _AddAggregateStringSymbol(
+      'method and field', method_string_idx_set | field_string_idx_set)
+
+  # Prototype strings.
+  proto_string_idx_set = {i.shorty_idx for i in dexfile.proto_id_item_list}
+  dex_string_data_size += _AddAggregateStringSymbol('prototype',
+                                                    proto_string_idx_set)
+
   return dex_string_symbols, dex_string_data_size
 
 
