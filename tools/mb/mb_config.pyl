@@ -164,6 +164,7 @@
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_reclient',
       'lacros-amd64-generic-rel-skylab': 'chromeos_amd64-generic_lacros_rel_skylab_reclient',
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_reclient',
+      'lacros-arm-generic-rel-skylab': 'chromeos_arm-generic_lacros_rel_skylab_reclient',
       'lacros-arm64-generic-rel': 'chromeos_arm64-generic_lacros_rel_reclient',
       'lacros-arm64-generic-rel-skylab': 'chromeos_arm64-generic_lacros_rel_skylab_reclient',
       'linux-ash-chromium-generator-rel': 'chromeos_with_codecs_release_bot_reclient',

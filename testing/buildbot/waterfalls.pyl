@@ -1460,6 +1460,15 @@
         },
         'os_type': 'chromeos'
       },
+      'lacros-arm-generic-rel-skylab': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+        'test_suites': {
+          'skylab_tests': 'lacros_arm_generic_rel_skylab',
+        },
+        'os_type': 'chromeos'
+      },
       'lacros-arm64-generic-rel': {
         'additional_compile_targets': [
           'chrome',

@@ -1628,6 +1628,26 @@
       }
     ]
   },
+  "lacros-arm-generic-rel-skylab": {
+    "additional_compile_targets": [
+      "chrome"
+    ],
+    "skylab_tests": [
+      {
+        "args": [],
+        "bucket": "chromiumos-image-archive",
+        "cros_board": "jacuzzi",
+        "cros_img": "jacuzzi-public/R109-15222.0.0",
+        "name": "lacros_all_tast_tests JACUZZI_PUBLIC",
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "timeout_sec": 10800,
+        "variant_id": "JACUZZI_PUBLIC"
+      }
+    ]
+  },
   "lacros-arm64-generic-rel": {
     "additional_compile_targets": [
       "chrome"

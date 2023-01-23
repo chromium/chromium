@@ -7125,6 +7125,14 @@
       },
     },
 
+    'lacros_arm_generic_rel_skylab': {
+      'lacros_skylab': {
+        'variants': [
+          'CROS_JACUZZI_PUBLIC',
+        ]
+      },
+    },
+
     'lacros_arm_generic_rel_skylab_fyi': {
       'lacros_skylab': {
         'variants': [
