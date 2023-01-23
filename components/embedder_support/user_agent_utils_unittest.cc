@@ -1344,7 +1344,7 @@ TEST_F(UserAgentUtilsTest, GetProductAndVersion) {
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/{{blink::features::kReduceUserAgentMinorVersion,
-                             {{{"build_version", "5555"}}}}},
+                             {{{"build_version", "0000"}}}}},
       /*disabled_features=*/{
           blink::features::kForceMajorVersionInMinorPositionInUserAgent});
 
@@ -1357,7 +1357,7 @@ TEST_F(UserAgentUtilsTest, GetProductAndVersion) {
                                   &build_version, &patch_version));
   EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
   EXPECT_EQ(minor_version, "0");
-  EXPECT_EQ(build_version, "5555");
+  EXPECT_EQ(build_version, "0000");
   EXPECT_EQ(patch_version, "0");
 
   // (2b) Policies: UserAgentReduction and MajorVersionInMinor force enabled.
@@ -1381,7 +1381,7 @@ TEST_F(UserAgentUtilsTest, GetProductAndVersion) {
                                   &build_version));
   EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
   EXPECT_EQ(minor_version, "0");
-  EXPECT_NE(build_version, "5555");
+  EXPECT_NE(build_version, "0000");
   // Patch version cannot be tested as it would be set in a release branch.
 
   // (3) Features: UserAgentReduction disabled and MajorVersionInMinor enabled.
