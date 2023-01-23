@@ -21860,5 +21860,17 @@
         }
       }
     ]
+  },
+  "ScreensaverEnabled" : {
+    "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"
+  },
+  "ScreensaverIdleTimeoutSeconds" : {
+    "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"
+  },
+  "ScreensaverImageDisplayIntervalSeconds" : {
+    "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"
+  },
+  "ScreensaverImages" : {
+    "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"
   }
 }

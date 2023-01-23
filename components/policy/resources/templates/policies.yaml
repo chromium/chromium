@@ -1057,6 +1057,10 @@ policies:
   1056: KioskTroubleshootingToolsEnabled
   1057: ForceEnablePepperVideoDecoderDevAPI
   1058: DomainReliabilityAllowed
+  1059: ScreensaverEnabled
+  1060: ScreensaverIdleTimeoutSeconds
+  1061: ScreensaverImageDisplayIntervalSeconds
+  1062: ScreensaverImages
 atomic_groups:
   1: Homepage
   2: RemoteAccess

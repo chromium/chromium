@@ -32419,6 +32419,10 @@ Called by update_document_policy_enum.py.-->
   <int value="1056" label="KioskTroubleshootingToolsEnabled"/>
   <int value="1057" label="ForceEnablePepperVideoDecoderDevAPI"/>
   <int value="1058" label="DomainReliabilityAllowed"/>
+  <int value="1059" label="ScreensaverEnabled"/>
+  <int value="1060" label="ScreensaverIdleTimeoutSeconds"/>
+  <int value="1061" label="ScreensaverImageDisplayIntervalSeconds"/>
+  <int value="1062" label="ScreensaverImages"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
