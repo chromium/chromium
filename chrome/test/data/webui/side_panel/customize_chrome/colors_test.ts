@@ -32,7 +32,8 @@ suite('ColorsTest', () => {
     callbackRouter = CustomizeChromeApiProxy.getInstance()
                          .callbackRouter.$.bindNewPipeAndPassRemote();
     chromeColorsResolver = new PromiseResolver();
-    handler.setResultFor('getChromeColors', chromeColorsResolver.promise);
+    handler.setResultFor(
+        'getOverviewChromeColors', chromeColorsResolver.promise);
     colorsElement = new ColorsElement();
     document.body.appendChild(colorsElement);
   });

@@ -1,0 +1,8 @@
+<button on-click="onBackClick_" id="backButton"
+    title="$i18n{backButton}">
+  Go Back
+</button>
+<h1>$i18n{chromeColors}</h1>
+<template id="chromeColors" is="dom-repeat" items="[[colors_]]">
+  <p class="color">[[item.name]]</p>
+</template>

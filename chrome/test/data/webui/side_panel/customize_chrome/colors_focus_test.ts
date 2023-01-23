@@ -21,7 +21,7 @@ suite('ColorsFocusTest', () => {
         (mock: CustomizeChromePageHandlerRemote) =>
             CustomizeChromeApiProxy.setInstance(
                 mock, new CustomizeChromePageCallbackRouter()));
-    handler.setResultFor('getChromeColors', new Promise(() => {}));
+    handler.setResultFor('getOverviewChromeColors', new Promise(() => {}));
     colorsElement = new ColorsElement();
     document.body.appendChild(colorsElement);
   });

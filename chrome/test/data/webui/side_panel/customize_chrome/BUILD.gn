@@ -24,6 +24,7 @@ ts_library("build_ts") {
     "cards_test.ts",
     "categories_test.ts",
     "check_mark_wrapper_test.ts",
+    "chrome_colors_test.ts",
     "color_test.ts",
     "colors_test.ts",
     "colors_focus_test.ts",

@@ -54,6 +54,8 @@ class CustomizeChromePageHandler
   // side_panel::mojom::CustomizeChromePageHandler:
   void SetDefaultColor() override;
   void SetSeedColor(SkColor seed_color) override;
+  void GetOverviewChromeColors(
+      GetOverviewChromeColorsCallback callback) override;
   void GetChromeColors(GetChromeColorsCallback callback) override;
   void SetBackgroundImage(const std::string& attribution_1,
                           const std::string& attribution_2,

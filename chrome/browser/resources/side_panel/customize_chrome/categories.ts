@@ -19,6 +19,7 @@ export interface CategoriesElement {
     classicChromeTile: HTMLElement,
     uploadImageTile: HTMLElement,
     chromeWebStoreTile: HTMLElement,
+    chromeColorsTile: HTMLElement,
   };
 }
 
@@ -58,6 +59,10 @@ export class CategoriesElement extends PolymerElement {
     if (success) {
       this.dispatchEvent(new Event('local-image-upload'));
     }
+  }
+
+  private async onChromeColorsClick_() {
+    this.dispatchEvent(new Event('chrome-colors-select'));
   }
 
   private onCollectionClick_(e: DomRepeatEvent<BackgroundCollection>) {

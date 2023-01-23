@@ -134,6 +134,15 @@ var SidePanelCustomizeChromeThemeSnapshotTest =
   }
 };
 
+var SidePanelCustomizeChromeChromeColorsTest =
+    class extends SidePanelCustomizeChromeBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
+        '?module=side_panel_customize_chrome/chrome_colors_test.js';
+  }
+};
+
 TEST_F('SidePanelCustomizeChromeButtonLabelTest', 'All', function() {
   mocha.run();
 });
@@ -180,5 +189,9 @@ TEST_F('SidePanelCustomizeChromeThemesTest', 'All', function() {
 });
 
 TEST_F('SidePanelCustomizeChromeThemeSnapshotTest', 'All', function() {
+  mocha.run();
+});
+
+TEST_F('SidePanelCustomizeChromeChromeColorsTest', 'All', function() {
   mocha.run();
 });

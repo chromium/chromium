@@ -110,7 +110,10 @@ interface CustomizeChromePageHandler {
   // Triggers a call to |CustomizeChromePage.SetPageMostVisitedSettings|.
   UpdateMostVisitedSettings();
 
-  // Returns the chrome colors used in the customize chrome side panel.
+  // Returns the chrome colors used in the customize chrome side panel overview.
+  GetOverviewChromeColors() => (array<ChromeColor> colors);
+
+  // Returns the chrome colors used in the customize chrome side panel themes.
   GetChromeColors() => (array<ChromeColor> colors);
 
   // Returns the collections of background images.

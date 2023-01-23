@@ -22,6 +22,7 @@ build_webui("build") {
     "cards.ts",
     "categories.ts",
     "check_mark_wrapper.ts",
+    "chrome_colors.ts",
     "color.ts",
     "colors.ts",
     "hover_button.ts",

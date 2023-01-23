@@ -114,4 +114,12 @@ suite('CategoriesTest', () => {
     categoriesElement.$.chromeWebStoreTile.click();
     assertEquals(1, handler.getCallCount('openChromeWebStore'));
   });
+
+  test('clicking chrome colors sends event', async () => {
+    const eventPromise =
+        eventToPromise('chrome-colors-select', categoriesElement);
+    categoriesElement.$.chromeColorsTile.click();
+    const event = await eventPromise;
+    assertTrue(!!event);
+  });
 });

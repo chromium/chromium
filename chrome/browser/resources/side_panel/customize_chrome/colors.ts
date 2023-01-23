@@ -118,8 +118,9 @@ export class ColorsElement extends PolymerElement {
 
   constructor() {
     super();
-    CustomizeChromeApiProxy.getInstance().handler.getChromeColors().then(
-        ({colors}) => {
+    CustomizeChromeApiProxy.getInstance()
+        .handler.getOverviewChromeColors()
+        .then(({colors}) => {
           this.colors_ = colors;
         });
   }
