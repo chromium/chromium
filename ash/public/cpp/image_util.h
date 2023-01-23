@@ -28,6 +28,9 @@ ASH_PUBLIC_EXPORT gfx::ImageSkia CreateEmptyImage(const gfx::Size& size);
 
 using DecodeImageCallback = base::OnceCallback<void(const gfx::ImageSkia&)>;
 
+// TESTING NOTE: See ash::InProcessImageDecoder for unit testing code that
+// calls any of the DecodeImage*() functions below.
+
 // Reads contents at |file_path| and calls |callback| with a decoded image.
 // Calls |callback| with an empty image on failure to read the file or decode
 // the image.

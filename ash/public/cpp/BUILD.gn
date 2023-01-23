@@ -467,6 +467,7 @@ source_set("unit_tests") {
     "holding_space/holding_space_progress_unittest.cc",
     "holding_space/holding_space_section_unittest.cc",
     "holding_space/holding_space_util_unittest.cc",
+    "image_util_unittest.cc",
     "metrics_util_unittest.cc",
     "pagination/pagination_model_unittest.cc",
     "power_utils_unittest.cc",
@@ -486,6 +487,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/ui/vector_icons",
     "//mojo/public/cpp/bindings",
+    "//services/data_decoder/public/mojom",
+    "//skia",
     "//testing/gtest",
     "//ui/aura:test_support",
     "//ui/chromeos/styles:cros_styles_views",
@@ -504,6 +507,8 @@ source_set("unit_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "test/in_process_image_decoder.cc",
+    "test/in_process_image_decoder.h",
     "test/mock_in_session_auth_token_provider.cc",
     "test/mock_in_session_auth_token_provider.h",
     "test/mock_projector_client.cc",
@@ -530,13 +535,19 @@ source_set("test_support") {
     ":cpp",
     "//base",
     "//components/access_code_cast/common",
+    "//mojo/public/cpp/bindings",
+    "//services/data_decoder/public/cpp:service_provider",
+    "//services/data_decoder/public/mojom",
     "//services/device/public/cpp:test_support",
     "//services/network/public/cpp:cpp",
+    "//skia",
     "//testing/gmock",
+    "//testing/gtest",
     "//ui/aura",
     "//ui/aura:test_support",
     "//ui/gfx",
     "//ui/gfx:test_support",
+    "//ui/gfx/codec",
     "//ui/views",
   ]
 }

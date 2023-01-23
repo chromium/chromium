@@ -722,6 +722,8 @@ class WallpaperControllerTest : public AshTestBase {
       AccountId::FromUserEmailGaiaId(kChildEmail, kChildEmail);
 
  private:
+  // TODO(esum): Use ash::InProcessImageDecoder here instead and exercise actual
+  // decoding in these tests.
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 

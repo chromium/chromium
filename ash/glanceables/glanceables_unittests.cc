@@ -21,6 +21,7 @@
 #include "ash/glanceables/signout_screenshot_handler.h"
 #include "ash/glanceables/test_glanceables_delegate.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
+#include "ash/public/cpp/test/in_process_image_decoder.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/style/pill_button.h"
@@ -45,7 +46,6 @@
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "google_apis/common/api_error_codes.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/compositor/layer.h"
@@ -367,7 +367,7 @@ TEST_F(GlanceablesTest, UpNextEventItemViewRendersCorrectlyWithoutEventTitle) {
 }
 
 TEST_F(GlanceablesTest, RestoreViewRendersScreenshot) {
-  data_decoder::test::InProcessDataDecoder data_decoder;
+  InProcessImageDecoder data_decoder;
   const SkColor expected_color = SK_ColorYELLOW;
 
   // Override home directory.
