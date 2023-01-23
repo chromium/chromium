@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
@@ -15,16 +14,13 @@
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/chromeos/office_web_app/office_web_app.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "components/services/app_service/public/cpp/app_update.h"
-#include "components/services/app_service/public/cpp/types_util.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace ash::cloud_upload {
 
-using ash::file_system_provider::ProvidedFileSystemInfo;
 using ash::file_system_provider::ProviderId;
 using ash::file_system_provider::Service;
 
@@ -61,19 +57,7 @@ void CloudUploadPageHandler::GetDialogArgs(GetDialogArgsCallback callback) {
 
 void CloudUploadPageHandler::IsOfficeWebAppInstalled(
     IsOfficeWebAppInstalledCallback callback) {
-  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
-          profile_)) {
-    std::move(callback).Run(false);
-    return;
-  }
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  bool installed = false;
-  proxy->AppRegistryCache().ForOneApp(
-      web_app::kMicrosoftOfficeAppId,
-      [&installed](const apps::AppUpdate& update) {
-        installed = apps_util::IsInstalled(update.Readiness());
-      });
-  std::move(callback).Run(installed);
+  std::move(callback).Run(CloudUploadDialog::IsOfficeWebAppInstalled(profile_));
 }
 
 void CloudUploadPageHandler::InstallOfficeWebApp(
@@ -105,14 +89,8 @@ void CloudUploadPageHandler::InstallOfficeWebApp(
 }
 
 void CloudUploadPageHandler::IsODFSMounted(IsODFSMountedCallback callback) {
-  Service* service = Service::Get(profile_);
-  ProviderId provider_id = ProviderId::CreateFromExtensionId(
-      file_manager::file_tasks::kODFSExtensionId);
-  std::vector<ProvidedFileSystemInfo> file_systems =
-      service->GetProvidedFileSystemInfoList(provider_id);
-
   // Assume any file system mounted by ODFS is the correct one.
-  std::move(callback).Run(!file_systems.empty());
+  std::move(callback).Run(CloudUploadDialog::IsODFSMounted(profile_));
 }
 
 void CloudUploadPageHandler::SignInToOneDrive(

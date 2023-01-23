@@ -34,6 +34,12 @@ export class CloudUploadElement extends HTMLElement {
   /** The modal dialog shown to confirm if the user wants to cancel setup. */
   private cancelDialog: SetupCancelDialogElement;
 
+  /**
+    True if the setup flow is being run for the first time. False if the fixup
+    flow is being run.
+  */
+  private firstTimeSetup: boolean = true;
+
   /** The names of the files to upload. */
   private fileNames: string[] = [];
 
@@ -69,7 +75,8 @@ export class CloudUploadElement extends HTMLElement {
     }
 
     const oneDriveUploadPage = new OneDriveUploadPageElement();
-    oneDriveUploadPage.setFileNames(this.fileNames);
+    oneDriveUploadPage.setFileNamesAndFirstTimeSetup(
+        this.fileNames, this.firstTimeSetup);
     this.pages.push(oneDriveUploadPage);
 
     this.pages.forEach((page, index) => {
@@ -110,6 +117,7 @@ export class CloudUploadElement extends HTMLElement {
     try {
       const dialogArgs = await this.proxy.handler.getDialogArgs();
       assert(dialogArgs.args);
+      this.firstTimeSetup = dialogArgs.args.firstTimeSetup;
       this.fileNames = dialogArgs.args.fileNames;
     } catch (e) {
       // TODO(b/243095484) Define expected behavior.

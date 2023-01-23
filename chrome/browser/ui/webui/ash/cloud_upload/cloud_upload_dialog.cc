@@ -10,6 +10,8 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
@@ -18,7 +20,9 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/drive_upload_handler.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
 #include "ui/gfx/geometry/size.h"
@@ -31,6 +35,9 @@ typedef base::OnceCallback<void(
 
 namespace {
 
+using ash::file_system_provider::ProvidedFileSystemInfo;
+using ash::file_system_provider::ProviderId;
+using ash::file_system_provider::Service;
 using file_manager::file_tasks::kDriveTaskResultMetricName;
 using file_manager::file_tasks::OfficeTaskResult;
 
@@ -310,6 +317,12 @@ bool OpenFilesWithCloudProvider(
     return CloudUploadDialog::SetUpAndShowDialog(
         profile, file_urls, mojom::DialogPage::kFileHandlerDialog);
   }
+
+  if (ShouldFixUpOffice(profile, cloud_provider)) {
+    // TODO(cassycc): Use page specifically for fix up.
+    CloudUploadDialog::SetUpAndShowDialog(profile, file_urls,
+                                          mojom::DialogPage::kOneDriveSetup);
+  }
   OpenOrMoveFiles(profile, file_urls, cloud_provider);
   return true;
 }
@@ -329,6 +342,12 @@ void OpenOrMoveFiles(Profile* profile,
     // The files need to be moved.
     ConfirmMoveOrStartUpload(profile, file_urls, cloud_provider);
   }
+}
+
+bool ShouldFixUpOffice(Profile* profile, const CloudProvider cloud_provider) {
+  return cloud_provider == CloudProvider::kOneDrive &&
+         !(CloudUploadDialog::IsODFSMounted(profile) &&
+           CloudUploadDialog::IsOfficeWebAppInstalled(profile));
 }
 
 void GetEntriesFromFilePathsAndMimeTypes(
@@ -438,6 +457,8 @@ bool CloudUploadDialog::SetUpAndShowDialog(
     args->file_names.push_back(file_url.path().BaseName().value());
   }
   args->dialog_page = dialog_page;
+  args->first_time_setup =
+      !file_manager::file_tasks::OfficeSetupComplete(profile);
 
   // The pointer is managed by an instance of `views::WebDialogView` and
   // removed in `SystemWebDialogDelegate::OnDialogClosed`.
@@ -461,6 +482,31 @@ bool CloudUploadDialog::SetUpAndShowDialog(
                nullptr);
   }
   return true;
+}
+
+bool CloudUploadDialog::IsODFSMounted(Profile* profile) {
+  Service* service = Service::Get(profile);
+  ProviderId provider_id = ProviderId::CreateFromExtensionId(
+      file_manager::file_tasks::kODFSExtensionId);
+  std::vector<ProvidedFileSystemInfo> file_systems =
+      service->GetProvidedFileSystemInfoList(provider_id);
+
+  // Assume any file system mounted by ODFS is the correct one.
+  return !file_systems.empty();
+}
+
+bool CloudUploadDialog::IsOfficeWebAppInstalled(Profile* profile) {
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    return false;
+  }
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+  bool installed = false;
+  proxy->AppRegistryCache().ForOneApp(
+      web_app::kMicrosoftOfficeAppId,
+      [&installed](const apps::AppUpdate& update) {
+        installed = apps_util::IsInstalled(update.Readiness());
+      });
+  return installed;
 }
 
 void CloudUploadDialog::OnDialogShown(content::WebUI* webui) {

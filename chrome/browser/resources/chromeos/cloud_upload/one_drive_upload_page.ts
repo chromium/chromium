@@ -17,17 +17,26 @@ export class OneDriveUploadPageElement extends BaseSetupPageElement {
   /** The names of the files to upload. */
   private fileNames: string[] = [];
 
+  /**
+    True if the setup flow is being run for the first time. False if the fixup
+    flow is being run.
+  */
+  private firstTimeSetup: boolean = true;
+
   constructor() {
     super();
   }
 
   /**
    * Sets the file name to be displayed by this dialog. Can be null if there is
-   * no file to upload.
+   * no file to upload. Sets whether the setup flow is running for the first
+   * time.
    * @param fileName Name of the file to be displayed.
+   * @param firstTimeSetup Whether the setup flow is running for the first time.
    */
-  setFileNames(fileNames: string[]) {
+  setFileNamesAndFirstTimeSetup(fileNames: string[], firstTimeSetup: boolean) {
     this.fileNames = fileNames;
+    this.firstTimeSetup = firstTimeSetup;
     if (this.isConnected) {
       this.connectedCallback();
     }
@@ -48,8 +57,9 @@ export class OneDriveUploadPageElement extends BaseSetupPageElement {
     const uploadButton = this.querySelector('.action-button')! as HTMLElement;
     const cancelButton = this.querySelector('.cancel-button') as HTMLElement;
 
-    this.proxy.handler.setOfficeAsDefaultHandler();
-
+    if (this.firstTimeSetup) {
+      this.proxy.handler.setOfficeAsDefaultHandler();
+    }
     // TODO(b/251046341): Show multiple files.
     if (this.fileNames.length > 0) {
       fileContainerElement.hidden = false;

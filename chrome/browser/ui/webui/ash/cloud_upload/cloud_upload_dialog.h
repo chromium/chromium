@@ -56,6 +56,10 @@ void OpenOrMoveFiles(Profile* profile,
                      const std::vector<storage::FileSystemURL>& file_urls,
                      const CloudProvider cloud_provider);
 
+// Returns True if OneDrive is the selected `cloud_provider` but either ODFS
+// is not mounted or the Office PWA is not installed. Returns False otherwise.
+bool ShouldFixUpOffice(Profile* profile, const CloudProvider cloud_provider);
+
 // Defines the web dialog used to help users upload Office files to the cloud.
 class CloudUploadDialog : public SystemWebDialogDelegate {
  public:
@@ -86,6 +90,9 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
       Profile* profile,
       const std::vector<storage::FileSystemURL>& file_urls,
       const mojom::DialogPage dialog_page);
+
+  static bool IsODFSMounted(Profile* profile);
+  static bool IsOfficeWebAppInstalled(Profile* profile);
 
   void OnDialogShown(content::WebUI* webui) override;
   void OnDialogClosed(const std::string& json_retval) override;

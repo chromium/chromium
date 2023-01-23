@@ -13,6 +13,7 @@ export interface ProxyOptions {
   odfsMounted: boolean;
   dialogPage: DialogPage;
   tasks?: DialogTask[]|null;
+  firstTimeSetup?: boolean|null;
 }
 
 /**
@@ -28,12 +29,16 @@ export class CloudUploadTestBrowserProxy implements CloudUploadBrowserProxy {
       fileNames: [],
       dialogPage: options.dialogPage,
       tasks: [],
+      firstTimeSetup: true,
     };
     if (options.fileName != null) {
       args.fileNames.push(options.fileName);
     }
     if (options.tasks != null) {
       args.tasks = options.tasks;
+    }
+    if (options.firstTimeSetup != null) {
+      args.firstTimeSetup = options.firstTimeSetup;
     }
     this.handler.setResultFor('getDialogArgs', {args: args});
     this.handler.setResultFor(

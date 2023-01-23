@@ -12,13 +12,17 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
+#include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -34,6 +38,15 @@
 namespace ash::cloud_upload {
 
 namespace {
+
+// The mime type and file_extension must be matching for
+// `CreateFakeWebApps()`.
+const char kDocFileExtension[] = ".doc";
+const char kDocMimeType[] = "application/msword";
+const char kPptFileExtension[] = ".ppt";
+const char kPptMimeType[] = "application/vnd.ms-powerpoint";
+const char kXlsFileExtension[] = ".xls";
+const char kXlsMimeType[] = "application/vnd.ms-excel";
 
 // Create `n` fake web apps that open any files with the `file_extensions` and
 // matching `mime_types`. The apps can be identified by a unique `app_id`
@@ -94,20 +107,42 @@ int PositionInList(base::Value::List& list, const std::string& elt) {
   return -1;
 }
 
+content::WebContents* GetWebContentsFromCloudUploadDialog() {
+  ash::SystemWebDialogDelegate* dialog =
+      ash::SystemWebDialogDelegate::FindInstance(
+          chrome::kChromeUICloudUploadURL);
+  EXPECT_TRUE(dialog);
+  content::WebUI* webui = dialog->GetWebUIForTest();
+  EXPECT_TRUE(webui);
+  content::WebContents* web_contents = webui->GetWebContents();
+  EXPECT_TRUE(web_contents);
+  return web_contents;
+}
+
+// Fill in the placeholder from `script_with_placeholder` with the JS command
+// to retrieve the HTML `element`. Return the resulting JS script.
+std::string ScriptFillPlaceholder(const char script_with_placeholder[],
+                                  std::string element) {
+  const char element_with_placeholder[] = "document.querySelectorAll('%s')[0]";
+  std::string element_script =
+      base::StringPrintf(element_with_placeholder, element.c_str());
+  return base::StringPrintf(script_with_placeholder, element_script.c_str());
+}
+
 }  // namespace
 
 // Tests the `kFileHandlerDialog` dialog page of the `CloudUploadDialog`.
 // Ensures that fake local file tasks are all found and passed to the JS side of
 // the dialog - the `FileHandlerPageElement`. Ensures that a local file task
 // selected on the JS side gets executed.
-class CloudUploadDialogBrowserTest : public InProcessBrowserTest {
+class FileHandlerDialogBrowserTest : public InProcessBrowserTest {
  public:
-  CloudUploadDialogBrowserTest() {
+  FileHandlerDialogBrowserTest() {
     feature_list_.InitAndEnableFeature(features::kUploadOfficeToCloud);
   }
 
-  CloudUploadDialogBrowserTest(const CloudUploadDialogBrowserTest&) = delete;
-  CloudUploadDialogBrowserTest& operator=(const CloudUploadDialogBrowserTest&) =
+  FileHandlerDialogBrowserTest(const FileHandlerDialogBrowserTest&) = delete;
+  FileHandlerDialogBrowserTest& operator=(const FileHandlerDialogBrowserTest&) =
       delete;
 
   Profile* profile() { return browser()->profile(); }
@@ -118,10 +153,9 @@ class CloudUploadDialogBrowserTest : public InProcessBrowserTest {
                           int n) {
     // Create `n` fake web apps for office files with the Doc extension and
     // store the created `urls_` and `tasks_`.
-    CreateFakeWebApps(
-        profile(), &urls_, &tasks_,
-        {doc_file_extension_, ppt_file_extension_, xls_file_extension_},
-        {doc_mime_type_, ppt_mime_type_, xls_mime_type_}, n);
+    CreateFakeWebApps(profile(), &urls_, &tasks_,
+                      {kDocFileExtension, kPptFileExtension, kXlsFileExtension},
+                      {kDocMimeType, kPptMimeType, kXlsMimeType}, n);
 
     for (const auto& file_extension : file_extensions) {
       base::FilePath file =
@@ -134,27 +168,7 @@ class CloudUploadDialogBrowserTest : public InProcessBrowserTest {
     }
   }
 
-  // Fill in the placeholder from `script_with_placeholder` with the JS command
-  // to retrieve the `FileHandlerPageElement`. Return this script wrapped with
-  // the send command.
-  std::string ScriptJS(const char script_with_placeholder[]) {
-    const char send_command[] = "domAutomationController.send(%s)";
-    const char dialog[] =
-        "document.querySelectorAll('file-handler-"
-        "page')[0]";
-    std::string script = base::StringPrintf(script_with_placeholder, dialog);
-    return base::StringPrintf(send_command, script.c_str());
-  }
-
  protected:
-  // The mime type and file_extension must be matching for
-  // `CreateFakeWebApps()`.
-  std::string doc_file_extension_ = ".doc";
-  std::string doc_mime_type_ = "application/msword";
-  std::string ppt_file_extension_ = ".ppt";
-  std::string ppt_mime_type_ = "application/vnd.ms-powerpoint";
-  std::string xls_file_extension_ = ".xls";
-  std::string xls_mime_type_ = "application/vnd.ms-excel";
   std::vector<std::string> urls_;
   std::vector<file_manager::file_tasks::TaskDescriptor> tasks_;
   std::vector<storage::FileSystemURL> files_;
@@ -167,10 +181,10 @@ class CloudUploadDialogBrowserTest : public InProcessBrowserTest {
 // `FileHandlerPageElement`. Tests that the `FileHandlerPageElement` observes
 // all of the fake file tasks and that a file task can be launched by clicking
 // on its button before clicking the open button.
-IN_PROC_BROWSER_TEST_F(CloudUploadDialogBrowserTest, OpenFileTaskFromDialog) {
+IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OpenFileTaskFromDialog) {
   // Create fake doc and ppt files and 3 fake local file tasks that support all
   // office file types.
-  SetUpTasksAndFiles({doc_file_extension_, ppt_file_extension_}, 3);
+  SetUpTasksAndFiles({kDocFileExtension, kPptFileExtension}, 3);
 
   // Install QuickOffice.
   file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile());
@@ -195,14 +209,7 @@ IN_PROC_BROWSER_TEST_F(CloudUploadDialogBrowserTest, OpenFileTaskFromDialog) {
 
   // Get the web contents of the dialog to be able to query
   // `FileHandlerPageElement`.
-  ash::SystemWebDialogDelegate* dialog =
-      ash::SystemWebDialogDelegate::FindInstance(
-          chrome::kChromeUICloudUploadURL);
-  ASSERT_TRUE(dialog);
-  content::WebUI* webui = dialog->GetWebUIForTest();
-  ASSERT_TRUE(webui);
-  content::WebContents* web_contents = webui->GetWebContents();
-  ASSERT_TRUE(web_contents);
+  content::WebContents* web_contents = GetWebContentsFromCloudUploadDialog();
 
   // Get the `tasks` member from the `FileHandlerPageElement` which are all of
   // the observed local file tasks.
@@ -215,7 +222,12 @@ IN_PROC_BROWSER_TEST_F(CloudUploadDialogBrowserTest, OpenFileTaskFromDialog) {
     // been initiated yet. It is completed when the `tasks` member is non-empty.
     if (!content::ExecuteScriptAndExtractString(
             web_contents,
-            ScriptJS("JSON.stringify(%s.tasks.map(task => task.appId))"),
+            base::StringPrintf(
+                "domAutomationController.send(%s)",
+                ScriptFillPlaceholder(
+                    "JSON.stringify(%s.tasks.map(task => task.appId))",
+                    "file-handler-page")
+                    .c_str()),
             &result)) {
       continue;
     }
@@ -261,22 +273,23 @@ IN_PROC_BROWSER_TEST_F(CloudUploadDialogBrowserTest, OpenFileTaskFromDialog) {
   // Check that there is not a default task for doc files.
   file_manager::file_tasks::TaskDescriptor default_task;
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), doc_mime_type_, doc_file_extension_,
-      &default_task));
+      *profile()->GetPrefs(), kDocMimeType, kDocFileExtension, &default_task));
 
   // Check that there is not a default task for ppt files.
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), ppt_mime_type_, ppt_file_extension_,
-      &default_task));
+      *profile()->GetPrefs(), kPptMimeType, kPptFileExtension, &default_task));
 
   // Click the selected task.
   std::string rename_task_id =
       "%s.$('#id" + base::NumberToString(selected_task_position) + "').click()";
-  EXPECT_TRUE(content::ExecJs(web_contents, ScriptJS(rename_task_id.c_str())));
+  EXPECT_TRUE(content::ExecJs(
+      web_contents,
+      ScriptFillPlaceholder(rename_task_id.c_str(), "file-handler-page")));
 
   // Click the open button.
-  EXPECT_TRUE(content::ExecJs(web_contents,
-                              ScriptJS("%s.$('.action-button').click()")));
+  EXPECT_TRUE(content::ExecJs(
+      web_contents, ScriptFillPlaceholder("%s.$('.action-button').click()",
+                                          "file-handler-page")));
 
   // Wait for selected task to open.
   navigation_observer_task.Wait();
@@ -286,30 +299,27 @@ IN_PROC_BROWSER_TEST_F(CloudUploadDialogBrowserTest, OpenFileTaskFromDialog) {
 
   // Check that the selected task has been made the default for doc files.
   ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), doc_mime_type_, doc_file_extension_,
-      &default_task));
+      *profile()->GetPrefs(), kDocMimeType, kDocFileExtension, &default_task));
   ASSERT_EQ(tasks_[selected_task], default_task);
 
   // Check that the selected task has been made the default for ppt files.
   ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), ppt_mime_type_, ppt_file_extension_,
-      &default_task));
+      *profile()->GetPrefs(), kPptMimeType, kPptFileExtension, &default_task));
   ASSERT_EQ(tasks_[selected_task], default_task);
 
   // Check that the selected task has not been made the default for xls files
   // because there was not an xls file selected by the user, even though the
   // task supports xls files.
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), xls_mime_type_, xls_file_extension_,
-      &default_task));
+      *profile()->GetPrefs(), kXlsMimeType, kXlsFileExtension, &default_task));
 }
 
 // Tests that OnDialogComplete() opens the specified fake file task.
-IN_PROC_BROWSER_TEST_F(CloudUploadDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
                        OnDialogCompleteOpensFileTasks) {
   file_manager::file_tasks::TaskDescriptor default_task;
   int num_tasks = 3;
-  SetUpTasksAndFiles({xls_file_extension_}, num_tasks);
+  SetUpTasksAndFiles({kXlsFileExtension}, num_tasks);
 
   for (int selected_task = 0; selected_task < num_tasks; selected_task++) {
     std::string user_response = base::NumberToString(selected_task);
@@ -328,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(CloudUploadDialogBrowserTest,
 
     // Check that the selected task has been made the default.
     ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-        *profile()->GetPrefs(), xls_mime_type_, xls_file_extension_,
+        *profile()->GetPrefs(), kXlsMimeType, kXlsFileExtension,
         &default_task));
     ASSERT_EQ(tasks_[selected_task], default_task);
   }
@@ -336,14 +346,290 @@ IN_PROC_BROWSER_TEST_F(CloudUploadDialogBrowserTest,
 
 // Tests that OnDialogComplete() doesn't crash when the specified selected task
 // doesn't exist.
-IN_PROC_BROWSER_TEST_F(CloudUploadDialogBrowserTest, OnDialogCompleteNoCrash) {
+IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OnDialogCompleteNoCrash) {
   int num_tasks = 3;
-  SetUpTasksAndFiles({ppt_file_extension_}, num_tasks);
+  SetUpTasksAndFiles({kPptFileExtension}, num_tasks);
 
   int out_of_range_task = 3;
   std::string user_response = base::NumberToString(out_of_range_task);
 
   // Simulate user selecting a nonexistent selected task.
   OnDialogComplete(profile(), files_, user_response, std::move(tasks_));
+}
+
+// Tests the Fixup flow. Ensures that it is run when the conditions are met: the
+// Setup flow has completed, ODFS is not mounted or the Office PWA is not
+// installed and OneDrive is selected as the cloud provider. Ensures that it
+// cannot change the default task set.
+class FixUpFlowBrowserTest : public InProcessBrowserTest {
+ public:
+  FixUpFlowBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kUploadOfficeToCloud);
+  }
+
+  FixUpFlowBrowserTest(const FixUpFlowBrowserTest&) = delete;
+  FixUpFlowBrowserTest& operator=(const FixUpFlowBrowserTest&) = delete;
+
+  Profile* profile() { return browser()->profile(); }
+
+  // Add a doc test file.
+  void SetUpFiles() {
+    base::FilePath file =
+        file_manager::util::GetMyFilesFolderForProfile(profile()).AppendASCII(
+            "foo.doc");
+    GURL url;
+    CHECK(file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
+        profile(), file, file_manager::util::GetFileManagerURL(), &url));
+    files_.push_back(storage::FileSystemURL::CreateForTest(url));
+  }
+
+  void AddFakeODFS() {
+    auto fake_provider =
+        ash::file_system_provider::FakeExtensionProvider::Create(
+            file_manager::file_tasks::kODFSExtensionId);
+    const auto kProviderId = fake_provider->GetId();
+    auto* service = file_system_provider::Service::Get(profile());
+    service->RegisterProvider(std::move(fake_provider));
+    service->MountFileSystem(kProviderId,
+                             ash::file_system_provider::MountOptions(
+                                 "test-filesystem", "Test FileSystem"));
+  }
+
+  void AddFakeOfficePWA() {
+    file_manager::test::AddFakeWebApp(
+        web_app::kMicrosoftOfficeAppId, kDocMimeType, kDocFileExtension, "",
+        true, apps::AppServiceProxyFactory::GetForProfile(profile()));
+  }
+
+ protected:
+  std::vector<storage::FileSystemURL> files_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that the Fixup flow is entered when OneDrive is selected as the cloud
+// provider but ODFS is not mounted and the Setup flow has already completed.
+// Checks that the ODFS Sign In Page is reachable.
+IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest, FixUpFlowWhenODFSNotMounted) {
+  // Set Setup flow as complete.
+  file_manager::file_tasks::SetOfficeSetupComplete(profile(), true);
+
+  SetUpFiles();
+  AddFakeOfficePWA();
+
+  // ODFS is not mounted, expect that the Fixup flow will need to run.
+  ASSERT_TRUE(ShouldFixUpOffice(profile(), CloudProvider::kOneDrive));
+
+  // Watch for OneDrive Setup dialog URL chrome://cloud-upload.
+  content::TestNavigationObserver navigation_observer_dialog(
+      (GURL(chrome::kChromeUICloudUploadURL)));
+  navigation_observer_dialog.StartWatchingNewWebContents();
+
+  OpenFilesWithCloudProvider(profile(), files_, CloudProvider::kOneDrive);
+
+  // Wait for Welcome Page to open at chrome://cloud-upload.
+  navigation_observer_dialog.Wait();
+  ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
+
+  content::WebContents* web_contents = GetWebContentsFromCloudUploadDialog();
+
+  // Click through the Welcome Page.
+  while (!content::ExecJs(
+      web_contents,
+      ScriptFillPlaceholder(
+          "%s.$('welcome-page').querySelector('.action-button').click()",
+          "cloud-upload"))) {
+  }
+
+  // Wait for the ODFS Sign In Page.
+  while (!content::ExecJs(
+      web_contents, ScriptFillPlaceholder(
+                        "%s.$('sign-in-page').querySelector('.action-button')",
+                        "cloud-upload"))) {
+  }
+}
+
+// Tests that the Fixup flow is entered when OneDrive is selected as the cloud
+// provider but the Office PWA is not installed and the Setup flow has already
+// completed. Checks that the Office PWA Install Page is reachable.
+IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
+                       FixUpFlowWhenOfficePWANotInstalled) {
+  // Set Setup flow as complete.
+  file_manager::file_tasks::SetOfficeSetupComplete(profile(), true);
+
+  SetUpFiles();
+  AddFakeODFS();
+
+  // Office PWA is not installed, expect that the Fixup flow will need to run.
+  ASSERT_TRUE(ShouldFixUpOffice(profile(), CloudProvider::kOneDrive));
+
+  // Watch for OneDrive Setup dialog URL chrome://cloud-upload.
+  content::TestNavigationObserver navigation_observer_dialog(
+      (GURL(chrome::kChromeUICloudUploadURL)));
+  navigation_observer_dialog.StartWatchingNewWebContents();
+
+  OpenFilesWithCloudProvider(profile(), files_, CloudProvider::kOneDrive);
+
+  // Wait for Welcome Page to open at chrome://cloud-upload.
+  navigation_observer_dialog.Wait();
+  ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
+
+  content::WebContents* web_contents = GetWebContentsFromCloudUploadDialog();
+
+  // Click through the Welcome Page.
+  while (!content::ExecJs(
+      web_contents,
+      ScriptFillPlaceholder(
+          "%s.$('welcome-page').querySelector('.action-button').click()",
+          "cloud-upload"))) {
+  }
+
+  // Wait for the Office PWA Install Page, this script will fail until the page
+  // exists.
+  while (!content::ExecJs(
+      web_contents,
+      ScriptFillPlaceholder(
+          "%s.$('office-pwa-install-page').querySelector('.action-button')",
+          "cloud-upload"))) {
+  }
+}
+
+// Tests that `ShouldFixUpOffice()` returns true when neither ODFS is mounted
+// nor Office PWA is installed and OneDrive is selected as the cloud provider.
+IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest, ShouldFixUpOfficeNoODFSNoPWA) {
+  ASSERT_TRUE(ShouldFixUpOffice(profile(), CloudProvider::kOneDrive));
+}
+
+// Tests that `ShouldFixUpOffice()` returns false when neither ODFS is mounted
+// nor Office PWA is installed but Drive is selected as the cloud provider.
+IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest, ShouldFixUpOfficeDrive) {
+  ASSERT_FALSE(ShouldFixUpOffice(profile(), CloudProvider::kGoogleDrive));
+}
+
+// Tests that `ShouldFixUpOffice()` returns false when both ODFS is mounted and
+// Office PWA is installed and OneDrive is selected as the cloud provider.
+IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest, ShouldFixUpOfficeODFSAndPWA) {
+  AddFakeODFS();
+  AddFakeOfficePWA();
+  ASSERT_FALSE(ShouldFixUpOffice(profile(), CloudProvider::kOneDrive));
+}
+
+// Test that entering and completing the Setup flow from the OneDrive Set Up
+// point changes the default task set when the Setup has not been run before.
+IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
+                       OneDriveSetUpChangesDefaultTaskWhenSetUpIncomplete) {
+  // Set Setup flow as incomplete.
+  file_manager::file_tasks::SetOfficeSetupComplete(profile(), false);
+
+  // Add a doc test file.
+  SetUpFiles();
+  AddFakeODFS();
+  AddFakeOfficePWA();
+
+  // Watch for OneDrive Setup dialog URL chrome://cloud-upload.
+  content::TestNavigationObserver navigation_observer_dialog(
+      (GURL(chrome::kChromeUICloudUploadURL)));
+  navigation_observer_dialog.StartWatchingNewWebContents();
+
+  // Check that there is not a default task for doc files.
+  file_manager::file_tasks::TaskDescriptor default_task;
+  ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), kDocMimeType, kDocFileExtension, &default_task));
+
+  // Open the Welcome Page for the OneDrive set up part of the Setup flow. This
+  // will lead to the Office PWA being set as the default task.
+  CloudUploadDialog::SetUpAndShowDialog(profile(), files_,
+                                        mojom::DialogPage::kOneDriveSetup);
+
+  // Wait for Welcome Page to open at chrome://cloud-upload.
+  navigation_observer_dialog.Wait();
+  ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
+
+  content::WebContents* web_contents = GetWebContentsFromCloudUploadDialog();
+
+  // Click through the Welcome Page.
+  while (!content::ExecJs(
+      web_contents,
+      ScriptFillPlaceholder(
+          "%s.$('welcome-page').querySelector('.action-button').click()",
+          "cloud-upload"))) {
+  }
+
+  // Click through the Upload Page.
+  while (!content::ExecJs(
+      web_contents,
+      ScriptFillPlaceholder(
+          "%s.$('upload-page').querySelector('.action-button').click()",
+          "cloud-upload"))) {
+  }
+
+  // Check that the Office PWA has been made the default for doc files.
+  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), kDocMimeType, kDocFileExtension, &default_task));
+  ASSERT_TRUE(IsOpenInOfficeTask(default_task));
+}
+
+// Test that entering and completing the Setup flow from the OneDrive Set Up
+// point does not change the default task set when the Setup has been run
+// before. This is to test that when the Fixup flow runs, the default task does
+// not change.
+IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
+                       OneDriveSetUpDoesNotChangeDefaultTaskWhenSetUpComplete) {
+  // Set Setup flow as complete.
+  file_manager::file_tasks::SetOfficeSetupComplete(profile(), true);
+
+  // Add a doc test file.
+  SetUpFiles();
+  // Note: although mounting ODFS and installing the Office PWA sets up
+  // conditions so that the Fixup flow does not need to be run, this test is
+  // just to check that entering the Setup flow from OneDrive Setup point does
+  // not set the default task when the Setup flow is already complete.
+  // Otherwise, the test would get stuck trying to set up OneDrive, unable to
+  // navigate through all the dialog pages.
+  AddFakeODFS();
+  AddFakeOfficePWA();
+
+  // Watch for OneDrive Setup dialog URL chrome://cloud-upload.
+  content::TestNavigationObserver navigation_observer_dialog(
+      (GURL(chrome::kChromeUICloudUploadURL)));
+  navigation_observer_dialog.StartWatchingNewWebContents();
+
+  // Check that there is not a default task for doc files.
+  file_manager::file_tasks::TaskDescriptor default_task;
+  ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), kDocMimeType, kDocFileExtension, &default_task));
+
+  // Open the Welcome Page for the OneDrive set up part of the Setup flow. This
+  // will not lead to the Office PWA being set as the default task because the
+  // Setup flow has already been completed.
+  CloudUploadDialog::SetUpAndShowDialog(profile(), files_,
+                                        mojom::DialogPage::kOneDriveSetup);
+
+  // Wait for Welcome Page to open at chrome://cloud-upload.
+  navigation_observer_dialog.Wait();
+  ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
+
+  content::WebContents* web_contents = GetWebContentsFromCloudUploadDialog();
+
+  // Click through the Welcome Page.
+  while (!content::ExecJs(
+      web_contents,
+      ScriptFillPlaceholder(
+          "%s.$('welcome-page').querySelector('.action-button').click()",
+          "cloud-upload"))) {
+  }
+
+  // Click through the Upload Page.
+  while (!content::ExecJs(
+      web_contents,
+      ScriptFillPlaceholder(
+          "%s.$('upload-page').querySelector('.action-button').click()",
+          "cloud-upload"))) {
+  }
+
+  // Check that there is still not a default task for doc files.
+  ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), kDocMimeType, kDocFileExtension, &default_task));
 }
 }  // namespace ash::cloud_upload

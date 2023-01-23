@@ -308,4 +308,58 @@ suite('<cloud-upload>', () => {
             [UserAction.kCancel],
             testProxy.handler.getArgs('respondWithUserActionAndClose'));
       }));
+
+  /**
+   * Test that completing the Setup flow from the OneDrive Upload Page triggers
+   * the `setOfficeAsDefaultHandler` mojo request when this is the first time
+   * the Setup flow is running.
+   */
+  test(
+      'Office PWA set as default handler when the Setup flow is running',
+      async () => {
+        await setUp({
+          officeWebAppInstalled: false,
+          installOfficeWebAppResult: true,
+          odfsMounted: true,
+          dialogPage: DialogPage.kOneDriveSetup,
+          firstTimeSetup: true,
+        });
+        // Go to the OneDrive upload page.
+        await doWelcomePage();
+        await doPWAInstallPage();
+        checkIsOneDriveUploadPage();
+
+        // Click the open file button.
+        cloudUploadApp.$('.action-button').click();
+
+        assertEquals(
+            1, testProxy.handler.getCallCount('setOfficeAsDefaultHandler'));
+      });
+
+  /**
+   * Test that completing the Setup flow from the OneDrive Upload Page does not
+   * trigger the `setOfficeAsDefaultHandler` mojo request when this is not the
+   * first time the Setup flow is not running, i.e. the Fixup flow is running.
+   */
+  test(
+      'Office PWA not set as default handler when the Fixup flow is running',
+      async () => {
+        await setUp({
+          officeWebAppInstalled: false,
+          installOfficeWebAppResult: true,
+          odfsMounted: true,
+          dialogPage: DialogPage.kOneDriveSetup,
+          firstTimeSetup: false,
+        });
+        // Go to the OneDrive upload page.
+        await doWelcomePage();
+        await doPWAInstallPage();
+        checkIsOneDriveUploadPage();
+
+        // Click the open file button.
+        cloudUploadApp.$('.action-button').click();
+
+        assertEquals(
+            0, testProxy.handler.getCallCount('setOfficeAsDefaultHandler'));
+      });
 });

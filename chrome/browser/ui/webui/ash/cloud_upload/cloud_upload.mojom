@@ -51,6 +51,10 @@ struct DialogArgs {
   // The local file tasks the user can pick from to open the files. Displayed in
   // the `kFileHandlerDialog` dialog.
   array<DialogTask> tasks;
+
+  // True if the setup flow is running for the first time. False if running
+  // fixup flow.
+  bool first_time_setup;
 };
 
 // Lives in the browser process. A renderer uses this to create a page handler
