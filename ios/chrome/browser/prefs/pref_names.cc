@@ -102,6 +102,11 @@ const char kIosPreRestoreAccountInfo[] = "ios.pre_restore_account_info";
 // campaigns.
 const char kIosPromosManagerActivePromos[] = "ios.promos_manager.active_promos";
 
+// Dict preference maintaining the dict of single-display, pending promo
+// campaigns. Key is the promo name, value is the time to become active.
+const char kIosPromosManagerSingleDisplayPendingPromos[] =
+    "ios.promos_manager.pending_promos";
+
 // List preference containing the promo impression history.
 const char kIosPromosManagerImpressions[] = "ios.promos_manager.impressions";
 

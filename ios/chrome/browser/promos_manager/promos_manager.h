@@ -10,6 +10,7 @@
 #import <map>
 
 #import "base/containers/small_map.h"
+#import "base/time/time.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
 @class ImpressionLimit;
@@ -40,6 +41,13 @@ class PromosManager {
   // status across app launches.
   virtual void RegisterPromoForSingleDisplay(promos_manager::Promo promo) = 0;
 
+  // Same as `RegisterPromoForSingleDisplay`, except that the promo can only be
+  // active after `becomes_active_after_period`. Pending status with time are
+  // persisted.
+  virtual void RegisterPromoForSingleDisplay(
+      promos_manager::Promo promo,
+      base::TimeDelta becomes_active_after_period) = 0;
+
   // Deregisters `promo` (stopping `promo` from being displayed) by removing the
   // promo entry from the single-display and continuous-display active promos
   // lists.
@@ -65,7 +73,7 @@ class PromosManager {
   virtual void RecordImpression(promos_manager::Promo promo) = 0;
 
   // Returns the next promo for display, if any.
-  virtual absl::optional<promos_manager::Promo> NextPromoForDisplay() const = 0;
+  virtual absl::optional<promos_manager::Promo> NextPromoForDisplay() = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_H_

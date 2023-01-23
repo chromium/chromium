@@ -36,6 +36,7 @@ extern const char kIosPreRestoreAccountInfo[];
 extern const char kIosPromosManagerActivePromos[];
 extern const char kIosPromosManagerImpressions[];
 extern const char kIosPromosManagerSingleDisplayActivePromos[];
+extern const char kIosPromosManagerSingleDisplayPendingPromos[];
 extern const char kIosSettingsPromoAlreadySeen[];
 extern const char kIosSettingsSigninPromoDisplayedCount[];
 extern const char kIosNtpFeedTopPromoAlreadySeen[];

@@ -13,6 +13,7 @@
 #import <set>
 
 #import "base/containers/small_map.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/impression_limit.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -39,7 +40,7 @@ class MockPromosManager : public PromosManager {
   MOCK_METHOD(absl::optional<promos_manager::Promo>,
               NextPromoForDisplay,
               (),
-              (const, override));
+              (override));
   MOCK_METHOD(void,
               RegisterPromoForContinuousDisplay,
               (promos_manager::Promo promo),
@@ -47,6 +48,11 @@ class MockPromosManager : public PromosManager {
   MOCK_METHOD(void,
               RegisterPromoForSingleDisplay,
               (promos_manager::Promo promo),
+              (override));
+  MOCK_METHOD(void,
+              RegisterPromoForSingleDisplay,
+              (promos_manager::Promo promo,
+               base::TimeDelta becomes_active_after_period),
               (override));
   MOCK_METHOD(void, DeregisterPromo, (promos_manager::Promo promo), (override));
 };

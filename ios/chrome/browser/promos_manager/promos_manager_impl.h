@@ -13,6 +13,7 @@
 #import <vector>
 
 #import "base/containers/small_map.h"
+#import "base/time/clock.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
@@ -24,7 +25,13 @@
 // promo_manager.h instead.
 class PromosManagerImpl : public PromosManager {
  public:
-  explicit PromosManagerImpl(PrefService* local_state);
+  // Context for a promo registration, internally used.
+  struct PromoContext {
+    // The promo has had pending status.
+    bool was_pending;
+  };
+
+  PromosManagerImpl(PrefService* local_state, base::Clock* clock);
   ~PromosManagerImpl() override;
 
   // `promo`-specific impression limits, if defined. May return an empty
@@ -51,7 +58,7 @@ class PromosManagerImpl : public PromosManager {
   // recently seen, as `sorted_impressions` is sorted by day (most recent ->
   // least recent).
   std::vector<promos_manager::Promo> LeastRecentlyShown(
-      const std::set<promos_manager::Promo>& active_promos,
+      const std::map<promos_manager::Promo, PromoContext>& active_promos,
       const std::vector<promos_manager::Impression>& sorted_impressions) const;
 
   // Impression limits that count against all promos.
@@ -68,7 +75,10 @@ class PromosManagerImpl : public PromosManager {
   // Loops over the stored active promos list (base::Value::List) and returns
   // a corresponding std::set<promos_manager::Promo>.
   std::set<promos_manager::Promo> ActivePromos(
-      const base::Value::List& stored_active_promos);
+      const base::Value::List& stored_active_promos) const;
+
+  // Initializes the `single_display_pending_promos_`, constructs it from Pref.
+  void InitializePendingPromos();
 
   // Returns true if any impression limit from `impression_limits` is triggered,
   // and false otherwise.
@@ -126,19 +136,29 @@ class PromosManagerImpl : public PromosManager {
           std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>
           promo_impression_limits) override;
   void RecordImpression(promos_manager::Promo promo) override;
-  absl::optional<promos_manager::Promo> NextPromoForDisplay() const override;
+  absl::optional<promos_manager::Promo> NextPromoForDisplay() override;
   void RegisterPromoForContinuousDisplay(promos_manager::Promo promo) override;
   void RegisterPromoForSingleDisplay(promos_manager::Promo promo) override;
+  void RegisterPromoForSingleDisplay(
+      promos_manager::Promo promo,
+      base::TimeDelta becomes_active_after_period) override;
   void DeregisterPromo(promos_manager::Promo promo) override;
 
   // Weak pointer to the local state prefs store.
   const raw_ptr<PrefService> local_state_;
+
+  // The time provider.
+  const raw_ptr<base::Clock> clock_;
 
   // The set of currently active, continuous-display promos.
   std::set<promos_manager::Promo> active_promos_;
 
   // The set of currently active, single-display promos.
   std::set<promos_manager::Promo> single_display_active_promos_;
+
+  // The map from registered single-display pending promos to the time that they
+  // can become active.
+  std::map<promos_manager::Promo, base::Time> single_display_pending_promos_;
 
   // The impression history sorted by `day` (most recent -> least recent).
   std::vector<promos_manager::Impression> impression_history_;
