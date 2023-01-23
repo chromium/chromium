@@ -1,0 +1,33 @@
+{
+  "cookies": [
+    {
+      "timestamp": "1643235571000",
+      "url": "https://r.test/",
+      "Set-Cookie": "ar_debug=1; SameSite=None; Secure; HttpOnly"
+    }
+  ],
+  "sources": [
+    {
+      "timestamp": "1643235571001",
+      "source_origin": "https://a.s.test",
+      "reporting_origin": "https://r.test",
+      "source_type": "navigation",
+      "Attribution-Reporting-Register-Source": {
+        "destination": "https://d.test",
+        "event_report_window": "86400",
+        "source_event_id": "123"
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "timestamp": "1643321971002",
+      "reporting_origin": "https://r.test",
+      "destination_origin": "https://d.test",
+      "Attribution-Reporting-Register-Trigger": {
+        "debug_reporting": true,
+        "event_trigger_data": [{}]
+      }
+    }
+  ]
+}

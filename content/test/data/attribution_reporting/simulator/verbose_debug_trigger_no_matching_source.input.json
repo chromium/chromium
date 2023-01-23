@@ -1,0 +1,20 @@
+{
+  "cookies": [
+    {
+      "timestamp": "1643235571000",
+      "url": "https://r.test/",
+      "Set-Cookie": "ar_debug=1; SameSite=None; Secure; HttpOnly"
+    }
+  ],
+  "triggers": [
+    {
+      "timestamp": "1643235571001",
+      "reporting_origin": "https://r.test",
+      "destination_origin": "https://d.test",
+      "Attribution-Reporting-Register-Trigger": {
+        "debug_reporting": true,
+        "event_trigger_data": [{}]
+      }
+    }
+  ]
+}
