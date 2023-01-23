@@ -1,0 +1,4 @@
+[document web] text-align:left text='%EF%BF%BC'
+++[section] text-align:left text='%EF%BF%BC%EF%BF%BC'
+++++[entry] selectable-text text-align:left text='done'
+++++[image] text-align:left

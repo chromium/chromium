@@ -1,0 +1,4 @@
+[document web]
+++[landmark] name='Stuff' xml-roles:region
+++++[static] name='Text'
+++++[push button] name='Button' xml-roles:button

@@ -34,14 +34,6 @@ slight variances across different platforms.
 @BLINK-ALLOW:pageLocation=(0, 300)
 @BLINK-ALLOW:pageLocation=(25, 325)
 @BLINK-ALLOW:pageLocation=(0, 450)
-
-These can be removed when bug 532249 is fixed because
-then the test framework will just wait until all frames
-have finished loading. Until then we need these because
-the test doesn't wait for same-process iframes to finish
-loading.
-@WAIT-FOR:Ordinary Button
-@WAIT-FOR:Scrolled Button
 -->
 <!DOCTYPE html>
 <html>

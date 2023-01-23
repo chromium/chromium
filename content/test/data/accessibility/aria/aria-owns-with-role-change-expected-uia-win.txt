@@ -1,0 +1,4 @@
+Document LocalizedControlType='document'
+++Group LocalizedControlType='region' Name='Stuff'
+++++Text LocalizedControlType='text' Name='Text'
+++++Button LocalizedControlType='button' Name='Button'
