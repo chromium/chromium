@@ -433,7 +433,7 @@ TEST_F(PrerenderHostTest, CanceledPrerenderCannotBeReadyForActivation) {
   PreloadingURLMatchCallback same_url_matcher =
       PreloadingData::GetSameURLMatcher(kPrerenderingUrl);
   PreloadingAttempt* preloading_attempt = preloading_data->AddPreloadingAttempt(
-      ToPreloadingPredictor(ContentPreloadingPredictor::kSpeculationRules),
+      content_preloading_predictor::kSpeculationRules,
       PreloadingType::kPrerender, std::move(same_url_matcher));
 
   const int prerender_frame_tree_node_id = registry().CreateAndStartHost(

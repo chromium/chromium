@@ -244,8 +244,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     attempt_entry_builder_ =
         std::make_unique<test::PreloadingAttemptUkmEntryBuilder>(
-            ToPreloadingPredictor(
-                ContentPreloadingPredictor::kSpeculationRules));
+            content_preloading_predictor::kSpeculationRules);
 
     scoped_test_timer_ =
         std::make_unique<base::ScopedMockElapsedTimersForTest>();

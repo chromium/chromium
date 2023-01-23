@@ -5,14 +5,17 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PRELOADING_H_
 #define CONTENT_PUBLIC_BROWSER_PRELOADING_H_
 
-#include <stdint.h>
+#include <cstdint>
+
+#include "base/strings/string_piece.h"
+#include "content/common/content_export.h"
 
 namespace content {
 
-// If you change any of the following enums, please follow the process in
-// go/preloading-dashboard-updates to update the mapping reflected in
-// dashboard, or if you are not a Googler, please file an FYI bug on
-// https://crbug.new with component Internals>Preload.
+// If you change any of the following enums or static variables, please follow
+// the process in go/preloading-dashboard-updates to update the mapping
+// reflected in dashboard, or if you are not a Googler, please file an FYI bug
+// on https://crbug.new with component Internals>Preload.
 
 // Defines the different types of preloading speedup techniques. Preloading is a
 // holistic term to define all the speculative operations the browser does for
@@ -52,42 +55,64 @@ enum class PreloadingType {
 };
 
 // Defines various triggering mechanisms which triggers different preloading
-// operations mentioned in preloading.h.
+// operations mentioned in preloading.h. The integer portion is used for UKM
+// logging, and the string portion is used to dynamically compose UMA histogram
+// names. Embedders are allowed to define more predictors.
+class CONTENT_EXPORT PreloadingPredictor {
+ public:
+  constexpr PreloadingPredictor(int64_t ukm_value, base::StringPiece name)
+      : ukm_value_(ukm_value), name_(name) {}
+  int64_t ukm_value() const { return ukm_value_; }
+  base::StringPiece name() const { return name_; }
+
+ private:
+  int64_t ukm_value_;
+  base::StringPiece name_;
+};
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class PreloadingPredictor {
-  // No PreloadingTrigger is present. This may include the small percentage of
-  // usages of browser triggers, link-rel, OptimizationGuideService e.t.c which
-  // will be added later as a separate elements.
-  kUnspecified = 0,
+//
+// Advance numbering by +1 when adding a new element.
+//
+// To add additional predictors in content-internals and embedders, wrap the
+// new `PreloadingPredictor` in the corresponding namespaces:
+// - `content_preloading_predictor` for content-internals;
+// - `chrome_preloading_predictor` for Chrome.
+//
+// See `content/browser/preloading/preloading.h` and
+// `chrome/browser/preloading/chrome_preloading.h` for examples.
+//
+// Please limit content-public `PreloadingPredictor` between 0 to 49
+// (inclusive) as 50 and beyond are reserved for content-internal and embedders.
+// Both the value and the name should be unique across all the namespaces.
+//
+// The embedder `PreloadingPredictor` definitions should start at 100 (see
+// `chrome/browser/preloading/chrome_preloading.h` for example).
+namespace preloading_predictor {
+// No PreloadingTrigger is present. This may include the small percentage of
+// usages of browser triggers, link-rel, OptimizationGuideService e.t.c which
+// will be added later as a separate elements.
+static constexpr PreloadingPredictor kUnspecified(0, "Unspecified");
 
-  // Preloading is triggered by OnPointerDown event heuristics.
-  kUrlPointerDownOnAnchor = 1,
+// Preloading is triggered by OnPointerDown event heuristics.
+static constexpr PreloadingPredictor kUrlPointerDownOnAnchor(
+    1,
+    "UrlPointerDownOnAnchor");
 
-  // Preloading is triggered by OnPointerHover event heuristics.
-  kUrlPointerHoverOnAnchor = 2,
+// Preloading is triggered by OnPointerHover event heuristics.
+static constexpr PreloadingPredictor kUrlPointerHoverOnAnchor(
+    2,
+    "UrlPointerHoverOnAnchor");
 
-  // Preloading was triggered by embedding a keyword for the rel attribute of
-  // the <link> HTML element to hint to browsers that the user might need it for
-  // next navigation.
-  kLinkRel = 3,
+// Preloading was triggered by embedding a keyword for the rel attribute of
+// the <link> HTML element to hint to browsers that the user might need it for
+// next navigation.
+static constexpr PreloadingPredictor kLinkRel(3, "LinkRel");
 
-  // TODO(crbug.com/1309934): Add more predictors as we integrate Preloading
-  // logging.
-
-  // This constant is used to define the value from which features can add more
-  // enums beyond this value both inside and outside content. We mask it by 50
-  // and 100 to avoid usage of the same numbers for logging.
-
-  // >= 50 values are reserved for content-internal values, such as
-  // ContentPreloadingPredictor enum.
-  kPreloadingPredictorContentStart = 50,
-
-  // >= 100 values are reserved for embedder-specific values, such as the
-  // ChromePreloadingPredictor enum.
-  kPreloadingPredictorContentEnd = 100,
-};
+// TODO(crbug.com/1309934): Add more predictors as we integrate Preloading
+// logging.
+}  // namespace preloading_predictor
 
 // Defines if a preloading operation is eligible for a given preloading
 // trigger.
@@ -195,7 +220,9 @@ enum class PreloadingHoldbackStatus {
 // triggered.
 
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// numeric values should never be reused. Please update
+// "PreloadingTriggeringOutcome" in `tools/metrics/histograms/enums.xml` when
+// new enums are added.
 enum class PreloadingTriggeringOutcome {
   // The outcome is kUnspecified for attempts that were not triggered due to
   // various ineligibility reasons or due to a field trial holdback.
@@ -237,6 +264,9 @@ enum class PreloadingTriggeringOutcome {
   // navigation. This outcome should not be recorded when
   // `kPrerender2SequentialPrerendering` is disabled.
   kTriggeredButPending = 9,
+
+  // Required by UMA histogram macro.
+  kMaxValue = kTriggeredButPending,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

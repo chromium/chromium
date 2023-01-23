@@ -126,8 +126,7 @@ class PrerenderOmniboxUIBrowserTest : public InProcessBrowserTest,
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     ukm_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-            ToPreloadingPredictor(
-                ChromePreloadingPredictor::kOmniboxDirectURLInput));
+            chrome_preloading_predictor::kOmniboxDirectURLInput);
 
     ASSERT_TRUE(embedded_test_server()->Start());
     scoped_test_timer_ =
@@ -701,12 +700,10 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
     // This test suite only tests for Default Search Engine prerendering.
     attempt_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-            ToPreloadingPredictor(
-                ChromePreloadingPredictor::kDefaultSearchEngine));
+            chrome_preloading_predictor::kDefaultSearchEngine);
     prediction_entry_builder_ =
         std::make_unique<content::test::PreloadingPredictionUkmEntryBuilder>(
-            ToPreloadingPredictor(
-                ChromePreloadingPredictor::kDefaultSearchEngine));
+            chrome_preloading_predictor::kDefaultSearchEngine);
     scoped_test_timer_ =
         std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }

@@ -51,10 +51,10 @@ void AnchorElementPreloader::MaybePreconnect(const GURL& target) {
   // likely compute the confidence by looking at different factors (e.g. anchor
   // element dimensions, last time since scroll, etc.).
   preloading_data->AddPreloadingPrediction(
-      ToPreloadingPredictor(ChromePreloadingPredictor::kPointerDownOnAnchor),
+      chrome_preloading_predictor::kPointerDownOnAnchor,
       /*confidence=*/100, match_callback);
   content::PreloadingAttempt* attempt = preloading_data->AddPreloadingAttempt(
-      ToPreloadingPredictor(ChromePreloadingPredictor::kPointerDownOnAnchor),
+      chrome_preloading_predictor::kPointerDownOnAnchor,
       content::PreloadingType::kPreconnect, match_callback);
 
   if (content::PreloadingEligibility eligibility =

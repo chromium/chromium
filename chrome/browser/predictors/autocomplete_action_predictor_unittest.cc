@@ -123,8 +123,7 @@ class AutocompleteActionPredictorTest : public testing::Test {
         profile_.get(), nullptr);
     ukm_entry_builder_ =
         std::make_unique<content::test::PreloadingPredictionUkmEntryBuilder>(
-            ToPreloadingPredictor(
-                ChromePreloadingPredictor::kOmniboxDirectURLInput));
+            chrome_preloading_predictor::kOmniboxDirectURLInput);
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
 

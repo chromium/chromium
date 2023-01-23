@@ -30,7 +30,7 @@ void PreloadingPrediction::RecordPreloadingPredictionUKMs(
   // Don't log when the source id is invalid.
   if (navigated_page_source_id != ukm::kInvalidSourceId) {
     ukm::builders::Preloading_Prediction builder(navigated_page_source_id);
-    builder.SetPreloadingPredictor(static_cast<int64_t>(predictor_type_))
+    builder.SetPreloadingPredictor(predictor_type_.ukm_value())
         .SetConfidence(confidence_)
         .SetAccuratePrediction(is_accurate_prediction_);
     if (time_to_next_navigation_) {
@@ -43,7 +43,7 @@ void PreloadingPrediction::RecordPreloadingPredictionUKMs(
   if (triggered_primary_page_source_id_ != ukm::kInvalidSourceId) {
     ukm::builders::Preloading_Prediction_PreviousPrimaryPage builder(
         triggered_primary_page_source_id_);
-    builder.SetPreloadingPredictor(static_cast<int64_t>(predictor_type_))
+    builder.SetPreloadingPredictor(predictor_type_.ukm_value())
         .SetConfidence(confidence_)
         .SetAccuratePrediction(is_accurate_prediction_);
     if (time_to_next_navigation_) {

@@ -150,12 +150,10 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest {
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     attempt_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-            ToPreloadingPredictor(
-                ChromePreloadingPredictor::kDefaultSearchEngine));
+            chrome_preloading_predictor::kDefaultSearchEngine);
     prediction_entry_builder_ =
         std::make_unique<content::test::PreloadingPredictionUkmEntryBuilder>(
-            ToPreloadingPredictor(
-                ChromePreloadingPredictor::kDefaultSearchEngine));
+            chrome_preloading_predictor::kDefaultSearchEngine);
     scoped_test_timer_ =
         std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }

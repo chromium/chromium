@@ -246,9 +246,9 @@ NoStatePrefetchManager::StartPrefetchingFromLinkRelPrerender(
 
     // Create PreloadingPrediction and PreloadingAttempt for NoStatePrefetch.
     preloading_data->AddPreloadingPrediction(
-        content::PreloadingPredictor::kLinkRel, confidence, same_url_matcher);
+        content::preloading_predictor::kLinkRel, confidence, same_url_matcher);
     attempt = preloading_data->AddPreloadingAttempt(
-        content::PreloadingPredictor::kLinkRel,
+        content::preloading_predictor::kLinkRel,
         content::PreloadingType::kNoStatePrefetch, same_url_matcher);
   }
   return StartPrefetchingWithPreconnectFallback(

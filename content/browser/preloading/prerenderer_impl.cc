@@ -211,7 +211,7 @@ bool PrerendererImpl::MaybePrerender(
   PreloadingURLMatchCallback same_url_matcher =
       PreloadingData::GetSameURLMatcher(candidate->url);
   PreloadingAttempt* preloading_attempt = preloading_data->AddPreloadingAttempt(
-      ToPreloadingPredictor(ContentPreloadingPredictor::kSpeculationRules),
+      content_preloading_predictor::kSpeculationRules,
       PreloadingType::kPrerender, std::move(same_url_matcher));
 
   auto [begin, end] = base::ranges::equal_range(

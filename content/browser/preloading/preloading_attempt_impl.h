@@ -30,7 +30,7 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
   void SetFailureReason(PreloadingFailureReason reason) override;
   base::WeakPtr<PreloadingAttempt> GetWeakPtr() override;
 
-  // Records both UKMs Preloading_Attempt and
+  // Records UKMs and UMA for both Preloading_Attempt and
   // Preloading_Attempt_PreviousPrimaryPage. Metrics for both these are same.
   // Only difference is that the Preloading_Attempt_PreviousPrimaryPage UKM is
   // associated with the WebContents primary page that triggered the preloading
@@ -38,7 +38,7 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
   // attempt on the primary visible page. Here `navigated_page` represent the
   // ukm::SourceId of the navigated page. If the navigation doesn't happen this
   // could be invalid.
-  void RecordPreloadingAttemptUKMs(ukm::SourceId navigated_page);
+  void RecordPreloadingAttemptMetrics(ukm::SourceId navigated_page);
 
   // Sets `is_accurate_triggering_` to true if `navigated_url` matches the
   // predicate URL logic. It also records `time_to_next_navigation_`.
@@ -50,8 +50,14 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
       ukm::SourceId triggered_primary_page_source_id,
       PreloadingURLMatchCallback url_match_predicate);
 
+  // Called by the `PreloadingDataImpl` that owns this attempt, to check the
+  // validity of `predictor_type_`.
+  PreloadingPredictor predictor_type() const { return predictor_type_; }
+
  private:
   friend class test::PreloadingAttemptAccessor;
+
+  void RecordPreloadingAttemptUMA();
 
   // Reason why the preloading attempt failed, this is similar to specific
   // preloading logging reason. Zero as a failure reason signifies no reason is

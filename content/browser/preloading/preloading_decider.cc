@@ -7,6 +7,7 @@
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/prerenderer_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/preloading.h"
 #include "content/public/browser/web_contents.h"
 
 namespace content {
@@ -51,7 +52,7 @@ void PreloadingDecider::OnPointerDown(const GURL& url) {
           blink::features::kSpeculationRulesPointerDownHeuristics)) {
     if (MaybePrerender(url)) {
       AddPreloadingPrediction(url,
-                              PreloadingPredictor::kUrlPointerDownOnAnchor);
+                              preloading_predictor::kUrlPointerDownOnAnchor);
       return;
     }
     if (ShouldWaitForPrerenderResult(url))
@@ -59,7 +60,7 @@ void PreloadingDecider::OnPointerDown(const GURL& url) {
 
     if (MaybePrefetch(url)) {
       AddPreloadingPrediction(url,
-                              PreloadingPredictor::kUrlPointerDownOnAnchor);
+                              preloading_predictor::kUrlPointerDownOnAnchor);
       return;
     }
     // Ideally it is preferred to fallback to preconnect asynchronously if a
@@ -81,7 +82,7 @@ void PreloadingDecider::OnPointerHover(const GURL& url) {
     // otherwise try to preconnect to it.
     if (MaybePrerender(url)) {
       AddPreloadingPrediction(url,
-                              PreloadingPredictor::kUrlPointerDownOnAnchor);
+                              preloading_predictor::kUrlPointerDownOnAnchor);
       return;
     }
     if (ShouldWaitForPrerenderResult(url))
@@ -89,7 +90,7 @@ void PreloadingDecider::OnPointerHover(const GURL& url) {
 
     if (MaybePrefetch(url)) {
       AddPreloadingPrediction(url,
-                              PreloadingPredictor::kUrlPointerHoverOnAnchor);
+                              preloading_predictor::kUrlPointerHoverOnAnchor);
       return;
     }
     // ditto (async fallback)
@@ -132,9 +133,8 @@ void PreloadingDecider::UpdateSpeculationCandidates(
     processed_candidates_.insert(std::move(key));
     // TODO(crbug.com/1341019): Pass the action requested by speculation rules
     // to PreloadingPrediction.
-    AddPreloadingPrediction(
-        candidate->url,
-        ToPreloadingPredictor(ContentPreloadingPredictor::kSpeculationRules));
+    AddPreloadingPrediction(candidate->url,
+                            content_preloading_predictor::kSpeculationRules);
 
     return false;
   };

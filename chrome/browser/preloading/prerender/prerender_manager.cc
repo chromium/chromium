@@ -389,8 +389,7 @@ void PrerenderManager::StartPrerenderSearchSuggestion(
   // this prerendering attempt.
   content::PreloadingAttempt* preloading_attempt =
       preloading_data->AddPreloadingAttempt(
-          ToPreloadingPredictor(
-              ChromePreloadingPredictor::kDefaultSearchEngine),
+          chrome_preloading_predictor::kDefaultSearchEngine,
           content::PreloadingType::kPrerender, same_url_matcher);
 
   // If the caller does not want to prerender a new result, this does not need

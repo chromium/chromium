@@ -81915,6 +81915,18 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="3" label="parse proto failed"/>
 </enum>
 
+<enum name="PreloadingTriggeringOutcome">
+  <int value="0" label="Unspecified"/>
+  <int value="2" label="Duplicate"/>
+  <int value="3" label="Running"/>
+  <int value="4" label="Ready"/>
+  <int value="5" label="Success"/>
+  <int value="6" label="Failure"/>
+  <int value="7" label="TriggeredButOutcomeUnknown"/>
+  <int value="8" label="TriggeredButUpgradedToPrerender"/>
+  <int value="9" label="TriggeredButPending"/>
+</enum>
+
 <enum name="PreloadPagesState">
   <int value="0" label="No preloading"/>
   <int value="1" label="Standard preloading"/>

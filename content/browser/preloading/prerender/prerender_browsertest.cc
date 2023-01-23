@@ -221,12 +221,10 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     host_resolver()->AddRule("*", "127.0.0.1");
     attempt_ukm_entry_builder_ =
         std::make_unique<test::PreloadingAttemptUkmEntryBuilder>(
-            ToPreloadingPredictor(
-                ContentPreloadingPredictor::kSpeculationRules));
+            content_preloading_predictor::kSpeculationRules);
     prediction_ukm_entry_builder_ =
         std::make_unique<test::PreloadingPredictionUkmEntryBuilder>(
-            ToPreloadingPredictor(
-                ContentPreloadingPredictor::kSpeculationRules));
+            content_preloading_predictor::kSpeculationRules);
     ssl_server_.AddDefaultHandlers(GetTestDataFilePath());
     ssl_server_.SetSSLConfig(
         net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);

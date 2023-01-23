@@ -197,14 +197,14 @@ bool SearchPrefetchService::MaybePrefetchURL(
     const GURL& url,
     content::WebContents* web_contents) {
   return MaybePrefetchURL(url, /*navigation_prefetch=*/false, web_contents,
-                          ChromePreloadingPredictor::kDefaultSearchEngine);
+                          chrome_preloading_predictor::kDefaultSearchEngine);
 }
 
 bool SearchPrefetchService::MaybePrefetchURL(
     const GURL& url,
     bool navigation_prefetch,
     content::WebContents* web_contents,
-    ChromePreloadingPredictor predictor) {
+    content::PreloadingPredictor predictor) {
   if (!SearchPrefetchServicePrefetchingIsEnabled())
     return false;
 
@@ -242,8 +242,7 @@ bool SearchPrefetchService::MaybePrefetchURL(
   // this DefaultSearchEngine or OmniboxSearchPredictor prefetch attempt when
   // |navigation_prefetch| is true.
   attempt = preloading_data->AddPreloadingAttempt(
-      ToPreloadingPredictor(predictor), content::PreloadingType::kPrefetch,
-      same_url_matcher);
+      predictor, content::PreloadingType::kPrefetch, same_url_matcher);
 
   if (!search_with_terms) {
     recorder.reason_ =
@@ -648,8 +647,8 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
 
     // Create PreloadingPrediction for this match.
     preloading_data->AddPreloadingPrediction(
-        ToPreloadingPredictor(ChromePreloadingPredictor::kDefaultSearchEngine),
-        confidence, std::move(same_url_matcher));
+        chrome_preloading_predictor::kDefaultSearchEngine, confidence,
+        std::move(same_url_matcher));
 
     // Record a prediction for default match prefetch suggest predictions.
     if (result.default_match() == &match) {
@@ -662,8 +661,7 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
 
       // Create PreloadingPrediction for this match.
       preloading_data->AddPreloadingPrediction(
-          ToPreloadingPredictor(
-              ChromePreloadingPredictor::kOmniboxSearchSuggestDefaultMatch),
+          chrome_preloading_predictor::kOmniboxSearchSuggestDefaultMatch,
           confidence, std::move(same_url_matcher));
     } else if (OnlyAllowDefaultMatchPreloading()) {
       // Only prefetch default match when in the experiment.
@@ -781,17 +779,17 @@ void SearchPrefetchService::OnNavigationLikely(
       [](NavigationPredictor navigation_predictor) {
         switch (navigation_predictor) {
           case NavigationPredictor::kMouseDown:
-            return ChromePreloadingPredictor::kOmniboxMousePredictor;
+            return chrome_preloading_predictor::kOmniboxMousePredictor;
           case NavigationPredictor::kUpOrDownArrowButton:
-            return ChromePreloadingPredictor::kOmniboxSearchPredictor;
+            return chrome_preloading_predictor::kOmniboxSearchPredictor;
         }
       };
   auto predictor = navigation_likely_event_to_predictor(navigation_predictor);
 
   // Create PreloadingPrediction for this match. We set the confidence to 100 as
   // when the user changed the selected match, we always trigger prefetch.
-  preloading_data->AddPreloadingPrediction(ToPreloadingPredictor(predictor),
-                                           100, std::move(same_url_matcher));
+  preloading_data->AddPreloadingPrediction(predictor, 100,
+                                           std::move(same_url_matcher));
   MaybePrefetchURL(preload_url,
                    /*navigation_prefetch=*/true, web_contents, predictor);
 }
@@ -998,8 +996,7 @@ void SearchPrefetchService::CoordinatePrefetchWithPrerender(
       content::PreloadingData::GetOrCreateForWebContents(web_contents);
   content::PreloadingAttempt* preloading_attempt =
       preloading_data->AddPreloadingAttempt(
-          ToPreloadingPredictor(
-              ChromePreloadingPredictor::kDefaultSearchEngine),
+          chrome_preloading_predictor::kDefaultSearchEngine,
           content::PreloadingType::kPrerender, same_url_matcher);
 
   auto prefetch_request_iter = prefetches_.find(canonical_search_url);

@@ -68,7 +68,8 @@ class CONTENT_EXPORT PreloadingDataImpl
   friend class WebContentsUserData<PreloadingDataImpl>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
-  void RecordUKMForPreloadingAttempts(ukm::SourceId navigated_page_source_id);
+  void RecordMetricsForPreloadingAttempts(
+      ukm::SourceId navigated_page_source_id);
   void RecordUKMForPreloadingPredictions(
       ukm::SourceId navigated_page_source_id);
   void SetIsAccurateTriggeringAndPrediction(const GURL& navigated_url);

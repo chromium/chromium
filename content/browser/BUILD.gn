@@ -1455,7 +1455,6 @@ source_set("browser") {
     "preloading/prefetch/proxy_lookup_client_impl.h",
     "preloading/prefetcher.cc",
     "preloading/prefetcher.h",
-    "preloading/preloading.cc",
     "preloading/preloading.h",
     "preloading/preloading_attempt_impl.cc",
     "preloading/preloading_attempt_impl.h",

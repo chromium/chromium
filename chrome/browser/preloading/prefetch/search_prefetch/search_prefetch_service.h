@@ -15,7 +15,6 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_request.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -23,6 +22,7 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
+#include "content/public/browser/preloading.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -211,7 +211,7 @@ class SearchPrefetchService : public KeyedService,
   bool MaybePrefetchURL(const GURL& url,
                         bool navigation_prefetch,
                         content::WebContents* web_contents,
-                        ChromePreloadingPredictor predictor);
+                        content::PreloadingPredictor predictor);
 
   // Adds |this| as an observer of |template_url_service| if not added already.
   void ObserveTemplateURLService(TemplateURLService* template_url_service);

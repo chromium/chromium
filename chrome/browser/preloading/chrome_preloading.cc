@@ -3,14 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/preloading/chrome_preloading.h"
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_context.h"
 #include "url/gurl.h"
-
-using content::PreloadingPredictor;
 
 namespace {
 
@@ -30,11 +29,6 @@ bool IsSideSearch(content::BrowserContext* browser_context, const GURL& url) {
 }
 
 }  // namespace
-
-content::PreloadingPredictor ToPreloadingPredictor(
-    ChromePreloadingPredictor predictor) {
-  return static_cast<content::PreloadingPredictor>(predictor);
-}
 
 content::PreloadingEligibility ToPreloadingEligibility(
     ChromePreloadingEligibility eligibility) {

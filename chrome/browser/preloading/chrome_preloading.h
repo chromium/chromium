@@ -13,63 +13,66 @@
 #include "url/gurl.h"
 
 class TemplateURLService;
-using content::PreloadingPredictor;
 
-// If you change any of the following emums, please follow the process in
-// go/preloading-dashboard-updates to update the mapping reflected in
-// dashboard, or if you are not a Googler, please file an FYI bug on
-// https://crbug.new with component Internals>Preload.
+// If you change any of the following enums or static variables, please follow
+// the process in go/preloading-dashboard-updates to update the mapping
+// reflected in dashboard, or if you are not a Googler, please file an FYI bug
+// on https://crbug.new with component Internals>Preload.
 
 // Defines various embedder triggering mechanisms which triggers different
 // preloading operations mentioned in //content/public/browser/preloading.h.
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class ChromePreloadingPredictor {
-  // Numbering starts from `kPreloadingPredictorContentEnd` defined in
-  // //content/browser/public/preloading.h . Advance numbering by +1 when adding
-  // a new element.
+//
+// Advance numbering by +1 when adding a new element.
+//
+// Please make sure Chrome `PreloadingPredictor` are defined after 100
+// (inclusive) as 99 and below are reserved for content-public and
+// content-internal definitions. Both the value and the name should be unique
+// across all the namespaces.
+namespace chrome_preloading_predictor {
+// When the preloading URL is predicted from the Omnibox Direct URL Input
+// (DUI). This is used to perform various preloading operations like prefetch
+// and prerender to load Omnibox predicted URLs faster.
+static constexpr content::PreloadingPredictor kOmniboxDirectURLInput(
+    100,
+    "OmniboxDirectURLInput");
 
-  // When the preloading URL is predicted from the Omnibox Direct URL Input
-  // (DUI). This is used to perform various preloading operations like prefetch
-  // and prerender to load Omnibox predicted URLs faster.
-  kOmniboxDirectURLInput =
-      static_cast<int>(PreloadingPredictor::kPreloadingPredictorContentEnd),
+// When a pointerdown (e.g. mousedown or touchstart) event happens on an
+// anchor element with an href value pointing to an HTTP(S) origin, we may
+// attempt to preload the link.
+static constexpr content::PreloadingPredictor kPointerDownOnAnchor(
+    101,
+    "PointerDownOnAnchor");
 
-  // When a pointerdown (e.g. mousedown or touchstart) event happens on an
-  // anchor element with an href value pointing to an HTTP(S) origin, we may
-  // attempt to preload the link.
-  kPointerDownOnAnchor =
-      static_cast<int>(PreloadingPredictor::kPreloadingPredictorContentEnd) + 1,
+// When the preloading URL is predicted from the default search suggest
+// service for faster search page loads.
+static constexpr content::PreloadingPredictor kDefaultSearchEngine(
+    102,
+    "DefaultSearchEngine");
 
-  // When the preloading URL is predicted from the default search suggest
-  // service for faster search page loads.
-  kDefaultSearchEngine =
-      static_cast<int>(PreloadingPredictor::kPreloadingPredictorContentEnd) + 2,
+// When the preloading URL is predicted from the default search suggest due to
+// change in Omnibox selection.
+static constexpr content::PreloadingPredictor kOmniboxSearchPredictor(
+    103,
+    "OmniboxSearchPredictor");
 
-  // When the preloading URL is predicted from the default search suggest due to
-  // change in Omnibox selection.
-  kOmniboxSearchPredictor =
-      static_cast<int>(PreloadingPredictor::kPreloadingPredictorContentEnd) + 3,
+// When the preloading URL is predicted from the default search suggest due to
+// mouse being pressed down on a Omnibox Search suggestion.
+static constexpr content::PreloadingPredictor kOmniboxMousePredictor(
+    104,
+    "OmniboxMousePredictor");
 
-  // When the preloading URL is predicted from the default search suggest due to
-  // mouse being pressed down on a Omnibox Search suggestion.
-  kOmniboxMousePredictor =
-      static_cast<int>(PreloadingPredictor::kPreloadingPredictorContentEnd) + 4,
+// When the default match in omnibox has the search prefetch or prerender
+// hint.
+static constexpr content::PreloadingPredictor kOmniboxSearchSuggestDefaultMatch(
+    105,
+    "OmniboxSearchSuggestDefaultMatch");
 
-  // When the default match in omnibox has the search prefetch or prerender
-  // hint.
-  kOmniboxSearchSuggestDefaultMatch =
-      static_cast<int>(PreloadingPredictor::kPreloadingPredictorContentEnd) + 5,
-
-  // TODO(crbug.com/1309934): Integrate more Preloading predictors with
-  // Preloading logging APIs.
-};
-
-// Helper method to convert ChromePreloadingPredictor to
-// content::PreloadingPredictor to avoid casting.
-content::PreloadingPredictor ToPreloadingPredictor(
-    ChromePreloadingPredictor predictor);
+// TODO(crbug.com/1309934): Integrate more Preloading predictors with
+// Preloading logging APIs.
+}  // namespace chrome_preloading_predictor
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

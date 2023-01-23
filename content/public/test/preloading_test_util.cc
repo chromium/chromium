@@ -50,8 +50,7 @@ UkmEntry PreloadingAttemptUkmEntryBuilder::BuildEntry(
   std::map<std::string, int64_t> metrics = {
       {Preloading_Attempt::kPreloadingTypeName,
        static_cast<int64_t>(preloading_type)},
-      {Preloading_Attempt::kPreloadingPredictorName,
-       static_cast<int64_t>(predictor_)},
+      {Preloading_Attempt::kPreloadingPredictorName, predictor_.ukm_value()},
       {Preloading_Attempt::kEligibilityName, static_cast<int64_t>(eligibility)},
       {Preloading_Attempt::kHoldbackStatusName,
        static_cast<int64_t>(holdback_status)},
@@ -82,7 +81,7 @@ UkmEntry PreloadingPredictionUkmEntryBuilder::BuildEntry(
     bool accurate_prediction) const {
   return UkmEntry{source_id,
                   {{Preloading_Prediction::kPreloadingPredictorName,
-                    static_cast<int64_t>(predictor_)},
+                    predictor_.ukm_value()},
                    {Preloading_Prediction::kConfidenceName, confidence},
                    {Preloading_Prediction::kAccuratePredictionName,
                     accurate_prediction ? 1 : 0},

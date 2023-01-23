@@ -132,6 +132,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/plugin_vm/histograms.xml",
       "//tools/metrics/histograms/metadata/power/histograms.xml",
       "//tools/metrics/histograms/metadata/prefetch/histograms.xml",
+      "//tools/metrics/histograms/metadata/preloading/histograms.xml",
       "//tools/metrics/histograms/metadata/print/histograms.xml",
       "//tools/metrics/histograms/metadata/printing/histograms.xml",
       "//tools/metrics/histograms/metadata/privacy/histograms.xml",

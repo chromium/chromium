@@ -44,6 +44,10 @@ class PreloadingPrediction {
       ukm::SourceId triggered_primary_page_source_id,
       base::RepeatingCallback<bool(const GURL&)> url_match_predicate);
 
+  // Called by the `PreloadingDataImpl` that owns this prediction, to check the
+  // validity of `predictor_type_`.
+  PreloadingPredictor predictor_type() const { return predictor_type_; }
+
  private:
   // Preloading predictor of this preloading prediction.
   const PreloadingPredictor predictor_type_;

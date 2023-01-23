@@ -77,8 +77,7 @@ class OmniboxPrerenderBrowserTest : public PlatformBrowserTest {
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     ukm_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-            ToPreloadingPredictor(
-                ChromePreloadingPredictor::kOmniboxDirectURLInput));
+            chrome_preloading_predictor::kOmniboxDirectURLInput);
     test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
     ASSERT_TRUE(embedded_test_server()->Start());
   }

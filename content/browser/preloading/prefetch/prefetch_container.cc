@@ -246,7 +246,7 @@ PrefetchContainer::PrefetchContainer(
                   prefetch_document_manager_, url_)
             : PreloadingDataImpl::GetSameURLMatcher(url_);
     auto* attempt = preloading_data->AddPreloadingAttempt(
-        ToPreloadingPredictor(ContentPreloadingPredictor::kSpeculationRules),
+        content_preloading_predictor::kSpeculationRules,
         PreloadingType::kPrefetch, std::move(matcher));
     attempt_ = attempt->GetWeakPtr();
     // `PreloadingPrediction` is added in `PreloadingDecider`.

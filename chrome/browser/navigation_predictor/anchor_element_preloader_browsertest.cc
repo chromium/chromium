@@ -71,8 +71,7 @@ class AnchorElementPreloaderBrowserTest
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     ukm_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-            ToPreloadingPredictor(
-                ChromePreloadingPredictor::kPointerDownOnAnchor));
+            chrome_preloading_predictor::kPointerDownOnAnchor);
     test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
     ASSERT_TRUE(loading_predictor);
     loading_predictor->preconnect_manager()->SetObserverForTesting(this);

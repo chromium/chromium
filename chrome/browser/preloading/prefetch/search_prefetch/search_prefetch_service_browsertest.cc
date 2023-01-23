@@ -36,6 +36,7 @@
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/browser/preloading.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
@@ -266,8 +267,7 @@ class SearchPrefetchWithoutPrefetchingBrowserTest
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     attempt_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-            ToPreloadingPredictor(
-                ChromePreloadingPredictor::kDefaultSearchEngine));
+            chrome_preloading_predictor::kDefaultSearchEngine);
   }
 
   ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
@@ -331,8 +331,7 @@ class SearchPrefetchHoldbackBrowserTest : public SearchPrefetchBaseBrowserTest {
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     attempt_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-            ToPreloadingPredictor(
-                ChromePreloadingPredictor::kDefaultSearchEngine));
+            chrome_preloading_predictor::kDefaultSearchEngine);
     scoped_test_timer_ =
         std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
@@ -436,8 +435,7 @@ class SearchPrefetchServiceEnabledBrowserTest
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     attempt_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-            ToPreloadingPredictor(
-                ChromePreloadingPredictor::kDefaultSearchEngine));
+            chrome_preloading_predictor::kDefaultSearchEngine);
     scoped_test_timer_ =
         std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
@@ -3510,15 +3508,15 @@ class SearchPrefetchServiceNavigationPrefetchBrowserTest
   }
 
   std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
-  attempt_entry_builder(ChromePreloadingPredictor predictor) {
+  attempt_entry_builder(content::PreloadingPredictor predictor) {
     return std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-        ToPreloadingPredictor(predictor));
+        predictor);
   }
 
   std::unique_ptr<content::test::PreloadingPredictionUkmEntryBuilder>
-  prediction_entry_builder(ChromePreloadingPredictor predictor) {
+  prediction_entry_builder(content::PreloadingPredictor predictor) {
     return std::make_unique<content::test::PreloadingPredictionUkmEntryBuilder>(
-        ToPreloadingPredictor(predictor));
+        predictor);
   }
 
   ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
@@ -3587,12 +3585,13 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
     // Check that PreloadingAttempt is successful and accurately triggered.
     std::vector<UkmEntry> expected_prediction_entries = {
         prediction_entry_builder(
-            ChromePreloadingPredictor::kOmniboxMousePredictor)
+            chrome_preloading_predictor::kOmniboxMousePredictor)
             ->BuildEntry(ukm_source_id,
                          /*confidence=*/100,
                          /*accurate_prediction=*/true)};
     std::vector<UkmEntry> expected_attempt_entries = {
-        attempt_entry_builder(ChromePreloadingPredictor::kOmniboxMousePredictor)
+        attempt_entry_builder(
+            chrome_preloading_predictor::kOmniboxMousePredictor)
             ->BuildEntry(ukm_source_id, content::PreloadingType::kPrefetch,
                          content::PreloadingEligibility::kEligible,
                          content::PreloadingHoldbackStatus::kAllowed,
@@ -3668,13 +3667,13 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
     // Check that PreloadingAttempt is successful and accurately triggered.
     std::vector<UkmEntry> expected_prediction_entries = {
         prediction_entry_builder(
-            ChromePreloadingPredictor::kOmniboxSearchPredictor)
+            chrome_preloading_predictor::kOmniboxSearchPredictor)
             ->BuildEntry(ukm_source_id,
                          /*confidence=*/100,
                          /*accurate_prediction=*/true)};
     std::vector<UkmEntry> expected_attempt_entries = {
         attempt_entry_builder(
-            ChromePreloadingPredictor::kOmniboxSearchPredictor)
+            chrome_preloading_predictor::kOmniboxSearchPredictor)
             ->BuildEntry(ukm_source_id, content::PreloadingType::kPrefetch,
                          content::PreloadingEligibility::kEligible,
                          content::PreloadingHoldbackStatus::kAllowed,
@@ -3870,8 +3869,7 @@ class SearchNavigationPrefetchHoldbackBrowserTest
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     attempt_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-            ToPreloadingPredictor(
-                ChromePreloadingPredictor::kOmniboxSearchPredictor));
+            chrome_preloading_predictor::kOmniboxSearchPredictor);
     scoped_test_timer_ =
         std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
@@ -3966,8 +3964,7 @@ class SearchNavigationPrefetchNoCancelBrowserTest
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     attempt_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-            ToPreloadingPredictor(
-                ChromePreloadingPredictor::kOmniboxSearchPredictor));
+            chrome_preloading_predictor::kOmniboxSearchPredictor);
   }
 
   ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {

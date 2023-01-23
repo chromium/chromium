@@ -198,8 +198,7 @@ TEST_F(PrerenderManagerTest, StartCleanPrerenderDirectUrlInput) {
       content::PreloadingData::GetSameURLMatcher(prerendering_url);
   content::PreloadingAttempt* preloading_attempt =
       preloading_data->AddPreloadingAttempt(
-          ToPreloadingPredictor(
-              ChromePreloadingPredictor::kOmniboxDirectURLInput),
+          chrome_preloading_predictor::kOmniboxDirectURLInput,
           content::PreloadingType::kPrerender, same_url_matcher);
 
   prerender_manager()->StartPrerenderDirectUrlInput(prerendering_url,
@@ -222,8 +221,7 @@ TEST_F(PrerenderManagerTest, StartNewPrerenderDirectUrlInput) {
       content::PreloadingData::GetSameURLMatcher(prerendering_url);
   content::PreloadingAttempt* preloading_attempt =
       preloading_data->AddPreloadingAttempt(
-          ToPreloadingPredictor(
-              ChromePreloadingPredictor::kOmniboxDirectURLInput),
+          chrome_preloading_predictor::kOmniboxDirectURLInput,
           content::PreloadingType::kPrerender, same_url_matcher);
 
   prerender_manager()->StartPrerenderDirectUrlInput(prerendering_url,
@@ -238,8 +236,7 @@ TEST_F(PrerenderManagerTest, StartNewPrerenderDirectUrlInput) {
       content::PreloadingData::GetSameURLMatcher(prerendering_url);
   content::PreloadingAttempt* preloading_attempt2 =
       preloading_data->AddPreloadingAttempt(
-          ToPreloadingPredictor(
-              ChromePreloadingPredictor::kOmniboxDirectURLInput),
+          chrome_preloading_predictor::kOmniboxDirectURLInput,
           content::PreloadingType::kPrerender, same_url_matcher);
   prerender_manager()->StartPrerenderDirectUrlInput(prerendering_url2,
                                                     *preloading_attempt2);

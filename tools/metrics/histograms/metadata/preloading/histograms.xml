@@ -1,0 +1,91 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+
+This file is used to generate a comprehensive list of Prefetch histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="PreloadingPredictor">
+  <variant name="DefaultSearchEngine"
+      summary="When preloading is triggered from the default search engine
+               suggest service."/>
+  <variant name="kLinkRel"
+      summary="When preloading is triggered by the 'rel' keyword embedded in
+               the link element."/>
+  <variant name="kUnspecified" summary=""/>
+  <variant name="kUrlPointerDownOnAnchor"
+      summary="When preloading is triggered by OnPointerDown."/>
+  <variant name="kUrlPointerHoverOnAnchor"
+      summary="When preloading is triggered by OnPointerHover."/>
+  <variant name="OmniboxDirectURLInput"
+      summary="When preloading is triggered from the Omnibox DUI."/>
+  <variant name="OmniboxMousePredictor"
+      summary="When preloading is triggered from the default search suggest
+               due to mousedown on a Omnibox Search suggestion."/>
+  <variant name="OmniboxSearchPredictor"
+      summary="When preloading is triggered from the default search suggest
+               due to change in Omnibox selection."/>
+  <variant name="PointerDownOnAnchor"
+      summary="When a pointerdown event happens on a HTTP/HTTPS anchor."/>
+  <variant name="SpeculationRules"
+      summary="When preloading is triggered by the speculation rules."/>
+</variants>
+
+<variants name="PreloadingType">
+  <variant name="NoStatePrefetch" summary=""/>
+  <variant name="Preconnect" summary=""/>
+  <variant name="Prefetch" summary=""/>
+  <variant name="Prerender" summary=""/>
+  <variant name="Unspecified" summary=""/>
+</variants>
+
+<histogram name="Preloading.AnchorElementPreloader.PreloadingTriggered"
+    enum="AnchorElementPreloaderType" expires_after="2023-06-04">
+  <owner>spelchat@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <summary>
+    Logged once for each preconnection request sent by renderer to the browser
+    when intercepting pointerdown events. Note that the browser may ignore some
+    of those requests (like duplicate requests or requests made by users that
+    disabled preloading via the UI) and will not always forward the preconnect
+    request to the network service. Associated with the Source ID of the page
+    triggering the preconnection.
+  </summary>
+</histogram>
+
+<histogram
+    name="Preloading.{PreloadingType}.Attempt.{PreloadingPredictor}.TriggeringOutcome"
+    enum="PreloadingTriggeringOutcome" expires_after="M115">
+  <owner>spelchat@chromium.org</owner>
+  <owner>sreejakshetty@chromium.org</owner>
+  <owner>jbroman@chromium.org</owner>
+  <owner>liuwilliam@chromium.org</owner>
+  <owner>chrome-brapp-loading@chromium.org</owner>
+  <summary>
+    Records the triggering outcome of a preloading attempt of type
+    {PreloadingType} and triggered by {PreloadingPredictor} that happened on the
+    previous page load at the time a new navigation is started.
+  </summary>
+  <token key="PreloadingType" variants="PreloadingType"/>
+  <token key="PreloadingPredictor" variants="PreloadingPredictor"/>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

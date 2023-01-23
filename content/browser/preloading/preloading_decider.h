@@ -13,7 +13,7 @@
 namespace content {
 
 class RenderFrameHost;
-enum class PreloadingPredictor;
+class PreloadingPredictor;
 
 class PreloadingDeciderObserverForTesting {
  public:

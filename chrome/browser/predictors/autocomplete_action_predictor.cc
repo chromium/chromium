@@ -212,8 +212,7 @@ void AutocompleteActionPredictor::StartPrerendering(
     // this prerendering attempt for Prerender.
     content::PreloadingAttempt* preloading_attempt =
         preloading_data->AddPreloadingAttempt(
-            ToPreloadingPredictor(
-                ChromePreloadingPredictor::kOmniboxDirectURLInput),
+            chrome_preloading_predictor::kOmniboxDirectURLInput,
             content::PreloadingType::kPrerender, std::move(same_url_matcher));
 
     PrerenderManager::CreateForWebContents(&web_contents);
@@ -227,8 +226,7 @@ void AutocompleteActionPredictor::StartPrerendering(
     // this preloading attempt for NoStatePrefetch.
     content::PreloadingAttempt* preloading_attempt =
         preloading_data->AddPreloadingAttempt(
-            ToPreloadingPredictor(
-                ChromePreloadingPredictor::kOmniboxDirectURLInput),
+            chrome_preloading_predictor::kOmniboxDirectURLInput,
             content::PreloadingType::kNoStatePrefetch,
             std::move(same_url_matcher));
 
@@ -318,8 +316,7 @@ AutocompleteActionPredictor::RecommendAction(
     // We multiply confidence by 100 to pass the percentage and cast it into int
     // for logs.
     preloading_data->AddPreloadingPrediction(
-        ToPreloadingPredictor(
-            ChromePreloadingPredictor::kOmniboxDirectURLInput),
+        chrome_preloading_predictor::kOmniboxDirectURLInput,
         static_cast<int64_t>(confidence * 100), std::move(same_url_matcher));
   }
 

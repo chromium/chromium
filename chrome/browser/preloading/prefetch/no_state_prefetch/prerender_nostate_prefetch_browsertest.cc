@@ -305,11 +305,10 @@ class NoStatePrefetchBrowserTest
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     omnibox_attempt_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-            ToPreloadingPredictor(
-                ChromePreloadingPredictor::kOmniboxDirectURLInput));
+            chrome_preloading_predictor::kOmniboxDirectURLInput);
     link_rel_attempt_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-            content::PreloadingPredictor::kLinkRel);
+            content::preloading_predictor::kLinkRel);
     test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
     host_resolver()->AddRule("*", "127.0.0.1");
   }
