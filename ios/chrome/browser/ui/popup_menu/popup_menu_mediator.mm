@@ -29,7 +29,7 @@
 #import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
-#import "ios/chrome/browser/find_in_page/java_script_find_tab_helper.h"
+#import "ios/chrome/browser/find_in_page/abstract_find_tab_helper.h"
 #import "ios/chrome/browser/follow/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/follow_menu_updater.h"
 #import "ios/chrome/browser/follow/follow_tab_helper.h"
@@ -881,7 +881,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 - (BOOL)isFindInPageEnabled {
   if (!self.webState)
     return NO;
-  auto* helper = JavaScriptFindTabHelper::FromWebState(self.webState);
+  auto* helper = GetConcreteFindTabHelperFromWebState(self.webState);
   return (helper && helper->CurrentPageSupportsFindInPage() &&
           !helper->IsFindUIActive());
 }

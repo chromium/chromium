@@ -7,8 +7,8 @@
 
 #include <Foundation/Foundation.h>
 
-#include "base/ios/block_types.h"
 #include "base/scoped_observation.h"
+#import "ios/chrome/browser/find_in_page/abstract_find_tab_helper.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -17,60 +17,30 @@
 @protocol FindInPageResponseDelegate;
 
 // Adds support for the "Find in page" feature.
-class JavaScriptFindTabHelper
-    : public web::WebStateObserver,
+class JavaScriptFindTabHelper final
+    : public AbstractFindTabHelper,
+      public web::WebStateObserver,
       public web::WebStateUserData<JavaScriptFindTabHelper> {
  public:
   JavaScriptFindTabHelper(const JavaScriptFindTabHelper&) = delete;
   JavaScriptFindTabHelper& operator=(const JavaScriptFindTabHelper&) = delete;
 
-  ~JavaScriptFindTabHelper() override;
+  ~JavaScriptFindTabHelper() final;
 
-  enum FindDirection {
-    FORWARD,
-    REVERSE,
-  };
-
-  // Sets the FindInPageResponseDelegate delegate to send responses to
-  // StartFinding(), ContinueFinding(), and StopFinding().
-  void SetResponseDelegate(id<FindInPageResponseDelegate> response_delegate);
-
-  // Starts an asynchronous Find operation that will call the given completion
-  // handler with results.  Highlights matches on the current page.  Always
-  // searches in the FORWARD direction.
-  void StartFinding(NSString* search_string);
-
-  // Runs an asynchronous Find operation that will call the given completion
-  // handler with results.  Highlights matches on the current page.  Uses the
-  // previously remembered search string and searches in the given `direction`.
-  void ContinueFinding(FindDirection direction);
-
-  // Stops any running find operations and runs the given completion block.
-  // Removes any highlighting from the current page.
-  void StopFinding();
-
-  // Returns the FindInPageModel that contains the latest find results.
-  FindInPageModel* GetFindResult() const;
-
-  // Returns true if the currently loaded page supports Find in Page.
-  bool CurrentPageSupportsFindInPage() const;
-
-  // Returns true if the Find in Page UI is currently visible.
-  bool IsFindUIActive() const;
-
-  // Marks the Find in Page UI as visible or not.  This method does not directly
-  // show or hide the UI.  It simply acts as a marker for whether or not the UI
-  // is visible.
-  void SetFindUIActive(bool active);
-
-  // Saves the current find text to persistent storage.
-  void PersistSearchTerm();
-
-  // Restores the current find text from persistent storage.
-  void RestoreSearchTerm();
+  // AbstractFindTabHelper implementation
+  void SetResponseDelegate(
+      id<FindInPageResponseDelegate> response_delegate) final;
+  void StartFinding(NSString* search_string) final;
+  void ContinueFinding(FindDirection direction) final;
+  void StopFinding() final;
+  FindInPageModel* GetFindResult() const final;
+  bool CurrentPageSupportsFindInPage() const final;
+  bool IsFindUIActive() const final;
+  void SetFindUIActive(bool active) final;
+  void PersistSearchTerm() final;
+  void RestoreSearchTerm() final;
 
  private:
-  friend class FindTabHelperTest;
   friend class web::WebStateUserData<JavaScriptFindTabHelper>;
 
   // Private constructor used by CreateForWebState().
@@ -81,10 +51,10 @@ class JavaScriptFindTabHelper
   void CreateFindInPageController(web::WebState* web_state);
 
   // web::WebStateObserver.
-  void WebStateRealized(web::WebState* web_state) override;
-  void WebStateDestroyed(web::WebState* web_state) override;
+  void WebStateRealized(web::WebState* web_state) final;
+  void WebStateDestroyed(web::WebState* web_state) final;
   void DidFinishNavigation(web::WebState* web_state,
-                           web::NavigationContext* navigation_context) override;
+                           web::NavigationContext* navigation_context) final;
 
   // The ObjC find in page controller (nil if the WebState is not realized).
   JavaScriptFindInPageController* controller_ = nil;

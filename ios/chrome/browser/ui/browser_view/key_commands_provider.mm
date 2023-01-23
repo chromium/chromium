@@ -13,7 +13,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/find_in_page/java_script_find_tab_helper.h"
+#import "ios/chrome/browser/find_in_page/abstract_find_tab_helper.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
@@ -552,8 +552,7 @@ using base::UserMetricsAction;
     return NO;
   }
 
-  JavaScriptFindTabHelper* helper =
-      JavaScriptFindTabHelper::FromWebState(currentWebState);
+  auto* helper = GetConcreteFindTabHelperFromWebState(currentWebState);
   return (helper && helper->CurrentPageSupportsFindInPage());
 }
 
@@ -564,8 +563,7 @@ using base::UserMetricsAction;
     return NO;
   }
 
-  JavaScriptFindTabHelper* helper =
-      JavaScriptFindTabHelper::FromWebState(currentWebState);
+  auto* helper = GetConcreteFindTabHelperFromWebState(currentWebState);
   return (helper && helper->IsFindUIActive());
 }
 

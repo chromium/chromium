@@ -5,6 +5,8 @@
 source_set("find_in_page") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "abstract_find_tab_helper.h",
+    "abstract_find_tab_helper.mm",
     "constants.h",
     "constants.mm",
     "find_in_page_controller.h",

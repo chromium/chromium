@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
 
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/find_in_page/java_script_find_tab_helper.h"
+#import "ios/chrome/browser/find_in_page/abstract_find_tab_helper.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -48,8 +48,7 @@
   self.mediator.consumer = self.findBarController;
 
   DCHECK(self.currentWebState);
-  JavaScriptFindTabHelper* helper =
-      JavaScriptFindTabHelper::FromWebState(self.currentWebState);
+  auto* helper = GetConcreteFindTabHelperFromWebState(self.currentWebState);
   helper->SetResponseDelegate(self.mediator);
   // If the FindUI is already active, just reshow it.
   if (helper->IsFindUIActive()) {
@@ -70,8 +69,7 @@
   // the UI will be brought back later.
   BOOL animated;
   if (self.currentWebState) {
-    JavaScriptFindTabHelper* helper =
-        JavaScriptFindTabHelper::FromWebState(self.currentWebState);
+    auto* helper = GetConcreteFindTabHelperFromWebState(self.currentWebState);
     animated = helper && !helper->IsFindUIActive();
   } else {
     animated = true;
@@ -96,8 +94,7 @@
   if (!self.currentWebState) {
     return;
   }
-  JavaScriptFindTabHelper* helper =
-      JavaScriptFindTabHelper::FromWebState(self.currentWebState);
+  auto* helper = GetConcreteFindTabHelperFromWebState(self.currentWebState);
   DCHECK(helper && helper->IsFindUIActive());
   if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
     helper->RestoreSearchTerm();
@@ -109,8 +106,7 @@
 }
 
 - (void)defocusFindBar {
-  JavaScriptFindTabHelper* helper =
-      JavaScriptFindTabHelper::FromWebState(self.currentWebState);
+  auto* helper = GetConcreteFindTabHelperFromWebState(self.currentWebState);
   if (helper && helper->IsFindUIActive()) {
     [self.findBarController updateView:helper->GetFindResult()
                          initialUpdate:NO

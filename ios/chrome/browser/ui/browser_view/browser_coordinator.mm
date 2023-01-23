@@ -1531,16 +1531,17 @@ enum class ToolbarKind {
 - (void)closeFindInPage {
   web::WebState* currentWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
+  if (!currentWebState) {
+    return;
+  }
 
-  if (currentWebState) {
-    JavaScriptFindTabHelper* helper =
-        JavaScriptFindTabHelper::FromWebState(currentWebState);
-    if (helper->IsFindUIActive()) {
-      helper->StopFinding();
-    } else {
-      [self.findBarCoordinator stop];
-      self.findBarCoordinator = nil;
-    }
+  auto* helper = GetConcreteFindTabHelperFromWebState(currentWebState);
+  DCHECK(helper);
+  if (helper->IsFindUIActive()) {
+    helper->StopFinding();
+  } else {
+    [self.findBarCoordinator stop];
+    self.findBarCoordinator = nil;
   }
 }
 
