@@ -18,6 +18,8 @@ Some specific guidelines on top of the general ones above, or just things that o
 * Deprecating fields:
   * If the field **is** still accessed: Mark it as `[deprecated = true]`. This is the common case, since the browser typically needs to continue supporting the old field for backwards compatibility reasons.
   * If the field **is not** accessed anymore (i.e. no non-ancient clients depend on the field being populated anymore, all migration code has been retired, etc): Remove the field, and add `reserved` entries for both its name and its tag number.
+  * **Note**: If your data type is using the [Protection against data override by old Sync clients](https://www.chromium.org/developers/design-documents/sync/old-sync-clients-data-override-protection/), then even fields that aren't accessed anymore should **not** be removed from the proto definition, since they should still be treated as supported for the purpose of trimming. (Otherwise, the removed fields would forever be carried forward in the data.)
+
 * Deprecating enum values: This is particularly tricky, especially if the default value is not a `FOO_UNSPECIFIED` one (see above). A common pattern is prepending `DEPRECATED_` to the entry name.
 
 For reviewers:
