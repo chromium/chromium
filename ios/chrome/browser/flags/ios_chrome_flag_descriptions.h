@@ -22,6 +22,10 @@ extern const char kAdaptiveSuggestionsCountDescription[];
 extern const char kAppStoreRatingName[];
 extern const char kAppStoreRatingDescription[];
 
+// Title and description for the flag to enable compatibility with GAS profiles.
+extern const char kAutofillAccountProfilesUnionViewName[];
+extern const char kAutofillAccountProfilesUnionViewDescription[];
+
 // Title and description for the flag to enable Chrome branding on form input
 // suggestions.
 extern const char kAutofillBrandingIOSName[];
