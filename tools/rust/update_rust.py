@@ -75,14 +75,19 @@ VERSION_STAMP_PATH = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'VERSION')
 
 
 # Package version built in build_rust.py, which is always built against the
-# latest Clang and never uses the FALLBACK_CLANG_VERSION.
+# current Clang. Typically Clang and Rust revisions are both updated together
+# and this picks the Clang that has just been built.
 def GetPackageVersionForBuild():
     from update import (CLANG_REVISION, CLANG_SUB_REVISION)
-    return GetPackageVersion(f'{CLANG_REVISION}-{CLANG_SUB_REVISION}')
+    return (f'{RUST_REVISION}-{RUST_SUB_REVISION}'
+            '-{CLANG_REVISION}-{CLANG_SUB_REVISION}')
 
 
-# Package version for download, which may differ from GetUploadPackageVersion()
-# if FALLBACK_CLANG_VERSION is set.
+# Package version for download. Ideally this is the latest Clang+Rust roll,
+# which was built successfully and is returned from GetPackageVersionForBuild().
+# However at this time Clang rolls even if Rust fails to build, so we have Rust
+# pinned to the last known successful build with FALLBACK_REVISION. This should
+# go away once we block Clang rolls on Rust also being built.
 def GetDownloadPackageVersion():
     return FALLBACK_REVISION \
         if FALLBACK_REVISION else GetPackageVersionForBuild()
