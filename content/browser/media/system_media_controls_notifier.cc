@@ -123,6 +123,9 @@ void SystemMediaControlsNotifier::MediaSessionMetadataChanged(
     // If no artist was provided, then the source URL will be in the artist
     // property.
     system_media_controls_->SetArtist(metadata->artist);
+
+    system_media_controls_->SetAlbum(metadata->album);
+
     system_media_controls_->UpdateDisplay();
   } else {
     // 5.3.2 If the metadata of the active media session is an empty metadata,

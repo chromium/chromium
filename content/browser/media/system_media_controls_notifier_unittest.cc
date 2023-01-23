@@ -61,18 +61,19 @@ class SystemMediaControlsNotifierTest : public testing::Test {
 
   void SimulateStopped() { notifier_->MediaSessionInfoChanged(nullptr); }
 
-  void SimulateMetadataChanged(bool empty,
-                               std::u16string title,
-                               std::u16string artist) {
-    if (!empty) {
-      media_session::MediaMetadata metadata;
-      metadata.title = title;
-      metadata.artist = artist;
-      notifier_->MediaSessionMetadataChanged(
-          absl::optional<media_session::MediaMetadata>(metadata));
-    } else {
-      notifier_->MediaSessionMetadataChanged(absl::nullopt);
-    }
+  void SimulateMetadataChanged(std::u16string title,
+                               std::u16string artist,
+                               std::u16string album) {
+    media_session::MediaMetadata metadata;
+    metadata.title = title;
+    metadata.artist = artist;
+    metadata.album = album;
+    notifier_->MediaSessionMetadataChanged(
+        absl::optional<media_session::MediaMetadata>(metadata));
+  }
+
+  void SimulateEmptyMetadata() {
+    notifier_->MediaSessionMetadataChanged(absl::nullopt);
   }
 
   void SimulateImageChanged() {
@@ -125,21 +126,24 @@ TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesPlaybackState) {
 TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesMetadata) {
   std::u16string title = u"title";
   std::u16string artist = u"artist";
+  std::u16string album = u"album";
 
   EXPECT_CALL(mock_system_media_controls(), SetTitle(title));
   EXPECT_CALL(mock_system_media_controls(), SetArtist(artist));
+  EXPECT_CALL(mock_system_media_controls(), SetAlbum(album));
   EXPECT_CALL(mock_system_media_controls(), ClearMetadata()).Times(0);
   EXPECT_CALL(mock_system_media_controls(), UpdateDisplay());
 
-  SimulateMetadataChanged(false, title, artist);
+  SimulateMetadataChanged(title, artist, album);
 }
 
 TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesNullMetadata) {
   EXPECT_CALL(mock_system_media_controls(), SetTitle(_)).Times(0);
   EXPECT_CALL(mock_system_media_controls(), SetArtist(_)).Times(0);
+  EXPECT_CALL(mock_system_media_controls(), SetAlbum(_)).Times(0);
   EXPECT_CALL(mock_system_media_controls(), ClearMetadata());
 
-  SimulateMetadataChanged(true, std::u16string(), std::u16string());
+  SimulateEmptyMetadata();
 }
 
 TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesImage) {
