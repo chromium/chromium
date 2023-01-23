@@ -79,4 +79,12 @@ bool AreCollapsible(const HeuristicPredictionFieldLogEvent& event1,
              event2.rank_in_field_signature_group;
 }
 
+bool AreCollapsible(const AutocompleteAttributeFieldLogEvent& event1,
+                    const AutocompleteAttributeFieldLogEvent& event2) {
+  return event1.html_type == event2.html_type &&
+         event1.html_mode == event2.html_mode &&
+         event1.rank_in_field_signature_group ==
+             event2.rank_in_field_signature_group;
+}
+
 }  // namespace autofill

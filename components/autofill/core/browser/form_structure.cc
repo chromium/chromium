@@ -1330,6 +1330,7 @@ void FormStructure::LogDetermineHeuristicTypesMetrics() {
 void FormStructure::SetFieldTypesFromAutocompleteAttribute() {
   has_author_specified_types_ = false;
   has_author_specified_upi_vpa_hint_ = false;
+  std::map<FieldSignature, size_t> field_rank_id_map;
   for (const std::unique_ptr<AutofillField>& field : fields_) {
     if (!field->parsed_autocomplete)
       continue;
@@ -1350,6 +1351,15 @@ void FormStructure::SetFieldTypesFromAutocompleteAttribute() {
 
     field->SetHtmlType(field->parsed_autocomplete->field_type,
                        field->parsed_autocomplete->mode);
+
+    // Log the field type predicted from autocomplete attribute.
+    ++field_rank_id_map[field->GetFieldSignature()];
+    field->AppendLogEventIfNotRepeated(AutocompleteAttributeFieldLogEvent{
+        .html_type = field->parsed_autocomplete->field_type,
+        .html_mode = field->parsed_autocomplete->mode,
+        .rank_in_field_signature_group =
+            field_rank_id_map[field->GetFieldSignature()],
+    });
   }
 }
 

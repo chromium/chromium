@@ -847,10 +847,26 @@ class BrowserAutofillManagerTest : public testing::Test {
               expected.rank_in_field_signature_group)));
   }
 
+  // Matches a AutocompleteAttributeFieldLogEvent by equality of fields.
+  auto Equal(const AutocompleteAttributeFieldLogEvent& expected) {
+    return VariantWith<AutocompleteAttributeFieldLogEvent>(AllOf(
+        Field("html_type", &AutocompleteAttributeFieldLogEvent::html_type,
+              expected.html_type),
+        Field("html_mode", &AutocompleteAttributeFieldLogEvent::html_mode,
+              expected.html_mode),
+        Field(
+            "rank_in_field_signature_group",
+            &AutocompleteAttributeFieldLogEvent::rank_in_field_signature_group,
+            expected.rank_in_field_signature_group)));
+  }
+
   // Matches a vector of FieldLogEventType objects by equality of fields of each
   // log event type.
   auto ArrayEquals(
       const std::vector<AutofillField::FieldLogEventType>& expected) {
+    static_assert(
+        absl::variant_size<AutofillField::FieldLogEventType>() == 7,
+        "If you add a new field event type, you need to update this function");
     std::vector<Matcher<AutofillField::FieldLogEventType>> matchers;
     for (const auto& event : expected) {
       if (absl::holds_alternative<AskForValuesToFillFieldLogEvent>(event)) {
@@ -866,6 +882,12 @@ class BrowserAutofillManagerTest : public testing::Test {
                      event)) {
         matchers.push_back(
             Equal(absl::get<HeuristicPredictionFieldLogEvent>(event)));
+      } else if (absl::holds_alternative<AutocompleteAttributeFieldLogEvent>(
+                     event)) {
+        matchers.push_back(
+            Equal(absl::get<AutocompleteAttributeFieldLogEvent>(event)));
+      } else {
+        NOTREACHED();
       }
     }
     return ElementsAreArray(matchers);
@@ -5357,7 +5379,7 @@ class BrowserAutofillManagerWithLogEventsTest
         /*disabled_features=*/{});
   }
 
-  std::vector<AutofillField::FieldLogEventType> ToHeuristicFieldTypes(
+  std::vector<AutofillField::FieldLogEventType> ToHeuristicFieldTypeEvents(
       ServerFieldType heuristic_type) {
     std::vector<AutofillField::FieldLogEventType> expected_events;
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
@@ -5465,10 +5487,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtFormSubmitted) {
 
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
-    // All parsed fields share the same expected
-    // HeuristicPredictionFieldLogEvent.
     std::vector<AutofillField::FieldLogEventType> expected_events =
-        ToHeuristicFieldTypes(autofill_field_ptr->heuristic_type());
+        ToHeuristicFieldTypeEvents(autofill_field_ptr->heuristic_type());
 
     if (autofill_field_ptr->parseable_label() == u"First Name") {
       // The "First Name" field is the trigger field, so it contains the
@@ -5546,10 +5566,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   FillEventId fill_event_id = trigger_fill_field_log_event->fill_event_id;
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
-    // All parsed fields share the same expected
-    // HeuristicPredictionFieldLogEvent.
     std::vector<AutofillField::FieldLogEventType> expected_events =
-        ToHeuristicFieldTypes(autofill_field_ptr->heuristic_type());
+        ToHeuristicFieldTypeEvents(autofill_field_ptr->heuristic_type());
 
     if (autofill_field_ptr->parseable_label() == u"First Name") {
       // The "First Name" field is the trigger field, so it contains the
@@ -5671,10 +5689,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
 
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
-    // All parsed fields share the same expected
-    // HeuristicPredictionFieldLogEvent.
     std::vector<AutofillField::FieldLogEventType> expected_events =
-        ToHeuristicFieldTypes(autofill_field_ptr->heuristic_type());
+        ToHeuristicFieldTypeEvents(autofill_field_ptr->heuristic_type());
 
     if (autofill_field_ptr->parseable_label() == u"First Name") {
       // The "First Name" field is the trigger field, so it contains the
@@ -5768,10 +5784,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
 
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
-    // All parsed fields share the same expected
-    // HeuristicPredictionFieldLogEvent.
     std::vector<AutofillField::FieldLogEventType> expected_events =
-        ToHeuristicFieldTypes(autofill_field_ptr->heuristic_type());
+        ToHeuristicFieldTypeEvents(autofill_field_ptr->heuristic_type());
 
     if (autofill_field_ptr->parseable_label() == u"First Name") {
       // The "First Name" field is the trigger field, so it contains the
@@ -5844,10 +5858,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
 
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
-    // All parsed fields share the same expected
-    // HeuristicPredictionFieldLogEvent.
     std::vector<AutofillField::FieldLogEventType> expected_events =
-        ToHeuristicFieldTypes(autofill_field_ptr->heuristic_type());
+        ToHeuristicFieldTypeEvents(autofill_field_ptr->heuristic_type());
 
     if (autofill_field_ptr->parseable_label() == u"Name on Card") {
       // The "Name on Card" field gets focus and shows a suggestion so it
@@ -5873,6 +5885,57 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
       });
     } else {
       expected_events.push_back(expected_fill_field_log_event);
+    }
+    EXPECT_THAT(autofill_field_ptr->field_log_events(),
+                ArrayEquals(expected_events));
+  }
+}
+
+// Test that we record AutocompleteAttributeFieldLogEvent for the fields with
+// autocomplete attributes in the form.
+TEST_F(BrowserAutofillManagerWithLogEventsTest,
+       LogEventsOnAutocompleteAttributeField) {
+  // Set up our form data.
+  FormData form;
+  form.name = u"MyForm";
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
+  FormFieldData field;
+  test::CreateTestFormField("First Name", "firstname", "", "text", "given-name",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Last Name", "lastname", "", "text", "family-name",
+                            &field);
+  form.fields.push_back(field);
+  // Set no autocomplete attribute for the middle name.
+  test::CreateTestFormField("Middle name", "middle", "", "text", "", &field);
+  form.fields.push_back(field);
+  // Set an unrecognized autocomplete attribute for the last name.
+  test::CreateTestFormField("Email", "email", "", "text", "unrecognized",
+                            &field);
+  form.fields.push_back(field);
+
+  // Simulate having seen this form on page load.
+  auto form_structure_instance = std::make_unique<FormStructure>(form);
+  FormStructure* form_structure = form_structure_instance.get();
+  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
+  browser_autofill_manager_->AddSeenFormStructure(
+      std::move(form_structure_instance));
+
+  // Simulate form submission.
+  FormSubmitted(form);
+
+  for (const auto& autofill_field_ptr : *form_structure) {
+    SCOPED_TRACE(autofill_field_ptr->parseable_label());
+    std::vector<AutofillField::FieldLogEventType> expected_events =
+        ToHeuristicFieldTypeEvents(autofill_field_ptr->heuristic_type());
+    if (autofill_field_ptr->parseable_label() != u"Middle name") {
+      expected_events.insert(expected_events.begin(),
+                             AutocompleteAttributeFieldLogEvent{
+                                 .html_type = autofill_field_ptr->html_type(),
+                                 .html_mode = HtmlFieldMode::kNone,
+                                 .rank_in_field_signature_group = 1,
+                             });
     }
     EXPECT_THAT(autofill_field_ptr->field_log_events(),
                 ArrayEquals(expected_events));

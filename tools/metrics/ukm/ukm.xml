@@ -2170,6 +2170,21 @@ be describing additional metrics about the same event.
       are from |autofill::ServerFieldType|.
     </summary>
   </metric>
+  <metric name="HtmlFieldMode" enum="AutocompleteHtmlFieldMode">
+    <summary>
+      The mode according to the autocomplete attribute of a field. Only set if a
+      field has a valid autocomplete attribute. Currently this is used to
+      specify if the field is part of the billing or shipping address. See
+      autofill::mojom::HtmlFieldMode.
+    </summary>
+  </metric>
+  <metric name="HtmlFieldType" enum="AutocompleteHtmlFieldType">
+    <summary>
+      The field type specified in the autocomplete attribute of the field. Only
+      set if a field has a valid autocomplete attribute. See
+      autofill::mojom::HtmlFieldType.
+    </summary>
+  </metric>
   <metric name="IsFocusable" enum="Boolean">
     <summary>
       Whether the field is focusable to the user. This is an approximation of

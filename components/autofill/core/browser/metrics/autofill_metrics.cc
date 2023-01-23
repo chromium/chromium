@@ -2524,15 +2524,22 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   // only for non-user-visible metrics, one step before experimental.
   ServerFieldType heuristic_next_gen_type = UNKNOWN_TYPE;
 
+  // Field types from Autocomplete attribute.
+  // Information of the HTML autocomplete attribute, see
+  // components/autofill/core/common/mojom/autofill_types.mojom.
+  HtmlFieldMode html_mode = HtmlFieldMode::kNone;
+  HtmlFieldType html_type = HtmlFieldType::kUnrecognized;
+
   // If multiple fields have the same signature, this indicates the position
   // within this set of fields. This allows us to understand problems related
   // to duplicated field signatures.
   size_t rank_in_field_signature_group = 0;
 
   bool had_heuristic_type = false;
+  bool had_html_type = false;
 
   for (const auto& log_event : field_log_events) {
-    static_assert(absl::variant_size<AutofillField::FieldLogEventType>() == 6,
+    static_assert(absl::variant_size<AutofillField::FieldLogEventType>() == 7,
                   "When adding new variants check that this function does not "
                   "need to be updated.");
     if (auto* event =
@@ -2596,6 +2603,14 @@ void AutofillMetrics::FormInteractionsUkmLogger::
       rank_in_field_signature_group = event->rank_in_field_signature_group;
       had_heuristic_type = true;
     }
+
+    if (auto* event =
+            absl::get_if<AutocompleteAttributeFieldLogEvent>(&log_event)) {
+      html_type = event->html_type;
+      html_mode = event->html_mode;
+      rank_in_field_signature_group = event->rank_in_field_signature_group;
+      had_html_type = true;
+    }
   }
 
   if (had_value_after_filling != OptionalBoolean::kUndefined ||
@@ -2651,8 +2666,16 @@ void AutofillMetrics::FormInteractionsUkmLogger::
         .SetHeuristicTypeLegacy(heuristic_legacy_type)
         .SetHeuristicTypeDefault(heuristic_default_type)
         .SetHeuristicTypeExperimental(heuristic_experimental_type)
-        .SetHeuristicTypeNextGen(heuristic_next_gen_type)
-        .SetRankInFieldSignatureGroup(rank_in_field_signature_group);
+        .SetHeuristicTypeNextGen(heuristic_next_gen_type);
+  }
+
+  if (had_html_type) {
+    builder.SetHtmlFieldType(static_cast<int>(html_type))
+        .SetHtmlFieldMode(static_cast<int>(html_mode));
+  }
+
+  if (rank_in_field_signature_group) {
+    builder.SetRankInFieldSignatureGroup(rank_in_field_signature_group);
   }
 
   builder.Record(ukm_recorder_);

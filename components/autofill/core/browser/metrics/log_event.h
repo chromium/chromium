@@ -121,6 +121,20 @@ using HeuristicPredictionFieldLogEvent = HeuristicPredictionFieldLogEventImpl<>;
 bool AreCollapsible(const HeuristicPredictionFieldLogEvent& event1,
                     const HeuristicPredictionFieldLogEvent& event2);
 
+// Predict the field type from Autocomplete attribute.
+template <typename IsRequired = void>
+struct AutocompleteAttributeFieldLogEventImpl {
+  HtmlFieldType html_type = IsRequired();
+  HtmlFieldMode html_mode = IsRequired();
+  size_t rank_in_field_signature_group = IsRequired();
+};
+using AutocompleteAttributeFieldLogEvent =
+    AutocompleteAttributeFieldLogEventImpl<>;
+
+// Compare two field log events from AutocompleteAttributeFieldLogEvent type.
+bool AreCollapsible(const AutocompleteAttributeFieldLogEvent& event1,
+                    const AutocompleteAttributeFieldLogEvent& event2);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_LOG_EVENT_H_

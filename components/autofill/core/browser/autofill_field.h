@@ -37,7 +37,8 @@ class AutofillField : public FormFieldData {
                                           TriggerFillFieldLogEvent,
                                           FillFieldLogEvent,
                                           TypingFieldLogEvent,
-                                          HeuristicPredictionFieldLogEvent>;
+                                          HeuristicPredictionFieldLogEvent,
+                                          AutocompleteAttributeFieldLogEvent>;
 
   AutofillField();
   explicit AutofillField(const FormFieldData& field);

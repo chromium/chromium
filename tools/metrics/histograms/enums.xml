@@ -5984,6 +5984,66 @@ others/histograms.xml -->
   <int value="1" label="Suggestion Selected"/>
 </enum>
 
+<enum name="AutocompleteHtmlFieldMode">
+  <int value="0" label="None"/>
+  <int value="1" label="Billing"/>
+  <int value="2" label="Shipping"/>
+</enum>
+
+<enum name="AutocompleteHtmlFieldType">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Name"/>
+  <int value="2" label="HonorificPrefix"/>
+  <int value="3" label="GivenName"/>
+  <int value="4" label="AdditionalName"/>
+  <int value="5" label="FamilyName"/>
+  <int value="6" label="Organization"/>
+  <int value="7" label="StreetAddress"/>
+  <int value="8" label="AddressLine1"/>
+  <int value="9" label="AddressLine2"/>
+  <int value="10" label="AddressLine3"/>
+  <int value="11" label="AddressLevel1"/>
+  <int value="12" label="AddressLevel2"/>
+  <int value="13" label="AddressLevel3"/>
+  <int value="14" label="CountryCode"/>
+  <int value="15" label="CountryName"/>
+  <int value="16" label="PostalCode"/>
+  <int value="17" label="FullAddress"/>
+  <int value="18" label="CreditCardNameFull"/>
+  <int value="19" label="CreditCardNameFirst"/>
+  <int value="20" label="CreditCardNameLast"/>
+  <int value="21" label="CreditCardNumber"/>
+  <int value="22" label="CreditCardExp"/>
+  <int value="23" label="CreditCardExpMonth"/>
+  <int value="24" label="CreditCardExpYear"/>
+  <int value="25" label="CreditCardVerificationCode"/>
+  <int value="26" label="CreditCardType"/>
+  <int value="27" label="Tel"/>
+  <int value="28" label="TelCountryCode"/>
+  <int value="29" label="TelNational"/>
+  <int value="30" label="TelAreaCode"/>
+  <int value="31" label="TelLocal"/>
+  <int value="32" label="TelLocalPrefix"/>
+  <int value="33" label="TelLocalSuffix"/>
+  <int value="34" label="TelExtension"/>
+  <int value="35" label="Email"/>
+  <int value="36" label="BirthdateDay"/>
+  <int value="37" label="BirthdateMonth"/>
+  <int value="38" label="BirthdateYear"/>
+  <int value="39" label="TransactionAmount"/>
+  <int value="40" label="TransactionCurrency"/>
+  <int value="41" label="AdditionalNameInitial"/>
+  <int value="42" label="CreditCardExpDate2DigitYear"/>
+  <int value="43" label="CreditCardExpDate4DigitYear"/>
+  <int value="44" label="CreditCardExp2DigitYear"/>
+  <int value="45" label="CreditCardExp4DigitYear"/>
+  <int value="46" label="UpiVpa"/>
+  <int value="47" label="OneTimeCode"/>
+  <int value="48" label="MerchantPromoCode"/>
+  <int value="49" label="Iban"/>
+  <int value="50" label="Unrecognized"/>
+</enum>
+
 <enum name="AutoDSEPermissionRevertTransition">
   <int value="0" label="NO_DECISION_ASK"/>
   <int value="1" label="PRESERVE_ALLOW"/>

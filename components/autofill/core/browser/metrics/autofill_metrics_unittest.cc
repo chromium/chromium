@@ -10588,46 +10588,73 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetrics_FieldType) {
           ->emplace(form_structure_ptr->global_id(), std::move(form_structure))
           .second);
 
+  AutofillQueryResponse response;
+  auto* form_suggestion = response.add_form_suggestions();
+  // Server response will match with autocomplete.
+  AddFieldPredictionToForm(form.fields[0], NAME_LAST, form_suggestion);
+  // Server response will NOT match with autocomplete.
+  AddFieldPredictionToForm(form.fields[1], NAME_FIRST, form_suggestion);
+  // Not logged.
+  AddFieldPredictionToForm(form.fields[2], NAME_MIDDLE, form_suggestion);
+  // Server response will have no data.
+  AddFieldPredictionToForm(form.fields[3], NO_SERVER_DATA, form_suggestion);
+
+  std::string response_string = SerializeAndEncode(response);
+  autofill_manager().OnLoadedServerPredictionsForTest(
+      response_string, test::GetEncodedSignatures(*form_structure_ptr));
+
   SubmitForm(form);
   // Record Autofill.FieldInfo UKM event at autofill manager reset.
   autofill_manager().Reset();
 
   auto entries =
       test_ukm_recorder_->GetEntriesByName(UkmFieldInfoType::kEntryName);
-  // The local heuristic prediction does not predict the type for the fourth
-  // field.
-  ASSERT_EQ(3u, entries.size());
-  std::vector<ServerFieldType> heuristic_types{NAME_LAST, NAME_FIRST,
-                                               ADDRESS_HOME_LINE1};
+  ASSERT_EQ(4u, entries.size());
+  // The heuristic type of each field. The local heuristic prediction does not
+  // predict the type for the fourth field.
+  std::vector<ServerFieldType> heuristic_types{
+      NAME_LAST, NAME_FIRST, ADDRESS_HOME_LINE1, UNKNOWN_TYPE};
+  // Field types as per the autocomplete attribute in the input.
+  std::vector<HtmlFieldType> html_field_types{
+      HtmlFieldType::kFamilyName, HtmlFieldType::kAdditionalName,
+      HtmlFieldType::kUnrecognized, HtmlFieldType::kPostalCode};
 
   for (size_t i = 0; i < entries.size(); ++i) {
     SCOPED_TRACE(testing::Message() << i);
     using UFIT = UkmFieldInfoType;
     const auto* const entry = entries[i];
-
     std::map<std::string, int64_t> expected = {
-      {UFIT::kFormSessionIdentifierName,
-       AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
-      {UFIT::kFieldSessionIdentifierName,
-       AutofillMetrics::FieldGlobalIdToHash64Bit(form.fields[i].global_id())},
-      {UFIT::kFieldSignatureName,
-       Collapse(CalculateFieldSignatureForField(form.fields[i])).value()},
-      {UFIT::kHeuristicTypeName, heuristic_types[i]},
-      {UFIT::kHeuristicTypeLegacyName, heuristic_types[i]},
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-      {UFIT::kHeuristicTypeDefaultName, heuristic_types[i]},
-      {UFIT::kHeuristicTypeExperimentalName, heuristic_types[i]},
-      {UFIT::kHeuristicTypeNextGenName, heuristic_types[i]},
-#else
-      {UFIT::kHeuristicTypeDefaultName, UNKNOWN_TYPE},
-      {UFIT::kHeuristicTypeExperimentalName, UNKNOWN_TYPE},
-      {UFIT::kHeuristicTypeNextGenName, UNKNOWN_TYPE},
-#endif
-      {UFIT::kIsFocusableName, true},
-      {UFIT::kRankInFieldSignatureGroupName, 1},
-      {UFIT::kWasFocusedName, false},
+        {UFIT::kFormSessionIdentifierName,
+         AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
+        {UFIT::kFieldSessionIdentifierName,
+         AutofillMetrics::FieldGlobalIdToHash64Bit(form.fields[i].global_id())},
+        {UFIT::kFieldSignatureName,
+         Collapse(CalculateFieldSignatureForField(form.fields[i])).value()},
+        {UFIT::kIsFocusableName, true},
+        {UFIT::kRankInFieldSignatureGroupName, 1},
+        {UFIT::kWasFocusedName, false},
     };
-
+    if (heuristic_types[i] != UNKNOWN_TYPE) {
+      expected.merge(std::map<std::string, int64_t>({
+          {UFIT::kHeuristicTypeName, heuristic_types[i]},
+          {UFIT::kHeuristicTypeLegacyName, heuristic_types[i]},
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+          {UFIT::kHeuristicTypeDefaultName, heuristic_types[i]},
+          {UFIT::kHeuristicTypeExperimentalName, heuristic_types[i]},
+          {UFIT::kHeuristicTypeNextGenName, heuristic_types[i]},
+#else
+          {UFIT::kHeuristicTypeDefaultName, UNKNOWN_TYPE},
+          {UFIT::kHeuristicTypeExperimentalName, UNKNOWN_TYPE},
+          {UFIT::kHeuristicTypeNextGenName, UNKNOWN_TYPE},
+#endif
+      }));
+    }
+    if (html_field_types[i] != HtmlFieldType::kUnrecognized) {
+      expected.merge(std::map<std::string, int64_t>({
+          {UFIT::kHtmlFieldTypeName, static_cast<int>(html_field_types[i])},
+          {UFIT::kHtmlFieldModeName, static_cast<int>(HtmlFieldMode::kNone)},
+      }));
+    }
     EXPECT_EQ(expected.size(), entry->metrics.size());
     for (const auto& [metric, value] : expected) {
       test_ukm_recorder_->ExpectEntryMetric(entry, metric, value);
