@@ -4411,7 +4411,6 @@ crbug.com/1008483 virtual/backface-visibility-interop/external/wpt/css/css-trans
 
 # Swiftshader issue.
 crbug.com/1048149 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-innerwidth.html [ Crash Timeout ]
-crbug.com/1048149 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-screeny.html [ Crash Timeout ]
 crbug.com/1048149 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-width.html [ Crash Timeout ]
 
 # SwANGLE issues
@@ -6948,3 +6947,6 @@ http/tests/security/canvas-remote-read-remote-image-document-domain.html [ Failu
 crbug.com/1408919 [ Mac ] virtual/text-antialias/capitalize-boundaries.html [ Failure Pass ]
 crbug.com/1408967 [ Fuchsia ] fast/block/float/float-in-float-painting.html [ Failure Pass ]
 crbug.com/1408967 [ Fuchsia ] fast/layers/opacity-transforms.html [ Failure Pass ]
+
+# Sheriff 2023-01-23
+crbug.com/1409463 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-screeny.html [ Failure Pass ]
