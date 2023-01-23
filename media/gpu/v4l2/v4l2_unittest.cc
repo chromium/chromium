@@ -145,12 +145,8 @@ void TestStatefulDecoderAllocations(uint32_t codec_fourcc,
   const auto gbm_format = ToGBMFormat(chosen_v4l2_pixel_format);
   ASSERT_NE(gbm_format, static_cast<uint32_t>(DRM_FORMAT_INVALID));
 
-  // We expect that the V4L2 device will round the resolution height to the
-  // nearest multiple of 32. Round GBM height to the nearest multiple of 32
-  // to compare to the V4L2 coded size.
-  const auto adjusted_height = base::bits::AlignUp(resolution.height(), 32);
   struct gbm_bo* bo = gbm_bo_create(
-      gbm, resolution.width(), adjusted_height, gbm_format,
+      gbm, coded_size.width(), coded_size.height(), gbm_format,
       GBM_BO_USE_SCANOUT | GBM_BO_USE_TEXTURING | GBM_BO_USE_HW_VIDEO_DECODER);
   ASSERT_TRUE(bo);
 
