@@ -127,10 +127,9 @@ int PrerenderHostRegistry::CreateAndStartHost(
 
     // Check whether preloading is enabled. If it is not enabled, report the
     // reason.
-    WebContentsDelegate* web_contents_delegate =
-        initiator_web_contents.GetDelegate();
-    if (auto reason = web_contents_delegate->IsPrerender2Supported(
-            initiator_web_contents);
+    if (auto reason =
+            initiator_web_contents.GetDelegate()->IsPrerender2Supported(
+                initiator_web_contents);
         reason != PreloadingEligibility::kEligible) {
       switch (reason) {
         case PreloadingEligibility::kPreloadingDisabled:
