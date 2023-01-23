@@ -99,8 +99,7 @@ class CONTENT_EXPORT RateLimitTable {
  private:
   [[nodiscard]] bool AddRateLimit(sql::Database* db,
                                   Scope scope,
-                                  const StoredSource& source,
-                                  base::Time time)
+                                  const StoredSource& source)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] RateLimitResult AllowedForReportingOriginLimit(

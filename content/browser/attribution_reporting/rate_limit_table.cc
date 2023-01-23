@@ -106,22 +106,19 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
 bool RateLimitTable::AddRateLimitForSource(sql::Database* db,
                                            const StoredSource& source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return AddRateLimit(db, Scope::kSource, source,
-                      source.common_info().source_time());
+  return AddRateLimit(db, Scope::kSource, source);
 }
 
 bool RateLimitTable::AddRateLimitForAttribution(
     sql::Database* db,
     const AttributionInfo& attribution_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return AddRateLimit(db, Scope::kAttribution, attribution_info.source,
-                      attribution_info.time);
+  return AddRateLimit(db, Scope::kAttribution, attribution_info.source);
 }
 
 bool RateLimitTable::AddRateLimit(sql::Database* db,
                                   Scope scope,
-                                  const StoredSource& source,
-                                  base::Time time) {
+                                  const StoredSource& source) {
   const CommonSourceInfo& common_info = source.common_info();
 
   // Only delete expired rate limits periodically to avoid excessive DB
@@ -161,7 +158,7 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
   statement.BindString(4, common_info.DestinationSite().Serialize());
   statement.BindString(5, common_info.destination_origin().Serialize());
   statement.BindString(6, common_info.reporting_origin().Serialize());
-  statement.BindTime(7, time);
+  statement.BindTime(7, common_info.source_time());
   statement.BindTime(8, expiry_time);
 
   return statement.Run();

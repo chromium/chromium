@@ -3105,4 +3105,30 @@ TEST_F(AttributionStorageTest, AggregationCoordinator_RoundTrip) {
   }
 }
 
+TEST_F(AttributionStorageTest, MaxAttributions_BoundedBySourceTimeWindow) {
+  constexpr base::TimeDelta kTimeWindow = base::Days(1);
+  delegate()->set_rate_limits({
+      .time_window = kTimeWindow,
+      .max_source_registration_reporting_origins =
+          std::numeric_limits<int64_t>::max(),
+      .max_attribution_reporting_origins = std::numeric_limits<int64_t>::max(),
+      .max_attributions = 1,
+  });
+
+  storage()->StoreSource(SourceBuilder().SetExpiry(base::Days(7)).Build());
+
+  AttributionTrigger trigger = DefaultTrigger();
+
+  constexpr base::TimeDelta kTriggerDelay = base::Minutes(1);
+  task_environment_.FastForwardBy(kTriggerDelay);
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(trigger));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kExcessiveAttributions,
+            MaybeCreateAndStoreEventLevelReport(trigger));
+
+  task_environment_.FastForwardBy(kTimeWindow - kTriggerDelay);
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(trigger));
+}
+
 }  // namespace content
