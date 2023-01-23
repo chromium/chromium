@@ -49,6 +49,11 @@ class RemoteDesktopPortalInjector {
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
+
+  static void ValidateGDPBusProxyResult(GObject* proxy,
+                                        GAsyncResult* result,
+                                        gpointer user_data);
+
   raw_ptr<GDBusConnection> connection_ GUARDED_BY_CONTEXT(sequence_checker_) =
       nullptr;
   raw_ptr<GDBusProxy> proxy_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;

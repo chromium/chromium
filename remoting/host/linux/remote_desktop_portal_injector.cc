@@ -26,6 +26,27 @@ RemoteDesktopPortalInjector::RemoteDesktopPortalInjector() {
 
 RemoteDesktopPortalInjector::~RemoteDesktopPortalInjector() {}
 
+// static
+void RemoteDesktopPortalInjector::ValidateGDPBusProxyResult(
+    GObject* proxy,
+    GAsyncResult* result,
+    gpointer user_data) {
+  RemoteDesktopPortalInjector* that =
+      static_cast<RemoteDesktopPortalInjector*>(user_data);
+  DCHECK(that);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(that->sequence_checker_);
+
+  Scoped<GError> error;
+  Scoped<GVariant> variant(g_dbus_proxy_call_finish(
+      reinterpret_cast<GDBusProxy*>(proxy), result, error.receive()));
+  if (!variant) {
+    if (g_error_matches(error.get(), G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+      return;
+    }
+    LOG(ERROR) << "Error in input injection";
+  }
+}
+
 void RemoteDesktopPortalInjector::InjectMouseButton(int code, bool pressed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(proxy_);
@@ -34,17 +55,11 @@ void RemoteDesktopPortalInjector::InjectMouseButton(int code, bool pressed) {
   DCHECK(pipewire_stream_node_id_);
   GVariantBuilder builder;
   g_variant_builder_init(&builder, G_VARIANT_TYPE_VARDICT);
-  Scoped<GError> error;
-  g_dbus_proxy_call_sync(proxy_, "NotifyPointerButton",
-                         g_variant_new("(oa{sv}iu)", session_handle_.c_str(),
-                                       &builder, code, pressed),
-                         G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, cancellable_,
-                         error.receive());
-  if (error.get()) {
-    LOG(ERROR) << "Failed to " << (pressed ? "press" : "release")
-               << " the mouse button, button code: " << code
-               << ", error: " << error->message;
-  }
+  g_dbus_proxy_call(proxy_, "NotifyPointerButton",
+                    g_variant_new("(oa{sv}iu)", session_handle_.c_str(),
+                                  &builder, code, pressed),
+                    G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, cancellable_,
+                    ValidateGDPBusProxyResult, this);
 }
 
 void RemoteDesktopPortalInjector::InjectMouseScroll(int axis, int steps) {
@@ -55,18 +70,11 @@ void RemoteDesktopPortalInjector::InjectMouseScroll(int axis, int steps) {
   DCHECK(pipewire_stream_node_id_);
   GVariantBuilder builder;
   g_variant_builder_init(&builder, G_VARIANT_TYPE_VARDICT);
-  Scoped<GError> error;
-  g_dbus_proxy_call_sync(proxy_, "NotifyPointerAxisDiscrete",
-                         g_variant_new("(oa{sv}ui)", session_handle_.c_str(),
-                                       &builder, axis, steps),
-                         G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, cancellable_,
-                         error.receive());
-  if (error.get()) {
-    LOG(ERROR) << "Failed to scroll "
-               << (axis == ScrollType::VERTICAL_SCROLL ? "vertically"
-                                                       : "horizontally")
-               << ". Error: " << error->message;
-  }
+  g_dbus_proxy_call(proxy_, "NotifyPointerAxisDiscrete",
+                    g_variant_new("(oa{sv}ui)", session_handle_.c_str(),
+                                  &builder, axis, steps),
+                    G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, cancellable_,
+                    ValidateGDPBusProxyResult, this);
 }
 
 void RemoteDesktopPortalInjector::MovePointerBy(int delta_x, int delta_y) {
@@ -77,16 +85,12 @@ void RemoteDesktopPortalInjector::MovePointerBy(int delta_x, int delta_y) {
   DCHECK(pipewire_stream_node_id_);
   GVariantBuilder builder;
   g_variant_builder_init(&builder, G_VARIANT_TYPE_VARDICT);
-  Scoped<GError> error;
-  g_dbus_proxy_call_sync(
+  g_dbus_proxy_call(
       proxy_, "NotifyPointerMotion",
       g_variant_new("(oa{sv}dd)", session_handle_.c_str(), &builder,
                     static_cast<double>(delta_x), static_cast<double>(delta_y)),
-      G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, cancellable_, error.receive());
-  if (error.get()) {
-    LOG(ERROR) << "Failed to move pointer by delta_x: " << delta_x
-               << ", delta_y: " << delta_y << ", error: " << error->message;
-  }
+      G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, cancellable_,
+      ValidateGDPBusProxyResult, this);
 }
 
 void RemoteDesktopPortalInjector::MovePointerTo(int x, int y) {
@@ -97,19 +101,15 @@ void RemoteDesktopPortalInjector::MovePointerTo(int x, int y) {
   DCHECK(pipewire_stream_node_id_);
   GVariantBuilder builder;
   g_variant_builder_init(&builder, G_VARIANT_TYPE_VARDICT);
-  Scoped<GError> error;
   VLOG(6) << "session handle: " << session_handle_
           << ", stream node id: " << pipewire_stream_node_id_;
-  g_dbus_proxy_call_sync(
+  g_dbus_proxy_call(
       proxy_, "NotifyPointerMotionAbsolute",
       g_variant_new("(oa{sv}udd)", session_handle_.c_str(), &builder,
                     pipewire_stream_node_id_, static_cast<double>(x),
                     static_cast<double>(y)),
-      G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, cancellable_, error.receive());
-  if (error.get()) {
-    LOG(ERROR) << "Failed to move pointer to x: " << x << ", y: " << y
-               << ", error: " << error->message;
-  }
+      G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, cancellable_,
+      ValidateGDPBusProxyResult, this);
 }
 
 void RemoteDesktopPortalInjector::InjectKeyPress(int code,
@@ -122,16 +122,13 @@ void RemoteDesktopPortalInjector::InjectKeyPress(int code,
   DCHECK(pipewire_stream_node_id_);
   GVariantBuilder builder;
   g_variant_builder_init(&builder, G_VARIANT_TYPE_VARDICT);
-  Scoped<GError> error;
   VLOG(6) << "session handle: " << session_handle_;
-  g_dbus_proxy_call_sync(
-      proxy_, is_code ? "NotifyKeyboardKeycode" : "NotifyKeyboardKeysym",
-      g_variant_new("(oa{sv}iu)", session_handle_.c_str(), &builder, code,
-                    pressed),
-      G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, cancellable_, error.receive());
-  if (error.get()) {
-    LOG(ERROR) << "Failed to inject key press";
-  }
+  g_dbus_proxy_call(proxy_,
+                    is_code ? "NotifyKeyboardKeycode" : "NotifyKeyboardKeysym",
+                    g_variant_new("(oa{sv}iu)", session_handle_.c_str(),
+                                  &builder, code, pressed),
+                    G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, cancellable_,
+                    ValidateGDPBusProxyResult, this);
 }
 
 void RemoteDesktopPortalInjector::SetSessionDetails(
