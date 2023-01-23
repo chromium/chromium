@@ -183,17 +183,40 @@ TEST_F(TabInteractionRecorderAndroidTest, HadFormInteraction) {
   std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
   auto* helper = TabInteractionRecorderAndroid::FromWebContents(contents.get());
 
-  EXPECT_FALSE(helper->has_form_interactions());
+  EXPECT_FALSE(helper->has_form_interactions_in_session());
   EXPECT_EQ(nullptr, FormInteractionData::GetForCurrentDocument(
                    contents->GetPrimaryMainFrame()));
   OnTextFieldDidChangeForAutofillManager(autofill_manager());
-  EXPECT_TRUE(helper->has_form_interactions());
+  EXPECT_TRUE(helper->has_form_interactions_in_session());
   EXPECT_TRUE(FormInteractionData::GetForCurrentDocument(
                   contents->GetPrimaryMainFrame())
                   ->FormInteractionData::GetHasFormInteractionData());
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  EXPECT_TRUE(helper->HadFormInteraction(env));
+  EXPECT_TRUE(helper->HadFormInteractionInSession(env));
+  EXPECT_TRUE(helper->HadFormInteractionInActivePage(env));
+}
+
+TEST_F(TabInteractionRecorderAndroidTest, HadFormInteractionThenNavigation) {
+  std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
+  auto* helper = TabInteractionRecorderAndroid::FromWebContents(contents.get());
+
+  EXPECT_FALSE(helper->has_form_interactions_in_session());
+  EXPECT_EQ(nullptr, FormInteractionData::GetForCurrentDocument(
+                         contents->GetPrimaryMainFrame()));
+  OnTextFieldDidChangeForAutofillManager(autofill_manager());
+  EXPECT_TRUE(helper->has_form_interactions_in_session());
+  EXPECT_TRUE(FormInteractionData::GetForCurrentDocument(
+                  contents->GetPrimaryMainFrame())
+                  ->FormInteractionData::GetHasFormInteractionData());
+
+  content::WebContentsTester::For(contents.get())
+      ->NavigateAndCommit(GURL("https://bar.com"));
+  task_environment()->RunUntilIdle();
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  EXPECT_TRUE(helper->HadFormInteractionInSession(env));
+  EXPECT_FALSE(helper->HadFormInteractionInActivePage(env));
 }
 
 TEST_F(TabInteractionRecorderAndroidTest, HasNavigatedFromFirstPage) {
@@ -260,15 +283,16 @@ TEST_F(TabInteractionRecorderAndroidTest, ResetInteractions) {
   content::WebContentsTester::For(contents.get())
       ->NavigateAndCommit(GURL("https://bar.com"));
   task_environment()->RunUntilIdle();
-  EXPECT_TRUE(helper->has_form_interactions());
+  EXPECT_TRUE(helper->has_form_interactions_in_session());
   EXPECT_TRUE(helper->did_get_user_interaction());
   EXPECT_TRUE(helper->HasNavigatedFromFirstPage());
 
   // Assuming the record resets from Android.
   JNIEnv* env = base::android::AttachCurrentThread();
   helper->Reset(env);
-  EXPECT_FALSE(helper->HadFormInteraction(env));
+  EXPECT_FALSE(helper->HadFormInteractionInSession(env));
   EXPECT_FALSE(helper->DidGetUserInteraction(env));
   EXPECT_FALSE(helper->HadNavigationInteraction(env));
+  EXPECT_FALSE(helper->HadFormInteractionInActivePage(env));
 }
 }  // namespace customtabs

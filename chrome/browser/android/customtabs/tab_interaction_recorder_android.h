@@ -83,8 +83,14 @@ class TabInteractionRecorderAndroid
   // Return whether the |web_contents()| has navigated away from the first page.
   bool HasNavigatedFromFirstPage() const;
 
+  // Return whether there is an active render frame host which has incurred a
+  // form interaction.
+  bool HasActiveFormInteraction() const;
+
   // Return whether the |web_contents()| has seen any form interactions.
-  bool has_form_interactions() const { return has_form_interactions_; }
+  bool has_form_interactions_in_session() const {
+    return has_form_interactions_in_session_;
+  }
   bool did_get_user_interaction() const { return did_get_user_interaction_; }
 
   // content::WebContentsObserver:
@@ -105,7 +111,8 @@ class TabInteractionRecorderAndroid
 
   // JNI methods
   jboolean DidGetUserInteraction(JNIEnv* env) const;
-  jboolean HadFormInteraction(JNIEnv* env) const;
+  jboolean HadFormInteractionInSession(JNIEnv* env) const;
+  jboolean HadFormInteractionInActivePage(JNIEnv* env) const;
   jboolean HadNavigationInteraction(JNIEnv* env) const;
   void Reset(JNIEnv* env);
 
@@ -126,7 +133,7 @@ class TabInteractionRecorderAndroid
   void ResetImpl();
 
   bool did_get_user_interaction_ = false;
-  bool has_form_interactions_ = false;
+  bool has_form_interactions_in_session_ = false;
   std::unordered_map<content::GlobalRenderFrameHostId,
                      std::unique_ptr<AutofillObserverImpl>,
                      content::GlobalRenderFrameHostIdHasher>

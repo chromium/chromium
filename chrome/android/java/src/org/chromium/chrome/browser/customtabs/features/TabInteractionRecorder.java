@@ -82,7 +82,8 @@ public class TabInteractionRecorder {
     public void onTabClosing() {
         long timestamp = SystemClock.uptimeMillis();
         boolean hadInteraction = hadInteraction();
-        boolean hadFormInteraction = hadFormInteraction();
+        boolean hadFormInteractionInSession = hadFormInteractionInSession();
+        boolean hadFormInteractionInActivePage = hadFormInteractionInActivePage();
         boolean hadNavigationInteraction = hadNavigationInteraction();
 
         Log.d(TAG,
@@ -96,7 +97,9 @@ public class TabInteractionRecorder {
         pref.writeBoolean(
                 ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION, hadInteraction);
         RecordHistogram.recordBooleanHistogram(
-                "CustomTabs.HadInteractionOnClose.Form", hadFormInteraction);
+                "CustomTabs.HadInteractionOnClose.Form", hadFormInteractionInSession);
+        RecordHistogram.recordBooleanHistogram(
+                "CustomTabs.HadInteractionOnClose.FormStillActive", hadFormInteractionInActivePage);
         RecordHistogram.recordBooleanHistogram(
                 "CustomTabs.HadInteractionOnClose.Navigation", hadNavigationInteraction);
     }
@@ -109,11 +112,17 @@ public class TabInteractionRecorder {
      * More details see chrome/browser/android/customtabs/tab_interaction_recorder_android.h
      */
     public boolean hadInteraction() {
-        return hadFormInteraction() || hadNavigationInteraction();
+        return hadFormInteractionInSession() || hadNavigationInteraction();
     }
 
-    private boolean hadFormInteraction() {
-        return TabInteractionRecorderJni.get().hadFormInteraction(mNativeTabInteractionRecorder);
+    private boolean hadFormInteractionInActivePage() {
+        return TabInteractionRecorderJni.get().hadFormInteractionInActivePage(
+                mNativeTabInteractionRecorder);
+    }
+
+    private boolean hadFormInteractionInSession() {
+        return TabInteractionRecorderJni.get().hadFormInteractionInSession(
+                mNativeTabInteractionRecorder);
     }
 
     private boolean hadNavigationInteraction() {
@@ -156,7 +165,8 @@ public class TabInteractionRecorder {
         TabInteractionRecorder getFromTab(Tab tab);
         TabInteractionRecorder createForTab(Tab tab);
         boolean didGetUserInteraction(long nativeTabInteractionRecorderAndroid);
-        boolean hadFormInteraction(long nativeTabInteractionRecorderAndroid);
+        boolean hadFormInteractionInActivePage(long nativeTabInteractionRecorderAndroid);
+        boolean hadFormInteractionInSession(long nativeTabInteractionRecorderAndroid);
         boolean hadNavigationInteraction(long nativeTabInteractionRecorderAndroid);
         void reset(long nativeTabInteractionRecorderAndroid);
     }

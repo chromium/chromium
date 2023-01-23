@@ -55,7 +55,8 @@ public class TabInteractionRecorderUnitTest {
 
     @Test
     public void hadFormInteractionOnTabClosing() {
-        mTestNative.paramHadFormInteraction = true;
+        mTestNative.paramHadFormInteractionInSession = true;
+        mTestNative.paramHadFormInteractionInActivePage = true;
         TabInteractionRecorder.getFromTab(mTab).onTabClosing();
 
         Assert.assertTrue("Shared pref <CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION> is not recorded.",
@@ -83,7 +84,8 @@ public class TabInteractionRecorderUnitTest {
 
     @Test
     public void noInteractionOnTabClosing() {
-        mTestNative.paramHadFormInteraction = false;
+        mTestNative.paramHadFormInteractionInSession = false;
+        mTestNative.paramHadFormInteractionInActivePage = false;
         mTestNative.paramHadNavigationInteraction = false;
         TabInteractionRecorder.getFromTab(mTab).onTabClosing();
 
@@ -99,7 +101,8 @@ public class TabInteractionRecorderUnitTest {
 
     class TestNativeInteractionRecorder implements TabInteractionRecorder.Natives {
         public boolean paramDidGetUserInteraction;
-        public boolean paramHadFormInteraction;
+        public boolean paramHadFormInteractionInSession;
+        public boolean paramHadFormInteractionInActivePage;
         public boolean paramHadNavigationInteraction;
 
         @Override
@@ -119,8 +122,13 @@ public class TabInteractionRecorderUnitTest {
         }
 
         @Override
-        public boolean hadFormInteraction(long nativeTabInteractionRecorderAndroid) {
-            return paramHadFormInteraction;
+        public boolean hadFormInteractionInSession(long nativeTabInteractionRecorderAndroid) {
+            return paramHadFormInteractionInSession;
+        }
+
+        @Override
+        public boolean hadFormInteractionInActivePage(long nativeTabInteractionRecorderAndroid) {
+            return paramHadFormInteractionInActivePage;
         }
 
         @Override
@@ -130,7 +138,8 @@ public class TabInteractionRecorderUnitTest {
 
         @Override
         public void reset(long nativeTabInteractionRecorderAndroid) {
-            paramHadFormInteraction = false;
+            paramHadFormInteractionInSession = false;
+            paramHadFormInteractionInActivePage = false;
             paramHadNavigationInteraction = false;
             paramDidGetUserInteraction = false;
         }

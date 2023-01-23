@@ -111,9 +111,32 @@ bool TabInteractionRecorderAndroid::HasNavigatedFromFirstPage() const {
          web_contents()->GetController().CanGoForward();
 }
 
+bool TabInteractionRecorderAndroid::HasActiveFormInteraction() const {
+  bool interaction = false;
+  web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHostWithAction(
+      [&interaction](RenderFrameHost* rfh) {
+        if (!FormInteractionData::GetForCurrentDocument(rfh)) {
+          return RenderFrameHost::FrameIterationAction::kContinue;
+        }
+        if (FormInteractionData::GetForCurrentDocument(rfh)
+                ->GetHasFormInteractionData()) {
+          interaction = true;
+          return RenderFrameHost::FrameIterationAction::kStop;
+        }
+        return RenderFrameHost::FrameIterationAction::kContinue;
+      });
+  return interaction;
+}
+
 void TabInteractionRecorderAndroid::ResetImpl() {
-  has_form_interactions_ = false;
+  has_form_interactions_in_session_ = false;
   did_get_user_interaction_ = false;
+  web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      [](RenderFrameHost* rfh) {
+        if (FormInteractionData::GetForCurrentDocument(rfh)) {
+          FormInteractionData::DeleteForCurrentDocument(rfh);
+        }
+      });
 }
 
 // content::WebContentsObserver:
@@ -123,16 +146,13 @@ void TabInteractionRecorderAndroid::RenderFrameHostStateChanged(
     RenderFrameHost::LifecycleState new_state) {
   if (old_state == RenderFrameHost::LifecycleState::kActive) {
     rfh_observer_map_.erase(render_frame_host->GetGlobalId());
-  } else if (new_state == RenderFrameHost::LifecycleState::kActive &&
-             !has_form_interactions_) {
+  } else if (new_state == RenderFrameHost::LifecycleState::kActive) {
     StartObservingFrame(render_frame_host);
   }
 }
 
 void TabInteractionRecorderAndroid::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (has_form_interactions_)
-    return;
   if (!navigation_handle->IsSameDocument() &&
       navigation_handle->HasCommitted() &&
       navigation_handle->GetRenderFrameHost()->IsActive())
@@ -159,7 +179,7 @@ void TabInteractionRecorderAndroid::SetHasFormInteractions(
         ->SetHasFormInteractionData();
   }
 
-  has_form_interactions_ = true;
+  has_form_interactions_in_session_ = true;
   rfh_observer_map_.clear();
 }
 
@@ -190,14 +210,19 @@ jboolean TabInteractionRecorderAndroid::DidGetUserInteraction(
   return did_get_user_interaction_;
 }
 
-jboolean TabInteractionRecorderAndroid::HadFormInteraction(JNIEnv* env) const {
-  return static_cast<jboolean>(has_form_interactions());
+jboolean TabInteractionRecorderAndroid::HadFormInteractionInSession(
+    JNIEnv* env) const {
+  return has_form_interactions_in_session();
 }
 
 jboolean TabInteractionRecorderAndroid::HadNavigationInteraction(
     JNIEnv* env) const {
-  return static_cast<jboolean>(did_get_user_interaction_ &&
-                               HasNavigatedFromFirstPage());
+  return did_get_user_interaction_ && HasNavigatedFromFirstPage();
+}
+
+jboolean TabInteractionRecorderAndroid::HadFormInteractionInActivePage(
+    JNIEnv* env) const {
+  return HasActiveFormInteraction();
 }
 
 void TabInteractionRecorderAndroid::Reset(JNIEnv* env) {

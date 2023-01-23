@@ -22,29 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="CustomTab.HadInteractionOnClose.Form" enum="Boolean"
-    expires_after="2023-06-19">
-  <owner>katzz@google.com</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    This histogram records true when the current CCT has seen any form
-    interactions (e.g. text entry, drop down entry) and false if there have been
-    no form interactions at the time of closing the CCT.
-  </summary>
-</histogram>
-
-<histogram name="CustomTab.HadInteractionOnClose.Navigation" enum="Boolean"
-    expires_after="2023-06-19">
-  <owner>katzz@google.com</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    This histogram records true when the current CCT has interactions with the
-    web contents (e.g. touch, scroll, fling), and the active tab can go back /
-    forward and false if there have not been web contents interactions or the
-    tab cannot go back / forward at the time of closing the CCT.
-  </summary>
-</histogram>
-
 <histogram base="true" name="CustomTab.SessionDuration" units="ms"
     expires_after="2020-10-18">
   <owner>ranj@chromium.org</owner>
@@ -292,6 +269,43 @@ chromium-metrics-reviews@google.com.
     Whether current CCT has seen any interactions. &quot;Interactions&quot;
     includes any form entries for text / drop down, and whether a tab can go
     forward / back when it is closed. Recorded when CCT tab is closed.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.HadInteractionOnClose.Form" enum="Boolean"
+    expires_after="2023-06-19">
+  <owner>katzz@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    This histogram records true when the current CCT has seen any form
+    interactions (e.g. text entry, drop down entry) throughout the session and
+    false if there have been no form interactions at the time of closing the
+    CCT. If the tab is restored the previous form interactions will be reset.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.HadInteractionOnClose.FormStillActive"
+    enum="Boolean" expires_after="2023-07-18">
+  <owner>katzz@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    This histogram records true when the current CCT has seen form interaction
+    (e.g. text entry, drop down entry) on the active page, and false if there
+    are no interactions in the active form, or if the interaction is reset (e.g.
+    navigation, form submission) at the time of closing the CCT.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.HadInteractionOnClose.Navigation" enum="Boolean"
+    expires_after="2023-06-19">
+  <owner>katzz@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    This histogram records true when the current CCT has interactions with the
+    web contents (e.g. touch, scroll, fling), and the active tab can go back /
+    forward and false if there have not been web contents interactions or the
+    tab cannot go back / forward at the time of closing the CCT. If the tab is
+    restored the previous form interactions will be reset.
   </summary>
 </histogram>
 
