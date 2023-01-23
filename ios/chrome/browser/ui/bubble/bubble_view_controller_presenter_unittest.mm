@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ui/bubble/bubble_unittest_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller.h"
+#import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter+private.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -16,19 +17,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-@interface BubbleViewControllerPresenter (Testing)
-
-// Underlying bubble view controller managed by the presenter.
-@property(nonatomic, strong) BubbleViewController* bubbleViewController;
-
-// Underlying timer used to dismiss the bubble automatically.
-@property(nonatomic, strong) NSTimer* bubbleDismissalTimer;
-
-// Underlying timer used to mark the user as no longer engaged automatically.
-@property(nonatomic, strong) NSTimer* engagementTimer;
-
-@end
 
 // Test fixture to test the BubbleViewControllerPresenter.
 class BubbleViewControllerPresenterTest : public PlatformTest {

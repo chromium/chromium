@@ -9,6 +9,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller.h"
+#import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter+private.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -52,9 +53,6 @@ enum class IPHDismissalReasonType {
 
 // Redeclared as readwrite so the value can be changed internally.
 @property(nonatomic, assign, readwrite, getter=isUserEngaged) BOOL userEngaged;
-// The underlying BubbleViewController managed by this object.
-// `bubbleViewController` manages the BubbleView instance.
-@property(nonatomic, strong) BubbleViewController* bubbleViewController;
 // The tap gesture recognizer intercepting tap gestures occurring inside the
 // bubble view. Taps inside must be differentiated from taps outside to track
 // UMA metrics.
@@ -66,20 +64,6 @@ enum class IPHDismissalReasonType {
 @property(nonatomic, strong) UITapGestureRecognizer* outsideBubbleTapRecognizer;
 // The swipe gesture recognizer to dismiss the bubble on swipes.
 @property(nonatomic, strong) UISwipeGestureRecognizer* swipeRecognizer;
-// The timer used to dismiss the bubble after a certain length of time. The
-// bubble is dismissed automatically if the user does not dismiss it manually.
-// If the user dismisses it manually, this timer is invalidated. The timer
-// maintains a strong reference to the presenter, so it must be retained weakly
-// to prevent a retain cycle. The run loop retains a strong reference to the
-// timer so it is not deallocated until it is invalidated.
-@property(nonatomic, weak) NSTimer* bubbleDismissalTimer;
-// The timer used to reset the user's engagement. The user is considered
-// engaged with the bubble while it is visible and for a certain duration after
-// it disappears. The timer maintains a strong reference to the presenter, so it
-// must be retained weakly to prevent a retain cycle. The run loop retains a
-// strong reference to the timer so it is not deallocated until it is
-// invalidated.
-@property(nonatomic, weak) NSTimer* engagementTimer;
 // The direction the underlying BubbleView's arrow is pointing.
 @property(nonatomic, assign) BubbleArrowDirection arrowDirection;
 // The alignment of the underlying BubbleView's arrow.
