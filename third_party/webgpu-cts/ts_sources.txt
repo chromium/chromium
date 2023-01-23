@@ -462,11 +462,13 @@ src/webgpu/web_platform/copyToTexture/video.spec.ts
 src/webgpu/web_platform/external_texture/video.spec.ts
 src/webgpu/web_platform/reftests/gpu_ref_test.ts
 src/webgpu/web_platform/reftests/canvas_clear.html.ts
+src/webgpu/web_platform/reftests/canvas_colorspace.html.ts
 src/webgpu/web_platform/reftests/canvas_complex.html.ts
 src/webgpu/web_platform/reftests/canvas_composite_alpha.html.ts
 src/webgpu/web_platform/reftests/canvas_image_rendering.html.ts
 src/webgpu/web_platform/reftests/create-pattern-data-url.ts
 src/webgpu/web_platform/reftests/resize_observer.html.ts
+src/webgpu/web_platform/reftests/ref/canvas_colorspace-ref.html.ts
 src/webgpu/web_platform/worker/worker.spec.ts
 src/webgpu/web_platform/worker/worker.ts
 src/webgpu/web_platform/worker/worker_launcher.ts
