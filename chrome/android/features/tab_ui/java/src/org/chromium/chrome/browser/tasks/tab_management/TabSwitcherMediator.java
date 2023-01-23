@@ -949,11 +949,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     }
 
     @Override
-    public void onOverviewShownAtLaunch(long activityCreationTimeMs) {
-        if (mMode == TabListMode.CAROUSEL) {
-            ReturnToChromeUtil.recordLastVisitedTabIsSRPWhenOverviewIsShownAtLaunch();
-        }
-    }
+    public void onOverviewShownAtLaunch(long activityCreationTimeMs) {}
 
     @Override
     public @TabSwitcherType int getTabSwitcherType() {

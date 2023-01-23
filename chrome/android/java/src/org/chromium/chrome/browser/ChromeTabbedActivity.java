@@ -2606,6 +2606,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             }
         }
 
+        ReturnToChromeUtil.recordStartSurfaceState(state);
+
         // If we don't have a current tab, show the overview mode.
         if (currentTab == null) {
             mLayoutManager.showLayout(layoutTypeToShow, false);
