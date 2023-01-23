@@ -30,6 +30,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "gpu/ipc/service/image_transport_surface.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_handle.h"
@@ -83,7 +84,16 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
     TestingBrowserProcess::DeleteInstance();
     // Some tests cause ChildThreadImpl to initialize a PowerMonitor.
     base::PowerMonitor::ShutdownForTesting();
-    DCHECK(ui::AXPlatformNode::GetAccessibilityMode() == ui::AXMode::kNone)
+#if BUILDFLAG(IS_WIN)
+    // Running tests locally on Windows machines with some degree of
+    // accessibility enabled can cause this flag to become implicitly set.
+    constexpr uint32_t kAllowedFlags = ui::AXMode::kNativeAPIs;
+#else
+    constexpr uint32_t kAllowedFlags = ui::AXMode::kNone;
+#endif
+    DCHECK_EQ(
+        kAllowedFlags,
+        ui::AXPlatformNode::GetAccessibilityMode().flags() | kAllowedFlags)
         << "Please use ScopedAXModeSetter, or add a call to "
            "AXPlatformNode::SetAXMode(ui::AXMode::kNone) at the end of your "
            "test.";
