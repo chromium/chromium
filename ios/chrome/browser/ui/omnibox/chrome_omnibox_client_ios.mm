@@ -5,10 +5,13 @@
 #import "ios/chrome/browser/ui/omnibox/chrome_omnibox_client_ios.h"
 
 #import "base/feature_list.h"
+#import "base/metrics/user_metrics.h"
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "components/favicon/ios/web_favicon_driver.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/browser/omnibox_edit_model_delegate.h"
@@ -20,11 +23,13 @@
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/omnibox/web_omnibox_edit_model_delegate.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/common/intents/SearchInChromeIntent.h"
@@ -140,6 +145,17 @@ void ChromeOmniboxClientIOS::OnFocusChanged(OmniboxFocusState state,
     if (service) {
       service->CancelPrerender();
     }
+  }
+}
+
+void ChromeOmniboxClientIOS::OnUserPastedInOmniboxResultingInValidURL() {
+  base::RecordAction(
+      base::UserMetricsAction("Mobile.Omnibox.iOS.PastedValidURL"));
+
+  if (!browser_state_->IsOffTheRecord() &&
+      HasRecentValidURLPastesAndRecordsCurrentPaste()) {
+    feature_engagement::TrackerFactory::GetForBrowserState(browser_state_)
+        ->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
   }
 }
 

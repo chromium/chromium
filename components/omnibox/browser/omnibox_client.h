@@ -135,6 +135,10 @@ class OmniboxClient {
   virtual void OnFocusChanged(OmniboxFocusState state,
                               OmniboxFocusChangeReason reason) {}
 
+  // Called to notify the clients that the user has pasted into the omnibox, and
+  // the resulting string in the omnibox is a valid URL.
+  virtual void OnUserPastedInOmniboxResultingInValidURL();
+
   // Called when the autocomplete result has changed. Implementations that
   // support preloading (currently, prefetching or prerendering) of search
   // results pages should preload only if `should_preload` is true. If the

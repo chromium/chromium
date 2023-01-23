@@ -93,6 +93,16 @@ void LogUserInteractionWithNonModalPromo();
 // Logs that the user has interacted with the first run promo.
 void LogUserInteractionWithFirstRunPromo(BOOL openedSettings);
 
+// Returns YES if the user has opened the app through first-party intent 2
+// times in the last 7 days, with more than 6 hours between each time. Also
+// records that a new launch has happened if the last one was more than one
+// session ago.
+bool HasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunch();
+
+// Returns YES if the user has pasted a valid URL into the omnibox twice in
+// the last 7 days and records the current paste.
+bool HasRecentValidURLPastesAndRecordsCurrentPaste();
+
 // Returns true if the last URL open is within the time threshold that would
 // indicate Chrome is likely still the default browser. Returns false otherwise.
 bool IsChromeLikelyDefaultBrowser();

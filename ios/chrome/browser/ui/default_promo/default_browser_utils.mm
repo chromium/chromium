@@ -92,6 +92,15 @@ NSString* const kRemindMeLaterPromoActionInteraction =
 NSString* const kOpenSettingsActionInteraction =
     @"openSettingsActionInteraction";
 
+// Key in storage containing the timestamp of the last time the user opened the
+// app via first-party intent.
+NSString* const kTimestampAppLastOpenedViaFirstPartyIntent =
+    @"TimestampAppLastOpenedViaFirstPartyIntent";
+
+// Key in storage containing the timestamp of the last time the user pasted a
+// valid URL into the omnibox.
+NSString* const kTimestampLastValidURLPasted = @"TimestampLastValidURLPasted";
+
 const char kDefaultBrowserFullscreenPromoExperimentChangeStringsGroupParam[] =
     "show_switch_description";
 
@@ -114,6 +123,17 @@ constexpr base::TimeDelta kFullscreenPromoCoolDown = base::Days(14);
 
 // Short cool down between promos.
 constexpr base::TimeDelta kPromosShortCoolDown = base::Days(3);
+
+// Maximum time range between first-party app launches to notify the FET.
+constexpr base::TimeDelta kMaximumTimeBetweenFirstPartyAppLaunches =
+    base::Days(7);
+
+// Minimum time range between first-party app launches to notify the FET.
+constexpr base::TimeDelta kMinimumTimeBetweenFirstPartyAppLaunches =
+    base::Hours(6);
+
+// Maximum time range between valid user URL pastes to notify the FET.
+constexpr base::TimeDelta kMaximumTimeBetweenValidURLPastes = base::Days(7);
 
 // List of DefaultPromoType considered by MostRecentInterestDefaultPromoType.
 const DefaultPromoType kDefaultPromoTypes[] = {
@@ -418,6 +438,37 @@ void LogUserInteractionWithFirstRunPromo(BOOL openedSettings) {
     kLastTimeUserInteractedWithPromo : [NSDate date],
     kDisplayedPromoCount : @(displayed_promo_count + 1),
   });
+}
+
+bool HasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunch() {
+  if (HasRecordedEventForKeyLessThanDelay(
+          kTimestampAppLastOpenedViaFirstPartyIntent,
+          kMaximumTimeBetweenFirstPartyAppLaunches)) {
+    if (HasRecordedEventForKeyMoreThanDelay(
+            kTimestampAppLastOpenedViaFirstPartyIntent,
+            kMinimumTimeBetweenFirstPartyAppLaunches)) {
+      SetObjectIntoStorageForKey(kTimestampAppLastOpenedViaFirstPartyIntent,
+                                 [NSDate date]);
+      return YES;
+    }
+
+    return NO;
+  }
+
+  SetObjectIntoStorageForKey(kTimestampAppLastOpenedViaFirstPartyIntent,
+                             [NSDate date]);
+  return NO;
+}
+
+bool HasRecentValidURLPastesAndRecordsCurrentPaste() {
+  if (HasRecordedEventForKeyLessThanDelay(kTimestampLastValidURLPasted,
+                                          kMaximumTimeBetweenValidURLPastes)) {
+    SetObjectIntoStorageForKey(kTimestampLastValidURLPasted, [NSDate date]);
+    return YES;
+  }
+
+  SetObjectIntoStorageForKey(kTimestampLastValidURLPasted, [NSDate date]);
+  return NO;
 }
 
 bool IsChromeLikelyDefaultBrowser7Days() {

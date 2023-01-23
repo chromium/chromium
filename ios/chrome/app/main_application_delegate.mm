@@ -12,6 +12,8 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/download/public/background_service/background_download_service.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/browser_launcher.h"
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
@@ -27,6 +29,7 @@
 #import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/download/background_service/background_download_service_factory.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/push_notification/push_notification_delegate.h"
 #import "ios/chrome/browser/push_notification/push_notification_util.h"
 #import "ios/chrome/browser/ui/keyboard/features.h"
@@ -347,6 +350,7 @@ const int kMainIntentCheckDelay = 1;
         if (!appStartupFromExternalIntent) {
           base::RecordAction(base::UserMetricsAction("IOSOpenByMainIntent"));
         } else {
+          [self notifyFETAppStartupFromExternalIntent];
           base::RecordAction(base::UserMetricsAction("IOSOpenByViewIntent"));
         }
       });
@@ -417,6 +421,23 @@ const int kMainIntentCheckDelay = 1;
 
     [PushNotificationUtil registerDeviceWithAPNS];
   }
+}
+
+// Notifies the FET that the app has launched from external intent (i.e. through
+// the share sheet), which is an eligibility criterion for the default browser
+// blue dot promo.
+- (void)notifyFETAppStartupFromExternalIntent {
+  ChromeBrowserState* browserState =
+      _mainController.interfaceProvider.mainInterface.browserState;
+
+  // OTR browsers are ignored because they can sometimes cause a nullptr tracker
+  // to be returned from the tracker factory.
+  if (!browserState || browserState->IsOffTheRecord()) {
+    return;
+  }
+
+  feature_engagement::TrackerFactory::GetForBrowserState(browserState)
+      ->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
 }
 
 @end

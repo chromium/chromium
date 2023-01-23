@@ -8,6 +8,11 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_view_controller.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_string_util.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
@@ -110,6 +115,7 @@
       base::RecordAction(base::UserMetricsAction(
           "IOS.DefaultBrowserFullscreenPromo.RemindMeTapped"));
       LogRemindMeLaterPromoActionInteraction();
+      [self NotifyFETRemindMeLater];
     } else {
       [self logDefaultBrowserFullscreenRemindMeSecondPromoHistogramForAction:
                 IOSDefaultBrowserFullscreenPromoAction::kCancel];
@@ -168,6 +174,21 @@
     (IOSDefaultBrowserFullscreenPromoAction)action {
   base::UmaHistogramEnumeration(
       "IOS.DefaultBrowserFullscreenPromoRemindMeSecondPromo", action);
+}
+
+#pragma mark - Private
+
+// Notifies the FET that the user has clicked "remind me later" on the default
+// browser promo, which is an eligibility criterion for the default browser blue
+// dot promo.
+- (void)NotifyFETRemindMeLater {
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  if (!browserState || browserState->IsOffTheRecord()) {
+    return;
+  }
+
+  feature_engagement::TrackerFactory::GetForBrowserState(browserState)
+      ->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
 }
 
 @end

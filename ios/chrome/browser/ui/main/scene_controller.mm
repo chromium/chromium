@@ -20,6 +20,8 @@
 #import "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #import "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
 #import "components/breadcrumbs/core/features.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/prefs/pref_service.h"
 #import "components/previous_session_info/previous_session_info.h"
@@ -50,6 +52,7 @@
 #import "ios/chrome/browser/crash_report/crash_report_helper.h"
 #import "ios/chrome/browser/crash_report/crash_restore_helper.h"
 #import "ios/chrome/browser/default_browser/promo_source.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/geolocation/geolocation_logger.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
@@ -415,6 +418,7 @@ void InjectNTP(Browser* browser) {
     DefaultBrowserSceneAgent* sceneAgent =
         [DefaultBrowserSceneAgent agentFromScene:self.sceneState];
     [sceneAgent.nonModalScheduler logUserEnteredAppViaFirstPartyScheme];
+    [self notifyFETAppOpenedViaFirstParty];
   }
 }
 
@@ -1075,6 +1079,20 @@ void InjectNTP(Browser* browser) {
     [applicationHandler openURLInNewTab:command];
   }
   [self maybeShowDefaultBrowserPromo:self.mainInterface.browser];
+}
+
+// Notifies the Feature Engagement Tracker that an eligibility criterion has
+// been met for the default browser blue dot promo.
+- (void)notifyFETAppOpenedViaFirstParty {
+  ChromeBrowserState* browserState = self.sceneState.appState.mainBrowserState;
+  if (!browserState || browserState->IsOffTheRecord()) {
+    return;
+  }
+
+  if (HasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunch()) {
+    feature_engagement::TrackerFactory::GetForBrowserState(browserState)
+        ->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
+  }
 }
 
 // `YES` if Chrome is not the default browser, the app did not crash recently,

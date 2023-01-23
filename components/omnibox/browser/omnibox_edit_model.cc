@@ -1693,15 +1693,10 @@ bool OmniboxEditModel::OnAfterPossibleChange(
   if (paste_state_ == PASTING) {
     paste_state_ = PASTED;
 
-#if BUILDFLAG(IS_IOS)
     GURL url = GURL(*(state_changes.new_text));
-
     if (url.is_valid()) {
-      base::RecordAction(
-          base::UserMetricsAction("Mobile.Omnibox.iOS.PastedValidURL"));
+      client_->OnUserPastedInOmniboxResultingInValidURL();
     }
-#endif
-
   } else if (state_changes.text_differs)
     paste_state_ = NONE;
 

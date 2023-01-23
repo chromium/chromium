@@ -87,6 +87,8 @@ bool OmniboxClient::ProcessExtensionKeyword(const std::u16string& text,
   return false;
 }
 
+void OmniboxClient::OnUserPastedInOmniboxResultingInValidURL() {}
+
 gfx::Image OmniboxClient::GetFaviconForPageUrl(
     const GURL& page_url,
     FaviconFetchedCallback on_favicon_fetched) {

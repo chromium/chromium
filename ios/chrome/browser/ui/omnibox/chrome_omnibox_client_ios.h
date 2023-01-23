@@ -46,6 +46,7 @@ class ChromeOmniboxClientIOS : public OmniboxClient {
                                const TemplateURL* template_url,
                                const AutocompleteMatch& match,
                                WindowOpenDisposition disposition) override;
+  void OnUserPastedInOmniboxResultingInValidURL() override;
   void OnFocusChanged(OmniboxFocusState state,
                       OmniboxFocusChangeReason reason) override;
   void OnResultChanged(const AutocompleteResult& result,
