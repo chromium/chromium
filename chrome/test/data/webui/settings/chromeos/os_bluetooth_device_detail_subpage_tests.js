@@ -755,6 +755,15 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
 
     // Disconnect device and check that connection error is not shown.
     getBluetoothConnectDisconnectBtn().click();
+
+    // Disconnecting.
+    assertUIState(
+        /*isShowingConnectionFailed=*/ false,
+        /*isConnectDisconnectBtnDisabled=*/ true,
+        /*bluetoothStateText=*/
+        bluetoothDeviceDetailPage.i18n('bluetoothDeviceDetailConnected'),
+        /*connectDisconnectBtnText=*/
+        bluetoothDeviceDetailPage.i18n('bluetoothDisconnect'));
     await flushAsync();
     bluetoothConfig.completeDisconnect(/*success=*/ true);
     await flushAsync();

@@ -35,7 +35,7 @@
           id="bluetoothStateText"
           aria-live="polite"
           aria-label$="[[getDeviceStatusA11yLabel_(device_.*, pageState_)]]">
-        [[getBluetoothStateTextLabel_(device_.*, pageState_)]]
+        [[getBluetoothStateTextLabel_(pageState_)]]
       </div>
       <template is="dom-if"
           if="[[shouldShowBatteryInfo_(device_.*, pageState_)]]"
@@ -80,7 +80,7 @@
             disabled$="[[isConnectDisconnectBtnDisabled(pageState_)]]"
             class="action-button"
             on-click="onConnectDisconnectBtnClick_">
-          [[getBluetoothConnectDisconnectBtnLabel_(isDeviceConnected_)]]
+          [[getBluetoothConnectDisconnectBtnLabel_(isDeviceConnected_, pageState_)]]
         </cr-button>
       </template>
     </div>

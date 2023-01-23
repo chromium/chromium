@@ -201,6 +201,10 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
       return this.i18n('bluetoothConnecting');
     }
 
+    if (this.pageState_ === PageState.DISCONNECTING) {
+      return this.i18n('bluetoothDeviceDetailConnected');
+    }
+
     return this.pageState_ === PageState.CONNECTED ?
         this.i18n('bluetoothDeviceDetailConnected') :
         this.i18n('bluetoothDeviceDetailDisconnected');
@@ -473,15 +477,13 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
 
   private disconnectDevice_(): void {
     this.pageState_ = PageState.DISCONNECTING;
-    getBluetoothConfig().disconnect(this.deviceId_).then(response => {
-      this.handleDisconnectResult_(response.success);
-    });
-  }
 
-  private handleDisconnectResult_(success: boolean): void {
-    if (success) {
-      this.pageState_ = PageState.DISCONNECTED;
-    }
+    // When disconnecting, disconnect() callback function could be called
+    // a few seconds before device connectionState is updated. This
+    // causes a situation where connectedState label is 'disconnected'
+    // while the color is green. `pageState_` would be updated in
+    // onDeviceChanged_().
+    getBluetoothConfig().disconnect(this.deviceId_);
   }
 
   private isConnectDisconnectBtnDisabled(): boolean {
