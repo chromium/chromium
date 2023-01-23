@@ -122,21 +122,36 @@ SavedTabGroup& SavedTabGroup::SetPosition(int position) {
   return *this;
 }
 
-SavedTabGroup& SavedTabGroup::AddTab(size_t index, SavedTabGroupTab tab) {
-  CHECK_GE(index, 0u);
-  CHECK_LE(index, saved_tabs_.size());
+SavedTabGroup& SavedTabGroup::AddTab(SavedTabGroupTab tab,
+                                     bool update_tab_positions) {
   CHECK(!ContainsTab(tab.saved_tab_guid()));
-  saved_tabs_.emplace(saved_tabs_.begin() + index, std::move(tab));
+
+  if (tab.position() == SavedTabGroupTab::kUnsetPosition) {
+    tab.SetPosition(saved_tabs_.size());
+  }
+
+  InsertTabImpl(tab);
+
+  if (update_tab_positions) {
+    UpdateTabPositionsImpl();
+  }
+
   SetUpdateTimeWindowsEpochMicros(base::Time::Now());
   return *this;
 }
 
-SavedTabGroup& SavedTabGroup::RemoveTab(const base::GUID& saved_tab_guid) {
+SavedTabGroup& SavedTabGroup::RemoveTab(const base::GUID& saved_tab_guid,
+                                        bool update_tab_positions) {
   absl::optional<size_t> index = GetIndexOfTab(saved_tab_guid);
   CHECK(index.has_value());
   CHECK_GE(index.value(), 0u);
   CHECK_LT(index.value(), saved_tabs_.size());
   saved_tabs_.erase(saved_tabs_.begin() + index.value());
+
+  if (update_tab_positions) {
+    UpdateTabPositionsImpl();
+  }
+
   SetUpdateTimeWindowsEpochMicros(base::Time::Now());
   return *this;
 }
@@ -161,6 +176,7 @@ SavedTabGroup& SavedTabGroup::ReplaceTabAt(const base::GUID& tab_id,
   CHECK(!ContainsTab(tab.saved_tab_guid()));
   saved_tabs_.erase(saved_tabs_.begin() + index.value());
   saved_tabs_.insert(saved_tabs_.begin() + index.value(), std::move(tab));
+  UpdateTabPositionsImpl();
   SetUpdateTimeWindowsEpochMicros(base::Time::Now());
   return *this;
 }
@@ -185,8 +201,50 @@ SavedTabGroup& SavedTabGroup::MoveTab(const base::GUID& saved_tab_guid,
         saved_tabs_.rbegin() + ((saved_tabs_.size() - 1) - curr_index.value()) +
             1);
   }
+  UpdateTabPositionsImpl();
   SetUpdateTimeWindowsEpochMicros(base::Time::Now());
   return *this;
+}
+
+void SavedTabGroup::UpdateTabPositionsImpl() {
+  for (size_t i = 0; i < saved_tabs_.size(); ++i) {
+    saved_tabs_[i].SetPosition(i);
+  }
+}
+
+void SavedTabGroup::InsertTabImpl(const SavedTabGroupTab& tab) {
+  // We can always safely insert the first tab at the end. We can also safely
+  // insert `tab` if its position is larger than the position at the end of
+  // `saved_tabs_`.
+  if (saved_tabs_.empty() ||
+      saved_tabs_[saved_tabs_.size() - 1].position() < tab.position()) {
+    saved_tabs_.emplace_back(std::move(tab));
+    return;
+  }
+
+  // Insert `tab` in front of an element if one of these criteria
+  // are met:
+  // 1. The current index is larger than `tab`.
+  // 2. The current index has the same position as `tab` and is not
+  // the most recently updated position.
+  for (size_t index = 0; index < saved_tabs_.size(); ++index) {
+    const SavedTabGroupTab& curr_tab = saved_tabs_[index];
+    bool curr_position_larger = curr_tab.position() > tab.position();
+    bool curr_position_same = curr_tab.position() == tab.position();
+    bool curr_position_least_recently_updated =
+        curr_tab.update_time_windows_epoch_micros() <
+        tab.update_time_windows_epoch_micros();
+
+    if (curr_position_larger ||
+        (curr_position_same && curr_position_least_recently_updated)) {
+      saved_tabs_.insert(saved_tabs_.begin() + index, std::move(tab));
+      return;
+    }
+  }
+
+  // This can happen when the last element of the vector has the same position
+  // as `group` and was more recently updated.
+  saved_tabs_.push_back(std::move(tab));
 }
 
 bool SavedTabGroup::ShouldMergeGroup(

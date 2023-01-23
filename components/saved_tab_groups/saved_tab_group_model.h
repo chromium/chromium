@@ -90,18 +90,23 @@ class SavedTabGroupModel {
   SavedTabGroup* GetGroupContainingTab(const base::Token& local_tab_id);
 
   // Adds a saved tab to `index` in the specified group denoted by `group_id` if
-  // it exists.
+  // it exists. If `update_tab_positions` is true, update the positions of all
+  // tabs in the group.
   void AddTabToGroup(const base::GUID& group_id,
                      SavedTabGroupTab tab,
-                     int index);
+                     bool update_tab_positions = false);
 
   // Calls the UpdateTab method on a group found by group id in the model.
   // Calls the observer function SavedTabGroupUpdatedLocally.
   void UpdateTabInGroup(const base::GUID& group_id, SavedTabGroupTab tab);
 
-  // Removes a saved tab from `index` in the specified group denoted by
-  // `group_id` if it exists.
-  void RemoveTabFromGroup(const base::GUID& group_id, const base::GUID& tab_id);
+  // Removes saved tab `tab_id` in the specified group denoted by
+  // `group_id` if it exists. We delete the group instead if the last tab is
+  // removed from it. If `update_tab_positions` is true, update the positions of
+  // all tabs in the group and notify sync of the changes.
+  void RemoveTabFromGroup(const base::GUID& group_id,
+                          const base::GUID& tab_id,
+                          bool update_tab_positions = false);
 
   // Replaces a saved tab `tab_id` in the specified group denoted by
   // `group_id` if it exists with `new_tab`.
@@ -147,7 +152,7 @@ class SavedTabGroupModel {
  private:
   // Updates all group positions to match the index they are currently stored
   // at.
-  void UpdatePositionsImpl();
+  void UpdateGroupPositionsImpl();
 
   // Insert `group` into sorted order based on its position compared to already
   // stored groups in `saved_tab_groups_`. It should be noted that

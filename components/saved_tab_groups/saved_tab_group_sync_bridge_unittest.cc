@@ -158,7 +158,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeSyncData) {
                          group.saved_guid());
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
                          group.saved_guid());
-  group.AddTab(0, tab_1).AddTab(1, tab_2);
+  group.AddTab(tab_1).AddTab(tab_2);
   group.SetPosition(0);
 
   // Note: Here the change type does not matter. The initial merge will add
@@ -196,7 +196,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeSyncDataWithExistingData) {
                          group.saved_guid());
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
                          group.saved_guid());
-  group.AddTab(0, tab_1).AddTab(1, tab_2);
+  group.AddTab(tab_1).AddTab(tab_2);
 
   base::GUID group_guid = group.saved_guid();
   base::GUID tab_1_guid = tab_1.saved_tab_guid();
@@ -216,8 +216,8 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeSyncDataWithExistingData) {
                               group_creation_time);
   SavedTabGroupTab updated_tab_1(GURL("https://support.google.com"), u"Support",
                                  group_guid, nullptr, tab_1_guid, absl::nullopt,
-                                 tab_1_creation_time);
-  updated_group.AddTab(0, updated_tab_1);
+                                 absl::nullopt, tab_1_creation_time);
+  updated_group.AddTab(updated_tab_1);
   updated_group.SetPosition(0);
 
   syncer::EntityChangeList entity_change_list = CreateEntityChangeListFromGroup(
@@ -240,7 +240,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeSyncDataWithExistingData) {
   // Ensure tab_2 was left untouched.
   SavedTabGroupTab tab_2_replica(GURL("https://google.com"), u"Google",
                                  group_guid, nullptr, tab_2_guid, absl::nullopt,
-                                 tab_2_creation_time);
+                                 absl::nullopt, tab_2_creation_time);
   EXPECT_TRUE(AreTabSpecificsEqual(
       *tab_2_replica.ToSpecifics(),
       *group_from_model->GetTab(tab_2_guid)->ToSpecifics()));
@@ -404,7 +404,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, AddSyncData) {
                          group.saved_guid());
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
                          group.saved_guid());
-  group.AddTab(0, tab_1).AddTab(1, tab_2);
+  group.AddTab(tab_1).AddTab(tab_2);
   group.SetPosition(0);
 
   bridge_->ApplySyncChanges(
@@ -470,7 +470,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, UpdateSyncData) {
                          group.saved_guid());
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
                          group.saved_guid());
-  group.AddTab(0, tab_1).AddTab(1, tab_2);
+  group.AddTab(tab_1).AddTab(tab_2);
   group.SetPosition(0);
 
   bridge_->ApplySyncChanges(
@@ -512,7 +512,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, DeleteSyncData) {
                          group.saved_guid());
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
                          group.saved_guid());
-  group.AddTab(0, tab_1).AddTab(1, tab_2);
+  group.AddTab(tab_1).AddTab(tab_2);
 
   EXPECT_EQ(group.saved_tabs().size(), 2u);
 
@@ -562,7 +562,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, AddGroupLocally) {
                          group.saved_guid());
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
                          group.saved_guid());
-  group.AddTab(0, tab_1).AddTab(1, tab_2);
+  group.AddTab(tab_1).AddTab(tab_2);
 
   base::GUID group_guid = group.saved_guid();
   base::GUID tab_1_guid = tab_1.saved_tab_guid();
@@ -584,7 +584,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, RemoveGroupLocally) {
                          group.saved_guid());
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
                          group.saved_guid());
-  group.AddTab(0, tab_1).AddTab(1, tab_2);
+  group.AddTab(tab_1).AddTab(tab_2);
 
   base::GUID group_guid = group.saved_guid();
   base::GUID tab_1_guid = tab_1.saved_tab_guid();
@@ -607,7 +607,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, UpdateGroupLocally) {
                          group.saved_guid());
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
                          group.saved_guid());
-  group.AddTab(0, tab_1).AddTab(1, tab_2);
+  group.AddTab(tab_1).AddTab(tab_2);
 
   base::GUID group_guid = group.saved_guid();
   base::GUID tab_1_guid = tab_1.saved_tab_guid();
@@ -634,7 +634,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, AddTabLocally) {
                          group.saved_guid());
   SavedTabGroupTab tab_3(GURL("https://youtube.com"), u"Youtube",
                          group.saved_guid());
-  group.AddTab(0, tab_1).AddTab(1, tab_2);
+  group.AddTab(tab_1).AddTab(tab_2);
 
   base::GUID group_guid = group.saved_guid();
   base::GUID tab_1_guid = tab_1.saved_tab_guid();
@@ -651,7 +651,8 @@ TEST_F(SavedTabGroupSyncBridgeTest, AddTabLocally) {
   // `tab_2` will have its position updated. Once tab ordering is implemented,
   // only the affected tabs will need to be updated. In that case, the Put()
   // call for tab_1 can be removed.
-  saved_tab_group_model_.AddTabToGroup(group_guid, tab_3, 1);
+  saved_tab_group_model_.AddTabToGroup(group_guid, tab_3,
+                                       /*update_tab_positions=*/true);
 }
 
 // Verify that locally removed tabs remove the correct tabs from the processor.
@@ -663,7 +664,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, RemoveTabLocally) {
                          group.saved_guid());
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Goole",
                          group.saved_guid());
-  group.AddTab(0, tab_1).AddTab(1, tab_2);
+  group.AddTab(tab_1).AddTab(tab_2);
 
   base::GUID group_guid = group.saved_guid();
   base::GUID tab_1_guid = tab_1.saved_tab_guid();
@@ -674,7 +675,8 @@ TEST_F(SavedTabGroupSyncBridgeTest, RemoveTabLocally) {
   EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _)).Times(0);
   EXPECT_CALL(processor_, Put(group_guid.AsLowercaseString(), _, _)).Times(0);
 
-  saved_tab_group_model_.RemoveTabFromGroup(group_guid, tab_1_guid);
+  saved_tab_group_model_.RemoveTabFromGroup(group_guid, tab_1_guid,
+                                            /*update_tab_positions=*/true);
 }
 
 // Verify that locally updated tabs update the correct tabs in the processor.
@@ -688,7 +690,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, UpdateTabLocally) {
                          group.saved_guid());
   SavedTabGroupTab tab_3(GURL("https://youtube.com"), u"Youtube",
                          group.saved_guid());
-  group.AddTab(0, tab_1).AddTab(1, tab_2);
+  group.AddTab(tab_1).AddTab(tab_2);
 
   base::GUID group_guid = group.saved_guid();
   base::GUID tab_1_guid = tab_1.saved_tab_guid();

@@ -184,8 +184,8 @@ void SavedTabGroupKeyedService::SaveGroup(
         browser_owning_tab_group, web_contents);
     saved_tab_group_tab.SetLocalTabID(token);
 
-    saved_tab_group.AddTab(saved_tab_group.saved_tabs().size(),
-                           std::move(saved_tab_group_tab));
+    saved_tab_group.AddTab(std::move(saved_tab_group_tab),
+                           /*update_tab_positions=*/true);
   }
 
   model_.Add(std::move(saved_tab_group));

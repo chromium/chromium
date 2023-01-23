@@ -24,6 +24,7 @@
 // tab_group_editor_bubble_view.
 class SavedTabGroup {
  public:
+  // Used to denote groups that have not been given a position.
   static constexpr int kUnsetPosition = -1;
 
   SavedTabGroup(
@@ -83,15 +84,22 @@ class SavedTabGroup {
   SavedTabGroup& SetPosition(int position);
 
   // Tab mutators.
-  // Adds `tab` to `saved_tabs_` at the specified `index` unless the added tab
-  // already exists. In this case we CHECK.
-  SavedTabGroup& AddTab(size_t index, SavedTabGroupTab tab);
-  // Removes the tab denoted by `tab_id` from `saved_tabs_`. This function will
-  // remove the last tab: crbug/1371959.
-  SavedTabGroup& RemoveTab(const base::GUID& tab_id);
+  // Add `tab` into its position in `saved_tabs_` if it is set. Otherwise add it
+  // to the end. If the tab already exists, CHECK. If `update_tab_positions` is
+  // true, update the positions of all tabs in the group.
+  SavedTabGroup& AddTab(SavedTabGroupTab tab,
+                        bool update_tab_positions = false);
+
   // Updates the tab with with `tab_id` tab.guid() with a value of `tab`. If
   // there is no tab, this function will CHECK.
   SavedTabGroup& UpdateTab(SavedTabGroupTab tab);
+
+  // Removes a tab from `saved_tabs_` denoted by `saved_tab_guid` even if that
+  // was the last tab in the group: crbug/1371959. If `update_tab_positions` is
+  // true, update the positions of all tabs in the group.
+  SavedTabGroup& RemoveTab(const base::GUID& saved_tab_guid,
+                           bool update_tab_positions = false);
+
   // Replaces that tab denoted by `tab_id` with value of `tab` unless the
   // replacement tab already exists. In this case we CHECK.
   SavedTabGroup& ReplaceTabAt(const base::GUID& saved_tab_guid,
@@ -109,6 +117,17 @@ class SavedTabGroup {
   // 1. The data from `sync_specific` has the most recent (larger) update time.
   // 2. The `sync_specific` has the oldest (smallest) creation time.
   bool ShouldMergeGroup(const sync_pb::SavedTabGroupSpecifics& sync_specific);
+
+  // Insert `tab` into sorted order based on its position compared to already
+  // stored tabs in its group. It should be noted that the list of tabs in each
+  // group must already be in sorted order for this function to work as
+  // intended. To do this, UpdateTabPositionsImpl() can be called before calling
+  // this method.
+  void InsertTabImpl(const SavedTabGroupTab& tab);
+
+  // Updates all tab positions to match the index they are currently stored at
+  // in the group at `group_index`. Does not call observers.
+  void UpdateTabPositionsImpl();
 
   // Converts a `SavedTabGroupSpecifics` retrieved from sync into a
   // `SavedTabGroupTab`.
@@ -146,8 +165,8 @@ class SavedTabGroup {
   std::vector<SavedTabGroupTab> saved_tabs_;
 
   // The current position of the group in relation to all other saved groups.
-  // A value of -1 means that the group was not assigned a position and will be
-  // assigned one when it is added into the SavedTabGroupModel.
+  // A value of kUnsetPosition means that the group was not assigned a position
+  // and will be assigned one when it is added into the SavedTabGroupModel.
   int position_;
 
   // Timestamp for when the tab was created using windows epoch microseconds.
