@@ -419,6 +419,9 @@ Additional details:
   <message name="IDS_POLICY_STATUS_ERROR_MANAGED_NO_POLICY" desc="Message to display when a managed device does not have a policy loaded.">
     Managed user or device has no policy loaded.
   </message>
+  <message name="IDS_POLICY_STATUS_FLEX_ORG_NO_POLICY" desc="Message to display when a managed account does not have a policy loaded because the account if from a flex org.">
+    No user policies applied. To add user policies, your organization must <ph name="LINK_BEGIN">&lt;a target="_blank" href="https://support.google.com/chrome/a/answer/9122284"&gt;</ph>verify your domain<ph name="LINK_END">&lt;/a&gt;</ph>.
+  </message>
   <message name="IDS_POLICY_LABEL_MACHINE_ENROLLMENT_DOMAIN" desc="Label for the enrollment domain in the machine policy status box.">
     Enrollment domain:
   </message>

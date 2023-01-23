@@ -87,6 +87,10 @@ struct AccountInfo : public CoreAccountInfo {
   // hosted_domain is still unknown (empty), this information will become
   // available asynchronously.
   static bool IsManaged(const std::string& hosted_domain);
+
+  // Returns true if the account has no hosted domain but is a dasher account.
+  bool IsMemberOfFlexOrg() const;
+
   bool IsManaged() const;
 };
 

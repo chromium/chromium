@@ -6,6 +6,7 @@ import './strings.m.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import {getTemplate} from './status_box.html.js';
 
@@ -32,6 +33,23 @@ export class StatusBoxElement extends CustomElement {
   }
 
   /**
+   * Sets the text of a particular named label element in the status box
+   * and updates the visibility if needed.
+   * @param {string} labelName The name of the label element that is being
+   *     updated.
+   * @param {string} labelValue The new text content for the label.
+   * @param {boolean=} needsToBeShown True if we want to show the label
+   *     False otherwise.
+   */
+  setLabelInnerHTMLAndShow_(labelName, labelValue, needsToBeShown = true) {
+    const labelElement = this.shadowRoot.querySelector(labelName);
+    labelElement.innerHTML = sanitizeInnerHtml(` ${labelValue}`);
+    if (needsToBeShown) {
+      labelElement.parentElement.hidden = false;
+    }
+  }
+
+  /**
    * Populate the box with the given cloud policy status.
    * @param {string} scope The policy scope, either "device", "machine",
    *     "user", or "updater".
@@ -43,7 +61,11 @@ export class StatusBoxElement extends CustomElement {
     // Set appropriate box legend based on status key
     this.shadowRoot.querySelector('.legend').textContent =
         loadTimeData.getString(status.policyDescriptionKey);
-
+    if (status.flexOrgWarning) {
+      this.setLabelInnerHTMLAndShow_(
+          '.warning', loadTimeData.getString('statusFlexOrgNoPolicy'), true);
+      return;
+    }
     if (scope === 'device') {
       // Populate the device naming information.
       // Populate the asset identifier.

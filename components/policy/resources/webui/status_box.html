@@ -26,6 +26,16 @@ div.status-entry:not([hidden]) {
 div.status-entry:last-child {
   margin-bottom: 0;
 }
+
+a {
+  color: rgb(26, 115, 232);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.warning {
+  max-width: 312px;
+}
 </style>
 <fieldset>
   <legend class="legend"></legend>
@@ -120,5 +130,9 @@ div.status-entry:last-child {
   <div class="status-entry" hidden>
     <div class="label">$i18n{labelError}:</div>
     <div class="error"></div>
+  </div>
+  <div class="status-entry" hidden>
+    <div class="label">$i18n{labelWarning}:</div>
+    <div class="warning"></div>
   </div>
 </fieldset>

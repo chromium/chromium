@@ -38,6 +38,7 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
     {"labelClientId", IDS_POLICY_LABEL_CLIENT_ID},
     {"labelDirectoryApiId", IDS_POLICY_LABEL_DIRECTORY_API_ID},
     {"labelError", IDS_POLICY_LABEL_ERROR},
+    {"labelWarning", IDS_POLICY_HEADER_WARNING},
     {"labelGaiaId", IDS_POLICY_LABEL_GAIA_ID},
     {"labelIsAffiliated", IDS_POLICY_LABEL_IS_AFFILIATED},
     {"labelLastCloudReportSentTimestamp",
@@ -77,6 +78,7 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
     {"signinProfile", IDS_POLICY_SIGNIN_PROFILE},
     {"status", IDS_POLICY_STATUS},
     {"statusErrorManagedNoPolicy", IDS_POLICY_STATUS_ERROR_MANAGED_NO_POLICY},
+    {"statusFlexOrgNoPolicy", IDS_POLICY_STATUS_FLEX_ORG_NO_POLICY},
     {"statusDevice", IDS_POLICY_STATUS_DEVICE},
     {"statusMachine", IDS_POLICY_STATUS_MACHINE},
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -93,9 +95,7 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
       source, base::make_span(kPolicyResources, kPolicyResourcesSize),
       IDR_POLICY_POLICY_HTML);
 
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types static-types;");
+  webui::EnableTrustedTypesCSP(source);
 }
 
 }  // namespace

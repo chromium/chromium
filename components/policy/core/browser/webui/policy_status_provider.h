@@ -29,6 +29,7 @@ class CloudPolicyCore;
 class CloudPolicyStore;
 
 POLICY_EXPORT extern const char kPolicyDescriptionKey[];
+POLICY_EXPORT extern const char kFlexOrgWarningKey[];
 
 // The following constants identify top-level keys in the dictionary returned by
 // PolicyStatusProvider.

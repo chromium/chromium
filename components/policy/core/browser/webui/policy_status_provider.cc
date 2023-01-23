@@ -27,6 +27,7 @@ namespace em = enterprise_management;
 namespace policy {
 
 const char kPolicyDescriptionKey[] = "policyDescriptionKey";
+const char kFlexOrgWarningKey[] = "flexOrgWarning";
 
 const char kAssetIdKey[] = "assetId";
 const char kLocationKey[] = "location";

@@ -5,6 +5,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 
 #include "build/build_config.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -130,6 +131,12 @@ bool AccountInfo::UpdateWith(const AccountInfo& other) {
 // static
 bool AccountInfo::IsManaged(const std::string& hosted_domain) {
   return !hosted_domain.empty() && hosted_domain != kNoHostedDomainFound;
+}
+
+bool AccountInfo::IsMemberOfFlexOrg() const {
+  return capabilities.is_subject_to_enterprise_policies() ==
+             signin::Tribool::kTrue &&
+         !IsManaged(hosted_domain);
 }
 
 bool AccountInfo::IsManaged() const {
