@@ -5658,16 +5658,6 @@ const char kMediaAppCustomColorsName[] = "Media App Custom Colors";
 const char kMediaAppCustomColorsDescription[] =
     "Within Gallery, enable the custom color chooser and recent colors.";
 
-const char kMediaAppPhotosIntegrationImageName[] =
-    "Media App Photos Integration (Image)";
-const char kMediaAppPhotosIntegrationImageDescription[] =
-    "Within Gallery, enable finding more editing tools for images in Photos";
-
-const char kMediaAppPhotosIntegrationVideoName[] =
-    "Media App Photos Integration (Video)";
-const char kMediaAppPhotosIntegrationVideoDescription[] =
-    "Within Gallery, enable finding editing tools for videos in Photos";
-
 const char kMeteredShowToggleName[] = "Show Metered Toggle";
 const char kMeteredShowToggleDescription[] =
     "Shows a Metered toggle in the Network settings UI for WiFI and Cellular. "

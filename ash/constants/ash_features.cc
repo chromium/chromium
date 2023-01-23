@@ -1381,18 +1381,6 @@ BASE_FEATURE(kMediaAppCustomColors,
              "MediaAppCustomColors",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Within the ChromeOS media app, reveals the button to edit the current image
-// in Photos.
-BASE_FEATURE(kMediaAppPhotosIntegrationImage,
-             "MediaAppPhotosIntegrationImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Within the ChromeOS media app, reveals the button to edit the current video
-// in Photos.
-BASE_FEATURE(kMediaAppPhotosIntegrationVideo,
-             "MediaAppPhotosIntegrationVideo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables notification of when a microphone-using app is launched while the
 // microphone is muted.
 BASE_FEATURE(kMicMuteNotifications,

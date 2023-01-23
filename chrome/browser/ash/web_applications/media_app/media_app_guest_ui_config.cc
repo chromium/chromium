@@ -54,12 +54,6 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
                           photos_version >= min_photos_version;
   source->AddBoolean("photosAvailableForImage", photos_available);
   source->AddBoolean("photosAvailableForVideo", photos_available);
-  source->AddBoolean("photosIntegrationImage",
-                     base::FeatureList::IsEnabled(
-                         ash::features::kMediaAppPhotosIntegrationImage));
-  source->AddBoolean("photosIntegrationVideo",
-                     base::FeatureList::IsEnabled(
-                         ash::features::kMediaAppPhotosIntegrationVideo));
   bool enable_color_picker_improvements =
       base::FeatureList::IsEnabled(ash::features::kMediaAppCustomColors);
   source->AddBoolean("recentColorPalette", enable_color_picker_improvements);

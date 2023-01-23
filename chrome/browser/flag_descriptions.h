@@ -3248,12 +3248,6 @@ extern const char kLockScreenNotificationDescription[];
 extern const char kMediaAppCustomColorsName[];
 extern const char kMediaAppCustomColorsDescription[];
 
-extern const char kMediaAppPhotosIntegrationImageName[];
-extern const char kMediaAppPhotosIntegrationImageDescription[];
-
-extern const char kMediaAppPhotosIntegrationVideoName[];
-extern const char kMediaAppPhotosIntegrationVideoDescription[];
-
 extern const char kMeteredShowToggleName[];
 extern const char kMeteredShowToggleDescription[];
 
