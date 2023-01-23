@@ -1230,6 +1230,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          kEnableAccessibilityIdentifierToOmniboxLeadingImageDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableAccessibilityIdentifierToOmniboxLeadingImage)},
+     {"shopping-list", commerce::flag_descriptions::kShoppingListName,
+     commerce::flag_descriptions::kShoppingListDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(commerce::kShoppingList)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
