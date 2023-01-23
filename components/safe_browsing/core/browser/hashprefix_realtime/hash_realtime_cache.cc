@@ -1,0 +1,95 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_cache.h"
+
+#include "base/notreached.h"
+#include "base/time/time.h"
+#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
+#include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
+
+namespace safe_browsing {
+
+HashRealTimeCache::HashRealTimeCache() = default;
+
+HashRealTimeCache::~HashRealTimeCache() = default;
+
+HashRealTimeCache::FullHashesAndDetails::FullHashesAndDetails() = default;
+HashRealTimeCache::FullHashesAndDetails::~FullHashesAndDetails() = default;
+
+std::unordered_map<std::string, std::vector<V5::FullHash>>
+HashRealTimeCache::SearchCache(
+    const std::set<std::string>& hash_prefixes) const {
+  std::unordered_map<std::string, std::vector<V5::FullHash>> results;
+  for (const auto& hash_prefix : hash_prefixes) {
+    auto cached_result_it = cache_.find(hash_prefix);
+    if (cached_result_it != cache_.end() &&
+        cached_result_it->second.expiration_time > base::Time::Now()) {
+      results[hash_prefix] = cached_result_it->second.full_hash_and_details;
+    }
+  }
+  return results;
+}
+
+void HashRealTimeCache::CacheSearchHashesResponse(
+    const std::vector<std::string>& requested_hash_prefixes,
+    const std::vector<V5::FullHash>& response_full_hashes,
+    const V5::Duration& cache_duration) {
+  // First, wipe all the results for the relevant hash prefixes, and set the
+  // latest expiry.
+  for (const auto& hash_prefix : requested_hash_prefixes) {
+    FullHashesAndDetails entry;
+    entry.expiration_time = base::Time::Now() +
+                            base::Seconds(cache_duration.seconds()) +
+                            base::Nanoseconds(cache_duration.nanos());
+    cache_[hash_prefix] = entry;
+  }
+  // Then, add all matching and relevant full hashes into the cache. Hash
+  // prefixes only sometimes have matching full hashes, so some may remain empty
+  // due to the wiping that occurred above.
+  for (const auto& fh : response_full_hashes) {
+    // Narrow down each full hash's results to just the threat types that are
+    // relevant for hash-prefix real-time lookups.
+    V5::FullHash full_hash_to_store;
+    full_hash_to_store.set_full_hash(fh.full_hash());
+    for (const auto& fhd : fh.full_hash_details()) {
+      if (hash_realtime_utils::IsThreatTypeRelevant(fhd.threat_type())) {
+        auto* fhd_to_store = full_hash_to_store.add_full_hash_details();
+        fhd_to_store->set_threat_type(fhd.threat_type());
+        for (auto i = 0; i < fhd.attributes_size(); ++i) {
+          fhd_to_store->add_attributes(fhd.attributes(i));
+        }
+      }
+    }
+    // If none of the threat types were relevant for the full hash, don't store
+    // it in the cache.
+    if (full_hash_to_store.full_hash_details().empty()) {
+      continue;
+    }
+    // Update the cache with the remaining results for the associated hash
+    // prefix.
+    auto hash_prefix = hash_realtime_utils::GetHashPrefix(fh.full_hash());
+    auto cached_result_it = cache_.find(hash_prefix);
+    if (cached_result_it != cache_.end()) {
+      cached_result_it->second.full_hash_and_details.push_back(
+          full_hash_to_store);
+    } else {
+      // There should always be a hash prefix associated with the full hash.
+      NOTREACHED();
+    }
+  }
+}
+
+void HashRealTimeCache::ClearExpiredResults() {
+  auto it = cache_.begin();
+  while (it != cache_.end()) {
+    if (it->second.expiration_time <= base::Time::Now()) {
+      it = cache_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+}
+
+}  // namespace safe_browsing

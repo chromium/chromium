@@ -35,15 +35,18 @@ using HPRTLookupRequestCallback =
 using HPRTLookupResponseCallback =
     base::OnceCallback<void(bool, absl::optional<SBThreatType>)>;
 
-// This class implements the backoff logic and lookup request for hash-prefix
-// real-time lookups. For testing purposes, the request is currently sent to the
-// Safe Browsing server directly. In the future, it will be sent to a proxy via
-// OHTTP.
+class VerdictCacheManager;
+
+// This class implements the backoff logic, cache logic, and lookup request for
+// hash-prefix real-time lookups. For testing purposes, the request is currently
+// sent to the Safe Browsing server directly. In the future, it will be sent to
+// a proxy via OHTTP.
 // TODO(1407283): Update "For testing purposes..." portion of description.
 class HashRealTimeService : public KeyedService {
  public:
   explicit HashRealTimeService(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      VerdictCacheManager* cache_manager);
 
   HashRealTimeService(const HashRealTimeService&) = delete;
   HashRealTimeService& operator=(const HashRealTimeService&) = delete;
@@ -89,23 +92,32 @@ class HashRealTimeService : public KeyedService {
 
   // Called when the response from the Safe Browsing V5 remote endpoint is
   // received. This is responsible for parsing the response, determining if
-  // there were errors and updating backoff if relevant, determining the most
-  // severe threat type, and calling the callback.
+  // there were errors and updating backoff if relevant, caching the results,
+  // determining the most severe threat type, and calling the callback.
   //  - |url| is used to match the full hashes in the response with the URL's
   //    full hashes.
+  //  - |hash_prefixes_in_request| is used to cache the mapping of the requested
+  //    hash prefixes to the results.
+  //  - |result_full_hashes| starts out as the initial results from the cache.
+  //    This method mutates this parameter to include the results from the
+  //    server response as well, and then uses the combined results to determine
+  //    the most severe threat type.
   //  - |url_loader| is the loader that was used to send the request.
   //  - |response_callback_task_runner| is the callback the original caller
   //    passed through that will be called when the method completes.
   //  - |response_body| is the unparsed response from the server.
   void OnURLLoaderComplete(
       const GURL& url,
+      const std::vector<std::string>& hash_prefixes_in_request,
+      std::vector<V5::FullHash> result_full_hashes,
       network::SimpleURLLoader* url_loader,
       scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
       std::unique_ptr<std::string> response_body);
 
   // Determines the most severe threat type based on |result_full_hashes|, which
-  // contains the server response results. The |url| is required in order to
-  // filter down |result_full_hashes| to ones that match the |url| full hashes.
+  // contains the merged caching and server response results. The |url| is
+  // required in order to filter down |result_full_hashes| to ones that match
+  // the |url| full hashes.
   static SBThreatType DetermineSBThreatType(
       const GURL& url,
       const std::vector<V5::FullHash>& result_full_hashes);
@@ -145,10 +157,25 @@ class HashRealTimeService : public KeyedService {
   void RemoveFullHashDetailsWithInvalidEnums(
       std::unique_ptr<V5::SearchHashesResponse>& response) const;
 
+  // Returns the hash prefixes for the URL's lookup expressions.
+  std::set<std::string> GetHashPrefixesSet(const GURL& url) const;
+
+  // Searches the local cache for the input |hash_prefixes|.
+  //  - |out_missing_hash_prefixes| is an output parameter with a list of which
+  //    hash prefixes were not found in the cache and need to be requested.
+  //  - |out_cached_full_hashes| is an output parameter with a list of unsafe
+  //    full hashes that were found in the cache for any of the |hash_prefixes|.
+  void SearchCache(std::set<std::string> hash_prefixes,
+                   std::vector<std::string>* out_missing_hash_prefixes,
+                   std::vector<V5::FullHash>* out_cached_full_hashes) const;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The URLLoaderFactory we use to issue network requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // Unowned object used for getting and storing cache entries.
+  raw_ptr<VerdictCacheManager> cache_manager_;
 
   // All requests that are sent but haven't received a response yet.
   PendingHPRTLookupRequests pending_requests_;

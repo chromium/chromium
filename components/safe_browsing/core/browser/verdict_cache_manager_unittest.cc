@@ -13,6 +13,7 @@
 #include "components/safe_browsing/core/browser/safe_browsing_sync_observer.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
+#include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -83,6 +84,24 @@ class VerdictCacheManagerTest : public ::testing::Test {
     response.set_cache_duration_sec(cache_duration_sec);
     cache_manager_->CachePhishGuardVerdict(trigger, password_type, response,
                                            verdict_received_time);
+  }
+
+  void CacheHashPrefixRealTimeLookupResult(int cache_duration_seconds,
+                                           std::string hash_prefix) {
+    V5::Duration duration;
+    duration.set_seconds(cache_duration_seconds);
+    cache_manager_->CacheHashPrefixRealTimeLookupResults(
+        {hash_prefix}, {V5::FullHash()}, duration);
+  }
+  void ConfirmHashPrefixRealTimeLookupCacheContent(std::string hash_prefix,
+                                                   bool should_expect_entry) {
+    // We cannot call the public SearchCache function because that automatically
+    // filters out expired results. We want to confirm that the cache contents
+    // themselves have been cleaned up as expected, so we access |cache_|
+    // directly.
+    EXPECT_EQ(base::Contains(cache_manager_->hash_realtime_cache_->cache_,
+                             hash_prefix),
+              should_expect_entry);
   }
 
   void AddThreatInfoToResponse(
@@ -401,6 +420,14 @@ TEST_F(VerdictCacheManagerTest, MAYBE_TestCleanUpExpiredVerdict) {
       GURL("https://www.example1.com"),
       CreatePageLoadToken(now.ToJavaTime(), "token2"));
 
+  CacheHashPrefixRealTimeLookupResult(/*cache_duration_seconds=*/0, "aaaa");
+  CacheHashPrefixRealTimeLookupResult(/*cache_duration_seconds=*/300, "bbbb");
+  // aaaa and bbbb should both be in the cache even though aaaa is expired.
+  ConfirmHashPrefixRealTimeLookupCacheContent(/*hash_prefix=*/"aaaa",
+                                              /*should_expect_entry=*/true);
+  ConfirmHashPrefixRealTimeLookupCacheContent(/*hash_prefix=*/"bbbb",
+                                              /*should_expect_entry=*/true);
+
   cache_manager_->CleanUpExpiredVerdicts();
 
   ASSERT_EQ(1u, cache_manager_->GetStoredPhishGuardVerdictCount(
@@ -470,6 +497,13 @@ TEST_F(VerdictCacheManagerTest, MAYBE_TestCleanUpExpiredVerdict) {
   EXPECT_EQ("token2",
             cache_manager_->GetPageLoadToken(GURL("https://www.example1.com/"))
                 .token_value());
+
+  // aaaa is not in the cache because it was expired and has been cleaned up.
+  ConfirmHashPrefixRealTimeLookupCacheContent(/*hash_prefix=*/"aaaa",
+                                              /*should_expect_entry=*/false);
+  // aaaa is still in the cache because it has not expired.
+  ConfirmHashPrefixRealTimeLookupCacheContent(/*hash_prefix=*/"bbbb",
+                                              /*should_expect_entry=*/true);
 }
 
 TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdictWithInvalidEntry) {
@@ -938,6 +972,21 @@ TEST_F(VerdictCacheManagerTest, TestShutdown) {
       GURL("https://www.example.com/path"),
       LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE, password_type,
       &out_pg_verdict);
+}
+
+TEST_F(VerdictCacheManagerTest, TestHashPrefixRealTimeLookupCaching) {
+  // Basic test ensuring that the cache manager calls are propagating as
+  // expected to the HashRealTimeCache.
+  EXPECT_TRUE(
+      cache_manager_->GetCachedHashPrefixRealTimeLookupResults({"aaaa", "bbbb"})
+          .empty());
+  CacheHashPrefixRealTimeLookupResult(/*cache_duration_seconds=*/300, "aaaa");
+  CacheHashPrefixRealTimeLookupResult(/*cache_duration_seconds=*/300, "bbbb");
+  auto cache_results = cache_manager_->GetCachedHashPrefixRealTimeLookupResults(
+      {"aaaa", "bbbb", "cccc"});
+  EXPECT_EQ(cache_results.size(), 2u);
+  EXPECT_TRUE(base::Contains(cache_results, "aaaa"));
+  EXPECT_TRUE(base::Contains(cache_results, "bbbb"));
 }
 
 }  // namespace safe_browsing

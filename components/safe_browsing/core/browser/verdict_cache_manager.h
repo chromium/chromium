@@ -18,9 +18,11 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_cache.h"
 #include "components/safe_browsing/core/browser/safe_browsing_sync_observer.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
+#include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
 #include "url/gurl.h"
 
 class HostContentSettingsMap;
@@ -100,6 +102,18 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   // token if the token is not found.
   ChromeUserPopulation::PageLoadToken GetPageLoadToken(const GURL& url);
 
+  // Stores the results of a hash-prefix real-time lookup into a cache object.
+  void CacheHashPrefixRealTimeLookupResults(
+      const std::vector<std::string>& requested_hash_prefixes,
+      const std::vector<V5::FullHash>& response_full_hashes,
+      const V5::Duration& cache_duration);
+
+  // Searches the hash-prefix real-time cache object for the requested
+  // |hash_prefixes|.
+  std::unordered_map<std::string, std::vector<V5::FullHash>>
+  GetCachedHashPrefixRealTimeLookupResults(
+      const std::set<std::string>& hash_prefixes);
+
   // Overridden from history::HistoryServiceObserver.
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
@@ -120,6 +134,7 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
 
  private:
   friend class SafeBrowsingBlockingPageRealTimeUrlCheckTest;
+  friend class VerdictCacheManagerTest;
   FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest, TestCleanUpExpiredVerdict);
   FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest,
                            TestCleanUpExpiredVerdictWithInvalidEntry);
@@ -151,6 +166,7 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   void CleanUpExpiredRealTimeUrlCheckVerdicts();
   void CleanUpExpiredPageLoadTokens();
   void CleanUpAllPageLoadTokens(ClearReason reason);
+  void CleanUpExpiredHashPrefixRealTimeLookupResults();
 
   // Helper method to remove content settings when URLs are deleted. If
   // |all_history| is true, removes all cached verdicts. Otherwise it removes
@@ -206,6 +222,10 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   PrefChangeRegistrar pref_change_registrar_;
 
   std::unique_ptr<SafeBrowsingSyncObserver> sync_observer_;
+
+  // The local cache object for hash-prefix real-time lookups.
+  std::unique_ptr<HashRealTimeCache> hash_realtime_cache_ =
+      std::make_unique<HashRealTimeCache>();
 
   bool is_shut_down_ = false;
 

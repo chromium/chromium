@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
+#include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "google_apis/google_api_keys.h"
@@ -61,8 +62,10 @@ SBThreatType MapThreatTypeToSbThreatType(const V5::ThreatType& threat_type) {
 }  // namespace
 
 HashRealTimeService::HashRealTimeService(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    VerdictCacheManager* cache_manager)
     : url_loader_factory_(url_loader_factory),
+      cache_manager_(cache_manager),
       backoff_operator_(std::make_unique<BackoffOperator>(
           /*num_failures_to_enforce_backoff=*/kNumFailuresToEnforceBackoff,
           /*min_backoff_reset_duration_in_seconds=*/
@@ -137,6 +140,42 @@ bool HashRealTimeService::IsInBackoffMode() const {
   return backoff_operator_->IsInBackoffMode();
 }
 
+std::set<std::string> HashRealTimeService::GetHashPrefixesSet(
+    const GURL& url) const {
+  std::vector<std::string> full_hashes;
+  V4ProtocolManagerUtil::UrlToFullHashes(url, &full_hashes);
+  std::set<std::string> hash_prefixes;
+  for (const auto& full_hash : full_hashes) {
+    auto hash_prefix = hash_realtime_utils::GetHashPrefix(full_hash);
+    hash_prefixes.insert(hash_prefix);
+  }
+  return hash_prefixes;
+}
+
+void HashRealTimeService::SearchCache(
+    std::set<std::string> hash_prefixes,
+    std::vector<std::string>* out_missing_hash_prefixes,
+    std::vector<V5::FullHash>* out_cached_full_hashes) const {
+  auto cached_results =
+      cache_manager_
+          ? cache_manager_->GetCachedHashPrefixRealTimeLookupResults(
+                hash_prefixes)
+          : std::unordered_map<std::string, std::vector<V5::FullHash>>();
+  for (const auto& hash_prefix : hash_prefixes) {
+    auto cached_result_it = cached_results.find(hash_prefix);
+    if (cached_result_it != cached_results.end()) {
+      // If in the cache, keep track of associated full hashes to merge them
+      // with the response results later.
+      for (const auto& cached_full_hash : cached_result_it->second) {
+        out_cached_full_hashes->push_back(cached_full_hash);
+      }
+    } else {
+      // If not in the cache, add the prefix to hash prefixes to request.
+      out_missing_hash_prefixes->push_back(hash_prefix);
+    }
+  }
+}
+
 void HashRealTimeService::StartLookup(
     const GURL& url,
     HPRTLookupResponseCallback response_callback,
@@ -144,12 +183,25 @@ void HashRealTimeService::StartLookup(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(url.is_valid());
 
+  // Search local cache.
+  std::vector<std::string> hash_prefixes_to_request;
+  std::vector<V5::FullHash> cached_full_hashes;
+  SearchCache(GetHashPrefixesSet(url), &hash_prefixes_to_request,
+              &cached_full_hashes);
+  // If all the prefixes are in the cache, no need to send a request. Return
+  // early with the cached results.
+  if (hash_prefixes_to_request.empty()) {
+    auto sb_threat_type = DetermineSBThreatType(url, cached_full_hashes);
+    callback_task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(response_callback),
+                       /*is_lookup_successful=*/true, sb_threat_type));
+    return;
+  }
+
   // Prepare request.
   auto request = std::make_unique<V5::SearchHashesRequest>();
-  std::vector<std::string> full_hashes;
-  V4ProtocolManagerUtil::UrlToFullHashes(url, &full_hashes);
-  for (const auto& full_hash : full_hashes) {
-    auto hash_prefix = hash_realtime_utils::GetHashPrefix(full_hash);
+  for (const auto& hash_prefix : hash_prefixes_to_request) {
     request->add_hash_prefixes(hash_prefix);
   }
 
@@ -162,13 +214,17 @@ void HashRealTimeService::StartLookup(
   owned_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&HashRealTimeService::OnURLLoaderComplete,
-                     weak_factory_.GetWeakPtr(), url, owned_loader.get(),
+                     weak_factory_.GetWeakPtr(), url,
+                     std::move(hash_prefixes_to_request),
+                     std::move(cached_full_hashes), owned_loader.get(),
                      std::move(callback_task_runner)));
   pending_requests_[owned_loader.release()] = std::move(response_callback);
 }
 
 void HashRealTimeService::OnURLLoaderComplete(
     const GURL& url,
+    const std::vector<std::string>& hash_prefixes_in_request,
+    std::vector<V5::FullHash> result_full_hashes,
     network::SimpleURLLoader* url_loader,
     scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
     std::unique_ptr<std::string> response_body) {
@@ -187,9 +243,19 @@ void HashRealTimeService::OnURLLoaderComplete(
                                                 std::move(response_body));
   absl::optional<SBThreatType> sb_threat_type;
   if (response.has_value()) {
-    sb_threat_type =
-        DetermineSBThreatType(url, {response.value()->full_hashes().begin(),
-                                    response.value()->full_hashes().end()});
+    if (cache_manager_) {
+      cache_manager_->CacheHashPrefixRealTimeLookupResults(
+          hash_prefixes_in_request,
+          std::vector<V5::FullHash>(response.value()->full_hashes().begin(),
+                                    response.value()->full_hashes().end()),
+          response.value()->cache_duration());
+    }
+
+    // Merge together the results from the cache and from the response.
+    for (const auto& response_hash : response.value()->full_hashes()) {
+      result_full_hashes.push_back(response_hash);
+    }
+    sb_threat_type = DetermineSBThreatType(url, result_full_hashes);
   }
 
   response_callback_task_runner->PostTask(
@@ -297,6 +363,9 @@ void HashRealTimeService::Shutdown() {
     delete pending.first;
   }
   pending_requests_.clear();
+
+  // Clear references to other KeyedServices.
+  cache_manager_ = nullptr;
 }
 
 net::NetworkTrafficAnnotationTag HashRealTimeService::GetTrafficAnnotationTag()

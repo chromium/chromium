@@ -28,7 +28,9 @@ namespace {
 class MockHashRealTimeService : public HashRealTimeService {
  public:
   MockHashRealTimeService()
-      : HashRealTimeService(/*url_loader_factory=*/nullptr) {}
+      : HashRealTimeService(
+            /*url_loader_factory=*/nullptr,
+            /*cache_manager=*/nullptr) {}
   base::WeakPtr<MockHashRealTimeService> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
