@@ -30,6 +30,8 @@ class Power {
   const base::GUID& guid() const { return guid_; }
   void set_guid(base::GUID guid) { guid_ = guid; }
 
+  std::string guid_string() const { return guid_.AsLowercaseString(); }
+
   const GURL& url() const { return url_; }
   void set_url(GURL url) { url_ = url; }
 

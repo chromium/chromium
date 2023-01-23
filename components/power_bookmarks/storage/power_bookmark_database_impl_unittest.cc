@@ -77,7 +77,7 @@ std::unique_ptr<Power> MakePower(GURL url, base::Time time_modified) {
 
 std::string WritePower(PowerBookmarkDatabaseImpl* pbdb,
                        std::unique_ptr<Power> power) {
-  std::string guid = power->guid().AsLowercaseString();
+  std::string guid = power->guid_string();
   EXPECT_TRUE(pbdb->CreatePower(std::move(power)));
   return guid;
 }
@@ -153,7 +153,7 @@ class PowerBookmarkDatabaseImplTest : public testing::Test {
         std::make_unique<sync_pb::PowerEntity>();
     std::unique_ptr<Power> power =
         std::make_unique<Power>(std::move(power_specifics));
-    save_statement.BindString(0, power->guid().AsLowercaseString());
+    save_statement.BindString(0, power->guid_string());
     save_statement.BindString(1, power->url().spec());
     save_statement.BindString(2, url::Origin::Create(power->url()).Serialize());
     save_statement.BindInt(3, power->power_type());
@@ -171,7 +171,7 @@ class PowerBookmarkDatabaseImplTest : public testing::Test {
 
     sql::Statement blob_statement(
         db.GetCachedStatement(SQL_FROM_HERE, kCreatePowerBlobSql));
-    blob_statement.BindString(0, power->guid().AsLowercaseString());
+    blob_statement.BindString(0, power->guid_string());
     std::string data = "badprotofortesting";
     blob_statement.BindBlob(1, data);
     EXPECT_TRUE(blob_statement.Run());
@@ -532,21 +532,21 @@ TEST_F(PowerBookmarkDatabaseImplTest, GetPowerOverviewsForType) {
   EXPECT_EQ(5u, example_power_overview->count());
   const Power* example_power = example_power_overview->power();
   EXPECT_EQ(kExampleUrl, example_power->url());
-  EXPECT_EQ(exampleGuid, example_power->guid().AsLowercaseString());
+  EXPECT_EQ(exampleGuid, example_power->guid_string());
   EXPECT_EQ(EpochAndSeconds(9), example_power->time_modified());
 
   const PowerOverview* google_power_overview = power_overviews[1].get();
   EXPECT_EQ(3u, google_power_overview->count());
   const Power* google_power = google_power_overview->power();
   EXPECT_EQ(kGoogleUrl, google_power->url());
-  EXPECT_EQ(googleGuid, google_power->guid().AsLowercaseString());
+  EXPECT_EQ(googleGuid, google_power->guid_string());
   EXPECT_EQ(EpochAndSeconds(3), google_power->time_modified());
 
   const PowerOverview* boogle_power_overview = power_overviews[2].get();
   EXPECT_EQ(1u, boogle_power_overview->count());
   const Power* boogle_power = boogle_power_overview->power();
   EXPECT_EQ(kBoogleUrl, boogle_power->url());
-  EXPECT_EQ(boogleGuid, boogle_power->guid().AsLowercaseString());
+  EXPECT_EQ(boogleGuid, boogle_power->guid_string());
   EXPECT_EQ(EpochAndSeconds(4), boogle_power->time_modified());
 }
 
@@ -830,7 +830,9 @@ TEST_F(PowerBookmarkDatabaseImplTest, DeletePowersForURL) {
       std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
   EXPECT_TRUE(pbdb->Init());
 
-  EXPECT_TRUE(pbdb->CreatePower(MakePower(kGoogleUrl, kMockType)));
+  auto power = MakePower(kGoogleUrl, kMockType);
+  auto guid = power->guid_string();
+  EXPECT_TRUE(pbdb->CreatePower(std::move(power)));
 
   std::vector<std::unique_ptr<Power>> stored_powers =
       pbdb->GetPowersForURL(kGoogleUrl, kMockType);
@@ -838,8 +840,14 @@ TEST_F(PowerBookmarkDatabaseImplTest, DeletePowersForURL) {
   EXPECT_EQ(kGoogleUrl, stored_powers[0]->url());
   EXPECT_EQ(kMockType, stored_powers[0]->power_type());
 
-  EXPECT_TRUE(pbdb->DeletePowersForURL(kGoogleUrl, kMockType));
-  stored_powers = pbdb->GetPowersForURL(kGoogleUrl, kMockType);
+  std::vector<std::string> guids;
+  EXPECT_TRUE(pbdb->DeletePowersForURL(kGoogleUrl, kMockType, &guids));
+  EXPECT_EQ(1u, guids.size());
+  EXPECT_EQ(guid, guids[0]);
+
+  stored_powers =
+      pbdb->GetPowersForURL(GURL("https://google.com"),
+                            sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK);
   EXPECT_EQ(0u, stored_powers.size());
 }
 
@@ -856,9 +864,12 @@ TEST_F(PowerBookmarkDatabaseImplTest, DeletePowersForURLUnspecifiedType) {
   EXPECT_EQ(kGoogleUrl, stored_powers[0]->url());
   EXPECT_EQ(kMockType, stored_powers[0]->power_type());
 
+  std::vector<std::string> guids;
   EXPECT_TRUE(pbdb->DeletePowersForURL(
-      kGoogleUrl, sync_pb::PowerBookmarkSpecifics::POWER_TYPE_UNSPECIFIED));
-  stored_powers = pbdb->GetPowersForURL(kGoogleUrl, kMockType);
+      kGoogleUrl, sync_pb::PowerBookmarkSpecifics::POWER_TYPE_UNSPECIFIED,
+      &guids));
+  stored_powers = pbdb->GetPowersForURL(
+      kGoogleUrl, sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK);
   EXPECT_EQ(0u, stored_powers.size());
 }
 
@@ -884,8 +895,8 @@ TEST_F(PowerBookmarkDatabaseImplTest, GetPowersForGUIDs) {
   auto power1 = MakePower(kGoogleUrl, kMockType);
   auto power2 = MakePower(kGoogleUrl, kMockType);
   auto power3 = MakePower(GURL("https://bing.com"), kMockType);
-  auto guid1 = power1->guid().AsLowercaseString();
-  auto guid2 = power2->guid().AsLowercaseString();
+  auto guid1 = power1->guid_string();
+  auto guid2 = power2->guid_string();
 
   EXPECT_TRUE(pbdb->CreatePower(std::move(power1)));
   EXPECT_TRUE(pbdb->CreatePower(std::move(power2)));
@@ -905,7 +916,7 @@ TEST_F(PowerBookmarkDatabaseImplTest, GetPowerForGUID) {
 
   auto power1 = MakePower(kGoogleUrl, kMockType);
   auto power2 = MakePower(GURL("https://bing.com"), kMockType);
-  auto guid1 = power1->guid().AsLowercaseString();
+  auto guid1 = power1->guid_string();
 
   EXPECT_TRUE(pbdb->CreatePower(std::move(power1)));
   EXPECT_TRUE(pbdb->CreatePower(std::move(power2)));

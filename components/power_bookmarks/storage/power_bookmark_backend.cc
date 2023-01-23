@@ -90,49 +90,58 @@ PowerBookmarkBackend::SearchPowerOverviews(const SearchParams& search_params) {
 bool PowerBookmarkBackend::CreatePower(std::unique_ptr<Power> power) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  sync_pb::PowerBookmarkSpecifics::PowerType power_type = power->power_type();
-  bool success = db_->CreatePower(std::move(power));
-  metrics::RecordPowerCreated(power_type, success);
-  if (success) {
-    // TODO(crbug.com/1406371): Posting a task here causes the observer method
-    // to be called before the callback. This behavior is pretty strange, but
-    // not a problem right now. Eventually we should stop using SequenceBound
-    // for the backend and post tasks directly to ensure proper ordering.
-    frontend_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&PowerBookmarkObserver::OnPowersChanged,
-                                  base::Unretained(service_observer_)));
+  auto transaction = db_->BeginTransaction();
+  if (!transaction) {
+    return false;
   }
-
-  return success;
+  sync_pb::PowerBookmarkSpecifics::PowerType power_type = power->power_type();
+  bool success = db_->CreatePower(power->Clone());
+  metrics::RecordPowerCreated(power_type, success);
+  if (!success) {
+    return false;
+  }
+  if (bridge_) {
+    bridge_->SendPowerToSync(*power);
+  }
+  return CommitAndNotify(*transaction);
 }
 
 bool PowerBookmarkBackend::UpdatePower(std::unique_ptr<Power> power) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  sync_pb::PowerBookmarkSpecifics::PowerType power_type = power->power_type();
-  bool success = db_->UpdatePower(std::move(power));
-  metrics::RecordPowerUpdated(power_type, success);
-  if (success) {
-    frontend_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&PowerBookmarkObserver::OnPowersChanged,
-                                  base::Unretained(service_observer_)));
+  auto transaction = db_->BeginTransaction();
+  if (!transaction) {
+    return false;
   }
-
-  return success;
+  sync_pb::PowerBookmarkSpecifics::PowerType power_type = power->power_type();
+  auto updated_power = db_->UpdatePower(std::move(power));
+  bool success = updated_power != nullptr;
+  metrics::RecordPowerUpdated(power_type, success);
+  if (!success) {
+    return false;
+  }
+  if (bridge_) {
+    bridge_->SendPowerToSync(*updated_power);
+  }
+  return CommitAndNotify(*transaction);
 }
 
 bool PowerBookmarkBackend::DeletePower(const base::GUID& guid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  auto transaction = db_->BeginTransaction();
+  if (!transaction) {
+    return false;
+  }
   bool success = db_->DeletePower(guid);
   metrics::RecordPowerDeleted(success);
-  if (success) {
-    frontend_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&PowerBookmarkObserver::OnPowersChanged,
-                                  base::Unretained(service_observer_)));
+  if (!success) {
+    return false;
   }
-
-  return success;
+  if (bridge_) {
+    bridge_->NotifySyncForDeletion(guid.AsLowercaseString());
+  }
+  return CommitAndNotify(*transaction);
 }
 
 bool PowerBookmarkBackend::DeletePowersForURL(
@@ -140,15 +149,22 @@ bool PowerBookmarkBackend::DeletePowersForURL(
     const sync_pb::PowerBookmarkSpecifics::PowerType& power_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  bool success = db_->DeletePowersForURL(url, power_type);
-  metrics::RecordPowersDeletedForURL(power_type, success);
-  if (success) {
-    frontend_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&PowerBookmarkObserver::OnPowersChanged,
-                                  base::Unretained(service_observer_)));
+  auto transaction = db_->BeginTransaction();
+  if (!transaction) {
+    return false;
   }
-
-  return success;
+  std::vector<std::string> deleted_guids;
+  bool success = db_->DeletePowersForURL(url, power_type, &deleted_guids);
+  metrics::RecordPowersDeletedForURL(power_type, success);
+  if (!success) {
+    return false;
+  }
+  if (bridge_) {
+    for (auto const& guid : deleted_guids) {
+      bridge_->NotifySyncForDeletion(guid);
+    }
+  }
+  return CommitAndNotify(*transaction);
 }
 
 std::vector<std::unique_ptr<Power>> PowerBookmarkBackend::GetAllPowers() {
@@ -166,6 +182,49 @@ std::unique_ptr<Power> PowerBookmarkBackend::GetPowerForGUID(
     const std::string& guid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return db_->GetPowerForGUID(guid);
+}
+
+bool PowerBookmarkBackend::CreateOrMergePowerFromSync(const Power& power) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return db_->CreateOrMergePowerFromSync(power);
+}
+
+bool PowerBookmarkBackend::DeletePowerFromSync(const std::string& guid) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return db_->DeletePowerFromSync(guid);
+}
+
+syncer::SyncMetadataStore* PowerBookmarkBackend::GetSyncMetadataDatabase() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return db_->GetSyncMetadataDatabase();
+}
+
+std::unique_ptr<Transaction> PowerBookmarkBackend::BeginTransaction() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return db_->BeginTransaction();
+}
+
+bool PowerBookmarkBackend::CommitAndNotify(Transaction& transaction) {
+  if (transaction.Commit()) {
+    NotifyPowersChanged();
+    return true;
+  } else {
+    if (bridge_) {
+      bridge_->change_processor()->ReportError(syncer::ModelError(
+          FROM_HERE, "PowerBookmark database fails to persist data."));
+    }
+    return false;
+  }
+}
+
+void PowerBookmarkBackend::NotifyPowersChanged() {
+  // TODO(crbug.com/1406371): Posting a task here causes the observer method
+  // to be called before the callback. This behavior is pretty strange, but
+  // not a problem right now. Eventually we should stop using SequenceBound
+  // for the backend and post tasks directly to ensure proper ordering.
+  frontend_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&PowerBookmarkObserver::OnPowersChanged,
+                                base::Unretained(service_observer_)));
 }
 
 }  // namespace power_bookmarks

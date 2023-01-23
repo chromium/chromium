@@ -6,6 +6,7 @@
 
 #include "components/power_bookmarks/common/power.h"
 #include "components/power_bookmarks/storage/power_bookmark_sync_metadata_database.h"
+#include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_type_change_processor.h"
@@ -19,7 +20,7 @@ void WritePowersToSyncData(const std::vector<std::unique_ptr<Power>>& powers,
                            PowerBookmarkSyncBridge::DataCallback callback) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const auto& power : powers) {
-    std::string guid = power->guid().AsLowercaseString();
+    std::string guid = power->guid_string();
     auto entity_data = std::make_unique<syncer::EntityData>();
     entity_data->name = guid;
     power->ToPowerBookmarkSpecifics(
@@ -31,7 +32,7 @@ void WritePowersToSyncData(const std::vector<std::unique_ptr<Power>>& powers,
 }  // namespace
 
 PowerBookmarkSyncBridge::PowerBookmarkSyncBridge(
-    PowerBookmarkSyncMetadataDatabase* meta_db,
+    syncer::SyncMetadataStore* meta_db,
     Delegate* delegate,
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
     : syncer::ModelTypeSyncBridge(std::move(change_processor)),
@@ -42,24 +43,21 @@ PowerBookmarkSyncBridge::~PowerBookmarkSyncBridge() = default;
 
 std::unique_ptr<syncer::MetadataChangeList>
 PowerBookmarkSyncBridge::CreateMetadataChangeList() {
-  return std::make_unique<syncer::SyncMetadataStoreChangeList>(
-      meta_db_, syncer::POWER_BOOKMARK,
-      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
-                          change_processor()->GetWeakPtr()));
+  return std::make_unique<syncer::InMemoryMetadataChangeList>();
 }
 
 absl::optional<syncer::ModelError> PowerBookmarkSyncBridge::MergeSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  NOTIMPLEMENTED();
-  return {};
+  return ApplyChanges(std::move(metadata_change_list), entity_changes,
+                      /*is_initial_merge=*/true);
 }
 
 absl::optional<syncer::ModelError> PowerBookmarkSyncBridge::ApplySyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  NOTIMPLEMENTED();
-  return {};
+  return ApplyChanges(std::move(metadata_change_list), entity_changes,
+                      /*is_initial_merge=*/false);
 }
 
 std::string PowerBookmarkSyncBridge::GetStorageKey(
@@ -80,6 +78,93 @@ void PowerBookmarkSyncBridge::GetData(StorageKeyList storage_keys,
 
 void PowerBookmarkSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   WritePowersToSyncData(delegate_->GetAllPowers(), std::move(callback));
+}
+
+void PowerBookmarkSyncBridge::SendPowerToSync(const Power& power) {
+  if (!change_processor()->IsTrackingMetadata()) {
+    return;
+  }
+  auto entity_data = std::make_unique<syncer::EntityData>();
+  power.ToPowerBookmarkSpecifics(
+      entity_data->specifics.mutable_power_bookmark());
+  entity_data->name = power.guid_string();
+
+  change_processor()->Put(power.guid_string(), std::move(entity_data),
+                          CreateMetadataChangeListInTransaction().get());
+}
+
+void PowerBookmarkSyncBridge::NotifySyncForDeletion(const std::string& guid) {
+  if (!change_processor()->IsTrackingMetadata()) {
+    return;
+  }
+  change_processor()->Delete(guid,
+                             CreateMetadataChangeListInTransaction().get());
+}
+
+std::unique_ptr<syncer::MetadataChangeList>
+PowerBookmarkSyncBridge::CreateMetadataChangeListInTransaction() {
+  // TODO(crbug.com/1392502): Add a DCHECK to make sure this is called inside a
+  // transaction.
+  return std::make_unique<syncer::SyncMetadataStoreChangeList>(
+      meta_db_, syncer::POWER_BOOKMARK,
+      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+                          change_processor()->GetWeakPtr()));
+}
+
+absl::optional<syncer::ModelError> PowerBookmarkSyncBridge::ApplyChanges(
+    std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
+    syncer::EntityChangeList& entity_changes,
+    bool is_initial_merge) {
+  std::set<std::string> synced_entries;
+  std::unique_ptr<Transaction> transaction = delegate_->BeginTransaction();
+  if (!transaction) {
+    return syncer::ModelError(
+        FROM_HERE, "Failed to begin transaction for PowerBookmarks.");
+  }
+
+  for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
+    switch (change->type()) {
+      case syncer::EntityChange::ACTION_ADD:
+      case syncer::EntityChange::ACTION_UPDATE:
+        if (!delegate_->CreateOrMergePowerFromSync(*std::make_unique<Power>(
+                change->data().specifics.power_bookmark()))) {
+          return syncer::ModelError(
+              FROM_HERE, "Failed to merge local powers for PowerBookmarks.");
+        }
+        if (is_initial_merge) {
+          synced_entries.insert(change->storage_key());
+        }
+        break;
+      case syncer::EntityChange::ACTION_DELETE:
+        if (!delegate_->DeletePowerFromSync(change->storage_key())) {
+          return syncer::ModelError(
+              FROM_HERE, "Failed to delete local powers for PowerBookmarks.");
+        }
+        break;
+    }
+  }
+
+  if (is_initial_merge) {
+    // Send local only powers to sync.
+    for (const std::unique_ptr<Power>& power : delegate_->GetAllPowers()) {
+      if (synced_entries.count(power->guid_string()) == 0) {
+        SendPowerToSync(*power);
+      }
+    }
+  }
+
+  std::unique_ptr<syncer::MetadataChangeList> power_bookmark_change_list =
+      CreateMetadataChangeListInTransaction();
+  static_cast<syncer::InMemoryMetadataChangeList*>(metadata_change_list.get())
+      ->TransferChangesTo(power_bookmark_change_list.get());
+
+  if (!transaction->Commit()) {
+    return syncer::ModelError(
+        FROM_HERE, "Failed to commit transaction for PowerBookmarks.");
+  }
+
+  delegate_->NotifyPowersChanged();
+  return {};
 }
 
 }  // namespace power_bookmarks

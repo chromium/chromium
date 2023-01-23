@@ -40,10 +40,13 @@ class PowerBookmarkSyncMetadataDatabaseTest : public testing::Test {
   }
 
   PowerBookmarkSyncMetadataDatabase* sync_db() {
-    return power_bookmark_db_->GetSyncMetadataDatabase();
+    return static_cast<PowerBookmarkSyncMetadataDatabase*>(
+        power_bookmark_db_->GetSyncMetadataDatabase());
   }
   sql::Database* sql_db() {
-    return power_bookmark_db_->GetSyncMetadataDatabase()->db_;
+    return static_cast<PowerBookmarkSyncMetadataDatabase*>(
+               power_bookmark_db_->GetSyncMetadataDatabase())
+        ->db_;
   }
 
  private:
