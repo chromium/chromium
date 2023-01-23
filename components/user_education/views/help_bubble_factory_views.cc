@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/common/user_education_class_properties.h"
 #include "components/user_education/views/help_bubble_delegate.h"
@@ -34,14 +35,15 @@ HelpBubbleViews::HelpBubbleViews(HelpBubbleView* help_bubble_view,
   DCHECK(help_bubble_view->GetWidget());
   scoped_observation_.Observe(help_bubble_view->GetWidget());
 
-  // Set up an event listener so that the bubble can be closed if the anchor
-  // element disappears. The specific anchor view is not tracked because in a
-  // few cases (e.g. Mac native menus) the anchor view is not the anchor
-  // element itself but a placeholder.
-  anchor_subscription_ =
+  anchor_hidden_subscription_ =
       ui::ElementTracker::GetElementTracker()->AddElementHiddenCallback(
           anchor_element->identifier(), anchor_element->context(),
           base::BindRepeating(&HelpBubbleViews::OnElementHidden,
+                              base::Unretained(this)));
+  anchor_bounds_changed_subscription_ =
+      ui::ElementTracker::GetElementTracker()->AddCustomEventCallback(
+          kHelpBubbleAnchorBoundsChangedEvent, anchor_element->context(),
+          base::BindRepeating(&HelpBubbleViews::OnElementBoundsChanged,
                               base::Unretained(this)));
 }
 
@@ -147,7 +149,8 @@ void HelpBubbleViews::CloseBubbleImpl() {
   if (!help_bubble_view_)
     return;
 
-  anchor_subscription_ = base::CallbackListSubscription();
+  anchor_hidden_subscription_ = base::CallbackListSubscription();
+  anchor_bounds_changed_subscription_ = base::CallbackListSubscription();
   scoped_observation_.Reset();
   MaybeResetAnchorView();
   help_bubble_view_->GetWidget()->Close();
@@ -155,7 +158,8 @@ void HelpBubbleViews::CloseBubbleImpl() {
 }
 
 void HelpBubbleViews::OnWidgetDestroying(views::Widget* widget) {
-  anchor_subscription_ = base::CallbackListSubscription();
+  anchor_hidden_subscription_ = base::CallbackListSubscription();
+  anchor_bounds_changed_subscription_ = base::CallbackListSubscription();
   scoped_observation_.Reset();
   MaybeResetAnchorView();
   help_bubble_view_ = nullptr;
@@ -168,9 +172,17 @@ void HelpBubbleViews::OnElementHidden(ui::TrackedElement* element) {
   if (element != anchor_element_)
     return;
 
-  anchor_subscription_ = base::CallbackListSubscription();
+  anchor_hidden_subscription_ = base::CallbackListSubscription();
+  anchor_bounds_changed_subscription_ = base::CallbackListSubscription();
   anchor_element_ = nullptr;
   Close();
+}
+
+void HelpBubbleViews::OnElementBoundsChanged(ui::TrackedElement* element) {
+  if (help_bubble_view_ && element == anchor_element_) {
+    help_bubble_view_->set_force_anchor_rect(element->GetScreenBounds());
+    OnAnchorBoundsChanged();
+  }
 }
 
 HelpBubbleFactoryViews::HelpBubbleFactoryViews(
@@ -197,8 +209,7 @@ bool HelpBubbleFactoryViews::CanBuildBubbleForTrackedElement(
 std::unique_ptr<HelpBubble> HelpBubbleFactoryViews::CreateBubbleImpl(
     ui::TrackedElement* element,
     const internal::HelpBubbleAnchorParams& anchor,
-    HelpBubbleParams params,
-    absl::optional<gfx::Rect> anchor_rect) {
+    HelpBubbleParams params) {
   anchor.view->SetProperty(kHasInProductHelpPromoKey, true);
   auto result = base::WrapUnique(new HelpBubbleViews(
       new HelpBubbleView(delegate_, anchor, std::move(params)), element));

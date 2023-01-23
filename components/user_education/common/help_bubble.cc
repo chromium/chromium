@@ -6,8 +6,11 @@
 
 #include "base/auto_reset.h"
 #include "base/notreached.h"
+#include "ui/base/interaction/element_tracker.h"
 
 namespace user_education {
+
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kHelpBubbleAnchorBoundsChangedEvent);
 
 HelpBubble::HelpBubble()
     : on_close_callbacks_(std::make_unique<CallbackList>()) {}

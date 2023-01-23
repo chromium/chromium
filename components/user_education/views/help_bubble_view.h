@@ -79,6 +79,10 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   views::LabelButton* GetDefaultButtonForTesting() const;
   views::LabelButton* GetNonDefaultButtonForTesting(int index) const;
 
+  void set_force_anchor_rect(gfx::Rect force_anchor_rect) {
+    force_anchor_rect_ = force_anchor_rect;
+  }
+
  protected:
   // BubbleDialogDelegateView:
   bool OnMousePressed(const ui::MouseEvent& event) override;

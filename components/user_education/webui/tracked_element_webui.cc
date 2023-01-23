@@ -5,6 +5,7 @@
 #include "components/user_education/webui/tracked_element_webui.h"
 
 #include "base/check.h"
+#include "components/user_education/common/help_bubble.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -47,10 +48,17 @@ gfx::Rect TrackedElementWebUI::GetScreenBounds() const {
 }
 
 void TrackedElementWebUI::SetVisible(bool visible, gfx::RectF bounds) {
-  last_known_bounds_ = bounds;
-  if (visible == visible_)
+  if (visible == visible_) {
+    if (visible && last_known_bounds_ != bounds) {
+      // This event signals that the bounds of the element have been updated.
+      ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+          this, kHelpBubbleAnchorBoundsChangedEvent);
+      last_known_bounds_ = bounds;
+    }
     return;
+  }
 
+  last_known_bounds_ = bounds;
   visible_ = visible;
   auto* const delegate = ui::ElementTracker::GetFrameworkDelegate();
   if (visible) {

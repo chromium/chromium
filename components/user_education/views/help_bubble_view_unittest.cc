@@ -13,22 +13,32 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "components/user_education/common/feature_promo_specification.h"
+#include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_views_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/theme_provider.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace user_education {
+
+namespace {
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId);
+const ui::ElementContext kTestElementContext{1};
+constexpr gfx::Rect kWidgetBounds{400, 200, 200, 200};
+}  // namespace
 
 // Unit tests for HelpBubbleView. Timeout functionality isn't tested here due to
 // the vagaries of trying to get simulated timed events to run without a full
@@ -48,6 +58,7 @@ class HelpBubbleViewTest : public views::ViewsTestBase {
     widget_->Init(CreateParamsForTestWidget());
     view_ = widget_->SetContentsView(std::make_unique<views::View>());
     widget_->Show();
+    widget_->SetBounds(kWidgetBounds);
   }
 
   void TearDown() override {
@@ -56,9 +67,17 @@ class HelpBubbleViewTest : public views::ViewsTestBase {
   }
 
  protected:
-  HelpBubbleView* CreateHelpBubbleView(HelpBubbleParams params) {
-    return new HelpBubbleView(&test_delegate_,
-                              internal::HelpBubbleAnchorParams{view_},
+  gfx::Rect GetWidgetClientBounds() const {
+    return widget_->GetClientAreaBoundsInScreen();
+  }
+
+  HelpBubbleView* CreateHelpBubbleView(
+      HelpBubbleParams params,
+      absl::optional<gfx::Rect> bounds = absl::nullopt) {
+    internal::HelpBubbleAnchorParams anchor_params;
+    anchor_params.view = view_;
+    anchor_params.rect = bounds;
+    return new HelpBubbleView(&test_delegate_, anchor_params,
                               std::move(params));
   }
 
@@ -143,6 +162,130 @@ TEST_F(HelpBubbleViewTest, StableButtonOrder) {
   EXPECT_EQ(kButton1Text, bubble->GetNonDefaultButtonForTesting(0)->GetText());
   EXPECT_EQ(kButton2Text, bubble->GetDefaultButtonForTesting()->GetText());
   EXPECT_EQ(kButton3Text, bubble->GetNonDefaultButtonForTesting(1)->GetText());
+}
+
+TEST_F(HelpBubbleViewTest, AnchorToRect) {
+  HelpBubbleParams params;
+  params.body_text = u"To X, do Y";
+  params.arrow = HelpBubbleArrow::kRightCenter;
+
+  const auto widget_bounds = GetWidgetClientBounds();
+  gfx::Rect anchor_bounds = widget_bounds;
+  anchor_bounds.Inset(50);
+
+  HelpBubbleView* const bubble =
+      CreateHelpBubbleView(std::move(params), anchor_bounds);
+  const auto bubble_bounds = bubble->GetWidget()->GetWindowBoundsInScreen();
+
+  // The right side of the bubble should overlap the widget.
+  EXPECT_TRUE(widget_bounds.Contains(bubble_bounds.right_center()));
+
+  // The right side of the widget should be outside and aligned with the center
+  // of the anchor bounds. Allow for rounding error when checking alignment.
+  EXPECT_LT(bubble_bounds.right(), anchor_bounds.x());
+  EXPECT_LE(std::abs(bubble_bounds.CenterPoint().y() -
+                     anchor_bounds.CenterPoint().y()),
+            2);
+}
+
+TEST_F(HelpBubbleViewTest, AnchorRectUpdated) {
+  HelpBubbleParams params;
+  params.body_text = u"To X, do Y";
+  params.arrow = HelpBubbleArrow::kRightCenter;
+
+  const auto widget_bounds = GetWidgetClientBounds();
+  gfx::Rect anchor_bounds = widget_bounds;
+  anchor_bounds.Inset(50);
+
+  HelpBubbleView* const bubble =
+      CreateHelpBubbleView(std::move(params), anchor_bounds);
+  const auto bubble_bounds = bubble->GetWidget()->GetWindowBoundsInScreen();
+
+  constexpr gfx::Vector2d kAnchorOffset{9, 13};
+  anchor_bounds.Offset(kAnchorOffset);
+  bubble->set_force_anchor_rect(anchor_bounds);
+  bubble->OnAnchorBoundsChanged();
+
+  gfx::Rect expected = bubble_bounds;
+  expected.Offset(kAnchorOffset);
+  EXPECT_EQ(expected, bubble->GetWidget()->GetWindowBoundsInScreen());
+}
+
+class HelpBubbleViewsTest : public HelpBubbleViewTest {
+ public:
+  HelpBubbleViewsTest() = default;
+  ~HelpBubbleViewsTest() override = default;
+
+  // This simulates logic used by e.g. FloatingWebUIHelpBubbleFactory.
+  std::unique_ptr<HelpBubbleViews> CreateHelpBubble(
+      HelpBubbleParams params,
+      ui::TrackedElement* element) {
+    HelpBubbleView* const bubble_view =
+        CreateHelpBubbleView(std::move(params), element->GetScreenBounds());
+    return base::WrapUnique(new HelpBubbleViews(bubble_view, element));
+  }
+
+  void SetUp() override {
+    HelpBubbleViewTest::SetUp();
+
+    HelpBubbleParams params;
+    params.body_text = u"To X, do Y";
+    params.arrow = HelpBubbleArrow::kRightCenter;
+
+    gfx::Rect anchor_bounds = GetWidgetClientBounds();
+    anchor_bounds.Inset(50);
+
+    test_element_ = std::make_unique<ui::test::TestElement>(
+        kTestElementId, kTestElementContext);
+    test_element_->SetScreenBounds(anchor_bounds);
+    test_element_->Show();
+
+    help_bubble_ = CreateHelpBubble(std::move(params), test_element_.get());
+  }
+
+  void TearDown() override {
+    test_element_.reset();
+    HelpBubbleViewTest::TearDown();
+  }
+
+ protected:
+  std::unique_ptr<ui::test::TestElement> test_element_;
+  std::unique_ptr<HelpBubbleViews> help_bubble_;
+};
+
+// This duplicates the previous test, but with a HelpBubbleViews object.
+TEST_F(HelpBubbleViewsTest, AnchorToRect) {
+  const auto widget_bounds = GetWidgetClientBounds();
+  const auto anchor_bounds = test_element_->GetScreenBounds();
+  const auto bubble_bounds = help_bubble_->GetBoundsInScreen();
+
+  // The right side of the bubble should overlap the widget.
+  EXPECT_TRUE(widget_bounds.Contains(bubble_bounds.right_center()));
+
+  // The right side of the widget should be outside and aligned with the center
+  // of the anchor bounds. Allow for rounding error when checking alignment.
+  EXPECT_LT(bubble_bounds.right(), anchor_bounds.x());
+  EXPECT_LE(std::abs(bubble_bounds.CenterPoint().y() -
+                     anchor_bounds.CenterPoint().y()),
+            2);
+}
+
+// This duplicates the previous test, but with a HelpBubbleViews object.
+TEST_F(HelpBubbleViewsTest, AnchorRectUpdated) {
+  const gfx::Rect old_bounds = help_bubble_->GetBoundsInScreen();
+
+  // Move the anchor target by a small but noticeable amount.
+  auto new_bounds = test_element_->GetScreenBounds();
+  constexpr gfx::Vector2d kAnchorOffset{9, 13};
+  new_bounds.Offset(kAnchorOffset);
+  test_element_->SetScreenBounds(new_bounds);
+  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+      test_element_.get(), kHelpBubbleAnchorBoundsChangedEvent);
+
+  // Verify that the help bubble has moved by a similar amount.
+  gfx::Rect expected = old_bounds;
+  expected.Offset(kAnchorOffset);
+  EXPECT_EQ(expected, help_bubble_->GetBoundsInScreen());
 }
 
 }  // namespace user_education

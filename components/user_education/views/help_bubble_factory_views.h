@@ -62,6 +62,7 @@ class HelpBubbleViews : public HelpBubble,
  private:
   friend class HelpBubbleFactoryViews;
   friend class HelpBubbleFactoryMac;
+  friend class HelpBubbleViewsTest;
 
   explicit HelpBubbleViews(HelpBubbleView* help_bubble_view,
                            ui::TrackedElement* anchor_element);
@@ -76,6 +77,7 @@ class HelpBubbleViews : public HelpBubble,
   void OnWidgetDestroying(views::Widget* widget) override;
 
   void OnElementHidden(ui::TrackedElement* element);
+  void OnElementBoundsChanged(ui::TrackedElement* element);
 
   raw_ptr<HelpBubbleView> help_bubble_view_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
@@ -83,7 +85,17 @@ class HelpBubbleViews : public HelpBubble,
 
   // Track the anchor element to determine if/when it goes away.
   base::raw_ptr<const ui::TrackedElement, DanglingUntriaged> anchor_element_;
-  base::CallbackListSubscription anchor_subscription_;
+
+  // Listens so that the bubble can be closed if the anchor element disappears.
+  // The specific anchor view is not tracked because in a few cases (e.g. Mac
+  // native menus) the anchor view is not the anchor element itself but a
+  // placeholder.
+  base::CallbackListSubscription anchor_hidden_subscription_;
+
+  // Listens for changes to the anchor bounding rect that are independent of the
+  // anchor view. Necessary for e.g. WebUI elements, which can be scrolled or
+  // moved within the web page.
+  base::CallbackListSubscription anchor_bounds_changed_subscription_;
 
   base::WeakPtrFactory<HelpBubbleViews> weak_ptr_factory_{this};
 };
@@ -106,8 +118,7 @@ class HelpBubbleFactoryViews : public HelpBubbleFactory {
   std::unique_ptr<HelpBubble> CreateBubbleImpl(
       ui::TrackedElement* element,
       const internal::HelpBubbleAnchorParams& anchor,
-      HelpBubbleParams params,
-      absl::optional<gfx::Rect> anchor_rect = absl::nullopt);
+      HelpBubbleParams params);
 
  private:
   base::raw_ptr<const HelpBubbleDelegate> delegate_;
