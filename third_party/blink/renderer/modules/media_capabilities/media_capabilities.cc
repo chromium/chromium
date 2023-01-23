@@ -1452,9 +1452,6 @@ void MediaCapabilities::GetGpuFactoriesSupport(
   ExecutionContext* execution_context =
       pending_cb->resolver->GetExecutionContext();
 
-  DCHECK(UseGpuFactoriesForPowerEfficient(execution_context,
-                                          pending_cb->key_system_access));
-
   // Frame may become detached in the time it takes us to get callback for
   // NotifyDecoderSupportKnown. In this case, report false as a means of clean
   // shutdown.
@@ -1462,6 +1459,9 @@ void MediaCapabilities::GetGpuFactoriesSupport(
     OnGpuFactoriesSupport(callback_id, false, video_codec);
     return;
   }
+
+  DCHECK(UseGpuFactoriesForPowerEfficient(execution_context,
+                                          pending_cb->key_system_access));
 
   media::GpuVideoAcceleratorFactories* gpu_factories =
       Platform::Current()->GetGpuFactories();
