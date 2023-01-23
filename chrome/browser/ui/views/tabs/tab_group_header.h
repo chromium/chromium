@@ -16,11 +16,13 @@
 #include "ui/views/view_targeter_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
+class SavedTabGroupKeyedService;
 class TabSlotController;
 class TabGroupStyle;
 struct TabSizeInfo;
 
 namespace views {
+class ImageView;
 class Label;
 class View;
 }
@@ -79,11 +81,27 @@ class TabGroupHeader : public TabSlotView,
 
   // Calculate the width for this View.
   int GetDesiredWidth() const;
+  // Determines if the sync icon should be shown in the header.
+  bool ShouldShowSyncIcon() const;
 
   const raw_ref<TabSlotController> tab_slot_controller_;
 
-  raw_ptr<views::View> title_chip_;
-  raw_ptr<views::Label> title_;
+  // The title chip for the tab group header which comprises of title text if
+  // there is any, and a background color. The size and color of the chip are
+  // set in VisualsChanged().
+  const raw_ptr<views::View> title_chip_;
+
+  // The title of the tab group. Text and color of the title are set in
+  // VisualsChanged().
+  const raw_ptr<views::Label> title_;
+
+  // The sync icon that is displayed in the tab group header of saved groups in
+  // the tabstrip.
+  const raw_ptr<views::ImageView> sync_icon_;
+
+  // Used to verify if this tab group is saved.
+  const raw_ptr<SavedTabGroupKeyedService> saved_tab_group_service_;
+
   const raw_ref<const TabGroupStyle> style_;
 
   // Saved collapsed state for usage with activation of element tracker system.

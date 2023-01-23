@@ -13,8 +13,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
@@ -35,14 +39,18 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/fill_layout.h"
@@ -85,24 +93,27 @@ class TabGroupHighlightPathGenerator : public views::HighlightPathGenerator {
 
 }  // namespace
 
-TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
-                               const tab_groups::TabGroupId& group,
-                               const TabGroupStyle& style)
+TabGroupHeader::TabGroupHeader(TabSlotController &tab_slot_controller,
+                               const tab_groups::TabGroupId &group,
+                               const TabGroupStyle &style)
     : tab_slot_controller_(tab_slot_controller),
-      style_(style),
-      editor_bubble_tracker_(tab_slot_controller) {
+      title_chip_(AddChildView(std::make_unique<views::View>())),
+      title_(title_chip_->AddChildView(std::make_unique<views::Label>())),
+      sync_icon_(
+          title_chip_->AddChildView(std::make_unique<views::ImageView>())),
+      saved_tab_group_service_(
+          tab_slot_controller_->GetBrowser()
+              ? SavedTabGroupServiceFactory::GetForProfile(
+                    tab_slot_controller_->GetBrowser()->profile())
+              : nullptr),
+      style_(style), editor_bubble_tracker_(tab_slot_controller) {
   set_group(group);
   set_context_menu_controller(this);
-
-  // The size and color of the chip are set in VisualsChanged().
-  title_chip_ = AddChildView(std::make_unique<views::View>());
 
   // Disable events processing (like tooltip handling)
   // for children of TabGroupHeader.
   title_chip_->SetCanProcessEventsWithinSubtree(false);
 
-  // The text and color of the title are set in VisualsChanged().
-  title_ = title_chip_->AddChildView(std::make_unique<views::Label>());
   title_->SetCollapseWhenHidden(true);
   title_->SetAutoColorReadabilityEnabled(false);
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -400,13 +411,22 @@ int TabGroupHeader::GetDesiredWidth() const {
 }
 
 void TabGroupHeader::VisualsChanged() {
+  const tab_groups::TabGroupId tab_group_id = group().value();
   const std::u16string title =
-      tab_slot_controller_->GetGroupTitle(group().value());
+      tab_slot_controller_->GetGroupTitle(tab_group_id);
   const tab_groups::TabGroupColorId color_id =
-      tab_slot_controller_->GetGroupColorId(group().value());
+      tab_slot_controller_->GetGroupColorId(tab_group_id);
   const SkColor color = tab_slot_controller_->GetPaintedGroupColor(color_id);
 
   title_->SetText(title);
+
+  if (ShouldShowSyncIcon()) {
+    sync_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+        kTabGroupsSyncIcon, color_utils::GetColorWithMaxContrast(color),
+        kEmptyChipSize));
+  }
+
+  sync_icon_->SetVisible(ShouldShowSyncIcon());
 
   if (title.empty()) {
     // If the title is empty, the chip is just a circle.
@@ -416,6 +436,9 @@ void TabGroupHeader::VisualsChanged() {
                            kEmptyChipSize, kEmptyChipSize);
     title_chip_->SetBackground(
         views::CreateRoundedRectBackground(color, kEmptyChipSize / 2));
+
+    sync_icon_->SetBounds(0, 0, ShouldShowSyncIcon() ? kEmptyChipSize : 0,
+                          ShouldShowSyncIcon() ? kEmptyChipSize : 0);
   } else {
     // If the title is set, the chip is a rounded rect that matches the active
     // tab shape, particularly the tab's corner radius.
@@ -434,18 +457,24 @@ void TabGroupHeader::VisualsChanged() {
     const int text_height = title_->GetPreferredSize().height();
     const int text_vertical_inset = 1;
     const int text_horizontal_inset = corner_radius + text_vertical_inset;
-
     const int y =
         (GetLayoutConstant(TAB_HEIGHT) - text_height) / 2 - text_vertical_inset;
+    const int sync_icon_width = ShouldShowSyncIcon() ? kEmptyChipSize : 0;
+    const int chip_width =
+        text_width + (2 * text_horizontal_inset) + sync_icon_width;
 
-    title_chip_->SetBounds(TabGroupUnderline::GetStrokeInset(), y,
-                           text_width + 2 * text_horizontal_inset,
+    title_chip_->SetBounds(TabGroupUnderline::GetStrokeInset(), y, chip_width,
                            text_height + 2 * text_vertical_inset);
+
     title_chip_->SetBackground(
         views::CreateRoundedRectBackground(color, corner_radius));
 
     title_->SetBounds(text_horizontal_inset, text_vertical_inset, text_width,
                       text_height);
+
+    sync_icon_->SetBounds(
+        text_horizontal_inset + text_width + 2 * text_vertical_inset,
+        text_vertical_inset, sync_icon_width, text_height);
   }
 
   if (views::FocusRing::Get(this))
@@ -470,6 +499,14 @@ int TabGroupHeader::GetCollapsedHeaderWidth() const {
                                2 * TabStyle::GetTabOverlap() -
                                empty_group_title_adjustment;
   return title_chip_width + 2 * TabGroupUnderline::GetStrokeInset();
+}
+
+bool TabGroupHeader::ShouldShowSyncIcon() const {
+  const bool is_group_saved =
+      saved_tab_group_service_ && saved_tab_group_service_->model() &&
+      saved_tab_group_service_->model()->Contains(group().value());
+  return base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
+         is_group_saved;
 }
 
 void TabGroupHeader::RemoveObserverFromWidget(views::Widget* widget) {

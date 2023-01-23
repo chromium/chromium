@@ -126,26 +126,28 @@ void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
     }
   }
 
-  // Create the group in the tabstrip.
+  // Create a new group in the tabstrip.
   tab_groups::TabGroupId tab_group_id = tab_groups::TabGroupId::GenerateNew();
   tab_strip_model_for_creation->AddToGroupForRestore(tab_indices, tab_group_id);
-  TabGroup* group =
-      tab_strip_model_for_creation->group_model()->GetTabGroup(tab_group_id);
-  tab_groups::TabGroupVisualData visual_data(saved_group->title(),
-                                             saved_group->color(),
-                                             /*is_collapsed=*/false);
-  group->SetVisualData(visual_data, /*is_customized=*/true);
 
   // Update the saved tab group to link to the local group id.
   model_.OnGroupOpenedInTabStrip(saved_group->saved_guid(), tab_group_id);
 
+  TabGroup* const group =
+      tab_strip_model_for_creation->group_model()->GetTabGroup(tab_group_id);
+
   // Activate the first tab in the tab group.
-  absl::optional<int> first_tab =
-      tab_strip_model_for_creation->group_model()
-          ->GetTabGroup(saved_group->local_group_id().value())
-          ->GetFirstTab();
+  absl::optional<int> first_tab = group->GetFirstTab();
   DCHECK(first_tab.has_value());
   tab_strip_model_for_creation->ActivateTabAt(first_tab.value());
+
+  // Update the group to use the saved title and color.
+  tab_groups::TabGroupVisualData visual_data(saved_group->title(),
+                                             saved_group->color(),
+                                             /*is_collapsed=*/false);
+  // Set the groups visual data after the tab strip is in its final state. This
+  // ensures the tab group's bounds are correctly set. crbug/1408814.
+  group->SetVisualData(visual_data, /*is_customized=*/true);
 }
 
 void SavedTabGroupKeyedService::SaveGroup(

@@ -142,6 +142,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "tab_bluetooth_scan_active.icon",
     "tab_close_normal.icon",
     "tab_group.icon",
+    "tab_groups_sync.icon",
     "tab_media_capturing.icon",
     "tab_media_capturing_with_arrow.icon",
     "tab_media_recording.icon",
