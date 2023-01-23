@@ -626,6 +626,12 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
+  if (IsTransitionPseudoElement(
+          GetPseudoId(static_cast<CSSSelector::PseudoType>(match->type))) &&
+      !RuntimeEnabledFeatures::ViewTransitionEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
   return static_cast<CSSSelector::PseudoType>(match->type);
 }
 
