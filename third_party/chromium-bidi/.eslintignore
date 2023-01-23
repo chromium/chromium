@@ -8,3 +8,4 @@ lib
 logs/
 node_modules/
 wptreport.json
+wpt/

@@ -22,7 +22,7 @@ import {
   Log,
   Session,
 } from '../../../protocol/protocol.js';
-import {BrowsingContextStorage} from '../context/browsingContextStorage';
+import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 
 export class SubscriptionManager {
   #subscriptionPriority = 0;

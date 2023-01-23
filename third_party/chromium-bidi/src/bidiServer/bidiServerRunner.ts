@@ -40,65 +40,64 @@ export class BidiServerRunner {
   ) {
     const self = this;
 
-    const server = http.createServer(async (
-      request: http.IncomingMessage,
-      response: http.ServerResponse
-    ) => {
-      debugInternal(
-        `${new Date()} Received ${request.method} request for ${request.url}`
-      );
-      if (!request.url) return response.end(404);
+    const server = http.createServer(
+      async (request: http.IncomingMessage, response: http.ServerResponse) => {
+        debugInternal(
+          `${new Date()} Received ${request.method} request for ${request.url}`
+        );
+        if (!request.url) return response.end(404);
 
-      // https://w3c.github.io/webdriver-bidi/#transport, step 2.
-      if (request.url === '/session') {
-        response.writeHead(200, {
-          'Content-Type': 'application/json;charset=utf-8',
-          'Cache-Control': 'no-cache',
-        });
-        response.write(
-          JSON.stringify({
-            value: {
-              sessionId: '1',
-              capabilities: {
-                webSocketUrl: 'ws://localhost:' + bidiPort,
+        // https://w3c.github.io/webdriver-bidi/#transport, step 2.
+        if (request.url === '/session') {
+          response.writeHead(200, {
+            'Content-Type': 'application/json;charset=utf-8',
+            'Cache-Control': 'no-cache',
+          });
+          response.write(
+            JSON.stringify({
+              value: {
+                sessionId: '1',
+                capabilities: {
+                  webSocketUrl: 'ws://localhost:' + bidiPort,
+                },
               },
-            },
-          })
-        );
-      } else if (request.url.startsWith('/session')) {
-        debugInternal(
-          `Unknown session command ${JSON.stringify(
-            request.method
-          )} request for ${JSON.stringify(
-            request.url
-          )} with payload ${JSON.stringify(
-            await BidiServerRunner.#getHttpRequestPayload(request)
-          )}. 200 returned.`
-        );
+            })
+          );
+        } else if (request.url.startsWith('/session')) {
+          debugInternal(
+            `Unknown session command ${JSON.stringify(
+              request.method
+            )} request for ${JSON.stringify(
+              request.url
+            )} with payload ${JSON.stringify(
+              await BidiServerRunner.#getHttpRequestPayload(request)
+            )}. 200 returned.`
+          );
 
-        response.writeHead(200, {
-          'Content-Type': 'application/json;charset=utf-8',
-          'Cache-Control': 'no-cache',
-        });
-        response.write(
-          JSON.stringify({
-            value: {},
-          })
-        );
-      } else {
-        debugInternal(
-          `Unknown ${JSON.stringify(
-            request.method
-          )} request for ${JSON.stringify(
-            request.url
-          )} with payload ${JSON.stringify(
-            await BidiServerRunner.#getHttpRequestPayload(request)
-          )}. 404 returned.`
-        );
-        response.writeHead(404);
+          response.writeHead(200, {
+            'Content-Type': 'application/json;charset=utf-8',
+            'Cache-Control': 'no-cache',
+          });
+          response.write(
+            JSON.stringify({
+              value: {},
+            })
+          );
+        } else {
+          debugInternal(
+            `Unknown ${JSON.stringify(
+              request.method
+            )} request for ${JSON.stringify(
+              request.url
+            )} with payload ${JSON.stringify(
+              await BidiServerRunner.#getHttpRequestPayload(request)
+            )}. 404 returned.`
+          );
+          response.writeHead(404);
+        }
+        return response.end();
       }
-      return response.end();
-    });
+    );
     server.listen(bidiPort, () => {
       console.log(`Server is listening on port ${bidiPort}`);
     });
