@@ -215,7 +215,7 @@ enum ModelEngineVersion {
   MODEL_ENGINE_VERSION_TFLITE_2_10 = 9;
   // A model using only operations that are supported by TensorflowLite 2.11.0.
   MODEL_ENGINE_VERSION_TFLITE_2_11 = 10;
-  // A model using only operations that are supported by TensorflowLite 2.11.0.
+  // A model using only operations that are supported by TensorflowLite 2.12.0.
   MODEL_ENGINE_VERSION_TFLITE_2_12 = 11;
 }
 
