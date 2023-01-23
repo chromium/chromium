@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/ambient/ui/ambient_view_delegate.h"
+#include "ash/ambient/ui/media_string_view.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "base/memory/raw_ptr.h"
@@ -29,7 +30,8 @@ class MediaStringView;
 // It also handles specific mouse/gesture events to dismiss ambient when user
 // interacts with the background photos.
 class ASH_EXPORT AmbientBackgroundImageView : public views::View,
-                                              public views::ViewObserver {
+                                              public views::ViewObserver,
+                                              public MediaStringView::Delegate {
  public:
   METADATA_HEADER(AmbientBackgroundImageView);
 
@@ -46,6 +48,9 @@ class ASH_EXPORT AmbientBackgroundImageView : public views::View,
 
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
+
+  // MediaStringView::Delegate:
+  MediaStringView::Settings GetSettings() override;
 
   // Updates the display images.
   void UpdateImage(const gfx::ImageSkia& image,

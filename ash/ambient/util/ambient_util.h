@@ -41,18 +41,6 @@ ASH_EXPORT SkColor GetColor(const ui::ColorProvider* color_provider,
 ASH_EXPORT SkColor GetColor(const ui::ColorProvider* color_provider,
                             ui::ColorId color_id);
 
-// Ambient mode uses non-standard colors for some text and the media icon, so
-// provides a wrapper for |AshColorProvider::GetContentLayerColor|. This is
-// currently only supported for primary and secondary text and icons.
-// TODO(b/262012604) rework to use ui::ColorProvider.
-ASH_EXPORT SkColor
-GetContentLayerColor(AshColorProvider::ContentLayerType content_layer_type,
-                     bool dark_mode_enable);
-// Version of the above that uses AshColorProvider::IsDarkModeEnabled().
-// TODO(b/262012604) rework to use ui::ColorProvider.
-ASH_EXPORT SkColor
-GetContentLayerColor(AshColorProvider::ContentLayerType content_layer_type);
-
 // Returns the default fontlist for Ambient Mode.
 ASH_EXPORT const gfx::FontList& GetDefaultFontlist();
 

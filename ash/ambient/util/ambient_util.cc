@@ -52,33 +52,6 @@ SkColor GetColor(const ui::ColorProvider* color_provider,
   }
 }
 
-SkColor GetContentLayerColor(
-    AshColorProvider::ContentLayerType content_layer_type) {
-  return GetContentLayerColor(
-      content_layer_type,
-      DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
-}
-
-SkColor GetContentLayerColor(
-    AshColorProvider::ContentLayerType content_layer_type,
-    bool dark_mode_enable) {
-  auto* ash_color_provider = AshColorProvider::Get();
-
-  switch (content_layer_type) {
-    case AshColorProvider::ContentLayerType::kTextColorPrimary:
-    case AshColorProvider::ContentLayerType::kTextColorSecondary:
-    case AshColorProvider::ContentLayerType::kIconColorPrimary:
-    case AshColorProvider::ContentLayerType::kIconColorSecondary:
-      return dark_mode_enable
-                 ? ash_color_provider->GetContentLayerColor(content_layer_type)
-                 : SK_ColorWHITE;
-    default:
-      NOTREACHED() << "Unsupported content layer type";
-      // Return a very bright color so it's obvious there is a mistake.
-      return gfx::kPlaceholderColor;
-  }
-}
-
 const gfx::FontList& GetDefaultFontlist() {
   static const base::NoDestructor<gfx::FontList> font_list("Google Sans, 64px");
   return *font_list;

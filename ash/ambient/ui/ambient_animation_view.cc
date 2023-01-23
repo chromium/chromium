@@ -305,12 +305,7 @@ void AmbientAnimationView::Init(
       views::BoxLayout::CrossAxisAlignment::kEnd);
   media_string_container_->SetBorder(CreateMediaStringBorder());
   MediaStringView* media_string_view = media_string_container_->AddChildView(
-      std::make_unique<MediaStringView>(MediaStringView::Settings(
-          {/*icon_light_mode_color=*/gfx::kGoogleGrey600,
-           /*icon_dark_mode_color=*/gfx::kGoogleGrey500,
-           /*text_light_mode_color=*/gfx::kGoogleGrey600,
-           /*text_dark_mode_color=*/gfx::kGoogleGrey500,
-           kMediaStringTextElevation})));
+      std::make_unique<MediaStringView>(this));
   media_string_view->SetVisible(false);
 }
 
@@ -393,6 +388,15 @@ void AmbientAnimationView::OnViewAddedToWidget(View* observed_view) {
 
 SkColor AmbientAnimationView::GetTimeTemperatureFontColor() {
   return gfx::kGoogleGrey900;
+}
+
+MediaStringView::Settings AmbientAnimationView::GetSettings() {
+  return MediaStringView::Settings(
+      {/*icon_light_mode_color=*/gfx::kGoogleGrey600,
+       /*icon_dark_mode_color=*/gfx::kGoogleGrey500,
+       /*text_light_mode_color=*/gfx::kGoogleGrey600,
+       /*text_dark_mode_color=*/gfx::kGoogleGrey500,
+       kMediaStringTextElevation});
 }
 
 void AmbientAnimationView::StartPlayingAnimation() {

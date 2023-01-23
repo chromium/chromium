@@ -39,9 +39,17 @@ class MediaStringView : public views::View,
     int text_shadow_elevation;
   };
 
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Returns the settings for |MediaStringView|.
+    virtual Settings GetSettings() = 0;
+  };
+
   METADATA_HEADER(MediaStringView);
 
-  explicit MediaStringView(Settings settings);
+  explicit MediaStringView(MediaStringView::Delegate* delegate);
   MediaStringView(const MediaStringView&) = delete;
   MediaStringView& operator=(const MediaStringView&) = delete;
   ~MediaStringView() override;
@@ -90,7 +98,8 @@ class MediaStringView : public views::View,
 
   views::Label* media_text_label_for_testing() { return media_text_; }
 
-  const Settings settings_;
+  // Unowned. Must out live |MediaStringView|.
+  base::raw_ptr<MediaStringView::Delegate> delegate_ = nullptr;
 
   // Music eighth note.
   views::ImageView* icon_ = nullptr;

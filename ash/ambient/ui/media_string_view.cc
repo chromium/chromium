@@ -64,8 +64,8 @@ bool ShouldShowOnLockScreen() {
 
 }  // namespace
 
-MediaStringView::MediaStringView(Settings settings)
-    : settings_(std::move(settings)) {
+MediaStringView::MediaStringView(MediaStringView::Delegate* delegate)
+    : delegate_(delegate) {
   SetID(AmbientViewID::kAmbientMediaStringView);
   InitLayout();
 }
@@ -75,19 +75,25 @@ MediaStringView::~MediaStringView() = default;
 void MediaStringView::OnThemeChanged() {
   views::View::OnThemeChanged();
   media_text_->SetShadows(ambient::util::GetTextShadowValues(
-      GetColorProvider(), settings_.text_shadow_elevation));
+      GetColorProvider(), delegate_->GetSettings().text_shadow_elevation));
 
   const bool dark_mode_enabled =
       DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
   DCHECK(icon_);
-  icon_->SetImage(gfx::CreateVectorIcon(kMusicNoteIcon, kMusicNoteIconSizeDip,
-                                        dark_mode_enabled
-                                            ? settings_.icon_dark_mode_color
-                                            : settings_.icon_light_mode_color));
+  icon_->SetImage(gfx::CreateVectorIcon(
+      kMusicNoteIcon, kMusicNoteIconSizeDip,
+      dark_mode_enabled ? delegate_->GetSettings().icon_dark_mode_color
+                        : delegate_->GetSettings().icon_light_mode_color));
   DCHECK(media_text_);
-  media_text_->SetEnabledColor(dark_mode_enabled
-                                   ? settings_.text_dark_mode_color
-                                   : settings_.text_light_mode_color);
+  media_text_->SetEnabledColor(
+      dark_mode_enabled ? delegate_->GetSettings().text_dark_mode_color
+                        : delegate_->GetSettings().text_light_mode_color);
+  gfx::Insets shadow_insets =
+      gfx::ShadowValue::GetMargin(ambient::util::GetTextShadowValues(
+          nullptr, delegate_->GetSettings().text_shadow_elevation));
+  // Compensate the shadow insets to put the text middle align with the icon.
+  media_text_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(-shadow_insets.bottom(), 0, -shadow_insets.top(), 0)));
 }
 
 void MediaStringView::OnViewBoundsChanged(views::View* observed_view) {
@@ -200,12 +206,6 @@ void MediaStringView::InitLayout() {
           .DeriveWithSizeDelta(kMediaStringFontSizeDip - kDefaultFontSizeDip)
           .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
   media_text_->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
-  gfx::Insets shadow_insets =
-      gfx::ShadowValue::GetMargin(ambient::util::GetTextShadowValues(
-          nullptr, settings_.text_shadow_elevation));
-  // Compensate the shadow insets to put the text middle align with the icon.
-  media_text_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(-shadow_insets.bottom(), 0, -shadow_insets.top(), 0)));
 
   BindMediaControllerObserver();
 }
@@ -286,10 +286,11 @@ void MediaStringView::StartScrolling(bool is_initial) {
   {
     // Desired speed is 10 seconds for kMediaStringMaxWidthDip.
     const int text_width = media_text_->GetPreferredSize().width();
-    const int shadow_width = gfx::ShadowValue::GetMargin(
-                                 ambient::util::GetTextShadowValues(
-                                     nullptr, settings_.text_shadow_elevation))
-                                 .width();
+    const int shadow_width =
+        gfx::ShadowValue::GetMargin(
+            ambient::util::GetTextShadowValues(
+                nullptr, delegate_->GetSettings().text_shadow_elevation))
+            .width();
     const int start_x = text_layer->GetTargetTransform().To2dTranslation().x();
     const int end_x = -(text_width + shadow_width) / 2;
     const int transform_distance = start_x - end_x;

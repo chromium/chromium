@@ -14,6 +14,7 @@
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_id.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -155,6 +156,24 @@ void AmbientBackgroundImageView::OnViewBoundsChanged(
     SetResizedImage(related_image_view_, related_image_unscaled_);
 }
 
+MediaStringView::Settings AmbientBackgroundImageView::GetSettings() {
+  return MediaStringView::Settings(
+      {/*icon_light_mode_color=*/ambient::util::GetColor(
+           GetColorProvider(), kColorAshIconColorPrimary,
+           /*dark_mode_enabled=*/false),
+       /*icon_dark_mode_color=*/
+       ambient::util::GetColor(GetColorProvider(), kColorAshIconColorPrimary,
+                               /*dark_mode_enabled=*/true),
+       /*text_light_mode_color=*/
+       ambient::util::GetColor(GetColorProvider(), kColorAshTextColorPrimary,
+                               /*dark_mode_enabled=*/false),
+       /*text_dark_mode_color=*/
+       ambient::util::GetColor(GetColorProvider(), kColorAshTextColorPrimary,
+                               /*dark_mode_enabled=*/true),
+       /*text_shadow_elevation=*/
+       ambient::util::kDefaultTextShadowElevation});
+}
+
 void AmbientBackgroundImageView::UpdateImage(
     const gfx::ImageSkia& image,
     const gfx::ImageSkia& related_image,
@@ -264,24 +283,7 @@ void AmbientBackgroundImageView::InitLayout() {
       gfx::Insets::TLBR(kMediaStringMarginDip + shadow_insets.top(), 0, 0,
                         kMediaStringMarginDip + shadow_insets.right()));
   media_string_view_ = media_string_view_container_->AddChildView(
-      std::make_unique<MediaStringView>(MediaStringView::Settings(
-          {/*icon_light_mode_color=*/ambient::util::GetContentLayerColor(
-               AshColorProvider::ContentLayerType::kIconColorPrimary,
-               /*dark_mode_enable=*/false),
-           /*icon_dark_mode_color=*/
-           ambient::util::GetContentLayerColor(
-               AshColorProvider::ContentLayerType::kIconColorPrimary,
-               /*dark_mode_enable=*/true),
-           /*text_light_mode_color=*/
-           ambient::util::GetContentLayerColor(
-               AshColorProvider::ContentLayerType::kTextColorPrimary,
-               /*dark_mode_enable=*/false),
-           /*text_dark_mode_color=*/
-           ambient::util::GetContentLayerColor(
-               AshColorProvider::ContentLayerType::kTextColorPrimary,
-               /*dark_mode_enable=*/true),
-           /*text_shadow_elevation=*/
-           ambient::util::kDefaultTextShadowElevation})));
+      std::make_unique<MediaStringView>(this));
   media_string_view_->SetVisible(false);
 }
 
