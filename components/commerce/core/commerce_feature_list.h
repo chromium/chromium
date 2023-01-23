@@ -362,7 +362,9 @@ std::string GetCurrentCountryCode(variations::VariationsService* variations);
 
 // Check if commerce features are allowed to run for the specified country
 // and locale.
-bool IsEnabledForCountryAndLocale(std::string country, std::string locale);
+bool IsEnabledForCountryAndLocale(const base::Feature& feature,
+                                  std::string country,
+                                  std::string locale);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Get the time delay between discount fetches.

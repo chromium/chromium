@@ -155,15 +155,20 @@ TEST_F(CommerceFeatureListTest, TestNoDiscountMerchant) {
 // "en-us" is an allowed locale for the US.
 TEST_F(CommerceFeatureListTest, TestEnabledForCountryAndLocale) {
   // Check the known success cases with different character cases.
-  ASSERT_TRUE(commerce::IsEnabledForCountryAndLocale("US", "en-us"));
-  ASSERT_TRUE(commerce::IsEnabledForCountryAndLocale("us", "en-US"));
+  ASSERT_TRUE(commerce::IsEnabledForCountryAndLocale(
+      commerce::kShoppingPDPMetricsRegionLaunched, "US", "en-us"));
+  ASSERT_TRUE(commerce::IsEnabledForCountryAndLocale(
+      commerce::kShoppingPDPMetricsRegionLaunched, "us", "en-US"));
 
   // Test allowed country with disallowed (fake) locale.
-  ASSERT_FALSE(commerce::IsEnabledForCountryAndLocale("us", "zz-zz"));
+  ASSERT_FALSE(commerce::IsEnabledForCountryAndLocale(
+      commerce::kShoppingPDPMetricsRegionLaunched, "us", "zz-zz"));
 
   // Test allowed locale in a disallowed (fake) country.
-  ASSERT_FALSE(commerce::IsEnabledForCountryAndLocale("zz", "en-us"));
+  ASSERT_FALSE(commerce::IsEnabledForCountryAndLocale(
+      commerce::kShoppingPDPMetricsRegionLaunched, "zz", "en-us"));
 
   // Ensure empty values don't crash.
-  ASSERT_FALSE(commerce::IsEnabledForCountryAndLocale("", ""));
+  ASSERT_FALSE(commerce::IsEnabledForCountryAndLocale(
+      commerce::kShoppingPDPMetricsRegionLaunched, "", ""));
 }

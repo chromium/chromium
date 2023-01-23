@@ -26,19 +26,28 @@ namespace commerce {
 
 namespace {
 
-typedef std::unordered_map<std::string, std::unordered_set<std::string>>
+typedef std::unordered_map<
+    const base::Feature*,
+    std::unordered_map<std::string, std::unordered_set<std::string>>>
     CountryLocaleMap;
 
 // Get a map of enabled countries to the set of allowed locales for that
-// country. Just because a locale is enabled for one country doesn't mean it can
-// or should be enabled in others. The checks using this map should convert all
-// countries and locales to lower case as they may differ depending on the API
-// used to access them.
+// country on a per-feature basis. Just because a locale is enabled for one
+// country doesn't mean it can or should be enabled in others. The checks using
+// this map should convert all countries and locales to lower case as they may
+// differ depending on the API used to access them.
 const CountryLocaleMap& GetAllowedCountryToLocaleMap() {
   // Declaring the variable "static" means it isn't recreated each time this
   // function is called. This gets around the "static initializers" problem.
-  static const base::NoDestructor<CountryLocaleMap> map{{{"us", {"en-us"}}}};
-  return *map;
+  static const base::NoDestructor<CountryLocaleMap> allowed_map([] {
+    CountryLocaleMap map;
+
+    map[&kShoppingListRegionLaunched] = {{"us", {"en-us"}}};
+    map[&kShoppingPDPMetricsRegionLaunched] = {{"us", {"en-us"}}};
+
+    return map;
+  }());
+  return *allowed_map;
 }
 
 constexpr base::FeatureParam<std::string> kRulePartnerMerchantPattern{
@@ -353,14 +362,24 @@ std::string GetCurrentCountryCode(variations::VariationsService* variations) {
   return country;
 }
 
-bool IsEnabledForCountryAndLocale(std::string country, std::string locale) {
+bool IsEnabledForCountryAndLocale(const base::Feature& feature,
+                                  std::string country,
+                                  std::string locale) {
   const CountryLocaleMap& allowedCountryLocales =
       GetAllowedCountryToLocaleMap();
-  auto it = allowedCountryLocales.find(base::ToLowerASCII(country));
+
+  // First make sure the feature is in the map.
+  auto feature_it = allowedCountryLocales.find(&feature);
+  if (feature_it == allowedCountryLocales.end()) {
+    return false;
+  }
+
+  auto it = feature_it->second.find(base::ToLowerASCII(country));
 
   // If the country isn't in the map, it's not valid.
-  if (it == allowedCountryLocales.end())
+  if (it == feature_it->second.end()) {
     return false;
+  }
 
   // If the set of allowed locales contains our locale, we're considered to be
   // enabled.

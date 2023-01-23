@@ -385,7 +385,8 @@ bool ShoppingService::IsProductInfoApiEnabled() {
                       commerce::kAddToCartProductImage.Get();
   bool region_launched =
       base::FeatureList::IsEnabled(kShoppingListRegionLaunched) &&
-      IsEnabledForCountryAndLocale(country_on_startup_, locale_on_startup_);
+      IsEnabledForCountryAndLocale(kShoppingListRegionLaunched,
+                                   country_on_startup_, locale_on_startup_);
 
   return flag_enabled || region_launched;
 }
@@ -394,7 +395,8 @@ bool ShoppingService::IsPDPMetricsRecordingEnabled() {
   bool flag_enabled = base::FeatureList::IsEnabled(kShoppingPDPMetrics);
   bool region_launched =
       base::FeatureList::IsEnabled(kShoppingPDPMetricsRegionLaunched) &&
-      IsEnabledForCountryAndLocale(country_on_startup_, locale_on_startup_);
+      IsEnabledForCountryAndLocale(kShoppingPDPMetricsRegionLaunched,
+                                   country_on_startup_, locale_on_startup_);
 
   return flag_enabled || region_launched;
 }
@@ -735,7 +737,8 @@ bool ShoppingService::IsShoppingListEligible(AccountChecker* account_checker,
   bool flag_enabled = base::FeatureList::IsEnabled(kShoppingList);
   bool region_launched =
       base::FeatureList::IsEnabled(kShoppingListRegionLaunched) &&
-      IsEnabledForCountryAndLocale(country_code, locale);
+      IsEnabledForCountryAndLocale(kShoppingListRegionLaunched, country_code,
+                                   locale);
 
   if (!flag_enabled && !region_launched) {
     return false;
