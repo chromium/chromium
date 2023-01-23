@@ -89,7 +89,8 @@ bool OptionalTransceiverDirectionFromStringWithStopped(
 
 webrtc::RtpTransceiverInit ToRtpTransceiverInit(
     ExecutionContext* context,
-    const RTCRtpTransceiverInit* init) {
+    const RTCRtpTransceiverInit* init,
+    const String& kind) {
   webrtc::RtpTransceiverInit webrtc_init;
   absl::optional<webrtc::RtpTransceiverDirection> direction;
   if (init->hasDirection() &&
@@ -104,7 +105,7 @@ webrtc::RtpTransceiverInit ToRtpTransceiverInit(
   DCHECK(init->hasSendEncodings());
   for (const auto& encoding : init->sendEncodings()) {
     webrtc_init.send_encodings.push_back(
-        ToRtpEncodingParameters(context, encoding));
+        ToRtpEncodingParameters(context, encoding, kind));
   }
   return webrtc_init;
 }

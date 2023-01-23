@@ -448,13 +448,14 @@ webrtc::Priority PriorityToEnum(const WTF::String& priority) {
 std::tuple<Vector<webrtc::RtpEncodingParameters>,
            absl::optional<webrtc::DegradationPreference>>
 ToRtpParameters(ExecutionContext* context,
-                const RTCRtpSendParameters* parameters) {
+                const RTCRtpSendParameters* parameters,
+                const String& kind) {
   Vector<webrtc::RtpEncodingParameters> encodings;
   if (parameters->hasEncodings()) {
     encodings.reserve(parameters->encodings().size());
 
     for (const auto& encoding : parameters->encodings()) {
-      encodings.push_back(ToRtpEncodingParameters(context, encoding));
+      encodings.push_back(ToRtpEncodingParameters(context, encoding, kind));
     }
   }
 
@@ -481,7 +482,8 @@ ToRtpParameters(ExecutionContext* context,
 
 webrtc::RtpEncodingParameters ToRtpEncodingParameters(
     ExecutionContext* context,
-    const RTCRtpEncodingParameters* encoding) {
+    const RTCRtpEncodingParameters* encoding,
+    const String& kind) {
   webrtc::RtpEncodingParameters webrtc_encoding;
   if (encoding->hasRid()) {
     webrtc_encoding.rid = encoding->rid().Utf8();
@@ -493,21 +495,24 @@ webrtc::RtpEncodingParameters ToRtpEncodingParameters(
   if (encoding->hasMaxBitrate()) {
     webrtc_encoding.max_bitrate_bps = ClampTo<int>(encoding->maxBitrate());
   }
-  if (encoding->hasScaleResolutionDownBy()) {
-    webrtc_encoding.scale_resolution_down_by =
-        encoding->scaleResolutionDownBy();
+  if (kind == "video") {
+    if (encoding->hasScaleResolutionDownBy()) {
+      webrtc_encoding.scale_resolution_down_by =
+          encoding->scaleResolutionDownBy();
+    }
+    if (encoding->hasMaxFramerate()) {
+      webrtc_encoding.max_framerate = encoding->maxFramerate();
+    }
+    // https://w3c.github.io/webrtc-svc/
+    if (encoding->hasScalabilityMode()) {
+      webrtc_encoding.scalability_mode = encoding->scalabilityMode().Utf8();
+      WebRtcScalabilityMode scalability_mode =
+          ScalabilityModeStringToUMAMode(*webrtc_encoding.scalability_mode);
+      UMA_HISTOGRAM_ENUMERATION("WebRtcScalabilityMode", scalability_mode);
+    }
+  } else if (kind == "audio") {
+    webrtc_encoding.adaptive_ptime = encoding->adaptivePtime();
   }
-  if (encoding->hasMaxFramerate()) {
-    webrtc_encoding.max_framerate = encoding->maxFramerate();
-  }
-  // https://w3c.github.io/webrtc-svc/
-  if (encoding->hasScalabilityMode()) {
-    webrtc_encoding.scalability_mode = encoding->scalabilityMode().Utf8();
-    WebRtcScalabilityMode scalability_mode =
-        ScalabilityModeStringToUMAMode(*webrtc_encoding.scalability_mode);
-    UMA_HISTOGRAM_ENUMERATION("WebRtcScalabilityMode", scalability_mode);
-  }
-  webrtc_encoding.adaptive_ptime = encoding->adaptivePtime();
   return webrtc_encoding;
 }
 
@@ -670,22 +675,25 @@ RTCRtpSendParameters* RTCRtpSender::getParameters() {
     if (webrtc_encoding.max_bitrate_bps) {
       encoding->setMaxBitrate(webrtc_encoding.max_bitrate_bps.value());
     }
-    if (webrtc_encoding.scale_resolution_down_by) {
-      encoding->setScaleResolutionDownBy(
-          webrtc_encoding.scale_resolution_down_by.value());
-    }
-    if (webrtc_encoding.max_framerate) {
-      encoding->setMaxFramerate(webrtc_encoding.max_framerate.value());
-    }
     encoding->setPriority(
         PriorityFromDouble(webrtc_encoding.bitrate_priority).c_str());
     encoding->setNetworkPriority(
         PriorityFromEnum(webrtc_encoding.network_priority).c_str());
-    if (webrtc_encoding.scalability_mode) {
-      encoding->setScalabilityMode(
-          webrtc_encoding.scalability_mode.value().c_str());
+    if (kind_ == "video") {
+      if (webrtc_encoding.scale_resolution_down_by) {
+        encoding->setScaleResolutionDownBy(
+            webrtc_encoding.scale_resolution_down_by.value());
+      }
+      if (webrtc_encoding.max_framerate) {
+        encoding->setMaxFramerate(webrtc_encoding.max_framerate.value());
+      }
+      if (webrtc_encoding.scalability_mode) {
+        encoding->setScalabilityMode(
+            webrtc_encoding.scalability_mode.value().c_str());
+      }
+    } else if (kind_ == "audio") {
+      encoding->setAdaptivePtime(webrtc_encoding.adaptive_ptime);
     }
-    encoding->setAdaptivePtime(webrtc_encoding.adaptive_ptime);
     encodings.push_back(encoding);
   }
   parameters->setEncodings(encodings);
@@ -743,7 +751,7 @@ ScriptPromise RTCRtpSender::setParameters(
   Vector<webrtc::RtpEncodingParameters> encodings;
   absl::optional<webrtc::DegradationPreference> degradation_preference;
   std::tie(encodings, degradation_preference) =
-      ToRtpParameters(pc_->GetExecutionContext(), parameters);
+      ToRtpParameters(pc_->GetExecutionContext(), parameters, kind_);
 
   auto* request = MakeGarbageCollected<SetParametersRequest>(resolver, this);
   sender_->SetParameters(std::move(encodings), degradation_preference, request);

@@ -1,17 +1,17 @@
 This is a testharness.js-based test.
-FAIL getParameters should return RTCRtpEncodingParameters with all required fields assert_equals: expected 1 but got 0
-FAIL addTransceiver(audio) with undefined sendEncodings should have default encoding parameter with active set to true assert_equals: expected 1 but got 0
-FAIL addTransceiver(video) with undefined sendEncodings should have default encoding parameter with active set to true and scaleResolutionDownBy set to 1 assert_equals: expected 1 but got 0
-FAIL addTransceiver(audio) with empty list sendEncodings should have default encoding parameter with active set to true assert_equals: expected 1 but got 0
-FAIL addTransceiver(video) with empty list sendEncodings should have default encoding parameter with active set to true and scaleResolutionDownBy set to 1 assert_equals: expected 1 but got 0
+PASS getParameters should return RTCRtpEncodingParameters with all required fields
+PASS addTransceiver(audio) with undefined sendEncodings should have default encoding parameter with active set to true
+FAIL addTransceiver(video) with undefined sendEncodings should have default encoding parameter with active set to true and scaleResolutionDownBy set to 1 assert_equals: expected (number) 1 but got (undefined) undefined
+PASS addTransceiver(audio) with empty list sendEncodings should have default encoding parameter with active set to true
+FAIL addTransceiver(video) with empty list sendEncodings should have default encoding parameter with active set to true and scaleResolutionDownBy set to 1 assert_equals: expected (number) 1 but got (undefined) undefined
 FAIL addTransceiver(video) should auto-set scaleResolutionDownBy to 1 when some encodings have it, but not all assert_equals: expected (number) 1 but got (undefined) undefined
 FAIL addTransceiver should auto-set scaleResolutionDownBy to powers of 2 (descending) when absent assert_equals: expected (number) 2 but got (undefined) undefined
 PASS addTransceiver with a ridiculous number of encodings should truncate the list
 PASS addTransceiver(audio) with multiple encodings should result in one encoding with no properties other than active
-FAIL addTransceiver(audio) should remove valid scaleResolutionDownBy assert_not_own_property: unexpected property "scaleResolutionDownBy" is found on object
-FAIL addTransceiver(audio) should remove invalid scaleResolutionDownBy promise_test: Unhandled rejection with value: object "RangeError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': Attempted to set RtpParameters scale_resolution_down_by to an invalid value. scale_resolution_down_by must be >= 1.0"
-FAIL setParameters with scaleResolutionDownBy on an audio sender should succeed, but remove the scaleResolutionDownBy assert_equals: expected 1 but got 0
-FAIL setParameters with an invalid scaleResolutionDownBy on an audio sender should succeed, but remove the scaleResolutionDownBy assert_equals: expected 1 but got 0
+PASS addTransceiver(audio) should remove valid scaleResolutionDownBy
+PASS addTransceiver(audio) should remove invalid scaleResolutionDownBy
+PASS setParameters with scaleResolutionDownBy on an audio sender should succeed, but remove the scaleResolutionDownBy
+PASS setParameters with an invalid scaleResolutionDownBy on an audio sender should succeed, but remove the scaleResolutionDownBy
 FAIL addTransceiver with duplicate rid and multiple encodings throws TypeError assert_throws_js: function "() => pc.addTransceiver('video', { sendEncodings: [{rid: "foo"}, {rid: "foo"}] })" did not throw
 FAIL addTransceiver with missing rid and multiple encodings throws TypeError assert_throws_js: function "() => pc.addTransceiver('video', { sendEncodings: [{rid: "foo"}, {}] })" threw object "InvalidAccessError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': RIDs must be provided for either all or none of the send encodings." ("InvalidAccessError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
 FAIL addTransceiver with empty rid throws TypeError assert_throws_js: function "() => pc.addTransceiver('video', { sendEncodings: [{rid: ""}] })" did not throw
@@ -19,14 +19,14 @@ FAIL addTransceiver with invalid rid characters throws TypeError assert_throws_j
 PASS addTransceiver with rid longer than 255 characters throws TypeError
 PASS addTransceiver with scaleResolutionDownBy < 1 throws RangeError
 PASS sender.getParameters() should return sendEncodings set by addTransceiver()
-FAIL sender.setParameters() with added encodings should reject with InvalidModificationError assert_equals: expected 1 but got 0
+PASS sender.setParameters() with added encodings should reject with InvalidModificationError
 PASS sender.setParameters() with removed encodings should reject with InvalidModificationError
 PASS sender.setParameters() with reordered encodings should reject with InvalidModificationError
 PASS sender.setParameters() with encodings unset should reject with TypeError
 PASS setParameters() with modified encoding.rid field should reject with InvalidModificationError
-FAIL setParameters() with encoding.scaleResolutionDownBy field set to less than 1.0 should reject with RangeError promise_test: Unhandled rejection with value: object "TypeError: Cannot set properties of undefined (setting 'scaleResolutionDownBy')"
-FAIL setParameters() with missing encoding.scaleResolutionDownBy field should succeed, and set the value back to 1 promise_test: Unhandled rejection with value: object "TypeError: Cannot convert undefined or null to object"
-FAIL setParameters() with encoding.scaleResolutionDownBy field set to greater than 1.0 should succeed promise_test: Unhandled rejection with value: object "TypeError: Cannot set properties of undefined (setting 'scaleResolutionDownBy')"
+FAIL setParameters() with encoding.scaleResolutionDownBy field set to less than 1.0 should reject with RangeError promise_rejects_js: function "function() { throw e }" threw object "InvalidStateError: getParameters() needs to be called before setParameters()." ("InvalidStateError") expected instance of function "function RangeError() { [native code] }" ("RangeError")
+FAIL setParameters() with missing encoding.scaleResolutionDownBy field should succeed, and set the value back to 1 assert_equals: expected (number) 1 but got (undefined) undefined
+PASS setParameters() with encoding.scaleResolutionDownBy field set to greater than 1.0 should succeed
 PASS setParameters() with encoding.active false->true should succeed (video) with RTCRtpTransceiverInit
 PASS setParameters() with encoding.active false->true should succeed (video) without RTCRtpTransceiverInit
 PASS setParameters() with encoding.active true->false should succeed (video) with RTCRtpTransceiverInit

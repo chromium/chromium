@@ -42,7 +42,8 @@ class RTCInsertableStreams;
 
 webrtc::RtpEncodingParameters ToRtpEncodingParameters(
     ExecutionContext* context,
-    const RTCRtpEncodingParameters*);
+    const RTCRtpEncodingParameters*,
+    const String& kind);
 RTCRtpHeaderExtensionParameters* ToRtpHeaderExtensionParameters(
     const webrtc::RtpExtension& headers);
 RTCRtpCodecParameters* ToRtpCodecParameters(

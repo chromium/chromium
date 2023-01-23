@@ -26,7 +26,8 @@ class RTCRtpReceiver;
 class RTCRtpSender;
 
 webrtc::RtpTransceiverInit ToRtpTransceiverInit(ExecutionContext* context,
-                                                const RTCRtpTransceiverInit*);
+                                                const RTCRtpTransceiverInit*,
+                                                const String& kind);
 
 class RTCRtpTransceiver final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
