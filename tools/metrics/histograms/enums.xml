@@ -76231,6 +76231,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="10" label="Not standard from OnAppUpdate"/>
   <int value="11" label="Icon exist on Destroyed"/>
   <int value="12" label="Icon not exist on Destroyed"/>
+  <int value="13" label="OnAppUpdate get called"/>
 </enum>
 
 <enum name="OsSettingsProviderStatus">

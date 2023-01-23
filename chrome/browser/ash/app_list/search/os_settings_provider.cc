@@ -80,7 +80,9 @@ enum class IconLoadStatus {
   // On App Registry Cache Will Be Destroyed
   kIconExistOnDestroyed = 11,
   kIconNotExistOnDestroyed = 12,
-  kMaxValue = kIconNotExistOnDestroyed,
+  // On App Update
+  kOnAppUpdateGetCalled = 13,
+  kMaxValue = kOnAppUpdateGetCalled,
 };
 
 void LogIconLoadStatus(IconLoadStatus icon_load_status) {
@@ -295,6 +297,8 @@ void OsSettingsProvider::OnSearchReturned(
 void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.AppId() != web_app::kOsSettingsAppId)
     return;
+
+  LogIconLoadStatus(IconLoadStatus::kOnAppUpdateGetCalled);
 
   // TODO(crbug.com/1068851): We previously disabled this search provider until
   // the app service signalled that the settings app is ready. But this signal
