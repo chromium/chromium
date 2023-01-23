@@ -295,6 +295,7 @@ class AttributionSimulatorInputParser {
               .trigger = AttributionTrigger(std::move(*reporting_origin),
                                             std::move(*trigger_registration),
                                             std::move(*destination_origin),
+                                            /*attestation=*/absl::nullopt,
                                             /*is_within_fenced_frame=*/false),
               .time = trigger_time,
           });

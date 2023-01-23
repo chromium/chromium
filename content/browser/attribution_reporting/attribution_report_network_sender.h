@@ -17,6 +17,7 @@
 class GURL;
 
 namespace net {
+class HttpRequestHeaders;
 class HttpResponseHeaders;
 }  // namespace net
 
@@ -63,6 +64,7 @@ class CONTENT_EXPORT AttributionReportNetworkSender
 
   void SendReport(GURL url,
                   const std::string& body,
+                  net::HttpRequestHeaders headers,
                   UrlLoaderCallback callback);
 
   // Called when headers are available for a sent report.

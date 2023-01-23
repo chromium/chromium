@@ -448,6 +448,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
 
   AttributionTrigger trigger(std::move(reporting_origin), std::move(data),
                              /*destination_origin=*/context.context_origin(),
+                             std::move(attestation),
                              context.is_within_fenced_frame());
 
   // Handle the trigger immediately if we're not waiting for any sources to be

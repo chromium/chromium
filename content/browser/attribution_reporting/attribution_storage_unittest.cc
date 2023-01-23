@@ -2705,6 +2705,7 @@ TEST_F(AttributionStorageTest, NoMatchingTriggerData_ReturnsError) {
               /*debug_reporting=*/false,
               ::aggregation_service::mojom::AggregationCoordinator::kDefault),
           /*destination_origin=*/origin,
+          /*attestation=*/absl::nullopt,
           /*is_within_fenced_frame=*/false)));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
@@ -2798,6 +2799,7 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
               /*debug_reporting=*/false,
               ::aggregation_service::mojom::AggregationCoordinator::kDefault),
           /*destination_origin=*/origin,
+          /*attestation=*/absl::nullopt,
           /*is_within_fenced_frame=*/false)));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
@@ -2847,7 +2849,8 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           aggregatable_values,
           /*debug_reporting=*/false,
           ::aggregation_service::mojom::AggregationCoordinator::kDefault),
-      /*destination_origin=*/origin, /*is_within_fenced_frame=*/false);
+      /*destination_origin=*/origin, /*attestation=*/absl::nullopt,
+      /*is_within_fenced_frame=*/false);
 
   AttributionTrigger trigger2(
       /*reporting_origin=*/origin,
@@ -2865,7 +2868,8 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           aggregatable_values,
           /*debug_reporting=*/false,
           ::aggregation_service::mojom::AggregationCoordinator::kDefault),
-      /*destination_origin=*/origin, /*is_within_fenced_frame=*/false);
+      /*destination_origin=*/origin, /*attestation=*/absl::nullopt,
+      /*is_within_fenced_frame=*/false);
 
   AttributionTrigger trigger3(
       /*reporting_origin=*/origin,
@@ -2882,6 +2886,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           /*debug_reporting=*/false,
           ::aggregation_service::mojom::AggregationCoordinator::kDefault),
       /*destination_origin=*/origin,
+      /*attestation=*/absl::nullopt,
       /*is_within_fenced_frame=*/false);
 
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(trigger1),

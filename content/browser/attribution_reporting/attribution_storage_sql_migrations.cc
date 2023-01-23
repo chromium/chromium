@@ -531,6 +531,25 @@ bool MigrateToVersion40(sql::Database* db, sql::MetaTable* meta_table) {
   return transaction.Commit();
 }
 
+bool MigrateToVersion41(sql::Database* db, sql::MetaTable* meta_table) {
+  // Wrap each migration in its own transaction. See comment in
+  // `MigrateToVersion34`.
+  sql::Transaction transaction(db);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  static constexpr char kAddAttestationHeaderColumnSql[] =
+      "ALTER TABLE aggregatable_report_metadata "
+      "ADD COLUMN attestation_token TEXT";
+  if (!db->Execute(kAddAttestationHeaderColumnSql)) {
+    return false;
+  }
+
+  meta_table->SetVersionNumber(41);
+  return transaction.Commit();
+}
+
 }  // namespace
 
 bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
@@ -575,6 +594,11 @@ bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
   }
   if (meta_table->GetVersionNumber() == 39) {
     if (!MigrateToVersion40(db, meta_table)) {
+      return false;
+    }
+  }
+  if (meta_table->GetVersionNumber() == 40) {
+    if (!MigrateToVersion41(db, meta_table)) {
       return false;
     }
   }

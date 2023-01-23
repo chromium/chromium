@@ -47,6 +47,7 @@
 #include "content/shell/browser/shell.h"
 #include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -1024,6 +1025,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           /*debug_reporting=*/false,
           ::aggregation_service::mojom::AggregationCoordinator::kDefault),
       *SuitableOrigin::Deserialize("https://d.test"),
+      /*attestation=*/absl::nullopt,
       /*is_within_fenced_frame=*/false);
 
   static constexpr char kScript[] = R"(

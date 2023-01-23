@@ -19,6 +19,7 @@
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
+#include "net/http/http_request_headers.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -57,10 +58,12 @@ AttributionReport::AggregatableAttributionData::AggregatableAttributionData(
     Id id,
     base::Time initial_report_time,
     ::aggregation_service::mojom::AggregationCoordinator
-        aggregation_coordinator)
+        aggregation_coordinator,
+    absl::optional<std::string> attestation_token)
     : contributions(std::move(contributions)),
       id(id),
       initial_report_time(initial_report_time),
+      attestation_token(std::move(attestation_token)),
       aggregation_coordinator(aggregation_coordinator) {}
 
 AttributionReport::AggregatableAttributionData::AggregatableAttributionData(
@@ -259,6 +262,15 @@ absl::optional<base::Time> AttributionReport::MinReportTime(
   }
 
   return std::min(*a, *b);
+}
+
+void AttributionReport::PopulateAdditionalHeaders(
+    net::HttpRequestHeaders& headers) const {
+  if (const auto* data = absl::get_if<AggregatableAttributionData>(&data_);
+      data && data->attestation_token.has_value()) {
+    headers.SetHeader("Sec-Attribution-Reporting-Private-State-Token",
+                      *data->attestation_token);
+  }
 }
 
 }  // namespace content

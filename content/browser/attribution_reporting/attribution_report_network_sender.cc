@@ -58,8 +58,10 @@ void AttributionReportNetworkSender::SendReport(
     ReportSentCallback sent_callback) {
   GURL url = report.ReportURL(is_debug_report);
   std::string body = SerializeAttributionJson(report.ReportBody());
+  net::HttpRequestHeaders headers;
+  report.PopulateAdditionalHeaders(headers);
 
-  SendReport(std::move(url), body,
+  SendReport(std::move(url), body, std::move(headers),
              base::BindOnce(&AttributionReportNetworkSender::OnReportSent,
                             base::Unretained(this), std::move(report),
                             is_debug_report, std::move(sent_callback)));
@@ -71,7 +73,7 @@ void AttributionReportNetworkSender::SendReport(
   GURL url = report.ReportURL();
   std::string body = SerializeAttributionJson(report.ReportBody());
   SendReport(
-      std::move(url), body,
+      std::move(url), body, net::HttpRequestHeaders(),
       base::BindOnce(&AttributionReportNetworkSender::OnDebugReportSent,
                      base::Unretained(this),
                      base::BindOnce(std::move(callback), std::move(report))));
@@ -79,9 +81,11 @@ void AttributionReportNetworkSender::SendReport(
 
 void AttributionReportNetworkSender::SendReport(GURL url,
                                                 const std::string& body,
+                                                net::HttpRequestHeaders headers,
                                                 UrlLoaderCallback callback) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = std::move(url);
+  resource_request->headers = std::move(headers);
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->load_flags =

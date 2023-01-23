@@ -187,7 +187,7 @@ inline constexpr const char kGetEventLevelReportSql[] =
   ATTRIBUTION_SOURCE_COLUMNS_SQL("I.")                                 \
   ",A.aggregation_id,A.trigger_time,A.report_time,A.debug_key,"        \
   "A.external_report_id,A.failed_send_attempts,A.initial_report_time," \
-  "A.aggregation_coordinator "                                         \
+  "A.aggregation_coordinator,A.attestation_token "                     \
   "FROM aggregatable_report_metadata A "                               \
   "JOIN sources I ON A.source_id=I.source_id "
 

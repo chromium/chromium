@@ -31,6 +31,7 @@
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
+#include "components/attribution_reporting/trigger_attestation.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
@@ -537,6 +538,9 @@ class TriggerBuilder {
   TriggerBuilder& SetAggregationCoordinator(
       ::aggregation_service::mojom::AggregationCoordinator);
 
+  TriggerBuilder& SetAttestation(
+      absl::optional<attribution_reporting::TriggerAttestation> attestation);
+
   AttributionTrigger Build(bool generate_event_trigger_data = true) const;
 
  private:
@@ -556,6 +560,7 @@ class TriggerBuilder {
   ::aggregation_service::mojom::AggregationCoordinator
       aggregation_coordinator_ =
           ::aggregation_service::mojom::AggregationCoordinator::kDefault;
+  absl::optional<attribution_reporting::TriggerAttestation> attestation_;
 };
 
 // Helper class to construct an `AttributionInfo` for tests using default data.
@@ -604,6 +609,9 @@ class ReportBuilder {
   ReportBuilder& SetAggregationCoordinator(
       ::aggregation_service::mojom::AggregationCoordinator);
 
+  ReportBuilder& SetAttestationToken(
+      absl::optional<std::string> attestation_token);
+
   AttributionReport Build() const;
 
   AttributionReport BuildAggregatableAttribution() const;
@@ -622,6 +630,7 @@ class ReportBuilder {
   ::aggregation_service::mojom::AggregationCoordinator
       aggregation_coordinator_ =
           ::aggregation_service::mojom::AggregationCoordinator::kDefault;
+  absl::optional<std::string> attestation_token_;
 };
 
 bool operator==(const AttributionTrigger& a, const AttributionTrigger& b);
@@ -986,6 +995,9 @@ struct AttributionTriggerMatcherConfig {
       registration = ::testing::_;
   ::testing::Matcher<const attribution_reporting::SuitableOrigin&>
       destination_origin = ::testing::_;
+  ::testing::Matcher<
+      const absl::optional<attribution_reporting::TriggerAttestation>&>
+      attestation = ::testing::_;
 
   ::testing::Matcher<bool> is_within_fenced_frame = ::testing::_;
 

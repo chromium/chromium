@@ -364,6 +364,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                           kDefault),
                   /*destination_origin=*/
                   *SuitableOrigin::Deserialize("https://a.d1.test"),
+                  /*attestation=*/absl::nullopt,
                   /*is_within_fenced_frame=*/false),
               .time = kOffsetTime + base::Milliseconds(1643235576123),
           },
@@ -387,6 +388,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                           kDefault),
                   /*destination_origin=*/
                   *SuitableOrigin::Deserialize("https://a.d2.test"),
+                  /*attestation=*/absl::nullopt,
                   /*is_within_fenced_frame=*/false),
               .time = kOffsetTime + base::Milliseconds(1643235575123),
           },
@@ -418,6 +420,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                           kDefault),
                   /*destination_origin=*/
                   *SuitableOrigin::Deserialize("https://a.d2.test"),
+                  /*attestation=*/absl::nullopt,
                   /*is_within_fenced_frame=*/false),
               .time = kOffsetTime + base::Milliseconds(1643235574123),
           })));

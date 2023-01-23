@@ -68,11 +68,11 @@ namespace content {
 // Version number of the database.
 // TODO: remove the active_unattributed_sources_by_site_reporting_origin index
 // during the next DB migration.
-const int AttributionStorageSql::kCurrentVersionNumber = 40;
+const int AttributionStorageSql::kCurrentVersionNumber = 41;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int AttributionStorageSql::kCompatibleVersionNumber = 40;
+const int AttributionStorageSql::kCompatibleVersionNumber = 41;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -310,6 +310,22 @@ void BindUint64OrNull(sql::Statement& statement,
   } else {
     statement.BindNull(col);
   }
+}
+
+void BindStringOrNull(sql::Statement& statement,
+                      int col,
+                      const absl::optional<std::string>& value) {
+  if (value.has_value()) {
+    statement.BindString(col, value.value());
+  } else {
+    statement.BindNull(col);
+  }
+}
+absl::optional<std::string> ColumnStringOrNull(sql::Statement& statement,
+                                               int col) {
+  return statement.GetColumnType(col) == sql::ColumnType::kNull
+             ? absl::nullopt
+             : absl::make_optional(statement.ColumnString(col));
 }
 
 absl::optional<uint64_t> ColumnUint64OrNull(sql::Statement& statement,
@@ -2281,7 +2297,8 @@ bool AttributionStorageSql::CreateSchema() {
       "report_time INTEGER NOT NULL,"
       "failed_send_attempts INTEGER NOT NULL,"
       "initial_report_time INTEGER NOT NULL,"
-      "aggregation_coordinator INTEGER NOT NULL)";
+      "aggregation_coordinator INTEGER NOT NULL,"
+      "attestation_token TEXT)";
   if (!db_->Execute(kAggregatableReportMetadataTableSql)) {
     return false;
   }
@@ -2708,13 +2725,24 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
   base::Time report_time =
       delegate_->GetAggregatableReportTime(attribution_info.time);
 
+  absl::optional<std::string> attestation_token;
+
+  if (trigger.attestation().has_value()) {
+    attestation_token = trigger.attestation()->token();
+  }
+
+  base::GUID external_report_id =
+      trigger.attestation().has_value()
+          ? trigger.attestation()->aggregatable_report_id()
+          : delegate_->NewReportID();
   report = AttributionReport(
-      attribution_info, report_time, delegate_->NewReportID(),
+      attribution_info, report_time, std::move(external_report_id),
       /*failed_send_attempts=*/0,
       AttributionReport::AggregatableAttributionData(
           std::move(contributions),
           AttributionReport::AggregatableAttributionData::Id(kUnsetReportId),
-          report_time, trigger_registration.aggregation_coordinator));
+          report_time, trigger_registration.aggregation_coordinator,
+          std::move(attestation_token)));
 
   return AggregatableResult::kSuccess;
 }
@@ -2736,8 +2764,9 @@ bool AttributionStorageSql::StoreAggregatableAttributionReport(
   static constexpr char kInsertMetadataSql[] =
       "INSERT INTO aggregatable_report_metadata"
       "(source_id,trigger_time,debug_key,external_report_id,report_time,"
-      "failed_send_attempts,initial_report_time,aggregation_coordinator)"
-      "VALUES(?,?,?,?,?,0,?,?)";
+      "failed_send_attempts,initial_report_time,aggregation_coordinator,"
+      "attestation_token)"
+      "VALUES(?,?,?,?,?,0,?,?,?)";
   sql::Statement insert_metadata_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertMetadataSql));
   insert_metadata_statement.BindInt64(0, *attribution_info.source.source_id());
@@ -2751,6 +2780,8 @@ bool AttributionStorageSql::StoreAggregatableAttributionReport(
   insert_metadata_statement.BindInt(
       6, SerializeAggregationCoordinator(
              aggregatable_attribution->aggregation_coordinator));
+  BindStringOrNull(insert_metadata_statement, 7,
+                   aggregatable_attribution->attestation_token);
   if (!insert_metadata_statement.Run()) {
     return false;
   }
@@ -2847,7 +2878,7 @@ AttributionStorageSql::MaybeStoreAggregatableAttributionReport(
 absl::optional<AttributionReport>
 AttributionStorageSql::ReadAggregatableAttributionReportFromStatement(
     sql::Statement& statement) {
-  DCHECK_EQ(statement.ColumnCount(), kSourceColumnCount + 8);
+  DCHECK_EQ(statement.ColumnCount(), kSourceColumnCount + 9);
 
   absl::optional<StoredSourceData> source_data =
       ReadSourceFromStatement(statement);
@@ -2870,6 +2901,9 @@ AttributionStorageSql::ReadAggregatableAttributionReportFromStatement(
       aggregation_coordinator =
           DeserializeAggregationCoordinator(statement.ColumnInt(col++));
 
+  absl::optional<std::string> attestation_token =
+      ColumnStringOrNull(statement, col++);
+
   // Ensure data is valid before continuing. This could happen if there is
   // database corruption.
   if (!external_report_id.is_valid() || failed_send_attempts < 0 ||
@@ -2883,13 +2917,13 @@ AttributionStorageSql::ReadAggregatableAttributionReportFromStatement(
     return absl::nullopt;
   }
 
-  return AttributionReport(AttributionInfo(std::move(source_data->source),
-                                           trigger_time, trigger_debug_key),
-                           report_time, std::move(external_report_id),
-                           failed_send_attempts,
-                           AttributionReport::AggregatableAttributionData(
-                               std::move(contributions), report_id,
-                               initial_report_time, *aggregation_coordinator));
+  return AttributionReport(
+      AttributionInfo(std::move(source_data->source), trigger_time,
+                      trigger_debug_key),
+      report_time, std::move(external_report_id), failed_send_attempts,
+      AttributionReport::AggregatableAttributionData(
+          std::move(contributions), report_id, initial_report_time,
+          *aggregation_coordinator, std::move(attestation_token)));
 }
 
 absl::optional<AttributionReport> AttributionStorageSql::GetReport(

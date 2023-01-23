@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <vector>
 
 #include "base/containers/enum_set.h"
@@ -25,6 +26,10 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;
+
+namespace net {
+class HttpRequestHeaders;
+}  // namespace net
 
 namespace content {
 
@@ -78,7 +83,8 @@ class CONTENT_EXPORT AttributionReport {
         Id id,
         base::Time initial_report_time,
         ::aggregation_service::mojom::AggregationCoordinator
-            aggregation_coordinator);
+            aggregation_coordinator,
+        absl::optional<std::string> attestation_token);
     AggregatableAttributionData(const AggregatableAttributionData&);
     AggregatableAttributionData& operator=(const AggregatableAttributionData&);
     AggregatableAttributionData(AggregatableAttributionData&&);
@@ -107,6 +113,10 @@ class CONTENT_EXPORT AttributionReport {
 
     // The initial report time scheduled by the browser.
     base::Time initial_report_time;
+
+    // A token that can be sent alongside the report to complete trigger
+    // attestation.
+    absl::optional<std::string> attestation_token;
 
     ::aggregation_service::mojom::AggregationCoordinator
         aggregation_coordinator;
@@ -142,6 +152,9 @@ class CONTENT_EXPORT AttributionReport {
   GURL ReportURL(bool debug = false) const;
 
   base::Value::Dict ReportBody() const;
+
+  // Populate additional headers that should be sent alongside the report.
+  void PopulateAdditionalHeaders(net::HttpRequestHeaders&) const;
 
   Id ReportId() const;
 

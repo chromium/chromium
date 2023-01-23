@@ -24,9 +24,17 @@ namespace content {
 
 namespace {
 
-std::string RemoveQuotes(std::string input) {
+// Normalize schema strings to compare them reliabily. Notably, applies the
+// following transformations:
+// - Remove quotes as sometimes migrations cause table names to be string
+//   literals.
+// - Replaces ", " with "," as CREATE TABLE in schema will be represented with
+//   or without a space depending if it got there by calling CREATE TABLE
+//   directly or with an ALTER TABLE.
+std::string NormalizeSchema(std::string input) {
   std::string output;
   base::RemoveChars(input, "\"", &output);
+  base::ReplaceSubstringsAfterOffset(&output, 0, ", ", ",");
   return output;
 }
 
@@ -171,9 +179,8 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateLatestDeprecatedToCurrent) {
     EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
               VersionFromDatabase(&db));
 
-    // Compare without quotes as sometimes migrations cause table names to be
-    // string literals.
-    EXPECT_EQ(RemoveQuotes(GetCurrentSchema()), RemoveQuotes(db.GetSchema()));
+    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
+              NormalizeSchema(db.GetSchema()));
 
     // Verify that data is not preserved across the migration.
     sql::Statement s(
@@ -218,9 +225,8 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion33ToCurrent) {
     EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
               VersionFromDatabase(&db));
 
-    // Compare without quotes as sometimes migrations cause table names to be
-    // string literals.
-    EXPECT_EQ(RemoveQuotes(GetCurrentSchema()), RemoveQuotes(db.GetSchema()));
+    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
+              NormalizeSchema(db.GetSchema()));
 
     // Verify that data is preserved across the migration.
     sql::Statement s(
@@ -269,9 +275,9 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion34ToCurrent) {
     EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
               VersionFromDatabase(&db));
 
-    // Compare without quotes as sometimes migrations cause table names to be
-    // string literals.
-    EXPECT_EQ(RemoveQuotes(GetCurrentSchema()), RemoveQuotes(db.GetSchema()));
+    // Compare normalized schemas
+    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
+              NormalizeSchema(db.GetSchema()));
 
     // Verify that data is preserved across the migration.
     sql::Statement s(db.GetUniqueStatement("SELECT * FROM rate_limits"));
@@ -314,9 +320,9 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion35ToCurrent) {
     EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
               VersionFromDatabase(&db));
 
-    // Compare without quotes as sometimes migrations cause table names to be
-    // string literals.
-    EXPECT_EQ(RemoveQuotes(GetCurrentSchema()), RemoveQuotes(db.GetSchema()));
+    // Compare normalized schemas
+    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
+              NormalizeSchema(db.GetSchema()));
 
     ASSERT_FALSE(db.DoesIndexExist("sources_by_origin"));
     ASSERT_TRUE(db.DoesIndexExist("active_sources_by_source_origin"));
@@ -356,9 +362,9 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion36ToCurrent) {
     EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
               VersionFromDatabase(&db));
 
-    // Compare without quotes as sometimes migrations cause table names to be
-    // string literals.
-    EXPECT_EQ(RemoveQuotes(GetCurrentSchema()), RemoveQuotes(db.GetSchema()));
+    // Compare normalized schemas
+    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
+              NormalizeSchema(db.GetSchema()));
 
     // Verify that data is preserved across the migration.
     sql::Statement s(db.GetUniqueStatement("SELECT * FROM dedup_keys"));
@@ -405,9 +411,9 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion37ToCurrent) {
     EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
               VersionFromDatabase(&db));
 
-    // Compare without quotes as sometimes migrations cause table names to be
-    // string literals.
-    EXPECT_EQ(RemoveQuotes(GetCurrentSchema()), RemoveQuotes(db.GetSchema()));
+    // Compare normalized schemas
+    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
+              NormalizeSchema(db.GetSchema()));
 
     // Verify that data is preserved across the migration.
     sql::Statement s(db.GetUniqueStatement("SELECT * FROM sources"));
@@ -455,9 +461,9 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion38ToCurrent) {
     EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
               VersionFromDatabase(&db));
 
-    // Compare without quotes as sometimes migrations cause table names to be
-    // string literals.
-    EXPECT_EQ(RemoveQuotes(GetCurrentSchema()), RemoveQuotes(db.GetSchema()));
+    // Compare normalized schemas
+    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
+              NormalizeSchema(db.GetSchema()));
 
     // Verify that data is preserved across the migration.
     sql::Statement s(
@@ -516,7 +522,8 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion39ToCurrent) {
 
     // Compare without quotes as sometimes migrations cause table names to be
     // string literals.
-    EXPECT_EQ(RemoveQuotes(GetCurrentSchema()), RemoveQuotes(db.GetSchema()));
+    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
+              NormalizeSchema(db.GetSchema()));
 
     // Verify that data is preserved across the migration.
     sql::Statement s(
@@ -534,6 +541,55 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion39ToCurrent) {
     ASSERT_EQ(32, s.ColumnInt(2));  // key_high_bits
     ASSERT_EQ(42, s.ColumnInt(3));  // key_low_bits
     ASSERT_EQ(52, s.ColumnInt(4));  // value
+    ASSERT_FALSE(s.Step());
+  }
+
+  // DB creation histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
+}
+
+TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion40ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(GetVersionFilePath(40), DbPath());
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+    ASSERT_FALSE(db.DoesColumnExist("aggregatable_report_metadata",
+                                    "attestation_token"));
+
+    sql::Statement s(
+        db.GetUniqueStatement("SELECT * FROM aggregatable_report_metadata"));
+
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ(1, s.ColumnInt(0));  // aggregation_id
+    ASSERT_FALSE(s.Step());
+  }
+
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    // Check version.
+    EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
+              VersionFromDatabase(&db));
+
+    // Compare normalized schemas
+    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
+              NormalizeSchema(db.GetSchema()));
+
+    // Verify that data is preserved across the migration.
+    sql::Statement s(
+        db.GetUniqueStatement("SELECT * FROM aggregatable_report_metadata"));
+
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ(1, s.ColumnInt(0));                           // aggregation_id
+    ASSERT_EQ(sql::ColumnType::kNull, s.GetColumnType(9));  // attestation_token
     ASSERT_FALSE(s.Step());
   }
 
