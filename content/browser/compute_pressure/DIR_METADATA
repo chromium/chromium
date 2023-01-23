@@ -1,1 +1,1 @@
-mixins: "//content/browser/compute_pressure/COMMON_METADATA"
+mixins: "//services/device/compute_pressure/COMMON_METADATA"

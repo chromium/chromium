@@ -10631,6 +10631,10 @@ Called by update_bad_message_reasons.py.-->
   <int value="292" label="MSDH_ON_STREAM_STARTED_DISALLOWED"/>
   <int value="293" label="RFH_WINDOW_CLOSE_ON_NON_OUTERMOST_FRAME"/>
   <int value="294" label="RFPH_WINDOW_CLOSE_ON_NON_OUTERMOST_FRAME"/>
+  <int value="295" label="BIBI_BIND_PRESSURE_MANAGER_FOR_INSECURE_ORIGIN"/>
+  <int value="296" label="BIBI_BIND_PRESSURE_MANAGER_FOR_FENCED_FRAME"/>
+  <int value="297"
+      label="BIBI_BIND_PRESSURE_MANAGER_BLOCKED_BY_PERMISSIONS_POLICY"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

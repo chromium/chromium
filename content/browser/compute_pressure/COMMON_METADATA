@@ -1,4 +1,0 @@
-monorail {
-  component: "Blink>PerformanceAPIs>ComputePressure"
-}
-team_email: "device-dev@chromium.org"

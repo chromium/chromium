@@ -28,15 +28,15 @@ void FakePressureManager::AddClient(
     AddClientCallback callback) {
   if (is_supported_) {
     clients_.Add(std::move(client));
-    std::move(callback).Run(true);
+    std::move(callback).Run(mojom::PressureStatus::kOk);
   } else {
-    std::move(callback).Run(false);
+    std::move(callback).Run(mojom::PressureStatus::kNotSupported);
   }
 }
 
 void FakePressureManager::UpdateClients(const mojom::PressureUpdate& update) {
   for (auto& client : clients_)
-    client->PressureStateChanged(update.Clone());
+    client->OnPressureUpdated(update.Clone());
 }
 
 void FakePressureManager::set_is_supported(bool is_supported) {

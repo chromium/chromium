@@ -6,23 +6,33 @@ module device.mojom;
 
 import "services/device/public/mojom/pressure_update.mojom";
 
-// This interface is used to get the PressureState.
+// Result of PressureManager.AddClient().
+enum PressureStatus {
+  kOk,
+
+  // The underlying platform does not report compute pressure information or
+  // the renderer is not allowed access to the feature.
+  kNotSupported,
+};
+
+// This interface is used to subscribe to notification about OnPressureUpdated.
 //
-// This interface is implemented by PressureManagerImpl and lives in the Device
-// Service. PressureServiceImpl in content/browser uses this interface to
-// subscribe to notification about PressureStateChanged.
+// This interface is implemented by PressureServiceImpl in content/browser and
+// PressureManagerImpl in services/device. PressureObserverManager in Blink
+// uses this interface to make a PressureClient subscribe to notification
+// about OnPressureUpdated.
 interface PressureManager {
-  // Add a client that will be notified on PressureStateChanged.
-  AddClient(pending_remote<PressureClient> client) => (bool success);
+  // Add a client that will be notified when a new PressureUpdate is obtained.
+  AddClient(pending_remote<PressureClient> client) => (PressureStatus status);
 };
 
 // Interface that client of the PressureManager interface must
-// implement to observe PressureState changes.
+// implement to receive PressureUpdate.
 //
-// This interface is implemented by PressureServiceImpl in content/browser.
-// PressureManagerImpl uses this interface to notify PressureServiceImpl about
-// PressureStateChanged.
+// This interface is implemented by PressureObserverManager in Blink.
+// PressureManagerImpl uses this interface to deliver PressureUpdate to
+// its client.
 interface PressureClient {
-  // Interface used to notify PressureState changes.
-  PressureStateChanged(PressureUpdate update);
+  // Interface used to deliver PressureUpdate.
+  OnPressureUpdated(PressureUpdate update);
 };

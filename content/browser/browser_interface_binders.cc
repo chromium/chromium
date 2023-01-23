@@ -23,7 +23,6 @@
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/browsing_topics/browsing_topics_document_host.h"
-#include "content/browser/compute_pressure/pressure_service_impl.h"
 #include "content/browser/contacts/contacts_manager_impl.h"
 #include "content/browser/content_index/content_index_service_impl.h"
 #include "content/browser/cookie_store/cookie_store_manager.h"
@@ -93,11 +92,14 @@
 #include "media/mojo/mojom/video_decode_perf_history.mojom.h"
 #include "media/mojo/mojom/webrtc_video_perf.mojom.h"
 #include "media/mojo/services/webrtc_video_perf_recorder.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
+#include "services/device/public/mojom/pressure_manager.mojom.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
 #include "services/device/public/mojom/vibration_manager.mojom.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "services/metrics/ukm_recorder_interface.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/p2p.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "services/shape_detection/public/mojom/barcodedetection_provider.mojom.h"
@@ -116,7 +118,6 @@
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom.h"
-#include "third_party/blink/public/mojom/compute_pressure/pressure_service.mojom.h"
 #include "third_party/blink/public/mojom/contacts/contacts_manager.mojom.h"
 #include "third_party/blink/public/mojom/content_index/content_index.mojom.h"
 #include "third_party/blink/public/mojom/cookie_store/cookie_store.mojom.h"
@@ -148,6 +149,7 @@
 #include "third_party/blink/public/mojom/payments/payment_credential.mojom.h"
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom.h"
 #include "third_party/blink/public/mojom/preloading/anchor_element_interaction_host.mojom.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
@@ -602,6 +604,39 @@ void BindBatteryMonitor(
     GetDeviceService().BindBatteryMonitor(std::move(receiver));
 }
 
+void BindPressureManager(
+    RenderFrameHostImpl* host,
+    mojo::PendingReceiver<device::mojom::PressureManager> receiver) {
+  if (!network::IsOriginPotentiallyTrustworthy(
+          host->GetLastCommittedOrigin())) {
+    bad_message::ReceivedBadMessage(
+        host->GetProcess(), bad_message::BadMessageReason::
+                                BIBI_BIND_PRESSURE_MANAGER_FOR_INSECURE_ORIGIN);
+    return;
+  }
+
+  if (host->IsNestedWithinFencedFrame()) {
+    // The renderer is supposed to disallow the use of compute pressure API
+    // when inside a fenced frame. Anything getting past the renderer checks
+    // must be marked as a bad request.
+    bad_message::ReceivedBadMessage(
+        host->GetProcess(), bad_message::BadMessageReason::
+                                BIBI_BIND_PRESSURE_MANAGER_FOR_FENCED_FRAME);
+    return;
+  }
+
+  if (!host->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kComputePressure)) {
+    bad_message::ReceivedBadMessage(
+        host->GetProcess(),
+        bad_message::BadMessageReason::
+            BIBI_BIND_PRESSURE_MANAGER_BLOCKED_BY_PERMISSIONS_POLICY);
+    return;
+  }
+
+  GetDeviceService().BindPressureManager(std::move(receiver));
+}
+
 DevicePostureProviderBinder& GetDevicePostureProviderBinderOverride() {
   static base::NoDestructor<DevicePostureProviderBinder> binder;
   return *binder;
@@ -673,8 +708,8 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   }
 
   if (base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
-    map->Add<blink::mojom::PressureService>(base::BindRepeating(
-        &PressureServiceImpl::Create, base::Unretained(host)));
+    map->Add<device::mojom::PressureManager>(
+        base::BindRepeating(&BindPressureManager, base::Unretained(host)));
   }
 
   map->Add<blink::mojom::ContactsManager>(

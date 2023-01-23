@@ -38,8 +38,9 @@ class PressureManagerImplSync {
   PressureManagerImplSync(const PressureManagerImplSync&) = delete;
   PressureManagerImplSync& operator=(const PressureManagerImplSync&) = delete;
 
-  bool AddClient(mojo::PendingRemote<mojom::PressureClient> client) {
-    base::test::TestFuture<bool> future;
+  mojom::PressureStatus AddClient(
+      mojo::PendingRemote<mojom::PressureClient> client) {
+    base::test::TestFuture<mojom::PressureStatus> future;
     manager_->AddClient(std::move(client), future.GetCallback());
     return future.Get();
   }
@@ -60,7 +61,7 @@ class FakePressureClient : public mojom::PressureClient {
   FakePressureClient& operator=(const FakePressureClient&) = delete;
 
   // device::mojom::PressureClient implementation.
-  void PressureStateChanged(device::mojom::PressureUpdatePtr update) override {
+  void OnPressureUpdated(device::mojom::PressureUpdatePtr update) override {
     updates_.emplace_back(*update);
     if (update_callback_) {
       std::move(update_callback_).Run();
@@ -139,7 +140,8 @@ class PressureManagerImplTest : public DeviceServiceTestBase {
 
 TEST_F(PressureManagerImplTest, OneClient) {
   FakePressureClient client;
-  ASSERT_TRUE(manager_impl_sync_->AddClient(client.BindNewPipeAndPassRemote()));
+  ASSERT_EQ(manager_impl_sync_->AddClient(client.BindNewPipeAndPassRemote()),
+            mojom::PressureStatus::kOk);
 
   client.WaitForUpdate();
   ASSERT_EQ(client.updates().size(), 1u);
@@ -148,14 +150,14 @@ TEST_F(PressureManagerImplTest, OneClient) {
 
 TEST_F(PressureManagerImplTest, ThreeClients) {
   FakePressureClient client1;
-  ASSERT_TRUE(
-      manager_impl_sync_->AddClient(client1.BindNewPipeAndPassRemote()));
+  ASSERT_EQ(manager_impl_sync_->AddClient(client1.BindNewPipeAndPassRemote()),
+            mojom::PressureStatus::kOk);
   FakePressureClient client2;
-  ASSERT_TRUE(
-      manager_impl_sync_->AddClient(client2.BindNewPipeAndPassRemote()));
+  ASSERT_EQ(manager_impl_sync_->AddClient(client2.BindNewPipeAndPassRemote()),
+            mojom::PressureStatus::kOk);
   FakePressureClient client3;
-  ASSERT_TRUE(
-      manager_impl_sync_->AddClient(client3.BindNewPipeAndPassRemote()));
+  ASSERT_EQ(manager_impl_sync_->AddClient(client3.BindNewPipeAndPassRemote()),
+            mojom::PressureStatus::kOk);
 
   FakePressureClient::WaitForUpdates({&client1, &client2, &client3});
   ASSERT_EQ(client1.updates().size(), 1u);
@@ -170,8 +172,8 @@ TEST_F(PressureManagerImplTest, AddClient_NoProbe) {
   CreateConnection(nullptr, kDefaultSamplingIntervalForTesting);
 
   FakePressureClient client;
-  ASSERT_FALSE(
-      manager_impl_sync_->AddClient(client.BindNewPipeAndPassRemote()));
+  ASSERT_EQ(manager_impl_sync_->AddClient(client.BindNewPipeAndPassRemote()),
+            mojom::PressureStatus::kNotSupported);
 }
 
 }  // namespace device

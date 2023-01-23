@@ -73,7 +73,7 @@ PressureObserverManager* PressureObserverManager::From(LocalDOMWindow& window) {
 PressureObserverManager::PressureObserverManager(LocalDOMWindow& window)
     : ExecutionContextLifecycleStateObserver(&window),
       Supplement<LocalDOMWindow>(window),
-      pressure_service_(GetSupplementable()->GetExecutionContext()),
+      pressure_manager_(GetSupplementable()->GetExecutionContext()),
       receiver_(this, GetSupplementable()->GetExecutionContext()) {
   UpdateStateIfNeeded();
 }
@@ -91,9 +91,9 @@ void PressureObserverManager::AddObserver(V8PressureSource::Enum source,
     // Not connected to the browser process yet. Make the binding.
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
         GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);
-    pressure_service_->BindObserver(
+    pressure_manager_->AddClient(
         receiver_.BindNewPipeAndPassRemote(std::move(task_runner)),
-        WTF::BindOnce(&PressureObserverManager::DidBindObserver,
+        WTF::BindOnce(&PressureObserverManager::DidAddClient,
                       WrapWeakPersistent(this), source));
     receiver_.set_disconnect_handler(WTF::BindOnce(
         &PressureObserverManager::Reset, WrapWeakPersistent(this)));
@@ -134,7 +134,7 @@ void PressureObserverManager::ContextLifecycleStateChanged(
   // when frozen or send a disconnect event.
 }
 
-void PressureObserverManager::OnUpdate(
+void PressureObserverManager::OnPressureUpdated(
     device::mojom::blink::PressureUpdatePtr update) {
   if (!PassesPrivacyTest())
     return;
@@ -166,7 +166,7 @@ void PressureObserverManager::Trace(blink::Visitor* visitor) const {
   for (const auto& observer_set : observers_) {
     visitor->Trace(observer_set);
   }
-  visitor->Trace(pressure_service_);
+  visitor->Trace(pressure_manager_);
   visitor->Trace(receiver_);
   ExecutionContextLifecycleStateObserver::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
@@ -175,14 +175,15 @@ void PressureObserverManager::Trace(blink::Visitor* visitor) const {
 void PressureObserverManager::EnsureServiceConnection() {
   DCHECK(GetExecutionContext());
 
-  if (pressure_service_.is_bound())
+  if (pressure_manager_.is_bound()) {
     return;
+  }
 
   auto task_runner =
       GetExecutionContext()->GetTaskRunner(TaskType::kUserInteraction);
   GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
-      pressure_service_.BindNewPipeAndPassReceiver(task_runner));
-  pressure_service_.set_disconnect_handler(
+      pressure_manager_.BindNewPipeAndPassReceiver(task_runner));
+  pressure_manager_.set_disconnect_handler(
       WTF::BindOnce(&PressureObserverManager::OnServiceConnectionError,
                     WrapWeakPersistent(this)));
 }
@@ -241,31 +242,31 @@ void PressureObserverManager::OnServiceConnectionError() {
 void PressureObserverManager::Reset() {
   state_ = State::kUninitialized;
   receiver_.reset();
-  pressure_service_.reset();
+  pressure_manager_.reset();
   for (auto& observer_set : observers_) {
     observer_set.clear();
   }
 }
 
-void PressureObserverManager::DidBindObserver(
+void PressureObserverManager::DidAddClient(
     V8PressureSource::Enum source,
-    mojom::blink::PressureStatus status) {
+    device::mojom::blink::PressureStatus status) {
   DCHECK_EQ(state_, State::kInitializing);
   DCHECK(receiver_.is_bound());
-  DCHECK(pressure_service_.is_bound());
+  DCHECK(pressure_manager_.is_bound());
 
   // Take a snapshot so as to safely iterate.
   HeapVector<Member<blink::PressureObserver>> observers(
       observers_[ToSourceIndex(source)]);
   switch (status) {
-    case mojom::blink::PressureStatus::kOk: {
+    case device::mojom::blink::PressureStatus::kOk: {
       state_ = State::kInitialized;
       for (const auto& observer : observers) {
         observer->OnBindingSucceeded(source);
       }
       break;
     }
-    case mojom::blink::PressureStatus::kNotSupported: {
+    case device::mojom::blink::PressureStatus::kNotSupported: {
       // TODO(crbug.com/1342184): Consider other sources.
       // For now, "cpu" is the only source.
       Reset();

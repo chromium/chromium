@@ -319,6 +319,9 @@ enum BadMessageReason {
   MSDH_ON_STREAM_STARTED_DISALLOWED = 292,
   RFH_WINDOW_CLOSE_ON_NON_OUTERMOST_FRAME = 293,
   RFPH_WINDOW_CLOSE_ON_NON_OUTERMOST_FRAME = 294,
+  BIBI_BIND_PRESSURE_MANAGER_FOR_INSECURE_ORIGIN = 295,
+  BIBI_BIND_PRESSURE_MANAGER_FOR_FENCED_FRAME = 296,
+  BIBI_BIND_PRESSURE_MANAGER_BLOCKED_BY_PERMISSIONS_POLICY = 297,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the
