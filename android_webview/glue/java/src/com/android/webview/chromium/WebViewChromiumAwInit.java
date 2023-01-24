@@ -232,7 +232,7 @@ public class WebViewChromiumAwInit {
                         mFactory, awBrowserContext.getGeolocationPermissions());
                 mWebStorage =
                         new WebStorageAdapter(mFactory, mBrowserContext.getQuotaManagerBridge());
-                if (AwFeatureList.isEnabled(AwFeatures.WEBVIEW_RESTRICT_THIRD_PARTY_CONTENT)) {
+                if (AwFeatureList.isEnabled(AwFeatures.WEBVIEW_RESTRICT_SENSITIVE_CONTENT)) {
                     AwOriginVerificationScheduler.initAndScheduleAll(
                             context.getPackageName(), context, awBrowserContext, null);
                 }

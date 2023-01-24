@@ -32,7 +32,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewUseMetricsUploadService,
     &features::kWebViewXRequestedWithHeaderControl,
     &features::kWebViewXRequestedWithHeaderManifestAllowList,
-    &features::kWebViewRestrictThirdPartyContent,
+    &features::kWebViewRestrictSensitiveContent,
     &features::kWebViewUmaUploadQualityOfServiceSetToDefault,
 };
 

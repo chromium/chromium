@@ -35,10 +35,10 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Tests for the restricting third party access.
+ * Tests for the restricting access sensitive web content.
  */
 @RunWith(AwJUnit4ClassRunner.class)
-public class AwRestrictThirdPartyContentTest {
+public class AwRestrictSensitiveContentTest {
     @Rule
     public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
@@ -99,7 +99,7 @@ public class AwRestrictThirdPartyContentTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"disable-features=WebViewRestrictThirdPartyContent"})
+    @CommandLineFlags.Add({"disable-features=WebViewRestrictSensitiveContent"})
     public void disablingFeatureDoesValidatePendingOrigins() throws Throwable {
         final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
@@ -126,8 +126,8 @@ public class AwRestrictThirdPartyContentTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=WebViewRestrictThirdPartyContent"})
-    public void testfThridPartyRestrictionInitAndScheduleAll() throws Throwable {
+    @CommandLineFlags.Add({"enable-features=WebViewRestrictSensitiveContent"})
+    public void testInitAndScheduleAll() throws Throwable {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         CountDownLatch countVerifiedLatch = new CountDownLatch(1);
@@ -148,7 +148,7 @@ public class AwRestrictThirdPartyContentTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=WebViewRestrictThirdPartyContent"})
+    @CommandLineFlags.Add({"enable-features=WebViewRestrictSensitiveContent"})
     public void testDoesNotBlockVerifiedContent() throws Throwable {
         final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
@@ -185,7 +185,7 @@ public class AwRestrictThirdPartyContentTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=WebViewRestrictThirdPartyContent"})
+    @CommandLineFlags.Add({"enable-features=WebViewRestrictSensitiveContent"})
     public void doesBlockAccessForFailedValidation() throws Throwable {
         final String webpageNotAvailable = "Webpage not available";
 

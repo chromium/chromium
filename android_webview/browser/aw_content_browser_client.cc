@@ -590,7 +590,7 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
 
   if (request.is_outermost_main_frame &&
       base::FeatureList::IsEnabled(
-          features::kWebViewRestrictThirdPartyContent)) {
+          features::kWebViewRestrictSensitiveContent)) {
     auto* origin_verification_bridge =
         AwOriginVerificationSchedulerBridge::GetInstance();
     result.push_back(digital_asset_links::BrowserURLLoaderThrottle::Create(
