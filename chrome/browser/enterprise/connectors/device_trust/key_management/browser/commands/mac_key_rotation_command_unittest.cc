@@ -204,6 +204,20 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_UploadKeyFailure) {
   EXPECT_EQ(KeyRotationCommand::Status::FAILED, future.Get());
 }
 
+// Tests when the browser has invalid permissions.
+TEST_F(MacKeyRotationCommandTest, Rotate_InvalidPermissions) {
+  EXPECT_CALL(*mock_persistence_delegate_, LoadKeyPair());
+  EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_persistence_delegate_, CheckRotationPermissions())
+      .WillOnce(Return(false));
+
+  base::test::TestFuture<KeyRotationCommand::Status> future;
+  rotation_command_->Trigger(params_, future.GetCallback());
+  EXPECT_EQ(KeyRotationCommand::Status::FAILED_INVALID_PERMISSIONS,
+            future.Get());
+}
+
 // Tests when the key rotation is successful.
 TEST_F(MacKeyRotationCommandTest, Rotate_Success) {
   EXPECT_CALL(*mock_persistence_delegate_, LoadKeyPair());

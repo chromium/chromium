@@ -135,21 +135,28 @@ void MacKeyRotationCommand::OnKeyRotated(KeyRotationResult result) {
 
   timeout_timer_.Stop();
 
-  if (result == KeyRotationResult::kFailed) {
-    SYSLOG(ERROR) << "Device trust key rotation failed.";
-    std::move(pending_callback_).Run(KeyRotationCommand::Status::FAILED);
-    return;
+  auto response_status = KeyRotationCommand::Status::FAILED;
+  switch (result) {
+    case KeyRotationResult::kSucceeded:
+      response_status = KeyRotationCommand::Status::SUCCEEDED;
+      break;
+    case KeyRotationResult::kFailed:
+      SYSLOG(ERROR) << "Device trust key rotation failed.";
+      response_status = KeyRotationCommand::Status::FAILED;
+      break;
+    case KeyRotationResult::kInsufficientPermissions:
+      SYSLOG(ERROR) << "Device trust key rotation failed. The browser is "
+                       "missing permissions.";
+      response_status = KeyRotationCommand::Status::FAILED_INVALID_PERMISSIONS;
+      break;
+    case KeyRotationResult::kFailedKeyConflict:
+      SYSLOG(ERROR) << "Device trust key rotation failed. Confict with the key "
+                       "that exists on the server.";
+      response_status = KeyRotationCommand::Status::FAILED_KEY_CONFLICT;
+      break;
   }
 
-  if (result == KeyRotationResult::kFailedKeyConflict) {
-    SYSLOG(ERROR) << "Device trust key rotation failed. Conflict "
-                     "with the key that exists on the server.";
-    std::move(pending_callback_)
-        .Run(KeyRotationCommand::Status::FAILED_KEY_CONFLICT);
-    return;
-  }
-
-  std::move(pending_callback_).Run(KeyRotationCommand::Status::SUCCEEDED);
+  std::move(pending_callback_).Run(response_status);
 }
 
 void MacKeyRotationCommand::OnKeyRotationTimeout() {
