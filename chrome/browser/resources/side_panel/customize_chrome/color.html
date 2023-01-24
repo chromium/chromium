@@ -14,7 +14,8 @@
   }
 
   svg {
-    border: 1px solid var(--customize-chrome-color-foreground-color);
+    border: 1px solid var(--customize-chrome-color-border-color,
+                          var(--customize-chrome-color-foreground-color));
     border-radius: var(--customize-chrome-color-border-radius);
     box-sizing: border-box;
     display: block;
