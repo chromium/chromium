@@ -8,12 +8,14 @@
 #include <vector>
 
 #include "base/android/build_info.h"
+#include "media/audio/android/audio_manager_android.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/android/media_drm_bridge.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/eme_constants.h"
 #include "media/base/encryption_scheme.h"
+#include "media/base/media_util.h"
 #include "media/base/video_codecs.h"
 
 using media::MediaCodecUtil;
@@ -60,6 +62,12 @@ const media::VideoCodec kMP4VideoCodecsToQuery[] = {
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 };
 
+// Is an audio sink connected which supports the given codec?
+static bool CanPassthrough(media::AudioCodec codec) {
+  return (media::AudioManagerAndroid::GetSinkAudioEncodingFormats() &
+          media::ConvertAudioCodecToBitstreamFormat(codec)) != 0;
+}
+
 }  // namespace
 
 void GetAndroidCdmCapability(const std::string& key_system,
@@ -91,9 +99,18 @@ void GetAndroidCdmCapability(const std::string& key_system,
   // the same codec, so if the loop above added them, no need to test the same
   // codec again.
   if (MediaDrmBridge::IsKeySystemSupportedWithType(key_system, "video/mp4")) {
+    // It is possible that a device that is not able to decode the audio stream
+    // is connected to an audiosink device that can. In this case, CanDecode()
+    // returns false but CanPassthrough() will return true. CanPassthrough()
+    // calls AudioManagerAndroid::GetSinkAudioEncodingFormats() to retrieve a
+    // bitmask representing audio bitstream formats that are supported by the
+    // connected audiosink device. This bitmask is then matched against current
+    // audio stream's codec type. A match indicates that the connected
+    // audiosink device is able to decode the current audio stream and Chromium
+    // should passthrough the audio bitstream instead of trying to decode it.
     for (const auto& codec : kMP4AudioCodecsToQuery) {
       if (!capability.audio_codecs.contains(codec)) {
-        if (MediaCodecUtil::CanDecode(codec)) {
+        if (MediaCodecUtil::CanDecode(codec) || CanPassthrough(codec)) {
           capability.audio_codecs.insert(codec);
         }
       }
