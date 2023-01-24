@@ -288,16 +288,14 @@ void ControllerPresentationConnection::Init(
 
 void ControllerPresentationConnection::CloseInternal() {
   auto& service = controller_->GetPresentationService();
-  if (service.is_bound()) {
+  if (service)
     service->CloseConnection(url_, id_);
-  }
 }
 
 void ControllerPresentationConnection::TerminateInternal() {
   auto& service = controller_->GetPresentationService();
-  if (service.is_bound()) {
+  if (service)
     service->Terminate(url_, id_);
-  }
 }
 
 // static
