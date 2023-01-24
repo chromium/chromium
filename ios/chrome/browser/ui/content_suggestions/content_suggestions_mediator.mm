@@ -344,6 +344,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
         [self.dispatcher showHistory];
         break;
       case NTPCollectionShortcutTypeWhatsNew:
+        SetWhatsNewUsed();
         base::RecordAction(base::UserMetricsAction("MobileNTPShowWhatsNew"));
         [self.dispatcher showWhatsNew];
         break;
@@ -627,7 +628,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 }
 
 - (BOOL)shouldShowWhatsNewActionItem {
-  if (!IsWhatsNewEnabled()) {
+  if (!IsWhatsNewEnabled() || WasWhatsNewUsed()) {
     return NO;
   }
 

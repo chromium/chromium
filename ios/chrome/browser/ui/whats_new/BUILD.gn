@@ -65,6 +65,10 @@ source_set("util") {
   deps = [
     ":feature_flags",
     "//base",
+    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/promos_manager",
+    "//ios/chrome/browser/promos_manager:constants",
+    "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/ui:feature_flags",
   ]
 }

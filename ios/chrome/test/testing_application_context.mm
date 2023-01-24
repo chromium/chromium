@@ -13,6 +13,8 @@
 #import "components/network_time/network_time_tracker.h"
 #import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/configuration_policy_handler_list_factory.h"
+#import "ios/chrome/browser/promos_manager/features.h"
+#import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_service.h"
 #import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
 #import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
@@ -223,6 +225,12 @@ TestingApplicationContext::GetBrowserPolicyConnector() {
 
 PromosManager* TestingApplicationContext::GetPromosManager() {
   DCHECK(thread_checker_.CalledOnValidThread());
+
+  if (IsFullscreenPromosManagerEnabled()) {
+    promos_manager_ = std::make_unique<MockPromosManager>();
+    return promos_manager_.get();
+  }
+
   return nullptr;
 }
 

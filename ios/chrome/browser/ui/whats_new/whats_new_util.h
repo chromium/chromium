@@ -16,12 +16,16 @@ extern NSString* const kWhatsNewDaysAfterFre;
 // Key to store the number of launches after FRE.
 extern NSString* const kWhatsNewLaunchesAfterFre;
 
+// Key to store whether a user interacted with What's New from the overflow
+// menu.
+extern NSString* const kWhatsNewUsageEntryKey;
+
 // Returns whether What's New was used in the overflow menu. This is used to
 // decide on the location of the What's New entry point in the overflow menu.
-bool IsWhatsNewOverflowMenuUsed();
+bool WasWhatsNewUsed();
 
 // Set that What's New was used in the overflow menu.
-void SetWhatsNewOverflowMenuUsed();
+void SetWhatsNewUsed();
 
 // Returns whether What's New is enabled.
 bool IsWhatsNewEnabled();
