@@ -42,4 +42,7 @@ void FakeFindInPageManagerDelegate::DidSelectMatch(
   delegate_state_->context_string = context_string;
 }
 
+void FakeFindInPageManagerDelegate::UserDismissedFindNavigator(
+    AbstractFindInPageManager* manager) {}
+
 }  // namespace web

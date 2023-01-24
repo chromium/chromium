@@ -61,7 +61,7 @@ UIFindSession* FindInPageManagerImpl::GetActiveFindSession()
   // If a Find interaction should be used, then the Find session to be used is
   // the one provided by this Find interaction.
   if (use_find_interaction_) {
-    UIFindInteraction* find_interaction = GetOrCreateFindInteraction();
+    UIFindInteraction* find_interaction = web_state_->GetFindInteraction();
     // According to the official documentation, if `findNavigatorVisible` is
     // `NO`, then `activeFindSession` should be `nil`. In practice, it is
     // necessary to check the value of `findNavigatorVisible` to ensure a Find
@@ -98,7 +98,7 @@ void FindInPageManagerImpl::StartSearch(NSString* query)
   current_highlighted_result_index_ = NSNotFound;
 
   if (use_find_interaction_) {
-    UIFindInteraction* find_interaction = web_state_->GetFindInteraction();
+    UIFindInteraction* find_interaction = GetOrCreateFindInteraction();
     // If a Find interaction should be used, prepopulate the Find navigator and
     // present it.
     find_interaction.searchText = query;
@@ -195,7 +195,15 @@ void FindInPageManagerImpl::StopPollingActiveFindSession()
 void FindInPageManagerImpl::PollActiveFindSession() API_AVAILABLE(ios(16)) {
   UIFindSession* findSession = GetActiveFindSession();
   if (!findSession || !delegate_) {
-    StopPollingActiveFindSession();
+    if (use_find_interaction_) {
+      // If a Find interaction is used but there is no active Find session
+      // anymore, then the user dismissed the Find navigator.
+      delegate_->UserDismissedFindNavigator(this);
+      StopSearch();
+    } else {
+      StopPollingActiveFindSession();
+    }
+
     return;
   }
 

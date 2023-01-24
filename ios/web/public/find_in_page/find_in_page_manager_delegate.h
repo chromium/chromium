@@ -47,6 +47,11 @@ class FindInPageManagerDelegate {
                               int index,
                               NSString* context_string) = 0;
 
+  // Called when the Find in Page manager detects the Find session has been
+  // ended by the user through the system Find panel.
+  virtual void UserDismissedFindNavigator(
+      AbstractFindInPageManager* manager) = 0;
+
  protected:
   virtual ~FindInPageManagerDelegate() = default;
 };

@@ -243,6 +243,12 @@ const int64_t kContextStringAnnouncementDelayInNanoseconds = 0.1 * NSEC_PER_SEC;
   [self.responseDelegate findDidFinishWithUpdatedModel:self.findInPageModel];
 }
 
+- (void)userDismissedFindNavigatorForManager:
+    (web::AbstractFindInPageManager*)manager {
+  // There should not be any Find navigator in JavaScript Find in Page.
+  NOTREACHED();
+}
+
 #pragma mark - Notification listeners
 
 - (void)findBarTextFieldWillBecomeFirstResponder:(NSNotification*)note {

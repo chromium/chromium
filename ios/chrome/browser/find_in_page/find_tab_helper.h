@@ -24,6 +24,8 @@ class FindTabHelper final : public AbstractFindTabHelper,
 
   ~FindTabHelper() final;
 
+  void DismissFindNavigator();
+
   // AbstractFindTabHelper implementation
   void SetResponseDelegate(
       id<FindInPageResponseDelegate> response_delegate) final;

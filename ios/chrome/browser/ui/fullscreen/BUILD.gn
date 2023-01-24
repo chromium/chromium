@@ -100,6 +100,7 @@ source_set("internal") {
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/find_in_page:find_in_page_api",
     "//ios/public/provider/chrome/browser/fullscreen:fullscreen_api",
     "//ios/web",
     "//ios/web/common",

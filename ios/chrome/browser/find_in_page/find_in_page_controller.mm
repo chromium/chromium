@@ -114,6 +114,13 @@ NSString* gSearchTerm;
   [self.responseDelegate findDidFinishWithUpdatedModel:self.findInPageModel];
 }
 
+- (void)userDismissedFindNavigatorForManager:
+    (web::AbstractFindInPageManager*)manager {
+  DCHECK(ios::provider::IsNativeFindInPageWithSystemFindPanel());
+  // User dismissed the Find panel so mark the Find UI as inactive.
+  self.findInPageModel.enabled = NO;
+}
+
 - (void)detachFromWebState {
   // Remove Find in Page manager from web state.
   web::FindInPageManager::RemoveFromWebState(_webState);

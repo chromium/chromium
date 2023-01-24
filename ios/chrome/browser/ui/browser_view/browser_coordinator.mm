@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/feature_engagement/tracker_util.h"
+#import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/java_script_find_tab_helper.h"
 #import "ios/chrome/browser/follow/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/follow_tab_helper.h"
@@ -180,6 +181,7 @@
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/webui/net_export_tab_helper_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/find_in_page/find_in_page_api.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -1508,23 +1510,11 @@ enum class ToolbarKind {
 #pragma mark - FindInPageCommands
 
 - (void)openFindInPage {
-  if (!self.canShowFindBar)
-    return;
-
-  if (_toolbarAccessoryPresenter.isPresenting) {
-    _nextToolbarToPresent = ToolbarKind::kFindInPage;
-    [self closeTextZoom];
-    return;
+  if (ios::provider::IsNativeFindInPageWithSystemFindPanel()) {
+    [self showSystemFindPanel];
+  } else {
+    [self showFindBar];
   }
-
-  FindBarCoordinator* findBarCoordinator = self.findBarCoordinator;
-  if (findBarCoordinator) {
-    [findBarCoordinator stop];
-    self.findBarCoordinator = nil;
-  }
-
-  self.findBarCoordinator = [self newFindBarCoordinator];
-  [self.findBarCoordinator start];
 }
 
 - (void)closeFindInPage {
@@ -1547,9 +1537,14 @@ enum class ToolbarKind {
 - (void)showFindUIIfActive {
   web::WebState* currentWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
-  auto* findHelper = JavaScriptFindTabHelper::FromWebState(currentWebState);
-  if (findHelper && findHelper->IsFindUIActive() &&
-      !_toolbarAccessoryPresenter.isPresenting) {
+  auto* findHelper = GetConcreteFindTabHelperFromWebState(currentWebState);
+  if (!findHelper || !findHelper->IsFindUIActive()) {
+    return;
+  }
+
+  if (ios::provider::IsNativeFindInPageWithSystemFindPanel()) {
+    [self showSystemFindPanel];
+  } else if (!_toolbarAccessoryPresenter.isPresenting) {
     DCHECK(!self.findBarCoordinator);
     self.findBarCoordinator = [self newFindBarCoordinator];
     [self.findBarCoordinator start];
@@ -1557,8 +1552,16 @@ enum class ToolbarKind {
 }
 
 - (void)hideFindUI {
-  [self.findBarCoordinator stop];
-  self.findBarCoordinator = nil;
+  if (ios::provider::IsNativeFindInPageWithSystemFindPanel()) {
+    web::WebState* currentWebState =
+        self.browser->GetWebStateList()->GetActiveWebState();
+    DCHECK(currentWebState);
+    auto* helper = FindTabHelper::FromWebState(currentWebState);
+    helper->DismissFindNavigator();
+  } else {
+    [self.findBarCoordinator stop];
+    self.findBarCoordinator = nil;
+  }
 }
 
 - (void)defocusFindInPage {
@@ -1569,8 +1572,7 @@ enum class ToolbarKind {
   web::WebState* currentWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
   DCHECK(currentWebState);
-  JavaScriptFindTabHelper* helper =
-      JavaScriptFindTabHelper::FromWebState(currentWebState);
+  auto* helper = GetConcreteFindTabHelperFromWebState(currentWebState);
   helper->StartFinding([self.findBarCoordinator.findBarController searchTerm]);
 
   if (!self.browser->GetBrowserState()->IsOffTheRecord())
@@ -1582,7 +1584,7 @@ enum class ToolbarKind {
       self.browser->GetWebStateList()->GetActiveWebState();
   DCHECK(currentWebState);
   // TODO(crbug.com/603524): Reshow find bar if necessary.
-  JavaScriptFindTabHelper::FromWebState(currentWebState)
+  GetConcreteFindTabHelperFromWebState(currentWebState)
       ->ContinueFinding(JavaScriptFindTabHelper::FORWARD);
 }
 
@@ -1591,11 +1593,47 @@ enum class ToolbarKind {
       self.browser->GetWebStateList()->GetActiveWebState();
   DCHECK(currentWebState);
   // TODO(crbug.com/603524): Reshow find bar if necessary.
-  JavaScriptFindTabHelper::FromWebState(currentWebState)
+  GetConcreteFindTabHelperFromWebState(currentWebState)
       ->ContinueFinding(JavaScriptFindTabHelper::REVERSE);
 }
 
 #pragma mark - FindInPageCommands Helpers
+
+- (void)showSystemFindPanel {
+  web::WebState* currentWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  DCHECK(currentWebState);
+  auto* helper = FindTabHelper::FromWebState(currentWebState);
+
+  if (!helper->IsFindUIActive()) {
+    // Hide the Omnibox if possible, so as not to confuse the user as to what
+    // text field is currently focused.
+    _fullscreenController->EnterFullscreen();
+    helper->SetFindUIActive(true);
+  }
+
+  // If the Native Find in Page variant does not use the Chrome Find bar, it
+  // is sufficient to call `StartFinding()` directly on the Find tab helper of
+  // the current web state.
+  helper->StartFinding(@"");
+}
+
+- (void)showFindBar {
+  if (!self.canShowFindBar) {
+    return;
+  }
+
+  if (_toolbarAccessoryPresenter.isPresenting) {
+    _nextToolbarToPresent = ToolbarKind::kFindInPage;
+    [self closeTextZoom];
+    return;
+  }
+
+  FindBarCoordinator* findBarCoordinator = self.findBarCoordinator;
+  [findBarCoordinator stop];
+  self.findBarCoordinator = [self newFindBarCoordinator];
+  [self.findBarCoordinator start];
+}
 
 - (BOOL)canShowFindBar {
   web::WebState* currentWebState =
@@ -1604,7 +1642,7 @@ enum class ToolbarKind {
     return NO;
   }
 
-  auto* helper = JavaScriptFindTabHelper::FromWebState(currentWebState);
+  auto* helper = GetConcreteFindTabHelperFromWebState(currentWebState);
   return (helper && helper->CurrentPageSupportsFindInPage() &&
           !helper->IsFindUIActive());
 }

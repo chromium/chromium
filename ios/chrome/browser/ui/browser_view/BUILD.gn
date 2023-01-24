@@ -227,6 +227,7 @@ source_set("browser_view") {
     "//ios/chrome/common/ui/util",
     "//ios/components/security_interstitials",
     "//ios/components/webui:url_constants",
+    "//ios/public/provider/chrome/browser/find_in_page:find_in_page_api",
     "//ios/public/provider/chrome/browser/fullscreen:fullscreen_api",
     "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",

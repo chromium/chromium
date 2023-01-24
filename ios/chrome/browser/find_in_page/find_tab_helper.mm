@@ -22,6 +22,12 @@ FindTabHelper::FindTabHelper(web::WebState* web_state) {
 
 FindTabHelper::~FindTabHelper() {}
 
+void FindTabHelper::DismissFindNavigator() {
+  // Same as `StopFinding()` except the UI is not marked as inactive so it can
+  // be set back up if needed later.
+  [controller_ disableFindInPage];
+}
+
 void FindTabHelper::CreateFindInPageController(web::WebState* web_state) {
   DCHECK(!controller_);
   controller_ = [[FindInPageController alloc] initWithWebState:web_state];

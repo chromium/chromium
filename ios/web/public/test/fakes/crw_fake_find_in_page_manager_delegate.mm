@@ -28,4 +28,8 @@
   _index = index;
 }
 
+- (void)userDismissedFindNavigatorForManager:
+    (web::AbstractFindInPageManager*)manager {
+}
+
 @end

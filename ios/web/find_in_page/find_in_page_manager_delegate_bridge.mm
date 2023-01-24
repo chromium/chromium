@@ -47,4 +47,13 @@ void FindInPageManagerDelegateBridge::DidSelectMatch(
                      forWebState:web_state];
   }
 }
+
+void FindInPageManagerDelegateBridge::UserDismissedFindNavigator(
+    AbstractFindInPageManager* manager) {
+  if ([delegate_ respondsToSelector:@selector
+                 (userDismissedFindNavigatorForManager:)]) {
+    [delegate_ userDismissedFindNavigatorForManager:manager];
+  }
 }
+
+}  // namespace web

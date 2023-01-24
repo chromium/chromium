@@ -27,6 +27,8 @@ class WebState;
     didSelectMatchAtIndex:(NSInteger)index
         withContextString:(NSString*)contextString
               forWebState:(web::WebState*)webState;
+- (void)userDismissedFindNavigatorForManager:
+    (web::AbstractFindInPageManager*)manager;
 
 // The last web::WebState received in delegate method calls.
 @property(nonatomic, readonly) web::WebState* webState;

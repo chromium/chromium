@@ -34,6 +34,7 @@ class FakeFindInPageManagerDelegate : public FindInPageManagerDelegate {
                       WebState* web_state,
                       int index,
                       NSString* context_string) override;
+  void UserDismissedFindNavigator(AbstractFindInPageManager* manager) override;
 
   // Holds the state passed to DidHighlightMatches and DidSelectMatch.
   struct State {

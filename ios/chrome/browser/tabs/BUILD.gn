@@ -123,6 +123,7 @@ source_set("tabs_internal") {
     "//ios/components/security_interstitials/https_only_mode:feature",
     "//ios/components/security_interstitials/lookalikes",
     "//ios/components/security_interstitials/safe_browsing",
+    "//ios/public/provider/chrome/browser/find_in_page:find_in_page_api",
     "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
     "//ios/web/common:features",
     "//ios/web/public/security",
