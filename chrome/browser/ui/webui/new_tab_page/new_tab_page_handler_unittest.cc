@@ -773,10 +773,11 @@ TEST_F(NewTabPageHandlerTest, GetModulesOrder) {
         {{ntp_features::kNtpModulesOrderParam, "bar,baz"}}},
        {ntp_features::kNtpModulesDragAndDrop, {}}},
       {});
-  base::Value module_ids_value(base::Value::Type::LIST);
+  base::Value::List module_ids_value;
   module_ids_value.Append("foo");
   module_ids_value.Append("bar");
-  profile_->GetPrefs()->Set(prefs::kNtpModulesOrder, module_ids_value);
+  profile_->GetPrefs()->SetList(prefs::kNtpModulesOrder,
+                                std::move(module_ids_value));
 
   handler_->GetModulesOrder(callback.Get());
   EXPECT_THAT(module_ids, ElementsAre("foo", "bar", "baz"));
