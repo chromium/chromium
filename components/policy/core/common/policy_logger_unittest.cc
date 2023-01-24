@@ -18,9 +18,7 @@ namespace policy {
 namespace {
 
 void AddLogs(const std::string& message, PolicyLogger* policy_logger) {
-  policy_logger->AddLog(policy::PolicyLogger::Log(
-      policy::PolicyLogger::Log::LogSource::kPolicyFetching, message,
-      FROM_HERE));
+  LOG_POLICY(POLICY_FETCHING) << "Element added " << message;
 }
 
 }  // namespace
@@ -33,7 +31,7 @@ TEST(PolicyLoggerTest, PolicyLoggingEnabled) {
   PolicyLogger* policy_logger = policy::PolicyLogger::GetInstance();
 
   int logs_size_before_adding = policy_logger->GetPolicyLogsSizeForTesting();
-  AddLogs("Element added when the feature is enabled.", policy_logger);
+  AddLogs("when the feature is enabled.", policy_logger);
   EXPECT_EQ(policy_logger->GetPolicyLogsSizeForTesting(),
             logs_size_before_adding + 1);
 }
@@ -46,7 +44,7 @@ TEST(PolicyLoggerTest, PolicyLoggingDisabled) {
   PolicyLogger* policy_logger = policy::PolicyLogger::GetInstance();
 
   int logs_size_before_adding = policy_logger->GetPolicyLogsSizeForTesting();
-  AddLogs("Element added when the feature is disabled.", policy_logger);
+  AddLogs("when the feature is disabled.", policy_logger);
   EXPECT_EQ(policy_logger->GetPolicyLogsSizeForTesting(),
             logs_size_before_adding);
 }

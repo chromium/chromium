@@ -59,6 +59,17 @@ PolicyLogger* PolicyLogger::GetInstance() {
   return instance.get();
 }
 
+PolicyLogger::LogHelper::LogHelper(
+    const PolicyLogger::Log::LogSource log_source,
+    const base::Location location)
+    : log_source_(log_source), location_(location) {}
+
+PolicyLogger::LogHelper::~LogHelper() {
+  DCHECK(PolicyLogger::GetInstance()->IsPolicyLoggingEnabled());
+  policy::PolicyLogger::GetInstance()->AddLog(PolicyLogger::Log(
+      this->log_source_, this->message_buffer_.str(), this->location_));
+}
+
 base::Value PolicyLogger::Log::GetAsValue() const {
   base::Value log_value(base::Value::Type::DICT);
   log_value.SetStringPath("message", message_);
