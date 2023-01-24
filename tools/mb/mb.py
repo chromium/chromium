@@ -911,7 +911,7 @@ class MetaBuildWrapper:
     if self.Exists(expectations_dir):
       jsonish_blob = self._ToJsonish()
       if not validation.CheckExpectations(self, jsonish_blob, expectations_dir):
-        raise MBErr("Expectations out of date. Please run 'mb.py train'.")
+        raise MBErr("Expectations out of date. Run 'tools/mb/mb.py train'.")
 
     validation.CheckKeyOrdering(errs, self.builder_groups, self.configs,
                                 self.mixins)
