@@ -11,6 +11,10 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace headless {
+
+namespace {
+
 INSTANTIATE_TEST_SUITE_P(HeadlessModeBrowserTestWithStartWindowMode,
                          HeadlessModeBrowserTestWithStartWindowMode,
                          testing::Values(kStartWindowNormal,
@@ -74,3 +78,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
   EXPECT_TRUE(browser()->window()->IsVisible());
   EXPECT_FALSE(ns_window.visible);
 }
+
+}  // namespace
+
+}  // namespace headless

@@ -9,6 +9,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
 
+namespace headless {
+
+namespace {
+
 // A class to expose a protected method for testing purposes.
 class DesktopWindowTreeHostWinWrapper : public views::DesktopWindowTreeHostWin {
  public:
@@ -107,3 +111,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
   EXPECT_TRUE(browser()->window()->IsVisible());
   EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
 }
+
+}  // namespace
+
+}  // namespace headless

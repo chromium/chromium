@@ -37,6 +37,8 @@
 #include "testing/multiprocess_func_list.h"
 #include "ui/gfx/switches.h"
 
+namespace headless {
+
 namespace switches {
 // This switch runs tests in headful mode, intended for experiments only because
 // not all tests are expected to pass in headful mode.
@@ -60,7 +62,8 @@ void HeadlessModeBrowserTest::SetUpCommandLine(
   if (command_line->HasSwitch(switches::kHeadfulMode)) {
     headful_mode_ = true;
   } else {
-    command_line->AppendSwitchASCII(switches::kHeadless, kHeadlessSwitchValue);
+    command_line->AppendSwitchASCII(::switches::kHeadless,
+                                    kHeadlessSwitchValue);
     headless::SetUpCommandLine(command_line);
   }
 }
@@ -79,10 +82,10 @@ void HeadlessModeBrowserTestWithStartWindowMode::SetUpCommandLine(
     case kStartWindowNormal:
       break;
     case kStartWindowMaximized:
-      command_line->AppendSwitch(switches::kStartMaximized);
+      command_line->AppendSwitch(::switches::kStartMaximized);
       break;
     case kStartWindowFullscreen:
-      command_line->AppendSwitch(switches::kStartFullscreen);
+      command_line->AppendSwitch(::switches::kStartFullscreen);
       break;
   }
 }
@@ -92,6 +95,8 @@ void ToggleFullscreenModeSync(Browser* browser) {
   chrome::ToggleFullscreenMode(browser);
   observer.Wait();
 }
+
+namespace {
 
 class HeadlessModeBrowserTestWithUserDataDir : public HeadlessModeBrowserTest {
  public:
@@ -110,7 +115,7 @@ class HeadlessModeBrowserTestWithUserDataDir : public HeadlessModeBrowserTest {
     ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(base::IsDirectoryEmpty(user_data_dir()));
 
-    command_line->AppendSwitchPath(switches::kUserDataDir, user_data_dir());
+    command_line->AppendSwitchPath(::switches::kUserDataDir, user_data_dir());
   }
 
   const base::FilePath& user_data_dir() const {
@@ -128,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithUserDataDir,
   // expected to fail.
   base::CommandLine command_line(
       base::GetMultiProcessTestChildBaseCommandLine());
-  command_line.AppendSwitchPath(switches::kUserDataDir, user_data_dir());
+  command_line.AppendSwitchPath(::switches::kUserDataDir, user_data_dir());
 
   base::Process child_process =
       base::SpawnMultiProcessTestChild("ChromeProcessSingletonChildProcessMain",
@@ -147,7 +152,7 @@ MULTIPROCESS_TEST_MAIN(ChromeProcessSingletonChildProcessMain) {
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   const base::FilePath user_data_dir =
-      command_line->GetSwitchValuePath(switches::kUserDataDir);
+      command_line->GetSwitchValuePath(::switches::kUserDataDir);
   if (user_data_dir.empty())
     return kErrorResultCode;
 
@@ -157,5 +162,9 @@ MULTIPROCESS_TEST_MAIN(ChromeProcessSingletonChildProcessMain) {
 
   return static_cast<int>(notify_result);
 }
+
+}  // namespace
+
+}  // namespace headless
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

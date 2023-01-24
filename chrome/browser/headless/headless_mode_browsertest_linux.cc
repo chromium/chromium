@@ -13,6 +13,8 @@
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
+namespace headless {
+
 namespace {
 
 // Mock platform window delegate for platform window creation.
@@ -41,8 +43,6 @@ class MockPlatformWindowDelegate : public ui::PlatformWindowDelegate {
   void OnActivationChanged(bool active) override {}
   void OnMouseEnter() override {}
 };
-
-}  // namespace
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, OzonePlatformHeadless) {
   // On Linux, the Native Headless Chrome uses Ozone/Headless.
@@ -76,3 +76,7 @@ IN_PROC_BROWSER_TEST_P(HeadlessModeBrowserTestWithStartWindowMode,
   // visible.
   EXPECT_TRUE(browser()->window()->IsVisible());
 }
+
+}  // namespace
+
+}  // namespace headless
