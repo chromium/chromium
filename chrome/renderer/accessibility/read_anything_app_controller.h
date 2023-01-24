@@ -121,7 +121,8 @@ class ReadAnythingAppController
                           const ui::AXTreeID& tree_id);
 
   // Called when distillation has completed.
-  void OnAXTreeDistilled(const std::vector<ui::AXNodeID>& content_node_ids);
+  void OnAXTreeDistilled(const ui::AXTreeID& tree_id,
+                         const std::vector<ui::AXNodeID>& content_node_ids);
 
   // Helper functions for the rendering algorithm. Post-process the AXTree and
   // cache values before sending an `updateContent` notification to the Read

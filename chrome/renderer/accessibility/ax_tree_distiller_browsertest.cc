@@ -44,10 +44,12 @@ class AXTreeDistillerTestBase : public ChromeRenderViewTest {
   }
 
   void OnAXTreeDistilled(ui::AXTree* tree,
+                         const ui::AXTreeID& tree_id,
                          const std::vector<int32_t>& content_node_ids) {
     // Content node IDs list should be the same length as
     // |expected_node_contents_|.
     EXPECT_EQ(content_node_ids.size(), expected_node_contents_.size());
+    EXPECT_EQ(tree_id, tree->GetAXTreeID());
 
     // Iterate through each content node ID from distiller and check that the
     // text value equals the passed-in string from |expected_node_contents_|.

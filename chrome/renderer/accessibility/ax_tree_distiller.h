@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -39,6 +40,7 @@ class AXTree;
 //
 class AXTreeDistiller {
   using OnAXTreeDistilledCallback = base::RepeatingCallback<void(
+      const ui::AXTreeID& tree_id,
       const std::vector<ui::AXNodeID>& content_node_ids)>;
 
  public:

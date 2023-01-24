@@ -447,6 +447,7 @@ void ReadAnythingAppController::Distill() {
 }
 
 void ReadAnythingAppController::OnAXTreeDistilled(
+    const ui::AXTreeID& tree_id,
     const std::vector<ui::AXNodeID>& content_node_ids) {
   // Reset state.
   display_node_ids_.clear();
@@ -457,12 +458,18 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   content_node_ids_ = content_node_ids;
   distillation_in_progress_ = false;
 
-  // This callback could be called after the AXTree was destroyed. In that case,
-  // return early.
-  if (active_tree_id_ == ui::AXTreeIDUnknown()) {
+  // Return early if any of the following scenarios occurred while waiting for
+  // distillation to complete:
+  // 1. tree_id != active_tree_id_: The active tree was changed.
+  // 2. active_tree_id_ == ui::AXTreeIDUnknown(): The active tree was change to
+  //    an unknown tree id.
+  // 3. !base::Contains(trees_, tree_id): The distilled tree was destroyed.
+  // 4. tree_id == ui::AXTreeIDUnknown(): The distiller sent back an unknown
+  //    tree id which occurs when there was an error.
+  if (tree_id != active_tree_id_ || active_tree_id_ == ui::AXTreeIDUnknown() ||
+      !base::Contains(trees_, tree_id) || tree_id == ui::AXTreeIDUnknown()) {
     return;
   }
-  DCHECK(base::Contains(trees_, active_tree_id_));
   ui::AXSelection selection = trees_[active_tree_id_]->GetUnignoredSelection();
   has_selection_ = selection.anchor_object_id != ui::kInvalidAXNodeID &&
                    selection.focus_object_id != ui::kInvalidAXNodeID;
@@ -808,7 +815,7 @@ void ReadAnythingAppController::SetContentForTesting(
       GetSnapshotFromV8SnapshotLite(isolate, v8_snapshot_lite);
   AccessibilityEventReceived(snapshot.tree_data.tree_id, {snapshot}, {});
   OnActiveAXTreeIDChanged(snapshot.tree_data.tree_id);
-  OnAXTreeDistilled(content_node_ids);
+  OnAXTreeDistilled(snapshot.tree_data.tree_id, content_node_ids);
 }
 
 AXTreeDistiller* ReadAnythingAppController::SetDistillerForTesting(

@@ -97,7 +97,12 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   }
 
   void OnAXTreeDistilled(const std::vector<ui::AXNodeID>& content_node_ids) {
-    controller_->OnAXTreeDistilled(content_node_ids);
+    OnAXTreeDistilled(tree_id_, content_node_ids);
+  }
+
+  void OnAXTreeDistilled(const ui::AXTreeID& tree_id,
+                         const std::vector<ui::AXNodeID>& content_node_ids) {
+    controller_->OnAXTreeDistilled(tree_id, content_node_ids);
   }
 
   void OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
@@ -830,4 +835,31 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_CALL(*distiller_, Distill).Times(1);
   OnActiveAXTreeIDChanged(tree_id_);
   EXPECT_EQ("567", GetTextContent(1));
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnAXTreeDistilledCalledWithInactiveTreeId) {
+  OnActiveAXTreeIDChanged(ui::AXTreeID::CreateNewAXTreeID());
+  // Should not crash.
+  OnAXTreeDistilled({});
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnAXTreeDistilledCalledWithDestroyedTreeId) {
+  OnAXTreeDestroyed(tree_id_);
+  // Should not crash.
+  OnAXTreeDistilled({});
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnAXTreeDistilledCalledWithUnknownActiveTreeId) {
+  OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown());
+  // Should not crash.
+  OnAXTreeDistilled({});
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnAXTreeDistilledCalledWithUnknownTreeId) {
+  // Should not crash.
+  OnAXTreeDistilled(ui::AXTreeIDUnknown(), {});
 }
