@@ -309,11 +309,11 @@ class WPTResultsProcessor:
         if not test_file_subpath:
             raise ValueError('test ID did not resolve to a file')
         manifest = manifestexpected.get_manifest(metadata_root,
-                                                 test_file_subpath, '/',
+                                                 test_file_subpath,
                                                  self.run_info)
         if not manifest:
             raise ValueError('unable to read ".ini" file from disk')
-        test_manifest = manifest.get_test('/' + test_name)
+        test_manifest = manifest.get_test(test_name.rpartition('/')[-1])
         if not test_manifest:
             raise ValueError('test ID does not exist')
         update_with_static_expectations(test_manifest)

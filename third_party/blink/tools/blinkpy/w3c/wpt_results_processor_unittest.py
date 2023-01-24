@@ -84,7 +84,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                         ],
                         'variant.html': [
                             'b8db5972284d1ac6bbda0da81621d9bca5d04ee7',
-                            ['variant.html?foo=bar/abc', {}],
+                            ['variant.html?foo=bar', {}],
                             ['variant.html?foo=baz', {}],
                         ],
                         'dir': {
@@ -806,13 +806,13 @@ class WPTResultsProcessorTest(LoggingTestCase):
         # ini file if it exists for a test
         json_dict = {
             'tests': {
-                'variant.html?foo=bar/abc': {
+                'variant.html?foo=bar': {
                     'expected': 'PASS',
                     'actual': 'FAIL',
                     'artifacts': {
                         'wpt_actual_status': ['OK'],
                         'wpt_actual_metadata': [
-                            '[variant.html?foo=bar/abc]\n  expected: OK\n',
+                            '[variant.html?foo=bar]\n  expected: OK\n',
                         ],
                     },
                 },
@@ -827,7 +827,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
             self.fs.join(self.processor.web_tests_dir, 'external', 'wpt',
                          'variant.html.ini'),
             textwrap.dedent("""\
-                [variant.html?foo=bar/abc]
+                [variant.html?foo=bar]
                   expected: OK
 
                 [variant.html?foo=baz]
@@ -836,16 +836,16 @@ class WPTResultsProcessorTest(LoggingTestCase):
         with self.fs.patch_builtins():
             self.processor.process_wpt_results(OUTPUT_JSON_FILENAME)
         variant_metadata = textwrap.dedent("""\
-            [variant.html?foo=bar/abc]
+            [variant.html?foo=bar]
               expected: OK
             """)
         artifacts_subdir = self.fs.join(self.processor.artifacts_dir)
         actual_path = self.fs.join(artifacts_subdir,
-                                   'variant_foo=bar_abc-actual.txt')
+                                   'variant_foo=bar-actual.txt')
         self.assertEqual(variant_metadata, self.fs.read_text_file(actual_path))
         # The checked-in metadata file gets renamed from .ini to -expected.txt
         expected_path = self.fs.join(artifacts_subdir,
-                                     'variant_foo=bar_abc-expected.txt')
+                                     'variant_foo=bar-expected.txt')
         # Exclude the `foo=baz` variant from the expected text.
         self.assertEqual(variant_metadata,
                          self.fs.read_text_file(expected_path))
@@ -854,12 +854,12 @@ class WPTResultsProcessorTest(LoggingTestCase):
         # the newly-created files.
         updated_json = self._load_json_output()
         test_node_parent = updated_json['tests']
-        test_node = test_node_parent['variant.html?foo=bar/abc']
+        test_node = test_node_parent['variant.html?foo=bar']
         path_from_out_dir_base = self.fs.join('layout-test-results')
         actual_path = self.fs.join(path_from_out_dir_base,
-                                   'variant_foo=bar_abc-actual.txt')
+                                   'variant_foo=bar-actual.txt')
         expected_path = self.fs.join(path_from_out_dir_base,
-                                     'variant_foo=bar_abc-expected.txt')
+                                     'variant_foo=bar-expected.txt')
         self.assertNotIn('wpt_actual_metadata', test_node['artifacts'])
         self.assertEqual([actual_path], test_node['artifacts']['actual_text'])
         self.assertEqual([expected_path],
