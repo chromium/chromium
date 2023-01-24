@@ -262,9 +262,6 @@ executable("launcher") {
     ldflags += [
       # When run from ./VERSION/GoogleUpdater.app/Contents/Helpers/launcher.
       "-Wl,-rpath,@executable_path/../MacOS",
-
-      # When run from ./launcher.
-      "-Wl,-rpath,@executable_path/${chrome_version_full}/${updater_product_full_name}.app/Contents/MacOS",
     ]
   }
 }
@@ -299,9 +296,6 @@ executable("launcher_test") {
     ldflags += [
       # From ./VERSION/GoogleUpdater_test.app/Contents/Helpers/launcher.
       "-Wl,-rpath,@executable_path/../MacOS",
-
-      # When run from ./launcher.
-      "-Wl,-rpath,@executable_path/${chrome_version_full}/${updater_product_full_name}_test.app/Contents/MacOS",
     ]
   }
 }

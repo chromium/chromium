@@ -221,7 +221,13 @@ absl::optional<base::FilePath> GetUpdateServiceLauncherPath(
     UpdaterScope scope) {
   absl::optional<base::FilePath> install_dir = GetBaseInstallDirectory(scope);
   return install_dir
-             ? absl::optional<base::FilePath>(install_dir->Append("launcher"))
+             ? absl::optional<base::FilePath>(
+                   install_dir->Append("Current")
+                       .Append(base::StrCat({PRODUCT_FULLNAME_STRING,
+                                             kExecutableSuffix, ".app"}))
+                       .Append("Contents")
+                       .Append("Helpers")
+                       .Append("launcher"))
              : absl::nullopt;
 }
 

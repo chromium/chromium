@@ -247,28 +247,28 @@ int PromoteCandidate(UpdaterScope scope) {
       GetUpdaterExecutablePath(scope);
   const absl::optional<base::FilePath> install_dir =
       GetBaseInstallDirectory(scope);
+  const absl::optional<base::FilePath> versioned_path =
+      GetVersionedInstallDirectory(scope);
   const absl::optional<base::FilePath> bundle_path =
       GetUpdaterAppBundlePath(scope);
-  if (!updater_executable_path || !bundle_path || !install_dir) {
+  if (!updater_executable_path || !install_dir || !versioned_path ||
+      !bundle_path) {
     return kErrorFailedToGetVersionedInstallDirectory;
   }
 
-  // Update the launcher hard link.
-  base::FilePath tmp_launcher_name = install_dir->Append("launcher_new");
-  if (link(bundle_path->Append("Contents")
-               .Append("Helpers")
-               .Append("launcher")
-               .value()
-               .c_str(),
-           tmp_launcher_name.value().c_str())) {
+  // Update the launcher sym link.
+  base::FilePath tmp_launcher_name = install_dir->Append("NewCurrent");
+  if (symlink(versioned_path->value().c_str(),
+              tmp_launcher_name.value().c_str())) {
     return kErrorFailedToLinkLauncher;
   }
   if (rename(tmp_launcher_name.value().c_str(),
-             install_dir->Append("launcher").value().c_str())) {
+             install_dir->Append("Current").value().c_str())) {
     return kErrorFailedToRenameLauncher;
   }
   if (scope == UpdaterScope::kSystem) {
-    base::FilePath path = install_dir->Append("launcher");
+    base::FilePath path =
+        bundle_path->Append("Contents").Append("Helpers").Append("launcher");
     struct stat info;
     if (stat(path.value().c_str(), &info) || info.st_uid ||
         lchmod(path.value().c_str(),
