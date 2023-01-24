@@ -236,10 +236,10 @@ class ClassLookupIndex:
 
     full_class_names = set()
 
-    # Read the location of the java_sources_file from the build_config
-    sources_path = deps_info.get('java_sources_file')
+    # Read the location of the target_sources_file from the build_config
+    sources_path = deps_info.get('target_sources_file')
     if sources_path:
-      # Read the java_sources_file, indexing the classes found
+      # Read the target_sources_file, indexing the classes found
       with open(self._abs_build_output_dir / sources_path) as sources_contents:
         for source_line in sources_contents:
           source_path = pathlib.Path(source_line.strip())

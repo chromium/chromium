@@ -225,11 +225,11 @@ class _ProjectEntry:
 
   def JavaFiles(self):
     if self._java_files is None:
-      java_sources_file = self.DepsInfo().get('java_sources_file')
+      target_sources_file = self.DepsInfo().get('target_sources_file')
       java_files = []
-      if java_sources_file:
-        java_sources_file = _RebasePath(java_sources_file)
-        java_files = build_utils.ReadSourcesList(java_sources_file)
+      if target_sources_file:
+        target_sources_file = _RebasePath(target_sources_file)
+        java_files = build_utils.ReadSourcesList(target_sources_file)
       self._java_files = java_files
     return self._java_files
 

@@ -3215,15 +3215,15 @@ if (enable_java_templates) {
   #    be the name of the main APK target.
   #  supports_android: Optional. True if target can run on Android.
   #  requires_android: Optional. True if target can only run on Android.
-  #  java_files: Optional list of Java source file paths for this target.
+  #  source_files: Optional list of Java source file paths for this target.
   #  javac_args: Optional list of extra arguments to pass to javac.
   #  errorprone_args: Optional list of extra arguments to pass to.
   #  srcjar_deps: Optional list of .srcjar targets (not file paths). The Java
   #    source files they contain will also be compiled for this target.
-  #  java_sources_file: Optional path to a file which will be written with
-  #    the content of java_files. If not provided, the file will be written
+  #  target_sources_file: Optional path to a file which will be written with
+  #    the content of source_files. If not provided, the file will be written
   #    under $target_gen_dir/$main_target_name.sources. Ignored if
-  #    java_files is empty. If not
+  #    sources_files is empty. If not
   #  jar_path: Optional path to a prebuilt .jar file for this target.
   #    Mutually exclusive with java_files and srcjar_deps.
   #  output_name: Optional output name for the final jar path. Used to
