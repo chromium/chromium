@@ -21,7 +21,12 @@ namespace ash {
 
 /**
  * SyncAppsyncOptinClient listens for changes to a profile's opt-in to AppsSync,
- * and propagates those changes to a file in the user's daemon-store.
+ * and propagates those changes to a file in the user's daemon-store. This file
+ * is used by crash_reporter/anomaly_detector in ChromeOS to check if a profile
+ * has opted in to AppsSync without needing to communicate directly with
+ * Chrome. The absence of the file is treated the same as a file indicating a
+ * user has not opted in, so eif a write fails it falls back to the
+ * default-private option, and will reattempt to write again in the future.
  */
 class SyncAppsyncOptinClient : public syncer::SyncServiceObserver {
  public:
@@ -37,6 +42,11 @@ class SyncAppsyncOptinClient : public syncer::SyncServiceObserver {
   explicit SyncAppsyncOptinClient(syncer::SyncService* sync_service,
                                   user_manager::UserManager* user_manager,
                                   const base::FilePath& daemon_store_location);
+  explicit SyncAppsyncOptinClient(
+      syncer::SyncService* sync_service,
+      user_manager::UserManager* user_manager,
+      const base::FilePath& daemon_store_location,
+      const base::FilePath& old_daemon_store_location);
   SyncAppsyncOptinClient(const SyncAppsyncOptinClient& other) = delete;
   SyncAppsyncOptinClient& operator=(const SyncAppsyncOptinClient& other) =
       delete;
@@ -54,8 +64,19 @@ class SyncAppsyncOptinClient : public syncer::SyncServiceObserver {
   };
 
  private:
-  // Issues a write to the opt-in file, to reflect Profile state.
+  // Issues a write to the opt-in file, to reflect Profile state. The IO
+  // operation is posted as a task to the ThreadPool, and thus could never be
+  // run - or it may fail, but will be attempted again on state change or
+  // client instantiation.
   void UpdateOptinFile(bool opted_in, const syncer::SyncService* sync_service);
+  // Attmepts to remove any existing contents from defunct daemon-store
+  // location. May silently fail (with debug log), but should be reattempted the
+  // next time Client is instantiated so should eventually go through. Posted as
+  // a task to the ThreadPool.
+  void RemoveOldAppsyncDaemonDir(const syncer::SyncService* sync_service);
+  // Looks up active profile and returns hash of username. String will be empty
+  // if no profile can be found.
+  std::string GetActiveProfileHash(const syncer::SyncService* sync_service);
 
   const base::raw_ptr<syncer::SyncService> sync_service_;
   const base::raw_ptr<user_manager::UserManager> user_manager_;
@@ -64,6 +85,9 @@ class SyncAppsyncOptinClient : public syncer::SyncServiceObserver {
 
   // Location of daemon-store - can be changed for testing.
   base::FilePath daemon_store_filepath_;
+  // Only for use during migration from appsync-consent to appsync-optin
+  // directory.
+  base::FilePath old_daemon_store_filepath_;
 };
 }  // namespace ash
 

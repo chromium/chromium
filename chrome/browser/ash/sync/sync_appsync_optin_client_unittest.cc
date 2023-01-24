@@ -273,4 +273,34 @@ TEST_F(SyncAppsyncOptinClientTest, WriteFails) {
       SyncAppsyncOptinClient::AppsSyncOptinFileWrite::kFailure, 1);
 }
 
+TEST_F(SyncAppsyncOptinClientTest, RemovesOldState) {
+  // Create old state to migrate
+  base::ScopedTempDir old_test_daemon_dir;
+  EXPECT_TRUE(old_test_daemon_dir.CreateUniqueTempDir());
+  base::FilePath tmp_old_dir_path =
+      old_test_daemon_dir.GetPath().Append("test@test.com-hash");
+  ASSERT_TRUE(base::CreateDirectory(tmp_old_dir_path));
+  ASSERT_TRUE(base::WriteFile(tmp_old_dir_path.Append("consent-enabled"), "1"));
+
+  test_sync_service_->SetAppsyncOptin(true);
+  test_appsync_optin_client_ = std::make_unique<SyncAppsyncOptinClient>(
+      test_sync_service_.get(), test_user_manager_.get(),
+      test_daemon_dir_.GetPath(), old_test_daemon_dir.GetPath());
+
+  // Wait for file IO to finish.
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(base::PathExists(tmp_old_dir_path));
+}
+
+TEST_F(SyncAppsyncOptinClientTest, DoenstBreakIfNoOldState) {
+  test_sync_service_->SetAppsyncOptin(true);
+  test_appsync_optin_client_ = std::make_unique<SyncAppsyncOptinClient>(
+      test_sync_service_.get(), test_user_manager_.get(),
+      test_daemon_dir_.GetPath(),
+      test_daemon_dir_.GetPath().Append("NOT-A-REAL-PATH"));
+
+  EXPECT_TRUE(base::PathExists(tmp_dir_path_));
+}
+
 }  // namespace ash
