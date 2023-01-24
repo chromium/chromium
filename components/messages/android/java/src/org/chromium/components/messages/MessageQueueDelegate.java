@@ -10,13 +10,14 @@ package org.chromium.components.messages;
  */
 public interface MessageQueueDelegate {
     /**
-     * Called before a message is shown to allow the delegate to do preparation work.
+     * Called before a message is shown to allow the delegate to do preparation work. Should be
+     * called only once before showing.
      * @param callback The callback called after all the preparation work has been done.
      */
-    void onStartShowing(Runnable callback);
+    void onRequestShowing(Runnable callback);
 
     /**
-     * Called after a message is finished hiding.
+     * Called after all messages are finished hiding. Should be called only once after hiding.
      */
     void onFinishHiding();
 
@@ -29,4 +30,16 @@ public interface MessageQueueDelegate {
      * Called after a message animation has ended.
      */
     void onAnimationEnd();
+
+    /**
+     * Returns whether the browser/UI is ready to show items from the queue.
+     * @return Whether everything is ready for showing a new message.
+     */
+    boolean isReadyForShowing();
+
+    /**
+     * Returns whether the delegate is preparing to show a message.
+     * @return True if {@link #onRequestShowing(Runnable)} is called but not finished yet.
+     */
+    boolean isPendingShow();
 }

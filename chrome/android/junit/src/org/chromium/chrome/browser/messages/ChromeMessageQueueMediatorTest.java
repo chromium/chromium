@@ -14,7 +14,9 @@ import android.os.Handler;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -29,12 +31,14 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
@@ -49,6 +53,9 @@ import org.chromium.ui.util.TokenHolder;
 @LooperMode(LooperMode.Mode.LEGACY)
 public class ChromeMessageQueueMediatorTest {
     private static final int EXPECTED_TOKEN = 42;
+
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock
     private BrowserControlsManager mBrowserControlsManager;
@@ -145,6 +152,7 @@ public class ChromeMessageQueueMediatorTest {
      * Test the runnable by #onStartShow is reset correctly.
      */
     @Test
+    @Features.EnableFeatures({ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES})
     public void testResetOnStartShowRunnable() {
         when(mBrowserControlsManager.getBrowserControlHiddenRatio()).thenReturn(0.5f);
         OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneShotSupplier =
@@ -177,13 +185,44 @@ public class ChromeMessageQueueMediatorTest {
                 mActivityLifecycleDispatcher, mMessageDispatcher);
         ChromeMessageQueueMediator.BrowserControlsObserver observer =
                 observerArgumentCaptor.getValue();
+        Assert.assertFalse(mMediator.isReadyForShowing());
         Runnable runnable = () -> {};
-        mMediator.onStartShowing(runnable);
+        mMediator.onRequestShowing(runnable);
         Assert.assertNotNull(observer.getRunnableForTesting());
+        Assert.assertFalse(mMediator.isReadyForShowing());
+        Assert.assertTrue(mMediator.isPendingShow());
 
         mMediator.onFinishHiding();
         Assert.assertNull("Callback should be reset to null after hiding is finished",
                 observer.getRunnableForTesting());
+        Assert.assertFalse(mMediator.isReadyForShowing());
+    }
+
+    /**
+     * Test whether #IsReadyForShowing returns correct value.
+     */
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES})
+    public void testIsReadyForShowing() {
+        final ArgumentCaptor<ChromeMessageQueueMediator.BrowserControlsObserver>
+                observerArgumentCaptor = ArgumentCaptor.forClass(
+                        ChromeMessageQueueMediator.BrowserControlsObserver.class);
+        doNothing().when(mBrowserControlsManager).addObserver(observerArgumentCaptor.capture());
+        var visibilitySupplier = new ObservableSupplierImpl<Boolean>();
+        visibilitySupplier.set(false);
+        var visibilityDelegate =
+                new BrowserStateBrowserControlsVisibilityDelegate(visibilitySupplier);
+        when(mBrowserControlsManager.getBrowserVisibilityDelegate()).thenReturn(visibilityDelegate);
+        initMediator();
+        Assert.assertFalse(mMediator.isReadyForShowing());
+        visibilitySupplier.set(true);
+        when(mBrowserControlsManager.getBrowserControlHiddenRatio()).thenReturn(0f);
+
+        mMediator.onRequestShowing(() -> {});
+        Assert.assertTrue(mMediator.isReadyForShowing());
+
+        mMediator.onFinishHiding();
+        Assert.assertFalse(mMediator.isReadyForShowing());
     }
 
     /**

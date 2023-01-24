@@ -32,6 +32,7 @@ public class MessageContainer extends FrameLayout {
     }
 
     private MessageContainerA11yDelegate mA11yDelegate;
+    private boolean mIsInitializingLayout;
 
     public MessageContainer(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -140,10 +141,12 @@ public class MessageContainer extends FrameLayout {
         View view = getChildAt(0);
         assert view != null;
         if (view.getHeight() > 0) {
+            mIsInitializingLayout = false;
             runnable.run();
             return;
         }
 
+        mIsInitializingLayout = true;
         view.addOnLayoutChangeListener(new OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom,
@@ -152,8 +155,18 @@ public class MessageContainer extends FrameLayout {
 
                 runnable.run();
                 v.removeOnLayoutChangeListener(this);
+                mIsInitializingLayout = false;
             }
         });
+    }
+
+    /**
+     * Returns whether container is initializing its layout for a new added view. Clients should not
+     * call {@link #runAfterInitialMessageLayout(Runnable)} when it returns true.
+     * @return True if it is initializing layout.
+     */
+    public boolean isIsInitializingLayout() {
+        return mIsInitializingLayout;
     }
 
     /**
