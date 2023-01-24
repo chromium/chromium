@@ -2,25 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
+
 // TODO(calamity): Remove TestTimerProxy in favor of MockTimer.
 export class TestTimerProxy {
-  constructor() {
-    this.immediatelyResolveTimeouts = true;
+  immediatelyResolveTimeouts: boolean = true;
+  private nextTimeoutId_: number = 0;
+  private activeTimeouts_: Map<number, Function> = new Map();
 
-    /** @private {number} */
-    this.nextTimeoutId_ = 0;
-
-    /** @private {!Map<number, !Function>} */
-    this.activeTimeouts_ = new Map();
-  }
-
-  /**
-   * @param {Function} fn
-   * @param {number=} delay
-   * @return {number}
-   * @override
-   */
-  setTimeout(fn, delay) {
+  setTimeout(fn: Function, _delay: number): number {
     if (this.immediatelyResolveTimeouts) {
       fn();
     } else {
@@ -30,31 +20,25 @@ export class TestTimerProxy {
     return this.nextTimeoutId_++;
   }
 
-  /**
-   * @param {number} id
-   * @override
-   */
-  clearTimeout(id) {
+  clearTimeout(id: number) {
     this.activeTimeouts_.delete(id);
   }
 
   /**
    * Run the function associated with a timeout id and clear it from the
    * active timeouts.
-   * @param {number} id
    */
-  runTimeoutFn(id) {
-    this.activeTimeouts_.get(id)();
+  runTimeoutFn(id: number) {
+    const fn = this.activeTimeouts_.get(id);
+    assert(fn);
+    fn();
     this.clearTimeout(id);
   }
 
   /**
    * Returns true if a given timeout id has not been run or cleared.
-   * @param {number} id
-   * @return {boolean} Whether a given timeout id has not been run or
-   * cleared.
    */
-  hasTimeout(id) {
+  hasTimeout(id: number): boolean {
     return this.activeTimeouts_.has(id);
   }
 }
