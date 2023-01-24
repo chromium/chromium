@@ -30,6 +30,8 @@ TEST_F(TableViewTextButtonItemTest, SetProperties) {
   item.text = text;
   item.buttonText = buttonText;
 
+  ASSERT_TRUE(item.dimBackgroundWhenDisabled);
+
   id cell = [[[item cellClass] alloc] init];
   ASSERT_TRUE([cell isMemberOfClass:[TableViewTextButtonCell class]]);
 

@@ -49,6 +49,7 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
     _enabled = YES;
     _textAlignment = kDefaultTextAlignment;
     _boldButtonText = YES;
+    _dimBackgroundWhenDisabled = YES;
   }
   return self;
 }
