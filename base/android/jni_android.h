@@ -79,6 +79,9 @@ BASE_EXPORT void InitVM(JavaVM* vm);
 // Returns true if the global JVM has been initialized.
 BASE_EXPORT bool IsVMInitialized();
 
+// Returns the global JVM, or nullptr if it has not been initialized.
+BASE_EXPORT JavaVM* GetVM();
+
 // Initializes the global ClassLoader used by the GetClass and LazyGetClass
 // methods. This is needed because JNI will use the base ClassLoader when there
 // is no Java code on the stack. The base ClassLoader doesn't know about any of

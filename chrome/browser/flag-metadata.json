@@ -1842,6 +1842,11 @@
     "expiry_milestone": 106
   },
   {
+    "name": "enable-cardboard",
+    "owners": [ "alcooper", "chrome-xr-eng@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-cast-remoting-query-blocklist",
     "owners": [ "rwkeane@google.com", "openscreen-eng@google.com" ],
     "expiry_milestone": 115

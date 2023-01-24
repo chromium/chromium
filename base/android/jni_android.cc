@@ -127,6 +127,10 @@ bool IsVMInitialized() {
   return g_jvm != nullptr;
 }
 
+JavaVM* GetVM() {
+  return g_jvm;
+}
+
 void InitGlobalClassLoader(JNIEnv* env) {
   DCHECK(g_class_loader == nullptr);
 

@@ -12,5 +12,6 @@ buildflag_header("buildflags") {
     "ENABLE_ARCORE=$enable_arcore",
     "ENABLE_VR=$enable_vr",
     "ENABLE_OPENXR=$enable_openxr",
+    "ENABLE_CARDBOARD=$enable_cardboard",
   ]
 }

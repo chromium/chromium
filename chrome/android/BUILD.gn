@@ -757,6 +757,10 @@ if (current_toolchain == default_toolchain) {
       ]
     }
 
+    if (enable_cardboard) {
+      deps += [ "//third_party/cardboard:cardboard_java" ]
+    }
+
     if (enable_vr) {
       deps += [ ":chrome_vr_java_resources" ]
     }

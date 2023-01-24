@@ -577,6 +577,16 @@ by a child template that "extends" this file.
             {{ self.supports_vr() }}
         </activity>
         {% endif %}
+        {% set enable_cardboard = enable_cardboard|default(0) %}
+        {% if enable_cardboard == "true" %}
+        <!-- Based on //third_party/cardboard/src/sdk/qrcode/android/AndroidManifest.xml -->
+        <activity
+            android:name="com.google.cardboard.sdk.QrCodeCaptureActivity"
+            android:exported="false"
+            android:label="@string/title_activity_qr_code_capture"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
+        </activity>
+        {% endif %}
         <activity android:name="org.chromium.chrome.browser.signin.SyncConsentActivity"
             android:theme="@style/Theme.Chromium.DialogWhenLarge"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"

@@ -7489,6 +7489,10 @@ static_library("browser") {
           "//device/vr/android/arcore",
         ]
       }
+
+      if (enable_cardboard) {
+        deps += [ "//device/vr/android/cardboard:vr_cardboard" ]
+      }
     } else {
       deps += [ "//device/vr/public/mojom:isolated_xr_service" ]
     }

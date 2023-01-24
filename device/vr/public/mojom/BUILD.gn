@@ -27,6 +27,10 @@ mojom_component("vr_service") {
     enabled_features += [ "enable_openxr" ]
   }
 
+  if (enable_cardboard) {
+    enabled_features += [ "enable_cardboard" ]
+  }
+
   shared_cpp_typemap = {
     types = [
       {

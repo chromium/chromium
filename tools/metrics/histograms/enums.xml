@@ -64352,6 +64352,7 @@ from previous Chrome versions.
   <int value="1852630189" label="NTPBookmarkSuggestions:disabled"/>
   <int value="1854017276" label="NavigationPredictorRendererWarmup:disabled"/>
   <int value="1854048611" label="OmniboxSuggestionsRecyclerView:disabled"/>
+  <int value="1854141935" label="EnableCardboard:enabled"/>
   <int value="1854226565" label="AutofillNoLocalSaveOnUnmaskSuccess:enabled"/>
   <int value="1854646491" label="DetailedLanguageSettings:disabled"/>
   <int value="1855524566" label="allow-insecure-websocket-from-https-origin"/>
@@ -64823,6 +64824,7 @@ from previous Chrome versions.
   <int value="2121870664"
       label="lacros-data-backward-migration-policy:enabled"/>
   <int value="2122023503" label="enable-win32k-lockdown-mimetypes"/>
+  <int value="2122256719" label="EnableCardboard:disabled"/>
   <int value="2122863344" label="WebViewSurfaceControl:disabled"/>
   <int value="2122876605" label="enable-bleeding-edge-rendering-fast-paths"/>
   <int value="2123183411" label="BlinkHeapIncrementalMarking:enabled"/>

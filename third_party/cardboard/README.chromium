@@ -11,4 +11,6 @@ The Cardboard SDK supports a simple API used for displaying VR scenes on
 smartphones inserted into Cardboard viewers.
 
 Local Modifications:
-None at this time.
+Created local top-level BUILD.gn based on src/sdk/build.gradle
+Created local proguard-rules.pro to remove wildcard rules
+Created local override for device_gyroscope_sensor to remove static initializers

@@ -1,0 +1,143 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_android)
+assert(!is_cast_android)
+
+proto_java_library("cardboard_proto_java") {
+  sources = [ "src/proto/cardboard_device.proto" ]
+  proto_path = "//"
+}
+
+android_resources("cardboard_resources") {
+  sources = [
+    "src/sdk/qrcode/android/res/drawable-xxhdpi/qr_sample.png",
+    "src/sdk/qrcode/android/res/drawable-xxhdpi/tick_marks.png",
+    "src/sdk/qrcode/android/res/layout/qr_code_capture.xml",
+    "src/sdk/qrcode/android/res/values/colors.xml",
+    "src/sdk/qrcode/android/res/values/strings.xml",
+    "src/sdk/qrcode/android/res/values/styles.xml",
+  ]
+
+  custom_package = "com.google.cardboard.sdk"
+}
+
+android_library("cardboard_java") {
+  sources = [
+    "src/sdk/device_params/android/java/com/google/cardboard/sdk/deviceparams/CardboardV1DeviceParams.java",
+    "src/sdk/device_params/android/java/com/google/cardboard/sdk/deviceparams/DeviceParamsUtils.java",
+    "src/sdk/qrcode/android/java/com/google/cardboard/sdk/HeadsetDetectionActivity.java",
+    "src/sdk/qrcode/android/java/com/google/cardboard/sdk/QrCodeCaptureActivity.java",
+    "src/sdk/qrcode/android/java/com/google/cardboard/sdk/qrcode/AsyncTask.java",
+    "src/sdk/qrcode/android/java/com/google/cardboard/sdk/qrcode/CardboardParamsUtils.java",
+    "src/sdk/qrcode/android/java/com/google/cardboard/sdk/qrcode/InputStreamProvider.java",
+    "src/sdk/qrcode/android/java/com/google/cardboard/sdk/qrcode/OutputStreamProvider.java",
+    "src/sdk/qrcode/android/java/com/google/cardboard/sdk/qrcode/QrCodeContentProcessor.java",
+    "src/sdk/qrcode/android/java/com/google/cardboard/sdk/qrcode/QrCodeTracker.java",
+    "src/sdk/qrcode/android/java/com/google/cardboard/sdk/qrcode/QrCodeTrackerFactory.java",
+    "src/sdk/qrcode/android/java/com/google/cardboard/sdk/qrcode/UrlFactory.java",
+    "src/sdk/qrcode/android/java/com/google/cardboard/sdk/qrcode/camera/CameraSource.java",
+    "src/sdk/qrcode/android/java/com/google/cardboard/sdk/qrcode/camera/CameraSourcePreview.java",
+    "src/sdk/screen_params/android/java/com/google/cardboard/sdk/screenparams/ScreenParamsUtils.java",
+  ]
+
+  resources_package = "com.google.cardboard.sdk"
+
+  deps = [
+    ":cardboard_proto_java",
+    ":cardboard_resources",
+    "$google_play_services_package:google_play_services_base_java",
+    "$google_play_services_package:google_play_services_basement_java",
+    "$google_play_services_package:google_play_services_vision_common_java",
+    "$google_play_services_package:google_play_services_vision_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/androidx:androidx_annotation_annotation_jvm_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_core_core_java",
+  ]
+
+  # TODO(alcooper): Switch this to "src/sdk/proguard-rules.pro" once b/264530605
+  # is fixed/rolled-in.
+  proguard_configs = [ "proguard-rules.pro" ]
+}
+
+static_library("cardboard") {
+  sources = [
+    "src/sdk/cardboard.cc",
+    "src/sdk/device_params/android/device_params.cc",
+    "src/sdk/device_params/android/device_params.h",
+    "src/sdk/distortion_mesh.cc",
+    "src/sdk/distortion_mesh.h",
+    "src/sdk/distortion_renderer.h",
+    "src/sdk/head_tracker.cc",
+    "src/sdk/head_tracker.h",
+    "src/sdk/include/cardboard.h",
+    "src/sdk/jni_utils/android/jni_utils.cc",
+    "src/sdk/jni_utils/android/jni_utils.h",
+    "src/sdk/lens_distortion.cc",
+    "src/sdk/lens_distortion.h",
+    "src/sdk/polynomial_radial_distortion.cc",
+    "src/sdk/polynomial_radial_distortion.h",
+    "src/sdk/qr_code.h",
+    "src/sdk/qrcode/android/qr_code.cc",
+    "src/sdk/qrcode/cardboard_v1/cardboard_v1.cc",
+    "src/sdk/qrcode/cardboard_v1/cardboard_v1.h",
+    "src/sdk/qrcode/ios/device_params_helper.h",
+    "src/sdk/qrcode/ios/nsurl_session_data_handler.h",
+    "src/sdk/qrcode/ios/qr_scan_view_controller.h",
+    "src/sdk/rendering/android/shaders/distortion_frag.spv.h",
+    "src/sdk/rendering/android/shaders/distortion_vert.spv.h",
+    "src/sdk/rendering/opengl_es2_distortion_renderer.cc",
+    "src/sdk/screen_params.h",
+    "src/sdk/screen_params/android/screen_params.cc",
+    "src/sdk/sensors/accelerometer_data.h",
+    "src/sdk/sensors/android/device_accelerometer_sensor.cc",
+    "src/sdk/sensors/android/sensor_event_producer.cc",
+    "src/sdk/sensors/device_accelerometer_sensor.h",
+    "src/sdk/sensors/device_gyroscope_sensor.h",
+    "src/sdk/sensors/gyroscope_bias_estimator.cc",
+    "src/sdk/sensors/gyroscope_bias_estimator.h",
+    "src/sdk/sensors/gyroscope_data.h",
+    "src/sdk/sensors/ios/sensor_helper.h",
+    "src/sdk/sensors/lowpass_filter.cc",
+    "src/sdk/sensors/lowpass_filter.h",
+    "src/sdk/sensors/mean_filter.cc",
+    "src/sdk/sensors/mean_filter.h",
+    "src/sdk/sensors/median_filter.cc",
+    "src/sdk/sensors/median_filter.h",
+    "src/sdk/sensors/neck_model.cc",
+    "src/sdk/sensors/neck_model.h",
+    "src/sdk/sensors/rotation_state.h",
+    "src/sdk/sensors/sensor_event_producer.h",
+    "src/sdk/sensors/sensor_fusion_ekf.cc",
+    "src/sdk/sensors/sensor_fusion_ekf.h",
+    "src/sdk/util/is_arg_null.h",
+    "src/sdk/util/is_initialized.cc",
+    "src/sdk/util/is_initialized.h",
+    "src/sdk/util/logging.h",
+    "src/sdk/util/matrix_3x3.cc",
+    "src/sdk/util/matrix_3x3.h",
+    "src/sdk/util/matrix_4x4.cc",
+    "src/sdk/util/matrix_4x4.h",
+    "src/sdk/util/matrixutils.cc",
+    "src/sdk/util/matrixutils.h",
+    "src/sdk/util/rotation.cc",
+    "src/sdk/util/rotation.h",
+    "src/sdk/util/vector.h",
+    "src/sdk/util/vectorutils.cc",
+    "src/sdk/util/vectorutils.h",
+    "src_overrides/sdk/sensors/android/device_gyroscope_sensor.cc",
+  ]
+
+  include_dirs = [ "src/sdk" ]
+
+  libs = [
+    "android",
+    "log",
+    "GLESv2",
+  ]
+}

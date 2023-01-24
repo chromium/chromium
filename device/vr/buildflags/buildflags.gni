@@ -11,6 +11,8 @@ declare_args() {
   enable_gvr_services = is_android && !is_cast_android &&
                         (current_cpu == "arm" || current_cpu == "arm64")
 
+  enable_cardboard = false
+
   use_command_buffer = is_win
 
   # To build with OpenXR support, the OpenXR Loader needs to be pulled to
