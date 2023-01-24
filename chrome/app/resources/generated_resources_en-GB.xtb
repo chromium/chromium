@@ -3228,7 +3228,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3936390757709632190">&amp;Open audio in new tab</translation>
 <translation id="3936925983113350642">The password you choose will be required to restore this certificate later. Please record it in a safe location.</translation>
 <translation id="3937640725563832867">Certificate Issuer Alternative Name</translation>
-<translation id="3937734102568271121">Always Translate <ph name="LANGUAGE" /></translation>
+<translation id="3937734102568271121">Always translate <ph name="LANGUAGE" /></translation>
 <translation id="3938128855950761626">Devices from vendor <ph name="VENDOR_ID" /></translation>
 <translation id="3940233957883229251">Enable auto-repeat</translation>
 <translation id="3941565636838060942">To hide access to this programme, you need to uninstall it by using
@@ -3624,7 +3624,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4324577459193912240">File incomplete</translation>
 <translation id="4325237902968425115">Uninstalling <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4330191372652740264">Ice water</translation>
-<translation id="4330387663455830245">Never Translate <ph name="LANGUAGE" /></translation>
+<translation id="4330387663455830245">Never translate <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Set Up Parental Controls</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 With RSA Encryption</translation>
 <translation id="4336434711095810371">Clear all data</translation>
@@ -6308,7 +6308,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6863496016067551393">All extensions allowed</translation>
 <translation id="686366188661646310">Delete password?</translation>
 <translation id="6865313869410766144">Auto-fill form data</translation>
-<translation id="6865598234501509159">Page Is not in <ph name="LANGUAGE" /></translation>
+<translation id="6865598234501509159">Page is not in <ph name="LANGUAGE" /></translation>
 <translation id="6865708901122695652">WebRTC event logs (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Quiet</translation>
 <translation id="686664946474413495">Colour temperature</translation>
@@ -8358,7 +8358,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8791534160414513928">Send a ‘Do Not Track’ request with your browsing traffic</translation>
 <translation id="879413103056696865">While the hotspot is on, your <ph name="PHONE_NAME" /> will:</translation>
 <translation id="8795916974678578410">New Window</translation>
-<translation id="8797459392481275117">Never Translate This Site</translation>
+<translation id="8797459392481275117">Never translate this site</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8800034312320686233">Site not working?</translation>
 <translation id="8803526663383843427">When on</translation>
