@@ -70,7 +70,7 @@ FeaturePodButton* VPNFeaturePodController::CreateButton() {
   return button_;
 }
 
-std::unique_ptr<FeatureTile> VPNFeaturePodController::CreateTile() {
+std::unique_ptr<FeatureTile> VPNFeaturePodController::CreateTile(bool compact) {
   DCHECK(features::IsQsRevampEnabled());
   DCHECK(!tile_);
   auto tile = std::make_unique<FeatureTile>(

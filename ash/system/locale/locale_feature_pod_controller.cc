@@ -59,7 +59,8 @@ FeaturePodButton* LocaleFeaturePodController::CreateButton() {
   return button;
 }
 
-std::unique_ptr<FeatureTile> LocaleFeaturePodController::CreateTile() {
+std::unique_ptr<FeatureTile> LocaleFeaturePodController::CreateTile(
+    bool compact) {
   DCHECK(features::IsQsRevampEnabled());
   auto tile = std::make_unique<FeatureTile>(
       base::BindRepeating(&LocaleFeaturePodController::OnIconPressed,

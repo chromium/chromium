@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/notifier_metadata.h"
 #include "ash/public/cpp/notifier_settings_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -47,16 +48,22 @@ QuietModeFeaturePodController::~QuietModeFeaturePodController() {
   MessageCenter::Get()->RemoveObserver(this);
 }
 
+// static
+bool QuietModeFeaturePodController::CalculateButtonVisibility() {
+  auto* session_controller = Shell::Get()->session_controller();
+  return session_controller->ShouldShowNotificationTray() &&
+         !session_controller->IsScreenLocked();
+}
+
 FeaturePodButton* QuietModeFeaturePodController::CreateButton() {
   DCHECK(!button_);
   button_ = new FeaturePodButton(this);
   button_->SetVectorIcon(kUnifiedMenuDoNotDisturbIcon);
-  const bool visible =
-      Shell::Get()->session_controller()->ShouldShowNotificationTray() &&
-      !Shell::Get()->session_controller()->IsScreenLocked();
-  button_->SetVisible(visible);
-  if (visible)
+  const bool target_visibility = CalculateButtonVisibility();
+  button_->SetVisible(target_visibility);
+  if (target_visibility) {
     TrackVisibilityUMA();
+  }
 
   button_->SetLabel(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NOTIFICATIONS_LABEL));
@@ -69,20 +76,21 @@ FeaturePodButton* QuietModeFeaturePodController::CreateButton() {
   return button_;
 }
 
-std::unique_ptr<FeatureTile> QuietModeFeaturePodController::CreateTile() {
+std::unique_ptr<FeatureTile> QuietModeFeaturePodController::CreateTile(
+    bool compact) {
   DCHECK(features::IsQsRevampEnabled());
-  // TODO(b/263423627): Tile should be compact if applicable.
   auto tile = std::make_unique<FeatureTile>(
       base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
                           weak_ptr_factory_.GetWeakPtr()),
-      /*is_togglable=*/true, FeatureTile::TileType::kPrimary);
+      /*is_togglable=*/true,
+      compact ? FeatureTile::TileType::kCompact
+              : FeatureTile::TileType::kPrimary);
   tile_ = tile.get();
+  tile_->SetID(VIEW_ID_DND_FEATURE_TILE);
 
-  auto* session_controller = Shell::Get()->session_controller();
-  const bool visible = session_controller->ShouldShowNotificationTray() &&
-                       !session_controller->IsScreenLocked();
-  tile_->SetVisible(visible);
-  if (visible) {
+  const bool target_visibility = CalculateButtonVisibility();
+  tile_->SetVisible(target_visibility);
+  if (target_visibility) {
     TrackVisibilityUMA();
   }
 
@@ -90,12 +98,13 @@ std::unique_ptr<FeatureTile> QuietModeFeaturePodController::CreateTile() {
   tile_->SetVectorIcon(kUnifiedMenuDoNotDisturbIcon);
   tile_->SetLabel(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_DO_NOT_DISTURB));
-  tile_->SetSubLabelVisibility(false);
+  if (!compact) {
+    tile_->SetSubLabelVisibility(false);
+  }
   tile_->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_NOTIFICATIONS_TOGGLE_TOOLTIP,
       GetQuietModeStateTooltip()));
-  NotifierSettingsController::Get()->AddNotifierSettingsObserver(this);
-  OnQuietModeChanged(MessageCenter::Get()->IsQuietMode());
+
   return tile;
 }
 

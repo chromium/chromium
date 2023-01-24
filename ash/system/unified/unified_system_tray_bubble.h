@@ -134,8 +134,7 @@ class ASH_EXPORT UnifiedSystemTrayBubble
   void RecordTimeToClick() override;
 
   // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
+  void OnTabletPhysicalStateChanged() override;
 
   // ShelfObserver:
   void OnAutoHideStateChanged(ShelfAutoHideState new_state) override;

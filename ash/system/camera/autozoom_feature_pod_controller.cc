@@ -56,7 +56,8 @@ FeaturePodButton* AutozoomFeaturePodController::CreateButton() {
   return button_;
 }
 
-std::unique_ptr<FeatureTile> AutozoomFeaturePodController::CreateTile() {
+std::unique_ptr<FeatureTile> AutozoomFeaturePodController::CreateTile(
+    bool compact) {
   DCHECK(!tile_);
   DCHECK(features::IsQsRevampEnabled());
   auto tile = std::make_unique<FeatureTile>(

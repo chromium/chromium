@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "base/memory/weak_ptr.h"
 
@@ -23,7 +22,6 @@ class FeatureTile;
 // is enabled).
 class ASH_EXPORT RotationLockFeaturePodController
     : public FeaturePodControllerBase,
-      public TabletModeObserver,
       public ScreenOrientationController::Observer {
  public:
   RotationLockFeaturePodController();
@@ -35,14 +33,15 @@ class ASH_EXPORT RotationLockFeaturePodController
 
   ~RotationLockFeaturePodController() override;
 
+  // Referenced by `UnifiedSystemTrayController` to know whether to construct a
+  // Primary or Compact tile.
+  static bool CalculateButtonVisibility();
+
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override;
-  std::unique_ptr<FeatureTile> CreateTile() override;
+  std::unique_ptr<FeatureTile> CreateTile(bool compact = false) override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
-
-  // TabletModeObserver:
-  void OnTabletPhysicalStateChanged() override;
 
   // ScreenOrientationController::Observer:
   void OnUserRotationLockChanged() override;

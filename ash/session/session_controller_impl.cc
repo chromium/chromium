@@ -118,10 +118,7 @@ bool SessionControllerImpl::ShouldEnableSettings() const {
 }
 
 bool SessionControllerImpl::ShouldShowNotificationTray() const {
-  if (!IsActiveUserSessionStarted() || IsInSecondaryLoginScreen())
-    return false;
-
-  return true;
+  return IsActiveUserSessionStarted() && !IsInSecondaryLoginScreen();
 }
 
 const SessionControllerImpl::UserSessions&

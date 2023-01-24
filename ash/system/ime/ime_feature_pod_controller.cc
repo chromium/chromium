@@ -85,7 +85,7 @@ FeaturePodButton* IMEFeaturePodController::CreateButton() {
   return button_;
 }
 
-std::unique_ptr<FeatureTile> IMEFeaturePodController::CreateTile() {
+std::unique_ptr<FeatureTile> IMEFeaturePodController::CreateTile(bool compact) {
   DCHECK(features::IsQsRevampEnabled());
   auto tile = std::make_unique<FeatureTile>(
       base::BindRepeating(&IMEFeaturePodController::OnIconPressed,

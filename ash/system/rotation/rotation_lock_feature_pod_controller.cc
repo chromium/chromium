@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -22,15 +23,20 @@ namespace ash {
 
 RotationLockFeaturePodController::RotationLockFeaturePodController() {
   DCHECK(Shell::Get());
-  Shell::Get()->tablet_mode_controller()->AddObserver(this);
   Shell::Get()->screen_orientation_controller()->AddObserver(this);
 }
 
 RotationLockFeaturePodController::~RotationLockFeaturePodController() {
   if (Shell::Get()->screen_orientation_controller())
     Shell::Get()->screen_orientation_controller()->RemoveObserver(this);
-  if (Shell::Get()->tablet_mode_controller())
-    Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
+}
+
+// static
+bool RotationLockFeaturePodController::CalculateButtonVisibility() {
+  // Auto-rotation is supported in both tablet mode and in clamshell mode with
+  // `kSupportsClamshellAutoRotation` set, however the button is shown only if
+  // the device is in tablet mode.
+  return Shell::Get()->tablet_mode_controller()->is_in_tablet_physical_state();
 }
 
 FeaturePodButton* RotationLockFeaturePodController::CreateButton() {
@@ -45,20 +51,27 @@ FeaturePodButton* RotationLockFeaturePodController::CreateButton() {
   return button_;
 }
 
-std::unique_ptr<FeatureTile> RotationLockFeaturePodController::CreateTile() {
+std::unique_ptr<FeatureTile> RotationLockFeaturePodController::CreateTile(
+    bool compact) {
   DCHECK(!tile_);
   DCHECK(features::IsQsRevampEnabled());
-  // TODO(b/251724698): Create the tile as FeatureTile::TileType::kCompact
-  // after adding logic to shrink the Cast tile to compact when auto-rotation
-  // is allowed. Also remove the call to SetSubLabelVisibility().
   auto tile = std::make_unique<FeatureTile>(
       base::BindRepeating(&RotationLockFeaturePodController::OnIconPressed,
-                          weak_factory_.GetWeakPtr()));
+                          weak_factory_.GetWeakPtr()),
+      /*is_togglable=*/true,
+      compact ? FeatureTile::TileType::kCompact
+              : FeatureTile::TileType::kPrimary);
   tile_ = tile.get();
-  // The tile label is always "Auto rotate" and there is no sub-label.
+  tile_->SetID(VIEW_ID_AUTOROTATE_FEATURE_TILE);
+
+  // The tile label is always "Auto rotate" and there is no sub-label when the
+  // tile is `TileType::kPrimary`.
   tile_->SetLabel(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ROTATION_LOCK_AUTO));
-  tile_->SetSubLabelVisibility(false);
+  if (!compact) {
+    tile_->SetSubLabelVisibility(false);
+  }
+
   // UpdateTile() will update visibility.
   tile_->SetVisible(false);
   UpdateTile();
@@ -77,14 +90,6 @@ void RotationLockFeaturePodController::OnIconPressed() {
   Shell::Get()->screen_orientation_controller()->ToggleUserRotationLock();
 }
 
-void RotationLockFeaturePodController::OnTabletPhysicalStateChanged() {
-  if (features::IsQsRevampEnabled()) {
-    UpdateTile();
-  } else {
-    UpdateButton();
-  }
-}
-
 void RotationLockFeaturePodController::OnUserRotationLockChanged() {
   if (features::IsQsRevampEnabled()) {
     UpdateTile();
@@ -95,20 +100,16 @@ void RotationLockFeaturePodController::OnUserRotationLockChanged() {
 
 void RotationLockFeaturePodController::UpdateButton() {
   DCHECK(!features::IsQsRevampEnabled());
-  // Even though auto-rotation is also supported when the device is not in a
-  // tablet physical state but kSupportsClamshellAutoRotation is set. The "Auto
-  // rotate" feature pod button in the system tray menu is not expected to be
-  // shown in the case.
-  const bool is_auto_rotation_allowed =
-      Shell::Get()->tablet_mode_controller()->is_in_tablet_physical_state();
 
-  if (!button_->GetVisible() && is_auto_rotation_allowed)
+  bool target_visibility = CalculateButtonVisibility();
+  if (!button_->GetVisible() && target_visibility) {
     TrackVisibilityUMA();
+  }
+  button_->SetVisible(target_visibility);
 
-  button_->SetVisible(is_auto_rotation_allowed);
-
-  if (!is_auto_rotation_allowed)
+  if (!target_visibility) {
     return;
+  }
 
   auto* screen_orientation_controller =
       Shell::Get()->screen_orientation_controller();
@@ -153,18 +154,14 @@ void RotationLockFeaturePodController::UpdateButton() {
 
 void RotationLockFeaturePodController::UpdateTile() {
   DCHECK(features::IsQsRevampEnabled());
-  // Auto-rotation is also supported when the device is not in a tablet physical
-  // state but kSupportsClamshellAutoRotation is set. The "Auto rotate" feature
-  // tile in the system tray menu is not expected to be shown in the case.
-  const bool is_auto_rotation_allowed =
-      Shell::Get()->tablet_mode_controller()->is_in_tablet_physical_state();
+  bool target_visibility = CalculateButtonVisibility();
 
-  if (!tile_->GetVisible() && is_auto_rotation_allowed) {
+  if (!tile_->GetVisible() && target_visibility) {
     TrackVisibilityUMA();
   }
-  tile_->SetVisible(is_auto_rotation_allowed);
+  tile_->SetVisible(target_visibility);
 
-  if (!is_auto_rotation_allowed) {
+  if (!target_visibility) {
     return;
   }
 

@@ -7,6 +7,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/constants/quick_settings_catalogs.h"
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -26,6 +27,11 @@ CaptureModeFeaturePodController::CaptureModeFeaturePodController(
 
 CaptureModeFeaturePodController::~CaptureModeFeaturePodController() = default;
 
+// static
+bool CaptureModeFeaturePodController::CalculateButtonVisibility() {
+  return !Shell::Get()->session_controller()->IsUserSessionBlocked();
+}
+
 FeaturePodButton* CaptureModeFeaturePodController::CreateButton() {
   DCHECK(!button_);
   DCHECK(!features::IsQsRevampEnabled());
@@ -36,36 +42,42 @@ FeaturePodButton* CaptureModeFeaturePodController::CreateButton() {
   button_->SetLabel(label_text);
   button_->icon_button()->SetTooltipText(label_text);
   button_->SetLabelTooltip(label_text);
-  const bool visible =
-      !Shell::Get()->session_controller()->IsUserSessionBlocked();
-  button_->SetVisible(visible);
+  const bool target_visibility = CalculateButtonVisibility();
+  button_->SetVisible(target_visibility);
 
-  if (visible)
+  if (target_visibility) {
     TrackVisibilityUMA();
+  }
 
   button_->DisableLabelButtonFocus();
   return button_;
 }
 
-std::unique_ptr<FeatureTile> CaptureModeFeaturePodController::CreateTile() {
+std::unique_ptr<FeatureTile> CaptureModeFeaturePodController::CreateTile(
+    bool compact) {
   DCHECK(features::IsQsRevampEnabled());
-  // TODO(b/263423627): Tile should be compact if applicable.
   auto feature_tile = std::make_unique<FeatureTile>(
       base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
                           weak_ptr_factory_.GetWeakPtr()),
-      /*is_togglable=*/false, FeatureTile::TileType::kPrimary);
+      /*is_togglable=*/false,
+      compact ? FeatureTile::TileType::kCompact
+              : FeatureTile::TileType::kPrimary);
+  feature_tile->SetID(VIEW_ID_SCREEN_CAPTURE_FEATURE_TILE);
+
+  const bool target_visibility = CalculateButtonVisibility();
+  feature_tile->SetVisible(target_visibility);
+  if (target_visibility) {
+    TrackVisibilityUMA();
+  }
+
   feature_tile->SetVectorIcon(kCaptureModeIcon);
   const auto label_text =
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAPTURE_MODE_BUTTON_LABEL);
   feature_tile->SetLabel(label_text);
-  feature_tile->SetSubLabelVisibility(false);
-  feature_tile->SetTooltipText(label_text);
-  const bool visible =
-      !Shell::Get()->session_controller()->IsUserSessionBlocked();
-  feature_tile->SetVisible(visible);
-  if (visible) {
-    TrackVisibilityUMA();
+  if (!compact) {
+    feature_tile->SetSubLabelVisibility(false);
   }
+  feature_tile->SetTooltipText(label_text);
   return feature_tile;
 }
 

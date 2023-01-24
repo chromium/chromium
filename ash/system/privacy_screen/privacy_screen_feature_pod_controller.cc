@@ -39,7 +39,8 @@ FeaturePodButton* PrivacyScreenFeaturePodController::CreateButton() {
   return button_;
 }
 
-std::unique_ptr<FeatureTile> PrivacyScreenFeaturePodController::CreateTile() {
+std::unique_ptr<FeatureTile> PrivacyScreenFeaturePodController::CreateTile(
+    bool compact) {
   DCHECK(!tile_);
   DCHECK(features::IsQsRevampEnabled());
   auto tile = std::make_unique<FeatureTile>(

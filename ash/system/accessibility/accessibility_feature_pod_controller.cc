@@ -49,7 +49,8 @@ FeaturePodButton* AccessibilityFeaturePodController::CreateButton() {
   return button;
 }
 
-std::unique_ptr<FeatureTile> AccessibilityFeaturePodController::CreateTile() {
+std::unique_ptr<FeatureTile> AccessibilityFeaturePodController::CreateTile(
+    bool compact) {
   DCHECK(features::IsQsRevampEnabled());
   auto feature_tile = std::make_unique<FeatureTile>(
       base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,

@@ -22,11 +22,8 @@ namespace {
 
 class MockFeaturePodController : public FeaturePodControllerBase {
  public:
-  explicit MockFeaturePodController(
-      FeatureTile::TileType type = FeatureTile::TileType::kPrimary)
-      : type_(type) {}
-  MockFeaturePodController(bool togglable, FeatureTile::TileType type)
-      : togglable_(togglable), type_(type) {}
+  MockFeaturePodController() = default;
+  explicit MockFeaturePodController(bool togglable) : togglable_(togglable) {}
 
   MockFeaturePodController(const MockFeaturePodController&) = delete;
   MockFeaturePodController& operator=(const MockFeaturePodController&) = delete;
@@ -37,11 +34,13 @@ class MockFeaturePodController : public FeaturePodControllerBase {
     return new FeaturePodButton(/*controller=*/this);
   }
 
-  std::unique_ptr<FeatureTile> CreateTile() override {
+  std::unique_ptr<FeatureTile> CreateTile(bool compact = false) override {
     auto tile = std::make_unique<FeatureTile>(
         base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
                             weak_ptr_factory_.GetWeakPtr()),
-        togglable_, type_);
+        togglable_,
+        compact ? FeatureTile::TileType::kCompact
+                : FeatureTile::TileType::kPrimary);
     tile->SetVectorIcon(vector_icons::kDogfoodIcon);
     tile_ = tile.get();
     return tile;
@@ -89,7 +88,6 @@ class MockFeaturePodController : public FeaturePodControllerBase {
   bool was_label_pressed_ = false;
   bool togglable_ = false;
   bool toggled_ = false;
-  FeatureTile::TileType type_ = FeatureTile::TileType::kPrimary;
 
   base::WeakPtrFactory<MockFeaturePodController> weak_ptr_factory_{this};
 };
@@ -123,8 +121,8 @@ class FeatureTileTest : public AshTestBase {
 };
 
 TEST_F(FeatureTileTest, PrimaryTile_LaunchSurface) {
-  auto mock_controller = std::make_unique<MockFeaturePodController>(
-      /*togglable=*/false, FeatureTile::TileType::kPrimary);
+  auto mock_controller =
+      std::make_unique<MockFeaturePodController>(/*togglable=*/false);
   auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
 
   EXPECT_FALSE(tile->drill_in_button());
@@ -141,8 +139,8 @@ TEST_F(FeatureTileTest, PrimaryTile_LaunchSurface) {
 }
 
 TEST_F(FeatureTileTest, PrimaryTile_Toggle) {
-  auto mock_controller = std::make_unique<MockFeaturePodController>(
-      /*togglable=*/true, FeatureTile::TileType::kPrimary);
+  auto mock_controller =
+      std::make_unique<MockFeaturePodController>(/*togglable=*/true);
   auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
 
   EXPECT_FALSE(tile->drill_in_button());
@@ -164,8 +162,8 @@ TEST_F(FeatureTileTest, PrimaryTile_Toggle) {
 }
 
 TEST_F(FeatureTileTest, PrimaryTile_DrillIn) {
-  auto mock_controller = std::make_unique<MockFeaturePodController>(
-      /*togglable=*/false, FeatureTile::TileType::kPrimary);
+  auto mock_controller =
+      std::make_unique<MockFeaturePodController>(/*togglable=*/false);
   auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
 
   mock_controller->CreateDrillInButton();
@@ -187,8 +185,8 @@ TEST_F(FeatureTileTest, PrimaryTile_DrillIn) {
 }
 
 TEST_F(FeatureTileTest, PrimaryTile_ToggleWithDrillIn) {
-  auto mock_controller = std::make_unique<MockFeaturePodController>(
-      /*togglable=*/true, FeatureTile::TileType::kPrimary);
+  auto mock_controller =
+      std::make_unique<MockFeaturePodController>(/*togglable=*/true);
   auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
 
   mock_controller->CreateDrillInButton();
@@ -218,8 +216,9 @@ TEST_F(FeatureTileTest, PrimaryTile_ToggleWithDrillIn) {
 
 TEST_F(FeatureTileTest, CompactTile_LaunchSurface) {
   auto mock_controller = std::make_unique<MockFeaturePodController>(
-      /*togglable=*/false, FeatureTile::TileType::kCompact);
-  auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
+      /*togglable=*/false);
+  auto* tile =
+      widget_->SetContentsView(mock_controller->CreateTile(/*compact=*/true));
 
   // Ensure icon hasn't been pressed.
   EXPECT_FALSE(tile->IsToggled());
@@ -234,8 +233,9 @@ TEST_F(FeatureTileTest, CompactTile_LaunchSurface) {
 
 TEST_F(FeatureTileTest, CompactTile_Toggle) {
   auto mock_controller = std::make_unique<MockFeaturePodController>(
-      /*togglable=*/true, FeatureTile::TileType::kCompact);
-  auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
+      /*togglable=*/true);
+  auto* tile =
+      widget_->SetContentsView(mock_controller->CreateTile(/*compact=*/true));
 
   // Ensure icon hasn't been pressed.
   EXPECT_FALSE(tile->IsToggled());
@@ -251,9 +251,5 @@ TEST_F(FeatureTileTest, CompactTile_Toggle) {
   LeftClickOn(tile);
   EXPECT_FALSE(tile->IsToggled());
 }
-
-// Tests that certain primary tiles switch to their compact versions after a
-// tablet mode change.
-// TODO(b/251724698): Implement tablet mode change behavior.
 
 }  // namespace ash

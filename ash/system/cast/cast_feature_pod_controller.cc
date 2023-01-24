@@ -34,6 +34,20 @@ CastFeaturePodController::~CastFeaturePodController() {
     CastConfigController::Get()->RemoveObserver(this);
 }
 
+// static
+bool CastFeaturePodController::CalculateButtonVisibility() {
+  // The button is visible if there is a primary profile (e.g. after login) and
+  // that profile has a media router (e.g. it is not disabled by policy).
+  // QsRevamp shows the button even if there are no media sinks.
+  auto* cast_config = CastConfigController::Get();
+  return features::IsQsRevampEnabled()
+             ? cast_config && cast_config->HasMediaRouterForPrimaryProfile()
+             : cast_config &&
+                   (cast_config->HasSinksAndRoutes() ||
+                    cast_config->AccessCodeCastingEnabled()) &&
+                   !cast_config->HasActiveRoute();
+}
+
 FeaturePodButton* CastFeaturePodController::CreateButton() {
   DCHECK(!features::IsQsRevampEnabled());
   button_ = new FeaturePodButton(this);
@@ -56,39 +70,50 @@ FeaturePodButton* CastFeaturePodController::CreateButton() {
   return button_;
 }
 
-std::unique_ptr<FeatureTile> CastFeaturePodController::CreateTile() {
+std::unique_ptr<FeatureTile> CastFeaturePodController::CreateTile(
+    bool compact) {
   DCHECK(features::IsQsRevampEnabled());
-  auto tile = std::make_unique<FeatureTile>(base::BindRepeating(
-      &CastFeaturePodController::OnIconPressed, weak_factory_.GetWeakPtr()));
+  auto tile = std::make_unique<FeatureTile>(
+      base::BindRepeating(&CastFeaturePodController::OnIconPressed,
+                          weak_factory_.GetWeakPtr()),
+      /*is_togglable=*/true,
+      compact ? FeatureTile::TileType::kCompact
+              : FeatureTile::TileType::kPrimary);
   tile_ = tile.get();
+  tile->SetID(VIEW_ID_CAST_MAIN_VIEW);
+
+  bool target_visibility = CalculateButtonVisibility();
+  if (target_visibility) {
+    TrackVisibilityUMA();
+  }
+  tile->SetVisible(target_visibility);
+
   tile->SetVectorIcon(kUnifiedMenuCastIcon);
   tile->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST));
-  tile->SetSubLabel(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_DEVICES_AVAILABLE));
   const std::u16string tooltip =
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_TOOLTIP);
   tile->SetTooltipText(tooltip);
-  tile->CreateDrillInButton(
-      base::BindRepeating(&CastFeaturePodController::OnLabelPressed,
-                          weak_factory_.GetWeakPtr()),
-      tooltip);
-  tile->SetID(VIEW_ID_CAST_MAIN_VIEW);
 
-  // The tile is visible if there is a primary profile (e.g. after login) and
-  // that profile has a media router (e.g. it is not disabled by policy).
-  // QsRevamp shows the tile even if there are no media sinks.
   auto* cast_config = CastConfigController::Get();
-  bool visible = cast_config && cast_config->HasMediaRouterForPrimaryProfile();
-  if (visible)
-    TrackVisibilityUMA();
-  tile->SetVisible(visible);
-
-  // Refresh cast devices to update the "Devices available" sublabel visibility.
   if (cast_config) {
     cast_config->AddObserver(this);
     cast_config->RequestDeviceRefresh();
   }
+
+  // Compact tile doesn't have a sub-label or drill-in button.
+  if (compact) {
+    return tile;
+  }
+
+  tile->SetSubLabel(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_DEVICES_AVAILABLE));
+  tile->CreateDrillInButton(
+      base::BindRepeating(&CastFeaturePodController::OnLabelPressed,
+                          weak_factory_.GetWeakPtr()),
+      tooltip);
+
   UpdateSublabelVisibility();
+
   return tile;
 }
 
@@ -123,22 +148,23 @@ void CastFeaturePodController::OnLabelPressed() {
 
 void CastFeaturePodController::OnDevicesUpdated(
     const std::vector<SinkAndRoute>& devices) {
-  if (features::IsQsRevampEnabled())
+  if (features::IsQsRevampEnabled()) {
+    if (tile_->tile_type() == FeatureTile::TileType::kCompact) {
+      return;
+    }
     UpdateSublabelVisibility();
-  else
+  } else {
     Update();
+  }
 }
 
 void CastFeaturePodController::Update() {
   DCHECK(!features::IsQsRevampEnabled());
-  auto* cast_config = CastConfigController::Get();
-  const bool visible = cast_config &&
-                       (cast_config->HasSinksAndRoutes() ||
-                        cast_config->AccessCodeCastingEnabled()) &&
-                       !cast_config->HasActiveRoute();
-  if (!button_->GetVisible() && visible)
+  const bool target_visibility = CalculateButtonVisibility();
+  if (!button_->GetVisible() && target_visibility) {
     TrackVisibilityUMA();
-  button_->SetVisible(visible);
+  }
+  button_->SetVisible(target_visibility);
 }
 
 void CastFeaturePodController::UpdateSublabelVisibility() {

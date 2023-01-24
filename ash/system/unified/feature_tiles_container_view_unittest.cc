@@ -28,22 +28,22 @@ namespace {
 
 class MockFeaturePodController : public FeaturePodControllerBase {
  public:
-  explicit MockFeaturePodController(FeatureTile::TileType type) : type_(type) {}
-
+  MockFeaturePodController() = default;
   MockFeaturePodController(const MockFeaturePodController&) = delete;
   MockFeaturePodController& operator=(const MockFeaturePodController&) = delete;
-
   ~MockFeaturePodController() override = default;
 
   FeaturePodButton* CreateButton() override {
     return new FeaturePodButton(/*controller=*/this);
   }
 
-  std::unique_ptr<FeatureTile> CreateTile() override {
+  std::unique_ptr<FeatureTile> CreateTile(bool compact = false) override {
     auto tile = std::make_unique<FeatureTile>(
         base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
                             weak_ptr_factory_.GetWeakPtr()),
-        /*togglable=*/true, type_);
+        /*togglable=*/true,
+        compact ? FeatureTile::TileType::kCompact
+                : FeatureTile::TileType::kPrimary);
     tile->SetVectorIcon(vector_icons::kDogfoodIcon);
     return tile;
   }
@@ -56,8 +56,6 @@ class MockFeaturePodController : public FeaturePodControllerBase {
   void OnLabelPressed() override {}
 
  private:
-  FeatureTile::TileType type_;
-
   base::WeakPtrFactory<MockFeaturePodController> weak_ptr_factory_{this};
 };
 
@@ -128,16 +126,15 @@ class FeatureTilesContainerViewTest : public AshTestBase,
 
   int GetPageCount() { return container()->page_count(); }
 
-  void FillContainerWithTiles(int pages) {
-    auto tile_controller = std::make_unique<MockFeaturePodController>(
-        FeatureTile::TileType::kPrimary);
+  void FillContainerWithPrimaryTiles(int pages) {
+    auto mock_controller = std::make_unique<MockFeaturePodController>();
     std::vector<std::unique_ptr<FeatureTile>> tiles;
 
     size_t number_of_tiles =
         pages * container()->displayable_rows() * kMaxPrimaryTilesPerRow;
 
     while (tiles.size() < number_of_tiles) {
-      tiles.push_back(tile_controller->CreateTile());
+      tiles.push_back(mock_controller->CreateTile());
     }
     AddTiles(std::move(tiles));
 
@@ -170,45 +167,38 @@ TEST_F(FeatureTilesContainerViewTest, DisplayableRows) {
 // Tests that rows are dynamically added by adding `FeatureTile` elements to the
 // container.
 TEST_F(FeatureTilesContainerViewTest, FeatureTileRows) {
-  std::unique_ptr<MockFeaturePodController> primary_tile_controller =
-      std::make_unique<MockFeaturePodController>(
-          FeatureTile::TileType::kPrimary);
-  std::unique_ptr<MockFeaturePodController> compact_tile_controller =
-      std::make_unique<MockFeaturePodController>(
-          FeatureTile::TileType::kCompact);
+  auto mock_controller = std::make_unique<MockFeaturePodController>();
 
   // Expect one row by adding two primary tiles.
   std::vector<std::unique_ptr<FeatureTile>> two_primary_tiles;
-  two_primary_tiles.push_back(primary_tile_controller->CreateTile());
-  two_primary_tiles.push_back(primary_tile_controller->CreateTile());
+  two_primary_tiles.push_back(mock_controller->CreateTile());
+  two_primary_tiles.push_back(mock_controller->CreateTile());
   container()->AddTiles(std::move(two_primary_tiles));
   EXPECT_EQ(GetRowCount(), 1);
 
   // Expect one other row by adding a primary and two compact tiles.
   std::vector<std::unique_ptr<FeatureTile>> one_primary_two_compact_tiles;
+  one_primary_two_compact_tiles.push_back(mock_controller->CreateTile());
   one_primary_two_compact_tiles.push_back(
-      primary_tile_controller->CreateTile());
+      mock_controller->CreateTile(/*compact=*/true));
   one_primary_two_compact_tiles.push_back(
-      compact_tile_controller->CreateTile());
-  one_primary_two_compact_tiles.push_back(
-      compact_tile_controller->CreateTile());
+      mock_controller->CreateTile(/*compact=*/true));
   container()->AddTiles(std::move(one_primary_two_compact_tiles));
   EXPECT_EQ(GetRowCount(), 2);
 
   // Expect one other row by adding a single primary tile.
   std::vector<std::unique_ptr<FeatureTile>> one_primary_tile;
-  one_primary_tile.push_back(primary_tile_controller->CreateTile());
+  one_primary_tile.push_back(mock_controller->CreateTile());
   container()->AddTiles(std::move(one_primary_tile));
   EXPECT_EQ(GetRowCount(), 3);
 }
 
 TEST_F(FeatureTilesContainerViewTest, ChangeTileVisibility) {
   // Create 3 full-size tiles. Normally they would require 2 rows.
-  auto tile_controller = std::make_unique<MockFeaturePodController>(
-      FeatureTile::TileType::kPrimary);
-  std::unique_ptr<FeatureTile> tile1 = tile_controller->CreateTile();
-  std::unique_ptr<FeatureTile> tile2 = tile_controller->CreateTile();
-  std::unique_ptr<FeatureTile> tile3 = tile_controller->CreateTile();
+  auto mock_controller = std::make_unique<MockFeaturePodController>();
+  std::unique_ptr<FeatureTile> tile1 = mock_controller->CreateTile();
+  std::unique_ptr<FeatureTile> tile2 = mock_controller->CreateTile();
+  std::unique_ptr<FeatureTile> tile3 = mock_controller->CreateTile();
 
   // Make the first tile invisible.
   FeatureTile* tile1_ptr = tile1.get();
@@ -234,22 +224,21 @@ TEST_F(FeatureTilesContainerViewTest, ChangeTileVisibility) {
 }
 
 TEST_F(FeatureTilesContainerViewTest, PageCountUpdated) {
-  auto tile_controller = std::make_unique<MockFeaturePodController>(
-      FeatureTile::TileType::kPrimary);
+  auto mock_controller = std::make_unique<MockFeaturePodController>();
 
   // Set the container height to have two displayable rows per page.
   SetRowsFromHeight(kFeatureTileHeight * 2);
 
-  // Add five tiles to the container.
   std::vector<std::unique_ptr<FeatureTile>> tiles;
 
   // Get pointer of one tile so we can make invisible later.
-  std::unique_ptr<FeatureTile> tile1 = tile_controller->CreateTile();
+  std::unique_ptr<FeatureTile> tile1 = mock_controller->CreateTile();
   FeatureTile* tile1_ptr = tile1.get();
   tiles.push_back(std::move(tile1));
 
+  // Add a total of five tiles to the container.
   while (tiles.size() < 5) {
-    tiles.push_back(tile_controller->CreateTile());
+    tiles.push_back(mock_controller->CreateTile());
   }
 
   // Since a row fits two primary tiles, expect two pages for five primary
@@ -270,7 +259,7 @@ TEST_F(FeatureTilesContainerViewTest, PageCountUpdated) {
 // TODO(b/263185068): Use EventGenerator.
 TEST_F(FeatureTilesContainerViewTest, PaginationGesture) {
   constexpr int kNumberOfPages = 4;
-  FillContainerWithTiles(kNumberOfPages);
+  FillContainerWithPrimaryTiles(kNumberOfPages);
 
   gfx::Point container_origin = container()->GetBoundsInScreen().origin();
   ui::GestureEvent swipe_left_begin(
@@ -336,7 +325,7 @@ TEST_F(FeatureTilesContainerViewTest, PaginationGesture) {
 TEST_F(FeatureTilesContainerViewTest, PaginationScroll) {
   constexpr int kNumberOfFingers = 2;
   constexpr int kNumberOfPages = 4;
-  FillContainerWithTiles(kNumberOfPages);
+  FillContainerWithPrimaryTiles(kNumberOfPages);
 
   gfx::Point container_origin = container()->GetBoundsInScreen().origin();
 
@@ -384,7 +373,7 @@ TEST_F(FeatureTilesContainerViewTest, PaginationScroll) {
 // TODO(b/263185068): Use EventGenerator.
 TEST_F(FeatureTilesContainerViewTest, PaginationMouseWheel) {
   constexpr int kNumberOfPages = 4;
-  FillContainerWithTiles(kNumberOfPages);
+  FillContainerWithPrimaryTiles(kNumberOfPages);
 
   gfx::Point container_origin = container()->GetBoundsInScreen().origin();
   ui::MouseWheelEvent wheel_up(gfx::Vector2d(0, 1000), container_origin,
@@ -422,7 +411,7 @@ TEST_F(FeatureTilesContainerViewTest, PaginationMouseWheel) {
 
 TEST_F(FeatureTilesContainerViewTest, PaginationDots) {
   constexpr int kNumberOfPages = 4;
-  FillContainerWithTiles(kNumberOfPages);
+  FillContainerWithPrimaryTiles(kNumberOfPages);
 
   // Expect the current_page to increase with each pagination dot click.
   int current_page = pagination_model()->selected_page();
@@ -435,7 +424,7 @@ TEST_F(FeatureTilesContainerViewTest, PaginationDots) {
 
 TEST_F(FeatureTilesContainerViewTest, ResetPagination) {
   constexpr int kNumberOfPages = 4;
-  FillContainerWithTiles(kNumberOfPages);
+  FillContainerWithPrimaryTiles(kNumberOfPages);
 
   // Expect page with index 2 to be selected after clicking its dot.
   LeftClickOn(GetPageIndicatorButtons()[2]);

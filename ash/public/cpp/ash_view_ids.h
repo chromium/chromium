@@ -17,6 +17,12 @@ enum ViewID {
   VIEW_ID_ACCESSIBILITY_VIRTUAL_KEYBOARD,
   // Icon that indicates the virtual keyboard is enabled.
   VIEW_ID_ACCESSIBILITY_VIRTUAL_KEYBOARD_ENABLED,
+
+  // Feature tile ids.
+  VIEW_ID_SCREEN_CAPTURE_FEATURE_TILE,
+  VIEW_ID_DND_FEATURE_TILE,
+  VIEW_ID_AUTOROTATE_FEATURE_TILE,
+
   // Accessibility feature pod button in main view.
   VIEW_ID_ACCESSIBILITY_TRAY_ITEM,
   // System tray AddUserButton in UserChooserView.

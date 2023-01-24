@@ -37,7 +37,7 @@ class ASH_EXPORT BluetoothFeaturePodController
 
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override;
-  std::unique_ptr<FeatureTile> CreateTile() override;
+  std::unique_ptr<FeatureTile> CreateTile(bool compact = false) override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
   void OnLabelPressed() override;

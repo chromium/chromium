@@ -28,9 +28,13 @@ class ASH_EXPORT CastFeaturePodController
 
   ~CastFeaturePodController() override;
 
+  // Referenced by `UnifiedSystemTrayController` to know whether to construct a
+  // Primary or Compact tile.
+  static bool CalculateButtonVisibility();
+
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override;
-  std::unique_ptr<FeatureTile> CreateTile() override;
+  std::unique_ptr<FeatureTile> CreateTile(bool compact = false) override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
   void OnLabelPressed() override;

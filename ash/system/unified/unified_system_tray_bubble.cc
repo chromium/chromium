@@ -342,13 +342,7 @@ void UnifiedSystemTrayBubble::RecordTimeToClick() {
   time_opened_.reset();
 }
 
-void UnifiedSystemTrayBubble::OnTabletModeStarted() {
-  UpdateBubbleBounds();
-  tray_->CloseBubble();
-}
-
-void UnifiedSystemTrayBubble::OnTabletModeEnded() {
-  UpdateBubbleBounds();
+void UnifiedSystemTrayBubble::OnTabletPhysicalStateChanged() {
   tray_->CloseBubble();
 }
 

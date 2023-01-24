@@ -68,7 +68,8 @@ FeaturePodButton* BluetoothFeaturePodController::CreateButton() {
   return button_;
 }
 
-std::unique_ptr<FeatureTile> BluetoothFeaturePodController::CreateTile() {
+std::unique_ptr<FeatureTile> BluetoothFeaturePodController::CreateTile(
+    bool compact) {
   DCHECK(features::IsQsRevampEnabled());
   auto tile = std::make_unique<FeatureTile>(
       base::BindRepeating(&BluetoothFeaturePodController::OnIconPressed,
