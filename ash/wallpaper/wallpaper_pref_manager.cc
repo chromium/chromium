@@ -352,6 +352,19 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
                         prefs::kSyncableWallpaperInfo);
   }
 
+  absl::optional<WallpaperCalculatedColors> GetCachedWallpaperColors(
+      base::StringPiece location) const override {
+    absl::optional<std::vector<SkColor>> cached_colors =
+        GetCachedProminentColors(location);
+    absl::optional<SkColor> cached_k_mean_color = GetCachedKMeanColor(location);
+    if (cached_colors.has_value() && cached_k_mean_color.has_value()) {
+      return WallpaperCalculatedColors(cached_colors.value(),
+                                       cached_k_mean_color.value());
+    }
+
+    return absl::nullopt;
+  }
+
   void CacheProminentColors(const AccountId& account_id,
                             const std::vector<SkColor>& colors) override {
     WallpaperInfo old_info;

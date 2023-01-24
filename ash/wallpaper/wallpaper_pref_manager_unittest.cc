@@ -438,5 +438,45 @@ TEST_F(WallpaperPrefManagerTest, RemoveCelebiColor) {
   EXPECT_FALSE(pref_manager_->GetCelebiColor(location));
 }
 
+TEST_F(WallpaperPrefManagerTest, SetCalculatedColors) {
+  const char location[] = "location";
+  WallpaperInfo info = InfoWithType(WallpaperType::kCustomized);
+  info.location = location;
+
+  // Set current wallpaper
+  pref_manager_->SetUserWallpaperInfo(account_id_1, info);
+
+  // Cache a prominent and KMean color entry
+  const std::vector<SkColor> prominent_colors = {
+      SK_ColorGREEN, SK_ColorGREEN, SK_ColorGREEN,
+      SkColorSetRGB(0xAB, 0xBC, 0xEF)};
+  pref_manager_->CacheProminentColors(account_id_1, prominent_colors);
+
+  const SkColor k_mean_color = SkColorSetRGB(0xAB, 0xBC, 0xEF);
+  pref_manager_->CacheKMeanColor(account_id_1, k_mean_color);
+
+  absl::optional<WallpaperCalculatedColors> actual_colors =
+      pref_manager_->GetCachedWallpaperColors(location);
+  ASSERT_TRUE(actual_colors);
+  EXPECT_THAT(actual_colors->prominent_colors,
+              testing::ContainerEq(prominent_colors));
+  EXPECT_EQ(actual_colors->k_mean_color, k_mean_color);
+}
+
+TEST_F(WallpaperPrefManagerTest, CalculatedColorsEmptyIfKMeanMissing) {
+  const char location[] = "location";
+  WallpaperInfo info = InfoWithType(WallpaperType::kCustomized);
+  info.location = location;
+
+  pref_manager_->SetUserWallpaperInfo(account_id_1, info);
+
+  const std::vector<SkColor> prominent_colors = {
+      SK_ColorGREEN, SK_ColorGREEN, SK_ColorGREEN,
+      SkColorSetRGB(0xAB, 0xBC, 0xEF)};
+  pref_manager_->CacheProminentColors(account_id_1, prominent_colors);
+
+  EXPECT_FALSE(pref_manager_->GetCachedWallpaperColors(location));
+}
+
 }  // namespace
 }  // namespace ash

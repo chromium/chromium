@@ -466,24 +466,6 @@ user_manager::UserType GetUserType(const AccountId& id) {
   return user_session->user_info.type;
 }
 
-// Returns the WallpaperCalculatedColors from `pref_manager`, if it exists,
-// using the location from `info`.
-absl::optional<WallpaperCalculatedColors> GetCachedCalculatedColors(
-    const WallpaperPrefManager& pref_manager,
-    const WallpaperInfo& info) {
-  base::StringPiece location = info.location;
-  absl::optional<std::vector<SkColor>> cached_colors =
-      pref_manager.GetCachedProminentColors(location);
-  absl::optional<SkColor> cached_k_mean_color =
-      pref_manager.GetCachedKMeanColor(location);
-  if (cached_colors.has_value() && cached_k_mean_color.has_value()) {
-    return WallpaperCalculatedColors(cached_colors.value(),
-                                     cached_k_mean_color.value());
-  }
-
-  return absl::nullopt;
-}
-
 // Gets |account_id|'s custom wallpaper at |wallpaper_path|. Falls back to the
 // original custom wallpaper. Verifies that the returned path exists. If a valid
 // path cannot be found, returns an empty FilePath. Must run on wallpaper
@@ -2627,8 +2609,9 @@ void WallpaperControllerImpl::CalculateWallpaperColors() {
     color_calculator_.reset();
   }
 
-  absl::optional<WallpaperCalculatedColors> colors = GetCachedCalculatedColors(
-      *pref_manager_, current_wallpaper_->wallpaper_info());
+  absl::optional<WallpaperCalculatedColors> colors =
+      pref_manager_->GetCachedWallpaperColors(
+          current_wallpaper_->wallpaper_info().location);
   if (colors) {
     SetCalculatedColors(std::move(*colors));
     return;
