@@ -3752,18 +3752,16 @@ TEST_F(PrivacySandboxServiceM1NoticePromptTest, TrialsDisabledAfterNotice) {
 }
 
 TEST_F(PrivacySandboxServiceM1NoticePromptTest, M1NoticeNotAcknowledged) {
-  // If m1 notice required, and the row notice has not been acknowledged,
-  return
-      // kM1NoticeROW.
-      RunTestCase(
-          TestState{{StateKey::kM1PromptSuppressedReason,
-                     static_cast<int>(PromptSuppressedReason::kNone)},
-                    {StateKey::kM1RowNoticeAcknowledged, false}},
-          TestInput{{InputKey::kForceChromeBuild, true}},
-          TestOutput{{OutputKey::kPromptType,
-                      static_cast<int>(PromptType::kM1NoticeROW)},
-                     {OutputKey::kM1PromptSuppressedReason,
-                      static_cast<int>(PromptSuppressedReason::kNone)}});
+  // If m1 notice required, and the row notice has not been acknowledged, return
+  // kM1NoticeROW.
+  RunTestCase(TestState{{StateKey::kM1PromptSuppressedReason,
+                         static_cast<int>(PromptSuppressedReason::kNone)},
+                        {StateKey::kM1RowNoticeAcknowledged, false}},
+              TestInput{{InputKey::kForceChromeBuild, true}},
+              TestOutput{{OutputKey::kPromptType,
+                          static_cast<int>(PromptType::kM1NoticeROW)},
+                         {OutputKey::kM1PromptSuppressedReason,
+                          static_cast<int>(PromptSuppressedReason::kNone)}});
 }
 
 TEST_F(PrivacySandboxServiceM1NoticePromptTest, M1NoticeAcknowledged) {
@@ -3777,6 +3775,36 @@ TEST_F(PrivacySandboxServiceM1NoticePromptTest, M1NoticeAcknowledged) {
       TestOutput{{OutputKey::kPromptType, static_cast<int>(PromptType::kNone)},
                  {OutputKey::kM1PromptSuppressedReason,
                   static_cast<int>(PromptSuppressedReason::kNone)}});
+}
+
+TEST_F(PrivacySandboxServiceM1NoticePromptTest, M1EEAFlowInterrupted) {
+  // If a user has migrated from EEA to ROW and has already completed the eea
+  // consent but not yet acknowledged the notice, return kM1NoticeROW.
+  RunTestCase(TestState{{StateKey::kM1PromptSuppressedReason,
+                         static_cast<int>(PromptSuppressedReason::kNone)},
+                        {StateKey::kM1ConsentDecisionMade, true},
+                        {StateKey::kM1EEANoticeAcknowledged, false}},
+              TestInput{{InputKey::kForceChromeBuild, true}},
+              TestOutput{{OutputKey::kPromptType,
+                          static_cast<int>(PromptType::kM1NoticeROW)},
+                         {OutputKey::kM1PromptSuppressedReason,
+                          static_cast<int>(PromptSuppressedReason::kNone)}});
+}
+
+TEST_F(PrivacySandboxServiceM1NoticePromptTest, M1EEAFlowCompleted) {
+  // If a user has migrated from EEA to ROW and has already completed the eea
+  // flow, set kEEAFlowCompleted as suppressed reason return kNone.
+  RunTestCase(
+      TestState{{StateKey::kM1PromptSuppressedReason,
+                 static_cast<int>(PromptSuppressedReason::kNone)},
+                {StateKey::kM1ConsentDecisionMade, true},
+                {StateKey::kM1EEANoticeAcknowledged, true}},
+      TestInput{{InputKey::kForceChromeBuild, true}},
+      TestOutput{
+          {OutputKey::kPromptType, static_cast<int>(PromptType::kNone)},
+          {OutputKey::kM1PromptSuppressedReason,
+           static_cast<int>(
+               PromptSuppressedReason::kEEAFlowCompletedBeforeRowMigration)}});
 }
 
 TEST_F(PrivacySandboxServiceM1NoticePromptTest,

@@ -618,6 +618,15 @@ void PrivacySandboxService::RecordPrivacySandbox4StartupMetrics() {
           PromptStartupState::kPromptNotShownDueToManagedState);
       return;
     }
+
+    case PromptSuppressedReason::kEEAFlowCompletedBeforeRowMigration: {
+      base::UmaHistogramEnumeration(
+          privacy_sandbox_prompt_startup_histogram,
+          topics_enabled
+              ? PromptStartupState::kEEAFlowCompletedWithTopicsAccepted
+              : PromptStartupState::kEEAFlowCompletedWithTopicsDeclined);
+      return;
+    }
   }
 
   // Prompt was not suppressed at this point.
@@ -1281,6 +1290,20 @@ PrivacySandboxService::GetRequiredPromptTypeInternalM1(
   }
 
   DCHECK(privacy_sandbox::kPrivacySandboxSettings4NoticeRequired.Get());
+
+  // If a user that migrated from EEA to ROW has already completed the EEA
+  // consent and notice flow, set the suppression reason as such and do not show
+  // a prompt.
+  if (pref_service->GetBoolean(prefs::kPrivacySandboxM1ConsentDecisionMade) &&
+      (pref_service->GetBoolean(
+          prefs::kPrivacySandboxM1EEANoticeAcknowledged))) {
+    pref_service->SetInteger(
+        prefs::kPrivacySandboxM1PromptSuppressed,
+        static_cast<int>(
+            PromptSuppressedReason::kEEAFlowCompletedBeforeRowMigration));
+    return PromptType::kNone;
+  }
+
   // If the notice has already been acknowledged, do not show a prompt.
   // Else, show the row notice prompt.
   if (pref_service->GetBoolean(prefs::kPrivacySandboxM1RowNoticeAcknowledged)) {

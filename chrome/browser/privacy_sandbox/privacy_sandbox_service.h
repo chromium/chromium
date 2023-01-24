@@ -114,7 +114,10 @@ class PrivacySandboxService : public KeyedService {
     kTrialsDisabledAfterNotice = 4,
     // A policy is suppressing any prompt
     kPolicy = 5,
-    kMaxValue = kPolicy,
+    // User migrated from EEA to ROW, and had already previously finished the
+    // EEA consent flow.
+    kEEAFlowCompletedBeforeRowMigration = 6,
+    kMaxValue = kEEAFlowCompletedBeforeRowMigration,
   };
 
   PrivacySandboxService(
