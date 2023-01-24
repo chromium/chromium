@@ -17,7 +17,6 @@ typedef NS_ENUM(NSInteger, ScreenType) {
   // corresponding screens as they are not obsolete.
   kWelcomeAndConsent_DEPRECATED,
   kSignInAndSync_DEPRECATED,
-  kLegacySignIn_DEPRECATED,
 
   // It isn't a screen, but a signal that no more screen should be
   // presented.

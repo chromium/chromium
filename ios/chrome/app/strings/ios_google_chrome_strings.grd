@@ -297,9 +297,6 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT" desc="Subtitle of the screen suggesting to the user to sign in. [iOS only]">
           Sign in to get the most out of Chrome.
       </message>
-      <message name="IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_MANAGED" desc="Subtitle of the screen suggesting to the user to sign in when their Sign In is managed by their administrator.">
-          Sign in to Chrome
-      </message>
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SIGNIN_FORCED" desc="Subtitle of a dialog to sign in to Chrome when sign-in is required because of an enterprise policy. [iOS only]">
         Your organization requires you to sign in to use Chrome.
       </message>

@@ -302,7 +302,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/elements:unit_tests",
     "//ios/chrome/browser/ui/first_run:unit_tests",
     "//ios/chrome/browser/ui/first_run:unit_tests",
-    "//ios/chrome/browser/ui/first_run/legacy_signin:unit_tests",
     "//ios/chrome/browser/ui/first_run/welcome:unit_tests",
     "//ios/chrome/browser/ui/fullscreen:unit_tests",
     "//ios/chrome/browser/ui/gestures:unit_tests",

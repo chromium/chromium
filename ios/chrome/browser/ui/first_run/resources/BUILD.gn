@@ -14,26 +14,6 @@ imageset("default_browser_screen_banner") {
   ]
 }
 
-imageset("legacy_signin_screen_banner") {
-  sources = [
-    "legacy_signin_screen_banner.imageset/Contents.json",
-    "legacy_signin_screen_banner.imageset/legacy_signin_screen_banner_dark@2x.png",
-    "legacy_signin_screen_banner.imageset/legacy_signin_screen_banner_dark@3x.png",
-    "legacy_signin_screen_banner.imageset/legacy_signin_screen_banner_light@2x.png",
-    "legacy_signin_screen_banner.imageset/legacy_signin_screen_banner_light@3x.png",
-  ]
-}
-
-imageset("legacy_forced_signin_screen_banner") {
-  sources = [
-    "legacy_forced_signin_screen_banner.imageset/Contents.json",
-    "legacy_forced_signin_screen_banner.imageset/legacy_forced_signin_screen_banner_dark@2x.png",
-    "legacy_forced_signin_screen_banner.imageset/legacy_forced_signin_screen_banner_dark@3x.png",
-    "legacy_forced_signin_screen_banner.imageset/legacy_forced_signin_screen_banner_light@2x.png",
-    "legacy_forced_signin_screen_banner.imageset/legacy_forced_signin_screen_banner_light@3x.png",
-  ]
-}
-
 imageset("signin_banner") {
   sources = [
     "signin_banner.imageset/Contents.json",
