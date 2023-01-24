@@ -176,9 +176,8 @@ class CORE_EXPORT CSSAnimationUpdate final {
     finished_transitions_.insert(property);
   }
 
-  void SetChangedScrollTimeline(CSSScrollTimeline* timeline) {
-    changed_scroll_timeline_ = timeline;
-    scroll_timeline_changed_ = true;
+  void SetChangedScrollTimelines(CSSScrollTimelineMap timelines) {
+    changed_scroll_timelines_ = std::move(timelines);
   }
 
   void SetChangedViewTimelines(CSSViewTimelineMap timelines) {
@@ -226,13 +225,13 @@ class CORE_EXPORT CSSAnimationUpdate final {
     return finished_transitions_;
   }
 
-  // A non-nullptr value means that the scroll-timeline was replaced with a
-  // a new one, a nullptr value means the scroll-timeline was removed,
-  // and absl::nullopt means there was no change.
-  absl::optional<CSSScrollTimeline*> ChangedScrollTimeline() const {
-    if (!scroll_timeline_changed_)
-      return absl::nullopt;
-    return changed_scroll_timeline_.Get();
+  // A "changed timelines map" (returned by Changed[Scroll,View]Timelines)
+  // contains en entry for each timeline (name) that was created, updated
+  // or removed. An entry with a non-nullptr value either means that a new
+  // timeline was created, or that an existing timeline was updated. An entry
+  // with an explicit nullptr value means that the timeline was removed.
+  const CSSScrollTimelineMap& ChangedScrollTimelines() const {
+    return changed_scroll_timelines_;
   }
   const CSSViewTimelineMap& ChangedViewTimelines() const {
     return changed_view_timelines_;
@@ -263,7 +262,8 @@ class CORE_EXPORT CSSAnimationUpdate final {
            !animation_indices_with_pause_toggled_.empty() ||
            !animations_with_updates_.empty() || !new_transitions_.empty() ||
            !cancelled_transitions_.empty() || !finished_transitions_.empty() ||
-           !updated_compositor_keyframes_.empty() || scroll_timeline_changed_ ||
+           !updated_compositor_keyframes_.empty() ||
+           !changed_scroll_timelines_.empty() ||
            !changed_view_timelines_.empty();
   }
 
@@ -275,7 +275,7 @@ class CORE_EXPORT CSSAnimationUpdate final {
     visitor->Trace(updated_compositor_keyframes_);
     visitor->Trace(active_interpolations_for_animations_);
     visitor->Trace(active_interpolations_for_transitions_);
-    visitor->Trace(changed_scroll_timeline_);
+    visitor->Trace(changed_scroll_timelines_);
     visitor->Trace(changed_view_timelines_);
   }
 
@@ -300,8 +300,7 @@ class CORE_EXPORT CSSAnimationUpdate final {
   HashSet<PropertyHandle> cancelled_transitions_;
   HashSet<PropertyHandle> finished_transitions_;
 
-  Member<CSSScrollTimeline> changed_scroll_timeline_ = nullptr;
-  bool scroll_timeline_changed_ = false;
+  CSSScrollTimelineMap changed_scroll_timelines_;
   CSSViewTimelineMap changed_view_timelines_;
 
   ActiveInterpolationsMap active_interpolations_for_animations_;

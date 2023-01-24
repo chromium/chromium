@@ -3172,23 +3172,108 @@ const CSSValue* ScrollPaddingInline::CSSValueFromComputedStyleInternal(
       allow_visited_style);
 }
 
+namespace {
+
+// Consume a single name and a single axis, and append the result to
+// `name_list` and `axis_list` respectively.
+bool ConsumeTimelineItemInto(CSSParserTokenRange& range,
+                             const CSSParserContext& context,
+                             CSSValueList* name_list,
+                             CSSValueList* axis_list) {
+  using css_parsing_utils::ConsumeSingleTimelineAxis;
+  using css_parsing_utils::ConsumeSingleTimelineName;
+
+  // Note that while the spec theoretically allows the name and axis in
+  // any order, the name will always come first in practice, since any
+  // value accepted as an axis is also accepted as a name.
+  CSSValue* name = ConsumeSingleTimelineName(range, context);
+
+  if (!name) {
+    return false;
+  }
+
+  CSSValue* axis = ConsumeSingleTimelineAxis(range);
+  if (!axis) {
+    axis = CSSIdentifierValue::Create(CSSValueID::kBlock);
+  }
+
+  name_list->Append(*name);
+  axis_list->Append(*axis);
+
+  return true;
+}
+
+bool ParseTimelineShorthand(CSSPropertyID shorthand_id,
+                            const StylePropertyShorthand& shorthand,
+                            bool important,
+                            CSSParserTokenRange& range,
+                            const CSSParserContext& context,
+                            const CSSParserLocalContext&,
+                            HeapVector<CSSPropertyValue, 64>& properties) {
+  using css_parsing_utils::AddProperty;
+  using css_parsing_utils::ConsumeCommaIncludingWhitespace;
+  using css_parsing_utils::IsImplicitProperty;
+
+  DCHECK_EQ(2u, shorthand.length());
+
+  CSSValueList* name_list = CSSValueList::CreateCommaSeparated();
+  CSSValueList* axis_list = CSSValueList::CreateCommaSeparated();
+
+  do {
+    if (!ConsumeTimelineItemInto(range, context, name_list, axis_list)) {
+      return false;
+    }
+  } while (ConsumeCommaIncludingWhitespace(range));
+
+  DCHECK(name_list->length());
+  DCHECK(axis_list->length());
+  DCHECK_EQ(name_list->length(), axis_list->length());
+
+  AddProperty(shorthand.properties()[0]->PropertyID(), shorthand_id, *name_list,
+              important, IsImplicitProperty::kNotImplicit, properties);
+  AddProperty(shorthand.properties()[1]->PropertyID(), shorthand_id, *axis_list,
+              important, IsImplicitProperty::kNotImplicit, properties);
+
+  return range.AtEnd();
+}
+
+static CSSValue* CSSValueForTimelineShorthand(
+    const HeapVector<Member<const ScopedCSSName>>& name_vector,
+    const Vector<TimelineAxis>& axis_vector) {
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+
+  if (name_vector.size() == axis_vector.size()) {
+    for (wtf_size_t i = 0; i < name_vector.size(); ++i) {
+      list->Append(*ComputedStyleUtils::SingleValueForTimelineShorthand(
+          name_vector[i].Get(), axis_vector[i]));
+    }
+  }
+
+  return list;
+}
+
+}  // namespace
+
 bool ScrollTimeline::ParseShorthand(
     bool important,
     CSSParserTokenRange& range,
     const CSSParserContext& context,
-    const CSSParserLocalContext&,
+    const CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
-      scrollTimelineShorthand(), important, context, range, properties,
-      true /* use_initial_value_function */);
+  return ParseTimelineShorthand(CSSPropertyID::kScrollTimeline,
+                                scrollTimelineShorthand(), important, range,
+                                context, local_context, properties);
 }
 
 const CSSValue* ScrollTimeline::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ValuesForScrollTimelineShorthand(
-      style, layout_object, allow_visited_style);
+  const HeapVector<Member<const ScopedCSSName>>& name_vector =
+      style.ScrollTimelineName() ? style.ScrollTimelineName()->GetNames()
+                                 : HeapVector<Member<const ScopedCSSName>>{};
+  const Vector<TimelineAxis>& axis_vector = style.ScrollTimelineAxis();
+  return CSSValueForTimelineShorthand(name_vector, axis_vector);
 }
 
 bool TextDecoration::ParseShorthand(
@@ -3334,75 +3419,15 @@ const CSSValue* Transition::CSSValueFromComputedStyleInternal(
   return list;
 }
 
-namespace {
-
-// Consume a single name and a single axis, and append the result to
-// `name_list` and `axis_list` respectively.
-bool ConsumeViewTimelineItemInto(CSSParserTokenRange& range,
-                                 const CSSParserContext& context,
-                                 CSSValueList* name_list,
-                                 CSSValueList* axis_list) {
-  using css_parsing_utils::ConsumeSingleTimelineAxis;
-  using css_parsing_utils::ConsumeSingleTimelineName;
-
-  // Note that while the spec theoretically allows the name and axis in
-  // any order, the name will always come first in practice, since any
-  // value accepted as an axis is also accepted as a name.
-  CSSValue* name = ConsumeSingleTimelineName(range, context);
-
-  if (!name) {
-    return false;
-  }
-
-  CSSValue* axis = ConsumeSingleTimelineAxis(range);
-  if (!axis) {
-    axis = CSSIdentifierValue::Create(CSSValueID::kBlock);
-  }
-
-  name_list->Append(*name);
-  axis_list->Append(*axis);
-
-  return true;
-}
-
-}  // namespace
-
 bool ViewTimeline::ParseShorthand(
     bool important,
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  using css_parsing_utils::AddProperty;
-  using css_parsing_utils::ConsumeCommaIncludingWhitespace;
-  using css_parsing_utils::IsImplicitProperty;
-
-  const StylePropertyShorthand shorthand = viewTimelineShorthand();
-  DCHECK_EQ(2u, shorthand.length());
-  DCHECK_EQ(&GetCSSPropertyViewTimelineName(), shorthand.properties()[0]);
-  DCHECK_EQ(&GetCSSPropertyViewTimelineAxis(), shorthand.properties()[1]);
-
-  CSSValueList* name_list = CSSValueList::CreateCommaSeparated();
-  CSSValueList* axis_list = CSSValueList::CreateCommaSeparated();
-
-  do {
-    if (!ConsumeViewTimelineItemInto(range, context, name_list, axis_list)) {
-      return false;
-    }
-  } while (ConsumeCommaIncludingWhitespace(range));
-
-  DCHECK(name_list->length());
-  DCHECK(axis_list->length());
-  DCHECK_EQ(name_list->length(), axis_list->length());
-
-  AddProperty(CSSPropertyID::kViewTimelineName, CSSPropertyID::kViewTimeline,
-              *name_list, important, IsImplicitProperty::kNotImplicit,
-              properties);
-  AddProperty(CSSPropertyID::kViewTimelineAxis, CSSPropertyID::kViewTimeline,
-              *axis_list, important, IsImplicitProperty::kNotImplicit,
-              properties);
-
-  return range.AtEnd();
+  return ParseTimelineShorthand(CSSPropertyID::kViewTimeline,
+                                viewTimelineShorthand(), important, range,
+                                context, local_context, properties);
 }
 
 const CSSValue* ViewTimeline::CSSValueFromComputedStyleInternal(
@@ -3413,17 +3438,7 @@ const CSSValue* ViewTimeline::CSSValueFromComputedStyleInternal(
       style.ViewTimelineName() ? style.ViewTimelineName()->GetNames()
                                : HeapVector<Member<const ScopedCSSName>>{};
   const Vector<TimelineAxis>& axis_vector = style.ViewTimelineAxis();
-
-  CSSValueList* list = CSSValueList::CreateCommaSeparated();
-
-  if (name_vector.size() == axis_vector.size()) {
-    for (wtf_size_t i = 0; i < name_vector.size(); ++i) {
-      list->Append(*ComputedStyleUtils::SingleValueForViewTimelineShorthand(
-          name_vector[i].Get(), axis_vector[i]));
-    }
-  }
-
-  return list;
+  return CSSValueForTimelineShorthand(name_vector, axis_vector);
 }
 
 bool WebkitColumnBreakAfter::ParseShorthand(

@@ -50,7 +50,6 @@
 
 namespace blink {
 
-class CSSScrollTimeline;
 class CSSTransitionData;
 class ComputedStyleBuilder;
 class Element;
@@ -202,28 +201,25 @@ class CORE_EXPORT CSSAnimations final {
     DISALLOW_NEW();
 
    public:
-    void SetScrollTimeline(CSSScrollTimeline* timeline) {
-      scroll_timeline_ = timeline;
-    }
-    CSSScrollTimeline* GetScrollTimeline() const {
-      return scroll_timeline_.Get();
+    void SetScrollTimeline(const ScopedCSSName& name, CSSScrollTimeline*);
+    const CSSScrollTimelineMap& GetScrollTimelines() const {
+      return scroll_timelines_;
     }
     void SetViewTimeline(const ScopedCSSName& name, CSSViewTimeline*);
     const CSSViewTimelineMap& GetViewTimelines() const {
       return view_timelines_;
     }
-
     bool IsEmpty() const {
-      return !scroll_timeline_ && view_timelines_.empty();
+      return scroll_timelines_.empty() && view_timelines_.empty();
     }
     void Clear() {
-      scroll_timeline_ = nullptr;
+      scroll_timelines_.clear();
       view_timelines_.clear();
     }
     void Trace(Visitor*) const;
 
    private:
-    Member<CSSScrollTimeline> scroll_timeline_;
+    CSSScrollTimelineMap scroll_timelines_;
     CSSViewTimelineMap view_timelines_;
   };
 
@@ -295,6 +291,11 @@ class CORE_EXPORT CSSAnimations final {
   static void CalculateViewTimelineUpdate(CSSAnimationUpdate&,
                                           Element& animating_element,
                                           const ComputedStyleBuilder&);
+
+  static CSSScrollTimelineMap CalculateChangedScrollTimelines(
+      Element& animating_element,
+      const CSSScrollTimelineMap* existing_scroll_timelines,
+      const ComputedStyleBuilder&);
   static CSSViewTimelineMap CalculateChangedViewTimelines(
       Element& animating_element,
       const CSSViewTimelineMap* existing_view_timelines,

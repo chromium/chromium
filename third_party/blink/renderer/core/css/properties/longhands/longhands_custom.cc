@@ -6923,37 +6923,60 @@ const CSSValue* ScrollTimelineAxis::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeSingleTimelineAxis(range);
+  using css_parsing_utils::ConsumeCommaSeparatedList;
+  using css_parsing_utils::ConsumeSingleTimelineAxis;
+  return ConsumeCommaSeparatedList(ConsumeSingleTimelineAxis, range);
 }
 
 const CSSValue* ScrollTimelineAxis::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return CSSIdentifierValue::Create(style.ScrollTimelineAxis());
+  const Vector<TimelineAxis>& vector = style.ScrollTimelineAxis();
+  if (vector.empty()) {
+    return InitialValue();
+  }
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  for (TimelineAxis axis : vector) {
+    list->Append(*CSSIdentifierValue::Create(axis));
+  }
+  return list;
 }
 
 const CSSValue* ScrollTimelineAxis::InitialValue() const {
-  return CSSIdentifierValue::Create(CSSValueID::kBlock);
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  list->Append(*CSSIdentifierValue::Create(CSSValueID::kBlock));
+  return list;
 }
 
 const CSSValue* ScrollTimelineName::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeSingleTimelineName(range, context);
+  using css_parsing_utils::ConsumeCommaSeparatedList;
+  using css_parsing_utils::ConsumeSingleTimelineName;
+  return ConsumeCommaSeparatedList(ConsumeSingleTimelineName, range, context);
 }
 
 const CSSValue* ScrollTimelineName::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ValueForCustomIdentOrNone(
-      style.ScrollTimelineName().Get());
+  if (!style.ScrollTimelineName()) {
+    return InitialValue();
+  }
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  for (const Member<const ScopedCSSName>& name :
+       style.ScrollTimelineName()->GetNames()) {
+    list->Append(*ComputedStyleUtils::ValueForCustomIdentOrNone(name.Get()));
+  }
+  return list;
 }
 
 const CSSValue* ScrollTimelineName::InitialValue() const {
-  return CSSIdentifierValue::Create(CSSValueID::kNone);
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  list->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
+  return list;
 }
 
 const CSSValue* ShapeImageThreshold::ParseSingleValue(

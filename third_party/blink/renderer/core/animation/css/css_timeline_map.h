@@ -12,6 +12,7 @@
 
 namespace blink {
 
+class CSSScrollTimeline;
 class CSSViewTimeline;
 
 template <typename TimelineType>
@@ -19,6 +20,7 @@ using CSSTimelineMap =
     HeapHashMap<Member<const ScopedCSSName>, Member<TimelineType>>;
 
 using CSSViewTimelineMap = CSSTimelineMap<CSSViewTimeline>;
+using CSSScrollTimelineMap = CSSTimelineMap<CSSScrollTimeline>;
 
 }  // namespace blink
 

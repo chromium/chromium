@@ -64,6 +64,7 @@ class CORE_EXPORT StylePropertySerializer {
   String GetShorthandValueForGrid(const StylePropertyShorthand&) const;
   String GetShorthandValueForGridTemplate(const StylePropertyShorthand&) const;
   String ContainerValue() const;
+  String TimelineValue(const StylePropertyShorthand&) const;
   String ScrollTimelineValue() const;
   String ViewTimelineValue() const;
   String AnimationDelayShorthandValue() const;

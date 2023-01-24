@@ -2291,7 +2291,7 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTimelineList(
       &ValueForAnimationTimeline);
 }
 
-CSSValue* ComputedStyleUtils::SingleValueForViewTimelineShorthand(
+CSSValue* ComputedStyleUtils::SingleValueForTimelineShorthand(
     const ScopedCSSName* name,
     TimelineAxis axis) {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
@@ -3460,37 +3460,6 @@ CSSValueList* ComputedStyleUtils::ValuesForContainerShorthand(
   if (!(IsA<CSSIdentifierValue>(type) &&
         To<CSSIdentifierValue>(*type).GetValueID() == CSSValueID::kNormal)) {
     list->Append(*type);
-  }
-
-  return list;
-}
-
-CSSValueList* ComputedStyleUtils::ValuesForScrollTimelineShorthand(
-    const ComputedStyle& style,
-    const LayoutObject* layout_object,
-    bool allow_visited_style) {
-  CHECK_EQ(scrollTimelineShorthand().length(), 2u);
-  CHECK_EQ(scrollTimelineShorthand().properties()[0],
-           &GetCSSPropertyScrollTimelineName());
-  CHECK_EQ(scrollTimelineShorthand().properties()[1],
-           &GetCSSPropertyScrollTimelineAxis());
-
-  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-
-  const CSSValue* name =
-      GetCSSPropertyScrollTimelineName().CSSValueFromComputedStyle(
-          style, layout_object, allow_visited_style);
-  const CSSValue* axis =
-      GetCSSPropertyScrollTimelineAxis().CSSValueFromComputedStyle(
-          style, layout_object, allow_visited_style);
-
-  DCHECK(name);
-  DCHECK(axis);
-
-  list->Append(*name);
-
-  if (To<CSSIdentifierValue>(*axis).GetValueID() != CSSValueID::kBlock) {
-    list->Append(*axis);
   }
 
   return list;

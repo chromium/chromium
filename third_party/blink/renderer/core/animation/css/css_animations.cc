@@ -551,7 +551,7 @@ class SpecifiedTimelines {
  public:
   explicit SpecifiedTimelines(const ScopedCSSNameList* names,
                               const Vector<TimelineAxis>& axes,
-                              const Vector<TimelineInset>& insets)
+                              const Vector<TimelineInset>* insets)
       : names_(names ? &names->GetNames() : nullptr),
         axes_(axes),
         insets_(insets) {}
@@ -567,15 +567,16 @@ class SpecifiedTimelines {
     operator*() const {
       const HeapVector<Member<const ScopedCSSName>>& names = *timelines_.names_;
       const Vector<TimelineAxis>& axes = timelines_.axes_;
-      const Vector<TimelineInset>& insets = timelines_.insets_;
+      const Vector<TimelineInset>* insets = timelines_.insets_;
 
       Member<const ScopedCSSName> name = names[index_];
       TimelineAxis axis = axes.empty()
                               ? TimelineAxis::kBlock
                               : axes[std::min(index_, axes.size() - 1)];
       const TimelineInset& inset =
-          insets.empty() ? TimelineInset()
-                         : insets[std::min(index_, insets.size() - 1)];
+          (!insets || insets->empty())
+              ? TimelineInset()
+              : (*insets)[std::min(index_, insets->size() - 1)];
 
       return std::make_tuple(name, axis, inset);
     }
@@ -609,7 +610,17 @@ class SpecifiedTimelines {
 
   const HeapVector<Member<const ScopedCSSName>>* names_;
   const Vector<TimelineAxis>& axes_;
-  const Vector<TimelineInset>& insets_;
+  const Vector<TimelineInset>* insets_;
+};
+
+class SpecifiedScrollTimelines : public SpecifiedTimelines {
+  STACK_ALLOCATED();
+
+ public:
+  explicit SpecifiedScrollTimelines(const ComputedStyleBuilder& style_builder)
+      : SpecifiedTimelines(style_builder.ScrollTimelineName(),
+                           style_builder.ScrollTimelineAxis(),
+                           /* insets */ nullptr) {}
 };
 
 class SpecifiedViewTimelines : public SpecifiedTimelines {
@@ -619,7 +630,7 @@ class SpecifiedViewTimelines : public SpecifiedTimelines {
   explicit SpecifiedViewTimelines(const ComputedStyleBuilder& style_builder)
       : SpecifiedTimelines(style_builder.ViewTimelineName(),
                            style_builder.ViewTimelineAxis(),
-                           style_builder.ViewTimelineInset()) {}
+                           &style_builder.ViewTimelineInset()) {}
 };
 
 // When calculating timeline updates, we initially assume that all timelines
@@ -653,41 +664,16 @@ void CSSAnimations::CalculateScrollTimelineUpdate(
     CSSAnimationUpdate& update,
     Element& animating_element,
     const ComputedStyleBuilder& style_builder) {
-  Document& document = animating_element.GetDocument();
-
-  const ScopedCSSName* name = style_builder.ScrollTimelineName();
-  TimelineAxis axis = style_builder.ScrollTimelineAxis();
-
   const CSSAnimations::TimelineData* timeline_data =
       GetTimelineData(animating_element);
-
-  CSSScrollTimeline* existing_timeline =
-      timeline_data ? timeline_data->GetScrollTimeline() : nullptr;
-  CSSScrollTimeline* new_timeline = nullptr;
-
-  if (name) {
-    // If the computed values of scroll-timeline-* would produce a
-    // CSSScrollTimeline identical to the existing one, we reuse the existing
-    // one instead.
-    CSSScrollTimeline::Options options(document,
-                                       ScrollTimeline::ReferenceType::kSource,
-                                       &animating_element, *name, axis);
-    // No need to change the timeline if it would be the same as the previous.
-    if (existing_timeline && existing_timeline->Matches(document, options))
-      return;
-    new_timeline =
-        MakeGarbageCollected<CSSScrollTimeline>(&document, std::move(options));
-    // It is not allowed for a style update to create timelines that
-    // needs timing updates (i.e.
-    // AnimationTimeline::NeedsAnimationTimingUpdate() must return false).
-    // Servicing animations after creation preserves this invariant by
-    // ensuring the last-update time of the timeline is equal to the current
-    // time.
-    new_timeline->ServiceAnimations(kTimingUpdateOnDemand);
+  const CSSScrollTimelineMap* existing_scroll_timelines =
+      (timeline_data && !timeline_data->GetScrollTimelines().empty())
+          ? &timeline_data->GetScrollTimelines()
+          : nullptr;
+  if (style_builder.ScrollTimelineName() || existing_scroll_timelines) {
+    update.SetChangedScrollTimelines(CalculateChangedScrollTimelines(
+        animating_element, existing_scroll_timelines, style_builder));
   }
-
-  if (new_timeline != existing_timeline)
-    update.SetChangedScrollTimeline(new_timeline);
 }
 
 void CSSAnimations::CalculateViewTimelineUpdate(
@@ -704,6 +690,35 @@ void CSSAnimations::CalculateViewTimelineUpdate(
     update.SetChangedViewTimelines(CalculateChangedViewTimelines(
         animating_element, existing_view_timelines, style_builder));
   }
+}
+
+CSSScrollTimelineMap CSSAnimations::CalculateChangedScrollTimelines(
+    Element& animating_element,
+    const CSSScrollTimelineMap* existing_scroll_timelines,
+    const ComputedStyleBuilder& style_builder) {
+  CSSScrollTimelineMap changed_timelines =
+      NullifyExistingTimelines(existing_scroll_timelines);
+
+  Document& document = animating_element.GetDocument();
+
+  for (auto [name, axis, inset] : SpecifiedScrollTimelines(style_builder)) {
+    // Note: CSSScrollTimeline does not use insets.
+    CSSScrollTimeline* existing_timeline =
+        GetTimeline(existing_scroll_timelines, *name);
+    CSSScrollTimeline::Options options(document,
+                                       ScrollTimeline::ReferenceType::kSource,
+                                       &animating_element, *name, axis);
+    if (existing_timeline && existing_timeline->Matches(document, options)) {
+      changed_timelines.erase(name);
+      continue;
+    }
+    CSSScrollTimeline* new_timeline =
+        MakeGarbageCollected<CSSScrollTimeline>(&document, std::move(options));
+    new_timeline->ServiceAnimations(kTimingUpdateOnDemand);
+    changed_timelines.Set(name, new_timeline);
+  }
+
+  return changed_timelines;
 }
 
 CSSViewTimelineMap CSSAnimations::CalculateChangedViewTimelines(
@@ -804,30 +819,12 @@ CSSScrollTimeline* CSSAnimations::FindScrollTimelineForElement(
     const ScopedCSSName& target_name,
     const CSSAnimationUpdate* update,
     const TimelineData* timeline_data) {
-  CSSScrollTimeline* existing_scroll_timeline =
-      timeline_data ? timeline_data->GetScrollTimeline() : nullptr;
-  // The pending CSSScrollTimeline (if any) takes precedence over the
-  // timeline stored on CSSAnimations::TimelineData.
-  absl::optional<CSSScrollTimeline*> pending_timeline =
-      update ? update->ChangedScrollTimeline()
-             : absl::optional<CSSScrollTimeline*>();
-  CSSScrollTimeline* pending_aware_timeline =
-      pending_timeline.value_or(existing_scroll_timeline);
-  if (!pending_aware_timeline) {
-    return nullptr;
-  }
-  if (pending_aware_timeline->Name().GetName() != target_name.GetName()) {
-    return nullptr;
-  }
-
-  if (RuntimeEnabledFeatures::CSSTreeScopedTimelinesEnabled()) {
-    if (TreeScopeDistance(pending_aware_timeline->Name().GetTreeScope(),
-                          target_name.GetTreeScope()) ==
-        std::numeric_limits<size_t>::max()) {
-      return nullptr;
-    }
-  }
-  return pending_aware_timeline;
+  const CSSScrollTimelineMap* existing_timelines =
+      timeline_data ? &timeline_data->GetScrollTimelines() : nullptr;
+  const CSSScrollTimelineMap* changed_timelines =
+      update ? &update->ChangedScrollTimelines() : nullptr;
+  return FindTimelineForElement<CSSScrollTimeline>(
+      target_name, existing_timelines, changed_timelines);
 }
 
 CSSViewTimeline* CSSAnimations::FindViewTimelineForElement(
@@ -1644,9 +1641,8 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
     return;
   }
 
-  if (absl::optional<CSSScrollTimeline*> changed_timeline =
-          pending_update_.ChangedScrollTimeline()) {
-    timeline_data_.SetScrollTimeline(*changed_timeline);
+  for (auto [name, value] : pending_update_.ChangedScrollTimelines()) {
+    timeline_data_.SetScrollTimeline(*name, value.Get());
   }
   for (auto [name, value] : pending_update_.ChangedViewTimelines()) {
     timeline_data_.SetViewTimeline(*name, value.Get());
@@ -2262,6 +2258,16 @@ void CSSAnimations::Cancel() {
   pending_update_.Clear();
 }
 
+void CSSAnimations::TimelineData::SetScrollTimeline(
+    const ScopedCSSName& name,
+    CSSScrollTimeline* timeline) {
+  if (timeline == nullptr) {
+    scroll_timelines_.erase(&name);
+  } else {
+    scroll_timelines_.Set(&name, timeline);
+  }
+}
+
 void CSSAnimations::TimelineData::SetViewTimeline(const ScopedCSSName& name,
                                                   CSSViewTimeline* timeline) {
   if (timeline == nullptr) {
@@ -2272,7 +2278,7 @@ void CSSAnimations::TimelineData::SetViewTimeline(const ScopedCSSName& name,
 }
 
 void CSSAnimations::TimelineData::Trace(blink::Visitor* visitor) const {
-  visitor->Trace(scroll_timeline_);
+  visitor->Trace(scroll_timelines_);
   visitor->Trace(view_timelines_);
 }
 

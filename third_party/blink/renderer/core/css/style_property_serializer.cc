@@ -806,37 +806,11 @@ String StylePropertySerializer::ContainerValue() const {
   return list->CssText();
 }
 
-String StylePropertySerializer::ScrollTimelineValue() const {
-  CHECK_EQ(scrollTimelineShorthand().length(), 2u);
-  CHECK_EQ(scrollTimelineShorthand().properties()[0],
-           &GetCSSPropertyScrollTimelineName());
-  CHECK_EQ(scrollTimelineShorthand().properties()[1],
-           &GetCSSPropertyScrollTimelineAxis());
-
-  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-
-  const CSSValue* name =
-      property_set_.GetPropertyCSSValue(GetCSSPropertyScrollTimelineName());
-  const CSSValue* axis =
-      property_set_.GetPropertyCSSValue(GetCSSPropertyScrollTimelineAxis());
-
-  DCHECK(name);
-  DCHECK(axis);
-
-  list->Append(*name);
-
-  if (To<CSSIdentifierValue>(*axis).GetValueID() != CSSValueID::kBlock) {
-    list->Append(*axis);
-  }
-
-  return list->CssText();
-}
-
 namespace {
 
-CSSValue* ViewTimelineValueItem(wtf_size_t index,
-                                const CSSValueList& name_list,
-                                const CSSValueList& axis_list) {
+CSSValue* TimelineValueItem(wtf_size_t index,
+                            const CSSValueList& name_list,
+                            const CSSValueList& axis_list) {
   DCHECK_LT(index, name_list.length());
   DCHECK_LT(index, axis_list.length());
 
@@ -860,21 +834,18 @@ CSSValue* ViewTimelineValueItem(wtf_size_t index,
 
 }  // namespace
 
-String StylePropertySerializer::ViewTimelineValue() const {
-  CHECK_EQ(viewTimelineShorthand().length(), 2u);
-  CHECK_EQ(viewTimelineShorthand().properties()[0],
-           &GetCSSPropertyViewTimelineName());
-  CHECK_EQ(viewTimelineShorthand().properties()[1],
-           &GetCSSPropertyViewTimelineAxis());
+String StylePropertySerializer::TimelineValue(
+    const StylePropertyShorthand& shorthand) const {
+  CHECK_EQ(shorthand.length(), 2u);
 
   const CSSValueList& name_list = To<CSSValueList>(
-      *property_set_.GetPropertyCSSValue(GetCSSPropertyViewTimelineName()));
+      *property_set_.GetPropertyCSSValue(*shorthand.properties()[0]));
   const CSSValueList& axis_list = To<CSSValueList>(
-      *property_set_.GetPropertyCSSValue(GetCSSPropertyViewTimelineAxis()));
+      *property_set_.GetPropertyCSSValue(*shorthand.properties()[1]));
 
-  // The view-timeline shorthand can not expand to longhands of two different
-  // lengths, so we can also not contract two different-longhands into a single
-  // shorthand.
+  // The scroll/view-timeline shorthand can not expand to longhands of two
+  // different lengths, so we can also not contract two different-longhands
+  // into a single shorthand.
   if (name_list.length() != axis_list.length()) {
     return "";
   }
@@ -882,10 +853,28 @@ String StylePropertySerializer::ViewTimelineValue() const {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
 
   for (wtf_size_t i = 0; i < name_list.length(); ++i) {
-    list->Append(*ViewTimelineValueItem(i, name_list, axis_list));
+    list->Append(*TimelineValueItem(i, name_list, axis_list));
   }
 
   return list->CssText();
+}
+
+String StylePropertySerializer::ScrollTimelineValue() const {
+  CHECK_EQ(scrollTimelineShorthand().length(), 2u);
+  CHECK_EQ(scrollTimelineShorthand().properties()[0],
+           &GetCSSPropertyScrollTimelineName());
+  CHECK_EQ(scrollTimelineShorthand().properties()[1],
+           &GetCSSPropertyScrollTimelineAxis());
+  return TimelineValue(scrollTimelineShorthand());
+}
+
+String StylePropertySerializer::ViewTimelineValue() const {
+  CHECK_EQ(viewTimelineShorthand().length(), 2u);
+  CHECK_EQ(viewTimelineShorthand().properties()[0],
+           &GetCSSPropertyViewTimelineName());
+  CHECK_EQ(viewTimelineShorthand().properties()[1],
+           &GetCSSPropertyViewTimelineAxis());
+  return TimelineValue(viewTimelineShorthand());
 }
 
 namespace {
