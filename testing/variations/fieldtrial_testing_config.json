@@ -6166,8 +6166,7 @@
                     "name": "EnableMetaExperiment",
                     "params": {
                         "AllowedRandomTypes": "0",
-                        "EnableActiveSampling": "true",
-                        "Gen": "9",
+                        "Gen": "10",
                         "Rho": "1"
                     },
                     "enable_features": [
