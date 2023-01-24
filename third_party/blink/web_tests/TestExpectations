@@ -6936,7 +6936,6 @@ http/tests/security/cross-frame-access-protocol-explicit-domain.html [ Failure P
 http/tests/security/canvas-remote-read-remote-image-document-domain.html [ Failure Pass ]
 
 # Sheriff 2023-01-20
-crbug.com/1408919 [ Mac ] virtual/text-antialias/capitalize-boundaries.html [ Failure Pass ]
 crbug.com/1408967 [ Fuchsia ] fast/block/float/float-in-float-painting.html [ Failure Pass ]
 crbug.com/1408967 [ Fuchsia ] fast/layers/opacity-transforms.html [ Failure Pass ]
 
