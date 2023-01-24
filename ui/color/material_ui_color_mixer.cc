@@ -23,7 +23,7 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
            << (dark_mode ? "Dark" : "Light") << " window.";
   ColorMixer& mixer = provider->AddMixer();
 
-  mixer[kColorButtonBackground] = {SK_ColorTRANSPARENT};
+  mixer[kColorButtonBackground] = {kColorSysSurface};
   mixer[kColorButtonBackgroundPressed] =
       GetResultingPaintColor({kColorSysStatePressed}, {kColorButtonBackground});
   mixer[kColorButtonBackgroundProminent] = {kColorSysPrimary};
