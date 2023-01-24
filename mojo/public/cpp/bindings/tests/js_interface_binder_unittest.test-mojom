@@ -4,6 +4,8 @@
 
 module mojo.test.js_interface_binder.mojom;
 
+import "mojo/public/cpp/bindings/tests/js_interface_binder_secondary_unittest.test-mojom";
+
 [JsInterfaceBinder]
 interface FooJsInterfaceBinder {
   BindFooPageHandler(pending_receiver<FooPageHandler> page_handler,
@@ -11,6 +13,12 @@ interface FooJsInterfaceBinder {
 
   BindBar(pending_receiver<Bar> bar);
   BindBarObserver(pending_remote<BarObserver> observer);
+};
+
+[JsInterfaceBinder]
+interface Interface1InterfaceBinder {
+  BindSecondaryInterface(
+    pending_receiver<mojo.test.js_interface_binder.secondary.mojom.SecondaryInterface> receiver);
 };
 
 interface FooPageHandler {};

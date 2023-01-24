@@ -119,6 +119,15 @@ TEST_P(JsInterfaceBinderTest, Bind) {
   EXPECT_EQ(1u, bar.observers().size());
 }
 
+// Tests we correctly generate a JsInterfaceBinderImpl for a interface that
+// binds interfaces in a separate mojom.
+TEST_P(JsInterfaceBinderTest, CrossModule) {
+  mojom::Interface1InterfaceBinderImpl binder(base::BindRepeating(
+      [](mojo::PendingReceiver<secondary::mojom::SecondaryInterface> receiver) {
+      }));
+  binder.BindSecondaryInterface(mojo::NullReceiver());
+}
+
 INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(JsInterfaceBinderTest);
 
 }  // namespace mojo::test::js_interface_binder

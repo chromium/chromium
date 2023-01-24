@@ -70,15 +70,22 @@ class Generator(generator.Generator):
   def GetTemplatePrefix():
     return "js_interface_binder_templates"
 
+  def _GetKindName(self, kind):
+    """Return `kind`'s name, prefixing it with its namespace if necessary."""
+    should_include_namespace = self.module.path != kind.module.path
+    if should_include_namespace:
+      return f'{kind.module.namespace}::{kind.name}'
+    return kind.name
+
   def _GetCppType(self, kind):
     """Return a string representing the C++ type of `kind`
 
      Returns None if the type is not supposed to be used in a JsInterfaceBinder.
      """
     if mojom.IsPendingRemoteKind(kind):
-      return "::mojo::PendingRemote<%s>" % kind.kind.name
+      return "::mojo::PendingRemote<%s>" % self._GetKindName(kind.kind)
     if mojom.IsPendingReceiverKind(kind):
-      return "::mojo::PendingReceiver<%s>" % kind.kind.name
+      return "::mojo::PendingReceiver<%s>" % self._GetKindName(kind.kind)
 
   def _GetBinderMemberVariableName(self, bind_method):
     """Return the variable name of the binder corresponding to `bind_method`."""
