@@ -47,6 +47,7 @@ source_set("safety_check") {
     "safety_check_constants.mm",
     "safety_check_coordinator.h",
     "safety_check_coordinator.mm",
+    "safety_check_mediator+private.h",
     "safety_check_mediator.h",
     "safety_check_mediator.mm",
     "safety_check_utils.h",

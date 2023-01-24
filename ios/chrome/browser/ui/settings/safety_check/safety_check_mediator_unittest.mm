@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_consumer.h"
+#import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator+private.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
@@ -60,38 +61,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-@interface SafetyCheckMediator (Test)
-- (void)checkAndReconfigureSafeBrowsingState;
-- (void)resetsCheckStartItemIfNeeded;
-- (void)passwordCheckStateDidChange:(PasswordCheckState)state;
-- (void)reconfigurePasswordCheckItem;
-- (void)reconfigureUpdateCheckItem;
-- (void)reconfigureSafeBrowsingCheckItem;
-- (void)reconfigureCheckStartSection;
-- (void)handleOmahaResponse:(const UpgradeRecommendedDetails&)details;
-@property(nonatomic, strong) SettingsCheckItem* updateCheckItem;
-@property(nonatomic, assign) UpdateCheckRowStates updateCheckRowState;
-@property(nonatomic, assign) UpdateCheckRowStates previousUpdateCheckRowState;
-@property(nonatomic, strong) SettingsCheckItem* passwordCheckItem;
-@property(nonatomic, assign) PasswordCheckRowStates passwordCheckRowState;
-@property(nonatomic, assign)
-    PasswordCheckRowStates previousPasswordCheckRowState;
-@property(nonatomic, strong) SettingsCheckItem* safeBrowsingCheckItem;
-@property(nonatomic, assign)
-    SafeBrowsingCheckRowStates safeBrowsingCheckRowState;
-@property(nonatomic, assign)
-    SafeBrowsingCheckRowStates previousSafeBrowsingCheckRowState;
-@property(nonatomic, strong) TableViewTextItem* checkStartItem;
-@property(nonatomic, assign) CheckStartStates checkStartState;
-@property(nonatomic, assign) BOOL checkDidRun;
-@property(nonatomic, assign) PasswordCheckState currentPasswordCheckState;
-@property(nonatomic, strong, readonly)
-    PrefBackedBoolean* safeBrowsingPreference;
-@property(nonatomic, strong, readonly)
-    PrefBackedBoolean* enhancedSafeBrowsingPreference;
-
-@end
 
 namespace {
 

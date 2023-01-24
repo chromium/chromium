@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_consumer.h"
+#import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator+private.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_utils.h"
@@ -115,59 +116,12 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
 // Header for the Safety Check page.
 @property(nonatomic, strong) TableViewLinkHeaderFooterItem* headerItem;
 
-// SettingsCheckItem used to display the state of the Safe Browsing check.
-@property(nonatomic, strong) SettingsCheckItem* safeBrowsingCheckItem;
-
-// Current state of the Safe Browsing check.
-@property(nonatomic, assign)
-    SafeBrowsingCheckRowStates safeBrowsingCheckRowState;
-
-// Previous on load or finished check state of the Safe Browsing check.
-@property(nonatomic, assign)
-    SafeBrowsingCheckRowStates previousSafeBrowsingCheckRowState;
-
-// SettingsCheckItem used to display the state of the update check.
-@property(nonatomic, strong) SettingsCheckItem* updateCheckItem;
-
-// Current state of the update check.
-@property(nonatomic, assign) UpdateCheckRowStates updateCheckRowState;
-
-// Previous on load or finished check state of the update check.
-@property(nonatomic, assign) UpdateCheckRowStates previousUpdateCheckRowState;
-
-// SettingsCheckItem used to display the state of the password check.
-@property(nonatomic, strong) SettingsCheckItem* passwordCheckItem;
-
-// Current state of the password check.
-@property(nonatomic, assign) PasswordCheckRowStates passwordCheckRowState;
-
-// Previous on load or finished check state of the password check.
-@property(nonatomic, assign)
-    PasswordCheckRowStates previousPasswordCheckRowState;
-
-// Row button to start the safety check.
-@property(nonatomic, strong) TableViewTextItem* checkStartItem;
-
-// Current state of the start safety check row button.
-@property(nonatomic, assign) CheckStartStates checkStartState;
-
-// Preference value for Safe Browsing.
-@property(nonatomic, strong, readonly)
-    PrefBackedBoolean* safeBrowsingPreference;
-
-// Preference value for Enhanced Safe Browsing.
-@property(nonatomic, strong, readonly)
-    PrefBackedBoolean* enhancedSafeBrowsingPreference;
-
 // If the Safe Browsing preference is managed.
 @property(nonatomic, assign) BOOL safeBrowsingPreferenceManaged;
 
 // The service responsible for password check feature.
 @property(nonatomic, assign) scoped_refptr<IOSChromePasswordCheckManager>
     passwordCheckManager;
-
-// Current state of password check.
-@property(nonatomic, assign) PasswordCheckState currentPasswordCheckState;
 
 // If any checks in safety check are still running.
 @property(nonatomic, assign, readonly) BOOL checksRemaining;
@@ -180,9 +134,6 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
 
 // Service used to check user preference values.
 @property(nonatomic, assign, readonly) PrefService* userPrefService;
-
-// Whether or not a safety check just ran.
-@property(nonatomic, assign) BOOL checkDidRun;
 
 // When the check was started.
 @property(nonatomic, assign) base::Time checkStartTime;
