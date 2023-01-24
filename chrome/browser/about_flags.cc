@@ -3058,19 +3058,25 @@ const FeatureEntry::FeatureParam kTabSelectionEditorV2_share_enabled[] = {
     {"enable_share", "true"}};
 const FeatureEntry::FeatureParam kTabSelectionEditorV2_bookmarks_enabled[] = {
     {"enable_bookmarks", "true"}};
+const FeatureEntry::FeatureParam kTabSelectionEditorV2_longpress_enabled[] = {
+    {"enable_longpress_entrypoint", "true"}};
 const FeatureEntry::FeatureParam
-    kTabSelectionEditorV2_share_and_bookmarks_enabled[] = {
+    kTabSelectionEditorV2_share_bookmarks_and_longpress_enabled[] = {
         {"enable_share", "true"},
         {"enable_bookmarks", "true"},
+        {"enable_longpress_entrypoint", "true"},
 };
 const FeatureEntry::FeatureVariation kTabSelectionEditorV2Variations[] = {
     {"- with share", kTabSelectionEditorV2_share_enabled,
      std::size(kTabSelectionEditorV2_share_enabled), nullptr},
     {"- with bookmarks", kTabSelectionEditorV2_bookmarks_enabled,
      std::size(kTabSelectionEditorV2_bookmarks_enabled), nullptr},
-    {"- with share and bookmarks",
-     kTabSelectionEditorV2_share_and_bookmarks_enabled,
-     std::size(kTabSelectionEditorV2_share_and_bookmarks_enabled), nullptr},
+    {"- with longpress", kTabSelectionEditorV2_longpress_enabled,
+     std::size(kTabSelectionEditorV2_longpress_enabled), nullptr},
+    {"- with share, bookmarks and longpress",
+     kTabSelectionEditorV2_share_bookmarks_and_longpress_enabled,
+     std::size(kTabSelectionEditorV2_share_bookmarks_and_longpress_enabled),
+     nullptr},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 

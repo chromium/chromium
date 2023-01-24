@@ -556,7 +556,9 @@ class TabListMediator {
             @Nullable GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
             @Nullable TabGridDialogHandler dialogHandler,
             @Nullable PriceWelcomeMessageController priceWelcomeMessageController,
-            String componentName, @UiType int uiType) {
+            String componentName, @UiType int uiType,
+            @Nullable TabGridItemTouchHelperCallback
+                    .OnLongPressTabItemEventListener onLongPressTabItemEventListener) {
         mContext = context;
         mTabModelSelector = tabModelSelector;
         mThumbnailProvider = thumbnailProvider;
@@ -752,7 +754,7 @@ class TabListMediator {
 
         mTabGridItemTouchHelperCallback = new TabGridItemTouchHelperCallback(context, mModel,
                 mTabModelSelector, mTabClosedListener, mTabGridDialogHandler, mComponentName,
-                mActionsOnAllRelatedTabs, mMode);
+                mActionsOnAllRelatedTabs, mMode, onLongPressTabItemEventListener);
 
         // Right now we need to update layout only if there is a price welcome message card in tab
         // switcher.

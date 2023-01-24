@@ -8,6 +8,7 @@ import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
@@ -83,6 +84,7 @@ import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -565,6 +567,71 @@ public class TabGridDialogTest {
         mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsHidden();
         waitForDialogHidingAnimationInTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 1);
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2 + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_longpress_entrypoint/true"})
+    public void
+    testDialogSelectionEditorV2_LongPressTabAndVerifyNoSelectionOccurs() throws ExecutionException {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Open the selection editor with longpress.
+        openDialogFromTabSwitcherAndVerify(cta, 2, null);
+        onView(allOf(withId(R.id.tab_list_view), withParent(withId(R.id.dialog_container_view))))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, longClick()));
+
+        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+        // Verify no selection action occurred to switch the selected tab in the tab model
+        Criteria.checkThat(
+                mActivityTestRule.getActivity().getCurrentTabModel().index(), Matchers.is(1));
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2 + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_longpress_entrypoint/true"})
+    public void
+    testDialogSelectionEditorV2_PostLongPressClickNoSelectionEditor() throws ExecutionException {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Open the selection editor with longpress.
+        openDialogFromTabSwitcherAndVerify(cta, 2, null);
+        onView(allOf(withId(R.id.tab_list_view), withParent(withId(R.id.dialog_container_view))))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, longClick()));
+
+        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+        Espresso.pressBack();
+
+        openDialogFromTabSwitcherAndVerify(cta, 2, null);
+        clickFirstTabInDialog(cta);
+        waitForDialogHidingAnimation(cta);
+
+        // Make sure tab switcher strip (and by extension a tab page) is showing to verify clicking
+        // the tab worked.
+        CriteriaHelper.pollUiThread(()
+                                            -> mActivityTestRule.getActivity()
+                                                       .getBrowserControlsManager()
+                                                       .getBottomControlOffset()
+                        == 0);
+        waitForView(allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
     }
 
     @Test

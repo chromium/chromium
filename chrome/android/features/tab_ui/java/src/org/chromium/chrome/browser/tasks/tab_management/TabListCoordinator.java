@@ -13,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.util.Size;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
@@ -26,6 +27,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
@@ -95,6 +97,8 @@ public class TabListCoordinator
     private OnLayoutChangeListener mListLayoutListener;
     private boolean mLayoutListenerRegistered;
     private @Nullable TabStripSnapshotter mTabStripSnapshotter;
+    private ItemTouchHelper mItemTouchHelper;
+    private OnItemTouchListener mOnItemTouchListener;
 
     /**
      * Construct a coordinator for UI that shows a list of tabs.
@@ -132,7 +136,9 @@ public class TabListCoordinator
             @Nullable TabSwitcherMediator
                     .PriceWelcomeMessageController priceWelcomeMessageController,
             @NonNull ViewGroup parentView, boolean attachToParent, String componentName,
-            @NonNull ViewGroup rootView, @Nullable Callback<Object> onModelTokenChange) {
+            @NonNull ViewGroup rootView, @Nullable Callback<Object> onModelTokenChange,
+            @Nullable TabGridItemTouchHelperCallback
+                    .OnLongPressTabItemEventListener onLongPressTabItemEventListener) {
         mMode = mode;
         mItemType = itemType;
         mContext = context;
@@ -234,7 +240,8 @@ public class TabListCoordinator
         mMediator = new TabListMediator(context, mModel, mMode, tabModelSelector, thumbnailProvider,
                 titleProvider, tabListFaviconProvider, actionOnRelatedTabs,
                 selectionDelegateProvider, gridCardOnClickListenerProvider, dialogHandler,
-                priceWelcomeMessageController, componentName, itemType);
+                priceWelcomeMessageController, componentName, itemType,
+                onLongPressTabItemEventListener);
 
         try (TraceEvent e = TraceEvent.scoped("TabListCoordinator.setupRecyclerView")) {
             if (!attachToParent) {
@@ -328,16 +335,61 @@ public class TabListCoordinator
 
             if ((mMode == TabListMode.GRID || mMode == TabListMode.LIST)
                     && mItemType != UiType.SELECTABLE) {
-                ItemTouchHelper touchHelper =
-                        new ItemTouchHelper(mMediator.getItemTouchHelperCallback(
+                TabGridItemTouchHelperCallback callback =
+                        (TabGridItemTouchHelperCallback) mMediator.getItemTouchHelperCallback(
                                 mContext.getResources().getDimension(
                                         R.dimen.swipe_to_dismiss_threshold),
                                 mContext.getResources().getDimension(
                                         R.dimen.tab_grid_merge_threshold),
                                 mContext.getResources().getDimension(
                                         R.dimen.bottom_sheet_peek_height),
-                                profile));
-                touchHelper.attachToRecyclerView(mRecyclerView);
+                                profile);
+
+                // The block below creates an instance of the ItemTouchHelper and also utilizes the
+                // TabGridItemTouchHelperCallback and its shouldBlockAction after attaching to the
+                // recycler view. The block action function determines if on longpress, a propagated
+                // MOTION_UP click event should be intercepted and negated by this listener to
+                // prevent selection state issues from occurring on subsequent recycler view layers
+                // should the MOTION_UP event continue propagating. The motion events concerning the
+                // longpress action are consumed by this recycler view, which is why the solution
+                // targets this recycler view rather than the selection editor recycler view.
+                mItemTouchHelper = new ItemTouchHelper(callback);
+                mItemTouchHelper.attachToRecyclerView(mRecyclerView);
+                mOnItemTouchListener = new OnItemTouchListener() {
+                    @Override
+                    public boolean onInterceptTouchEvent(
+                            RecyclerView recyclerView, MotionEvent event) {
+                        // There can be an edge case when adding the block action logic where
+                        // minimal movement not picked up by the actionStarted bool in onChildDraw
+                        // can result in a block action request with a DRAG event. The event gets
+                        // consumed and no erroneous selection would have occurred as it is not a
+                        // pure longpress, but due to the active block request, subsequent
+                        // intercepted actions may be blocked or have weird behaviours. This check
+                        // ensures that for a given action, if a block is requested, the MOTION_UP
+                        // event which results in a propagated click must be present to block it.
+                        if (callback.shouldBlockAction()
+                                && (event.getActionMasked() == MotionEvent.ACTION_UP
+                                        || event.getActionMasked()
+                                                == MotionEvent.ACTION_POINTER_UP)) {
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    @Override
+                    public void onTouchEvent(RecyclerView recyclerView, MotionEvent event) {}
+
+                    @Override
+                    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+                        // If a child component does not allow this recyclerView and any parent
+                        // components to intercept touch events, shouldBlockAction should be called
+                        // anyways to reset the tracking boolean. Otherwise, the original intercept
+                        // method will do the check.
+                        if (!disallowIntercept) return;
+                        callback.shouldBlockAction();
+                    }
+                };
+                mRecyclerView.addOnItemTouchListener(mOnItemTouchListener);
             }
         }
     }
@@ -497,6 +549,12 @@ public class TabListCoordinator
         mRecyclerView.setRecyclerListener(null);
         if (mTabStripSnapshotter != null) {
             mTabStripSnapshotter.destroy();
+        }
+        if (mItemTouchHelper != null) {
+            mItemTouchHelper.attachToRecyclerView(null);
+        }
+        if (mOnItemTouchListener != null) {
+            mRecyclerView.removeOnItemTouchListener(mOnItemTouchListener);
         }
     }
 
