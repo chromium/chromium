@@ -469,6 +469,7 @@ void FileSelectHelper::FolderUploadContentAnalysisCompletionCallback(
     for (size_t i = 0; i < data.paths.size(); ++i) {
       result.paths_results[i] = false;
     }
+    RunFileChooserEnd();
   }
 }
 

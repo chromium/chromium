@@ -481,9 +481,16 @@ TEST_F(FileSelectHelperTest,
 
   EXPECT_FALSE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
 
+  // Calling the content analysis completion callback would normally
+  // release `file_select_helper`, so we add a reference and validate that
+  // it goes down to 1 after the call.
+  file_select_helper->AddRef();
+  EXPECT_FALSE(file_select_helper->HasOneRef());
+
   file_select_helper->FolderUploadContentAnalysisCompletionCallback(
       data_dir_, data, result);
 
+  EXPECT_TRUE(file_select_helper->HasOneRef());
   EXPECT_FALSE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
 }
 
@@ -508,10 +515,65 @@ TEST_F(FileSelectHelperTest,
 
   EXPECT_FALSE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
 
+  // Calling the content analysis completion callback would normally
+  // release `file_select_helper`, so we add a reference and validate that
+  // it goes down to 1 after the call.
+  file_select_helper->AddRef();
+  EXPECT_FALSE(file_select_helper->HasOneRef());
+
+  EXPECT_FALSE(file_select_helper->HasOneRef());
   file_select_helper->FolderUploadContentAnalysisCompletionCallback(
       data_dir_, data, result);
 
+  EXPECT_TRUE(file_select_helper->HasOneRef());
   EXPECT_FALSE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
+}
+
+TEST_F(FileSelectHelperTest,
+       ContentAnalysisCompletionCallback_FolderUploadBlockedThenAllowed) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  scoped_refptr<FileSelectHelper> file_select_helper =
+      new FileSelectHelper(&profile);
+
+  std::vector<blink::mojom::FileChooserFileInfoPtr> files;
+  auto listener = base::MakeRefCounted<TestFileSelectListener>(&files);
+  file_select_helper->SetFileSelectListenerForTesting(std::move(listener));
+  file_select_helper->DontAbortOnMissingWebContentsForTesting();
+
+  enterprise_connectors::ContentAnalysisDelegate::Data data;
+  enterprise_connectors::ContentAnalysisDelegate::Result result;
+
+  // bar.doc has a blocking verdict, which blocks the entire folder.
+  PrepareContentAnalysisCompletionCallbackArgs(
+      {data_dir_.AppendASCII("foo.doc"), data_dir_.AppendASCII("bar.doc")},
+      {true, false}, nullptr, &data, &result);
+
+  EXPECT_FALSE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
+
+  // Calling the content analysis completion callback would normally
+  // release `file_select_helper`, so we add a reference and validate that
+  // it goes down to 1 after the call.
+  file_select_helper->AddRef();
+  EXPECT_FALSE(file_select_helper->HasOneRef());
+
+  file_select_helper->FolderUploadContentAnalysisCompletionCallback(
+      data_dir_, data, result);
+
+  EXPECT_TRUE(file_select_helper->HasOneRef());
+  EXPECT_FALSE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
+
+  // bar.doc now has a safe verdict, so the entire folder is allowed.
+  PrepareContentAnalysisCompletionCallbackArgs(
+      {data_dir_.AppendASCII("foo.doc"), data_dir_.AppendASCII("bar.doc")},
+      {true, true}, nullptr, &data, &result);
+
+  EXPECT_FALSE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
+
+  file_select_helper->FolderUploadContentAnalysisCompletionCallback(
+      data_dir_, data, result);
+
+  EXPECT_TRUE(file_select_helper->IsDirectoryEnumerationStartedForTesting());
 }
 
 TEST_F(FileSelectHelperTest, GetFileTypesFromAcceptType) {
