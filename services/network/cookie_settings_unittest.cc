@@ -727,6 +727,13 @@ TEST_P(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
       *partitioned_cookie, GURL(kURL), net::SiteForCookies(),
       url::Origin::Create(GURL(kOtherURL)), net::CookieSettingOverrides()));
 
+  // If third-party cookie blocking is disabled, the partitioned cookie should
+  // still be available
+  settings.set_block_third_party_cookies(false);
+  EXPECT_TRUE(settings.IsCookieAccessible(
+      *partitioned_cookie, GURL(kURL), net::SiteForCookies(),
+      url::Origin::Create(GURL(kOtherURL)), net::CookieSettingOverrides()));
+
   // If there is a site-specific content setting blocking cookies, then
   // partitioned cookies should not be available.
   settings.set_block_third_party_cookies(false);
