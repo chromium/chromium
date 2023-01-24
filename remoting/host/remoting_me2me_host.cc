@@ -19,6 +19,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/metrics/field_trial.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -435,6 +436,9 @@ class HostProcess : public ConfigWatcher::Delegate,
   bool security_key_auth_policy_enabled_ = false;
   bool security_key_extension_supported_ = true;
   absl::optional<int> max_session_duration_minutes_;
+
+  // Allows us to override field trials which are causing issues for chromoting.
+  std::unique_ptr<base::FieldTrialList> field_trial_list_;
 
   // Used to specify which window to stream, if enabled.
   webrtc::WindowId window_id_ = 0;
@@ -1709,6 +1713,15 @@ void HostProcess::StartHost() {
 
   // This thread is used as a network thread in WebRTC.
   webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
+
+  // Initialize global field trials.
+  field_trial_list_ = std::make_unique<base::FieldTrialList>();
+
+  // Override LossBasedBweV2 trial.
+  // TODO(b/266103942): Remove this override once we figure out why the BWE is
+  // crashing for some users and have a fix available.
+  base::FieldTrialList::CreateTrialsFromString(
+      "WebRTC-Bwe-LossBasedBweV2/Enabled:false/");
 
   SetState(HOST_STARTED);
 
