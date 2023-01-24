@@ -113,11 +113,8 @@ void SigninPartitionManager::CloseCurrentSigninSession(
     std::move(partition_data_cleared).Run();
     return;
   }
-  clear_storage_partition_task_.Run(
-      current_storage_partition_,
-      base::BindOnce(&SigninPartitionManager::OnStoragePartitionCleared,
-                     weak_ptr_factory_.GetWeakPtr(), current_storage_partition_,
-                     std::move(partition_data_cleared)));
+  clear_storage_partition_task_.Run(current_storage_partition_,
+                                    std::move(partition_data_cleared));
   current_storage_partition_ = nullptr;
   current_storage_partition_name_.clear();
 }
@@ -156,31 +153,6 @@ SigninPartitionManager::GetCurrentStoragePartition() {
 bool SigninPartitionManager::IsCurrentSigninStoragePartition(
     const content::StoragePartition* storage_partition) const {
   return IsInSigninSession() && storage_partition == current_storage_partition_;
-}
-
-void SigninPartitionManager::DisposeOldStoragePartitions() {
-  if (pending_removal_partitions_.empty())
-    return;
-
-  // Disposes all but the last storage partition. The last storage partition
-  // represents the last gaia load and there might still be references to it,
-  // e.g. fast gaia reload in All/SshWarningTest.VisibilityOnEnrollment/0 test.
-
-  content::StoragePartition* last = pending_removal_partitions_.back();
-  pending_removal_partitions_.pop_back();
-
-  for (auto* partition : pending_removal_partitions_)
-    browser_context_->DisposeStoragePartition(partition);
-
-  pending_removal_partitions_.clear();
-  pending_removal_partitions_.push_back(last);
-}
-
-void SigninPartitionManager::OnStoragePartitionCleared(
-    content::StoragePartition* storage_partition,
-    base::OnceClosure partition_data_cleared) {
-  pending_removal_partitions_.push_back(storage_partition);
-  std::move(partition_data_cleared).Run();
 }
 
 SigninPartitionManager::Factory::Factory()

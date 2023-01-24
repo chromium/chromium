@@ -171,11 +171,6 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // StoragePartitions.
   size_t GetLoadedStoragePartitionCount();
 
-  // Disposes the given StoragePartition. Only in-memory storage partition
-  // disposal is supported. Caller needs to be careful that no outstanding
-  // references are left to access the disposed storage partition.
-  void DisposeStoragePartition(StoragePartition* storage_partition);
-
   // Starts an asynchronous best-effort attempt to delete all on-disk storage
   // related to |partition_domain| and synchronously invokes |done_callback|
   // once all deletable on-disk storage is deleted. |on_gc_required| will be

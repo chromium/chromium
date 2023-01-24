@@ -6,11 +6,9 @@
 #define CHROME_BROWSER_ASH_LOGIN_SIGNIN_PARTITION_MANAGER_H_
 
 #include <string>
-#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/singleton.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -88,10 +86,6 @@ class SigninPartitionManager : public KeyedService {
   bool IsCurrentSigninStoragePartition(
       const content::StoragePartition* storage_partition) const;
 
-  // Disposes old storage partitions. Note that callers need to be sure that
-  // old partitions will not be referenced again.
-  void DisposeOldStoragePartitions();
-
   void SetClearStoragePartitionTaskForTesting(
       ClearStoragePartitionTask clear_storage_partition_task);
   void SetGetSystemNetworkContextForTesting(
@@ -121,10 +115,6 @@ class SigninPartitionManager : public KeyedService {
   };
 
  private:
-  // Invoked after `storage_partition` is cleared.
-  void OnStoragePartitionCleared(content::StoragePartition* storage_partition,
-                                 base::OnceClosure partition_data_cleared);
-
   content::BrowserContext* const browser_context_;
 
   ClearStoragePartitionTask clear_storage_partition_task_;
@@ -140,17 +130,6 @@ class SigninPartitionManager : public KeyedService {
   // The StoragePartition identified by `storage_partition_domain_` and
   // `current_storage_partition_name_`.
   content::StoragePartition* current_storage_partition_ = nullptr;
-
-  // Storage partitions that should be disposed. Storage partitions for previous
-  // gaia loads are added here. It if only safe to remove them when there are no
-  // outstanding references. The current assumption is that all references are
-  // gone after the gaia loading webview is fully navigated away. The vector
-  // here is maintained in the time order of gaia loads and the last element
-  // is used as a barrier to indicate all previous ones could be safely
-  // disposed.
-  std::vector<content::StoragePartition*> pending_removal_partitions_;
-
-  base::WeakPtrFactory<SigninPartitionManager> weak_ptr_factory_{this};
 };
 
 }  // namespace login

@@ -444,17 +444,6 @@ void StoragePartitionImplMap::ForEach(
   }
 }
 
-void StoragePartitionImplMap::DisposeInMemory(StoragePartition* partition) {
-  for (PartitionMap::const_iterator it = partitions_.begin();
-       it != partitions_.end(); ++it) {
-    if (it->second.get() == partition) {
-      DCHECK(it->first.in_memory());
-      partitions_.erase(it);
-      return;
-    }
-  }
-}
-
 void StoragePartitionImplMap::PostCreateInitialization(
     StoragePartitionImpl* partition,
     bool in_memory) {

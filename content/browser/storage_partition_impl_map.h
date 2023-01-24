@@ -62,9 +62,6 @@ class CONTENT_EXPORT StoragePartitionImplMap
 
   void ForEach(BrowserContext::StoragePartitionCallback callback);
 
-  // Disposes the given in-memory storage partition.
-  void DisposeInMemory(StoragePartition* partition);
-
   size_t size() const { return partitions_.size(); }
 
  private:
