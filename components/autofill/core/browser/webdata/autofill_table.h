@@ -465,6 +465,11 @@ struct VirtualCardUsageData;
 //                      help identifying the semantics of the profile. The user
 //                      can choose an arbitrary string in principle, but the
 //                      values '$HOME$' and '$WORK$' indicate a special meaning.
+//   initial_creator_id The application that initially created the profile.
+//                      Represented as an integer. See AutofillProfile.
+//   last_modifier_id   The application that performed the last non-metadata
+//                      modification of the profile.
+//                      Represented as an integer. See AutofillProfile.
 //
 // contact_info_type_tokens
 //                      Contains the values for all relevant ServerFieldTypes of
@@ -811,6 +816,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion107AddContactInfoTables();
   bool MigrateToVersion108AddCardIssuerIdColumn();
   bool MigrateToVersion109AddVirtualCardUsageDataTable();
+  bool MigrateToVersion110AddInitialCreatorIdAndLastModifierId();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.

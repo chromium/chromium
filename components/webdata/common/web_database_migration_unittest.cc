@@ -141,7 +141,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 109;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 110;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -1047,5 +1047,33 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion108ToCurrent) {
 
     // The virtual_card_usage_data tables should exist.
     EXPECT_TRUE(connection.DoesTableExist("virtual_card_usage_data"));
+  }
+}
+
+// Tests that the initial_creator_id and last_modifier_id columns are added to
+// the contact_info table.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion109ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_109.sql")));
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    EXPECT_EQ(109, VersionFromConnection(&connection));
+    EXPECT_FALSE(
+        connection.DoesColumnExist("contact_info", "initial_creator_id"));
+    EXPECT_FALSE(
+        connection.DoesColumnExist("contact_info", "last_modifier_id"));
+  }
+  DoMigration();
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+    EXPECT_TRUE(
+        connection.DoesColumnExist("contact_info", "initial_creator_id"));
+    EXPECT_TRUE(connection.DoesColumnExist("contact_info", "last_modifier_id"));
   }
 }

@@ -275,6 +275,8 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
   has_converted_ = profile.has_converted();
 
   source_ = profile.source_;
+  initial_creator_id_ = profile.initial_creator_id_;
+  last_modifier_id_ = profile.last_modifier_id_;
 
   return *this;
 }

@@ -54,6 +54,10 @@ class AutofillProfile : public AutofillDataModel {
     kMaxValue = kAccount,
   };
 
+  // The values used to represent Autofill in the `initial_creator_id()` and
+  // `last_modifier_id()`.
+  static constexpr int kInitialCreatorOrModifierChrome = 70073;
+
   AutofillProfile(const std::string& guid,
                   const std::string& origin,
                   Source source = Source::kLocalOrSyncable);
@@ -270,6 +274,16 @@ class AutofillProfile : public AutofillDataModel {
     source_ = source;
   }
 
+  int initial_creator_id() const { return initial_creator_id_; }
+  void set_initial_creator_id(int creator_id) {
+    initial_creator_id_ = creator_id;
+  }
+
+  int last_modifier_id() const { return last_modifier_id_; }
+  void set_last_modifier_id(int modifier_id) {
+    last_modifier_id_ = modifier_id;
+  }
+
   // Checks for non-empty setting-inaccessible fields and returns all that were
   // found.
   ServerFieldTypeSet FindInaccessibleProfileValues() const;
@@ -353,6 +367,17 @@ class AutofillProfile : public AutofillDataModel {
   bool has_converted_;
 
   Source source_;
+
+  // Indicates the application that initially created the profile and the
+  // application that performed the last non-metadata modification of it.
+  // Only relevant for `source_ == kAccount` profiles, since `kLocalOrSyncable`
+  // profiles are only used within Autofill.
+  // The integer values represent a server-side enum `BillableService`, which is
+  // not duplicated in Chromium. For Autofill, the exact application that
+  // created/modified the profile is thus opaque. However, Autofill is
+  // represented by the value `kInitialCreatorOrModifierChrome`.
+  int initial_creator_id_ = 0;
+  int last_modifier_id_ = 0;
 };
 
 // So we can compare AutofillProfiles with EXPECT_EQ().

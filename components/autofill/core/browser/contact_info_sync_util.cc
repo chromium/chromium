@@ -134,6 +134,8 @@ CreateContactInfoEntityDataFromAutofillProfile(const AutofillProfile& profile) {
       profile.modification_date().ToTimeT());
   specifics->set_language_code(profile.language_code());
   specifics->set_profile_label(profile.profile_label());
+  specifics->set_initial_creator_id(profile.initial_creator_id());
+  specifics->set_last_modifier_id(profile.last_modifier_id());
 
   EntryDataSetter s(profile);
   // Set name-related values and statuses.
@@ -201,6 +203,8 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
       base::Time::FromTimeT(specifics.date_modified_windows_epoch_micros()));
   profile->set_language_code(specifics.language_code());
   profile->set_profile_label(specifics.profile_label());
+  profile->set_initial_creator_id(specifics.initial_creator_id());
+  profile->set_last_modifier_id(specifics.last_modifier_id());
 
   ProfileSetter s(*profile);
   // Set name-related values and statuses.

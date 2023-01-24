@@ -306,6 +306,8 @@ VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics& proto) {
   VISIT(date_modified_windows_epoch_micros);
   VISIT(language_code);
   VISIT(profile_label);
+  VISIT(initial_creator_id);
+  VISIT(last_modifier_id);
   VISIT(name_honorific);
   VISIT(name_first);
   VISIT(name_middle);

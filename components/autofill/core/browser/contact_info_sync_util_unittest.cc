@@ -15,8 +15,9 @@ namespace {
 
 using sync_pb::ContactInfoSpecifics;
 
-const char kGuid[] = "00000000-0000-0000-0000-000000000001";
-const char kInvalidGuid[] = "1234";
+constexpr char kGuid[] = "00000000-0000-0000-0000-000000000001";
+constexpr char kInvalidGuid[] = "1234";
+constexpr int kNonChromeModifier = 1234;
 const auto kUseDate = base::Time::FromDoubleT(123);
 const auto kModificationDate = base::Time::FromDoubleT(456);
 
@@ -31,6 +32,9 @@ AutofillProfile ConstructCompleteProfile() {
   profile.set_modification_date(kModificationDate);
   profile.set_language_code("en");
   profile.set_profile_label("profile_label");
+  profile.set_initial_creator_id(
+      AutofillProfile::kInitialCreatorOrModifierChrome);
+  profile.set_last_modifier_id(kNonChromeModifier);
 
   // Set name-related values and statuses.
   profile.SetRawInfoWithVerificationStatus(NAME_HONORIFIC_PREFIX, u"Dr.",
@@ -126,6 +130,9 @@ ContactInfoSpecifics ConstructCompleteSpecifics() {
   specifics.set_date_modified_windows_epoch_micros(kModificationDate.ToTimeT());
   specifics.set_language_code("en");
   specifics.set_profile_label("profile_label");
+  specifics.set_initial_creator_id(
+      AutofillProfile::kInitialCreatorOrModifierChrome);
+  specifics.set_last_modifier_id(kNonChromeModifier);
 
   // Set name-related values and statuses.
   SetToken(specifics.mutable_name_honorific(), "Dr.",

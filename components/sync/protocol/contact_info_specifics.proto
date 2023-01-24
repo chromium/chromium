@@ -76,6 +76,17 @@ message ContactInfoSpecifics {
   // The value of the label can be freely chosen by the user.
   optional string profile_label = 5;
 
+  // Tracks the application that initially created the profile. The integer
+  // represents a value in the server-side enum `BillableService`. A value of
+  // 70073 represents Chrome (enum value BILLABLE_SERVICE_CHROME_PAYMENTS).
+  optional int32 initial_creator_id = 39;
+  // Tracks the application that applied the last modification to the
+  // non-metadata content of the profile. It represents a value in the same
+  // `BillableService` enum.
+  // All String- and IntegerToken, and the `profile_label` are considered
+  // non-metadata.
+  optional int32 last_modifier_id = 40;
+
   // Contact info name fields.
   optional StringToken name_honorific = 6;
   optional StringToken name_first = 7;

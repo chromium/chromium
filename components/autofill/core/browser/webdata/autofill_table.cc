@@ -290,6 +290,8 @@ constexpr base::StringPiece kContactInfoTable = "contact_info";
 // kDateModified = "date_modified"
 // kLanguageCode = "language_code"
 // kLabel = "label"
+constexpr base::StringPiece kInitialCreatorId = "initial_creator_id";
+constexpr base::StringPiece kLastModifierId = "last_modifier_id";
 
 constexpr base::StringPiece kContactInfoTypeTokensTable =
     "contact_info_type_tokens";
@@ -1054,6 +1056,8 @@ void BindAutofillProfileToContactInfoStatement(
   s.BindInt64(index++, modification_date.ToTimeT());
   s.BindString(index++, profile.language_code());
   s.BindString(index++, profile.profile_label());
+  s.BindInt(index++, profile.initial_creator_id());
+  s.BindInt(index++, profile.last_modifier_id());
 }
 
 // Inserts `profile` into `kContactInfoTable` and `kContactInfoTypeTokensTable`.
@@ -1061,9 +1065,9 @@ bool AddAutofillProfileToContactInfoTable(sql::Database* db,
                                           const AutofillProfile& profile,
                                           const base::Time& modification_date) {
   sql::Statement s;
-  InsertBuilder(
-      db, s, kContactInfoTable,
-      {kGuid, kUseCount, kUseDate, kDateModified, kLanguageCode, kLabel});
+  InsertBuilder(db, s, kContactInfoTable,
+                {kGuid, kUseCount, kUseDate, kDateModified, kLanguageCode,
+                 kLabel, kInitialCreatorId, kLastModifierId});
   BindAutofillProfileToContactInfoStatement(profile, modification_date, s);
   if (!s.Run())
     return false;
@@ -1087,7 +1091,8 @@ std::unique_ptr<AutofillProfile> GetAutofillProfileFromContactInfoTable(
     const std::string& guid) {
   sql::Statement s;
   if (!SelectByGuid(db, s, kContactInfoTable,
-                    {kUseCount, kUseDate, kDateModified, kLanguageCode, kLabel},
+                    {kUseCount, kUseDate, kDateModified, kLanguageCode, kLabel,
+                     kInitialCreatorId, kLastModifierId},
                     guid)) {
     return nullptr;
   }
@@ -1099,6 +1104,8 @@ std::unique_ptr<AutofillProfile> GetAutofillProfileFromContactInfoTable(
   profile->set_modification_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
   profile->set_language_code(s.ColumnString(index++));
   profile->set_profile_label(s.ColumnString(index++));
+  profile->set_initial_creator_id(s.ColumnInt(index++));
+  profile->set_last_modifier_id(s.ColumnInt(index++));
 
   if (!SelectByGuid(db, s, kContactInfoTypeTokensTable,
                     {kType, kValue, kVerificationStatus}, guid)) {
@@ -1238,6 +1245,9 @@ bool AutofillTable::MigrateToVersion(int version,
     case 109:
       *update_compatible_version = false;
       return MigrateToVersion109AddVirtualCardUsageDataTable();
+    case 110:
+      *update_compatible_version = false;
+      return MigrateToVersion110AddInitialCreatorIdAndLastModifierId();
   }
   return true;
 }
@@ -3341,6 +3351,16 @@ bool AutofillTable::MigrateToVersion109AddVirtualCardUsageDataTable() {
                       {kLastFour, "VARCHAR"}});
 }
 
+bool AutofillTable::MigrateToVersion110AddInitialCreatorIdAndLastModifierId() {
+  sql::Transaction transaction(db_);
+  return db_->DoesTableExist(kContactInfoTable) && transaction.Begin() &&
+         AddColumnIfNotExists(db_, kContactInfoTable, kInitialCreatorId,
+                              "INTEGER DEFAULT 0") &&
+         AddColumnIfNotExists(db_, kContactInfoTable, kLastModifierId,
+                              "INTEGER DEFAULT 0") &&
+         transaction.Commit();
+}
+
 bool AutofillTable::AddFormFieldValuesTime(
     const std::vector<FormFieldData>& elements,
     std::vector<AutofillChange>* changes,
@@ -3811,7 +3831,9 @@ bool AutofillTable::InitContactInfoTable() {
                                  {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
                                  {kDateModified, "INTEGER NOT NULL DEFAULT 0"},
                                  {kLanguageCode, "VARCHAR"},
-                                 {kLabel, "VARCHAR"}});
+                                 {kLabel, "VARCHAR"},
+                                 {kInitialCreatorId, "INTEGER DEFAULT 0"},
+                                 {kLastModifierId, "INTEGER DEFAULT 0"}});
 }
 
 bool AutofillTable::InitContactInfoTypeTokensTable() {
