@@ -5,7 +5,6 @@ name: Web platform tests
 
 on:
   pull_request:
-    branches: '*'
   push:
     branches: 'main'
 

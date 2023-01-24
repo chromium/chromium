@@ -5,7 +5,8 @@ name: Unit tests
 
 on:
   pull_request:
-    branches: '*'
+  push:
+    branches: 'main'
 
 jobs:
   unit:

@@ -4,7 +4,6 @@ name: E2E tests
 
 on:
   pull_request:
-    branches: '*'
   push:
     branches: 'main'
 
