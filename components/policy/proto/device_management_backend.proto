@@ -4026,15 +4026,14 @@ message CertProvAuthorizeInstruction {
 // The client should provide a proof-of-possession signature generated using
 // the private key.
 message CertProvProofOfPossessionInstruction {
-  // Algorithm to sign data with for CSR creation.
-  optional SigningAlgorithm signing_algorithm = 1;
+  reserved 1;
 
   // Data to sign for CSR creation.
-  // For SigningAlgorithm RSA_PKCS1_V1_5, the client will perform PKCS#1 v1.5
-  // padding on `data_to_sign`. `data_to_sign` is expected to already contain a
-  // PKCS#1 DigestInfo prefix - the client will not attempt to add such a
-  // prefix. Also `data_to_sign` must be shorter than (key_size-11) bytes. If no
-  // other key size was specified in the
+  // The signing algorithm is currently RSA_PKCS1_V1_5. The client will perform
+  // PKCS#1 v1.5 padding on `data_to_sign`. `data_to_sign` is expected to
+  // already contain a PKCS#1 DigestInfo prefix - the client will not attempt to
+  // add such a prefix. Also `data_to_sign` must be shorter than (key_size-11)
+  // bytes. If no other key size was specified in the
   // RequiredClientCertificateFor{User,Device} policy, 2048 bits is assumed.
   optional bytes data_to_sign = 2;
 }
