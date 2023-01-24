@@ -457,6 +457,9 @@ PreferenceAPI::PreferenceAPI(content::BrowserContext* context)
     pref_mapping->RegisterPrefTransformer(
         prefs::kPrivacySandboxM1TopicsEnabled,
         std::make_unique<PrivacySandboxTransformer>());
+    pref_mapping->RegisterPrefTransformer(
+        prefs::kPrivacySandboxM1FledgeEnabled,
+        std::make_unique<PrivacySandboxTransformer>());
   }
 
   for (const auto& pref : PrefMapping::GetMappings()) {

@@ -91,6 +91,9 @@ class ExtensionPreferenceApiTest
     VerifyPrefValueAndControlledState(prefs::kPrivacySandboxM1TopicsEnabled,
                                       base::Value(false),
                                       /* expected_controlled */ true);
+    VerifyPrefValueAndControlledState(prefs::kPrivacySandboxM1FledgeEnabled,
+                                      base::Value(false),
+                                      /* expected_controlled */ true);
   }
 
   void CheckPreferencesCleared() {
@@ -118,6 +121,9 @@ class ExtensionPreferenceApiTest
     EXPECT_FALSE(prefs->GetBoolean(prefs::kSafeBrowsingEnabled));
     EXPECT_FALSE(prefs->GetBoolean(prefs::kSearchSuggestEnabled));
     VerifyPrefValueAndControlledState(prefs::kPrivacySandboxM1TopicsEnabled,
+                                      base::Value(true),
+                                      /* expected_controlled */ false);
+    VerifyPrefValueAndControlledState(prefs::kPrivacySandboxM1FledgeEnabled,
                                       base::Value(true),
                                       /* expected_controlled */ false);
   }
@@ -196,6 +202,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, Standard) {
   prefs->SetString(prefs::kWebRTCIPHandlingPolicy,
                    blink::kWebRTCIPHandlingDefaultPublicInterfaceOnly);
   prefs->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
+  prefs->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
 
   // The 'protectedContentEnabled' pref is only available on ChromeOS and
   // Windows, so pass a JSON array object with any unsupported prefs into
