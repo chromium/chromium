@@ -16,7 +16,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -32,7 +31,6 @@
 #include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/strings/escape.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -42,7 +40,6 @@
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
-#include "components/crash/core/common/crash_key.h"
 #include "components/favicon/core/favicon_backend.h"
 #include "components/history/core/browser/download_constants.h"
 #include "components/history/core/browser/download_row.h"
@@ -240,27 +237,6 @@ class DeleteForeignVisitsDBTask : public HistoryDBTask {
 
   void DoneRunOnMainThread() override {}
 };
-
-// Does base::debug::DumpWithoutCrashing(), but on Canary/Dev only, and at a
-// throttled rate. This is because our dump volume is high, and that can mask
-// OTHER crashes. This is similar to ReportUnrecoverableError() in Sync code.
-// https://crbug.com/1377512
-void SelectiveDumpWithoutCrashing(version_info::Channel channel) {
-  if (channel != version_info::Channel::CANARY &&
-      channel != version_info::Channel::DEV) {
-    return;
-  }
-
-  // We only want to upload |kErrorUploadRatio| ratio of errors.
-  const double kErrorUploadRatio = 0.1;
-  if (kErrorUploadRatio <= 0.0)
-    return;  // We are not allowed to upload errors.
-  double random_number = base::RandDouble();
-  if (random_number > kErrorUploadRatio)
-    return;
-
-  base::debug::DumpWithoutCrashing();
-}
 
 }  // namespace
 
@@ -2989,66 +2965,57 @@ void HistoryBackend::ProcessDBTaskImpl() {
 
 void HistoryBackend::BeginSingletonTransaction() {
   TRACE_EVENT0("browser", "HistoryBackend::BeginSingletonTransaction");
-  // TODO(crbug.com/1321483): Convert to DCHECKs after sussing out all the
-  // transaction bugs in History.
-  CHECK(!singleton_transaction_);
+  DCHECK(!singleton_transaction_);
 
-  CHECK_EQ(db_->transaction_nesting(), 0);
+  DCHECK_EQ(db_->transaction_nesting(), 0);
   singleton_transaction_ = db_->CreateTransaction();
 
   bool success = singleton_transaction_->Begin();
   UMA_HISTOGRAM_BOOLEAN("History.Backend.TransactionBeginSuccess", success);
   if (success) {
-    CHECK_EQ(db_->transaction_nesting(), 1);
+    DCHECK_EQ(db_->transaction_nesting(), 1);
   } else {
-    // Failing to begin the transaction is weird but it's not the end of the
-    // world. History can operate (slowly) without the long-running transaction,
-    // and we'll try to start one again at the next commit interval. Clear out
+    // Failing to begin the transaction happens very occasionally in the wild,
+    // at about 1 failure per million, almost exclusively on Windows. Previous
+    // analysis showed SQLITE_BUSY to be the main cause, which could suggest
+    // some other process (could be malware) trying to read Chrome history.
+    // See https://crbug.com/1377512 for more discussion.
+    //
+    // In any case, failing here is not a big deal, because Chrome will try to
+    // start another transaction again at the next commit interval. Clear out
     // the `singleton_transaction_` pointer, because it's only kept around if
     // it was successfully begun.
+    sql::UmaHistogramSqliteResult("History.Backend.TransactionBeginError",
+                                  diagnostics_.reported_sqlite_error_code);
     singleton_transaction_.reset();
-
-    // TODO(crbug.com/1321483): Remove DumpWithoutCrashing after fixing
-    // transaction related bugs in History.
-    SelectiveDumpWithoutCrashing(channel_);
   }
 }
 
 void HistoryBackend::CommitSingletonTransactionIfItExists() {
   TRACE_EVENT0("browser",
                "HistoryBackend::CommitSingletonTransactionIfItExists");
-  // This can happen if the transaction was not successfully started.
-  // TODO(crbug.com/1321483): Convert to DCHECKs after sussing out all the
-  // transaction bugs in History.
+
   if (!singleton_transaction_) {
-    CHECK_EQ(db_->transaction_nesting(), 0)
+    DCHECK_EQ(db_->transaction_nesting(), 0)
         << "There should not be any transactions other than the singleton one.";
     return;
   }
 
-  CHECK_EQ(db_->transaction_nesting(), 1)
+  DCHECK_EQ(db_->transaction_nesting(), 1)
       << "Someone opened multiple transactions.";
 
   bool success = singleton_transaction_->Commit();
   UMA_HISTOGRAM_BOOLEAN("History.Backend.TransactionCommitSuccess", success);
   if (success) {
-    CHECK_EQ(db_->transaction_nesting(), 0)
+    DCHECK_EQ(db_->transaction_nesting(), 0)
         << "Someone left a transaction open.";
   } else {
-    // These diagnostic codes don't contain PII, and have already been cleared
-    // by Privacy to be used for error telemetry.
-    static crash_reporter::CrashKeyString<8> error_code_key(
-        "sql_diagnostics_error_code");
-    error_code_key.Set(base::NumberToString(diagnostics_.error_code));
-    static crash_reporter::CrashKeyString<8> version_key(
-        "sql_diagnostics_version");
-    version_key.Set(base::NumberToString(diagnostics_.version));
-    static crash_reporter::CrashKeyString<256> error_message_key(
-        "sql_diagnostics_error_message");
-    error_message_key.Set(diagnostics_.error_message);
-    // TODO(crbug.com/1321483): Remove DumpWithoutCrashing after fixing
-    // transaction related bugs in History.
-    SelectiveDumpWithoutCrashing(channel_);
+    // The long-running transaction fails to commit about 1 per 100,000 times.
+    // The crash reports are again predominantly on Windows. The exact breakdown
+    // is less clear here compared to BEGIN, but some logs show "no transaction
+    // is active" and some show SQLITE_BUSY. Maybe this UMA will reveal things.
+    sql::UmaHistogramSqliteResult("History.Backend.TransactionCommitError",
+                                  diagnostics_.reported_sqlite_error_code);
   }
   singleton_transaction_.reset();
 }
