@@ -16,9 +16,7 @@ include_rules = [
 
 specific_include_rules = {
   "cast_mirroring_performance_browsertest\.cc": [
-    "+third_party/openscreen/src/cast/streaming",
-    # Required by Open Screen API.
-    "+third_party/jsoncpp/source/include/json",
+    "+third_party/openscreen/src/platform/base/error.h"
   ],
   "cast_remoting_connector\.cc": [
     "+chrome/browser/ui/views/media_router/media_remoting_dialog_view.h",

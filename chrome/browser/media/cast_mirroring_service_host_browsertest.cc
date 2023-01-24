@@ -389,8 +389,8 @@ class CastMirroringServiceHostBrowserTestTabSwitcher
                                       media::kOpenscreenCastStreamingSession},
                                      {});
     } else {
-      feature_list_.InitAndEnableFeature(
-          features::kAccessCodeCastTabSwitchingUI);
+      feature_list_.InitWithFeatures({features::kAccessCodeCastTabSwitchingUI},
+                                     {media::kOpenscreenCastStreamingSession});
     }
   }
 
