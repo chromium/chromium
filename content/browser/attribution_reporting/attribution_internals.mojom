@@ -49,6 +49,7 @@ struct AttestationToken {
 struct WebUIReportAggregatableAttributionData {
   array<AggregatableHistogramContribution> contributions;
   AttestationToken? attestation_token;
+  string aggregation_coordinator;
 };
 
 union WebUIReportData {

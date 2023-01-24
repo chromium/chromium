@@ -21,6 +21,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "components/aggregation_service/parsing_utils.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
@@ -178,7 +179,9 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
 
             return ai_mojom::WebUIReportData::NewAggregatableAttributionData(
                 ai_mojom::WebUIReportAggregatableAttributionData::New(
-                    std::move(contributions), std::move(attestation_token)));
+                    std::move(contributions), std::move(attestation_token),
+                    aggregation_service::SerializeAggregationCoordinator(
+                        aggregatable_data.aggregation_coordinator)));
           },
       },
       report.data());

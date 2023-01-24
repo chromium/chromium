@@ -529,6 +529,7 @@ class EventLevelReport extends Report {
 class AggregatableAttributionReport extends Report {
   contributions: string;
   attestationToken: string;
+  aggregationCoordinator: string;
 
   constructor(mojo: WebUIReport) {
     super(mojo);
@@ -541,6 +542,9 @@ class AggregatableAttributionReport extends Report {
         mojo.data.aggregatableAttributionData!.attestationToken ?
         `${mojo.data.aggregatableAttributionData!.attestationToken.value}` :
         '';
+
+    this.aggregationCoordinator =
+        mojo.data.aggregatableAttributionData!.aggregationCoordinator;
   }
 }
 
@@ -702,6 +706,8 @@ class AggregatableAttributionReportTableModel extends
               'Histograms', (e) => e.contributions),
           new ValueColumn<AggregatableAttributionReport, string>(
               'Attestation Token', (e) => e.attestationToken),
+          new ValueColumn<AggregatableAttributionReport, string>(
+            'Aggregation Coordinator', (e) => e.aggregationCoordinator),
         ],
         showDebugReportsContainer,
         sendReportsButton,

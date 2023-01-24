@@ -959,6 +959,7 @@ IN_PROC_BROWSER_TEST_F(
             table.children[0].children[2]?.innerText === 'Pending' &&
             table.children[0].children[6]?.innerText === '[ {  "key": "0x1",  "value": 2 }]' &&
             table.children[0].children[7]?.innerText === '' &&
+            table.children[0].children[8]?.innerText === 'aws-cloud' &&
             table.children[1].children[2]?.innerText === 'Sent: HTTP 200' &&
             table.children[1].children[7]?.innerText === 'abc' &&
             table.children[2].children[2]?.innerText === 'Prohibited by browser policy' &&
