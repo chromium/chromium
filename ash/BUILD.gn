@@ -476,10 +476,6 @@ component("ash") {
     "display/output_protection_delegate.h",
     "display/overscan_calibrator.cc",
     "display/overscan_calibrator.h",
-    "display/persistent_window_controller.cc",
-    "display/persistent_window_controller.h",
-    "display/persistent_window_info.cc",
-    "display/persistent_window_info.h",
     "display/privacy_screen_controller.cc",
     "display/privacy_screen_controller.h",
     "display/projecting_observer.cc",
@@ -828,6 +824,10 @@ component("ash") {
     "projector/ui/projector_button.h",
     "projector/ui/projector_color_button.cc",
     "projector/ui/projector_color_button.h",
+    "wm/multi_display/persistent_window_controller.cc",
+    "wm/multi_display/persistent_window_controller.h",
+    "wm/multi_display/persistent_window_info.cc",
+    "wm/multi_display/persistent_window_info.h",
 
     # These headers declare functions that are implemented inside of //ash, so
     # they cannot live in //ash/public/cpp/BUILD.gn. The "test api" files are
@@ -2855,7 +2855,6 @@ test("ash_unittests") {
     "display/mirror_window_controller_unittest.cc",
     "display/mouse_cursor_event_filter_unittest.cc",
     "display/overscan_calibrator_unittest.cc",
-    "display/persistent_window_controller_unittest.cc",
     "display/privacy_screen_controller_unittest.cc",
     "display/projecting_observer_unittest.cc",
     "display/refresh_rate_throttle_controller_unittest.cc",
@@ -3283,6 +3282,7 @@ test("ash_unittests") {
     "wm/lock_state_controller_unittest.cc",
     "wm/mru_window_tracker_unittest.cc",
     "wm/multi_display/multi_display_metrics_controller_unittest.cc",
+    "wm/multi_display/persistent_window_controller_unittest.cc",
     "wm/multitask_menu_nudge_controller_unittest.cc",
     "wm/native_cursor_manager_ash_unittest.cc",
     "wm/overlay_event_filter_unittest.cc",

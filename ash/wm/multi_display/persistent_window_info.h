@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_DISPLAY_PERSISTENT_WINDOW_INFO_H_
-#define ASH_DISPLAY_PERSISTENT_WINDOW_INFO_H_
+#ifndef ASH_WM_MULTI_DISPLAY_PERSISTENT_WINDOW_INFO_H_
+#define ASH_WM_MULTI_DISPLAY_PERSISTENT_WINDOW_INFO_H_
 
 #include <stdint.h>
 
@@ -47,4 +47,4 @@ struct ASH_EXPORT PersistentWindowInfo {
 
 }  // namespace ash
 
-#endif  // ASH_DISPLAY_PERSISTENT_WINDOW_INFO_H_
+#endif  // ASH_WM_MULTI_DISPLAY_PERSISTENT_WINDOW_INFO_H_

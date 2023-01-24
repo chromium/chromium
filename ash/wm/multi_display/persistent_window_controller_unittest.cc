@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/display/persistent_window_controller.h"
+#include "ash/wm/multi_display/persistent_window_controller.h"
 
 #include "ash/display/display_move_window_util.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
@@ -499,8 +499,9 @@ TEST_F(PersistentWindowControllerTest, MRUOrderMatchesStacking) {
   ASSERT_EQ(
       expected_mru_order,
       Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kAllDesks));
-  for (auto* window : expected_mru_order)
+  for (auto* window : expected_mru_order) {
     ASSERT_EQ(secondary_id, screen->GetDisplayNearestWindow(window).id());
+  }
 
   // Disconnect secondary display. The windows should move to the primary
   // display and retain MRU ordering.

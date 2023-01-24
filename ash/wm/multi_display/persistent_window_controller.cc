@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/display/persistent_window_controller.h"
+#include "ash/wm/multi_display/persistent_window_controller.h"
 
-#include "ash/display/persistent_window_info.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/multi_display/persistent_window_info.h"
 #include "ash/wm/tablet_mode/scoped_skip_user_session_blocked_check.h"
 #include "ash/wm/window_state.h"
 #include "base/command_line.h"
@@ -41,8 +41,9 @@ MruWindowTracker::WindowList GetWindowList() {
 // Returns true when window cycle list can be processed to perform save/restore
 // operations on observing display changes.
 bool ShouldProcessWindowList() {
-  if (!Shell::Get()->desks_controller())
+  if (!Shell::Get()->desks_controller()) {
     return false;
+  }
   return !GetDisplayManager()->IsInMirrorMode();
 }
 
@@ -62,15 +63,17 @@ PersistentWindowController::~PersistentWindowController() {
 }
 
 void PersistentWindowController::OnWillProcessDisplayChanges() {
-  if (!ShouldProcessWindowList())
+  if (!ShouldProcessWindowList()) {
     return;
+  }
 
   for (auto* window : GetWindowList()) {
     WindowState* window_state = WindowState::Get(window);
     // This implies that we keep the first persistent info until they're valid
     // to restore, or until they're cleared by user-invoked bounds change.
-    if (window_state->persistent_window_info_of_display_removal())
+    if (window_state->persistent_window_info_of_display_removal()) {
       continue;
+    }
     // Place the window that needs persistent window info into the temporary
     // set. The persistent window info will be created and set if a display is
     // removed.
@@ -100,8 +103,9 @@ void PersistentWindowController::OnDisplayRemoved(
 void PersistentWindowController::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t changed_metrics) {
-  if (!(changed_metrics & DISPLAY_METRIC_ROTATION))
+  if (!(changed_metrics & DISPLAY_METRIC_ROTATION)) {
     return;
+  }
 
   const bool was_landscape_before_rotation =
       is_landscape_orientation_map_.find(display.id()) !=
@@ -114,8 +118,9 @@ void PersistentWindowController::OnDisplayMetricsChanged(
       continue;
     }
     auto* window_state = WindowState::Get(window);
-    if (window_state->persistent_window_info_of_screen_rotation())
+    if (window_state->persistent_window_info_of_screen_rotation()) {
       continue;
+    }
     // Do not restore the bounds on screen rotation of windows that are snapped,
     // maximized or fullscreened. A snapped window is expected to have different
     // snap positions in different orientations, which means different bounds.
@@ -137,12 +142,14 @@ void PersistentWindowController::OnDisplayMetricsChanged(
 }
 
 void PersistentWindowController::OnDidProcessDisplayChanges() {
-  if (display_added_restore_callback_)
+  if (display_added_restore_callback_) {
     std::move(display_added_restore_callback_).Run();
+  }
   need_persistent_info_windows_.RemoveAll();
 
-  if (screen_rotation_restore_callback_)
+  if (screen_rotation_restore_callback_) {
     std::move(screen_rotation_restore_callback_).Run();
+  }
 
   if (display::Screen::GetScreen()) {
     for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
@@ -153,8 +160,9 @@ void PersistentWindowController::OnDidProcessDisplayChanges() {
 }
 
 void PersistentWindowController::OnFirstSessionStarted() {
-  if (!display::Screen::GetScreen())
+  if (!display::Screen::GetScreen()) {
     return;
+  }
 
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
     is_landscape_orientation_map_[display.id()] =
@@ -164,8 +172,9 @@ void PersistentWindowController::OnFirstSessionStarted() {
 
 void PersistentWindowController::
     MaybeRestorePersistentWindowBoundsOnDisplayAdded() {
-  if (!ShouldProcessWindowList())
+  if (!ShouldProcessWindowList()) {
     return;
+  }
 
   int window_restored_count = 0;
   // Maybe add the windows to a new display via SetBoundsInScreen() depending on
@@ -175,14 +184,16 @@ void PersistentWindowController::
   std::vector<aura::Window*> mru_window_list = GetWindowList();
   for (auto* window : base::Reversed(mru_window_list)) {
     WindowState* window_state = WindowState::Get(window);
-    if (!window_state->persistent_window_info_of_display_removal())
+    if (!window_state->persistent_window_info_of_display_removal()) {
       continue;
+    }
     PersistentWindowInfo info =
         *window_state->persistent_window_info_of_display_removal();
     const int64_t persistent_display_id = info.display_id;
     auto* display_manager = GetDisplayManager();
-    if (!display_manager->IsDisplayIdValid(persistent_display_id))
+    if (!display_manager->IsDisplayIdValid(persistent_display_id)) {
       continue;
+    }
     const auto& display =
         display_manager->GetDisplayForId(persistent_display_id);
 
@@ -193,8 +204,9 @@ void PersistentWindowController::
     const auto& persistent_display_bounds = info.display_bounds_in_screen;
     // It is possible to have display size change, such as changing cable, bad
     // cable signal etc., but it should be rare.
-    if (display.bounds().size() != persistent_display_bounds.size())
+    if (display.bounds().size() != persistent_display_bounds.size()) {
       continue;
+    }
     const gfx::Vector2d offset = display.bounds().OffsetFromOrigin() -
                                  persistent_display_bounds.OffsetFromOrigin();
     persistent_window_bounds.Offset(offset);
@@ -220,20 +232,23 @@ void PersistentWindowController::
 
 void PersistentWindowController::
     MaybeRestorePersistentWindowBoundsOnScreenRotation() {
-  if (!ShouldProcessWindowList())
+  if (!ShouldProcessWindowList()) {
     return;
+  }
 
   int window_restored_count = 0;
   for (auto* window : GetWindowList()) {
     WindowState* window_state = WindowState::Get(window);
-    if (!window_state->persistent_window_info_of_screen_rotation())
+    if (!window_state->persistent_window_info_of_screen_rotation()) {
       continue;
+    }
     PersistentWindowInfo info =
         *window_state->persistent_window_info_of_screen_rotation();
     const int64_t display_id = info.display_id;
     auto* display_manager = GetDisplayManager();
-    if (!display_manager->IsDisplayIdValid(display_id))
+    if (!display_manager->IsDisplayIdValid(display_id)) {
       continue;
+    }
 
     // Restore window's bounds if we are rotating back to the screen orientation
     // that window's bounds was stored. Note, `kLandscapePrimary` and

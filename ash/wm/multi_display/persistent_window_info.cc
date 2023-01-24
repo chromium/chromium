@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/display/persistent_window_info.h"
+#include "ash/wm/multi_display/persistent_window_info.h"
 
 #include "ash/wm/window_state.h"
 #include "ui/aura/window.h"
@@ -22,8 +22,9 @@ PersistentWindowInfo::PersistentWindowInfo(aura::Window* window,
 
   WindowState* window_state = WindowState::Get(window);
   DCHECK(window_state);
-  if (window_state->HasRestoreBounds())
+  if (window_state->HasRestoreBounds()) {
     restore_bounds_in_screen = window_state->GetRestoreBoundsInScreen();
+  }
 }
 
 PersistentWindowInfo::PersistentWindowInfo(const PersistentWindowInfo& other) =

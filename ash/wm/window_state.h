@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/display/persistent_window_info.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/wm/drag_details.h"
+#include "ash/wm/multi_display/persistent_window_info.h"
 #include "ash/wm/wm_metrics.h"
 #include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
