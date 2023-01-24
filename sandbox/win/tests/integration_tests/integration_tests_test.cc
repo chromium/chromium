@@ -9,9 +9,6 @@
 
 #include <windows.h>
 
-// Must be after windows.h.
-#include <versionhelpers.h>
-
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -361,17 +358,10 @@ TEST(IntegrationTestsTest, RunChildFromInsideJob) {
 // Running from inside job that doesn't allow us to escape from it should fail
 // on any windows prior to 8.
 TEST(IntegrationTestsTest, RunChildFromInsideJobNoEscape) {
-  int expect_result = 4;  // Means the runner has failed to execute the child.
-  // Check if we are on Win8 or newer and expect a success as newer windows
-  // versions support nested jobs.
-  if (IsWindows8OrGreater()) {
-    expect_result = SBOX_TEST_SUCCEEDED;
-  }
-
   TestRunner runner;
   runner.SetUnsandboxed(true);
   runner.SetTimeout(TestTimeouts::action_timeout());
-  ASSERT_EQ(expect_result,
+  ASSERT_EQ(SBOX_TEST_SUCCEEDED,
             runner.RunTest(L"IntegrationTestsTest_job with_job"));
 }
 
