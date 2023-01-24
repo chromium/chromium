@@ -69,14 +69,16 @@ FlagMetadataMap LoadFlagMetadata() {
   base::Value metadata_json = FileContents(FlagFile::kFlagMetadata);
 
   FlagMetadataMap metadata;
-  for (const auto& entry : metadata_json.GetList()) {
-    std::string name = entry.FindKey("name")->GetString();
+  for (const auto& entry_val : metadata_json.GetList()) {
+    const base::Value::Dict& entry = entry_val.GetDict();
+    std::string name = *entry.FindString("name");
     std::vector<std::string> owners;
-    if (const base::Value* e = entry.FindKey("owners")) {
-      for (const auto& owner : e->GetList())
+    if (const base::Value::List* e = entry.FindList("owners")) {
+      for (const auto& owner : *e) {
         owners.push_back(owner.GetString());
+      }
     }
-    int expiry_milestone = entry.FindKey("expiry_milestone")->GetInt();
+    int expiry_milestone = entry.FindInt("expiry_milestone").value();
     metadata[name] = FlagMetadataEntry{owners, expiry_milestone};
   }
 
@@ -275,10 +277,10 @@ void EnsureFlagsAreListedInAlphabeticalOrder() {
 
   std::vector<std::string> normalized_names;
   std::vector<std::string> names;
-  for (const auto& entry : metadata_json.GetList()) {
-    normalized_names.push_back(
-        NormalizeName(entry.FindKey("name")->GetString()));
-    names.push_back(entry.FindKey("name")->GetString());
+  for (const auto& entry_val : metadata_json.GetList()) {
+    const base::Value::Dict& entry = entry_val.GetDict();
+    normalized_names.push_back(NormalizeName(*entry.FindString("name")));
+    names.push_back(*entry.FindString("name"));
   }
 
   EnsureNamesAreAlphabetical(normalized_names, names, FlagFile::kFlagMetadata);
