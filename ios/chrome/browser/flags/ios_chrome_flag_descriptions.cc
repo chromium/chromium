@@ -614,6 +614,18 @@ const char kOmniboxOnFocusSuggestionsDescription[] =
     "before the user has typed any input. This provides overrides for the "
     "default suggestion locations.";
 
+const char kOmniboxReportAssistedQueryStatsName[] =
+    "Omnibox Assisted Query Stats param";
+const char kOmniboxReportAssistedQueryStatsDescription[] =
+    "Enables reporting the Assisted Query Stats param in search destination "
+    "URLs originated from the Omnibox.";
+
+const char kOmniboxReportSearchboxStatsName[] =
+    "Omnibox Searchbox Stats proto param";
+const char kOmniboxReportSearchboxStatsDescription[] =
+    "Enables reporting the serialized Searchbox Stats proto param in search "
+    "destination URLs originated from the Omnibox.";
+
 const char kOmniboxUIMaxAutocompleteMatchesName[] =
     "Omnibox UI Max Autocomplete Matches";
 const char kOmniboxUIMaxAutocompleteMatchesDescription[] =

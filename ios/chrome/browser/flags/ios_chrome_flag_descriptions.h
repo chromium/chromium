@@ -552,6 +552,14 @@ extern const char kOmniboxOnDeviceTailSuggestionsDescription[];
 extern const char kOmniboxOnFocusSuggestionsName[];
 extern const char kOmniboxOnFocusSuggestionsDescription[];
 
+// Title and description for assisted query stats param reporting.
+extern const char kOmniboxReportAssistedQueryStatsName[];
+extern const char kOmniboxReportAssistedQueryStatsDescription[];
+
+// Title and description for searchbox stats flag.
+extern const char kOmniboxReportSearchboxStatsName[];
+extern const char kOmniboxReportSearchboxStatsDescription[];
+
 // Title and description for the flag to change the max number of autocomplete
 // matches in the omnibox popup.
 extern const char kOmniboxUIMaxAutocompleteMatchesName[];
