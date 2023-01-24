@@ -10,6 +10,8 @@
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/wm/features.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 
 namespace ash {
 
@@ -49,15 +51,17 @@ class TabletModeMultitaskCueTest : public AshTestBase {
 // Tests that the cue layer is created properly.
 TEST_F(TabletModeMultitaskCueTest, BasicShowCue) {
   auto window = CreateAppWindow();
+  gfx::Rect window_bounds = window->bounds();
 
   auto* multitask_cue = GetMultitaskCue();
   ASSERT_TRUE(multitask_cue);
 
   ui::Layer* cue_layer = multitask_cue->cue_layer_for_testing();
   ASSERT_TRUE(cue_layer);
-  EXPECT_EQ(
-      gfx::Rect((800 - kCueWidth) / 2, kCueYOffset, kCueWidth, kCueHeight),
-      cue_layer->bounds());
+
+  EXPECT_EQ(gfx::Rect((window_bounds.width() - kCueWidth) / 2, kCueYOffset,
+                      kCueWidth, kCueHeight),
+            cue_layer->bounds());
 }
 
 // Tests that the cue bounds are updated properly after a window is split.
@@ -66,11 +70,12 @@ TEST_F(TabletModeMultitaskCueTest, SplitCueBounds) {
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
 
   auto window1 = CreateAppWindow();
+
   split_view_controller->SnapWindow(
       window1.get(), SplitViewController::SnapPosition::kPrimary);
 
-  gfx::Rect split_bounds((396 - kCueWidth) / 2, kCueYOffset, kCueWidth,
-                         kCueHeight);
+  gfx::Rect split_bounds((window1->bounds().width() - kCueWidth) / 2,
+                         kCueYOffset, kCueWidth, kCueHeight);
 
   ui::Layer* cue_layer = GetMultitaskCue()->cue_layer_for_testing();
   ASSERT_TRUE(cue_layer);
@@ -87,15 +92,55 @@ TEST_F(TabletModeMultitaskCueTest, SplitCueBounds) {
 
 // Tests that the `OneShotTimer` properly dismisses the cue after firing.
 TEST_F(TabletModeMultitaskCueTest, DismissTimerFiring) {
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
   auto window = CreateAppWindow();
 
   auto* multitask_cue = GetMultitaskCue();
   ui::Layer* cue_layer = multitask_cue->cue_layer_for_testing();
   ASSERT_TRUE(cue_layer);
 
+  // Wait for fade in to finish.
+  ui::LayerAnimationStoppedWaiter animation_waiter;
+  animation_waiter.Wait(cue_layer);
+
   multitask_cue->FireCueDismissTimerForTesting();
-  cue_layer = multitask_cue->cue_layer_for_testing();
-  EXPECT_FALSE(cue_layer);
+
+  // Wait for fade out to finish.
+  animation_waiter.Wait(cue_layer);
+  EXPECT_FALSE(multitask_cue->cue_layer_for_testing());
+}
+
+// Tests that the cue dismisses properly during the fade out animation.
+TEST_F(TabletModeMultitaskCueTest, DismissEarly) {
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  auto window = CreateAppWindow();
+
+  auto* multitask_cue = GetMultitaskCue();
+  ui::Layer* cue_layer = multitask_cue->cue_layer_for_testing();
+  ASSERT_TRUE(cue_layer);
+
+  // Wait for fade in to finish.
+  ui::LayerAnimationStoppedWaiter().Wait(cue_layer);
+
+  multitask_cue->FireCueDismissTimerForTesting();
+  multitask_cue->DismissCue();
+  EXPECT_FALSE(multitask_cue->cue_layer_for_testing());
+}
+
+// Tests that the cue dismisses properly when the float keyboard accelerator is
+// pressed.
+TEST_F(TabletModeMultitaskCueTest, FloatWindow) {
+  auto window = CreateAppWindow();
+
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+
+  auto* multitask_cue = GetMultitaskCue();
+  ASSERT_TRUE(multitask_cue);
+  EXPECT_FALSE(multitask_cue->cue_layer_for_testing());
 }
 
 }  // namespace ash

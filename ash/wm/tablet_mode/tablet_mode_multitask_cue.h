@@ -57,9 +57,15 @@ class ASH_EXPORT TabletModeMultitaskCue : aura::WindowObserver,
   void FireCueDismissTimerForTesting() { cue_dismiss_timer_.FireNow(); }
 
  private:
+  friend class TabletModeMultitaskCueTest;
+
   // Updates the bounds of the cue relative to the window if the window is
   // still available.
   void UpdateCueBounds();
+
+  // Fades the cue out over a short duration if it is still active, then cleans
+  // up via `DismissCue`. If already fading out, returns immediately.
+  void OnTimerFinished();
 
   // The app window that the cue is associated with.
   aura::Window* window_ = nullptr;
