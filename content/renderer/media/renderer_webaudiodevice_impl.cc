@@ -94,7 +94,7 @@ media::AudioParameters GetOutputDeviceParameters(
     const blink::LocalFrameToken& frame_token,
     const std::string& device_id) {
   return AudioDeviceFactory::GetInstance()
-      ->GetOutputDeviceInfo(frame_token, {base::UnguessableToken(), device_id})
+      ->GetOutputDeviceInfo(frame_token, device_id)
       .output_params();
 }
 

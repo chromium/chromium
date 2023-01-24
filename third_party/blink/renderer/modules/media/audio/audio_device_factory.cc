@@ -159,7 +159,7 @@ AudioDeviceFactory::NewAudioCapturerSource(
 
 media::OutputDeviceInfo AudioDeviceFactory::GetOutputDeviceInfo(
     const blink::LocalFrameToken& frame_token,
-    const media::AudioSinkParameters& params) {
+    const std::string& device_id) {
   DCHECK(IsMainThread()) << __func__ << "() is called on a wrong thread.";
   constexpr base::TimeDelta kDeleteTimeout = base::Milliseconds(5000);
 
@@ -175,8 +175,12 @@ media::OutputDeviceInfo AudioDeviceFactory::GetOutputDeviceInfo(
                             blink::WebAudioDeviceSourceType::kNone),
         kDeleteTimeout);
   }
-  return sink_cache_->GetSinkInfo(frame_token, params.session_id,
-                                  params.device_id);
+
+  // Passing a base::UnguessableToken() as a session ID is fine here, as we can
+  // identify entirely off of |device_id|.
+  // TODO(tguilbert): remove the use of session ID from AudioRendererSinkCache.
+  return sink_cache_->GetSinkInfo(frame_token, base::UnguessableToken(),
+                                  device_id);
 }
 
 scoped_refptr<media::AudioRendererSink>

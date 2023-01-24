@@ -66,9 +66,11 @@ class BLINK_MODULES_EXPORT AudioDeviceFactory {
                                  const media::AudioSinkParameters& params);
 
   // A helper to get device info in the absence of AudioOutputDevice.
+  // |device_id| identifies which device we are getting info from.
+  // |frame_token| is used to created a temporary sink to retrieve the info.
   virtual media::OutputDeviceInfo GetOutputDeviceInfo(
       const LocalFrameToken& frame_token,
-      const media::AudioSinkParameters& params);
+      const std::string& device_id);
 
   // Creates an AudioCapturerSource using the currently registered factory.
   // |frame_token| refers to the RenderFrame containing the entity

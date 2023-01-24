@@ -2027,7 +2027,7 @@ uint32_t PepperPluginInstanceImpl::GetAudioHardwareOutputSampleRate(
              ? blink::AudioDeviceFactory::GetInstance()
                    ->GetOutputDeviceInfo(
                        render_frame()->GetWebFrame()->GetLocalFrameToken(),
-                       media::AudioSinkParameters())
+                       std::string())
                    .output_params()
                    .sample_rate()
              : 0;
@@ -2039,7 +2039,7 @@ uint32_t PepperPluginInstanceImpl::GetAudioHardwareOutputBufferSize(
              ? blink::AudioDeviceFactory::GetInstance()
                    ->GetOutputDeviceInfo(
                        render_frame()->GetWebFrame()->GetLocalFrameToken(),
-                       media::AudioSinkParameters())
+                       std::string())
                    .output_params()
                    .frames_per_buffer()
              : 0;

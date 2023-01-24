@@ -143,7 +143,7 @@ media::AudioParameters GetAudioHardwareParams() {
 
   return blink::AudioDeviceFactory::GetInstance()
       ->GetOutputDeviceInfo(render_frame->GetWebFrame()->GetLocalFrameToken(),
-                            media::AudioSinkParameters())
+                            std::string())
       .output_params();
 }
 
