@@ -113,13 +113,15 @@ base::Value::List Mapper::MapArray(const OncValueSignature& array_signature,
   base::Value::List result_array;
   int original_index = 0;
   for (const auto& entry : onc_array) {
+    bool error = false;
     base::Value result_entry =
         MapEntry(original_index, *array_signature.onc_array_entry_signature,
-                 entry, nested_error);
-    if (!result_entry.is_none())
+                 entry, &error);
+    if (!error) {
       result_array.Append(std::move(result_entry));
-    else
-      DCHECK(*nested_error);
+    }
+
+    *nested_error |= error;
     ++original_index;
   }
   return result_array;

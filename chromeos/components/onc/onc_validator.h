@@ -141,8 +141,7 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
   // Dispatch to the right validation function according to
   // |signature|. Iterates over all fields and recursively validates/repairs
   // these. All valid fields are added to the result dictionary. Returns the
-  // repaired dictionary. Only on error returns a Value of type
-  // base::Value::Type::NONE.
+  // repaired dictionary.
   base::Value MapObject(const OncValueSignature& signature,
                         const base::Value& onc_object,
                         bool* error) override;

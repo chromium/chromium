@@ -175,7 +175,7 @@ base::Value Validator::MapObject(const OncValueSignature& signature,
 
   DCHECK(!validation_issues_.empty());
   *error = true;
-  return {};
+  return base::Value(base::Value::Type::DICT);
 }
 
 base::Value Validator::MapField(const std::string& field_name,
