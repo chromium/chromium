@@ -92,6 +92,10 @@ protocol::Audits::GenericIssueErrorType GenericIssueErrorTypeToProtocol(
     case mojom::blink::GenericIssueErrorType::kFormInputWithNoLabelError:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           FormInputWithNoLabelError;
+    case mojom::blink::GenericIssueErrorType::
+        kFormAutocompleteAttributeEmptyError:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormAutocompleteAttributeEmptyError;
   }
 }
 

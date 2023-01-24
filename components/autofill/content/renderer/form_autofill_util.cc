@@ -1759,6 +1759,21 @@ std::string GetAutocompleteAttribute(const WebElement& element) {
   return autocomplete_attribute;
 }
 
+bool HasAutocompleteAttribute(const WebElement& element) {
+  static base::NoDestructor<WebString> kAutocomplete("autocomplete");
+  return element.HasAttribute(*kAutocomplete);
+}
+
+void ValidateAutocompleteAttributeForElement(const WebElement& element) {
+  std::string autocomplete_attribute = GetAutocompleteAttribute(element);
+  if (HasAutocompleteAttribute(element) && autocomplete_attribute.empty()) {
+    element.GetDocument().GetFrame()->AddGenericIssue(
+        blink::mojom::GenericIssueErrorType::
+            kFormAutocompleteAttributeEmptyError,
+        element.GetDevToolsNodeId());
+  }
+}
+
 void FindFormElementUpShadowRoots(const WebElement& element,
                                   WebFormElement* found_form_element) {
   // If we are in shadowdom, then look to see if the host(s) are inside a form
@@ -2087,6 +2102,11 @@ void WebFormControlElementToFormField(
   field->max_length =
       IsTextInput(input_element) ? input_element.MaxLength() : 0;
   field->autocomplete_attribute = GetAutocompleteAttribute(element);
+
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableDevtoolsIssues)) {
+    ValidateAutocompleteAttributeForElement(element);
+  }
+
   field->parsed_autocomplete = ParseAutocompleteAttribute(
       field->autocomplete_attribute, field->max_length);
   if (base::EqualsCaseInsensitiveASCII(element.GetAttribute(*kRole).Utf16(),
@@ -2131,6 +2151,7 @@ void WebFormControlElementToFormField(
       field->name = field->name_attribute.empty() ? field->id_attribute
                                                   : field->name_attribute;
     }
+    ValidateAutocompleteAttributeForElement(element);
     if (field->autocomplete_attribute.empty()) {
       field->autocomplete_attribute = GetAutocompleteAttribute(host);
       field->parsed_autocomplete = ParseAutocompleteAttribute(
