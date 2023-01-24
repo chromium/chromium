@@ -5508,7 +5508,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"page-visibility-page-content-annotations",
      flag_descriptions::kPageVisibilityPageContentAnnotationsName,
      flag_descriptions::kPageVisibilityPageContentAnnotationsDescription,
-     kOsDesktop,
+     kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(
          optimization_guide::features::kPageVisibilityPageContentAnnotations)},
 
