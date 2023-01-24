@@ -100,7 +100,6 @@ class ASH_EXPORT AppListControllerImpl
                       SearchModel* search_model) override;
   void ClearActiveModel() override;
   void DismissAppList() override;
-  void GetAppInfoDialogBounds(GetAppInfoDialogBoundsCallback callback) override;
   void ShowAppList(AppListShowSource source) override;
   AppListShowSource LastAppListShowSource() override;
   aura::Window* GetWindow() override;

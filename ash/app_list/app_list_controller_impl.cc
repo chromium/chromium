@@ -350,15 +350,6 @@ void AppListControllerImpl::DismissAppList() {
   fullscreen_presenter_->Dismiss(base::TimeTicks());
 }
 
-void AppListControllerImpl::GetAppInfoDialogBounds(
-    GetAppInfoDialogBoundsCallback callback) {
-  AppListView* app_list_view = fullscreen_presenter_->GetView();
-  gfx::Rect bounds = gfx::Rect();
-  if (app_list_view)
-    bounds = app_list_view->GetAppInfoDialogBounds();
-  std::move(callback).Run(bounds);
-}
-
 void AppListControllerImpl::ShowAppList(AppListShowSource source) {
   if (Shell::Get()->session_controller()->GetSessionState() !=
       session_manager::SessionState::ACTIVE) {

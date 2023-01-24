@@ -59,12 +59,6 @@ class ASH_PUBLIC_EXPORT AppListController {
   // Dismisses the app list.
   virtual void DismissAppList() = 0;
 
-  // Returns bounds of a rectangle to show an AppInfo dialog.
-  using GetAppInfoDialogBoundsCallback =
-      base::OnceCallback<void(const gfx::Rect&)>;
-  virtual void GetAppInfoDialogBounds(
-      GetAppInfoDialogBoundsCallback callback) = 0;
-
   // Shows the app list.
   virtual void ShowAppList(AppListShowSource source) = 0;
 

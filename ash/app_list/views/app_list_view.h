@@ -223,10 +223,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // Gets the PaginationModel owned by this view's apps grid.
   PaginationModel* GetAppsPaginationModel();
 
-  // Gets the content bounds of the app info dialog of the app list in the
-  // screen coordinates.
-  gfx::Rect GetAppInfoDialogBounds() const;
-
   // Returns the height of app list in fullscreen state.
   int GetFullscreenStateHeight() const;
 

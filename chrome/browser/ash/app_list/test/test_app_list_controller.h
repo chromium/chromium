@@ -38,8 +38,6 @@ class TestAppListController : public ash::AppListController {
   void ShowAppList(ash::AppListShowSource source) override;
   ash::AppListShowSource LastAppListShowSource() override;
   void DismissAppList() override;
-  void GetAppInfoDialogBounds(
-      GetAppInfoDialogBoundsCallback callback) override {}
   aura::Window* GetWindow() override;
   bool IsVisible(const absl::optional<int64_t>& display_id) override;
   bool IsVisible() override;

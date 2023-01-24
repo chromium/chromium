@@ -52,10 +52,6 @@ namespace ash {
 
 namespace {
 
-// The size of app info dialog in fullscreen app list.
-constexpr int kAppInfoDialogWidth = 512;
-constexpr int kAppInfoDialogHeight = 384;
-
 // The number of minutes that must pass for the current app list page to reset
 // to the first page.
 constexpr int kAppListPageResetTimeLimitMinutes = 20;
@@ -980,13 +976,6 @@ void AppListView::OffsetYPositionOfAppList(int offset) {
 
 PaginationModel* AppListView::GetAppsPaginationModel() {
   return GetRootAppsGridView()->pagination_model();
-}
-
-gfx::Rect AppListView::GetAppInfoDialogBounds() const {
-  gfx::Rect app_info_bounds(GetDisplayNearestView().work_area());
-  app_info_bounds.ClampToCenteredSize(
-      gfx::Size(kAppInfoDialogWidth, kAppInfoDialogHeight));
-  return app_info_bounds;
 }
 
 void AppListView::OnHomeLauncherGainingFocusWithoutAnimation() {
