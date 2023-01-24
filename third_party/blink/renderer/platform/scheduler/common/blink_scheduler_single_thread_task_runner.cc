@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -65,10 +64,9 @@ class DeleteHelper {
       Delete();
     } else {
       // The deleter task couldn't be posted to the intended thread, so the only
-      // safe thing to do is leak the object. As leaks of this type should not
-      // be permitted, flush out any places where this happens so they can be
-      // fixed.
-      base::debug::DumpWithoutCrashing();
+      // safe thing to do is leak the object.
+      // TODO(crbug.com/1376851): Add a CHECK, DumpWithoutCrashing, or trace
+      // event to determine if leaks still occur.
     }
   }
 
