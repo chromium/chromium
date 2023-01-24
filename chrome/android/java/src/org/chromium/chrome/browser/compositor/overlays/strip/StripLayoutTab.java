@@ -178,7 +178,9 @@ public class StripLayoutTab implements VirtualView {
     // Animation/Timer Constants
     private static final int ANIM_TAB_CLOSE_BUTTON_FADE_MS = 150;
 
-    // Close button width
+    // Close Button Constants
+    // Close button padding value comes from the built-in padding in the source png.
+    private static final int CLOSE_BUTTON_PADDING_DP = 7;
     private static final int CLOSE_BUTTON_WIDTH_DP = 36;
     private static final int CLOSE_BUTTON_WIDTH_SCROLLING_STRIP_DP = 48;
 
@@ -188,7 +190,7 @@ public class StripLayoutTab implements VirtualView {
 
     // Divider Constants
     // TODO(crbug.com/1373632): Temp value until the 9-patches are updated.
-    private static final int DIVIDER_OFFSET_X = 9;
+    private static final int DIVIDER_OFFSET_X = 13;
     @VisibleForTesting
     static final float DIVIDER_FOLIO_LIGHT_OPACITY = 0.2f;
 
@@ -207,6 +209,7 @@ public class StripLayoutTab implements VirtualView {
     private boolean mFolioAttached = true;
     private final boolean mIncognito;
     private float mBottomMargin;
+    private float mContainerOpacity;
     private float mContentOffsetX;
     private float mDividerOpacity;
     private float mVisiblePercentage = 1.f;
@@ -379,15 +382,10 @@ public class StripLayoutTab implements VirtualView {
      * @return The tint color resource that represents the tab background.
      */
     public int getTint(boolean foreground) {
+        // TODO(https://crbug.com/1408276): Avoid calculating every time. Instead, store the tab's
+        //  color and only re-determine when the color could have changed (i.e. on selection).
         if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-            // Inactive tabs have no container in TSR. Return arbitrary color to avoid calculation.
-            if (!foreground) return Color.TRANSPARENT;
-
-            if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
-                return ChromeColors.getDefaultThemeColor(mContext, mIncognito);
-            } else if (TabUiFeatureUtilities.isTabStripDetachedEnabled()) {
-                return TabUiThemeProvider.getTabStripDetachedTabColor(mContext, mIncognito);
-            }
+            return TabUiThemeProvider.getTabStripContainerColor(mContext, mIncognito, foreground);
         }
 
         if (foreground) {
@@ -575,18 +573,21 @@ public class StripLayoutTab implements VirtualView {
     }
 
     /**
-     * @param foreground Whether or not this tab is a foreground tab.
-     * @return The fraction (from 0.f to 1.f) of how opaque the tab should be.
+     * @param opacity The fraction (from 0.f to 1.f) of how opaque the tab container should be.
      */
-    public float getOpacity(boolean foreground) {
+    public void setContainerOpacity(float opacity) {
+        mContainerOpacity = opacity;
+    }
+
+    /**
+     * @return The fraction (from 0.f to 1.f) of how opaque the tab container should be.
+     */
+    public float getContainerOpacity() {
         if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-            if (foreground) {
-                return 1.0f;
-            } else {
-                return 0.0f;
-            }
+            return mContainerOpacity;
+        } else {
+            return 1.f;
         }
-        return 1.0f;
     }
 
     /**
@@ -881,6 +882,10 @@ public class StripLayoutTab implements VirtualView {
 
         mClosePlacement.offset(getDrawX() + xOffset, getDrawY());
         return mClosePlacement;
+    }
+
+    public int getCloseButtonPadding() {
+        return CLOSE_BUTTON_PADDING_DP;
     }
 
     // TODO(dtrainor): Don't animate this if we're selecting or deselecting this tab.

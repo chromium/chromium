@@ -49,6 +49,7 @@ class TabHandleLayer : public Layer {
                      float content_offset_y,
                      float divider_offset_x,
                      float bottom_offset_y,
+                     float close_button_padding,
                      float close_button_alpha,
                      float divider_alpha,
                      bool is_loading,

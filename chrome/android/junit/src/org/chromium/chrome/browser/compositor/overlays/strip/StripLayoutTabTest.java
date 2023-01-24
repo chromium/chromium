@@ -101,8 +101,8 @@ public class StripLayoutTabTest {
                 mNormalTab.getTint(true));
 
         // Normal inactive tab color.
-        expectedColor = Color.TRANSPARENT;
-        assertEquals("Folio inactive tab containers should be transparent.", expectedColor,
+        expectedColor = ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_0);
+        assertEquals("Folio inactive tab containers should be Surface-0.", expectedColor,
                 mNormalTab.getTint(false));
 
         // Incognito active tab color.
@@ -111,8 +111,8 @@ public class StripLayoutTabTest {
                 mIncognitoTab.getTint(true));
 
         // Incognito inactive tab color.
-        expectedColor = Color.TRANSPARENT;
-        assertEquals("Folio inactive tab containers should be transparent.", expectedColor,
+        expectedColor = mContext.getColor(R.color.default_bg_color_dark);
+        assertEquals("Incognito inactive folio should be baseline Surface-0.", expectedColor,
                 mIncognitoTab.getTint(false));
     }
 
@@ -129,8 +129,8 @@ public class StripLayoutTabTest {
                 mNormalTab.getTint(true));
 
         // Normal inactive tab color.
-        expectedColor = Color.TRANSPARENT;
-        assertEquals("Detached inactive tab containers should be transparent.", expectedColor,
+        expectedColor = ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_5);
+        assertEquals("Detached inactive tab containers should be Surface-5.", expectedColor,
                 mNormalTab.getTint(false));
 
         // Incognito active tab color.
@@ -139,8 +139,8 @@ public class StripLayoutTabTest {
                 mIncognitoTab.getTint(true));
 
         // Incognito inactive tab color.
-        expectedColor = Color.TRANSPARENT;
-        assertEquals("Detached inactive tab containers should be transparent.", expectedColor,
+        expectedColor = mContext.getColor(R.color.default_bg_color_dark_elev_5_baseline);
+        assertEquals("Detached incognito inactive should be baseline Surface-5.", expectedColor,
                 mIncognitoTab.getTint(false));
     }
 

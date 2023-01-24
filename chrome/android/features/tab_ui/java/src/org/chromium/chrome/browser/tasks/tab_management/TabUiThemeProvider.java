@@ -347,6 +347,68 @@ public class TabUiThemeProvider {
     }
 
     /**
+     * Returns the value that corresponds to Surface-0 based on incognito status.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @return The value that corresponds to Surface-0.
+     */
+    private static int getSurfaceColorElev0(Context context, boolean isIncognito) {
+        if (isIncognito) {
+            return context.getColor(org.chromium.chrome.R.color.default_bg_color_dark);
+        }
+
+        return ChromeColors.getSurfaceColor(
+                context, org.chromium.chrome.R.dimen.default_elevation_0);
+    }
+
+    /**
+     * Returns the value that corresponds to Surface-5 based on incognito status.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @return The value that corresponds to Surface-5.
+     */
+    private static int getSurfaceColorElev5(Context context, boolean isIncognito) {
+        if (isIncognito) {
+            return context.getColor(
+                    org.chromium.chrome.R.color.default_bg_color_dark_elev_5_baseline);
+        }
+
+        return ChromeColors.getSurfaceColor(
+                context, org.chromium.chrome.R.dimen.default_elevation_5);
+    }
+
+    /**
+     * Returns the color for the tab container based on experiment arm, incognito mode, and
+     * foreground status.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @param foreground Whether the tab is in the foreground.
+     * @return The color for the tab container.
+     */
+    public static int getTabStripContainerColor(
+            Context context, boolean isIncognito, boolean foreground) {
+        if (foreground) {
+            if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
+                return ChromeColors.getDefaultThemeColor(context, isIncognito);
+            } else if (TabUiFeatureUtilities.isTabStripDetachedEnabled()) {
+                return getTabStripDetachedTabColor(context, isIncognito);
+            }
+        } else {
+            if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
+                return getSurfaceColorElev0(context, isIncognito);
+            } else if (TabUiFeatureUtilities.isTabStripDetachedEnabled()) {
+                return getSurfaceColorElev5(context, isIncognito);
+            }
+        }
+
+        // Should be unreachable as TSR should never be enabled without the folio or detached arm.
+        return Color.TRANSPARENT;
+    }
+
+    /**
      * Returns the color used for tab grid dialog background based on the incognito mode.
      *
      * @param context {@link Context} used to retrieve color.

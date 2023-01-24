@@ -42,6 +42,7 @@ void TabHandleLayer::SetProperties(
     float content_offset_y,
     float divider_offset_x,
     float bottom_offset_y,
+    float close_button_padding,
     float close_button_alpha,
     float divider_alpha,
     bool is_loading,
@@ -210,7 +211,6 @@ void TabHandleLayer::SetProperties(
   } else {
     close_button_->SetIsDrawable(true);
     const float close_max_width = close_button_->bounds().width();
-
     int close_y;
     if (is_tab_strip_redesign_enabled) {
       close_y = content_offset_y;
@@ -218,9 +218,10 @@ void TabHandleLayer::SetProperties(
       close_y = (tab_handle_resource->padding().y() + height) / 2 -
                 close_button_->bounds().height() / 2;
     }
-
-    int close_x = is_rtl ? padding_left - close_max_width + close_width
-                         : width - padding_right - close_width;
+    int close_x =
+        is_rtl ? padding_left - close_max_width + close_width -
+                     close_button_padding
+               : width - padding_right - close_width + close_button_padding;
     if (foreground_) {
       close_y += original_y;
       close_x += original_x;

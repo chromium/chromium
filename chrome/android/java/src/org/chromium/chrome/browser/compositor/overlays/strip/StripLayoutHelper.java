@@ -124,6 +124,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     // Visibility Constants
     private static final float TAB_STACK_WIDTH_DP = 4.f;
     private static final float TAB_OVERLAP_WIDTH_DP = 24.f;
+    private static final float TAB_OVERLAP_WIDTH_LARGE_DP = 28.f;
     private static final float TAB_WIDTH_SMALL = 108.f;
     private static final float TAB_WIDTH_MEDIUM = 156.f;
     private static final float MAX_TAB_WIDTH_DP = 265.f;
@@ -148,6 +149,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private static final float NEW_TAB_BUTTON_DESIRED_TOUCH_TARGET_SIZE = 48.f;
     private static final float NEW_TAB_BUTTON_DEFAULT_PRESSED_OPACITY = 0.2f;
     private static final float NEW_TAB_BUTTON_DARK_DETACHED_OPACITY = 0.15f;
+    static final float TAB_OPACITY_HIDDEN = 0.f;
+    static final float TAB_OPACITY_VISIBLE_BACKGROUND = 0.55f;
+    static final float TAB_OPACITY_VISIBLE_FOREGROUND = 1.f;
     static final float BACKGROUND_TAB_BRIGHTNESS_DEFAULT = 1.f;
     static final float BACKGROUND_TAB_BRIGHTNESS_DIMMED = 0.65f;
     static final float DIVIDER_HIDDEN_OPACITY = 0.f;
@@ -253,7 +257,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      */
     public StripLayoutHelper(Context context, LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost, boolean incognito, CompositorButton modelSelectorButton) {
-        mTabOverlapWidth = TAB_OVERLAP_WIDTH_DP;
+        mTabOverlapWidth = ChromeFeatureList.sTabStripRedesign.isEnabled()
+                ? TAB_OVERLAP_WIDTH_LARGE_DP
+                : TAB_OVERLAP_WIDTH_DP;
         if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
             if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
                 mNewTabButtonWidth = NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP_FOLIO;
@@ -702,6 +708,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             setAccessibilityDescription(stripTab, getTabById(id));
             setAccessibilityDescription(findTabById(prevId), getTabById(prevId));
         }
+
+        StripLayoutTab selectedTab = findTabById(id);
+        StripLayoutTab prevTab = findTabById(prevId);
+        selectedTab.setContainerOpacity(TAB_OPACITY_VISIBLE_FOREGROUND);
+        if (prevTab != null) prevTab.setContainerOpacity(TAB_OPACITY_HIDDEN);
     }
 
     /**
@@ -873,8 +884,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         for (int i = 1; i < mStripTabs.length; i++) {
             final StripLayoutTab prevTab = mStripTabs[i - 1];
             final StripLayoutTab currTab = mStripTabs[i];
-            if (prevTab.getId() == selectedTabId || currTab.getId() == selectedTabId) {
-                // Dividers adjacent to the selected tab are hidden.
+            if (prevTab.getId() == selectedTabId || currTab.getId() == selectedTabId
+                    || currTab.getContainerOpacity() > TAB_OPACITY_HIDDEN) {
+                // Dividers adjacent to selected tab are hidden. Additionally, when tab containers
+                // are visible for grouped tabs in edit mode, tab dividers are unneeded and
+                // therefore hidden.
                 currTab.setDividerOpacity(DIVIDER_HIDDEN_OPACITY);
             } else {
                 // All other dividers are visible.
@@ -1496,6 +1510,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         StripLayoutTab tab = new StripLayoutTab(
                 mContext, id, this, mTabLoadTrackerHost, mRenderHost, mUpdateHost, mIncognito);
         tab.setHeight(mHeight);
+        if (id == mModel.getTabAt(mModel.index()).getId()) {
+            tab.setContainerOpacity(TAB_OPACITY_VISIBLE_FOREGROUND);
+        }
         pushStackerPropertiesToTab(tab);
         return tab;
     }
@@ -1836,6 +1853,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         float endValue =
                 attached ? FOLIO_ATTACHED_BOTTOM_MARGIN_DP : FOLIO_DETACHED_BOTTOM_MARGIN_DP;
 
+        if (animationList == null) {
+            tab.setBottomMargin(endValue);
+            tab.setFolioAttached(attached);
+            return;
+        }
+
         ArrayList<Animator> attachAnimationList = new ArrayList<>();
         CompositorAnimator dropAnimation = CompositorAnimator.ofFloatProperty(
                 mUpdateHost.getAnimationHandler(), tab, StripLayoutTab.BOTTOM_MARGIN, startValue,
@@ -1855,12 +1878,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         AnimatorSet set = new AnimatorSet();
         set.playSequentially(attachAnimationList);
-
-        if (animationList == null) {
-            set.end();
-        } else {
-            animationList.add(set);
-        }
+        animationList.add(set);
     }
 
     @VisibleForTesting
@@ -1911,7 +1929,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 mModel, TabModelUtils.getTabIndexById(mModel, mInteractingTab.getId()), false);
 
         // 5. Dim the background tabs and fade-out the new tab & model selector buttons.
-        setBackgroundTabsDimmed(true);
+        if (!ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            setBackgroundTabsDimmed(true);
+        }
         setCompositorButtonsVisible(false);
 
         // 6. Fast expand to make sure this tab is visible. If tabs are not cascaded, the selected
@@ -1924,7 +1944,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         } else if (TabUiFeatureUtilities.isTabletTabGroupsEnabled(mContext)) {
             Tab tab = getTabById(mInteractingTab.getId());
             computeAndUpdateTabGroupMargins(true, animationList);
-            setTabGroupDimmed(mTabGroupModelFilter.getRootId(tab), false);
+            if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+                setTabGroupContainersVisible(mTabGroupModelFilter.getRootId(tab), true);
+            } else {
+                setTabGroupDimmed(mTabGroupModelFilter.getRootId(tab), false);
+            }
             performHapticFeedback(tab);
         }
 
@@ -1959,8 +1983,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             mInteractingTab.setOffsetX(0f);
         }
 
-        // 3. Un-dim the background tabs and fade-in the new tab & model selector buttons.
-        setBackgroundTabsDimmed(false);
+        // 3. Reset the background tabs and fade-in the new tab & model selector buttons.
+        if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            setBackgroundTabContainersVisible(false);
+        } else {
+            setBackgroundTabsDimmed(false);
+        }
         setCompositorButtonsVisible(true);
 
         // 4. Clear any tab group margins if they are enabled.
@@ -2167,6 +2195,34 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
     }
 
+    private void setTabContainerVisible(StripLayoutTab tab, boolean visible) {
+        if (tab != mInteractingTab) {
+            float opacity = visible ? TAB_OPACITY_VISIBLE_BACKGROUND : TAB_OPACITY_HIDDEN;
+            tab.setContainerOpacity(opacity);
+
+            if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
+                updateFolioTabAttachState(tab, !visible, null);
+            }
+        }
+    }
+
+    private void setBackgroundTabContainersVisible(boolean visible) {
+        for (int i = 0; i < mStripTabs.length; i++) {
+            final StripLayoutTab tab = mStripTabs[i];
+            setTabContainerVisible(tab, visible);
+        }
+    }
+
+    private void setTabGroupContainersVisible(int groupId, boolean visible) {
+        for (int i = 0; i < mStripTabs.length; i++) {
+            final StripLayoutTab tab = mStripTabs[i];
+
+            if (mTabGroupModelFilter.getRootId(getTabById(tab.getId())) == groupId) {
+                setTabContainerVisible(tab, visible);
+            }
+        }
+    }
+
     /**
      * This method checks whether or not interacting tab has met the conditions to be moved out of 
      * its tab group. It moves tab out of group if so and returns the new index for the interacting 
@@ -2183,7 +2239,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (Math.abs(offset) > mTabMarginWidth * REORDER_OVERLAP_SWITCH_PERCENTAGE) {
             final int tabId = mInteractingTab.getId();
 
-            setTabGroupDimmed(mTabGroupModelFilter.getRootId(getTabById(tabId)), true);
+            if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+                setTabGroupContainersVisible(
+                        mTabGroupModelFilter.getRootId(getTabById(tabId)), false);
+            } else {
+                setTabGroupDimmed(mTabGroupModelFilter.getRootId(getTabById(tabId)), true);
+            }
             mTabGroupModelFilter.moveTabOutOfGroupInDirection(tabId, towardEnd);
             RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
             return curIndex;
@@ -2253,7 +2314,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             // 1.b. Set tab group dim as necessary.
             int groupId = mTabGroupModelFilter.getRootId(
                     getTabById(mStripTabs[curIndex + (towardEnd ? 1 : -1)].getId()));
-            setTabGroupDimmed(groupId, !mHoveringOverGroup);
+            if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+                setTabGroupContainersVisible(groupId, mHoveringOverGroup);
+            } else {
+                setTabGroupDimmed(groupId, !mHoveringOverGroup);
+            }
         }
 
         // 2. If we are hovering, attempt to merge to the hovered group.
@@ -2285,7 +2350,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // If past threshold, un-dim hovered group and trigger reorder.
         if (Math.abs(offset) > threshold) {
-            setTabGroupDimmed(groupId, true);
+            if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+                setTabGroupContainersVisible(groupId, false);
+            } else {
+                setTabGroupDimmed(groupId, true);
+            }
 
             int destIndex = towardEnd ? curIndex + 1 + numTabsToSkip : curIndex - numTabsToSkip;
             return destIndex;
