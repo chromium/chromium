@@ -167,7 +167,7 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
   ~AppIconLoader();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void OnGetArcAppCompressedIconData(AdaptiveIconPaths default_app_paths,
+  void OnGetArcAppCompressedIconData(AdaptiveIconPaths app_icon_paths,
                                      arc::mojom::RawIconPngDataPtr icon);
 
   void OnGetGuestOSAppCompressedIconData(base::FilePath png_path,

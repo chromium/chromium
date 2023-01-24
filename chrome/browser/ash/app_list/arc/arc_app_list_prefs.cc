@@ -662,11 +662,14 @@ void ArcAppListPrefs::RequestIcon(
   // ArcSessionManager can be terminated during test tear down, before callback
   // into this function.
   // TODO(victorhsieh): figure out the best way/place to handle this situation.
-  if (arc::ArcSessionManager::Get() == nullptr)
+  if (arc::ArcSessionManager::Get() == nullptr) {
+    std::move(callback).Run(nullptr);
     return;
+  }
 
   if (!IsRegistered(app_id)) {
     VLOG(2) << "Request to load icon for non-registered app: " << app_id << ".";
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -676,18 +679,22 @@ void ArcAppListPrefs::RequestIcon(
   // icon when icon file decode failure is suffered in case app sends bad icon.
   request_icon_recorded_[app_id].insert(descriptor);
 
-  if (!ready_apps_.count(app_id))
+  if (!ready_apps_.count(app_id)) {
+    std::move(callback).Run(nullptr);
     return;
+  }
 
   if (!app_connection_holder()->IsConnected()) {
     // AppInstance should be ready since we have app_id in ready_apps_. This
     // can happen in browser_tests.
+    std::move(callback).Run(nullptr);
     return;
   }
 
   std::unique_ptr<AppInfo> app_info = GetApp(app_id);
   if (!app_info) {
     VLOG(2) << "Failed to get app info: " << app_id << ".";
+    std::move(callback).Run(nullptr);
     return;
   }
 

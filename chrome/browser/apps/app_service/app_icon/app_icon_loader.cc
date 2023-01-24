@@ -105,10 +105,9 @@ std::vector<uint8_t> ReadFileAndMaybeResize(const base::FilePath path,
 // the icon data from `icon_path`, we might resize it if the icon size doesn't
 // match, because it could be shown as the compress icon directly, without
 // calling the adaptive icon Composite function to chop and resize.
-apps::IconValuePtr ReadFilesForDefaultAppAndMaybeResize(
-    apps::AdaptiveIconPaths icon_paths,
-    float icon_scale,
-    int icon_size_in_px) {
+apps::IconValuePtr ReadFilesAndMaybeResize(apps::AdaptiveIconPaths icon_paths,
+                                           float icon_scale,
+                                           int icon_size_in_px) {
   auto iv = std::make_unique<apps::IconValue>();
   iv->icon_type = apps::IconType::kCompressed;
 
@@ -687,24 +686,35 @@ void AppIconLoader::GetArcAppCompressedIconData(
   icon_size_in_px_ =
       apps_util::ConvertDipToPxForScale(size_hint_in_dip_, icon_scale_);
 
-  // Get the icon paths for the default apps. If we can't fetch the raw icon
-  // data from the ARC side, the icon paths for the default apps are used to get
-  // the icon data.
-  AdaptiveIconPaths default_app_paths;
+  AdaptiveIconPaths app_paths;
   const ArcAppIconDescriptor descriptor(size_hint_in_dip_, scale_factor);
   if (arc_prefs->IsDefault(app_id)) {
-    default_app_paths.icon_path =
+    // Get the icon paths for the default apps. If we can't fetch the raw icon
+    // data from the ARC side, the icon paths for the default apps are used to
+    // get the icon data.
+    app_paths.icon_path =
         arc_prefs->MaybeGetIconPathForDefaultApp(app_id, descriptor);
-    default_app_paths.foreground_icon_path =
+    app_paths.foreground_icon_path =
         arc_prefs->MaybeGetForegroundIconPathForDefaultApp(app_id, descriptor);
-    default_app_paths.background_icon_path =
+    app_paths.background_icon_path =
         arc_prefs->MaybeGetBackgroundIconPathForDefaultApp(app_id, descriptor);
+  } else {
+    // For the migration scenario, as ARC may take some time to startup after
+    // the user login, fetching the raw icon files from the ARC VM could fail.
+    // So try to fetch the raw icon files from the ARC on-disk cache to
+    // migrate the icon files from the ARC directory to the AppService
+    // directory.
+    app_paths.icon_path = arc_prefs->GetIconPath(app_id, descriptor);
+    app_paths.foreground_icon_path =
+        arc_prefs->GetForegroundIconPath(app_id, descriptor);
+    app_paths.background_icon_path =
+        arc_prefs->GetBackgroundIconPath(app_id, descriptor);
   }
 
   arc_prefs->RequestRawIconData(
       app_id, ArcAppIconDescriptor(size_hint_in_dip_, scale_factor),
       base::BindOnce(&AppIconLoader::OnGetArcAppCompressedIconData,
-                     base::WrapRefCounted(this), std::move(default_app_paths)));
+                     base::WrapRefCounted(this), std::move(app_paths)));
 }
 
 void AppIconLoader::GetGuestOSAppCompressedIconData(
@@ -738,22 +748,21 @@ void AppIconLoader::GetGuestOSAppCompressedIconData(
 }
 
 void AppIconLoader::OnGetArcAppCompressedIconData(
-    AdaptiveIconPaths default_app_paths,
+    AdaptiveIconPaths app_icon_paths,
     arc::mojom::RawIconPngDataPtr icon) {
   auto iv = std::make_unique<IconValue>();
   if (!icon || !icon->icon_png_data.has_value()) {
-    // If the app is not a default app, return the empty icon value.
-    if (default_app_paths.IsEmpty()) {
+    // If we can't find `app_icon_paths`, return the empty icon value.
+    if (app_icon_paths.IsEmpty()) {
       std::move(callback_).Run(std::move(iv));
       return;
     }
 
-    // Get the raw icon data from the icon files for the default app.
+    // Get the raw icon data from `app_icon_paths`.
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(&ReadFilesForDefaultAppAndMaybeResize,
-                       std::move(default_app_paths), icon_scale_,
-                       icon_size_in_px_),
+        base::BindOnce(&ReadFilesAndMaybeResize, std::move(app_icon_paths),
+                       icon_scale_, icon_size_in_px_),
         std::move(callback_));
     return;
   }
