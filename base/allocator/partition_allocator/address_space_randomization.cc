@@ -10,9 +10,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
-#include <windows.h>  // Must be in front of other Windows header files.
-
-#include <versionhelpers.h>
+#include <windows.h>
 #endif
 
 namespace partition_alloc {
@@ -24,26 +22,10 @@ uintptr_t GetRandomPageBase() {
   random <<= 32ULL;
   random |= static_cast<uintptr_t>(internal::RandomValue());
 
-// The ASLRMask() and ASLROffset() constants will be suitable for the
-// OS and build configuration.
-#if BUILDFLAG(IS_WIN) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
-  // Windows >= 8.1 has the full 47 bits. Use them where available.
-  static bool windows_81 = false;
-  static bool windows_81_initialized = false;
-  if (!windows_81_initialized) {
-    windows_81 = IsWindows8Point1OrGreater();
-    windows_81_initialized = true;
-  }
-  if (!windows_81) {
-    random &= internal::ASLRMaskBefore8_10();
-  } else {
-    random &= internal::ASLRMask();
-  }
-  random += internal::ASLROffset();
-#else
+  // The ASLRMask() and ASLROffset() constants will be suitable for the
+  // OS and build configuration.
   random &= internal::ASLRMask();
   random += internal::ASLROffset();
-#endif  // BUILDFLAG(IS_WIN) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 #else   // PA_CONFIG(HAS_64_BITS_POINTERS)
 #if BUILDFLAG(IS_WIN)
   // On win32 host systems the randomization plus huge alignment causes

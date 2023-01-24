@@ -17,8 +17,6 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/win/windows_version.h"
-// versionhelpers.h must be included after windows.h.
-#include <versionhelpers.h>
 #endif
 
 namespace partition_alloc {
@@ -28,12 +26,6 @@ namespace {
 uintptr_t GetMask() {
   uintptr_t mask = internal::ASLRMask();
 #if defined(ARCH_CPU_64_BITS)
-// Sanitizers use their own ASLR mask constant.
-#if BUILDFLAG(IS_WIN) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
-  if (!IsWindows8Point1OrGreater()) {
-    mask = internal::ASLRMaskBefore8_10();
-  }
-#endif  // BUILDFLAG(IS_WIN) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR))
 #elif defined(ARCH_CPU_32_BITS)
 #if BUILDFLAG(IS_WIN)
   BOOL is_wow64 = FALSE;
