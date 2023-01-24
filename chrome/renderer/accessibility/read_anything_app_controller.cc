@@ -320,8 +320,10 @@ void ReadAnythingAppController::AccessibilityEventReceived(
   // so it’s critical that updates are not unserialized until drawing is
   // complete.
   if (tree_id == active_tree_id_ && distillation_in_progress_) {
-    DCHECK(pending_updates_.empty() ||
-           tree_id == pending_updates_.back().tree_data.tree_id);
+#if DCHECK_IS_ON()
+    DCHECK(pending_updates_.empty() || tree_id == pending_updates_bundle_id_);
+    pending_updates_bundle_id_ = tree_id;
+#endif
     pending_updates_.insert(pending_updates_.end(),
                             std::make_move_iterator(updates.begin()),
                             std::make_move_iterator(updates.end()));
@@ -365,7 +367,14 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   // Unserialize all pending updates on the formerly active AXTree.
   // TODO(crbug.com/1266555): If distillation is in progress, cancel the
   // distillation request.
+#if DCHECK_IS_ON()
+  DCHECK(pending_updates_.empty() ||
+         pending_updates_bundle_id_ == previous_active_tree_id);
+#endif
   UnserializeUpdates(std::move(pending_updates_), previous_active_tree_id);
+#if DCHECK_IS_ON()
+  pending_updates_bundle_id_ = ui::AXTreeIDUnknown();
+#endif
   // When the UI first constructs, this function may be called before tree_id
   // has been added to trees_ in AccessibilityEventReceived. In that case, do
   // not distill.
@@ -402,6 +411,8 @@ void ReadAnythingAppController::OnAtomicUpdateFinished(
     ui::AXTree* tree,
     bool root_changed,
     const std::vector<Change>& changes) {
+  // TODO(crbug.com/1266555): This method may be called when child trees finish
+  // updating. We should re-distill if tree is a child of the active tree.
   if (active_tree_id_ == ui::AXTreeIDUnknown() ||
       tree->GetAXTreeID() != active_tree_id_) {
     return;
@@ -489,7 +500,14 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   Draw();
   // Once drawing is complete, unserialize all of the pending updates on the
   // active tree and send out a new distillation request.
+#if DCHECK_IS_ON()
+  DCHECK(pending_updates_.empty() ||
+         pending_updates_bundle_id_ == active_tree_id_);
+#endif
   UnserializeUpdates(std::move(pending_updates_), active_tree_id_);
+#if DCHECK_IS_ON()
+  pending_updates_bundle_id_ = ui::AXTreeIDUnknown();
+#endif
 }
 
 void ReadAnythingAppController::Draw() {

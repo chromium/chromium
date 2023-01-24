@@ -88,8 +88,13 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   void AccessibilityEventReceived(
       const std::vector<ui::AXTreeUpdate>& updates) {
-    controller_->AccessibilityEventReceived(updates[0].tree_data.tree_id,
-                                            updates, {});
+    AccessibilityEventReceived(updates[0].tree_data.tree_id, updates);
+  }
+
+  void AccessibilityEventReceived(
+      const ui::AXTreeID& tree_id,
+      const std::vector<ui::AXTreeUpdate>& updates) {
+    controller_->AccessibilityEventReceived(tree_id, updates, {});
   }
 
   void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id) {
@@ -862,4 +867,47 @@ TEST_F(ReadAnythingAppControllerTest,
        OnAXTreeDistilledCalledWithUnknownTreeId) {
   // Should not crash.
   OnAXTreeDistilled(ui::AXTreeIDUnknown(), {});
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       ChangeActiveTreeWithPendingUpdates_UnknownID) {
+  EXPECT_EQ(0u, GetNumPendingUpdates());
+
+  // Create a couple of updates which add additional nodes to the tree.
+  std::vector<ui::AXTreeUpdate> updates;
+  std::vector<int> child_ids = {2, 3, 4};
+  for (int i = 0; i < 2; i++) {
+    int id = i + 5;
+    child_ids.push_back(id);
+
+    ui::AXTreeUpdate update;
+    SetUpdateTreeID(&update);
+    update.root_id = 1;
+    update.nodes.resize(2);
+    update.nodes[0].id = 1;
+    update.nodes[0].child_ids = child_ids;
+    update.nodes[1].id = id;
+    update.nodes[1].role = ax::mojom::Role::kStaticText;
+    update.nodes[1].SetName(base::NumberToString(id));
+    update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
+    updates.push_back(update);
+  }
+
+  // Create an update which has no tree id.
+  ui::AXTreeUpdate update;
+  update.nodes.resize(1);
+  update.nodes[0].id = 1;
+  update.nodes[0].role = ax::mojom::Role::kGenericContainer;
+  updates.push_back(update);
+
+  // Add the three updates.
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+  AccessibilityEventReceived({updates[0]});
+  EXPECT_EQ(0u, GetNumPendingUpdates());
+  AccessibilityEventReceived(tree_id_, {updates[1], updates[2]});
+  EXPECT_EQ(2u, GetNumPendingUpdates());
+
+  // Switch to a new active tree. Should not crash.
+  EXPECT_CALL(*distiller_, Distill).Times(0);
+  OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown());
 }
