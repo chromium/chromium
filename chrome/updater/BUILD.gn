@@ -189,6 +189,7 @@ if (is_win || is_mac || is_linux) {
         "policy/mac/managed_preference_policy_manager_impl.mm",
         "prefs_mac.mm",
         "setup_mac.mm",
+        "update_service_internal_impl_qualifying_mac.cc",
         "update_usage_stats_task_mac.mm",
         "util/launchd_util.cc",
         "util/launchd_util.h",
@@ -233,6 +234,7 @@ if (is_win || is_mac || is_linux) {
         "remove_uninstalled_apps_task_win.cc",
         "setup_win.cc",
         "update_block_check_win.cc",
+        "update_service_internal_impl_qualifying_win.cc",
         "update_usage_stats_task_win.cc",
         "win/action_handler.cc",
         "win/app_command_runner.cc",
@@ -343,6 +345,7 @@ if (is_win || is_mac || is_linux) {
         "net/network_fetcher_linux.cc",
         "prefs_linux.cc",
         "setup_linux.cc",
+        "update_service_internal_impl_qualifying_linux.cc",
         "update_usage_stats_task_linux.cc",
       ]
     }

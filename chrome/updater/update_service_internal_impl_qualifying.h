@@ -7,12 +7,17 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "chrome/updater/update_service_internal.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace updater {
 
 class Configurator;
 class LocalPrefs;
 class UpdateServiceInternal;
+
+// Runs in the thread pool. May block. May use sync primitives. Returns true
+// iff the health checks pass.
+bool DoPlatformSpecificHealthChecks(UpdaterScope scope);
 
 scoped_refptr<UpdateServiceInternal> MakeQualifyingUpdateServiceInternal(
     scoped_refptr<Configurator> config,

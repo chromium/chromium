@@ -105,6 +105,9 @@ the `Qualified` state and exits.
 The qualification app installer is a no-op installer that simply exits with no
 error, but could be customized in the future to do additional checks.
 
+The updater also performs other basic health checks during qualification, which
+are detailed in the platform-specific sections.
+
 Qualification is skipped (along with any other pre-active states) if there is
 no active instance of the updater.
 
@@ -919,6 +922,15 @@ fails, launches the server process and then repeatedly retries to connect.
 During activation of a new instance of the updater, the updater creates a hard
 link to a simple launcher program outside the versioned directories. This
 program is used to launch UpdateService servers.
+
+The launcher program's ability to launch an updater process is checked during
+qualification. The program accepts a `--test` argument, that, when passed,
+launches the updater executable with `--test` rather than `--server`. (An
+unqualified updater must not launch the non-side-by-side server process.)
+
+In the system case, the launcher program is a setuid executable owned by root.
+This enables low-privilege clients to start a highly-privileged server to run
+updates for system-scope applications.
 
 Since Mojo's NamedPlatformChannel is not reusable for multiple connections, the
 updater relies on NamedMojoIpcServer's utilities to bootstrap mojo connections

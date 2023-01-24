@@ -23,16 +23,7 @@ bool DialUpdateService(UpdaterScope scope) {
       // If there's no updater present, abandon dialing.
       return false;
     }
-    base::CommandLine command(*updater);
-    command.AppendSwitch(kServerSwitch);
-    command.AppendSwitchASCII(kServerServiceSwitch,
-                              kServerUpdateServiceSwitchValue);
-    if (scope == UpdaterScope::kSystem) {
-      command.AppendSwitch(kSystemSwitch);
-    }
-    command.AppendSwitch(kEnableLoggingSwitch);
-    command.AppendSwitchASCII(kLoggingModuleSwitch, kLoggingModuleSwitchValue);
-    base::LaunchProcess(command, {});
+    base::LaunchProcess(base::CommandLine(*updater), {});
   }
 
   return true;

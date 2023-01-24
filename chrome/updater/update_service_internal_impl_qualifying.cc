@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "chrome/updater/check_for_updates_task.h"
 #include "chrome/updater/configurator.h"
@@ -39,19 +40,7 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
   void Run(base::OnceClosure callback) override {
     VLOG(1) << __func__ << " (Qualifying)";
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    scoped_refptr<UpdateServiceImpl> service =
-        base::MakeRefCounted<UpdateServiceImpl>(config_);
-
-    RegistrationRequest registration;
-    registration.app_id = kQualificationAppId;
-    registration.version = base::Version(kQualificationInitialVersion);
-
-    service->RegisterApp(
-        registration,
-        base::BindOnce(
-            &UpdateServiceInternalQualifyingImpl::RegisterQualificationAppDone,
-            this, std::move(callback)));
+    Qualify(std::move(callback));
   }
 
   void Hello(base::OnceClosure callback) override {
@@ -65,10 +54,54 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
 
-  void RegisterQualificationAppDone(base::OnceClosure callback, int result) {
+  void Qualify(base::OnceClosure callback) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
+        base::BindOnce(&DoPlatformSpecificHealthChecks, GetUpdaterScope()),
+        base::BindOnce(
+            &UpdateServiceInternalQualifyingImpl::
+                PlatformSpecificHealthChecksDone,
+            this,
+            base::BindOnce(
+                &UpdateServiceInternalQualifyingImpl::QualificationDone, this,
+                std::move(callback))));
+  }
+
+  void PlatformSpecificHealthChecksDone(base::OnceCallback<void(bool)> callback,
+                                        bool success) {
+    if (!success) {
+      VLOG(1) << "Platfom-specific qualification checks failed.";
+      std::move(callback).Run(false);
+      return;
+    }
+    RegisterQualificationApp(std::move(callback));
+  }
+
+  void RegisterQualificationApp(base::OnceCallback<void(bool)> callback) {
+    RegistrationRequest registration;
+    registration.app_id = kQualificationAppId;
+    registration.version = base::Version(kQualificationInitialVersion);
+    base::MakeRefCounted<UpdateServiceImpl>(config_)->RegisterApp(
+        registration,
+        base::BindOnce(
+            &UpdateServiceInternalQualifyingImpl::RegisterQualificationAppDone,
+            this, std::move(callback)));
+  }
+
+  void RegisterQualificationAppDone(base::OnceCallback<void(bool)> callback,
+                                    int result) {
+    if (result != kRegistrationSuccess &&
+        result != kRegistrationAlreadyRegistered) {
+      VLOG(1) << "Registration failed: " << result;
+      std::move(callback).Run(false);
+      return;
+    }
+    UpdateCheck(std::move(callback));
+  }
+
+  void UpdateCheck(base::OnceCallback<void(bool)> callback) {
     // Create a `CheckForUpdatesTask` with the local prefs' config and perform
     // an `Update` task for `kQualificationAppId`.
-    VLOG(2) << "Registration response: " << result;
     base::MakeRefCounted<CheckForUpdatesTask>(
         config_, GetUpdaterScope(),
         base::BindOnce(&UpdateServiceImpl::Update,
@@ -78,23 +111,24 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
                        UpdateService::PolicySameVersionUpdate::kNotAllowed,
                        base::DoNothing()))
         ->Run(base::BindOnce(
-            &UpdateServiceInternalQualifyingImpl::QualificationDone, this,
+            &UpdateServiceInternalQualifyingImpl::UpdateCheckDone, this,
             std::move(callback)));
   }
 
-  void QualificationDone(base::OnceClosure callback) {
-    auto persisted_data = base::MakeRefCounted<PersistedData>(
-        GetUpdaterScope(), local_prefs_->GetPrefService());
+  void UpdateCheckDone(base::OnceCallback<void(bool)> callback) {
     const base::Version qualification_app_version =
-        persisted_data->GetProductVersion(kQualificationAppId);
-    VLOG(0) << "qualification_app_version: " << qualification_app_version;
-    const bool qualification_app_version_updated =
-        qualification_app_version.CompareTo(
-            base::Version(kQualificationInitialVersion)) == 1;
+        base::MakeRefCounted<PersistedData>(GetUpdaterScope(),
+                                            local_prefs_->GetPrefService())
+            ->GetProductVersion(kQualificationAppId);
+    VLOG(2) << "qualification_app_version: " << qualification_app_version;
+    std::move(callback).Run(qualification_app_version.CompareTo(base::Version(
+                                kQualificationInitialVersion)) == 1);
+  }
 
-    local_prefs_->SetQualified(qualification_app_version_updated);
+  void QualificationDone(base::OnceClosure callback, bool qualified) {
+    VLOG(1) << "Qualification complete, qualified = " << qualified;
+    local_prefs_->SetQualified(qualified);
     local_prefs_->GetPrefService()->CommitPendingWrite();
-
     std::move(callback).Run();
   }
 
