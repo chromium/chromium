@@ -10655,9 +10655,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_SAVE_PAGE_DESC_COMPLETE" desc="In the Save Page dialog, the description of saving both the HTML and all shown resources.">
         Webpage, Complete
       </message>
-      <message name="IDS_SAVE_PAGE_DESC_WEB_BUNDLE_FILE" desc="In the Save Page dialog, the description of saving both the HTML and all shown resources into a single Web Bundle file.">
-        Webpage, Single File (Web Bundle)
-      </message>
 
       <!-- General app failure messages -->
       <message name="IDS_PROFILE_ERROR_DIALOG_TITLE" desc="The title of the dialog shown when there's an error page">

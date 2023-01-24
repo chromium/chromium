@@ -16,8 +16,6 @@ enum SavePageType {
   SAVE_PAGE_TYPE_AS_COMPLETE_HTML = 1,
   // User chose to save complete-html page as MHTML.
   SAVE_PAGE_TYPE_AS_MHTML = 2,
-  // User chose to save complete-html page as Web Bundle.
-  SAVE_PAGE_TYPE_AS_WEB_BUNDLE = 3,
 
   // Insert new values BEFORE this value.
   SAVE_PAGE_TYPE_MAX,

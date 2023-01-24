@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/metrics/histogram_macros.h"
@@ -21,7 +20,6 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_member.h"
@@ -32,7 +30,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/save_page_type.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using content::RenderProcessHost;
@@ -73,16 +70,6 @@ void AddSingleFileFileTypeInfo(
   file_type_info->extensions.emplace_back(
       std::initializer_list<base::FilePath::StringType>{
           FILE_PATH_LITERAL("mhtml")});
-}
-
-// Adds "Webpage, Single File (Web Bundle)" type to FileTypeInfo.
-void AddWebBundleFileFileTypeInfo(
-    ui::SelectFileDialog::FileTypeInfo* file_type_info) {
-  file_type_info->extension_description_overrides.push_back(
-      l10n_util::GetStringUTF16(IDS_SAVE_PAGE_DESC_WEB_BUNDLE_FILE));
-  file_type_info->extensions.emplace_back(
-      std::initializer_list<base::FilePath::StringType>{
-          FILE_PATH_LITERAL("wbn")});
 }
 
 // Chrome OS doesn't support HTML-Complete. crbug.com/154823
@@ -180,11 +167,6 @@ SavePackageFilePicker::SavePackageFilePicker(
     if (can_save_as_complete_) {
       AddSingleFileFileTypeInfo(&file_type_info);
       save_types_.push_back(content::SAVE_PAGE_TYPE_AS_MHTML);
-
-      if (base::FeatureList::IsEnabled(features::kSavePageAsWebBundle)) {
-        AddWebBundleFileFileTypeInfo(&file_type_info);
-        save_types_.push_back(content::SAVE_PAGE_TYPE_AS_WEB_BUNDLE);
-      }
     }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

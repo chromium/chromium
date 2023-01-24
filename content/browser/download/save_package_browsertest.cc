@@ -7,17 +7,13 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/download/download_manager_impl.h"
 #include "content/browser/download/save_package.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/browser/web_package/web_bundle_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -25,7 +21,6 @@
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_download_manager_delegate.h"
-#include "net/base/filename_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -45,12 +40,7 @@ class TestShellDownloadManagerDelegate : public ShellDownloadManagerDelegate {
                       const base::FilePath::StringType& default_extension,
                       bool can_save_as_complete,
                       SavePackagePathPickedCallback callback) override {
-    base::FilePath suggested_path_copy = suggested_path;
-    if (save_page_type_ == SAVE_PAGE_TYPE_AS_WEB_BUNDLE) {
-      suggested_path_copy =
-          suggested_path_copy.ReplaceExtension(FILE_PATH_LITERAL("wbn"));
-    }
-    std::move(callback).Run(suggested_path_copy, save_page_type_,
+    std::move(callback).Run(suggested_path, save_page_type_,
                             SavePackageDownloadCreatedCallback());
   }
 
@@ -280,61 +270,6 @@ IN_PROC_BROWSER_TEST_F(SavePackageBrowserTest, Reload) {
   shell()->web_contents()->GetController().Reload(content::ReloadType::NORMAL,
                                                   false /* check_for_repost */);
   download_manager->SetDelegate(old_delegate);
-}
-
-class SavePackageWebBundleBrowserTest : public SavePackageBrowserTest {
- public:
-  void SetUp() override {
-    std::vector<base::test::FeatureRef> enable_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    enable_features.push_back(features::kSavePageAsWebBundle);
-    enable_features.push_back(features::kWebBundles);
-    feature_list_.InitWithFeatures(enable_features, disabled_features);
-
-    SavePackageBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SavePackageWebBundleBrowserTest, OnePageSimple) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL(
-      "/web_bundle/save_page_as_web_bundle/one_page_simple.html");
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-  auto* download_manager = static_cast<DownloadManagerImpl*>(
-      shell()->web_contents()->GetBrowserContext()->GetDownloadManager());
-  auto delegate = std::make_unique<TestShellDownloadManagerDelegate>(
-      SAVE_PAGE_TYPE_AS_WEB_BUNDLE);
-  delegate->download_dir_ = save_dir_.GetPath();
-  auto* old_delegate = download_manager->GetDelegate();
-  download_manager->SetDelegate(delegate.get());
-
-  GURL wbn_file_url;
-  {
-    base::RunLoop run_loop;
-    DownloadCompleteObserver observer(run_loop.QuitClosure());
-    download_manager->AddObserver(&observer);
-    scoped_refptr<SavePackage> save_package(
-        new SavePackage(web_contents_impl()->GetPrimaryPage()));
-    save_package->GetSaveInfo();
-    run_loop.Run();
-    download_manager->RemoveObserver(&observer);
-    EXPECT_TRUE(save_package->finished());
-    EXPECT_EQ("application/webbundle", observer.mime_type());
-    wbn_file_url = net::FilePathToFileURL(observer.target_file_path());
-  }
-
-  download_manager->SetDelegate(old_delegate);
-  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-
-  std::u16string expected_title = u"Hello";
-  TitleWatcher title_watcher(shell()->web_contents(), expected_title);
-  EXPECT_TRUE(NavigateToURL(
-      shell(), wbn_file_url,
-      web_bundle_utils::GetSynthesizedUrlForWebBundle(wbn_file_url, url)));
-  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 }
 
 class SavePackageFencedFrameBrowserTest : public SavePackageBrowserTest {

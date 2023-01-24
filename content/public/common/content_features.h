@@ -198,7 +198,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kRenderAccessibilityHostDeserializationOffMainThread);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kRenderDocument);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kRunVideoCaptureServiceInBrowserProcess);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kSavePageAsWebBundle);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSecurePaymentConfirmation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSecurePaymentConfirmationDebug);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSecurePaymentConfirmationRemoveRpField);

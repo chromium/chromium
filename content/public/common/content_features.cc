@@ -1011,11 +1011,6 @@ BASE_FEATURE(kRunVideoCaptureServiceInBrowserProcess,
              "RunVideoCaptureServiceInBrowserProcess",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables saving pages as Web Bundle.
-BASE_FEATURE(kSavePageAsWebBundle,
-             "SavePageAsWebBundle",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Browser-side feature flag for Secure Payment Confirmation (SPC) that also
 // controls the render side feature state. SPC is not currently available on
 // Linux or ChromeOS, as it requires platform authenticator support.
