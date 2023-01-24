@@ -169,14 +169,6 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest, Simple_Https) {
       SecurityStatePageLoadMetricsObserver::
           GetEngagementFinalHistogramNameForTesting(security_state::SECURE),
       1);
-  histogram_tester()->ExpectTotalCount(
-      SecurityStatePageLoadMetricsObserver::
-          GetEngagementDeltaHistogramNameForTesting(security_state::NONE),
-      0);
-  histogram_tester()->ExpectTotalCount(
-      SecurityStatePageLoadMetricsObserver::
-          GetEngagementDeltaHistogramNameForTesting(security_state::SECURE),
-      1);
   EXPECT_EQ(1u, CountUkmEntries());
   ExpectMetricForUrl(url, UkmEntry::kInitialSecurityLevelName,
                      security_state::SECURE);
@@ -205,14 +197,6 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest, Simple_Http) {
       SecurityStatePageLoadMetricsObserver::
           GetEngagementFinalHistogramNameForTesting(security_state::SECURE),
       0);
-  histogram_tester()->ExpectTotalCount(
-      SecurityStatePageLoadMetricsObserver::
-          GetEngagementDeltaHistogramNameForTesting(security_state::NONE),
-      1);
-  histogram_tester()->ExpectTotalCount(
-      SecurityStatePageLoadMetricsObserver::
-          GetEngagementDeltaHistogramNameForTesting(security_state::SECURE),
-      0);
   EXPECT_EQ(1u, CountUkmEntries());
   ExpectMetricForUrl(url, UkmEntry::kInitialSecurityLevelName,
                      security_state::NONE);
@@ -237,14 +221,6 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest, ReloadPage) {
       SecurityStatePageLoadMetricsObserver::
           GetEngagementFinalHistogramNameForTesting(security_state::SECURE),
       1);
-  histogram_tester()->ExpectTotalCount(
-      SecurityStatePageLoadMetricsObserver::
-          GetEngagementDeltaHistogramNameForTesting(security_state::NONE),
-      0);
-  histogram_tester()->ExpectTotalCount(
-      SecurityStatePageLoadMetricsObserver::
-          GetEngagementDeltaHistogramNameForTesting(security_state::SECURE),
-      1);
   EXPECT_EQ(1u, CountUkmEntries());
   ExpectMetricForUrl(url, UkmEntry::kInitialSecurityLevelName,
                      security_state::SECURE);
@@ -263,8 +239,6 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest, ReloadPage) {
 IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
                        SafetyTipSiteEngagement) {
   const std::string kSiteEngagementHistogramPrefix = "Security.SiteEngagement.";
-  const std::string kSiteEngagementDeltaHistogramPrefix =
-      "Security.SiteEngagementDelta.";
 
   StartHttpServer();
 
@@ -308,11 +282,6 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
         kSiteEngagementHistogramPrefix + (test_case.expect_safety_tip
                                               ? "SafetyTip_Lookalike"
                                               : "SafetyTip_None"),
-        1);
-    histogram_tester.ExpectTotalCount(
-        kSiteEngagementDeltaHistogramPrefix + (test_case.expect_safety_tip
-                                                   ? "SafetyTip_Lookalike"
-                                                   : "SafetyTip_None"),
         1);
     EXPECT_EQ(1u, CountUkmEntries());
     ExpectMetricForUrl(
@@ -384,14 +353,6 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest, OtherScheme) {
       SecurityStatePageLoadMetricsObserver::
           GetEngagementFinalHistogramNameForTesting(security_state::SECURE),
       0);
-  histogram_tester()->ExpectTotalCount(
-      SecurityStatePageLoadMetricsObserver::
-          GetEngagementDeltaHistogramNameForTesting(security_state::NONE),
-      0);
-  histogram_tester()->ExpectTotalCount(
-      SecurityStatePageLoadMetricsObserver::
-          GetEngagementDeltaHistogramNameForTesting(security_state::SECURE),
-      0);
   EXPECT_EQ(0u, CountUkmEntries());
 
   histogram_tester()->ExpectTotalCount(
@@ -444,15 +405,6 @@ IN_PROC_BROWSER_TEST_F(
       SecurityStatePageLoadMetricsObserver::
           GetEngagementFinalHistogramNameForTesting(security_state::SECURE),
       0);
-  histogram_tester()->ExpectTotalCount(
-      SecurityStatePageLoadMetricsObserver::
-          GetEngagementDeltaHistogramNameForTesting(
-              mixed_content_security_level),
-      1);
-  histogram_tester()->ExpectTotalCount(
-      SecurityStatePageLoadMetricsObserver::
-          GetEngagementDeltaHistogramNameForTesting(security_state::SECURE),
-      0);
   EXPECT_EQ(1u, CountUkmEntries());
   ExpectMetricForUrl(url, UkmEntry::kInitialSecurityLevelName,
                      security_state::SECURE);
@@ -476,14 +428,6 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
       SecurityStatePageLoadMetricsObserver::
           GetEngagementFinalHistogramNameForTesting(security_state::SECURE),
       0);
-  histogram_tester()->ExpectTotalCount(
-      SecurityStatePageLoadMetricsObserver::
-          GetEngagementDeltaHistogramNameForTesting(security_state::NONE),
-      0);
-  histogram_tester()->ExpectTotalCount(
-      SecurityStatePageLoadMetricsObserver::
-          GetEngagementDeltaHistogramNameForTesting(security_state::SECURE),
-      0);
   EXPECT_EQ(0u, CountUkmEntries());
 }
 
@@ -499,14 +443,6 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
   histogram_tester()->ExpectTotalCount(
       SecurityStatePageLoadMetricsObserver::
           GetEngagementFinalHistogramNameForTesting(security_state::SECURE),
-      0);
-  histogram_tester()->ExpectTotalCount(
-      SecurityStatePageLoadMetricsObserver::
-          GetEngagementDeltaHistogramNameForTesting(security_state::NONE),
-      0);
-  histogram_tester()->ExpectTotalCount(
-      SecurityStatePageLoadMetricsObserver::
-          GetEngagementDeltaHistogramNameForTesting(security_state::SECURE),
       0);
   EXPECT_EQ(0u, CountUkmEntries());
 
@@ -562,14 +498,6 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
   histogram_tester()->ExpectTotalCount(
       SecurityStatePageLoadMetricsObserver::
           GetEngagementFinalHistogramNameForTesting(security_state::SECURE),
-      0);
-  histogram_tester()->ExpectTotalCount(
-      SecurityStatePageLoadMetricsObserver::
-          GetEngagementDeltaHistogramNameForTesting(security_state::NONE),
-      0);
-  histogram_tester()->ExpectTotalCount(
-      SecurityStatePageLoadMetricsObserver::
-          GetEngagementDeltaHistogramNameForTesting(security_state::SECURE),
       0);
   EXPECT_EQ(0u, CountUkmEntries());
 

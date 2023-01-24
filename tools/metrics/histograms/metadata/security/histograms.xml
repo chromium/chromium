@@ -582,21 +582,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Security.SiteEngagementDelta" units="units"
-    expires_after="2021-10-10">
-  <owner>cthomp@chromium.org</owner>
-  <owner>security-enamel@chromium.org</owner>
-  <summary>
-    The change in Site Engagement score for a site between the page navigation
-    committing and the user closing the page or navigating away. Recorded when
-    the user closes the page or initiates a new navigation.
-
-    The delta is logged as a linear count in [0, 100]. To use, convert back to
-    the original difference (in the range [-100,100]) by multiplying by 2 and
-    subtracting 100.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Security.TimeOnPage2" units="ms"
     expires_after="2023-07-02">
   <owner>cthomp@chromium.org</owner>

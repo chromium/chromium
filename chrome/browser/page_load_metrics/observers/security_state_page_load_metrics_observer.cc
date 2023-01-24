@@ -22,7 +22,6 @@
 namespace {
 // Site Engagement score behavior histogram prefixes.
 const char kEngagementFinalPrefix[] = "Security.SiteEngagement";
-const char kEngagementDeltaPrefix[] = "Security.SiteEngagementDelta";
 
 // Navigation histogram prefixes.
 const char kPageEndReasonPrefix[] = "Security.PageEndReason";
@@ -48,14 +47,6 @@ SecurityStatePageLoadMetricsObserver::MaybeCreateForProfile(
           static_cast<Profile*>(profile));
   return std::make_unique<SecurityStatePageLoadMetricsObserver>(
       engagement_service);
-}
-
-// static
-std::string
-SecurityStatePageLoadMetricsObserver::GetEngagementDeltaHistogramNameForTesting(
-    security_state::SecurityLevel level) {
-  return security_state::GetSecurityLevelHistogramName(
-      kEngagementDeltaPrefix, level);
 }
 
 // static
@@ -181,20 +172,10 @@ void SecurityStatePageLoadMetricsObserver::OnComplete(
 
     // Get the change in Site Engagement score and transform it into the range
     // [0, 100] so it can be logged in an EXACT_LINEAR histogram.
-    int delta = std::round(
-        (final_engagement_score - initial_engagement_score_ + 100) / 2);
     base::UmaHistogramExactLinear(
-        security_state::GetSecurityLevelHistogramName(
-            kEngagementDeltaPrefix, current_security_level_),
-        delta, 100);
-    base::UmaHistogramExactLinear(
-        security_state::GetSecurityLevelHistogramName(
-            kEngagementFinalPrefix, current_security_level_),
+        security_state::GetSecurityLevelHistogramName(kEngagementFinalPrefix,
+                                                      current_security_level_),
         final_engagement_score, 100);
-    base::UmaHistogramExactLinear(
-        security_state::GetSafetyTipHistogramName(kEngagementDeltaPrefix,
-                                                  safety_tip_status),
-        delta, 100);
     base::UmaHistogramExactLinear(
         security_state::GetSafetyTipHistogramName(kEngagementFinalPrefix,
                                                   safety_tip_status),

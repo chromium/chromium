@@ -39,8 +39,6 @@ class SecurityStatePageLoadMetricsObserver
   static std::unique_ptr<page_load_metrics::PageLoadMetricsObserver>
   MaybeCreateForProfile(content::BrowserContext* profile);
 
-  static std::string GetEngagementDeltaHistogramNameForTesting(
-      security_state::SecurityLevel level);
   static std::string GetEngagementFinalHistogramNameForTesting(
       security_state::SecurityLevel level);
   static std::string GetSecurityLevelPageEndReasonHistogramNameForTesting(
