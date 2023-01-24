@@ -367,6 +367,13 @@ void TransferredMediaStreamTrack::BeingTransferred(
   // initialized.
 }
 
+bool TransferredMediaStreamTrack::TransferAllowed(String& message) const {
+  if (track_) {
+    return track_->TransferAllowed(message);
+  }
+  return clone_list_.empty();
+}
+
 void TransferredMediaStreamTrack::AddObserver(Observer* observer) {
   if (track_) {
     track_->AddObserver(observer);

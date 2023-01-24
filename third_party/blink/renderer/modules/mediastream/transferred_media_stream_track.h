@@ -95,6 +95,7 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
   ImageCapture* GetImageCapture() override;
   absl::optional<const MediaStreamDevice> device() const override;
   void BeingTransferred(const base::UnguessableToken& transfer_id) override;
+  bool TransferAllowed(String& message) const override;
 
   void AddObserver(Observer*) override;
 

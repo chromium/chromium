@@ -1439,6 +1439,41 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferAudioMediaStreamTrack) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest,
+     TransferClonedMediaStreamTrackFails) {
+  V8TestingScope scope;
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
+  ScriptState* script_state = scope.GetScriptState();
+  ExceptionState exception_state(scope.GetIsolate(),
+                                 ExceptionState::kExecutionContext, "Window",
+                                 "postMessage");
+  MediaStreamComponent* video_component = MakeTabCaptureVideoComponentForTest(
+      &scope.GetFrame(), base::UnguessableToken::Create());
+  MediaStreamComponent* audio_component =
+      MakeTabCaptureAudioComponentForTest(base::UnguessableToken::Create());
+  for (MediaStreamComponent* component : {video_component, audio_component}) {
+    MediaStreamTrack* original_track =
+        MakeGarbageCollected<BrowserCaptureMediaStreamTrack>(
+            scope.GetExecutionContext(), component,
+            MediaStreamSource::ReadyState::kReadyStateMuted,
+            /*callback=*/base::DoNothing());
+    MediaStreamTrack* cloned_track =
+        original_track->clone(scope.GetExecutionContext());
+    for (MediaStreamTrack* track : {original_track, cloned_track}) {
+      Transferables transferables;
+      transferables.media_stream_tracks.push_back(track);
+      v8::Local<v8::Value> wrapper = ToV8(track, scope.GetScriptState());
+      V8ScriptValueSerializer::Options serialize_options;
+      serialize_options.transferables = &transferables;
+      EXPECT_FALSE(
+          V8ScriptValueSerializerForModules(script_state, serialize_options)
+              .Serialize(wrapper, exception_state));
+      EXPECT_TRUE(HadDOMExceptionInModulesTest("DataCloneError", script_state,
+                                               exception_state));
+    }
+  }
+}
+
+TEST(V8ScriptValueSerializerForModulesTest,
      TransferDeviceCaptureMediaStreamTrackFails) {
   V8TestingScope scope;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
@@ -1617,7 +1652,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
   EXPECT_FALSE(
       V8ScriptValueSerializerForModules(script_state, serialize_options)
           .Serialize(wrapper, exception_state));
-  EXPECT_TRUE(HadDOMExceptionInModulesTest("InvalidStateError", script_state,
+  EXPECT_TRUE(HadDOMExceptionInModulesTest("DataCloneError", script_state,
                                            exception_state));
 }
 

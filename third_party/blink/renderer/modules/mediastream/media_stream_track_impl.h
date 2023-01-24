@@ -70,7 +70,8 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   MediaStreamTrackImpl(ExecutionContext*,
                        MediaStreamComponent*,
                        MediaStreamSource::ReadyState,
-                       base::OnceClosure callback);
+                       base::OnceClosure callback,
+                       bool is_clone = false);
   ~MediaStreamTrackImpl() override;
 
   // MediaStreamTrack
@@ -133,6 +134,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   absl::optional<const MediaStreamDevice> device() const override;
 
   void BeingTransferred(const base::UnguessableToken& transfer_id) override;
+  bool TransferAllowed(String& message) const override;
 
   void AddObserver(MediaStreamTrack::Observer*) override;
 
@@ -177,6 +179,10 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
       feature_handle_for_scheduler_;
 
   MediaStreamSource::ReadyState ready_state_;
+  // has_clones indicates if clone has been called on this MediaStreamTrack or
+  // if it is cloned from another MediaStreamTrack. If set, it will remain true
+  // even if the other MediaStreamTrack is gargabe-collected.
+  bool has_clones_ = false;
   HeapHashSet<Member<MediaStream>> registered_media_streams_;
   bool is_iterating_registered_media_streams_ = false;
   Member<MediaStreamComponent> component_;

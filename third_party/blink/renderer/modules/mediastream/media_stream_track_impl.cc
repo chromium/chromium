@@ -267,8 +267,10 @@ MediaStreamTrackImpl::MediaStreamTrackImpl(
     ExecutionContext* context,
     MediaStreamComponent* component,
     MediaStreamSource::ReadyState ready_state,
-    base::OnceClosure callback)
+    base::OnceClosure callback,
+    bool is_clone)
     : ready_state_(ready_state),
+      has_clones_(is_clone),
       component_(component),
       execution_context_(context) {
   component_->AddSourceObserver(this);
@@ -451,7 +453,7 @@ MediaStreamTrack* MediaStreamTrackImpl::clone(
   MediaStreamTrackImpl* cloned_track =
       MakeGarbageCollected<MediaStreamTrackImpl>(
           execution_context, Component()->Clone(ClonePlatformTrack()),
-          ready_state_, base::DoNothing());
+          ready_state_, base::DoNothing(), /*is_clone=*/true);
 
   // Copy state.
   CloneInternal(cloned_track);
@@ -907,6 +909,23 @@ void MediaStreamTrackImpl::BeingTransferred(
   return;
 }
 
+bool MediaStreamTrackImpl::TransferAllowed(String& message) const {
+  if (Ended()) {
+    message = "MediaStreamTrack has ended.";
+    return false;
+  }
+  if (has_clones_) {
+    message = "MediaStreamTracks with clones cannot be transferred.";
+    return false;
+  }
+  if (!(device() && device()->serializable_session_id() &&
+        IsMediaStreamDeviceTransferrable(*device()))) {
+    message = "MediaStreamTrack could not be serialized.";
+    return false;
+  }
+  return true;
+}
+
 void MediaStreamTrackImpl::RegisterMediaStream(MediaStream* media_stream) {
   CHECK(!is_iterating_registered_media_streams_);
   CHECK(!registered_media_streams_.Contains(media_stream));
@@ -957,6 +976,8 @@ void MediaStreamTrackImpl::CloneInternal(MediaStreamTrackImpl* cloned_track) {
   if (image_capture_) {
     cloned_track->image_capture_ = image_capture_->Clone();
   }
+
+  has_clones_ = true;
 }
 
 void MediaStreamTrackImpl::EnsureFeatureHandleForScheduler() {

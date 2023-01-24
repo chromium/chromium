@@ -633,19 +633,13 @@ bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
     MediaStreamTrack* track,
     ScriptWrappable::TypeDispatcher& dispatcher,
     ExceptionState& exception_state) {
-  if (track->Ended()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "MediaStreamTrack has ended.");
+  String message;
+  if (!track->TransferAllowed(message)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
+                                      message);
     return false;
   }
   absl::optional<const MediaStreamDevice> device = track->device();
-  if (!(device && device->serializable_session_id() &&
-        IsMediaStreamDeviceTransferrable(*device))) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataCloneError,
-        "MediaStreamTrack could not be serialized.");
-    return false;
-  }
   // TODO(crbug.com/1352414): Replace this UnguessableToken with a mojo
   // interface.
   auto transfer_id = base::UnguessableToken::Create();
