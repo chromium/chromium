@@ -113,8 +113,6 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   enum class Type { NONE, EGL_STREAM, D3D, PBUFFER };
   virtual Type GetType() const;
 
-  virtual void* GetEGLImage() const;
-
  private:
   // Safe downcasts. All functions return nullptr if |image| does not exist or
   // does not have the specified type.

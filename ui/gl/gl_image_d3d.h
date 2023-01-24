@@ -39,9 +39,10 @@ class GL_EXPORT GLImageD3D : public GLImage {
 
   bool Initialize();
 
+  void* GetEGLImage() const;
+
   // GLImage implementation
   Type GetType() const override;
-  void* GetEGLImage() const override;
   gfx::Size GetSize() override;
   bool BindTexImage(unsigned target) override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,

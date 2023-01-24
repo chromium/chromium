@@ -613,9 +613,9 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
     std::unique_ptr<GLTextureImageRepresentationBase> gl_representation =
         ProduceGLTexturePassthrough(manager, tracker);
     gpu::TextureBase* texture = gl_representation->GetTextureBase();
-    const gl::GLImage* image =
+    const auto* image = gl::GLImage::ToGLImageD3D(
         static_cast<gles2::TexturePassthrough*>(texture)->GetLevelImage(
-            texture->target(), 0u);
+            texture->target(), 0u));
     DCHECK(image);
     return std::make_unique<DawnEGLImageRepresentation>(
         std::move(gl_representation), image->GetEGLImage(), manager, this,

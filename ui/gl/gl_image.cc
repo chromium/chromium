@@ -58,8 +58,4 @@ GLImage::Type GLImage::GetType() const {
   return Type::NONE;
 }
 
-void* GLImage::GetEGLImage() const {
-  return nullptr;
-}
-
 }  // namespace gl

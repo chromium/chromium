@@ -421,10 +421,6 @@ gfx::Size GLImageNativePixmap::GetSize() {
   return size_;
 }
 
-void* GLImageNativePixmap::GetEGLImage() const {
-  return egl_image_;
-}
-
 bool GLImageNativePixmap::BindTexImage(unsigned target) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

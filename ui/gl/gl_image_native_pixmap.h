@@ -56,7 +56,6 @@ class GL_EXPORT GLImageNativePixmap : public GLImage {
 
   // Overridden from GLImage:
   gfx::Size GetSize() override;
-  void* GetEGLImage() const override;
   bool BindTexImage(unsigned target) override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t process_tracing_id,
