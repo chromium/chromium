@@ -555,71 +555,33 @@ bool ManifestUpdateDataFetchCommand::
   return false;
 }
 
-bool ManifestUpdateDataFetchCommand::IsUpdateNeededForWebAppOriginAssociations()
-    const {
-  // Web app origin association update is tied to the manifest update process.
-  // If there are url handlers for the current app, associations need to be
-  // revalidated.
-  DCHECK(install_info_.has_value());
-  return !install_info_->url_handlers.empty();
-}
-
 void ManifestUpdateDataFetchCommand::NoManifestUpdateRequired() {
   if (IsWebContentsDestroyed()) {
     CompleteCommand(ManifestUpdateResult::kWebContentsDestroyed);
     return;
   }
   DCHECK_EQ(stage_, ManifestUpdateStage::kPendingAppIdentityCheck);
-  stage_ = ManifestUpdateStage::kPendingAssociationsUpdate;
-
-  if (!IsUpdateNeededForWebAppOriginAssociations()) {
-    CompleteCommand(ManifestUpdateResult::kAppUpToDate);
-    return;
-  }
-
-  auto manifest_update_origin_update_callback = base::BindOnce(
-      &ManifestUpdateDataFetchCommand::OnWebAppOriginAssociationsUpdated,
-      AsWeakPtr());
-  auto synchronize_callback = base::BarrierCallback<bool>(
-      /*num_callbacks = */ 2,
-      base::BindOnce(
-          [&](base::OnceCallback<void(bool)> final_callback,
-              std::vector<bool> final_results) {
-            DCHECK_EQ(2u, final_results.size());
-            bool final_result = final_results[0] && final_results[1];
-            std::move(final_callback).Run(final_result);
-          },
-          std::move(manifest_update_origin_update_callback)));
-
-  // TODO(crbug.com/1401125): Remove UpdateUrlHandlers() once OS integration
-  // sub managers have been implemented.
-  lock_->os_integration_manager().UpdateUrlHandlers(app_id_,
-                                                    synchronize_callback);
-  lock_->os_integration_manager().Synchronize(
-      app_id_, base::BindOnce(synchronize_callback, true));
-}
-
-void ManifestUpdateDataFetchCommand::OnWebAppOriginAssociationsUpdated(
-    bool success) {
-  DCHECK_EQ(stage_, ManifestUpdateStage::kPendingAssociationsUpdate);
-  success ? CompleteCommand(ManifestUpdateResult::kAppAssociationsUpdated)
-          : CompleteCommand(ManifestUpdateResult::kAppAssociationsUpdateFailed);
+  CompleteCommand(ManifestUpdateResult::kAppUpToDate);
 }
 
 void ManifestUpdateDataFetchCommand::CompleteCommand(
-    absl::optional<ManifestUpdateResult> result) {
-  if (result.has_value())
-    debug_log_.Set("result", base::StreamableToString(result.value()));
-  else
+    absl::optional<ManifestUpdateResult> early_exit_result) {
+  if (early_exit_result.has_value()) {
+    debug_log_.Set("result",
+                   base::StreamableToString(early_exit_result.value()));
+  } else {
     debug_log_.Set("result", "pending_manifest_data_write");
+  }
 
+  // TODO(crbug.com/1409710): Does success/failure make sense here? It should
+  // probably be based on the exact result rather than if we early exit.
   CommandResult command_result = CommandResult::kSuccess;
-  if (result.has_value() &&
-      result.value() != ManifestUpdateResult::kAppAssociationsUpdated)
+  if (early_exit_result.has_value()) {
     command_result = CommandResult::kFailure;
+  }
   SignalCompletionAndSelfDestruct(
       command_result,
-      base::BindOnce(std::move(fetch_callback_), result,
+      base::BindOnce(std::move(fetch_callback_), early_exit_result,
                      std::move(install_info_), app_identity_update_allowed_));
 }
 

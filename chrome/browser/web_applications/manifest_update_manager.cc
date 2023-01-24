@@ -251,7 +251,7 @@ void ManifestUpdateManager::OnManifestDataFetchAwaitAppWindowClose(
     base::WeakPtr<content::WebContents> contents,
     const GURL& url,
     const AppId& app_id,
-    absl::optional<ManifestUpdateResult> result,
+    absl::optional<ManifestUpdateResult> early_exit_result,
     absl::optional<WebAppInstallInfo> install_info,
     bool app_identity_update_allowed) {
   auto update_stage_it = update_stages_.find(app_id);
@@ -265,11 +265,8 @@ void ManifestUpdateManager::OnManifestDataFetchAwaitAppWindowClose(
   DCHECK_EQ(update_stage.stage, UpdateStage::Stage::kFetchingManifestData);
   update_stage.stage = UpdateStage::Stage::kPendingAppWindowClose;
 
-  if (result.has_value()) {
-    // Stop the manifest update process if there already is a result, which
-    // means that there were issues during the manifest fetching and can
-    // early exit.
-    OnUpdateStopped(url, app_id, result.value());
+  if (early_exit_result.has_value()) {
+    OnUpdateStopped(url, app_id, early_exit_result.value());
     return;
   }
 

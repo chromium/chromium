@@ -472,6 +472,7 @@ class WebApp {
   std::vector<apps::ProtocolHandlerInfo> protocol_handlers_;
   base::flat_set<std::string> allowed_launch_protocols_;
   base::flat_set<std::string> disallowed_launch_protocols_;
+  // TODO(crbug.com/1072058): No longer aiming to ship, remove.
   apps::UrlHandlers url_handlers_;
   GURL lock_screen_start_url_;
   GURL note_taking_new_note_url_;

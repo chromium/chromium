@@ -30,9 +30,9 @@ enum ManifestUpdateResult {
   kIconDownloadFailed = 10,
   kIconReadFromDiskFailed = 11,
   kAppIdMismatch = 12,
-  kAppAssociationsUpdateFailed = 13,
-  kAppAssociationsUpdated = 14,
-  kMaxValue = kAppAssociationsUpdated,
+  // kAppAssociationsUpdateFailed = 13,
+  // kAppAssociationsUpdated = 14,
+  kMaxValue = kAppIdMismatch,
 };
 
 std::ostream& operator<<(std::ostream& os, ManifestUpdateResult result);
@@ -42,7 +42,6 @@ enum class ManifestUpdateStage {
   kPendingIconDownload,
   kPendingIconReadFromDisk,
   kPendingAppIdentityCheck,
-  kPendingAssociationsUpdate,
   kAppWindowsClosed,
   kPendingFinalizerUpdate,
 };
