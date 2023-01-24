@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/controls/hover_button.h"
+#include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -77,19 +77,17 @@ void DownloadDialogView::AddHeader() {
 }
 
 void DownloadDialogView::AddFooter() {
-  // Do not display an icon in the primary position.
-  auto empty_primary_icon = std::make_unique<views::View>();
-  auto launch_icon_view = std::make_unique<views::ImageView>();
-  launch_icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kLaunchIcon, ui::kColorIconSecondary));
-
-  AddChildView(std::make_unique<HoverButton>(
-                   base::BindRepeating(&DownloadDialogView::ShowAllDownloads,
-                                       base::Unretained(this)),
-                   std::move(empty_primary_icon),
-                   l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_FOOTER_LINK),
-                   /*subtitle=*/std::u16string(), std::move(launch_icon_view),
-                   /*resize_row_for_secondary_view=*/false))
+  AddChildView(
+      std::make_unique<RichHoverButton>(
+          base::BindRepeating(&DownloadDialogView::ShowAllDownloads,
+                              base::Unretained(this)),
+          /*main_image_icon=*/ui::ImageModel(),
+          l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_FOOTER_LINK),
+          /*secondary_text=*/std::u16string(),
+          l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_FOOTER_TOOLTIP),
+          /*subtitle_text=*/std::u16string(),
+          ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
+                                         ui::kColorIconSecondary)))
       ->SetBorder(views::CreateEmptyBorder(GetLayoutInsets(DOWNLOAD_ROW)));
 }
 
