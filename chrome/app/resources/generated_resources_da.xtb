@@ -1121,7 +1121,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1992397118740194946">Ikke angivet</translation>
 <translation id="1992924914582925289">Fjern fra enhed</translation>
 <translation id="1994173015038366702">Webadresse</translation>
-<translation id="1995916364271252349">Styrer, hvilke oplysninger websites kan anvende og vise (placering, kamera, pop op-vinduer m.m.)</translation>
+<translation id="1995916364271252349">Styrer, hvilke oplysninger websites kan anvende og vise (lokation, kamera, pop op-vinduer m.m.)</translation>
 <translation id="1997433994358798851">Chrome skal have tilladelse til at bruge Bluetooth for at oprette forbindelse til din enhed</translation>
 <translation id="1997616988432401742">Dine certifikater</translation>
 <translation id="1999115740519098545">Ved opstart</translation>
@@ -1582,7 +1582,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2373666622366160481">Tilpas til papiret</translation>
 <translation id="2375406435414127095">Opret forbindelse til din telefon</translation>
 <translation id="2376056713414548745">Læs højt</translation>
-<translation id="2377588536920405462">Du kan deaktivere Placering ved at deaktivere den overordnede lokationsindstilling på din enhed. Du kan også deaktivere brugen af Wi-Fi, mobilnetværk og sensorer ifm. placering i lokationsindstillingerne.</translation>
+<translation id="2377588536920405462">Du kan deaktivere lokation ved at deaktivere den overordnede lokationsindstilling på din enhed. Du kan også deaktivere brugen af Wi-Fi, mobilnetværk og sensorer ifm. placering i lokationsindstillingerne.</translation>
 <translation id="2377667304966270281">Hårde fejl</translation>
 <translation id="237828693408258535">Vil du oversætte denne side?</translation>
 <translation id="2378982052244864789">Vælg udvidelsens mappe.</translation>
@@ -3710,7 +3710,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4370975561335139969">Den mail og adgangskode, du indtastede, stemmer ikke overens</translation>
 <translation id="4374831787438678295">Linux-installationsprogram</translation>
 <translation id="4375035964737468845">Åbne downloadede filer</translation>
-<translation id="4376226992615520204">Placering er slået fra</translation>
+<translation id="4376226992615520204">Lokation er slået fra</translation>
 <translation id="4377058670119819762">Aktiverer rulning mod venstre og højre på fanelinjen, når den er fuld.</translation>
 <translation id="4377363674125277448">Der opstod et problem med serverens certifikat.</translation>
 <translation id="4378154925671717803">Telefon</translation>
@@ -4684,7 +4684,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5287425679749926365">Dine konti</translation>
 <translation id="5288106344236929384">Flere handlinger, valgmuligheder for adgangsnøgle for <ph name="USERNAME" /> på <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">G&amp;enåbn lukket fane</translation>
-<translation id="52895863590846877">Siden findes ikke på <ph name="LANGUAGE" /></translation>
+<translation id="52895863590846877">Siden er ikke på <ph name="LANGUAGE" /></translation>
 <translation id="52912272896845572">Den private nøglefil er ugyldig.</translation>
 <translation id="5291739252352359682">Der genereres automatisk undertekster til medier i Chrome-browseren (i øjeblikket tilgængelig på engelsk). Lyd og undertekster behandles lokalt og forlader aldrig enheden.</translation>
 <translation id="529175790091471945">Formatér denne enhed</translation>
@@ -5366,7 +5366,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5916664084637901428">Til</translation>
 <translation id="59174027418879706">Aktiveret</translation>
 <translation id="5920543303088087579">Din administrator har deaktiveret tilslutning til dette netværk</translation>
-<translation id="5921257443092182237">Googles lokationstjeneste bruger kilder som f.eks. Wi-Fi, mobilnetværk og sensorer for at hjælpe med at estimere enhedens placering.</translation>
+<translation id="5921257443092182237">Googles lokationstjeneste bruger kilder som f.eks. Wi-Fi, mobilnetværk og sensorer for at hjælpe med at estimere enhedens lokation.</translation>
 <translation id="5924047253200400718">Få hjælp<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924527146239595929">Tag et nyt billede, eller vælg et eksisterende billede eller ikon.
     <ph name="LINE_BREAK" />
@@ -6386,7 +6386,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6863496016067551393">Alle udvidelser er tilladt</translation>
 <translation id="686366188661646310">Vil du slette adgangskoden?</translation>
 <translation id="6865313869410766144">Formulardata for AutoFyld</translation>
-<translation id="6865598234501509159">Siden findes ikke på <ph name="LANGUAGE" /></translation>
+<translation id="6865598234501509159">Siden er ikke på <ph name="LANGUAGE" /></translation>
 <translation id="6865708901122695652">WebRTC-hændelseslogfiler (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Stille</translation>
 <translation id="686664946474413495">Farvetemperatur</translation>
@@ -6902,7 +6902,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7367714965999718019">QR-kodegenerator</translation>
 <translation id="736877393389250337"><ph name="URL" /> kunne ikke åbnes i <ph name="ALTERNATIVE_BROWSER_NAME" />. Kontakt din systemadministrator.</translation>
 <translation id="7370592524170198497">Ethernet EAP:</translation>
-<translation id="7371490947952970241">Du kan deaktivere Placering ved at deaktivere den overordnede lokationsindstilling på denne enhed. Du kan også deaktivere brugen af Wi-Fi, mobilnetværk og sensorer ifm. placering i lokationsindstillingerne.</translation>
+<translation id="7371490947952970241">Du kan deaktivere lokation ved at deaktivere den overordnede lokationsindstilling på denne enhed. Du kan også deaktivere brugen af Wi-Fi, mobilnetværk og sensorer ifm. lokation i lokationsindstillingerne.</translation>
 <translation id="7371917887111892735">Faner formindskes til bredden for fastgjorte faner</translation>
 <translation id="7374376573160927383">Administrer USB-enheder</translation>
 <translation id="7376124766545122644">Dette link kan ikke bruges. Sørg for, at dit link starter med "http://" eller "https://", før du prøver igen.</translation>
@@ -7080,7 +7080,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7529411698175791732">Tjek din internetforbindelse. Hvis problemet fortsætter, kan du prøve at logge ud og logge ind igen.</translation>
 <translation id="7529876053219658589">{0,plural, =1{Luk gæstevindue}one{Close Guest}other{Luk gæstevinduer}}</translation>
 <translation id="7530016656428373557">Afladningshastighed i Watt</translation>
-<translation id="7531310913436731628">Placering er deaktiveret i systemindstillingerne for Mac</translation>
+<translation id="7531310913436731628">Lokation er deaktiveret i systemindstillingerne for Mac</translation>
 <translation id="7531771599742723865">Enheden er i brug</translation>
 <translation id="7531779363494549572">Gå til Indstillinger &gt; Apps og notifikationer &gt; Notifikationer.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> svarer ikke. Vælg "Tving til at lukke" for at lukke appen.</translation>

@@ -4659,7 +4659,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5281013262333731149">Ábrese en: <ph name="OPEN_BROWSER" /></translation>
 <translation id="528208740344463258">Para descargar e utilizar aplicacións para Android, primeiro debes instalar esta actualización obrigatoria. Non podes utilizar o dispositivo <ph name="DEVICE_TYPE" /> mentres se está actualizando. O <ph name="DEVICE_TYPE" /> reiniciarase tras finalizar a instalación.</translation>
 <translation id="5282733140964383898">Ao activar a opción Non seguir, incluirase unha solicitude no teu tráfico de navegación. O efecto producido depende de se o sitio web responde á solicitude e da interpretación desta. Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche anuncios que non estean baseados noutros sitios web que visitases. Moitos sitios web seguirán recompilando e utilizando os teus datos de navegación para, por exemplo, mellorar a seguranza, fornecer contido, anuncios e recomendacións e para crear estatísticas de informes. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
-<translation id="5283677936944177147">Vaites! Produciuse un erro no sistema e non puido determinar o modelo do dispositivo ou o número de serie.</translation>
+<translation id="5283677936944177147">Vaia, produciuse un erro no sistema e non puido determinar o modelo do dispositivo ou o número de serie.</translation>
 <translation id="5284445933715251131">Continuar coa descarga</translation>
 <translation id="5285635972691565180">Pantalla <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Buscando</translation>
@@ -8439,7 +8439,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8786824282808281903">Cando o teu fillo ou filla vexa esta icona, poderase usar unha impresión dixital para identificarse ou autorizar compras.</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{Grupo sen nome (1 pestana)}other{Grupo sen nome (# pestanas)}}</translation>
 <translation id="8791157330927639737">Máis información sobre a actualización</translation>
-<translation id="8791534160414513928">Enviar unha solicitude de "Non realizar seguimento" co teu tráfico de navegación</translation>
+<translation id="8791534160414513928">Enviar unha solicitude de "Do Not Track" co teu tráfico de navegación</translation>
 <translation id="879413103056696865">Mentres a zona wifi estea activada, o teu teléfono <ph name="PHONE_NAME" />:</translation>
 <translation id="8795916974678578410">Nova ventá</translation>
 <translation id="8797459392481275117">Non traducir nunca este sitio</translation>

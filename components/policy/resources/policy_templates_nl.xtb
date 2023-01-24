@@ -7055,7 +7055,7 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
       Een extensie of Android-app kan standaard geen sleutel gebruiken die is bedoeld voor zakelijk gebruik. Dit staat gelijk aan het instellen van allowCorporateKeyUsage op False voor die extensie of Android-app. Alleen als allowCorporateKeyUsage voor een extensie of Android-app is ingesteld op True kan deze elke platformsleutel gebruiken die is gemarkeerd voor zakelijk gebruik om willekeurige gegevens te ondertekenen. Geef deze toestemming alleen als je er zeker van bent dat de extensie of de Android-app de toegang tot de sleutel voldoende beveiligt tegen aanvallers.</translation>
 <translation id="7930383470029339167">ThrottleDisplayNoneAndAccessibilityHiddenCrossOriginIframes is een Chrome-functie die is ontworpen om cross-origin-iframes in verschillende processen en binnen hetzelfde proces consistent te maken in hun weergavegedrag. Zie https://chromestatus.com/feature/5175574929080320 voor meer informatie over throttling in verschillende processen versus throttling binnen hetzelfde proces.
 
-Met dit bedrijfsbeleid kunnen beheerders bepalen of hun gebruikers de extra throttling wel of niet kunnen aanzetten. Als je het beleid niet toepast, kan de throttling niet worden aangezet. Als het beleid wordt ingesteld op aangezet of niet wordt ingesteld, kan de gebruiker throttling toestaan of kan de functie worden aangezet via Chrome-varianten.</translation>
+Met dit bedrijfsbeleid kunnen beheerders bepalen of hun gebruikers de extra throttling wel of niet kunnen aanzetten. Als je het beleid niet toepast, kan de throttling niet worden aangezet. Als het beleid wordt toegepast of niet wordt ingesteld, kan de gebruiker throttling toestaan of kan de functie worden aangezet via Chrome-varianten.</translation>
 <translation id="793188693675675950">Import van homepage bij eerste uitvoering uitzetten</translation>
 <translation id="7933141401888114454">Aanmaak van bewaakte gebruikers aanzetten</translation>
 <translation id="793473937901685727">Certificaatbeschikbaarheid instellen voor ARC-apps</translation>
@@ -8380,7 +8380,7 @@ Als je dit beleid niet instelt, wordt het nieuwe gedrag gebruikt, net als bij de
 
       Als dit beleid niet is ingesteld of is ingesteld op <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />, wordt de standaard modus voor introductie van de Assistent gebruikt.
       Als het beleid is ingesteld op <ph name="ASSISTANT_ONBOARDING_MODE_EDUCATION" />, wordt de EDU-modus voor introductie van de Assistent gebruikt.</translation>
-<translation id="9191821120522935133">Hiermee kun je throttling van niet-zichtbare, cross-origin iframes aanzetten</translation>
+<translation id="9191821120522935133">Hiermee kun je throttling van niet-zichtbare, cross-origin-iframes aanzetten</translation>
 <translation id="9192220384862917760">Afscherming van de host voor externe toegang aanzetten</translation>
 <translation id="9195766455191826480">Beveiligingsstatus niet rapporteren</translation>
 <translation id="9197740283131855199">Percentage waarmee de dimvertraging van het scherm wordt geschaald als de gebruiker actief wordt na het dimmen</translation>
