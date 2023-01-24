@@ -146,6 +146,8 @@ ChromeVoxE2ETest = class extends E2ETestBase {
     await importModule(
         'ChromeVoxState', '/chromevox/background/chromevox_state.js');
     await importModule(
+        'TtsInterface', '/chromevox/background/tts_interface.js');
+    await importModule(
         'CommandHandler', '/chromevox/background/command_handler.js');
     await importModule(
         'CommandHandlerInterface',
@@ -159,7 +161,6 @@ ChromeVoxE2ETest = class extends E2ETestBase {
         'OutputContextOrder', '/chromevox/background/output/output_types.js');
     await importModule(
         'NavBraille', '/chromevox/common/braille/nav_braille.js');
-    await importModule('TtsInterface', '/chromevox/common/tts_interface.js');
     await importModule('QueueMode', '/chromevox/common/tts_types.js');
 
     // For tests, enable announcement of events we trigger via automation.

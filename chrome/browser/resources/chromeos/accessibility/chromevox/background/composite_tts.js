@@ -5,10 +5,10 @@
 /**
  * @fileoverview A composite TTS allows ChromeVox to use multiple TTS engines at
  * the same time.
- *
  */
-import {TtsInterface} from '../common/tts_interface.js';
 import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
+
+import {TtsInterface} from './tts_interface.js';
 
 /**
  * A Composite Tts

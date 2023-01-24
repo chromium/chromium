@@ -9,8 +9,9 @@
 
 import {LocalStorage} from '../../common/local_storage.js';
 import {Msgs} from '../common/msgs.js';
-import {TtsInterface} from '../common/tts_interface.js';
 import * as ttsTypes from '../common/tts_types.js';
+
+import {TtsInterface} from './tts_interface.js';
 
 /**
  * @typedef {{
