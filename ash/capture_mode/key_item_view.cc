@@ -24,14 +24,14 @@ namespace ash {
 
 namespace {
 
-constexpr int kKeyItemMinWidth = 64;
-constexpr int kKeyItemHeight = 64;
+constexpr int kKeyItemMinWidth = 56;
+constexpr int kKeyItemHeight = 56;
 constexpr int kKeyItemVerticalPadding = 16;
-constexpr int kKeyItemHorizontalPadding = 24;
-constexpr gfx::Size kIconSize{24, 24};
+constexpr int kKeyItemHorizontalPadding = 20;
+constexpr gfx::Size kIconSize{20, 20};
 constexpr char kGoogleSansFont[] = "Google Sans";
-constexpr int kKeyItemViewFontSize = 24;
-constexpr int kKeyItemViewLineHeight = 32;
+constexpr int kKeyItemViewFontSize = 18;
+constexpr int kKeyItemViewLineHeight = 24;
 
 }  // namespace
 
