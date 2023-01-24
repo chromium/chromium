@@ -422,23 +422,11 @@ bool DiscardableSharedMemory::Purge(Time current_time) {
 #elif BUILDFLAG(IS_WIN)
   // On Windows, discarded pages are not returned to the system immediately and
   // not guaranteed to be zeroed when returned to the application.
-  using DiscardVirtualMemoryFunction =
-      DWORD(WINAPI*)(PVOID virtualAddress, SIZE_T size);
-  static DiscardVirtualMemoryFunction discard_virtual_memory =
-      reinterpret_cast<DiscardVirtualMemoryFunction>(GetProcAddress(
-          GetModuleHandle(L"Kernel32.dll"), "DiscardVirtualMemory"));
-
   char* address = static_cast<char*>(shared_memory_mapping_.memory()) +
                   AlignToPageSize(sizeof(SharedState));
   size_t length = AlignToPageSize(mapped_size_);
 
-  // Use DiscardVirtualMemory when available because it releases faster than
-  // MEM_RESET.
-  DWORD ret = ERROR_NOT_SUPPORTED;
-  if (discard_virtual_memory) {
-    ret = discard_virtual_memory(address, length);
-  }
-
+  DWORD ret = DiscardVirtualMemory(address, length);
   // DiscardVirtualMemory is buggy in Win10 SP0, so fall back to MEM_RESET on
   // failure.
   if (ret != ERROR_SUCCESS) {
