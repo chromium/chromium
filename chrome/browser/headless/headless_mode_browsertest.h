@@ -23,6 +23,9 @@ class HeadlessModeBrowserTest : public InProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
+
+ protected:
+  bool headful_mode_ = false;
 };
 
 enum StartWindowMode {
