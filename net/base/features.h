@@ -170,7 +170,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTLS13KeyUpdate);
 // deployment of future security improvements.
 NET_EXPORT BASE_DECLARE_FEATURE(kPermuteTLSExtensions);
 
+// Enables Kyber-based post-quantum key-agreements in TLS 1.3 connections.
+NET_EXPORT BASE_DECLARE_FEATURE(kPostQuantumKyber);
+
 // Enables CECPQ2, a post-quantum key-agreement, in TLS 1.3 connections.
+// Ineffective if kPostQuantumKyber is enabled.
 NET_EXPORT BASE_DECLARE_FEATURE(kPostQuantumCECPQ2);
 
 // Enables CECPQ2, a post-quantum key-agreement, in TLS 1.3 connections for a
