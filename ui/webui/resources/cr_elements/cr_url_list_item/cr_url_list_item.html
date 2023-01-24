@@ -20,13 +20,13 @@
   }
 
   :host(.hovered),
-  :host(:focus-within) {
+  :host-context(.focus-outline-visible):host(:focus-within) {
     background: var(--google-grey-200);
   }
 
   @media (prefers-color-scheme: dark) {
     :host(.hovered),
-    :host(:focus-within) {
+    :host-context(.focus-outline-visible):host(:focus-within) {
       background: var(--google-grey-800);
     }
   }
@@ -103,6 +103,19 @@
     font-weight: 400;
   }
 
+  ::slotted(button[slot=title]) {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    display: inline;
+    padding: 0;
+    text-align: start;
+  }
+
+  ::slotted(button[slot=title]:focus) {
+    outline: none;
+  }
+
   .descriptions {
     align-items: center;
     display: flex;
@@ -158,8 +171,10 @@
   }
 
   :host(.hovered) ::slotted(cr-icon-button[slot=suffix-icon]),
-  :host(:focus-within) ::slotted(cr-icon-button[slot=suffix-icon]),
-  :host([always-show-suffix-icons]) ::slotted(cr-icon-button[slot=suffix-icon]) {
+  :host-context(.focus-outline-visible):host(:focus-within)
+      ::slotted(cr-icon-button[slot=suffix-icon]),
+  :host([always-show-suffix-icons])
+      ::slotted(cr-icon-button[slot=suffix-icon]) {
     display: block;
   }
 </style>

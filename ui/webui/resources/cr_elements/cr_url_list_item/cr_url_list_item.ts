@@ -5,9 +5,10 @@
 import '../cr_icons.css.js';
 import '../cr_shared_vars.css.js';
 
+import {assert} from '//resources/js/assert_ts.js';
+import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
 import {getFaviconForPageURL} from '//resources/js/icon.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {MouseHoverableMixin} from '../mouse_hoverable_mixin.js';
 
@@ -51,6 +52,11 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
   iconsAlwaysVisible: boolean;
   size: CrUrlListItemSize;
   url?: string;
+
+  override ready() {
+    super.ready();
+    FocusOutlineManager.forDocument(document);
+  }
 
   private getFavicon_(): string {
     return getFaviconForPageURL(this.url || '', false);
