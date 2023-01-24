@@ -774,6 +774,8 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
     // In unit tests MIME type will be empty, because loadHTML:forURL: does
     // not notify web view delegate about received response, so web controller
     // does not get a chance to properly update MIME type.
+    [self.webStateImpl->GetWebController() injectWindowID];
+
     self.webStateImpl->RetrieveExistingFrames();
   }
 

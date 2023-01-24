@@ -64,6 +64,11 @@
 // ui::PAGE_TRANSITION_TYPED and returns without waiting for the page to load.
 + (void)startLoadingURL:(NSString*)spec;
 
+// If the current WebState is HTML content, will wait until the window ID is
+// injected. Returns YES if the injection is successful or if the WebState is
+// not HTML content.
++ (BOOL)waitForWindowIDInjectionIfNeeded;
+
 // Returns YES if the current WebState is loading.
 + (BOOL)isLoading;
 
@@ -209,6 +214,11 @@
 
 // Returns YES if the current WebState in window with given number is loading.
 + (BOOL)isLoadingInWindowWithNumber:(int)windowNumber [[nodiscard]];
+
+// If the current WebState in window with given number is HTML content, will
+// wait until the window ID is injected. Returns YES if the injection is
+// successful or if the WebState is not HTML content.
++ (BOOL)waitForWindowIDInjectionIfNeededInWindowWithNumber:(int)windowNumber;
 
 // Returns YES if the current WebState in window with given number contains
 // `text`.

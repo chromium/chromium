@@ -371,6 +371,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   if (wait) {
     [self waitForWebStateVisible];
     [self waitForPageToFinishLoading];
+    EG_TEST_HELPER_ASSERT_TRUE(
+        [ChromeEarlGreyAppInterface waitForWindowIDInjectionIfNeeded],
+        @"WindowID failed to inject");
     // Loading URL (especially the first time) can trigger alerts.
     [SystemAlertHandler handleSystemAlertIfVisible];
   }
@@ -1025,6 +1028,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                            inWindowWithNumber:windowNumber];
   if (wait) {
     [self waitForPageToFinishLoadingInWindowWithNumber:windowNumber];
+    EG_TEST_HELPER_ASSERT_TRUE(
+        [ChromeEarlGreyAppInterface
+            waitForWindowIDInjectionIfNeededInWindowWithNumber:windowNumber],
+        @"WindowID failed to inject");
     // Loading URL (especially the first time) can trigger alerts.
     [SystemAlertHandler handleSystemAlertIfVisible];
   }

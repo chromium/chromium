@@ -1105,7 +1105,7 @@ TEST_F(PasswordControllerTest, SuggestionUpdateTests) {
       "Should show all suggestions when focusing empty username field",
       @[(@"var evt = document.createEvent('Events');"
          "username_.focus();"),
-        @";"],
+        @""],
       @[@"user0 ••••••••", @"abc ••••••••"],
       @"[]=, onkeyup=false, onchange=false"
     },
@@ -1113,7 +1113,7 @@ TEST_F(PasswordControllerTest, SuggestionUpdateTests) {
       "Should show password suggestions when focusing password field",
       @[(@"var evt = document.createEvent('Events');"
          "password_.focus();"),
-        @";"],
+        @""],
       @[@"user0 ••••••••", @"abc ••••••••"],
       @"[]=, onkeyup=false, onchange=false"
     },
@@ -1121,7 +1121,7 @@ TEST_F(PasswordControllerTest, SuggestionUpdateTests) {
       "Should not filter suggestions when focusing username field with input",
       @[(@"username_.value='ab';"
          "username_.focus();"),
-        @";"],
+        @""],
       @[@"user0 ••••••••", @"abc ••••••••"],
       @"ab[]=, onkeyup=false, onchange=false"
     },
@@ -1132,7 +1132,7 @@ TEST_F(PasswordControllerTest, SuggestionUpdateTests) {
          // Keyup event is dispatched to simulate typing
          "var ev = new KeyboardEvent('keyup', {bubbles:true});"
          "username_.dispatchEvent(ev);"),
-        @";"],
+        @""],
       @[@"abc ••••••••"],
       @"ab[]=, onkeyup=true, onchange=false"
     },
@@ -1144,7 +1144,7 @@ TEST_F(PasswordControllerTest, SuggestionUpdateTests) {
          // Keyup event is dispatched to simulate typing.
          "var ev = new KeyboardEvent('keyup', {bubbles:true});"
          "password_.dispatchEvent(ev);"),
-        @";"],
+        @""],
       @[],
       @"abc[]=••, onkeyup=true, onchange=false"
     },
@@ -1600,7 +1600,7 @@ TEST_F(PasswordControllerTest, CheckPasswordGenerationSuggestion) {
       "Should not show suggest password when focusing username field",
       @[(@"var evt = document.createEvent('Events');"
          "username_.focus();"),
-        @";"],
+        @""],
       @[@"user0 ••••••••", @"abc ••••••••"],
       @"[]=, onkeyup=false, onchange=false"
     },
@@ -1608,7 +1608,7 @@ TEST_F(PasswordControllerTest, CheckPasswordGenerationSuggestion) {
       "Should show suggest password when focusing password field",
       @[(@"var evt = document.createEvent('Events');"
          "password_.focus();"),
-        @";"],
+        @""],
       @[@"user0 ••••••••", @"abc ••••••••", @"Suggest Password\u2026"],
       @"[]=, onkeyup=false, onchange=false"
     },

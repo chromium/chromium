@@ -29,6 +29,7 @@ source_set("web") {
   deps = [
     ":common_js",
     ":core",
+    ":js_resources",
     ":message_js",
     ":navigation_resources",
     ":plugin_placeholder_js",
@@ -117,6 +118,8 @@ source_set("eg_app_support+eg2") {
   ]
 
   sources = [
+    "public/test/earl_grey/js_test_util.h",
+    "public/test/earl_grey/js_test_util.mm",
     "public/test/earl_grey/web_view_actions.h",
     "public/test/earl_grey/web_view_actions.mm",
     "public/test/earl_grey/web_view_matchers.h",
@@ -661,6 +664,11 @@ optimize_js("message_js") {
 
   primary_script = "js_messaging/resources/message.js"
   sources = [ "js_messaging/resources/message.js" ]
+}
+
+optimize_js("js_resources") {
+  primary_script = "js_messaging/resources/window_id.js"
+  sources = [ "js_messaging/resources/window_id.js" ]
 }
 
 bundle_data("navigation_resources") {

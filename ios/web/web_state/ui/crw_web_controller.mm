@@ -28,6 +28,7 @@
 #import "ios/web/find_in_page/java_script_find_in_page_manager_impl.h"
 #import "ios/web/history_state_util.h"
 #import "ios/web/js_features/scroll_helper/scroll_helper_java_script_feature.h"
+#import "ios/web/js_messaging/crw_js_window_id_manager.h"
 #import "ios/web/js_messaging/java_script_feature_util_impl.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/js_messaging/web_view_web_state_map.h"
@@ -216,6 +217,9 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
 
 // ContextMenu controller, handling the interactions with the context menu.
 @property(nonatomic, strong) CRWContextMenuController* contextMenuController;
+
+// Script manager for setting the windowID.
+@property(nonatomic, strong) CRWJSWindowIDManager* windowIDJSManager;
 
 // Returns the current URL of the web view, and sets `trustLevel` accordingly
 // based on the confidence in the verification.
@@ -425,6 +429,10 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
     _webView.allowsBackForwardNavigationGestures =
         _allowsBackForwardNavigationGestures;
+    self.windowIDJSManager =
+        [[CRWJSWindowIDManager alloc] initWithWebView:_webView];
+  } else {
+    self.windowIDJSManager = nil;
   }
   self.webViewNavigationObserver.webView = _webView;
 
@@ -1080,11 +1088,16 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
 #pragma mark - JavaScript
 
+- (void)injectWindowID {
+  [_windowIDJSManager inject];
+}
+
 - (void)executeJavaScript:(NSString*)javascript
         completionHandler:(void (^)(id result, NSError* error))completion {
   __block void (^stack_completion_block)(id result, NSError* error) =
       [completion copy];
-  web::ExecuteJavaScript(self.webView, javascript, ^(id value, NSError* error) {
+  NSString* safeScript = [self scriptByAddingWindowIDCheckForScript:javascript];
+  web::ExecuteJavaScript(self.webView, safeScript, ^(id value, NSError* error) {
     if (error) {
       DLOG(WARNING) << "Script execution failed with error: "
                     << base::SysNSStringToUTF16(
@@ -1117,6 +1130,16 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   [self touched:YES];
 
   [self executeJavaScript:javascript completionHandler:completion];
+}
+
+#pragma mark - JavaScript Helpers (Private)
+
+// Returns a new script which wraps `script` with windowID check so `script` is
+// not evaluated on windowID mismatch.
+- (NSString*)scriptByAddingWindowIDCheckForScript:(NSString*)script {
+  NSString* kTemplate = @"if (__gCrWeb['windowId'] === '%@') { %@; }";
+  return [NSString
+      stringWithFormat:kTemplate, [_windowIDJSManager windowID], script];
 }
 
 #pragma mark - CRWTouchTrackingDelegate (Public)

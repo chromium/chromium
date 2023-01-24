@@ -230,6 +230,10 @@ class WebStateImpl;
 - (NSDictionary<NSNumber*, NSNumber*>*)
     statesForAllPermissions API_AVAILABLE(ios(15.0));
 
+// Injects the windowID into the main frame of the current webpage.
+// TODO(crbug.com/905939): Remove WindowID.
+- (void)injectWindowID;
+
 // Shows a custom iOS context menu with the given `items` for options targeted
 // to the data visible in given window `rect`.
 - (void)showMenuWithItems:(NSArray<CRWContextMenuItem*>*)items
