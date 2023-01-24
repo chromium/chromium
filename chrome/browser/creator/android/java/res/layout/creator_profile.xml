@@ -16,7 +16,7 @@
       android:orientation="vertical"
       android:layout_weight="1"
       android:layout_width="@dimen/creator_profile_container_width"
-      android:layout_height="match_parent"
+      android:layout_height="wrap_content"
       android:layout_marginStart="@dimen/creator_profile_container_margin" >
     <TextView
         android:id="@+id/creator_name"
@@ -35,7 +35,8 @@
   </LinearLayout>
   <FrameLayout
       android:layout_width="wrap_content"
-      android:layout_height="wrap_content" >
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_vertical" >
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/creator_follow_button"
         android:layout_width="wrap_content"
