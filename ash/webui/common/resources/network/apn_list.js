@@ -70,12 +70,6 @@ export class ApnList extends ApnListBase {
         type: Object,
         value: ApnDetailDialogMode.CREATE,
       },
-
-      /** @private */
-      isConnectedApnAutoDetected_: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 
@@ -95,7 +89,6 @@ export class ApnList extends ApnListBase {
       return [];
     }
 
-    this.isConnectedApnAutoDetected_ = false;
     const connectedApn = this.managedCellularProperties.connectedApn;
     const customApnList = this.managedCellularProperties.customApnList;
 
@@ -105,7 +98,6 @@ export class ApnList extends ApnListBase {
     }
 
     if (!customApnList || customApnList.length === 0) {
-      this.isConnectedApnAutoDetected_ = true;
       return [connectedApn];
     }
 
@@ -116,8 +108,6 @@ export class ApnList extends ApnListBase {
 
     if (connectedApnIndex != -1) {
       customApnList.splice(connectedApnIndex, 1);
-    } else {
-      this.isConnectedApnAutoDetected_ = true;
     }
 
     return [connectedApn, ...customApnList];
@@ -132,16 +122,6 @@ export class ApnList extends ApnListBase {
   isApnConnected_(index) {
     return !!this.managedCellularProperties &&
         !!this.managedCellularProperties.connectedApn && index === 0;
-  }
-
-  /**
-   * Returns true if the APN is automatically detected.
-   * @param {number} index index in the APNs array.
-   * @return {boolean}
-   * @private
-   */
-  isApnAutoDetected_(index) {
-    return this.isApnConnected_(index) && this.isConnectedApnAutoDetected_;
   }
 
   /**

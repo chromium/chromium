@@ -145,7 +145,6 @@ suite('ApnListTest', function() {
         assertTrue(OncMojo.apnMatch(apns[0].apn, customApn1));
         assertTrue(OncMojo.apnMatch(apns[1].apn, customApn2));
         assertFalse(apns[0].isConnected);
-        assertFalse(apns[0].isAutoDetected);
       });
 
   test(
@@ -162,7 +161,6 @@ suite('ApnListTest', function() {
         assertEquals(apns.length, 1);
         assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
         assertTrue(apns[0].isConnected);
-        assertTrue(apns[0].isAutoDetected);
       });
 
   test(
@@ -182,7 +180,6 @@ suite('ApnListTest', function() {
         assertTrue(OncMojo.apnMatch(apns[1].apn, customApn1));
         assertTrue(OncMojo.apnMatch(apns[2].apn, customApn2));
         assertTrue(apns[0].isConnected);
-        assertTrue(apns[0].isAutoDetected);
       });
 
   test('Connected APN is inside custom APN list.', async function() {
@@ -201,7 +198,6 @@ suite('ApnListTest', function() {
     assertTrue(OncMojo.apnMatch(apns[2].apn, customApn2));
     assertTrue(OncMojo.apnMatch(apns[3].apn, customApn3));
     assertTrue(apns[0].isConnected);
-    assertFalse(apns[0].isAutoDetected);
   });
 
   test('Connected APN is the only apn in custom APN list.', async function() {
@@ -214,7 +210,6 @@ suite('ApnListTest', function() {
     assertEquals(apns.length, 1);
     assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
     assertTrue(apns[0].isConnected);
-    assertFalse(apns[0].isAutoDetected);
   });
 
   test(

@@ -48,11 +48,6 @@ class ApnListItem extends ApnListItemBase {
         value: true,
       },
 
-      isAutoDetected: {
-        type: Boolean,
-        value: true,
-      },
-
       shouldDisallowDisablingRemoving: {
         type: Boolean,
         value: false,
@@ -101,8 +96,7 @@ class ApnListItem extends ApnListItemBase {
       detail: /** @type {!ApnEventData} */ ({
         apn: this.apn,
         // Only allow editing if the APN is a custom APN.
-        mode: this.isAutoDetected ? ApnDetailDialogMode.VIEW :
-                                    ApnDetailDialogMode.EDIT,
+        mode: this.apn.id ? ApnDetailDialogMode.EDIT : ApnDetailDialogMode.VIEW,
       }),
     }));
   }
