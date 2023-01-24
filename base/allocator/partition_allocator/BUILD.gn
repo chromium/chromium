@@ -180,10 +180,7 @@ component("partition_alloc") {
     "yield_processor.h",
   ]
 
-  # Add *Scan sources if building inside Chromium. Currently,
-  # we see no need to add a more dedicated buildflag for this, as
-  # we don't anticipate Chromium-external usage of *Scan.
-  if (build_with_chromium) {
+  if (use_starscan) {
     sources += [
       "starscan/logging.h",
       "starscan/metadata_allocator.cc",
@@ -290,7 +287,7 @@ component("partition_alloc") {
       ]
     }
   }
-  if (build_with_chromium) {
+  if (use_starscan) {
     if (current_cpu == "x64") {
       defines += [ "PA_PCSCAN_STACK_SUPPORTED" ]
       sources += [ "starscan/stack/asm/x64/push_registers_asm.cc" ]
@@ -428,8 +425,7 @@ buildflag_header("partition_alloc_buildflags") {
     "ENABLE_POINTER_COMPRESSION=$enable_pointer_compression_support",
     "ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=$enable_shadow_metadata",
 
-    # *Scan is currently only used by Chromium.
-    "STARSCAN=$build_with_chromium",
+    "STARSCAN=$use_starscan",
 
     "ENABLE_PKEYS=$enable_pkeys",
   ]

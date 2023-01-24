@@ -139,6 +139,9 @@ declare_args() {
   enable_shadow_metadata = false
 }
 
+# *Scan is currently only used by Chromium.
+use_starscan = build_with_chromium
+
 # We want to provide assertions that guard against inconsistent build
 # args, but there is no point in having them fire if we're not building
 # PartitionAlloc at all. If `use_partition_alloc` is false, we jam all
@@ -159,6 +162,7 @@ if (!use_partition_alloc) {
   enable_dangling_raw_ptr_checks = false
   enable_dangling_raw_ptr_perf_experiment = false
   backup_ref_ptr_poison_oob_ptr = false
+  use_starscan = false
 }
 
 # put_ref_count_in_previous_slot can only be used if

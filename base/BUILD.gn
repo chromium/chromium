@@ -3768,13 +3768,18 @@ test("base_unittests") {
       "allocator/partition_allocator/partition_alloc_unittest.cc",
       "allocator/partition_allocator/partition_lock_unittest.cc",
       "allocator/partition_allocator/reverse_bytes_unittest.cc",
-      "allocator/partition_allocator/starscan/pcscan_scheduling_unittest.cc",
-      "allocator/partition_allocator/starscan/pcscan_unittest.cc",
-      "allocator/partition_allocator/starscan/scan_loop_unittest.cc",
-      "allocator/partition_allocator/starscan/stack/stack_unittest.cc",
-      "allocator/partition_allocator/starscan/state_bitmap_unittest.cc",
       "allocator/partition_allocator/thread_cache_unittest.cc",
     ]
+
+    if (use_starscan) {
+      sources += [
+        "allocator/partition_allocator/starscan/pcscan_scheduling_unittest.cc",
+        "allocator/partition_allocator/starscan/pcscan_unittest.cc",
+        "allocator/partition_allocator/starscan/scan_loop_unittest.cc",
+        "allocator/partition_allocator/starscan/stack/stack_unittest.cc",
+        "allocator/partition_allocator/starscan/state_bitmap_unittest.cc",
+      ]
+    }
 
     if ((is_android || is_linux) && target_cpu == "arm64") {
       cflags = [

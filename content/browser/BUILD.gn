@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//base/allocator/partition_allocator/partition_alloc.gni")
 import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/chromeos/ui_mode.gni")
@@ -2066,8 +2067,6 @@ source_set("browser") {
     "ssl/ssl_manager.h",
     "ssl_private_key_impl.cc",
     "ssl_private_key_impl.h",
-    "starscan_load_observer.cc",
-    "starscan_load_observer.h",
     "startup_data_impl.cc",
     "startup_data_impl.h",
     "startup_helper.cc",
@@ -2307,6 +2306,13 @@ source_set("browser") {
     "worker_host/worker_script_loader_factory.cc",
     "worker_host/worker_script_loader_factory.h",
   ]
+
+  if (use_starscan) {
+    sources += [
+      "starscan_load_observer.cc",
+      "starscan_load_observer.h",
+    ]
+  }
 
   if (!is_android && !is_fuchsia) {
     sources += [
