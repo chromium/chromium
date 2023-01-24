@@ -78,6 +78,9 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
+#include "components/cast_streaming/public/features.h"  //nogncheck
+#include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"  //nogncheck
+#include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"  //nogncheck
 #include "fuchsia_web/webengine/browser/receiver_session_client.h"  //nogncheck
 #include "fuchsia_web/webengine/common/cast_streaming.h"            // nogncheck
 #endif
@@ -766,12 +769,18 @@ void FrameImpl::MaybeStartCastStreaming(
 
   mojo::AssociatedRemote<cast_streaming::mojom::DemuxerConnector>
       demuxer_connector;
-  navigation_handle->GetRenderFrameHost()
-      ->GetRemoteAssociatedInterfaces()
-      ->GetInterface(&demuxer_connector);
-  receiver_session_client_->SetDemuxerConnector(std::move(demuxer_connector));
+  mojo::AssociatedRemote<cast_streaming::mojom::RendererController>
+      renderer_controller;
+  auto* remote_interfaces =
+      navigation_handle->GetRenderFrameHost()->GetRemoteAssociatedInterfaces();
+  remote_interfaces->GetInterface(&demuxer_connector);
+  if (cast_streaming::IsCastRemotingEnabled()) {
+    remote_interfaces->GetInterface(&renderer_controller);
+  }
+  receiver_session_client_->SetMojoEndpoints(std::move(demuxer_connector),
+                                             std::move(renderer_controller));
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_CAST_RECEIVER)
 
 void FrameImpl::UpdateRenderFrameZoomLevel(
     content::RenderFrameHost* render_frame_host) {

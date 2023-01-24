@@ -23,9 +23,11 @@ ReceiverSessionClient::ReceiverSessionClient(
 
 ReceiverSessionClient::~ReceiverSessionClient() = default;
 
-void ReceiverSessionClient::SetDemuxerConnector(
+void ReceiverSessionClient::SetMojoEndpoints(
     mojo::AssociatedRemote<cast_streaming::mojom::DemuxerConnector>
-        demuxer_connector) {
+        demuxer_connector,
+    mojo::AssociatedRemote<cast_streaming::mojom::RendererController>
+        renderer_controller) {
   DCHECK(message_port_request_);
 
   // TODO: Add streaming session Constraints based on system capabilities
@@ -55,7 +57,12 @@ void ReceiverSessionClient::SetDemuxerConnector(
                 std::move(port));
           },
           std::move(message_port_request_)));
-  receiver_session_->StartStreamingAsync(std::move(demuxer_connector));
+  if (renderer_controller) {
+    receiver_session_->StartStreamingAsync(std::move(demuxer_connector),
+                                           std::move(renderer_controller));
+  } else {
+    receiver_session_->StartStreamingAsync(std::move(demuxer_connector));
+  }
 }
 
 bool ReceiverSessionClient::HasReceiverSession() {

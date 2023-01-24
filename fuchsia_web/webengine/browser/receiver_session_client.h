@@ -8,6 +8,7 @@
 #include <fuchsia/web/cpp/fidl.h>
 
 #include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"
+#include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace cast_streaming {
@@ -26,9 +27,11 @@ class ReceiverSessionClient {
 
   ReceiverSessionClient& operator=(const ReceiverSessionClient&) = delete;
 
-  void SetDemuxerConnector(
+  void SetMojoEndpoints(
       mojo::AssociatedRemote<cast_streaming::mojom::DemuxerConnector>
-          demuxer_connector);
+          demuxer_connector,
+      mojo::AssociatedRemote<cast_streaming::mojom::RendererController>
+          renderer_controller);
 
   bool HasReceiverSession();
 
