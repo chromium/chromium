@@ -20,6 +20,77 @@
 
 namespace history_clusters {
 
+namespace {
+
+base::Value::Dict GetDebugJSONDictForAnnotatedVisit(
+    const history::AnnotatedVisit& visit) {
+  base::Value::Dict debug_visit;
+  debug_visit.Set("visitId", base::NumberToString(visit.visit_row.visit_id));
+  debug_visit.Set("url",
+                  visit.content_annotations.search_normalized_url.is_empty()
+                      ? visit.url_row.url().spec()
+                      : visit.content_annotations.search_normalized_url.spec());
+  debug_visit.Set("title", visit.url_row.title());
+  debug_visit.Set(
+      "foregroundTimeSecs",
+      base::NumberToString(
+          visit.context_annotations.total_foreground_duration.InSeconds()));
+  debug_visit.Set(
+      "visitDurationSecs",
+      base::NumberToString(visit.visit_row.visit_duration.InSeconds()));
+  debug_visit.Set(
+      "navigationTimeMs",
+      base::NumberToString(visit.visit_row.visit_time.ToDeltaSinceWindowsEpoch()
+                               .InMilliseconds()));
+  debug_visit.Set("pageEndReason", visit.context_annotations.page_end_reason);
+  debug_visit.Set("pageTransition",
+                  base::NumberToString(visit.visit_row.transition));
+  debug_visit.Set(
+      "referringVisitId",
+      base::NumberToString(visit.referring_visit_of_redirect_chain_start));
+  debug_visit.Set(
+      "openerVisitId",
+      base::NumberToString(visit.opener_visit_of_redirect_chain_start));
+  debug_visit.Set("originatorCacheGuid", visit.visit_row.originator_cache_guid);
+  debug_visit.Set(
+      "originatorReferringVisitId",
+      base::NumberToString(visit.visit_row.originator_referring_visit));
+  debug_visit.Set(
+      "originatorOpenerVisitId",
+      base::NumberToString(visit.visit_row.originator_opener_visit));
+  debug_visit.Set("urlForDeduping",
+                  visit.content_annotations.search_normalized_url.is_empty()
+                      ? ComputeURLForDeduping(visit.url_row.url()).spec()
+                      : visit.content_annotations.search_normalized_url.spec());
+  debug_visit.Set("visitSource", base::NumberToString(visit.source));
+
+  // Content annotations.
+  base::Value::List debug_categories;
+  for (const auto& category :
+       visit.content_annotations.model_annotations.categories) {
+    base::Value::Dict debug_category;
+    debug_category.Set("name", category.id);
+    debug_category.Set("value", category.weight);
+    debug_categories.Append(std::move(debug_category));
+  }
+  debug_visit.Set("categories", std::move(debug_categories));
+  base::Value::List debug_entities;
+  for (const auto& entity :
+       visit.content_annotations.model_annotations.entities) {
+    base::Value::Dict debug_entity;
+    debug_entity.Set("name", entity.id);
+    debug_entity.Set("value", entity.weight);
+    debug_entities.Append(std::move(debug_entity));
+  }
+  debug_visit.Set("entities", std::move(debug_entities));
+  debug_visit.Set("visibility",
+                  visit.content_annotations.model_annotations.visibility_score);
+  debug_visit.Set("searchTerms", visit.content_annotations.search_terms);
+  return debug_visit;
+}
+
+}  // namespace
+
 std::string GetDebugTime(const base::Time time) {
   return time.is_null() ? "null" : base::TimeToISO8601(time);
 }
@@ -29,49 +100,7 @@ std::string GetDebugJSONForVisits(
     const std::vector<history::AnnotatedVisit>& visits) {
   base::Value::List debug_visits_list;
   for (auto& visit : visits) {
-    base::Value::Dict debug_visit;
-    debug_visit.Set("visitId", base::NumberToString(visit.visit_row.visit_id));
-    debug_visit.Set(
-        "url", visit.content_annotations.search_normalized_url.is_empty()
-                   ? visit.url_row.url().spec()
-                   : visit.content_annotations.search_normalized_url.spec());
-    debug_visit.Set("title", visit.url_row.title());
-    debug_visit.Set(
-        "foregroundTimeSecs",
-        base::NumberToString(
-            visit.context_annotations.total_foreground_duration.InSeconds()));
-    debug_visit.Set(
-        "visitDurationSecs",
-        base::NumberToString(visit.visit_row.visit_duration.InSeconds()));
-    debug_visit.Set("navigationTimeMs",
-                    base::NumberToString(
-                        visit.visit_row.visit_time.ToDeltaSinceWindowsEpoch()
-                            .InMilliseconds()));
-    debug_visit.Set("pageEndReason", visit.context_annotations.page_end_reason);
-    debug_visit.Set("pageTransition",
-                    base::NumberToString(visit.visit_row.transition));
-    debug_visit.Set(
-        "referringVisitId",
-        base::NumberToString(visit.referring_visit_of_redirect_chain_start));
-    debug_visit.Set(
-        "openerVisitId",
-        base::NumberToString(visit.opener_visit_of_redirect_chain_start));
-    debug_visit.Set("originatorCacheGuid",
-                    visit.visit_row.originator_cache_guid);
-    debug_visit.Set(
-        "originatorReferringVisitId",
-        base::NumberToString(visit.visit_row.originator_referring_visit));
-    debug_visit.Set(
-        "originatorOpenerVisitId",
-        base::NumberToString(visit.visit_row.originator_opener_visit));
-    debug_visit.Set("searchTerms", visit.content_annotations.search_terms);
-    debug_visit.Set(
-        "urlForDeduping",
-        visit.content_annotations.search_normalized_url.is_empty()
-            ? ComputeURLForDeduping(visit.url_row.url()).spec()
-            : visit.content_annotations.search_normalized_url.spec());
-    debug_visit.Set("visitSource", base::NumberToString(visit.source));
-    debug_visits_list.Append(std::move(debug_visit));
+    debug_visits_list.Append(GetDebugJSONDictForAnnotatedVisit(visit));
   }
 
   base::Value::Dict debug_value;
@@ -112,33 +141,9 @@ std::string GetDebugJSONForClusters(
 
     base::Value::List debug_visits;
     for (const auto& visit : cluster.visits) {
-      base::Value::Dict debug_visit;
-      debug_visit.Set(
-          "visit_id",
-          static_cast<int>(visit.annotated_visit.visit_row.visit_id));
+      base::Value::Dict debug_visit =
+          GetDebugJSONDictForAnnotatedVisit(visit.annotated_visit);
       debug_visit.Set("score", visit.score);
-      base::Value::List debug_categories;
-      for (const auto& category : visit.annotated_visit.content_annotations
-                                      .model_annotations.categories) {
-        base::Value::Dict debug_category;
-        debug_category.Set("name", category.id);
-        debug_category.Set("value", category.weight);
-        debug_categories.Append(std::move(debug_category));
-      }
-      debug_visit.Set("categories", std::move(debug_categories));
-      base::Value::List debug_entities;
-      for (const auto& entity : visit.annotated_visit.content_annotations
-                                    .model_annotations.entities) {
-        base::Value::Dict debug_entity;
-        debug_entity.Set("name", entity.id);
-        debug_entity.Set("value", entity.weight);
-        debug_entities.Append(std::move(debug_entity));
-      }
-      debug_visit.Set("entities", std::move(debug_entities));
-      if (!visit.annotated_visit.content_annotations.search_terms.empty()) {
-        debug_visit.Set("search_terms",
-                        visit.annotated_visit.content_annotations.search_terms);
-      }
       debug_visit.Set("site_engagement_score", visit.engagement_score);
 
       base::Value::List debug_duplicate_visits;
