@@ -1,0 +1,3 @@
+div.accessibilityCustomContent[0].label=ERROR:Cannot call '[](0).label' on null value
+div.accessibilityCustomContent[0].value=ERROR:Cannot call '[](0).value' on null value
+not_applicable.accessibilityCustomContent=NULL

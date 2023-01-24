@@ -156,6 +156,11 @@ AXOptionalNSObject AXCallStatementInvoker::Invoke(
 AXOptionalNSObject AXCallStatementInvoker::InvokeFor(
     const id target,
     const AXPropertyNode& property_node) const {
+  if (target == nil) {
+    return AXOptionalNSObject::Error(
+        "Cannot call '" + property_node.ToFlatString() + "' on null value");
+  }
+
   if (AXElementWrapper::IsValidElement(target))
     return InvokeForAXElement({target}, property_node);
 
