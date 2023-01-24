@@ -31,8 +31,12 @@
 
 constexpr char kRevokedKey[] = "revoked";
 constexpr base::TimeDelta kRevocationThreshold = base::Days(60);
-constexpr base::TimeDelta kRevocationThresholdForTesting = base::Days(0);
+constexpr base::TimeDelta kRevocationThresholdNoDelayForTesting = base::Days(0);
+constexpr base::TimeDelta kRevocationThresholdWithDelayForTesting =
+    base::Minutes(5);
 constexpr base::TimeDelta kRevocationCleanUpThreshold = base::Days(30);
+constexpr base::TimeDelta kRevocationCleanUpThresholdWithDelayForTesting =
+    base::Minutes(30);
 
 namespace permissions {
 namespace {
@@ -80,9 +84,22 @@ base::TimeDelta GetRevocationThreshold() {
   // ready. Today, no delay revocation is necessary to enable manual testing.
   if (content_settings::features::kSafetyCheckUnusedSitePermissionsNoDelay
           .Get()) {
-    return kRevocationThresholdForTesting;
+    return kRevocationThresholdNoDelayForTesting;
+  } else if (content_settings::features::
+                 kSafetyCheckUnusedSitePermissionsWithDelay.Get()) {
+    return kRevocationThresholdWithDelayForTesting;
   }
   return kRevocationThreshold;
+}
+
+base::TimeDelta GetCleanUpThreshold() {
+  // TODO(crbug.com/1401701): Clean up delayed clean up logic after the feature
+  // is ready. Today, this is necessary to enable manual testing.
+  if (content_settings::features::kSafetyCheckUnusedSitePermissionsWithDelay
+          .Get()) {
+    return kRevocationCleanUpThresholdWithDelayForTesting;
+  }
+  return kRevocationCleanUpThreshold;
 }
 
 }  // namespace
@@ -351,7 +368,7 @@ void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
   dict.Set(kRevokedKey, base::Value::List(std::move(permission_type_list)));
 
   const content_settings::ContentSettingConstraints constraint{
-      .expiration = clock_->Now() + kRevocationCleanUpThreshold};
+      .expiration = clock_->Now() + GetCleanUpThreshold()};
 
   // Set website setting for the list of recently revoked permissions and
   // previously revoked permissions, if exists.

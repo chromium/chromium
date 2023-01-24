@@ -205,8 +205,10 @@ base::Time GetCoarseVisitedTime(base::Time time) {
 }
 
 base::TimeDelta GetCoarseVisitedTimePrecision() {
-  if (features::kSafetyCheckUnusedSitePermissionsNoDelay.Get())
+  if (features::kSafetyCheckUnusedSitePermissionsNoDelay.Get() ||
+      features::kSafetyCheckUnusedSitePermissionsWithDelay.Get()) {
     return base::Days(0);
+  }
   return base::Days(7);
 }
 

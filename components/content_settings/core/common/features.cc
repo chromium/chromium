@@ -41,5 +41,9 @@ const base::FeatureParam<bool> kSafetyCheckUnusedSitePermissionsNoDelay{
     &kSafetyCheckUnusedSitePermissions,
     "unused-site-permissions-no-delay-for-testing", false};
 
+const base::FeatureParam<bool> kSafetyCheckUnusedSitePermissionsWithDelay{
+    &kSafetyCheckUnusedSitePermissions,
+    "unused-site-permissions-with-delay-for-testing", false};
+
 }  // namespace features
 }  // namespace content_settings

@@ -3140,10 +3140,17 @@ const FeatureEntry::FeatureParam
     kSafetyCheckUnusedSitePermissionsNoDelayParam[] = {
         {"unused-site-permissions-no-delay-for-testing", "true"}};
 
+const FeatureEntry::FeatureParam
+    kSafetyCheckUnusedSitePermissionsWithDelayParam[] = {
+        {"unused-site-permissions-with-delay-for-testing", "true"}};
+
 const FeatureEntry::FeatureVariation
     kSafetyCheckUnusedSitePermissionsVariations[] = {
-        {"for testing", kSafetyCheckUnusedSitePermissionsNoDelayParam,
+        {"for testing no delay", kSafetyCheckUnusedSitePermissionsNoDelayParam,
          std::size(kSafetyCheckUnusedSitePermissionsNoDelayParam), nullptr},
+        {"for testing with delay",
+         kSafetyCheckUnusedSitePermissionsWithDelayParam,
+         std::size(kSafetyCheckUnusedSitePermissionsWithDelayParam), nullptr},
 };
 #endif
 

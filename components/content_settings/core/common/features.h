@@ -43,6 +43,12 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 extern const base::FeatureParam<bool> kSafetyCheckUnusedSitePermissionsNoDelay;
 
+// When enabled, site permissions will be considered as unused after a smaller
+// delay in order to facilitate testing.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const base::FeatureParam<bool>
+    kSafetyCheckUnusedSitePermissionsWithDelay;
+
 }  // namespace features
 }  // namespace content_settings
 
