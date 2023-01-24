@@ -191,7 +191,7 @@ void GbmSurfacelessWayland::Present(SwapCompletionCallback completion_callback,
 
   unsubmitted_frames_.push_back(
       std::make_unique<PendingFrame>(next_frame_id()));
-
+  unsubmitted_frames_.back()->configs.reserve(frame->configs.size());
   // If Wayland server supports linux_explicit_synchronization_protocol, fences
   // should be shipped with buffers. Otherwise, we will wait for fences.
   if (buffer_manager_->supports_acquire_fence() || !use_egl_fence_sync_ ||
