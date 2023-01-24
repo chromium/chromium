@@ -37,14 +37,7 @@ inline constexpr char kWidevineCdmLibraryName[] = "widevinecdm";
 inline constexpr char kWidevineCdmDisplayName[] =
     "Widevine Content Decryption Module";
 
-// TODO(crbug.com/1231162): Remove the string identifier once we've migrated off
-// of the PluginPrivateFileSystem.
-// Identifier used for both CDM process site isolation and by the
-// PluginPrivateFileSystem to identify the files stored for the Widevine CDM.
-// This is used to store persistent files. As the files were initially used by
-// the CDM running as a pepper plugin, this ID is based on the pepper plugin
-// MIME type. Changing this will result in any existing saved files becoming
-// inaccessible.
+// Identifier used for CDM process site isolation.
 inline constexpr media::CdmType kWidevineCdmType{0x05d908e5dcca9960ull,
                                                  0xcd92d30eac98157aull};
 
@@ -54,8 +47,7 @@ inline constexpr char kMediaFoundationWidevineCdmLibraryName[] =
     "Google.Widevine.CDM";
 inline constexpr char kMediaFoundationWidevineCdmDisplayName[] =
     "Google Widevine Windows CDM";
-// TODO(crbug.com/1231162): Remove the string identifier once we've migrated off
-// of the PluginPrivateFileSystem.
+// Identifier used for CDM process site isolation.
 inline constexpr media::CdmType kMediaFoundationWidevineCdmType{
     0x8e73dec793bf5adcull, 0x27e572c9a1fd930eull};
 #endif  // BUILDFLAG(IS_WIN)
