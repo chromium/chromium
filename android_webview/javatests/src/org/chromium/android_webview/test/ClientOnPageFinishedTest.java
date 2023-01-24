@@ -21,7 +21,6 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.JSUtils;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -72,7 +71,6 @@ public class ClientOnPageFinishedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "crbug.com/652577")
     public void testCalledAfterError() throws Throwable {
         class LocalTestClient extends TestAwContentsClient {
             private boolean mIsOnReceivedErrorCalled;
