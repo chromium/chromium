@@ -201,6 +201,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
             public void onSheetOpened(@StateChangeReason int reason) {
                 if (mBottomSheet.getCurrentSheetContent() != null
                         && mBottomSheet.getCurrentSheetContent().hasCustomScrimLifecycle()) {
+                    updateBackPressStateChangedSupplier();
                     return;
                 }
 
