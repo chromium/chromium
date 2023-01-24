@@ -60,6 +60,7 @@
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -379,9 +380,9 @@ void ChromeAutofillClient::ShowUnmaskPrompt(
     const CreditCard& card,
     const CardUnmaskPromptOptions& card_unmask_prompt_options,
         base::WeakPtr<CardUnmaskDelegate> delegate) {
-  unmask_controller_.ShowPrompt(
+  unmask_controller_->ShowPrompt(
       base::BindOnce(&CreateCardUnmaskPromptView,
-                     base::Unretained(&unmask_controller_),
+                     base::Unretained(unmask_controller_.get()),
                      base::Unretained(web_contents())),
       card, card_unmask_prompt_options, delegate);
 }
@@ -389,7 +390,7 @@ void ChromeAutofillClient::ShowUnmaskPrompt(
 // TODO(crbug.com/1220990): Refactor this for both CVC and Biometrics flows.
 void ChromeAutofillClient::OnUnmaskVerificationResult(
     PaymentsRpcResult result) {
-  unmask_controller_.OnVerificationResult(result);
+  unmask_controller_->OnVerificationResult(result);
 #if BUILDFLAG(IS_ANDROID)
   // For VCN-related errors, on Android we show a new error dialog instead of
   // updating the CVC unmask prompt with the error message.
@@ -1114,8 +1115,8 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
           LogManager::Create(AutofillLogRouterFactory::GetForBrowserContext(
                                  web_contents->GetBrowserContext()),
                              base::NullCallback())),
-      unmask_controller_(
-          user_prefs::UserPrefs::Get(web_contents->GetBrowserContext())),
+      unmask_controller_(std::make_unique<CardUnmaskPromptControllerImpl>(
+          user_prefs::UserPrefs::Get(web_contents->GetBrowserContext()))),
       autofill_error_dialog_controller_(web_contents),
       autofill_progress_dialog_controller_(
           std::make_unique<AutofillProgressDialogControllerImpl>(

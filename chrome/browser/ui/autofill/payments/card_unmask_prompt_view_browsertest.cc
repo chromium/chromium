@@ -185,7 +185,7 @@ class CardUnmaskPromptViewBrowserTest : public DialogBrowserTest {
       controller()->set_expected_verification_failure(
           /*allow_retry*/ name == kExpiryValidTemporaryError);
       CardUnmaskPromptViewTester::For(controller()->view())
-          ->EnterCVCAndAccept();
+          ->EnterCVCAndAccept(u"123");
     }
   }
 

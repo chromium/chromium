@@ -246,6 +246,11 @@ class ChromeAutofillClient
     return popup_controller_;
   }
   void KeepPopupOpenForTesting() { keep_popup_open_for_testing_ = true; }
+  std::unique_ptr<CardUnmaskPromptControllerImpl>
+  SetCardUnmaskControllerForTesting(
+      std::unique_ptr<CardUnmaskPromptControllerImpl> test_controller) {
+    return std::exchange(unmask_controller_, std::move(test_controller));
+  }
 
 #if !BUILDFLAG(IS_ANDROID)
   // ZoomObserver implementation.
@@ -282,7 +287,7 @@ class ChromeAutofillClient
   SaveUpdateAddressProfileFlowManager save_update_address_profile_flow_manager_;
   TouchToFillCreditCardController touch_to_fill_credit_card_controller_;
 #endif
-  CardUnmaskPromptControllerImpl unmask_controller_;
+  std::unique_ptr<CardUnmaskPromptControllerImpl> unmask_controller_;
   AutofillErrorDialogControllerImpl autofill_error_dialog_controller_;
   std::unique_ptr<AutofillProgressDialogControllerImpl>
       autofill_progress_dialog_controller_;

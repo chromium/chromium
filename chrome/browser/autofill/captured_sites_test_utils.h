@@ -181,14 +181,16 @@ class ProfileDataController {
 
   const autofill::CreditCard& credit_card() const { return card_; }
   const autofill::AutofillProfile& profile() { return profile_; }
-
   bool AddAutofillProfileInfo(const std::string& field_type,
                               const std::string& field_value);
+  absl::optional<std::u16string> cvc() const { return cvc_; }
 
  private:
-  absl::optional<autofill::ServerFieldType> StringToFieldType(
-      const std::string& str) const;
-
+  // If a CVC is available in the Action Recorder receipt, this test uses a
+  // server card to autofill the payment form. So the "Enter CVC" dialog will
+  // pop up for card autofill. Otherwise, this test uses a local card to
+  // autofill the payment form.
+  absl::optional<std::u16string> cvc_;
   autofill::AutofillProfile profile_;
   autofill::CreditCard card_;
   std::map<std::string, autofill::ServerFieldType> string_to_field_type_map_;
@@ -215,10 +217,12 @@ class TestRecipeReplayChromeFeatureActionExecutor {
   // Chrome Autofill feature methods.
   // Triggers Chrome Autofill in the specified input element on the specified
   // document.
-  virtual bool AutofillForm(const std::string& focus_element_css_selector,
-                            const std::vector<std::string>& iframe_path,
-                            const int attempts,
-                            content::RenderFrameHost* frame);
+  virtual bool AutofillForm(
+      const std::string& focus_element_css_selector,
+      const std::vector<std::string>& iframe_path,
+      const int attempts,
+      content::RenderFrameHost* frame,
+      absl::optional<autofill::ServerFieldType> triggered_field_type);
   virtual bool AddAutofillProfileInfo(const std::string& field_type,
                                       const std::string& field_value);
   virtual bool SetupAutofillProfile();

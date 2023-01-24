@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/autofill/payments/card_unmask_prompt_view_tester_views.h"
 
+#include <string>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/autofill/payments/card_unmask_prompt_views.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -28,8 +30,9 @@ void CardUnmaskPromptViewTesterViews::Close() {
   view_->ClosePrompt();
 }
 
-void CardUnmaskPromptViewTesterViews::EnterCVCAndAccept() {
-  view_->cvc_input_->SetText(u"123");
+void CardUnmaskPromptViewTesterViews::EnterCVCAndAccept(
+    const std::u16string& cvc) {
+  view_->cvc_input_->SetText(cvc);
   view_->AcceptDialog();
 }
 

@@ -23,6 +23,7 @@ namespace autofill {
 
 class CardUnmaskPromptView;
 
+// This class is owned by `ChromeAutofillClient`.
 class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
  public:
   explicit CardUnmaskPromptControllerImpl(PrefService* pref_service);
@@ -42,10 +43,11 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   // Functions called by ChromeAutofillClient.
   // It is guaranteed that |view_factory| is called before this function
   // returns, i.e., the callback will not outlive the stack frame of ShowPrompt.
-  void ShowPrompt(CardUnmaskPromptViewFactory view_factory,
-                  const CreditCard& card,
-                  const CardUnmaskPromptOptions& card_unmask_prompt_options,
-                  base::WeakPtr<CardUnmaskDelegate> delegate);
+  virtual void ShowPrompt(
+      CardUnmaskPromptViewFactory view_factory,
+      const CreditCard& card,
+      const CardUnmaskPromptOptions& card_unmask_prompt_options,
+      base::WeakPtr<CardUnmaskDelegate> delegate);
   // The CVC the user entered went through validation.
   void OnVerificationResult(AutofillClient::PaymentsRpcResult result);
 
