@@ -93,12 +93,11 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   void SetUpInstallerPreferences(const base::CommandLine& command_line);
 #endif  // BUILDFLAG(IS_MAC)
 
-  ChromeContentClient chrome_content_client_;
-
   std::unique_ptr<ChromeContentBrowserClient> chrome_content_browser_client_;
   std::unique_ptr<ChromeContentUtilityClient> chrome_content_utility_client_;
-
   std::unique_ptr<tracing::TracingSamplerProfiler> tracing_sampler_profiler_;
+
+  ChromeContentClient chrome_content_client_;
 
   // The controller schedules UMA heap profiles collections and forwarding down
   // the reporting pipeline.
