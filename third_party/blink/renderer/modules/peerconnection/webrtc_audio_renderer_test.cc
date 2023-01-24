@@ -11,10 +11,13 @@
 #include "base/cfi_buildflags.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/audio/audio_sink_parameters.h"
 #include "media/audio/audio_source_parameters.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_capturer_source.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/mock_audio_renderer_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,6 +39,7 @@
 #include "third_party/webrtc/api/media_stream_interface.h"
 
 using testing::_;
+using testing::AnyNumber;
 using testing::DoAll;
 using testing::InvokeWithoutArgs;
 using testing::Return;
@@ -50,16 +54,22 @@ const int kHardwareBufferSize = 512;
 const char kDefaultOutputDeviceId[] = "";
 const char kOtherOutputDeviceId[] = "other-output-device";
 const char kInvalidOutputDeviceId[] = "invalid-device";
+const media::AudioParameters kAudioParameters(
+    media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+    media::ChannelLayoutConfig::Stereo(),
+    kHardwareSampleRate,
+    kHardwareBufferSize);
 
 class MockAudioRendererSource : public blink::WebRtcAudioRendererSource {
  public:
-  MockAudioRendererSource() {}
-  ~MockAudioRendererSource() override {}
-  MOCK_METHOD4(RenderData,
+  MockAudioRendererSource() = default;
+  ~MockAudioRendererSource() override = default;
+  MOCK_METHOD5(RenderData,
                void(media::AudioBus* audio_bus,
                     int sample_rate,
                     base::TimeDelta audio_delay,
-                    base::TimeDelta* current_time));
+                    base::TimeDelta* current_time,
+                    const media::AudioGlitchInfo& glitch_info));
   MOCK_METHOD1(RemoveAudioRenderer, void(blink::WebRtcAudioRenderer* renderer));
   MOCK_METHOD0(AudioRendererThreadStopped, void());
   MOCK_METHOD1(SetOutputDeviceForAec, void(const String&));
@@ -88,9 +98,7 @@ class AudioDeviceFactoryTestingPlatformSupport : public blink::Platform {
         params.device_id == kInvalidOutputDeviceId
             ? media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL
             : media::OUTPUT_DEVICE_STATUS_OK,
-        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                               media::ChannelLayoutConfig::Stereo(),
-                               kHardwareSampleRate, kHardwareBufferSize));
+        kAudioParameters);
 
     if (params.device_id != kInvalidOutputDeviceId) {
       EXPECT_CALL(*mock_sink_.get(), Start());
@@ -202,6 +210,10 @@ class WebRtcAudioRendererTest : public testing::Test {
     return audio_device_factory_platform_->mock_sink();
   }
 
+  media::AudioRendererSink::RenderCallback* render_callback() {
+    return mock_sink()->callback();
+  }
+
   void TearDown() override {
     base::RunLoop().RunUntilIdle();
     renderer_proxy_ = nullptr;
@@ -290,6 +302,31 @@ TEST_F(WebRtcAudioRendererTest, DISABLED_VerifySinkParameters) {
   EXPECT_EQ(kExpectedBufferSize, renderer_->frames_per_buffer());
   EXPECT_EQ(kHardwareSampleRate, renderer_->sample_rate());
   EXPECT_EQ(2, renderer_->channels());
+
+  EXPECT_CALL(*mock_sink(), Stop());
+  EXPECT_CALL(*source_.get(), RemoveAudioRenderer(renderer_.get()));
+  renderer_proxy_->Stop();
+}
+
+TEST_F(WebRtcAudioRendererTest, Render) {
+  SetupRenderer(kDefaultOutputDeviceId);
+  EXPECT_EQ(kDefaultOutputDeviceId,
+            mock_sink()->GetOutputDeviceInfo().device_id());
+  renderer_proxy_->Start();
+
+  auto dest = media::AudioBus::Create(kAudioParameters);
+  media::AudioGlitchInfo glitch_info{};
+  auto audio_delay = base::Seconds(1);
+
+  EXPECT_CALL(*mock_sink(), CurrentThreadIsRenderingThread())
+      .WillRepeatedly(Return(true));
+  // We cannot place any specific expectations on the calls to RenderData,
+  // because they vary depending on whether or not the fifo is used, which in
+  // turn varies depending on the platform.
+  EXPECT_CALL(*source_, RenderData(_, kAudioParameters.sample_rate(), _, _, _))
+      .Times(AnyNumber());
+  render_callback()->Render(audio_delay, base::TimeTicks(), glitch_info,
+                            dest.get());
 
   EXPECT_CALL(*mock_sink(), Stop());
   EXPECT_CALL(*source_.get(), RemoveAudioRenderer(renderer_.get()));

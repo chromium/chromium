@@ -5,6 +5,7 @@ include_rules = [
     "+media/base/audio_bus.h",
     "+media/base/audio_capturer_source.h",
     "+media/base/audio_decoder.h",
+    "+media/base/audio_glitch_info.h",
     "+media/base/audio_power_monitor.h",
     "+media/base/audio_latency.h",
     "+media/base/audio_parameters.h",

@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "media/base/audio_decoder.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_power_monitor.h"
 #include "media/base/audio_pull_fifo.h"
 #include "media/base/audio_renderer_sink.h"
@@ -388,6 +389,9 @@ class MODULES_EXPORT WebRtcAudioRenderer
 
   std::unique_ptr<media::SpeechRecognitionClient> speech_recognition_client_;
   TranscribeAudioCallback transcribe_audio_callback_;
+
+  // Accessed only on the rendering thread.
+  media::AudioGlitchInfo::Accumulator glitch_info_accumulator_;
 
   base::WeakPtrFactory<WebRtcAudioRenderer> weak_factory_{this};
 };

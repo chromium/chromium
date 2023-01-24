@@ -11,6 +11,7 @@
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "media/base/sample_rates.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/modules/mediastream/processed_local_audio_source.h"
@@ -50,14 +51,24 @@ WebRtcAudioDeviceImpl::~WebRtcAudioDeviceImpl() {
   DCHECK(!initialized_) << "Terminate must have been called.";
 }
 
-void WebRtcAudioDeviceImpl::RenderData(media::AudioBus* audio_bus,
-                                       int sample_rate,
-                                       base::TimeDelta audio_delay,
-                                       base::TimeDelta* current_time) {
+void WebRtcAudioDeviceImpl::RenderData(
+    media::AudioBus* audio_bus,
+    int sample_rate,
+    base::TimeDelta audio_delay,
+    base::TimeDelta* current_time,
+    const media::AudioGlitchInfo& glitch_info) {
   TRACE_EVENT2("audio", "WebRtcAudioDeviceImpl::RenderData", "sample_rate",
                sample_rate, "audio_delay_ms", audio_delay.InMilliseconds());
   {
     base::AutoLock auto_lock(lock_);
+    cumulative_glitch_info_ += glitch_info;
+    total_samples_count_ += audio_bus->frames();
+    // |total_playout_delay_| refers to the sum of playout delays for all
+    // samples, so we add the delay multiplied by the number of samples. See
+    // https://w3c.github.io/webrtc-stats/#dom-rtcaudioplayoutstats-totalplayoutdelay
+    total_playout_delay_ += audio_delay * audio_bus->frames();
+    total_samples_duration_ += media::AudioTimestampHelper::FramesToTime(
+        audio_bus->frames(), sample_rate);
 #if DCHECK_IS_ON()
     DCHECK(!renderer_ || renderer_->CurrentThreadIsRenderingThread());
     if (!audio_renderer_thread_checker_.CalledOnValidThread()) {
@@ -385,6 +396,19 @@ void WebRtcAudioDeviceImpl::RemovePlayoutSink(
   DCHECK(sink);
   base::AutoLock auto_lock(lock_);
   playout_sinks_.remove(sink);
+}
+
+absl::optional<webrtc::AudioDeviceModule::Stats>
+WebRtcAudioDeviceImpl::GetStats() const {
+  base::AutoLock auto_lock(lock_);
+  return absl::optional<webrtc::AudioDeviceModule::Stats>(
+      webrtc::AudioDeviceModule::Stats{
+          .synthesized_samples_duration_s =
+              cumulative_glitch_info_.duration.InSecondsF(),
+          .synthesized_samples_events = cumulative_glitch_info_.count,
+          .total_samples_duration_s = total_samples_duration_.InSecondsF(),
+          .total_playout_delay_s = total_playout_delay_.InSecondsF(),
+          .total_samples_count = total_samples_count_});
 }
 
 base::UnguessableToken

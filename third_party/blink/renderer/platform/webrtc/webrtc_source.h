@@ -14,6 +14,7 @@ class TimeDelta;
 
 namespace media {
 class AudioBus;
+struct AudioGlitchInfo;
 }
 
 namespace blink {
@@ -29,7 +30,8 @@ class PLATFORM_EXPORT WebRtcAudioRendererSource {
   virtual void RenderData(media::AudioBus* audio_bus,
                           int sample_rate,
                           base::TimeDelta audio_delay,
-                          base::TimeDelta* current_time) = 0;
+                          base::TimeDelta* current_time,
+                          const media::AudioGlitchInfo& glitch_info) = 0;
 
   // Callback to notify the client that the renderer is going away.
   virtual void RemoveAudioRenderer(WebRtcAudioRenderer* renderer) = 0;

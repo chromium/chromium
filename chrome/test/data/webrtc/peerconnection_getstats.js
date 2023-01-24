@@ -147,6 +147,7 @@ let kRTCInboundRtpStreamStats = new RTCStats(kRTCReceivedRtpStreamStats, {
   estimatedPlayoutTimestamp: 'number',
   fractionLost: 'number',  // Obsolete, moved to RTCRemoteInboundRtpStreamStats.
   decoderImplementation: 'string',
+  playoutId: 'string',
   powerEfficientDecoder: 'boolean',
   framesAssembledFromMultiplePackets: 'number',
   totalAssemblyTime: 'number',
@@ -493,6 +494,20 @@ let kRTCCertificateStats = new RTCStats(null, {
   issuerCertificateId: 'string',
 });
 addRTCStatsToAllowlist(Presence.MANDATORY, 'certificate', kRTCCertificateStats);
+
+/*
+ * RTCAudioPlayoutStats
+ * https://w3c.github.io/webrtc-stats/#playoutstats-dict*
+ * @private
+ */
+let kRTCAudioPlayoutStats = new RTCStats(null, {
+  synthesizedSamplesDuration: 'number',
+  synthesizedSamplesEvents: 'number',
+  totalSamplesDuration: 'number',
+  totalPlayoutDelay: 'number',
+  totalSamplesCount: 'number',
+});
+addRTCStatsToAllowlist(Presence.OPTIONAL, 'audio-playout', kRTCAudioPlayoutStats);
 
 // Public interface to tests. These are expected to be called with
 // ExecuteJavascript invocations from the browser tests and will return answers

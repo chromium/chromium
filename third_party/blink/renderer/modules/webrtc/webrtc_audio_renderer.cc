@@ -618,6 +618,7 @@ int WebRtcAudioRenderer::Render(base::TimeDelta delay,
     return 0;
 
   audio_delay_ = delay;
+  glitch_info_accumulator_.Add(glitch_info);
 
   // Pull the data we will deliver.
   if (audio_fifo_)
@@ -673,7 +674,7 @@ void WebRtcAudioRenderer::SourceCallback(int fifo_frame_delay,
   // We need to keep render data for the |source_| regardless of |state_|,
   // otherwise the data will be buffered up inside |source_|.
   source_->RenderData(audio_bus, sink_params_.sample_rate(), output_delay,
-                      &current_time_);
+                      &current_time_, glitch_info_accumulator_.GetAndReset());
 
   // Avoid filling up the audio bus if we are not playing; instead
   // return here and ensure that the returned value in Render() is 0.

@@ -3,5 +3,6 @@ FAIL No RTCRtpStreamStats exist when only remote description is set assert_equal
 FAIL No RTCRtpStreamStats exist when only local description is set assert_equals: no rtp stats with only local description expected 0 but got 2
 FAIL No RTCOutboundRtpStreamStats exist until packets have been sent assert_true: no outbound rtp stats before packets sent expected true got false
 FAIL No RTCInboundRtpStreamStats exist until packets have been received assert_true: no inbound rtp stats before packets received expected true got false
+PASS RTCAudioPlayoutStats should be present
 Harness: the test ran to completion.
 
