@@ -21,6 +21,17 @@ namespace updater {
 // `offline_dir`, and falls back to "<app_id>.gup" in the same directory if
 // needed.
 //
+// The offline dir can be specified as a relative path when it is in the format
+// "/offlinedir {GUID}". In this case:
+// * the actual offline directory is `{CURRENT_PROCESS_DIR}\Offline\{GUID}`,
+// * the offline manifest is
+// `{CURRENT_PROCESS_DIR}\Offline\{GUID}\OfflineManifest.gup`, and
+// * the installer is at
+// `{CURRENT_PROCESS_DIR}\Offline\{GUID}\{app_id}\installer.exe`.
+//   * `installer.exe` may not correspond exactly to the value of the manifest's
+//   `run` attribute, so the code picks the first file it finds in the
+//   directory if that is the case.
+//
 // The manifest file contains the update check response in XML format.
 // See https://github.com/google/omaha/blob/master/doc/ServerProtocol.md for
 // protocol details.

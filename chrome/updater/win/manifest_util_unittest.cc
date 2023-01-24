@@ -7,6 +7,8 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/update_client/protocol_parser.h"
@@ -29,6 +31,75 @@ TEST(ManifestUtil, ReadInstallCommandFromManifest) {
       offline_dir, "{CDABE316-39CD-43BA-8440-6D1E0547AEE6}", "verboselogging",
       results, installer_path, install_args, install_data);
   EXPECT_EQ(installer_path, offline_dir.AppendASCII("my_installer.exe"));
+  EXPECT_EQ(install_args, "-baz");
+  EXPECT_EQ(install_data,
+            "{\n"
+            "        \"distribution\": {\n"
+            "          \"verbose_logging\": true\n"
+            "        }\n"
+            "      }");
+}
+
+TEST(ManifestUtil, ReadInstallCommandFromManifest_OfflineDirRelative) {
+  const std::string app_id("{CDABE316-39CD-43BA-8440-6D1E0547AEE6}");
+  const std::wstring manifest_filename(L"OfflineManifest.gup");
+  const std::wstring executable_name(L"my_installer.exe");
+  const std::wstring executable_name_v2(L"random_named_my_installer.exe");
+  const base::FilePath offline_dir_relative(
+      L"{7B3A5597-DDEA-409B-B900-4C3D2A94A75C}");
+
+  base::FilePath exe_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_dir));
+
+  base::ScopedTempDir scoped_offline_base_dir;
+  ASSERT_TRUE(scoped_offline_base_dir.Set(exe_dir.Append(L"Offline")));
+
+  const base::FilePath offline_dir(
+      scoped_offline_base_dir.GetPath().Append(offline_dir_relative));
+
+  base::FilePath test_manifest;
+  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_manifest));
+  test_manifest = test_manifest.Append(L"updater").Append(manifest_filename);
+  ASSERT_TRUE(base::PathExists(test_manifest));
+
+  const base::FilePath offline_app_dir(offline_dir.AppendASCII(app_id));
+  ASSERT_TRUE(base::CreateDirectory(offline_app_dir));
+  ASSERT_TRUE(
+      base::CopyFile(test_manifest, offline_dir.Append(manifest_filename)));
+
+  const std::string dummy_file_contents("Test Executable Contents");
+  const base::FilePath expected_installer_path(
+      offline_app_dir.Append(executable_name));
+  ASSERT_EQ(
+      base::WriteFile(expected_installer_path, dummy_file_contents.c_str(),
+                      dummy_file_contents.length()),
+      static_cast<int>(dummy_file_contents.length()));
+
+  update_client::ProtocolParser::Results results;
+  base::FilePath installer_path;
+  std::string install_args;
+  std::string install_data;
+
+  ReadInstallCommandFromManifest(offline_dir_relative, app_id, "verboselogging",
+                                 results, installer_path, install_args,
+                                 install_data);
+  EXPECT_EQ(installer_path, expected_installer_path);
+  EXPECT_EQ(install_args, "-baz");
+  EXPECT_EQ(install_data,
+            "{\n"
+            "        \"distribution\": {\n"
+            "          \"verbose_logging\": true\n"
+            "        }\n"
+            "      }");
+
+  const base::FilePath expected_installer_path_v2(
+      offline_app_dir.Append(executable_name_v2));
+  ASSERT_TRUE(base::Move(expected_installer_path, expected_installer_path_v2));
+
+  ReadInstallCommandFromManifest(offline_dir_relative, app_id, "verboselogging",
+                                 results, installer_path, install_args,
+                                 install_data);
+  EXPECT_EQ(installer_path, expected_installer_path_v2);
   EXPECT_EQ(install_args, "-baz");
   EXPECT_EQ(install_data,
             "{\n"

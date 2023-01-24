@@ -624,6 +624,9 @@ void AppInstallControllerImpl::DoInstallAppOffline(
   if (tag_args)
     request.brand_code = tag_args->brand_code;
 
+  VLOG(1) << __func__ << ": " << installer_path << ": " << install_args << ": "
+          << install_data;
+
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&SetUsageStats, GetUpdaterScope(), app_id_,

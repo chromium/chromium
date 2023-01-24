@@ -344,6 +344,9 @@ bool IsShutdownEventSignaled(UpdaterScope scope);
 // processes exited cleanly.
 bool StopGoogleUpdateProcesses(UpdaterScope scope);
 
+// Returns `true` if the argument is a guid.
+bool IsGuid(std::wstring s);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_WIN_UTIL_H_

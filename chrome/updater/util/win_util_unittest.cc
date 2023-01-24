@@ -356,4 +356,28 @@ TEST(WinUtil, StopGoogleUpdateProcesses) {
   EXPECT_TRUE(StopGoogleUpdateProcesses(GetTestScope()));
 }
 
+TEST(WinUtil, IsGuid) {
+  EXPECT_FALSE(IsGuid(L"c:\\test\\dir"));
+  EXPECT_FALSE(IsGuid(L"a"));
+  EXPECT_FALSE(IsGuid(L"CA3045BFA6B14fb8A0EFA615CEFE452C"));
+
+  // Missing {}
+  EXPECT_FALSE(IsGuid(L"CA3045BF-A6B1-4fb8-A0EF-A615CEFE452C"));
+
+  // Invalid char X
+  EXPECT_FALSE(IsGuid(L"{XA3045BF-A6B1-4fb8-A0EF-A615CEFE452C}"));
+
+  // Invalid binary char 0x200
+  EXPECT_FALSE(IsGuid(L"{\0x200a3045bf-a6b1-4fb8-a0ef-a615cefe452c}"));
+
+  // Missing -
+  EXPECT_FALSE(IsGuid(L"{CA3045BFA6B14fb8A0EFA615CEFE452C}"));
+
+  // Double quotes
+  EXPECT_FALSE(IsGuid(L"\"{ca3045bf-a6b1-4fb8-a0ef-a615cefe452c}\""));
+
+  EXPECT_TRUE(IsGuid(L"{CA3045BF-A6B1-4fb8-A0EF-A615CEFE452C}"));
+  EXPECT_TRUE(IsGuid(L"{ca3045bf-a6b1-4fb8-a0ef-a615cefe452c}"));
+}
+
 }  // namespace updater

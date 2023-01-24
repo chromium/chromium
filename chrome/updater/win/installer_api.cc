@@ -320,8 +320,10 @@ AppInstallerResult RunApplicationInstaller(
     const absl::optional<base::FilePath>& installer_data_file,
     const base::TimeDelta& timeout,
     InstallProgressCallback progress_callback) {
-  if (!base::PathExists(app_installer))
+  if (!base::PathExists(app_installer)) {
+    LOG(ERROR) << "application installer does not exist: " << app_installer;
     return AppInstallerResult(kErrorMissingRunableFile);
+  }
 
   if (!app_installer.MatchesExtension(L".exe") &&
       !app_installer.MatchesExtension(L".msi")) {

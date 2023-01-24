@@ -125,14 +125,15 @@ process is determined by command-line arguments:
         * The value of `installerdata` needs to be URL encoded.
         * The data will be decoded and written to a file same as in
           [installdataindex](#installdataindex).
-    *   --offlinedir=...
+    *   --offlinedir={absolute dir} or {GUID} relative to the "Offline" dir
         *   Performs offline install, which means no update check or file
             download is performed against the server during installation.
-            All data is read from the files in the directory instead.
+            All data is read from the files in the offline directory instead.
         *   Files in offline directory:
             * Manifest file, named `OfflineManifest.gup` or *`<app-id>`*`.gup`.
               The file contains the update check response in XML format.
             * App installer.
+            * See the "Offline installs" section below for more information.
         *   The switch can be combined with `--handoff` above.
         *   --enterprise
             *   Suppresses transmission of pings from the offline install.
@@ -398,6 +399,17 @@ host OS.
 Omaha 3 offline manifests have `arch` as "x64", but the Chromium functions
 return "x86_64" as the architecture for amd64. The updater accounts for this by
 treating "x64" the same as "x86_64".
+
+The offline dir can be specified as a relative path when it is in the format
+"/offlinedir {GUID}". In this case:
+* the actual offline directory is `{CURRENT_PROCESS_DIR}\Offline\{GUID}`,
+* the offline manifest is
+  `{CURRENT_PROCESS_DIR}\Offline\{GUID}\OfflineManifest.gup`, and
+* the installer is at
+  `{CURRENT_PROCESS_DIR}\Offline\{GUID}\{app_id}\installer.exe`.
+  * `installer.exe` may not correspond exactly to the value of the manifest's
+    `run` attribute, so the code picks the first file it finds in the directory
+    if that is the case.
 
 For more information, see the
 [protocol document](protocol_3_1.md#update-checks-body-update-check-response-objects-update-check-response-3).
