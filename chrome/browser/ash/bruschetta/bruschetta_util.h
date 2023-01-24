@@ -49,6 +49,13 @@ absl::optional<const base::Value::Dict*> GetInstallableConfig(
     const Profile* profile,
     const std::string& config_id);
 
+// Returns true if an installable config for Bruschetta is present in the
+// enterprise policy.
+bool HasInstallableConfig(const Profile* profile, const std::string& config_id);
+
+// Returns true if Bruschetta is installed.
+bool IsInstalled(Profile* profile, const guest_os::GuestId& guest_id);
+
 }  // namespace bruschetta
 
 #endif  // CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_UTIL_H_

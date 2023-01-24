@@ -42,6 +42,7 @@ export class TestCrostiniBrowserProxy extends TestBrowserProxy {
       'requestSharedVmDevices',
       'isVmDeviceShared',
       'setVmDeviceShared',
+      'requestBruschettaInstallerView',
     ]);
     this.crostiniMicSharingEnabled = false;
     this.crostiniIsRunning = true;
@@ -262,5 +263,10 @@ export class TestCrostiniBrowserProxy extends TestBrowserProxy {
   setVmDeviceShared(id, device, shared) {
     this.methodCalled('setVmDeviceShared', id, device, shared);
     return this.getNewPromiseFor('setVmDeviceShared');
+  }
+
+  /** @override */
+  requestBruschettaInstallerView() {
+    this.methodCalled('requestBruschettaInstallerView');
   }
 }

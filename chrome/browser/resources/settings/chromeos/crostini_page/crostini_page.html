@@ -46,18 +46,33 @@
       </template>
     </div>
 
-    <template is="dom-if" if="[[enableBruschetta_]]">
-      <div id="bruschetta" class="settings-box first"
-          actionable
+    <template is="dom-if" if="[[showBruschetta_]]">
+      <div id="bruschetta" class="settings-box two-line"
+          actionable$="[[isBruschettaInstalled_]]"
           on-click="onBruschettaSubpageTap_">
         <div class="start">
           $i18n{bruschettaPageLabel}
+          <div class="secondary" id="secondaryText">
+            <localized-link
+                localized-string="[[i18nAdvanced('bruschettaSubtext')]]">
+            </localized-link>
+          </div>
         </div>
-        <cr-icon-button class="subpage-arrow"
-            aria-label="$i18n{crostiniPageTitle}"
-            aria-describedby="secondaryText"
-            aria-roledescription="$i18n{subpageArrowRoleDescription}">
-        </cr-icon-button>
+        <template is="dom-if" if="[[isBruschettaInstalled_]]">
+          <cr-icon-button class="subpage-arrow"
+              aria-label="$i18n{bruschettaPageLabel}"
+              aria-describedby="secondaryText"
+              aria-roledescription="$i18n{subpageArrowRoleDescription}">
+          </cr-icon-button>
+        </template>
+        <template is="dom-if" if="[[!isBruschettaInstalled_]]">
+          <div class="separator"></div>
+          <cr-button id="enable"
+              on-click="onBruschettaEnableTap_"
+              aria-describedby="secondaryText">
+            $i18n{bruschettaEnable}
+          </cr-button>
+        </template>
       </div>
     </template>
   </div>

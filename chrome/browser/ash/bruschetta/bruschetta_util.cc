@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 
@@ -76,6 +77,17 @@ absl::optional<const base::Value::Dict*> GetInstallableConfig(
     const std::string& config_id) {
   return GetConfigWithEnabledLevel(profile, config_id,
                                    prefs::PolicyEnabledState::INSTALL_ALLOWED);
+}
+
+bool HasInstallableConfig(const Profile* profile,
+                          const std::string& config_id) {
+  return GetInstallableConfig(profile, config_id).has_value();
+}
+
+bool IsInstalled(Profile* profile, const guest_os::GuestId& guest_id) {
+  const base::Value* value = guest_os::GetContainerPrefValue(
+      profile, guest_id, guest_os::prefs::kVmNameKey);
+  return value != nullptr;
 }
 
 }  // namespace bruschetta

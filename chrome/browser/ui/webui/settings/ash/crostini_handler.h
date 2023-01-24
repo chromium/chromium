@@ -160,6 +160,7 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   void HandleIsVmDeviceShared(const base::Value::List& args);
   // Handle a request to set the sharing status of a VmDevice
   void HandleSetVmDeviceShared(const base::Value::List& args);
+  void HandleRequestBruschettaInstallerView(const base::Value::List& args);
 
   Profile* profile_;
   base::CallbackListSubscription adb_sideloading_device_policy_subscription_;

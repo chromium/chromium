@@ -295,6 +295,9 @@ export interface CrostiniBrowserProxy {
    */
   setVmDeviceShared(id: GuestId, device: string, shared: boolean):
       Promise<boolean>;
+
+  /** Show Bruschetta installer. */
+  requestBruschettaInstallerView(): void;
 }
 
 let instance: CrostiniBrowserProxy|null = null;
@@ -464,5 +467,9 @@ export class CrostiniBrowserProxyImpl implements CrostiniBrowserProxy {
   setVmDeviceShared(id: GuestId, device: string, shared: boolean):
       Promise<boolean> {
     return sendWithPromise('setVmDeviceShared', id, device, shared);
+  }
+
+  requestBruschettaInstallerView() {
+    chrome.send('requestBruschettaInstallerView');
   }
 }
