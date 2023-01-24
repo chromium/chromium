@@ -23,7 +23,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {InsetsF, RectF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {HELP_BUBBLE_DISMISSED_EVENT, HELP_BUBBLE_TIMED_OUT_EVENT, HelpBubbleDismissedEvent, HelpBubbleElement} from './help_bubble.js';
+import {debounceEnd, HELP_BUBBLE_DISMISSED_EVENT, HELP_BUBBLE_TIMED_OUT_EVENT, HelpBubbleDismissedEvent, HelpBubbleElement} from './help_bubble.js';
 import {HelpBubbleClientCallbackRouter, HelpBubbleClosedReason, HelpBubbleHandlerInterface, HelpBubbleParams} from './help_bubble.mojom-webui.js';
 import {HelpBubbleController, Trackable} from './help_bubble_controller.js';
 import {HelpBubbleProxyImpl} from './help_bubble_proxy.js';
@@ -50,6 +50,8 @@ export const HelpBubbleMixin = dedupingMixin(
         private helpBubbleAnchorObserver_: IntersectionObserver|null = null;
         private helBubbleDismissedEventTracker_: EventTracker =
             new EventTracker();
+        private helpBubbleScrollCallbackDebounced_:
+            EventListenerOrEventListenerObject|null = null;
 
         constructor(...args: any[]) {
           super(...args);
@@ -80,6 +82,13 @@ export const HelpBubbleMixin = dedupingMixin(
                       target as HTMLElement, isIntersecting)),
               {root: document.body});
 
+          this.helpBubbleScrollCallbackDebounced_ =
+              debounceEnd(this.helpBubbleScrollCallback_.bind(this), 50) as
+              EventListenerOrEventListenerObject;
+          document.addEventListener(
+              'scroll', this.helpBubbleScrollCallbackDebounced_,
+              {passive: true});
+
           // When the component is connected, if the target elements were
           // already registered, they should be observed now. Any targets
           // registered from this point forward will observed on registration.
@@ -101,6 +110,11 @@ export const HelpBubbleMixin = dedupingMixin(
           this.helpBubbleAnchorObserver_.disconnect();
           this.helpBubbleAnchorObserver_ = null;
           this.helpBubbleControllerById_.clear();
+          if (this.helpBubbleScrollCallbackDebounced_) {
+            document.removeEventListener(
+                'scroll', this.helpBubbleScrollCallbackDebounced_);
+            this.helpBubbleScrollCallbackDebounced_ = null;
+          }
         }
 
         /**
@@ -345,24 +359,49 @@ export const HelpBubbleMixin = dedupingMixin(
             this.helpBubbleHandler_.helpBubbleClosed(
                 nativeId, HelpBubbleClosedReason.kPageChanged);
           }
-          const rect = new RectF();
-          if (isVisible) {
-            const bounds = target.getBoundingClientRect();
-            rect.x = bounds.x;
-            rect.y = bounds.y;
-            rect.width = bounds.width;
-            rect.height = bounds.height;
+          const bounds =
+              isVisible ? this.getElementBounds_(target) : new RectF();
+          this.helpBubbleHandler_.helpBubbleAnchorVisibilityChanged(
+              nativeId, isVisible, bounds);
+        }
 
-            if (ctrl) {
-              const padding = ctrl.getPadding();
-              rect.x -= padding.left;
-              rect.y -= padding.top;
-              rect.width += padding.left + padding.right;
-              rect.height += padding.top + padding.bottom;
+        /**
+         * When the document scrolls, we need to update cached positions
+         * of bubble anchors
+         */
+        private helpBubbleScrollCallback_() {
+          for (const ctrl of this.controllers) {
+            if (ctrl.hasAnchor() && ctrl.getAnchorVisibility()) {
+              this.helpBubbleHandler_.helpBubbleAnchorVisibilityChanged(
+                  ctrl.getNativeId(), ctrl.getAnchorVisibility(),
+                  this.getElementBounds_(ctrl.getAnchor()!));
             }
           }
-          this.helpBubbleHandler_.helpBubbleAnchorVisibilityChanged(
-              nativeId, isVisible, rect);
+        }
+
+        /**
+         * Returns bounds of the anchor element
+         */
+        private getElementBounds_(element: HTMLElement) {
+          const rect = new RectF();
+          const bounds = element.getBoundingClientRect();
+          rect.x = bounds.x;
+          rect.y = bounds.y;
+          rect.width = bounds.width;
+          rect.height = bounds.height;
+          const nativeId = element.dataset['nativeId'];
+          if (!nativeId) {
+            return rect;
+          }
+          const ctrl = this.helpBubbleControllerById_.get(nativeId);
+          if (ctrl) {
+            const padding = ctrl.getPadding();
+            rect.x -= padding.left;
+            rect.y -= padding.top;
+            rect.width += padding.left + padding.right;
+            rect.height += padding.top + padding.bottom;
+          }
+          return rect;
         }
 
         /**

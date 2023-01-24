@@ -43,7 +43,7 @@ export type HelpBubbleTimedOutEvent = CustomEvent<{
 
 type ResizeListener = (this: Window, ev: UIEvent) => any;
 
-function debounceEnd(fn: Function, time: number = 50) {
+export function debounceEnd(fn: Function, time: number = 50) {
   let timerId: number|undefined;
   return () => {
     clearTimeout(timerId);

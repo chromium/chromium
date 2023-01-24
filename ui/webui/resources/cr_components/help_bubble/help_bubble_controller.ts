@@ -89,6 +89,10 @@ export class HelpBubbleController {
     this.isAnchorVisible_ = isVisible;
   }
 
+  isExternal() {
+    return this.isExternal_;
+  }
+
   updateExternalShowingStatus(isShowing: boolean) {
     this.isExternal_ = true;
     this.isBubbleShowing_ = isShowing;
