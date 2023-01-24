@@ -29,6 +29,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
+#include "components/services/storage/public/mojom/service_worker_database.mojom-forward.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
@@ -49,6 +50,8 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/result_codes.h"
+#include "crypto/secure_hash.h"
+#include "crypto/sha2.h"
 #include "ipc/ipc_message.h"
 #include "mojo/public/c/system/types.h"
 #include "net/base/net_errors.h"
@@ -204,6 +207,39 @@ const char* FetchHandlerTypeToSuffix(
     case ServiceWorkerVersion::FetchHandlerType::kEmptyFetchHandler:
       return "_EMPTY_FETCH_HANDLER";
   }
+}
+
+// This function merges SHA256 checksum hash strings in
+// ServiceWokrerResourceRecord and return a single hash string.
+std::string MergeResourceRecordSHA256ScriptChecksum(
+    const ServiceWorkerScriptCacheMap& script_cache_map) {
+  const std::unique_ptr<crypto::SecureHash> checksum =
+      crypto::SecureHash::Create(crypto::SecureHash::SHA256);
+  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources;
+  script_cache_map.GetResources(&resources);
+  // Sort |resources| by |sha256_checksum| value not to make the merged value
+  // inconsistent based on the script order.
+  std::sort(resources.begin(), resources.end(),
+            [](const storage::mojom::ServiceWorkerResourceRecordPtr& record1,
+               const storage::mojom::ServiceWorkerResourceRecordPtr& record2) {
+              return record1->sha256_checksum.value() <
+                     record2->sha256_checksum.value();
+            });
+
+  for (auto& resource : resources) {
+    // This may not be the case because we use the fixed length string, but
+    // insert a delimiter here to distinguish following cases to avoid hash
+    // value collisions: ab,cdef vs abcd,ef
+    const std::string checksum_with_delimiter =
+        resource->sha256_checksum.value() + "|";
+    checksum->Update(checksum_with_delimiter.data(),
+                     checksum_with_delimiter.size());
+  }
+
+  uint8_t result[crypto::kSHA256Length];
+  checksum->Finish(result, crypto::kSHA256Length);
+
+  return base::HexEncode(result);
 }
 
 }  // namespace
@@ -1289,6 +1325,16 @@ void ServiceWorkerVersion::OnStarted(
                 fetch_handler_type != FetchHandlerType::kNoHandler);
       fetch_handler_type_ = fetch_handler_type;
     }
+  }
+
+  // Update |sha256_script_checksum_| if it's empty. This can happen when the
+  // script is updated and the new service worker version is created. This case
+  // ServiceWorkerVersion::SetResources() isn't called and
+  // |sha256_script_checksum_| should be empty. Calculate the checksum string
+  // with the script newly added/updated in |script_cache_map_|.
+  if (sha256_script_checksum_.empty()) {
+    sha256_script_checksum_ =
+        MergeResourceRecordSHA256ScriptChecksum(script_cache_map_);
   }
 
   // Fire all start callbacks.
@@ -2673,4 +2719,13 @@ ServiceWorkerVersion::RebindStorageReference() {
       remote_reference_.BindNewPipeAndPassReceiver());
 }
 
+void ServiceWorkerVersion::SetResources(
+    const std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>&
+        resources) {
+  DCHECK_EQ(status_, NEW);
+  DCHECK(sha256_script_checksum_.empty());
+  script_cache_map_.SetResources(resources);
+  sha256_script_checksum_ =
+      MergeResourceRecordSHA256ScriptChecksum(script_cache_map_);
+}
 }  // namespace content

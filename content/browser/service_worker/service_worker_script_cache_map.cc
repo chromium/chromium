@@ -78,7 +78,8 @@ void ServiceWorkerScriptCacheMap::NotifyFinishedCaching(
 }
 
 void ServiceWorkerScriptCacheMap::GetResources(
-    std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>* resources) {
+    std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>* resources)
+    const {
   DCHECK(resources->empty());
   for (ResourceMap::const_iterator it = resource_map_.begin();
        it != resource_map_.end();

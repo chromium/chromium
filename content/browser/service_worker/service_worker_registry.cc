@@ -913,9 +913,12 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
         registration.get(), data.script, data.script_type, data.version_id,
         std::move(version_reference), context_->AsWeakPtr());
     version->set_fetch_handler_type(data.fetch_handler_type);
+    // Set resources before changing the status to ACTIVATED/INSTALLED.
+    // |sha256_script_checksum_| in ServiceWorkerVersion should be set before
+    // changing the status.
+    version->SetResources(resources);
     version->SetStatus(data.is_active ? ServiceWorkerVersion::ACTIVATED
                                       : ServiceWorkerVersion::INSTALLED);
-    version->script_cache_map()->SetResources(resources);
     if (data.origin_trial_tokens)
       version->SetValidOriginTrialTokens(*data.origin_trial_tokens);
 

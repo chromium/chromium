@@ -401,6 +401,11 @@ class ServiceWorkerBrowserTest : public ContentBrowserTest {
         ->browser_context()
         ->set_client_hints_controller_delegate(
             &client_hints_controller_delegate_);
+
+    // Set a custom request handler for Sha256ScriptChecksum test.
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &ServiceWorkerBrowserTest::HandleRequestForSha256ScriptChecksumTest,
+        base::Unretained(this)));
   }
 
   void TearDownOnMainThread() override {
@@ -458,6 +463,32 @@ class ServiceWorkerBrowserTest : public ContentBrowserTest {
   }
 
  private:
+  std::unique_ptr<net::test_server::HttpResponse>
+  HandleRequestForSha256ScriptChecksumTest(
+      const net::test_server::HttpRequest& request) {
+    GURL absolute_url = embedded_test_server()->GetURL(request.relative_url);
+    if (absolute_url.path() != "/service_worker/import_scripts_test.js") {
+      return nullptr;
+    }
+
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    // Add a counter that is different every request to the script so that a
+    // service worker will detect it as a script update.
+    http_response->set_content(
+        "importScripts('empty.js'); var counter = " +
+        std::to_string(counter_for_sha256_checksum_test_) + ";");
+    http_response->set_content_type("text/javascript");
+    http_response->AddCustomHeader("Service-Worker-Allowed", "/");
+
+    counter_for_sha256_checksum_test_++;
+
+    return http_response;
+  }
+
+  int64_t counter_for_sha256_checksum_test_ = 0;
+
   base::test::ScopedFeatureList feature_list_;
   scoped_refptr<ServiceWorkerContextWrapper> wrapper_;
   MockClientHintsControllerDelegate client_hints_controller_delegate_{
@@ -2272,6 +2303,139 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, Registration) {
   EXPECT_EQ(FindRegistration(
                 embedded_test_server()->GetURL("/service_worker/empty.html")),
             blink::ServiceWorkerStatusCode::kErrorNotFound);
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
+                       Sha256ScriptChecksum_ImportScripts) {
+  StartServerAndNavigateToSetup();
+
+  using ServiceWorkerScriptChecksumInfo = std::pair<GURL, std::string>;
+  std::map<std::string, ServiceWorkerScriptChecksumInfo> sw_scripts{
+      {"main_script",
+       {embedded_test_server()->GetURL(
+            "/service_worker/import_scripts_test.js"),
+        "1507F551298E329B279C1077FA52926986465DD8E28831722568FBD01442CFD5"}},
+      {"imported_script",
+       {embedded_test_server()->GetURL("/service_worker/empty.js"),
+        "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"}}};
+
+  std::map<std::string, ServiceWorkerScriptChecksumInfo> updated_sw_scripts{
+      {"main_script",
+       {embedded_test_server()->GetURL(
+            "/service_worker/import_scripts_test.js"),
+        "45BC089A979085D4AFEC61990D1A3B05C88078A530A230157610E261D97F3187"}},
+      {"imported_script",
+       {embedded_test_server()->GetURL("/service_worker/empty.js"),
+        "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"}}};
+
+  // Start the ServiceWorker.
+  WorkerRunningStatusObserver observer1(public_context());
+  const GURL create_service_worker_url(embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
+  EXPECT_EQ("DONE", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                           "register('" +
+                               sw_scripts["main_script"].first.spec() + "')"));
+  observer1.WaitUntilRunning();
+  scoped_refptr<ServiceWorkerVersion> version =
+      wrapper()->GetLiveVersion(observer1.version_id());
+  EXPECT_EQ(version->script_url(), sw_scripts["main_script"].first);
+  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+
+  // Validate checksums for each script, and ServiceWorkerVersion's one.
+  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources;
+  version->script_cache_map()->GetResources(&resources);
+  std::set<std::string> expected_checksums;
+  for (auto& sw_script : sw_scripts) {
+    expected_checksums.insert(sw_script.second.second);
+  }
+  EXPECT_EQ(expected_checksums.size(), resources.size());
+  for (auto& resource : resources) {
+    EXPECT_TRUE(expected_checksums.find(resource->sha256_checksum.value()) !=
+                expected_checksums.end());
+  }
+  EXPECT_EQ("415B8002080749B4C042B3F3896A5574971C2DC2873505455709990B9B87169B",
+            version->sha256_script_checksum());
+
+  // Update the ServiceWorker.
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  EXPECT_EQ("DONE",
+            EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                   "register('" +
+                       updated_sw_scripts["main_script"].first.spec() + "')"));
+  WorkerRunningStatusObserver observer2(public_context());
+  const GURL scope(embedded_test_server()->GetURL("/service_worker"));
+  wrapper()->SkipWaitingWorker(scope,
+                               blink::StorageKey(url::Origin::Create(scope)));
+  observer2.WaitUntilRunning();
+
+  scoped_refptr<ServiceWorkerVersion> updated_version =
+      wrapper()->GetLiveVersion(observer2.version_id());
+  EXPECT_EQ(updated_version->script_url(),
+            updated_sw_scripts["main_script"].first);
+  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, updated_version->running_status());
+
+  // Validate updated checksums for each script, and ServiceWorkerVersion's one.
+  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> updated_resources;
+  updated_version->script_cache_map()->GetResources(&updated_resources);
+  std::set<std::string> updated_expected_checksums;
+  for (auto& sw_script : updated_sw_scripts) {
+    updated_expected_checksums.insert(sw_script.second.second);
+  }
+  EXPECT_EQ(updated_expected_checksums.size(), updated_resources.size());
+  for (auto& resource : updated_resources) {
+    EXPECT_TRUE(
+        updated_expected_checksums.find(resource->sha256_checksum.value()) !=
+        updated_expected_checksums.end());
+  }
+
+  EXPECT_EQ("A7B70A7BF7F36340EFED59B725CF0DBB2B222D59F01448B8F55F372F1C5C2724",
+            updated_version->sha256_script_checksum());
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
+                       Sha256ScriptChecksum_StaticImport) {
+  StartServerAndNavigateToSetup();
+
+  using ServiceWorkerScriptChecksumInfo = std::pair<GURL, std::string>;
+  std::map<std::string, ServiceWorkerScriptChecksumInfo> sw_scripts{
+      {"main_script",
+       {embedded_test_server()->GetURL(
+            "/service_worker/static_import_worker.js"),
+        "9A61565460D4DD31E31625E08DFF783C96E24759BF2AC92F65449F5BB6C7E438"}},
+      {"imported_script",
+       {embedded_test_server()->GetURL("/service_worker/worker.js"),
+        "8F940B6CD3F48EB992FAF65BA7500113CEEDE502922F1C09ED705FF47D181C67"}}};
+
+  // Start the ServiceWorker.
+  WorkerRunningStatusObserver observer1(public_context());
+  const GURL create_service_worker_url(embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
+  EXPECT_EQ("DONE",
+            EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                   "register('" + sw_scripts["main_script"].first.spec() +
+                       "', null, 'module')"));
+  observer1.WaitUntilRunning();
+  scoped_refptr<ServiceWorkerVersion> version =
+      wrapper()->GetLiveVersion(observer1.version_id());
+  EXPECT_EQ(version->script_url(), sw_scripts["main_script"].first);
+  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+
+  // Validate checksums for each script, and ServiceWorkerVersion's one.
+  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources;
+  version->script_cache_map()->GetResources(&resources);
+  std::set<std::string> expected_checksums;
+  for (auto& sw_script : sw_scripts) {
+    expected_checksums.insert(sw_script.second.second);
+  }
+  EXPECT_EQ(expected_checksums.size(), resources.size());
+  for (auto& resource : resources) {
+    EXPECT_TRUE(expected_checksums.find(resource->sha256_checksum.value()) !=
+                expected_checksums.end());
+  }
+  EXPECT_EQ("8CC1C2D44A6709AA9285BA56D2956C6F9A0D45678E9F6C0AFBCF02C2F224A811",
+            version->sha256_script_checksum());
 }
 
 class CacheStorageSideDataSizeChecker

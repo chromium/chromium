@@ -1909,5 +1909,26 @@ TEST_F(ServiceWorkerVersionTest,
   EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version_->running_status());
 }
 
+TEST_F(ServiceWorkerVersionTest, SetResources) {
+  // Create a new version
+  scoped_refptr<ServiceWorkerVersion> version = CreateNewServiceWorkerVersion(
+      helper_->context()->registry(), registration_.get(),
+      GURL("https://www.example.com/test/service_worker.js"),
+      blink::mojom::ScriptType::kClassic);
+
+  // The checksum is empty because still no resource records.
+  EXPECT_EQ("", version->sha256_script_checksum());
+
+  // Set resource records.
+  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> records;
+  records.push_back(WriteToDiskCacheWithIdSync(
+      helper_->context()->GetStorageControl(), version->script_url(), 10,
+      {} /* headers */, "I'm a body", "I'm a meta data"));
+  version->SetResources(records);
+
+  // The checksum has been calculated after the SetResources.
+  EXPECT_EQ("CBE5CFDF7C2118A9C3D78EF1D684F3AFA089201352886449A06A6511CFEF74A7",
+            version->sha256_script_checksum());
+}
 }  // namespace service_worker_version_unittest
 }  // namespace content

@@ -48,8 +48,8 @@ class CONTENT_EXPORT ServiceWorkerScriptCacheMap {
                              const std::string& status_message);
 
   // Used to retrieve the results of the initial run of a new version.
-  void GetResources(
-      std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>* resources);
+  void GetResources(std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>*
+                        resources) const;
 
   // Used when loading an existing version.
   void SetResources(

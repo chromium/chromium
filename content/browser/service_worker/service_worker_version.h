@@ -673,6 +673,14 @@ class CONTENT_EXPORT ServiceWorkerVersion
     return ancestor_frame_type_;
   }
 
+  // Used when loading an existing version. Sets ServiceWorkerResourceRecord to
+  // |script_cache_map_|, then updates |sha256_script_checksum_|.
+  void SetResources(
+      const std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>&
+          resources);
+
+  std::string sha256_script_checksum() { return sha256_script_checksum_; }
+
  private:
   friend class base::RefCounted<ServiceWorkerVersion>;
   friend class EmbeddedWorkerTestHelper;
@@ -1197,6 +1205,15 @@ class CONTENT_EXPORT ServiceWorkerVersion
   scoped_refptr<PolicyContainerHost> policy_container_host_;
 
   base::UnguessableToken reporting_source_;
+
+  // The checksum hash string, which is calculated from each checksum string in
+  // |script_cache_map_|'s resources. This will be used to decide if the main
+  // resource request is bypassed or not in the experiment (crbug.com/1371756).
+  // This field should be set before starting the service worker when the
+  // service worker starts with an existing version. But the field will be set
+  // after the worker has started when there is a change in the script and new
+  // version is created.
+  std::string sha256_script_checksum_;
 
   base::WeakPtrFactory<ServiceWorkerVersion> weak_factory_{this};
 };
