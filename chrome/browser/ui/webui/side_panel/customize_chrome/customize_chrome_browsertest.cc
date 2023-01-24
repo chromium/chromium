@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_tab_helper.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -63,7 +64,8 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
 
   // After calling show, the customize chrome entry should be shown in the side
   // panel
-  customize_chrome_tab_helper->SetCustomizeChromeSidePanelVisible(true);
+  customize_chrome_tab_helper->SetCustomizeChromeSidePanelVisible(
+      true, CustomizeChromeSection::kAppearance);
   EXPECT_TRUE(customize_chrome_tab_helper->IsCustomizeChromeEntryShowing());
 }
 
@@ -75,7 +77,8 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
   auto* customize_chrome_tab_helper = GetTabHelper(browser());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUINewTabURL)));
-  customize_chrome_tab_helper->SetCustomizeChromeSidePanelVisible(true);
+  customize_chrome_tab_helper->SetCustomizeChromeSidePanelVisible(
+      true, CustomizeChromeSection::kAppearance);
   EXPECT_TRUE(customize_chrome_tab_helper->IsCustomizeChromeEntryShowing());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUISettingsURL)));
@@ -97,7 +100,8 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
                                            GURL(chrome::kChromeUINewTabURL)));
   auto* customize_chrome_tab_helper1 = GetTabHelper(browser());
   EXPECT_FALSE(customize_chrome_tab_helper1->IsCustomizeChromeEntryShowing());
-  customize_chrome_tab_helper1->SetCustomizeChromeSidePanelVisible(true);
+  customize_chrome_tab_helper1->SetCustomizeChromeSidePanelVisible(
+      true, CustomizeChromeSection::kAppearance);
   ActivateTabAt(browser(), 2);
   auto* customize_chrome_tab_helper2 = GetTabHelper(browser());
   EXPECT_FALSE(customize_chrome_tab_helper2->IsCustomizeChromeEntryShowing());
@@ -108,10 +112,12 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
   auto* customize_chrome_tab_helper = GetTabHelper(browser());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUINewTabURL)));
-  customize_chrome_tab_helper->SetCustomizeChromeSidePanelVisible(true);
+  customize_chrome_tab_helper->SetCustomizeChromeSidePanelVisible(
+      true, CustomizeChromeSection::kAppearance);
   EXPECT_TRUE(customize_chrome_tab_helper->IsCustomizeChromeEntryShowing());
   // After calling hide, the customize chrome entry should be hidden in the side
   // panel
-  customize_chrome_tab_helper->SetCustomizeChromeSidePanelVisible(false);
+  customize_chrome_tab_helper->SetCustomizeChromeSidePanelVisible(
+      false, CustomizeChromeSection::kAppearance);
   EXPECT_FALSE(customize_chrome_tab_helper->IsCustomizeChromeEntryShowing());
 }

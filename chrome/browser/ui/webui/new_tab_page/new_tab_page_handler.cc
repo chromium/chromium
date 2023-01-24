@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_tab_helper.h"
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -835,10 +836,28 @@ void NewTabPageHandler::LogModulesFreOptInStatus(
   }
 }
 
-void NewTabPageHandler::SetCustomizeChromeSidePanelVisible(bool visible) {
+void NewTabPageHandler::SetCustomizeChromeSidePanelVisible(
+    bool visible,
+    new_tab_page::mojom::CustomizeChromeSection section) {
+  CustomizeChromeSection section_enum;
+  switch (section) {
+    case new_tab_page::mojom::CustomizeChromeSection::kUnspecified:
+      section_enum = CustomizeChromeSection::kUnspecified;
+      break;
+    case new_tab_page::mojom::CustomizeChromeSection::kAppearance:
+      section_enum = CustomizeChromeSection::kAppearance;
+      break;
+    case new_tab_page::mojom::CustomizeChromeSection::kShortcuts:
+      section_enum = CustomizeChromeSection::kShortcuts;
+      break;
+    case new_tab_page::mojom::CustomizeChromeSection::kModules:
+      section_enum = CustomizeChromeSection::kModules;
+      break;
+  }
   auto* customize_chrome_tab_helper =
       CustomizeChromeTabHelper::FromWebContents(web_contents_);
-  customize_chrome_tab_helper->SetCustomizeChromeSidePanelVisible(visible);
+  customize_chrome_tab_helper->SetCustomizeChromeSidePanelVisible(visible,
+                                                                  section_enum);
 }
 
 void NewTabPageHandler::OnPromoDataUpdated() {

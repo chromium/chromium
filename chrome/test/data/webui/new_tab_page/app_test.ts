@@ -6,7 +6,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {counterfactualLoad, LensUploadDialogElement, Module, ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, AppElement, BackgroundManager, BrowserCommandProxy, CustomizeDialogPage, NewTabPageProxy, NtpCustomizeChromeEntryPoint, NtpElement, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import {CustomizeChromeSection, PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
@@ -646,7 +646,9 @@ suite('NewTabPageAppTest', () => {
       $$<HTMLElement>(app, '#customizeButton')!.click();
 
       // Assert.
-      assertTrue(handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
+      assertDeepEquals(
+          [true, CustomizeChromeSection.kUnspecified],
+          handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
       assertEquals(
           1,
           metrics.count(
@@ -666,7 +668,9 @@ suite('NewTabPageAppTest', () => {
       $$<HTMLElement>(app, '#customizeButton')!.click();
 
       // Assert.
-      assertFalse(handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
+      assertDeepEquals(
+          [false, CustomizeChromeSection.kUnspecified],
+          handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
       assertEquals(
           0,
           metrics.count(
@@ -686,7 +690,9 @@ suite('NewTabPageAppTest', () => {
         $$(app, 'ntp-modules')!.dispatchEvent(new Event('customize-module'));
 
         // Assert.
-        assertTrue(handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
+        assertDeepEquals(
+            [true, CustomizeChromeSection.kModules],
+            handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
         assertEquals(
             1,
             metrics.count(
@@ -704,7 +710,9 @@ suite('NewTabPageAppTest', () => {
 
       test('URL opens side panel', () => {
         // Assert.
-        assertTrue(handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
+        assertDeepEquals(
+            [true, CustomizeChromeSection.kAppearance],
+            handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
         assertEquals(
             1,
             metrics.count(

@@ -152,6 +152,13 @@ enum DoodleShareChannel {
   kLinkCopy,
 };
 
+enum CustomizeChromeSection {
+  kUnspecified,
+  kAppearance,
+  kShortcuts,
+  kModules,
+};
+
 struct PromoImagePart {
   url.mojom.Url image_url;
   url.mojom.Url target;
@@ -287,7 +294,8 @@ interface PageHandler {
   // Log user's FRE |optInStatus|.
   LogModulesFreOptInStatus(OptInStatus opt_in_status);
   // Shows or hides the customize chrome in unified side panel.
-  SetCustomizeChromeSidePanelVisible(bool visible);
+  SetCustomizeChromeSidePanelVisible(bool visible,
+                                     CustomizeChromeSection section);
 
   // ======= METRICS =======
   // Logs that the One Google Bar was added to the DOM / loaded in an iframe at

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_TAB_HELPER_H_
 #define CHROME_BROWSER_UI_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_TAB_HELPER_H_
 
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
@@ -23,7 +24,9 @@ class CustomizeChromeTabHelper
    public:
     virtual void CreateAndRegisterEntry() = 0;
     virtual void DeregisterEntry() = 0;
-    virtual void SetCustomizeChromeSidePanelVisible(bool visible) = 0;
+    virtual void SetCustomizeChromeSidePanelVisible(
+        bool visible,
+        CustomizeChromeSection section) = 0;
     virtual bool IsCustomizeChromeEntryShowing() const = 0;
     virtual bool IsCustomizeChromeEntryAvailable() const = 0;
     virtual ~Delegate() = default;
@@ -43,7 +46,9 @@ class CustomizeChromeTabHelper
   void DeregisterEntry();
 
   // Opens and closes Side Panel to the customize chrome entry.
-  void SetCustomizeChromeSidePanelVisible(bool visible);
+  virtual void SetCustomizeChromeSidePanelVisible(
+      bool visible,
+      CustomizeChromeSection section);
 
   // True if the side panel is open and showing the customize chrome entry.
   bool IsCustomizeChromeEntryShowing() const;
@@ -58,9 +63,11 @@ class CustomizeChromeTabHelper
   // Sets callback that is run when side panel entry state is changed
   void SetCallback(StateChangedCallBack callback);
 
+ protected:
+  explicit CustomizeChromeTabHelper(content::WebContents* web_contents);
+
  private:
   friend class content::WebContentsUserData<CustomizeChromeTabHelper>;
-  explicit CustomizeChromeTabHelper(content::WebContents* web_contents);
 
   std::unique_ptr<Delegate> delegate_;
 

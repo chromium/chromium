@@ -25,7 +25,7 @@ import {loadTimeData} from './i18n_setup.js';
 import {IframeElement} from './iframe.js';
 import {LogoElement} from './logo.js';
 import {recordLoadDuration} from './metrics_utils.js';
-import {PageCallbackRouter, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
+import {CustomizeChromeSection, PageCallbackRouter, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {$$} from './utils.js';
 import {Action as VoiceAction, recordVoiceAction} from './voice_search_overlay.js';
@@ -383,7 +383,7 @@ export class AppElement extends PolymerElement {
             });
     // Open Customize Chrome if there are Customize Chrome URL params.
     if (this.showCustomize_) {
-      this.pageHandler_.setCustomizeChromeSidePanelVisible(this.showCustomize_);
+      this.setCustomizeChromeSidePanelVisible_(this.showCustomize_);
       recordCustomizeChromeOpen(NtpCustomizeChromeEntryPoint.URL);
     }
     this.eventTracker_.add(window, 'message', (event: MessageEvent) => {
@@ -523,12 +523,10 @@ export class AppElement extends PolymerElement {
   }
 
   private onCustomizeClick_() {
+    // Let customize dialog or side panel decide what page or section to show.
+    this.selectedCustomizeDialogPage_ = null;
     if (this.customizeChromeEnabled_) {
-      // TODO(crbug.com/1402251): Scroll to section requested by
-      // |this.selectedCustomizeDialogPage_|.
-      // Flip customize chrome's visibility e.g. if it is closed, open it.
-      this.pageHandler_.setCustomizeChromeSidePanelVisible(
-          !this.showCustomize_);
+      this.setCustomizeChromeSidePanelVisible_(!this.showCustomize_);
       if (!this.showCustomize_) {
         recordCustomizeChromeOpen(
             NtpCustomizeChromeEntryPoint.CUSTOMIZE_BUTTON);
@@ -729,11 +727,29 @@ export class AppElement extends PolymerElement {
 
   private onCustomizeModule_() {
     this.showCustomize_ = true;
-    if (this.customizeChromeEnabled_) {
-      this.pageHandler_.setCustomizeChromeSidePanelVisible(this.showCustomize_);
-    }
     this.selectedCustomizeDialogPage_ = CustomizeDialogPage.MODULES;
     recordCustomizeChromeOpen(NtpCustomizeChromeEntryPoint.MODULE);
+    this.setCustomizeChromeSidePanelVisible_(this.showCustomize_);
+  }
+
+  private setCustomizeChromeSidePanelVisible_(visible: boolean) {
+    if (!this.customizeChromeEnabled_) {
+      return;
+    }
+    let section: CustomizeChromeSection = CustomizeChromeSection.kUnspecified;
+    switch (this.selectedCustomizeDialogPage_) {
+      case CustomizeDialogPage.BACKGROUNDS:
+      case CustomizeDialogPage.THEMES:
+        section = CustomizeChromeSection.kAppearance;
+        break;
+      case CustomizeDialogPage.SHORTCUTS:
+        section = CustomizeChromeSection.kShortcuts;
+        break;
+      case CustomizeDialogPage.MODULES:
+        section = CustomizeChromeSection.kModules;
+        break;
+    }
+    this.pageHandler_.setCustomizeChromeSidePanelVisible(visible, section);
   }
 
   private printPerformanceDatum_(

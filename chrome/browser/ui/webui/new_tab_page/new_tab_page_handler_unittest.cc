@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_tab_helper.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -168,6 +169,29 @@ class MockPromoService : public PromoService {
   MOCK_METHOD(void, Refresh, (), (override));
 };
 
+class MockCustomizeChromeTabHelper : public CustomizeChromeTabHelper {
+ public:
+  static MockCustomizeChromeTabHelper* CreateForWebContents(
+      content::WebContents* contents) {
+    DCHECK(contents);
+    DCHECK(!contents->GetUserData(UserDataKey()));
+    contents->SetUserData(
+        UserDataKey(),
+        base::WrapUnique(new MockCustomizeChromeTabHelper(contents)));
+    return static_cast<MockCustomizeChromeTabHelper*>(
+        contents->GetUserData(UserDataKey()));
+  }
+
+  MOCK_METHOD(void,
+              SetCustomizeChromeSidePanelVisible,
+              (bool, CustomizeChromeSection),
+              (override));
+
+ private:
+  explicit MockCustomizeChromeTabHelper(content::WebContents* web_contents)
+      : CustomizeChromeTabHelper(web_contents) {}
+};
+
 std::unique_ptr<TestingProfile> MakeTestingProfile(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   TestingProfile::Builder profile_builder;
@@ -196,7 +220,10 @@ class NewTabPageHandlerTest : public testing::Test {
         mock_ntp_custom_background_service_(profile_.get()),
         mock_promo_service_(*static_cast<MockPromoService*>(
             PromoServiceFactory::GetForProfile(profile_.get()))),
-        web_contents_(factory_.CreateWebContents(profile_.get())) {
+        web_contents_(factory_.CreateWebContents(profile_.get())),
+        mock_customize_chrome_tab_helper_(
+            MockCustomizeChromeTabHelper::CreateForWebContents(
+                web_contents_.get())) {
     mock_hats_service_ = static_cast<MockHatsService*>(
         HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile_.get(), base::BindRepeating(&BuildMockHatsService)));
@@ -224,10 +251,8 @@ class NewTabPageHandlerTest : public testing::Test {
     web_contents_->SetColorProviderSource(&mock_color_provider_source_);
     const std::vector<std::pair<const std::string, int>> module_id_names = {
         {"recipe_tasks", IDS_NTP_MODULES_RECIPE_TASKS_SENTENCE}};
-    CustomizeChromeTabHelper::CreateForWebContents(web_contents_.get());
-    auto* customize_chrome_tab_helper_ =
-        CustomizeChromeTabHelper::FromWebContents(web_contents_.get());
-    EXPECT_FALSE(customize_chrome_tab_helper_->IsCustomizeChromeEntryShowing());
+    EXPECT_FALSE(
+        mock_customize_chrome_tab_helper_->IsCustomizeChromeEntryShowing());
     handler_ = std::make_unique<NewTabPageHandler>(
         mojo::PendingReceiver<new_tab_page::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(), profile_.get(),
@@ -286,6 +311,7 @@ class NewTabPageHandlerTest : public testing::Test {
   const raw_ref<MockPromoService> mock_promo_service_;
   content::TestWebContentsFactory factory_;
   raw_ptr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
+  raw_ptr<MockCustomizeChromeTabHelper> mock_customize_chrome_tab_helper_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<NewTabPageHandler> handler_;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
@@ -908,4 +934,37 @@ TEST_F(NewTabPageHandlerTest, ModulesVisiblePrefChangeTriggersPageCall) {
   profile_->GetPrefs()->SetBoolean(prefs::kNtpModulesVisible, true);
   EXPECT_CALL(mock_page_, SetDisabledModules).Times(1);
   mock_page_.FlushForTesting();
+}
+
+TEST_F(NewTabPageHandlerTest, SetCustomizeChromeSidePanelVisible) {
+  bool visible;
+  CustomizeChromeSection section;
+  EXPECT_CALL(*mock_customize_chrome_tab_helper_,
+              SetCustomizeChromeSidePanelVisible)
+      .Times(1)
+      .WillOnce(testing::DoAll(testing::SaveArg<0>(&visible),
+                               testing::SaveArg<1>(&section)));
+
+  handler_->SetCustomizeChromeSidePanelVisible(
+      /*visible=*/true,
+      new_tab_page::mojom::CustomizeChromeSection::kAppearance);
+
+  EXPECT_TRUE(visible);
+  EXPECT_EQ(CustomizeChromeSection::kAppearance, section);
+}
+
+TEST_F(NewTabPageHandlerTest, SetCustomizeChromeSidePanelInvisible) {
+  bool visible;
+  CustomizeChromeSection section;
+  EXPECT_CALL(*mock_customize_chrome_tab_helper_,
+              SetCustomizeChromeSidePanelVisible)
+      .Times(1)
+      .WillOnce(testing::DoAll(testing::SaveArg<0>(&visible),
+                               testing::SaveArg<1>(&section)));
+
+  handler_->SetCustomizeChromeSidePanelVisible(
+      /*visible=*/false, new_tab_page::mojom::CustomizeChromeSection::kModules);
+
+  EXPECT_FALSE(visible);
+  EXPECT_EQ(CustomizeChromeSection::kModules, section);
 }

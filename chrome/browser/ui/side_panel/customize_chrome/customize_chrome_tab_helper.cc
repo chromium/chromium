@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_tab_helper.h"
 
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_side_panel_controller_utils.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 
 CustomizeChromeTabHelper::~CustomizeChromeTabHelper() = default;
 
@@ -19,9 +20,10 @@ void CustomizeChromeTabHelper::DeregisterEntry() {
 }
 
 void CustomizeChromeTabHelper::SetCustomizeChromeSidePanelVisible(
-    bool visible) {
+    bool visible,
+    CustomizeChromeSection section) {
   DCHECK(delegate_);
-  delegate_->SetCustomizeChromeSidePanelVisible(visible);
+  delegate_->SetCustomizeChromeSidePanelVisible(visible, section);
 }
 
 bool CustomizeChromeTabHelper::IsCustomizeChromeEntryShowing() const {

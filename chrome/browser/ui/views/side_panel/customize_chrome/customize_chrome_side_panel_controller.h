@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 
 namespace content {
 class WebContents;
@@ -31,7 +32,9 @@ class CustomizeChromeSidePanelController
   // CustomizeChromeTabHelper::Delegate
   void CreateAndRegisterEntry() override;
   void DeregisterEntry() override;
-  void SetCustomizeChromeSidePanelVisible(bool visible) override;
+  void SetCustomizeChromeSidePanelVisible(
+      bool visible,
+      CustomizeChromeSection section) override;
   bool IsCustomizeChromeEntryShowing() const override;
   bool IsCustomizeChromeEntryAvailable() const override;
 

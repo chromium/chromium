@@ -65,7 +65,8 @@ void CustomizeChromeSidePanelController::DeregisterEntry() {
 }
 
 void CustomizeChromeSidePanelController::SetCustomizeChromeSidePanelVisible(
-    bool visible) {
+    bool visible,
+    CustomizeChromeSection section) {
   auto* browser_view = GetBrowserView();
   if (!browser_view)
     return;
@@ -76,6 +77,7 @@ void CustomizeChromeSidePanelController::SetCustomizeChromeSidePanelVisible(
   } else {
     browser_view->side_panel_coordinator()->Close();
   }
+  // TODO(crbug.com/1402251): Scroll to requested `section`.
 }
 
 bool CustomizeChromeSidePanelController::IsCustomizeChromeEntryShowing() const {

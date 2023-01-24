@@ -5334,6 +5334,7 @@ static_library("ui") {
       "webauthn/transport_hover_list_model.h",
       "webauthn/webauthn_ui_helpers.cc",
       "webauthn/webauthn_ui_helpers.h",
+      "webui/side_panel/customize_chrome/customize_chrome_section.h",
       "window_name_prompt/window_name_prompt.cc",
     ]
 
