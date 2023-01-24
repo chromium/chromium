@@ -323,22 +323,33 @@ class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
     PrintPreviewUI::SetDelegateForTesting(nullptr);
   }
 
-  void WaitUntilPreviewIsReady() {
-    if (rendered_page_count_ >= expected_rendered_page_count_)
-      return;
+  // Tests that use PrintPreviewObserver must call
+  // WaitUntilPreviewIsReady*() exactly once.
+  [[nodiscard]] content::WebContents*
+  WaitUntilPreviewIsReadyAndReturnPreviewDialog() {
+    if (rendered_page_count_ < expected_rendered_page_count_) {
+      base::RunLoop run_loop;
+      base::AutoReset<base::RunLoop*> auto_reset(&run_loop_, &run_loop);
+      run_loop.Run();
 
-    base::RunLoop run_loop;
-    base::AutoReset<base::RunLoop*> auto_reset(&run_loop_, &run_loop);
-    run_loop.Run();
-
-    if (queue_.has_value()) {
-      std::string message;
-      EXPECT_TRUE(queue_->WaitForMessage(&message));
-      EXPECT_EQ("\"success\"", message);
+      if (queue_.has_value()) {
+        std::string message;
+        EXPECT_TRUE(queue_->WaitForMessage(&message));
+        EXPECT_EQ("\"success\"", message);
+      }
     }
+
+    // Grab and reset `preview_dialog_` to avoid potential dangling pointers.
+    content::WebContents* dialog = preview_dialog_;
+    preview_dialog_ = nullptr;
+    return dialog;
   }
 
-  content::WebContents* GetPrintPreviewDialog() { return preview_dialog_; }
+  // Wrapper for WaitUntilPreviewIsReadyAndReturnPreviewDialog() provided for
+  // convenience for callers that do not need the returned result.
+  void WaitUntilPreviewIsReady() {
+    std::ignore = WaitUntilPreviewIsReadyAndReturnPreviewDialog();
+  }
 
   uint32_t rendered_page_count() const { return rendered_page_count_; }
 
@@ -387,7 +398,7 @@ class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
   uint32_t rendered_page_count_ = 0;
 
   const bool wait_for_loaded_;
-  raw_ptr<content::WebContents, DanglingUntriaged> preview_dialog_ = nullptr;
+  raw_ptr<content::WebContents> preview_dialog_ = nullptr;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
   RAW_PTR_EXCLUSION base::RunLoop* run_loop_ = nullptr;
@@ -2057,10 +2068,8 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
   StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
              /*print_renderer=*/mojo::NullAssociatedRemote(),
              /*print_preview_disabled=*/false, /*has_selection=*/false);
-  print_preview_observer.WaitUntilPreviewIsReady();
-
   content::WebContents* preview_dialog =
-      print_preview_observer.GetPrintPreviewDialog();
+      print_preview_observer.WaitUntilPreviewIsReadyAndReturnPreviewDialog();
   ASSERT_TRUE(preview_dialog);
 
   // The script will ensure we return the id of <zoom-out-button> when
@@ -2643,13 +2652,11 @@ class SystemAccessProcessPrintBrowserTestBase
                /*print_renderer=*/mojo::NullAssociatedRemote(),
                /*print_preview_disabled=*/false,
                /*has_selection=*/false);
-    print_preview_observer.WaitUntilPreviewIsReady();
+    content::WebContents* preview_dialog =
+        print_preview_observer.WaitUntilPreviewIsReadyAndReturnPreviewDialog();
+    ASSERT_TRUE(preview_dialog);
 
     set_rendered_page_count(print_preview_observer.rendered_page_count());
-
-    content::WebContents* preview_dialog =
-        print_preview_observer.GetPrintPreviewDialog();
-    ASSERT_TRUE(preview_dialog);
 
     // Print Preview is completely ready, can now initiate printing.
     // This script locates and clicks the Print button.
@@ -2671,13 +2678,11 @@ class SystemAccessProcessPrintBrowserTestBase
                /*print_renderer=*/mojo::NullAssociatedRemote(),
                /*print_preview_disabled=*/false,
                /*has_selection=*/false);
-    print_preview_observer.WaitUntilPreviewIsReady();
+    content::WebContents* preview_dialog =
+        print_preview_observer.WaitUntilPreviewIsReadyAndReturnPreviewDialog();
+    ASSERT_TRUE(preview_dialog);
 
     set_rendered_page_count(print_preview_observer.rendered_page_count());
-
-    content::WebContents* preview_dialog =
-        print_preview_observer.GetPrintPreviewDialog();
-    ASSERT_TRUE(preview_dialog);
 
     // Print Preview is completely ready, can now initiate printing.
     // This script locates and clicks the "Print using system dialog",
