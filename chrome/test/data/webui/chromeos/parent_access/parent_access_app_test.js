@@ -12,7 +12,7 @@ import {setParentAccessUIHandlerForTest} from 'chrome://parent-access/parent_acc
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {buildWebApprovalsParams} from './parent_access_test_utils.js';
+import {buildExtensionApprovalsParams, buildWebApprovalsParams} from './parent_access_test_utils.js';
 import {TestParentAccessUIHandler} from './test_parent_access_ui_handler.js';
 
 window.parent_access_app_tests = {};
@@ -22,6 +22,8 @@ parent_access_app_tests.suiteName = 'ParentAccessAppTest';
 parent_access_app_tests.TestNames = {
   TestShowWebApprovalsAfterFlow:
       'Tests that the web approvals after flow is shown',
+  TestShowExtensionApprovalsFlow:
+      'Tests that the extension approvals flow is shown',
   TestShowErrorScreenOnOAuthFailure: 'Tests that the error screen is shown',
   TestWebApprovalsOffline:
       'Tests that dialog switches in/out of offline screen',
@@ -62,6 +64,31 @@ suite(parent_access_app_tests.suiteName, function() {
         const webApprovalsAfter = parentAccessAfter.shadowRoot.querySelector(
             'local-web-approvals-after');
         assertNotEquals(null, webApprovalsAfter);
+      });
+
+  test(
+      parent_access_app_tests.TestNames.TestShowExtensionApprovalsFlow,
+      async () => {
+        // Set up the TestParentAccessUIHandler
+        const handler = new TestParentAccessUIHandler();
+        handler.setParentAccessParams(buildExtensionApprovalsParams());
+        handler.setOAuthTokenStatus('token', GetOAuthTokenStatus.kSuccess);
+        setParentAccessUIHandlerForTest(handler);
+
+        // Create app element.
+        const parentAccessApp = document.createElement('parent-access-app');
+        document.body.appendChild(parentAccessApp);
+        await flushTasks();
+
+        // Verify online flow is showing and switch to the after screen.
+        assertEquals(parentAccessApp.currentScreen_, Screens.BEFORE_FLOW);
+        parentAccessApp.dispatchEvent(
+            new CustomEvent('show-authentication-flow'));
+        await flushTasks();
+
+        // Verify online flow is showing and switch to the after screen.
+        assertEquals(
+            parentAccessApp.currentScreen_, Screens.AUTHENTICATION_FLOW);
       });
 
   test(

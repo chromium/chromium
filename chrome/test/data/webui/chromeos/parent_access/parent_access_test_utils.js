@@ -18,3 +18,9 @@ export function buildWebApprovalsParams() {
   parentAccessParams.flowTypeParams = {webApprovalsParams};
   return parentAccessParams;
 }
+
+export function buildExtensionApprovalsParams() {
+  const parentAccessParams = new ParentAccessParams();
+  parentAccessParams.flowType = ParentAccessParams_FlowType.kExtensionAccess;
+  return parentAccessParams;
+}

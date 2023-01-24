@@ -39,6 +39,7 @@ struct ParentAccessServerMessage {
 struct ParentAccessParams {
   enum FlowType {
     kWebsiteAccess,
+    kExtensionAccess,
   };
 
   // Defines the type of flow to invoke in the dialog.

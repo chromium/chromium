@@ -71,6 +71,10 @@ const std::string ParentAccessDialogProvider::
           {kParentAccessWidgetShowDialogErrorHistogramBase,
            kParentAccessWidgetShowDialogErrorSuffixWebApprovals},
           separator);
+    case parent_access_ui::mojom::ParentAccessParams::FlowType::
+        kExtensionAccess:
+      // TODO(b/262451256): Implement metrics for extension flow.
+      return std::string();
   }
 }
 

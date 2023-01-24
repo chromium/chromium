@@ -32,6 +32,10 @@ std::string ParentAccessStateTracker::GetParentAccessResultHistogramForFlowType(
       return base::JoinString({kParentAccessFlowResultHistogramBase,
                                kParentAccessFlowResultSuffixWebApprovals},
                               separator);
+    case parent_access_ui::mojom::ParentAccessParams::FlowType::
+        kExtensionAccess:
+      // TODO(b/262451256): Implement metrics for extension flow.
+      return std::string();
   }
 }
 
@@ -43,6 +47,10 @@ ParentAccessStateTracker::ParentAccessStateTracker(
       // Initialize flow result to kParentAuthentication for flows without an
       // initial screen.
       flow_result_ = FlowResult::kParentAuthentication;
+      break;
+    case parent_access_ui::mojom::ParentAccessParams::FlowType::
+        kExtensionAccess:
+      flow_result_ = FlowResult::kInitial;
       break;
   }
 }
@@ -57,6 +65,10 @@ ParentAccessStateTracker::~ParentAccessStateTracker() {
       base::UmaHistogramEnumeration(
           GetParentAccessResultHistogramForFlowType(flow_type_), flow_result_,
           FlowResult::kNumStates);
+      break;
+    case parent_access_ui::mojom::ParentAccessParams::FlowType::
+        kExtensionAccess:
+      // TODO(b/262451256): Implement metrics for extension flow.
       break;
   }
 }

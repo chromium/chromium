@@ -43,6 +43,9 @@ std::string GetCallerId(
   switch (flow_type) {
     case parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess:
       return "39454505";
+    case parent_access_ui::mojom::ParentAccessParams::FlowType::
+        kExtensionAccess:
+      return "12367dff";
       // NOTE:  Do not add default case here, to ensure that adding new flow
       // types to ParentAccessParams forces this case statement to be updated.
   }
@@ -71,6 +74,10 @@ ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
       return base::JoinString({kParentAccessWidgetErrorHistogramBase,
                                kParentAccessWidgetErrorSuffixWebApprovals},
                               separator);
+    case parent_access_ui::mojom::ParentAccessParams::FlowType::
+        kExtensionAccess:
+      // TODO(b/262451256): Implement metrics for extension flow.
+      return std::string();
   }
 }
 

@@ -15,8 +15,8 @@ import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ParentAccessResult} from './parent_access_ui.mojom-webui.js';
-import {getParentAccessUIHandler} from './parent_access_ui_handler.js';
+import {ParentAccessParams_FlowType, ParentAccessResult} from './parent_access_ui.mojom-webui.js';
+import {getParentAccessParams, getParentAccessUIHandler} from './parent_access_ui_handler.js';
 
 /** @enum {string} */
 export const Screens = {
@@ -44,7 +44,6 @@ class ParentAccessApp extends PolymerElement {
        */
       currentScreen_: {
         type: Screens,
-        value: Screens.AUTHENTICATION_FLOW,
       },
     };
   }
@@ -52,17 +51,21 @@ class ParentAccessApp extends PolymerElement {
   /** @override */
   ready() {
     super.ready();
+    this.addEventListeners_();
+    this.getInitialScreen_().then((initialScreen) => {
+      this.switchScreen_(navigator.onLine ? initialScreen : Screens.OFFLINE);
+    });
+  }
+
+  /** @private */
+  addEventListeners_() {
     this.addEventListener('show-after', () => {
-      this.currentScreen_ = Screens.AFTER_FLOW;
-      /** @type {CrViewManagerElement} */ (this.$.viewManager)
-          .switchView(this.currentScreen_);
+      this.switchScreen_(Screens.AFTER_FLOW);
       this.shadowRoot.querySelector('parent-access-after').onShowAfterScreen();
     });
 
     this.addEventListener('show-authentication-flow', () => {
-      this.currentScreen_ = Screens.AUTHENTICATION_FLOW;
-      /** @type {CrViewManagerElement} */ (this.$.viewManager)
-          .switchView(this.currentScreen_);
+      this.switchScreen_(Screens.AUTHENTICATION_FLOW);
     });
 
     this.addEventListener('show-error', () => {
@@ -70,31 +73,27 @@ class ParentAccessApp extends PolymerElement {
     });
 
     window.addEventListener('online', () => {
-      if (this.currentScreen_ !== Screens.ERROR) {
-        this.currentScreen_ = this.getInitialScreen_();
-        /** @type {CrViewManagerElement} */ (this.$.viewManager)
-            .switchView(this.currentScreen_);
-      }
+      // If the app comes back online, start from the initial screen.
+      this.getInitialScreen_().then((initialScreen) => {
+        this.switchScreen_(initialScreen);
+      });
     });
 
     window.addEventListener('offline', () => {
-      if (this.currentScreen_ !== Screens.ERROR) {
-        this.currentScreen_ = Screens.OFFLINE;
-        /** @type {CrViewManagerElement} */ (this.$.viewManager)
-            .switchView(this.currentScreen_);
-      }
+      this.switchScreen_(Screens.OFFLINE);
     });
-
-    this.currentScreen_ =
-        navigator.onLine ? this.getInitialScreen_() : Screens.OFFLINE;
-    /** @type {CrViewManagerElement} */ (this.$.viewManager)
-        .switchView(this.currentScreen_);
   }
 
-  getInitialScreen_() {
-    // TODO(b/262448394): Implement logic to check if the before screen should
-    // be shown instead of the authentication flow.
-    return Screens.AUTHENTICATION_FLOW;
+  /** @private */
+  async getInitialScreen_() {
+    const response = await getParentAccessParams();
+    switch (response.params.flowType) {
+      case ParentAccessParams_FlowType.kExtensionAccess:
+        return Screens.BEFORE_FLOW;
+      case ParentAccessParams_FlowType.kWebsiteAccess:
+      default:
+        return Screens.AUTHENTICATION_FLOW;
+    }
   }
 
   /**
@@ -102,10 +101,22 @@ class ParentAccessApp extends PolymerElement {
    * @private
    */
   onError_() {
-    this.currentScreen_ = Screens.ERROR;
+    this.switchScreen_(Screens.ERROR);
+    getParentAccessUIHandler().onParentAccessDone(ParentAccessResult.kError);
+  }
+
+  /**
+   * @param {!Screens} screen
+   * @private
+   */
+  switchScreen_(screen) {
+    // The error screen is a terminal state.
+    if (this.currentScreen_ === Screens.ERROR) {
+      return;
+    }
+    this.currentScreen_ = screen;
     /** @type {CrViewManagerElement} */ (this.$.viewManager)
         .switchView(this.currentScreen_);
-    getParentAccessUIHandler().onParentAccessDone(ParentAccessResult.kError);
   }
 }
 customElements.define(ParentAccessApp.is, ParentAccessApp);
