@@ -210,6 +210,14 @@ void PluginVmApps::LoadIcon(const std::string& app_id,
                       std::move(callback));
 }
 
+void PluginVmApps::GetCompressedIconData(const std::string& app_id,
+                                         int32_t size_in_dip,
+                                         ui::ResourceScaleFactor scale_factor,
+                                         LoadIconCallback callback) {
+  GetGuestOSAppCompressedIconData(profile_, app_id, size_in_dip, scale_factor,
+                                  std::move(callback));
+}
+
 void PluginVmApps::Launch(const std::string& app_id,
                           int32_t event_flags,
                           LaunchSource launch_source,
