@@ -519,6 +519,10 @@ class PaymentsClient {
   void set_url_loader_factory_for_testing(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
+  // TODO(crbug.com/1409158): Remove this function, as it should not be the
+  // PaymentsClient's responsibility to check if the user is off the record. The
+  // sole responsibility of the PaymentsClient is to send requests to the Google
+  // payments server.
   bool is_off_the_record() { return is_off_the_record_; }
 
  private:
@@ -579,6 +583,10 @@ class PaymentsClient {
   std::string access_token_;
 
   // Denotes incognito mode.
+  // TODO(crbug.com/1409158): Remove this variable, as it should not be the
+  // PaymentsClient's responsibility to check if the user is off the record. The
+  // sole responsibility of the PaymentsClient is to send requests to the Google
+  // payments server.
   bool is_off_the_record_;
 
   // True if |request_| has already retried due to a 401 response from the

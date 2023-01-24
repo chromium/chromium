@@ -204,6 +204,9 @@ void CreditCardAccessManager::OnDidGetUnmaskDetails(
 
   unmask_details_request_in_progress_ = false;
   unmask_details_ = unmask_details;
+
+  // TODO(crbug.com/1409151): Rename `offer_fido_opt_in`, and check that the
+  // user is off the record separately.
   unmask_details_.offer_fido_opt_in = unmask_details_.offer_fido_opt_in &&
                                       !payments_client_->is_off_the_record();
 
@@ -316,6 +319,15 @@ void CreditCardAccessManager::FIDOAuthOptChange(bool opt_in) {
   if (opt_in) {
     ShowWebauthnOfferDialog(/*card_authorization_token=*/std::string());
   } else {
+    // We should not offer to update any user preferences when the user is off
+    // the record. This also protects against a possible crash when attempting
+    // to add the maximum amount of strikes to the FIDO auth strike database, as
+    // strike databases are not present in incognito mode and should not be
+    // used.
+    if (personal_data_manager_->IsOffTheRecord()) {
+      return;
+    }
+
     GetOrCreateFIDOAuthenticator()->OptOut();
     GetOrCreateFIDOAuthenticator()
         ->GetOrCreateFidoAuthenticationStrikeDatabase()

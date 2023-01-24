@@ -2003,6 +2003,19 @@ TEST_F(CreditCardAccessManagerTest, IntentToOptOut_OptOutFailure) {
   EXPECT_FALSE(IsCreditCardFIDOAuthEnabled());
 }
 
+// TODO(crbug.com/1409172): Extend the FIDOAuthOptChange tests to more
+// use-cases.
+TEST_F(CreditCardAccessManagerTest, FIDOAuthOptChange_OptOut) {
+  credit_card_access_manager_->FIDOAuthOptChange(/*opt_in=*/false);
+  ASSERT_TRUE(fido_authenticator_->IsOptOutCalled());
+}
+
+TEST_F(CreditCardAccessManagerTest, FIDOAuthOptChange_OptOut_OffTheRecord) {
+  personal_data().set_is_off_the_record_for_testing(/*is_off_the_record=*/true);
+  credit_card_access_manager_->FIDOAuthOptChange(/*opt_in=*/false);
+  ASSERT_FALSE(fido_authenticator_->IsOptOutCalled());
+}
+
 // TODO(crbug.com/1109296) Debug issues and re-enable this test on MacOS.
 #if !BUILDFLAG(IS_APPLE)
 // Ensures that PrepareToFetchCreditCard() is properly rate limited.
