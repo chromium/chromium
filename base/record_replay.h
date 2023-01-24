@@ -84,6 +84,7 @@ void UnregisterPointer(const void* ptr);
 int PointerId(const void* ptr);
 void* IdPointer(int id);
 
+void OnEvent(const char* aEvent, bool aBefore);
 void OnMouseEvent(const char* kind, size_t clientX, size_t clientY);
 void OnKeyEvent(const char* kind, const char* key);
 void OnNavigationEvent(const char* kind, const char* url);

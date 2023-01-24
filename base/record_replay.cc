@@ -55,6 +55,7 @@ extern "C" void* V8RecordReplayIdPointer(int id);
 extern "C" bool V8RecordReplayFeatureEnabled(const char* feature);
 extern "C" void V8RecordReplayBrowserEvent(const char* name, const char* payload);
 extern "C" bool V8IsMainThread();
+extern "C" void V8RecordReplayOnEvent(const char* aEvent, bool aBefore);
 extern "C" void V8RecordReplayOnMouseEvent(const char* kind,
                                            size_t clientX,
                                            size_t clientY);
@@ -221,6 +222,9 @@ void* IdPointer(int id) {
   return OP2(V8RecordReplayIdPointer(id), nullptr);
 }
 
+void OnEvent(const char* aEvent, bool aBefore) {
+  OP(V8RecordReplayOnEvent(aEvent, aBefore));
+}
 void OnMouseEvent(const char* kind,
                                 size_t clientX,
                                 size_t clientY) {
