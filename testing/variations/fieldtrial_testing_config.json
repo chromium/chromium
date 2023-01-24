@@ -11815,6 +11815,36 @@
             ]
         }
     ],
+    "UseAVCaptureDeviceDiscoverySession": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseAVCaptureDeviceDiscoverySession"
+                    ]
+                }
+            ]
+        }
+    ],
+    "UseAVCaptureDeviceDiscoverySessionDeviceMonitor": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseAVCaptureDeviceDiscoverySessionDeviceMonitor"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseBoringSSLForRandBytes": [
         {
             "platforms": [
