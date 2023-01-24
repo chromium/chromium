@@ -206,7 +206,6 @@ crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] WebGLCa
 # x64 Release (Intel) yet.
 crbug.com/1230619 [ android android-pixel-4 ] TraceTest_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android android-SM-A235M ] TraceTest_WebGLFloat [ Failure ]
-crbug.com/1230619 [ linux intel display-server-wayland  ] TraceTest_WebGLFloat [ Failure ]
 
 crbug.com/1409457 [ win amd ] OverlayModeTraceTest_DirectComposition_Video_MP4_BGRA [ Failure ]
 crbug.com/1409457 [ win amd ] OverlayModeTraceTest_DirectComposition_Video_MP4_YUY2 [ Failure ]
