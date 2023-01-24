@@ -518,6 +518,14 @@ extern const char kOmniboxOnFocusSuggestionsDescription[];
 extern const char kOmniboxMaxURLMatchesName[];
 extern const char kOmniboxMaxURLMatchesDescription[];
 
+// Title and description for assisted query stats param reporting.
+extern const char kOmniboxReportAssistedQueryStatsName[];
+extern const char kOmniboxReportAssistedQueryStatsDescription[];
+
+// Title and description for searchbox stats flag.
+extern const char kOmniboxReportSearchboxStatsName[];
+extern const char kOmniboxReportSearchboxStatsDescription[];
+
 // Title and description for the flag to swap Omnibox Textfield implementation
 // to a new experimental one.
 extern const char kOmniboxNewImplementationName[];

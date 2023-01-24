@@ -601,6 +601,18 @@ const char kOmniboxLocalHistoryZeroSuggestBeyondNTPDescription[] =
     "Enables local history zero-prefix suggestions in every context in which "
     "the remote zero-prefix suggestions are enabled.";
 
+const char kOmniboxReportAssistedQueryStatsName[] =
+    "Omnibox Assisted Query Stats param";
+const char kOmniboxReportAssistedQueryStatsDescription[] =
+    "Enables reporting the Assisted Query Stats param in search destination "
+    "URLs originated from the Omnibox.";
+
+const char kOmniboxReportSearchboxStatsName[] =
+    "Omnibox Searchbox Stats proto param";
+const char kOmniboxReportSearchboxStatsDescription[] =
+    "Enables reporting the serialized Searchbox Stats proto param in search "
+    "destination URLs originated from the Omnibox.";
+
 const char kOmniboxZeroSuggestPrefetchingName[] =
     "Omnibox Zero Prefix Suggestion Prefetching on NTP";
 const char kOmniboxZeroSuggestPrefetchingDescription[] =
