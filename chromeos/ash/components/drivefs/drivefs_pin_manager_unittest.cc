@@ -508,6 +508,125 @@ TEST_F(DriveFsPinManagerTest, Update) {
   }
 }
 
+// Tests DriveFsPinManagerTest::Remove().
+TEST_F(DriveFsPinManagerTest, Remove) {
+  DriveFsPinManager manager(temp_dir_.GetPath(), &mock_drivefs_);
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  manager.progress_.pinned_bytes = 5000;
+  manager.progress_.bytes_to_pin = 10000;
+  manager.progress_.required_space = 20480;
+
+  {
+    const SetupProgress progress = manager.GetProgress();
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.pinned_bytes, 5000);
+    EXPECT_EQ(progress.bytes_to_pin, 10000);
+    EXPECT_EQ(progress.required_space, 20480);
+  }
+
+  const DriveFsPinManager::StableId id1 = DriveFsPinManager::StableId(549);
+  const std::string path1 = "Path 1";
+
+  const DriveFsPinManager::StableId id2 = DriveFsPinManager::StableId(17);
+  const std::string path2 = "Path 2";
+
+  // Put in place a file to track.
+  {
+    const auto [it, ok] = manager.files_to_track_.try_emplace(
+        id1, DriveFsPinManager::Progress{.path = path1,
+                                         .transferred = 1200,
+                                         .total = 3000,
+                                         .in_progress = true});
+    ASSERT_TRUE(ok);
+  }
+
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+
+  // Try to remove an unknown file.
+  EXPECT_FALSE(manager.Remove(id2, path2));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+
+  {
+    const auto it = manager.files_to_track_.find(id1);
+    ASSERT_NE(it, manager.files_to_track_.end());
+    const auto& [got_id, progress] = *it;
+    EXPECT_EQ(got_id, id1);
+    EXPECT_EQ(progress.path, path1);
+    EXPECT_EQ(progress.total, 3000);
+    EXPECT_EQ(progress.transferred, 1200);
+    EXPECT_TRUE(progress.in_progress);
+  }
+
+  {
+    const SetupProgress progress = manager.GetProgress();
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.pinned_bytes, 5000);
+    EXPECT_EQ(progress.bytes_to_pin, 10000);
+    EXPECT_EQ(progress.required_space, 20480);
+  }
+
+  // Remove file with default final size.
+  EXPECT_TRUE(manager.Remove(id1, path2));
+  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+
+  {
+    const SetupProgress progress = manager.GetProgress();
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.pinned_bytes, 6800);
+    EXPECT_EQ(progress.bytes_to_pin, 10000);
+    EXPECT_EQ(progress.required_space, 20480);
+  }
+
+  // Put in place a file to track.
+  {
+    const auto [it, ok] = manager.files_to_track_.try_emplace(
+        id1, DriveFsPinManager::Progress{.path = path1,
+                                         .transferred = 1200,
+                                         .total = 3000,
+                                         .in_progress = true});
+    ASSERT_TRUE(ok);
+  }
+
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+
+  // Remove file while setting size to zero.
+  EXPECT_TRUE(manager.Remove(id1, path2, 0));
+  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+
+  {
+    const SetupProgress progress = manager.GetProgress();
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.pinned_bytes, 5600);
+    EXPECT_EQ(progress.bytes_to_pin, 7000);
+    EXPECT_EQ(progress.required_space, 16384);
+  }
+
+  // Put in place a file to track.
+  {
+    const auto [it, ok] = manager.files_to_track_.try_emplace(
+        id1, DriveFsPinManager::Progress{.path = path1,
+                                         .transferred = 5000,
+                                         .total = 6000,
+                                         .in_progress = true});
+    ASSERT_TRUE(ok);
+  }
+
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+
+  // Remove file while setting size to a different value that the expected one.
+  EXPECT_TRUE(manager.Remove(id1, path1, 10000));
+  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+
+  {
+    const SetupProgress progress = manager.GetProgress();
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.pinned_bytes, 10600);
+    EXPECT_EQ(progress.bytes_to_pin, 11000);
+    EXPECT_EQ(progress.required_space, 20480);
+  }
+}
+
 TEST_F(DriveFsPinManagerTest, CannotGetFreeSpace) {
   base::MockOnceCallback<void(SetupStage)> mock_callback;
 

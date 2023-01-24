@@ -198,29 +198,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   }
 
  private:
-  // Adds an item to the files to pin.  Does nothing if an item with the same ID
-  // already exists in files_to_pin_. Updates the total number of bytes to
-  // transfer and the required space. Returns whether an item was actually
-  // added.
-  bool Add(StableId id, const std::string& path, int64_t size);
-
-  // Removes an item from the map. Does nothing if the item is not in the map.
-  // Updates the total number of bytes transferred so far.
-  // If `bytes_transferred` is negative, use the total expected size.
-  // Returns whether an item was actually removed.
-  bool Remove(StableId id,
-              const std::string& path,
-              int64_t bytes_transferred = -1);
-
-  // Updates an item in the map. Does nothing if the item is not in the map.
-  // Updates the total number of bytes transferred so far. Updates the required
-  // space. If `transferred` or `total` is less than zero, then the matching
-  // argument is ignored. Returns whether anything has actually been updated.
-  bool Update(StableId id,
-              const std::string& path,
-              int64_t transferred,
-              int64_t total);
-
   // Struct keeping track of the progress of a file being synced.
   struct Progress {
     // Path inside the Drive folder.
@@ -242,6 +219,33 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
                  << ", in_progress: " << p.in_progress << "}";
     }
   };
+
+  using Files = std::map<StableId, Progress>;
+
+  // Adds an item to the files to pin.  Does nothing if an item with the same ID
+  // already exists in files_to_pin_. Updates the total number of bytes to
+  // transfer and the required space. Returns whether an item was actually
+  // added.
+  bool Add(StableId id, const std::string& path, int64_t size);
+
+  // Removes an item from the map. Does nothing if the item is not in the map.
+  // Updates the total number of bytes transferred so far. If `transferred` is
+  // negative, use the total expected size. Returns whether an item was actually
+  // removed.
+  bool Remove(StableId id, const std::string& path, int64_t transferred = -1);
+
+  // Updates an item in the map. Does nothing if the item is not in the map.
+  // Updates the total number of bytes transferred so far. Updates the required
+  // space. If `transferred` or `total` is negative, then the matching argument
+  // is ignored. Returns whether anything has actually been updated.
+  bool Update(StableId id,
+              const std::string& path,
+              int64_t transferred,
+              int64_t total);
+  bool Update(Files::value_type& entry,
+              const std::string& path,
+              int64_t transferred,
+              int64_t total);
 
   // Invoked on retrieval of available space in the `~/GCache` directory.
   void OnFreeSpaceRetrieved(int64_t free_space);
@@ -312,7 +316,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   base::ElapsedTimer timer_;
 
   // Map that tracks the in-progress files indexed by their stable ID.
-  using Files = std::map<StableId, Progress>;
   Files files_to_pin_ GUARDED_BY_CONTEXT(sequence_checker_);
   Files files_to_track_ GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -320,6 +323,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
 
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, Add);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, Update);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, Remove);
 };
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)

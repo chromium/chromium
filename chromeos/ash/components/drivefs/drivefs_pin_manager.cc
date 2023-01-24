@@ -335,40 +335,22 @@ bool DriveFsPinManager::Add(const StableId id,
 
 bool DriveFsPinManager::Remove(const StableId id,
                                const std::string& path,
-                               int64_t bytes_transferred) {
+                               int64_t transferred) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const Files::node_type node = files_to_track_.extract(id);
-  if (!node) {
+  const Files::iterator it = files_to_track_.find(id);
+  if (it == files_to_track_.end()) {
+    VLOG(3) << "Not tracked: " << id << " " << path;
     return false;
   }
 
-  DCHECK_EQ(node.key(), id);
-  const Progress& progress = node.mapped();
-
-  LOG_IF(ERROR, path != progress.path)
-      << "Changed path of " << id << " " << Quote(progress.path) << " to "
-      << Quote(path);
-
-  if (bytes_transferred < 0) {
-    bytes_transferred = progress.total;
-  } else if (progress.total != bytes_transferred) {
-    LOG(ERROR) << "Expected final progress "
-               << HumanReadableSize(progress.total) << " instead of "
-               << HumanReadableSize(bytes_transferred) << " for " << id << " "
-               << Quote(path);
-    progress_.bytes_to_pin += bytes_transferred - progress.total;
-    progress_.required_space +=
-        RoundToBlockSize(bytes_transferred) - RoundToBlockSize(progress.total);
+  if (transferred < 0) {
+    Update(*it, path, it->second.total, -1);
+  } else {
+    Update(*it, path, transferred, transferred);
   }
 
-  LOG_IF(ERROR, progress.transferred > bytes_transferred)
-      << "Progress went backwards from "
-      << HumanReadableSize(progress.transferred) << " to "
-      << HumanReadableSize(bytes_transferred) << " for " << id << " "
-      << Quote(path);
-  progress_.pinned_bytes += bytes_transferred - progress.transferred;
-
+  files_to_track_.erase(it);
   VLOG(3) << "Stopped tracking " << id << " " << Quote(path);
   return true;
 }
@@ -386,7 +368,16 @@ bool DriveFsPinManager::Update(const StableId id,
   }
 
   DCHECK_EQ(it->first, id);
-  Progress& progress = it->second;
+  return Update(*it, path, transferred, total);
+}
+
+bool DriveFsPinManager::Update(Files::value_type& entry,
+                               const std::string& path,
+                               int64_t transferred,
+                               int64_t total) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto& [id, progress] = entry;
   bool modified = false;
 
   if (path != progress.path) {
