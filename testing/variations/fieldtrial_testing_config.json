@@ -12621,29 +12621,6 @@
             ]
         }
     ],
-    "VisibilityModelValidation": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20221202",
-                    "params": {
-                        "ContentVisibility": "true"
-                    },
-                    "enable_features": [
-                        "PageContentAnnotationsValidation"
-                    ]
-                }
-            ]
-        }
-    ],
     "VisualFeaturesInCsppPings": [
         {
             "platforms": [
