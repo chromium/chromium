@@ -115,6 +115,8 @@ class VideoSurfaceTextureImageBacking::GLTextureVideoImageRepresentation
     return true;
   }
 
+  void EndAccess() override {}
+
  private:
   std::unique_ptr<gles2::AbstractTexture> texture_;
 };
@@ -159,6 +161,8 @@ class VideoSurfaceTextureImageBacking::
 
     return true;
   }
+
+  void EndAccess() override {}
 
  private:
   std::unique_ptr<gles2::AbstractTexture> abstract_texture_;

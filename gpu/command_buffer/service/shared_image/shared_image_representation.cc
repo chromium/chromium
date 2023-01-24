@@ -81,10 +81,6 @@ gpu::TextureBase* GLTextureImageRepresentationBase::GetTextureBase() {
   return GetTextureBase(0);
 }
 
-bool GLTextureImageRepresentationBase::BeginAccess(GLenum mode) {
-  return true;
-}
-
 bool GLTextureImageRepresentationBase::SupportsMultipleConcurrentReadAccess() {
   return false;
 }

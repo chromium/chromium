@@ -217,10 +217,8 @@ class GPU_GLES2_EXPORT GLTextureImageRepresentationBase
   virtual void UpdateClearedStateOnBeginAccess() {}
   virtual void UpdateClearedStateOnEndAccess() {}
 
-  // TODO(ericrk): Make these pure virtual and ensure real implementations
-  // exist.
-  virtual bool BeginAccess(GLenum mode);
-  virtual void EndAccess() {}
+  virtual bool BeginAccess(GLenum mode) = 0;
+  virtual void EndAccess() = 0;
 
   virtual bool SupportsMultipleConcurrentReadAccess();
 };

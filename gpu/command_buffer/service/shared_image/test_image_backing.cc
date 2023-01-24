@@ -30,6 +30,7 @@ class TestGLTextureImageRepresentation : public GLTextureImageRepresentation {
   bool BeginAccess(GLenum mode) override {
     return static_cast<TestImageBacking*>(backing())->can_access();
   }
+  void EndAccess() override {}
 
  private:
   const raw_ptr<gles2::Texture> texture_;
@@ -54,6 +55,7 @@ class TestGLTexturePassthroughImageRepresentation
   bool BeginAccess(GLenum mode) override {
     return static_cast<TestImageBacking*>(backing())->can_access();
   }
+  void EndAccess() override {}
 
  private:
   const scoped_refptr<gles2::TexturePassthrough> texture_;
