@@ -99,6 +99,9 @@ def main():
   argument_parser = argparse.ArgumentParser()
   argument_parser.add_argument(
       'build_type', help='The type of build', choices=('official', 'default'))
+  argument_parser.add_argument('--version_file',
+                               help='Optional version file',
+                               required=False)
   args = argument_parser.parse_args()
 
   # The mtime of the revision in build/util/LASTCHANGE is stored in a file
@@ -117,9 +120,8 @@ def main():
   # builds we do lots of quantization to avoid churn.
   offset = 0
   if args.build_type == 'official':
-    if os.name == 'nt':
-      version_path = os.path.join(THIS_DIR, os.pardir, 'chrome', 'VERSION')
-      with open(version_path) as f:
+    if os.name == 'nt' and args.version_file:
+      with open(args.version_file) as f:
         patch_line = f.readlines()[3].strip()
         # Use the patch number as an offset to the build date so that multiple
         # versions with different patch numbers built from the same source code

@@ -9,6 +9,7 @@ build_dotfile_settings = {
   exec_script_whitelist = [
     "//build/config/android/rules.gni",
     "//build/config/chromeos/rules.gni",
+    "//build/config/chrome_win_timestamp.gni",
     "//build/config/compiler/BUILD.gn",
     "//build/config/compiler/pgo/BUILD.gn",
     "//build/config/gcc/gcc_version.gni",
