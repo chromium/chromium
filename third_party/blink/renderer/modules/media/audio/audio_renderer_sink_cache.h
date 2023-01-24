@@ -41,7 +41,7 @@ class MODULES_EXPORT AudioRendererSinkCache {
   using CreateSinkCallback =
       base::RepeatingCallback<scoped_refptr<media::AudioRendererSink>(
           const LocalFrameToken& frame_token,
-          const media::AudioSinkParameters& params)>;
+          const std::string& device_id)>;
 
   // If called, the cache will drop sinks belonging to the specified window on
   // navigation.
@@ -61,7 +61,6 @@ class MODULES_EXPORT AudioRendererSinkCache {
   ~AudioRendererSinkCache();
 
   media::OutputDeviceInfo GetSinkInfo(const LocalFrameToken& source_frame_token,
-                                      const base::UnguessableToken& session_id,
                                       const std::string& device_id);
 
  private:

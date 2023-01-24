@@ -59,11 +59,11 @@ class AudioRendererSinkCacheTest : public testing::Test {
 
   scoped_refptr<media::AudioRendererSink> CreateSink(
       const LocalFrameToken& frame_token,
-      const media::AudioSinkParameters& params) {
+      const std::string& device_id) {
     return new testing::NiceMock<media::MockAudioRendererSink>(
-        params.device_id, (params.device_id == kUnhealthyDeviceId)
-                              ? media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL
-                              : media::OUTPUT_DEVICE_STATUS_OK);
+        device_id, (device_id == kUnhealthyDeviceId)
+                       ? media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL
+                       : media::OUTPUT_DEVICE_STATUS_OK);
   }
 
   void ExpectNotToStop(media::AudioRendererSink* sink) {
@@ -103,13 +103,13 @@ class AudioRendererSinkCacheTest : public testing::Test {
 // Verify that the sink created with GetSinkInfo() is reused when possible.
 TEST_F(AudioRendererSinkCacheTest, GetDeviceInfo) {
   EXPECT_EQ(0u, sink_count());
-  media::OutputDeviceInfo device_info = cache_->GetSinkInfo(
-      kFrameToken, base::UnguessableToken(), kDefaultDeviceId);
+  media::OutputDeviceInfo device_info =
+      cache_->GetSinkInfo(kFrameToken, kDefaultDeviceId);
   EXPECT_EQ(1u, sink_count());
 
   // The info on the same device is requested, so no new sink is created.
-  media::OutputDeviceInfo one_more_device_info = cache_->GetSinkInfo(
-      kFrameToken, base::UnguessableToken(), kDefaultDeviceId);
+  media::OutputDeviceInfo one_more_device_info =
+      cache_->GetSinkInfo(kFrameToken, kDefaultDeviceId);
   EXPECT_EQ(1u, sink_count());
   EXPECT_EQ(device_info.device_id(), one_more_device_info.device_id());
 }
@@ -118,12 +118,12 @@ TEST_F(AudioRendererSinkCacheTest, GetDeviceInfo) {
 TEST_F(AudioRendererSinkCacheTest, GarbageCollection) {
   EXPECT_EQ(0u, sink_count());
 
-  media::OutputDeviceInfo device_info = cache_->GetSinkInfo(
-      kFrameToken, base::UnguessableToken(), kDefaultDeviceId);
+  media::OutputDeviceInfo device_info =
+      cache_->GetSinkInfo(kFrameToken, kDefaultDeviceId);
   EXPECT_EQ(1u, sink_count());
 
-  media::OutputDeviceInfo another_device_info = cache_->GetSinkInfo(
-      kFrameToken, base::UnguessableToken(), kAnotherDeviceId);
+  media::OutputDeviceInfo another_device_info =
+      cache_->GetSinkInfo(kFrameToken, kAnotherDeviceId);
   EXPECT_EQ(2u, sink_count());
 
   // Wait for garbage collection. Doesn't actually sleep, just advances the mock
@@ -138,8 +138,8 @@ TEST_F(AudioRendererSinkCacheTest, GarbageCollection) {
 // unhealthy.
 TEST_F(AudioRendererSinkCacheTest, UnhealthySinkIsNotCached) {
   EXPECT_EQ(0u, sink_count());
-  media::OutputDeviceInfo device_info = cache_->GetSinkInfo(
-      kFrameToken, base::UnguessableToken(), kUnhealthyDeviceId);
+  media::OutputDeviceInfo device_info =
+      cache_->GetSinkInfo(kFrameToken, kUnhealthyDeviceId);
   EXPECT_EQ(0u, sink_count());
 }
 
@@ -155,11 +155,9 @@ TEST_F(AudioRendererSinkCacheTest, UnhealthySinkIsStopped) {
       task_runner_,
       base::BindRepeating(
           [](scoped_refptr<media::AudioRendererSink> sink,
-             const LocalFrameToken& frame_token,
-             const media::AudioSinkParameters& params) {
+             const LocalFrameToken& frame_token, const std::string& device_id) {
             EXPECT_EQ(kFrameToken, frame_token);
-            EXPECT_TRUE(params.session_id.is_empty());
-            EXPECT_EQ(kUnhealthyDeviceId, params.device_id);
+            EXPECT_EQ(kUnhealthyDeviceId, device_id);
             return sink;
           },
           sink),
@@ -167,36 +165,8 @@ TEST_F(AudioRendererSinkCacheTest, UnhealthySinkIsStopped) {
 
   EXPECT_CALL(*sink, Stop());
 
-  media::OutputDeviceInfo device_info = cache_->GetSinkInfo(
-      kFrameToken, base::UnguessableToken(), kUnhealthyDeviceId);
-}
-
-// Verify that a sink created with GetSinkInfo() is stopped even if it's
-// unhealthy.
-TEST_F(AudioRendererSinkCacheTest, UnhealthySinkUsingSessionIdIsStopped) {
-  scoped_refptr<media::MockAudioRendererSink> sink =
-      new media::MockAudioRendererSink(
-          kUnhealthyDeviceId, media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
-
-  cache_.reset();  // Destruct first so there's only one cache at a time.
-  cache_ = std::make_unique<AudioRendererSinkCache>(
-      task_runner_,
-      base::BindRepeating(
-          [](scoped_refptr<media::AudioRendererSink> sink,
-             const LocalFrameToken& frame_token,
-             const media::AudioSinkParameters& params) {
-            EXPECT_EQ(kFrameToken, frame_token);
-            EXPECT_TRUE(!params.session_id.is_empty());
-            EXPECT_TRUE(params.device_id.empty());
-            return sink;
-          },
-          sink),
-      kDeleteTimeout);
-
-  EXPECT_CALL(*sink, Stop());
-
-  media::OutputDeviceInfo device_info = cache_->GetSinkInfo(
-      kFrameToken, base::UnguessableToken::Create(), std::string());
+  media::OutputDeviceInfo device_info =
+      cache_->GetSinkInfo(kFrameToken, kUnhealthyDeviceId);
 }
 
 // Check that a sink created on one thread in response to GetSinkInfo can be
@@ -215,7 +185,7 @@ TEST_F(AudioRendererSinkCacheTest, MultithreadedAccess) {
       thread1,
       base::BindOnce(base::IgnoreResult(&AudioRendererSinkCache::GetSinkInfo),
                      base::Unretained(cache_.get()), kFrameToken,
-                     base::UnguessableToken(), kDefaultDeviceId));
+                     kDefaultDeviceId));
 
   EXPECT_EQ(1u, sink_count());
 
@@ -224,7 +194,7 @@ TEST_F(AudioRendererSinkCacheTest, MultithreadedAccess) {
       thread2,
       base::BindOnce(base::IgnoreResult(&AudioRendererSinkCache::GetSinkInfo),
                      base::Unretained(cache_.get()), kFrameToken,
-                     base::UnguessableToken(), kDefaultDeviceId));
+                     kDefaultDeviceId));
 }
 
 }  // namespace blink

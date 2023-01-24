@@ -69,7 +69,8 @@ enum GetOutputDeviceInfoCacheUtilization {
 
   // If session id is used to specify a device, we always have to create and
   // cache a new sink.
-  SINK_CACHE_MISS_CANNOT_LOOKUP_BY_SESSION_ID = 1,
+  // DEPRECATED: Do not edit, to preserve UMAs.
+  // SINK_CACHE_MISS_CANNOT_LOOKUP_BY_SESSION_ID = 1,
 
   // Output parmeters for an already-cached sink are requested.
   SINK_CACHE_HIT = 2,
@@ -125,31 +126,10 @@ AudioRendererSinkCache::~AudioRendererSinkCache() {
 
 media::OutputDeviceInfo AudioRendererSinkCache::GetSinkInfo(
     const LocalFrameToken& source_frame_token,
-    const base::UnguessableToken& session_id,
     const std::string& device_id) {
   TRACE_EVENT_BEGIN2("audio", "AudioRendererSinkCache::GetSinkInfo",
                      "frame_token", source_frame_token.ToString(), "device id",
                      device_id);
-
-  if (media::AudioDeviceDescription::UseSessionIdToSelectDevice(session_id,
-                                                                device_id)) {
-    // We are provided with session id instead of device id. Session id is
-    // unique, so we can't find any matching sink. Creating a new one.
-    scoped_refptr<media::AudioRendererSink> sink =
-        create_sink_cb_.Run(source_frame_token, {session_id, device_id});
-
-    MaybeCacheSink(source_frame_token, sink->GetOutputDeviceInfo().device_id(),
-                   sink);
-
-    UMA_HISTOGRAM_ENUMERATION(
-        "Media.Audio.Render.SinkCache.GetOutputDeviceInfoCacheUtilization",
-        SINK_CACHE_MISS_CANNOT_LOOKUP_BY_SESSION_ID, SINK_CACHE_LAST_ENTRY);
-    TRACE_EVENT_END1("audio", "AudioRendererSinkCache::GetSinkInfo", "result",
-                     "Cache not used due to using |session_id|");
-
-    return sink->GetOutputDeviceInfo();
-  }
-  // Ignore session id.
   {
     base::AutoLock auto_lock(cache_lock_);
     auto* cache_iter = FindCacheEntry_Locked(source_frame_token, device_id);
@@ -165,9 +145,8 @@ media::OutputDeviceInfo AudioRendererSinkCache::GetSinkInfo(
   }
 
   // No matching sink found, create a new one.
-  scoped_refptr<media::AudioRendererSink> sink = create_sink_cb_.Run(
-      source_frame_token,
-      media::AudioSinkParameters(base::UnguessableToken(), device_id));
+  scoped_refptr<media::AudioRendererSink> sink =
+      create_sink_cb_.Run(source_frame_token, device_id);
 
   MaybeCacheSink(source_frame_token, device_id, sink);
 

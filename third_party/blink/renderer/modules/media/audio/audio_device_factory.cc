@@ -164,23 +164,25 @@ media::OutputDeviceInfo AudioDeviceFactory::GetOutputDeviceInfo(
   constexpr base::TimeDelta kDeleteTimeout = base::Milliseconds(5000);
 
   if (!sink_cache_) {
+    auto create_sink_cb = [](AudioDeviceFactory* factory,
+                             const LocalFrameToken& frame_token,
+                             const std::string& device_id) {
+      return factory->NewAudioRendererSink(
+          blink::WebAudioDeviceSourceType::kNone, frame_token,
+          media::AudioSinkParameters(base::UnguessableToken(), device_id));
+    };
+
     // Do we actually need a separate thread pool just for deleting audio sinks?
     sink_cache_ = std::make_unique<AudioRendererSinkCache>(
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::TaskPriority::BEST_EFFORT,
              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
              base::MayBlock()}),
-        base::BindRepeating(&AudioDeviceFactory::NewAudioRendererSink,
-                            base::Unretained(this),
-                            blink::WebAudioDeviceSourceType::kNone),
+        base::BindRepeating(std::move(create_sink_cb), base::Unretained(this)),
         kDeleteTimeout);
   }
 
-  // Passing a base::UnguessableToken() as a session ID is fine here, as we can
-  // identify entirely off of |device_id|.
-  // TODO(tguilbert): remove the use of session ID from AudioRendererSinkCache.
-  return sink_cache_->GetSinkInfo(frame_token, base::UnguessableToken(),
-                                  device_id);
+  return sink_cache_->GetSinkInfo(frame_token, device_id);
 }
 
 scoped_refptr<media::AudioRendererSink>
