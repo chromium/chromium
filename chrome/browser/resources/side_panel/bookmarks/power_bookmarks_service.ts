@@ -135,12 +135,9 @@ export class PowerBookmarksService {
                   folder.children!));
       shownBookmarks = topLevelBookmarks;
     }
-    if (searchQuery) {
-      shownBookmarks = this.applySearchQuery_(searchQuery!, shownBookmarks);
-    }
     shownBookmarks = shownBookmarks.filter(
         (b: chrome.bookmarks.BookmarkTreeNode) =>
-            this.nodeMatchesContentFilters_(b, labels));
+            this.nodeMatchesContentFilters_(b, labels, searchQuery));
     const sortChangedPosition =
         this.sortBookmarks(shownBookmarks, activeSortIndex);
     if (sortChangedPosition) {
@@ -348,40 +345,19 @@ export class PowerBookmarksService {
     }
   }
 
-  // Return an array that includes folder and all its descendants.
-  private expandFolder_(folder: chrome.bookmarks.BookmarkTreeNode):
-      chrome.bookmarks.BookmarkTreeNode[] {
-    let expanded: chrome.bookmarks.BookmarkTreeNode[] = [folder];
-    if (folder.children) {
-      folder.children.forEach((child: chrome.bookmarks.BookmarkTreeNode) => {
-        expanded = expanded.concat(this.expandFolder_(child));
-      });
-    }
-    return expanded;
-  }
-
-  private applySearchQuery_(
-      searchQuery: string,
-      shownBookmarks: chrome.bookmarks.BookmarkTreeNode[]) {
-    let searchSpace: chrome.bookmarks.BookmarkTreeNode[] = [];
-    // Search space should include all descendants of the shown bookmarks, in
-    // addition to the shown bookmarks themselves.
-    shownBookmarks.forEach((bookmark: chrome.bookmarks.BookmarkTreeNode) => {
-      searchSpace = searchSpace.concat(this.expandFolder_(bookmark));
-    });
-    return searchSpace.filter(
-        (bookmark: chrome.bookmarks.BookmarkTreeNode) =>
-            (bookmark.title &&
-             bookmark.title.toLocaleLowerCase().includes(searchQuery)) ||
-            (bookmark.url &&
-             bookmark.url.toLocaleLowerCase().includes(searchQuery)));
-  }
-
   private nodeMatchesContentFilters_(
-      bookmark: chrome.bookmarks.BookmarkTreeNode, labels: Label[]): boolean {
+      bookmark: chrome.bookmarks.BookmarkTreeNode, labels: Label[],
+      searchQuery: string|undefined): boolean {
     // Price tracking label
     if (labels[0] && labels[0]!.active &&
         !this.productInfos_.has(bookmark.id)) {
+      return false;
+    } else if (
+        searchQuery &&
+        !(bookmark.title &&
+          bookmark.title.toLocaleLowerCase().includes(searchQuery!)) &&
+        !(bookmark.url &&
+          bookmark.url.toLocaleLowerCase().includes(searchQuery!))) {
       return false;
     }
     return true;

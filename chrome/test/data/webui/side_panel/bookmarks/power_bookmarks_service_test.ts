@@ -163,7 +163,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
 
   test('FiltersBySearchQuery', () => {
     const searchBookmarks = service.filterBookmarks(undefined, 0, 'http', []);
-    assertEquals(searchBookmarks.length, 3);
+    assertEquals(searchBookmarks.length, 2);
   });
 
   test('FiltersByPriceTracking', () => {

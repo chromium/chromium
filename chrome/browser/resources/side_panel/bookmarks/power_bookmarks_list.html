@@ -144,7 +144,7 @@
     <iron-list items="[[shownBookmarks_]]" scroll-target="bookmarks">
       <template>
         <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
-            description="[[getBookmarkDescription_(item,
+            description= "[[getBookmarkDescription_(item,
                             compactDescriptions_.*, expandedDescriptions_.*,
                             compact_)]]"
             compact="[[compact_]]" trailing-icon="cr:more-vert"
@@ -221,7 +221,7 @@
     </button>
   </template>
   <hr>
-  <button id="visualView" class="dropdown-item" on-click="onVisualViewClicked_">
+  <button class="dropdown-item" on-click="onVisualViewClicked_">
     <iron-icon icon="cr:check" invisible$="[[compact_]]"></iron-icon>
     $i18n{visualView}
   </button>

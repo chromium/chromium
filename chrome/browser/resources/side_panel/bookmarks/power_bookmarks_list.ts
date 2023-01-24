@@ -293,28 +293,14 @@ export class PowerBookmarksListElement extends PolymerElement {
     if (this.compact_) {
       return this.get(`compactDescriptions_.${bookmark.id}`);
     } else {
-      const url = this.get(`expandedDescriptions_.${bookmark.id}`);
-      if (this.searchQuery_ && url && bookmark.parentId) {
-        const parentFolder =
-            this.bookmarksService_.findBookmarkWithId(bookmark.parentId);
-        const folderLabel = this.getFolderLabel_(parentFolder);
-        return loadTimeData.getStringF(
-            'urlFolderDescription', url, folderLabel);
-      } else {
-        return url;
-      }
+      return this.get(`expandedDescriptions_.${bookmark.id}`);
     }
   }
 
-  private getActiveFolderLabel_(): string {
-    return this.getFolderLabel_(this.getActiveFolder_());
-  }
-
-  private getFolderLabel_(folder: chrome.bookmarks.BookmarkTreeNode|
-                          undefined): string {
-    if (folder && folder.id !== loadTimeData.getString('otherBookmarksId') &&
-        folder.id !== loadTimeData.getString('mobileBookmarksId')) {
-      return folder!.title;
+  private getFolderLabel_(): string {
+    const activeFolder = this.getActiveFolder_();
+    if (activeFolder) {
+      return activeFolder!.title;
     } else {
       return loadTimeData.getString('allBookmarks');
     }
