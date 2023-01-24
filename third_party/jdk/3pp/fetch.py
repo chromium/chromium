@@ -6,6 +6,7 @@
 import argparse
 import hashlib
 import json
+import os
 import pathlib
 import urllib.request
 
@@ -29,8 +30,14 @@ def do_latest():
     print('{}.{}'.format(release['name'], file_hash))
 
 
-def do_get_url():
+def do_get_url(version_with_hash):
     release = get_latest_release()
+    latest_release_name = release['name']
+    version_release_name = version_with_hash.rsplit('.', 1)[0]
+    assert latest_release_name == version_release_name, (
+        f'The latest release name is {latest_release_name} but the one given '
+        f'via the version parameter is {version_release_name}.')
+
     # version without file hash.
     version = release['name']
     release_url = None
@@ -61,7 +68,7 @@ def main():
     latest.set_defaults(func=do_latest)
 
     download = sub.add_parser("get_url")
-    download.set_defaults(func=do_get_url)
+    download.set_defaults(func=lambda: do_get_url(os.environ['_3PP_VERSION']))
 
     opts = ap.parse_args()
     opts.func()

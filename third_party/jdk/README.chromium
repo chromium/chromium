@@ -1,7 +1,7 @@
 Name: Java Development Kit
 Short Name: JDK
 URL: https://openjdk.java.net/
-Version: 11.0.15+10.cr0
+Version: see_below
 License: GPL v2
 License File: NOT_SHIPPED
 Security Critical: no
@@ -16,6 +16,11 @@ For the `jdk` directory:
 2. Each instance is tagged with version:2@<jdk version>.<md5 hash>.
 3. Choose the cipd instance you wish to roll.
 7. Update the cipd instance ID in //DEPS
+
+Check Current Version:
+ - run ./print_version.sh
+ - Find the tag that looks like `version:2@<jdk version>.<md5 hash>`
+ - The version is the <jdk version> part of the tag.
 
 Local Modifications:
 None
