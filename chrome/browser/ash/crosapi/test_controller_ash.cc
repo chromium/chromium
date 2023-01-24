@@ -887,7 +887,7 @@ void ShillClientTestInterfaceAsh::AddIPConfig(const std::string& ip_config_path,
                                               ::base::Value properties,
                                               AddIPConfigCallback callback) {
   auto* ip_config_test = ash::ShillIPConfigClient::Get()->GetTestInterface();
-  ip_config_test->AddIPConfig(ip_config_path, properties);
+  ip_config_test->AddIPConfig(ip_config_path, std::move(properties).TakeDict());
   std::move(callback).Run();
 }
 

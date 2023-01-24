@@ -97,14 +97,14 @@ class EnterpriseNetworkingAttributesTest
     base::Value::Dict ipconfig_v4_dictionary;
     ipconfig_v4_dictionary.Set(shill::kAddressProperty, kIpv4Address);
     ipconfig_v4_dictionary.Set(shill::kMethodProperty, shill::kTypeIPv4);
-    shill_ipconfig_client->AddIPConfig(
-        kWifiIPConfigV4Path, base::Value(std::move(ipconfig_v4_dictionary)));
+    shill_ipconfig_client->AddIPConfig(kWifiIPConfigV4Path,
+                                       std::move(ipconfig_v4_dictionary));
 
     base::Value::Dict ipconfig_v6_dictionary;
     ipconfig_v6_dictionary.Set(shill::kAddressProperty, kIpv6Address);
     ipconfig_v6_dictionary.Set(shill::kMethodProperty, shill::kTypeIPv6);
-    shill_ipconfig_client->AddIPConfig(
-        kWifiIPConfigV6Path, base::Value(std::move(ipconfig_v6_dictionary)));
+    shill_ipconfig_client->AddIPConfig(kWifiIPConfigV6Path,
+                                       std::move(ipconfig_v6_dictionary));
 
     base::Value::List ip_configs;
     ip_configs.Append(kWifiIPConfigV4Path);

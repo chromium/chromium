@@ -867,8 +867,7 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, WebProxyAutoDiscovery) {
   wpad_config.Set(shill::kWebProxyAutoDiscoveryUrlProperty,
                   base::Value(kWebProxyAutodetectionUrl));
   const std::string kIPConfigPath = "test_ip_config";
-  ip_config_client->AddIPConfig(kIPConfigPath,
-                                base::Value(std::move(wpad_config)));
+  ip_config_client->AddIPConfig(kIPConfigPath, std::move(wpad_config));
 
   ash::ShillServiceClient::TestInterface* service_test =
       ash::ShillServiceClient::Get()->GetTestInterface();

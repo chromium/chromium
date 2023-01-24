@@ -140,8 +140,8 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
       ip_config_properties.Set(shill::kGatewayProperty, network_data.gateway);
       const std::string kIPConfigPath =
           base::StrCat({"test_ip_config", network_data.guid});
-      ip_config_client->AddIPConfig(
-          kIPConfigPath, base::Value(std::move(ip_config_properties)));
+      ip_config_client->AddIPConfig(kIPConfigPath,
+                                    std::move(ip_config_properties));
       service_client->SetServiceProperty(service_path, shill::kIPConfigProperty,
                                          base::Value(kIPConfigPath));
       if (network_data.type == shill::kTypeCellular) {

@@ -48,11 +48,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillIPConfigClient
 
   // ShillIPConfigClient::TestInterface overrides.
   void AddIPConfig(const std::string& ip_config_path,
-                   const base::Value& properties) override;
+                   base::Value::Dict properties) override;
 
  private:
   // Dictionary of <ipconfig_path, property dictionaries>
-  base::Value ipconfigs_{base::Value::Type::DICTIONARY};
+  base::Value::Dict ipconfigs_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

@@ -141,7 +141,7 @@ class NetworkingPrivateChromeOSApiTestBase
     ipconfig.Set(shill::kGatewayProperty, "0.0.0.1");
     ipconfig.Set(shill::kPrefixlenProperty, 0);
     ipconfig.Set(shill::kMethodProperty, shill::kTypeIPv4);
-    AddIPConfig(kIPConfigPath, base::Value(std::move(ipconfig)));
+    AddIPConfig(kIPConfigPath, std::move(ipconfig));
 
     // Add Devices
     AddDevice(kEthernetDevicePath, shill::kTypeEthernet,
@@ -296,7 +296,7 @@ class NetworkingPrivateChromeOSApiTestBase
                                    const std::string& service_path) = 0;
   virtual std::string GetSharedProfilePath() = 0;
   virtual void AddIPConfig(const std::string& ip_config_path,
-                           const base::Value& properties) = 0;
+                           base::Value::Dict properties) = 0;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -479,9 +479,9 @@ class NetworkingPrivateChromeOSApiTestAsh
   }
 
   void AddIPConfig(const std::string& ip_config_path,
-                   const base::Value& properties) override {
-    network_handler_test_helper_->ip_config_test()->AddIPConfig(ip_config_path,
-                                                                properties);
+                   base::Value::Dict properties) override {
+    network_handler_test_helper_->ip_config_test()->AddIPConfig(
+        ip_config_path, std::move(properties));
   }
 
   void AddProfile(const std::string& profile_path,
@@ -600,9 +600,9 @@ class NetworkingPrivateChromeOSApiTestLacros
   }
 
   void AddIPConfig(const std::string& ip_config_path,
-                   const base::Value& properties) override {
+                   base::Value::Dict properties) override {
     ShillClientTestInterfaceAsyncWaiter(shill_test_.get())
-        .AddIPConfig(ip_config_path, properties.Clone());
+        .AddIPConfig(ip_config_path, base::Value(std::move(properties)));
   }
 
   void AddProfile(const std::string& profile_path,

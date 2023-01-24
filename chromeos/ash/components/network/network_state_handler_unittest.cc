@@ -2274,8 +2274,7 @@ TEST_F(NetworkStateHandlerTest, IPConfigChanged) {
   ShillIPConfigClient::TestInterface* ip_config_test =
       ShillIPConfigClient::Get()->GetTestInterface();
   const std::string kIPConfigPath = "test_ip_config";
-  base::Value ip_config_properties(base::Value::Type::DICTIONARY);
-  ip_config_test->AddIPConfig(kIPConfigPath, ip_config_properties);
+  ip_config_test->AddIPConfig(kIPConfigPath, base::Value::Dict());
   base::Value::List device_ip_configs;
   device_ip_configs.Append(kIPConfigPath);
   device_test_->SetDeviceProperty(kShillManagerClientStubWifiDevice,

@@ -261,7 +261,7 @@ class WifiLanMediumTest : public ::testing::Test {
       ipv4.Set(shill::kMethodProperty, shill::kTypeIPv4);
       cros_network_config_helper_->network_state_helper()
           .ip_config_test()
-          ->AddIPConfig(kIPv4ConfigPath, base::Value(std::move(ipv4)));
+          ->AddIPConfig(kIPv4ConfigPath, std::move(ipv4));
       base::RunLoop().RunUntilIdle();
     }
 

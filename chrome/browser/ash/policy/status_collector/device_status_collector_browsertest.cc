@@ -3945,8 +3945,8 @@ class DeviceStatusCollectorNetworkTest : public DeviceStatusCollectorTest {
         ip_config_properties.Set(shill::kAddressProperty, fake_network.address);
         ip_config_properties.Set(shill::kGatewayProperty, fake_network.gateway);
         const std::string kIPConfigPath = "test_ip_config";
-        ip_config_client->AddIPConfig(
-            kIPConfigPath, base::Value(std::move(ip_config_properties)));
+        ip_config_client->AddIPConfig(kIPConfigPath,
+                                      std::move(ip_config_properties));
         service_client->SetServiceProperty(fake_network.name,
                                            shill::kIPConfigProperty,
                                            base::Value(kIPConfigPath));

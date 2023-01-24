@@ -73,15 +73,14 @@ class DnsResolverPresentRoutineTest : public NetworkDiagnosticsTestHelper {
     // Set up the IP config
     base::Value::Dict ip_config_properties;
     ip_config_properties.Set(shill::kMethodProperty, type);
-    ip_config_properties.Set(shill::kNameServersProperty,
-                             base::Value(dns_servers.Clone()));
-    helper()->ip_config_test()->AddIPConfig(
-        kIPConfigPath, base::Value(ip_config_properties.Clone()));
+    ip_config_properties.Set(shill::kNameServersProperty, dns_servers.Clone());
+    helper()->ip_config_test()->AddIPConfig(kIPConfigPath,
+                                            ip_config_properties.Clone());
     std::string wifi_device_path =
         helper()->device_test()->GetDevicePathForType(shill::kTypeWifi);
     helper()->device_test()->SetDeviceProperty(
         wifi_device_path, shill::kIPConfigsProperty,
-        base::Value(ip_config_properties.Clone()),
+        base::Value(std::move(ip_config_properties)),
         /*notify_changed=*/true);
     SetServiceProperty(wifi_path(), shill::kIPConfigProperty,
                        base::Value(kIPConfigPath));

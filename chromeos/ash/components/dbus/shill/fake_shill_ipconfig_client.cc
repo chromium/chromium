@@ -35,11 +35,10 @@ void FakeShillIPConfigClient::RemovePropertyChangedObserver(
 void FakeShillIPConfigClient::GetProperties(
     const dbus::ObjectPath& ipconfig_path,
     chromeos::DBusMethodCallback<base::Value> callback) {
-  const base::Value* dict = ipconfigs_.FindDictKey(ipconfig_path.value());
-  if (!dict)
-    return;
+  const base::Value::Dict* dict = ipconfigs_.EnsureDict(ipconfig_path.value());
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), dict->Clone()));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), base::Value(dict->Clone())));
 }
 
 void FakeShillIPConfigClient::SetProperty(
@@ -47,14 +46,10 @@ void FakeShillIPConfigClient::SetProperty(
     const std::string& name,
     const base::Value& value,
     chromeos::VoidDBusMethodCallback callback) {
-  base::Value* dict = ipconfigs_.FindDictKey(ipconfig_path.value());
-  if (!dict) {
-    dict = ipconfigs_.SetKey(ipconfig_path.value(),
-                             base::Value(base::Value::Type::DICTIONARY));
-  }
+  base::Value::Dict* dict = ipconfigs_.EnsureDict(ipconfig_path.value());
 
   // Update existing ip config stub object's properties.
-  dict->SetKey(name, value.Clone());
+  dict->Set(name, value.Clone());
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
@@ -82,8 +77,8 @@ FakeShillIPConfigClient::GetTestInterface() {
 // ShillIPConfigClient::TestInterface overrides
 
 void FakeShillIPConfigClient::AddIPConfig(const std::string& ip_config_path,
-                                          const base::Value& properties) {
-  ipconfigs_.SetKey(ip_config_path, properties.Clone());
+                                          base::Value::Dict properties) {
+  ipconfigs_.Set(ip_config_path, std::move(properties));
 }
 
 }  // namespace ash

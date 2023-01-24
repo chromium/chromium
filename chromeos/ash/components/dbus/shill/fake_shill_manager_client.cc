@@ -893,23 +893,20 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
   const bool add_to_visible = true;
 
   // IPConfigs
-  base::Value ipconfig_v4_dictionary(base::Value::Type::DICTIONARY);
-  ipconfig_v4_dictionary.SetKey(shill::kAddressProperty,
-                                base::Value("100.0.0.1"));
-  ipconfig_v4_dictionary.SetKey(shill::kGatewayProperty,
-                                base::Value("100.0.0.2"));
-  ipconfig_v4_dictionary.SetKey(shill::kPrefixlenProperty, base::Value(1));
-  ipconfig_v4_dictionary.SetKey(shill::kMethodProperty,
-                                base::Value(shill::kTypeIPv4));
-  ipconfig_v4_dictionary.SetKey(shill::kWebProxyAutoDiscoveryUrlProperty,
-                                base::Value("http://wpad.com/wpad.dat"));
-  ip_configs->AddIPConfig("ipconfig_v4_path", ipconfig_v4_dictionary);
-  base::Value ipconfig_v6_dictionary(base::Value::Type::DICTIONARY);
-  ipconfig_v6_dictionary.SetKey(shill::kAddressProperty,
-                                base::Value("0:0:0:0:100:0:0:1"));
-  ipconfig_v6_dictionary.SetKey(shill::kMethodProperty,
-                                base::Value(shill::kTypeIPv6));
-  ip_configs->AddIPConfig("ipconfig_v6_path", ipconfig_v6_dictionary);
+  base::Value::Dict ipconfig_v4_dictionary;
+  ipconfig_v4_dictionary.Set(shill::kAddressProperty, "100.0.0.1");
+  ipconfig_v4_dictionary.Set(shill::kGatewayProperty, "100.0.0.2");
+  ipconfig_v4_dictionary.Set(shill::kPrefixlenProperty, 1);
+  ipconfig_v4_dictionary.Set(shill::kMethodProperty, shill::kTypeIPv4);
+  ipconfig_v4_dictionary.Set(shill::kWebProxyAutoDiscoveryUrlProperty,
+                             "http://wpad.com/wpad.dat");
+  ip_configs->AddIPConfig("ipconfig_v4_path",
+                          std::move(ipconfig_v4_dictionary));
+  base::Value::Dict ipconfig_v6_dictionary;
+  ipconfig_v6_dictionary.Set(shill::kAddressProperty, "0:0:0:0:100:0:0:1");
+  ipconfig_v6_dictionary.Set(shill::kMethodProperty, shill::kTypeIPv6);
+  ip_configs->AddIPConfig("ipconfig_v6_path",
+                          std::move(ipconfig_v6_dictionary));
 
   bool enabled;
   std::string state;

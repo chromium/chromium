@@ -129,9 +129,9 @@ class NetworkingAttributesAshTest : public testing::Test {
                                base::Value(shill::kTypeIPv6));
 
     network_handler_test_helper_.ip_config_test()->AddIPConfig(
-        kWifiIPConfigV4Path, base::Value(std::move(ipconfig_v4_dictionary)));
+        kWifiIPConfigV4Path, std::move(ipconfig_v4_dictionary));
     network_handler_test_helper_.ip_config_test()->AddIPConfig(
-        kWifiIPConfigV6Path, base::Value(std::move(ipconfig_v6_dictionary)));
+        kWifiIPConfigV6Path, std::move(ipconfig_v6_dictionary));
 
     base::Value::List ip_configs;
     ip_configs.Append(kWifiIPConfigV4Path);
