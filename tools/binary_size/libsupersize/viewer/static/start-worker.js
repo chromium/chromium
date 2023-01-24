@@ -34,6 +34,12 @@ class TreeWorker {
     });
   }
 
+  /** @public **/
+  dispose() {
+    this._worker.terminate();
+    delete this._worker;
+  }
+
   /**
    * @param {string} action
    * @param {any} data
@@ -99,6 +105,10 @@ class TreeWorker {
  * @return {TreeWorker}
  */
 function restartWorker(onProgressHandler) {
+  if (window.supersize.worker) {
+    window.supersize.worker.dispose();
+    window.supersize.worker = null;
+  }
   const innerWorker = new Worker('tree-worker-wasm.js');
   window.supersize.worker = new TreeWorker(innerWorker, onProgressHandler);
   return window.supersize.worker;

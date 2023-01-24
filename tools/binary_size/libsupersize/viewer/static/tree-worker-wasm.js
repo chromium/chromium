@@ -253,9 +253,11 @@ async function loadTreeWorkhorse(input, accessToken, optionsStr) {
     const sizeProperties = wasmLoadSizeProperties();
     isMultiContainer = sizeProperties.isMultiContainer;
     if (!isUpload) {
+      // Revoked in displayOrHideDownloadButton().
       loadBlobUrl = URL.createObjectURL(new Blob(
           [mainSizeBuffer.buffer], {type: 'application/octet-stream'}));
       if (beforeSizeBuffer) {
+        // Revoked in displayOrHideDownloadButton().
         beforeBlobUrl = URL.createObjectURL(new Blob(
             [beforeSizeBuffer.buffer], {type: 'application/octet-stream'}));
       }

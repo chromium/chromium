@@ -580,10 +580,15 @@ const newTreeElement = (() => {
     const loadAnchor =  /** @type {HTMLAnchorElement} */ (
         document.getElementById('load-anchor'));
 
-    beforeAnchor.style.display = beforeUrl ? '' : 'none';
-    beforeAnchor.href = beforeUrl;
-    loadAnchor.style.display = loadUrl ? '' : 'none';
-    loadAnchor.href = loadUrl;
+    const updateAnchor = (anchor, url) => {
+      anchor.style.display = url ? '' : 'none';
+      if (anchor.href && anchor.href.startsWith('blob:')) {
+        URL.revokeObjectURL(anchor.href);
+      }
+      anchor.href = url;
+    };
+    updateAnchor(beforeAnchor, beforeUrl);
+    updateAnchor(loadAnchor, loadUrl);
 
     if (_dataUrlInput.value.includes('.sizediff')) {
       loadAnchor.title = 'Download .sizediff file';
@@ -688,6 +693,7 @@ const newTreeElement = (() => {
     const worker = restartWorker(onProgressMessage);
     _progress.setValue(0.3);
     const message = await worker.loadAndBuildTree(fileUrl);
+    URL.revokeObjectURL(fileUrl);
     processLoadTreeResponse(message);
     // Clean up afterwards so new files trigger event.
     input.value = '';
