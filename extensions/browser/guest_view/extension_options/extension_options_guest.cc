@@ -27,6 +27,7 @@
 #include "extensions/common/api/extension_options_internal.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/strings/grit/extensions_strings.h"
 
@@ -106,6 +107,15 @@ void ExtensionOptionsGuest::DidInitialize(
   ExtensionsAPIClient::Get()->AttachWebContentsHelpers(web_contents());
   GetController().LoadURL(options_page_, content::Referrer(),
                           ui::PAGE_TRANSITION_LINK, std::string());
+}
+
+void ExtensionOptionsGuest::MaybeRecreateGuestContents(
+    content::WebContents* embedder_web_contents) {
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kWebviewTagMPArchBehavior)) {
+    // This situation is not possible for ExtensionOptions.
+    NOTREACHED();
+  }
 }
 
 void ExtensionOptionsGuest::GuestViewDidStopLoading() {

@@ -24,6 +24,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/api/app_runtime.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "ipc/ipc_message_macros.h"
@@ -231,6 +232,15 @@ void AppViewGuest::DidInitialize(const base::Value::Dict& create_params) {
 
   GetController().LoadURL(url_, content::Referrer(), ui::PAGE_TRANSITION_LINK,
                           std::string());
+}
+
+void AppViewGuest::MaybeRecreateGuestContents(
+    content::WebContents* embedder_web_contents) {
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kWebviewTagMPArchBehavior)) {
+    // This situation is not possible for AppView.
+    NOTREACHED();
+  }
 }
 
 const char* AppViewGuest::GetAPINamespace() const {

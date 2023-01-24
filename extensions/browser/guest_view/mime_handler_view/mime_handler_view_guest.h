@@ -141,6 +141,8 @@ class MimeHandlerViewGuest
                          WebContentsCreatedCallback callback) override;
   void DidAttachToEmbedder() override;
   void DidInitialize(const base::Value::Dict& create_params) final;
+  void MaybeRecreateGuestContents(
+      content::WebContents* embedder_web_contents) final;
   void EmbedderFullscreenToggled(bool entered_fullscreen) final;
   bool ZoomPropagatesFromEmbedderToGuest() const final;
 

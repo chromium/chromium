@@ -157,7 +157,8 @@ GuestViewBase::~GuestViewBase() {
 
   // This is not necessarily redundant with the removal when the guest contents
   // is destroyed, since we may never have initialized a guest WebContents.
-  GetGuestViewManager()->RemoveGuest(guest_instance_id_);
+  GetGuestViewManager()->RemoveGuest(guest_instance_id_,
+                                     /*invalidate_id=*/true);
 
   pending_events_.clear();
 }
@@ -212,6 +213,20 @@ void GuestViewBase::InitWithWebContents(const base::Value::Dict& create_params,
 
   // Give the derived class an opportunity to perform additional initialization.
   DidInitialize(create_params);
+}
+
+const absl::optional<
+    std::pair<base::Value::Dict, content::WebContents::CreateParams>>&
+GuestViewBase::GetCreateParams() const {
+  return create_params_;
+}
+
+void GuestViewBase::SetCreateParams(
+    const base::Value::Dict& create_params,
+    const content::WebContents::CreateParams& web_contents_create_params) {
+  DCHECK_EQ(web_contents_create_params.browser_context, browser_context());
+  DCHECK_EQ(web_contents_create_params.guest_delegate, this);
+  create_params_ = {create_params.Clone(), web_contents_create_params};
 }
 
 void GuestViewBase::DispatchOnResizeEvent(const gfx::Size& old_size,
@@ -428,14 +443,12 @@ void GuestViewBase::WillAttach(
     GuestViewMessageHandler::AttachToEmbedderFrameCallback
         attachment_callback) {
   // Stop tracking the old embedder's zoom level.
+  // TODO(crbug.com/533069): We should assert that we're not tracking the
+  // embedder at this point, since guest reattachment is no longer possible.
   StopTrackingEmbedderZoomLevel();
 
   if (owner_web_contents_ != embedder_web_contents) {
-    DCHECK_EQ(owner_contents_observer_->web_contents(), owner_web_contents_);
-    owner_web_contents_ = embedder_web_contents;
-    owner_contents_observer_ = std::make_unique<OwnerContentsObserver>(
-        weak_ptr_factory_.GetSafeRef(), embedder_web_contents);
-    SetOwnerHost();
+    SetNewOwnerWebContents(embedder_web_contents);
   }
 
   // Start tracking the new embedder's zoom level.
@@ -511,7 +524,8 @@ void GuestViewBase::RenderViewReady() {
 
 void GuestViewBase::WebContentsDestroyed() {
   g_webcontents_guestview_map.Get().erase(web_contents());
-  GetGuestViewManager()->RemoveGuest(guest_instance_id_);
+  GetGuestViewManager()->RemoveGuest(guest_instance_id_,
+                                     /*invalidate_id=*/false);
 
   // Self-destruct.
   if (self_owned_) {
@@ -752,6 +766,19 @@ void GuestViewBase::TakeGuestContentsOwnership(
 
 void GuestViewBase::ClearOwnedGuestContents() {
   owned_guest_contents_.reset();
+}
+
+void GuestViewBase::SetNewOwnerWebContents(
+    content::WebContents* owner_web_contents) {
+  DCHECK(!attached());
+  DCHECK(owner_web_contents_);
+  DCHECK(owner_web_contents);
+  DCHECK_NE(owner_web_contents_, owner_web_contents);
+  DCHECK_EQ(owner_contents_observer_->web_contents(), owner_web_contents_);
+  owner_web_contents_ = owner_web_contents;
+  owner_contents_observer_ = std::make_unique<OwnerContentsObserver>(
+      weak_ptr_factory_.GetSafeRef(), owner_web_contents_);
+  SetOwnerHost();
 }
 
 double GuestViewBase::GetEmbedderZoomFactor() const {

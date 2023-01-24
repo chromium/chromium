@@ -31,6 +31,8 @@ embedder.setUp_ = function(config) {
       '/extensions/platform_apps/web_view/shim/empty_guest.html';
   embedder.windowOpenGuestURL = embedder.baseGuestURL +
       '/extensions/platform_apps/web_view/shim/guest.html';
+  embedder.windowOpenNoopenerGuestURL = embedder.baseGuestURL +
+      '/extensions/platform_apps/web_view/shim/guest_noopener.html';
   embedder.windowOpenGuestFromSameURL = embedder.baseGuestURL +
       '/extensions/platform_apps/web_view/shim/guest_from_opener.html';
   embedder.noReferrerGuestURL = embedder.baseGuestURL +
@@ -114,6 +116,13 @@ embedder.test.assertFalse = function(condition) {
     embedder.test.fail();
   }
 };
+
+// Promisify webview.executeScript.
+function executeScriptP(webview, details) {
+  return new Promise((resolve) => {
+    webview.executeScript(details, resolve);
+  });
+}
 
 // Tests begin.
 
@@ -3321,38 +3330,71 @@ function testRendererNavigationRedirectWhileUnattached() {
   webview.src = 'about:blank';
 };
 
-function testWebViewAndEmbedderInNewWindow() {
-  var webview = document.createElement('webview');
-  webview.addEventListener('newwindow', function(e) {
+function runNewWindowCrossWindowAttachTest(noopener) {
+  let firstWebviewUrl = noopener ? embedder.windowOpenNoopenerGuestURL :
+                                   embedder.windowOpenGuestURL;
+  let webview = document.createElement('webview');
+  webview.src = firstWebviewUrl;
+
+  async function checkOpenerRelationships(secondWebview) {
+    let hasOpenerResult =
+        await executeScriptP(secondWebview, {code: '!!window.opener;'});
+    embedder.test.assertEq(1, hasOpenerResult.length);
+    embedder.test.assertEq(!noopener, hasOpenerResult[0]);
+
+    if (!noopener) {
+      let openerUsageResult = await executeScriptP(
+          secondWebview, {code: 'window.opener.location.href;'});
+      embedder.test.assertEq(1, openerUsageResult.length);
+      embedder.test.assertEq(firstWebviewUrl, openerUsageResult[0]);
+
+      // The first webview should be able to get, by name, another window
+      // reference to the window it previously opened.
+      let refFromNameResult = await executeScriptP(
+          webview,
+          {code: 'window.open(\'\', \'namedWebview\').location.href;'});
+      embedder.test.assertEq(1, refFromNameResult.length);
+      embedder.test.assertEq(embedder.emptyGuestURL, refFromNameResult[0]);
+    }
+
+    // After this test exits, we'll still need to compare embedders in the
+    // C++ part of this test.
+    embedder.test.succeed();
+  }
+
+  webview.addEventListener('newwindow', (e) => {
     e.preventDefault();
-    var url = 'new_window_main.html';
-    chrome.app.window.create(url, {}, function (app_new_window) {
+    let secondAppWindowUrl = 'new_window_main.html';
+    chrome.app.window.create(secondAppWindowUrl, {}, function(app_new_window) {
       if (chrome.runtime.lastError) {
         console.log('Error:' + chrome.runtime.lastError.message);
         embedder.test.fail();
         return;
       }
 
-      var new_window = app_new_window.contentWindow;
-      new_window.onload = function(evt) {
-        var newwebview = new_window.document.createElement('webview');
-        // We could use e.targetUrl here I suppose, but it's about:blank so
-        // it doesn't seem to trigger a loadstop.
-        newwebview.setAttribute('src', embedder.emptyGuestURL);
-        newwebview.addEventListener('loadstop', function(evt2) {
-          // After this test exits, we'll still need to compare embedders in the
-          // C++ part of this test.
-          if (newwebview.src == embedder.emptyGuestURL)
-            embedder.test.succeed();
+      let new_window = app_new_window.contentWindow;
+      new_window.onload = () => {
+        let new_webview = new_window.document.createElement('webview');
+        new_webview.addEventListener('loadstop', () => {
+          if (new_webview.src == embedder.emptyGuestURL) {
+            checkOpenerRelationships(new_webview);
+          }
         });
         // Be sure to do the attach before appending to document.
-        e.window.attach(newwebview);
-        new_window.document.body.appendChild(newwebview);
+        e.window.attach(new_webview);
+        new_window.document.body.appendChild(new_webview);
       };
     });
   });
-  webview.setAttribute('src', embedder.windowOpenGuestURL);
   document.body.appendChild(webview);
+}
+
+function testWebViewAndEmbedderInNewWindow() {
+  runNewWindowCrossWindowAttachTest(false);
+}
+
+function testWebViewAndEmbedderInNewWindow_Noopener() {
+  runNewWindowCrossWindowAttachTest(true);
 }
 
 function testNewWindowNoDeadlock() {
@@ -3595,8 +3637,8 @@ embedder.test.testList = {
   'testResizeWebviewWithDisplayNoneResizesContent':
       testResizeWebviewWithDisplayNoneResizesContent,
   'testPostMessageCommChannel': testPostMessageCommChannel,
-  'testScreenshotCapture' : testScreenshotCapture,
-  'testZoomAPI' : testZoomAPI,
+  'testScreenshotCapture': testScreenshotCapture,
+  'testZoomAPI': testZoomAPI,
   'testFindAPI': testFindAPI,
   'testFindAPI_findupdate': testFindAPI_findupdate,
   'testFindInMultipleWebViews': testFindInMultipleWebViews,
@@ -3616,9 +3658,11 @@ embedder.test.testList = {
   'testDialogInPdf': testDialogInPdf,
   'testMailtoLink': testMailtoLink,
   'testRendererNavigationRedirectWhileUnattached':
-       testRendererNavigationRedirectWhileUnattached,
+      testRendererNavigationRedirectWhileUnattached,
   'testBlobURL': testBlobURL,
   'testWebViewAndEmbedderInNewWindow': testWebViewAndEmbedderInNewWindow,
+  'testWebViewAndEmbedderInNewWindow_Noopener':
+      testWebViewAndEmbedderInNewWindow_Noopener,
   'testNewWindowNoDeadlock': testNewWindowNoDeadlock,
   'testSelectPopupPositionInMac': testSelectPopupPositionInMac,
   'testWebRequestBlockedNavigation': testWebRequestBlockedNavigation,

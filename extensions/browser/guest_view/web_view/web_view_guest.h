@@ -177,6 +177,8 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
                          WebContentsCreatedCallback callback) final;
   void DidAttachToEmbedder() final;
   void DidInitialize(const base::Value::Dict& create_params) final;
+  void MaybeRecreateGuestContents(
+      content::WebContents* embedder_web_contents) final;
   void EmbedderFullscreenToggled(bool entered_fullscreen) final;
   void FindReply(content::WebContents* source,
                  int request_id,
@@ -376,6 +378,10 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
 
   // Store spatial navigation status.
   bool is_spatial_navigation_enabled_;
+
+  // Used to delay the navigation of a recreated guest contents until later in
+  // the attachment process when state related to the WebRequest API is set up.
+  base::OnceClosure recreate_initial_nav_;
 
   // This is used to ensure pending tasks will not fire after this object is
   // destroyed.

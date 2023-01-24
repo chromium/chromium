@@ -98,6 +98,7 @@ class TestGuestViewManager : public GuestViewManager {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(GuestViewManagerTest, AddRemove);
+  FRIEND_TEST_ALL_PREFIXES(GuestViewManagerTest, ReuseIdForRecreatedGuestPage);
 
   // guest_view::GuestViewManager:
   void AddGuest(int guest_instance_id,

@@ -364,6 +364,7 @@ void WebViewGuest::CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
   WebContents::CreateParams params(browser_context(),
                                    std::move(guest_site_instance));
   params.guest_delegate = this;
+  SetCreateParams(create_params, params);
   std::unique_ptr<WebContents> new_contents = WebContents::Create(params);
 
   // Grant access to the origin of the embedder to the guest process. This
@@ -399,6 +400,47 @@ void WebViewGuest::DidInitialize(const base::Value::Dict& create_params) {
   PushWebViewStateToIOThread(web_contents()->GetPrimaryMainFrame());
 
   ApplyAttributes(create_params);
+}
+
+void WebViewGuest::MaybeRecreateGuestContents(
+    content::WebContents* embedder_web_contents) {
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kWebviewTagMPArchBehavior)) {
+    return;
+  }
+
+  DCHECK(GetCreateParams().has_value());
+  auto& [create_params, web_contents_create_params] = *GetCreateParams();
+  DCHECK_EQ(web_contents_create_params.guest_delegate, this);
+  auto new_web_contents_create_params = web_contents_create_params;
+  new_web_contents_create_params.renderer_initiated_creation = false;
+
+  if (!new_web_contents_create_params.opener_suppressed) {
+    // TODO(crbug.com/1261928): Add further information to this message,
+    // including temporary opt-outs.
+    owner_web_contents()->GetPrimaryMainFrame()->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        "A <webview> is being attached to a window other than the window of "
+        "its opener <webview>. The window reference the opener <webview> "
+        "obtained from window.open will be invalidated.");
+  }
+
+  ClearOwnedGuestContents();
+  SetNewOwnerWebContents(embedder_web_contents);
+
+  std::unique_ptr<WebContents> new_contents =
+      WebContents::Create(new_web_contents_create_params);
+  InitWithWebContents(create_params, new_contents.get());
+  TakeGuestContentsOwnership(std::move(new_contents));
+
+  // The original guest main frame had a pending navigation which was discarded.
+  // We'll need to trigger the intended navigation in the new guest contents,
+  // but we need to wait until later in the attachment process, after the state
+  // related to the WebRequest API is set up.
+  recreate_initial_nav_ = base::BindOnce(
+      &WebViewGuest::LoadURLWithParams, weak_ptr_factory_.GetWeakPtr(),
+      new_web_contents_create_params.initial_popup_url, content::Referrer(),
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, /*force_navigation=*/true);
 }
 
 void WebViewGuest::ClearCodeCache(base::Time remove_since,
@@ -1058,6 +1100,10 @@ void WebViewGuest::WillAttachToEmbedder() {
   // TODO(alexmos): This may be redundant with the call in
   // RenderFrameCreated() and should be cleaned up.
   PushWebViewStateToIOThread(web_contents()->GetPrimaryMainFrame());
+
+  if (recreate_initial_nav_) {
+    SignalWhenReady(std::move(recreate_initial_nav_));
+  }
 }
 
 bool WebViewGuest::RequiresSslInterstitials() const {

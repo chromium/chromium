@@ -128,6 +128,19 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   void InitWithWebContents(const base::Value::Dict& create_params,
                            content::WebContents* guest_web_contents);
 
+  void SetCreateParams(
+      const base::Value::Dict& create_params,
+      const content::WebContents::CreateParams& web_contents_create_params);
+
+  // As part of the migration of GuestViews to MPArch, we need to know what the
+  // embedder WebContents is at the time that the guest page is created.
+  // <webview>s have an edge case where we have to create the guest page before
+  // then. We assume the owner doesn't change before attachment, but if it does,
+  // we destroy and recreate the guest page. See this doc for details:
+  // https://docs.google.com/document/d/1RVbtvklXUg9QCNvMT0r-1qDwJNeQFGoTCOD1Ur9mDa4/edit?usp=sharing
+  virtual void MaybeRecreateGuestContents(
+      content::WebContents* embedder_web_contents) = 0;
+
   // Used to toggle autosize mode for this GuestView, and set both the automatic
   // and normal sizes.
   void SetSize(const SetSizeParams& params);
@@ -224,9 +237,15 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
 
   void SetOpener(GuestViewBase* opener);
 
+  const absl::optional<
+      std::pair<base::Value::Dict, content::WebContents::CreateParams>>&
+  GetCreateParams() const;
+
   void TakeGuestContentsOwnership(
       std::unique_ptr<content::WebContents> guest_web_contents);
   void ClearOwnedGuestContents();
+
+  void SetNewOwnerWebContents(content::WebContents* owner_web_contents);
 
   // WebContentsDelegate implementation.
   bool HandleKeyboardEvent(
@@ -462,6 +481,13 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // attachment, a GuestViewBase is self-owned and scoped to the lifetime of the
   // guest WebContents.
   bool self_owned_ = false;
+
+  // The params used when creating the guest contents. These are saved here in
+  // case we need to recreate the guest contents. Not all guest types need to
+  // store these.
+  absl::optional<
+      std::pair<base::Value::Dict, content::WebContents::CreateParams>>
+      create_params_;
 
   // Indicates whether autosize mode is enabled or not.
   bool auto_size_enabled_ = false;

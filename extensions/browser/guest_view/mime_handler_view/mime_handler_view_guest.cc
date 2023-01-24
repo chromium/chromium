@@ -29,6 +29,7 @@
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/api/mime_handler_private.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/guest_view.mojom.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -246,6 +247,15 @@ void MimeHandlerViewGuest::DidAttachToEmbedder() {
 void MimeHandlerViewGuest::DidInitialize(
     const base::Value::Dict& create_params) {
   ExtensionsAPIClient::Get()->AttachWebContentsHelpers(web_contents());
+}
+
+void MimeHandlerViewGuest::MaybeRecreateGuestContents(
+    content::WebContents* embedder_web_contents) {
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kWebviewTagMPArchBehavior)) {
+    // This situation is not possible for MimeHandlerView.
+    NOTREACHED();
+  }
 }
 
 void MimeHandlerViewGuest::EmbedderFullscreenToggled(bool entered_fullscreen) {

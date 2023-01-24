@@ -222,12 +222,16 @@ GuestViewManager::CreateGuestWithWebContentsParams(
   if (!guest)
     return nullptr;
 
+  // TODO(crbug.com/1409929): For the noopener case, it would be better to delay
+  // the creation of the guest contents until attachment.
   content::WebContents::CreateParams guest_create_params(create_params);
   guest_create_params.guest_delegate = guest.get();
 
   std::unique_ptr<content::WebContents> guest_web_contents =
       WebContents::Create(guest_create_params);
-  guest->InitWithWebContents(base::Value::Dict(), guest_web_contents.get());
+  const base::Value::Dict guest_params = base::Value::Dict();
+  guest->SetCreateParams(guest_params, guest_create_params);
+  guest->InitWithWebContents(guest_params, guest_web_contents.get());
   ManageOwnership(std::move(guest));
   // Ownership of the guest WebContents goes to the content layer until we get
   // it back in AddNewContents.
@@ -288,7 +292,7 @@ void GuestViewManager::AddGuest(int guest_instance_id,
   delegate_->OnGuestAdded(guest_web_contents);
 }
 
-void GuestViewManager::RemoveGuest(int guest_instance_id) {
+void GuestViewManager::RemoveGuest(int guest_instance_id, bool invalidate_id) {
   guest_web_contents_by_instance_id_.erase(guest_instance_id);
 
   auto id_iter = reverse_instance_id_map_.find(guest_instance_id);
@@ -296,6 +300,10 @@ void GuestViewManager::RemoveGuest(int guest_instance_id) {
     const ElementInstanceKey& instance_id_key = id_iter->second;
     instance_id_map_.erase(instance_id_key);
     reverse_instance_id_map_.erase(id_iter);
+  }
+
+  if (!invalidate_id) {
+    return;
   }
 
   // All the instance IDs that lie within [0, last_instance_id_removed_]
