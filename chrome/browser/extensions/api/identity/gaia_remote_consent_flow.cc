@@ -52,11 +52,13 @@ GaiaRemoteConsentFlow::GaiaRemoteConsentFlow(
     Delegate* delegate,
     Profile* profile,
     const ExtensionTokenKey& token_key,
-    const RemoteConsentResolutionData& resolution_data)
+    const RemoteConsentResolutionData& resolution_data,
+    const std::string& extension_name)
     : delegate_(delegate),
       profile_(profile),
       account_id_(token_key.account_info.account_id),
       resolution_data_(resolution_data),
+      extension_name_(extension_name),
       web_flow_started_(false) {}
 
 GaiaRemoteConsentFlow::~GaiaRemoteConsentFlow() {
@@ -67,7 +69,7 @@ void GaiaRemoteConsentFlow::Start() {
   if (!web_flow_) {
     web_flow_ = std::make_unique<WebAuthFlow>(
         this, profile_, resolution_data_.url, WebAuthFlow::INTERACTIVE,
-        WebAuthFlow::GET_AUTH_TOKEN);
+        WebAuthFlow::GET_AUTH_TOKEN, extension_name_);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // `profile_` may be nullptr in tests.
     if (profile_) {

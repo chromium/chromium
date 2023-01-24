@@ -196,6 +196,8 @@ static_library("extensions") {
     "api/identity/identity_token_cache.h",
     "api/identity/web_auth_flow.cc",
     "api/identity/web_auth_flow.h",
+    "api/identity/web_auth_flow_info_bar_delegate.cc",
+    "api/identity/web_auth_flow_info_bar_delegate.h",
     "api/idltest/idltest_api.cc",
     "api/idltest/idltest_api.h",
     "api/image_writer_private/destroy_partitions_operation.cc",

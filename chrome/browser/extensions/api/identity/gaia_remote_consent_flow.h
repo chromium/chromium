@@ -53,7 +53,8 @@ class GaiaRemoteConsentFlow
   GaiaRemoteConsentFlow(Delegate* delegate,
                         Profile* profile,
                         const ExtensionTokenKey& token_key,
-                        const RemoteConsentResolutionData& resolution_data);
+                        const RemoteConsentResolutionData& resolution_data,
+                        const std::string& extension_name);
   ~GaiaRemoteConsentFlow() override;
 
   GaiaRemoteConsentFlow(const GaiaRemoteConsentFlow& other) = delete;
@@ -98,6 +99,7 @@ class GaiaRemoteConsentFlow
   raw_ptr<Profile> profile_;
   CoreAccountId account_id_;
   RemoteConsentResolutionData resolution_data_;
+  const std::string extension_name_;
 
   std::unique_ptr<WebAuthFlow> web_flow_;
   bool web_flow_started_;

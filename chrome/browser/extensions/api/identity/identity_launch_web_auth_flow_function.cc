@@ -50,7 +50,8 @@ ExtensionFunction::ResponseAction IdentityLaunchWebAuthFlowFunction::Run() {
   AddRef();  // Balanced in OnAuthFlowSuccess/Failure.
 
   auth_flow_ = std::make_unique<WebAuthFlow>(this, profile, auth_url, mode,
-                                             WebAuthFlow::LAUNCH_WEB_AUTH_FLOW);
+                                             WebAuthFlow::LAUNCH_WEB_AUTH_FLOW,
+                                             extension()->name());
   auth_flow_->Start();
   return RespondLater();
 }

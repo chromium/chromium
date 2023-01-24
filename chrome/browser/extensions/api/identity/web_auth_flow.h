@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -23,6 +24,8 @@ class StoragePartition;
 }
 
 namespace extensions {
+
+class WebAuthFlowInfoBarDelegate;
 
 // When enabled, cookies in the `launchWebAuthFlow()` partition are persisted
 // across browser restarts.
@@ -86,7 +89,8 @@ class WebAuthFlow : public content::WebContentsObserver,
               Profile* profile,
               const GURL& provider_url,
               Mode mode,
-              Partition partition);
+              Partition partition,
+              const std::string& extension_name);
 
   WebAuthFlow(const WebAuthFlow&) = delete;
   WebAuthFlow& operator=(const WebAuthFlow&) = delete;
@@ -111,6 +115,9 @@ class WebAuthFlow : public content::WebContentsObserver,
   static content::StoragePartitionConfig GetWebViewPartitionConfig(
       Partition partition,
       content::BrowserContext* browser_context);
+
+  // Returns nullptr if the InfoBar is not displayed.
+  base::WeakPtr<WebAuthFlowInfoBarDelegate> GetInfoBarDelegateForTesting();
 
  private:
   friend class ::WebAuthFlowTest;
@@ -139,6 +146,9 @@ class WebAuthFlow : public content::WebContentsObserver,
 
   bool IsObservingProviderWebContents() const;
 
+  void DisplayInfoBar();
+  void CloseInfoBar();
+
   raw_ptr<Delegate> delegate_ = nullptr;
   const raw_ptr<Profile> profile_;
   const GURL provider_url_;
@@ -159,6 +169,10 @@ class WebAuthFlow : public content::WebContentsObserver,
   // `this`. When this value becomes nullptr, this means that the browser tab
   // has taken ownership and the interactive tab was opened.
   std::unique_ptr<content::WebContents> web_contents_;
+  const std::string extension_name_;
+  // WeakPtr to the info bar delegate attached to the auth tab when opened. Used
+  // to close the info bar when closing the flow if still valid.
+  base::WeakPtr<WebAuthFlowInfoBarDelegate> info_bar_delegate_ = nullptr;
 };
 
 }  // namespace extensions

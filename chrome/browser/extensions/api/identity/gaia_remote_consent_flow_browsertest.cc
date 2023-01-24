@@ -137,8 +137,8 @@ class GaiaRemoteConsentFlowBrowserTest : public InProcessBrowserTest {
     RemoteConsentResolutionData resolution_data;
     resolution_data.url = fake_gaia_test_server()->GetURL("/title1.html");
 
-    flow_ = std::make_unique<GaiaRemoteConsentFlow>(&mock(), profile(),
-                                                    token_key, resolution_data);
+    flow_ = std::make_unique<GaiaRemoteConsentFlow>(
+        &mock(), profile(), token_key, resolution_data, "extension_name");
 
     content::TestNavigationObserver navigation_observer(resolution_data.url);
     navigation_observer.StartWatchingNewWebContents();
