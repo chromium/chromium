@@ -29,21 +29,6 @@
     margin-top: 16px;
   }
 
-  #ambientSubpageLink {
-    --cr-icon-button-size: 48px;
-    /* Make the arrow align with the thumbnail image */
-    margin-inline-end: -18px;
-  }
-
-  #ambientLabel > h2 {
-    color: var(--cros-text-color-primary);
-    font: var(--personalization-app-label-font);
-    margin: 14px 0;
-  }
-
-  #ambientLabel.enterprise {
-    opacity: var(--cros-disabled-opacity);
-  }
 </style>
 <div id="container">
   <user-preview path="[[path]]">
@@ -55,31 +40,8 @@
       </template>
     </wallpaper-preview>
     <template is="dom-if" if="[[isAmbientModeAllowed_()]]">
-      <ambient-preview clickable="[[clickable_]]" main-page>
-        <template is="dom-if" if="[[!isAmbientModeManaged_]]">
-          <div id="ambientLabel">
-            <h2 on-click="onClickAmbientSubpageLink_" class="clickable">
-              $i18n{screensaverLabel}
-            </h2>
-            <cr-icon-button id="ambientSubpageLink"
-                  iron-icon="cr:chevron-right"
-                  on-click="onClickAmbientSubpageLink_"
-                  class="tast-open-subpage"
-                  aria-label="$i18n{ariaLabelChangeScreensaver}">
-            </cr-icon-button>
-          </div>
-        </template>
-        <template is="dom-if" if="[[isAmbientModeManaged_]]">
-          <div id="ambientLabel" class="enterprise">
-            <h2>
-              $i18n{screensaverLabel}
-            </h2>
-            <cr-icon-button id="ambientSubpageLink"
-                  iron-icon="cr:chevron-right" disabled>
-            </cr-icon-button>
-          </div>
-        </template>
-      </ambient-preview>
+      <ambient-preview-large>
+      </ambient-preview-large>
     </template>
   </div>
   <template is="dom-if" if="[[isRgbKeyboardSupported_()]]">

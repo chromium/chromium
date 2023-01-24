@@ -1,5 +1,5 @@
 <style include="common cros-button-style">
-  :host([main-page]) #container {
+  #container {
     border: 1px solid var(--cros-separator-color);
     border-radius: 16px;
     display: grid;
@@ -15,7 +15,7 @@
     height: 100%;
   }
 
-  :host([main-page]) #container.zero-state-disabled {
+  #container.zero-state-disabled {
     grid-template-areas:
       '. slot          .'
       '. image         .'
@@ -27,7 +27,7 @@
     grid-template-rows: auto minmax(158px, 220px) 20px 130px auto 18px;
   }
 
-  :host([main-page]) #container.pre-ui-change {
+  #container.pre-ui-change {
     grid-template-areas:
       '. slot           slot    slot    .'
       '. image          image   image   .'
@@ -35,12 +35,39 @@
       '. message        message message .'
       '. mainpage-desc  .       collage .'
       '. .              .       .       .';
-    grid-template-columns: 20px minmax(0,1fr) 16px 106px 20px;
+    grid-template-columns: 20px minmax(0, 1fr) 16px 106px 20px;
     grid-template-rows: auto minmax(158px, 220px) 20px 106px auto 24px;
   }
 
-  :host([main-page]) #container.pre-ui-change.zero-state-disabled {
+  #container.pre-ui-change.zero-state-disabled {
     grid-template-rows: auto minmax(158px, 220px) 20px auto 106px 24px;
+  }
+
+  #ambientLabel {
+    align-items: center;
+    background: none;
+    border: none;
+    display: flex;
+    flex-flow: row nowrap;
+    grid-area: slot;
+    justify-content: space-between;
+    margin-top: 12px;
+  }
+
+  #ambientSubpageLink {
+    --cr-icon-button-size: 48px;
+    /* Make the arrow align with the thumbnail image */
+    margin-inline-end: -18px;
+  }
+
+  #ambientLabel>h2 {
+    color: var(--cros-text-color-primary);
+    font: var(--personalization-app-label-font);
+    margin: 14px 0;
+  }
+
+  #ambientLabel.enterprise {
+    opacity: var(--cros-disabled-opacity);
   }
 
   #messageContainer {
@@ -83,55 +110,8 @@
     margin-top: 20px;
   }
 
-  :host([main-page]) #zeroStateTextContainer,
-  :host(:not([main-page])) #messageContainer {
-    display: none;
-  }
-
-  /* TODO(b/253470553): Remove after Ambient subpage UI change is released. */
-  :host(:not([main-page])) #container.pre-ui-change {
-    border: none;
-    display: grid;
-    grid-template-areas:
-      '.              . .'
-      'image          . subpage-desc'
-      'image          . buttons'
-      '.              . .';
-    grid-template-columns: 224px 32px minmax(0,1fr);
-    grid-template-rows: 20px 118px 34px 20px;
-  }
-
-  :host(:not([main-page])) #container.ambient-mode-disabled {
-    grid-template-areas:
-      'image          . subpage-desc'
-      '.              . .';
-    grid-template-columns: 224px 32px minmax(0,1fr);
-    grid-template-rows: 152px 20px;
-  }
-
-  :host(:not([main-page])) #container {
-    border: none;
-    display: grid;
-    grid-template-areas:
-      'image          . subpage-desc'
-      'image          . buttons'
-      '.              . .';
-    grid-template-columns: 224px 32px minmax(0,1fr);
-    grid-template-rows: 118px 34px 20px;
-  }
-
-  :host([main-page]) #buttonContainer,
-  :host([main-page]) .currently-set-text {
-    display: none;
-  }
-
-  :host(:not([main-page])) #buttonContainer,
-  :host(:not([main-page])) .currently-set-text {
-    display: inline-flex;
-  }
-
-  :host([main-page]) #imageContainer,
-  :host([main-page]) #imagePlaceholder {
+  #imageContainer,
+  #imagePlaceholder {
     display: flex;
     height: 100%;
     justify-self: center;
@@ -140,37 +120,13 @@
     width: 100%;
   }
 
-  ::slotted(div[id='ambientLabel']) {
-    align-items: center;
-    background: none;
-    border: none;
-    display: flex;
-    flex-flow: row nowrap;
-    grid-area: slot;
-    justify-content: space-between;
-    margin-top: 12px;
-  }
-
-  .album-info-mainpage,
-  .album-info-subpage,
-  .zero-state-info-subpage {
-    display: none;
-  }
-
-  :host([main-page]) .album-info-mainpage {
+  .album-info-mainpage {
     display: flex;
     grid-area: mainpage-desc;
     justify-content: center;
   }
 
-  :host(:not([main-page])) .album-info-subpage,
-  :host(:not([main-page])) .zero-state-info-subpage {
-    display: flex;
-    grid-area: subpage-desc;
-    justify-content: center;
-  }
-
-  :host([main-page]) .album-info-mainpage:not(.pre-ui-change) span {
+  .album-info-mainpage:not(.pre-ui-change) span {
     margin-inline: auto;
   }
 
@@ -191,33 +147,28 @@
     opacity: 50%;
   }
 
-  :host(:not([main-page])) #collageContainer,
-  :host(:not([main-page])) #collagePlaceholder {
-    display: none;
-  }
-
-  :host([main-page]) #albumTitle {
+  #albumTitle {
     color: var(--cros-text-color-primary);
     font: var(--cros-display-7-font);
     margin-top: 16px;
   }
 
-  :host([main-page]) #albumTitle.pre-ui-change {
+  #albumTitle.pre-ui-change {
     margin-top: 4px;
   }
 
-  :host([main-page]) #albumDescription {
+  #albumDescription {
     color: var(--cros-text-color-secondary);
     font: var(--cros-body-2-font);
     margin-top: 2px;
   }
 
-  :host([main-page]) #albumDescription.pre-ui-change {
+  #albumDescription.pre-ui-change {
     margin-top: 4px;
   }
 
-  :host([main-page]) #collageContainer,
-  :host([main-page]) #collagePlaceholder {
+  #collageContainer,
+  #collagePlaceholder {
     border-radius: 12px;
     display: grid;
     gap: 2px;
@@ -225,13 +176,10 @@
     overflow: hidden;
   }
 
-  :host([main-page]) #collageContainer {
-    border: 1px solid rgba(0, 0, 0, 0.08);
-  }
-
   #collageContainer {
-    grid-template-columns: repeat(2, minmax(0,1fr));
-    grid-template-rows: repeat(2, minmax(0,1fr));
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
   }
 
   #collageContainer.collage-1 .collage-item:first-child {
@@ -258,6 +206,7 @@
   #buttonContainer .text {
     margin-inline-start: 8px;
   }
+
   #buttonContainer .preview-button-disabled {
     cursor: wait;
     pointer-events: none;
@@ -273,13 +222,8 @@
     width: 20px;
   }
 
-  :host(:not([main-page])) #thumbnailContainer,
-  :host(:not([main-page])) #thumbnailPlaceholder {
-    display: none;
-  }
-
-  :host([main-page]) #thumbnailContainer,
-  :host([main-page]) #thumbnailPlaceholder {
+  #thumbnailContainer,
+  #thumbnailPlaceholder {
     display: grid;
     grid-area: collage;
     justify-self: center;
@@ -307,7 +251,7 @@
 
   #thumbnailContainer.thumbnail-2 {
     column-gap: 12px;
-    grid-template-columns: 130px minmax(0,1fr);
+    grid-template-columns: 130px minmax(0, 1fr);
   }
 
   #thumbnailContainer.thumbnail-2 .thumbnail-item:first-of-type {
@@ -320,7 +264,7 @@
 
   #thumbnailContainer.thumbnail-3 {
     column-gap: 8px;
-    grid-template-columns: minmax(0,1fr) 32px 32px;
+    grid-template-columns: minmax(0, 1fr) 32px 32px;
   }
 
   #thumbnailContainer.thumbnail-3 .thumbnail-item:first-of-type {
@@ -332,16 +276,39 @@
     border-radius: 16px;
     object-fit: none;
   }
+
 </style>
-<div class$="[[getPreviewContainerClass_(ambientModeEnabled_, loading_)]]" id="container">
-  <slot></slot>
+<div class$="[[getPreviewContainerClass_(ambientModeEnabled_, loading_)]]"
+    id="container">
+  <template is="dom-if" if="[[!isAmbientModeManaged_]]">
+    <div id="ambientLabel">
+      <h2 on-click="onClickAmbientSubpageLink_" class="clickable">
+        $i18n{screensaverLabel}
+      </h2>
+      <cr-icon-button aria-label="$i18n{ariaLabelChangeScreensaver}"
+          class="tast-open-subpage"
+          id="ambientSubpageLink"
+          iron-icon="cr:chevron-right"
+          on-click="onClickAmbientSubpageLink_">
+      </cr-icon-button>
+    </div>
+  </template>
+  <template is="dom-if" if="[[isAmbientModeManaged_]]">
+    <div id="ambientLabel" class="enterprise">
+      <h2>$i18n{screensaverLabel}</h2>
+      <cr-icon-button disabled
+          id="ambientSubpageLink"
+          iron-icon="cr:chevron-right">
+      </cr-icon-button>
+    </div>
+  </template>
   <template is="dom-if" if="[[loading_]]">
     <div id="imagePlaceholder" class="placeholder"></div>
     <template is="dom-if" if="[[isAmbientSubpageUiChangeEnabled_]]">
       <div id="thumbnailPlaceholder" class="placeholder"></div>
     </template>
-    <div id="textPlaceholder" class="preview-text-placeholder album-info-mainpage album-info-subpage">
-      <div class="placeholder currently-set-text"></div>
+    <div id="textPlaceholder"
+        class="preview-text-placeholder album-info-mainpage">
       <div class="placeholder"></div>
       <div class="placeholder"></div>
     </div>
@@ -349,17 +316,12 @@
   </template>
   <template is="dom-if" if="[[!loading_]]">
     <template is="dom-if" if="[[!ambientModeEnabled_]]">
-      <div id="imageContainer" class="preview-image-container" ambient-mode-managed$="[[isAmbientModeManaged_]]" aria-hidden="true">
+      <div id="imageContainer" class="preview-image-container"
+          ambient-mode-managed$="[[isAmbientModeManaged_]]" aria-hidden="true">
         <div class="preview-image-border"></div>
-        <img class="preview-image disabled" src="//personalization/images/slideshow.png">
+        <img class="preview-image disabled"
+            src="//personalization/images/slideshow.png">
       </div>
-      <h3 id="zeroStateTextContainer"
-          class="preview-text-container zero-state-info-subpage"
-          aria-label$="$i18n{ambientModeMainPageZeroStateMessage}">
-        <span class="text">
-          $i18n{ambientModeMainPageZeroStateMessage}
-        </span>
-      </h3>
       <template is="dom-if" if="[[!isAmbientSubpageUiChangeEnabled_]]">
         <div id="messageContainer" class="pre-ui-change">
           <span class="text" id="turnOnDescription">
@@ -401,20 +363,13 @@
       <template is="dom-if" if="[[previewAlbums_]]">
         <div id="imageContainer" class="preview-image-container">
           <div class="preview-image-border"></div>
-          <template is="dom-if" if="[[clickable]]">
-            <img class="preview-image clickable" is="cr-auto-img"
-                on-click="onClickPreviewImage_"
-                on-keypress="onClickPreviewImage_"
-                auto-src="[[getPreviewImage_(firstPreviewAlbum_)]]"
-                alt$="[[getAlbumTitle_(firstPreviewAlbum_)]]"
-                is-google-photos>
-          </template>
-          <template is="dom-if" if="[[!clickable]]">
-            <img class="preview-image" is="cr-auto-img"
-                auto-src="[[getPreviewImage_(firstPreviewAlbum_)]]"
-                alt$="[[getAlbumTitle_(firstPreviewAlbum_)]]"
-                is-google-photos>
-          </template>
+          <img alt$="[[getAlbumTitle_(firstPreviewAlbum_)]]"
+              auto-src="[[getPreviewImage_(firstPreviewAlbum_)]]"
+              class="preview-image clickable"
+              is-google-photos
+              is="cr-auto-img"
+              on-click="onClickPreviewImage_"
+              on-keypress="onClickPreviewImage_">
         </div>
         <template is="dom-if" if="[[isAmbientSubpageUiChangeEnabled_]]">
           <div id="thumbnailContainer" aria-hidden="true"
@@ -428,26 +383,21 @@
             </template>
           </div>
           <!-- Use inline svg in order to reference the clip path by url() -->
-          <svg width="0" height="0" viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg width="0" height="0" viewBox="0 0 130 130" fill="none"
+              xmlns="http://www.w3.org/2000/svg">
             <defs>
               <clipPath id="squiggleClip">
-                <path d="M 1.4375 72.371094 C -0.332031 69.402344 -0.476562 65.738281 1.054688 62.640625 L 3.210938 58.28125 C 4.125 56.429688 4.457031 54.339844 4.15625 52.296875 L 3.457031 47.484375 C 2.957031 44.066406 4.226562 40.625 6.824219 38.347656 L 10.484375 35.148438 C 12.039062 33.785156 13.144531 31.984375 13.652344 29.980469 L 14.84375 25.265625 C 15.691406 21.914062 18.179688 19.222656 21.453125 18.113281 L 26.058594 16.554688 C 28.015625 15.894531 29.726562 14.652344 30.960938 12.996094 L 33.867188 9.097656 C 35.929688 6.324219 39.261719 4.789062 42.710938 5.019531 L 47.5625 5.339844 C 49.625 5.480469 51.679688 4.984375 53.453125 3.925781 L 57.628906 1.4375 C 60.597656 -0.332031 64.261719 -0.476562 67.359375 1.054688 L 71.71875 3.210938 C 73.570312 4.125 75.660156 4.457031 77.703125 4.15625 L 82.515625 3.457031 C 85.933594 2.957031 89.375 4.226562 91.652344 6.824219 L 94.851562 10.484375 C 96.214844 12.039062 98.015625 13.144531 100.019531 13.652344 L 104.734375 14.84375 C 108.085938 15.691406 110.777344 18.179688 111.886719 21.453125 L 113.445312 26.058594 C 114.105469 28.015625 115.347656 29.726562 117.003906 30.960938 L 120.902344 33.867188 C 123.675781 35.929688 125.210938 39.261719 124.980469 42.710938 L 124.660156 47.5625 C 124.519531 49.625 125.015625 51.679688 126.074219 53.453125 L 128.5625 57.628906 C 130.332031 60.597656 130.476562 64.261719 128.945312 67.359375 L 126.792969 71.71875 C 125.875 73.570312 125.542969 75.660156 125.84375 77.703125 L 126.542969 82.515625 C 127.042969 85.933594 125.773438 89.375 123.175781 91.652344 L 119.515625 94.851562 C 117.960938 96.214844 116.855469 98.015625 116.347656 100.019531 L 115.15625 104.734375 C 114.308594 108.085938 111.820312 110.777344 108.546875 111.886719 L 103.941406 113.445312 C 101.984375 114.105469 100.273438 115.347656 99.039062 117.003906 L 96.132812 120.902344 C 94.070312 123.675781 90.738281 125.210938 87.289062 124.980469 L 82.4375 124.660156 C 80.375 124.519531 78.320312 125.015625 76.546875 126.074219 L 72.371094 128.5625 C 69.402344 130.332031 65.738281 130.476562 62.640625 128.945312 L 58.28125 126.792969 C 56.429688 125.875 54.339844 125.542969 52.296875 125.84375 L 47.484375 126.542969 C 44.066406 127.042969 40.625 125.773438 38.347656 123.175781 L 35.148438 119.515625 C 33.785156 117.960938 31.984375 116.855469 29.980469 116.347656 L 25.265625 115.15625 C 21.914062 114.308594 19.222656 111.820312 18.113281 108.546875 L 16.554688 103.941406 C 15.894531 101.984375 14.652344 100.273438 12.996094 99.039062 L 9.097656 96.132812 C 6.324219 94.070312 4.789062 90.738281 5.019531 87.289062 L 5.339844 82.4375 C 5.480469 80.375 4.984375 78.320312 3.925781 76.546875 Z M 1.4375 72.371094 "></path>
+                <path
+                    d="M 1.4375 72.371094 C -0.332031 69.402344 -0.476562 65.738281 1.054688 62.640625 L 3.210938 58.28125 C 4.125 56.429688 4.457031 54.339844 4.15625 52.296875 L 3.457031 47.484375 C 2.957031 44.066406 4.226562 40.625 6.824219 38.347656 L 10.484375 35.148438 C 12.039062 33.785156 13.144531 31.984375 13.652344 29.980469 L 14.84375 25.265625 C 15.691406 21.914062 18.179688 19.222656 21.453125 18.113281 L 26.058594 16.554688 C 28.015625 15.894531 29.726562 14.652344 30.960938 12.996094 L 33.867188 9.097656 C 35.929688 6.324219 39.261719 4.789062 42.710938 5.019531 L 47.5625 5.339844 C 49.625 5.480469 51.679688 4.984375 53.453125 3.925781 L 57.628906 1.4375 C 60.597656 -0.332031 64.261719 -0.476562 67.359375 1.054688 L 71.71875 3.210938 C 73.570312 4.125 75.660156 4.457031 77.703125 4.15625 L 82.515625 3.457031 C 85.933594 2.957031 89.375 4.226562 91.652344 6.824219 L 94.851562 10.484375 C 96.214844 12.039062 98.015625 13.144531 100.019531 13.652344 L 104.734375 14.84375 C 108.085938 15.691406 110.777344 18.179688 111.886719 21.453125 L 113.445312 26.058594 C 114.105469 28.015625 115.347656 29.726562 117.003906 30.960938 L 120.902344 33.867188 C 123.675781 35.929688 125.210938 39.261719 124.980469 42.710938 L 124.660156 47.5625 C 124.519531 49.625 125.015625 51.679688 126.074219 53.453125 L 128.5625 57.628906 C 130.332031 60.597656 130.476562 64.261719 128.945312 67.359375 L 126.792969 71.71875 C 125.875 73.570312 125.542969 75.660156 125.84375 77.703125 L 126.542969 82.515625 C 127.042969 85.933594 125.773438 89.375 123.175781 91.652344 L 119.515625 94.851562 C 117.960938 96.214844 116.855469 98.015625 116.347656 100.019531 L 115.15625 104.734375 C 114.308594 108.085938 111.820312 110.777344 108.546875 111.886719 L 103.941406 113.445312 C 101.984375 114.105469 100.273438 115.347656 99.039062 117.003906 L 96.132812 120.902344 C 94.070312 123.675781 90.738281 125.210938 87.289062 124.980469 L 82.4375 124.660156 C 80.375 124.519531 78.320312 125.015625 76.546875 126.074219 L 72.371094 128.5625 C 69.402344 130.332031 65.738281 130.476562 62.640625 128.945312 L 58.28125 126.792969 C 56.429688 125.875 54.339844 125.542969 52.296875 125.84375 L 47.484375 126.542969 C 44.066406 127.042969 40.625 125.773438 38.347656 123.175781 L 35.148438 119.515625 C 33.785156 117.960938 31.984375 116.855469 29.980469 116.347656 L 25.265625 115.15625 C 21.914062 114.308594 19.222656 111.820312 18.113281 108.546875 L 16.554688 103.941406 C 15.894531 101.984375 14.652344 100.273438 12.996094 99.039062 L 9.097656 96.132812 C 6.324219 94.070312 4.789062 90.738281 5.019531 87.289062 L 5.339844 82.4375 C 5.480469 80.375 4.984375 78.320312 3.925781 76.546875 Z M 1.4375 72.371094 ">
+                </path>
               </clipPath>
             </defs>
           </svg>
-          <div id="buttonContainer" hidden$="[[!isScreenSaverPreviewEnabled_()]]">
-            <cr-button class$="[[getScreenSaverPreviewClass_(ambientUiVisibility_)]]" on-click="startScreenSaverPreview_">
-              <iron-icon icon="personalization:fullscreen" hidden$="[[screenSaverPreviewActive_]]"></iron-icon>
-              <paper-spinner-lite active class="spinner" hidden$="[[!screenSaverPreviewActive_]]"></paper-spinner-lite>
-              <div class="text">[[getScreenSaverPreviewText_(ambientUiVisibility_)]]</div>
-            </cr-button>
-          </div>
-          <h3 id="textContainer" class="preview-text-container album-info-mainpage album-info-subpage"
+          <h3 id="textContainer"
+              class="preview-text-container album-info-mainpage"
               aria-label$="[[getPreviewTextAriaLabel_(firstPreviewAlbum_, topicSource_, previewAlbums_)]]">
-            <span id="currentlySet" class="currently-set-text" aria-hidden="true">
-              $i18n{currentlySet}
-            </span>
-            <span id="albumTitle" aria-hidden="true" title="[[getAlbumTitle_(firstPreviewAlbum_)]]">
+            <span id="albumTitle" aria-hidden="true"
+                title="[[getAlbumTitle_(firstPreviewAlbum_)]]">
               [[getAlbumTitle_(firstPreviewAlbum_)]]
             </span>
             <span id="albumDescription" aria-hidden="true">
@@ -456,25 +406,17 @@
           </h3>
         </template>
         <template is="dom-if" if="[[!isAmbientSubpageUiChangeEnabled_]]">
-          <h3 id="textContainer" class="preview-text-container album-info-mainpage album-info-subpage pre-ui-change"
+          <h3 id="textContainer"
+              class="preview-text-container album-info-mainpage pre-ui-change"
               aria-label$="[[getPreviewTextAriaLabel_(firstPreviewAlbum_, topicSource_, previewAlbums_)]]">
-            <span id="currentlySet" class="currently-set-text" aria-hidden="true">
-              $i18n{currentlySet}
-            </span>
-            <span id="albumTitle" aria-hidden="true" title="[[getAlbumTitle_(firstPreviewAlbum_)]]">
+            <span id="albumTitle" aria-hidden="true"
+                title="[[getAlbumTitle_(firstPreviewAlbum_)]]">
               [[getAlbumTitle_(firstPreviewAlbum_)]]
             </span>
             <span id="albumDescription" aria-hidden="true">
               [[getAlbumDescription_(topicSource_, previewAlbums_)]]
             </span>
           </h3>
-          <div id="buttonContainer" hidden$="[[!isScreenSaverPreviewEnabled_()]]">
-            <cr-button class$="[[getScreenSaverPreviewClass_(ambientUiVisibility_)]]" on-click="startScreenSaverPreview_">
-              <iron-icon icon="personalization:fullscreen" hidden$="[[screenSaverPreviewActive_]]"></iron-icon>
-              <paper-spinner-lite active class="spinner" hidden$="[[!screenSaverPreviewActive_]]"></paper-spinner-lite>
-              <div class="text">[[getScreenSaverPreviewText_(ambientUiVisibility_)]]</div>
-            </cr-button>
-          </div>
           <div aria-hidden="true"
               class$="[[getCollageContainerClass_(collageImages_)]]"
               on-click="onClickPhotoCollage_"

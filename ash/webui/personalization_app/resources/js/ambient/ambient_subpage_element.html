@@ -26,10 +26,10 @@
     grid-area: zeroState;
   }
   /* TODO(b/253470553): Remove after Ambient subpage UI change is released. */
-  ambient-preview.pre-ui-change {
+  ambient-preview-small.pre-ui-change {
     margin: 20px 8px 0 8px;
   }
-  ambient-preview {
+  ambient-preview-small {
     grid-area: preview;
     margin: 0 8px;
   }
@@ -97,19 +97,19 @@
 </style>
 <div id="container">
   <template is="dom-if" if="[[isAmbientSubpageUiChangeEnabled_]]">
-    <ambient-preview></ambient-preview>
+    <ambient-preview-small></ambient-preview-small>
   </template>
   <!-- restamp to avoid layout issues with iron-list resizing while hidden -->
   <template is="dom-if" if="[[shouldShowMainSettings_(path)]]" restamp>
     <div id="mainSettings">
-      <template is="dom-if" if="[[loadingAmbientMode_(ambientModeEnabled_)]]">
+      <template is="dom-if" if="[[isLoadingAmbientMode_(ambientModeEnabled_)]]">
         <div id="toggleRowPlaceholder" class="ambient-toggle-row-container">
           <div class="ambient-toggle-row">
             <div class="ambient-primary-text-placeholder placeholder"></div>
           </div>
         </div>
       </template>
-      <template is="dom-if" if="[[!loadingAmbientMode_(ambientModeEnabled_)]]">
+      <template is="dom-if" if="[[!isLoadingAmbientMode_(ambientModeEnabled_)]]">
         <toggle-row id="ambientToggleRow" checked="[[ambientModeEnabled_]]"
             on-click="onClickAmbientModeButton_" on-change="onToggleStateChanged_">
         </toggle-row>
@@ -117,7 +117,7 @@
       <template is="dom-if" if="[[ambientModeEnabled_]]">
         <!-- TODO(b/253470553): Remove after Ambient subpage UI change is released. -->
         <template is="dom-if" if="[[!isAmbientSubpageUiChangeEnabled_]]">
-          <ambient-preview class="pre-ui-change"></ambient-preview>
+          <ambient-preview-small class="pre-ui-change"></ambient-preview-small>
         </template>
         <template is="dom-if" if="[[loadingSettings_]]">
           <div id="animationThemePlaceholder">
@@ -172,11 +172,8 @@
           </ambient-weather-unit>
         </template>
       </template>
-      <template is="dom-if" if="[[!ambientModeEnabled_]]">
-        <!-- TODO(b/253470693): Remove after Ambient subpage UI change is released.  -->
-        <template is="dom-if" if="[[!isAmbientSubpageUiChangeEnabled_]]">
-          <ambient-zero-state id="zeroState"></ambient-zero-state>
-        </template>
+      <template is="dom-if" if="[[shouldShowZeroState_(ambientModeEnabled_, isAmbientSubpageUiChangeEnabled_)]]">
+        <ambient-zero-state id="zeroState"></ambient-zero-state>
       </template>
     </div>
   </template>

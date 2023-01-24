@@ -101,21 +101,9 @@ suite('AmbientSubpageTest', function() {
 
     // Preview element should show placeholders for preview images, preview
     // album info and preview album collage.
-    const ambientPreview =
-        ambientSubpageElement.shadowRoot!.querySelector('ambient-preview');
+    const ambientPreview = ambientSubpageElement.shadowRoot!.querySelector(
+        'ambient-preview-small');
     assertTrue(!!ambientPreview, 'ambient-preview element exists');
-
-    const previewImagePlaceholder =
-        ambientPreview.shadowRoot!.querySelector('#imagePlaceholder');
-    assertTrue(!!previewImagePlaceholder);
-
-    const previewTextPlaceholder =
-        ambientPreview.shadowRoot!.querySelector('#textPlaceholder');
-    assertTrue(!!previewTextPlaceholder);
-
-    const previewItemPlaceholders =
-        ambientPreview.shadowRoot!.querySelectorAll('.placeholder');
-    assertEquals(6, previewItemPlaceholders!.length);
 
     // Should show image placeholders for the 3 theme items.
     const animationThemePlaceholder =
@@ -157,22 +145,22 @@ suite('AmbientSubpageTest', function() {
     personalizationStore.notifyObservers();
     await waitAfterNextRender(ambientSubpageElement);
 
-    // Placeholders will be hidden for preview, animation theme, topic source
+    // Placeholders will be hidden for animation theme, topic source
     // and temperature unit elements.
-    assertTrue(!!previewImagePlaceholder);
-    assertEquals(getComputedStyle(previewImagePlaceholder).display, 'none');
-
-    assertTrue(!!previewTextPlaceholder);
-    assertEquals(getComputedStyle(previewTextPlaceholder).display, 'none');
-
     assertTrue(!!animationThemePlaceholder);
-    assertEquals(getComputedStyle(animationThemePlaceholder).display, 'none');
+    assertEquals(
+        'none', getComputedStyle(animationThemePlaceholder).display,
+        'animation theme placeholder is hidden');
 
     assertTrue(!!topicSourcePlaceholder);
-    assertEquals(getComputedStyle(topicSourcePlaceholder).display, 'none');
+    assertEquals(
+        'none', getComputedStyle(topicSourcePlaceholder).display,
+        'topic source placeholder is hidden');
 
     assertTrue(!!weatherUnitPlaceholder);
-    assertEquals(getComputedStyle(weatherUnitPlaceholder).display, 'none');
+    assertEquals(
+        'none', getComputedStyle(weatherUnitPlaceholder).display,
+        'weather unit placeholder is hidden');
   });
 
   test('sets ambient mode enabled in store on first load', async () => {
@@ -683,8 +671,8 @@ suite('AmbientSubpageTest', function() {
     const action = await personalizationStore.waitForAction(
                        AmbientActionName.SET_ALBUMS) as SetAlbumsAction;
     assertEquals(4, action.albums.length);
-    const ambientPreview =
-        ambientSubpageElement.shadowRoot!.querySelector('ambient-preview');
+    const ambientPreview = ambientSubpageElement.shadowRoot!.querySelector(
+        'ambient-preview-small');
     assertTrue(!!ambientPreview);
 
     const previewImage =
@@ -699,86 +687,6 @@ suite('AmbientSubpageTest', function() {
     assertEquals('2', previewAlbumTitle.innerText.replace(/\s/g, ''));
   });
 
-  test(
-      'displays 4 image collage when there are enough photos in Google photos album',
-      async () => {
-        // Disables `isAmbientSubpageUiChangeEnabled` to show the previous UI.
-        loadTimeData.overrideValues(
-            {['isAmbientSubpageUiChangeEnabled']: false});
-
-        ambientSubpageElement = await displayMainSettings(
-            TopicSource.kGooglePhotos, TemperatureUnit.kFahrenheit,
-            /*ambientModeEnabled=*/ true);
-        personalizationStore.data.ambient.googlePhotosAlbumsPreviews =
-            ambientProvider.googlePhotosAlbumsPreviews;
-        personalizationStore.notifyObservers();
-        await waitAfterNextRender(ambientSubpageElement);
-
-        const ambientPreview =
-            ambientSubpageElement.shadowRoot!.querySelector('ambient-preview');
-        assertTrue(!!ambientPreview);
-
-        const collageImages =
-            ambientPreview.shadowRoot!.querySelectorAll<HTMLImageElement>(
-                '.collage-item');
-        assertTrue(!!collageImages);
-        assertEquals(4, collageImages.length);
-      });
-
-  test(
-      'displays 1 image collage when there are not enough photos in Google photos album',
-      async () => {
-        // Disables `isAmbientSubpageUiChangeEnabled` to show the previous UI.
-        loadTimeData.overrideValues(
-            {['isAmbientSubpageUiChangeEnabled']: false});
-
-        ambientSubpageElement = await displayMainSettings(
-            TopicSource.kGooglePhotos, TemperatureUnit.kFahrenheit,
-            /*ambientModeEnabled=*/ true);
-        personalizationStore.data.ambient.googlePhotosAlbumsPreviews = [
-          ambientProvider.googlePhotosAlbumsPreviews[0],
-          ambientProvider.googlePhotosAlbumsPreviews[1],
-        ];
-        personalizationStore.notifyObservers();
-        await waitAfterNextRender(ambientSubpageElement);
-
-        const ambientPreview =
-            ambientSubpageElement.shadowRoot!.querySelector('ambient-preview');
-        assertTrue(!!ambientPreview);
-
-        const collageImages =
-            ambientPreview.shadowRoot!.querySelectorAll<HTMLImageElement>(
-                '.collage-item');
-        assertTrue(!!collageImages);
-        assertEquals(1, collageImages.length);
-      });
-
-  test(
-      'displays preview urls from selected albums when there are zero preview photos in Google photos album',
-      async () => {
-        // Disables `isAmbientSubpageUiChangeEnabled` to show the previous UI.
-        loadTimeData.overrideValues(
-            {['isAmbientSubpageUiChangeEnabled']: false});
-
-        ambientSubpageElement = await displayMainSettings(
-            TopicSource.kGooglePhotos, TemperatureUnit.kFahrenheit,
-            /*ambientModeEnabled=*/ true);
-        personalizationStore.data.ambient.googlePhotosAlbumsPreviews = [];
-        personalizationStore.notifyObservers();
-        await waitAfterNextRender(ambientSubpageElement);
-
-        const ambientPreview =
-            ambientSubpageElement.shadowRoot!.querySelector('ambient-preview');
-        assertTrue(!!ambientPreview);
-
-        const collageImages =
-            ambientPreview.shadowRoot!.querySelectorAll<HTMLImageElement>(
-                '.collage-item');
-        assertTrue(!!collageImages);
-        assertEquals(1, collageImages.length);
-        assertTrue(collageImages[0]!.src.includes('test_url3'));
-      });
-
   test('displays zero state when ambient mode is disabled', async () => {
     // Disables `isAmbientSubpageUiChangeEnabled` to show the previous UI.
     loadTimeData.overrideValues({['isAmbientSubpageUiChangeEnabled']: false});
@@ -787,28 +695,27 @@ suite('AmbientSubpageTest', function() {
         TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
         /*ambientModeEnabled=*/ false);
 
-    // Main settings should be present.
     const mainSettings =
         ambientSubpageElement.shadowRoot!.querySelector('#mainSettings');
-    assertTrue(!!mainSettings);
+    assertTrue(!!mainSettings, 'main settings should be present');
 
-    // Preview image should be absent.
-    assertEquals(mainSettings.querySelector('ambient-preview'), null);
-
-    // Topic source list should be absent.
     assertEquals(
+        null, mainSettings.querySelector('ambient-preview'),
+        'preview image should be absent');
+
+    assertEquals(
+        null,
         ambientSubpageElement.shadowRoot!.querySelector('topic-source-list'),
-        null);
+        'topic source list should be absent');
 
-    // Weather unit should be absent.
     assertEquals(
+        null,
         ambientSubpageElement.shadowRoot!.querySelector('ambient-weather-unit'),
-        null);
+        'weather unit should be absent');
 
-    // Zero state should be present.
     const zeroState =
         ambientSubpageElement.shadowRoot!.querySelector('ambient-zero-state');
-    assertTrue(!!zeroState);
+    assertTrue(!!zeroState, 'zero state should be present');
   });
 
   test('displays ambient preview when ambient mode is disabled', async () => {
@@ -816,24 +723,23 @@ suite('AmbientSubpageTest', function() {
         TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
         /*ambientModeEnabled=*/ false);
 
-    // Preview image should be present.
-    const ambientPreview =
-        ambientSubpageElement.shadowRoot!.querySelector('ambient-preview');
-    assertTrue(!!ambientPreview);
+    const ambientPreview = ambientSubpageElement.shadowRoot!.querySelector(
+        'ambient-preview-small');
+    assertTrue(!!ambientPreview, 'preview image should be present');
 
-    // Topic source list should be absent.
     assertEquals(
+        null,
         ambientSubpageElement.shadowRoot!.querySelector('topic-source-list'),
-        null);
+        'topic source list should be absent');
 
-    // Weather unit should be absent.
     assertEquals(
+        null,
         ambientSubpageElement.shadowRoot!.querySelector('ambient-weather-unit'),
-        null);
+        'weather unit should be absent');
 
-    // Zero state should not be present.
     assertEquals(
+        null,
         ambientSubpageElement.shadowRoot!.querySelector('ambient-zero-state'),
-        null);
+        'zero state should not be present');
   });
 });

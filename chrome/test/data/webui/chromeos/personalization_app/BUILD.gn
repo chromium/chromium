@@ -20,7 +20,8 @@ ts_library("build_ts") {
                     target_gen_dir),
   ]
   in_files = [
-    "ambient_preview_element_test.ts",
+    "ambient_preview_large_element_test.ts",
+    "ambient_preview_small_element_test.ts",
     "ambient_subpage_element_test.ts",
     "avatar_camera_element_test.ts",
     "avatar_list_element_test.ts",

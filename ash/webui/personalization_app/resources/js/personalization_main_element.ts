@@ -7,12 +7,12 @@
  * the personalization hub.
  */
 
-import '../css/cros_button_style.css.js';
+import './ambient/ambient_preview_large_element.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import {getTemplate} from './personalization_main_element.html.js';
-import {isAmbientModeAllowed, Paths, PersonalizationRouter} from './personalization_router_element.js';
+import {isAmbientModeAllowed} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
 export class PersonalizationMain extends WithPersonalizationStore {
@@ -27,14 +27,6 @@ export class PersonalizationMain extends WithPersonalizationStore {
   static get properties() {
     return {
       path: String,
-      clickable_: {
-        type: Boolean,
-        value: true,
-      },
-      isAmbientModeManaged_: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('isAmbientModeManaged'),
-      },
     };
   }
 
@@ -48,10 +40,6 @@ export class PersonalizationMain extends WithPersonalizationStore {
 
   private isRgbKeyboardSupported_(): boolean {
     return loadTimeData.getBoolean('isRgbKeyboardSupported');
-  }
-
-  private onClickAmbientSubpageLink_() {
-    PersonalizationRouter.instance().goToRoute(Paths.AMBIENT);
   }
 }
 

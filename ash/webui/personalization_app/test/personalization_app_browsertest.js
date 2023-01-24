@@ -152,7 +152,7 @@ TEST_F(
     () => {
       const preview = document.querySelector('personalization-router')
                           .shadowRoot.querySelector('personalization-main')
-                          .shadowRoot.querySelector('ambient-preview');
+                          .shadowRoot.querySelector('ambient-preview-large');
       assertTrue(!!preview);
       testDone();
     });
@@ -163,6 +163,7 @@ TEST_F(
       const ambientSubpageLink =
           document.querySelector('personalization-router')
               .shadowRoot.querySelector('personalization-main')
+              .shadowRoot.querySelector('ambient-preview-large')
               .shadowRoot.querySelector('#ambientSubpageLink');
       assertTrue(!!ambientSubpageLink);
       testDone();

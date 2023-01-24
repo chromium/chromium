@@ -10,7 +10,7 @@
 import '../../css/common.css.js';
 import './albums_subpage_element.js';
 import './ambient_weather_element.js';
-import './ambient_preview_element.js';
+import './ambient_preview_small_element.js';
 import './animation_theme_list_element.js';
 import './toggle_row_element.js';
 import './topic_source_list_element.js';
@@ -191,7 +191,13 @@ export class AmbientSubpage extends WithPersonalizationStore {
     return path === Paths.AMBIENT_ALBUMS;
   }
 
-  private loadingAmbientMode_(): boolean {
+  private shouldShowZeroState_(): boolean {
+    // TODO(b/253470693): Remove after Ambient subpage UI change is released.
+    return this.ambientModeEnabled_ === false &&
+        !this.isAmbientSubpageUiChangeEnabled_;
+  }
+
+  private isLoadingAmbientMode_(): boolean {
     return this.ambientModeEnabled_ === null;
   }
 

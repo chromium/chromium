@@ -25,6 +25,7 @@ non_web_component_files = [
   "js/ambient/ambient_controller.ts",
   "js/ambient/ambient_interface_provider.ts",
   "js/ambient/ambient_observer.ts",
+  "js/ambient/ambient_preview_base.ts",
   "js/ambient/ambient_reducers.ts",
   "js/ambient/ambient_state.ts",
   "js/ambient/utils.ts",
@@ -72,8 +73,9 @@ non_web_component_files = [
 web_component_files = [
   "js/ambient/album_list_element.ts",
   "js/ambient/albums_subpage_element.ts",
+  "js/ambient/ambient_preview_large_element.ts",
+  "js/ambient/ambient_preview_small_element.ts",
   "js/ambient/art_album_dialog_element.ts",
-  "js/ambient/ambient_preview_element.ts",
   "js/ambient/ambient_subpage_element.ts",
   "js/ambient/ambient_zero_state_svg_element.ts",
   "js/ambient/ambient_weather_element.ts",

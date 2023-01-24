@@ -1,11 +1,11 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {AmbientObserver, AmbientPreview, Paths, PersonalizationRouter, TopicSource} from 'chrome://personalization/js/personalization_app.js';
+import {AmbientObserver, AmbientPreviewLarge, Paths, PersonalizationRouter, TopicSource} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -16,8 +16,8 @@ import {TestAmbientProvider} from './test_ambient_interface_provider.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 
 
-suite('AmbientPreviewTest', function() {
-  let ambientPreviewElement: AmbientPreview|null;
+suite('AmbientPreviewLargeTest', function() {
+  let ambientPreviewLargeElement: AmbientPreviewLarge|null;
   let ambientProvider: TestAmbientProvider;
   let personalizationStore: TestPersonalizationStore;
   const routerOriginal = PersonalizationRouter.instance;
@@ -32,8 +32,8 @@ suite('AmbientPreviewTest', function() {
   });
 
   teardown(async () => {
-    await teardownElement(ambientPreviewElement);
-    ambientPreviewElement = null;
+    await teardownElement(ambientPreviewLargeElement);
+    ambientPreviewLargeElement = null;
     AmbientObserver.shutdown();
     PersonalizationRouter.instance = routerOriginal;
   });
@@ -45,19 +45,20 @@ suite('AmbientPreviewTest', function() {
         personalizationStore.data.ambient.ambientModeEnabled = false;
         personalizationStore.data.ambient.googlePhotosAlbumsPreviews =
             ambientProvider.googlePhotosAlbumsPreviews;
-        ambientPreviewElement = initElement(AmbientPreview);
+        ambientPreviewLargeElement = initElement(AmbientPreviewLarge);
         personalizationStore.notifyObservers();
-        await waitAfterNextRender(ambientPreviewElement);
+        await waitAfterNextRender(ambientPreviewLargeElement);
 
         const messageContainer =
-            ambientPreviewElement.shadowRoot!.getElementById(
+            ambientPreviewLargeElement.shadowRoot!.getElementById(
                 'messageContainer');
         assertTrue(!!messageContainer);
         const textSpan = messageContainer.querySelector<HTMLSpanElement>(
             '#turnOnDescription');
         assertTrue(!!textSpan);
         assertEquals(
-            ambientPreviewElement.i18n('ambientModeMainPageZeroStateMessageV2'),
+            ambientPreviewLargeElement.i18n(
+                'ambientModeMainPageZeroStateMessageV2'),
             textSpan.innerText.trim());
       });
 
@@ -69,12 +70,12 @@ suite('AmbientPreviewTest', function() {
         personalizationStore.data.ambient.ambientModeEnabled = false;
         personalizationStore.data.ambient.googlePhotosAlbumsPreviews =
             ambientProvider.googlePhotosAlbumsPreviews;
-        ambientPreviewElement = initElement(AmbientPreview);
+        ambientPreviewLargeElement = initElement(AmbientPreviewLarge);
         personalizationStore.notifyObservers();
-        await waitAfterNextRender(ambientPreviewElement);
+        await waitAfterNextRender(ambientPreviewLargeElement);
 
         const messageContainer =
-            ambientPreviewElement.shadowRoot!.getElementById(
+            ambientPreviewLargeElement.shadowRoot!.getElementById(
                 'messageContainer');
         assertTrue(!!messageContainer);
         const button = messageContainer.querySelector('cr-button');
@@ -108,9 +109,9 @@ suite('AmbientPreviewTest', function() {
       ambientModeEnabled: true,
       googlePhotosAlbumsPreviews: ambientProvider.googlePhotosAlbumsPreviews,
     };
-    ambientPreviewElement = initElement(AmbientPreview, {clickable: true});
+    ambientPreviewLargeElement = initElement(AmbientPreviewLarge);
     personalizationStore.notifyObservers();
-    await waitAfterNextRender(ambientPreviewElement);
+    await waitAfterNextRender(ambientPreviewLargeElement);
 
     const original = PersonalizationRouter.instance;
     const goToRoutePromise = new Promise<[Paths, Object]>(resolve => {
@@ -124,7 +125,7 @@ suite('AmbientPreviewTest', function() {
       };
     });
 
-    ambientPreviewElement.shadowRoot!
+    ambientPreviewLargeElement.shadowRoot!
         .querySelector<HTMLImageElement>('.preview-image.clickable')!.click();
 
     const [path, queryParams] = await goToRoutePromise;
@@ -144,9 +145,9 @@ suite('AmbientPreviewTest', function() {
       ambientModeEnabled: true,
       googlePhotosAlbumsPreviews: ambientProvider.googlePhotosAlbumsPreviews,
     };
-    ambientPreviewElement = initElement(AmbientPreview, {clickable: true});
+    ambientPreviewLargeElement = initElement(AmbientPreviewLarge);
     personalizationStore.notifyObservers();
-    await waitAfterNextRender(ambientPreviewElement);
+    await waitAfterNextRender(ambientPreviewLargeElement);
 
     function setFakeRouter() {
       const original = PersonalizationRouter.instance;
@@ -164,8 +165,8 @@ suite('AmbientPreviewTest', function() {
 
     const artGalleryPromise = setFakeRouter();
 
-    ambientPreviewElement.shadowRoot!.getElementById(
-                                         'collageContainer')!.click();
+    ambientPreviewLargeElement.shadowRoot!.getElementById(
+                                              'collageContainer')!.click();
 
     let topicSource = await artGalleryPromise;
     assertEquals(
@@ -178,8 +179,8 @@ suite('AmbientPreviewTest', function() {
     personalizationStore.notifyObservers();
     const googlePhotosPromise = setFakeRouter();
 
-    ambientPreviewElement.shadowRoot!.getElementById(
-                                         'collageContainer')!.click();
+    ambientPreviewLargeElement.shadowRoot!.getElementById(
+                                              'collageContainer')!.click();
 
     topicSource = await googlePhotosPromise;
     assertEquals(
@@ -197,9 +198,9 @@ suite('AmbientPreviewTest', function() {
       ambientModeEnabled: true,
       googlePhotosAlbumsPreviews: ambientProvider.googlePhotosAlbumsPreviews,
     };
-    ambientPreviewElement = initElement(AmbientPreview, {clickable: true});
+    ambientPreviewLargeElement = initElement(AmbientPreviewLarge);
     personalizationStore.notifyObservers();
-    await waitAfterNextRender(ambientPreviewElement);
+    await waitAfterNextRender(ambientPreviewLargeElement);
 
     function setFakeRouter() {
       const original = PersonalizationRouter.instance;
@@ -217,8 +218,8 @@ suite('AmbientPreviewTest', function() {
 
     const artGalleryPromise = setFakeRouter();
 
-    ambientPreviewElement.shadowRoot!.getElementById(
-                                         'thumbnailContainer')!.click();
+    ambientPreviewLargeElement.shadowRoot!.getElementById(
+                                              'thumbnailContainer')!.click();
 
     let topicSource = await artGalleryPromise;
     assertEquals(
@@ -231,8 +232,8 @@ suite('AmbientPreviewTest', function() {
     personalizationStore.notifyObservers();
     const googlePhotosPromise = setFakeRouter();
 
-    ambientPreviewElement.shadowRoot!.getElementById(
-                                         'thumbnailContainer')!.click();
+    ambientPreviewLargeElement.shadowRoot!.getElementById(
+                                              'thumbnailContainer')!.click();
 
     topicSource = await googlePhotosPromise;
     assertEquals(
@@ -249,18 +250,19 @@ suite('AmbientPreviewTest', function() {
     personalizationStore.data.ambient.ambientModeEnabled = false;
     personalizationStore.data.ambient.googlePhotosAlbumsPreviews =
         ambientProvider.googlePhotosAlbumsPreviews;
-    ambientPreviewElement = initElement(AmbientPreview);
+    ambientPreviewLargeElement = initElement(AmbientPreviewLarge);
     personalizationStore.notifyObservers();
-    await waitAfterNextRender(ambientPreviewElement);
+    await waitAfterNextRender(ambientPreviewLargeElement);
 
     const messageContainer =
-        ambientPreviewElement.shadowRoot!.getElementById('messageContainer');
+        ambientPreviewLargeElement.shadowRoot!.getElementById(
+            'messageContainer');
     assertTrue(!!messageContainer);
     const textSpan =
         messageContainer.querySelector<HTMLSpanElement>('#turnOnDescription');
     assertTrue(!!textSpan);
     assertEquals(
-        ambientPreviewElement.i18n('ambientModeMainPageZeroStateMessage'),
+        ambientPreviewLargeElement.i18n('ambientModeMainPageZeroStateMessage'),
         textSpan.innerText.trim());
   });
 
@@ -278,19 +280,19 @@ suite('AmbientPreviewTest', function() {
         personalizationStore.data.ambient.ambientModeEnabled = false;
         personalizationStore.data.ambient.googlePhotosAlbumsPreviews =
             ambientProvider.googlePhotosAlbumsPreviews;
-        ambientPreviewElement = initElement(AmbientPreview);
+        ambientPreviewLargeElement = initElement(AmbientPreviewLarge);
         personalizationStore.notifyObservers();
-        await waitAfterNextRender(ambientPreviewElement);
+        await waitAfterNextRender(ambientPreviewLargeElement);
 
         const messageContainer =
-            ambientPreviewElement.shadowRoot!.getElementById(
+            ambientPreviewLargeElement.shadowRoot!.getElementById(
                 'messageContainer');
         assertTrue(!!messageContainer);
         const textSpan = messageContainer.querySelector<HTMLSpanElement>(
             '#turnOnDescription');
         assertTrue(!!textSpan);
         assertEquals(
-            ambientPreviewElement.i18n(
+            ambientPreviewLargeElement.i18n(
                 'ambientModeMainPageEnterpriseUserMessage'),
             textSpan.innerText.trim());
       });
