@@ -39,7 +39,7 @@ class CORE_EXPORT Text : public CharacterData {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const unsigned kDefaultLengthLimit = 1 << 16;
+  static constexpr unsigned kDefaultLengthLimit = 1 << 16;
 
   static Text* Create(Document&, const String&);
   static Text* Create(Document&, String&&);

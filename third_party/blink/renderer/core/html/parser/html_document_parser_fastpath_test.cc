@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
+#include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
@@ -59,6 +60,21 @@ TEST(HTMLDocumentParserFastpathTest, SetInnerHTMLUsesFastPathFailure) {
   histogram_tester.ExpectTotalCount("Blink.HTMLFastPathParser.ParseResult", 1);
   histogram_tester.ExpectBucketCount("Blink.HTMLFastPathParser.ParseResult",
                                      HtmlFastPathResult::kSucceeded, 0);
+}
+
+TEST(HTMLDocumentParserFastpathTest, LongTextIsSplit) {
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
+  document->write("<body></body>");
+  auto* div = MakeGarbageCollected<HTMLDivElement>(*document);
+  std::vector<LChar> chars(Text::kDefaultLengthLimit + 1, 'a');
+  div->setInnerHTML(String(chars.data(), static_cast<unsigned>(chars.size())));
+  Text* text_node = To<Text>(div->firstChild());
+  ASSERT_TRUE(text_node);
+  // Text is split at 64k for performance. See
+  // HTMLConstructionSite::FlushPendingText for more details.
+  EXPECT_EQ(Text::kDefaultLengthLimit, text_node->length());
 }
 
 TEST(HTMLDocumentParserFastpathTest, MaximumHTMLParserDOMTreeDepth) {
