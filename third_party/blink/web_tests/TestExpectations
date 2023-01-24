@@ -4555,6 +4555,7 @@ crbug.com/1084256 [ Mac ] http/tests/misc/insert-iframe-into-xml-document-before
 
 # Assorted virtual/threaded/.../wpt/scroll-animations tests
 crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/view-timeline-inset-animation.html [ Failure Pass Timeout ]
+crbug.com/1409975 virtual/threaded/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Failure Pass Timeout ]
 
 crbug.com/1071189 [ Debug ] editing/selection/programmatic-selection-on-mac-is-directionless.html [ Pass Timeout ]
 
