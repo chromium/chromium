@@ -154,4 +154,9 @@ specific_include_rules = {
   "gtest_prod_util\.h$": [
     "+testing/gtest/include/gtest/gtest_prod.h",
   ],
+  "raw_(ptr|ref)_unittest\.cc$": [
+    "+base",
+    "+third_party/abseil-cpp/absl/types/optional.h",
+    "+third_party/abseil-cpp/absl/types/variant.h",
+  ]
 }

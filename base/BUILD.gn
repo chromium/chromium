@@ -3081,6 +3081,8 @@ test("base_unittests") {
     "allocator/dispatcher/testing/observer_mock.h",
     "allocator/dispatcher/testing/tools.h",
     "allocator/dispatcher/tls_unittest.cc",
+    "allocator/partition_allocator/pointers/raw_ptr_unittest.cc",
+    "allocator/partition_allocator/pointers/raw_ref_unittest.cc",
     "at_exit_unittest.cc",
     "atomicops_unittest.cc",
     "auto_reset_unittest.cc",
@@ -3196,8 +3198,6 @@ test("base_unittests") {
     "memory/platform_shared_memory_region_unittest.cc",
     "memory/ptr_util_unittest.cc",
     "memory/raw_ptr_asan_unittest.cc",
-    "memory/raw_ptr_unittest.cc",
-    "memory/raw_ref_unittest.cc",
     "memory/ref_counted_memory_unittest.cc",
     "memory/ref_counted_unittest.cc",
     "memory/safe_ref_unittest.cc",
@@ -4005,6 +4005,7 @@ if (enable_nocompile_tests) {
   nocompile_test("base_nocompile_tests") {
     sources = [
       "allocator/partition_allocator/partition_alloc_base/thread_annotations_pa_unittest.nc",
+      "allocator/partition_allocator/pointers/raw_ptr_unittest.nc",
       "callback_list_unittest.nc",
       "containers/buffer_iterator_unittest.nc",
       "containers/checked_iterators_unittest.nc",
@@ -4016,7 +4017,6 @@ if (enable_nocompile_tests) {
       "functional/callback_unittest.nc",
       "functional/function_ref_unittest.nc",
       "functional/overloaded_unittest.nc",
-      "memory/raw_ptr_unittest.nc",
       "memory/ref_counted_unittest.nc",
       "memory/weak_ptr_unittest.nc",
       "metrics/field_trial_params_unittest.nc",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 
 #include <climits>
 #include <cstddef>
@@ -19,11 +19,11 @@
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/pointers/raw_ref.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/cpu.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr_asan_service.h"
-#include "base/memory/raw_ref.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
