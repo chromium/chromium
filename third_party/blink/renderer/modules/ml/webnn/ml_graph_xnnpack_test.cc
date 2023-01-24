@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
@@ -1025,6 +1026,80 @@ TEST_P(MLGraphXnnpackTest, Conv2dTest) {
                                .values = {-6000.0, -7000.0, 8000.0, 9000.0}},
         .expected = {0.0, 0.0, 6.0, 6.0}}
         .Test(scope, builder, options);
+  }
+}
+
+template <typename T>
+struct Pool2dTester {
+  MLGraphXnnpackTest* helper;
+  Pool2dKind kind;
+  OperandInfo<T> input;
+  Vector<T> expected;
+
+  void Test(V8TestingScope& scope,
+            MLPool2dOptions* options = MLPool2dOptions::Create()) {
+    auto* builder = CreateMLGraphBuilder(scope);
+    auto* input_operand =
+        BuildInput(scope, builder, "input", input.dimensions, input.type);
+    auto* output_operand =
+        BuildPool2d(scope, builder, kind, input_operand, options);
+    auto [graph, build_exception] =
+        helper->BuildGraph(scope, builder, {{"output", output_operand}});
+    EXPECT_NE(graph, nullptr);
+
+    auto input_buffer =
+        CreateArrayBufferViewForOperand(input_operand, input.values);
+    auto output_buffer = CreateArrayBufferViewForOperand(output_operand);
+    auto* compute_exception = helper->ComputeGraph(
+        scope, graph, {{"input", input_buffer}}, {{"output", output_buffer}});
+    EXPECT_EQ(compute_exception, nullptr);
+    Vector<float> results = GetArrayBufferViewValues<T>(output_buffer);
+    EXPECT_EQ(results, expected);
+  }
+};
+
+TEST_P(MLGraphXnnpackTest, Pool2dTest) {
+  V8TestingScope scope;
+  {
+    // Test averagePool2d operator for nhwc input layout.
+    auto* options = MLPool2dOptions::Create();
+    options->setLayout(V8MLInputOperandLayout::Enum::kNhwc);
+    options->setWindowDimensions({3, 3});
+    Pool2dTester<float>{
+        .kind = Pool2dKind::kAverage,
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 4, 4, 1},
+                  .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
+                             11.0, 12.0, 13.0, 14.0, 15.0, 16.0}},
+        .expected = {6.0, 7.0, 10.0, 11.0}}
+        .Test(scope, options);
+  }
+  {
+    // Test global averagePool2d operator for nhwc input layout.
+    auto* options = MLPool2dOptions::Create();
+    options->setLayout(V8MLInputOperandLayout::Enum::kNhwc);
+    Pool2dTester<float>{
+        .kind = Pool2dKind::kAverage,
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 4, 4, 1},
+                  .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
+                             11.0, 12.0, 13.0, 14.0, 15.0, 16.0}},
+        .expected = {8.5}}
+        .Test(scope, options);
+  }
+  {
+    // Test maxPool2d operator for nhwc input layout.
+    auto* options = MLPool2dOptions::Create();
+    options->setLayout(V8MLInputOperandLayout::Enum::kNhwc);
+    options->setWindowDimensions({3, 3});
+    Pool2dTester<float>{
+        .kind = Pool2dKind::kMax,
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 4, 4, 1},
+                  .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
+                             11.0, 12.0, 13.0, 14.0, 15.0, 16.0}},
+        .expected = {11.0, 12.0, 15.0, 16.0}}
+        .Test(scope, options);
   }
 }
 

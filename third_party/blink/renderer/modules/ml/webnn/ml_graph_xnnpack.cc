@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
@@ -397,6 +398,58 @@ xnn_status DefineXnnNodeForClamp(xnn_subgraph_t subgraph,
   return xnn_status_success;
 }
 
+struct XnnPadding2D {
+  uint32_t top;
+  uint32_t bottom;
+  uint32_t left;
+  uint32_t right;
+};
+
+// Helper to get padding sizes for XNNPACK convolution 2d or pooling 2d Nodes.
+template <typename OptionsType>
+XnnPadding2D GetXnnPadding2D(const OptionsType* options,
+                             uint32_t input_height,
+                             uint32_t input_width,
+                             uint32_t filter_height,
+                             uint32_t filter_width,
+                             uint32_t stride_height,
+                             uint32_t stride_width,
+                             uint32_t dilation_height,
+                             uint32_t dilation_width) {
+  XnnPadding2D xnn_padding;
+  switch (options->autoPad().AsEnum()) {
+    case V8MLAutoPad::Enum::kExplicit: {
+      // Set the XNNPACK padding from WebNN explicit padding that is in
+      // [beginning_height, ending_height, beginning_width, ending_width],
+      // default to 0.
+      const Vector<uint32_t> default_pads({0, 0, 0, 0});
+      xnn_padding.top = options->getPaddingOr(default_pads)[0];
+      xnn_padding.bottom = options->getPaddingOr(default_pads)[1];
+      xnn_padding.left = options->getPaddingOr(default_pads)[2];
+      xnn_padding.right = options->getPaddingOr(default_pads)[3];
+      break;
+    }
+    case V8MLAutoPad::Enum::kSameUpper:
+    case V8MLAutoPad::Enum::kSameLower: {
+      // Calculate the XNNPACK padding based on WebNN auto padding mode and
+      // sizes.
+      auto padding_sizes_height = MLGraphBuilder::CalculatePaddingForAutoPad(
+          options->autoPad().AsEnum(), input_height, filter_height,
+          stride_height, dilation_height);
+      DCHECK(padding_sizes_height);
+      xnn_padding.top = padding_sizes_height.value().begin;
+      xnn_padding.bottom = padding_sizes_height.value().end;
+      auto padding_sizes_width = MLGraphBuilder::CalculatePaddingForAutoPad(
+          options->autoPad().AsEnum(), input_width, filter_width, stride_width,
+          dilation_width);
+      xnn_padding.left = padding_sizes_width.value().begin;
+      xnn_padding.right = padding_sizes_width.value().end;
+      break;
+    }
+  }
+  return xnn_padding;
+}
+
 xnn_status DefineXnnNodeForConv2d(xnn_subgraph_t subgraph,
                                   const MLOperator* conv2d,
                                   const OperandValueIdMap& operand_value_id_map,
@@ -489,28 +542,9 @@ xnn_status DefineXnnNodeForConv2d(xnn_subgraph_t subgraph,
   }
 
   // Set or calculate padding sizes of XNNPACK conv2d.
-  uint32_t pad_top, pad_bottom, pad_left, pad_right;
-  if (options->autoPad().AsEnum() == V8MLAutoPad::Enum::kExplicit) {
-    // WebNN padding sizes are in [beginning_height, ending_height,
-    // beginning_width, ending_width], default to 0.
-    const Vector<uint32_t> default_pads({0, 0, 0, 0});
-    pad_top = options->getPaddingOr(default_pads)[0];
-    pad_bottom = options->getPaddingOr(default_pads)[1];
-    pad_left = options->getPaddingOr(default_pads)[2];
-    pad_right = options->getPaddingOr(default_pads)[3];
-  } else {
-    auto padding_sizes_height = MLGraphBuilder::CalculatePaddingForAutoPad(
-        options->autoPad().AsEnum(), input_height, filter_height, stride_height,
-        dilation_height);
-    DCHECK(padding_sizes_height);
-    pad_top = padding_sizes_height.value().begin;
-    pad_bottom = padding_sizes_height.value().end;
-    auto padding_sizes_width = MLGraphBuilder::CalculatePaddingForAutoPad(
-        options->autoPad().AsEnum(), input_width, filter_width, stride_width,
-        dilation_width);
-    pad_left = padding_sizes_width.value().begin;
-    pad_right = padding_sizes_width.value().end;
-  }
+  const auto padding = GetXnnPadding2D(
+      options, input_height, input_width, filter_height, filter_width,
+      stride_height, stride_width, dilation_height, dilation_width);
 
   // Set the minimum and maximum output values for XNNPACK conv2d based on the
   // fused activation function. If no fused activation function is set, there
@@ -541,17 +575,18 @@ xnn_status DefineXnnNodeForConv2d(xnn_subgraph_t subgraph,
   if (depthwise) {
     const uint32_t depth_multiplier = 1;
     XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_depthwise_convolution_2d(
-        subgraph, pad_top, pad_right, pad_bottom, pad_left, filter_height,
-        filter_width, stride_height, stride_width, dilation_height,
-        dilation_width, depth_multiplier, input_channels, output_range.min,
-        output_range.max, input_id, filter_id, bias_id, output_id, flags));
-  } else {
-    XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_convolution_2d(
-        subgraph, pad_top, pad_right, pad_bottom, pad_left, filter_height,
-        filter_width, stride_height, stride_width, dilation_height,
-        dilation_width, groups, group_input_channels, group_output_channels,
+        subgraph, padding.top, padding.right, padding.bottom, padding.left,
+        filter_height, filter_width, stride_height, stride_width,
+        dilation_height, dilation_width, depth_multiplier, input_channels,
         output_range.min, output_range.max, input_id, filter_id, bias_id,
         output_id, flags));
+  } else {
+    XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_convolution_2d(
+        subgraph, padding.top, padding.right, padding.bottom, padding.left,
+        filter_height, filter_width, stride_height, stride_width,
+        dilation_height, dilation_width, groups, group_input_channels,
+        group_output_channels, output_range.min, output_range.max, input_id,
+        filter_id, bias_id, output_id, flags));
   }
   return xnn_status_success;
 }
@@ -607,6 +642,103 @@ xnn_status DefineXnnNodeForElementWiseBinary(
   return xnn_status_success;
 }
 
+xnn_status DefineXnnNodeForPool2d(xnn_subgraph_t subgraph,
+                                  const MLOperator* pool2d,
+                                  const OperandValueIdMap& operand_value_id_map,
+                                  String& error_message) {
+  const uint32_t input_id =
+      GetOperatorInputValueId(pool2d, operand_value_id_map);
+  const uint32_t output_id =
+      GetOperatorOutputValueId(pool2d, operand_value_id_map);
+
+  // Set strides of XNNPACK pooling 2d Node, default to 1.
+  const MLPool2dOptions* options =
+      static_cast<const MLPool2dOptions*>(pool2d->Options());
+  const Vector<uint32_t> default_strides({1, 1});
+  const uint32_t stride_height = options->getStridesOr(default_strides)[0];
+  const uint32_t stride_width = options->getStridesOr(default_strides)[1];
+
+  // Set dilations of XNNPACK pooling 2d Node, default to 1.
+  const Vector<uint32_t> default_dilations({1, 1});
+  const uint32_t dilation_height =
+      options->getDilationsOr(default_dilations)[0];
+  const uint32_t dilation_width = options->getDilationsOr(default_dilations)[1];
+
+  // Set window sizes of XNNPACK pooling 2d Node.
+  uint32_t input_height, input_width;
+  uint32_t filter_height, filter_width;
+  bool global_pooling = false;
+  switch (options->layout().AsEnum()) {
+    case V8MLInputOperandLayout::Enum::kNhwc: {
+      const auto* input = pool2d->Inputs()[0].Get();
+      DCHECK(input);
+      input_height = input->Dimensions()[1];
+      input_width = input->Dimensions()[2];
+      if (options->hasWindowDimensions()) {
+        filter_height = options->windowDimensions()[0];
+        filter_width = options->windowDimensions()[1];
+      } else {
+        // According to WebNN pool2d spec:
+        // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pool2d, if the window
+        // dimensions are not present, the window dimensions are assumed to be
+        // the height and width dimensions of the input shape that could be
+        // mapped to the global pooling operation.
+        filter_height = input_height;
+        filter_width = input_width;
+        global_pooling = true;
+      }
+      break;
+    }
+    case V8MLInputOperandLayout::Enum::kNchw: {
+      // TODO(crbug.com/1273291): support nchw input layout by transposing the
+      // input tensor.
+      error_message = "The nchw input layout is not supported.";
+      return xnn_status_unsupported_parameter;
+    }
+  }
+
+  // Set or calculate padding sizes of XNNPACK pooling 2d Node.
+  const auto padding = GetXnnPadding2D(
+      options, input_height, input_width, filter_height, filter_width,
+      stride_height, stride_width, dilation_height, dilation_width);
+
+  // Define XNNPACK average or max pooling 2d Node for the Subgraph object.
+  const float output_min = -std::numeric_limits<float>::infinity();
+  const float output_max = +std::numeric_limits<float>::infinity();
+  const uint32_t flags = 0;
+  switch (pool2d->Kind()) {
+    case MLOperator::OperatorKind::kAveragePool2d: {
+      if (dilation_height != 1 || dilation_width != 1) {
+        error_message = "averagePool2d doesn't support dilations.";
+        return xnn_status_unsupported_parameter;
+      }
+      if (global_pooling) {
+        XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+            xnn_define_global_average_pooling_2d(
+                subgraph, output_min, output_max, input_id, output_id, flags));
+      } else {
+        XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_average_pooling_2d(
+            subgraph, padding.top, padding.right, padding.bottom, padding.left,
+            filter_height, filter_width, stride_height, stride_width,
+            output_min, output_max, input_id, output_id, flags));
+      }
+      break;
+    }
+    case MLOperator::OperatorKind::kMaxPool2d: {
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_max_pooling_2d(
+          subgraph, padding.top, padding.right, padding.bottom, padding.left,
+          filter_height, filter_width, stride_height, stride_width,
+          dilation_height, dilation_width, output_min, output_max, input_id,
+          output_id, flags));
+      break;
+    }
+    default:
+      // Only average and max pool2d are supported by this method.
+      NOTREACHED();
+  }
+  return xnn_status_success;
+}
+
 xnn_status DefineXnnNodeForRelu(xnn_subgraph_t subgraph,
                                 const MLOperator* relu,
                                 const OperandValueIdMap& operand_value_id_map,
@@ -648,6 +780,13 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
     case MLOperator::OperatorKind::kMax:
     case MLOperator::OperatorKind::kMin: {
       XNN_CHECK_STATUS(DefineXnnNodeForElementWiseBinary(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
+    }
+    // Define XNNPACK Node for pool2d operators.
+    case MLOperator::OperatorKind::kAveragePool2d:
+    case MLOperator::OperatorKind::kMaxPool2d: {
+      XNN_CHECK_STATUS(DefineXnnNodeForPool2d(
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
     }
