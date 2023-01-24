@@ -470,14 +470,24 @@ void DeviceActivityClient::OnGetLastPingDatesStatusFetched(
       }
 
       if (!device_active_use_case_ptr->IsLastKnownPingTimestampSet()) {
-        RecordPreservedFileState(
-            DeviceActivityClient::PreservedFileState::kReadOkLocalStateEmpty);
+        if (use_case ==
+            private_computing::PrivateComputingUseCase::CROS_FRESNEL_DAILY) {
+          // Only record the successfully read from preserved file for daily use
+          // case.
+          RecordPreservedFileState(
+              DeviceActivityClient::PreservedFileState::kReadOkLocalStateEmpty);
+        }
         VLOG(1) << "Updating local pref timestamp value with file timestamp = "
                 << last_ping_time;
         device_active_use_case_ptr->SetLastKnownPingTimestamp(last_ping_time);
       } else {
-        RecordPreservedFileState(
-            DeviceActivityClient::PreservedFileState::kReadOkLocalStateSet);
+        if (use_case ==
+            private_computing::PrivateComputingUseCase::CROS_FRESNEL_DAILY) {
+          // Only record the successfully read from preserved file for daily use
+          // case.
+          RecordPreservedFileState(
+              DeviceActivityClient::PreservedFileState::kReadOkLocalStateSet);
+        }
         VLOG(1) << "Preserved File was read successfully but local state is "
                    "already set. "
                 << "Device was most likely restarted and not powerwashed, so "
