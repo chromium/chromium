@@ -572,7 +572,11 @@ void ArcPolicyBridge::OnConnectionClosed() {
 
 void ArcPolicyBridge::GetPolicies(GetPoliciesCallback callback) {
   VLOG(1) << "ArcPolicyBridge::GetPolicies";
-  arc_policy_for_reporting_ = GetCurrentJSONPolicies();
+  std::string new_policy = GetCurrentJSONPolicies();
+  if (arc_policy_for_reporting_ != new_policy) {
+    arc_policy_for_reporting_ = new_policy;
+    VLOG(1) << "Policy updated. Current policy: " << new_policy;
+  }
   for (Observer& observer : observers_) {
     observer.OnPolicySent(arc_policy_for_reporting_);
   }
