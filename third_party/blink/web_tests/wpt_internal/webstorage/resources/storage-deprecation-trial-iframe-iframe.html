@@ -1,0 +1,17 @@
+<!doctype html>
+<meta charset="utf-8">
+<script type="module">
+import { getOrCreateID, clearID } from "/wpt_internal/webstorage/resources/storage-deprecation-trial-utils.js";
+
+// Step 5 (wpt_internal/webstorage/storage-deprecation-trial-{enabled|disabled}-{local|session}.sub.https.html)
+const useSessionStorage = (new URLSearchParams(window.location.search)).has("session");
+const userID = getOrCreateID(useSessionStorage);
+clearID(useSessionStorage);
+
+// Step 6 (wpt_internal/webstorage/storage-deprecation-trial-{enabled|disabled}-{local|session}.sub.https.html)
+const payload = {
+  message: "UserID",
+  userID: userID,
+}
+window.top.postMessage(payload, window.top.origin);
+</script>

@@ -1,0 +1,44 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Local Storage: deprecation trial</title>
+<meta name=help href="https://privacycg.github.io/storage-partitioning/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script type="module">
+import { getOrCreateID, clearID } from "/wpt_internal/webstorage/resources/storage-deprecation-trial-utils.js";
+// Generate token in headers file with the command:
+// generate_token.py https://web-platform.test:8444 DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning --expire-timestamp=2000000000
+//
+// Here's the set-up for this test:
+// Step 1 (top-frame) Create an ID in storage.
+// Step 2 (top-frame) Set up listener for "UserID" message.
+// Step 3 (top-frame) Embed an iframe that's cross-origin with top-frame.
+// Step 4 (sub-frame) Embed an iframe that's same-origin with top-frame.
+// Step 5 (sub-sub-frame) Get or create an ID in storage and cleanup.
+// Step 6 (sub-sub-frame) Send "UserID" message to top-frame.
+// Step 7 (top-frame) Compare IDs recieved and cleanup.
+
+async_test(t => {
+  // Step 1
+  const userID = getOrCreateID(/*useSessionStorage=*/false);
+
+  // Step 2
+  window.addEventListener("message", t.step_func(e => {
+    // Step 7
+    if (e.data.message === "UserID") {
+      t.step(() => {
+        assert_true(e.data.userID !== userID, "IDs pulled from same-origin partitioned frames should be different.")
+      });
+      clearID(/*useSessionStorage=*/false);
+      t.done();
+    };
+  }));
+
+  // Step 3
+  let iframe = document.createElement("iframe");
+  iframe.src = "https://{{hosts[alt][]}}:{{ports[https][0]}}/wpt_internal/webstorage/resources/storage-deprecation-trial-iframe.sub.html";
+  document.body.appendChild(iframe);
+}, "Test for Local Storage with DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning enabled");
+</script>
+</body>

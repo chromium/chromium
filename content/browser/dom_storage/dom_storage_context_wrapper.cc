@@ -25,6 +25,7 @@
 #include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
+#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -296,7 +297,18 @@ bool DOMStorageContextWrapper::IsRequestValid(
     if (!host) {
       return false;
     }
-    host_storage_key_did_not_match = host->storage_key() != storage_key;
+    switch (type) {
+      case StorageType::kLocalStorage: {
+        host_storage_key_did_not_match = host->storage_key() != storage_key;
+        break;
+      }
+      case StorageType::kSessionStorage: {
+        host_storage_key_did_not_match =
+            host->frame_tree()->GetSessionStorageKey(host->storage_key()) !=
+            storage_key;
+        break;
+      }
+    }
   }
   if (!security_policy_handle.CanAccessDataForOrigin(storage_key.origin())) {
     const std::string type_string =
