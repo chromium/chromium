@@ -5,31 +5,63 @@
 #ifndef COMPONENTS_POWER_BOOKMARKS_STORAGE_POWER_BOOKMARK_SYNC_BRIDGE_H_
 #define COMPONENTS_POWER_BOOKMARKS_STORAGE_POWER_BOOKMARK_SYNC_BRIDGE_H_
 
+#include "base/guid.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 
 namespace syncer {
 class ModelError;
+class SyncMetadataStore;
 }  // namespace syncer
 
 namespace power_bookmarks {
 
 class Power;
-class PowerBookmarkSyncMetadataDatabase;
+
+// Transaction wraps a database transaction. When it's out of scope the
+// underlying transaction will be cancelled if not committed.
+// TODO(crbug.com/1392502): Find a better layout for this class.
+class Transaction {
+ public:
+  virtual bool Commit() = 0;
+  virtual ~Transaction() = default;
+};
 
 // PowerBookmarkSyncBridge is responsible for syncing all powers to different
 // devices. It runs on the same thread as the power bookmark database
 // implementation.
 class PowerBookmarkSyncBridge : public syncer::ModelTypeSyncBridge {
  public:
+  // Delegate interface PowerBookmarkSyncBridge needs from the backend.
   class Delegate {
    public:
+    // Get all the powers from the database.
     virtual std::vector<std::unique_ptr<Power>> GetAllPowers() = 0;
+
+    // Get powers for the given guids.
     virtual std::vector<std::unique_ptr<Power>> GetPowersForGUIDs(
         const std::vector<std::string>& guids) = 0;
+
+    // Get power for the given guid.
     virtual std::unique_ptr<Power> GetPowerForGUID(const std::string& guid) = 0;
+
+    // Create a power if not exists or merge existing the power in the database.
+    virtual bool CreateOrMergePowerFromSync(const Power& power) = 0;
+
+    // Delete a power from the database.
+    virtual bool DeletePowerFromSync(const std::string& guid) = 0;
+
+    // Get the database to store power bookmarks metadata.
+    virtual syncer::SyncMetadataStore* GetSyncMetadataDatabase() = 0;
+
+    // Start a transaction. This is used to make sure power bookmark data
+    // and metadata are stored atomically.
+    virtual std::unique_ptr<Transaction> BeginTransaction() = 0;
+
+    // Notify the backend if powers are changed.
+    virtual void NotifyPowersChanged() {}
   };
   PowerBookmarkSyncBridge(
-      PowerBookmarkSyncMetadataDatabase* meta_db,
+      syncer::SyncMetadataStore* meta_db,
       Delegate* delegate,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
 
@@ -52,8 +84,27 @@ class PowerBookmarkSyncBridge : public syncer::ModelTypeSyncBridge {
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
   void GetAllDataForDebugging(DataCallback callback) override;
 
+  void SendPowerToSync(const Power& power);
+  void NotifySyncForDeletion(const std::string& guid);
+
  private:
-  const raw_ptr<PowerBookmarkSyncMetadataDatabase> meta_db_;
+  // Create a change list to store metadata inside the power bookmark database.
+  // This method should be called inside a transaction because Chrome sync
+  // requires saving data and metadata atomically. Also need to transfer the
+  // meta_data_change_list from the InMemoryMetadataChangeList created by
+  // CreateMetadataChangeList() within the transaction created in
+  // MergeSyncData() and ApplySyncChanges().
+  std::unique_ptr<syncer::MetadataChangeList>
+  CreateMetadataChangeListInTransaction();
+
+  // Helper function called by both `MergeSyncData` with is_initial_merge=true
+  // and `ApplySyncChanges` with is_initial_merge=false.
+  absl::optional<syncer::ModelError> ApplyChanges(
+      std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
+      syncer::EntityChangeList& entity_changes,
+      bool is_initial_merge);
+
+  const raw_ptr<syncer::SyncMetadataStore> meta_db_;
   const raw_ptr<Delegate> delegate_;
 };
 

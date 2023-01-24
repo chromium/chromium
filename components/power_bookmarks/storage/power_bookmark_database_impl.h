@@ -44,19 +44,20 @@ class PowerBookmarkDatabaseImpl : public PowerBookmarkDatabase {
   std::vector<std::unique_ptr<PowerOverview>> GetPowerOverviewsForSearchParams(
       const SearchParams& search_params) override;
   bool CreatePower(std::unique_ptr<Power> power) override;
-  bool UpdatePower(std::unique_ptr<Power> power) override;
+  std::unique_ptr<Power> UpdatePower(std::unique_ptr<Power> power) override;
   bool DeletePower(const base::GUID& guid) override;
   bool DeletePowersForURL(
       const GURL& url,
-      const sync_pb::PowerBookmarkSpecifics::PowerType& power_type) override;
+      const sync_pb::PowerBookmarkSpecifics::PowerType& power_type,
+      std::vector<std::string>* deleted_guids = nullptr) override;
   std::vector<std::unique_ptr<Power>> GetAllPowers() override;
   std::vector<std::unique_ptr<Power>> GetPowersForGUIDs(
       const std::vector<std::string>& guids) override;
   std::unique_ptr<Power> GetPowerForGUID(const std::string& guid) override;
-
-  PowerBookmarkSyncMetadataDatabase* GetSyncMetadataDatabase() {
-    return sync_db_.get();
-  }
+  bool CreateOrMergePowerFromSync(const Power& power) override;
+  bool DeletePowerFromSync(const std::string& guid) override;
+  syncer::SyncMetadataStore* GetSyncMetadataDatabase() override;
+  std::unique_ptr<Transaction> BeginTransaction() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PowerBookmarkDatabaseImplTest,
@@ -72,6 +73,16 @@ class PowerBookmarkDatabaseImpl : public PowerBookmarkDatabase {
   absl::optional<sync_pb::PowerBookmarkSpecifics> DeserializeOrDelete(
       const std::string& data,
       const base::GUID& id);
+
+  std::vector<std::string> GetGUIDsForURL(
+      const GURL& url,
+      const sync_pb::PowerBookmarkSpecifics::PowerType& power_type);
+
+  bool CreatePowerInternal(const Power& power);
+
+  bool UpdatePowerInternal(const Power& power);
+
+  bool DeletePowerInternal(const base::GUID& guid);
 
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);
   sql::MetaTable meta_table_ GUARDED_BY_CONTEXT(sequence_checker_);

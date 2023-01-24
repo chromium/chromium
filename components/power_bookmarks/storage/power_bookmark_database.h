@@ -52,8 +52,9 @@ class PowerBookmarkDatabase : public PowerBookmarkSyncBridge::Delegate {
   virtual bool CreatePower(std::unique_ptr<Power> power) = 0;
 
   // Update the given `power` in the database. If it doesn't exist, then it
-  // will be created instead. Returns whether the operation was successful.
-  virtual bool UpdatePower(std::unique_ptr<Power> power) = 0;
+  // will be created instead. Returns the updated power if the operation was
+  // successful or nullptr otherwise.
+  virtual std::unique_ptr<Power> UpdatePower(std::unique_ptr<Power> power) = 0;
 
   // Delete the given `guid` in the database, if it exists. Returns whether
   // the operation was successful.
@@ -61,9 +62,12 @@ class PowerBookmarkDatabase : public PowerBookmarkSyncBridge::Delegate {
 
   // Delete all powers for the given `url`. Use `power_type` to restrict which
   // type is deleted or use POWER_TYPE_UNSPECIFIED to delete everything.
+  // Returns whether the operation was successfaul and all deleted guids in
+  // deleted_guids as output if provided.
   virtual bool DeletePowersForURL(
       const GURL& url,
-      const sync_pb::PowerBookmarkSpecifics::PowerType& power_type) = 0;
+      const sync_pb::PowerBookmarkSpecifics::PowerType& power_type,
+      std::vector<std::string>* deleted_guids = nullptr) = 0;
 };
 
 }  // namespace power_bookmarks
