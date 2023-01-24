@@ -1058,12 +1058,31 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
         if (result != H264Parser::kOk)
           break;
         for (auto& sei_msg : sei.msgs) {
-          if (sei_msg.type == H264SEIMessage::kSEIRecoveryPoint &&
-              sei_msg.recovery_point.recovery_frame_cnt == 0) {
-            // We only support immediate recovery points. Supporting
-            // future points would require dropping |recovery_frame_cnt|
-            // frames when needed.
-            frame->has_recovery_point = true;
+          switch (sei_msg.type) {
+            case H264SEIMessage::kSEIRecoveryPoint:
+              if (sei_msg.recovery_point.recovery_frame_cnt == 0) {
+                // We only support immediate recovery points. Supporting
+                // future points would require dropping |recovery_frame_cnt|
+                // frames when needed.
+                frame->has_recovery_point = true;
+              }
+              break;
+            case H264SEIMessage::kSEIMasteringDisplayInfo:
+              if (!config_.hdr_metadata) {
+                config_.hdr_metadata = gfx::HDRMetadata();
+              }
+              sei_msg.mastering_display_info.PopulateColorVolumeMetadata(
+                  config_.hdr_metadata->color_volume_metadata);
+              break;
+            case H264SEIMessage::kSEIContentLightLevelInfo:
+              if (!config_.hdr_metadata) {
+                config_.hdr_metadata = gfx::HDRMetadata();
+              }
+              sei_msg.content_light_level_info.PopulateHDRMetadata(
+                  config_.hdr_metadata.value());
+              break;
+            default:
+              break;
           }
         }
         break;
@@ -1151,6 +1170,7 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
 
   if (frame->is_idr || frame->has_recovery_point)
     waiting_for_idr_ = false;
+  frame->hdr_metadata = config_.hdr_metadata;
 
   // If no IDR has been seen yet, skip decoding. Note that Flash sends
   // configuration changes as a bitstream with only SPS/PPS; we don't print
