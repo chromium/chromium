@@ -232,39 +232,36 @@ CookieSettings::GetCookieSettingWithMetadata(
     }
   }
 
-  if (cookie_setting != CONTENT_SETTING_BLOCK && !found_explicit_setting) {
-    // Check for should block third party.
-    if (block_third_party_cookies_ && is_third_party_request &&
-        !base::Contains(third_party_cookies_allowed_schemes_,
-                        first_party_url.scheme())) {
+  if (cookie_setting != CONTENT_SETTING_BLOCK && !found_explicit_setting &&
+      block_third_party_cookies_ && is_third_party_request &&
+      !base::Contains(third_party_cookies_allowed_schemes_,
+                      first_party_url.scheme())) {
+    // Cookie access will be blocked by the third-party-cookie-blocking
+    // setting, unless there's an applicable override.
+    //
+    // We optimistically search for an applicable override before changing the
+    // setting to `CONTENT_SETTING_BLOCK` so as not to accidentally change the
+    // setting from `CONTENT_SETTING_SESSION_ONLY` to `CONTENT_SETTING_ALLOW` or
+    // vice versa.
+    if (ShouldConsiderStorageAccessGrants(query_reason) &&
+        IsAllowedByStorageAccessGrant(url, first_party_url)) {
+      storage_access_result = net::cookie_util::StorageAccessResult::
+          ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
+    } else if (ShouldConsiderTopLevelStorageAccessGrants(query_reason) &&
+               IsAllowedByTopLevelStorageAccessGrant(url, first_party_url)) {
+      // TODO(crbug.com/1385156): Separate metrics between StorageAccessAPI
+      // and the page-level variant.
+      storage_access_result = net::cookie_util::StorageAccessResult::
+          ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
+    } else if (overrides.Has(
+                   net::CookieSettingOverride::kForceThirdPartyByUser)) {
+      storage_access_result =
+          net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_FORCED;
+    } else {
       cookie_setting = CONTENT_SETTING_BLOCK;
       storage_access_result =
           net::cookie_util::StorageAccessResult::ACCESS_BLOCKED;
       third_party_blocking_scope = GetThirdPartyBlockingScope(first_party_url);
-
-      // See if a Storage Access permission grant can unblock.
-      if (ShouldConsiderStorageAccessGrants(query_reason) &&
-          IsAllowedByStorageAccessGrant(url, first_party_url)) {
-        cookie_setting = CONTENT_SETTING_ALLOW;
-        storage_access_result = net::cookie_util::StorageAccessResult::
-            ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
-        third_party_blocking_scope = absl::nullopt;
-      } else if (ShouldConsiderTopLevelStorageAccessGrants(query_reason) &&
-                 IsAllowedByTopLevelStorageAccessGrant(url, first_party_url)) {
-        // TODO(crbug.com/1385156): Separate metrics between StorageAccessAPI
-        // and the page-level variant.
-        cookie_setting = CONTENT_SETTING_ALLOW;
-        storage_access_result = net::cookie_util::StorageAccessResult::
-            ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
-        third_party_blocking_scope = absl::nullopt;
-      } else if (overrides.Has(
-                     net::CookieSettingOverride::kForceThirdPartyByUser)) {
-        // See if a user bypass can unblock.
-        cookie_setting = CONTENT_SETTING_ALLOW;
-        third_party_blocking_scope = absl::nullopt;
-        storage_access_result =
-            net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_FORCED;
-      }
     }
   }
 

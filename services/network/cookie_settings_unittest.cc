@@ -106,10 +106,13 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
   }
 
   // Assumes that cookie access would be blocked if not for a Storage Access API
-  // grant or force allow.
-  ContentSetting SettingWithEitherOverride() const {
+  // grant or force allow. The `allow` parameter indicates the setting to be
+  // returned if cookie access is expected to be allowed.
+  ContentSetting SettingWithEitherOverride(ContentSetting allow) const {
+    DCHECK(allow == CONTENT_SETTING_ALLOW ||
+           allow == CONTENT_SETTING_SESSION_ONLY);
     return IsStorageAccessAPIEnabled() || IsForceAllowThirdPartyCookies()
-               ? CONTENT_SETTING_ALLOW
+               ? allow
                : CONTENT_SETTING_BLOCK;
   }
 
@@ -219,6 +222,21 @@ TEST_P(CookieSettingsTest, GetCookieSettingBlockThirdParty) {
             SettingWithForceAllowThirdPartyCookies());
 }
 
+TEST_P(CookieSettingsTest,
+       GetCookieSettingOverridePreservesSessionOnlySetting) {
+  CookieSettings settings;
+  settings.set_content_settings(
+      {CreateSetting("*", "*", CONTENT_SETTING_SESSION_ONLY)});
+
+  settings.set_storage_access_grants(
+      {CreateSetting(kURL, kOtherURL, CONTENT_SETTING_ALLOW)});
+  settings.set_block_third_party_cookies(true);
+  EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kOtherURL),
+                                      GetCookieSettingOverrides(), nullptr,
+                                      QueryReason::kCookies),
+            SettingWithEitherOverride(CONTENT_SETTING_SESSION_ONLY));
+}
+
 TEST_P(CookieSettingsTest, GetCookieSettingDontBlockThirdPartyWithException) {
   CookieSettings settings;
   settings.set_content_settings(
@@ -254,7 +272,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAUnblocks) {
   EXPECT_EQ(
       settings.GetCookieSetting(url, top_level_url, GetCookieSettingOverrides(),
                                 nullptr, QueryReason::kCookies),
-      SettingWithEitherOverride());
+      SettingWithEitherOverride(CONTENT_SETTING_ALLOW));
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
   histogram_tester.ExpectBucketCount(
       kAllowedRequestsHistogram,
@@ -295,7 +313,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAUnblocks) {
     EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
                                         GetCookieSettingOverrides(), nullptr,
                                         QueryReason::kCookies),
-              SettingWithEitherOverride());
+              SettingWithEitherOverride(CONTENT_SETTING_ALLOW));
     histogram_tester_2.ExpectTotalCount(kAllowedRequestsHistogram, 1);
     histogram_tester_2.ExpectBucketCount(
         kAllowedRequestsHistogram,
@@ -338,7 +356,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAResourceWildcards) {
   EXPECT_EQ(
       settings.GetCookieSetting(url, top_level_url, GetCookieSettingOverrides(),
                                 nullptr, QueryReason::kCookies),
-      SettingWithEitherOverride());
+      SettingWithEitherOverride(CONTENT_SETTING_ALLOW));
 
   EXPECT_EQ(settings.GetCookieSetting(GURL(kSubDomainURL), top_level_url,
                                       GetCookieSettingOverrides(), nullptr,
@@ -363,7 +381,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAATopLevelWildcards) {
   EXPECT_EQ(
       settings.GetCookieSetting(url, top_level_url, GetCookieSettingOverrides(),
                                 nullptr, QueryReason::kCookies),
-      SettingWithEitherOverride());
+      SettingWithEitherOverride(CONTENT_SETTING_ALLOW));
 
   EXPECT_EQ(settings.GetCookieSetting(url, GURL(kSubDomainURL),
                                       GetCookieSettingOverrides(), nullptr,
@@ -411,7 +429,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAExpiredGrant) {
   EXPECT_EQ(
       settings.GetCookieSetting(url, top_level_url, GetCookieSettingOverrides(),
                                 nullptr, QueryReason::kCookies),
-      SettingWithEitherOverride());
+      SettingWithEitherOverride(CONTENT_SETTING_ALLOW));
 
   // If we fastforward past the expiration of our grant the result should be
   // CONTENT_SETTING_BLOCK now.
