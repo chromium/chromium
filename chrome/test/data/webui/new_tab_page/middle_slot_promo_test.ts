@@ -12,10 +12,10 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {fakeMetricsPrivate, MetricsTracker} from './../metrics_test_support.js';
 import {installMock} from './test_support.js';
 
 suite('NewTabPageMiddleSlotPromoTest', () => {

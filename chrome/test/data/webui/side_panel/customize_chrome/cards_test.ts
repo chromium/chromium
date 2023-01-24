@@ -15,11 +15,10 @@ import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggl
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
-
-import {fakeMetricsPrivate, MetricsTracker} from '../../metrics_test_support.js';
 
 import {assertNotStyle, assertStyle, installMock} from './test_support.js';
 

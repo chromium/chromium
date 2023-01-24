@@ -2,34 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("../build_webui_tests.gni")
 
-ts_library("build_ts") {
-  root_dir = "."
-  out_dir = "$target_gen_dir/tsc"
-  composite = true
-  tsconfig_base = "tsconfig_base.json"
-  path_mappings = [ "chrome://webui-test/*|" +
-                    rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                                target_gen_dir) ]
-  in_files = [
-    "metrics_reporter_test.ts",
-    "mocked_metrics_reporter.ts",
-  ]
-  definitions = [ "//tools/typescript/definitions/chrome_timeticks.d.ts" ]
-  deps = [
-    "..:build_ts",
-    "//ui/webui/resources/js/metrics_reporter:build_ts",
-  ]
-}
-
-generate_grd("build_grdp") {
-  grd_prefix = "webui_metrics_reporter"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+build_webui_tests("build") {
   resource_path_prefix = "metrics_reporter"
+
+  files = [ "metrics_reporter_test.ts" ]
+
+  ts_deps = [ "//ui/webui/resources/js/metrics_reporter:build_ts" ]
+  ts_definitions = [ "//tools/typescript/definitions/chrome_timeticks.d.ts" ]
 }

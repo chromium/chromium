@@ -9,9 +9,9 @@ import {$$, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-import {fakeMetricsPrivate, MetricsTracker} from '../../metrics_test_support.js';
 import {assertNotStyle, assertStyle, capture, createElement, initNullModule, installMock, render} from '../test_support.js';
 
 suite('NewTabPageModulesModulesTest', () => {

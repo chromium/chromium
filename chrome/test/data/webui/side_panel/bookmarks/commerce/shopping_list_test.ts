@@ -13,10 +13,10 @@ import {ShoppingListApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome
 import {BookmarkProductInfo} from 'chrome://bookmarks-side-panel.top-chrome/shopping_list.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {fakeMetricsPrivate, MetricsTracker} from '../../../metrics_test_support.js';
 import {TestBookmarksApiProxy} from '../test_bookmarks_api_proxy.js';
 
 import {TestShoppingListApiProxy} from './test_shopping_list_api_proxy.js';

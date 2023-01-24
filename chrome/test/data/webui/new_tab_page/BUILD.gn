@@ -2,68 +2,42 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("../build_webui_tests.gni")
 import("./modules/modules.gni")
 import("./realbox/realbox.gni")
 
-# Test files that do not require preprocessing.
-non_preprocessed_files = [
-                           "app_test.ts",
-                           "background_manager_test.ts",
-                           "customize_backgrounds_test.ts",
-                           "customize_dialog_focus_test.ts",
-                           "customize_dialog_test.ts",
-                           "customize_modules_test.ts",
-                           "customize_shortcuts_test.ts",
-                           "doodle_share_dialog_focus_test.ts",
-                           "doodle_share_dialog_test.ts",
-                           "lens_form_test.ts",
-                           "lens_upload_dialog_test.ts",
-                           "logo_test.ts",
-                           "metrics_utils_test.ts",
-                           "middle_slot_promo_test.ts",
-                           "test_support.ts",
-                           "utils_test.ts",
-                           "voice_search_overlay_test.ts",
-                         ] + modules_test_files + realbox_test_files
+build_webui_tests("build") {
+  resource_path_prefix = "new_tab_page"
 
-ts_library("build_ts") {
-  root_dir = "."
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
-  path_mappings = [
-    "chrome://new-tab-page/*|" +
+  files = [
+            "app_test.ts",
+            "background_manager_test.ts",
+            "customize_backgrounds_test.ts",
+            "customize_dialog_focus_test.ts",
+            "customize_dialog_test.ts",
+            "customize_modules_test.ts",
+            "customize_shortcuts_test.ts",
+            "doodle_share_dialog_focus_test.ts",
+            "doodle_share_dialog_test.ts",
+            "lens_form_test.ts",
+            "lens_upload_dialog_test.ts",
+            "logo_test.ts",
+            "metrics_utils_test.ts",
+            "middle_slot_promo_test.ts",
+            "test_support.ts",
+            "utils_test.ts",
+            "voice_search_overlay_test.ts",
+          ] + modules_test_files + realbox_test_files
+
+  ts_path_mappings =
+      [ "chrome://new-tab-page/*|" +
         rebase_path("$root_gen_dir/chrome/browser/resources/new_tab_page/tsc/*",
-                    target_gen_dir),
-    "chrome://webui-test/*|" +
-        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                    target_gen_dir),
-    "chrome://webui-test/metrics_reporter/*|" +
-        rebase_path(
-            "$root_gen_dir/chrome/test/data/webui/metrics_reporter/tsc/*",
-            target_gen_dir),
-  ]
-  in_files = non_preprocessed_files
+                    target_gen_dir) ]
 
-  definitions = [
+  ts_definitions = [
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
   ]
 
-  deps = [
-    "..:build_ts",
-    "../metrics_reporter:build_ts",
-    "//chrome/browser/resources/new_tab_page:build_ts",
-  ]
-}
-
-generate_grd("build_grdp") {
-  grd_prefix = "webui_new_tab_page"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  resource_path_prefix = "new_tab_page"
+  ts_deps = [ "//chrome/browser/resources/new_tab_page:build_ts" ]
 }
