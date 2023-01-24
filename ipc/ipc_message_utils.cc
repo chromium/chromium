@@ -1307,11 +1307,16 @@ bool ParamTraits<base::UnguessableToken>::Read(const base::Pickle* m,
       !ParamTraits<uint64_t>::Read(m, iter, &low))
     return false;
 
-  // Receiving a zeroed UnguessableToken is a security issue.
-  if (high == 0 && low == 0)
+  // This is not mapped as nullable_is_same_type, so any UnguessableToken
+  // deserialized by the traits should always yield a non-empty token.
+  // If deserialization results in an empty token, the data is malformed.
+  absl::optional<base::UnguessableToken> token =
+      base::UnguessableToken::Deserialize2(high, low);
+  if (!token.has_value()) {
     return false;
+  }
 
-  *r = base::UnguessableToken::Deserialize(high, low);
+  *r = token.value();
   return true;
 }
 

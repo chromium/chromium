@@ -351,9 +351,10 @@ DataPipeProducerDispatcher::Deserialize(const void* data,
     return nullptr;
   }
 
-  auto buffer_guid = base::UnguessableToken::Deserialize(
-      state->buffer_guid_high, state->buffer_guid_low);
-  if (buffer_guid.is_empty()) {
+  absl::optional<base::UnguessableToken> buffer_guid =
+      base::UnguessableToken::Deserialize2(state->buffer_guid_high,
+                                           state->buffer_guid_low);
+  if (!buffer_guid.has_value()) {
     AssertNotExtractingHandlesFromMessage();
     return nullptr;
   }
@@ -363,7 +364,7 @@ DataPipeProducerDispatcher::Deserialize(const void* data,
   auto region = base::subtle::PlatformSharedMemoryRegion::Take(
       std::move(region_handle),
       base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
-      state->options.capacity_num_bytes, std::move(buffer_guid));
+      state->options.capacity_num_bytes, buffer_guid.value());
   auto ring_buffer =
       base::UnsafeSharedMemoryRegion::Deserialize(std::move(region));
   if (!ring_buffer.IsValid()) {

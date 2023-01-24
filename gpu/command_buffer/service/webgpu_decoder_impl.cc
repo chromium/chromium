@@ -2070,22 +2070,22 @@ error::Error WebGPUDecoderImpl::HandleSetWebGPUExecutionContextToken(
   blink::WebGPUExecutionContextToken::Tag type{c.type};
   uint64_t high = uint64_t(c.high_high) << 32 | uint64_t(c.high_low);
   uint64_t low = uint64_t(c.low_high) << 32 | uint64_t(c.low_low);
-  base::UnguessableToken unguessable_token =
-      base::UnguessableToken::Deserialize(high, low);
-  if (unguessable_token.is_empty()) {
+  absl::optional<base::UnguessableToken> unguessable_token =
+      base::UnguessableToken::Deserialize2(high, low);
+  if (!unguessable_token.has_value()) {
     return error::kInvalidArguments;
   }
   blink::WebGPUExecutionContextToken execution_context_token;
   switch (type) {
     case blink::WebGPUExecutionContextToken::IndexOf<blink::DocumentToken>(): {
       execution_context_token = blink::WebGPUExecutionContextToken(
-          blink::DocumentToken(unguessable_token));
+          blink::DocumentToken(unguessable_token.value()));
       break;
     }
     case blink::WebGPUExecutionContextToken::IndexOf<
         blink::DedicatedWorkerToken>(): {
       execution_context_token = blink::WebGPUExecutionContextToken(
-          blink::DedicatedWorkerToken(unguessable_token));
+          blink::DedicatedWorkerToken(unguessable_token.value()));
       break;
     }
     default:

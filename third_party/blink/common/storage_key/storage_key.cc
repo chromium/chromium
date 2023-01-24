@@ -61,7 +61,7 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
 
   url::Origin key_origin;
   net::SchemefulSite key_top_level_site;
-  std::unique_ptr<base::UnguessableToken> nonce;
+  absl::optional<base::UnguessableToken> nonce;
   blink::mojom::AncestorChainBit ancestor_chain_bit;
 
   if (pos_first_caret == std::string::npos) {
@@ -166,6 +166,10 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
       // separator.
       key_origin = url::Origin::Create(GURL(in.substr(0, pos_first_caret)));
 
+      if (key_origin.opaque()) {
+        return absl::nullopt;
+      }
+
       // The first high 64 bits of the nonce are next, between the two
       // separators.
       int length_of_high = pos_second_caret - (pos_first_caret + 2);
@@ -185,15 +189,16 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
       if (!base::StringToUint64(low_digits, &nonce_low))
         return absl::nullopt;
 
-      nonce = std::make_unique<base::UnguessableToken>(
-          base::UnguessableToken::Deserialize(nonce_high, nonce_low));
+      nonce = base::UnguessableToken::Deserialize2(nonce_high, nonce_low);
 
-      if (key_origin.opaque() || !nonce || nonce->is_empty())
+      if (!nonce.has_value()) {
         return absl::nullopt;
+      }
 
       // This constructor makes a copy of the nonce, so getting the raw pointer
       // is safe.
-      return StorageKey(key_origin, net::SchemefulSite(key_origin), nonce.get(),
+      return StorageKey(key_origin, net::SchemefulSite(key_origin),
+                        &nonce.value(),
                         blink::mojom::AncestorChainBit::kSameSite);
     }
     default: {

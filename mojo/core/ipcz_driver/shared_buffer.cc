@@ -132,9 +132,9 @@ scoped_refptr<SharedBuffer> SharedBuffer::CreateForMojoWrapper(
       return nullptr;
   }
 
-  auto guid =
-      base::UnguessableToken::Deserialize(mojo_guid.high, mojo_guid.low);
-  if (guid.is_empty()) {
+  absl::optional<base::UnguessableToken> guid =
+      base::UnguessableToken::Deserialize2(mojo_guid.high, mojo_guid.low);
+  if (!guid.has_value()) {
     return nullptr;
   }
 
@@ -147,7 +147,7 @@ scoped_refptr<SharedBuffer> SharedBuffer::CreateForMojoWrapper(
   auto handle = CreateRegionHandleFromPlatformHandles(
       {&handles[0], mojo_platform_handles.size()}, mode);
   auto region = base::subtle::PlatformSharedMemoryRegion::Take(
-      std::move(handle), mode, size, guid);
+      std::move(handle), mode, size, guid.value());
   if (!region.IsValid()) {
     return nullptr;
   }
@@ -250,15 +250,15 @@ scoped_refptr<SharedBuffer> SharedBuffer::Deserialize(
       return nullptr;
   }
 
-  auto guid =
-      base::UnguessableToken::Deserialize(header.guid_high, header.guid_low);
-  if (guid.is_empty()) {
+  absl::optional<base::UnguessableToken> guid =
+      base::UnguessableToken::Deserialize2(header.guid_high, header.guid_low);
+  if (!guid.has_value()) {
     return nullptr;
   }
 
   auto handle = CreateRegionHandleFromPlatformHandles(handles, mode);
   auto region = base::subtle::PlatformSharedMemoryRegion::Take(
-      std::move(handle), mode, header.size, guid);
+      std::move(handle), mode, header.size, guid.value());
   if (!region.IsValid()) {
     return nullptr;
   }

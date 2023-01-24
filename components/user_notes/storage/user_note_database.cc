@@ -104,9 +104,9 @@ UserNoteMetadataSnapshot UserNoteDatabase::GetNoteMetadataForUrls(
           !base::HexStringToUInt64(string_piece.substr(16, 16), &low)) {
         continue;
       }
-      base::UnguessableToken token =
-          base::UnguessableToken::Deserialize(high, low);
-      if (token.is_empty()) {
+      absl::optional<base::UnguessableToken> token =
+          base::UnguessableToken::Deserialize2(high, low);
+      if (!token.has_value()) {
         continue;
       }
 
@@ -115,7 +115,7 @@ UserNoteMetadataSnapshot UserNoteDatabase::GetNoteMetadataForUrls(
 
       auto metadata = std::make_unique<UserNoteMetadata>(
           creation_date, modification_date, /*min_note_version=*/1);
-      metadata_snapshot.AddEntry(url, token, std::move(metadata));
+      metadata_snapshot.AddEntry(url, token.value(), std::move(metadata));
     }
   }
 

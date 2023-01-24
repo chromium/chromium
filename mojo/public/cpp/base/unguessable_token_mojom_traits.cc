@@ -14,11 +14,15 @@ bool StructTraits<mojo_base::mojom::UnguessableTokenDataView,
   uint64_t high = data.high();
   uint64_t low = data.low();
 
-  // Receiving a zeroed UnguessableToken is a security issue.
-  if (high == 0 && low == 0)
+  // This is not mapped as nullable_is_same_type, so any UnguessableToken
+  // deserialized by the traits should always yield a non-empty token.
+  // If deserialization results in an empty token, the data is malformed.
+  absl::optional<base::UnguessableToken> token =
+      base::UnguessableToken::Deserialize2(high, low);
+  if (!token.has_value()) {
     return false;
-
-  *out = base::UnguessableToken::Deserialize(high, low);
+  }
+  *out = token.value();
   return true;
 }
 

@@ -65,7 +65,9 @@ base::UnguessableToken GetUnguessableToken(base::StringPiece str) {
   absl::optional<base::Token> token = base::Token::FromString(str);
   DCHECK(token.has_value());
 
-  return base::UnguessableToken::Deserialize(token->high(), token->low());
+  absl::optional<base::UnguessableToken> unguessable_token =
+      base::UnguessableToken::Deserialize2(token->high(), token->low());
+  return unguessable_token.value();
 }
 
 // Class used to wait for InstanceRegistry events.

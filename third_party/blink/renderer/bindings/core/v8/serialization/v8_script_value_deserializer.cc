@@ -265,11 +265,12 @@ bool V8ScriptValueDeserializer::ReadUnguessableToken(
   uint64_t low;
   if (!ReadUint64(&high) || !ReadUint64(&low))
     return false;
-  auto token = base::UnguessableToken::Deserialize(high, low);
-  if (token.is_empty()) {
+  absl::optional<base::UnguessableToken> token =
+      base::UnguessableToken::Deserialize2(high, low);
+  if (!token.has_value()) {
     return false;
   }
-  *token_out = std::move(token);
+  *token_out = token.value();
   return true;
 }
 

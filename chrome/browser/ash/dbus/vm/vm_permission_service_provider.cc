@@ -48,7 +48,12 @@ base::UnguessableToken TokenFromString(const std::string& str) {
     count++;
   });
 
-  return base::UnguessableToken::Deserialize(high, low);
+  absl::optional<base::UnguessableToken> token =
+      base::UnguessableToken::Deserialize2(high, low);
+  if (!token.has_value()) {
+    return base::UnguessableToken();
+  }
+  return token.value();
 }
 
 }  // namespace

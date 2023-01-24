@@ -152,8 +152,9 @@ MojoResult DataPipeConsumerDispatcher::ReadData(
 
   uint32_t bytes_to_read = std::min(max_num_bytes_to_read, bytes_available_);
   if (bytes_to_read == 0) {
-    if (had_new_data)
+    if (had_new_data) {
       watchers_.NotifyState(GetHandleSignalsStateNoLock());
+    }
     return peer_closed_ ? MOJO_RESULT_FAILED_PRECONDITION
                         : MOJO_RESULT_SHOULD_WAIT;
   }
@@ -389,9 +390,10 @@ DataPipeConsumerDispatcher::Deserialize(const void* data,
     return nullptr;
   }
 
-  auto buffer_guid = base::UnguessableToken::Deserialize(
-      state->buffer_guid_high, state->buffer_guid_low);
-  if (buffer_guid.is_empty()) {
+  absl::optional<base::UnguessableToken> buffer_guid =
+      base::UnguessableToken::Deserialize2(state->buffer_guid_high,
+                                           state->buffer_guid_low);
+  if (!buffer_guid.has_value()) {
     AssertNotExtractingHandlesFromMessage();
     return nullptr;
   }
@@ -401,7 +403,7 @@ DataPipeConsumerDispatcher::Deserialize(const void* data,
   auto region = base::subtle::PlatformSharedMemoryRegion::Take(
       std::move(region_handle),
       base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
-      state->options.capacity_num_bytes, std::move(buffer_guid));
+      state->options.capacity_num_bytes, buffer_guid.value());
   auto ring_buffer =
       base::UnsafeSharedMemoryRegion::Deserialize(std::move(region));
   if (!ring_buffer.IsValid()) {

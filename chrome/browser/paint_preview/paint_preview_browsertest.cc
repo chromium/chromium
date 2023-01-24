@@ -161,8 +161,10 @@ class PaintPreviewBrowserTest
                                      const gfx::Size& size = gfx::Size(1, 1)) {
     base::ScopedAllowBlockingForTesting scoped_blocking;
 
-    auto it = recording_map->find(base::UnguessableToken::Deserialize(
-        frame_proto.embedding_token_high(), frame_proto.embedding_token_low()));
+    auto it = recording_map->find(
+        base::UnguessableToken::Deserialize2(frame_proto.embedding_token_high(),
+                                             frame_proto.embedding_token_low())
+            .value());
     ASSERT_NE(it, recording_map->end());
 
     absl::optional<SkpResult> result = std::move(it->second).Deserialize();

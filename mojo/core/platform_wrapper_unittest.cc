@@ -191,8 +191,9 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformSharedBuffer,
   EXPECT_EQ(MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_UNSAFE, access_mode);
 
   auto mode = base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe;
-  base::UnguessableToken guid =
-      base::UnguessableToken::Deserialize(mojo_guid.high, mojo_guid.low);
+  absl::optional<base::UnguessableToken> guid =
+      base::UnguessableToken::Deserialize2(mojo_guid.high, mojo_guid.low);
+  ASSERT_TRUE(guid.has_value());
 #if BUILDFLAG(IS_WIN)
   ASSERT_EQ(MOJO_PLATFORM_HANDLE_TYPE_WINDOWS_HANDLE, os_buffer.type);
   auto platform_handle =
@@ -210,7 +211,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformSharedBuffer,
 #endif
   base::subtle::PlatformSharedMemoryRegion platform_region =
       base::subtle::PlatformSharedMemoryRegion::Take(std::move(platform_handle),
-                                                     mode, size, guid);
+                                                     mode, size, guid.value());
   base::UnsafeSharedMemoryRegion region =
       base::UnsafeSharedMemoryRegion::Deserialize(std::move(platform_region));
   ASSERT_TRUE(region.IsValid());

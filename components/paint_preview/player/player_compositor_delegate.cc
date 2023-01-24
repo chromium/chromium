@@ -41,13 +41,17 @@ namespace {
 
 std::pair<base::UnguessableToken, std::unique_ptr<HitTester>> BuildHitTester(
     const PaintPreviewFrameProto& proto) {
-  auto embedding_token = base::UnguessableToken::Deserialize(
-      proto.embedding_token_high(), proto.embedding_token_low());
-  if (embedding_token.is_empty()) {
+  absl::optional<base::UnguessableToken> embedding_token =
+      base::UnguessableToken::Deserialize2(proto.embedding_token_high(),
+                                           proto.embedding_token_low());
+  // TODO(https://crbug.com/1406995): Investigate whether a deserialization
+  // failure can actually occur here and if it can, add a comment discussing how
+  // this can happen.
+  if (!embedding_token.has_value()) {
     embedding_token = base::UnguessableToken::Create();
   }
   std::pair<base::UnguessableToken, std::unique_ptr<HitTester>> out(
-      std::move(embedding_token), std::make_unique<HitTester>());
+      embedding_token.value(), std::make_unique<HitTester>());
   out.second->Build(proto);
   return out;
 }

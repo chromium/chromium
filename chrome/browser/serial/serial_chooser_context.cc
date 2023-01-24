@@ -67,7 +67,12 @@ base::UnguessableToken DecodeToken(base::StringPiece input) {
   }
 
   const uint64_t* data = reinterpret_cast<const uint64_t*>(buffer.data());
-  return base::UnguessableToken::Deserialize(data[0], data[1]);
+  absl::optional<base::UnguessableToken> token =
+      base::UnguessableToken::Deserialize2(data[0], data[1]);
+  if (!token.has_value()) {
+    return base::UnguessableToken();
+  }
+  return token.value();
 }
 
 base::Value PortInfoToValue(const device::mojom::SerialPortInfo& port) {

@@ -45,12 +45,13 @@ jlong Origin::CreateNative(JNIEnv* env,
   const std::string& scheme = ConvertJavaStringToUTF8(env, java_scheme);
   const std::string& host = ConvertJavaStringToUTF8(env, java_host);
 
-  bool has_nonce = token_high_bits != 0 && token_low_bits != 0;
+  absl::optional<base::UnguessableToken> nonce_token =
+      base::UnguessableToken::Deserialize2(token_high_bits, token_low_bits);
+  bool has_nonce = nonce_token.has_value();
   CHECK(has_nonce == is_opaque);
   Origin::Nonce nonce;
   if (has_nonce) {
-    nonce = Origin::Nonce(
-        base::UnguessableToken::Deserialize(token_high_bits, token_low_bits));
+    nonce = Origin::Nonce(nonce_token.value());
   }
   Origin origin = is_opaque
                       ? Origin::CreateOpaqueFromNormalizedPrecursorTuple(

@@ -61,14 +61,18 @@ RecordingMap RecordingMapFromPaintPreviewProto(const PaintPreviewProto& proto) {
   if (!root_frame_recording.IsValid())
     return {};
 
-  auto root_frame_embedding_token = base::UnguessableToken::Deserialize(
-      proto.root_frame().embedding_token_high(),
-      proto.root_frame().embedding_token_low());
-  if (root_frame_embedding_token.is_empty()) {
+  absl::optional<base::UnguessableToken> root_frame_embedding_token =
+      base::UnguessableToken::Deserialize2(
+          proto.root_frame().embedding_token_high(),
+          proto.root_frame().embedding_token_low());
+  // TODO(https://crbug.com/1406995): Investigate whether a deserialization
+  // failure can actually occur here and if it can, add a comment discussing
+  // how this can happen.
+  if (!root_frame_embedding_token.has_value()) {
     return {};
   }
 
-  entries.emplace_back(std::move(root_frame_embedding_token),
+  entries.emplace_back(root_frame_embedding_token.value(),
                        std::move(root_frame_recording));
 
   for (const auto& subframe : proto.subframes()) {
@@ -78,13 +82,17 @@ RecordingMap RecordingMapFromPaintPreviewProto(const PaintPreviewProto& proto) {
     if (!frame_recording.IsValid())
       continue;
 
-    auto subframe_embedding_token = base::UnguessableToken::Deserialize(
-        subframe.embedding_token_high(), subframe.embedding_token_low());
-    if (subframe_embedding_token.is_empty()) {
+    absl::optional<base::UnguessableToken> subframe_embedding_token =
+        base::UnguessableToken::Deserialize2(subframe.embedding_token_high(),
+                                             subframe.embedding_token_low());
+    // TODO(https://crbug.com/1406995): Investigate whether a deserialization
+    // failure can actually occur here and if it can, add a comment discussing
+    // how this can happen.
+    if (!subframe_embedding_token.has_value()) {
       continue;
     }
 
-    entries.emplace_back(std::move(subframe_embedding_token),
+    entries.emplace_back(subframe_embedding_token.value(),
                          std::move(frame_recording));
   }
 

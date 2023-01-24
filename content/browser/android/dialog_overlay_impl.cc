@@ -33,13 +33,14 @@ static jlong JNI_DialogOverlayImpl_Init(JNIEnv* env,
                                         jboolean power_efficient) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  base::UnguessableToken token = base::UnguessableToken::Deserialize(high, low);
-  if (token.is_empty()) {
+  absl::optional<base::UnguessableToken> token =
+      base::UnguessableToken::Deserialize2(high, low);
+  if (!token.has_value()) {
     return 0;
   }
 
   RenderFrameHostImpl* rfhi =
-      content::RenderFrameHostImpl::FromOverlayRoutingToken(std::move(token));
+      content::RenderFrameHostImpl::FromOverlayRoutingToken(token.value());
 
   if (!rfhi)
     return 0;

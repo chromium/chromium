@@ -582,7 +582,7 @@ struct FuzzTraits<base::UnguessableToken> {
       FuzzParam(&low, fuzzer);
       FuzzParam(&high, fuzzer);
     }
-    *p = base::UnguessableToken::Deserialize(high, low);
+    *p = base::UnguessableToken::Deserialize2(high, low).value();
     return true;
   }
 };
@@ -1554,7 +1554,13 @@ struct FuzzTraits<url::Origin> {
       if (auto* nonce = p->GetNonceForSerialization()) {
         token = *nonce;
       } else {
-        token = base::UnguessableToken::Deserialize(RandU64(), RandU64());
+        auto high = RandU64();
+        auto low = RandU64();
+        while (high == 0 && low == 0) {
+          high = RandU64();
+          low = RandU64();
+        }
+        token = base::UnguessableToken::Deserialize2(high, low).value();
       }
       if (!FuzzParam(&(*token), fuzzer))
         return false;
