@@ -1,0 +1,35 @@
+caption: Default Window Management permission setting
+default: null
+desc: |-
+  Setting the policy to <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME">BlockWindowManagement</ph> (value 2) automatically denies the window management permission to sites by default. This will limit the ability of sites to see information about the device's screens and use that information to open and place windows or request fullscreen on specific screens.
+
+  Setting the policy to <ph name="ASK_WINDOW_MANAGEMENT_POLICY_NAME">AskWindowManagement</ph> (value 3) will prompt the user when the window management permission is requested by default. If users allow the permission, it will extend the ability of sites to see information about the device's screens and use that information to open and place windows or request fullscreen on specific screens.
+
+  Leaving the policy unset means the <ph name="ASK_WINDOW_MANAGEMENT_POLICY_NAME">AskWindowManagement</ph> policy applies, but users can change this setting.
+
+  This replaces the deprecated <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME">DefaultWindowPlacementSetting</ph> policy.
+example_value: 2
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Denies the Window Management permission on all sites by default
+  name: BlockWindowManagement
+  value: 2
+- caption: Ask every time a site wants obtain the Window Management permission
+  name: AskWindowManagement
+  value: 3
+owners:
+- msw@chromium.org
+schema:
+  enum:
+  - 2
+  - 3
+  type: integer
+supported_on:
+- chrome.*:111-
+- chrome_os:111-
+tags: []
+type: int-enum

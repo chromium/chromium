@@ -29,5 +29,6 @@ schema:
 supported_on:
 - chrome.*:100-
 - chrome_os:100-
+deprecated: true
 tags: []
 type: int-enum

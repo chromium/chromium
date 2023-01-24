@@ -54,7 +54,13 @@ constexpr char kCheckPermissionTemplate[] = R"(
   })();
 )";
 
-typedef std::tuple<bool, bool> PolicyTestParams;
+struct PolicySet {
+  const char* default_setting;
+  const char* allowed_for_urls_setting;
+  const char* blocked_for_urls_setting;
+};
+
+typedef std::tuple<bool, bool, PolicySet> PolicyTestParams;
 
 class PolicyTestWindowManagement
     : public PolicyTest,
@@ -69,6 +75,7 @@ class PolicyTestWindowManagement
  protected:
   bool AliasEnabled() const { return std::get<0>(GetParam()); }
   bool UseAlias() const { return std::get<1>(GetParam()); }
+  const PolicySet& PolicySet() const { return std::get<2>(GetParam()); }
   bool ShouldError() const { return UseAlias() && !AliasEnabled(); }
   std::string GetScreensScript() const {
     return base::ReplaceStringPlaceholders(
@@ -105,7 +112,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestWindowManagement, DefaultSetting) {
             EvalJs(tab, GetCheckPermissionScript()));
 
   PolicyMap policies;
-  SetPolicy(&policies, key::kDefaultWindowPlacementSetting, base::Value(2));
+  SetPolicy(&policies, PolicySet().default_setting, base::Value(2));
   UpdateProviderPolicy(policies);
 
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
@@ -119,7 +126,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestWindowManagement, DefaultSetting) {
             EvalJs(tab, GetCheckPermissionScript()));
   EXPECT_EQ("error", EvalJs(tab, GetScreensScript()));
 
-  SetPolicy(&policies, key::kDefaultWindowPlacementSetting, base::Value(3));
+  SetPolicy(&policies, PolicySet().default_setting, base::Value(3));
   UpdateProviderPolicy(policies);
 
   EXPECT_EQ(CONTENT_SETTING_ASK,
@@ -143,7 +150,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestWindowManagement, AllowedForUrlsSettings) {
   PolicyMap policies;
   base::Value::List list;
   list.Append(url.spec());
-  SetPolicy(&policies, key::kWindowPlacementAllowedForUrls,
+  SetPolicy(&policies, PolicySet().allowed_for_urls_setting,
             base::Value(std::move(list)));
   UpdateProviderPolicy(policies);
 
@@ -170,7 +177,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestWindowManagement, BlockedForUrlsSettings) {
   PolicyMap policies;
   base::Value::List list;
   list.Append(url.spec());
-  SetPolicy(&policies, key::kWindowPlacementBlockedForUrls,
+  SetPolicy(&policies, PolicySet().blocked_for_urls_setting,
             base::Value(std::move(list)));
   UpdateProviderPolicy(policies);
 
@@ -188,11 +195,18 @@ IN_PROC_BROWSER_TEST_P(PolicyTestWindowManagement, BlockedForUrlsSettings) {
   EXPECT_EQ("error", EvalJs(tab, GetScreensScript()));
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         PolicyTestWindowManagement,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool()));
-
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PolicyTestWindowManagement,
+    ::testing::Combine(
+        ::testing::Bool(),
+        ::testing::Bool(),
+        ::testing::Values(PolicySet{key::kDefaultWindowPlacementSetting,
+                                    key::kWindowPlacementAllowedForUrls,
+                                    key::kWindowPlacementBlockedForUrls},
+                          PolicySet{key::kDefaultWindowManagementSetting,
+                                    key::kWindowManagementAllowedForUrls,
+                                    key::kWindowManagementBlockedForUrls})));
 }  // namespace
 
 }  // namespace policy

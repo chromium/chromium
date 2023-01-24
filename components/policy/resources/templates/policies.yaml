@@ -1065,6 +1065,9 @@ policies:
   1064: DeviceScreensaverIdleTimeoutSeconds
   1065: DeviceScreensaverImageDisplayIntervalSeconds
   1066: DeviceScreensaverImages
+  1067: DefaultWindowManagementSetting
+  1068: WindowManagementAllowedForUrls
+  1069: WindowManagementBlockedForUrls
 atomic_groups:
   1: Homepage
   2: RemoteAccess
@@ -1107,7 +1110,7 @@ atomic_groups:
   39: SensorsSettings
   40: PrivateNetworkRequestSettings
   41: ScreenCaptureSettings
-  42: WindowPlacementSettings
+  42: WindowManagementSettings
   43: LocalFontsSettings
   44: BrowserIdle
   45: PrivacySandbox

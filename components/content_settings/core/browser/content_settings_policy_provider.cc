@@ -99,9 +99,9 @@ constexpr PrefsForManagedContentSettingsMapEntry
          CONTENT_SETTING_ASK},
         {prefs::kManagedWebHidBlockedForUrls, ContentSettingsType::HID_GUARD,
          CONTENT_SETTING_BLOCK},
-        {prefs::kManagedWindowPlacementAllowedForUrls,
+        {prefs::kManagedWindowManagementAllowedForUrls,
          ContentSettingsType::WINDOW_MANAGEMENT, CONTENT_SETTING_ALLOW},
-        {prefs::kManagedWindowPlacementBlockedForUrls,
+        {prefs::kManagedWindowManagementBlockedForUrls,
          ContentSettingsType::WINDOW_MANAGEMENT, CONTENT_SETTING_BLOCK},
         {prefs::kManagedLocalFontsAllowedForUrls,
          ContentSettingsType::LOCAL_FONTS, CONTENT_SETTING_ALLOW},
@@ -144,8 +144,8 @@ constexpr const char* kManagedPrefs[] = {
     prefs::kManagedWebUsbAllowDevicesForUrls,
     prefs::kManagedWebUsbAskForUrls,
     prefs::kManagedWebUsbBlockedForUrls,
-    prefs::kManagedWindowPlacementAllowedForUrls,
-    prefs::kManagedWindowPlacementBlockedForUrls,
+    prefs::kManagedWindowManagementAllowedForUrls,
+    prefs::kManagedWindowManagementBlockedForUrls,
     prefs::kManagedLocalFontsAllowedForUrls,
     prefs::kManagedLocalFontsBlockedForUrls,
 };
@@ -176,7 +176,7 @@ constexpr const char* kManagedDefaultPrefs[] = {
     prefs::kManagedDefaultWebUsbGuardSetting,
     prefs::kManagedDefaultJavaScriptJitSetting,
     prefs::kManagedDefaultWebHidGuardSetting,
-    prefs::kManagedDefaultWindowPlacementSetting,
+    prefs::kManagedDefaultWindowManagementSetting,
     prefs::kManagedDefaultLocalFontsSetting,
 };
 
@@ -230,7 +230,7 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
         {ContentSettingsType::HID_GUARD,
          prefs::kManagedDefaultWebHidGuardSetting},
         {ContentSettingsType::WINDOW_MANAGEMENT,
-         prefs::kManagedDefaultWindowPlacementSetting},
+         prefs::kManagedDefaultWindowManagementSetting},
         {ContentSettingsType::LOCAL_FONTS,
          prefs::kManagedDefaultLocalFontsSetting},
 };

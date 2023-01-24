@@ -61,8 +61,8 @@ const char kManagedDefaultJavaScriptJitSetting[] =
     "profile.managed_default_content_settings.javascript_jit";
 const char kManagedDefaultWebHidGuardSetting[] =
     "profile.managed_default_content_settings.web_hid_guard";
-const char kManagedDefaultWindowPlacementSetting[] =
-    "profile.managed_default_content_settings.window_placement";
+const char kManagedDefaultWindowManagementSetting[] =
+    "profile.managed_default_content_settings.window_management";
 const char kManagedDefaultLocalFontsSetting[] =
     "profile.managed_default_content_settings.local_fonts";
 
@@ -133,10 +133,10 @@ const char kManagedJavaScriptJitBlockedForSites[] =
 const char kManagedWebHidAskForUrls[] = "profile.managed_web_hid_ask_for_urls";
 const char kManagedWebHidBlockedForUrls[] =
     "profile.managed_web_hid_blocked_for_urls";
-const char kManagedWindowPlacementAllowedForUrls[] =
-    "profile.managed_window_placement_allowed_for_urls";
-const char kManagedWindowPlacementBlockedForUrls[] =
-    "profile.managed_window_placement_blocked_for_urls";
+const char kManagedWindowManagementAllowedForUrls[] =
+    "profile.managed_window_management_allowed_for_urls";
+const char kManagedWindowManagementBlockedForUrls[] =
+    "profile.managed_window_management_blocked_for_urls";
 const char kManagedLocalFontsAllowedForUrls[] =
     "profile.managed_local_fonts_allowed_for_urls";
 const char kManagedLocalFontsBlockedForUrls[] =

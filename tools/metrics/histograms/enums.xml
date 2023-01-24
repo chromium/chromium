@@ -32491,6 +32491,9 @@ Called by update_document_policy_enum.py.-->
   <int value="1064" label="DeviceScreensaverIdleTimeoutSeconds"/>
   <int value="1065" label="DeviceScreensaverImageDisplayIntervalSeconds"/>
   <int value="1066" label="DeviceScreensaverImages"/>
+  <int value="1067" label="DefaultWindowManagementSetting"/>
+  <int value="1068" label="WindowManagementAllowedForUrls"/>
+  <int value="1069" label="WindowManagementBlockedForUrls"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
@@ -81143,7 +81146,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="39" label="SensorsSettings"/>
   <int value="40" label="PrivateNetworkRequestSettings"/>
   <int value="41" label="ScreenCaptureSettings"/>
-  <int value="42" label="WindowPlacementSettings"/>
+  <int value="42" label="WindowManagementSettings"/>
   <int value="43" label="LocalFontsSettings"/>
   <int value="44" label="BrowserIdle"/>
   <int value="45" label="PrivacySandbox"/>

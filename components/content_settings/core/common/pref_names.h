@@ -37,7 +37,7 @@ extern const char kManagedDefaultSerialGuardSetting[];
 extern const char kManagedDefaultInsecurePrivateNetworkSetting[];
 extern const char kManagedDefaultJavaScriptJitSetting[];
 extern const char kManagedDefaultWebHidGuardSetting[];
-extern const char kManagedDefaultWindowPlacementSetting[];
+extern const char kManagedDefaultWindowManagementSetting[];
 extern const char kManagedDefaultLocalFontsSetting[];
 
 extern const char kManagedClipboardAllowedForUrls[];
@@ -74,8 +74,8 @@ extern const char kManagedJavaScriptJitAllowedForSites[];
 extern const char kManagedJavaScriptJitBlockedForSites[];
 extern const char kManagedWebHidAskForUrls[];
 extern const char kManagedWebHidBlockedForUrls[];
-extern const char kManagedWindowPlacementAllowedForUrls[];
-extern const char kManagedWindowPlacementBlockedForUrls[];
+extern const char kManagedWindowManagementAllowedForUrls[];
+extern const char kManagedWindowManagementBlockedForUrls[];
 extern const char kManagedLocalFontsAllowedForUrls[];
 extern const char kManagedLocalFontsBlockedForUrls[];
 

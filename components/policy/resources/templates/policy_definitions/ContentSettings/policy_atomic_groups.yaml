@@ -67,9 +67,12 @@ WebUsbSettings:
   - WebUsbAllowDevicesForUrls
   - WebUsbAskForUrls
   - WebUsbBlockedForUrls
-WindowPlacementSettings:
-  caption: Window Placement settings
+WindowManagementSettings:
+  caption: Window Management settings
   policies:
+  - DefaultWindowManagementSetting
+  - WindowManagementAllowedForUrls
+  - WindowManagementBlockedForUrls
   - DefaultWindowPlacementSetting
   - WindowPlacementAllowedForUrls
   - WindowPlacementBlockedForUrls
