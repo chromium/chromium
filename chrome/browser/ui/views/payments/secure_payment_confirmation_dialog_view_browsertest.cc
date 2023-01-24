@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_views_util.h"
 #include "chrome/browser/ui/views/payments/test_secure_payment_confirmation_payment_request_delegate.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/autofill/core/browser/test_event_waiter.h"
 #include "components/payments/core/sizes.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -51,12 +50,6 @@ class SecurePaymentConfirmationDialogViewTest
     : public DialogBrowserTest,
       public SecurePaymentConfirmationDialogView::ObserverForTest {
  public:
-  enum DialogEvent : int {
-    DIALOG_OPENED,
-    DIALOG_CLOSED,
-    OPT_OUT_CLICKED,
-  };
-
   // UiBrowserTest:
   void ShowUi(const std::string& name) override {
     content::WebContents* web_contents = GetActiveWebContents();
@@ -126,9 +119,7 @@ class SecurePaymentConfirmationDialogViewTest
             web_contents->GetPrimaryMainFrame(), model_.GetWeakPtr(),
             GetWeakPtr());
 
-    ResetEventWaiter(DialogEvent::DIALOG_OPENED);
     test_delegate_->ShowDialog(nullptr);
-    event_waiter_->Wait();
 
     // The web-modal dialog should be open.
     web_modal::WebContentsModalDialogManager*
@@ -256,41 +247,20 @@ class SecurePaymentConfirmationDialogViewTest
     button->OnMouseReleased(event);
   }
 
-  void ResetEventWaiter(DialogEvent event) {
-    event_waiter_ = std::make_unique<autofill::EventWaiter<DialogEvent>>(
-        std::list<DialogEvent>{event});
-  }
-
   // SecurePaymentConfirmationDialogView::ObserverForTest:
-  void OnDialogOpened() override {
-    if (event_waiter_)
-      event_waiter_->OnEvent(DialogEvent::DIALOG_OPENED);
-  }
-
-  void OnDialogClosed() override {
-    if (event_waiter_)
-      event_waiter_->OnEvent(DialogEvent::DIALOG_CLOSED);
-  }
-
+  void OnDialogClosed() override { dialog_closed_ = true; }
   void OnConfirmButtonPressed() override { confirm_pressed_ = true; }
-
   void OnCancelButtonPressed() override { cancel_pressed_ = true; }
-
-  void OnOptOutClicked() override {
-    opt_out_clicked_ = true;
-    if (event_waiter_)
-      event_waiter_->OnEvent(DialogEvent::OPT_OUT_CLICKED);
-  }
+  void OnOptOutClicked() override { opt_out_clicked_ = true; }
 
  protected:
-  std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
-
   SecurePaymentConfirmationModel model_;
   std::unique_ptr<TestSecurePaymentConfirmationPaymentRequestDelegate>
       test_delegate_;
 
   std::unique_ptr<SkBitmap> instrument_icon_;
 
+  bool dialog_closed_ = false;
   bool confirm_pressed_ = false;
   bool cancel_pressed_ = false;
   bool opt_out_clicked_ = false;
@@ -316,9 +286,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   CreateModel();
   InvokeSecurePaymentConfirmationUI();
 
-  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
   ClickButton(test_delegate_->dialog_view()->GetOkButton());
-  event_waiter_->Wait();
 
   EXPECT_TRUE(confirm_pressed_);
   EXPECT_FALSE(cancel_pressed_);
@@ -384,9 +352,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   CreateModel();
   InvokeSecurePaymentConfirmationUI();
 
-  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
   ClickButton(test_delegate_->dialog_view()->GetCancelButton());
-  event_waiter_->Wait();
 
   EXPECT_TRUE(cancel_pressed_);
   EXPECT_FALSE(confirm_pressed_);
@@ -480,13 +446,14 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
                        WebContentsClosed) {
   CreateModel();
-
   InvokeSecurePaymentConfirmationUI();
 
-  // Test passes if there is no crash.
-  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
   GetActiveWebContents()->Close();
-  event_waiter_->Wait();
+
+  EXPECT_TRUE(dialog_closed_);
+  EXPECT_FALSE(confirm_pressed_);
+  EXPECT_FALSE(cancel_pressed_);
+  EXPECT_FALSE(opt_out_clicked_);
 }
 
 // TestBrowserUi-provided UI test.
@@ -623,13 +590,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
 
   // Now click the opt-out link, and verify that the dialog is closed via the
   // correct path.
-  ResetEventWaiter(DialogEvent::OPT_OUT_CLICKED);
-
   views::StyledLabel* opt_out_label = static_cast<views::StyledLabel*>(
       test_delegate_->dialog_view()->GetFootnoteViewForTesting());
   opt_out_label->ClickFirstLinkForTesting();
-
-  event_waiter_->Wait();
 
   EXPECT_FALSE(cancel_pressed_);
   EXPECT_FALSE(confirm_pressed_);

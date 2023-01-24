@@ -115,10 +115,6 @@ void SecurePaymentConfirmationDialogView::ShowDialog(
 
   constrained_window::ShowWebModalDialogViews(this, web_contents);
 
-  // observer_for_test_ is used in views browsertests.
-  if (observer_for_test_)
-    observer_for_test_->OnDialogOpened();
-
   // ui_observer_for_test_ is used in platform browsertests.
   if (ui_observer_for_test_)
     ui_observer_for_test_->OnUIDisplayed();
