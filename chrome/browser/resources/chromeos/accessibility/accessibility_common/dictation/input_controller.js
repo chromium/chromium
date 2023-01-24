@@ -459,7 +459,7 @@ export class InputController {
       return;
     }
 
-    node.setSelection(selection.start, selection.end);
+    this.setSelection_(selection.start, selection.end);
   }
 
   /**
