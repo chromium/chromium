@@ -602,61 +602,6 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
-<histogram name="Navigation.CrossOtr.ContextMenu.RefreshCount" units="count"
-    expires_after="2023-03-05">
-  <owner>mreichhoff@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <owner>bcl@chromium.org</owner>
-  <owner>dc-komics@google.com</owner>
-  <summary>
-    The count of refreshes on the first document after a cross-OTR navigation
-    completes. This metric is written when default classifications were applied.
-  </summary>
-</histogram>
-
-<histogram name="Navigation.CrossOtr.ContextMenu.RefreshCountExperimental"
-    units="count" expires_after="2023-03-05">
-  <owner>mreichhoff@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <owner>bcl@chromium.org</owner>
-  <owner>dc-komics@google.com</owner>
-  <summary>
-    The count of refreshes on the first document after a cross-OTR navigation
-    completes. This metric is currently experimental and will likely be
-    replaced.
-  </summary>
-</histogram>
-
-<histogram name="Navigation.CrossOtr.ContextMenu.ResponseCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-03-05">
-  <owner>mreichhoff@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <owner>bcl@chromium.org</owner>
-  <owner>dc-komics@google.com</owner>
-  <summary>
-    Http response codes seen when opening links from non-OTR to OTR browsing.
-    Logged when using the &quot;Open Link in Incognito Window&quot; menu item.
-    Note that, in the case of redirects, multiple entries will be written for a
-    single navigation. This metric is written when default classifications were
-    applied.
-  </summary>
-</histogram>
-
-<histogram name="Navigation.CrossOtr.ContextMenu.ResponseCodeExperimental"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-03-05">
-  <owner>mreichhoff@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <owner>bcl@chromium.org</owner>
-  <owner>dc-komics@google.com</owner>
-  <summary>
-    Http response codes seen when opening links from non-OTR to OTR browsing.
-    Logged when using the &quot;Open Link in Incognito Window&quot; menu item.
-    Note that, in the case of redirects, multiple entries will be written for a
-    single navigation. This metric is currently experimental and will likely be
-    replaced.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.DownloadPolicy.LogArbitraryPolicyPerDownload"
     enum="NavigationDownloadPolicy" expires_after="2020-11-01">
   <owner>csharrison@chromium.org</owner>
@@ -1462,77 +1407,6 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   <summary>
     Records whether a speculative RenderFrame is live when UndoCommitNavigation
     is called.
-  </summary>
-</histogram>
-
-<histogram
-    name="Navigation.UrlParamFilter.ApplicableClassificationCount{UrlParamFilterClassificationRole}"
-    units="count" expires_after="2023-01-02">
-  <obsolete>
-    Obsolete and no longer written as of m109.
-  </obsolete>
-  <owner>mreichhoff@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <owner>bcl@chromium.org</owner>
-  <owner>dc-komics@google.com</owner>
-  <summary>
-    The number of FilterClassification objects received from component updater
-    that are determined to be applicable given experiment settings. This metric
-    is recorded when the component updater parsing is completed.
-  </summary>
-  <token key="UrlParamFilterClassificationRole"
-      variants="UrlParamFilterClassificationRole"/>
-</histogram>
-
-<histogram name="Navigation.UrlParamFilter.ClassificationListValidationResult"
-    enum="ClassificationListValidationResult" expires_after="2023-01-02">
-  <obsolete>
-    Obsolete and no longer written as of m109.
-  </obsolete>
-  <owner>kaklilu@chromium.org</owner>
-  <owner>src/chrome/browser/url_param_filter/OWNERS</owner>
-  <summary>
-    The result of reading the proto file of classifications provided to the
-    URLParamClassificationComponentInstaller.
-
-    This histogram is measured on a classification-list basis, and will provide
-    metrics regarding the number of valid and invalid classification lists.
-
-    This metric is recorded every time the Component Updater attempts to install
-    a new version of the UrlParamClassificaton Component.
-  </summary>
-</histogram>
-
-<histogram name="Navigation.UrlParamFilter.FilteredParamCount" units="count"
-    expires_after="2023-01-02">
-  <obsolete>
-    Obsolete and no longer written as of m109.
-  </obsolete>
-  <owner>mreichhoff@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <owner>bcl@chromium.org</owner>
-  <owner>dc-komics@google.com</owner>
-  <summary>
-    The number of parameters filtered out of a given request when switching from
-    normal browsing to incognito. Determined by backend classification of
-    parameters.
-  </summary>
-</histogram>
-
-<histogram name="Navigation.UrlParamFilter.FilteredParamCountExperimental"
-    units="count" expires_after="2023-01-02">
-  <obsolete>
-    Obsolete and no longer written as of m109.
-  </obsolete>
-  <owner>mreichhoff@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <owner>bcl@chromium.org</owner>
-  <owner>dc-komics@google.com</owner>
-  <summary>
-    The number of parameters filtered out of a given request when switching from
-    normal browsing to incognito. Determined by backend classification of
-    parameters. This metric tracks parameters filtered based on experimental
-    classification heuristics.
   </summary>
 </histogram>
 
