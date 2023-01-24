@@ -14,7 +14,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/core_winrt_util.h"
-#include "base/win/windows_version.h"
 #include "skia/ext/skia_utils_win.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_utils.h"
@@ -173,7 +172,6 @@ std::string GetCssColorWithAlpha(CC::ClosedCaptionColor caption_color,
 
 absl::optional<CaptionStyle> InitializeFromSystemSettings() {
   TRACE_EVENT0("ui", "InitializeFromSystemSettings");
-  DCHECK_GE(base::win::GetVersion(), base::win::Version::WIN10);
   DCHECK(base::FeatureList::IsEnabled(features::kSystemCaptionStyle));
 
   // Need to do this check before using ScopedHString.
