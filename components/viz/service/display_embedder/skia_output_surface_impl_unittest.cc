@@ -133,8 +133,8 @@ void SkiaOutputSurfaceImplTest::CopyRequestCallbackOnGpuThread(
       output_rect.width(), output_rect.height(), color_space.ToSkColorSpace()));
   expected.eraseColor(kOutputColor, /*colorSpace=*/nullptr);
 
-  EXPECT_TRUE(cc::MatchesBitmap(result_bitmap, expected,
-                                cc::ExactPixelComparator(false)));
+  EXPECT_TRUE(
+      cc::MatchesBitmap(result_bitmap, expected, cc::ExactPixelComparator()));
 
   UnblockMainThread();
 }

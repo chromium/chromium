@@ -278,10 +278,10 @@ class OopPixelTest : public testing::Test,
   }
 
   // Verifies |actual| matches the expected PNG image.
-  void ExpectEquals(const SkBitmap& actual,
-                    const base::FilePath::StringType& ref_filename,
-                    const PixelComparator& comparator =
-                        ExactPixelComparator(/*discard_alpha=*/false)) {
+  void ExpectEquals(
+      const SkBitmap& actual,
+      const base::FilePath::StringType& ref_filename,
+      const PixelComparator& comparator = ExactPixelComparator()) {
     base::FilePath test_data_dir;
     ASSERT_TRUE(
         base::PathService::Get(viz::Paths::DIR_TEST_DATA, &test_data_dir));
@@ -296,10 +296,10 @@ class OopPixelTest : public testing::Test,
     }
   }
 
-  void ExpectEquals(SkBitmap actual,
-                    SkBitmap expected,
-                    const PixelComparator& comparator =
-                        ExactPixelComparator(/*discard_alpha=*/false)) {
+  void ExpectEquals(
+      SkBitmap actual,
+      SkBitmap expected,
+      const PixelComparator& comparator = ExactPixelComparator()) {
     EXPECT_TRUE(MatchesBitmap(actual, expected, comparator));
   }
 
@@ -611,9 +611,9 @@ TEST_F(OopPixelTest, DrawImageWithTargetColorSpace) {
 
 #if BUILDFLAG(IS_ANDROID)
   // Android has slight differences in color.
-  FuzzyPixelOffByOneComparator comparator(/*discard_alpha=*/false);
+  FuzzyPixelOffByOneComparator comparator;
 #else
-  ExactPixelComparator comparator(/*discard_alpha=*/false);
+  ExactPixelComparator comparator;
 #endif
 
   ExpectEquals(actual, FILE_PATH_LITERAL("oop_image_target_color_space.png"),
@@ -738,15 +738,12 @@ TEST_F(OopPixelTest, DrawImageWithSourceColorSpace) {
 
 #if BUILDFLAG(IS_ANDROID)
   // Android has slight differences in color.
-  FuzzyPixelComparator comparator(
-      /*discard_alpha=*/false,
-      /*error_pixels_percentage_limit=*/100.0f,
-      /*small_error_pixels_percentage_limit=*/0.0f,
-      /*avg_abs_error_limit=*/1.2f,
-      /*max_abs_error_limit=*/2,
-      /*small_error_threshold=*/0);
+  auto comparator = FuzzyPixelComparator()
+                        .SetErrorPixelsPercentageLimit(100.0f)
+                        .SetAvgAbsErrorLimit(1.2f)
+                        .SetAbsErrorLimit(2);
 #else
-  ExactPixelComparator comparator(/*discard_alpha=*/false);
+  ExactPixelComparator comparator;
 #endif
 
   ExpectEquals(actual,
@@ -783,9 +780,9 @@ TEST_F(OopPixelTest, DrawImageWithSourceAndTargetColorSpace) {
 
 #if BUILDFLAG(IS_ANDROID)
   // Android has slight differences in color.
-  FuzzyPixelOffByOneComparator comparator(/*discard_alpha=*/false);
+  FuzzyPixelOffByOneComparator comparator;
 #else
-  ExactPixelComparator comparator(/*discard_alpha=*/false);
+  ExactPixelComparator comparator;
 #endif
 
   ExpectEquals(actual, FILE_PATH_LITERAL("oop_draw_image_both_color_space.png"),
@@ -1521,7 +1518,7 @@ TEST_F(OopPixelTest, DrawRectQueryMiddleOfDisplayList) {
 
   auto actual = Raster(display_item_list, options);
   ExpectEquals(actual, FILE_PATH_LITERAL("oop_draw_rect_query.png"),
-               FuzzyPixelOffByOneComparator(/*discard_alpha=*/false));
+               FuzzyPixelOffByOneComparator());
 }
 
 TEST_F(OopPixelTest, DrawRectColorSpace) {
@@ -1704,13 +1701,11 @@ class OopTextBlobPixelTest
       }
     }
 
-    FuzzyPixelComparator comparator(
-        /*discard_alpha=*/false,
-        /*error_pixels_percentage_limit=*/error_pixels_percentage,
-        /*small_error_pixels_percentage_limit=*/0.0f,
-        /*avg_abs_error_limit=*/avg_error,
-        /*max_abs_error_limit=*/max_abs_error,
-        /*small_error_threshold=*/0);
+    auto comparator =
+        FuzzyPixelComparator()
+            .SetErrorPixelsPercentageLimit(error_pixels_percentage)
+            .SetAvgAbsErrorLimit(avg_error)
+            .SetAbsErrorLimit(max_abs_error);
     ExpectEquals(actual, expected, comparator);
   }
 
@@ -2132,13 +2127,9 @@ TEST_F(OopPixelTest, DrawTextBlobPersistentShaderCache) {
 
   // Allow 1% of pixels to be off by 1 due to differences between software and
   // GPU canvas.
-  FuzzyPixelComparator comparator(
-      /*discard_alpha=*/false,
-      /*error_pixels_percentage_limit=*/1.0f,
-      /*small_error_pixels_percentage_limit=*/0.0f,
-      /*avg_abs_error_limit=*/1.0f,
-      /*max_abs_error_limit=*/1,
-      /*small_error_threshold=*/0);
+  auto comparator = FuzzyPixelComparator()
+                        .SetErrorPixelsPercentageLimit(1.0f)
+                        .SetAbsErrorLimit(1);
 
   ExpectEquals(actual, expected, comparator);
 
@@ -2325,13 +2316,9 @@ TEST_P(OopYUVToRGBPixelTest, ConvertYUVToRGB) {
       options.resource_size, SkColor4f::FromColor(expected_color));
 
   // Allow slight rounding error on all pixels.
-  FuzzyPixelComparator comparator(
-      /*discard_alpha=*/false,
-      /*error_pixels_percentage_limit=*/100.0f,
-      /*small_error_pixels_percentage_limit=*/0.0f,
-      /*avg_abs_error_limit=*/2.f,
-      /*max_abs_error_limit=*/2.f,
-      /*small_error_threshold=*/0);
+  auto comparator = FuzzyPixelComparator()
+                        .SetErrorPixelsPercentageLimit(100.0f)
+                        .SetAbsErrorLimit(2);
   ExpectEquals(actual_bitmap, expected_bitmap, comparator);
 
   gpu::SyncToken sync_token;
@@ -2445,14 +2432,9 @@ class OopPathPixelTest : public OopPixelTest,
     display_item_list->Finalize();
 
     // Allow 8 pixels in 100x100 image to be different due to non-AA pixel
-    // rounding (hence 255 for error limit).
-    FuzzyPixelComparator comparator(
-        /*discard_alpha=*/false,
-        /*error_pixels_percentage_limit=*/0.08f,
-        /*small_error_pixels_percentage_limit=*/0.0f,
-        /*avg_abs_error_limit=*/255,
-        /*max_abs_error_limit=*/255,
-        /*small_error_threshold=*/0);
+    // rounding.
+    auto comparator =
+        FuzzyPixelComparator().SetErrorPixelsPercentageLimit(0.08f);
     auto actual = Raster(display_item_list, options);
     ExpectEquals(actual, FILE_PATH_LITERAL("oop_path.png"), comparator);
   }

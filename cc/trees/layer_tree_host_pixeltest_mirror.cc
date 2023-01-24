@@ -50,20 +50,18 @@ TEST_P(LayerTreeHostMirrorPixelTest, MirrorLayer) {
   background->AddChild(mirror_layer);
 
   if (use_software_renderer()) {
-    const bool discard_alpha = true;
-    const float error_pixels_percentage_limit = 3.f;
-    const float small_error_pixels_percentage_limit = 0.f;
-    const float avg_abs_error_limit = 65.f;
-    const int max_abs_error_limit = 120;
-    const int small_error_threshold = 0;
     pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
-        discard_alpha, error_pixels_percentage_limit,
-        small_error_pixels_percentage_limit, avg_abs_error_limit,
-        max_abs_error_limit, small_error_threshold);
+        FuzzyPixelComparator()
+            .DiscardAlpha()
+            .SetErrorPixelsPercentageLimit(3.f)
+            .SetAvgAbsErrorLimit(65.f)
+            .SetAbsErrorLimit(120));
   }
 
-  if (use_skia_vulkan())
-    pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(true);
+  if (use_skia_vulkan()) {
+    pixel_comparator_ =
+        std::make_unique<AlphaDiscardingFuzzyPixelOffByOneComparator>();
+  }
 
   RunPixelTest(background,
                base::FilePath(FILE_PATH_LITERAL("mirror_layer.png")));

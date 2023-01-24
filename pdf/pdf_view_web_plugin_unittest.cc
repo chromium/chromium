@@ -498,9 +498,8 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
     // color.
     SkBitmap expected_bitmap = GenerateExpectedBitmapForPaint(
         expected_clipped_rect, plugin_->GetBackgroundColor());
-    EXPECT_TRUE(
-        cc::MatchesBitmap(canvas_.GetBitmap(), expected_bitmap,
-                          cc::ExactPixelComparator(/*discard_alpha=*/false)))
+    EXPECT_TRUE(cc::MatchesBitmap(canvas_.GetBitmap(), expected_bitmap,
+                                  cc::ExactPixelComparator()))
         << "Failure at device scale of " << device_scale << ", window rect of "
         << window_rect.ToString();
   }
@@ -520,9 +519,8 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
     // Expect the clipped area on canvas to be filled with `kPaintColor`.
     SkBitmap expected_bitmap =
         GenerateExpectedBitmapForPaint(expected_clipped_rect, kPaintColor);
-    EXPECT_TRUE(
-        cc::MatchesBitmap(canvas_.GetBitmap(), expected_bitmap,
-                          cc::ExactPixelComparator(/*discard_alpha=*/false)))
+    EXPECT_TRUE(cc::MatchesBitmap(canvas_.GetBitmap(), expected_bitmap,
+                                  cc::ExactPixelComparator()))
         << "Failure at device scale of " << device_scale << ", window rect of "
         << window_rect.ToString();
   }

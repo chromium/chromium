@@ -448,9 +448,10 @@ class VideoCaptureOverlayRenderTest
     // (16/255 for YUV tests). The YUV tests allow for more error due to the
     // expected errors introduced by both color space (dynamic range) and format
     // (chroma subsampling) conversion.
-    cc::FuzzyPixelComparator comparator(false, 100.0f, 0.0f,
-                                        is_argb_test() ? 1.0f : 16.0f,
-                                        is_argb_test() ? 1 : 64, 0);
+    auto comparator = cc::FuzzyPixelComparator()
+                          .SetErrorPixelsPercentageLimit(100.0f)
+                          .SetAvgAbsErrorLimit(is_argb_test() ? 1.0f : 16.0f)
+                          .SetAbsErrorLimit(is_argb_test() ? 1 : 64);
     const bool matches_golden_file =
         cc::MatchesPNGFile(canonical_bitmap, golden_file_path, comparator);
     // If MatchesPNGFile() returned false, it will have LOG(ERROR)'ed the

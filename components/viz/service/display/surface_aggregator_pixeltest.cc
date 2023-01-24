@@ -114,8 +114,7 @@ TEST_P(SurfaceAggregatorPixelTest, DrawSimpleFrame) {
   auto aggregated_frame = aggregator.Aggregate(
       root_surface_id, this->GetNextDisplayTime(), gfx::OVERLAY_TRANSFORM_NONE);
 
-  bool discard_alpha = false;
-  cc::ExactPixelComparator pixel_comparator(discard_alpha);
+  cc::ExactPixelComparator pixel_comparator;
   auto* pass_list = &aggregated_frame.render_pass_list;
   EXPECT_TRUE(this->RunPixelTest(pass_list,
                                  base::FilePath(FILE_PATH_LITERAL("green.png")),
@@ -193,8 +192,7 @@ TEST_P(SurfaceAggregatorPixelTest, DrawSimpleAggregatedFrame) {
   auto aggregated_frame = aggregator.Aggregate(
       root_surface_id, this->GetNextDisplayTime(), gfx::OVERLAY_TRANSFORM_NONE);
 
-  bool discard_alpha = false;
-  cc::ExactPixelComparator pixel_comparator(discard_alpha);
+  cc::ExactPixelComparator pixel_comparator;
   auto* pass_list = &aggregated_frame.render_pass_list;
   EXPECT_TRUE(this->RunPixelTest(
       pass_list, base::FilePath(FILE_PATH_LITERAL("blue_yellow.png")),
@@ -327,8 +325,7 @@ TEST_P(SurfaceAggregatorPixelTest, DrawAggregatedFrameWithSurfaceTransforms) {
   auto aggregated_frame = aggregator.Aggregate(
       root_surface_id, this->GetNextDisplayTime(), gfx::OVERLAY_TRANSFORM_NONE);
 
-  bool discard_alpha = false;
-  cc::ExactPixelComparator pixel_comparator(discard_alpha);
+  cc::ExactPixelComparator pixel_comparator;
   auto* pass_list = &aggregated_frame.render_pass_list;
   EXPECT_TRUE(this->RunPixelTest(
       pass_list,
@@ -380,8 +377,7 @@ TEST_P(SurfaceAggregatorPixelTest, DrawAndEraseDelegatedInkTrail) {
   auto aggregated_frame = aggregator.Aggregate(
       root_surface_id, this->GetNextDisplayTime(), gfx::OVERLAY_TRANSFORM_NONE);
 
-  bool discard_alpha = false;
-  cc::FuzzyPixelOffByOneComparator pixel_comparator(discard_alpha);
+  cc::FuzzyPixelOffByOneComparator pixel_comparator;
   auto* pass_list = &aggregated_frame.render_pass_list;
   EXPECT_TRUE(this->RunPixelTest(
       pass_list, base::FilePath(FILE_PATH_LITERAL("delegated_ink_trail.png")),

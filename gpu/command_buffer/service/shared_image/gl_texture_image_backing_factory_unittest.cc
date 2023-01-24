@@ -638,8 +638,8 @@ TEST_P(GLTextureImageBackingFactoryWithReadbackTest, ReadbackToMemory) {
     SkPixmap result_pixmap;
     ASSERT_TRUE(result_bitmap.peekPixels(&result_pixmap));
     ASSERT_TRUE(backing->ReadbackToMemory(result_pixmap));
-    EXPECT_TRUE(cc::MatchesBitmap(result_bitmap, bitmap,
-                                  cc::ExactPixelComparator(false)));
+    EXPECT_TRUE(
+        cc::MatchesBitmap(result_bitmap, bitmap, cc::ExactPixelComparator()));
   }
 
   {
@@ -650,8 +650,8 @@ TEST_P(GLTextureImageBackingFactoryWithReadbackTest, ReadbackToMemory) {
     SkPixmap result_pixmap;
     ASSERT_TRUE(result_bitmap.peekPixels(&result_pixmap));
     ASSERT_TRUE(backing->ReadbackToMemory(result_pixmap));
-    EXPECT_TRUE(cc::MatchesBitmap(result_bitmap, bitmap,
-                                  cc::ExactPixelComparator(false)));
+    EXPECT_TRUE(
+        cc::MatchesBitmap(result_bitmap, bitmap, cc::ExactPixelComparator()));
   }
 }
 

@@ -22,18 +22,19 @@ class PixelComparator {
 // Exact pixel comparator. Counts the number of pixel with an error.
 class ExactPixelComparator : public PixelComparator {
  public:
-  explicit ExactPixelComparator(const bool discard_alpha);
-  ~ExactPixelComparator() override = default;
-
   // Returns true if the two bitmaps are identical. Otherwise, returns false
-  // and report the number of pixels with an error on LOG(ERROR). Differences
-  // in the alpha channel are ignored.
+  // and report the number of pixels with an error on LOG(ERROR).
   bool Compare(const SkBitmap& actual_bmp,
                const SkBitmap& expected_bmp) const override;
 
- private:
+ protected:
   // Exclude alpha channel from comparison?
-  bool discard_alpha_;
+  bool discard_alpha_ = false;
+};
+
+class AlphaDiscardingExactPixelComparator : public ExactPixelComparator {
+ public:
+  AlphaDiscardingExactPixelComparator() { discard_alpha_ = true; }
 };
 
 // Different platforms have slightly different pixel output, due to different
@@ -58,49 +59,83 @@ class ManhattanDistancePixelComparator : public PixelComparator {
 };
 
 // Fuzzy pixel comparator. Counts small and arbitrary errors separately and
-// computes average and maximum absolute errors per color channel.
+// computes average and maximum absolute errors per color channel. It can be
+// configured to discard alpha channel. If alpha channel is not discarded
+// (by default), alpha changing among fully transparent, translucent and fully
+// opaque (e.g. 0 to 1, 254 to 255) are always reported.
 class FuzzyPixelComparator : public PixelComparator {
  public:
-  FuzzyPixelComparator(bool discard_alpha,
-                       float error_pixels_percentage_limit,
-                       float small_error_pixels_percentage_limit,
-                       float avg_abs_error_limit,
-                       int max_abs_error_limit,
-                       int small_error_threshold,
-                       bool check_critical_error = true);
-  ~FuzzyPixelComparator() override = default;
+  FuzzyPixelComparator& DiscardAlpha() {
+    discard_alpha_ = true;
+    return *this;
+  }
+  // Sets the limits for percentages of pixels with errors:
+  // - large errors: >small_abs_error_limit_,
+  // - small errors: >0 and <= small_abs_error_limit_.
+  // If small_abs_error_limit_ is zero (by default),
+  // `large_error_pixels_percentage_limit` is for all errors.
+  FuzzyPixelComparator& SetErrorPixelsPercentageLimit(
+      float large_error_pixels_percentage_limit,
+      float small_error_pixels_percentage_limit = 0) {
+    large_error_pixels_percentage_limit_ = large_error_pixels_percentage_limit;
+    small_error_pixels_percentage_limit_ = small_error_pixels_percentage_limit;
+    return *this;
+  }
+  // Sets limit for average absolute error (excluding identical pixels).
+  // The default is 255.0, which means it's not checked.
+  FuzzyPixelComparator& SetAvgAbsErrorLimit(float avg_abs_error_limit) {
+    avg_abs_error_limit_ = avg_abs_error_limit;
+    return *this;
+  }
+  // Sets limits of the largest absolute error and the small absolute error.
+  // The default of `max_abs_error_limit` is 255, which means it's not checked
+  // by default. The default of `small_abs_eror_limit` is 0, which means all
+  // errors are treated as large errors by default.
+  FuzzyPixelComparator& SetAbsErrorLimit(int max_abs_error_limit,
+                                         int small_abs_error_limit = 0) {
+    max_abs_error_limit_ = max_abs_error_limit;
+    small_abs_error_limit_ = small_abs_error_limit;
+    return *this;
+  }
 
   // Computes error metrics and returns true if the errors don't exceed the
   // specified limits. Otherwise, returns false and reports the error metrics on
-  // LOG(ERROR). Differences in the alpha channel are ignored.
+  // LOG(ERROR).
   bool Compare(const SkBitmap& actual_bmp,
                const SkBitmap& expected_bmp) const override;
 
  private:
   // Exclude alpha channel from comparison?
-  bool discard_alpha_;
-  // Limit for percentage of pixels with an error.
-  float error_pixels_percentage_limit_;
-  // Limit for percentage of pixels with a small error.
-  float small_error_pixels_percentage_limit_;
-  // Limit for average absolute error (excluding identical pixels).
-  float avg_abs_error_limit_;
-  // Limit for largest absolute error.
-  int max_abs_error_limit_;
-  // Threshold for small errors.
-  int small_error_threshold_;
-  // If true, comparator will report critical errors. For example:
-  // alpha value goes from 0 to 1 or 256 to 255.
-  bool check_critical_error_;
+  bool discard_alpha_ = false;
+  float large_error_pixels_percentage_limit_ = 0;
+  // Limit for percentage of pixels with a small error
+  // (>0 and <= small_abs_error_limit_).
+  float small_error_pixels_percentage_limit_ = 0;
+  float avg_abs_error_limit_ = 255.0;
+  int max_abs_error_limit_ = 255;
+  int small_abs_error_limit_ = 0;
 };
 
 // All pixels can be off by one, but any more than that is an error.
 class FuzzyPixelOffByOneComparator : public FuzzyPixelComparator {
  public:
-  explicit FuzzyPixelOffByOneComparator(bool discard_alpha)
-      : FuzzyPixelComparator(discard_alpha, 100.f, 0.f, 1.f, 1, 0) {}
+  FuzzyPixelOffByOneComparator() {
+    SetErrorPixelsPercentageLimit(100.f);
+    SetAbsErrorLimit(1);
+  }
+
+ protected:
+  using FuzzyPixelComparator::DiscardAlpha;
+  using FuzzyPixelComparator::SetAbsErrorLimit;
+  using FuzzyPixelComparator::SetAvgAbsErrorLimit;
+  using FuzzyPixelComparator::SetErrorPixelsPercentageLimit;
 };
 
+class AlphaDiscardingFuzzyPixelOffByOneComparator
+    : public FuzzyPixelOffByOneComparator {
+ public:
+  AlphaDiscardingFuzzyPixelOffByOneComparator() { DiscardAlpha(); }
+};
 }  // namespace cc
 
 #endif  // CC_TEST_PIXEL_COMPARATOR_H_

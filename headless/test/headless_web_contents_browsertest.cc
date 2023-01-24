@@ -620,9 +620,8 @@ class HeadlessWebContentsBeginFrameControlViewportTest
         SkImageInfo::MakeN32(300, 300, kOpaque_SkAlphaType), /*rowBytes=*/0);
     expected_bitmap.eraseColor(SkColorSetRGB(0x00, 0x00, 0xff));
 
-    EXPECT_TRUE(
-        cc::MatchesBitmap(result_bitmap, expected_bitmap,
-                          cc::ExactPixelComparator(/*discard_alpha=*/false)));
+    EXPECT_TRUE(cc::MatchesBitmap(result_bitmap, expected_bitmap,
+                                  cc::ExactPixelComparator()));
 
     // Post completion to avoid deleting the WebContents on the same callstack
     // as frame finished callback.

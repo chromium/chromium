@@ -220,7 +220,7 @@ class SecurePaymentConfirmationDialogViewTest
                                        DialogViewID::INSTRUMENT_ICON)))
               ->GetImage()
               .bitmap()),
-        cc::ExactPixelComparator(/*discard_alpha=*/false)));
+        cc::ExactPixelComparator()));
 
     ExpectLabelText(
         model_.total_label(),

@@ -111,16 +111,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRect) {
 
 #if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
   // Windows and ARM64 have 436 pixels off by 1: crbug.com/259915
-  float percentage_pixels_large_error = 1.09f;  // 436px / (200*200)
-  float percentage_pixels_small_error = 0.0f;
-  float average_error_allowed_in_bad_pixels = 1.f;
-  int large_error_allowed = 1;
-  int small_error_allowed = 0;
   pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
-      true,  // discard_alpha
-      percentage_pixels_large_error, percentage_pixels_small_error,
-      average_error_allowed_in_bad_pixels, large_error_allowed,
-      small_error_allowed);
+      FuzzyPixelComparator()
+          .DiscardAlpha()
+          .SetErrorPixelsPercentageLimit(1.09f)  // 436px / (200*200)
+          .SetAbsErrorLimit(1));
 #endif
 
   RunPixelTest(background,
@@ -176,22 +171,20 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRadius) {
   blur->SetBackdropFilterBounds(backdrop_filter_bounds);
 
 #if BUILDFLAG(IS_FUCHSIA)
-  pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(false);
+  pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>();
 #elif BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
-  // Windows and ARM64 have 436 pixels off by 1: crbug.com/259915
-  float percentage_pixels_large_error = 1.09f;  // 436px / (200*200)
-  float percentage_pixels_small_error = 0.0f;
-  float average_error_allowed_in_bad_pixels = 1.f;
-  int large_error_allowed = 2;
-  int small_error_allowed = 0;
+  // Windows and ARM64 have 436 pixels off by 1 or 2: crbug.com/259915
+  float percentage_pixels_error = 1.09f;  // 436px / (200*200)
   // Windows using Dawn D3D12 has 4044 pixels off by max of 2.
-  if (use_d3d12())
-    percentage_pixels_large_error = 2.5275f;  // 4044px / (400*400)
+  if (use_d3d12()) {
+    percentage_pixels_error = 2.5275f;  // 4044px / (400*400)
+  }
   pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
-      true,  // discard_alpha
-      percentage_pixels_large_error, percentage_pixels_small_error,
-      average_error_allowed_in_bad_pixels, large_error_allowed,
-      small_error_allowed);
+      FuzzyPixelComparator()
+          .DiscardAlpha()
+          .SetErrorPixelsPercentageLimit(percentage_pixels_error)
+          .SetAvgAbsErrorLimit(1.f)
+          .SetAbsErrorLimit(2));
 #endif
   RunPixelTest(
       background,
@@ -228,15 +221,16 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRounded) {
   // Allow for ~1 perimeter of the clip path to have a small error.
   float percentage_pixels_small_error = 100.f * (100*4) / (200*200);
   int large_error_limit = 128;  // Off by two samples in 4 MSAA.
-  float percentage_pixels_large_or_small_error =
-          1.01f * percentage_pixels_small_error;
+  float percentage_pixels_large_error = 0.01f * percentage_pixels_small_error;
   // Divide average error by 4 since we blur most of the result.
   float average_error_allowed_in_bad_pixels = small_error_threshold / 4.f;
   pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
-      true,  // discard_alpha
-      percentage_pixels_large_or_small_error, percentage_pixels_small_error,
-      average_error_allowed_in_bad_pixels, large_error_limit,
-      small_error_threshold);
+      FuzzyPixelComparator()
+          .DiscardAlpha()
+          .SetErrorPixelsPercentageLimit(percentage_pixels_large_error,
+                                         percentage_pixels_small_error)
+          .SetAvgAbsErrorLimit(average_error_allowed_in_bad_pixels)
+          .SetAbsErrorLimit(large_error_limit, small_error_threshold));
 
   RunPixelTest(background, use_software_renderer()
                                ? base::FilePath(FILE_PATH_LITERAL(
@@ -273,23 +267,21 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurOutsets) {
 #if BUILDFLAG(IS_WIN) || defined(_MIPS_ARCH_LOONGSON) || defined(ARCH_CPU_ARM64)
 #if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
   // Windows has 5.9325% pixels by at most 2: crbug.com/259922
-  float percentage_pixels_large_error = 6.0f;
+  float percentage_pixels_error = 6.0f;
 #else
   // Loongson has 8.685% pixels by at most 2: crbug.com/819110
-  float percentage_pixels_large_error = 8.7f;
+  float percentage_pixels_error = 8.7f;
 #endif
-  float percentage_pixels_small_error = 0.0f;
-  float average_error_allowed_in_bad_pixels = 2.f;
-  int large_error_allowed = 2;
-  int small_error_allowed = 0;
   pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
-      true,  // discard_alpha
-      percentage_pixels_large_error, percentage_pixels_small_error,
-      average_error_allowed_in_bad_pixels, large_error_allowed,
-      small_error_allowed);
+      FuzzyPixelComparator()
+          .DiscardAlpha()
+          .SetErrorPixelsPercentageLimit(percentage_pixels_error)
+          .SetAbsErrorLimit(2));
 #else
-  if (use_skia_vulkan())
-    pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(true);
+  if (use_skia_vulkan()) {
+    pixel_comparator_ =
+        std::make_unique<AlphaDiscardingFuzzyPixelOffByOneComparator>();
+  }
 #endif
 
   RunPixelTest(
@@ -383,26 +375,26 @@ TEST_P(LayerTreeHostBlurFiltersPixelTestGPULayerList,
 #if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
 #if BUILDFLAG(IS_WIN)
   // Windows has 116 pixels off by at most 2: crbug.com/225027
-  float percentage_pixels_large_error = 0.3f;  // 116px / (200*200), rounded up
-  int large_error_allowed = 2;
+  float percentage_pixels_error = 0.3f;  // 116px / (200*200), rounded up
+  int error_allowed = 2;
   // Windows on SkiaRenderer Dawn has 447 pixels off by at most 2.
   if (use_d3d12())
-    percentage_pixels_large_error = 1.12f;  // 447px / (200*200), rounded up
+    percentage_pixels_error = 1.12f;  // 447px / (200*200), rounded up
 #else
-  float percentage_pixels_large_error = 0.25f;  // 96px / (200*200), rounded up
-  int large_error_allowed = 1;
+  float percentage_pixels_error = 0.25f;  // 96px / (200*200), rounded up
+  int error_allowed = 1;
 #endif
-  float percentage_pixels_small_error = 0.0f;
   float average_error_allowed_in_bad_pixels = 1.f;
-  int small_error_allowed = 0;
   pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
-      true,  // discard_alpha
-      percentage_pixels_large_error, percentage_pixels_small_error,
-      average_error_allowed_in_bad_pixels, large_error_allowed,
-      small_error_allowed);
+      FuzzyPixelComparator()
+          .DiscardAlpha()
+          .SetErrorPixelsPercentageLimit(percentage_pixels_error)
+          .SetAvgAbsErrorLimit(average_error_allowed_in_bad_pixels)
+          .SetAbsErrorLimit(error_allowed));
 #else
   if (use_skia_vulkan() || renderer_type_ == viz::RendererType::kSkiaDawn)
-    pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(true);
+    pixel_comparator_ =
+        std::make_unique<AlphaDiscardingFuzzyPixelOffByOneComparator>();
 #endif
 
   RunPixelTestWithLayerList(
@@ -595,39 +587,37 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterScaled) {
 
 #if BUILDFLAG(IS_FUCHSIA)
   if (renderer_type() == viz::RendererType::kSkiaVk) {
-    pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(false);
+    pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>();
   }
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || \
     defined(_MIPS_ARCH_LOONGSON) || defined(ARCH_CPU_ARM64)
 #if BUILDFLAG(IS_WIN)
   // Windows has 153 pixels off by at most 2: crbug.com/225027
-  float percentage_pixels_large_error = 0.3825f;  // 153px / (200*200)
-  int large_error_allowed = 2;
+  float percentage_pixels_error = 0.3825f;  // 153px / (200*200)
+  int error_allowed = 2;
   // Windows using Dawn D3D12 has 166 pixels off by 1.
   if (use_d3d12()) {
-    percentage_pixels_large_error = 0.415f;  // 166px / (200*200)
-    large_error_allowed = 1;
+    percentage_pixels_error = 0.415f;  // 166px / (200*200)
+    error_allowed = 1;
   }
 #elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   // There's a 1 pixel error on MacOS and ChromeOS
-  float percentage_pixels_large_error = 0.0025f;  // 1px / (200*200)
-  int large_error_allowed = 1;
+  float percentage_pixels_error = 0.0025f;  // 1px / (200*200)
+  int error_allowed = 1;
 #elif defined(_MIPS_ARCH_LOONGSON)
   // Loongson has 2 pixels off by at most 2: crbug.com/819075
-  float percentage_pixels_large_error = 0.005f;  // 2px / (200*200)
-  int large_error_allowed = 2;
+  float percentage_pixels_error = 0.005f;  // 2px / (200*200)
+  int error_allowed = 2;
 #else
-  float percentage_pixels_large_error = 0.0325f;  // 13px / (200*200)
-  int large_error_allowed = 1;
+  float percentage_pixels_error = 0.0325f;  // 13px / (200*200)
+  int error_allowed = 1;
 #endif
-  float percentage_pixels_small_error = 0.0f;
-  float average_error_allowed_in_bad_pixels = 1.f;
-  int small_error_allowed = 0;
   pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
-      true,  // discard_alpha
-      percentage_pixels_large_error, percentage_pixels_small_error,
-      average_error_allowed_in_bad_pixels, large_error_allowed,
-      small_error_allowed);
+      FuzzyPixelComparator()
+          .DiscardAlpha()
+          .SetErrorPixelsPercentageLimit(percentage_pixels_error)
+          .SetAvgAbsErrorLimit(1.f)
+          .SetAbsErrorLimit(error_allowed));
 #endif
 
   RunPixelTest(
@@ -682,16 +672,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterRotated) {
   // changes to blur or rectangle rendering.
   // Fuchsia/Flutter forces off the lowp skia raster pipeline resulting
   // in a totally different code path for software rendering.
-  float percentage_pixels_large_error = 5.f;
-  float percentage_pixels_small_error = 0.0f;
-  float average_error_allowed_in_bad_pixels = 2.f;
-  int large_error_allowed = 2;
-  int small_error_allowed = 0;
   pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
-      true,  // discard_alpha
-      percentage_pixels_large_error, percentage_pixels_small_error,
-      average_error_allowed_in_bad_pixels, large_error_allowed,
-      small_error_allowed);
+      FuzzyPixelComparator()
+          .DiscardAlpha()
+          .SetErrorPixelsPercentageLimit(5.f)
+          .SetAbsErrorLimit(2));
 
   RunPixelTest(background,
                base::FilePath(FILE_PATH_LITERAL("backdrop_filter_rotated_.png"))
@@ -728,27 +713,27 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageRenderSurfaceScaled) {
 
   background->AddChild(render_surface_layer);
 
-  float percentage_pixels_large_error = 0.0f;
-  float percentage_pixels_small_error = 0.0f;
+  float percentage_pixels_error = 0.0f;
   float average_error_allowed_in_bad_pixels = 0.0f;
-  int large_error_allowed = 0;
-  int small_error_allowed = 0;
+  int error_allowed = 0;
   if (use_software_renderer()) {
     // Software has some huge differences in the AA'd pixels on the different
     // trybots. See crbug.com/452198.
-    percentage_pixels_large_error = 0.686f;
+    percentage_pixels_error = 0.686f;
     average_error_allowed_in_bad_pixels = 16.f;
-    large_error_allowed = 17;
+    error_allowed = 17;
   } else if (use_d3d12()) {
     // Windows using Dawn D3D12 has 25 pixels off by 1.
-    percentage_pixels_large_error = 0.028;
+    percentage_pixels_error = 0.028;
     average_error_allowed_in_bad_pixels = 1.f;
-    large_error_allowed = 1;
+    error_allowed = 1;
   }
   pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
-      /*discard_alpha=*/true, percentage_pixels_large_error,
-      percentage_pixels_small_error, average_error_allowed_in_bad_pixels,
-      large_error_allowed, small_error_allowed);
+      FuzzyPixelComparator()
+          .DiscardAlpha()
+          .SetErrorPixelsPercentageLimit(percentage_pixels_error)
+          .SetAvgAbsErrorLimit(average_error_allowed_in_bad_pixels)
+          .SetAbsErrorLimit(error_allowed));
 
   RunPixelTest(
       background,
@@ -808,16 +793,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, ZoomFilter) {
 
 #if BUILDFLAG(IS_WIN)
   // Windows has 1 pixel off by 1: crbug.com/259915
-  float percentage_pixels_large_error = 0.00111112f;  // 1px / (300*300)
-  float percentage_pixels_small_error = 0.0f;
-  float average_error_allowed_in_bad_pixels = 1.f;
-  int large_error_allowed = 1;
-  int small_error_allowed = 0;
   pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
-      true,  // discard_alpha
-      percentage_pixels_large_error, percentage_pixels_small_error,
-      average_error_allowed_in_bad_pixels, large_error_allowed,
-      small_error_allowed);
+      FuzzyPixelComparator()
+          .DiscardAlpha()
+          .SetErrorPixelsPercentageLimit(0.00111112f)  // 1px / (300*300)
+          .SetAbsErrorLimit(1));
 #endif
 
   RunPixelTest(std::move(root),
@@ -851,29 +831,28 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedFilter) {
 #if defined(ARCH_CPU_ARM64)
   // Windows, macOS, and Fuchsia on ARM64 has some pixels difference
   // crbug.com/1029728, crbug.com/1048249, crbug.com/1128443
-  float percentage_pixels_large_error = 1.f;
+  float percentage_pixels_error = 1.f;
   float average_error_allowed_in_bad_pixels = 2.f;
-  int large_error_allowed = 3;
+  int error_allowed = 3;
 #elif BUILDFLAG(IS_WIN)
   // Windows has 1 pixel off by 1: crbug.com/259915
-  float percentage_pixels_large_error = 0.00111112f;  // 1px / (300*300)
+  float percentage_pixels_error = 0.00111112f;  // 1px / (300*300)
   float average_error_allowed_in_bad_pixels = 1.f;
-  int large_error_allowed = 1;
+  int error_allowed = 1;
   // Windows using Dawn D3D12 has 104 pixels off by 1.
   if (use_d3d12())
-    percentage_pixels_large_error = 0.115556f;  // 104px / (300*300)
+    percentage_pixels_error = 0.115556f;  // 104px / (300*300)
 #else
-  float percentage_pixels_large_error = 0.0f;  // 1px / (300*300)
+  float percentage_pixels_error = 0.0f;  // 1px / (300*300)
   float average_error_allowed_in_bad_pixels = 0.0f;
-  int large_error_allowed = 0;
+  int error_allowed = 0;
 #endif
-  float percentage_pixels_small_error = 0.0f;
-  int small_error_allowed = 0;
   pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
-      true,  // discard_alpha
-      percentage_pixels_large_error, percentage_pixels_small_error,
-      average_error_allowed_in_bad_pixels, large_error_allowed,
-      small_error_allowed);
+      FuzzyPixelComparator()
+          .DiscardAlpha()
+          .SetErrorPixelsPercentageLimit(percentage_pixels_error)
+          .SetAvgAbsErrorLimit(average_error_allowed_in_bad_pixels)
+          .SetAbsErrorLimit(error_allowed));
 #endif
 
   RunPixelTest(background,
@@ -914,33 +893,34 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedDropShadowFilter) {
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC))
   // Windows, macOS, and Fuchsia on ARM64 has some pixels difference.
   // crbug.com/1029728, crbug.com/1128443
-  float percentage_pixels_large_error = 0.89f;
+  float percentage_pixels_error = 0.89f;
   float average_error_allowed_in_bad_pixels = 5.f;
-  int large_error_allowed = 17;
+  int error_allowed = 17;
 #elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
   // There's a 1 pixel error on MacOS and ChromeOS
-  float percentage_pixels_large_error = 0.00111112f;  // 1px / (300*300)
+  float percentage_pixels_error = 0.00111112f;  // 1px / (300*300)
   float average_error_allowed_in_bad_pixels = 1.f;
-  int large_error_allowed = 1;
+  int error_allowed = 1;
 #else
   // Windows and all other ARM64 have 3 pixels off by 1: crbug.com/259915
-  float percentage_pixels_large_error = 0.00333334f;  // 3px / (300*300)
+  float percentage_pixels_error = 0.00333334f;  // 3px / (300*300)
   float average_error_allowed_in_bad_pixels = 1.f;
-  int large_error_allowed = 1;
+  int error_allowed = 1;
   // Windows using Dawn D3D12 has 22 pixels off by 1.
   if (use_d3d12())
-    percentage_pixels_large_error = 0.02445;  // 22px / (300*300)
+    percentage_pixels_error = 0.02445;  // 22px / (300*300)
 #endif
-  float percentage_pixels_small_error = 0.0f;
-  int small_error_allowed = 0;
   pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
-      true,  // discard_alpha
-      percentage_pixels_large_error, percentage_pixels_small_error,
-      average_error_allowed_in_bad_pixels, large_error_allowed,
-      small_error_allowed);
+      FuzzyPixelComparator()
+          .DiscardAlpha()
+          .SetErrorPixelsPercentageLimit(percentage_pixels_error)
+          .SetAvgAbsErrorLimit(average_error_allowed_in_bad_pixels)
+          .SetAbsErrorLimit(error_allowed));
 #else
-  if (use_skia_vulkan())
-    pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(true);
+  if (use_skia_vulkan()) {
+    pixel_comparator_ =
+        std::make_unique<AlphaDiscardingFuzzyPixelOffByOneComparator>();
+  }
 #endif
 
   RunPixelTest(
@@ -983,8 +963,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, TranslatedFilter) {
   parent->AddChild(child);
   clip->AddChild(parent);
 
-  if (use_software_renderer() || renderer_type_ == viz::RendererType::kSkiaDawn)
-    pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(true);
+  if (use_software_renderer() ||
+      renderer_type_ == viz::RendererType::kSkiaDawn) {
+    pixel_comparator_ =
+        std::make_unique<AlphaDiscardingFuzzyPixelOffByOneComparator>();
+  }
 
   RunPixelTest(clip, base::FilePath(
                          FILE_PATH_LITERAL("translated_blue_green_alpha.png")));
@@ -1095,21 +1078,18 @@ TEST_P(LayerTreeHostFiltersPixelTest, BlurFilterWithClip) {
 #if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
 #if BUILDFLAG(IS_WIN)
   // Windows has 1880 pixels off by 1: crbug.com/259915
-  float percentage_pixels_large_error = 4.7f;  // 1880px / (200*200)
+  float percentage_pixels_error = 4.7f;  // 1880px / (200*200)
 #else
   // Differences in floating point calculation on ARM means a small percentage
   // of pixels will have small differences.
-  float percentage_pixels_large_error = 2.76f;  // 1104px / (200*200)
+  float percentage_pixels_error = 2.76f;  // 1104px / (200*200)
 #endif
-  float percentage_pixels_small_error = 0.0f;
-  float average_error_allowed_in_bad_pixels = 1.f;
-  int large_error_allowed = 2;
-  int small_error_allowed = 0;
   pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
-      true,  // discard_alpha
-      percentage_pixels_large_error, percentage_pixels_small_error,
-      average_error_allowed_in_bad_pixels, large_error_allowed,
-      small_error_allowed);
+      FuzzyPixelComparator()
+          .DiscardAlpha()
+          .SetErrorPixelsPercentageLimit(percentage_pixels_error)
+          .SetAvgAbsErrorLimit(1.f)
+          .SetAbsErrorLimit(2));
 #endif
 
   RunPixelTest(filter_layer,
@@ -1224,16 +1204,11 @@ class BackdropFilterInvertTest : public LayerTreeHostFiltersPixelTest {
       expected_result = expected_result.InsertBeforeExtensionASCII("_sw");
     } else if (use_d3d12()) {
       // Windows using Dawn D3D12 has 16 pixels off by 1.
-      float percentage_pixels_large_error = 0.04f;  // 16px / (200*200)
-      float average_error_allowed_in_bad_pixels = 1.f;
-      int large_error_allowed = 1;
-      float percentage_pixels_small_error = 0.0f;
-      int small_error_allowed = 0;
       pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
-          true,  // discard_alpha
-          percentage_pixels_large_error, percentage_pixels_small_error,
-          average_error_allowed_in_bad_pixels, large_error_allowed,
-          small_error_allowed);
+          FuzzyPixelComparator()
+              .DiscardAlpha()
+              .SetErrorPixelsPercentageLimit(0.04f)  // 16px / (200*200)
+              .SetAbsErrorLimit(1));
     }
     RunPixelTest(std::move(root), expected_result);
   }

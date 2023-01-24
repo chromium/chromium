@@ -1768,7 +1768,7 @@ TEST_F(LayerWithRealCompositorTest, DrawAlphaBlendedPixels) {
   original_bitmap.allocPixels(bitmap.info());
   original_bitmap.eraseColor(blend_color);
 
-  cc::FuzzyPixelOffByOneComparator comparator(false);
+  cc::FuzzyPixelOffByOneComparator comparator;
   EXPECT_TRUE(comparator.Compare(bitmap, original_bitmap));
 }
 
@@ -1948,42 +1948,48 @@ TEST_F(LayerWithRealCompositorTest, ModifyHierarchy) {
   ReadPixels(&bitmap);
   ASSERT_FALSE(bitmap.empty());
   // WritePNGFile(bitmap, ref_img1);
-  EXPECT_TRUE(MatchesPNGFile(bitmap, ref_img1, cc::ExactPixelComparator(true)));
+  EXPECT_TRUE(MatchesPNGFile(bitmap, ref_img1,
+                             cc::AlphaDiscardingExactPixelComparator()));
 
   l0->StackAtTop(l11.get());
   DrawTree(l0.get());
   ReadPixels(&bitmap);
   ASSERT_FALSE(bitmap.empty());
   // WritePNGFile(bitmap, ref_img2);
-  EXPECT_TRUE(MatchesPNGFile(bitmap, ref_img2, cc::ExactPixelComparator(true)));
+  EXPECT_TRUE(MatchesPNGFile(bitmap, ref_img2,
+                             cc::AlphaDiscardingExactPixelComparator()));
 
   // should restore to original configuration
   l0->StackAbove(l12.get(), l11.get());
   DrawTree(l0.get());
   ReadPixels(&bitmap);
   ASSERT_FALSE(bitmap.empty());
-  EXPECT_TRUE(MatchesPNGFile(bitmap, ref_img1, cc::ExactPixelComparator(true)));
+  EXPECT_TRUE(MatchesPNGFile(bitmap, ref_img1,
+                             cc::AlphaDiscardingExactPixelComparator()));
 
   // l11 back to front
   l0->StackAtTop(l11.get());
   DrawTree(l0.get());
   ReadPixels(&bitmap);
   ASSERT_FALSE(bitmap.empty());
-  EXPECT_TRUE(MatchesPNGFile(bitmap, ref_img2, cc::ExactPixelComparator(true)));
+  EXPECT_TRUE(MatchesPNGFile(bitmap, ref_img2,
+                             cc::AlphaDiscardingExactPixelComparator()));
 
   // should restore to original configuration
   l0->StackAbove(l12.get(), l11.get());
   DrawTree(l0.get());
   ReadPixels(&bitmap);
   ASSERT_FALSE(bitmap.empty());
-  EXPECT_TRUE(MatchesPNGFile(bitmap, ref_img1, cc::ExactPixelComparator(true)));
+  EXPECT_TRUE(MatchesPNGFile(bitmap, ref_img1,
+                             cc::AlphaDiscardingExactPixelComparator()));
 
   // l11 back to front
   l0->StackAbove(l11.get(), l12.get());
   DrawTree(l0.get());
   ReadPixels(&bitmap);
   ASSERT_FALSE(bitmap.empty());
-  EXPECT_TRUE(MatchesPNGFile(bitmap, ref_img2, cc::ExactPixelComparator(true)));
+  EXPECT_TRUE(MatchesPNGFile(bitmap, ref_img2,
+                             cc::AlphaDiscardingExactPixelComparator()));
 }
 
 // Checks that basic background blur is working.
@@ -2015,7 +2021,10 @@ TEST_F(LayerWithRealCompositorTest, BackgroundBlur) {
   SkBitmap bitmap;
 
   // 25% of image can have up to a difference of 3.
-  cc::FuzzyPixelComparator fuzzy_comparator(true, 25.f, 0.0f, 3.f, 3, 0);
+  auto fuzzy_comparator = cc::FuzzyPixelComparator()
+                              .DiscardAlpha()
+                              .SetErrorPixelsPercentageLimit(25.f)
+                              .SetAbsErrorLimit(3);
 
   l0->Add(l1.get());
   l0->Add(l2.get());
@@ -2059,7 +2068,10 @@ TEST_F(LayerWithRealCompositorTest, BackgroundBlurChangeDeviceScale) {
   SkBitmap bitmap;
 
   // 25% of image can have up to a difference of 3.
-  cc::FuzzyPixelComparator fuzzy_comparator(true, 25.f, 0.0f, 3.f, 3, 0);
+  auto fuzzy_comparator = cc::FuzzyPixelComparator()
+                              .DiscardAlpha()
+                              .SetErrorPixelsPercentageLimit(25.f)
+                              .SetAbsErrorLimit(3);
 
   l0->Add(l1.get());
   l0->Add(l2.get());
@@ -2105,7 +2117,8 @@ TEST_F(LayerWithRealCompositorTest, Opacity) {
   ReadPixels(&bitmap);
   ASSERT_FALSE(bitmap.empty());
   // WritePNGFile(bitmap, ref_img);
-  EXPECT_TRUE(MatchesPNGFile(bitmap, ref_img, cc::ExactPixelComparator(true)));
+  EXPECT_TRUE(MatchesPNGFile(bitmap, ref_img,
+                             cc::AlphaDiscardingExactPixelComparator()));
 }
 
 namespace {

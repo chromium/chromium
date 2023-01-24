@@ -215,9 +215,8 @@ TEST_F(AppIconFactoryTest, LoadFromFileSuccess) {
   EXPECT_FALSE(fallback_called);
   ASSERT_TRUE(result);
 
-  EXPECT_TRUE(
-      cc::MatchesBitmap(*bitmap, *result->uncompressed.bitmap(),
-                        cc::ExactPixelComparator(/*discard_alpha=*/false)));
+  EXPECT_TRUE(cc::MatchesBitmap(*bitmap, *result->uncompressed.bitmap(),
+                                cc::ExactPixelComparator()));
 }
 
 TEST_F(AppIconFactoryTest, LoadFromFileFallback) {

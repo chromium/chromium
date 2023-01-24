@@ -850,8 +850,7 @@ TEST_F(DataOfferTest, SetClipboardDataImage) {
   ASSERT_TRUE(gfx::PNGCodec::Decode(
       reinterpret_cast<const unsigned char*>(result.data()), result.size(),
       &decoded));
-  EXPECT_TRUE(cc::MatchesBitmap(
-      image, decoded, cc::ExactPixelComparator(/*discard_alpha=*/false)));
+  EXPECT_TRUE(cc::MatchesBitmap(image, decoded, cc::ExactPixelComparator()));
   std::string good = result;
   ASSERT_TRUE(ReadString(std::move(read_pipe2), &result));
   EXPECT_EQ(good, result);

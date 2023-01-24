@@ -101,30 +101,26 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     // This fuzzy pixel comparator handles several mac behaviors:
     // - Different font rendering after 10.14
     // - Slight differences in radio and checkbox rendering in 10.15
-    // - Tiny errors (difference <= 1) are ignored for more pixels
-    cc::FuzzyPixelComparator comparator(
-        /* discard_alpha */ true,
-        /* error_pixels_percentage_limit */ 26.f,
-        /* small_error_pixels_percentage_limit */ 0.f,
-        /* avg_abs_error_limit */ 20.f,
-        /* max_abs_error_limit */ 120.f,
-        /* small_error_threshold */ 0);
+    // TODO(wangxianzhu): Tighten these parameters.
+    auto comparator = cc::FuzzyPixelComparator()
+                          .DiscardAlpha()
+                          .SetErrorPixelsPercentageLimit(26.f)
+                          .SetAvgAbsErrorLimit(20.f)
+                          .SetAbsErrorLimit(120);
 #elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || (OS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
     // Different versions of android may have slight differences in rendering.
     // Some versions have more significant differences than others, which are
     // tracked separately in separate baseline image files. The less significant
     // differences are accommodated for with this fuzzy pixel comparator.
-    // This also applies to different versions of Windows.
-    cc::FuzzyPixelComparator comparator(
-        /* discard_alpha */ true,
-        /* error_pixels_percentage_limit */ 11.f,
-        /* small_error_pixels_percentage_limit */ 0.f,
-        /* avg_abs_error_limit */ 5.f,
-        /* max_abs_error_limit */ 140.f,
-        /* small_error_threshold */ 0);
+    // This also applies to different versions of other OSes.
+    auto comparator = cc::FuzzyPixelComparator()
+                          .DiscardAlpha()
+                          .SetErrorPixelsPercentageLimit(11.f)
+                          .SetAvgAbsErrorLimit(5.f)
+                          .SetAbsErrorLimit(140);
 #else
-    cc::ExactPixelComparator comparator(/* disard_alpha */ true);
+    cc::AlphaDiscardingExactPixelComparator comparator;
 #endif
     EXPECT_TRUE(CompareWebContentsOutputToReference(
         shell()->web_contents(), golden_filepath,

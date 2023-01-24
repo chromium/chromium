@@ -123,9 +123,8 @@ class PaintManagerTest : public testing::Test {
     ASSERT_TRUE(expected_surface->makeImageSnapshot()->asLegacyBitmap(
         &expected_bitmap));
 
-    EXPECT_TRUE(
-        cc::MatchesBitmap(snapshot_bitmap, expected_bitmap,
-                          cc::ExactPixelComparator(/*discard_alpha=*/false)));
+    EXPECT_TRUE(cc::MatchesBitmap(snapshot_bitmap, expected_bitmap,
+                                  cc::ExactPixelComparator()));
   }
 
   void TestScroll(const gfx::Vector2d& scroll_amount,

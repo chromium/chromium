@@ -36,20 +36,16 @@
 // Mac has subtle rendering differences between different versions of MacOS, so
 // we account for them with these fuzzy pixel comparators. These two comparators
 // are used in different tests in order to keep the matching somewhat strict.
-const cc::FuzzyPixelComparator mac_strict_comparator(
-    /* discard_alpha */ true,
-    /* error_pixels_percentage_limit */ 3.f,
-    /* small_error_pixels_percentage_limit */ 0.f,
-    /* avg_abs_error_limit */ 20.f,
-    /* max_abs_error_limit */ 49.f,
-    /* small_error_threshold */ 0);
-const cc::FuzzyPixelComparator mac_loose_comparator(
-    /* discard_alpha */ true,
-    /* error_pixels_percentage_limit */ 8.7f,
-    /* small_error_pixels_percentage_limit */ 0.f,
-    /* avg_abs_error_limit */ 20.f,
-    /* max_abs_error_limit */ 43.f,
-    /* small_error_threshold */ 0);
+const auto mac_strict_comparator = cc::FuzzyPixelComparator()
+                                       .DiscardAlpha()
+                                       .SetErrorPixelsPercentageLimit(3.f)
+                                       .SetAvgAbsErrorLimit(20.f)
+                                       .SetAbsErrorLimit(49);
+const auto mac_loose_comparator = cc::FuzzyPixelComparator()
+                                      .DiscardAlpha()
+                                      .SetErrorPixelsPercentageLimit(8.7f)
+                                      .SetAvgAbsErrorLimit(20.f)
+                                      .SetAbsErrorLimit(43);
 #endif
 
 class FocusRingBrowserTest : public InProcessBrowserTest {
@@ -119,9 +115,9 @@ class FocusRingBrowserTest : public InProcessBrowserTest {
 #endif
 IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_Checkbox) {
 #if BUILDFLAG(IS_MAC)
-  cc::FuzzyPixelComparator comparator = mac_strict_comparator;
+  auto comparator = mac_strict_comparator;
 #else
-  cc::ExactPixelComparator comparator(/*discard_alpha=*/true);
+  cc::AlphaDiscardingExactPixelComparator comparator;
 #endif
   RunTest("focus_ring_browsertest_checkbox",
           "<input type=checkbox autofocus>"
@@ -138,9 +134,9 @@ IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_Checkbox) {
 #endif
 IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_Radio) {
 #if BUILDFLAG(IS_MAC)
-  cc::FuzzyPixelComparator comparator = mac_loose_comparator;
+  auto comparator = mac_loose_comparator;
 #else
-  cc::ExactPixelComparator comparator(/*discard_alpha=*/true);
+  cc::AlphaDiscardingExactPixelComparator comparator;
 #endif
   RunTest("focus_ring_browsertest_radio",
           "<input type=radio autofocus>"
@@ -157,9 +153,9 @@ IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_Radio) {
 #endif
 IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_Button) {
 #if BUILDFLAG(IS_MAC)
-  cc::FuzzyPixelComparator comparator = mac_strict_comparator;
+  auto comparator = mac_strict_comparator;
 #else
-  cc::ExactPixelComparator comparator(/*discard_alpha=*/true);
+  cc::AlphaDiscardingExactPixelComparator comparator;
 #endif
   RunTest("focus_ring_browsertest_button",
           "<button autofocus style=\"width:40px;height:20px;\"></button>"
@@ -178,9 +174,9 @@ IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_Button) {
 #endif
 IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_Anchor) {
 #if BUILDFLAG(IS_MAC)
-  cc::FuzzyPixelComparator comparator = mac_strict_comparator;
+  auto comparator = mac_strict_comparator;
 #else
-  cc::ExactPixelComparator comparator(/*discard_alpha=*/true);
+  cc::AlphaDiscardingExactPixelComparator comparator;
 #endif
   RunTest("focus_ring_browsertest_anchor",
           "<div style='text-align: center; width: 80px;'>"
@@ -204,9 +200,9 @@ IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_DarkModeButton) {
 #if BUILDFLAG(IS_MAC)
   if (!MacOSVersionSupportsDarkMode())
     return;
-  cc::FuzzyPixelComparator comparator = mac_strict_comparator;
+  auto comparator = mac_strict_comparator;
 #else
-  cc::ExactPixelComparator comparator(/*discard_alpha=*/true);
+  cc::AlphaDiscardingExactPixelComparator comparator;
 #endif
   RunTest("focus_ring_browsertest_dark_mode_button",
           "<meta name=\"color-scheme\" content=\"dark\">"

@@ -337,7 +337,7 @@ TEST_P(LayerTreeHostTilesTestRasterColorSpace, GenericRGB) {
 
 TEST_P(LayerTreeHostTilesTestRasterColorSpace, CustomColorSpace) {
 #if BUILDFLAG(IS_FUCHSIA)
-  pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(false);
+  pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>();
 #endif
   // Create a color space with a different blue point.
   SkColorSpacePrimaries primaries;

@@ -72,7 +72,8 @@ class LayerTreeHostBlendingPixelTest
   LayerTreeHostBlendingPixelTest()
       : LayerTreeHostPixelResourceTest(resource_type()),
         force_antialiasing_(false) {
-    pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(true);
+    pixel_comparator_ =
+        std::make_unique<AlphaDiscardingFuzzyPixelOffByOneComparator>();
   }
 
   RasterTestConfig resource_type() const {
@@ -224,17 +225,10 @@ class LayerTreeHostBlendingPixelTest
 
     if (renderer_type_ == viz::RendererType::kSkiaVk) {
       // Blending results might differ with one pixel.
-      float percentage_pixels_error = 35.f;
-      float percentage_pixels_small_error = 0.f;
-      float average_error_allowed_in_bad_pixels = 1.f;
-      int large_error_allowed = 1;
-      int small_error_allowed = 0;
-
       pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
-          false,  // discard_alpha
-          percentage_pixels_error, percentage_pixels_small_error,
-          average_error_allowed_in_bad_pixels, large_error_allowed,
-          small_error_allowed);
+          FuzzyPixelComparator()
+              .SetErrorPixelsPercentageLimit(35.f)
+              .SetAbsErrorLimit(1));
     }
 
     RunPixelResourceTest(root, CreateBlendingWithRenderPassExpected(

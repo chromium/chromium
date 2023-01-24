@@ -50,8 +50,10 @@ constexpr float kAvgAbsoluteErrorLimit = 8.f;
 constexpr int kMaxAbsoluteErrorLimit = 32;
 
 cc::FuzzyPixelComparator GetDefaultFuzzyPixelComparator() {
-  return cc::FuzzyPixelComparator(false, 100.f, 0.f, kAvgAbsoluteErrorLimit,
-                                  kMaxAbsoluteErrorLimit, 0);
+  return cc::FuzzyPixelComparator()
+      .SetErrorPixelsPercentageLimit(100.f)
+      .SetAvgAbsErrorLimit(kAvgAbsoluteErrorLimit)
+      .SetAbsErrorLimit(kMaxAbsoluteErrorLimit);
 }
 
 base::FilePath GetTestFilePath(const base::FilePath::CharType* basename) {
@@ -439,8 +441,7 @@ TEST_P(SkiaReadbackPixelTestRGBA, ExecutesCopyRequest) {
     EXPECT_TRUE(cc::WritePNGFile(actual, expected_path, false));
   }
 
-  if (!cc::MatchesPNGFile(actual, expected_path,
-                          cc::ExactPixelComparator(false))) {
+  if (!cc::MatchesPNGFile(actual, expected_path, cc::ExactPixelComparator())) {
     LOG(ERROR) << "Entire source: " << cc::GetPNGDataUrl(GetSourceBitmap());
     ADD_FAILURE();
   }

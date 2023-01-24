@@ -240,7 +240,7 @@ class ReadbackHolder : public base::RefCountedThreadSafe<ReadbackHolder> {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-const cc::ExactPixelComparator pixel_comparator(/*discard_alpha=*/false);
+const cc::ExactPixelComparator pixel_comparator;
 
 // Flaky on Lacros: https://crbug.com/1289366
 #if (BUILDFLAG(IS_MAC) &&                                     \

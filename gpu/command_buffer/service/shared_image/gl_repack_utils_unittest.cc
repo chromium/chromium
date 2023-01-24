@@ -192,9 +192,8 @@ TEST(RepackUtilsTest, UnpackStride) {
   // Result bitmap should have red pixels after.
   UnpackPixelDataWithStride(size, repacked_data, expected_stride, pixmap);
 
-  EXPECT_TRUE(
-      cc::MatchesBitmap(result_bitmap, source_bitmap,
-                        cc::ExactPixelComparator(/*discard_alpha=*/false)));
+  EXPECT_TRUE(cc::MatchesBitmap(result_bitmap, source_bitmap,
+                                cc::ExactPixelComparator()));
 }
 
 TEST(RepackUtilsTest, SwizzleRedAndBlue) {
@@ -210,9 +209,8 @@ TEST(RepackUtilsTest, SwizzleRedAndBlue) {
   SkBitmap expected_bitmap =
       MakeSolidColorBitmap(size, kRGBA_8888_SkColorType, SK_ColorBLUE);
 
-  EXPECT_TRUE(
-      cc::MatchesBitmap(swizzled_bitmap, expected_bitmap,
-                        cc::ExactPixelComparator(/*discard_alpha=*/false)));
+  EXPECT_TRUE(cc::MatchesBitmap(swizzled_bitmap, expected_bitmap,
+                                cc::ExactPixelComparator()));
 }
 
 }  // namespace

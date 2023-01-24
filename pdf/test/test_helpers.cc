@@ -39,7 +39,7 @@ testing::AssertionResult MatchesPngFile(
     return testing::AssertionFailure() << "Reference: " << expected_png_file;
 
   if (!cc::MatchesPNGFile(actual_bitmap, GetTestDataFilePath(expected_png_file),
-                          cc::ExactPixelComparator(/*discard_alpha=*/false))) {
+                          cc::ExactPixelComparator())) {
     return testing::AssertionFailure() << "Reference: " << expected_png_file;
   }
 

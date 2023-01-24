@@ -56,7 +56,8 @@ TestRasterType GetDefaultRasterType(viz::RendererType renderer_type) {
 LayerTreePixelTest::LayerTreePixelTest(viz::RendererType renderer_type)
     : LayerTreeTest(renderer_type),
       raster_type_(GetDefaultRasterType(renderer_type)),
-      pixel_comparator_(new ExactPixelComparator(true)),
+      pixel_comparator_(
+          std::make_unique<AlphaDiscardingExactPixelComparator>()),
       pending_texture_mailbox_callbacks_(0) {}
 
 LayerTreePixelTest::~LayerTreePixelTest() = default;

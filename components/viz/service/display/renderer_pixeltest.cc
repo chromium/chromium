@@ -929,7 +929,7 @@ TEST_P(RendererPixelTest, SimpleGreenRect) {
 
   EXPECT_TRUE(this->RunPixelTest(&pass_list,
                                  base::FilePath(FILE_PATH_LITERAL("green.png")),
-                                 cc::ExactPixelComparator(true)));
+                                 cc::AlphaDiscardingExactPixelComparator()));
 }
 
 TEST_P(RendererPixelTest, SimpleGreenRectNonRootRenderPass) {
@@ -966,7 +966,7 @@ TEST_P(RendererPixelTest, SimpleGreenRectNonRootRenderPass) {
   EXPECT_TRUE(this->RunPixelTestWithReadbackTarget(
       &pass_list, child_pass_ptr,
       base::FilePath(FILE_PATH_LITERAL("green_small.png")),
-      cc::ExactPixelComparator(true)));
+      cc::AlphaDiscardingExactPixelComparator()));
 }
 
 TEST_P(RendererPixelTest, PremultipliedTextureWithoutBackground) {
@@ -995,7 +995,7 @@ TEST_P(RendererPixelTest, PremultipliedTextureWithoutBackground) {
 
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("green_alpha.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(RendererPixelTest, PremultipliedTextureWithBackground) {
@@ -1027,7 +1027,7 @@ TEST_P(RendererPixelTest, PremultipliedTextureWithBackground) {
 
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("green_alpha.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(RendererPixelTest, TextureDrawQuadVisibleRectInsetTopLeft) {
@@ -1061,7 +1061,7 @@ TEST_P(RendererPixelTest, TextureDrawQuadVisibleRectInsetTopLeft) {
 
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("inset_top_left.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 // This tests drawing a TextureDrawQuad with a visible_rect strictly included in
@@ -1105,7 +1105,7 @@ TEST_P(RendererPixelTest,
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("offset_inset_top_left.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(RendererPixelTest, TextureDrawQuadVisibleRectInsetBottomRight) {
@@ -1146,7 +1146,7 @@ TEST_P(RendererPixelTest, TextureDrawQuadVisibleRectInsetBottomRight) {
 
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("inset_bottom_right.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(GPURendererPixelTest, SolidColorBlend) {
@@ -1180,7 +1180,7 @@ TEST_P(GPURendererPixelTest, SolidColorBlend) {
 
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("dark_grey.png")),
-      cc::FuzzyPixelOffByOneComparator(/*discard_alpha=*/true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(GPURendererPixelTest, SolidColorWithTemperature) {
@@ -1206,7 +1206,7 @@ TEST_P(GPURendererPixelTest, SolidColorWithTemperature) {
 
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("temperature_brown.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(GPURendererPixelTest, SolidColorWithTemperatureNonRootRenderPass) {
@@ -1248,7 +1248,7 @@ TEST_P(GPURendererPixelTest, SolidColorWithTemperatureNonRootRenderPass) {
   EXPECT_TRUE(this->RunPixelTest(
       &render_passes_in_draw_order,
       base::FilePath(FILE_PATH_LITERAL("temperature_brown_non_root.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(GPURendererPixelTest,
@@ -1284,7 +1284,7 @@ TEST_P(GPURendererPixelTest,
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("green_alpha_vertex_opacity.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 class IntersectingQuadPixelTest : public VizPixelTestWithParam {
@@ -1413,7 +1413,7 @@ TEST_P(IntersectingQuadPixelTest, SolidColorQuads) {
   quad2->SetNew(this->back_quad_state_, this->quad_rect_, this->quad_rect_,
                 SkColors::kGreen, false);
   this->AppendBackgroundAndRunTest(
-      cc::FuzzyPixelComparator(false, 2.f, 0.f, 256.f, 256, 0.f),
+      cc::FuzzyPixelComparator().SetErrorPixelsPercentageLimit(2.f),
       FILE_PATH_LITERAL("intersecting_blue_green.png"));
 }
 
@@ -1435,7 +1435,7 @@ TEST_P(IntersectingQuadPixelTest, TexturedQuads) {
       this->child_context_provider_, this->render_pass_.get());
 
   this->AppendBackgroundAndRunTest(
-      cc::FuzzyPixelComparator(false, 2.f, 0.f, 256.f, 256, 0.f),
+      cc::FuzzyPixelComparator().SetErrorPixelsPercentageLimit(2.f),
       FILE_PATH_LITERAL("intersecting_blue_green_squares.png"));
 }
 
@@ -1461,7 +1461,7 @@ TEST_P(IntersectingQuadPixelTest, NonFlippedTexturedQuads) {
       this->child_context_provider_, this->render_pass_.get());
 
   this->AppendBackgroundAndRunTest(
-      cc::FuzzyPixelComparator(false, 2.f, 0.f, 256.f, 256, 0.f),
+      cc::FuzzyPixelComparator().SetErrorPixelsPercentageLimit(2.f),
       FILE_PATH_LITERAL(
           "intersecting_non_flipped_blue_green_half_size_rectangles.png"));
 }
@@ -1488,7 +1488,7 @@ TEST_P(IntersectingQuadPixelTest, FlippedTexturedQuads) {
       this->child_context_provider_, this->render_pass_.get());
 
   this->AppendBackgroundAndRunTest(
-      cc::FuzzyPixelComparator(false, 2.f, 0.f, 256.f, 256, 0.f),
+      cc::FuzzyPixelComparator().SetErrorPixelsPercentageLimit(2.f),
       FILE_PATH_LITERAL(
           "intersecting_flipped_blue_green_half_size_rectangles.png"));
 }
@@ -1543,7 +1543,7 @@ TEST_P(IntersectingQuadSoftwareTest, PictureQuads) {
                      this->quad_rect_, 1.f, {},
                      green_raster_source->GetDisplayItemList());
   this->AppendBackgroundAndRunTest(
-      cc::FuzzyPixelComparator(false, 2.f, 0.f, 256.f, 256, 0.f),
+      cc::FuzzyPixelComparator().SetErrorPixelsPercentageLimit(2.f),
       FILE_PATH_LITERAL("intersecting_blue_green_squares.png"));
 }
 
@@ -1586,7 +1586,7 @@ TEST_P(IntersectingQuadPixelTest, RenderPassQuads) {
   this->pass_list_.push_back(std::move(child_pass1));
   this->pass_list_.push_back(std::move(child_pass2));
   this->AppendBackgroundAndRunTest(
-      cc::FuzzyPixelComparator(false, 2.f, 0.f, 256.f, 256, 0.f),
+      cc::FuzzyPixelComparator().SetErrorPixelsPercentageLimit(2.f),
       FILE_PATH_LITERAL("intersecting_blue_green_squares.png"));
 }
 
@@ -1615,7 +1615,11 @@ TEST_P(IntersectingVideoQuadPixelTest, YUVVideoQuads) {
       this->child_context_provider_.get());
 
   this->AppendBackgroundAndRunTest(
-      cc::FuzzyPixelComparator(true, 0.50f, 0.f, 1.2f, 2, 0),
+      cc::FuzzyPixelComparator()
+          .DiscardAlpha()
+          .SetErrorPixelsPercentageLimit(0.50f)
+          .SetAvgAbsErrorLimit(1.2f)
+          .SetAbsErrorLimit(2),
       FILE_PATH_LITERAL("intersecting_blue_green_squares_video.png"));
 }
 
@@ -1642,7 +1646,7 @@ TEST_P(IntersectingVideoQuadPixelTest, Y16VideoQuads) {
       this->child_context_provider_.get());
 
   this->AppendBackgroundAndRunTest(
-      cc::FuzzyPixelOffByOneComparator(false),
+      cc::FuzzyPixelOffByOneComparator(),
       FILE_PATH_LITERAL("intersecting_light_dark_squares_video.png"));
 }
 
@@ -1673,7 +1677,7 @@ TEST_P(GPURendererPixelTest, NonPremultipliedTextureWithoutBackground) {
 
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("green_alpha.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 // TODO(skaslev): The software renderer does not support non-premultplied alpha.
@@ -1706,7 +1710,7 @@ TEST_P(GPURendererPixelTest, NonPremultipliedTextureWithBackground) {
 
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("green_alpha.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 class VideoRendererPixelTestBase : public VizPixelTest {
@@ -1813,7 +1817,7 @@ TEST_P(VideoRendererPixelHiLoTest, SimpleYUVRect) {
 
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("yuv_stripes.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(VideoRendererPixelHiLoTest, ClippedYUVRect) {
@@ -1841,7 +1845,7 @@ TEST_P(VideoRendererPixelHiLoTest, ClippedYUVRect) {
 
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("yuv_stripes_clipped.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 #endif  // #if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 
@@ -1886,7 +1890,7 @@ TEST_P(VideoRendererPixelTest, OffsetYUVRect) {
 
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("yuv_stripes_offset.png")),
-      cc::FuzzyPixelComparator(true, 100.0f, 1.0f, 1.0f, 1, 0)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(VideoRendererPixelTest, SimpleYUVRectBlack) {
@@ -1913,9 +1917,9 @@ TEST_P(VideoRendererPixelTest, SimpleYUVRectBlack) {
 
   // If we didn't get black out of the YUV values above, then we probably have a
   // color range issue.
-  EXPECT_TRUE(this->RunPixelTest(&pass_list,
-                                 base::FilePath(FILE_PATH_LITERAL("black.png")),
-                                 cc::FuzzyPixelOffByOneComparator(true)));
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list, base::FilePath(FILE_PATH_LITERAL("black.png")),
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(VideoRendererPixelTest, SimpleYUVJRect) {
@@ -1938,9 +1942,9 @@ TEST_P(VideoRendererPixelTest, SimpleYUVJRect) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
 
-  EXPECT_TRUE(this->RunPixelTest(&pass_list,
-                                 base::FilePath(FILE_PATH_LITERAL("green.png")),
-                                 cc::FuzzyPixelOffByOneComparator(true)));
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list, base::FilePath(FILE_PATH_LITERAL("green.png")),
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(VideoRendererPixelTest, SimpleYUVJRectWithTemperature) {
@@ -1971,7 +1975,7 @@ TEST_P(VideoRendererPixelTest, SimpleYUVJRectWithTemperature) {
 
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("temperature_brown.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(VideoRendererPixelTest, SimpleNV12JRect) {
@@ -1994,9 +1998,9 @@ TEST_P(VideoRendererPixelTest, SimpleNV12JRect) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
 
-  EXPECT_TRUE(this->RunPixelTest(&pass_list,
-                                 base::FilePath(FILE_PATH_LITERAL("green.png")),
-                                 cc::FuzzyPixelOffByOneComparator(true)));
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list, base::FilePath(FILE_PATH_LITERAL("green.png")),
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 // Test that a YUV video doesn't bleed outside of its tex coords when the
@@ -2005,9 +2009,9 @@ TEST_P(VideoRendererPixelTest, YUVEdgeBleed) {
   AggregatedRenderPassList pass_list;
   this->CreateEdgeBleedPass(media::PIXEL_FORMAT_I420,
                             gfx::ColorSpace::CreateJpeg(), &pass_list);
-  EXPECT_TRUE(this->RunPixelTest(&pass_list,
-                                 base::FilePath(FILE_PATH_LITERAL("green.png")),
-                                 cc::FuzzyPixelOffByOneComparator(true)));
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list, base::FilePath(FILE_PATH_LITERAL("green.png")),
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(VideoRendererPixelTest, YUVAEdgeBleed) {
@@ -2016,9 +2020,9 @@ TEST_P(VideoRendererPixelTest, YUVAEdgeBleed) {
                             gfx::ColorSpace::CreateREC601(), &pass_list);
   // Set the output color space to match the input primaries and transfer.
   this->display_color_spaces_ = kRec601DisplayColorSpaces;
-  EXPECT_TRUE(this->RunPixelTest(&pass_list,
-                                 base::FilePath(FILE_PATH_LITERAL("green.png")),
-                                 cc::FuzzyPixelOffByOneComparator(true)));
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list, base::FilePath(FILE_PATH_LITERAL("green.png")),
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(VideoRendererPixelTest, SimpleYUVJRectGrey) {
@@ -2043,7 +2047,7 @@ TEST_P(VideoRendererPixelTest, SimpleYUVJRectGrey) {
 
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("dark_grey.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(VideoRendererPixelTest, SimpleYUVARect) {
@@ -2072,7 +2076,7 @@ TEST_P(VideoRendererPixelTest, SimpleYUVARect) {
 
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("yuv_stripes_alpha.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(VideoRendererPixelTest, FullyTransparentYUVARect) {
@@ -2101,7 +2105,7 @@ TEST_P(VideoRendererPixelTest, FullyTransparentYUVARect) {
 
   EXPECT_TRUE(this->RunPixelTest(&pass_list,
                                  base::FilePath(FILE_PATH_LITERAL("black.png")),
-                                 cc::ExactPixelComparator(true)));
+                                 cc::AlphaDiscardingExactPixelComparator()));
 }
 
 TEST_P(VideoRendererPixelTest, TwoColorY16Rect) {
@@ -2126,7 +2130,7 @@ TEST_P(VideoRendererPixelTest, TwoColorY16Rect) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("blue_yellow_filter_chain.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(RendererPixelTest, FastPassColorFilterAlpha) {
@@ -2205,7 +2209,7 @@ TEST_P(RendererPixelTest, FastPassColorFilterAlpha) {
   // renderer so use a fuzzy comparator.
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("blue_yellow_alpha.png")),
-      cc::FuzzyPixelOffByOneComparator(false)));
+      cc::FuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(RendererPixelTest, FastPassSaturateFilter) {
@@ -2266,7 +2270,7 @@ TEST_P(RendererPixelTest, FastPassSaturateFilter) {
   // renderer so use a fuzzy comparator.
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("blue_yellow_alpha.png")),
-      cc::FuzzyPixelOffByOneComparator(false)));
+      cc::FuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(RendererPixelTest, FastPassFilterChain) {
@@ -2329,7 +2333,7 @@ TEST_P(RendererPixelTest, FastPassFilterChain) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("blue_yellow_filter_chain.png")),
-      cc::FuzzyPixelOffByOneComparator(false)));
+      cc::FuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(RendererPixelTest, FastPassColorFilterAlphaTranslation) {
@@ -2413,7 +2417,7 @@ TEST_P(RendererPixelTest, FastPassColorFilterAlphaTranslation) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("blue_yellow_alpha_translate.png")),
-      cc::FuzzyPixelOffByOneComparator(false)));
+      cc::FuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(RendererPixelTest, EnlargedRenderPassTexture) {
@@ -2457,7 +2461,7 @@ TEST_P(RendererPixelTest, EnlargedRenderPassTexture) {
 
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("blue_yellow.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(RendererPixelTest, EnlargedRenderPassTextureWithAntiAliasing) {
@@ -2512,7 +2516,11 @@ TEST_P(RendererPixelTest, EnlargedRenderPassTextureWithAntiAliasing) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("blue_yellow_anti_aliasing.png")),
-      cc::FuzzyPixelComparator(true, 100.f, 0.f, 5.f, 7, 0)));
+      cc::FuzzyPixelComparator()
+          .DiscardAlpha()
+          .SetErrorPixelsPercentageLimit(100.f)
+          .SetAvgAbsErrorLimit(5.f)
+          .SetAbsErrorLimit(7)));
 }
 
 // This tests the case where we have a RenderPass with a mask, but the quad
@@ -2609,7 +2617,7 @@ TEST_P(RendererPixelTest, RenderPassAndMaskWithPartialQuad) {
 
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("mask_bottom_right.png")),
-      cc::ExactPixelComparator(true)));
+      cc::AlphaDiscardingExactPixelComparator()));
 }
 
 // This tests the case where we have a RenderPass with a mask, but the quad
@@ -2706,7 +2714,7 @@ TEST_P(RendererPixelTest, RenderPassAndMaskWithPartialQuad2) {
 
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("mask_middle.png")),
-      cc::ExactPixelComparator(true)));
+      cc::AlphaDiscardingExactPixelComparator()));
 }
 
 TEST_P(RendererPixelTest, RenderPassAndMaskForRoundedCorner) {
@@ -2795,7 +2803,8 @@ TEST_P(RendererPixelTest, RenderPassAndMaskForRoundedCorner) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("rounded_corner_simple.png")),
-      cc::FuzzyPixelComparator(true, 0.6f, 0.f, 255.f, 255, 0)));
+      cc::FuzzyPixelComparator().DiscardAlpha().SetErrorPixelsPercentageLimit(
+          0.6f)));
 }
 
 TEST_P(RendererPixelTest, RenderPassAndMaskForRoundedCornerMultiRadii) {
@@ -2896,7 +2905,8 @@ TEST_P(RendererPixelTest, RenderPassAndMaskForRoundedCornerMultiRadii) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("rounded_corner_multi_radii.png")),
-      cc::FuzzyPixelComparator(true, 0.6f, 0.f, 255.f, 255, 0)));
+      cc::FuzzyPixelComparator().DiscardAlpha().SetErrorPixelsPercentageLimit(
+          0.6f)));
 }
 
 class RendererPixelTestWithBackdropFilter : public VizPixelTestWithParam {
@@ -3075,7 +3085,7 @@ TEST_P(RendererPixelTestWithBackdropFilter, InvertFilter) {
   EXPECT_TRUE(this->RunPixelTest(
       &this->pass_list_,
       base::FilePath(FILE_PATH_LITERAL("backdrop_filter.png")),
-      cc::ExactPixelComparator(true)));
+      cc::AlphaDiscardingExactPixelComparator()));
 }
 
 TEST_P(RendererPixelTestWithBackdropFilter, InvertFilterWithMask) {
@@ -3093,7 +3103,7 @@ TEST_P(RendererPixelTestWithBackdropFilter, InvertFilterWithMask) {
           : FILE_PATH_LITERAL("backdrop_filter_masked.png"));
 
   EXPECT_TRUE(this->RunPixelTest(&this->pass_list_, expected_path,
-                                 cc::FuzzyPixelOffByOneComparator(false)));
+                                 cc::FuzzyPixelOffByOneComparator()));
 }
 
 // Software renderer does not support anti-aliased edges.
@@ -3135,7 +3145,7 @@ TEST_P(GPURendererPixelTest, AntiAliasing) {
       this->RunPixelTest(&pass_list,
                          base::FilePath(FILE_PATH_LITERAL("anti_aliasing_.png"))
                              .InsertBeforeExtensionASCII(this->renderer_str()),
-                         cc::FuzzyPixelOffByOneComparator(true)));
+                         cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 // Software renderer does not support anti-aliased edges.
@@ -3173,7 +3183,7 @@ TEST_P(GPURendererPixelTest, AntiAliasingPerspective) {
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("anti_aliasing_perspective_.png"))
           .InsertBeforeExtensionASCII(this->renderer_str()),
-      cc::FuzzyPixelOffByOneComparator(true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 // This test tests that anti-aliasing works for axis aligned quads.
@@ -3201,7 +3211,7 @@ TEST_P(GPURendererPixelTest, AxisAligned) {
 
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("axis_aligned.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 // This test tests that forcing anti-aliasing off works as expected for
@@ -3240,7 +3250,7 @@ TEST_P(GPURendererPixelTest, SolidColorDrawQuadForceAntiAliasingOff) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("force_anti_aliasing_off.png")),
-      cc::ExactPixelComparator(/*discard_alpha=*/true)));
+      cc::AlphaDiscardingExactPixelComparator()));
 }
 
 // This test tests that forcing anti-aliasing off works as expected for
@@ -3299,7 +3309,7 @@ TEST_P(GPURendererPixelTest, RenderPassDrawQuadForceAntiAliasingOff) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("force_anti_aliasing_off.png")),
-      cc::ExactPixelComparator(/*discard_alpha=*/true)));
+      cc::AlphaDiscardingExactPixelComparator()));
 }
 
 // This test tests that forcing anti-aliasing off works as expected for
@@ -3367,7 +3377,7 @@ TEST_P(GPURendererPixelTest, TileDrawQuadForceAntiAliasingOff) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("force_anti_aliasing_off.png")),
-      cc::ExactPixelComparator(/*discard_alpha=*/true)));
+      cc::AlphaDiscardingExactPixelComparator()));
 }
 
 // This test tests that forcing anti-aliasing off works as expected while
@@ -3397,7 +3407,7 @@ TEST_P(GPURendererPixelTest, BlendingWithoutAntiAliasing) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("translucent_quads_no_aa.png")),
-      cc::ExactPixelComparator(/*discard_alpha=*/true)));
+      cc::AlphaDiscardingExactPixelComparator()));
 }
 
 TEST_P(GPURendererPixelTest, TrilinearFiltering) {
@@ -3456,12 +3466,12 @@ TEST_P(GPURendererPixelTest, TrilinearFiltering) {
     EXPECT_TRUE(this->RunPixelTest(
         &pass_list,
         base::FilePath(FILE_PATH_LITERAL("trilinear_filtering_skia_vk.png")),
-        cc::ExactPixelComparator(true)));
+        cc::AlphaDiscardingExactPixelComparator()));
   } else {
     EXPECT_TRUE(this->RunPixelTest(
         &pass_list,
         base::FilePath(FILE_PATH_LITERAL("trilinear_filtering.png")),
-        cc::ExactPixelComparator(true)));
+        cc::AlphaDiscardingExactPixelComparator()));
   }
 }
 
@@ -3542,7 +3552,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadIdentityScale) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("green_with_blue_corner.png")),
-      cc::ExactPixelComparator(true)));
+      cc::AlphaDiscardingExactPixelComparator()));
 }
 
 // Not WithSkiaGPUBackend since that path currently requires tiles for opacity.
@@ -3602,7 +3612,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadOpacity) {
 
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("green_alpha.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 TEST_F(SoftwareRendererPixelTest, PictureDrawQuadOpacityWithAlpha) {
@@ -3659,9 +3669,9 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadOpacityWithAlpha) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
 
-  EXPECT_TRUE(this->RunPixelTest(&pass_list,
-                                 base::FilePath(FILE_PATH_LITERAL("white.png")),
-                                 cc::FuzzyPixelOffByOneComparator(true)));
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list, base::FilePath(FILE_PATH_LITERAL("white.png")),
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 void draw_point_color(SkCanvas* canvas,
@@ -3721,7 +3731,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadDisableImageFiltering) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("four_blue_green_checkers.png")),
-      cc::ExactPixelComparator(true)));
+      cc::AlphaDiscardingExactPixelComparator()));
 }
 
 // This disables filtering by setting |nearest_neighbor| on the
@@ -3770,7 +3780,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadNearestNeighbor) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("four_blue_green_checkers.png")),
-      cc::ExactPixelComparator(true)));
+      cc::AlphaDiscardingExactPixelComparator()));
 }
 
 // This disables filtering by setting |nearest_neighbor| on the
@@ -3832,7 +3842,7 @@ TEST_P(RendererPixelTest, TileDrawQuadNearestNeighbor) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("four_blue_green_checkers.png")),
-      cc::ExactPixelComparator(true)));
+      cc::AlphaDiscardingExactPixelComparator()));
 }
 
 // This disables filtering by setting |nearest_neighbor| to true on the
@@ -3884,7 +3894,7 @@ TEST_F(SoftwareRendererPixelTest, TextureDrawQuadNearestNeighbor) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("four_blue_green_checkers.png")),
-      cc::FuzzyPixelComparator(false, 2.f, 0.f, 256.f, 256, 0.f)));
+      cc::FuzzyPixelComparator().SetErrorPixelsPercentageLimit(2.f)));
 }
 
 // This ensures filtering is enabled by setting |nearest_neighbor| to false on
@@ -3941,7 +3951,9 @@ TEST_F(SoftwareRendererPixelTest, TextureDrawQuadLinear) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("four_blue_green_checkers_linear.png")),
-      cc::FuzzyPixelComparator(false, 100.f, 0.f, 16.f, 16.f, 0.f)));
+      cc::FuzzyPixelComparator()
+          .SetErrorPixelsPercentageLimit(100.f)
+          .SetAbsErrorLimit(16)));
 }
 
 TEST_F(SoftwareRendererPixelTest, PictureDrawQuadNonIdentityScale) {
@@ -4076,7 +4088,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadNonIdentityScale) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("four_blue_green_checkers.png")),
-      cc::ExactPixelComparator(true)));
+      cc::AlphaDiscardingExactPixelComparator()));
 }
 
 class RendererPixelTestWithFlippedOutputSurface : public VizPixelTestWithParam {
@@ -4138,7 +4150,7 @@ TEST_P(RendererPixelTestWithFlippedOutputSurface, ExplicitFlipTest) {
   // right-side up result regardless (i.e., NOT blue_yellow_flipped.png).
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("blue_yellow.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(RendererPixelTestWithFlippedOutputSurface, CheckChildPassUnflipped) {
@@ -4183,7 +4195,7 @@ TEST_P(RendererPixelTestWithFlippedOutputSurface, CheckChildPassUnflipped) {
   EXPECT_TRUE(this->RunPixelTestWithReadbackTarget(
       &pass_list, pass_list.front().get(),
       base::FilePath(FILE_PATH_LITERAL("blue_yellow.png")),
-      cc::ExactPixelComparator(true)));
+      cc::AlphaDiscardingExactPixelComparator()));
 }
 
 TEST_P(GPURendererPixelTest, CheckReadbackSubset) {
@@ -4232,7 +4244,7 @@ TEST_P(GPURendererPixelTest, CheckReadbackSubset) {
   EXPECT_TRUE(this->RunPixelTestWithReadbackTargetAndArea(
       &pass_list, pass_list.front().get(),
       base::FilePath(FILE_PATH_LITERAL("green_small_with_blue_corner.png")),
-      cc::ExactPixelComparator(true), &capture_rect));
+      cc::AlphaDiscardingExactPixelComparator(), &capture_rect));
 }
 
 TEST_P(GPURendererPixelTest, TextureQuadBatching) {
@@ -4317,7 +4329,7 @@ TEST_P(GPURendererPixelTest, TextureQuadBatching) {
 
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("spiral.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(GPURendererPixelTest, TileQuadClamping) {
@@ -4390,7 +4402,7 @@ TEST_P(GPURendererPixelTest, TileQuadClamping) {
 
   EXPECT_TRUE(this->RunPixelTest(&pass_list,
                                  base::FilePath(FILE_PATH_LITERAL("green.png")),
-                                 cc::ExactPixelComparator(true)));
+                                 cc::AlphaDiscardingExactPixelComparator()));
 }
 
 TEST_P(RendererPixelTest, RoundedCornerSimpleSolidDrawQuad) {
@@ -4429,7 +4441,8 @@ TEST_P(RendererPixelTest, RoundedCornerSimpleSolidDrawQuad) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("rounded_corner_simple.png")),
-      cc::FuzzyPixelComparator(true, 0.55f, 0.f, 255.f, 255, 0)));
+      cc::FuzzyPixelComparator().DiscardAlpha().SetErrorPixelsPercentageLimit(
+          0.55f)));
 }
 
 TEST_P(GPURendererPixelTest, RoundedCornerSimpleTextureDrawQuad) {
@@ -4488,7 +4501,8 @@ TEST_P(GPURendererPixelTest, RoundedCornerSimpleTextureDrawQuad) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("rounded_corner_simple.png")),
-      cc::FuzzyPixelComparator(true, 0.6f, 0.f, 255.f, 255, 0)));
+      cc::FuzzyPixelComparator().DiscardAlpha().SetErrorPixelsPercentageLimit(
+          0.6f)));
 }
 
 TEST_P(RendererPixelTest, RoundedCornerOnRenderPass) {
@@ -4548,8 +4562,8 @@ TEST_P(RendererPixelTest, RoundedCornerOnRenderPass) {
 
   base::FilePath path(FILE_PATH_LITERAL("rounded_corner_render_pass_.png"));
   path = path.InsertBeforeExtensionASCII(this->renderer_str());
-  EXPECT_TRUE(this->RunPixelTest(&pass_list, path,
-                                 cc::FuzzyPixelOffByOneComparator(true)));
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list, path, cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(GPURendererPixelTest, LinearGradientOnRenderPass) {
@@ -4593,12 +4607,8 @@ TEST_P(GPURendererPixelTest, LinearGradientOnRenderPass) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("linear_gradient_render_pass.png")),
-      cc::FuzzyPixelComparator(/*discard_alpha=*/true,
-                               /*error_pixels_percentage_limit=*/0.6f,
-                               /*small_error_pixels_percentage_limit=*/0.f,
-                               /*avg_abs_error_limit=*/255.f,
-                               /*max_abs_error_limit=*/255,
-                               /*small_error_threshold=*/0)));
+      cc::FuzzyPixelComparator().DiscardAlpha().SetErrorPixelsPercentageLimit(
+          0.6f)));
 }
 
 TEST_P(GPURendererPixelTest, MultiLinearGradientOnRenderPass) {
@@ -4663,12 +4673,8 @@ TEST_P(GPURendererPixelTest, MultiLinearGradientOnRenderPass) {
       &pass_list,
       base::FilePath(
           FILE_PATH_LITERAL("multi_linear_gradient_render_pass.png")),
-      cc::FuzzyPixelComparator(/*discard_alpha=*/true,
-                               /*error_pixels_percentage_limit=*/0.6f,
-                               /*small_error_pixels_percentage_limit=*/0.f,
-                               /*avg_abs_error_limit=*/255.f,
-                               /*max_abs_error_limit=*/255,
-                               /*small_error_threshold=*/0)));
+      cc::FuzzyPixelComparator().DiscardAlpha().SetErrorPixelsPercentageLimit(
+          0.6f)));
 }
 
 TEST_P(RendererPixelTest, RoundedCornerMultiRadii) {
@@ -4715,7 +4721,8 @@ TEST_P(RendererPixelTest, RoundedCornerMultiRadii) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("rounded_corner_multi_radii.png")),
-      cc::FuzzyPixelComparator(true, 0.55f, 0.f, 255.f, 255, 0)));
+      cc::FuzzyPixelComparator().DiscardAlpha().SetErrorPixelsPercentageLimit(
+          0.55f)));
 }
 
 TEST_P(RendererPixelTest, RoundedCornerMultipleQads) {
@@ -4792,7 +4799,9 @@ TEST_P(RendererPixelTest, RoundedCornerMultipleQads) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(root_pass));
 
-  cc::FuzzyPixelComparator comparator(true, 0.55f, 0.f, 255.f, 255, 0);
+  auto comparator =
+      cc::FuzzyPixelComparator().DiscardAlpha().SetErrorPixelsPercentageLimit(
+          0.55f);
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("rounded_corner_multi_quad.png")),
@@ -4834,7 +4843,7 @@ TEST_P(RendererPixelTestWithOverdrawFeedback, TranslucentRectangles) {
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("translucent_rectangles.png")),
-      cc::FuzzyPixelComparator(false, 2.f, 0.f, 256.f, 256, 0.f)));
+      cc::FuzzyPixelComparator().SetErrorPixelsPercentageLimit(2.f)));
 }
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -4990,8 +4999,10 @@ class ColorTransformPixelTest
     }
 #endif
 
-    cc::FuzzyPixelComparator comparator(false, 100.f, 0.f, avg_abs_error_limit,
-                                        max_abs_error_limit, 0);
+    auto comparator = cc::FuzzyPixelComparator()
+                          .SetErrorPixelsPercentageLimit(100.f)
+                          .SetAvgAbsErrorLimit(avg_abs_error_limit)
+                          .SetAbsErrorLimit(max_abs_error_limit);
     EXPECT_TRUE(
         this->RunPixelTest(&pass_list, &expected_output_colors, comparator))
         << " src:" << src_color_space_ << ", dst:" << dst_color_space_;
@@ -5110,8 +5121,9 @@ class DelegatedInkTest : public VizPixelTestWithParam,
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
 
-    return this->RunPixelTest(&pass_list, base::FilePath(file),
-                              cc::FuzzyPixelOffByOneComparator(true));
+    return this->RunPixelTest(
+        &pass_list, base::FilePath(file),
+        cc::AlphaDiscardingFuzzyPixelOffByOneComparator());
   }
 
  protected:
@@ -5307,7 +5319,7 @@ TEST_P(DelegatedInkWithPredictionTest, DelegatedInkTrailAfterBatchedQuads) {
       &pass_list,
       base::FilePath(
           FILE_PATH_LITERAL("delegated_ink_trail_on_batched_quads.png")),
-      cc::FuzzyPixelOffByOneComparator(true)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 // Confirm that delegated ink trails are not drawn on non-root render passes.
@@ -5354,7 +5366,7 @@ TEST_P(DelegatedInkWithPredictionTest, SimpleTrailNonRootRenderPass) {
   EXPECT_TRUE(this->RunPixelTestWithReadbackTarget(
       &pass_list, child_pass_ptr,
       base::FilePath(FILE_PATH_LITERAL("green.png")),
-      cc::ExactPixelComparator(true)));
+      cc::AlphaDiscardingExactPixelComparator()));
 }
 
 // Draw two different trails that are made up of sets of DelegatedInkPoints with

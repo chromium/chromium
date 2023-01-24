@@ -176,7 +176,8 @@ TEST_P(LayerTreeHostScrollbarsPixelTest, MAYBE_HugeTransformScale) {
   scale_transform.Scale(scale, scale);
   layer->SetTransform(scale_transform);
 
-  pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(true);
+  pixel_comparator_ =
+      std::make_unique<AlphaDiscardingFuzzyPixelOffByOneComparator>();
 
   RunPixelTest(background,
                base::FilePath(use_skia_vulkan()
