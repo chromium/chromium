@@ -177,7 +177,6 @@
 #include "base/stack_canary_linux.h"
 #include "content/browser/sandbox_host_linux.h"
 #include "content/browser/zygote_host/zygote_host_impl_linux.h"
-#include "content/common/shared_file_util.h"
 #include "content/common/zygote/zygote_communication_linux.h"
 #include "content/common/zygote/zygote_handle_impl_linux.h"
 #include "content/public/common/zygote/sandbox_support_linux.h"
@@ -644,11 +643,6 @@ int NO_STACK_PROTECTOR RunZygote(ContentMainDelegate* delegate) {
     stack_canary_debug_message.ReplaceClosure(
         base::BindOnce(&base::SetStackSmashingEmitsDebugMessage));
   }
-
-  // The zygote sets up base::GlobalDescriptors with all of the FDs passed to
-  // the new child, so populate base::FileDescriptorStore with a subset of the
-  // FDs currently stored in base::GlobalDescriptors.
-  PopulateFileDescriptorStoreFromGlobalDescriptors();
 
   delegate->ZygoteForked();
 

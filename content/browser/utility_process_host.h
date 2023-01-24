@@ -14,20 +14,13 @@
 #include "base/process/launch.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "content/browser/child_process_launcher.h"
 #include "content/common/child_process.mojom.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_child_process_host_delegate.h"
-#include "content/public/common/zygote/zygote_buildflags.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
-
-#if BUILDFLAG(USE_ZYGOTE)
-#include "content/public/common/zygote/zygote_handle.h"
-#endif  // BUILDFLAG(USE_ZYGOTE)
 
 // TODO(crbug.com/1328879): Remove this when fixing the bug.
 #if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
@@ -124,17 +117,6 @@ class CONTENT_EXPORT UtilityProcessHost
   // Provides extra switches to append to the process's command line.
   void SetExtraCommandLineSwitches(std::vector<std::string> switches);
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
-  // Adds to ChildProcessLauncherFileData::files_to_preload, which maps |key| ->
-  // |file| in the new process's base::FileDescriptorStore.
-  void AddFileToPreload(std::string key,
-                        absl::variant<base::FilePath, base::ScopedFD> file);
-#endif
-
-#if BUILDFLAG(USE_ZYGOTE)
-  void SetZygoteForTesting(ZygoteCommunication* handle);
-#endif  // BUILDFLAG(USE_ZYGOTE)
-
   // Returns a control interface for the running child process.
   mojom::ChildProcess* GetChildProcess();
 
@@ -175,13 +157,6 @@ class CONTENT_EXPORT UtilityProcessHost
 
   // Extra command line switches to append.
   std::vector<std::string> extra_switches_;
-
-  // Extra files and file descriptors to preload in the new process.
-  std::unique_ptr<ChildProcessLauncherFileData> file_data_;
-
-#if BUILDFLAG(USE_ZYGOTE)
-  absl::optional<raw_ptr<ZygoteCommunication>> zygote_for_testing_;
-#endif  // BUILDFLAG(USE_ZYGOTE)
 
   // Indicates whether the process has been successfully launched yet, or if
   // launch failed.

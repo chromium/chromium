@@ -152,6 +152,8 @@ source_set("common") {
     "pseudonymization_salt.h",
     "set_process_title.cc",
     "set_process_title.h",
+    "shared_file_util.cc",
+    "shared_file_util.h",
     "skia_utils.cc",
     "skia_utils.h",
     "thread_pool_util.cc",
@@ -271,13 +273,6 @@ source_set("common") {
     ":mojo_bindings",
     "//content/public/common:interfaces",
   ]
-
-  if (is_posix) {
-    sources += [
-      "shared_file_util.cc",
-      "shared_file_util.h",
-    ]
-  }
 
   if (is_android) {
     sources += [

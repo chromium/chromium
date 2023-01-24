@@ -13,7 +13,7 @@
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 
 #if BUILDFLAG(USE_ZYGOTE)
-#include "content/public/common/zygote/zygote_handle.h"
+#include "content/common/zygote/zygote_handle_impl_linux.h"
 #endif  // BUILDFLAG(USE_ZYGOTE)
 
 #if BUILDFLAG(IS_WIN)
@@ -49,19 +49,10 @@ class UtilitySandboxedProcessLauncherDelegate
   base::EnvironmentMap GetEnvironment() override;
 #endif  // BUILDFLAG(IS_POSIX)
 
-#if BUILDFLAG(USE_ZYGOTE)
-  void SetZygote(ZygoteCommunication* handle);
-#endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
-
  private:
 #if BUILDFLAG(IS_POSIX)
   base::EnvironmentMap env_;
 #endif  // BUILDFLAG(IS_POSIX)
-
-#if BUILDFLAG(USE_ZYGOTE)
-  absl::optional<raw_ptr<ZygoteCommunication>> zygote_;
-#endif  // BUILDFLAG(USE_ZYGOTE)
-
   sandbox::mojom::Sandbox sandbox_type_;
   base::CommandLine cmd_line_;
 };

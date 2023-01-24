@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -40,10 +39,6 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "content/test/sandbox_status_service.h"
-#endif
-
-#if BUILDFLAG(IS_POSIX)
-#include "base/file_descriptor_store.h"
 #endif
 
 namespace content {
@@ -140,19 +135,6 @@ class TestUtilityServiceImpl : public mojom::TestService {
   void PassWriteableFile(base::File file,
                          PassWriteableFileCallback callback) override {
     std::move(callback).Run();
-  }
-
-  void WriteToPreloadedPipe() override {
-#if BUILDFLAG(IS_POSIX)
-    base::MemoryMappedFile::Region region;
-    base::ScopedFD write_pipe = base::FileDescriptorStore::GetInstance().TakeFD(
-        mojom::kTestPipeKey, &region);
-    CHECK(write_pipe.is_valid());
-    CHECK(region == base::MemoryMappedFile::Region::kWholeFile);
-    CHECK(base::WriteFileDescriptor(write_pipe.get(), "test"));
-#else
-    NOTREACHED();
-#endif
   }
 
  private:

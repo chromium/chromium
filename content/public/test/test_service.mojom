@@ -7,8 +7,6 @@ module content.mojom;
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 
-const string kTestPipeKey = "content_test_pipe";
-
 interface TestService {
   // Doesn't actually do anything, just responds.
   DoSomething() => ();
@@ -60,8 +58,4 @@ interface TestService {
   // Pass a writeable file handle. This is used to test that the file cannot be
   // passed if it can be opened with EXECUTE. See https://crbug.com/1335974.
   PassWriteableFile(mojo_base.mojom.File file) => ();
-
-  // Writes to the pipe that should be stored in base::FileDescriptorStore with
-  // the key kTestPipeKey.
-  WriteToPreloadedPipe();
 };

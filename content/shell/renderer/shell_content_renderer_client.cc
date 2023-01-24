@@ -142,8 +142,6 @@ class TestRendererServiceImpl : public mojom::TestService {
     std::move(callback).Run();
   }
 
-  void WriteToPreloadedPipe() override { NOTREACHED(); }
-
   mojo::Receiver<mojom::TestService> receiver_;
 };
 
