@@ -67,6 +67,9 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   const NGLayoutResult* Layout() override;
 
  private:
+  NOINLINE const NGLayoutResult* HandleNonsuccessfulLayoutResult(
+      const NGLayoutResult*);
+
   NOINLINE const NGLayoutResult* LayoutWithInlineChildLayoutContext(
       const NGLayoutInputNode& first_child);
 

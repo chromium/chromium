@@ -462,13 +462,33 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::Layout() {
     result = LayoutWithInlineChildLayoutContext(first_child);
   else
     result = Layout(nullptr);
+
+  if (result->Status() == NGLayoutResult::kSuccess) {
+    return result;
+  }
+
+  // To reduce stack usage, handle non-successful results in a separate
+  // function.
+  return HandleNonsuccessfulLayoutResult(result);
+}
+
+NOINLINE const NGLayoutResult*
+NGBlockLayoutAlgorithm::HandleNonsuccessfulLayoutResult(
+    const NGLayoutResult* result) {
+  DCHECK(result->Status() != NGLayoutResult::kSuccess);
   switch (result->Status()) {
-    case NGLayoutResult::kNeedsEarlierBreak:
+    case NGLayoutResult::kNeedsEarlierBreak: {
       // If we found a good break somewhere inside this block, re-layout and
       // break at that location.
       DCHECK(result->GetEarlyBreak());
-      return RelayoutAndBreakEarlier<NGBlockLayoutAlgorithm>(
-          *result->GetEarlyBreak());
+
+      NGLayoutAlgorithmParams params(
+          Node(), container_builder_.InitialFragmentGeometry(),
+          ConstraintSpace(), BreakToken(), result->GetEarlyBreak());
+      params.column_spanner_path = column_spanner_path_;
+      NGBlockLayoutAlgorithm algorithm_with_break(params);
+      return RelayoutAndBreakEarlier(&algorithm_with_break);
+    }
     case NGLayoutResult::kNeedsRelayoutWithNoForcedTruncateAtLineClamp:
       DCHECK(!ignore_line_clamp_);
       return RelayoutIgnoringLineClamp();
