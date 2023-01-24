@@ -43,6 +43,10 @@
 </div>
 <script src="../../resources/run-after-layout-and-paint.js"></script>
 <script>
+// Under-invalidation checking for this test is slow.
+if (window.internals) {
+  internals.runtimeFlags.paintUnderInvalidationCheckingEnabled = false;
+}
 runAfterLayoutAndPaint(function() {
   container.scrollTop = 10000;
   container.scrollLeft = 10000;
