@@ -897,7 +897,7 @@ class TestTabMirroringSession : public mirroring::mojom::SessionObserver,
         false /** force_letterboxing */);
     host_->Start(std::move(session_params), std::move(observer_remote),
                  std::move(channel_remote),
-                 channel_to_service_.BindNewPipeAndPassReceiver());
+                 channel_to_service_.BindNewPipeAndPassReceiver(), "Sink Name");
   }
 
   // SessionObserver implementation

@@ -157,18 +157,39 @@ class SwitchToTabButton
   const bool focus_target_is_capturer_;
 };
 
-std::u16string GetMessageTextCasting(bool shared_tab,
-                                     const std::u16string& shared_tab_name) {
+std::u16string GetMessageTextCastingNoSinkName(
+    bool shared_tab,
+    const std::u16string& shared_tab_name) {
   if (shared_tab) {
     return l10n_util::GetStringUTF16(
-        IDS_TAB_CASTING_INFOBAR_CASTING_CURRENT_TAB_LABEL);
+        IDS_TAB_CASTING_INFOBAR_CASTING_CURRENT_TAB_NO_DEVICE_NAME_LABEL);
   }
-  return !shared_tab_name.empty()
+  return shared_tab_name.empty()
+             ? l10n_util::GetStringUTF16(
+                   IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_UNTITLED_TAB_NO_DEVICE_NAME_LABEL)
+             : l10n_util::GetStringFUTF16(
+                   IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_TAB_NO_DEVICE_NAME_LABEL,
+                   shared_tab_name);
+}
+
+std::u16string GetMessageTextCasting(bool shared_tab,
+                                     const std::u16string& shared_tab_name,
+                                     const std::u16string& sink_name) {
+  if (sink_name.empty()) {
+    return GetMessageTextCastingNoSinkName(shared_tab, shared_tab_name);
+  }
+
+  if (shared_tab) {
+    return l10n_util::GetStringFUTF16(
+        IDS_TAB_CASTING_INFOBAR_CASTING_CURRENT_TAB_LABEL, sink_name);
+  }
+  return shared_tab_name.empty()
              ? l10n_util::GetStringFUTF16(
+                   IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_UNTITLED_TAB_LABEL,
+                   sink_name)
+             : l10n_util::GetStringFUTF16(
                    IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_TAB_LABEL,
-                   shared_tab_name)
-             : l10n_util::GetStringUTF16(
-                   IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_UNTITLED_TAB_LABEL);
+                   shared_tab_name, sink_name);
 }
 
 std::u16string GetMessageTextCapturing(bool shared_tab,
@@ -193,7 +214,7 @@ std::u16string GetMessageTextCapturing(bool shared_tab,
 infobars::InfoBar* TabSharingInfoBarDelegate::Create(
     infobars::ContentInfoBarManager* infobar_manager,
     const std::u16string& shared_tab_name,
-    const std::u16string& app_name,
+    const std::u16string& capturer_name,
     bool shared_tab,
     ButtonState share_this_tab_instead_button_state,
     absl::optional<FocusTarget> focus_target,
@@ -203,14 +224,14 @@ infobars::InfoBar* TabSharingInfoBarDelegate::Create(
   DCHECK(infobar_manager);
   return infobar_manager->AddInfoBar(
       CreateConfirmInfoBar(base::WrapUnique(new TabSharingInfoBarDelegate(
-          shared_tab_name, app_name, shared_tab,
+          shared_tab_name, capturer_name, shared_tab,
           share_this_tab_instead_button_state, focus_target, ui, capture_type,
           favicons_used_for_switch_to_tab_button))));
 }
 
 TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
     std::u16string shared_tab_name,
-    std::u16string app_name,
+    std::u16string capturer_name,
     bool shared_tab,
     ButtonState share_this_tab_instead_button_state,
     absl::optional<FocusTarget> focus_target,
@@ -218,8 +239,8 @@ TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
     TabShareType capture_type,
     bool favicons_used_for_switch_to_tab_button)
     : shared_tab_name_(std::move(shared_tab_name)),
-      app_name_(std::move(app_name)),
       shared_tab_(shared_tab),
+      capturer_name_(std::move(capturer_name)),
       ui_(ui),
       favicons_used_for_switch_to_tab_button_(
           favicons_used_for_switch_to_tab_button),
@@ -268,9 +289,11 @@ TabSharingInfoBarDelegate::GetIdentifier() const {
 std::u16string TabSharingInfoBarDelegate::GetMessageText() const {
   switch (capture_type_) {
     case TabShareType::CAST:
-      return GetMessageTextCasting(shared_tab_, shared_tab_name_);
+      return GetMessageTextCasting(shared_tab_, shared_tab_name_,
+                                   capturer_name_);
     case TabShareType::CAPTURE:
-      return GetMessageTextCapturing(shared_tab_, shared_tab_name_, app_name_);
+      return GetMessageTextCapturing(shared_tab_, shared_tab_name_,
+                                     capturer_name_);
   }
   NOTREACHED();
   return std::u16string();

@@ -75,8 +75,8 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
   void Start(mojom::SessionParametersPtr session_params,
              mojo::PendingRemote<mojom::SessionObserver> observer,
              mojo::PendingRemote<mojom::CastMessageChannel> outbound_channel,
-             mojo::PendingReceiver<mojom::CastMessageChannel> inbound_channel)
-      override;
+             mojo::PendingReceiver<mojom::CastMessageChannel> inbound_channel,
+             const std::string& sink_name) override;
   void GetTabSourceId(
       GetTabSourceIdCallback get_tab_source_id_callback) override;
 
@@ -178,6 +178,8 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
   // mirroring session using tab switcher UI bar. Mainly used for metrics
   // collecting.
   absl::optional<int> tab_switching_count_;
+
+  std::u16string sink_name_;
 
   // Used for calls supplied to `media_stream_ui_`, mainly to handle callbacks
   // for TabSharingUIViews. Invalidated every time a new UI is created.

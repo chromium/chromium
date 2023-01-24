@@ -49,7 +49,7 @@ class TabSharingUIViews : public TabSharingUI,
  public:
   TabSharingUIViews(content::GlobalRenderFrameHostId capturer,
                     const content::DesktopMediaID& media_id,
-                    std::u16string app_name,
+                    const std::u16string& capturer_name,
                     bool favicons_used_for_switch_to_tab_button,
                     bool app_preferred_current_tab,
                     TabSharingInfoBarDelegate::TabShareType capture_type);
@@ -176,7 +176,10 @@ class TabSharingUIViews : public TabSharingUI,
   const bool can_focus_capturer_;
   const bool capturer_restricted_to_same_origin_ = false;
   content::DesktopMediaID shared_tab_media_id_;
-  const std::u16string app_name_;
+
+  // Represents the web app name or the sink name receiving the captured stream.
+  const std::u16string capturer_name_;
+
   raw_ptr<content::WebContents, DanglingUntriaged> shared_tab_;
   std::unique_ptr<SameOriginObserver> shared_tab_origin_observer_;
   std::u16string shared_tab_name_;

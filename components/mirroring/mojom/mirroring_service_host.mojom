@@ -20,7 +20,8 @@ interface MirroringServiceHost {
   Start(SessionParameters params,
         pending_remote<SessionObserver> observer,
         pending_remote<CastMessageChannel> outbound_channel,
-        pending_receiver<CastMessageChannel> inbound_channel);
+        pending_receiver<CastMessageChannel> inbound_channel,
+        string sink_name);
 
   // Replies back with the current tab source id of the active mirroring
   // session if exist.

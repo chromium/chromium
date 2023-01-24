@@ -80,7 +80,8 @@ class MockMirroringServiceHost : public mirroring::mojom::MirroringServiceHost {
                mojo::PendingRemote<mirroring::mojom::CastMessageChannel>
                    outbound_channel,
                mojo::PendingReceiver<mirroring::mojom::CastMessageChannel>
-                   inbound_channel));
+                   inbound_channel,
+               const std::string& sink_name));
   MOCK_METHOD(void, GetTabSourceId, (GetTabSourceIdCallback callback));
 };
 

@@ -4030,13 +4030,22 @@ are declared in tools/grit/grit_rule.gni.
       </message>
 
       <!-- Tab casting infobar -->
-      <message name="IDS_TAB_CASTING_INFOBAR_CASTING_CURRENT_TAB_LABEL" desc="Text displayed on an infobar when current tab is being casted.">
+      <message name="IDS_TAB_CASTING_INFOBAR_CASTING_CURRENT_TAB_LABEL" desc="Text displayed on an infobar when current tab is being cast. The placeholder text (DEVICE_NAME) represents the name of the cast receiver.">
+       Casting this tab to <ph name="DEVICE_NAME">$1<ex>Living Room TV</ex></ph>
+      </message>
+      <message name="IDS_TAB_CASTING_INFOBAR_CASTING_CURRENT_TAB_NO_DEVICE_NAME_LABEL" desc="Text displayed on an infobar when current tab is being cast.">
        Casting this tab
       </message>
-      <message name="IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_UNTITLED_TAB_LABEL" desc="Text displayed on an infobar when another (non-current) untitled tab is being casted.">
+      <message name="IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_UNTITLED_TAB_LABEL" desc="Text displayed on an infobar when another (non-current) untitled tab is being cast. The placeholder text (DEVICE_NAME) represents the name of the cast receiver.">
+       Casting a tab to <ph name="DEVICE_NAME">$1<ex>Living Room TV</ex></ph>
+      </message>
+      <message name="IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_UNTITLED_TAB_NO_DEVICE_NAME_LABEL" desc="Text displayed on an infobar when another (non-current) untitled tab is being cast.">
        Casting a tab
       </message>
-      <message name="IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_TAB_LABEL" desc="Text displayed on an infobar when another (non-current) tab is being shacastedred.">
+      <message name="IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_TAB_LABEL" desc="Text displayed on an infobar when another (non-current) tab is being cast. The placeholder text (DEVICE_NAME) represents the name of the cast receiver.">
+       Casting <ph name="TAB_NAME">$1<ex>youtube.com</ex></ph> to <ph name="DEVICE_NAME">$2<ex>Living Room TV</ex></ph>
+      </message>
+      <message name="IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_TAB_NO_DEVICE_NAME_LABEL" desc="Text displayed on an infobar when another (non-current) tab is being cast.">
        Casting <ph name="TAB_NAME">$1<ex>youtube.com</ex></ph>
       </message>
       <message name="IDS_TAB_CASTING_INFOBAR_CAST_BUTTON" desc="Text displayed on the button to cast current tab.">

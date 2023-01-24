@@ -180,7 +180,7 @@ class CastMirroringServiceHostBrowserTest
     session_params->source_id = "SourceID";
     host_->Start(std::move(session_params), std::move(observer),
                  std::move(outbound_channel),
-                 inbound_channel_.BindNewPipeAndPassReceiver());
+                 inbound_channel_.BindNewPipeAndPassReceiver(), "Sink Name");
   }
 
   void EnableAccessCodeCast() {

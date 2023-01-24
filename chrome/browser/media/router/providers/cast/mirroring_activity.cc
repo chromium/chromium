@@ -545,7 +545,7 @@ void MirroringActivity::OnSessionSet(const CastSession& session) {
           GetMirroringRefreshInterval(),
           ShouldForceLetterboxing(cast_data_.model_name)),
       std::move(observer_remote), std::move(channel_remote),
-      std::move(channel_to_service_receiver_));
+      std::move(channel_to_service_receiver_), route_.media_sink_name());
 }
 
 void MirroringActivity::StopMirroring() {

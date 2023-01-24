@@ -24,17 +24,18 @@ class TabSharingUI;
 // per tab.
 //
 // 1. Layout for currently shared tab:
-// "Sharing this tab to |app_name_| [Stop]"
+// "Sharing this tab to |capturer_name_| [Stop]"
 //
 // 2. Layout for capturing/captured tab:
-// "Sharing |shared_tab_name_| to |app_name_| [Stop] [Switch-Label]"
+// "Sharing |shared_tab_name_| to |capturer_name_| [Stop] [Switch-Label]"
 // Where [Switch-Label] is "Switch to tab <hostname>", with the hostname in
 // the captured tab being the capturer's, and vice versa.
 //
 // 3a. Layout for all other tabs:
-// "Sharing |shared_tab_name_| to |app_name_| [Stop] [Share this tab instead]"
+// "Sharing |shared_tab_name_| to |capturer_name_| [Stop] [Share this tab
+// instead]"
 // 3b. Or if |shared_tab_name_| is empty:
-// "Sharing a tab to |app_name_| [Stop] [Share this tab instead]"
+// "Sharing a tab to |capturer_name_| [Stop] [Share this tab instead]"
 class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   // Represents a target to which focus could be switched and its favicon.
@@ -72,7 +73,7 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
   static infobars::InfoBar* Create(
       infobars::ContentInfoBarManager* infobar_manager,
       const std::u16string& shared_tab_name,
-      const std::u16string& app_name,
+      const std::u16string& capturer_name,
       bool shared_tab,
       ButtonState share_this_tab_instead_button_state,
       absl::optional<FocusTarget> focus_target,
@@ -84,7 +85,7 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
 
  private:
   TabSharingInfoBarDelegate(std::u16string shared_tab_name,
-                            std::u16string app_name,
+                            std::u16string capturer_name,
                             bool shared_tab,
                             ButtonState share_this_tab_instead_button_state,
                             absl::optional<FocusTarget> focus_target,
@@ -109,8 +110,12 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
   const gfx::VectorIcon& GetVectorIcon() const override;
 
   const std::u16string shared_tab_name_;
-  const std::u16string app_name_;
   const bool shared_tab_;
+
+  // Represents the app name that's doing the capture in `getDisplayMedia` when
+  // `TabShareType::CAPTURE`, and the sink name (which could be empty) when
+  // `TabShareType::CAST`.
+  const std::u16string capturer_name_;
 
   // Creates and removes delegate's infobar; outlives delegate.
   const raw_ptr<TabSharingUI, DanglingUntriaged> ui_;
