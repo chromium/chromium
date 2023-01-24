@@ -21,7 +21,6 @@
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_types.h"
 #include "extensions/browser/script_executor.h"
-#include "extensions/common/mojom/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom.h"
 
 namespace extensions {
@@ -310,8 +309,6 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void ApplyAttributes(const base::Value::Dict& params);
 
   void SetTransparency();
-
-  extensions::mojom::LocalFrame* GetLocalFrame();
 
   // Identifies the set of rules registries belonging to this guest.
   int rules_registry_id_;
