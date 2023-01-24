@@ -18,8 +18,9 @@ items:
   name: DevChannel
   value: dev-channel
 owners:
-- file://components/policy/OWNERS
-- pastarmovj@chromium.org
+- mpolzer@google.com
+- vsavu@google.com
+- chromeos-commercial-remote-management@google.com
 schema:
   enum:
   - stable-channel

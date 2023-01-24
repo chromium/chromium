@@ -14,6 +14,8 @@ future_on:
 label: Time period (milliseconds)
 owners:
 - grt@chromium.org
+- mpolzer@google.com
+- chromeos-commercial-remote-management@google.com
 schema:
   minimum: 3600000
   type: integer

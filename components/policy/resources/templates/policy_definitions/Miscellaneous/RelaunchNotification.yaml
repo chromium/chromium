@@ -21,6 +21,8 @@ items:
   value: 2
 owners:
 - grt@chromium.org
+- mpolzer@google.com
+- chromeos-commercial-remote-management@google.com
 schema:
   enum:
   - 1

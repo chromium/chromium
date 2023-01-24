@@ -10,8 +10,9 @@ example_value: 7200
 features:
   dynamic_refresh: true
 owners:
-- file://components/policy/OWNERS
-- emaxx@chromium.org
+- crisguerrero@google.com
+- mpolzer@google.com
+- chromeos-commercial-remote-management@google.com
 schema:
   type: integer
 supported_on:

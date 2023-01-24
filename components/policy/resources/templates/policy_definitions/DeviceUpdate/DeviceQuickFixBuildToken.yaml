@@ -11,8 +11,9 @@ features:
   dynamic_refresh: true
   per_profile: false
 owners:
-- askaraitzhan@chromium.org
-- ultrotter@chromium.org
+- sergiyb@google.com
+- mpolzer@google.com
+- chromeos-commercial-remote-management@google.com
 schema:
   type: string
 supported_on:

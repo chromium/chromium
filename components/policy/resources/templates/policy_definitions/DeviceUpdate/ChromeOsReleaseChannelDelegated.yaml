@@ -14,8 +14,9 @@ items:
 - caption: Prevent users from changing the release channel
   value: false
 owners:
-- file://components/policy/OWNERS
-- pastarmovj@chromium.org
+- mpolzer@google.com
+- vsavu@google.com
+- chromeos-commercial-remote-management@google.com
 schema:
   type: boolean
 supported_on:

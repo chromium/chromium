@@ -19,8 +19,9 @@ items:
 - caption: Disallow automatic reboot after updates
   value: false
 owners:
-- file://components/policy/OWNERS
-- bartfab@chromium.org
+- crisguerrero@google.com
+- mpolzer@google.com
+- chromeos-commercial-remote-management@google.com
 schema:
   type: boolean
 supported_on:

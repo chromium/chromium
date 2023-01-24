@@ -28,7 +28,8 @@ items:
 owners:
 - pastarmovj@chromium.org
 - asvitkine@chromium.org
-- amraboelkher@chromium.org
+- mpolzer@google.com
+- chromeos-commercial-remote-management@google.com
 schema:
   enum:
   - 0

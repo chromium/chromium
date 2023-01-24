@@ -11,8 +11,9 @@ features:
   per_profile: false
 label: Time period (milliseconds)
 owners:
-- file://components/policy/OWNERS
 - zmin@chromium.org
+- mpolzer@google.com
+- chromeos-commercial-remote-management@google.com
 schema:
   minimum: 3600000
   type: integer

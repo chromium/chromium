@@ -15,8 +15,9 @@ example_value: '1412.'
 features:
   dynamic_refresh: true
 owners:
-- file://components/policy/OWNERS
-- pmarko@chromium.org
+- janagrill@google.com
+- mpolzer@google.com
+- chromeos-commercial-remote-management@google.com
 schema:
   type: string
 supported_on:

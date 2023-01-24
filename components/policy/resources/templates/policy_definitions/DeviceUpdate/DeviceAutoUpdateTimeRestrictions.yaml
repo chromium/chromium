@@ -29,8 +29,9 @@ features:
   dynamic_refresh: true
   per_profile: false
 owners:
-- file://components/policy/OWNERS
-- pmarko@chromium.org
+- asumaneev@gogole.com
+- mpolzer@google.com
+- chromeos-commercial-remote-management@google.com
 schema:
   items:
     description: Time interval that spans at most one week. If the start time is later

@@ -17,7 +17,8 @@ items:
   value: false
 owners:
 - zeuthen@chromium.org
-- poromov@chromium.org
+- vsavu@google.com
+- chromeos-commercial-remote-management@google.com
 schema:
   type: boolean
 supported_on:

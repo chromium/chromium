@@ -7,7 +7,8 @@ features:
   dynamic_refresh: true
 owners:
 - vsavu@google.com
-- file://components/policy/OWNERS
+- mpolzer@google.com
+- chromeos-commercial-remote-management@google.com
 schema:
   type: string
 supported_on:

@@ -19,8 +19,9 @@ items:
 - caption: ChromeOS updates ignore the version defined in the kiosk app manifest
   value: false
 owners:
-- xiyuan@chromium.org
-- poromov@chromium.org
+- mpolzer@google.com
+- sergiyb@google.com
+- chromeos-commercial-remote-management@google.com
 schema:
   type: boolean
 supported_chrome_os_management:

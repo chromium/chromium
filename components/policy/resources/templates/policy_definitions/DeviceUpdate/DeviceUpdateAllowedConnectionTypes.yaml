@@ -9,8 +9,8 @@ example_value:
 features:
   dynamic_refresh: true
 owners:
-- file://components/policy/OWNERS
-- poromov@chromium.org
+- mpolzer@google.com
+- chromeos-commercial-remote-management@google.com
 schema:
   items:
     type: string

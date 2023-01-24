@@ -21,8 +21,9 @@ future_on:
 - fuchsia
 label: Relaunch time window
 owners:
-- snijhara@google.com
-- file://chrome/browser/upgrade_detector/OWNERS
+- mpolzer@google.com
+- crisguerrero@google.com
+- chromeos-commercial-remote-management@google.com
 schema:
   properties:
     entries:

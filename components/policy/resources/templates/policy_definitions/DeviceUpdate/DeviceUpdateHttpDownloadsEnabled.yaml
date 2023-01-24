@@ -13,8 +13,8 @@ items:
 - caption: Use HTTPS for update downloads
   value: false
 owners:
-- file://components/policy/OWNERS
-- bartfab@chromium.org
+- mpolzer@google.com
+- chromeos-commercial-remote-management@google.com
 schema:
   type: boolean
 supported_on:

@@ -21,7 +21,7 @@ features:
 owners:
 - vsavu@google.com
 - asumaneev@google.com
-- file://components/policy/OWNERS
+- chromeos-commercial-remote-management@google.com
 schema:
   type: string
 supported_on:
