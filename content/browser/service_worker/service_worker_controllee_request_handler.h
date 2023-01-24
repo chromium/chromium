@@ -127,11 +127,14 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   // initial subresources load, if this handler was for a navigation.
   void MaybeScheduleUpdate();
 
-  // Runs after ServiceWorker has started. Normally ServiceWorker starts before
-  // dispatching the main resource request, but if the
-  // ServiceWorkerBypassFetchHandler feature is enabled, we bypass the main
-  // resource request and then start ServiceWorker for subresources.
-  void DidStartWorkerForSubresources(blink::ServiceWorkerStatusCode status);
+  // Runs after ServiceWorker has started.
+  // Normally ServiceWorker starts before dispatching the main resource request,
+  // but if the ServiceWorkerBypassFetchHandler feature is enabled, we bypass
+  // the main resource request and then start ServiceWorker for subresources.
+  // Also, if we decided to start the service worker for
+  // the ServiceWorkerSkipEmptyFetchHandler feature and the browser handles
+  // an empty fetch handler, this runs after the service worker starts.
+  void DidStartWorker(blink::ServiceWorkerStatusCode status);
 
   const base::WeakPtr<ServiceWorkerContextCore> context_;
   const base::WeakPtr<ServiceWorkerContainerHost> container_host_;

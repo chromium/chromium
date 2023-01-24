@@ -540,6 +540,21 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
       registration->active_version()->CountFeature(
           blink::mojom::WebFeature::kServiceWorkerSkippedForEmptyFetchHandler);
       CompleteWithoutLoader();
+      if (!features::kStartServiceWorkerForEmptyFetchHandler.Get()) {
+        return;
+      }
+      // Start service worker if it is not running so that we run the code
+      // written in the top level.
+      if (registration->active_version()->running_status() ==
+              EmbeddedWorkerStatus::STARTING ||
+          registration->active_version()->running_status() ==
+              EmbeddedWorkerStatus::RUNNING) {
+        return;
+      }
+      registration->active_version()->StartWorker(
+          ServiceWorkerMetrics::EventType::SKIP_EMPTY_FETCH_HANDLER,
+          base::BindOnce(&ServiceWorkerControlleeRequestHandler::DidStartWorker,
+                         weak_factory_.GetWeakPtr()));
       return;
     }
     case ServiceWorkerVersion::FetchHandlerType::kNotSkippable: {
@@ -561,9 +576,9 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
         }
         registration->active_version()->StartWorker(
             ServiceWorkerMetrics::EventType::BYPASS_MAIN_RESOURCE,
-            base::BindOnce(&ServiceWorkerControlleeRequestHandler::
-                               DidStartWorkerForSubresources,
-                           weak_factory_.GetWeakPtr()));
+            base::BindOnce(
+                &ServiceWorkerControlleeRequestHandler::DidStartWorker,
+                weak_factory_.GetWeakPtr()));
         return;
       }
       // Otherwise, record the skip reason as kNotSkipped.
@@ -590,11 +605,10 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
                          loader_wrapper_->get()->AsWeakPtr())));
 }
 
-void ServiceWorkerControlleeRequestHandler::DidStartWorkerForSubresources(
+void ServiceWorkerControlleeRequestHandler::DidStartWorker(
     blink::ServiceWorkerStatusCode status) {
   TRACE_EVENT_WITH_FLOW1(
-      "ServiceWorker",
-      "ServiceWorkerControlleeRequestHandler::DidStartWorkerForSubresources",
+      "ServiceWorker", "ServiceWorkerControlleeRequestHandler::DidStartWorker",
       TRACE_ID_LOCAL(this),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "Status",
       blink::ServiceWorkerStatusToString(status));
