@@ -306,6 +306,7 @@ enum IOTaskState {
   queued,
   scanning,
   in_progress,
+  paused,
   success,
   error,
   need_password,

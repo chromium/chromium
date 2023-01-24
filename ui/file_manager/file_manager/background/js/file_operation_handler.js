@@ -83,6 +83,7 @@ export class FileOperationHandler {
         item.remainingTime = event.remainingSeconds;
         break;
       case chrome.fileManagerPrivate.IOTaskState.IN_PROGRESS:
+      case chrome.fileManagerPrivate.IOTaskState.PAUSED:
         item.progressMax = event.totalBytes;
         item.progressValue = event.bytesTransferred;
         item.remainingTime = event.remainingSeconds;
@@ -126,10 +127,12 @@ export class FileOperationHandler {
       default:
         console.error(`Invalid IOTaskState: ${event.state}`);
     }
+
     if (!event.showNotification) {
       // Set state to canceled so notification doesn't display.
       item.state = ProgressItemState.CANCELED;
     }
+
     this.progressCenter_.updateItem(item);
   }
 

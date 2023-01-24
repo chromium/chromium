@@ -152,6 +152,8 @@ file_manager_private::IOTaskState GetIOTaskState(
       return file_manager_private::IO_TASK_STATE_SCANNING;
     case file_manager::io_task::State::kInProgress:
       return file_manager_private::IO_TASK_STATE_IN_PROGRESS;
+    case file_manager::io_task::State::kPaused:
+      return file_manager_private::IO_TASK_STATE_PAUSED;
     case file_manager::io_task::State::kSuccess:
       return file_manager_private::IO_TASK_STATE_SUCCESS;
     case file_manager::io_task::State::kError:

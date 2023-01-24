@@ -27,6 +27,9 @@ enum class State {
   // Task is currently running.
   kInProgress,
 
+  // Task is currently paused.
+  kPaused,
+
   // Task has been successfully completed.
   kSuccess,
 

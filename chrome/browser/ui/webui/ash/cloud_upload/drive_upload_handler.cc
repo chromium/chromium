@@ -233,6 +233,8 @@ void DriveUploadHandler::OnIOTaskStatus(
             profile_, observed_relative_drive_path_);
       }
       return;
+    case file_manager::io_task::State::kPaused:
+      return;
     case file_manager::io_task::State::kSuccess:
       move_progress_ = 100;
       UpdateProgressNotification();

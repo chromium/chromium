@@ -294,6 +294,7 @@ chrome.fileManagerPrivate.IOTaskState = {
   QUEUED: 'queued',
   SCANNING: 'scanning',
   IN_PROGRESS: 'in_progress',
+  PAUSED: 'paused',
   SUCCESS: 'success',
   ERROR: 'error',
   NEED_PASSWORD: 'need_password',
