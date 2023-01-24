@@ -38,6 +38,7 @@ component("media_message_center") {
     "//base",
     "//components/media_message_center/vector_icons",
     "//components/strings:components_strings_grit",
+    "//components/url_formatter",
     "//components/vector_icons",
     "//services/media_session/public/cpp",
     "//skia",

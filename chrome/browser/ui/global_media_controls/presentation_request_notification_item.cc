@@ -9,10 +9,9 @@
 #include "components/favicon/core/favicon_driver.h"
 #include "components/global_media_controls/public/constants.h"
 #include "components/global_media_controls/public/media_item_manager.h"
+#include "components/media_message_center/media_notification_util.h"
 #include "components/media_message_center/media_notification_view.h"
 #include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
-#include "components/url_formatter/elide_url.h"
-#include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/media_session.h"
 #include "services/media_session/public/cpp/media_image_manager.h"
 #include "services/media_session/public/cpp/media_metadata.h"
@@ -186,10 +185,12 @@ void PresentationRequestNotificationItem::UpdateViewWithMetadata() {
 
   auto* web_contents = GetWebContentsFromPresentationRequest(request_);
   DCHECK(web_contents);
-  // `request_` has more accurate origin info than `metadata_` e.g. when the
-  // request is from within an iframe.
-  data.source_title = url_formatter::FormatOriginForSecurityDisplay(
-      request_.frame_origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
+  if (media_message_center::IsOriginGoodForDisplay(request_.frame_origin)) {
+    // `request_` has more accurate origin info than `metadata_` e.g. when the
+    // request is from within an iframe.
+    data.source_title =
+        media_message_center::GetOriginNameForDisplay(request_.frame_origin);
+  }
   // If not empty, then `metadata_.artist` is likely to contain information
   // more relevant than the page title.
   if (data.artist.empty()) {

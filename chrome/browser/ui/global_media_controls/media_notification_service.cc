@@ -256,7 +256,7 @@ void MediaNotificationService::OnStartPresentationContextCreated(
     // |web_contents|, hold onto the context for later use.
     context_ = std::move(context);
 
-    // When a media session item is associated with a presentation request, we
+    // When a media session item is associated with PresentationRequest, we
     // must show the origin associated with the request rather than that for
     // the top frame.
     std::string item_id =

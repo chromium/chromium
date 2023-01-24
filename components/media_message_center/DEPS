@@ -1,6 +1,7 @@
 include_rules = [
   "+cc/paint",
   "+components/strings/grit/components_strings.h",
+  "+components/url_formatter",
   "+components/vector_icons",
   "+mojo/public/cpp/bindings",
   "+services/media_session/public",

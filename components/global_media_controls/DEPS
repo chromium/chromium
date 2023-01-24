@@ -1,7 +1,6 @@
 include_rules = [
   "+components/media_message_center",
   "+components/strings",
-  "+components/url_formatter",
   "+components/vector_icons",
   "+media",
   "+mojo/public/cpp/bindings",

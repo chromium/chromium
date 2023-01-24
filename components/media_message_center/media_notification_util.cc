@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/media_message_center/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/button.h"
 
@@ -57,6 +58,19 @@ std::u16string GetAccessibleNameFromMetadata(
 
   std::u16string accessible_name = base::JoinString(text, u" - ");
   return accessible_name;
+}
+
+bool IsOriginGoodForDisplay(const url::Origin& origin) {
+  return !origin.opaque() ||
+         origin.GetTupleOrPrecursorTupleIfOpaque().IsValid();
+}
+
+std::u16string GetOriginNameForDisplay(const url::Origin& origin) {
+  const auto url = origin.opaque()
+                       ? origin.GetTupleOrPrecursorTupleIfOpaque().GetURL()
+                       : origin.GetURL();
+  return url_formatter::FormatUrlForSecurityDisplay(
+      url, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
 }
 
 base::flat_set<MediaSessionAction> GetTopVisibleActions(
