@@ -7,7 +7,6 @@
 #include <random>
 
 #include "base/containers/contains.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/json/values_util.h"
 #include "base/rand_util.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
@@ -609,7 +608,6 @@ void WebsiteMetrics::EmitUkm(ukm::SourceId source_id,
                              bool is_from_last_login) {
   if (source_id == ukm::kInvalidSourceId) {
     DVLOG(1) << "WebsiteMetrics::EmitUkm source id is invalid.";
-    base::debug::DumpWithoutCrashing();
     return;
   }
 
