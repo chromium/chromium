@@ -40,26 +40,10 @@ class PromosManagerImpl : public PromosManager {
   NSArray<ImpressionLimit*>* PromoImpressionLimits(
       promos_manager::Promo promo) const;
 
-  // Returns a std::vector<promos_manager::Promo> that only includes promos in
-  // `active_promos`, sorted by day (least recent -> most recent).
-  //
-  // Assumes that `sorted_impressions` is sorted by day (most recent -> least
-  // recent).
-  //
-  // When `active_promos` or `sorted_impressions` is empty, returns an empty
-  // array.
-  //
-  // Promos that have never been shown before are considered less recently shown
-  // than promos that have been shown.
-  //
-  // Promos shown on the same day will be sorted by relative position. More
-  // concretely, even if two promos are shown on the same day, the promos with
-  // the lower index in the impressions history list will be considered more
-  // recently seen, as `sorted_impressions` is sorted by day (most recent ->
-  // least recent).
-  std::vector<promos_manager::Promo> LeastRecentlyShown(
-      const std::map<promos_manager::Promo, PromoContext>& active_promos,
-      const std::vector<promos_manager::Impression>& sorted_impressions) const;
+  // Sorts the active promos in the order that they will be displayed.
+  std::vector<promos_manager::Promo> SortPromos(
+      const std::map<promos_manager::Promo, PromoContext>&
+          promos_to_sort_with_context) const;
 
   // Impression limits that count against all promos.
   NSArray<ImpressionLimit*>* GlobalImpressionLimits() const;

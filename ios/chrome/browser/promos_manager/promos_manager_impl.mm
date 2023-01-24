@@ -30,6 +30,8 @@
 #error "This file requires ARC support."
 #endif
 
+using promos_manager::Promo;
+
 namespace {
 
 // The number of days since the Unix epoch; one day, in this context, runs
@@ -223,15 +225,17 @@ absl::optional<promos_manager::Promo> PromosManagerImpl::NextPromoForDisplay() {
     }
   }
 
-  std::vector<promos_manager::Promo> least_recently_shown_promos =
-      LeastRecentlyShown(active_promos_with_context, impression_history_);
+  std::vector<promos_manager::Promo> sorted_promos =
+      SortPromos(active_promos_with_context);
 
-  if (least_recently_shown_promos.empty())
+  if (sorted_promos.empty()) {
     return absl::nullopt;
+  }
 
-  for (promos_manager::Promo promo : least_recently_shown_promos)
+  for (promos_manager::Promo promo : sorted_promos) {
     if (CanShowPromo(promo, impression_history_))
       return promo;
+  }
 
   return absl::nullopt;
 }
@@ -492,54 +496,74 @@ int PromosManagerImpl::TotalImpressionCount(
   return std::accumulate(counts.begin(), counts.end(), 0);
 }
 
-std::vector<promos_manager::Promo> PromosManagerImpl::LeastRecentlyShown(
-    const std::map<promos_manager::Promo, PromoContext>& active_promos,
-    const std::vector<promos_manager::Impression>& sorted_impressions) const {
-  std::vector<promos_manager::Promo>
-      active_promos_sorted_by_least_recently_shown;
+// Sort the promos in the order that they will be displayed.
+// Based on the Promo's context, type, and the recently shown time.
+std::vector<promos_manager::Promo> PromosManagerImpl::SortPromos(
+    const std::map<promos_manager::Promo, PromoContext>&
+        promos_to_sort_with_context) const {
+  std::vector<std::pair<promos_manager::Promo, PromoContext>>
+      promos_list_to_sort;
 
-  // If there are no active promos, and no impression history, return an empty
-  // array. (This is seldom expected to happen, if ever, as Promos Manager will
-  // launch with promos_manager::Promo::DefaultBrowser continuously running.)
-  if (active_promos.empty() && sorted_impressions.empty())
-    return active_promos_sorted_by_least_recently_shown;
-
-  for (promos_manager::Impression impression : sorted_impressions) {
-    // The resulting, sorted array only needs to contain the active promos. Once
-    // all active promos are accounted for in
-    // `active_promos_sorted_by_least_recently_shown`, we can short-circuit and
-    // return `active_promos_sorted_by_least_recently_shown`.
-    if (active_promos_sorted_by_least_recently_shown.size() ==
-        active_promos.size())
-      break;
-
-    // If the current impression's promo already exists in
-    // `active_promos_sorted_by_least_recently_shown`, move onto the next
-    // impression.
-    if (base::Contains(active_promos_sorted_by_least_recently_shown,
-                       impression.promo)) {
-      continue;
-    }
-
-    if (active_promos.count(impression.promo))
-      active_promos_sorted_by_least_recently_shown.push_back(impression.promo);
+  for (const auto& it : promos_to_sort_with_context) {
+    promos_list_to_sort.push_back(
+        std::pair<promos_manager::Promo, PromoContext>(it.first, it.second));
   }
 
-  // It's possible some active promos have never been seen (so no impressions
-  // exist for the promo). In that case, add them to the end of the resulting
-  // array, before the array is reversed. Those never-before-seen promos will
-  // end up at the front of the resulting array after reversal.
-  //
-  // Never-before-seen promos are considered less recently seen than previously
-  // seen promos.
-  for (const auto& [name, _] : active_promos) {
-    if (!base::Contains(active_promos_sorted_by_least_recently_shown, name)) {
-      active_promos_sorted_by_least_recently_shown.push_back(name);
+  const std::vector<promos_manager::Impression>& impression_history =
+      impression_history_;
+
+  // The order: PostRestoreSignIn types are shown first, then Promos with
+  // pending state, then Promos without pending state in least-recently-shown
+  // order.
+  auto compare_promo = [&impression_history](
+                           std::pair<promos_manager::Promo, PromoContext> lhs,
+                           std::pair<promos_manager::Promo, PromoContext> rhs) {
+    // PostRestoreSignIn types are to be displayed first.
+    if (lhs.first == Promo::PostRestoreSignInFullscreen ||
+        lhs.first == Promo::PostRestoreSignInAlert) {
+      return true;
     }
+    if (rhs.first == Promo::PostRestoreSignInFullscreen ||
+        rhs.first == Promo::PostRestoreSignInAlert) {
+      return false;
+    }
+    // prefer the promo with pending state to the other without.
+    if (lhs.second.was_pending && !rhs.second.was_pending) {
+      return true;
+    }
+    if (!lhs.second.was_pending && rhs.second.was_pending) {
+      return false;
+    }
+    // Tied after comparing the type and pending state, break using the most
+    // recently shown times, prefer the promo that was shown less recently.
+    auto lhs_impression =
+        std::find_if(impression_history.begin(), impression_history.end(),
+                     [lhs](promos_manager::Impression impression) {
+                       return impression.promo == lhs.first;
+                     });
+    // If the promo is unseen, make it show first.
+    if (lhs_impression == impression_history.end()) {
+      return true;
+    }
+    auto rhs_impression =
+        std::find_if(impression_history.begin(), impression_history.end(),
+                     [rhs](promos_manager::Impression impression) {
+                       return impression.promo == rhs.first;
+                     });
+    if (rhs_impression == impression_history.end()) {
+      return false;
+    }
+    // Both promos are seen. `impression_history` is in the most recently seen
+    // order. larger iterator = less recently seen = displayed first
+    return lhs_impression > rhs_impression;
+  };
+
+  sort(promos_list_to_sort.begin(), promos_list_to_sort.end(), compare_promo);
+
+  std::vector<promos_manager::Promo> sorted_promos;
+  for (const auto& it : promos_list_to_sort) {
+    sorted_promos.push_back(it.first);
   }
 
-  std::reverse(active_promos_sorted_by_least_recently_shown.begin(),
-               active_promos_sorted_by_least_recently_shown.end());
-
-  return active_promos_sorted_by_least_recently_shown;
+  return sorted_promos;
 }

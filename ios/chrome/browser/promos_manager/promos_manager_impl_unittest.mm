@@ -353,9 +353,11 @@ TEST_F(PromosManagerImplTest, DecidesCannotShowPromo) {
       false);
 }
 
-// Tests PromosManager::LeastRecentlyShown() correctly returns a list of active
-// promos sorted by least recently shown.
-TEST_F(PromosManagerImplTest, ReturnsLeastRecentlyShown) {
+// Tests PromosManager::SortPromos() correctly returns a list of active
+// promos sorted by impression history.
+TEST_F(PromosManagerImplTest, SortPromos) {
+  CreatePromosManager();
+
   const std::map<promos_manager::Promo, PromoContext> active_promos = {
       {promos_manager::Promo::Test, kPromoContextForActive},
       {promos_manager::Promo::CredentialProviderExtension,
@@ -366,7 +368,7 @@ TEST_F(PromosManagerImplTest, ReturnsLeastRecentlyShown) {
 
   int today = TodaysDay();
 
-  const std::vector<promos_manager::Impression> impressions = {
+  promos_manager_->impression_history_ = {
       promos_manager::Impression(promos_manager::Promo::Test, today),
       promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
                                  today - 7),
@@ -383,14 +385,15 @@ TEST_F(PromosManagerImplTest, ReturnsLeastRecentlyShown) {
       promos_manager::Promo::Test,
   };
 
-  EXPECT_EQ(promos_manager_->LeastRecentlyShown(active_promos, impressions),
-            expected);
+  EXPECT_EQ(promos_manager_->SortPromos(active_promos), expected);
 }
 
-// Tests PromosManager::LeastRecentlyShown() correctly returns a list of
-// active / promos sorted by least recently shown (with some impressions /
+// Tests PromosManager::SortPromos() correctly returns a list of
+// promos sorted by least recently shown (with some impressions /
 // belonging to inactive promo campaigns).
-TEST_F(PromosManagerImplTest, ReturnsLeastRecentlyShownWithSomeInactivePromos) {
+TEST_F(PromosManagerImplTest, SortPromosWithSomeInactivePromos) {
+  CreatePromosManager();
+
   const std::map<promos_manager::Promo, PromoContext> active_promos = {
       {promos_manager::Promo::Test, kPromoContextForActive},
       {promos_manager::Promo::AppStoreRating, kPromoContextForActive},
@@ -413,13 +416,14 @@ TEST_F(PromosManagerImplTest, ReturnsLeastRecentlyShownWithSomeInactivePromos) {
       promos_manager::Promo::Test,
   };
 
-  EXPECT_EQ(promos_manager_->LeastRecentlyShown(active_promos, impressions),
-            expected);
+  promos_manager_->impression_history_ = impressions;
+  EXPECT_EQ(promos_manager_->SortPromos(active_promos), expected);
 }
 
-// Tests PromosManager::LeastRecentlyShown() gracefully returns a list of
-// active / promos when multiple promos are tied for least recently shown.
-TEST_F(PromosManagerImplTest, ReturnsLeastRecentlyShownBreakingTies) {
+// Tests PromosManager::SortPromos() correctly returns a list of
+//  promos when multiple promos are tied for least recently shown.
+TEST_F(PromosManagerImplTest, ReturnsSortPromosBreakingTies) {
+  CreatePromosManager();
   const std::map<promos_manager::Promo, PromoContext> active_promos = {
       {promos_manager::Promo::Test, kPromoContextForActive},
       {promos_manager::Promo::CredentialProviderExtension,
@@ -438,21 +442,17 @@ TEST_F(PromosManagerImplTest, ReturnsLeastRecentlyShownBreakingTies) {
           promos_manager::Promo::CredentialProviderExtension, today),
   };
 
-  const std::vector<promos_manager::Promo> expected = {
-      promos_manager::Promo::CredentialProviderExtension,
-      promos_manager::Promo::AppStoreRating,
-      promos_manager::Promo::DefaultBrowser,
-      promos_manager::Promo::Test,
-  };
-
-  EXPECT_EQ(promos_manager_->LeastRecentlyShown(active_promos, impressions),
-            expected);
+  promos_manager_->impression_history_ = impressions;
+  EXPECT_EQ(promos_manager_->SortPromos(active_promos).size(), (size_t)4);
+  EXPECT_EQ(promos_manager_->SortPromos(active_promos)[0],
+            promos_manager::Promo::CredentialProviderExtension);
 }
 
-// Tests PromosManager::LeastRecentlyShown() gracefully returns a single promo
-// in a list when the impression history contains only one active promo
-// campaign.
-TEST_F(PromosManagerImplTest, ReturnsLeastRecentlyShownWithOnlyOnePromoActive) {
+// Tests `SortPromos` returns a single promo in a list when the impression
+// history contains only one active promo.
+TEST_F(PromosManagerImplTest, ReturnsSortPromosWithOnlyOnePromoActive) {
+  CreatePromosManager();
+
   const std::map<promos_manager::Promo, PromoContext> active_promos = {
       {promos_manager::Promo::Test, kPromoContextForActive},
   };
@@ -473,15 +473,16 @@ TEST_F(PromosManagerImplTest, ReturnsLeastRecentlyShownWithOnlyOnePromoActive) {
       promos_manager::Promo::Test,
   };
 
-  EXPECT_EQ(promos_manager_->LeastRecentlyShown(active_promos, impressions),
-            expected);
+  promos_manager_->impression_history_ = impressions;
+  EXPECT_EQ(promos_manager_->SortPromos(active_promos), expected);
 }
 
-// Tests PromosManager::LeastRecentlyShown() gracefully returns an empty array
-// when there are no active promo campaigns.
+// Tests `SortPromos` returns an empty array when there are no active promo.
 TEST_F(PromosManagerImplTest,
-       ReturnsEmptyListWhenLeastRecentlyShownHasNoActivePromoCampaigns) {
+       ReturnsEmptyListWhenSortPromosHasNoActivePromoCampaigns) {
+  CreatePromosManager();
   const std::map<promos_manager::Promo, PromoContext> active_promos;
+
   int today = TodaysDay();
 
   const std::vector<promos_manager::Impression> impressions = {
@@ -496,26 +497,29 @@ TEST_F(PromosManagerImplTest,
 
   const std::vector<promos_manager::Promo> expected;
 
-  EXPECT_EQ(promos_manager_->LeastRecentlyShown(active_promos, impressions),
-            expected);
+  promos_manager_->impression_history_ = impressions;
+  EXPECT_EQ(promos_manager_->SortPromos(active_promos), expected);
 }
 
-// Tests PromosManager::LeastRecentlyShown() gracefully returns an empty array
-// when no impression history and no active promos exist.
+// Tests `SortPromos` returns an empty array when no impression history and no
+// active promos exist.
 TEST_F(PromosManagerImplTest,
-       ReturnsEmptyListWhenLeastRecentlyShownHasNoImpressionHistory) {
+       ReturnsEmptyListWhenSortPromosHasNoImpressionHistory) {
+  CreatePromosManager();
   const std::map<promos_manager::Promo, PromoContext> active_promos;
+
   const std::vector<promos_manager::Impression> impressions;
   const std::vector<promos_manager::Promo> expected;
 
-  EXPECT_EQ(promos_manager_->LeastRecentlyShown(active_promos, impressions),
-            expected);
+  promos_manager_->impression_history_ = impressions;
+  EXPECT_EQ(promos_manager_->SortPromos(active_promos), expected);
 }
 
-// Tests PromosManager::LeastRecentlyShown() sorts unshown promos before shown
-// promos.
+// Tests `SortPromos` sorts unshown promos before shown promos.
 TEST_F(PromosManagerImplTest,
-       SortsUnshownPromosBeforeShownPromosForLeastRecentlyShown) {
+       SortsUnshownPromosBeforeShownPromosForSortPromos) {
+  CreatePromosManager();
+
   const std::map<promos_manager::Promo, PromoContext> active_promos = {
       {promos_manager::Promo::Test, kPromoContextForActive},
       {promos_manager::Promo::AppStoreRating, kPromoContextForActive},
@@ -536,8 +540,75 @@ TEST_F(PromosManagerImplTest,
       promos_manager::Promo::Test,
   };
 
-  EXPECT_EQ(promos_manager_->LeastRecentlyShown(active_promos, impressions),
-            expected);
+  promos_manager_->impression_history_ = impressions;
+  EXPECT_EQ(promos_manager_->SortPromos(active_promos), expected);
+}
+
+// Tests `SortPromos` sorts `PostRestoreSignIn` promos before others.
+TEST_F(PromosManagerImplTest, SortsPromosPreferCertainTypes) {
+  CreatePromosManager();
+
+  const std::map<promos_manager::Promo, PromoContext> active_promos = {
+      {promos_manager::Promo::Test, PromoContext{false}},
+      {promos_manager::Promo::DefaultBrowser, PromoContext{true}},
+      {promos_manager::Promo::PostRestoreSignInFullscreen, PromoContext{false}},
+      {promos_manager::Promo::PostRestoreSignInAlert, PromoContext{false}},
+  };
+
+  int today = TodaysDay();
+
+  const std::vector<promos_manager::Impression> impressions = {
+      promos_manager::Impression(
+          promos_manager::Promo::PostRestoreSignInFullscreen, today - 1),
+      promos_manager::Impression(promos_manager::Promo::PostRestoreSignInAlert,
+                                 today - 2),
+      promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
+                                 today - 7),
+
+      promos_manager::Impression(promos_manager::Promo::Test, today - 8),
+  };
+
+  promos_manager_->impression_history_ = impressions;
+  std::vector<promos_manager::Promo> sorted =
+      promos_manager_->SortPromos(active_promos);
+  EXPECT_EQ(sorted.size(), (size_t)4);
+  // tied for the type.
+  EXPECT_TRUE(sorted[0] == promos_manager::Promo::PostRestoreSignInFullscreen ||
+              sorted[0] == promos_manager::Promo::PostRestoreSignInAlert);
+  // with pending state, before the less recently shown promo (Test).
+  EXPECT_EQ(sorted[2], promos_manager::Promo::DefaultBrowser);
+  EXPECT_EQ(sorted[3], promos_manager::Promo::Test);
+}
+
+// Tests `SortPromos` sorts promos with pending state before others without.
+TEST_F(PromosManagerImplTest, SortsPromosPreferPendingToNonPending) {
+  CreatePromosManager();
+
+  const std::map<promos_manager::Promo, PromoContext> active_promos = {
+      {promos_manager::Promo::Test, PromoContext{true}},
+      {promos_manager::Promo::DefaultBrowser, PromoContext{false}},
+      {promos_manager::Promo::AppStoreRating, PromoContext{true}},
+  };
+
+  int today = TodaysDay();
+
+  const std::vector<promos_manager::Impression> impressions = {
+      promos_manager::Impression(promos_manager::Promo::Test, today - 1),
+      promos_manager::Impression(promos_manager::Promo::AppStoreRating,
+                                 today - 2),
+      promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
+                                 today - 7),
+  };
+
+  promos_manager_->impression_history_ = impressions;
+  std::vector<promos_manager::Promo> sorted =
+      promos_manager_->SortPromos(active_promos);
+  EXPECT_EQ(sorted.size(), (size_t)3);
+  // The first 2 are tied with the pending state.
+  EXPECT_TRUE(sorted[0] == promos_manager::Promo::Test ||
+              sorted[0] == promos_manager::Promo::AppStoreRating);
+  // The one without pending state is at the end.
+  EXPECT_EQ(sorted[2], promos_manager::Promo::DefaultBrowser);
 }
 
 // Tests PromosManager::ImpressionHistory() correctly ingests impression history
