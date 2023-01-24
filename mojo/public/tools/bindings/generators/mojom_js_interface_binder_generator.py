@@ -80,9 +80,14 @@ class Generator(generator.Generator):
     if mojom.IsPendingReceiverKind(kind):
       return "::mojo::PendingReceiver<%s>" % kind.kind.name
 
+  def _GetBinderMemberVariableName(self, bind_method):
+    """Return the variable name of the binder corresponding to `bind_method`."""
+    return "binder_for_%s" % generator.ToLowerSnakeCase(bind_method.name)
+
   def GetFilters(self):
     return {
         "cpp_type": self._GetCppType,
+        "binder_variable_name": self._GetBinderMemberVariableName,
     }
 
   def _GetInterfaceBinders(self):
@@ -123,10 +128,16 @@ class Generator(generator.Generator):
     }
 
   @UseJinja("js_interface_binder_impl.h.tmpl")
-  def _GenerateJsInterfaceBinderImpl(self):
+  def _GenerateJsInterfaceBinderImplDeclaration(self):
+    return self._GetParameters()
+
+  @UseJinja("js_interface_binder_impl.cc.tmpl")
+  def _GenerateJsInterfaceBinderImplDefinition(self):
     return self._GetParameters()
 
   def GenerateFiles(self, args):
     self.module.Stylize(JsInterfaceBinderImplStylizer())
-    self.WriteWithComment(self._GenerateJsInterfaceBinderImpl(),
+    self.WriteWithComment(self._GenerateJsInterfaceBinderImplDeclaration(),
                           "%s-js-interface-binder-impl.h" % self.module.path)
+    self.WriteWithComment(self._GenerateJsInterfaceBinderImplDefinition(),
+                          "%s-js-interface-binder-impl.cc" % self.module.path)

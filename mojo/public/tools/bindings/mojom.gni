@@ -1776,7 +1776,10 @@ template("mojom") {
 
         outputs = []
         foreach(base_path, output_file_base_paths) {
-          outputs += [ "$root_gen_dir/${base_path}-js-interface-binder-impl.h" ]
+          outputs += [
+            "$root_gen_dir/${base_path}-js-interface-binder-impl.cc",
+            "$root_gen_dir/${base_path}-js-interface-binder-impl.h",
+          ]
         }
 
         response_file_contents = filelist
@@ -1797,7 +1800,10 @@ template("mojom") {
 
         sources = []
         foreach(base_path, output_file_base_paths) {
-          sources = [ "$root_gen_dir/${base_path}-js-interface-binder-impl.h" ]
+          sources = [
+            "$root_gen_dir/${base_path}-js-interface-binder-impl.cc",
+            "$root_gen_dir/${base_path}-js-interface-binder-impl.h",
+          ]
         }
         deps = [
           ":$cpp_target_name",

@@ -1,3 +1,4 @@
+{%- import "js_interface_binder_macros.tmpl" as macros -%}
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -18,22 +19,38 @@ namespace {{module.namespace}} {
 
 {%  for interface_binder in interface_binders -%}
 
-class {{interface_binder.name}}Impl : public {{interface_binder.name}} {
+{%- set class_name = "%sImpl" % interface_binder.name %}
+
+class {{class_name}} : public {{interface_binder.name}} {
  public:
-  {{interface_binder.name}}Impl() = default;
-  ~{{interface_binder.name}}Impl() = default;
+{% for method in interface_binder.methods %}
+  using BinderFor{{method.name}} = base::RepeatingCallback<void(
+{%-  for param in method.parameters %}
+    {{param.kind|cpp_type}}{{"," if not loop.last else ""}}
+{%-   endfor -%}
+  )>;
+{% endfor %}
+
+  {{class_name}}(
+    {{- macros.constructor_params(interface_binder) -}}
+  );
+
+  ~{{class_name}}();
 
 {% for method in interface_binder.methods %}
   void {{method.name}}(
 {%-  for param in method.parameters %}
-    {{param.kind|cpp_type}} {{param.name}}{{", " if not loop.last else ""}}
+    {{param.kind|cpp_type}} {{param.name}}{{"," if not loop.last else ""}}
 {%-   endfor -%}
-  ) override {}
+  ) override;
+{% endfor %}
+
+ private:
+{% for method in interface_binder.methods %}
+  BinderFor{{method.name}} {{method|binder_variable_name}}_;
 {% endfor %}
 };
-
 {% endfor %}
-
 }  // {{module.namespace}}
 
 #endif // {{header_guard}}

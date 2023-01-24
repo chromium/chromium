@@ -1,0 +1,10 @@
+{#---
+  Macro for JsInterfaceBinder declarations and definitions.
+---#}
+
+{%- macro constructor_params(interface_binder) -%}
+{%- for method in interface_binder.methods %}
+    BinderFor{{method.name}} {{method|binder_variable_name}}
+    {{- "," if not loop.last else "" -}}
+{%- endfor -%}
+{%- endmacro -%}

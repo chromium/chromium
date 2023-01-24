@@ -1,0 +1,39 @@
+{%- import "js_interface_binder_macros.tmpl" as macros -%}
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "{{module.path}}-js-interface-binder-impl.h"
+
+namespace {{module.namespace}} {
+
+{%  for interface_binder in interface_binders -%}
+
+{%- set class_name = "%sImpl" % interface_binder.name -%}
+
+{{class_name}}::{{class_name}}(
+  {{- macros.constructor_params(interface_binder) -}}
+) :
+{%- for method in interface_binder.methods %}
+   {{method|binder_variable_name}}_({{method|binder_variable_name}})
+   {{-"," if not loop.last else ""}}
+ {%- endfor %} {}
+
+{{class_name}}::~{{class_name}}() = default;
+
+{% for method in interface_binder.methods %}
+  void {{class_name}}::{{method.name}}(
+{%-  for param in method.parameters %}
+    {{param.kind|cpp_type}} {{param.name}}{{", " if not loop.last else ""}}
+{%-   endfor -%}
+  ) {
+  {{method|binder_variable_name}}_.Run(
+{%-  for param in method.parameters %}
+    std::move({{param.name}}){{", " if not loop.last else ""}}
+{%-   endfor -%}
+  );
+}
+{% endfor %}
+{% endfor %}
+
+}  // {{module.namespace}}
