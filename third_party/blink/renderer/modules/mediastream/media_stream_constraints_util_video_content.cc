@@ -85,6 +85,8 @@ class VideoContentCaptureCandidates {
 
   bool IsEmpty() const {
     return resolution_set_.IsEmpty() || frame_rate_set_.IsEmpty() ||
+           (frame_rate_set_.Max().has_value() &&
+            frame_rate_set_.Max().value() <= 0.0) ||
            device_id_set_.IsEmpty() || noise_reduction_set_.IsEmpty() ||
            rescale_set_.IsEmpty();
   }
@@ -371,7 +373,9 @@ VideoCaptureSettings UnsatisfiedConstraintsResult(
     return VideoCaptureSettings(constraint_set.width.GetName());
   } else if (candidates.resolution_set().IsAspectRatioEmpty()) {
     return VideoCaptureSettings(constraint_set.aspect_ratio.GetName());
-  } else if (candidates.frame_rate_set().IsEmpty()) {
+  } else if (candidates.frame_rate_set().IsEmpty() ||
+             (candidates.frame_rate_set().Max().has_value() &&
+              candidates.frame_rate_set().Max().value() <= 0)) {
     return VideoCaptureSettings(constraint_set.frame_rate.GetName());
   } else if (candidates.noise_reduction_set().IsEmpty()) {
     return VideoCaptureSettings(constraint_set.goog_noise_reduction.GetName());
