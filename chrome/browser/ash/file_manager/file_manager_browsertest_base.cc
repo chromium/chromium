@@ -86,6 +86,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/sync_file_system/mock_remote_file_sync_service.h"
@@ -113,6 +114,7 @@
 #include "chromeos/ash/components/smbfs/smbfs_host.h"
 #include "chromeos/ash/components/smbfs/smbfs_mounter.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
+#include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -1866,7 +1868,8 @@ void FileManagerBrowserTestBase::DevToolsAgentHostCrashed(
 
 void FileManagerBrowserTestBase::SetUp() {
   net::NetworkChangeNotifier::SetTestNotificationsOnly(true);
-  extensions::ExtensionApiTest::SetUp();
+
+  extensions::MixinBasedExtensionApiTest::SetUp();
 }
 
 void FileManagerBrowserTestBase::SetUpCommandLine(
@@ -2009,18 +2012,25 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
   feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
   feature_list_->InitWithFeatures(enabled_features, disabled_features);
 
-  extensions::ExtensionApiTest::SetUpCommandLine(command_line);
+  extensions::MixinBasedExtensionApiTest::SetUpCommandLine(command_line);
 }
 
 bool FileManagerBrowserTestBase::SetUpUserDataDirectory() {
   if (GetOptions().guest_mode == IN_GUEST_MODE)
     return true;
 
-  return drive::SetUpUserDataDirectoryForDriveFsTest();
+  return extensions::MixinBasedExtensionApiTest::SetUpUserDataDirectory() &&
+         drive::SetUpUserDataDirectoryForDriveFsTest(GetAccountId());
+}
+
+AccountId FileManagerBrowserTestBase::GetAccountId() {
+  return AccountId::FromUserEmailGaiaId(
+      drive::FakeDriveFsHelper::kDefaultUserEmail,
+      drive::FakeDriveFsHelper::kDefaultGaiaId);
 }
 
 void FileManagerBrowserTestBase::SetUpInProcessBrowserTestFixture() {
-  extensions::ExtensionApiTest::SetUpInProcessBrowserTestFixture();
+  extensions::MixinBasedExtensionApiTest::SetUpInProcessBrowserTestFixture();
 
   local_volume_ = std::make_unique<DownloadsTestVolume>();
 
@@ -2046,7 +2056,8 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
           std::make_unique<::testing::NiceMock<
               sync_file_system::MockRemoteFileSyncService>>());
 
-  extensions::ExtensionApiTest::SetUpOnMainThread();
+  extensions::MixinBasedExtensionApiTest::SetUpOnMainThread();
+
   CHECK(profile());
   CHECK_EQ(!!browser(), options.browser);
 
@@ -2057,8 +2068,15 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
   }
 
   if (options.guest_mode != IN_GUEST_MODE) {
-    // Start the embedded test server to serve the mocked CWS widget container.
-    CHECK(embedded_test_server()->Start());
+    // `LoggedInUserFilesAppBrowserTest` starts `embedded_test_server` via
+    // `LoggedInUserMixin`. Starting the server again can cause a CHECK
+    // failure.
+    if (!embedded_test_server()->Started()) {
+      // Start the embedded test server to serve the mocked CWS widget
+      // container.
+      CHECK(embedded_test_server()->Start());
+    }
+
     drive_volume_ = drive_volumes_[profile()->GetOriginalProfile()].get();
     if (options.mount_volumes) {
       test_util::WaitUntilDriveMountPointIsAdded(profile());
@@ -2184,7 +2202,7 @@ void FileManagerBrowserTestBase::TearDownOnMainThread() {
 }
 
 void FileManagerBrowserTestBase::TearDown() {
-  extensions::ExtensionApiTest::TearDown();
+  extensions::MixinBasedExtensionApiTest::TearDown();
   feature_list_.reset();
 }
 

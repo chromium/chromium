@@ -16,7 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
-#include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/test/base/devtools_listener.h"
@@ -40,6 +40,13 @@ class KeyEvent;
 namespace file_manager {
 
 enum GuestMode { NOT_IN_GUEST_MODE, IN_GUEST_MODE, IN_INCOGNITO };
+enum TestAccountType {
+  TEST_ACCOUNT_TYPE_NOT_SET,
+  ENTERPRISE,
+  CHILD,
+  NON_MANAGED
+};
+enum DeviceMode { DEVICE_MODE_NOT_SET, CONSUMER_OWNED, ENROLLED };
 
 class DriveFsTestVolume;
 class FakeTestVolume;
@@ -53,8 +60,9 @@ class SmbfsTestVolume;
 class HiddenTestVolume;
 class GuestOsTestVolume;
 
-class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
-                                   public extensions::ExtensionApiTest {
+class FileManagerBrowserTestBase
+    : public content::DevToolsAgentHostObserver,
+      public extensions::MixinBasedExtensionApiTest {
  public:
   struct Options {
     Options();
@@ -62,6 +70,16 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
 
     // Should test run in Guest or Incognito mode?
     GuestMode guest_mode = NOT_IN_GUEST_MODE;
+
+    // Account type used to log-in for a test session. This option is valid only
+    // for `LoggedInUserFilesAppBrowserTest`. This won't work with `guest_mode`
+    // option.
+    TestAccountType test_account_type = TEST_ACCOUNT_TYPE_NOT_SET;
+
+    // Device mode used for a test session. This option is valid only for
+    // `LoggedInUserFilesAppBrowserTest`. This might not work with `guest_mode`
+    // option.
+    DeviceMode device_mode = DEVICE_MODE_NOT_SET;
 
     // Whether test runs in tablet mode.
     bool tablet_mode = false;
@@ -174,6 +192,10 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
   virtual const char* GetTestCaseName() const = 0;
   virtual std::string GetFullTestCaseName() const = 0;
   virtual const char* GetTestExtensionManifestName() const = 0;
+
+  // Returns an account id used for a test. The base class provides a default
+  // implementation.
+  virtual AccountId GetAccountId();
 
   // Launches the test extension from GetTestExtensionManifestName() and uses
   // it to drive the testing the actual FileManager component extension under

@@ -1148,8 +1148,9 @@ util.isSearchV2Enabled = () => {
   return loadTimeData.getBoolean('FILES_SEARCH_V2');
 };
 
-util.isGoogleOneOfferFilesBannerEnabled = () => {
-  return loadTimeData.getBoolean('GOOGLE_ONE_OFFER_FILES_BANNER');
+util.isGoogleOneOfferFilesBannerEligibleAndEnabled = () => {
+  return loadTimeData.getBoolean(
+      'ELIGIBLE_AND_ENABLED_GOOGLE_ONE_OFFER_FILES_BANNER');
 };
 
 /**

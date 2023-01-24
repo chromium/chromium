@@ -5,18 +5,19 @@
 #include <stddef.h>
 #include <memory>
 
-#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/immediate_crash.h"
 #include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task_scanning_impl.h"
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_base.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
@@ -32,8 +33,10 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
+#include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -196,6 +199,16 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& SetDeviceMode(DeviceMode device_mode) {
+    options.device_mode = device_mode;
+    return *this;
+  }
+
+  TestCase& SetTestAccountType(TestAccountType test_account_type) {
+    options.test_account_type = test_account_type;
+    return *this;
+  }
+
   std::string GetFullName() const {
     std::string full_name = name;
 
@@ -249,6 +262,30 @@ struct TestCase {
       full_name += "_GoogleOneOfferFilesBanner";
     }
 
+    switch (options.device_mode) {
+      case DEVICE_MODE_NOT_SET:
+        break;
+      case CONSUMER_OWNED:
+        full_name += "_DeviceModeConsumerOwned";
+        break;
+      case ENROLLED:
+        full_name += "_DeviceModeEnrolled";
+    }
+
+    switch (options.test_account_type) {
+      case TEST_ACCOUNT_TYPE_NOT_SET:
+        break;
+      case ENTERPRISE:
+        full_name += "_AccountTypeEnterprise";
+        break;
+      case CHILD:
+        full_name += "_AccountTypeChild";
+        break;
+      case NON_MANAGED:
+        full_name += "_AccountTypeNonManaged";
+        break;
+    }
+
     return full_name;
   }
 
@@ -294,6 +331,96 @@ class FilesAppBrowserTest : public FileManagerBrowserTestBase,
 };
 
 IN_PROC_BROWSER_TEST_P(FilesAppBrowserTest, Test) {
+  StartTest();
+}
+
+// `FilesAppBrowserTest` with `LoggedInUserMixin` and `DeviceStateMixin`. This
+// test provides additional two options from `FilesAppBrowserTest`. Both options
+// must be explicitly set for this test.
+//
+// - test_account_type: Account type used for a test.
+// - device_mode: Status of a device, e.g. a device is enrolled.
+class LoggedInUserFilesAppBrowserTest : public FilesAppBrowserTest {
+ public:
+  LoggedInUserFilesAppBrowserTest() {
+    // ChromeOS user will be set by `LoggedInUserMixin`.
+    set_chromeos_user_ = false;
+
+    device_state_mixin_ = std::make_unique<ash::DeviceStateMixin>(
+        &mixin_host_, DeviceStateFor(GetOptions().device_mode));
+
+    logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
+        &mixin_host_, LogInTypeFor(GetOptions().test_account_type),
+        embedded_test_server(), this, /*should_launch_browser=*/false,
+        AccountIdFor(GetOptions().test_account_type));
+  }
+
+  void SetUpOnMainThread() override {
+    logged_in_user_mixin_->LogInUser();
+    FilesAppBrowserTest::SetUpOnMainThread();
+  }
+
+  AccountId GetAccountId() override {
+    return logged_in_user_mixin_->GetAccountId();
+  }
+
+ private:
+  ash::DeviceStateMixin::State DeviceStateFor(DeviceMode device_mode) {
+    switch (device_mode) {
+      case DEVICE_MODE_NOT_SET:
+        CHECK(false) << "device_mode option must be set for "
+                        "LoggedInUserFilesAppBrowserTest";
+        // `base::ImmediateCrash` is necessary for https://crbug.com/1061742.
+        base::ImmediateCrash();
+      case CONSUMER_OWNED:
+        return ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED;
+      case ENROLLED:
+        return ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED;
+    }
+  }
+
+  ash::LoggedInUserMixin::LogInType LogInTypeFor(
+      TestAccountType test_account_type) {
+    switch (test_account_type) {
+      case TEST_ACCOUNT_TYPE_NOT_SET:
+        CHECK(false) << "test_account_type option must be set for "
+                        "LoggedInUserFilesAppBrowserTest";
+        // `base::ImmediateCrash` is necessary for https://crbug.com/1061742.
+        base::ImmediateCrash();
+      case ENTERPRISE:
+        return ash::LoggedInUserMixin::LogInType::kRegular;
+      case CHILD:
+        return ash::LoggedInUserMixin::LogInType::kChild;
+      case NON_MANAGED:
+        return ash::LoggedInUserMixin::LogInType::kRegular;
+    }
+  }
+
+  absl::optional<AccountId> AccountIdFor(TestAccountType test_account_type) {
+    switch (test_account_type) {
+      case TEST_ACCOUNT_TYPE_NOT_SET:
+        CHECK(false) << "test_account_type option must be set for "
+                        "LoggedInUserFilesAppBrowserTest";
+        // `base::ImmediateCrash` is necessary for https://crbug.com/1061742.
+        base::ImmediateCrash();
+      case ENTERPRISE:
+        return AccountId::FromUserEmailGaiaId(
+            FakeGaiaMixin::kEnterpriseUser1,
+            FakeGaiaMixin::kEnterpriseUser1GaiaId);
+      case CHILD:
+        // Use the default account provided by `LoggedInUserMixin`.
+        return absl::nullopt;
+      case NON_MANAGED:
+        // Use the default account provided by `LoggedInUserMixin`.
+        return absl::nullopt;
+    }
+  }
+
+  std::unique_ptr<ash::LoggedInUserMixin> logged_in_user_mixin_;
+  std::unique_ptr<ash::DeviceStateMixin> device_state_mixin_;
+};
+
+IN_PROC_BROWSER_TEST_P(LoggedInUserFilesAppBrowserTest, Test) {
   StartTest();
 }
 
@@ -488,8 +615,8 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
     return false;
   }
 
-  // Invokes `callback` with the previously constructed `response`. Note that the
-  // result doesn't depend on the value of `request`.
+  // Invokes `callback` with the previously constructed `response`. Note that
+  // the result doesn't depend on the value of `request`.
   void GetFilesSourcesMock(
       const dlp::GetFilesSourcesResponse response,
       const dlp::GetFilesSourcesRequest request,
@@ -1329,13 +1456,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveOfflineInfoBanner"),
         TestCase("driveDeleteDialogDoesntMentionPermanentDelete"),
         TestCase("driveInlineSyncStatusSingleFile").EnableInlineStatusSync(),
-        TestCase("driveInlineSyncStatusParentFolder").EnableInlineStatusSync(),
-        TestCase("driveGoogleOneOfferBannerEnabled")
-            .EnableGoogleOneOfferFilesBanner(),
-        // Google One offer banner is disabled by default.
-        TestCase("driveGoogleOneOfferBannerDisabled"),
-        TestCase("driveGoogleOneOfferBannerDismiss")
-            .EnableGoogleOneOfferFilesBanner()
+        TestCase("driveInlineSyncStatusParentFolder").EnableInlineStatusSync()
         // TODO(b/189173190): Enable
         // TestCase("driveEnableDocsOfflineDialog"),
         // TODO(b/189173190): Enable
@@ -1422,6 +1543,40 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("saveAsDlpRestrictedVm").EnableDlp(),
         TestCase("openDlpRestrictedFile").EnableDlp(),
         TestCase("openFolderDlpRestricted").EnableDlp()));
+
+WRAPPED_INSTANTIATE_TEST_SUITE_P(
+    DriveSpecific, /* drive_specific.js */
+    LoggedInUserFilesAppBrowserTest,
+    ::testing::Values(
+        // Google One offer banner checks device state. Device state is NOT set
+        // to `policy::DeviceMode::DEVICE_MODE_CONSUMER` in
+        // `FilesAppBrowserTest`.
+        TestCase("driveGoogleOneOfferBannerEnabled")
+            .SetDeviceMode(DeviceMode::CONSUMER_OWNED)
+            .SetTestAccountType(TestAccountType::NON_MANAGED)
+            .EnableGoogleOneOfferFilesBanner(),
+        // Google One offer banner is disabled by default.
+        TestCase("driveGoogleOneOfferBannerDisabled")
+            .SetDeviceMode(DeviceMode::CONSUMER_OWNED)
+            .SetTestAccountType(TestAccountType::NON_MANAGED),
+        TestCase("driveGoogleOneOfferBannerDismiss")
+            .SetDeviceMode(DeviceMode::CONSUMER_OWNED)
+            .SetTestAccountType(TestAccountType::NON_MANAGED)
+            .EnableGoogleOneOfferFilesBanner(),
+        TestCase("driveGoogleOneOfferBannerDisabled")
+            .EnableGoogleOneOfferFilesBanner()
+            .SetDeviceMode(DeviceMode::CONSUMER_OWNED)
+            .SetTestAccountType(TestAccountType::ENTERPRISE),
+        TestCase("driveGoogleOneOfferBannerDisabled")
+            .EnableGoogleOneOfferFilesBanner()
+            .SetDeviceMode(DeviceMode::CONSUMER_OWNED)
+            .SetTestAccountType(TestAccountType::CHILD),
+        // Google One offer is for a device. The banner will not
+        // be shown for an enrolled device.
+        TestCase("driveGoogleOneOfferBannerDisabled")
+            .EnableGoogleOneOfferFilesBanner()
+            .SetDeviceMode(DeviceMode::ENROLLED)
+            .SetTestAccountType(TestAccountType::NON_MANAGED)));
 
 #define FILE_TRANSFER_TEST_CASE(name) \
   TestCase(name).EnableFileTransferConnector()

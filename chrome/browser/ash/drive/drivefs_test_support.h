@@ -11,16 +11,20 @@
 #include "base/functional/callback_forward.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
+#include "components/account_id/account_id.h"
 
 class Profile;
 
 namespace drive {
 
 bool SetUpUserDataDirectoryForDriveFsTest();
+bool SetUpUserDataDirectoryForDriveFsTest(const AccountId& account_id);
 
 class FakeDriveFsHelper {
  public:
   static const char kPredefinedProfileSalt[];
+  static const char kDefaultUserEmail[];
+  static const char kDefaultGaiaId[];
 
   FakeDriveFsHelper(Profile* profile, const base::FilePath& mount_path);
 

@@ -313,7 +313,8 @@ export class BannerController extends EventTarget {
         DriveLowIndividualSpaceBanner,
       ]);
 
-      const educationalBanners = util.isGoogleOneOfferFilesBannerEnabled() ?
+      const educationalBanners =
+          util.isGoogleOneOfferFilesBannerEligibleAndEnabled() ?
           [GoogleOneOfferBannerTagName] :
           [DriveWelcomeBannerTagName];
       educationalBanners.push(
