@@ -1165,6 +1165,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/webapps/WebApkHandlerDelegate.java",
   "java/src/org/chromium/chrome/browser/webapps/WebApkIconNameUpdateCustomView.java",
   "java/src/org/chromium/chrome/browser/webapps/WebApkIconNameUpdateDialog.java",
+  "java/src/org/chromium/chrome/browser/webapps/WebApkInstallBroadcastReceiver.java",
   "java/src/org/chromium/chrome/browser/webapps/WebApkInstallCoordinatorBridge.java",
   "java/src/org/chromium/chrome/browser/webapps/WebApkInstallCoordinatorServiceImpl.java",
   "java/src/org/chromium/chrome/browser/webapps/WebApkInstallService.java",

@@ -376,6 +376,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &video_tutorials::features::kVideoTutorials,
     &webapps::features::kInstallableAmbientBadgeInfoBar,
     &webapps::features::kInstallableAmbientBadgeMessage,
+    &webapps::features::kWebApkInstallFailureNotification,
     &webapps::features::kWebApkUniqueId,
 };
 

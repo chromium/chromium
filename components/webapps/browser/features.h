@@ -18,6 +18,7 @@ BASE_DECLARE_FEATURE(kInstallableAmbientBadgeInfoBar);
 BASE_DECLARE_FEATURE(kInstallableAmbientBadgeMessage);
 extern const base::FeatureParam<int>
     kInstallableAmbientBadgeMessage_ThrottleDomainsCapacity;
+BASE_DECLARE_FEATURE(kWebApkInstallFailureNotification);
 BASE_DECLARE_FEATURE(kWebApkUniqueId);
 #endif  // BUILDFLAG(IS_ANDROID)
 

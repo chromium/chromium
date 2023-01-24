@@ -831,6 +831,10 @@
         <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
       </intent-filter>  # DIFF-ANCHOR: e8cce90c
     </receiver>  # DIFF-ANCHOR: 9015e3cf
+    <receiver  # DIFF-ANCHOR: 2553238b
+        android:name="org.chromium.chrome.browser.webapps.WebApkInstallBroadcastReceiver"
+        android:exported="false">
+    </receiver>  # DIFF-ANCHOR: 2553238b
     <receiver  # DIFF-ANCHOR: c787586e
         android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskBroadcastReceiver"
         android:exported="false">

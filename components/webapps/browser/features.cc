@@ -31,6 +31,11 @@ extern const base::FeatureParam<int>
         &kInstallableAmbientBadgeMessage,
         "installable_ambient_badge_message_throttle_domains_capacity", 100};
 
+// Enables WebAPK Install Failure Notification.
+BASE_FEATURE(kWebApkInstallFailureNotification,
+             "WebApkInstallFailureNotification",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables PWA Unique IDs for WebAPKs.
 BASE_FEATURE(kWebApkUniqueId,
              "WebApkUniqueId",

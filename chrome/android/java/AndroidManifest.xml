@@ -866,6 +866,10 @@ by a child template that "extends" this file.
             android:name="org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.DisclosureAcceptanceBroadcastReceiver"
             android:exported="false" />
 
+        <receiver
+            android:name="org.chromium.chrome.browser.webapps.WebApkInstallBroadcastReceiver"
+            android:exported="false" />
+
         <!-- Service for decoding images in a sandboxed process. -->
         <service
             android:description="@string/decoder_description"

@@ -151,6 +151,11 @@ void WebApkInstallService::OnFinishedInstall(
       shortcut_info.url, shortcut_info.short_name, primary_icon,
       is_primary_icon_maskable, result, webapk_package_name);
 
+  if (base::FeatureList::IsEnabled(
+          webapps::features::kWebApkInstallFailureNotification)) {
+    return;
+  }
+
   // If WebAPK install failed, try adding a shortcut instead.
   // If the install didn't definitely fail (i.e. PROBABLE_FAILURE), we don't add
   // a shortcut. This could happen if Play was busy with another install and
@@ -199,13 +204,18 @@ void WebApkInstallService::HandleFinishInstallNotifications(
   if (result == webapps::WebApkInstallResult::SUCCESS) {
     ShowInstalledNotification(notification_id, short_name, url, primary_icon,
                               is_primary_icon_maskable, webapk_package_name);
-    return;
+  } else if (base::FeatureList::IsEnabled(
+                 webapps::features::kWebApkInstallFailureNotification) &&
+             result != webapps::WebApkInstallResult::PROBABLE_FAILURE) {
+    ShowInstallFailedNotification(notification_id, short_name, url,
+                                  primary_icon, is_primary_icon_maskable,
+                                  result);
+  } else {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    base::android::ScopedJavaLocalRef<jstring> java_notification_id =
+        base::android::ConvertUTF8ToJavaString(env, notification_id.spec());
+    Java_WebApkInstallService_cancelNotification(env, java_notification_id);
   }
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> java_notification_id =
-      base::android::ConvertUTF8ToJavaString(env, notification_id.spec());
-  Java_WebApkInstallService_cancelNotification(env, java_notification_id);
 }
 
 // static
@@ -253,4 +263,27 @@ void WebApkInstallService::ShowInstalledNotification(
   Java_WebApkInstallService_showInstalledNotification(
       env, java_webapk_package, java_notification_id, java_short_name, java_url,
       java_primary_icon, is_primary_icon_maskable);
+}
+
+// static
+void WebApkInstallService::ShowInstallFailedNotification(
+    const GURL& notification_id,
+    const std::u16string& short_name,
+    const GURL& url,
+    const SkBitmap& primary_icon,
+    bool is_primary_icon_maskable,
+    webapps::WebApkInstallResult result) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jstring> java_notification_id =
+      base::android::ConvertUTF8ToJavaString(env, notification_id.spec());
+  base::android::ScopedJavaLocalRef<jstring> java_short_name =
+      base::android::ConvertUTF16ToJavaString(env, short_name);
+  base::android::ScopedJavaLocalRef<jstring> java_url =
+      base::android::ConvertUTF8ToJavaString(env, url.spec());
+  base::android::ScopedJavaLocalRef<jobject> java_primary_icon =
+      gfx::ConvertToJavaBitmap(primary_icon);
+
+  Java_WebApkInstallService_showInstallFailedNotification(
+      env, java_notification_id, java_short_name, java_url, java_primary_icon,
+      is_primary_icon_maskable, static_cast<int>(result));
 }
