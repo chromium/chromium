@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 #
 # Defines the build_timestamp variable.
-# Note that Chrome uses build/config/chrome_win_timestamp.gni which is a
-# slightly modified copy of this.
 
 import("//build/util/lastchange.gni")
 

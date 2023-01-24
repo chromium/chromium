@@ -4,12 +4,12 @@
 
 import("//build/config/c++/c++.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chrome_win_timestamp.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/win/control_flow_guard.gni")
 import("//build/config/win/visual_studio_version.gni")
+import("//build/timestamp.gni")
 import("//build/toolchain/goma.gni")
 import("//build/toolchain/toolchain.gni")
 
@@ -166,7 +166,7 @@ config("compiler") {
     # build/compute_build_timestamp.py for how the timestamp is chosen.
     # (link.exe also writes the current time, but it doesn't have a flag to
     # override that behavior.)
-    ldflags += [ "/TIMESTAMP:" + chrome_win_build_timestamp ]
+    ldflags += [ "/TIMESTAMP:" + build_timestamp ]
 
     # Don't look for libpaths in %LIB%, similar to /X in cflags above.
     ldflags += [ "/lldignoreenv" ]
