@@ -215,7 +215,7 @@ void BaseRenderingContext2D::beginLayer() {
     max_state_stack_depth_ =
         std::max(state_stack_.size(), max_state_stack_depth_);
 
-    if (GetState().ShouldDrawShadows()) {
+    if (StateHasFilter() && GetState().ShouldDrawShadows()) {
       cc::PaintFlags extra_flags;
       extra_flags.setAlphaf(static_cast<float>(globalAlpha()));
       extra_flags.setImageFilter(StateGetFilter());

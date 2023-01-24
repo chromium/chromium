@@ -302,13 +302,8 @@ TEST(BaseRenderingContextLayerTests, ShadowAndGlobalAlpha) {
       0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
       DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr));
 
-  // TODO(crbug.com/1407289): A `SaveLayerAlphaOp` should be used here instead
-  // of a SaveLayerOp.
-  cc::PaintFlags alpha_flags;
-  alpha_flags.setAlphaf(0.5f);
-
   EXPECT_THAT(context->getRecording(),
-              PaintOpsAreEq(SaveLayerOp(shadow_flags), SaveLayerOp(alpha_flags),
+              PaintOpsAreEq(SaveLayerOp(shadow_flags), SaveLayerAlphaOp(0.5f),
                             RestoreOp(), RestoreOp()));
 }
 
@@ -328,13 +323,8 @@ TEST(BaseRenderingContextLayerTests, ShadowGlobalAlphaAndComposite) {
       DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr));
   shadow_flags.setBlendMode(SkBlendMode::kXor);
 
-  // TODO(crbug.com/1407289): A `SaveLayerAlphaOp` should be used here instead
-  // of a SaveLayerOp.
-  cc::PaintFlags alpha_flags;
-  alpha_flags.setAlphaf(0.5f);
-
   EXPECT_THAT(context->getRecording(),
-              PaintOpsAreEq(SaveLayerOp(shadow_flags), SaveLayerOp(alpha_flags),
+              PaintOpsAreEq(SaveLayerOp(shadow_flags), SaveLayerAlphaOp(0.5f),
                             RestoreOp(), RestoreOp()));
 }
 
