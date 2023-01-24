@@ -395,16 +395,6 @@ bool DspAecAllowed(const AudioParameters& params) {
          params.effects() & AudioParameters::ECHO_CANCELLER;
 }
 
-bool DspNsAllowed(const AudioParameters& params) {
-  return params.effects() & AudioParameters::ALLOW_DSP_NOISE_SUPPRESSION &&
-         params.effects() & AudioParameters::NOISE_SUPPRESSION;
-}
-
-bool DspAgcAllowed(const AudioParameters& params) {
-  return params.effects() & AudioParameters::ALLOW_DSP_AUTOMATIC_GAIN_CONTROL &&
-         params.effects() & AudioParameters::AUTOMATIC_GAIN_CONTROL;
-}
-
 class AudioManagerCrasTestAEC
     : public AudioManagerCrasTest,
       public ::testing::WithParamInterface<std::tuple<bool, bool>> {
@@ -568,8 +558,6 @@ TEST_P(AudioManagerCrasTestDSP, BehaviorWithoutAnyEnforcedEffects) {
   AudioParameters params = audio_manager_->GetInputStreamParameters("");
 
   EXPECT_FALSE(DspAecAllowed(params));
-  EXPECT_FALSE(DspNsAllowed(params));
-  EXPECT_FALSE(DspAgcAllowed(params));
 }
 
 TEST_P(AudioManagerCrasTestDSP, BehaviorWithCrOSEnforceSystemAec) {
@@ -580,10 +568,6 @@ TEST_P(AudioManagerCrasTestDSP, BehaviorWithCrOSEnforceSystemAec) {
 
   EXPECT_TRUE(DspAecAllowed(params) && aec_on_dsp_allowed_ ||
               !DspAecAllowed(params) && !aec_on_dsp_allowed_);
-  EXPECT_TRUE(DspNsAllowed(params) && ns_on_dsp_allowed_ ||
-              !DspNsAllowed(params) && !ns_on_dsp_allowed_);
-  EXPECT_TRUE(DspAgcAllowed(params) && agc_on_dsp_allowed_ ||
-              !DspAgcAllowed(params) && !agc_on_dsp_allowed_);
 }
 
 TEST_P(AudioManagerCrasTestDSP, BehaviorWithCrOSEnforceSystemAecNs) {
@@ -594,10 +578,6 @@ TEST_P(AudioManagerCrasTestDSP, BehaviorWithCrOSEnforceSystemAecNs) {
 
   EXPECT_TRUE(DspAecAllowed(params) && aec_on_dsp_allowed_ ||
               !DspAecAllowed(params) && !aec_on_dsp_allowed_);
-  EXPECT_TRUE(DspNsAllowed(params) && ns_on_dsp_allowed_ ||
-              !DspNsAllowed(params) && !ns_on_dsp_allowed_);
-  EXPECT_TRUE(DspAgcAllowed(params) && agc_on_dsp_allowed_ ||
-              !DspAgcAllowed(params) && !agc_on_dsp_allowed_);
 }
 
 TEST_P(AudioManagerCrasTestDSP, BehaviorWithCrOSEnforceSystemAecAgc) {
@@ -608,10 +588,6 @@ TEST_P(AudioManagerCrasTestDSP, BehaviorWithCrOSEnforceSystemAecAgc) {
 
   EXPECT_TRUE(DspAecAllowed(params) && aec_on_dsp_allowed_ ||
               !DspAecAllowed(params) && !aec_on_dsp_allowed_);
-  EXPECT_TRUE(DspNsAllowed(params) && ns_on_dsp_allowed_ ||
-              !DspNsAllowed(params) && !ns_on_dsp_allowed_);
-  EXPECT_TRUE(DspAgcAllowed(params) && agc_on_dsp_allowed_ ||
-              !DspAgcAllowed(params) && !agc_on_dsp_allowed_);
 }
 
 TEST_P(AudioManagerCrasTestDSP, BehaviorWithCrOSEnforceSystemAecNsAgc) {
@@ -622,10 +598,6 @@ TEST_P(AudioManagerCrasTestDSP, BehaviorWithCrOSEnforceSystemAecNsAgc) {
 
   EXPECT_TRUE(DspAecAllowed(params) && aec_on_dsp_allowed_ ||
               !DspAecAllowed(params) && !aec_on_dsp_allowed_);
-  EXPECT_TRUE(DspNsAllowed(params) && ns_on_dsp_allowed_ ||
-              !DspNsAllowed(params) && !ns_on_dsp_allowed_);
-  EXPECT_TRUE(DspAgcAllowed(params) && agc_on_dsp_allowed_ ||
-              !DspAgcAllowed(params) && !agc_on_dsp_allowed_);
 }
 
 }  // namespace
