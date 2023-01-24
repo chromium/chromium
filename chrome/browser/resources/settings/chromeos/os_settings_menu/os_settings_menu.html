@@ -55,17 +55,26 @@
     border-radius: 20px 0 0 20px;
   }
 
-  a.iron-selected.item {
+  a.item.iron-selected {
     background-color: var(--cros-highlight-color);
     color: var(--cros-text-color-selection);
   }
 
-  :host-context(.focus-outline-visible) a:focus.item {
+  :host-context(body.jelly-enabled) a.item.iron-selected {
+    background-color: var(--cros-sys-primary);
+    color: var(--cros-sys-on_primary);
+  }
+
+  :host-context(.focus-outline-visible) a.item:focus {
     border-color: var(--cros-focus-ring-color);
   }
 
-  a:hover:not(.iron-selected).item {
+  a.item:not(.iron-selected):hover {
     background-color: var(--cros-ripple-color);
+  }
+
+  :host-context(body.jelly-enabled) a.item:not(.iron-selected):hover {
+    background-color: var(--cros-sys-hover_on_subtle);
   }
 
   iron-icon {
@@ -74,8 +83,12 @@
     vertical-align: top;
   }
 
-  a.iron-selected.item > iron-icon {
+  a.item.iron-selected > iron-icon {
     fill: var(--cros-icon-color-selection);
+  }
+
+  :host-context(body.jelly-enabled) a.item.iron-selected > iron-icon {
+    fill: var(--cros-sys-on_primary);
   }
 
   #advancedButton {
