@@ -17,8 +17,12 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.chrome.browser.BackPressHelper;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
@@ -26,12 +30,14 @@ import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.policy.PolicyService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 
 /** Base class for First Run Experience. */
-public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
+public abstract class FirstRunActivityBase
+        extends AsyncInitializationActivity implements BackPressHandler {
     private static final String TAG = "FirstRunActivity";
 
     public static final String EXTRA_COMING_FROM_CHROME_ICON = "Extra.ComingFromChromeIcon";
@@ -58,6 +64,11 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
 
     private final FirstRunAppRestrictionInfo mFirstRunAppRestrictionInfo;
     private final OneshotSupplierImpl<PolicyService> mPolicyServiceSupplier;
+    private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
+            new ObservableSupplierImpl<>() {
+                // Always intercept back press.
+                { set(true); }
+            };
     private PolicyLoadListener mPolicyLoadListener;
 
     private final long mStartTime;
@@ -100,6 +111,19 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
         }
     }
 
+    @Override
+    protected void onPreCreate() {
+        super.onPreCreate();
+        if (BackPressManager.isSecondaryActivityEnabled()) {
+            BackPressHelper.create(this, getOnBackPressedDispatcher(), this);
+        } else {
+            BackPressHelper.create(this, getOnBackPressedDispatcher(), () -> {
+                handleBackPress();
+                return true;
+            });
+        }
+    }
+
     // Activity:
     @Override
     public void onPause() {
@@ -139,6 +163,17 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
         mPolicyLoadListener.destroy();
         mFirstRunAppRestrictionInfo.destroy();
     }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mBackPressStateSupplier;
+    }
+
+    /**
+     * Called when back press is intercepted.
+     */
+    @Override
+    public abstract void handleBackPress();
 
     protected void flushPersistentData() {
         if (mNativeInitialized) {

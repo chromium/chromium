@@ -22,7 +22,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.BackPressHelper;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.ui.base.LocalizationUtils;
@@ -71,15 +70,6 @@ public class LightweightFirstRunActivity
             // point.
             mSkipTosDialogPolicyListener.onAvailable((ignored) -> onPolicyLoadListenerAvailable());
         }
-    }
-
-    @Override
-    protected void onPreCreate() {
-        super.onPreCreate();
-        BackPressHelper.create(this, getOnBackPressedDispatcher(), () -> {
-            abortFirstRunExperience();
-            return true;
-        });
     }
 
     @Override
@@ -222,6 +212,11 @@ public class LightweightFirstRunActivity
         if (mHandler != null && mExitFreRunnable != null) {
             mHandler.removeCallbacks(mExitFreRunnable);
         }
+    }
+
+    @Override
+    public void handleBackPress() {
+        abortFirstRunExperience();
     }
 
     private void abortFirstRunExperience() {
