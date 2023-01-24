@@ -6,10 +6,6 @@
 
 namespace extensions {
 
-ChromeKioskDelegate::ChromeKioskDelegate() {}
-
-ChromeKioskDelegate::~ChromeKioskDelegate() {}
-
 bool ChromeKioskDelegate::IsAutoLaunchedKioskApp(const ExtensionId& id) const {
   return false;
 }

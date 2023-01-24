@@ -17,8 +17,8 @@ namespace extensions {
 // platforms.
 class KioskDelegate {
  public:
-  KioskDelegate();
-  virtual ~KioskDelegate();
+  KioskDelegate() = default;
+  virtual ~KioskDelegate() = default;
 
   virtual bool IsAutoLaunchedKioskApp(const ExtensionId& id) const = 0;
 };

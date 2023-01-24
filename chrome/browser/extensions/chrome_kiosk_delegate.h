@@ -14,8 +14,8 @@ namespace extensions {
 // functionality.
 class ChromeKioskDelegate : public KioskDelegate {
  public:
-  ChromeKioskDelegate();
-  ~ChromeKioskDelegate() override;
+  ChromeKioskDelegate() = default;
+  ~ChromeKioskDelegate() override = default;
 
   // KioskDelegate overrides:
   bool IsAutoLaunchedKioskApp(const ExtensionId& id) const override;

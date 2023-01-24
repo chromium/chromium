@@ -8,10 +8,7 @@ assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
 
 source_set("kiosk") {
-  sources = [
-    "kiosk_delegate.cc",
-    "kiosk_delegate.h",
-  ]
+  sources = [ "kiosk_delegate.h" ]
 
   deps = [ "//extensions/common" ]
 }

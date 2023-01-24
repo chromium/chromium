@@ -14,8 +14,8 @@ namespace extensions {
 // functionality.
 class ShellKioskDelegate : public KioskDelegate {
  public:
-  ShellKioskDelegate();
-  ~ShellKioskDelegate() override;
+  ShellKioskDelegate() = default;
+  ~ShellKioskDelegate() override = default;
 
   // KioskDelegate overrides:
   bool IsAutoLaunchedKioskApp(const ExtensionId& id) const override;
