@@ -70,6 +70,7 @@ message Process {
   optional uint64 canonical_uid = 3;
   optional string commandline = 4;
   optional FileImage image = 5;
+  optional int64 rel_start_time_s = 6;
 }
 
 // Namespaces for a process.
