@@ -51,7 +51,7 @@ public class GestureListenerManagerImpl
     private final WebContentsImpl mWebContents;
     private final ObserverList<GestureStateListener> mListeners;
     private final RewindableIterator<GestureStateListener> mIterator;
-    private final SelectionPopupControllerImpl mSelectionPopupController;
+    private SelectionPopupControllerImpl mSelectionPopupController;
     private ViewAndroidDelegate mViewDelegate;
     private InternalAccessDelegate mScrollDelegate;
     private final Point mRootScrollOffsetStruct = new Point();
@@ -95,7 +95,6 @@ public class GestureListenerManagerImpl
         mWebContents = (WebContentsImpl) webContents;
         mListeners = new ObserverList<GestureStateListener>();
         mIterator = mListeners.rewindableIterator();
-        mSelectionPopupController = SelectionPopupControllerImpl.fromWebContents(mWebContents);
         mViewDelegate = mWebContents.getViewAndroidDelegate();
         mViewDelegate.addVerticalScrollDirectionChangeListener(this);
         WindowEventObserverManager.from(mWebContents).addObserver(this);
@@ -338,7 +337,13 @@ public class GestureListenerManagerImpl
     }
 
     private void destroyPastePopup() {
-        if (mSelectionPopupController != null) mSelectionPopupController.destroyPastePopup();
+        if (mSelectionPopupController == null) {
+            mSelectionPopupController =
+                    SelectionPopupControllerImpl.fromWebContentsNoCreate(mWebContents);
+        }
+        if (mSelectionPopupController != null) {
+            mSelectionPopupController.destroyPastePopup();
+        }
     }
 
     @CalledByNative
@@ -456,6 +461,9 @@ public class GestureListenerManagerImpl
     private void setGestureScrollInProgress(boolean gestureScrollInProgress) {
         mIsGestureScrollInProgress = gestureScrollInProgress;
 
+        if (mSelectionPopupController == null) {
+            mSelectionPopupController = SelectionPopupControllerImpl.fromWebContents(mWebContents);
+        }
         // Use the active scroll signal for hiding. The animation movement by
         // fling will naturally hide the ActionMode by invalidating its content
         // rect.
