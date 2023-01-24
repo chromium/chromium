@@ -32,7 +32,10 @@ class OnceCallbackAlgorithm final : public AbortSignal::Algorithm {
       : callback_(std::move(callback)) {}
   ~OnceCallbackAlgorithm() override = default;
 
-  void Run() override { std::move(callback_).Run(); }
+  void Run() override {
+    recordreplay::Assert("[RUN-1182] OnceCallbackAlgorithm::Run");
+    std::move(callback_).Run();
+  }
 
  private:
   base::OnceClosure callback_;
@@ -47,6 +50,7 @@ class FollowAlgorithm final : public AbortSignal::Algorithm {
   ~FollowAlgorithm() override = default;
 
   void Run() override {
+    recordreplay::Assert("[RUN-1182] FollowAlgorithm::Run");
     following_->SignalAbort(script_state_, parent_->reason(script_state_));
   }
 
@@ -66,8 +70,14 @@ class FollowAlgorithm final : public AbortSignal::Algorithm {
 }  // namespace
 
 AbortSignal::AbortSignal(ExecutionContext* execution_context)
-    : execution_context_(execution_context) {}
-AbortSignal::~AbortSignal() = default;
+    : execution_context_(execution_context) {
+  // https://linear.app/replay/issue/RUN-1182
+  recordreplay::RegisterPointer("AbortSignal", this);
+}
+
+AbortSignal::~AbortSignal() {
+  recordreplay::UnregisterPointer(this);
+}
 
 // static
 AbortSignal* AbortSignal::abort(ScriptState* script_state) {
@@ -148,6 +158,9 @@ ExecutionContext* AbortSignal::GetExecutionContext() const {
 }
 
 void AbortSignal::AddAlgorithm(Algorithm* algorithm) {
+  recordreplay::Assert("[RUN-1182] AbortSignal::AddAlgorithm v1 %d %d",
+                       recordreplay::PointerId(this), aborted());
+
   if (aborted())
     return;
 
@@ -155,6 +168,9 @@ void AbortSignal::AddAlgorithm(Algorithm* algorithm) {
 }
 
 void AbortSignal::AddAlgorithm(base::OnceClosure algorithm) {
+  recordreplay::Assert("[RUN-1182] AbortSignal::AddAlgorithm v2 %d %d",
+                       recordreplay::PointerId(this), aborted());
+
   if (aborted())
     return;
   abort_algorithms_.push_back(
@@ -172,25 +188,41 @@ void AbortSignal::SignalAbort(ScriptState* script_state) {
 
 void AbortSignal::SignalAbort(ScriptState* script_state, ScriptValue reason) {
   DCHECK(!reason.IsEmpty());
-  if (aborted())
+
+  recordreplay::Assert("[RUN-1182] AbortSignal::SignalAbort %d", recordreplay::PointerId(this));
+
+  if (aborted()) {
+    recordreplay::Assert("[RUN-1182] AbortSignal::SignalAbort #1");
     return;
+  }
   if (reason.IsUndefined()) {
+    recordreplay::Assert("[RUN-1182] AbortSignal::SignalAbort #2");
     abort_reason_ = ScriptValue(
         script_state->GetIsolate(),
         V8ThrowDOMException::CreateOrEmpty(
             script_state->GetIsolate(), DOMExceptionCode::kAbortError,
             "signal is aborted with undefined reason"));
   } else {
+    recordreplay::Assert("[RUN-1182] AbortSignal::SignalAbort #3");
     abort_reason_ = reason;
   }
   for (Algorithm* algorithm : abort_algorithms_) {
+    recordreplay::Assert("[RUN-1182] AbortSignal::SignalAbort #4");
     algorithm->Run();
   }
   abort_algorithms_.clear();
+
+  recordreplay::Assert("[RUN-1182] AbortSignal::SignalAbort Done");
+
   DispatchEvent(*Event::Create(event_type_names::kAbort), "AbortSignal::SignalAbort");
 }
 
 void AbortSignal::Follow(ScriptState* script_state, AbortSignal* parent) {
+  recordreplay::Assert("[RUN-1182] AbortSignal::Follow %d %d %d %d",
+                       recordreplay::PointerId(this),
+                       recordreplay::PointerId(parent),
+                       aborted(), parent->aborted());
+
   if (aborted())
     return;
   if (parent->aborted()) {

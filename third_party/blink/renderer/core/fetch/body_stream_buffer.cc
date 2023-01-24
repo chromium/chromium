@@ -403,10 +403,15 @@ void BodyStreamBuffer::Trace(Visitor* visitor) const {
 }
 
 void BodyStreamBuffer::Abort() {
+  recordreplay::Assert("[RUN-1182] BodyStreamBuffer::Abort");
+
   if (!GetExecutionContext()) {
     DCHECK(!consumer_);
     return;
   }
+
+  recordreplay::Assert("[RUN-1182] BodyStreamBuffer::Abort #1");
+
   Controller()->Error(
       MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError));
   CancelConsumer();

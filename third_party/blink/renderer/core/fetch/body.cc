@@ -50,6 +50,8 @@ class BodyConsumerBase : public GarbageCollected<BodyConsumerBase>,
   }
 
   void Abort() override {
+    recordreplay::Assert("[RUN-1182] BodyConsumerBase::Abort");
+
     resolver_->Reject(
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError));
   }
