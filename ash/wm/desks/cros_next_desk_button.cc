@@ -18,6 +18,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -34,7 +35,9 @@ constexpr int kDefaultButtonHorizontalPadding = 16;
 
 constexpr int kDefaultDeskButtonMinWidth = 56;
 
+// The desk icon button's corner radius.
 constexpr int kIconButtonCornerRadius = 18;
+constexpr int kDragAndDropStateCornerRadius = 8;
 
 // Focus rings' corner radius of the desk icon button at different states.
 constexpr int kZeroStateFocusRingRadius = 16;
@@ -136,7 +139,8 @@ CrOSNextDeskIconButton::CrOSNextDeskIconButton(
       GetFocusRingRadiusForState(state_));
   views::FocusRing::Get(this)->SetHasFocusPredicate([&](views::View* view) {
     return IsViewHighlighted() ||
-           ((bar_view_->dragged_item_over_bar() &&
+           ((state_ == State::kDragAndDrop &&
+             bar_view_->dragged_item_over_bar() &&
              IsPointOnButton(bar_view_->last_dragged_item_screen_location())) ||
             paint_as_active_);
   });
@@ -144,12 +148,26 @@ CrOSNextDeskIconButton::CrOSNextDeskIconButton(
 
 CrOSNextDeskIconButton::~CrOSNextDeskIconButton() = default;
 
+// static
+int CrOSNextDeskIconButton::GetCornerRadiusOnState(State state) {
+  switch (state) {
+    case CrOSNextDeskIconButton::State::kZero:
+    case CrOSNextDeskIconButton::State::kExpanded:
+      return kIconButtonCornerRadius;
+    case CrOSNextDeskIconButton::State::kDragAndDrop:
+      return kDragAndDropStateCornerRadius;
+  }
+}
+
 void CrOSNextDeskIconButton::UpdateState(State state) {
   if (state_ == state) {
     return;
   }
 
   state_ = state;
+
+  SetBackground(views::CreateRoundedRectBackground(
+      background()->get_color(), GetCornerRadiusOnState(state_)));
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(kFocusRingHaloInset),
       GetFocusRingRadiusForState(state_));
@@ -157,9 +175,18 @@ void CrOSNextDeskIconButton::UpdateState(State state) {
 
 bool CrOSNextDeskIconButton::IsPointOnButton(
     const gfx::Point& screen_location) const {
-  gfx::Point point_in_view = screen_location;
-  ConvertPointFromScreen(this, &point_in_view);
-  return HitTestPoint(point_in_view);
+  DCHECK(!bar_view_->IsZeroState());
+
+  gfx::Rect hit_test_bounds = GetBoundsInScreen();
+  // Include some pixels on the bottom so the hit region is the same as the desk
+  // mini view even though the views have different heights.
+  hit_test_bounds.Inset(gfx::Insets::TLBR(
+      0, 0,
+      GetPreferredSize().height() -
+          bar_view_->mini_views()[0]->GetPreferredSize().height(),
+      0));
+
+  return hit_test_bounds.Contains(screen_location);
 }
 
 gfx::Size CrOSNextDeskIconButton::CalculatePreferredSize() const {
@@ -181,7 +208,7 @@ void CrOSNextDeskIconButton::UpdateFocusState() {
   absl::optional<ui::ColorId> new_focus_color_id;
 
   if (IsViewHighlighted() ||
-      (bar_view_->dragged_item_over_bar() &&
+      (state_ == State::kDragAndDrop && bar_view_->dragged_item_over_bar() &&
        IsPointOnButton(bar_view_->last_dragged_item_screen_location()))) {
     new_focus_color_id = ui::kColorAshFocusRing;
   } else if (paint_as_active_) {

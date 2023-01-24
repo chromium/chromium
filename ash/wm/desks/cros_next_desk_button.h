@@ -12,7 +12,7 @@
 
 namespace gfx {
 struct VectorIcon;
-}
+}  // namespace gfx
 
 namespace ash {
 
@@ -78,6 +78,10 @@ class ASH_EXPORT CrOSNextDeskIconButton : public CrOSNextDeskButtonBase {
   CrOSNextDeskIconButton(const CrOSNextDeskIconButton&) = delete;
   CrOSNextDeskIconButton& operator=(const CrOSNextDeskIconButton&) = delete;
   ~CrOSNextDeskIconButton() override;
+
+  // Convenient function for returning the desk icon button's corner radius on
+  // the given `state`.
+  static int GetCornerRadiusOnState(State state);
 
   State state() const { return state_; }
   void set_paint_as_active(bool paint_as_active) {

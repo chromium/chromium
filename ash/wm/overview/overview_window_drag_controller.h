@@ -185,6 +185,12 @@ class ASH_EXPORT OverviewWindowDragController {
   // after a gesture is completed if there is an animation.
   void DestroyFloatDragHelper();
 
+  // Scale up the new desk button on the desks bar from expanded state to
+  // drag and drop state to make the new desk button a drop target for the
+  // window being dragged. It's triggered by `new_desk_button_scale_up_timer_`.
+  // Refer to `new_desk_button_scale_up_timer_` for more information.
+  void MaybeScaleUpNewDeskButton();
+
   OverviewSession* overview_session_;
 
   // The drag target window in the overview mode.
@@ -253,6 +259,11 @@ class ASH_EXPORT OverviewWindowDragController {
 
   SplitViewController::SnapPosition snap_position_ =
       SplitViewController::SnapPosition::kNone;
+
+  // A timer used to scale up the new desk button to make it a drop target for
+  // the window being dragged if the window is hovered on the button over a
+  // period of time.
+  base::OneShotTimer new_desk_button_scale_up_timer_;
 
   // Helper class that encapsulates the logic needed to alter the floated
   // windows' container during a drag. May stay alive shortly after a drag is

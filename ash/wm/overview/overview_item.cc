@@ -340,6 +340,13 @@ gfx::RectF OverviewItem::GetTransformedBounds() const {
   return transform_window_.GetTransformedBounds();
 }
 
+gfx::RectF OverviewItem::GetWindowTargetBoundsWithInsets() const {
+  gfx::RectF window_target_bounds = target_bounds_;
+  window_target_bounds.Inset(kWindowMargin);
+  window_target_bounds.Inset(gfx::InsetsF::TLBR(kHeaderHeightDp, 0, 0, 0));
+  return window_target_bounds;
+}
+
 void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
                              OverviewAnimationType animation_type) {
   if (in_bounds_update_ ||
@@ -1105,13 +1112,6 @@ gfx::Rect OverviewItem::GetShadowBoundsForTesting() {
     return gfx::Rect();
 
   return shadow_->GetContentBounds();
-}
-
-gfx::RectF OverviewItem::GetWindowTargetBoundsWithInsets() const {
-  gfx::RectF window_target_bounds = target_bounds_;
-  window_target_bounds.Inset(kWindowMargin);
-  window_target_bounds.Inset(gfx::InsetsF::TLBR(kHeaderHeightDp, 0, 0, 0));
-  return window_target_bounds;
 }
 
 gfx::RectF OverviewItem::GetUnclippedShadowBounds() const {

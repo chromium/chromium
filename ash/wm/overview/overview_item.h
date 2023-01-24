@@ -105,6 +105,10 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   // Returns the transformed bound of |transform_window_|.
   gfx::RectF GetTransformedBounds() const;
 
+  // Returns the target bounds of `window_`. Same as `target_bounds_`, with some
+  // insets.
+  gfx::RectF GetWindowTargetBoundsWithInsets() const;
+
   // Sets the bounds of this overview item to |target_bounds| in the
   // |root_window_| root window. The bounds change will be animated as specified
   // by |animation_type|.
@@ -287,10 +291,6 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
  private:
   friend class OverviewTestBase;
   FRIEND_TEST_ALL_PREFIXES(SplitViewOverviewSessionTest, Clipping);
-
-  // Returns the target bounds of |window_|. Same as |target_bounds_|, with some
-  // insets.
-  gfx::RectF GetWindowTargetBoundsWithInsets() const;
 
   // The shadow should match the size of the transformed window or preview
   // window if unclipped.

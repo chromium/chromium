@@ -434,15 +434,17 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
 
     gfx::Size mini_view_size = mini_views[0]->GetPreferredSize();
 
+    gfx::Size new_desk_button_size =
+        bar_view_->new_desk_button()->GetPreferredSize();
     gfx::Size library_button_size = library_button->GetPreferredSize();
-    // New desk button and library button have the same size;
-    const int num_buttons = library_button_visible ? 2 : 1;
 
     // Content width is sum of the width of all views, and plus the spacing
     // between the views, the focus ring's thickness and padding on each sides.
     const int content_width =
         mini_views.size() * (mini_view_size.width() + kMiniViewsSpacing) +
-        num_buttons * (library_button_size.width() + kMiniViewsSpacing) -
+        (new_desk_button_size.width() + kMiniViewsSpacing) +
+        (library_button_visible ? 1 : 0) *
+            (library_button_size.width() + kMiniViewsSpacing) -
         kMiniViewsSpacing + kDeskPreviewViewFocusRingThicknessAndPadding * 2;
     width_ = std::max(scroll_bounds.width(), content_width);
 
@@ -463,10 +465,10 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
       x += (mini_view_size.width() + kMiniViewsSpacing);
     }
     bar_view_->new_desk_button()->SetBoundsRect(
-        gfx::Rect(gfx::Point(x, y), library_button_size));
+        gfx::Rect(gfx::Point(x, y), new_desk_button_size));
 
     if (library_button) {
-      x += (library_button_size.width() + kMiniViewsSpacing);
+      x += (new_desk_button_size.width() + kMiniViewsSpacing);
       library_button->SetBoundsRect(
           gfx::Rect(gfx::Point(x, y), library_button_size));
     }
@@ -724,7 +726,11 @@ void DesksBarView::SetDragDetails(const gfx::Point& screen_location,
 
   if (features::IsDragWindowToNewDeskEnabled() &&
       DesksController::Get()->CanCreateDesks()) {
-    expanded_state_new_desk_button()->UpdateFocusColor();
+    if (features::IsJellyrollEnabled()) {
+      new_desk_button_->UpdateFocusState();
+    } else {
+      expanded_state_new_desk_button()->UpdateFocusColor();
+    }
   }
 }
 
@@ -1148,6 +1154,16 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
     return;
   }
 
+  if (features::IsJellyrollEnabled()) {
+    if (new_desk_button_->state() ==
+        CrOSNextDeskIconButton::State::kDragAndDrop) {
+      // Make sure the new desk button is updated to expanded state from the
+      // drag and drop state. This can happen when dropping the window on the
+      // new desk button.
+      new_desk_button_->UpdateState(CrOSNextDeskIconButton::State::kExpanded);
+    }
+  }
+
   Layout();
 
   if (initializing_bar_view)
@@ -1538,6 +1554,31 @@ void DesksBarView::MaybeUpdateCombineDesksTooltips() {
     mini_view->desk_action_view()->UpdateCombineDesksTooltip(
         DesksController::Get()->GetCombineDesksTargetName(mini_view->desk()));
   }
+}
+
+void DesksBarView::UpdateNewDeskButton(
+    CrOSNextDeskIconButton::State target_state) {
+  DCHECK(features::IsJellyrollEnabled());
+  DCHECK_NE(target_state, CrOSNextDeskIconButton::State::kZero);
+
+  if (new_desk_button_->state() == target_state) {
+    return;
+  }
+
+  const int begin_x = GetFirstMiniViewXOffset();
+  const gfx::Rect current_bounds(new_desk_button_->GetBoundsInScreen());
+
+  new_desk_button_->UpdateState(target_state);
+  Layout();
+
+  const gfx::RectF target_bounds(new_desk_button_->GetBoundsInScreen());
+  gfx::Transform scale_transform;
+  const int shift_x = begin_x - GetFirstMiniViewXOffset();
+  scale_transform.Translate(shift_x, 0);
+  scale_transform.Scale(current_bounds.width() / target_bounds.width(),
+                        current_bounds.height() / target_bounds.height());
+
+  PerformNewDeskButtonScaleAnimationCrOSNext(this, scale_transform, shift_x);
 }
 
 void DesksBarView::OnContentsScrolled() {

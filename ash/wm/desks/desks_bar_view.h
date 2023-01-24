@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/wm/desks/cros_next_desk_button.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "base/callback_list.h"
@@ -233,6 +234,13 @@ class ASH_EXPORT DesksBarView : public views::View,
 
   // Bring focus to the name view of the desk with `desk_index`.
   void NudgeDeskName(int desk_index);
+
+  // Called to update state of `new_desk_button_` to the given
+  // `target_state` for drag and drop window. To make the button a drop target
+  // for the window being dragged, the button needs to be updated to the
+  // `kDragAndDrop` state. At the end of the drag, the button needs to be
+  // updated to the `kExpanded` state.
+  void UpdateNewDeskButton(CrOSNextDeskIconButton::State target_state);
 
  private:
   friend class DesksBarScrollViewLayout;

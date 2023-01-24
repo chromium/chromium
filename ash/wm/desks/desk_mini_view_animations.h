@@ -8,9 +8,13 @@
 #include <memory>
 #include <vector>
 
+namespace gfx {
+class Transform;
+}  // namespace gfx
+
 namespace views {
 class View;
-}
+}  // namespace views
 
 namespace ash {
 
@@ -109,6 +113,17 @@ void PerformReorderDeskMiniViewAnimation(
 void PerformLibraryButtonVisibilityAnimation(
     const std::vector<DeskMiniView*>& mini_views,
     views::View* new_desk_button,
+    int shift_x);
+
+// Performs the `new_desk_button_` scale animation based on the given arguments.
+// It also shifts the mini views to the left and the library button to the right
+// by `shift_x` with animation.
+// * Notes:
+// - It assumes all the mini views in `bar_view`, new desk button and library
+// button have been laid out in their final positions.
+void PerformNewDeskButtonScaleAnimationCrOSNext(
+    DesksBarView* bar_view,
+    const gfx::Transform& new_desk_button_rects_transform,
     int shift_x);
 
 }  // namespace ash
