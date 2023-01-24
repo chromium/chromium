@@ -357,6 +357,7 @@ crbug.com/956134 [ win angle-d3d9 ] conformance/extensions/webgl-depth-texture.h
 
 ## Win / AMD RX 5500 XT failures ##
 
+crbug.com/1409858 [ win amd-0x7340 angle-d3d11 ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 crbug.com/1152597 [ win amd-0x7340 angle-d3d11 ] conformance/renderbuffers/framebuffer-state-restoration.html [ Failure ]
 crbug.com/1152599 [ win amd-0x7340 angle-d3d11 ] conformance/rendering/polygon-offset.html [ Failure ]
 
