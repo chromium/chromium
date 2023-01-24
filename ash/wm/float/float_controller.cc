@@ -286,6 +286,13 @@ gfx::Rect FloatController::GetPreferredFloatWindowClamshellBounds(
                 std::max(static_cast<int>(work_area.height() * 0.7),
                          minimum_size.height()));
 
+  // If user has already adjusted the window to be a size smaller than the
+  // calculated preferred size, use user size instead.
+  if (window->bounds().height() <= preferred_bounds.height() &&
+      window->bounds().width() <= preferred_bounds.width()) {
+    preferred_bounds = window->bounds();
+  }
+
   const int padding_dp = chromeos::wm::kFloatedWindowPaddingDp;
   const int preferred_width =
       std::min(preferred_bounds.width(), work_area.width() - 2 * padding_dp);
