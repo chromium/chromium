@@ -68,7 +68,6 @@
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#import "ios/web/public/test/earl_grey/js_test_util.h"
 #import "ios/web/public/test/element_selector.h"
 #import "ios/web/public/test/url_test_util.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
@@ -192,16 +191,6 @@ NSString* SerializedValue(const base::Value* value) {
 
 + (void)startLoadingURL:(NSString*)spec {
   chrome_test_util::LoadUrl(GURL(base::SysNSStringToUTF8(spec)));
-}
-
-+ (BOOL)waitForWindowIDInjectionIfNeeded {
-  web::WebState* webState = chrome_test_util::GetCurrentWebState();
-
-  if (webState->ContentIsHTML()) {
-    return web::WaitUntilWindowIdInjected(webState);
-  }
-
-  return YES;
 }
 
 + (bool)isLoading {
@@ -505,17 +494,6 @@ NSString* SerializedValue(const base::Value* value) {
 
 + (BOOL)isLoadingInWindowWithNumber:(int)windowNumber {
   return chrome_test_util::IsLoadingInWindowWithNumber(windowNumber);
-}
-
-+ (BOOL)waitForWindowIDInjectionIfNeededInWindowWithNumber:(int)windowNumber {
-  web::WebState* webState =
-      chrome_test_util::GetCurrentWebStateForWindowWithNumber(windowNumber);
-
-  if (webState->ContentIsHTML()) {
-    return web::WaitUntilWindowIdInjected(webState);
-  }
-
-  return YES;
 }
 
 + (BOOL)webStateContainsText:(NSString*)text

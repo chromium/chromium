@@ -114,7 +114,3 @@ window.history.replaceState = function(stateObject, pageTitle, pageUrl) {
     'frame_id': __gCrWeb.message.getFrameId()
   });
 };
-
-window.addEventListener('__gCrWebWindowIdInjected', function() {
-  sendQueuedMessages();
-});

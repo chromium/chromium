@@ -21,12 +21,6 @@
 // Returns YES if the current WebState is loading.
 + (BOOL)isCurrentWebStateLoading [[nodiscard]];
 
-// Waits until the windowID is injected into the current web state. Returns nil
-// on success, or else an NSError indicating why the operation failed.
-// Immediately returns if the WebState contains content that does not require
-// windowID injection.
-+ (NSError*)waitForWindowIDInjectedInCurrentWebState [[nodiscard]];
-
 // Returns YES if the current WebState contains the given `text`.
 + (BOOL)currentWebStateContainsText:(NSString*)text [[nodiscard]];
 

@@ -45,7 +45,7 @@ class SessionRestoreJavaScriptFeature : public base::SupportsUserData::Data,
 
   // This feature uses ScopedWKScriptMessageHandler directly instead of the
   // message handling built into JavaScriptFeature because the WKWebView is used
-  // to message the WKWebView directly since windowID is not yet setup during
+  // to message the WKWebView directly since WebFrames are not yet setup during
   // session restoration. (The WKWebView is intentionally hidden from
   // JavaScriptFeature::ScriptMessageReceived).
   std::unique_ptr<ScopedWKScriptMessageHandler> session_restore_handler_;
