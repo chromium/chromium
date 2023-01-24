@@ -1401,12 +1401,12 @@
     },
 
     'tryserver.webrtc': {
-      'android_chromium_compile': 'android_release_trybot',
-      'linux_chromium_compile': 'release_trybot',
-      'linux_chromium_compile_dbg': 'debug_bot',
-      'mac_chromium_compile': 'gpu_tests_release_trybot',
-      'win_chromium_compile': 'gpu_tests_release_trybot_resource_allowlisting',
-      'win_chromium_compile_dbg': 'gpu_tests_debug_bot_x86_no_symbols',
+      'android_chromium_compile': 'android_release_trybot_reclient',
+      'linux_chromium_compile': 'release_trybot_reclient',
+      'linux_chromium_compile_dbg': 'debug_bot_reclient',
+      'mac_chromium_compile': 'gpu_tests_release_trybot_reclient',
+      'win_chromium_compile': 'gpu_tests_release_trybot_resource_allowlisting_reclient',
+      'win_chromium_compile_dbg': 'gpu_tests_debug_bot_x86_no_symbols_reclient',
     },
   },
 
@@ -2852,10 +2852,6 @@
       'gpu_tests', 'release_trybot_reclient',
     ],
 
-    'gpu_tests_release_trybot_resource_allowlisting': [
-      'gpu_tests', 'release_trybot', 'resource_allowlisting',
-    ],
-
     # TODO(crbug.com/1004523) Delete this once coverage mode is enabled on the
     # standard Windows trybot and the dedicated coverage trybot is no longer
     # needed.
@@ -2885,6 +2881,10 @@
     'gpu_tests_release_trybot_resource_allowlisting_no_precompiled_headers_siso': [
       'gpu_tests', 'release_trybot', 'no_resource_allowlisting', 'no_precompiled_headers',
       'no_goma', 'no_reclient',
+    ],
+
+    'gpu_tests_release_trybot_resource_allowlisting_reclient': [
+      'gpu_tests', 'release_trybot_reclient', 'resource_allowlisting',
     ],
 
     'gpu_tests_release_trybot_x86_reclient': [
