@@ -17,6 +17,9 @@
 #include "content/public/common/content_features.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
@@ -79,6 +82,32 @@ void CriticalClientHintsThrottle::MaybeRestartWithHints(
     const network::mojom::URLResponseHead& response_head) {
   if (!base::FeatureList::IsEnabled(features::kCriticalClientHint))
     return;
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+
+  // Measure any usage of the header whether or not we take action on it.
+  auto* ukm_recorder = ukm::UkmRecorder::Get();
+  if (response_head.parsed_headers && frame_tree_node &&
+      frame_tree_node->navigation_request()) {
+    if (response_head.parsed_headers->critical_ch) {
+      for (const WebClientHintsType hint :
+           response_head.parsed_headers->critical_ch.value()) {
+        ukm::builders::ClientHints_CriticalCHHeaderUsage(
+            frame_tree_node->navigation_request()->GetNextPageUkmSourceId())
+            .SetType(static_cast<int64_t>(hint))
+            .Record(ukm_recorder->Get());
+      }
+    }
+    if (response_head.parsed_headers->accept_ch) {
+      for (const WebClientHintsType hint :
+           response_head.parsed_headers->accept_ch.value()) {
+        ukm::builders::ClientHints_AcceptCHHeaderUsage(
+            frame_tree_node->navigation_request()->GetNextPageUkmSourceId())
+            .SetType(static_cast<int64_t>(hint))
+            .Record(ukm_recorder->Get());
+      }
+    }
+  }
 
   if (!response_head.parsed_headers ||
       !response_head.parsed_headers->accept_ch ||
@@ -91,9 +120,8 @@ void CriticalClientHintsThrottle::MaybeRestartWithHints(
   if (restarted_origins_.contains(response_origin))
     return;
 
-  if (!ShouldAddClientHints(
-          response_origin, FrameTreeNode::GloballyFindByID(frame_tree_node_id_),
-          client_hint_delegate_)) {
+  if (!ShouldAddClientHints(response_origin, frame_tree_node,
+                            client_hint_delegate_)) {
     return;
   }
 
@@ -114,9 +142,6 @@ void CriticalClientHintsThrottle::MaybeRestartWithHints(
     return;
 
   LogCriticalCHStatus(CriticalCHRestart::kHeaderPresent);
-
-  FrameTreeNode* frame_tree_node =
-      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
 
   if (!AreCriticalHintsMissing(response_origin, frame_tree_node,
                                client_hint_delegate_, critical_hints)) {

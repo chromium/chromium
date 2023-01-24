@@ -5774,6 +5774,49 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="ClientHints.AcceptCHHeaderUsage">
+  <owner>arichiv@chromium.org</owner>
+  <owner>victortan@chromium.org</owner>
+  <summary>
+    Record when a Client Hint is requested in a Accept-CH HTTP Response Header.
+  </summary>
+  <metric name="Type" enum="WebClientHintsType">
+    <summary>
+      Records an enum representing the specific Client Hint type that was
+      requested.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="ClientHints.CriticalCHHeaderUsage">
+  <owner>arichiv@chromium.org</owner>
+  <owner>victortan@chromium.org</owner>
+  <summary>
+    Record when a Client Hint is requested in a Critical-CH HTTP Response
+    Header.
+  </summary>
+  <metric name="Type" enum="WebClientHintsType">
+    <summary>
+      Records an enum representing the specific Client Hint type that was
+      requested.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="ClientRenderingAPI">
   <owner>aaronhk@chromium.org</owner>
   <owner>cwallez@chromium.org</owner>
