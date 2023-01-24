@@ -283,7 +283,6 @@ class CONTENT_EXPORT FrameNavigationEntry
   absl::optional<url::Origin> committed_origin_;
   Referrer referrer_;
   absl::optional<url::Origin> initiator_origin_;
-  // TODO(https://crbug.com/1399599): Persist `initiator_base_url_`.
   absl::optional<GURL> initiator_base_url_;
   // This is used when transferring a pending entry from one process to another.
   // We also send the main frame's redirect chain through session sync for

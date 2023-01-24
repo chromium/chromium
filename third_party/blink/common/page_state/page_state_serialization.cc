@@ -193,6 +193,7 @@ struct SerializeObject {
 // 30: Add navigation API state.
 // 31: Add protect url in navigation API bit.
 // 32: Fix assign() for initiator origin.
+// 33: Add initiator origin to FrameState.
 // NOTE: If the version is -1, then the pickle contains only a URL string.
 // See ReadPageState.
 //
@@ -200,7 +201,7 @@ const int kMinVersion = 11;
 // NOTE: When changing the version, please add a backwards compatibility test.
 // See PageStateSerializationTest.DumpExpectedPageStateForBackwardsCompat for
 // instructions on how to generate the new test case.
-const int kCurrentVersion = 32;
+const int kCurrentVersion = 33;
 
 // A bunch of convenience functions to write to/read from SerializeObjects.  The
 // de-serializers assume the input data will be in the correct format and fall
@@ -746,12 +747,16 @@ void ReadHttpBody(mojom::HttpBody* mojo_body, ExplodedHttpBody* http_body) {
   }
 }
 
+// Do not depend on feature state when writing data to frame, so that the
+// contents of persisted history do not depend on whether a feature is enabled
+// or not.
 void WriteFrameState(const ExplodedFrameState& state,
                      mojom::FrameState* frame) {
   frame->url_string = state.url_string;
   frame->referrer = state.referrer;
   if (state.initiator_origin.has_value())
     frame->initiator_origin = state.initiator_origin.value().Serialize();
+  frame->initiator_base_url_string = state.initiator_base_url_string;
   frame->target = state.target;
   frame->state_object = state.state_object;
 
@@ -808,6 +813,7 @@ void ReadFrameState(mojom::FrameState* frame, ExplodedFrameState* state) {
     state->initiator_origin =
         url::Origin::Create(GURL(frame->initiator_origin.value()));
   }
+  state->initiator_base_url_string = frame->initiator_base_url_string;
 
   state->target = frame->target;
   state->state_object = frame->state_object;
@@ -954,6 +960,7 @@ void ExplodedFrameState::assign(const ExplodedFrameState& other) {
   url_string = other.url_string;
   referrer = other.referrer;
   initiator_origin = other.initiator_origin;
+  initiator_base_url_string = other.initiator_base_url_string;
   target = other.target;
   state_object = other.state_object;
   document_state = other.document_state;

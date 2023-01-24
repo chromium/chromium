@@ -89,6 +89,8 @@ void ExpectEquality(const ExplodedFrameState& expected,
   EXPECT_EQ(expected.referrer, actual.referrer);
   EXPECT_EQ(expected.referrer_policy, actual.referrer_policy);
   EXPECT_EQ(expected.initiator_origin, actual.initiator_origin);
+  EXPECT_EQ(expected.initiator_base_url_string,
+            actual.initiator_base_url_string);
   EXPECT_EQ(expected.target, actual.target);
   EXPECT_EQ(expected.state_object, actual.state_object);
   ExpectEquality(expected.document_state, actual.document_state);
@@ -148,6 +150,8 @@ class PageStateSerializationTest : public testing::Test {
     frame_state->navigation_api_id = u"wxyz";
     frame_state->navigation_api_state = absl::nullopt;
     frame_state->protect_url_in_navigation_api = false;
+    frame_state->initiator_base_url_string =
+        base::UTF8ToUTF16(frame_state->initiator_origin->GetURL().spec());
   }
 
   void PopulateHttpBody(
@@ -172,7 +176,7 @@ class PageStateSerializationTest : public testing::Test {
                                                 bool is_child,
                                                 int version) {
     if (version < 28) {
-      // Older versions didn't cover |initiator_origin| -  we expect that
+      // Older versions didn't cover `initiator_origin` -  we expect that
       // deserialization will set it to the default, null value.
       frame_state->initiator_origin = absl::nullopt;
     } else if (version < 32) {
@@ -232,6 +236,11 @@ class PageStateSerializationTest : public testing::Test {
 
     if (version >= 31)
       frame_state->protect_url_in_navigation_api = true;
+
+    if (version >= 33) {
+      frame_state->initiator_base_url_string =
+          base::UTF8ToUTF16(GURL("https://initiator.example.com").spec());
+    }
 
     if (!is_child) {
       frame_state->http_body.http_content_type = u"foo/bar";
@@ -636,6 +645,10 @@ TEST_F(PageStateSerializationTest, BackwardsCompat_v31) {
 
 TEST_F(PageStateSerializationTest, BackwardsCompat_v32) {
   TestBackwardsCompat(32);
+}
+
+TEST_F(PageStateSerializationTest, BackwardsCompat_v33) {
+  TestBackwardsCompat(33);
 }
 
 // Add your new backwards compat test for future versions *above* this
