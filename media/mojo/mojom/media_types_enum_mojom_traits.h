@@ -154,6 +154,8 @@ struct EnumTraits<media::mojom::SVCScalabilityMode, media::SVCScalabilityMode> {
   static media::mojom::SVCScalabilityMode ToMojom(
       media::SVCScalabilityMode input) {
     switch (input) {
+      case media::SVCScalabilityMode::kL1T1:
+        return media::mojom::SVCScalabilityMode::kL1T1;
       case media::SVCScalabilityMode::kL1T2:
         return media::mojom::SVCScalabilityMode::kL1T2;
       case media::SVCScalabilityMode::kL1T3:
@@ -202,6 +204,9 @@ struct EnumTraits<media::mojom::SVCScalabilityMode, media::SVCScalabilityMode> {
       case media::mojom::SVCScalabilityMode::kUnsupportedMode:
         NOTREACHED();
         return false;
+      case media::mojom::SVCScalabilityMode::kL1T1:
+        *output = media::SVCScalabilityMode::kL1T1;
+        return true;
       case media::mojom::SVCScalabilityMode::kL1T2:
         *output = media::SVCScalabilityMode::kL1T2;
         return true;

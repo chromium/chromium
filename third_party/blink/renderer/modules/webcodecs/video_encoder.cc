@@ -273,7 +273,9 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
 
   // https://w3c.github.io/webrtc-svc/
   if (config->hasScalabilityMode()) {
-    if (config->scalabilityMode() == "L1T2") {
+    if (config->scalabilityMode() == "L1T1") {
+      result->options.scalability_mode = media::SVCScalabilityMode::kL1T1;
+    } else if (config->scalabilityMode() == "L1T2") {
       result->options.scalability_mode = media::SVCScalabilityMode::kL1T2;
     } else if (config->scalabilityMode() == "L1T3") {
       result->options.scalability_mode = media::SVCScalabilityMode::kL1T3;

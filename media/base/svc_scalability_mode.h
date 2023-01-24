@@ -12,6 +12,7 @@ namespace media {
 // This enum class is the corresponding implementation with WebRTC-SVC.
 // See https://www.w3.org/TR/webrtc-svc/#scalabilitymodes* for the detail.
 enum class SVCScalabilityMode {
+  kL1T1,
   kL1T2,
   kL1T3,
   kL2T1,

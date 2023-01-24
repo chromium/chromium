@@ -103,6 +103,9 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
   size_t num_temporal_layers = 1;
   if (opts.scalability_mode) {
     switch (opts.scalability_mode.value()) {
+      case SVCScalabilityMode::kL1T1:
+        // Nothing to do
+        break;
       case SVCScalabilityMode::kL1T2:
         num_temporal_layers = 2;
         break;

@@ -10,6 +10,8 @@ namespace media {
 
 const char* GetScalabilityModeName(SVCScalabilityMode scalability_mode) {
   switch (scalability_mode) {
+    case SVCScalabilityMode::kL1T1:
+      return "L1T1";
     case SVCScalabilityMode::kL1T2:
       return "L1T2";
     case SVCScalabilityMode::kL1T3:

@@ -122,6 +122,7 @@ enum SVCScalabilityMode {
   // kUnsupportedMode is used to handle the enum differ of C++ and Mojo
   // SVCScalabilityMode in ToMojom, should not be used in other place.
   kUnsupportedMode,
+  kL1T1,
   kL1T2,
   kL1T3,
   kL2T2Key,

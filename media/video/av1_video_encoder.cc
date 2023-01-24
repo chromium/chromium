@@ -121,6 +121,9 @@ EncoderStatus SetUpAomConfig(const VideoEncoder::Options& opts,
   svc_params.number_spatial_layers = 1;
   if (opts.scalability_mode.has_value()) {
     switch (opts.scalability_mode.value()) {
+      case SVCScalabilityMode::kL1T1:
+        // Nothing to do
+        break;
       case SVCScalabilityMode::kL1T2:
         svc_params.framerate_factor[0] = 2;
         svc_params.framerate_factor[1] = 1;

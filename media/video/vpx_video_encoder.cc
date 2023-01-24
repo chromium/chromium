@@ -134,6 +134,9 @@ EncoderStatus SetUpVpxConfig(const VideoEncoder::Options& opts,
     return EncoderStatus::Codes::kOk;
 
   switch (opts.scalability_mode.value()) {
+    case SVCScalabilityMode::kL1T1:
+      // Nothing to do
+      break;
     case SVCScalabilityMode::kL1T2:
       // Frame Pattern:
       // Layer Index 0: |0| |2| |4| |6| |8|

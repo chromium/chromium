@@ -276,6 +276,7 @@ VTVideoEncodeAccelerator::GetSupportedH264Profiles() {
   profile.max_framerate_denominator = kMaxFrameRateDenominator;
   profile.rate_control_modes = VideoEncodeAccelerator::kConstantMode |
                                VideoEncodeAccelerator::kVariableMode;
+  profile.scalability_modes.push_back(SVCScalabilityMode::kL1T1);
   if (__builtin_available(macOS LOW_LATENCY_FLAG_AVAILABLE_VER, *))
     profile.scalability_modes.push_back(SVCScalabilityMode::kL1T2);
 

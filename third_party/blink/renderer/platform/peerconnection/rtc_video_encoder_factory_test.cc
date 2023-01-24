@@ -27,7 +27,8 @@ constexpr gfx::Size kMaxResolution = {1920, 1080};
 constexpr uint32_t kMaxFramerateNumerator = 30;
 constexpr uint32_t kMaxFramerateDenominator = 1;
 const std::vector<media::SVCScalabilityMode> kScalabilityModes = {
-    media::SVCScalabilityMode::kL1T2, media::SVCScalabilityMode::kL1T3};
+    media::SVCScalabilityMode::kL1T1, media::SVCScalabilityMode::kL1T2,
+    media::SVCScalabilityMode::kL1T3};
 
 bool Equals(webrtc::VideoEncoderFactory::CodecSupport a,
             webrtc::VideoEncoderFactory::CodecSupport b) {

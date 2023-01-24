@@ -521,13 +521,17 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
 
 // This test checks the supported SVC scalability mode.
 TEST_F(VaapiTest, CheckSupportedSVCScalabilityModes) {
+  const std::vector<SVCScalabilityMode> kSupportedL1T1 = {
+      SVCScalabilityMode::kL1T1};
 #if BUILDFLAG(IS_CHROMEOS)
   const std::vector<SVCScalabilityMode> kSupportedTemporalSVC = {
-      SVCScalabilityMode::kL1T2, SVCScalabilityMode::kL1T3};
+      SVCScalabilityMode::kL1T1, SVCScalabilityMode::kL1T2,
+      SVCScalabilityMode::kL1T3};
   const std::vector<SVCScalabilityMode> kSupportedTemporalAndKeySVC = {
-      SVCScalabilityMode::kL1T2,    SVCScalabilityMode::kL1T3,
-      SVCScalabilityMode::kL2T2Key, SVCScalabilityMode::kL2T3Key,
-      SVCScalabilityMode::kL3T2Key, SVCScalabilityMode::kL3T3Key};
+      SVCScalabilityMode::kL1T1,    SVCScalabilityMode::kL1T2,
+      SVCScalabilityMode::kL1T3,    SVCScalabilityMode::kL2T2Key,
+      SVCScalabilityMode::kL2T3Key, SVCScalabilityMode::kL3T2Key,
+      SVCScalabilityMode::kL3T3Key};
 #endif
 
   const auto scalability_modes_vp9_profile0 =
@@ -543,13 +547,13 @@ TEST_F(VaapiTest, CheckSupportedSVCScalabilityModes) {
     EXPECT_EQ(scalability_modes_vp9_profile0, kSupportedTemporalSVC);
   }
 #else
-  EXPECT_TRUE(scalability_modes_vp9_profile0.empty());
+  EXPECT_EQ(scalability_modes_vp9_profile0, kSupportedL1T1);
 #endif
 
   const auto scalability_modes_vp9_profile2 =
       VaapiWrapper::GetSupportedScalabilityModes(VP9PROFILE_PROFILE2,
                                                  VAProfileVP9Profile2);
-  EXPECT_TRUE(scalability_modes_vp9_profile2.empty());
+  EXPECT_EQ(scalability_modes_vp9_profile2, kSupportedL1T1);
 
   const auto scalability_modes_vp8 = VaapiWrapper::GetSupportedScalabilityModes(
       VP8PROFILE_ANY, VAProfileVP8Version0_3);
@@ -557,10 +561,10 @@ TEST_F(VaapiTest, CheckSupportedSVCScalabilityModes) {
   if (base::FeatureList::IsEnabled(kVaapiVp8TemporalLayerHWEncoding)) {
     EXPECT_EQ(scalability_modes_vp8, kSupportedTemporalSVC);
   } else {
-    EXPECT_TRUE(scalability_modes_vp8.empty());
+    EXPECT_EQ(scalability_modes_vp8, kSupportedL1T1);
   }
 #else
-  EXPECT_TRUE(scalability_modes_vp8.empty());
+  EXPECT_EQ(scalability_modes_vp8, kSupportedL1T1);
 #endif
 
   const auto scalability_modes_h264_baseline =
@@ -570,10 +574,10 @@ TEST_F(VaapiTest, CheckSupportedSVCScalabilityModes) {
   if (base::FeatureList::IsEnabled(kVaapiH264TemporalLayerHWEncoding)) {
     EXPECT_EQ(scalability_modes_h264_baseline, kSupportedTemporalSVC);
   } else {
-    EXPECT_TRUE(scalability_modes_h264_baseline.empty());
+    EXPECT_EQ(scalability_modes_h264_baseline, kSupportedL1T1);
   }
 #else
-  EXPECT_TRUE(scalability_modes_h264_baseline.empty());
+  EXPECT_EQ(scalability_modes_h264_baseline, kSupportedL1T1);
 #endif
 }
 

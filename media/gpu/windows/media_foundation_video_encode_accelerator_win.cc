@@ -507,6 +507,7 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesForCodec(
   profile.rate_control_modes = kSupportedProfileModes;
   profile.max_resolution = gfx::Size(kMaxResolutionWidth, kMaxResolutionHeight);
   profile.min_resolution = gfx::Size(kMinResolutionWidth, kMinResolutionHeight);
+  profile.scalability_modes.push_back(SVCScalabilityMode::kL1T1);
   if (svc_supported) {
     profile.scalability_modes.push_back(SVCScalabilityMode::kL1T2);
     profile.scalability_modes.push_back(SVCScalabilityMode::kL1T3);
