@@ -4,6 +4,7 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 #include "chrome/browser/apps/app_preload_service/proto/app_provisioning.pb.h"
@@ -18,6 +19,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -32,8 +34,12 @@ class WebAppPreloadInstallerBrowserTest : public InProcessBrowserTest {
     https_server_.RegisterRequestHandler(
         base::BindRepeating(&WebAppPreloadInstallerBrowserTest::HandleRequest,
                             base::Unretained(this)));
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
 
-    ASSERT_TRUE(https_server()->Start());
+    ASSERT_TRUE(https_server_.Start());
+
+    // Icon URLs should remap to the test server.
+    host_resolver()->AddRule("meltingpot.googleusercontent.com", "127.0.0.1");
   }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
@@ -47,6 +53,20 @@ class WebAppPreloadInstallerBrowserTest : public InProcessBrowserTest {
     response->set_content_type("application/json");
     response->set_content(manifest_);
     return response;
+  }
+
+  std::string AddIconToManifest(const std::string& manifest_template) {
+    GURL icon_url = https_server()->GetURL("meltingpot.googleusercontent.com",
+                                           "/web_apps/blue-192.png");
+    constexpr char kIconsBlock[] = R"([{
+        "src": "$1",
+        "sizes": "192x192",
+        "type": "image/png"
+      }])";
+    std::string icon_value = base::ReplaceStringPlaceholders(
+        kIconsBlock, {icon_url.spec()}, nullptr);
+    return base::ReplaceStringPlaceholders(manifest_template, {icon_value},
+                                           nullptr);
   }
 
   void SetManifestResponse(std::string manifest) { manifest_ = manifest; }
@@ -79,11 +99,13 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest, InstallOemApp) {
       "https://www.example.com/manifest.json");
   web_extras->set_manifest_url(https_server()->GetURL("/manifest.json").spec());
 
-  SetManifestResponse(R"({
+  constexpr char kManifestTemplate[] = R"({
     "name": "Example App",
     "start_url": "/index.html",
-    "scope": "/"
-  })");
+    "scope": "/",
+    "icons": $1
+  })";
+  SetManifestResponse(AddIconToManifest(kManifestTemplate));
 
   base::test::TestFuture<bool> result;
   installer.InstallApp(PreloadAppDefinition(app), result.GetCallback());
@@ -114,12 +136,13 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
       "https://www.example.com/manifest.json");
   web_extras->set_manifest_url(https_server()->GetURL("/manifest.json").spec());
 
-  SetManifestResponse(R"({
+  SetManifestResponse(AddIconToManifest(R"({
     "id": "manifest_id",
     "name": "Example App",
     "start_url": "/index.html",
-    "scope": "/"
-  })");
+    "scope": "/",
+    "icons": $1
+  })"));
 
   base::test::TestFuture<bool> result;
   installer.InstallApp(PreloadAppDefinition(app), result.GetCallback());
@@ -155,10 +178,11 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest, InstallOverUserApp) {
   web_extras->set_manifest_url(https_server()->GetURL("/manifest.json").spec());
   web_extras->set_original_manifest_url(kOriginalManifestUrl);
 
-  SetManifestResponse(R"({
+  SetManifestResponse(AddIconToManifest(R"({
     "name": "OEM Installed app",
-    "start_url": "/"
-  })");
+    "start_url": "/",
+    "icons": $1
+  })"));
 
   base::test::TestFuture<bool> result;
   installer.InstallApp(PreloadAppDefinition(app), result.GetCallback());
@@ -188,11 +212,12 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
       "https://www.example.com/manifest.json");
   web_extras->set_manifest_url(https_server()->GetURL("/manifest.json").spec());
 
-  SetManifestResponse(R"({
+  SetManifestResponse(AddIconToManifest(R"({
     "name": "Example App",
     "start_url": "/index.html",
-    "scope": "/"
-  })");
+    "scope": "/",
+    "icons": $1
+  })"));
 
   base::test::TestFuture<bool> result;
   installer.InstallApp(PreloadAppDefinition(app), result.GetCallback());
@@ -261,6 +286,44 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
   bool found =
       app_registry_cache().ForOneApp(app_id, [](const AppUpdate& update) {});
   ASSERT_FALSE(found);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
+                       ManifestWithFailingIcons) {
+  WebAppPreloadInstaller installer(profile());
+
+  proto::AppProvisioningListAppsResponse_App app;
+  app.set_name("Example App");
+  app.set_package_id("web:https://www.example.com/manifest_id");
+  app.set_install_reason(
+      proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM);
+
+  auto* web_extras = app.mutable_web_extras();
+  web_extras->set_original_manifest_url(
+      "https://www.example.com/manifest.json");
+  web_extras->set_manifest_url(https_server()->GetURL("/manifest.json").spec());
+
+  constexpr char kManifestTemplate[] = R"({
+    "name": "Example App",
+    "start_url": "/index.html",
+    "scope": "/",
+    "icons": [{
+      "src": "$1",
+      "sizes": "96x96",
+      "type": "image/png"
+    }]
+  })";
+
+  // The image will fail to download, which will cause the installation to fail.
+  GURL image_url =
+      https_server()->GetURL("meltingpot.googleusercontent.com", "/404");
+
+  SetManifestResponse(base::ReplaceStringPlaceholders(
+      kManifestTemplate, {image_url.spec()}, nullptr));
+
+  base::test::TestFuture<bool> result;
+  installer.InstallApp(PreloadAppDefinition(app), result.GetCallback());
+  ASSERT_FALSE(result.Get());
 }
 
 }  // namespace apps

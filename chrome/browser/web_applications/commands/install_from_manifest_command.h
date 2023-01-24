@@ -8,9 +8,11 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -18,8 +20,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
-
-class GURL;
+#include "url/gurl.h"
 
 namespace web_app {
 
@@ -31,11 +32,18 @@ class SharedWebContentsWithAppLockDescription;
 
 // Installs a web app using a raw manifest JSON string, which is interpreted as
 // if it was loaded from the renderer for a given URL. This does not attempt to
-// verify all the installability criteria of the manifest: the manifest is
-// treated as valid if it parses successfully and contains a start URL.
+// verify all the normal installability criteria of the manifest, instead it
+// just checks limited criteria needed to successfully install the app:
+// - The manifest must be valid JSON
+// - The manifest must have a valid start URL
+// - The manifest must have a valid icon from an allowlisted host (see
+// `host_allowlist` parameter).
 //
-// The web app can be simultaneously installed from multiple sources. If the web
-// app already exists, the manifest contents will be ignored.
+// Installation will fail if any of these criteria are not met, or if icons fail
+// to download (that is, placeholder icons will never be generated).
+//
+// The web app can be simultaneously installed from multiple sources. If the
+// web app already exists, the manifest contents will be ignored.
 class InstallFromManifestCommand
     : public WebAppCommandTemplate<SharedWebContentsLock> {
  public:
@@ -49,12 +57,16 @@ class InstallFromManifestCommand
   // `manifest_contents`: JSON string of a web app manifest to install.
   // `expected_id`: Expected hashed App ID for the installed app. If the ID does
   // not match, installation will abort with an error.
+  // `host_allowlist`: Allowlist of hosts which icon data can be downloaded
+  // from. Icon URLs whose host does not exactly match a host from this set are
+  // ignored.
   // `callback`: Called when installation completes.
   InstallFromManifestCommand(webapps::WebappInstallSource install_source,
                              GURL document_url,
                              GURL manifest_url,
                              std::string manifest_contents,
                              AppId expected_id,
+                             base::flat_set<std::string> host_allowlist,
                              OnceInstallCallback callback);
 
   ~InstallFromManifestCommand() override;
@@ -68,6 +80,9 @@ class InstallFromManifestCommand
 
  private:
   void OnManifestParsed(blink::mojom::ManifestPtr manifest);
+  void OnIconsRetrieved(IconsDownloadedResult result,
+                        IconsMap icons_map,
+                        DownloadedIconsHttpResults icons_http_results);
   void OnAppLockAcquired(
       std::unique_ptr<SharedWebContentsWithAppLock> app_lock);
   void OnInstallFinalized(const AppId& app_id,
@@ -81,6 +96,7 @@ class InstallFromManifestCommand
   GURL manifest_url_;
   std::string manifest_contents_;
   AppId expected_id_;
+  base::flat_set<std::string> host_allowlist_;
   OnceInstallCallback install_callback_;
 
   // SharedWebContentsLock is held while parsing the manifest.
@@ -92,6 +108,8 @@ class InstallFromManifestCommand
   std::unique_ptr<SharedWebContentsWithAppLock> app_lock_;
   std::unique_ptr<SharedWebContentsWithAppLockDescription>
       app_lock_description_;
+
+  std::unique_ptr<WebAppDataRetriever> data_retriever_;
 
   bool manifest_parsed_ = false;
   std::unique_ptr<WebAppInstallInfo> web_app_info_;

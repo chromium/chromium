@@ -128,12 +128,15 @@ void WebAppPreloadInstaller::OnManifestRetrieved(
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
 
+  base::flat_set<std::string> host_allowlist = {
+      "meltingpot.googleusercontent.com"};
+
   provider->command_manager().ScheduleCommand(
       std::make_unique<web_app::InstallFromManifestCommand>(
           webapps::WebappInstallSource::PRELOADED_OEM,
           /*document_url=*/GURL(app.GetWebAppManifestId()).GetWithEmptyPath(),
           /*manifest_url=*/app.GetWebAppOriginalManifestUrl(),
-          std::move(*response), GetAppId(app),
+          std::move(*response), GetAppId(app), std::move(host_allowlist),
           base::BindOnce(&WebAppPreloadInstaller::OnAppInstalled,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
 }

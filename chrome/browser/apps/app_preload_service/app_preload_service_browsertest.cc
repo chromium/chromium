@@ -22,6 +22,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
 
 namespace apps {
 
@@ -42,9 +43,14 @@ class AppPreloadServiceBrowserTest : public InProcessBrowserTest {
 
     https_server_.RegisterRequestHandler(base::BindRepeating(
         &AppPreloadServiceBrowserTest::HandleRequest, base::Unretained(this)));
-    ASSERT_TRUE(https_server()->Start());
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_.Start());
+
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         ash::switches::kAlmanacApiUrl, https_server()->GetURL("/").spec());
+
+    // Icon URLs should remap to the test server.
+    host_resolver()->AddRule("meltingpot.googleusercontent.com", "127.0.0.1");
   }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
@@ -67,6 +73,20 @@ class AppPreloadServiceBrowserTest : public InProcessBrowserTest {
     }
 
     return nullptr;
+  }
+
+  std::string AddIconToManifest(const std::string& manifest_template) {
+    GURL icon_url = https_server()->GetURL("meltingpot.googleusercontent.com",
+                                           "/web_apps/blue-192.png");
+    constexpr char kIconsBlock[] = R"([{
+        "src": "$1",
+        "sizes": "192x192",
+        "type": "image/png"
+      }])";
+    std::string icon_value = base::ReplaceStringPlaceholders(
+        kIconsBlock, {icon_url.spec()}, nullptr);
+    return base::ReplaceStringPlaceholders(manifest_template, {icon_value},
+                                           nullptr);
   }
 
   void SetManifestResponse(std::string manifest) { manifest_ = manifest; }
@@ -106,11 +126,12 @@ IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, OemWebAppInstall) {
       "https://www.example.com/");
 
   SetAppProvisioningResponse(response);
-  SetManifestResponse(R"({
+  SetManifestResponse(AddIconToManifest(R"({
     "id": "id",
     "name": "Example App",
-    "start_url": "/index.html"
-  })");
+    "start_url": "/index.html",
+    "icons": $1
+  })"));
 
   base::test::TestFuture<bool> result;
   auto* service = AppPreloadService::Get(profile());
@@ -166,7 +187,8 @@ IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, InstallOverUserApp) {
   constexpr char kManifest[] = R"({
     "id": "manifest_id",
     "name": "OEM Installed app",
-    "start_url": "/"
+    "start_url": "/",
+    "icons": $1
   })";
 
   auto app_id = web_app::test::InstallDummyWebApp(profile(), kUserAppName,
@@ -184,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, InstallOverUserApp) {
   app->mutable_web_extras()->set_original_manifest_url(kOriginalManifestUrl);
 
   SetAppProvisioningResponse(response);
-  SetManifestResponse(kManifest);
+  SetManifestResponse(AddIconToManifest(kManifest));
 
   base::test::TestFuture<bool> result;
   auto* service = AppPreloadService::Get(profile());

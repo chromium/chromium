@@ -7,7 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/flat_tree.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
@@ -22,6 +26,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/url_util.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -36,6 +41,7 @@ InstallFromManifestCommand::InstallFromManifestCommand(
     GURL manifest_url,
     std::string manifest_contents,
     AppId expected_id,
+    base::flat_set<std::string> host_allowlist,
     OnceInstallCallback callback)
     : WebAppCommandTemplate<SharedWebContentsLock>(
           "InstallFromManifestCommand"),
@@ -44,9 +50,11 @@ InstallFromManifestCommand::InstallFromManifestCommand(
       manifest_url_(std::move(manifest_url)),
       manifest_contents_(std::move(manifest_contents)),
       expected_id_(std::move(expected_id)),
+      host_allowlist_(std::move(host_allowlist)),
       install_callback_(std::move(callback)),
       web_contents_lock_description_(
-          std::make_unique<SharedWebContentsLockDescription>()) {}
+          std::make_unique<SharedWebContentsLockDescription>()),
+      data_retriever_(std::make_unique<WebAppDataRetriever>()) {}
 
 InstallFromManifestCommand::~InstallFromManifestCommand() = default;
 
@@ -117,9 +125,44 @@ void InstallFromManifestCommand::OnManifestParsed(
 
   UpdateWebAppInfoFromManifest(*manifest, manifest_url_, web_app_info_.get());
 
-  // Generates a fallback icon for the app.
-  // TODO(crbug.com/1402583): Download and use real icons.
-  PopulateProductIcons(web_app_info_.get(), nullptr);
+  base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(*web_app_info_);
+  base::EraseIf(icon_urls, [this](const GURL& url) {
+    return !base::Contains(host_allowlist_, url.host());
+  });
+
+  if (icon_urls.empty()) {
+    // Abort as "not a valid manifest" if there are no icons to download, so we
+    // can distinguish this case from having icons but failing to download
+    // them.
+    Abort(CommandResult::kFailure,
+          webapps::InstallResultCode::kNotValidManifestForWebApp);
+    return;
+  }
+
+  data_retriever_->GetIcons(
+      &web_contents_lock_->shared_web_contents(), std::move(icon_urls),
+      /*skip_page_favicons=*/true,
+      base::BindOnce(&InstallFromManifestCommand::OnIconsRetrieved,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void InstallFromManifestCommand::OnIconsRetrieved(
+    IconsDownloadedResult result,
+    IconsMap icons_map,
+    DownloadedIconsHttpResults icons_http_results) {
+  DCHECK(web_app_info_);
+
+  PopulateProductIcons(web_app_info_.get(), &icons_map);
+  if (web_app_info_->is_generated_icon) {
+    // PopulateProductIcons sets is_generated_icon if it had to generate a
+    // product icon due a lack of successfully downloaded product icons. In
+    // this case, abort the installation and report the error.
+    Abort(CommandResult::kFailure,
+          webapps::InstallResultCode::kIconDownloadingFailed);
+    return;
+  }
+
+  PopulateOtherIcons(web_app_info_.get(), icons_map);
 
   AppId app_id =
       GenerateAppId(web_app_info_->manifest_id, web_app_info_->start_url);

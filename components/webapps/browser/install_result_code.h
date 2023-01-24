@@ -86,7 +86,11 @@ enum class InstallResultCode {
   // Invalid install URL for externally managed apps.
   kInstallURLInvalid = 29,
 
-  kMaxValue = kInstallURLInvalid,
+  // Downloading failed for all icons in an installation method which requires
+  // non-generated icons.
+  kIconDownloadingFailed = 30,
+
+  kMaxValue = kIconDownloadingFailed,
 };
 
 // Checks if InstallResultCode is not a failure.

@@ -106422,6 +106422,8 @@ others/histograms.xml -->
   <int value="26" label="UpdateTaskFailed"/>
   <int value="27" label="AppNotInRegistrarAfterCommit"/>
   <int value="28" label="HaltedBySyncUninstall"/>
+  <int value="29" label="kInstallURLInvalid"/>
+  <int value="30" label="kIconDownloadingFailed"/>
 </enum>
 
 <enum name="WebAppInstallSource">
