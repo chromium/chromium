@@ -82,7 +82,7 @@ const base::FeatureParam<bool> kEnableOopPrintDriversSandbox{
 // the OnPrintEnterpriseConnector policy is enabled.
 BASE_FEATURE(kEnablePrintContentAnalysis,
              "EnablePrintContentAnalysis",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
 }  // namespace features
