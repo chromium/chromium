@@ -40,16 +40,26 @@ constexpr int kDefaultEndTimeOffsetMinutes = 6 * 60;
 
 }  // namespace
 
+base::Time ScheduledFeature::Clock::Now() const {
+  return base::Time::Now();
+}
+
+base::TimeTicks ScheduledFeature::Clock::NowTicks() const {
+  return base::TimeTicks::Now();
+}
+
 ScheduledFeature::ScheduledFeature(
     const std::string prefs_path_enabled,
     const std::string prefs_path_schedule_type,
     const std::string prefs_path_custom_start_time,
     const std::string prefs_path_custom_end_time)
-    : prefs_path_enabled_(prefs_path_enabled),
+    : timer_(std::make_unique<base::OneShotTimer>()),
+      prefs_path_enabled_(prefs_path_enabled),
       prefs_path_schedule_type_(prefs_path_schedule_type),
       prefs_path_custom_start_time_(prefs_path_custom_start_time),
       prefs_path_custom_end_time_(prefs_path_custom_end_time),
-      geolocation_controller_(ash::GeolocationController::Get()) {
+      geolocation_controller_(ash::GeolocationController::Get()),
+      clock_(&default_clock_) {
   Shell::Get()->session_controller()->AddObserver(this);
   aura::Env::GetInstance()->AddObserver(this);
   chromeos::PowerManagerClient::Get()->AddObserver(this);
@@ -98,7 +108,7 @@ TimeOfDay ScheduledFeature::GetCustomEndTime() const {
 
 bool ScheduledFeature::IsNowWithinSunsetSunrise() const {
   // The times below are all on the same calendar day.
-  const base::Time now = GetNow();
+  const base::Time now = clock_->Now();
   return now < geolocation_controller_->GetSunriseTime() ||
          now > geolocation_controller_->GetSunsetTime();
 }
@@ -168,12 +178,11 @@ void ScheduledFeature::SuspendDone(base::TimeDelta sleep_duration) {
           /*keep_manual_toggles_during_schedules=*/true);
 }
 
-void ScheduledFeature::SetClockForTesting(base::Clock* clock) {
+void ScheduledFeature::SetClockForTesting(const Clock* clock) {
+  CHECK(clock);
   clock_ = clock;
-}
-
-base::Time ScheduledFeature::GetNow() const {
-  return clock_ ? clock_->Now() : base::Time::Now();
+  CHECK(!timer_->IsRunning());
+  timer_ = std::make_unique<base::OneShotTimer>(clock_);
 }
 
 bool ScheduledFeature::MaybeRestoreSchedule() {
@@ -185,7 +194,7 @@ bool ScheduledFeature::MaybeRestoreSchedule() {
     return false;
 
   ScheduleTargetState& target_state = iter->second;
-  const base::Time now = GetNow();
+  const base::Time now = clock_->Now();
   // It may be that the device was suspended for a very long time that the
   // target time is no longer valid.
   if (target_state.target_time <= now)
@@ -266,7 +275,7 @@ void ScheduledFeature::Refresh(bool did_schedule_change,
                                bool keep_manual_toggles_during_schedules) {
   switch (GetScheduleType()) {
     case ScheduleType::kNone:
-      timer_.Stop();
+      timer_->Stop();
       RefreshFeatureState();
       return;
     case ScheduleType::kSunsetToSunrise:
@@ -296,7 +305,7 @@ void ScheduledFeature::RefreshScheduleTimer(
   }
 
   // NOTE: Users can set any weird combinations.
-  const base::Time now = GetNow();
+  const base::Time now = clock_->Now();
   if (end_time <= start_time) {
     // Example:
     // Start: 9:00 PM, End: 6:00 AM.
@@ -407,7 +416,7 @@ void ScheduledFeature::ScheduleNextToggle(base::TimeDelta delay) {
   DCHECK(active_user_pref_service_);
 
   const bool new_status = !GetEnabled();
-  const base::Time target_time = GetNow() + delay;
+  const base::Time target_time = clock_->Now() + delay;
 
   per_user_schedule_target_state_[active_user_pref_service_] =
       ScheduleTargetState{target_time, new_status};
@@ -415,9 +424,9 @@ void ScheduledFeature::ScheduleNextToggle(base::TimeDelta delay) {
   VLOG(1) << "Setting " << GetFeatureName() << " to toggle to "
           << (new_status ? "enabled" : "disabled") << " at "
           << base::TimeFormatTimeOfDay(target_time);
-  timer_.Start(FROM_HERE, delay,
-               base::BindOnce(&ScheduledFeature::SetEnabled,
-                              base::Unretained(this), new_status));
+  timer_->Start(FROM_HERE, delay,
+                base::BindOnce(&ScheduledFeature::SetEnabled,
+                               base::Unretained(this), new_status));
 }
 
 }  // namespace ash

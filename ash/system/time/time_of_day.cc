@@ -32,7 +32,7 @@ bool TimeOfDay::operator==(const TimeOfDay& rhs) const {
   return offset_minutes_from_zero_hour_ == rhs.offset_minutes_from_zero_hour_;
 }
 
-TimeOfDay& TimeOfDay::SetClock(base::Clock* clock) {
+TimeOfDay& TimeOfDay::SetClock(const base::Clock* clock) {
   clock_ = clock;
   return *this;
 }
@@ -61,6 +61,10 @@ std::string TimeOfDay::ToString() const {
 
 base::Time TimeOfDay::GetNow() const {
   return clock_ ? clock_->Now() : base::Time::Now();
+}
+
+std::ostream& operator<<(std::ostream& os, const TimeOfDay& time_of_day) {
+  return os << base::Minutes(time_of_day.offset_minutes_from_zero_hour());
 }
 
 }  // namespace ash

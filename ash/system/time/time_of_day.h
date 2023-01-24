@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_TIME_TIME_OF_DAY_H_
 #define ASH_SYSTEM_TIME_TIME_OF_DAY_H_
 
+#include <ostream>
 #include <string>
 
 #include "ash/ash_export.h"
@@ -39,7 +40,7 @@ class ASH_EXPORT TimeOfDay {
 
   // Sets `clock_` with a given `clock`, but this class does not own it.
   // The clock is used to determine current time in `GetNow()`.
-  TimeOfDay& SetClock(base::Clock* clock);
+  TimeOfDay& SetClock(const base::Clock* clock);
 
   // Converts to an actual point in time today. If this fail for some reason,
   // base::Time() will be returned.
@@ -56,8 +57,11 @@ class ASH_EXPORT TimeOfDay {
   int offset_minutes_from_zero_hour_;
 
   // Optional Used in tests to override the time of "Now".
-  base::Clock* clock_ = nullptr;  // Not owned.
+  const base::Clock* clock_ = nullptr;  // Not owned.
 };
+
+ASH_EXPORT std::ostream& operator<<(std::ostream& os,
+                                    const TimeOfDay& time_of_day);
 
 }  // namespace ash
 

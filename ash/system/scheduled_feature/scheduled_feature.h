@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
+#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -35,6 +36,16 @@ class ASH_EXPORT ScheduledFeature
       public SessionObserver,
       public chromeos::PowerManagerClient::Observer {
  public:
+  // May be overridden for testing purposes (see SetClockForTesting()). By
+  // default, returns system time.
+  class Clock : public base::Clock, public base::TickClock {
+   public:
+    // base::Clock:
+    base::Time Now() const override;
+    // base::TickClock:
+    base::TimeTicks NowTicks() const override;
+  };
+
   // `prefs_path_custom_start_time` and `prefs_path_custom_end_time` can be
   // empty strings. Supplying only one of the custom time prefs is invalid,
   // while supplying both of them enables the custom scheduling support.
@@ -50,7 +61,7 @@ class ASH_EXPORT ScheduledFeature
   PrefService* active_user_pref_service() const {
     return active_user_pref_service_;
   }
-  base::OneShotTimer* timer() { return &timer_; }
+  base::OneShotTimer* timer() { return timer_.get(); }
 
   bool GetEnabled() const;
   ScheduleType GetScheduleType() const;
@@ -76,7 +87,7 @@ class ASH_EXPORT ScheduledFeature
   // chromeos::PowerManagerClient::Observer:
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
-  void SetClockForTesting(base::Clock* clock);
+  void SetClockForTesting(const Clock* clock);
 
  protected:
   // Called by `Refresh()` and `RefreshScheduleTimer()` to refresh the feature
@@ -85,10 +96,6 @@ class ASH_EXPORT ScheduledFeature
 
  private:
   virtual const char* GetFeatureName() const = 0;
-
-  // Gets now time from the `clock_`, used for testing, or `base::Time::Now()`
-  // if `clock_` does not exist.
-  base::Time GetNow() const;
 
   // Attempts restoring a previously stored schedule for the current user if
   // possible and returns true if so, false otherwise.
@@ -154,8 +161,9 @@ class ASH_EXPORT ScheduledFeature
       per_user_schedule_target_state_;
 
   // The timer that schedules the start and end of this feature when the
-  // schedule type is either kSunsetToSunrise or kCustom.
-  base::OneShotTimer timer_;
+  // schedule type is either kSunsetToSunrise or kCustom. Safe to assume this is
+  // never null; this is only reinitialized when the caller sets a new clock.
+  std::unique_ptr<base::OneShotTimer> timer_;
 
   // True only until this feature is initialized from the very first user
   // session. After that, it is set to false.
@@ -180,8 +188,10 @@ class ASH_EXPORT ScheduledFeature
   // added twice if it is already an observer.
   bool is_observing_geolocation_ = false;
 
-  // Optional Used in tests to override the time of "Now".
-  base::Clock* clock_ = nullptr;  // Not owned.
+  const Clock default_clock_;
+  // May be reset in tests to override the time of "Now"; otherwise, points to
+  // `default_clock_`. Should never be null.
+  const Clock* clock_ = nullptr;  // Not owned.
 };
 
 }  // namespace ash

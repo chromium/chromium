@@ -7,6 +7,8 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -29,8 +31,11 @@
 #include "base/strings/pattern.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 
@@ -38,8 +43,13 @@ namespace ash {
 
 namespace {
 
+using ::testing::ElementsAre;
+using ::testing::Pair;
+
 constexpr char kUser1Email[] = "user1@featuredschedule";
 constexpr char kUser2Email[] = "user2@featuredschedule";
+
+const char* kFeaturePrefName = prefs::kNightLightEnabled;
 
 enum AmPm { kAM, kPM };
 
@@ -54,6 +64,45 @@ Geoposition CreateGeoposition(double latitude,
   position.timestamp = timestamp;
   return position;
 }
+
+// Records all changes made to the feature state from the time that
+// PrefChangeObserver is constructed (turned on at 2 PM, turned off at 5 PM,
+// turned back on at 11 PM, etc). Allows tests to not only verify that the
+// feature changed status at the appropriate times, but also that it did not
+// change at an unintended time. For example, if the feature is expected to turn
+// on at 2 PM and it's now 12 PM, we want to make sure that it did not turn off
+// then back on again at some point in the middle (say 1 PM).
+class PrefChangeObserver {
+ public:
+  PrefChangeObserver(PrefService* pref_service, const base::Clock* clock)
+      : clock_(clock) {
+    pref_registrar_.Init(pref_service);
+    pref_registrar_.Add(
+        kFeaturePrefName,
+        base::BindRepeating(&PrefChangeObserver::OnEnabledPrefChanged,
+                            base::Unretained(this)));
+  }
+  ~PrefChangeObserver() = default;
+
+  // Elements appear in chronological order:
+  // <Time of the status change, the status of the feature at the time>
+  const std::vector<std::pair<TimeOfDay, bool>>& changes() const {
+    return changes_;
+  }
+
+  void ClearHistory() { changes_.clear(); }
+
+ private:
+  void OnEnabledPrefChanged() {
+    changes_.emplace_back(
+        TimeOfDay::FromTime(clock_->Now()),
+        pref_registrar_.prefs()->GetBoolean(kFeaturePrefName));
+  }
+
+  PrefChangeRegistrar pref_registrar_;
+  const base::Clock* const clock_;
+  std::vector<std::pair<TimeOfDay, bool>> changes_;
+};
 
 class TestScheduledFeature : public ScheduledFeature {
  public:
@@ -72,7 +121,8 @@ class TestScheduledFeature : public ScheduledFeature {
   const char* GetFeatureName() const override { return "TestFeature"; }
 };
 
-class ScheduledFeatureTest : public NoSessionAshTestBase {
+class ScheduledFeatureTest : public NoSessionAshTestBase,
+                             public ScheduledFeature::Clock {
  public:
   ScheduledFeatureTest() = default;
   ScheduledFeatureTest(const ScheduledFeatureTest& other) = delete;
@@ -108,14 +158,13 @@ class ScheduledFeatureTest : public NoSessionAshTestBase {
     // Set the clock of geolocation controller to our test clock to control the
     // time now.
     geolocation_controller_ = ash::Shell::Get()->geolocation_controller();
-    geolocation_controller()->SetClockForTesting(&test_clock_);
+    geolocation_controller()->SetClockForTesting(this);
 
     // Every feature that is auto scheduled by default needs to set test clock.
     // Otherwise the tests will fails `DCHECK_GE(start_time, now)` in
     // `ScheduledFeature::RefreshScheduleTimer()` when the new user session
     // is entered and `InitFromUserPrefs()` triggers `RefreshScheduleTimer()`.
-    ash::Shell::Get()->dark_light_mode_controller()->SetClockForTesting(
-        &test_clock_);
+    ash::Shell::Get()->dark_light_mode_controller()->SetClockForTesting(this);
 
     CreateTestUserSessions();
 
@@ -124,11 +173,11 @@ class ScheduledFeatureTest : public NoSessionAshTestBase {
 
     // Use user prefs of NightLight, which is an example of ScheduledFeature.
     feature_ = std::make_unique<TestScheduledFeature>(
-        prefs::kNightLightEnabled, prefs::kNightLightScheduleType,
+        kFeaturePrefName, prefs::kNightLightScheduleType,
         prefs::kNightLightCustomStartTime, prefs::kNightLightCustomEndTime);
     ASSERT_FALSE(feature_->GetEnabled());
 
-    feature_->SetClockForTesting(&test_clock_);
+    feature_->SetClockForTesting(this);
     feature_->OnActiveUserPrefServiceChanged(
         Shell::Get()->session_controller()->GetActivePrefService());
 
@@ -144,6 +193,11 @@ class ScheduledFeatureTest : public NoSessionAshTestBase {
     feature_.reset();
     NoSessionAshTestBase::TearDown();
   }
+
+  // ScheduledFeature::Clock:
+  base::Time Now() const override { return test_clock_.Now(); }
+
+  base::TimeTicks NowTicks() const override { return tick_clock_.NowTicks(); }
 
   void CreateTestUserSessions() {
     auto* session_controller_client = GetSessionControllerClient();
@@ -180,6 +234,57 @@ class ScheduledFeatureTest : public NoSessionAshTestBase {
     return TimeOfDay(hour * 60).SetClock(&test_clock_);
   }
 
+  // It is infeasible to initialize AshTestBase with "mock" time and fast
+  // forward the mock TaskEnvironment in these test cases. Why: The AshTestBase
+  // harness also instantiates a large portion of the UI stack (even though it's
+  // irrelevant to these tests), which causes TaskEnvironment::FastForwardBy()
+  // to block for long periods of time. The test cases ultimately take too long.
+  //
+  // This implementation is a workaround that only fast forwards the custom
+  // test "clocks" that are visible to the ScheduledFeature and its relevant
+  // dependencies. It also runs the internal ScheduledFeature "timer" as time
+  // progresses, so test cases may call this and the related methods below as if
+  // they were using TaskEnvironment::FastForwardBy() and the end result will
+  // look the same to them.
+  void FastForwardBy(base::TimeDelta amount) {
+    while (amount.is_positive()) {
+      base::TimeDelta advance_increment;
+      if (feature()->timer()->IsRunning() &&
+          feature()->timer()->desired_run_time() <=
+              tick_clock_.NowTicks() + amount) {
+        // Emulates the internal timer firing at its scheduled time.
+        advance_increment =
+            feature()->timer()->desired_run_time() - tick_clock_.NowTicks();
+        AdvanceTimeBy(advance_increment);
+        feature()->timer()->FireNow();
+      } else {
+        advance_increment = amount;
+        AdvanceTimeBy(advance_increment);
+      }
+      ASSERT_LE(advance_increment, amount);
+      amount -= advance_increment;
+    }
+  }
+
+  // Fast forwards to the next point in time that the specified `time_of_day`
+  // is hit. Examples:
+  // 1) now = 2 PM time_of_day = 5 PM, advances 3 hours
+  // 2) now = 7 PM time_of_day = 5 PM, advances 22 hours (the next day)
+  void FastForwardTo(TimeOfDay time_of_day) {
+    base::Time target_time = time_of_day.SetClock(&test_clock_).ToTimeToday();
+    const base::Time now = test_clock_.Now();
+    if (target_time < now) {
+      target_time += base::Days(1);
+      ASSERT_GT(target_time, now);
+    }
+    FastForwardBy(target_time - now);
+  }
+
+  void AdvanceTimeBy(base::TimeDelta amount) {
+    test_clock_.Advance(amount);
+    tick_clock_.Advance(amount);
+  }
+
   // Fires the timer of the scheduler to request geoposition and wait for all
   // observers to receive the latest geoposition from the server.
   void FireTimerToFetchGeoposition() {
@@ -208,7 +313,10 @@ class ScheduledFeatureTest : public NoSessionAshTestBase {
  private:
   std::unique_ptr<TestScheduledFeature> feature_;
   GeolocationController* geolocation_controller_;
+  // The `test_clock_` and `tick_clock_` are advanced in unison so that the
+  // ScheduledFeature sees time progressing consistently in all facets.
   base::SimpleTestClock test_clock_;
+  base::SimpleTestTickClock tick_clock_;
   base::OneShotTimer* timer_ptr_;
   TestGeolocationUrlLoaderFactory* factory_;
   Geoposition position_;
@@ -279,7 +387,7 @@ TEST_F(ScheduledFeatureTest, InitScheduleTypeFromUserPrefs) {
 // types.
 TEST_F(ScheduledFeatureTest, ScheduleNoneToCustomTransition) {
   // Now is 6:00 PM.
-  test_clock()->SetNow(MakeTimeOfDay(6, AmPm::kPM).ToTimeToday());
+  FastForwardTo(MakeTimeOfDay(6, AmPm::kPM));
   SetFeatureEnabled(false);
   feature()->SetScheduleType(ScheduleType::kNone);
   // Start time is at 3:00 PM and end time is at 8:00 PM.
@@ -300,24 +408,36 @@ TEST_F(ScheduledFeatureTest, ScheduleNoneToCustomTransition) {
   // hours scheduling the end.
   feature()->SetScheduleType(ScheduleType::kCustom);
   EXPECT_TRUE(GetEnabled());
-  EXPECT_TRUE(feature()->timer()->IsRunning());
-  EXPECT_EQ(base::Hours(2), feature()->timer()->GetCurrentDelay());
+  PrefChangeObserver change_log(user1_pref_service(), test_clock());
+  FastForwardTo(MakeTimeOfDay(8, AmPm::kPM));
+  EXPECT_FALSE(GetEnabled());
+  EXPECT_THAT(change_log.changes(),
+              ElementsAre(Pair(MakeTimeOfDay(8, AmPm::kPM), false)));
+
+  // First reset back to 6 p.m. the next day:
+  FastForwardTo(MakeTimeOfDay(6, AmPm::kPM));
+  ASSERT_TRUE(GetEnabled());
 
   // If the user changes the schedule type to "none", the feature status
-  // should not change, but the timer should not be running.
+  // should not change.
   feature()->SetScheduleType(ScheduleType::kNone);
   EXPECT_TRUE(GetEnabled());
-  EXPECT_FALSE(feature()->timer()->IsRunning());
+  // Since schedule type is none, the feature should not switch off at the
+  // scheduled end.
+  FastForwardTo(MakeTimeOfDay(8, AmPm::kPM));
+  EXPECT_TRUE(GetEnabled());
 }
 
 // Tests what happens when the time now reaches the end of the feature
 // interval when the feature mode is on.
 TEST_F(ScheduledFeatureTest, TestCustomScheduleReachingEndTime) {
-  test_clock()->SetNow(MakeTimeOfDay(6, AmPm::kPM).ToTimeToday());
+  FastForwardTo(MakeTimeOfDay(6, AmPm::kPM));
   feature()->SetCustomStartTime(MakeTimeOfDay(3, AmPm::kPM));
   feature()->SetCustomEndTime(MakeTimeOfDay(8, AmPm::kPM));
   feature()->SetScheduleType(ScheduleType::kCustom);
   EXPECT_TRUE(GetEnabled());
+
+  PrefChangeObserver change_log(user1_pref_service(), test_clock());
 
   // Simulate reaching the end time by triggering the timer's user task. Make
   // sure that the feature ended.
@@ -328,13 +448,13 @@ TEST_F(ScheduledFeatureTest, TestCustomScheduleReachingEndTime) {
   //      start                    end & now
   //
   // Now is 8:00 PM.
-  test_clock()->SetNow(MakeTimeOfDay(8, AmPm::kPM).ToTimeToday());
-  feature()->timer()->FireNow();
+  FastForwardTo(MakeTimeOfDay(8, AmPm::kPM));
   EXPECT_FALSE(GetEnabled());
-  // The timer should still be running, but now scheduling the start at 3:00 PM
-  // tomorrow which is 19 hours from "now" (8:00 PM).
-  EXPECT_TRUE(feature()->timer()->IsRunning());
-  EXPECT_EQ(base::Hours(19), feature()->timer()->GetCurrentDelay());
+  // The feature should be scheduled to start again at 3:00 PM tomorrow.
+  FastForwardTo(MakeTimeOfDay(3, AmPm::kPM));
+  EXPECT_THAT(change_log.changes(),
+              ElementsAre(Pair(MakeTimeOfDay(8, AmPm::kPM), false),
+                          Pair(MakeTimeOfDay(3, AmPm::kPM), true)));
 }
 
 // Tests that user toggles from the system menu or system settings override any
@@ -347,7 +467,7 @@ TEST_F(ScheduledFeatureTest, ExplicitUserTogglesWhileScheduleIsActive) {
   //        |                   |              |
   //      start                end            now
   //
-  test_clock()->SetNow(MakeTimeOfDay(11, AmPm::kPM).ToTimeToday());
+  FastForwardTo(MakeTimeOfDay(11, AmPm::kPM));
   feature()->SetCustomStartTime(MakeTimeOfDay(3, AmPm::kPM));
   feature()->SetCustomEndTime(MakeTimeOfDay(8, AmPm::kPM));
   feature()->SetScheduleType(ScheduleType::kCustom);
@@ -359,18 +479,30 @@ TEST_F(ScheduledFeatureTest, ExplicitUserTogglesWhileScheduleIsActive) {
   // button must override any automatic schedule.
   SetFeatureEnabled(true);
   EXPECT_TRUE(GetEnabled());
-  // The timer should still be running, but the feature should automatically
-  // turn off at 8:00 PM tomorrow, which is 21 hours from now (11:00 PM).
-  EXPECT_TRUE(feature()->timer()->IsRunning());
-  EXPECT_EQ(base::Hours(21), feature()->timer()->GetCurrentDelay());
+
+  PrefChangeObserver change_log(user1_pref_service(), test_clock());
+  // The feature should automatically turn off at 8:00 PM tomorrow.
+  FastForwardTo(MakeTimeOfDay(8, AmPm::kPM));
+  EXPECT_FALSE(GetEnabled());
+
+  // Manually reset the feature back to on.
+  SetFeatureEnabled(true);
+  EXPECT_TRUE(GetEnabled());
 
   // Manually turning it back off should also be respected, and this time the
   // start is scheduled at 3:00 PM tomorrow after 19 hours from "now" (8:00
   // PM).
   SetFeatureEnabled(false);
   EXPECT_FALSE(GetEnabled());
-  EXPECT_TRUE(feature()->timer()->IsRunning());
-  EXPECT_EQ(base::Hours(16), feature()->timer()->GetCurrentDelay());
+  FastForwardTo(MakeTimeOfDay(3, AmPm::kPM));
+  EXPECT_TRUE(GetEnabled());
+  EXPECT_THAT(
+      change_log.changes(),
+      ElementsAre(
+          Pair(MakeTimeOfDay(8, AmPm::kPM), false),
+          Pair(MakeTimeOfDay(8, AmPm::kPM), true),   // Manual toggle on
+          Pair(MakeTimeOfDay(8, AmPm::kPM), false),  // Manual toggle off
+          Pair(MakeTimeOfDay(3, AmPm::kPM), true)));
 }
 
 // Tests that changing the custom start and end times, in such a way that
@@ -382,33 +514,38 @@ TEST_F(ScheduledFeatureTest, ChangingStartTimesThatDontChangeTheStatus) {
   //        |             |             |
   //       now          start          end
   //
-  test_clock()->SetNow(MakeTimeOfDay(4, AmPm::kPM).ToTimeToday());  // 4:00 PM.
+  FastForwardTo(MakeTimeOfDay(4, AmPm::kPM));  // 4:00 PM.
   SetFeatureEnabled(false);
   feature()->SetScheduleType(ScheduleType::kNone);
   feature()->SetCustomStartTime(MakeTimeOfDay(6, AmPm::kPM));  // 6:00 PM.
   feature()->SetCustomEndTime(MakeTimeOfDay(10, AmPm::kPM));   // 10:00 PM.
 
   // Since now is outside the feature interval, changing the schedule type
-  // to kCustom, shouldn't affect the status. Validate the timer is running
-  // with a 2-hour delay.
+  // to kCustom, shouldn't affect the status. Validate the feature turns on then
+  // off at the scheduled times.
   feature()->SetScheduleType(ScheduleType::kCustom);
   EXPECT_FALSE(GetEnabled());
-  EXPECT_TRUE(feature()->timer()->IsRunning());
-  EXPECT_EQ(base::Hours(2), feature()->timer()->GetCurrentDelay());
+  PrefChangeObserver change_log(user1_pref_service(), test_clock());
+  FastForwardBy(base::Days(1));
+  EXPECT_THAT(change_log.changes(),
+              ElementsAre(Pair(MakeTimeOfDay(6, AmPm::kPM), true),
+                          Pair(MakeTimeOfDay(10, AmPm::kPM), false)));
 
+  change_log.ClearHistory();
   // Change the start time in such a way that doesn't change the status, but
   // despite that, confirm that schedule has been updated.
+  ASSERT_FALSE(GetEnabled());
   feature()->SetCustomStartTime(MakeTimeOfDay(7, AmPm::kPM));  // 7:00 PM.
   EXPECT_FALSE(GetEnabled());
-  EXPECT_TRUE(feature()->timer()->IsRunning());
-  EXPECT_EQ(base::Hours(3), feature()->timer()->GetCurrentDelay());
 
   // Changing the end time in a similar fashion to the above and expect no
   // change.
   feature()->SetCustomEndTime(MakeTimeOfDay(11, AmPm::kPM));  // 11:00 PM.
   EXPECT_FALSE(GetEnabled());
-  EXPECT_TRUE(feature()->timer()->IsRunning());
-  EXPECT_EQ(base::Hours(3), feature()->timer()->GetCurrentDelay());
+  FastForwardBy(base::Days(1));
+  EXPECT_THAT(change_log.changes(),
+              ElementsAre(Pair(MakeTimeOfDay(7, AmPm::kPM), true),
+                          Pair(MakeTimeOfDay(11, AmPm::kPM), false)));
 }
 
 // Tests that the feature should turn on at sunset time and turn off at sunrise
@@ -417,35 +554,28 @@ TEST_F(ScheduledFeatureTest, SunsetSunrise) {
   EXPECT_FALSE(GetEnabled());
 
   // Set time now to 10:00 AM.
-  base::Time current_time = MakeTimeOfDay(10, AmPm::kAM).ToTimeToday();
-  test_clock()->SetNow(current_time);
-  EXPECT_FALSE(feature()->timer()->IsRunning());
+  FastForwardTo(MakeTimeOfDay(10, AmPm::kAM));
   feature()->SetScheduleType(ScheduleType::kSunsetToSunrise);
   EXPECT_FALSE(GetEnabled());
-  EXPECT_TRUE(feature()->timer()->IsRunning());
-  EXPECT_EQ(geolocation_controller()->GetSunsetTime() - current_time,
-            feature()->timer()->GetCurrentDelay());
+
+  const PrefChangeObserver change_log(user1_pref_service(), test_clock());
 
   // Firing a timer should to advance the time to sunset and automatically turn
   // on the feature.
-  current_time = geolocation_controller()->GetSunsetTime();
-  test_clock()->SetNow(current_time);
-  feature()->timer()->FireNow();
-  EXPECT_TRUE(feature()->timer()->IsRunning());
+  const TimeOfDay sunset_time =
+      TimeOfDay::FromTime(geolocation_controller()->GetSunsetTime());
+  FastForwardTo(sunset_time);
   EXPECT_TRUE(GetEnabled());
-  EXPECT_EQ(
-      geolocation_controller()->GetSunriseTime() + base::Days(1) - current_time,
-      feature()->timer()->GetCurrentDelay());
 
   // Firing a timer should advance the time to sunrise and automatically turn
   // off the feature.
-  current_time = geolocation_controller()->GetSunriseTime();
-  test_clock()->SetNow(current_time);
-  feature()->timer()->FireNow();
+  const TimeOfDay sunrise_time =
+      TimeOfDay::FromTime(geolocation_controller()->GetSunriseTime());
+  FastForwardTo(sunrise_time);
   EXPECT_FALSE(GetEnabled());
-  EXPECT_TRUE(feature()->timer()->IsRunning());
-  EXPECT_EQ(geolocation_controller()->GetSunsetTime() - current_time,
-            feature()->timer()->GetCurrentDelay());
+
+  EXPECT_THAT(change_log.changes(),
+              ElementsAre(Pair(sunset_time, true), Pair(sunrise_time, false)));
 }
 
 // Tests that scheduled start time and end time of sunset-to-sunrise feature
@@ -490,27 +620,23 @@ TEST_F(ScheduledFeatureTest, MAYBE_SunsetSunriseGeoposition) {
   ASSERT_LT(sunset_time1 - base::Days(1), sunrise_time1);
 
   // Set time now to be 4 hours before sunset.
-  test_clock()->SetNow(sunset_time1 - base::Hours(4));
+  FastForwardTo(TimeOfDay::FromTime(sunset_time1 - base::Hours(4)));
 
   // Expect that timer is running and the start is scheduled after 4 hours.
   EXPECT_FALSE(feature()->GetEnabled());
+
   feature()->SetScheduleType(ScheduleType::kSunsetToSunrise);
   EXPECT_FALSE(feature()->GetEnabled());
   EXPECT_TRUE(IsFeatureObservingGeoposition());
-  EXPECT_TRUE(feature()->timer()->IsRunning());
-  EXPECT_EQ(base::Hours(4), feature()->timer()->GetCurrentDelay());
 
   // Simulate reaching sunset.
-  test_clock()->SetNow(sunset_time1);  // Now is sunset time of the position1.
-  feature()->timer()->FireNow();
+  FastForwardBy(base::Hours(4));  // Now is sunset time of the position1.
   EXPECT_TRUE(feature()->GetEnabled());
-  // Timer is running scheduling the end at sunrise of the second day.
-  EXPECT_TRUE(feature()->timer()->IsRunning());
-  EXPECT_EQ(sunrise_time1 + base::Days(1) - test_clock()->Now(),
-            feature()->timer()->GetCurrentDelay());
 
   // Simulate reaching sunrise.
-  test_clock()->SetNow(sunrise_time1);  // Now is sunrise time of the position1
+  FastForwardTo(TimeOfDay::FromTime(
+      sunrise_time1));  // Now is sunrise time of the position1
+  EXPECT_FALSE(feature()->GetEnabled());
 
   // Now simulate user changing position.
   // Position 2 sunset and sunrise times.
@@ -542,26 +668,21 @@ TEST_F(ScheduledFeatureTest, MAYBE_SunsetSunriseGeoposition) {
   // Expect that the scheduled end delay has been updated to sunrise of the
   // same (second) day in location 2, and the status hasn't changed.
   EXPECT_TRUE(feature()->GetEnabled());
-  EXPECT_TRUE(feature()->timer()->IsRunning());
-  EXPECT_EQ(sunrise_time2 + base::Days(1) - test_clock()->Now(),
-            feature()->timer()->GetCurrentDelay());
 
   // Simulate reaching sunrise.
-  test_clock()->SetNow(sunrise_time2 +
-                       base::Days(1));  // Now is sunrise time of the position2.
-  feature()->timer()->FireNow();
+  FastForwardTo(TimeOfDay::FromTime(
+      sunrise_time2));  // Now is sunrise time of the position2.
   EXPECT_FALSE(feature()->GetEnabled());
   // Timer is running scheduling the start at the sunset of the next day.
-  EXPECT_TRUE(feature()->timer()->IsRunning());
-  EXPECT_EQ(sunset_time2 + base::Days(1) - test_clock()->Now(),
-            feature()->timer()->GetCurrentDelay());
+  FastForwardTo(TimeOfDay::FromTime(sunrise_time2));
+  EXPECT_TRUE(feature()->GetEnabled());
 }
 
 // Tests that on device resume from sleep, the feature status is updated
 // correctly if the time has changed meanwhile.
 TEST_F(ScheduledFeatureTest, CustomScheduleOnResume) {
   // Now is 4:00 PM.
-  test_clock()->SetNow(MakeTimeOfDay(4, AmPm::kPM).ToTimeToday());
+  FastForwardTo(MakeTimeOfDay(4, AmPm::kPM));
   feature()->SetEnabled(false);
   // Start time is at 6:00 PM and end time is at 10:00 PM. The feature should be
   // off.
@@ -573,21 +694,23 @@ TEST_F(ScheduledFeatureTest, CustomScheduleOnResume) {
   feature()->SetCustomStartTime(MakeTimeOfDay(6, AmPm::kPM));
   feature()->SetCustomEndTime(MakeTimeOfDay(10, AmPm::kPM));
   feature()->SetScheduleType(ScheduleType::kCustom);
+  ASSERT_FALSE(feature()->GetEnabled());
 
-  EXPECT_FALSE(feature()->GetEnabled());
-  EXPECT_TRUE(feature()->timer()->IsRunning());
-  // The feature should be enabled in 2 hours.
-  EXPECT_EQ(base::Hours(2), feature()->timer()->GetCurrentDelay());
+  PrefChangeObserver change_log(user1_pref_service(), test_clock());
 
   // Now simulate that the device was suspended for 3 hours, and the time now
   // is 7:00 PM when the devices was resumed. Expect that the feature turns on.
-  test_clock()->SetNow(MakeTimeOfDay(7, AmPm::kPM).ToTimeToday());
+  AdvanceTimeBy(base::Hours(3));  // 7:00 PM
   feature()->SuspendDone(base::TimeDelta::Max());
 
   EXPECT_TRUE(feature()->GetEnabled());
-  EXPECT_TRUE(feature()->timer()->IsRunning());
-  // The feature should be disabled in 3 hours.
-  EXPECT_EQ(base::Hours(3), feature()->timer()->GetCurrentDelay());
+  // The feature should be disabled at originally scheduled time.
+  FastForwardTo(MakeTimeOfDay(10, AmPm::kPM));
+  EXPECT_FALSE(feature()->GetEnabled());
+
+  EXPECT_THAT(change_log.changes(),
+              ElementsAre(Pair(MakeTimeOfDay(7, AmPm::kPM), true),
+                          Pair(MakeTimeOfDay(10, AmPm::kPM), false)));
 }
 
 // The following tests ensure that the feature schedule is correctly
@@ -598,7 +721,7 @@ TEST_F(ScheduledFeatureTest, CustomScheduleOnResume) {
 // Case 1: "Now" is less than both "end" and "start".
 TEST_F(ScheduledFeatureTest, CustomScheduleInvertedStartAndEndTimesCase1) {
   // Now is 4:00 AM.
-  test_clock()->SetNow(MakeTimeOfDay(4, AmPm::kAM).ToTimeToday());
+  FastForwardTo(MakeTimeOfDay(4, AmPm::kAM));
   SetFeatureEnabled(false);
   // Start time is at 9:00 PM and end time is at 6:00 AM. "Now" is less than
   // both. The feature should be on.
@@ -612,15 +735,17 @@ TEST_F(ScheduledFeatureTest, CustomScheduleInvertedStartAndEndTimesCase1) {
   feature()->SetScheduleType(ScheduleType::kCustom);
 
   EXPECT_TRUE(GetEnabled());
-  EXPECT_TRUE(feature()->timer()->IsRunning());
-  // The feature should end in two hours.
-  EXPECT_EQ(base::Hours(2), feature()->timer()->GetCurrentDelay());
+  PrefChangeObserver change_log(user1_pref_service(), test_clock());
+  FastForwardBy(base::Days(1));
+  EXPECT_THAT(change_log.changes(),
+              ElementsAre(Pair(MakeTimeOfDay(6, AmPm::kAM), false),
+                          Pair(MakeTimeOfDay(9, AmPm::kPM), true)));
 }
 
 // Case 2: "Now" is between "end" and "start".
 TEST_F(ScheduledFeatureTest, CustomScheduleInvertedStartAndEndTimesCase2) {
   // Now is 6:00 AM.
-  test_clock()->SetNow(MakeTimeOfDay(6, AmPm::kAM).ToTimeToday());
+  FastForwardTo(MakeTimeOfDay(6, AmPm::kAM));
   SetFeatureEnabled(false);
   // Start time is at 9:00 PM and end time is at 4:00 AM. "Now" is between both.
   // The feature should be off.
@@ -634,15 +759,17 @@ TEST_F(ScheduledFeatureTest, CustomScheduleInvertedStartAndEndTimesCase2) {
   feature()->SetScheduleType(ScheduleType::kCustom);
 
   EXPECT_FALSE(GetEnabled());
-  EXPECT_TRUE(feature()->timer()->IsRunning());
-  // The feature should start in 15 hours.
-  EXPECT_EQ(base::Hours(15), feature()->timer()->GetCurrentDelay());
+  PrefChangeObserver change_log(user1_pref_service(), test_clock());
+  FastForwardBy(base::Days(1));
+  EXPECT_THAT(change_log.changes(),
+              ElementsAre(Pair(MakeTimeOfDay(9, AmPm::kPM), true),
+                          Pair(MakeTimeOfDay(4, AmPm::kAM), false)));
 }
 
 // Case 3: "Now" is greater than both "start" and "end".
 TEST_F(ScheduledFeatureTest, CustomScheduleInvertedStartAndEndTimesCase3) {
   // Now is 11:00 PM.
-  test_clock()->SetNow(MakeTimeOfDay(11, AmPm::kPM).ToTimeToday());
+  FastForwardTo(MakeTimeOfDay(11, AmPm::kPM));
   SetFeatureEnabled(false);
   // Start time is at 9:00 PM and end time is at 4:00 AM. "Now" is greater than
   // both. the feature should be on.
@@ -656,9 +783,11 @@ TEST_F(ScheduledFeatureTest, CustomScheduleInvertedStartAndEndTimesCase3) {
   feature()->SetScheduleType(ScheduleType::kCustom);
 
   EXPECT_TRUE(GetEnabled());
-  EXPECT_TRUE(feature()->timer()->IsRunning());
-  // The feature should end in 5 hours.
-  EXPECT_EQ(base::Hours(5), feature()->timer()->GetCurrentDelay());
+  PrefChangeObserver change_log(user1_pref_service(), test_clock());
+  FastForwardBy(base::Days(1));
+  EXPECT_THAT(change_log.changes(),
+              ElementsAre(Pair(MakeTimeOfDay(4, AmPm::kAM), false),
+                          Pair(MakeTimeOfDay(9, AmPm::kPM), true)));
 }
 
 // Tests that manual changes to the feature status while a schedule is being
@@ -681,7 +810,7 @@ TEST_F(ScheduledFeatureTest, MultiUserManualStatusToggleWithSchedules) {
   //    2pm       4pm         7pm           10pm                         9am
   //
 
-  test_clock()->SetNow(MakeTimeOfDay(2, kPM).ToTimeToday());
+  FastForwardTo(MakeTimeOfDay(2, kPM));
   feature()->SetCustomStartTime(MakeTimeOfDay(3, kPM));
   feature()->SetCustomEndTime(MakeTimeOfDay(8, kPM));
   feature()->SetScheduleType(ScheduleType::kCustom);
@@ -690,20 +819,18 @@ TEST_F(ScheduledFeatureTest, MultiUserManualStatusToggleWithSchedules) {
   SwitchActiveUser(kUser1Email);
 
   struct {
-    base::Time fake_now;
+    TimeOfDay fake_now;
     bool user_1_expected_status;
     bool user_2_expected_status;
   } kTestCases[] = {
-      {MakeTimeOfDay(2, kPM).ToTimeToday(), false, false},
-      {MakeTimeOfDay(4, kPM).ToTimeToday(), true, false},
-      {MakeTimeOfDay(7, kPM).ToTimeToday(), true, true},
-      {MakeTimeOfDay(10, kPM).ToTimeToday(), false, true},
-      {MakeTimeOfDay(9, kAM).ToTimeToday() +
-           base::Days(1),  // 9:00 AM tomorrow.
+      {MakeTimeOfDay(2, kPM), false, false},
+      {MakeTimeOfDay(4, kPM), true, false},
+      {MakeTimeOfDay(7, kPM), true, true},
+      {MakeTimeOfDay(10, kPM), false, true},
+      {MakeTimeOfDay(9, kAM),  // 9:00 AM tomorrow.
        false, false},
   };
 
-  bool user_1_previous_status = false;
   for (const auto& test_case : kTestCases) {
     // Each test case begins when user_1 is active.
     const bool user_1_toggled_status = !test_case.user_1_expected_status;
@@ -711,10 +838,7 @@ TEST_F(ScheduledFeatureTest, MultiUserManualStatusToggleWithSchedules) {
 
     // Apply the test's case fake time, and fire the timer if there's a change
     // expected in the feature's status.
-    test_clock()->SetNow(test_case.fake_now);
-    if (user_1_previous_status != test_case.user_1_expected_status)
-      feature()->timer()->FireNow();
-    user_1_previous_status = test_case.user_1_expected_status;
+    FastForwardTo(test_case.fake_now);
 
     // The untoggled states for both users should match the expected ones
     // according to their schedules.
@@ -753,7 +877,7 @@ TEST_F(ScheduledFeatureTest, MultiUserManualStatusToggleWithSchedules) {
 
 TEST_F(ScheduledFeatureTest,
        ManualStatusToggleCanPersistAfterResumeFromSuspend) {
-  test_clock()->SetNow(MakeTimeOfDay(11, kAM).ToTimeToday());
+  FastForwardTo(MakeTimeOfDay(11, kAM));
 
   feature()->SetCustomStartTime(MakeTimeOfDay(3, kPM));
   feature()->SetCustomEndTime(MakeTimeOfDay(8, kPM));
@@ -764,25 +888,28 @@ TEST_F(ScheduledFeatureTest,
   // turn back off at 8:00 PM.
   feature()->SetEnabled(true);
   EXPECT_TRUE(feature()->GetEnabled());
-  EXPECT_TRUE(feature()->timer()->IsRunning());
-  EXPECT_EQ(base::Hours(9), feature()->timer()->GetCurrentDelay());
+
+  PrefChangeObserver change_log(user1_pref_service(), test_clock());
 
   // Simulate suspend and then resume at 2:00 PM (which is outside the user's
   // custom schedule). However, the manual toggle to on should be kept.
-  test_clock()->SetNow(MakeTimeOfDay(2, kPM).ToTimeToday());
+  AdvanceTimeBy(base::Hours(3));
   feature()->SuspendDone(base::TimeDelta{});
   EXPECT_TRUE(feature()->GetEnabled());
 
   // Suspend again and resume at 5:00 PM (which is within the user's custom
   // schedule). The schedule should be applied normally.
-  test_clock()->SetNow(MakeTimeOfDay(5, kPM).ToTimeToday());
+  AdvanceTimeBy(base::Hours(3));
   feature()->SuspendDone(base::TimeDelta{});
   EXPECT_TRUE(feature()->GetEnabled());
 
   // Suspend and resume at 9:00 PM and expect the feature to be off.
-  test_clock()->SetNow(MakeTimeOfDay(9, kPM).ToTimeToday());
+  AdvanceTimeBy(base::Hours(4));
   feature()->SuspendDone(base::TimeDelta{});
   EXPECT_FALSE(feature()->GetEnabled());
+
+  EXPECT_THAT(change_log.changes(),
+              ElementsAre(Pair(MakeTimeOfDay(9, AmPm::kPM), false)));
 }
 
 }  // namespace
