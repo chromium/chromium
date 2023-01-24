@@ -169,6 +169,9 @@ group("test_runner_device_support") {
   if (build_with_chromium) {
     data_deps += [ "//tools/android/forwarder2" ]
     data += [ "//tools/android/avd/proto/" ]
+    if (enable_chrome_android_internal) {
+       data += [ "//clank/tools/android/avd/proto/" ]
+     }
     if (is_asan) {
       data_deps += [ "//tools/android/asan/third_party:asan_device_setup" ]
     }
