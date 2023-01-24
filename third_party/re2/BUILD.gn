@@ -10,6 +10,7 @@ config("re2_config") {
 
 static_library("re2") {
   sources = [
+    "src/re2/bitmap256.cc",
     "src/re2/bitmap256.h",
     "src/re2/bitstate.cc",
     "src/re2/compile.cc",
