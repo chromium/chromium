@@ -14,10 +14,9 @@ import {assert, assertInstanceof} from 'chrome://resources/js/assert_ts.js';
  * @throws If |arg| is undefined or null.
  */
 export function assertExists<T>(
-    arg: T, message?: string): asserts arg is NonNullable<T> {
-  assert(
-      arg !== undefined && arg !== null,
-      message || `Expected ${arg} to be defined.`);
+    arg: T, message: string = `Expected ${arg} to be defined.`):
+    asserts arg is NonNullable<T> {
+  assert(arg !== undefined && arg !== null, message);
 }
 
 /**
