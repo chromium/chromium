@@ -16,8 +16,7 @@
 import copy
 
 import pytest
-
-from _helpers import *
+from test_helpers import *
 
 
 def _strip_handle(obj):

@@ -14,8 +14,7 @@
 # limitations under the License.
 
 import pytest
-
-from _helpers import *
+from test_helpers import *
 
 # Tests for "handle an incoming message" error handling, when the message
 # can't be decoded as known command.
@@ -34,7 +33,7 @@ async def test_binary(websocket):
     resp = await read_JSON_message(websocket)
     assert resp['id'] == 1
 
-    binary_msg = 'text_msg'.encode('utf-8')
+    binary_msg = b'text_msg'
     await websocket.send(binary_msg)
     resp = await read_JSON_message(websocket)
     assert resp == {

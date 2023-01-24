@@ -25,6 +25,8 @@ repos:
       - id: check-executables-have-shebangs
       - id: check-yaml
       - id: end-of-file-fixer
+      - id: name-tests-test
+        args: [--pytest-test-first]
       - id: requirements-txt-fixer
       - id: trailing-whitespace
   - repo: https://github.com/pre-commit/mirrors-eslint
@@ -41,6 +43,16 @@ repos:
     rev: v0.32.0
     hooks:
       - id: yapf
+        args: ['--in-place', '--parallel']
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.11.4
+    hooks:
+      - id: isort
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.3.1
+    hooks:
+      - id: pyupgrade
+        args: [--py39-plus]
   - repo: https://github.com/codespell-project/codespell
     rev: 'v2.2.2'
     hooks:

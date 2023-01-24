@@ -17,7 +17,7 @@
 
 import asyncio
 import logging
-from pathlib import Path
+
 from _helpers import *
 
 logging.basicConfig(
@@ -58,7 +58,7 @@ async def main():
     context_id = command_result['result']['context']
 
     # Navigate to page
-    pageUrl = f'about:blank'
+    pageUrl = 'about:blank'
     await run_and_wait_command(
         {
             "id": 1001,
