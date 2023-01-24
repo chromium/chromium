@@ -15,13 +15,11 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.FeatureParamUtils;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
@@ -39,18 +37,12 @@ import java.util.function.BooleanSupplier;
  * class.
  */
 public class HomeButtonCoordinator {
-    @VisibleForTesting
-    static final String MAIN_INTENT_FROM_LAUNCHER_PARAM_NAME = "isMainIntentFromLauncher";
-    @VisibleForTesting
-    static final String INTENT_WITH_EFFECT_PARAM_NAME = "intentWithEffect";
-
     private final Context mContext;
     private final View mHomeButton;
     private final BooleanSupplier mIsFeedEnabled;
     private final UserEducationHelper mUserEducationHelper;
     private final BooleanSupplier mIsIncognitoSupplier;
     private final CurrentTabObserver mPageLoadObserver;
-    private final OneshotSupplier<ToolbarIntentMetadata> mIntentMetadataOneshotSupplier;
     private final OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
     private final Supplier<Boolean> mIsHomepageNonNtpSupplier;
 
@@ -68,7 +60,6 @@ public class HomeButtonCoordinator {
     public HomeButtonCoordinator(@NonNull Context context, @Nullable View homeButton,
             @NonNull UserEducationHelper userEducationHelper,
             @NonNull BooleanSupplier isIncognitoSupplier,
-            @NonNull OneshotSupplier<ToolbarIntentMetadata> intentMetadataOneshotSupplier,
             @NonNull OneshotSupplier<Boolean> promoShownOneshotSupplier,
             @NonNull Supplier<Boolean> isHomepageNonNtpSupplier,
             @NonNull BooleanSupplier isFeedEnabled, @NonNull ObservableSupplier<Tab> tabSupplier) {
@@ -76,7 +67,6 @@ public class HomeButtonCoordinator {
         mHomeButton = homeButton;
         mUserEducationHelper = userEducationHelper;
         mIsIncognitoSupplier = isIncognitoSupplier;
-        mIntentMetadataOneshotSupplier = intentMetadataOneshotSupplier;
         mPromoShownOneshotSupplier = promoShownOneshotSupplier;
         mIsHomepageNonNtpSupplier = isHomepageNonNtpSupplier;
         mIsFeedEnabled = isFeedEnabled;
@@ -109,20 +99,6 @@ public class HomeButtonCoordinator {
         if (UrlUtilities.isNTPUrl(url)) return;
         if (mIsHomepageNonNtpSupplier.get()) return;
         if (mPromoShownOneshotSupplier.get() == null || mPromoShownOneshotSupplier.get()) return;
-
-        ToolbarIntentMetadata intentMetadata = mIntentMetadataOneshotSupplier.get();
-        if (intentMetadata == null) return;
-        if (FeatureParamUtils.paramExistsAndDoesNotMatch(
-                    FeatureConstants.NEW_TAB_PAGE_HOME_BUTTON_FEATURE,
-                    MAIN_INTENT_FROM_LAUNCHER_PARAM_NAME,
-                    intentMetadata.getIsMainIntentFromLauncher())) {
-            return;
-        }
-        if (FeatureParamUtils.paramExistsAndDoesNotMatch(
-                    FeatureConstants.NEW_TAB_PAGE_HOME_BUTTON_FEATURE,
-                    INTENT_WITH_EFFECT_PARAM_NAME, intentMetadata.getIsIntentWithEffect())) {
-            return;
-        }
 
         boolean hasFeed = mIsFeedEnabled.getAsBoolean();
         int textId = hasFeed ? R.string.iph_ntp_with_feed_text : R.string.iph_ntp_without_feed_text;

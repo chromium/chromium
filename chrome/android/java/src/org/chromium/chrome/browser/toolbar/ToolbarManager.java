@@ -291,7 +291,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private StartSurface.StateObserver mStartSurfaceStateObserver;
     private AppBarLayout.OnOffsetChangedListener mStartSurfaceHeaderOffsetChangeListener;
 
-    private OneshotSupplier<ToolbarIntentMetadata> mIntentMetadataOneshotSupplier;
     private OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
     private OverlayPanelManagerObserver mOverlayPanelManagerObserver;
     private ObservableSupplierImpl<Boolean> mOverlayPanelVisibilitySupplier =
@@ -402,7 +401,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
      * @param startSurfaceSupplier Supplier of the StartSurface.
      * @param omniboxFocusStateSupplier Supplier to access the focus state of the omnibox.
-     * @param intentMetadataOneshotSupplier Supplier with info about the launching intent.
      * @param promoShownOneshotSupplier Supplier for whether a promo was shown on startup.
      * @param windowAndroid The {@link WindowAndroid} associated with the ToolbarManager.
      * @param isInOverviewModeSupplier Supplies whether the app is currently in overview mode.
@@ -441,7 +439,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             OneshotSupplier<StartSurface> startSurfaceSupplier,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier,
-            OneshotSupplier<ToolbarIntentMetadata> intentMetadataOneshotSupplier,
             OneshotSupplier<Boolean> promoShownOneshotSupplier, WindowAndroid windowAndroid,
             Supplier<Boolean> isInOverviewModeSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
@@ -471,7 +468,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mScrimCoordinator = scrimCoordinator;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
-        mIntentMetadataOneshotSupplier = intentMetadataOneshotSupplier;
         mPromoShownOneshotSupplier = promoShownOneshotSupplier;
         mAppMenuDelegate = appMenuDelegate;
         mStatusBarColorController = statusBarColorController;
@@ -1403,9 +1399,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         View homeButton = mControlContainer.findViewById(R.id.home_button);
         mHomeButtonCoordinator = new HomeButtonCoordinator(mActivity, homeButton,
                 userEducationHelper, mIncognitoStateProvider::isIncognitoSelected,
-                mIntentMetadataOneshotSupplier, mPromoShownOneshotSupplier,
-                HomepageManager::isHomepageNonNtp, FeedFeatures::isFeedEnabled,
-                mActivityTabProvider);
+                mPromoShownOneshotSupplier, HomepageManager::isHomepageNonNtp,
+                FeedFeatures::isFeedEnabled, mActivityTabProvider);
         ToggleTabStackButton toggleTabStackButton =
                 mControlContainer.findViewById(R.id.tab_switcher_button);
         mToggleTabStackButtonCoordinator =
