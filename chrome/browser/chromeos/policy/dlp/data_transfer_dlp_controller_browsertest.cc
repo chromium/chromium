@@ -269,13 +269,7 @@ class DataTransferDlpBrowserTest : public InProcessBrowserTest {
   raw_ptr<views::Textfield, DanglingUntriaged> textfield_ = nullptr;
 };
 
-// Flaky on MSan bots: http://crbug.com/1178328
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_EmptyPolicy DISABLED_EmptyPolicy
-#else
-#define MAYBE_EmptyPolicy EmptyPolicy
-#endif
-IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_EmptyPolicy) {
+IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, EmptyPolicy) {
   SetClipboardText(kClipboardText116, nullptr);
 
   ui::DataTransferEndpoint data_dst((GURL("https://google.com")));
@@ -355,9 +349,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, BlockDestination) {
   FlushMessageLoop();
 }
 
-// Flaky on MSan bots: http://crbug.com/1178328
 // Failing on Lacros: http://crbug.com/1380180
-#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_WarnDestination DISABLED_WarnDestination
 #else
 #define MAYBE_WarnDestination WarnDestination
@@ -519,10 +512,13 @@ class DataTransferDlpBlinkBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<FakeDlpController> dlp_controller_;
 };
 
-// TODO(crbug.com/1230617): Disable test on ASAN/LSAN builds.
-// TODO(b/264865493): Flaky
-IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest,
-                       DISABLED_ProceedOnWarn) {
+// Failing on Lacros: http://crbug.com/1380180
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ProceedOnWarn DISABLED_ProceedOnWarn
+#else
+#define MAYBE_ProceedOnWarn ProceedOnWarn
+#endif
+IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_ProceedOnWarn) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -608,10 +604,13 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest,
   EXPECT_TRUE(!widget || widget->IsClosed());
 }
 
-// TODO(crbug.com/1395711): The test is flaky. Re-enable it.
-// TODO(crbug.com/1230617): Disable test on ASAN/LSAN builds.
-// TODO(b/264865493): Flaky
-IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, DISABLED_CancelWarn) {
+// Failing on Lacros: http://crbug.com/1380180
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_CancelWarn DISABLED_CancelWarn
+#else
+#define MAYBE_CancelWarn CancelWarn
+#endif
+IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_CancelWarn) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -693,9 +692,13 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, DISABLED_CancelWarn) {
   EXPECT_TRUE(!widget || widget->IsClosed());
 }
 
-// TODO(b/264865493): Flaky
-IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest,
-                       DISABLED_ShouldProceedWarn) {
+// Failing on Lacros: http://crbug.com/1380180
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ShouldProceedWarn DISABLED_ShouldProceedWarn
+#else
+#define MAYBE_ShouldProceedWarn ShouldProceedWarn
+#endif
+IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_ShouldProceedWarn) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -767,8 +770,13 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest,
 }
 
 // Test case for crbug.com/1213143
-// TODO(b/264865493): Flaky
-IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, DISABLED_Reporting) {
+// Failing on Lacros: http://crbug.com/1380180
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_Reporting DISABLED_Reporting
+#else
+#define MAYBE_Reporting Reporting
+#endif
+IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_Reporting) {
   base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(embedded_test_server()->Start());
