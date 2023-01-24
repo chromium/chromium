@@ -33,7 +33,7 @@
     place-self: stretch;
   }
 
-  :host-context(.focus-outline-visible) .tile:focus {
+  :host-context(.focus-outline-visible) #customColorContainer:focus {
     box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
   }
 
@@ -41,11 +41,17 @@
     position: relative;
   }
 
+  #colorPicker {
+    bottom: 0;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+  }
+
   #colorPickerIcon {
     -webkit-mask-image: url(chrome://resources/cr_components/customize_themes/colorize.svg);
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 100%;
-    background-color: var(--google-grey-700);
     height: 20px;
     left: calc(50% - 10px);
     pointer-events: none;
@@ -70,31 +76,36 @@
       class="tile"
       title="$i18n{colorPickerLabel}"
       aria-label="$i18n{colorPickerLabel}"
-      tabindex="0">
+      tabindex="0"
+      on-click="onCustomColorClick_">
     <customize-chrome-color
         id="customColor"
         background-color="[[customColor_.background]]"
         foreground-color="[[customColor_.foreground]]">
     </customize-chrome-color>
     <div id="colorPickerIcon"></div>
+    <input id="colorPicker" type="color" tabindex="-1" aria-hidden="true"
+        on-change="onCustomColorChange_">
   </div>
   <customize-chrome-color
       id="defaultColor"
       class="tile"
-      background-color="[[defaultColor_.background]]"
-      foreground-color="[[defaultColor_.foreground]]"
       title="$i18n{defaultColorName}"
       aria-label="$i18n{defaultColorName}"
-      tabindex="0">
+      tabindex="0"
+      on-click="onDefaultColorClick_"
+      background-color="[[defaultColor_.background]]"
+      foreground-color="[[defaultColor_.foreground]]">
   </customize-chrome-color>
   <template is="dom-repeat" id="chromeColorsRepeat" items="[[colors_]]">
     <customize-chrome-color
         class="chrome-color tile"
-        background-color="[[item.background]]"
-        foreground-color="[[item.foreground]]"
         title="[[item.name]]"
         aria-label$="[[item.name]]"
-        tabindex="0">
+        tabindex="0"
+        on-click="onChromeColorClick_"
+        background-color="[[item.background]]"
+        foreground-color="[[item.foreground]]">
     </customize-chrome-color>
   </template>
 </cr-grid>

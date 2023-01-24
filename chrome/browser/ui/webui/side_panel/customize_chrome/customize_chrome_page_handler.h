@@ -69,7 +69,7 @@ class CustomizeChromePageHandler
                            GetBackgroundImagesCallback callback) override;
   void ChooseLocalCustomBackground(
       ChooseLocalCustomBackgroundCallback callback) override;
-  void SetClassicChromeDefaultTheme() override;
+  void RemoveBackgroundImage() override;
   void UpdateTheme() override;
   void OpenChromeWebStore() override;
   void OpenThirdPartyThemePage(const std::string& theme_id) override;

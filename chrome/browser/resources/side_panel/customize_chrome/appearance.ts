@@ -137,7 +137,8 @@ export class AppearanceElement extends PolymerElement {
   }
 
   private onSetClassicChromeClicked_() {
-    this.pageHandler_.setClassicChromeDefaultTheme();
+    this.pageHandler_.removeBackgroundImage();
+    this.pageHandler_.setDefaultColor();
   }
 }
 

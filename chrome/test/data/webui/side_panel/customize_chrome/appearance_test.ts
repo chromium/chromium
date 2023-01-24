@@ -71,7 +71,8 @@ suite('AppearanceTest', () => {
     await callbackRouterRemote.$.flushForTesting();
 
     appearanceElement.$.setClassicChromeButton.click();
-    assertEquals(1, handler.getCallCount('setClassicChromeDefaultTheme'));
+    assertEquals(1, handler.getCallCount('removeBackgroundImage'));
+    assertEquals(1, handler.getCallCount('setDefaultColor'));
   });
 
   test('1P view shows when 3P theme info not set', async () => {

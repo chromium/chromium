@@ -650,12 +650,11 @@ TEST_F(CustomizeChromePageHandlerTest, SetSeedColor) {
   EXPECT_EQ(SK_ColorBLUE, color);
 }
 
-TEST_F(CustomizeChromePageHandlerTest, SetClassicChromeDefaultTheme) {
+TEST_F(CustomizeChromePageHandlerTest, RemoveBackgroundImage) {
   EXPECT_CALL(mock_ntp_custom_background_service_, ResetCustomBackgroundInfo)
       .Times(1);
-  EXPECT_CALL(mock_theme_service(), UseDefaultTheme).Times(1);
 
-  handler().SetClassicChromeDefaultTheme();
+  handler().RemoveBackgroundImage();
 }
 
 TEST_F(CustomizeChromePageHandlerTest, ChooseLocalCustomBackgroundSuccess) {

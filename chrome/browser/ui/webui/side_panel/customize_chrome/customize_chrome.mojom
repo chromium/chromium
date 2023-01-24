@@ -134,8 +134,8 @@ interface CustomizeChromePageHandler {
   // Sets a Chrome theme generated from |seed_color|.
   SetSeedColor(skia.mojom.SkColor seed_color);
 
-  // Sets theme to default classic chrome.
-  SetClassicChromeDefaultTheme();
+  // Removes background image.
+  RemoveBackgroundImage();
 
   // Choose custom background from local file system.
   ChooseLocalCustomBackground() => (bool success);

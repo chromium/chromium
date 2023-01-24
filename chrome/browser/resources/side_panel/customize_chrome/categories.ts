@@ -51,7 +51,8 @@ export class CategoriesElement extends PolymerElement {
   }
 
   private onClassicChromeClick_() {
-    this.pageHandler_.setClassicChromeDefaultTheme();
+    this.pageHandler_.removeBackgroundImage();
+    this.pageHandler_.setDefaultColor();
   }
 
   private async onUploadImageClick_() {

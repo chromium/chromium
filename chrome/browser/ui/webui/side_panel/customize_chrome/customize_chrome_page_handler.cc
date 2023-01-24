@@ -216,11 +216,10 @@ void CustomizeChromePageHandler::ChooseLocalCustomBackground(
       nullptr);
 }
 
-void CustomizeChromePageHandler::SetClassicChromeDefaultTheme() {
+void CustomizeChromePageHandler::RemoveBackgroundImage() {
   if (ntp_custom_background_service_) {
     ntp_custom_background_service_->ResetCustomBackgroundInfo();
   }
-  theme_service_->UseDefaultTheme();
 }
 
 void CustomizeChromePageHandler::UpdateTheme() {

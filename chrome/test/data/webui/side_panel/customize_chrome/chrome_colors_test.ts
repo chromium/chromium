@@ -9,7 +9,7 @@ import {ChromeColorsElement} from 'chrome://customize-chrome-side-panel.top-chro
 import {ColorElement} from 'chrome://customize-chrome-side-panel.top-chrome/color.js';
 import {ChromeColor, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -67,5 +67,38 @@ suite('ChromeColorsTest', () => {
     assertDeepEquals({value: 2}, colors[1]!.backgroundColor);
     assertDeepEquals({value: 3}, colors[1]!.foregroundColor);
     assertEquals('color_1', colors[1]!.title);
+  });
+
+  test('sets chrome color', async () => {
+    await setInitialSettings(1);
+
+    chromeColorsElement.shadowRoot!
+        .querySelector<ColorElement>('.chrome-color')!.click();
+
+    // Should remove background image if there is one.
+    assertEquals(1, handler.getCallCount('removeBackgroundImage'));
+    assertEquals(1, handler.getCallCount('setSeedColor'));
+    assertEquals(0, handler.getArgs('setSeedColor')[0].value);
+  });
+
+  test('sets default color', async () => {
+    await setInitialSettings(1);
+
+    chromeColorsElement.$.defaultColor.click();
+
+    // Should remove background image if there is one.
+    assertEquals(1, handler.getCallCount('removeBackgroundImage'));
+    assertEquals(1, handler.getCallCount('setDefaultColor'));
+  });
+
+  test('sets custom color', async () => {
+    await setInitialSettings(0);
+    chromeColorsElement.$.colorPicker.value = '#ff0000';
+    chromeColorsElement.$.colorPicker.dispatchEvent(new Event('change'));
+
+    assertEquals(1, handler.getCallCount('removeBackgroundImage'));
+    const args = handler.getArgs('setSeedColor');
+    assertGE(1, args.length);
+    assertEquals(0xffff0000, args.at(-1).value);
   });
 });

@@ -91,7 +91,8 @@ suite('CategoriesTest', () => {
   test('clicking classic chrome sets theme', async () => {
     await setInitialSettings(0);
     categoriesElement.$.classicChromeTile.click();
-    assertEquals(1, handler.getCallCount('setClassicChromeDefaultTheme'));
+    assertEquals(1, handler.getCallCount('removeBackgroundImage'));
+    assertEquals(1, handler.getCallCount('setDefaultColor'));
   });
 
   test('clicking upload image creates dialog and sends event', async () => {

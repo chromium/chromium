@@ -9,7 +9,7 @@
     width: 100%;
   }
 
-  :host(:focus) {
+  :host(:focus):host-context(.focus-outline-visible) {
     box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
   }
 
