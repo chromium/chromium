@@ -5879,6 +5879,16 @@
     "expiry_milestone": 104
   },
   {
+    "name": "read-anything",
+    "owners": [ "abigailbklein@google.com", "jocelyntran@google.com", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 130
+  },
+  {
+    "name": "read-anything-with-screen2x",
+    "owners": [ "abigailbklein@google.com", "rhalavati@google.com", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "read-later",
     "owners": [ "chrome-desktop-ui-sea@google.com", "corising", "wylieb", "chrome-collections@google.com" ],
     "expiry_milestone": 112

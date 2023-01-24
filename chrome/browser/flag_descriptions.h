@@ -2394,6 +2394,12 @@ extern const char kDesktopPartialTranslateDescription[];
 extern const char kEnableAccessibilityLiveCaptionName[];
 extern const char kEnableAccessibilityLiveCaptionDescription[];
 
+extern const char kReadAnythingName[];
+extern const char kReadAnythingDescription[];
+
+extern const char kReadAnythingWithScreen2xName[];
+extern const char kReadAnythingWithScreen2xDescription[];
+
 extern const char kEnableUserCloudSigninRestrictionPolicyName[];
 extern const char kEnableUserCloudSigninRestrictionPolicyDescription[];
 

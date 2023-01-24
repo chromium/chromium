@@ -58127,6 +58127,7 @@ from previous Chrome versions.
   <int value="-1720576957" label="ThirdPartyStoragePartitioning:disabled"/>
   <int value="-1719833926" label="disable-answers-in-suggest"/>
   <int value="-1719699712" label="AudioPlayerJsModules:enabled"/>
+  <int value="-1719629293" label="ReadAnything:disabled"/>
   <int value="-1718808435" label="WebAssemblyGarbageCollection:disabled"/>
   <int value="-1718644168" label="SharingHubLinkToggle:disabled"/>
   <int value="-1718074215" label="HomepageSettingsUIConversion:enabled"/>
@@ -60332,6 +60333,7 @@ from previous Chrome versions.
   <int value="-488779992" label="blink-settings"/>
   <int value="-488744544" label="PromoBrowserCommands:disabled"/>
   <int value="-487294731" label="EnablePerfettoSystemTracing:disabled"/>
+  <int value="-486491020" label="ReadAnythingWithScreen2x:enabled"/>
   <int value="-482494879"
       label="OmniboxHistoryQuickProviderAllowMidwordContinuations:disabled"/>
   <int value="-482259889" label="MacMDDownloadShelf:disabled"/>
@@ -62271,6 +62273,7 @@ from previous Chrome versions.
   <int value="654879464" label="WalletRequiresFirstSyncSetupComplete:enabled"/>
   <int value="656864700" label="FillOnAccountSelectHttp:disabled"/>
   <int value="657832926" label="SwipeToMoveCursor:enabled"/>
+  <int value="658127191" label="ReadAnything:enabled"/>
   <int value="658983252" label="enable-features"/>
   <int value="659051425"
       label="AdaptiveButtonInTopToolbarCustomizationV2:disabled"/>
@@ -62796,6 +62799,7 @@ from previous Chrome versions.
   <int value="964995928" label="LauncherHideContinueSection:enabled"/>
   <int value="965037619"
       label="HappinessTrackingSurveysForDesktopSettingsPrivacy:disabled"/>
+  <int value="965218542" label="ReadAnythingWithScreen2x:disabled"/>
   <int value="966134219" label="CrostiniEnableDlc:disabled"/>
   <int value="966352185" label="PrivacyAdvisor:disabled"/>
   <int value="966415988" label="SyncPseudoUSSPasswords:enabled"/>

@@ -6135,6 +6135,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableAccessibilityLiveCaptionDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kLiveCaption)},
 
+    {"read-anything", flag_descriptions::kReadAnythingName,
+     flag_descriptions::kReadAnythingDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kReadAnything)},
+
+    {"read-anything-with-screen2x",
+     flag_descriptions::kReadAnythingWithScreen2xName,
+     flag_descriptions::kReadAnythingWithScreen2xDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kReadAnythingWithScreen2x)},
+
     {"support-tool", flag_descriptions::kSupportTool,
      flag_descriptions::kSupportToolDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSupportTool)},

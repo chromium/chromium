@@ -4187,6 +4187,17 @@ const char kEnableAccessibilityLiveCaptionDescription[] =
     "media playing in Chrome. Turn the feature on in "
     "chrome://settings/accessibility.";
 
+const char kReadAnythingName[] = "Read Anything";
+const char kReadAnythingDescription[] =
+    "Enables the Read Anything feature which generates a reader-friendly view "
+    "of web pages. Open the side panel and select Read Anything to try the "
+    "feature.";
+
+const char kReadAnythingWithScreen2xName[] = "Read Anything with Screen2x";
+const char kReadAnythingWithScreen2xDescription[] =
+    "Have Read Anything use a local machine learning model for web page"
+    "distillation.";
+
 const char kEnableUserCloudSigninRestrictionPolicyName[] =
     "Cloud User level Signin Restrictions Policy";
 const char kEnableUserCloudSigninRestrictionPolicyDescription[] =
