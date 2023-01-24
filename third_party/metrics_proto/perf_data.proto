@@ -216,9 +216,16 @@ message PerfDataProto {
     // PG Offset.
     optional uint64 pgoff = 5;
 
+    // Not added from original: fields 9-14.
+
     // Filename's md5 prefix.
     // The filename was field 6 and has been intentionally left out.
     optional uint64 filename_md5_prefix = 7;
+
+    // Root path's md5 prefix. It helps to categorize filenames we could not
+    // recover by the filename_md5_prefix.
+    // The root_path was field 15 and has been intentionally left out.
+    optional uint64 root_path_md5_prefix = 16;
 
     // Info about the perf sample containing this event.
     optional SampleInfo sample_info = 8;
