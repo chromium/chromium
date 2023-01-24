@@ -65,7 +65,7 @@ BASE_FEATURE(kAutofillEnableCardProductName,
 // options.
 BASE_FEATURE(kAutofillEnableCvcForVcnYellowPath,
              "AutofillEnableCvcForVcnYellowPath",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, a progress dialog will display while authenticating with FIDO.
 // TODO(crbug.com/1337380): Clean up kAutofillEnableFIDOProgressDialog when it's
