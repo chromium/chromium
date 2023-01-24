@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "net/base/features.h"
@@ -777,6 +778,40 @@ TEST(StorageKeyTest, ToCookiePartitionKey) {
       EXPECT_EQ(test_case.expected,
                 test_case.storage_key.ToCookiePartitionKey());
     }
+  }
+}
+
+TEST(StorageKeyTest, NonceRequiresMatchingOriginSiteAndSameSite) {
+  const url::Origin origin = url::Origin::Create(GURL("https://foo.com"));
+  const net::SchemefulSite site(origin);
+  const net::SchemefulSite opaque_site;
+  const net::SchemefulSite other_site(GURL("https://notfoo.com"));
+  base::UnguessableToken nonce = base::UnguessableToken::Create();
+
+  for (const bool toggle : {false, true}) {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatureState(
+        net::features::kThirdPartyStoragePartitioning, toggle);
+
+    // A nonce key with a matching origin/site that's SameSite works.
+    (void)StorageKey::CreateWithOptionalNonce(
+        origin, site, &nonce, mojom::AncestorChainBit::kSameSite);
+
+    // A nonce key with a non-matching origin/site that's SameSite fails.
+    EXPECT_DCHECK_DEATH(StorageKey::CreateWithOptionalNonce(
+        origin, opaque_site, &nonce, mojom::AncestorChainBit::kSameSite));
+    EXPECT_DCHECK_DEATH(StorageKey::CreateWithOptionalNonce(
+        origin, other_site, &nonce, mojom::AncestorChainBit::kSameSite));
+
+    // A nonce key with a matching origin/site that's CrossSite fails.
+    EXPECT_DCHECK_DEATH(StorageKey::CreateWithOptionalNonce(
+        origin, site, &nonce, mojom::AncestorChainBit::kCrossSite));
+
+    // A nonce key with a non-matching origin/site that's CrossSite fails.
+    EXPECT_DCHECK_DEATH(StorageKey::CreateWithOptionalNonce(
+        origin, opaque_site, &nonce, mojom::AncestorChainBit::kCrossSite));
+    EXPECT_DCHECK_DEATH(StorageKey::CreateWithOptionalNonce(
+        origin, other_site, &nonce, mojom::AncestorChainBit::kCrossSite));
   }
 }
 

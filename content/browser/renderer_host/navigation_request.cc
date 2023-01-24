@@ -1477,13 +1477,21 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           navigation_request->ComputeFencedFrameNonce());
   url::Origin top_level_origin =
       render_frame_host->ComputeTopFrameOrigin(origin);
-  navigation_request->commit_params_->storage_key =
-      blink::StorageKey::CreateWithOptionalNonce(
-          origin, net::SchemefulSite(top_level_origin),
-          base::OptionalToPtr(nonce),
-          render_frame_host->ComputeSiteForCookies().IsNull()
-              ? blink::mojom::AncestorChainBit::kCrossSite
-              : blink::mojom::AncestorChainBit::kSameSite);
+  // If the `nonce` is set the `top_level_site` must be the same as `origin` and
+  // the `ancestor_chain_bit` must be kSameSite.
+  if (nonce) {
+    navigation_request->commit_params_->storage_key =
+        blink::StorageKey::CreateWithOptionalNonce(
+            origin, net::SchemefulSite(origin), base::OptionalToPtr(nonce),
+            blink::mojom::AncestorChainBit::kSameSite);
+  } else {
+    navigation_request->commit_params_->storage_key =
+        blink::StorageKey::CreateWithOptionalNonce(
+            origin, net::SchemefulSite(top_level_origin), nullptr,
+            render_frame_host->ComputeSiteForCookies().IsNull()
+                ? blink::mojom::AncestorChainBit::kCrossSite
+                : blink::mojom::AncestorChainBit::kSameSite);
+  }
   navigation_request->commit_params_->session_storage_key =
       frame_tree_node->frame_tree().GetSessionStorageKey(
           navigation_request->commit_params_->storage_key);

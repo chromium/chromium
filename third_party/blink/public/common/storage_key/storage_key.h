@@ -74,7 +74,9 @@ class BLINK_COMMON_EXPORT StorageKey {
       const url::Origin& origin,
       const base::UnguessableToken& nonce);
 
-  // Callers may specify an optional nonce by passing nullptr.
+  // Callers may specify an optional `nonce` by passing nullptr.
+  // If the `nonce` isn't null, `top_level_site` must be the same as `origin`
+  // and `ancestor_chain_bit` must be kSameSite.
   static StorageKey CreateWithOptionalNonce(
       const url::Origin& origin,
       const net::SchemefulSite& top_level_site,
@@ -243,17 +245,7 @@ class BLINK_COMMON_EXPORT StorageKey {
   StorageKey(const url::Origin& origin,
              const net::SchemefulSite& top_level_site,
              const base::UnguessableToken* nonce,
-             blink::mojom::AncestorChainBit ancestor_chain_bit)
-      : origin_(origin),
-        top_level_site_(IsThirdPartyStoragePartitioningEnabled()
-                            ? top_level_site
-                            : net::SchemefulSite(origin)),
-        top_level_site_if_third_party_enabled_(top_level_site),
-        nonce_(nonce ? absl::make_optional(*nonce) : absl::nullopt),
-        ancestor_chain_bit_(IsThirdPartyStoragePartitioningEnabled()
-                                ? ancestor_chain_bit
-                                : blink::mojom::AncestorChainBit::kSameSite),
-        ancestor_chain_bit_if_third_party_enabled_(ancestor_chain_bit) {}
+             blink::mojom::AncestorChainBit ancestor_chain_bit);
 
   // Converts the attribute type into the separator + uint8_t byte
   // serialization. E.x.: kTopLevelSite becomes "^0"

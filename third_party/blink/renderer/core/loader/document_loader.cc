@@ -2348,10 +2348,21 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   // to preserve the information that is stripped due to the key being re-made.
   const auto& storage_key_with_3psp =
       storage_key_.CopyWithForceEnabledThirdPartyStoragePartitioning();
+
+  // If the nonce isn't null, we need to ensure the top level site matches
+  // origin and the ancestor chain bit is kSameSite. The ancestor chain bit
+  // should be fine as it's from the same StorageKey that already had a nonce,
+  // but it's possible `security_origin` doesn't match the StorageKey's site.
+  // TODO(https://crbug.com/888079): Just use the origin in the storage key.
+  BlinkSchemefulSite top_level_site(security_origin);
+  if (!storage_key_.GetNonce()) {
+    top_level_site = storage_key_with_3psp.GetTopLevelSite();
+  }
+
   // TODO(https://crbug.com/888079): Just use the storage key sent by the
   // browser once the browser will be able to compute the origin in all cases.
   frame_->DomWindow()->SetStorageKey(
-      BlinkStorageKey(security_origin, storage_key_with_3psp.GetTopLevelSite(),
+      BlinkStorageKey(security_origin, top_level_site,
                       base::OptionalToPtr(storage_key_.GetNonce()),
                       storage_key_with_3psp.GetAncestorChainBit()));
   if (storage_key_ == session_storage_key_ ||

@@ -603,12 +603,11 @@ TEST_P(DocumentLoaderTest, StorageKeyFromNavigationParams) {
           SharedBuffer::Create(), other_origin_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
 
-  net::SchemefulSite top_level_site =
-      net::SchemefulSite(url::Origin::Create(GURL(other_origin_url)));
+  url::Origin origin;
   auto nonce = base::UnguessableToken::Create();
-  StorageKey storage_key_to_commit =
-      StorageKey::CreateWithOptionalNonce(url::Origin(), top_level_site, &nonce,
-                                          mojom::AncestorChainBit::kSameSite);
+  StorageKey storage_key_to_commit = StorageKey::CreateWithOptionalNonce(
+      origin, net::SchemefulSite(origin), &nonce,
+      mojom::AncestorChainBit::kSameSite);
   params->storage_key = storage_key_to_commit;
 
   LocalFrame* local_frame =

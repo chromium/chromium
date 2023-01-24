@@ -271,6 +271,31 @@ StorageKey StorageKey::WithOrigin(const url::Origin& origin) const {
                                  ancestor_chain_bit_);
 }
 
+StorageKey::StorageKey(const url::Origin& origin,
+                       const net::SchemefulSite& top_level_site,
+                       const base::UnguessableToken* nonce,
+                       blink::mojom::AncestorChainBit ancestor_chain_bit)
+    : origin_(origin),
+      top_level_site_(IsThirdPartyStoragePartitioningEnabled()
+                          ? top_level_site
+                          : net::SchemefulSite(origin)),
+      top_level_site_if_third_party_enabled_(top_level_site),
+      nonce_(base::OptionalFromPtr(nonce)),
+      ancestor_chain_bit_(IsThirdPartyStoragePartitioningEnabled()
+                              ? ancestor_chain_bit
+                              : blink::mojom::AncestorChainBit::kSameSite),
+      ancestor_chain_bit_if_third_party_enabled_(ancestor_chain_bit) {
+  // If we're setting a `nonce`, the `top_level_site` must be the same as
+  // the `origin` and the `ancestor_chain_bit` must be kSameSite. We don't
+  // serialize those pieces of information so have to check to prevent
+  // mistaken reliance on what is supposed to be an invariant.
+  if (nonce) {
+    DCHECK(!nonce->is_empty());
+    DCHECK_EQ(top_level_site, net::SchemefulSite(origin));
+    DCHECK_EQ(ancestor_chain_bit, blink::mojom::AncestorChainBit::kSameSite);
+  }
+}
+
 std::string StorageKey::Serialize() const {
   using EncodedAttribute = StorageKey::EncodedAttribute;
   DCHECK(!origin_.opaque());

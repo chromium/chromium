@@ -4050,6 +4050,14 @@ absl::optional<base::UnguessableToken> RenderFrameHostImpl::ComputeNonce(
 blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
     const url::Origin& new_rfh_origin,
     const base::UnguessableToken* nonce) {
+  // If the nonce is set the `top_level_site` must be the same as
+  // `new_rfh_origin` and the `ancestor_chain_bit` must be kSameSite.
+  if (nonce) {
+    return blink::StorageKey::CreateWithOptionalNonce(
+        new_rfh_origin, net::SchemefulSite(new_rfh_origin), nonce,
+        blink::mojom::AncestorChainBit::kSameSite);
+  }
+
   std::vector<RenderFrameHostImpl*> ancestor_chain;
   RenderFrameHostImpl* current = this;
   while (current) {
@@ -4093,13 +4101,15 @@ blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
   blink::mojom::AncestorChainBit ancestor_chain_bit =
       blink::mojom::AncestorChainBit::kSameSite;
   for (auto* ancestor : ancestor_chain) {
-    if (!site_for_cookies.IsFirstParty(origin(ancestor).GetURL()))
+    if (!site_for_cookies.IsFirstParty(origin(ancestor).GetURL())) {
       ancestor_chain_bit = blink::mojom::AncestorChainBit::kCrossSite;
+      break;
+    }
   }
 
   return blink::StorageKey::CreateWithOptionalNonce(
-      new_rfh_origin, net::SchemefulSite(origin(ancestor_chain.back())), nonce,
-      ancestor_chain_bit);
+      new_rfh_origin, net::SchemefulSite(origin(ancestor_chain.back())),
+      nullptr, ancestor_chain_bit);
 }
 
 void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(

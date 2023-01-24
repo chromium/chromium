@@ -41,12 +41,21 @@ BlinkStorageKey::BlinkStorageKey(
                           ? top_level_site
                           : BlinkSchemefulSite(origin)),
       top_level_site_if_third_party_enabled_(top_level_site),
-      nonce_(nonce ? absl::make_optional(*nonce) : absl::nullopt),
+      nonce_(base::OptionalFromPtr(nonce)),
       ancestor_chain_bit_(StorageKey::IsThirdPartyStoragePartitioningEnabled()
                               ? ancestor_chain_bit
                               : mojom::blink::AncestorChainBit::kSameSite),
       ancestor_chain_bit_if_third_party_enabled_(ancestor_chain_bit) {
   DCHECK(origin_);
+  // If we're setting a `nonce`, the `top_level_site` must be the same as
+  // the `origin` and the `ancestor_chain_bit` must be kSameSite. We don't
+  // serialize those pieces of information so have to check to prevent
+  // mistaken reliance on what is supposed to be an invariant.
+  if (nonce) {
+    DCHECK(!nonce->is_empty());
+    DCHECK(top_level_site == BlinkSchemefulSite(origin));
+    DCHECK_EQ(ancestor_chain_bit, mojom::blink::AncestorChainBit::kSameSite);
+  }
 }
 
 // static
