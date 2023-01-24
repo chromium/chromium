@@ -155,8 +155,8 @@ export class AmbientPreview extends WithPersonalizationStore {
   }
 
   private getScreenSaverPreviewClass_(): string {
-    return this.screenSaverPreviewActive_ ? 'previewButtonDisabled' :
-                                            'previewButton';
+    return this.screenSaverPreviewActive_ ? 'preview-button-disabled' :
+                                            'preview-button';
   }
 
   private getScreenSaverPreviewText_(): string {
