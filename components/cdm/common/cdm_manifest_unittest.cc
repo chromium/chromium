@@ -61,14 +61,14 @@ std::string MakeStringList(int item) {
   return base::JoinString(parts, ",");
 }
 
-base::Value MakeListValue(const std::string& item) {
-  base::Value list(base::Value::Type::LIST);
+base::Value::List MakeList(const std::string& item) {
+  base::Value::List list;
   list.Append(item);
   return list;
 }
 
-base::Value MakeListValue(const std::string& item1, const std::string& item2) {
-  base::Value list(base::Value::Type::LIST);
+base::Value::List MakeList(const std::string& item1, const std::string& item2) {
+  base::Value::List list;
   list.Append(item1);
   list.Append(item2);
   return list;
@@ -79,7 +79,7 @@ base::Value::Dict DefaultManifest() {
   base::Value::Dict dict;
   dict.Set(kCdmCodecsListName, "vp8,vp09,av01");
   dict.Set(kCdmPersistentLicenseSupportName, true);
-  dict.Set(kCdmSupportedEncryptionSchemesName, MakeListValue("cenc", "cbcs"));
+  dict.Set(kCdmSupportedEncryptionSchemesName, MakeList("cenc", "cbcs"));
 
   // The following are dependent on what the current code supports.
   EXPECT_TRUE(media::IsSupportedCdmModuleVersion(kSupportedCdmModuleVersion));
@@ -301,14 +301,14 @@ TEST(CdmManifestTest, ManifestEncryptionSchemes) {
   // Try each valid value individually.
   {
     CdmCapability capability;
-    manifest.Set(kCdmSupportedEncryptionSchemesName, MakeListValue("cenc"));
+    manifest.Set(kCdmSupportedEncryptionSchemesName, MakeList("cenc"));
     EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
     CheckEncryptionSchemes(capability.encryption_schemes,
                            {media::EncryptionScheme::kCenc});
   }
   {
     CdmCapability capability;
-    manifest.Set(kCdmSupportedEncryptionSchemesName, MakeListValue("cbcs"));
+    manifest.Set(kCdmSupportedEncryptionSchemesName, MakeList("cbcs"));
     EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
     CheckEncryptionSchemes(capability.encryption_schemes,
                            {media::EncryptionScheme::kCbcs});
@@ -316,8 +316,7 @@ TEST(CdmManifestTest, ManifestEncryptionSchemes) {
   {
     // Try multiple valid entries.
     CdmCapability capability;
-    manifest.Set(kCdmSupportedEncryptionSchemesName,
-                 MakeListValue("cenc", "cbcs"));
+    manifest.Set(kCdmSupportedEncryptionSchemesName, MakeList("cenc", "cbcs"));
     EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
     CheckEncryptionSchemes(
         capability.encryption_schemes,
@@ -327,13 +326,13 @@ TEST(CdmManifestTest, ManifestEncryptionSchemes) {
     // Invalid encryption schemes are ignored. However, if value specified then
     // there must be at least 1 valid value.
     CdmCapability capability;
-    manifest.Set(kCdmSupportedEncryptionSchemesName, MakeListValue("invalid"));
+    manifest.Set(kCdmSupportedEncryptionSchemesName, MakeList("invalid"));
     EXPECT_FALSE(ParseCdmManifest(manifest, &capability));
   }
   {
     CdmCapability capability;
     manifest.Set(kCdmSupportedEncryptionSchemesName,
-                 MakeListValue("invalid", "cenc"));
+                 MakeList("invalid", "cenc"));
     EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
     CheckEncryptionSchemes(capability.encryption_schemes,
                            {media::EncryptionScheme::kCenc});
