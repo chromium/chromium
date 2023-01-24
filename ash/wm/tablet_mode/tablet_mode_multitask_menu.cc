@@ -57,7 +57,7 @@ class TabletModeMultitaskMenuView : public views::View {
   TabletModeMultitaskMenuView(aura::Window* window,
                               base::RepeatingClosure callback) {
     SetBackground(views::CreateThemedRoundedRectBackground(
-        kColorAshShieldAndBase80, kCornerRadius));
+        kColorAshShieldAndBaseOpaque, kCornerRadius));
     SetBorder(std::make_unique<views::HighlightBorder>(
         kCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
         /*use_light_colors=*/false));
