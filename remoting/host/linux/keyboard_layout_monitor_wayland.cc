@@ -172,12 +172,12 @@ void KeyboardLayoutMonitorWayland::ProcessModifiersAndNotifyCallbacks(
     return;
   }
 
+  current_group_ = static_cast<xkb_layout_index_t>(group);
+
   if (!xkb_state_) {
     LOG(WARNING) << "Received modifier without keymap?";
     return;
   }
-
-  current_group_ = static_cast<xkb_layout_index_t>(group);
 
   DCHECK(keymap_);
 
