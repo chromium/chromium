@@ -606,7 +606,18 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
   base::Value::List ReportToList(
       const rtc::scoped_refptr<const webrtc::RTCStatsReport>& report) {
     base::Value::List result_list;
+    // Used for string comparisons with const char* below.
+    const std::string track_str = "track";
+    const std::string stream_str = "stream";
+    const std::string track_id_str = "trackId";
     for (const auto& stats : *report) {
+      // Filter out deprecated metrics.
+      // TODO(https://crbug.com/webrtc/14175): When these are no longer exposed
+      // in the lower layers, remove this filtering because it will then not be
+      // needed.
+      if (stats.type() == track_str || stats.type() == stream_str) {
+        continue;
+      }
       // The format of "stats_subdictionary" is:
       // {timestamp:<milliseconds>, values: [<key-value pairs>]}
       // The timestamp unit is milliseconds but we want decimal
@@ -620,8 +631,11 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
       // "values": ["member1", value, "member2", value...]
       base::Value::List name_value_pairs;
       for (const auto* member : stats.Members()) {
-        if (!member->is_defined())
+        // TODO(https://crbug.com/webrtc/14175): When trackId is deleted we'll
+        // no longer need to filter it out here.
+        if (!member->is_defined() || member->name() == track_id_str) {
           continue;
+        }
         // Non-standardized / provisional stats which are not exposed
         // to Javascript are postfixed with an asterisk.
         std::string postfix = member->is_standardized() ? "" : "*";

@@ -5,7 +5,7 @@
 import {$} from 'chrome://resources/js/util_ts.js';
 
 import {GetSsrcFromReport, SsrcInfoManager} from './ssrc_info_manager.js';
-import {generateStatsLabel, isDeprecatedStats} from './stats_helper.js';
+import {generateStatsLabel} from './stats_helper.js';
 
 /**
  * Maintains the stats table.
@@ -38,10 +38,6 @@ export class StatsTable {
     // Update the label since information may have changed.
     statsTable.parentElement.firstElementChild.innerText =
         generateStatsLabel(report);
-
-    if (isDeprecatedStats(report)) {
-      statsTable.parentElement.classList.add('stats-deprecation');
-    }
 
     if (report.stats) {
       this.addStatsToTable_(
@@ -131,11 +127,6 @@ export class StatsTable {
       table.appendChild($('trth-template').content.cloneNode(true));
       table.rows[0].cells[0].textContent = 'Statistics ' + report.id;
 
-      // Deprecated stats.
-      if (isDeprecatedStats(report)) {
-        details.appendChild($('stats-deprecation-warning')
-            .content.cloneNode(true));
-      }
       // Only for legacy stats.
       if (report.type === 'ssrc') {
         table.insertRow(1);

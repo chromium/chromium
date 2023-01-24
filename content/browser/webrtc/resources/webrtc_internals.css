@@ -165,7 +165,3 @@ details[open] details summary {
 #legacy-stats-warning {
     display: none;
 }
-
-.stats-deprecation {
-  color: #be2026;
-}
