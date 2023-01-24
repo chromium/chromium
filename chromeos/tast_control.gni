@@ -304,9 +304,6 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1236234
   "lacros.AudioPlay",
 
-  # https://crbug.com/1198918
-  "ui.ScreenRecorder",
-
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
