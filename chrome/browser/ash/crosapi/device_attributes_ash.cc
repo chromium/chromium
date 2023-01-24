@@ -7,17 +7,16 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/policy/core/device_attributes.h"
 #include "chrome/browser/ash/policy/core/device_attributes_fake.h"
 #include "chrome/browser/ash/policy/core/device_attributes_impl.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/crosapi/mojom/device_attributes.mojom.h"
-#include "components/user_manager/user.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
@@ -25,6 +24,21 @@ namespace crosapi {
 namespace {
 
 const char kAccessDenied[] = "Access denied.";
+
+void GetAttribute(
+    base::OnceCallback<void(mojom::DeviceAttributesStringResultPtr)> callback,
+    const std::string& attr_value) {
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  if (!browser_util::IsSigninProfileOrBelongsToAffiliatedUser(profile)) {
+    std::move(callback).Run(
+        mojom::DeviceAttributesStringResult::NewErrorMessage(kAccessDenied));
+    return;
+  }
+
+  std::move(callback).Run(
+      mojom::DeviceAttributesStringResult::NewContents(attr_value));
+}
 
 }  // namespace
 
@@ -40,81 +54,27 @@ void DeviceAttributesAsh::BindReceiver(
 
 void DeviceAttributesAsh::GetDirectoryDeviceId(
     GetDirectoryDeviceIdCallback callback) {
-  Profile* profile =
-      g_browser_process->profile_manager()->GetPrimaryUserProfile();
-  if (!browser_util::IsSigninProfileOrBelongsToAffiliatedUser(profile)) {
-    std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
-    return;
-  }
-  std::string result = attributes_->GetDirectoryApiID();
-  if (result.empty()) {
-    std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
-  } else {
-    std::move(callback).Run(StringResult::NewContents(result));
-  }
+  GetAttribute(std::move(callback), attributes_->GetDirectoryApiID());
 }
 
 void DeviceAttributesAsh::GetDeviceSerialNumber(
     GetDeviceSerialNumberCallback callback) {
-  Profile* profile =
-      g_browser_process->profile_manager()->GetPrimaryUserProfile();
-  if (!browser_util::IsSigninProfileOrBelongsToAffiliatedUser(profile)) {
-    std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
-    return;
-  }
-  std::string result = attributes_->GetDeviceSerialNumber();
-  if (result.empty()) {
-    std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
-  } else {
-    std::move(callback).Run(StringResult::NewContents(result));
-  }
+  GetAttribute(std::move(callback), attributes_->GetDeviceSerialNumber());
 }
 
 void DeviceAttributesAsh::GetDeviceAssetId(GetDeviceAssetIdCallback callback) {
-  Profile* profile =
-      g_browser_process->profile_manager()->GetPrimaryUserProfile();
-  if (!browser_util::IsSigninProfileOrBelongsToAffiliatedUser(profile)) {
-    std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
-    return;
-  }
-  std::string result = attributes_->GetDeviceAssetID();
-  if (result.empty()) {
-    std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
-  } else {
-    std::move(callback).Run(StringResult::NewContents(result));
-  }
+  GetAttribute(std::move(callback), attributes_->GetDeviceAssetID());
 }
 
 void DeviceAttributesAsh::GetDeviceAnnotatedLocation(
     GetDeviceAnnotatedLocationCallback callback) {
-  Profile* profile =
-      g_browser_process->profile_manager()->GetPrimaryUserProfile();
-  if (!browser_util::IsSigninProfileOrBelongsToAffiliatedUser(profile)) {
-    std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
-    return;
-  }
-  std::string result = attributes_->GetDeviceAnnotatedLocation();
-  if (result.empty()) {
-    std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
-  } else {
-    std::move(callback).Run(StringResult::NewContents(result));
-  }
+  GetAttribute(std::move(callback), attributes_->GetDeviceAnnotatedLocation());
 }
 
 void DeviceAttributesAsh::GetDeviceHostname(
     GetDeviceHostnameCallback callback) {
-  Profile* profile =
-      g_browser_process->profile_manager()->GetPrimaryUserProfile();
-  if (!browser_util::IsSigninProfileOrBelongsToAffiliatedUser(profile)) {
-    std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
-    return;
-  }
-  absl::optional<std::string> result = attributes_->GetDeviceHostname();
-  if (!result) {
-    std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
-  } else {
-    std::move(callback).Run(StringResult::NewContents(*result));
-  }
+  GetAttribute(std::move(callback),
+               attributes_->GetDeviceHostname().value_or(""));
 }
 
 void DeviceAttributesAsh::GetDeviceTypeForMetrics(

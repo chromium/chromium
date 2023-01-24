@@ -7,10 +7,9 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/common/extensions/api/enterprise_device_attributes.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #else
@@ -60,8 +59,6 @@ absl::optional<std::string> ValidateCrosapi(content::BrowserContext* context) {
 
 namespace extensions {
 
-EnterpriseDeviceAttributesBase::~EnterpriseDeviceAttributesBase() = default;
-
 void EnterpriseDeviceAttributesBase::OnCrosapiResult(
     crosapi::mojom::DeviceAttributesStringResultPtr result) {
   using Result = crosapi::mojom::DeviceAttributesStringResult;
@@ -76,12 +73,6 @@ void EnterpriseDeviceAttributesBase::OnCrosapiResult(
       return;
   }
 }
-
-EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction::
-    EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction() = default;
-
-EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction::
-    ~EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction() = default;
 
 ExtensionFunction::ResponseAction
 EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction::Run() {
@@ -102,12 +93,6 @@ EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction::Run() {
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
-EnterpriseDeviceAttributesGetDeviceSerialNumberFunction::
-    EnterpriseDeviceAttributesGetDeviceSerialNumberFunction() = default;
-
-EnterpriseDeviceAttributesGetDeviceSerialNumberFunction::
-    ~EnterpriseDeviceAttributesGetDeviceSerialNumberFunction() = default;
-
 ExtensionFunction::ResponseAction
 EnterpriseDeviceAttributesGetDeviceSerialNumberFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -126,12 +111,6 @@ EnterpriseDeviceAttributesGetDeviceSerialNumberFunction::Run() {
   GetDeviceAttributesApi()->GetDeviceSerialNumber(std::move(cb));
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
-
-EnterpriseDeviceAttributesGetDeviceAssetIdFunction::
-    EnterpriseDeviceAttributesGetDeviceAssetIdFunction() = default;
-
-EnterpriseDeviceAttributesGetDeviceAssetIdFunction::
-    ~EnterpriseDeviceAttributesGetDeviceAssetIdFunction() = default;
 
 ExtensionFunction::ResponseAction
 EnterpriseDeviceAttributesGetDeviceAssetIdFunction::Run() {
@@ -152,12 +131,6 @@ EnterpriseDeviceAttributesGetDeviceAssetIdFunction::Run() {
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
-EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction::
-    EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction() = default;
-
-EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction::
-    ~EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction() = default;
-
 ExtensionFunction::ResponseAction
 EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -177,12 +150,6 @@ EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction::Run() {
   GetDeviceAttributesApi()->GetDeviceAnnotatedLocation(std::move(cb));
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
-
-EnterpriseDeviceAttributesGetDeviceHostnameFunction::
-    EnterpriseDeviceAttributesGetDeviceHostnameFunction() = default;
-
-EnterpriseDeviceAttributesGetDeviceHostnameFunction::
-    ~EnterpriseDeviceAttributesGetDeviceHostnameFunction() = default;
 
 ExtensionFunction::ResponseAction
 EnterpriseDeviceAttributesGetDeviceHostnameFunction::Run() {

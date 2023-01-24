@@ -8,7 +8,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_DEVICE_ATTRIBUTES_ENTERPRISE_DEVICE_ATTRIBUTES_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_DEVICE_ATTRIBUTES_ENTERPRISE_DEVICE_ATTRIBUTES_API_H_
 
-#include "chromeos/crosapi/mojom/device_attributes.mojom.h"
+#include "chromeos/crosapi/mojom/device_attributes.mojom-forward.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 
@@ -18,7 +18,7 @@ namespace extensions {
 // used to reduce redundant code.
 class EnterpriseDeviceAttributesBase : public ExtensionFunction {
  protected:
-  ~EnterpriseDeviceAttributesBase() override;
+  ~EnterpriseDeviceAttributesBase() override = default;
 
   // Called asynchronously when crosapi returns the result.
   void OnCrosapiResult(crosapi::mojom::DeviceAttributesStringResultPtr result);
@@ -27,10 +27,10 @@ class EnterpriseDeviceAttributesBase : public ExtensionFunction {
 class EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction
     : public EnterpriseDeviceAttributesBase {
  public:
-  EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction();
+  EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction() = default;
 
  protected:
-  ~EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction() override;
+  ~EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction() override = default;
 
   ResponseAction Run() override;
 
@@ -42,10 +42,10 @@ class EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction
 class EnterpriseDeviceAttributesGetDeviceSerialNumberFunction
     : public EnterpriseDeviceAttributesBase {
  public:
-  EnterpriseDeviceAttributesGetDeviceSerialNumberFunction();
+  EnterpriseDeviceAttributesGetDeviceSerialNumberFunction() = default;
 
  protected:
-  ~EnterpriseDeviceAttributesGetDeviceSerialNumberFunction() override;
+  ~EnterpriseDeviceAttributesGetDeviceSerialNumberFunction() override = default;
 
   ResponseAction Run() override;
 
@@ -58,10 +58,10 @@ class EnterpriseDeviceAttributesGetDeviceSerialNumberFunction
 class EnterpriseDeviceAttributesGetDeviceAssetIdFunction
     : public EnterpriseDeviceAttributesBase {
  public:
-  EnterpriseDeviceAttributesGetDeviceAssetIdFunction();
+  EnterpriseDeviceAttributesGetDeviceAssetIdFunction() = default;
 
  protected:
-  ~EnterpriseDeviceAttributesGetDeviceAssetIdFunction() override;
+  ~EnterpriseDeviceAttributesGetDeviceAssetIdFunction() override = default;
 
   ResponseAction Run() override;
 
@@ -73,10 +73,11 @@ class EnterpriseDeviceAttributesGetDeviceAssetIdFunction
 class EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction
     : public EnterpriseDeviceAttributesBase {
  public:
-  EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction();
+  EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction() = default;
 
  protected:
-  ~EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction() override;
+  ~EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction() override =
+      default;
 
   ResponseAction Run() override;
 
@@ -89,10 +90,10 @@ class EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction
 class EnterpriseDeviceAttributesGetDeviceHostnameFunction
     : public EnterpriseDeviceAttributesBase {
  public:
-  EnterpriseDeviceAttributesGetDeviceHostnameFunction();
+  EnterpriseDeviceAttributesGetDeviceHostnameFunction() = default;
 
  protected:
-  ~EnterpriseDeviceAttributesGetDeviceHostnameFunction() override;
+  ~EnterpriseDeviceAttributesGetDeviceHostnameFunction() override = default;
 
   ResponseAction Run() override;
 

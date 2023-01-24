@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "base/test/gtest_tags.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/force_installed_affiliated_extension_apitest.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -16,7 +14,6 @@
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "url/gurl.h"
 
