@@ -732,11 +732,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUpdateHistoryEntryPointsInIncognitoDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kUpdateHistoryEntryPointsInIncognito)},
-    {"sync-trusted-vault-passphrase-promo",
-     flag_descriptions::kSyncTrustedVaultPassphrasePromoName,
-     flag_descriptions::kSyncTrustedVaultPassphrasePromoDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(::syncer::kSyncTrustedVaultPassphrasePromo)},
     {"wait-threshold-seconds-for-capabilities-api",
      flag_descriptions::kWaitThresholdMillisecondsForCapabilitiesApiName,
      flag_descriptions::kWaitThresholdMillisecondsForCapabilitiesApiDescription,
@@ -1238,9 +1233,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          kEnableAccessibilityIdentifierToOmniboxLeadingImageDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableAccessibilityIdentifierToOmniboxLeadingImage)},
-     {"shopping-list", commerce::flag_descriptions::kShoppingListName,
-     commerce::flag_descriptions::kShoppingListDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(commerce::kShoppingList)},
+    {"shopping-list", commerce::flag_descriptions::kShoppingListName,
+     commerce::flag_descriptions::kShoppingListDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(commerce::kShoppingList)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

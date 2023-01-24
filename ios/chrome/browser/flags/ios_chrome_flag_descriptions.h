@@ -698,11 +698,6 @@ extern const char kSynthesizedRestoreSessionDescription[];
 extern const char kSyncEnableHistoryDataTypeName[];
 extern const char kSyncEnableHistoryDataTypeDescription[];
 
-// Title and description for the flag to control if Chrome Sync should support
-// trusted vault passphrase promos.
-extern const char kSyncTrustedVaultPassphrasePromoName[];
-extern const char kSyncTrustedVaultPassphrasePromoDescription[];
-
 // Title and description for the flag to enable Sync standalone invalidations.
 extern const char kSyncInvalidationsName[];
 extern const char kSyncInvalidationsDescription[];
