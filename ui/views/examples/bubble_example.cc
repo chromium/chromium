@@ -98,11 +98,6 @@ void BubbleExample::CreateExampleView(View* container) {
   container->SetLayoutManager(std::make_unique<BoxLayout>(
       BoxLayout::Orientation::kHorizontal, gfx::Insets(), 10));
 
-  no_shadow_legacy_ = container->AddChildView(std::make_unique<LabelButton>(
-      base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
-                          &no_shadow_legacy_, BubbleBorder::NO_SHADOW_LEGACY,
-                          false),
-      u"No Shadow Legacy"));
   standard_shadow_ = container->AddChildView(std::make_unique<LabelButton>(
       base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
                           &standard_shadow_, BubbleBorder::STANDARD_SHADOW,
@@ -114,7 +109,7 @@ void BubbleExample::CreateExampleView(View* container) {
       u"No Shadow"));
   persistent_ = container->AddChildView(std::make_unique<LabelButton>(
       base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
-                          &persistent_, BubbleBorder::NO_SHADOW_LEGACY, true),
+                          &persistent_, BubbleBorder::NO_SHADOW, true),
       u"Persistent"));
 }
 

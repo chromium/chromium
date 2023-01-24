@@ -14,10 +14,6 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/win/hwnd_message_handler.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "ui/base/win/shell.h"
-#endif
-
 namespace views {
 
 namespace {
@@ -107,12 +103,7 @@ void CalculateWindowStylesFromInitParams(
     case Widget::InitParams::TYPE_MENU:
       *style |= WS_POPUP;
       if (params.remove_standard_frame) {
-        // If the platform doesn't support drop shadow, decorate the Window
-        // with just a border.
-        if (ui::win::IsAeroGlassEnabled())
-          *style |= WS_THICKFRAME;
-        else
-          *style |= WS_BORDER;
+        *style |= WS_THICKFRAME;
       }
       if (!params.force_show_in_taskbar)
         *ex_style |= WS_EX_TOOLWINDOW;
@@ -163,11 +154,9 @@ void ConfigureWindowStyles(
   //    not have not have WM_SIZEBOX, WS_THICKFRAME or WS_CAPTION in its
   //    style.
   //
-  // This doesn't work when Aero is disabled, so disable it in that case.
   // Software composited windows can continue to use WS_EX_LAYERED.
   bool is_translucent =
-      (params.opacity == Widget::InitParams::WindowOpacity::kTranslucent &&
-       (ui::win::IsAeroGlassEnabled() || params.force_software_compositing));
+      (params.opacity == Widget::InitParams::WindowOpacity::kTranslucent);
 
   CalculateWindowStylesFromInitParams(params, widget_delegate,
                                       native_widget_delegate, is_translucent,

@@ -34,9 +34,6 @@ const char kEnableResourcesFileSharing[] = "enable-resources-file-sharing";
 // Disables layer-edge anti-aliasing in the compositor.
 const char kDisableCompositedAntialiasing[] = "disable-composited-antialiasing";
 
-// Disables use of DWM composition for top level windows.
-const char kDisableDwmComposition[] = "disable-dwm-composition";
-
 // Disables touch event based drag and drop.
 const char kDisableTouchDragDrop[] = "disable-touch-drag-drop";
 

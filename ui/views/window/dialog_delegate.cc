@@ -31,10 +31,6 @@
 #include "ui/views/window/dialog_client_view.h"
 #include "ui/views/window/dialog_observer.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "ui/base/win/shell.h"
-#endif
-
 namespace views {
 
 // Debug information for https://crbug.com/1215247.
@@ -82,11 +78,6 @@ bool DialogDelegate::CanSupportCustomFrame(gfx::NativeView parent) {
   // The new style doesn't support unparented dialogs on Linux desktop.
   return parent != nullptr;
 #else
-#if BUILDFLAG(IS_WIN)
-  // The new style doesn't support unparented dialogs on Windows Classic themes.
-  if (!ui::win::IsAeroGlassEnabled())
-    return parent != nullptr;
-#endif
   return true;
 #endif
 }

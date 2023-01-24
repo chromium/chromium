@@ -59,7 +59,6 @@
 #include "ui/gl/gpu_switching_manager.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "ui/base/win/shell.h"
 #include "ui/gfx/win/physical_size.h"
 #endif
 
@@ -181,10 +180,8 @@ base::Value::List GetBasicGpuInfo(const gpu::GPUInfo& gpu_info,
   basic_info.Append(display::BuildGpuInfoEntry(
       "AMD switchable", base::Value(gpu_info.amd_switchable)));
 #if BUILDFLAG(IS_WIN)
-  std::string compositor =
-      ui::win::IsAeroGlassEnabled() ? "Aero Glass" : "none";
   basic_info.Append(
-      display::BuildGpuInfoEntry("Desktop compositing", compositor));
+      display::BuildGpuInfoEntry("Desktop compositing", "Aero Glass"));
 
   basic_info.Append(display::BuildGpuInfoEntry(
       "Direct composition",

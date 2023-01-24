@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/win/win_util.h"
-#include "ui/base/win/shell.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/display/win/screen_win_display.h"
@@ -61,12 +60,6 @@ gfx::Rect FullscreenHandler::GetRestoreBounds() const {
 void FullscreenHandler::ProcessFullscreen(bool fullscreen,
                                           int64_t target_display_id) {
   std::unique_ptr<ScopedFullscreenVisibility> visibility;
-
-  // With Aero enabled disabling the visibility causes the window to disappear
-  // for several frames, which looks worse than doing other updates
-  // non-atomically.
-  if (!ui::win::IsAeroGlassEnabled())
-    visibility = std::make_unique<ScopedFullscreenVisibility>(hwnd_);
 
   // Save current window state if not already fullscreen.
   if (!fullscreen_) {

@@ -16,6 +16,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/linear_animation.h"
@@ -142,18 +143,16 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   class FadeLabel;
   class ThumbnailView;
 
-  bool using_rounded_corners() const { return corner_radius_.has_value(); }
-
   // views::BubbleDialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
-  void OnThemeChanged() override;
 
   raw_ptr<FadeLabel> title_label_ = nullptr;
   raw_ptr<FadeLabel> domain_label_ = nullptr;
   raw_ptr<ThumbnailView> thumbnail_view_ = nullptr;
   absl::optional<TabAlertState> alert_state_;
 
-  absl::optional<int> corner_radius_;
+  int corner_radius_ = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kHigh);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_BUBBLE_VIEW_H_

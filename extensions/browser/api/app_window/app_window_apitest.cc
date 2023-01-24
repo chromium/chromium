@@ -24,10 +24,6 @@
 #include "ui/base/base_window.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "ui/base/win/shell.h"
-#endif
-
 namespace extensions {
 
 using AppWindowApiTest = PlatformAppBrowserTest;
@@ -147,12 +143,6 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_AlphaEnabledHasPermissions) {
 // of lacros-chrome is complete.
 #if defined(USE_AURA) && !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   test_dir = kHasAlphaDir;
-
-#if BUILDFLAG(IS_WIN)
-  if (!ui::win::IsAeroGlassEnabled()) {
-    test_dir = kNoAlphaDir;
-  }
-#endif  // BUILDFLAG(IS_WIN)
 #endif  // USE_AURA && !(OS_LINUX || IS_CHROMEOS_LACROS)
 
   EXPECT_TRUE(RunExtensionTest(test_dir, {.launch_as_platform_app = true}))

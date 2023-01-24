@@ -45,7 +45,6 @@
 #include "ui/base/win/lock_state.h"
 #include "ui/base/win/mouse_wheel_util.h"
 #include "ui/base/win/session_change_observer.h"
-#include "ui/base/win/shell.h"
 #include "ui/base/win/touch_input.h"
 #include "ui/base/win/win_cursor.h"
 #include "ui/display/types/display_constants.h"
@@ -362,8 +361,7 @@ class HWNDMessageHandler::ScopedRedrawLock {
         cancel_unlock_(false),
         should_lock_(owner_->IsVisible() && !owner->HasChildRenderingWindow() &&
                      ::IsWindow(hwnd_) && !owner_->IsHeadless() &&
-                     (!(GetWindowLong(hwnd_, GWL_STYLE) & WS_CAPTION) ||
-                      !ui::win::IsAeroGlassEnabled())) {
+                     (!(GetWindowLong(hwnd_, GWL_STYLE) & WS_CAPTION))) {
     if (should_lock_)
       owner_->LockUpdates();
   }
@@ -625,8 +623,7 @@ void HWNDMessageHandler::SetBounds(const gfx::Rect& bounds_in_pixels,
 }
 
 void HWNDMessageHandler::SetDwmFrameExtension(DwmFrameState state) {
-  if (!delegate_->HasFrame() && ui::win::IsAeroGlassEnabled() &&
-      !is_translucent_) {
+  if (!delegate_->HasFrame() && !is_translucent_) {
     MARGINS m = {0, 0, 0, 0};
     if (state == DwmFrameState::kOn && !IsMaximized())
       m = {0, 0, 1, 0};
@@ -1855,8 +1852,7 @@ void HWNDMessageHandler::OnEnterSizeMove() {
 
 LRESULT HWNDMessageHandler::OnEraseBkgnd(HDC dc) {
   gfx::Insets insets;
-  if (ui::win::IsAeroGlassEnabled() &&
-      delegate_->GetDwmFrameInsetsInPixels(&insets) && !insets.IsEmpty() &&
+  if (delegate_->GetDwmFrameInsetsInPixels(&insets) && !insets.IsEmpty() &&
       needs_dwm_frame_clear_) {
     // This is necessary to avoid white flashing in the titlebar area around the
     // minimize/maximize/close buttons.
@@ -2427,30 +2423,28 @@ void HWNDMessageHandler::OnNCPaint(HRGN rgn) {
   // It's required to avoid some native painting artifacts from appearing when
   // the window is resized.
   if (!delegate_->HasNonClientView() || IsFrameSystemDrawn()) {
-    if (ui::win::IsAeroGlassEnabled()) {
-      // The default WM_NCPAINT handler under Aero Glass doesn't clear the
-      // nonclient area, so it'll remain the default white color. That area is
-      // invisible initially (covered by the window border) but can become
-      // temporarily visible on maximizing or fullscreening, so clear it here.
-      HDC dc = GetWindowDC(hwnd());
-      RECT client_rect;
-      ::GetClientRect(hwnd(), &client_rect);
-      ::MapWindowPoints(hwnd(), nullptr, reinterpret_cast<POINT*>(&client_rect),
-                        2);
-      ::OffsetRect(&client_rect, -window_rect.left, -window_rect.top);
-      // client_rect now is in window space.
+    // The default WM_NCPAINT handler under Aero Glass doesn't clear the
+    // nonclient area, so it'll remain the default white color. That area is
+    // invisible initially (covered by the window border) but can become
+    // temporarily visible on maximizing or fullscreening, so clear it here.
+    HDC dc = GetWindowDC(hwnd());
+    RECT client_rect;
+    ::GetClientRect(hwnd(), &client_rect);
+    ::MapWindowPoints(hwnd(), nullptr, reinterpret_cast<POINT*>(&client_rect),
+                      2);
+    ::OffsetRect(&client_rect, -window_rect.left, -window_rect.top);
+    // client_rect now is in window space.
 
-      base::win::ScopedRegion base(::CreateRectRgnIndirect(&dirty_region));
-      base::win::ScopedRegion client(::CreateRectRgnIndirect(&client_rect));
-      base::win::ScopedRegion nonclient(::CreateRectRgn(0, 0, 0, 0));
-      ::CombineRgn(nonclient.get(), base.get(), client.get(), RGN_DIFF);
+    base::win::ScopedRegion base(::CreateRectRgnIndirect(&dirty_region));
+    base::win::ScopedRegion client(::CreateRectRgnIndirect(&client_rect));
+    base::win::ScopedRegion nonclient(::CreateRectRgn(0, 0, 0, 0));
+    ::CombineRgn(nonclient.get(), base.get(), client.get(), RGN_DIFF);
 
-      ::SelectClipRgn(dc, nonclient.get());
-      HBRUSH brush = CreateSolidBrush(0);
-      ::FillRect(dc, &dirty_region, brush);
-      ::DeleteObject(brush);
-      ::ReleaseDC(hwnd(), dc);
-    }
+    ::SelectClipRgn(dc, nonclient.get());
+    HBRUSH brush = CreateSolidBrush(0);
+    ::FillRect(dc, &dirty_region, brush);
+    ::DeleteObject(brush);
+    ::ReleaseDC(hwnd(), dc);
     SetMsgHandled(FALSE);
     return;
   }
@@ -3487,8 +3481,7 @@ void HWNDMessageHandler::UpdateDwmFrame() {
   TRACE_EVENT0("ui", "HWNDMessageHandler::UpdateDwmFrame");
 
   gfx::Insets insets;
-  if (ui::win::IsAeroGlassEnabled() &&
-      delegate_->GetDwmFrameInsetsInPixels(&insets)) {
+  if (delegate_->GetDwmFrameInsetsInPixels(&insets)) {
     MARGINS margins = {insets.left(), insets.right(), insets.top(),
                        insets.bottom()};
     DwmExtendFrameIntoClientArea(hwnd(), &margins);

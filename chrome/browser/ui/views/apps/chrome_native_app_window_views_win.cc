@@ -23,11 +23,9 @@
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/win/hwnd_util.h"
 
-ChromeNativeAppWindowViewsWin::ChromeNativeAppWindowViewsWin()
-    : glass_frame_view_(nullptr), is_translucent_(false) {}
+ChromeNativeAppWindowViewsWin::ChromeNativeAppWindowViewsWin() = default;
 
-ChromeNativeAppWindowViewsWin::~ChromeNativeAppWindowViewsWin() {
-}
+ChromeNativeAppWindowViewsWin::~ChromeNativeAppWindowViewsWin() = default;
 
 HWND ChromeNativeAppWindowViewsWin::GetNativeAppWindowHWND() const {
   return views::HWNDForWidget(widget()->GetTopLevelWidget());
@@ -79,14 +77,10 @@ void ChromeNativeAppWindowViewsWin::InitializeDefaultWindow(
 
 std::unique_ptr<views::NonClientFrameView>
 ChromeNativeAppWindowViewsWin::CreateStandardDesktopAppFrame() {
-  if (ui::win::IsAeroGlassEnabled()) {
-    auto glass_frame_view =
-        std::make_unique<GlassAppWindowFrameViewWin>(widget());
-    glass_frame_view_ = glass_frame_view.get();
-    return glass_frame_view;
-  }
-  glass_frame_view_ = nullptr;
-  return ChromeNativeAppWindowViewsAura::CreateStandardDesktopAppFrame();
+  auto glass_frame_view =
+      std::make_unique<GlassAppWindowFrameViewWin>(widget());
+  glass_frame_view_ = glass_frame_view.get();
+  return glass_frame_view;
 }
 
 bool ChromeNativeAppWindowViewsWin::CanMinimize() const {

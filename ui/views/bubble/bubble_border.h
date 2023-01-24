@@ -66,10 +66,7 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   };
 
   enum Shadow {
-    // NO_SHADOW_LEGACY is obsolete. Used only for Win7 where custom shadows are
-    // not supported.
-    NO_SHADOW_LEGACY = 0,
-    STANDARD_SHADOW,
+    STANDARD_SHADOW = 0,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // CHROMEOS_SYSTEM_UI_SHADOW uses ChromeOS system UI shadow style.
     CHROMEOS_SYSTEM_UI_SHADOW,
@@ -294,10 +291,6 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // Paint for the NO_SHADOW shadow type. This just paints transparent pixels
   // to make the window shape based on insets and GetBorderCornerRadius().
   void PaintNoShadow(const View& view, gfx::Canvas* canvas);
-
-  // Paint for the NO_SHADOW_LEGACY shadow type. This paints a simple line
-  // border.
-  void PaintNoShadowLegacy(const View& view, gfx::Canvas* canvas);
 
   // Paint a visible arrow pointing to the anchor region.
   void PaintVisibleArrow(const View& view, gfx::Canvas* canvas);

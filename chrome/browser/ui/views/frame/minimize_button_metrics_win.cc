@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/i18n/rtl.h"
-#include "ui/base/win/shell.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -139,11 +138,11 @@ int MinimizeButtonMetrics::GetMinimizeButtonOffsetX() const {
   // WM_NCACTIVATE (maybe it returns classic values?). In an attempt to return a
   // consistant value we cache the last value across instances and use it until
   // we get the activate.
-  if (was_activated_ || !ui::win::IsAeroGlassEnabled() ||
-      cached_minimize_button_x_delta_ == 0) {
+  if (was_activated_ || cached_minimize_button_x_delta_ == 0) {
     const int minimize_button_offset = GetAndCacheMinimizeButtonOffsetX();
-    if (minimize_button_offset > 0)
+    if (minimize_button_offset > 0) {
       return minimize_button_offset;
+    }
   }
 
   // If we fail to get the minimize button offset via the WM_GETTITLEBARINFOEX

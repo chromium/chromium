@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/views/native_widget_factory.h"
 #include "chrome/browser/win/app_icon.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
-#include "ui/base/win/shell.h"
 
 namespace {
 
@@ -133,20 +132,10 @@ views::NativeWidget* ChromeViewsDelegate::CreateNativeWidget(
     // TODO: This may no longer be needed if we get proper elevation-based
     // shadows on toplevel windows. See https://crbug.com/838667.
     native_widget_type = NativeWidgetType::NATIVE_WIDGET_AURA;
-  } else if (!ui::win::IsAeroGlassEnabled()) {
-    // If we don't have composition (either because Glass is not enabled or
-    // because it was disabled at the command line), anything that requires
-    // transparency will be broken with a toplevel window, so force the use of
-    // a non toplevel window.
-    if (params->opacity ==
-            views::Widget::InitParams::WindowOpacity::kTranslucent &&
-        !params->force_software_compositing)
-      native_widget_type = NativeWidgetType::NATIVE_WIDGET_AURA;
   } else {
-    // If we're on Vista+ with composition enabled, then we can use toplevel
-    // windows for most things (they get blended via WS_EX_COMPOSITED, which
-    // allows for animation effects, but also exceeding the bounds of the parent
-    // window).
+    // Otherwise, we can use a toplevel window (they get blended via
+    // WS_EX_COMPOSITED, which allows for animation effects, and for exceeding
+    // the bounds of the parent window).
     if (params->parent &&
         params->type != views::Widget::InitParams::TYPE_CONTROL &&
         params->type != views::Widget::InitParams::TYPE_WINDOW) {

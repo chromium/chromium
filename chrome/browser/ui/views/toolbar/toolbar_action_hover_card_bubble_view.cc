@@ -25,10 +25,6 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "ui/base/win/shell.h"
-#endif
-
 namespace {
 
 using HoverCardState = ToolbarActionViewController::HoverCardState;
@@ -42,14 +38,6 @@ constexpr int kHoverCardWidth = 240;
 // TODO(crbug.com/1351778): Move to a base hover card class.
 constexpr int kHorizontalMargin = 18;
 constexpr int kVerticalMargin = 10;
-
-bool CustomShadowsSupported() {
-#if BUILDFLAG(IS_WIN)
-  return ui::win::IsAeroGlassEnabled();
-#else
-  return true;
-#endif
-}
 
 std::u16string GetSiteAccessTitle(
     ToolbarActionViewController::HoverCardState::SiteAccess state) {
@@ -281,10 +269,8 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
   layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
   layout->SetCollapseMargins(true);
 
-  if (CustomShadowsSupported()) {
-    corner_radius_ = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-        views::Emphasis::kHigh);
-  }
+  corner_radius_ = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kHigh);
 
   // Set up content.
   auto create_label = [](int context, gfx::Insets insets) {
@@ -402,7 +388,7 @@ void ToolbarActionHoverCardBubbleView::OnThemeChanged() {
 
   // Bubble closes if the theme changes to the point where the border has to be
   // regenerated. See crbug.com/1140256
-  if (using_rounded_corners() != CustomShadowsSupported()) {
+  if (!using_rounded_corners()) {
     GetWidget()->Close();
     return;
   }

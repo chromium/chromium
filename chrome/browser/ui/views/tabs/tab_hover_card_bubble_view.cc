@@ -8,6 +8,7 @@
 #include <cctype>
 #include <cwctype>
 #include <ios>
+#include <limits>
 #include <memory>
 #include <string>
 
@@ -25,7 +26,6 @@
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
@@ -64,10 +64,6 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "ui/base/win/shell.h"
-#endif
-
 namespace {
 
 // Maximum number of lines that a title label occupies.
@@ -80,14 +76,6 @@ constexpr auto kTitleMargins =
     gfx::Insets::VH(kVerticalMargin, kHorizontalMargin);
 constexpr auto kAlertMargins =
     gfx::Insets::VH(kFootnoteVerticalMargin, kHorizontalMargin);
-
-bool CustomShadowsSupported() {
-#if BUILDFLAG(IS_WIN)
-  return ui::win::IsAeroGlassEnabled();
-#else
-  return true;
-#endif
-}
 
 std::unique_ptr<views::Label> CreateAlertView(const TabAlertState& state) {
   auto alert_state_label = std::make_unique<views::Label>(
@@ -746,10 +734,6 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
     : BubbleDialogDelegateView(tab,
                                views::BubbleBorder::TOP_LEFT,
                                views::BubbleBorder::STANDARD_SHADOW) {
-  if (CustomShadowsSupported()) {
-    corner_radius_ = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-        views::Emphasis::kHigh);
-  }
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
   // Remove the accessible role so that hover cards are not read when they
@@ -782,13 +766,11 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
       thumbnail_view_ =
           AddChildViewAt(std::make_unique<ThumbnailView>(this), 0);
       thumbnail_view_->SetRoundedCorners(
-          ThumbnailView::RoundedCorners::kTopCorners,
-          corner_radius_.value_or(0));
+          ThumbnailView::RoundedCorners::kTopCorners, corner_radius_);
     } else {
       thumbnail_view_ = AddChildView(std::make_unique<ThumbnailView>(this));
       thumbnail_view_->SetRoundedCorners(
-          ThumbnailView::RoundedCorners::kBottomCorners,
-          corner_radius_.value_or(0));
+          ThumbnailView::RoundedCorners::kBottomCorners, corner_radius_);
     }
   }
 
@@ -840,8 +822,7 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
       views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
   GetBubbleFrameView()->set_hit_test_transparent(true);
 
-  if (using_rounded_corners())
-    GetBubbleFrameView()->SetCornerRadius(corner_radius_.value());
+  GetBubbleFrameView()->SetCornerRadius(corner_radius_);
 
   // Placeholder image should be used when there is no image data for the
   // given tab. Otherwise don't flash the placeholder while we wait for the
@@ -960,7 +941,7 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
                       ? ThumbnailView::RoundedCorners::kTopCorners
                       : ThumbnailView::RoundedCorners::kBottomCorners;
       }
-      thumbnail_view_->SetRoundedCorners(corners, corner_radius_.value_or(0));
+      thumbnail_view_->SetRoundedCorners(corners, corner_radius_);
     }
   }
 }
@@ -1010,17 +991,6 @@ gfx::Size TabHoverCardBubbleView::CalculatePreferredSize() const {
   preferred_size.set_width(TabStyle::GetPreviewImageSize().width());
   DCHECK(!preferred_size.IsEmpty());
   return preferred_size;
-}
-
-void TabHoverCardBubbleView::OnThemeChanged() {
-  BubbleDialogDelegateView::OnThemeChanged();
-
-  // Bubble closes if the theme changes to the point where the border has to be
-  // regenerated. See crbug.com/1140256
-  if (using_rounded_corners() != CustomShadowsSupported()) {
-    GetWidget()->Close();
-    return;
-  }
 }
 
 BEGIN_METADATA(TabHoverCardBubbleView, views::BubbleDialogDelegateView)

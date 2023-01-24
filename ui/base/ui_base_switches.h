@@ -28,7 +28,6 @@ COMPONENT_EXPORT(UI_BASE) extern const char kEnableResourcesFileSharing[];
 #endif
 
 COMPONENT_EXPORT(UI_BASE) extern const char kDisableCompositedAntialiasing[];
-COMPONENT_EXPORT(UI_BASE) extern const char kDisableDwmComposition[];
 COMPONENT_EXPORT(UI_BASE) extern const char kDisableTouchDragDrop[];
 COMPONENT_EXPORT(UI_BASE) extern const char kEnableTouchDragDrop[];
 COMPONENT_EXPORT(UI_BASE) extern const char kForceCaptionStyle[];

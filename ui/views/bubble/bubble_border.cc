@@ -344,8 +344,8 @@ gfx::Rect BubbleBorder::GetBounds(const gfx::Rect& anchor_rect,
 
   // With NO_SHADOW, there should be further insets, but the same logic is
   // used to position the bubble origin according to |anchor_rect|.
-  DCHECK((shadow_ != NO_SHADOW && shadow_ != NO_SHADOW_LEGACY) ||
-         insets_.has_value() || shadow_insets.IsEmpty() || visible_arrow_);
+  DCHECK(shadow_ != NO_SHADOW || insets_.has_value() ||
+         shadow_insets.IsEmpty() || visible_arrow_);
   if (!avoid_shadow_overlap_)
     contents_bounds.Inset(-shadow_insets);
 
@@ -445,17 +445,13 @@ void BubbleBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
     return;
   }
 
-  if (shadow_ == NO_SHADOW_LEGACY) {
-    PaintNoShadowLegacy(view, canvas);
-  } else {
-    gfx::ScopedCanvas scoped(canvas);
-    SkRRect r_rect = GetClientRect(view);
-    canvas->sk_canvas()->clipRRect(r_rect, SkClipOp::kDifference,
-                                   true /*doAntiAlias*/);
-    DrawBorderAndShadowImpl(r_rect, &cc::PaintCanvas::drawRRect, canvas,
-                            view.GetColorProvider(), md_shadow_elevation_,
-                            shadow_);
-  }
+  gfx::ScopedCanvas scoped(canvas);
+  SkRRect r_rect = GetClientRect(view);
+  canvas->sk_canvas()->clipRRect(r_rect, SkClipOp::kDifference,
+                                 true /*doAntiAlias*/);
+  DrawBorderAndShadowImpl(r_rect, &cc::PaintCanvas::drawRRect, canvas,
+                          view.GetColorProvider(), md_shadow_elevation_,
+                          shadow_);
 
   if (visible_arrow_)
     PaintVisibleArrow(view, canvas);
@@ -479,9 +475,6 @@ gfx::Insets BubbleBorder::GetInsets() const {
   gfx::Insets insets;
 
   switch (shadow_) {
-    case NO_SHADOW_LEGACY:
-      insets = gfx::Insets(kBorderThicknessDip);
-      break;
     case STANDARD_SHADOW:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case CHROMEOS_SYSTEM_UI_SHADOW:
@@ -694,19 +687,6 @@ void BubbleBorder::PaintNoShadow(const View& view, gfx::Canvas* canvas) {
   canvas->sk_canvas()->clipRRect(GetClientRect(view), SkClipOp::kDifference,
                                  true /*doAntiAlias*/);
   canvas->sk_canvas()->drawColor(SkColors::kTransparent, SkBlendMode::kSrc);
-}
-
-void BubbleBorder::PaintNoShadowLegacy(const View& view, gfx::Canvas* canvas) {
-  gfx::RectF bounds(view.GetLocalBounds());
-  bounds.Inset(gfx::InsetsF(kBorderThicknessDip / 2.0f));
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-  flags.setStyle(cc::PaintFlags::kStroke_Style);
-  flags.setStrokeWidth(kBorderThicknessDip);
-  SkColor kBorderColor =
-      view.GetColorProvider()->GetColor(ui::kColorBubbleBorder);
-  flags.setColor(kBorderColor);
-  canvas->DrawRoundRect(bounds, corner_radius(), flags);
 }
 
 void BubbleBorder::PaintVisibleArrow(const View& view, gfx::Canvas* canvas) {

@@ -28,7 +28,6 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/win/event_creation_utils.h"
-#include "ui/base/win/shell.h"
 #include "ui/base/win/win_cursor.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -76,8 +75,9 @@ namespace {
 const int kMouseCaptureRegionBorder = 5;
 
 gfx::Size GetExpandedWindowSize(bool is_translucent, gfx::Size size) {
-  if (!is_translucent || !ui::win::IsAeroGlassEnabled())
+  if (!is_translucent) {
     return size;
+  }
 
   // Some AMD drivers can't display windows that are less than 64x64 pixels,
   // so expand them to be at least that size. http://crbug.com/286609
@@ -587,7 +587,7 @@ bool DesktopWindowTreeHostWin::IsAnimatingClosed() const {
 }
 
 bool DesktopWindowTreeHostWin::IsTranslucentWindowOpacitySupported() const {
-  return ui::win::IsAeroGlassEnabled();
+  return true;
 }
 
 void DesktopWindowTreeHostWin::SizeConstraintsChanged() {

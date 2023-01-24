@@ -39,17 +39,13 @@
 #include "base/time/time.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "ui/base/win/shell.h"
-#endif
-
 namespace message_center {
 
 namespace {
 
 bool ShouldShowAeroShadowBorder() {
 #if BUILDFLAG(IS_WIN)
-  return ui::win::IsAeroGlassEnabled();
+  return true;
 #else
   return false;
 #endif

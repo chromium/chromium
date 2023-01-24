@@ -212,8 +212,7 @@ TEST_F(BubbleBorderTest, IsArrowAtCenter) {
 }
 
 TEST_F(BubbleBorderTest, GetSizeForContentsSizeTest) {
-  views::BubbleBorder border(BubbleBorder::NONE,
-                             BubbleBorder::NO_SHADOW_LEGACY);
+  views::BubbleBorder border(BubbleBorder::NONE, BubbleBorder::NO_SHADOW);
 
   const gfx::Insets kInsets = border.GetInsets();
 

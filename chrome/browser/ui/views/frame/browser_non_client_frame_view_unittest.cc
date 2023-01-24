@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 
-#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -24,7 +23,7 @@
 class BrowserNonClientFrameViewTest : public TestWithBrowserView {
  public:
   explicit BrowserNonClientFrameViewTest(Browser::Type type)
-      : TestWithBrowserView(type), frame_view_(nullptr) {}
+      : TestWithBrowserView(type) {}
 
   BrowserNonClientFrameViewTest(const BrowserNonClientFrameViewTest&) = delete;
   BrowserNonClientFrameViewTest& operator=(
@@ -32,11 +31,6 @@ class BrowserNonClientFrameViewTest : public TestWithBrowserView {
 
   // TestWithBrowserView override:
   void SetUp() override {
-#if BUILDFLAG(IS_WIN)
-    // Use opaque frame.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kDisableDwmComposition);
-#endif
     TestWithBrowserView::SetUp();
     views::Widget* widget = browser_view()->GetWidget();
     frame_view_ = static_cast<BrowserNonClientFrameView*>(
@@ -45,7 +39,7 @@ class BrowserNonClientFrameViewTest : public TestWithBrowserView {
 
  protected:
   // Owned by the browser view.
-  raw_ptr<BrowserNonClientFrameView> frame_view_;
+  raw_ptr<BrowserNonClientFrameView> frame_view_ = nullptr;
 };
 
 class BrowserNonClientFrameViewPopupTest

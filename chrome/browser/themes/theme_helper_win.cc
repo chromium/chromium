@@ -6,13 +6,9 @@
 
 #include "chrome/browser/win/titlebar_config.h"
 #include "chrome/grit/theme_resources.h"
-#include "skia/ext/skia_utils_win.h"
-#include "ui/base/win/shell.h"
 
 bool ThemeHelperWin::ShouldUseNativeFrame(
     const CustomThemeSupplier* theme_supplier) const {
-  const bool use_native_frame_if_enabled =
-      ShouldCustomDrawSystemTitlebar() ||
-      !HasCustomImage(IDR_THEME_FRAME, theme_supplier);
-  return use_native_frame_if_enabled && ui::win::IsAeroGlassEnabled();
+  return ShouldCustomDrawSystemTitlebar() ||
+         !HasCustomImage(IDR_THEME_FRAME, theme_supplier);
 }

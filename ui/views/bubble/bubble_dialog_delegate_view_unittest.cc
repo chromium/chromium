@@ -37,10 +37,6 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "ui/base/win/shell.h"
-#endif
-
 namespace views {
 
 using test::TestInkDrop;
@@ -409,21 +405,13 @@ TEST_F(BubbleDialogDelegateViewTest, NonClientHitTest) {
   BubbleDialogDelegateView::CreateBubble(bubble_delegate);
   BubbleFrameView* frame = bubble_delegate->GetBubbleFrameView();
 
-#if BUILDFLAG(IS_WIN)
-  bool is_aero_glass_enabled = ui::win::IsAeroGlassEnabled();
-#endif
-
   struct {
     const int point;
     const int hit;
   } kTestCases[] = {
-#if BUILDFLAG(IS_WIN)
-    {0, is_aero_glass_enabled ? HTTRANSPARENT : HTNOWHERE},
-#else
-    {0, HTTRANSPARENT},
-#endif
-    {60, HTCLIENT},
-    {1000, HTNOWHERE},
+      {0, HTTRANSPARENT},
+      {60, HTCLIENT},
+      {1000, HTNOWHERE},
   };
 
   for (const auto& test_case : kTestCases) {

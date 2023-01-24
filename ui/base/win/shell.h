@@ -75,11 +75,6 @@ void SetRelaunchDetailsForWindow(const std::wstring& relaunch_command,
 // Clears the Window Property Store on an HWND.
 COMPONENT_EXPORT(UI_BASE) void ClearWindowPropertyStore(HWND hwnd);
 
-// Returns true if dwm composition is available and turned on on the current
-// platform.
-// This method supports a command-line override for testing.
-COMPONENT_EXPORT(UI_BASE) bool IsAeroGlassEnabled();
-
 }  // namespace ui::win
 
 #endif  // UI_BASE_WIN_SHELL_H_

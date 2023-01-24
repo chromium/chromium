@@ -11,7 +11,6 @@
 #include <shellapi.h>
 #include <wrl/client.h>
 
-#include "base/command_line.h"
 #include "base/debug/alias.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -175,17 +174,6 @@ void ClearWindowPropertyStore(HWND hwnd) {
 
   // Verify none of the keys are leaking.
   DCHECK(FAILED(pps->GetCount(&property_count)) || property_count == 0);
-}
-
-bool IsAeroGlassEnabled() {
-  // For testing in Win8+ (where it is not possible to disable composition) the
-  // user can specify this command line switch to mimic the behavior.  In this
-  // mode, cross-HWND transparency is not supported and various types of
-  // widgets fallback to more simplified rendering behavior.
-  // TODO(https://crbug.com/1385856): See if this switch and the code to support
-  // it can be removed.
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kDisableDwmComposition);
 }
 
 }  // namespace ui::win

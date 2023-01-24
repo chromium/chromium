@@ -214,7 +214,7 @@ TEST_F(BubbleFrameViewTest, GetUpdatedWindowBounds) {
   gfx::Rect window_bounds;
 
   frame.SetBubbleBorder(
-      std::make_unique<BubbleBorder>(kArrow, BubbleBorder::NO_SHADOW_LEGACY));
+      std::make_unique<BubbleBorder>(kArrow, BubbleBorder::NO_SHADOW));
 
   // Test that the info bubble displays normally when it fits.
   frame.SetArrow(BubbleBorder::TOP_LEFT);
@@ -376,7 +376,7 @@ TEST_F(BubbleFrameViewTest, TestMirroringForCenteredArrow) {
 TEST_F(BubbleFrameViewTest, GetUpdatedWindowBoundsDontTryMirror) {
   TestBubbleFrameView frame(this);
   frame.SetBubbleBorder(std::make_unique<BubbleBorder>(
-      BubbleBorder::TOP_RIGHT, BubbleBorder::NO_SHADOW_LEGACY));
+      BubbleBorder::TOP_RIGHT, BubbleBorder::NO_SHADOW));
   gfx::Rect window_bounds = frame.GetUpdatedWindowBounds(
       gfx::Rect(100, 900, 0, 0),       // |anchor_rect|
       BubbleBorder::Arrow::TOP_RIGHT,  // |delegate_arrow|
@@ -394,7 +394,7 @@ TEST_F(BubbleFrameViewTest, GetUpdatedWindowBoundsCenterArrows) {
   gfx::Rect window_bounds;
 
   frame.SetBubbleBorder(
-      std::make_unique<BubbleBorder>(kArrow, BubbleBorder::NO_SHADOW_LEGACY));
+      std::make_unique<BubbleBorder>(kArrow, BubbleBorder::NO_SHADOW));
 
   // Some of these tests may go away once --secondary-ui-md becomes the
   // default. Under Material Design mode, the BubbleBorder doesn't support all
@@ -458,7 +458,7 @@ TEST_F(BubbleFrameViewTest, GetUpdatedWindowBoundsForBubbleWithAnchorWindow) {
   gfx::Rect window_bounds;
 
   frame.SetBubbleBorder(
-      std::make_unique<BubbleBorder>(kArrow, BubbleBorder::NO_SHADOW_LEGACY));
+      std::make_unique<BubbleBorder>(kArrow, BubbleBorder::NO_SHADOW));
 
   // Test that the bubble displays normally when it fits.
   frame.SetArrow(BubbleBorder::TOP_LEFT);
@@ -576,7 +576,7 @@ TEST_F(BubbleFrameViewTest,
   gfx::Rect window_bounds;
 
   frame.SetBubbleBorder(
-      std::make_unique<BubbleBorder>(kArrow, BubbleBorder::NO_SHADOW_LEGACY));
+      std::make_unique<BubbleBorder>(kArrow, BubbleBorder::NO_SHADOW));
 
   // Test bubble fitting anchor window and not fitting screen on right.
   //     ________________________
@@ -648,7 +648,7 @@ TEST_F(BubbleFrameViewTest, MirroringNotStickyForGetUpdatedWindowBounds) {
   gfx::Rect window_bounds;
 
   frame.SetBubbleBorder(
-      std::make_unique<BubbleBorder>(kArrow, BubbleBorder::NO_SHADOW_LEGACY));
+      std::make_unique<BubbleBorder>(kArrow, BubbleBorder::NO_SHADOW));
 
   // Test bubble fitting anchor window and not fitting screen on right.
   frame.SetAvailableAnchorWindowBounds(gfx::Rect(700, 200, 400, 400));
@@ -685,7 +685,7 @@ TEST_F(BubbleFrameViewTest, GetUpdatedWindowBoundsForBubbleSetToOffset) {
   gfx::Rect window_bounds;
 
   frame.SetBubbleBorder(
-      std::make_unique<BubbleBorder>(kArrow, BubbleBorder::NO_SHADOW_LEGACY));
+      std::make_unique<BubbleBorder>(kArrow, BubbleBorder::NO_SHADOW));
 
   // Test that the bubble displays normally when it fits.
   frame.SetArrow(BubbleBorder::TOP_LEFT);
@@ -743,7 +743,7 @@ TEST_F(BubbleFrameViewTest,
   gfx::Rect window_bounds;
 
   frame.SetBubbleBorder(
-      std::make_unique<BubbleBorder>(kArrow, BubbleBorder::NO_SHADOW_LEGACY));
+      std::make_unique<BubbleBorder>(kArrow, BubbleBorder::NO_SHADOW));
 
   // Test that the bubble exiting right side of anchor window displays against
   // left edge of anchor window bounds if larger than anchor window.

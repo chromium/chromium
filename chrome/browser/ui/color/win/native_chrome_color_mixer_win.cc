@@ -14,7 +14,6 @@
 #include "chrome/browser/win/titlebar_config.h"
 #include "chrome/grit/theme_resources.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/win/shell.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -159,10 +158,8 @@ bool FrameColorHelper::HasCustomImage(
 
 bool FrameColorHelper::DwmColorsAllowed(
     const ui::ColorProviderManager::Key& key) const {
-  const bool use_native_frame_if_enabled =
-      (ShouldCustomDrawSystemTitlebar() ||
-       !HasCustomImage(IDR_THEME_FRAME, key));
-  return use_native_frame_if_enabled && ui::win::IsAeroGlassEnabled();
+  return ShouldCustomDrawSystemTitlebar() ||
+         !HasCustomImage(IDR_THEME_FRAME, key);
 }
 
 color_utils::HSL FrameColorHelper::GetTint(

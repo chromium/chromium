@@ -142,23 +142,13 @@ class BubbleDialogFrameView : public BubbleFrameView {
   gfx::Size GetMaximumSize() const override { return gfx::Size(); }
 };
 
-bool CustomShadowsSupported() {
-#if BUILDFLAG(IS_WIN)
-  return ui::win::IsAeroGlassEnabled();
-#else
-  return true;
-#endif
-}
-
 // Create a widget to host the bubble.
 Widget* CreateBubbleWidget(BubbleDialogDelegate* bubble) {
   DCHECK(bubble->owned_by_widget());
   Widget* bubble_widget = new BubbleWidget();
   Widget::InitParams bubble_params(Widget::InitParams::TYPE_BUBBLE);
   bubble_params.delegate = bubble;
-  bubble_params.opacity = CustomShadowsSupported()
-                              ? Widget::InitParams::WindowOpacity::kTranslucent
-                              : Widget::InitParams::WindowOpacity::kOpaque;
+  bubble_params.opacity = Widget::InitParams::WindowOpacity::kTranslucent;
   bubble_params.accept_events = bubble->accept_events();
   bubble_params.remove_standard_frame = true;
   bubble_params.layer_type = bubble->GetLayerType();
@@ -166,10 +156,8 @@ Widget* CreateBubbleWidget(BubbleDialogDelegate* bubble) {
   // Use a window default shadow if the bubble doesn't provides its own.
   if (bubble->GetShadow() == BubbleBorder::NO_SHADOW)
     bubble_params.shadow_type = Widget::InitParams::ShadowType::kDefault;
-  else if (CustomShadowsSupported())
-    bubble_params.shadow_type = Widget::InitParams::ShadowType::kNone;
   else
-    bubble_params.shadow_type = Widget::InitParams::ShadowType::kDrop;
+    bubble_params.shadow_type = Widget::InitParams::ShadowType::kNone;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bubble_params.background_elevation =
       ui::ColorProviderManager::ElevationMode::kHigh;
@@ -538,8 +526,9 @@ BubbleDialogDelegate::CreateNonClientFrameView(Widget* widget) {
   std::unique_ptr<BubbleBorder> border =
       std::make_unique<BubbleBorder>(arrow(), GetShadow());
   border->SetColor(color());
-  if (CustomShadowsSupported() && GetParams().round_corners)
+  if (GetParams().round_corners) {
     border->SetCornerRadius(GetCornerRadius());
+  }
 
   frame->SetBubbleBorder(std::move(border));
   return frame;
@@ -614,9 +603,7 @@ void BubbleDialogDelegate::OnAnchorWidgetBoundsChanged() {
 
 
 BubbleBorder::Shadow BubbleDialogDelegate::GetShadow() const {
-  if (CustomShadowsSupported() || shadow_ == BubbleBorder::NO_SHADOW)
-    return shadow_;
-  return BubbleBorder::NO_SHADOW_LEGACY;
+  return shadow_;
 }
 
 View* BubbleDialogDelegate::GetAnchorView() const {
