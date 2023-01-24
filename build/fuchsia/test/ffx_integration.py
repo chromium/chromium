@@ -62,7 +62,14 @@ class ScopedFfxConfig(AbstractContextManager):
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
         if self._new_value != self._old_value:
-            run_ffx_command(['config', 'remove', self._name])
+
+            # Allow removal of config to fail.
+            remove_cmd = run_ffx_command(['config', 'remove', self._name],
+                                         check=False)
+            if remove_cmd.returncode != 0:
+                logging.warning('Error when removing ffx config %s',
+                                self._name)
+
             if self._old_value is not None:
                 # Explicitly set the value back only if removing the new value
                 # doesn't already restore the old value.
