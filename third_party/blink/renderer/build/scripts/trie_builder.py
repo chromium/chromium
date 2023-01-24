@@ -51,7 +51,7 @@ def trie_list_by_str_length(str_to_return_value_dict):
         dicts_by_length[len(string)].append((string, value))
 
     output = []
-    for length, pairs in dicts_by_length.items():
+    for length, pairs in sorted(dicts_by_length.items()):
         output.append((length, _single_trie(sorted(pairs), 0)))
 
     return output
