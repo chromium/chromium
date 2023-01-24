@@ -68,27 +68,27 @@ function createChromiumSourceLink(
 /**
  * Maps the logSource to a human readable string representation.
  * Must be kept in sync with the |LogSource| enum in
- * optimization_guide_internals/webui/optimization_guide_internals.mojom.
+ * //components/optimization_guide/core/optimization_guide_common.mojom.
  * @param logSource
  * @returns string
  */
 function getLogSource(logSource: number) {
-  if (logSource == 1) {
+  if (logSource == 0) {
     return 'SERVICE_AND_SETTINGS';
   }
-  if (logSource == 2) {
+  if (logSource == 1) {
     return 'HINTS';
   }
-  if (logSource == 3) {
+  if (logSource == 2) {
     return 'MODEL_MANAGEMENT';
   }
-  if (logSource == 4) {
+  if (logSource == 3) {
     return 'PAGE_CONTENT_ANNOTATIONS';
   }
-  if (logSource == 5) {
+  if (logSource == 4) {
     return 'HINTS_NOTIFICATIONS';
   }
-  if (logSource == 6) {
+  if (logSource == 5) {
     return 'TEXT_CLASSIFIER';
   }
   return logSource.toString();

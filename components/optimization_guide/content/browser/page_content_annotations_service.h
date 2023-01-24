@@ -198,7 +198,7 @@ class PageContentAnnotationsService : public KeyedService,
   // can be merged into |merge_to_output|. |signal_merge_complete_callback|
   // should be run last as it is a |base::BarrierClosure| that may trigger
   // |OnBatchVisitsAnnotated| to run.
-  static void OnAnnotationBatchComplete(
+  void OnAnnotationBatchComplete(
       AnnotationType type,
       std::vector<absl::optional<history::VisitContentModelAnnotations>>*
           merge_to_output,

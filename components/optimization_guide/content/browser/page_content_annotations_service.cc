@@ -285,13 +285,13 @@ void PageContentAnnotationsService::AnnotateVisitBatch() {
   for (AnnotationType type : annotation_types_to_execute_) {
     annotator_->Annotate(
         base::BindOnce(
-            &PageContentAnnotationsService::OnAnnotationBatchComplete, type,
-            merged_annotation_outputs_ptr, barrier_closure),
+            &PageContentAnnotationsService::OnAnnotationBatchComplete,
+            weak_ptr_factory_.GetWeakPtr(), type, merged_annotation_outputs_ptr,
+            barrier_closure),
         inputs, type);
   }
 }
 
-// static
 void PageContentAnnotationsService::OnAnnotationBatchComplete(
     AnnotationType type,
     std::vector<absl::optional<history::VisitContentModelAnnotations>>*
@@ -302,6 +302,13 @@ void PageContentAnnotationsService::OnAnnotationBatchComplete(
   for (size_t i = 0; i < batch_result.size(); i++) {
     const BatchAnnotationResult result = batch_result[i];
     DCHECK_EQ(type, result.type());
+
+    if (optimization_guide_logger_) {
+      OPTIMIZATION_GUIDE_LOGGER(
+          optimization_guide_common::mojom::LogSource::PAGE_CONTENT_ANNOTATIONS,
+          optimization_guide_logger_)
+          << "PageContentAnnotationJob Result: " << result.ToString();
+    }
 
     if (!result.HasOutputForType())
       continue;
