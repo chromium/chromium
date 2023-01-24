@@ -82,7 +82,7 @@ suite('Multidevice', function() {
    *     verified.
    * @private
    */
-  function simulateFeatureStateChangeRequest(enabled) {
+  async function simulateFeatureStateChangeRequest(enabled) {
     const token = 'token1';
     smartLockItem.authToken =
         /** @type{chrome.quickUnlockPrivate} */ {
@@ -97,15 +97,14 @@ suite('Multidevice', function() {
         {feature: MultiDeviceFeature.SMART_LOCK, enabled: enabled});
     flush();
 
-    return browserProxy.whenCalled('setFeatureEnabledState').then(params => {
-      assertEquals(MultiDeviceFeature.SMART_LOCK, params[0]);
-      assertEquals(enabled, params[1]);
-      assertEquals(token, params[2]);
+    const params = await browserProxy.whenCalled('setFeatureEnabledState');
+    assertEquals(MultiDeviceFeature.SMART_LOCK, params[0]);
+    assertEquals(enabled, params[1]);
+    assertEquals(token, params[2]);
 
-      // Reset the resolver so that setFeatureEnabledState() can be called
-      // multiple times in a test.
-      browserProxy.resetResolver('setFeatureEnabledState');
-    });
+    // Reset the resolver so that setFeatureEnabledState() can be called
+    // multiple times in a test.
+    browserProxy.resetResolver('setFeatureEnabledState');
   }
 
   /**
@@ -193,14 +192,13 @@ suite('Multidevice', function() {
         assertFalse(!!featureItem);
       });
 
-  test('feature toggle click event handled', function() {
+  test('feature toggle click event handled', async function() {
     initializeElement();
-    simulateFeatureStateChangeRequest(false).then(function() {
-      simulateFeatureStateChangeRequest(true);
-    });
+    await simulateFeatureStateChangeRequest(false);
+    await simulateFeatureStateChangeRequest(true);
   });
 
-  test('SmartLockSignInRemoved flag removes subpage', function() {
+  test('SmartLockSignInRemoved flag removes subpage', async function() {
     initializeElement(/*isSmartLockSignInRemoved=*/ true);
     const featureItem =
         smartLockItem.shadowRoot.querySelector('#smartLockItem');

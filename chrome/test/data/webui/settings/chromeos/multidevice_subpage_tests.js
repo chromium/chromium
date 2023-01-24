@@ -305,7 +305,8 @@ suite('Multidevice', function() {
   });
 
   test(
-      'AndroidMessages set up button calls browser proxy function', function() {
+      'AndroidMessages set up button calls browser proxy function',
+      async function() {
         setAndroidSmsPairingComplete(false);
         flush();
 
@@ -315,7 +316,7 @@ suite('Multidevice', function() {
 
         setUpButton.click();
 
-        return browserProxy.whenCalled('setUpAndroidSms');
+        await browserProxy.whenCalled('setUpAndroidSms');
       });
 
   test(

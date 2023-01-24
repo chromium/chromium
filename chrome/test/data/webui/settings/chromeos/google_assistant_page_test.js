@@ -75,7 +75,7 @@ suite('GoogleAssistantHandler', function() {
         page.getPref('settings.voice_interaction.context.enabled.value'));
   });
 
-  test('toggleAssistantHotword', function() {
+  test('toggleAssistantHotword', async function() {
     let button =
         page.shadowRoot.querySelector('#google-assistant-hotword-enable');
     assertFalse(!!button);
@@ -92,7 +92,7 @@ suite('GoogleAssistantHandler', function() {
     assertTrue(button.checked);
     assertTrue(
         page.getPref('settings.voice_interaction.hotword.enabled.value'));
-    return browserProxy.whenCalled('syncVoiceModelStatus');
+    await browserProxy.whenCalled('syncVoiceModelStatus');
   });
 
   test('hotwordToggleVisibility', function() {
@@ -126,7 +126,7 @@ suite('GoogleAssistantHandler', function() {
     assertTrue(button.disabled);
   });
 
-  test('tapOnRetrainVoiceModel', function() {
+  test('tapOnRetrainVoiceModel', async function() {
     let button = page.shadowRoot.querySelector('#retrain-voice-model');
     assertFalse(!!button);
     page.setPrefValue('settings.voice_interaction.enabled', true);
@@ -140,7 +140,7 @@ suite('GoogleAssistantHandler', function() {
 
     button.click();
     flush();
-    return browserProxy.whenCalled('retrainAssistantVoiceModel');
+    await browserProxy.whenCalled('retrainAssistantVoiceModel');
   });
 
   test('retrainButtonVisibility', function() {
@@ -227,7 +227,7 @@ suite('GoogleAssistantHandler', function() {
         page.getPref('settings.voice_interaction.launch_with_mic_open.value'));
   });
 
-  test('tapOnAssistantSettings', function() {
+  test('tapOnAssistantSettings', async function() {
     let button = page.shadowRoot.querySelector('#google-assistant-settings');
     assertFalse(!!button);
     page.setPrefValue('settings.voice_interaction.enabled', true);
@@ -237,7 +237,7 @@ suite('GoogleAssistantHandler', function() {
 
     button.click();
     flush();
-    return browserProxy.whenCalled('showGoogleAssistantSettings');
+    await browserProxy.whenCalled('showGoogleAssistantSettings');
   });
 
   test('assistantDisabledByPolicy', function() {
@@ -445,7 +445,7 @@ suite('GoogleAssistantHandlerWithNoDspHotword', function() {
     assertEquals(Number(dropdown.value), DspHotwordState.OFF);
   });
 
-  test('dspHotwordDropdownDefaultOnSync', function() {
+  test('dspHotwordDropdownDefaultOnSync', async function() {
     let dropdown = page.shadowRoot.querySelector('#dsp-hotword-state');
     assertFalse(!!dropdown);
 
@@ -460,10 +460,10 @@ suite('GoogleAssistantHandlerWithNoDspHotword', function() {
 
     selectValue(dropdown, DspHotwordState.DEFAULT_ON);
     flush();
-    return browserProxy.whenCalled('syncVoiceModelStatus');
+    await browserProxy.whenCalled('syncVoiceModelStatus');
   });
 
-  test('dspHotwordDropdownAlwaysOnSync', function() {
+  test('dspHotwordDropdownAlwaysOnSync', async function() {
     let dropdown = page.shadowRoot.querySelector('#dsp-hotword-state');
     assertFalse(!!dropdown);
 
@@ -478,6 +478,6 @@ suite('GoogleAssistantHandlerWithNoDspHotword', function() {
 
     selectValue(dropdown, DspHotwordState.ALWAYS_ON);
     flush();
-    return browserProxy.whenCalled('syncVoiceModelStatus');
+    await browserProxy.whenCalled('syncVoiceModelStatus');
   });
 });

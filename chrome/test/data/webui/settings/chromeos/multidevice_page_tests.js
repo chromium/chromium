@@ -255,12 +255,12 @@ suite('Multidevice', function() {
   const getSubpage = () =>
       multidevicePage.shadowRoot.querySelector('settings-multidevice-subpage');
 
-  test('clicking setup shows multidevice setup dialog', function() {
+  test('clicking setup shows multidevice setup dialog', async function() {
     setHostData(MultiDeviceSettingsMode.NO_HOST_SET);
     const button = multidevicePage.shadowRoot.querySelector('cr-button');
     assertTrue(!!button);
     button.click();
-    return browserProxy.whenCalled('showMultiDeviceSetupDialog');
+    await browserProxy.whenCalled('showMultiDeviceSetupDialog');
   });
 
   test('Deep link to multidevice setup', async () => {

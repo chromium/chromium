@@ -274,82 +274,69 @@ suite('SiteDetails', function() {
     assertEquals(PrivacyElementInteractions.SITE_DETAILS_CLEAR_DATA, metric);
   });
 
-  test('correct pref settings are shown', function() {
+  test('correct pref settings are shown', async function() {
     browserProxy.setPrefs(prefs);
     testElement = createSiteDetails('https://foo.com:443');
 
-    return browserProxy.whenCalled('isOriginValid')
-        .then(() => {
-          return browserProxy.whenCalled('getOriginPermissions');
-        })
-        .then(() => {
-          testElement.shadowRoot!.querySelectorAll('site-details-permission')
-              .forEach((siteDetailsPermission) => {
-                if (!isChromeOS &&
-                    siteDetailsPermission.category ===
-                        ContentSettingsTypes.PROTECTED_CONTENT) {
-                  return;
-                }
+    await browserProxy.whenCalled('isOriginValid').then(async () => {
+      await browserProxy.whenCalled('getOriginPermissions');
+    });
 
-                // Verify settings match the values specified in |prefs|.
-                let expectedSetting = ContentSetting.ALLOW;
-                let expectedSource = SiteSettingSource.PREFERENCE;
-                let expectedMenuValue = ContentSetting.ALLOW;
+    const siteDetailsPermissions =
+        testElement.shadowRoot!.querySelectorAll('site-details-permission');
+    siteDetailsPermissions.forEach((siteDetailsPermission) => {
+      if (!isChromeOS &&
+          siteDetailsPermission.category ===
+              ContentSettingsTypes.PROTECTED_CONTENT) {
+        return;
+      }
 
-                // For all the categories with non-user-set 'Allow' preferences,
-                // update expected values.
-                if (siteDetailsPermission.category ===
-                        ContentSettingsTypes.NOTIFICATIONS ||
-                    siteDetailsPermission.category ===
-                        ContentSettingsTypes.JAVASCRIPT ||
-                    siteDetailsPermission.category ===
-                        ContentSettingsTypes.IMAGES ||
-                    siteDetailsPermission.category ===
-                        ContentSettingsTypes.POPUPS ||
-                    siteDetailsPermission.category ===
-                        ContentSettingsTypes.FILE_SYSTEM_WRITE) {
-                  expectedSetting =
-                      prefs.exceptions[siteDetailsPermission.category][0]!
-                          .setting;
-                  expectedSource =
-                      prefs.exceptions[siteDetailsPermission.category][0]!
-                          .source;
-                  expectedMenuValue =
-                      (expectedSource === SiteSettingSource.DEFAULT) ?
-                      ContentSetting.DEFAULT :
-                      expectedSetting;
-                }
-                assertEquals(
-                    expectedSetting, siteDetailsPermission.site.setting);
-                assertEquals(expectedSource, siteDetailsPermission.site.source);
-                assertEquals(
-                    expectedMenuValue,
-                    siteDetailsPermission.$.permission.value);
-              });
-        });
+      // Verify settings match the values specified in |prefs|.
+      let expectedSetting = ContentSetting.ALLOW;
+      let expectedSource = SiteSettingSource.PREFERENCE;
+      let expectedMenuValue = ContentSetting.ALLOW;
+
+      // For all the categories with non-user-set 'Allow' preferences,
+      // update expected values.
+      if (siteDetailsPermission.category ===
+              ContentSettingsTypes.NOTIFICATIONS ||
+          siteDetailsPermission.category === ContentSettingsTypes.JAVASCRIPT ||
+          siteDetailsPermission.category === ContentSettingsTypes.IMAGES ||
+          siteDetailsPermission.category === ContentSettingsTypes.POPUPS ||
+          siteDetailsPermission.category ===
+              ContentSettingsTypes.FILE_SYSTEM_WRITE) {
+        expectedSetting =
+            prefs.exceptions[siteDetailsPermission.category][0]!.setting;
+        expectedSource =
+            prefs.exceptions[siteDetailsPermission.category][0]!.source;
+        expectedMenuValue = expectedSource === SiteSettingSource.DEFAULT ?
+            ContentSetting.DEFAULT :
+            expectedSetting;
+      }
+      assertEquals(expectedSetting, siteDetailsPermission.site.setting);
+      assertEquals(expectedSource, siteDetailsPermission.site.source);
+      assertEquals(expectedMenuValue, siteDetailsPermission.$.permission.value);
+    });
   });
 
-  test('categories can be hidden', function() {
+  test('categories can be hidden', async function() {
     browserProxy.setPrefs(prefs);
     // Only the categories in this list should be visible to the user.
     browserProxy.setCategoryList(
         [ContentSettingsTypes.NOTIFICATIONS, ContentSettingsTypes.GEOLOCATION]);
     testElement = createSiteDetails('https://foo.com:443');
 
-    return browserProxy.whenCalled('isOriginValid')
-        .then(() => {
-          return browserProxy.whenCalled('getOriginPermissions');
-        })
-        .then(() => {
-          testElement.shadowRoot!.querySelectorAll('site-details-permission')
-              .forEach((siteDetailsPermission) => {
-                const shouldBeVisible = siteDetailsPermission.category ===
-                        ContentSettingsTypes.NOTIFICATIONS ||
-                    siteDetailsPermission.category ===
-                        ContentSettingsTypes.GEOLOCATION;
-                assertEquals(
-                    !shouldBeVisible, siteDetailsPermission.$.details.hidden);
-              });
+    await browserProxy.whenCalled('isOriginValid');
+    await browserProxy.whenCalled('getOriginPermissions');
+
+    testElement.shadowRoot!.querySelectorAll('site-details-permission')
+        .forEach((siteDetailsPermission) => {
+          const shouldBeVisible = siteDetailsPermission.category ===
+                  ContentSettingsTypes.NOTIFICATIONS ||
+              siteDetailsPermission.category ===
+                  ContentSettingsTypes.GEOLOCATION;
+          assertEquals(
+              !shouldBeVisible, siteDetailsPermission.$.details.hidden);
         });
   });
 
@@ -459,22 +446,21 @@ suite('SiteDetails', function() {
     assertEquals(
         routes.SITE_SETTINGS_SITE_DETAILS.path,
         Router.getInstance().getCurrentRoute().path);
-    const args = await browserProxy.whenCalled('isOriginValid');
 
+    const args = await browserProxy.whenCalled('isOriginValid');
     assertEquals(invalid_url, args);
     await new Promise((resolve) => {
       listenOnce(window, 'popstate', resolve);
     });
-
     assertEquals(
         routes.SITE_SETTINGS.path, Router.getInstance().getCurrentRoute().path);
   });
 
-  test('call fetch block autoplay status', function() {
+  test('call fetch block autoplay status', async function() {
     const origin = 'https://foo.com:443';
     browserProxy.setPrefs(prefs);
     testElement = createSiteDetails(origin);
-    return browserProxy.whenCalled('fetchBlockAutoplayStatus');
+    await browserProxy.whenCalled('fetchBlockAutoplayStatus');
   });
 
   test('check first party set membership label empty string', async function() {

@@ -291,7 +291,7 @@ suite('NetworkSummaryItem', function() {
 
     test(
         'kPortal shows signin text and opens portal signin on click',
-        function() {
+        async function() {
           initWithPortalState(PortalState.kPortal);
           assertTrue(netSummaryItem.shadowRoot.querySelector('#networkState')
                          .classList.contains('warning-message'));
@@ -307,11 +307,9 @@ suite('NetworkSummaryItem', function() {
               netSummaryItem.shadowRoot.querySelector('#networkSummaryItemRow');
           assertTrue(!!networkSummaryItemRow);
           networkSummaryItemRow.click();
-          return browserProxy.whenCalled('showPortalSignin')
-              .then(function(guid) {
-                assertEquals(browserProxy.getCallCount('showPortalSignin'), 1);
-                assertEquals(testGuid, guid);
-              });
+          const guid = await browserProxy.whenCalled('showPortalSignin');
+          assertEquals(browserProxy.getCallCount('showPortalSignin'), 1);
+          assertEquals(testGuid, guid);
         });
 
     test(
@@ -342,7 +340,7 @@ suite('NetworkSummaryItem', function() {
 
     test(
         'kProxyAuthRequired shows signin text and opens portal signin on click',
-        function() {
+        async function() {
           initWithPortalState(PortalState.kProxyAuthRequired);
           assertTrue(netSummaryItem.shadowRoot.querySelector('#networkState')
                          .classList.contains('warning-message'));
@@ -358,11 +356,9 @@ suite('NetworkSummaryItem', function() {
               netSummaryItem.shadowRoot.querySelector('#networkSummaryItemRow');
           assertTrue(!!networkSummaryItemRow);
           networkSummaryItemRow.click();
-          return browserProxy.whenCalled('showPortalSignin')
-              .then(function(guid) {
-                assertEquals(browserProxy.getCallCount('showPortalSignin'), 1);
-                assertEquals(testGuid, guid);
-              });
+          const guid = await browserProxy.whenCalled('showPortalSignin');
+          assertEquals(browserProxy.getCallCount('showPortalSignin'), 1);
+          assertEquals(testGuid, guid);
         });
   });
 });

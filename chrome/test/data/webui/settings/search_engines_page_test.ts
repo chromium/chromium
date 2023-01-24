@@ -114,7 +114,7 @@ suite('AddSearchEngineDialogTests', function() {
     await browserProxy.whenCalled('searchEngineEditCompleted');
   });
 
-  test('DialogCloseWhenEnginesChangedModelEngineNotFound', function() {
+  test('DialogCloseWhenEnginesChangedModelEngineNotFound', async function() {
     dialog.set('model', createSampleSearchEngine({id: 0, name: 'G'}));
     webUIListenerCallback('search-engines-changed', {
       defaults: [],
@@ -122,10 +122,10 @@ suite('AddSearchEngineDialogTests', function() {
       others: [createSampleSearchEngine({id: 1, name: 'H'})],
       extensions: [],
     });
-    return browserProxy.whenCalled('searchEngineEditCancelled');
+    await browserProxy.whenCalled('searchEngineEditCancelled');
   });
 
-  test('DialogValidateInputsWhenEnginesChanged', function() {
+  test('DialogValidateInputsWhenEnginesChanged', async function() {
     dialog.set('model', createSampleSearchEngine({name: 'G'}));
     dialog.set('keyword_', 'G');
     webUIListenerCallback('search-engines-changed', {
@@ -134,7 +134,7 @@ suite('AddSearchEngineDialogTests', function() {
       others: [createSampleSearchEngine({name: 'G'})],
       extensions: [],
     });
-    return browserProxy.whenCalled('validateSearchEngineInput');
+    await browserProxy.whenCalled('validateSearchEngineInput');
   });
 });
 
@@ -412,7 +412,7 @@ suite('SearchEnginePageTests', function() {
     extensions: [createSampleOmniboxExtension()],
   };
 
-  setup(function() {
+  setup(async function() {
     browserProxy = new TestSearchEnginesBrowserProxy();
 
     // Purposefully pass a clone of |searchEnginesInfo| to avoid any
@@ -433,7 +433,7 @@ suite('SearchEnginePageTests', function() {
       value: true,
     });
     document.body.appendChild(page);
-    return browserProxy.whenCalled('getSearchEnginesList');
+    await browserProxy.whenCalled('getSearchEnginesList');
   });
 
   teardown(function() {

@@ -320,10 +320,10 @@ suite('AboutPageTest_OfficialBuilds', function() {
     document.body.appendChild(page);
   });
 
-  test('ReportAnIssue', function() {
+  test('ReportAnIssue', async function() {
     assertTrue(!!page.shadowRoot!.querySelector('#reportIssue'));
     page.shadowRoot!.querySelector<HTMLElement>('#reportIssue')!.click();
-    return browserProxy.whenCalled('openFeedbackDialog');
+    await browserProxy.whenCalled('openFeedbackDialog');
   });
 
   // <if expr="_google_chrome and is_macosx">
@@ -425,7 +425,7 @@ suite('AboutPageTest_OfficialBuilds', function() {
     assertTrue(arrow!.hasAttribute('disabled'));
   });
 
-  test('PromoteUpdaterButtonWorksWhenEnabled', function() {
+  test('PromoteUpdaterButtonWorksWhenEnabled', async function() {
     firePromoteUpdaterStatusChanged(PromoStatusScenarios.CAN_PROMOTE);
     flush();
     const item = page.shadowRoot!.querySelector<HTMLElement>('#promoteUpdater');
@@ -433,7 +433,7 @@ suite('AboutPageTest_OfficialBuilds', function() {
 
     item!.click();
 
-    return browserProxy.whenCalled('promoteUpdater');
+    await browserProxy.whenCalled('promoteUpdater');
   });
   // </if>
 });

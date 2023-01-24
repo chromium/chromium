@@ -1374,7 +1374,7 @@ suite('ChannelSwitcherDialogTest', function() {
   let browserProxy = null;
   let currentChannel;
 
-  setup(function() {
+  setup(async function() {
     currentChannel = BrowserChannel.BETA;
     browserProxy = new TestAboutPageBrowserProxyChromeOS();
     browserProxy.setChannels(currentChannel, currentChannel);
@@ -1385,7 +1385,7 @@ suite('ChannelSwitcherDialogTest', function() {
 
     radioButtons = dialog.shadowRoot.querySelectorAll('cr-radio-button');
     assertEquals(3, radioButtons.length);
-    return browserProxy.whenCalled('getChannelInfo');
+    await browserProxy.whenCalled('getChannelInfo');
   });
 
   teardown(function() {
@@ -1525,10 +1525,10 @@ suite('AboutPageTest_OfficialBuild', function() {
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('ReportAnIssue', function() {
+  test('ReportAnIssue', async function() {
     assertTrue(!!page.$.reportIssue);
     page.$.reportIssue.click();
-    return browserProxy.whenCalled('openFeedbackDialog');
+    await browserProxy.whenCalled('openFeedbackDialog');
   });
 
   test('Deep link to report an issue', async () => {
