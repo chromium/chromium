@@ -31,6 +31,21 @@ export class HoverButtonElement extends PolymerElement {
 
   label: string;
   labelDescription: string|null = null;
+
+  constructor() {
+    super();
+    this.addEventListener('keydown', this.onKeyDown_.bind(this));
+  }
+
+  private onKeyDown_(e: KeyboardEvent) {
+    if (e.key !== ' ' && e.key !== 'Enter') {
+      return;
+    }
+
+    e.preventDefault();
+    e.stopPropagation();
+    this.click();
+  }
 }
 
 declare global {

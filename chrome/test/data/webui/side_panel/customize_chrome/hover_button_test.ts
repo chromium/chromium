@@ -6,8 +6,9 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/hover_button.js';
 
 import {HoverButtonElement} from 'chrome://customize-chrome-side-panel.top-chrome/hover_button.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-
+import {listenOnce} from 'chrome://resources/js/util_ts.js';
+import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('HoverButtonTest', () => {
   let hoverButtonElement: HoverButtonElement;
@@ -49,4 +50,24 @@ suite('HoverButtonTest', () => {
         assertEquals(
             hoverButtonElement.labelDescription, buttonLabel!.labelDescription);
       });
+
+  test('Enter key triggers click event', async () => {
+    const clickEventHappened: boolean = await new Promise(resolve => {
+      listenOnce(hoverButtonElement, 'click', () => {
+        resolve(true);
+      });
+      keyDownOn(hoverButtonElement, 0, [], 'Enter');
+    });
+    assertTrue(clickEventHappened);
+  });
+
+  test('Space key triggers click event', async () => {
+    const clickEventHappened: boolean = await new Promise(resolve => {
+      listenOnce(hoverButtonElement, 'click', () => {
+        resolve(true);
+      });
+      keyDownOn(hoverButtonElement, 0, [], ' ');
+    });
+    assertTrue(clickEventHappened);
+  });
 });
