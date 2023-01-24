@@ -69,12 +69,19 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
   ImageBitmap::ParsedOptions parsed_options;
   if (options->imageOrientation() == kImageOrientationFlipY) {
     parsed_options.flip_y = true;
+    parsed_options.orientation_from_image = true;
   } else {
+    DCHECK(options->imageOrientation() == kImageOrientationFromImage ||
+           options->imageOrientation() == kImageBitmapOptionNone);
     parsed_options.flip_y = false;
-    DCHECK(options->imageOrientation() == kImageBitmapOptionNone ||
-           options->imageOrientation() == kImageOrientationFromImage);
-  }
+    parsed_options.orientation_from_image = true;
 
+    if (base::FeatureList::IsEnabled(
+            features::kCreateImageBitmapOrientationNone) &&
+        options->imageOrientation() == kImageBitmapOptionNone) {
+      parsed_options.orientation_from_image = false;
+    }
+  }
   if (options->premultiplyAlpha() == kImageBitmapOptionNone) {
     parsed_options.premultiply_alpha = false;
   } else {

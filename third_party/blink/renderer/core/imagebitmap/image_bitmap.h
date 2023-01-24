@@ -131,6 +131,7 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
     bool should_scale_input = false;
     bool has_color_space_conversion = false;
     bool source_is_unpremul = false;
+    bool orientation_from_image = true;
     unsigned resize_width = 0;
     unsigned resize_height = 0;
     gfx::Rect crop_rect;

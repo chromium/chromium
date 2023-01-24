@@ -710,6 +710,13 @@ BASE_FEATURE(kCanvasFreeMemoryWhenHidden,
              "CanvasFreeMemoryWhenHidden",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, add a new option, {imageOrientation: 'none'}, to
+// createImageBitmap, which ignores the image orientation metadata of the source
+// and renders the image as encoded.
+BASE_FEATURE(kCreateImageBitmapOrientationNone,
+             "CreateImageBitmapOrientationNone",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, frees up CachedMetadata after consumption by script resources
 // and modules. Needed for the experiment in http://crbug.com/1045052.
 BASE_FEATURE(kDiscardCodeCacheAfterFirstUse,
