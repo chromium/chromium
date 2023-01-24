@@ -98,19 +98,16 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   // was successful. |printer_status| contains the current status of the
   // printer. |make_and_model| is the unparsed printer-make-and-model string.
   // |ipp_everywhere| indicates if configuration using the CUPS IPP Everywhere
-  // driver should be attempted. |client_info_supported| indicates whether the
-  // printer supports all member attributes of the IPP 'client-info' attribute.
-  // If |result| is not SUCCESS, the values of |printer_status|,
-  // |make_and_model|, |document_formats|, |ipp_everywhere|, |auth_info|, and
-  // |client_info_supported| are not specified.
+  // driver should be attempted. If |result| is not SUCCESS, the values of
+  // |printer_status|, |make_and_model|, |document_formats|, |ipp_everywhere|
+  // and |auth_info| are not specified.
   void OnAutoconfQueried(const std::string& callback_id,
                          printing::PrinterQueryResult result,
                          const printing::PrinterStatus& printer_status,
                          const std::string& make_and_model,
                          const std::vector<std::string>& document_formats,
                          bool ipp_everywhere,
-                         const chromeos::PrinterAuthenticationInfo& auth_info,
-                         bool client_info_supported);
+                         const chromeos::PrinterAuthenticationInfo& auth_info);
 
   // Handles the callback for HandleGetPrinterInfo for a discovered printer.
   void OnAutoconfQueriedDiscovered(
@@ -121,8 +118,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
       const std::string& make_and_model,
       const std::vector<std::string>& document_formats,
       bool ipp_everywhere,
-      const chromeos::PrinterAuthenticationInfo& auth_info,
-      bool client_info_supported);
+      const chromeos::PrinterAuthenticationInfo& auth_info);
 
   // Callback for PPD matching attempts;
   void OnPpdResolved(const std::string& callback_id,

@@ -26,16 +26,14 @@ namespace ash {
 // the raw printer-make-and-model value from the printer. |autoconf| indicates
 // if we think we can compute the printer capabilities without a PPD.
 // |auth_info| holds the information about authentication required by the
-// printer. |client_info_supported| indicates whether the printer supports all
-// members of the 'client-info' IPP attribute.
+// printer.
 using PrinterInfoCallback = base::OnceCallback<void(
     ::printing::PrinterQueryResult result,
     const ::printing::PrinterStatus& status,
     const std::string& make_and_model,
     const std::vector<std::string>& document_formats,
     bool autoconf,
-    const chromeos::PrinterAuthenticationInfo& auth_info,
-    bool client_info_supported)>;
+    const chromeos::PrinterAuthenticationInfo& auth_info)>;
 
 // Dispatch an IPP request to |host| on |port| for |path| to obtain
 // basic printer information.

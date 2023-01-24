@@ -92,10 +92,6 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterInfo {
   // URI of OAuth2 Authorization Server and scope. Empty strings if not set.
   std::string oauth_server;
   std::string oauth_scope;
-
-  // client-info-supported
-  // A collection of supported 'client-info' member attributes.
-  std::vector<std::string> client_info_supported;
 };
 
 // Specifies classes of jobs.

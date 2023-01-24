@@ -420,18 +420,16 @@ class CupsPrintersManagerImpl
       const std::string& make_and_model,
       const std::vector<std::string>& document_formats,
       bool ipp_everywhere,
-      const chromeos::PrinterAuthenticationInfo& auth_info,
-      bool client_info_supported) {
+      const chromeos::PrinterAuthenticationInfo& auth_info) {
     SendPrinterStatus(printer_id, std::move(cb), result, printer_status,
-                      auth_info, client_info_supported);
+                      auth_info);
   }
 
   void SendPrinterStatus(const std::string& printer_id,
                          PrinterStatusCallback cb,
                          PrinterQueryResult result,
                          const ::printing::PrinterStatus& printer_status,
-                         const chromeos::PrinterAuthenticationInfo& auth_info,
-                         bool client_info_supported) {
+                         const chromeos::PrinterAuthenticationInfo& auth_info) {
     base::UmaHistogramEnumeration("Printing.CUPS.PrinterStatusQueryResult",
                                   result);
     switch (result) {
@@ -471,7 +469,7 @@ class CupsPrintersManagerImpl
         // Convert printing::PrinterStatus to printing::CupsPrinterStatus
         CupsPrinterStatus cups_printers_status =
             PrinterStatusToCupsPrinterStatus(printer_id, printer_status,
-                                             auth_info, client_info_supported);
+                                             auth_info);
 
         // Save the PrinterStatus so it can be attached along side future
         // Printer retrievals.

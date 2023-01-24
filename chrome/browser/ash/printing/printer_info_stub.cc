@@ -25,8 +25,7 @@ void QueryIppPrinter(const std::string& host,
           std::move(callback), printing::PrinterQueryResult::kUnknownFailure,
           printing::PrinterStatus(), /*make_and_model=*/"Foo Bar",
           /*document_formats=*/std::vector<std::string>{},
-          /*ipp_everywhere=*/false, chromeos::PrinterAuthenticationInfo{},
-          /*client_info_supported=*/false));
+          /*ipp_everywhere=*/false, chromeos::PrinterAuthenticationInfo{}));
 }
 
 }  // namespace ash

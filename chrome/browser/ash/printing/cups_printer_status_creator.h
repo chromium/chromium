@@ -19,8 +19,7 @@ namespace ash {
 chromeos::CupsPrinterStatus PrinterStatusToCupsPrinterStatus(
     const std::string& printer_id,
     const printing::PrinterStatus& printer_status,
-    const chromeos::PrinterAuthenticationInfo& auth_info,
-    bool client_info_supported);
+    const chromeos::PrinterAuthenticationInfo& auth_info);
 
 chromeos::CupsPrinterStatus::CupsPrinterStatusReason::Reason
 PrinterReasonToCupsReason(

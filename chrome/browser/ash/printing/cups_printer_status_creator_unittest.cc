@@ -34,11 +34,8 @@ TEST(CupsPrinterStatusCreatorTest, PrinterStatusToCupsPrinterStatus) {
   std::string printer_id = "id";
   chromeos::PrinterAuthenticationInfo auth_info{.oauth_server = "a",
                                                 .oauth_scope = "b"};
-
-  bool client_info_supported = true;
-
-  CupsPrinterStatus cups_printer_status = PrinterStatusToCupsPrinterStatus(
-      printer_id, printer_status, auth_info, client_info_supported);
+  CupsPrinterStatus cups_printer_status =
+      PrinterStatusToCupsPrinterStatus(printer_id, printer_status, auth_info);
 
   EXPECT_EQ("id", cups_printer_status.GetPrinterId());
   EXPECT_EQ(2u, cups_printer_status.GetStatusReasons().size());
@@ -52,7 +49,6 @@ TEST(CupsPrinterStatusCreatorTest, PrinterStatusToCupsPrinterStatus) {
 
   EXPECT_EQ(cups_printer_status.GetAuthenticationInfo().oauth_server, "a");
   EXPECT_EQ(cups_printer_status.GetAuthenticationInfo().oauth_scope, "b");
-  EXPECT_EQ(cups_printer_status.IsClientInfoSupported(), client_info_supported);
 }
 
 TEST(CupsPrinterStatusCreatorTest, PrinterSeverityToCupsSeverity) {

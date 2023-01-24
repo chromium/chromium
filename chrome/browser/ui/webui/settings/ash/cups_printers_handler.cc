@@ -576,8 +576,7 @@ void CupsPrintersHandler::HandleGetPrinterInfo(const base::Value::List& args) {
     OnAutoconfQueried(callback_id, PrinterQueryResult::kUnknownFailure,
                       ::printing::PrinterStatus(), /*make_and_model=*/"",
                       /*document_formats=*/{}, /*ipp_everywhere=*/false,
-                      chromeos::PrinterAuthenticationInfo{},
-                      /*client_info_supported=*/false);
+                      chromeos::PrinterAuthenticationInfo{});
     return;
   }
 
@@ -594,8 +593,7 @@ void CupsPrintersHandler::OnAutoconfQueriedDiscovered(
     const std::string& make_and_model,
     const std::vector<std::string>& /*document_formats*/,
     bool ipp_everywhere,
-    const chromeos::PrinterAuthenticationInfo& /*auth_info*/,
-    bool /*client_info_supported*/) {
+    const chromeos::PrinterAuthenticationInfo& /*auth_info*/) {
   RecordIppQueryResult(result);
 
   const bool success = result == PrinterQueryResult::kSuccess;
@@ -636,8 +634,7 @@ void CupsPrintersHandler::OnAutoconfQueried(
     const std::string& make_and_model,
     const std::vector<std::string>& document_formats,
     bool ipp_everywhere,
-    const chromeos::PrinterAuthenticationInfo& /*auth_info*/,
-    bool /*client_info_supported*/) {
+    const chromeos::PrinterAuthenticationInfo& /*auth_info*/) {
   RecordIppQueryResult(result);
   const bool success = result == PrinterQueryResult::kSuccess;
 

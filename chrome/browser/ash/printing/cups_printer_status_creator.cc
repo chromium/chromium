@@ -19,8 +19,7 @@ using SeverityFromPrinter = printing::PrinterStatus::PrinterReason::Severity;
 CupsPrinterStatus PrinterStatusToCupsPrinterStatus(
     const std::string& printer_id,
     const printing::PrinterStatus& printer_status,
-    const chromeos::PrinterAuthenticationInfo& auth_info,
-    bool client_info_supported) {
+    const chromeos::PrinterAuthenticationInfo& auth_info) {
   CupsPrinterStatus cups_printer_status(printer_id);
 
   for (const auto& reason : printer_status.reasons) {
@@ -32,10 +31,7 @@ CupsPrinterStatus PrinterStatusToCupsPrinterStatus(
         PrinterReasonToCupsReason(reason.reason),
         PrinterSeverityToCupsSeverity(reason.severity));
   }
-
   cups_printer_status.SetAuthenticationInfo(auth_info);
-  cups_printer_status.SetClientInfoSupported(client_info_supported);
-
   return cups_printer_status;
 }
 

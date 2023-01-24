@@ -78,24 +78,17 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) CupsPrinterStatus {
 
   const base::Time& GetTimestamp() const;
 
-  bool IsClientInfoSupported() const { return client_info_supported_; }
-
   // Adds a new CupsPrinterStatusReason to an existing CupsPrinterStatus.
   void AddStatusReason(const CupsPrinterStatusReason::Reason& reason,
                        const CupsPrinterStatusReason::Severity& severity);
 
   void SetAuthenticationInfo(const PrinterAuthenticationInfo& auth_info);
 
-  void SetClientInfoSupported(bool supported) {
-    client_info_supported_ = supported;
-  }
-
  private:
   std::string printer_id_;
   base::flat_set<CupsPrinterStatusReason> status_reasons_;
   PrinterAuthenticationInfo auth_info_;
   base::Time timestamp_;
-  bool client_info_supported_;
 };
 
 }  // namespace chromeos
