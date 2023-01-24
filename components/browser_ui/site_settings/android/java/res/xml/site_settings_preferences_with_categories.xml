@@ -20,6 +20,7 @@ Also add new settings to site_settings_preferences.xml!
         android:icon="@drawable/settings_all_sites"
         app:iconTint="@macro/default_icon_color" />
 
+    <!-- PERMISSIONS section -->
     <PreferenceCategory android:title="@string/site_settings_permission_category"/>
     <!-- Location -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
@@ -73,31 +74,14 @@ Also add new settings to site_settings_preferences.xml!
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
         android:key="idle_detection" />
-    <!-- Federated Identity API -->
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
-        android:key="federated_identity_api" />
-    <!-- Auto-dark Web Content -->
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
-        android:key="auto_dark_web_content" />
-    <!-- Request Desktop Site -->
-    <!-- TODO(crbug.com/1243758): Update the location of this setting once approved.
-                                  Also update site_settings_preferences.xml. -->
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
-        android:key="request_desktop_site" />
 
+    <!-- CONTENT SETTINGS section -->
     <PreferenceCategory android:title="@string/site_settings_content_category"/>
     <!-- Third party cookies -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="third_party_cookies"
         android:icon="@drawable/permission_cookie"
         app:iconTint="@macro/default_icon_color"
-        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings" />
-    <!-- Site data -->
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:key="site_data"
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings" />
     <!-- JavaScript -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
@@ -107,10 +91,36 @@ Also add new settings to site_settings_preferences.xml!
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
         android:key="popups" />
+    <!-- Sound -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
+        android:key="sound" />
     <!-- Ads -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
         android:key="ads" />
+    <!-- Protected content -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
+        android:key="protected_content" />
+    <!-- Federated Identity API -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
+        android:key="federated_identity_api" />
+    <!-- Site data -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="site_data"
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings" />
+    <!-- Request Desktop Site -->
+    <!-- TODO(crbug.com/1243758): Update the location of this setting once approved.
+                                  Also update site_settings_preferences.xml. -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
+        android:key="request_desktop_site" />
+    <!-- Auto-dark Web Content -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
+        android:key="auto_dark_web_content" />
     <!-- Background sync -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
@@ -119,14 +129,7 @@ Also add new settings to site_settings_preferences.xml!
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
         android:key="automatic_downloads" />
-    <!-- Protected content -->
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
-        android:key="protected_content" />
-    <!-- Sound -->
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
-        android:key="sound" />
+
     <!-- Storage -->
     <!-- TODO(finnur): Move this over to the new Usage screen, once it exists.
                        Also update site_settings_preferences.xml. -->
