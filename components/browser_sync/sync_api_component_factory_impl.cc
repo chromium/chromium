@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/webdata/autofill_wallet_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_wallet_usage_data_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/browser/webdata/contact_info_model_type_controller.h"
 #include "components/autofill/core/browser/webdata/contact_info_sync_bridge.h"
 #include "components/browser_sync/active_devices_provider_impl.h"
 #include "components/browser_sync/browser_sync_client.h"
@@ -226,12 +227,21 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
     // disabled.
     if (base::FeatureList::IsEnabled(syncer::kSyncEnableContactInfoDataType) &&
         !disabled_types.Has(syncer::CONTACT_INFO)) {
-      controllers.push_back(std::make_unique<syncer::ModelTypeController>(
-          syncer::CONTACT_INFO,
-          std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
-              db_thread_, base::BindRepeating(
-                              &ContactInfoDelegateFromDataService,
-                              base::RetainedRef(web_data_service_on_disk_)))));
+      // The same delegate is used for full sync and transport mode.
+      controllers.push_back(
+          std::make_unique<autofill::ContactInfoModelTypeController>(
+              /*delegate_for_full_sync_mode=*/
+              std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
+                  db_thread_,
+                  base::BindRepeating(
+                      &ContactInfoDelegateFromDataService,
+                      base::RetainedRef(web_data_service_on_disk_))),
+              /*delegate_for_transport_mode=*/
+              std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
+                  db_thread_,
+                  base::BindRepeating(
+                      &ContactInfoDelegateFromDataService,
+                      base::RetainedRef(web_data_service_on_disk_)))));
     }
 
     // Wallet data sync is enabled by default. Register unless explicitly

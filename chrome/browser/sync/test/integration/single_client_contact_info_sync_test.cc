@@ -27,6 +27,7 @@ namespace {
 using autofill::AutofillProfile;
 using contact_info_helper::BuildTestAccountProfile;
 using contact_info_helper::PersonalDataManagerProfileChecker;
+using testing::IsEmpty;
 using testing::UnorderedElementsAre;
 
 // Helper class to wait until the fake server's ContactInfoSpecifics match a
@@ -127,9 +128,46 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, ClearOnDisableSync) {
                                                 UnorderedElementsAre(kProfile))
                   .Wait());
   GetClient(0)->StopSyncServiceAndClearData();
+  EXPECT_TRUE(
+      PersonalDataManagerProfileChecker(GetPersonalDataManager(), IsEmpty())
+          .Wait());
+}
+
+// Specialized fixture that enables AutofillAccountProfilesOnSignIn.
+class SingleClientContactInfoTransportSyncTest
+    : public SingleClientContactInfoSyncTest {
+ public:
+  SingleClientContactInfoTransportSyncTest() {
+    transport_feature_.InitAndEnableFeature(
+        autofill::features::kAutofillAccountProfilesOnSignIn);
+  }
+
+ private:
+  base::test::ScopedFeatureList transport_feature_;
+};
+
+// When AutofillAccountProfilesOnSignIn is enabled, the CONTACT_INFO type should
+// run in transport mode and the availability of account profiles should depend
+// on the signed-in state.
+IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
+                       TransportMode) {
+  AutofillProfile profile = BuildTestAccountProfile();
+  AddSpecificsToServer(AsContactInfoSpecifics(profile), GetFakeServer());
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  EXPECT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
   EXPECT_TRUE(PersonalDataManagerProfileChecker(GetPersonalDataManager(),
-                                                testing::IsEmpty())
+                                                UnorderedElementsAre(profile))
                   .Wait());
+  // ChromeOS doesn't have the concept of sign-out.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  GetClient(0)->SignOutPrimaryAccount();
+  EXPECT_TRUE(
+      PersonalDataManagerProfileChecker(GetPersonalDataManager(), IsEmpty())
+          .Wait());
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace

@@ -39,6 +39,14 @@ BASE_FEATURE(kAutofillAccountProfilesUnionView,
 const base::FeatureParam<bool> kAutofillEnableSilentUpdatesForAccountProfiles{
     &kAutofillAccountProfilesUnionView, "enable_silent_updates", true};
 
+// If enabled, the Sync CONTACT_INFO type runs in transport mode. This has the
+// effect that Account profiles are bound to the signed-in state rather than the
+// Sync state.
+// TODO(crbug.com/1348294): Remove once launched.
+BASE_FEATURE(kAutofillAccountProfilesOnSignIn,
+             "AutofillAccountProfilesOnSignIn",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // TODO(crbug.com/1135188): Remove this feature flag after the explicit save
 // prompts for address profiles is complete.
 // When enabled, address profile save problem will contain a dropdown for
