@@ -304,17 +304,17 @@ void PrintLog(UpdaterScope scope) {
   std::string contents;
   absl::optional<base::FilePath> path = GetDataDirPath(scope);
   EXPECT_TRUE(path);
-  VLOG(0) << "Contents of updater.log for " << GetTestName() << " in "
-          << path.value() << ":";
   if (path &&
       base::ReadFileToString(path->AppendASCII("updater.log"), &contents)) {
+    VLOG(0) << "Contents of updater.log for " << GetTestName() << " in "
+            << path.value() << ":";
     const std::string demarcation(72, '=');
     VLOG(0) << demarcation;
     VLOG(0) << contents;
-    VLOG(0) << "End contents of updater.log.";
+    VLOG(0) << "End contents of updater.log for " << GetTestName() << ".";
     VLOG(0) << demarcation;
   } else {
-    VLOG(0) << "Failed to read updater.log file.";
+    VLOG(0) << "No updater.log at " << path.value() << " for " << GetTestName();
   }
 }
 

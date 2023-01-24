@@ -717,10 +717,12 @@ void ExpectNotActive(UpdaterScope /*scope*/, const std::string& id) {
 // Waits for all updater processes to end, including the server process holding
 // the prefs lock.
 bool WaitForUpdaterExit(UpdaterScope /*scope*/) {
-  return WaitFor(base::BindRepeating([]() { return !IsUpdaterRunning(); }),
-                 base::BindLambdaForTesting([]() {
-                   VLOG(0) << "Still waiting for updater to exit...";
-                 }));
+  return WaitFor(
+      base::BindRepeating([]() { return !IsUpdaterRunning(); }),
+      base::BindLambdaForTesting([]() {
+        VLOG(0) << "Still waiting for updater to exit. "
+                << test::PrintProcesses(GetExecutableRelativePath().value());
+      }));
 }
 
 // Verify registry entries for all interfaces.
