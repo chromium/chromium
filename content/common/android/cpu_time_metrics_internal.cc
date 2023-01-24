@@ -301,8 +301,10 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
     // only depends on the process type, which also doesn't change.
     static const char* histogram_name =
         GetPerThreadHistogramNameForProcessType(process_type_);
-    UMA_HISTOGRAM_SCALED_ENUMERATION(histogram_name, type,
-                                     cpu_time_delta.InMicroseconds(),
+    // Histograms use int internally. Make sure it doesn't overflow.
+    int capped_value = std::min<int64_t>(cpu_time_delta.InMicroseconds(),
+                                         std::numeric_limits<int>::max());
+    UMA_HISTOGRAM_SCALED_ENUMERATION(histogram_name, type, capped_value,
                                      base::Time::kMicrosecondsPerSecond);
   }
 
