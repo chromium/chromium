@@ -4,6 +4,10 @@
 
 source_set("digital_asset_links") {
   sources = [
+    "browser_url_loader_throttle.cc",
+    "browser_url_loader_throttle.h",
+    "digital_asset_links_constants.cc",
+    "digital_asset_links_constants.h",
     "digital_asset_links_handler.cc",
     "digital_asset_links_handler.h",
   ]
@@ -11,6 +15,7 @@ source_set("digital_asset_links") {
   deps = [
     "//base",
     "//content/public/browser",
+    "//content/public/common",
     "//net",
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",

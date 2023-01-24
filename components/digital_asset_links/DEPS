@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/util",
   "+content/public/android/java/src/org/chromium/content_public/browser",
   "+content/public/browser",
   "+content/public/test",
@@ -7,6 +8,6 @@ include_rules = [
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+services/network/test",
+  "+third_party/blink/public/common/loader/url_loader_throttle.h",
   "+third_party/blink/public/mojom",
-  "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/util",
 ]

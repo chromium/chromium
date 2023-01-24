@@ -18,6 +18,7 @@
 #include "android_webview/browser/aw_devtools_manager_delegate.h"
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "android_webview/browser/aw_http_auth_handler.h"
+#include "android_webview/browser/aw_origin_verification_scheduler_bridge.h"
 #include "android_webview/browser/aw_resource_context.h"
 #include "android_webview/browser/aw_settings.h"
 #include "android_webview/browser/aw_speech_recognition_manager_delegate.h"
@@ -586,6 +587,15 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
+
+  if (request.is_outermost_main_frame &&
+      base::FeatureList::IsEnabled(
+          features::kWebViewRestrictThirdPartyContent)) {
+    auto* origin_verification_bridge =
+        AwOriginVerificationSchedulerBridge::GetInstance();
+    result.push_back(digital_asset_links::BrowserURLLoaderThrottle::Create(
+        origin_verification_bridge));
+  }
 
   result.push_back(safe_browsing::BrowserURLLoaderThrottle::Create(
       base::BindOnce(

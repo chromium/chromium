@@ -137,9 +137,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -671,38 +668,6 @@ public class AwContents implements SmartClipProvider {
                         new AwContentsClient.AwWebResourceError());
             }
             return webResourceResponseInfo;
-        }
-
-        @Override
-        public boolean shouldBlockRequest(String url) {
-            if (!AwFeatureList.isEnabled(AwFeatures.WEBVIEW_RESTRICT_THIRD_PARTY_CONTENT)) {
-                return false;
-            }
-            // TODO(1376958): Implement a URLLoaderThrottle to not block the IO thread before
-            // enabling the feature.
-
-            CountDownLatch countDownLatch = new CountDownLatch(1);
-            AtomicBoolean verified = new AtomicBoolean(false);
-
-            // Verifications are scheduled when WebView is initialized, so when this is called, the
-            // verification is likely finished here.
-            if (AwOriginVerificationScheduler.getInstance().getOriginVerifier().checkForSavedResult(
-                        url)) {
-                return false;
-            }
-
-            AwThreadUtils.postToUiThreadLooper(() -> {
-                AwOriginVerificationScheduler.getInstance().verify(url, (result) -> {
-                    verified.set(result);
-                    countDownLatch.countDown();
-                });
-            });
-            try {
-                countDownLatch.await(10, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                // Returning the default value as no successful verification was performed.
-            }
-            return !verified.get();
         }
     }
 

@@ -17,6 +17,7 @@ include_rules = [
   "+components/component_updater/installer_policies",
   "+components/crash/content/browser",
   "+components/crash/core",
+  "+components/digital_asset_links",
   "+components/download/public/common",
   "+components/embedder_support",
   "+components/favicon_base",

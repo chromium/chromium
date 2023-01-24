@@ -388,24 +388,6 @@ std::unique_ptr<AwWebResourceInterceptResponse> RunShouldInterceptRequest(
   return web_resource_intercept_response;
 }
 
-bool RunShouldBlockRequest(AwWebResourceRequest request,
-                           JavaObjectWeakGlobalRef ref) {
-  if (!request.is_outermost_main_frame) {
-    return false;
-  }
-
-  JNIEnv* env = AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jobject> obj = ref.get(env);
-  if (!obj) {
-    return true;
-  }
-  AwWebResourceRequest::AwJavaWebResourceRequest java_web_resource_request;
-  AwWebResourceRequest::ConvertToJava(env, request, &java_web_resource_request);
-
-  return Java_AwContentsBackgroundThreadClient_shouldBlockRequestFromNative(
-      env, obj, java_web_resource_request.jurl);
-}
-
 }  // namespace
 
 void AwContentsIoThreadClient::ShouldInterceptRequestAsync(
@@ -427,23 +409,6 @@ void AwContentsIoThreadClient::ShouldInterceptRequestAsync(
   }
   sequenced_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, std::move(get_response), std::move(callback));
-}
-
-bool AwContentsIoThreadClient::ShouldBlockRequest(
-    AwWebResourceRequest request) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  JNIEnv* env = AttachCurrentThread();
-  if (!bg_thread_client_object_) {
-    bg_thread_client_object_.Reset(
-        Java_AwContentsIoThreadClient_getBackgroundThreadClient(env,
-                                                                java_object_));
-  }
-  if (bg_thread_client_object_) {
-    return RunShouldBlockRequest(
-        request, JavaObjectWeakGlobalRef(env, bg_thread_client_object_.obj()));
-  }
-  // Block request if validation did not run.
-  return true;
 }
 
 bool AwContentsIoThreadClient::ShouldBlockContentUrls() const {
