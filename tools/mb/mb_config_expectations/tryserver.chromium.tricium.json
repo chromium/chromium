@@ -10,6 +10,7 @@
       "strip_debug_info": true,
       "symbol_level": 0,
       "target_os": "android",
+      "use_cxx17": true,
       "use_remoteexec": true
     }
   },
@@ -20,6 +21,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_os": "fuchsia",
+      "use_cxx17": true,
       "use_remoteexec": true
     }
   },
@@ -34,6 +36,7 @@
       "target_cpu": "arm64",
       "target_environment": "device",
       "target_os": "ios",
+      "use_cxx17": true,
       "use_goma": true
     }
   },
@@ -46,6 +49,7 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "target_os": "chromeos",
+      "use_cxx17": true,
       "use_remoteexec": true
     }
   },
@@ -55,6 +59,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
+      "use_cxx17": true,
       "use_remoteexec": true
     }
   },
@@ -67,6 +72,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_os": "chromeos",
+      "use_cxx17": true,
       "use_remoteexec": true
     }
   },
@@ -76,6 +82,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
+      "use_cxx17": true,
       "use_goma": true
     }
   },
@@ -85,6 +92,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
+      "use_cxx17": true,
       "use_remoteexec": true
     }
   }

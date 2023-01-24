@@ -1341,14 +1341,14 @@
     },
 
     'tryserver.chromium.tricium': {
-      'android-clang-tidy-rel': 'android_release_trybot_reclient',
-      'fuchsia-clang-tidy-rel': 'release_trybot_fuchsia_reclient',
-      'ios-clang-tidy-rel': 'ios_device_release_compile_only',
-      'linux-chromeos-clang-tidy-rel': 'chromeos_with_codecs_release_trybot_reclient',
-      'linux-clang-tidy-rel': 'release_trybot_reclient',
-      'linux-lacros-clang-tidy-rel': 'lacros_on_linux_release_trybot_reclient',
-      'mac-clang-tidy-rel': 'release_trybot',
-      'win10-clang-tidy-rel': 'release_trybot_reclient',
+      'android-clang-tidy-rel': 'android_release_trybot_reclient_cxx17',
+      'fuchsia-clang-tidy-rel': 'release_trybot_fuchsia_reclient_cxx17',
+      'ios-clang-tidy-rel': 'ios_device_release_compile_only_cxx17',
+      'linux-chromeos-clang-tidy-rel': 'chromeos_with_codecs_release_trybot_reclient_cxx17',
+      'linux-clang-tidy-rel': 'release_trybot_reclient_cxx17',
+      'linux-lacros-clang-tidy-rel': 'lacros_on_linux_release_trybot_reclient_cxx17',
+      'mac-clang-tidy-rel': 'release_trybot_cxx17',
+      'win10-clang-tidy-rel': 'release_trybot_reclient_cxx17',
     },
 
     'tryserver.chromium.updater': {
@@ -1729,6 +1729,10 @@
 
     'android_release_trybot_reclient': [
       'android', 'release_trybot_reclient', 'strip_debug_info',
+    ],
+
+    'android_release_trybot_reclient_cxx17': [
+      'android', 'release_trybot_reclient', 'strip_debug_info', 'force_cxx17',
     ],
 
     'android_release_trybot_x64_fastbuild_webview_trichrome_reclient': [
@@ -2288,7 +2292,7 @@
       'chromeos_with_codecs', 'release_bot_reclient',
     ],
 
-    # Keep in sync with chromeos_with_codecs_release_trybot_reclient.
+    # Keep in sync with chromeos_with_codecs_release_trybot_reclient_cxx17.
     'chromeos_with_codecs_release_trybot_code_coverage_reclient': [
       'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols', 'also_build_lacros_chrome',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
@@ -2298,8 +2302,8 @@
       'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols', 'invert_fieldtrials',
     ],
 
-    'chromeos_with_codecs_release_trybot_reclient': [
-      'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols',
+    'chromeos_with_codecs_release_trybot_reclient_cxx17': [
+      'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols', 'force_cxx17',
     ],
 
     'chromeos_with_codecs_with_lacros_release_bot_reclient': [
@@ -2929,7 +2933,11 @@
     ],
 
     'ios_device_release_compile_only': [
-        'compile_only', 'ios', 'ios_device', 'ios_cpu_arm64', 'ios_google_cert', 'ios_disable_code_signing', 'release_bot',
+      'ios_device_release_compile_only',
+    ],
+
+    'ios_device_release_compile_only_cxx17': [
+      'ios_device_release_compile_only', 'force_cxx17',
     ],
 
     'ios_device_release_compile_only_reclient': [
@@ -2998,7 +3006,11 @@
     ],
 
     'lacros_on_linux_release_trybot_reclient': [
-      'lacros_on_linux', 'release_trybot_reclient', 'also_build_ash_chrome', 'no_symbols',
+      'lacros_on_linux_release_trybot_reclient',
+    ],
+
+    'lacros_on_linux_release_trybot_reclient_cxx17': [
+      'lacros_on_linux_release_trybot_reclient', 'force_cxx17',
     ],
 
     'lacros_on_linux_tot_debug': [
@@ -3593,6 +3605,10 @@
       'release_trybot_blink', 'devtools_do_typecheck',
     ],
 
+    'release_trybot_cxx17': [
+      'release_trybot', 'force_cxx17'
+    ],
+
     'release_trybot_dcheck_off': [
       'release_trybot_dcheck_off',
     ],
@@ -3625,8 +3641,8 @@
       'release_trybot', 'fuchsia', 'fuchsia_chrome'
     ],
 
-    'release_trybot_fuchsia_reclient': [
-      'release_trybot_reclient', 'fuchsia',
+    'release_trybot_fuchsia_reclient_cxx17': [
+      'release_trybot_reclient', 'fuchsia', 'force_cxx17',
     ],
 
     'release_trybot_minimal_symbols_reclient': [
@@ -3643,6 +3659,10 @@
 
     'release_trybot_reclient': [
       'release_trybot_reclient',
+    ],
+
+    'release_trybot_reclient_cxx17': [
+      'release_trybot_reclient', 'force_cxx17',
     ],
 
     'release_trybot_tsan': [
@@ -4213,6 +4233,10 @@
       'gn_args': 'ffmpeg_branding="ChromeOS"',
     },
 
+    'force_cxx17': {
+      'gn_args': 'use_cxx17=true',
+    },
+
     'fuchsia': {
       'gn_args': 'target_os="fuchsia"',
     },
@@ -4311,6 +4335,12 @@
       'gn_args': 'target_environment="device"',
     },
 
+    'ios_device_release_compile_only': {
+      'mixins': [
+        'compile_only', 'ios', 'ios_device', 'ios_cpu_arm64', 'ios_google_cert', 'ios_disable_code_signing', 'release_bot',
+      ],
+    },
+
     'ios_disable_code_signing': {
       # defaults to true under ios_sdk.gni
       'gn_args': 'ios_enable_code_signing=false'
@@ -4342,6 +4372,12 @@
 
     'lacros_on_linux': {
       'gn_args': 'target_os="chromeos" chromeos_is_browser_only=true'
+    },
+
+    'lacros_on_linux_release_trybot_reclient': {
+      'mixins': [
+        'lacros_on_linux', 'release_trybot_reclient', 'also_build_ash_chrome', 'no_symbols',
+      ],
     },
 
     'libfuzzer': { 'gn_args': 'use_libfuzzer=true' },
