@@ -90,7 +90,7 @@ TouchAction AdjustTouchActionForElement(TouchAction touch_action,
                                         const ComputedStyle& parent_style,
                                         Element* element) {
   Element* document_element = element->GetDocument().documentElement();
-  bool scrolls_overflow = builder.InternalStyle()->ScrollsOverflow();
+  bool scrolls_overflow = builder.ScrollsOverflow();
   if (element && element == element->GetDocument().FirstBodyElement()) {
     // Body scrolls overflow if html root overflow is not visible or the
     // propagation of overflow is stopped by containment.

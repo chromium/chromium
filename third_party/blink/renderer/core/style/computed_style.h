@@ -1871,22 +1871,28 @@ class ComputedStyle : public ComputedStyleBase,
     return true;
   }
 
+  static bool HasAutoScroll(EOverflow overflow) {
+    return overflow == EOverflow::kAuto || overflow == EOverflow::kOverlay;
+  }
+
+  static bool ScrollsOverflow(EOverflow overflow) {
+    return overflow == EOverflow::kScroll || HasAutoScroll(overflow);
+  }
+
   bool HasAutoHorizontalScroll() const {
-    return OverflowX() == EOverflow::kAuto ||
-           OverflowX() == EOverflow::kOverlay;
+    return ComputedStyle::HasAutoScroll(OverflowX());
   }
 
   bool HasAutoVerticalScroll() const {
-    return OverflowY() == EOverflow::kAuto ||
-           OverflowY() == EOverflow::kOverlay;
+    return ComputedStyle::HasAutoScroll(OverflowY());
   }
 
   bool ScrollsOverflowX() const {
-    return OverflowX() == EOverflow::kScroll || HasAutoHorizontalScroll();
+    return ComputedStyle::ScrollsOverflow(OverflowX());
   }
 
   bool ScrollsOverflowY() const {
-    return OverflowY() == EOverflow::kScroll || HasAutoVerticalScroll();
+    return ComputedStyle::ScrollsOverflow(OverflowY());
   }
 
   bool ScrollsOverflow() const {
@@ -3072,6 +3078,12 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
 
   // orphans
   void SetOrphans(int16_t o) { SetOrphansInternal(ClampTo<int16_t>(o, 1)); }
+
+  // overflow
+  bool ScrollsOverflow() const {
+    return ComputedStyle::ScrollsOverflow(OverflowX()) ||
+           ComputedStyle::ScrollsOverflow(OverflowY());
+  }
 
   // padding-*
   void SetPaddingTop(const Length& v) {
