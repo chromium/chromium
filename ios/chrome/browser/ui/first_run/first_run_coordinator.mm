@@ -129,7 +129,7 @@
 // Creates a screen coordinator according to `type`.
 - (ChromeCoordinator*)createChildCoordinatorWithScreenType:(ScreenType)type {
   switch (type) {
-    case kWelcomeAndConsent:
+    case kWelcomeAndConsent_DEPRECATED:
       return [[WelcomeScreenCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
                                    browser:self.browser
@@ -145,12 +145,12 @@
           initWithBaseNavigationController:self.navigationController
                                    browser:self.browser
                                   delegate:self];
-    case kSignInAndSync:
+    case kSignInAndSync_DEPRECATED:
       return [[SigninSyncCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
                                    browser:self.browser
                                   delegate:self];
-    case kLegacySignIn:
+    case kLegacySignIn_DEPRECATED:
       return [[LegacySigninScreenCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
                                    browser:self.browser

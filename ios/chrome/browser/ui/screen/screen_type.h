@@ -7,12 +7,18 @@
 
 // The types of the start up screens.
 typedef NS_ENUM(NSInteger, ScreenType) {
-  kWelcomeAndConsent,
-  kSignInAndSync,
   kSignIn,
-  kLegacySignIn,
   kTangibleSync,
   kDefaultBrowserPromo,
+
+  // Deprecated.
+  //
+  // TODO(crbug.com/1407658) Remove the following entries and their
+  // corresponding screens as they are not obsolete.
+  kWelcomeAndConsent_DEPRECATED,
+  kSignInAndSync_DEPRECATED,
+  kLegacySignIn_DEPRECATED,
+
   // It isn't a screen, but a signal that no more screen should be
   // presented.
   kStepsCompleted,

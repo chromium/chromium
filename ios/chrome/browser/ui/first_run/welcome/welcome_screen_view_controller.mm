@@ -8,7 +8,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/commands/tos_commands.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
-#import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/first_run/welcome/checkbox_button.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -127,9 +126,7 @@ NSString* const kEnterpriseIconImageName = @"enterprise_icon";
   UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
                                   self.titleLabel);
   [self.delegate logScrollButtonVisible:!self.didReachBottom
-                 withUMACheckboxVisible:
-                     fre_field_trial::GetNewMobileIdentityConsistencyFRE() ==
-                     NewMobileIdentityConsistencyFRE::kOld];
+                 withUMACheckboxVisible:false];
 }
 
 #pragma mark - Private

@@ -5,8 +5,6 @@
 source_set("field_trial") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "fre_field_trial.cc",
-    "fre_field_trial.h",
     "ios_first_run_field_trials.cc",
     "ios_first_run_field_trials.h",
     "trending_queries_field_trial.cc",
@@ -223,7 +221,6 @@ source_set("eg2_tests") {
   testonly = true
   sources = [
     "enterprise_loading_screen_egtest.mm",
-    "first_run_egtest.mm",
     "first_run_two_steps_egtest.mm",
   ]
   deps = [

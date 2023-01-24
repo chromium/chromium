@@ -110,7 +110,7 @@
 - (InterruptibleChromeCoordinator*)createChildCoordinatorWithScreenType:
     (ScreenType)type {
   switch (type) {
-    case kLegacySignIn:
+    case kLegacySignIn_DEPRECATED:
       return [[LegacySigninScreenCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
                                    browser:self.browser
@@ -121,9 +121,9 @@
                                    browser:self.browser
                             showFREConsent:NO
                                   delegate:self];
-    case kSignInAndSync:
+    case kSignInAndSync_DEPRECATED:
     case kTangibleSync:
-    case kWelcomeAndConsent:
+    case kWelcomeAndConsent_DEPRECATED:
     case kDefaultBrowserPromo:
     case kStepsCompleted:
       NOTREACHED() << "Type of screen not supported." << static_cast<int>(type);

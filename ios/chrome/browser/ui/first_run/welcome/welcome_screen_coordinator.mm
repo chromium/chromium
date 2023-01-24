@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/tos_commands.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
-#import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/first_run/uma/uma_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/welcome/tos_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/welcome/welcome_screen_mediator.h"

@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/tos_commands.h"
-#import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/first_run/welcome/tos_view_controller.h"
 #import "ios/chrome/browser/ui/util/terms_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -62,26 +61,8 @@
 
 // Creates a WKWebView and load the terms of services html page in it.
 - (WKWebView*)newWebViewDisplayingTOS {
-  NSURL* TOSURL = nil;
-  switch (fre_field_trial::GetNewMobileIdentityConsistencyFRE()) {
-    case NewMobileIdentityConsistencyFRE::kTangibleSyncA: {
-      TOSURL =
-          net::NSURLWithGURL(GetUnifiedTermsOfServiceURL(/*embbeded=*/true));
-      break;
-    }
-    case NewMobileIdentityConsistencyFRE::kOld: {
-      // Craft ToS path.
-      std::string TOS = GetTermsOfServicePath();
-      NSString* path = [[base::mac::FrameworkBundle() bundlePath]
-          stringByAppendingPathComponent:base::SysUTF8ToNSString(TOS)];
-      NSURLComponents* components = [[NSURLComponents alloc] init];
-      [components setScheme:@"file"];
-      [components setHost:@""];
-      [components setPath:path];
-      TOSURL = [components URL];
-      break;
-    }
-  }
+  NSURL* TOSURL =
+      net::NSURLWithGURL(GetUnifiedTermsOfServiceURL(/*embbeded=*/true));
   DCHECK(TOSURL);
 
   // Create web view.
