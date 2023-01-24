@@ -64,9 +64,9 @@ bool CookieSettingsBase::ShouldDeleteCookieOnExit(
   GURL origin = net::cookie_util::CookieOriginToURL(domain, is_https);
   // Pass GURL() as first_party_url since we don't know the context and
   // don't want to match against (*, exception) pattern.
-  ContentSetting setting =
-      GetCookieSetting(origin, is_privacy_sandbox_v4_enabled_ ? GURL() : origin,
-                       nullptr, QueryReason::kCookies);
+  ContentSetting setting = GetCookieSetting(
+      origin, is_privacy_sandbox_v4_enabled_ ? GURL() : origin,
+      net::CookieSettingOverrides(), nullptr, QueryReason::kCookies);
   DCHECK(IsValidSetting(setting));
   if (setting == CONTENT_SETTING_ALLOW)
     return false;
@@ -127,7 +127,7 @@ bool CookieSettingsBase::IsCookieSessionOnly(const GURL& origin,
   // don't want to match against (*, exception) pattern.
   ContentSetting setting =
       GetCookieSetting(origin, is_privacy_sandbox_v4_enabled_ ? GURL() : origin,
-                       nullptr, query_reason);
+                       net::CookieSettingOverrides(), nullptr, query_reason);
   DCHECK(IsValidSetting(setting));
   return setting == CONTENT_SETTING_SESSION_ONLY;
 }

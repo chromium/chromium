@@ -169,7 +169,8 @@ ContentSettingsContentSettingGetFunction::Run() {
   ContentSetting setting =
       content_type == ContentSettingsType::COOKIES
           ? cookie_settings->GetCookieSetting(
-                primary_url, secondary_url, nullptr,
+                primary_url, secondary_url, net::CookieSettingOverrides(),
+                nullptr,
                 content_settings::CookieSettings::QueryReason::kSetting)
           : map->GetContentSetting(primary_url, secondary_url, content_type);
 

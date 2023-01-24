@@ -140,18 +140,6 @@ class CookieSettingsBase {
   bool IsCookieSessionOnly(const GURL& url, QueryReason query_reason) const;
 
   // A helper for applying third party cookie blocking rules.
-  // DEPRECATED: Replace with GetCookieSetting(GURL, GURL, bool, SettingSource,
-  // QueryReason).
-  // TODO(crbug.com/1386190): Update callers and remove.
-  ContentSetting GetCookieSetting(const GURL& url,
-                                  const GURL& first_party_url,
-                                  content_settings::SettingSource* source,
-                                  QueryReason query_reason) const {
-    return GetCookieSetting(url, first_party_url, net::CookieSettingOverrides(),
-                            source, query_reason);
-  }
-
-  // A helper for applying third party cookie blocking rules.
   ContentSetting GetCookieSetting(const GURL& url,
                                   const GURL& first_party_url,
                                   net::CookieSettingOverrides overrides,

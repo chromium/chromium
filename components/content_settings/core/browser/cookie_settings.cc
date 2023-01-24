@@ -97,8 +97,9 @@ bool CookieSettings::IsThirdPartyAccessAllowed(
     QueryReason query_reason) {
   // Use GURL() as an opaque primary url to check if any site
   // could access cookies in a 3p context on |first_party_url|.
-  return IsAllowed(
-      GetCookieSetting(GURL(), first_party_url, source, query_reason));
+  return IsAllowed(GetCookieSetting(GURL(), first_party_url,
+                                    net::CookieSettingOverrides(), source,
+                                    query_reason));
 }
 
 void CookieSettings::SetThirdPartyCookieSetting(const GURL& first_party_url,
