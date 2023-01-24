@@ -174,7 +174,10 @@ TEST(BlinkStorageKey, CreateFromStringForTesting) {
 
 // Test that BlinkStorageKey's top_level_site getter returns origin's site when
 // storage partitioning is disabled.
-TEST(BlinkStorageKey, TopLevelSiteGetter) {
+TEST(BlinkStorageKey, TopLevelSiteGetterWithPartitioningDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      net::features::kThirdPartyStoragePartitioning);
   url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
   url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
 

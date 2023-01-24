@@ -53,7 +53,10 @@ TEST(StorageKeyTest, ConstructionValidity) {
 
 // Test that StorageKeys are/aren't equivalent as expected when storage
 // partitioning is disabled.
-TEST(StorageKeyTest, Equivalence) {
+TEST(StorageKeyTest, EquivalenceUnpartitioned) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      net::features::kThirdPartyStoragePartitioning);
   url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
   url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
   url::Origin origin3 = url::Origin();
@@ -477,16 +480,20 @@ TEST(StorageKeyTest, SerializeDeserializeNonce) {
 }
 
 TEST(StorageKeyTest, IsThirdPartyStoragePartitioningEnabled) {
-  EXPECT_FALSE(StorageKey::IsThirdPartyStoragePartitioningEnabled());
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      net::features::kThirdPartyStoragePartitioning);
-  EXPECT_TRUE(StorageKey::IsThirdPartyStoragePartitioningEnabled());
+  for (const bool toggle : {false, true}) {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatureState(
+        net::features::kThirdPartyStoragePartitioning, toggle);
+    EXPECT_EQ(StorageKey::IsThirdPartyStoragePartitioningEnabled(), toggle);
+  }
 }
 
 // Test that StorageKey's top_level_site getter returns origin's site when
 // storage partitioning is disabled.
-TEST(StorageKeyTest, TopLevelSiteGetter) {
+TEST(StorageKeyTest, TopLevelSiteGetterWithPartitioningDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      net::features::kThirdPartyStoragePartitioning);
   url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
   url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
 
@@ -520,7 +527,10 @@ TEST(StorageKeyTest, TopLevelSiteGetterWithPartitioningEnabled) {
 
 // Test that the AncestorChainBit enum class is not reordered and returns
 // kSameSite when partitioning is not enabled.
-TEST(StorageKeyTest, AncestorChainBitGetter) {
+TEST(StorageKeyTest, AncestorChainBitGetterWithPartitioningDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      net::features::kThirdPartyStoragePartitioning);
   std::string same_site_string =
       "https://example.com/^0https://test.example^30";
   std::string cross_site_string =
