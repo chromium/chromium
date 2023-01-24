@@ -23,6 +23,7 @@ source_set("download") {
     "download_manager_tab_helper_delegate.h",
     "external_app_util.h",
     "external_app_util.mm",
+    "installation_notifier+private.h",
     "installation_notifier.h",
     "installation_notifier.mm",
     "pass_kit_tab_helper.h",

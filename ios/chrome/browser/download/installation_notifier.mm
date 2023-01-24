@@ -11,6 +11,7 @@
 
 #import "base/check_op.h"
 #import "base/metrics/histogram_macros.h"
+#import "ios/chrome/browser/download/installation_notifier+private.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "net/base/backoff_entry.h"
 #import "url/gurl.h"
@@ -42,23 +43,10 @@ const net::BackoffEntry::Policy kPollingBackoffPolicy = {
 @end
 
 @interface InstallationNotifier ()
-// Registers for a notification and gives the option to not immediately start
-// polling.
-- (void)registerForInstallationNotifications:(id)observer
-                                withSelector:(SEL)notificationSelector
-                                   forScheme:(NSString*)scheme
-                                startPolling:(BOOL)poll;
-// Dispatches a block with an exponentially increasing delay.
-- (void)dispatchInstallationNotifierBlock;
 // Dispatched blocks cannot be cancelled. Instead, each block has a `blockId`.
 // If `blockId` is different from `lastCreatedBlockId_`, then the block does
 // not execute anything.
 @property(nonatomic, readonly) int lastCreatedBlockId;
-@end
-
-@interface InstallationNotifier (Testing)
-// Sets the dispatcher.
-- (void)setDispatcher:(id<DispatcherProtocol>)dispatcher;
 @end
 
 @implementation InstallationNotifier {

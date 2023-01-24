@@ -10,6 +10,7 @@
 #import <stdint.h>
 
 #import "base/ios/block_types.h"
+#import "ios/chrome/browser/download/installation_notifier+private.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "net/base/backoff_entry.h"
 #import "testing/platform_test.h"
@@ -77,17 +78,6 @@
   _notificationCount++;
 }
 
-@end
-
-@interface InstallationNotifier (Testing)
-- (void)setDispatcher:(id<DispatcherProtocol>)dispatcher;
-- (void)resetDispatcher;
-- (void)dispatchInstallationNotifierBlock;
-- (void)registerForInstallationNotifications:(id)observer
-                                withSelector:(SEL)notificationSelector
-                                   forScheme:(NSString*)scheme
-                                startPolling:(BOOL)poll;
-- (net::BackoffEntry::Policy const*)backOffPolicy;
 @end
 
 namespace {
