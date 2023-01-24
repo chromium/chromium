@@ -234,14 +234,6 @@ TEST(BaseRenderingContextLayerTests, GlobalComposite) {
   cc::PaintFlags flags;
   flags.setBlendMode(SkBlendMode::kXor);
 
-  // TODO(crbug.com/1403037): There shouldn't be a shadow filter computed if no
-  // shadow has been enabled on the context.
-  flags.setImageFilter(sk_make_sp<ComposePaintFilter>(
-      sk_make_sp<DropShadowPaintFilter>(
-          0.0f, 0.0f, 0.0f, 0.0f, SkColors::kTransparent,
-          DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr),
-      nullptr));
-
   EXPECT_THAT(context->getRecording(),
               PaintOpsAreEq(SaveLayerOp(flags), RestoreOp()));
 }
@@ -258,14 +250,6 @@ TEST(BaseRenderingContextLayerTests, GlobalAlphaAndComposite) {
   flags.setAlphaf(0.3f);
   flags.setBlendMode(SkBlendMode::kXor);
 
-  // TODO(crbug.com/1403037): There shouldn't be a shadow filter computed if no
-  // shadow has been enabled on the context.
-  flags.setImageFilter(sk_make_sp<ComposePaintFilter>(
-      sk_make_sp<DropShadowPaintFilter>(
-          0.0f, 0.0f, 0.0f, 0.0f, SkColors::kTransparent,
-          DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr),
-      nullptr));
-
   EXPECT_THAT(context->getRecording(),
               PaintOpsAreEq(SaveLayerOp(flags), RestoreOp()));
 }
@@ -279,11 +263,9 @@ TEST(BaseRenderingContextLayerTests, Shadow) {
   context->endLayer();
 
   cc::PaintFlags flags;
-  flags.setImageFilter(sk_make_sp<ComposePaintFilter>(
-      sk_make_sp<DropShadowPaintFilter>(
-          0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
-          DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr),
-      nullptr));
+  flags.setImageFilter(sk_make_sp<DropShadowPaintFilter>(
+      0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
+      DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr));
   EXPECT_THAT(context->getRecording(),
               PaintOpsAreEq(SaveLayerOp(flags), RestoreOp()));
 }
@@ -336,14 +318,9 @@ TEST(BaseRenderingContextLayerTests, Filter) {
   context->beginLayer();
   context->endLayer();
 
-  // TODO(crbug.com/1403037): There shouldn't be a shadow filter computed if no
-  // shadow has been enabled on the context.
   cc::PaintFlags flags;
-  flags.setImageFilter(sk_make_sp<ComposePaintFilter>(
-      sk_make_sp<DropShadowPaintFilter>(
-          0.0f, 0.0f, 0.0f, 0.0f, SkColors::kTransparent,
-          DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr),
-      sk_make_sp<BlurPaintFilter>(10.0f, 10.0f, SkTileMode::kDecal, nullptr)));
+  flags.setImageFilter(
+      sk_make_sp<BlurPaintFilter>(10.0f, 10.0f, SkTileMode::kDecal, nullptr));
   EXPECT_THAT(context->getRecording(),
               PaintOpsAreEq(SaveLayerOp(flags), RestoreOp()));
 }

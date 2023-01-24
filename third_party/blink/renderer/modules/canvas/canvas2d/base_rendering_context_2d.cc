@@ -227,10 +227,15 @@ void BaseRenderingContext2D::beginLayer() {
              GetState().GlobalComposite() != SkBlendMode::kSrcOver) {
     cc::PaintFlags flags;
     flags.setBlendMode(GetState().GlobalComposite());
-    // This ComposePaintFilter will work always, whether there is only
-    // shadows, or filters, both of them, or none of them.
-    flags.setImageFilter(sk_make_sp<ComposePaintFilter>(
-        GetState().ShadowAndForegroundImageFilter(), StateGetFilter()));
+
+    if (StateHasFilter() && GetState().ShouldDrawShadows()) {
+      flags.setImageFilter(sk_make_sp<ComposePaintFilter>(
+          GetState().ShadowAndForegroundImageFilter(), StateGetFilter()));
+    } else if (GetState().ShouldDrawShadows()) {
+      flags.setImageFilter(GetState().ShadowAndForegroundImageFilter());
+    } else if (StateHasFilter()) {
+      flags.setImageFilter(StateGetFilter());
+    }
     flags.setAlphaf(static_cast<float>(globalAlpha()));
     canvas->saveLayer(flags);
   } else {
