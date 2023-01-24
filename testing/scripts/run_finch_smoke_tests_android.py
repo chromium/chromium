@@ -605,6 +605,7 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
 
   def browser_command_line_args(self):
     return (['--vmodule=variations_field_trial_creator.cc=1', '--v=1',
+             '--disable-field-trial-config',
              '--fake-variations-channel=%s' %
              self.options.fake_variations_channel] +
             self.test_specific_browser_args)
@@ -1235,7 +1236,6 @@ def main(args):
       # line, e.g. for Android.
       if installed_seed:
         extra_args = [f'--variations-test-seed-path={installed_seed}']
-        extra_args += ['--disable-field-trial-config']
         ret = test_case.run_tests('with_finch_seed', test_results_dict,
             extra_browser_args=extra_args)
       else:
