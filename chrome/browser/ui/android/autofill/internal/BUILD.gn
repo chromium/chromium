@@ -23,7 +23,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/autofill/OtpVerificationDialogView.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/OtpVerificationDialogViewBinder.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/data/AuthenticatorOption.java",
-    "java/src/org/chromium/chrome/browser/ui/autofill/data/CardUnmaskChallengeOptionType.java",
   ]
   deps = [
     ":java_resources",
@@ -31,6 +30,7 @@ android_library("java") {
     "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
+    "//components/autofill/android:main_autofill_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
@@ -66,6 +66,7 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
+    "//components/autofill/android:main_autofill_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",

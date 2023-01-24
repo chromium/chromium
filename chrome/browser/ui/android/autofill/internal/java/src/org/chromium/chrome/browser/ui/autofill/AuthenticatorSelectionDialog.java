@@ -78,6 +78,25 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
     @Override
     public void onItemClicked(AuthenticatorOption option) {
         mSelectedAuthenticatorOption = option;
+        mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                getPositiveButtonText(mSelectedAuthenticatorOption.getType()));
+    }
+
+    private String getPositiveButtonText(
+            @CardUnmaskChallengeOptionType int authenticatorOptionType) {
+        switch (authenticatorOptionType) {
+            case CardUnmaskChallengeOptionType.SMS_OTP:
+                return mContext.getResources().getString(
+                        R.string.autofill_card_unmask_authentication_selection_dialog_ok_button_label_send);
+            case CardUnmaskChallengeOptionType.CVC:
+                return mContext.getResources().getString(
+                        R.string.autofill_card_unmask_authentication_selection_dialog_ok_button_label_continue);
+            case CardUnmaskChallengeOptionType.UNKNOWN_TYPE:
+                // This will never happen.
+                assert false
+                    : "Attempted to get positive button text for an authenticator option with Unknown type.";
+        }
+        return "";
     }
 
     /**
@@ -116,8 +135,7 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
                                 mContext.getResources().getString(
                                         R.string.autofill_payments_authenticator_selection_dialog_negative_button_label))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                mContext.getResources().getString(
-                                        R.string.autofill_payments_authenticator_selection_dialog_positive_button_label));
+                                getPositiveButtonText(mSelectedAuthenticatorOption.getType()));
         mDialogModel = builder.build();
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
     }

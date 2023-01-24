@@ -42,6 +42,7 @@ public class AuthenticatorSelectionDialogBridgeTest {
                     .setIdentifier("identifier1")
                     .setDescription("description1")
                     .setIconResId(android.R.drawable.ic_media_pause)
+                    .setType(CardUnmaskChallengeOptionType.SMS_OTP)
                     .build();
 
     private static final AuthenticatorOption OPTION_2 =
@@ -50,6 +51,7 @@ public class AuthenticatorSelectionDialogBridgeTest {
                     .setIdentifier("identifier2")
                     .setDescription("description2")
                     .setIconResId(android.R.drawable.ic_media_play)
+                    .setType(CardUnmaskChallengeOptionType.SMS_OTP)
                     .build();
 
     private static final long NATIVE_AUTHENTICATOR_SELECTION_DIALOG_VIEW = 100L;

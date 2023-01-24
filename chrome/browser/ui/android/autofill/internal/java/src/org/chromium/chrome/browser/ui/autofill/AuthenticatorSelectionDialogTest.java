@@ -45,6 +45,7 @@ public class AuthenticatorSelectionDialogTest {
                     .setIdentifier("identifier1")
                     .setDescription("description1")
                     .setIconResId(android.R.drawable.ic_media_pause)
+                    .setType(CardUnmaskChallengeOptionType.SMS_OTP)
                     .build();
 
     private static final AuthenticatorOption OPTION_2 =
@@ -53,6 +54,16 @@ public class AuthenticatorSelectionDialogTest {
                     .setIdentifier("identifier2")
                     .setDescription("description2")
                     .setIconResId(android.R.drawable.ic_media_play)
+                    .setType(CardUnmaskChallengeOptionType.SMS_OTP)
+                    .build();
+
+    private static final AuthenticatorOption OPTION_3 =
+            new AuthenticatorOption.Builder()
+                    .setTitle("title3")
+                    .setIdentifier("identifier3")
+                    .setDescription("description3")
+                    .setIconResId(android.R.drawable.ic_media_play)
+                    .setType(CardUnmaskChallengeOptionType.CVC)
                     .build();
 
     private FakeModalDialogManager mModalDialogManager;
@@ -151,6 +162,7 @@ public class AuthenticatorSelectionDialogTest {
         ArrayList<AuthenticatorOption> options = new ArrayList<>();
         options.add(OPTION_1);
         options.add(OPTION_2);
+        options.add(OPTION_3);
 
         mAuthenticatorSelectionDialog.show(options);
 
@@ -160,12 +172,18 @@ public class AuthenticatorSelectionDialogTest {
                 getAuthenticatorOptionViewHolderAtPosition(model, 0);
         AuthenticatorOptionViewHolder viewHolder2 =
                 getAuthenticatorOptionViewHolderAtPosition(model, 1);
+        AuthenticatorOptionViewHolder viewHolder3 =
+                getAuthenticatorOptionViewHolderAtPosition(model, 2);
+
         // Verify that the first radio button is selected by default.
         assertThat(viewHolder1.getRadioButton().isChecked()).isTrue();
+        assertThat(model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT)).isEqualTo("Send");
         assertThat(viewHolder2.getRadioButton().isChecked()).isFalse();
+        assertThat(viewHolder3.getRadioButton().isChecked()).isFalse();
 
         // Perform click for the radio button of authenticator option 2.
         viewHolder2.getRadioButton().performClick();
+        assertThat(model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT)).isEqualTo("Send");
 
         // Verify that the radio button's checked state reflects correctly. Note: we need to fetch
         // the viewHolder again as the performClick triggered a redraw of the views.
@@ -175,12 +193,31 @@ public class AuthenticatorSelectionDialogTest {
         assertThat(
                 getAuthenticatorOptionViewHolderAtPosition(model, 1).getRadioButton().isChecked())
                 .isTrue();
+        assertThat(
+                getAuthenticatorOptionViewHolderAtPosition(model, 2).getRadioButton().isChecked())
+                .isFalse();
+
+        // Perform click for the radio button of authenticator option 3.
+        viewHolder3.getRadioButton().performClick();
+        assertThat(model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT)).isEqualTo("Continue");
+
+        // Verify that the radio button's checked state reflects correctly. Note: we need to fetch
+        // the viewHolder again as the performClick triggered a redraw of the views.
+        assertThat(
+                getAuthenticatorOptionViewHolderAtPosition(model, 0).getRadioButton().isChecked())
+                .isFalse();
+        assertThat(
+                getAuthenticatorOptionViewHolderAtPosition(model, 1).getRadioButton().isChecked())
+                .isFalse();
+        assertThat(
+                getAuthenticatorOptionViewHolderAtPosition(model, 2).getRadioButton().isChecked())
+                .isTrue();
 
         // Trigger positive button click.
         mModalDialogManager.clickPositiveButton();
 
-        // Verify that the correct identifier is passed to the listener.
-        verify(mAuthenticatorSelectedListener, times(1)).onOptionSelected(OPTION_2.getIdentifier());
+        // Verify that the correct identifiers are passed to the listener.
+        verify(mAuthenticatorSelectedListener, times(1)).onOptionSelected(OPTION_3.getIdentifier());
     }
 
     private AuthenticatorOptionViewHolder getAuthenticatorOptionViewHolderAtPosition(
