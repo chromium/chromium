@@ -624,8 +624,11 @@ export const add = (a, b) => a + b;
 
         try:
             test_dir = tempfile.mkdtemp()
-            file_path = os.path.join(test_dir, 'coverage.json')
-            example_test_file_path = os.path.join(test_dir, 'fileA.js')
+            file_path = os.path.join(test_dir,
+                                     'coverage.json').replace('\\', '/')
+            example_test_file_path = os.path.join(test_dir,
+                                                  'fileA.js').replace(
+                                                      '\\', '/')
             expected_output = json.loads(
                 expected_output_file %
                 (example_test_file_path, example_test_file_path))
