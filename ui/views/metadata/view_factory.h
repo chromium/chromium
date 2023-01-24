@@ -35,25 +35,14 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
   BaseViewBuilderT& operator=(BaseViewBuilderT&&) = default;
   ~BaseViewBuilderT() override = default;
 
-  template <typename View>
-  Builder& CopyAddressTo(View** view_address) & {
+  template <typename ViewPtr>
+  Builder& CopyAddressTo(ViewPtr* view_address) & {
     *view_address = view_ ? view_.get() : root_view_.get();
     return *static_cast<Builder*>(this);
   }
 
-  template <typename View>
-  Builder&& CopyAddressTo(View** view_address) && {
-    return std::move(this->CopyAddressTo(view_address));
-  }
-
-  template <typename View, typename Traits>
-  Builder& CopyAddressTo(raw_ptr<View, Traits>* view_address) & {
-    *view_address = view_ ? view_.get() : root_view_.get();
-    return *static_cast<Builder*>(this);
-  }
-
-  template <typename View, typename Traits>
-  Builder&& CopyAddressTo(raw_ptr<View, Traits>* view_address) && {
+  template <typename ViewPtr>
+  Builder&& CopyAddressTo(ViewPtr* view_address) && {
     return std::move(this->CopyAddressTo(view_address));
   }
 

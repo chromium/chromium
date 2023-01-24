@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
+#include "base/cxx20_to_address.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
@@ -526,15 +527,11 @@ bool IsWebcamAvailableOnSystem(WebContents* web_contents);
 // declare additional ConvertToRenderFrameHost functions for convenience.
 class ToRenderFrameHost {
  public:
-  template <typename T>
+  template <typename Ptr>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  ToRenderFrameHost(T* frame_convertible_value)
-      : render_frame_host_(ConvertToRenderFrameHost(frame_convertible_value)) {}
-
-  template <typename T, typename Traits>
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  ToRenderFrameHost(const raw_ptr<T, Traits>& frame_convertible_value)
-      : ToRenderFrameHost(frame_convertible_value.get()) {}
+  ToRenderFrameHost(Ptr frame_convertible_value)
+      : render_frame_host_(ConvertToRenderFrameHost(
+            base::to_address(frame_convertible_value))) {}
 
   // Extract the underlying frame.
   RenderFrameHost* render_frame_host() const { return render_frame_host_; }
