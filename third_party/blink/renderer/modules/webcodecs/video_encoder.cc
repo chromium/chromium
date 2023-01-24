@@ -37,6 +37,7 @@
 #include "media/video/offloading_video_encoder.h"
 #include "media/video/video_encode_accelerator_adapter.h"
 #include "media/video/video_encoder_fallback.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -1205,10 +1206,15 @@ static void isConfigSupportedWithSoftwareOnly(
                           media::EncoderStatus status) {
     support->setSupported(status.is_ok());
     resolver->Resolve(support);
-    // This task runner may be destroyed without running tasks, so don't use
-    // DeleteSoon() which can leak the codec. See https://crbug.com/1376851.
-    runner->PostTask(FROM_HERE,
-                     base::DoNothingWithBoundArgs(std::move(encoder)));
+    if (base::FeatureList::IsEnabled(
+            features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter)) {
+      runner->DeleteSoon(FROM_HERE, std::move(encoder));
+    } else {
+      // This task runner may be destroyed without running tasks, so don't use
+      // DeleteSoon() which can leak the codec. See https://crbug.com/1376851.
+      runner->PostTask(FROM_HERE,
+                       base::DoNothingWithBoundArgs(std::move(encoder)));
+    }
   };
 
   auto* context = ExecutionContext::From(script_state);

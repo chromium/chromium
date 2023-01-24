@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -232,11 +233,15 @@ void EncoderBase<Traits>::ResetInternal() {
   // |media_encoder_|. If we delete it now, this thread might come back up
   // the call stack and continue executing code belonging to deleted
   // |media_encoder_|.
-  //
-  // NOTE: This task runner may be destroyed without running tasks, so don't
-  // use DeleteSoon() which can leak the codec. See https://crbug.com/1376851.
-  callback_runner_->PostTask(
-      FROM_HERE, base::DoNothingWithBoundArgs(std::move(media_encoder_)));
+  if (base::FeatureList::IsEnabled(
+          features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter)) {
+    callback_runner_->DeleteSoon(FROM_HERE, std::move(media_encoder_));
+  } else {
+    // NOTE: This task runner may be destroyed without running tasks, so don't
+    // use DeleteSoon() which can leak the codec. See https://crbug.com/1376851.
+    callback_runner_->PostTask(
+        FROM_HERE, base::DoNothingWithBoundArgs(std::move(media_encoder_)));
+  }
 
   // This codec isn't holding on to any resources, and doesn't need to be
   // reclaimed.

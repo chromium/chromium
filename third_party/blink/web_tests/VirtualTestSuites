@@ -1744,5 +1744,14 @@
     "exclusive_tests": "ALL",
     "args": ["--enable-features=ExtendScriptResourceLifetime"],
     "expires": "Jul 1, 2023"
+  },
+  {
+    "prefix": "webcodecs-without-task-runner-with-custom-deleter",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/webcodecs"
+    ],
+    "args": ["--disable-features=UseBlinkSchedulerTaskRunnerWithCustomDeleter"],
+    "expires": "Jul 1, 2023"
   }
 ]
