@@ -161,22 +161,22 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   // Signal processing.
   SignalHandler signal_handler_;
 
+  ExecutionService execution_service_;
+
   // Segment selection.
   // TODO(shaktisahu): Determine safe destruction ordering between
   // SegmentSelectorImpl and ModelExecutionSchedulerImpl.
   base::flat_map<std::string, std::unique_ptr<SegmentSelectorImpl>>
       segment_selectors_;
 
-  // For routing requests to the right handler.
-  std::unique_ptr<RequestDispatcher> request_dispatcher_;
-
   // Result cache.
   std::unique_ptr<CachedResultProvider> cached_result_provider_;
 
+  // For routing requests to the right handler.
+  std::unique_ptr<RequestDispatcher> request_dispatcher_;
+
   // Segment results.
   std::unique_ptr<SegmentScoreProvider> segment_score_provider_;
-
-  ExecutionService execution_service_;
 
   std::unique_ptr<ServiceProxyImpl> proxy_;
 
