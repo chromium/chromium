@@ -86,6 +86,8 @@ class InputInjectorWayland : public InputInjector {
     // WaylandManager class.
     void SetKeyboardCapabilityCallback();
 
+    void Shutdown();
+
    private:
     friend class base::RefCountedThreadSafe<Core>;
     virtual ~Core();

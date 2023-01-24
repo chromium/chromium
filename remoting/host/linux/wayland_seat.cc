@@ -57,6 +57,7 @@ void WaylandSeat::OnSeatCapabilitiesEvent(void* data,
         std::make_unique<WaylandKeyboard>(wayland_seat->wl_seat_);
     WaylandManager::Get()->OnSeatKeyboardCapability();
   } else if (!has_keyboard && wayland_seat->wayland_keyboard_) {
+    WaylandManager::Get()->OnSeatKeyboardCapabilityRevoked();
     wayland_seat->wayland_keyboard_.reset();
   }
 }

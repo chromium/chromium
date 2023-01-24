@@ -29,7 +29,10 @@ WaylandDesktopCapturer::WaylandDesktopCapturer(
                               std::make_unique<xdg_portal::RemoteDesktopPortal>(
                                   this,
                                   options.prefer_cursor_embedded())) {}
-WaylandDesktopCapturer::~WaylandDesktopCapturer() {}
+
+WaylandDesktopCapturer::~WaylandDesktopCapturer() {
+  WaylandManager::Get()->OnDesktopCapturerDestroyed();
+}
 
 void WaylandDesktopCapturer::Start(Callback* callback) {
   base_capturer_pipewire_.Start(callback);

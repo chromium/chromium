@@ -122,9 +122,13 @@ InputInjectorWayland::InputInjectorWayland(
       base::BindRepeating(&Core::SetRemoteDesktopSessionDetails, core_)));
   WaylandManager::Get()->AddClipboardMetadataCallback(converting_cb.Then(
       base::BindRepeating(&Core::SetClipboardSessionDetails, core_)));
+  WaylandManager::Get()->AddCapturerDestroyedCallback(
+      base::BindRepeating(&Core::Shutdown, core_));
 }
 
-InputInjectorWayland::~InputInjectorWayland() {}
+InputInjectorWayland::~InputInjectorWayland() {
+  core_->Shutdown();
+}
 
 void InputInjectorWayland::InjectClipboardEvent(const ClipboardEvent& event) {
   core_->InjectClipboardEvent(event);
@@ -503,6 +507,21 @@ void InputInjectorWayland::Core::Start(
   }
   DCHECK(input_task_runner_->BelongsToCurrentThread());
   clipboard_.Start(std::move(client_clipboard));
+}
+
+void InputInjectorWayland::Core::Shutdown() {
+  if (!input_task_runner_->BelongsToCurrentThread()) {
+    input_task_runner_->PostTask(FROM_HERE,
+                                 base::BindOnce(&Core::Shutdown, this));
+    return;
+  }
+  DCHECK(input_task_runner_->BelongsToCurrentThread());
+  // We disable processing the events here. This may cause the events to be
+  // queued for sometime but the expectation here is that after `Shutdown` is
+  // invoked, we expect the injector to be destroyed soon.
+  seat_has_keyboard_capability_ = false;
+  clipboard_initialized_ = false;
+  remote_desktop_initialized_ = false;
 }
 
 }  // namespace remoting

@@ -60,8 +60,19 @@ class WaylandManager {
   // Adds callback to be invoked when a desktop capturer has metadata available.
   void AddCapturerMetadataCallback(DesktopMetadataCallback callback);
 
+  // Adds callback to be invoked when a desktop capturer is destroyed.
+  // TODO(salmanmalik): This would need to be enhanced when supporting multiple
+  // desktops/capturers.
+  void AddCapturerDestroyedCallback(base::OnceClosure callback);
+
   // Invoked by the desktop capturer(s), upon successful start.
   void OnDesktopCapturerMetadata(webrtc::DesktopCaptureMetadata metadata);
+
+  // Invoked by the desktop capturer(s), upon destruction.
+  // TODO(salmanmalik): This would need to be enhanced when supporting multiple
+  // desktops/capturers and is likely going to notify the listener only when
+  // the last desktop capturer is destroyed.
+  void OnDesktopCapturerDestroyed();
 
   // Adds callback to be invoked when clipboard has metadata available.
   void AddClipboardMetadataCallback(DesktopMetadataCallback callback);
@@ -99,15 +110,15 @@ class WaylandManager {
   void SetSeatPresentCallback(WaylandSeat::OnSeatPresentCallback callback);
 
   // Sets callback to be invoked when the associated seat gains a keyboard
-  // capability. It is an error to call this method before the seat is
-  // available.
+  // capability.
   void SetKeyboardCapabilityCallback(base::OnceClosure callback);
 
  private:
   friend class WaylandSeat;
 
-  // Invoked by wayland seat when it acquires the wayland keyboard capability.
+  // Invoked by wayland seat when wayland keyboard capability changes.
   void OnSeatKeyboardCapability();
+  void OnSeatKeyboardCapabilityRevoked();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -125,15 +136,15 @@ class WaylandManager {
       GUARDED_BY_CONTEXT(sequence_checker_);
   base::OnceClosure keyboard_capability_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  base::OnceClosure capturer_destroyed_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Keeps track of the latest keymap for the case where the keyboard layout
   // monitor has not yet registered a callback.
   XkbKeyMapUniquePtr keymap_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
-  // Used to match the keyboard capability to make sure that we don't send
-  // the capability to the input injector if a stale keyboard capability has
-  // arrived.
-  uint32_t desired_seat_id_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  bool is_keyboard_capability_acquired_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
 };
 
 }  // namespace remoting
