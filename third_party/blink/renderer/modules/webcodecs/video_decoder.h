@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <memory>
 
-#include "base/containers/lru_cache.h"
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "media/base/media_types.h"
 #include "media/base/status.h"
@@ -140,7 +140,7 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
   struct ChunkMetadata {
     base::TimeDelta duration;
   };
-  base::LRUCache<base::TimeDelta, ChunkMetadata> chunk_metadata_;
+  base::flat_map<base::TimeDelta, ChunkMetadata> chunk_metadata_;
 };
 
 }  // namespace blink

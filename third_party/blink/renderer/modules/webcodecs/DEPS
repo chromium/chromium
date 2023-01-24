@@ -1,4 +1,5 @@
 include_rules = [
+    "+base/containers/flat_map.h",
     "+base/functional/bind.h",
     "+base/strings/string_util.h",
     "+base/test",

@@ -558,8 +558,7 @@ VideoEncoder::VideoEncoder(ScriptState* script_state,
                            const VideoEncoderInit* init,
                            ExceptionState& exception_state)
     : Base(script_state, init, exception_state),
-      max_active_encodes_(ComputeMaxActiveEncodes()),
-      frame_metadata_(128) {
+      max_active_encodes_(ComputeMaxActiveEncodes()) {
   UseCounter::Count(ExecutionContext::From(script_state),
                     WebFeature::kWebCodecs);
 }
@@ -876,8 +875,8 @@ void VideoEncoder::ProcessEncode(Request* request) {
       MakeUnwrappingCrossThreadHandle(request)));
 
   if (frame->metadata().frame_duration) {
-    frame_metadata_.Put(frame->timestamp(),
-                        FrameMetadata{*frame->metadata().frame_duration});
+    frame_metadata_[frame->timestamp()] =
+        FrameMetadata{*frame->metadata().frame_duration};
   }
 
   // Currently underlying encoders can't handle frame backed by textures,
@@ -1095,11 +1094,19 @@ void VideoEncoder::CallOutputCallback(
   buffer->set_is_key_frame(output.key_frame);
 
   // Get duration from |frame_metadata_|.
-  const auto it = frame_metadata_.Get(output.timestamp);
+  const auto it = frame_metadata_.find(output.timestamp);
   if (it != frame_metadata_.end()) {
     const auto duration = it->second.duration;
-    if (!duration.is_zero() && duration != media::kNoTimestamp)
+    if (!duration.is_zero() && duration != media::kNoTimestamp) {
       buffer->set_duration(duration);
+    }
+
+    // While encoding happens in presentation order, outputs may be out of order
+    // for some codec configurations. The maximum number of reordered outputs is
+    // 16, so we can clear everything before that.
+    if (it - frame_metadata_.begin() > 16) {
+      frame_metadata_.erase(frame_metadata_.begin(), it + 1);
+    }
   }
 
   auto* chunk = MakeGarbageCollected<EncodedVideoChunk>(std::move(buffer));

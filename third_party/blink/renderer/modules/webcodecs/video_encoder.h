@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/containers/lru_cache.h"
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
@@ -155,7 +155,7 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
   struct FrameMetadata {
     base::TimeDelta duration;
   };
-  base::LRUCache<base::TimeDelta, FrameMetadata> frame_metadata_;
+  base::flat_map<base::TimeDelta, FrameMetadata> frame_metadata_;
 
   // The color space corresponding to the last emitted output. Used to update
   // emitted VideoDecoderConfig when necessary.
