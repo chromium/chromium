@@ -171,6 +171,7 @@ NSString* const kSignOutIdentityIconName = @"sign_out_icon";
     // Check to see if the collection are still scrolled to the top --
     // it's possible (and difficult) to unfocus the omnibox and initiate a
     // -shiftTilesDownForOmniboxDefocus before the animation here completes.
+    [self.dispatcher fakeboxFocused];
     if (IsSplitToolbarMode(self)) {
       [self.dispatcher onFakeboxAnimationComplete];
     }

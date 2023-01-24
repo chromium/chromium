@@ -42,7 +42,7 @@
 namespace {
 // Animation time for the shift up/down animations to focus/defocus omnibox.
 const CGFloat kShiftTilesDownAnimationDuration = 0.2;
-const CGFloat kShiftTilesUpAnimationDuration = 0.1;
+const CGFloat kShiftTilesUpAnimationDuration = 0.25;
 }  // namespace
 
 @interface NewTabPageViewController () <NewTabPageOmniboxPositioning,
@@ -229,7 +229,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   [self updateFakeOmniboxForScrollPosition];
 
   if (self.shouldFocusFakebox) {
-    [self shiftTilesUpToFocusOmnibox];
+    [self focusFakebox];
     self.shouldFocusFakebox = NO;
   }
 
@@ -575,7 +575,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   // action) needs to wait until it is ready. viewDidAppear: currently serves as
   // this proxy as there is no specific signal given from the feed that its
   // contents have loaded.
-  if (self.isFeedVisible && !self.viewDidAppear) {
+  if (self.isFeedVisible && ![self collectionViewHasLoaded]) {
     self.shouldFocusFakebox = YES;
   } else {
     [self shiftTilesUpToFocusOmnibox];
@@ -786,7 +786,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   if (self.scrolledToMinimumHeight) {
     self.shouldAnimateHeader = NO;
     self.disableScrollAnimation = NO;
-    [self.ntpContentDelegate focusOmnibox];
     [self.headerController
         completeHeaderFakeOmniboxFocusAnimationWithFinalPosition:
             UIViewAnimatingPositionEnd];
@@ -830,7 +829,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
                 self.disableScrollAnimation = YES;
                 [strongSelf.headerController expandHeaderForFocus];
                 shiftOmniboxToTop();
-                [strongSelf.ntpContentDelegate focusOmnibox];
               }
             }];
 

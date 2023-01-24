@@ -23,9 +23,6 @@
 // Signals to the receiver that the Fakebox is blurring.
 - (void)onFakeboxBlur;
 
-// Signal to the Omnibox to enter the focused state.
-- (void)focusOmnibox;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_CONTENT_DELEGATE_H_

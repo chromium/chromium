@@ -1044,12 +1044,6 @@
   [fakeboxFocuserHandler onFakeboxBlur];
 }
 
-- (void)focusOmnibox {
-  id<FakeboxFocuser> fakeboxFocuserHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), FakeboxFocuser);
-  [fakeboxFocuserHandler fakeboxFocused];
-}
-
 #pragma mark - NewTabPageDelegate
 
 - (void)updateFeedLayout {
