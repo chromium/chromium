@@ -975,15 +975,18 @@ class MediaStreamManager::DeviceRequest {
     NOTREACHED();
   }
 
-  // TODO(crbug.com/1386165): Make pure virtual when there is a subclass for all
-  // MediaStreamRequestTypes
+  // TODO(crbug.com/1386165): Combine FinalizeRequest and
+  // FinalizeMediaAccessRequest, implement it for the remaining subclasses and
+  // make it into on pure virtual function.
   virtual void FinalizeRequest(const std::string& label) { NOTREACHED(); }
 
-  // TODO(crbug.com/1386165): Make pure virtual when there is a subclass for all
-  // MediaStreamRequestTypes
-  virtual void FinalizeRequestFailed(MediaStreamRequestResult result) {
+  virtual void FinalizeMediaAccessRequest(
+      const std::string& label,
+      const blink::mojom::StreamDevicesSet&) {
     NOTREACHED();
   }
+
+  virtual void FinalizeRequestFailed(MediaStreamRequestResult result) = 0;
 
   virtual void FinalizeChangeDevice(const std::string& label) { NOTREACHED(); }
 
@@ -1029,11 +1032,6 @@ class MediaStreamManager::DeviceRequest {
 
   blink::mojom::StreamDevicesSet stream_devices_set;
   blink::mojom::StreamDevicesSet old_stream_devices_set;
-
-  // Callback to the requester which audio/video devices have been selected.
-  // It can be null if the requester has no interest to know the result.
-  // Currently it is only used by |DEVICE_ACCESS| type.
-  MediaAccessRequestCallback media_access_request_cb;
 
   DeviceStoppedCallback device_stopped_cb;
 
@@ -1109,6 +1107,55 @@ class MediaStreamManager::DeviceRequest {
   int target_process_id_;
   int target_frame_id_;
   std::string label_;
+};
+
+class MediaStreamManager::MediaAccessRequest
+    : public MediaStreamManager::DeviceRequest {
+ public:
+  MediaAccessRequest(int requesting_process_id,
+                     int requesting_frame_id,
+                     int requester_id,
+                     int page_request_id,
+                     StreamSelectionInfoPtr audio_stream_selection_info_ptr,
+                     const StreamControls& controls,
+                     MediaDeviceSaltAndOrigin salt_and_origin,
+                     MediaAccessRequestCallback media_access_request_cb)
+      : DeviceRequest(requesting_process_id,
+                      requesting_frame_id,
+                      requester_id,
+                      page_request_id,
+                      /*user_gesture=*/false,
+                      std::move(audio_stream_selection_info_ptr),
+                      blink::MEDIA_DEVICE_ACCESS,
+                      controls,
+                      std::move(salt_and_origin)),
+        media_access_request_cb_(std::move(media_access_request_cb)) {}
+
+  void FinalizeMediaAccessRequest(
+      const std::string& label,
+      const blink::mojom::StreamDevicesSet& stream_devices_set) override {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    DCHECK(media_access_request_cb_);
+    SendLogMessage(base::StringPrintf(
+        "FinalizeMediaAccessRequest({label=%s}, {requester_id="
+        "%d}, {request_type=%s})",
+        label.c_str(), requester_id, RequestTypeToString(request_type())));
+    std::move(media_access_request_cb_)
+        .Run(stream_devices_set, std::move(ui_proxy));
+  }
+
+  void FinalizeRequestFailed(MediaStreamRequestResult) override {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    DCHECK(media_access_request_cb_);
+    std::move(media_access_request_cb_)
+        .Run(/*stream_devices_set=*/blink::mojom::StreamDevicesSet(),
+             std::move(ui_proxy));
+  }
+
+ private:
+  // Callback to the requester which audio/video devices have been selected.
+  // It can be null if the requester has no interest to know the result.
+  MediaAccessRequestCallback media_access_request_cb_;
 };
 
 class MediaStreamManager::CreateDeviceRequest
@@ -1627,15 +1674,13 @@ std::string MediaStreamManager::MakeMediaAccessRequest(
       StreamSelectionInfo::New(
           blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID,
           absl::nullopt);
-  auto request = std::make_unique<DeviceRequest>(
+  auto request = std::make_unique<MediaAccessRequest>(
       render_process_id, render_frame_id, requester_id, page_request_id,
-      false /* user gesture */, std::move(audio_stream_selection_info_ptr),
-      blink::MEDIA_DEVICE_ACCESS, controls,
+      std::move(audio_stream_selection_info_ptr), controls,
       MediaDeviceSaltAndOrigin{
           std::string() /* salt */, std::string() /* group_id_salt */,
-          security_origin, true /* has_focus */, false /* is_background */});
-
-  request->media_access_request_cb = std::move(callback);
+          security_origin, true /* has_focus */, false /* is_background */},
+      std::move(callback));
   const std::string& label = AddRequest(std::move(request))->first;
 
   // Post a task and handle the request asynchronously. The reason is that the
@@ -3000,17 +3045,11 @@ void MediaStreamManager::FinalizeRequestFailed(
       RequestResultToString(result)));
 
   switch (request->request_type()) {
+    case blink::MEDIA_DEVICE_ACCESS:
     case blink::MEDIA_GENERATE_STREAM:
     case blink::MEDIA_GET_OPEN_DEVICE:
     case blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY: {
       request->FinalizeRequestFailed(result);
-      break;
-    }
-    case blink::MEDIA_DEVICE_ACCESS: {
-      DCHECK(request->media_access_request_cb);
-      std::move(request->media_access_request_cb)
-          .Run(/*stream_devices_set=*/blink::mojom::StreamDevicesSet(),
-               std::move(request->ui_proxy));
       break;
     }
     case blink::MEDIA_DEVICE_UPDATE: {
@@ -3061,18 +3100,9 @@ void MediaStreamManager::FinalizeMediaAccessRequest(
     const blink::mojom::StreamDevicesSet& stream_devices_set) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(request_it != requests_.end());
-
   DeviceRequest* const request = request_it->second.get();
-  DCHECK(request->media_access_request_cb);
 
-  SendLogMessage(
-      base::StringPrintf("FinalizeMediaAccessRequest({label=%s}, {requester_id="
-                         "%d}, {request_type=%s})",
-                         request_it->first.c_str(), request->requester_id,
-                         RequestTypeToString(request->request_type())));
-
-  std::move(request->media_access_request_cb)
-      .Run(stream_devices_set, std::move(request->ui_proxy));
+  request->FinalizeMediaAccessRequest(request_it->first, stream_devices_set);
 
   // Delete the request since it is done.
   DeleteRequest(request_it);

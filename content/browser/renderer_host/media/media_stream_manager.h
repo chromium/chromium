@@ -457,6 +457,8 @@ class CONTENT_EXPORT MediaStreamManager
 
   // Contains common data needed to keep track of requests.
   class DeviceRequest;
+  // Contains data specific for MediaDeviceAccess requests
+  class MediaAccessRequest;
   // Contains common data between GenerateStreams and GetOpenDevice requests
   class CreateDeviceRequest;
   // Contains data specific for GenerateStreams requests
