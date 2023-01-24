@@ -2988,6 +2988,7 @@ crbug.com/webrtc/10567 external/wpt/webrtc/RTCRtpParameters-encodings.html [ Fai
 crbug.com/webrtc/10567 external/wpt/webrtc/simulcast/setParameters-encodings.https.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11 ] external/wpt/url/IdnaTestV2.window.html [ Timeout Failure ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/block-container-non-adjoining-item.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-block-end-trimmed-only.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-block-start-trimmed-only.html [ Failure ]
@@ -6936,7 +6937,7 @@ crbug.com/1408967 [ Fuchsia ] fast/block/float/float-in-float-painting.html [ Fa
 crbug.com/1408967 [ Fuchsia ] fast/layers/opacity-transforms.html [ Failure Pass ]
 
 # Sheriff 2023-01-23
-crbug.com/1409463 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-screeny.html [ Failure Pass Crash Timeout ]
+crbug.com/1409463 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-screeny.html [ Crash Failure Pass Timeout ]
 
 # Sheriff 2023-01-24
 crbug.com/1409804 [ Mac ] fast/backgrounds/repeat/negative-offset-repeat-transformed.html [ Failure ]

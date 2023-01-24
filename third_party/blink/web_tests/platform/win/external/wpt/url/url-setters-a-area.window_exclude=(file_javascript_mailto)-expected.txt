@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 395 tests; 231 PASS, 164 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 405 tests; 239 PASS, 166 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 FAIL <a>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged. assert_equals: expected "a://example.net" but got "file:///A://example.net"
 FAIL <area>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged. assert_equals: expected "a://example.net" but got "file:///A://example.net"
@@ -47,6 +47,20 @@ PASS <a>: Setting <data:text/html,<p>Test>.protocol = 'view-source+data:foo : ba
 PASS <area>: Setting <data:text/html,<p>Test>.protocol = 'view-source+data:foo : bar' Stuff after the first ':' is ignored
 PASS <a>: Setting <http://foo.com:443/>.protocol = 'https' Port is set to null if it is the default for new scheme.
 PASS <area>: Setting <http://foo.com:443/>.protocol = 'https' Port is set to null if it is the default for new scheme.
+FAIL <a>: Setting <http://test/>.protocol = 'h
+
+tt	ps' Tab and newline are stripped assert_equals: expected "https://test/" but got "http://test/"
+FAIL <area>: Setting <http://test/>.protocol = 'h
+
+tt	ps' Tab and newline are stripped assert_equals: expected "https://test/" but got "http://test/"
+PASS <a>: Setting <http://test/>.protocol = 'https\0' Non-tab/newline C0 controls result in no-op
+PASS <area>: Setting <http://test/>.protocol = 'https\0' Non-tab/newline C0 controls result in no-op
+PASS <a>: Setting <http://test/>.protocol = 'https'
+PASS <area>: Setting <http://test/>.protocol = 'https'
+PASS <a>: Setting <http://test/>.protocol = 'https\r'
+PASS <area>: Setting <http://test/>.protocol = 'https\r'
+PASS <a>: Setting <http://test/>.protocol = 'https '
+PASS <area>: Setting <http://test/>.protocol = 'https '
 PASS <a>: Setting <unix:/run/foo.socket>.username = 'me' No host means no username
 PASS <area>: Setting <unix:/run/foo.socket>.username = 'me' No host means no username
 PASS <a>: Setting <http://example.net>.username = 'me'

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 198 tests; 112 PASS, 86 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 203 tests; 116 PASS, 87 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 FAIL URL: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged. assert_equals: expected "a://example.net" but got "file:///A://example.net"
 FAIL URL: Setting <a://example.net>.protocol = 'b' assert_equals: expected "b://example.net" but got "file:///B:///A://example.net"
@@ -24,6 +24,13 @@ FAIL URL: Setting <nonsense:///test>.protocol = 'https' assert_equals: expected 
 PASS URL: Setting <http://example.net>.protocol = 'https:foo : bar' Stuff after the first ':' is ignored
 PASS URL: Setting <data:text/html,<p>Test>.protocol = 'view-source+data:foo : bar' Stuff after the first ':' is ignored
 PASS URL: Setting <http://foo.com:443/>.protocol = 'https' Port is set to null if it is the default for new scheme.
+FAIL URL: Setting <http://test/>.protocol = 'h
+
+tt	ps' Tab and newline are stripped assert_equals: expected "https://test/" but got "http://test/"
+PASS URL: Setting <http://test/>.protocol = 'https\0' Non-tab/newline C0 controls result in no-op
+PASS URL: Setting <http://test/>.protocol = 'https'
+PASS URL: Setting <http://test/>.protocol = 'https\r'
+PASS URL: Setting <http://test/>.protocol = 'https '
 PASS URL: Setting <unix:/run/foo.socket>.username = 'me' No host means no username
 PASS URL: Setting <http://example.net>.username = 'me'
 PASS URL: Setting <http://:secret@example.net>.username = 'me'
