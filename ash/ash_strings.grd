@@ -423,11 +423,20 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_BUTTON_LABEL" desc="The shorter label used for the button in the status tray to toggle Nearby Share high visibility mode, which makes the device visible to all nearby devices for file sharing.">
         Nearby visibility
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL" desc="The shorter label used for the feature tile in the status tray to toggle Nearby Share high visibility mode, which makes the device visible to all nearby devices for file sharing.">
+        Nearby Share
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_OFF_STATE" desc="Sub-label for the Nearby Share system tray button." meaning="Nearby Share high visibility mode is currently inactive. [CHAR_LIMIT=14]">
         Off
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_ON_STATE" desc="Sub-label for the Nearby Share system tray button." meaning="Nearby Share high visibility mode is currently active with the displayed time remaining. [CHAR_LIMIT=14]">
         On, <ph name="REMAINING_TIME">$1<ex>40 sec</ex></ph>
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_OFF_STATE" desc="Sub-label for the Nearby Share system tray feature tile when off." meaning="Nearby Share high visibility mode is currently inactive. [CHAR_LIMIT=14]">
+        Everyone, off
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_ON_STATE" desc="Sub-label for the Nearby Share system tray feature tile when on." meaning="Nearby Share high visibility mode is currently active with the displayed time remaining. [CHAR_LIMIT=14]">
+        Everyone, <ph name="REMAINING_TIME">$1<ex>40 sec</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_REMAINING_MINUTES" desc="A short string showing the nearest number of whole minutes until Nearby Share high visibility turns off. To be used with IDS_ASH_STATUS_TRAY_NEARBY_SHARE_ON_STATE. [CHAR_LIMIT=7]">
         <ph name="MINUTES">$1<ex>2</ex></ph> min

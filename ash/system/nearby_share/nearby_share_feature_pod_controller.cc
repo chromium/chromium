@@ -12,6 +12,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/functional/bind.h"
@@ -86,6 +87,35 @@ FeaturePodButton* NearbyShareFeaturePodController::CreateButton() {
   return button_;
 }
 
+std::unique_ptr<FeatureTile> NearbyShareFeaturePodController::CreateTile(
+    bool compact) {
+  DCHECK(features::IsQsRevampEnabled());
+  auto tile = std::make_unique<FeatureTile>(
+      base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
+                          weak_ptr_factory_.GetWeakPtr()));
+  tile_ = tile.get();
+
+  SessionControllerImpl* session_controller =
+      Shell::Get()->session_controller();
+  const bool visible = nearby_share_delegate_->IsPodButtonVisible() &&
+                       session_controller->IsActiveUserSessionStarted() &&
+                       session_controller->IsUserPrimary() &&
+                       !session_controller->IsUserSessionBlocked() &&
+                       nearby_share_delegate_->IsEnabled();
+  tile_->SetVisible(visible);
+  if (visible) {
+    TrackVisibilityUMA();
+  }
+
+  tile_->SetLabel(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL));
+  tile_->SetTooltipText(l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TOGGLE_TOOLTIP));
+  bool enabled = nearby_share_delegate_->IsHighVisibilityOn();
+  OnHighVisibilityEnabledChanged(enabled);
+  return tile;
+}
+
 QsFeatureCatalogName NearbyShareFeaturePodController::GetCatalogName() {
   return QsFeatureCatalogName::kNearbyShare;
 }
@@ -117,17 +147,37 @@ void NearbyShareFeaturePodController::OnHighVisibilityEnabledChanged(
 }
 
 void NearbyShareFeaturePodController::UpdateButton(bool enabled) {
-  button_->SetToggled(enabled);
-  button_->SetVectorIcon(enabled ? kUnifiedMenuNearbyShareVisibleIcon
-                                 : kUnifiedMenuNearbyShareNotVisibleIcon);
+  bool is_qs_revamp_enabled = features::IsQsRevampEnabled();
+
+  if (is_qs_revamp_enabled) {
+    tile_->SetToggled(enabled);
+    tile_->SetVectorIcon(enabled ? kQuickSettingsNearbyShareOnIcon
+                                 : kQuickSettingsNearbyShareOffIcon);
+
+  } else {
+    button_->SetToggled(enabled);
+    button_->SetVectorIcon(enabled ? kUnifiedMenuNearbyShareVisibleIcon
+                                   : kUnifiedMenuNearbyShareNotVisibleIcon);
+  }
 
   if (enabled) {
-    button_->SetSubLabel(l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_NEARBY_SHARE_ON_STATE,
-        RemainingTimeString(RemainingHighVisibilityTime())));
+    if (is_qs_revamp_enabled) {
+      tile_->SetSubLabel(l10n_util::GetStringFUTF16(
+          IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_ON_STATE,
+          RemainingTimeString(RemainingHighVisibilityTime())));
+    } else {
+      button_->SetSubLabel(l10n_util::GetStringFUTF16(
+          IDS_ASH_STATUS_TRAY_NEARBY_SHARE_ON_STATE,
+          RemainingTimeString(RemainingHighVisibilityTime())));
+    }
   } else {
-    button_->SetSubLabel(
-        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NEARBY_SHARE_OFF_STATE));
+    if (is_qs_revamp_enabled) {
+      tile_->SetSubLabel(l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_OFF_STATE));
+    } else {
+      button_->SetSubLabel(l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_NEARBY_SHARE_OFF_STATE));
+    }
   }
 }
 

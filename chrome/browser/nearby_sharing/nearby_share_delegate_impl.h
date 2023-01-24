@@ -51,6 +51,7 @@ class NearbyShareDelegateImpl
   ~NearbyShareDelegateImpl() override;
 
   // ash::NearbyShareDelegate
+  bool IsEnabled() override;
   bool IsPodButtonVisible() override;
   bool IsHighVisibilityOn() override;
   bool IsEnableHighVisibilityRequestActive() const override;

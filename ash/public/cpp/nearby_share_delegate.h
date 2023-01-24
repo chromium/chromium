@@ -21,6 +21,9 @@ class ASH_PUBLIC_EXPORT NearbyShareDelegate {
  public:
   virtual ~NearbyShareDelegate() = default;
 
+  // Used to determine if NearbyShare has been enabled in the settings app.
+  virtual bool IsEnabled() = 0;
+
   // Used by the pod button to determine whether it should be visible.
   virtual bool IsPodButtonVisible() = 0;
 

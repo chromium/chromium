@@ -25,6 +25,7 @@ class ASH_PUBLIC_EXPORT TestNearbyShareDelegate : public NearbyShareDelegate {
   TestNearbyShareDelegate& operator=(TestNearbyShareDelegate&) = delete;
 
   // NearbyShareDelegate
+  bool IsEnabled() override;
   bool IsPodButtonVisible() override;
   bool IsHighVisibilityOn() override;
   bool IsEnableHighVisibilityRequestActive() const override;
@@ -32,6 +33,8 @@ class ASH_PUBLIC_EXPORT TestNearbyShareDelegate : public NearbyShareDelegate {
   void EnableHighVisibility() override;
   void DisableHighVisibility() override;
   void ShowNearbyShareSettings() const override;
+
+  void set_is_enabled(bool enabled) { is_enabled_ = enabled; }
 
   void set_is_pod_button_visible(bool visible) {
     is_pod_button_visible_ = visible;
@@ -52,6 +55,7 @@ class ASH_PUBLIC_EXPORT TestNearbyShareDelegate : public NearbyShareDelegate {
   std::vector<Method>& method_calls() { return method_calls_; }
 
  private:
+  bool is_enabled_ = true;
   bool is_pod_button_visible_ = false;
   bool is_enable_high_visibility_request_active_ = false;
   bool is_high_visibility_on_ = false;

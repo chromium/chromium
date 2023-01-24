@@ -722,6 +722,8 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
               feature_pod_controllers_, tiles,
               cast_and_rotation_tiles_are_compact);
 
+  create_tile(std::make_unique<NearbyShareFeaturePodController>(this),
+              feature_pod_controllers_, tiles);
   create_tile(std::make_unique<AccessibilityFeaturePodController>(this),
               feature_pod_controllers_, tiles);
   create_tile(std::make_unique<PrivacyScreenFeaturePodController>(),

@@ -12,6 +12,10 @@ TestNearbyShareDelegate::TestNearbyShareDelegate() = default;
 
 TestNearbyShareDelegate::~TestNearbyShareDelegate() = default;
 
+bool TestNearbyShareDelegate::IsEnabled() {
+  return is_enabled_;
+}
+
 bool TestNearbyShareDelegate::IsPodButtonVisible() {
   return is_pod_button_visible_;
 }
