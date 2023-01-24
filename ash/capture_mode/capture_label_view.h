@@ -8,10 +8,10 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/animation/animation_delegate.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -27,16 +27,14 @@ class DropToStopRecordingButtonAnimation;
 // A view that displays (optional) icon and text message to the user depending
 // on current capture source and type. In video capture mode, it will later
 // transform into a 3 second countdown timer.
-class ASH_EXPORT CaptureLabelView
-    : public views::View,
-      public CaptureModeSessionFocusCycler::HighlightableView,
-      public gfx::AnimationDelegate {
+class ASH_EXPORT CaptureLabelView : public views::View,
+                                    public gfx::AnimationDelegate {
  public:
   METADATA_HEADER(CaptureLabelView);
 
   CaptureLabelView(CaptureModeSession* capture_mode_session,
-                   base::RepeatingClosure on_capture_button_pressed,
-                   base::RepeatingClosure on_drop_down_button_pressed);
+                   views::Button::PressedCallback on_capture_button_pressed,
+                   views::Button::PressedCallback on_drop_down_button_pressed);
   CaptureLabelView(const CaptureLabelView&) = delete;
   CaptureLabelView& operator=(const CaptureLabelView&) = delete;
   ~CaptureLabelView() override;
@@ -76,10 +74,6 @@ class ASH_EXPORT CaptureLabelView
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
-
-  // CaptureModeSessionFocusCycler::HighlightableView:
-  views::View* GetView() override;
-  std::unique_ptr<views::HighlightPathGenerator> CreatePathGenerator() override;
 
   // gfx::AnimationDelegate:
   void AnimationEnded(const gfx::Animation* animation) override;

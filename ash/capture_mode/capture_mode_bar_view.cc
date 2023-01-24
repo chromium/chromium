@@ -167,9 +167,9 @@ void CaptureModeBarView::SetSettingsMenuShown(bool shown) {
   settings_button_->SetToggled(shown);
 }
 
-void CaptureModeBarView::OnSettingsButtonPressed() {
+void CaptureModeBarView::OnSettingsButtonPressed(const ui::Event& event) {
   CaptureModeController::Get()->capture_mode_session()->SetSettingsMenuShown(
-      !settings_button_->toggled());
+      !settings_button_->toggled(), /*by_key_event=*/event.IsKeyEvent());
 }
 
 void CaptureModeBarView::OnCloseButtonPressed() {

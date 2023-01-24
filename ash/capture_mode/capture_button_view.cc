@@ -9,12 +9,14 @@
 
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
+#include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -24,12 +26,15 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
 
 namespace {
+
+constexpr int kCaptureLabelRadius = 18;
 
 // Defines the state of the capture button, which is the ID of the string used
 // as its label, and its icon. These are selected based on the current state of
@@ -69,13 +74,29 @@ void SetupButton(views::Button* button) {
   StyleUtil::ConfigureInkDropAttributes(
       button, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
   button->SetNotifyEnterExitOnChild(true);
+
+  // TODO(b/266261745): Implement a custom focus ring shape that matches the
+  // specs, with rounded corners on one side of each button, and sharp edges on
+  // the other.
+  CaptureModeSessionFocusCycler::HighlightHelper::Install(
+      button,
+      base::BindRepeating(
+          []() -> std::unique_ptr<views::HighlightPathGenerator> {
+            // Regular focus rings are drawn outside the view's bounds. Since
+            // this view is the same size as its widget, inset by half the focus
+            // ring thickness to ensure the focus ring is drawn inside the
+            // widget bounds.
+            return std::make_unique<views::RoundRectHighlightPathGenerator>(
+                gfx::Insets(views::FocusRing::kDefaultHaloThickness / 2),
+                kCaptureLabelRadius);
+          }));
 }
 
 }  // namespace
 
 CaptureButtonView::CaptureButtonView(
-    base::RepeatingClosure on_capture_button_pressed,
-    base::RepeatingClosure on_drop_down_pressed)
+    views::Button::PressedCallback on_capture_button_pressed,
+    views::Button::PressedCallback on_drop_down_pressed)
     : capture_button_(AddChildView(std::make_unique<views::LabelButton>(
           std::move(on_capture_button_pressed),
           std::u16string()))) {
@@ -127,6 +148,17 @@ void CaptureButtonView::UpdateViewVisuals() {
   capture_button_->SetImageModel(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(button_state.vector_icon, icon_color));
+}
+
+std::vector<CaptureModeSessionFocusCycler::HighlightableView*>
+CaptureButtonView::GetHighlightableItems() const {
+  std::vector<CaptureModeSessionFocusCycler::HighlightableView*> result{
+      CaptureModeSessionFocusCycler::HighlightHelper::Get(capture_button_)};
+  if (drop_down_button_ && drop_down_button_->GetVisible()) {
+    result.push_back(
+        CaptureModeSessionFocusCycler::HighlightHelper::Get(drop_down_button_));
+  }
+  return result;
 }
 
 void CaptureButtonView::OnThemeChanged() {

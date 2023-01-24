@@ -5,8 +5,10 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_BUTTON_VIEW_H_
 #define ASH_CAPTURE_MODE_CAPTURE_BUTTON_VIEW_H_
 
+#include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "base/functional/callback_forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -25,8 +27,8 @@ class CaptureButtonView : public views::View {
  public:
   METADATA_HEADER(CaptureButtonView);
 
-  CaptureButtonView(base::RepeatingClosure on_capture_button_pressed,
-                    base::RepeatingClosure on_drop_down_pressed);
+  CaptureButtonView(views::Button::PressedCallback on_capture_button_pressed,
+                    views::Button::PressedCallback on_drop_down_pressed);
   CaptureButtonView(const CaptureButtonView&) = delete;
   CaptureButtonView& operator=(const CaptureButtonView&) = delete;
   ~CaptureButtonView() override = default;
@@ -38,6 +40,11 @@ class CaptureButtonView : public views::View {
   // of the `separator_` and `drop_down_button_` depending on the current type
   // of capture. This should only be called when this view is visible.
   void UpdateViewVisuals();
+
+  // Returns the list of avaibale buttons that can be highlighted while
+  // navigating with keyboard.
+  std::vector<CaptureModeSessionFocusCycler::HighlightableView*>
+  GetHighlightableItems() const;
 
   // views::View:
   void OnThemeChanged() override;

@@ -75,7 +75,7 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
   void SetSettingsMenuShown(bool shown);
 
  private:
-  void OnSettingsButtonPressed();
+  void OnSettingsButtonPressed(const ui::Event& event);
   void OnCloseButtonPressed();
 
   // Owned by the views hierarchy.

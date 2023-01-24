@@ -19,7 +19,6 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_owner.h"
@@ -27,7 +26,6 @@
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
@@ -42,6 +40,7 @@ class CaptureModeController;
 class CaptureModeSessionFocusCycler;
 class CaptureModeSettingsView;
 class CaptureWindowObserver;
+class RecordingTypeMenuView;
 class UserNudgeController;
 class WindowDimmer;
 
@@ -138,8 +137,10 @@ class ASH_EXPORT CaptureModeSession
   // OnWaitingForDlpConfirmationStarted().
   void OnWaitingForDlpConfirmationEnded(bool reshow_uis);
 
-  // Called when the settings menu is toggled.
-  void SetSettingsMenuShown(bool shown);
+  // Called when the settings menu is toggled. If `by_key_event` is true, it
+  // means that the settings menu is being opened or closed as a result of a key
+  // event (e.g. pressing the space bar) on the settings button.
+  void SetSettingsMenuShown(bool shown, bool by_key_event = false);
 
   // Called when the user performs a capture. Records histograms related to this
   // session.
@@ -298,7 +299,7 @@ class ASH_EXPORT CaptureModeSession
 
   // Called when the drop-down button in the `capture_label_widget_` is pressed
   // which toggles the recording type menu on and off.
-  void OnRecordingTypeDropDownButtonPressed();
+  void OnRecordingTypeDropDownButtonPressed(const ui::Event& event);
 
   // Gets the bounds of current window selected for |kWindow| capture source.
   gfx::Rect GetSelectedWindowBounds() const;
@@ -427,8 +428,10 @@ class ASH_EXPORT CaptureModeSession
   void MaybeUpdateCameraPreviewBounds();
 
   // Creates or distroys the recording type menu widget based on the given
-  // `shown` value.
-  void SetRecordingTypeMenuShown(bool shown);
+  // `shown` value. If `by_key_event` is true, it means that the recording type
+  // menu is being opened or closed as a result of a key event (e.g. pressing
+  // the space bar) on the recording type drop down button.
+  void SetRecordingTypeMenuShown(bool shown, bool by_key_event = false);
 
   // Returns true if the given `screen_location` is on the drop down button in
   // the `capture_label_widget_` which when clicked opens the recording type
@@ -472,6 +475,7 @@ class ASH_EXPORT CaptureModeSession
   // Widget that hosts the recording type menu, from which the user can pick the
   // desired recording format type.
   views::UniqueWidgetPtr recording_type_menu_widget_;
+  RecordingTypeMenuView* recording_type_menu_view_ = nullptr;
 
   // Magnifier glass used during a region capture session.
   MagnifierGlass magnifier_glass_;

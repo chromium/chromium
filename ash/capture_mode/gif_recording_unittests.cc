@@ -56,6 +56,12 @@ class GifRecordingTest : public AshTestBase {
     return label_view->capture_button_container()->capture_button();
   }
 
+  views::ImageButton* GetRecordingTypeDropDownButton() {
+    auto* label_view = GetCaptureLabelView();
+    EXPECT_TRUE(label_view->IsRecordingTypeDropDownButtonVisible());
+    return label_view->capture_button_container()->drop_down_button();
+  }
+
   views::Widget* GetRecordingTypeMenuWidget() {
     return CaptureModeSessionTestApi().GetRecordingTypeMenuWidget();
   }
@@ -65,11 +71,7 @@ class GifRecordingTest : public AshTestBase {
   }
 
   void ClickOnDropDownButton() {
-    auto* label_view = GetCaptureLabelView();
-    ASSERT_TRUE(label_view->IsRecordingTypeDropDownButtonVisible());
-    CaptureButtonView* capture_button_container =
-        label_view->capture_button_container();
-    LeftClickOn(capture_button_container->drop_down_button());
+    LeftClickOn(GetRecordingTypeDropDownButton());
   }
 
   void ClickOnSettingsButton() {
@@ -249,6 +251,72 @@ TEST_F(GifRecordingTest, FutureCaptureSessionsAffected) {
   ClickOnDropDownButton();
   EXPECT_TRUE(
       GetRecordingTypeMenuView()->IsOptionChecked(ToInt(RecordingType::kGif)));
+}
+
+TEST_F(GifRecordingTest, TabNavigation) {
+  auto* controller = StartRegionVideoCapture();
+
+  // Tab 15 times until we reach the capture button.
+  auto* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/15);
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+  EXPECT_EQ(FocusGroup::kCaptureButton, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+  EXPECT_EQ(GetCaptureButton(), test_api.GetCurrentFocusedView()->GetView());
+
+  // Tab one more time to get to the drop down button.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
+  EXPECT_EQ(GetRecordingTypeDropDownButton(),
+            test_api.GetCurrentFocusedView()->GetView());
+
+  // Pressing the spacebar should open the menu, and we should be in the
+  // `kPendingRecordingType` focus group.
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_TRUE(GetRecordingTypeMenuWidget());
+  EXPECT_EQ(FocusGroup::kPendingRecordingType, test_api.GetCurrentFocusGroup());
+
+  // The next tab will move the focus inside the menu.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kRecordingTypeMenu, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+  // And the WebM option will be focused.
+  auto* recording_type_menu_view = GetRecordingTypeMenuView();
+  EXPECT_EQ(recording_type_menu_view->GetWebMOptionForTesting(),
+            test_api.GetCurrentFocusedView()->GetView());
+
+  // Tabbing again will focus on the GIF option.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
+  EXPECT_EQ(recording_type_menu_view->GetGifOptionForTesting(),
+            test_api.GetCurrentFocusedView()->GetView());
+
+  // The next tab will focus on the settings button, but the recording type menu
+  // stays open.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+  EXPECT_EQ(test_api.GetCaptureModeBarView()->settings_button(),
+            test_api.GetCurrentFocusedView()->GetView());
+
+  // Reverse tabbing should get us back to the GIF option.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(FocusGroup::kRecordingTypeMenu, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
+  EXPECT_EQ(recording_type_menu_view->GetGifOptionForTesting(),
+            test_api.GetCurrentFocusedView()->GetView());
+
+  // Pressing the spacebar should select GIF, and close the menu.
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_FALSE(GetRecordingTypeMenuWidget());
+  EXPECT_EQ(RecordingType::kGif, controller->recording_type());
+
+  // The focus is moved to the settings button.
+  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+  EXPECT_EQ(test_api.GetCaptureModeBarView()->settings_button(),
+            test_api.GetCurrentFocusedView()->GetView());
 }
 
 }  // namespace ash
