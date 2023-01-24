@@ -883,8 +883,7 @@ void AppListView::ApplyBoundsAnimation(AppListViewState target_state,
 
   // When closing the view should animate to the shelf bounds. The workspace
   // area will not reflect an autohidden shelf so ask for the proper bounds.
-  const int y_for_closed_state = delegate_->GetTargetYForAppListHide(
-      GetWidget()->GetNativeView()->GetRootWindow());
+  const int y_for_closed_state = 0;
   if (target_state == AppListViewState::kClosed) {
     target_bounds.set_y(y_for_closed_state);
   }

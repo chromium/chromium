@@ -8,16 +8,13 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback_forward.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -124,10 +121,6 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // the assistant takes a screenshot the app list is closed immediately so it
   // doesn't appear in the screenshot.
   virtual bool ShouldDismissImmediately() = 0;
-
-  // Gets the ideal y position for the close animation, which depends on
-  // autohide state.
-  virtual int GetTargetYForAppListHide(aura::Window* root_window) = 0;
 
   // Returns the AssistantViewDelegate.
   virtual AssistantViewDelegate* GetAssistantViewDelegate() = 0;
