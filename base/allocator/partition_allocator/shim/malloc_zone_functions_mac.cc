@@ -5,6 +5,7 @@
 #include "base/allocator/partition_allocator/shim/malloc_zone_functions_mac.h"
 
 #include <atomic>
+#include <type_traits>
 
 #include "base/synchronization/lock.h"
 
