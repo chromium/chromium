@@ -6,11 +6,13 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/singleton.h"
 #include "base/win/registry.h"
+#include "ui/gfx/switches.h"
 #include "ui/gfx/win/singleton_hwnd_observer.h"
 
 namespace gfx {
@@ -81,14 +83,17 @@ class CachedFontRenderParams {
     params_->subpixel_rendering = FontRenderParams::SUBPIXEL_RENDERING_NONE;
 
     BOOL enabled = false;
-    if (SystemParametersInfo(SPI_GETFONTSMOOTHING, 0, &enabled, 0) && enabled) {
-      params_->antialiasing = true;
-      params_->subpixel_positioning = true;
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+           switches::kDisableFontSubpixelPositioning)) {
+      if (SystemParametersInfo(SPI_GETFONTSMOOTHING, 0, &enabled, 0) && enabled) {
+        params_->antialiasing = true;
+        params_->subpixel_positioning = true;
 
-      UINT type = 0;
-      if (SystemParametersInfo(SPI_GETFONTSMOOTHINGTYPE, 0, &type, 0) &&
-          type == FE_FONTSMOOTHINGCLEARTYPE) {
-        params_->subpixel_rendering = GetSubpixelRenderingGeometry();
+        UINT type = 0;
+        if (SystemParametersInfo(SPI_GETFONTSMOOTHINGTYPE, 0, &type, 0) &&
+            type == FE_FONTSMOOTHINGCLEARTYPE) {
+          params_->subpixel_rendering = GetSubpixelRenderingGeometry();
+        }
       }
     }
     singleton_hwnd_observer_ =
