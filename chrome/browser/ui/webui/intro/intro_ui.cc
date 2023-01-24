@@ -26,7 +26,6 @@
 #endif
 
 namespace {
-
 void AddStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -45,18 +44,6 @@ void AddStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 #endif
 }
-
-std::string GetEnterpriseDisclaimer(content::WebUI* web_ui) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  int managed_id = IDS_FRE_MANAGED_DESCRIPTION;
-  return chrome::ShouldDisplayManagedUi(Profile::FromWebUI(web_ui))
-             ? l10n_util::GetStringUTF8(managed_id)
-             : "";
-#else
-  return "";
-#endif
-}
-
 }  // namespace
 
 IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
@@ -72,7 +59,11 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
 
   AddStrings(source);
 
-  source->AddString("managedDeviceDisclaimer", GetEnterpriseDisclaimer(web_ui));
+  // TODO(crbug.com/1409028): Replace this function by a call to
+  // chrome::GetDeviceManagerIdentity()
+  bool is_device_managed =
+      chrome::ShouldDisplayManagedUi(Profile::FromWebUI(web_ui));
+  source->AddBoolean("isDeviceManaged", is_device_managed);
 
   source->AddResourcePath("product-logo.svg", IDR_PRODUCT_LOGO_SVG);
   source->AddResourcePath("product-logo-animation.svg",
@@ -91,8 +82,9 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
       IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_WINDOW_RIGHT_ILLUSTRATION_DARK_SVG);
 
   // Unretained ok: `this` owns the handler.
-  web_ui->AddMessageHandler(std::make_unique<IntroHandler>(base::BindRepeating(
-      &IntroUI::HandleSigninChoice, base::Unretained(this))));
+  web_ui->AddMessageHandler(std::make_unique<IntroHandler>(
+      base::BindRepeating(&IntroUI::HandleSigninChoice, base::Unretained(this)),
+      is_device_managed));
 }
 
 IntroUI::~IntroUI() = default;

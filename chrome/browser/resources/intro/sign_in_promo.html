@@ -136,7 +136,11 @@
   }
 
   .fade-in {
-    animation: fade-in-animation 500ms 1 ease-in-out;
+    animation: fade-in-animation 500ms ease-in-out;
+  }
+
+  .fast-fade-in {
+    animation: fade-in-animation 300ms ease-in-out;
   }
 
   #contentArea {
@@ -239,7 +243,6 @@
 
   #left-background-image {
     animation-duration: 500ms;
-    animation-iteration-count: 1;
     animation-name: left-background-slide-animation, fade-in-animation;
     content: var(--left-background-image-url);
     left: 0;
@@ -248,14 +251,13 @@
 
   #right-background-image {
     animation-duration: 500ms;
-    animation-iteration-count: 1;
     animation-name: right-background-slide-animation, fade-in-animation;
     content: var(--right-background-image-url);
     right: 0;
   }
 
   #safeZone {
-    animation: safe-zone-transition-animation 500ms 1 ease-in-out;
+    animation: safe-zone-transition-animation 500ms ease-in-out;
     box-sizing: border-box;
     display: flex;
     height: calc(100% - var(--btn-container-height));
@@ -269,7 +271,7 @@
     border-top: var(--cr-separator-line);
   }
 
-  #managed-device-disclaimer {
+  #managedDeviceDisclaimer {
     align-items: center;
     border: 1px solid var(--disclaimer-border-color);
     border-radius: 8px;
@@ -283,7 +285,15 @@
     padding-inline-end: 18px;
   }
 
-  #managed-device-disclaimer > p {
+  #managedDeviceDisclaimer.hidden {
+    display: none;
+  }
+
+  #managedDeviceDisclaimer.temporarily-hidden {
+    visibility: hidden;
+  }
+
+  #managedDeviceDisclaimer > p {
     flex-grow: 1;
     font-family: Roboto, Cantarell, Arial, sans-serif;
     margin-block: 0;
@@ -324,25 +334,26 @@
         </div>
       </template>
     </div>
-    <template is="dom-if" if="[[shouldDisplayManagedDisclaimer_]]">
-      <div id="managed-device-disclaimer" class="fade-in">
-        <div id="icon-container">
-          <iron-icon icon="cr:domain"></iron-icon>
-        </div>
-        <p>
-        $i18n{managedDeviceDisclaimer}
-        </p>
+    <div class$="[[getDisclaimerVisibilityClass_(isDeviceManaged_, managedDeviceDisclaimer_)]]"
+      id="managedDeviceDisclaimer">
+      <div id="icon-container">
+        <iron-icon icon="cr:domain"></iron-icon>
       </div>
-    </template>
+      <p>
+        [[managedDeviceDisclaimer_]]
+      </p>
+    </div>
   </div>
 </div>
 
 <div class="fade-in" id="buttonRow">
   <div id="buttonContainer">
     <cr-button id="declineSignInButton"
-    on-click="onContinueWithoutAccountClick_">$i18n{declineSignInButtonTitle}</cr-button>
-  </cr-button>
+      disabled="[[areButtonsDisabled_(isDeviceManaged_, managedDeviceDisclaimer_)]]"
+      on-click="onContinueWithoutAccountClick_">$i18n{declineSignInButtonTitle}</cr-button>
+    </cr-button>
     <cr-button class="action-button" id="acceptSignInButton"
+      disabled="[[areButtonsDisabled_(isDeviceManaged_, managedDeviceDisclaimer_)]]"
       on-click="onContinueWithAccountClick_">$i18n{acceptSignInButtonTitle}</cr-button>
   </div>
 </div>

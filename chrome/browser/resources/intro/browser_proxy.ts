@@ -13,6 +13,9 @@ export interface IntroBrowserProxy {
 
   // Called when the user clicks the "continue without account" button.
   continueWithoutAccount(): void;
+
+  // Initializes the FRE intro main view.
+  initializeMainView(): void;
 }
 
 export class IntroBrowserProxyImpl implements IntroBrowserProxy {
@@ -22,6 +25,10 @@ export class IntroBrowserProxyImpl implements IntroBrowserProxy {
 
   continueWithoutAccount() {
     chrome.send('continueWithoutAccount');
+  }
+
+  initializeMainView() {
+    chrome.send('initializeMainView');
   }
 
   static getInstance(): IntroBrowserProxy {

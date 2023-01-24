@@ -146,6 +146,8 @@ std::u16string GetDeviceManagedUiWebUILabel() {
 }
 #endif
 
+// TODO(crbug.com/1409028): Modify this function so it would not return
+// absl::nullopt if the device is managed.
 absl::optional<std::string> GetDeviceManagerIdentity() {
   if (!policy::ManagementServiceFactory::GetForPlatform()->IsManaged())
     return absl::nullopt;

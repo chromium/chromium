@@ -11,6 +11,7 @@ export class TestIntroBrowserProxy extends TestBrowserProxy implements
     super([
       'continueWithAccount',
       'continueWithoutAccount',
+      'initializeMainView',
     ]);
   }
 
@@ -20,5 +21,9 @@ export class TestIntroBrowserProxy extends TestBrowserProxy implements
 
   continueWithoutAccount() {
     this.methodCalled('continueWithoutAccount');
+  }
+
+  initializeMainView() {
+    this.methodCalled('initializeMainView');
   }
 }

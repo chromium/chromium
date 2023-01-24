@@ -11,6 +11,7 @@ import './strings.m.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -23,6 +24,7 @@ export interface SignInPromoElement {
     buttonRow: HTMLElement,
     contentArea: HTMLElement,
     declineSignInButton: CrButtonElement,
+    managedDeviceDisclaimer: HTMLElement,
     safeZone: HTMLElement,
   };
 }
@@ -33,7 +35,7 @@ export interface BenefitCard {
   iconName: string;
 }
 
-const SignInPromoElementBase = I18nMixin(PolymerElement);
+const SignInPromoElementBase = WebUiListenerMixin(I18nMixin(PolymerElement));
 
 export class SignInPromoElement extends SignInPromoElementBase {
   static get is() {
@@ -74,11 +76,14 @@ export class SignInPromoElement extends SignInPromoElementBase {
         type: Array,
       },
 
-      shouldDisplayManagedDisclaimer_: {
+      managedDeviceDisclaimer_: {
+        type: String,
+        value: '',
+      },
+
+      isDeviceManaged_: {
         type: Boolean,
-        value() {
-          return loadTimeData.getString('managedDeviceDisclaimer').length > 0;
-        },
+        value: loadTimeData.getBoolean('isDeviceManaged'),
       },
     };
   }
@@ -87,11 +92,20 @@ export class SignInPromoElement extends SignInPromoElementBase {
       IntroBrowserProxyImpl.getInstance();
   private benefitCards_: BenefitCard[];
   private divisionLineResizeObserver_: ResizeObserver|null = null;
-  private shouldDisplayManagedDisclaimer_: boolean;
+  private managedDeviceDisclaimer_: string;
+  private isDeviceManaged_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
+
+    this.browserProxy_.initializeMainView();
     this.toggleDivisionLine_();
+
+    if (this.isDeviceManaged_) {
+      this.addWebUiListener(
+          'managed-device-disclaimer-updated',
+          this.handleManagedDeviceDisclaimerUpdate_.bind(this));
+    }
   }
 
   override disconnectedCallback() {
@@ -101,11 +115,12 @@ export class SignInPromoElement extends SignInPromoElementBase {
 
   override ready() {
     super.ready();
-    this.addEventListener('view-enter-start', this.onViewEnterStart_);
+    this.addEventListener(
+        'view-enter-start', this.onViewEnterStart_.bind(this));
   }
 
   private onViewEnterStart_() {
-    this.setTranslationHeightToAlignLogoAndAnimation();
+    this.setTranslationHeightToAlignLogoAndAnimation_();
   }
 
   private toggleDivisionLine_() {
@@ -118,11 +133,25 @@ export class SignInPromoElement extends SignInPromoElementBase {
     this.divisionLineResizeObserver_.observe(safeZone);
   }
 
+  private handleManagedDeviceDisclaimerUpdate_(disclaimer: string) {
+    this.managedDeviceDisclaimer_ = disclaimer;
+    this.$.managedDeviceDisclaimer.classList.remove('temporarily-hidden');
+    this.$.managedDeviceDisclaimer.classList.toggle('fast-fade-in');
+  }
+
+  /**
+   * Disable buttons if the device is managed until the management
+   * disclaimer is loaded.
+   */
+  private areButtonsDisabled_() {
+    return this.isDeviceManaged_ && this.managedDeviceDisclaimer_.length === 0;
+  }
+
   // At the start of the signInPromo animation, the product logo should be at
   // the same position as the splash view logo animation. To be able
   // to do that, we had to translate the safeZone vertically up by the value
   // calculated in the function below, after doing top:50%.
-  private setTranslationHeightToAlignLogoAndAnimation() {
+  private setTranslationHeightToAlignLogoAndAnimation_() {
     const contentAreaHeight = this.$.contentArea.clientHeight;
     const safeZoneHeight = this.$.safeZone.clientHeight;
     const productLogoMarginTop = parseInt(
@@ -147,6 +176,17 @@ export class SignInPromoElement extends SignInPromoElementBase {
 
   private onContinueWithoutAccountClick_() {
     this.browserProxy_.continueWithoutAccount();
+  }
+
+  // To keep the layout stable during animations, for non-managed devices the
+  // disclaimer is omitted from the layout, and for managed devices it is
+  // invisible while we're fetching the text to display.
+  private getDisclaimerVisibilityClass_() {
+    if (!this.isDeviceManaged_) {
+      return 'hidden';
+    }
+    return this.managedDeviceDisclaimer_.length === 0 ? 'temporarily-hidden' :
+                                                        '';
   }
 }
 

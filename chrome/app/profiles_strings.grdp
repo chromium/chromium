@@ -761,8 +761,11 @@
       <message name="IDS_FRE_ACCEPT_SIGN_IN_BUTTON_TITLE" desc="The title of the button giving the users the choice to sign in to Chrome">
         Sign in
       </message>
-      <message name="IDS_FRE_MANAGED_DESCRIPTION" desc="The disclaimer explaining to the users that their device is managed by their organisation">
+      <message name="IDS_FRE_MANAGED_DESCRIPTION" desc="The disclaimer explaining to the users that their device is managed by their organization">
         Your device is managed by your organization. Administrators can access the data in any profile on this device.
+      </message>
+      <message name="IDS_FRE_MANAGED_BY_DESCRIPTION" desc="The disclaimer explaining to the users that their device is managed by an administrator">
+        Your device is managed by <ph name="DOMAIN">$1<ex>example.com</ex></ph>. Administrators can access the data in any profile on this device.
       </message>
     </if>
 
