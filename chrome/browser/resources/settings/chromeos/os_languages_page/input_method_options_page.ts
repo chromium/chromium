@@ -25,7 +25,7 @@ import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {getTemplate} from './input_method_options_page.html.js';
-import {AUTOCORRECT_OPTION_MAP_OVERRIDE, generateOptions, getDefaultValue, getFirstPartyInputMethodEngineId, getOptionLabelName, getOptionMenuItems, getOptionSubtitleName, getOptionUiType, getOptionUrl, getSubmenuButtonType, getUntranslatedOptionLabelName, isOptionLabelTranslated, OPTION_DEFAULT, OptionType, PHYSICAL_KEYBOARD_AUTOCORRECT_ENABLED_BY_DEFAULT, shouldStoreAsNumber, SubmenuButton, UiType} from './input_method_util.js';
+import {AUTOCORRECT_OPTION_MAP_OVERRIDE, generateOptions, getDefaultValue, getFirstPartyInputMethodEngineId, getOptionLabelName, getOptionMenuItems, getOptionSubtitleName, getOptionUiType, getOptionUrl, getSubmenuButtonType, getUntranslatedOptionLabelName, isOptionLabelTranslated, OPTION_DEFAULT, OptionType, PHYSICAL_KEYBOARD_AUTOCORRECT_ENABLED_BY_DEFAULT, SettingsHeaders, shouldStoreAsNumber, SubmenuButton, UiType} from './input_method_util.js';
 import {LanguageHelper} from './languages_types.js';
 
 /**
@@ -475,34 +475,31 @@ class SettingsInputMethodOptionsPageElement extends
    * @param section the name of the section.
    * @return the i18n string for the section title.
    */
-  // TODO(b/263829863): Use `SettingsHeaders` as the type of `section`.
-  private getSectionTitleI18n_(section: string): string {
+  private getSectionTitleI18n_(section: SettingsHeaders): string {
     switch (section) {
-      case 'basic':
+      case SettingsHeaders.BASIC:
         return this.i18n('inputMethodOptionsBasicSectionTitle');
-      case 'advanced':
+      case SettingsHeaders.ADVANCED:
         return this.i18n('inputMethodOptionsAdvancedSectionTitle');
-      case 'physicalKeyboard':
+      case SettingsHeaders.PHYSICAL_KEYBOARD:
         return this.i18n('inputMethodOptionsPhysicalKeyboardSectionTitle');
-      case 'virtualKeyboard':
+      case SettingsHeaders.VIRTUAL_KEYBOARD:
         return this.i18n('inputMethodOptionsVirtualKeyboardSectionTitle');
-      case 'suggestions':
+      case SettingsHeaders.SUGGESTIONS:
         return this.i18n('inputMethodOptionsSuggestionsSectionTitle');
       // Japanese section
-      case 'inputAssistance':
+      case SettingsHeaders.INPUT_ASSISTANCE:
         return this.i18n('inputMethodOptionsInputAssistanceSectionTitle');
       // Japanese section
-      case 'userDictionaries':
+      case SettingsHeaders.USER_DICTIONARIES:
         return this.i18n('inputMethodOptionsUserDictionariesSectionTitle');
       // Japanese section
-      case 'privacy':
+      case SettingsHeaders.PRIVACY:
         return this.i18n('inputMethodOptionsPrivacySectionTitle');
 
       default:
-        // Safety: `section` should be of type SettingsHeaders, so this should
-        // be exhaustive.
-        // TODO(b/265559342): Use a compile-time exhaustive check here after
-        // setting the type of `section` to be `SettingsHeaders`.
+        // Safety: `section` has type `never` here.
+        // TODO(b/265559342): Use a compile-time exhaustive check here.
         assertNotReached();
     }
   }

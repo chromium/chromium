@@ -244,7 +244,7 @@ export enum SubmenuButton {
 /**
  * All possible Settings headers
  */
-enum SettingsHeaders {
+export enum SettingsHeaders {
   ADVANCED = 'advanced',
   BASIC = 'basic',
   INPUT_ASSISTANCE = 'inputAssistance',
