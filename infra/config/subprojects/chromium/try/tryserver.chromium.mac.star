@@ -333,6 +333,8 @@ ios_builder(
     mirrors = [
         "ci/ios-catalyst",
     ],
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 ios_builder(
@@ -340,6 +342,8 @@ ios_builder(
     mirrors = [
         "ci/ios-device",
     ],
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 ios_builder(
@@ -360,6 +364,8 @@ ios_builder(
     mirrors = ["ci/ios-m1-simulator-cronet"],
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.orchestrator_builder(
@@ -411,6 +417,8 @@ ios_builder(
             cq.location_filter(exclude = True, path_regexp = "components/cronet/android/.+"),
         ],
     ),
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
 ios_builder(
@@ -452,6 +460,8 @@ ios_builder(
             "third_party/crashpad/crashpad/.+",
         ],
     ),
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 ios_builder(
@@ -464,6 +474,7 @@ ios_builder(
     name = "ios15-sdk-simulator",
     mirrors = ["ci/ios15-sdk-simulator"],
     os = os.MAC_12,
+    goma_backend = None,
 )
 
 ios_builder(
@@ -472,6 +483,8 @@ ios_builder(
         "ci/ios16-beta-simulator",
     ],
     os = os.MAC_DEFAULT,
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 ios_builder(

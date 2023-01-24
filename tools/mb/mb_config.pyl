@@ -1252,23 +1252,23 @@
       'gpu-try-mac-amd-retina-dbg': 'gpu_tests_debug_bot',
       'gpu-try-mac-intel-dbg': 'gpu_tests_debug_bot',
       'ios-asan': 'ios_simulator_release_static_asan_bot_xctest_reclient',
-      'ios-catalyst': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting',
-      'ios-device': 'ios_device_release_compile_only',
+      'ios-catalyst': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting_reclient',
+      'ios-device': 'ios_device_release_compile_only_reclient',
       'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64',
       'ios-m1-simulator': 'ios_simulator_debug_static_bot_xctest_arm64',
-      'ios-m1-simulator-cronet': 'ios_cronet_xctest_arm64',
+      'ios-m1-simulator-cronet': 'ios_cronet_xctest_arm64_reclient',
       'ios-simulator': 'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient',
       'ios-simulator-code-coverage': 'clang_code_coverage_ios_xctest',
       'ios-simulator-cr-recipe': 'ios_simulator_debug_static_bot_xctest',
-      'ios-simulator-cronet': 'ios_cronet_xctest',
+      'ios-simulator-cronet': 'ios_cronet_xctest_reclient',
       'ios-simulator-full-configs': 'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient',
       'ios-simulator-inverse-fieldtrials-fyi': 'ios_simulator_debug_static_bot_invert_fieldtrials_xctest',
       'ios-simulator-multi-window': 'ios_simulator_debug_static_bot_xctest',
-      'ios-simulator-noncq': 'ios_simulator_debug_static_bot_xctest',
+      'ios-simulator-noncq': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios-simulator-rts': 'ios_simulator_code_coverage_partial_instrumentation_xctest',
       'ios15-beta-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
-      'ios15-sdk-simulator': 'ios_simulator_debug_static_bot_xctest',
-      'ios16-beta-simulator': 'ios_simulator_debug_static_bot_xctest',
+      'ios15-sdk-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
+      'ios16-beta-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios16-sdk-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
       'mac-arm64-on-arm64-rel': 'mac_arm64_release_trybot',
       'mac-builder-next-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
@@ -2908,10 +2908,6 @@
       'headless_shell', 'release', 'static', 'reclient',
     ],
 
-    'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting': [
-        'compile_only', 'debug_static_bot', 'ios', 'ios_catalyst', 'ios_cpu_x64',  'asan', 'libfuzzer',  'no_dsyms', 'no_remoting',
-    ],
-
     'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting_reclient': [
         'compile_only', 'debug_static_bot_reclient', 'ios', 'ios_catalyst', 'ios_cpu_x64',  'asan', 'libfuzzer',  'no_dsyms', 'no_remoting',
     ],
@@ -2922,14 +2918,6 @@
 
     'ios_clang_tot_xctest': [
       'clang_tot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'ios_disable_code_signing', 'release', 'static', 'xctest',
-    ],
-
-    'ios_cronet_xctest': [
-      'cronet_ios', 'debug_static_bot', 'ios_deployment_target_11_0', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
-    ],
-
-    'ios_cronet_xctest_arm64': [
-      'cronet_ios', 'debug_static_bot', 'ios_deployment_target_11_0', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'xctest',
     ],
 
     'ios_cronet_xctest_arm64_reclient': [
