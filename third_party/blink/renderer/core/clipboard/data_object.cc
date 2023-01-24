@@ -30,6 +30,8 @@
 
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 
+#include <utility>
+
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -438,7 +440,7 @@ WebDragData DataObject::ToWebDragData() {
     }
     item_list[i] = item;
   }
-  data.SwapItems(item_list);
+  data.SetItems(std::move(item_list));
   return data;
 }
 

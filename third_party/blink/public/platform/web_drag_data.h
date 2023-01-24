@@ -108,9 +108,6 @@ class BLINK_PLATFORM_EXPORT WebDragData {
   const WebVector<Item>& Items() const { return item_list_; }
 
   void SetItems(WebVector<Item> item_list);
-  // FIXME: SetItems is slow because SetItems copies WebVector.
-  // Instead, use SwapItems.
-  void SwapItems(WebVector<Item>& item_list) { item_list_.Swap(item_list); }
 
   void AddItem(const Item&);
 

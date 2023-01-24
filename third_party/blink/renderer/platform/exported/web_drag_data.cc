@@ -33,7 +33,7 @@
 namespace blink {
 
 void WebDragData::SetItems(WebVector<Item> item_list) {
-  item_list_.Swap(item_list);
+  item_list_ = std::move(item_list);
 }
 
 void WebDragData::AddItem(const Item& item) {
