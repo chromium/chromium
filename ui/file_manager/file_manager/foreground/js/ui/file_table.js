@@ -468,8 +468,9 @@ export class FileTable extends Table {
     nameColumn.renderFunction = self.renderName_.bind(self);
     nameColumn.headerRenderFunction = renderHeader_;
 
-    const sizeColumn =
-        new TableColumn('size', str('SIZE_COLUMN_LABEL'), 110, true);
+    const sizeColumn = new TableColumn(
+        'size', str('SIZE_COLUMN_LABEL'), 110,
+        util.isJellyEnabled() ? false : true);
     sizeColumn.renderFunction = self.renderSize_.bind(self);
     sizeColumn.defaultOrder = 'desc';
     sizeColumn.headerRenderFunction = renderHeader_;

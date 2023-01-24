@@ -1772,11 +1772,6 @@ li[renaming=''] .filename-label {
   align-items: center;
 }
 
-#list-container li.table-row {
-  height: 40px;
-  line-height: 40px;
-}
-
 /* The icon in the name column. See file_types.css for specific icons. */
 .detail-icon {
   height: 24px;
@@ -1803,10 +1798,10 @@ li[renaming=''] .filename-label {
   width: 24px;
 }
 
-body.files-ng #list-container list li .detail-icon {
+#list-container list li .detail-icon {
   color: var(--cros-icon-color-primary);
   height: 40px;
-  margin-inline-end: 8px;
+  margin-inline-end: 12px;
   margin-inline-start: 8px;
   width: 40px;
 }
@@ -2074,14 +2069,9 @@ html.col-resize .table-header-label .sort-icon:not(:active):hover {
   text-overflow: ellipsis;
 }
 
-/** Size column is aligned to right. */
-.table-header-label.size .table-label-container {
-  justify-content: flex-end;
-}
-
-body.files-ng #list-container li.table-row {
+#list-container li.table-row {
   box-sizing: border-box;
-  height: 40px;
+  height: 48px;
   line-height: 20px;
 }
 
@@ -2140,9 +2130,9 @@ html.col-resize .table-header-splitter .splitter-icon:not(:active):hover {
   --cr-icon-button-hover-background-color: none;
 }
 
-body.files-ng #list-container .table-row-cell .size {
+#list-container .table-row-cell .size {
   padding-inline-end: 5px;
-  padding-inline-start: 22px;
+  padding-inline-start: 32px;
 }
 
 body.files-ng.check-select list:focus li[selected] .table-row-cell > * {
