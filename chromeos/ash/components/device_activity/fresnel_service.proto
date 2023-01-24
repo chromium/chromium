@@ -67,6 +67,58 @@ message DeviceMetadata {
   optional Channel chromeos_channel = 5;
 }
 
+// The metadata which is related to Churn Cohort request.
+message ChurnCohortMetadata {
+  // This 28 bits value represents the device monthly cohort active statuses for
+  // the past 18 months. The left 10 bits represent the number of months since
+  // Jan. 2000, and the right 18 bits represent the device's monthly cohort
+  // active statuses for the past 18 months, with a value of 1 indicating that
+  // the device was active and a value of 0 indicating that the device was not
+  // active in that month.
+  //
+  // If the device is active when the time switches to a new month (e.g., from
+  // 1/31 to 2/1), the number of months will increase by 1 and the first 10 bits
+  // will be updated. Also, use the number of months modulo 18 to get the index
+  // in the right 18 bits and set that index bit to 1.
+  //
+  // If the device was not active for a couple of months, after the device
+  // becomes active again and reports the cohort request successfully, it needs
+  // to set the bits of the inactive months to 0 before updating the number of
+  // months for the left 10 bits and the current month bit.
+  optional int32 active_status_value = 1;
+
+  // Compare the first active weeks obtained from the VPD to determine if the
+  // device is new during the cohort month.
+  optional bool is_first_active_in_cohort = 2;
+}
+
+// The metadata which is related to Churn Observation request.
+message ChurnObservationMetadata {
+  // The device's first active status in different cohort month.
+  enum FirstActiveDuringCohort {
+    // The device is either an existing device that was activated before the
+    // cohort month, or it is a new device that has not yet been activated
+    // during the cohort month.
+    EXISTED_OR_NOT_ACTIVE_YET = 0;
+    // The device was first activated during the corresponding monthly cohort
+    // period.
+    FIRST_ACTIVE_IN_MONTHLY_COHORT = 1;
+    // The device was first activated during the corresponding yearly cohort
+    // period.
+    FIRST_ACTIVE_IN_YEARLY_COHORT = 2;
+  }
+
+  // Whether the device was `active` during monthly cohort period.
+  optional bool monthly_active_status = 1;
+
+  // Whether the device was `active` during yearly cohort period.
+  optional bool yearly_active_status = 2;
+
+  // Whether the device was `first active` during the corresponding cohort
+  // period.
+  optional FirstActiveDuringCohort first_active_during_cohort = 3;
+}
+
 // This message is part of the import request. For some use cases, such as
 // N-Day use case, they may need to batch import the requests to Fresnel.
 // We make a general import data message for all use cases.
@@ -87,6 +139,12 @@ message FresnelImportData {
   // Boolean used to indicate whether client is sending UTC (false) or PT
   // (true) timezone for the window_identifier.
   optional bool is_pt_window_identifier = 4;
+
+  // The metadata related to Churn Cohort check-in request.
+  optional ChurnCohortMetadata churn_cohort_metadata = 5;
+
+  // The metadata related to Churn Observation check-in request.
+  optional ChurnObservationMetadata churn_observation_metadata = 6;
 }
 
 // This proto will represent the data sent to Fresnel used to generate a PSM
