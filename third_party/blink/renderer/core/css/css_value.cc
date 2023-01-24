@@ -459,6 +459,17 @@ String CSSValue::CssText() const {
   return String();
 }
 
+const CSSValue& CSSValue::PopulateWithTreeScope(
+    const TreeScope* tree_scope) const {
+  switch (GetClassType()) {
+    case kCustomIdentClass:
+      return To<CSSCustomIdentValue>(this)->PopulateWithTreeScope(tree_scope);
+    default:
+      NOTREACHED();
+      return *this;
+  }
+}
+
 void CSSValue::Trace(Visitor* visitor) const {
   switch (GetClassType()) {
     case kAxisClass:

@@ -4852,24 +4852,20 @@ const CSSValue* ListStyleType::CSSValueFromComputedStyleInternal(
   if (!style.ListStyleType()) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
-  if (style.ListStyleType()->IsString()) {
+  const ListStyleTypeData& list_style_type = *style.ListStyleType();
+  if (list_style_type.IsString()) {
     return MakeGarbageCollected<CSSStringValue>(
-        style.ListStyleType()->GetStringValue());
+        list_style_type.GetStringValue());
   }
   // TODO(crbug.com/687225): Return a scoped CSSValue?
   return MakeGarbageCollected<CSSCustomIdentValue>(
-      style.ListStyleType()->GetCounterStyleName());
+      list_style_type.GetCounterStyleName());
 }
 
 void ListStyleType::ApplyValue(StyleResolverState& state,
                                const CSSValue& value) const {
-  NOTREACHED();
-}
-
-void ListStyleType::ApplyValue(StyleResolverState& state,
-                               const ScopedCSSValue& scoped_value) const {
+  DCHECK(value.IsScopedValue());
   ComputedStyleBuilder& builder = state.StyleBuilder();
-  const CSSValue& value = scoped_value.GetCSSValue();
   if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK_EQ(CSSValueID::kNone, identifier_value->GetValueID());
     builder.SetListStyleType(nullptr);
@@ -4885,7 +4881,7 @@ void ListStyleType::ApplyValue(StyleResolverState& state,
   DCHECK(value.IsCustomIdentValue());
   const auto& custom_ident_value = To<CSSCustomIdentValue>(value);
   builder.SetListStyleType(ListStyleTypeData::CreateCounterStyle(
-      custom_ident_value.Value(), scoped_value.GetTreeScope()));
+      custom_ident_value.Value(), custom_ident_value.GetTreeScope()));
 }
 
 bool MarginBlockEnd::IsLayoutDependent(const ComputedStyle* style,

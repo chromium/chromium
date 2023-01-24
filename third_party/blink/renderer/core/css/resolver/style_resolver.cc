@@ -1508,9 +1508,12 @@ void StyleResolver::ApplyBaseStyle(
            ++property_idx) {
         CSSPropertyValueSet::PropertyReference property =
             inline_style->PropertyAt(property_idx);
+        // TODO(crbug.com/1395026): Get rid of ScopedCSSValue when all
+        // properties are converted to use CSSValue directly.
         StyleBuilder::ApplyProperty(
             property.Name(), state,
-            ScopedCSSValue(property.Value(), &GetDocument()));
+            ScopedCSSValue(property.Value().EnsureScopedValue(&GetDocument()),
+                           &GetDocument()));
       }
     }
 
@@ -2195,8 +2198,12 @@ FilterOperations StyleResolver::ComputeFilterOperations(
 
   state.SetStyle(ComputedStyle::Clone(*parent));
 
-  StyleBuilder::ApplyProperty(GetCSSPropertyFilter(), state,
-                              ScopedCSSValue(filter_value, &GetDocument()));
+  // TODO(crbug.com/1395026): Get rid of ScopedCSSValue when all
+  // properties are converted to use CSSValue directly.
+  StyleBuilder::ApplyProperty(
+      GetCSSPropertyFilter(), state,
+      ScopedCSSValue(filter_value.EnsureScopedValue(&GetDocument()),
+                     &GetDocument()));
 
   state.LoadPendingResources();
 
@@ -2364,11 +2371,13 @@ void StyleResolver::ComputeFont(Element& element,
     // TODO(futhark): If we start supporting fonts on ShadowRoot.fonts in
     // addition to Document.fonts, we need to pass the correct TreeScope instead
     // of GetDocument() in the ScopedCSSValue below.
+    // TODO(crbug.com/1395026): Get rid of ScopedCSSValue when all
+    // properties are converted to use CSSValue directly.
     StyleBuilder::ApplyProperty(
         *property, state,
-        ScopedCSSValue(
-            *property_set.GetPropertyCSSValue(property->PropertyID()),
-            &GetDocument()));
+        ScopedCSSValue(property_set.GetPropertyCSSValue(property->PropertyID())
+                           ->EnsureScopedValue(&GetDocument()),
+                       &GetDocument()));
   }
   state.UpdateFont();
 }

@@ -3221,7 +3221,6 @@
         "decimal", "none"
       ],
       style_builder_custom_functions: ["value"],
-      tree_scoped_value: true,
     },
     {
       name: "margin-bottom",

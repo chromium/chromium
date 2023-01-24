@@ -46,11 +46,14 @@ void CSSDefaultInterpolationType::Apply(
     InterpolationEnvironment& environment) const {
   DCHECK(
       To<CSSDefaultNonInterpolableValue>(non_interpolable_value)->CssValue());
+  // TODO(crbug.com/1395026): Populate the correct tree scope here, and stop
+  // using ScopedCSSValue.
   StyleBuilder::ApplyProperty(
       GetProperty().GetCSSPropertyName(),
       To<CSSInterpolationEnvironment>(environment).GetState(),
-      ScopedCSSValue(*To<CSSDefaultNonInterpolableValue>(non_interpolable_value)
-                          ->CssValue(),
+      ScopedCSSValue(To<CSSDefaultNonInterpolableValue>(non_interpolable_value)
+                         ->CssValue()
+                         ->EnsureScopedValue(nullptr),
                      nullptr));
 }
 

@@ -704,8 +704,12 @@ void StyleCascade::LookupAndApplyDeclaration(const CSSProperty& property,
   } else if (origin == CascadeOrigin::kAuthorPresentationalHint) {
     tree_scope = &GetDocument();
   }
-  StyleBuilder::ApplyPhysicalProperty(property, state_,
-                                      ScopedCSSValue(*value, tree_scope));
+  // TODO(crbug.com/1395026): Convert properties to use CSSValues (with tree
+  // scope populated) directly instead of ScopedCSSValue, and get rid of
+  // ScopedCSSValue class when all properties are converted.
+  StyleBuilder::ApplyPhysicalProperty(
+      property, state_,
+      ScopedCSSValue(value->EnsureScopedValue(tree_scope), tree_scope));
 }
 
 void StyleCascade::LookupAndApplyInterpolation(const CSSProperty& property,
