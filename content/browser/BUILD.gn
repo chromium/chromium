@@ -899,6 +899,8 @@ source_set("browser") {
     "fenced_frame/fenced_frame.h",
     "fenced_frame/fenced_frame_config.cc",
     "fenced_frame/fenced_frame_config.h",
+    "fenced_frame/fenced_frame_reporter.cc",
+    "fenced_frame/fenced_frame_reporter.h",
     "fenced_frame/fenced_frame_url_mapping.cc",
     "fenced_frame/fenced_frame_url_mapping.h",
     "field_trial_recorder.cc",

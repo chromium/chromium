@@ -138,10 +138,6 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
   shared_storage_budget_metadata() const {
     return shared_storage_budget_metadata_;
   }
-  const absl::optional<RedactedFencedFrameProperty<FencedFrameReporting>>&
-  reporting_metadata() const {
-    return reporting_metadata_;
-  }
   const DeprecatedFencedFrameMode& mode() const { return mode_; }
 
  private:
@@ -165,8 +161,6 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
       nested_configs_;
   absl::optional<RedactedFencedFrameProperty<SharedStorageBudgetMetadata>>
       shared_storage_budget_metadata_;
-  absl::optional<RedactedFencedFrameProperty<FencedFrameReporting>>
-      reporting_metadata_;
 
   // TODO(crbug.com/1347953): Not yet used.
   DeprecatedFencedFrameMode mode_ = DeprecatedFencedFrameMode::kDefault;
@@ -211,9 +205,8 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
   shared_storage_budget_metadata() const {
     return shared_storage_budget_metadata_;
   }
-  const absl::optional<RedactedFencedFrameProperty<FencedFrameReporting>>&
-  reporting_metadata() const {
-    return reporting_metadata_;
+  bool has_fenced_frame_reporting() const {
+    return has_fenced_frame_reporting_;
   }
   const DeprecatedFencedFrameMode& mode() const { return mode_; }
 
@@ -237,8 +230,7 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
       nested_urn_config_pairs_;
   absl::optional<RedactedFencedFrameProperty<SharedStorageBudgetMetadata>>
       shared_storage_budget_metadata_;
-  absl::optional<RedactedFencedFrameProperty<FencedFrameReporting>>
-      reporting_metadata_;
+  bool has_fenced_frame_reporting_ = false;
   DeprecatedFencedFrameMode mode_ = DeprecatedFencedFrameMode::kDefault;
 };
 

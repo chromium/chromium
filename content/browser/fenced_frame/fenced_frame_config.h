@@ -72,6 +72,8 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
+#include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
@@ -199,7 +201,7 @@ struct CONTENT_EXPORT FencedFrameConfig {
       const GURL& urn_uuid,
       const GURL& url,
       const SharedStorageBudgetMetadata& shared_storage_budget_metadata,
-      const ReportingMetadata& reporting_metadata = ReportingMetadata());
+      scoped_refptr<FencedFrameReporter> fenced_frame_reporter);
   FencedFrameConfig(const FencedFrameConfig&);
   FencedFrameConfig(FencedFrameConfig&&);
   ~FencedFrameConfig();
@@ -255,8 +257,8 @@ struct CONTENT_EXPORT FencedFrameConfig {
       shared_storage_budget_metadata_;
 
   // If reporting events from fenced frames are registered, then this
-  // information gets filled here.
-  absl::optional<FencedFrameProperty<ReportingMetadata>> reporting_metadata_;
+  // is populated. May be nullptr, otherwise.
+  scoped_refptr<FencedFrameReporter> fenced_frame_reporter_;
 
   // The mode for the resulting fenced frame: `kDefault` or `kOpaqueAds`.
   // TODO(crbug.com/1347953): This field is currently unused. Replace the
@@ -333,7 +335,7 @@ struct CONTENT_EXPORT FencedFrameProperties {
       FencedFrameProperty<raw_ptr<const SharedStorageBudgetMetadata>>>
       shared_storage_budget_metadata_;
 
-  absl::optional<FencedFrameProperty<ReportingMetadata>> reporting_metadata_;
+  scoped_refptr<FencedFrameReporter> fenced_frame_reporter_;
 
   absl::optional<FencedFrameProperty<base::UnguessableToken>> partition_nonce_;
 

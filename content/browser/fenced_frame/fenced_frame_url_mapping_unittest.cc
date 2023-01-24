@@ -5,11 +5,14 @@
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/test/fenced_frame_test_utils.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
@@ -116,6 +119,15 @@ GURL GenerateAndVerifyPendingMappedURN(
   EXPECT_TRUE(pending_urn->is_valid());
 
   return pending_urn.value();
+}
+
+// Creates a dummy FencedFrameReporter that will never used to send any reports.
+// Tests only check for pointer equality, so the configuration of the
+// FencedFrameReporter does not matter.
+scoped_refptr<FencedFrameReporter> CreateReporter() {
+  return FencedFrameReporter::CreateForFledge(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          nullptr));
 }
 
 }  // namespace
@@ -499,49 +511,24 @@ TEST(FencedFrameURLMappingTest, HasCorrectFormat) {
 // Test that reporting metadata gets saved successfully.
 TEST(FencedFrameURLMappingTest, ReportingMetadataSuccess) {
   FencedFrameURLMapping fenced_frame_url_mapping;
+  scoped_refptr<FencedFrameReporter> fenced_frame_reporter = CreateReporter();
   GURL test_url("https://foo.test");
-  GURL buyer_reporting_url("https://buyer_reporting.test");
-  GURL seller_reporting_url("https://seller_reporting.test");
-  ReportingMetadata fenced_frame_reporting;
-  fenced_frame_reporting
-      .metadata[blink::FencedFrame::ReportingDestination::kBuyer]
-               ["mouse interaction"] = buyer_reporting_url;
-  fenced_frame_reporting
-      .metadata[blink::FencedFrame::ReportingDestination::kSeller]
-               ["mouse interaction"] = seller_reporting_url;
   absl::optional<GURL> urn_uuid =
       fenced_frame_url_mapping.AddFencedFrameURLForTesting(
-          test_url, fenced_frame_reporting);
+          test_url, fenced_frame_reporter);
   EXPECT_TRUE(urn_uuid.has_value());
   EXPECT_TRUE(urn_uuid->is_valid());
   TestFencedFrameURLMappingResultObserver observer;
   fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid.value(),
                                                       &observer);
   EXPECT_TRUE(observer.mapping_complete_observed());
-  EXPECT_EQ(buyer_reporting_url,
-            observer.reporting_metadata()
-                .metadata[blink::FencedFrame::ReportingDestination::kBuyer]
-                         ["mouse interaction"]);
-  EXPECT_EQ(seller_reporting_url,
-            observer.reporting_metadata()
-                .metadata[blink::FencedFrame::ReportingDestination::kSeller]
-                         ["mouse interaction"]);
+  EXPECT_EQ(fenced_frame_reporter.get(), observer.fenced_frame_reporter());
 }
 
 // Test that reporting metadata gets saved successfully.
-TEST(FencedFrameURLMappingTest, ReportingMetadataSuccessWithInterestGroupInfo) {
+TEST(FencedFrameURLMappingTest, ReporterSuccessWithInterestGroupInfo) {
   FencedFrameURLMapping fenced_frame_url_mapping;
-  GURL test_url("https://foo.test");
-  GURL buyer_reporting_url("https://buyer_reporting.test");
-  GURL seller_reporting_url("https://seller_reporting.test");
-  ReportingMetadata fenced_frame_reporting;
-  fenced_frame_reporting
-      .metadata[blink::FencedFrame::ReportingDestination::kBuyer]
-               ["mouse interaction"] = buyer_reporting_url;
-  fenced_frame_reporting
-      .metadata[blink::FencedFrame::ReportingDestination::kSeller]
-               ["mouse interaction"] = seller_reporting_url;
-
+  scoped_refptr<FencedFrameReporter> fenced_frame_reporter = CreateReporter();
   GURL top_level_url("https://bar.test");
   url::Origin interest_group_owner = url::Origin::Create(top_level_url);
   std::string interest_group_name = "bars";
@@ -552,19 +539,12 @@ TEST(FencedFrameURLMappingTest, ReportingMetadataSuccessWithInterestGroupInfo) {
   fenced_frame_url_mapping.AssignFencedFrameURLAndInterestGroupInfo(
       urn_uuid, top_level_url, {interest_group_owner, interest_group_name},
       /*on_navigate_callback=*/base::RepeatingClosure(), ad_component_urls,
-      fenced_frame_reporting);
+      fenced_frame_reporter);
 
   TestFencedFrameURLMappingResultObserver observer;
   fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
   EXPECT_TRUE(observer.mapping_complete_observed());
-  EXPECT_EQ(buyer_reporting_url,
-            observer.reporting_metadata()
-                .metadata[blink::FencedFrame::ReportingDestination::kBuyer]
-                         ["mouse interaction"]);
-  EXPECT_EQ(seller_reporting_url,
-            observer.reporting_metadata()
-                .metadata[blink::FencedFrame::ReportingDestination::kSeller]
-                         ["mouse interaction"]);
+  EXPECT_EQ(fenced_frame_reporter.get(), observer.fenced_frame_reporter());
 }
 
 // Test that number of urn mappings limit is enforced for pending mapped urn

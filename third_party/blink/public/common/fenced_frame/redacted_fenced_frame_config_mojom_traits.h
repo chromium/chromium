@@ -186,30 +186,6 @@ class BLINK_COMMON_EXPORT UnionTraits<
 };
 
 template <>
-class BLINK_COMMON_EXPORT
-    UnionTraits<blink::mojom::PotentiallyOpaqueReportingMetadataDataView,
-                Prop<blink::FencedFrame::FencedFrameReporting>> {
- public:
-  static const blink::FencedFrame::FencedFrameReporting& transparent(
-      const Prop<blink::FencedFrame::FencedFrameReporting>&
-          fenced_frame_reporting) {
-    return *fenced_frame_reporting.potentially_opaque_value;
-  }
-  static blink::FencedFrame::Opaque opaque(
-      const Prop<blink::FencedFrame::FencedFrameReporting>&) {
-    return blink::FencedFrame::Opaque::kOpaque;
-  }
-
-  static bool Read(
-      blink::mojom::PotentiallyOpaqueReportingMetadataDataView data,
-      Prop<blink::FencedFrame::FencedFrameReporting>* out);
-
-  static blink::mojom::PotentiallyOpaqueReportingMetadataDataView::Tag GetTag(
-      const Prop<blink::FencedFrame::FencedFrameReporting>&
-          fenced_frame_reporting);
-};
-
-template <>
 class BLINK_COMMON_EXPORT UnionTraits<
     blink::mojom::PotentiallyOpaqueSharedStorageBudgetMetadataDataView,
     Prop<blink::FencedFrame::SharedStorageBudgetMetadata>> {
@@ -275,11 +251,6 @@ struct BLINK_COMMON_EXPORT
       const blink::FencedFrame::RedactedFencedFrameConfig& config) {
     return config.shared_storage_budget_metadata_;
   }
-  static const absl::optional<Prop<blink::FencedFrame::FencedFrameReporting>>&
-  reporting_metadata(
-      const blink::FencedFrame::RedactedFencedFrameConfig& config) {
-    return config.reporting_metadata_;
-  }
 
   static const blink::FencedFrame::DeprecatedFencedFrameMode& mode(
       const blink::FencedFrame::RedactedFencedFrameConfig& config) {
@@ -325,10 +296,9 @@ struct BLINK_COMMON_EXPORT
       const blink::FencedFrame::RedactedFencedFrameProperties& properties) {
     return properties.shared_storage_budget_metadata_;
   }
-  static const absl::optional<Prop<blink::FencedFrame::FencedFrameReporting>>&
-  reporting_metadata(
+  static bool has_fenced_frame_reporting(
       const blink::FencedFrame::RedactedFencedFrameProperties& properties) {
-    return properties.reporting_metadata_;
+    return properties.has_fenced_frame_reporting_;
   }
   static const blink::FencedFrame::DeprecatedFencedFrameMode& mode(
       const blink::FencedFrame::RedactedFencedFrameProperties& properties) {

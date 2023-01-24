@@ -1069,7 +1069,7 @@ void FillMiscNavigationParams(
       }
     }
     navigation_params->has_fenced_frame_reporting =
-        commit_params.fenced_frame_properties->reporting_metadata().has_value();
+        commit_params.fenced_frame_properties->has_fenced_frame_reporting();
   }
 
   navigation_params->ancestor_or_self_has_cspee =

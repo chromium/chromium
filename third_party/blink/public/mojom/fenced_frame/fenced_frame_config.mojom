@@ -100,11 +100,6 @@ union PotentiallyOpaqueSharedStorageBudgetMetadata {
   Opaque opaque;
 };
 
-union PotentiallyOpaqueReportingMetadata {
-  FencedFrameReporting transparent;
-  Opaque opaque;
-};
-
 // The `FencedFrameConfig` struct is used to transfer a redacted version
 // (`blink::RedactedFencedFrameConfig`) of `content::FencedFrameConfig` from the
 // browser process, to the renderer process, where the redaction process is
@@ -139,8 +134,6 @@ struct FencedFrameConfig {
   PotentiallyOpaqueConfigVector? nested_configs;
 
   PotentiallyOpaqueSharedStorageBudgetMetadata? shared_storage_budget_metadata;
-
-  PotentiallyOpaqueReportingMetadata? reporting_metadata;
 
   // This is the internal URN that represents this config in the browser-side
   // `FencedFrameURLMapping`. When this config is navigated to via a fenced
@@ -190,11 +183,9 @@ struct FencedFrameProperties {
 
   PotentiallyOpaqueSharedStorageBudgetMetadata? shared_storage_budget_metadata;
 
-  // If this is an "opaque-ads" mode fenced frame, there might be an associated
-  // reporting metadata. This is a map from destination type to reporting
-  // metadata which in turn is a map from the event type to the reporting url.
-  // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
-  PotentiallyOpaqueReportingMetadata? reporting_metadata;
+  // Whether the fenced frame potentially has any fenced frame reporting
+  // information associated with it.
+  bool has_fenced_frame_reporting;
 
   DeprecatedFencedFrameMode mode;
 };

@@ -11,6 +11,7 @@
 #include "components/services/storage/shared_storage/public/mojom/shared_storage.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
@@ -42,7 +43,8 @@ using SharedStorageURNMappingResult =
 using OperationResult = storage::SharedStorageManager::OperationResult;
 using GetResult = storage::SharedStorageManager::GetResult;
 
-SharedStorageURNMappingResult CalculateSharedStorageURNMappingResult(
+SharedStorageURNMappingResult CreateSharedStorageURNMappingResult(
+    StoragePartition* storage_partition,
     const url::Origin& shared_storage_origin,
     std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
         urls_with_metadata,
@@ -65,11 +67,17 @@ SharedStorageURNMappingResult CalculateSharedStorageURNMappingResult(
 
   GURL mapped_url = urls_with_metadata[index]->url;
 
+  scoped_refptr<FencedFrameReporter> fenced_frame_reporter;
+  if (!urls_with_metadata[index]->reporting_metadata.empty()) {
+    fenced_frame_reporter = FencedFrameReporter::CreateForSharedStorage(
+        storage_partition->GetURLLoaderFactoryForBrowserProcess(),
+        urls_with_metadata[index]->reporting_metadata);
+  }
   return SharedStorageURNMappingResult(
       mapped_url,
       SharedStorageBudgetMetadata{.origin = shared_storage_origin,
                                   .budget_to_charge = budget_to_charge},
-      urls_with_metadata[index]->reporting_metadata);
+      std::move(fenced_frame_reporter));
 }
 
 }  // namespace
@@ -82,17 +90,11 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
       page_(
           static_cast<PageImpl&>(document_service.render_frame_host().GetPage())
               .GetWeakPtrImpl()),
-      shared_storage_manager_(static_cast<StoragePartitionImpl*>(
-                                  document_service.render_frame_host()
-                                      .GetProcess()
-                                      ->GetStoragePartition())
-                                  ->GetSharedStorageManager()),
+      storage_partition_(static_cast<StoragePartitionImpl*>(
+          document_service.render_frame_host().GetStoragePartition())),
+      shared_storage_manager_(storage_partition_->GetSharedStorageManager()),
       shared_storage_worklet_host_manager_(
-          static_cast<StoragePartitionImpl*>(
-              document_service.render_frame_host()
-                  .GetProcess()
-                  ->GetStoragePartition())
-              ->GetSharedStorageWorkletHostManager()),
+          storage_partition_->GetSharedStorageWorkletHostManager()),
       browser_context_(
           document_service.render_frame_host().GetBrowserContext()),
       shared_storage_origin_(
@@ -133,8 +135,8 @@ SharedStorageWorkletHost::~SharedStorageWorkletHost() {
     bool failed_due_to_no_budget = false;
     page_->fenced_frame_urls_map().OnSharedStorageURNMappingResultDetermined(
         urn_uuid,
-        CalculateSharedStorageURNMappingResult(
-            shared_storage_origin_, std::move(it->second),
+        CreateSharedStorageURNMappingResult(
+            storage_partition_, shared_storage_origin_, std::move(it->second),
             /*index=*/0, /*budget_remaining=*/0.0, failed_due_to_no_budget));
 
     it = unresolved_urns_.erase(it);
@@ -740,9 +742,10 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
   if (page_) {
     bool failed_due_to_no_budget = false;
     SharedStorageURNMappingResult mapping_result =
-        CalculateSharedStorageURNMappingResult(
-            shared_storage_origin_, std::move(urls_with_metadata), index,
-            budget_result.bits, failed_due_to_no_budget);
+        CreateSharedStorageURNMappingResult(
+            storage_partition_, shared_storage_origin_,
+            std::move(urls_with_metadata), index, budget_result.bits,
+            failed_due_to_no_budget);
 
     if (document_service_) {
       DCHECK(!IsInKeepAlivePhase());

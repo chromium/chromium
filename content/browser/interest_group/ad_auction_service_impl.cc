@@ -17,6 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/ad_auction_document_data.h"
 #include "content/browser/interest_group/ad_auction_result_metrics.h"
@@ -744,6 +745,17 @@ void AdAuctionServiceImpl::OnReporterComplete(
   // the callback needs directly.
   content::AdAuctionData ad_auction_data{winning_group_key.owner,
                                          winning_group_key.name};
+
+  // Set up reporting for the fenced frame. Use a URLLoaderFactory that will
+  // automatically reconnect on network process crashes, and can outlive the
+  // frame.
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
+      render_frame_host()
+          .GetStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess();
+  scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
+      FencedFrameReporter::CreateForFledge(url_loader_factory);
+
   blink::FencedFrame::RedactedFencedFrameConfig config =
       fenced_frame_urls_map.AssignFencedFrameURLAndInterestGroupInfo(
           urn_uuid, render_url, std::move(ad_auction_data),
@@ -764,7 +776,17 @@ void AdAuctionServiceImpl::OnReporterComplete(
               std::move(interest_groups_that_bid),
               std::move(k_anon_keys_to_join), GetClientSecurityState(),
               GetRefCountedTrustedURLLoaderFactory()),
-          ad_component_urls, ad_beacon_map);
+          ad_component_urls, fenced_frame_reporter);
+
+  // Pass reporting map to the FencedFrameReporter.
+  // TODO(mmenke): move this into InterestGroupReporter.
+  for (auto destination :
+       {blink::FencedFrame::ReportingDestination::kBuyer,
+        blink::FencedFrame::ReportingDestination::kSeller,
+        blink::FencedFrame::ReportingDestination::kComponentSeller}) {
+    fenced_frame_reporter->OnUrlMappingReady(
+        destination, std::move(ad_beacon_map.metadata[destination]));
+  }
 
   std::move(callback).Run(/*manually_aborted=*/false, std::move(config));
 }

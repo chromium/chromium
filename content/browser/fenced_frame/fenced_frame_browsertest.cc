@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -13,6 +14,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/back_forward_cache_browsertest.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
+#include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -72,10 +74,10 @@ constexpr char kAddIframeScript[] = R"({
 GURL AddAndVerifyFencedFrameURL(
     FencedFrameURLMapping* fenced_frame_url_mapping,
     const GURL& https_url,
-    const ReportingMetadata& reporting_metadata = ReportingMetadata()) {
+    scoped_refptr<FencedFrameReporter> fenced_frame_reporter = nullptr) {
   absl::optional<GURL> urn_uuid =
-      fenced_frame_url_mapping->AddFencedFrameURLForTesting(https_url,
-                                                            reporting_metadata);
+      fenced_frame_url_mapping->AddFencedFrameURLForTesting(
+          https_url, std::move(fenced_frame_reporter));
   EXPECT_TRUE(urn_uuid.has_value());
   EXPECT_TRUE(urn_uuid->is_valid());
   return urn_uuid.value();
@@ -4664,17 +4666,26 @@ class FencedFrameReportEventBrowserTest
     EXPECT_TRUE(fenced_frame_root_node->IsFencedFrameRoot());
     EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
 
-    // Create valid reporting metadata for buyer.
-    ReportingMetadata fenced_frame_reporting;
+    // Create a FencedFrameReporter and pass it reporting metadata.
+    scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
+        FencedFrameReporter::CreateForFledge(
+            web_contents()
+                ->GetPrimaryMainFrame()
+                ->GetStoragePartition()
+                ->GetURLLoaderFactoryForBrowserProcess());
     GURL reporting_url(
         https_server()->GetURL("c.test", "/_report_event_server.html"));
-    fenced_frame_reporting
-        .metadata[blink::FencedFrame::ReportingDestination::kBuyer]["click"] =
-        reporting_url;
-    // Create reporting metadata with an empty reporting url for seller.
-    fenced_frame_reporting
-        .metadata[blink::FencedFrame::ReportingDestination::kSeller]["click"] =
-        GURL();
+    // Set valid reporting metadata for buyer.
+    fenced_frame_reporter->OnUrlMappingReady(
+        blink::FencedFrame::ReportingDestination::kBuyer,
+        {{"click", reporting_url}});
+    // Set empty reporting url for seller.
+    fenced_frame_reporter->OnUrlMappingReady(
+        blink::FencedFrame::ReportingDestination::kSeller, {{"click", GURL()}});
+    // Set no reporting urls for component seller.
+    fenced_frame_reporter->OnUrlMappingReady(
+        blink::FencedFrame::ReportingDestination::kComponentSeller, {});
+
     // Get the urn mapping object.
     FencedFrameURLMapping& url_mapping =
         root->current_frame_host()->GetPage().fenced_frame_urls_map();
@@ -4692,7 +4703,7 @@ class FencedFrameReportEventBrowserTest
       GURL expect_url = navigate_url;
       if (step.is_opaque) {
         auto urn_uuid = AddAndVerifyFencedFrameURL(&url_mapping, navigate_url,
-                                                   fenced_frame_reporting);
+                                                   fenced_frame_reporter);
         navigate_url = urn_uuid;
       }
       FrameTreeNode* navigation_target_node = fenced_frame_root_node;
@@ -5138,22 +5149,31 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
   EXPECT_EQ(1U, root->child_count());
   FrameTreeNode* iframe_node = root->child_at(0);
 
-  // Add reporting metadata.
-  ReportingMetadata fenced_frame_reporting;
+  // Create a FencedFrameReporter and pass it reporting metadata.
+  scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
+      FencedFrameReporter::CreateForFledge(
+          web_contents()
+              ->GetPrimaryMainFrame()
+              ->GetStoragePartition()
+              ->GetURLLoaderFactoryForBrowserProcess());
   GURL reporting_url(https_server()->GetURL("c.test", "/title2.html"));
-  fenced_frame_reporting
-      .metadata[blink::FencedFrame::ReportingDestination::kBuyer]
-               ["mouse interaction"] = reporting_url;
-  fenced_frame_reporting
-      .metadata[blink::FencedFrame::ReportingDestination::kBuyer]["click"] =
-      https_server()->GetURL("c.test", "/title1.html");
+  // Set valid reporting metadata for buyer.
+  fenced_frame_reporter->OnUrlMappingReady(
+      blink::FencedFrame::ReportingDestination::kBuyer,
+      {{"mouse interaction", reporting_url},
+       {"click", https_server()->GetURL("c.test", "/title1.html")}});
+  // Set empty reporting url for seller and component seller.
+  fenced_frame_reporter->OnUrlMappingReady(
+      blink::FencedFrame::ReportingDestination::kSeller, {});
+  fenced_frame_reporter->OnUrlMappingReady(
+      blink::FencedFrame::ReportingDestination::kComponentSeller, {});
 
   GURL https_url(
       https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
   FencedFrameURLMapping& url_mapping =
       root->current_frame_host()->GetPage().fenced_frame_urls_map();
   auto urn_uuid = AddAndVerifyFencedFrameURL(&url_mapping, https_url,
-                                             fenced_frame_reporting);
+                                             fenced_frame_reporter);
 
   TestFencedFrameURLMappingResultObserver mapping_observer;
   url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &mapping_observer);
@@ -5163,10 +5183,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
 
   observer.WaitForCommit();
   EXPECT_TRUE(mapping_observer.mapping_complete_observed());
-  EXPECT_EQ(reporting_url,
-            mapping_observer.reporting_metadata()
-                .metadata[blink::FencedFrame::ReportingDestination::kBuyer]
-                         ["mouse interaction"]);
+  EXPECT_EQ(fenced_frame_reporter, mapping_observer.fenced_frame_reporter());
 
   EXPECT_EQ(https_url,
             iframe_node->current_frame_host()->GetLastCommittedURL());

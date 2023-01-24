@@ -2213,6 +2213,7 @@ test("content_unittests") {
     "../browser/dom_storage/dom_storage_context_wrapper_unittest.cc",
     "../browser/download/download_manager_impl_unittest.cc",
     "../browser/download/save_package_unittest.cc",
+    "../browser/fenced_frame/fenced_frame_reporter_unittest.cc",
     "../browser/fenced_frame/fenced_frame_unittest.cc",
     "../browser/fenced_frame/fenced_frame_url_mapping_unittest.cc",
     "../browser/fenced_frame/redacted_fenced_frame_config_mojom_traits_unittest.cc",

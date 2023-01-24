@@ -11,8 +11,10 @@
 #include "base/check_op.h"
 #include "base/functional/callback.h"
 #include "base/guid.h"
+#include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
@@ -64,12 +66,13 @@ FencedFrameURLMapping::SharedStorageURNMappingResult::
     SharedStorageURNMappingResult() = default;
 
 FencedFrameURLMapping::SharedStorageURNMappingResult::
-    SharedStorageURNMappingResult(GURL mapped_url,
-                                  SharedStorageBudgetMetadata budget_metadata,
-                                  SharedStorageReportingMap reporting_map)
+    SharedStorageURNMappingResult(
+        GURL mapped_url,
+        SharedStorageBudgetMetadata budget_metadata,
+        scoped_refptr<FencedFrameReporter> fenced_frame_reporter)
     : mapped_url(std::move(mapped_url)),
       budget_metadata(std::move(budget_metadata)),
-      reporting_map(std::move(reporting_map)) {}
+      fenced_frame_reporter(std::move(fenced_frame_reporter)) {}
 
 FencedFrameURLMapping::SharedStorageURNMappingResult::
     ~SharedStorageURNMappingResult() = default;
@@ -90,7 +93,7 @@ void FencedFrameURLMapping::ImportPendingAdComponents(
 
 absl::optional<GURL> FencedFrameURLMapping::AddFencedFrameURLForTesting(
     const GURL& url,
-    const ReportingMetadata& reporting_metadata) {
+    scoped_refptr<FencedFrameReporter> fenced_frame_reporter) {
   DCHECK(url.is_valid());
   CHECK(blink::IsValidFencedFrameURL(url));
 
@@ -103,9 +106,7 @@ absl::optional<GURL> FencedFrameURLMapping::AddFencedFrameURLForTesting(
 
   auto& [urn, config] = *it.value();
 
-  config.reporting_metadata_.emplace(reporting_metadata,
-                                     VisibilityToEmbedder::kOpaque,
-                                     VisibilityToContent::kOpaque);
+  config.fenced_frame_reporter_ = std::move(fenced_frame_reporter);
   return urn;
 }
 
@@ -132,7 +133,7 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
     AdAuctionData ad_auction_data,
     base::RepeatingClosure on_navigate_callback,
     std::vector<GURL> ad_component_urls,
-    const ReportingMetadata& reporting_metadata) {
+    scoped_refptr<FencedFrameReporter> fenced_frame_reporter) {
   // Move pending mapped urn::uuid to `urn_uuid_to_url_map_`.
   auto pending_it = pending_urn_uuid_to_url_map_.find(urn_uuid);
   DCHECK(pending_it != pending_urn_uuid_to_url_map_.end());
@@ -164,9 +165,7 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
                                  VisibilityToEmbedder::kOpaque,
                                  VisibilityToContent::kTransparent);
 
-  config.reporting_metadata_.emplace(reporting_metadata,
-                                     VisibilityToEmbedder::kOpaque,
-                                     VisibilityToContent::kTransparent);
+  config.fenced_frame_reporter_ = std::move(fenced_frame_reporter);
 
   return config.RedactFor(FencedFrameEntity::kEmbedder);
 }
@@ -234,18 +233,9 @@ void FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
   // TODO(crbug.com/1318970): Simplify this by making Shared Storage only
   // capable of producing URLs that fenced frames can navigate to.
   if (blink::IsValidFencedFrameURL(mapping_result.mapped_url)) {
-    ReportingMetadata reporting_metadata;
-    base::flat_map<blink::FencedFrame::ReportingDestination,
-                   SharedStorageReportingMap>
-        reporting_metadata_map;
-    reporting_metadata_map
-        [blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl] =
-            std::move(mapping_result.reporting_map);
-    reporting_metadata.metadata = std::move(reporting_metadata_map);
-
-    config =
-        FencedFrameConfig(urn_uuid, mapping_result.mapped_url,
-                          mapping_result.budget_metadata, reporting_metadata);
+    config = FencedFrameConfig(urn_uuid, mapping_result.mapped_url,
+                               mapping_result.budget_metadata,
+                               std::move(mapping_result.fenced_frame_reporter));
     urn_uuid_to_url_map_.emplace(urn_uuid, *config);
   }
 

@@ -5,8 +5,10 @@
 #include "content/browser/fenced_frame/fenced_frame_config.h"
 #include "base/functional/callback.h"
 #include "base/guid.h"
+#include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 
 namespace content {
@@ -80,7 +82,7 @@ FencedFrameConfig::FencedFrameConfig(
     const GURL& urn_uuid,
     const GURL& mapped_url,
     const SharedStorageBudgetMetadata& shared_storage_budget_metadata,
-    const ReportingMetadata& reporting_metadata)
+    scoped_refptr<FencedFrameReporter> fenced_frame_reporter)
     : urn_uuid_(urn_uuid),
       mapped_url_(absl::in_place,
                   mapped_url,
@@ -90,10 +92,7 @@ FencedFrameConfig::FencedFrameConfig(
                                       shared_storage_budget_metadata,
                                       VisibilityToEmbedder::kOpaque,
                                       VisibilityToContent::kOpaque),
-      reporting_metadata_(absl::in_place,
-                          reporting_metadata,
-                          VisibilityToEmbedder::kOpaque,
-                          VisibilityToContent::kOpaque) {}
+      fenced_frame_reporter_(std::move(fenced_frame_reporter)) {}
 
 FencedFrameConfig::FencedFrameConfig(const FencedFrameConfig&) = default;
 FencedFrameConfig::FencedFrameConfig(FencedFrameConfig&&) = default;
@@ -136,8 +135,6 @@ blink::FencedFrame::RedactedFencedFrameConfig FencedFrameConfig::RedactFor(
 
   RedactProperty(shared_storage_budget_metadata_, entity,
                  redacted_config.shared_storage_budget_metadata_);
-  RedactProperty(reporting_metadata_, entity,
-                 redacted_config.reporting_metadata_);
 
   // The mode never needs to be redacted, because it is a function of which API
   // was called to generate the config, rather than any cross-site data.
@@ -165,7 +162,7 @@ FencedFrameProperties::FencedFrameProperties(const FencedFrameConfig& config)
       on_navigate_callback_(config.on_navigate_callback_),
       nested_urn_config_pairs_(absl::nullopt),
       shared_storage_budget_metadata_(absl::nullopt),
-      reporting_metadata_(config.reporting_metadata_),
+      fenced_frame_reporter_(config.fenced_frame_reporter_),
       partition_nonce_(absl::in_place,
                        base::UnguessableToken::Create(),
                        VisibilityToEmbedder::kOpaque,
@@ -240,8 +237,9 @@ FencedFrameProperties::RedactFor(FencedFrameEntity entity) const {
     }
   }
 
-  RedactProperty(reporting_metadata_, entity,
-                 redacted_properties.reporting_metadata_);
+  if (fenced_frame_reporter_) {
+    redacted_properties.has_fenced_frame_reporting_ = true;
+  }
 
   // The mode never needs to be redacted, because it is a function of which API
   // was called to generate the config, rather than any cross-site data.

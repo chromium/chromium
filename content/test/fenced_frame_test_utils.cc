@@ -4,7 +4,9 @@
 
 #include "content/test/fenced_frame_test_utils.h"
 
+#include "base/memory/ref_counted.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
+#include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/test/test_frame_navigation_observer.h"
@@ -26,17 +28,14 @@ void SimulateSharedStorageURNMappingComplete(
     const GURL& mapped_url,
     const url::Origin& shared_storage_origin,
     double budget_to_charge,
-    const std::string& report_event,
-    const GURL& report_url) {
+    scoped_refptr<FencedFrameReporter> fenced_frame_reporter) {
   SharedStorageBudgetMetadata budget_metadata = {
       .origin = shared_storage_origin, .budget_to_charge = budget_to_charge};
 
-  SharedStorageReportingMap reporting_map(
-      {std::make_pair(report_event, report_url)});
-
   fenced_frame_url_mapping.OnSharedStorageURNMappingResultDetermined(
-      urn_uuid, FencedFrameURLMapping::SharedStorageURNMappingResult(
-                    mapped_url, budget_metadata, reporting_map));
+      urn_uuid,
+      FencedFrameURLMapping::SharedStorageURNMappingResult(
+          mapped_url, budget_metadata, std::move(fenced_frame_reporter)));
 }
 
 TestFencedFrameURLMappingResultObserver::
@@ -67,18 +66,21 @@ void FencedFrameURLMappingTestPeer::GetSharedStorageReportingMap(
   auto urn_it = fenced_frame_url_mapping_->urn_uuid_to_url_map_.find(urn_uuid);
   DCHECK(urn_it != fenced_frame_url_mapping_->urn_uuid_to_url_map_.end());
 
-  if (!urn_it->second.reporting_metadata_.has_value())
+  scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
+      urn_it->second.fenced_frame_reporter_;
+  if (!fenced_frame_reporter) {
     return;
+  }
 
-  auto data_it =
-      urn_it->second.reporting_metadata_->GetValueIgnoringVisibility()
-          .metadata.find(blink::FencedFrame::ReportingDestination::
-                             kSharedStorageSelectUrl);
+  const auto& metadata = fenced_frame_reporter->reporting_metadata();
+  auto data_it = metadata.find(
+      blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl);
 
-  if (data_it !=
-      urn_it->second.reporting_metadata_->GetValueIgnoringVisibility()
-          .metadata.end())
-    *out_reporting_map = data_it->second;
+  if (data_it != metadata.end()) {
+    // No need to check if `reporting_url_map` is null - it never is for
+    // kSharedStorageSelectUrl reporting destinations.
+    *out_reporting_map = *data_it->second.reporting_url_map;
+  }
 }
 
 void FencedFrameURLMappingTestPeer::FillMap(const GURL& url) {

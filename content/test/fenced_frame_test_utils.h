@@ -6,6 +6,8 @@
 #define CONTENT_TEST_FENCED_FRAME_TEST_UTILS_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
+#include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "net/base/net_errors.h"
 
@@ -27,8 +29,7 @@ void SimulateSharedStorageURNMappingComplete(
     const GURL& mapped_url,
     const url::Origin& shared_storage_origin,
     double budget_to_charge,
-    const std::string& report_event = "",
-    const GURL& report_url = GURL());
+    scoped_refptr<FencedFrameReporter> fenced_frame_reporter = nullptr);
 
 // Tests can use this class to observe and check the URL mapping result.
 class TestFencedFrameURLMappingResultObserver
@@ -78,13 +79,11 @@ class TestFencedFrameURLMappingResultObserver
     return observed_fenced_frame_properties_->on_navigate_callback_;
   }
 
-  ReportingMetadata reporting_metadata() {
-    if (!observed_fenced_frame_properties_ ||
-        !observed_fenced_frame_properties_->reporting_metadata_) {
-      return {};
+  FencedFrameReporter* fenced_frame_reporter() {
+    if (!observed_fenced_frame_properties_) {
+      return nullptr;
     }
-    return observed_fenced_frame_properties_->reporting_metadata_
-        ->GetValueIgnoringVisibility();
+    return observed_fenced_frame_properties_->fenced_frame_reporter_.get();
   }
 
  private:

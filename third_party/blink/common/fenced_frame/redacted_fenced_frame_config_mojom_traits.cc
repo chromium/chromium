@@ -421,46 +421,6 @@ UnionTraits<blink::mojom::PotentiallyOpaqueSharedStorageBudgetMetadataDataView,
       Tag::kOpaque;
 }
 
-// static
-bool UnionTraits<blink::mojom::PotentiallyOpaqueReportingMetadataDataView,
-                 Prop<blink::FencedFrame::FencedFrameReporting>>::
-    Read(blink::mojom::PotentiallyOpaqueReportingMetadataDataView data,
-         Prop<blink::FencedFrame::FencedFrameReporting>* out) {
-  switch (data.tag()) {
-    case blink::mojom::PotentiallyOpaqueReportingMetadataDataView::Tag::
-        kTransparent: {
-      blink::FencedFrame::FencedFrameReporting fenced_frame_reporting;
-      if (!data.ReadTransparent(&fenced_frame_reporting))
-        return false;
-      out->potentially_opaque_value.emplace(std::move(fenced_frame_reporting));
-      return true;
-    }
-    case blink::mojom::PotentiallyOpaqueReportingMetadataDataView::Tag::
-        kOpaque: {
-      blink::FencedFrame::Opaque opaque;
-      if (!data.ReadOpaque(&opaque))
-        return false;
-      return true;
-    }
-  }
-  NOTREACHED();
-  return false;
-}
-
-// static
-blink::mojom::PotentiallyOpaqueReportingMetadataDataView::Tag
-UnionTraits<blink::mojom::PotentiallyOpaqueReportingMetadataDataView,
-            Prop<blink::FencedFrame::FencedFrameReporting>>::
-    GetTag(const Prop<blink::FencedFrame::FencedFrameReporting>&
-               fenced_frame_reporting) {
-  if (fenced_frame_reporting.potentially_opaque_value.has_value()) {
-    return blink::mojom::PotentiallyOpaqueReportingMetadataDataView::Tag::
-        kTransparent;
-  }
-
-  return blink::mojom::PotentiallyOpaqueReportingMetadataDataView::Tag::kOpaque;
-}
-
 bool StructTraits<blink::mojom::FencedFrameConfigDataView,
                   blink::FencedFrame::RedactedFencedFrameConfig>::
     Read(blink::mojom::FencedFrameConfigDataView data,
@@ -475,8 +435,7 @@ bool StructTraits<blink::mojom::FencedFrameConfigDataView,
       !data.ReadAdAuctionData(&out_config->ad_auction_data_) ||
       !data.ReadNestedConfigs(&out_config->nested_configs_) ||
       !data.ReadSharedStorageBudgetMetadata(
-          &out_config->shared_storage_budget_metadata_) ||
-      !data.ReadReportingMetadata(&out_config->reporting_metadata_)) {
+          &out_config->shared_storage_budget_metadata_)) {
     return false;
   }
 
@@ -526,8 +485,7 @@ bool StructTraits<blink::mojom::FencedFramePropertiesDataView,
       !data.ReadAdAuctionData(&out_properties->ad_auction_data_) ||
       !data.ReadNestedUrnConfigPairs(&nested_urn_config_pairs) ||
       !data.ReadSharedStorageBudgetMetadata(
-          &out_properties->shared_storage_budget_metadata_) ||
-      !data.ReadReportingMetadata(&out_properties->reporting_metadata_)) {
+          &out_properties->shared_storage_budget_metadata_)) {
     return false;
   }
 
@@ -547,6 +505,8 @@ bool StructTraits<blink::mojom::FencedFramePropertiesDataView,
     }
   }
 
+  out_properties->has_fenced_frame_reporting_ =
+      data.has_fenced_frame_reporting();
   return true;
 }
 

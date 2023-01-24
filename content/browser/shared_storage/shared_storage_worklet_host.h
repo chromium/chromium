@@ -25,6 +25,7 @@ class SharedStorageDocumentServiceImpl;
 class SharedStorageURLLoaderFactoryProxy;
 class SharedStorageWorkletDriver;
 class SharedStorageWorkletHostManager;
+class StoragePartitionImpl;
 class PageImpl;
 
 // The SharedStorageWorkletHost is responsible for getting worklet operation
@@ -199,6 +200,12 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // its keep-alive.
   base::WeakPtr<PageImpl> page_;
 
+  // Storage partition. Used to get other raw pointers below, as well as a
+  // URLLoaderFactory for the browser process, which is used for reporting.
+  // Don't store a reference to that URLLoaderFactory directly to avoid
+  // confusion with `url_loader_factory_proxy_`.
+  raw_ptr<StoragePartitionImpl> storage_partition_;
+
   // Both `this` and `shared_storage_manager_` live in the `StoragePartition`.
   // `shared_storage_manager_` always outlives `this` because `this` will be
   // destroyed before `shared_storage_manager_` in ~StoragePartition.
@@ -208,7 +215,7 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   raw_ptr<SharedStorageWorkletHostManager> shared_storage_worklet_host_manager_;
 
   // Pointer to the `BrowserContext`, saved to be able to call
-  // `IsSharedStorageAllowed()`.
+  // `IsSharedStorageAllowed()`, and to get the global URLLoaderFactory.
   raw_ptr<BrowserContext> browser_context_;
 
   // The shared storage owner document's origin.
