@@ -15,7 +15,8 @@ typedef enum {
 
 // A label which applies a fade-to-background color gradient to one or both ends
 // of the string if it is too large to fit the available area. It  uses the
-// attributedText property of UILabel to implement the fading.
+// attributedText property of UILabel to implement the fading. If
+// `numberOfLines` different than 1, the `lineBreakMode` is ignored.
 @interface FadeTruncatingLabel : UILabel
 
 // Which side(s) to truncate.

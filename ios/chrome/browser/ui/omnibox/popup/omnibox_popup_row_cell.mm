@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_row_cell.h"
 
 #import "base/check.h"
+#import "base/i18n/rtl.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/browser/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/ui/elements/fade_truncating_label.h"
@@ -401,6 +403,9 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 
   // Clear text.
   self.textTruncatingLabel.attributedText = nil;
+  self.textTruncatingLabel.truncateMode = FadeTruncatingTail;
+  self.textTruncatingLabel.semanticContentAttribute =
+      UISemanticContentAttributeUnspecified;
   self.detailTruncatingLabel.attributedText = nil;
   self.detailAnswerLabel.attributedText = nil;
 
@@ -454,8 +459,14 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
           : suggestion.text;
   if (base::FeatureList::IsEnabled(kOmniboxMultilineSearchSuggest) &&
       suggestion.isMatchTypeSearch) {
-    self.textTruncatingLabel.lineBreakMode = NSLineBreakByWordWrapping;
     self.textTruncatingLabel.numberOfLines = kSearchSuggestNumberOfLines;
+    base::i18n::TextDirection textDirection = base::i18n::GetStringDirection(
+        base::SysNSStringToUTF16(self.textTruncatingLabel.text));
+    if (textDirection == base::i18n::RIGHT_TO_LEFT) {
+      self.textTruncatingLabel.semanticContentAttribute =
+          UISemanticContentAttributeForceRightToLeft;
+      self.textTruncatingLabel.truncateMode = FadeTruncatingHead;
+    }
   } else {
     // Default values for FadeTruncatingLabel.
     self.textTruncatingLabel.lineBreakMode = NSLineBreakByClipping;

@@ -156,6 +156,7 @@ source_set("popup_ui") {
     "resources:omnibox_suggestion_icon_dark_color",
     "resources:omnibox_suggestion_row_highlight_color",
     "//base",
+    "//base:i18n",
     "//components/favicon/core",
     "//components/omnibox/common",
     "//ios/chrome/app/strings",
