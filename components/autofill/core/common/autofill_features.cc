@@ -224,6 +224,11 @@ BASE_FEATURE(kAutofillEnableDependentLocalityParsing,
              "AutofillEnableDependentLocalityParsing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls if Autofill emits form issues to devtools.
+BASE_FEATURE(kAutofillEnableDevtoolsIssues,
+             "AutofillEnableDevtoolsIssues",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to save the first number in a form with multiple phone
 // numbers instead of aborting the import.
 // TODO(crbug.com/1167484) Remove once launched.

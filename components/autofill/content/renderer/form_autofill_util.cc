@@ -1434,7 +1434,8 @@ void MatchLabelsAndFields(
     field_data->label_source = FormFieldData::LabelSource::kFor;
     base::UmaHistogramEnumeration(kAssignedLabelSourceHistogram, label_source);
 
-    if (label_source == AssignedLabelSource::kName) {
+    if (label_source == AssignedLabelSource::kName &&
+        base::FeatureList::IsEnabled(features::kAutofillEnableDevtoolsIssues)) {
       // Add a DevTools issue informing the developer that the `label`'s for-
       // attribute is pointing to the name of a field, even though the ID should
       // be used.
@@ -1524,7 +1525,9 @@ bool FormOrFieldsetsToFormData(
   DCHECK(!optional_field || form_control_element);
   DCHECK(!form_element || fieldsets.empty());
 
-  MaybeEmitDuplicateIdForInputIssue(control_elements);
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableDevtoolsIssues)) {
+    MaybeEmitDuplicateIdForInputIssue(control_elements);
+  }
 
   // Extracts fields from |control_elements| into `form->fields` and sets
   // `form->child_frames[i].predecessor` to the field index of the last field
@@ -1620,7 +1623,9 @@ bool FormOrFieldsetsToFormData(
     }
   }
 
-  MaybeEmitInputWithNoLabelIssue(control_elements, form, fields_extracted);
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableDevtoolsIssues)) {
+    MaybeEmitInputWithNoLabelIssue(control_elements, form, fields_extracted);
+  }
 
   // Infers field labels from other tags or <labels> without for="...".
   bool found_field = false;
