@@ -1139,6 +1139,38 @@ message DeviceWallpaperImageProto {
   optional string device_wallpaper_image = 1;
 }
 
+message DeviceScreensaverIdleTimeoutSecondsProto {
+  optional int64 device_screensaver_idle_timeout_seconds = 1;
+};
+
+message DeviceScreensaverImageDisplayIntervalSecondsProto {
+  optional int64 device_screensaver_image_display_interval_seconds = 1;
+};
+
+// Specifies the images to be displayed in the device-level screensaver.
+// Represented as a JSON string that must follow the following schema:
+// {
+//   "items": {
+//     "properties": {
+//       "hash": {
+//         "type": "string"
+//       },
+//       "url": {
+//         "type": "string"
+//       }
+//     },
+//     "type": "object"
+//   },
+//   "type": "array"
+// }
+message DeviceScreensaverImagesProto {
+  optional string device_screensaver_images = 1;
+};
+
+message DeviceScreensaverEnabledProto {
+  optional bool device_screensaver_enabled = 1;
+};
+
 // Migration strategy for the case when ARC(N+) needs the ext4 encryption while
 // the device used ecryptfs in the past.
 message DeviceEcryptfsMigrationStrategyProto {
@@ -1927,4 +1959,10 @@ message ChromeDeviceSettingsProto {
       device_hindi_inscript_layout_enabled = 140;
   optional LoginScreenExtensionManifestV2AvailabilityProto
       login_screen_extension_manifest_v2_availability = 141;
+  optional DeviceScreensaverEnabledProto device_screensaver_enabled = 142;
+  optional DeviceScreensaverIdleTimeoutSecondsProto
+      device_screensaver_idle_timeout_seconds = 143;
+  optional DeviceScreensaverImageDisplayIntervalSecondsProto
+      device_screensaver_image_display_interval_seconds = 144;
+  optional DeviceScreensaverImagesProto device_screensaver_images = 145;
 }

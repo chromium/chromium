@@ -1,0 +1,45 @@
+caption: Device screensaver image source.
+desc: |-
+  Configures the list of images to display in the screensaver for the sign-in screen.
+
+  Each list item references an image to be displayed in the screensaver. The item must have as members a URL to the image, and the SHA-256 hash value of the image file for verification. The image format must be JPEG. The <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> device will download these images, and maintain a local cache of these references.
+
+  This policy will not have any effect if the <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME">DeviceScreensaverEnabled</ph> policy is set to false.
+
+  If this policy is unset, or the list does not contain any valid image references, the screensaver for the sign-in screen will not be displayed, regardless of the value set in the <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME">DeviceScreensaverEnabled</ph> policy.
+
+device_only: true
+default: []
+example_value:
+- url: https://www.example.com/img_1.jpg
+  hash: 38aae2b1647f1f37729c4f3632c297ceb901a130bf5881d72c3a19e16ff97e7a
+- url: https://www.example.com/img_2.jpg
+  hash: 439189aabe4fb024450ca7f0f5a7bc06841200e14b286db87e820d8674e316cd
+- url: https://www.example.com/img_3.jpg
+  hash: b6d9d35eb4d2957dbb78ba82f47c94727b8563ee7e3030c3c56be227c4ef4f78
+features:
+  can_be_recommended: false
+  dynamic_refresh: true
+  per_profile: false
+owners:
+- mpetrisor@google.com
+- eariassoto@google.com
+- imprivata-eng@google.com
+schema:
+  items:
+    properties:
+      hash:
+        description: The SHA-256 hash of the image.
+        type: string
+      url:
+        description: The URL from which the screensaver image can be downloaded.
+        type: string
+    required:
+    - url
+    - hash
+    type: object
+  type: array
+future_on:
+- chrome_os
+tags: []
+type: dict

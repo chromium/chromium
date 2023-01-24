@@ -21872,5 +21872,17 @@
   },
   "ScreensaverImages" : {
     "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"
+  },
+  "DeviceScreensaverEnabled" : {
+    "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"
+  },
+  "DeviceScreensaverIdleTimeoutSeconds" : {
+    "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"
+  },
+  "DeviceScreensaverImageDisplayIntervalSeconds" : {
+    "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"
+  },
+  "DeviceScreensaverImages" : {
+    "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"
   }
 }
