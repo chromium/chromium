@@ -314,6 +314,13 @@ const base::FeatureParam<int>
         &kSharedStorageSelectURLLimit,
         "SharedStorageMaxAllowedSelectURLCallsPerOriginPerPageLoad", 3};
 
+BASE_FEATURE(kSharedStorageReportEventLimit,
+             "SharedStorageReportEventLimit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kSharedStorageReportEventBitBudgetPerPageLoad = {
+    &kSharedStorageReportEventLimit,
+    "SharedStorageReportEventBitBudgetPerPageLoad", 9};
+
 BASE_FEATURE(kSameSiteCrossOriginForSpeculationRulesPrerender,
              "SameSiteCrossOriginForSpeculationRulesPrerender",
              base::FEATURE_ENABLED_BY_DEFAULT);

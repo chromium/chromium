@@ -9,6 +9,23 @@
 <script>
 'use strict';
 
+// Poll the server for the test result.
+async function waitForReportCount(id) {
+  const url = `resources/report.py?query&token=${id}`;
+  for (let i = 0; i < 30; ++i) {
+      const response = await fetch(url);
+      let count = response.headers.get("Count");
+
+      if (!count || count === '0') {
+          await new Promise(resolve => step_timeout(resolve, 100));
+          continue;
+      }
+
+      return parseInt(count);
+  }
+  assert_true(false, 'timeout');
+}
+
 promise_test(async () => {
     const ancestor_key = token();
     let url0 = generateURL("resources/sender0.html", [ancestor_key]);
@@ -16,12 +33,14 @@ promise_test(async () => {
 
     await sharedStorage.worklet.addModule("resources/simple-module.js");
 
+    const report_id = token();
+    const reportURL = `resources/report.py?token=${report_id}`;
     let uuid0 = await sharedStorage.selectURL(
         "test-url-selection-operation", [
             {url: url0,
              reportingMetadata:
                  {
-                     'click': "resources/receiver0.html",
+                     'click': reportURL,
                      'mouse interaction': "resources/receiver1.html"
                  }
              }, {url: url1}
@@ -30,6 +49,9 @@ promise_test(async () => {
     attachFencedFrame(uuid0, 'opaque-ads');
     const result0 = await nextValueFromServer(ancestor_key);
     assert_equals(result0, "sender0_reported");
+
+    const reportCount = await waitForReportCount(report_id);
+    assert_equals(reportCount, 1, `Num reports received: ${reportCount}`);
 }, 'selectURL() with reportEvent()');
 
 </script>

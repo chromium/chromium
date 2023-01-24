@@ -18,6 +18,7 @@
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/public/browser/render_view_host.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
@@ -27,7 +28,13 @@ namespace content {
 PageImpl::PageImpl(RenderFrameHostImpl& rfh, PageDelegate& delegate)
     : main_document_(rfh),
       delegate_(delegate),
-      text_autosizer_page_info_({0, 0, 1.f}) {}
+      text_autosizer_page_info_({0, 0, 1.f}) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSharedStorageReportEventLimit)) {
+    select_url_report_event_budget_ = static_cast<double>(
+        blink::features::kSharedStorageReportEventBitBudgetPerPageLoad.Get());
+  }
+}
 
 PageImpl::~PageImpl() {
   // As SupportsUserData is a base class of PageImpl, Page members will be
@@ -318,6 +325,49 @@ bool PageImpl::IsSelectURLAllowed(const url::Origin& origin) {
   }
 
   ++count;
+  return true;
+}
+
+bool PageImpl::CheckAndMaybeDebitReportEventForSelectURLBudget(
+    RenderFrameHost& rfh) {
+  if (!select_url_report_event_budget_.has_value()) {
+    // `blink::features::kSharedStorageReportEventLimit` is disabled.
+    return true;
+  }
+
+  std::vector<const SharedStorageBudgetMetadata*> metadata_vector =
+      static_cast<RenderFrameHostImpl&>(rfh)
+          .frame_tree_node()
+          ->FindSharedStorageBudgetMetadata();
+
+  // Get the total charge.
+  double total_to_charge = 0;
+  for (const auto* metadata : metadata_vector) {
+    if (metadata->report_event_called) {
+      // The bits have already been charged for this URN.
+      continue;
+    }
+
+    total_to_charge += metadata->budget_to_charge;
+  }
+
+  if (total_to_charge > select_url_report_event_budget_.value()) {
+    // There is insufficient budget remaining.
+    return false;
+  }
+
+  // Set flag(s) that `reportEvent()` has now been called.
+  for (const auto* metadata : metadata_vector) {
+    if (metadata->report_event_called) {
+      // The bits have already been charged for this URN.
+      continue;
+    }
+
+    metadata->report_event_called = true;
+  }
+
+  // There is sufficient budget, so charge the total now.
+  select_url_report_event_budget_.value() -= total_to_charge;
   return true;
 }
 

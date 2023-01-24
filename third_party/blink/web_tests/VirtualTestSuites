@@ -1343,6 +1343,18 @@
     "expires": "Jul 1, 2023"
   },
   {
+    "prefix": "shared-storage-fenced-frame-mparch-reportevent-limit",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "wpt_internal/shared_storage_reportevent_limit/"
+    ],
+    "exclusive_tests": [
+      "wpt_internal/shared_storage_reportevent_limit/"
+    ],
+    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,SharedStorageReportEventLimit"],
+    "expires": "Jul 1, 2023"
+  },
+  {
     "prefix": "shared-storage-fenced-frame-mparch-selecturl-limit",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

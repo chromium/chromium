@@ -61,17 +61,22 @@ void SharedStorageBudgetCharger::DidStartNavigation(
                                            ->FindSharedStorageBudgetMetadata();
 
   for (const auto* metadata : shared_storage_budget_metadata) {
-    if (metadata->budget_to_charge == 0)
+    if (metadata->top_navigated) {
       continue;
-
-    shared_storage_manager->MakeBudgetWithdrawal(
-        metadata->origin, metadata->budget_to_charge, base::DoNothing());
+    }
 
     // We only want to charge the budget the first time a navigation leaves the
     // fenced frame, across all fenced frames navigated to the same urn.
     // We can do this even though the pointer is const because
-    // `budget_to_charge` is a mutable field of `SharedStorageBudgetMetadata`.
-    metadata->budget_to_charge = 0;
+    // `top_navigated` is a mutable field of `SharedStorageBudgetMetadata`.
+    metadata->top_navigated = true;
+
+    if (metadata->budget_to_charge == 0) {
+      continue;
+    }
+
+    shared_storage_manager->MakeBudgetWithdrawal(
+        metadata->origin, metadata->budget_to_charge, base::DoNothing());
   }
 }
 

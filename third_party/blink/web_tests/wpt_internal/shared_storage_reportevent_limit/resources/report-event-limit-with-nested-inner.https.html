@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="../../fenced_frame/resources/utils.js"></script>
+<title>Outer fenced frame content to test fence.reportEvent limit for Shared Storage with nested fenced frames</title>
+
+<body>
+<script>
+  // Get the token for communication with the parent.
+  const [frameToken, reportID] = parseKeylist();
+
+  async function createNestedFrame(frameToken, reportID) {
+    const reportURL = `../../shared_storage/resources/report.py?token=${reportID}`;
+    const reportingMetadata = {'click': reportURL};
+    let url0 = generateURL("report-event-limit-with-nested-inner-inner.https.html",
+                           [frameToken]);
+    let url1 = generateURL("../shared_storage/resources/frame0.html",
+                           [frameToken]);
+    let url2 = generateURL("../shared_storage/resources/frame1.html",
+                           [frameToken]);
+    let url3 = generateURL("../shared_storage/resources/frame2.html",
+                           [frameToken]);
+
+    await sharedStorage.worklet.addModule("../../shared_storage/resources/simple-module.js");
+
+    let urn = await sharedStorage.selectURL(
+          "test-url-selection-operation", [{url: url0, reportingMetadata},
+                                           {url: url1}, {url: url2},
+                                           {url: url3}],
+          {data: {'mockResult': 0}});
+
+    // Create a nested fenced frame. A report will be sent, if allowed.
+    attachFencedFrame(urn, 'opaque-ads');
+  }
+
+  createNestedFrame(frameToken, reportID);
+</script>
+</body>

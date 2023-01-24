@@ -71,12 +71,16 @@ struct BLINK_COMMON_EXPORT AdAuctionData {
 // the `FencedFrameURLMapping`.
 struct BLINK_COMMON_EXPORT SharedStorageBudgetMetadata {
   url::Origin origin;
+  double budget_to_charge = 0;
 
-  // The `budget_to_charge` needs to be mutable because the overall
-  // `FencedFrameConfig`/`FencedFrameProperties` object is const in virtually
-  // all cases, except that we want to reduce this budget to 0 after it's used
-  // the first time.
-  mutable double budget_to_charge = 0;
+  // The bools `top_navigated` and `report_event_called` need to be mutable
+  // because the overall `FencedFrameConfig`/`FencedFrameProperties` object is
+  // const in virtually all cases, except that we want to change each of these
+  // bools to true after a frame with this config navigates the top for the
+  // first time or calls `fence.reportEvent() with a shared storage reporting
+  // destination for the first time, respectively.
+  mutable bool top_navigated = false;
+  mutable bool report_event_called = false;
 };
 
 // Represents a potentially opaque (redacted) value.

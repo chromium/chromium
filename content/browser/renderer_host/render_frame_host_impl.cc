@@ -7754,6 +7754,17 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
     return;
   }
 
+  if (destination ==
+          blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl &&
+      !GetOutermostMainFrame()
+           ->GetPage()
+           .CheckAndMaybeDebitReportEventForSelectURLBudget(*this)) {
+    AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
+                        "The call to fence.reportEvent was blocked due to "
+                        "insufficient budget.");
+    return;
+  }
+
   // Construct the resource request.
   auto request = std::make_unique<network::ResourceRequest>();
 

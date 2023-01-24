@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="../../fenced_frame/resources/utils.js"></script>
+<title>Inner fenced frame content to test fence.reportEvent limit for Shared Storage with nested fenced frames</title>
+
+<body>
+<script>
+  // Get the token for communication with the parent.
+  const [frameToken] = parseKeylist();
+
+  window.fence.reportEvent({
+      eventType: 'click',
+      eventData: "user clicked",
+      destination: ['shared-storage-select-url']
+  });
+
+  // Tell the parent that the fenced frame code has succeeded.
+  writeValueToServer(frameToken, "");
+
+</script>
+</body>

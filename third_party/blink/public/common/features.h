@@ -140,6 +140,17 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageSelectURLLimit);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kSharedStorageMaxAllowedSelectURLCallsPerOriginPerPageLoad;
 
+// If enabled, limits the maximum bits of entropy per pageload that
+// `fence.reportEvent()` is allowed to leak when called with
+// `FencedFrame::ReportingDestination::kSharedStorageSelectUrl`.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageReportEventLimit);
+// Maximum number of bits of entropy per pageload that are allowed to leak via
+// calls to `fence.reportEvent()` with
+// `FencedFrame::ReportingDestination::kSharedStorageSelectUrl`, if
+// `kSharedStorageReportEventLimit` is enabled.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kSharedStorageReportEventBitBudgetPerPageLoad;
+
 // Enables the multiple prerendering in a sequential way:
 // https://crbug.com/1355151
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrerender2SequentialPrerendering);

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="../fenced_frame/resources/utils.js"></script>
+<title>Test fence.reportEvent limit for Shared Storage</title>
+
+<body>
+<script>
+// Poll the server for the test result.
+async function waitForReportCount(reportID) {
+  const url = `../shared_storage/resources/report.py?query&token=${reportID}`;
+  for (let i = 0; i < 30; ++i) {
+      const response = await fetch(url);
+      let count = response.headers.get("Count");
+
+      if (!count || count === '0') {
+          await new Promise(resolve => step_timeout(resolve, 100));
+          continue;
+      }
+
+      return parseInt(count);
+  }
+  assert_true(false, 'timeout');
+}
+
+promise_test(async () => {
+    const frameToken = token();
+    const reportID = token();
+    const reportURL = `../shared_storage/resources/report.py?token=${reportID}`;
+    const reportingMetadata = {'click': reportURL};
+    let url0 = generateURL("resources/report-event-limit-inner.https.html", [frameToken]);
+    let url1 = generateURL("../shared_storage/resources/frame0.html", [frameToken]);
+    let url2 = generateURL("../shared_storage/resources/frame1.html", [frameToken]);
+    let url3 = generateURL("../shared_storage/resources/frame2.html", [frameToken]);
+
+    await sharedStorage.worklet.addModule("../shared_storage/resources/simple-module.js");
+
+    for (let i = 0; i < 5; ++i) {
+      let urn = await sharedStorage.selectURL(
+        "test-url-selection-operation", [{url: url0, reportingMetadata},
+                                         {url: url1}, {url: url2}, {url: url3}],
+        {data: {'mockResult': 0}});
+
+      // Create a fenced frame. A report will be sent, if allowed.
+      attachFencedFrame(urn, 'opaque-ads');
+
+      // Wait for the fenced frame to complete its tasks.
+      await nextValueFromServer(frameToken);
+    }
+
+    // Wait for the report count.
+    const reportCount = await waitForReportCount(reportID);
+
+    // Only the first 4 reports will be sent. The fifth will be blocked due to
+    // insufficient budget.
+    assert_equals(reportCount, 4, `Num reports received: ${reportCount}`);
+}, "window.fence.reportEvent");
+</script>
+</body>
