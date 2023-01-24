@@ -187,6 +187,7 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
 
       // TODO(khushalsagar): We should keep track of the snapshot viewport rect
       // size to handle changes in its bounds.
+      // https://crbug.com/1404957.
       continue;
     }
 
@@ -491,6 +492,9 @@ bool ViewTransitionStyleTracker::Capture() {
 
   set_element_sequence_id_ = 0;
   pending_transition_element_names_.clear();
+
+  DCHECK(!snapshot_root_size_at_capture_.has_value());
+  snapshot_root_size_at_capture_ = GetSnapshotRootSize();
 
   return true;
 }
@@ -804,6 +808,10 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
   if (device_pixel_ratio_ != device_pixel_ratio) {
     device_pixel_ratio_ = device_pixel_ratio;
     needs_style_invalidation = true;
+  }
+
+  if (SnapshotRootDidChangeSize()) {
+    return false;
   }
 
   for (auto& entry : element_data_map_) {
@@ -1493,6 +1501,27 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
     result.Unite(box.PhysicalVisualOverflowRectIncludingFilters());
   }
   return result;
+}
+
+bool ViewTransitionStyleTracker::SnapshotRootDidChangeSize() const {
+  if (!snapshot_root_size_at_capture_.has_value()) {
+    return false;
+  }
+
+  gfx::Size current_size = GetSnapshotRootSize();
+
+  // Allow 1px of diff since the snapshot root can be adjusted by
+  // viewport-resizing UI (e.g. the virtual keyboard insets the viewport but
+  // then outsets the viewport rect to get the snapshot root). These
+  // adjustments can be off by a pixel due to different pixel snapping.
+  if (std::abs(snapshot_root_size_at_capture_->width() -
+               current_size.width()) <= 1 &&
+      std::abs(snapshot_root_size_at_capture_->height() -
+               current_size.height()) <= 1) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace blink

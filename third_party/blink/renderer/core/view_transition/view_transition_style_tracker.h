@@ -273,6 +273,8 @@ class ViewTransitionStyleTracker
       LayoutBoxModelObject& box,
       LayoutBoxModelObject* ancestor = nullptr);
 
+  bool SnapshotRootDidChangeSize() const;
+
   Member<Document> document_;
 
   // Indicates which step during the transition we're currently at.
@@ -287,6 +289,15 @@ class ViewTransitionStyleTracker
   // Tracks the number of names discovered during the capture phase of the
   // transition.
   int captured_name_count_ = 0;
+
+  // Tracks the size of the snapshot root rect that was used to generate
+  // snapshots. If the snapshot root changes size at any point in the
+  // transition the transition will be aborted. For SPA transitions, this will
+  // be empty until the kCapturing phase. For a cross-document transition, this
+  // will be initialized from the cached state at creation but is currently
+  // unset.
+  // TODO(bokan): Implement for cross-document transitions. crbug.com/1404957.
+  absl::optional<gfx::Size> snapshot_root_size_at_capture_;
 
   // Map of the CSS |view-transition-name| property to state for that tag.
   HeapHashMap<AtomicString, Member<ElementData>> element_data_map_;
