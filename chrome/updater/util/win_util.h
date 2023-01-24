@@ -345,7 +345,7 @@ bool IsShutdownEventSignaled(UpdaterScope scope);
 bool StopGoogleUpdateProcesses(UpdaterScope scope);
 
 // Returns `true` if the argument is a guid.
-bool IsGuid(std::wstring s);
+bool IsGuid(const std::wstring& s);
 
 }  // namespace updater
 

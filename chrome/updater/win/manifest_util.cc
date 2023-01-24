@@ -103,10 +103,15 @@ void ReadInstallCommandFromManifest(
   const base::FilePath offline_dir =
       is_offline_dir_relative ? [&offline_dir_input]() {
         base::FilePath offline_dir;
-        CHECK(base::PathService::Get(base::DIR_EXE, &offline_dir));
-        return offline_dir.Append(L"Offline").Append(offline_dir_input);
+        return base::PathService::Get(base::DIR_EXE, &offline_dir)
+                   ? offline_dir.Append(L"Offline").Append(offline_dir_input)
+                   : base::FilePath();
       }()
                               : offline_dir_input;
+  if (offline_dir.empty()) {
+    VLOG(1) << "Unexpected: offline directory empty.";
+    return;
+  }
 
   const std::unique_ptr<ProtocolParserXML> manifest_parser =
       ParseOfflineManifest(offline_dir, app_id);

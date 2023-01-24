@@ -999,7 +999,7 @@ base::FilePath GetExecutableRelativePath() {
   return base::FilePath::FromASCII(kExecutableName);
 }
 
-bool IsGuid(std::wstring s) {
+bool IsGuid(const std::wstring& s) {
   DCHECK(!s.empty());
 
   GUID guid = {0};
