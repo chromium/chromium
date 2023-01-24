@@ -474,6 +474,8 @@ void WebEngineAudioRenderer::OnError(media::PipelineStatus status) {
   audio_consumer_.Unbind();
   stream_sink_.Unbind();
   sysmem_buffer_stream_.reset();
+  read_timer_.Stop();
+  renderer_started_ = false;
 
   if (is_demuxer_read_pending_) {
     drop_next_demuxer_read_result_ = true;
