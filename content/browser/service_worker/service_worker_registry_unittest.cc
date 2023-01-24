@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
@@ -1138,7 +1139,21 @@ TEST_F(ServiceWorkerRegistryTest, FindRegistration_LongestScopeMatch) {
   EXPECT_EQ(live_registration2, found_registration);
 }
 
-TEST_F(ServiceWorkerRegistryTest, MergeDuplicateFindRegistrationCalls) {
+class ServiceWorkerRegistryMergeTest
+    : public ServiceWorkerRegistryTest,
+      public testing::WithParamInterface<bool> {};
+
+INSTANTIATE_TEST_SUITE_P(All, ServiceWorkerRegistryMergeTest, testing::Bool());
+
+TEST_P(ServiceWorkerRegistryMergeTest, MergeDuplicateFindRegistrationCalls) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  if (GetParam()) {
+    scoped_feature_list.InitAndEnableFeature(
+        kServiceWorkerMergeFindRegistrationForClientUrl);
+  } else {
+    scoped_feature_list.InitAndDisableFeature(
+        kServiceWorkerMergeFindRegistrationForClientUrl);
+  }
   const GURL kScope("http://www.example.com/scope/");
   const GURL kScript("http://www.example.com/script.js");
   const blink::StorageKey kKey(url::Origin::Create(kScope));
@@ -1168,12 +1183,20 @@ TEST_F(ServiceWorkerRegistryTest, MergeDuplicateFindRegistrationCalls) {
               }
             }));
   }
-  // Even when FindRegistrationForClientUrl is called 3 times, the in-flight
-  // calls of FindRegistrationForClientUrl must be merged into one internally.
-  // The following check expects that the
-  // `registry()->FindRegistrationForClientUrl()` implementation keeps track of
-  // `inflight_call_count()` synchronously.
-  EXPECT_EQ(inflight_call_count(), 1U);
+  if (GetParam()) {
+    // When kServiceWorkerMergeFindRegistrationForClientUrl is enabled,
+    // Even when FindRegistrationForClientUrl is called 3 times, the in-flight
+    // calls of FindRegistrationForClientUrl must be merged into one internally.
+    // The following check expects that the
+    // `registry()->FindRegistrationForClientUrl()` implementation keeps track
+    // of `inflight_call_count()` synchronously.
+    EXPECT_EQ(inflight_call_count(), 1U);
+  } else {
+    // When kServiceWorkerMergeFindRegistrationForClientUrl is disabled,
+    // FindRegistrationForClientUrl will never be merged. So
+    // inflight_call_count() returns 3 (= kCallCount).
+    EXPECT_EQ(int(inflight_call_count()), kCallCount);
+  }
   loop.Run();
 }
 

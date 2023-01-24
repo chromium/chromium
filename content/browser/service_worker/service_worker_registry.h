@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -39,6 +40,9 @@ class ServiceWorkerVersion;
 
 class ServiceWorkerRegistryTest;
 FORWARD_DECLARE_TEST(ServiceWorkerRegistryTest, StoragePolicyChange);
+
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kServiceWorkerMergeFindRegistrationForClientUrl);
 
 // Manages in-memory representation of service worker registrations
 // (i.e., ServiceWorkerRegistration) including installing and uninstalling
@@ -323,6 +327,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       const GURL& client_url,
       const blink::StorageKey& key,
       int64_t trace_event_id,
+      FindRegistrationCallback callback,
       storage::mojom::ServiceWorkerDatabaseStatus database_status,
       storage::mojom::ServiceWorkerFindRegistrationResultPtr result);
   void RunFindRegistrationCallbacks(
