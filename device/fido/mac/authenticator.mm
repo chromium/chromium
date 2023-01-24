@@ -27,9 +27,7 @@
 #include "device/fido/public_key_credential_user_entity.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace device {
-namespace fido {
-namespace mac {
+namespace device::fido::mac {
 
 // static
 void TouchIdAuthenticator::IsAvailable(
@@ -105,12 +103,6 @@ void TouchIdAuthenticator::GetAssertion(CtapGetAssertionRequest request,
   operation_->Run();
 }
 
-void TouchIdAuthenticator::GetNextAssertion(GetAssertionCallback callback) {
-  DCHECK(operation_);
-  reinterpret_cast<GetAssertionOperation*>(operation_.get())
-      ->GetNextAssertion(std::move(callback));
-}
-
 void TouchIdAuthenticator::Cancel() {
   // If there is an operation pending, delete it, which will clean up any
   // pending callbacks, e.g. if the operation is waiting for a response from
@@ -168,6 +160,4 @@ TouchIdAuthenticator::TouchIdAuthenticator(std::string keychain_access_group,
           {std::move(keychain_access_group), std::move(metadata_secret)}),
       weak_factory_(this) {}
 
-}  // namespace mac
-}  // namespace fido
-}  // namespace device
+}  // namespace device::fido::mac

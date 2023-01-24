@@ -235,15 +235,16 @@ void WinWebAuthnApiAuthenticator::GetAssertionDone(
     return;
   }
   if (result.first != CtapDeviceResponseCode::kSuccess) {
-    std::move(callback).Run(result.first, absl::nullopt);
+    std::move(callback).Run(result.first, {});
     return;
   }
   if (!result.second) {
-    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrInvalidCBOR,
-                            absl::nullopt);
+    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrInvalidCBOR, {});
     return;
   }
-  std::move(callback).Run(result.first, std::move(result.second));
+  std::vector<AuthenticatorGetAssertionResponse> responses;
+  responses.emplace_back(std::move(*result.second));
+  std::move(callback).Run(result.first, std::move(responses));
 }
 
 void WinWebAuthnApiAuthenticator::GetCredentialInformationForRequest(

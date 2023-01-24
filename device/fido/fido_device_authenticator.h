@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/ctap2_device_operation.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
@@ -56,7 +57,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   void GetAssertion(CtapGetAssertionRequest request,
                     CtapGetAssertionOptions options,
                     GetAssertionCallback callback) override;
-  void GetNextAssertion(GetAssertionCallback callback) override;
   void GetTouch(base::OnceClosure callback) override;
   void GetPinRetries(GetRetriesCallback callback) override;
   void GetPINToken(std::string pin,
@@ -145,14 +145,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   FidoDevice* device() { return device_.get(); }
   void SetTaskForTesting(std::unique_ptr<FidoTask> task);
 
- protected:
-  void OnCtapMakeCredentialResponseReceived(
-      MakeCredentialCallback callback,
-      absl::optional<std::vector<uint8_t>> response_data);
-  void OnCtapGetAssertionResponseReceived(
-      GetAssertionCallback callback,
-      absl::optional<std::vector<uint8_t>> response_data);
-
  private:
   using GetEphemeralKeyCallback =
       base::OnceCallback<void(CtapDeviceResponseCode,
@@ -162,6 +154,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   void DoGetAssertion(CtapGetAssertionRequest request,
                       CtapGetAssertionOptions options,
                       GetAssertionCallback callback);
+  void OnHaveNextAssertion(
+      CtapGetAssertionRequest request,
+      std::vector<AuthenticatorGetAssertionResponse> responses,
+      GetAssertionCallback callback,
+      CtapDeviceResponseCode status,
+      absl::optional<AuthenticatorGetAssertionResponse> response);
   void OnHaveEphemeralKeyForGetAssertion(
       CtapGetAssertionRequest request,
       CtapGetAssertionOptions options,

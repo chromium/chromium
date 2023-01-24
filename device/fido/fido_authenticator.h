@@ -48,9 +48,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   using MakeCredentialCallback = base::OnceCallback<void(
       CtapDeviceResponseCode,
       absl::optional<AuthenticatorMakeCredentialResponse>)>;
-  using GetAssertionCallback = base::OnceCallback<void(
-      CtapDeviceResponseCode,
-      absl::optional<AuthenticatorGetAssertionResponse>)>;
+  using GetAssertionCallback =
+      base::OnceCallback<void(CtapDeviceResponseCode,
+                              std::vector<AuthenticatorGetAssertionResponse>)>;
   using GetCredentialInformationForRequestCallback = base::OnceCallback<void(
       std::vector<DiscoverableCredentialMetadata> credentials,
       bool has_credentials)>;
@@ -113,15 +113,28 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
       MakeCredentialOptions options,
       base::OnceCallback<void(CtapDeviceResponseCode, absl::optional<bool>)>);
 
+  // Makes a FIDO credential given |request| and |options|.
+  // https://drafts.fidoalliance.org/fido-2/stable-links-to-latest/fido-client-to-authenticator-protocol.html#authenticatorMakeCredential
+  //
+  // This can take an arbitrary amount of time since the authenticator may
+  // prompt the user to satisfy user presence. |callback| will be executed with
+  // either a kSuccess status code and a valid response, or any other (error)
+  // code and an empty response.
   virtual void MakeCredential(CtapMakeCredentialRequest request,
                               MakeCredentialOptions options,
                               MakeCredentialCallback callback) = 0;
+
+  // Requests a FIDO assertion given |request| and |options|.
+  // https://drafts.fidoalliance.org/fido-2/stable-links-to-latest/fido-client-to-authenticator-protocol.html#authenticatorGetAssertion
+  //
+  // This can take an arbitrary amount of time since the authenticator may
+  // prompt the user to satisfy user presence. |callback| will be executed with
+  // either a kSuccess status code and at least one valid response, or any other
+  // (error) code and an empty response.
   virtual void GetAssertion(CtapGetAssertionRequest request,
                             CtapGetAssertionOptions options,
                             GetAssertionCallback callback) = 0;
-  // GetNextAssertion fetches the next assertion from a device that indicated in
-  // the response to |GetAssertion| that multiple results were available.
-  virtual void GetNextAssertion(GetAssertionCallback callback);
+
   // GetCredentialInformationForRequest returns a boolean indicating whether
   // there are credentials applicable for |request|, and if supported, a list of
   // the corresponding resident credential metadata for empty allow list

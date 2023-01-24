@@ -18,6 +18,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/cbor/values.h"
 #include "device/fido/appid_exclude_probe_task.h"
+#include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_supported_options.h"
 #include "device/fido/credential_management.h"
 #include "device/fido/ctap_authenticator_selection_request.h"
@@ -177,7 +178,7 @@ void FidoDeviceAuthenticator::OnHaveEphemeralKeyForGetAssertion(
     CtapDeviceResponseCode status,
     absl::optional<pin::KeyAgreementResponse> key) {
   if (status != CtapDeviceResponseCode::kSuccess) {
-    std::move(callback).Run(status, absl::nullopt);
+    std::move(callback).Run(status, {});
     return;
   }
   options.pin_key_agreement = std::move(*key);
@@ -196,14 +197,43 @@ void FidoDeviceAuthenticator::DoGetAssertion(CtapGetAssertionRequest request,
     request.user_verification = UserVerificationRequirement::kDiscouraged;
   }
 
+  CtapGetAssertionRequest request_copy(request);
   RunTask<GetAssertionTask, AuthenticatorGetAssertionResponse,
           CtapGetAssertionRequest, CtapGetAssertionOptions>(
-      std::move(request), std::move(options), std::move(callback));
+      std::move(request), std::move(options),
+      base::BindOnce(&FidoDeviceAuthenticator::OnHaveNextAssertion,
+                     weak_factory_.GetWeakPtr(), std::move(request_copy),
+                     std::vector<AuthenticatorGetAssertionResponse>{},
+                     std::move(callback)));
 }
 
-void FidoDeviceAuthenticator::GetNextAssertion(GetAssertionCallback callback) {
+void FidoDeviceAuthenticator::OnHaveNextAssertion(
+    CtapGetAssertionRequest request,
+    std::vector<AuthenticatorGetAssertionResponse> responses,
+    GetAssertionCallback callback,
+    CtapDeviceResponseCode status,
+    absl::optional<AuthenticatorGetAssertionResponse> response) {
+  if (status != CtapDeviceResponseCode::kSuccess) {
+    std::move(callback).Run(status, {});
+    return;
+  }
+  responses.emplace_back(std::move(*response));
+  uint8_t num_responses = responses.at(0).num_credentials.value_or(1u);
+  if (num_responses == 0 ||
+      (num_responses > 1 && !request.allow_list.empty())) {
+    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrInvalidCBOR, {});
+    return;
+  }
+  if (responses.size() >= num_responses) {
+    std::move(callback).Run(status, std::move(responses));
+    return;
+  }
+  // Read the next response.
   RunOperation<CtapGetNextAssertionRequest, AuthenticatorGetAssertionResponse>(
-      CtapGetNextAssertionRequest(), std::move(callback),
+      CtapGetNextAssertionRequest(),
+      base::BindOnce(&FidoDeviceAuthenticator::OnHaveNextAssertion,
+                     weak_factory_.GetWeakPtr(), std::move(request),
+                     std::move(responses), std::move(callback)),
       base::BindOnce(&ReadCTAPGetAssertionResponse, device_->DeviceTransport()),
       GetAssertionTask::StringFixupPredicate);
 }
