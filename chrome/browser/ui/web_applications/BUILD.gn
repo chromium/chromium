@@ -82,6 +82,7 @@ source_set("browser_tests") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/ui/ash/system_web_apps",
     ]

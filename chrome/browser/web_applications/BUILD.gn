@@ -735,6 +735,7 @@ source_set("web_applications_unit_tests") {
       "//ash/components/arc/mojom",
       "//ash/constants",
       "//chrome/browser/ash",
+      "//chrome/browser/ash:test_support",
       "//components/arc:arc_test_support",
     ]
   }
