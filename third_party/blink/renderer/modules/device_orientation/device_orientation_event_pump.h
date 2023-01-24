@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_ORIENTATION_DEVICE_ORIENTATION_EVENT_PUMP_H_
 
 #include "third_party/blink/renderer/modules/device_orientation/device_sensor_event_pump.h"
+
+#include "third_party/blink/renderer/modules/device_orientation/device_sensor_entry.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -42,6 +44,14 @@ class MODULES_EXPORT DeviceOrientationEventPump
   // DeviceSensorEventPump:
   void SendStartMessage(LocalFrame& frame) override;
   void SendStopMessage() override;
+
+  DeviceSensorEntry::State GetRelativeSensorStateForTesting() {
+    return relative_orientation_sensor_->state();
+  }
+
+  DeviceSensorEntry::State GetAbsoluteSensorStateForTesting() {
+    return absolute_orientation_sensor_->state();
+  }
 
  protected:
   // DeviceSensorEventPump:

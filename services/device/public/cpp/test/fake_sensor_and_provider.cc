@@ -104,6 +104,10 @@ void FakeSensorProvider::GetSensor(mojom::SensorType type,
     return;
   }
 
+  if (sensor_requested_callback_) {
+    std::move(sensor_requested_callback_).Run(type);
+  }
+
   SensorReadingSharedBuffer* buffer = GetSensorReadingSharedBufferForType(type);
 
   std::unique_ptr<FakeSensor> sensor;

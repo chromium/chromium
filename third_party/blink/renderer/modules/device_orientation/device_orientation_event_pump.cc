@@ -144,8 +144,7 @@ void DeviceOrientationEventPump::DidStartIfPossible() {
     // then fall back to using absolute_orientation_sensor_.
     attempted_to_fall_back_to_absolute_orientation_sensor_ = true;
     absolute_orientation_sensor_->Start(sensor_provider_.get());
-    if (relative_orientation_sensor_->state() ==
-        DeviceSensorEntry::State::kShouldSuspend) {
+    if (state() == PumpState::kStopped) {
       // If SendStopMessage() was called before the OnSensorCreated() callback
       // registered that relative_orientation_sensor_ was not able to connect
       // then absolute_orientation_sensor_ needs to be Stop()'d so that it

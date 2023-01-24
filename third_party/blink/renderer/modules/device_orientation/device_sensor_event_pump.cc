@@ -64,7 +64,6 @@ void DeviceSensorEventPump::Trace(Visitor* visitor) const {
 DeviceSensorEventPump::DeviceSensorEventPump(LocalFrame& frame)
     : sensor_provider_(frame.DomWindow()),
       task_runner_(frame.GetTaskRunner(TaskType::kSensor)),
-      state_(PumpState::kStopped),
       timer_(frame.GetTaskRunner(TaskType::kSensor),
              this,
              &DeviceSensorEventPump::FireEvent) {}

@@ -70,6 +70,13 @@ class FakeSensorProvider : public mojom::SensorProvider {
   void Bind(mojo::PendingReceiver<mojom::SensorProvider> receiver);
   bool is_bound() const;
 
+  // Configures a callback which is invoked when GetSensor() is called, allowing
+  // tests to take an action before the response callback is invoked.
+  void set_sensor_requested_callback(
+      base::OnceCallback<void(mojom::SensorType)> callback) {
+    sensor_requested_callback_ = std::move(callback);
+  }
+
   void set_ambient_light_sensor_is_available(
       bool ambient_light_sensor_is_available) {
     ambient_light_sensor_is_available_ = ambient_light_sensor_is_available;
@@ -149,6 +156,7 @@ class FakeSensorProvider : public mojom::SensorProvider {
   SensorReading gyroscope_reading_;
   SensorReading relative_orientation_sensor_reading_;
   SensorReading absolute_orientation_sensor_reading_;
+  base::OnceCallback<void(mojom::SensorType)> sensor_requested_callback_;
   bool ambient_light_sensor_is_available_ = true;
   bool accelerometer_is_available_ = true;
   bool linear_acceleration_sensor_is_available_ = true;
