@@ -36,6 +36,16 @@ using PermissionsPolicyFeatureList =
 BLINK_COMMON_EXPORT const PermissionsPolicyFeatureList&
 GetPermissionsPolicyFeatureList();
 
+// Updates the PermissionPolicyFeatureList based on the current feature flags.
+// For efficiency, `GetPermissionPolicyFeatureList()` only calculates the
+// default permissions policy once, so it does not track changes in feature
+// flags that occur between tests. This function is intended to be used in tests
+// that depend on the permission policy being set based the value on a feature
+// flag to avoid flakiness. Note that, like the general feature flag
+// calculation, if the flags for multiple `default_value_behind_flag` are
+// enabled, the default from the first listed is used.
+BLINK_COMMON_EXPORT void UpdatePermissionsPolicyFeatureListForTesting();
+
 // TODO(iclelland): Generate, instead of this map, a set of bool flags, one
 // for each feature, as all features are supposed to be represented here.
 using PermissionsPolicyFeatureState =

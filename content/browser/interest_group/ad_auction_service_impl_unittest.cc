@@ -55,6 +55,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "third_party/blink/public/mojom/parakeet/ad_request.mojom.h"
@@ -5782,6 +5783,7 @@ class AdAuctionServiceImplRestrictedPermissionsPolicyTest
   AdAuctionServiceImplRestrictedPermissionsPolicyTest() {
     feature_list_.InitAndEnableFeature(
         blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault);
+    blink::UpdatePermissionsPolicyFeatureListForTesting();
     old_content_browser_client_ =
         SetBrowserClientForTesting(&content_browser_client_);
   }
@@ -5861,15 +5863,15 @@ TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
 // Permissions policy feature join-ad-interest-group is disabled by default for
 // cross site iframes under restricted permissions policy, so interest group
 // APIs should not work, and result in the pipe being closed.
-// TODO(crbug.com/1404806): Flaky on all platforms
 TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
-       DISABLED_APICallsFromCrossSiteIFrame) {
+       APICallsFromCrossSiteIFrame) {
   network_responder_->RegisterUpdateResponse(
       kDailyUpdateUrlPath,
       base::StringPrintf(R"({"biddingLogicUrl": "%s%s"})", kOriginStringC,
                          kNewBiddingUrlPath));
 
   NavigateAndCommit(kUrlC);
+
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.owner = kOriginC;
   interest_group.bidding_url = kUrlC.Resolve(kBiddingUrlPath);

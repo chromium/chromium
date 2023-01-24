@@ -23,21 +23,43 @@ const PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureList() {
       {%- endfor %}
     });
 
-    {%- for feature in features %}
+    {% for feature in features %}
     {%- if feature.default_value_behind_flag %}
       {%- for flag, default_value in feature.default_value_behind_flag %}
         {%- if not loop.first %} else {% endif %}
-        if (base::FeatureList::IsEnabled(features::k{{flag}})) {
-          map.find(mojom::PermissionsPolicyFeature::k{{feature.name}})->second =
-            PermissionsPolicyFeatureDefault::{{default_value}};
-        }
-      {%- endfor %}
+    if (base::FeatureList::IsEnabled(features::k{{flag}})) {
+      map.find(mojom::PermissionsPolicyFeature::k{{feature.name}})->second =
+        PermissionsPolicyFeatureDefault::{{default_value}};
+    }
+      {% endfor %}
     {%- endif %}
     {%- endfor %}
 
     return map;
   }());
   return *feature_list;
+}
+
+void UpdatePermissionsPolicyFeatureListForTesting() {
+  const PermissionsPolicyFeatureList& feature_list = GetPermissionsPolicyFeatureList();
+  PermissionsPolicyFeatureList& mutable_feature_list = const_cast<PermissionsPolicyFeatureList&>(feature_list);
+
+  {% for feature in features %}
+  {%- if feature.default_value_behind_flag %}
+    {%- for flag, default_value in feature.default_value_behind_flag %}
+      {%- if not loop.first %} else {% endif %}
+  if (base::FeatureList::IsEnabled(features::k{{flag}})) {
+    mutable_feature_list.find(mojom::PermissionsPolicyFeature::k{{feature.name}})->second =
+      PermissionsPolicyFeatureDefault::{{default_value}};
+  }
+    {%- endfor %}
+ else {
+    mutable_feature_list.find(mojom::PermissionsPolicyFeature::k{{feature.name}})->second =
+      PermissionsPolicyFeatureDefault::{{feature.feature_default}};
+  }
+
+  {% endif %}
+  {%- endfor %}
 }
 
 } // namespace blink
