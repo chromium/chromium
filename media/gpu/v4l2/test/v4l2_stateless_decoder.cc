@@ -39,6 +39,7 @@ constexpr char kUsageMsg[] =
     "           --video=<video path>\n"
     "           [--frames=<number of frames to decode>]\n"
     "           [--v=<log verbosity>]\n"
+    "           [--output_format]=<output type of yuv or png>]\n"
     "           [--output_path_prefix=<output files path prefix>]\n"
     "           [--md5=<md_log_path>]\n"
     "           [--visible]\n"
@@ -54,11 +55,14 @@ constexpr char kHelpMsg[] =
     "    --frames=<int>\n"
     "        Optional. Number of frames to decode, defaults to all.\n"
     "        Override with a positive integer to decode at most that many.\n"
+    "    --output_format=<str>\n"
+    "        Optional. Output type for decoded frames\n"
+    "        Formats currently supported are YUV or PNG\n"
     "    --output_path_prefix=<path>\n"
-    "        Optional. Prefix to the filepaths where raw YUV frames will be\n"
-    "        written. For example, setting <path> to \"test/test_\" would \n"
-    "        result in output files of the form \"test/test_000000.yuv\",\n"
-    "       \"test/test_000001.yuv\", etc.\n"
+    "        Optional. Prefix to the filepaths where raw YUV or PNG files\n"
+    "        will be written. For example, setting <path> to \"test/test_\"\n"
+    "        would result in output files of the form\n"
+    "        \"test/test_000000.yuv\" \"test/test_000001.yuv\", etc.\n"
     "    --md5=<path>\n"
     "        Optional. If specified, computes md5 checksum. If specified\n"
     "        with argument, prints the md5 checksum of each decoded (and\n"
@@ -132,6 +136,13 @@ int main(int argc, char** argv) {
   const std::string output_file_prefix =
       cmd->GetSwitchValueASCII("output_path_prefix");
 
+  std::string output_format = cmd->GetSwitchValueASCII("output_format");
+  if (output_format != "yuv" && output_format != "png") {
+    LOG(ERROR) << "Unsupported output format: " << output_format
+               << " so default to YUV.";
+    output_format = "yuv";
+  }
+
   const base::FilePath video_path = cmd->GetSwitchValuePath("video");
   if (video_path.empty()) {
     LOG(ERROR) << "No input video path provided to decode.\n" << kUsageMsg;
@@ -200,11 +211,19 @@ int main(int argc, char** argv) {
     if (!has_output_file)
       continue;
 
-    base::FilePath filename(
-        base::StringPrintf("%s%.6d.yuv", output_file_prefix.c_str(), i));
+    base::FilePath filename(base::StringPrintf(
+        "%s%.6d.%s", output_file_prefix.c_str(), i, output_format.c_str()));
     base::File output_file(
         filename, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-    output_file.Write(0, yuv_plane.data(), yuv_plane.size());
+
+    if (output_format == "yuv") {
+      output_file.Write(0, yuv_plane.data(), yuv_plane.size());
+    } else {
+      std::vector<unsigned char> image_buffer = dec->ConvertYUVToPNG(
+          y_plane.data(), u_plane.data(), v_plane.data(), size);
+      output_file.Write(0, reinterpret_cast<char*>(image_buffer.data()),
+                        image_buffer.size());
+    }
   }
 
   return EXIT_SUCCESS;

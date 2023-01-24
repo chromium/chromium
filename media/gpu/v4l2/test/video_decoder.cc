@@ -9,6 +9,8 @@
 #include "base/bits.h"
 #include "base/logging.h"
 #include "media/gpu/v4l2/test/av1_pix_fmt.h"
+#include "third_party/libyuv/include/libyuv.h"
+#include "ui/gfx/codec/png_codec.h"
 
 namespace {
 // Returns |src| in a packed buffer.
@@ -344,5 +346,37 @@ void VideoDecoder::ConvertMM21ToYUV(std::vector<char>& dest_y,
                                 src_v_padded_size);
 }
 
+std::vector<unsigned char> VideoDecoder::ConvertYUVToPNG(
+    char* y_plane,
+    char* u_plane,
+    char* v_plane,
+    const gfx::Size& size) {
+  const size_t argb_stride = size.width() * 4;
+  auto argb_data = std::make_unique<uint8_t[]>(argb_stride * size.height());
+
+  size_t u_plane_padded_width, v_plane_padded_width;
+  u_plane_padded_width = v_plane_padded_width =
+      base::bits::AlignUp(size.width(), 2) / 2;
+
+  // Note that we use J420ToARGB instead of I420ToARGB so that the
+  // kYuvJPEGConstants YUV-to-RGB conversion matrix is used.
+  const int convert_to_argb_result = libyuv::J420ToARGB(
+      reinterpret_cast<uint8_t*>(y_plane), size.width(),
+      reinterpret_cast<uint8_t*>(u_plane), u_plane_padded_width,
+      reinterpret_cast<uint8_t*>(v_plane), v_plane_padded_width,
+      argb_data.get(), base::checked_cast<int>(argb_stride), size.width(),
+      size.height());
+
+  LOG_ASSERT(convert_to_argb_result == 0) << "Failed to convert to ARGB";
+
+  std::vector<unsigned char> image_buffer;
+  const bool encode_to_png_result = gfx::PNGCodec::Encode(
+      argb_data.get(), gfx::PNGCodec::FORMAT_BGRA, size, argb_stride,
+      true /*discard_transparency*/, std::vector<gfx::PNGCodec::Comment>(),
+      &image_buffer);
+  LOG_ASSERT(encode_to_png_result) << "Failed to encode to PNG";
+
+  return image_buffer;
+}
 }  // namespace v4l2_test
 }  // namespace media

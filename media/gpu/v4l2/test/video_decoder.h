@@ -54,8 +54,14 @@ class VideoDecoder {
   // Returns whether the last decoded frame was visible.
   bool LastDecodedFrameVisible() const { return last_decoded_frame_visible_; }
 
-  // Return whether there is a dynamic resolytion change.
+  // Returns whether there is a dynamic resolution change.
   bool IsResolutionChanged() const { return is_resolution_changed_; }
+
+  // Converts raw YUV of decoded frame data to PNG.
+  static std::vector<unsigned char> ConvertYUVToPNG(char* y_plane,
+                                                    char* u_plane,
+                                                    char* v_plane,
+                                                    const gfx::Size& size);
 
  protected:
   // Helper method for converting NV12 frames to I420.

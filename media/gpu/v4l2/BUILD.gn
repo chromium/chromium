@@ -190,6 +190,7 @@ executable("v4l2_stateless_decoder") {
     "//media:test_support",
     "//media/gpu:common",
     "//media/parsers",
+    "//third_party/libyuv",
   ]
 
   if (use_libgav1_parser) {
