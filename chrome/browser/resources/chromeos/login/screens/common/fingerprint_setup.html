@@ -14,10 +14,10 @@ found in the LICENSE file.
 </style>
 <oobe-adaptive-dialog id="setupFingerprint" role="dialog" for-step="start"
     footer-shrinkable>
-  <h1 slot="title" hidden="[[isChildAccount_]]">
+  <h1 slot="title" hidden="[[isChildAccount_]]" aria-live="polite">
     [[i18nDynamic(locale, 'setupFingerprintScreenTitle')]]
   </h1>
-  <h1 slot="title" hidden="[[!isChildAccount_]]">
+  <h1 slot="title" hidden="[[!isChildAccount_]]" aria-live="polite">
     [[i18nDynamic(locale, 'setupFingerprintScreenTitleForChild')]]
   </h1>
   <p slot="subtitle" hidden="[[isChildAccount_]]">
