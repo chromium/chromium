@@ -138,7 +138,8 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
       for (const auto& value : preload_data_->meta_ch_values) {
         preload_preferences.UpdateFromMetaCH(value.value, document_url_,
                                              nullptr, value.type,
-                                             value.is_doc_preloader);
+                                             value.is_doc_preloader,
+                                             /*is_sync_parser=*/false);
       }
       EXPECT_EQ(preferences.ShouldSend(
                     network::mojom::WebClientHintsType::kDpr_DEPRECATED),

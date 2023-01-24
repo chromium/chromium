@@ -87,10 +87,10 @@ TEST_F(ClientHintsPreferencesTest, BasicSecure) {
     SCOPED_TRACE(testing::Message() << test_case.header_value);
     ClientHintsPreferences preferences;
     const KURL kurl(String::FromUTF8("https://www.google.com/"));
-    bool did_update =
-        preferences.UpdateFromMetaCH(test_case.header_value, kurl, nullptr,
-                                     network::MetaCHType::HttpEquivAcceptCH,
-                                     /*is_doc_preloader_or_sync_parser*/ true);
+    bool did_update = preferences.UpdateFromMetaCH(
+        test_case.header_value, kurl, nullptr,
+        network::MetaCHType::HttpEquivAcceptCH,
+        /*is_doc_preloader=*/true, /*is_sync_parser=*/true);
     EXPECT_TRUE(did_update);
     EXPECT_EQ(
         test_case.expectation_resource_width_DEPRECATED,
@@ -142,7 +142,7 @@ TEST_F(ClientHintsPreferencesTest, BasicSecure) {
     // have no impact on client hint preferences.
     did_update = preferences.UpdateFromMetaCH(
         "1, 42,", kurl, nullptr, network::MetaCHType::HttpEquivAcceptCH,
-        /*is_doc_preloader_or_sync_parser*/ true);
+        /*is_doc_preloader=*/true, /*is_sync_parser=*/true);
     EXPECT_FALSE(did_update);
     EXPECT_EQ(
         test_case.expectation_resource_width_DEPRECATED,
@@ -169,7 +169,7 @@ TEST_F(ClientHintsPreferencesTest, BasicSecure) {
     // hence merge.
     did_update = preferences.UpdateFromMetaCH(
         "", kurl, nullptr, network::MetaCHType::HttpEquivAcceptCH,
-        /*is_doc_preloader_or_sync_parser*/ true);
+        /*is_doc_preloader=*/true, /*is_sync_parser=*/true);
     EXPECT_TRUE(did_update);
     EXPECT_EQ(
         test_case.expectation_resource_width_DEPRECATED,
@@ -200,7 +200,7 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
   const KURL kurl(String::FromUTF8("https://www.google.com/"));
   bool did_update = preferences.UpdateFromMetaCH(
       "rtt, downlink", kurl, nullptr, network::MetaCHType::HttpEquivAcceptCH,
-      /*is_doc_preloader_or_sync_parser*/ true);
+      /*is_doc_preloader=*/true, /*is_sync_parser=*/true);
   EXPECT_TRUE(did_update);
   EXPECT_FALSE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
@@ -236,7 +236,7 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
   // have no impact on client hint preferences.
   did_update = preferences.UpdateFromMetaCH(
       "1,,42", kurl, nullptr, network::MetaCHType::HttpEquivAcceptCH,
-      /*is_doc_preloader_or_sync_parser*/ true);
+      /*is_doc_preloader=*/true, /*is_sync_parser=*/true);
   EXPECT_FALSE(did_update);
   EXPECT_FALSE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
@@ -262,10 +262,10 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
 
   // Calling UpdateFromMetaCH with "width" header should
   // replace add width to preferences
-  did_update =
-      preferences.UpdateFromMetaCH("width,sec-ch-width", kurl, nullptr,
-                                   network::MetaCHType::HttpEquivAcceptCH,
-                                   /*is_doc_preloader_or_sync_parser*/ true);
+  did_update = preferences.UpdateFromMetaCH(
+      "width,sec-ch-width", kurl, nullptr,
+      network::MetaCHType::HttpEquivAcceptCH,
+      /*is_doc_preloader=*/true, /*is_sync_parser=*/true);
   EXPECT_TRUE(did_update);
   EXPECT_TRUE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
@@ -293,7 +293,7 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
   // change anything.
   did_update = preferences.UpdateFromMetaCH(
       "", kurl, nullptr, network::MetaCHType::HttpEquivAcceptCH,
-      /*is_doc_preloader_or_sync_parser*/ true);
+      /*is_doc_preloader=*/true, /*is_sync_parser=*/true);
   EXPECT_TRUE(did_update);
   EXPECT_TRUE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
@@ -326,11 +326,11 @@ TEST_F(ClientHintsPreferencesTest, Insecure) {
                           : KURL(String::FromUTF8("http://www.google.com/"));
     bool did_update = preferences.UpdateFromMetaCH(
         "dpr", kurl, nullptr, network::MetaCHType::HttpEquivAcceptCH,
-        /*is_doc_preloader_or_sync_parser*/ true);
+        /*is_doc_preloader=*/true, /*is_sync_parser=*/true);
     EXPECT_EQ(did_update, use_secure_url);
     did_update = preferences.UpdateFromMetaCH(
         "sec-ch-dpr", kurl, nullptr, network::MetaCHType::HttpEquivAcceptCH,
-        /*is_doc_preloader_or_sync_parser*/ true);
+        /*is_doc_preloader=*/true, /*is_sync_parser=*/true);
     EXPECT_EQ(did_update, use_secure_url);
     EXPECT_EQ(use_secure_url,
               preferences.ShouldSend(
@@ -432,7 +432,8 @@ TEST_F(ClientHintsPreferencesTest, ParseHeaders) {
     const KURL kurl(String::FromUTF8("https://www.google.com/"));
     preferences.UpdateFromMetaCH(test.accept_ch_header_value, kurl, nullptr,
                                  network::MetaCHType::HttpEquivAcceptCH,
-                                 /*is_doc_preloader_or_sync_parser*/ true);
+                                 /*is_doc_preloader=*/true,
+                                 /*is_sync_parser=*/true);
 
     enabled_types = preferences.GetEnabledClientHints();
 

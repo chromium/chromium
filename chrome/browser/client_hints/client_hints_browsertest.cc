@@ -406,6 +406,24 @@ void ExpectCriticalCHHeaderUKMSeen(
                 ukm::builders::ClientHints_CriticalCHHeaderUsage::kTypeName);
 }
 
+void ExpectAcceptCHMetaUKMSeen(
+    const ukm::TestAutoSetUkmRecorder& ukm_recorder,
+    const std::vector<network::mojom::WebClientHintsType>& hints,
+    size_t loads) {
+  ExpectUKMSeen(ukm_recorder, hints, loads,
+                ukm::builders::ClientHints_AcceptCHMetaUsage::kEntryName,
+                ukm::builders::ClientHints_AcceptCHMetaUsage::kTypeName);
+}
+
+void ExpectDelegateCHMetaUKMSeen(
+    const ukm::TestAutoSetUkmRecorder& ukm_recorder,
+    const std::vector<network::mojom::WebClientHintsType>& hints,
+    size_t loads) {
+  ExpectUKMSeen(ukm_recorder, hints, loads,
+                ukm::builders::ClientHints_DelegateCHMetaUsage::kEntryName,
+                ukm::builders::ClientHints_DelegateCHMetaUsage::kTypeName);
+}
+
 const std::vector<network::mojom::WebClientHintsType> kStandardHTTPHeaderHints(
     {network::mojom::WebClientHintsType::kDpr_DEPRECATED,
      network::mojom::WebClientHintsType::kDpr,
@@ -427,6 +445,89 @@ const std::vector<network::mojom::WebClientHintsType> kStandardHTTPHeaderHints(
      network::mojom::WebClientHintsType::kUAFullVersionList,
      network::mojom::WebClientHintsType::kUAWoW64});
 
+const std::vector<network::mojom::WebClientHintsType>
+    kStandardAcceptCHMetaHints(
+        {network::mojom::WebClientHintsType::kDpr_DEPRECATED,
+         network::mojom::WebClientHintsType::kDpr,
+         network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
+         network::mojom::WebClientHintsType::kDeviceMemory,
+         network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED,
+         network::mojom::WebClientHintsType::kViewportWidth,
+         network::mojom::WebClientHintsType::kRtt_DEPRECATED,
+         network::mojom::WebClientHintsType::kDownlink_DEPRECATED,
+         network::mojom::WebClientHintsType::kEct_DEPRECATED,
+         network::mojom::WebClientHintsType::kUAArch,
+         network::mojom::WebClientHintsType::kUAPlatform,
+         network::mojom::WebClientHintsType::kUAModel,
+         network::mojom::WebClientHintsType::kUAFullVersion,
+         network::mojom::WebClientHintsType::kUABitness,
+         network::mojom::WebClientHintsType::kUAFullVersionList,
+         network::mojom::WebClientHintsType::kUAWoW64});
+
+const std::vector<network::mojom::WebClientHintsType>
+    kStandardDelegateCHMetaHints(
+        {network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
+         network::mojom::WebClientHintsType::kDpr_DEPRECATED,
+         network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED,
+         network::mojom::WebClientHintsType::kRtt_DEPRECATED,
+         network::mojom::WebClientHintsType::kDownlink_DEPRECATED,
+         network::mojom::WebClientHintsType::kEct_DEPRECATED,
+         network::mojom::WebClientHintsType::kUAArch,
+         network::mojom::WebClientHintsType::kUAPlatform,
+         network::mojom::WebClientHintsType::kUAModel,
+         network::mojom::WebClientHintsType::kUAFullVersion,
+         network::mojom::WebClientHintsType::kUABitness,
+         network::mojom::WebClientHintsType::kDeviceMemory,
+         network::mojom::WebClientHintsType::kDpr,
+         network::mojom::WebClientHintsType::kViewportWidth,
+         network::mojom::WebClientHintsType::kUAFullVersionList,
+         network::mojom::WebClientHintsType::kUAWoW64});
+
+const std::vector<network::mojom::WebClientHintsType>
+    kExtendedAcceptCHMetaHints(
+        {network::mojom::WebClientHintsType::kDpr_DEPRECATED,
+         network::mojom::WebClientHintsType::kDpr,
+         network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
+         network::mojom::WebClientHintsType::kDeviceMemory,
+         network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED,
+         network::mojom::WebClientHintsType::kViewportWidth,
+         network::mojom::WebClientHintsType::kRtt_DEPRECATED,
+         network::mojom::WebClientHintsType::kDownlink_DEPRECATED,
+         network::mojom::WebClientHintsType::kEct_DEPRECATED,
+         network::mojom::WebClientHintsType::kUAArch,
+         network::mojom::WebClientHintsType::kUAPlatform,
+         network::mojom::WebClientHintsType::kUAPlatformVersion,
+         network::mojom::WebClientHintsType::kUAModel,
+         network::mojom::WebClientHintsType::kUAFullVersion,
+         network::mojom::WebClientHintsType::kPrefersColorScheme,
+         network::mojom::WebClientHintsType::kPrefersReducedMotion,
+         network::mojom::WebClientHintsType::kUABitness,
+         network::mojom::WebClientHintsType::kViewportHeight,
+         network::mojom::WebClientHintsType::kUAFullVersionList,
+         network::mojom::WebClientHintsType::kUAWoW64});
+
+const std::vector<network::mojom::WebClientHintsType>
+    kExtendedDelegateCHMetaHints(
+        {network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
+         network::mojom::WebClientHintsType::kDpr_DEPRECATED,
+         network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED,
+         network::mojom::WebClientHintsType::kRtt_DEPRECATED,
+         network::mojom::WebClientHintsType::kDownlink_DEPRECATED,
+         network::mojom::WebClientHintsType::kEct_DEPRECATED,
+         network::mojom::WebClientHintsType::kUAArch,
+         network::mojom::WebClientHintsType::kUAPlatform,
+         network::mojom::WebClientHintsType::kUAModel,
+         network::mojom::WebClientHintsType::kUAFullVersion,
+         network::mojom::WebClientHintsType::kUAPlatformVersion,
+         network::mojom::WebClientHintsType::kPrefersColorScheme,
+         network::mojom::WebClientHintsType::kUABitness,
+         network::mojom::WebClientHintsType::kViewportHeight,
+         network::mojom::WebClientHintsType::kDeviceMemory,
+         network::mojom::WebClientHintsType::kDpr,
+         network::mojom::WebClientHintsType::kViewportWidth,
+         network::mojom::WebClientHintsType::kUAFullVersionList,
+         network::mojom::WebClientHintsType::kUAWoW64,
+         network::mojom::WebClientHintsType::kPrefersReducedMotion});
 }  // namespace
 
 class ClientHintsBrowserTest : public policy::PolicyTest {
@@ -1375,6 +1476,20 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTestForMetaTagTypes,
   content::FetchHistogramsFromChildProcesses();
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histogram_tester.ExpectTotalCount("ClientHints.UpdateSize", 0);
+  switch (GetParam()) {
+    case network::MetaCHType::HttpEquivAcceptCH:
+      ExpectAcceptCHMetaUKMSeen(*ukm_recorder_, kStandardAcceptCHMetaHints,
+                                /*loads=*/1);
+      ExpectDelegateCHMetaUKMSeen(*ukm_recorder_, {},
+                                  /*loads=*/1);
+      break;
+    case network::MetaCHType::HttpEquivDelegateCH:
+      ExpectAcceptCHMetaUKMSeen(*ukm_recorder_, {},
+                                /*loads=*/1);
+      ExpectDelegateCHMetaUKMSeen(*ukm_recorder_, kStandardDelegateCHMetaHints,
+                                  /*loads=*/1);
+      break;
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, ClientHintsAlps) {
@@ -2126,6 +2241,20 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTestForMetaTagTypes, Default) {
   // Client hints should not be sent to the third-party with the exception of
   // the `Sec-CH-UA/-Platform/-Mobile))` hints sent every request.
   EXPECT_EQ(3u, third_party_client_hints_count_seen());
+  switch (GetParam()) {
+    case network::MetaCHType::HttpEquivAcceptCH:
+      ExpectAcceptCHMetaUKMSeen(*ukm_recorder_, kExtendedAcceptCHMetaHints,
+                                /*loads=*/1);
+      ExpectDelegateCHMetaUKMSeen(*ukm_recorder_, {},
+                                  /*loads=*/1);
+      break;
+    case network::MetaCHType::HttpEquivDelegateCH:
+      ExpectAcceptCHMetaUKMSeen(*ukm_recorder_, {},
+                                /*loads=*/1);
+      ExpectDelegateCHMetaUKMSeen(*ukm_recorder_, kExtendedDelegateCHMetaHints,
+                                  /*loads=*/1);
+      break;
+  }
 }
 
 // Loads a HTTPS webpage that does not request persisting of client hints.
@@ -2230,6 +2359,10 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTestForMetaTagTypes,
   // persist client hints from accept_ch() should be
   // disregarded.
   histogram_tester.ExpectTotalCount("ClientHints.UpdateSize", 0);
+  ExpectAcceptCHMetaUKMSeen(*ukm_recorder_, {},
+                            /*loads=*/1);
+  ExpectDelegateCHMetaUKMSeen(*ukm_recorder_, {},
+                              /*loads=*/1);
 }
 
 // Loads a HTTPS webpage that does not request persisting of client hints.
@@ -2295,6 +2428,10 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTestForMetaTagTypes,
   // accept_ch() as a subresource. The request to persist
   // client hints from accept_ch() should be disregarded.
   histogram_tester.ExpectTotalCount("ClientHints.UpdateSize", 0);
+  ExpectAcceptCHMetaUKMSeen(*ukm_recorder_, {},
+                            /*loads=*/1);
+  ExpectDelegateCHMetaUKMSeen(*ukm_recorder_, {},
+                              /*loads=*/1);
 }
 
 // Loads a HTTPS webpage that does not request persisting of client hints.
@@ -2360,6 +2497,10 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTestForMetaTagTypes,
   // `gurl` loads accept_ch() or meta_equiv_delegate_ch_url() as a subresource
   // in an iframe. The request to persist client hints  should be disregarded.
   histogram_tester.ExpectTotalCount("ClientHints.UpdateSize", 0);
+  ExpectAcceptCHMetaUKMSeen(*ukm_recorder_, {},
+                            /*loads=*/1);
+  ExpectDelegateCHMetaUKMSeen(*ukm_recorder_, {},
+                              /*loads=*/1);
 }
 
 // Loads a webpage that does not request persisting of client hints.
@@ -2481,6 +2622,20 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTestForMetaTagTypes,
   // Expected number of hints attached to the image request, and the same number
   // to the main frame request.
   EXPECT_EQ(0u, count_client_hints_headers_seen());
+  switch (GetParam()) {
+    case network::MetaCHType::HttpEquivAcceptCH:
+      ExpectAcceptCHMetaUKMSeen(*ukm_recorder_, kStandardAcceptCHMetaHints,
+                                /*loads=*/1);
+      ExpectDelegateCHMetaUKMSeen(*ukm_recorder_, {},
+                                  /*loads=*/1);
+      break;
+    case network::MetaCHType::HttpEquivDelegateCH:
+      ExpectAcceptCHMetaUKMSeen(*ukm_recorder_, {},
+                                /*loads=*/1);
+      ExpectDelegateCHMetaUKMSeen(*ukm_recorder_, kStandardDelegateCHMetaHints,
+                                  /*loads=*/1);
+      break;
+  }
 }
 
 // The test first fetches a page that sets Accept-CH. Next, it fetches a URL
@@ -2708,6 +2863,10 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTestForMetaTagTypes,
       ->GetSettingsForOneType(ContentSettingsType::CLIENT_HINTS,
                               &host_settings);
   EXPECT_EQ(1u, host_settings.size());
+  ExpectAcceptCHMetaUKMSeen(*ukm_recorder_, {},
+                            /*loads=*/1);
+  ExpectDelegateCHMetaUKMSeen(*ukm_recorder_, {},
+                              /*loads=*/1);
 
   // Clear settings.
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
@@ -2987,6 +3146,10 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTestForMetaTagTypes,
   EXPECT_EQ(expected_client_hints_number, count_client_hints_headers_seen());
   EXPECT_EQ(3u, third_party_request_count_seen());
   EXPECT_EQ(3u, third_party_client_hints_count_seen());
+  ExpectAcceptCHMetaUKMSeen(*ukm_recorder_, {},
+                            /*loads=*/1);
+  ExpectDelegateCHMetaUKMSeen(*ukm_recorder_, {},
+                              /*loads=*/1);
 
   // Clear settings.
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
@@ -3069,6 +3232,20 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTestForMetaTagTypes,
   EXPECT_EQ(expected_client_hints_number, count_client_hints_headers_seen());
   EXPECT_EQ(1u, third_party_request_count_seen());
   EXPECT_EQ(3u, third_party_client_hints_count_seen());
+  switch (GetParam()) {
+    case network::MetaCHType::HttpEquivAcceptCH:
+      ExpectAcceptCHMetaUKMSeen(*ukm_recorder_, kExtendedAcceptCHMetaHints,
+                                /*loads=*/1);
+      ExpectDelegateCHMetaUKMSeen(*ukm_recorder_, {},
+                                  /*loads=*/1);
+      break;
+    case network::MetaCHType::HttpEquivDelegateCH:
+      ExpectAcceptCHMetaUKMSeen(*ukm_recorder_, {},
+                                /*loads=*/1);
+      ExpectDelegateCHMetaUKMSeen(*ukm_recorder_, kExtendedDelegateCHMetaHints,
+                                  /*loads=*/1);
+      break;
+  }
 
   // Clear settings.
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())

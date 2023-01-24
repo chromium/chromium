@@ -55,7 +55,8 @@ class CORE_EXPORT HTMLMetaElement final : public HTMLElement {
   static void ProcessMetaCH(Document&,
                             const AtomicString& content,
                             network::MetaCHType type,
-                            bool is_doc_preloader_or_sync_parser);
+                            bool is_doc_preloader,
+                            bool is_sync_parser);
 
   explicit HTMLMetaElement(Document&, const CreateElementFlags);
 

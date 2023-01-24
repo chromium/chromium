@@ -724,7 +724,8 @@ const AtomicString& HTMLMetaElement::Itemprop() const {
 void HTMLMetaElement::ProcessMetaCH(Document& document,
                                     const AtomicString& content,
                                     network::MetaCHType type,
-                                    bool is_doc_preloader_or_sync_parser) {
+                                    bool is_doc_preloader,
+                                    bool is_sync_parser) {
   switch (type) {
     case network::MetaCHType::HttpEquivAcceptCH:
       if (!RuntimeEnabledFeatures::ClientHintsMetaHTTPEquivAcceptCHEnabled())
@@ -763,7 +764,7 @@ void HTMLMetaElement::ProcessMetaCH(Document& document,
   FrameClientHintsPreferencesContext hints_context(frame);
   UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
       frame->GetClientHintsPreferences(), document.domWindow(), content,
-      document.Url(), &hints_context, type, is_doc_preloader_or_sync_parser);
+      document.Url(), &hints_context, type, is_doc_preloader, is_sync_parser);
 }
 
 void HTMLMetaElement::FinishParsingChildren() {

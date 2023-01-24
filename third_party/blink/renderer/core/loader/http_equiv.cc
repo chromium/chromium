@@ -56,11 +56,11 @@ void HttpEquiv::Process(Document& document,
   } else if (EqualIgnoringASCIICase(equiv, http_names::kAcceptCH)) {
     HTMLMetaElement::ProcessMetaCH(document, content,
                                    network::MetaCHType::HttpEquivAcceptCH,
-                                   is_sync_parser);
+                                   /*is_doc_preloader=*/false, is_sync_parser);
   } else if (EqualIgnoringASCIICase(equiv, http_names::kDelegateCH)) {
     HTMLMetaElement::ProcessMetaCH(document, content,
                                    network::MetaCHType::HttpEquivDelegateCH,
-                                   is_sync_parser);
+                                   /*is_doc_preloader=*/false, is_sync_parser);
   } else if (EqualIgnoringASCIICase(equiv, "content-security-policy") ||
              EqualIgnoringASCIICase(equiv,
                                     "content-security-policy-report-only")) {

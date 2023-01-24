@@ -1337,7 +1337,8 @@ void HTMLDocumentParser::ProcessPreloadData(
     std::unique_ptr<PendingPreloadData> preload_data) {
   for (const auto& value : preload_data->meta_ch_values) {
     HTMLMetaElement::ProcessMetaCH(*GetDocument(), value.value, value.type,
-                                   value.is_doc_preloader);
+                                   value.is_doc_preloader,
+                                   /*is_sync_parser=*/false);
   }
 
   // Make sure that the viewport is up-to-date, so that the correct viewport

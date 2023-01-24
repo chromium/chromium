@@ -23,11 +23,12 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
     const KURL& url,
     ClientHintsPreferences::Context* context,
     network::MetaCHType type,
-    bool is_doc_preloader_or_sync_parser) {
+    bool is_doc_preloader,
+    bool is_sync_parser) {
   // If it's not http-equiv="accept-ch" and it's not a preload-or-sync-parser
   // visible meta tag, then we need to warn the dev that js injected the tag.
-  if (type != network::MetaCHType::HttpEquivAcceptCH &&
-      !is_doc_preloader_or_sync_parser && local_dom_window &&
+  if (type != network::MetaCHType::HttpEquivAcceptCH && !is_doc_preloader &&
+      !is_sync_parser && local_dom_window &&
       RuntimeEnabledFeatures::ClientHintThirdPartyDelegationEnabled()) {
     AuditsIssue::ReportClientHintIssue(
         local_dom_window, ClientHintIssueReason::kMetaTagModifiedHTML);
@@ -37,9 +38,9 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
   // added by js, the `local_dom_window` is missing, or the feature is disabled,
   // there's nothing more to do.
   if (!client_hints_preferences.UpdateFromMetaCH(
-          header_value, url, context, type, is_doc_preloader_or_sync_parser) ||
+          header_value, url, context, type, is_doc_preloader, is_sync_parser) ||
       type == network::MetaCHType::HttpEquivAcceptCH ||
-      !is_doc_preloader_or_sync_parser || !local_dom_window ||
+      !(is_doc_preloader || is_sync_parser) || !local_dom_window ||
       !RuntimeEnabledFeatures::ClientHintThirdPartyDelegationEnabled()) {
     return;
   }

@@ -29,7 +29,8 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
     const KURL& url,
     ClientHintsPreferences::Context* context,
     network::MetaCHType type,
-    bool is_doc_preloader_or_sync_parser);
+    bool is_doc_preloader,
+    bool is_sync_parser);
 
 // This modifies `container_policy` to reflect any changes to client hint
 // permissions which may have occurred via the named accept-ch meta tag.
