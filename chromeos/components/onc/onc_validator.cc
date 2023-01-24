@@ -113,12 +113,12 @@ base::Value Validator::MapValue(const OncValueSignature& signature,
   return repaired;
 }
 
-base::Value Validator::MapObject(const OncValueSignature& signature,
-                                 const base::Value& onc_object,
-                                 bool* error) {
-  base::Value repaired(base::Value::Type::DICTIONARY);
-
+base::Value::Dict Validator::MapObject(const OncValueSignature& signature,
+                                       const base::Value::Dict& onc_object,
+                                       bool* error) {
+  base::Value repaired(base::Value::Type::DICT);
   bool valid = ValidateObjectDefault(signature, onc_object, &repaired);
+
   if (valid) {
     if (&signature == &kToplevelConfigurationSignature) {
       valid = ValidateToplevelConfiguration(&repaired);
@@ -171,11 +171,11 @@ base::Value Validator::MapObject(const OncValueSignature& signature,
   }
 
   if (valid)
-    return repaired;
+    return std::move(repaired).TakeDict();
 
   DCHECK(!validation_issues_.empty());
   *error = true;
-  return base::Value(base::Value::Type::DICT);
+  return base::Value::Dict();
 }
 
 base::Value Validator::MapField(const std::string& field_name,
@@ -242,12 +242,12 @@ base::Value Validator::MapEntry(int index,
 }
 
 bool Validator::ValidateObjectDefault(const OncValueSignature& signature,
-                                      const base::Value& onc_object,
+                                      const base::Value::Dict& onc_object,
                                       base::Value* result) {
   bool found_unknown_field = false;
   bool nested_error_occured = false;
   MapFields(signature, onc_object, &found_unknown_field, &nested_error_occured,
-            result);
+            &result->GetDict());
 
   if (found_unknown_field && error_on_unknown_field_) {
     DVLOG(1) << "Unknown field names are errors: Aborting.";

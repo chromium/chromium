@@ -26,25 +26,22 @@ base::Value Normalizer::NormalizeObject(
     const base::Value& onc_object) {
   CHECK(object_signature != nullptr);
   bool error = false;
-  base::Value result = MapObject(*object_signature, onc_object, &error);
+  base::Value result(
+      MapObject(*object_signature, onc_object.GetDict(), &error));
   DCHECK(!error);
-  DCHECK(!result.is_none());
   return result;
 }
 
-base::Value Normalizer::MapObject(
+base::Value::Dict Normalizer::MapObject(
     const chromeos::onc::OncValueSignature& signature,
-    const base::Value& onc_object,
+    const base::Value::Dict& onc_object,
     bool* error) {
-  base::Value normalized_value =
+  base::Value::Dict normalized =
       chromeos::onc::Mapper::MapObject(signature, onc_object, error);
 
-  if (normalized_value.is_none()) {
+  if (*error) {
     return {};
   }
-
-  DCHECK(normalized_value.is_dict());
-  base::Value::Dict& normalized = normalized_value.GetDict();
 
   if (remove_recommended_fields_)
     normalized.Remove(::onc::kRecommended);
@@ -68,7 +65,7 @@ base::Value Normalizer::MapObject(
   else if (&signature == &chromeos::onc::kWiFiSignature)
     NormalizeWiFi(&normalized);
 
-  return base::Value(std::move(normalized));
+  return normalized;
 }
 
 namespace {

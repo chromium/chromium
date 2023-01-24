@@ -40,9 +40,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Normalizer
 
  private:
   // Dispatch to the right normalization function according to |signature|.
-  base::Value MapObject(const chromeos::onc::OncValueSignature& signature,
-                        const base::Value& onc_object,
-                        bool* error) override;
+  base::Value::Dict MapObject(const chromeos::onc::OncValueSignature& signature,
+                              const base::Value::Dict& onc_object,
+                              bool* error) override;
 
   void NormalizeCertificate(base::Value::Dict* cert);
   void NormalizeEAP(base::Value::Dict* eap);

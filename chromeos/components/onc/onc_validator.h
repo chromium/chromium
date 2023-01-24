@@ -142,9 +142,9 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
   // |signature|. Iterates over all fields and recursively validates/repairs
   // these. All valid fields are added to the result dictionary. Returns the
   // repaired dictionary.
-  base::Value MapObject(const OncValueSignature& signature,
-                        const base::Value& onc_object,
-                        bool* error) override;
+  base::Value::Dict MapObject(const OncValueSignature& signature,
+                              const base::Value::Dict& onc_object,
+                              bool* error) override;
 
   // Pushes/pops the |field_name| to |path_|, otherwise like |Mapper::MapField|.
   base::Value MapField(const std::string& field_name,
@@ -169,7 +169,7 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
   // |onc_object| according to |object_signature|. |result| must point to a
   // dictionary into which the repaired fields are written.
   bool ValidateObjectDefault(const OncValueSignature& object_signature,
-                             const base::Value& onc_object,
+                             const base::Value::Dict& onc_object,
                              base::Value* result);
 
   // Validates/repairs the kRecommended array in |result| according to

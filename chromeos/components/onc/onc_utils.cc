@@ -89,8 +89,8 @@ class OncMaskValues : public Mapper {
                           const std::string& mask) {
     OncMaskValues masker(mask);
     bool error = false;
-    base::Value result = masker.MapObject(signature, onc_object, &error);
-    DCHECK(!result.is_none());
+    base::Value result(
+        masker.MapObject(signature, onc_object.GetDict(), &error));
     return result;
   }
 
