@@ -140,13 +140,13 @@ const char* SubsamplingToString(SharedImageFormat::Subsampling subsampling) {
 const char* ChannelFormatToString(SharedImageFormat::ChannelFormat channel) {
   switch (channel) {
     case SharedImageFormat::ChannelFormat::k8:
-      return "8_unorm";
+      return "8unorm";
     case SharedImageFormat::ChannelFormat::k10:
-      return "10_unorm";
+      return "10unorm";
     case SharedImageFormat::ChannelFormat::k16:
-      return "16_unorm";
+      return "16unorm";
     case SharedImageFormat::ChannelFormat::k16F:
-      return "16_float";
+      return "16float";
   }
 }
 
@@ -399,6 +399,36 @@ bool SharedImageFormat::operator==(const SharedImageFormat& o) const {
 
 bool SharedImageFormat::operator!=(const SharedImageFormat& o) const {
   return !operator==(o);
+}
+
+bool SharedImageFormat::operator<(const SharedImageFormat& o) const {
+  if (plane_type_ != o.plane_type()) {
+    return plane_type_ < o.plane_type();
+  }
+
+  switch (plane_type_) {
+    case PlaneType::kUnknown:
+      return false;
+    case PlaneType::kSinglePlane:
+      return resource_format() < o.resource_format();
+    case PlaneType::kMultiPlane:
+      return multiplanar_format() < o.multiplanar_format();
+  }
+}
+
+bool SharedImageFormat::SharedImageFormatUnion::MultiplanarFormat::operator==(
+    const MultiplanarFormat& o) const {
+  return plane_config == o.plane_config && subsampling == o.subsampling &&
+         channel_format == o.channel_format;
+}
+bool SharedImageFormat::SharedImageFormatUnion::MultiplanarFormat::operator!=(
+    const MultiplanarFormat& o) const {
+  return !operator==(o);
+}
+bool SharedImageFormat::SharedImageFormatUnion::MultiplanarFormat::operator<(
+    const MultiplanarFormat& o) const {
+  return std::tie(plane_config, subsampling, channel_format) <
+         std::tie(o.plane_config, o.subsampling, o.channel_format);
 }
 
 }  // namespace viz

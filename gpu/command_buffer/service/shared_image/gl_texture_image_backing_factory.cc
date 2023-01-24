@@ -11,7 +11,6 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/config/gpu_preferences.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_implementation.h"
@@ -32,7 +31,22 @@ GLTextureImageBackingFactory::GLTextureImageBackingFactory(
                                   workarounds,
                                   feature_info,
                                   progress_reporter),
-      for_cpu_upload_usage_(for_cpu_upload_usage) {}
+      for_cpu_upload_usage_(for_cpu_upload_usage) {
+  // If RED_8 and RG_88 are supported then YUV formats should also work.
+  // TODO(crbug.com/1406253): Verify if P010 support is also needed here for
+  // software GpuMemoryBuffers.
+  auto r_iter = supported_formats_.find(viz::SinglePlaneFormat::kRED_8);
+  auto rg_iter = supported_formats_.find(viz::SinglePlaneFormat::kRG_88);
+  if (r_iter != supported_formats_.end() &&
+      rg_iter != supported_formats_.end()) {
+    auto& r_info = r_iter->second[0];
+    auto& rg_info = rg_iter->second[0];
+    supported_formats_[viz::MultiPlaneFormat::kYUV_420_BIPLANAR] = {r_info,
+                                                                    rg_info};
+    supported_formats_[viz::MultiPlaneFormat::kYVU_420] = {r_info, r_info,
+                                                           r_info};
+  }
+}
 
 GLTextureImageBackingFactory::~GLTextureImageBackingFactory() = default;
 
@@ -91,7 +105,9 @@ bool GLTextureImageBackingFactory::IsSupported(
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
     base::span<const uint8_t> pixel_data) {
-  if (format.is_multi_plane()) {
+  if (format.is_multi_plane() && !use_passthrough_) {
+    // With validating command decoder the clear rect tracking doesn't work with
+    // multi-planar textures.
     return false;
   }
   if (!pixel_data.empty() && gr_context_type != GrContextType::kGL) {
@@ -144,8 +160,7 @@ bool GLTextureImageBackingFactory::IsSupported(
     return false;
   }
 
-  return CanCreateSharedImage(size, pixel_data, GetFormatInfo(format),
-                              GL_TEXTURE_2D);
+  return CanCreateSharedImage(format, size, pixel_data, GL_TEXTURE_2D);
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -159,8 +174,7 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
     SkAlphaType alpha_type,
     uint32_t usage,
     base::span<const uint8_t> pixel_data) {
-  const FormatInfo& format_info = GetFormatInfo(format);
-  DCHECK(CanCreateSharedImage(size, pixel_data, format_info, GL_TEXTURE_2D));
+  DCHECK(CanCreateSharedImage(format, size, pixel_data, GL_TEXTURE_2D));
 
   const bool for_framebuffer_attachment =
       (usage & (SHARED_IMAGE_USAGE_RASTER |
@@ -171,8 +185,8 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
   auto result = std::make_unique<GLTextureImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       use_passthrough_);
-  result->InitializeGLTexture(format_info, pixel_data, progress_reporter_,
-                              framebuffer_attachment_angle);
+  result->InitializeGLTexture(GetFormatInfo(format), pixel_data,
+                              progress_reporter_, framebuffer_attachment_angle);
 
   return std::move(result);
 }

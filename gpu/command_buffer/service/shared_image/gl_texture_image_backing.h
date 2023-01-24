@@ -8,10 +8,6 @@
 #include "gpu/command_buffer/service/shared_image/gl_common_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_holder.h"
 
-namespace gl {
-class GLImageNativePixmap;
-}
-
 namespace gpu {
 
 // Implementation of SharedImageBacking that creates a GL Texture that is not
@@ -34,7 +30,7 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
   ~GLTextureImageBacking() override;
 
   void InitializeGLTexture(
-      const GLCommonImageBackingFactory::FormatInfo& format_info,
+      const std::vector<GLCommonImageBackingFactory::FormatInfo>& format_info,
       base::span<const uint8_t> pixel_data,
       gl::ProgressReporter* progress_reporter,
       bool framebuffer_attachment_angle);
@@ -67,10 +63,9 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
   bool IsPassthrough() const { return is_passthrough_; }
 
   const bool is_passthrough_;
-  GLTextureHolder texture_;
 
-  sk_sp<SkPromiseImageTexture> cached_promise_texture_;
-  scoped_refptr<gl::GLImageNativePixmap> gl_image_native_pixmap_;
+  std::vector<GLTextureHolder> textures_;
+  std::vector<sk_sp<SkPromiseImageTexture>> cached_promise_textures_;
 };
 
 }  // namespace gpu

@@ -37,9 +37,6 @@ class GPU_GLES2_EXPORT GLCommonImageBackingFactory
     FormatInfo(const FormatInfo& other);
     ~FormatInfo();
 
-    // Whether this format is supported.
-    bool enabled = false;
-
     // Whether this format supports TexStorage2D.
     bool supports_storage = false;
 
@@ -72,21 +69,21 @@ class GPU_GLES2_EXPORT GLCommonImageBackingFactory
                               gl::ProgressReporter* progress_reporter);
   ~GLCommonImageBackingFactory() override;
 
-  // WARNING: Format must be single plane.
-  const FormatInfo& GetFormatInfo(viz::SharedImageFormat format) {
-    return format_info_[format.resource_format()];
-  }
+  // Returns FormatInfo for each plane in format. Will return an empty vector
+  // if format isn't supported.
+  std::vector<FormatInfo> GetFormatInfo(viz::SharedImageFormat format) const;
 
-  bool CanCreateSharedImage(const gfx::Size& size,
+  bool CanCreateSharedImage(viz::SharedImageFormat format,
+                            const gfx::Size& size,
                             base::span<const uint8_t> pixel_data,
-                            const FormatInfo& format_info,
                             GLenum target);
 
   // Whether we're using the passthrough command decoder and should generate
   // passthrough textures.
   bool use_passthrough_ = false;
 
-  FormatInfo format_info_[viz::RESOURCE_FORMAT_MAX + 1];
+  // Map of supported SharedImageFormats and associated GL format info for them.
+  std::map<viz::SharedImageFormat, std::vector<FormatInfo>> supported_formats_;
   int32_t max_texture_size_ = 0;
   bool texture_usage_angle_ = false;
   GpuDriverBugWorkarounds workarounds_;

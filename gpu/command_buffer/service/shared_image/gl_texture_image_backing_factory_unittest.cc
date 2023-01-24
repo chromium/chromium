@@ -6,7 +6,6 @@
 
 #include <thread>
 
-#include "base/bits.h"
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_comparator.h"
@@ -14,6 +13,7 @@
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/service_utils.h"
@@ -23,7 +23,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
-#include "gpu/command_buffer/service/shared_image/test_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -46,6 +45,14 @@ using testing::AtLeast;
 
 namespace gpu {
 namespace {
+
+std::vector<SkPixmap> GetSkPixmaps(const std::vector<SkBitmap>& bitmaps) {
+  std::vector<SkPixmap> pixmaps;
+  for (auto& bitmap : bitmaps) {
+    pixmaps.push_back(bitmap.pixmap());
+  }
+  return pixmaps;
+}
 
 bool IsGLSupported(viz::SharedImageFormat format) {
   return format.is_single_plane() && !format.IsLegacyMultiplanar() &&
@@ -121,21 +128,26 @@ class GLTextureImageBackingFactoryTestBase : public testing::Test {
             shared_image_manager_.get(), nullptr);
   }
 
-  bool use_passthrough() {
+  bool use_passthrough() const {
     return gles2::UsePassthroughCommandDecoder(
                base::CommandLine::ForCurrentProcess()) &&
            gles2::PassthroughCommandDecoderSupported();
   }
 
   bool IsFormatSupport(viz::SharedImageFormat format) const {
-    auto resource_format = format.resource_format();
-    if (resource_format == viz::ResourceFormat::RED_8 ||
-        resource_format == viz::ResourceFormat::RG_88) {
+    if (format.is_multi_plane()) {
+      if (!use_passthrough()) {
+        // Validating command decoder doesn't work with multi-planar textures.
+        return false;
+      }
       return supports_r_rg_;
-    } else if (resource_format == viz::ResourceFormat::BGRA_1010102 ||
-               resource_format == viz::ResourceFormat::RGBA_1010102) {
+    } else if (format == viz::SinglePlaneFormat::kRED_8 ||
+               format == viz::SinglePlaneFormat::kRG_88) {
+      return supports_r_rg_;
+    } else if (format == viz::SinglePlaneFormat::kBGRA_1010102 ||
+               format == viz::SinglePlaneFormat::kRGBA_1010102) {
       return supports_ar30_ || supports_ab30_;
-    } else if (resource_format == viz::ResourceFormat::ETC1) {
+    } else if (format == viz::SinglePlaneFormat::kETC1) {
       return supports_etc1_;
     }
     return true;
@@ -352,8 +364,9 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
     auto gl_representation =
         shared_image_representation_factory_->ProduceGLTexture(mailbox);
     EXPECT_TRUE(gl_representation);
-    EXPECT_TRUE(gl_representation->GetTexture()->service_id());
-    EXPECT_EQ(expected_target, gl_representation->GetTexture()->target());
+    auto* texture = gl_representation->GetTexture(/*plane_index=*/0);
+    EXPECT_TRUE(texture->service_id());
+    EXPECT_EQ(expected_target, texture->target());
     EXPECT_EQ(size, gl_representation->size());
     EXPECT_EQ(format, gl_representation->format());
     EXPECT_EQ(color_space, gl_representation->color_space());
@@ -367,9 +380,9 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
         shared_image_representation_factory_->ProduceGLTexturePassthrough(
             mailbox);
     EXPECT_TRUE(gl_representation);
-    EXPECT_TRUE(gl_representation->GetTexturePassthrough()->service_id());
-    EXPECT_EQ(expected_target,
-              gl_representation->GetTexturePassthrough()->target());
+    auto texture = gl_representation->GetTexturePassthrough(/*plane_index=*/0);
+    EXPECT_TRUE(texture->service_id());
+    EXPECT_EQ(expected_target, texture->target());
     EXPECT_EQ(size, gl_representation->size());
     EXPECT_EQ(format, gl_representation->format());
     EXPECT_EQ(color_space, gl_representation->color_space());
@@ -392,13 +405,10 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
   // support. It's possible Skia might support these formats even if the Chrome
   // feature flags are false. We just check here that the feature flags don't
   // allow Chrome to do something that Skia doesn't support.
-  auto resource_format = format.resource_format();
-  if ((resource_format != viz::ResourceFormat::BGRA_1010102 ||
-       supports_ar30_) &&
-      (resource_format != viz::ResourceFormat::RGBA_1010102 ||
-       supports_ab30_)) {
+  if ((format != viz::SinglePlaneFormat::kBGRA_1010102 || supports_ar30_) &&
+      (format != viz::SinglePlaneFormat::kRGBA_1010102 || supports_ab30_)) {
     ASSERT_TRUE(scoped_write_access);
-    auto* surface = scoped_write_access->surface();
+    auto* surface = scoped_write_access->surface(/*plane_index=*/0);
     ASSERT_TRUE(surface);
     EXPECT_EQ(size.width(), surface->width());
     EXPECT_EQ(size.height(), surface->height());
@@ -410,7 +420,8 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
   std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess> scoped_read_access;
   scoped_read_access = skia_representation->BeginScopedReadAccess(
       &begin_semaphores, &end_semaphores);
-  auto* promise_texture = scoped_read_access->promise_image_texture();
+  auto* promise_texture =
+      scoped_read_access->promise_image_texture(/*plane_index=*/0);
   EXPECT_TRUE(promise_texture);
   EXPECT_TRUE(begin_semaphores.empty());
   EXPECT_TRUE(end_semaphores.empty());
@@ -551,27 +562,35 @@ TEST_P(GLTextureImageBackingFactoryWithUploadTest, UploadFromMemory) {
       alpha_type, usage, false /* is_thread_safe */);
   ASSERT_TRUE(backing);
 
-  SkColorType color_type = viz::ToClosestSkColorType(true, format);
+  int num_planes = format.NumberOfPlanes();
+  std::vector<SkBitmap> bitmaps(num_planes);
+  std::vector<SkBitmap> larger_bitmaps(num_planes);
+  for (int plane = 0; plane < num_planes; ++plane) {
+    SkColorType color_type = ToClosestSkColorType(true, format, plane);
 
-  // Allocate a bitmap with red pixels and upload from it. RED_8 will be filled
-  // with 0xFF repeating and RG_88 will be filled with OxFF00 repeating.
-  SkBitmap bitmap;
-  SkImageInfo info =
-      SkImageInfo::Make(size.width(), size.height(), color_type, alpha_type);
-  const size_t min_stride = info.minRowBytes64();
-  bitmap.allocPixels(info, min_stride);
-  bitmap.eraseColor(SK_ColorRED);
+    // Allocate a bitmap with red pixels and upload from it. RED_8 will be
+    // filled with 0xFF repeating and RG_88 will be filled with OxFF00
+    // repeating.
+    SkImageInfo info =
+        SkImageInfo::Make(size.width(), size.height(), color_type, alpha_type);
+    const size_t min_stride = info.minRowBytes64();
 
-  EXPECT_TRUE(backing->UploadFromMemory({bitmap.pixmap()}));
+    auto& bitmap = bitmaps[plane];
+    bitmap.allocPixels(info, min_stride);
+    bitmap.eraseColor(SK_ColorRED);
 
-  // Allocate a bitmap with much larger stride than necessary. Upload from that
-  // bitmap should still work correctly.
-  SkBitmap larger_bitmap;
-  const size_t larger_stride = min_stride + 25 * info.bytesPerPixel();
-  larger_bitmap.allocPixels(info, larger_stride);
-  larger_bitmap.eraseColor(SK_ColorRED);
+    // Allocate a bitmap with much larger stride than necessary.
+    auto& larger_bitmap = larger_bitmaps[plane];
+    const size_t larger_stride = min_stride + 25 * info.bytesPerPixel();
+    larger_bitmap.allocPixels(info, larger_stride);
+    larger_bitmap.eraseColor(SK_ColorRED);
+  }
 
-  EXPECT_TRUE(backing->UploadFromMemory({larger_bitmap.pixmap()}));
+  // Upload from bitmap with expected stride.
+  EXPECT_TRUE(backing->UploadFromMemory(GetSkPixmaps(bitmaps)));
+
+  // Upload from bitmap with larger than expected stride.
+  EXPECT_TRUE(backing->UploadFromMemory(GetSkPixmaps(larger_bitmaps)));
 }
 
 TEST_P(GLTextureImageBackingFactoryWithReadbackTest, ReadbackToMemory) {
@@ -638,7 +657,7 @@ TEST_P(GLTextureImageBackingFactoryWithReadbackTest, ReadbackToMemory) {
 
 std::string TestParamToString(
     const testing::TestParamInfo<viz::SharedImageFormat>& param_info) {
-  return param_info.param.ToString();
+  return param_info.param.ToTestParamString();
 }
 
 const auto kInitialDataFormats =
@@ -665,7 +684,9 @@ const auto kSharedImageFormats =
                       viz::SinglePlaneFormat::kBGRA_1010102,
                       viz::SinglePlaneFormat::kRGBA_1010102,
                       viz::SinglePlaneFormat::kRGBX_8888,
-                      viz::SinglePlaneFormat::kBGRX_8888);
+                      viz::SinglePlaneFormat::kBGRX_8888,
+                      viz::MultiPlaneFormat::kYUV_420_BIPLANAR,
+                      viz::MultiPlaneFormat::kYVU_420);
 
 INSTANTIATE_TEST_SUITE_P(,
                          GLTextureImageBackingFactoryWithFormatTest,

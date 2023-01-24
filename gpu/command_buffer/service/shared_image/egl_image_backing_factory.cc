@@ -126,8 +126,7 @@ bool EGLImageBackingFactory::IsSupported(uint32_t usage,
     }
   }
 
-  return CanCreateSharedImage(size, pixel_data, GetFormatInfo(format),
-                              GL_TEXTURE_2D);
+  return CanCreateSharedImage(format, size, pixel_data, GL_TEXTURE_2D);
 }
 
 std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::MakeEglImageBacking(
@@ -148,10 +147,14 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::MakeEglImageBacking(
     return nullptr;
   }
 
+  // EGLImageBacking only supports single-planar textures (so far).
+  auto format_info = GetFormatInfo(format);
+  DCHECK_EQ(format_info.size(), 1u);
+
   return std::make_unique<EGLImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      estimated_size.value(), GetFormatInfo(format), workarounds_,
-      use_passthrough_, pixel_data);
+      estimated_size.value(), format_info[0], workarounds_, use_passthrough_,
+      pixel_data);
 }
 
 }  // namespace gpu

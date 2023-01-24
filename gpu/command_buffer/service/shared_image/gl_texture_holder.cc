@@ -48,6 +48,7 @@ GLTextureHolder::GLTextureHolder(GLTextureHolder&& other) {
 }
 
 GLTextureHolder& GLTextureHolder::operator=(GLTextureHolder&& other) {
+  format_ = other.format_;
   size_ = other.size_;
   is_passthrough_ = other.is_passthrough_;
   context_lost_ = other.context_lost_;

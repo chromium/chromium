@@ -145,6 +145,7 @@ class SharedImageFormat {
 
   bool operator==(const SharedImageFormat& o) const;
   bool operator!=(const SharedImageFormat& o) const;
+  bool operator<(const SharedImageFormat& o) const;
 
  private:
   enum class PlaneType : uint8_t {
@@ -161,10 +162,9 @@ class SharedImageFormat {
       Subsampling subsampling;
       ChannelFormat channel_format;
 
-      bool operator==(const MultiplanarFormat& o) const {
-        return plane_config == o.plane_config && subsampling == o.subsampling &&
-               channel_format == o.channel_format;
-      }
+      bool operator==(const MultiplanarFormat& o) const;
+      bool operator!=(const MultiplanarFormat& o) const;
+      bool operator<(const MultiplanarFormat& o) const;
     };
 
     SharedImageFormatUnion() = default;
