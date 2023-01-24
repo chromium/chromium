@@ -29,6 +29,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "extensions/browser/api/content_settings/content_settings_service.h"
@@ -153,6 +154,34 @@ class ProtectedContentEnabledTransformer : public PrefTransformerInterface {
     auto protected_identifier_mode =
         static_cast<ContentSetting>(browser_pref.GetInt());
     return base::Value(protected_identifier_mode == CONTENT_SETTING_ALLOW);
+  }
+};
+
+// Return error when extensions try to enable a Privacy Sandbox API.
+class PrivacySandboxTransformer : public PrefTransformerInterface {
+ public:
+  absl::optional<base::Value> ExtensionToBrowserPref(
+      const base::Value& extension_pref,
+      std::string& error,
+      bool& bad_message) override {
+    if (!extension_pref.is_bool()) {
+      bad_message = true;
+      return absl::nullopt;
+    }
+
+    if (extension_pref.GetBool()) {
+      error = "Extensions aren’t allowed to enable Privacy Sandbox APIs.";
+      return absl::nullopt;
+    }
+
+    return extension_pref.Clone();
+  }
+
+  // Default behaviour
+  absl::optional<base::Value> BrowserToExtensionPref(
+      const base::Value& browser_pref,
+      bool is_incognito_profile) override {
+    return browser_pref.Clone();
   }
 };
 
@@ -421,6 +450,13 @@ PreferenceAPI::PreferenceAPI(content::BrowserContext* context)
     pref_mapping->RegisterPrefTransformer(
         prefs::kProtectedContentDefault,
         std::make_unique<ProtectedContentEnabledTransformer>());
+  }
+
+  if (!pref_mapping->HasPrefTransformer(
+          prefs::kPrivacySandboxM1TopicsEnabled)) {
+    pref_mapping->RegisterPrefTransformer(
+        prefs::kPrivacySandboxM1TopicsEnabled,
+        std::make_unique<PrivacySandboxTransformer>());
   }
 
   for (const auto& pref : PrefMapping::GetMappings()) {

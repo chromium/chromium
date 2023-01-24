@@ -30,6 +30,7 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "content/public/browser/notification_service.h"
@@ -87,6 +88,9 @@ class ExtensionPreferenceApiTest
         prefs->GetBoolean(password_manager::prefs::kCredentialsEnableService));
     EXPECT_TRUE(prefs->GetBoolean(prefs::kSafeBrowsingEnabled));
     EXPECT_TRUE(prefs->GetBoolean(prefs::kSearchSuggestEnabled));
+    VerifyPrefValueAndControlledState(prefs::kPrivacySandboxM1TopicsEnabled,
+                                      base::Value(false),
+                                      /* expected_controlled */ true);
   }
 
   void CheckPreferencesCleared() {
@@ -113,6 +117,9 @@ class ExtensionPreferenceApiTest
         prefs->GetBoolean(password_manager::prefs::kCredentialsEnableService));
     EXPECT_FALSE(prefs->GetBoolean(prefs::kSafeBrowsingEnabled));
     EXPECT_FALSE(prefs->GetBoolean(prefs::kSearchSuggestEnabled));
+    VerifyPrefValueAndControlledState(prefs::kPrivacySandboxM1TopicsEnabled,
+                                      base::Value(true),
+                                      /* expected_controlled */ false);
   }
 
   // Verifies whether the boolean |preference| has the |expected_value| and is
@@ -188,6 +195,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, Standard) {
   prefs->SetBoolean(prefs::kSearchSuggestEnabled, false);
   prefs->SetString(prefs::kWebRTCIPHandlingPolicy,
                    blink::kWebRTCIPHandlingDefaultPublicInterfaceOnly);
+  prefs->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
 
   // The 'protectedContentEnabled' pref is only available on ChromeOS and
   // Windows, so pass a JSON array object with any unsupported prefs into

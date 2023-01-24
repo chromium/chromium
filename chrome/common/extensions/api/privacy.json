@@ -105,6 +105,11 @@
             "value": ["privacySandboxEnabled", {"type": "boolean"}],
             "description": "If enabled, the experimental <a href=”https://www.chromium.org/Home/chromium-privacy/privacy-sandbox”>Privacy Sandbox</a> features are active. The value of this preference is of type boolean, and the default value is <code>true</code>. PLEASE NOTE: The schema of this API may change in the future as the Privacy Sandbox features crystallize. In that case, we will provide prior notice."
           },
+          "topicsEnabled": {
+            "$ref": "types.ChromeSetting",
+            "value": ["topicsEnabled", {"type": "boolean"}],
+            "description": "If disabled, the <a href='https://developer.chrome.com/en/docs/privacy-sandbox/topics/'>Topics API</a> is deactivated. The value of this preference is of type boolean, and the default value is <code>true</code>. Extensions may only disable this API by setting the value to <code>false</code>. If you try setting this API to <code>true</code>, it will throw an error."
+          },
           "hyperlinkAuditingEnabled": {
             "$ref": "types.ChromeSetting",
             "value": ["hyperlinkAuditingEnabled", {"type":"boolean"}],
