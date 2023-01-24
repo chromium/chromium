@@ -57,9 +57,6 @@ gfx::Point ConvertPageCoordToScreenCoord(
 // Synchronously sets the input focus on the plugin frame by clicking on the
 // top-left corner of a PDF document.
 void SetInputFocusOnPlugin(extensions::MimeHandlerViewGuest* guest);
-// TODO(crbug.com/1261928): Prefer the MimeHandlerViewGuest overload of this
-// method.
-void SetInputFocusOnPlugin(content::WebContents* guest_contents);
 
 // Returns the `MimeHandlerViewGuest` embedded in `embedder_contents`. If more
 // than one `MimeHandlerViewGuest` is found, the test fails.

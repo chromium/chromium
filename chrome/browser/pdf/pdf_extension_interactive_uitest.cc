@@ -83,12 +83,6 @@ class PDFExtensionInteractiveUITest : public extensions::ExtensionApiTest {
     return GetOnlyMimeHandlerView(GetActiveWebContents());
   }
 
-  // TODO(crbug.com/1261928): Prefer using `LoadPdfGetMimeHandlerView`.
-  content::WebContents* LoadPdfGetGuestContents(const GURL& url) {
-    extensions::MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(url);
-    return guest ? guest->web_contents() : nullptr;
-  }
-
   content::WebContents* GetActiveWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
@@ -106,16 +100,6 @@ class PDFExtensionInteractiveUITest : public extensions::ExtensionApiTest {
       return {};
     }
     return focus_observer.Wait();
-  }
-
-  // TODO(crbug.com/1261928): Prefer the `MimeHandlerViewGuest` overload of this
-  // method in tests.
-  content::FocusedNodeDetails TabAndWait(content::WebContents* guest_contents,
-                                         bool forward) {
-    extensions::MimeHandlerViewGuest* guest =
-        extensions::MimeHandlerViewGuest::FromWebContents(guest_contents);
-    EXPECT_TRUE(guest);
-    return TabAndWait(guest, forward);
   }
 };
 

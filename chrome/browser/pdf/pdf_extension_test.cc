@@ -289,13 +289,6 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
     return GetOnlyMimeHandlerView(GetActiveWebContents());
   }
 
-  // TODO(crbug.com/1261928): Prefer using `LoadPdfGetMimeHandlerView`.
-  WebContents* LoadPdfGetGuestContents(const GURL& url) {
-    if (!LoadPdf(url))
-      return nullptr;
-    return GetOnlyGuestContents(GetActiveWebContents());
-  }
-
   // Same as LoadPdf(), but also returns a pointer to the `MimeHandlerViewGuest`
   // for the loaded PDF in a new tab. Returns nullptr if the load fails.
   MimeHandlerViewGuest* LoadPdfInNewTabGetMimeHandlerView(const GURL& url) {
@@ -357,21 +350,8 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
     return manager;
   }
 
-  // TODO(crbug.com/1261928): Prefer using GetOnlyMimeHandlerView.
-  WebContents* GetOnlyGuestContents(WebContents* embedder_contents) const {
-    MimeHandlerViewGuest* guest = GetOnlyMimeHandlerView(embedder_contents);
-    return guest ? guest->web_contents() : nullptr;
-  }
-
   content::RenderFrameHost* GetPluginFrame(MimeHandlerViewGuest* guest) const {
     return pdf_frame_util::FindPdfChildFrame(guest->GetGuestMainFrame());
-  }
-
-  // TODO(crbug.com/1261928): Prefer the MimeHandlerViewGuest overload of this
-  // method.
-  content::RenderFrameHost* GetPluginFrame(WebContents* guest_contents) const {
-    return pdf_frame_util::FindPdfChildFrame(
-        guest_contents->GetPrimaryMainFrame());
   }
 
   int CountPDFProcesses() {

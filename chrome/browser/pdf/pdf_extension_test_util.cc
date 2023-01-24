@@ -165,15 +165,6 @@ void SetInputFocusOnPlugin(extensions::MimeHandlerViewGuest* guest) {
   focus_observer.Wait();
 }
 
-void SetInputFocusOnPlugin(content::WebContents* guest_contents) {
-  content::FocusChangedObserver focus_observer(guest_contents);
-  content::SimulateMouseClickAt(
-      guest_contents, blink::WebInputEvent::kNoModifiers,
-      blink::WebMouseEvent::Button::kLeft,
-      ConvertPageCoordToScreenCoord(guest_contents, {1, 1}));
-  focus_observer.Wait();
-}
-
 extensions::MimeHandlerViewGuest* GetOnlyMimeHandlerView(
     content::WebContents* embedder_contents) {
   extensions::MimeHandlerViewGuest* result = nullptr;
