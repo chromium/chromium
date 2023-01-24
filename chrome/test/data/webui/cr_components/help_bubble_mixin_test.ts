@@ -6,9 +6,9 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 
 import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import {ANCHOR_HIGHLIGHT_CLASS, HelpBubbleElement} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
+import {HelpBubbleElement} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 import {HelpBubbleArrowPosition, HelpBubbleClientCallbackRouter, HelpBubbleClientRemote, HelpBubbleClosedReason, HelpBubbleHandlerInterface, HelpBubbleParams} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
-import {HelpBubbleController} from 'chrome://resources/cr_components/help_bubble/help_bubble_controller.js';
+import {ANCHOR_HIGHLIGHT_CLASS, HelpBubbleController} from 'chrome://resources/cr_components/help_bubble/help_bubble_controller.js';
 import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {HelpBubbleProxy, HelpBubbleProxyImpl} from 'chrome://resources/cr_components/help_bubble/help_bubble_proxy.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -281,10 +281,10 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
   test(
       'help bubble mixin shows bubble anchored to arbitrary HTMLElment', () => {
         assertFalse(container.isHelpBubbleShowing());
-        assertFalse(spanBubble.isShowing());
+        assertFalse(spanBubble.isBubbleShowing());
         container.showHelpBubble(spanBubble, defaultParams);
         assertTrue(container.isHelpBubbleShowing());
-        assertTrue(spanBubble.isShowing());
+        assertTrue(spanBubble.isBubbleShowing());
       });
 
   test(
@@ -308,10 +308,10 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
             'help bubble anchors to correct element in shadow dom');
 
         assertFalse(container.isHelpBubbleShowing());
-        assertFalse(nestedChildBubble.isShowing());
+        assertFalse(nestedChildBubble.isBubbleShowing());
         container.showHelpBubble(nestedChildBubble, defaultParams);
         assertTrue(container.isHelpBubbleShowing());
-        assertTrue(nestedChildBubble.isShowing());
+        assertTrue(nestedChildBubble.isBubbleShowing());
       });
 
   test('help bubble mixin reports not open for other elements', () => {

@@ -12,6 +12,8 @@ type Root = HTMLElement|ShadowRoot&{shadowRoot?: ShadowRoot};
 
 export type Trackable = string|string[]|HTMLElement;
 
+export const ANCHOR_HIGHLIGHT_CLASS = 'help-anchor-highlight';
+
 /**
  * HelpBubble controller class
  * - There should exist only one HelpBubble instance for each nativeId
@@ -22,9 +24,23 @@ export class HelpBubbleController {
   private nativeId_: string;
   private root_: ShadowRoot;
   private anchor_: HTMLElement|null = null;
-  private showing_: boolean = false;
   private bubble_: HelpBubbleElement|null = null;
   private padding_: InsetsF = new InsetsF();
+
+  /**
+   * Whether a help bubble (webui or external) is being shown for this
+   * controller
+   */
+  private isBubbleShowing_: boolean = false;
+
+  // Keep track of last-known anchor visibility status
+  private isAnchorVisible_: boolean = false;
+
+  /*
+   * This flag is used to know whether to send position updates for
+   * external bubbles
+   */
+  private isExternal_: boolean = false;
 
   constructor(nativeId: string, root: ShadowRoot) {
     assert(nativeId && root);
@@ -33,12 +49,20 @@ export class HelpBubbleController {
     this.root_ = root;
   }
 
-  isShowing() {
-    return this.showing_;
+  isBubbleShowing() {
+    return this.isBubbleShowing_;
   }
 
-  canShow() {
+  canShowBubble() {
     return this.hasAnchor();
+  }
+
+  hasBubble() {
+    return !!this.bubble_;
+  }
+
+  getBubble() {
+    return this.bubble_;
   }
 
   hasAnchor() {
@@ -55,6 +79,20 @@ export class HelpBubbleController {
 
   getPadding() {
     return this.padding_;
+  }
+
+  getAnchorVisibility() {
+    return this.isAnchorVisible_;
+  }
+
+  cacheAnchorVisibility(isVisible: boolean) {
+    this.isAnchorVisible_ = isVisible;
+  }
+
+  updateExternalShowingStatus(isShowing: boolean) {
+    this.isExternal_ = true;
+    this.isBubbleShowing_ = isShowing;
+    this.setAnchorHighlight_(isShowing);
   }
 
   track(trackable: Trackable, padding: InsetsF): boolean {
@@ -97,21 +135,15 @@ export class HelpBubbleController {
     return cur as HTMLElement;
   }
 
-  hasElement() {
-    return !!this.bubble_;
-  }
-
-  getElement() {
-    return this.bubble_;
-  }
-
   show() {
+    this.isExternal_ = false;
     if (!(this.bubble_ && this.anchor_)) {
       return;
     }
     this.bubble_.show(this.anchor_);
     this.anchor_.focus();
-    this.showing_ = true;
+    this.isBubbleShowing_ = true;
+    this.setAnchorHighlight_(true);
   }
 
   hide() {
@@ -121,7 +153,8 @@ export class HelpBubbleController {
     this.bubble_.hide();
     this.bubble_.remove();
     this.bubble_ = null;
-    this.showing_ = false;
+    this.isBubbleShowing_ = false;
+    this.setAnchorHighlight_(false);
   }
 
   createBubble(params: HelpBubbleParams): HelpBubbleElement {
@@ -153,5 +186,16 @@ export class HelpBubbleController {
     this.root_.appendChild(this.bubble_);
 
     return this.bubble_;
+  }
+
+
+  /**
+   * Styles the anchor element to appear highlighted while the bubble is open,
+   * or removes the highlight.
+   */
+  private setAnchorHighlight_(highlight: boolean) {
+    assert(
+        this.anchor_, 'Set anchor highlight: expected valid anchor element.');
+    this.anchor_.classList.toggle(ANCHOR_HIGHLIGHT_CLASS, highlight);
   }
 }

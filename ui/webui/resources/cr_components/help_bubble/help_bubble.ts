@@ -28,8 +28,6 @@ import {HelpBubbleArrowPosition, HelpBubbleButtonParams, Progress} from './help_
 
 const ACTION_BUTTON_ID_PREFIX = 'action-button-';
 
-export const ANCHOR_HIGHLIGHT_CLASS = 'help-anchor-highlight';
-
 export const HELP_BUBBLE_DISMISSED_EVENT = 'help-bubble-dismissed';
 export const HELP_BUBBLE_TIMED_OUT_EVENT = 'help-bubble-timed-out';
 
@@ -146,7 +144,6 @@ export class HelpBubbleElement extends PolymerElement {
     this.style.display = 'block';
     this.removeAttribute('aria-hidden');
     this.updatePosition_();
-    this.setAnchorHighlight_(true);
 
     this.debouncedUpdate = debounceEnd(() => {
       if (this.anchorElement_) {
@@ -182,7 +179,6 @@ export class HelpBubbleElement extends PolymerElement {
   hide() {
     this.style.display = 'none';
     this.setAttribute('aria-hidden', 'true');
-    this.setAnchorHighlight_(false);
     this.anchorElement_ = null;
     if (this.timeoutTimerId !== null) {
       clearInterval(this.timeoutTimerId);
@@ -474,17 +470,6 @@ export class HelpBubbleElement extends PolymerElement {
 
     this.style.top = offsetY.toString() + 'px';
     this.style.left = offsetX.toString() + 'px';
-  }
-
-  /**
-   * Styles the anchor element to appear highlighted while the bubble is open,
-   * or removes the highlight.
-   */
-  private setAnchorHighlight_(highlight: boolean) {
-    assert(
-        this.anchorElement_,
-        'Set anchor highlight: expected valid anchor element.');
-    this.anchorElement_.classList.toggle(ANCHOR_HIGHLIGHT_CLASS, highlight);
   }
 }
 
