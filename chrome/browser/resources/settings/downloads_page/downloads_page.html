@@ -5,6 +5,9 @@
     </style>
     <div class="cr-row first">
       <div class="flex cr-padded-text">
+        <div id="locationLabel" aria-hidden="true">
+          $i18n{downloadLocation}
+        </div>
         <div class="secondary" id="defaultDownloadPath" aria-hidden="true">
 <if expr="not chromeos_ash">
           [[prefs.download.default_directory.value]]
