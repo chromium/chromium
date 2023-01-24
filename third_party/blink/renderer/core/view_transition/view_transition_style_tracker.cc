@@ -46,6 +46,9 @@
 namespace blink {
 namespace {
 
+const char* kContainmentNotSatisfied =
+    "Aborting transition. Element must contain paint or layout for "
+    "view-transition-name : ";
 const char* kDuplicateTagBaseError =
     "Unexpected duplicate view-transition-name: ";
 
@@ -61,6 +64,11 @@ const String& AnimationUAStyles() {
       String, kAnimationUAStyles,
       (UncompressResourceAsASCIIString(IDR_UASTYLE_TRANSITION_ANIMATIONS_CSS)));
   return kAnimationUAStyles;
+}
+
+bool SatisfiesContainment(const LayoutObject& object) {
+  return object.ShouldApplyPaintContainment() ||
+         object.ShouldApplyLayoutContainment();
 }
 
 absl::optional<String> ComputeInsetDifference(PhysicalRect reference_rect,
@@ -339,6 +347,25 @@ bool ViewTransitionStyleTracker::FlattenAndVerifyElements(
     VectorOf<Element>& elements,
     VectorOf<AtomicString>& transition_names,
     absl::optional<RootData>& root_data) {
+  for (const auto& element : ViewTransitionSupplement::From(*document_)
+                                 ->ElementsWithViewTransitionName()) {
+    DCHECK(element->ComputedStyleRef().ViewTransitionName());
+
+    // Ignore elements which are not rendered.
+    if (!element->GetLayoutObject())
+      continue;
+
+    // Skip the transition if containment is not satisfied.
+    if (!element->IsDocumentElement() &&
+        !SatisfiesContainment(*element->GetLayoutObject())) {
+      StringBuilder message;
+      message.Append(kContainmentNotSatisfied);
+      message.Append(element->ComputedStyleRef().ViewTransitionName());
+      AddConsoleError(message.ReleaseString());
+      return false;
+    }
+  }
+
   // We need to flatten the data first, and sort it by ordering which reflects
   // the setElement ordering.
   struct FlatData : public GarbageCollected<FlatData> {
@@ -786,9 +813,11 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
 
     DCHECK_NE(element_data->target_element, document_->documentElement());
     auto* layout_object = element_data->target_element->GetLayoutObject();
-    // TODO(khushalsagar): Verify that skipping a transition when things become
-    // display none is aligned with spec.
-    if (!layout_object) {
+    if (!layout_object || !SatisfiesContainment(*layout_object)) {
+      StringBuilder message;
+      message.Append(kContainmentNotSatisfied);
+      message.Append(entry.key);
+      AddConsoleError(message.ReleaseString());
       return false;
     }
 
