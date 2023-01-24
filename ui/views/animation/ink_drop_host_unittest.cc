@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/animation/ink_drop_host_view.h"
+#include "ui/views/animation/ink_drop_host.h"
 
 #include <memory>
 
@@ -24,7 +24,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
-#include "ui/views/animation/test/ink_drop_host_view_test_api.h"
+#include "ui/views/animation/test/ink_drop_host_test_api.h"
 #include "ui/views/animation/test/ink_drop_impl_test_api.h"
 #include "ui/views/animation/test/test_ink_drop.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -58,12 +58,12 @@ class TestViewWithInkDrop : public View {
   raw_ptr<TestInkDrop> last_created_inkdrop_ = nullptr;
 };
 
-class InkDropHostViewTest : public testing::Test {
+class InkDropHostTest : public testing::Test {
  public:
-  InkDropHostViewTest();
-  InkDropHostViewTest(const InkDropHostViewTest&) = delete;
-  InkDropHostViewTest& operator=(const InkDropHostViewTest&) = delete;
-  ~InkDropHostViewTest() override;
+  InkDropHostTest();
+  InkDropHostTest(const InkDropHostTest&) = delete;
+  InkDropHostTest& operator=(const InkDropHostTest&) = delete;
+  ~InkDropHostTest() override;
 
  protected:
   // Test target.
@@ -78,14 +78,14 @@ class InkDropHostViewTest : public testing::Test {
   void MouseEventTriggersInkDropHelper(InkDropMode ink_drop_mode);
 };
 
-InkDropHostViewTest::InkDropHostViewTest()
+InkDropHostTest::InkDropHostTest()
     : test_api_(InkDrop::Get(&host_view_)),
       animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED)) {}
 
-InkDropHostViewTest::~InkDropHostViewTest() = default;
+InkDropHostTest::~InkDropHostTest() = default;
 
-void InkDropHostViewTest::MouseEventTriggersInkDropHelper(
+void InkDropHostTest::MouseEventTriggersInkDropHelper(
     InkDropMode ink_drop_mode) {
   test_api_.SetInkDropMode(ink_drop_mode);
   host_view_.SetEnabled(true);
@@ -93,10 +93,11 @@ void InkDropHostViewTest::MouseEventTriggersInkDropHelper(
   // Call InkDrop::Get(this)->GetInkDrop() to make sure the test
   // CreateInkDrop() is created.
   test_api_.GetInkDrop();
-  if (ink_drop_mode != views::InkDropHost::InkDropMode::OFF)
+  if (ink_drop_mode != views::InkDropHost::InkDropMode::OFF) {
     EXPECT_FALSE(host_view_.last_created_inkdrop()->is_hovered());
-  else
+  } else {
     EXPECT_EQ(host_view_.last_created_inkdrop(), nullptr);
+  }
 
   ui::MouseEvent mouse_event(ui::ET_MOUSE_ENTERED, gfx::Point(0, 0),
                              gfx::Point(0, 0), ui::EventTimeForNow(),
@@ -104,15 +105,16 @@ void InkDropHostViewTest::MouseEventTriggersInkDropHelper(
 
   host_view_.GetTargetHandler()->OnEvent(&mouse_event);
 
-  if (ink_drop_mode != views::InkDropHost::InkDropMode::OFF)
+  if (ink_drop_mode != views::InkDropHost::InkDropMode::OFF) {
     EXPECT_TRUE(host_view_.last_created_inkdrop()->is_hovered());
-  else
+  } else {
     EXPECT_EQ(host_view_.last_created_inkdrop(), nullptr);
+  }
 }
 
 // Verifies the return value of GetInkDropCenterBasedOnLastEvent() for a null
 // Event.
-TEST_F(InkDropHostViewTest, GetInkDropCenterBasedOnLastEventForNullEvent) {
+TEST_F(InkDropHostTest, GetInkDropCenterBasedOnLastEventForNullEvent) {
   host_view_.SetSize(gfx::Size(20, 20));
   test_api_.AnimateToState(InkDropState::ACTION_PENDING, nullptr);
   EXPECT_EQ(gfx::Point(10, 10),
@@ -121,7 +123,7 @@ TEST_F(InkDropHostViewTest, GetInkDropCenterBasedOnLastEventForNullEvent) {
 
 // Verifies the return value of GetInkDropCenterBasedOnLastEvent() for a located
 // Event.
-TEST_F(InkDropHostViewTest, GetInkDropCenterBasedOnLastEventForLocatedEvent) {
+TEST_F(InkDropHostTest, GetInkDropCenterBasedOnLastEventForLocatedEvent) {
   host_view_.SetSize(gfx::Size(20, 20));
 
   ui::MouseEvent located_event(ui::ET_MOUSE_PRESSED, gfx::Point(5, 6),
@@ -133,7 +135,7 @@ TEST_F(InkDropHostViewTest, GetInkDropCenterBasedOnLastEventForLocatedEvent) {
             InkDrop::Get(&host_view_)->GetInkDropCenterBasedOnLastEvent());
 }
 
-TEST_F(InkDropHostViewTest, HasInkDrop) {
+TEST_F(InkDropHostTest, HasInkDrop) {
   EXPECT_FALSE(test_api_.HasInkDrop());
 
   test_api_.GetInkDrop();
@@ -144,13 +146,13 @@ TEST_F(InkDropHostViewTest, HasInkDrop) {
 }
 
 // Verifies that mouse events trigger ink drops when ink drop mode is ON.
-TEST_F(InkDropHostViewTest, MouseEventsTriggerInkDropsWhenInkDropIsOn) {
+TEST_F(InkDropHostTest, MouseEventsTriggerInkDropsWhenInkDropIsOn) {
   MouseEventTriggersInkDropHelper(views::InkDropHost::InkDropMode::ON);
 }
 
 // Verifies that mouse events trigger ink drops when ink drop mode is
 // ON_NO_GESTURE_HANDLER.
-TEST_F(InkDropHostViewTest,
+TEST_F(InkDropHostTest,
        MouseEventsTriggerInkDropsWhenInkDropIsOnNoGestureHandler) {
   MouseEventTriggersInkDropHelper(
       views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
@@ -158,13 +160,12 @@ TEST_F(InkDropHostViewTest,
 
 // Verifies that mouse events do not trigger ink drops when ink drop mode is
 // OFF.
-TEST_F(InkDropHostViewTest, MouseEventsDontTriggerInkDropsWhenInkDropIsOff) {
+TEST_F(InkDropHostTest, MouseEventsDontTriggerInkDropsWhenInkDropIsOff) {
   MouseEventTriggersInkDropHelper(views::InkDropHost::InkDropMode::OFF);
 }
 
 // Verifies that ink drops are not shown when the host is disabled.
-TEST_F(InkDropHostViewTest,
-       GestureEventsDontTriggerInkDropsWhenHostIsDisabled) {
+TEST_F(InkDropHostTest, GestureEventsDontTriggerInkDropsWhenHostIsDisabled) {
   test_api_.SetInkDropMode(views::InkDropHost::InkDropMode::ON);
   host_view_.SetEnabled(false);
 
@@ -180,7 +181,7 @@ TEST_F(InkDropHostViewTest,
 
 // Verifies that ink drops are not triggered by gesture events when ink drop
 // mode is ON_NO_GESTURE_EVENT or OFF.
-TEST_F(InkDropHostViewTest,
+TEST_F(InkDropHostTest,
        GestureEventsDontTriggerInkDropsWhenInkDropModeIsNotOn) {
   for (auto ink_drop_mode :
        {views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER,
@@ -198,7 +199,7 @@ TEST_F(InkDropHostViewTest,
 }
 
 #if BUILDFLAG(IS_WIN)
-TEST_F(InkDropHostViewTest, NoInkDropOnTouchOrGestureEvents) {
+TEST_F(InkDropHostTest, NoInkDropOnTouchOrGestureEvents) {
   host_view_.SetSize(gfx::Size(20, 20));
 
   test_api_.SetInkDropMode(
@@ -234,11 +235,12 @@ TEST_F(InkDropHostViewTest, NoInkDropOnTouchOrGestureEvents) {
             InkDropState::HIDDEN);
 }
 
-TEST_F(InkDropHostViewTest, DismissInkDropOnTouchOrGestureEvents) {
+TEST_F(InkDropHostTest, DismissInkDropOnTouchOrGestureEvents) {
   // TODO(bruthig): Re-enable! For some reason these tests fail on some win
   // trunk builds. See crbug.com/731811.
-  if (!gfx::Animation::ShouldRenderRichAnimation())
+  if (!gfx::Animation::ShouldRenderRichAnimation()) {
     return;
+  }
 
   host_view_.SetSize(gfx::Size(20, 20));
 
@@ -269,7 +271,7 @@ TEST_F(InkDropHostViewTest, DismissInkDropOnTouchOrGestureEvents) {
 
 // Verifies that calling OnInkDropHighlightedChanged() triggers a property
 // changed notification for the highlighted property.
-TEST_F(InkDropHostViewTest, HighlightedChangedFired) {
+TEST_F(InkDropHostTest, HighlightedChangedFired) {
   bool callback_called = false;
   auto subscription =
       InkDrop::Get(&host_view_)
@@ -294,12 +296,11 @@ class BasicTestViewWithInkDrop : public View {
 };
 
 // Tests the existence of layer clipping or layer masking when certain path
-// generators are applied on an InkDropHostView.
-class InkDropHostViewClippingTest : public testing::Test {
+// generators are applied on an InkDropHost.
+class InkDropHostClippingTest : public testing::Test {
  public:
-  InkDropHostViewClippingTest()
-      : host_view_test_api_(InkDrop::Get(&host_view_)) {
-    // Set up an InkDropHostView. Clipping is based on the size of the view, so
+  InkDropHostClippingTest() : host_view_test_api_(InkDrop::Get(&host_view_)) {
+    // Set up an InkDropHost. Clipping is based on the size of the view, so
     // make sure the size is non empty.
     host_view_test_api_.SetInkDropMode(views::InkDropHost::InkDropMode::ON);
     host_view_.SetSize(gfx::Size(20, 20));
@@ -310,10 +311,9 @@ class InkDropHostViewClippingTest : public testing::Test {
         static_cast<InkDropImpl*>(InkDrop::Get(&host_view_)->GetInkDrop());
     ink_drop_test_api_ = std::make_unique<test::InkDropImplTestApi>(ink_drop_);
   }
-  InkDropHostViewClippingTest(const InkDropHostViewClippingTest&) = delete;
-  InkDropHostViewClippingTest& operator=(const InkDropHostViewClippingTest&) =
-      delete;
-  ~InkDropHostViewClippingTest() override = default;
+  InkDropHostClippingTest(const InkDropHostClippingTest&) = delete;
+  InkDropHostClippingTest& operator=(const InkDropHostClippingTest&) = delete;
+  ~InkDropHostClippingTest() override = default;
 
   ui::Layer* GetRootLayer() { return ink_drop_test_api_->GetRootLayer(); }
 
@@ -332,7 +332,7 @@ class InkDropHostViewClippingTest : public testing::Test {
 
 // Tests that by default (no highlight path generator applied), the root layer
 // will be masked.
-TEST_F(InkDropHostViewClippingTest, DefaultInkDropMasksRootLayer) {
+TEST_F(InkDropHostClippingTest, DefaultInkDropMasksRootLayer) {
   ink_drop_->SetHovered(true);
   EXPECT_TRUE(GetRootLayer()->layer_mask_layer());
   EXPECT_TRUE(GetRootLayer()->clip_rect().IsEmpty());
@@ -340,7 +340,7 @@ TEST_F(InkDropHostViewClippingTest, DefaultInkDropMasksRootLayer) {
 
 // Tests that when adding a non empty highlight path generator, the root layer
 // is clipped instead of masked.
-TEST_F(InkDropHostViewClippingTest,
+TEST_F(InkDropHostClippingTest,
        HighlightPathGeneratorClipsRootLayerWithoutMask) {
   views::InstallRectHighlightPathGenerator(&host_view_);
   ink_drop_->SetHovered(true);
@@ -351,7 +351,7 @@ TEST_F(InkDropHostViewClippingTest,
 // An empty highlight path generator is used for views who do not want their
 // highlight or ripple constrained by their size. Test that the views' ink
 // drop root layers have neither a clip or mask.
-TEST_F(InkDropHostViewClippingTest,
+TEST_F(InkDropHostClippingTest,
        EmptyHighlightPathGeneratorUsesNeitherMaskNorClipsRootLayer) {
   views::InstallEmptyHighlightPathGenerator(&host_view_);
   ink_drop_->SetHovered(true);

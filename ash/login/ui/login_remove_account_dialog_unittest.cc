@@ -14,7 +14,7 @@
 #include "components/user_manager/user_type.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/animation/ink_drop.h"
-#include "ui/views/animation/test/ink_drop_host_view_test_api.h"
+#include "ui/views/animation/test/ink_drop_host_test_api.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {

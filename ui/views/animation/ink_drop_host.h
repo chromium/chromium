@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_ANIMATION_INK_DROP_HOST_VIEW_H_
-#define UI_VIEWS_ANIMATION_INK_DROP_HOST_VIEW_H_
+#ifndef UI_VIEWS_ANIMATION_INK_DROP_HOST_H_
+#define UI_VIEWS_ANIMATION_INK_DROP_HOST_H_
 
 #include <memory>
 
@@ -272,4 +272,4 @@ class VIEWS_EXPORT InkDropHost {
 
 }  // namespace views
 
-#endif  // UI_VIEWS_ANIMATION_INK_DROP_HOST_VIEW_H_
+#endif  // UI_VIEWS_ANIMATION_INK_DROP_HOST_H_

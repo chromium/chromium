@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_ANIMATION_TEST_INK_DROP_HOST_VIEW_TEST_API_H_
-#define UI_VIEWS_ANIMATION_TEST_INK_DROP_HOST_VIEW_TEST_API_H_
+#ifndef UI_VIEWS_ANIMATION_TEST_INK_DROP_HOST_TEST_API_H_
+#define UI_VIEWS_ANIMATION_TEST_INK_DROP_HOST_TEST_API_H_
 
 #include <memory>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "ui/views/animation/ink_drop.h"
-#include "ui/views/animation/ink_drop_host_view.h"
+#include "ui/views/animation/ink_drop_host.h"
 
 namespace views::test {
 
@@ -57,4 +57,4 @@ class InkDropHostTestApi {
 
 }  // namespace views::test
 
-#endif  // UI_VIEWS_ANIMATION_TEST_INK_DROP_HOST_VIEW_TEST_API_H_
+#endif  // UI_VIEWS_ANIMATION_TEST_INK_DROP_HOST_TEST_API_H_

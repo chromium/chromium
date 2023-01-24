@@ -6,7 +6,7 @@
 #define UI_VIEWS_ANIMATION_TEST_TEST_INK_DROP_HOST_H_
 
 #include "base/memory/raw_ptr.h"
-#include "ui/views/animation/ink_drop_host_view.h"
+#include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/animation/ink_drop_impl.h"
 
 namespace views {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/animation/ink_drop_host_view.h"
+#include "ui/views/animation/ink_drop_host.h"
 
 #include <utility>
 
@@ -74,8 +74,9 @@ InkDropHost::InkDropHost(View* view)
 InkDropHost::~InkDropHost() = default;
 
 std::unique_ptr<InkDrop> InkDropHost::CreateInkDrop() {
-  if (create_ink_drop_callback_)
+  if (create_ink_drop_callback_) {
     return create_ink_drop_callback_.Run();
+  }
   return InkDrop::CreateInkDropForFloodFillRipple(this);
 }
 
@@ -85,8 +86,9 @@ void InkDropHost::SetCreateInkDropCallback(
 }
 
 std::unique_ptr<InkDropRipple> InkDropHost::CreateInkDropRipple() const {
-  if (create_ink_drop_ripple_callback_)
+  if (create_ink_drop_ripple_callback_) {
     return create_ink_drop_ripple_callback_.Run();
+  }
   return std::make_unique<views::FloodFillInkDropRipple>(
       host_view_->size(), gfx::Insets(), GetInkDropCenterBasedOnLastEvent(),
       GetBaseColor(), GetVisibleOpacity());
@@ -105,8 +107,9 @@ gfx::Point InkDropHost::GetInkDropCenterBasedOnLastEvent() const {
 }
 
 std::unique_ptr<InkDropHighlight> InkDropHost::CreateInkDropHighlight() const {
-  if (create_ink_drop_highlight_callback_)
+  if (create_ink_drop_highlight_callback_) {
     return create_ink_drop_highlight_callback_.Run();
+  }
 
   auto highlight = std::make_unique<views::InkDropHighlight>(
       host_view_->size(), 0,
@@ -116,8 +119,9 @@ std::unique_ptr<InkDropHighlight> InkDropHost::CreateInkDropHighlight() const {
   // TODO(pbos): Once |ink_drop_highlight_opacity_| is either always set or
   // callers are using the default InkDropHighlight value then make this a
   // constructor argument to InkDropHighlight.
-  if (ink_drop_highlight_opacity_)
+  if (ink_drop_highlight_opacity_) {
     highlight->set_visible_opacity(*ink_drop_highlight_opacity_);
+  }
 
   return highlight;
 }
@@ -128,8 +132,9 @@ void InkDropHost::SetCreateHighlightCallback(
 }
 
 std::unique_ptr<views::InkDropMask> InkDropHost::CreateInkDropMask() const {
-  if (create_ink_drop_mask_callback_)
+  if (create_ink_drop_mask_callback_) {
     return create_ink_drop_mask_callback_.Run();
+  }
   return std::make_unique<views::PathInkDropMask>(host_view_->size(),
                                                   GetHighlightPath(host_view_));
 }
@@ -140,12 +145,14 @@ void InkDropHost::SetCreateMaskCallback(
 }
 
 SkColor InkDropHost::GetBaseColor() const {
-  if (ink_drop_base_color_id_.has_value())
+  if (ink_drop_base_color_id_.has_value()) {
     return host_view_->GetColorProvider()->GetColor(
         ink_drop_base_color_id_.value());
+  }
 
-  if (ink_drop_base_color_callback_)
+  if (ink_drop_base_color_callback_) {
     return ink_drop_base_color_callback_.Run();
+  }
   DCHECK(ink_drop_base_color_);
   return ink_drop_base_color_.value_or(gfx::kPlaceholderColor);
 }
@@ -169,8 +176,9 @@ void InkDropHost::SetMode(InkDropMode ink_drop_mode) {
 }
 
 void InkDropHost::SetVisibleOpacity(float visible_opacity) {
-  if (visible_opacity == ink_drop_visible_opacity_)
+  if (visible_opacity == ink_drop_visible_opacity_) {
     return;
+  }
   ink_drop_visible_opacity_ = visible_opacity;
 }
 
@@ -179,14 +187,16 @@ float InkDropHost::GetVisibleOpacity() const {
 }
 
 void InkDropHost::SetHighlightOpacity(absl::optional<float> opacity) {
-  if (opacity == ink_drop_highlight_opacity_)
+  if (opacity == ink_drop_highlight_opacity_) {
     return;
+  }
   ink_drop_highlight_opacity_ = opacity;
 }
 
 void InkDropHost::SetSmallCornerRadius(int small_radius) {
-  if (small_radius == ink_drop_small_corner_radius_)
+  if (small_radius == ink_drop_small_corner_radius_) {
     return;
+  }
   ink_drop_small_corner_radius_ = small_radius;
 }
 
@@ -195,8 +205,9 @@ int InkDropHost::GetSmallCornerRadius() const {
 }
 
 void InkDropHost::SetLargeCornerRadius(int large_radius) {
-  if (large_radius == ink_drop_large_corner_radius_)
+  if (large_radius == ink_drop_large_corner_radius_) {
     return;
+  }
   ink_drop_large_corner_radius_ = large_radius;
 }
 
@@ -215,10 +226,11 @@ bool InkDropHost::HasInkDrop() const {
 
 InkDrop* InkDropHost::GetInkDrop() {
   if (!ink_drop_) {
-    if (ink_drop_mode_ == InkDropMode::OFF)
+    if (ink_drop_mode_ == InkDropMode::OFF) {
       ink_drop_ = std::make_unique<InkDropStub>();
-    else
+    } else {
       ink_drop_ = CreateInkDrop();
+    }
   }
   return ink_drop_.get();
 }
@@ -238,8 +250,9 @@ void InkDropHost::OnInkDropHighlightedChanged() {
 
 void InkDropHost::AddInkDropLayer(ui::Layer* ink_drop_layer) {
   // If a clip is provided, use that as it is more performant than a mask.
-  if (!AddInkDropClip(ink_drop_layer))
+  if (!AddInkDropClip(ink_drop_layer)) {
     InstallInkDropMask(ink_drop_layer);
+  }
   host_view_->AddLayerBeneathView(ink_drop_layer);
 }
 
@@ -278,8 +291,9 @@ InkDropEventHandler* InkDropHost::GetEventHandler() {
 bool InkDropHost::AddInkDropClip(ui::Layer* ink_drop_layer) {
   absl::optional<gfx::RRectF> clipping_data =
       HighlightPathGenerator::GetRoundRectForView(host_view_);
-  if (!clipping_data)
+  if (!clipping_data) {
     return false;
+  }
 
   ink_drop_layer->SetClipRect(gfx::ToEnclosingRect(clipping_data->rect()));
   auto get_corner_radii =
