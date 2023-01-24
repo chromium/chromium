@@ -35,9 +35,9 @@ import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 
 import {PersonalDataChangedListener} from './autofill_manager_proxy.js';
+import {DotsIbanMenuClickEvent} from './iban_list_entry.js';
 import {PaymentsManagerImpl, PaymentsManagerProxy} from './payments_manager_proxy.js';
 import {getTemplate} from './payments_section.html.js';
-
 
 type DotsCardMenuiClickEvent = CustomEvent<{
   creditCard: chrome.autofillPrivate.CreditCardEntry,
@@ -55,6 +55,7 @@ export interface SettingsPaymentsSectionElement {
     autofillCreditCardToggle: SettingsToggleButtonElement,
     canMakePaymentToggle: SettingsToggleButtonElement,
     creditCardSharedMenu: CrActionMenuElement,
+    ibanSharedActionMenu: CrLazyRenderElement<CrActionMenuElement>,
     menuClearCreditCard: HTMLElement,
     menuEditCreditCard: HTMLElement,
     menuRemoveCreditCard: HTMLElement,
@@ -223,6 +224,7 @@ export class SettingsPaymentsSectionElement extends
   override ready() {
     super.ready();
 
+    // TODO(crbug.com/1409766): Add the listener declaratively for all above.
     this.addEventListener('save-credit-card', this.saveCreditCard_);
     this.addEventListener(
         'dots-card-menu-click', this.onCreditCardDotsMenuClick_);
@@ -336,6 +338,17 @@ export class SettingsPaymentsSectionElement extends
   }
 
   /**
+   * Opens the IBAN action menu.
+   */
+  private onDotsIbanMenuClick_(e: DotsIbanMenuClickEvent) {
+    // Copy item so dialog won't update model on cancel.
+    this.activeIban_ = e.detail.iban;
+    this.activeDialogAnchor_ = e.detail.anchorElement;
+
+    this.$.ibanSharedActionMenu.get().showAt(e.detail.anchorElement);
+  }
+
+  /**
    * Handles clicking on the "Add credit card" button.
    */
   private onAddCreditCardClick_(e: Event) {
@@ -417,6 +430,27 @@ export class SettingsPaymentsSectionElement extends
     this.paymentsManager_.removeCreditCard(this.activeCreditCard_!.guid!);
     this.$.creditCardSharedMenu.close();
     this.activeCreditCard_ = null;
+  }
+
+  /**
+   * Handles clicking on the "Edit" IBAN button.
+   */
+  private onMenuEditIbanClick_(e: Event) {
+    e.preventDefault();
+    this.showIbanDialog_ = true;
+    this.$.ibanSharedActionMenu.get().close();
+  }
+
+  /**
+   * Handles clicking on the "Remove" IBAN button.
+   */
+  private onMenuRemoveIbanClick_() {
+    assert(this.activeIban_);
+    this.paymentsManager_.removeIban(this.activeIban_.guid!);
+    this.$.ibanSharedActionMenu.get().close();
+    assert(this.activeDialogAnchor_);
+    focusWithoutInk(this.activeDialogAnchor_);
+    this.activeIban_ = null;
   }
 
   /**

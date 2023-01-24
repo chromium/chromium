@@ -12,7 +12,7 @@ import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://w
 import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {createCreditCardEntry, TestPaymentsManager} from './passwords_and_autofill_fake_data.js';
+import {createCreditCardEntry, createIbanEntry, TestPaymentsManager} from './passwords_and_autofill_fake_data.js';
 // clang-format on
 
 /**
@@ -161,6 +161,37 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
         section.shadowRoot!.querySelector('settings-credit-card-edit-dialog');
     assertTrue(!!creditCardDialog);
     return creditCardDialog;
+  }
+
+  /**
+   * Creates the Edit IBAN dialog for existing local IBANs by simulating
+   * clicking the three-dots menu button then clicking the edit button of the
+   * first IBAN in the list.
+   */
+  async function createEditIbanDialog(
+      ibans: chrome.autofillPrivate.IbanEntry[]):
+      Promise<SettingsIbanEditDialogElement> {
+    const section = await createPaymentsSection(
+        /*creditCards=*/[], /*ibans=*/ ibans);
+    // Simulate clicking three-dots menu button for the first IBAN in the list.
+    const firstEntry = section.$.paymentsList.shadowRoot!.querySelector(
+        'settings-iban-list-entry');
+    assertTrue(!!firstEntry);
+    const menuButton = firstEntry.$.ibanMenu;
+    assertTrue(!!menuButton);
+    menuButton.click();
+    flush();
+
+    // Simulate clicking the 'Edit' button in the menu.
+    const menuEditIban =
+        section.shadowRoot!.querySelector<HTMLElement>('#menuEditIban');
+    assertTrue(!!menuEditIban);
+    menuEditIban.click();
+    flush();
+    const ibanDialog =
+        section.shadowRoot!.querySelector('settings-iban-edit-dialog');
+    assertTrue(!!ibanDialog);
+    return ibanDialog;
   }
 
   function nextYear(): string {
@@ -642,6 +673,35 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     assertEquals(saveEvent.detail.guid, undefined);
     assertEquals(saveEvent.detail.value, 'IT60 X054 2811 1010 0000 0123 456');
     assertEquals(saveEvent.detail.nickname, 'My doctor\'s IBAN');
+  });
+
+  test('update local IBAN value', async function() {
+    loadTimeData.overrideValues({
+      showIbansSettings: true,
+    });
+    const iban =
+        createIbanEntry('IE64 IRCE 9205 0112 3456 78', 'My teacher\'s IBAN');
+    const ibanDialog = await createEditIbanDialog([iban]);
+
+    // Wait for the dialog to open.
+    await whenAttributeIs(ibanDialog.$.dialog, 'open', '');
+
+    // Update IBAN value and nickname, and trigger the on-input handler.
+    const nicknameInput = ibanDialog.$.nicknameInput;
+    const valueInput = ibanDialog.$.valueInput;
+    valueInput.value = 'DE75 5121 0800 1245 1261 99';
+    nicknameInput.value = 'My brother\'s IBAN';
+    flush();
+
+    const savedPromise = eventToPromise('save-iban', ibanDialog);
+    const saveButton = ibanDialog.$.saveButton;
+    saveButton.click();
+    const saveEvent = await savedPromise;
+
+    // Verify the updated values are correctly passed to save-iban.
+    assertEquals(saveEvent.detail.guid, iban.guid);
+    assertEquals(saveEvent.detail.value, 'DE75 5121 0800 1245 1261 99');
+    assertEquals(saveEvent.detail.nickname, 'My brother\'s IBAN');
   });
 
 });

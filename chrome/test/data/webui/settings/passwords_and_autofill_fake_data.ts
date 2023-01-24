@@ -171,11 +171,13 @@ export function createCreditCardEntry():
 
 /**
  * Creates a new valid IBAN entry for testing.
+ * If `value` is not empty, set guid when creating the IBAN entry, otherwise,
+ * leave it undefined, as it is an empty IBAN.
  */
 export function createIbanEntry(
     value?: string, nickname?: string): chrome.autofillPrivate.IbanEntry {
   return {
-    guid: makeGuid(),
+    guid: value ? makeGuid() : undefined,
     value: (value || value === '') ? value : 'CR99 0000 0000 0000 8888 88',
     nickname: (nickname || nickname === '') ? nickname : 'My doctor\'s IBAN',
     metadata: {
@@ -492,6 +494,7 @@ export class PaymentsManagerExpectations {
   clearedCachedCreditCards: number = 0;
   addedVirtualCards: number = 0;
   requestedIbans: number = 0;
+  removedIbans: number = 0;
 }
 
 /**
@@ -519,6 +522,7 @@ export class TestPaymentsManager extends TestBrowserProxy implements
       'getUpiIdList',
       'clearCachedCreditCard',
       'removeCreditCard',
+      'removeIban',
       'addVirtualCard',
     ]);
 
@@ -578,6 +582,10 @@ export class TestPaymentsManager extends TestBrowserProxy implements
 
   saveIban(_iban: chrome.autofillPrivate.IbanEntry) {}
 
+  removeIban(_guid: string) {
+    this.methodCalled('removeIban');
+  }
+
   getIbanList() {
     this.methodCalled('getIbanList');
     return Promise.resolve(this.data.ibans);
@@ -610,5 +618,6 @@ export class TestPaymentsManager extends TestBrowserProxy implements
     assertEquals(
         expected.addedVirtualCards, this.getCallCount('addVirtualCard'));
     assertEquals(expected.requestedIbans, this.getCallCount('getIbanList'));
+    assertEquals(expected.removedIbans, this.getCallCount('removeIban'));
   }
 }

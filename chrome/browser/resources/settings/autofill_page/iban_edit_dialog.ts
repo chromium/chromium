@@ -114,6 +114,7 @@ export class SettingsIbanEditDialogElement extends
    */
   private onIbanSaveButtonClick_() {
     const iban = {
+      guid: this.iban?.guid,
       value: this.value_!.trim(),
       nickname: this.nickname_ ? this.nickname_.trim() : '',
     };

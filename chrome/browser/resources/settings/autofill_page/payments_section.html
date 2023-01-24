@@ -113,7 +113,8 @@
     class$="list-frame [[computeCssClass_(
         removeCardExpirationAndTypeTitlesEnabled_,
             virtualCardMetadataEnabled_)]]"
-    credit-cards="[[creditCards]]" ibans="[[ibans]]" upi-ids="[[upiIds]]">
+    credit-cards="[[creditCards]]" ibans="[[ibans]]" upi-ids="[[upiIds]]"
+    on-dots-iban-menu-click="onDotsIbanMenuClick_">
 </settings-payments-list>
 
 <cr-action-menu id="creditCardSharedMenu" role-description="$i18n{menu}">
@@ -142,6 +143,21 @@
     $i18n{removeVirtualCard}
   </button>
 </cr-action-menu>
+
+<cr-lazy-render id="ibanSharedActionMenu">
+  <template>
+    <cr-action-menu id="ibanSharedMenu" role-description="$i18n{menu}">
+      <button id="menuEditIban" class="dropdown-item"
+          on-click="onMenuEditIbanClick_">
+        $i18n{editIban}
+      </button>
+      <button id="menuRemoveIban" class="dropdown-item"
+          on-click="onMenuRemoveIbanClick_">
+        $i18n{removeIban}
+      </button>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>
 
 <template is="dom-if" if="[[showCreditCardDialog_]]" restamp>
   <settings-credit-card-edit-dialog credit-card="[[activeCreditCard_]]"

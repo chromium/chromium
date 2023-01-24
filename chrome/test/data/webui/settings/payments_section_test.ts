@@ -181,6 +181,7 @@ suite('PaymentsSection', function() {
     expected.clearedCachedCreditCards = 0;
     expected.addedVirtualCards = 0;
     expected.requestedIbans = 1;
+    expected.removedIbans = 0;
     return expected;
   }
 
@@ -1362,6 +1363,81 @@ suite('PaymentsSection', function() {
     assertEquals(undefined, event.detail.guid);
     assertEquals('FI1410093000123458', event.detail.value);
     assertEquals('', event.detail.nickname);
+  });
+
+  test('verifyIbanEntryIsNotEditedAfterCancel', async function() {
+    const iban = createIbanEntry('FI1410093000123458', 'NickName');
+    let ibanDialog = createIbanDialog(iban);
+
+    await whenAttributeIs(ibanDialog.$.dialog, 'open', '');
+
+    // Edit the value and nickname of the IBAN.
+    const nicknameInput = ibanDialog.$.nicknameInput;
+    nicknameInput.value = 'Updated NickName';
+
+    const valueInput = ibanDialog.$.valueInput;
+    valueInput.value = 'FI1410093000123412';
+    flush();
+
+    const cancelButton = ibanDialog.$.cancelButton;
+    cancelButton.click();
+    await eventToPromise('close', ibanDialog);
+
+    ibanDialog = createIbanDialog(iban);
+    await whenAttributeIs(ibanDialog.$.dialog, 'open', '');
+
+    assertEquals(ibanDialog.get('nickname_'), iban.nickname);
+    assertEquals(ibanDialog.get('value_'), iban.value);
+  });
+
+  test('verifyLocalIbanMenu', async function() {
+    const iban = createIbanEntry();
+    const section = await createPaymentsSection(
+        /*creditCards=*/[], [iban], /*upiIds=*/[],
+        /*prefValues=*/ {});
+    assertEquals(1, getLocalIbanListItems().length);
+
+    // Local IBANs will show the 3-dot overflow menu.
+    section.$.ibanSharedActionMenu.get();
+    const menuEditIban =
+        section.shadowRoot!.querySelector<HTMLElement>('#menuEditIban');
+    const menuRemoveIban =
+        section.shadowRoot!.querySelector<HTMLElement>('#menuRemoveIban');
+
+    // Menu should have 2 options.
+    assertTrue(!!menuEditIban);
+    assertTrue(!!menuRemoveIban);
+    assertFalse(menuEditIban.hidden);
+    assertFalse(menuRemoveIban!.hidden);
+
+    flush();
+  });
+
+  test('verifyRemoveIbanClicked', async function() {
+    const iban = createIbanEntry();
+
+    const section = await createPaymentsSection(
+        /*creditCards=*/[], [iban], /*upiIds=*/[], /*prefValues=*/ {});
+    assertEquals(1, getLocalIbanListItems().length);
+
+    const rowShadowRoot = getIbanRowShadowRoot(section.$.paymentsList);
+    assertTrue(!!rowShadowRoot);
+    const menuButton = rowShadowRoot.querySelector<HTMLElement>('#ibanMenu');
+    assertTrue(!!menuButton);
+    menuButton.click();
+    flush();
+
+    const menuRemoveIban =
+        section.shadowRoot!.querySelector<HTMLElement>('#menuRemoveIban');
+    assertTrue(!!menuRemoveIban);
+    menuRemoveIban.click();
+    flush();
+
+    const paymentsManager =
+        PaymentsManagerImpl.getInstance() as TestPaymentsManager;
+    const expectations = getDefaultExpectations();
+    expectations.removedIbans = 1;
+    paymentsManager.assertExpectations(expectations);
   });
 
 });

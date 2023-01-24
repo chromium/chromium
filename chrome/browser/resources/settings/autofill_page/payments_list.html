@@ -31,15 +31,16 @@
           </settings-credit-card-list-entry>
         </template>
       </div>
+      <div class="list-separator" hidden$="[[!showCreditCardIbanSeparator_]]">
+      </div>
       <div class="vertical-list list-with-header" role="rowgroup">
         <template is="dom-repeat" items="[[ibans]]">
           <settings-iban-list-entry iban="[[item]]">
           </settings-iban-list-entry>
         </template>
       </div>
-      <template is="dom-if" if="[[showCreditCardUpiSeparator_]]">
-        <div class="list-separator"></div>
-      </template>
+      <div class="list-separator" hidden$="[[!showSeparatorBeforeUpiSection_]]">
+      </div>
       <template is="dom-if" if="[[showUpiIds_(upiIds, enableUpiIds_)]]">
         <div class="vertical-list list-with-header" role="rowgroup">
           <template is="dom-repeat" items="[[upiIds]]">

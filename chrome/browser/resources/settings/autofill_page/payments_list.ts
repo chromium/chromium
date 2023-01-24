@@ -79,13 +79,24 @@ class SettingsPaymentsListElement extends PolymerElement {
       },
 
       /**
-       * True iff both credit cards and UPI IDs will be shown.
+       * True iff both credit cards and IBANs will be shown.
        */
-      showCreditCardUpiSeparator_: {
+      showCreditCardIbanSeparator_: {
         type: Boolean,
         value: false,
-        computed: 'computeShowCreditCardUpiSeparator_(' +
-            'creditCards, upiIds, enableUpiIds_)',
+        computed: 'computeShowCreditCardIbanSeparator_(' +
+            'creditCards, ibans, enableIbans_)',
+      },
+
+      /**
+       * True if at least credit cards or IBANs will be shown before UPI IDs
+       * section.
+       */
+      showSeparatorBeforeUpiSection_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeShowSeparatorBeforeUpiSection_(' +
+            'creditCards, ibans, enableIbans_, upiIds, enableUpiIds_)',
       },
 
       /**
@@ -106,7 +117,8 @@ class SettingsPaymentsListElement extends PolymerElement {
   private enableIbans_: boolean;
   private enableUpiIds_: boolean;
   private removeCardExpirationAndTypeTitlesEnabled_: boolean;
-  private showCreditCardUpiSeparator_: boolean;
+  private showCreditCardIbanSeparator_: boolean;
+  private showSeparatorBeforeUpiSection_: boolean;
   private showAnyPaymentMethods_: boolean;
 
   /**
@@ -139,10 +151,18 @@ class SettingsPaymentsListElement extends PolymerElement {
   }
 
   /**
-   * @return true iff both credit cards and UPI IDs will be shown.
+   * @return true iff both credit cards and IBANs will be shown.
    */
-  private computeShowCreditCardUpiSeparator_(): boolean {
-    return this.showCreditCards_() && this.showUpiIds_();
+  private computeShowCreditCardIbanSeparator_(): boolean {
+    return this.showCreditCards_() && this.showIbans_();
+  }
+
+  /**
+   * @return true iff both credit cards and UPI IDs will be shown, or both IBANs
+   *     and UPI IDs will be shown.
+   */
+  private computeShowSeparatorBeforeUpiSection_(): boolean {
+    return (this.showCreditCards_() || this.showIbans_()) && this.showUpiIds_();
   }
 
   /**

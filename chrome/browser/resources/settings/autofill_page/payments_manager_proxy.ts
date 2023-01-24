@@ -42,6 +42,9 @@ export interface PaymentsManagerProxy {
    */
   saveCreditCard(creditCard: chrome.autofillPrivate.CreditCardEntry): void;
 
+  /** @param guid The GUID of the IBAN to remove. */
+  removeIban(guid: string): void;
+
   /**
    * Saves the given IBAN.
    */
@@ -117,6 +120,10 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
 
   saveIban(iban: chrome.autofillPrivate.IbanEntry) {
     chrome.autofillPrivate.saveIban(iban);
+  }
+
+  removeIban(guid: string) {
+    chrome.autofillPrivate.removeEntry(guid);
   }
 
   migrateCreditCards() {
