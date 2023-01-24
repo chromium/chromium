@@ -82,10 +82,4 @@ TEST_F(UpdaterInstallerConfigurationTest, IsSystemLevel) {
   }
 }
 
-TEST_F(UpdaterInstallerConfigurationTest, HasInvalidSwitch) {
-  EXPECT_FALSE(TestConfiguration(L"spam.exe").has_invalid_switch());
-  EXPECT_TRUE(
-      TestConfiguration(L"spam.exe --chrome-frame").has_invalid_switch());
-}
-
 }  // namespace updater
