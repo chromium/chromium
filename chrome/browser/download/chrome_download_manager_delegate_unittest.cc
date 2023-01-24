@@ -1741,15 +1741,15 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
      download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
      /*blocked=*/true},
 
-    // POTENTIALLY_UNWANTED verdict for a potentially dangerous file, not
-    // blocked by policy.
+    // POTENTIALLY_UNWANTED verdict for a potentially dangerous file, blocked by
+    // policy.
     {download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
      DownloadFileType::ALLOW_ON_USER_GESTURE,
      safe_browsing::DownloadCheckResult::POTENTIALLY_UNWANTED,
      DownloadPrefs::DownloadRestriction::DANGEROUS_FILES,
 
      download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
-     /*blocked=*/false},
+     /*blocked=*/true},
 
     // POTENTIALLY_UNWANTED verdict for a potentially dangerous file, not
     // blocked by policy.
