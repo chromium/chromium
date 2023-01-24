@@ -64,6 +64,9 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
       const content::NativeWebKeyboardEvent& event) override;
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
+  std::unique_ptr<content::EyeDropper> OpenEyeDropper(
+      content::RenderFrameHost* frame,
+      content::EyeDropperListener* listener) override;
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;

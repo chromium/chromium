@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/native_web_keyboard_event.h"
@@ -94,6 +95,14 @@ bool BubbleContentsWrapper::HandleContextMenu(
     const content::ContextMenuParams& params) {
   // Ignores context menu.
   return true;
+}
+
+std::unique_ptr<content::EyeDropper> BubbleContentsWrapper::OpenEyeDropper(
+    content::RenderFrameHost* frame,
+    content::EyeDropperListener* listener) {
+  BrowserWindow* window =
+      BrowserWindow::FindBrowserWindowWithWebContents(web_contents_.get());
+  return window->OpenEyeDropper(frame, listener);
 }
 
 void BubbleContentsWrapper::PrimaryPageChanged(content::Page& page) {
