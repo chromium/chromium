@@ -15,6 +15,7 @@
 class GURL;
 
 namespace message_center {
+class MessagePopupView;
 class MessageView;
 class Notification;
 struct NotifierId;
@@ -47,6 +48,10 @@ class NotificationCenterTestApi {
   // Toggles the `NotificationCenterBubble` by simulating a click on the
   // `NotificationCenterTray` on the primary display.
   void ToggleBubble();
+
+  // Toggles the `NotificationCenterBubble` by simulating a click on the
+  // `NotificationCenterTray` on the specified display.
+  void ToggleBubbleOnDisplay(int64_t dispay_id);
 
   // Adds a notification with custom parameters and returns the associated id.
   std::string AddCustomNotification(
@@ -90,9 +95,15 @@ class NotificationCenterTestApi {
   // Should be only used when the notifications bubble is open.
   message_center::MessageView* GetNotificationViewForId(const std::string& id);
 
+  // Returns the notification view for the provided `notification_id` on the
+  // display associated with the provided `display_id`.
+  message_center::MessageView* GetNotificationViewForIdOnDisplay(
+      const std::string& notification_id,
+      const int64_t display_id);
+
   // Returns the popup view associated with the provided notification id,
   // nullptr otherwise.
-  views::View* GetPopupViewForId(const std::string& id);
+  message_center::MessagePopupView* GetPopupViewForId(const std::string& id);
 
   // Returns the `NotificationCenterTray` in the shelf.
   NotificationCenterTray* GetTray();
@@ -122,6 +133,8 @@ class NotificationCenterTestApi {
 
   NotificationListView* GetNotificationListView();
 
+  NotificationListView* GetNotificationListViewOnDisplay(int64_t display_id);
+
   std::unique_ptr<message_center::Notification> CreateNotification(
       const std::string& id,
       const std::u16string& title,
@@ -133,6 +146,8 @@ class NotificationCenterTestApi {
 
   int notification_id_ = 0;
   NotificationCenterTray* const notification_center_tray_;
+
+  const int64_t primary_display_id_;
 };
 
 }  // namespace ash

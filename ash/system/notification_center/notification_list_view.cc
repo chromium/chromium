@@ -31,6 +31,8 @@
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/canvas.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/notification_list.h"
 #include "ui/message_center/notification_view_controller.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/views/message_view.h"
@@ -98,9 +100,16 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
         list_view_(list_view),
         control_view_(new NotificationSwipeControlView(message_view)) {
     message_view_->AddObserver(this);
-    if (!features::IsNotificationsRefreshEnabled()) {
-      message_view_->SetBackground(
-          views::CreateSolidBackground(SK_ColorTRANSPARENT));
+
+    if (features::IsQsRevampEnabled()) {
+      message_center::ExpandState expand_state =
+          MessageCenter::Get()->GetNotificationExpandState(
+              message_view_->notification_id());
+
+      if (expand_state != message_center::ExpandState::DEFAULT) {
+        message_view_->SetExpanded(expand_state ==
+                                   message_center::ExpandState::USER_EXPANDED);
+      }
     }
 
     SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -183,11 +192,15 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
         model->GetNotificationExpanded(GetNotificationId());
     if (manually_expanded.has_value()) {
       message_view_->SetExpanded(manually_expanded.value());
-      message_view_->SetManuallyExpandedOrCollapsed(true);
+      message_view_->SetManuallyExpandedOrCollapsed(
+          manually_expanded.value()
+              ? message_center::ExpandState::USER_EXPANDED
+              : message_center::ExpandState::USER_COLLAPSED);
     } else {
       // Expand the latest notification, and collapse all other notifications.
-      message_view_->SetExpanded(is_latest &&
-                                 message_view_->IsAutoExpandingAllowed());
+      message_view_->SetExpanded(
+          is_latest && message_view_->IsAutoExpandingAllowed() &&
+          !message_view_->IsManuallyExpandedOrCollapsed());
     }
   }
 
@@ -450,7 +463,13 @@ NotificationListView::~NotificationListView() {
   if (!features::IsQsRevampEnabled()) {
     model_->ClearNotificationChanges();
     for (auto* view : children()) {
-      AsMVC(view)->StoreExpandedState(model_.get());
+      auto* mvc = AsMVC(view);
+      // Make sure we only store expanded state for notifications that still
+      // exist.
+      if (message_center::MessageCenter::Get()->FindVisibleNotificationById(
+              mvc->message_view()->notification_id())) {
+        mvc->StoreExpandedState(model_.get());
+      }
     }
   }
 }
@@ -462,19 +481,12 @@ void NotificationListView::Init() {
     auto* view =
         new MessageViewContainer(CreateMessageView(*notification), this);
 
-    // TODO(b/252876795): We cannot use the `UnifiedSystemTrayModel` to store
-    // the expanded state for notifications with QsRevamp since it is owned by
-    // `UnifiedSystemTray` and  notifications are being completely separated
-    // from it. Implement a way to remember collase/expand state for
-    // notifications across popups and notification center.
     if (!features::IsQsRevampEnabled()) {
       view->LoadExpandedState(model_.get(), is_latest);
     }
 
-    // TODO(b/252876795): This is a workaround to match the pre-existing
-    // behavior, need to fully implement this to remember expanded states across
-    // popups and the message center.
-    if (features::IsQsRevampEnabled() && is_latest) {
+    if (features::IsQsRevampEnabled() && is_latest &&
+        !view->message_view()->IsManuallyExpandedOrCollapsed()) {
       view->message_view()->SetExpanded(
           view->message_view()->IsAutoExpandingAllowed());
     }

@@ -218,6 +218,15 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   // Allows querying the visibility of the center.
   virtual bool IsMessageCenterVisible() const = 0;
 
+  // Access for the `ExpandState` stored for each notification in the
+  // `NotificationList`. The `ExpandState` is kept alongside other
+  // notifications' state information in the `NotificationState` struct. The
+  // `ExpandState signifies whether the notification has been manually expanded
+  // or collapsed by the user.
+  virtual ExpandState GetNotificationExpandState(const std::string& id) = 0;
+  virtual void SetNotificationExpandState(const std::string& id,
+                                          const ExpandState state) = 0;
+
   // Informs the MessageCenter whether there's a bubble anchored to a system
   // tray which holds notifications. If false, only toasts are shown (e.g. on
   // desktop Linux and Windows). When there's no message center view, updated

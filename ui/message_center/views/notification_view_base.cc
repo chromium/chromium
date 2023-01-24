@@ -38,6 +38,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/notification_list.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -927,11 +928,12 @@ void NotificationViewBase::SetExpanded(bool expanded) {
 }
 
 bool NotificationViewBase::IsManuallyExpandedOrCollapsed() const {
-  return manually_expanded_or_collapsed_;
+  return MessageCenter::Get()->GetNotificationExpandState(notification_id()) !=
+         ExpandState::DEFAULT;
 }
 
-void NotificationViewBase::SetManuallyExpandedOrCollapsed(bool value) {
-  manually_expanded_or_collapsed_ = value;
+void NotificationViewBase::SetManuallyExpandedOrCollapsed(ExpandState state) {
+  MessageCenter::Get()->SetNotificationExpandState(notification_id(), state);
 }
 
 void NotificationViewBase::OnSettingsButtonPressed(const ui::Event& event) {

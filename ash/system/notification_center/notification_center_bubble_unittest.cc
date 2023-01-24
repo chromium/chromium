@@ -4,10 +4,12 @@
 
 #include "ash/system/notification_center/notification_center_bubble.h"
 
+#include <cstdint>
 #include <string>
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/system/message_center/ash_notification_view.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
@@ -16,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/message_center/views/message_popup_view.h"
 #include "ui/message_center/views/message_view.h"
 
 namespace ash {
@@ -149,6 +152,62 @@ TEST_F(NotificationCenterBubbleTest, NotificationsGroupingBasic) {
   // `parent_notification_view`.
   EXPECT_TRUE(parent_notification_view->FindGroupNotificationView(id0));
   EXPECT_TRUE(parent_notification_view->FindGroupNotificationView(id1));
+}
+
+TEST_F(NotificationCenterBubbleTest,
+       NotificationCollapseStatePreservedFromPopup) {
+  std::string id0 = test_api()->AddNotification();
+
+  // Manually collapse the notification.
+  static_cast<AshNotificationView*>(
+      test_api()->GetPopupViewForId(id0)->message_view())
+      ->ToggleExpand();
+
+  // Expect `id0` to be collapsed despite the default state for it to be
+  // expanded.
+  test_api()->ToggleBubble();
+  EXPECT_FALSE(test_api()->GetNotificationViewForId(id0)->IsExpanded());
+}
+
+TEST_F(NotificationCenterBubbleTest,
+       NotificationExpandStatePreservedAcrossDisplays) {
+  UpdateDisplay("600x500,600x500");
+
+  std::string id0, id1;
+  id0 = test_api()->AddNotification();
+  id1 = test_api()->AddNotification();
+
+  const int64_t secondary_display_id = display_manager()->GetDisplayAt(1).id();
+
+  test_api()->ToggleBubbleOnDisplay(secondary_display_id);
+
+  auto* notification_view0 = static_cast<AshNotificationView*>(
+      test_api()->GetNotificationViewForIdOnDisplay(id0, secondary_display_id));
+
+  auto* notification_view1 = static_cast<AshNotificationView*>(
+      test_api()->GetNotificationViewForIdOnDisplay(id1, secondary_display_id));
+
+  // The newest notification is expected to be expanded by default while other
+  // notifications are expected to be collapsed by default.
+  EXPECT_TRUE(notification_view1->IsExpanded());
+  EXPECT_FALSE(notification_view0->IsExpanded());
+
+  // Toggle the expand states for both notifications so they are opposite of the
+  // default state.
+  notification_view0->ToggleExpand();
+  notification_view1->ToggleExpand();
+
+  const int64_t primary_display_id = display_manager()->GetDisplayAt(0).id();
+  test_api()->ToggleBubbleOnDisplay(primary_display_id);
+
+  // Expect the expanded states to be preserved on the primary display after
+  // they were changed by the user on the secondary display.
+  EXPECT_FALSE(test_api()
+                   ->GetNotificationViewForIdOnDisplay(id1, primary_display_id)
+                   ->IsExpanded());
+  EXPECT_TRUE(test_api()
+                  ->GetNotificationViewForIdOnDisplay(id0, primary_display_id)
+                  ->IsExpanded());
 }
 
 }  // namespace ash

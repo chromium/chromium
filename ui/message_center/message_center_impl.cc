@@ -124,6 +124,21 @@ bool MessageCenterImpl::IsMessageCenterVisible() const {
   return visible_;
 }
 
+ExpandState MessageCenterImpl::GetNotificationExpandState(
+    const std::string& id) {
+  DCHECK(FindVisibleNotificationById(id));
+
+  return notification_list_->GetNotificationExpandState(id);
+}
+
+void MessageCenterImpl::SetNotificationExpandState(
+    const std::string& id,
+    const ExpandState expand_state) {
+  DCHECK(FindVisibleNotificationById(id));
+
+  notification_list_->SetNotificationExpandState(id, expand_state);
+}
+
 void MessageCenterImpl::SetHasMessageCenterView(bool has_message_center_view) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   has_message_center_view_ = has_message_center_view;

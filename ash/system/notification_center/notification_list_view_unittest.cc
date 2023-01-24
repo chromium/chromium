@@ -21,6 +21,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/notification_list.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/notification_view.h"
 #include "ui/views/test/views_test_utils.h"
@@ -413,7 +414,8 @@ TEST_P(ParameterizedNotificationListViewTest, CollapseOlderNotifications) {
   EXPECT_TRUE(GetMessageViewAt(0)->IsExpanded());
 
   GetMessageViewAt(1)->SetExpanded(true);
-  GetMessageViewAt(1)->SetManuallyExpandedOrCollapsed(true);
+  GetMessageViewAt(1)->SetManuallyExpandedOrCollapsed(
+      message_center::ExpandState::USER_EXPANDED);
 
   AddNotification();
 
@@ -478,12 +480,6 @@ TEST_P(ParameterizedNotificationListViewTest, DISABLED_ResetAnimation) {
 }
 
 TEST_P(ParameterizedNotificationListViewTest, KeepManuallyExpanded) {
-  // TODO(b/252876795): Enable this test for the QsRevamp feature after expand
-  // statefulness is implemented.
-  if (IsQsRevampEnabled()) {
-    return;
-  }
-
   AddNotification();
   AddNotification();
   CreateMessageListView();
@@ -496,9 +492,11 @@ TEST_P(ParameterizedNotificationListViewTest, KeepManuallyExpanded) {
 
   // Manually expand the first notification & manually collapse the second one.
   GetMessageViewAt(0)->SetExpanded(true);
-  GetMessageViewAt(0)->SetManuallyExpandedOrCollapsed(true);
+  GetMessageViewAt(0)->SetManuallyExpandedOrCollapsed(
+      message_center::ExpandState::USER_EXPANDED);
   GetMessageViewAt(1)->SetExpanded(false);
-  GetMessageViewAt(1)->SetManuallyExpandedOrCollapsed(true);
+  GetMessageViewAt(1)->SetManuallyExpandedOrCollapsed(
+      message_center::ExpandState::USER_COLLAPSED);
 
   DestroyMessageListView();
 

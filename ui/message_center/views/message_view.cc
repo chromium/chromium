@@ -183,7 +183,7 @@ bool MessageView::IsManuallyExpandedOrCollapsed() const {
   return false;
 }
 
-void MessageView::SetManuallyExpandedOrCollapsed(bool value) {
+void MessageView::SetManuallyExpandedOrCollapsed(ExpandState state) {
   // Not implemented by default.
 }
 

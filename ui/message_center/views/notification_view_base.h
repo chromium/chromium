@@ -15,6 +15,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/message_center_export.h"
+#include "ui/message_center/notification_list.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/notification_input_container.h"
 #include "ui/views/animation/ink_drop.h"
@@ -127,7 +128,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   bool IsExpanded() const override;
   void SetExpanded(bool expanded) override;
   bool IsManuallyExpandedOrCollapsed() const override;
-  void SetManuallyExpandedOrCollapsed(bool value) override;
+  void SetManuallyExpandedOrCollapsed(ExpandState state) override;
   void OnSettingsButtonPressed(const ui::Event& event) override;
 
   // views::InkDropObserver:

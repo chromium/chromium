@@ -4,6 +4,7 @@
 
 #include "ui/message_center/fake_message_center.h"
 
+#include <string>
 #include <utility>
 
 #include "base/strings/string_util.h"
@@ -185,6 +186,14 @@ void FakeMessageCenter::SetVisibility(Visibility visible) {}
 bool FakeMessageCenter::IsMessageCenterVisible() const {
   return false;
 }
+
+ExpandState FakeMessageCenter::GetNotificationExpandState(
+    const std::string& id) {
+  return ExpandState::DEFAULT;
+}
+
+void FakeMessageCenter::SetNotificationExpandState(const std::string& id,
+                                                   const ExpandState state) {}
 
 void FakeMessageCenter::SetHasMessageCenterView(bool has_message_center_view) {
   has_message_center_view_ = has_message_center_view;

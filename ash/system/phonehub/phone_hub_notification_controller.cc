@@ -98,7 +98,9 @@ class PhoneHubNotificationView : public message_center::NotificationView {
     custom_view_type_ = notification.custom_view_type();
     if (custom_view_type_ == kNotificationCustomCallViewType) {
       // Expand the action buttons row by default for Call Style notification.
-      SetManuallyExpandedOrCollapsed(true);
+      SetManuallyExpandedOrCollapsed(
+          !IsExpanded() ? message_center::ExpandState::USER_EXPANDED
+                        : message_center::ExpandState::USER_COLLAPSED);
       SetExpanded(true);
       return;
     }
@@ -192,7 +194,9 @@ class PhoneHubAshNotificationView : public AshNotificationView {
     custom_view_type_ = notification.custom_view_type();
     if (custom_view_type_ == kNotificationCustomCallViewType) {
       // Expand the action buttons row by default for Call Style notification.
-      SetManuallyExpandedOrCollapsed(true);
+      SetManuallyExpandedOrCollapsed(
+          !IsExpanded() ? message_center::ExpandState::USER_EXPANDED
+                        : message_center::ExpandState::USER_COLLAPSED);
       SetExpanded(true);
       return;
     }

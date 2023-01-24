@@ -80,6 +80,9 @@ class FakeMessageCenter : public MessageCenter {
   void EnterQuietModeWithExpire(const base::TimeDelta& expires_in) override;
   void SetVisibility(Visibility visible) override;
   bool IsMessageCenterVisible() const override;
+  ExpandState GetNotificationExpandState(const std::string& id) override;
+  void SetNotificationExpandState(const std::string& id,
+                                  const ExpandState state) override;
   void SetHasMessageCenterView(bool has_message_center_view) override;
   bool HasMessageCenterView() const override;
   void RestartPopupTimers() override;
