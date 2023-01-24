@@ -467,6 +467,14 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   const BlinkStorageKey& GetStorageKey() const { return storage_key_; }
   void SetStorageKey(const BlinkStorageKey& storage_key);
 
+  // This storage key must only be used when binding session storage.
+  //
+  // TODO(crbug.com/1407150): Remove this when deprecation trial is complete.
+  const BlinkStorageKey& GetSessionStorageKey() const {
+    return session_storage_key_;
+  }
+  void SetSessionStorageKey(const BlinkStorageKey& session_storage_key);
+
   void DidReceiveUserActivation();
 
   // Returns the state of the |PaymentRequestToken| in this document.
@@ -622,6 +630,13 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   // The storage key for this LocalDomWindow.
   BlinkStorageKey storage_key_;
+
+  // The storage key here is the one to use when binding session storage. This
+  // may differ from `storage_key_` as a deprecation trial can prevent the
+  // partitioning of session storage.
+  //
+  // TODO(crbug.com/1407150): Remove this when deprecation trial is complete.
+  BlinkStorageKey session_storage_key_;
 
   // Fire "online" and "offline" events.
   Member<NetworkStateObserver> network_state_observer_;

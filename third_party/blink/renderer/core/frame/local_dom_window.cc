@@ -2401,6 +2401,11 @@ void LocalDOMWindow::SetStorageKey(const BlinkStorageKey& storage_key) {
   storage_key_ = storage_key;
 }
 
+void LocalDOMWindow::SetSessionStorageKey(
+    const BlinkStorageKey& session_storage_key) {
+  session_storage_key_ = session_storage_key;
+}
+
 bool LocalDOMWindow::IsPaymentRequestTokenActive() const {
   return payment_request_token_.IsActive();
 }

@@ -1253,9 +1253,9 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
   blink::mojom::CommitNavigationParamsPtr commit_params =
       blink::mojom::CommitNavigationParams::New(
           absl::nullopt,
-          // The correct storage key will be computed before committing the
-          // navigation.
-          blink::StorageKey(), override_user_agent,
+          // The correct storage key and session storage key will be computed
+          // before committing the navigation.
+          blink::StorageKey(), blink::StorageKey(), override_user_agent,
           /*redirects=*/std::vector<GURL>(),
           /*redirect_response=*/
           std::vector<network::mojom::URLResponseHeadPtr>(),
@@ -1398,9 +1398,10 @@ NavigationRequest::CreateForSynchronousRendererCommit(
   blink::mojom::CommitNavigationParamsPtr commit_params =
       blink::mojom::CommitNavigationParams::New(
           absl::nullopt,
-          // The correct storage key is computed right after creating the
-          // NavigationRequest below.
-          blink::StorageKey(), is_overriding_user_agent, redirects,
+          // The correct storage key and session storage key are computed right
+          // after creating the NavigationRequest below.
+          blink::StorageKey(), blink::StorageKey(), is_overriding_user_agent,
+          redirects,
           /*redirect_response=*/
           std::vector<network::mojom::URLResponseHeadPtr>(),
           /*redirect_infos=*/std::vector<net::RedirectInfo>(),
@@ -1483,6 +1484,9 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           render_frame_host->ComputeSiteForCookies().IsNull()
               ? blink::mojom::AncestorChainBit::kCrossSite
               : blink::mojom::AncestorChainBit::kSameSite);
+  navigation_request->commit_params_->session_storage_key =
+      frame_tree_node->frame_tree().GetSessionStorageKey(
+          navigation_request->commit_params_->storage_key);
   navigation_request->web_bundle_navigation_info_ =
       std::move(web_bundle_navigation_info);
   if (subresource_web_bundle_navigation_info) {
@@ -5222,6 +5226,9 @@ void NavigationRequest::CommitNavigation() {
                                        ComputeFencedFrameNonce());
   commit_params_->storage_key = render_frame_host_->CalculateStorageKey(
       GetOriginToCommit().value(), base::OptionalToPtr(nonce));
+  commit_params_->session_storage_key =
+      frame_tree_node()->frame_tree().GetSessionStorageKey(
+          commit_params_->storage_key);
 
   if (IsServedFromBackForwardCache() || IsPrerenderedPageActivation()) {
     CommitPageActivation();

@@ -249,6 +249,7 @@ struct SameSizeAsDocumentLoader
   scoped_refptr<SecurityOrigin> origin_to_commit;
   AtomicString origin_calculation_debug_info;
   BlinkStorageKey storage_key;
+  BlinkStorageKey session_storage_key;
   WebNavigationType navigation_type;
   DocumentLoadTiming document_load_timing;
   base::TimeTicks time_of_last_data_received;
@@ -468,6 +469,7 @@ DocumentLoader::DocumentLoader(
                             ? nullptr
                             : params_->origin_to_commit.Get()->IsolatedCopy()),
       storage_key_(std::move(params_->storage_key)),
+      session_storage_key_(std::move(params_->session_storage_key)),
       navigation_type_(navigation_type),
       document_load_timing_(*this),
       service_worker_network_provider_(
@@ -2352,6 +2354,34 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
       BlinkStorageKey(security_origin, storage_key_with_3psp.GetTopLevelSite(),
                       base::OptionalToPtr(storage_key_.GetNonce()),
                       storage_key_with_3psp.GetAncestorChainBit()));
+  if (storage_key_ == session_storage_key_ ||
+      storage_key_.GetSecurityOrigin()->IsOpaque() ||
+      session_storage_key_.GetSecurityOrigin()->IsOpaque()) {
+    // If the `storage_key_` and `session_storage_key_` match (or either are
+    // opaque), we should just use whatever storage key was built above as we
+    // aren't preventing partition.
+    frame_->DomWindow()->SetSessionStorageKey(
+        frame_->DomWindow()->GetStorageKey());
+  } else {
+    // Otherwise, we first must verify that the requested StorageKey to use for
+    // binding session storage has the same SecurityOrigin as the actual
+    // storage key. The purpose of this path is to change the partition for a
+    // given origin, not to allow access to another origin's data.
+    DCHECK(session_storage_key_ ==
+           BlinkStorageKey(storage_key_.GetSecurityOrigin()));
+    // We use the renderer side origin when setting the StorageKey on the path
+    // above, so we check that the renderer's understanding of the origin
+    // matches the session storage StorageKey. This is another precaution to
+    // to prevent cross-origin partition binding.
+    // TODO(https://crbug.com/888079): Depend on the origin in the StorageKey.
+    if (session_storage_key_.GetSecurityOrigin()->IsSameOriginWith(
+            security_origin.get())) {
+      frame_->DomWindow()->SetSessionStorageKey(session_storage_key_);
+    } else {
+      frame_->DomWindow()->SetSessionStorageKey(
+          frame_->DomWindow()->GetStorageKey());
+    }
+  }
 
   // Conceptually, SecurityOrigin doesn't have to be initialized after sandbox
   // flags are applied, but there's a UseCounter in SetSecurityOrigin() that

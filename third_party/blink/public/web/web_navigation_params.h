@@ -350,6 +350,15 @@ struct BLINK_EXPORT WebNavigationParams {
   // taking into account the origin computed by the renderer.
   StorageKey storage_key;
 
+  // The storage key here is the one the browser process believes the renderer
+  // should use when binding session storage. This may differ from `storage_key`
+  // as a deprecation trial can prevent the partitioning of session storage.
+  // The document loader should verify this storage key is (1) the same as
+  // `storage_key` or (2) a first-party storage key at `storage_key.origin`.
+  //
+  // TODO(crbug.com/1407150): Remove this when deprecation trial is complete.
+  StorageKey session_storage_key;
+
   blink::DocumentToken document_token;
   // The devtools token for this navigation. See DocumentLoader
   // for details.

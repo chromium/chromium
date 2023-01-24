@@ -84,7 +84,10 @@ scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(
 
   CacheMetrics metric = CacheMetrics::kMiss;
   scoped_refptr<CachedStorageArea> result;
-  auto cache_it = cached_areas_.find(&local_dom_window->GetStorageKey());
+  const BlinkStorageKey& storage_key =
+      IsSessionStorage() ? local_dom_window->GetSessionStorageKey()
+                         : local_dom_window->GetStorageKey();
+  auto cache_it = cached_areas_.find(&storage_key);
   if (cache_it != cached_areas_.end()) {
     metric = cache_it->value->HasOneRef() ? CacheMetrics::kHit
                                           : CacheMetrics::kUnused;
@@ -104,10 +107,9 @@ scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(
   result = base::MakeRefCounted<CachedStorageArea>(
       IsSessionStorage() ? CachedStorageArea::AreaType::kSessionStorage
                          : CachedStorageArea::AreaType::kLocalStorage,
-      local_dom_window->GetStorageKey(), local_dom_window, this,
+      storage_key, local_dom_window, this,
       /*is_session_storage_for_prerendering=*/false, std::move(storage_area));
-  cached_areas_.insert(std::make_unique<const BlinkStorageKey>(
-                           local_dom_window->GetStorageKey()),
+  cached_areas_.insert(std::make_unique<const BlinkStorageKey>(storage_key),
                        result);
   return result;
 }
@@ -119,7 +121,9 @@ scoped_refptr<CachedStorageArea> StorageNamespace::CreateCachedAreaForPrerender(
   return base::MakeRefCounted<CachedStorageArea>(
       IsSessionStorage() ? CachedStorageArea::AreaType::kSessionStorage
                          : CachedStorageArea::AreaType::kLocalStorage,
-      local_dom_window->GetStorageKey(), local_dom_window, this,
+      IsSessionStorage() ? local_dom_window->GetSessionStorageKey()
+                         : local_dom_window->GetStorageKey(),
+      local_dom_window, this,
       /*is_session_storage_for_prerendering=*/true, std::move(storage_area));
 }
 
@@ -222,8 +226,9 @@ void StorageNamespace::BindStorageArea(
     mojo::PendingReceiver<mojom::blink::StorageArea> receiver) {
   if (IsSessionStorage()) {
     controller_->dom_storage()->BindSessionStorageArea(
-        local_dom_window.GetStorageKey(), local_dom_window.GetLocalFrameToken(),
-        namespace_id_, std::move(receiver));
+        local_dom_window.GetSessionStorageKey(),
+        local_dom_window.GetLocalFrameToken(), namespace_id_,
+        std::move(receiver));
   } else {
     controller_->dom_storage()->OpenLocalStorage(
         local_dom_window.GetStorageKey(), local_dom_window.GetLocalFrameToken(),
