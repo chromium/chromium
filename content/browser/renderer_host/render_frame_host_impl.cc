@@ -2331,6 +2331,10 @@ const url::Origin& RenderFrameHostImpl::GetLastCommittedOrigin() const {
   return last_committed_origin_;
 }
 
+const GURL& RenderFrameHostImpl::GetInheritedBaseUrl() const {
+  return inherited_base_url_;
+}
+
 const net::NetworkIsolationKey& RenderFrameHostImpl::GetNetworkIsolationKey() {
   DCHECK(!isolation_info_.IsEmpty());
   return isolation_info_.network_isolation_key();
@@ -3139,8 +3143,7 @@ void RenderFrameHostImpl::RenderProcessGone(
   // reset.
   RenderFrameDeleted();
   SetLastCommittedUrl(GURL());
-  set_base_url_from_renderer(GURL());
-  set_inherited_base_url(GURL());
+  SetInheritedBaseUrl(GURL());
   renderer_url_info_ = RendererURLInfo();
   web_bundle_handle_.reset();
 
@@ -3897,6 +3900,12 @@ void RenderFrameHostImpl::DidNavigate(
 
 void RenderFrameHostImpl::SetLastCommittedOrigin(const url::Origin& origin) {
   last_committed_origin_ = origin;
+}
+
+void RenderFrameHostImpl::SetInheritedBaseUrl(const GURL& inherited_base_url) {
+  if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
+    inherited_base_url_ = inherited_base_url;
+  }
 }
 
 void RenderFrameHostImpl::SetLastCommittedOriginForTesting(
@@ -8069,43 +8078,6 @@ void RenderFrameHostImpl::DidChangeSrcDoc(
   child->SetSrcdocValue(srcdoc_value);
 }
 
-void RenderFrameHostImpl::DidChangeBaseURL(const GURL& base_url) {
-  if (!blink::features::IsNewBaseUrlInheritanceBehaviorEnabled())
-    return;
-
-  // TODO(https://crbug.com/1356658,1366593): consider restricting base URL in
-  // web renderers to non-chrome:// URLs.
-  set_base_url_from_renderer(base_url);
-}
-
-const GURL& RenderFrameHostImpl::GetBaseUrl() const {
-  if (!blink::features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
-    NOTREACHED() << __func__
-                 << " should only be invoked when the feature"
-                    " NewBaseUrlInheritanceBehavior is enabled.";
-    return GURL::EmptyGURL();
-  }
-
-  if (!base_url_from_renderer_.is_empty())
-    return base_url_from_renderer_;
-
-  // If `base_url_from_renderer_` is not set, then the document uses either the
-  // inherited or default (i.e. last committed URL) value for base URL.
-  if (!snapshotted_base_url_from_parent_.is_empty()) {
-    // TODO(wjmaclean): update this DCHECK when we start sending base urls for
-    // about:blank as well.
-    DCHECK(GetLastCommittedURL().IsAboutSrcdoc());
-    return snapshotted_base_url_from_parent_;
-  }
-
-  // If no other base URL is specified or inherited, the last committed URL is
-  // used. Note that srcdoc cases should always inherit.
-  // TODO(wjmaclean): update this DCHECK when we start sending base urls for
-  // about:blank as well.
-  DCHECK(!GetLastCommittedURL().IsAboutSrcdoc());
-  return GetLastCommittedURL();
-}
-
 void RenderFrameHostImpl::ReceivedDelegatedCapability(
     blink::mojom::DelegatedCapability delegated_capability) {
   if (delegated_capability ==
@@ -12179,15 +12151,15 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   DCHECK(!navigation_request->IsSameDocument());
   DCHECK(!navigation_request->IsPageActivation());
 
-  // On every cross-document navigation, reset the the base url as sent from the
-  // renderer.
-  set_base_url_from_renderer(GURL());
-  // Remember any snapshot of the inherited base URL, in case subframes need it.
-  // This is currently only used for srcdoc frames when the
-  // IsolateSandboxedIframes feature is enabled.
-  DCHECK(navigation_request->inherited_base_url().is_empty() ||
-         navigation_request->GetURL().IsAboutSrcdoc());
-  set_inherited_base_url(navigation_request->inherited_base_url());
+  const GURL& request_url = navigation_request->common_params().url;
+  if (request_url.IsAboutBlank() || request_url.IsAboutSrcdoc()) {
+    const absl::optional<::GURL>& initiator_base_url =
+        navigation_request->common_params().initiator_base_url;
+    SetInheritedBaseUrl(initiator_base_url ? initiator_base_url.value()
+                                           : GURL::EmptyGURL());
+  } else {
+    SetInheritedBaseUrl(GURL::EmptyGURL());
+  }
 
   // The nonce to use in credentialless iframe is a page scoped attribute. So it
   // needs to change every time the top-level document change.

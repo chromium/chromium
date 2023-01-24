@@ -525,10 +525,17 @@ void FillNavigationParamsRequest(
   }
 
   if (common_params.url.IsAboutSrcdoc()) {
-    // Pass on the `fallback_srcdoc_baseurl` sent from the frame host. This will
+    // Pass on the `initiator_base_url`sent via the common_params. This will be
     // picked up in DocumentLoader.
-    navigation_params->fallback_srcdoc_base_url =
-        commit_params.fallback_srcdoc_baseurl;
+    if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
+      // It's possible for initiator_base_url to be empty if this is an error
+      // srcdoc page. See
+      // NavigationRequestBrowserTest.OriginForSrcdocErrorPageInSubframe.
+      navigation_params->fallback_srcdoc_base_url =
+          common_params.initiator_base_url
+              ? WebURL(common_params.initiator_base_url.value())
+              : WebURL();
+    }
   }
 }
 
@@ -2873,6 +2880,10 @@ void RenderFrameImpl::CommitFailedNavigation(
   DCHECK(!NavigationTypeUtils::IsSameDocument(common_params->navigation_type));
   // `origin_to_commit` must be set on failed navigations.
   CHECK(commit_params->origin_to_commit);
+
+  // The browser process should not send us an initiator_base_url in a failed
+  // navigation.
+  DCHECK(!common_params->initiator_base_url);
 
   AssertNavigationCommits assert_navigation_commits(
       this, kMayReplaceInitialEmptyDocument);

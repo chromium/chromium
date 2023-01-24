@@ -4285,23 +4285,6 @@ void Document::UpdateBaseURL() {
   if (!base_url_.IsValid())
     base_url_ = KURL();
 
-  // The RenderFrameHost won't know anything about the state of
-  // `base_element_url_` or `base_url_override_`, so if either of these affect
-  // `base_url_` we should share it with the frame host.
-  bool has_overridden_base_url =
-      !base_element_url_.IsEmpty() || !base_url_override_.IsEmpty();
-  // Avoid sending a spurious IPC if this is the first UpdateBaseURL() call
-  // and there is no overridden base URL. There may not be a frame since
-  // UpdateBaseURL() is called for documents that do not have a frame;
-  // there is nothing to notify in that case however.
-  // If we sent `base_url_` to the frame host, and then later its dependence
-  // on `base_element_url_`/`base_url_override_` ends, we should notify the
-  // frame host so it can reset its copy.
-  if ((!old_base_url.IsNull() || has_overridden_base_url) && GetFrame()) {
-    GetFrame()->GetLocalFrameHostRemote().DidChangeBaseURL(
-        has_overridden_base_url ? base_url_ : KURL());
-  }
-
   if (elem_sheet_) {
     // Element sheet is silly. It never contains anything.
     DCHECK(!elem_sheet_->Contents()->RuleCount());
@@ -4338,24 +4321,26 @@ KURL Document::FallbackBaseURL() const {
   //           document base URL of document's browsing context's container
   //           document.
   if (IsSrcdocDocument()) {
-    // Return the base_url value that was sent from the parent along with the
+    // Return the base_url value that was sent from the initiator along with the
     // srcdoc attribute's value.
     if (fallback_base_url_for_srcdoc_.IsValid())
       return fallback_base_url_for_srcdoc_;
-    // Until https://crbug.com/1356658 is resolved,
-    // `fallback_base_url_for_srcdoc_` will only be sent from the frame host if
-    // we are process isolating sandboxed srcdoc iframes (although when the
-    // IsolateSandboxedIframes feature is enabled we will send it for all srcdoc
-    // iframes, not just sandboxed ones). The fallback base url will also be
-    // sent from the frame host if kNewBaseUrlInheritanceBehavior is enabled.
-    // If `fallback_base_url_for_srcdoc_` isn't sent, then we must still check
-    // that `ParentDocument()` is non-null, in case this function is called
-    // while the document is detached.
-    // TODO(https://crbug.com/751329, https://crbug.com/1336904): Referring to
-    // ParentDocument() is not correct.
-    DCHECK(!blink::features::IsNewBaseUrlInheritanceBehaviorEnabled());
-    if (ParentDocument())
+    // We only use the parent document's base URL in legacy behavior. There are
+    // cases where fallback_base_url_for_srcdoc_ may not be set in the new base
+    // URL inheritance mode (e.g., browser-initiated navigations as in
+    // NavigationBrowserTest.BlockedSrcDocBrowserInitiated), but we should avoid
+    // trying to look at the parent document's current value in those cases. In
+    // legacy behavior, we still use the parent document's base URL (unless
+    // ParentDocument() is null, such as for detached documents).
+    // TODO(https://crbug.com/1408782): handle cases where
+    // NewBaseUrlInheritanceBehavior is enabled, but legacy session-history is
+    // missing initiator_base_url information.
+    if (!blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() &&
+        ParentDocument()) {
+      // TODO(https://crbug.com/751329, https://crbug.com/1336904): Referring to
+      // ParentDocument() is not correct.
       return ParentDocument()->BaseURL();
+    }
   }
 
   // [spec] 2. If document's URL is about:blank, and document's browsing

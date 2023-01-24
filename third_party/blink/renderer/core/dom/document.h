@@ -2195,7 +2195,7 @@ class CORE_EXPORT Document : public ContainerNode,
                             // over base_url_ (but not base_element_url_).
 
   // Used in FallbackBaseURL() to provide the base URL for srcdoc documents,
-  // which is the parent's base URL at the time the navigation was initiated.
+  // which is the initiator's base URL at the time the navigation was initiated.
   // Separate from the base_url_* fields because the fallback base URL should
   // not take precedence over things like <base>.
   // Note: this currently is only used when IsolateSandboxedIframes is enabled.

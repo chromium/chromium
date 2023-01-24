@@ -1298,7 +1298,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*early_hints_preloaded_resources=*/std::vector<GURL>(),
           // This timestamp will be populated when the commit IPC is sent.
           /*commit_sent=*/base::TimeTicks(), /*srcdoc_value=*/std::string(),
-          /*fallback_srcdoc_baseurl=*/GURL(),
           /*should_load_data_url=*/false,
           /*ancestor_or_self_has_cspee=*/
           frame_tree_node->AncestorOrSelfHasCSPEE(),
@@ -1442,7 +1441,6 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           /*early_hints_preloaded_resources=*/std::vector<GURL>(),
           // This timestamp will be populated when the commit IPC is sent.
           /*commit_sent=*/base::TimeTicks(), /*srcdoc_value=*/std::string(),
-          /*fallback_srcdoc_baseurl=*/GURL(),
           /*should_load_data_url=*/false,
           /*ancestor_or_self_has_cspee=*/
           frame_tree_node->AncestorOrSelfHasCSPEE(),
@@ -1901,20 +1899,6 @@ NavigationRequest::NavigationRequest(
           1, common_params_->url, true,
           GetIsolationInfo().network_anonymization_key());
     }
-  }
-
-  // For navigations that inherit a base URL, snapshot the parent's base URL at
-  // the start of the navigation. Currently, this is only stored and sent to the
-  // renderer if kNewBaseUrlInheritanceBehavior or kIsolateSandboxedIframes is
-  // enabled, since it is a behavior change relevant for isolated sandboxed
-  // iframes. See https://crbug.com/1356658.
-  // TODO(wjmaclean): about:blank frames may also need to inherit base URLs,
-  // possibly from the initiator rather than the parent. See
-  // https://crbug.com/1356658#c7.
-  if (GetURL().IsAboutSrcdoc() && frame_tree_node_->parent() &&
-      blink::features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
-    commit_params_->fallback_srcdoc_baseurl =
-        frame_tree_node_->parent()->GetBaseUrl();
   }
 
   // Ask the service worker context to speculatively start a service worker for
@@ -5126,6 +5110,9 @@ void NavigationRequest::CommitErrorPage(
   DCHECK(!commit_params_->origin_to_commit);
   commit_params_->origin_to_commit = GetOriginToCommit();
   DCHECK(commit_params_->origin_to_commit->opaque());
+
+  // Don't pass the base url in a failed navigation.
+  common_params_->initiator_base_url = absl::nullopt;
 
   if (request_navigation_client_.is_bound()) {
     if (render_frame_host_ == frame_tree_node()->current_frame_host()) {

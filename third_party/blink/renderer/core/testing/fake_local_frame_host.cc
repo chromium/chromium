@@ -244,8 +244,6 @@ void FakeLocalFrameHost::DidChangeSrcDoc(
     const blink::FrameToken& child_frame_token,
     const WTF::String& srcdoc_value) {}
 
-void FakeLocalFrameHost::DidChangeBaseURL(const ::blink::KURL& url) {}
-
 void FakeLocalFrameHost::ReceivedDelegatedCapability(
     blink::mojom::DelegatedCapability delegated_capability) {}
 

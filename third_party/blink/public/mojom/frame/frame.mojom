@@ -567,16 +567,6 @@ interface LocalFrameHost {
   DidChangeSrcDoc(blink.mojom.FrameToken child_frame_token,
                   string srcdoc_value);
 
-  // Notifies the browser that a document's base url has changed, and sends the
-  // new value to the browser. The base url is subsequently shared with srcdoc
-  // subframes. The base url is only sent if (1) the frame's base url is changed
-  // from the default value the browser would expect (e.g. it sets a <base>
-  // element), or (2) if the value is reset to the default the browser would
-  // expect, in which case an empty url is sent to 'reset' the previously sent
-  // value.
-  // Note: this is currently only used when IsolateSandboxedIframes is enabled.
-  DidChangeBaseURL(url.mojom.Url base_url);
-
   // Notifies the browser that this frame received a message from a local frame
   // with a delegated capability (https://wicg.github.io/capability-delegation).
   // `delegated_capability` is the capability delegated via postMessage().

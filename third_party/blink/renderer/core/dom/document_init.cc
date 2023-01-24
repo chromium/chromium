@@ -88,8 +88,9 @@ bool DocumentInit::IsSrcdocDocument() const {
 }
 
 const KURL& DocumentInit::FallbackSrcdocBaseURL() const {
-  DCHECK(window_ && !window_->GetFrame()->IsMainFrame() ||
-         fallback_srcdoc_base_url_.IsEmpty());
+  // The following DCHECK will need to change when we also use the fallback base
+  // url for about:blank. https://crbug.com/1356658.
+  DCHECK(IsSrcdocDocument() || fallback_srcdoc_base_url_.IsEmpty());
   return fallback_srcdoc_base_url_;
 }
 

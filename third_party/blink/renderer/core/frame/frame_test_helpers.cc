@@ -822,10 +822,7 @@ void TestWebFrameClient::CommitNavigation(
 
   KURL url = info->url_request.Url();
   if (url.IsAboutSrcdocURL()) {
-    // If we are loading an about:srcdoc frame in a Blink unit test, then we are
-    // guaranteed to have a local parent.
-    blink::WebLocalFrame* parent = frame_->Parent()->ToWebLocalFrame();
-    params->fallback_srcdoc_base_url = parent->GetDocument().BaseURL();
+    params->fallback_srcdoc_base_url = info->requestor_base_url;
     TestWebFrameHelper::FillStaticResponseForSrcdocNavigation(frame_,
                                                               params.get());
   }

@@ -1873,13 +1873,9 @@ void NavigationControllerImpl::CreateInitialEntry() {
   params->referrer = blink::mojom::Referrer::New();
 
   // Create and insert the initial NavigationEntry.
-  // TODO(https://crbug.com/1356658): in the follow-on CL enabling srcdoc base
-  // urls, change `temporary_initiator_base_url` to the inherited base_url
-  // stored on RFHI at the same time that GetLastCommittedOrigin() is set.
-  absl::optional<GURL> temporary_initiator_base_url;
   auto new_entry = std::make_unique<NavigationEntryImpl>(
       rfh->GetSiteInstance(), params->url, Referrer(*params->referrer),
-      rfh->GetLastCommittedOrigin(), temporary_initiator_base_url,
+      rfh->GetLastCommittedOrigin(), rfh->GetInheritedBaseUrl(),
       std::u16string() /* title */, ui::PAGE_TRANSITION_TYPED,
       false /* renderer_initiated */, nullptr /* blob_url_loader_factory */,
       true /* is_initial_entry */);
@@ -3846,7 +3842,6 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           /*early_hints_preloaded_resources=*/std::vector<GURL>(),
           // This timestamp will be populated when the commit IPC is sent.
           /*commit_sent=*/base::TimeTicks(), /*srcdoc_value=*/std::string(),
-          /*fallback_srcdoc_baseurl_value=*/GURL(),
           /*should_load_data_url=*/false,
           /*ancestor_or_self_has_cspee=*/node->AncestorOrSelfHasCSPEE(),
           /*reduced_accept_language=*/std::string(),

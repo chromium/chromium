@@ -166,7 +166,6 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       blink::mojom::PreferredColorScheme preferred_color_scheme) override;
   void DidChangeSrcDoc(const blink::FrameToken& child_frame_token,
                        const WTF::String& srcdoc_value) override;
-  void DidChangeBaseURL(const ::blink::KURL& url) override;
   void ReceivedDelegatedCapability(
       blink::mojom::DelegatedCapability delegated_capability) override;
   void SendFencedFrameReportingBeacon(

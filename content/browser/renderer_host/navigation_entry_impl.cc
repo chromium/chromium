@@ -929,7 +929,6 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           std::vector<GURL>() /* early_hints_preloaded_resources */,
           // This timestamp will be populated when the commit IPC is sent.
           base::TimeTicks() /* commit_sent */, std::string() /* srcdoc_value */,
-          GURL() /* fallback_srcdoc_baseurl */,
           false /* should_load_data_url */, ancestor_or_self_has_cspee,
           std::string() /* reduced_accept_language */,
           /*navigation_delivery_type=*/

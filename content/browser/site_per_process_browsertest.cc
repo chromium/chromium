@@ -5788,6 +5788,15 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   ASSERT_EQ(1U, new_root->child_count());
   EXPECT_EQ(main_url, new_root->current_url());
   EXPECT_TRUE(new_root->child_at(0)->current_url().IsAboutSrcdoc());
+  if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
+    // When NewBaseUrlInheritanceBehavior is enabled, not only should the srcdoc
+    // inherit its base url from its initiator, but it should also be properly
+    // restored from the session history.
+    EXPECT_EQ(
+        main_url,
+        GURL(
+            EvalJs(new_root->child_at(0), "document.baseURI").ExtractString()));
+  }
 
   EXPECT_EQ(new_root->current_frame_host()->GetSiteInstance(),
             new_root->child_at(0)->current_frame_host()->GetSiteInstance());

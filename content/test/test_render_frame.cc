@@ -358,11 +358,7 @@ void TestRenderFrame::BeginNavigation(
           blink::WebString::FromUTF8(charset), data);
     }
     if (url.IsAboutSrcdoc()) {
-      // If we are loading an about:srcdoc frame in a TestRenderFrame browser
-      // test, then we are guaranteed we have a local parent.
-      blink::WebLocalFrame* parent = GetWebFrame()->Parent()->ToWebLocalFrame();
-      navigation_params->fallback_srcdoc_base_url =
-          parent->GetDocument().BaseURL();
+      navigation_params->fallback_srcdoc_base_url = info->requestor_base_url;
     }
 
     navigation_params->policy_container->policies.sandbox_flags =

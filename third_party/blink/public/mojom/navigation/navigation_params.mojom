@@ -483,13 +483,6 @@ struct CommitNavigationParams {
   // When URL is about:srcdoc, this carries the srcdoc attribute's value.
   string srcdoc_value;
 
-  // When URL is about:srcdoc, this carries the srcdoc's fallback baseurl value
-  // from the parent.
-  // TODO(wjmaclean): modify this to carry the base url value for about:blank as
-  // well. That will require some renaming.
-  // Note: this is currently only used when IsolateSandboxedIframes is enabled.
-  url.mojom.Url fallback_srcdoc_baseurl;
-
   // Whether the navigation should be treated as a "loadDataWithBaseURL"
   // navigation, where the "document URL" is set to the supplied base URL
   // instead of the data URL set in CommonNavigationParams' `url`. If this
