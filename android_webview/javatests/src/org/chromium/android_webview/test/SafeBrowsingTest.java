@@ -286,18 +286,6 @@ public class SafeBrowsingTest {
         }
     }
 
-    private static class JavaScriptHelper extends CallbackHelper {
-        private String mValue;
-
-        public void setValue(String s) {
-            mValue = s;
-        }
-
-        public String getValue() {
-            return mValue;
-        }
-    }
-
     private static class AllowlistHelper extends CallbackHelper implements Callback<Boolean> {
         public boolean success;
 
@@ -320,6 +308,9 @@ public class SafeBrowsingTest {
 
         // Need to configure user opt-in, otherwise WebView won't perform Safe Browsing checks.
         AwSafeBrowsingConfigHelper.setSafeBrowsingUserOptIn(true);
+
+        // Some tests need to inject JavaScript.
+        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
     }
 
     @After
@@ -341,32 +332,14 @@ public class SafeBrowsingTest {
         mActivityTestRule.waitForVisualStateCallback(mAwContents);
     }
 
-    private void evaluateJavaScriptOnInterstitialOnUiThread(
-            final String script, final Callback<String> callback) {
-        PostTask.runOrPostTask(
-                UiThreadTaskTraits.DEFAULT, () -> mAwContents.evaluateJavaScript(script, callback));
-    }
-
-    private String evaluateJavaScriptOnInterstitialOnUiThreadSync(final String script)
-            throws Exception {
-        final JavaScriptHelper helper = new JavaScriptHelper();
-        final Callback<String> callback = value -> {
-            helper.setValue(value);
-            helper.notifyCalled();
-        };
-        final int count = helper.getCallCount();
-        evaluateJavaScriptOnInterstitialOnUiThread(script, callback);
-        helper.waitForCallback(count);
-        return helper.getValue();
-    }
-
     private void waitForInterstitialDomToLoad() {
         final String script = "document.readyState;";
         final String expected = "\"complete\"";
 
         CriteriaHelper.pollInstrumentationThread(() -> {
             try {
-                Criteria.checkThat(evaluateJavaScriptOnInterstitialOnUiThreadSync(script),
+                Criteria.checkThat(mActivityTestRule.executeJavaScriptAndWaitForResult(
+                                           mAwContents, mContentsClient, script),
                         Matchers.is(expected));
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -374,23 +347,23 @@ public class SafeBrowsingTest {
         });
     }
 
-    private void clickBackToSafety() {
+    private void clickBackToSafety() throws Exception {
         clickLinkById("primary-button");
     }
 
-    private void clickVisitUnsafePageQuietInterstitial() {
+    private void clickVisitUnsafePageQuietInterstitial() throws Exception {
         clickLinkById("details-link");
         clickLinkById("proceed-link");
     }
 
-    private void clickVisitUnsafePage() {
+    private void clickVisitUnsafePage() throws Exception {
         clickLinkById("details-button");
         clickLinkById("proceed-link");
     }
 
-    private void clickLinkById(String id) {
+    private void clickLinkById(String id) throws Exception {
         final String script = "document.getElementById('" + id + "').click();";
-        evaluateJavaScriptOnInterstitialOnUiThread(script, null);
+        mActivityTestRule.executeJavaScriptAndWaitForResult(mAwContents, mContentsClient, script);
     }
 
     private void loadPathAndWaitForInterstitial(final String path) throws Exception {
@@ -1009,8 +982,8 @@ public class SafeBrowsingTest {
                 + "})(document.getElementById('" + domNodeId + "'))";
         // clang-format on
 
-        String value = evaluateJavaScriptOnInterstitialOnUiThreadSync(script);
-
+        String value = mActivityTestRule.executeJavaScriptAndWaitForResult(
+                mAwContents, mContentsClient, script);
         if (value.equals("true")) {
             return true;
         } else if (value.equals("false")) {
