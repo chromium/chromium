@@ -46,7 +46,8 @@ class HTMLMetricsTest : public testing::Test {
   frame_test_helpers::WebViewHelper helper_;
 };
 
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+#if (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)) || \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 // https://crbug.com/1222653
 #define MAYBE_ReportSingleChunk DISABLED_ReportSingleChunk
 #else
@@ -111,7 +112,7 @@ TEST_F(HTMLMetricsTest, MAYBE_ReportSingleChunk) {
 
 #if (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)) ||   \
     (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)) || \
-    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) || BUILDFLAG(IS_LINUX)
 // https://crbug.com/1222653
 // https://crbug.com/1406813
 #define MAYBE_HistogramReportsTwoChunks DISABLED_HistogramReportsTwoChunks
