@@ -774,8 +774,7 @@ void LocalFrameClientImpl::DidObserveLayoutShift(double score,
 }
 
 void LocalFrameClientImpl::PreloadSubresourceOptimizationsForOrigins(
-    const WTF::HashSet<scoped_refptr<const SecurityOrigin>,
-                       SecurityOriginHashTraits>& origins) {
+    const WTF::HashSet<scoped_refptr<const SecurityOrigin>>& origins) {
   if (WebLocalFrameClient* client = web_frame_->Client()) {
     std::vector<WebSecurityOrigin> origins_list;
     for (const auto& origin : origins) {

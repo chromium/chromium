@@ -44,7 +44,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin_hash.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
@@ -719,9 +719,9 @@ TEST_F(SecurityOriginTest, OpaqueIsolatedCopy) {
   scoped_refptr<const SecurityOrigin> copied = origin->IsolatedCopy();
   EXPECT_TRUE(origin->CanAccess(copied.get()));
   EXPECT_TRUE(origin->IsSameOriginWith(copied.get()));
-  EXPECT_EQ(SecurityOriginHashTraits::GetHash(origin),
-            SecurityOriginHashTraits::GetHash(copied));
-  EXPECT_TRUE(SecurityOriginHashTraits::Equal(origin, copied));
+  EXPECT_EQ(WTF::GetHash(origin), WTF::GetHash(copied));
+  EXPECT_TRUE(
+      HashTraits<scoped_refptr<const SecurityOrigin>>::Equal(origin, copied));
 }
 
 TEST_F(SecurityOriginTest, EdgeCases) {

@@ -1496,7 +1496,6 @@ component("platform") {
     "weborigin/scheme_registry.h",
     "weborigin/security_origin.cc",
     "weborigin/security_origin.h",
-    "weborigin/security_origin_hash.h",
     "weborigin/security_policy.cc",
     "weborigin/security_policy.h",
     "webrtc/convert_to_webrtc_video_frame_buffer.cc",

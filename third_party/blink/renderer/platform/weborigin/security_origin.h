@@ -36,6 +36,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "url/origin.h"
@@ -382,7 +383,7 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
  private:
   // Various serialisation and test routines that need direct nonce access.
   friend struct mojo::UrlOriginAdapter;
-  friend struct SecurityOriginHashTraits;
+  friend struct WTF::HashTraits<scoped_refptr<const SecurityOrigin>>;
   friend class SecurityOriginTest;
 
   // For calling GetNonceForSerialization().
@@ -452,5 +453,61 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
 };
 
 }  // namespace blink
+
+namespace WTF {
+
+// The default HashTraits of SecurityOrigin implements the "same origin"
+// equality relation between two origins. As such it ignores the domain that
+// might or might not be set on the origin. If you need "same origin-domain"
+// equality you'll need to define a custom hash traits type using a different
+// hash function.
+template <>
+struct HashTraits<scoped_refptr<const blink::SecurityOrigin>>
+    : GenericHashTraits<scoped_refptr<const blink::SecurityOrigin>> {
+  static unsigned GetHash(const blink::SecurityOrigin* origin) {
+    const base::UnguessableToken* nonce = origin->GetNonceForSerialization();
+    size_t nonce_hash = nonce ? base::UnguessableTokenHash()(*nonce) : 0;
+
+    unsigned hash_codes[] = {
+      origin->Protocol().Impl() ? origin->Protocol().Impl()->GetHash() : 0,
+      origin->Host().Impl() ? origin->Host().Impl()->GetHash() : 0,
+      origin->Port(),
+#if ARCH_CPU_32_BITS
+      nonce_hash,
+#elif ARCH_CPU_64_BITS
+      static_cast<unsigned>(nonce_hash),
+      static_cast<unsigned>(nonce_hash >> 32),
+#else
+#error "Unknown bits"
+#endif
+    };
+    return StringHasher::HashMemory<sizeof(hash_codes)>(hash_codes);
+  }
+  static unsigned GetHash(
+      const scoped_refptr<const blink::SecurityOrigin>& origin) {
+    return GetHash(origin.get());
+  }
+
+  static bool Equal(const blink::SecurityOrigin* a,
+                    const blink::SecurityOrigin* b) {
+    return a->IsSameOriginWith(b);
+  }
+  static bool Equal(const blink::SecurityOrigin* a,
+                    const scoped_refptr<const blink::SecurityOrigin>& b) {
+    return Equal(a, b.get());
+  }
+  static bool Equal(const scoped_refptr<const blink::SecurityOrigin>& a,
+                    const blink::SecurityOrigin* b) {
+    return Equal(a.get(), b);
+  }
+  static bool Equal(const scoped_refptr<const blink::SecurityOrigin>& a,
+                    const scoped_refptr<const blink::SecurityOrigin>& b) {
+    return Equal(a.get(), b.get());
+  }
+
+  static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
+};
+
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBORIGIN_SECURITY_ORIGIN_H_

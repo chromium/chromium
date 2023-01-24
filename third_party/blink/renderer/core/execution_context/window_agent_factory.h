@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin_hash.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -77,18 +77,14 @@ class WindowAgentFactory final : public GarbageCollected<WindowAgentFactory> {
   WeakMember<WindowAgent> file_url_agent_;
 
   // Use the SecurityOrigin itself as the key for opaque origins.
-  HeapHashMap<scoped_refptr<const SecurityOrigin>,
-              WeakMember<WindowAgent>,
-              SecurityOriginHashTraits>
+  HeapHashMap<scoped_refptr<const SecurityOrigin>, WeakMember<WindowAgent>>
       opaque_origin_agents_;
 
   // Use the SecurityOrigin itself as the key for origin-keyed origins.
   // TODO(wjmaclean,domenic): In future when logical cross-origin-isolation
   // (COI) is implemented, we should unify it with logical-OAC so that all the
   // origin-keyed isolation relies on a single mechanism.
-  HeapHashMap<scoped_refptr<const SecurityOrigin>,
-              WeakMember<WindowAgent>,
-              SecurityOriginHashTraits>
+  HeapHashMap<scoped_refptr<const SecurityOrigin>, WeakMember<WindowAgent>>
       origin_keyed_agent_cluster_agents_;
 
   // Use registerable domain as the key for general tuple origins.

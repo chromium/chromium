@@ -10,7 +10,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin_hash.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -120,8 +119,7 @@ namespace WTF {
 template <>
 struct HashTraits<blink::BlinkSchemefulSite>
     : OneFieldHashTraits<blink::BlinkSchemefulSite,
-                         &blink::BlinkSchemefulSite::site_as_origin_,
-                         blink::SecurityOriginHashTraits> {};
+                         &blink::BlinkSchemefulSite::site_as_origin_> {};
 
 }  // namespace WTF
 
