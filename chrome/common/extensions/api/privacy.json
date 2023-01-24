@@ -115,6 +115,11 @@
             "value": ["fledgeEnabled", {"type": "boolean"}],
             "description": "If disabled, the <a href='https://developer.chrome.com/docs/privacy-sandbox/fledge/'>Fledge API</a> is deactivated. The value of this preference is of type boolean, and the default value is <code>true</code>. Extensions may only disable this API by setting the value to <code>false</code>. If you try setting this API to <code>true</code>, it will throw an error."
           },
+          "adMeasurementEnabled": {
+            "$ref": "types.ChromeSetting",
+            "value": ["adMeasurementEnabled", {"type": "boolean"}],
+            "description": "If disabled, the <a href='https://developer.chrome.com/en/docs/privacy-sandbox/attribution-reporting/'>Attribution Reporting API</a> and <a href='https://developer.chrome.com/docs/privacy-sandbox/private-aggregation/'>Private Aggregation API</a> are deactivated. The value of this preference is of type boolean, and the default value is <code>true</code>. Extensions may only disable these APIs by setting the value to <code>false</code>. If you try setting these APIs to <code>true</code>, it will throw an error."
+          },
           "hyperlinkAuditingEnabled": {
             "$ref": "types.ChromeSetting",
             "value": ["hyperlinkAuditingEnabled", {"type":"boolean"}],

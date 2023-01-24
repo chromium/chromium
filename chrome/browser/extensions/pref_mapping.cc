@@ -82,6 +82,8 @@ const PrefMappingEntry kMappings[] = {
      APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"fledgeEnabled", prefs::kPrivacySandboxM1FledgeEnabled,
      APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
+    {"adMeasurementEnabled", prefs::kPrivacySandboxM1AdMeasurementEnabled,
+     APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"translationServiceEnabled", translate::prefs::kOfferTranslateEnabled,
      APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"webRTCIPHandlingPolicy", prefs::kWebRTCIPHandlingPolicy,
