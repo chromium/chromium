@@ -8,7 +8,7 @@
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
-import {AmbientModeAlbum, TopicSource} from '../personalization_app.mojom-webui.js';
+import {TopicSource} from '../personalization_app.mojom-webui.js';
 
 /**
  * Returns photo count string.
@@ -20,13 +20,6 @@ export function getPhotoCount(photoCount: number): string {
   }
   return loadTimeData.getStringF(
       'ambientModeAlbumsSubpagePhotosNumPluralDesc', photoCount);
-}
-
-/**
- * Returns whether the given album is Recent Highlights.
- */
-export function isRecentHighlightsAlbum(album: AmbientModeAlbum): boolean {
-  return album.id === 'RecentHighlights';
 }
 
 /**

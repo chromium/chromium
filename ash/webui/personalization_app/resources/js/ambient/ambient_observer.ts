@@ -8,11 +8,10 @@ import {AmbientModeAlbum, AmbientObserverInterface, AmbientObserverReceiver, Amb
 import {logGooglePhotosPreviewsLoadTime} from '../personalization_metrics_logger.js';
 import {Paths} from '../personalization_router_element.js';
 import {PersonalizationStore} from '../personalization_store.js';
-import {isNonEmptyArray} from '../utils.js';
+import {isNonEmptyArray, isRecentHighlightsAlbum} from '../utils.js';
 
 import {setAlbumsAction, setAmbientModeEnabledAction, setAmbientUiVisibilityAction, setAnimationThemeAction, setGooglePhotosAlbumsPreviewsAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
-import {isRecentHighlightsAlbum} from './utils.js';
 
 /** @fileoverview listens for updates on ambient mode changes. */
 

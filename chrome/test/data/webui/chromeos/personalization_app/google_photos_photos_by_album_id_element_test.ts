@@ -56,6 +56,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
               title: 'foo',
               photoCount: 1,
               preview: {url: 'foo.com'},
+              timestamp: {internalValue: BigInt('1')},
             };
 
             // Set values returned by |wallpaperProvider|.
@@ -122,6 +123,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
       // Use svg data urls so that img on-load event fires and removes the
       // placeholder attribute.
       preview: {url: createSvgDataUrl('svg-1')},
+      timestamp: {internalValue: BigInt('1')},
     };
 
     const otherAlbum: GooglePhotosAlbum = {
@@ -129,6 +131,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
       title: 'bar',
       photoCount: 1,
       preview: {url: createSvgDataUrl('svg-2')},
+      timestamp: {internalValue: BigInt('2')},
     };
 
     const photosByAlbumId: Record<string, GooglePhotosPhoto[]> = {
@@ -267,8 +270,13 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
   test('displays photo selected', async () => {
     personalizationStore.setReducersEnabled(true);
 
-    const album: GooglePhotosAlbum =
-        {id: '1', title: '', photoCount: 2, preview: {url: ''}};
+    const album: GooglePhotosAlbum = {
+      id: '1',
+      title: '',
+      photoCount: 2,
+      preview: {url: ''},
+      timestamp: {internalValue: BigInt('1')},
+    };
 
     const photo: GooglePhotosPhoto = {
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
@@ -434,8 +442,13 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
   test('displays placeholders until photos are present', async () => {
     // Prepare Google Photos data.
     const photosCount = 5;
-    const album: GooglePhotosAlbum =
-        {id: '1', title: '', photoCount: photosCount, preview: {url: ''}};
+    const album: GooglePhotosAlbum = {
+      id: '1',
+      title: '',
+      photoCount: photosCount,
+      preview: {url: ''},
+      timestamp: {internalValue: BigInt('1')},
+    };
     const photos: GooglePhotosPhoto[] = Array.from(
         {length: photosCount}, (_, i) => ({
                                  id: `id-${i}`,
@@ -527,8 +540,13 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
     personalizationStore.setReducersEnabled(true);
 
     const photosCount = 200;
-    const album: GooglePhotosAlbum =
-        {id: '1', title: '', photoCount: photosCount, preview: {url: ''}};
+    const album: GooglePhotosAlbum = {
+      id: '1',
+      title: '',
+      photoCount: photosCount,
+      preview: {url: ''},
+      timestamp: {internalValue: BigInt('1')},
+    };
 
     // Set albums returned by |wallpaperProvider|.
     wallpaperProvider.setGooglePhotosAlbums([album]);
@@ -677,6 +695,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
       title: 'foo',
       photoCount: 1,
       preview: {url: 'foo.com'},
+      timestamp: {internalValue: BigInt('1')},
     };
 
     const photo: GooglePhotosPhoto = {

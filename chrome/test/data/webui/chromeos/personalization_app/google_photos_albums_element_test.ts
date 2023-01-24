@@ -56,6 +56,7 @@ suite('GooglePhotosAlbumsTest', function() {
         preview: {
           url: createSvgDataUrl('svg-0'),
         },
+        timestamp: {internalValue: BigInt(`13318040939308000`)},
       },
       {
         id: '0ec40478-9712-42e1-b5bf-3e75870ca042',
@@ -64,6 +65,7 @@ suite('GooglePhotosAlbumsTest', function() {
         preview: {
           url: createSvgDataUrl('svg-1'),
         },
+        timestamp: {internalValue: BigInt(`13318040939307000`)},
       },
       {
         id: '0a268a37-877a-4936-81d4-38cc84b0f596',
@@ -72,6 +74,7 @@ suite('GooglePhotosAlbumsTest', function() {
         preview: {
           url: createSvgDataUrl('svg-2'),
         },
+        timestamp: {internalValue: BigInt(`13318040939306000`)},
       },
     ];
 
@@ -168,12 +171,14 @@ suite('GooglePhotosAlbumsTest', function() {
     // Prepare Google Photos data.
     const photosCount = 5;
     const albums: GooglePhotosAlbum[] = Array.from(
-        {length: photosCount}, (_, i) => ({
-                                 id: `id-${i}`,
-                                 title: `title-${i}`,
-                                 photoCount: 1,
-                                 preview: {url: createSvgDataUrl(`svg-${i}`)},
-                               }));
+        {length: photosCount},
+        (_, i) => ({
+          id: `id-${i}`,
+          title: `title-${i}`,
+          photoCount: 1,
+          preview: {url: createSvgDataUrl(`svg-${i}`)},
+          timestamp: {internalValue: BigInt(`${photosCount - i}`)},
+        }));
 
     // Initialize |googlePhotosAlbumsElement|.
     googlePhotosAlbumsElement =
@@ -254,6 +259,7 @@ suite('GooglePhotosAlbumsTest', function() {
             title: `title-${nextAlbumId}`,
             photoCount: 1,
             preview: {url: `url-${nextAlbumId++}`},
+            timestamp: {internalValue: BigInt(`${nextAlbumId}`)},
           };
         }));
 
@@ -280,6 +286,7 @@ suite('GooglePhotosAlbumsTest', function() {
             title: `title-${nextAlbumId}`,
             photoCount: 1,
             preview: {url: `url-${nextAlbumId++}`},
+            timestamp: {internalValue: BigInt(`${nextAlbumId}`)},
           };
         }));
 

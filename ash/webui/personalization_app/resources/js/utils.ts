@@ -10,6 +10,8 @@ import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
+import {AmbientModeAlbum, GooglePhotosAlbum} from './personalization_app.mojom-webui.js';
+
 export type PersonalizationAppSelectionEvent =
     MouseEvent&{type: 'click'}|KeyboardEvent&{key: 'Enter'};
 
@@ -101,4 +103,12 @@ export function convertToRgbHexStr(hexVal: number): string {
       (hexVal & 0x0FFFFFF)
           .toString(STRING_LENGTH)
           .padStart(PADDING_LENGTH, '0')}`;
+}
+
+/**
+ * Returns whether the given album is Recent Highlights.
+ */
+export function isRecentHighlightsAlbum(album: AmbientModeAlbum|
+                                        GooglePhotosAlbum): boolean {
+  return album.id === 'RecentHighlights';
 }

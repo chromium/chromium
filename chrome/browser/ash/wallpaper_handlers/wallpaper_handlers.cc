@@ -757,11 +757,15 @@ GooglePhotosAlbumsCbkArgs GooglePhotosAlbumsFetcher::ParseResponse(
     const auto* num_photos_string = response_album.FindString("numPhotos");
     const auto* cover_photo_url =
         response_album.FindString("coverItemServingUrl");
+    const auto* timestamp_string =
+        response_album.FindString("latestModificationTimestamp");
 
     int64_t num_photos;
+    base::Time timestamp;
     if (!album_id || !title || !num_photos_string ||
         !base::StringToInt64(*num_photos_string, &num_photos) ||
-        num_photos < 1 || !cover_photo_url) {
+        num_photos < 1 || !cover_photo_url || !timestamp_string ||
+        !base::Time::FromUTCString(timestamp_string->c_str(), &timestamp)) {
       LOG(ERROR) << "Failed to parse item in Google Photos albums response.";
       continue;
     }
@@ -769,7 +773,7 @@ GooglePhotosAlbumsCbkArgs GooglePhotosAlbumsFetcher::ParseResponse(
     parsed_response->albums->push_back(
         ash::personalization_app::mojom::GooglePhotosAlbum::New(
             *album_id, *title, base::saturated_cast<int>(num_photos),
-            GURL(*cover_photo_url)));
+            GURL(*cover_photo_url), timestamp));
   }
   return parsed_response;
 }
@@ -828,8 +832,12 @@ GooglePhotosAlbumsCbkArgs GooglePhotosSharedAlbumsFetcher::ParseResponse(
     const auto* title = response_album.FindString("name");
     const auto* cover_photo_url =
         response_album.FindString("coverItemServingUrl");
+    const auto* timestamp_string =
+        response_album.FindString("latestModificationTimestamp");
 
-    if (!album_id || !title || !cover_photo_url) {
+    base::Time timestamp;
+    if (!album_id || !title || !cover_photo_url || !timestamp_string ||
+        !base::Time::FromUTCString(timestamp_string->c_str(), &timestamp)) {
       LOG(ERROR) << "Failed to parse item in Google Photos albums response.";
       continue;
     }
@@ -837,7 +845,8 @@ GooglePhotosAlbumsCbkArgs GooglePhotosSharedAlbumsFetcher::ParseResponse(
     // `num_image` is always 0 for shared albums.
     parsed_response->albums->push_back(
         ash::personalization_app::mojom::GooglePhotosAlbum::New(
-            *album_id, *title, /*num_image=*/0, GURL(*cover_photo_url)));
+            *album_id, *title, /*num_image=*/0, GURL(*cover_photo_url),
+            timestamp));
   }
   return parsed_response;
 }

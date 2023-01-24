@@ -76,7 +76,8 @@ constexpr char kGooglePhotosAlbumsFullResponse[] =
     "      },"
     "      \"coverItemServingUrl\": \"https://www.google.com/\","
     "      \"name\": \"title\","
-    "      \"numPhotos\": \"1\""
+    "      \"numPhotos\": \"1\","
+    "      \"latestModificationTimestamp\": \"2021-12-31T07:07:07.000Z\""
     "   } ],"
     "   \"resumeToken\": \"token\""
     "}";
@@ -775,8 +776,11 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   // Parse a response with a valid album and a resume token.
   auto response = JsonToDict(kGooglePhotosAlbumsFullResponse);
   auto valid_albums_vector = std::vector<GooglePhotosAlbumPtr>();
+  base::Time timestamp;
+  EXPECT_TRUE(
+      base::Time::FromUTCString("2021-12-31T07:07:07.000Z", &timestamp));
   valid_albums_vector.push_back(GooglePhotosAlbum::New(
-      "albumId", "title", 1, GURL("https://www.google.com/")));
+      "albumId", "title", 1, GURL("https://www.google.com/"), timestamp));
   auto result = FetchGooglePhotosAlbumsResponse::New(
       mojo::Clone(valid_albums_vector), kResumeToken);
   EXPECT_EQ(google_photos_albums_fetcher->ParseResponse(&response), result);

@@ -22,7 +22,7 @@ import {GooglePhotosAlbum, WallpaperProviderInterface} from '../personalization_
 import {PersonalizationRouter} from '../personalization_router_element.js';
 import {PersonalizationStateError} from '../personalization_state.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {getCountText} from '../utils.js';
+import {getCountText, isNonEmptyArray, isRecentHighlightsAlbum} from '../utils.js';
 
 import {getTemplate} from './google_photos_albums_element.html.js';
 import {getLoadingPlaceholders} from './utils.js';
@@ -107,7 +107,7 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
   /** The list of owned albums. */
   private albums_: GooglePhotosAlbum[]|null|undefined;
 
-  /** The concatenation of |albums_| and |albumsShared_| for display. */
+  /** Merged |albums_| and |albumsShared_| for display. */
   private albumsForDisplay_: GooglePhotosAlbum[];
 
   /** Whether the list of owned albums is currently loading. */
@@ -168,6 +168,27 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
     }
   }
 
+  private mergeAlbumsByTimestamp_(
+      owned: GooglePhotosAlbums['albums_'],
+      shared: GooglePhotosAlbums['albumsShared_']) {
+    if (!isNonEmptyArray(owned)) {
+      owned = [];
+    }
+    if (!isNonEmptyArray(shared)) {
+      shared = [];
+    }
+    // If the Recent Highlights album exists, it will be the first element in
+    // the owned albums, i.e. owned[0].
+    let recentHighlights: GooglePhotosAlbum|undefined;
+    if (isNonEmptyArray(owned) && isRecentHighlightsAlbum(owned[0])) {
+      recentHighlights = owned.shift();
+    }
+    const albums = (owned).concat(shared).sort(
+        (a, b) => Number(b.timestamp.internalValue) -
+            Number(a.timestamp.internalValue));
+    return recentHighlights ? [recentHighlights].concat(albums) : albums;
+  }
+
   /** Invoked on changes to |albums_| or |albumsShared_|. */
   private onAlbumsChanged_(
       albums: GooglePhotosAlbums['albums_'],
@@ -205,16 +226,13 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
       return;
     }
 
-    // Concatenate owned and shared albums.
-    const newAlbums = (albums || []).concat(albumsShared || []);
-
     // NOTE: |albumsForDisplay_| is updated in place to avoid resetting the
     // scroll position of the grid which would otherwise occur during
-    // reassignment but it will be deeply equal to |newAlbums| after updating.
+    // reassignment but it will be deeply equal to |newList| after updating.
     this.updateList(
         /*propertyPath=*/ 'albumsForDisplay_',
         /*identityGetter=*/ (album: GooglePhotosAlbum) => album.id,
-        /*newList=*/ newAlbums,
+        /*newList=*/ this.mergeAlbumsByTimestamp_(albums, albumsShared),
         /*identityBasedUpdate=*/ true);
   }
 
