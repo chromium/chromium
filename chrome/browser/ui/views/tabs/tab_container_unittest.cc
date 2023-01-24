@@ -969,14 +969,15 @@ TEST_F(TabContainerTest, PreferredWidthDuringAnimation) {
                 .right());
 }
 
-TEST_F(TabContainerTest, PreferredWidthNotAffectedByTransferOut) {
+TEST_F(TabContainerTest, PreferredWidthNotAffectedByTransferTabTo) {
   // Start with two tabs.
   AddTab(0);
   AddTab(1);
   const int initial_pref_width = tab_container_->GetPreferredSize().width();
 
   // Transfer one out, then pretend to animate it.
-  std::unique_ptr<Tab> owned_tab = tab_container_->TransferTabOut(1);
+  std::unique_ptr<views::View> hold_my_tab = std::make_unique<views::View>();
+  hold_my_tab->AddChildView(tab_container_->RemoveTabFromViewModel(1));
   tab_container_controller_->set_is_animating_outside_container(true);
   // Preferred width should be unchanged, even though `owned_tab` is no longer
   // part of `tab_container_`.

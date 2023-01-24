@@ -60,7 +60,7 @@ class TabContainerImpl : public TabContainer,
   void SetActiveTab(absl::optional<size_t> prev_active_index,
                     absl::optional<size_t> new_active_index) override;
 
-  std::unique_ptr<Tab> TransferTabOut(int model_index) override;
+  Tab* RemoveTabFromViewModel(int model_index) override;
   Tab* AddTabToViewModel(Tab* tab, int model_index, TabPinned pinned) override;
   void ReturnTabSlotView(TabSlotView* view) override;
 
@@ -247,9 +247,9 @@ class TabContainerImpl : public TabContainer,
 
   absl::optional<int> GetMidAnimationTrailingX() const;
 
-  // Remove the tab from |tabs_view_model_|, but *not* from the View hierarchy,
-  // so it can be animated closed.
-  void RemoveTabFromViewModel(int index);
+  // Update `layout_helper_` and remove the tab from `tabs_view_model_` (but
+  // *not* from the View hierarchy) so it can be animated closed.
+  void CloseTabInViewModel(int index);
 
   // Call when `tab` is going away to remove the tab from data structures.
   void OnTabRemoved(Tab* tab);

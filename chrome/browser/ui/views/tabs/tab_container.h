@@ -47,11 +47,11 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   virtual void SetActiveTab(absl::optional<size_t> prev_active_index,
                             absl::optional<size_t> new_active_index) = 0;
 
-  // Transfer the tab at `model_index` our of this container so it can be
-  // parented elsewhere. Unlike RemoveTab, this method does not close the tab,
-  // but it does remove it from the layout viewmodel.
-  [[nodiscard]] virtual std::unique_ptr<Tab> TransferTabOut(
-      int model_index) = 0;
+  // Removes the tab at `model_index` from the TabContainer's data structures so
+  // it can be reparented elsewhere. Unlike RemoveTab, it does not animate the
+  // tab closed and it does not destroy the tab, so it should be used only to
+  // transfer the tab to another parent and not to close the tab.
+  [[nodiscard]] virtual Tab* RemoveTabFromViewModel(int model_index) = 0;
 
   // Adds the tab to the TabContainer's data structures, but does not transfer
   // ownership of the actual view `tab`.

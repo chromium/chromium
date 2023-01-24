@@ -172,10 +172,10 @@ void TabContainerImpl::MoveTab(int from_model_index, int to_model_index) {
 void TabContainerImpl::RemoveTab(int model_index, bool was_active) {
   UpdateClosingModeOnRemovedTab(model_index, was_active);
 
-  Tab* tab = GetTabAtModelIndex(model_index);
+  Tab* const tab = GetTabAtModelIndex(model_index);
   tab->SetClosing(true);
 
-  RemoveTabFromViewModel(model_index);
+  CloseTabInViewModel(model_index);
 
   StartRemoveTabAnimation(tab, model_index);
 
@@ -234,12 +234,12 @@ void TabContainerImpl::SetActiveTab(absl::optional<size_t> prev_active_index,
     ScrollTabToVisible(new_active_index.value());
 }
 
-std::unique_ptr<Tab> TabContainerImpl::TransferTabOut(int model_index) {
+Tab* TabContainerImpl::RemoveTabFromViewModel(int model_index) {
   Tab* const tab = GetTabAtModelIndex(model_index);
   tabs_view_model_.Remove(model_index);
   OnTabRemoved(tab);
 
-  return RemoveChildViewT(tab);
+  return tab;
 }
 
 Tab* TabContainerImpl::AddTabToViewModel(Tab* tab,
@@ -1236,7 +1236,7 @@ absl::optional<int> TabContainerImpl::GetMidAnimationTrailingX() const {
   return trailing_x;
 }
 
-void TabContainerImpl::RemoveTabFromViewModel(int index) {
+void TabContainerImpl::CloseTabInViewModel(int index) {
   Tab* tab = GetTabAtModelIndex(index);
   bool tab_was_active = tab->IsActive();
 
