@@ -77,7 +77,7 @@ void OVRMultiview2::framebufferTextureMultiviewOVR(GLenum target,
   framebuffer_binding->SetAttachmentForBoundFramebuffer(
       target, attachment, textarget, texture, level, base_view_index,
       num_views);
-  scoped.Context()->ApplyStencilTest();
+  scoped.Context()->ApplyDepthAndStencilTest();
 }
 
 bool OVRMultiview2::Supported(WebGLRenderingContextBase* context) {

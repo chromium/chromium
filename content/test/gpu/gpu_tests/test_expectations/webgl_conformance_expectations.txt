@@ -307,9 +307,6 @@ crbug.com/1175371 [ win ] conformance/extensions/khr-parallel-shader-compile.htm
 # Won't investigate failure on validating command decoder. Remove once it's unshipped.
 crbug.com/angleproject/5499 [ no-passthrough ] conformance/glsl/misc/shaders-with-name-conflicts.html [ Failure ]
 
-# Skipping new tests
-crbug.com/1276153 conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
-
 # Need to implement new error semantics
 # https://github.com/KhronosGroup/WebGL/pull/2607
 crbug.com/849572 [ win angle-d3d11 passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
@@ -331,8 +328,7 @@ crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test
 
 # Win / Intel / Vulkan / Passthrough command decoder
 # Technically flaky, but flake rate is too high for RetryOnFailure.
-# TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
-# crbug.com/angleproject/4922 [ win intel angle-vulkan passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
+crbug.com/angleproject/4922 [ win intel angle-vulkan passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 
 ####################
 # Fuchsia failures #
@@ -346,8 +342,7 @@ crbug.com/1371306 [ fuchsia fuchsia-board-sherlock ] conformance/textures/misc/t
 [ fuchsia fuchsia-board-sherlock ] WebglExtension_EXT_float_blend [ Failure ]
 
 # Anti-aliasing disabled on Fuchsia
-# TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
-# [ fuchsia ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
+[ fuchsia ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 
 ####################
 # Win failures     #
@@ -427,12 +422,6 @@ crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/glsl/sample
 
 # No active browser window, but no crash stack.
 crbug.com/1240443 [ mac apple-apple-m1 passthrough angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
-
-## Mac / M1 / Metal ##
-
-# Introduced by upstreaming Apple's direct-to-metal backend
-# TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
-# crbug.com/angleproject/5505 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 
 ####################
 # Linux failures   #

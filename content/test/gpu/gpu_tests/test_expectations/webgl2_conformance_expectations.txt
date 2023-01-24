@@ -223,7 +223,6 @@ crbug.com/891953 [ android ] WebglExtension_OVR_multiview2 [ Failure ]
 crbug.com/1131224 conformance2/rendering/framebuffer-mismatched-attachment-targets.html [ Failure ]
 crbug.com/1108086 [ no-passthrough ] conformance2/renderbuffers/framebuffer-object-attachment.html [ Failure ]
 crbug.com/angleproject/4807 [ win angle-d3d11 passthrough ] conformance2/glsl3/switch-case.html [ Failure ]
-crbug.com/1276153 conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 # Failing at least on Pixel 4, both validating and passthrough
 crbug.com/1336010 [ android angle-disabled no-passthrough ] conformance2/extensions/oes-draw-buffers-indexed.html [ Failure ]
 # Failing on at least NVIDIA and Intel
@@ -671,8 +670,7 @@ crbug.com/1221362 [ chromeos chromeos-board-amd64-generic ] conformance2/renderi
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_03.html [ Failure ]
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_04.html [ Failure ]
 
-# TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
-# crbug.com/1232102 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
+crbug.com/1232102 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 
 crbug.com/1232106 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 crbug.com/1232118 [ angle-opengles chromeos chromeos-board-amd64-generic passthrough ] conformance/uniforms/uniform-samplers-test.html [ Failure ]

@@ -546,7 +546,7 @@ void WebGL2RenderingContextBase::framebufferTextureLayer(GLenum target,
   }
   framebuffer_binding->SetAttachmentForBoundFramebuffer(
       target, attachment, textarget, texture, level, layer, 0);
-  ApplyStencilTest();
+  ApplyDepthAndStencilTest();
 }
 
 ScriptValue WebGL2RenderingContextBase::getInternalformatParameter(
@@ -1087,7 +1087,7 @@ void WebGL2RenderingContextBase::renderbufferStorageMultisample(
   }
   RenderbufferStorageImpl(target, samples, internalformat, width, height,
                           function_name);
-  ApplyStencilTest();
+  ApplyDepthAndStencilTest();
 }
 
 void WebGL2RenderingContextBase::ResetUnpackParameters() {

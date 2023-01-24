@@ -127,8 +127,8 @@ XRWebGLLayer* XRWebGLLayer::Create(XRSession* session,
       gfx::ToFlooredSize(gfx::ScaleSize(framebuffers_size, framebuffer_scale));
 
   // Create an opaque WebGL Framebuffer
-  WebGLFramebuffer* framebuffer =
-      WebGLFramebuffer::CreateOpaque(webgl_context, want_stencil_buffer);
+  WebGLFramebuffer* framebuffer = WebGLFramebuffer::CreateOpaque(
+      webgl_context, want_depth_buffer, want_stencil_buffer);
 
   scoped_refptr<XRWebGLDrawingBuffer> drawing_buffer =
       XRWebGLDrawingBuffer::Create(webgl_context->GetDrawingBuffer(),

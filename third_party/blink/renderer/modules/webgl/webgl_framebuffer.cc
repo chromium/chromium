@@ -184,9 +184,11 @@ void WebGLTextureAttachment::Unattach(gpu::gles2::GLES2Interface* gl,
 WebGLFramebuffer::WebGLAttachment::WebGLAttachment() = default;
 
 WebGLFramebuffer* WebGLFramebuffer::CreateOpaque(WebGLRenderingContextBase* ctx,
+                                                 bool has_depth,
                                                  bool has_stencil) {
   WebGLFramebuffer* const fb =
       MakeGarbageCollected<WebGLFramebuffer>(ctx, true);
+  fb->SetOpaqueHasDepth(has_depth);
   fb->SetOpaqueHasStencil(has_stencil);
   return fb;
 }
@@ -366,6 +368,18 @@ GLenum WebGLFramebuffer::CheckDepthStencilStatus(const char** reason) const {
     return GL_FRAMEBUFFER_COMPLETE;
   *reason = "conflicting DEPTH/STENCIL/DEPTH_STENCIL attachments";
   return GL_FRAMEBUFFER_UNSUPPORTED;
+}
+
+bool WebGLFramebuffer::HasDepthBuffer() const {
+  if (opaque_) {
+    return opaque_has_depth_;
+  } else {
+    WebGLAttachment* attachment = GetAttachment(GL_DEPTH_ATTACHMENT);
+    if (!attachment) {
+      attachment = GetAttachment(GL_DEPTH_STENCIL_ATTACHMENT);
+    }
+    return attachment && attachment->Valid();
+  }
 }
 
 bool WebGLFramebuffer::HasStencilBuffer() const {
