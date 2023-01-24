@@ -23,6 +23,10 @@ class SharedFileSwitchValueBuilder final {
   std::string switch_value_;
 };
 
+// Populates base::FileDescriptorStore using the information from the command
+// line.
+void PopulateFileDescriptorStoreFromGlobalDescriptors();
+
 absl::optional<std::map<int, std::string>> ParseSharedFileSwitchValue(
     const std::string& value);
 

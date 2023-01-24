@@ -90,7 +90,10 @@ std::unique_ptr<PosixFileDescriptorInfo> CreateDefaultPosixFilesToMap(
                            }
                            return file;
                          },
-                         [](const base::ScopedFD& fd) { return fd.get(); }},
+                         [&region](const base::ScopedFD& fd) {
+                           region = base::MemoryMappedFile::Region::kWholeFile;
+                           return fd.get();
+                         }},
         key_path_iter.second);
     if (file == base::kInvalidPlatformFile) {
       continue;

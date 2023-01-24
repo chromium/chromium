@@ -35,7 +35,6 @@
 #include "content/app/content_main_runner_impl.h"
 #include "content/common/mojo_core_library_support.h"
 #include "content/common/set_process_title.h"
-#include "content/common/shared_file_util.h"
 #include "content/public/app/content_main_delegate.h"
 #include "content/public/common/content_switches.h"
 #include "mojo/core/embedder/configuration.h"
@@ -62,8 +61,7 @@
 #include <locale.h>
 #include <signal.h>
 
-#include "base/file_descriptor_store.h"
-#include "base/posix/global_descriptors.h"
+#include "content/common/shared_file_util.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
@@ -110,27 +108,6 @@ void SetupSignalHandlers() {
                                          SIGTERM, SIGCHLD, SIGBUS,  SIGTRAP};
   for (int signal_to_reset : signals_to_reset)
     CHECK_EQ(0, sigaction(signal_to_reset, &sigact, nullptr));
-}
-
-void PopulateFDsFromCommandLine() {
-  const std::string& shared_file_param =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kSharedFiles);
-  if (shared_file_param.empty())
-    return;
-
-  absl::optional<std::map<int, std::string>> shared_file_descriptors =
-      ParseSharedFileSwitchValue(shared_file_param);
-  if (!shared_file_descriptors)
-    return;
-
-  for (const auto& descriptor : *shared_file_descriptors) {
-    base::MemoryMappedFile::Region region;
-    const std::string& key = descriptor.second;
-    base::ScopedFD fd = base::GlobalDescriptors::GetInstance()->TakeFD(
-        descriptor.first, &region);
-    base::FileDescriptorStore::GetInstance().Set(key, std::move(fd), region);
-  }
 }
 
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
@@ -262,7 +239,7 @@ RunContentProcess(ContentMainParams params,
     base::CommandLine::Init(argc, argv);
 
 #if BUILDFLAG(IS_POSIX)
-    PopulateFDsFromCommandLine();
+    PopulateFileDescriptorStoreFromGlobalDescriptors();
 #endif
 
     base::EnableTerminationOnHeapCorruption();
