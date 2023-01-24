@@ -241,7 +241,7 @@ bool MatchedPropertiesCache::IsStyleCacheable(
   // Avoiding cache for ::highlight styles, and the originating styles they are
   // associated with, because the style depends on the highlight names involved
   // and they're not cached.
-  if (builder.InternalStyle()->HasPseudoElementStyle(kPseudoIdHighlight) ||
+  if (builder.HasPseudoElementStyle(kPseudoIdHighlight) ||
       builder.StyleType() == kPseudoIdHighlight) {
     return false;
   }

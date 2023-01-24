@@ -2140,9 +2140,18 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   // Pseudo element styles.
+  static bool HasPseudoElementStyle(unsigned pseudo_styles, PseudoId pseudo) {
+    DCHECK(pseudo >= kFirstPublicPseudoId);
+    DCHECK(pseudo <= kLastTrackedPublicPseudoId);
+    return (1 << (pseudo - kFirstPublicPseudoId)) & pseudo_styles;
+  }
+
   bool HasAnyPseudoElementStyles() const;
   bool HasAnyHighlightPseudoElementStyles() const;
-  bool HasPseudoElementStyle(PseudoId) const;
+  bool HasPseudoElementStyle(PseudoId pseudo) const {
+    return ComputedStyle::HasPseudoElementStyle(PseudoElementStylesInternal(),
+                                                pseudo);
+  }
 
   // Note: CanContainAbsolutePositionObjects should return true if
   // CanContainFixedPositionObjects.  We currently never use this value
@@ -2676,12 +2685,6 @@ inline bool ComputedStyle::HasAnyHighlightPseudoElementStyles() const {
   return mask & PseudoElementStylesInternal();
 }
 
-inline bool ComputedStyle::HasPseudoElementStyle(PseudoId pseudo) const {
-  DCHECK(pseudo >= kFirstPublicPseudoId);
-  DCHECK(pseudo <= kLastTrackedPublicPseudoId);
-  return (1 << (pseudo - kFirstPublicPseudoId)) & PseudoElementStylesInternal();
-}
-
 class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   STACK_ALLOCATED();
 
@@ -2739,6 +2742,12 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   // that are not explicitly set in this style.
   void PropagateIndependentInheritedProperties(
       const ComputedStyle& parent_style);
+
+  // Pseudo-elements
+  bool HasPseudoElementStyle(PseudoId pseudo) const {
+    return ComputedStyle::HasPseudoElementStyle(PseudoElementStylesInternal(),
+                                                pseudo);
+  }
 
   // animations
   const CSSAnimationData* Animations() const {
