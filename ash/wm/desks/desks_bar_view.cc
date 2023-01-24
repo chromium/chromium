@@ -1531,6 +1531,10 @@ void DesksBarView::MaybeUpdateCombineDesksTooltips() {
     return;
 
   for (auto* mini_view : mini_views_) {
+    // If desk is being removed, do not update the tooltip.
+    if (mini_view->desk()->is_desk_being_removed()) {
+      continue;
+    }
     mini_view->desk_action_view()->UpdateCombineDesksTooltip(
         DesksController::Get()->GetCombineDesksTargetName(mini_view->desk()));
   }

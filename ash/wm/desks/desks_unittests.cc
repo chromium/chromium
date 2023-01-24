@@ -1532,6 +1532,49 @@ TEST_P(DesksTest, RemoveActiveDeskFromOverview) {
   desk_1->RemoveObserver(&desk_1_observer);
 }
 
+// Test that there is no crash when closing active desk with a all desk window
+// right after creating a desk with empty name.
+// Regression test for b/266147233.
+TEST_P(DesksTest,
+       RemoveActiveDeskWithAllDeskWindowFromOverviewWithNewDeskOfEmptyName) {
+  auto* controller = DesksController::Get();
+
+  NewDesk();
+  auto win1 = CreateAppWindow();
+  views::Widget::GetWidgetForNativeWindow(win1.get())
+      ->SetVisibleOnAllWorkspaces(true);
+  ASSERT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(win1.get()));
+
+  EnterOverview();
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(GetExpandedStateNewDeskButton(GetPrimaryRootDesksBarView()),
+              event_generator);
+  ASSERT_EQ(3u, controller->desks().size());
+  Desk* desk_1 = controller->desks()[0].get();
+  Desk* desk_2 = controller->desks()[1].get();
+  Desk* desk_3 = controller->desks()[2].get();
+  ASSERT_TRUE(desk_1->is_active());
+
+  controller->RemoveDesk(desk_1, DesksCreationRemovalSource::kButton,
+                         DeskCloseType::kCloseAllWindowsAndWait);
+  ASSERT_EQ(desk_2, controller->GetTargetActiveDesk());
+  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  controller->RemoveDesk(desk_2, DesksCreationRemovalSource::kButton,
+                         DeskCloseType::kCloseAllWindowsAndWait);
+  ASSERT_EQ(desk_3, controller->GetTargetActiveDesk());
+  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  if (GetParam().enable_jellyroll) {
+    // When the feature Jellyroll is enabled, the desk bar doesn't switch to
+    // zero state.
+    EXPECT_EQ(1u, GetPrimaryRootDesksBarView()->mini_views().size());
+  } else {
+    // When the feature Jellyroll is not enabled, the desk bar will switch to
+    // zero state.
+    EXPECT_TRUE(GetPrimaryRootDesksBarView()->mini_views().empty());
+  }
+}
+
 TEST_P(DesksTest, ActivateActiveDeskFromOverview) {
   auto* controller = DesksController::Get();
 

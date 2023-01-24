@@ -445,9 +445,21 @@ const std::u16string& DesksController::GetCombineDesksTargetName(
 }
 
 const Desk* DesksController::GetTargetActiveDesk() const {
-  if (animation_)
-    return desks_[animation_->ending_desk_index()].get();
-  return active_desk();
+  const Desk* target_desk = nullptr;
+  if (animation_) {
+    // If there is ongoing animation, return the target of the animation.
+    target_desk = desks_[animation_->ending_desk_index()].get();
+  } else if (desk_to_activate_) {
+    // Even if there is no ongoing animation, it's still possible to be in the
+    // middle of a desk switch.
+    // Please refer to b/266147233.
+    target_desk = desk_to_activate_;
+  } else {
+    target_desk = active_desk();
+  }
+
+  DCHECK(HasDesk(target_desk));
+  return target_desk;
 }
 
 base::flat_set<aura::Window*>
@@ -1539,6 +1551,8 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
     return;
 
   base::AutoReset<bool> in_progress(&are_desks_being_modified_, true);
+  base::AutoReset<Desk*> activate_desk(&desk_to_activate_,
+                                       const_cast<Desk*>(desk));
 
   // Mark the new desk as active first, so that deactivating windows on the
   // `old_active` desk do not activate other windows on the same desk. See
