@@ -4266,7 +4266,8 @@ enum DeviceManagementErrorDetail {
 //     gcm_id_update, active_directory_enroll_play_user,
 //     active_directory_play_activity, active_directory_user_signin,
 //     policy_validation_report, chrome_desktop_report,
-//     chrome_os_user_report, refresh_account, client_cert_provisioning requests
+//     chrome_os_user_report, refresh_account, client_cert_provisioning,
+//     api_authorization requests
 //     Authorization: GoogleDMToken token=<DMToken from register>
 //
 //   * The Authorization header isn't used for enterprise_check,
