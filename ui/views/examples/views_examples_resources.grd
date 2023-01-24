@@ -439,6 +439,9 @@
       <message translateable="false" name="IDS_TOGGLE_BUTTON_NAME_2">
         Toggle Button 2
       </message>
+      <message translateable="false" name="IDS_TOGGLE_BUTTON_NAME_3">
+        Toggle Button 3
+      </message>
 
       <!-- tree view example -->
       <message translateable="false" name="IDS_TREE_VIEW_SELECTED_LABEL">

@@ -44,6 +44,7 @@ aggregate_vector_icons("views_vector_icons") {
     "pin.icon",
     "radio_button_active.icon",
     "radio_button_normal.icon",
+    "toggle_button_check.icon",
     "uninstall.icon",
     "unpin.icon",
   ]

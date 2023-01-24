@@ -11,9 +11,12 @@
 #include "base/functional/bind.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
+#include "third_party/skia/include/core/SkRect.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/event.h"
@@ -21,14 +24,18 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_ripple.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/painter.h"
+#include "ui/views/vector_icons.h"
 
 namespace views {
 
@@ -41,6 +48,25 @@ constexpr int kTrackVerticalMargin = 5;
 constexpr int kTrackHorizontalMargin = 6;
 // Inset from the rounded edge of the thumb to the rounded edge of the track.
 constexpr int kThumbInset = 2;
+
+// ChromeRefresh2023 specific values.
+constexpr gfx::Size kRefreshTrackSize = gfx::Size(26, 16);
+constexpr int kRefreshThumbIconSize = 8;
+constexpr int kRefreshThumbInset = -4;
+constexpr int kRefreshThumbInsetSelected = -2;
+constexpr int kRefreshThumbPressedOutset = 1;
+constexpr int kRefreshHoverDiameter = 20;
+
+const gfx::Size GetTrackSize() {
+  return features::IsChromeRefresh2023() ? kRefreshTrackSize : kTrackSize;
+}
+
+int GetThumbInset(bool is_on) {
+  if (features::IsChromeRefresh2023()) {
+    return is_on ? kRefreshThumbInsetSelected : kRefreshThumbInset;
+  }
+  return kThumbInset;
+}
 
 }  // namespace
 
@@ -55,6 +81,7 @@ class ToggleButton::FocusRingHighlightPathGenerator
 // Class representing the thumb (the circle that slides horizontally).
 class ToggleButton::ThumbView : public View {
  public:
+  METADATA_HEADER(ThumbView);
   ThumbView() {
     // Make the thumb behave as part of the parent for event handling.
     SetCanProcessEventsWithinSubtree(false);
@@ -63,17 +90,20 @@ class ToggleButton::ThumbView : public View {
   ThumbView& operator=(const ThumbView&) = delete;
   ~ThumbView() override = default;
 
-  void Update(const gfx::Rect& bounds, float color_ratio) {
+  void Update(const gfx::Rect& bounds, float color_ratio, bool is_on) {
     SetBoundsRect(bounds);
     color_ratio_ = color_ratio;
+    is_on_ = is_on;
     SchedulePaint();
   }
 
   // Returns the extra space needed to draw the shadows around the thumb. Since
   // the extra space is around the thumb, the insets will be negative.
   static gfx::Insets GetShadowOutsets() {
-    return gfx::Insets(-kShadowBlur) +
-           gfx::Vector2d(kShadowOffsetX, kShadowOffsetY);
+    return features::IsChromeRefresh2023()
+               ? gfx::Insets()
+               : gfx::Insets(-kShadowBlur) +
+                     gfx::Vector2d(kShadowOffsetX, kShadowOffsetY);
   }
 
   void SetThumbColor(bool is_on, const absl::optional<SkColor>& thumb_color) {
@@ -93,13 +123,15 @@ class ToggleButton::ThumbView : public View {
   void OnPaint(gfx::Canvas* canvas) override {
     const float dsf = canvas->UndoDeviceScaleFactor();
     const ui::ColorProvider* color_provider = GetColorProvider();
-    std::vector<gfx::ShadowValue> shadows;
-    gfx::ShadowValue shadow(
-        gfx::Vector2d(kShadowOffsetX, kShadowOffsetY), 2 * kShadowBlur,
-        color_provider->GetColor(ui::kColorToggleButtonShadow));
-    shadows.push_back(shadow.Scale(dsf));
     cc::PaintFlags thumb_flags;
-    thumb_flags.setLooper(gfx::CreateShadowDrawLooper(shadows));
+    if (!features::IsChromeRefresh2023()) {
+      std::vector<gfx::ShadowValue> shadows;
+      gfx::ShadowValue shadow(
+          gfx::Vector2d(kShadowOffsetX, kShadowOffsetY), 2 * kShadowBlur,
+          color_provider->GetColor(ui::kColorToggleButtonShadow));
+      shadows.push_back(shadow.Scale(dsf));
+      thumb_flags.setLooper(gfx::CreateShadowDrawLooper(shadows));
+    }
     thumb_flags.setAntiAlias(true);
     const SkColor thumb_on_color = thumb_on_color_.value_or(
         color_provider->GetColor(ui::kColorToggleButtonThumbOn));
@@ -117,11 +149,23 @@ class ToggleButton::ThumbView : public View {
     thumb_bounds = gfx::RectF(gfx::ToEnclosingRect(thumb_bounds));
     canvas->DrawCircle(thumb_bounds.CenterPoint(), thumb_bounds.height() / 2.f,
                        thumb_flags);
+    if (is_on_ && features::IsChromeRefresh2023()) {
+      const gfx::ImageSkia image = gfx::CreateVectorIcon(
+          kToggleButtonCheckIcon, kRefreshThumbIconSize * dsf,
+          color_provider->GetColor(ui::kColorToggleButtonTrackOn));
+      const gfx::PointF pos = {
+          thumb_bounds.CenterPoint().x() - image.width() / 2,
+          thumb_bounds.CenterPoint().y() - image.height() / 2};
+      canvas->DrawImageInt(image, pos.x(), pos.y());
+    }
   }
 
   // Colors used for the thumb.
   absl::optional<SkColor> thumb_on_color_;
   absl::optional<SkColor> thumb_off_color_;
+
+  // Thumb paints differently when on under ChromeRefresh2023.
+  bool is_on_ = false;
 
   // Color ratio between 0 and 1 that controls the thumb color.
   float color_ratio_ = 0.0f;
@@ -138,8 +182,9 @@ ToggleButton::ToggleButton(PressedCallback callback)
   views::InstallEmptyHighlightPathGenerator(this);
   // InkDrop event triggering is handled in NotifyClick().
   SetHasInkDropActionOnClick(false);
-  InkDrop::UseInkDropForSquareRipple(InkDrop::Get(this),
-                                     /*highlight_on_hover=*/false);
+  InkDrop::UseInkDropForSquareRipple(
+      InkDrop::Get(this),
+      /*highlight_on_hover=*/features::IsChromeRefresh2023());
   InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
       [](ToggleButton* host) {
         gfx::Rect rect = host->thumb_view_->GetLocalBounds();
@@ -152,6 +197,20 @@ ToggleButton::ToggleButton(PressedCallback callback)
         return host->GetTrackColor(host->GetIsOn() || host->HasFocus());
       },
       this));
+  if (features::IsChromeRefresh2023()) {
+    InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
+        [](ToggleButton* host) {
+          gfx::Rect thumb_bounds = host->thumb_view_->GetLocalBounds();
+          thumb_bounds.Outset((kRefreshHoverDiameter - thumb_bounds.height()) /
+                              2);
+          const gfx::Size thumb_size = thumb_bounds.size();
+          return std::make_unique<InkDropHighlight>(
+              thumb_size, thumb_size.height() / 2,
+              gfx::PointF(thumb_bounds.CenterPoint()),
+              host->GetTrackColor(host->GetIsOn()));
+        },
+        this));
+  }
 
   // Even though ToggleButton doesn't paint anything, declare us as flipped in
   // RTL mode so that FocusRing correctly flips as well.
@@ -247,7 +306,7 @@ void ToggleButton::RemoveLayerBeneathView(ui::Layer* layer) {
 }
 
 gfx::Size ToggleButton::CalculatePreferredSize() const {
-  gfx::Rect rect(kTrackSize);
+  gfx::Rect rect(GetTrackSize());
   rect.Inset(gfx::Insets::VH(-kTrackVerticalMargin, -kTrackHorizontalMargin));
   rect.Inset(-GetInsets());
   return rect.size();
@@ -255,25 +314,29 @@ gfx::Size ToggleButton::CalculatePreferredSize() const {
 
 gfx::Rect ToggleButton::GetTrackBounds() const {
   gfx::Rect track_bounds(GetContentsBounds());
-  track_bounds.ClampToCenteredSize(kTrackSize);
+  track_bounds.ClampToCenteredSize(GetTrackSize());
   return track_bounds;
 }
 
 gfx::Rect ToggleButton::GetThumbBounds() const {
   gfx::Rect thumb_bounds(GetTrackBounds());
-  thumb_bounds.Inset(gfx::Insets(-kThumbInset));
+  thumb_bounds.Inset(gfx::Insets(-GetThumbInset(GetIsOn())));
   thumb_bounds.set_x(thumb_bounds.x() +
                      slide_animation_.GetCurrentValue() *
                          (thumb_bounds.width() - thumb_bounds.height()));
   // The thumb is a circle, so the width should match the height.
   thumb_bounds.set_width(thumb_bounds.height());
   thumb_bounds.Inset(ThumbView::GetShadowOutsets());
+  if (GetState() == STATE_PRESSED && features::IsChromeRefresh2023()) {
+    thumb_bounds.Outset(kRefreshThumbPressedOutset);
+  }
   return thumb_bounds;
 }
 
 void ToggleButton::UpdateThumb() {
   thumb_view_->Update(GetThumbBounds(),
-                      static_cast<float>(slide_animation_.GetCurrentValue()));
+                      static_cast<float>(slide_animation_.GetCurrentValue()),
+                      GetIsOn());
   if (FocusRing::Get(this)) {
     // Updating the thumb changes the result of GetFocusRingPath(), make sure
     // the focus ring gets updated to match this new state.
@@ -310,7 +373,7 @@ void ToggleButton::NotifyClick(const ui::Event& event) {
   // focused state correctly. This is set up to highlight on focus, but the
   // highlight does not come back after the ripple is triggered. Then remove
   // this and add back SetHasInkDropActionOnClick(true) in the constructor.
-  if (!HasFocus()) {
+  if (!HasFocus() || features::IsChromeRefresh2023()) {
     InkDrop::Get(this)->AnimateToState(InkDropState::ACTION_TRIGGERED,
                                        ui::LocatedEvent::FromIfValid(&event));
   }
@@ -318,11 +381,27 @@ void ToggleButton::NotifyClick(const ui::Event& event) {
   Button::NotifyClick(event);
 }
 
+void ToggleButton::StateChanged(ButtonState old_state) {
+  Button::StateChanged(old_state);
+  if (features::IsChromeRefresh2023() &&
+      (GetState() == STATE_PRESSED || old_state == STATE_PRESSED)) {
+    UpdateThumb();
+  }
+}
+
 SkPath ToggleButton::GetFocusRingPath() const {
   SkPath path;
-  const gfx::Point center = GetThumbBounds().CenterPoint();
-  const int kFocusRingRadius = 16;
-  path.addCircle(center.x(), center.y(), kFocusRingRadius);
+  if (features::IsChromeRefresh2023()) {
+    gfx::Rect bounds = GetLocalBounds();
+    constexpr int kFocusRingInset = 3;
+    bounds.Inset(kFocusRingInset);
+    const SkRect sk_rect = gfx::RectToSkRect(bounds);
+    path.addRoundRect(sk_rect, 0, sk_rect.height() / 2);
+  } else {
+    const gfx::Point center = GetThumbBounds().CenterPoint();
+    constexpr int kFocusRingRadius = 16;
+    path.addCircle(center.x(), center.y(), kFocusRingRadius);
+  }
   return path;
 }
 
@@ -336,21 +415,26 @@ void ToggleButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void ToggleButton::OnFocus() {
   Button::OnFocus();
-  InkDrop::Get(this)->AnimateToState(views::InkDropState::ACTION_PENDING,
-                                     nullptr);
-  SchedulePaint();
+  if (!features::IsChromeRefresh2023()) {
+    InkDrop::Get(this)->AnimateToState(views::InkDropState::ACTION_PENDING,
+                                       nullptr);
+    SchedulePaint();
+  }
 }
 
 void ToggleButton::OnBlur() {
   Button::OnBlur();
 
-  // The ink drop may have already gone away if the user clicked after focusing.
-  if (InkDrop::Get(this)->GetInkDrop()->GetTargetInkDropState() ==
-      views::InkDropState::ACTION_PENDING) {
-    InkDrop::Get(this)->AnimateToState(views::InkDropState::ACTION_TRIGGERED,
-                                       nullptr);
+  if (!features::IsChromeRefresh2023()) {
+    // The ink drop may have already gone away if the user clicked after
+    // focusing.
+    if (InkDrop::Get(this)->GetInkDrop()->GetTargetInkDropState() ==
+        views::InkDropState::ACTION_PENDING) {
+      InkDrop::Get(this)->AnimateToState(views::InkDropState::ACTION_TRIGGERED,
+                                         nullptr);
+    }
+    SchedulePaint();
   }
-  SchedulePaint();
 }
 
 void ToggleButton::PaintButtonContents(gfx::Canvas* canvas) {
@@ -361,13 +445,21 @@ void ToggleButton::PaintButtonContents(gfx::Canvas* canvas) {
   gfx::RectF track_rect(GetTrackBounds());
   track_rect.Scale(dsf);
   track_rect = gfx::RectF(gfx::ToEnclosingRect(track_rect));
+  const SkScalar radius = track_rect.height() / 2;
   cc::PaintFlags track_flags;
   track_flags.setAntiAlias(true);
   const float color_ratio =
       static_cast<float>(slide_animation_.GetCurrentValue());
   track_flags.setColor(color_utils::AlphaBlend(
       GetTrackColor(true), GetTrackColor(false), color_ratio));
-  canvas->DrawRoundRect(track_rect, track_rect.height() / 2, track_flags);
+  canvas->DrawRoundRect(track_rect, radius, track_flags);
+  if (!GetIsOn() && features::IsChromeRefresh2023()) {
+    track_flags.setColor(
+        GetColorProvider()->GetColor(ui::kColorToggleButtonShadow));
+    track_flags.setStrokeWidth(0.5f);
+    track_flags.setStyle(cc::PaintFlags::kStroke_Style);
+    canvas->DrawRoundRect(track_rect, radius, track_flags);
+  }
   canvas->Restore();
 }
 
@@ -381,6 +473,9 @@ void ToggleButton::AnimationProgressed(const gfx::Animation* animation) {
   }
   Button::AnimationProgressed(animation);
 }
+
+BEGIN_METADATA(ToggleButton, ThumbView, View)
+END_METADATA
 
 BEGIN_METADATA(ToggleButton, Button)
 ADD_PROPERTY_METADATA(bool, IsOn)

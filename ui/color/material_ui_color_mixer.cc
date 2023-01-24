@@ -46,6 +46,7 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorToggleButtonThumbOn] = {kColorSysOnPrimary};
   mixer[kColorToggleButtonTrackOff] = {kColorSysSurfaceVariant};
   mixer[kColorToggleButtonTrackOn] = {kColorSysPrimary};
+  mixer[kColorToggleButtonThumbOnIcon] = {kColorSysOnPrimaryContainer};
 }
 
 }  // namespace ui

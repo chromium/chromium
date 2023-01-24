@@ -43,6 +43,15 @@ void ToggleButtonExample::CreateExampleView(View* container) {
   button->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_TOGGLE_BUTTON_NAME_2));
   button->SetIsOn(true);
+  button = container->AddChildView(
+      std::make_unique<ToggleButton>(base::BindRepeating(
+          [](ToggleButtonExample* example) {
+            PrintStatus("Pressed 3! count: %d", ++example->count_2_);
+          },
+          base::Unretained(this))));
+  button->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_TOGGLE_BUTTON_NAME_3));
+  button->SetEnabled(false);
 }
 
 }  // namespace views::examples

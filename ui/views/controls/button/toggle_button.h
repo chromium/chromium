@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/controls/button/button.h"
 
@@ -58,6 +59,7 @@ class VIEWS_EXPORT ToggleButton : public Button {
 
   // views::Button:
   void NotifyClick(const ui::Event& event) override;
+  void StateChanged(ButtonState old_state) override;
 
   // Returns the path to draw the focus ring around for this ToggleButton.
   SkPath GetFocusRingPath() const;
