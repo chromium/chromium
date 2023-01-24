@@ -23,7 +23,6 @@ from update import (CHROMIUM_DIR)
 PACKAGE_VERSION = GetPackageVersionForBuild()
 BUILDLOG_NAME = f'rust-buildlog-{PACKAGE_VERSION}.txt'
 RUST_TOOLCHAIN_PACKAGE_NAME = f'rust-toolchain-{PACKAGE_VERSION}.tgz'
-BUILD_MAC_ARM = False
 
 
 def BuildCrubit(build_mac_arm):

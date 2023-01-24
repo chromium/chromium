@@ -123,7 +123,7 @@ def VerifyStage0JsonHash():
     sys.exit(1)
 
 
-def Configure(llvm_libs_root):
+def Configure(llvm_bins_path, llvm_libs_root):
     # Read the config.toml template file...
     with open(RUST_CONFIG_TEMPLATE_PATH, 'r') as input:
         template = string.Template(input.read())
@@ -134,7 +134,7 @@ def Configure(llvm_libs_root):
     subs = {}
     subs['INSTALL_DIR'] = quote_string(str(RUST_TOOLCHAIN_OUT_DIR))
     subs['LLVM_LIB_ROOT'] = quote_string(str(llvm_libs_root))
-    subs['LLVM_BIN'] = quote_string(str(os.path.join(LLVM_BUILD_DIR, 'bin')))
+    subs['LLVM_BIN'] = quote_string(str(llvm_bins_path))
     subs['PACKAGE_VERSION'] = GetPackageVersionForBuild()
 
     # ...and apply substitutions, writing to config.toml in Rust tree.
@@ -142,7 +142,7 @@ def Configure(llvm_libs_root):
         output.write(template.substitute(subs))
 
 
-def RunXPy(sub, args, zlib_path, libxml2_dirs, build_mac_arm,
+def RunXPy(sub, args, llvm_bins_path, zlib_path, libxml2_dirs, build_mac_arm,
            gcc_toolchain_path, verbose):
     ''' Run x.py, Rust's build script'''
     # We append to these flags, make sure they exist.
@@ -158,45 +158,32 @@ def RunXPy(sub, args, zlib_path, libxml2_dirs, build_mac_arm,
     for f in ENV_FLAGS:
         RUSTENV.setdefault(f, '')
 
-    # The TARGET is consumed by the cc crate for building C/C++ sources, the
-    # CARGO_BUILD_TARGET is used for building Rust sources.
-    if sys.platform == 'win32':
-        RUSTENV['TARGET'] = 'x86_64-pc-windows-msvc'
-        RUSTENV['CARGO_BUILD_TARGET'] = 'x86_64-pc-windows-msvc'
-    elif sys.platform == 'darwin':
-        if build_mac_arm or platform.machine() == 'arm64':
-            RUSTENV['TARGET'] = 'arm64-apple-darwin'
-            RUSTENV['CARGO_BUILD_TARGET'] = 'arm64-apple-darwin'
-        else:
-            RUSTENV['TARGET'] = 'amd64-apple-darwin'
-            RUSTENV['CARGO_BUILD_TARGET'] = 'amd64-apple-darwin'
-    else:
-        RUSTENV['TARGET'] = 'x86_64-unknown-linux-gnu'
-        RUSTENV['CARGO_BUILD_TARGET'] = 'x86_64-unknown-linux-gnu'
-
     # The AR, CC, CXX flags control the C/C++ compiler used through the `cc`
     # crate. There are also C/C++ targets that are part of the Rust toolchain
     # build for which the tool is controlled from `config.toml`, so these must
     # be duplicated there.
 
-    clang_bin = os.path.join(LLVM_BUILD_DIR, 'bin')
     if sys.platform == 'win32':
-        RUSTENV['AR'] = os.path.join(clang_bin, 'llvm-lib.exe')
-        RUSTENV['CC'] = os.path.join(clang_bin, 'clang-cl.exe')
-        RUSTENV['CXX'] = os.path.join(clang_bin, 'clang-cl.exe')
+        RUSTENV['AR'] = os.path.join(llvm_bins_path, 'llvm-lib.exe')
+        RUSTENV['CC'] = os.path.join(llvm_bins_path, 'clang-cl.exe')
+        RUSTENV['CXX'] = os.path.join(llvm_bins_path, 'clang-cl.exe')
     else:
-        RUSTENV['AR'] = os.path.join(clang_bin, 'llvm-ar')
-        RUSTENV['CC'] = os.path.join(clang_bin, 'clang')
-        RUSTENV['CXX'] = os.path.join(clang_bin, 'clang++')
+        RUSTENV['AR'] = os.path.join(llvm_bins_path, 'llvm-ar')
+        RUSTENV['CC'] = os.path.join(llvm_bins_path, 'clang')
+        RUSTENV['CXX'] = os.path.join(llvm_bins_path, 'clang++')
 
-    if RUSTENV['CARGO_BUILD_TARGET'].endswith('apple-darwin'):
-        # The system/xcode compiler would find system headers correctly, but
+    if sys.platform == 'darwin':
+        # The system/xcode compiler would find system SDK correctly, but
         # the Clang we've built does not. See
         # https://github.com/llvm/llvm-project/issues/45225
         sdk_path = subprocess.check_output(['xcrun', '--show-sdk-path'],
                                            text=True).rstrip()
         RUSTENV['CFLAGS'] += f' -isysroot {sdk_path}'
         RUSTENV['CXXFLAGS'] += f' -isysroot {sdk_path}'
+        RUSTENV['LDFLAGS'] += f' -isysroot {sdk_path}'
+        RUSTENV['RUSTFLAGS_BOOTSTRAP'] += (f' -Clink-arg=-isysroot {sdk_path}')
+        RUSTENV['RUSTFLAGS_NOT_BOOTSTRAP'] += (
+            f' -Clink-arg=-isysroot {sdk_path}')
 
     if zlib_path:
         RUSTENV['CFLAGS'] += f' -I{zlib_path}'
@@ -235,6 +222,10 @@ def RunXPy(sub, args, zlib_path, libxml2_dirs, build_mac_arm,
 
     # Cargo normally stores files in $HOME. Override this.
     RUSTENV['CARGO_HOME'] = CARGO_HOME_DIR
+
+    # This enables the compiler to produce Mac ARM binaries.
+    if build_mac_arm:
+        args.extend(['--target', 'aarch64-apple-darwin'])
 
     os.chdir(RUST_SRC_DIR)
     cmd = [sys.executable, 'x.py', sub]
@@ -324,6 +315,15 @@ def main():
     else:
         llvm_libs_root = build.LLVM_BOOTSTRAP_DIR
 
+    # If we're building for Mac ARM on an x86_64 Mac, we can't use the final
+    # clang binaries as they don't have x86_64 support. Building them with that
+    # support would blow up their size a lot. So, we use the bootstrap binaries
+    # until such time as the Mac ARM builder becomes an actual Mac ARM machine.
+    if not args.build_mac_arm:
+        llvm_bins_path = os.path.join(LLVM_BUILD_DIR, 'bin')
+    else:
+        llvm_bins_path = os.path.join(build.LLVM_BOOTSTRAP_DIR, 'bin')
+
     VerifyStage0JsonHash()
     if args.verify_stage0_hash:
         # The above function exits and prints the actual hash if verification
@@ -342,7 +342,7 @@ def main():
         build.MaybeDownloadHostGcc(args)
 
     # Set up config.toml in Rust source tree to configure build.
-    Configure(llvm_libs_root)
+    Configure(llvm_bins_path, llvm_libs_root)
 
     AddCMakeToPath()
 
@@ -366,21 +366,21 @@ def main():
     if args.run_xpy:
         if rest[0] == '--':
             rest = rest[1:]
-        RunXPy(rest[0], rest[1:], zlib_path, libxml2_dirs, args.build_mac_arm,
-               args.gcc_toolchain, args.verbose)
+        RunXPy(rest[0], rest[1:], llvm_bins_path, zlib_path, libxml2_dirs,
+               args.build_mac_arm, args.gcc_toolchain, args.verbose)
         return 0
     else:
         assert not rest
 
     if not args.skip_clean:
         print('Cleaning build artifacts...')
-        RunXPy('clean', [], zlib_path, libxml2_dirs, args.build_mac_arm,
-               args.gcc_toolchain, args.verbose)
+        RunXPy('clean', [], llvm_bins_path, zlib_path, libxml2_dirs,
+               args.build_mac_arm, args.gcc_toolchain, args.verbose)
 
     if not args.skip_test:
         print('Running stage 2 tests...')
         # Run a subset of tests. Tell x.py to keep the rustc we already built.
-        RunXPy('test', GetTestArgs(), zlib_path, libxml2_dirs,
+        RunXPy('test', GetTestArgs(), llvm_bins_path, zlib_path, libxml2_dirs,
                args.build_mac_arm, args.gcc_toolchain, args.verbose)
 
     targets = [
@@ -391,8 +391,8 @@ def main():
     # Build stage 2 compiler, tools, and libraries. This should reuse earlier
     # stages from the test command (if run).
     print('Building stage 2 artifacts...')
-    RunXPy('build', ['--stage', '2'] + targets, zlib_path, libxml2_dirs,
-           args.build_mac_arm, args.gcc_toolchain, args.verbose)
+    RunXPy('build', ['--stage', '2'] + targets, llvm_bins_path, zlib_path,
+           libxml2_dirs, args.build_mac_arm, args.gcc_toolchain, args.verbose)
 
     if args.skip_install:
         # Rust is fully built. We can quit.
@@ -403,8 +403,8 @@ def main():
     if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
         shutil.rmtree(RUST_TOOLCHAIN_OUT_DIR)
 
-    RunXPy('install', DISTRIBUTION_ARTIFACTS, zlib_path, libxml2_dirs,
-           args.gcc_toolchain, args.verbose)
+    RunXPy('install', DISTRIBUTION_ARTIFACTS, llvm_bins_path, zlib_path,
+           libxml2_dirs, args.gcc_toolchain, args.verbose)
 
     with open(VERSION_STAMP_PATH, 'w') as stamp:
         stamp.write(GetVersionStamp())
