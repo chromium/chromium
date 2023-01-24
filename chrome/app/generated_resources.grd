@@ -5882,7 +5882,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_WEB_APP_WINDOW_CONTROLS_OVERLAY_DISABLED_ALERT" desc="Status change notification that the title bar is showing after window controls overlay is disabled">
         Title bar is now showing
       </message>
- 
+
      <!-- App Home WebUI strings. -->
       <message name="IDS_APP_HOME_TITLE" desc="Title of the new App Home page">
         Apps
@@ -10394,9 +10394,16 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_SYNC_CONFIRMATION_SETTINGS_INFO" desc="Information about customizing Sync settings in the sync confirmation dialog when Unity is enabled">
         You can always choose what to sync in settings.
       </message>
-      <message name="IDS_SYNC_CONFIRMATION_CONFIRM_BUTTON_LABEL" desc="Label of the confirmation button in the sync confirmation dialog of the tab modal signin flow">
-        Yes, I'm in
-      </message>
+      <if expr="not use_titlecase">
+        <message name="IDS_SYNC_CONFIRMATION_CONFIRM_BUTTON_LABEL" desc="Label of the confirmation button in the sync confirmation dialog of the tab modal signin flow">
+          Yes, I'm in
+        </message>
+      </if>
+      <if expr="use_titlecase">
+        <message name="IDS_SYNC_CONFIRMATION_CONFIRM_BUTTON_LABEL" desc="In Title Case: Label of the confirmation button in the sync confirmation dialog of the tab modal signin flow">
+          Yes, I'm In
+        </message>
+      </if>
       <message name="IDS_SYNC_CONFIRMATION_SETTINGS_BUTTON_LABEL" desc="Label of the button in the sync confirmation dialog of the tab modal signin flow to open settings">
         Settings
       </message>
