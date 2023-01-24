@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
@@ -14,7 +13,6 @@
 #include "ash/system/tray/tray_toggle_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
@@ -30,7 +28,6 @@ class NetworkListWifiHeaderViewTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    feature_list_.InitAndEnableFeature(features::kQuickSettingsNetworkRevamp);
 
     std::unique_ptr<NetworkListWifiHeaderViewImpl>
         network_list_wifi_header_view =
@@ -95,7 +92,6 @@ class NetworkListWifiHeaderViewTest : public AshTestBase {
 
   std::unique_ptr<views::Widget> widget_;
   network_config::CrosNetworkConfigTestHelper network_config_helper_;
-  base::test::ScopedFeatureList feature_list_;
   FakeNetworkListNetworkHeaderViewDelegate
       fake_network_list_network_header_delegate_;
   NetworkListWifiHeaderViewImpl* network_list_wifi_header_view_;

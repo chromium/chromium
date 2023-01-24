@@ -3385,9 +3385,6 @@ extern const char kSpectreVariant2MitigationDescription[];
 extern const char kSystemJapanesePhysicalTypingName[];
 extern const char kSystemJapanesePhysicalTypingDescription[];
 
-extern const char kQuickSettingsNetworkRevampName[];
-extern const char kQuickSettingsNetworkRevampDescription[];
-
 extern const char kCaptivePortalErrorPageName[];
 extern const char kCaptivePortalErrorPageDescription[];
 

@@ -6,14 +6,12 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/network/fake_network_list_network_header_view_delegate.h"
 #include "ash/system/network/network_list_header_view.h"
 #include "ash/system/tray/tri_view.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/view.h"
 
@@ -23,8 +21,6 @@ class NetworkListNetworkHeaderViewTest : public AshTestBase {
  public:
   void SetUp() override {
     AshTestBase::SetUp();
-
-    feature_list_.InitAndEnableFeature(features::kQuickSettingsNetworkRevamp);
 
     network_list_network_header_view_ =
         std::make_unique<NetworkListNetworkHeaderView>(
@@ -63,7 +59,6 @@ class NetworkListNetworkHeaderViewTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   FakeNetworkListNetworkHeaderViewDelegate
       fake_network_list_network_header_delegate_;
   std::unique_ptr<NetworkListNetworkHeaderView>

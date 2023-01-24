@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -19,7 +18,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -66,8 +64,6 @@ class NetworkListNetworkItemViewTest : public AshTestBase {
  public:
   void SetUp() override {
     AshTestBase::SetUp();
-
-    feature_list_.InitAndEnableFeature(features::kQuickSettingsNetworkRevamp);
 
     SetUpDefaultNetworkDevices();
 
@@ -162,7 +158,6 @@ class NetworkListNetworkItemViewTest : public AshTestBase {
     return &network_config_helper_.network_state_helper();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<FakeNetworkDetailedNetworkView>
       fake_network_detailed_network_view_;
@@ -276,10 +271,6 @@ TEST_F(NetworkListNetworkItemViewTest, HasCorrectCellularSublabel) {
 }
 
 TEST_F(NetworkListNetworkItemViewTest, HasCorrectPortalSublabel) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kQuickSettingsNetworkRevamp},
-      /*disabled_features=*/{});
   EXPECT_FALSE(network_list_network_item_view()->sub_text_label());
 
   NetworkStatePropertiesPtr wifi_network = CreateStandaloneNetworkProperties(
@@ -294,10 +285,6 @@ TEST_F(NetworkListNetworkItemViewTest, HasCorrectPortalSublabel) {
 }
 
 TEST_F(NetworkListNetworkItemViewTest, HasCorrectProxyAuthSublabel) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kQuickSettingsNetworkRevamp},
-      /*disabled_features=*/{});
   EXPECT_FALSE(network_list_network_item_view()->sub_text_label());
 
   NetworkStatePropertiesPtr wifi_network = CreateStandaloneNetworkProperties(
@@ -312,10 +299,6 @@ TEST_F(NetworkListNetworkItemViewTest, HasCorrectProxyAuthSublabel) {
 }
 
 TEST_F(NetworkListNetworkItemViewTest, HasCorrectPortalSuspectedSublabel) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kQuickSettingsNetworkRevamp},
-      /*disabled_features=*/{});
   EXPECT_FALSE(network_list_network_item_view()->sub_text_label());
 
   NetworkStatePropertiesPtr wifi_network = CreateStandaloneNetworkProperties(
@@ -330,10 +313,6 @@ TEST_F(NetworkListNetworkItemViewTest, HasCorrectPortalSuspectedSublabel) {
 }
 
 TEST_F(NetworkListNetworkItemViewTest, HasCorrectNoConnectivitySublabel) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kQuickSettingsNetworkRevamp},
-      /*disabled_features=*/{});
   EXPECT_FALSE(network_list_network_item_view()->sub_text_label());
 
   NetworkStatePropertiesPtr wifi_network = CreateStandaloneNetworkProperties(

@@ -95,7 +95,6 @@ class NetworkFeaturePodControllerTest
   void SetUp() override {
     auto enabled_features = std::vector<base::test::FeatureRef>();
     auto disabled_features = std::vector<base::test::FeatureRef>();
-    enabled_features.push_back(features::kQuickSettingsNetworkRevamp);
     if (IsQsRevampEnabled()) {
       feature_list_.InitAndEnableFeature(features::kQsRevamp);
     } else {

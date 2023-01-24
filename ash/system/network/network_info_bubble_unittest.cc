@@ -7,13 +7,11 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
@@ -85,8 +83,6 @@ class NetworkInfoBubbleTest : public AshTestBase {
  public:
   void SetUp() override {
     AshTestBase::SetUp();
-
-    feature_list_.InitAndEnableFeature(features::kQuickSettingsNetworkRevamp);
 
     network_state_helper()->ClearDevices();
 
@@ -195,7 +191,6 @@ class NetworkInfoBubbleTest : public AshTestBase {
   network_config::CrosNetworkConfigTestHelper network_config_helper_;
   FakeNetworkInfoBubbleDelegate fake_delegate_;
   NetworkInfoBubble* network_info_bubble_ = nullptr;
-  base::test::ScopedFeatureList feature_list_;
   std::string wifi_path_;
   std::unique_ptr<views::Widget> widget_;
 

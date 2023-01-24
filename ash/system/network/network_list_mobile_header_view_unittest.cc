@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
@@ -15,7 +14,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/network/network_device_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
@@ -47,7 +45,6 @@ class NetworkListMobileHeaderViewTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    feature_list_.InitAndEnableFeature(features::kQuickSettingsNetworkRevamp);
     network_state_helper()->ClearDevices();
 
     network_state_helper()->manager_test()->AddTechnology(shill::kTypeCellular,
@@ -131,7 +128,6 @@ class NetworkListMobileHeaderViewTest : public AshTestBase {
 
   std::unique_ptr<views::Widget> widget_;
   network_config::CrosNetworkConfigTestHelper network_config_helper_;
-  base::test::ScopedFeatureList feature_list_;
   FakeNetworkListNetworkHeaderViewDelegate
       fake_network_list_network_header_delegate_;
   NetworkListMobileHeaderViewImpl* network_list_mobile_header_view_;

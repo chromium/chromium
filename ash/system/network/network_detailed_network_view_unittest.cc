@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/network/network_detailed_network_view.h"
 #include "ash/system/network/network_detailed_view.h"
 #include "ash/system/network/network_list_mobile_header_view.h"
@@ -16,7 +15,6 @@
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
@@ -100,8 +98,6 @@ class NetworkDetailedNetworkViewTest : public AshTestBase {
  public:
   void SetUp() override {
     AshTestBase::SetUp();
-
-    feature_list_.InitAndEnableFeature(features::kQuickSettingsNetworkRevamp);
 
     network_state_helper()->ClearDevices();
 
@@ -207,7 +203,6 @@ class NetworkDetailedNetworkViewTest : public AshTestBase {
     return &network_config_helper_.network_state_helper();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
   CrosNetworkConfigTestHelper network_config_helper_;
   FakeNetworkDetailedNetworkViewDelegate fake_network_detailed_network_delagte_;

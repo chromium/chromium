@@ -1762,12 +1762,6 @@ BASE_FEATURE(kVCPortraitRelighting,
              "VCPortraitRelighting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables the Quick Settings Network revamp, which updates Network
-// Quick Settings UI and related infrastructure. See https://crbug.com/1169479.
-BASE_FEATURE(kQuickSettingsNetworkRevamp,
-             "QuickSettingsNetworkRevamp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables fingerprint quick unlock.
 BASE_FEATURE(kQuickUnlockFingerprint,
              "QuickUnlockFingerprint",

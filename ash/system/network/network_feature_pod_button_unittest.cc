@@ -6,10 +6,8 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 
 namespace ash {
 namespace {
@@ -37,8 +35,6 @@ class NetworkFeaturePodButtonTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    feature_list_.InitAndEnableFeature(features::kQuickSettingsNetworkRevamp);
-
     network_feature_pod_button_ =
         std::make_unique<NetworkFeaturePodButton>(/*controller=*/nullptr,
                                                   /*delegate=*/delegate());
@@ -57,7 +53,6 @@ class NetworkFeaturePodButtonTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<NetworkFeaturePodButton> network_feature_pod_button_;
   FakeNetworkFeaturePodButtonDelegate fake_network_feature_pod_button_delegate_;
 };

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/system/network/network_utils.h"
@@ -15,7 +14,6 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/network/network_connect.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -110,8 +108,6 @@ class NetworkDetailedViewControllerTest : public AshTestBase {
     network_connect_delegate_ = std::make_unique<NetworkConnectTestDelegate>();
     NetworkConnect::Initialize(network_connect_delegate_.get());
     AshTestBase::SetUp();
-
-    feature_list_.InitAndEnableFeature(features::kQuickSettingsNetworkRevamp);
 
     network_detailed_view_controller_ =
         std::make_unique<NetworkDetailedViewController>(
@@ -249,7 +245,6 @@ class NetworkDetailedViewControllerTest : public AshTestBase {
   const std::string& portal_signin_guid() const {
     return network_connect_delegate_->portal_signin_guid();
   }
-  base::test::ScopedFeatureList feature_list_;
 
  private:
   NetworkStateHandler* network_state_handler() {
@@ -611,11 +606,6 @@ TEST_F(NetworkDetailedViewControllerTest, MobileToggleClicked) {
 
 TEST_F(NetworkDetailedViewControllerTest,
        PortalNetworkListItemSelectedWithFlagEnabled) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kQuickSettingsNetworkRevamp},
-      /*disabled_features=*/{});
-
   AddWifiService(shill::kStateRedirectFound);
 
   NetworkStatePropertiesPtr wifi_network = CreateStandaloneNetworkProperties(

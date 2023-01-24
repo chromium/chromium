@@ -5888,12 +5888,6 @@ const char kSystemJapanesePhysicalTypingDescription[] =
     "typing in Japanese. This also replaces the Japanese extension settings "
     "page with one built into the UI and migrates the data to a new location.";
 
-const char kQuickSettingsNetworkRevampName[] =
-    "Enables the Quick Settings Network revamp.";
-const char kQuickSettingsNetworkRevampDescription[] =
-    "Enables the Quick Settings Network revamp, which updates Network Quick "
-    "Settings UI and related infrastructure. See https://crbug.com/1169479.";
-
 const char kCaptivePortalErrorPageName[] =
     "Enables Captive Portal error page suggestions.";
 const char kCaptivePortalErrorPageDescription[] =

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/login_status.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -19,7 +18,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
@@ -45,8 +43,6 @@ class NetworkDetailedViewTest : public AshTestBase {
  public:
   void SetUp() override {
     AshTestBase::SetUp();
-
-    feature_list_.InitAndEnableFeature(features::kQuickSettingsNetworkRevamp);
 
     list_type_ = NetworkDetailedView::ListType::LIST_TYPE_NETWORK;
 
@@ -112,7 +108,6 @@ class NetworkDetailedViewTest : public AshTestBase {
   FakeNetworkDetailedViewDelegate fake_network_detailed_view_delegate_;
   FakeDetailedViewDelegate fake_detailed_view_delegate_;
   NetworkDetailedView::ListType list_type_;
-  base::test::ScopedFeatureList feature_list_;
   base::UserActionTester user_action_tester_;
 };
 
