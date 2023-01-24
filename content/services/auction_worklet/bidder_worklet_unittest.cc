@@ -6010,6 +6010,42 @@ TEST_F(BidderWorkletTest, KAnonEnforce) {
   EXPECT_TRUE(kanon_bid_->is_same_as_non_enforced());
 }
 
+// Test for context re-use for k-anon rerun.
+TEST_F(BidderWorkletTest, KAnonRerun) {
+  const char kScript[] = R"(
+    if (!('count' in globalThis))
+      globalThis.count = 0;
+    function generateBid(interestGroup) {
+      ++count;
+      return {ad: ["ad"], bid:count,
+      render:interestGroup.ads[interestGroup.ads.length - 1].renderUrl};
+    }
+  )";
+
+  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kEnforce;
+
+  interest_group_ads_.emplace_back(GURL("https://response2.test/"),
+                                   /*metadata=*/absl::nullopt);
+  ads_kanon_.emplace(GURL("https://response.test/"), true);
+
+  for (auto execution_mode :
+       {blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode,
+        blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode}) {
+    execution_mode_ = execution_mode;
+    SCOPED_TRACE(execution_mode_);
+    RunGenerateBidWithJavascriptExpectingResult(
+        kScript, mojom::BidderWorkletBid::New(
+                     R"(["ad"])", 1, GURL("https://response2.test/"),
+                     /*ad_components=*/absl::nullopt, base::TimeDelta()));
+    ASSERT_TRUE(kanon_bid_);
+    ASSERT_TRUE(kanon_bid_->is_bid());
+    EXPECT_EQ(R"(["ad"])", kanon_bid_->get_bid()->ad);
+    EXPECT_EQ(2, kanon_bid_->get_bid()->bid);
+    EXPECT_EQ(GURL("https://response.test/"),
+              kanon_bid_->get_bid()->render_url);
+  }
+}
+
 TEST(BidderWorklerTest, IsKAnonURL) {
   const GURL kUrl1("https://example.com/1");
   const GURL kUrl2("https://example.org/2");

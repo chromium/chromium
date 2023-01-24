@@ -441,6 +441,7 @@ void BidderWorklet::V8State::SetWasmHelper(
 BidderWorklet::V8State::SingleGenerateBidResult::SingleGenerateBidResult() =
     default;
 BidderWorklet::V8State::SingleGenerateBidResult::SingleGenerateBidResult(
+    std::unique_ptr<ContextRecycler> context_recycler_for_rerun,
     mojom::BidderWorkletBidPtr bid,
     absl::optional<uint32_t> bidding_signals_data_version,
     absl::optional<GURL> debug_loss_report_url,
@@ -450,7 +451,8 @@ BidderWorklet::V8State::SingleGenerateBidResult::SingleGenerateBidResult(
         update_priority_signals_overrides,
     PrivateAggregationRequests pa_requests,
     std::vector<std::string> error_msgs)
-    : bid(std::move(bid)),
+    : context_recycler_for_rerun(std::move(context_recycler_for_rerun)),
+      bid(std::move(bid)),
       bidding_signals_data_version(std::move(bidding_signals_data_version)),
       debug_loss_report_url(std::move(debug_loss_report_url)),
       debug_win_report_url(std::move(debug_win_report_url)),
@@ -644,6 +646,7 @@ void BidderWorklet::V8State::GenerateBid(
       base::OptionalToPtr(browser_signal_top_level_seller_origin),
       bidding_browser_signals, auction_start_time,
       trusted_bidding_signals_result, trace_id,
+      /*context_recycler_for_rerun=*/nullptr,
       /*restrict_to_kanon_ads=*/false);
   if (!result.has_value()) {
     PostErrorBidCallbackToUserThread(std::move(callback));
@@ -676,6 +679,7 @@ void BidderWorklet::V8State::GenerateBid(
               base::OptionalToPtr(browser_signal_top_level_seller_origin),
               bidding_browser_signals, auction_start_time,
               trusted_bidding_signals_result, trace_id,
+              std::move(result->context_recycler_for_rerun),
               /*restrict_to_kanon_ads=*/true);
       if (restricted_result.has_value() && restricted_result->bid) {
         kanon_bid = mojom::BidderWorkletKAnonEnforcedBid::NewBid(
@@ -728,12 +732,17 @@ BidderWorklet::V8State::GenerateSingleBid(
     base::Time auction_start_time,
     const scoped_refptr<TrustedSignals::Result>& trusted_bidding_signals_result,
     uint64_t trace_id,
+    std::unique_ptr<ContextRecycler> context_recycler_for_rerun,
     bool restrict_to_kanon_ads) {
   // Can't make a bid without any ads, or if we aren't permitted to spend any
   // time on it.
   if (!bidder_worklet_non_shared_params->ads ||
       (per_buyer_timeout.has_value() && per_buyer_timeout.value().is_zero())) {
     return absl::nullopt;
+  }
+
+  if (context_recycler_for_rerun) {
+    DCHECK(restrict_to_kanon_ads);
   }
 
   base::TimeTicks start = base::TimeTicks::Now();
@@ -756,6 +765,14 @@ BidderWorklet::V8State::GenerateSingleBid(
   base::UmaHistogramBoolean("Ads.InterestGroup.Auction.ContextReused",
                             reused_context);
 
+  // See if we can reuse a context for k-anon re-run. The group-by-origin mode
+  // would do that, too, so this is only a fallback for when that's not on.
+  if (!context_recycler && context_recycler_for_rerun) {
+    context_recycler = context_recycler_for_rerun.get();
+    reused_context = true;
+  }
+
+  // No recycled context, make a fresh one.
   if (!context_recycler) {
     fresh_context_recycler =
         std::make_unique<ContextRecycler>(v8_helper_.get());
@@ -946,9 +963,10 @@ BidderWorklet::V8State::GenerateSingleBid(
     // Aggregation API requests since `generateBid()` might use them to detect
     // script timeout or failures. Keep any set priority and set priority
     // overrides because an interest group may want to update them even when not
-    // bidding.
+    // bidding. No need to return a ContextRecycler since this will not be
+    // re-run.
     return absl::make_optional(SingleGenerateBidResult(
-        mojom::BidderWorkletBidPtr(),
+        std::unique_ptr<ContextRecycler>(), mojom::BidderWorkletBidPtr(),
         /*bidding_signals_data_version=*/absl::nullopt,
         context_recycler->for_debugging_only_bindings()->TakeLossReportUrl(),
         /*debug_win_report_url=*/absl::nullopt,
@@ -960,7 +978,11 @@ BidderWorklet::V8State::GenerateSingleBid(
         std::move(errors_out)));
   }
 
+  // If the context recycler wasn't saved based on `execution_mode`,
+  // `fresh_context_recycler` is non-null here, and it will be provided to the
+  // caller for potential re-use for k-anon re-run.
   return absl::make_optional(SingleGenerateBidResult(
+      std::move(fresh_context_recycler),
       context_recycler->set_bid_bindings()->TakeBid(),
       bidding_signals_data_version,
       context_recycler->for_debugging_only_bindings()->TakeLossReportUrl(),

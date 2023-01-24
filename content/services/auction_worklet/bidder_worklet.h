@@ -314,6 +314,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     struct SingleGenerateBidResult {
       SingleGenerateBidResult();
       SingleGenerateBidResult(
+          std::unique_ptr<ContextRecycler> context_recycler_for_rerun,
           mojom::BidderWorkletBidPtr bid,
           absl::optional<uint32_t> bidding_signals_data_version,
           absl::optional<GURL> debug_loss_report_url,
@@ -331,6 +332,10 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       SingleGenerateBidResult& operator=(const SingleGenerateBidResult&) =
           delete;
       SingleGenerateBidResult& operator=(SingleGenerateBidResult&&);
+
+      // If the context was not saved for user-configurable reuse mechanicsm,
+      // it's returned here to be available for any re-run for k-anonymity.
+      std::unique_ptr<ContextRecycler> context_recycler_for_rerun;
 
       mojom::BidderWorkletBidPtr bid;
       absl::optional<uint32_t> bidding_signals_data_version;
@@ -391,6 +396,8 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     ~V8State();
 
     // Returns nullopt on error.
+    // `context_recycler_for_rerun` is permitted to be null, and should only be
+    // set if `restrict_to_kanon_ads` is true.
     absl::optional<SingleGenerateBidResult> GenerateSingleBid(
         const mojom::BidderWorkletNonSharedParamsPtr&
             bidder_worklet_non_shared_params,
@@ -409,6 +416,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         const scoped_refptr<TrustedSignals::Result>&
             trusted_bidding_signals_result,
         uint64_t trace_id,
+        std::unique_ptr<ContextRecycler> context_recycler_for_rerun,
         bool restrict_to_kanon_ads);
 
     void FinishInit();
