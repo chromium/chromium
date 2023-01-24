@@ -39,6 +39,11 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(
 // deleted from CBCM.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kDmTokenDeletion);
 
+#if BUILDFLAG(IS_ANDROID)
+// Enable logging and chrome://policy/logs page on Android.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kPolicyLogsPageAndroid);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace features
 }  // namespace policy
 

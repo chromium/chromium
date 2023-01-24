@@ -19,7 +19,46 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/json/json_writer.h"
+#include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
+#include "components/policy/core/common/policy_logger.h"
+#include "components/version_info/version_info.h"
+#include "components/version_ui/version_handler_helper.h"
+#include "content/public/common/user_agent.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace {
+
+#if BUILDFLAG(IS_ANDROID)
+// Returns the operating system information to be displayed on
+// chrome://policy/logs page.
+std::string GetOsInfo() {
+  // The base format for the OS version and build
+  constexpr char kOSVersionAndBuildFormat[] = "%s, Version: %s";
+  return base::StringPrintf(
+      kOSVersionAndBuildFormat,
+      (content::GetAndroidOSInfo(content::IncludeAndroidBuildNumber::Include,
+                                 content::IncludeAndroidModel::Include))
+          .c_str(),
+      (base::SysInfo::OperatingSystemVersion()).c_str());
+}
+
+// Returns the version information to be displayed on the chrome://policy/logs
+// page.
+base::Value GetVersionInfo() {
+  base::Value version_info(base::Value::Type::DICT);
+
+  version_info.SetStringPath("revision", version_info::GetLastChange());
+  version_info.SetStringPath("version", version_info::GetVersionNumber());
+  version_info.SetStringPath("device_os", GetOsInfo());
+  version_info.SetPath("variations",
+                       base::Value(version_ui::GetVariationsList()));
+
+  return version_info;
+}
+#endif
 
 void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -90,6 +129,22 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   };
   source->AddLocalizedStrings(kStrings);
+
+#if BUILDFLAG(IS_ANDROID)
+  source->AddBoolean(
+      "loggingEnabled",
+      policy::PolicyLogger::GetInstance()->IsPolicyLoggingEnabled());
+
+  if (policy::PolicyLogger::GetInstance()->IsPolicyLoggingEnabled()) {
+    std::string variations_json_value;
+    base::JSONWriter::Write(GetVersionInfo(), &variations_json_value);
+
+    source->AddString("versionInfo", variations_json_value);
+  }
+
+  source->AddResourcePath("logs/", IDR_POLICY_LOGS_POLICY_LOGS_HTML);
+  source->AddResourcePath("logs", IDR_POLICY_LOGS_POLICY_LOGS_HTML);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kPolicyResources, kPolicyResourcesSize),

@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/policy/core/common/policy_logger.h"
-
+#include "base/test/scoped_feature_list.h"
+#include "components/policy/core/common/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,14 +17,6 @@ namespace policy {
 
 namespace {
 
-class MockObserver : public policy::PolicyLogger::Observer {
- public:
-  MOCK_METHOD(void,
-              OnLogsChanged,
-              (const std::vector<policy::PolicyLogger::Log>& logs),
-              (override));
-};
-
 void AddLogs(const std::string& message, PolicyLogger* policy_logger) {
   policy_logger->AddLog(policy::PolicyLogger::Log(
       policy::PolicyLogger::Log::LogSource::kPolicyFetching, message,
@@ -32,35 +25,30 @@ void AddLogs(const std::string& message, PolicyLogger* policy_logger) {
 
 }  // namespace
 
-TEST(PolicyLoggerTest, ObserverRegistered) {
-  PolicyLogger policy_logger;
-  MockObserver mock_observer;
+TEST(PolicyLoggerTest, PolicyLoggingEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatureState(
+      policy::features::kPolicyLogsPageAndroid, true);
 
-  // Ensure OnLogsChanged is called when the observer is added to the logger.
-  EXPECT_CALL(mock_observer,
-              OnLogsChanged(ElementsAre(
-                  Property(&PolicyLogger::Log::message,
-                           Eq("Element Added Before Observer Creation")))))
-      .Times(1);
+  PolicyLogger* policy_logger = policy::PolicyLogger::GetInstance();
 
-  AddLogs("Element Added Before Observer Creation", &policy_logger);
+  int logs_size_before_adding = policy_logger->GetPolicyLogsSizeForTesting();
+  AddLogs("Element added when the feature is enabled.", policy_logger);
+  EXPECT_EQ(policy_logger->GetPolicyLogsSizeForTesting(),
+            logs_size_before_adding + 1);
+}
 
-  policy_logger.AddObserver(&mock_observer);
+TEST(PolicyLoggerTest, PolicyLoggingDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatureState(
+      policy::features::kPolicyLogsPageAndroid, false);
 
-  // Ensure OnLogsChanged is called when a log is added after registration.
-  EXPECT_CALL(mock_observer,
-              OnLogsChanged(ElementsAre(
-                  Property(&PolicyLogger::Log::message,
-                           Eq("Element Added Before Observer Creation")),
-                  Property(&PolicyLogger::Log::message,
-                           Eq("Element Added After Observer Creation")))))
-      .Times(1);
-  AddLogs("Element Added After Observer Creation", &policy_logger);
+  PolicyLogger* policy_logger = policy::PolicyLogger::GetInstance();
 
-  // Ensure OnLogsChanged is not called when observer is removed.
-  EXPECT_CALL(mock_observer, OnLogsChanged(_)).Times(0);
-  policy_logger.RemoveObserver(&mock_observer);
-  AddLogs("Element Added After Observer Removal", &policy_logger);
+  int logs_size_before_adding = policy_logger->GetPolicyLogsSizeForTesting();
+  AddLogs("Element added when the feature is disabled.", policy_logger);
+  EXPECT_EQ(policy_logger->GetPolicyLogsSizeForTesting(),
+            logs_size_before_adding);
 }
 
 }  // namespace policy

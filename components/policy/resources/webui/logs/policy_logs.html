@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <title>Policy Logs</title>
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+
+  <style>
+    h2,
+    ul,
+    .version-info-table-data {
+      word-break: break-all;
+    }
+
+    .buttons-row {
+      align-items: center;
+      display: flex;
+      height: 56px;
+    }
+
+    ul {
+      list-style-type: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <section id="logs-disabled-container" hidden>
+    <h2>This page is not available on your browser</h2>
+  </section>
+
+  <section id="logs-enabled-container">
+    <h1>Policy Logs</h1>
+
+    <div class="buttons-row">
+      <button id="logs-dump">Export Logs to JSON</button>
+      <button id="logs-refresh">Refresh Logs</button>
+    </div>
+
+    <h2>Version Information</h2>
+
+    <table id="version-info" aria-label="Version Information">
+      <tr>
+        <td>Chrome Version: </td>
+        <td id="chrome-version-value" class="version-info-table-data">-</td>
+      </tr>
+
+      <tr>
+        <td>Chrome Revision: </td>
+        <td id="chrome-revision-value" class="version-info-table-data">-</td>
+      </tr>
+
+      <tr>
+        <td id="os-version-label">OS: </td>
+        <td id="os-version-value" class="version-info-table-data">-</td>
+      </tr>
+    </table>
+
+    <h2>Logs</h2>
+
+    <ul id="logs-container" aria-label="Logs List"></ul>
+
+    <h2>Active Variations</h2>
+
+    <ul id="active-variations-container" aria-label="Active Variations List"></ul>
+  </section>
+  <script type="module" src="/logs/policy_logs.js"></script>
+</body>
+</html>

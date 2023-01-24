@@ -63,6 +63,11 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   void HandleUploadReport(const base::Value::List& args);
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+  // Handler functions for chrome://policy/logs.
+  void HandleGetPolicyLogs(const base::Value::List& args);
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // Send information about the current policy values to the UI. Information is
   // sent in two parts to the UI:
   // - A dictionary containing all available policy names

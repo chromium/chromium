@@ -16,6 +16,10 @@ static_files = [
   "policy.html",
 ]
 
+if (is_android) {
+  static_files += [ "logs/policy_logs.html" ]
+}
+
 # TODO(b/265198461): Migrate to TypeScript and then simplify the build setup by
 # leveraging build_webui().
 web_component_files = [
@@ -40,6 +44,13 @@ non_web_component_files = [
   "policy_base.js",
   "policy.js",
 ]
+
+if (is_android) {
+  non_web_component_files += [
+    "logs/types.ts",
+    "logs/policy_logs.ts",
+  ]
+}
 
 preprocess_if_expr("preprocess_static_files") {
   in_folder = "."
