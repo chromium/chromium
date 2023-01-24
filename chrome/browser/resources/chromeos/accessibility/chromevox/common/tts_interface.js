@@ -4,11 +4,9 @@
 
 /**
  * @fileoverview Defines a Tts interface.
- *
  * All TTS engines in ChromeVox conform to the this interface.
- *
  */
-import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
+import {QueueMode, TtsSpeechProperties} from './tts_types.js';
 
 /**
  * An interface for clients who want to get notified when an utterance
@@ -16,19 +14,13 @@ import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
  * @interface
  */
 export class TtsCapturingEventListener {
-  /**
-   * Called when any utterance starts.
-   */
+  /** Called when any utterance starts. */
   onTtsStart() {}
 
-  /**
-   * Called when any utterance ends.
-   */
+  /** Called when any utterance ends. */
   onTtsEnd() {}
 
-  /**
-   * Called when any utterance gets interrupted.
-   */
+  /** Called when any utterance gets interrupted. */
   onTtsInterrupted() {}
 }
 
