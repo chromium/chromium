@@ -368,7 +368,7 @@ ScriptPromise ImageCapture::setOptions(ScriptState* script_state,
   }
 
   service_->SetOptions(
-      stream_track_->Component()->Source()->Id(), std::move(settings),
+      SourceId(), std::move(settings),
       WTF::BindOnce(&ImageCapture::OnMojoSetOptions, WrapPersistent(this),
                     WrapPersistent(resolver), trigger_take_photo));
   return promise;
@@ -794,7 +794,7 @@ void ImageCapture::SetMediaTrackConstraints(
   service_requests_.insert(resolver);
 
   service_->SetOptions(
-      stream_track_->Component()->Source()->Id(), std::move(settings),
+      SourceId(), std::move(settings),
       WTF::BindOnce(&ImageCapture::OnMojoSetOptions, WrapPersistent(this),
                     WrapPersistent(resolver), false /* trigger_take_photo */));
 }
@@ -852,7 +852,7 @@ void ImageCapture::SetPanTiltZoomSettingsFromTrack(
   }
 
   service_->SetOptions(
-      stream_track_->Component()->Source()->Id(), std::move(settings),
+      SourceId(), std::move(settings),
       WTF::BindOnce(&ImageCapture::OnSetPanTiltZoomSettingsFromTrack,
                     WrapPersistent(this), std::move(initialized_callback)));
 }
@@ -861,7 +861,7 @@ void ImageCapture::OnSetPanTiltZoomSettingsFromTrack(
     base::OnceClosure done_callback,
     bool result) {
   service_->GetPhotoState(
-      stream_track_->Component()->Source()->Id(),
+      SourceId(),
       WTF::BindOnce(&ImageCapture::UpdateMediaTrackCapabilities,
                     WrapPersistent(this), std::move(done_callback)));
 }
@@ -918,7 +918,7 @@ ImageCapture::ImageCapture(ExecutionContext* context,
   // Launch a retrieval of the current photo state, which arrive asynchronously
   // to avoid blocking the main UI thread.
   service_->GetPhotoState(
-      stream_track_->Component()->Source()->Id(),
+      SourceId(),
       WTF::BindOnce(&ImageCapture::SetPanTiltZoomSettingsFromTrack,
                     WrapPersistent(this), std::move(initialized_callback)));
 
@@ -963,12 +963,8 @@ ScriptPromise ImageCapture::GetMojoPhotoState(
   }
   service_requests_.insert(resolver);
 
-  // m_streamTrack->component()->source()->id() is the renderer "name" of the
-  // camera;
-  // TODO(mcasas) consider sending the security origin as well:
-  // scriptState->getExecutionContext()->getSecurityOrigin()->toString()
   service_->GetPhotoState(
-      stream_track_->Component()->Source()->Id(),
+      SourceId(),
       WTF::BindOnce(&ImageCapture::OnMojoGetPhotoState, WrapPersistent(this),
                     WrapPersistent(resolver), std::move(resolver_cb),
                     false /* trigger_take_photo */));
@@ -1025,7 +1021,7 @@ void ImageCapture::OnMojoGetPhotoState(
 
   if (trigger_take_photo) {
     service_->TakePhoto(
-        stream_track_->Component()->Source()->Id(),
+        SourceId(),
         WTF::BindOnce(&ImageCapture::OnMojoTakePhoto, WrapPersistent(this),
                       WrapPersistent(resolver)));
     return;
@@ -1055,10 +1051,9 @@ void ImageCapture::OnMojoSetOptions(ScriptPromiseResolver* resolver,
 
   // Retrieve the current device status after setting the options.
   service_->GetPhotoState(
-      stream_track_->Component()->Source()->Id(),
-      WTF::BindOnce(&ImageCapture::OnMojoGetPhotoState, WrapPersistent(this),
-                    WrapPersistent(resolver), std::move(resolver_cb),
-                    trigger_take_photo));
+      SourceId(), WTF::BindOnce(&ImageCapture::OnMojoGetPhotoState,
+                                WrapPersistent(this), WrapPersistent(resolver),
+                                std::move(resolver_cb), trigger_take_photo));
 }
 
 void ImageCapture::OnMojoTakePhoto(ScriptPromiseResolver* resolver,
@@ -1241,6 +1236,10 @@ void ImageCapture::ResolveWithPhotoCapabilities(
 
 bool ImageCapture::IsPageVisible() {
   return DomWindow() ? DomWindow()->document()->IsPageVisible() : false;
+}
+
+const String& ImageCapture::SourceId() const {
+  return stream_track_->Component()->Source()->Id();
 }
 
 ImageCapture* ImageCapture::Clone() const {

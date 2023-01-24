@@ -136,6 +136,8 @@ class MODULES_EXPORT ImageCapture final
   // Returns true if page is visible. Otherwise returns false.
   bool IsPageVisible();
 
+  const String& SourceId() const;
+
   Member<MediaStreamTrack> stream_track_;
   std::unique_ptr<ImageCaptureFrameGrabber> frame_grabber_;
   HeapMojoRemote<media::mojom::blink::ImageCapture> service_;
