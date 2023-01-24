@@ -31,8 +31,8 @@ import json
 import logging
 import optparse
 import re
-
 from collections import defaultdict
+from typing import ClassVar
 
 from blinkpy.common import message_pool
 from blinkpy.common.path_finder import WEB_TESTS_LAST_COMPONENT
@@ -57,7 +57,7 @@ MAX_TESTS_IN_OPTIMIZE_CMDLINE = 128
 
 class AbstractRebaseliningCommand(Command):
     """Base class for rebaseline-related commands."""
-    # Not overriding execute() - pylint: disable=abstract-method
+    # pylint: disable=abstract-method; not overriding `execute()`
 
     # Generic option groups (list of options):
     platform_options = factory.platform_options(use_globs=True)
@@ -298,8 +298,9 @@ class TestBaselineSet(object):
 
 class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
     """Base class for rebaseline commands that do some tasks in parallel."""
+    # pylint: disable=abstract-method; not overriding `execute()`
 
-    # Not overriding execute() - pylint: disable=abstract-method
+    MAX_WORKERS: ClassVar[int] = 16
 
     def __init__(self, options=None):
         super(AbstractParallelRebaselineCommand,
@@ -599,9 +600,10 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         results = []
         if resultdb:
             try:
+                num_workers = min(self.MAX_WORKERS,
+                                  self._tool.executive.cpu_count())
                 pool = message_pool.get(self, self._worker_factory,
-                                        self._tool.executive.cpu_count(),
-                                        self._tool)
+                                        num_workers, self._tool)
                 pool.run(('rebaseline', command) for command, cwd in commands)
             except Exception as error:
                 _log.debug('%s("%s") raised, exiting',
