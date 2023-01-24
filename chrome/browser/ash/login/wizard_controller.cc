@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
@@ -54,6 +55,7 @@
 #include "chrome/browser/ash/login/screens/active_directory_password_change_screen.h"
 #include "chrome/browser/ash/login/screens/app_downloading_screen.h"
 #include "chrome/browser/ash/login/screens/arc_terms_of_service_screen.h"
+#include "chrome/browser/ash/login/screens/arc_vm_data_migration_screen.h"
 #include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/choobe_screen.h"
@@ -133,6 +135,7 @@
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/arc_terms_of_service_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/assistant_optin_flow_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/auto_enrollment_check_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/choobe_screen_handler.h"
@@ -684,6 +687,11 @@ WizardController::CreateScreens() {
   append(std::make_unique<LocalStateErrorScreen>(
       oobe_ui->GetView<LocalStateErrorScreenHandler>()->AsWeakPtr()));
 
+  if (base::FeatureList::IsEnabled(arc::kEnableArcVmDataMigration)) {
+    append(std::make_unique<ArcVmDataMigrationScreen>(
+        oobe_ui->GetView<ArcVmDataMigrationScreenHandler>()->AsWeakPtr()));
+  }
+
   if (HIDDetectionScreen::CanShowScreen()) {
     append(std::make_unique<HIDDetectionScreen>(
         oobe_ui->GetView<HIDDetectionScreenHandler>()->AsWeakPtr(),
@@ -1128,6 +1136,10 @@ void WizardController::ShowLacrosDataBackwardMigrationScreen() {
 void WizardController::ShowGuestTosScreen() {
   DCHECK(features::IsOobeConsolidatedConsentEnabled());
   SetCurrentScreen(GetScreen(GuestTosScreenView::kScreenId));
+}
+
+void WizardController::ShowArcVmDataMigrationScreen() {
+  SetCurrentScreen(GetScreen(ArcVmDataMigrationScreenView::kScreenId));
 }
 
 void WizardController::ShowCryptohomeRecoveryScreen(
@@ -2420,6 +2432,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowConsolidatedConsentScreen();
   } else if (screen_id == CryptohomeRecoverySetupScreenView::kScreenId) {
     ShowCryptohomeRecoverySetupScreen();
+  } else if (screen_id == ArcVmDataMigrationScreenView::kScreenId) {
+    ShowArcVmDataMigrationScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
              screen_id == GaiaPasswordChangedView::kScreenId ||
              screen_id == ActiveDirectoryPasswordChangeView::kScreenId ||

@@ -6,6 +6,10 @@
 
 #include <memory>
 
+#include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/session/arc_vm_data_migration_status.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/webui/shimless_rma/shimless_rma.h"
@@ -34,6 +38,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/shimless_rma_dialog.h"
@@ -269,6 +274,22 @@ void OnRmaIsRequiredResponse() {
   }
 }
 
+bool MaybeStartArcVmDataMigration(Profile* profile) {
+  // Migration should be performed only when the session is restarted with the
+  // primary user.
+  user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
+  if (user && user_manager::UserManager::Get()->GetPrimaryUser() == user) {
+    arc::ArcVmDataMigrationStatus data_migration_status =
+        arc::GetArcVmDataMigrationStatus(profile->GetPrefs());
+    if (data_migration_status == arc::ArcVmDataMigrationStatus::kConfirmed ||
+        data_migration_status == arc::ArcVmDataMigrationStatus::kStarted) {
+      ShowLoginWizard(ArcVmDataMigrationScreenView::kScreenId);
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 ChromeSessionManager::ChromeSessionManager()
@@ -309,6 +330,11 @@ void ChromeSessionManager::Initialize(
     if (features::IsShimlessRMAFlowEnabled()) {
       VLOG(1) << "ChromeSessionManager::Initialize Shimless RMA is not allowed";
     }
+  }
+
+  if (base::FeatureList::IsEnabled(arc::kEnableArcVmDataMigration) &&
+      MaybeStartArcVmDataMigration(profile)) {
+    return;
   }
 
   // This check has to happen before `StartKioskSession()` or

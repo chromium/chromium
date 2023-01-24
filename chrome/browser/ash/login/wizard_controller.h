@@ -317,6 +317,7 @@ class WizardController : public OobeUI::Observer {
   void ShowCryptohomeRecoverySetupScreen();
   void ShowAuthenticationSetupScreen();
   void ShowGuestTosScreen();
+  void ShowArcVmDataMigrationScreen();
   void ShowThemeSelectionScreen();
   void ShowChoobeScreen();
   void ShowTouchpadScrollScreen();
