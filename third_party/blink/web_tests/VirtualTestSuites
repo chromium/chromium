@@ -1138,9 +1138,7 @@
               "view-transition",
               "inspector-protocol/css/css-get-styles-for-view-transition.js"],
     "exclusive_tests": "ALL",
-    "args": ["--enable-features=ViewTransition",
-             "--enable-threaded-compositing",
-             "--enable-gpu-rasterization"],
+    "args": ["--enable-threaded-compositing"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -1148,9 +1146,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/view-transition-on-navigation"],
     "exclusive_tests": "ALL",
-    "args": ["--enable-features=ViewTransition,ViewTransitionOnNavigation",
-             "--enable-threaded-compositing",
-             "--enable-gpu-rasterization"],
+    "args": ["--enable-features=ViewTransitionOnNavigation",
+             "--enable-threaded-compositing"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -1161,9 +1158,7 @@
               "view-transition",
               "inspector-protocol/css/css-get-styles-for-view-transition.js"],
     "exclusive_tests": "ALL",
-    "args": ["--enable-features=ViewTransition",
-             "--enable-threaded-compositing",
-             "--enable-gpu-rasterization",
+    "args": ["--enable-threaded-compositing",
              "--force-color-profile=display-p3-d65"],
     "expires": "Jul 1, 2023"
   },

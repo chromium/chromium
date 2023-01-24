@@ -2046,6 +2046,7 @@ interface Document : Node
     method replaceChildren
     method requestStorageAccess
     method requestStorageAccessForOrigin
+    method startViewTransition
     method webkitCancelFullScreen
     method webkitExitFullscreen
     method write
@@ -9634,6 +9635,13 @@ interface ViewTimeline : ScrollTimeline
     getter startOffset
     getter subject
     method constructor
+interface ViewTransition
+    attribute @@toStringTag
+    getter finished
+    getter ready
+    getter updateCallbackDone
+    method constructor
+    method skipTransition
 interface VirtualKeyboard : EventTarget
     attribute @@toStringTag
     getter boundingRect

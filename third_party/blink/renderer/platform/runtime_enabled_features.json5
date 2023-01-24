@@ -3005,6 +3005,7 @@
       // View transitions.
       // See https://www.w3.org/TR/css-view-transitions-1/
       name: "ViewTransition",
+      status: "stable",
       base_feature: "ViewTransition",
       implied_by: ["ViewTransitionOnNavigation"],
     },

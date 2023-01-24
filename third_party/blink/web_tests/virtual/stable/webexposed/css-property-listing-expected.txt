@@ -380,6 +380,7 @@ All changes to this list should go through Blink's feature review process: http:
     user-select
     vector-effect
     vertical-align
+    view-transition-name
     visibility
     white-space
     widows

@@ -367,6 +367,7 @@ vertical-align: baseline
 view-timeline-axis: block
 view-timeline-inset: 0px
 view-timeline-name: none
+view-transition-name: none
 visibility: visible
 white-space: normal
 widows: 2

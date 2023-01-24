@@ -404,6 +404,7 @@ All changes to this list should go through Blink's feature review process: http:
     view-timeline-axis
     view-timeline-inset
     view-timeline-name
+    view-transition-name
     visibility
     white-space
     widows

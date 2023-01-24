@@ -77,6 +77,7 @@ Level=1
 [NO STYLE]
 html: [user-agent] {
     ['display':'block'] @[undefined-undefined] 
+    ['view-transition-name':'root'] @[undefined-undefined] 
 }
 html: [regular, 4:0-4:4] {
     ['font-weight':'400'] @[5:4-5:21] 

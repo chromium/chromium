@@ -436,6 +436,7 @@ unicodeRange
 userSelect
 vectorEffect
 verticalAlign
+viewTransitionName
 visibility
 webkitAlignContent
 webkitAlignItems
