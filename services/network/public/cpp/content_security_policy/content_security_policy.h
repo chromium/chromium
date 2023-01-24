@@ -102,9 +102,6 @@ bool Subsumes(const mojom::ContentSecurityPolicy& policy_a,
               const std::vector<mojom::ContentSecurityPolicyPtr>& policies_b);
 
 COMPONENT_EXPORT(NETWORK_CPP)
-mojom::CSPDirectiveName ToCSPDirectiveName(const std::string& name);
-
-COMPONENT_EXPORT(NETWORK_CPP)
 std::string ToString(mojom::CSPDirectiveName name);
 
 // Return true if the response allows the embedder to enforce arbitrary policy

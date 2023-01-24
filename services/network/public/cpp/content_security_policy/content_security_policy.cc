@@ -56,6 +56,101 @@ std::string ElideURLForReportViolation(const GURL& url) {
   return url.spec();
 }
 
+CSPDirectiveName ToCSPDirectiveName(base::StringPiece name) {
+  if (base::EqualsCaseInsensitiveASCII(name, "base-uri")) {
+    return CSPDirectiveName::BaseURI;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "block-all-mixed-content")) {
+    return CSPDirectiveName::BlockAllMixedContent;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "child-src")) {
+    return CSPDirectiveName::ChildSrc;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "connect-src")) {
+    return CSPDirectiveName::ConnectSrc;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "default-src")) {
+    return CSPDirectiveName::DefaultSrc;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "fenced-frame-src")) {
+    return CSPDirectiveName::FencedFrameSrc;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "frame-ancestors")) {
+    return CSPDirectiveName::FrameAncestors;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "frame-src")) {
+    return CSPDirectiveName::FrameSrc;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "font-src")) {
+    return CSPDirectiveName::FontSrc;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "form-action")) {
+    return CSPDirectiveName::FormAction;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "img-src")) {
+    return CSPDirectiveName::ImgSrc;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "manifest-src")) {
+    return CSPDirectiveName::ManifestSrc;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "media-src")) {
+    return CSPDirectiveName::MediaSrc;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "object-src")) {
+    return CSPDirectiveName::ObjectSrc;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "prefetch-src")) {
+    return CSPDirectiveName::PrefetchSrc;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "report-uri")) {
+    return CSPDirectiveName::ReportURI;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "require-trusted-types-for")) {
+    return CSPDirectiveName::RequireTrustedTypesFor;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "sandbox")) {
+    return CSPDirectiveName::Sandbox;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "script-src")) {
+    return CSPDirectiveName::ScriptSrc;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "script-src-attr")) {
+    return CSPDirectiveName::ScriptSrcAttr;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "script-src-elem")) {
+    return CSPDirectiveName::ScriptSrcElem;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "style-src")) {
+    return CSPDirectiveName::StyleSrc;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "style-src-attr")) {
+    return CSPDirectiveName::StyleSrcAttr;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "style-src-elem")) {
+    return CSPDirectiveName::StyleSrcElem;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "treat-as-public-address")) {
+    return CSPDirectiveName::TreatAsPublicAddress;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "trusted-types")) {
+    return CSPDirectiveName::TrustedTypes;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "upgrade-insecure-requests")) {
+    return CSPDirectiveName::UpgradeInsecureRequests;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "worker-src")) {
+    return CSPDirectiveName::WorkerSrc;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "report-to")) {
+    return CSPDirectiveName::ReportTo;
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "navigate-to")) {
+    return CSPDirectiveName::NavigateTo;
+  }
+
+  return CSPDirectiveName::Unknown;
+}
+
 bool SupportedInReportOnly(CSPDirectiveName directive) {
   switch (directive) {
     case CSPDirectiveName::Sandbox:
@@ -616,8 +711,7 @@ mojom::CSPSourceListPtr ParseSourceList(
       continue;
     }
 
-    if (ToCSPDirectiveName(std::string(expression)) !=
-        CSPDirectiveName::Unknown) {
+    if (ToCSPDirectiveName(expression) != CSPDirectiveName::Unknown) {
       parsing_errors.emplace_back(base::StringPrintf(
           "The Content-Security-Policy directive '%s' contains '%s' as a "
           "source expression. Did you want to add it as a directive and forget "
@@ -958,8 +1052,7 @@ void AddContentSecurityPolicyFromHeader(
       continue;
     }
 
-    CSPDirectiveName directive_name =
-        ToCSPDirectiveName(std::string(directive.first));
+    CSPDirectiveName directive_name = ToCSPDirectiveName(directive.first);
 
     if (directive_name == CSPDirectiveName::Unknown) {
       out->parsing_errors.emplace_back(
@@ -1422,71 +1515,6 @@ bool Subsumes(const mojom::ContentSecurityPolicy& policy_a,
     return CSPSourceListSubsumes(*required.second, returned, required.first,
                                  origin_b);
   });
-}
-
-CSPDirectiveName ToCSPDirectiveName(const std::string& name) {
-  if (base::EqualsCaseInsensitiveASCII(name, "base-uri"))
-    return CSPDirectiveName::BaseURI;
-  if (base::EqualsCaseInsensitiveASCII(name, "block-all-mixed-content"))
-    return CSPDirectiveName::BlockAllMixedContent;
-  if (base::EqualsCaseInsensitiveASCII(name, "child-src"))
-    return CSPDirectiveName::ChildSrc;
-  if (base::EqualsCaseInsensitiveASCII(name, "connect-src"))
-    return CSPDirectiveName::ConnectSrc;
-  if (base::EqualsCaseInsensitiveASCII(name, "default-src"))
-    return CSPDirectiveName::DefaultSrc;
-  if (base::EqualsCaseInsensitiveASCII(name, "fenced-frame-src"))
-    return CSPDirectiveName::FencedFrameSrc;
-  if (base::EqualsCaseInsensitiveASCII(name, "frame-ancestors"))
-    return CSPDirectiveName::FrameAncestors;
-  if (base::EqualsCaseInsensitiveASCII(name, "frame-src"))
-    return CSPDirectiveName::FrameSrc;
-  if (base::EqualsCaseInsensitiveASCII(name, "font-src"))
-    return CSPDirectiveName::FontSrc;
-  if (base::EqualsCaseInsensitiveASCII(name, "form-action"))
-    return CSPDirectiveName::FormAction;
-  if (base::EqualsCaseInsensitiveASCII(name, "img-src"))
-    return CSPDirectiveName::ImgSrc;
-  if (base::EqualsCaseInsensitiveASCII(name, "manifest-src"))
-    return CSPDirectiveName::ManifestSrc;
-  if (base::EqualsCaseInsensitiveASCII(name, "media-src"))
-    return CSPDirectiveName::MediaSrc;
-  if (base::EqualsCaseInsensitiveASCII(name, "object-src"))
-    return CSPDirectiveName::ObjectSrc;
-  if (base::EqualsCaseInsensitiveASCII(name, "prefetch-src"))
-    return CSPDirectiveName::PrefetchSrc;
-  if (base::EqualsCaseInsensitiveASCII(name, "report-uri"))
-    return CSPDirectiveName::ReportURI;
-  if (base::EqualsCaseInsensitiveASCII(name, "require-trusted-types-for"))
-    return CSPDirectiveName::RequireTrustedTypesFor;
-  if (base::EqualsCaseInsensitiveASCII(name, "sandbox"))
-    return CSPDirectiveName::Sandbox;
-  if (base::EqualsCaseInsensitiveASCII(name, "script-src"))
-    return CSPDirectiveName::ScriptSrc;
-  if (base::EqualsCaseInsensitiveASCII(name, "script-src-attr"))
-    return CSPDirectiveName::ScriptSrcAttr;
-  if (base::EqualsCaseInsensitiveASCII(name, "script-src-elem"))
-    return CSPDirectiveName::ScriptSrcElem;
-  if (base::EqualsCaseInsensitiveASCII(name, "style-src"))
-    return CSPDirectiveName::StyleSrc;
-  if (base::EqualsCaseInsensitiveASCII(name, "style-src-attr"))
-    return CSPDirectiveName::StyleSrcAttr;
-  if (base::EqualsCaseInsensitiveASCII(name, "style-src-elem"))
-    return CSPDirectiveName::StyleSrcElem;
-  if (base::EqualsCaseInsensitiveASCII(name, "treat-as-public-address"))
-    return CSPDirectiveName::TreatAsPublicAddress;
-  if (base::EqualsCaseInsensitiveASCII(name, "trusted-types"))
-    return CSPDirectiveName::TrustedTypes;
-  if (base::EqualsCaseInsensitiveASCII(name, "upgrade-insecure-requests"))
-    return CSPDirectiveName::UpgradeInsecureRequests;
-  if (base::EqualsCaseInsensitiveASCII(name, "worker-src"))
-    return CSPDirectiveName::WorkerSrc;
-  if (base::EqualsCaseInsensitiveASCII(name, "report-to"))
-    return CSPDirectiveName::ReportTo;
-  if (base::EqualsCaseInsensitiveASCII(name, "navigate-to"))
-    return CSPDirectiveName::NavigateTo;
-
-  return CSPDirectiveName::Unknown;
 }
 
 std::string ToString(CSPDirectiveName name) {
