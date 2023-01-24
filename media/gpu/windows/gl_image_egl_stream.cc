@@ -30,10 +30,6 @@ gl::GLImage::Type GLImageEGLStream::GetType() const {
   return Type::EGL_STREAM;
 }
 
-void GLImageEGLStream::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                                    uint64_t process_tracing_id,
-                                    const std::string& dump_name) {}
-
 void GLImageEGLStream::SetTexture(
     const Microsoft::WRL::ComPtr<ID3D11Texture2D>& texture,
     size_t level) {

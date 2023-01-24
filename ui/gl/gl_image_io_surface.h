@@ -54,12 +54,15 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
                                    gfx::BufferFormat format,
                                    const gfx::ColorSpace& color_space);
 
+  // Dumps information about the memory backing this instance to a dump named
+  // |dump_name|.
+  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
+                    uint64_t process_tracing_id,
+                    const std::string& dump_name);
+
   // Overridden from GLImage:
   gfx::Size GetSize() override;
   bool BindTexImage(unsigned target) override;
-  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                    uint64_t process_tracing_id,
-                    const std::string& dump_name) override;
 
   gfx::BufferFormat format() const { return format_; }
   gfx::GenericSharedMemoryId io_surface_id() const { return io_surface_id_; }

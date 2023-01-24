@@ -45,9 +45,6 @@ class GL_EXPORT GLImageD3D : public GLImage {
   Type GetType() const override;
   gfx::Size GetSize() override;
   bool BindTexImage(unsigned target) override;
-  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                    uint64_t process_tracing_id,
-                    const std::string& dump_name) override;
 
   const Microsoft::WRL::ComPtr<ID3D11Texture2D>& texture() const {
     return texture_;

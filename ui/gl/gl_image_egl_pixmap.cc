@@ -90,10 +90,4 @@ void GLImageEGLPixmap::ReleaseEGLImage() {
   eglReleaseTexImage(display_, surface_, EGL_BACK_BUFFER);
 }
 
-void GLImageEGLPixmap::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                                    uint64_t process_tracing_id,
-                                    const std::string& dump_name) {
-  // TODO(crbug.com/514914): Implement GLImage OnMemoryDump.
-}
-
 }  // namespace gl

@@ -9,8 +9,6 @@
 
 #include <EGL/eglplatform.h>
 
-#include <string>
-
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "ui/gfx/color_space.h"
@@ -57,9 +55,6 @@ class GL_EXPORT GLImageNativePixmap : public GLImage {
   // Overridden from GLImage:
   gfx::Size GetSize() override;
   bool BindTexImage(unsigned target) override;
-  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                    uint64_t process_tracing_id,
-                    const std::string& dump_name) override;
 
  protected:
   ~GLImageNativePixmap() override;

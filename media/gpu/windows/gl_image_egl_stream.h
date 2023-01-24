@@ -23,9 +23,6 @@ class GLImageEGLStream : public gl::GLImage {
   bool BindTexImage(unsigned target) override;
   gfx::Size GetSize() override;
   Type GetType() const override;
-  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                    uint64_t process_tracing_id,
-                    const std::string& dump_name) override;
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture() { return texture_; }
   size_t level() const { return level_; }

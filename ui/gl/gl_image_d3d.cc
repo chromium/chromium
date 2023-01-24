@@ -81,10 +81,4 @@ bool GLImageD3D::BindTexImage(unsigned target) {
   return glGetError() == static_cast<GLenum>(GL_NO_ERROR);
 }
 
-void GLImageD3D::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                              uint64_t process_tracing_id,
-                              const std::string& dump_name) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
 }  // namespace gl

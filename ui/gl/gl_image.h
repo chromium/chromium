@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
@@ -21,12 +19,6 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gl/gl_export.h"
-
-namespace base {
-namespace trace_event {
-class ProcessMemoryDump;
-}  // namespace trace_event
-}  // namespace base
 
 namespace gpu {
 class D3DImageBacking;
@@ -103,12 +95,6 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   bool BindTexImageForTesting(unsigned target) { return BindTexImage(target); }
 
  protected:
-  // Dumps information about the memory backing the GLImage to a dump named
-  // |dump_name|.
-  virtual void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                            uint64_t process_tracing_id,
-                            const std::string& dump_name);
-
   // An identifier for subclasses. Necessary for safe downcasting.
   enum class Type { NONE, EGL_STREAM, D3D, PBUFFER };
   virtual Type GetType() const;

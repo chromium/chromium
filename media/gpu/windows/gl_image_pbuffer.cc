@@ -25,9 +25,6 @@ bool GLImagePbuffer::BindTexImage(unsigned target) {
   return true;
 }
 void SetColorSpace(const gfx::ColorSpace& color_space) {}
-void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                  uint64_t process_tracing_id,
-                  const std::string& dump_name) {}
 
 GLImagePbuffer::~GLImagePbuffer() {
   EGLDisplay egl_display = gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay();
