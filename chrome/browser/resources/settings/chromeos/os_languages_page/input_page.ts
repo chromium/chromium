@@ -20,41 +20,43 @@ import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
+import {FocusConfig} from '../../focus_config.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
+import {castExists} from '../assert_extras.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {hasOptionsPageInSettings} from './input_method_util.js';
 import {getTemplate} from './input_page.html.js';
-import {InputsShortcutReminderState, LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_metrics_proxy.js';
+import {InputsShortcutReminderState, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_metrics_proxy.js';
 import {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {PrefsBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const OsSettingsInputPageElementBase = mixinBehaviors(
-    [DeepLinkingBehavior, I18nBehavior, PrefsBehavior, RouteObserverBehavior],
-    PolymerElement);
+const OsSettingsInputPageElementBase =
+    RouteObserverMixin(PrefsMixin(I18nMixin(DeepLinkingMixin(PolymerElement))));
 
-/** @polymer */
+interface OsSettingsInputPageElement {
+  $: {
+    addInputMethod: CrButtonElement,
+    editDictionarySubpageTrigger: CrLinkRowElement,
+  };
+}
+
 class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   static get is() {
-    return 'os-settings-input-page';
+    return 'os-settings-input-page' as const;
   }
 
   static get template() {
@@ -63,13 +65,14 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
   static get properties() {
     return {
+      // TODO(b/265554350): Remove this property from properties() as it is
+      // already specified in PrefsMixin.
       /* Preferences state. */
       prefs: {
         type: Object,
         notify: true,
       },
 
-      /** @type {!Map<string, (string|Function)>} */
       focusConfig: {
         type: Object,
         observer: 'focusConfigChanged_',
@@ -78,39 +81,34 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
       /**
        * Read-only reference to the languages model provided by the
        * 'os-settings-languages' instance.
-       * @type {!LanguagesModel|undefined}
        */
       languages: {
         type: Object,
       },
 
-      /** @type {!LanguageHelper} */
       languageHelper: Object,
 
-      /**
-       * @private {!Array<!LanguageState|!SpellCheckLanguageState>|undefined}
-       */
       spellCheckLanguages_: {
         type: Array,
         computed: `getSpellCheckLanguages_(languageSettingsV2Update2Enabled_,
             languages.spellCheckOnLanguages.*, languages.enabled.*)`,
       },
 
-      /** @private */
       showAddInputMethodsDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       showAddSpellcheckLanguagesDialog_: {
         type: Boolean,
         value: false,
       },
 
+      // TODO(b/265554350): Remove this property from properties() as it is
+      // already specified in DeepLinkingMixin, and move the default value to
+      // the field initializer.
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
@@ -121,7 +119,6 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
         ]),
       },
 
-      /** @private */
       languageSettingsV2Update2Enabled_: {
         type: Boolean,
         value() {
@@ -129,7 +126,6 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
         },
       },
 
-      /** @private */
       languageSettingsJapaneseEnabled_: {
         type: Boolean,
         value() {
@@ -137,7 +133,6 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
         },
       },
 
-      /** @private */
       shouldShowLanguagePacksNotice_: {
         type: Boolean,
         value() {
@@ -148,7 +143,6 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
       /**
        * Whether the shortcut reminder for the last used IME is currently
        * showing.
-       * @private
        */
       showLastUsedImeShortcutReminder_: {
         type: Boolean,
@@ -159,7 +153,6 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
       /**
        * Whether the shortcut reminder for the next IME is currently showing.
-       * @private
        */
       showNextImeShortcutReminder_: {
         type: Boolean,
@@ -170,7 +163,6 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
       /**
        * The body of the currently showing shortcut reminders.
-       * @private {!Array<string>}
        */
       shortcutReminderBody_: {
         type: Array,
@@ -178,7 +170,6 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
             showNextImeShortcutReminder_)`,
       },
 
-      /** @private */
       onDeviceGrammarCheckEnabled_: {
         type: Boolean,
         value() {
@@ -188,19 +179,51 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     };
   }
 
-  /** @override */
-  constructor() {
-    super();
+  // Public API: Bidirectional data flow.
+  // override prefs: any;  // From PrefsMixin.
 
-    /** @private {!LanguagesMetricsProxy} */
-    this.languagesMetricsProxy_ = LanguagesMetricsProxyImpl.getInstance();
-  }
+  // Public API: Downwards data flow.
+  languages: LanguagesModel|undefined;
+  languageHelper: LanguageHelper;
+  // Note that even though this passed in using downwards data flow, we mutate
+  // this variable in focusConfigChanged_. This is OK, as the place where we use
+  // focusConfig (<os-settings-animated-pages>) lazily reads focusConfig and
+  // does not need to be notified of mutations.
+  focusConfig: FocusConfig;
 
-  /**
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
-   */
-  currentRouteChanged(route, oldRoute) {
+  // API proxies.
+  private languagesMetricsProxy_ = LanguagesMetricsProxyImpl.getInstance();
+
+  // Internal properties for mixins.
+  // From DeepLinkingMixin.
+  // override supportedSettingIds = new Set([
+  //   Setting.kShowInputOptionsInShelf,
+  //   Setting.kAddInputMethod,
+  //   Setting.kSpellCheck,
+  // ]);
+
+  // Internal state.
+  private showAddSpellcheckLanguagesDialog_: boolean;
+  private showAddInputMethodsDialog_: boolean;
+
+  // loadTimeData flags.
+  private onDeviceGrammarCheckEnabled_: boolean;
+  private languageSettingsV2Update2Enabled_: boolean;
+  private languageSettingsJapaneseEnabled_: boolean;
+  private shouldShowLanguagePacksNotice_: boolean;
+
+  // Computed properties.
+  private spellCheckLanguages_?: Array<LanguageState|SpellCheckLanguageState>;
+  private showLastUsedImeShortcutReminder_: boolean;
+  private showNextImeShortcutReminder_: boolean;
+  // This is passed into a <keyboard-shortcut-banner> as a `body`, but that
+  // takes in a `string[]`, not `TrustedHTML[]`.
+  // TODO(b/238031866): Update <keyboard-shortcut-banner> to take in
+  // `TrustedHTML[]`, or update this and `getShortcutReminderBody` to be a a
+  // `string[]`.
+  private shortcutReminderBody_: TrustedHTML[];
+
+  override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.OS_LANGUAGES_INPUT) {
       return;
@@ -209,34 +232,24 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     this.attemptDeepLink();
   }
 
-  /**
-   * @param {!Map<string, (string|Function)>} newConfig
-   * @param {?Map<string, (string|Function)>} oldConfig
-   * @private
-   */
-  focusConfigChanged_(newConfig, oldConfig) {
-    // focusConfig is set only once on the parent, so this observer should
-    // only fire once.
+  private focusConfigChanged_(
+      _newConfig: FocusConfig, oldConfig: FocusConfig|null): void {
+    // Safety: focusConfig is set only once on the parent, so this observer
+    // should only fire once.
     assert(!oldConfig);
     this.focusConfig.set(
         routes.OS_LANGUAGES_EDIT_DICTIONARY.path,
         () => focusWithoutInk(this.$.editDictionarySubpageTrigger));
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onShowImeMenuChange_(e) {
+  private onShowImeMenuChange_(e: Event): void {
     this.languagesMetricsProxy_.recordToggleShowInputOptionsOnShelf(
-        e.target.checked);
+        // Safety: This method is only called from a
+        // <settings-toggle-button> event handler.
+        (e.target as SettingsToggleButtonElement).checked);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  inputMethodsLimitedByPolicy_() {
+  private inputMethodsLimitedByPolicy_(): boolean {
     const allowedInputMethodsPref =
         this.getPref('settings.language.allowed_input_methods');
     return !!allowedInputMethodsPref && allowedInputMethodsPref.value.length;
@@ -245,13 +258,13 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   /**
    * Handler for click events on an input method on the main page,
    * which sets it as the current input method.
-   * @param {{model: {item: !chrome.languageSettingsPrivate.InputMethod},
-   *           target: {tagName: string}}} e
-   * @private
    */
-  onInputMethodClick_(e) {
+  private onInputMethodClick_(
+      e: DomRepeatEvent<chrome.languageSettingsPrivate.InputMethod>): void {
     // Clicks on the button are handled in onInputMethodOptionsClick_.
-    if (e.target.tagName === 'CR-ICON-BUTTON') {
+    // Safety: This event comes from the DOM, so the target should always be an
+    // element.
+    if ((e.target as Element).tagName === 'CR-ICON-BUTTON') {
       return;
     }
 
@@ -264,11 +277,10 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   /**
    * Handler for <Enter> events on an input method on the main page,
    * which sets it as the current input method.
-   * @param {{model: {item: !chrome.languageSettingsPrivate.InputMethod},
-   *           key: string}} e
-   * @private
    */
-  onInputMethodKeyPress_(e) {
+  private onInputMethodKeyPress_(
+      e: DomRepeatEvent<
+          chrome.languageSettingsPrivate.InputMethod, KeyboardEvent>): void {
     // Ignores key presses other than <Enter>.
     if (e.key !== 'Enter') {
       return;
@@ -280,32 +292,26 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   /**
    * Opens the input method extension's options page in a new tab (or focuses
    * an existing instance of the IME's options).
-   * @param {{model: {item: chrome.languageSettingsPrivate.InputMethod}}} e
-   * @private
    */
-  openExtensionOptionsPage_(e) {
+  private openExtensionOptionsPage_(
+      e: DomRepeatEvent<chrome.languageSettingsPrivate.InputMethod>): void {
     this.languageHelper.openInputMethodOptions(e.model.item.id);
   }
 
-
   /**
-   * @param {string} id The input method ID.
-   * @return {boolean} True if there is a options page in ChromeOS settings
-   *     for the input method ID.
-   * @private
+   * @param id The input method ID.
+   * @return True if there is a options page in ChromeOS settings for the input
+   *     method ID.
    */
-  hasOptionsPageInSettings_(id) {
+  private hasOptionsPageInSettings_(id: string): boolean {
     return hasOptionsPageInSettings(
         id, loadTimeData.getBoolean('allowPredictiveWriting'),
         loadTimeData.getBoolean('allowDiacriticsOnPhysicalKeyboardLongpress'),
         loadTimeData.getBoolean('systemJapanesePhysicalTyping'));
   }
 
-  /**
-   * @param {{model: {item: chrome.languageSettingsPrivate.InputMethod}}} e
-   * @private
-   */
-  navigateToOptionsPageInSettings_(e) {
+  private navigateToOptionsPageInSettings_(
+      e: DomRepeatEvent<chrome.languageSettingsPrivate.InputMethod>): void {
     const params = new URLSearchParams();
     params.append('id', e.model.item.id);
     Router.getInstance().navigateTo(
@@ -313,68 +319,59 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   }
 
   /**
-   * @param {string} id The input method ID.
-   * @param {string} currentId The ID of the currently enabled input method.
-   * @return {boolean} True if the IDs match.
-   * @private
+   * @param id The input method ID.
+   * @param currentId The ID of the currently enabled input method.
+   * @return True if the IDs match.
    */
-  isCurrentInputMethod_(id, currentId) {
+  private isCurrentInputMethod_(id: string, currentId: string): boolean {
     return id === currentId;
   }
 
   /**
-   * @param {string} id The input method ID.
-   * @param {string} currentId The ID of the currently enabled input method.
-   * @return {string} The class for the input method item.
-   * @private
+   * @param id The input method ID.
+   * @param currentId The ID of the currently enabled input method.
+   * @return The class for the input method item.
    */
-  getInputMethodItemClass_(id, currentId) {
+  private getInputMethodItemClass_(id: string, currentId: string): string {
     return this.isCurrentInputMethod_(id, currentId) ? 'selected' : '';
   }
 
   /**
-   * @param {string} id The selected input method ID.
-   * @param {string} currentId The ID of the currently enabled input method.
-   * @return {string} The default tab index '0' if the selected input method
-   *     is not currently enabled; otherwise, returns an empty string which
-   *     effectively unsets the tabindex attribute.
-   * @private
+   * @param id The selected input method ID.
+   * @param currentId The ID of the currently enabled input method.
+   * @return The default tab index '0' if the selected input method is not
+   *     currently enabled; otherwise, returns an empty string which effectively
+   *     unsets the tabindex attribute.
    */
-  getInputMethodTabIndex_(id, currentId) {
+  private getInputMethodTabIndex_(id: string, currentId: string): string {
     return id === currentId ? '' : '0';
   }
 
-  /**
-   * @param {string} inputMethodName
-   * @return {string}
-   * @private
-   */
-  getOpenOptionsPageLabel_(inputMethodName) {
+  private getOpenOptionsPageLabel_(inputMethodName: string): string {
     return this.i18n('openOptionsPage', inputMethodName);
   }
 
-  /** @private */
-  onAddInputMethodClick_() {
+  private onAddInputMethodClick_(): void {
     this.languagesMetricsProxy_.recordAddInputMethod();
     this.showAddInputMethodsDialog_ = true;
   }
 
-  /** @private */
-  onAddInputMethodsDialogClose_() {
+  private onAddInputMethodsDialogClose_(): void {
     this.showAddInputMethodsDialog_ = false;
-    focusWithoutInk(assert(this.$.addInputMethod));
+    focusWithoutInk(this.$.addInputMethod);
   }
 
-  /** @private */
-  onAddSpellcheckLanguagesClick_() {
+  private onAddSpellcheckLanguagesClick_(): void {
     this.showAddSpellcheckLanguagesDialog_ = true;
   }
 
-  /** @private */
-  onAddSpellcheckLanguagesDialogClose_() {
+  private onAddSpellcheckLanguagesDialogClose_(): void {
     this.showAddSpellcheckLanguagesDialog_ = false;
 
-    if (this.languages.spellCheckOnLanguages.length > 0) {
+    // This assertion of `this.languages` is potentially unsafe and could fail.
+    // TODO(b/265553377): Prove that this assertion is safe, or rewrite this to
+    // avoid this assertion.
+    if (this.languages!.spellCheckOnLanguages.length > 0) {
       // User has at least one spell check language after closing the dialog.
       // If spell checking is disabled, enabled it.
       this.setPrefValue('browser.enable_spellchecking', true);
@@ -384,15 +381,17 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     // within a <template is="dom-if">), we need to use
     // this.shadowRoot.querySelector("#addSpellcheckLanguages") instead of
     // this.$.addSpellCheckLanguages.
+    // TODO(b/263823772): Move addSpellcheckLanguages to `this.$` once we remove
+    // LSV2 Update 2 code.
     focusWithoutInk(
-        assert(this.shadowRoot.querySelector('#addSpellcheckLanguages')));
+        // Safety: This method is only called when the spell check
+        // language dialog is closed, but that can only be opened if
+        // #addSpellchecklanguages was clicked.
+        castExists(this.shadowRoot!.querySelector('#addSpellcheckLanguages')));
   }
 
-  /**
-   * @param {!chrome.languageSettingsPrivate.InputMethod} targetInputMethod
-   * @private
-   */
-  disableRemoveInputMethod_(targetInputMethod) {
+  private disableRemoveInputMethod_(
+      targetInputMethod: chrome.languageSettingsPrivate.InputMethod): boolean {
     // Third-party IMEs can always be removed.
     if (!this.languageHelper.isComponentIme(targetInputMethod)) {
       return false;
@@ -400,58 +399,57 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
     // Disable remove if there is no other component IME (pre-installed
     // system IMES) enabled.
-    return !this.languages.inputMethods.enabled.some(
-        inputMethod => inputMethod.id !== targetInputMethod.id &&
-            this.languageHelper.isComponentIme(inputMethod));
+    // Safety: This method is only called from a button inside a `dom-repeat`
+    // over `languages.inputMethods.enabled`, so if this method is called,
+    // `this.languages` must be defined.
+    return !this.languages!
+                // Safety: `LanguagesModel.inputMethods` is always defined on
+                // CrOS.
+                .inputMethods!.enabled.some(
+                    inputMethod => inputMethod.id !== targetInputMethod.id &&
+                        this.languageHelper.isComponentIme(inputMethod));
   }
 
-  /**
-   * @param {!chrome.languageSettingsPrivate.InputMethod} inputMethod
-   * @private
-   */
-  getRemoveInputMethodTooltip_(inputMethod) {
+  private getRemoveInputMethodTooltip_(
+      inputMethod: chrome.languageSettingsPrivate.InputMethod): string {
     return this.i18n('removeInputMethodTooltip', inputMethod.displayName);
   }
 
-  /**
-   * @param {{model: {item: chrome.languageSettingsPrivate.InputMethod}}} e
-   * @private
-   */
-  onRemoveInputMethodClick_(e) {
+  private onRemoveInputMethodClick_(
+      e: DomRepeatEvent<chrome.languageSettingsPrivate.InputMethod>): void {
     this.languageHelper.removeInputMethod(e.model.item.id);
     recordSettingChange();
   }
 
-  /**
-   * @param {!SpellCheckLanguageState} lang
-   * @private
-   */
-  getRemoveSpellcheckLanguageTooltip_(lang) {
+  private getRemoveSpellcheckLanguageTooltip_(lang: SpellCheckLanguageState):
+      string {
     return this.i18n(
         'removeSpellCheckLanguageTooltip', lang.language.displayName);
   }
 
-  /**
-   * @param {{model: {item: SpellCheckLanguageState}}} e
-   * @private
-   */
-  onRemoveSpellcheckLanguageClick_(e) {
+  private onRemoveSpellcheckLanguageClick_(
+      e: DomRepeatEvent<LanguageState|SpellCheckLanguageState>): void {
     this.languageHelper.toggleSpellCheck(e.model.item.language.code, false);
     recordSettingChange();
   }
 
   /**
    * Called whenever the spell check toggle is changed by the user.
-   * @param {!Event} e
-   * @private
    */
-  onSpellcheckToggleChange_(e) {
-    const toggle = /** @type {SettingsToggleButtonElement} */ (e.target);
+  private onSpellcheckToggleChange_(e: Event): void {
+    // Safety: This is only called from a 'settings-boolean-control-changed'
+    // event from a <settings-toggle-button>, so the event target must be a
+    // <settings-toggle-button>.
+    const toggle = (e.target as SettingsToggleButtonElement);
 
     this.languagesMetricsProxy_.recordToggleSpellCheck(toggle.checked);
 
     if (this.languageSettingsV2Update2Enabled_ && toggle.checked &&
-        this.languages.spellCheckOnLanguages.length === 0) {
+        // This assertion of `this.languages` is potentially unsafe and could
+        // fail.
+        // TODO(b/265553377): Prove that this assertion is safe, or rewrite this
+        // to avoid this assertion.
+        this.languages!.spellCheckOnLanguages.length === 0) {
       // In LSV2 Update 2, we never want to enable spell check without the user
       // having a spell check language. When this happens, we try estimating
       // their expected spell check language (their device language, assuming
@@ -461,16 +459,19 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
       // happens. If the user then adds a spell check language, we finally
       // enable spell check (see |onAddSpellcheckLanguagesDialogClose_|).
 
-      // This assert is safe as prospectiveUILanguage is always defined in
-      // languages.js' |createModel_()|.
-      const deviceLanguageCode = assert(this.languages.prospectiveUILanguage);
+      // Safety: `LanguagesModel.prospectiveUILanguage` is always defined on
+      // CrOS, and we checked that `this.languages` is defined above.
+      const deviceLanguageCode =
+          castExists(this.languages!.prospectiveUILanguage);
       // However, deviceLanguage itself may be undefined as it is possible that
       // it was set outside of CrOS language settings (normally when debugging
       // or in tests).
       const deviceLanguage =
           this.languageHelper.getLanguage(deviceLanguageCode);
       if (deviceLanguage && deviceLanguage.supportsSpellcheck &&
-          this.languages.inputMethods.enabled.some(
+          // Safety: `LanguagesModel.inputMethods` is always defined on CrOS,
+          // and we checked that `this.languages` is defined above.
+          this.languages!.inputMethods!.enabled.some(
               inputMethod =>
                   inputMethod.languageCodes.includes(deviceLanguageCode))) {
         this.languageHelper.toggleSpellCheck(deviceLanguageCode, true);
@@ -494,20 +495,20 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   /**
    * Returns the value to use as the |pref| attribute for the policy indicator
    * of spellcheck languages, based on whether or not the language is enabled.
-   * @param {boolean} isEnabled Whether the language is enabled or not.
-   * @private
+   * @param isEnabled Whether the language is enabled or not.
    */
-  getIndicatorPrefForManagedSpellcheckLanguage_(isEnabled) {
-    return isEnabled ? this.getPref('spellcheck.forced_dictionaries') :
-                       this.getPref('spellcheck.blocked_dictionaries');
+  private getIndicatorPrefForManagedSpellcheckLanguage_(isEnabled: boolean):
+      chrome.settingsPrivate.PrefObject<string[]> {
+    return isEnabled ?
+        this.getPref<string[]>('spellcheck.forced_dictionaries') :
+        this.getPref<string[]>('spellcheck.blocked_dictionaries');
   }
 
   /**
    * Returns an array of spell check languages for the UI.
-   * @return {!Array<!LanguageState|!SpellCheckLanguageState>|undefined}
-   * @private
    */
-  getSpellCheckLanguages_() {
+  private getSpellCheckLanguages_():
+      Array<LanguageState|SpellCheckLanguageState>|undefined {
     if (this.languages === undefined) {
       return undefined;
     }
@@ -518,12 +519,13 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
               a.language.displayName.localeCompare(b.language.displayName));
       return languages;
     }
-    /** @type {!Array<!LanguageState|!SpellCheckLanguageState>} */
-    const enabledLanguages = this.languages.enabled;
+    const enabledLanguages: Array<LanguageState|SpellCheckLanguageState> =
+        this.languages.enabled;
     const combinedLanguages =
         enabledLanguages.concat(this.languages.spellCheckOnLanguages);
-    const supportedSpellcheckLanguagesSet = new Set();
-    const supportedSpellcheckLanguages = [];
+    const supportedSpellcheckLanguagesSet = new Set<string>();
+    const supportedSpellcheckLanguages:
+        Array<LanguageState|SpellCheckLanguageState> = [];
 
     combinedLanguages.forEach(languageState => {
       if (!supportedSpellcheckLanguagesSet.has(languageState.language.code) &&
@@ -538,10 +540,9 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
   /**
    * Handler for enabling or disabling spell check for a specific language.
-   * @param {{target: Element, model: {item: !LanguageState}}} e
-   * @private
    */
-  onSpellCheckLanguageChange_(e) {
+  private onSpellCheckLanguageChange_(
+      e: DomRepeatEvent<LanguageState|SpellCheckLanguageState>): void {
     const item = e.model.item;
     if (!item.language.supportsSpellcheck) {
       return;
@@ -554,10 +555,11 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   /**
    * Handler for clicking on the name of the language. The action taken must
    * match the control that is available.
-   * @param {{target: Element, model: {item: !LanguageState}}} e
-   * @private
    */
-  onSpellCheckNameClick_(e) {
+  private onSpellCheckNameClick_(
+      e: DomRepeatEvent<LanguageState|SpellCheckLanguageState>): void {
+    // Safety: The button associated with this event listener is disabled in
+    // the template if the below is true.
     assert(!this.isSpellCheckNameClickDisabled_(e.model.item));
     this.onSpellCheckLanguageChange_(e);
   }
@@ -565,11 +567,9 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   /**
    * Name only supports clicking when language is not managed, supports
    * spellcheck, and the dictionary has been downloaded with no errors.
-   * @param {!LanguageState|!SpellCheckLanguageState} item
-   * @return {boolean}
-   * @private
    */
-  isSpellCheckNameClickDisabled_(item) {
+  private isSpellCheckNameClickDisabled_(item: LanguageState|
+                                         SpellCheckLanguageState): boolean {
     return item.isManaged || item.downloadDictionaryFailureCount > 0 ||
         !this.getPref('browser.enable_spellchecking').value;
   }
@@ -577,40 +577,29 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   /**
    * Handler to initiate another attempt at downloading the spell check
    * dictionary for a specified language.
-   * @param {{target: Element, model: {item: !LanguageState}}} e
-   * @private
    */
-  onRetryDictionaryDownloadClick_(e) {
+  private onRetryDictionaryDownloadClick_(
+      e: DomRepeatEvent<LanguageState|SpellCheckLanguageState>): void {
+    // Safety: The button associated with this event listener is disabled in
+    // the template if `!item.downloadDictionaryFailureCount`, and dictionary
+    // download failure count cannot ever be negative.
     assert(e.model.item.downloadDictionaryFailureCount > 0);
     this.languageHelper.retryDownloadDictionary(e.model.item.language.code);
   }
 
-  /**
-   * @param {!LanguageState} item
-   * @return {!string}
-   * @private
-   */
-  getDictionaryDownloadRetryAriaLabel_(item) {
+  private getDictionaryDownloadRetryAriaLabel_(item: LanguageState): string {
     return this.i18n(
         'languagesDictionaryDownloadRetryDescription',
         item.language.displayName);
   }
 
-  /**
-   * Opens the Custom Dictionary page.
-   * @private
-   */
-  onEditDictionaryClick_() {
+  private onEditDictionaryClick_(): void {
     this.languagesMetricsProxy_.recordInteraction(
         LanguagesPageInteraction.OPEN_CUSTOM_SPELL_CHECK);
     Router.getInstance().navigateTo(routes.OS_LANGUAGES_EDIT_DICTIONARY);
   }
 
-
-  /**
-   * @private
-   */
-  onJapaneseManageUserDictionaryClick_() {
+  private onJapaneseManageUserDictionaryClick_(): void {
     Router.getInstance().navigateTo(
         routes.OS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY);
   }
@@ -618,67 +607,48 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   /**
    * Gets the appropriate CSS class for the Enhanced spell check toggle
    * depending on whether Update 2 is enabled or not.
-   * @private
    */
-  getEnhancedSpellCheckClass_() {
+  private getEnhancedSpellCheckClass_(): ''|'hr' {
     return this.languageSettingsV2Update2Enabled_ ? '' : 'hr';
   }
 
-  /**
-   * @private
-   */
-  isEnableSpellcheckingDisabled_() {
+  private isEnableSpellcheckingDisabled_(): boolean {
     return !this.languageSettingsV2Update2Enabled_ &&
         (!!this.spellCheckLanguages_ && this.spellCheckLanguages_.length === 0);
   }
 
-  /**
-   * @param {boolean} update2Enabled
-   * @param {boolean} spellCheckOn
-   * @return {boolean}
-   */
-  isCollapseOpened_(update2Enabled, spellCheckOn) {
+  private isCollapseOpened_(update2Enabled: boolean, spellCheckOn: boolean):
+      boolean {
     return !update2Enabled || spellCheckOn;
   }
 
-  /** @private */
-  onLanguagePackNoticeLinkClick_() {
+  private onLanguagePackNoticeLinkClick_(): void {
     this.languagesMetricsProxy_.recordInteraction(
         LanguagesPageInteraction.OPEN_LANGUAGE_PACKS_LEARN_MORE);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowLastUsedImeShortcutReminder_() {
+  private shouldShowLastUsedImeShortcutReminder_(): boolean {
     // User has already dismissed the shortcut reminder.
     if (this.getPref('ash.shortcut_reminders.last_used_ime_dismissed').value) {
       return false;
     }
     // Need at least 2 input methods to be shown the reminder.
-    return !!this.languages && this.languages.inputMethods.enabled.length >= 2;
+    // Safety: `LanguagesModel.inputMethods` is always defined on CrOS.
+    return !!this.languages && this.languages.inputMethods!.enabled.length >= 2;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowNextImeShortcutReminder_() {
+  private shouldShowNextImeShortcutReminder_(): boolean {
     // User has already dismissed the shortcut reminder.
     if (this.getPref('ash.shortcut_reminders.next_ime_dismissed').value) {
       return false;
     }
     // Need at least 3 input methods to be shown the reminder.
-    return !!this.languages && this.languages.inputMethods.enabled.length >= 3;
+    // Safety: `LanguagesModel.inputMethods` is always defined on CrOS.
+    return !!this.languages && this.languages.inputMethods!.enabled.length >= 3;
   }
 
-  /**
-   * @return {!Array<string>}
-   * @private
-   */
-  getShortcutReminderBody_() {
-    const /** !Array<string> */ reminderBody = [];
+  private getShortcutReminderBody_(): TrustedHTML[] {
+    const reminderBody: TrustedHTML[] = [];
     if (this.showLastUsedImeShortcutReminder_) {
       reminderBody.push(this.i18nAdvanced('imeShortcutReminderLastUsed'));
     }
@@ -688,19 +658,22 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     return reminderBody;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowShortcutReminder_() {
+  private shouldShowShortcutReminder_(): boolean {
     return this.languageSettingsV2Update2Enabled_ &&
+        // `this.shortcutReminderBody_` should always be truthy here.
+        // TODO(b/238031866): Remove `this.shortcutReminderBody_` here, or
+        // investigate why removing it does not work.
         this.shortcutReminderBody_ && this.shortcutReminderBody_.length > 0;
   }
 
-  /** @private */
-  onShortcutReminderDismiss_() {
+  private onShortcutReminderDismiss_(): void {
     // Record the metric - assume that both reminders were dismissed unless one
     // of them wasn't shown.
+    // Safety: The shortcut reminder is only shown if
+    // `shouldShowShortcutReminder_` is true, so `this.shortcutReminderBody`
+    // contains at least one thing, so at least one of
+    // `this.showLastUsedImeShortcutReminder_` or
+    // `this.showNextImeShortcutReminder_` should be true.
     assert(
         this.showLastUsedImeShortcutReminder_ ||
         this.showNextImeShortcutReminder_);
@@ -723,3 +696,9 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
 customElements.define(
     OsSettingsInputPageElement.is, OsSettingsInputPageElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OsSettingsInputPageElement.is]: OsSettingsInputPageElement;
+  }
+}

@@ -29,10 +29,9 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './cr_checkbox_with_policy.html.js';
 
-/** @polymer */
-class CrCheckboxWithPolicyElement extends PolymerElement {
+export class CrCheckboxWithPolicyElement extends PolymerElement {
   static get is() {
-    return 'cr-checkbox-with-policy';
+    return 'cr-checkbox-with-policy' as const;
   }
 
   static get template() {
@@ -67,20 +66,42 @@ class CrCheckboxWithPolicyElement extends PolymerElement {
     };
   }
 
+  // All properties except `policyTooltip` are forwarded to the internal
+  // <cr-checkbox>.
+
+  // Public API: Bidirectional data flow.
+  checked: boolean;
+
+  // Public API: Downwards data flow.
+  policyTooltip: string;
+  ariaDescription: string;
+  disabled: boolean;
+  override tabIndex: number;
+
   /**
    * Focuses the correct element (icon if disabled, otherwise checkbox).
    *
-   * Overrides focus() defined on HTMLElement.
-   * @override
+   * Do not call this method after setting `disabled` to true until this element
+   * is re-rendered.
    */
-  focus() {
+  override focus(): void {
+    // We use getElementById here instead of this.$ as #icon does not exist if
+    // this.disabled is false.
     const elementId = this.disabled ? 'icon' : 'checkbox';
-    const element = this.shadowRoot.getElementById(elementId);
-    element.focus();
+    const element = this.shadowRoot!.getElementById(elementId);
+    // Safety: This assumes that an element with an id of `elementId` exists in
+    // the shadow root.
+    // The element with id 'checkbox' should always exist here as it is
+    // unconditionally rendered.
+    // The element with id 'icon' should always exist here as it is enforced by
+    // documentation. This method should always be called after a render if
+    // `this.disabled` was set to true, so the aforementioned element should
+    // have been already rendered by the `dom-if` in the template before this
+    // method is called.
+    element!.focus();
   }
 
-  /** @private */
-  onTabIndexChanged_() {
+  private onTabIndexChanged_(): void {
     // :host shouldn't have a tabindex because it's set on the appropriate
     // element instead.
     this.removeAttribute('tabindex');
@@ -88,22 +109,24 @@ class CrCheckboxWithPolicyElement extends PolymerElement {
 
   /**
    * Returns the correct tab index for the checkbox (-1 if it is disabled).
-   * @private
-   * @return {number}
    */
-  getCheckboxTabIndex_() {
+  private getCheckboxTabIndex_(): number {
     return this.disabled ? -1 : this.tabIndex;
   }
 
   /**
    * Returns the correct tab index for the icon (-1 if it is enabled).
-   * @private
-   * @return {number}
    */
-  getIconTabIndex_() {
+  private getIconTabIndex_(): number {
     return this.disabled ? this.tabIndex : -1;
   }
 }
 
 customElements.define(
     CrCheckboxWithPolicyElement.is, CrCheckboxWithPolicyElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [CrCheckboxWithPolicyElement.is]: CrCheckboxWithPolicyElement;
+  }
+}

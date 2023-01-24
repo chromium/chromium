@@ -12,147 +12,125 @@
 /**
  * Keeps in sync with SettingsLanguagesPageInteraction
  * in tools/metrics/histograms/enums.xml.
- * @enum {number}
  */
-export const LanguagesPageInteraction = {
-  SWITCH_SYSTEM_LANGUAGE: 0,
-  RESTART: 1,
-  SWITCH_INPUT_METHOD: 2,
-  RESTART_LATER: 3,
-  OPEN_CUSTOM_SPELL_CHECK: 4,
-  OPEN_MANAGE_GOOGLE_ACCOUNT_LANGUAGE: 5,
-  OPEN_WEB_LANGUAGES_LEARN_MORE: 6,
-  OPEN_LANGUAGE_PACKS_LEARN_MORE: 7,
-};
+export enum LanguagesPageInteraction {
+  SWITCH_SYSTEM_LANGUAGE = 0,
+  RESTART = 1,
+  SWITCH_INPUT_METHOD = 2,
+  RESTART_LATER = 3,
+  OPEN_CUSTOM_SPELL_CHECK = 4,
+  OPEN_MANAGE_GOOGLE_ACCOUNT_LANGUAGE = 5,
+  OPEN_WEB_LANGUAGES_LEARN_MORE = 6,
+  OPEN_LANGUAGE_PACKS_LEARN_MORE = 7,
+}
 
 /**
  * Keeps in sync with SettingsInputsShortcutReminderState
  * in tools/metrics/histograms/enums.xml.
- * @enum {number}
  */
-export const InputsShortcutReminderState = {
-  NONE: 0,
-  LAST_USED_IME: 1,
-  NEXT_IME: 2,
-  LAST_USED_IME_AND_NEXT_IME: 3,
-};
+export enum InputsShortcutReminderState {
+  NONE = 0,
+  LAST_USED_IME = 1,
+  NEXT_IME = 2,
+  LAST_USED_IME_AND_NEXT_IME = 3,
+}
 
-/** @interface */
-export class LanguagesMetricsProxy {
+export interface LanguagesMetricsProxy {
   /**
    * Records the interaction to enumerated histogram.
-   * @param {!LanguagesPageInteraction} interaction
    */
-  recordInteraction(interaction) {}
+  recordInteraction(interaction: LanguagesPageInteraction): void;
 
   /** Records when users select "Add input method". */
-  recordAddInputMethod() {}
+  recordAddInputMethod(): void;
 
   /** Records when users select "Add languages". */
-  recordAddLanguages() {}
+  recordAddLanguages(): void;
 
   /** Records when users select "Manage input methods". */
-  recordManageInputMethods() {}
+  recordManageInputMethods(): void;
 
   /**
    * Records when users toggle "Show Input Options On Shelf" option.
-   * @param {boolean} value
    */
-  recordToggleShowInputOptionsOnShelf(value) {}
+  recordToggleShowInputOptionsOnShelf(value: boolean): void;
 
   /**
    * Records when users toggle "Spell check" option.
-   * @param {boolean} value
    */
-  recordToggleSpellCheck(value) {}
+  recordToggleSpellCheck(value: boolean): void;
 
   /**
    * Records when users toggle "Offer to translate languages you don't read"
    * option.
-   * @param {boolean} value
    */
-  recordToggleTranslate(value) {}
+  recordToggleTranslate(value: boolean): void;
 
   /**
    * Records when users check/uncheck "Offer to translate pages in this
    * language" checkbox.
-   * @param {boolean} value
    */
-  recordTranslateCheckboxChanged(value) {}
+  recordTranslateCheckboxChanged(value: boolean): void;
 
   /**
    * Records when users dismiss the shortcut reminder.
-   * @param {InputsShortcutReminderState} value
    */
-  recordShortcutReminderDismissed(value) {}
+  recordShortcutReminderDismissed(value: InputsShortcutReminderState): void;
 }
 
-/** @type {?LanguagesMetricsProxy} */
-let instance = null;
+let instance: LanguagesMetricsProxy|null = null;
 
-/** @implements {LanguagesMetricsProxy} */
-export class LanguagesMetricsProxyImpl {
-  /** @return {!LanguagesMetricsProxy} */
-  static getInstance() {
+export class LanguagesMetricsProxyImpl implements LanguagesMetricsProxy {
+  static getInstance(): LanguagesMetricsProxy {
     return instance || (instance = new LanguagesMetricsProxyImpl());
   }
 
-  /** @param {!LanguagesMetricsProxy} obj */
-  static setInstanceForTesting(obj) {
+  static setInstanceForTesting(obj: LanguagesMetricsProxy): void {
     instance = obj;
   }
 
-  /** @override */
-  recordInteraction(interaction) {
+  recordInteraction(interaction: LanguagesPageInteraction): void {
     chrome.metricsPrivate.recordEnumerationValue(
         'ChromeOS.Settings.Languages.Interaction', interaction,
         Object.keys(LanguagesPageInteraction).length);
   }
 
-  /** @override */
-  recordAddInputMethod() {
+  recordAddInputMethod(): void {
     chrome.metricsPrivate.recordUserAction(
         'ChromeOS.Settings.Languages.AddInputMethod');
   }
 
-  /** @override */
-  recordAddLanguages() {
+  recordAddLanguages(): void {
     chrome.metricsPrivate.recordUserAction(
         'ChromeOS.Settings.Languages.AddLanguages');
   }
 
-  /** @override */
-  recordManageInputMethods() {
+  recordManageInputMethods(): void {
     chrome.metricsPrivate.recordUserAction(
         'ChromeOS.Settings.Languages.ManageInputMethods');
   }
 
-  /** @override */
-  recordToggleShowInputOptionsOnShelf(value) {
+  recordToggleShowInputOptionsOnShelf(value: boolean): void {
     chrome.metricsPrivate.recordBoolean(
         'ChromeOS.Settings.Languages.Toggle.ShowInputOptionsOnShelf', value);
   }
 
-  /** @override */
-  recordToggleSpellCheck(value) {
+  recordToggleSpellCheck(value: boolean): void {
     chrome.metricsPrivate.recordBoolean(
         'ChromeOS.Settings.Languages.Toggle.SpellCheck', value);
   }
 
-  /** @override */
-  recordToggleTranslate(value) {
+  recordToggleTranslate(value: boolean): void {
     chrome.metricsPrivate.recordBoolean(
         'ChromeOS.Settings.Languages.Toggle.Translate', value);
   }
 
-  /** @override */
-  recordTranslateCheckboxChanged(value) {
+  recordTranslateCheckboxChanged(value: boolean): void {
     chrome.metricsPrivate.recordBoolean(
         'ChromeOS.Settings.Languages.OfferToTranslateCheckbox', value);
   }
 
-  /** @override */
-  recordShortcutReminderDismissed(value) {
+  recordShortcutReminderDismissed(value: InputsShortcutReminderState): void {
     chrome.metricsPrivate.recordEnumerationValue(
         'ChromeOS.Settings.Inputs.ShortcutReminderDismissed', value,
         Object.keys(InputsShortcutReminderState).length);

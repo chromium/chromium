@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {LanguagesBrowserProxy} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {FakeInputMethodPrivate} from './fake_input_method_private.js';
 import {FakeLanguageSettingsPrivate} from './fake_language_settings_private.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {LanguagesBrowserProxy} */
+// This class implements LanguagesBrowserProxy from
+// c/b/r/settings/chromeos/os_languages_page/languages_browser_proxy.ts.
 export class TestLanguagesBrowserProxy extends TestBrowserProxy {
   constructor() {
     const methodNames = [];

@@ -42,6 +42,9 @@
             </cr-toggle>
           </template>
           <template is="dom-if" if="[[isDropdown_(option.uiType)]]">
+            <!-- TODO(b/265557721): Stop using Polymer "two-way native binding"
+                 on <select>s as values are casted to strings, and use
+                 <dom-repeat> events instead. -->
             <select class="md-select" value="{{option.value::change}}"
                 on-change="onToggleButtonOrDropdownChange_"
                 aria-label="[[option.label]]">
@@ -75,9 +78,12 @@
               </cr-toggle>
             </template>
             <template is="dom-if" if="[[isDropdown_(dependant.uiType)]]">
+              <!-- TODO(b/265557721): Stop using Polymer "two-way native
+                   binding" on <select>s as values are casted to strings, and
+                   use <dom-repeat> events instead. -->
               <select class="md-select" value="{{dependant.value::change}}"
                   on-change="onToggleButtonOrDropdownChange_"
-                  aria-label="[[dependant.label]]"">
+                  aria-label="[[dependant.label]]">
                 <template is="dom-repeat" items="[[dependant.menuItems]]">
                   <option selected="[[item.selected]]"
                     value="[[item.value]]">
@@ -100,6 +106,7 @@
 </div>
 
 <template is="dom-if" if="[[showClearPersonalizedData_]]" restamp>
+  <!-- TODO(b/238031866): Remove languages and language-helper if not used. -->
   <os-settings-japanese-clear-ime-data-dialog languages="[[languages]]"
       language-helper="[[languageHelper]]"
       on-close="onClearPersonalizedDataClose_">

@@ -11,36 +11,27 @@ import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_route.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
 import {getTemplate} from './smart_inputs_page.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {PrefsBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const OsSettingsSmartInputsPageElementBase = mixinBehaviors(
-    [DeepLinkingBehavior, I18nBehavior, PrefsBehavior, RouteObserverBehavior],
-    PolymerElement);
+const OsSettingsSmartInputsPageElementBase =
+    RouteObserverMixin(PrefsMixin(I18nMixin(DeepLinkingMixin(PolymerElement))));
 
-/** @polymer */
 class OsSettingsSmartInputsPageElement extends
     OsSettingsSmartInputsPageElementBase {
   static get is() {
-    return 'os-settings-smart-inputs-page';
+    return 'os-settings-smart-inputs-page' as const;
   }
 
   static get template() {
@@ -49,13 +40,14 @@ class OsSettingsSmartInputsPageElement extends
 
   static get properties() {
     return {
+      // TODO(b/265554350): Remove this property from properties() as it is
+      // already specified in PrefsMixin.
       /** Preferences state. */
       prefs: {
         type: Object,
         notify: true,
       },
 
-      /** @private */
       allowAssistivePersonalInfo_: {
         type: Boolean,
         value() {
@@ -63,7 +55,6 @@ class OsSettingsSmartInputsPageElement extends
         },
       },
 
-      /** @private */
       allowEmojiSuggestion_: {
         type: Boolean,
         value() {
@@ -72,8 +63,7 @@ class OsSettingsSmartInputsPageElement extends
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
@@ -85,11 +75,21 @@ class OsSettingsSmartInputsPageElement extends
     };
   }
 
-  /**
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
-   */
-  currentRouteChanged(route, oldRoute) {
+  // Public API: Bidirectional data flow.
+  // override prefs: any;  // From PrefsMixin.
+
+  // Internal properties for mixins.
+  // From DeepLinkingMixin.
+  // override supportedSettingIds = new Set([
+  //   Setting.kShowPersonalInformationSuggestions,
+  //   Setting.kShowEmojiSuggestions,
+  // ]);
+
+  // loadTimeData flags.
+  private allowAssistivePersonalInfo_: boolean;
+  private allowEmojiSuggestion_: boolean;
+
+  override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.OS_LANGUAGES_SMART_INPUTS) {
       return;
@@ -100,21 +100,26 @@ class OsSettingsSmartInputsPageElement extends
 
   /**
    * Opens Chrome browser's autofill manage addresses setting page.
-   * @private
    */
-  onManagePersonalInfoClick_() {
+  private onManagePersonalInfoClick_(): void {
     window.open('chrome://settings/addresses');
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onPersonalInfoSuggestionToggled_(e) {
+  // 'change' event listener on a <cr-toggle>.
+  private onPersonalInfoSuggestionToggled_(e: CustomEvent<boolean>): void {
+    // Safety: This method is only called from a 'change' event from a
+    // <cr-checkbox>, so the event target must be a <cr-checkbox>.
     this.setPrefValue(
-        'assistive_input.personal_info_enabled', e.target.checked);
+        'assistive_input.personal_info_enabled',
+        (e.target! as CrCheckboxElement).checked);
   }
 }
 
 customElements.define(
     OsSettingsSmartInputsPageElement.is, OsSettingsSmartInputsPageElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OsSettingsSmartInputsPageElement.is]: OsSettingsSmartInputsPageElement;
+  }
+}

@@ -15,10 +15,9 @@ import {Item} from './add_items_dialog.js';
 import {LanguageHelper, LanguagesModel} from './languages_types.js';
 import {getTemplate} from './os_add_languages_dialog.html.js';
 
-/** @polymer */
 class OsSettingsAddLanguagesDialogElement extends PolymerElement {
   static get is() {
-    return 'os-settings-add-languages-dialog';
+    return 'os-settings-add-languages-dialog' as const;
   }
 
   static get template() {
@@ -27,23 +26,26 @@ class OsSettingsAddLanguagesDialogElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!LanguagesModel|undefined} */
       languages: {
         type: Object,
         notify: true,
       },
-
-      /** @type {!LanguageHelper} */
       languageHelper: Object,
     };
   }
 
+  // Public API: Downwards data flow.
+  languages: LanguagesModel|undefined;
+  languageHelper: LanguageHelper;
+
   /**
-   * @return {!Array<!Item>} A list of languages to be displayed in the dialog.
-   * @private
+   * @return A list of languages to be displayed in the dialog.
    */
-  getLanguages_() {
-    return this.languages.supported
+  private getLanguages_(): Item[] {
+    // This assertion of `this.languages` is potentially unsafe and could fail.
+    // TODO(b/265553377): Prove that this assertion is safe, or rewrite this to
+    // avoid this assertion.
+    return this.languages!.supported
         .filter(language => this.languageHelper.canEnableLanguage(language))
         .map(language => ({
                id: language.code,
@@ -54,11 +56,10 @@ class OsSettingsAddLanguagesDialogElement extends PolymerElement {
   }
 
   /**
-   * @param {!chrome.languageSettingsPrivate.Language} language
-   * @return {string} The text to be displayed.
-   * @private
+   * @return The text to be displayed.
    */
-  getDisplayText_(language) {
+  private getDisplayText_(language: chrome.languageSettingsPrivate.Language):
+      string {
     let displayText = language.displayName;
     // If the native name is different, add it.
     if (language.displayName !== language.nativeDisplayName) {
@@ -69,10 +70,8 @@ class OsSettingsAddLanguagesDialogElement extends PolymerElement {
 
   /**
    * Enables the checked languages.
-   * @param {!CustomEvent<!Set<string>>} e
-   * @private
    */
-  onItemsAdded_(e) {
+  private onItemsAdded_(e: HTMLElementEventMap['items-added']): void {
     e.detail.forEach(languageCode => {
       this.languageHelper.enableLanguage(languageCode);
     });
@@ -82,3 +81,10 @@ class OsSettingsAddLanguagesDialogElement extends PolymerElement {
 customElements.define(
     OsSettingsAddLanguagesDialogElement.is,
     OsSettingsAddLanguagesDialogElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OsSettingsAddLanguagesDialogElement.is]:
+        OsSettingsAddLanguagesDialogElement;
+  }
+}

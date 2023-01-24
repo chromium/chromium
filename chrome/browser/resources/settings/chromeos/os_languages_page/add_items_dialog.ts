@@ -16,13 +16,17 @@ import './cr_checkbox_with_policy.js';
 import './shared_style.css.js';
 import '../../settings_shared.css.js';
 
-import {CrScrollableBehavior, CrScrollableBehaviorInterface} from 'chrome://resources/ash/common/cr_scrollable_behavior.js';
-import {FindShortcutBehavior, FindShortcutBehaviorInterface} from '../find_shortcut_behavior.js';
-import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
+import {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
+import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
+import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import {afterNextRender, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './add_items_dialog.html.js';
 
-const ITEMS_ADDED_EVENT_NAME = 'items-added';
+const ITEMS_ADDED_EVENT_NAME = 'items-added' as const;
 
 /**
  * `id` must unique.
@@ -31,25 +35,27 @@ const ITEMS_ADDED_EVENT_NAME = 'items-added';
  * search.
  * `disabledByPolicy` can be set to show that a given item is disabled by
  * policy. These items will never appear as a suggestion.
- * @typedef {{id: string, name: string, searchTerms: !Array<string>,
- * disabledByPolicy: boolean}}
  */
-export let Item;
+export interface Item {
+  id: string;
+  name: string;
+  searchTerms: string[];
+  disabledByPolicy: boolean;
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {CrScrollableBehaviorInterface}
- * @implements {FindShortcutBehaviorInterface}
- */
-const OsSettingsAddItemsDialogElementBase = mixinBehaviors(
-    [CrScrollableBehavior, FindShortcutBehavior], PolymerElement);
+export interface OsSettingsAddItemsDialogElement {
+  $: {
+    dialog: CrDialogElement,
+    search: CrSearchFieldElement,
+  };
+}
+const OsSettingsAddItemsDialogElementBase =
+    CrScrollableMixin(FindShortcutMixin(PolymerElement));
 
-/** @polymer */
-class OsSettingsAddItemsDialogElement extends
+export class OsSettingsAddItemsDialogElement extends
     OsSettingsAddItemsDialogElementBase {
   static get is() {
-    return 'os-settings-add-items-dialog';
+    return 'os-settings-add-items-dialog' as const;
   }
 
   static get template() {
@@ -58,9 +64,11 @@ class OsSettingsAddItemsDialogElement extends
 
   static get properties() {
     return {
-      /** @type {!Array<!Item>} */
       items: {
         type: Array,
+        // This array is shared between all instances of the class:
+        // https://crrev.com/c/3897703/comment/fa845200_e10503c6/
+        // TODO(b/265556004): Move this to the constructor to avoid this.
         value: [],
       },
 
@@ -68,10 +76,12 @@ class OsSettingsAddItemsDialogElement extends
        * Item IDs to show in the "Suggested" section of the dialog.
        * Any items in this array which are disabled by policy, or IDs which do
        * not appear in the items array will be filtered out automatically.
-       * @type {!Array<!string>}
        */
       suggestedItemIds: {
         type: Array,
+        // This array is shared between all instances of the class:
+        // https://crrev.com/c/3897703/comment/fa845200_e10503c6/
+        // TODO(b/265556004): Move this to the constructor to avoid this.
         value: [],
       },
 
@@ -85,17 +95,17 @@ class OsSettingsAddItemsDialogElement extends
 
       policyTooltip: String,
 
-      /** @private */
       lowercaseQueryString_: String,
 
-      /** @private {!Array<!Item>} */
       filteredItems_: {
         type: Array,
         computed: 'getFilteredItems_(items.*, lowercaseQueryString_)',
+        // This array is shared between all instances of the class:
+        // https://crrev.com/c/3897703/comment/fa845200_e10503c6/
+        // TODO(b/265556004): Move this to the constructor to avoid this.
         value: [],
       },
 
-      /** @private {!Set<string>} */
       itemIdsToAdd_: {
         type: Object,
         value() {
@@ -105,7 +115,6 @@ class OsSettingsAddItemsDialogElement extends
 
       /**
        * Mapping from item ID to item for use in computing `suggestedItems_`.
-       * @private {!Map<string, !Item>}
        */
       itemIdsToItems_: {
         type: Object,
@@ -116,16 +125,17 @@ class OsSettingsAddItemsDialogElement extends
       },
 
       /**
-       * All items are guaranteed to not be disabled by policy.
-       * @private {!Array<!Item>}
+       * All items in this array are guaranteed to not be disabled by policy.
        */
       suggestedItems_: {
         type: Array,
         computed: 'getSuggestedItems_(suggestedItemIds.*, itemIdsToItems_)',
+        // This array is shared between all instances of the class:
+        // https://crrev.com/c/3897703/comment/fa845200_e10503c6/
+        // TODO(b/265556004): Move this to the constructor to avoid this.
         value: [],
       },
 
-      /** @private */
       showSuggestedList_: {
         type: Boolean,
         computed: `shouldShowSuggestedList_(suggestedItems_.length,
@@ -133,7 +143,6 @@ class OsSettingsAddItemsDialogElement extends
         value: false,
       },
 
-      /** @private */
       showFilteredList_: {
         type: Boolean,
         computed: 'shouldShowFilteredList_(filteredItems_.length)',
@@ -148,6 +157,45 @@ class OsSettingsAddItemsDialogElement extends
     };
   }
 
+  // Public API: Items to show in the dialog (downwards data flow).
+  items: Item[];
+  /**
+   * Item IDs to show in the "Suggested" section of the dialog.
+   * Any items in this array which are disabled by policy, or IDs which do not
+   * appear in the items array will be filtered out automatically.
+   */
+  suggestedItemIds: string[];
+
+  // Public API: Strings displayed to the user, in the order a user would see
+  // them (downwards data flow).
+  header: string;
+  searchLabel: string;
+  suggestedItemsLabel: string;
+  allItemsLabel: string;
+  policyTooltip: string;
+
+  // Internal state.
+  private itemIdsToAdd_: Set<string>;
+  // This property does not have a default value in `static get properties()`.
+  // TODO(b/265556480): Update the initial value to be ''.
+  private lowercaseQueryString_: string;
+
+  // Computed properties for suggested items.
+  /** Mapping from item ID to item for use in computing `suggestedItems_`. */
+  private itemIdsToItems_: Map<string, Item>;
+  /** All items in this array are guaranteed to not be disabled by policy. */
+  private suggestedItems_: Item[];
+  /** Whether suggestedItems_ is non-empty. */
+  private showSuggestedList_: boolean;
+
+  // Computed properties for filtered items.
+  private filteredItems_: Item[];
+  /** Whether filteredItems_ is non-empty. */
+  private showFilteredList_: boolean;
+
+  // Other computed properties.
+  private disableActionButton_: boolean;
+
   static get observers() {
     return [
       // The two observers below have all possible properties that could affect
@@ -159,8 +207,7 @@ class OsSettingsAddItemsDialogElement extends
     ];
   }
 
-  // Override FindShortcutBehavior methods.
-  handleFindShortcut(_modalContextOpen) {
+  override handleFindShortcut(_modalContextOpen: boolean): boolean {
     // Assumes this is the only open modal.
     const searchInput = this.$.search.getSearchInput();
     searchInput.scrollIntoView();
@@ -170,27 +217,23 @@ class OsSettingsAddItemsDialogElement extends
     return true;
   }
 
-  // Override FindShortcutBehavior methods.
-  searchInputHasFocus() {
+  override searchInputHasFocus(): boolean {
     return this.$.search.getSearchInput() ===
-        this.$.search.shadowRoot.activeElement;
+        this.$.search.shadowRoot!.activeElement;
   }
 
-  /**
-   * @param {!CustomEvent<string>} e
-   * @private
-   */
-  onSearchChanged_(e) {
+  // 'search-changed' event listener on a <cr-search-field>.
+  private onSearchChanged_(e: CustomEvent<string>): void {
     this.lowercaseQueryString_ = e.detail.toLocaleLowerCase();
   }
 
-  /**
-   * @param {{model: {item: !Item}, target: !Element}} e
-   * @private
-   */
-  onCheckboxChange_(e) {
+  // 'change' event listener on a <cr-checkbox>.
+  private onCheckboxChange_(e: DomRepeatEvent<Item, CustomEvent<boolean>>):
+      void {
     const id = e.model.item.id;
-    if (e.target.checked) {
+    // Safety: This method is only called from a 'change' event from a
+    // <cr-checkbox>, so the event target must be a <cr-checkbox>.
+    if ((e.target! as CrCheckboxElement).checked) {
       this.itemIdsToAdd_.add(id);
     } else {
       this.itemIdsToAdd_.delete(id);
@@ -199,29 +242,22 @@ class OsSettingsAddItemsDialogElement extends
     this.notifyPath('itemIdsToAdd_.size');
   }
 
-  /** @private */
-  onCancelButtonClick_() {
+  private onCancelButtonClick_(): void {
     this.$.dialog.close();
   }
 
-  /**
-   * @private
-   */
-  onActionButtonClick_() {
-    const event = new CustomEvent(ITEMS_ADDED_EVENT_NAME, {
-      bubbles: true,
-      composed: true,
-      detail: this.itemIdsToAdd_,
-    });
+  private onActionButtonClick_(): void {
+    const event: HTMLElementEventMap[typeof ITEMS_ADDED_EVENT_NAME] =
+        new CustomEvent(ITEMS_ADDED_EVENT_NAME, {
+          bubbles: true,
+          composed: true,
+          detail: this.itemIdsToAdd_,
+        });
     this.dispatchEvent(event);
     this.$.dialog.close();
   }
 
-  /**
-   * @param {!KeyboardEvent} e
-   * @private
-   */
-  onKeydown_(e) {
+  private onKeydown_(e: KeyboardEvent): void {
     // Close dialog if 'esc' is pressed and the search box is already empty.
     if (e.key === 'Escape' && !this.$.search.getValue().trim()) {
       this.$.dialog.close();
@@ -232,37 +268,23 @@ class OsSettingsAddItemsDialogElement extends
 
   /**
    * True if the user has chosen to add this item (checked its checkbox).
-   * @param {string} id
-   * @return {boolean}
-   * @private
    */
-  willAdd_(id) {
+  private willAdd_(id: string): boolean {
     return this.itemIdsToAdd_.has(id);
   }
 
-  /**
-   * @return {!Map<string, !Item>}
-   * @private
-   */
-  getItemIdsToItems_() {
+  private getItemIdsToItems_(): Map<string, Item> {
     return new Map(this.items.map(item => [item.id, item]));
   }
 
   /**
    * Returns whether a string matches the current search query.
-   * @param {string} string
-   * @return {boolean}
-   * @private
    */
-  matchesSearchQuery_(string) {
+  private matchesSearchQuery_(string: string): boolean {
     return string.toLocaleLowerCase().includes(this.lowercaseQueryString_);
   }
 
-  /**
-   * @return {!Array<!Item>}
-   * @private
-   */
-  getFilteredItems_() {
+  private getFilteredItems_(): Item[] {
     if (!this.lowercaseQueryString_) {
       return this.items;
     }
@@ -272,52 +294,34 @@ class OsSettingsAddItemsDialogElement extends
             item.searchTerms.some(term => this.matchesSearchQuery_(term)));
   }
 
-  /**
-   * @return {!Array<!Item>}
-   * @private
-   */
-  getSuggestedItems_() {
+  private getSuggestedItems_(): Item[] {
     return this.suggestedItemIds.map(id => this.itemIdsToItems_.get(id))
-        .filter(item => item !== undefined)
+        .filter(
+            <T>(item: T): item is Exclude<T, undefined> => item !== undefined)
         .filter(item => !item.disabledByPolicy);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowSuggestedList_() {
+  private shouldShowSuggestedList_(): boolean {
     return this.suggestedItems_.length > 0 && !this.lowercaseQueryString_;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowFilteredList_() {
+  private shouldShowFilteredList_(): boolean {
     return this.filteredItems_.length > 0;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldDisableActionButton_() {
+  private shouldDisableActionButton_(): boolean {
     return !this.itemIdsToAdd_.size;
   }
 
-  /**
-   * @private
-   */
-  updateSuggestedListScrollOffset_() {
+  private updateSuggestedListScrollOffset_(): void {
     afterNextRender(this, () => {
       if (!this.showSuggestedList_) {
         return;
       }
       // Because #suggested-items-list is not statically created (as it is
       // within a <template is="dom-if">), we can't use this.$ here.
-      const list = /** @type {!IronListElement|null} */ (
-          this.shadowRoot.querySelector('#suggested-items-list'));
+      const list = this.shadowRoot!.querySelector<IronListElement>(
+          '#suggested-items-list');
       if (list === null) {
         return;
       }
@@ -325,16 +329,15 @@ class OsSettingsAddItemsDialogElement extends
     });
   }
 
-  /**
-   * @private
-   */
-  updateFilteredListScrollOffset_() {
+  private updateFilteredListScrollOffset_(): void {
     afterNextRender(this, () => {
       if (!this.showFilteredList_) {
         return;
       }
-      const list = /** @type {!IronListElement|null} */ (
-          this.shadowRoot.querySelector('#filtered-items-list'));
+      // Because #filtered-items-list is not statically created (as it is
+      // within a <template is="dom-if">), we can't use this.$ here.
+      const list = this.shadowRoot!.querySelector<IronListElement>(
+          '#filtered-items-list');
       if (list === null) {
         return;
       }
@@ -345,3 +348,12 @@ class OsSettingsAddItemsDialogElement extends
 
 customElements.define(
     OsSettingsAddItemsDialogElement.is, OsSettingsAddItemsDialogElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OsSettingsAddItemsDialogElement.is]: OsSettingsAddItemsDialogElement;
+  }
+  interface HTMLElementEventMap {
+    [ITEMS_ADDED_EVENT_NAME]: CustomEvent<Set<string>>;
+  }
+}

@@ -15,43 +15,50 @@ import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../../settings_shared.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
+import {DomRepeatEvent, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route} from '../router.js';
 import {GlobalScrollTargetBehavior, GlobalScrollTargetBehaviorInterface} from '../global_scroll_target_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
 
-import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
+import {LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
 import {getTemplate} from './os_edit_dictionary_page.html.js';
 
 // Max valid word size, keep in sync with kMaxCustomDictionaryWordBytes in
 // //components/spellcheck/common/spellcheck_common.h
 const MAX_CUSTOM_DICTIONARY_WORD_BYTES = 99;
 
-/** @enum {number} */
-const NewWordState = {
-  NO_WORD: 0,
-  VALID_WORD: 1,
-  WORD_ALREADY_ADDED: 2,
-  WORD_TOO_LONG: 3,
-};
+enum NewWordState {
+  NO_WORD = 0,
+  VALID_WORD = 1,
+  WORD_ALREADY_ADDED = 2,
+  WORD_TOO_LONG = 3,
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {GlobalScrollTargetBehaviorInterface}
- */
-const OsSettingsEditDictionaryPageElementBase =
-    mixinBehaviors([I18nBehavior, GlobalScrollTargetBehavior], PolymerElement);
+const OsSettingsEditDictionaryPageElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
+const OsSettingsEditDictionaryPageElementBaseWithBehaviors =
+    mixinBehaviors(
+        // TODO(b/265559727): Remove GlobalScrollTargetBehavior if it is unused.
+        [GlobalScrollTargetBehavior],
+        OsSettingsEditDictionaryPageElementBase) as
+        typeof OsSettingsEditDictionaryPageElementBase &
+    (new (...args: any[]) => GlobalScrollTargetBehaviorInterface);
+
+interface OsSettingsEditDictionaryPageElement {
+  $: {
+    keys: IronA11yKeysElement,
+    newWord: CrInputElement,
+  };
+}
+
 class OsSettingsEditDictionaryPageElement extends
-    OsSettingsEditDictionaryPageElementBase {
+    OsSettingsEditDictionaryPageElementBaseWithBehaviors {
   static get is() {
-    return 'os-settings-edit-dictionary-page';
+    return 'os-settings-edit-dictionary-page' as const;
   }
 
   static get template() {
@@ -60,40 +67,36 @@ class OsSettingsEditDictionaryPageElement extends
 
   static get properties() {
     return {
-      /** @private */
       newWordValue_: {
         type: String,
         value: '',
       },
 
+      // TODO(b/265554350): Remove this property from properties() as it is
+      // already specified in GlobalScrollTargetBehavior, and move the default
+      // value to the field initializer.
       /**
        * Needed for GlobalScrollTargetBehavior.
-       * @type {!Route}
-       * @override
        */
       subpageRoute: {
         type: Object,
         value: routes.OS_LANGUAGES_EDIT_DICTIONARY,
       },
 
-      /** @private {!Array<string>} */
       words_: Array,
 
-      /** @private */
       hasWords_: {
         type: Boolean,
         value: false,
         computed: 'computeHasWords_(words_.length)',
       },
 
-      /** @private */
       disableAddButton_: {
         type: Boolean,
         value: true,
         computed: 'shouldDisableAddButton_(newWordState_)',
       },
 
-      /** @private */
       newWordState_: {
         type: Number,
         value: NewWordState.NO_WORD,
@@ -102,22 +105,27 @@ class OsSettingsEditDictionaryPageElement extends
     };
   }
 
-  /** @override */
-  constructor() {
-    super();
+  // API proxies.
+  private languageSettingsPrivate_ =
+      LanguagesBrowserProxyImpl.getInstance().getLanguageSettingsPrivate();
 
-    this.words_ = [];
+  // Internal properties for mixins.
+  // From GlobalScrollTargetBehavior.
+  // protected override subpageRoute = routes.OS_LANGUAGES_EDIT_DICTIONARY;
 
-    /** @private {!LanguageSettingsPrivate} */
-    this.languageSettingsPrivate_ =
-        LanguagesBrowserProxyImpl.getInstance().getLanguageSettingsPrivate();
-  }
+  // Internal state.
+  private words_: string[] = [];
+  private newWordValue_: string;
 
-  /** @override */
-  ready() {
+  // Computed properties.
+  private hasWords_: boolean;
+  private newWordState_: number;
+  private disableAddButton_: boolean;
+
+  override ready(): void {
     super.ready();
 
-    this.languageSettingsPrivate_.getSpellcheckWords(words => {
+    this.languageSettingsPrivate_.getSpellcheckWords().then(words => {
       this.words_ = words;
     });
 
@@ -128,19 +136,14 @@ class OsSettingsEditDictionaryPageElement extends
     this.$.keys.target = this.$.newWord;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeHasWords_() {
+  private computeHasWords_(): boolean {
     return this.words_.length > 0;
   }
 
   /**
    * Adds the word in the new-word input to the dictionary.
-   * @private
    */
-  addWordFromInput_() {
+  private addWordFromInput_(): void {
     // Spaces are allowed, but removing leading and trailing whitespace.
     const word = this.getTrimmedNewWord_();
     this.newWordValue_ = '';
@@ -150,19 +153,11 @@ class OsSettingsEditDictionaryPageElement extends
     }
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getTrimmedNewWord_() {
+  private getTrimmedNewWord_(): string {
     return this.newWordValue_.trim();
   }
 
-  /**
-   * @return {NewWordState}
-   * @private
-   */
-  updateNewWordState_() {
+  private updateNewWordState_(): NewWordState {
     const trimmedNewWord = this.getTrimmedNewWord_();
     if (!trimmedNewWord.length) {
       return NewWordState.NO_WORD;
@@ -176,19 +171,11 @@ class OsSettingsEditDictionaryPageElement extends
     return NewWordState.VALID_WORD;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldDisableAddButton_() {
+  private shouldDisableAddButton_(): boolean {
     return this.newWordState_ !== NewWordState.VALID_WORD;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getErrorMessage_() {
+  private getErrorMessage_(): string {
     switch (this.newWordState_) {
       case NewWordState.WORD_TOO_LONG:
         return this.i18n('addDictionaryWordLengthError');
@@ -199,20 +186,15 @@ class OsSettingsEditDictionaryPageElement extends
     }
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isNewWordInvalid_() {
+  private isNewWordInvalid_(): boolean {
     return this.newWordState_ === NewWordState.WORD_TOO_LONG ||
         this.newWordState_ === NewWordState.WORD_ALREADY_ADDED;
   }
 
   /**
    * Handles tapping on the Add Word button.
-   * @private
    */
-  onAddWordTap_() {
+  private onAddWordTap_(): void {
     this.addWordFromInput_();
     this.$.newWord.focus();
   }
@@ -220,11 +202,8 @@ class OsSettingsEditDictionaryPageElement extends
   /**
    * Handles updates to the word list. Additions are unshifted to the top
    * of the list so that users can see them easily.
-   * @param {!Array<string>} added
-   * @param {!Array<string>} removed
-   * @private
    */
-  onCustomDictionaryChanged_(added, removed) {
+  private onCustomDictionaryChanged_(added: string[], removed: string[]): void {
     for (const word of removed) {
       const index = this.words_.indexOf(word);
       if (index !== -1) {
@@ -241,23 +220,23 @@ class OsSettingsEditDictionaryPageElement extends
 
   /**
    * Handles Enter and Escape key presses for the new-word input.
-   * @param {!CustomEvent<{key: string}>} e
-   * @private
    */
-  onKeysPress_(e) {
+  private onKeysPress_(
+      e: CustomEvent<{key: string, keyboardEvent: KeyboardEvent}>): void {
     if (e.detail.key === 'enter' && !this.disableAddButton_) {
       this.addWordFromInput_();
     } else if (e.detail.key === 'esc') {
-      e.detail.keyboardEvent.target.value = '';
+      // Safety: This method is only used as an event listener for an
+      // <iron-a11y-keys> which has its target set to `this.$.newWord` in
+      // `ready()`, so the target must always be a CrInputElement.
+      (e.detail.keyboardEvent.target as CrInputElement).value = '';
     }
   }
 
   /**
    * Handles tapping on a "Remove word" icon button.
-   * @param {{model: {item: string}}} e
-   * @private
    */
-  onRemoveWordTap_(e) {
+  private onRemoveWordTap_(e: DomRepeatEvent<string>): void {
     this.languageSettingsPrivate_.removeSpellcheckWord(e.model.item);
     recordSettingChange();
   }
@@ -266,3 +245,10 @@ class OsSettingsEditDictionaryPageElement extends
 customElements.define(
     OsSettingsEditDictionaryPageElement.is,
     OsSettingsEditDictionaryPageElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OsSettingsEditDictionaryPageElement.is]:
+        OsSettingsEditDictionaryPageElement;
+  }
+}

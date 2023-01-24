@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {LanguagesMetricsProxy} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /**
  * A test version of LanguagesMetricsProxy.
- * @implements {LanguagesMetricsProxy}
  */
+// This class implements LanguagesMetricsProxy from
+// c/b/r/settings/chromeos/os_languages_page/languages_metrics_proxy.ts.
 export class TestLanguagesMetricsProxy extends TestBrowserProxy {
   constructor() {
     super([

@@ -4,29 +4,26 @@
 
 /**
  * Type of settings to use for an input method.
- * @enum {number}
  */
-export const SettingsType = {
-  LATIN_SETTINGS: 0,
-  ZHUYIN_SETTINGS: 1,
-  KOREAN_SETTINGS: 2,
-  PINYIN_SETTINGS: 3,
-  PINYIN_FUZZY_SETTINGS: 4,
-  BASIC_SETTINGS: 5,
-  ENGLISH_BASIC_WITH_AUTOSHIFT_SETTINGS: 6,
-  SUGGESTION_SETTINGS: 7,
-  PK_DIACRITICS_SETTINGS: 8,
-  JAPANESE_SETTINGS: 9,
-};
+export enum SettingsType {
+  LATIN_SETTINGS = 0,
+  ZHUYIN_SETTINGS = 1,
+  KOREAN_SETTINGS = 2,
+  PINYIN_SETTINGS = 3,
+  PINYIN_FUZZY_SETTINGS = 4,
+  BASIC_SETTINGS = 5,
+  ENGLISH_BASIC_WITH_AUTOSHIFT_SETTINGS = 6,
+  SUGGESTION_SETTINGS = 7,
+  PK_DIACRITICS_SETTINGS = 8,
+  JAPANESE_SETTINGS = 9,
+}
 
-/**
- * @param {boolean} predictiveWritingEnabled .
- * @param {boolean} physicalKeyboardDiacriticsEnabled .
- * @return {Object<string,!Array<!SettingsType>>}
- */
+type SettingsMap = Partial<Record<string, SettingsType[]>>;
+
 export function getInputMethodSettings(
-    predictiveWritingEnabled, physicalKeyboardDiacriticsEnabled,
-    isJapaneseSettingsEnabled) {
+    predictiveWritingEnabled: boolean,
+    physicalKeyboardDiacriticsEnabled: boolean,
+    isJapaneseSettingsEnabled: boolean): SettingsMap {
   const usEnglishSettings = [SettingsType.LATIN_SETTINGS];
   if (predictiveWritingEnabled) {
     usEnglishSettings.push(SettingsType.SUGGESTION_SETTINGS);
@@ -34,7 +31,7 @@ export function getInputMethodSettings(
   if (physicalKeyboardDiacriticsEnabled) {
     usEnglishSettings.push(SettingsType.PK_DIACRITICS_SETTINGS);
   }
-  const settingsMap = {
+  const settingsMap: SettingsMap = {
     // NOTE: Please group by SettingsType, and keep entries sorted
     // alphabetically
     // by ID within each group, just for readability.

@@ -6,7 +6,7 @@
  * @fileoverview constants related to input method options.
  */
 
-import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {routes} from '../os_route.js';
@@ -17,7 +17,6 @@ import {JapaneseInputMode, JapaneseKeymapStyle, JapanesePunctuationStyle, Japane
 
 /**
  * The prefix string shared by all first party input method ID.
- * @private @const
  */
 export const FIRST_PARTY_INPUT_METHOD_ID_PREFIX =
     '_comp_ime_jkghodnilhceideoidjikpgommlajknk';
@@ -32,103 +31,97 @@ export const PHYSICAL_KEYBOARD_AUTOCORRECT_ENABLED_BY_DEFAULT =
 
 /**
  * All possible keyboard layouts. Should match Google3.
- *
- * @enum {string}
  */
-const KeyboardLayout = {
-  STANDARD: 'Default',
-  GINYIEH: 'Gin Yieh',
-  ETEN: 'Eten',
-  IBM: 'IBM',
-  HSU: 'Hsu',
-  ETEN26: 'Eten 26',
-  SET2: '2 Set / 두벌식',
-  SET2Y: '2 Set (Old Hangul) / 두벌식 (옛글)',
-  SET390: '3 Set (390) / 세벌식 (390)',
-  SET3_FINAL: '3 Set (Final) / 세벌식 (최종)',
-  SET3_SUN: '3 Set (No Shift) / 세벌식 (순아래)',
-  SET3_YET: '3 Set (Old Hangul) / 세벌식 (옛글)',
-  XKB_US: 'US',
-  XKB_DVORAK: 'Dvorak',
-  XKB_COLEMAK: 'Colemak',
-};
+enum KeyboardLayout {
+  STANDARD = 'Default',
+  GINYIEH = 'Gin Yieh',
+  ETEN = 'Eten',
+  IBM = 'IBM',
+  HSU = 'Hsu',
+  ETEN26 = 'Eten 26',
+  SET2 = '2 Set / 두벌식',
+  SET2Y = '2 Set (Old Hangul) / 두벌식 (옛글)',
+  SET390 = '3 Set (390) / 세벌식 (390)',
+  SET3_FINAL = '3 Set (Final) / 세벌식 (최종)',
+  SET3_SUN = '3 Set (No Shift) / 세벌식 (순아래)',
+  SET3_YET = '3 Set (Old Hangul) / 세벌식 (옛글)',
+  XKB_US = 'US',
+  XKB_DVORAK = 'Dvorak',
+  XKB_COLEMAK = 'Colemak',
+}
 
 /**
  * All possible options on options pages. Should match Gooogle3.
- *
- * @enum {string}
  */
-export const OptionType = {
-  EDIT_USER_DICT: 'editUserDict',
-  ENABLE_COMPLETION: 'enableCompletion',
-  ENABLE_DOUBLE_SPACE_PERIOD: 'enableDoubleSpacePeriod',
-  ENABLE_GESTURE_TYPING: 'enableGestureTyping',
-  ENABLE_PREDICTION: 'enablePrediction',
-  ENABLE_SOUND_ON_KEYPRESS: 'enableSoundOnKeypress',
-  PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL:
+export enum OptionType {
+  EDIT_USER_DICT = 'editUserDict',
+  ENABLE_COMPLETION = 'enableCompletion',
+  ENABLE_DOUBLE_SPACE_PERIOD = 'enableDoubleSpacePeriod',
+  ENABLE_GESTURE_TYPING = 'enableGestureTyping',
+  ENABLE_PREDICTION = 'enablePrediction',
+  ENABLE_SOUND_ON_KEYPRESS = 'enableSoundOnKeypress',
+  PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL =
       'physicalKeyboardAutoCorrectionLevel',
-  PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION:
+  PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION =
       'physicalKeyboardEnableCapitalization',
-  PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING:
+  PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING =
       'physicalKeyboardEnablePredictiveWriting',
-  PHYSICAL_KEYBOARD_ENABLE_DIACRITICS_ON_LONGPRESS:
+  PHYSICAL_KEYBOARD_ENABLE_DIACRITICS_ON_LONGPRESS =
       'physicalKeyboardEnableDiacriticsOnLongpress',
-  VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL: 'virtualKeyboardAutoCorrectionLevel',
-  VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION: 'virtualKeyboardEnableCapitalization',
-  XKB_LAYOUT: 'xkbLayout',
+  VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL = 'virtualKeyboardAutoCorrectionLevel',
+  VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION =
+      'virtualKeyboardEnableCapitalization',
+  XKB_LAYOUT = 'xkbLayout',
   // Options for Japanese input method.
-  JAPANESE_AUTOMATICALLY_SWITCH_TO_HALFWIDTH: 'AutomaticallySwitchToHalfwidth',
-  JAPANESE_SHIFT_KEY_MODE_STYLE: 'ShiftKeyModeStyle',
-  JAPANESE_USE_INPUT_HISTORY: 'UseInputHistory',
-  JAPANESE_USE_SYSTEM_DICTIONARY: 'UseSystemDictionary',
-  JAPANESE_NUMBER_OF_SUGGESTIONS: 'numberOfSuggestions',
-  JAPANESE_INPUT_MODE: 'JapaneseInputMode',
-  JAPANESE_PUNCTUATION_STYLE: 'JapanesePunctuationStyle',
-  JAPANESE_SYMBOL_STYLE: 'JapaneseSymbolStyle',
-  JAPANESE_SPACE_INPUT_STYLE: 'JapaneseSpaceInputStyle',
-  JAPANESE_SECTION_SHORTCUT: 'JapaneseSectionShortcut',
-  JAPANESE_KEYMAP_STYLE: 'JapaneseKeymapStyle',
-  JAPANESE_MANAGE_USER_DICTIONARY: 'JapaneseManageUserDictionary',
-  JAPANESE_CLEAR_PERSONALIZATION_DATA: 'JapaneseClearPersonalizationData',
-  JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS: 'JapaneseDisableSuggestions',
-  JAPANESE_AUTOMATICALLY_SEND_STATISTICS_TO_GOOGLE:
+  JAPANESE_AUTOMATICALLY_SWITCH_TO_HALFWIDTH = 'AutomaticallySwitchToHalfwidth',
+  JAPANESE_SHIFT_KEY_MODE_STYLE = 'ShiftKeyModeStyle',
+  JAPANESE_USE_INPUT_HISTORY = 'UseInputHistory',
+  JAPANESE_USE_SYSTEM_DICTIONARY = 'UseSystemDictionary',
+  JAPANESE_NUMBER_OF_SUGGESTIONS = 'numberOfSuggestions',
+  JAPANESE_INPUT_MODE = 'JapaneseInputMode',
+  JAPANESE_PUNCTUATION_STYLE = 'JapanesePunctuationStyle',
+  JAPANESE_SYMBOL_STYLE = 'JapaneseSymbolStyle',
+  JAPANESE_SPACE_INPUT_STYLE = 'JapaneseSpaceInputStyle',
+  JAPANESE_SECTION_SHORTCUT = 'JapaneseSectionShortcut',
+  JAPANESE_KEYMAP_STYLE = 'JapaneseKeymapStyle',
+  JAPANESE_MANAGE_USER_DICTIONARY = 'JapaneseManageUserDictionary',
+  JAPANESE_CLEAR_PERSONALIZATION_DATA = 'JapaneseClearPersonalizationData',
+  JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS = 'JapaneseDisableSuggestions',
+  JAPANESE_AUTOMATICALLY_SEND_STATISTICS_TO_GOOGLE =
       'AutomaticallySendStatisticsToGoogle',
   // Options for Korean input method.
-  KOREAN_ENABLE_SYLLABLE_INPUT: 'koreanEnableSyllableInput',
-  KOREAN_KEYBOARD_LAYOUT: 'koreanKeyboardLayout',
+  KOREAN_ENABLE_SYLLABLE_INPUT = 'koreanEnableSyllableInput',
+  KOREAN_KEYBOARD_LAYOUT = 'koreanKeyboardLayout',
   // Options for pinyin input method.
-  PINYIN_CHINESE_PUNCTUATION: 'pinyinChinesePunctuation',
-  PINYIN_DEFAULT_CHINESE: 'pinyinDefaultChinese',
-  PINYIN_ENABLE_FUZZY: 'pinyinEnableFuzzy',
-  PINYIN_ENABLE_LOWER_PAGING: 'pinyinEnableLowerPaging',
-  PINYIN_ENABLE_UPPER_PAGING: 'pinyinEnableUpperPaging',
-  PINYIN_FULL_WIDTH_CHARACTER: 'pinyinFullWidthCharacter',
-  PINYIN_FUZZY_CONFIG: 'pinyinFuzzyConfig',
-  PINYIN_EN_ENG: 'en:eng',
-  PINYIN_AN_ANG: 'an:ang',
-  PINYIN_IAN_IANG: 'ian:iang',
-  PINYIN_K_G: 'k:g',
-  PINYIN_R_L: 'r:l',
-  PINYIN_UAN_UANG: 'uan:uang',
-  PINYIN_C_CH: 'c:ch',
-  PINYIN_F_H: 'f:h',
-  PINYIN_IN_ING: 'in:ing',
-  PINYIN_L_N: 'l:n',
-  PINYIN_S_SH: 's:sh',
-  PINYIN_Z_ZH: 'z:zh',
+  PINYIN_CHINESE_PUNCTUATION = 'pinyinChinesePunctuation',
+  PINYIN_DEFAULT_CHINESE = 'pinyinDefaultChinese',
+  PINYIN_ENABLE_FUZZY = 'pinyinEnableFuzzy',
+  PINYIN_ENABLE_LOWER_PAGING = 'pinyinEnableLowerPaging',
+  PINYIN_ENABLE_UPPER_PAGING = 'pinyinEnableUpperPaging',
+  PINYIN_FULL_WIDTH_CHARACTER = 'pinyinFullWidthCharacter',
+  PINYIN_FUZZY_CONFIG = 'pinyinFuzzyConfig',
+  PINYIN_EN_ENG = 'en:eng',
+  PINYIN_AN_ANG = 'an:ang',
+  PINYIN_IAN_IANG = 'ian:iang',
+  PINYIN_K_G = 'k:g',
+  PINYIN_R_L = 'r:l',
+  PINYIN_UAN_UANG = 'uan:uang',
+  PINYIN_C_CH = 'c:ch',
+  PINYIN_F_H = 'f:h',
+  PINYIN_IN_ING = 'in:ing',
+  PINYIN_L_N = 'l:n',
+  PINYIN_S_SH = 's:sh',
+  PINYIN_Z_ZH = 'z:zh',
   // Options for zhuyin input method.
-  ZHUYIN_KEYBOARD_LAYOUT: 'zhuyinKeyboardLayout',
-  ZHUYIN_PAGE_SIZE: 'zhuyinPageSize',
-  ZHUYIN_SELECT_KEYS: 'zhuyinSelectKeys',
-};
+  ZHUYIN_KEYBOARD_LAYOUT = 'zhuyinKeyboardLayout',
+  ZHUYIN_PAGE_SIZE = 'zhuyinPageSize',
+  ZHUYIN_SELECT_KEYS = 'zhuyinSelectKeys',
+}
 
 /**
  * Default values for each option type.
  *
  * WARNING: Keep this in sync with corresponding Google3 file for extension.
- *
- * @type {Object<OptionType, *>}
- * @const
  */
 export const OPTION_DEFAULT = {
   [OptionType.ENABLE_COMPLETION]: false,
@@ -190,86 +183,82 @@ export const OPTION_DEFAULT = {
   [OptionType.ZHUYIN_KEYBOARD_LAYOUT]: KeyboardLayout.STANDARD,
   [OptionType.ZHUYIN_PAGE_SIZE]: '10',
   [OptionType.ZHUYIN_SELECT_KEYS]: '1234567890',
-};
+} satisfies Partial<Record<OptionType, unknown>>;
 
 /**
- * @param {OptionType} optionName The option we want the default value for.
- * @param {Object<OptionType, *>} overrides List of values to use instead of
- *    the default values.
- * @return {*} The default, or overriden value.
+ * @param optionName The option we want the default value for.
+ * @param overrides List of values to use instead of the default values.
+ * @return The default, or overridden value.
  */
-export function getDefaultValue(optionName, overrides) {
+export function getDefaultValue<T extends keyof typeof OPTION_DEFAULT>(
+    optionName: T, overrides: {[K in T]?: (typeof OPTION_DEFAULT)[K]}):
+    (typeof OPTION_DEFAULT)[T] {
   // Overrides are only coming from the following flag, let's be safe here and
   // only enable this branch if the flag is also enabled.
   if (!loadTimeData.getBoolean('autocorrectEnableByDefault')) {
     return OPTION_DEFAULT[optionName];
   }
-  return optionName in overrides ? overrides[optionName] :
-                                   OPTION_DEFAULT[optionName];
+  return optionName in overrides ?
+      // This assertion is unsafe, as TypeScript's optional property types
+      // include `undefined` in properties, as
+      // https://www.typescriptlang.org/tsconfig#exactOptionalPropertyTypes is
+      // not set in our tsconfig.
+      // TODO(b/265558129): Use `overrides[optionName] !== undefined` instead.
+      overrides[optionName]! :
+      OPTION_DEFAULT[optionName];
 }
 
 /**
  * Type conversions functions for reading and writing options.  Use these for
  * reading and writing pref values when we don't want the default mappings. This
  * is only used if allow autocorrect toggle is on.
- *
- * @const
  */
 export const AUTOCORRECT_OPTION_MAP_OVERRIDE = {
   [OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL]: {
-    mapValueForDisplay: (value) => value > 0 ? true : false,
-    mapValueForWrite: (value) => value ? 1 : 0,
+    mapValueForDisplay: (value: number): boolean => value > 0 ? true : false,
+    mapValueForWrite: (value: boolean): 1 | 0 => value ? 1 : 0,
   },
   [OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL]: {
-    mapValueForDisplay: (value) => value > 0 ? true : false,
-    mapValueForWrite: (value) => value ? 1 : 0,
+    mapValueForDisplay: (value: number): boolean => value > 0 ? true : false,
+    mapValueForWrite: (value: boolean): 1 | 0 => value ? 1 : 0,
   },
 };
 
 /**
  * All possible UI elements for options.
- *
- * @enum {string}
  */
-export const UiType = {
-  DROPDOWN: 'dropdown',
-  LINK: 'link',
-  SUBMENU_BUTTON: 'submenuButton',
-  TOGGLE_BUTTON: 'toggleButton',
-};
+export enum UiType {
+  DROPDOWN = 'dropdown',
+  LINK = 'link',
+  SUBMENU_BUTTON = 'submenuButton',
+  TOGGLE_BUTTON = 'toggleButton',
+}
 
 /**
  * All possible submenu button types.
- *
- * @enum {string}
  */
-export const SubmenuButton = {
-  JAPANESE_CLEAR_PERSONALIZATION_DATA: 'SubmenuButtonClearPersonalizedData',
-};
+export enum SubmenuButton {
+  JAPANESE_CLEAR_PERSONALIZATION_DATA = 'SubmenuButtonClearPersonalizedData',
+}
 
 /**
  * All possible Settings headers
- *
- * @enum {string}
  */
-const SettingsHeaders = {
-  ADVANCED: 'advanced',
-  BASIC: 'basic',
-  INPUT_ASSISTANCE: 'inputAssistance',
-  PHYSICAL_KEYBOARD: 'physicalKeyboard',
-  PRIVACY: 'privacy',
-  SUGGESTIONS: 'suggestions',
-  USER_DICTIONARIES: 'userDictionaries',
-  VIRTUAL_KEYBOARD: 'virtualKeyboard',
-};
+enum SettingsHeaders {
+  ADVANCED = 'advanced',
+  BASIC = 'basic',
+  INPUT_ASSISTANCE = 'inputAssistance',
+  PHYSICAL_KEYBOARD = 'physicalKeyboard',
+  PRIVACY = 'privacy',
+  SUGGESTIONS = 'suggestions',
+  USER_DICTIONARIES = 'userDictionaries',
+  VIRTUAL_KEYBOARD = 'virtualKeyboard',
+}
 
 /**
  * Contents of the settings page for different settings types.
  * These should be in the order they are expected to appear in
  * the actual settings pages.
- *
- * @type {Object<SettingsType, !Array<{title: SettingsHeaders, optionNames:
- * !Array<OptionType>}>>}
  */
 const Settings = {
   [SettingsType.LATIN_SETTINGS]: [
@@ -412,26 +401,32 @@ const Settings = {
     optionNames:
         [{name: OptionType.PHYSICAL_KEYBOARD_ENABLE_DIACRITICS_ON_LONGPRESS}],
   }],
-};
+} satisfies Record<SettingsType, Array<{
+                     title: SettingsHeaders,
+                     optionNames: Array<{
+                       name: OptionType,
+                       dependentOptions?: OptionType[],
+                     }>,
+                   }>>;
 
 /**
- * @param {string} id Input method ID.
- * @return {string} The corresponding engind ID of the input method.
+ * @param id A first party input method ID.
+ * @return The corresponding engind ID of the input method.
  */
-export function getFirstPartyInputMethodEngineId(id) {
+export function getFirstPartyInputMethodEngineId(id: string): string {
+  // Safety: Enforced by documentation.
   assert(isFirstPartyInputMethodId(id));
   return id.substring(FIRST_PARTY_INPUT_METHOD_ID_PREFIX.length);
 }
 
 /**
- * @param {string} id Input method ID.
- * @param {boolean} predictiveWritingEnabled .
- * @param {boolean} physicalKeyboardDiacriticsEnabled .
- * @return {boolean} true if the input method's options page is implemented.
+ * @param id Input method ID.
+ * @return true if the input method's options page is implemented.
  */
 export function hasOptionsPageInSettings(
-    id, predictiveWritingEnabled, physicalKeyboardDiacriticsEnabled,
-    isJapaneseSettingsEnabled) {
+    id: string, predictiveWritingEnabled: boolean,
+    physicalKeyboardDiacriticsEnabled: boolean,
+    isJapaneseSettingsEnabled: boolean): boolean {
   if (!isFirstPartyInputMethodId(id)) {
     return false;
   }
@@ -445,23 +440,26 @@ export function hasOptionsPageInSettings(
 
 /**
  * Generates options to be displayed in the options page, grouped by sections.
- * @param {string} engineId Input method engine ID.
- * @param {boolean} predictiveWritingEnabled .
- * @param {boolean} physicalKeyboardDiacriticsEnabled .
- * @return {!Array<{title: string, optionNames:
- *     !Array<OptionType>}>} the options to be
- *     displayed.
+ * @param engineId Input method engine ID.
+ * @return the options to be displayed.
  */
 export function generateOptions(
-    engineId, predictiveWritingEnabled, physicalKeyboardDiacriticsEnabled,
-    isJapaneseSettingsEnabled) {
-  const options = [];
+    engineId: string, predictiveWritingEnabled: boolean,
+    physicalKeyboardDiacriticsEnabled: boolean,
+    isJapaneseSettingsEnabled: boolean): Array<{
+  title: SettingsHeaders,
+  optionNames: Array<{name: OptionType, dependentOptions?: OptionType[]}>,
+}> {
+  const options: Array<{
+    title: SettingsHeaders,
+    optionNames: Array<{name: OptionType, dependentOptions?: OptionType[]}>,
+  }> = [];
   const inputMethodSettings = getInputMethodSettings(
       predictiveWritingEnabled, physicalKeyboardDiacriticsEnabled,
       isJapaneseSettingsEnabled);
   const engineSettings = inputMethodSettings[engineId];
   if (engineSettings) {
-    const pushedOptions = new Map();
+    const pushedOptions = new Map<SettingsHeaders, number>();
 
     engineSettings.forEach((settingType) => {
       const settings = Settings[settingType];
@@ -486,10 +484,10 @@ export function generateOptions(
 }
 
 /**
- * @param {!OptionType} option The option type.
- * @return {UiType} The UI type of |option|.
+ * @param option The option type.
+ * @return The UI type of |option|.
  */
-export function getOptionUiType(option) {
+export function getOptionUiType(option: OptionType): UiType {
   switch (option) {
     // TODO(b/191608723): Clean up switch statements.
     case OptionType.ENABLE_COMPLETION:
@@ -551,11 +549,21 @@ export function getOptionUiType(option) {
     case OptionType.JAPANESE_CLEAR_PERSONALIZATION_DATA:
       return UiType.SUBMENU_BUTTON;
     default:
+      // This assert is unsafe, as `option` could be
+      // `OptionType.PINYIN_FUZZY_CONFIG` here.
+      // TODO(b/265559342): Handle the aforementioned cases of `option`, and use
+      // use a compile-time exhaustive check here to avoid backsliding.
       assertNotReached();
   }
 }
 
-export function isOptionLabelTranslated(option) {
+export function isOptionLabelTranslated(option: OptionType): option is Exclude<
+    OptionType,
+    OptionType.PINYIN_AN_ANG|OptionType.PINYIN_EN_ENG|OptionType
+        .PINYIN_IAN_IANG|OptionType.PINYIN_K_G|OptionType.PINYIN_R_L|
+    OptionType.PINYIN_UAN_UANG|OptionType.PINYIN_C_CH|
+    OptionType.PINYIN_F_H|OptionType.PINYIN_IN_ING|
+    OptionType.PINYIN_L_N|OptionType.PINYIN_S_SH|OptionType.PINYIN_Z_ZH> {
   switch (option) {
     // TODO(b/191608723): Clean up switch statements.
     case OptionType.PINYIN_AN_ANG:
@@ -577,10 +585,11 @@ export function isOptionLabelTranslated(option) {
 }
 
 /**
- * @param {!OptionType} option The option type.
- * @return {string} The name of the i18n string for the label of |option|.
+ * `isOptionLabelTranslated(option)` must be true.
+ * @param option The option type.
+ * @return The name of the i18n string for the label of |option|.
  */
-export function getOptionLabelName(option) {
+export function getOptionLabelName(option: OptionType): string {
   switch (option) {
     case OptionType.ENABLE_DOUBLE_SPACE_PERIOD:
       return 'inputMethodOptionsEnableDoubleSpacePeriod';
@@ -657,16 +666,21 @@ export function getOptionLabelName(option) {
     case OptionType.KOREAN_ENABLE_SYLLABLE_INPUT:
       return 'inputMethodOptionsKoreanSyllableInput';
     default:
+      // This assertion is unsafe, as `option` could be
+      // `OptionType.ENABLE_COMPLETION` or `OptionType.PINYIN_FUZZY_CONFIG` here
+      // (assuming that `isOptionLabelTranslated(option)` is true).
+      // TODO(b/265559342): Handle the aforementioned cases of `option`, and use
+      // use a compile-time exhaustive check here to avoid backsliding.
       assertNotReached();
   }
 }
 
 /**
- * @param {!OptionType} option The option type.
- * @return {string} The name of the string for the subtitle of |option|. Returns
- * empty string if no subtitle.
+ * @param option The option type.
+ * @return The name of the string for the subtitle of |option|. Returns empty
+ *     string if no subtitle.
  */
-export function getOptionSubtitleName(option) {
+export function getOptionSubtitleName(option: OptionType): string {
   switch (option) {
     case OptionType.PHYSICAL_KEYBOARD_ENABLE_DIACRITICS_ON_LONGPRESS:
       return 'inputMethodOptionsDiacriticsOnPhysicalKeyboardLongpressSubtitle';
@@ -683,7 +697,10 @@ export function getOptionSubtitleName(option) {
   }
 }
 
-export function getUntranslatedOptionLabelName(option) {
+/**
+ * `isOptionLabelTranslated(option)` must be false.
+ */
+export function getUntranslatedOptionLabelName(option: OptionType): string {
   switch (option) {
     case OptionType.PINYIN_AN_ANG:
       return 'an_ang';
@@ -710,16 +727,19 @@ export function getUntranslatedOptionLabelName(option) {
     case OptionType.PINYIN_Z_ZH:
       return 'z_zh';
     default:
+      // Safety: Assuming that `isOptionLabelTranslated(option)` is false,
+      // `option` cannot be anything here.
+      // TODO(b/265559342): Use a compile-time exhaustive check here.
       assertNotReached();
   }
 }
 
 /**
- * @param {!OptionType} option The option type.
- * @return {!Array<{value: *, name: string}>} The list of items to be
- *     displayed in the dropdown for |option|.
+ * @param option The option type.
+ * @return The list of items to be displayed in the dropdown for |option|.
  */
-export function getOptionMenuItems(option) {
+export function getOptionMenuItems(option: OptionType):
+    Array<{name?: string, value: string | number}> {
   switch (option) {
     case OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL:
     case OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL:
@@ -924,23 +944,29 @@ export function getOptionMenuItems(option) {
   }
 }
 
-
 /**
- *
- * @param {!OptionType} option The option type.
- * @return {boolean} true if the value for |option| is a number.
+ * Used to work around dropdowns in the UI always storing their values as
+ * strings.
+ * @param option The option type.
+ * @return true if the value for |option| is a number and |option| is a
+ *     dropdown.
  */
-export function shouldStoreAsNumber(option) {
+// TODO(b/265557721): Remove this when we remove Polymer's two-way native
+// binding of value changes.
+export function shouldStoreAsNumber(option: OptionType):
+    option is OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL|
+    OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL|
+    OptionType.JAPANESE_NUMBER_OF_SUGGESTIONS {
   return option === OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL ||
       option === OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL ||
       option === OptionType.JAPANESE_NUMBER_OF_SUGGESTIONS;
 }
 /**
- * @param {!OptionType} option The option type.
- * @return {Route|undefined} The url to open for |option|, returns
- *     undefined if |option| does not have a url.
+ * @param option The option type.
+ * @return The url to open for |option|, returns undefined if |option| does not
+ *     have a url.
  */
-export function getOptionUrl(option) {
+export function getOptionUrl(option: OptionType): Route|undefined {
   if (option === OptionType.EDIT_USER_DICT) {
     return routes.OS_LANGUAGES_EDIT_DICTIONARY;
   }
@@ -951,11 +977,12 @@ export function getOptionUrl(option) {
 }
 
 /**
- * @param {!OptionType} option The option type.
- * @return {SubmenuButton|undefined} The submenu button type for
- * |option|, returns undefined if |option| does not have a submenu button type.
+ * @param option The option type.
+ * @return The submenu button type for |option|, returns undefined if |option|
+ *     does not have a submenu button type.
  */
-export function getSubmenuButtonType(option) {
+export function getSubmenuButtonType(option: OptionType): SubmenuButton|
+    undefined {
   if (option === OptionType.JAPANESE_CLEAR_PERSONALIZATION_DATA) {
     return SubmenuButton.JAPANESE_CLEAR_PERSONALIZATION_DATA;
   }
@@ -963,10 +990,9 @@ export function getSubmenuButtonType(option) {
 }
 
 /**
- * @param {string} id Input method ID.
- * @return {boolean} true if |id| is a first party input method ID.
- * @private
+ * @param id Input method ID.
+ * @return true if |id| is a first party input method ID.
  */
-function isFirstPartyInputMethodId(id) {
+function isFirstPartyInputMethodId(id: string): boolean {
   return id.startsWith(FIRST_PARTY_INPUT_METHOD_ID_PREFIX);
 }

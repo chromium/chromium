@@ -17,32 +17,34 @@ import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import './languages.js';
 import '../../settings_shared.css.js';
 
-import {CrScrollableBehavior, CrScrollableBehaviorInterface} from 'chrome://resources/ash/common/cr_scrollable_behavior.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
+import {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 
 import {getTemplate} from './change_device_language_dialog.html.js';
-import {LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_metrics_proxy.js';
+import {LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_metrics_proxy.js';
 import {LanguageHelper, LanguagesModel} from './languages_types.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {CrScrollableBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- */
-const OsSettingsChangeDeviceLanguageDialogElementBase =
-    mixinBehaviors([CrScrollableBehavior, I18nBehavior], PolymerElement);
+export interface OsSettingsChangeDeviceLanguageDialogElement {
+  $: {
+    dialog: CrDialogElement,
+    search: CrSearchFieldElement,
+  };
+}
 
-/** @polymer */
-class OsSettingsChangeDeviceLanguageDialogElement extends
+const OsSettingsChangeDeviceLanguageDialogElementBase =
+    I18nMixin(CrScrollableMixin(PolymerElement));
+
+export class OsSettingsChangeDeviceLanguageDialogElement extends
     OsSettingsChangeDeviceLanguageDialogElementBase {
   static get is() {
-    return 'os-settings-change-device-language-dialog';
+    return 'os-settings-change-device-language-dialog' as const;
   }
 
   static get template() {
@@ -51,38 +53,31 @@ class OsSettingsChangeDeviceLanguageDialogElement extends
 
   static get properties() {
     return {
-      /** @type {!LanguagesModel|undefined} */
       languages: Object,
 
-      /** @private {!Array<!chrome.languageSettingsPrivate.Language>} */
       displayedLanguages_: {
         type: Array,
         computed: `getPossibleDeviceLanguages_(languages.supported,
             languages.enabled.*, lowercaseQueryString_)`,
       },
 
-      /** @private {boolean} */
       displayedLanguagesEmpty_: {
         type: Boolean,
         computed: 'isZero_(displayedLanguages_.length)',
       },
 
-      /** @type {!LanguageHelper} */
       languageHelper: Object,
 
-      /** @private {?chrome.languageSettingsPrivate.Language} */
       selectedLanguage_: {
         type: Object,
         value: null,
       },
 
-      /** @private */
       disableActionButton_: {
         type: Boolean,
         computed: 'shouldDisableActionButton_(selectedLanguage_)',
       },
 
-      /** @private */
       lowercaseQueryString_: {
         type: String,
         value: '',
@@ -90,24 +85,34 @@ class OsSettingsChangeDeviceLanguageDialogElement extends
     };
   }
 
-  /**
-   * @param {!CustomEvent<string>} e
-   * @private
-   */
-  onSearchChanged_(e) {
+  // Public API: Downwards data flow.
+  languages: LanguagesModel|undefined;
+  languageHelper: LanguageHelper;
+
+  // Internal state.
+  private lowercaseQueryString_: string;
+  private selectedLanguage_: chrome.languageSettingsPrivate.Language|null;
+
+  // Computed properties.
+  private disableActionButton_: boolean;
+  private displayedLanguages_: chrome.languageSettingsPrivate.Language[];
+  private displayedLanguagesEmpty_: boolean;
+
+  private onSearchChanged_(e: CustomEvent<string>): void {
     this.lowercaseQueryString_ = e.detail.toLowerCase();
   }
 
-  /**
-   * @return {!Array<!chrome.languageSettingsPrivate.Language>} A list of
-   *     possible device language.
-   * @private
-   */
-  getPossibleDeviceLanguages_() {
-    return this.languages.supported
+  private getPossibleDeviceLanguages_():
+      chrome.languageSettingsPrivate.Language[] {
+    // This assertion of `this.languages` is potentially unsafe and could fail.
+    // TODO(b/265553377): Prove that this assertion is safe, or rewrite this to
+    // avoid this assertion.
+    return this.languages!.supported
         .filter(language => {
           if (!language.supportsUI || language.isProhibitedLanguage ||
-              language.code === this.languages.prospectiveUILanguage) {
+              // Safety: We checked that `this.languages` is defined above, and
+              // `prospectiveUILanguage` is always define on CrOS.
+              language.code === this.languages!.prospectiveUILanguage!) {
             return false;
           }
 
@@ -127,32 +132,20 @@ class OsSettingsChangeDeviceLanguageDialogElement extends
         });
   }
 
-  /**
-   * @param {boolean} selected
-   * @private
-   */
-  getItemClass_(selected) {
+  private getItemClass_(selected: boolean): 'selected'|'' {
     return selected ? 'selected' : '';
   }
 
-  /**
-   * @param {!chrome.languageSettingsPrivate.Language} item
-   * @param {boolean} selected
-   * @return {!string}
-   * @private
-   */
-  getAriaLabelForItem_(item, selected) {
+  private getAriaLabelForItem_(
+      item: chrome.languageSettingsPrivate.Language,
+      selected: boolean): string {
     const instruction = selected ? 'selectedDeviceLanguageInstruction' :
                                    'notSelectedDeviceLanguageInstruction';
     return this.i18n(instruction, this.getDisplayText_(item));
   }
 
-  /**
-   * @param {!chrome.languageSettingsPrivate.Language} language
-   * @return {string} The text to be displayed.
-   * @private
-   */
-  getDisplayText_(language) {
+  private getDisplayText_(language: chrome.languageSettingsPrivate.Language):
+      string {
     let displayText = language.nativeDisplayName;
     // If the local name is different, add it.
     if (language.displayName !== language.nativeDisplayName) {
@@ -161,21 +154,21 @@ class OsSettingsChangeDeviceLanguageDialogElement extends
     return displayText;
   }
 
-  /** @private */
-  shouldDisableActionButton_() {
+  private shouldDisableActionButton_(): boolean {
     return this.selectedLanguage_ === null;
   }
 
-  /** @private */
-  onCancelButtonTap_() {
+  private onCancelButtonTap_(): void {
     this.$.dialog.close();
   }
 
   /**
    * Sets device language and restarts device.
-   * @private
    */
-  onActionButtonTap_() {
+  private onActionButtonTap_(): void {
+    // Safety: This method is only called as an event listener on the action
+    // button, which is only enabled if `disableActionButton_` is false - i.e.
+    // `this.selectedLanguage_ !== null`.
     assert(this.selectedLanguage_);
     const languageCode = this.selectedLanguage_.code;
     this.languageHelper.setProspectiveUiLanguage(languageCode);
@@ -193,11 +186,7 @@ class OsSettingsChangeDeviceLanguageDialogElement extends
     LifetimeBrowserProxyImpl.getInstance().signOutAndRestart();
   }
 
-  /**
-   * @param {!KeyboardEvent} e
-   * @private
-   */
-  onKeydown_(e) {
+  private onKeydown_(e: KeyboardEvent): void {
     // Close dialog if 'esc' is pressed and the search box is already empty.
     if (e.key === 'Escape' && !this.$.search.getValue().trim()) {
       this.$.dialog.close();
@@ -206,12 +195,7 @@ class OsSettingsChangeDeviceLanguageDialogElement extends
     }
   }
 
-  /**
-   * @param {number} num
-   * @return {boolean}
-   * @private
-   */
-  isZero_(num) {
+  private isZero_(num: number): boolean {
     return num === 0;
   }
 }
@@ -219,3 +203,10 @@ class OsSettingsChangeDeviceLanguageDialogElement extends
 customElements.define(
     OsSettingsChangeDeviceLanguageDialogElement.is,
     OsSettingsChangeDeviceLanguageDialogElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OsSettingsChangeDeviceLanguageDialogElement.is]:
+        OsSettingsChangeDeviceLanguageDialogElement;
+  }
+}

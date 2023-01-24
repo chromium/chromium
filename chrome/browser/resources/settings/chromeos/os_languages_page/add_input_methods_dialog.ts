@@ -18,14 +18,12 @@ import {Item} from './add_items_dialog.js';
 import {LanguageHelper, LanguagesModel} from './languages_types.js';
 
 // The IME ID for the Accessibility Common extension used by Dictation.
-/** @type {string} */
-const ACCESSIBILITY_COMMON_IME_ID =
+const ACCESSIBILITY_COMMON_IME_ID: string =
     '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
 
-/** @polymer */
 class OsSettingsAddInputMethodsDialogElement extends PolymerElement {
   static get is() {
-    return 'os-settings-add-input-methods-dialog';
+    return 'os-settings-add-input-methods-dialog' as const;
   }
 
   static get template() {
@@ -34,20 +32,19 @@ class OsSettingsAddInputMethodsDialogElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!LanguagesModel|undefined} */
       languages: Object,
-
-      /** @type {!LanguageHelper} */
       languageHelper: Object,
     };
   }
 
+  // Public API: Downwards data flow.
+  languages: LanguagesModel|undefined;
+  languageHelper: LanguageHelper;
+
   /**
    * Get suggested input methods based on user's enabled languages and ARC IMEs
-   * @return {!Array<!chrome.languageSettingsPrivate.InputMethod>}
-   * @private
    */
-  getSuggestedInputMethodIds_() {
+  private getSuggestedInputMethodIds_(): string[] {
     const languageCodes = [
       ...this.languageHelper.getEnabledLanguageCodes(),
       this.languageHelper.getArcImeLanguageCode(),
@@ -58,9 +55,10 @@ class OsSettingsAddInputMethodsDialogElement extends PolymerElement {
     // methods to the top of the suggested list.
     // TODO(b/237492047): Remove this once 1P Vietnamese input methods are
     // suitable for widespread use.
-    const isVietnameseExtension = inputMethod =>
-        (inputMethod.id.startsWith('_ext_ime_') &&
-         inputMethod.languageCodes.includes('vi'));
+    const isVietnameseExtension =
+        (inputMethod: chrome.languageSettingsPrivate.InputMethod): boolean =>
+            (inputMethod.id.startsWith('_ext_ime_') &&
+             inputMethod.languageCodes.includes('vi'));
     inputMethods = inputMethods.filter(isVietnameseExtension)
                        .concat(inputMethods.filter(
                            inputMethod => !isVietnameseExtension(inputMethod)));
@@ -68,11 +66,17 @@ class OsSettingsAddInputMethodsDialogElement extends PolymerElement {
   }
 
   /**
-   * @return {!Array<!Item>} A list of possible input methods.
-   * @private
+   * @return A list of possible input methods.
    */
-  getInputMethods_() {
-    return this.languages.inputMethods.supported
+  private getInputMethods_(): Item[] {
+    return this
+        // This assertion of `this.languages` is potentially unsafe and could
+        // fail.
+        // TODO(b/265553377): Prove that this assertion is safe, or rewrite this
+        // to avoid this assertion.
+        .languages!
+        // Safety: `LanguagesModel.inputMethods` is always defined on CrOS.
+        .inputMethods!.supported
         .filter(inputMethod => {
           // Don't show input methods which are already enabled.
           if (this.languageHelper.isInputMethodEnabled(inputMethod.id)) {
@@ -95,10 +99,8 @@ class OsSettingsAddInputMethodsDialogElement extends PolymerElement {
 
   /**
    * Add input methods.
-   * @param {!CustomEvent<!Set<string>>} e
-   * @private
    */
-  onItemsAdded_(e) {
+  private onItemsAdded_(e: HTMLElementEventMap['items-added']): void {
     e.detail.forEach(id => {
       this.languageHelper.addInputMethod(id);
     });
@@ -109,3 +111,10 @@ class OsSettingsAddInputMethodsDialogElement extends PolymerElement {
 customElements.define(
     OsSettingsAddInputMethodsDialogElement.is,
     OsSettingsAddInputMethodsDialogElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OsSettingsAddInputMethodsDialogElement.is]:
+        OsSettingsAddInputMethodsDialogElement;
+  }
+}

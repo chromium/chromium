@@ -21,10 +21,11 @@ import '../os_settings_page/os_settings_subpage.js';
 import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {FocusConfig} from '../../focus_config.js';
 import {routes} from '../os_route.js';
 import {Router} from '../router.js';
 
@@ -32,23 +33,15 @@ import {LanguageHelper, LanguagesModel} from './languages_types.js';
 import {getTemplate} from './os_languages_section.html.js';
 
 // The IME ID for the Accessibility Common extension used by Dictation.
-/** @type {string} */
 const ACCESSIBILITY_COMMON_IME_ID =
     '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const OsSettingsLanguagesSectionElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const OsSettingsLanguagesSectionElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 class OsSettingsLanguagesSectionElement extends
     OsSettingsLanguagesSectionElementBase {
   static get is() {
-    return 'os-settings-languages-section';
+    return 'os-settings-languages-section' as const;
   }
 
   static get template() {
@@ -59,16 +52,13 @@ class OsSettingsLanguagesSectionElement extends
     return {
       prefs: Object,
 
-      /** @type {!LanguagesModel|undefined} */
       languages: {
         type: Object,
         notify: true,
       },
 
-      /** @type {!LanguageHelper} */
       languageHelper: Object,
 
-      /** @private {!Map<string, string>} */
       focusConfig_: {
         type: Object,
         value() {
@@ -82,10 +72,9 @@ class OsSettingsLanguagesSectionElement extends
         },
       },
 
-      /** @private */
       inputPageTitle_: {
         type: String,
-        value() {
+        value(this: OsSettingsLanguagesSectionElement): string {
           const isUpdate2 =
               loadTimeData.getBoolean('enableLanguageSettingsV2Update2');
           return this.i18n(isUpdate2 ? 'inputPageTitleV2' : 'inputPageTitle');
@@ -94,8 +83,7 @@ class OsSettingsLanguagesSectionElement extends
 
       /**
        * This is enabled when any of the smart inputs features is allowed.
-       * @private
-       * */
+       */
       smartInputsEnabled_: {
         type: Boolean,
         value() {
@@ -107,28 +95,39 @@ class OsSettingsLanguagesSectionElement extends
     };
   }
 
-  /** @private */
-  onLanguagesV2Click_() {
+  // Public API: Bidirectional data flow.
+  /** Passed down to children. Do not access without using PrefsMixin. */
+  prefs: unknown;
+
+  // Internal state.
+  private languages: LanguagesModel|undefined;
+  // Only defined after a render.
+  private languageHelper: LanguageHelper;
+  private focusConfig_: FocusConfig;
+
+  // loadTimeData flags and strings.
+  private inputPageTitle_: string;
+  private smartInputsEnabled_: boolean;
+
+  private onLanguagesV2Click_(): void {
     Router.getInstance().navigateTo(routes.OS_LANGUAGES_LANGUAGES);
   }
 
-  /** @private */
-  onInputClick_() {
+  private onInputClick_(): void {
     Router.getInstance().navigateTo(routes.OS_LANGUAGES_INPUT);
   }
 
-  /** @private */
-  onSmartInputsClick_() {
+  private onSmartInputsClick_(): void {
     Router.getInstance().navigateTo(routes.OS_LANGUAGES_SMART_INPUTS);
   }
 
   /**
-   * @param {string|undefined} code The language code of the language.
-   * @param {!LanguageHelper} languageHelper The LanguageHelper object.
-   * @return {string} The display name of the language specified.
-   * @private
+   * @param code The language code of the language.
+   * @param languageHelper The LanguageHelper object.
+   * @return The display name of the language specified.
    */
-  getLanguageDisplayName_(code, languageHelper) {
+  private getLanguageDisplayName_(
+      code: string|undefined, languageHelper: LanguageHelper): string {
     if (!code) {
       return '';
     }
@@ -140,12 +139,12 @@ class OsSettingsLanguagesSectionElement extends
   }
 
   /**
-   * @param {string|undefined} id The input method ID.
-   * @param {!LanguageHelper} languageHelper The LanguageHelper object.
-   * @return {string} The display name of the input method.
-   * @private
+   * @param id The input method ID.
+   * @param languageHelper The LanguageHelper object.
+   * @return The display name of the input method.
    */
-  getInputMethodDisplayName_(id, languageHelper) {
+  private getInputMethodDisplayName_(
+      id: string|undefined, languageHelper: LanguageHelper): string {
     if (id === undefined) {
       return '';
     }
@@ -160,3 +159,9 @@ class OsSettingsLanguagesSectionElement extends
 
 customElements.define(
     OsSettingsLanguagesSectionElement.is, OsSettingsLanguagesSectionElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OsSettingsLanguagesSectionElement.is]: OsSettingsLanguagesSectionElement;
+  }
+}

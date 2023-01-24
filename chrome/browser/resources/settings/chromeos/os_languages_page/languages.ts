@@ -10,19 +10,22 @@
  * this class via languageHelper.
  */
 
+// TODO(b/263828712): Upstream and downstream changes from browser settings, and
+// consider merging the two.
+
 import '../../prefs/prefs.js';
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '../../prefs/prefs_types.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
+import {castExists} from '../assert_extras.js';
 
 import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
-import {InputMethodsModel, LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
-
+import {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
 
 const MoveType = chrome.languageSettingsPrivate.MoveType;
 
@@ -34,7 +37,7 @@ const kLanguageCodeToTranslateCode = {
   'zh-HK': 'zh-TW',
   'zh-MO': 'zh-TW',
   'zh-SG': 'zh-CN',
-};
+} as const;
 
 // Some ISO 639 language codes have been renamed, e.g. "he" to "iw", but
 // Translate still uses the old versions. TODO(michaelpg): Chrome does too.
@@ -42,78 +45,70 @@ const kLanguageCodeToTranslateCode = {
 const kTranslateLanguageSynonyms = {
   'he': 'iw',
   'jv': 'jw',
-};
+} as const;
 
 // The fake language name used for ARC IMEs. The value must be in sync with the
 // one in ui/base/ime/ash/extension_ime_util.h.
 const kArcImeLanguage = '_arc_ime_language_';
 
 // The IME ID for the Accessibility Common extension used by Dictation.
-/** @type {string} */
 const ACCESSIBILITY_COMMON_IME_ID =
     '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
 
-/**
- * @typedef {{
- *   supportedLanguages: !Array<!chrome.languageSettingsPrivate.Language>,
- *   translateTarget: string,
- *   alwaysTranslateCodes: !Array<string>,
- *   neverTranslateCodes: !Array<string>,
- *   startingUILanguage: string,
- *   supportedInputMethods:
- * (!Array<!chrome.languageSettingsPrivate.InputMethod>|undefined),
- *   currentInputMethodId: (string|undefined)
- * }}
- */
-let ModelArgs;
+interface ModelArgs {
+  // Unused.
+  supportedLanguages: chrome.languageSettingsPrivate.Language[];
+  translateTarget: string;
+  alwaysTranslateCodes: string[];
+  neverTranslateCodes: string[];
+  startingUILanguage: string;
+  // TODO(b/263824661): Remove undefined from these definitions if we do not
+  // share this file with Chrome browser.
+  /** Always defined on CrOS. */
+  supportedInputMethods: (chrome.languageSettingsPrivate.InputMethod[]|
+                          undefined);
+  /** Always defined on CrOS. */
+  currentInputMethodId: (string|undefined);
+}
 
 /**
  * Singleton element that generates the languages model on start-up and
  * updates it whenever Chrome's pref store and other settings change.
  */
+const SettingsLanguagesElementBase = PrefsMixin(PolymerElement);
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LanguageHelper}
- * @implements {PrefsBehaviorInterface}
- */
-const SettingsLanguagesElementBase =
-    mixinBehaviors([PrefsBehavior], PolymerElement);
-
-/** @polymer */
-class SettingsLanguagesElement extends SettingsLanguagesElementBase {
+class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
+    LanguageHelper {
   static get is() {
-    return 'settings-languages';
+    return 'settings-languages' as const;
   }
 
   static get properties() {
     return {
-      /**
-       * @type {!LanguagesModel|undefined}
-       */
       languages: {
         type: Object,
         notify: true,
+        // TODO(b/238031866): Remove readOnly here and set `this.languages` with
+        // an assignment instead of a `this._setProperty`. See
+        // https://crrev.com/c/3176181/comment/63b644b9_ee7ad7df/ for more
+        // details.
         readOnly: true,
       },
 
       /**
        * This element, as a LanguageHelper instance for API usage.
-       * @type {!LanguageHelper}
        */
       languageHelper: {
         type: Object,
         notify: true,
         readOnly: true,
-        value() {
-          return /** @type {!LanguageHelper} */ (this);
+        value(this: SettingsLanguagesElement): LanguageHelper {
+          return this;
         },
       },
 
       /**
        * PromiseResolver to be resolved when the singleton has been initialized.
-       * @private {!PromiseResolver}
        */
       resolver_: {
         type: Object,
@@ -124,7 +119,6 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
 
       /**
        * Hash map of supported languages by language codes for fast lookup.
-       * @private {!Map<string, !chrome.languageSettingsPrivate.Language>}
        */
       supportedLanguageMap_: {
         type: Object,
@@ -135,7 +129,6 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
 
       /**
        * Hash set of enabled language codes for membership testing.
-       * @private {!Set<string>}
        */
       enabledLanguageSet_: {
         type: Object,
@@ -146,7 +139,6 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
 
       /**
        * Hash map of supported input methods by ID for fast lookup.
-       * @private {!Map<string, chrome.languageSettingsPrivate.InputMethod>}
        */
       supportedInputMethodMap_: {
         type: Object,
@@ -157,9 +149,6 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
 
       /**
        * Hash map of input methods supported for each language.
-       * @type {!Map<string,
-       *             !Array<!chrome.languageSettingsPrivate.InputMethod>>}
-       * @private
        */
       languageInputMethods_: {
         type: Object,
@@ -170,7 +159,6 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
 
       /**
        * Hash set of enabled input methods id for mebership testings
-       * @private {!Set<string>}
        */
       enabledInputMethodSet_: {
         type: Object,
@@ -179,7 +167,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
         },
       },
 
-      /** @private Prospective UI language when the page was loaded. */
+      /** Prospective UI language when the page was loaded. */
       originalProspectiveUILanguage_: String,
     };
   }
@@ -217,34 +205,53 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
     ];
   }
 
-  constructor() {
-    super();
+  // Public API: Bidirectional data flow.
+  // override prefs: any;  // From PrefsMixin.
 
-    /** @private {?Function} */
-    this.boundOnSpellcheckDictionariesChanged_ = null;
+  // Public API: Upwards data flow.
+  languages?: LanguagesModel;
+  languageHelper: LanguageHelper;
 
-    /** @private {!LanguagesBrowserProxy} */
-    this.browserProxy_ = LanguagesBrowserProxyImpl.getInstance();
+  // API proxies.
+  private browserProxy_: LanguagesBrowserProxy =
+      LanguagesBrowserProxyImpl.getInstance();
+  private languageSettingsPrivate_: typeof chrome.languageSettingsPrivate =
+      this.browserProxy_.getLanguageSettingsPrivate();
+  private inputMethodPrivate_: typeof chrome.inputMethodPrivate =
+      this.browserProxy_.getInputMethodPrivate();
 
-    /** @private {!LanguageSettingsPrivate} */
-    this.languageSettingsPrivate_ =
-        this.browserProxy_.getLanguageSettingsPrivate();
+  // Internal state.
+  private resolver_: PromiseResolver<undefined>;
+  private supportedLanguageMap_:
+      Map<string, chrome.languageSettingsPrivate.Language>;
+  private enabledLanguageSet_: Set<string>;
+  private supportedInputMethodMap_:
+      Map<string, chrome.languageSettingsPrivate.InputMethod>;
+  private languageInputMethods_:
+      Map<string, chrome.languageSettingsPrivate.InputMethod[]>;
+  private enabledInputMethodSet_: Set<string>;
+  private originalProspectiveUILanguage_?: string;
 
-    /** @private {!InputMethodPrivate} */
-    this.inputMethodPrivate_ = this.browserProxy_.getInputMethodPrivate();
+  // Bound methods.
+  // Instances of SettingsLanguagesElement below should be replaced with
+  // (typeof this) due to possible subclasses of SettingsLanguagesElement
+  // replacing these methods with a Liskov substitution principle-compatible
+  // method. However, that type is too complicated for TypeScript to check (it
+  // results in incorrect type errors), and we don't expect there to be any
+  // subclasses.
+  private boundOnSpellcheckDictionariesChanged_: OmitThisParameter<
+      SettingsLanguagesElement['onSpellcheckDictionariesChanged_']>|null = null;
+  private boundOnInputMethodAdded_:
+      OmitThisParameter<SettingsLanguagesElement['onInputMethodAdded_']>|null =
+          null;
+  private boundOnInputMethodRemoved_:
+      OmitThisParameter<SettingsLanguagesElement['onInputMethodRemoved_']>|
+      null = null;
+  private boundOnInputMethodChanged_:
+      OmitThisParameter<SettingsLanguagesElement['onInputMethodChanged_']>|
+      null = null;
 
-    /** @private {?Function} */
-    this.boundOnInputMethodAdded_ = null;
-
-    /** @private {?Function} */
-    this.boundOnInputMethodRemoved_ = null;
-
-    /** @private {?Function} */
-    this.boundOnInputMethodChanged_ = null;
-  }
-
-  /** @override */
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     const promises = [];
@@ -252,16 +259,14 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
     /**
      * An object passed into createModel to keep track of platform-specific
      * arguments, populated by the "promises" array.
-     * @type {!ModelArgs}
      */
-    const args = {
+    const args: ModelArgs = {
       supportedLanguages: [],
       translateTarget: '',
       alwaysTranslateCodes: [],
       neverTranslateCodes: [],
       startingUILanguage: '',
 
-      // Only used by ChromeOS
       supportedInputMethods: [],
       currentInputMethodId: '',
     };
@@ -321,12 +326,12 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
       this.languageSettingsPrivate_.getSpellcheckDictionaryStatuses().then(
           this.boundOnSpellcheckDictionariesChanged_);
 
-      this.resolver_.resolve();
+      this.resolver_.resolve(undefined);
     });
 
     this.boundOnInputMethodChanged_ = this.onInputMethodChanged_.bind(this);
     this.inputMethodPrivate_.onChanged.addListener(
-        assert(this.boundOnInputMethodChanged_));
+        this.boundOnInputMethodChanged_);
     this.boundOnInputMethodAdded_ = this.onInputMethodAdded_.bind(this);
     this.languageSettingsPrivate_.onInputMethodAdded.addListener(
         this.boundOnInputMethodAdded_);
@@ -335,18 +340,19 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
         this.boundOnInputMethodRemoved_);
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
 
+    // Safety: All bound methods here were set in `connectedCallback`,
+    // which is guaranteed to be run before `disconnectedCallback`.
     this.inputMethodPrivate_.onChanged.removeListener(
-        assert(this.boundOnInputMethodChanged_));
+        castExists(this.boundOnInputMethodChanged_));
     this.boundOnInputMethodChanged_ = null;
     this.languageSettingsPrivate_.onInputMethodAdded.removeListener(
-        assert(this.boundOnInputMethodAdded_));
+        castExists(this.boundOnInputMethodAdded_));
     this.boundOnInputMethodAdded_ = null;
     this.languageSettingsPrivate_.onInputMethodRemoved.removeListener(
-        assert(this.boundOnInputMethodRemoved_));
+        castExists(this.boundOnInputMethodRemoved_));
     this.boundOnInputMethodRemoved_ = null;
 
     if (this.boundOnSpellcheckDictionariesChanged_) {
@@ -358,10 +364,8 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
 
   /**
    * Updates the prospective UI language based on the new pref value.
-   * @param {string} prospectiveUILanguage
-   * @private
    */
-  prospectiveUiLanguageChanged_(prospectiveUILanguage) {
+  private prospectiveUiLanguageChanged_(prospectiveUILanguage: string): void {
     this.set(
         'languages.prospectiveUILanguage',
         prospectiveUILanguage || this.originalProspectiveUILanguage_);
@@ -369,9 +373,8 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
 
   /**
    * Updates the list of enabled languages from the preferred languages pref.
-   * @private
    */
-  preferredLanguagesPrefChanged_() {
+  private preferredLanguagesPrefChanged_(): void {
     if (this.prefs === undefined || this.languages === undefined) {
       return;
     }
@@ -400,21 +403,18 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
 
   /**
    * Updates the spellCheckEnabled state of each enabled language.
-   * @private
    */
-  spellCheckDictionariesPrefChanged_() {
+  private spellCheckDictionariesPrefChanged_(): void {
     if (this.prefs === undefined || this.languages === undefined) {
       return;
     }
 
-    const spellCheckSet = this.makeSetFromArray_(/** @type {!Array<string>} */ (
-        this.getPref('spellcheck.dictionaries').value));
-    const spellCheckForcedSet =
-        this.makeSetFromArray_(/** @type {!Array<string>} */ (
-            this.getPref('spellcheck.forced_dictionaries').value));
-    const spellCheckBlockedSet =
-        this.makeSetFromArray_(/** @type {!Array<string>} */ (
-            this.getPref('spellcheck.blocked_dictionaries').value));
+    const spellCheckSet = this.makeSetFromArray_(
+        this.getPref<string[]>('spellcheck.dictionaries').value);
+    const spellCheckForcedSet = this.makeSetFromArray_(
+        this.getPref<string[]>('spellcheck.forced_dictionaries').value);
+    const spellCheckBlockedSet = this.makeSetFromArray_(
+        this.getPref<string[]>('spellcheck.blocked_dictionaries').value);
 
     for (let i = 0; i < this.languages.enabled.length; i++) {
       const languageState = this.languages.enabled[i];
@@ -436,29 +436,25 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
   /**
    * Returns two arrays of SpellCheckLanguageStates for spell check languages:
    * one for spell check on, one for spell check off.
-   * @param {!Array<!chrome.languageSettingsPrivate.Language>}
-   *     supportedLanguages The list of supported languages, normally
+   * @param supportedLanguages The list of supported languages, normally
    *     this.languages.supported.
-   * @return {{on: !Array<SpellCheckLanguageState>, off:
-   *     !Array<SpellCheckLanguageState>}}
-   * @private
    */
-  getSpellCheckLanguages_(supportedLanguages) {
+  private getSpellCheckLanguages_(
+      supportedLanguages: chrome.languageSettingsPrivate.Language[]):
+      {on: SpellCheckLanguageState[], off: SpellCheckLanguageState[]} {
     // The spell check preferences are prioritised in this order:
     // forced_dictionaries, blocked_dictionaries, dictionaries.
 
     // The set of all language codes seen thus far.
-    const /** !Set<string> */ seenCodes = new Set();
+    const seenCodes = new Set<string>();
 
     /**
      * Gets the list of language codes indicated by the preference name, and
      * de-duplicates it with all other language codes.
-     * @param {string} prefName
-     * @return {!Array<string>}
      */
-    const getPrefAndDedupe = prefName => {
-      const /** !Array<string> */ result =
-          this.getPref(prefName).value.filter(x => !seenCodes.has(x));
+    const getPrefAndDedupe = (prefName: string): string[] => {
+      const result =
+          this.getPref<string[]>(prefName).value.filter(x => !seenCodes.has(x));
       result.forEach(code => seenCodes.add(code));
       return result;
     };
@@ -469,7 +465,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
     const blockedCodesSet = new Set(blockedCodes);
     const enabledCodes = getPrefAndDedupe('spellcheck.dictionaries');
 
-    const /** !Array<SpellCheckLanguageState> */ on = [];
+    const on: SpellCheckLanguageState[] = [];
     // We want to add newly enabled languages to the end of the "on" list, so we
     // should explicitly move the forced languages to the front of the list.
     for (const code of [...forcedCodes, ...enabledCodes]) {
@@ -496,7 +492,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
     // We don't want to split this list in "forced" / "not-forced" like the
     // spell check on list above, as we don't want to explicitly surface / hide
     // blocked languages to the user.
-    const /** !Array<SpellCheckLanguageState> */ off = [];
+    const off: SpellCheckLanguageState[] = [];
 
     for (const language of supportedLanguages) {
       // If spell check is off for this language, it must either not be in any
@@ -522,44 +518,47 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
 
   /**
    * Updates the list of always translate languages from translate prefs.
-   * @private
    */
-  alwaysTranslateLanguagesPrefChanged_() {
+  private alwaysTranslateLanguagesPrefChanged_(): void {
     if (this.prefs === undefined || this.languages === undefined) {
       return;
     }
     const alwaysTranslateCodes = Object.keys(
-        /** @type {!Object} */ (this.getPref('translate_allowlists').value));
+        this.getPref<Record<string, string>>('translate_allowlists').value);
     const alwaysTranslateLanguages =
-        alwaysTranslateCodes.map(code => this.getLanguage(code));
+        // This `getLanguage` assertion is potentially unsafe and could fail.
+        // TODO(b/265554088): Prove that this assertion is safe, or rewrite this
+        // to avoid this assertion.
+        alwaysTranslateCodes.map(code => this.getLanguage(code)!);
     this.set('languages.alwaysTranslate', alwaysTranslateLanguages);
   }
 
   /**
    * Updates the list of never translate languages from translate prefs.
-   * @private
    */
-  neverTranslateLanguagesPrefChanged_() {
+  private neverTranslateLanguagesPrefChanged_(): void {
     if (this.prefs === undefined || this.languages === undefined) {
       return;
     }
     const neverTranslateCodes =
-        /** @type {!Object} */ (
-            this.getPref('translate_blocked_languages').value);
+        this.getPref<string[]>('translate_blocked_languages').value;
     const neverTranslateLanguages =
-        neverTranslateCodes.map(code => this.getLanguage(code));
+        // This `getLanguage` assertion is potentially unsafe and could fail.
+        // TODO(b/265554088): Prove that this assertion is safe, or rewrite this
+        // to avoid this assertion.
+        neverTranslateCodes.map(code => this.getLanguage(code)!);
     this.set('languages.neverTranslate', neverTranslateLanguages);
   }
 
-  /** @private */
-  translateLanguagesPrefChanged_() {
+  private translateLanguagesPrefChanged_(): void {
     if (this.prefs === undefined || this.languages === undefined) {
       return;
     }
 
-    const translateBlockedPref = this.getPref('translate_blocked_languages');
-    const translateBlockedSet = this.makeSetFromArray_(
-        /** @type {!Array<string>} */ (translateBlockedPref.value));
+    const translateBlockedPref =
+        this.getPref<string[]>('translate_blocked_languages');
+    const translateBlockedSet =
+        this.makeSetFromArray_(translateBlockedPref.value);
 
     for (let i = 0; i < this.languages.enabled.length; i++) {
       const language = this.languages.enabled[i].language;
@@ -571,8 +570,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
     }
   }
 
-  /** @private */
-  translateTargetPrefChanged_() {
+  private translateTargetPrefChanged_(): void {
     if (this.prefs === undefined || this.languages === undefined) {
       return;
     }
@@ -583,11 +581,9 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
 
   /**
    * Constructs the languages model.
-   * @param {!ModelArgs} args used to populate the model
-   *     above.
-   * @private
+   * @param args used to populate the model above.
    */
-  createModel_(args) {
+  private createModel_(args: ModelArgs): void {
     // Populate the hash map of supported languages.
     for (let i = 0; i < args.supportedLanguages.length; i++) {
       const language = args.supportedLanguages[i];
@@ -598,11 +594,19 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
       this.supportedLanguageMap_.set(language.code, language);
     }
 
-    let prospectiveUILanguage;
-    // eslint-disable-next-line prefer-const
-    prospectiveUILanguage =
-        /** @type {string} */ (this.getPref('intl.app_locale').value) ||
-        this.originalProspectiveUILanguage_;
+    // The below getPref call should always be defined, so the
+    // `this.originalProspectiveUILanguage_` part of this expression is
+    // redundant.
+    // TODO(b/238031866): Investigate why we have two ways of getting the
+    // prospective UI language, and simplify this expression if necessary.
+    const prospectiveUILanguage =
+        this.getPref<string>('intl.app_locale').value ||
+        // Safety: This method is only called after all the promises
+        // in `connectedCallback()` have resolved, which includes a promise
+        // which sets `this.originalProspectiveUILanguage_`.
+        // TODO(b/238031866): Move this variable to `ModelArgs` to avoid this
+        // assertion.
+        this.originalProspectiveUILanguage_!;
 
     // Create a list of enabled languages from the supported languages.
     const enabledLanguageStates = this.getEnabledLanguageStates_(
@@ -616,12 +620,19 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
         this.getSpellCheckLanguages_(args.supportedLanguages);
 
     const alwaysTranslateLanguages =
-        args.alwaysTranslateCodes.map(code => this.getLanguage(code));
+        // This `getLanguage` assertion is potentially unsafe and could fail.
+        // TODO(b/265554088): Prove that this assertion is safe, or rewrite this
+        // to avoid this assertion.
+        args.alwaysTranslateCodes.map(code => this.getLanguage(code)!);
 
     const neverTranslateLangauges =
-        args.neverTranslateCodes.map(code => this.getLanguage(code));
+        // This `getLanguage` assertion is potentially unsafe and could fail.
+        // TODO(b/265554088): Prove that this assertion is safe, or rewrite this
+        // to avoid this assertion.
+        args.neverTranslateCodes.map(code => this.getLanguage(code)!);
 
-    const model = /** @type {!LanguagesModel} */ ({
+    // TODO(b/238031866): Remove the use of Partial here.
+    const model: Partial<LanguagesModel> = {
       supported: args.supportedLanguages,
       enabled: enabledLanguageStates,
       translateTarget: args.translateTarget,
@@ -629,58 +640,63 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
       neverTranslate: neverTranslateLangauges,
       spellCheckOnLanguages,
       spellCheckOffLanguages,
-    });
+    };
 
     model.prospectiveUILanguage = prospectiveUILanguage;
 
     if (args.supportedInputMethods) {
       this.createInputMethodModel_(args.supportedInputMethods);
     }
-    model.inputMethods = /** @type {!InputMethodsModel} */ ({
-      supported: args.supportedInputMethods,
+    model.inputMethods = {
+      // Safety: `ModelArgs.supportedInputMethods` is always defined on CrOS.
+      supported: args.supportedInputMethods!,
       enabled: this.getEnabledInputMethods_(),
-      currentId: args.currentInputMethodId,
-    });
+      // Safety: `ModelArgs.currentInputMethodId` is always defined on CrOS.
+      currentId: args.currentInputMethodId!,
+    };
 
     // Initialize the Polymer languages model.
-    this._setLanguages(model);
+    // Safety: All properties of `LanguagesModel` were set above.
+    this._setProperty('languages', model as LanguagesModel);
   }
 
   /**
    * Returns a list of LanguageStates for each enabled language in the supported
    * languages list.
-   * @param {string} translateTarget Language code of the default translate
+   * This must be called after `whenReady()` is resolved.
+   * @param translateTarget Language code of the default translate
    *     target language.
-   * @param {(string|undefined)} prospectiveUILanguage Prospective UI display
+   * @param prospectiveUILanguage Prospective UI display
    *     language. Only defined on Windows and Chrome OS.
-   * @return {!Array<!LanguageState>}
-   * @private
    */
-  getEnabledLanguageStates_(translateTarget, prospectiveUILanguage) {
+  private getEnabledLanguageStates_(
+      translateTarget: string,
+      prospectiveUILanguage: (string|undefined)): LanguageState[] {
+    // Safety: Enforced in documentation.
     assert(CrSettingsPrefs.isInitialized);
 
-    const pref = this.getPref('intl.accept_languages');
+    const pref = this.getPref<string>('intl.accept_languages');
     const enabledLanguageCodes = pref.value.split(',');
-    const languagesForcedPref = this.getPref('intl.forced_languages');
-    const spellCheckPref = this.getPref('spellcheck.dictionaries');
-    const spellCheckForcedPref = this.getPref('spellcheck.forced_dictionaries');
+    const languagesForcedPref = this.getPref<string[]>('intl.forced_languages');
+    const spellCheckPref = this.getPref<string[]>('spellcheck.dictionaries');
+    const spellCheckForcedPref =
+        this.getPref<string[]>('spellcheck.forced_dictionaries');
     const spellCheckBlockedPref =
-        this.getPref('spellcheck.blocked_dictionaries');
-    const languageForcedSet = this.makeSetFromArray_(
-        /** @type {!Array<string>} */ (languagesForcedPref.value));
+        this.getPref<string[]>('spellcheck.blocked_dictionaries');
+    const languageForcedSet = this.makeSetFromArray_(languagesForcedPref.value);
     const spellCheckSet = this.makeSetFromArray_(
-        /** @type {!Array<string>} */ (
-            spellCheckPref.value.concat(spellCheckForcedPref.value)));
-    const spellCheckForcedSet = this.makeSetFromArray_(
-        /** @type {!Array<string>} */ (spellCheckForcedPref.value));
-    const spellCheckBlockedSet = this.makeSetFromArray_(
-        /** @type {!Array<string>} */ (spellCheckBlockedPref.value));
+        (spellCheckPref.value.concat(spellCheckForcedPref.value)));
+    const spellCheckForcedSet =
+        this.makeSetFromArray_(spellCheckForcedPref.value);
+    const spellCheckBlockedSet =
+        this.makeSetFromArray_(spellCheckBlockedPref.value);
 
-    const translateBlockedPref = this.getPref('translate_blocked_languages');
-    const translateBlockedSet = this.makeSetFromArray_(
-        /** @type {!Array<string>} */ (translateBlockedPref.value));
+    const translateBlockedPref =
+        this.getPref<string[]>('translate_blocked_languages');
+    const translateBlockedSet =
+        this.makeSetFromArray_(translateBlockedPref.value);
 
-    const enabledLanguageStates = [];
+    const enabledLanguageStates: LanguageState[] = [];
 
     for (let i = 0; i < enabledLanguageCodes.length; i++) {
       const code = enabledLanguageCodes[i];
@@ -689,7 +705,8 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
       if (!language) {
         continue;
       }
-      const languageState = /** @type {LanguageState} */ ({});
+      // TODO(b/238031866): Remove the use of Partial here.
+      const languageState: Partial<LanguageState> = {};
       languageState.language = language;
       languageState.spellCheckEnabled =
           spellCheckSet.has(code) && !spellCheckBlockedSet.has(code) ||
@@ -701,28 +718,29 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
           spellCheckForcedSet.has(code) || spellCheckBlockedSet.has(code);
       languageState.isForced = languageForcedSet.has(code);
       languageState.downloadDictionaryFailureCount = 0;
-      enabledLanguageStates.push(languageState);
+      // This cast is very unsafe as `downloadDictionaryStatus` and `removable`
+      // have not been set.
+      // TODO(b/265554105): Investigate and remove this cast if possible.
+      enabledLanguageStates.push(languageState as LanguageState);
     }
     return enabledLanguageStates;
   }
 
   /**
    * True iff we translate pages that are in the given language.
-   * @param {string} code Language code.
-   * @param {boolean} supportsTranslate If translation supports the given
+   * @param code Language code.
+   * @param supportsTranslate If translation supports the given language.
+   * @param translateBlockedSet Set of languages for which translation is
+   *     blocked.
+   * @param translateTarget Language code of the default translate target
    *     language.
-   * @param {!Set<string>} translateBlockedSet Set of languages for which
-   *     translation is blocked.
-   * @param {string} translateTarget Language code of the default translate
-   *     target language.
-   * @param {(string|undefined)} prospectiveUILanguage Prospective UI display
-   *     language. Only defined on Windows and Chrome OS.
-   * @return {boolean}
-   * @private
+   * @param prospectiveUILanguage Prospective UI display language. Only defined
+   *     on Windows and Chrome OS.
    */
-  isTranslateEnabled_(
-      code, supportsTranslate, translateBlockedSet, translateTarget,
-      prospectiveUILanguage) {
+  private isTranslateEnabled_(
+      code: string, supportsTranslate: boolean,
+      translateBlockedSet: Set<string>, translateTarget: string,
+      prospectiveUILanguage: (string|undefined)): boolean {
     const translateCode = this.convertLanguageCodeForTranslate(code);
     return supportsTranslate && !translateBlockedSet.has(translateCode) &&
         translateCode !== translateTarget &&
@@ -732,20 +750,24 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
   /**
    * Updates the dictionary download status for spell check languages in order
    * to track the number of times a spell check dictionary download has failed.
-   * @param {!Array<!chrome.languageSettingsPrivate.SpellcheckDictionaryStatus>}
-   *     statuses
-   * @private
    */
-  onSpellcheckDictionariesChanged_(statuses) {
-    const statusMap = new Map();
+  private onSpellcheckDictionariesChanged_(
+      statuses: chrome.languageSettingsPrivate.SpellcheckDictionaryStatus[]):
+      void {
+    const statusMap = new Map<
+        string, chrome.languageSettingsPrivate.SpellcheckDictionaryStatus>();
     statuses.forEach(status => {
       statusMap.set(status.languageCode, status);
     });
 
     const collectionNames =
-        ['enabled', 'spellCheckOnLanguages', 'spellCheckOffLanguages'];
+        ['enabled', 'spellCheckOnLanguages', 'spellCheckOffLanguages'] as const;
     for (const collectionName of collectionNames) {
-      this.languages[collectionName].forEach((languageState, index) => {
+      // This assertion of `this.languages` is potentially unsafe and could
+      // fail.
+      // TODO(b/265553377): Prove that this assertion is safe, or rewrite this
+      // to avoid this assertion.
+      this.languages![collectionName].forEach((languageState, index) => {
         const status = statusMap.get(languageState.language.code);
         if (!status) {
           return;
@@ -771,9 +793,8 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
   /**
    * Updates the |removable| property of the enabled language states based
    * on what other languages and input methods are enabled.
-   * @private
    */
-  updateRemovableLanguages_() {
+  private updateRemovableLanguages_(): void {
     if (this.prefs === undefined || this.languages === undefined) {
       return;
     }
@@ -793,62 +814,60 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
 
   /**
    * Creates a Set from the elements of the array.
-   * @param {!Array<T>} list
-   * @return {!Set<T>}
-   * @template T
-   * @private
    */
-  makeSetFromArray_(list) {
+  private makeSetFromArray_<T>(list: T[]): Set<T> {
+    // TODO(b/238031866): Inline these calls.
     return new Set(list);
   }
 
   // LanguageHelper implementation.
   // TODO(michaelpg): replace duplicate docs with @override once b/24294625
   // is fixed.
-
-  /** @return {!Promise} */
-  whenReady() {
+  whenReady(): Promise<void> {
     return this.resolver_.promise;
   }
 
   /**
    * Sets the prospective UI language to the chosen language. This won't affect
    * the actual UI language until a restart.
-   * @param {string} languageCode
    */
-  setProspectiveUiLanguage(languageCode) {
+  setProspectiveUiLanguage(languageCode: string): void {
     this.browserProxy_.setProspectiveUiLanguage(languageCode);
   }
 
   /**
    * True if the prospective UI language was changed from its starting value.
-   * @return {boolean}
    */
-  requiresRestart() {
+  // TODO(b/263824661): Remove this unused method if we do not share this file
+  // with browser settings.
+  requiresRestart(): boolean {
     return this.originalProspectiveUILanguage_ !==
-        this.languages.prospectiveUILanguage;
+        // This assertion of `this.languages` is potentially unsafe and could
+        // fail.
+        // TODO(b/265553377): Prove that this assertion is safe, or rewrite this
+        // to avoid this assertion.
+        this.languages!.prospectiveUILanguage;
   }
 
   /**
-   * @return {string} The language code for ARC IMEs.
+   * @return The language code for ARC IMEs.
    */
-  getArcImeLanguageCode() {
+  getArcImeLanguageCode(): string {
     return kArcImeLanguage;
   }
 
   /**
-   * @param {string} languageCode
-   * @return {boolean} True if the language is for ARC IMEs.
+   * @return True if the language is for ARC IMEs.
    */
-  isLanguageCodeForArcIme(languageCode) {
+  isLanguageCodeForArcIme(languageCode: string): boolean {
     return languageCode === kArcImeLanguage;
   }
 
   /**
-   *  @param {!chrome.languageSettingsPrivate.Language} language
-   *  @return {boolean} True if the language can be translated by Chrome.
+   * @return True if the language can be translated by Chrome.
    */
-  isLanguageTranslatable(language) {
+  isLanguageTranslatable(language: chrome.languageSettingsPrivate.Language):
+      boolean {
     if (language.code === 'zh-CN' || language.code === 'zh-TW') {
       // In Translate, general Chinese is not used, and the sub code is
       // necessary as a language code for the Translate server.
@@ -862,18 +881,16 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
   }
 
   /**
-   * @param {string} languageCode
-   * @return {boolean} True if the language is enabled.
+   * @return True if the language is enabled.
    */
-  isLanguageEnabled(languageCode) {
+  isLanguageEnabled(languageCode: string): boolean {
     return this.enabledLanguageSet_.has(languageCode);
   }
 
   /**
    * Enables the language, making it available for spell check and input.
-   * @param {string} languageCode
    */
-  enableLanguage(languageCode) {
+  enableLanguage(languageCode: string): void {
     if (!CrSettingsPrefs.isInitialized) {
       return;
     }
@@ -883,9 +900,8 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
 
   /**
    * Disables the language.
-   * @param {string} languageCode
    */
-  disableLanguage(languageCode) {
+  disableLanguage(languageCode: string): void {
     if (!CrSettingsPrefs.isInitialized) {
       return;
     }
@@ -900,32 +916,27 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
     this.languageSettingsPrivate_.disableLanguage(languageCode);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isChromeOsLanguageSettingsV2Update2_() {
+  private isChromeOsLanguageSettingsV2Update2_(): boolean {
     return loadTimeData.valueExists('enableLanguageSettingsV2Update2') &&
         loadTimeData.getBoolean('enableLanguageSettingsV2Update2');
   }
 
-  /**
-   * @param {!LanguageState} languageState
-   * @return {boolean}
-   */
-  isOnlyTranslateBlockedLanguage(languageState) {
+  isOnlyTranslateBlockedLanguage(languageState: LanguageState): boolean {
     return !languageState.translateEnabled &&
-        this.languages.enabled.filter(lang => !lang.translateEnabled).length ===
-        1;
+        // This assertion of `this.languages` is potentially unsafe and could
+        // fail.
+        // TODO(b/265553377): Prove that this assertion is safe, or rewrite this
+        // to avoid this assertion.
+        this.languages!.enabled.filter(lang => !lang.translateEnabled)
+            .length === 1;
   }
 
-  /**
-   * @param {!LanguageState} languageState
-   * @return {boolean}
-   */
-  canDisableLanguage(languageState) {
+  canDisableLanguage(languageState: LanguageState): boolean {
     // Cannot disable the only enabled language.
-    if (this.languages.enabled.length === 1) {
+    // This assertion of `this.languages` is potentially unsafe and could fail.
+    // TODO(b/265553377): Prove that this assertion is safe, or rewrite this to
+    // avoid this assertion.
+    if (this.languages!.enabled.length === 1) {
       return false;
     }
 
@@ -938,10 +949,10 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
   }
 
   /**
-   * @param {!chrome.languageSettingsPrivate.Language} language
-   * @return {boolean} true if the given language can be enabled
+   * @return true if the given language can be enabled
    */
-  canEnableLanguage(language) {
+  canEnableLanguage(language: chrome.languageSettingsPrivate.Language):
+      boolean {
     return !(
         this.isLanguageEnabled(language.code) ||
         language.isProhibitedLanguage ||
@@ -950,10 +961,9 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
 
   /**
    * Sets whether a given language should always be automatically translated.
-   * @param {string} languageCode
-   * @param {boolean} alwaysTranslate
    */
-  setLanguageAlwaysTranslateState(languageCode, alwaysTranslate) {
+  setLanguageAlwaysTranslateState(
+      languageCode: string, alwaysTranslate: boolean): void {
     this.languageSettingsPrivate_.setLanguageAlwaysTranslateState(
         languageCode, alwaysTranslate);
   }
@@ -961,11 +971,10 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
   /**
    * Moves the language in the list of enabled languages either up (toward the
    * front of the list) or down (toward the back).
-   * @param {string} languageCode
-   * @param {boolean} upDirection True if we need to move up, false if we
+   * @param upDirection True if we need to move up, false if we
    *     need to move down
    */
-  moveLanguage(languageCode, upDirection) {
+  moveLanguage(languageCode: string, upDirection: boolean): void {
     if (!CrSettingsPrefs.isInitialized) {
       return;
     }
@@ -979,9 +988,8 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
 
   /**
    * Moves the language directly to the front of the list of enabled languages.
-   * @param {string} languageCode
    */
-  moveLanguageToFront(languageCode) {
+  moveLanguageToFront(languageCode: string): void {
     if (!CrSettingsPrefs.isInitialized) {
       return;
     }
@@ -992,9 +1000,8 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
   /**
    * Enables translate for the given language by removing the translate
    * language from the blocked languages preference.
-   * @param {string} languageCode
    */
-  enableTranslateLanguage(languageCode) {
+  enableTranslateLanguage(languageCode: string): void {
     this.languageSettingsPrivate_.setEnableTranslationForLanguage(
         languageCode, true);
   }
@@ -1002,9 +1009,8 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
   /**
    * Disables translate for the given language by adding the translate
    * language to the blocked languages preference.
-   * @param {string} languageCode
    */
-  disableTranslateLanguage(languageCode) {
+  disableTranslateLanguage(languageCode: string): void {
     this.languageSettingsPrivate_.setEnableTranslationForLanguage(
         languageCode, false);
   }
@@ -1012,24 +1018,20 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
   /**
    * Sets the translate target language and adds it to the content languages if
    * not already there.
-   * @param {string} languageCode
    */
-  setTranslateTargetLanguage(languageCode) {
+  setTranslateTargetLanguage(languageCode: string): void {
     this.languageSettingsPrivate_.setTranslateTargetLanguage(languageCode);
   }
 
   /**
    * Enables or disables spell check for the given language.
-   * @param {string} languageCode
-   * @param {boolean} enable
    */
-  toggleSpellCheck(languageCode, enable) {
+  toggleSpellCheck(languageCode: string, enable: boolean): void {
     if (!this.languages) {
       return;
     }
 
     if (enable) {
-      const spellCheckPref = this.getPref('spellcheck.dictionaries');
       this.appendPrefListItem('spellcheck.dictionaries', languageCode);
     } else {
       this.deletePrefListItem('spellcheck.dictionaries', languageCode);
@@ -1040,12 +1042,18 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
    * Converts the language code for translate. There are some differences
    * between the language set the Translate server uses and that for
    * Accept-Language.
-   * @param {string} languageCode
-   * @return {string} The converted language code.
+   * @return The converted language code.
    */
-  convertLanguageCodeForTranslate(languageCode) {
+  convertLanguageCodeForTranslate(languageCode: string): string {
     if (languageCode in kLanguageCodeToTranslateCode) {
-      return kLanguageCodeToTranslateCode[languageCode];
+      // Work around https://github.com/microsoft/TypeScript/issues/21732.
+      // As of writing, it is marked as fixed by
+      // https://github.com/microsoft/TypeScript/pull/50666, but that PR does
+      // not address this specific issue of narrowing a `string` down to keys of
+      // an object.
+      type LanguageCode = keyof typeof kLanguageCodeToTranslateCode;
+      // Safety: We checked that languageCode is a key above.
+      return kLanguageCodeToTranslateCode[languageCode as LanguageCode];
     }
 
     const main = languageCode.split('-')[0];
@@ -1055,7 +1063,9 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
       return languageCode;
     }
     if (main in kTranslateLanguageSynonyms) {
-      return kTranslateLanguageSynonyms[main];
+      type TranslateSynonymKey = keyof typeof kTranslateLanguageSynonyms;
+      // Safety: We checked that languageCode is a key above.
+      return kTranslateLanguageSynonyms[main as TranslateSynonymKey];
     }
 
     return main;
@@ -1064,10 +1074,8 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
   /**
    * Given a language code, returns just the base language. E.g., converts
    * 'en-GB' to 'en'.
-   * @param {string} languageCode
-   * @return {string}
    */
-  getLanguageCodeWithoutRegion(languageCode) {
+  getLanguageCodeWithoutRegion(languageCode: string): string {
     // The Norwegian languages fall under the 'no' macrolanguage.
     if (languageCode === 'nb' || languageCode === 'nn') {
       return 'no';
@@ -1085,16 +1093,17 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
     }
 
     // Match the characters before the hyphen.
-    const result = languageCode.match(/^([^-]+)-?/);
+    // This assertion is unsafe if `languageCode` is an empty string, or starts
+    // with a hyphen.
+    // TODO(b/265554105): Gracefully handle this case.
+    const result = languageCode.match(/^([^-]+)-?/)!;
+    // Safety: The regex above has one non-optional capturing group.
     assert(result.length === 2);
     return result[1];
   }
 
-  /**
-   * @param {string} languageCode
-   * @return {!chrome.languageSettingsPrivate.Language|undefined}
-   */
-  getLanguage(languageCode) {
+  getLanguage(languageCode: string): chrome.languageSettingsPrivate.Language
+      |undefined {
     // If a languageCode is not found, try language without location.
     return this.supportedLanguageMap_.get(languageCode) ||
         this.supportedLanguageMap_.get(
@@ -1103,19 +1112,17 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
 
   /**
    * Retries downloading the dictionary for |languageCode|.
-   * @param {string} languageCode
    */
-  retryDownloadDictionary(languageCode) {
+  retryDownloadDictionary(languageCode: string): void {
     this.languageSettingsPrivate_.retryDownloadDictionary(languageCode);
   }
 
   /**
    * Constructs the input method part of the languages model.
-   * @param {!Array<!chrome.languageSettingsPrivate.InputMethod>}
-   *     supportedInputMethods Input methods.
-   * @private
    */
-  createInputMethodModel_(supportedInputMethods) {
+  private createInputMethodModel_(
+      supportedInputMethods: chrome.languageSettingsPrivate.InputMethod[]):
+      void {
     // Populate the hash map of supported input methods.
     this.supportedInputMethodMap_.clear();
     this.languageInputMethods_.clear();
@@ -1144,16 +1151,19 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
 
   /**
    * Returns a list of enabled input methods.
-   * @return {!Array<!chrome.languageSettingsPrivate.InputMethod>}
-   * @private
+   *
+   * This must be called after `whenReady()` is resolved.
    */
-  getEnabledInputMethods_() {
+  private getEnabledInputMethods_():
+      chrome.languageSettingsPrivate.InputMethod[] {
+    // Safety: Enforced in documentation.
     assert(CrSettingsPrefs.isInitialized);
 
     let enabledInputMethodIds =
-        this.getPref('settings.language.preload_engines').value.split(',');
+        this.getPref<string>('settings.language.preload_engines')
+            .value.split(',');
     enabledInputMethodIds = enabledInputMethodIds.concat(
-        this.getPref('settings.language.enabled_extension_imes')
+        this.getPref<string>('settings.language.enabled_extension_imes')
             .value.split(','));
     this.enabledInputMethodSet_ = new Set(enabledInputMethodIds);
 
@@ -1161,72 +1171,73 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
     // (Accessibility Common) input method.
     return enabledInputMethodIds
         .map(id => this.supportedInputMethodMap_.get(id))
-        .filter(inputMethod => !!inputMethod)
+        .filter(
+            <T>(inputMethod: T): inputMethod is NonNullable<T> => !!inputMethod)
         .filter(inputMethod => inputMethod.id !== ACCESSIBILITY_COMMON_IME_ID);
   }
 
-  /** @private */
-  async updateSupportedInputMethods_() {
+  private async updateSupportedInputMethods_(): Promise<void> {
     const lists = await this.languageSettingsPrivate_.getInputMethodLists();
     const supportedInputMethods =
         lists.componentExtensionImes.concat(lists.thirdPartyExtensionImes);
     this.createInputMethodModel_(supportedInputMethods);
+    // The two lines below are potentially unsafe and could fail, as they assume
+    // that `this.languages` is defined.
+    // TODO(b/265553377): Prove that this assertion is safe, or rewrite this to
+    // avoid this assertion.
     this.set('languages.inputMethods.supported', supportedInputMethods);
     this.updateEnabledInputMethods_();
   }
 
-  /** @private */
-  updateEnabledInputMethods_() {
+  private updateEnabledInputMethods_(): void {
     const enabledInputMethods = this.getEnabledInputMethods_();
     const enabledInputMethodSet = this.makeSetFromArray_(enabledInputMethods);
 
-    for (let i = 0; i < this.languages.inputMethods.supported.length; i++) {
+    // This assertion of `this.languages` is potentially unsafe and could fail.
+    // TODO(b/265553377): Prove that this assertion is safe, or rewrite this to
+    // avoid this assertion.
+    // Safety: `LanguagesModel.inputMethods` is always defined on CrOS.
+    for (let i = 0; i < this.languages!.inputMethods!.supported.length; i++) {
       this.set(
           'languages.inputMethods.supported.' + i + '.enabled',
-          enabledInputMethodSet.has(this.languages.inputMethods.supported[i]));
+          enabledInputMethodSet.has(
+              this.languages!.inputMethods!.supported[i]));
     }
     this.set('languages.inputMethods.enabled', enabledInputMethods);
   }
 
-  /** @param {string} id */
-  addInputMethod(id) {
+  addInputMethod(id: string): void {
     if (!this.supportedInputMethodMap_.has(id)) {
       return;
     }
     this.languageSettingsPrivate_.addInputMethod(id);
   }
 
-  /** @param {string} id */
-  removeInputMethod(id) {
+  removeInputMethod(id: string): void {
     if (!this.supportedInputMethodMap_.has(id)) {
       return;
     }
     this.languageSettingsPrivate_.removeInputMethod(id);
   }
 
-  /** @param {string} id */
-  setCurrentInputMethod(id) {
+  setCurrentInputMethod(id: string): void {
     this.inputMethodPrivate_.setCurrentInputMethod(id);
   }
 
-  /**
-   * @param {string} languageCode
-   * @return {!Array<!chrome.languageSettingsPrivate.InputMethod>}
-   */
-  getInputMethodsForLanguage(languageCode) {
+  getInputMethodsForLanguage(languageCode: string):
+      chrome.languageSettingsPrivate.InputMethod[] {
     return this.languageInputMethods_.get(languageCode) || [];
   }
 
   /**
    * Returns the input methods that support any of the given languages.
-   * @param {!Array<string>} languageCodes
-   * @return {!Array<!chrome.languageSettingsPrivate.InputMethod>}
    */
-  getInputMethodsForLanguages(languageCodes) {
+  getInputMethodsForLanguages(languageCodes: string[]):
+      chrome.languageSettingsPrivate.InputMethod[] {
     // Input methods that have already been listed for this language.
-    const /** !Set<string> */ usedInputMethods = new Set();
-    /** @type {!Array<chrome.languageSettingsPrivate.InputMethod>} */
-    const combinedInputMethods = [];
+    const usedInputMethods = new Set<string>();
+    const combinedInputMethods: chrome.languageSettingsPrivate.InputMethod[] =
+        [];
     for (const languageCode of languageCodes) {
       const inputMethods = this.getInputMethodsForLanguage(languageCode);
       // Get the language's unused input methods and mark them as used.
@@ -1240,53 +1251,49 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
   }
 
   /**
-   * @return {!Set<string>} list of enabled language code.
+   * @return list of enabled language code.
    */
-  getEnabledLanguageCodes() {
+  getEnabledLanguageCodes(): Set<string> {
     return this.enabledLanguageSet_;
   }
 
   /**
-   * @param {string} id the input method id
-   * @return {boolean} True if the input method is enabled
+   * @param id the input method id
+   * @return True if the input method is enabled
    */
-  isInputMethodEnabled(id) {
+  isInputMethodEnabled(id: string): boolean {
     return this.enabledInputMethodSet_.has(id);
   }
 
-  /**
-   * @param {!chrome.languageSettingsPrivate.InputMethod} inputMethod
-   * @return {boolean}
-   */
-  isComponentIme(inputMethod) {
+  isComponentIme(inputMethod: chrome.languageSettingsPrivate.InputMethod):
+      boolean {
     return inputMethod.id.startsWith('_comp_');
   }
 
-  /** @param {string} id Input method ID. */
-  openInputMethodOptions(id) {
+  /** @param id Input method ID. */
+  openInputMethodOptions(id: string): void {
     this.inputMethodPrivate_.openOptionsPage(id);
   }
 
-  /** @param {string} id New current input method ID. */
-  onInputMethodChanged_(id) {
+  /** @param id New current input method ID. */
+  private onInputMethodChanged_(id: string): void {
     this.set('languages.inputMethods.currentId', id);
   }
 
-  /** @param {string} id Added input method ID. */
-  onInputMethodAdded_(id) {
+  /** @param _id Added input method ID. */
+  private onInputMethodAdded_(_id: string): void {
     this.updateSupportedInputMethods_();
   }
 
-  /** @param {string} id Removed input method ID. */
-  onInputMethodRemoved_(id) {
+  /** @param id Removed input method ID. */
+  private onInputMethodRemoved_(_id: string): void {
     this.updateSupportedInputMethods_();
   }
 
   /**
-   * @param {string} id Input method ID.
-   * @return {string}
+   * @param id Input method ID.
    */
-  getInputMethodDisplayName(id) {
+  getInputMethodDisplayName(id: string): string {
     const inputMethod = this.supportedInputMethodMap_.get(id);
     if (inputMethod === undefined) {
       return '';
@@ -1296,3 +1303,9 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
 }
 
 customElements.define(SettingsLanguagesElement.is, SettingsLanguagesElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsLanguagesElement.is]: SettingsLanguagesElement;
+  }
+}

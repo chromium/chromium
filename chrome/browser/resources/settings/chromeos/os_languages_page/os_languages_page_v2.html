@@ -199,6 +199,7 @@
 </template>
 
 <template is="dom-if" if="[[showAddLanguagesDialog_]]" restamp>
+  <!-- TODO(b/238031866): Change this two-way binding to be one-way. -->
   <os-settings-add-languages-dialog languages="{{languages}}"
       language-helper="[[languageHelper]]"
       on-close="onAddLanguagesDialogClose_">
