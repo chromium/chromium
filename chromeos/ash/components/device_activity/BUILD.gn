@@ -38,6 +38,8 @@ component("device_activity") {
   sources = [
     "churn_active_status.cc",
     "churn_active_status.h",
+    "churn_cohort_use_case_impl.cc",
+    "churn_cohort_use_case_impl.h",
     "daily_use_case_impl.cc",
     "daily_use_case_impl.h",
     "device_active_use_case.cc",
@@ -59,6 +61,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "churn_cohort_use_case_impl_unittest.cc",
     "daily_use_case_impl_unittest.cc",
     "device_active_use_case_unittest.cc",
     "device_activity_client_unittest.cc",

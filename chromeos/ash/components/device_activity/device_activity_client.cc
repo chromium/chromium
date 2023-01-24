@@ -366,7 +366,6 @@ DeviceActivityClient::GetSaveStatusRequest() {
 
   for (auto* use_case : GetUseCases()) {
     private_computing::ActiveStatus status = use_case->GenerateActiveStatus();
-
     if (status.has_use_case()) {
       *request.add_active_status() = status;
     }
@@ -456,6 +455,11 @@ void DeviceActivityClient::OnGetLastPingDatesStatusFetched(
             CROS_FRESNEL_28DAY_ACTIVE:
           device_active_use_case_ptr =
               GetUseCasePtr(psm_rlwe::RlweUseCase::CROS_FRESNEL_28DAY_ACTIVE);
+          break;
+        case private_computing::PrivateComputingUseCase::
+            CROS_FRESNEL_CHURN_MONTHLY_COHORT:
+          device_active_use_case_ptr = GetUseCasePtr(
+              psm_rlwe::RlweUseCase::CROS_FRESNEL_CHURN_MONTHLY_COHORT);
           break;
         default:
           LOG(ERROR) << "PSM use case is not supported yet.";

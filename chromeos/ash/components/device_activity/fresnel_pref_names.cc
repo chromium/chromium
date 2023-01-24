@@ -14,4 +14,8 @@ const char kDeviceActiveLastKnownDailyPingTimestamp[] =
 const char kDeviceActiveLastKnown28DayActivePingTimestamp[] =
     "device_active.last_known_28day_active_ping_timestamp";
 
+// Timestamp of last known monthly churn cohort ping to Fresnel.
+const char kDeviceActiveChurnCohortMonthlyPingTimestamp[] =
+    "device_active.last_known_churn_cohort_monthly_ping_timestamp";
+
 }  // namespace ash::prefs

@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/device_activity/churn_cohort_use_case_impl.h"
 #include "chromeos/ash/components/device_activity/daily_use_case_impl.h"
 #include "chromeos/ash/components/device_activity/device_active_use_case.h"
 #include "chromeos/ash/components/device_activity/device_activity_client.h"
@@ -98,6 +99,8 @@ void DeviceActivityController::RegisterPrefs(PrefRegistrySimple* registry) {
                              unix_epoch);
   registry->RegisterTimePref(
       prefs::kDeviceActiveLastKnown28DayActivePingTimestamp, unix_epoch);
+  registry->RegisterTimePref(
+      prefs::kDeviceActiveChurnCohortMonthlyPingTimestamp, unix_epoch);
 }
 
 // static
@@ -113,9 +116,9 @@ base::TimeDelta DeviceActivityController::DetermineStartUpDelay(
   // on device start up, gets the wrong check membership response.
   base::TimeDelta delay_on_first_chrome_run;
   base::Time current_ts = base::Time::Now();
-  if (current_ts < (chrome_first_run_ts + base::Minutes(10))) {
+  if (current_ts < (chrome_first_run_ts + base::Minutes(1))) {
     delay_on_first_chrome_run =
-        chrome_first_run_ts + base::Minutes(10) - current_ts;
+        chrome_first_run_ts + base::Minutes(1) - current_ts;
   }
 
   return delay_on_first_chrome_run;
@@ -238,6 +241,9 @@ void DeviceActivityController::OnMachineStatisticsLoaded(
       psm_device_active_secret, chrome_passed_device_params_, local_state,
       std::make_unique<PsmDelegateImpl>()));
   use_cases.push_back(std::make_unique<TwentyEightDayActiveUseCaseImpl>(
+      psm_device_active_secret, chrome_passed_device_params_, local_state,
+      std::make_unique<PsmDelegateImpl>()));
+  use_cases.push_back(std::make_unique<ChurnCohortUseCaseImpl>(
       psm_device_active_secret, chrome_passed_device_params_, local_state,
       std::make_unique<PsmDelegateImpl>()));
 

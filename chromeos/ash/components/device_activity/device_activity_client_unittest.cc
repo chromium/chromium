@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/dbus/private_computing/fake_private_computing_client.h"
 #include "chromeos/ash/components/dbus/private_computing/private_computing_service.pb.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
+#include "chromeos/ash/components/device_activity/churn_cohort_use_case_impl.h"
 #include "chromeos/ash/components/device_activity/daily_use_case_impl.h"
 #include "chromeos/ash/components/device_activity/device_active_use_case.h"
 #include "chromeos/ash/components/device_activity/device_activity_controller.h"
@@ -252,6 +253,25 @@ class TwentyEightDayActiveUseCaseImplUnderTest
   ~TwentyEightDayActiveUseCaseImplUnderTest() override = default;
 };
 
+class ChurnCohortUseCaseImplUnderTest : public ChurnCohortUseCaseImpl {
+ public:
+  ChurnCohortUseCaseImplUnderTest(
+      PrefService* local_state,
+      const psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase&
+          test_case)
+      : ChurnCohortUseCaseImpl(
+            kFakePsmDeviceActiveSecret,
+            kFakeChromeParameters,
+            local_state,
+            std::make_unique<FakePsmDelegate>(test_case.ec_cipher_key(),
+                                              test_case.seed(),
+                                              GetPlaintextIds(test_case))) {}
+  ChurnCohortUseCaseImplUnderTest(const ChurnCohortUseCaseImplUnderTest&) =
+      delete;
+  ChurnCohortUseCaseImplUnderTest& operator=(
+      const ChurnCohortUseCaseImplUnderTest&) = delete;
+  ~ChurnCohortUseCaseImplUnderTest() override = default;
+};
 }  // namespace
 
 // TODO(crbug/1317652): Refactor checking if current use case local pref is
@@ -414,6 +434,8 @@ class DeviceActivityClientTest : public testing::Test {
             features::kDeviceActiveClientDailyCheckMembership,
             features::kDeviceActiveClient28DayActiveCheckIn,
             features::kDeviceActiveClient28DayActiveCheckMembership,
+            features::kDeviceActiveClientChurnCohortCheckIn,
+            features::kDeviceActiveClientChurnCohortCheckMembership,
         },
         GetPsmNonMemberTestCase(),
         GetPrivateComputingRegressionTestCase(
@@ -479,6 +501,13 @@ class DeviceActivityClientTest : public testing::Test {
           std::make_unique<TwentyEightDayActiveUseCaseImplUnderTest>(
               &local_state_, psm_test_case));
     }
+    if (base::FeatureList::IsEnabled(
+            features::kDeviceActiveClientChurnCohortCheckIn) ||
+        base::FeatureList::IsEnabled(
+            features::kDeviceActiveClientChurnCohortCheckMembership)) {
+      use_cases.push_back(std::make_unique<ChurnCohortUseCaseImplUnderTest>(
+          &local_state_, psm_test_case));
+    }
 
     device_activity_client_ = std::make_unique<DeviceActivityClient>(
         network_state_test_helper_->network_state_handler(),
@@ -493,6 +522,8 @@ class DeviceActivityClientTest : public testing::Test {
         prefs::kDeviceActiveLastKnownDailyPingTimestamp);
     local_state_.RemoveUserPref(
         prefs::kDeviceActiveLastKnown28DayActivePingTimestamp);
+    local_state_.RemoveUserPref(
+        prefs::kDeviceActiveChurnCohortMonthlyPingTimestamp);
   }
 
   void SimulateOprfResponse(const std::string& serialized_response_body,
@@ -568,7 +599,7 @@ class DeviceActivityClientTest : public testing::Test {
 };
 
 TEST_F(DeviceActivityClientTest, ValidateActiveUseCases) {
-  EXPECT_EQ(static_cast<int>(device_activity_client_->GetUseCases().size()), 2);
+  EXPECT_EQ(static_cast<int>(device_activity_client_->GetUseCases().size()), 3);
 }
 
 TEST_F(DeviceActivityClientTest,

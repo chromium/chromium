@@ -2202,6 +2202,18 @@ BASE_FEATURE(kDeviceActiveClientDailyCheckMembership,
              "DeviceActiveClientDailyCheckMembership",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables PSM CheckIn for the churn cohort device active pings
+// on ChromeOS.
+BASE_FEATURE(kDeviceActiveClientChurnCohortCheckIn,
+             "DeviceActiveClientChurnCohortCheckIn",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables PSM CheckMembership for the churn cohort device active
+// pings on ChromeOS.
+BASE_FEATURE(kDeviceActiveClientChurnCohortCheckMembership,
+             "DeviceActiveClientChurnCohortCheckMembership",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables forced reboots when DeviceScheduledReboot policy is set.
 BASE_FEATURE(kDeviceForceScheduledReboot,
              "DeviceForceScheduledReboot",
