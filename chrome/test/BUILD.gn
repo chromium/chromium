@@ -10870,7 +10870,6 @@ if (!is_android) {
     deps = [
       "//base",
       "//chrome/test:browser_tests_runner",
-      "//device/base",
       "//sandbox/policy",
     ]
 

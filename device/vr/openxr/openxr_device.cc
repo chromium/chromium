@@ -10,10 +10,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "device/base/features.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_render_loop.h"
 #include "device/vr/openxr/openxr_statics.h"
+#include "device/vr/public/cpp/features.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace device {

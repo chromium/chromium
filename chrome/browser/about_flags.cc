@@ -293,6 +293,10 @@
 #include "components/supervised_user/core/common/features.h"  // nogncheck
 #endif  // ENABLE_SUPERVISED_USERS
 
+#if BUILDFLAG(ENABLE_VR)
+#include "device/vr/public/cpp/features.h"
+#endif
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/ozone/buildflags.h"
 #include "ui/ozone/public/ozone_switches.h"

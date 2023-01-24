@@ -9,8 +9,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/common/content_switches.h"
-#include "device/base/features.h"
 #include "device/vr/buildflags/buildflags.h"
+#include "device/vr/public/cpp/features.h"
 
 #if BUILDFLAG(ENABLE_OPENXR)
 #include "content/public/common/gpu_stream_constants.h"

@@ -29,9 +29,9 @@
 #include "content/public/browser/xr_runtime_manager.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "device/base/features.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "device/vr/orientation/orientation_device_provider.h"
+#include "device/vr/public/cpp/features.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
 #include "gpu/config/gpu_info.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -139,7 +139,7 @@ XRRuntimeManagerImpl::GetOrCreateInstance() {
 #if !BUILDFLAG(IS_ANDROID)
   const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   orientation_provider_enabled =
-      IsEnabled(cmd_line, device::kWebXrOrientationSensorDevice,
+      IsEnabled(cmd_line, device::features::kWebXrOrientationSensorDevice,
                 ::switches::kWebXrRuntimeOrientationSensors);
 #endif
 

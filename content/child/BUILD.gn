@@ -4,6 +4,7 @@
 
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
+import("//device/vr/buildflags/buildflags.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//third_party/blink/public/public_features.gni")
 if (is_android) {
@@ -79,6 +80,7 @@ target(link_target_type, "child") {
     "//content/public/common:common_sources",
     "//device/base",
     "//device/gamepad/public/cpp:switches",
+    "//device/vr/buildflags",
     "//gpu/command_buffer/client",
     "//media",
     "//mojo/core/embedder",
@@ -156,6 +158,10 @@ target(link_target_type, "child") {
       "browser_font_resource_trusted.cc",
       "browser_font_resource_trusted.h",
     ]
+  }
+
+  if (enable_vr) {
+    deps += [ "//device/vr/public/cpp:features" ]
   }
 
   configs += [ "//content:content_implementation" ]

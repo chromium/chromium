@@ -19,10 +19,26 @@ component("cpp") {
     "xr_frame_sink_client.h",
   ]
 
+  public_deps = [ ":features" ]
+
   deps = [
     "//base",
+    "//device/vr/buildflags",
     "//device/vr/public/mojom:isolated_xr_service",
     "//mojo/public/cpp/bindings",
     "//services/viz/privileged/mojom/compositing",
   ]
+}
+
+component("features") {
+  output_name = "vr_features"
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  public_deps = [
+    "//base",
+    "//device/vr/buildflags",
+  ]
+  defines = [ "IS_VR_FEATURES_IMPL" ]
 }

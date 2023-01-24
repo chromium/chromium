@@ -11,6 +11,10 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+#if BUILDFLAG(ENABLE_VR)
+#include "device/vr/public/cpp/features.h"
+#endif
+
 using testing::_;
 using testing::Invoke;
 
@@ -92,7 +96,7 @@ WebXrVrRuntimelessBrowserTestSensorless::
   // WebXrOrientationSensorDevice is only defined when the enable_vr flag is
   // set.
 #if BUILDFLAG(ENABLE_VR)
-  disable_features_.push_back(device::kWebXrOrientationSensorDevice);
+  disable_features_.push_back(device::features::kWebXrOrientationSensorDevice);
 #endif  // BUILDFLAG(ENABLE_VR)
 }
 

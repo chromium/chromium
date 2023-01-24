@@ -10,6 +10,8 @@ include_rules = [
   "+device/base/features.h",
   "+device/fido/features.h",
   "+device/gamepad/public/cpp/gamepad_features.h",
+  "+device/vr/buildflags/buildflags.h",
+  "+device/vr/public/cpp/features.h",
   "+services/device/public/cpp/device_features.h",
   "+services/device/public/cpp/power_monitor",
   "+services/device/public/mojom",

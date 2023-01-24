@@ -26,6 +26,7 @@
 #include "device/base/features.h"
 #include "device/fido/features.h"
 #include "device/gamepad/public/cpp/gamepad_features.h"
+#include "device/vr/buildflags/buildflags.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "media/base/media_switches.h"
@@ -45,6 +46,10 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
+#endif
+
+#if BUILDFLAG(ENABLE_VR)
+#include "device/vr/public/cpp/features.h"
 #endif
 
 using blink::WebRuntimeFeatures;
@@ -284,11 +289,13 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      features::kWebOTPAssertionFeaturePolicy, kSetOnlyIfOverridden},
     {wf::EnableWebUSB, features::kWebUsb},
     {wf::EnableWebXR, features::kWebXr},
+#if BUILDFLAG(ENABLE_VR)
     {wf::EnableWebXRFrontFacing, device::features::kWebXrIncubations},
     {wf::EnableWebXRHandInput, device::features::kWebXrHandInput},
     {wf::EnableWebXRImageTracking, device::features::kWebXrIncubations},
     {wf::EnableWebXRLayers, device::features::kWebXrLayers},
     {wf::EnableWebXRPlaneDetection, device::features::kWebXrIncubations},
+#endif
     {wf::EnableRemoveMobileViewportDoubleTap,
      features::kRemoveMobileViewportDoubleTap},
     {wf::EnableGetDisplayMediaSet, features::kGetDisplayMediaSet},
