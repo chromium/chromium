@@ -36,8 +36,6 @@ class ViewTransitionStyleBuilder {
                           const ContainerProperties& properties,
                           WritingMode writing_mode);
 
-  void AddRootStyles(const gfx::RectF& snapshot_viewport_rect_css);
-
   String Build();
 
  private:

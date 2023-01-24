@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_content_element.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_style_builder.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
@@ -707,7 +708,7 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
       viz::ViewTransitionElementResourceId snapshot_id;
       if (old_root_data_ &&
           old_root_data_->names.Contains(view_transition_name)) {
-        size = LayoutSize(GetSnapshotViewportRect().size());
+        size = LayoutSize(GetSnapshotRootSize());
         snapshot_id = old_root_data_->snapshot_id;
       } else {
         DCHECK(view_transition_name);
@@ -739,7 +740,7 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
       viz::ViewTransitionElementResourceId snapshot_id;
       if (new_root_data_ &&
           new_root_data_->names.Contains(view_transition_name)) {
-        size = LayoutSize(GetSnapshotViewportRect().size());
+        size = LayoutSize(GetSnapshotRootSize());
         snapshot_id = new_root_data_->snapshot_id;
       } else {
         DCHECK(view_transition_name);
@@ -805,8 +806,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
       snapshot_matrix.PostTranslate(-viewport.VerticalScrollbarWidth(), 0);
     }
 
-    gfx::Vector2d snapshot_to_fixed_offset =
-        -GetSnapshotViewportRect().OffsetFromOrigin();
+    gfx::Vector2d snapshot_to_fixed_offset = -GetFixedToSnapshotRootOffset();
     snapshot_matrix.PostTranslate(snapshot_to_fixed_offset.x(),
                                   snapshot_to_fixed_offset.y());
 
@@ -1061,7 +1061,7 @@ gfx::Outsets GetFixedToSnapshotViewportOutsets(Document& document) {
 }
 }  // namespace
 
-gfx::Rect ViewTransitionStyleTracker::GetSnapshotViewportRect() const {
+gfx::Rect ViewTransitionStyleTracker::GetSnapshotRootInFixedViewport() const {
   DCHECK(document_->GetLayoutView());
   DCHECK(document_->View());
   DCHECK(document_->GetFrame());
@@ -1078,7 +1078,15 @@ gfx::Rect ViewTransitionStyleTracker::GetSnapshotViewportRect() const {
   return snapshot_viewport_rect;
 }
 
-gfx::Vector2d ViewTransitionStyleTracker::GetRootSnapshotPaintOffset() const {
+gfx::Size ViewTransitionStyleTracker::GetSnapshotRootSize() const {
+  return GetSnapshotRootInFixedViewport().size();
+}
+
+gfx::Vector2d ViewTransitionStyleTracker::GetFixedToSnapshotRootOffset() const {
+  return GetSnapshotRootInFixedViewport().OffsetFromOrigin();
+}
+
+gfx::Vector2d ViewTransitionStyleTracker::GetFrameToSnapshotRootOffset() const {
   DCHECK(document_->GetLayoutView());
   DCHECK(document_->View());
 
@@ -1086,14 +1094,15 @@ gfx::Vector2d ViewTransitionStyleTracker::GetRootSnapshotPaintOffset() const {
   int left = outsets.left();
   int top = outsets.top();
 
-  // Paint already applies an offset for a left-side vertical scrollbar so
-  // don't offset by it here again.
+  // Left-side vertical scrollbars are placed within the frame but offset the
+  // fixed viewport so remove its width from the fixed-to-snapshot offset to
+  // get the frame-to-snapshot offset.
   if (document_->GetLayoutView()
           ->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft()) {
     left -= document_->View()->LayoutViewport()->VerticalScrollbarWidth();
   }
 
-  return gfx::Vector2d(left, top);
+  return gfx::Vector2d(-left, -top);
 }
 
 ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
@@ -1130,8 +1139,7 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
     auto& element = transition_state.elements.emplace_back();
     // TODO(khushalsagar): What about non utf8 strings?
     element.tag_name = old_root_data_->names[0].Utf8();
-    element.border_box_size_in_css_space =
-        gfx::SizeF(GetSnapshotViewportRect().size());
+    element.border_box_size_in_css_space = gfx::SizeF(GetSnapshotRootSize());
     element.snapshot_id = old_root_data_->snapshot_id;
     element.paint_order = 0;
     element.is_root = true;
@@ -1236,20 +1244,6 @@ const String& ViewTransitionStyleTracker::UAStyleSheet() {
   // transition element only -- no roots involved. Everything is done in the
   // `element_data_map_` loop.
 
-  // Size and position the root container behind any viewport insetting widgets
-  // (such as the URL bar) so that it's stable across a transition. This rect
-  // is called the "snapshot viewport".  Since this is applied in style,
-  // convert from physical pixels to CSS pixels.
-  gfx::RectF snapshot_viewport_css_pixels = gfx::ScaleRect(
-      gfx::RectF(GetSnapshotViewportRect()), 1.f / device_pixel_ratio_);
-
-  // If adjusted, the root is always translated up and left underneath any UI
-  // so the direction must always be negative.
-  DCHECK_LE(snapshot_viewport_css_pixels.x(), 0.f);
-  DCHECK_LE(snapshot_viewport_css_pixels.y(), 0.f);
-
-  builder.AddRootStyles(snapshot_viewport_css_pixels);
-
   for (auto& root_name : AllRootTags()) {
     // This is case 3 above.
     bool name_is_old_root =
@@ -1347,7 +1341,7 @@ const String& ViewTransitionStyleTracker::UAStyleSheet() {
         builder.AddAnimationAndBlending(
             view_transition_name, element_data->cached_container_properties);
       } else if (element_data->new_snapshot_id.IsValid() && name_is_old_root) {
-        auto layout_view_size = LayoutSize(GetSnapshotViewportRect().size());
+        auto layout_view_size = LayoutSize(GetSnapshotRootSize());
         // Note that we want the size in css space, which means we need to undo
         // the effective zoom.
         layout_view_size.Scale(

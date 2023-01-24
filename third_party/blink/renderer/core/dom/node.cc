@@ -125,6 +125,7 @@
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"

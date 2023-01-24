@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
-#include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 
 namespace blink {
 
@@ -102,34 +101,20 @@ class CORE_EXPORT ViewTransitionUtils {
     return nullptr;
   }
 
-  static ViewTransition* GetActiveTransition(const Document& document) {
-    auto* supplement = ViewTransitionSupplement::FromIfExists(document);
-    if (!supplement)
-      return nullptr;
-    auto* transition = supplement->GetActiveTransition();
-    if (!transition || transition->IsDone())
-      return nullptr;
-    return transition;
-  }
+  // Returns the active transition from the document, if any.
+  static ViewTransition* GetActiveTransition(const Document& document);
 
+  // Returns the ::view-transition pseudo element that is the root of the
+  // view-transition DOM hierarchy.
+  static PseudoElement* GetRootPseudo(const Document& document);
+
+  // Returns any queued view transition requests.
   static VectorOf<std::unique_ptr<ViewTransitionRequest>> GetPendingRequests(
-      const Document& document) {
-    auto* supplement = ViewTransitionSupplement::FromIfExists(document);
-    if (supplement)
-      return supplement->TakePendingRequests();
-    return {};
-  }
+      const Document& document);
 
-  static PseudoElement* GetRootPseudo(const Document& document) {
-    if (!document.documentElement()) {
-      return nullptr;
-    }
-
-    PseudoElement* view_transition_pseudo =
-        document.documentElement()->GetPseudoElement(kPseudoIdViewTransition);
-    DCHECK(!view_transition_pseudo || GetActiveTransition(document));
-    return view_transition_pseudo;
-  }
+  // Returns true if the given layout object corresponds to the root
+  // ::view-transition pseudo element of a view transition hierarchy.
+  static bool IsViewTransitionRoot(const LayoutObject& object);
 };
 
 }  // namespace blink

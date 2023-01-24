@@ -165,8 +165,8 @@ class CORE_EXPORT ViewTransition : public ScriptWrappable,
 
   // In physical pixels. See comments on equivalent methods in
   // ViewTransitionStyleTracker for info.
-  gfx::Rect GetSnapshotViewportRect() const;
-  gfx::Vector2d GetRootSnapshotPaintOffset() const;
+  gfx::Size GetSnapshotRootSize() const;
+  gfx::Vector2d GetFrameToSnapshotRootOffset() const;
 
   bool IsDone() const { return IsTerminalState(state_); }
 

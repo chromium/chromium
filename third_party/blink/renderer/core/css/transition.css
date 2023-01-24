@@ -11,12 +11,7 @@
 
 html::view-transition {
   position: fixed;
-  top: 0;
-  left: 0;
-
-  /* Size will be set dynamically to correctly account for UI such as
-     virtual-keyboards */
-
+  inset: 0;
   pointer-events: none;
 }
 

@@ -14,7 +14,6 @@
 namespace blink {
 namespace {
 
-const char* kViewTransitionTagName = "html::view-transition";
 const char* kGroupTagName = "html::view-transition-group";
 const char* kImagePairTagName = "html::view-transition-image-pair";
 const char* kNewImageTagName = "html::view-transition-new";
@@ -150,26 +149,6 @@ void ViewTransitionStyleBuilder::AddContainerStyles(
       writing_mode_stream.str().c_str());
 
   AddContainerStyles(tag, rule_builder.ReleaseString());
-}
-
-void ViewTransitionStyleBuilder::AddRootStyles(
-    const gfx::RectF& snapshot_viewport_rect_css) {
-  builder_.Append(kViewTransitionTagName);
-  builder_.Append("{ ");
-  builder_.AppendFormat(
-      R"CSS(
-        width: %.3fpx;
-        height: %.3fpx;
-      )CSS",
-      snapshot_viewport_rect_css.width(), snapshot_viewport_rect_css.height());
-  if (!snapshot_viewport_rect_css.OffsetFromOrigin().IsZero()) {
-    builder_.AppendFormat(
-        R"CSS(
-          transform: translate(%.3fpx, %.3fpx);
-        )CSS",
-        snapshot_viewport_rect_css.x(), snapshot_viewport_rect_css.y());
-  }
-  builder_.Append(" }");
 }
 
 }  // namespace blink

@@ -17,6 +17,7 @@ blink_core_sources_view_transition = [
   "view_transition_style_tracker.h",
   "view_transition_supplement.cc",
   "view_transition_supplement.h",
+  "view_transition_utils.cc",
   "view_transition_utils.h",
 ]
 

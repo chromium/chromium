@@ -8,6 +8,7 @@
 
 #include "third_party/blink/renderer/core/layout/anchor_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/deferred_shaping.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
@@ -33,6 +34,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 
 namespace blink {
@@ -502,6 +504,34 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
         container_builder_->GridLayoutData(), container_builder_->Borders(),
         {container_builder_->InlineSize(),
          container_builder_->FragmentBlockSize()});
+  }
+
+  // The ::view-transition element is special in that its containing block is
+  // the "snapshot root" rect, rather than a viewport or parent box:
+  // https://drafts.csswg.org/css-view-transitions-1/#selectordef-view-transition.
+  DCHECK(candidate.box);
+  if (ViewTransitionUtils::IsViewTransitionRoot(*candidate.box)) {
+    DCHECK(container_object->IsLayoutView());
+    const ViewTransition* transition =
+        ViewTransitionUtils::GetActiveTransition(candidate.box->GetDocument());
+    DCHECK(transition);
+
+    PhysicalRect physical_snapshot_root_in_frame(
+        PhysicalOffset(transition->GetFrameToSnapshotRootOffset()),
+        PhysicalSize(transition->GetSnapshotRootSize()));
+
+    WritingDirectionMode writing_direction =
+        ConstraintSpace().GetWritingDirection();
+    LogicalSize outer_size = container_builder_->Size();
+    WritingModeConverter converter(writing_direction, outer_size);
+
+    NGOutOfFlowLayoutPart::ContainingBlockInfo containing_block_for_snapshot;
+    containing_block_for_snapshot.rect =
+        converter.ToLogical(physical_snapshot_root_in_frame);
+
+    containing_block_for_snapshot.writing_direction = writing_direction;
+
+    return containing_block_for_snapshot;
   }
 
   return node_style.GetPosition() == EPosition::kAbsolute

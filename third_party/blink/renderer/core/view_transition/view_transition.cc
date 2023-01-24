@@ -915,18 +915,18 @@ void ViewTransition::WillCommitCompositorFrame() {
     PauseRendering();
 }
 
-gfx::Rect ViewTransition::GetSnapshotViewportRect() const {
+gfx::Size ViewTransition::GetSnapshotRootSize() const {
   if (!style_tracker_)
-    return gfx::Rect();
+    return gfx::Size();
 
-  return style_tracker_->GetSnapshotViewportRect();
+  return style_tracker_->GetSnapshotRootSize();
 }
 
-gfx::Vector2d ViewTransition::GetRootSnapshotPaintOffset() const {
+gfx::Vector2d ViewTransition::GetFrameToSnapshotRootOffset() const {
   if (!style_tracker_)
     return gfx::Vector2d();
 
-  return style_tracker_->GetRootSnapshotPaintOffset();
+  return style_tracker_->GetFrameToSnapshotRootOffset();
 }
 
 void ViewTransition::PauseRendering() {

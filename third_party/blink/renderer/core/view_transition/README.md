@@ -119,8 +119,8 @@ transition to a document shrunken by the URL bar. Other examples of UI widgets
 like this are the virtual-keyboard and root scrollbars.
 
 Viewport widgets inset the "fixed viewport" so to avoid a moving coordinate
-space we introduce the concept of a "snapshot viewport". The snapshot viewport
-is invariant with respect to whether viewport widgets are shown or not, neither
+space we introduce the concept of a "snapshot root" rect. The snapshot root is
+invariant with respect to whether viewport widgets are shown or not, neither
 its position nor its size change. When all widgets are hidden, it is equal to
 the fixed viewport.
 
@@ -132,7 +132,7 @@ the fixed viewport.
 │                      │   │                       │  │                    │
 │                      │   │                       │  │                    │
 │   <PAGE CONTENT>     │   │    Fixed Viewport     │  │                    │
-│                      │   │                       │  │  Snapshot Viewport │
+│                      │   │                       │  │  Snapshot Root     │
 │                      │   │                       │  │                    │
 │                      │   │                       │  │                    │
 ├┬────────────────────┬┤   └───────────────────────┘  │                    │
@@ -142,18 +142,18 @@ the fixed viewport.
 │┼────────────────────┼│                              │                    │
 └──────────────────────┘                              └────────────────────┘
 ```
-_The snapshot and fixed viewports when the mobile URL bar and virtual keyboard
-are shown._
+_The snapshot root and fixed viewport when the mobile URL bar and virtual
+keyboard are shown._
 
 The root ::view-transition pseudo is shifted up and left so that its origin is
-at the snapshot viewport origin. This is a no-op if no viewport widgets are
-hidden. If the widgets are showing this causes ::view-transition to be
-positioned at a negative offset relative to the fixed viewport (i.e. it's origin
-is underneath the mobile URL bar). This creates a stable coordinate space during
-the transition. Transition elements' viewport transforms account for this and
-are computed relative to the snapshot viewport origin.
+at the snapshot root origin. This is a no-op if viewport widgets aren't showing.
+If the widgets are showing this causes ::view-transition to be positioned at a
+negative offset relative to the fixed viewport (i.e. it's origin is underneath
+the mobile URL bar). This creates a stable coordinate space during the
+transition. Transition element's viewport transforms account for this and are
+computed relative to the snapshot root origin.
 
-The root snapshot is sized to the snapshot viewport's size, which may be larger
+The root snapshot is sized to the snapshot root's size, which may be larger
 than the current fixed viewport. Painting is offset within the snapshot so that
 page content is rendered at the correct location (i.e. the snapshot will paint
 the background color in the region overlaid by the URL bar).

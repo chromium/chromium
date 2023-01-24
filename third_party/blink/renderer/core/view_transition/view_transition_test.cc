@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_style_resolver.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
@@ -871,7 +872,7 @@ TEST_P(ViewTransitionTest, ObjectViewBoxDuringCapture) {
   UpdateAllLifecyclePhasesAndFinishDirectives();
 }
 
-TEST_P(ViewTransitionTest, VirtualKeyboardDoesntAffectSnapshotViewport) {
+TEST_P(ViewTransitionTest, VirtualKeyboardDoesntAffectSnapshotSize) {
   SetHtmlInnerHTML(R"HTML(
     <style>
       .target {
@@ -921,16 +922,18 @@ TEST_P(ViewTransitionTest, VirtualKeyboardDoesntAffectSnapshotViewport) {
 
   // The snapshot rect should not have been shrunk by the virtual keyboard, even
   // though it shrinks the WebView.
-  EXPECT_EQ(transition->GetSnapshotViewportRect().size(), original_size);
+  EXPECT_EQ(transition->GetSnapshotRootSize(), original_size);
 
-  // The height style of the ::view-transition should come from the snapshot
-  // viewport rect.
+  // The height of the ::view-transition should come from the snapshot root
+  // rect.
   {
-    const Length& height = GetDocument()
-                               .documentElement()
-                               ->EnsureComputedStyle(kPseudoIdViewTransition)
-                               ->Height();
-    EXPECT_EQ(height, Length::Fixed(original_size.height()));
+    auto* transition_pseudo = GetDocument().documentElement()->GetPseudoElement(
+        kPseudoIdViewTransition);
+    int height = To<LayoutBox>(transition_pseudo->GetLayoutObject())
+                     ->GetPhysicalFragment(0)
+                     ->Size()
+                     .height.ToInt();
+    EXPECT_EQ(height, original_size.height());
   }
 
   // Finish the prepare phase, mutate the DOM and start the animation.
@@ -945,7 +948,7 @@ TEST_P(ViewTransitionTest, VirtualKeyboardDoesntAffectSnapshotViewport) {
       ->SetVirtualKeyboardResizeHeightForTesting(0);
 
   // The snapshot rect should remain the same size.
-  EXPECT_EQ(transition->GetSnapshotViewportRect().size(), original_size);
+  EXPECT_EQ(transition->GetSnapshotRootSize(), original_size);
 
   // The start phase should generate pseudo elements for rendering new live
   // content.

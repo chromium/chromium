@@ -699,7 +699,7 @@ gfx::Size PaintLayerScrollableArea::PixelSnappedContentsSize(
     if (auto* transition = ViewTransitionUtils::GetActiveTransition(
             GetLayoutBox()->GetDocument());
         transition && transition->IsRootTransitioning()) {
-      PhysicalSize container_size(transition->GetSnapshotViewportRect().size());
+      PhysicalSize container_size(transition->GetSnapshotRootSize());
       size.width = std::max(container_size.width, size.width);
       size.height = std::max(container_size.height, size.height);
     }

@@ -159,17 +159,23 @@ class ViewTransitionStyleTracker
 
   VectorOf<Element> GetTransitioningElements() const;
 
-  // In physical pixels. Returns the snapshot viewport rect, relative to the
-  // fixed viewport origin. See README.md for a detailed description of the
-  // snapshot viewport.
-  gfx::Rect GetSnapshotViewportRect() const;
+  // In physical pixels. Returns the size of the snapshot root rect. This is
+  // the fixed viewport size "as-if" all transient browser UI were hidden (e.g.
+  // include the mobile URL bar, virutal-keyboard, layout scrollbars in the
+  // rect size).
+  gfx::Size GetSnapshotRootSize() const;
 
-  // In physical pixels. Returns the offset within the root snapshot which
-  // should be used as the paint origin. The root snapshot fills the snapshot
-  // viewport, which is overlaid by viewport-insetting UI widgets such as the
-  // mobile URL bar. Because of this, we offset paint so that content is
-  // painted where it appears on the screen (rather than under the UI).
-  gfx::Vector2d GetRootSnapshotPaintOffset() const;
+  // In physical pixels. Returns the offset from the fixed viewport's origin to
+  // the snapshot root rect. These values will always be <= 0.
+  gfx::Vector2d GetFixedToSnapshotRootOffset() const;
+
+  // In physical pixels. Returns the offset from the frame origin to the the
+  // snapshot root rect. The only time this currently differs from the above
+  // offset is with a left-side vertical scrollbar (i.e. a vertical scrollbar
+  // in an RTL document). In that case the frame origin is at x-coordinate 0
+  // while the fixed viewport origin is inset by the scrollbar width.  Note: In
+  // Chrome, only iframes can have a left-side vertical scrollbar.
+  gfx::Vector2d GetFrameToSnapshotRootOffset() const;
 
   // Returns a serializable representation of the state cached by this class to
   // recreate the same pseudo-element tree in a new Document.
@@ -232,6 +238,11 @@ class ViewTransitionStyleTracker
     viz::ViewTransitionElementResourceId snapshot_id;
     VectorOf<AtomicString> names;
   };
+
+  // In physical pixels. Returns the snapshot root rect, relative to the
+  // fixed viewport origin. See README.md for a detailed description of the
+  // snapshot root rect.
+  gfx::Rect GetSnapshotRootInFixedViewport() const;
 
   void InvalidateStyle();
   bool HasLiveNewContent() const;

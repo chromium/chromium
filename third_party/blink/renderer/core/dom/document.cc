@@ -314,6 +314,7 @@
 #include "third_party/blink/renderer/core/timing/render_blocking_metrics_reporter.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
 #include "third_party/blink/renderer/core/xml_names.h"
