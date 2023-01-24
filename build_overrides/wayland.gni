@@ -6,9 +6,5 @@ import("//build/config/ozone.gni")
 
 wayland_gn_dir = "//third_party/wayland"
 
-# TODO(crbug.com/1385736): remove this once importers of this file do not
-# rely on this gn arg.
-use_system_libwayland = false
-
 # Path to Wayland sources
 wayland_dir = "$wayland_gn_dir/src"
