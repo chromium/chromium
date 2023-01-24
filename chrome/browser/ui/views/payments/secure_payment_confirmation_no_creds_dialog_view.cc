@@ -71,10 +71,6 @@ void SecurePaymentConfirmationNoCredsDialogView::ShowDialog(
   SetModalType(ui::MODAL_TYPE_CHILD);
 
   constrained_window::ShowWebModalDialogViews(this, web_contents);
-
-  // observer_for_test_ is used in views browsertests.
-  if (observer_for_test_)
-    observer_for_test_->OnDialogOpened();
 }
 
 void SecurePaymentConfirmationNoCredsDialogView::HideDialog() {

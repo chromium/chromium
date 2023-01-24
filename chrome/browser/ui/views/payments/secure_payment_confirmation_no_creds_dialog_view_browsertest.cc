@@ -7,7 +7,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_no_creds_dialog_view.h"
-#include "components/autofill/core/browser/test_event_waiter.h"
 #include "components/payments/content/secure_payment_confirmation_no_creds_model.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
@@ -15,9 +14,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/test/mock_input_event_activation_protector.h"
+#include "ui/views/window/dialog_client_view.h"
 
 namespace payments {
 
@@ -27,12 +29,6 @@ class SecurePaymentConfirmationNoCredsDialogViewTest
     : public DialogBrowserTest,
       public SecurePaymentConfirmationNoCredsDialogView::ObserverForTest {
  public:
-  enum DialogEvent : int {
-    DIALOG_OPENED,
-    DIALOG_CLOSED,
-    OPT_OUT_CLICKED,
-  };
-
   // UiBrowserTest:
   // Note that ShowUi is only used for the InvokeUi_* tests.
   void ShowUi(const std::string& name) override {
@@ -68,24 +64,26 @@ class SecurePaymentConfirmationNoCredsDialogViewTest
         ->GetText();
   }
 
-  void ResetEventWaiter(DialogEvent event) {
-    event_waiter_ = std::make_unique<autofill::EventWaiter<DialogEvent>>(
-        std::list<DialogEvent>{event});
+  void ClickButton(views::View* button) {
+    gfx::Point center(button->width() / 2, button->height() / 2);
+    const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, center, center,
+                               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+    button->OnMousePressed(event);
+    button->OnMouseReleased(event);
   }
 
   // SecurePaymentConfirmationNoCredsDialogView::ObserverForTest
-  void OnDialogOpened() override {}
-  void OnDialogClosed() override {}
-  void OnOptOutClicked() override {
-    event_waiter_->OnEvent(DialogEvent::OPT_OUT_CLICKED);
-  }
+  void OnDialogClosed() override { dialog_closed_ = true; }
+  void OnOptOutClicked() override { opt_out_clicked_ = true; }
 
  protected:
   std::unique_ptr<SecurePaymentConfirmationNoCredsModel> model_;
 
   base::WeakPtr<SecurePaymentConfirmationNoCredsDialogView> dialog_view_;
 
-  std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
+  bool dialog_closed_ = false;
+  bool opt_out_clicked_ = false;
 };
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationNoCredsDialogViewTest,
@@ -94,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationNoCredsDialogViewTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationNoCredsDialogViewTest,
-                       Default) {
+                       ViewMatchesModel) {
   CreateAndShowDialog(u"merchant.example", /*show_opt_out=*/false);
   EXPECT_THAT(base::UTF16ToUTF8(
                   GetLabelText(SecurePaymentConfirmationNoCredsDialogView::
@@ -102,8 +100,39 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationNoCredsDialogViewTest,
               HasSubstr("merchant.example"));
   // The no-creds dialog does not create the opt-out footnote by default.
   ASSERT_EQ(nullptr, dialog_view_->GetFootnoteViewForTesting());
+
+  // The dialog should have an Ok button but no Cancel button.
+  ASSERT_TRUE(dialog_view_->GetOkButton());
+  ASSERT_FALSE(dialog_view_->GetCancelButton());
 }
 
+// Test that the 'Continue' button is protected against accidental inputs.
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationNoCredsDialogViewTest,
+                       ContinueButtonIgnoresAccidentalInputs) {
+  CreateAndShowDialog(u"merchant.example", /*show_opt_out=*/false);
+
+  // Insert a mock input protector that will ignore the first input and then
+  // accepts all subsequent inputs.
+  auto mock_input_protector =
+      std::make_unique<views::MockInputEventActivationProtector>();
+  EXPECT_CALL(*mock_input_protector, IsPossiblyUnintendedInteraction)
+      .WillOnce(testing::Return(true))
+      .WillRepeatedly(testing::Return(false));
+  dialog_view_->GetDialogClientView()->SetInputProtectorForTesting(
+      std::move(mock_input_protector));
+
+  // Because of the input protector, the first press of the button should be
+  // ignored.
+  ClickButton(dialog_view_->GetOkButton());
+  EXPECT_FALSE(dialog_closed_);
+
+  // However a subsequent press should be accepted.
+  ClickButton(dialog_view_->GetOkButton());
+  EXPECT_TRUE(dialog_closed_);
+}
+
+// Test that the opt out link is shown when requested, and that clicking it
+// correctly closes the dialog via the expected path.
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationNoCredsDialogViewTest, OptOut) {
   CreateAndShowDialog(u"merchant.example", /*show_opt_out=*/true);
 
@@ -124,11 +153,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationNoCredsDialogViewTest, OptOut) {
       ::testing::HasSubstr(base::UTF16ToUTF8(model_->opt_out_link_label())));
 
   // Now click the Opt Out link and make sure that the expected events occur.
-  ResetEventWaiter(DialogEvent::OPT_OUT_CLICKED);
   opt_out_label->ClickFirstLinkForTesting();
-
-  // If we make it past this wait, the delegate was correctly called.
-  event_waiter_->Wait();
+  EXPECT_TRUE(opt_out_clicked_);
 }
 
 }  // namespace payments

@@ -22,7 +22,6 @@ class SecurePaymentConfirmationNoCredsDialogView
 
   class ObserverForTest {
    public:
-    virtual void OnDialogOpened() = 0;
     virtual void OnDialogClosed() = 0;
     virtual void OnOptOutClicked() = 0;
   };
