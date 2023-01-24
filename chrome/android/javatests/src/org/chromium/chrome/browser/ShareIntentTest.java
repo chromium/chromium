@@ -8,17 +8,20 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
 import android.content.ComponentName;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -28,24 +31,23 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 
 /**
  * Instrumentation tests for Share intents.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class ShareIntentTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Before
-    public void setUp() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
-    }
-
     @Test
     @LargeTest
     public void testDirectShareIntent() throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
+
         ComponentName target = new ComponentName("test.package", "test.activity");
         ActivityMonitor monitor =
                 InstrumentationRegistry.getInstrumentation().addMonitor(target.getClassName(),
@@ -56,5 +58,16 @@ public class ShareIntentTest {
         });
         CriteriaHelper.pollUiThread(
                 () -> { Criteria.checkThat(monitor.getHits(), Matchers.is(1)); });
+    }
+
+    @Test
+    @LargeTest
+    public void testReceiveShareIntent() throws Exception {
+        String url = mActivityTestRule.getTestServer().getURL("/content/test/data/hello.html");
+        Intent intent = new Intent(Intent.ACTION_SEND, Uri.parse(url));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
+        mActivityTestRule.startActivityCompletely(intent);
+        ChromeTabUtils.waitForTabPageLoaded(mActivityTestRule.getActivity().getActivityTab(), url);
     }
 }
