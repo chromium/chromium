@@ -1,6 +1,6 @@
 ### tools/gritsettings README
 
-This directory contains several files that apply global to the Chrome resource
+This directory contains several files that apply globally to the Chrome resource
 generation system (which uses GRIT - see tools/grit).
 
 **resource_ids.spec**: This file is used to assign fake start IDs for resources
@@ -44,7 +44,7 @@ static, or injected using `"META": {"sizes": {...}}` if generated.
 
 To add a new `.grd` entry, first find the location to add it:
 * Find the matching section (`chrome/app/`, `chrome/browser/`, etc.).
-* Preserve alphabetical order within section.
+* Preserve alphabetical order within a section.
 
 ##### Simple case: Sufficient most of the time
 
@@ -64,8 +64,8 @@ nearby `.grd` entries have distinct-looking fake start IDs without
   },
 ```
 The best location is between `bbb.grd` and `ddd.grd`. Each resource type (say,
-`includes` and `messages`) must be have a sub-entry with fake start IDs. The
-values select should be intermediate to neighboring ones, and sorted, e.g.:
+`includes` and `messages`) must have a sub-entry with fake start IDs. The values
+select should be intermediate to neighboring ones, and sorted, e.g.:
 ```
   "foo/bar/aaa.grd": {
     "includes": [1140],
@@ -88,11 +88,11 @@ Done!
 
 If fake start IDs get too crowded, then (from this directory) run
 ```
-python3 ../grit/grit.py update_resource_ids --fake resource_ids.spec > temp
+python3 ../grit/grit.py update_resource_ids -i resource_ids.spec --fake > temp
 mv temp resource_ids.spec
 ```
 before (and/or after) your edit to make room. After this, your CLs will have
-many diffs in fake start IDs, but that's okay since relative ordering are
+many diffs in fake start IDs, but that's okay since relative orderings are
 preserved.
 
 ##### Special case: Generated .grd files
@@ -177,7 +177,7 @@ required update would be:
 
 If you're adding a new entry to the start or end of sections, pay attention to
 potential splits across sections. In particular, note that `chrome/` and
-`ios/chrome/` sections very long splits that finally get joined by the
+`ios/chrome/` sections are very long splits that finally get joined by the
 "everything else" section!
 
 ##### Special case: Add new alternative to existing split
@@ -259,11 +259,11 @@ reserved for `x.grd`.
 Complication arise from the following:
 * Start IDs among `.grd` files must follow a preassigned order for
   determinism (i.e., no "first-come, first-serve" assignment).
-* Generated `.grd` files's `count()` are in general not known _a priori_. By
+* Generated `.grd` files' `count()` are in general not known _a priori_. By
   contrast, static `.grd` files in the source can have `count()` determined
   by parsing.
 * Depending on build config, some `.grd` files may be excluded. To avoid
-  wasteful large gaps in resource ID space, mutually exclusive `.grd` file can
+  wasteful large gaps in resource ID space, mutually exclusive `.grd` files can
   share resource IDs.
 
 The (former) `resource_ids` file was introduced to coordinate resource ID
@@ -358,7 +358,7 @@ Some possibilities:
 * Use bracketing: Series op is associative; parallel op is associative and
   commutative (over isomorphism). Therefore we can represent series op with a
   list (order important) and parallel op as a set (order unimportant). The graph
-  then becomes mutually nesting list and set (noting that with list of lists and
+  becomes an alternating-nested list and set (noting that list of lists and
   set of sets can be flattened)! For example, `[a,{b,[c,{d,e},f]},{g,h,i},j]`
   would represent (using # for vertices):
 ```
