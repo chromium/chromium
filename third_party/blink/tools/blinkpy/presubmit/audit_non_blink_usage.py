@@ -92,6 +92,7 @@ _CONFIG = [
             'base::Nanoseconds',
             'base::OptionalFromPtr',
             'base::OptionalToPtr',
+            'base::Overloaded',
             'base::PassKey',
             'base::PlatformThread',
             'base::PlatformThreadId',

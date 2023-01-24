@@ -896,6 +896,9 @@ mojom("mojom_platform") {
   blink_cpp_typemaps = [
     {
       types = [
+        # TODO(dcheng): The structs for the variant subtypes should be
+        # registered here as well, but it becomes tricky, because one of the C++
+        # types is defined outside dragging code.
         {
           mojom = "blink.mojom.DragData"
           cpp = "::blink::WebDragData"

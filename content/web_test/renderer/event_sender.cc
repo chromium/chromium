@@ -31,6 +31,7 @@
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
 #include "net/base/filename_util.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -1786,11 +1787,12 @@ void EventSender::DumpFilenameBeingDragged() {
     return;
 
   WebVector<WebDragData::Item> items = current_drag_data_->Items();
-  for (size_t i = 0; i < items.size(); ++i) {
-    if (items[i].storage_type == WebDragData::Item::kStorageTypeBinaryData) {
-      WebURL url = items[i].binary_data_source_url;
-      WebString filename_extension = items[i].binary_data_filename_extension;
-      WebString content_disposition = items[i].binary_data_content_disposition;
+  for (const auto& item : items) {
+    if (const auto* binary_data_item =
+            absl::get_if<WebDragData::BinaryDataItem>(&item)) {
+      WebURL url = binary_data_item->source_url;
+      WebString filename_extension = binary_data_item->filename_extension;
+      WebString content_disposition = binary_data_item->content_disposition;
       base::FilePath filename =
           net::GenerateFileName(url, content_disposition.Utf8(),
                                 std::string(),   // referrer_charset
@@ -1863,8 +1865,10 @@ void EventSender::BeginDragWithItems(
   std::vector<base::FilePath> file_paths;
   for (const WebDragData::Item& item : items) {
     current_drag_data_->AddItem(item);
-    if (item.storage_type == WebDragData::Item::kStorageTypeFilename)
-      file_paths.push_back(blink::WebStringToFilePath(item.filename_data));
+    if (const auto* filename_item =
+            absl::get_if<WebDragData::FilenameItem>(&item)) {
+      file_paths.push_back(blink::WebStringToFilePath(filename_item->filename));
+    }
   }
   if (!file_paths.empty()) {
     current_drag_data_->SetFilesystemId(
@@ -1895,10 +1899,9 @@ void EventSender::BeginDragWithFiles(const std::vector<std::string>& files) {
   WebVector<WebDragData::Item> items;
 
   for (const std::string& file_path : files) {
-    WebDragData::Item item;
-    item.storage_type = WebDragData::Item::kStorageTypeFilename;
-    item.filename_data =
-        test_runner_->GetAbsoluteWebStringFromUTF8Path(file_path);
+    WebDragData::FilenameItem item = {
+        .filename = test_runner_->GetAbsoluteWebStringFromUTF8Path(file_path),
+    };
     items.emplace_back(item);
   }
 
@@ -1908,10 +1911,10 @@ void EventSender::BeginDragWithFiles(const std::vector<std::string>& files) {
 void EventSender::BeginDragWithStringData(const std::string& data,
                                           const std::string& mime_type) {
   WebVector<WebDragData::Item> items;
-  WebDragData::Item item;
-  item.storage_type = WebDragData::Item::kStorageTypeString;
-  item.string_data = WebString::FromUTF8(data);
-  item.string_type = WebString::FromUTF8(mime_type);
+  WebDragData::StringItem item = {
+      .type = WebString::FromUTF8(mime_type),
+      .data = WebString::FromUTF8(data),
+  };
   items.emplace_back(item);
 
   BeginDragWithItems(items);

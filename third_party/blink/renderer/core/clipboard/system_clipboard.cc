@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "skia/ext/skia_utils_base.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -296,13 +297,14 @@ void SystemClipboard::WriteDataObject(DataObject* data_object) {
   HashMap<String, String> custom_data;
   WebDragData data = data_object->ToWebDragData();
   for (const WebDragData::Item& item : data.Items()) {
-    if (item.storage_type == WebDragData::Item::kStorageTypeString) {
-      if (item.string_type == kMimeTypeTextPlain) {
-        clipboard_->WriteText(NonNullString(item.string_data));
-      } else if (item.string_type == kMimeTypeTextHTML) {
-        clipboard_->WriteHtml(NonNullString(item.string_data), KURL());
-      } else if (item.string_type != kMimeTypeDownloadURL) {
-        custom_data.insert(item.string_type, NonNullString(item.string_data));
+    if (const auto* string_item =
+            absl::get_if<WebDragData::StringItem>(&item)) {
+      if (string_item->type == kMimeTypeTextPlain) {
+        clipboard_->WriteText(NonNullString(string_item->data));
+      } else if (string_item->type == kMimeTypeTextHTML) {
+        clipboard_->WriteHtml(NonNullString(string_item->data), KURL());
+      } else if (string_item->type != kMimeTypeDownloadURL) {
+        custom_data.insert(string_item->type, NonNullString(string_item->data));
       }
     }
   }

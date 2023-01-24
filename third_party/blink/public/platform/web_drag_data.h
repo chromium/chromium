@@ -33,6 +33,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
@@ -54,52 +55,47 @@ using FileSystemAccessDropData =
 // inexpensive to copy a WebDragData object.
 class BLINK_PLATFORM_EXPORT WebDragData {
  public:
-  struct Item {
-    enum StorageType {
-      // String data with an associated MIME type. Depending on the MIME type,
-      // there may be optional metadata attributes as well.
-      kStorageTypeString,
-      // Stores the name of one file being dragged into the renderer.
-      kStorageTypeFilename,
-      // An image being dragged out of the renderer. Contains a buffer holding
-      // the image data as well as the suggested name for saving the image to.
-      kStorageTypeBinaryData,
-      // Stores the filesystem URL of one file being dragged into the renderer.
-      kStorageTypeFileSystemFile,
-    };
+  // String data with an associated MIME type. Depending on the MIME type,
+  // there may be optional metadata attributes as well.
+  struct StringItem {
+    WebString type;
+    WebString data;
 
-    StorageType storage_type;
-
-    // TODO(dcheng): This should probably be a union.
-    // Only valid when storage_type == kStorageTypeString.
-    WebString string_type;
-    WebString string_data;
-
-    // Title associated with a link when string_type == "text/uri-list".
+    // Title associated with a link when type == "text/uri-list".
     WebString title;
 
-    // Only valid when string_type == "text/html". Stores the base URL for the
+    // Only valid when type == "text/html". Stores the base URL for the
     // contained markup.
     WebURL base_url;
-
-    // Only valid when storage_type == kStorageTypeFilename.
-    WebString filename_data;
-    WebString display_name_data;
-    scoped_refptr<FileSystemAccessDropData> file_system_access_entry;
-
-    // Only valid when storage_type == kStorageTypeBinaryData.
-    WebData binary_data;
-    bool binary_data_image_accessible;
-    WebURL binary_data_source_url;
-    WebString binary_data_filename_extension;
-    WebString binary_data_content_disposition;
-
-    // Only valid when storage_type == kStorageTypeFileSystemFile.
-    WebURL file_system_url;
-    int64_t file_system_file_size;
-    WebString file_system_id;
-    WebBlobInfo file_system_blob_info;
   };
+
+  // Represents one native file being dragged into the renderer.
+  struct FilenameItem {
+    WebString filename;
+    WebString display_name;
+    scoped_refptr<FileSystemAccessDropData> file_system_access_entry;
+  };
+
+  // An image being dragged out of the renderer. Contains a buffer holding
+  // the image data as well as the suggested name for saving the image to.
+  struct BinaryDataItem {
+    WebData data;
+    bool image_accessible;
+    WebURL source_url;
+    WebString filename_extension;
+    WebString content_disposition;
+  };
+
+  // Stores the filesystem URL of one file being dragged into the renderer.
+  struct FileSystemFileItem {
+    WebURL url;
+    int64_t size;
+    WebString file_system_id;
+    WebBlobInfo blob_info;
+  };
+
+  using Item = absl::
+      variant<StringItem, FilenameItem, BinaryDataItem, FileSystemFileItem>;
 
   WebDragData() = default;
 
@@ -109,7 +105,7 @@ class BLINK_PLATFORM_EXPORT WebDragData {
 
   ~WebDragData() = default;
 
-  WebVector<Item> Items() const { return item_list_; }
+  const WebVector<Item>& Items() const { return item_list_; }
 
   void SetItems(WebVector<Item> item_list);
   // FIXME: SetItems is slow because SetItems copies WebVector.

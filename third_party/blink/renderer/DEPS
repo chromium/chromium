@@ -21,6 +21,7 @@ include_rules = [
     "+base/format_macros.h",
     "+base/functional/bind.h",
     "+base/functional/function_ref.h",
+    "+base/functional/overloaded.h",
     "+base/gtest_prod_util.h",
     "+base/hash/hash.h",
     "+base/i18n/rtl.h",
