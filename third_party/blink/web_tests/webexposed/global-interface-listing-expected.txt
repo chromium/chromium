@@ -6889,6 +6889,7 @@ interface PressureRecord
     getter state
     getter time
     method constructor
+    method toJSON
 interface ProcessingInstruction : CharacterData
     attribute @@toStringTag
     getter sheet

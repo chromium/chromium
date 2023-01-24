@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/compute_pressure/pressure_record.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
 
@@ -28,6 +31,15 @@ const Vector<V8PressureFactor>& PressureRecord::factors() const {
 
 DOMHighResTimeStamp PressureRecord::time() const {
   return time_;
+}
+
+ScriptValue PressureRecord::toJSON(ScriptState* script_state) const {
+  V8ObjectBuilder result(script_state);
+  result.Add("source", source());
+  result.Add("state", state());
+  result.Add("factors", factors());
+  result.Add("time", time());
+  return result.GetScriptValue();
 }
 
 }  // namespace blink

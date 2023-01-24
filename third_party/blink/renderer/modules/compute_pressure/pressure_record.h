@@ -15,6 +15,9 @@
 
 namespace blink {
 
+class ScriptState;
+class ScriptValue;
+
 // https://wicg.github.io/compute-pressure/#dom-pressurerecord
 
 class MODULES_EXPORT PressureRecord final : public ScriptWrappable {
@@ -31,6 +34,8 @@ class MODULES_EXPORT PressureRecord final : public ScriptWrappable {
   V8PressureState state() const;
   const Vector<V8PressureFactor>& factors() const;
   DOMHighResTimeStamp time() const;
+
+  ScriptValue toJSON(ScriptState*) const;
 
  private:
   const V8PressureSource::Enum source_;

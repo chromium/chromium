@@ -23,4 +23,5 @@ enum PressureState {
   readonly attribute PressureState state;
   readonly attribute FrozenArray<PressureFactor> factors;
   readonly attribute DOMHighResTimeStamp time;
+  [CallWith=ScriptState] object toJSON();
 };
