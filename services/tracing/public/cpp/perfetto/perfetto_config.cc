@@ -250,7 +250,13 @@ perfetto::TraceConfig COMPONENT_EXPORT(TRACING_CPP)
 
   // Clear incremental state every 5 seconds, so that we lose at most the first
   // 5 seconds of the trace (if we wrap around perfetto's central buffer).
+  // For Android, we reset the incremental state every 0.5 seconds to reduce
+  // data loss in ring buffer mode.
+#if BUILDFLAG(IS_ANDROID)
+  perfetto_config.mutable_incremental_state_config()->set_clear_period_ms(500);
+#else
   perfetto_config.mutable_incremental_state_config()->set_clear_period_ms(5000);
+#endif
 
   // We strip the process filter from the config string we send to Perfetto, so
   // perfetto doesn't reject it from a future TracingService::ChangeTraceConfig
