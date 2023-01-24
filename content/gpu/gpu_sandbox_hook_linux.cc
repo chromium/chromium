@@ -393,21 +393,12 @@ void AddVulkanICDPermissions(std::vector<BrokerFilePermission>* permissions) {
   }
 }
 
-void AddStandardGpuPermissions(
-    std::vector<BrokerFilePermission>* permissions,
-    const sandbox::policy::SandboxSeccompBPF::Options& options) {
+void AddStandardGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
   static const char kDriCardBasePath[] = "/dev/dri/card";
   static const char kNvidiaCtlPath[] = "/dev/nvidiactl";
   static const char kNvidiaDeviceBasePath[] = "/dev/nvidia";
   static const char kNvidiaDeviceModeSetPath[] = "/dev/nvidia-modeset";
   static const char kNvidiaParamsPath[] = "/proc/driver/nvidia/params";
-  static const char kAsahiDri[] =
-#if defined(DRI_DRIVER_DIR)
-      DRI_DRIVER_DIR "/asahi_dri.so"
-#else
-      "/usr/lib64/dri/asahi_dri.so"
-#endif
-      ;
   static const char kDevShm[] = "/dev/shm/";
 
   // For shared memory.
@@ -439,11 +430,6 @@ void AddStandardGpuPermissions(
       permissions->push_back(BrokerFilePermission::ReadOnly(sw_path));
     }
   }
-
-  // For Asahi drivers.
-  if (options.use_asahi_specific_policies) {
-    permissions->push_back(BrokerFilePermission::ReadOnly(kAsahiDri));
-  }
 }
 
 std::vector<BrokerFilePermission> FilePermissionsForGpu(
@@ -474,7 +460,7 @@ std::vector<BrokerFilePermission> FilePermissionsForGpu(
       AddIntelGpuPermissions(&permissions);
     }
     if (options.use_nvidia_specific_policies) {
-      AddStandardGpuPermissions(&permissions, options);
+      AddStandardGpuPermissions(&permissions);
     }
     if (options.use_virtio_specific_policies) {
       AddVirtIOGpuPermissions(&permissions);
@@ -492,7 +478,7 @@ std::vector<BrokerFilePermission> FilePermissionsForGpu(
     }
   }
 
-  AddStandardGpuPermissions(&permissions, options);
+  AddStandardGpuPermissions(&permissions);
   return permissions;
 }
 
@@ -521,15 +507,18 @@ void LoadArmGpuLibraries() {
         DRI_DRIVER_DIR "/panfrost_dri.so",
         DRI_DRIVER_DIR "/mediatek_dri.so",
         DRI_DRIVER_DIR "/rockchip_dri.so",
+        DRI_DRIVER_DIR "/asahi_dri.so",
 #else
         "/usr/lib64/dri/msm_dri.so",
         "/usr/lib64/dri/panfrost_dri.so",
         "/usr/lib64/dri/mediatek_dri.so",
         "/usr/lib64/dri/rockchip_dri.so",
+        "/usr/lib64/dri/asahi_dri.so",
         "/usr/lib/dri/msm_dri.so",
         "/usr/lib/dri/panfrost_dri.so",
         "/usr/lib/dri/mediatek_dri.so",
         "/usr/lib/dri/rockchip_dri.so",
+        "/usr/lib/dri/asahi_dri.so",
 #endif
         nullptr
       };
