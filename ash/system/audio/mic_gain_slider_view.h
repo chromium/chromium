@@ -34,6 +34,9 @@ class MicGainSliderView : public UnifiedSliderView,
   void OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) override;
   void OnActiveInputNodeChanged() override;
 
+  // UnifiedSliderView:
+  void VisibilityChanged(View* starting_from, bool is_visible) override;
+
  private:
   void Update(bool by_user);
 

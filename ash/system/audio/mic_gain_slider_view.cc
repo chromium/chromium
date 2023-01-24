@@ -224,6 +224,15 @@ void MicGainSliderView::OnActiveInputNodeChanged() {
   Update(/*by_user=*/true);
 }
 
+void MicGainSliderView::VisibilityChanged(View* starting_from,
+                                          bool is_visible) {
+  // Only trigger the visibility change when it's from parent as there are also
+  // visibility changes in Update().
+  if (starting_from != this) {
+    Update(/*by_user=*/true);
+  }
+}
+
 BEGIN_METADATA(MicGainSliderView, views::View)
 END_METADATA
 
