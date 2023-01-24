@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/dbus/arc/arc_camera_client.h"
 #include "chromeos/ash/components/dbus/arc/arc_data_snapshotd_client.h"
 #include "chromeos/ash/components/dbus/arc/arc_keymaster_client.h"
+#include "chromeos/ash/components/dbus/arc/arc_keymint_client.h"
 #include "chromeos/ash/components/dbus/arc/arc_midis_client.h"
 #include "chromeos/ash/components/dbus/arc/arc_obb_mounter_client.h"
 #include "chromeos/ash/components/dbus/arc/arcvm_data_migrator_client.h"
@@ -140,6 +141,7 @@ void InitializeDBus() {
   InitializeDBusClient<ArcCameraClient>(bus);
   InitializeDBusClient<ArcDataSnapshotdClient>(bus);
   InitializeDBusClient<ArcKeymasterClient>(bus);
+  InitializeDBusClient<ArcKeyMintClient>(bus);
   InitializeDBusClient<ArcMidisClient>(bus);
   InitializeDBusClient<ArcObbMounterClient>(bus);
   InitializeDBusClient<ArcQuotaClient>(bus);
@@ -335,6 +337,7 @@ void ShutdownDBus() {
   ArcQuotaClient::Shutdown();
   ArcObbMounterClient::Shutdown();
   ArcMidisClient::Shutdown();
+  ArcKeyMintClient::Shutdown();
   ArcKeymasterClient::Shutdown();
   ArcDataSnapshotdClient::Shutdown();
   ArcCameraClient::Shutdown();
