@@ -17,6 +17,12 @@
   });
 
   await dp.Page.enable();
+
+  // Chrome optimizes away onfocus/onblur notifications if the target page
+  // is not active, so activate it explicitly. Note that this is not needed
+  // for the old headless which implicitly sets focus to a navigated page.
+  dp.Page.bringToFront();
+
   dp.Page.navigate(
       {url: testRunner.url('/resources/focus-blur-notifications.html')});
 })
