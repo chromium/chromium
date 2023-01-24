@@ -246,7 +246,6 @@ void DestructionHelper(
              std::unique_ptr<media::CdmContextRef> cdm_context_1,
              std::unique_ptr<media::CdmContextRef> cdm_context_2,
              std::unique_ptr<media::MediaLog> media_log) {
-            SCOPED_UMA_HISTOGRAM_TIMER("Media.MSE.DemuxerDestructionTime");
             demuxer_manager.reset();
             main_task_runner->DeleteSoon(FROM_HERE, std::move(cdm_context_1));
             main_task_runner->DeleteSoon(FROM_HERE, std::move(cdm_context_2));

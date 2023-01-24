@@ -62,21 +62,6 @@ using blink::WebSourceBuffer;
 
 namespace blink {
 
-namespace {
-// These values are written to logs. New enum values can be added, but existing
-// ones must never be renumbered or deleted and reused.
-enum class MseExecutionContext {
-  kWindow = 0,
-
-  kDedicatedWorker = 1,
-
-  // TODO(https://crbug.com/1054566): Consider supporting MSE usage in
-  // SharedWorkers.
-  kSharedWorker = 2,
-  kMaxValue = kSharedWorker
-};
-}  // namespace
-
 static AtomicString ReadyStateToString(MediaSource::ReadyState state) {
   AtomicString result;
   switch (state) {
@@ -149,23 +134,9 @@ MediaSource::MediaSource(ExecutionContext* context)
              GetExecutionContext()) ||
          IsMainThread());
 
-  MseExecutionContext type = MseExecutionContext::kWindow;
   if (!IsMainThread()) {
-    if (context->IsDedicatedWorkerGlobalScope()) {
-      type = MseExecutionContext::kDedicatedWorker;
-    } else if (context->IsSharedWorkerGlobalScope()) {
-      type = MseExecutionContext::kSharedWorker;
-    } else {
-      CHECK(false) << "Invalid execution context for MSE usage";
-    }
+    DCHECK(context->IsDedicatedWorkerGlobalScope());
   }
-  base::UmaHistogramEnumeration("Media.MSE.ExecutionContext", type);
-
-  // TODO(https://crbug.com/1054566): Also consider supporting experimental
-  // usage of MediaSource API from shared worker contexts. Meanwhile, IDL limits
-  // constructor exposure to not include shared worker.
-  CHECK_NE(type, MseExecutionContext::kSharedWorker)
-      << "MSE is not supported from SharedWorkers";
 }
 
 MediaSource::~MediaSource() {
