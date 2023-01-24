@@ -900,7 +900,10 @@ CSSValue* AnimationDelayShorthandValueItem(wtf_size_t index,
   return list;
 }
 
-std::pair<CSSValueID, double> GetTimelineRange(const CSSValue& value) {
+// If `value` is a range on the form '<ident> <percentage>', then return that as
+// a pair. This is useful for contracting '<somename> 0%' and '<somename> 100%'
+// into just just <somename>.
+std::pair<CSSValueID, double> GetTimelineRangePercent(const CSSValue& value) {
   const auto* list = DynamicTo<CSSValueList>(value);
   if (!list) {
     return {CSSValueID::kInvalid, -1.0};
@@ -908,6 +911,9 @@ std::pair<CSSValueID, double> GetTimelineRange(const CSSValue& value) {
   DCHECK_EQ(list->length(), 2u);
   const auto& name = To<CSSIdentifierValue>(list->Item(0));
   const auto& offset = To<CSSPrimitiveValue>(list->Item(1));
+  if (!offset.IsPercentage()) {
+    return {CSSValueID::kInvalid, -1.0};
+  }
   return {name.GetValueID(), offset.GetValue<double>()};
 }
 
@@ -922,8 +928,8 @@ CSSValue* AnimationRangeShorthandValueItem(wtf_size_t index,
 
   // E.g. "enter 0% enter 100%" must be shortened to just "enter".
   {
-    const auto& [start_name, start_offset] = GetTimelineRange(start);
-    const auto& [end_name, end_offset] = GetTimelineRange(end);
+    const auto& [start_name, start_offset] = GetTimelineRangePercent(start);
+    const auto& [end_name, end_offset] = GetTimelineRangePercent(end);
     if (start_name == end_name && start_offset == 0.0 && end_offset == 100.0) {
       return CSSIdentifierValue::Create(start_name);
     }

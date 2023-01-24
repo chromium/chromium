@@ -4092,7 +4092,6 @@ CSSValue* ConsumeTimelineRangeName(CSSParserTokenRange& range) {
                       CSSValueID::kEnter, CSSValueID::kExit>(range);
 }
 
-// TODO(crbug.com/1407923): Support <length-percentage>.
 CSSValue* ConsumeTimelineRangeNameAndPercent(CSSParserTokenRange& range,
                                              const CSSParserContext& context) {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
@@ -4122,7 +4121,19 @@ CSSValue* ConsumeAnimationRange(CSSParserTokenRange& range,
   if (CSSValue* ident = ConsumeIdent<CSSValueID::kAuto>(range)) {
     return ident;
   }
-  return ConsumeTimelineRangeNameAndPercent(range, context);
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  CSSValue* range_name = ConsumeTimelineRangeName(range);
+  if (!range_name) {
+    return nullptr;
+  }
+  list->Append(*range_name);
+  CSSValue* percentage = ConsumeLengthOrPercent(
+      range, context, CSSPrimitiveValue::ValueRange::kAll);
+  if (!percentage) {
+    return nullptr;
+  }
+  list->Append(*percentage);
+  return list;
 }
 
 bool ConsumeAnimationShorthand(

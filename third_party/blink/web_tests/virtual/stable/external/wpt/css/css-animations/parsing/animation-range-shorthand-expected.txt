@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 51 tests; 21 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 57 tests; 21 PASS, 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL e.style['animation-range'] = "cover" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['animation-range'] = "contain" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['animation-range'] = "enter" should set the property value assert_not_equals: property should be set got disallowed value ""
@@ -9,10 +9,13 @@ FAIL e.style['animation-range'] = "enter 0% enter 100%" should set the property 
 FAIL e.style['animation-range'] = "exit 0% exit 100%" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['animation-range'] = "cover 0% cover 100%" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['animation-range'] = "contain 0% contain 100%" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['animation-range'] = "enter calc(10% - 10%) enter calc(50% + 50%)" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['animation-range'] = "cover 50%" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['animation-range'] = "contain 50%" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['animation-range'] = "enter 50%" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['animation-range'] = "exit 50%" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['animation-range'] = "enter 50px exit 100px" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['animation-range'] = "exit calc(10% + 50px)" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['animation-range'] = "enter 50% exit 50%" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['animation-range'] = "cover 50% enter 50%, contain 50% exit 50%" should set the property value assert_not_equals: property should be set got disallowed value ""
 PASS e.style['animation-range'] = "enter 50% 0s" should not set the property value
@@ -45,6 +48,9 @@ FAIL e.style['animation-range'] = "contain" should not set unrelated longhands a
 FAIL e.style['animation-range'] = "enter 10% exit 20%" should set animation-range-end assert_equals: animation-range-end should be canonical expected (string) "exit 20%" but got (undefined) undefined
 FAIL e.style['animation-range'] = "enter 10% exit 20%" should set animation-range-start assert_equals: animation-range-start should be canonical expected (string) "enter 10%" but got (undefined) undefined
 FAIL e.style['animation-range'] = "enter 10% exit 20%" should not set unrelated longhands assert_true: expected true got false
+FAIL e.style['animation-range'] = "enter calc(10% + 10px) exit 20px" should set animation-range-end assert_equals: animation-range-end should be canonical expected (string) "exit 20px" but got (undefined) undefined
+FAIL e.style['animation-range'] = "enter calc(10% + 10px) exit 20px" should set animation-range-start assert_equals: animation-range-start should be canonical expected (string) "enter calc(10% + 10px)" but got (undefined) undefined
+FAIL e.style['animation-range'] = "enter calc(10% + 10px) exit 20px" should not set unrelated longhands assert_true: expected true got false
 FAIL e.style['animation-range'] = "enter, exit" should set animation-range-end assert_equals: animation-range-end should be canonical expected (string) "enter 100%, exit 100%" but got (undefined) undefined
 FAIL e.style['animation-range'] = "enter, exit" should set animation-range-start assert_equals: animation-range-start should be canonical expected (string) "enter 0%, exit 0%" but got (undefined) undefined
 FAIL e.style['animation-range'] = "enter, exit" should not set unrelated longhands assert_true: expected true got false

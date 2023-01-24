@@ -1991,15 +1991,13 @@ CSSValue* ComputedStyleUtils::ValueForWillChange(
 
 namespace {
 
-template <class U>
-using ItemFunc = CSSValue*(U);
-
-template <typename T, typename U>
+template <typename T, typename Func, typename... Args>
 CSSValue* CreateAnimationValueList(const Vector<T>& values,
-                                   ItemFunc<U>* item_func) {
+                                   Func item_func,
+                                   Args&&... args) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   for (const T& value : values) {
-    list->Append(*item_func(value));
+    list->Append(*item_func(value, std::forward<Args>(args)...));
   }
   return list;
 }
@@ -2141,39 +2139,43 @@ CSSValue* ComputedStyleUtils::ValueForAnimationPlayStateList(
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationRangeStart(
-    const absl::optional<Timing::TimelineOffset>& offset) {
+    const absl::optional<Timing::TimelineOffset>& offset,
+    const ComputedStyle& style) {
   if (!offset.has_value()) {
     return MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kAuto);
   }
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*MakeGarbageCollected<CSSIdentifierValue>(offset->name));
-  list->Append(*CSSValue::Create(offset->offset, 1));
+  list->Append(*ZoomAdjustedPixelValueForLength(offset->offset, style));
   return list;
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationRangeStartList(
-    const CSSTimingData* timing_data) {
+    const CSSTimingData* timing_data,
+    const ComputedStyle& style) {
   return CreateAnimationValueList(
       timing_data
           ? timing_data->RangeStartList()
           : Vector<absl::optional<
                 Timing::TimelineOffset>>{CSSTimingData::InitialRangeStart()},
-      &ValueForAnimationRangeStart);
+      &ValueForAnimationRangeStart, style);
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationRangeEnd(
-    const absl::optional<Timing::TimelineOffset>& offset) {
-  return ValueForAnimationRangeStart(offset);
+    const absl::optional<Timing::TimelineOffset>& offset,
+    const ComputedStyle& style) {
+  return ValueForAnimationRangeStart(offset, style);
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationRangeEndList(
-    const CSSTimingData* timing_data) {
+    const CSSTimingData* timing_data,
+    const ComputedStyle& style) {
   return CreateAnimationValueList(
       timing_data
           ? timing_data->RangeEndList()
           : Vector<absl::optional<
                 Timing::TimelineOffset>>{CSSTimingData::InitialRangeEnd()},
-      &ValueForAnimationRangeEnd);
+      &ValueForAnimationRangeEnd, style);
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationTimingFunction(

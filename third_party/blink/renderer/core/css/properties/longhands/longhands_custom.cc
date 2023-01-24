@@ -454,8 +454,8 @@ const CSSValue* AnimationRangeStart::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ValueForAnimationRangeStartList(
-      style.Animations());
+  return ComputedStyleUtils::ValueForAnimationRangeStartList(style.Animations(),
+                                                             style);
 }
 
 const CSSValue* AnimationRangeEnd::ParseSingleValue(
@@ -471,7 +471,8 @@ const CSSValue* AnimationRangeEnd::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ValueForAnimationRangeEndList(style.Animations());
+  return ComputedStyleUtils::ValueForAnimationRangeEndList(style.Animations(),
+                                                           style);
 }
 
 const CSSValue* AnimationTimeline::ParseSingleValue(

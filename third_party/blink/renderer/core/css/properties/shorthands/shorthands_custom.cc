@@ -458,11 +458,11 @@ const CSSValue* AnimationRange::CSSValueFromComputedStyleInternal(
     }
 
     auto* inner_list = CSSValueList::CreateSpaceSeparated();
-    inner_list->Append(
-        *ComputedStyleUtils::ValueForAnimationRangeStart(range_start_list[i]));
+    inner_list->Append(*ComputedStyleUtils::ValueForAnimationRangeStart(
+        range_start_list[i], style));
     if (end != CSSTimingData::InitialRangeEnd()) {
-      inner_list->Append(
-          *ComputedStyleUtils::ValueForAnimationRangeEnd(range_end_list[i]));
+      inner_list->Append(*ComputedStyleUtils::ValueForAnimationRangeEnd(
+          range_end_list[i], style));
     }
     outer_list->Append(*inner_list);
   }

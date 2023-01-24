@@ -11,5 +11,9 @@ FAIL Property animation-range-start value 'contain 42%' assert_true: animation-r
 FAIL Property animation-range-start value 'exit 42%' assert_true: animation-range-start doesn't seem to be supported in the computed style expected true got false
 FAIL Property animation-range-start value 'exit calc(41% + 1%)' assert_true: animation-range-start doesn't seem to be supported in the computed style expected true got false
 FAIL Property animation-range-start value 'exit 1%, cover 2%, contain 100%' assert_true: animation-range-start doesn't seem to be supported in the computed style expected true got false
+FAIL Property animation-range-start value 'enter 42px' assert_true: animation-range-start doesn't seem to be supported in the computed style expected true got false
+FAIL Property animation-range-start value 'contain calc(10% + 10px)' assert_true: animation-range-start doesn't seem to be supported in the computed style expected true got false
+FAIL Property animation-range-start value 'enter 1em' assert_true: animation-range-start doesn't seem to be supported in the computed style expected true got false
+FAIL Property animation-range-start value 'exit calc(1em + 10px)' assert_true: animation-range-start doesn't seem to be supported in the computed style expected true got false
 Harness: the test ran to completion.
 
