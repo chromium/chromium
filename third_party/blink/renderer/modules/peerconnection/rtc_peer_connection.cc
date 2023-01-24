@@ -85,7 +85,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_result_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
-#include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_event.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
@@ -1252,12 +1251,6 @@ void RTCPeerConnection::setConfiguration(
 
   if (exception_state.HadException())
     return;
-
-  MediaErrorState media_error_state;
-  if (media_error_state.HadException()) {
-    media_error_state.RaiseException(exception_state);
-    return;
-  }
 
   if (peer_handler_->encoded_insertable_streams() !=
       rtc_configuration->encodedInsertableStreams()) {

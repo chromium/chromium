@@ -38457,7 +38457,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1148" label="NotificationAPISecureOriginIframe"/>
   <int value="1149" label="WebSocket"/>
   <int value="1150" label="MediaStreamConstraintsNameValue"/>
-  <int value="1151" label="MediaStreamConstraintsFromDictionary"/>
+  <int value="1151" label="OBSOLETE_MediaStreamConstraintsFromDictionary"/>
   <int value="1152" label="MediaStreamConstraintsConformant"/>
   <int value="1153" label="CSSSelectorIndirectAdjacent"/>
   <int value="1154" label="NodeRootNode (obsolete)"/>

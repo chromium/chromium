@@ -148,65 +148,6 @@ static bool ParseOptionalConstraintsVectorElement(
   return true;
 }
 
-// Old style parser. Deprecated.
-static bool Parse(const Dictionary& constraints_dictionary,
-                  Vector<NameValueStringConstraint>& optional,
-                  Vector<NameValueStringConstraint>& mandatory) {
-  if (constraints_dictionary.IsUndefinedOrNull())
-    return true;
-
-  DummyExceptionStateForTesting exception_state;
-  const Vector<String>& names =
-      constraints_dictionary.GetPropertyNames(exception_state);
-  if (exception_state.HadException())
-    return false;
-
-  String mandatory_name("mandatory");
-  String optional_name("optional");
-
-  for (const auto& name : names) {
-    if (name != mandatory_name && name != optional_name)
-      return false;
-  }
-
-  if (names.Contains(mandatory_name)) {
-    Dictionary mandatory_constraints_dictionary;
-    bool ok = constraints_dictionary.Get(mandatory_name,
-                                         mandatory_constraints_dictionary);
-    if (!ok || mandatory_constraints_dictionary.IsUndefinedOrNull())
-      return false;
-    ok = ParseMandatoryConstraintsDictionary(mandatory_constraints_dictionary,
-                                             mandatory);
-    if (!ok)
-      return false;
-  }
-
-  if (names.Contains(optional_name)) {
-    ArrayValue optional_constraints;
-    bool ok = DictionaryHelper::Get(constraints_dictionary, optional_name,
-                                    optional_constraints);
-    if (!ok || optional_constraints.IsUndefinedOrNull())
-      return false;
-
-    uint32_t number_of_constraints;
-    ok = optional_constraints.length(number_of_constraints);
-    if (!ok)
-      return false;
-
-    for (uint32_t i = 0; i < number_of_constraints; ++i) {
-      Dictionary constraint;
-      ok = optional_constraints.Get(i, constraint);
-      if (!ok || constraint.IsUndefinedOrNull())
-        return false;
-      ok = ParseOptionalConstraintsVectorElement(constraint, optional);
-      if (!ok)
-        return false;
-    }
-  }
-
-  return true;
-}
-
 static bool Parse(const MediaTrackConstraints* constraints_in,
                   Vector<NameValueStringConstraint>& optional,
                   Vector<NameValueStringConstraint>& mandatory) {
@@ -336,20 +277,6 @@ static MediaConstraints CreateFromNamedConstraints(
   }
   constraints.Initialize(basic, advanced_vector);
   return constraints;
-}
-
-// Deprecated.
-MediaConstraints Create(ExecutionContext* context,
-                        const Dictionary& constraints_dictionary,
-                        MediaErrorState& error_state) {
-  Vector<NameValueStringConstraint> optional;
-  Vector<NameValueStringConstraint> mandatory;
-  if (!Parse(constraints_dictionary, optional, mandatory)) {
-    error_state.ThrowTypeError("Malformed constraints object.");
-    return MediaConstraints();
-  }
-  UseCounter::Count(context, WebFeature::kMediaStreamConstraintsFromDictionary);
-  return CreateFromNamedConstraints(context, mandatory, optional, error_state);
 }
 
 void CopyLongConstraint(const V8ConstrainLong* blink_union_form,

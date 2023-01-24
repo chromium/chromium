@@ -789,7 +789,7 @@ enum WebFeature {
   kNotificationAPISecureOriginIframe = 1148,
   kWebSocket = 1149,
   kMediaStreamConstraintsNameValue = 1150,
-  kMediaStreamConstraintsFromDictionary = 1151,
+  kOBSOLETE_MediaStreamConstraintsFromDictionary = 1151,
   kMediaStreamConstraintsConformant = 1152,
   kCSSSelectorIndirectAdjacent = 1153,
   kCreateImageBitmap = 1156,

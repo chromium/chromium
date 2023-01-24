@@ -36,7 +36,6 @@
 
 namespace blink {
 
-class Dictionary;
 class ExecutionContext;
 class MediaErrorState;
 class MediaTrackConstraints;
@@ -51,7 +50,6 @@ const size_t kMaxConstraintStringLength = 500;
 const size_t kMaxConstraintStringSeqLength = 100;
 
 MediaConstraints Create();
-MediaConstraints Create(ExecutionContext*, const Dictionary&, MediaErrorState&);
 MediaConstraints Create(ExecutionContext*,
                         const MediaTrackConstraints*,
                         MediaErrorState&);

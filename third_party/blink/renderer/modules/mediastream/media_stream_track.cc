@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_constraints.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
-#include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
 #include "third_party/blink/renderer/modules/mediastream/transferred_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_request.h"
@@ -85,7 +84,6 @@ MediaStreamTrack* MediaStreamTrack::FromTransferredState(
     return nullptr;
   }
 
-  MediaErrorState error_state;
   // TODO(1288839): Set media_type, options, callbacks, surface appropriately
   MediaConstraints audio = (data.kind == "audio")
                                ? media_constraints_impl::Create()
