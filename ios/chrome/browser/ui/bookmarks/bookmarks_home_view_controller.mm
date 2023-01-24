@@ -659,16 +659,30 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [self setTableViewEditing:NO];
 }
 
-// Opens the editor on the given node.
-- (void)editNode:(const BookmarkNode*)node {
+// Ensures bookmarkInteractionController is set.
+- (void)ensureBookmarksCoordinator {
   if (!self.bookmarksCoordinator) {
     self.bookmarksCoordinator =
         [[BookmarksCoordinator alloc] initWithBrowser:self.browser];
     self.bookmarksCoordinator.baseViewController = self;
     self.bookmarksCoordinator.delegate = self;
   }
+}
 
-  [self.bookmarksCoordinator presentEditorForNode:node];
+// Opens the editor on the given URL node.
+- (void)editNodeURL:(const BookmarkNode*)node {
+  DCHECK(node);
+  DCHECK_EQ(node->type(), BookmarkNode::URL);
+  [self ensureBookmarksCoordinator];
+  [self.bookmarksCoordinator presentEditorForURLNode:node];
+}
+
+// Opens the editor on the given Folder node.
+- (void)editNodeFolder:(const BookmarkNode*)node {
+  DCHECK(node);
+  DCHECK_EQ(node->type(), BookmarkNode::FOLDER);
+  [self ensureBookmarksCoordinator];
+  [self.bookmarksCoordinator presentEditorForFolderNode:node];
 }
 
 - (void)openAllURLs:(std::vector<GURL>)urls
@@ -809,7 +823,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     const bookmarks::BookmarkNode* node = *nodes.begin();
     if (node->is_url()) {
       [self setContextBarState:BookmarksContextBarSingleURLSelection];
-    } else if (node->is_folder()) {
+    } else {
+      DCHECK_EQ(node->type(), BookmarkNode::FOLDER);
       [self setContextBarState:BookmarksContextBarSingleFolderSelection];
     }
     return;
@@ -1814,7 +1829,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                bookmark_utils_ios::FindNodeById(
                                    strongSelf.bookmarks, nodeId);
                            if (nodeFromId) {
-                             [strongSelf editNode:nodeFromId];
+                             [strongSelf editNodeURL:nodeFromId];
                            }
                          }
                           style:UIAlertActionStyleDefault
@@ -1902,7 +1917,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                bookmark_utils_ios::FindNodeById(
                                    strongSelf.bookmarks, nodeId);
                            if (nodeFromId) {
-                             [strongSelf editNode:nodeFromId];
+                             [strongSelf editNodeFolder:nodeFromId];
                            }
                          }
                           style:UIAlertActionStyleDefault
@@ -2365,7 +2380,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
         const bookmarks::BookmarkNode* nodeFromId =
             bookmark_utils_ios::FindNodeById(innerStrongSelf.bookmarks, nodeId);
         if (nodeFromId) {
-          [innerStrongSelf editNode:nodeFromId];
+          [innerStrongSelf editNodeURL:nodeFromId];
         }
       }];
       [menuElements addObject:editAction];
@@ -2435,7 +2450,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
         const bookmarks::BookmarkNode* nodeFromId =
             bookmark_utils_ios::FindNodeById(innerStrongSelf.bookmarks, nodeId);
         if (nodeFromId) {
-          [innerStrongSelf editNode:nodeFromId];
+          [innerStrongSelf editNodeFolder:nodeFromId];
         }
       }];
       UIAction* moveAction = [actionFactory actionToMoveFolderWithBlock:^{

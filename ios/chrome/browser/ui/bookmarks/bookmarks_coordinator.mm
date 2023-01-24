@@ -247,7 +247,7 @@ enum class PresentedState {
   if (!bookmark) {
     return;
   }
-  [self presentEditorForNode:bookmark];
+  [self presentEditorForURLNode:bookmark];
 }
 
 - (void)presentBookmarks {
@@ -301,47 +301,42 @@ enum class PresentedState {
       withReplacementViewControllers:nil];
 }
 
-- (void)presentEditorForNode:(const bookmarks::BookmarkNode*)node {
+- (void)presentEditorForURLNode:(const bookmarks::BookmarkNode*)node {
   DCHECK_EQ(PresentedState::NONE, self.currentPresentedState);
+  DCHECK(node);
+  DCHECK_EQ(node->type(), BookmarkNode::URL);
 
   [self dismissSnackbar];
 
-  if (!node) {
-    return;
-  }
+  self.currentPresentedState = PresentedState::BOOKMARK_EDITOR;
+  BookmarksEditorViewController* bookmarkEditor =
+      [[BookmarksEditorViewController alloc] initWithBookmark:node
+                                                      browser:_browser];
+  bookmarkEditor.delegate = self;
+  bookmarkEditor.snackbarCommandsHandler = self.snackbarCommandsHandler;
+  self.bookmarkEditor = bookmarkEditor;
 
-  if (!(node->type() == BookmarkNode::URL ||
-        node->type() == BookmarkNode::FOLDER)) {
-    return;
-  }
+  [self presentTableViewController:bookmarkEditor
+      withReplacementViewControllers:nil];
+}
 
-  ChromeTableViewController<UIAdaptivePresentationControllerDelegate>*
-      editorController = nil;
-  if (node->type() == BookmarkNode::URL) {
-    self.currentPresentedState = PresentedState::BOOKMARK_EDITOR;
-    BookmarksEditorViewController* bookmarkEditor =
-        [[BookmarksEditorViewController alloc] initWithBookmark:node
-                                                        browser:_browser];
-    bookmarkEditor.delegate = self;
-    bookmarkEditor.snackbarCommandsHandler = self.snackbarCommandsHandler;
-    self.bookmarkEditor = bookmarkEditor;
-    editorController = bookmarkEditor;
-  } else if (node->type() == BookmarkNode::FOLDER) {
-    self.currentPresentedState = PresentedState::FOLDER_EDITOR;
-    BookmarksFolderEditorViewController* folderEditor =
-        [BookmarksFolderEditorViewController
-            folderEditorWithBookmarkModel:self.bookmarkModel
-                                   folder:node
-                                  browser:_browser];
-    folderEditor.delegate = self;
-    folderEditor.snackbarCommandsHandler = self.snackbarCommandsHandler;
-    self.folderEditor = folderEditor;
-    editorController = folderEditor;
-  } else {
-    NOTREACHED();
-  }
+- (void)presentEditorForFolderNode:(const bookmarks::BookmarkNode*)node {
+  DCHECK_EQ(PresentedState::NONE, self.currentPresentedState);
+  DCHECK(node);
+  DCHECK_EQ(node->type(), BookmarkNode::FOLDER);
 
-  [self presentTableViewController:editorController
+  [self dismissSnackbar];
+  self.currentPresentedState = PresentedState::FOLDER_EDITOR;
+  BookmarksFolderEditorViewController* folderEditor =
+      [BookmarksFolderEditorViewController
+          folderEditorWithBookmarkModel:self.bookmarkModel
+                                 folder:node
+                                browser:_browser];
+  folderEditor.delegate = self;
+  folderEditor.snackbarCommandsHandler = self.snackbarCommandsHandler;
+  self.folderEditor = folderEditor;
+
+  [self presentTableViewController:folderEditor
       withReplacementViewControllers:nil];
 }
 

@@ -47,8 +47,11 @@ class GURL;
 // Presents the bookmarks browser modally.
 - (void)presentBookmarks;
 
-// Presents the bookmark or folder editor for the given `node`.
-- (void)presentEditorForNode:(const bookmarks::BookmarkNode*)node;
+// Presents the folder editor for the given folder `node`.
+- (void)presentEditorForFolderNode:(const bookmarks::BookmarkNode*)node;
+
+// Presents the bookmark editor for the given URL `node`.
+- (void)presentEditorForURLNode:(const bookmarks::BookmarkNode*)node;
 
 // Removes any bookmark modal controller from view if visible.
 // override this method.
