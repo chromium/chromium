@@ -471,7 +471,7 @@ inline bool IsHashTraitsEmptyOrDeletedValue(const T& value) {
 
 // A HashTraits type for T to delegate all HashTraits API to a field.
 template <typename T,
-          auto T::*field,
+          auto field,
           typename FieldTraits = HashTraits<
               std::remove_reference_t<decltype(std::declval<T>().*field)>>>
 struct OneFieldHashTraits : GenericHashTraits<T> {
@@ -517,8 +517,8 @@ struct OneFieldHashTraits : GenericHashTraits<T> {
 // A HashTraits type for T to delegate all HashTraits API to two fields.
 template <
     typename T,
-    auto T::*first_field,
-    auto T::*second_field,
+    auto first_field,
+    auto second_field,
     typename FirstTraits = HashTraits<
         std::remove_reference_t<decltype(std::declval<T>().*first_field)>>,
     typename SecondTraits = HashTraits<
