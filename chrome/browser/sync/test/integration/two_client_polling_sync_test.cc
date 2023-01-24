@@ -99,8 +99,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientPollingSyncTest, DISABLED_ShouldPollOnStartup) {
   // Disconnect client 1 from sync and write another change from client 0.
   // Disconnect the remote client from the invalidation service.
   DisableNotificationsForClient(1);
-  // Make sure no extra sync cycles get triggered by test infrastructure.
-  StopConfigurationRefresher();
   // Note: It's important to *not* clear data here - if we clear data, then
   // we'll do a regular GetUpdates at the next startup, so there'd be no need
   // for a poll.

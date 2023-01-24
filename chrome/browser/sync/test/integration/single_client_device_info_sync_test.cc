@@ -208,9 +208,6 @@ class SingleClientDeviceInfoSyncTest : public SyncTest {
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
 
-  // SyncTest overrides.
-  bool UseConfigurationRefresher() override { return false; }
-
  private:
   base::test::ScopedFeatureList override_features_;
 };

@@ -22,6 +22,7 @@
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
+#include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -1608,7 +1609,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Make sure all local commits make it to the server.
   ASSERT_TRUE(
-      UpdatedProgressMarkerChecker(GetSyncService(kSingleProfileIndex)).Wait());
+      CommittedAllNudgedChangesChecker(GetSyncService(kSingleProfileIndex))
+          .Wait());
 
   // Verify that the bookmark hasn't been uploaded (no local updates issued). No
   // commits are expected despite the fact that the server-side bookmark is a
@@ -1694,6 +1696,14 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitEngineInitialization());
+  ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitSyncSetupCompletion());
+
+  // Run a sync cycle to trigger bookmarks reupload on browser startup. This is
+  // required since bookmarks get reuploaded only after the latest changes are
+  // downloaded to avoid uploading outdated data.
+  GetSyncService(kSingleProfileIndex)->TriggerRefresh(syncer::BOOKMARKS);
+
+  // Bookmark favicon will be loaded if there are local changes.
   ASSERT_TRUE(
       BookmarkFaviconLoadedChecker(kSingleProfileIndex, GURL(kBookmarkPageUrl))
           .Wait());

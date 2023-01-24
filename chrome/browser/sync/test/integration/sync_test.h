@@ -19,7 +19,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/sync/test/integration/configuration_refresher.h"
 #include "chrome/browser/sync/test/integration/fake_server_invalidation_sender.h"
 #include "chrome/browser/sync/test/integration/invalidations/fake_server_sync_invalidation_sender.h"
 #include "chrome/common/buildflags.h"
@@ -59,6 +58,7 @@
 #define E2E_ENABLED(test_name) MACRO_CONCAT(test_name, E2ETest)
 
 class FakeSyncGCMDriver;
+class KeyedService;
 class SyncServiceImplHarness;
 
 namespace arc {
@@ -214,11 +214,6 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // tests are rewritten in a way to not use verifier.
   virtual bool UseVerifier();
 
-  // Used to determine whether to use the configuration refresher. It's used to
-  // mitigate test flakiness due to missed invalidations and download updates
-  // after SetupClients().
-  virtual bool UseConfigurationRefresher();
-
   // Initializes sync clients and profiles but does not sync any of them.
   [[nodiscard]] virtual bool SetupClients();
 
@@ -262,11 +257,6 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
 
   // Triggers a sync for the given |model_types| for the Profile at |index|.
   void TriggerSyncForModelTypes(int index, syncer::ModelTypeSet model_types);
-
-  // The configuration refresher is triggering refreshes after the configuration
-  // phase is done (during start-up). Call this function before SetupSync() to
-  // avoid its effects.
-  void StopConfigurationRefresher();
 
   arc::SyncArcPackageHelper* sync_arc_helper();
 
@@ -365,9 +355,6 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // value of |server_type_|.
   void SetUpInvalidations(int index);
 
-  // Initializes the configuration refresher.
-  void InitializeConfigurationRefresher(int index);
-
   // Internal routine for setting up sync.
   void SetupSyncInternal(SetupSyncMode setup_mode);
 
@@ -453,9 +440,6 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // FakeSyncServerInvalidationSender.
   std::map<raw_ptr<Profile>, raw_ptr<FakeSyncGCMDriver>>
       profile_to_fake_gcm_driver_;
-
-  // Triggers a GetUpdates via refresh after a configuration.
-  std::unique_ptr<ConfigurationRefresher> configuration_refresher_;
 
   base::CallbackListSubscription create_services_subscription_;
 

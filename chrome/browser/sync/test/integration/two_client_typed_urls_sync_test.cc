@@ -859,7 +859,12 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTestWithoutLacrosSupport,
 IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTestWithoutLacrosSupport,
                        ResetWithDuplicateMetadata) {
   base::HistogramTester histogram_tester;
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // SetupSync() can't be used since it relies on an additional sync cycle (via
+  // UpdateProgressMarkerChecker which checks non-empty progress markers).
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(1)->AwaitSyncSetupCompletion());
 
   // On startup, client 1 should reset its metadata and perform initial sync
   // once again. Sync one more url across the clients to be sure client 1

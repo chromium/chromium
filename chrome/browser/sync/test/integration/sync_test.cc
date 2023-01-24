@@ -551,10 +551,6 @@ bool SyncTest::UseVerifier() {
   return false;
 }
 
-bool SyncTest::UseConfigurationRefresher() {
-  return true;
-}
-
 bool SyncTest::SetupClients() {
   previous_profile_ =
       g_browser_process->profile_manager()->GetLastUsedProfile();
@@ -685,7 +681,6 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
   clients_[index] = SyncServiceImplHarness::Create(GetProfile(index), username_,
                                                    password_, signin_type);
   EXPECT_NE(nullptr, GetClient(index)) << "Could not create Client " << index;
-  InitializeConfigurationRefresher(index);
 }
 
 void SyncTest::DisableNotificationsForClient(int index) {
@@ -740,31 +735,6 @@ void SyncTest::SetUpInvalidations(int index) {
           invalidation::prefs::kInvalidationClientIDCache);
 
       update_client_id->Set(kInvalidationGCMSenderId, client_id);
-      break;
-    }
-  }
-}
-
-void SyncTest::InitializeConfigurationRefresher(int index) {
-  if (!UseConfigurationRefresher()) {
-    return;
-  }
-
-  // Lazily create |configuration_refresher_| the first time we get here (or the
-  // first time after a previous call to StopConfigurationRefresher).
-  if (!configuration_refresher_) {
-    configuration_refresher_ = std::make_unique<ConfigurationRefresher>();
-  }
-
-  switch (server_type_) {
-    case EXTERNAL_LIVE_SERVER:
-      // DO NOTHING. External live sync servers use GCM to notify profiles of
-      // any invalidations in sync'ed data. In this case, to notify other
-      // profiles of invalidations, we use sync refresh notifications instead.
-      break;
-    case IN_PROCESS_FAKE_SERVER: {
-      configuration_refresher_->Observe(
-          SyncServiceFactory::GetForProfile(GetProfile(index)));
       break;
     }
   }
@@ -911,9 +881,6 @@ void SyncTest::TearDownOnMainThread() {
     fake_server_sync_invalidation_sender_.reset();
     fake_server_.reset();
   }
-
-  // Delete things that unsubscribe in destructor before their targets are gone.
-  configuration_refresher_.reset();
 
   for (Profile* profile : profiles_) {
     // Profile could be removed earlier.
@@ -1222,10 +1189,6 @@ fake_server::FakeServer* SyncTest::GetFakeServer() const {
 void SyncTest::TriggerSyncForModelTypes(int index,
                                         syncer::ModelTypeSet model_types) {
   GetSyncService(index)->TriggerRefresh(model_types);
-}
-
-void SyncTest::StopConfigurationRefresher() {
-  configuration_refresher_.reset();
 }
 
 arc::SyncArcPackageHelper* SyncTest::sync_arc_helper() {

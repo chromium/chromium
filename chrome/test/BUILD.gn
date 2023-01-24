@@ -10286,8 +10286,6 @@ source_set("sync_integration_test_support") {
     "../browser/sync/test/integration/bookmarks_helper.h",
     "../browser/sync/test/integration/committed_all_nudged_changes_checker.cc",
     "../browser/sync/test/integration/committed_all_nudged_changes_checker.h",
-    "../browser/sync/test/integration/configuration_refresher.cc",
-    "../browser/sync/test/integration/configuration_refresher.h",
     "../browser/sync/test/integration/contact_info_helper.cc",
     "../browser/sync/test/integration/contact_info_helper.h",
     "../browser/sync/test/integration/device_info_helper.cc",

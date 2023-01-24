@@ -266,10 +266,6 @@ class SingleClientSyncInvalidationsTestBase : public SyncTest {
     override_features_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  // Disable configuration refresher to make it sure that clients receive
-  // invalidations correctly during browser startup.
-  bool UseConfigurationRefresher() override { return false; }
-
  private:
   base::test::ScopedFeatureList override_features_;
 };

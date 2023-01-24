@@ -300,9 +300,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTest,
 IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTest,
                        PersistProgressMarkerOnRestart) {
   base::HistogramTester histogram_tester;
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
   ASSERT_EQ(1, GetPasswordCount(0));
-  ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
+
+  // Wait for data types to be ready for sync and trigger a sync cycle.
+  // Otherwise, TriggerRefresh() would be no-op.
+  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  GetSyncService(0)->TriggerRefresh(syncer::PASSWORDS);
 
   // After restart, the last sync cycle snapshot should be empty. Once a sync
   // request happened (e.g. by a poll), that snapshot is populated. We use the
@@ -831,12 +835,10 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   ASSERT_EQ(1, GetPasswordCount(0));
-  ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
 
-  // After restart, the last sync cycle snapshot should be empty. Once a sync
-  // request happened (e.g. by a poll), that snapshot is populated. We use the
-  // following checker to simply wait for an non-empty snapshot.
-  EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  // Wait for data types to be ready for sync (and hence model types are
+  // loaded).
+  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
 
   // The original metric is defined in password_sync_bridge.cc.
   const int kNone = 0;
