@@ -669,7 +669,13 @@ var CrSettingsCookiesPageTest = class extends CrSettingsBrowserTest {
   }
 };
 
-TEST_F('CrSettingsCookiesPageTest', 'CookiesPageTest', function() {
+GEN('#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)');
+GEN('#define MAYBE_CookiesPageTest DISABLED_CookiesPageTest');
+GEN('#else');
+GEN('#define MAYBE_CookiesPageTest CookiesPageTest');
+GEN('#endif');
+// TODO(crbug.com/1409653): fix flakiness on Linux debug builds and re-enable.
+TEST_F('CrSettingsCookiesPageTest', 'MAYBE_CookiesPageTest', function() {
   runMochaSuite('CrSettingsCookiesPageTest');
 });
 
@@ -683,8 +689,17 @@ TEST_F('CrSettingsCookiesPageTest', 'LacrosSecondaryProfile', function() {
 });
 GEN('#endif');
 
+GEN('#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)');
+GEN('#define MAYBE_PrivacySandboxSettings4Disabled2 DISABLED_PrivacySandboxSettings4Disabled');
+GEN('#else');
+GEN('#define MAYBE_PrivacySandboxSettings4Disabled2 PrivacySandboxSettings4Disabled');
+GEN('#endif');
+// TODO(crbug.com/1409653): fix flakiness on Linux debug builds and re-enable.
+// The "MAYBE..." portion of the test has a 2 at the end because there is
+// already a macro with the same name defined in this file.
 TEST_F(
-    'CrSettingsCookiesPageTest', 'PrivacySandboxSettings4Disabled', function() {
+    'CrSettingsCookiesPageTest', 'MAYBE_PrivacySandboxSettings4Disabled2',
+    function() {
       runMochaSuite(
           'CrSettingsCookiesPageTest_PrivacySandboxSettings4Disabled');
     });
