@@ -6752,16 +6752,16 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithNewFlowAndIPH_V2",
+                    "name": "EnabledWithDecisionInBrowser_V2",
                     "enable_features": [
                         "AppIconInIntentChip",
-                        "IPH_IntentChip",
-                        "IntentChipSkipsPicker",
-                        "LinkCapturingInfoBar",
                         "LinkCapturingUiUpdate"
                     ],
                     "disable_features": [
-                        "LinkCapturingAutoDisplayIntentPicker"
+                        "IPH_IntentChip",
+                        "IntentChipSkipsPicker",
+                        "LinkCapturingAutoDisplayIntentPicker",
+                        "LinkCapturingInfoBar"
                     ]
                 }
             ]
