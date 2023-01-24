@@ -9,8 +9,9 @@ import json
 import logging
 import optparse
 import re
+from typing import FrozenSet
 
-from blinkpy.common.net.git_cl import GitCL, TryJobStatus
+from blinkpy.common.net.git_cl import BuildStatuses, GitCL, TryJobStatus
 from blinkpy.common.net.rpc import Build, RPCError
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.tool.commands.build_resolver import (
@@ -115,11 +116,13 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         self._builders = options.builders
 
         build_resolver = BuildResolver(
+            self._tool.web,
             self.git_cl,
             can_trigger_jobs=(options.trigger_jobs and not self._dry_run))
         builds = [Build(builder) for builder in self.selected_try_bots]
         try:
-            jobs = build_resolver.resolve_builds(builds, options.patchset)
+            build_statuses = build_resolver.resolve_builds(
+                builds, options.patchset)
         except RPCError as error:
             _log.error('%s', error)
             _log.error('Request payload: %s',
@@ -129,30 +132,20 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             _log.error('%s', error)
             return 1
 
-        jobs_to_results = self._fetch_results(jobs)
+        builders_with_infra_failures = self._warn_about_infra_failures(
+            build_statuses)
+        jobs_to_results = self._fetch_results(build_statuses)
         builders_with_results = {b.builder_name for b in jobs_to_results}
-        builders_without_results = (
-            set(self.selected_try_bots) - builders_with_results)
-        interrupted_builders = self._remove_interrupted_builders(
-            jobs_to_results)
+        builders_without_results = (set(self.selected_try_bots) -
+                                    builders_with_results -
+                                    builders_with_infra_failures)
         if builders_without_results:
-            _log.warning('There are some builders with no results:')
+            _log.warning('Some builders have no results:')
             for builder in sorted(builders_without_results):
                 _log.warning('  %s', builder)
-        if interrupted_builders:
-            _log.warning('There are some builders that were interrupted.')
-            _log.warning('Some shards may have timed out or exited early '
-                         'due to excessive unexpected failures:')
-            for builder in sorted(interrupted_builders):
-                _log.warning('  %s', builder)
-            _log.warning('Please consider retry the failed builders or '
-                         'give the builders more shards. See '
-                         'https://chromium.googlesource.com/chromium/src/+/'
-                         'HEAD/docs/testing/web_test_expectations.md'
-                         '#rebaselining-using-try-jobs')
 
-        incomplete_builders = builders_without_results | interrupted_builders
-        if options.fill_missing is None and incomplete_builders:
+        builders_without_results.update(builders_with_infra_failures)
+        if options.fill_missing is None and builders_without_results:
             should_continue = self._tool.user.confirm(
                 'Would you like to continue?',
                 default=self._tool.user.DEFAULT_NO)
@@ -185,15 +178,31 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         self.rebaseline(options, test_baseline_set)
         return 0
 
-    def _remove_interrupted_builders(self, jobs_to_results):
-        interrupted_builders = set()
-        # Iterate over a shallow copy of `items()`, which is a view of a
-        # dictionary being mutated.
-        for build, step_results in list(jobs_to_results.items()):
-            if any(step_result.interrupted for step_result in step_results):
-                interrupted_builders.add(build.builder_name)
-                del jobs_to_results[build]
-        return interrupted_builders
+    def _warn_about_infra_failures(
+            self,
+            build_statuses: BuildStatuses,
+    ) -> FrozenSet[str]:
+        builders_with_infra_failures = {
+            build.builder_name
+            for build, status in build_statuses.items()
+            if status == TryJobStatus.from_bb_status('INFRA_FAILURE')
+        }
+        if builders_with_infra_failures:
+            _log.warning('Some builders have infrastructure failures:')
+            for builder in sorted(builders_with_infra_failures):
+                _log.warning('  %s', builder)
+            _log.warning('Examples of infrastructure failures include:')
+            _log.warning('  * Shard terminated the harness after timing out.')
+            _log.warning('  * Harness exited early due to '
+                         'excessive unexpected failures.')
+            _log.warning('  * Build failed on a non-test step.')
+            _log.warning('Please consider retrying the failed builders or '
+                         'giving the builders more shards.')
+            _log.warning(
+                'See https://chromium.googlesource.com/chromium/src/+/'
+                'HEAD/docs/testing/web_test_expectations.md'
+                '#rebaselining-using-try-jobs')
+        return builders_with_infra_failures
 
     def check_ok_to_run(self):
         unstaged_baselines = self.unstaged_baselines()

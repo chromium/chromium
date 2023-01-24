@@ -151,6 +151,7 @@ class UpdateMetadata(Command):
     def execute(self, options: optparse.Values, args: List[str],
                 _tool: Host) -> Optional[int]:
         build_resolver = BuildResolver(
+            self._tool.web,
             self.git_cl,
             can_trigger_jobs=(options.trigger_jobs and not options.dry_run))
         manifests = load_and_update_manifests(self._path_finder)

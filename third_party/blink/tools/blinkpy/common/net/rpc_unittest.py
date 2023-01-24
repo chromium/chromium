@@ -136,7 +136,8 @@ class BuildbucketTest(unittest.TestCase):
                 }
             }],
         })
-        self.client.add_get_build_req(Build('linux-rel'), build_fields=['id'])
+        self.client.add_get_build_req(Build('linux-rel', 123),
+                                      build_fields=['id'])
         self.client.add_search_builds_req({}, ['id'])
         build1, build2, build3 = self.client.execute_batch()
         (url, request), = self.host.web.requests
@@ -153,6 +154,7 @@ class BuildbucketTest(unittest.TestCase):
                                 'bucket': 'try',
                                 'builder': 'linux-rel',
                             },
+                            'buildNumber': 123,
                             'fields': 'id',
                         },
                     },

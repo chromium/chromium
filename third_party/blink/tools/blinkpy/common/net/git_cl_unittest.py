@@ -473,8 +473,10 @@ class GitCLTest(unittest.TestCase):
         git_cl = GitCL(MockHost(web=web))
         self.assertEqual(
             git_cl.latest_try_jobs(builder_names=['builder-a', 'builder-b']), {
-                Build('builder-a', 100): TryJobStatus('COMPLETED', 'FAILURE'),
-                Build('builder-b', 200): TryJobStatus('COMPLETED', 'FAILURE'),
+                Build('builder-a', 100):
+                TryJobStatus('COMPLETED', 'FAILURE'),
+                Build('builder-b', 200):
+                TryJobStatus('COMPLETED', 'INFRA_FAILURE'),
             })
 
     def test_filter_latest(self):
@@ -555,15 +557,13 @@ class GitCLTest(unittest.TestCase):
         }])
         git_cl = GitCL(MockHost(web=web))
         self.assertEqual(
-            git_cl.try_job_results(issue_number=None),
-            {
+            git_cl.try_job_results(issue_number=None), {
                 Build('builder-a', 111):
                 TryJobStatus('COMPLETED', 'SUCCESS'),
                 Build('builder-b', 222):
                 TryJobStatus('SCHEDULED', None),
-                # INFRA_FAILURE is mapped to FAILURE for this build.
                 Build('builder-c', 333):
-                TryJobStatus('COMPLETED', 'FAILURE'),
+                TryJobStatus('COMPLETED', 'INFRA_FAILURE'),
             })
 
     def test_try_job_results_skip_experimental_cq(self):

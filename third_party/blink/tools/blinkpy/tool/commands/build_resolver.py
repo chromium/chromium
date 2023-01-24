@@ -2,10 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import contextlib
 import logging
+import re
 from typing import Collection, Dict, Optional, Tuple
 
+from requests.exceptions import RequestException
+
+from blinkpy.common import exit_codes
 from blinkpy.common.net.rpc import Build
+from blinkpy.common.net.web import Web
 from blinkpy.common.net.git_cl import BuildStatuses, GitCL, TryJobStatus
 
 _log = logging.getLogger(__name__)
@@ -34,12 +40,19 @@ class BuildResolver:
 
     # Build fields required by `_build_statuses_from_responses`.
     _build_fields = [
-        'id', 'number', 'builder.builder', 'builder.bucket', 'status'
+        'id',
+        'number',
+        'builder.builder',
+        'builder.bucket',
+        'status',
+        'steps.*.name',
+        'steps.*.logs.*.name',
+        'steps.*.logs.*.view_url',
     ]
 
-    def __init__(self,
-                 git_cl: GitCL,
+    def __init__(self, web: Web, git_cl: GitCL,
                  can_trigger_jobs: bool = False):
+        self._web = web
         self._git_cl = git_cl
         self._can_trigger_jobs = can_trigger_jobs
 
@@ -54,7 +67,7 @@ class BuildResolver:
         return {
             Build(build['builder']['builder'], build['number'], build['id'],
                   build['builder']['bucket']):
-            TryJobStatus.from_bb_status(build['status'])
+            self._status_if_interrupted(build)
             for build in raw_builds
         }
 
@@ -92,9 +105,15 @@ class BuildResolver:
         build_statuses = {}
         # Handle implied tryjobs first, since there are more failure modes.
         if try_builders_to_infer:
-            build_statuses.update(
-                self.fetch_or_trigger_try_jobs(try_builders_to_infer,
-                                               patchset))
+            try_build_statuses = self.fetch_or_trigger_try_jobs(
+                try_builders_to_infer, patchset)
+            build_statuses.update(try_build_statuses)
+            # Re-request completed try builds so that the resolver can check
+            # for interrupted steps.
+            for build, (status, _) in try_build_statuses.items():
+                if build.build_number and status == 'COMPLETED':
+                    self._git_cl.bb_client.add_get_build_req(
+                        build, build_fields=self._build_fields)
         # Find explicit or CI builds.
         build_statuses.update(
             self._build_statuses_from_responses(
@@ -107,10 +126,41 @@ class BuildResolver:
                 'please re-run the tool to fetch new results.')
         return build_statuses
 
-    def fetch_or_trigger_try_jobs(self,
-                                  builders: Collection[str],
-                                  patchset: Optional[int] = None
-                                  ) -> BuildStatuses:
+    def _status_if_interrupted(self, raw_build) -> TryJobStatus:
+        """Map non-browser-related failures to an infrastructue failure status.
+
+        Such failures include shard-level timeouts and early exits caused by
+        exceeding the failure threshold. These failures are opaque to LUCI, but
+        can be discovered from `run_web_tests.py` exit code conventions.
+        """
+        # TODO(crbug.com/1123077): After the switch to wptrunner, stop checking
+        # the `blink_wpt_tests` step.
+        run_web_tests_pattern = re.compile(
+            r'[\w_-]*blink_(web|wpt)_tests.*\(with patch\)[^|]*')
+        for step in raw_build.get('steps', []):
+            if run_web_tests_pattern.fullmatch(step['name']):
+                summary = self._fetch_swarming_summary(step)
+                shards = (summary or {}).get('shards', [])
+                if any(map(_shard_interrupted, shards)):
+                    return TryJobStatus.from_bb_status('INFRA_FAILURE')
+        return TryJobStatus.from_bb_status(raw_build['status'])
+
+    def _fetch_swarming_summary(self,
+                                step,
+                                log_name: str = 'chromium_swarming.summary'):
+        for log in step.get('logs', []):
+            if log['name'] == log_name:
+                with contextlib.suppress(RequestException):
+                    params = {'format': 'raw'}
+                    return self._web.session.get(log['viewUrl'],
+                                                 params=params).json()
+        return None
+
+    def fetch_or_trigger_try_jobs(
+            self,
+            builders: Collection[str],
+            patchset: Optional[int] = None,
+    ) -> BuildStatuses:
         """Fetch or trigger try jobs for the current CL.
 
         Arguments:
@@ -178,3 +228,7 @@ class BuildResolver:
             _log.info(template, build.builder_name,
                       str(build.build_number or '--'), build_statuses[build],
                       build.bucket)
+
+
+def _shard_interrupted(shard) -> bool:
+    return int(shard.get('exit_code', 0)) in exit_codes.ERROR_CODES

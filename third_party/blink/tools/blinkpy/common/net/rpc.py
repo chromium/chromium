@@ -198,14 +198,16 @@ class BuildbucketClient(BaseRPC):
         request = {}
         if build.build_id:
             request['id'] = str(build.build_id)
-        if build.builder_name:
+        elif build.builder_name and build.build_number:
             request['builder'] = {
                 'project': 'chromium',
                 'bucket': build.bucket,
                 'builder': build.builder_name
             }
-        if build.build_number:
             request['buildNumber'] = build.build_number
+        else:
+            raise ValueError('bad GetBuild request: must provide either '
+                             'build ID or (builder and build number)')
         if build_fields:
             # The `builds.*` prefix is not needed for retrieving an individual
             # build.

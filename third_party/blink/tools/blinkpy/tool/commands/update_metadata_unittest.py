@@ -108,6 +108,9 @@ class BaseUpdateMetadataTest(LoggingTestCase):
             yield stack
 
 
+# Do not re-request try build information to check for interrupted steps.
+@patch(
+    'blinkpy.common.net.rpc.BuildbucketClient.execute_batch', lambda self: [])
 @patch('concurrent.futures.ThreadPoolExecutor.map', new=map)
 class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
     """Verify the tool's frontend and build infrastructure interactions."""
