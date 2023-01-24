@@ -169,9 +169,16 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
                           contribution.key()),
                       contribution.value());
                 });
+
+            ai_mojom::AttestationTokenPtr attestation_token =
+                aggregatable_data.attestation_token
+                    ? ai_mojom::AttestationToken::New(
+                          *aggregatable_data.attestation_token)
+                    : nullptr;
+
             return ai_mojom::WebUIReportData::NewAggregatableAttributionData(
                 ai_mojom::WebUIReportAggregatableAttributionData::New(
-                    std::move(contributions)));
+                    std::move(contributions), std::move(attestation_token)));
           },
       },
       report.data());
@@ -515,6 +522,7 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
       GetWebUITriggerStatus(result.event_level_status());
   web_ui_trigger->aggregatable_status =
       GetWebUITriggerStatus(result.aggregatable_status());
+  web_ui_trigger->attestation = trigger.attestation();
 
   for (auto& observer : observers_) {
     observer->OnTriggerHandled(web_ui_trigger.Clone());

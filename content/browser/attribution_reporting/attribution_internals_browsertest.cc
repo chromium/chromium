@@ -23,6 +23,7 @@
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/trigger_attestation.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -899,6 +900,7 @@ IN_PROC_BROWSER_TEST_F(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
           .SetReportTime(now + base::Hours(3))
           .SetAggregatableHistogramContributions(contributions)
+          .SetAttestationToken("abc")
           .BuildAggregatableAttribution(),
       /*is_debug_report=*/false,
       SendResult(SendResult::Status::kSent, net::OK,
@@ -956,7 +958,9 @@ IN_PROC_BROWSER_TEST_F(
               'https://report.test/.well-known/attribution-reporting/report-aggregate-attribution' &&
             table.children[0].children[2]?.innerText === 'Pending' &&
             table.children[0].children[6]?.innerText === '[ {  "key": "0x1",  "value": 2 }]' &&
+            table.children[0].children[7]?.innerText === '' &&
             table.children[1].children[2]?.innerText === 'Sent: HTTP 200' &&
+            table.children[1].children[7]?.innerText === 'abc' &&
             table.children[2].children[2]?.innerText === 'Prohibited by browser policy' &&
             table.children[3].children[2]?.innerText === 'Dropped due to assembly failure' &&
             table.children[4].children[2]?.innerText === 'Network error: ERR_INVALID_REDIRECT' &&
@@ -981,54 +985,60 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        TriggersDisplayed) {
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
-  const base::Time now = base::Time::Now();
-
-  const AttributionTrigger trigger(
-      /*reporting_origin=*/*SuitableOrigin::Deserialize("https://r.test"),
-      attribution_reporting::TriggerRegistration(
-          /*filters=*/*AttributionFilters::Create({{"a", {"b"}}}),
-          /*not_filters=*/*AttributionFilters::Create({{"g", {"h"}}}),
-          /*debug_key=*/1,
-          /*aggregatable_dedup_key=*/18,
-          *attribution_reporting::EventTriggerDataList::Create({
-              attribution_reporting::EventTriggerData(
-                  /*data=*/2,
-                  /*priority=*/3,
-                  /*dedup_key=*/absl::nullopt,
-                  /*filters=*/
-                  *AttributionFilters::Create({{"c", {"d"}}}),
-                  /*not_filters=*/AttributionFilters()),
-              attribution_reporting::EventTriggerData(
-                  /*data=*/4,
-                  /*priority=*/5,
-                  /*dedup_key=*/6,
-                  /*filters=*/AttributionFilters(),
-                  /*not_filters=*/
-                  *AttributionFilters::Create({{"e", {"f"}}})),
-          }),
-          *attribution_reporting::AggregatableTriggerDataList::Create(
-              {*attribution_reporting::AggregatableTriggerData::Create(
-                   /*key_piece=*/345,
-                   /*source_keys=*/{"a"},
-                   /*filters=*/
-                   *AttributionFilters::Create({{"c", {"d"}}}),
-                   /*not_filters=*/AttributionFilters()),
-               *attribution_reporting::AggregatableTriggerData::Create(
-                   /*key_piece=*/678,
-                   /*source_keys=*/{"b"},
-                   /*filters=*/AttributionFilters(),
-                   /*not_filters=*/
-                   *AttributionFilters::Create({{"e", {"f"}}}))}),
-          /*aggregatable_values=*/
-          *attribution_reporting::AggregatableValues::Create(
-              {{"a", 123}, {"b", 456}}),
-          /*debug_reporting=*/false,
-          ::aggregation_service::mojom::AggregationCoordinator::kDefault),
-      *SuitableOrigin::Deserialize("https://d.test"),
-      /*attestation=*/absl::nullopt,
-      /*is_within_fenced_frame=*/false);
+  const auto create_trigger =
+      [](absl::optional<attribution_reporting::TriggerAttestation>
+             attestation) {
+        return AttributionTrigger(
+            /*reporting_origin=*/*SuitableOrigin::Deserialize("https://r.test"),
+            attribution_reporting::TriggerRegistration(
+                /*filters=*/*AttributionFilters::Create({{"a", {"b"}}}),
+                /*not_filters=*/*AttributionFilters::Create({{"g", {"h"}}}),
+                /*debug_key=*/1,
+                /*aggregatable_dedup_key=*/18,
+                *attribution_reporting::EventTriggerDataList::Create({
+                    attribution_reporting::EventTriggerData(
+                        /*data=*/2,
+                        /*priority=*/3,
+                        /*dedup_key=*/absl::nullopt,
+                        /*filters=*/
+                        *AttributionFilters::Create({{"c", {"d"}}}),
+                        /*not_filters=*/AttributionFilters()),
+                    attribution_reporting::EventTriggerData(
+                        /*data=*/4,
+                        /*priority=*/5,
+                        /*dedup_key=*/6,
+                        /*filters=*/AttributionFilters(),
+                        /*not_filters=*/
+                        *AttributionFilters::Create({{"e", {"f"}}})),
+                }),
+                *attribution_reporting::AggregatableTriggerDataList::Create(
+                    {*attribution_reporting::AggregatableTriggerData::Create(
+                         /*key_piece=*/345,
+                         /*source_keys=*/{"a"},
+                         /*filters=*/
+                         *AttributionFilters::Create({{"c", {"d"}}}),
+                         /*not_filters=*/AttributionFilters()),
+                     *attribution_reporting::AggregatableTriggerData::Create(
+                         /*key_piece=*/678,
+                         /*source_keys=*/{"b"},
+                         /*filters=*/AttributionFilters(),
+                         /*not_filters=*/
+                         *AttributionFilters::Create({{"e", {"f"}}}))}),
+                /*aggregatable_values=*/
+                *attribution_reporting::AggregatableValues::Create(
+                    {{"a", 123}, {"b", 456}}),
+                /*debug_reporting=*/false,
+                ::aggregation_service::mojom::AggregationCoordinator::kDefault),
+            *SuitableOrigin::Deserialize("https://d.test"),
+            std::move(attestation),
+            /*is_within_fenced_frame=*/false);
+      };
 
   static constexpr char kScript[] = R"(
+    const expectedAttestation =
+      '<dl><dt>Token</dt><dd>abc</dd>' +
+      '<dt>Report ID</dt><dd>a2ab30b9-d664-4dfc-a9db-85f9729b9a30</dd></dl>';
+
     const table = document.querySelector('#triggerTable')
         .shadowRoot.querySelector('tbody');
     const obs = new MutationObserver((_, obs) => {
@@ -1039,7 +1049,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[0].children[4]?.innerText === 'https://r.test' &&
           table.children[0].children[5]?.innerText.includes('{') &&
           table.children[0].children[6]?.innerText === '' &&
-          table.children[1].children[6]?.innerText === '123') {
+          table.children[0].children[7]?.innerText === '' &&
+          table.children[1].children[6]?.innerText === '123' &&
+          table.children[1].children[7]?.innerHTML === expectedAttestation) {
         obs.disconnect();
         document.title = $1;
       }
@@ -1048,8 +1060,11 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   )";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
+  const base::Time now = base::Time::Now();
+
   auto notify_trigger_handled =
-      [&](AttributionTrigger::EventLevelResult event_status,
+      [&](const AttributionTrigger& trigger,
+          AttributionTrigger::EventLevelResult event_status,
           AttributionTrigger::AggregatableResult aggregatable_status,
           absl::optional<uint64_t> cleared_debug_key = absl::nullopt) {
         static int offset_hours = 0;
@@ -1065,12 +1080,16 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             cleared_debug_key);
       };
 
-  notify_trigger_handled(AttributionTrigger::EventLevelResult::kSuccess,
+  notify_trigger_handled(create_trigger(/*attestation=*/absl::nullopt),
+                         AttributionTrigger::EventLevelResult::kSuccess,
                          AttributionTrigger::AggregatableResult::kSuccess);
 
-  notify_trigger_handled(AttributionTrigger::EventLevelResult::kSuccess,
-                         AttributionTrigger::AggregatableResult::kSuccess,
-                         /*cleared_debug_key=*/123);
+  notify_trigger_handled(
+      create_trigger(attribution_reporting::TriggerAttestation::Create(
+          "abc", "a2ab30b9-d664-4dfc-a9db-85f9729b9a30")),
+      AttributionTrigger::EventLevelResult::kSuccess,
+      AttributionTrigger::AggregatableResult::kSuccess,
+      /*cleared_debug_key=*/123);
 
   // TODO(apaseltiner): Add tests for other statuses.
 

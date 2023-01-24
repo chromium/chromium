@@ -4,6 +4,7 @@
 
 module attribution_internals.mojom;
 
+import "components/attribution_reporting/registration.mojom";
 import "components/attribution_reporting/source_registration_error.mojom";
 import "content/browser/attribution_reporting/attribution_reporting.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
@@ -40,9 +41,14 @@ struct AggregatableHistogramContribution {
   uint32 value;
 };
 
+struct AttestationToken {
+  string value;
+};
+
 // Contains aggregatable attribution data to be displayed.
 struct WebUIReportAggregatableAttributionData {
   array<AggregatableHistogramContribution> contributions;
+  AttestationToken? attestation_token;
 };
 
 union WebUIReportData {
@@ -149,6 +155,7 @@ struct WebUITrigger {
   // simply displayed in the UI, never inspected.
   string registration_json;
   TriggerDebugKey? cleared_debug_key;
+  attribution_reporting.mojom.TriggerAttestation? attestation;
 
   enum Status {
     // Shared statuses:

@@ -11,6 +11,7 @@ import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 import {FailedSourceRegistration, Handler, HandlerInterface, ObserverInterface, ObserverReceiver, ReportID, WebUIDebugReport, WebUIReport, WebUISource, WebUISource_Attributability, WebUISource_DebugReporting, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
 import {AttributionInternalsTableElement} from './attribution_internals_table.js';
 import {ReportType, SourceType} from './attribution_reporting.mojom-webui.js';
+import {TriggerAttestation} from './registration.mojom-webui.js';
 import {SourceRegistrationError} from './source_registration_error.mojom-webui.js';
 import {Column, TableModel} from './table_model.js';
 
@@ -383,6 +384,7 @@ class Trigger {
   clearedDebugKey: string;
   eventLevelStatus: string;
   aggregatableStatus: string;
+  attestation?: TriggerAttestation;
 
   constructor(mojo: WebUITrigger) {
     this.triggerTime = new Date(mojo.triggerTime);
@@ -393,6 +395,25 @@ class Trigger {
         mojo.clearedDebugKey ? `${mojo.clearedDebugKey.value}` : '';
     this.eventLevelStatus = triggerStatusToText(mojo.eventLevelStatus);
     this.aggregatableStatus = triggerStatusToText(mojo.aggregatableStatus);
+    this.attestation = mojo.attestation;
+  }
+}
+
+const ATTESTATION_COLS: Array<Column<TriggerAttestation>> = [
+  new ValueColumn<TriggerAttestation, string>('Token', e => e.token),
+  new ValueColumn<TriggerAttestation, string>(
+      'Report ID', e => e.aggregatableReportId),
+];
+
+class AttestationColumn implements Column<Trigger> {
+  renderHeader(th: HTMLElement) {
+    th.innerText = 'Attestation';
+  }
+
+  render(td: HTMLElement, row: Trigger) {
+    if (row.attestation) {
+      renderDL(td, row.attestation, ATTESTATION_COLS);
+    }
   }
 }
 
@@ -415,6 +436,7 @@ class TriggerTableModel extends TableModel<Trigger> {
               'Registration JSON', (e) => e.registrationJson),
           new ValueColumn<Trigger, string>(
               'Cleared Debug Key', (e) => e.clearedDebugKey),
+          new AttestationColumn(),
         ],
         0,  // Sort by trigger time by default.
         'No triggers.',
@@ -506,6 +528,7 @@ class EventLevelReport extends Report {
 
 class AggregatableAttributionReport extends Report {
   contributions: string;
+  attestationToken: string;
 
   constructor(mojo: WebUIReport) {
     super(mojo);
@@ -513,6 +536,11 @@ class AggregatableAttributionReport extends Report {
     this.contributions = JSON.stringify(
         mojo.data.aggregatableAttributionData!.contributions, bigintReplacer,
         ' ');
+
+    this.attestationToken =
+        mojo.data.aggregatableAttributionData!.attestationToken ?
+        `${mojo.data.aggregatableAttributionData!.attestationToken.value}` :
+        '';
   }
 }
 
@@ -672,6 +700,8 @@ class AggregatableAttributionReportTableModel extends
         [
           new CodeColumn<AggregatableAttributionReport>(
               'Histograms', (e) => e.contributions),
+          new ValueColumn<AggregatableAttributionReport, string>(
+              'Attestation Token', (e) => e.attestationToken),
         ],
         showDebugReportsContainer,
         sendReportsButton,

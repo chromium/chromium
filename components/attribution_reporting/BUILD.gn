@@ -160,6 +160,7 @@ mojom("registration_mojom") {
   sources = [ "registration.mojom" ]
 
   generate_java = true
+  webui_module_path = "/"
 
   deps = [
     "//components/aggregation_service:mojom",

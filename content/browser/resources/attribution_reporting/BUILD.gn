@@ -28,8 +28,11 @@ build_webui("build") {
   attribution_reporting_component_folder = "components/attribution_reporting"
   attribution_reporting_content_folder = "content/browser/attribution_reporting"
   network_folder = "services/network/public/mojom"
+  aggregation_service_folder = "components/aggregation_service"
 
   mojo_files = [
+    "$mojom_folder/$aggregation_service_folder/aggregation_service.mojom-webui.js",
+    "$mojom_folder/$attribution_reporting_component_folder/registration.mojom-webui.js",
     "$mojom_folder/$attribution_reporting_component_folder/source_registration_error.mojom-webui.js",
     "$mojom_folder/$attribution_reporting_content_folder/attribution_internals.mojom-webui.js",
     "$mojom_folder/$attribution_reporting_content_folder/attribution_reporting.mojom-webui.js",
@@ -37,7 +40,9 @@ build_webui("build") {
   ]
 
   mojo_files_deps = [
+    "//$aggregation_service_folder:mojom_js__generator",
     "//$attribution_reporting_component_folder:mojom_js__generator",
+    "//$attribution_reporting_component_folder:registration_mojom_js__generator",
     "//$attribution_reporting_content_folder:internals_mojo_bindings_js__generator",
     "//$attribution_reporting_content_folder:mojo_bindings_js__generator",
     "//$network_folder:mojom_schemeful_site_js__generator",

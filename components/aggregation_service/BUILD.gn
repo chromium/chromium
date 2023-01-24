@@ -6,6 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   generate_java = true
+  webui_module_path = "/"
   sources = [ "aggregation_service.mojom" ]
 }
 
