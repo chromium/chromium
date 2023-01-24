@@ -292,7 +292,7 @@ cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetOrCreatePaintCanvas() {
   return GetPaintCanvas();
 }
 
-cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetPaintCanvas() const {
+cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetPaintCanvas() {
   if (!is_valid_size_ || !GetCanvasResourceProvider())
     return nullptr;
   return GetCanvasResourceProvider()->Canvas();

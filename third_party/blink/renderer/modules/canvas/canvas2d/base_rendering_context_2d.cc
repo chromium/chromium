@@ -1467,7 +1467,7 @@ bool BaseRenderingContext2D::ShouldDrawImageAntialiased(
     const gfx::RectF& dest_rect) const {
   if (!GetState().ShouldAntialias())
     return false;
-  cc::PaintCanvas* c = GetPaintCanvas();
+  const cc::PaintCanvas* c = GetPaintCanvas();
   DCHECK(c);
 
   const SkMatrix& ctm = c->getLocalToDevice().asM33();

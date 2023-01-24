@@ -443,7 +443,7 @@ cc::PaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
   return nullptr;
 }
 
-cc::PaintCanvas* CanvasRenderingContext2D::GetPaintCanvas() const {
+cc::PaintCanvas* CanvasRenderingContext2D::GetPaintCanvas() {
   if (UNLIKELY(isContextLost() || !canvas() ||
                !canvas()->GetCanvas2DLayerBridge() ||
                !canvas()->GetCanvas2DLayerBridge()->ResourceProvider()))

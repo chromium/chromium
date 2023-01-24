@@ -265,7 +265,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   virtual Color GetCurrentColor() const = 0;
 
   virtual cc::PaintCanvas* GetOrCreatePaintCanvas() = 0;
-  virtual cc::PaintCanvas* GetPaintCanvas() const = 0;
+  const cc::PaintCanvas* GetPaintCanvas() const {
+    return const_cast<BaseRenderingContext2D*>(this)->GetPaintCanvas();
+  }
+  virtual cc::PaintCanvas* GetPaintCanvas() = 0;
   virtual cc::PaintCanvas* GetPaintCanvasForDraw(
       const SkIRect& dirty_rect,
       CanvasPerformanceMonitor::DrawType) = 0;

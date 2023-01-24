@@ -178,7 +178,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   Color GetCurrentColor() const final;
 
   cc::PaintCanvas* GetOrCreatePaintCanvas() final;
-  cc::PaintCanvas* GetPaintCanvas() const final;
+  cc::PaintCanvas* GetPaintCanvas() final;
   cc::PaintCanvas* GetPaintCanvasForDraw(
       const SkIRect& dirty_rect,
       CanvasPerformanceMonitor::DrawType) final;

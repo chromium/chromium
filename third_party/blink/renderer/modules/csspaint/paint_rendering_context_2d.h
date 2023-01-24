@@ -60,7 +60,7 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   Color GetCurrentColor() const final;
 
   cc::PaintCanvas* GetOrCreatePaintCanvas() final { return GetPaintCanvas(); }
-  cc::PaintCanvas* GetPaintCanvas() const final;
+  cc::PaintCanvas* GetPaintCanvas() final;
   cc::PaintCanvas* GetPaintCanvasForDraw(
       const SkIRect&,
       CanvasPerformanceMonitor::DrawType) final;
