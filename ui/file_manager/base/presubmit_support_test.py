@@ -100,15 +100,17 @@ class NoDirectLitImportPresubmit(unittest.TestCase):
             "import {aaa} from 'a.js';"
             "import {css} from 'chrome://resources/mwc/lit/index.js';"
         ]
-        foo_ts = MockFile(os.path.join('some', 'path', 'foo.ts'), lines)
-        foo_js = MockFile(os.path.join('some', 'path', 'foo.js'), lines)
+        ts_path = os.path.join('some', 'path', 'foo.ts')
+        js_path = os.path.join('some', 'path', 'foo.js')
+        foo_ts = MockFile(ts_path, lines)
+        foo_js = MockFile(js_path, lines)
         self.mock_input_api.files.append(foo_ts)
         self.mock_input_api.files.append(foo_js)
         errors = _CheckNoDirectLitImport(self.mock_input_api,
                                          self.mock_output_api)
         self.assertEqual(2, len(errors))
-        self.assertTrue('some/path/foo.ts:1' in errors[0].message)
-        self.assertTrue('some/path/foo.js:1' in errors[1].message)
+        self.assertTrue(ts_path + ':1' in errors[0].message)
+        self.assertTrue(js_path + ':1' in errors[1].message)
 
     def testNoWarningWithDirectLitImportInXfBase(self):
         """
