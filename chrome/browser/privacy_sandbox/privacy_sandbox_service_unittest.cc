@@ -17,6 +17,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/scoped_mock_first_party_sets_handler.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -28,6 +29,7 @@
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/policy/core/common/mock_policy_service.h"
+#include "components/policy/policy_constants.h"
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/mock_privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -96,6 +98,10 @@ using privacy_sandbox_test_util::InputKey;
 constexpr auto kTopicsToggleNewValue = InputKey::kTopicsToggleNewValue;
 constexpr auto kTopicsConfirmationDecisionConfirmed =
     InputKey::kTopicsConfirmationDecisionConfirmed;
+constexpr auto kTopFrameOrigin = InputKey::kTopFrameOrigin;
+constexpr auto kAdMeasurementReportingOrigin =
+    InputKey::kAdMeasurementReportingOrigin;
+constexpr auto kFledgeAuctionPartyOrigin = InputKey::kFledgeAuctionPartyOrigin;
 
 // using enum privacy_sandbox_test_util::TestOutput;
 using privacy_sandbox_test_util::OutputKey;
@@ -3105,6 +3111,13 @@ class PrivacySandboxServiceM1Test : public PrivacySandboxServiceTest {
         privacy_sandbox_settings(), &service_wrapper, user_provider_raw,
         managed_provider_raw, TestCase(test_state, test_input, test_output));
   }
+
+  void DisablePrivacySandboxPromptEnabledPolicy() {
+    prefs()->SetManagedPref(
+        prefs::kPrivacySandboxM1PromptSuppressed,
+        base::Value(static_cast<int>(
+            PrivacySandboxService::PromptSuppressedReason::kPolicy)));
+  }
 };
 
 TEST_F(PrivacySandboxServiceM1Test, TopicsConsentDefault) {
@@ -3282,7 +3295,7 @@ TEST_F(PrivacySandboxServiceM1Test, TopicsConsentConfirmation_Declined) {
 }
 
 TEST_F(PrivacySandboxServiceM1Test,
-       RecordPrivacySandbox4StartupMetrics_PromptSuppressed) {
+       RecordPrivacySandbox4StartupMetrics_PromptSuppressed_Explicitly) {
   base::HistogramTester histogram_tester;
   const std::string privacy_sandbox_prompt_startup_histogram =
       "Settings.PrivacySandbox.PromptStartupState";
@@ -3334,6 +3347,28 @@ TEST_F(PrivacySandboxServiceM1Test,
   prefs()->SetInteger(
       prefs::kPrivacySandboxM1PromptSuppressed,
       static_cast<int>(PrivacySandboxService::PromptSuppressedReason::kPolicy));
+  privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
+  histogram_tester.ExpectBucketCount(
+      privacy_sandbox_prompt_startup_histogram,
+      static_cast<int>(PrivacySandboxService::PromptStartupState::
+                           kPromptNotShownDueToManagedState),
+      /*expected_count=*/1);
+}
+
+TEST_F(PrivacySandboxServiceM1Test,
+       RecordPrivacySandbox4StartupMetrics_PromptSuppressed_Implicitly) {
+  base::HistogramTester histogram_tester;
+  const std::string privacy_sandbox_prompt_startup_histogram =
+      "Settings.PrivacySandbox.PromptStartupState";
+
+  // Ensure prompt not suppressed.
+  prefs()->SetInteger(
+      prefs::kPrivacySandboxM1PromptSuppressed,
+      static_cast<int>(PrivacySandboxService::PromptSuppressedReason::kNone));
+
+  // Disable one of the K-APIs.
+  prefs()->SetManagedPref(prefs::kPrivacySandboxM1TopicsEnabled,
+                          base::Value(false));
   privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
   histogram_tester.ExpectBucketCount(
       privacy_sandbox_prompt_startup_histogram,
@@ -3830,4 +3865,59 @@ TEST_F(PrivacySandboxServiceM1NoticePromptTest, PromptAction_OpenSettings) {
                          {OutputKey::kM1TopicsEnabled, true},
                          {OutputKey::kM1FledgeEnabled, true},
                          {OutputKey::kM1AdMeasurementEnabled, true}});
+}
+
+TEST_F(PrivacySandboxServiceM1Test, DisablePrivacySandboxPromptPolicy) {
+  // Disable the prompt via policy and check the returned prompt type is kNone.
+  RunTestCase(
+      TestState{{StateKey::kM1PromptDisabledByPolicy,
+                 static_cast<int>(
+                     PrivacySandboxService::PromptSuppressedReason::kPolicy)}},
+      TestInput{{InputKey::kForceChromeBuild, true}},
+      TestOutput{
+          {OutputKey::kPromptType, static_cast<int>(PromptType::kNone)}});
+}
+
+TEST_F(PrivacySandboxServiceM1Test, DisablePrivacySandboxTopicsPolicy) {
+  // Disable the Topics api via policy and check the returned prompt type is
+  // kNone and topics is not allowed.
+  RunTestCase(
+      TestState{{StateKey::kM1TopicsDisabledByPolicy, true}},
+      TestInput{{InputKey::kForceChromeBuild, true}},
+      TestOutput{{OutputKey::kPromptType, static_cast<int>(PromptType::kNone)},
+                 {OutputKey::kM1PromptSuppressedReason,
+                  static_cast<int>(PromptSuppressedReason::kNone)},
+                 {OutputKey::kIsTopicsAllowed, false}});
+}
+
+TEST_F(PrivacySandboxServiceM1Test, DisablePrivacySandboxFledgePolicy) {
+  // Disable the Fledge api via policy and check the returned prompt type is
+  // kNone and fledge is not allowed.
+  RunTestCase(
+      TestState{{StateKey::kM1FledgeDisabledByPolicy, true}},
+      TestInput{
+          {InputKey::kForceChromeBuild, true},
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kFledgeAuctionPartyOrigin,
+           url::Origin::Create(GURL("https://embedded.com"))}},
+      TestOutput{{OutputKey::kPromptType, static_cast<int>(PromptType::kNone)},
+                 {OutputKey::kM1PromptSuppressedReason,
+                  static_cast<int>(PromptSuppressedReason::kNone)},
+                 {OutputKey::kIsFledgeAllowed, false}});
+}
+
+TEST_F(PrivacySandboxServiceM1Test, DisablePrivacySandboxAdMeasurementPolicy) {
+  // Disable the ad measurement api via policy and check the returned prompt
+  // type is kNone and the api is not allowed.
+  RunTestCase(
+      TestState{{StateKey::kM1AdMesaurementDisabledByPolicy, true}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kAdMeasurementReportingOrigin,
+           url::Origin::Create(GURL("https://embedded.com"))},
+          {InputKey::kForceChromeBuild, true}},
+      TestOutput{{OutputKey::kPromptType, static_cast<int>(PromptType::kNone)},
+                 {OutputKey::kM1PromptSuppressedReason,
+                  static_cast<int>(PromptSuppressedReason::kNone)},
+                 {OutputKey::kIsAttributionReportingAllowed, false}});
 }

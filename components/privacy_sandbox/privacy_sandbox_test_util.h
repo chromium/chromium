@@ -97,6 +97,10 @@ enum class StateKey {
   kM1EEANoticeAcknowledged = 17,
   kM1RowNoticeAcknowledged = 18,
   kM1PromptSuppressedReason = 19,
+  kM1PromptDisabledByPolicy = 20,
+  kM1TopicsDisabledByPolicy = 21,
+  kM1FledgeDisabledByPolicy = 22,
+  kM1AdMesaurementDisabledByPolicy = 23,
 };
 
 // Defines the input to the functions under test.

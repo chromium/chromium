@@ -629,7 +629,15 @@ void PrivacySandboxService::RecordPrivacySandbox4StartupMetrics() {
     }
   }
 
-  // Prompt was not suppressed at this point.
+  // Prompt was not suppressed explicitly at this point.
+
+  // Check if prompt was suppressed implicitly.
+  if (IsM1PrivacySandboxEffectivelyManaged(pref_service_)) {
+    base::UmaHistogramEnumeration(
+        privacy_sandbox_prompt_startup_histogram,
+        PromptStartupState::kPromptNotShownDueToManagedState);
+    return;
+  }
 
   // EEA
   if (privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get()) {
@@ -1237,6 +1245,12 @@ PrivacySandboxService::GetRequiredPromptTypeInternalM1(
     return PromptType::kNone;
   }
 
+  // If an Admin controls any of the K-APIs or suppresses the prompt explicitly
+  // then don't show the prompt.
+  if (IsM1PrivacySandboxEffectivelyManaged(pref_service)) {
+    return PromptType::kNone;
+  }
+
   if (pref_service->GetBoolean(prefs::kPrivacySandboxConsentDecisionMade) ||
       pref_service->GetBoolean(prefs::kPrivacySandboxNoticeDisplayed)) {
     // If during the trials a previous consent decision was made, or the notice
@@ -1546,4 +1560,23 @@ void PrivacySandboxService::OnAdMeasurementPrefChanged() {
                 DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL,
         content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB);
   }
+}
+
+// static
+bool PrivacySandboxService::IsM1PrivacySandboxEffectivelyManaged(
+    PrefService* pref_service) {
+  bool is_prompt_suppressed_by_policy =
+      pref_service->IsManagedPreference(
+          prefs::kPrivacySandboxM1PromptSuppressed) &&
+      static_cast<int>(
+          PrivacySandboxService::PromptSuppressedReason::kPolicy) ==
+          pref_service->GetInteger(prefs::kPrivacySandboxM1PromptSuppressed);
+
+  return is_prompt_suppressed_by_policy ||
+         pref_service->IsManagedPreference(
+             prefs::kPrivacySandboxM1TopicsEnabled) ||
+         pref_service->IsManagedPreference(
+             prefs::kPrivacySandboxM1FledgeEnabled) ||
+         pref_service->IsManagedPreference(
+             prefs::kPrivacySandboxM1AdMeasurementEnabled);
 }

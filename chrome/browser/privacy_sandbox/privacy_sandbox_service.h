@@ -362,7 +362,10 @@ class PrivacySandboxService : public KeyedService {
                            FirstPartySetsDisabledMetric);
   FRIEND_TEST_ALL_PREFIXES(
       PrivacySandboxServiceM1Test,
-      RecordPrivacySandbox4StartupMetrics_PromptSuppressed);
+      RecordPrivacySandbox4StartupMetrics_PromptSuppressed_Explicitly);
+  FRIEND_TEST_ALL_PREFIXES(
+      PrivacySandboxServiceM1Test,
+      RecordPrivacySandbox4StartupMetrics_PromptSuppressed_Implicitly);
   FRIEND_TEST_ALL_PREFIXES(
       PrivacySandboxServiceM1Test,
       RecordPrivacySandbox4StartupMetrics_PromptNotSuppressed_EEA);
@@ -568,6 +571,10 @@ class PrivacySandboxService : public KeyedService {
 
   // Called when the Ad measurement preference is changed.
   void OnAdMeasurementPrefChanged();
+
+  // Returns true if _any_ of the k-API prefs are disabled via policy or
+  // the prompt was suppressed via policy.
+  static bool IsM1PrivacySandboxEffectivelyManaged(PrefService* pref_service);
 
   bool force_chrome_build_for_tests_ = false;
 

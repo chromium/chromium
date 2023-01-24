@@ -236,6 +236,39 @@ void ApplyTestState(
           base::Value(GetItemValue<int>(value)));
       return;
     }
+    case (StateKey::kM1PromptDisabledByPolicy): {
+      SCOPED_TRACE("State Setup: M1 prompt disabled by policy");
+      testing_pref_service->SetManagedPref(
+          prefs::kPrivacySandboxM1PromptSuppressed,
+          base::Value(GetItemValue<int>(value)));
+      EXPECT_TRUE(testing_pref_service->IsManagedPreference(
+          prefs::kPrivacySandboxM1PromptSuppressed));
+      return;
+    }
+    case (StateKey::kM1TopicsDisabledByPolicy): {
+      SCOPED_TRACE("State Setup: M1 topics disabled by policy");
+      testing_pref_service->SetManagedPref(
+          prefs::kPrivacySandboxM1TopicsEnabled, base::Value(false));
+      EXPECT_TRUE(testing_pref_service->IsManagedPreference(
+          prefs::kPrivacySandboxM1TopicsEnabled));
+      return;
+    }
+    case (StateKey::kM1FledgeDisabledByPolicy): {
+      SCOPED_TRACE("State Setup: M1 fledge disabled by policy");
+      testing_pref_service->SetManagedPref(
+          prefs::kPrivacySandboxM1FledgeEnabled, base::Value(false));
+      EXPECT_TRUE(testing_pref_service->IsManagedPreference(
+          prefs::kPrivacySandboxM1FledgeEnabled));
+      return;
+    }
+    case (StateKey::kM1AdMesaurementDisabledByPolicy): {
+      SCOPED_TRACE("State Setup: M1 ad measurement disabled by policy");
+      testing_pref_service->SetManagedPref(
+          prefs::kPrivacySandboxM1AdMeasurementEnabled, base::Value(false));
+      EXPECT_TRUE(testing_pref_service->IsManagedPreference(
+          prefs::kPrivacySandboxM1AdMeasurementEnabled));
+      return;
+    }
     default:
       NOTREACHED();
   }
