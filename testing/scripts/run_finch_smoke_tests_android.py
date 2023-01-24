@@ -906,8 +906,10 @@ class WebViewFinchTestCase(FinchTestCase):
       # because it is the first version of WebView that contains
       # crrev.com/c/4076271.
       webview_update = self._device.GetWebViewUpdateServiceDump()
-      check_for_vlog = _is_version_greater_than_or_equal(
-          webview_update['CurrentWebViewVersion'], '110.0.5463.0')
+      check_for_vlog = ('CurrentWebViewVersion' in webview_update and
+                        _is_version_greater_than_or_equal(
+                            webview_update['CurrentWebViewVersion'],
+                            '110.0.5463.0'))
       field_trial_check_name = 'check_for_logged_field_trials'
 
       if check_for_vlog:
