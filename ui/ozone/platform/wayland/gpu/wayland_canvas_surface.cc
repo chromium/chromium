@@ -27,7 +27,7 @@ namespace ui {
 namespace {
 
 // The maximum number of buffers we allow to be created.
-constexpr uint32_t kMaxNumbferOfBuffers = 3;
+constexpr size_t kMaxNumberOfBuffers = 3;
 
 }  // namespace
 
@@ -39,10 +39,8 @@ size_t CalculateStride(int width) {
 
 class WaylandCanvasSurface::SharedMemoryBuffer {
  public:
-  SharedMemoryBuffer(gfx::AcceleratedWidget widget,
-                     WaylandBufferManagerGpu* buffer_manager)
+  explicit SharedMemoryBuffer(WaylandBufferManagerGpu* buffer_manager)
       : buffer_id_(buffer_manager->AllocateBufferID()),
-        widget_(widget),
         buffer_manager_(buffer_manager) {
     DCHECK(buffer_manager_);
   }
@@ -99,12 +97,6 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
     dirty_region_.setRect(gfx::RectToSkIRect(gfx::Rect(size)));
   }
 
-  void CommitBuffer(const gfx::Rect& damage, float buffer_scale) {
-    buffer_manager_->CommitBuffer(widget_, buffer_id_, /*frame_id*/ buffer_id_,
-                                  frame_data_, gfx::Rect(size_),
-                                  gfx::RoundedCornersF(), buffer_scale, damage);
-  }
-
   void OnUse() {
     DCHECK(!used_);
     used_ = true;
@@ -143,8 +135,6 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
     return pending_damage_region_;
   }
 
-  void set_frame_data(const gfx::FrameData& data) { frame_data_ = data; }
-
  private:
   // The size of the buffer.
   gfx::Size size_;
@@ -154,9 +144,6 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
 
   // Whether this buffer is currently being used.
   bool used_ = false;
-
-  // The widget this buffer is created for.
-  const gfx::AcceleratedWidget widget_;
 
   // Non-owned pointer to the buffer manager on the gpu process/thread side.
   const raw_ptr<WaylandBufferManagerGpu> buffer_manager_;
@@ -172,9 +159,6 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
 
   // Pending damage region if the buffer is pending to be submitted.
   gfx::Rect pending_damage_region_;
-
-  // Frame data.
-  gfx::FrameData frame_data_;
 };
 
 class WaylandCanvasSurface::VSyncProvider : public gfx::VSyncProvider {
@@ -212,6 +196,28 @@ class WaylandCanvasSurface::VSyncProvider : public gfx::VSyncProvider {
   base::WeakPtr<WaylandCanvasSurface> surface_;
 };
 
+WaylandCanvasSurface::PendingFrame::PendingFrame(
+    uint32_t frame_id,
+    const gfx::Size& surface_size,
+    SwapBuffersCallback callback,
+    gfx::FrameData frame_data,
+    SharedMemoryBuffer* frame_buffer)
+    : frame_id(frame_id),
+      surface_size(surface_size),
+      swap_ack_callback(std::move(callback)),
+      data(std::move(frame_data)),
+      frame_buffer(frame_buffer) {
+  // The frame might be invalid if there is no frame buffer. However, if there
+  // is a buffer, it must be marked as used.
+  DCHECK(!frame_buffer || frame_buffer->used());
+}
+
+WaylandCanvasSurface::PendingFrame::~PendingFrame() {
+  if (swap_ack_callback) {
+    std::move(swap_ack_callback).Run(surface_size);
+  }
+}
+
 WaylandCanvasSurface::WaylandCanvasSurface(
     WaylandBufferManagerGpu* buffer_manager,
     gfx::AcceleratedWidget widget)
@@ -235,11 +241,9 @@ SkCanvas* WaylandCanvasSurface::GetCanvas() {
   }
 
   if (!pending_buffer_) {
-    if (buffers_.size() >= kMaxNumbferOfBuffers) {
-      // We have achieved the maximum number of buffers we can create. Wait for
-      // a free buffer.
-      return nullptr;
-    }
+    // It must be impossible that the maximum number of buffers that can be
+    // created is achieved.
+    DCHECK_LE(buffers_.size(), kMaxNumberOfBuffers);
     auto buffer = CreateSharedMemoryBuffer();
     pending_buffer_ = buffer.get();
     buffers_.push_back(std::move(buffer));
@@ -259,10 +263,20 @@ void WaylandCanvasSurface::ResizeCanvas(const gfx::Size& viewport_size,
   // the new size still fits (but still reallocate if the new size is much
   // smaller than the old size).
   buffers_.clear();
-  current_buffer_ = nullptr;
   previous_buffer_ = nullptr;
   pending_buffer_ = nullptr;
-  unsubmitted_buffers_.clear();
+
+  // First clear submitted frame, which will execute the pending swap ack
+  // callback and only then clear unsubmitted ones. This helps to preserve order
+  // of swap ack callbacks.
+  submitted_frame_.reset();
+
+  // We must preserve FIFO. Thus, manually destroy pending frames.
+  for (auto& frame : unsubmitted_frames_) {
+    frame.reset();
+  }
+  unsubmitted_frames_.clear();
+
   size_ = viewport_size;
   viewport_scale_ = scale;
 }
@@ -280,16 +294,12 @@ bool WaylandCanvasSurface::SupportsAsyncBufferSwap() const {
 
 void WaylandCanvasSurface::OnSwapBuffers(SwapBuffersCallback swap_ack_callback,
                                          gfx::FrameData data) {
-  if (pending_buffer_) {
-    pending_buffer_->set_frame_data(data);
-    unsubmitted_buffers_.push_back(pending_buffer_);
-    pending_buffer_ = nullptr;
-  }
+  unsubmitted_frames_.push_back(std::make_unique<PendingFrame>(
+      next_frame_id(), size_, std::move(swap_ack_callback), std::move(data),
+      pending_buffer_));
+  pending_buffer_ = nullptr;
 
-  if (!unsubmitted_buffers_.empty())
-    ProcessUnsubmittedBuffers();
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(swap_ack_callback), size_));
+  MaybeProcessUnsubmittedFrames();
 }
 
 std::unique_ptr<gfx::VSyncProvider>
@@ -302,64 +312,82 @@ bool WaylandCanvasSurface::SupportsOverridePlatformSize() const {
   return true;
 }
 
-void WaylandCanvasSurface::ProcessUnsubmittedBuffers() {
-  DCHECK(!unsubmitted_buffers_.empty() && unsubmitted_buffers_.front()->used());
-
-  // Don't submit a new buffer if there's one already submitted being
+void WaylandCanvasSurface::MaybeProcessUnsubmittedFrames() {
+  // Don't submit a new frame if there's one already submitted being
   // processed.
-  if (current_buffer_)
+  if (submitted_frame_ || unsubmitted_frames_.empty()) {
     return;
+  }
 
-  current_buffer_ = std::move(unsubmitted_buffers_.front());
-  unsubmitted_buffers_.erase(unsubmitted_buffers_.begin());
+  auto frame = std::move(unsubmitted_frames_.front());
+  unsubmitted_frames_.erase(unsubmitted_frames_.begin());
 
-  gfx::Rect damage = current_buffer_->pending_damage_region();
+  auto* frame_buffer = frame->frame_buffer.get();
+  // There was no frame buffer associated with this frame. Skip that and process
+  // the next frame.
+  if (!frame_buffer) {
+    // Reset the frame so that it executes the swap ack callback.
+    frame.reset();
+    MaybeProcessUnsubmittedFrames();
+    return;
+  }
+
+  gfx::Rect damage = frame_buffer->pending_damage_region();
 
   // The buffer has been updated. Thus, the |damage| can be subtracted
   // from its dirty region.
-  current_buffer_->UpdateDirtyRegion(damage, SkRegion::kDifference_Op);
+  frame_buffer->UpdateDirtyRegion(damage, SkRegion::kDifference_Op);
 
   // Make sure the buffer is up-to-date by copying the outdated region from
   // the previous buffer.
-  if (previous_buffer_ && previous_buffer_ != current_buffer_)
-    current_buffer_->CopyDirtyRegionFrom(previous_buffer_);
+  if (previous_buffer_ && previous_buffer_ != frame_buffer) {
+    frame_buffer->CopyDirtyRegionFrom(previous_buffer_);
+  }
 
-  // As long as the |current_buffer_| has been updated, add dirty region to
+  // As long as the current frame's buffer has been updated, add dirty region to
   // other buffers to make sure their regions will be updated with up-to-date
   // content.
   for (auto& buffer : buffers_) {
-    if (buffer.get() != current_buffer_)
+    if (buffer.get() != frame_buffer) {
       buffer->UpdateDirtyRegion(damage, SkRegion::kUnion_Op);
+    }
   }
 
-  current_buffer_->CommitBuffer(damage, viewport_scale_);
+  buffer_manager_->CommitBuffer(
+      widget_, frame->frame_id, frame_buffer->buffer_id(),
+      std::move(frame->data), gfx::Rect(size_), gfx::RoundedCornersF(),
+      viewport_scale_, damage);
+
+  submitted_frame_ = std::move((frame));
 }
 
 void WaylandCanvasSurface::OnSubmission(uint32_t frame_id,
                                         const gfx::SwapResult& swap_result,
                                         gfx::GpuFenceHandle release_fence) {
   DCHECK(release_fence.is_null());
-  // We may get an OnSubmission callback for a buffer that was submitted
-  // before a ResizeCanvas call, which clears all our buffers. Check to
-  // see if we still know about this buffer. If we know about this buffer
-  // it must be |current_buffer_| because we only submit new buffers when
-  // |current_buffer_| is nullptr, and it is only set to nullptr in
-  // |OnSubmission| and |ResizeCanvas|. In |ResizeCanvas|, |buffers_| is cleared
-  // so we will not know about |frame_id|.
-  if (!base::Contains(buffers_, frame_id, &SharedMemoryBuffer::buffer_id))
+  // We may get an OnSubmission callback for a frame that was submitted
+  // before a ResizeCanvas call, which clears all our submitted frame. Check to
+  // see if we still know about this frame. If we know about this frame
+  // it must have the same |frame_id| because we only submit new frames when
+  // |submitted_frame_| is nullptr, and it is only set to nullptr in
+  // |OnSubmission| and |ResizeCanvas|. In |ResizeCanvas|, |submitted_frame_|
+  // is cleared so we will not know about |frame_id|. In addition to that, if
+  // the frame_id is stale, the gpu process may have just recovered from a crash
+  // so this frame_id can also be ignored.
+  if (!submitted_frame_ || submitted_frame_->frame_id != frame_id) {
     return;
+  }
 
-  DCHECK(current_buffer_);
-  DCHECK_EQ(current_buffer_->buffer_id(), frame_id);
+  DCHECK_EQ(size_, submitted_frame_->surface_size);
 
   if (previous_buffer_)
     previous_buffer_->OnRelease();
 
-  previous_buffer_ = current_buffer_;
-  current_buffer_ = nullptr;
+  previous_buffer_ = submitted_frame_->frame_buffer;
+  // The frame will automatically execute the swap ack callback on destruction.
+  submitted_frame_.reset();
 
-  if (!unsubmitted_buffers_.empty())
-    ProcessUnsubmittedBuffers();
+  MaybeProcessUnsubmittedFrames();
 }
 
 void WaylandCanvasSurface::OnPresentation(
@@ -374,8 +402,7 @@ std::unique_ptr<WaylandCanvasSurface::SharedMemoryBuffer>
 WaylandCanvasSurface::CreateSharedMemoryBuffer() {
   DCHECK(!size_.IsEmpty());
 
-  auto canvas_buffer =
-      std::make_unique<SharedMemoryBuffer>(widget_, buffer_manager_);
+  auto canvas_buffer = std::make_unique<SharedMemoryBuffer>(buffer_manager_);
   canvas_buffer->Initialize(size_);
   return canvas_buffer;
 }
