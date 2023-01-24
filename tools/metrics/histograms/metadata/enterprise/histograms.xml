@@ -137,9 +137,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentBucketDownloadTime{EnterpriseAutoEnrollmentType}"
-    units="ms" expires_after="2023-07-10">
+    units="ms" expires_after="2023-12-01">
   <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Duration of the bucket download part of the auto-enrollment protocol.
     {EnterpriseAutoEnrollmentType}
@@ -153,9 +154,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.AutoEnrollmentControllerTimeout"
     enum="EnterpriseAutoEnrollmentControllerTimeoutReport"
-    expires_after="2023-07-09">
+    expires_after="2023-12-01">
   <owner>vsavu@google.com</owner>
   <owner>igorcov@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Count the number of timeouts and successes for AutoEnrollmentController.
   </summary>
@@ -163,9 +165,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentHashDanceSuccessTime{EnterpriseAutoEnrollmentType}"
-    units="ms" expires_after="2023-07-10">
+    units="ms" expires_after="2023-12-01">
   <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Duration of the hash dance to determine enrollment state of the device. Only
     recorded if the hash dance finished successfully.
@@ -176,9 +179,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.AutoEnrollmentPrivateSetMembershipSuccessTime"
-    units="ms" expires_after="2023-07-10">
+    units="ms" expires_after="2023-12-01">
   <owner>sergiyb@google.com</owner>
   <owner>mpolzer@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Duration of the private set membership request to determine enrollment state
     of the device. Only recorded if it finished successfully.
@@ -190,9 +194,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentProtocolTime{EnterpriseAutoEnrollmentType}"
-    units="ms" expires_after="2023-07-10">
+    units="ms" expires_after="2023-12-01">
   <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Total duration time of the auto-enrollment protocol.
     {EnterpriseAutoEnrollmentType}
@@ -206,9 +211,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentPsmDmServerRequestStatus{EnterpriseAutoEnrollmentType}"
-    enum="EnterpriseDeviceManagementStatus" expires_after="2023-07-10">
+    enum="EnterpriseDeviceManagementStatus" expires_after="2023-12-01">
   <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Device management server request status for auto-enrollment PSM requests.
     {EnterpriseAutoEnrollmentType}
@@ -224,9 +230,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentPsmRequestNetworkErrorCode{EnterpriseAutoEnrollmentType}"
-    enum="NetErrorCodes" expires_after="2023-07-10">
+    enum="NetErrorCodes" expires_after="2023-12-01">
   <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Network error code (if applicable) for auto-enrollment PSM requests.
     {EnterpriseAutoEnrollmentType}
@@ -242,11 +249,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentPsmResult{EnterpriseAutoEnrollmentType}"
-    enum="PsmResult" expires_after="2023-07-10">
+    enum="PsmResult" expires_after="2023-12-01">
   <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
-    All possible PSM protocol results after it has executed succcessfully or
+    All possible PSM protocol results after it has executed successfully or
     terminated due to an error or timeout. This request is used to determine the
     initial enrollment state of the device. {EnterpriseAutoEnrollmentType}
 
@@ -261,9 +269,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentRequestNetworkErrorCode{EnterpriseAutoEnrollmentType}"
-    enum="NetErrorCodes" expires_after="2023-07-10">
+    enum="NetErrorCodes" expires_after="2023-12-01">
   <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Network error code (if applicable) for auto-enrollment requests.
     {EnterpriseAutoEnrollmentType}
@@ -277,9 +286,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentRequestStatus{EnterpriseAutoEnrollmentType}"
-    enum="EnterpriseDeviceManagementStatus" expires_after="2023-07-10">
+    enum="EnterpriseDeviceManagementStatus" expires_after="2023-12-01">
   <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     URL fetcher status for auto-enrollment requests.
     {EnterpriseAutoEnrollmentType}
@@ -498,9 +508,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceLocalAccountPolicyInvalidations2"
-    enum="EnterprisePolicyInvalidations" expires_after="2023-03-01">
+    enum="EnterprisePolicyInvalidations" expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events for counting device local account policy invalidations received with
     and without payloads. Invalidations indicate that a policy has been updated
@@ -513,9 +523,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceLocalAccountPolicyRefresh3"
-    enum="EnterprisePolicyRefresh" expires_after="2023-03-01">
+    enum="EnterprisePolicyRefresh" expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events measuring effectiveness of refreshing device local account policy
     when invalidations are received from a service. For each refresh, indicates
@@ -528,9 +538,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DevicePolicyInvalidations2"
-    enum="EnterprisePolicyInvalidations" expires_after="2023-03-01">
+    enum="EnterprisePolicyInvalidations" expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events for counting device policy invalidations received with and without
     payloads. Invalidations indicate that a policy has been updated and should
@@ -544,9 +554,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DevicePolicyRefresh3"
-    enum="EnterprisePolicyRefresh" expires_after="2023-07-02">
+    enum="EnterprisePolicyRefresh" expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events measuring effectiveness of refreshing device policy when
     invalidations are received from a service. For each refresh, indicates
@@ -641,9 +651,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.DeviceRemoteCommand.Executed{Enterprise_RemoteCommandType}"
-    enum="RemoteCommandExecutionStatus" expires_after="2023-03-01">
+    enum="RemoteCommandExecutionStatus" expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events for counting status of executed device remote commands. The metric
     includes only signed device remote commands. Reports a final status of
@@ -657,9 +667,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceRemoteCommand.Received"
-    enum="RemoteCommandReceivedStatus" expires_after="2023-07-02">
+    enum="RemoteCommandReceivedStatus" expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events for counting received device remote commands. The metric includes
     signed device remote commands, both valid and invalid. Valid remote command
@@ -669,9 +679,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceRemoteCommandInvalidations"
-    enum="EnterprisePolicyInvalidations" expires_after="2023-03-01">
+    enum="EnterprisePolicyInvalidations" expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events for counting device remote commands invalidations received with and
     without payloads. Invalidations indicate that there is a remote command to
@@ -686,7 +696,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSettings.MissingPolicyMitigated"
-    enum="BooleanSuccess" expires_after="2023-11-30">
+    enum="BooleanSuccess" expires_after="2023-12-01">
   <owner>rbock@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <owner>managed-devices@google.com</owner>
@@ -698,7 +708,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSettings.UpdatedStatus"
-    enum="DeviceSettingsStatus" expires_after="2023-11-30">
+    enum="DeviceSettingsStatus" expires_after="2023-12-01">
   <owner>rbock@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <owner>managed-devices@google.com</owner>
@@ -1543,7 +1553,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DMServerRequestSuccess{EnterpriseDMServerRequest}"
-    enum="EnterpriseDMServerRequestSuccess" expires_after="2023-11-30">
+    enum="EnterpriseDMServerRequestSuccess" expires_after="2023-12-01">
   <owner>rbock@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <owner>managed-devices@google.com</owner>
@@ -1662,7 +1672,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrolledDevicePolicyPresent" enum="Boolean"
-    expires_after="2023-06-04">
+    expires_after="2023-12-01">
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -1714,7 +1724,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Enterprise.EnrollmentAttestationBased.EnrollmentCertificateStatus.InitialAttempt"
     enum="EnrollmentAttestationBasedCertificateStatus"
-    expires_after="2023-07-02">
+    expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -1730,7 +1740,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Enterprise.EnrollmentAttestationBased.EnrollmentCertificateStatus.SubsequentAttempt"
     enum="EnrollmentAttestationBasedCertificateStatus"
-    expires_after="2023-03-01">
+    expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -1747,6 +1757,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-07-09">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events related to forced re-enrollment (FRE) of Chrome OS devices.
   </summary>
@@ -1756,6 +1767,7 @@ chromium-metrics-reviews@google.com.
     enum="EnterpriseEnrollmentType" expires_after="2023-06-04">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events related to attestation-based re-enrollment (Auto RE) of Chrome OS
     devices.
@@ -1767,6 +1779,7 @@ chromium-metrics-reviews@google.com.
   <owner>dkuzmin@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events related to forced initial enrollment of Chrome OS devices during the
     first startup of a device.
@@ -1790,6 +1803,7 @@ chromium-metrics-reviews@google.com.
   <owner>dkuzmin@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events related to manual fallback from attestation-based initial enrollment
     (Zero-Touch) of Chrome OS devices during the first startup of a device.
@@ -1800,6 +1814,7 @@ chromium-metrics-reviews@google.com.
     enum="EnterpriseEnrollmentType" expires_after="2023-06-04">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events related to manual fallback from attestation-based re-enrollment (Auto
     RE) of Chrome OS devices.
@@ -1822,7 +1837,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentRollbackAttestation"
-    enum="EnterpriseEnrollmentType" expires_after="2023-11-30">
+    enum="EnterpriseEnrollmentType" expires_after="2023-12-01">
   <owner>crisguerrero@chromium.org</owner>
   <owner>mpolzer@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -1835,7 +1850,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentRollbackManualFallback"
-    enum="EnterpriseEnrollmentType" expires_after="2023-11-30">
+    enum="EnterpriseEnrollmentType" expires_after="2023-12-01">
   <owner>crisguerrero@chromium.org</owner>
   <owner>mpolzer@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -1852,6 +1867,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-04-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Elapsed time from *after* GAIA login until enrollment was cancelled.
   </summary>
@@ -1861,6 +1877,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-06-04">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Elapsed time from *after* GAIA login until enrollment failed.
   </summary>
@@ -1870,6 +1887,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-06-04">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Elapsed time from *after* GAIA login until enrollment succeeded.
   </summary>
@@ -1955,9 +1973,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.FCMInvalidationService.DeviceLocalAccountPolicyInvalidations2"
-    enum="EnterprisePolicyInvalidations" expires_after="2023-03-01">
+    enum="EnterprisePolicyInvalidations" expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events for counting device local account policy invalidations received with
     and without payloads. Invalidations indicate that a policy has been updated
@@ -1974,9 +1992,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.FCMInvalidationService.DeviceLocalAccountPolicyRefresh3"
-    enum="EnterprisePolicyRefresh" expires_after="2023-03-01">
+    enum="EnterprisePolicyRefresh" expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events measuring effectiveness of refreshing device local account policy
     when invalidations are received from a service. For each refresh, indicates
@@ -1992,9 +2010,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.FCMInvalidationService.DevicePolicyInvalidations2"
-    enum="EnterprisePolicyInvalidations" expires_after="2023-03-01">
+    enum="EnterprisePolicyInvalidations" expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events for counting device policy invalidations received with and without
     payloads. Invalidations indicate that a policy has been updated and should
@@ -2010,9 +2028,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.FCMInvalidationService.DevicePolicyRefresh3"
-    enum="EnterprisePolicyRefresh" expires_after="2023-03-01">
+    enum="EnterprisePolicyRefresh" expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events measuring effectiveness of refreshing device policy when
     invalidations are received from a service. For each refresh, indicates
@@ -2028,9 +2046,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.FCMInvalidationService.PolicyInvalidations"
-    enum="EnterprisePolicyInvalidations" expires_after="2023-04-30">
+    enum="EnterprisePolicyInvalidations" expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events for counting user policy invalidations received with and without
     payloads. Invalidations indicate that a policy has been updated and should
@@ -2043,9 +2061,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.FCMInvalidationService.PolicyInvalidationsRegistrationResult"
-    enum="BooleanSuccess" expires_after="2023-07-02">
+    enum="BooleanSuccess" expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Tracks the result of registration for policy invalidations. It will fail
     when duplicate invalidation names are used for different policies due to
@@ -2056,9 +2074,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.FCMInvalidationService.PolicyRefresh2"
-    enum="EnterprisePolicyRefresh" expires_after="2023-07-09">
+    enum="EnterprisePolicyRefresh" expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events measuring effectiveness of refreshing user policy when invalidations
     are received from a service. For each refresh, indicates whether the policy
@@ -2073,7 +2091,7 @@ chromium-metrics-reviews@google.com.
   <owner>wenyufu@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
-    Records the time it takes to retrieve applicaton restrictions from the
+    Records the time it takes to retrieve application restrictions from the
     system using an AsyncTask. Recording during first run experience on Android
     only.
   </summary>
@@ -2085,17 +2103,18 @@ chromium-metrics-reviews@google.com.
   <owner>twellington@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
-    Records the time it takes to retrieve applicaton restrictions from the
+    Records the time it takes to retrieve application restrictions from the
     system using an AsyncTask. Recording during first run experience on Android
     only. Has a bigger range (0-3 minutes) than the non-Medium version.
   </summary>
 </histogram>
 
 <histogram name="Enterprise.InvalidDevicePolicyFilesStatus"
-    enum="InvalidDevicePolicyFilesStatus" expires_after="2023-06-18">
+    enum="InvalidDevicePolicyFilesStatus" expires_after="2023-12-01">
   <owner>emaxx@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>vsavu@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Chrome OS only. Result of checking if device policy files are valid when
     reading the device policy data.
@@ -2290,8 +2309,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Policies" enum="EnterprisePolicies"
-    expires_after="2023-07-09">
-  <owner>mnissler@chromium.org</owner>
+    expires_after="2023-12-01">
+  <owner>vsavu@google.com</owner>
+  <owner>asumaneev@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     A set of enterprise policy rules that are in use. This is recorded every 24
     hours and at startup, if the last recording was earlier than a day before.
@@ -2302,6 +2323,7 @@ chromium-metrics-reviews@google.com.
     enum="EnterprisePolicies" expires_after="2023-02-12">
   <owner>ydago@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     A set of enterprise policy rules that are ignored because they do not share
     the highest priority from their policy atomic group. This is recorded at
@@ -2314,6 +2336,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-06-04">
   <owner>zmin@chromium.org</owner>
   <owner>igorruvinov@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Record summary of sources of all policies. It's recorded ever 24 hours and
     at startup.
@@ -2327,6 +2350,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-12-01">
   <owner>zmin@chromium.org</owner>
   <owner>qiutanw@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     A set of {PolicyLevel} enterprise policy rules that are in use. This is
     recorded for each {PolicyLevel} policy every 24 hours and at startup, if the
@@ -2336,9 +2360,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyInvalidations"
-    enum="EnterprisePolicyInvalidations" expires_after="2023-07-02">
+    enum="EnterprisePolicyInvalidations" expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events for counting user policy invalidations received with and without
     payloads. Invalidations indicate that a policy has been updated and should
@@ -2348,9 +2372,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyInvalidationsRegistrationResult"
-    enum="BooleanSuccess" expires_after="2023-07-09">
+    enum="BooleanSuccess" expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Tracks the result of registration for policy invalidations. It will fail
     when duplicate invalidation names are used for different policies due to
@@ -2377,9 +2401,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyRefresh2" enum="EnterprisePolicyRefresh"
-    expires_after="2023-03-01">
+    expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events measuring effectiveness of refreshing user policy when invalidations
     are received from a service. For each refresh, indicates whether the policy
@@ -2388,7 +2412,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.Device" units="days"
-    expires_after="2023-11-30">
+    expires_after="2023-12-01">
   <owner>rbock@google.com</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2408,7 +2432,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.User" units="days"
-    expires_after="2023-11-30">
+    expires_after="2023-12-01">
   <owner>rbock@google.com</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2520,9 +2544,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.RemoteCommandInvalidationsRegistrationResult"
-    enum="BooleanSuccess" expires_after="2023-03-01">
+    enum="BooleanSuccess" expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Tracks whether remote commands invalidator registered for corresponding
     invalidations. In case of success the invalidator is able to receive
@@ -2718,10 +2742,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.UserPolicyChromeOS.InitialFetch.OAuth2Error"
-    enum="GoogleServiceAuthError" expires_after="2022-03-01">
+    enum="GoogleServiceAuthError" expires_after="2023-12-01">
   <owner>igorcov@chromium.org</owner>
   <owner>asumaneev@google.com</owner>
-  <summary>Service error during OAuth2 access token fetch.</summary>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Service error during OAuth2 access token fetch.
+
+    There is a gap in data as the histogram was expired from 2022-03-01 till
+    2023-02-09.
+  </summary>
 </histogram>
 
 <histogram name="Enterprise.UserPolicyChromeOS.InitialFetch.OAuth2NetworkError"
@@ -2732,7 +2762,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.UserPolicyChromeOS.ReregistrationResult"
     enum="EnterpriseUserPolicyChromeOSReregistrationResult"
-    expires_after="2023-06-11">
+    expires_after="2023-12-01">
   <owner>hendrich@chromium.org</owner>
   <owner>rbock@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2742,9 +2772,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.UserRemoteCommand.Executed{Enterprise_RemoteCommandType}"
-    enum="RemoteCommandExecutionStatus" expires_after="2023-03-01">
+    enum="RemoteCommandExecutionStatus" expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events for counting status of executed user remote commands. The metric
     includes only signed user remote commands. Reports a final status of
@@ -2758,9 +2788,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.UserRemoteCommand.Received"
-    enum="RemoteCommandReceivedStatus" expires_after="2023-06-04">
+    enum="RemoteCommandReceivedStatus" expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events for counting received user remote commands. The metric includes
     signed user remote commands, both valid and invalid. Valid remote command is
@@ -2770,9 +2800,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.UserRemoteCommandInvalidations"
-    enum="EnterprisePolicyInvalidations" expires_after="2023-05-14">
+    enum="EnterprisePolicyInvalidations" expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events for counting user remote commands invalidations received with and
     without payloads. Invalidations indicate that there is a remote command to
@@ -2804,25 +2834,31 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.VPDCacheReadResult" enum="VPDCacheReadResult"
-    expires_after="2023-07-09">
+    expires_after="2023-12-01">
   <owner>vsavu@google.com</owner>
   <owner>igorcov@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>The result of Chrome reading the VPD cache on Chrome OS.</summary>
 </histogram>
 
-<histogram name="Enterprise.VpdCheck" units="units" expires_after="2020-07-05">
+<histogram name="Enterprise.VpdCheck" units="units" expires_after="2023-12-01">
   <owner>igorcov@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     The status code (exit code or signal) from sanity check of RW_VPD read and
     matching the contents with data from dump_vpd_log (Chrome OS).
+
+    There is a gap in data as the histogram was expired from 2020-07-05 till
+    2023-02-09.
   </summary>
 </histogram>
 
 <histogram name="Enterprise.VpdUpdateStatus" units="units"
-    expires_after="2023-05-27">
+    expires_after="2023-12-01">
   <owner>igorcov@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     The status code (exit code or signal) from VPD update operation (Chrome OS).
   </summary>
