@@ -2266,8 +2266,6 @@ crbug.com/538717 http/tests/permissions/chromium/test-request-multiple-window.ht
 crbug.com/538717 http/tests/permissions/chromium/test-request-multiple-worker.html [ Failure Pass Timeout ]
 crbug.com/538717 http/tests/permissions/chromium/test-request-multiple-sharedworker.html [ Failure Pass Timeout ]
 
-crbug.com/548765 http/tests/devtools/console-fetch-logging.js [ Failure Pass ]
-
 crbug.com/399951 http/tests/mime/javascript-mimetype-usecounters.html [ Failure Pass ]
 
 crbug.com/663847 fast/events/context-no-deselect.html [ Failure Pass ]
