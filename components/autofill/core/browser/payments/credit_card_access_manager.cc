@@ -161,7 +161,7 @@ void CreditCardAccessManager::PrepareToFetchCreditCard() {
   } else {
     is_user_verifiable_called_timestamp_ = AutofillTickClock::NowTicks();
 
-    GetOrCreateFIDOAuthenticator()->IsUserVerifiable(base::BindOnce(
+    GetOrCreateFidoAuthenticator()->IsUserVerifiable(base::BindOnce(
         &CreditCardAccessManager::GetUnmaskDetailsIfUserIsVerifiable,
         weak_ptr_factory_.GetWeakPtr()));
   }
@@ -222,7 +222,7 @@ void CreditCardAccessManager::OnDidGetUnmaskDetails(
 
 #if !BUILDFLAG(IS_IOS)
   opt_in_intention_ =
-      GetOrCreateFIDOAuthenticator()->GetUserOptInIntention(unmask_details);
+      GetOrCreateFidoAuthenticator()->GetUserOptInIntention(unmask_details);
 #endif
   ready_to_start_authentication_.Signal();
 
@@ -295,7 +295,7 @@ void CreditCardAccessManager::FetchCreditCard(
     if (is_user_verifiable_.value_or(false)) {
       autofill_metrics::LogUserPerceivedLatencyOnCardSelection(
           autofill_metrics::PreflightCallEvent::kDidNotChooseMaskedCard,
-          GetOrCreateFIDOAuthenticator()->IsUserOptedIn());
+          GetOrCreateFidoAuthenticator()->IsUserOptedIn());
     }
 #endif
     Reset();
@@ -328,8 +328,8 @@ void CreditCardAccessManager::FIDOAuthOptChange(bool opt_in) {
       return;
     }
 
-    GetOrCreateFIDOAuthenticator()->OptOut();
-    GetOrCreateFIDOAuthenticator()
+    GetOrCreateFidoAuthenticator()->OptOut();
+    GetOrCreateFidoAuthenticator()
         ->GetOrCreateFidoAuthenticationStrikeDatabase()
         ->AddStrikes(
             FidoAuthenticationStrikeDatabase::kStrikesToAddWhenUserOptsOut);
@@ -471,7 +471,7 @@ void CreditCardAccessManager::Authenticate(
 #else
       // If |is_authentication_in_progress_| is false, it means the process has
       // been cancelled via the verification pending dialog. Do not run
-      // CreditCardFIDOAuthenticator::Authenticate() in this case (should not
+      // CreditCardFidoAuthenticator::Authenticate() in this case (should not
       // fall back to CVC auth either).
       if (!is_authentication_in_progress_) {
         Reset();
@@ -491,7 +491,7 @@ void CreditCardAccessManager::Authenticate(
         fido_request_options =
             std::move(unmask_details_.fido_request_options.value());
       }
-      GetOrCreateFIDOAuthenticator()->Authenticate(
+      GetOrCreateFidoAuthenticator()->Authenticate(
           card_.get(), weak_ptr_factory_.GetWeakPtr(),
           std::move(fido_request_options), context_token);
 #endif
@@ -545,11 +545,11 @@ void CreditCardAccessManager::Authenticate(
 }
 
 #if !BUILDFLAG(IS_IOS)
-CreditCardFIDOAuthenticator*
-CreditCardAccessManager::GetOrCreateFIDOAuthenticator() {
+CreditCardFidoAuthenticator*
+CreditCardAccessManager::GetOrCreateFidoAuthenticator() {
   if (!fido_authenticator_)
     fido_authenticator_ =
-        std::make_unique<CreditCardFIDOAuthenticator>(driver_, client_);
+        std::make_unique<CreditCardFidoAuthenticator>(driver_, client_);
   return fido_authenticator_.get();
 }
 #endif
@@ -596,13 +596,13 @@ void CreditCardAccessManager::OnCVCAuthenticationComplete(
 
     // Additionally authorizes the card with FIDO. It also delays the form
     // filling.
-    GetOrCreateFIDOAuthenticator()->Authorize(weak_ptr_factory_.GetWeakPtr(),
+    GetOrCreateFidoAuthenticator()->Authorize(weak_ptr_factory_.GetWeakPtr(),
                                               response.card_authorization_token,
                                               request_options->Clone());
 #endif
   }
   if (ShouldOfferFidoOptInDialog(response)) {
-    // CreditCardFIDOAuthenticator will handle enrollment completely.
+    // CreditCardFidoAuthenticator will handle enrollment completely.
     ShowWebauthnOfferDialog(response.card_authorization_token);
   }
 
@@ -633,7 +633,7 @@ bool CreditCardAccessManager::UserOptedInToFidoFromSettingsPageOnMobile()
 
 #if !BUILDFLAG(IS_IOS)
 void CreditCardAccessManager::OnFIDOAuthenticationComplete(
-    const CreditCardFIDOAuthenticator::FidoAuthenticationResponse& response) {
+    const CreditCardFidoAuthenticator::FidoAuthenticationResponse& response) {
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableFIDOProgressDialog)) {
@@ -772,7 +772,7 @@ bool CreditCardAccessManager::IsUserOptedInToFidoAuth() {
   return false;
 #else
   return is_user_verifiable_.value_or(false) &&
-         GetOrCreateFIDOAuthenticator()->IsUserOptedIn();
+         GetOrCreateFidoAuthenticator()->IsUserOptedIn();
 #endif
 }
 
@@ -814,7 +814,7 @@ bool CreditCardAccessManager::ShouldRespondImmediately(
 bool CreditCardAccessManager::ShouldRegisterCardWithFido(
     const CreditCardCVCAuthenticator::CVCAuthenticationResponse& response) {
   // Card authorization token is required in order to call
-  // CreditCardFIDOAuthenticator::Authorize(), so if we do not have a card
+  // CreditCardFidoAuthenticator::Authorize(), so if we do not have a card
   // authorization token populated we immediately return false.
   if (response.card_authorization_token.empty())
     return false;
@@ -861,7 +861,7 @@ bool CreditCardAccessManager::ShouldOfferFidoOptInDialog(
 
   // If the strike limit was reached for the FIDO opt-in dialog, we should not
   // offer it.
-  if (GetOrCreateFIDOAuthenticator()
+  if (GetOrCreateFidoAuthenticator()
           ->GetOrCreateFidoAuthenticationStrikeDatabase()
           ->ShouldBlockFeature()) {
     return false;
@@ -876,7 +876,7 @@ bool CreditCardAccessManager::ShouldOfferFidoOptInDialog(
 void CreditCardAccessManager::ShowWebauthnOfferDialog(
     std::string card_authorization_token) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  GetOrCreateFIDOAuthenticator()->OnWebauthnOfferDialogRequested(
+  GetOrCreateFidoAuthenticator()->OnWebauthnOfferDialogRequested(
       card_authorization_token);
   client_->ShowWebauthnOfferDialog(
       base::BindRepeating(&CreditCardAccessManager::HandleDialogUserResponse,
@@ -895,11 +895,11 @@ void CreditCardAccessManager::HandleDialogUserResponse(
     WebauthnDialogCallbackType type) {
   switch (type) {
     case WebauthnDialogCallbackType::kOfferAccepted:
-      GetOrCreateFIDOAuthenticator()->OnWebauthnOfferDialogUserResponse(
+      GetOrCreateFidoAuthenticator()->OnWebauthnOfferDialogUserResponse(
           /*did_accept=*/true);
       break;
     case WebauthnDialogCallbackType::kOfferCancelled:
-      GetOrCreateFIDOAuthenticator()->OnWebauthnOfferDialogUserResponse(
+      GetOrCreateFidoAuthenticator()->OnWebauthnOfferDialogUserResponse(
           /*did_accept=*/false);
       break;
     case WebauthnDialogCallbackType::kVerificationCancelled:
@@ -909,11 +909,11 @@ void CreditCardAccessManager::HandleDialogUserResponse(
       SignalCanFetchUnmaskDetails();
       ready_to_start_authentication_.Reset();
       unmask_details_request_in_progress_ = false;
-      GetOrCreateFIDOAuthenticator()->CancelVerification();
+      GetOrCreateFidoAuthenticator()->CancelVerification();
 
       // Indicate that FIDO authentication was canceled, resulting in falling
       // back to CVC auth.
-      CreditCardFIDOAuthenticator::FidoAuthenticationResponse response{
+      CreditCardFidoAuthenticator::FidoAuthenticationResponse response{
           .did_succeed = false};
       OnFIDOAuthenticationComplete(response);
       break;
@@ -946,7 +946,7 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
                   kPreflightCallReturnedBeforeCardChosen
             : autofill_metrics::PreflightCallEvent::
                   kCardChosenBeforePreflightCallReturned,
-        GetOrCreateFIDOAuthenticator()->IsUserOptedIn());
+        GetOrCreateFidoAuthenticator()->IsUserOptedIn());
   }
 #endif
 

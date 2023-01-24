@@ -42,7 +42,7 @@ enum class UserOptInIntention {
 // and verify that binding. More information can be found here:
 // - https://www.w3.org/TR/webauthn-1/
 // - https://fidoalliance.org/fido2/
-class CreditCardFIDOAuthenticator
+class CreditCardFidoAuthenticator
     : public payments::FullCardRequest::ResultDelegate {
  public:
   // Useful for splitting metrics to correct sub-histograms and knowing which
@@ -82,13 +82,13 @@ class CreditCardFIDOAuthenticator
         const FidoAuthenticationResponse& response) = 0;
     virtual void OnFidoAuthorizationComplete(bool did_succeed) = 0;
   };
-  CreditCardFIDOAuthenticator(AutofillDriver* driver, AutofillClient* client);
+  CreditCardFidoAuthenticator(AutofillDriver* driver, AutofillClient* client);
 
-  CreditCardFIDOAuthenticator(const CreditCardFIDOAuthenticator&) = delete;
-  CreditCardFIDOAuthenticator& operator=(const CreditCardFIDOAuthenticator&) =
+  CreditCardFidoAuthenticator(const CreditCardFidoAuthenticator&) = delete;
+  CreditCardFidoAuthenticator& operator=(const CreditCardFidoAuthenticator&) =
       delete;
 
-  ~CreditCardFIDOAuthenticator() override;
+  ~CreditCardFidoAuthenticator() override;
 
   // Invokes Authentication flow. Responds to |accessor_| with full pan.
   // |context_token| is used to share context between different requests. It
@@ -151,15 +151,15 @@ class CreditCardFIDOAuthenticator
  private:
   friend class BrowserAutofillManagerTest;
   friend class CreditCardAccessManagerTest;
-  friend class CreditCardFIDOAuthenticatorTest;
-  friend class TestCreditCardFIDOAuthenticator;
-  FRIEND_TEST_ALL_PREFIXES(CreditCardFIDOAuthenticatorTest,
+  friend class CreditCardFidoAuthenticatorTest;
+  friend class TestCreditCardFidoAuthenticator;
+  FRIEND_TEST_ALL_PREFIXES(CreditCardFidoAuthenticatorTest,
                            ParseRequestOptions);
-  FRIEND_TEST_ALL_PREFIXES(CreditCardFIDOAuthenticatorTest,
+  FRIEND_TEST_ALL_PREFIXES(CreditCardFidoAuthenticatorTest,
                            ParseAssertionResponse);
-  FRIEND_TEST_ALL_PREFIXES(CreditCardFIDOAuthenticatorTest,
+  FRIEND_TEST_ALL_PREFIXES(CreditCardFidoAuthenticatorTest,
                            ParseCreationOptions);
-  FRIEND_TEST_ALL_PREFIXES(CreditCardFIDOAuthenticatorTest,
+  FRIEND_TEST_ALL_PREFIXES(CreditCardFidoAuthenticatorTest,
                            ParseAttestationResponse);
 
   // Invokes the WebAuthn prompt to request user verification to sign the
@@ -294,7 +294,7 @@ class CreditCardFIDOAuthenticator
   // requests. Will be populated only for virtual card unmasking.
   absl::optional<std::string> context_token_;
 
-  base::WeakPtrFactory<CreditCardFIDOAuthenticator> weak_ptr_factory_{this};
+  base::WeakPtrFactory<CreditCardFidoAuthenticator> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

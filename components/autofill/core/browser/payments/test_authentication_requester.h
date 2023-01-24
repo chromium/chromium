@@ -21,7 +21,7 @@
 namespace autofill {
 
 // Test class for requesting authentication from CreditCardCVCAuthenticator or
-// CreditCardFIDOAuthenticator.
+// CreditCardFidoAuthenticator.
 #if BUILDFLAG(IS_IOS)
 class TestAuthenticationRequester
     : public CreditCardCVCAuthenticator::Requester,
@@ -29,7 +29,7 @@ class TestAuthenticationRequester
 #else
 class TestAuthenticationRequester
     : public CreditCardCVCAuthenticator::Requester,
-      public CreditCardFIDOAuthenticator::Requester,
+      public CreditCardFidoAuthenticator::Requester,
       public CreditCardOtpAuthenticator::Requester {
 #endif
  public:
@@ -46,9 +46,9 @@ class TestAuthenticationRequester
 #endif
 
 #if !BUILDFLAG(IS_IOS)
-  // CreditCardFIDOAuthenticator::Requester:
+  // CreditCardFidoAuthenticator::Requester:
   void OnFIDOAuthenticationComplete(
-      const CreditCardFIDOAuthenticator::FidoAuthenticationResponse& response)
+      const CreditCardFidoAuthenticator::FidoAuthenticationResponse& response)
       override;
   void OnFidoAuthorizationComplete(bool did_succeed) override;
 
@@ -73,7 +73,7 @@ class TestAuthenticationRequester
   }
 
  private:
-  // Set when CreditCardFIDOAuthenticator invokes IsUserVerifiableCallback().
+  // Set when CreditCardFidoAuthenticator invokes IsUserVerifiableCallback().
   absl::optional<bool> is_user_verifiable_;
 
   // Is set to true if authentication was successful.

@@ -17,20 +17,20 @@
 
 namespace autofill {
 
-// Test class for CreditCardFIDOAuthenticator.
-class TestCreditCardFIDOAuthenticator : public CreditCardFIDOAuthenticator {
+// Test class for CreditCardFidoAuthenticator.
+class TestCreditCardFidoAuthenticator : public CreditCardFidoAuthenticator {
  public:
-  explicit TestCreditCardFIDOAuthenticator(AutofillDriver* driver,
+  explicit TestCreditCardFidoAuthenticator(AutofillDriver* driver,
                                            AutofillClient* client);
 
-  TestCreditCardFIDOAuthenticator(const TestCreditCardFIDOAuthenticator&) =
+  TestCreditCardFidoAuthenticator(const TestCreditCardFidoAuthenticator&) =
       delete;
-  TestCreditCardFIDOAuthenticator& operator=(
-      const TestCreditCardFIDOAuthenticator&) = delete;
+  TestCreditCardFidoAuthenticator& operator=(
+      const TestCreditCardFidoAuthenticator&) = delete;
 
-  ~TestCreditCardFIDOAuthenticator() override;
+  ~TestCreditCardFidoAuthenticator() override;
 
-  // CreditCardFIDOAuthenticator:
+  // CreditCardFidoAuthenticator:
   void Authenticate(const CreditCard* card,
                     base::WeakPtr<Requester> requester,
                     base::Value::Dict request_options,
@@ -44,11 +44,11 @@ class TestCreditCardFIDOAuthenticator : public CreditCardFIDOAuthenticator {
   void OptOut() override;
 
   // Invokes fido_authenticator->OnDidGetAssertion().
-  static void GetAssertion(CreditCardFIDOAuthenticator* fido_authenticator,
+  static void GetAssertion(CreditCardFidoAuthenticator* fido_authenticator,
                            bool did_succeed);
 
   // Invokes fido_authenticator->OnDidMakeCredential().
-  static void MakeCredential(CreditCardFIDOAuthenticator* fido_authenticator,
+  static void MakeCredential(CreditCardFidoAuthenticator* fido_authenticator,
                              bool did_succeed);
 
   // Getter methods to query Request Options.

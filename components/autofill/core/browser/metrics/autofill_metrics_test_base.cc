@@ -81,7 +81,7 @@ void AutofillMetricsBaseTest::SetUp() {
   autofill_manager()
       .GetCreditCardAccessManager()
       ->set_fido_authenticator_for_testing(
-          std::make_unique<TestCreditCardFIDOAuthenticator>(
+          std::make_unique<TestCreditCardFidoAuthenticator>(
               autofill_driver_.get(), autofill_client_.get()));
 #endif
 
@@ -134,8 +134,8 @@ void AutofillMetricsBaseTest::SetFidoEligibility(bool is_verifiable) {
   CreditCardAccessManager* access_manager =
       autofill_manager().GetCreditCardAccessManager();
 #if !BUILDFLAG(IS_IOS)
-  static_cast<TestCreditCardFIDOAuthenticator*>(
-      access_manager->GetOrCreateFIDOAuthenticator())
+  static_cast<TestCreditCardFidoAuthenticator*>(
+      access_manager->GetOrCreateFidoAuthenticator())
       ->SetUserVerifiable(is_verifiable);
 #endif
   static_cast<payments::TestPaymentsClient*>(
