@@ -357,7 +357,8 @@ void SetupFragmentBuilderForFragmentation(
     // since captions are not part of the "table box", and any specified
     // block-size pertains to the table box, while the captions are on the
     // outside of the "table box", but still part of the fragment.
-    if (!node.IsTable()) {
+    if (!node.IsTable() &&
+        builder->InitialBorderBoxSize().inline_size != kIndefiniteSize) {
       // Pass an "infinite" intrinsic size to see how the block-size is
       // constrained. If it doesn't affect the block size, it means that we can
       // tell before layout how much more space this node needs.
