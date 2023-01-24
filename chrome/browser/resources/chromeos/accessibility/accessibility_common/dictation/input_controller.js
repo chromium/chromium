@@ -126,6 +126,9 @@ export class InputController {
     /** @private {?function(): void} */
     this.onSurroundingTextChangedForTesting_ = null;
 
+    /** @private {?function(): void} */
+    this.onSelectionChangedForTesting_ = null;
+
     this.initialize_();
   }
 
@@ -404,6 +407,9 @@ export class InputController {
     const waiter = new AutomationImeEventWaiter(
         editableNode, EventType.TEXT_SELECTION_CHANGED);
     await waiter.doActionAndWait(setDocumentSelection);
+    if (this.onSelectionChangedForTesting_) {
+      this.onSelectionChangedForTesting_();
+    }
   }
 
   /**
@@ -413,6 +419,7 @@ export class InputController {
    * use the one closest to the text caret.
    * @param {string} insertPhrase
    * @param {string} beforePhrase
+   * @return {!Promise}
    */
   async insertBefore(insertPhrase, beforePhrase) {
     const data = this.getEditableNodeData();
@@ -455,55 +462,34 @@ export class InputController {
     node.setSelection(selection.start, selection.end);
   }
 
-  /** Moves the text caret to the next sentence. */
-  navNextSent() {
+  /**
+   * Moves the text caret to the next sentence.
+   * @return {!Promise}
+   */
+  async navNextSent() {
     const data = this.getEditableNodeData();
     if (!this.checkEditableNodeData_(data)) {
       return;
     }
 
-    const {node, value, selStart, selEnd} = data;
+    const {value, selStart} = data;
     const newCaretIndex = EditingUtil.navNextSent(value, selStart);
-    node.setSelection(newCaretIndex, newCaretIndex);
-  }
-
-  /** Moves the text caret to the previous sentence. */
-  navPrevSent() {
-    const data = this.getEditableNodeData();
-    if (!this.checkEditableNodeData_(data)) {
-      return;
-    }
-
-    const {node, value, selStart, selEnd} = data;
-    const newCaretIndex = EditingUtil.navPrevSent(value, selStart);
-    node.setSelection(newCaretIndex, newCaretIndex);
+    await this.setSelection_(newCaretIndex, newCaretIndex);
   }
 
   /**
-   * @param {string} value
-   * @param {number} index
-   * @private
+   * Moves the text caret to the previous sentence.
+   * @return {!Promise}
    */
-  setEditableValueAndUpdateCaretPosition_(value, index) {
-    const editableNode = this.focusHandler_.getEditableNode();
-    if (!editableNode) {
+  async navPrevSent() {
+    const data = this.getEditableNodeData();
+    if (!this.checkEditableNodeData_(data)) {
       return;
     }
 
-    // Set the value first, then update the caret position.
-    let handled = false;
-    const setSelection = () => {
-      if (!handled) {
-        // Ensure this listener only runs once.
-        editableNode.removeEventListener(
-            EventType.VALUE_CHANGED, setSelection, false);
-        editableNode.setSelection(index, index);
-        handled = true;
-      }
-    };
-
-    editableNode.addEventListener(EventType.VALUE_CHANGED, setSelection, false);
-    editableNode.setValue(value);
+    const {value, selStart} = data;
+    const newCaretIndex = EditingUtil.navPrevSent(value, selStart);
+    await this.setSelection_(newCaretIndex, newCaretIndex);
   }
 
   /**

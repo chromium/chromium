@@ -464,6 +464,8 @@ class DictationTestBase : public InProcessBrowserTest,
     ASSERT_TRUE(selection_waiter.WaitForNotification());
   }
 
+  // TODO(b:259353252): Update this method to use testSupport JS, similar to
+  // what's done in DictationFormattedContentEditableTest::WaitForSelection.
   void SendFinalResultAndWaitForCaretBoundsChanged(const std::string& result) {
     content::AccessibilityNotificationWaiter selection_waiter(
         browser()->tab_strip_model()->GetActiveWebContents(),
@@ -1434,12 +1436,6 @@ IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, SmartSelectBetween) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, MoveBySentence) {
-  if (editable_type() == EditableType::kContentEditable) {
-    // TODO(b:259353252): Remove this once this command is supported in
-    // contenteditables.
-    return;
-  }
-
   SendFinalResultAndWaitForEditableValue("Hello world! Goodnight world?",
                                          "Hello world! Goodnight world?");
   SendFinalResultAndWaitForCaretBoundsChanged("move to the previous sentence");
@@ -1955,12 +1951,6 @@ IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, SmartSelectBetween) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, MoveBySentence) {
-  if (editable_type() == EditableType::kContentEditable) {
-    // TODO(b:259353252): Remove this once this command is supported in
-    // contenteditables.
-    return;
-  }
-
   SendFinalResultAndWaitForEditableValue("Hello world! Goodnight world?",
                                          "Hello world! Goodnight world?");
   SendFinalResultAndWaitForCaretBoundsChanged("one sentence back");
@@ -2199,6 +2189,12 @@ class DictationFormattedContentEditableTest : public DictationPumpkinTest {
     std::string script = "testSupport.setSelection(14, 14);";
     ExecuteAccessibilityCommonScript(script);
   }
+
+  void WaitForSelection(int start, int end) {
+    std::string script =
+        base::StringPrintf("testSupport.waitForSelection(%d, %d);", start, end);
+    ExecuteAccessibilityCommonScript(script);
+  }
 };
 
 // Note: For these tests, the content editable comes pre-populated with a value
@@ -2238,6 +2234,21 @@ IN_PROC_BROWSER_TEST_P(DictationFormattedContentEditableTest, InsertBefore) {
   std::string command = "insert the phrase simple before test";
   std::string expected_value = "This is a simple test";
   SendFinalResultAndWaitForEditableValue(command, expected_value);
+}
+
+IN_PROC_BROWSER_TEST_P(DictationFormattedContentEditableTest, MoveBySentence) {
+  SendFinalResultAndWaitForEditableValue(", good luck.",
+                                         "This is a test, good luck.");
+  SendFinalResultAndWait("move to the previous sentence");
+  // Wait for the selection to move to the beginning of the editable.
+  WaitForSelection(0, 0);
+  SendFinalResultAndWaitForEditableValue(
+      "Good morning. ", "Good morning. This is a test, good luck.");
+  SendFinalResultAndWait("forward one sentence");
+  // Wait for the selection to move to the end of the editable.
+  WaitForSelection(40, 40);
+  SendFinalResultAndWaitForEditableValue(
+      " Have fun.", "Good morning. This is a test, good luck. Have fun.");
 }
 
 }  // namespace ash
