@@ -32,4 +32,11 @@ void DragWindowFromShelfControllerTestApi::WaitUntilOverviewIsShown(
   run_loop.Run();
 }
 
+ui::Layer* DragWindowFromShelfControllerTestApi::GetOtherWindowCopyLayer(
+    DragWindowFromShelfController* window_drag_controller) {
+  ui::LayerTreeOwner* layer_tree_owner =
+      window_drag_controller->other_window_copy_.get();
+  return layer_tree_owner ? layer_tree_owner->root() : nullptr;
+}
+
 }  // namespace ash

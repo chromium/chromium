@@ -7,6 +7,10 @@
 
 #include "ash/ash_export.h"
 
+namespace ui {
+class Layer;
+}
+
 namespace ash {
 
 class DragWindowFromShelfController;
@@ -21,6 +25,12 @@ class ASH_EXPORT DragWindowFromShelfControllerTestApi {
   ~DragWindowFromShelfControllerTestApi();
 
   void WaitUntilOverviewIsShown(
+      DragWindowFromShelfController* window_drag_controller);
+
+  // Retrieves the copy layer of the "other" window during a drag from shelf
+  // with a floated window. See `DragWindowFromShelfController::other_window_`
+  // for more details.
+  ui::Layer* GetOtherWindowCopyLayer(
       DragWindowFromShelfController* window_drag_controller);
 };
 

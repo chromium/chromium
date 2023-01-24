@@ -105,9 +105,6 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
  private:
   class WindowsHider;
   friend class DragWindowFromShelfControllerTestApi;
-  // TODO(sammiequon): Refactor `DragWindowFromShelfControllerTestApi` so that
-  // we can fetch `other_window_copy_` using it.
-  friend class FloatDragWindowFromShelfControllerTest;
 
   void OnDragStarted(const gfx::PointF& location_in_screen);
   void OnDragEnded(const gfx::PointF& location_in_screen,
