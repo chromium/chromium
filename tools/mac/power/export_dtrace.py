@@ -126,7 +126,6 @@ class DTraceParser:
     self._stack_frames = {}
     self._sample_type = sample_type
     self._post_processing_applied = False
-    self._shorten_stack_samples = False
 
   def ParseFile(self, stack_file: typing.TextIO):
     """Parses dtrace `stack_file` and adds the data to this profile.
@@ -246,45 +245,6 @@ class DTraceParser:
       self._stack_frames[stack_string] = stack_frames
       self._stack_weights[stack_string] += sample['weight']
 
-  def ShortenStack(self, stack: typing.List[typing.Tuple[str, str]]):
-    """Drop some frames that don't offer any valuable information. The part
-    above/before the frame is trimmed. This means that the base of the stack
-    can be dropped but no frame can "skipped".
-
-    Example (dropping biz):
-
-    foo;bar;biz;boo --> boo
-    foo;biz;bar;boo --> bar;boo
-
-    Args:
-      stack: An array of strings that represent each frame of a stack trace.
-
-    Returns: The input array with zero or more elements removed.
-    """
-
-    message_pump_roots = [
-        "base::MessagePumpNSRunLoop::DoRun", "base::MessagePumpDefault::Run",
-        "base::MessagePumpKqueue::Run", "base::MessagePumpCFRunLoopBase::Run",
-        "base::MessagePumpNSApplication::DoRun", "base::mac::CallWithEHFrame",
-        "base::internal::WorkerThread::RunPooledWorker",
-        "base::internal::WorkerThread::RunBackgroundPooledWorker"
-    ]
-
-    first_ignored_index = -1
-    for i, (module, function) in enumerate(stack):
-      if any(
-          function.startswith(message_pump_root)
-          for message_pump_root in message_pump_roots):
-        # If any of the markers is present in the function it means everything
-        # under the frame should be dropped from the stack.
-        first_ignored_index = i
-        break
-
-    if first_ignored_index != -1:
-      return stack[:first_ignored_index]
-    else:
-      return stack
-
   def ApplySignatures(self, stack: typing.List[typing.Tuple[str, str]]):
     """Matches and return known signatures to given stackframe.
     """
@@ -301,9 +261,6 @@ class DTraceParser:
         return 'ParkableString'
     return 'unknown'
 
-  def EnableShortenStackSamples(self):
-    self._shorten_stack_samples = True
-
   def PostProcessStackSamples(self):
     """Applies filtering and enhancing to self.samples().  This function can
     only be called once.
@@ -318,9 +275,6 @@ class DTraceParser:
     self._post_processing_applied = True
 
     for key in self._stack_frames:
-      # Filter out the frames we don't care about and all those under it.
-      if self._shorten_stack_samples:
-        self._stack_frames[key] = self.ShortenStack(self._stack_frames[key])
       # Signatures are always added since they are non destructive.
       self._signatures[key] = self.ApplySignatures(self._stack_frames[key])
 
@@ -346,10 +300,6 @@ if __name__ == "__main__":
                       choices=["pprof", "collapsed"],
                       default="pprof",
                       help="Output format to generate.")
-  parser.add_argument('--shorten',
-                      action='store_true',
-                      help="Shorten stacks by removing the base part "
-                      "of the stack that doesn't provide useful information")
   args = parser.parse_args()
   logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 
@@ -366,8 +316,6 @@ if __name__ == "__main__":
 
   parser = DTraceParser(args.unit)
   parser.ParseDir(args.data_dir)
-  if args.shorten:
-    parser.EnableShortenStackSamples()
   parser.PostProcessStackSamples()
 
   output_filename = args.output

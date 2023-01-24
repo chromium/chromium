@@ -46,9 +46,9 @@ class DTraceReadTest(unittest.TestCase):
     collapser.ParseDir('./test_data/absolute_offset/')
     self.assertEquals(collapser.GetSamplesListForTesting(), [{
         'frames': [
-            ('unsymbolized module', 'unsymbolized function'),
-            ('unsymbolized module', 'unsymbolized function'),
-            ('unsymbolized module', 'unsymbolized function'),
+            ('unsymbolized module', '0x21'),
+            ('unsymbolized module', '0x85'),
+            ('unsymbolized module', '0x37'),
         ],
         'weight':
         12
@@ -56,7 +56,7 @@ class DTraceReadTest(unittest.TestCase):
 
 
 class StackCollapseTest(unittest.TestCase):
-  def testDoubleShortenStackSamplesFails(self):
+  def testDoublePostProcessStackSamplesFails(self):
     """Tests that calling post_process_samples() twice triggers a failure."""
 
     samples = [{
@@ -69,106 +69,5 @@ class StackCollapseTest(unittest.TestCase):
     stack_collapser.AddSamplesForTesting(samples)
 
     with self.assertRaises(SystemExit):
-      stack_collapser.ShortenStackSamples()
-      stack_collapser.ShortenStackSamples()
-
-  def testNoStackShortening(self):
-    """Tests that sampes with no uninteresting frames don't get modified."""
-
-    samples = [{
-        'frames': [('fake_module', 'foo'), ('fake_module', 'bar'),
-                   ('fake_module', 'baz')],
-        'weight':
-        24
-    }]
-    stack_collapser = DTraceParser()
-    stack_collapser.AddSamplesForTesting(samples)
-    stack_collapser.ShortenStackSamples()
-    self.assertEquals(samples, stack_collapser.GetSamplesListForTesting())
-
-  def testNoStackShortening(self):
-    """Tests that sampes with no uninteresting frames don't get modified."""
-
-    samples = [{
-        'frames': [('fake_module', 'foo'), ('fake_module', 'bar'),
-                   ('fake_module', 'baz')],
-        'weight':
-        24
-    }]
-    stack_collapser = DTraceParser()
-    stack_collapser.AddSamplesForTesting(samples)
-    stack_collapser.ShortenStackSamples()
-    self.assertEquals(samples, stack_collapser.GetSamplesListForTesting())
-
-  def testCutoffPointPreserved(self):
-    """Tests that shortening a stack is inclusive of the cutoff point."""
-
-    samples = [{
-        'frames': [('fake_module', 'foo'), ('fake_module', 'bar'),
-                   ('fake_module', 'baz'),
-                   ('chrome', 'base::MessagePumpNSRunLoop::DoRun'),
-                   ('fake_module', 'biz')],
-        'weight':
-        24
-    }]
-    shortened_stack = [{
-        'frames': [('chrome', 'base::MessagePumpNSRunLoop::DoRun'),
-                   ('fake_module', 'biz')],
-        'weight':
-        24
-    }]
-
-    stack_collapser = DTraceParser()
-    stack_collapser.AddSamplesForTesting(samples)
-    stack_collapser.ShortenStackSamples()
-    self.assertEquals(shortened_stack,
-                      stack_collapser.GetSamplesListForTesting())
-
-  def testNoStackDisappearance(self):
-    """Tests that a stack that finishes with an ignored frame isn't culled from
-    the report. It represents overhead and should be kept"""
-
-    samples = [{
-        'frames': [('fake_module', 'foo'), ('fake_module', 'bar'),
-                   ('fake_module', 'baz'),
-                   ('chrome', 'base::MessagePumpNSRunLoop::DoRun')],
-        'weight':
-        24
-    }]
-    shortened_stack = [{
-        'frames': [('chrome', 'base::MessagePumpNSRunLoop::DoRun')],
-        'weight':
-        24
-    }]
-
-    stack_collapser = DTraceParser()
-    stack_collapser.AddSamplesForTesting(samples)
-    stack_collapser.ShortenStackSamples()
-    self.assertEquals(shortened_stack,
-                      stack_collapser.GetSamplesListForTesting())
-
-  def testStackShortening(self):
-    """Tests that stacks get shortened to drop frames of low interest."""
-
-    samples = [{
-        'frames': [('fake_module', 'foo'), ('fake_module', 'bar'),
-                   ('fake_module', 'baz')],
-        'weight':
-        24
-    }, {
-        'frames': [('fake_module', 'foo'), ('fake_module', 'bar'),
-                   ('fake_module', 'baz'),
-                   ('chrome', 'base::MessagePumpNSRunLoop::DoRun')],
-        'weight':
-        24
-    }]
-
-    # Stack will be shortened to remove anything before the uninteresting frame.
-    shortened_samples = samples.copy()
-    shortened_samples[1]["frames"] = shortened_samples[1]["frames"][3:]
-
-    stack_collapser = DTraceParser()
-    stack_collapser.AddSamplesForTesting(samples)
-    stack_collapser.ShortenStackSamples()
-    self.assertEquals(shortened_samples,
-                      stack_collapser.GetSamplesListForTesting())
+      stack_collapser.PostProcessStackSamples()
+      stack_collapser.PostProcessStackSamples()
