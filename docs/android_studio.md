@@ -25,10 +25,14 @@ If you're asked to use Studio's Android SDK: No.
 
 If you're asked to use Studio's Gradle wrapper: Yes.
 
-You need to re-run `generate_gradle.py` whenever `BUILD.gn` files change.
+You need to re-run `generate_gradle.py` whenever `BUILD.gn` files change, for
+example, when you add a new directory containing source files.
 
-Pass `--canary` or `--beta` to avoid the "A newer version of gradle is
-available" notification.
+Since newer gradle versions are released regularly and it is not possible to set
+a gradle version in `root.jinja` that is the newest for each version of Android
+Studio, feel free to update the value in `build.gradle` locally when you see the
+"A newer version of gradle is available" notification. This will likely happen
+each time after `generate_gradle.py` runs.
 
 * After regenerating, Android Studio should prompt you to "Sync". If it
   doesn't, try some of the following options:
@@ -46,7 +50,7 @@ generated.
 
 To see more detailed structure of gn targets, the `--split-projects` flag can
 be used. This will generate one module for every gn target in the dependency
-graph. This can be very slow when used with `--all` by default.
+graph. This can be very slow.
 
 ### Excluded Files
 
@@ -74,11 +78,16 @@ includes `R.java`).
 
 ### Native Files
 
-A new experimental option is now available to enable editing native C/C++ files
-with Android Studio. Pass in any number of `--native-target [target name]` flags
-in order to try it out. The target must be the full path and name of a valid gn
-target (no shorthands). This will require you to install `cmake` and `ndk` when
-prompted. Accept Android Studio's prompts for these SDK packages.
+This option is no longer supported since Android Studio is very slow when
+editing in a code base with a large number of C++ files, and Chromium has a lot
+of C++ code. It is recommended to use [VS Code](vscode.md) to edit native files
+and stick to just editing java files in Android Studio.
+
+If you still want to enable editing native C/C++ files with Android Studio, pass
+in any number of `--native-target [target name]` flags in order to use it. The
+target must be the full path and name of a valid gn target (no short-forms).
+This will require you to install `cmake` and `ndk` when prompted. Accept Android
+Studio's prompts for these SDK packages.
 
 You need to disable a new gradle option in order to edit native files:
 File -&gt; Settings -&gt; Experimental
@@ -163,15 +172,15 @@ resources, native libraries, etc.
     * Add the line `org.gradle.daemon=true` to `~/.gradle/gradle.properties`,
       creating it if necessary.
 
-## Status (as of May 10, 2018)
+## Status
 
 ### What works
 
-* Android Studio v3.0-v3.2.
+* Android Studio v2021 & v2022.
 * Java editing.
     * Application code in `main` sourceset.
     * Instrumentation test code in `androidTest` sourceset.
-* Native code editing (experimental).
+* Native code editing (deprecated, use [VS Code](vscode.md) instead).
 * Symlinks to existing .so files in jniLibs (doesn't generate them).
 * Editing resource xml files
 * Layout editor (limited functionality).
@@ -182,7 +191,10 @@ resources, native libraries, etc.
 * Emulators (more docs coming soon).
 * Separate Android SDK for Android Studio.
 
-### What doesn't work (yet) ([crbug](https://bugs.chromium.org/p/chromium/issues/detail?id=620034))
+### What doesn't work
 
 * Gradle being aware of assets.
 * Having the "Make Project" button work correctly.
+    * Stick to using `autoninja` to build targets and just use Android Studio
+      for editing java source files.
+* No active work is underway or planned to expand Android Studio support.

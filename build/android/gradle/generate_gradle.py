@@ -45,8 +45,6 @@ _GRADLE_BUILD_FILE = 'build.gradle'
 _CMAKE_FILE = 'CMakeLists.txt'
 # This needs to come first alphabetically among all modules.
 _MODULE_ALL = '_all'
-_SRC_INTERNAL = os.path.join(
-    os.path.dirname(host_paths.DIR_SOURCE_ROOT), 'src-internal')
 _INSTRUMENTATION_TARGET_SUFFIX = '_test_apk__test_apk__apk'
 
 _DEFAULT_TARGETS = [
@@ -257,13 +255,12 @@ class _ProjectEntry:
 class _ProjectContextGenerator:
   """Helper class to generate gradle build files"""
   def __init__(self, project_dir, build_vars, use_gradle_process_resources,
-               jinja_processor, split_projects, channel):
+               jinja_processor, split_projects):
     self.project_dir = project_dir
     self.build_vars = build_vars
     self.use_gradle_process_resources = use_gradle_process_resources
     self.jinja_processor = jinja_processor
     self.split_projects = split_projects
-    self.channel = channel
     self.processed_java_dirs = set()
     self.processed_prebuilts = set()
     self.processed_res_dirs = set()
@@ -521,7 +518,6 @@ def _GenerateBaseVars(generator, build_vars):
   variables['min_sdk_version'] = build_vars['default_min_sdk_version']
   variables['use_gradle_process_resources'] = (
       generator.use_gradle_process_resources)
-  variables['channel'] = generator.channel
   return variables
 
 
@@ -653,9 +649,9 @@ def _GenerateModuleAll(gradle_output_dir, generator, build_vars,
         os.path.join(gradle_output_dir, _MODULE_ALL, _CMAKE_FILE), cmake_data)
 
 
-def _GenerateRootGradle(jinja_processor, channel):
+def _GenerateRootGradle(jinja_processor):
   """Returns the data for the root project's build.gradle."""
-  return jinja_processor.Render(_TemplatePath('root'), {'channel': channel})
+  return jinja_processor.Render(_TemplatePath('root'))
 
 
 def _GenerateSettingsGradle(project_entries):
@@ -764,15 +760,6 @@ def main():
       default=os.path.expanduser('~/Android/Sdk'),
       help='The path to use as the SDK root, overrides the '
       'default at ~/Android/Sdk.')
-  version_group = parser.add_mutually_exclusive_group()
-  version_group.add_argument('--beta',
-                      action='store_true',
-                      help='Generate a project that is compatible with '
-                           'Android Studio Beta.')
-  version_group.add_argument('--canary',
-                      action='store_true',
-                      help='Generate a project that is compatible with '
-                           'Android Studio Canary.')
   args = parser.parse_args()
   if args.output_directory:
     constants.SetOutputDirectory(args.output_directory)
@@ -822,15 +809,9 @@ def main():
 
   build_vars = gn_helpers.ReadBuildVars(output_dir)
   jinja_processor = jinja_template.JinjaProcessor(_FILE_DIR)
-  if args.beta:
-    channel = 'beta'
-  elif args.canary:
-    channel = 'canary'
-  else:
-    channel = 'stable'
   generator = _ProjectContextGenerator(_gradle_output_dir, build_vars,
-      args.use_gradle_process_resources, jinja_processor, args.split_projects,
-      channel)
+                                       args.use_gradle_process_resources,
+                                       jinja_processor, args.split_projects)
 
   main_entries = [_ProjectEntry.FromGnTarget(t) for t in targets]
 
@@ -871,7 +852,7 @@ def main():
                        jinja_processor, args.native_targets)
 
   _WriteFile(os.path.join(generator.project_dir, _GRADLE_BUILD_FILE),
-             _GenerateRootGradle(jinja_processor, channel))
+             _GenerateRootGradle(jinja_processor))
 
   _WriteFile(os.path.join(generator.project_dir, 'settings.gradle'),
              _GenerateSettingsGradle(project_entries))
@@ -904,7 +885,7 @@ def main():
     targets = _RebasePath(generated_inputs, output_dir)
     _RunNinja(output_dir, targets)
 
-  print('Generated projects for Android Studio ' + channel)
+  print('Generated projects for Android Studio.')
   print('** Building using Android Studio / Gradle does not work.')
   print('** This project is only for IDE editing & tools.')
   print('Note: Generated files will appear only if they have been built')
