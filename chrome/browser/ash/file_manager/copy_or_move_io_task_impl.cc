@@ -229,6 +229,7 @@ void CopyOrMoveIOTaskImpl::GetFileSize(size_t idx) {
   const base::FilePath& destination = progress_.destination_folder.path();
 
   constexpr auto metadata_fields =
+      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
       storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
       storage::FileSystemOperation::GET_METADATA_FIELD_TOTAL_SIZE;
 
@@ -288,6 +289,7 @@ void CopyOrMoveIOTaskImpl::GotFileSize(size_t idx,
 
   progress_.total_bytes += file_info.size;
   source_sizes_[idx] = file_info.size;
+  progress_.sources[idx].is_directory = file_info.is_directory;
 
   // Return early if we didn't yet get the file size for all files.
   DCHECK_LT(files_preprocessed_, progress_.sources.size());
