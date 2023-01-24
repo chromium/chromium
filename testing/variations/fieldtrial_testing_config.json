@@ -3666,6 +3666,30 @@
             ]
         }
     ],
+    "DeferredSyncStartupCustomDelay": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled0Seconds",
+                    "params": {
+                        "DeferredSyncStartupCustomDelayInSeconds": "0"
+                    },
+                    "enable_features": [
+                        "DeferredSyncStartupCustomDelay"
+                    ]
+                }
+            ]
+        }
+    ],
     "DelayFirstWorkerWake": [
         {
             "platforms": [
