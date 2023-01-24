@@ -416,20 +416,16 @@ void FakeShillDeviceClient::AddCellularFoundNetwork(
   }
 
   // Add a new scan result entry
-  base::Value* scan_results =
-      device_properties->GetDict().Find(shill::kFoundNetworksProperty);
-  if (!scan_results) {
-    scan_results = device_properties->SetKey(shill::kFoundNetworksProperty,
-                                             base::Value(base::Value::List()));
-  }
-  base::Value new_result(base::Value::Type::DICTIONARY);
-  int idx = static_cast<int>(scan_results->GetList().size());
-  new_result.SetKey(shill::kNetworkIdProperty,
-                    base::Value(base::StringPrintf("network%d", idx)));
-  new_result.SetKey(shill::kLongNameProperty,
-                    base::Value(base::StringPrintf("Network %d", idx)));
-  new_result.SetKey(shill::kTechnologyProperty, base::Value("GSM"));
-  new_result.SetKey(shill::kStatusProperty, base::Value("available"));
+  base::Value::List* scan_results =
+      device_properties->GetDict().EnsureList(shill::kFoundNetworksProperty);
+  base::Value::Dict new_result;
+  int idx = static_cast<int>(scan_results->size());
+  new_result.Set(shill::kNetworkIdProperty,
+                 base::StringPrintf("network%d", idx));
+  new_result.Set(shill::kLongNameProperty,
+                 base::StringPrintf("Network %d", idx));
+  new_result.Set(shill::kTechnologyProperty, "GSM");
+  new_result.Set(shill::kStatusProperty, "available");
   scan_results->Append(std::move(new_result));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,

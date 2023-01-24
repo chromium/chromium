@@ -110,10 +110,10 @@ TEST_F(ShillProfileClientTest, GetProperties) {
   writer.CloseContainer(&array_writer);
 
   // Create the expected value.
-  base::Value entries(base::Value::Type::LIST);
+  base::Value::List entries;
   entries.Append(kExampleEntryPath);
   base::Value value(base::Value::Type::DICTIONARY);
-  value.SetKey(shill::kEntriesProperty, std::move(entries));
+  value.GetDict().Set(shill::kEntriesProperty, std::move(entries));
   // Set expectations.
   PrepareForMethodCall(shill::kGetPropertiesFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());

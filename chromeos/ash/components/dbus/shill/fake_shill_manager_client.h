@@ -158,10 +158,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   std::string GetInitialStateForType(const std::string& type, bool* enabled);
 
   // Dictionary of property name -> property value
-  base::Value stub_properties_{base::Value::Type::DICTIONARY};
+  base::Value::Dict stub_properties_;
 
   // Dictionary of technology -> list of property dictionaries
-  base::Value stub_geo_networks_{base::Value::Type::DICTIONARY};
+  base::Value::Dict stub_geo_networks_;
 
   // Delay for interactive actions
   base::TimeDelta interactive_delay_;
