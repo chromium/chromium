@@ -1047,7 +1047,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // because onResume() is guaranteed to called after onNewIntent() and thus have the updated
         // Intent which is used by shouldShowOverviewPageOnStart(). See https://crbug.com/1321607.
         if (mFromResumption) {
-            setInitialOverviewState();
+            setInitialOverviewState(shouldShowOverviewPageOnStart());
         } else {
             // Set mFromResumption to be true to skip the call of setInitialOverviewState() in
             // onStart() when the next time onStart() is called, since it is no longer a cold start.
@@ -1112,7 +1112,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // resumption. Defer it to onResumeWitheNative() since it needs to check the latest Intent
         // which is only guaranteed to be updated onResume() if onNewIntent() is called.
         if (!mPendingInitialTabCreation && !mFromResumption) {
-            setInitialOverviewState();
+            setInitialOverviewState(shouldShowOverviewPageOnStart());
         }
 
         Bundle savedInstanceState = getSavedInstanceState();
@@ -1199,13 +1199,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         StartupPaintPreviewHelper.setShouldShowOnRestore(shouldTrackColdStartupMetrics);
     }
 
-    private void setInitialOverviewState() {
+    private void setInitialOverviewState(boolean shouldShowOverviewPageOnStart) {
         if (mHasDeterminedOverviewStateForCurrentSession) return;
 
         mHasDeterminedOverviewStateForCurrentSession = true;
         boolean isOverviewVisible = isInOverviewMode();
 
-        if (shouldShowOverviewPageOnStart() && !isOverviewVisible) {
+        if (shouldShowOverviewPageOnStart && !isOverviewVisible) {
             if (getCurrentTabModel() != null) {
                 RecordHistogram.recordCount1MHistogram(
                         TAB_COUNT_ON_RETURN, getCurrentTabModel().getCount());
@@ -1405,7 +1405,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         // If the start surface or grid tab switcher will be shown on start, do not create a new
         // tab.
-        if (!shouldShowOverviewPageOnStart()) {
+        boolean shouldShowOverviewPageOnStart = shouldShowOverviewPageOnStart();
+        if (!shouldShowOverviewPageOnStart) {
             String url = HomepageManager.getHomepageUri();
             if (TextUtils.isEmpty(url)) {
                 url = UrlConstants.NTP_URL;
@@ -1423,7 +1424,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // If we didn't call setInitialOverviewState() in onStartWithNative() because
         // mPendingInitialTabCreation was true then do so now.
         if (hasStartWithNativeBeenCalled()) {
-            setInitialOverviewState();
+            // We have to use the cached value of shouldShowOverviewPageOnStart because once a new
+            // Tab is created above, the return value of shouldShowOverviewPageOnStart() may change
+            // since the Tab count is increased from 0 to 1.
+            setInitialOverviewState(shouldShowOverviewPageOnStart);
         }
 
         mAppLaunchDrawBlocker.onActiveTabAvailable(isTabRegularNtp(getActivityTab()));
@@ -1875,7 +1879,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mIsAccessibilityTabSwitcherEnabled =
                         DeviceClassManager.enableAccessibilityLayout(this);
                 assert !mHasDeterminedOverviewStateForCurrentSession;
-                setInitialOverviewState();
+                setInitialOverviewState(true /* shouldShowOverviewPageOnStart */);
             }
         }
     }
