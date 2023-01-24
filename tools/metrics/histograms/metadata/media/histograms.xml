@@ -3547,6 +3547,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.MSE.Mp4ConsecutiveEmptySamples" units="samples"
     expires_after="2023-07-02">
+  <obsolete>
+    Removed Jan 2023, no further data needed.
+  </obsolete>
   <owner>wolenetz@chromium.org</owner>
   <owner>sandersd@chromium.org</owner>
   <summary>
@@ -3560,6 +3563,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.MSE.Mp4EmptySamplesInTRun" units="samples"
     expires_after="2022-04-17">
+  <obsolete>
+    Removed Jan 2023, no further data needed.
+  </obsolete>
   <owner>wolenetz@chromium.org</owner>
   <owner>sandersd@chromium.org</owner>
   <summary>
@@ -3571,6 +3577,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.MSE.Mp4SampleSize" units="bytes"
     expires_after="2023-07-02">
+  <obsolete>
+    Removed Jan 2023, no further data needed.
+  </obsolete>
   <owner>wolenetz@chromium.org</owner>
   <owner>sandersd@chromium.org</owner>
   <summary>
@@ -3582,6 +3591,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.MSE.Mp4TrunSampleCount" units="samples"
     expires_after="2023-07-02">
+  <obsolete>
+    Removed Jan 2023, no further data needed.
+  </obsolete>
   <owner>wolenetz@chromium.org</owner>
   <owner>sandersd@chromium.org</owner>
   <summary>
