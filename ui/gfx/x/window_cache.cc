@@ -253,7 +253,7 @@ void WindowCache::OnEvent(const Event& event) {
   } else if (auto* shape = event.As<Shape::NotifyEvent>()) {
     Window window = shape->affected_window;
     Shape::Sk kind = shape->shape_kind;
-    if (base::Contains(windows_, window)) {
+    if (kind != Shape::Sk::Clip && base::Contains(windows_, window)) {
       AddRequest(connection_->shape().GetRectangles(window, kind),
                  &WindowCache::OnGetRectanglesResponse, window, kind);
     }
