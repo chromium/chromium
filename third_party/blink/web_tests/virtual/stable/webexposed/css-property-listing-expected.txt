@@ -82,6 +82,7 @@ All changes to this list should go through Blink's feature review process: http:
     background-repeat-y
     background-size
     baseline-shift
+    baseline-source
     block-size
     border-block-end-color
     border-block-end-style

@@ -39,6 +39,7 @@ backgroundRepeatY
 backgroundSize
 basePalette
 baselineShift
+baselineSource
 blockSize
 border
 borderBlock

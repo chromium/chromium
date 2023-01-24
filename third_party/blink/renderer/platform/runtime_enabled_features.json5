@@ -634,7 +634,8 @@
     },
     {
       name: "CSSBaselineSource",
-      status: "experimental",
+      status: "stable",
+      base_feature: "CSSBaselineSource",
     },
     {
       // Support CSS Values Level 4 calc simplification and serialization
