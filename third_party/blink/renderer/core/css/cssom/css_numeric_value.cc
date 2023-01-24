@@ -153,7 +153,10 @@ CSSNumericValue* CalcToNumericValue(const CSSMathExpressionNode& root) {
     return CSSMathSum::Create(std::move(values));
   }
 
-  DCHECK(root.IsOperation());
+  // TODO(crbug.com/1376521): Implement Typed OM API for `anchor()`, and turn
+  // the CHECK below back into a DCHECK.
+
+  CHECK(root.IsOperation());
 
   CSSNumericValueVector values;
 
