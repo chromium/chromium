@@ -8,6 +8,7 @@ rect.setAttribute("x", "0");
 rect.setAttribute("width", "100");
 rect.setAttribute("height", "100");
 rect.setAttribute("fill", "green");
+rect.setAttribute("font-family", "Ahem");
 rect.setAttribute("font-size", "10px");
 rect.setAttribute("onclick", "executeTest()");
 
@@ -17,7 +18,7 @@ animate.setAttribute("attributeName", "width");
 animate.setAttribute("begin", "click");
 animate.setAttribute("dur", "4s");
 animate.setAttribute("from", "100px");
-animate.setAttribute("to", "40ex");
+animate.setAttribute("to", "25ex");
 rect.appendChild(animate);
 rootSVGElement.appendChild(rect);
 
