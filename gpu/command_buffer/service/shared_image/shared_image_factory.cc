@@ -449,12 +449,10 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
 
   std::unique_ptr<SharedImageBacking> backing;
   if (use_compound) {
-    // Only allow shmem overlays for NV12 on Windows.
 #if BUILDFLAG(IS_WIN)
-    const bool allow_shm_overlays =
-        format == gfx::BufferFormat::YUV_420_BIPLANAR;
+    constexpr bool allow_shm_overlays = true;
 #else
-    const bool allow_shm_overlays = false;
+    constexpr bool allow_shm_overlays = false;
 #endif
     backing = CompoundImageBacking::CreateSharedMemory(
         factory, allow_shm_overlays, mailbox, std::move(handle), format, plane,
