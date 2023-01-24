@@ -23,7 +23,8 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
     private final CardUnmaskPrompt mCardUnmaskPrompt;
 
     private CardUnmaskBridge(long nativeCardUnmaskPromptViewAndroid, String title,
-            String instructions, String confirmButtonLabel, int cvcIconId, int googlePayIconId,
+            String instructions, int cardIconId, String cardName, String cardLastFourDigits,
+            String cardExpiration, String confirmButtonLabel, int cvcIconId, int googlePayIconId,
             boolean isVirtualCard, boolean shouldRequestExpirationDate, boolean shouldOfferWebauthn,
             boolean defaultUseScreenlockChecked, long successMessageDurationMilliseconds,
             WindowAndroid windowAndroid) {
@@ -36,22 +37,26 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
             new Handler().post(() -> dismissed());
         } else {
             mCardUnmaskPrompt = new CardUnmaskPrompt(activity, this, title, instructions,
-                    confirmButtonLabel, cvcIconId, googlePayIconId, isVirtualCard,
-                    shouldRequestExpirationDate, shouldOfferWebauthn, defaultUseScreenlockChecked,
+                    cardIconId, cardName, cardLastFourDigits, cardExpiration, confirmButtonLabel,
+                    cvcIconId, googlePayIconId, isVirtualCard, shouldRequestExpirationDate,
+                    shouldOfferWebauthn, defaultUseScreenlockChecked,
                     successMessageDurationMilliseconds);
         }
     }
 
+    // TODO (crbug.com/1356735): Sync down the credit card directly from native instead of adding
+    // more and more arguments.
     @CalledByNative
     private static CardUnmaskBridge create(long nativeUnmaskPrompt, String title,
-            String instructions, String confirmButtonLabel, int cvcIconId, int googlePayIconId,
+            String instructions, int cardIconId, String cardName, String cardLastFourDigits,
+            String cardExpiration, String confirmButtonLabel, int cvcIconId, int googlePayIconId,
             boolean isVirtualCard, boolean shouldRequestExpirationDate, boolean shouldOfferWebauthn,
             boolean defaultUseScreenlockChecked, long successMessageDurationMilliseconds,
             WindowAndroid windowAndroid) {
-        return new CardUnmaskBridge(nativeUnmaskPrompt, title, instructions, confirmButtonLabel,
-                cvcIconId, googlePayIconId, isVirtualCard, shouldRequestExpirationDate,
-                shouldOfferWebauthn, defaultUseScreenlockChecked,
-                successMessageDurationMilliseconds, windowAndroid);
+        return new CardUnmaskBridge(nativeUnmaskPrompt, title, instructions, cardIconId, cardName,
+                cardLastFourDigits, cardExpiration, confirmButtonLabel, cvcIconId, googlePayIconId,
+                isVirtualCard, shouldRequestExpirationDate, shouldOfferWebauthn,
+                defaultUseScreenlockChecked, successMessageDurationMilliseconds, windowAndroid);
     }
 
     @Override

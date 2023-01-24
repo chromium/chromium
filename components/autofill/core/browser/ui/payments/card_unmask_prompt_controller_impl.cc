@@ -283,6 +283,22 @@ bool CardUnmaskPromptControllerImpl::ShouldRequestExpirationDate() const {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+std::string CardUnmaskPromptControllerImpl::GetCardIconString() const {
+  return card_.CardIconStringForAutofillSuggestion();
+}
+
+std::u16string CardUnmaskPromptControllerImpl::GetCardName() const {
+  return card_.CardNameForAutofillDisplay();
+}
+
+std::u16string CardUnmaskPromptControllerImpl::GetCardLastFourDigits() const {
+  return card_.ObfuscatedNumberWithVisibleLastFourDigits();
+}
+
+std::u16string CardUnmaskPromptControllerImpl::GetCardExpiration() const {
+  return card_.ExpirationDateForDisplay();
+}
+
 int CardUnmaskPromptControllerImpl::GetGooglePayImageRid() const {
   return IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER;
 }

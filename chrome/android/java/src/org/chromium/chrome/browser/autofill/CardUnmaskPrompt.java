@@ -35,7 +35,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.task.AsyncTask;
-import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.ErrorType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -43,9 +42,9 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ChromeImageView;
 
 import java.util.Calendar;
-import java.util.Locale;
 
 /**
  * A prompt that bugs users to enter their CVC when unmasking a Wallet instrument (credit card).
@@ -148,7 +147,8 @@ public class CardUnmaskPrompt
     }
 
     public CardUnmaskPrompt(Context context, CardUnmaskPromptDelegate delegate, String title,
-            String instructions, String confirmButtonLabel, int cvcDrawableId,
+            String instructions, int cardIconId, String cardName, String cardLastFourDigits,
+            String cardExpiration, String confirmButtonLabel, int cvcDrawableId,
             int googlePayDrawableId, boolean isVirtualCard, boolean shouldRequestExpirationDate,
             boolean shouldOfferWebauthn, boolean defaultUseScreenlockChecked,
             long successMessageDurationMilliseconds) {
@@ -161,23 +161,15 @@ public class CardUnmaskPrompt
                     ChromeFeatureList.AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID)) {
             mMainView = inflater.inflate(R.layout.autofill_card_unmask_prompt_new, null);
 
-            // TODO (crbug.com/1356735): These mock card details are added to demo the UI. Remove
-            // when actual card details are synced from native. Only shown in debug builds.
-            if (BuildConfig.ENABLE_ASSERTS) {
-                ViewGroup cardDetails =
-                        (ViewGroup) mMainView.findViewById(R.id.card_details_container);
-                cardDetails.setVisibility(View.VISIBLE);
-
-                String cardName = "Chase Sapphire Preferred Ultimate Rewards Card";
-                String lastFour = "....1234";
-                String expiration = "12/2029";
-                ((TextView) mMainView.findViewById(R.id.card_name))
-                        .setText(String.format(Locale.ROOT, "%s", cardName));
-                ((TextView) mMainView.findViewById(R.id.card_last_four))
-                        .setText(String.format(Locale.ROOT, "%s", lastFour));
-                ((TextView) mMainView.findViewById(R.id.card_expiration))
-                        .setText(String.format(Locale.ROOT, "%s", expiration));
+            // Populate card details.
+            if (cardIconId != 0) {
+                ChromeImageView cardIconView =
+                        (ChromeImageView) mMainView.findViewById(R.id.card_icon);
+                cardIconView.setImageDrawable(context.getDrawable(cardIconId));
             }
+            ((TextView) mMainView.findViewById(R.id.card_name)).setText(cardName);
+            ((TextView) mMainView.findViewById(R.id.card_last_four)).setText(cardLastFourDigits);
+            ((TextView) mMainView.findViewById(R.id.card_expiration)).setText(cardExpiration);
         } else {
             mMainView = inflater.inflate(R.layout.autofill_card_unmask_prompt, null);
         }

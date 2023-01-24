@@ -6,6 +6,7 @@
 
 #include "chrome/android/chrome_jni_headers/CardUnmaskBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
+#include "chrome/browser/autofill/autofill_popup_controller_utils.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -149,12 +150,22 @@ CardUnmaskPromptViewAndroid::GetOrCreateJavaObject() {
   ScopedJavaLocalRef<jstring> instructions =
       base::android::ConvertUTF16ToJavaString(
           env, controller_->GetInstructionsMessage());
+  ScopedJavaLocalRef<jstring> card_name =
+      base::android::ConvertUTF16ToJavaString(env, controller_->GetCardName());
+  ScopedJavaLocalRef<jstring> card_last_four_digits =
+      base::android::ConvertUTF16ToJavaString(
+          env, controller_->GetCardLastFourDigits());
+  ScopedJavaLocalRef<jstring> card_expiration =
+      base::android::ConvertUTF16ToJavaString(env,
+                                              controller_->GetCardExpiration());
   ScopedJavaLocalRef<jstring> confirm = base::android::ConvertUTF16ToJavaString(
       env, controller_->GetOkButtonLabel());
 
   return java_object_internal_ = Java_CardUnmaskBridge_create(
              env, reinterpret_cast<intptr_t>(this), dialog_title, instructions,
-             confirm,
+             ResourceMapper::MapToJavaDrawableId(
+                 GetIconResourceID(controller_->GetCardIconString())),
+             card_name, card_last_four_digits, card_expiration, confirm,
              ResourceMapper::MapToJavaDrawableId(controller_->GetCvcImageRid()),
              ResourceMapper::MapToJavaDrawableId(
                  controller_->GetGooglePayImageRid()),
