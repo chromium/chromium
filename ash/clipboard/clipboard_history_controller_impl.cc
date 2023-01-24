@@ -56,7 +56,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/chromeos/events/keyboard_layout_util.h"
+#include "ui/chromeos/events/keyboard_capability.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -684,7 +684,8 @@ void ClipboardHistoryControllerImpl::OnOperationConfirmed(bool copy) {
       base::RecordAction(base::UserMetricsAction("Ash_Clipboard_CopiedItem"));
 
       // TODO(b/264913203): Add proper string resources for toast.
-      bool use_launcher_key = ui::DeviceUsesKeyboardLayout2();
+      bool use_launcher_key =
+          Shell::Get()->keyboard_capability()->HasLauncherButton();
       std::u16string shortcut_key = l10n_util::GetStringUTF16(
           use_launcher_key ? IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER
                            : IDS_ASH_SHORTCUT_MODIFIER_SEARCH);

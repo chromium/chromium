@@ -18,7 +18,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/system_nudge_label.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/chromeos/events/keyboard_layout_util.h"
+#include "ui/chromeos/events/keyboard_capability.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/color_palette.h"
@@ -69,7 +69,8 @@ ClipboardNudge::ClipboardNudge(ClipboardNudgeType nudge_type)
 ClipboardNudge::~ClipboardNudge() = default;
 
 std::unique_ptr<SystemNudgeLabel> ClipboardNudge::CreateLabelView() const {
-  bool use_launcher_key = ui::DeviceUsesKeyboardLayout2();
+  bool use_launcher_key =
+      Shell::Get()->keyboard_capability()->HasLauncherButton();
   std::u16string shortcut_key = l10n_util::GetStringUTF16(
       use_launcher_key ? IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER
                        : IDS_ASH_SHORTCUT_MODIFIER_SEARCH);

@@ -77,7 +77,6 @@ bool KeyboardCapability::HasLauncherButton(
   if (!keyboard.has_value()) {
     // DeviceUsesKeyboardLayout2() relies on DeviceDataManager.
     DCHECK(DeviceDataManager::HasInstance());
-    DCHECK(DeviceDataManager::GetInstance()->AreDeviceListsComplete());
     return DeviceUsesKeyboardLayout2();
   }
 
