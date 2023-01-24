@@ -120,10 +120,21 @@
     width: 100%;
   }
 
-  .album-info-mainpage {
+  .album-info-mainpage,
+  #textPlaceholder {
+    align-items: center;
     display: flex;
     grid-area: mainpage-desc;
     justify-content: center;
+  }
+
+  .pre-ui-change .album-info-mainpage,
+  .pre-ui-change #textPlaceholder {
+    align-items: flex-start;
+  }
+
+  #textPlaceholder .placeholder:first-child {
+    margin-top: 8px;
   }
 
   .album-info-mainpage:not(.pre-ui-change) span {
@@ -312,7 +323,9 @@
       <div class="placeholder"></div>
       <div class="placeholder"></div>
     </div>
-    <div id="collagePlaceholder" class="placeholder"></div>
+    <template is="dom-if" if="[[!isAmbientSubpageUiChangeEnabled_]]">
+      <div id="collagePlaceholder" class="placeholder"></div>
+    </template>
   </template>
   <template is="dom-if" if="[[!loading_]]">
     <template is="dom-if" if="[[!ambientModeEnabled_]]">
