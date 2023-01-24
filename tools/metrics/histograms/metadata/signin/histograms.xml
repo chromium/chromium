@@ -22,7 +22,7 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Signin" enum="SigninHelperFlow" expires_after="2023-07-16">
+<histogram name="Signin" enum="SigninHelperFlow" expires_after="2023-07-23">
   <owner>mlerman@chromium.org</owner>
   <summary>
     Tracks user interactions as they sign in through a flow. The suffix of the
@@ -248,7 +248,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AndroidIsFREStudyGroupConsistent"
-    enum="BooleanConsistent" expires_after="2023-05-20">
+    enum="BooleanConsistent" expires_after="2023-07-23">
   <owner>bsazonov@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
