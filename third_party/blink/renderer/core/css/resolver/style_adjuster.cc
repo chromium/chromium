@@ -1103,7 +1103,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     // needs to be legacy objects, in order to be fragmentable). Set a flag, so
     // that we can quickly determine whether we need to check that an element is
     // compatible with the block fragmentation implementation being used.
-    if (builder.InternalStyle()->SpecifiesColumns() ||
+    if (builder.SpecifiesColumns() ||
         (element && element->GetDocument().Printing())) {
       builder.SetInsideFragmentationContextWithNondeterministicEngine(true);
     }
