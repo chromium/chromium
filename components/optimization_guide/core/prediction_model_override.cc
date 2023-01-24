@@ -72,11 +72,11 @@ std::unique_ptr<proto::PredictionModel> ProcessModelOverrideOnBGThread(
 }
 
 void OnModelOverrideUnzipped(proto::OptimizationTarget optimization_target,
-                             const base::FilePath& unzipped_dir_path,
+                             const base::FilePath& base_model_dir,
                              OnPredictionModelBuiltCallback callback,
                              bool success) {
   if (!success) {
-    LOG(ERROR) << FilePathToString(unzipped_dir_path) << "failed to unzip";
+    LOG(ERROR) << FilePathToString(base_model_dir) << "failed to unzip";
     std::move(callback).Run(nullptr);
     return;
   }
@@ -84,16 +84,16 @@ void OnModelOverrideUnzipped(proto::OptimizationTarget optimization_target,
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&ProcessModelOverrideOnBGThread, optimization_target,
-                     unzipped_dir_path),
+                     base_model_dir),
       base::BindOnce(&OnModelOverrideProcessed, std::move(callback)));
 }
 
-void OnModelOverrideVerified(
-    proto::OptimizationTarget optimization_target,
-    const std::string& passed_crx_file_path,
-    OnPredictionModelBuiltCallback callback,
-    absl::optional<std::pair<base::FilePath, base::FilePath>> src_dst) {
-  if (!src_dst) {
+void OnModelOverrideVerified(proto::OptimizationTarget optimization_target,
+                             const base::FilePath& passed_crx_file_path,
+                             const base::FilePath& base_model_dir,
+                             OnPredictionModelBuiltCallback callback,
+                             bool is_verify_success) {
+  if (!is_verify_success) {
     LOG(ERROR) << passed_crx_file_path << " failed verification";
     std::move(callback).Run(nullptr);
     return;
@@ -104,15 +104,16 @@ void OnModelOverrideVerified(
 #else
   auto unzipper = unzip::LaunchUnzipper();
 #endif
-  unzip::Unzip(std::move(unzipper), src_dst->first, src_dst->second,
+  unzip::Unzip(std::move(unzipper), passed_crx_file_path, base_model_dir,
                base::BindOnce(&OnModelOverrideUnzipped, optimization_target,
-                              src_dst->second, std::move(callback)));
+                              base_model_dir, std::move(callback)));
 }
 
 }  // namespace
 
 void BuildPredictionModelFromCommandLineForOptimizationTarget(
     proto::OptimizationTarget optimization_target,
+    const base::FilePath& base_model_dir,
     OnPredictionModelBuiltCallback callback) {
   absl::optional<std::pair<std::string, absl::optional<proto::Any>>>
       model_file_path_and_metadata =
@@ -136,10 +137,11 @@ void BuildPredictionModelFromCommandLineForOptimizationTarget(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(PredictionModelDownloadManager::VerifyDownload,
                        *StringToFilePath(model_file_path_and_metadata->first),
+                       base_model_dir,
                        /*delete_file_on_error=*/false),
         base::BindOnce(&OnModelOverrideVerified, optimization_target,
-                       model_file_path_and_metadata->first,
-                       std::move(callback)));
+                       *StringToFilePath(model_file_path_and_metadata->first),
+                       base_model_dir, std::move(callback)));
     return;
   }
 

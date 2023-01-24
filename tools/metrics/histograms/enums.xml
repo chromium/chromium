@@ -75819,6 +75819,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="12" label="Model directory could not be created">
     The directory needed to store this model version could not be created.
   </int>
+  <int value="13" label="Failed to save model info">
+    The model info was not saved to model store file.
+  </int>
+  <int value="14" label="Invalid additional file found">
+    The additional file was not found in the CRX file.
+  </int>
 </enum>
 
 <enum name="OptimizationGuidePredictionModelStoreModelRemovalReason">

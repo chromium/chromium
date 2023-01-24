@@ -275,6 +275,11 @@ class PredictionManager : public PredictionModelDownloadObserver {
       const proto::PredictionModel& get_models_response_model,
       std::unique_ptr<proto::PredictionModel> loaded_model);
 
+  // Returns a new file path for the directory to download the model files for
+  // |optimization_target|. The directory will not be created.
+  base::FilePath GetBaseModelDirForDownload(
+      proto::OptimizationTarget optimization_target);
+
   void SetModelCacheKeyForTesting(const proto::ModelCacheKey& model_cache_key) {
     model_cache_key_ = model_cache_key;
   }

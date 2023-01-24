@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
 #include "base/functional/callback.h"
+#include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
@@ -770,8 +771,12 @@ void PredictionManager::MaybeInitializeModelDownloads(
       !prediction_model_download_manager_) {
     prediction_model_download_manager_ =
         std::make_unique<PredictionModelDownloadManager>(
-            background_download_service, models_dir_path_,
-            prediction_model_store_, model_cache_key_,
+            background_download_service,
+            base::BindRepeating(
+                &PredictionManager::GetBaseModelDirForDownload,
+                // base::Unretained is safe here because the
+                // PredictionModelDownloadManager is owned by `this`
+                base::Unretained(this)),
             base::ThreadPool::CreateSequencedTaskRunner(
                 {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
                  base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}));
@@ -826,8 +831,10 @@ void PredictionManager::LoadPredictionModels(
 
   if (switches::IsModelOverridePresent()) {
     for (proto::OptimizationTarget optimization_target : optimization_targets) {
+      base::FilePath base_model_dir =
+          GetBaseModelDirForDownload(optimization_target);
       BuildPredictionModelFromCommandLineForOptimizationTarget(
-          optimization_target,
+          optimization_target, base_model_dir,
           base::BindOnce(&PredictionManager::OnPredictionModelOverrideLoaded,
                          ui_weak_ptr_factory_.GetWeakPtr(),
                          optimization_target));
@@ -1052,6 +1059,15 @@ void PredictionManager::SetLastModelFetchSuccessTime(
 
 void PredictionManager::SetClockForTesting(const base::Clock* clock) {
   clock_ = clock;
+}
+
+base::FilePath PredictionManager::GetBaseModelDirForDownload(
+    proto::OptimizationTarget optimization_target) {
+  return features::IsInstallWideModelStoreEnabled()
+             ? prediction_model_store_->GetBaseModelDirForModelCacheKey(
+                   optimization_target, model_cache_key_)
+             : models_dir_path_.AppendASCII(
+                   base::GUID::GenerateRandomV4().AsLowercaseString());
 }
 
 void PredictionManager::OverrideTargetModelForTesting(

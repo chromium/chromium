@@ -8,6 +8,10 @@
 #include "base/functional/callback.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace optimization_guide {
 
 // Attempts to parse the result from |GetModelOverrideForOptimizationTarget|
@@ -17,6 +21,7 @@ using OnPredictionModelBuiltCallback =
     base::OnceCallback<void(std::unique_ptr<proto::PredictionModel>)>;
 void BuildPredictionModelFromCommandLineForOptimizationTarget(
     proto::OptimizationTarget optimization_target,
+    const base::FilePath& base_model_dir,
     OnPredictionModelBuiltCallback callback);
 
 }  // namespace optimization_guide

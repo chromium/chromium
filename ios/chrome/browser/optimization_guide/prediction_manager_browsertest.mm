@@ -638,17 +638,12 @@ TEST_F(PredictionManagerModelDownloadingBrowserTest,
       "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 1);
   task_environment_.RunUntilIdle();
 
-  // The additional file should not have been able to be moved, since it doesn't
-  // exist.
+  // The additional file does not exist.
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
       optimization_guide::PredictionModelDownloadStatus::
-          kFailedModelFileOtherError,
+          kFailedInvalidAdditionalFile,
       1);
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError."
-      "PainfulPageLoad",
-      std::abs(base::File::Error::FILE_ERROR_NOT_FOUND), 1);
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);

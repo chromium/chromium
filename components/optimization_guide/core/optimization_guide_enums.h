@@ -112,9 +112,11 @@ enum class PredictionModelDownloadStatus {
   kCouldNotCreateDirectory = 12,
   // The model info was not saved to model store file.
   kFailedModelInfoSaving = 13,
+  // The additional file was not found in the CRX file.
+  kFailedInvalidAdditionalFile = 14,
 
   // Add new values above this line.
-  kMaxValue = kFailedModelInfoSaving,
+  kMaxValue = kFailedInvalidAdditionalFile,
 };
 
 // The status for the page content annotations being stored.

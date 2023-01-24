@@ -123,13 +123,13 @@ class FakePredictionModelDownloadManager
     : public PredictionModelDownloadManager {
  public:
   explicit FakePredictionModelDownloadManager(
-      const base::FilePath& models_dir_path,
+      GetBaseModelDirForDownloadCallback
+          get_base_model_dir_for_download_callback,
       scoped_refptr<base::SequencedTaskRunner> task_runner)
-      : PredictionModelDownloadManager(/*download_service=*/nullptr,
-                                       models_dir_path,
-                                       /*prediction_model_store=*/nullptr,
-                                       proto::ModelCacheKey(),
-                                       task_runner) {}
+      : PredictionModelDownloadManager(
+            /*download_service=*/nullptr,
+            get_base_model_dir_for_download_callback,
+            task_runner) {}
   ~FakePredictionModelDownloadManager() override = default;
 
   void StartDownload(const GURL& url,
@@ -480,10 +480,20 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
         prediction_manager()->prediction_model_fetcher());
   }
 
+  void CreatePredictionModelDownloadManager() {
+    prediction_manager()->SetPredictionModelDownloadManagerForTesting(
+        std::make_unique<FakePredictionModelDownloadManager>(
+            base::BindRepeating(&PredictionManager::GetBaseModelDirForDownload,
+                                base::Unretained(prediction_manager())),
+            task_environment()->GetMainThreadTaskRunner()));
+  }
+
   FakePredictionModelDownloadManager* prediction_model_download_manager()
       const {
     return static_cast<FakePredictionModelDownloadManager*>(
-        temp_dir(), prediction_manager()->prediction_model_download_manager());
+        base::BindRepeating(&PredictionManager::GetBaseModelDirForDownload,
+                            base::Unretained(prediction_manager())),
+        prediction_manager()->prediction_model_download_manager());
   }
 
   TestOptimizationGuideStore* models_and_features_store() const {
@@ -1008,9 +1018,7 @@ TEST_P(PredictionManagerTest, DownloadManagerUnavailableShouldNotFetch) {
   prediction_manager()->SetPredictionModelFetcherForTesting(
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchSuccessWithModels));
-  prediction_manager()->SetPredictionModelDownloadManagerForTesting(
-      std::make_unique<FakePredictionModelDownloadManager>(
-          temp_dir(), task_environment()->GetMainThreadTaskRunner()));
+  CreatePredictionModelDownloadManager();
   prediction_model_download_manager()->SetAvailableForDownloads(false);
 
   FakeOptimizationTargetModelObserver observer;
@@ -1036,9 +1044,7 @@ TEST_P(PredictionManagerTest, UpdateModelWithDownloadUrl) {
   prediction_manager()->SetPredictionModelFetcherForTesting(
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchSuccessWithModels));
-  prediction_manager()->SetPredictionModelDownloadManagerForTesting(
-      std::make_unique<FakePredictionModelDownloadManager>(
-          temp_dir(), task_environment()->GetMainThreadTaskRunner()));
+  CreatePredictionModelDownloadManager();
 
   FakeOptimizationTargetModelObserver observer;
   prediction_manager()->AddObserverForOptimizationTargetModel(
@@ -1199,9 +1205,7 @@ TEST_P(PredictionManagerTest, ModelFetcherTimerRetryDelay) {
   prediction_manager()->SetPredictionModelFetcherForTesting(
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchFailed));
-  prediction_manager()->SetPredictionModelDownloadManagerForTesting(
-      std::make_unique<FakePredictionModelDownloadManager>(
-          temp_dir(), task_environment()->GetMainThreadTaskRunner()));
+  CreatePredictionModelDownloadManager();
 
   FakeOptimizationTargetModelObserver observer;
   prediction_manager()->AddObserverForOptimizationTargetModel(
@@ -1226,9 +1230,7 @@ TEST_P(PredictionManagerTest, ModelFetcherTimerFetchSucceeds) {
   prediction_manager()->SetPredictionModelFetcherForTesting(
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchSuccessWithModels));
-  prediction_manager()->SetPredictionModelDownloadManagerForTesting(
-      std::make_unique<FakePredictionModelDownloadManager>(
-          temp_dir(), task_environment()->GetMainThreadTaskRunner()));
+  CreatePredictionModelDownloadManager();
 
   FakeOptimizationTargetModelObserver observer;
   prediction_manager()->AddObserverForOptimizationTargetModel(
