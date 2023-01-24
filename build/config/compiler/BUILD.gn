@@ -778,6 +778,10 @@ config("compiler") {
     ldflags += [ "-Wl,--undefined-version" ]
   }
 
+  if (use_lld && is_apple) {
+    ldflags += [ "-Wl,--strict-auto-link" ]
+  }
+
   # LLD does call-graph-sorted binary layout by default when profile data is
   # present. On Android this increases binary size due to more thinks for long
   # jumps. Turn it off by default and enable selectively for targets where it's
