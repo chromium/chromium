@@ -12,6 +12,7 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
+import {constants} from './constants.js';
 import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {ActionModelUI} from './ui/action_model_ui.js';
@@ -814,6 +815,14 @@ export class ActionsModel extends EventTarget {
                           chrome.runtime.lastError.message);
                     } else {
                       customActions.forEach(action => {
+                        // Skip fake actions that should not be displayed to the
+                        // user, for example actions that just expose OneDrive
+                        // URLs.
+                        // TODO(b/237216270): Restrict to the ODFS extension ID.
+                        if (action.id ===
+                            constants.FSP_ACTION_HIDDEN_ODFS_URL) {
+                          return;
+                        }
                         actions[action.id] = new CustomAction(
                             this.entries_, action.id, action.title || null,
                             this.invalidate_.bind(this));

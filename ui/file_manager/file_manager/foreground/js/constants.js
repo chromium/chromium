@@ -108,3 +108,10 @@ constants.DEFAULT_BRUSCHETTA_VM = 'bru';
  * @const {string}
  */
 constants.CROSTINI_CONNECT_ERR = 'CrostiniConnectErr';
+
+/**
+ * ID of the fake fileSystemProvider custom action containing OneDrive document
+ * URLs.
+ * @const {string}
+ */
+constants.FSP_ACTION_HIDDEN_ODFS_URL = 'HIDDEN_ODFS_URL';

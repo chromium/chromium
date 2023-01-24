@@ -50,9 +50,6 @@ class CommonAppsNavigationThrottle : public apps::AppsNavigationThrottle {
   bool ShouldCancelNavigation(content::NavigationHandle* handle) override;
   bool ShouldShowDisablePage(content::NavigationHandle* handle) override;
   ThrottleCheckResult MaybeShowCustomResult() override;
-  bool ShouldOverrideUrlLoadingForOfficeExperiment(
-      const GURL& previous_url,
-      const GURL& current_url) override;
 
   // Used to create a unique timestamped URL to force reload apps.
   // Points to the base::DefaultTickClock by default.

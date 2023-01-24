@@ -113,28 +113,4 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsBrowserTest,
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsBrowserTest,
-                       OverrideLoadingForNonEmptyPreviousUrl) {
-  EXPECT_FALSE(ChromeOsWebAppExperiments::ShouldOverrideUrlLoading(
-      extended_scope_page_, extended_scope_.Resolve("app3.html")));
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsBrowserTest,
-                       OverrideLoadingForInvalidUrl) {
-  EXPECT_FALSE(
-      ChromeOsWebAppExperiments::ShouldOverrideUrlLoading(GURL(), GURL("a")));
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsBrowserTest,
-                       OverrideLoadingForOutOfScopeUrl) {
-  EXPECT_FALSE(ChromeOsWebAppExperiments::ShouldOverrideUrlLoading(
-      GURL(), GURL("https://google.com")));
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsBrowserTest,
-                       OverrideLoadingForExtendedScopeUrl) {
-  EXPECT_TRUE(ChromeOsWebAppExperiments::ShouldOverrideUrlLoading(
-      GURL(), extended_scope_page_));
-}
-
 }  // namespace web_app

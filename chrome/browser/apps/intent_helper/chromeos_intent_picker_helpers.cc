@@ -26,8 +26,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
-#include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
-#include "chrome/common/chrome_features.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -238,18 +236,6 @@ void LaunchAppFromIntentPickerChromeOs(content::WebContents* web_contents,
         std::make_unique<WindowInfo>(display::kDefaultDisplayId));
     CloseOrGoBack(web_contents);
   }
-}
-
-bool ShouldOverrideUrlLoadingForOfficeExperiment(const GURL& previous_url,
-                                                 const GURL& current_url) {
-  if (base::FeatureList::IsEnabled(
-          ::features::kMicrosoftOfficeWebAppExperiment)) {
-    if (web_app::ChromeOsWebAppExperiments::ShouldOverrideUrlLoading(
-            previous_url, current_url)) {
-      return true;
-    }
-  }
-  return false;
 }
 
 }  // namespace apps

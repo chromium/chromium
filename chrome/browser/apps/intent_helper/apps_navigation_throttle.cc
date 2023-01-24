@@ -113,11 +113,8 @@ ThrottleCheckResult AppsNavigationThrottle::HandleRequest() {
 
   // Do not automatically launch the app if we shouldn't override url loading,
   // or if we don't have a browser, or we are already in an app browser.
-  bool override_for_office =
-      ShouldOverrideUrlLoadingForOfficeExperiment(starting_url_, url);
-  bool should_override =
-      ShouldOverrideUrlLoading(starting_url_, url) || override_for_office;
-  if (should_override && !InAppBrowser(web_contents)) {
+  if (ShouldOverrideUrlLoading(starting_url_, url) &&
+      !InAppBrowser(web_contents)) {
     // Handles apps that are automatically launched and the navigation needs to
     // be cancelled. This only applies on the new intent picker system, because
     // we don't need to defer the navigation to find out preferred app anymore.
@@ -130,12 +127,6 @@ ThrottleCheckResult AppsNavigationThrottle::HandleRequest() {
   }
 
   return content::NavigationThrottle::PROCEED;
-}
-
-bool AppsNavigationThrottle::ShouldOverrideUrlLoadingForOfficeExperiment(
-    const GURL& previous_url,
-    const GURL& current_url) {
-  return false;
 }
 
 }  // namespace apps

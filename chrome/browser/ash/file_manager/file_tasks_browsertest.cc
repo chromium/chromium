@@ -21,6 +21,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
@@ -80,6 +83,8 @@ namespace file_tasks {
 namespace {
 
 const char* blockedUrl = "https://blocked.com";
+
+static const char kOneDriveSampleUrl[] = "https://1drv.ms/123";
 
 // A list of file extensions (`/` delimited) representing a selection of files
 // and the app expected to be the default to open these files.
@@ -1049,28 +1054,16 @@ IN_PROC_BROWSER_TEST_F(DriveTest, FileNotInDriveOpensSetUpDialog) {
 class FakeProvidedFileSystemOneDrive
     : public ash::file_system_provider::FakeProvidedFileSystem {
  public:
-  FakeProvidedFileSystemOneDrive(
-      const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
-      base::OnceClosure callback)
-      : FakeProvidedFileSystem(file_system_info),
-        callback_(std::move(callback)) {}
-
-  ash::file_system_provider::AbortCallback ExecuteAction(
+  explicit FakeProvidedFileSystemOneDrive(
+      const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info)
+      : FakeProvidedFileSystem(file_system_info) {}
+  ash::file_system_provider::AbortCallback GetActions(
       const std::vector<base::FilePath>& entry_paths,
-      const std::string& action_id,
-      storage::AsyncFileUtil::StatusCallback callback) override {
-    // When the "OPEN_WEB" action is observed, notify the
-    // `OneDriveTest` via the `callback_`.
-    if (action_id == file_manager::file_tasks::kActionIdOpenWeb) {
-      std::move(callback_).Run();
-    }
-    return FakeProvidedFileSystem::ExecuteAction(entry_paths, action_id,
-                                                 std::move(callback));
+      GetActionsCallback callback) override {
+    std::move(callback).Run({{"HIDDEN_ONEDRIVE_URL", kOneDriveSampleUrl}},
+                            base::File::FILE_OK);
+    return ash::file_system_provider::AbortCallback();
   }
-
- protected:
-  // OneDriveTest::OpenWebAction.
-  base::OnceClosure callback_;
 };
 
 // TODO(cassycc): move this class to a more appropriate spot
@@ -1083,13 +1076,12 @@ class FakeExtensionProviderOneDrive
   static std::unique_ptr<ProviderInterface> Create(
       const extensions::ExtensionId& extension_id,
       const base::FilePath relative_test_file_path,
-      std::string test_file_name,
-      base::OnceClosure callback) {
+      std::string test_file_name) {
     ash::file_system_provider::Capabilities default_capabilities(
         false, false, false, extensions::SOURCE_NETWORK);
     return std::unique_ptr<ProviderInterface>(new FakeExtensionProviderOneDrive(
         extension_id, default_capabilities, relative_test_file_path,
-        test_file_name, std::move(callback)));
+        test_file_name));
   }
 
   std::unique_ptr<ash::file_system_provider::ProvidedFileSystemInterface>
@@ -1099,8 +1091,7 @@ class FakeExtensionProviderOneDrive
       override {
     DCHECK(profile);
     std::unique_ptr<FakeProvidedFileSystemOneDrive> fake_provided_file_system =
-        std::make_unique<FakeProvidedFileSystemOneDrive>(file_system_info,
-                                                         std::move(callback_));
+        std::make_unique<FakeProvidedFileSystemOneDrive>(file_system_info);
     // Add test file.
     fake_provided_file_system->AddEntry(
         relative_test_file_path_, false, test_file_name_, 0, base::Time::Now(),
@@ -1115,17 +1106,75 @@ class FakeExtensionProviderOneDrive
       const extensions::ExtensionId& extension_id,
       const ash::file_system_provider::Capabilities& capabilities,
       const base::FilePath relative_test_file_path,
-      std::string test_file_name,
-      base::OnceClosure callback)
+      std::string test_file_name)
       : FakeExtensionProvider(extension_id, capabilities),
-        callback_(std::move(callback)),
         relative_test_file_path_(relative_test_file_path),
         test_file_name_(test_file_name) {}
 
-  // OneDriveTest::OpenWebAction.
-  base::OnceClosure callback_;
   const base::FilePath relative_test_file_path_;
   std::string test_file_name_;
+};
+
+// Fake app service web app publisher to test when an app is launched.
+class FakeWebAppPublisher : public apps::AppPublisher {
+ public:
+  struct LaunchEvent {
+    std::string app_id;
+    std::string intent_url;
+  };
+  explicit FakeWebAppPublisher(Profile* profile)
+      : AppPublisher(apps::AppServiceProxyFactory::GetForProfile(profile)) {
+    RegisterPublisher(apps::AppType::kWeb);
+
+    std::vector<apps::AppPtr> apps;
+    apps.push_back(std::make_unique<apps::App>(apps::AppType::kWeb,
+                                               web_app::kMicrosoftOfficeAppId));
+    Publish(std::move(apps), apps::AppType::kWeb,
+            /*should_notify_initialized=*/true);
+  }
+
+  void LoadIcon(const std::string& app_id,
+                const apps::IconKey& icon_key,
+                apps::IconType icon_type,
+                int32_t size_hint_in_dip,
+                bool allow_placeholder_icon,
+                apps::LoadIconCallback callback) override {
+    // Never called in these tests.
+    NOTREACHED();
+  }
+
+  void Launch(const std::string& app_id,
+              int32_t event_flags,
+              apps::LaunchSource launch_source,
+              apps::WindowInfoPtr window_info) override {
+    // Never called in these tests.
+    NOTREACHED();
+  }
+
+  void LaunchAppWithIntent(const std::string& app_id,
+                           int32_t event_flags,
+                           apps::IntentPtr intent,
+                           apps::LaunchSource launch_source,
+                           apps::WindowInfoPtr window_info,
+                           apps::LaunchCallback callback) override {
+    launches_.push_back({
+        .app_id = app_id,
+        .intent_url = (intent && intent->url) ? intent->url->spec() : "",
+    });
+  }
+
+  void LaunchAppWithParams(apps::AppLaunchParams&& params,
+                           apps::LaunchCallback callback) override {
+    // Never called in these tests.
+    NOTREACHED();
+  }
+
+  void ClearPastLaunches() { launches_.clear(); }
+
+  std::vector<LaunchEvent> GetLaunches() { return launches_; }
+
+ private:
+  std::vector<LaunchEvent> launches_;
 };
 
 // TODO(cassycc or petermarshall) share this class with other test files for
@@ -1149,10 +1198,6 @@ class OneDriveTest : public InProcessBrowserTest {
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
   }
 
-  // Callback for when the `FakeProvidedFileSystemOneDrive` observes that a file
-  // in the ODFS was opened.
-  void OpenWebAction() { file_opened_ = true; }
-
   // Creates and mounts fake provided file system for OneDrive with a test file
   // added. Installs QuickOffice for the check in GetUserFallbackChoice() before
   // the dialog can launched.
@@ -1166,8 +1211,7 @@ class OneDriveTest : public InProcessBrowserTest {
     // `FakeProvidedFileSystemOneDrive`. The use of `base::Unretained()` is safe
     // because the class will exist for the duration of the test.
     service_->RegisterProvider(FakeExtensionProviderOneDrive::Create(
-        kODFSExtensionId, relative_test_file_path_, test_file_name_,
-        base::BindOnce(&OneDriveTest::OpenWebAction, base::Unretained(this))));
+        kODFSExtensionId, relative_test_file_path_, test_file_name_));
     provider_id_ = ash::file_system_provider::ProviderId::CreateFromExtensionId(
         kODFSExtensionId);
     ash::file_system_provider::MountOptions options(file_system_id_, "ODFS");
@@ -1179,6 +1223,8 @@ class OneDriveTest : public InProcessBrowserTest {
         profile(),
         file_manager::util::GetFileManagerFileSystemContext(profile()),
         observed_one_drive_path());
+
+    web_app_publisher_ = std::make_unique<FakeWebAppPublisher>(profile());
   }
 
   Profile* profile() { return browser()->profile(); }
@@ -1209,8 +1255,8 @@ class OneDriveTest : public InProcessBrowserTest {
   }
 
  protected:
-  bool file_opened_;
   FileSystemURL one_drive_test_file_url_;
+  std::unique_ptr<FakeWebAppPublisher> web_app_publisher_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -1244,9 +1290,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackTryAgain) {
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();
 
-  // This boolean only becomes `True` if the fake provided ODFS
-  // observes the test file being opened.
-  file_opened_ = false;
+  web_app_publisher_->ClearPastLaunches();
 
   // Fails as system is offline and thus will open office fallback dialog.
   ExecuteFileTask(
@@ -1259,7 +1303,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackTryAgain) {
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
-  ASSERT_FALSE(file_opened_);
+  CHECK_EQ(0u, web_app_publisher_->GetLaunches().size());
 
   SetConnectionOnline();
 
@@ -1268,7 +1312,10 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackTryAgain) {
   OnDialogChoiceReceived(profile(), open_in_office_task, file_urls,
                          ash::office_fallback::kDialogChoiceTryAgain);
 
-  ASSERT_TRUE(file_opened_);
+  auto launches = web_app_publisher_->GetLaunches();
+  ASSERT_EQ(1u, launches.size());
+  CHECK_EQ(launches[0].app_id, web_app::kMicrosoftOfficeAppId);
+  CHECK_EQ(launches[0].intent_url, kOneDriveSampleUrl);
 }
 
 // Test to check that the test file fails to open when the system is offline and
@@ -1291,9 +1338,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackCancel) {
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();
 
-  // This boolean only becomes `True` if the fake provided ODFS
-  // observes the test file being opened.
-  file_opened_ = false;
+  web_app_publisher_->ClearPastLaunches();
 
   // Fails as system is offline and thus will open office fallback dialog.
   ExecuteFileTask(
@@ -1306,7 +1351,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackCancel) {
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
-  ASSERT_FALSE(file_opened_);
+  ASSERT_EQ(0u, web_app_publisher_->GetLaunches().size());
 
   SetConnectionOnline();
 
@@ -1315,7 +1360,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackCancel) {
   OnDialogChoiceReceived(profile(), open_in_office_task, file_urls,
                          ash::office_fallback::kDialogChoiceCancel);
 
-  ASSERT_FALSE(file_opened_);
+  ASSERT_EQ(0u, web_app_publisher_->GetLaunches().size());
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -1327,14 +1372,15 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileInOneDrive) {
 
   std::vector<storage::FileSystemURL> file_urls{one_drive_test_file_url_};
 
-  // This boolean only becomes `True` if the fake provided ODFS
-  // observes the test file being opened.
-  file_opened_ = false;
+  web_app_publisher_->ClearPastLaunches();
 
   ash::cloud_upload::OpenOrMoveFiles(
       profile(), file_urls, ash::cloud_upload::CloudProvider::kOneDrive);
 
-  ASSERT_TRUE(file_opened_);
+  auto launches = web_app_publisher_->GetLaunches();
+  ASSERT_EQ(1u, launches.size());
+  CHECK_EQ(launches[0].app_id, web_app::kMicrosoftOfficeAppId);
+  CHECK_EQ(launches[0].intent_url, kOneDriveSampleUrl);
 }
 
 // Test that OpenOrMoveFiles() will open the Move Confirmation dialog when the

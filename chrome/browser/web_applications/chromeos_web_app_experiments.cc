@@ -114,16 +114,6 @@ absl::optional<SkColor> ChromeOsWebAppExperiments::GetFallbackPageThemeColor(
   return absl::nullopt;
 }
 
-bool ChromeOsWebAppExperiments::ShouldOverrideUrlLoading(
-    const GURL& previous_url,
-    const GURL& current_url) {
-  // We expect |previous_url| to be empty, because the navigations we care about
-  // are caused by chrome.browser.openTab(), which does not set an
-  // initiator_origin on the navigation.
-  return previous_url.is_empty() && current_url.is_valid() &&
-         GetExtendedScopeScore(kMicrosoftOfficeAppId, current_url.spec()) > 0;
-}
-
 void ChromeOsWebAppExperiments::SetAlwaysEnabledForTesting() {
   g_always_enabled_for_testing = true;
 }

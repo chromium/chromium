@@ -51,13 +51,6 @@ class ChromeOsWebAppExperiments {
       const AppId& app_id,
       content::WebContents* web_contents);
 
-  // Whether the navigation from |previous_url| to |current_url| should override
-  // the default decision for opening URLs in a web app, based on whether the
-  // experimental behavior is enabled and whether |current_url| is in the
-  // extended scope of the experiment.
-  static bool ShouldOverrideUrlLoading(const GURL& previous_url,
-                                       const GURL& current_url);
-
   static void SetAlwaysEnabledForTesting();
   static void SetScopeExtensionsForTesting(
       std::vector<const char* const> scope_extensions_override);

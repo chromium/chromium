@@ -313,13 +313,6 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
   return true;
 }
 
-bool CommonAppsNavigationThrottle::ShouldOverrideUrlLoadingForOfficeExperiment(
-    const GURL& previous_url,
-    const GURL& current_url) {
-  return apps::ShouldOverrideUrlLoadingForOfficeExperiment(previous_url,
-                                                           current_url);
-}
-
 bool CommonAppsNavigationThrottle::ShouldShowDisablePage(
     content::NavigationHandle* handle) {
   content::WebContents* web_contents = handle->GetWebContents();

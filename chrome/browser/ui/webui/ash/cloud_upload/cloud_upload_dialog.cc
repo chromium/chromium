@@ -41,7 +41,7 @@ using ash::file_system_provider::Service;
 using file_manager::file_tasks::kDriveTaskResultMetricName;
 using file_manager::file_tasks::OfficeTaskResult;
 
-const char kOpenWebActionId[] = "OPEN_WEB";
+const char kOneDriveUrlActionId[] = "HIDDEN_ONEDRIVE_URL";
 
 // Open a hosted MS Office file e.g. .docx, from a url hosted in
 // DriveFS. Check the file was successfully uploaded to DriveFS.
@@ -77,7 +77,7 @@ void OpenAlreadyHostedDriveUrl(drive::FileError error,
   }
 }
 
-void OpenODFSUrl(const storage::FileSystemURL& url) {
+void OpenODFSUrl(Profile* profile, const storage::FileSystemURL& url) {
   if (!url.is_valid()) {
     LOG(ERROR) << "Invalid uploaded file URL";
     return;
@@ -88,19 +88,45 @@ void OpenODFSUrl(const storage::FileSystemURL& url) {
     return;
   }
 
-  parser.file_system()->ExecuteAction(
-      {parser.file_path()}, kOpenWebActionId,
-      base::BindOnce([](base::File::Error result) {
-        if (result != base::File::Error::FILE_OK) {
-          LOG(ERROR) << "Error executing action: " << result;
-          // TODO(cassycc): Run GetUserFallbackChoice().
-        }
-      }));
+  parser.file_system()->GetActions(
+      {parser.file_path()},
+      base::BindOnce(
+          [](base::WeakPtr<Profile> profile_weak_ptr,
+             const file_system_provider::Actions& actions,
+             base::File::Error result) {
+            if (result != base::File::Error::FILE_OK) {
+              return;
+            }
+            Profile* profile = profile_weak_ptr.get();
+            if (!profile) {
+              return;
+            }
+            for (const file_system_provider::Action& action : actions) {
+              if (action.id == kOneDriveUrlActionId) {
+                // Custom actions are used to pass a OneDrive URL as the "title"
+                // attribute to be opened using an installed web app.
+                GURL url(action.title);
+                if (!url.is_valid()) {
+                  return;
+                }
+
+                auto* proxy =
+                    apps::AppServiceProxyFactory::GetForProfile(profile);
+                proxy->LaunchAppWithUrl(web_app::kMicrosoftOfficeAppId,
+                                        /*event_flags=*/ui::EF_NONE, url,
+                                        apps::LaunchSource::kFromFileManager,
+                                        /*window_info=*/nullptr);
+                return;
+              }
+            }
+          },
+          profile->GetWeakPtr()));
 }
 
-void OpenODFSUrls(const std::vector<storage::FileSystemURL>& file_urls) {
+void OpenODFSUrls(Profile* profile,
+                  const std::vector<storage::FileSystemURL>& file_urls) {
   for (const auto& file_url : file_urls) {
-    OpenODFSUrl(file_url);
+    OpenODFSUrl(profile, file_url);
   }
 }
 
@@ -131,8 +157,18 @@ void StartUpload(Profile* profile,
     }
   } else if (cloud_provider == CloudProvider::kOneDrive) {
     for (const auto& file_url : file_urls) {
-      OneDriveUploadHandler::Upload(profile, file_url,
-                                    base::BindOnce(&OpenODFSUrl));
+      OneDriveUploadHandler::Upload(
+          profile, file_url,
+          base::BindOnce(
+              [](base::WeakPtr<Profile> profile_weak_ptr,
+                 const storage::FileSystemURL& url) {
+                Profile* profile = profile_weak_ptr.get();
+                if (!profile) {
+                  return;
+                }
+                OpenODFSUrl(profile, url);
+              },
+              profile->GetWeakPtr()));
     }
   }
 }
@@ -337,7 +373,7 @@ void OpenOrMoveFiles(Profile* profile,
   } else if (cloud_provider == CloudProvider::kOneDrive &&
              FileIsOnODFS(profile, file_urls.front())) {
     // The files are on OneDrive already.
-    OpenODFSUrls(file_urls);
+    OpenODFSUrls(profile, file_urls);
   } else {
     // The files need to be moved.
     ConfirmMoveOrStartUpload(profile, file_urls, cloud_provider);

@@ -48,9 +48,6 @@ void LaunchAppFromIntentPickerChromeOs(content::WebContents* web_contents,
                                        const std::string& launch_name,
                                        PickerEntryType app_type);
 
-bool ShouldOverrideUrlLoadingForOfficeExperiment(const GURL& previous_url,
-                                                 const GURL& current_url);
-
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_INTENT_HELPER_CHROMEOS_INTENT_PICKER_HELPERS_H_

@@ -45,10 +45,6 @@ class AppsNavigationThrottle : public content::NavigationThrottle {
 
   virtual ThrottleCheckResult MaybeShowCustomResult();
 
-  virtual bool ShouldOverrideUrlLoadingForOfficeExperiment(
-      const GURL& previous_url,
-      const GURL& current_url);
-
   bool navigate_from_link() const;
 
   GURL starting_url_;
