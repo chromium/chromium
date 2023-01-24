@@ -195,6 +195,13 @@ void BrowserControlsOffsetManager::UpdateBrowserControlsState(
 
   ResetAnimations();
 
+  // If we're about to animate the controls in, then restart the animation after
+  // the scroll completes.  We don't know if a scroll is in progress, but that's
+  // okay; the flag will be reset when a scroll starts next in that case.
+  if (animate && direction == AnimationDirection::SHOWING_CONTROLS) {
+    show_controls_when_scroll_completes_ = true;
+  }
+
   if (animate)
     SetupAnimation(direction);
   else
@@ -387,6 +394,11 @@ void BrowserControlsOffsetManager::ScrollBegin() {
   if (pinch_gesture_active_)
     return;
 
+  // If an animation to show the controls is in progress, re-order the animation
+  // to start after the scroll completes.  This ensures that the user doesn't
+  // accidentally hide the controls with a gesture that would not normally be
+  // enough to hide them.
+  show_controls_when_scroll_completes_ = IsAnimatingToShowControls();
   ResetAnimations();
   ResetBaseline();
 }
@@ -459,8 +471,13 @@ gfx::Vector2dF BrowserControlsOffsetManager::ScrollBy(
 
   // If the controls are fully visible, treat the current position as the
   // new baseline even if the gesture didn't end.
-  if (TopControlsShownRatio() == 1.f && BottomControlsShownRatio() == 1.f)
+  if (TopControlsShownRatio() == 1.f && BottomControlsShownRatio() == 1.f) {
     ResetBaseline();
+    // Once the controls are fully visible, then any cancelled animation to show
+    // them isn't relevant; the user definitely sees the controls and can decide
+    // if they'd like to keep them.
+    show_controls_when_scroll_completes_ = false;
+  }
 
   ResetAnimations();
 
@@ -475,6 +492,13 @@ gfx::Vector2dF BrowserControlsOffsetManager::ScrollBy(
 void BrowserControlsOffsetManager::ScrollEnd() {
   if (pinch_gesture_active_)
     return;
+
+  // See if we should animate the top bar in, in case there was a race between
+  // chrome showing the controls and the user performing a scroll.
+  if (show_controls_when_scroll_completes_) {
+    SetupAnimation(AnimationDirection::SHOWING_CONTROLS);
+    return;
+  }
 
   StartAnimationIfNecessary();
 }
