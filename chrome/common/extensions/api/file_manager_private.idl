@@ -1005,6 +1005,28 @@ dictionary IOTaskParams {
   boolean? showNotification;
 };
 
+// IO task state::PAUSED parameters, see file_manager::io_task::PauseParams.
+dictionary PauseParams {
+  // The conflict file name.
+  DOMString? conflictName;
+
+  // Set true if there are potentially multiple conflicted file names.
+  boolean? conflictMultiple;
+
+  // True if the conflict file name is a directory.
+  boolean? conflictIsDirectory;
+};
+
+// Resume IO Task parameters, see file_manager::io_task::ResumeParams.
+dictionary ResumeParams {
+  // How to resolve a CopyOrMoveIOTask file name conflict: either 'keepboth'
+  // or 'replace'.
+  DOMString? conflictResolve;
+
+  // Set true if conflictResolve should apply to future file name conflicts.
+  boolean? conflictApplyToAll;
+};
+
 // IO Task Progress status, see file_manager::io_task::ProgressStatus.
 dictionary ProgressStatus {
 
@@ -1044,6 +1066,9 @@ dictionary ProgressStatus {
 
   // The name of the last error that happened.
   DOMString errorName;
+
+  // I/O task state::PAUSED parameters.
+  PauseParams? pauseParams;
 
   // The files affected by the IOTask. Currently only returned for TrashIOTask.
   [instanceOf=Entry] object[]? outputs;

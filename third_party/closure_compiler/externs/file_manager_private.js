@@ -742,6 +742,23 @@ chrome.fileManagerPrivate.IOTaskParams;
 
 /**
  * @typedef {{
+ *   conflictName: (string|undefined),
+ *   conflictMultiple: (boolean|undefined),
+ *   conflictIsDirectory: (boolean|undefined),
+ * }}
+ */
+chrome.fileManagerPrivate.PauseParams;
+
+/**
+ * @typedef {{
+ *   conflictResolve: (string|undefined),
+ *   conflictApplyToAll: (boolean|undefined),
+ * }}
+ */
+chrome.fileManagerPrivate.ResumeParams;
+
+/**
+ * @typedef {{
  *   type: !chrome.fileManagerPrivate.IOTaskType,
  *   state: !chrome.fileManagerPrivate.IOTaskState,
  *   numRemainingItems: number,
@@ -755,6 +772,7 @@ chrome.fileManagerPrivate.IOTaskParams;
  *   showNotification: boolean,
  *   errorName: string,
  *   outputs: (Array<Entry>|undefined),
+ *   pauseParams:(chrome.fileManagerPrivate.PauseParams|undefined),
  * }}
  */
 chrome.fileManagerPrivate.ProgressStatus;
