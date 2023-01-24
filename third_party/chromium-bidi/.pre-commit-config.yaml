@@ -53,6 +53,10 @@ repos:
     hooks:
       - id: pyupgrade
         args: [--py39-plus]
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.9.0.2
+    hooks:
+      - id: shellcheck
   - repo: https://github.com/codespell-project/codespell
     rev: 'v2.2.2'
     hooks:

@@ -1,10 +1,11 @@
 #!/bin/sh
 
-readonly LOG_DIR="logs"
-readonly LOG_FILE="$LOG_DIR/$(date +%s).log"
+LOG_DIR="logs"
+LOG_FILE="$LOG_DIR/$(date +%s).log"
+readonly LOG_DIR LOG_FILE
 
 # Go to the project root folder.
-(cd "$(dirname $0)/" && \
+(cd "$(dirname "$0")/" && \
 # Create a folder to store logs.
 mkdir -p "$LOG_DIR" && \
 npm run build && \
