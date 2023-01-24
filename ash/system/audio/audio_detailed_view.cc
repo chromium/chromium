@@ -321,9 +321,7 @@ void AudioDetailedView::CreateLiveCaptionView() {
   // TODO(b/262281693): Update the font and color for `live_caption_view_` text.
   live_caption_view_->AddViewAndLabel(
       std::move(toggle_icon),
-      l10n_util::GetStringUTF16(live_caption_enabled
-                                    ? IDS_ASH_STATUS_TRAY_LIVE_CAPTION
-                                    : IDS_ASH_STATUS_TRAY_LIVE_CAPTION_OFF));
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LIVE_CAPTION));
 
   // Creates a toggle button on the right.
   auto toggle = std::make_unique<TrayToggleButton>(
@@ -436,11 +434,6 @@ void AudioDetailedView::UpdateLiveCaptionView(bool is_enabled) {
   toggle_icon_->SetImage(ui::ImageModel::FromVectorIcon(
       is_enabled ? kUnifiedMenuLiveCaptionIcon : kUnifiedMenuLiveCaptionOffIcon,
       cros_tokens::kCrosSysOnSurface, kQsSliderIconSize));
-
-  // TODO(b/257151067): Update text when disabled.
-  live_caption_view_->text_label()->SetText(l10n_util::GetStringUTF16(
-      is_enabled ? IDS_ASH_STATUS_TRAY_LIVE_CAPTION
-                 : IDS_ASH_STATUS_TRAY_LIVE_CAPTION_OFF));
 
   // Updates the toggle button tooltip.
   std::u16string toggle_tooltip =
