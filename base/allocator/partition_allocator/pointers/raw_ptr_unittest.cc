@@ -1211,6 +1211,47 @@ TEST_F(RawPtrTest, ComparisonOperatorUsesGetForComparison) {
               CountingRawPtrHasCounts());
 }
 
+// Two `raw_ptr`s with different `TraitBundle`s should still hit
+// `GetForComparison()` (as opposed to `GetForExtraction()`) in their
+// comparison operators. We use `CountingRawPtr` and
+// `CountingRawPtrMayDangle` to contrast two different `TraitBundle`s.
+TEST_F(RawPtrTest, OperatorsUseGetForComparison) {
+  int x = 123;
+  CountingRawPtr<int> ptr1 = &x;
+  CountingRawPtrMayDangle<int> ptr2 = &x;
+
+  RawPtrCountingImpl::ClearCounters();
+  RawPtrCountingMayDangleImpl::ClearCounters();
+
+  EXPECT_TRUE(ptr1 == ptr2);
+  EXPECT_FALSE(ptr1 != ptr2);
+  EXPECT_THAT((CountingRawPtrExpectations{
+                  .get_for_extraction_cnt = 0,
+                  .get_for_comparison_cnt = 2,
+              }),
+              CountingRawPtrHasCounts());
+  EXPECT_THAT((CountingRawPtrExpectations{
+                  .get_for_extraction_cnt = 0,
+                  .get_for_comparison_cnt = 2,
+              }),
+              MayDangleCountingRawPtrHasCounts());
+
+  EXPECT_FALSE(ptr1 < ptr2);
+  EXPECT_FALSE(ptr1 > ptr2);
+  EXPECT_TRUE(ptr1 <= ptr2);
+  EXPECT_TRUE(ptr1 >= ptr2);
+  EXPECT_THAT((CountingRawPtrExpectations{
+                  .get_for_extraction_cnt = 0,
+                  .get_for_comparison_cnt = 6,
+              }),
+              CountingRawPtrHasCounts());
+  EXPECT_THAT((CountingRawPtrExpectations{
+                  .get_for_extraction_cnt = 0,
+                  .get_for_comparison_cnt = 6,
+              }),
+              MayDangleCountingRawPtrHasCounts());
+}
+
 // This test checks how the std library handles collections like
 // std::vector<raw_ptr<T>>.
 //

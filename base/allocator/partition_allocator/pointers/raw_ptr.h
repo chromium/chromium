@@ -1680,23 +1680,21 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   template <typename U, typename V, typename R1, typename R2>
   friend PA_ALWAYS_INLINE bool operator==(const raw_ptr<U, R1>& lhs,
                                           const raw_ptr<V, R2>& rhs);
-  template <typename U>
-  friend PA_ALWAYS_INLINE bool operator!=(const raw_ptr& lhs,
-                                          const raw_ptr<U, Traits>& rhs) {
-    return !(lhs == rhs);
-  }
-  template <typename U, typename V, typename R>
-  friend PA_ALWAYS_INLINE bool operator<(const raw_ptr<U, R>& lhs,
-                                         const raw_ptr<V, R>& rhs);
-  template <typename U, typename V, typename R>
-  friend PA_ALWAYS_INLINE bool operator>(const raw_ptr<U, R>& lhs,
-                                         const raw_ptr<V, R>& rhs);
-  template <typename U, typename V, typename R>
-  friend PA_ALWAYS_INLINE bool operator<=(const raw_ptr<U, R>& lhs,
-                                          const raw_ptr<V, R>& rhs);
-  template <typename U, typename V, typename R>
-  friend PA_ALWAYS_INLINE bool operator>=(const raw_ptr<U, R>& lhs,
-                                          const raw_ptr<V, R>& rhs);
+  template <typename U, typename V, typename R1, typename R2>
+  friend PA_ALWAYS_INLINE bool operator!=(const raw_ptr<U, R1>& lhs,
+                                          const raw_ptr<V, R2>& rhs);
+  template <typename U, typename V, typename R1, typename R2>
+  friend PA_ALWAYS_INLINE bool operator<(const raw_ptr<U, R1>& lhs,
+                                         const raw_ptr<V, R2>& rhs);
+  template <typename U, typename V, typename R1, typename R2>
+  friend PA_ALWAYS_INLINE bool operator>(const raw_ptr<U, R1>& lhs,
+                                         const raw_ptr<V, R2>& rhs);
+  template <typename U, typename V, typename R1, typename R2>
+  friend PA_ALWAYS_INLINE bool operator<=(const raw_ptr<U, R1>& lhs,
+                                          const raw_ptr<V, R2>& rhs);
+  template <typename U, typename V, typename R1, typename R2>
+  friend PA_ALWAYS_INLINE bool operator>=(const raw_ptr<U, R1>& lhs,
+                                          const raw_ptr<V, R2>& rhs);
 
   // Comparisons with U*. These operators also handle the case where the RHS is
   // T*.
@@ -1814,27 +1812,33 @@ PA_ALWAYS_INLINE bool operator==(const raw_ptr<U, Traits1>& lhs,
   return lhs.GetForComparison() == rhs.GetForComparison();
 }
 
-template <typename U, typename V, typename Traits>
-PA_ALWAYS_INLINE bool operator<(const raw_ptr<U, Traits>& lhs,
-                                const raw_ptr<V, Traits>& rhs) {
+template <typename U, typename V, typename Traits1, typename Traits2>
+PA_ALWAYS_INLINE bool operator!=(const raw_ptr<U, Traits1>& lhs,
+                                 const raw_ptr<V, Traits2>& rhs) {
+  return !(lhs == rhs);
+}
+
+template <typename U, typename V, typename Traits1, typename Traits2>
+PA_ALWAYS_INLINE bool operator<(const raw_ptr<U, Traits1>& lhs,
+                                const raw_ptr<V, Traits2>& rhs) {
   return lhs.GetForComparison() < rhs.GetForComparison();
 }
 
-template <typename U, typename V, typename Traits>
-PA_ALWAYS_INLINE bool operator>(const raw_ptr<U, Traits>& lhs,
-                                const raw_ptr<V, Traits>& rhs) {
+template <typename U, typename V, typename Traits1, typename Traits2>
+PA_ALWAYS_INLINE bool operator>(const raw_ptr<U, Traits1>& lhs,
+                                const raw_ptr<V, Traits2>& rhs) {
   return lhs.GetForComparison() > rhs.GetForComparison();
 }
 
-template <typename U, typename V, typename Traits>
-PA_ALWAYS_INLINE bool operator<=(const raw_ptr<U, Traits>& lhs,
-                                 const raw_ptr<V, Traits>& rhs) {
+template <typename U, typename V, typename Traits1, typename Traits2>
+PA_ALWAYS_INLINE bool operator<=(const raw_ptr<U, Traits1>& lhs,
+                                 const raw_ptr<V, Traits2>& rhs) {
   return lhs.GetForComparison() <= rhs.GetForComparison();
 }
 
-template <typename U, typename V, typename Traits>
-PA_ALWAYS_INLINE bool operator>=(const raw_ptr<U, Traits>& lhs,
-                                 const raw_ptr<V, Traits>& rhs) {
+template <typename U, typename V, typename Traits1, typename Traits2>
+PA_ALWAYS_INLINE bool operator>=(const raw_ptr<U, Traits1>& lhs,
+                                 const raw_ptr<V, Traits2>& rhs) {
   return lhs.GetForComparison() >= rhs.GetForComparison();
 }
 
