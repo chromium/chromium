@@ -2209,6 +2209,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.WindowIDInjection.ElapsedTime" units="ms"
     expires_after="2023-02-26">
+  <obsolete>
+    Removed in M111 because windowId injection was removed.
+  </obsolete>
   <owner>michaeldo@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
