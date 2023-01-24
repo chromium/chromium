@@ -163,19 +163,11 @@ int RendererMain(MainFunctionParams parameters) {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Turn on core scheduling for ash renderers only if kLacrosOnly is not
-  // enabled. If kLacrosOnly is enabled, ash renderers don't run user code. This
-  // means they don't need core scheduling. Lacros renderers will get core
-  // scheduling in this case.
-  if (!command_line.HasSwitch(switches::kAshWebBrowserDisabled)) {
-    chromeos::system::EnableCoreSchedulingIfAvailable();
-  }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Turn on core scheduling for lacros renderers since they run user code in
-  // most cases.
+#if BUILDFLAG(IS_CHROMEOS)
+  // When we start the renderer on ChromeOS if the system has core scheduling
+  // available we want to turn it on.
   chromeos::system::EnableCoreSchedulingIfAvailable();
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(ARCH_CPU_X86_64)

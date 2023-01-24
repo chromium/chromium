@@ -27,10 +27,6 @@ const char kAllowLoopbackInPeerConnection[] =
 // This is used in blimp to emulate android fonts on linux.
 const char kAndroidFontsPath[]          = "android-fonts-path";
 
-// Indicates that the ash web browser is disabled (i.e. lacros the only
-// browser).
-const char kAshWebBrowserDisabled[] = "ash-web-browser-disabled";
-
 // Causes the Attribution Report API to run without delays or noise.
 const char kAttributionReportingDebugMode[] =
     "attribution-reporting-debug-mode";
