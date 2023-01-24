@@ -59,11 +59,9 @@ template("chrome_public_common_apk_or_module_tmpl") {
   _is_trichrome = defined(invoker.is_trichrome) && invoker.is_trichrome
   _is_bundle = invoker.target_type == "android_app_bundle_module"
 
-  if (defined(invoker.is_64_bit_browser)) {
-    _is_64_bit_browser = invoker.is_64_bit_browser
-  } else {
-    _is_64_bit_browser = android_64bit_target_cpu
-  }
+  _is_64_bit_browser =
+      android_64bit_target_cpu &&
+      (!defined(invoker.is_64_bit_browser) || invoker.is_64_bit_browser)
   _is_secondary_abi_primary = !_is_64_bit_browser && android_64bit_target_cpu
   not_needed([ "_is_secondary_abi_primary" ])
 
@@ -277,11 +275,21 @@ template("chrome_public_common_apk_or_module_tmpl") {
       custom_assertion_handler = crash_reporting_assertion_handler
     }
 
+    if (!defined(version_name)) {
+      version_name = chrome_version_name
+    }
     if (!defined(version_code)) {
+      if (_is_trichrome || _is_monochrome) {
+        _include_64_bit_webview = android_64bit_target_cpu &&
+                                  (!defined(invoker.include_64_bit_webview) ||
+                                   invoker.include_64_bit_webview)
+        _include_32_bit_webview = !defined(invoker.include_32_bit_webview) ||
+                                  invoker.include_32_bit_webview
+      }
       if (_is_trichrome) {
-        version_code = trichrome_version_code
+        version_code = TRICHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
       } else if (_is_monochrome) {
-        version_code = monochrome_version_code
+        version_code = MONOCHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
       } else {
         # TODO(agrieve): Merge chrome_modern_version_code with chrome_version_code.
         version_code = chrome_modern_version_code
@@ -292,25 +300,22 @@ template("chrome_public_common_apk_or_module_tmpl") {
 
 # The equivalent of chrome_common_apk_or_module_tmpl for all builds of
 # monochrome and trichrome chrome.
-
-# Variables:
-#   use_trichrome_library: Specifies that this target depends on a trichrome
-#     static library target to provide certain shared library deps, and that
-#     this target should not package webview deps.
 template("monochrome_public_common_apk_or_module_tmpl") {
-  _is_bundle_module = defined(invoker.target_type) &&
-                      invoker.target_type == "android_app_bundle_module"
-
   chrome_public_common_apk_or_module_tmpl(target_name) {
     _overrides = {
+      _is_bundle_module = defined(invoker.target_type) &&
+                          invoker.target_type == "android_app_bundle_module"
+
       if (_is_bundle_module) {
         assert(
             defined(invoker.is_base_module),
             "_is_bundle_module is true but the invoker does not define is_base_module!")
       }
 
-      is_trichrome = defined(invoker.use_trichrome_library) &&
-                     invoker.use_trichrome_library
+      # TODO(crbug.com/1408322): Delete use_trichrome_library reference.
+      is_trichrome = (defined(invoker.use_trichrome_library) &&
+                      invoker.use_trichrome_library) ||
+                     (defined(invoker.is_trichrome) && invoker.is_trichrome)
       is_monochrome = !is_trichrome
 
       shared_libraries = []
@@ -406,6 +411,12 @@ template("monochrome_public_common_apk_or_module_tmpl") {
         }
       }
 
+      if (android_64bit_target_cpu && (is_monochrome || is_trichrome)) {
+        _include_64_bit_webview = !defined(invoker.include_64_bit_webview) ||
+                                  invoker.include_64_bit_webview
+        _include_32_bit_webview = !defined(invoker.include_32_bit_webview) ||
+                                  invoker.include_32_bit_webview
+      }
       if (is_monochrome) {
         product_config_java_packages = [
           "org.chromium.chrome.browser",
@@ -427,7 +438,7 @@ template("monochrome_public_common_apk_or_module_tmpl") {
           if (invoker.is_64_bit_browser) {
             _include_primary_support = true
             shared_libraries += [ "//chrome/android:libmonochrome_64" ]
-            if (invoker.include_32_bit_webview) {
+            if (_include_32_bit_webview) {
               secondary_abi_shared_libraries += [ "//android_webview:monochrome_64($android_secondary_abi_toolchain)" ]
               _include_secondary_support = true
             }
@@ -435,7 +446,7 @@ template("monochrome_public_common_apk_or_module_tmpl") {
             secondary_abi_shared_libraries +=
                 [ "//chrome/android:monochrome_secondary_abi_lib" ]
             _include_secondary_support = true
-            if (invoker.include_64_bit_webview) {
+            if (_include_64_bit_webview) {
               shared_libraries += [ "//android_webview:monochrome" ]
               _include_primary_support = true
             }
@@ -497,12 +508,12 @@ template("monochrome_public_common_apk_or_module_tmpl") {
         if (android_64bit_target_cpu) {
           if (invoker.is_64_bit_browser) {
             native_lib_placeholders += [ "libdummy.so" ]
-            if (invoker.include_32_bit_webview) {
+            if (_include_32_bit_webview) {
               secondary_native_lib_placeholders += [ "libdummy.so" ]
             }
           } else {
             secondary_native_lib_placeholders += [ "libdummy.so" ]
-            if (invoker.include_64_bit_webview) {
+            if (_include_64_bit_webview) {
               native_lib_placeholders += [ "libdummy.so" ]
             }
           }
@@ -582,12 +593,6 @@ template("monochrome_public_common_apk_or_module_tmpl") {
     #   _overrides.
     # * Values set in _overrides cannot accidentaly clobber values set in
     #   invoker (since the forward_variables_from will fail).
-    # Other nice properties:
-    # * _override_args needs to only reference values set within _overrides
-    #   (as opposed to creating a list of values not set in it, which would be
-    #   hard to keep up-to-date).
-    # * GN will issue an unused variable warning if there are entries missing
-    #   from _override_args.
     _override_args = [
       "alternative_android_sdk_dep",
       "app_as_shared_lib",

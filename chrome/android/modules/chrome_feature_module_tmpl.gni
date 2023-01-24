@@ -12,15 +12,17 @@ import("//components/module_installer/android/module_desc_java.gni")
 # Supports most variables of the android_app_bundle_module, plus:
 #   module_desc: Descriptor of this module. See
 #     //chrome/android/modules/chrome_feature_modules.gni for the format.
-#   is_monochrome_or_trichrome: (Optional) Whether this module is packaged into
-#     Monochrome or Trichrome.
+#   is_monochrome: (Optional) Whether this module is Monochrome.
+#   is_trichrome: (Optional) Whether this module is Trichrome.
 #   is_64_bit_browser: (Optional) Whether Chrome (as opposed to WebView) runs in
 #     64 bit.
 template("chrome_feature_module") {
   assert(defined(invoker.module_desc))
   _module_desc = invoker.module_desc
-  _is_monochrome_or_trichrome = defined(invoker.is_monochrome_or_trichrome) &&
-                                invoker.is_monochrome_or_trichrome
+  _is_monochrome_or_trichrome =
+      (defined(invoker.is_monochrome) && invoker.is_monochrome) ||
+      (defined(invoker.is_trichrome) && invoker.is_trichrome)
+  not_needed(invoker, [ "is_trichrome" ])
 
   _loadable_modules_32_bit = []
   if (defined(_module_desc.loadable_modules_32_bit)) {

@@ -191,10 +191,9 @@ if (android_64bit_target_cpu) {
 template("trichrome_webview_tmpl") {
   system_webview_apk_or_module_tmpl(target_name) {
     forward_variables_from(invoker, "*")
+    is_trichrome = true
     min_sdk_version = 29
-
     deps = upstream_only_webview_deps
-    use_trichrome_library = true
   }
 }
 
@@ -309,7 +308,7 @@ if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
       android_manifest = trichrome_webview_64_32_android_manifest
       android_manifest_dep =
           "//android_webview/nonembedded:trichrome_webview_64_32_manifest"
-      use_trichrome_library = true
+      is_trichrome = true
       is_64_bit_browser = true
       include_32_bit_webview = true
 
@@ -347,7 +346,7 @@ if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
       android_manifest = trichrome_webview_32_android_manifest
       android_manifest_dep =
           "//android_webview/nonembedded:trichrome_webview_32_manifest"
-      use_trichrome_library = true
+      is_trichrome = true
       is_64_bit_browser = false
       include_64_bit_webview = false
 

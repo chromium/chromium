@@ -24,12 +24,6 @@ declare_args() {
   # Android. You can use "apksigner verify --print-certs" on the signed APK to
   # calculate the correct digest.
   trichrome_certdigest = default_trichrome_certdigest
-
-  # By default, Trichrome channels are compiled using separate package names.
-  # Set this to 'true' to compile Trichrome channels using the Stable channel's
-  # package name. This currently only affects builds with `android_channel =
-  # "beta"`.
-  use_stable_package_name_for_trichrome = false
 }
 
 trichrome_jinja_variables = [
@@ -72,54 +66,13 @@ template("trichrome_library_apk_tmpl") {
     uncompress_dex = true
     version_name = chrome_version_name
 
-    _use_stable_package_name_for_trichrome =
-        use_stable_package_name_for_trichrome && android_channel == "beta"
-    if (android_64bit_target_cpu) {
-      if (invoker.is_64_bit_browser) {
-        if (invoker.include_32_bit_webview) {
-          if (_use_stable_package_name_for_trichrome) {
-            version_code = trichrome_64_32_beta_version_code
-          } else {
-            version_code = trichrome_64_32_version_code
-          }
-        } else {
-          _use_high_package_name_for_64bit_only_trichrome = is_high_end_android
-          if (_use_high_package_name_for_64bit_only_trichrome) {
-            if (_use_stable_package_name_for_trichrome) {
-              version_code = trichrome_64_high_beta_version_code
-            } else {
-              version_code = trichrome_64_high_version_code
-            }
-          } else {
-            if (_use_stable_package_name_for_trichrome) {
-              version_code = trichrome_64_beta_version_code
-            } else {
-              version_code = trichrome_64_version_code
-            }
-          }
-        }
-      } else {
-        if (invoker.include_64_bit_webview) {
-          if (_use_stable_package_name_for_trichrome) {
-            version_code = trichrome_32_64_beta_version_code
-          } else {
-            version_code = trichrome_32_64_version_code
-          }
-        } else {
-          if (_use_stable_package_name_for_trichrome) {
-            version_code = trichrome_32_beta_version_code
-          } else {
-            version_code = trichrome_32_version_code
-          }
-        }
-      }
-    } else {
-      if (_use_stable_package_name_for_trichrome) {
-        version_code = trichrome_beta_version_code
-      } else {
-        version_code = trichrome_version_code
-      }
-    }
+    _is_64_bit_browser = android_64bit_target_cpu && invoker.is_64_bit_browser
+    _include_64_bit_webview =
+        (!defined(invoker.include_64_bit_webview) ||
+         invoker.include_64_bit_webview) && android_64bit_target_cpu
+    _include_32_bit_webview = !defined(invoker.include_32_bit_webview) ||
+                              invoker.include_32_bit_webview
+    version_code = TRICHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
 
     min_sdk_version = 29
 
@@ -140,10 +93,10 @@ template("trichrome_library_apk_tmpl") {
       # (crashpad and linker), and an opposite-bitness placeholder library to
       # ensure that the library is treated as multiarch and gets its Java code
       # precompiled for both architectures.
-      if (invoker.is_64_bit_browser) {
+      if (_is_64_bit_browser) {
         shared_libraries = [ "//chrome/android:libmonochrome_64" ]
         _include_primary_support = true
-        if (invoker.include_32_bit_webview) {
+        if (_include_32_bit_webview) {
           secondary_native_lib_placeholders = [ "libdummy.so" ]
         }
       } else {
