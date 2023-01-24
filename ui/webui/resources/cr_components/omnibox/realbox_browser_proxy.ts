@@ -6,8 +6,8 @@ import {PageCallbackRouter, PageHandler, PageHandlerInterface} from './omnibox.m
 
 /**
  * @fileoverview This file provides a singleton class that exposes the Mojo
- * handler interface used for bidirectional communication between the NTP
- * realbox JS and the browser.
+ * handler interface used for bidirectional communication between the
+ * <ntp-realbox> or the <cr-realbox-dropdown> and the browser.
  */
 
 let instance: RealboxBrowserProxy|null = null;

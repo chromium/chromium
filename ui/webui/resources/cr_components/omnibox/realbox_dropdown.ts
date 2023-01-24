@@ -35,7 +35,7 @@ export interface RealboxDropdownElement {
 // the embedder (i.e., <ntp-realbox>) to change the selection.
 export class RealboxDropdownElement extends PolymerElement {
   static get is() {
-    return 'ntp-realbox-dropdown';
+    return 'cr-realbox-dropdown';
   }
 
   static get template() {

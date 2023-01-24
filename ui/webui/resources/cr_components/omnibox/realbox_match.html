@@ -102,8 +102,8 @@
   }
 
   /* Uses a dimmed color for description for entities. */
-  :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)):host([is-entity-suggestion]) #description,
-  :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)) .dim {
+  :host-context(cr-realbox-match:-webkit-any(:focus-within, .selected)):host([is-entity-suggestion]) #description,
+  :host-context(cr-realbox-match:-webkit-any(:focus-within, .selected)) .dim {
     color: var(--color-realbox-results-dim-selected);
   }
 
@@ -111,7 +111,7 @@
     color: var(--color-realbox-results-url);
   }
 
-  :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)) .url {
+  :host-context(cr-realbox-match:-webkit-any(:focus-within, .selected)) .url {
     color: var(--color-realbox-results-url-selected);
   }
 
@@ -120,11 +120,11 @@
     opacity: 0; /* Hides the button while keeping it in tab order. */
   }
 
-  :host-context(ntp-realbox-match:hover) #remove {
+  :host-context(cr-realbox-match:hover) #remove {
     opacity: 1;
   }
 
-  :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)) #remove {
+  :host-context(cr-realbox-match:-webkit-any(:focus-within, .selected)) #remove {
     --cr-icon-button-fill-color:
         var(--color-realbox-results-icon-selected);
     opacity: 1;
@@ -133,7 +133,7 @@
 </style>
 <div class="container" aria-hidden="true">
   <div id="focus-indicator"></div>
-  <ntp-realbox-icon id="icon" match="[[match]]"></ntp-realbox-icon>
+  <cr-realbox-icon id="icon" match="[[match]]"></cr-realbox-icon>
   <div id="text-container">
     <span id="tail-suggest-prefix" hidden$="[[!tailSuggestPrefix_]]">
       <span id="prefix">[[tailSuggestPrefix_]]</span>
@@ -154,9 +154,9 @@
 </div>
 <template is="dom-if" if="[[actionIsVisible_]]">
   <div class="container" aria-hidden="true">
-    <ntp-realbox-action id="action" action="[[match.action]]"
+    <cr-realbox-action id="action" action="[[match.action]]"
                      tabindex="1" on-click="onActionClick_"
                      on-keydown="onActionKeyDown_">
-    </ntp-realbox-action>
+    </cr-realbox-action>
   </div>
 </template>

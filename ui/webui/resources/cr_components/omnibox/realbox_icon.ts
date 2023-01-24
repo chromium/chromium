@@ -23,7 +23,7 @@ export interface RealboxIconElement {
 // render icons, favicons, and entity images.
 export class RealboxIconElement extends PolymerElement {
   static get is() {
-    return 'ntp-realbox-icon';
+    return 'cr-realbox-icon';
   }
 
   static get template() {

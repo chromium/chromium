@@ -5,17 +5,17 @@
 
   #selector {
     background-color: var(--color-realbox-results-background);
-    border-radius: calc(0.25 * var(--ntp-realbox-height));
-    box-shadow: var(--ntp-realbox-shadow);
+    border-radius: calc(0.25 * var(--cr-realbox-height));
+    box-shadow: var(--cr-realbox-shadow);
     display: block;
     margin-bottom: 8px;
     overflow: hidden;
     padding-bottom: 8px;
-    padding-top: var(--ntp-realbox-height);
+    padding-top: var(--cr-realbox-height);
   }
 
   :host([round-corners]) #selector {
-    border-radius: calc(0.5 * var(--ntp-realbox-height));
+    border-radius: calc(0.5 * var(--cr-realbox-height));
     padding-bottom: 18px;
   }
 
@@ -25,7 +25,7 @@
     }
   }
 
-  ntp-realbox-match {
+  cr-realbox-match {
     color: var(--color-realbox-results-foreground);
   }
 
@@ -58,20 +58,20 @@
           var(--color-realbox-results-icon-selected);
   }
 
-  ntp-realbox-match:-webkit-any(:hover, :focus-within, .selected),
+  cr-realbox-match:-webkit-any(:hover, :focus-within, .selected),
   .header:-webkit-any(:hover, :focus-within) {
     background-color:
         var(--color-realbox-results-background-hovered);
   }
 
   @media (forced-colors: active) {
-    ntp-realbox-match:-webkit-any(:hover, :focus-within, .selected),
+    cr-realbox-match:-webkit-any(:hover, :focus-within, .selected),
     .header:-webkit-any(:hover, :focus-within) {
       background-color: Highlight;
     }
   }
 </style>
-<iron-selector id="selector" selectable="ntp-realbox-match"
+<iron-selector id="selector" selectable="cr-realbox-match"
     items="{{selectableMatchElements_}}" selected="{{selectedMatchIndex}}"
     selected-class="selected">
   <template is="dom-repeat" items="[[groupIds_(result.matches.*)]]"
@@ -95,9 +95,9 @@
       <template is="dom-repeat" items="[[result.matches]]" as="match"
           filter="[[matchIsInGroupFilter_(groupId)]]"
           on-dom-change="onResultRepaint_">
-        <ntp-realbox-match tabindex="0" role="option" match="[[match]]"
+        <cr-realbox-match tabindex="0" role="option" match="[[match]]"
             match-index="[[matchIndex_(match)]]">
-        </ntp-realbox-match>
+        </cr-realbox-match>
       </template>
     </template>
   </template>

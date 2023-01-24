@@ -51,7 +51,7 @@ export interface RealboxMatchElement {
 // Displays an autocomplete match similar to those in the Omnibox.
 export class RealboxMatchElement extends PolymerElement {
   static get is() {
-    return 'ntp-realbox-match';
+    return 'cr-realbox-match';
   }
 
   static get template() {
@@ -414,7 +414,7 @@ export class RealboxMatchElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ntp-realbox-match': RealboxMatchElement;
+    'cr-realbox-match': RealboxMatchElement;
   }
 }
 

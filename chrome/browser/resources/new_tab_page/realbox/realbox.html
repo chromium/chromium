@@ -1,19 +1,20 @@
 <style include="cr-icons">
   :host {
-    --ntp-realbox-border-radius: calc(0.5 * var(--ntp-realbox-height));
-    --ntp-realbox-height: 44px;
-    --ntp-realbox-shadow: 0 1px 6px 0 var(--color-realbox-shadow);
+    --cr-realbox-height: 44px;
+    --cr-realbox-shadow: 0 1px 6px 0 var(--color-realbox-shadow);
+
+    --ntp-realbox-border-radius: calc(0.5 * var(--cr-realbox-height));
     --ntp-realbox-icon-width: 26px;
     --ntp-realbox-inner-icon-margin: 8px;
     --ntp-realbox-voice-icon-offset: 16px;
     border-radius: var(--ntp-realbox-border-radius);
-    box-shadow: var(--ntp-realbox-shadow);
+    box-shadow: var(--cr-realbox-shadow);
     font-size: 16px;
-    height: var(--ntp-realbox-height);
+    height: var(--cr-realbox-height);
   }
 
   :host([is-dark]) {
-    --ntp-realbox-shadow: 0 2px 6px 0 var(--color-realbox-shadow);
+    --cr-realbox-shadow: 0 2px 6px 0 var(--color-realbox-shadow);
   }
 
   :host([realbox-lens-search-enabled_]) {
@@ -36,7 +37,7 @@
 
   :host([match-searchbox]:not([matches-are-visible]):hover) {
     border: 1px solid transparent;
-    box-shadow: var(--ntp-realbox-shadow);
+    box-shadow: var(--cr-realbox-shadow);
   }
 
   :host([match-searchbox]:not([is-dark]):not([matches-are-visible]):not(:hover)) {
@@ -99,14 +100,14 @@
     background-color: var(--color-realbox-background-hovered);
   }
 
-  ntp-realbox-icon {
+  cr-realbox-icon {
     height: 100%;
     left: 12px;
     position: absolute;
     top: 0;
   }
 
-  :host-context([dir='rtl']) ntp-realbox-icon {
+  :host-context([dir='rtl']) cr-realbox-icon {
     left: unset;
     right: 12px;
   }
@@ -170,11 +171,11 @@
     box-shadow: var(--ntp-focus-shadow);
   }
 
-  :-webkit-any(input, ntp-realbox-icon, .realbox-icon-button) {
+  :-webkit-any(input, cr-realbox-icon, .realbox-icon-button) {
     z-index: 100;
   }
 
-  ntp-realbox-dropdown {
+  cr-realbox-dropdown {
     left: 0;
     position: absolute;
     right: 0;
@@ -191,9 +192,9 @@
       on-cut="onInputCutCopy_" on-focus="onInputFocus_" on-input="onInputInput_"
       on-keydown="onInputKeydown_" on-keyup="onInputKeyup_"
       on-mousedown="onInputMouseDown_" on-paste="onInputPaste_">
-  <ntp-realbox-icon id="icon" match="[[selectedMatch_]]"
+  <cr-realbox-icon id="icon" match="[[selectedMatch_]]"
       default-icon="[[realboxIcon_]]" in-searchbox>
-  </ntp-realbox-icon>
+  </cr-realbox-icon>
   <button id="voiceSearchButton" class="realbox-icon-button"
       on-click="onVoiceSearchClick_" title="$i18n{voiceSearchButtonLabel}">
   </button>
@@ -202,10 +203,10 @@
         on-click="onLensSearchClick_" title="$i18n{lensSearchButtonLabel}">
     </button>
   </template>
-  <ntp-realbox-dropdown id="matches" role="listbox" result="[[result_]]"
+  <cr-realbox-dropdown id="matches" role="listbox" result="[[result_]]"
       selected-match-index="{{selectedMatchIndex_}}"
       on-result-repaint="onResultRepaint_" on-match-focusin="onMatchFocusin_"
       on-match-click="onMatchClick_" on-match-remove="onMatchRemove_"
       on-header-focusin="onHeaderFocusin_" hidden$="[[!matchesAreVisible]]">
-  </ntp-realbox-dropdown>
+  </cr-realbox-dropdown>
 </div>

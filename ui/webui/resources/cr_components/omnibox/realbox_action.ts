@@ -15,7 +15,7 @@ import {decodeString16} from './utils.js';
 // Browsing History, etc.)
 class RealboxActionElement extends PolymerElement {
   static get is() {
-    return 'ntp-realbox-action';
+    return 'cr-realbox-action';
   }
 
   static get template() {

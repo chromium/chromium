@@ -181,7 +181,7 @@ export class RealboxElement extends PolymerElement {
 
       /**
        * Index of the currently selected match, if any.
-       * Do not modify this. Use <ntp-realbox-dropdown> API to change selection.
+       * Do not modify this. Use <cr-realbox-dropdown> API to change selection.
        */
       selectedMatchIndex_: {
         type: Number,

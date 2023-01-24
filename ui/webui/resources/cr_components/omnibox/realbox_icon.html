@@ -18,12 +18,12 @@
   }
 
   /* Entities may feature a dominant color background until image loads. */
-  :host-context(ntp-realbox-match[has-image]) #container {
+  :host-context(cr-realbox-match[has-image]) #container {
     background-color: var(--container-bg-color);
   }
 
   /* Calculator answer and suggestion answer icons feature a blue background. */
-  :host-context(ntp-realbox-match[is-rich-suggestion]:not([has-image])) #container {
+  :host-context(cr-realbox-match[is-rich-suggestion]:not([has-image])) #container {
     background-color: var(--google-blue-600);
     border-radius: 50%;
     height: 24px;
@@ -36,7 +36,7 @@
     max-width: 32px;
   }
 
-  :host-context(ntp-realbox-match[has-image]) #image {
+  :host-context(cr-realbox-match[has-image]) #image {
     display: initial;
   }
 
@@ -57,11 +57,11 @@
     width: 24px;
   }
 
-  :host-context(ntp-realbox-match[has-image]) #icon {
+  :host-context(cr-realbox-match[has-image]) #icon {
     display: none;
   }
 
-  :host-context(ntp-realbox-match[is-rich-suggestion]) #icon {
+  :host-context(cr-realbox-match[is-rich-suggestion]) #icon {
     background-color: white;
   }
 
