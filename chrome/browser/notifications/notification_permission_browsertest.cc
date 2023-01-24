@@ -146,13 +146,38 @@ class NotificationPermissionBrowserTest : public InProcessBrowserTest {
   StoragePartitioningChromeContentBrowserClient partitioning_client_;
 };
 
-// Tests that notification permissions aren't delegated to an embedded frame
+// Tests that undelegated permissions which have their default/prompt value on
+// an origin are automatically denied in documents from that origin when
+// loaded as a cross-origin iframe.
+IN_PROC_BROWSER_TEST_F(NotificationPermissionBrowserTest,
+                       UndelegatedPermissionDeniedIfNotGrantedToOrigin) {
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), TesterUrl()));
+  content::RenderFrameHost* main_frame =
+      GetActiveWebContents()->GetPrimaryMainFrame();
+  EXPECT_EQ("default", EvalJs(main_frame, "getNotificationPermission()"));
+  EXPECT_EQ("denied",
+            EvalJs(main_frame, "getServiceWorkerNotificationPermission()"));
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), EmbedderUrl()));
+  main_frame = GetActiveWebContents()->GetPrimaryMainFrame();
+  EXPECT_EQ("default", EvalJs(main_frame, "getNotificationPermission()"));
+
+  content::RenderFrameHost* iframe = CreateChildIframe(main_frame, TesterUrl());
+  EXPECT_EQ("denied", EvalJs(iframe, "getNotificationPermission()"));
+  EXPECT_EQ("denied",
+            EvalJs(iframe, "getServiceWorkerNotificationPermission()"));
+  EXPECT_EQ("denied", EvalJs(iframe, "getPushPermission()"));
+  // TODO(crbug.com/1409720): This should return 'denied'.
+  EXPECT_EQ("prompt", EvalJs(iframe, "getServiceWorkerPushPermission()"));
+}
+
+// Tests that undelegated permissions aren't delegated to an embedded frame
 // as other permissions are. If 'example.com' was granted notification
 // permissions by the user when it was a top-level frame, then it retains that
 // permission when iframed in another page, regardless of the other page's
 // permission status.
 IN_PROC_BROWSER_TEST_F(NotificationPermissionBrowserTest,
-                       PermissionNotDelegated) {
+                       UndelegatedPermissionsAreNotDelegated) {
   GrantNotificationPermissionForTest(TesterUrl());
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), TesterUrl()));
@@ -165,6 +190,11 @@ IN_PROC_BROWSER_TEST_F(NotificationPermissionBrowserTest,
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), EmbedderUrl()));
   main_frame = GetActiveWebContents()->GetPrimaryMainFrame();
   EXPECT_EQ("default", EvalJs(main_frame, "getNotificationPermission()"));
+  EXPECT_EQ("denied",
+            EvalJs(main_frame, "getServiceWorkerNotificationPermission()"));
+  EXPECT_EQ("prompt", EvalJs(main_frame, "getPushPermission()"));
+  // TODO(crbug.com/1409720): This should return 'denied'.
+  EXPECT_EQ("prompt", EvalJs(main_frame, "getServiceWorkerPushPermission()"));
 
   content::RenderFrameHost* iframe = CreateChildIframe(main_frame, TesterUrl());
   EXPECT_EQ("granted", EvalJs(iframe, "getNotificationPermission()"));
