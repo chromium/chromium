@@ -65,6 +65,7 @@ class CORE_EXPORT Fullscreen final : public GarbageCollected<Fullscreen>,
   static Element* FullscreenElementForBindingFrom(TreeScope&);
   static bool IsFullscreenElement(const Element&);
   static bool IsInFullscreenElementStack(const Element&);
+  static bool HasFullscreenElements();
 
   static void RequestFullscreen(Element&);
   static ScriptPromise RequestFullscreen(
@@ -147,7 +148,8 @@ class CORE_EXPORT Fullscreen final : public GarbageCollected<Fullscreen>,
 };
 
 inline bool Fullscreen::IsFullscreenElement(const Element& element) {
-  return FullscreenElementFrom(element.GetDocument()) == &element;
+  return UNLIKELY(HasFullscreenElements()) &&
+         FullscreenElementFrom(element.GetDocument()) == &element;
 }
 
 }  // namespace blink

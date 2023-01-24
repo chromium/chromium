@@ -620,6 +620,11 @@ Fullscreen& Fullscreen::From(LocalDOMWindow& window) {
   return *fullscreen;
 }
 
+// static
+bool Fullscreen::HasFullscreenElements() {
+  return !FullscreenParamsMap().empty();
+}
+
 Element* Fullscreen::FullscreenElementFrom(Document& document) {
   // The fullscreen element is the topmost element in the document's top layer
   // whose fullscreen flag is set, if any, and null otherwise.
