@@ -502,8 +502,7 @@
       <intent-filter>  # DIFF-ANCHOR: 8f70c92f
         <action android:name="android.intent.action.SEARCH"/>
       </intent-filter>  # DIFF-ANCHOR: 8f70c92f
-      <intent-filter>  # DIFF-ANCHOR: 4ee601b7
-        <action android:name="android.intent.action.SEND"/>
+      <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <category android:name="android.intent.category.DEFAULT"/>
@@ -514,17 +513,7 @@
         <data android:scheme="googlechrome"/>
         <data android:scheme="http"/>
         <data android:scheme="https"/>
-      </intent-filter>  # DIFF-ANCHOR: 4ee601b7
-      <intent-filter>  # DIFF-ANCHOR: 4ee601b7
-        <action android:name="android.intent.action.SEND"/>
-        <action android:name="android.intent.action.VIEW"/>
-        <category android:name="android.intent.category.BROWSABLE"/>
-        <category android:name="android.intent.category.DEFAULT"/>
-        <data android:scheme="about"/>
-        <data android:scheme="googlechrome"/>
-        <data android:scheme="http"/>
-        <data android:scheme="https"/>
-      </intent-filter>  # DIFF-ANCHOR: 4ee601b7
+      </intent-filter>  # DIFF-ANCHOR: 13c9b0a8
       <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.BROWSABLE"/>
@@ -586,6 +575,15 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <data android:mimeType="multipart/related"/>
         <data android:scheme="file"/>
+      </intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+      <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:scheme="about"/>
+        <data android:scheme="googlechrome"/>
+        <data android:scheme="http"/>
+        <data android:scheme="https"/>
       </intent-filter>  # DIFF-ANCHOR: 13c9b0a8
       <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
         <action android:name="android.intent.action.VIEW"/>

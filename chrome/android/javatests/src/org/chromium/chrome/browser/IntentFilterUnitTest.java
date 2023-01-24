@@ -17,20 +17,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
-import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterProvider;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-
-import java.util.Arrays;
 
 /**
  * Unit tests for Intent Filters in chrome/android/java/AndroidManifest.xml
  */
-@RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
+@RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class IntentFilterUnitTest {
     private static final Uri HTTPS_URI = Uri.parse("https://www.example.com/index.html");
@@ -47,15 +40,6 @@ public class IntentFilterUnitTest {
 
     private Intent mIntent;
     private PackageManager mPm;
-
-    /** Parameter provider for the intent action. */
-    public static class ActionParamProvider implements ParameterProvider {
-        @Override
-        public Iterable<ParameterSet> getParameters() {
-            return Arrays.asList(new ParameterSet().value(Intent.ACTION_VIEW).name("view"),
-                    new ParameterSet().value(Intent.ACTION_SEND).name("send"));
-        }
-    }
 
     @Before
     public void setUp() {
@@ -75,9 +59,7 @@ public class IntentFilterUnitTest {
 
     @Test
     @SmallTest
-    @ParameterAnnotations.UseMethodParameter(ActionParamProvider.class)
-    public void testIgnoredMimeType(String action) {
-        mIntent.setAction(action);
+    public void testIgnoredMimeType() {
         mIntent.setDataAndType(CONTENT_URI, "application/octet-stream");
         verifyIntent(false);
         mIntent.addCategory(Intent.CATEGORY_BROWSABLE);
@@ -86,9 +68,7 @@ public class IntentFilterUnitTest {
 
     @Test
     @SmallTest
-    @ParameterAnnotations.UseMethodParameter(ActionParamProvider.class)
-    public void testHttpsUri(String action) {
-        mIntent.setAction(action);
+    public void testHttpsUri() {
         mIntent.setData(HTTPS_URI);
         verifyIntent(true);
         mIntent.addCategory(Intent.CATEGORY_BROWSABLE);
@@ -97,9 +77,7 @@ public class IntentFilterUnitTest {
 
     @Test
     @SmallTest
-    @ParameterAnnotations.UseMethodParameter(ActionParamProvider.class)
-    public void testHttpsUriWithMime(String action) {
-        mIntent.setAction(action);
+    public void testHttpsUriWithMime() {
         mIntent.setDataAndType(HTTPS_URI, "text/html");
         verifyIntent(true);
         mIntent.setDataAndType(HTTPS_URI, "text/plain");
@@ -112,9 +90,7 @@ public class IntentFilterUnitTest {
 
     @Test
     @SmallTest
-    @ParameterAnnotations.UseMethodParameter(ActionParamProvider.class)
-    public void testAboutUri(String action) {
-        mIntent.setAction(action);
+    public void testAboutUri() {
         mIntent.setData(ABOUT_URI);
         verifyIntent(true);
         mIntent.addCategory(Intent.CATEGORY_BROWSABLE);
@@ -123,9 +99,7 @@ public class IntentFilterUnitTest {
 
     @Test
     @SmallTest
-    @ParameterAnnotations.UseMethodParameter(ActionParamProvider.class)
-    public void testAboutUriWithMime(String action) {
-        mIntent.setAction(action);
+    public void testAboutUriWithMime() {
         mIntent.setDataAndType(ABOUT_URI, "text/html");
         verifyIntent(true);
         mIntent.setDataAndType(ABOUT_URI, "text/plain");
@@ -139,9 +113,7 @@ public class IntentFilterUnitTest {
     // We don't support javascript URI intents.
     @Test
     @SmallTest
-    @ParameterAnnotations.UseMethodParameter(ActionParamProvider.class)
-    public void testJavascriptUri(String action) {
-        mIntent.setAction(action);
+    public void testJavascriptUri() {
         mIntent.setData(JAVASCRIPT_URI);
         verifyIntent(false);
         mIntent.addCategory(Intent.CATEGORY_BROWSABLE);
@@ -150,9 +122,7 @@ public class IntentFilterUnitTest {
 
     @Test
     @SmallTest
-    @ParameterAnnotations.UseMethodParameter(ActionParamProvider.class)
-    public void testJavascriptUriWithMime(String action) {
-        mIntent.setAction(action);
+    public void testJavascriptUriWithMime() {
         mIntent.setDataAndType(JAVASCRIPT_URI, "text/javascript");
         verifyIntent(false);
         mIntent.setDataAndType(JAVASCRIPT_URI, "text/html");
@@ -167,9 +137,7 @@ public class IntentFilterUnitTest {
 
     @Test
     @SmallTest
-    @ParameterAnnotations.UseMethodParameter(ActionParamProvider.class)
-    public void testHtmlFileUri(String action) {
-        mIntent.setAction(action);
+    public void testHtmlFileUri() {
         mIntent.setData(HTML_URI);
         verifyIntent(false);
         mIntent.setDataAndType(HTML_URI, "text/html");
@@ -180,61 +148,51 @@ public class IntentFilterUnitTest {
 
     @Test
     @SmallTest
-    @ParameterAnnotations.UseMethodParameter(ActionParamProvider.class)
-    public void testHtmlContentUri(String action) {
-        mIntent.setAction(action);
+    public void testHtmlContentUri() {
         mIntent.setDataAndType(CONTENT_URI, "text/html");
-        verifyIntent(action.equals(Intent.ACTION_VIEW));
+        verifyIntent(true);
         mIntent.addCategory(Intent.CATEGORY_BROWSABLE);
         verifyIntent(false);
     }
 
     @Test
     @SmallTest
-    @ParameterAnnotations.UseMethodParameter(ActionParamProvider.class)
-    public void testMhtmlUri(String action) {
-        mIntent.setAction(action);
+    public void testMhtmlUri() {
         mIntent.setData(MHTML_URI);
-        verifyIntent(action.equals(Intent.ACTION_VIEW));
+        verifyIntent(true);
         // Note that calling setType() would clear the Data...
         mIntent.setDataAndType(MHTML_URI, ANY_MIME);
-        verifyIntent(action.equals(Intent.ACTION_VIEW));
+        verifyIntent(true);
         mIntent.addCategory(Intent.CATEGORY_BROWSABLE);
-        verifyIntent(action.equals(Intent.ACTION_VIEW));
+        verifyIntent(true);
     }
 
     @Test
     @SmallTest
-    @ParameterAnnotations.UseMethodParameter(ActionParamProvider.class)
-    public void testContentMhtmlUri(String action) {
-        mIntent.setAction(action);
+    public void testContentMhtmlUri() {
         mIntent.setDataAndType(CONTENT_URI, "multipart/related");
-        verifyIntent(action.equals(Intent.ACTION_VIEW));
+        verifyIntent(true);
         mIntent.addCategory(Intent.CATEGORY_BROWSABLE);
         verifyIntent(false);
     }
 
     @Test
     @SmallTest
-    @ParameterAnnotations.UseMethodParameter(ActionParamProvider.class)
-    public void testWbnUri(String action) {
-        mIntent.setAction(action);
+    public void testWbnUri() {
         mIntent.setData(WBN_URI);
-        verifyIntent(action.equals(Intent.ACTION_VIEW));
+        verifyIntent(true);
         // Note that calling setType() would clear the Data...
         mIntent.setDataAndType(WBN_URI, ANY_MIME);
-        verifyIntent(action.equals(Intent.ACTION_VIEW));
+        verifyIntent(true);
         mIntent.addCategory(Intent.CATEGORY_BROWSABLE);
-        verifyIntent(action.equals(Intent.ACTION_VIEW));
+        verifyIntent(true);
     }
 
     @Test
     @SmallTest
-    @ParameterAnnotations.UseMethodParameter(ActionParamProvider.class)
-    public void testContentWbnUri(String action) {
-        mIntent.setAction(action);
+    public void testContentWbnUri() {
         mIntent.setDataAndType(CONTENT_URI, "application/webbundle");
-        verifyIntent(action.equals(Intent.ACTION_VIEW));
+        verifyIntent(true);
         mIntent.addCategory(Intent.CATEGORY_BROWSABLE);
         verifyIntent(false);
     }
