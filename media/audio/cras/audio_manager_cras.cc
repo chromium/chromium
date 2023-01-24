@@ -214,9 +214,12 @@ AudioParameters AudioManagerCras::GetStreamParametersForSystem(
       (tuned_system_apm_available && tuned_system_aec_allowed) ||
       enforce_system_aec;
 
-  // TODO(hychao): query from CRAS
-  bool system_ns_supported = true;
-  bool system_agc_supported = true;
+  // TODO(b/266242770): Reintroduce the scheme for setting this to follow what
+  // was previously done in (the now removed)
+  // media/audio/cras/audio_manager_chromeos.cc. Until then, the NS and AGC
+  // effects are hardcoded to never run in CRAS.
+  bool system_ns_supported = false;
+  bool system_agc_supported = false;
 
   int aec_group_id = cras_util_->CrasGetAecGroupId();
   if (!use_system_aec || IsSystemAecDeactivated(aec_group_id)) {
