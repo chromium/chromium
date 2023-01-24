@@ -118,29 +118,18 @@ void ExecuteJavaScript(WKWebView* web_view,
                        WKFrameInfo* frame_info,
                        NSString* script,
                        void (^completion_handler)(id, NSError*)) {
-  if (!content_world && !frame_info) {
-    // The -[WKWebView evaluateJavaScript:inFrame:inContentWorld:
-    // completionHandler:] API requires a content_world. However, if no specific
-    // world or frame is specified, this implies executing the JavaScript in the
-    // main frame of the page content world and can be executed.
-    ExecuteJavaScript(web_view, script, completion_handler);
-    return;
-  }
+  DCHECK(content_world);
+  // `frame_info` is required to ensure `script` is executed on the correct
+  // webpage. This works because a `frame_info` instance is associated with a
+  // particular loaded webpage/navigation and the script execution will only
+  // happen in the web view if the current frame_info matches.
+  DCHECK(frame_info);
 
   DCHECK([script length] > 0);
-  DCHECK(content_world);
   if (!web_view && completion_handler) {
     NotifyCompletionHandlerNullWebView(completion_handler);
     return;
   }
-
-  // If `content_world` is not the page world, a `frame_info` must be specified.
-  // `frame_info` is required to ensure `script` is executed on the correct
-  // webpage.
-  // NOTE: The page content world uses windowID to ensure that `script` is being
-  // executed on the intended page. Both windowID and `frame_info` are
-  // associated with the loaded page and are destroyed on navigation.
-  DCHECK(content_world == WKContentWorld.pageWorld || frame_info);
 
   [web_view evaluateJavaScript:script
                        inFrame:frame_info
