@@ -72,63 +72,16 @@
 
 #define ARRAYSIZE(x) (sizeof(x) / sizeof(*(x)))
 
-// CopyCStringFromCFString converts a CFString to a C string allocated via
-// malloc. The caller is responsible for releasing the string.
-//
-// If NULL is passed as an argument, this returns an empty string (a 1-byte
-// buffer containing a single zero).
-//
-// If this method cannot allocate memory for a result or cannot convert the
-// provided CFString to a C string for any other reason, it exits with a failure
-// status.
-static const char* CopyCStringFromCFString(CFStringRef cfstr) {
-  if (!cfstr) {
-    char* ret = calloc(1, 1);
-    if (!ret) {
-      err(EX_UNAVAILABLE, "out of memory");
-    }
-    return ret;
-  }
-  CFIndex buf_sz = 1 + CFStringGetMaximumSizeForEncoding(
-                           CFStringGetLength(cfstr), kCFStringEncodingUTF8);
-  char* buf = malloc((size_t)buf_sz);
-  if (!buf) {
-    err(EX_UNAVAILABLE, "out of memory");
-  }
-  if (!CFStringGetCString(cfstr, buf, buf_sz, kCFStringEncodingUTF8)) {
-    errx(EX_UNAVAILABLE, "can't convert string");
-  }
-  return buf;
-}
-
-// CopySecError converts an OSStatus from a Security.h API to a C string
-// allocated via malloc. The caller is responsible for releasing the string
-// (assuming the process isn't crashing).
-static const char* CopySecError(OSStatus code) {
-  CFStringRef cfstr = SecCopyErrorMessageString(code, NULL);
-  if (!cfstr) {
-    char* ret = NULL;
-    if (asprintf(&ret, "unknown error %d", code) < 0) {
-      err(EX_UNAVAILABLE, "can't asprintf unknown error %d", code);
-    }
-    return ret;
-  }
-  const char* buf = CopyCStringFromCFString(cfstr);
-  CFRelease(cfstr);
-  return buf;
-}
-
 static bool StrAppend(char* dest, const char* suffix, size_t dest_size) {
   return strlcat(dest, suffix, dest_size) < dest_size;
 }
 
 // ErrSec exits the program with the specified return code, emitting an error
-// message of the form <msg>: <error>, using SecCopyErrorMessageString to get a
-// readable error message from the error code.
+// message of the form <msg>: <error code>.
 static __attribute__((noreturn)) void ErrSec(int rc,
                                              OSStatus error,
                                              const char* msg) {
-  errx(rc, "%s: %s", msg, CopySecError(error));
+  errx(rc, "%s: %d", msg, error);
 }
 
 // Checks whether extended POSIX ACLs allow write access on the specified path.
