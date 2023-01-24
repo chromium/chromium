@@ -53,11 +53,11 @@ char StructuredMetricsProvider::kDeviceKeyDataPath[] =
 char StructuredMetricsProvider::kUnsentLogsPath[] = "structured_metrics/events";
 
 StructuredMetricsProvider::StructuredMetricsProvider(
-    base::raw_ptr<metrics::MetricsProvider> system_profile_provider) {
-  StructuredMetricsProvider(
-      base::FilePath(kDeviceKeyDataPath), base::Milliseconds(kSaveDelayMs),
-      kMinIndependentMetricsInterval, system_profile_provider);
-}
+    base::raw_ptr<metrics::MetricsProvider> system_profile_provider)
+    : StructuredMetricsProvider(base::FilePath(kDeviceKeyDataPath),
+                                base::Milliseconds(kSaveDelayMs),
+                                kMinIndependentMetricsInterval,
+                                system_profile_provider) {}
 
 StructuredMetricsProvider::StructuredMetricsProvider(
     const base::FilePath& device_key_path,
