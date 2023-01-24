@@ -10,11 +10,8 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/values.h"
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
-
-namespace base {
-class Value;
-}
 
 class Profile;
 
@@ -51,7 +48,7 @@ class DevToolsTargetsUIHandler {
   virtual void ForceUpdate();
 
  protected:
-  base::Value Serialize(content::DevToolsAgentHost* host);
+  base::Value::Dict Serialize(content::DevToolsAgentHost* host);
   void SendSerializedTargets(const base::Value& list);
 
   using TargetMap =

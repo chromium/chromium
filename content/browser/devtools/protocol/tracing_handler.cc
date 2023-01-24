@@ -94,19 +94,19 @@ std::string ConvertFromCamelCase(const std::string& in_str, char separator) {
 
 base::Value ConvertDictKeyStyle(const base::Value& value) {
   if (value.is_dict()) {
-    base::Value out(base::Value::Type::DICTIONARY);
+    base::Value::Dict out;
     for (auto kv : value.DictItems()) {
-      out.SetKey(ConvertFromCamelCase(kv.first, '_'),
-                 ConvertDictKeyStyle(kv.second));
+      out.Set(ConvertFromCamelCase(kv.first, '_'),
+              ConvertDictKeyStyle(kv.second));
     }
-    return out;
+    return base::Value(std::move(out));
   }
 
   if (value.is_list()) {
-    base::Value out(base::Value::Type::LIST);
+    base::Value::List out;
     for (const auto& v : value.GetList())
       out.Append(ConvertDictKeyStyle(v));
-    return out;
+    return base::Value(std::move(out));
   }
 
   return value.Clone();

@@ -141,8 +141,8 @@ void LocalTargetsUIHandler::UpdateTargets() {
       continue;
 
     targets_[host->GetId()] = host;
-    hosts.push_back(
-        {host->GetId(), host->GetParentId(), Serialize(host.get())});
+    hosts.push_back({host->GetId(), host->GetParentId(),
+                     base::Value(Serialize(host.get()))});
   }
 
   SendSerializedTargets(
@@ -224,57 +224,56 @@ void AdbTargetsUIHandler::DeviceListChanged(
   if (!android_bridge_)
     return;
 
-  base::Value device_list(base::Value::Type::LIST);
+  base::Value::List device_list;
   for (const auto& device_ptr : devices) {
     DevToolsAndroidBridge::RemoteDevice* device = device_ptr.get();
-    base::Value device_data(base::Value::Type::DICTIONARY);
-    device_data.SetStringKey(kAdbModelField, device->model());
-    device_data.SetStringKey(kAdbSerialField, device->serial());
-    device_data.SetBoolKey(kAdbConnectedField, device->is_connected());
+    base::Value::Dict device_data;
+    device_data.Set(kAdbModelField, device->model());
+    device_data.Set(kAdbSerialField, device->serial());
+    device_data.Set(kAdbConnectedField, device->is_connected());
     std::string device_id = base::StringPrintf(
         kAdbDeviceIdFormat,
         device->serial().c_str());
-    device_data.SetStringKey(kTargetIdField, device_id);
-    base::Value browser_list(base::Value::Type::LIST);
+    device_data.Set(kTargetIdField, device_id);
+    base::Value::List browser_list;
 
     DevToolsAndroidBridge::RemoteBrowsers& browsers = device->browsers();
     for (const auto& browser_ptr : browsers) {
       DevToolsAndroidBridge::RemoteBrowser* browser = browser_ptr.get();
-      base::Value browser_data(base::Value::Type::DICTIONARY);
-      browser_data.SetStringKey(kAdbBrowserNameField, browser->display_name());
-      browser_data.SetStringKey(kAdbBrowserUserField, browser->user());
-      browser_data.SetStringKey(kAdbBrowserVersionField, browser->version());
+      base::Value::Dict browser_data;
+      browser_data.Set(kAdbBrowserNameField, browser->display_name());
+      browser_data.Set(kAdbBrowserUserField, browser->user());
+      browser_data.Set(kAdbBrowserVersionField, browser->version());
       DevToolsAndroidBridge::RemoteBrowser::ParsedVersion parsed =
           browser->GetParsedVersion();
-      browser_data.SetIntKey(
-          kAdbBrowserChromeVersionField,
-          browser->IsChrome() && !parsed.empty() ? parsed[0] : 0);
+      browser_data.Set(kAdbBrowserChromeVersionField,
+                       browser->IsChrome() && !parsed.empty() ? parsed[0] : 0);
       std::string browser_id = browser->GetId();
-      browser_data.SetStringKey(kTargetIdField, browser_id);
-      browser_data.SetStringKey(kTargetSourceField, source_id());
+      browser_data.Set(kTargetIdField, browser_id);
+      browser_data.Set(kTargetSourceField, source_id());
 
-      base::Value page_list(base::Value::Type::LIST);
+      base::Value::List page_list;
       remote_browsers_[browser_id] = browser;
       for (const auto& page : browser->pages()) {
         scoped_refptr<DevToolsAgentHost> host = page->CreateTarget();
-        base::Value target_data = Serialize(host.get());
+        base::Value::Dict target_data = Serialize(host.get());
         // Pass the screen size in the target object to make sure that
         // the caching logic does not prevent the target item from updating
         // when the screen size changes.
         gfx::Size screen_size = device->screen_size();
-        target_data.SetIntKey(kAdbScreenWidthField, screen_size.width());
-        target_data.SetIntKey(kAdbScreenHeightField, screen_size.height());
+        target_data.Set(kAdbScreenWidthField, screen_size.width());
+        target_data.Set(kAdbScreenHeightField, screen_size.height());
         targets_[host->GetId()] = host;
         page_list.Append(std::move(target_data));
       }
-      browser_data.SetKey(kAdbPagesList, std::move(page_list));
+      browser_data.Set(kAdbPagesList, std::move(page_list));
       browser_list.Append(std::move(browser_data));
     }
 
-    device_data.SetKey(kAdbBrowsersList, std::move(browser_list));
+    device_data.Set(kAdbBrowsersList, std::move(browser_list));
     device_list.Append(std::move(device_data));
   }
-  SendSerializedTargets(device_list);
+  SendSerializedTargets(base::Value(std::move(device_list)));
 }
 
 } // namespace
@@ -322,16 +321,16 @@ DevToolsTargetsUIHandler::GetBrowserAgentHost(const std::string& browser_id) {
   return nullptr;
 }
 
-base::Value DevToolsTargetsUIHandler::Serialize(DevToolsAgentHost* host) {
-  base::Value target_data(base::Value::Type::DICTIONARY);
-  target_data.SetStringKey(kTargetSourceField, source_id_);
-  target_data.SetStringKey(kTargetIdField, host->GetId());
-  target_data.SetStringKey(kTargetTypeField, host->GetType());
-  target_data.SetBoolKey(kAttachedField, host->IsAttached());
-  target_data.SetStringKey(kUrlField, host->GetURL().spec());
-  target_data.SetStringKey(kNameField, host->GetTitle());
-  target_data.SetStringKey(kFaviconUrlField, host->GetFaviconURL().spec());
-  target_data.SetStringKey(kDescriptionField, host->GetDescription());
+base::Value::Dict DevToolsTargetsUIHandler::Serialize(DevToolsAgentHost* host) {
+  base::Value::Dict target_data;
+  target_data.Set(kTargetSourceField, source_id_);
+  target_data.Set(kTargetIdField, host->GetId());
+  target_data.Set(kTargetTypeField, host->GetType());
+  target_data.Set(kAttachedField, host->IsAttached());
+  target_data.Set(kUrlField, host->GetURL().spec());
+  target_data.Set(kNameField, host->GetTitle());
+  target_data.Set(kFaviconUrlField, host->GetFaviconURL().spec());
+  target_data.Set(kDescriptionField, host->GetDescription());
   return target_data;
 }
 
@@ -363,23 +362,22 @@ PortForwardingStatusSerializer::~PortForwardingStatusSerializer() {
 
 void PortForwardingStatusSerializer::PortStatusChanged(
     const ForwardingStatus& status) {
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value::Dict result;
   for (const auto& status_pair : status) {
-    base::Value port_status_dict(base::Value::Type::DICTIONARY);
+    base::Value::Dict port_status_dict;
     const PortStatusMap& port_status_map = status_pair.second;
     for (const auto& p : port_status_map) {
-      port_status_dict.SetIntKey(base::NumberToString(p.first), p.second);
+      port_status_dict.Set(base::NumberToString(p.first), p.second);
     }
 
-    base::Value device_status_dict(base::Value::Type::DICTIONARY);
-    device_status_dict.SetKey(kPortForwardingPorts,
-                              std::move(port_status_dict));
-    device_status_dict.SetStringKey(kPortForwardingBrowserId,
-                                    status_pair.first->GetId());
+    base::Value::Dict device_status_dict;
+    device_status_dict.Set(kPortForwardingPorts, std::move(port_status_dict));
+    device_status_dict.Set(kPortForwardingBrowserId,
+                           status_pair.first->GetId());
 
     std::string device_id = base::StringPrintf(
         kAdbDeviceIdFormat, status_pair.first->serial().c_str());
-    result.SetKey(device_id, std::move(device_status_dict));
+    result.Set(device_id, std::move(device_status_dict));
   }
-  callback_.Run(std::move(result));
+  callback_.Run(base::Value(std::move(result)));
 }
