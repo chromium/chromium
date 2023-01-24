@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/clip_list.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -36,7 +37,7 @@ enum ShadowMode {
   kDrawForegroundOnly
 };
 
-class CanvasRenderingContext2DState final
+class MODULES_EXPORT CanvasRenderingContext2DState final
     : public GarbageCollected<CanvasRenderingContext2DState>,
       public FontSelectorClient {
  public:
