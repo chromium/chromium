@@ -193,6 +193,7 @@ test("jpeg_decode_accelerator_unittest") {
     ":mjpeg_decode_accelerator",
     ":mjpeg_decode_accelerator_service",
     "//base",
+    "//base/test:test_support",
     "//media:test_support",
     "//media/gpu",
     "//media/gpu:buildflags",

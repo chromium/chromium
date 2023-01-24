@@ -33,6 +33,8 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -953,6 +955,9 @@ class MjpegDecodeAcceleratorTest : public ::testing::TestWithParam<bool> {
                   size_t num_concurrent_decoders = 1);
   void PerfDecodeByJDA(int decode_times, const std::vector<DecodeTask>& tasks);
   void PerfDecodeBySW(int decode_times, const std::vector<DecodeTask>& tasks);
+
+  // This is needed to use base::ThreadPool in MjpegDecodeAccelerator.
+  base::test::TaskEnvironment task_environment_;
 };
 
 void MjpegDecodeAcceleratorTest::TestDecode(
@@ -1303,6 +1308,7 @@ int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);
   base::CommandLine::Init(argc, argv);
   mojo::core::Init();
+  TestTimeouts::Initialize();
   base::ShadowingAtExitManager at_exit_manager;
 
   // Needed to enable DVLOG through --vmodule.
