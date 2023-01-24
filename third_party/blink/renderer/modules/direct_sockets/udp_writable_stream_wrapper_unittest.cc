@@ -28,7 +28,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/gc_plugin_ignore.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/googletest/src/googlemock/include/gmock/gmock-matchers.h"
 
 namespace blink {
