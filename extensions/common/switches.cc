@@ -29,7 +29,7 @@ const char kDEPRECATED_AllowlistedExtensionID[] = "whitelisted-extension-id";
 // a new tab.
 const char kEmbeddedExtensionOptions[] = "embedded-extension-options";
 
-// Enable BLE Advertisiing in apps.
+// Enable BLE Advertising in apps.
 const char kEnableBLEAdvertising[] = "enable-ble-advertising-in-apps";
 
 // Enables extension APIs that are in development.
