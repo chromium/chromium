@@ -154,6 +154,12 @@ WebrtcVideoEncoderWrapper::WebrtcVideoEncoderWrapper(
               << (lossless_color ? "true" : "false");
       encoder_ = std::make_unique<WebrtcVideoEncoderAV1>();
       encoder_->SetLosslessColor(lossless_color);
+      absl::optional<int> encoder_speed =
+          session_options.GetInt("Av1-Encoder-Speed");
+      if (encoder_speed) {
+        VLOG(0) << "Setting AV1 encoder speed to " << encoder_speed.value();
+        encoder_->SetEncoderSpeed(encoder_speed.value());
+      }
       break;
     }
     case webrtc::kVideoCodecH264:

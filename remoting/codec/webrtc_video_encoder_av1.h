@@ -32,6 +32,7 @@ class WebrtcVideoEncoderAV1 : public WebrtcVideoEncoder {
 
   // WebrtcVideoEncoder interface.
   void SetLosslessColor(bool want_lossless) override;
+  void SetEncoderSpeed(int encoder_speed) override;
   void Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
               const FrameParams& params,
               EncodeCallback done) override;
@@ -55,6 +56,7 @@ class WebrtcVideoEncoderAV1 : public WebrtcVideoEncoder {
   // Indicates whether the frames provided to the encoder will use I420 (lossy)
   // or I444 (lossless) format.
   bool lossless_color_ = false;
+  int av1_encoder_speed_ = -1;
 
   // Active map used to optimize out processing of unchanged macroblocks.
   VideoEncoderActiveMap active_map_;
