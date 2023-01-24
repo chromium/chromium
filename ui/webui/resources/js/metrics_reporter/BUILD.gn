@@ -13,13 +13,9 @@ mojom("mojo_bindings") {
   use_typescript_sources = true
 }
 
-# Output folder used to hold ts_library() output.
-preprocess_folder =
-    "$root_gen_dir/ui/webui/resources/preprocessed/js/metrics_reporter"
-
 ts_library("build_ts") {
   root_dir = target_gen_dir
-  out_dir = preprocess_folder
+  out_dir = "$root_gen_dir/ui/webui/resources/tsc/js/metrics_reporter"
   composite = true
   in_files = [
     "metrics_reporter.ts",

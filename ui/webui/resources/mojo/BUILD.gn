@@ -5,11 +5,11 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//tools/typescript/ts_library.gni")
 
-preprocessed_folder = "$root_gen_dir/ui/webui/resources/preprocessed/mojo"
+tsc_folder = "$root_gen_dir/ui/webui/resources/tsc/mojo"
 
 ts_library("library") {
   root_dir = "$root_gen_dir/mojom-webui"
-  out_dir = preprocessed_folder
+  out_dir = tsc_folder
   tsconfig_base = "tsconfig_base.json"
   composite = true
 
@@ -34,7 +34,7 @@ ts_library("library") {
     "url/mojom/origin.mojom-webui.js",
   ]
 
-  definitions = [ "$preprocessed_folder/mojo/public/js/bindings.d.ts" ]
+  definitions = [ "$tsc_folder/mojo/public/js/bindings.d.ts" ]
 
   extra_deps = [
     ":copy_bindings_dts",
@@ -84,5 +84,5 @@ ts_library("library") {
 # resolving chrome://resources/mojo/mojo/public/js/bindings.js.
 copy("copy_bindings_dts") {
   sources = [ "bindings.d.ts" ]
-  outputs = [ "$preprocessed_folder/mojo/public/js/{{source_file_part}}" ]
+  outputs = [ "$tsc_folder/mojo/public/js/{{source_file_part}}" ]
 }

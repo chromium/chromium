@@ -87,7 +87,7 @@ def _update_dep_file(in_folder, args, out_file_path, manifest):
 # excludes: Imports to exclude from the bundle.
 # external_paths: Path mappings for import paths that are outside of
 #                 |in_path|. For example:
-#                 chrome://resources/|gen/ui/webui/resources/preprocessed
+#                 chrome://resources/|gen/ui/webui/resources/tsc
 def _generate_rollup_config(tmp_out_dir, path_to_plugin, in_path, bundle_path,
                             host_url, excludes, external_paths):
   rollup_config_file = os.path.join(tmp_out_dir, bundle_path,

@@ -32,8 +32,7 @@ build_cr_component("build") {
   mojo_files_deps = [ ":mojom_ts__generator" ]
   mojo_files = [ "$target_gen_dir/most_visited.mojom-webui.ts" ]
 
-  tsc_dir =
-      "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/most_visited"
+  tsc_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/most_visited"
   ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",

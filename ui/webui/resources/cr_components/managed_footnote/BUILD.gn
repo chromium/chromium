@@ -13,7 +13,8 @@ build_cr_component("build") {
 
   web_component_files = [ "managed_footnote.ts" ]
 
-  tsc_dir = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/managed_footnote"
+  tsc_dir =
+      "$root_gen_dir/ui/webui/resources/tsc/cr_components/managed_footnote"
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
     "//third_party/polymer/v3_0:library",

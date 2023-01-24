@@ -84,7 +84,7 @@ function getPathForUrl(source, origin, urlPrefix, urlSrcPath, excludes) {
  * @param excludes Imports that should be excluded from the bundle.
  * @param externalPaths Array of mappings from URLs to paths where the
  *     files imported from the URLs can be found, e.g.
- *     chrome://resources|gen/ui/webui/resources/preprocessed/
+ *     chrome://resources|gen/ui/webui/resources/tsc/
  */
 export default function plugin(
     rootPath, bundlePath, hostUrl, excludes, externalPaths) {

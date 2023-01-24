@@ -42,7 +42,8 @@ build_cr_component("build") {
 
   css_files = [ "certificate_shared.css" ]
 
-  tsc_dir = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/certificate_manager"
+  tsc_dir =
+      "$root_gen_dir/ui/webui/resources/tsc/cr_components/certificate_manager"
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
     "//third_party/polymer/v3_0:library",

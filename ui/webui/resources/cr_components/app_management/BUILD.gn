@@ -102,7 +102,7 @@ build_cr_component("build") {
   mojo_files_deps = [ ":mojo_bindings_ts__generator" ]
   mojo_files = [ "$target_gen_dir/app_management.mojom-webui.ts" ]
 
-  tsc_dir = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/app_management"
+  tsc_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/app_management"
   ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",

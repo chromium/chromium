@@ -26,6 +26,7 @@ build_cr_component("build") {
   mojo_files = [ "$target_gen_dir/color_change_listener.mojom-webui.ts" ]
 
   ts_use_local_config = false
-  tsc_dir = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/color_change_listener"
+  tsc_dir =
+      "$root_gen_dir/ui/webui/resources/tsc/cr_components/color_change_listener"
   ts_deps = [ "//ui/webui/resources/mojo:library" ]
 }

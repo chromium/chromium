@@ -25,8 +25,7 @@ build_cr_component("build") {
   mojo_files =
       [ "$root_gen_dir/components/omnibox/browser/omnibox.mojom-webui.ts" ]
 
-  tsc_dir =
-      "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/omnibox"
+  tsc_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/omnibox"
   ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",

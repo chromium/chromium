@@ -13,7 +13,7 @@ build_cr_component("build") {
 
   web_component_files = [ "managed_dialog.ts" ]
 
-  tsc_dir = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/managed_dialog"
+  tsc_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/managed_dialog"
   ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",

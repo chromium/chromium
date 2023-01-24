@@ -109,8 +109,7 @@ def get_tsc_paths(board):
 
     webui_dir = os.path.join(target_gen_dir, src_relative_dir,
                              'js/mojom-webui/*')
-    resources_dir = os.path.join(target_gen_dir,
-                                 'ui/webui/resources/preprocessed/*')
+    resources_dir = os.path.join(target_gen_dir, 'ui/webui/resources/tsc/*')
 
     return {
         '/mojom-webui/*': [os.path.relpath(webui_dir)],

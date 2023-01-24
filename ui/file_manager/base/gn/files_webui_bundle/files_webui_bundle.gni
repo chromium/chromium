@@ -52,8 +52,7 @@ template("files_webui_bundle") {
         rebase_path("//third_party/polymer/v3_0/components-chromium/",
                     root_build_dir)
     resources_path =
-        rebase_path("$root_gen_dir/ui/webui/resources/preprocessed/",
-                    root_build_dir)
+        rebase_path("$root_gen_dir/ui/webui/resources/tsc/", root_build_dir)
 
     ash_resources_path =
         rebase_path("$root_gen_dir/ash/webui/common/resources/preprocessed/",

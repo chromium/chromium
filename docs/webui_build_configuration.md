@@ -679,7 +679,7 @@ build_cr_component("build") {
   mojo_files_deps = [ ":mojo_bindings_ts__generator" ]
   mojo_files = [ "$root_gen_dir/ui/webui/resources/cr_components/history_clusters/history_clusters.mojom-webui.ts" ]
 
-  tsc_dir = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/history_clusters"
+  tsc_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/history_clusters"
   ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
   ts_deps = [
     "//third_party/polymer/v3_0:library",

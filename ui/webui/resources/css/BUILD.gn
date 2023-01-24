@@ -7,21 +7,21 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 
 include_polymer = !is_android && !is_ios
 
-preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/css"
-preprocess_src_manifest = "preprocessed_src_manifest.json"
+preprocess_manifest = "preprocessed_manifest.json"
 
 generate_grd("build_grdp") {
   grd_prefix = "webui_css"
   out_grd = "$target_gen_dir/resources.grdp"
-  public_deps = [ ":preprocess_src" ]
-  manifest_files = [ "$target_gen_dir/$preprocess_src_manifest" ]
+  public_deps = [ ":preprocess" ]
+  manifest_files = [ "$target_gen_dir/$preprocess_manifest" ]
   resource_path_prefix = "css"
 }
 
-preprocess_if_expr("preprocess_src") {
+preprocess_if_expr("preprocess") {
+  visibility = [ ":build_grdp" ]
   in_folder = "."
-  out_folder = "$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_src_manifest"
+  out_folder = "$target_gen_dir/preprocessed"
+  out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [
     "action_link.css",
     "butter_bar.css",
