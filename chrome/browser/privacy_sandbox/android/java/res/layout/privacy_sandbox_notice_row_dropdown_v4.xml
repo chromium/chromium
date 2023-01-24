@@ -73,6 +73,13 @@ found in the LICENSE file.
         android:layout_marginBottom="@dimen/promo_between_text_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="@string/privacy_sandbox_m1_notice_row_learn_more_description_android"
+        style="@style/TextAppearance.TextMedium.Secondary" />
+
+    <TextView
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="@string/privacy_sandbox_m1_notice_row_learn_more_description_5"
         style="@style/TextAppearance.TextMedium.Secondary" />
 
