@@ -342,8 +342,10 @@ TEST_F(PerformanceTest, MergePerformanceEntryVectorsTest) {
   }
 
   PerformanceEntryVector all_entries;
-  all_entries = MergePerformanceEntryVectors(all_entries, first_vector);
-  all_entries = MergePerformanceEntryVectors(all_entries, second_vector);
+  all_entries =
+      MergePerformanceEntryVectors(all_entries, first_vector, g_null_atom);
+  all_entries =
+      MergePerformanceEntryVectors(all_entries, second_vector, g_null_atom);
 
   std::sort(test_vector.begin(), test_vector.end(),
             PerformanceEntry::StartTimeCompareLessThan);

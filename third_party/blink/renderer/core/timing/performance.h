@@ -88,10 +88,14 @@ class V8UnionPerformanceMeasureOptionsOrString;
 using PerformanceEntryVector = HeapVector<Member<PerformanceEntry>>;
 using PerformanceEntryDeque = HeapDeque<Member<PerformanceEntry>>;
 
-// Merge two sorted PerformanceEntryVectors in linear time.
+// Merge two sorted PerformanceEntryVectors in linear time. If a non-null name
+// is provided, then items in second_entry_vector will be included in the result
+// only if their names match the given name. It is expected (and DCHECKed) that
+// first_entry_vector has already been filtered by name.
 CORE_EXPORT PerformanceEntryVector
 MergePerformanceEntryVectors(const PerformanceEntryVector& first_entry_vector,
-                             const PerformanceEntryVector& second_entry_vector);
+                             const PerformanceEntryVector& second_entry_vector,
+                             const AtomicString& maybe_name);
 
 class CORE_EXPORT Performance : public EventTargetWithInlineData {
   DEFINE_WRAPPERTYPEINFO();
@@ -351,22 +355,27 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
   void CopySecondaryBuffer();
 
   PerformanceEntryVector getEntriesByTypeInternal(
-      PerformanceEntry::EntryType type);
+      PerformanceEntry::EntryType type,
+      const AtomicString& maybe_name = g_null_atom);
 
   void MeasureMemoryExperimentTimerFired(TimerBase*);
 
-  // Get performance entries of the current frame.
-  PerformanceEntryVector GetEntriesForCurrentFrame();
+  // Get performance entries of the current frame, with an optional name filter.
+  PerformanceEntryVector GetEntriesForCurrentFrame(
+      const AtomicString& maybe_name = g_null_atom);
 
-  // Get performance entries of the current frame by type.
+  // Get performance entries of the current frame by type, with an optional name
+  // filter.
   PerformanceEntryVector GetEntriesByTypeForCurrentFrame(
-      const AtomicString& entry_type);
+      const AtomicString& entry_type,
+      const AtomicString& maybe_name = g_null_atom);
 
   // Get performance entries of nested same-origin iframes, with an optional
-  // type.
+  // type and optional name filter.
   PerformanceEntryVector GetEntriesWithChildFrames(
       ScriptState* script_state,
-      const AtomicString& entry_type = g_null_atom);
+      const AtomicString& maybe_type = g_null_atom,
+      const AtomicString& maybe_name = g_null_atom);
 
  protected:
   Performance(base::TimeTicks time_origin,
