@@ -36,6 +36,10 @@ namespace {
 // M109).
 // TODO(crbug/1371661): Do not expose the static ash extension keeplist data
 // in Lacros build after M112.
+
+// For any extension running in both Ash and Lacros, if it needs to be published
+// in app service, it must be added to one of app service block lists (Ash or
+// Lacros), so that it won't be published by both.
 base::span<const base::StringPiece>
 ExtensionsRunInOSAndStandaloneBrowserAllowlist() {
   static const base::StringPiece kKeeplist[] = {
@@ -45,6 +49,9 @@ ExtensionsRunInOSAndStandaloneBrowserAllowlist() {
   return base::make_span(kKeeplist);
 }
 
+// For any extension apps running in both Ash and Lacros, it must be added to
+// one of app service block lists (Ash or Lacros), so that it won't be published
+// by both.
 base::span<const base::StringPiece>
 ExtensionAppsRunInOSAndStandaloneBrowserAllowlist() {
   static const base::StringPiece kKeeplist[] = {
@@ -90,6 +97,57 @@ base::span<const base::StringPiece> ExtensionAppsRunInOSOnlyAllowlist() {
 
   return base::make_span(kKeeplist);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// The list of the extension apps blocked for app service in Ash.
+// The app on the block list can run in Ash but can't be published to app
+// service by Ash. For an app running in both Ash and Lacros, if it should be
+// published by Lacros, it must be blocked in Ash.
+base::span<const base::StringPiece> ExtensionAppsAppServiceBlocklistInOS() {
+  // Note: gnubbyd chrome app is running in both Ash and Lacros, but only the
+  // app running in Lacros should be published in app service so that it can be
+  // launched by users, the one running in Ash is blocked from app service and
+  // is invisible to users.
+  static const base::StringPiece kBlocklist[] = {
+      extension_misc::kGnubbyAppId,
+  };
+
+  return base::make_span(kBlocklist);
+}
+
+// The list of the extensions blocked for app service in Ash.
+// The extension on the block list can run in Ash but can't be published to app
+// service by Ash. For an extension running in both Ash and Lacros, if it should
+// be published by Lacros, it must be blocked in Ash.
+const std::vector<base::StringPiece>& ExtensionsAppServiceBlocklistInOS() {
+  // Note: Add extensions to be blocked if there are any in the future.
+  static const base::NoDestructor<std::vector<base::StringPiece>> block_list;
+  return *block_list;
+}
+
+// The list of the extension apps blocked for app service in Lacros.
+// The app on the block list can run in Lacros but can't be published to app
+// service by Lacros. For an app running in both Ash and Lacros, if it should be
+// published by Ash, it must be blocked in Lacros.
+const std::vector<base::StringPiece>&
+ExtensionAppsAppServiceBlocklistInStandaloneBrowser() {
+  // Note: Add extension apps to be blocked if there are any in the future.
+  static const base::NoDestructor<std::vector<base::StringPiece>> block_list;
+  return *block_list;
+}
+
+// The list of the extensions blocked for app service in Lacros.
+// The extension on the block list can run in Lacros but can't be published to
+// app service by Lacros. For an extension running in both Ash and Lacros, if it
+// should be published by Ash, it must be blocked in Lacros.
+const std::vector<base::StringPiece>&
+ExtensionsAppServiceBlocklistInStandaloneBrowser() {
+  // Note: Add extensions to be blocked if there are any in the future.
+  static const base::NoDestructor<std::vector<base::StringPiece>> block_list;
+  return *block_list;
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 const std::vector<base::StringPiece>&
@@ -263,6 +321,20 @@ crosapi::mojom::ExtensionKeepListPtr BuildExtensionKeeplistInitParam() {
 
   return keep_list_param;
 }
+
+crosapi::mojom::StandaloneBrowserAppServiceBlockListPtr
+BuildStandaloneBrowserAppServiceBlockListInitParam() {
+  auto app_service_block_list =
+      crosapi::mojom::StandaloneBrowserAppServiceBlockList::New();
+  for (const auto& id : ExtensionAppsAppServiceBlocklistInStandaloneBrowser()) {
+    app_service_block_list->extension_apps.emplace_back(id);
+  }
+  for (const auto& id : ExtensionsAppServiceBlocklistInStandaloneBrowser()) {
+    app_service_block_list->extensions.emplace_back(id);
+  }
+
+  return app_service_block_list;
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 base::span<const base::StringPiece>
@@ -328,6 +400,48 @@ bool ExtensionAppRunsInOS(const std::string& app_id) {
                         app_id) ||
          base::Contains(GetExtensionAppsRunInOSOnly(), app_id);
 }
+
+bool ExtensionAppRunsInOSOnly(base::StringPiece app_id) {
+  return base::Contains(GetExtensionAppsRunInOSOnly(), app_id);
+}
+
+bool ExtensionRunsInOSOnly(base::StringPiece extension_id) {
+  return base::Contains(GetExtensionsRunInOSOnly(), extension_id);
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool IsAppServiceBlocklistCrosapiSupported() {
+  const auto* block_list = chromeos::BrowserParamsProxy::Get()
+                         ->StandaloneBrowserAppServiceBlockList();
+  return block_list != nullptr;
+}
+
+bool ExtensionAppBlockListedForAppServiceInStandaloneBrowser(
+    base::StringPiece app_id) {
+  const auto* block_list = chromeos::BrowserParamsProxy::Get()
+                         ->StandaloneBrowserAppServiceBlockList();
+  DCHECK(block_list);
+  return base::Contains(block_list->extension_apps, app_id);
+}
+
+bool ExtensionBlockListedForAppServiceInStandaloneBrowser(
+    base::StringPiece extension_id) {
+  const auto* block_list = chromeos::BrowserParamsProxy::Get()
+                         ->StandaloneBrowserAppServiceBlockList();
+  DCHECK(block_list);
+  return base::Contains(block_list->extensions, extension_id);
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool ExtensionAppBlockListedForAppServiceInOS(base::StringPiece app_id) {
+  return base::Contains(ExtensionAppsAppServiceBlocklistInOS(), app_id);
+}
+
+bool ExtensionBlockListedForAppServiceInOS(base::StringPiece extension_id) {
+  return base::Contains(ExtensionsAppServiceBlocklistInOS(), extension_id);
+}
+#endif
 
 size_t ExtensionsRunInOSAndStandaloneBrowserAllowlistSizeForTest() {
   return ExtensionsRunInOSAndStandaloneBrowserAllowlist().size();

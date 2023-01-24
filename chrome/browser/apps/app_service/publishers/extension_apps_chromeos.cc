@@ -651,12 +651,23 @@ bool ExtensionAppsChromeOs::IsBlocklisted(const std::string& app_id) {
   if (app_id == arc::kPlayStoreAppId)
     return true;
 
-  // If an extension runs in both ash and lacros, then don't publish it as that
-  // would conflict with lacros publishing it. This path is used for both
-  // extensions and extension apps.
-  return crosapi::browser_util::IsLacrosChromeAppsEnabled() &&
-         (extensions::ExtensionRunsInBothOSAndStandaloneBrowser(app_id) ||
-          extensions::ExtensionAppRunsInBothOSAndStandaloneBrowser(app_id));
+  // If lacros chrome apps is enabled, a small list of extension apps or
+  // extensions on ash extension keeplist is allowed to run in both ash and
+  // lacros, don't publish such app or extension if it is blocked for app
+  // service in ash.
+  if (crosapi::browser_util::IsLacrosChromeAppsEnabled()) {
+    if (extensions::ExtensionAppRunsInBothOSAndStandaloneBrowser(app_id) &&
+        extensions::ExtensionAppBlockListedForAppServiceInOS(app_id)) {
+      return true;
+    }
+
+    if (extensions::ExtensionRunsInBothOSAndStandaloneBrowser(app_id) &&
+        extensions::ExtensionBlockListedForAppServiceInOS(app_id)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 void ExtensionAppsChromeOs::UpdateShowInFields(const std::string& app_id) {

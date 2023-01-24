@@ -22,3 +22,26 @@ struct ExtensionKeepList {
   // The ids of the extensions running in both ash-chrome and lacros-chrome.
   array<string> extensions_run_in_os_and_standalonebrowser@3;
 };
+
+// App service block list that lists the extension apps and extensions to be
+// blocked for AppService in Lacros.
+//
+// When Lacros is set as user's primary or only browser, by default, the
+// extensions and extension apps will run in Lacros only. However, there is a
+// small exception list (see ExtensionKeepList above) which allows
+// some extension apps and extensions to run in both ash and lacros. These
+// apps and extensions can be only published in either ash or lacros, but not
+// both. They should be added to StandaloneBrowserAppServiceBlockList if they
+// should not by published in AppService in Lacros.
+// Next version: 1
+// Next id: 2
+[Stable]
+struct StandaloneBrowserAppServiceBlockList {
+  // The ids of the extension apps to be blocked for app service in lacros.
+  // Extension apps include chrome apps and hosted apps.
+  array<string> extension_apps@0;
+
+  // The ids of the regular extensions (not apps) to be blocked for app service
+  // in lacros.
+  array<string> extensions@1;
+};

@@ -1,0 +1,11 @@
+{
+  "name": "Fake gnubbyd app",
+  "manifest_version": 2,
+  "version": "1",
+  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDSDppGY6HFiqKeQaAWVkBqewnt5MxZDFPGNTjtfML9IAH0MC30wrj2ZCD20++KKWwbM8ZLr3BBbTucTGV9EbCv1coVqEXwauSi+rju6O3epFGVxkr1KysCiOIf0zU4iu3BNXVpYvAExycmIGnGPQSA0A/gem46G4kL/kQZymve7QIDAQAB",
+  "app": {
+    "background": {
+      "scripts": ["test.js"]
+    }
+  }
+}
