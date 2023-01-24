@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <cstdint>
 #include <type_traits>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
