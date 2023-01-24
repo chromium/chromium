@@ -35,7 +35,6 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
-#include "ui/accessibility/ax_mode.h"
 
 using blink::mojom::FederatedAuthRequestResult;
 using blink::mojom::IdentityProviderConfig;
@@ -833,26 +832,21 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     }
   }
 
-  WebContents* rp_web_contents =
-      WebContents::FromRenderFrameHost(&render_frame_host());
   // RenderFrameHost should be in the primary page (ex not in the BFCache).
   DCHECK(render_frame_host().GetPage().IsPrimary());
 
-  bool screen_reader_is_on = rp_web_contents->GetAccessibilityMode().has_mode(
-      ui::AXMode::kScreenReader);
   // Auto signs in returning users if they have a single returning account and
   // are signing in.
   // TODO(yigu): Add additional controls for RP/IDP/User for this flow.
   // https://crbug.com/1236678.
-  // TODO(crbug.com/1408880): Enable auto sign-in regardless of whether screen
-  // reader is on.
-  bool is_auto_sign_in = prefer_auto_signin && !screen_reader_is_on &&
-                         HasSingleReturningAccount(idp_data_for_display);
+  bool is_auto_sign_in =
+      prefer_auto_signin && HasSingleReturningAccount(idp_data_for_display);
 
   // TODO(crbug.com/1382863): Handle UI where some IDPs are successful and some
   // IDPs are failing in the multi IDP case.
   request_dialog_controller_->ShowAccountsDialog(
-      rp_web_contents, rp_url_for_display, idp_data_for_display,
+      WebContents::FromRenderFrameHost(&render_frame_host()),
+      rp_url_for_display, idp_data_for_display,
       is_auto_sign_in ? SignInMode::kAuto : SignInMode::kExplicit,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                      weak_ptr_factory_.GetWeakPtr()),

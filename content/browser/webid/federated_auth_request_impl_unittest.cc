@@ -1339,34 +1339,6 @@ TEST_F(FederatedAuthRequestImplTest, AutoSigninForFirstTimeUser) {
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
 }
 
-// Test that auto sign-in with a screen reader sets the sign-in mode to
-// explicit.
-TEST_F(FederatedAuthRequestImplTest, AutoSigninWithScreenReader) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAutoSignin);
-
-  content::BrowserAccessibilityState::GetInstance()->AddAccessibilityModeFlags(
-      ui::AXMode::kScreenReader);
-
-  // Pretend the sharing permission has been granted for this account.
-  EXPECT_CALL(
-      *mock_permission_delegate_,
-      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
-                           OriginFromString(kProviderUrlFull), kAccountId))
-      .WillOnce(Return(true));
-
-  for (const auto& idp_info : kConfigurationValid.idp_info) {
-    ASSERT_EQ(idp_info.second.accounts.size(), 1u);
-  }
-  RequestParameters request_parameters = kDefaultRequestParameters;
-  request_parameters.prefer_auto_sign_in = true;
-  RunAuthTest(request_parameters, kExpectationSuccess, kConfigurationValid);
-
-  ASSERT_EQ(displayed_accounts().size(), 1u);
-  EXPECT_EQ(displayed_accounts()[0].login_state, LoginState::kSignIn);
-  EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
-}
-
 TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   // Pretends that the sharing permission has been granted for this account.
   EXPECT_CALL(*mock_permission_delegate_,
