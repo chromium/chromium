@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/ios/ios_util.h"
+#import "base/test/ios/wait_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -16,6 +17,9 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using base::test::ios::kWaitForPageLoadTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 
@@ -69,7 +73,9 @@ TEST_F(WebFramesManagerTest, SingleWebFrame) {
   GURL url = test_server_->GetURL("/echo");
   ASSERT_TRUE(LoadUrl(url));
 
-  ASSERT_EQ(1ul, frames_manager->GetAllWebFrames().size());
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return frames_manager->GetAllWebFrames().size() == 1;
+  }));
 
   WebFrame* main_web_frame = frames_manager->GetMainWebFrame();
   ASSERT_TRUE(main_web_frame);
@@ -97,7 +103,9 @@ TEST_F(WebFramesManagerTest, SingleWebFrameBack) {
   GURL pony_url = test_server_->GetURL(kPonyPageURL);
   ASSERT_TRUE(LoadUrl(pony_url));
 
-  ASSERT_EQ(1ul, frames_manager->GetAllWebFrames().size());
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return frames_manager->GetAllWebFrames().size() == 1;
+  }));
   WebFrame* pony_main_web_frame = frames_manager->GetMainWebFrame();
   ASSERT_TRUE(pony_main_web_frame);
   EXPECT_TRUE(pony_main_web_frame->IsMainFrame());
@@ -112,7 +120,9 @@ TEST_F(WebFramesManagerTest, SingleWebFrameBack) {
   navigation_manager()->GoBack();
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "Echo"));
 
-  EXPECT_EQ(1ul, frames_manager->GetAllWebFrames().size());
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return frames_manager->GetAllWebFrames().size() == 1;
+  }));
   EXPECT_EQ(frame_id, frames_manager->GetMainWebFrame()->GetFrameId());
 }
 
@@ -138,7 +148,9 @@ TEST_F(WebFramesManagerTest, SingleWebFrameLinkNavigationBackForward) {
   };
   ASSERT_TRUE(ExecuteBlockAndWaitForLoad(pony_url, block));
 
-  ASSERT_EQ(1ul, frames_manager->GetAllWebFrames().size());
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return frames_manager->GetAllWebFrames().size() == 1;
+  }));
   WebFrame* pony_main_web_frame = frames_manager->GetMainWebFrame();
   ASSERT_TRUE(pony_main_web_frame);
   EXPECT_TRUE(pony_main_web_frame->IsMainFrame());
@@ -154,7 +166,9 @@ TEST_F(WebFramesManagerTest, SingleWebFrameLinkNavigationBackForward) {
   ASSERT_TRUE(
       test::WaitForWebViewContainingText(web_state(), kLinksPagePonyLinkText));
 
-  ASSERT_EQ(1ul, frames_manager->GetAllWebFrames().size());
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return frames_manager->GetAllWebFrames().size() == 1;
+  }));
   EXPECT_FALSE(frames_manager->GetMainWebFrame()->GetFrameId().empty());
   EXPECT_EQ(frame_id, frames_manager->GetMainWebFrame()->GetFrameId());
 
@@ -162,7 +176,9 @@ TEST_F(WebFramesManagerTest, SingleWebFrameLinkNavigationBackForward) {
   navigation_manager()->GoForward();
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), kPonyPageText));
 
-  ASSERT_EQ(1ul, frames_manager->GetAllWebFrames().size());
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return frames_manager->GetAllWebFrames().size() == 1;
+  }));
   EXPECT_FALSE(frames_manager->GetMainWebFrame()->GetFrameId().empty());
   EXPECT_NE(frame_id, frames_manager->GetMainWebFrame()->GetFrameId());
 }
@@ -184,21 +200,27 @@ TEST_F(WebFramesManagerTest, SingleWebFrameSamePageNavigationBackForward) {
                                                  kLinksPageSamePageLinkID));
 
   // WebFrame should not have changed.
-  ASSERT_EQ(1ul, frames_manager->GetAllWebFrames().size());
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return frames_manager->GetAllWebFrames().size() == 1;
+  }));
   EXPECT_EQ(main_web_frame, frames_manager->GetMainWebFrame());
 
   navigation_manager()->GoBack();
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(),
                                                  kLinksPageSamePageLinkText));
 
-  ASSERT_EQ(1ul, frames_manager->GetAllWebFrames().size());
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return frames_manager->GetAllWebFrames().size() == 1;
+  }));
   EXPECT_EQ(main_web_frame, frames_manager->GetMainWebFrame());
 
   navigation_manager()->GoForward();
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(),
                                                  kLinksPageSamePageLinkText));
 
-  ASSERT_EQ(1ul, frames_manager->GetAllWebFrames().size());
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return frames_manager->GetAllWebFrames().size() == 1;
+  }));
   EXPECT_FALSE(frames_manager->GetMainWebFrame()->GetFrameId().empty());
   EXPECT_EQ(main_web_frame, frames_manager->GetMainWebFrame());
 }

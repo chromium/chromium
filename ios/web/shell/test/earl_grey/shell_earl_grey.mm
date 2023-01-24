@@ -35,9 +35,6 @@ using base::test::ios::WaitUntilConditionOrTimeout;
       [condition waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(pageLoaded, loadingErrorDescription);
 
-  EG_TEST_HELPER_ASSERT_NO_ERROR(
-      [ShellEarlGreyAppInterface waitForWindowIDInjectedInCurrentWebState]);
-
   // Ensure any UI elements handled by EarlGrey become idle for any subsequent
   // EarlGrey steps.
   GREYWaitForAppToIdle(@"App failed to idle");

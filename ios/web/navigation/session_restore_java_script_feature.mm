@@ -87,8 +87,9 @@ void SessionRestoreJavaScriptFeature::SessionRestorationMessageReceived(
   NSString* method =
       [NSString stringWithFormat:@"_crFinishSessionRestoration('%@')",
                                  message.body[@"offset"]];
-  // Don't use `CallJavaScriptFunction` here, as it relies on `windowID` being
-  // injected before window.onload starts.
+
+  // Don't use `CallJavaScriptFunction` here, as it relies on the WebFrame
+  // existing before window.onload starts.
   // Note that `web::ExecuteJavaScript` assumes the page content world, which is
   // ok in this case as restore_session.html is loaded as a webpage.
   web::ExecuteJavaScript(message.webView, method, nil);

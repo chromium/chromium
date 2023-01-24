@@ -475,21 +475,6 @@ TEST_F(CRWWebControllerJSExecutionTest, Execution) {
   EXPECT_NSEQ(@NO, ExecuteJavaScript(@"false"));
 }
 
-// Tests that a script is not executed on windowID mismatch.
-TEST_F(CRWWebControllerJSExecutionTest, WindowIdMissmatch) {
-  LoadHtml(@"<p></p>");
-  // Script is evaluated since windowID is matched.
-  ExecuteJavaScript(@"window.test1 = '1';");
-  EXPECT_NSEQ(@"1", ExecuteJavaScript(@"window.test1"));
-
-  // Change windowID.
-  ExecuteJavaScript(@"__gCrWeb['windowId'] = '';");
-
-  // Script is not evaluated because of windowID mismatch.
-  ExecuteJavaScript(@"window.test2 = '2';");
-  EXPECT_FALSE(ExecuteJavaScript(@"window.test2"));
-}
-
 // Test fixture to test decidePolicyForNavigationResponse:decisionHandler:
 // delegate method.
 class CRWWebControllerResponseTest : public CRWWebControllerTest {
