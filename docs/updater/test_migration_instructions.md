@@ -24,7 +24,7 @@ On macOS, and with a per-user Keystone (this is common), run:
 
 On macOS, and with a system-wide Keystone, run:
 ```
-/Library/Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksadmin -C chromium-updater-opt-in -P com.google.Keystone -S && ~/Library/Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksadmin --install -P com.google.Keystone -S
+sudo /Library/Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksadmin -C chromium-updater-opt-in -P com.google.Keystone -S && sudo /Library/Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksadmin --install -P com.google.Keystone -S
 ```
 
 On Windows, and with a per-user Omaha 3, use `regedit.exe` to open the key
