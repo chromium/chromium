@@ -659,7 +659,8 @@ BaseFetchContext::CanRequestInternal(
 
   // data: URL is deprecated in SVGUseElement.
   if (RuntimeEnabledFeatures::RemoveDataUrlInSvgUseEnabled() &&
-      options.initiator_info.name.Ascii() == "use" && url.ProtocolIsData()) {
+      options.initiator_info.name == fetch_initiator_type_names::kUse &&
+      url.ProtocolIsData()) {
     PrintAccessDeniedMessage(url);
     return ResourceRequestBlockedReason::kOrigin;
   }

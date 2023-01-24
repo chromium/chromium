@@ -1113,6 +1113,8 @@ static const char* InitiatorTypeNameToString(
     return "Track";
   if (initiator_type_name == fetch_initiator_type_names::kUacss)
     return "User Agent CSS resource";
+  if (initiator_type_name == fetch_initiator_type_names::kUse)
+    return "SVG Use element resource";
   if (initiator_type_name == fetch_initiator_type_names::kVideo)
     return "Video";
   if (initiator_type_name == fetch_initiator_type_names::kXml)
@@ -1121,7 +1123,7 @@ static const char* InitiatorTypeNameToString(
     return "XMLHttpRequest";
 
   static_assert(
-      fetch_initiator_type_names::kNamesCount == 18,
+      fetch_initiator_type_names::kNamesCount == 19,
       "New FetchInitiatorTypeNames should be handled correctly here.");
 
   return "Resource";

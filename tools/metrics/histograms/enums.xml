@@ -41924,6 +41924,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4448" label="WindowPlacementPermissionDescriptorUsed"/>
   <int value="4449" label="WindowManagementPermissionPolicyParsed"/>
   <int value="4450" label="WindowPlacementPermissionPolicyParsed"/>
+  <int value="4451" label="ContentDispositionInSvgUse"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

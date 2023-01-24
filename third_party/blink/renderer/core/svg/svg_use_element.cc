@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
@@ -219,7 +220,7 @@ void SVGUseElement::UpdateTargetReference() {
   auto* context_document = &GetDocument();
   ExecutionContext* execution_context = context_document->GetExecutionContext();
   ResourceLoaderOptions options(execution_context->GetCurrentWorld());
-  options.initiator_info.name = localName();
+  options.initiator_info.name = fetch_initiator_type_names::kUse;
   FetchParameters params(ResourceRequest(element_url_), options);
   document_content_ =
       SVGResourceDocumentContent::Fetch(params, *context_document, this);
