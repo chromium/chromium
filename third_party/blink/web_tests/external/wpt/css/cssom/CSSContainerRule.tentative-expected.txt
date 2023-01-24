@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL @container name (min-width: 100px) {} assert_equals: containerName expected (string) "name" but got (undefined) undefined
-FAIL @container (min-width: 100px) {} assert_equals: containerName expected (string) "" but got (undefined) undefined
-Harness: the test ran to completion.
-

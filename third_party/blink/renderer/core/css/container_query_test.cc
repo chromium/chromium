@@ -153,8 +153,8 @@ TEST_F(ContainerQueryTest, PreludeParsing) {
       "(width < 300px)",
       SerializeCondition(ParseAtContainer("@container (width < 300px) {}")));
 
-  EXPECT_EQ("not (width)", SerializeCondition(ParseAtContainer(
-                               "@container somename not (width) {}")));
+  EXPECT_EQ("somename not (width)", SerializeCondition(ParseAtContainer(
+                                        "@container somename not (width) {}")));
 
   EXPECT_EQ("(width) and (height)", SerializeCondition(ParseAtContainer(
                                         "@container (width) and (height) {}")));
@@ -162,7 +162,17 @@ TEST_F(ContainerQueryTest, PreludeParsing) {
   EXPECT_EQ("(width) or (height)", SerializeCondition(ParseAtContainer(
                                        "@container (width) or (height) {}")));
 
+  EXPECT_EQ("test_name (width) or (height)",
+            SerializeCondition(ParseAtContainer(
+                "@container test_name (width) or (height) {}")));
+
+  EXPECT_EQ("test_name ((max-width: 500px) or (max-height: 500px))",
+            SerializeCondition(
+                ParseAtContainer("@container test_name ((max-width: 500px) "
+                                 "or (max-height: 500px)) {}")));
+
   // Invalid:
+  EXPECT_FALSE(ParseAtContainer("@container test_name {}"));
   EXPECT_FALSE(ParseAtContainer("@container 100px {}"));
   EXPECT_FALSE(ParseAtContainer("@container calc(1) {}"));
   EXPECT_FALSE(ParseAtContainer("@container {}"));
@@ -182,13 +192,17 @@ TEST_F(ContainerQueryTest, ValidFeatures) {
   EXPECT_TRUE(ParseAtContainer("@container (min-aspect-ratio: 1/2) {}"));
   EXPECT_TRUE(ParseAtContainer("@container (max-aspect-ratio: 1/2) {}"));
   EXPECT_TRUE(ParseAtContainer("@container (orientation: portrait) {}"));
+  EXPECT_TRUE(
+      ParseAtContainer("@container test_name (orientation: portrait) {}"));
 
   EXPECT_FALSE(ParseAtContainer("@container (color) {}"));
+  EXPECT_FALSE(ParseAtContainer("@container test_name (color) {}"));
   EXPECT_FALSE(ParseAtContainer("@container (color-index) {}"));
   EXPECT_FALSE(ParseAtContainer("@container (color-index >= 1) {}"));
   EXPECT_FALSE(ParseAtContainer("@container (grid) {}"));
   EXPECT_FALSE(ParseAtContainer("@container (resolution: 150dpi) {}"));
   EXPECT_FALSE(ParseAtContainer("@container size(width) {}"));
+  EXPECT_FALSE(ParseAtContainer("@container test_name size(width) {}"));
 }
 
 TEST_F(ContainerQueryTest, FeatureFlags) {
@@ -196,6 +210,8 @@ TEST_F(ContainerQueryTest, FeatureFlags) {
             FeatureFlagsFrom("(width: 100gil)"));
   EXPECT_EQ(MediaQueryExpNode::kFeatureWidth,
             FeatureFlagsFrom("(width: 100px)"));
+  EXPECT_EQ(MediaQueryExpNode::kFeatureWidth,
+            FeatureFlagsFrom("test_name (width: 100px)"));
   EXPECT_EQ(MediaQueryExpNode::kFeatureHeight,
             FeatureFlagsFrom("(height < 100px)"));
   EXPECT_EQ(MediaQueryExpNode::kFeatureInlineSize,
@@ -271,12 +287,13 @@ TEST_F(ContainerQueryTest, ImplicitContainerSelector) {
 
 TEST_F(ContainerQueryTest, RuleParsing) {
   StyleRuleContainer* container = ParseAtContainer(R"CSS(
-    @container (min-width: 100px) {
+    @container test_name (min-width: 100px) {
       div { width: 100px; }
       span { height: 100px; }
     }
   )CSS");
   ASSERT_TRUE(container);
+  ASSERT_EQ("test_name", container->GetContainerQuery().Selector().Name());
 
   CSSStyleSheet* sheet = css_test_helpers::CreateStyleSheet(GetDocument());
   auto* rule = DynamicTo<CSSContainerRule>(

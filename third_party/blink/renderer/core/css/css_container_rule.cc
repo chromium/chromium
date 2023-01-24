@@ -20,12 +20,6 @@ CSSContainerRule::~CSSContainerRule() = default;
 String CSSContainerRule::cssText() const {
   StringBuilder result;
   result.Append("@container");
-
-  String name = ContainerQuery().Selector().Name();
-  if (!name.empty()) {
-    result.Append(' ');
-    SerializeIdentifier(name, result);
-  }
   result.Append(' ');
   result.Append(ContainerQuery().ToString());
   AppendCSSTextForItems(result);
@@ -46,6 +40,19 @@ void CSSContainerRule::SetConditionText(
   CSSStyleSheet::RuleMutationScope mutation_scope(this);
   To<StyleRuleContainer>(group_rule_.Get())
       ->SetConditionText(execution_context, value);
+}
+
+String CSSContainerRule::containerName() const {
+  StringBuilder result;
+  String name = ContainerQuery().Selector().Name();
+  if (!name.empty()) {
+    SerializeIdentifier(name, result);
+  }
+  return result.ReleaseString();
+}
+
+String CSSContainerRule::containerQuery() const {
+  return ContainerQuery().Query().Serialize();
 }
 
 const ContainerQuery& CSSContainerRule::ContainerQuery() const {

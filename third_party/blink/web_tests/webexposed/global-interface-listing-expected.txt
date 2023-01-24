@@ -671,6 +671,8 @@ interface CSSConditionRule : CSSGroupingRule
     method constructor
 interface CSSContainerRule : CSSConditionRule
     attribute @@toStringTag
+    getter containerName
+    getter containerQuery
     method constructor
 interface CSSCounterStyleRule : CSSRule
     attribute @@toStringTag

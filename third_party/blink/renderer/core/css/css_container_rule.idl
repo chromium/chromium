@@ -6,4 +6,6 @@
     Exposed=Window
 ] interface CSSContainerRule : CSSConditionRule {
     // TODO(crbug.com/1145970): Spec and implement.
+  readonly attribute DOMString containerName;
+  readonly attribute DOMString containerQuery;
 };

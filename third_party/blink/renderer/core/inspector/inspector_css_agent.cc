@@ -2047,7 +2047,7 @@ std::unique_ptr<protocol::CSS::CSSContainerQuery>
 InspectorCSSAgent::BuildContainerQueryObject(CSSContainerRule* rule) {
   std::unique_ptr<protocol::CSS::CSSContainerQuery> container_query_object =
       protocol::CSS::CSSContainerQuery::create()
-          .setText(rule->ConditionTextInternal())
+          .setText(rule->containerQuery())
           .build();
 
   auto it =

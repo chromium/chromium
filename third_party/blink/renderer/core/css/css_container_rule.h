@@ -22,6 +22,8 @@ class CSSContainerRule final : public CSSConditionRule {
   ~CSSContainerRule() override;
 
   String cssText() const override;
+  String containerName() const;
+  String containerQuery() const;
 
   const AtomicString& Name() const;
   const ContainerSelector& Selector() const;
