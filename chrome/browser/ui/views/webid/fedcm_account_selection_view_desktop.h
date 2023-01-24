@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "chrome/browser/ui/views/webid/identity_provider_display_data.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/views/input_event_activation_protector.h"
 #include "ui/views/widget/widget_observer.h"
 
 class AccountSelectionBubbleViewInterface;
@@ -51,6 +52,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
+  void SetInputEventActivationProtectorForTesting(
+      std::unique_ptr<views::InputEventActivationProtector>);
+
  protected:
   friend class FedCmAccountSelectionViewBrowserTest;
 
@@ -85,10 +89,13 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // AccountSelectionBubbleView::Observer:
   void OnAccountSelected(const Account& account,
                          const IdentityProviderDisplayData& idp_data,
-                         bool auto_signin) override;
-  void OnLinkClicked(LinkType link_type, const GURL& url) override;
+                         bool auto_signin,
+                         const ui::Event& event) override;
+  void OnLinkClicked(LinkType link_type,
+                     const GURL& url,
+                     const ui::Event& event) override;
   void OnBackButtonClicked() override;
-  void OnCloseButtonClicked() override;
+  void OnCloseButtonClicked(const ui::Event& event) override;
 
   // Called when the user selected an account AND granted consent.
   void OnAccountSelected(const content::IdentityRequestAccount& account);
@@ -111,6 +118,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   bool notify_delegate_of_dismiss_{true};
 
   base::WeakPtr<views::Widget> bubble_widget_;
+
+  std::unique_ptr<views::InputEventActivationProtector> input_protector_;
 
   base::WeakPtrFactory<FedCmAccountSelectionView> weak_ptr_factory_{this};
 };

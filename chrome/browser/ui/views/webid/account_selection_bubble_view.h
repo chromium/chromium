@@ -49,16 +49,19 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
     virtual void OnAccountSelected(
         const content::IdentityRequestAccount& account,
         const IdentityProviderDisplayData& idp_data,
-        bool auto_signin) = 0;
+        bool auto_signin,
+        const ui::Event& event) = 0;
 
     // Called when the user clicks "privacy policy" or "terms of service" link.
-    virtual void OnLinkClicked(LinkType link_type, const GURL& url) = 0;
+    virtual void OnLinkClicked(LinkType link_type,
+                               const GURL& url,
+                               const ui::Event& event) = 0;
 
     // Called when the user clicks "back" button.
     virtual void OnBackButtonClicked() = 0;
 
     // Called when the user clicks "close" button.
-    virtual void OnCloseButtonClicked() = 0;
+    virtual void OnCloseButtonClicked(const ui::Event& event) = 0;
   };
 
   METADATA_HEADER(AccountSelectionBubbleView);
