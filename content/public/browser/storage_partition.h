@@ -63,6 +63,7 @@ class Origin;
 
 namespace content {
 
+class AttributionDataModel;
 class BackgroundSyncContext;
 class BrowserContext;
 class BrowsingDataFilterBuilder;
@@ -157,6 +158,7 @@ class CONTENT_EXPORT StoragePartition {
   virtual PlatformNotificationContext* GetPlatformNotificationContext() = 0;
   virtual InterestGroupManager* GetInterestGroupManager() = 0;
   virtual BrowsingTopicsSiteDataManager* GetBrowsingTopicsSiteDataManager() = 0;
+  virtual AttributionDataModel* GetAttributionDataModel() = 0;
 
   virtual leveldb_proto::ProtoDatabaseProvider* GetProtoDatabaseProvider() = 0;
   // Must be set before the first call to GetProtoDatabaseProvider(), or a new

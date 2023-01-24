@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <utility>
+#include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
@@ -56,6 +57,7 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/attribution_reporting.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -798,6 +800,20 @@ void AttributionManagerImpl::OnClearDataComplete() {
   NotifySourcesChanged();
   NotifyReportsChanged(AttributionReport::Type::kEventLevel);
   NotifyReportsChanged(AttributionReport::Type::kAggregatableAttribution);
+}
+
+// TODO(crbug.com/1407369): Propagate calls to storage
+void AttributionManagerImpl::GetAllDataKeys(
+    base::OnceCallback<void(std::vector<AttributionManager::DataKey>)>
+        callback) {
+  std::move(callback).Run({});
+}
+
+// TODO(crbug.com/1407369): Propagate calls to storage
+void AttributionManagerImpl::RemoveAttributionDataByDataKey(
+    const AttributionManager::DataKey& data_key,
+    base::OnceClosure callback) {
+  std::move(callback).Run();
 }
 
 void AttributionManagerImpl::GetReportsToSend() {

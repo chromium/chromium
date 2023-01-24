@@ -12,6 +12,7 @@
 #include "components/attribution_reporting/os_support.mojom-forward.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
 
 namespace attribution_reporting {
@@ -34,13 +35,13 @@ class WebContents;
 
 // Interface that mediates data flow between the network, storage layer, and
 // blink.
-class AttributionManager {
+class AttributionManager : public AttributionDataModel {
  public:
   static AttributionManager* FromWebContents(WebContents* web_contents);
 
   static attribution_reporting::mojom::OsSupport GetOsSupport();
 
-  virtual ~AttributionManager() = default;
+  ~AttributionManager() override = default;
 
   virtual void AddObserver(AttributionObserver* observer) = 0;
 

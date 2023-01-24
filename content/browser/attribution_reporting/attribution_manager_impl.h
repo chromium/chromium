@@ -163,6 +163,12 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       const attribution_reporting::SuitableOrigin& reporting_origin,
       attribution_reporting::mojom::SourceRegistrationError) override;
 
+  void GetAllDataKeys(
+      base::OnceCallback<void(std::vector<DataKey>)> callback) override;
+
+  void RemoveAttributionDataByDataKey(const DataKey& data_key,
+                                      base::OnceClosure callback) override;
+
  private:
   friend class AttributionManagerImplTest;
 

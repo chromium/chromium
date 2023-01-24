@@ -293,6 +293,18 @@ class MockAttributionManager : public AttributionManager {
                attribution_reporting::mojom::SourceRegistrationError),
               (override));
 
+  MOCK_METHOD(void,
+              GetAllDataKeys,
+              (base::OnceCallback<
+                  void(std::vector<AttributionManager::DataKey>)> callback),
+              (override));
+
+  MOCK_METHOD(void,
+              RemoveAttributionDataByDataKey,
+              (const AttributionManager::DataKey& data_key,
+               base::OnceClosure callback),
+              (override));
+
   void AddObserver(AttributionObserver* observer) override;
   void RemoveObserver(AttributionObserver* observer) override;
   AttributionDataHostManager* GetDataHostManager() override;

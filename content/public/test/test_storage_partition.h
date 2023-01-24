@@ -142,6 +142,8 @@ class TestStoragePartition : public StoragePartition {
 
   InterestGroupManager* GetInterestGroupManager() override;
 
+  AttributionDataModel* GetAttributionDataModel() override;
+
   void set_browsing_topics_site_data_manager(
       BrowsingTopicsSiteDataManager* manager) {
     browsing_topics_site_data_manager_ = manager;

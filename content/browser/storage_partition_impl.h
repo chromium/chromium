@@ -197,6 +197,9 @@ class CONTENT_EXPORT StoragePartitionImpl
   InterestGroupManager* GetInterestGroupManager() override;
   BrowsingTopicsSiteDataManager* GetBrowsingTopicsSiteDataManager() override;
   leveldb_proto::ProtoDatabaseProvider* GetProtoDatabaseProvider() override;
+  // Use outside content.
+  AttributionDataModel* GetAttributionDataModel() override;
+
   void SetProtoDatabaseProvider(
       std::unique_ptr<leveldb_proto::ProtoDatabaseProvider> proto_db_provider)
       override;
@@ -256,6 +259,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   FileSystemAccessManagerImpl* GetFileSystemAccessManager();
   BucketManager* GetBucketManager();
   QuotaContext* GetQuotaContext();
+  // Use inside content.
   AttributionManager* GetAttributionManager();
   void SetFontAccessManagerForTesting(
       std::unique_ptr<FontAccessManager> font_access_manager);

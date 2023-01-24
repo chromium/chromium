@@ -32,6 +32,8 @@ source_set("browser_sources") {
     "allow_service_worker_result.h",
     "anchor_element_preconnect_delegate.h",
     "attribution_config.h",
+    "attribution_data_model.cc",
+    "attribution_data_model.h",
     "attribution_reporting.h",
     "audio_service.h",
     "audio_service_info.cc",

@@ -1686,6 +1686,11 @@ AttributionManager* StoragePartitionImpl::GetAttributionManager() {
   return attribution_manager_.get();
 }
 
+AttributionDataModel* StoragePartitionImpl::GetAttributionDataModel() {
+  DCHECK(initialized_);
+  return attribution_manager_.get();
+}
+
 FontAccessManager* StoragePartitionImpl::GetFontAccessManager() {
   DCHECK(initialized_);
   return font_access_manager_.get();
