@@ -101,6 +101,24 @@ void RecordUrlLoadStatsOnProfileLoad(const UrlLoadStats& stats) {
   base::UmaHistogramCounts1000(
       "Bookmarks.Times.OnProfileLoad.TimeSinceAdded3",
       base::saturated_cast<int>(stats.avg_num_days_since_added));
+
+  int utilization;
+  if (stats.used_url_bookmark_count == 0) {
+    utilization = 0;
+  } else {
+    // Calculate the utilization as a percentage from 0 - 100. Do this without
+    // a float conversion by multiplying everything by 100 first.
+    utilization = (100 * stats.used_url_bookmark_count +
+                   stats.total_url_bookmark_count / 2) /
+                  stats.total_url_bookmark_count;
+  }
+  base::UmaHistogramPercentage(
+      "Bookmarks.Utilization.OnProfileLoad.PercentUsed", utilization);
+  base::UmaHistogramCounts1000("Bookmarks.Utilization.OnProfileLoad.TotalUsed",
+                               stats.used_url_bookmark_count);
+  base::UmaHistogramCounts1000(
+      "Bookmarks.Utilization.OnProfileLoad.TotalUnused",
+      stats.total_url_bookmark_count - stats.used_url_bookmark_count);
 }
 
 void RecordCloneBookmarkNode(int num_cloned) {

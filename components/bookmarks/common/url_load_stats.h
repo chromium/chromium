@@ -25,6 +25,10 @@ struct UrlLoadStats {
   size_t duplicate_url_and_title_and_parent_bookmark_count = 0;
   // Average number of days since each bookmark was added.
   size_t avg_num_days_since_added = 0;
+  // Number of bookmarks which have a non-default value for time_since_opened.
+  // This hints that this bookmark has been used before, but isn't conclusive
+  // as this number is reset with history clear events.
+  size_t used_url_bookmark_count = 0;
 };
 
 }  // namespace bookmarks

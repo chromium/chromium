@@ -65,6 +65,15 @@ void AddStatsForBookmarksWithSameUrl(
       duplicate_title_and_parent_count;
 }
 
+void AddTimeStatsForBookmark(BookmarkNode* node, UrlLoadStats* stats) {
+  stats->avg_num_days_since_added +=
+      (base::Time::Now() - node->date_added()).InDays();
+
+  if (node->date_last_used() != base::Time()) {
+    stats->used_url_bookmark_count += 1;
+  }
+}
+
 }  // namespace
 
 UrlIndex::UrlIndex(std::unique_ptr<BookmarkNode> root)
@@ -131,6 +140,9 @@ UrlLoadStats UrlIndex::ComputeStats() const {
   base::AutoLock url_lock(url_lock_);
   UrlLoadStats stats;
   stats.total_url_bookmark_count = nodes_ordered_by_url_set_.size();
+  if (nodes_ordered_by_url_set_.begin() != nodes_ordered_by_url_set_.end()) {
+    AddTimeStatsForBookmark(*nodes_ordered_by_url_set_.begin(), &stats);
+  }
 
   if (stats.total_url_bookmark_count <= 1)
     return stats;
@@ -139,14 +151,14 @@ UrlLoadStats UrlIndex::ComputeStats() const {
   auto prev_i = nodes_ordered_by_url_set_.begin();
   for (auto i = std::next(prev_i); i != nodes_ordered_by_url_set_.end();
        ++i, ++prev_i) {
+    // Handle duplicate URL stats.
     if ((*prev_i)->url() != (*i)->url()) {
       AddStatsForBookmarksWithSameUrl(&bookmarks_with_same_url, &stats);
       bookmarks_with_same_url.clear();
     }
-
-    stats.avg_num_days_since_added +=
-        (base::Time::Now() - (*i)->date_added()).InDays();
     bookmarks_with_same_url.push_back(*i);
+
+    AddTimeStatsForBookmark(*i, &stats);
   }
 
   stats.avg_num_days_since_added /= nodes_ordered_by_url_set_.size();

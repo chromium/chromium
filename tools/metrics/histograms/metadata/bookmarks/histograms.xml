@@ -1009,6 +1009,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.Utilization.OnProfileLoad.PercentageUsed"
+    units="Percentage (0-100)" expires_after="2023-07-09">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    The percentage of bookmarks which have been used expressed as 0-100.
+    Recorded on profile load.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.Utilization.OnProfileLoad.TotalUnused"
+    units="Bookmarks" expires_after="2023-07-09">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    The total number of bookmarks that haven't been opened. Recorded on profile
+    load.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.Utilization.OnProfileLoad.TotalUsed"
+    units="Bookmarks" expires_after="2023-07-09">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    The total number of bookmarks that have been opened. Recorded on profile
+    load.
+  </summary>
+</histogram>
+
 <histogram name="PowerBookmarks.BookmarkManager.PriceTrackingEnabled"
     enum="PriceTrackingState" expires_after="2023-10-24">
   <owner>wylieb@chromium.org</owner>
