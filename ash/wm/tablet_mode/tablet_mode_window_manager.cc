@@ -24,7 +24,6 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/scoped_skip_user_session_blocked_check.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_multitask_cue.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
 #include "ash/wm/tablet_mode/tablet_mode_toggle_fullscreen_event_handler.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
@@ -188,7 +187,6 @@ void TabletModeWindowManager::Init() {
   if (chromeos::wm::features::IsFloatWindowEnabled()) {
     tablet_mode_multitask_menu_event_handler_ =
         std::make_unique<TabletModeMultitaskMenuEventHandler>();
-    tablet_mode_multitask_cue_ = std::make_unique<TabletModeMultitaskCue>();
   }
 }
 

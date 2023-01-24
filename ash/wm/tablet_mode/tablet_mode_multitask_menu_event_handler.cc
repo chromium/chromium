@@ -29,6 +29,7 @@ constexpr gfx::SizeF kTargetAreaSize(510.f, 113.f);
 }  // namespace
 
 TabletModeMultitaskMenuEventHandler::TabletModeMultitaskMenuEventHandler() {
+  multitask_cue_ = std::make_unique<TabletModeMultitaskCue>();
   Shell::Get()->AddPreTargetHandler(this);
 }
 
@@ -42,15 +43,7 @@ void TabletModeMultitaskMenuEventHandler::MaybeCreateMultitaskMenu(
     multitask_menu_ =
         std::make_unique<TabletModeMultitaskMenu>(this, active_window);
 
-    // TODO(hewer): Remove this and add the cue as a class variable.
-    auto* multitask_cue = Shell::Get()
-                              ->tablet_mode_controller()
-                              ->tablet_mode_window_manager()
-                              ->tablet_mode_multitask_cue();
-
-    if (multitask_cue) {
-      multitask_cue->DismissCue();
-    }
+    multitask_cue_->DismissCue();
   }
 }
 

@@ -652,18 +652,14 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, HiddenButtons) {
 TEST_F(TabletModeMultitaskMenuEventHandlerTest, DismissCueOnShowMenu) {
   auto window = CreateAppWindow();
 
-  auto* multitask_cue = TabletModeControllerTestApi()
-                            .tablet_mode_window_manager()
-                            ->tablet_mode_multitask_cue();
+  auto* multitask_cue =
+      GetMultitaskMenuEventHandler()->multitask_cue_for_testing();
   ASSERT_TRUE(multitask_cue);
   EXPECT_TRUE(multitask_cue->cue_layer_for_testing());
 
   ShowMultitaskMenu(*window);
-  ASSERT_TRUE(GetMultitaskMenu());
 
-  multitask_cue = TabletModeControllerTestApi()
-                      .tablet_mode_window_manager()
-                      ->tablet_mode_multitask_cue();
+  multitask_cue = GetMultitaskMenuEventHandler()->multitask_cue_for_testing();
   ASSERT_TRUE(multitask_cue);
   EXPECT_FALSE(multitask_cue->cue_layer_for_testing());
 }

@@ -11,6 +11,7 @@
 namespace ash {
 
 class TabletModeMultitaskMenu;
+class TabletModeMultitaskCue;
 
 // TabletModeMultitaskMenuEventHandler handles gestures in tablet mode that may
 // show or hide the multitask menu.
@@ -37,8 +38,14 @@ class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
   TabletModeMultitaskMenu* multitask_menu_for_testing() {
     return multitask_menu_.get();
   }
+  TabletModeMultitaskCue* multitask_cue_for_testing() {
+    return multitask_cue_.get();
+  }
 
  private:
+  // Creates a draggable bar when app windows are activated.
+  std::unique_ptr<TabletModeMultitaskCue> multitask_cue_;
+
   std::unique_ptr<TabletModeMultitaskMenu> multitask_menu_;
 };
 

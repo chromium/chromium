@@ -7,6 +7,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/wm/features.h"
@@ -35,7 +36,8 @@ class TabletModeMultitaskCueTest : public AshTestBase {
   TabletModeMultitaskCue* GetMultitaskCue() {
     return TabletModeControllerTestApi()
         .tablet_mode_window_manager()
-        ->tablet_mode_multitask_cue();
+        ->tablet_mode_multitask_menu_event_handler_for_testing()
+        ->multitask_cue_for_testing();
   }
 
   // AshTestBase:

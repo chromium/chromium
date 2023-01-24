@@ -17,7 +17,8 @@
 
 namespace ash {
 
-// Creates a cue (drag bar) when app windows are activated in tablet mode.
+// Creates a cue (draggable bar) at the top center of an app window when it is
+// activated in tablet mode. Only one cue exists at a time.
 class ASH_EXPORT TabletModeMultitaskCue : aura::WindowObserver,
                                           wm::ActivationChangeObserver,
                                           WindowStateObserver {
@@ -29,8 +30,9 @@ class ASH_EXPORT TabletModeMultitaskCue : aura::WindowObserver,
 
   ~TabletModeMultitaskCue() override;
 
-  // Shows the cue if `window` is an maximizable app window in the MRU list.
-  // Also sets a `OneShotTimer` to dismiss the cue after a short duration.
+  // Shows the cue if `active_window` is an maximizable app window that is not
+  // floated. Also sets a `OneShotTimer` to dismiss the cue after a short
+  // duration.
   void MaybeShowCue(aura::Window* active_window);
 
   // Dismisses the cue from the screen and cleans up the pointers and
@@ -70,7 +72,7 @@ class ASH_EXPORT TabletModeMultitaskCue : aura::WindowObserver,
   // The app window that the cue is associated with.
   aura::Window* window_ = nullptr;
 
-  // The solid color layer that represents the cue (drag bar).
+  // The solid color layer that represents the cue.
   std::unique_ptr<ui::Layer> cue_layer_;
 
   // Observes for window destruction or bounds changes.
