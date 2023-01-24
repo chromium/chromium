@@ -26,6 +26,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import io
 import platform
 import sys
 import unittest
@@ -38,7 +39,8 @@ from blinkpy.common.system.platform_info import PlatformInfo
 
 
 def fake_sys(platform_str='darwin', windows_version_tuple=None):
-    class FakeSysModule(object):
+    class FakeSysModule:
+        stdin = io.StringIO()
         platform = platform_str
         if windows_version_tuple:
             getwindowsversion = lambda x: windows_version_tuple

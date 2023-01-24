@@ -27,9 +27,11 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import unittest
+from unittest import mock
 
 from blinkpy.common.system.output_capture import OutputCapture
 from blinkpy.common.system.user import User
+from blinkpy.common.system.platform_info_mock import MockPlatformInfo
 
 
 class UserTest(unittest.TestCase):
@@ -154,6 +156,14 @@ class UserTest(unittest.TestCase):
             expected_out=False,
             default=User.DEFAULT_NO,
             user_input='')
+
+    def test_confirm_use_default_noninteractive(self):
+        platform_info = MockPlatformInfo(interactive=False)
+        with mock.patch('builtins.input', side_effect=EOFError):
+            self.assertTrue(
+                User(platform_info).confirm(default=User.DEFAULT_YES))
+            self.assertFalse(
+                User(platform_info).confirm(default=User.DEFAULT_NO))
 
     def test_confirm_not_y_means_no(self):
         self.check_confirm(

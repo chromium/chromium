@@ -33,8 +33,6 @@ import re
 import sys
 import webbrowser
 
-from six.moves import input
-
 from blinkpy.common.system.executive import Executive
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.common.system.platform_info import PlatformInfo
@@ -110,8 +108,18 @@ class User(object):
     def confirm(self, message=None, default=DEFAULT_YES, input_func=input):
         if not message:
             message = 'Continue?'
-        choice = {'y': 'Y/n', 'n': 'y/N'}[default]
-        response = input_func('%s [%s]: ' % (message, choice))
+        choices = {'y': 'Y/n', 'n': 'y/N'}[default]
+        try:
+            response = input_func('%s [%s]: ' % (message, choices))
+        except EOFError:
+            # EOF means either the user hit Ctrl+D or the piped-in stdin has no
+            # more to read. In the non-interactive case (e.g., on a bot), use
+            # the default as the response.
+            #
+            # See also: https://docs.python.org/3/library/functions.html#input
+            if self._platform_info.interactive:
+                raise
+            response = default
         response = response.strip().lower()
         if not response:
             response = default

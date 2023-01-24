@@ -28,12 +28,11 @@
 
 import re
 import sys
-from six.moves import map
 
 from blinkpy.common.system.executive import ScriptError
 
 
-class PlatformInfo(object):
+class PlatformInfo:
     """This class provides a consistent (and mockable) interpretation of
     system-specific values (like sys.platform and platform.mac_ver())
     to be used by the rest of the blinkpy code base.
@@ -62,6 +61,7 @@ class PlatformInfo(object):
         if self.os_name.startswith('win'):
             self.os_version = self._determine_win_version(
                 self._win_version_tuple())
+        self.interactive = sys_module.stdin.isatty()
         assert sys.platform != 'cygwin', 'Cygwin is not supported.'
 
     def is_mac(self):

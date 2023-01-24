@@ -34,9 +34,11 @@ class MockPlatformInfo(object):
                  linux_distribution=None,
                  is_highdpi=False,
                  is_running_rosetta=False,
-                 machine=None):
+                 machine=None,
+                 interactive=True):
         self.os_name = os_name
         self.os_version = os_version
+        self.interactive = interactive
         self._linux_distribution = linux_distribution
         self._is_highdpi = is_highdpi
         self._is_running_rosetta = is_running_rosetta
