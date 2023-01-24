@@ -387,8 +387,6 @@
       'Win 10 Fast Ring': 'release_trybot_minimal_symbols_reclient',
       'Win x64 Builder (reclient compare)': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'Win x64 Builder (reclient)': 'gpu_tests_release_bot_minimal_symbols_reclient',
-      'Win x64 Builder (reclient)(cross)': 'gpu_tests_release_bot_minimal_symbols_reclient_win_cross',
-      'Win x64 Builder (reclient)(cross)(gvisor)': 'gpu_tests_release_bot_minimal_symbols_reclient_win_cross',
       'android-backuprefptr-arm-fyi-rel': 'release_trybot_backuprefptr_arm_reclient',
       'android-backuprefptr-arm64-fyi-rel': 'release_trybot_backuprefptr_arm64_reclient',
       'android-code-coverage': 'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_java_coverage_reclient',
@@ -2749,10 +2747,6 @@
       'gpu_tests', 'release_bot_reclient', 'minimal_symbols',
     ],
 
-    'gpu_tests_release_bot_minimal_symbols_reclient_win_cross': [
-      'gpu_tests', 'release_bot_reclient_win_cross', 'minimal_symbols',
-    ],
-
     'gpu_tests_release_bot_no_nacl_reclient': [
       'gpu_tests', 'release_bot_reclient', 'disable_nacl',
     ],
@@ -4564,11 +4558,6 @@
       'gn_args': 'use_remoteexec=true',
     },
 
-    # experiment windows cross. crbug.com/1213717
-    'reclient_win_cross': {
-      'gn_args': 'use_remoteexec=true rbe_cfg_dir="../../buildtools/reclient_cfgs/win-cross"',
-    },
-
     # Historically, a 'release' bot had DCHECKs turned off. DCHECKs are now
     # enabled by default, but explicitly turning them off here preserves
     # backwards compatibility. TODO: We should probably come up with better
@@ -4593,10 +4582,6 @@
 
     'release_bot_reclient': {
       'mixins': ['release', 'static', 'reclient'],
-    },
-
-    'release_bot_reclient_win_cross': {
-      'mixins': ['release', 'static', 'reclient_win_cross'],
     },
 
     'release_java': {

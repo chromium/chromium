@@ -1828,36 +1828,6 @@ ci.builder(
     reclient_rewrapper_env = {"RBE_compare": "true"},
 )
 
-ci.builder(
-    name = "Win x64 Builder (reclient)(cross)",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "use_clang_coverage",
-                "reclient_test",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-    ),
-    builderless = True,
-    cores = 32,
-    os = os.WINDOWS_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "win",
-        short_name = "re x",
-    ),
-    reclient_jobs = None,
-    reclient_profiler_service = "reclient-win",
-    reclient_publish_trace = True,
-)
-
 fyi_mac_builder(
     name = "Mac Builder (reclient)",
     description_html = "experiment reclient on mac. should be removed after the migration. crbug.com/1244441",
