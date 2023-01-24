@@ -68,6 +68,14 @@ class AutofillDriver {
   // frame.
   virtual bool CanShowAutofillUi() const = 0;
 
+  // Sets whether the keyboard should be suppressed. Used to keep the keyboard
+  // hidden while the bottom sheet (e.g. Touch To Fill) is shown. Forwarded to
+  // the last-queried source remembered by `ContentAutofillRouter`.
+  virtual void SetShouldSuppressKeyboard(bool suppress) = 0;
+
+  // Triggers a reparse on all frames of the same frame tree.
+  virtual void TriggerReparseInAllFrames() = 0;
+
   // Returns the ax tree id associated with this driver.
   virtual ui::AXTreeID GetAxTreeId() const = 0;
 

@@ -75,6 +75,8 @@ class TestAutofillDriver : public ContentAutofillDriver {
   net::IsolationInfo IsolationInfo() override;
   void SendFieldsEligibleForManualFillingToRenderer(
       const std::vector<FieldGlobalId>& fields) override {}
+  void SetShouldSuppressKeyboard(bool suppress) override {}
+  void TriggerReparseInAllFrames() override {}
 
   // Methods unique to TestAutofillDriver that tests can use to specialize
   // functionality.

@@ -3345,6 +3345,18 @@ void BrowserAutofillManager::SetSuggestionOriginMetricState(
   autofill_suggestion_method_ = state;
 }
 
+void BrowserAutofillManager::SetShouldSuppressKeyboard(bool suppress) {
+  driver()->SetShouldSuppressKeyboard(suppress);
+}
+
+bool BrowserAutofillManager::CanShowAutofillUi() const {
+  return driver()->CanShowAutofillUi();
+}
+
+void BrowserAutofillManager::TriggerReparseInAllFrames() {
+  driver()->TriggerReparseInAllFrames();
+}
+
 void BrowserAutofillManager::ProcessFieldLogEventsInForm(
     const FormStructure& form_structure) {
   // TODO(crbug.com/1325851): Log metrics if at least one field in the form was

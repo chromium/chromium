@@ -141,6 +141,14 @@ void AutofillDriverIOS::RendererShouldAcceptDataListSuggestion(
 void AutofillDriverIOS::SendFieldsEligibleForManualFillingToRenderer(
     const std::vector<FieldGlobalId>& fields) {}
 
+void AutofillDriverIOS::SetShouldSuppressKeyboard(bool suppress) {
+  NOTIMPLEMENTED();
+}
+
+void AutofillDriverIOS::TriggerReparseInAllFrames() {
+  NOTIMPLEMENTED();
+}
+
 void AutofillDriverIOS::RendererShouldClearFilledSection() {}
 
 void AutofillDriverIOS::RendererShouldClearPreviewedForm() {

@@ -71,6 +71,11 @@ void ContentAutofillDriver::TriggerReparse() {
   GetAutofillAgent()->TriggerReparse();
 }
 
+void ContentAutofillDriver::TriggerReparseInAllFrames() {
+  // TODO(crbug.com/1334642): Implement.
+  NOTIMPLEMENTED();
+}
+
 // static
 ContentAutofillDriver* ContentAutofillDriver::GetForRenderFrameHost(
     content::RenderFrameHost* render_frame_host) {

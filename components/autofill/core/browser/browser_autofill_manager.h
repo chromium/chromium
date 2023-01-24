@@ -315,6 +315,15 @@ class BrowserAutofillManager : public AutofillManager,
   // keyboard accessory, etc.
   virtual void SetSuggestionOriginMetricState(AutofillSuggestionMethod state);
 
+  // Forwards call to the same-named `AutofillDriver` function.
+  virtual void SetShouldSuppressKeyboard(bool suppress);
+
+  // Forwards call to the same-named `AutofillDriver` function.
+  virtual bool CanShowAutofillUi() const;
+
+  // Forwards call to the same-named `AutofillDriver` function.
+  virtual void TriggerReparseInAllFrames();
+
   void SetExternalDelegateForTest(
       std::unique_ptr<AutofillExternalDelegate> external_delegate) {
     external_delegate_ = std::move(external_delegate);

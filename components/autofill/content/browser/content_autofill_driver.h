@@ -165,6 +165,8 @@ class ContentAutofillDriver : public AutofillDriver,
   void HandleParsedForms(const std::vector<FormData>& forms) override {}
   void PopupHidden() override;
   net::IsolationInfo IsolationInfo() override;
+  void SetShouldSuppressKeyboard(bool suppress) override;
+  void TriggerReparseInAllFrames() override;
 
   // Called to inform the browser that in the field with `form_global_id` and
   // `field_global_id`, the context menu was triggered. This is different from
@@ -214,11 +216,6 @@ class ContentAutofillDriver : public AutofillDriver,
   void SetKeyPressHandler(
       const content::RenderWidgetHost::KeyPressEventCallback& handler);
   void UnsetKeyPressHandler();
-
-  // Sets whether the keyboard should be suppressed. Used to keep the keyboard
-  // hidden while the bottom sheet (e.g. Touch To Fill) is shown. Forwarded to
-  // the last-queried source remembered by ContentAutofillRouter.
-  virtual void SetShouldSuppressKeyboard(bool suppress);
 
   // Callbacks that are called also in other functions by ContentAutofillRouter.
   void FocusNoLongerOnFormCallback(bool had_interacted_form);
