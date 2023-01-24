@@ -69,6 +69,9 @@ declare_args() {
 
   # List of plist templates to merge when generating chrome cpe entitlements.
   ios_chrome_cpe_entitlements_additions = []
+
+  # Use perf_tests_hook if true
+  ios_is_perf_test = false
 }
 
 if (target_environment == "catalyst") {

@@ -136,6 +136,16 @@ source_set("tests_fake_hook") {
   deps = [ ":tests_hook" ]
 }
 
+source_set("perf_tests_hook") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "perf_tests_hook.mm" ]
+  deps = [
+    ":tests_hook",
+    "//base",
+    "//ios/chrome/browser/flags/:system_flags",
+  ]
+}
+
 if (!is_fat_secondary_toolchain) {
   tweak_info_plist("info_plist") {
     info_plists = [
@@ -679,11 +689,16 @@ ios_app_bundle("chrome") {
 
   deps = [
     ":main",
-    ":tests_fake_hook",
 
     # Use the provider API controlled by args.gn.
     ios_provider_target,
   ]
+
+  if (ios_is_perf_test) {
+    deps += [ ":perf_tests_hook" ]
+  } else {
+    deps += [ ":tests_fake_hook" ]
+  }
 
   if (current_toolchain == default_toolchain) {
     if (ios_enable_search_widget_extension) {
