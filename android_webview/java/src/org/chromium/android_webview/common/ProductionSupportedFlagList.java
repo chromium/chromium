@@ -359,6 +359,7 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature("CanvasColorCache"),
             Flag.baseFeature(AwFeatures.WEBVIEW_RESTRICT_SENSITIVE_CONTENT,
                     "Controls whether access to sensitive web content should be restricted."),
+            Flag.baseFeature("NavigationRequestPreconnect"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

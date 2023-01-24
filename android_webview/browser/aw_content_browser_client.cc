@@ -1053,6 +1053,12 @@ bool AwContentBrowserClient::SuppressDifferentOriginSubframeJSDialogs(
       features::kWebViewSuppressDifferentOriginSubframeJSDialogs);
 }
 
+bool AwContentBrowserClient::ShouldPreconnectNavigation(
+    content::BrowserContext* browser_context) {
+  return !base::FeatureList::IsEnabled(
+      features::kWebViewRestrictSensitiveContent);
+}
+
 void AwContentBrowserClient::OnDisplayInsecureContent(
     content::WebContents* web_contents) {
   AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
