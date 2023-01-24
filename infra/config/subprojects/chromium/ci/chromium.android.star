@@ -19,9 +19,6 @@ ci.defaults.set(
     sheriff_rotations = sheriff_rotations.ANDROID,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
@@ -477,6 +474,9 @@ ci.builder(
     ),
     execution_timeout = 7 * time.hour,
     notifies = ["Deterministic Android"],
+
+    # TODO(crbug.com/1362440): remove this.
+    omit_python2 = False,
 )
 
 ci.builder(
@@ -492,6 +492,9 @@ ci.builder(
     execution_timeout = 6 * time.hour,
     notifies = ["Deterministic Android"],
     reclient_jobs = reclient.jobs.DEFAULT,
+
+    # TODO(crbug.com/1362440): remove this.
+    omit_python2 = False,
 )
 
 ci.thin_tester(
@@ -590,9 +593,6 @@ ci.builder(
         category = "builder_tester|arm64",
         short_name = "10",
     ),
-
-    # TODO(crbug.com/1366956): remove this after confirm py3 works on this builder.
-    omit_python2 = True,
 )
 
 ci.builder(
@@ -697,6 +697,9 @@ ci.builder(
         short_name = "size",
     ),
     reclient_jobs = reclient.jobs.DEFAULT,
+
+    # TODO(crbug.com/1362440): remove this.
+    omit_python2 = False,
 )
 
 ci.builder(
@@ -864,6 +867,9 @@ ci.builder(
     ),
     notifies = ["cronet"],
     reclient_jobs = reclient.jobs.DEFAULT,
+
+    # TODO(crbug.com/1362440): remove this.
+    omit_python2 = False,
 )
 
 ci.builder(
@@ -1187,9 +1193,6 @@ ci.builder(
         short_name = "N",
     ),
     execution_timeout = 4 * time.hour,
-
-    # TODO(crbug.com/1366956): remove this after confirm py3 works on this builder.
-    omit_python2 = True,
 )
 
 ci.thin_tester(
@@ -1257,9 +1260,6 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     execution_timeout = 4 * time.hour,
-
-    # TODO(crbug.com/1366956): remove this after confirm py3 works on this builder.
-    omit_python2 = True,
 )
 
 ci.builder(
@@ -1291,9 +1291,6 @@ ci.builder(
         category = "builder_tester|x86",
         short_name = "P",
     ),
-
-    # TODO(crbug.com/1366956): remove this after confirm py3 works on this builder.
-    omit_python2 = True,
 )
 
 # TODO(crbug.com/1137474): Update the console view config once on CQ
@@ -1328,9 +1325,6 @@ ci.builder(
         category = "builder_tester|x86",
         short_name = "11",
     ),
-
-    # TODO(crbug.com/1366956): remove this after confirm py3 works on this builder.
-    omit_python2 = True,
 )
 
 ci.builder(
@@ -1363,9 +1357,6 @@ ci.builder(
         short_name = "12",
     ),
     execution_timeout = 4 * time.hour,
-
-    # TODO(crbug.com/1366956): remove this after confirm py3 works on this builder.
-    omit_python2 = True,
 )
 
 ci.builder(
@@ -1402,7 +1393,4 @@ ci.builder(
         short_name = "13",
     ),
     execution_timeout = 4 * time.hour,
-
-    # TODO(crbug.com/1366956): remove this after confirm py3 works on this builder.
-    omit_python2 = True,
 )
