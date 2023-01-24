@@ -3037,7 +3037,6 @@ crbug.com/626703 [ Linux ] external/wpt/resource-timing/response-status-code.htm
 crbug.com/626703 [ Win ] external/wpt/resource-timing/response-status-code.html [ Skip Timeout ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/resource-timing/response-status-code.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/resource-timing/response-status-code.html [ Skip Timeout ]
-crbug.com/1404285 [ Mac ] virtual/compute-pressure/external/wpt/compute-pressure/compute_pressure_disconnect_immediately.tentative.https.window.html [ Crash Failure ]
 crbug.com/626703 [ Win11 ] wpt_internal/geolocation-api/watchPosition-page-visibility.https.html [ Timeout ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/web-animations/idlharness.window.html [ Crash Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/performance-timeline/tentative/include-frames-from-child-cross-origin-grandchild.sub.html [ Timeout ]
