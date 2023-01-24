@@ -91,10 +91,10 @@ const int kCompatibleVersionNumber = 12;
 // |kCurrentVersionNumber| without razing the database.
 const int kDeprecatedVersionNumber = 5;
 
-std::string Serialize(const base::Value& value) {
+std::string Serialize(base::ValueView value_view) {
   std::string json_output;
   JSONStringValueSerializer serializer(&json_output);
-  serializer.Serialize(value);
+  serializer.Serialize(value_view);
   return json_output;
 }
 std::unique_ptr<base::Value> DeserializeValue(
@@ -177,7 +177,7 @@ std::string Serialize(
     const absl::optional<std::vector<blink::InterestGroup::Ad>>& ads) {
   if (!ads)
     return std::string();
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   for (const auto& ad : ads.value()) {
     list.Append(ToValue(ad));
   }
@@ -200,7 +200,7 @@ DeserializeInterestGroupAdVector(const std::string& serialized_ads) {
 std::string Serialize(const absl::optional<std::vector<std::string>>& strings) {
   if (!strings)
     return std::string();
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   for (const auto& s : strings.value())
     list.Append(s);
   return Serialize(list);
