@@ -7,7 +7,6 @@
 #import <ostream>
 
 #import "base/notreached.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/ui/badges/badge_button.h"
 #import "ios/chrome/browser/ui/badges/badge_constants.h"
 #import "ios/chrome/browser/ui/badges/badge_delegate.h"
@@ -64,13 +63,9 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
 
 #pragma mark - Private
 - (BadgeButton*)passwordsSaveBadgeButton {
-  UIImage* symbol =
-      base::FeatureList::IsEnabled(
-          password_manager::features::kIOSShowPasswordStorageInSaveInfobar)
-          ? CustomSymbolWithPointSize(kMulticolorPasswordSymbol,
-                                      kInfobarSymbolPointSize)
-          : CustomSymbolWithPointSize(kPasswordSymbol, kInfobarSymbolPointSize);
-  UIImage* image = UseSymbols() ? symbol : [UIImage imageNamed:@"password_key"];
+  UIImage* image = UseSymbols() ? CustomSymbolWithPointSize(
+                                      kPasswordSymbol, kInfobarSymbolPointSize)
+                                : [UIImage imageNamed:@"password_key"];
   BadgeButton* button =
       [self createButtonForType:kBadgeTypePasswordSave
                           image:[image imageWithRenderingMode:
@@ -86,13 +81,9 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
 }
 
 - (BadgeButton*)passwordsUpdateBadgeButton {
-  UIImage* symbol =
-      base::FeatureList::IsEnabled(
-          password_manager::features::kIOSShowPasswordStorageInSaveInfobar)
-          ? CustomSymbolWithPointSize(kMulticolorPasswordSymbol,
-                                      kInfobarSymbolPointSize)
-          : CustomSymbolWithPointSize(kPasswordSymbol, kInfobarSymbolPointSize);
-  UIImage* image = UseSymbols() ? symbol : [UIImage imageNamed:@"password_key"];
+  UIImage* image = UseSymbols() ? CustomSymbolWithPointSize(
+                                      kPasswordSymbol, kInfobarSymbolPointSize)
+                                : [UIImage imageNamed:@"password_key"];
   BadgeButton* button =
       [self createButtonForType:kBadgeTypePasswordUpdate
                           image:[image imageWithRenderingMode:
