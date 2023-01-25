@@ -48,8 +48,8 @@ enum class PrefLocation {
   kLocalState,
 };
 
-PrefLocation GetPrefLocation(const base::Value& settings) {
-  const std::string* location = settings.FindStringKey("location");
+PrefLocation GetPrefLocation(const base::Value::Dict& settings) {
+  const std::string* location = settings.FindString("location");
   if (!location || *location == "user_profile")
     return PrefLocation::kUserProfile;
   if (*location == "local_state")
@@ -136,14 +136,14 @@ void CheckPrefHasMandatoryValue(const PrefService::Preference* pref,
 // chrome/test/data/policy/policy_test_cases.json.
 class PrefTestCase {
  public:
-  explicit PrefTestCase(const std::string& name, const base::Value& settings) {
-    const base::Value* value = settings.FindKey("value");
-    const base::Value* default_value = settings.FindKey("default_value");
+  PrefTestCase(const std::string& name, const base::Value::Dict& settings) {
+    const base::Value* value = settings.Find("value");
+    const base::Value* default_value = settings.Find("default_value");
     location_ = GetPrefLocation(settings);
     check_for_mandatory_ =
-        settings.FindBoolKey("check_for_mandatory").value_or(true);
+        settings.FindBool("check_for_mandatory").value_or(true);
     check_for_recommended_ =
-        settings.FindBoolKey("check_for_recommended").value_or(true);
+        settings.FindBool("check_for_recommended").value_or(true);
 
     pref_ = name;
     if (value)
@@ -210,7 +210,8 @@ class PolicyPrefMappingTest {
           ADD_FAILURE() << "prefs item " << name << " is not dict";
           continue;
         }
-        prefs_.push_back(std::make_unique<PrefTestCase>(name, setting));
+        prefs_.push_back(
+            std::make_unique<PrefTestCase>(name, setting.GetDict()));
       }
     }
     if (prefs_.empty()) {
