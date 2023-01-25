@@ -16,8 +16,6 @@ struct OverflowMenuView: View {
 
   weak var metricsHandler: PopupMenuMetricsHandler?
 
-  weak var carouselMetricsDelegate: PopupMenuCarouselMetricsDelegate?
-
   var body: some View {
     VStack(
       alignment: .leading,
@@ -28,12 +26,7 @@ struct OverflowMenuView: View {
       OverflowMenuDestinationList(
         destinations: model.destinations, metricsHandler: metricsHandler,
         uiConfiguration: uiConfiguration
-      ).onPreferenceChange(
-        DestinationVisibilityPreferenceKey.self
-      ) {
-        (value: DestinationVisibilityPreferenceKey.Value) in
-        carouselMetricsDelegate?.visibleDestinationCountDidChange(value)
-      }.frame(height: Dimensions.destinationListHeight)
+      ).frame(height: Dimensions.destinationListHeight)
       Divider()
       OverflowMenuActionList(actionGroups: model.actionGroups, metricsHandler: metricsHandler)
       // Add a spacer on iPad to make sure there's space below the list.

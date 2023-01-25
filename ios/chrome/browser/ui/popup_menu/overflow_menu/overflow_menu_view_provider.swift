@@ -12,13 +12,11 @@ import UIKit
   public static func makeViewController(
     withModel model: OverflowMenuModel,
     uiConfiguration: OverflowMenuUIConfiguration,
-    metricsHandler: PopupMenuMetricsHandler,
-    carouselMetricsDelegate: PopupMenuCarouselMetricsDelegate
+    metricsHandler: PopupMenuMetricsHandler
   ) -> UIViewController {
     return OverflowMenuHostingController(
       rootView: OverflowMenuView(
-        model: model, uiConfiguration: uiConfiguration, metricsHandler: metricsHandler,
-        carouselMetricsDelegate: carouselMetricsDelegate),
+        model: model, uiConfiguration: uiConfiguration, metricsHandler: metricsHandler),
       uiConfiguration: uiConfiguration)
   }
 }

@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/follow/follow_action_state.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_consumer.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
-#import "ios/chrome/browser/ui/popup_menu/popup_menu_carousel_metrics_delegate.h"
 
 namespace bookmarks {
 class BookmarkModel;
@@ -37,8 +36,7 @@ class FollowBrowserAgent;
 
 // Mediator for the overflow menu. This object is in charge of creating and
 // updating the items of the overflow menu.
-@interface OverflowMenuMediator
-    : NSObject <BrowserContainerConsumer, PopupMenuCarouselMetricsDelegate>
+@interface OverflowMenuMediator : NSObject <BrowserContainerConsumer>
 
 // The data model for the overflow menu.
 @property(nonatomic, readonly) OverflowMenuModel* overflowMenuModel;
@@ -94,6 +92,10 @@ class FollowBrowserAgent;
 
 // The FollowBrowserAgent used to manage web channels subscriptions.
 @property(nonatomic, assign) FollowBrowserAgent* followBrowserAgent;
+
+// The number of destinations immediately visible to the user when opening the
+// new overflow menu (i.e. the number of "above-the-fold" destinations).
+@property(nonatomic, assign) int numAboveFoldDestinations;
 
 // Disconnect the mediator.
 - (void)disconnect;

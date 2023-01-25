@@ -137,10 +137,7 @@ source_set("constants") {
 
 source_set("metrics_protocols") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "popup_menu_carousel_metrics_delegate.h",
-    "popup_menu_metrics_handler.h",
-  ]
+  sources = [ "popup_menu_metrics_handler.h" ]
 }
 
 source_set("unit_tests") {

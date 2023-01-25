@@ -103,13 +103,10 @@ struct OverflowMenuDestinationList: View {
   private func scrollView(in geometry: GeometryProxy) -> some View {
     ScrollViewReader { proxy in
       ScrollView(.horizontal, showsIndicators: false) {
-        let spacing = destinationSpacing(forScreenWidth: geometry.size.width)
-        let layoutParameters: OverflowMenuDestinationView.LayoutParameters =
-          sizeCategory >= .accessibilityMedium
-          ? .horizontal(itemWidth: geometry.size.width - Constants.largeTextSizeSpace)
-          : .vertical(
-            iconSpacing: spacing.iconSpacing,
-            iconPadding: spacing.iconPadding)
+        let spacing = OverflowMenuDestinationList.destinationSpacing(
+          forScreenWidth: geometry.size.width)
+        let layoutParameters = OverflowMenuDestinationList.layoutParameters(
+          forScreenWidth: geometry.size.width, forSizeCategory: sizeCategory)
         let alignment: VerticalAlignment = sizeCategory >= .accessibilityMedium ? .center : .top
 
         ZStack {
@@ -151,7 +148,7 @@ struct OverflowMenuDestinationList: View {
   ///
   /// Returns `nil` for either end if `width` is above or below the largest or
   /// smallest breakpoint.
-  private func findBreakpoints(forScreenWidth width: CGFloat) -> (CGFloat?, CGFloat?) {
+  private static func findBreakpoints(forScreenWidth width: CGFloat) -> (CGFloat?, CGFloat?) {
     // Add extra sentinel values to either end of the breakpoint array.
     let x = zip(
       Constants.lowerWidthBreakpoints, Constants.upperWidthBreakpoints
@@ -170,7 +167,7 @@ struct OverflowMenuDestinationList: View {
   }
 
   /// Calculates the icon spacing and padding for the given `width`.
-  private func destinationSpacing(forScreenWidth width: CGFloat) -> (
+  private static func destinationSpacing(forScreenWidth width: CGFloat) -> (
     iconSpacing: CGFloat, iconPadding: CGFloat
   ) {
     let (lowerBreakpoint, upperBreakpoint) = findBreakpoints(
@@ -203,9 +200,34 @@ struct OverflowMenuDestinationList: View {
     return (iconSpacing: iconSpacing, iconPadding: iconPadding)
   }
 
+  private static func layoutParameters(
+    forScreenWidth width: CGFloat, forSizeCategory sizeCategory: ContentSizeCategory
+  ) -> OverflowMenuDestinationView.LayoutParameters {
+    let spacing = OverflowMenuDestinationList.destinationSpacing(forScreenWidth: width)
+
+    return sizeCategory >= .accessibilityMedium
+      ? .horizontal(itemWidth: width - Constants.largeTextSizeSpace)
+      : .vertical(
+        iconSpacing: spacing.iconSpacing,
+        iconPadding: spacing.iconPadding)
+  }
+
+  public static func numDestinationsVisibleWithoutHorizontalScrolling(
+    forScreenWidth width: CGFloat, forSizeCategory sizeCategory: ContentSizeCategory
+  )
+    -> CGFloat
+  {
+    let layoutParameters = OverflowMenuDestinationList.layoutParameters(
+      forScreenWidth: width, forSizeCategory: sizeCategory)
+    let destinationWidth = OverflowMenuDestinationButton.destinationWidth(
+      forLayoutParameters: layoutParameters)
+
+    return (width / destinationWidth).rounded(.up)
+  }
+
   /// Maps the given `number` from its relative position in `inRange` to its
   /// relative position in `outRange`.
-  private func mapNumber<F: FloatingPoint>(
+  private static func mapNumber<F: FloatingPoint>(
     _ number: F, from inRange: ClosedRange<F>, to outRange: ClosedRange<F>
   ) -> F {
     let scalingFactor =

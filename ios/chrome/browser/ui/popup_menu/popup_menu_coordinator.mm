@@ -390,6 +390,19 @@ enum class IOSOverflowMenuActionType {
     if (IsNewOverflowMenuEnabled()) {
       if (@available(iOS 15, *)) {
         self.overflowMenuMediator = [[OverflowMenuMediator alloc] init];
+
+        CGFloat screenWidth = self.baseViewController.view.frame.size.width;
+        UIContentSizeCategory contentSizeCategory =
+            self.baseViewController.traitCollection
+                .preferredContentSizeCategory;
+
+        self.overflowMenuMediator
+            .numAboveFoldDestinations = [OverflowMenuUIConfiguration
+            numDestinationsVisibleWithoutHorizontalScrollingForScreenWidth:
+                screenWidth
+                                                    forContentSizeCategory:
+                                                        contentSizeCategory];
+
         self.overflowMenuMediator.dispatcher = static_cast<
             id<ActivityServiceCommands, ApplicationCommands, BrowserCommands,
                BrowserCoordinatorCommands, FindInPageCommands,
@@ -444,8 +457,7 @@ enum class IOSOverflowMenuActionType {
             makeViewControllerWithModel:self.overflowMenuMediator
                                             .overflowMenuModel
                         uiConfiguration:uiConfiguration
-                         metricsHandler:self
-                carouselMetricsDelegate:self.overflowMenuMediator];
+                         metricsHandler:self];
 
         LayoutGuideCenter* layoutGuideCenter =
             LayoutGuideCenterForBrowser(self.browser);

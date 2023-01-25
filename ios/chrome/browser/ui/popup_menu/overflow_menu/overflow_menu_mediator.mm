@@ -205,10 +205,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 // Whether the web content is currently being blocked.
 @property(nonatomic, assign) BOOL contentBlocked;
 
-// The number of destinations immediately visible to the user when opening the
-// new overflow menu (i.e. the number of "above-the-fold" destinations).
-@property(nonatomic, assign) int numAboveFoldDestinations;
-
 @property(nonatomic, strong) OverflowMenuDestination* bookmarksDestination;
 @property(nonatomic, strong) OverflowMenuDestination* downloadsDestination;
 @property(nonatomic, strong) OverflowMenuDestination* historyDestination;
@@ -1863,19 +1859,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   DCHECK(IsSpotlightDebuggingEnabled());
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
   [self.dispatcher showSpotlightDebugger];
-}
-
-#pragma mark - PopupMenuCarouselMetricsDelegate
-
-- (void)visibleDestinationCountDidChange:(NSInteger)numVisibleDestinations {
-  // Exit early if numAboveFoldDestinations is already set to a non-zero value;
-  // this class only cares about the first time this method is called with a
-  // non-zero value; for that reason, exit early on subsequent calls to this
-  // method if numAboveFoldDestinations is already set.
-  if (self.numAboveFoldDestinations)
-    return;
-
-  self.numAboveFoldDestinations = numVisibleDestinations;
 }
 
 @end

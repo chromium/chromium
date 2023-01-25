@@ -5,14 +5,6 @@
 import SwiftUI
 import ios_chrome_common_ui_colors_swift
 
-/// PreferenceKey to listen to visibility changes for a given destination.
-struct DestinationVisibilityPreferenceKey: PreferenceKey {
-  static var defaultValue: Int = 0
-  static func reduce(value: inout Int, nextValue: () -> Int) {
-    value += nextValue()
-  }
-}
-
 /// Style based on state for an OverflowMenuDestinationView.
 @available(iOS 15, *)
 struct OverflowMenuDestinationButton: ButtonStyle {
@@ -57,40 +49,32 @@ struct OverflowMenuDestinationButton: ButtonStyle {
   /// The layout parameters for this view.
   var layoutParameters: OverflowMenuDestinationView.LayoutParameters
 
-  /// Tracks if the destination icon is visible in the carousel.
-  @State var isIconVisible = false
-
-  /// Tracks if the destination name is visible in the carousel.
-  @State var isTextVisible = false
-
   weak var metricsHandler: PopupMenuMetricsHandler?
 
   func makeBody(configuration: Configuration) -> some View {
+    let destinationWidth = OverflowMenuDestinationButton.destinationWidth(
+      forLayoutParameters: layoutParameters)
     Group {
       switch layoutParameters {
-      case .vertical(let iconSpacing, let iconPadding):
+      case .vertical:
         VStack {
           icon(configuration: configuration)
           text
         }
-        .frame(width: Dimensions.imageWidth + 2 * iconSpacing + 2 * iconPadding)
-      case .horizontal(let itemWidth):
+        .frame(width: destinationWidth)
+      case .horizontal:
         HStack {
           icon(configuration: configuration)
           Spacer().frame(width: Dimensions.horizontalLayoutIconSpacing)
           text
         }
-        .frame(width: itemWidth, alignment: .leading)
+        .frame(width: destinationWidth, alignment: .leading)
         // In horizontal layout, the item itself has leading and trailing
         // padding.
         .padding([.leading, .trailing], Dimensions.horizontalLayoutViewPadding)
       }
     }
     .contentShape(Rectangle())
-    .preference(
-      key: DestinationVisibilityPreferenceKey.self,
-      value: (isIconVisible || isTextVisible) ? 1 : 0
-    )
   }
 
   /// Background color for the icon.
@@ -186,12 +170,6 @@ struct OverflowMenuDestinationButton: ButtonStyle {
       // VoiceOver will occasionally read out icons it thinks it can
       // recognize.
       .accessibilityHidden(true)
-      .onAppear {
-        isIconVisible = true
-      }
-      .onDisappear {
-        isIconVisible = false
-      }
 
     if !destination.symbolName.isEmpty {
       configuredImage
@@ -220,12 +198,17 @@ struct OverflowMenuDestinationButton: ButtonStyle {
       .padding([.leading, .trailing], textSpacing)
       .multilineTextAlignment(.center)
       .lineLimit(maximumLines)
-      .onAppear {
-        isTextVisible = true
-      }
-      .onDisappear {
-        isTextVisible = false
-      }
+  }
+
+  static public func destinationWidth(
+    forLayoutParameters layoutParameters: OverflowMenuDestinationView.LayoutParameters
+  ) -> CGFloat {
+    switch layoutParameters {
+    case .vertical(let iconSpacing, let iconPadding):
+      return Dimensions.imageWidth + 2 * iconSpacing + 2 * iconPadding
+    case .horizontal(let itemWidth):
+      return itemWidth
+    }
   }
 }
 
