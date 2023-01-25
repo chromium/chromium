@@ -24,10 +24,7 @@ found in the LICENSE file.
   <script defer src="state.js"></script>
   <script defer src="infocard-ui.js"></script>
   <script defer src="tree-ui.js"></script>
-  <script defer src="https://apis.google.com/js/api.js"
-      onload="this.onload=function(){};onAuthScriptLoaded()"
-      onreadystatechange="if (this.readyState === 'complete') this.onload()">
-  </script>
+  <script async defer src="https://accounts.google.com/gsi/client" onload="initClient()"></script>
   <script async>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js')

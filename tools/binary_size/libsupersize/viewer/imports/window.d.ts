@@ -11,7 +11,7 @@
 // Global `window` context.
 declare global {
   interface Window {
-    onAuthScriptLoaded: any;
+    initClient: Func;
     supersize: any;
   }
 }

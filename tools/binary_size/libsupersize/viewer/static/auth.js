@@ -4,66 +4,71 @@
 
 'use strict';
 
-/** @type {Promise} Resolves when gapi.js is loaded. */
+
+/** @type {(a: TokenClient) => void} Resolve function of g_authScriptPromise. */
+let g_onAuthScriptLoaded = null;
+/** @type {Promise<TokenClient>} Resolves when GIS is loaded. */
 const g_authScriptPromise = new Promise((resolve, reject) => {
-  window.onAuthScriptLoaded = resolve;
+  g_onAuthScriptLoaded = resolve;
 });
 
-/** @type {?Promise} Resolves when auth has completed. */
-let g_doAuthPromise = null;
+/** @type {(a: string) => void} Resolve function of g_authTokenPromise. */
+let g_onTokenReceived = null;
+/** @type {Promise<string>} Resolves when access token is received. */
+const g_authTokenPromise = new Promise((resolve, reject) => {
+  g_onTokenReceived = resolve;
+});
+
+/** @type {boolean} Used to ensure the auth pipeline is only setup once. */
+let g_authFetchCalled = false;
 
 /** @return {Promise<*>} */
-async function initAuthApi() {
-  await g_authScriptPromise;
-  await new Promise((resolve, reject) => {
-    gapi.load('client:auth2', resolve);
+async function initClient() {
+  let tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: AUTH_CLIENT_ID,
+    scope: AUTH_SCOPE,
+    callback: '',  // defined at request time in await/promise scope.
   });
-  await gapi.client.init({
-      'clientId': AUTH_CLIENT_ID,
-      'discoveryDocs': [AUTH_DISCOVERY_URL],
-      'scope': AUTH_SCOPE,
-  })
-  return gapi.auth2.getAuthInstance();
+  g_onAuthScriptLoaded(tokenClient);
 }
 
-/** @return {Promise<*>} */
-async function doAuthFetch() {
-  let googleAuth = await initAuthApi();
-
-  // See if already signed in.
-  if (googleAuth.isSignedIn.get()) {
-    return googleAuth.currentUser.get();
+/** @return {Promise<void>} */
+async function getToken() {
+  let tokenClient = await g_authScriptPromise;
+  try {
+    tokenClient.callback = (resp) => {
+      if (resp.error === undefined) {
+        g_onTokenReceived(resp.access_token);
+      }
+    };
+    tokenClient.requestAccessToken();
+  } catch (err) {
+    console.error(err)
   }
+}
+
+/** @return {Promise<void>} */
+async function doAuthFetch() {
+  // TODO(mheikal): cache access token in localstorage and check if expired here
+  // and return cached token.
 
   // Show a "Please sign in" dialog.
   toggleSigninModal(true /*show*/);
+  let signinButton = document.querySelector('#signin-modal button.signin');
+  signinButton.addEventListener('click', getToken);
 
-  // Loop in case the pop-up dialog is closed without signing in.
-  while (true) {
-    await new Promise((resolve, reject) => {
-      let signinButton = document.querySelector('#signin-modal button.signin');
-      signinButton.addEventListener('click', resolve, {once: true});
-    });
-
-    try {
-      await googleAuth.signIn();
-      break;
-    } catch {
-      // Allow them to click dialog button again.
-    }
-  }
+  // Only hide the dialog once we have the token.
+  await g_authTokenPromise;
   toggleSigninModal(false /*show*/);
-
-  return googleAuth.currentUser.get();
 }
 
 /** @return {Promise<?string>} */
 async function fetchAccessToken() {
-  if (!g_doAuthPromise) {
-    g_doAuthPromise = doAuthFetch();
+  if (!g_authFetchCalled) {
+    doAuthFetch();
+    g_authFetchCalled = true;
   }
-  let user = await g_doAuthPromise;
-  return user.getAuthResponse().access_token;
+  return await g_authTokenPromise;
 }
 
 /** @param {boolean} show */
