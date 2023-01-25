@@ -3673,6 +3673,15 @@
         },
         'os_type': 'mac',
       },
+      'mac12-arm64-wpt-content-shell-fyi-rel': {
+        'mixins': [
+          'mac_12_arm64',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'wpt_web_tests_content_shell',
+        },
+        'os_type': 'mac',
+      },
       'mac12-wpt-content-shell-fyi-rel': {
         'mixins': [
           'mac_12_x64',
