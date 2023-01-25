@@ -59769,6 +59769,7 @@ from previous Chrome versions.
       label="AutofillEnforceDelaysInStrikeDatabase:enabled"/>
   <int value="-831066457" label="IncognitoBrandConsistencyForDesktop:disabled"/>
   <int value="-829498062" label="HttpsFirstModeV2:disabled"/>
+  <int value="-826010284" label="EnterpriseReportingUI:disabled"/>
   <int value="-825942229" label="tab-management-experiment-type-elderberry"/>
   <int value="-825312041" label="CastStreamingAv1:enabled"/>
   <int value="-824199802" label="ContextualSearchSimplifiedServer:enabled"/>
@@ -61377,6 +61378,7 @@ from previous Chrome versions.
   <int value="103560544" label="ViewportHeightClientHintHeader:disabled"/>
   <int value="103932290" label="show-autofill-type-predictions"/>
   <int value="105046382" label="ParallelDownloading:disabled"/>
+  <int value="105164136" label="EnterpriseReportingUI:enabled"/>
   <int value="105284154" label="PromiseIcons:enabled"/>
   <int value="106235373" label="LauncherSystemInfoAnswerCards:enabled"/>
   <int value="106744400" label="OmniboxModernizeVisualUpdate:enabled"/>

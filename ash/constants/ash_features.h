@@ -267,6 +267,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<double>
     kFastPairDeviceLostNotificationTimeoutMinutes;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFastPairLowPower);
+COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEnterpriseReportingUI);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<double> kFastPairLowPowerActiveSeconds;
 COMPONENT_EXPORT(ASH_CONSTANTS)

@@ -3546,6 +3546,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "enterprise-reporting-ui",
+    "owners": ["tylergarrett@google.com", "cros-reporting-team@google.com"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "ev-details-in-page-info",
     "owners": [ "cthomp" ],
     "expiry_milestone": 83

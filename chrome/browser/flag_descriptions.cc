@@ -4957,6 +4957,11 @@ const char kEnableServiceWorkersForChromeUntrustedName[] =
 const char kEnableServiceWorkersForChromeUntrustedDescription[] =
     "When enabled, allows chrome-untrusted:// WebUIs to use service workers.";
 
+const char kEnterpriseReportingUIName[] =
+    "Enable chrome://enterprise-reporting";
+const char kEnterpriseReportingUIDescription[] =
+    "When enabled, allows for chrome://enterprise-reporting to be visited";
+
 const char kCrostiniContainerInstallName[] =
     "Debian version for new Crostini containers";
 const char kCrostiniContainerInstallDescription[] =

@@ -2846,6 +2846,9 @@ extern const char kSystemExtensionsDescription[];
 extern const char kEnableServiceWorkersForChromeUntrustedName[];
 extern const char kEnableServiceWorkersForChromeUntrustedDescription[];
 
+extern const char kEnterpriseReportingUIName[];
+extern const char kEnterpriseReportingUIDescription[];
+
 extern const char kCrostiniContainerInstallName[];
 extern const char kCrostiniContainerInstallDescription[];
 
