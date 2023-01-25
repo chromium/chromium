@@ -419,24 +419,37 @@ def main():
   Git('checkout', 'origin/main', '-b', branch_name, no_run=args.no_git)
 
   old_clang_version = PatchClangRevision(clang_version)
-  old_rust_version = PatchRustRevision(rust_version)
-  assert (clang_version != old_clang_version
-          or rust_version != old_rust_version), (
-              'Change the sub-revision of Clang or Rust if there is '
-              'no major version change.')
-  # TODO: Turn the nightly dates into git hashes?
-  PatchRustStage0()
-  # TODO: Do this when we block Clang updates without a matching Rust compiler.
-  # PatchRustRemoveFallback()
+  # Avoiding changing Rust versions when rolling Clang until we can fetch
+  # stdlib sources at the same revisionas the compiler, from the
+  # FALLBACK_REVISION in update.py.
+  roll_rust = False
+  if roll_rust:
+    old_rust_version = PatchRustRevision(rust_version)
+    assert (clang_version != old_clang_version
+            or rust_version != old_rust_version), (
+                'Change the sub-revision of Clang or Rust if there is '
+                'no major version change.')
+    # TODO: Turn the nightly dates into git hashes?
+    PatchRustStage0()
+    # TODO: Do this when we block Clang updates without a matching Rust
+    # compiler.
+    # PatchRustRemoveFallback()
+  else:
+    assert (clang_version !=
+            old_clang_version), ('Change the sub-revision of Clang if there is '
+                                 'no major version change.')
 
   clang_change = f'{old_clang_version} : {clang_version}'
   clang_change_log = (
       f'{GOB_LLVM_URL}/+log/'
       f'{old_clang_version.short_git_hash}..{clang_version.short_git_hash}')
 
-  rust_change = (
-      f'{old_rust_version.string_without_dashes(with_sub_revision = True)} '
-      f': {rust_version.string_without_dashes(with_sub_revision = True)}')
+  if roll_rust:
+    rust_change = (
+        f'{old_rust_version.string_without_dashes(with_sub_revision = True)} '
+        f': {rust_version.string_without_dashes(with_sub_revision = True)}')
+  else:
+    rust_change = '[skipping Rust]'
 
   title = f'Roll clang+rust {clang_change} / {rust_change}'
 
