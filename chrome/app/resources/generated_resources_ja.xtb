@@ -673,7 +673,7 @@
 <translation id="1611776894942218234">Beta チャンネルを使用してください</translation>
 <translation id="1612019740169791082">コンテナはディスクサイズを変更できるように設定されていません。Linux 用に予約されている容量を調整するには、バックアップしてから新しいコンテナに復元してください。</translation>
 <translation id="1613019471223620622"><ph name="DOMAIN" /> の <ph name="USERNAME" /> のパスワードを表示します</translation>
-<translation id="1613149688105334014">古いバージョンの Chrome アプリを使用できるのは、2022 年 12 月までです。新しいバージョンが利用可能かどうかは次の手順で確認できます。</translation>
+<translation id="1613149688105334014">古いバージョンの Chrome アプリを使用できるのは、2022 年 12 月までです。新しいバージョンが利用可能かどうか確認してみてください。</translation>
 <translation id="1614511179807650956">モバイルデータの割り当て量をすべて使用している可能性があります。データを追加購入するには、<ph name="NAME" /> の有効化ポータルにアクセスしてください</translation>
 <translation id="161460670679785907">スマートフォンが見つかりません</translation>
 <translation id="1615433306336820465">セキュリティ キーに保存されているログインデータを管理します</translation>
@@ -1035,7 +1035,7 @@
 <translation id="1925017091976104802">貼り付けるには、<ph name="MODIFIER_KEY_DESCRIPTION" /> キーを押してください</translation>
 <translation id="1925021887439448749">カスタムのウェブアドレスを入力</translation>
 <translation id="1925124445985510535">安全確認を <ph name="TIME" /> に実行しました</translation>
-<translation id="192564025059434655">古いバージョンの Chrome アプリを Windows デバイスで使用できるのは、2022 年 12 月までです。新しいバージョンが利用可能かどうかは次の手順で確認できます。</translation>
+<translation id="192564025059434655">古いバージョンの Chrome アプリを Windows デバイスで使用できるのは、2022 年 12 月までです。新しいバージョンが利用可能かどうか確認してみてください。</translation>
 <translation id="1926339101652878330">これらの設定は会社のポリシーによって制御されています。詳しくは管理者にお尋ねください。</translation>
 <translation id="1927632033341042996">指紋 <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">画面ロックの PIN</translation>
@@ -2593,7 +2593,7 @@
 <translation id="3348131053948466246">絵文字の候補です。上または下矢印キーで移動し、Enter キーで挿入します。</translation>
 <translation id="3349933790966648062">メモリ使用量</translation>
 <translation id="3353786022389205125">[スリープから復帰するときにロック画面を表示する] をオンにしてから、もう一度お試しください</translation>
-<translation id="3354768182971982851">古いバージョンの Chrome アプリを Mac デバイスで使用できるのは、2022 年 12 月までです。新しいバージョンが利用可能かどうかは次の手順で確認できます。</translation>
+<translation id="3354768182971982851">古いバージョンの Chrome アプリを Mac デバイスで使用できるのは、2022 年 12 月までです。新しいバージョンが利用可能かどうか確認してみてください。</translation>
 <translation id="3354972872297836698">デバイス <ph name="DEVICE_NAME" />　とペア設定できませんでした。デバイスを選択してもう一度お試しください</translation>
 <translation id="335581015389089642">スピーチ</translation>
 <translation id="3355936511340229503">接続エラー</translation>
@@ -8246,7 +8246,7 @@
 <translation id="863109444997383731">サイトによる通知の確認をブロックします。サイトで通知がリクエストされた場合、ブロックされたことを示すインジケーターがアドレスバーに表示されます。</translation>
 <translation id="8632104508818855045"><ph name="ORIGIN" /> の拡張機能を一切許可しないよう選択しています</translation>
 <translation id="8633025649649592204">最近のアクティビティ</translation>
-<translation id="8633979878370972178">古いバージョンの Chrome アプリを Linux デバイスで使用できるのは、2022 年 12 月までです。新しいバージョンが利用可能かどうかは次の手順で確認できます。</translation>
+<translation id="8633979878370972178">古いバージョンの Chrome アプリを Linux デバイスで使用できるのは、2022 年 12 月までです。新しいバージョンが利用可能かどうか確認してみてください。</translation>
 <translation id="8634348081024879304">Google Pay で仮想カードを使用できなくなります。<ph name="BEGIN_LINK" />仮想カードについて<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">再読み込みしています...</translation>
 <translation id="8636284842992792762">拡張機能を初期化しています…</translation>
