@@ -13,10 +13,15 @@
 #include "chrome/browser/ash/app_list/search/system_info/cpu_data.h"
 #include "chrome/browser/ash/app_list/search/system_info/cpu_usage_data.h"
 #include "chrome/browser/ash/app_list/search/system_info/system_info_util.h"
+#include "chrome/common/channel_info.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-shared.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
+#include "components/strings/grit/components_strings.h"
+#include "components/version_info/version_info.h"
+#include "components/version_info/version_string.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace app_list {
 namespace {
@@ -76,6 +81,15 @@ void SystemInfoCardProvider::Start(const std::u16string& query) {
         chromeos::PowerManagerClient::Get()->AddObserver(this);
       }
       UpdateBatteryInfo(absl::nullopt);
+      break;
+    }
+  }
+
+  std::vector<std::u16string> version_keywords = {u"version", u"my device",
+                                                  u"about"};
+  for (std::u16string keyword : version_keywords) {
+    if (CalculateRelevance(query, keyword) > kRelevanceThreshold) {
+      UpdateChromeOsVersion();
       break;
     }
   }
@@ -238,6 +252,21 @@ void SystemInfoCardProvider::PowerChanged(
     const power_manager::PowerSupplyProperties& power_supply_properties) {
   UpdateBatteryInfo(absl::make_optional<power_manager::PowerSupplyProperties>(
       power_supply_properties));
+}
+
+void SystemInfoCardProvider::UpdateChromeOsVersion() {
+  std::string version = version_info::GetVersionStringWithModifier("");
+  std::string official = l10n_util::GetStringUTF8(
+      version_info::IsOfficialBuild() ? IDS_VERSION_UI_OFFICIAL
+                                      : IDS_VERSION_UI_UNOFFICIAL);
+  std::string processorVariation = l10n_util::GetStringUTF8(
+      sizeof(void*) == 8 ? IDS_VERSION_UI_64BIT : IDS_VERSION_UI_32BIT);
+
+  // TODO(b/263994165): Replace this with the correct translation string.
+  chromeOS_version_ =
+      std::string("Version " + version + " (" + official + ") " +
+                  chrome::GetChannelName(chrome::WithExtendedStable(true)) +
+                  " " + processorVariation);
 }
 
 }  // namespace app_list

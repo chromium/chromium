@@ -65,9 +65,12 @@ class SystemInfoCardProvider : public SearchProvider,
   void PowerChanged(const power_manager::PowerSupplyProperties&
                         power_supply_properties) override;
 
+  void UpdateChromeOsVersion();
+
   Profile* const profile_;
   mojo::Remote<ash::cros_healthd::mojom::CrosHealthdProbeService>
       probe_service_;
+  std::string chromeOS_version_{""};
   CpuUsageData previous_cpu_usage_data_{CpuUsageData()};
   ash::cros_healthd::mojom::MemoryInfo* memory_info_{nullptr};
   std::unique_ptr<CpuData> cpu_usage_{nullptr};
