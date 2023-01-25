@@ -579,7 +579,6 @@ template("test") {
                              [
                                "excluded_files",
                                "excluded_dirs",
-                               "excluded_paths",
                              ])
       package_name = _output_name
       deps = _test_component_targets
@@ -587,17 +586,11 @@ template("test") {
       if (defined(invoker.fuchsia_package_deps)) {
         deps += invoker.fuchsia_package_deps
       }
-      if (!defined(excluded_paths)) {
-        excluded_paths = []
+      if (!defined(excluded_dirs)) {
+        excluded_dirs = []
       }
-      excluded_paths += [
-        "${devtools_root_location}/*",
-        "*.git/*",
-        "*.svn/*",
-        "*.hg/*",
-      ]
       if (devtools_root_location != "") {
-        excluded_paths += [ "${devtools_root_location}/*" ]
+        excluded_dirs += [ devtools_root_location ]
       }
     }
 
