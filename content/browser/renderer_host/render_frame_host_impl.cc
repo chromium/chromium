@@ -4057,22 +4057,25 @@ blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
   if (ignore_top_level_extension) {
     ancestor_chain.pop_back();
   }
+  net::SchemefulSite top_level_site(origin(ancestor_chain.back()));
 
-  // Compute the AncestorChainBit. It represents whether every ancestors are all
-  // same-site or not.
+  // Compute the AncestorChainBit. It represents whether every ancestors are
+  // all same-site or not. If `top_level_site` is opaque the bit must be
+  // kSameSite as this is the default value (which won't be serialized).
   auto site_for_cookies = net::SiteForCookies::FromOrigin(new_rfh_origin);
   blink::mojom::AncestorChainBit ancestor_chain_bit =
       blink::mojom::AncestorChainBit::kSameSite;
-  for (auto* ancestor : ancestor_chain) {
-    if (!site_for_cookies.IsFirstParty(origin(ancestor).GetURL())) {
-      ancestor_chain_bit = blink::mojom::AncestorChainBit::kCrossSite;
-      break;
+  if (!top_level_site.opaque()) {
+    for (auto* ancestor : ancestor_chain) {
+      if (!site_for_cookies.IsFirstParty(origin(ancestor).GetURL())) {
+        ancestor_chain_bit = blink::mojom::AncestorChainBit::kCrossSite;
+        break;
+      }
     }
   }
 
   return blink::StorageKey::CreateWithOptionalNonce(
-      new_rfh_origin, net::SchemefulSite(origin(ancestor_chain.back())),
-      nullptr, ancestor_chain_bit);
+      new_rfh_origin, top_level_site, nullptr, ancestor_chain_bit);
 }
 
 void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(

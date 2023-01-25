@@ -46,6 +46,7 @@ BlinkStorageKey::BlinkStorageKey(
                               ? ancestor_chain_bit
                               : mojom::blink::AncestorChainBit::kSameSite),
       ancestor_chain_bit_if_third_party_enabled_(ancestor_chain_bit) {
+#if DCHECK_IS_ON()
   DCHECK(origin_);
   // If we're setting a `nonce`, the `top_level_site` must be the same as
   // the `origin` and the `ancestor_chain_bit` must be kSameSite. We don't
@@ -56,6 +57,13 @@ BlinkStorageKey::BlinkStorageKey(
     DCHECK(top_level_site == BlinkSchemefulSite(origin));
     DCHECK_EQ(ancestor_chain_bit, mojom::blink::AncestorChainBit::kSameSite);
   }
+  // If we're setting an opaque `top_level_site`, the `ancestor_chain_bit` must
+  // be kSameSite. We don't serialize that information so have to check to
+  // prevent mistaken reliance on what is supposed to be an invariant.
+  if (top_level_site.IsOpaque()) {
+    DCHECK_EQ(ancestor_chain_bit, mojom::blink::AncestorChainBit::kSameSite);
+  }
+#endif
 }
 
 // static
@@ -79,7 +87,8 @@ BlinkStorageKey BlinkStorageKey::CreateForTesting(
     scoped_refptr<const SecurityOrigin> origin,
     const BlinkSchemefulSite& top_level_site) {
   return BlinkStorageKey(origin, top_level_site, nullptr,
-                         BlinkSchemefulSite(origin) == top_level_site
+                         (BlinkSchemefulSite(origin) == top_level_site ||
+                          top_level_site.IsOpaque())
                              ? mojom::blink::AncestorChainBit::kSameSite
                              : mojom::blink::AncestorChainBit::kCrossSite);
 }

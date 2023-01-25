@@ -1483,10 +1483,12 @@ NavigationRequest::CreateForSynchronousRendererCommit(
             origin, net::SchemefulSite(origin), base::OptionalToPtr(nonce),
             blink::mojom::AncestorChainBit::kSameSite);
   } else {
+    net::SchemefulSite top_level_site(top_level_origin);
     navigation_request->commit_params_->storage_key =
         blink::StorageKey::CreateWithOptionalNonce(
-            origin, net::SchemefulSite(top_level_origin), nullptr,
-            render_frame_host->ComputeSiteForCookies().IsNull()
+            origin, top_level_site, nullptr,
+            (render_frame_host->ComputeSiteForCookies().IsNull() &&
+             !top_level_site.opaque())
                 ? blink::mojom::AncestorChainBit::kCrossSite
                 : blink::mojom::AncestorChainBit::kSameSite);
   }

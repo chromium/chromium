@@ -73,6 +73,8 @@ class PLATFORM_EXPORT BlinkSchemefulSite {
     return !operator==(rhs);
   }
 
+  bool IsOpaque() const { return site_as_origin_->IsOpaque(); }
+
  private:
   friend struct WTF::HashTraits<BlinkSchemefulSite>;
 

@@ -17,6 +17,7 @@ class GURL;
 
 namespace blink {
 class BlinkSchemefulSite;
+class StorageKey;
 }  // namespace blink
 
 namespace IPC {
@@ -165,7 +166,11 @@ class NET_EXPORT SchemefulSite {
   // Needed because cookies do not account for scheme.
   friend class CookieMonster;
 
+  // Needed for access to nonce for serialization.
+  friend class blink::StorageKey;
+
   FRIEND_TEST_ALL_PREFIXES(SchemefulSiteTest, OpaqueSerialization);
+  FRIEND_TEST_ALL_PREFIXES(SchemefulSiteTest, InternalValue);
 
   struct ObtainASiteResult {
     url::Origin origin;
@@ -200,6 +205,11 @@ class NET_EXPORT SchemefulSite {
   std::string registrable_domain_or_host() const {
     return site_as_origin_.host();
   }
+
+  // This should not be used casually, it's an opaque Origin or an scheme+eTLD+1
+  // packed into an Origin. If you extract this value SchemefulSite is not
+  // responsible for any unexpected friction you might encounter.
+  const url::Origin& internal_value() const { return site_as_origin_; }
 
   // Origin which stores the result of running the steps documented at
   // https://html.spec.whatwg.org/multipage/origin.html#obtain-a-site.

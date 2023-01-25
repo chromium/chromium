@@ -136,4 +136,12 @@ TEST(BlinkSchemefulSiteTest, HashBlinkSchemefulSite) {
   EXPECT_FALSE(blink_schemeful_site_map_.Contains(opaque_site_1));
 }
 
+TEST(BlinkSchemefulSiteTest, IsOpaque) {
+  BlinkSchemefulSite site(
+      SecurityOrigin::CreateFromString("https://example.com"));
+  EXPECT_FALSE(site.IsOpaque());
+  BlinkSchemefulSite opaque_site;
+  EXPECT_TRUE(opaque_site.IsOpaque());
+}
+
 }  // namespace blink

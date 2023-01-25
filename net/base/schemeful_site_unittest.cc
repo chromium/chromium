@@ -397,4 +397,13 @@ TEST(SchemefulSiteTest, GetGURL) {
   }
 }
 
+TEST(SchemefulSiteTest, InternalValue) {
+  url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  SchemefulSite site(origin);
+  EXPECT_EQ(site.internal_value(), origin);
+  url::Origin opaque_origin;
+  SchemefulSite opaque_site(opaque_origin);
+  EXPECT_EQ(opaque_site.internal_value(), opaque_origin);
+}
+
 }  // namespace net
