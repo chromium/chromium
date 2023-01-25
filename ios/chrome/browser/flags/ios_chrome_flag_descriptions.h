@@ -271,6 +271,11 @@ extern const char kEnableCBDSignOutDescription[];
 extern const char kEnableDiscoverFeedDiscoFeedEndpointName[];
 extern const char kEnableDiscoverFeedDiscoFeedEndpointDescription[];
 
+// Title and description for the flag to enable the hiding the Most Visited
+// Tiles and Shortcuts for new users.
+extern const char kHideMVTAndShortcutsForNewUsersName[];
+extern const char kHideMVTAndShortcutsForNewUsersDescription[];
+
 // Title and description for the flag to remove the Feed from the NTP.
 extern const char kEnableFeedAblationName[];
 extern const char kEnableFeedAblationDescription[];

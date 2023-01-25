@@ -40,6 +40,9 @@ extern const char
 extern const char kContentSuggestionsUIModuleRefreshMinimizeSpacingParam[];
 extern const char kContentSuggestionsUIModuleRefreshRemoveHeadersParam[];
 
+// Feature to hide the MVT and Shortcuts tiles for new users.
+BASE_DECLARE_FEATURE(kHideMVTAndShortcutsForNewUsers);
+
 // Feature to show the Trending Queries module.
 BASE_DECLARE_FEATURE(kTrendingQueriesModule);
 // Feature version of kTrendingQueriesModule used for client-side study.
@@ -63,6 +66,9 @@ extern const char kDiscoverFeedIsNativeUIEnabled[];
 // Whether the Discover feed is enabled instead of the Zine feed.
 // TODO(crbug.com/1385512): Remove this.
 bool IsDiscoverFeedEnabled();
+
+// Whether the MVTs and Shortcuts should be hidden or not.
+bool IsHideMVTAndShortcutsEnabled();
 
 // Whether the Content Suggestions UI Module Refresh feature is enabled.
 bool IsContentSuggestionsUIModuleRefreshEnabled();

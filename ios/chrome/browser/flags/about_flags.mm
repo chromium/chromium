@@ -785,6 +785,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableDiscoverFeedTopSyncPromo,
                                     kDiscoverFeedTopSyncPromoVariations,
                                     "EnableDiscoverFeedTopSyncPromo")},
+    {"enable-hiding-mvt-shortcuts",
+     flag_descriptions::kHideMVTAndShortcutsForNewUsersName,
+     flag_descriptions::kHideMVTAndShortcutsForNewUsersDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kHideMVTAndShortcutsForNewUsers)},
+
     {"shared-highlighting-amp",
      flag_descriptions::kIOSSharedHighlightingAmpName,
      flag_descriptions::kIOSSharedHighlightingAmpDescription, flags_ui::kOsIos,
