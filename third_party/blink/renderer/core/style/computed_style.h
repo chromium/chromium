@@ -1698,7 +1698,15 @@ class ComputedStyle : public ComputedStyleBase,
     return EffectiveContainment() & kContainsBlockSize;
   }
 
-  CORE_EXPORT bool ShouldApplyAnyContainment(const Element& element) const;
+  CORE_EXPORT static bool ShouldApplyAnyContainment(
+      const Element& element,
+      const DisplayStyle&,
+      unsigned effective_containment);
+
+  CORE_EXPORT bool ShouldApplyAnyContainment(const Element& element) const {
+    return ShouldApplyAnyContainment(element, GetDisplayStyle(),
+                                     EffectiveContainment());
+  }
 
   // Return true if an element can match size container queries. In addition to
   // checking if it has a size container-type, we check if we are never able to
@@ -2910,6 +2918,14 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   bool SpecifiesColumns() const {
     return ComputedStyle::SpecifiesColumns(HasAutoColumnCount(),
                                            HasAutoColumnWidth());
+  }
+  // contain
+  bool ShouldApplyAnyContainment(const Element& element) const {
+    unsigned effective_containment = ComputedStyle::EffectiveContainment(
+        Contain(), ContainerType(), ContentVisibility(), ToggleVisibility(),
+        SkipsContents());
+    return ComputedStyle::ShouldApplyAnyContainment(element, GetDisplayStyle(),
+                                                    effective_containment);
   }
 
   // content

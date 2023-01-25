@@ -28,6 +28,7 @@ class DisplayStyle {
 
   EDisplay Display() const { return display_; }
   PseudoId StyleType() const { return style_type_; }
+  const ContentData* GetContentData() const { return content_data_; }
 
   bool ContentBehavesAsNormal() const {
     switch (style_type_) {

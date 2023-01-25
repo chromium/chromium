@@ -96,7 +96,7 @@ TouchAction AdjustTouchActionForElement(TouchAction touch_action,
     // propagation of overflow is stopped by containment.
     if (parent_style.IsOverflowVisibleAlongBothAxes()) {
       if (!parent_style.ShouldApplyAnyContainment(*document_element) &&
-          !builder.InternalStyle()->ShouldApplyAnyContainment(*element)) {
+          !builder.ShouldApplyAnyContainment(*element)) {
         scrolls_overflow = false;
       }
     }
