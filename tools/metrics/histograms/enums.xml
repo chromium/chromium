@@ -53488,6 +53488,14 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="2" label="A tab is dropped at a new index position."/>
 </enum>
 
+<enum name="IOSTabSwitcherDragOrigin">
+  <int value="0"
+      label="The item is from the same collection in the same Chrome window."/>
+  <int value="1" label="The item is from the same Chrome window."/>
+  <int value="2" label="The item is from another Chrome window."/>
+  <int value="3" label="The item is not a Chrome Tab."/>
+</enum>
+
 <enum name="IOSTabSwitcherPageChangeInteraction">
   <int value="0" label="Unknown Interaction"/>
   <int value="1" label="Scroll View Drag"/>

@@ -2003,6 +2003,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.TabSwitcher.DragOrigin" enum="IOSTabSwitcherDragOrigin"
+    expires_after="2024-01-22">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>pakzhygitov@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>Records the origin of dropped items in the tab switcher.</summary>
+</histogram>
+
 <histogram name="IOS.TabSwitcher.PageChangeInteraction"
     enum="IOSTabSwitcherPageChangeInteraction" expires_after="2023-07-16">
   <owner>marq@chromium.org</owner>
@@ -2024,6 +2032,14 @@ chromium-metrics-reviews@google.com.
     Records tab drag and drop interactions in the pinned tab view. An
     interaction is recorded twice (one drag and one drop).
   </summary>
+</histogram>
+
+<histogram name="IOS.TabSwitcher.PinnedTabs.DragOrigin"
+    enum="IOSTabSwitcherDragOrigin" expires_after="2024-01-22">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>pakzhygitov@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>Records the origin of dropped items in the pinned tab view.</summary>
 </histogram>
 
 <histogram name="IOS.TabSwitcher.TimeSpent" units="ms"

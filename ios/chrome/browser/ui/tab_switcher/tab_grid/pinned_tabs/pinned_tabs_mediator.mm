@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/main/browser_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
@@ -444,14 +445,24 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
                                             /*pin_state=*/YES);
       if (tabIndex == WebStateList::kInvalidIndex) {
         // Move tab across Browsers.
+        base::UmaHistogramEnumeration(kUmaPinnedViewDragOrigin,
+                                      DragItemOrigin::kOtherBrwoser);
         MoveTabToBrowser(tabInfo.tabID, self.browser, destinationIndex);
         return;
       }
+      base::UmaHistogramEnumeration(kUmaPinnedViewDragOrigin,
+                                    DragItemOrigin::kSameBrowser);
+    } else {
+      base::UmaHistogramEnumeration(kUmaPinnedViewDragOrigin,
+                                    DragItemOrigin::kSameCollection);
     }
+
     // Reorder tabs.
     [self.consumer moveItemWithID:tabInfo.tabID toIndex:destinationIndex];
     return;
   }
+  base::UmaHistogramEnumeration(kUmaPinnedViewDragOrigin,
+                                DragItemOrigin::kOther);
 
   // Handle URLs from within Chrome synchronously using a local object.
   if ([dragItem.localObject isKindOfClass:[URLInfo class]]) {
