@@ -54,17 +54,14 @@ suite('ReadAnythingAppTest', () => {
     chrome.readAnything.setThemeForTesting('Serif', 18.0, 0, 0, 1, 0);
     assertFontName('serif');
 
-    chrome.readAnything.setThemeForTesting('Avenir', 18.0, 0, 0, 1, 0);
-    assertFontName('avenir');
-
-    chrome.readAnything.setThemeForTesting('Comic Neue', 18.0, 0, 0, 1, 0);
-    assertFontName('"Comic Neue"');
+    chrome.readAnything.setThemeForTesting('Arial', 18.0, 0, 0, 1, 0);
+    assertFontName('Arial');
 
     chrome.readAnything.setThemeForTesting('Comic Sans MS', 18.0, 0, 0, 1, 0);
     assertFontName('"Comic Sans MS"');
 
-    chrome.readAnything.setThemeForTesting('Poppins', 18.0, 0, 0, 1, 0);
-    assertFontName('poppins');
+    chrome.readAnything.setThemeForTesting('Times New Roman', 18.0, 0, 0, 1, 0);
+    assertFontName('"Times New Roman"');
   });
 
   test('updateTheme fontSize', () => {

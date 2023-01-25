@@ -66,15 +66,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // the names set in read_anything_font_model.cc.
   // TODO(1266555): The displayed names of the fonts should be messages that
   //                will be translated to other languages.
-  private defaultFontName: string = 'Standard font';
+  private defaultFontName: string = 'sans-serif';
   private validFontNames: Array<{name: string, css: string}> = [
     {name: 'Standard font', css: 'Standard font'},
     {name: 'Sans-serif', css: 'sans-serif'},
     {name: 'Serif', css: 'serif'},
-    {name: 'Avenir', css: 'avenir'},
-    {name: 'Comic Neue', css: '"Comic Neue"'},
+    {name: 'Arial', css: 'Arial'},
     {name: 'Comic Sans MS', css: '"Comic Sans MS"'},
-    {name: 'Poppins', css: 'poppins'},
+    {name: 'Times New Roman', css: '"Times New Roman"'},
   ];
 
   override connectedCallback() {
