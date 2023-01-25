@@ -70,7 +70,8 @@ public class UmaUtils {
      */
     @IntDef({StandbyBucketStatus.ACTIVE, StandbyBucketStatus.WORKING_SET,
             StandbyBucketStatus.FREQUENT, StandbyBucketStatus.RARE, StandbyBucketStatus.RESTRICTED,
-            StandbyBucketStatus.UNSUPPORTED, StandbyBucketStatus.COUNT})
+            StandbyBucketStatus.UNSUPPORTED, StandbyBucketStatus.EXEMPTED,
+            StandbyBucketStatus.COUNT})
     private @interface StandbyBucketStatus {
         int ACTIVE = 0;
         int WORKING_SET = 1;
@@ -78,7 +79,8 @@ public class UmaUtils {
         int RARE = 3;
         int RESTRICTED = 4;
         int UNSUPPORTED = 5;
-        int COUNT = 6;
+        int EXEMPTED = 6;
+        int COUNT = 7;
     }
 
     /**
@@ -199,6 +201,8 @@ public class UmaUtils {
                 return "Restricted";
             case StandbyBucketStatus.UNSUPPORTED:
                 return "Unsupported";
+            case StandbyBucketStatus.EXEMPTED:
+                return "Exempted";
             default:
                 assert false : "Unexpected standby bucket " + standbyBucket;
                 return "Unknown";
@@ -228,6 +232,9 @@ public class UmaUtils {
                 break;
             case UsageStatsManager.STANDBY_BUCKET_RESTRICTED:
                 standbyBucketUma = StandbyBucketStatus.RESTRICTED;
+                break;
+            case 5: // STANDBY_BUCKET_EXEMPTED
+                standbyBucketUma = StandbyBucketStatus.EXEMPTED;
                 break;
             default:
                 assert false : "Unexpected standby bucket " + standbyBucket;

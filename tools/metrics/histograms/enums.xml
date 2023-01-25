@@ -96947,6 +96947,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Frequent"/>
   <int value="3" label="Rare"/>
   <int value="4" label="Restricted"/>
+  <int value="5" label="Exempted"/>
 </enum>
 
 <enum name="StarEntryPointAction">
