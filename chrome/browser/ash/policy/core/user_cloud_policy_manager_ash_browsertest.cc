@@ -22,10 +22,10 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -59,7 +59,8 @@ class UserCloudPolicyManagerTest
   ~UserCloudPolicyManagerTest() override = default;
 
   void TearDown() override {
-    BrowserPolicyConnector::SetNonEnterpriseDomainForTesting(nullptr);
+    signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(
+        nullptr);
     MixinBasedInProcessBrowserTest::TearDown();
   }
 
@@ -174,9 +175,12 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerTest,
   // Recognize example.com as non-enterprise account. We don't use any
   // available public domain such as gmail.com in order to prevent possible
   // leak of verification keys/signatures.
-  BrowserPolicyConnector::SetNonEnterpriseDomainForTesting("example.com");
-  EXPECT_TRUE(BrowserPolicyConnector::IsNonEnterpriseUser(
-      logged_in_user_mixin_.GetAccountId().GetUserEmail()));
+  signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(
+      "example.com");
+  EXPECT_EQ(signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
+                logged_in_user_mixin_.GetAccountId().GetUserEmail()),
+            signin::AccountManagedStatusFinder::EmailEnterpriseStatus::
+                kKnownNonEnterprise);
   user_manager::KnownUser known_user(g_browser_process->local_state());
   // If a user signs in with a known non-enterprise account there should be no
   // policy.
@@ -195,9 +199,12 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerTest,
 using UserCloudPolicyManagerChildTest = UserCloudPolicyManagerTest;
 
 IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerChildTest, PolicyForChildUser) {
-  BrowserPolicyConnector::SetNonEnterpriseDomainForTesting("example.com");
-  EXPECT_TRUE(BrowserPolicyConnector::IsNonEnterpriseUser(
-      logged_in_user_mixin_.GetAccountId().GetUserEmail()));
+  signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(
+      "example.com");
+  EXPECT_EQ(signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
+                logged_in_user_mixin_.GetAccountId().GetUserEmail()),
+            signin::AccountManagedStatusFinder::EmailEnterpriseStatus::
+                kKnownNonEnterprise);
 
   user_manager::KnownUser known_user(g_browser_process->local_state());
   // If a user signs in with a known non-enterprise account there should be no
@@ -227,9 +234,12 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerChildTest, PolicyForChildUser) {
 IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerChildTest,
                        PolicyForChildUserMissing) {
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  BrowserPolicyConnector::SetNonEnterpriseDomainForTesting("example.com");
-  EXPECT_TRUE(BrowserPolicyConnector::IsNonEnterpriseUser(
-      logged_in_user_mixin_.GetAccountId().GetUserEmail()));
+  signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(
+      "example.com");
+  EXPECT_EQ(signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
+                logged_in_user_mixin_.GetAccountId().GetUserEmail()),
+            signin::AccountManagedStatusFinder::EmailEnterpriseStatus::
+                kKnownNonEnterprise);
 
   // If a user signs in with a known non-enterprise account there should be no
   // policy in case user type is child.

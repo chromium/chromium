@@ -183,7 +183,7 @@ class POLICY_EXPORT UserPolicySigninServiceBase
 
   // Returns false if cloud policy is disabled or if the passed |email_address|
   // is definitely not from a hosted domain (according to the list in
-  // BrowserPolicyConnector::IsNonEnterpriseUser()).
+  // signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail()).
   bool ShouldLoadPolicyForUser(const std::string& email_address);
 
   // Handler to call the policy registration callback that provides the DM

@@ -19,16 +19,18 @@ namespace signin {
 // account.
 class AccountManagedStatusFinder : public signin::IdentityManager::Observer {
  public:
+  // Whether an email belongs to an enterprise domain.
+  enum class EmailEnterpriseStatus {
+    // It's unknown whether an email belongs to an enterprise domain.
+    kUnknown,
+    // Email belongs to a well-known non-enterprise domain.
+    kKnownNonEnterprise,
+  };
+
   // Check whether the given account is known to be non-enterprise. Domains such
-  // as gmail.com and googlemail.com are known to not be managed. Also returns
-  // true if the username is empty or not a valid email address.
-  // Note that this is accurate in only one direction: If it returns true, the
-  // account is definitely non-enterprise. But if it returns false, it may or
-  // may not be an enterprise account.
-  // TODO(crbug.com/1378553): Consider changing the return type to an enum to
-  // make the possible outcomes clearer. (This would also avoid the weird
-  // negation in the method name.)
-  static bool IsNonEnterpriseUser(const std::string& email);
+  // as gmail.com and googlemail.com are known to not be managed.
+  static EmailEnterpriseStatus IsEnterpriseUserBasedOnEmail(
+      const std::string& email);
 
   // Allows to register a domain that is recognized as non-enterprise for tests.
   // Note that `domain` needs to live until this method is invoked with nullptr.

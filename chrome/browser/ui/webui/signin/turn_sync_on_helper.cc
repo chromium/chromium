@@ -40,11 +40,11 @@
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -544,8 +544,9 @@ void TurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
     // for cloud policies because local policies are instantly available. See
     // http://crbug.com/812546
     bool may_have_cloud_policies =
-        !policy::BrowserPolicyConnector::IsNonEnterpriseUser(
-            account_info_.email) ||
+        signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
+            account_info_.email) == signin::AccountManagedStatusFinder::
+                                        EmailEnterpriseStatus::kUnknown ||
         policy::ManagementServiceFactory::GetForProfile(profile_)
             ->HasManagementAuthority(
                 policy::EnterpriseManagementAuthority::CLOUD) ||
@@ -652,8 +653,9 @@ void TurnSyncOnHelper::ShowSyncConfirmationUI() {
   const bool is_managed_account =
       account_info_.IsValid()
           ? account_info_.IsManaged()
-          : !policy::BrowserPolicyConnector::IsNonEnterpriseUser(
-                account_info_.email);
+          : signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
+                account_info_.email) == signin::AccountManagedStatusFinder::
+                                            EmailEnterpriseStatus::kUnknown;
   delegate_->ShowSyncDisabledConfirmation(
       is_managed_account,
       base::BindOnce(&TurnSyncOnHelper::FinishSyncSetupAndDelete,

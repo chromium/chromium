@@ -11,9 +11,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 
 namespace arc {
 
@@ -47,8 +47,10 @@ void ArcAndroidManagementChecker::StartCheck(CheckCallback callback) {
   // No need to check Android Management if the user is a Chrome OS managed
   // user, or belongs to a well-known non-enterprise domain.
   if (policy_util::IsAccountManaged(profile_) ||
-      policy::BrowserPolicyConnector::IsNonEnterpriseUser(
-          profile_->GetProfileUserName())) {
+      (signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
+           profile_->GetProfileUserName()) ==
+       signin::AccountManagedStatusFinder::EmailEnterpriseStatus::
+           kKnownNonEnterprise)) {
     std::move(callback).Run(CheckResult::ALLOWED);
     return;
   }

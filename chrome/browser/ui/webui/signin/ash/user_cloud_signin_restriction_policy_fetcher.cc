@@ -10,8 +10,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/policy_switches.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -110,7 +110,9 @@ void UserCloudSigninRestrictionPolicyFetcher::GetSecondaryGoogleAccountUsage(
   DCHECK(callback);
   DCHECK(!callback_) << "A request is already in progress";
   callback_ = std::move(callback);
-  if (policy::BrowserPolicyConnector::IsNonEnterpriseUser(email_)) {
+  if (signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
+          email_) == signin::AccountManagedStatusFinder::EmailEnterpriseStatus::
+                         kKnownNonEnterprise) {
     // Non Enterprise accounts do not have restrictions.
     std::move(callback_).Run(/*status=*/Status::kUnsupportedAccountTypeError,
                              /*policy=*/absl::nullopt,

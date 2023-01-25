@@ -92,7 +92,7 @@ class UserCloudSigninRestrictionPolicyFetcher
   // (abc1234@gmail.com). It's used to skip API requests for domains such as
   // gmail.com and others since these type of users are known to be
   // non-enterprise. For more information check
-  // policy::BrowserPolicyConnector::IsNonEnterpriseUser.
+  // signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail.
   UserCloudSigninRestrictionPolicyFetcher(
       const std::string& email,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);

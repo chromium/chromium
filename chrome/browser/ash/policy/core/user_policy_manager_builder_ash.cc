@@ -36,11 +36,11 @@
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -118,7 +118,10 @@ void CreateConfigurationPolicyProvider(
   // All other user types do not have user policy.
   const AccountId& account_id = user->GetAccountId();
   if (user->GetType() != user_manager::USER_TYPE_CHILD &&
-      BrowserPolicyConnector::IsNonEnterpriseUser(account_id.GetUserEmail())) {
+      signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
+          account_id.GetUserEmail()) ==
+          signin::AccountManagedStatusFinder::EmailEnterpriseStatus::
+              kKnownNonEnterprise) {
     DLOG(WARNING) << "No policy loaded for known non-enterprise user";
     // Mark this profile as not requiring policy.
     known_user.SetProfileRequiresPolicy(
@@ -286,7 +289,9 @@ void CreateConfigurationPolicyProvider(
         ash::CrosSettings::Get()->IsUserAllowlisted(
             account_id.GetUserEmail(), &wildcard_match, user->GetType()) &&
         wildcard_match &&
-        !connector->IsNonEnterpriseUser(account_id.GetUserEmail())) {
+        signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
+            account_id.GetUserEmail()) == signin::AccountManagedStatusFinder::
+                                              EmailEnterpriseStatus::kUnknown) {
       manager->EnableWildcardLoginCheck(account_id.GetUserEmail());
     }
 

@@ -28,8 +28,8 @@
 #include "chrome/browser/signin/account_id_from_account_info.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/google/core/common/google_util.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -111,7 +111,9 @@ class ProfileDataRemover : public content::BrowsingDataRemover::Observer {
 
 // Returns whether the user is a managed user or not.
 bool ShouldLoadPolicyForUser(const std::string& username) {
-  return !policy::BrowserPolicyConnector::IsNonEnterpriseUser(username);
+  return signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
+             username) ==
+         signin::AccountManagedStatusFinder::EmailEnterpriseStatus::kUnknown;
 }
 
 }  // namespace

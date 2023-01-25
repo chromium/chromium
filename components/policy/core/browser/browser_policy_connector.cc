@@ -119,18 +119,6 @@ std::string BrowserPolicyConnector::GetUrlOverride(
 }
 
 // static
-bool BrowserPolicyConnector::IsNonEnterpriseUser(const std::string& username) {
-  TRACE_EVENT0("browser", "BrowserPolicyConnector::IsNonEnterpriseUser");
-  return signin::AccountManagedStatusFinder::IsNonEnterpriseUser(username);
-}
-
-// static
-void BrowserPolicyConnector::SetNonEnterpriseDomainForTesting(
-    const char* domain) {
-  signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(domain);
-}
-
-// static
 void BrowserPolicyConnector::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       policy_prefs::kUserPolicyRefreshRate,

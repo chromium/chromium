@@ -32,13 +32,13 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/account_id/account_id.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/profile_metrics/state.h"
 #include "components/signin/public/base/persistent_repeating_timer.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
@@ -233,8 +233,10 @@ profile_metrics::UnconsentedPrimaryAccountType GetUnconsentedPrimaryAccountType(
   // TODO(crbug.com/1060113): Replace this check by
   // !entry->GetHostedDomain().has_value() in M84 (once the attributes storage
   // gets reasonably well populated).
-  if (policy::BrowserPolicyConnector::IsNonEnterpriseUser(
-          base::UTF16ToUTF8(entry->GetUserName()))) {
+  if (signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
+          base::UTF16ToUTF8(entry->GetUserName())) ==
+      signin::AccountManagedStatusFinder::EmailEnterpriseStatus::
+          kKnownNonEnterprise) {
     return profile_metrics::UnconsentedPrimaryAccountType::kConsumer;
   }
   // TODO(crbug.com/1060113): Figure out how to distinguish EDU accounts from

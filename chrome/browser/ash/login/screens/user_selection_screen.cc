@@ -56,6 +56,7 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
@@ -224,8 +225,9 @@ class UserSelectionScreen::DircryptoMigrationChecker {
     // If the user may be enterprise-managed, don't display the banner, because
     // migration may be blocked by user policy (and user policy is not available
     // at this time yet).
-    if (!policy::BrowserPolicyConnector::IsNonEnterpriseUser(
-            account_id.GetUserEmail())) {
+    if (signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
+            account_id.GetUserEmail()) ==
+        signin::AccountManagedStatusFinder::EmailEnterpriseStatus::kUnknown) {
       UpdateUI(account_id, false);
       return;
     }

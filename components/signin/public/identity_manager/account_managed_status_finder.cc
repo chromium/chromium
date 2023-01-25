@@ -67,27 +67,29 @@ bool MatchDomain(const std::u16string& domain,
 }  // namespace
 
 // static
-bool AccountManagedStatusFinder::IsNonEnterpriseUser(const std::string& email) {
+AccountManagedStatusFinder::EmailEnterpriseStatus
+AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
+    const std::string& email) {
   size_t email_separator_pos = email.find('@');
   if (email.empty() || email_separator_pos == std::string::npos ||
       email_separator_pos == email.size() - 1) {
     // An empty email means no logged-in user, or incognito user in case of
     // ChromiumOS. Also, some tests use nonsense email addresses (e.g. "test");
     // these should be treated as non-enterprise too.
-    return true;
+    return EmailEnterpriseStatus::kKnownNonEnterprise;
   }
   const std::u16string domain =
       base::UTF8ToUTF16(gaia::ExtractDomainName(email));
   for (size_t i = 0; i < std::size(kNonManagedDomainPatterns); i++) {
     std::u16string pattern = base::WideToUTF16(kNonManagedDomainPatterns[i]);
     if (MatchDomain(domain, pattern, i))
-      return true;
+      return EmailEnterpriseStatus::kKnownNonEnterprise;
   }
   if (g_non_managed_domain_for_testing &&
       domain == base::UTF8ToUTF16(g_non_managed_domain_for_testing)) {
-    return true;
+    return EmailEnterpriseStatus::kKnownNonEnterprise;
   }
-  return false;
+  return EmailEnterpriseStatus::kUnknown;
 }
 
 // static
@@ -106,7 +108,8 @@ AccountManagedStatusFinder::AccountManagedStatusFinder(
   // tell the account type from the email.
   if (!identity_manager_->HasAccountWithRefreshToken(account_.account_id)) {
     outcome_ = Outcome::kError;
-  } else if (IsNonEnterpriseUser(account_.email)) {
+  } else if (IsEnterpriseUserBasedOnEmail(account_.email) ==
+             EmailEnterpriseStatus::kKnownNonEnterprise) {
     outcome_ = Outcome::kNonEnterprise;
   } else if (gaia::IsGoogleInternalAccountEmail(
                  gaia::CanonicalizeEmail(account_.email))) {

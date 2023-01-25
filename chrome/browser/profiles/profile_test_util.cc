@@ -15,7 +15,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/profiles/profile_window.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -40,12 +40,12 @@ void SwitchToProfileSync(const base::FilePath& path, bool always_create) {
 
 ScopedNonEnterpriseDomainSetterForTesting::
     ScopedNonEnterpriseDomainSetterForTesting(const char* domain) {
-  policy::BrowserPolicyConnector::SetNonEnterpriseDomainForTesting(domain);
+  signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(domain);
 }
 
 ScopedNonEnterpriseDomainSetterForTesting::
     ~ScopedNonEnterpriseDomainSetterForTesting() {
-  policy::BrowserPolicyConnector::SetNonEnterpriseDomainForTesting(nullptr);
+  signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(nullptr);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

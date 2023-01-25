@@ -11,12 +11,12 @@
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 
 namespace em = enterprise_management;
 
@@ -174,7 +174,9 @@ bool UserPolicySigninServiceBase::ShouldLoadPolicyForUser(
   if (username.empty())
     return false;  // Not signed in.
 
-  return !BrowserPolicyConnector::IsNonEnterpriseUser(username);
+  return signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
+             username) ==
+         signin::AccountManagedStatusFinder::EmailEnterpriseStatus::kUnknown;
 }
 
 void UserPolicySigninServiceBase::InitializeForSignedInUser(
