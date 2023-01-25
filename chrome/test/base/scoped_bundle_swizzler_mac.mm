@@ -25,6 +25,7 @@ static id g_swizzled_main_bundle = nil;
 
 @implementation TestBundle {
   base::scoped_nsobject<NSBundle> _mainBundle;
+  base::scoped_nsobject<NSString> _bundleID;
 }
 
 + (NSBundle*)mainBundle {
@@ -33,11 +34,13 @@ static id g_swizzled_main_bundle = nil;
 
 - (instancetype)initWithRealBundle:(NSBundle*)bundle {
   _mainBundle.reset([bundle retain]);
+  _bundleID.reset(base::SysUTF8ToNSString(base::mac::BaseBundleID()),
+                  base::scoped_policy::RETAIN);
   return self;
 }
 
 - (NSString*)bundleIdentifier {
-  return base::SysUTF8ToNSString(base::mac::BaseBundleID());
+  return _bundleID.get();
 }
 
 - (void)forwardInvocation:(NSInvocation*)invocation {
