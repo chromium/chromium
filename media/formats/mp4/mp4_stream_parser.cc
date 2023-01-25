@@ -60,6 +60,17 @@ EncryptionScheme GetEncryptionScheme(const ProtectionSchemeInfo& sinf) {
   return EncryptionScheme::kUnencrypted;
 }
 
+class ExternalMemoryAdapter : public DecoderBuffer::ExternalMemory {
+ public:
+  explicit ExternalMemoryAdapter(std::vector<uint8_t> memory)
+      : memory_(std::move(memory)) {
+    span_ = {memory_.data(), memory_.size()};
+  }
+
+ private:
+  std::vector<uint8_t> memory_;
+};
+
 }  // namespace
 
 MP4StreamParser::MP4StreamParser(const std::set<int>& audio_object_types,
@@ -991,9 +1002,9 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
   StreamParserBuffer::Type buffer_type = audio ? DemuxerStream::AUDIO :
       DemuxerStream::VIDEO;
 
-  scoped_refptr<StreamParserBuffer> stream_buf =
-      StreamParserBuffer::CopyFrom(&frame_buf[0], frame_buf.size(), is_keyframe,
-                                   buffer_type, runs_->track_id());
+  auto stream_buf = StreamParserBuffer::FromExternalMemory(
+      std::make_unique<ExternalMemoryAdapter>(std::move(frame_buf)),
+      is_keyframe, buffer_type, runs_->track_id());
 
   if (decrypt_config)
     stream_buf->set_decrypt_config(std::move(decrypt_config));

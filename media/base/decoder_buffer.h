@@ -47,8 +47,9 @@ class MEDIA_EXPORT DecoderBuffer
     virtual ~ExternalMemory() = default;
     const base::span<const uint8_t>& span() const { return span_; }
 
-   private:
-    const base::span<const uint8_t> span_;
+   protected:
+    ExternalMemory() = default;
+    base::span<const uint8_t> span_;
   };
 
   using DiscardPadding = std::pair<base::TimeDelta, base::TimeDelta>;

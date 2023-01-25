@@ -145,6 +145,11 @@ class MEDIA_EXPORT StreamParserBuffer : public DecoderBuffer {
                                                     bool is_key_frame,
                                                     Type type,
                                                     TrackId track_id);
+  static scoped_refptr<StreamParserBuffer> FromExternalMemory(
+      std::unique_ptr<ExternalMemory> external_memory,
+      bool is_key_frame,
+      Type type,
+      TrackId track_id);
 
   StreamParserBuffer(const StreamParserBuffer&) = delete;
   StreamParserBuffer& operator=(const StreamParserBuffer&) = delete;
@@ -189,6 +194,10 @@ class MEDIA_EXPORT StreamParserBuffer : public DecoderBuffer {
   }
 
  private:
+  StreamParserBuffer(std::unique_ptr<ExternalMemory> external_memory,
+                     bool is_key_frame,
+                     Type type,
+                     TrackId track_id);
   StreamParserBuffer(const uint8_t* data,
                      int data_size,
                      const uint8_t* side_data,
@@ -198,12 +207,12 @@ class MEDIA_EXPORT StreamParserBuffer : public DecoderBuffer {
                      TrackId track_id);
   ~StreamParserBuffer() override;
 
-  DecodeTimestamp decode_timestamp_;
-  int config_id_;
+  DecodeTimestamp decode_timestamp_ = kNoDecodeTimestamp;
+  int config_id_ = kInvalidConfigId;
   Type type_;
   TrackId track_id_;
   scoped_refptr<StreamParserBuffer> preroll_buffer_;
-  bool is_duration_estimated_;
+  bool is_duration_estimated_ = false;
 };
 
 }  // namespace media

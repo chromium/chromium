@@ -114,8 +114,9 @@ OSStatus ProvideInputCallback(AudioConverterRef decoder,
   buffer_list->mBuffers[0].mNumberChannels = 0;
   buffer_list->mBuffers[0].mDataByteSize = input_data->buffer->data_size();
 
-  // No const version of this API unfortunately, so we need writable_data().
-  buffer_list->mBuffers[0].mData = input_data->buffer->writable_data();
+  // No const version of this API unfortunately, so we need const_cast().
+  buffer_list->mBuffers[0].mData =
+      const_cast<uint8_t*>(input_data->buffer->data());
 
   if (packets)
     *packets = &input_data->packet;
