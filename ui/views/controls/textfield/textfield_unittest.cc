@@ -3802,6 +3802,64 @@ TEST_F(TextfieldTouchSelectionTest, MAYBE_TapOnSelection) {
   EXPECT_EQ(tap_range, range);
 }
 
+TEST_F(TextfieldTest, MoveCaret) {
+  InitTextfield();
+  textfield_->SetText(u"hello world");
+  const int cursor_y = GetCursorYForTesting();
+  gfx::Range range;
+
+  textfield_->MoveCaret(gfx::Point(GetCursorPositionX(3), cursor_y));
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(3));
+
+  textfield_->MoveCaret(gfx::Point(GetCursorPositionX(0), cursor_y));
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(0));
+
+  textfield_->MoveCaret(gfx::Point(GetCursorPositionX(11), cursor_y));
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(11));
+}
+
+TEST_F(TextfieldTest, MoveRangeSelectionExtent) {
+  InitTextfield();
+  textfield_->SetText(u"hello world");
+  const int cursor_y = GetCursorYForTesting();
+  gfx::Range range;
+
+  textfield_->SelectBetweenCoordinates(
+      gfx::Point(GetCursorPositionX(2), cursor_y),
+      gfx::Point(GetCursorPositionX(3), cursor_y));
+  textfield_->MoveRangeSelectionExtent(
+      gfx::Point(GetCursorPositionX(5), cursor_y));
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(2, 5));
+
+  textfield_->MoveRangeSelectionExtent(
+      gfx::Point(GetCursorPositionX(0), cursor_y));
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(2, 0));
+}
+
+TEST_F(TextfieldTest, SelectBetweenCoordinates) {
+  InitTextfield();
+  textfield_->SetText(u"hello world");
+  const int cursor_y = GetCursorYForTesting();
+  gfx::Range range;
+
+  textfield_->SelectBetweenCoordinates(
+      gfx::Point(GetCursorPositionX(1), cursor_y),
+      gfx::Point(GetCursorPositionX(2), cursor_y));
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(1, 2));
+
+  textfield_->SelectBetweenCoordinates(
+      gfx::Point(GetCursorPositionX(0), cursor_y),
+      gfx::Point(GetCursorPositionX(11), cursor_y));
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(0, 11));
+}
+
 TEST_F(TextfieldTest, AccessiblePasswordTest) {
   InitTextfield();
   textfield_->SetText(u"password");

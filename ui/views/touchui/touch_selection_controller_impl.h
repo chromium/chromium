@@ -47,13 +47,15 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
  private:
   friend class TouchSelectionControllerImplTest;
 
-  void SetDraggingHandle(EditingHandleView* handle);
+  void OnDragBegin(EditingHandleView* handle);
 
   // Callback to inform the client view that the selection handle has been
   // dragged, hence selection may need to be updated. |drag_pos| is the new
   // position for the edge of the selection corresponding to |dragging_handle_|,
   // specified in handle's coordinates
-  void SelectionHandleDragged(const gfx::Point& drag_pos);
+  void OnDragUpdate(const gfx::Point& drag_pos);
+
+  void OnDragEnd();
 
   // Convenience method to convert a point from a selection handle's coordinate
   // system to that of the client view.

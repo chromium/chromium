@@ -387,8 +387,10 @@ class VIEWS_EXPORT Textfield : public View,
   bool HasTextBeingDragged() const override;
 
   // ui::TouchEditable overrides:
-  void SelectRect(const gfx::Point& start, const gfx::Point& end) override;
-  void MoveCaretTo(const gfx::Point& point) override;
+  void MoveCaret(const gfx::Point& position) override;
+  void MoveRangeSelectionExtent(const gfx::Point& extent) override;
+  void SelectBetweenCoordinates(const gfx::Point& base,
+                                const gfx::Point& extent) override;
   void GetSelectionEndPoints(gfx::SelectionBound* anchor,
                              gfx::SelectionBound* focus) override;
   gfx::Rect GetBounds() override;

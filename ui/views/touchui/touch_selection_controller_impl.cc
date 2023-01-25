@@ -249,7 +249,7 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
     switch (event->type()) {
       case ui::ET_GESTURE_SCROLL_BEGIN: {
         widget_->SetCapture(this);
-        controller_->SetDraggingHandle(this);
+        controller_->OnDragBegin(this);
         // Distance from the point which is |kSelectionHandleVerticalDragOffset|
         // pixels above the bottom of the selection bound edge to the event
         // location (aka the touch-drag point).
@@ -259,13 +259,13 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
         break;
       }
       case ui::ET_GESTURE_SCROLL_UPDATE: {
-        controller_->SelectionHandleDragged(event->location() + drag_offset_);
+        controller_->OnDragUpdate(event->location() + drag_offset_);
         break;
       }
       case ui::ET_GESTURE_SCROLL_END:
       case ui::ET_SCROLL_FLING_START: {
         widget_->ReleaseCapture();
-        controller_->SetDraggingHandle(nullptr);
+        controller_->OnDragEnd();
         break;
       }
       default:
@@ -360,8 +360,7 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
   bool is_cursor_handle_;
 
   // Offset applied to the scroll events location when calling
-  // TouchSelectionControllerImpl::SelectionHandleDragged while dragging the
-  // handle.
+  // TouchSelectionControllerImpl::OnDragUpdate while dragging the handle.
   gfx::Vector2d drag_offset_;
 
   // If set to true, the handle will not draw anything, hence providing an empty
@@ -508,40 +507,52 @@ void TouchSelectionControllerImpl::ShowQuickMenuImmediatelyForTesting() {
   }
 }
 
-void TouchSelectionControllerImpl::SetDraggingHandle(
-    EditingHandleView* handle) {
+void TouchSelectionControllerImpl::OnDragBegin(EditingHandleView* handle) {
   dragging_handle_ = handle;
-  if (dragging_handle_)
-    HideQuickMenu();
-  else
-    StartQuickMenuTimer();
+  HideQuickMenu();
+  if (dragging_handle_ == cursor_handle_) {
+    return;
+  }
+
+  DCHECK(dragging_handle_ == selection_handle_1_ ||
+         dragging_handle_ == selection_handle_2_);
+
+  // Find selection end points in client_view's coordinate system.
+  gfx::Point base = selection_bound_1_.edge_start_rounded();
+  base.Offset(0, selection_bound_1_.GetHeight() / 2);
+  client_view_->ConvertPointFromScreen(&base);
+
+  gfx::Point extent = selection_bound_2_.edge_start_rounded();
+  extent.Offset(0, selection_bound_2_.GetHeight() / 2);
+  client_view_->ConvertPointFromScreen(&extent);
+
+  if (dragging_handle_ == selection_handle_1_) {
+    std::swap(base, extent);
+  }
+
+  // When moving the handle we want to move only the extent point. Before
+  // doing so we must make sure that the base point is set correctly.
+  client_view_->SelectBetweenCoordinates(base, extent);
 }
 
-void TouchSelectionControllerImpl::SelectionHandleDragged(
-    const gfx::Point& drag_pos) {
+void TouchSelectionControllerImpl::OnDragUpdate(const gfx::Point& drag_pos) {
   DCHECK(dragging_handle_);
   gfx::Point drag_pos_in_client = drag_pos;
   ConvertPointToClientView(dragging_handle_, &drag_pos_in_client);
 
   if (dragging_handle_ == cursor_handle_) {
-    client_view_->MoveCaretTo(drag_pos_in_client);
+    client_view_->MoveCaret(drag_pos_in_client);
     return;
   }
 
-  // Find the stationary selection handle.
-  gfx::SelectionBound anchor_bound = selection_handle_1_ == dragging_handle_
-                                         ? selection_bound_2_
-                                         : selection_bound_1_;
+  DCHECK(dragging_handle_ == selection_handle_1_ ||
+         dragging_handle_ == selection_handle_2_);
+  client_view_->MoveRangeSelectionExtent(drag_pos_in_client);
+}
 
-  // Find selection end points in client_view's coordinate system.
-  gfx::Point p2 = anchor_bound.edge_start_rounded();
-  p2.Offset(0, anchor_bound.GetHeight() / 2);
-  client_view_->ConvertPointFromScreen(&p2);
-
-  // Instruct client_view to select the region between p1 and p2. The position
-  // of |fixed_handle| is the start and that of |dragging_handle| is the end
-  // of selection.
-  client_view_->SelectRect(p2, drag_pos_in_client);
+void TouchSelectionControllerImpl::OnDragEnd() {
+  dragging_handle_ = nullptr;
+  StartQuickMenuTimer();
 }
 
 void TouchSelectionControllerImpl::ConvertPointToClientView(

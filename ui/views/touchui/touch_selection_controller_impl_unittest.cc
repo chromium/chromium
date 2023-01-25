@@ -408,9 +408,9 @@ TEST_F(TouchSelectionControllerImplTest, SelectionInBidiTextfieldTest) {
   VerifyHandlePositions(false, true, FROM_HERE);
 }
 
-// Tests if the SelectRect callback is called appropriately when selection
-// handles are moved.
-TEST_F(TouchSelectionControllerImplTest, SelectRectCallbackTest) {
+// Tests if the selection update callbacks are called appropriately when
+// selection handles are moved.
+TEST_F(TouchSelectionControllerImplTest, SelectionUpdateCallbackTest) {
   CreateTextfield();
   textfield_->SetText(u"textfield with selected text");
   // Tap the textfield to invoke touch selection.
@@ -452,7 +452,7 @@ TEST_F(TouchSelectionControllerImplTest, SelectRectCallbackTest) {
   VerifyHandlePositions(false, true, FROM_HERE);
 }
 
-TEST_F(TouchSelectionControllerImplTest, SelectRectInBidiCallbackTest) {
+TEST_F(TouchSelectionControllerImplTest, SelectionUpdateInBidiCallbackTest) {
   CreateTextfield();
   textfield_->SetText(
       u"abc\x05e1\x05e2\x05e3"
@@ -668,10 +668,14 @@ class TestTouchEditable : public ui::TouchEditable {
 
  private:
   // Overridden from ui::TouchEditable.
-  void SelectRect(const gfx::Point& start, const gfx::Point& end) override {
+  void MoveCaret(const gfx::Point& position) override { NOTREACHED(); }
+  void MoveRangeSelectionExtent(const gfx::Point& extent) override {
     NOTREACHED();
   }
-  void MoveCaretTo(const gfx::Point& point) override { NOTREACHED(); }
+  void SelectBetweenCoordinates(const gfx::Point& base,
+                                const gfx::Point& extent) override {
+    NOTREACHED();
+  }
   void GetSelectionEndPoints(gfx::SelectionBound* anchor,
                              gfx::SelectionBound* focus) override {
     *anchor = *focus = cursor_bound_;

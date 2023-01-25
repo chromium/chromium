@@ -33,16 +33,43 @@ class COMPONENT_EXPORT(UI_BASE) TouchEditable
     kLastTouchEditableCommandId = kSelectWord,
   };
 
-  // TODO(mohsen): Consider switching from local coordinates to screen
+  // TODO(b/266345972): Consider switching from local coordinates to screen
   // coordinates in this interface and see if it will simplify things.
 
-  // Select everything between start and end (points are in view's local
-  // coordinate system). |start| is the logical start and |end| is the logical
-  // end of selection. Visually, |start| may lie after |end|.
-  virtual void SelectRect(const gfx::Point& start, const gfx::Point& end) = 0;
+  // Moves the caret to |position|. |position| is in local coordinates.
+  virtual void MoveCaret(const gfx::Point& position) = 0;
 
-  // Move the caret to |point|. |point| is in local coordinates.
-  virtual void MoveCaretTo(const gfx::Point& point) = 0;
+  // Moves the logical end of the selection according to |extent| while keeping
+  // the logical start of the selection fixed. Here, |extent| corresponds to the
+  // position (in local coordinates) of the touch handle being dragged to update
+  // the selection range.
+  //
+  // Note that the resultant end of the selection depends on the behaviour of
+  // the TouchEditable, e.g. for "expand by word, shrink by character", the
+  // selection end can move to the character or word boundary nearest to
+  // |extent| depending on the previous extent position:
+  // ____________________________________
+  // | textf|ield wit|h selected text   |
+  // ------------------------------------
+  //                 ^extent
+  //        ^start   ^end
+  //
+  // ____________________________________
+  // | textf|ield with selec|ted| text   |
+  // ------------------------------------
+  //                        ^extent
+  //        ^start              ^end
+  //
+  virtual void MoveRangeSelectionExtent(const gfx::Point& extent) = 0;
+
+  // Sets the logical start and end of the selection according to |base| and
+  // |extent|. |base| corresponds to the position of the fixed touch handle and
+  // determines the logical start of the selection. |extent| corresponds to the
+  // position of the currently dragging handle and determines the logical end of
+  // the selection, which may be visually before, on, or after the logical start
+  // of the selection. Both |base| and |start| are in local coordinates.
+  virtual void SelectBetweenCoordinates(const gfx::Point& base,
+                                        const gfx::Point& extent) = 0;
 
   // Gets the end points of the current selection. The end points |anchor| and
   // |focus| must be the cursor rect for the logical start and logical end of
