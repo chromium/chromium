@@ -2538,11 +2538,26 @@ void NGLineBreaker::HandleCloseTag(const NGInlineItem& item,
       item_result->can_break_after = last->can_break_after;
       return;
     }
-    if (was_auto_wrap || last->can_break_after) {
-      item_result->can_break_after =
-          last->can_break_after ||
-          IsBreakableSpace(Text()[item_result->EndOffset()]);
+    if (last->can_break_after) {
+      // A break opportunity before a close tag always propagates to after the
+      // close tag.
+      item_result->can_break_after = true;
       last->can_break_after = false;
+      return;
+    }
+    if (was_auto_wrap) {
+      // We can break before a breakable space if we either:
+      //   a) allow breaking before a white space, or
+      //   b) the break point is preceded by another breakable space.
+      // TODO(abotella): What if the following breakable space is after an
+      // open tag which has a different white-space value?
+      bool preceded_by_breakable_space =
+          item_result->EndOffset() > 0 &&
+          IsBreakableSpace(Text()[item_result->EndOffset() - 1]);
+      item_result->can_break_after =
+          IsBreakableSpace(Text()[item_result->EndOffset()]) &&
+          (!current_style_->BreakOnlyAfterWhiteSpace() ||
+           preceded_by_breakable_space);
       return;
     }
     if (auto_wrap_ && !IsBreakableSpace(Text()[item_result->EndOffset() - 1]))
