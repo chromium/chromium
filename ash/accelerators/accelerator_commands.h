@@ -262,6 +262,9 @@ ASH_EXPORT void ShowEmojiPicker();
 // Sees keyboard shortcut helper.
 ASH_EXPORT void ShowKeyboardShortcutViewer();
 
+// Opens Shortcut Customization.
+ASH_EXPORT void ShowShortcutCustomizationApp();
+
 // Shows stylus tools.
 ASH_EXPORT void ShowStylusTools();
 

@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ui/webui/settings/ash/device_keyboard_handler.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/keyboard_shortcut_viewer.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
 #include "ui/chromeos/events/keyboard_capability.h"
@@ -105,6 +108,11 @@ void KeyboardHandler::HandleInitialize(const base::Value::List& args) {
 
 void KeyboardHandler::HandleShowKeyboardShortcutViewer(
     const base::Value::List& args) const {
+  if (ash::features::ShouldOnlyShowNewShortcutApp()) {
+    ash::LaunchSystemWebAppAsync(ProfileManager::GetActiveUserProfile(),
+                                 ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION);
+    return;
+  }
   ToggleKeyboardShortcutViewer();
 }
 

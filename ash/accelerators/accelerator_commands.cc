@@ -1013,7 +1013,15 @@ void ShowEmojiPicker() {
 }
 
 void ShowKeyboardShortcutViewer() {
+  if (features::ShouldOnlyShowNewShortcutApp()) {
+    ShowShortcutCustomizationApp();
+    return;
+  }
   NewWindowDelegate::GetInstance()->ShowKeyboardShortcutViewer();
+}
+
+void ShowShortcutCustomizationApp() {
+  NewWindowDelegate::GetInstance()->ShowShortcutCustomizationApp();
 }
 
 void ShowStylusTools() {

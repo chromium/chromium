@@ -1115,7 +1115,11 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::ToggleProjectorMarker();
       break;
     case SHOW_SHORTCUT_VIEWER:
-      accelerators::ShowKeyboardShortcutViewer();
+      if (features::ShouldOnlyShowNewShortcutApp()) {
+        accelerators::ShowShortcutCustomizationApp();
+      } else {
+        accelerators::ShowKeyboardShortcutViewer();
+      }
       break;
     case SHOW_STYLUS_TOOLS:
       base::RecordAction(UserMetricsAction("Accel_Show_Stylus_Tools"));

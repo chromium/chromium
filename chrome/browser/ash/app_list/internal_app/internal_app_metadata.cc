@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/cpp/keyboard_shortcut_viewer.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
@@ -44,23 +45,25 @@ namespace {
 const std::vector<InternalApp>& GetInternalAppListImpl(bool get_all,
                                                        const Profile* profile) {
   DCHECK(get_all || profile);
-  static const base::NoDestructor<std::vector<InternalApp>>
-      internal_app_list_static(
-          {{ash::kInternalAppIdKeyboardShortcutViewer,
-            IDS_INTERNAL_APP_KEYBOARD_SHORTCUT_VIEWER,
-            IDR_SHORTCUT_VIEWER_LOGO_192,
-            /*recommendable=*/false,
-            /*searchable=*/true,
-            /*show_in_launcher=*/false,
-            apps::BuiltInAppName::kKeyboardShortcutViewer,
-            IDS_LAUNCHER_SEARCHABLE_KEYBOARD_SHORTCUT_VIEWER},
+  static base::NoDestructor<std::vector<InternalApp>> internal_app_list_static(
+      {{ash::kInternalAppIdContinueReading, IDS_INTERNAL_APP_CONTINUOUS_READING,
+        IDR_PRODUCT_LOGO_256,
+        /*recommendable=*/true,
+        /*searchable=*/false,
+        /*show_in_launcher=*/false, apps::BuiltInAppName::kContinueReading,
+        /*searchable_string_resource_id=*/0}});
 
-           {ash::kInternalAppIdContinueReading,
-            IDS_INTERNAL_APP_CONTINUOUS_READING, IDR_PRODUCT_LOGO_256,
-            /*recommendable=*/true,
-            /*searchable=*/false,
-            /*show_in_launcher=*/false, apps::BuiltInAppName::kContinueReading,
-            /*searchable_string_resource_id=*/0}});
+  if (!ash::features::ShouldOnlyShowNewShortcutApp()) {
+    internal_app_list_static->push_back(
+        {ash::kInternalAppIdKeyboardShortcutViewer,
+         IDS_INTERNAL_APP_KEYBOARD_SHORTCUT_VIEWER,
+         IDR_SHORTCUT_VIEWER_LOGO_192,
+         /*recommendable=*/false,
+         /*searchable=*/true,
+         /*show_in_launcher=*/false,
+         apps::BuiltInAppName::kKeyboardShortcutViewer,
+         IDS_LAUNCHER_SEARCHABLE_KEYBOARD_SHORTCUT_VIEWER});
+  }
   return *internal_app_list_static;
 }
 

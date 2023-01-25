@@ -187,6 +187,10 @@ void CrosapiNewWindowDelegate::ShowKeyboardShortcutViewer() {
   delegate_->ShowKeyboardShortcutViewer();
 }
 
+void CrosapiNewWindowDelegate::ShowShortcutCustomizationApp() {
+  delegate_->ShowShortcutCustomizationApp();
+}
+
 void CrosapiNewWindowDelegate::ShowTaskManager() {
   delegate_->ShowTaskManager();
 }

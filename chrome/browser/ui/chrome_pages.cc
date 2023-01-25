@@ -587,6 +587,14 @@ void ShowFirmwareUpdatesApp(Profile* profile) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+void ShowShortcutCustomizationApp(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ShowSystemAppInternal(profile, ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  ShowSystemAppInternal(profile, GURL(kOsUIShortcutCustomizationAppURL));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // SigninViewController::ShowSignin is only available with DICE
 void ShowBrowserSignin(Browser* browser,

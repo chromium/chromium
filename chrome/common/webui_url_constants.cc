@@ -493,6 +493,7 @@ const char kOsUIFlagsURL[] = "os://flags";
 const char kOsUIHelpAppURL[] = "os://help-app";
 const char kOsUIPrintManagementAppURL[] = "os://print-management";
 const char kOsUIScanningAppURL[] = "os://scanning";
+const char kOsUIShortcutCustomizationAppURL[] = "os://shortcut-customization";
 const char kOsUIVersionURL[] = "os://version";
 #endif
 

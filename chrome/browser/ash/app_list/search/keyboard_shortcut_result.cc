@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/accelerators/keyboard_code_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ash/app_list/search/common/search_result_util.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "chromeos/ash/components/string_matching/tokenized_string_match.h"
@@ -264,6 +266,10 @@ KeyboardShortcutResult::KeyboardShortcutResult(Profile* profile,
 KeyboardShortcutResult::~KeyboardShortcutResult() = default;
 
 void KeyboardShortcutResult::Open(int event_flags) {
+  if (ash::features::ShouldOnlyShowNewShortcutApp()) {
+    chrome::ShowShortcutCustomizationApp(profile_);
+    return;
+  }
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_);
   proxy->Launch(ash::kInternalAppIdKeyboardShortcutViewer, event_flags,

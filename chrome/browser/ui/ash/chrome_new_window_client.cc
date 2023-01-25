@@ -487,7 +487,15 @@ void ChromeNewWindowClient::RestoreTab() {
 }
 
 void ChromeNewWindowClient::ShowKeyboardShortcutViewer() {
+  if (ash::features::ShouldOnlyShowNewShortcutApp()) {
+    ShowShortcutCustomizationApp();
+    return;
+  }
   ash::ToggleKeyboardShortcutViewer();
+}
+
+void ChromeNewWindowClient::ShowShortcutCustomizationApp() {
+  chrome::ShowShortcutCustomizationApp(ProfileManager::GetActiveUserProfile());
 }
 
 void ChromeNewWindowClient::ShowTaskManager() {
