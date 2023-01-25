@@ -90,24 +90,26 @@ public class UrlUtilitiesUnitTest {
     @Test
     @SmallTest
     public void testIsAcceptedScheme() {
-        Assert.assertTrue(UrlUtilities.isAcceptedScheme("about:awesome"));
-        Assert.assertTrue(UrlUtilities.isAcceptedScheme("data:data"));
+        Assert.assertTrue(UrlUtilities.isAcceptedScheme(new GURL("about:awesome")));
+        Assert.assertTrue(UrlUtilities.isAcceptedScheme(new GURL("data:data")));
         Assert.assertTrue(UrlUtilities.isAcceptedScheme(
-                "https://user:pass@awesome.com:9000/bad-scheme/#fake"));
-        Assert.assertTrue(UrlUtilities.isAcceptedScheme("http://awesome.example.com/"));
-        Assert.assertTrue(UrlUtilities.isAcceptedScheme("file://hostname/path/to/file"));
-        Assert.assertTrue(UrlUtilities.isAcceptedScheme("inline:skates.co.uk"));
-        Assert.assertTrue(UrlUtilities.isAcceptedScheme("javascript:alert(1)"));
-        Assert.assertTrue(UrlUtilities.isAcceptedScheme("http://foo.bar/has[square].html"));
+                new GURL("https://user:pass@awesome.com:9000/bad-scheme/#fake")));
+        Assert.assertTrue(UrlUtilities.isAcceptedScheme(new GURL("http://awesome.example.com/")));
+        Assert.assertTrue(UrlUtilities.isAcceptedScheme(new GURL("file://hostname/path/to/file")));
+        Assert.assertTrue(UrlUtilities.isAcceptedScheme(new GURL("inline:skates.co.uk")));
+        Assert.assertTrue(UrlUtilities.isAcceptedScheme(new GURL("javascript:alert(1)")));
+        Assert.assertTrue(
+                UrlUtilities.isAcceptedScheme(new GURL("http://foo.bar/has[square].html")));
 
-        Assert.assertFalse(UrlUtilities.isAcceptedScheme("super:awesome"));
-        Assert.assertFalse(UrlUtilities.isAcceptedScheme("ftp://https:password@example.com/"));
+        Assert.assertFalse(UrlUtilities.isAcceptedScheme(new GURL("super:awesome")));
         Assert.assertFalse(
-                UrlUtilities.isAcceptedScheme("ftp://https:password@example.com/?http:#http:"));
+                UrlUtilities.isAcceptedScheme(new GURL("ftp://https:password@example.com/")));
         Assert.assertFalse(UrlUtilities.isAcceptedScheme(
-                "google-search://https:password@example.com/?http:#http:"));
-        Assert.assertFalse(UrlUtilities.isAcceptedScheme("chrome://http://version"));
-        Assert.assertFalse(UrlUtilities.isAcceptedScheme(""));
+                new GURL("ftp://https:password@example.com/?http:#http:")));
+        Assert.assertFalse(UrlUtilities.isAcceptedScheme(
+                new GURL("google-search://https:password@example.com/?http:#http:")));
+        Assert.assertFalse(UrlUtilities.isAcceptedScheme(new GURL("chrome://http://version")));
+        Assert.assertFalse(UrlUtilities.isAcceptedScheme(GURL.emptyGURL()));
     }
 
     @Test

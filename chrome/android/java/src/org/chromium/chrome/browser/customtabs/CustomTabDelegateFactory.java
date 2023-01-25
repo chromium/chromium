@@ -113,9 +113,9 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         }
 
         @Override
-        public boolean shouldAvoidDisambiguationDialog(Intent intent) {
+        public boolean shouldAvoidDisambiguationDialog(GURL intentDataUrl) {
             // Don't show the disambiguation dialog if Chrome could handle the intent.
-            return UrlUtilities.isAcceptedScheme(intent.toUri(0));
+            return UrlUtilities.isAcceptedScheme(intentDataUrl);
         }
 
         @Override

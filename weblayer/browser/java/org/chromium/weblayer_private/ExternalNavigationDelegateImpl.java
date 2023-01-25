@@ -53,9 +53,9 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public boolean shouldAvoidDisambiguationDialog(Intent intent) {
+    public boolean shouldAvoidDisambiguationDialog(GURL intentDataUrl) {
         // Don't show the disambiguation dialog if WebLayer can handle the intent.
-        return UrlUtilities.isAcceptedScheme(intent.toUri(0));
+        return UrlUtilities.isAcceptedScheme(intentDataUrl);
     }
 
     @Override

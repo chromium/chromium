@@ -2895,7 +2895,7 @@ public class ExternalNavigationHandlerTest {
         }
 
         @Override
-        public boolean shouldAvoidDisambiguationDialog(Intent intent) {
+        public boolean shouldAvoidDisambiguationDialog(GURL intentDataUrl) {
             return mShouldAvoidDisambiguationDialog;
         }
 

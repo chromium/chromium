@@ -135,7 +135,7 @@ public interface ExternalNavigationDelegate {
      * Whether the Activity launch should be aborted if the disambiguation prompt is going to be
      * shown and Chrome is able to handle the navigation.
      */
-    boolean shouldAvoidDisambiguationDialog(Intent intent);
+    boolean shouldAvoidDisambiguationDialog(GURL intentDataUrl);
 
     /**
      * Whether navigations started by the embedder (i.e. not by the renderer) should stay in the

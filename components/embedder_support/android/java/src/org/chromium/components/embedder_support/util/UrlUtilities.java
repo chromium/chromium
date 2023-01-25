@@ -81,17 +81,6 @@ public class UrlUtilities {
     }
 
     /**
-     * @param uri A URI.
-     *
-     * @return True if the URI's scheme is one that ContentView can handle.
-     * @deprecated use {@link #isAcceptedScheme(GURL)} instead.
-     */
-    @Deprecated
-    public static boolean isAcceptedScheme(String uri) {
-        return isAcceptedScheme(new GURL(uri));
-    }
-
-    /**
      * @param url A GURL.
      *
      * @return True if the GURL's scheme is one that ContentView can handle.

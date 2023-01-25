@@ -217,7 +217,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public boolean shouldAvoidDisambiguationDialog(Intent intent) {
+    public boolean shouldAvoidDisambiguationDialog(GURL intentDataUrl) {
         return false;
     }
 

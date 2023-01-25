@@ -1572,7 +1572,7 @@ public class ExternalNavigationHandler {
         }
 
         if (shouldAvoidShowingDisambiguationPrompt(
-                    isExternalProtocol, targetIntent, resolvingInfos, resolveActivity)) {
+                    isExternalProtocol, intentDataUrl, resolvingInfos, resolveActivity)) {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
@@ -1598,7 +1598,7 @@ public class ExternalNavigationHandler {
     }
 
     private boolean shouldAvoidShowingDisambiguationPrompt(boolean isExternalProtocol,
-            Intent intent, QueryIntentActivitiesSupplier resolvingInfosSupplier,
+            GURL intentDataUrl, QueryIntentActivitiesSupplier resolvingInfosSupplier,
             ResolveActivitySupplier resolveActivitySupplier) {
         // For navigations Chrome can't handle, it's fine to show the disambiguation dialog
         // regardless of the embedder's preference.
@@ -1606,7 +1606,7 @@ public class ExternalNavigationHandler {
 
         // Don't bother performing the package manager checks if the delegate is fine with the
         // disambiguation prompt.
-        if (!mDelegate.shouldAvoidDisambiguationDialog(intent)) return false;
+        if (!mDelegate.shouldAvoidDisambiguationDialog(intentDataUrl)) return false;
 
         ResolveInfo resolveActivity = resolveActivitySupplier.get();
 
