@@ -2907,6 +2907,21 @@
             ]
         }
     ],
+    "CloudApAuth": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CloudApAuth"
+                    ]
+                }
+            ]
+        }
+    ],
     "Collections": [
         {
             "platforms": [

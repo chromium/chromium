@@ -127,6 +127,7 @@ class PlatformAuthPolicyObserverFeatureDisabledTest
     : public PlatformAuthPolicyObserverTest {
  public:
   void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(enterprise_auth::kCloudApAuth);
     policy_provider_.SetDefaultReturns(
         /*is_initialization_complete_return=*/true,
         /*is_first_policy_load_complete_return=*/true);
