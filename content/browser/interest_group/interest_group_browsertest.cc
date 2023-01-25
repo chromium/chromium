@@ -911,7 +911,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
 
   // Wrapper around RunAuctionAndWait that assumes the result is a URN URL and
   // returns the mapped URL.
-  [[nodiscard]] std::string RunAuctionAndWaitForURL(
+  [[nodiscard]] std::string RunAuctionAndWaitForUrl(
       const std::string& auction_config_json,
       const absl::optional<ToRenderFrameHost> execution_target =
           absl::nullopt) {
@@ -1037,7 +1037,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   // `url`'s hostname is replaced with "127.0.0.1", since the embedded test
   // server always claims requests were for 127.0.0.1, rather than revealing the
   // hostname that was actually associated with a request.
-  void WaitForURL(const GURL& url) {
+  void WaitForUrl(const GURL& url) {
     GURL::Replacements replacements;
     replacements.SetHostStr("127.0.0.1");
     GURL wait_for_url = url.ReplaceComponents(replacements);
@@ -1384,7 +1384,7 @@ class InterestGroupFencedFrameBrowserTest
     // fenced frame actually made the request and, in the MPArch case, to make
     // sure the load actually started. On regression, this is likely to hang.
     if (expected_url.SchemeIs(url::kHttpsScheme)) {
-      WaitForURL(expected_url);
+      WaitForUrl(expected_url);
     } else {
       // The only other URLs this should be used with are about:blank URLs.
       ASSERT_EQ(GURL(url::kAboutBlankURL), expected_url);
@@ -4288,12 +4288,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
   for (const auto& expected_report_url : kExpectedReportUrls) {
     SCOPED_TRACE(expected_report_url);
 
-    // Wait for the report URL to be fetched, which only happens after the
-    // auction has completed.
-    WaitForURL(expected_report_url);
+    // Make sure the report URL was actually fetched over the network.
+    WaitForUrl(expected_report_url);
 
     absl::optional<network::ResourceRequest> request =
-        url_loader_monitor.GetRequestInfo(expected_report_url);
+        url_loader_monitor.WaitForUrl(expected_report_url);
     ASSERT_TRUE(request);
     EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
               request->credentials_mode);
@@ -4678,12 +4677,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   for (const auto& expected_report_url : kExpectedReportUrls) {
     SCOPED_TRACE(expected_report_url);
 
-    // Wait for the report URL to be fetched, which only happens after the
-    // auction has completed.
-    WaitForURL(expected_report_url);
+    // Make sure the report URL was actually fetched over the network.
+    WaitForUrl(expected_report_url);
 
     absl::optional<network::ResourceRequest> request =
-        url_loader_monitor.GetRequestInfo(expected_report_url);
+        url_loader_monitor.WaitForUrl(expected_report_url);
     ASSERT_TRUE(request);
     EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
               request->credentials_mode);
@@ -4720,8 +4718,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 // All bidders' genereteBid() failed so no bid was made, thus no render url.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionWithDebugReportingNoBid) {
-  URLLoaderMonitor url_loader_monitor;
-
   GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   url::Origin test_origin = url::Origin::Create(test_url);
@@ -4778,14 +4774,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   for (const auto& expected_report_url : kExpectedReportUrls) {
     SCOPED_TRACE(expected_report_url);
-
-    // Wait for the report URL to be fetched, which only happens after the
-    // auction has completed.
-    WaitForURL(expected_report_url);
-
-    absl::optional<network::ResourceRequest> request =
-        url_loader_monitor.GetRequestInfo(expected_report_url);
-    ASSERT_TRUE(request);
+    WaitForUrl(expected_report_url);
   }
 }
 
@@ -4896,12 +4885,11 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
   for (const auto& expected_report_url : kExpectedReportUrls) {
     SCOPED_TRACE(expected_report_url);
 
-    // Wait for the report URL to be fetched, which only happens after the
-    // auction has completed.
-    WaitForURL(expected_report_url);
+    // Make sure the report URL was actually fetched over the network.
+    WaitForUrl(expected_report_url);
 
     absl::optional<network::ResourceRequest> request =
-        url_loader_monitor.GetRequestInfo(expected_report_url);
+        url_loader_monitor.WaitForUrl(expected_report_url);
     ASSERT_TRUE(request);
     EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
               request->credentials_mode);
@@ -5304,10 +5292,10 @@ function reportResult(
   });
 
   // Reporting urls should be fetched after an auction succeeded.
-  WaitForURL(https_server_->GetURL("/echoall?report_seller"));
-  WaitForURL(https_server_->GetURL("/echoall?report_bidder"));
+  WaitForUrl(https_server_->GetURL("/echoall?report_seller"));
+  WaitForUrl(https_server_->GetURL("/echoall?report_bidder"));
   // Double-check that the trusted scoring signals URL was requested as well.
-  WaitForURL(https_server_->GetURL(base::StringPrintf(
+  WaitForUrl(https_server_->GetURL(base::StringPrintf(
       "/trusted_scoring_signals.json"
       "?hostname=a.test"
       "&renderUrls=%s",
@@ -5362,7 +5350,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   });
 
   // Wait for the component to load.
-  WaitForURL(component_url);
+  WaitForUrl(component_url);
 }
 
 // Make sure correct topFrameHostname is passed in. Check auctions from top
@@ -5428,7 +5416,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, TopFrameHostname) {
     GURL seller_logic_url =
         https_server_->GetURL(kOtherHost, test_case.seller_path);
     ASSERT_EQ("https://example.com/render",
-              RunAuctionAndWaitForURL(JsReplace(
+              RunAuctionAndWaitForUrl(JsReplace(
                                           R"(
 {
   seller: $1,
@@ -5569,8 +5557,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   // Seller and winning bidder should get reports, and other bidders shouldn't
   // get reports.
-  WaitForURL(https_server_->GetURL("/echoall?report_seller"));
-  WaitForURL(https_server_->GetURL(
+  WaitForUrl(https_server_->GetURL("/echoall?report_seller"));
+  WaitForUrl(https_server_->GetURL(
       "/echoall?report_bidder_stop_bidding_after_win&cars"));
   base::AutoLock auto_lock(requests_lock_);
   EXPECT_FALSE(base::Contains(received_https_test_server_requests_,
@@ -6192,7 +6180,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ReportingMultipleAuctions) {
 
   // Check ResourceRequest structs of report requests.
   // The URLs must not have the same path with different hostnames, because
-  // WaitForURL() always replaces hostnames with "127.0.0.1", thus only waits
+  // WaitForUrl() always replaces hostnames with "127.0.0.1", thus only waits
   // for the first URL among URLs with the same path.
   const struct ExpectedReportRequest {
     GURL url;
@@ -6238,11 +6226,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ReportingMultipleAuctions) {
   for (const auto& expected_report_request : kExpectedReportRequests) {
     SCOPED_TRACE(expected_report_request.url);
 
-    // Wait for the report URL to be fetched.
-    WaitForURL(expected_report_request.url);
+    // Make sure the report URL was actually fetched over the network.
+    WaitForUrl(expected_report_request.url);
 
     absl::optional<network::ResourceRequest> request =
-        url_loader_monitor.GetRequestInfo(expected_report_request.url);
+        url_loader_monitor.WaitForUrl(expected_report_request.url);
     ASSERT_TRUE(request);
     EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
               request->credentials_mode);
@@ -6502,7 +6490,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
   // Wait for the URL to be requested, to make sure the fenced frame actually
   // made the request and, in the MPArch case, to make sure the load actually
   // started.
-  WaitForURL(new_url);
+  WaitForUrl(new_url);
 
   // Wait for the load to complete.
   observer.Wait();
@@ -7343,11 +7331,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   // don't want to send a random request to port 80 on localhost, which is what
   // example.com is mapped to.
   observer.on_navigate_callback().Run();
-  WaitForURL(https_server_->GetURL(kTopLevelSellerHost,
+  WaitForUrl(https_server_->GetURL(kTopLevelSellerHost,
                                    "/echo?report_top_level_seller"));
-  WaitForURL(https_server_->GetURL(kComponentSellerHost,
+  WaitForUrl(https_server_->GetURL(kComponentSellerHost,
                                    "/echo?report_component_seller"));
-  WaitForURL(https_server_->GetURL(kBidderHost, "/echo?report_bidder"));
+  WaitForUrl(https_server_->GetURL(kBidderHost, "/echo?report_bidder"));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
@@ -8006,7 +7994,7 @@ navigator.runAdAuction({
                                         )",
                                         hanging_origin, hanging_url));
 
-  WaitForURL(https_server_->GetURL("/hung"));
+  WaitForUrl(https_server_->GetURL("/hung"));
 }
 
 // These tests validate the `dailyUpdateUrl` and
@@ -8326,7 +8314,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   })";
 
   EXPECT_EQ("https://example.com/render",
-            RunAuctionAndWaitForURL(JsReplace(
+            RunAuctionAndWaitForUrl(JsReplace(
                 kAuctionConfigTemplate, url::Origin::Create(seller_logic_url),
                 seller_logic_url,
                 https_server_->GetURL(
@@ -8335,10 +8323,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   // Make sure that the right trusted signals URLs got fetched, incorporating
   // the experiment group ID.
-  WaitForURL(https_server_->GetURL(
+  WaitForUrl(https_server_->GetURL(
       "/interest_group/trusted_bidding_signals.json?hostname=a.test&keys=key1"
       "&interestGroupNames=cars&experimentGroupId=3498"));
-  WaitForURL(https_server_->GetURL(
+  WaitForUrl(https_server_->GetURL(
       "/interest_group/trusted_scoring_signals.json?hostname=a.test"
       "&renderUrls=https%3A%2F%2Fexample.com%2Frender&experimentGroupId=8349"));
 }
@@ -8403,16 +8391,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   })";
 
   EXPECT_EQ("https://example.com/render",
-            RunAuctionAndWaitForURL(JsReplace(
+            RunAuctionAndWaitForUrl(JsReplace(
                 kAuctionConfigTemplate, url::Origin::Create(seller_logic_url),
                 seller_logic_url, bidder_origin, bidder2_origin)));
 
   // Make sure that the right trusted signals URLs got fetched, incorporating
   // the experiment group IDs.
-  WaitForURL(https_server_->GetURL(
+  WaitForUrl(https_server_->GetURL(
       "/interest_group/trusted_bidding_signals.json?hostname=a.test&keys=key1"
       "&interestGroupNames=cars&experimentGroupId=3498"));
-  WaitForURL(https_server_->GetURL(
+  WaitForUrl(https_server_->GetURL(
       "/interest_group/trusted_bidding_signals.json?hostname=a.test&keys=key2"
       "&interestGroupNames=cars_and_trucks&experimentGroupId=1203"));
 }
@@ -8719,15 +8707,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
         seller_debug_win_report_url}) {
     SCOPED_TRACE(report_url.spec());
     EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
-              url_loader_monitor.GetRequestInfo(report_url)
-                  ->trusted_params->client_security_state->ip_address_space);
+              url_loader_monitor.WaitForUrl(report_url)
+                  .trusted_params->client_security_state->ip_address_space);
   }
 
   // Check that all reports reached the server.
-  WaitForURL(bidder_report_to_url);
-  WaitForURL(seller_report_to_url);
-  WaitForURL(bidder_debug_win_report_url);
-  WaitForURL(seller_debug_win_report_url);
+  WaitForUrl(bidder_report_to_url);
+  WaitForUrl(seller_report_to_url);
+  WaitForUrl(bidder_debug_win_report_url);
+  WaitForUrl(seller_debug_win_report_url);
 }
 
 // Make sure that the IPAddressSpace of the frame that triggers the update is
@@ -9251,7 +9239,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                   execution_target));
 
     EXPECT_EQ("https://example.com/render",
-              RunAuctionAndWaitForURL(
+              RunAuctionAndWaitForUrl(
                   JsReplace(
                       R"(
 {
@@ -9414,7 +9402,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
                   execution_target));
 
     EXPECT_EQ("https://example.com/render",
-              RunAuctionAndWaitForURL(
+              RunAuctionAndWaitForUrl(
                   JsReplace(
                       R"(
 {
@@ -9531,7 +9519,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
   // Interest group APIs fail and run ad auction succeeds for iframe_ad_auction.
   ExpectNotAllowedToJoinOrUpdateInterestGroup(other_origin, iframe_ad_auction);
   EXPECT_EQ("https://example.com/render",
-            RunAuctionAndWaitForURL(
+            RunAuctionAndWaitForUrl(
                 JsReplace(
                     R"(
 {
@@ -9643,7 +9631,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedURNToURLValidURN) {
 
   // Only the `send_reports` == true case should have sent a report. Wait for
   // it, and then check that the report URL for the first case was not seen.
-  WaitForURL(kTestCases[1].report_url);
+  WaitForUrl(kTestCases[1].report_url);
   EXPECT_FALSE(HasServerSeenUrl(kTestCases[0].report_url));
 }
 
@@ -9705,7 +9693,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ExecutionModeGroupByOrigin) {
                     blink::InterestGroup::ExecutionMode::kCompatibilityMode
                 ? "/echo?1"
                 : "/echo?10"),
-        RunAuctionAndWaitForURL(JsReplace(
+        RunAuctionAndWaitForUrl(JsReplace(
             R"({
                     seller: $1,
                     decisionLogicUrl: $2,
@@ -9820,7 +9808,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionLimitBrowserTest,
 
   // 1st auction -- before navigations
   EXPECT_EQ("https://example.com/render",
-            RunAuctionAndWaitForURL(JsReplace(
+            RunAuctionAndWaitForUrl(JsReplace(
                 R"({
     seller: $1,
     decisionLogicUrl: $2,
@@ -9840,7 +9828,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionLimitBrowserTest,
 
   // 2nd auction -- after navigations
   EXPECT_EQ("https://example.com/render",
-            RunAuctionAndWaitForURL(JsReplace(
+            RunAuctionAndWaitForUrl(JsReplace(
                 R"({
     seller: $1,
     decisionLogicUrl: $2,
@@ -9891,7 +9879,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionLimitBrowserTest,
 
   // 1st auction -- in main frame
   EXPECT_EQ("https://example.com/render",
-            RunAuctionAndWaitForURL(JsReplace(
+            RunAuctionAndWaitForUrl(JsReplace(
                 R"({
     seller: $1,
     decisionLogicUrl: $2,
@@ -9903,7 +9891,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionLimitBrowserTest,
 
   // 2nd auction -- in cross-origin iframe
   EXPECT_EQ("https://example.com/render",
-            RunAuctionAndWaitForURL(
+            RunAuctionAndWaitForUrl(
                 JsReplace(
                     R"({
     seller: $1,
@@ -9949,8 +9937,6 @@ class InterestGroupBiddingAndScoringDebugReportingAPIDisabledBrowserTest
 IN_PROC_BROWSER_TEST_F(
     InterestGroupBiddingAndScoringDebugReportingAPIDisabledBrowserTest,
     RunAdAuctionWithDebugReporting) {
-  URLLoaderMonitor url_loader_monitor;
-
   GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   url::Origin test_origin = url::Origin::Create(test_url);
@@ -10001,14 +9987,7 @@ IN_PROC_BROWSER_TEST_F(
 
   for (const auto& expected_report_url : kExpectedReportUrls) {
     SCOPED_TRACE(expected_report_url);
-
-    // Wait for the report URL to be fetched, which only happens after the
-    // auction has completed.
-    WaitForURL(expected_report_url);
-
-    absl::optional<network::ResourceRequest> request =
-        url_loader_monitor.GetRequestInfo(expected_report_url);
-    ASSERT_TRUE(request);
+    WaitForUrl(expected_report_url);
   }
 
   // No requests should be sent to forDebuggingOnly reporting URLs when
@@ -10023,9 +10002,7 @@ IN_PROC_BROWSER_TEST_F(
       // Debugging report URL from seller for win report.
       https_server_->GetURL("a.test", "/echo?seller_debug_report_win/winner")};
   for (const auto& debugging_report_url : kDebuggingReportUrls) {
-    absl::optional<network::ResourceRequest> request =
-        url_loader_monitor.GetRequestInfo(debugging_report_url);
-    ASSERT_FALSE(request);
+    EXPECT_FALSE(HasServerSeenUrl(debugging_report_url));
   }
 }
 
