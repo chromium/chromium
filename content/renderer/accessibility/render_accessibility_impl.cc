@@ -504,10 +504,13 @@ void RenderAccessibilityImpl::NotifyWebAXObjectMarkedDirty(
     return;
 
   // If the event occurred on the focused object, process immediately.
-  // kLayoutComplete is an exception because it always fires on the root
-  // object but it doesn't imply immediate processing is needed.
-  if (obj != ComputeRoot() && obj.IsFocused())
+  // The root is an exception because it often has focus while the page is
+  // loading. In that case the event type is used as the signal (see
+  // HandleAXEvent() and IsImmediateProcessingRequiredForEvent()).
+  if (event_schedule_mode_ != EventScheduleMode::kProcessEventsImmediately &&
+      obj != ComputeRoot() && obj.IsFocused()) {
     event_schedule_mode_ = EventScheduleMode::kProcessEventsImmediately;
+  }
 
   ScheduleSendPendingAccessibilityEvents();
 }
@@ -565,6 +568,7 @@ bool RenderAccessibilityImpl::IsImmediateProcessingRequiredForEvent(
     case ax::mojom::Event::kFocus:
     case ax::mojom::Event::kHover:
     case ax::mojom::Event::kLoadComplete:
+    case ax::mojom::Event::kLoadStart:
     case ax::mojom::Event::kValueChanged:
       return true;
 
@@ -573,7 +577,6 @@ bool RenderAccessibilityImpl::IsImmediateProcessingRequiredForEvent(
     case ax::mojom::Event::kExpandedChanged:
     case ax::mojom::Event::kHide:
     case ax::mojom::Event::kLayoutComplete:
-    case ax::mojom::Event::kLoadStart:
     case ax::mojom::Event::kLocationChanged:
     case ax::mojom::Event::kMenuListValueChanged:
     case ax::mojom::Event::kRowCollapsed:
