@@ -105,7 +105,7 @@ void HighEfficiencyChipView::UpdateImpl() {
   }
   TabDiscardTabHelper* const tab_helper =
       TabDiscardTabHelper::FromWebContents(web_contents);
-  if (tab_helper->IsChipVisible() && is_high_efficiency_mode_enabled_) {
+  if (tab_helper->ShouldChipBeVisible() && is_high_efficiency_mode_enabled_) {
     SetVisible(true);
     if (tab_helper->ShouldIconAnimate()) {
       // Only animate the chip to the expanded view the first 3 times it is

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/performance_controls/tab_discard_tab_helper.h"
 
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "content/public/common/url_constants.h"
 
 namespace {
 // Conversion constant for bytes to kilobytes.
@@ -17,8 +18,8 @@ TabDiscardTabHelper::TabDiscardTabHelper(content::WebContents* contents)
     : content::WebContentsObserver(contents),
       content::WebContentsUserData<TabDiscardTabHelper>(*contents) {}
 
-bool TabDiscardTabHelper::IsChipVisible() const {
-  return was_discarded_;
+bool TabDiscardTabHelper::ShouldChipBeVisible() const {
+  return was_discarded_ && is_page_supported_;
 }
 
 bool TabDiscardTabHelper::ShouldIconAnimate() const {
@@ -64,6 +65,11 @@ void TabDiscardTabHelper::DidStartNavigation(
   was_discarded_ = navigation_handle->ExistingDocumentWasDiscarded();
   was_animated_ = false;
   was_chip_hidden_ = false;
+  is_page_supported_ = DoesChipSupportPage(navigation_handle->GetURL());
+}
+
+bool TabDiscardTabHelper::DoesChipSupportPage(const GURL& url) const {
+  return !url.SchemeIs(content::kChromeUIScheme);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TabDiscardTabHelper);

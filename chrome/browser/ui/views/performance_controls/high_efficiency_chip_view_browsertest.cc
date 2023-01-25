@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/performance_manager/public/decorators/process_metrics_decorator.h"
@@ -32,8 +33,9 @@
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_navigation_handle.h"
-#include "content/public/test/test_navigation_observer.h"
+#include "net/dns/mock_host_resolver.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/views/animation/ink_drop.h"
@@ -93,10 +95,16 @@ class HighEfficiencyChipViewBrowserTest : public InProcessBrowserTest {
     resource_coordinator::GetTabLifecycleUnitSource()
         ->SetFocusedTabStripModelForTesting(browser()->tab_strip_model());
 
-    ASSERT_TRUE(AddTabAtIndex(0, GURL(chrome::kChromeUINewTabURL),
-                              ui::PAGE_TRANSITION_TYPED));
-    ASSERT_TRUE(AddTabAtIndex(1, GURL(chrome::kChromeUINewTabURL),
-                              ui::PAGE_TRANSITION_TYPED));
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    GURL test_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), test_url, WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), test_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
   void TearDown() override { InProcessBrowserTest::TearDown(); }
@@ -220,13 +228,13 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipViewBrowserTest,
   EXPECT_TRUE(GetFeaturePromoController()->IsPromoActive(
       feature_engagement::kIPHHighEfficiencyInfoModeFeature));
 
-  content::TestNavigationObserver navigation_observer(
-      browser()->tab_strip_model()->GetWebContentsAt(0));
   ClickIPHSettingsButton();
-  navigation_observer.Wait();
-
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  EXPECT_EQ(3, tab_strip_model->count());
+  content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(2);
+  WaitForLoadStop(web_contents);
   GURL expected(chrome::kChromeUIPerformanceSettingsURL);
-  EXPECT_EQ(expected.host(), navigation_observer.last_navigation_url().host());
+  EXPECT_EQ(expected.host(), web_contents->GetLastCommittedURL().host());
 }
 
 IN_PROC_BROWSER_TEST_F(HighEfficiencyChipViewBrowserTest,
@@ -273,6 +281,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(HighEfficiencyChipViewBrowserTest,
                        BubbleCorrectlyReportingMemorySaved) {
+  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   ForceRefreshMemoryMetricsForTesting();
   DiscardTabAt(0);
   content::WebContents* web_contents =
@@ -280,14 +289,14 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipViewBrowserTest,
   auto* pre_discard_resource_usage =
       performance_manager::user_tuning::UserPerformanceTuningManager::
           PreDiscardResourceUsage::FromWebContents(web_contents);
-  int resident_set_kb =
+  int memory_footprint_estimate =
       pre_discard_resource_usage->memory_footprint_estimate_kb();
   chrome::SelectNumberedTab(browser(), 0);
-  content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents());
+  WaitForIPHToShow();
   ClickHighEfficiencyChip();
   views::StyledLabel* label = GetHighEfficiencyBubbleLabel();
 
-  EXPECT_NE(label->GetText().find(ui::FormatBytes(resident_set_kb * 1024)),
-            std::string::npos);
+  EXPECT_NE(
+      label->GetText().find(ui::FormatBytes(memory_footprint_estimate * 1024)),
+      std::string::npos);
 }

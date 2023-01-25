@@ -24,7 +24,7 @@ class TabDiscardTabHelper
   ~TabDiscardTabHelper() override;
 
   // Returns whether the chip associated with a discarded tab should be shown.
-  bool IsChipVisible() const;
+  bool ShouldChipBeVisible() const;
 
   // Returns whether the chip associated with a discarded tab should animate in.
   bool ShouldIconAnimate() const;
@@ -53,9 +53,15 @@ class TabDiscardTabHelper
  private:
   friend class content::WebContentsUserData<TabDiscardTabHelper>;
   explicit TabDiscardTabHelper(content::WebContents* contents);
+
+  // Returns whether the high efficiency chip should be supported for the
+  // given URL
+  bool DoesChipSupportPage(const GURL& url) const;
+
   bool was_discarded_ = false;
   bool was_animated_ = false;
   bool was_chip_hidden_ = false;
+  bool is_page_supported_ = false;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

@@ -27,6 +27,7 @@
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -62,7 +63,7 @@ class HighEfficiencyChipInteractiveTest : public InteractiveBrowserTest {
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
-
+    host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
     tab_strip_model_ = browser()->tab_strip_model();
     test_url_ = embedded_test_server()->GetURL("a.com", "/title1.html");
@@ -218,6 +219,23 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
       DiscardAndSelectTab(1, kSecondTabContents), CheckChipIsExpandedState(),
       SelectTab(kTabStripElementId, 0), CheckChipIsCollapsedState(),
       SelectTab(kTabStripElementId, 1), CheckChipIsCollapsedState());
+}
+
+// Page Action chip should only show on discarded non-chrome pages
+IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
+                       ChipShowsOnNonChromeSites) {
+  RunTestSequence(InstrumentTab(kFirstTabContents, 0),
+                  NavigateTab(test_url_, kFirstTabContents),
+                  AddInstrumentedTab(kSecondTabContents,
+                                     GURL(chrome::kChromeUINewTabURL), 1),
+                  // Discards tab on non-chrome page
+                  SelectTab(kTabStripElementId, 1),
+                  DiscardAndSelectTab(0, kFirstTabContents),
+                  WaitForShow(kHighEfficiencyChipElementId),
+
+                  // Discards tab on chrome://newtab page
+                  DiscardAndSelectTab(1, kSecondTabContents),
+                  EnsureNotPresent(kHighEfficiencyChipElementId));
 }
 
 // Clicking on the settings link in high efficiency dialog bubble should open
