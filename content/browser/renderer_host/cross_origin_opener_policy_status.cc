@@ -48,9 +48,13 @@ CoopSwapResult ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
     case CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep:
       switch (destination_coop) {
         case CrossOriginOpenerPolicyValue::kUnsafeNone:
+          return CoopSwapResult::kSwapWithReference;
         case CrossOriginOpenerPolicyValue::kRestrictProperties:
         case CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep:
-          return CoopSwapResult::kSwapWithReference;
+          return (initiator_coop == destination_coop &&
+                  initiator_origin.IsSameOriginWith(destination_origin))
+                     ? CoopSwapResult::kNoSwap
+                     : CoopSwapResult::kSwapWithReference;
         case CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
         case CrossOriginOpenerPolicyValue::kSameOrigin:
         case CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:

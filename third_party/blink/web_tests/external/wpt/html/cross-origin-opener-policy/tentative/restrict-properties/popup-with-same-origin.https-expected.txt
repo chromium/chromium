@@ -3,6 +3,6 @@ FAIL Same-origin popup with empty coop assert_false: Main page has dom access to
 FAIL Same-origin popup with coop unsafe-none assert_false: Main page has dom access to the popup? expected false got true
 PASS Same-origin popup with coop same-origin
 PASS Same-origin popup with coop same-origin-allow-popups
-FAIL Same-origin popup with coop restrict-properties assert_false: Main page has dom access to the popup? expected false got true
+PASS Same-origin popup with coop restrict-properties
 Harness: the test ran to completion.
 
