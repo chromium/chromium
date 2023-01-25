@@ -78,9 +78,7 @@ void FloatingWorkspaceService::InitForTest(
       InitForV1();
       break;
     case TestFloatingWorkspaceVersion::kFloatingWorkspaceV2Enabled:
-      // For testings we don't need to add itself to observer list of
-      // DeskSyncBridge, tests can be done by calling
-      // EntriesAddedOrUpdatedRemotely directly so InitForV2 can be skipped.
+      InitForV2();
       break;
   }
 }
@@ -274,11 +272,6 @@ void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
     return;
   }
 
-  LaunchFloatingWorkspaceTemplate(desk_template);
-}
-
-void FloatingWorkspaceService::LaunchFloatingWorkspaceTemplate(
-    const DeskTemplate* desk_template) {
   DesksClient::Get()->LaunchDeskTemplate(
       desk_template->uuid(),
       base::BindOnce(&FloatingWorkspaceService::OnTemplateLaunched,
