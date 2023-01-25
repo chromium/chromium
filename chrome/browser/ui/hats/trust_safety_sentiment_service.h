@@ -116,12 +116,26 @@ class TrustSafetySentimentService
     kBrowsingData = 12,
     kPrivacyGuide = 13,
     kControlGroup = 14,
-    kMaxValue = kControlGroup,
+    kPrivacySandbox4ConsentAccept = 15,
+    kPrivacySandbox4ConsentDecline = 16,
+    kPrivacySandbox4NoticeOk = 17,
+    kPrivacySandbox4NoticeSettings = 18,
+    kMaxValue = kPrivacySandbox4NoticeSettings,
   };
 
   // Called when the user interacts with Privacy Sandbox 3, |feature_area|
   // specifies what type of interaction occurred.
   virtual void InteractedWithPrivacySandbox3(FeatureArea feature_area);
+
+  virtual void InteractedWithPrivacySandbox4(FeatureArea feature_area);
+
+  // Checks that this feature area is valid for the current version.
+  static bool VersionCheck(
+      TrustSafetySentimentService::FeatureArea feature_area);
+
+  // Gets the HaTS trigger for a feature area.
+  static std::string GetHatsTriggerForFeatureArea(
+      TrustSafetySentimentService::FeatureArea feature_area);
 
  private:
   friend class TrustSafetySentimentServiceTest;

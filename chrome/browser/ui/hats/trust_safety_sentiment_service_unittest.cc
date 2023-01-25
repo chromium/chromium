@@ -69,6 +69,10 @@ class TrustSafetySentimentServiceTest : public testing::Test {
     std::string privacy_sandbox_3_notice_dismiss_probability = "0.1";
     std::string privacy_sandbox_3_notice_ok_probability = "0.4";
     std::string privacy_sandbox_3_notice_settings_probability = "0.7";
+    std::string privacy_sandbox_4_consent_accept_probability = "0.01";
+    std::string privacy_sandbox_4_consent_decline_probability = "0.1";
+    std::string privacy_sandbox_4_notice_ok_probability = "0.1";
+    std::string privacy_sandbox_4_notice_settings_probability = "0.1";
     std::string privacy_settings_trigger_id = "privacy-settings-test";
     std::string trusted_surface_trigger_id = "trusted-surface-test";
     std::string transactions_trigger_id = "transactions-test";
@@ -82,6 +86,14 @@ class TrustSafetySentimentServiceTest : public testing::Test {
         "privacy-sandbox-3-ok-dismiss";
     std::string privacy_sandbox_3_notice_settings_trigger_id =
         "privacy-sandbox-3-settings-dismiss";
+    std::string privacy_sandbox_4_consent_accept_trigger_id =
+        "privacy-sandbox-4-consent-accept";
+    std::string privacy_sandbox_4_consent_decline_trigger_id =
+        "privacy-sandbox-4-consent-decline";
+    std::string privacy_sandbox_4_notice_ok_trigger_id =
+        "privacy-sandbox-4-notice-ok";
+    std::string privacy_sandbox_4_notice_settings_trigger_id =
+        "privacy-sandbox-4-notice-settings";
     std::string transactions_password_manager_time = "20s";
   };
 
@@ -108,6 +120,14 @@ class TrustSafetySentimentServiceTest : public testing::Test {
              params.privacy_sandbox_3_notice_ok_probability},
             {"privacy-sandbox-3-notice-settings-probability",
              params.privacy_sandbox_3_notice_settings_probability},
+            {"privacy-sandbox-4-consent-accept-probability",
+             params.privacy_sandbox_4_consent_accept_probability},
+            {"privacy-sandbox-4-consent-decline-probability",
+             params.privacy_sandbox_4_consent_decline_probability},
+            {"privacy-sandbox-4-notice-ok-probability",
+             params.privacy_sandbox_4_notice_ok_probability},
+            {"privacy-sandbox-4-notice-settings-probability",
+             params.privacy_sandbox_4_notice_settings_probability},
             {"privacy-settings-trigger-id", params.privacy_settings_trigger_id},
             {"trusted-surface-trigger-id", params.trusted_surface_trigger_id},
             {"transactions-trigger-id", params.transactions_trigger_id},
@@ -121,6 +141,14 @@ class TrustSafetySentimentServiceTest : public testing::Test {
              params.privacy_sandbox_3_notice_ok_trigger_id},
             {"privacy-sandbox-3-notice-settings-trigger-id",
              params.privacy_sandbox_3_notice_settings_trigger_id},
+            {"privacy-sandbox-4-consent-accept-trigger-id",
+             params.privacy_sandbox_4_consent_accept_trigger_id},
+            {"privacy-sandbox-4-consent-decline-trigger-id",
+             params.privacy_sandbox_4_consent_decline_trigger_id},
+            {"privacy-sandbox-4-notice-ok-trigger-id",
+             params.privacy_sandbox_4_notice_ok_trigger_id},
+            {"privacy-sandbox-4-notice-settings-trigger-id",
+             params.privacy_sandbox_4_notice_settings_trigger_id},
             {"transactions-password-manager-time",
              params.transactions_password_manager_time},
         });
@@ -139,12 +167,24 @@ class TrustSafetySentimentServiceTest : public testing::Test {
     std::string safety_check_probability = "0.4";
     std::string trusted_surface_probability = "0.4";
     std::string privacy_guide_probability = "0.4";
+    std::string privacy_sandbox_4_consent_accept_probability = "0.01";
+    std::string privacy_sandbox_4_consent_decline_probability = "0.1";
+    std::string privacy_sandbox_4_notice_ok_probability = "0.1";
+    std::string privacy_sandbox_4_notice_settings_probability = "0.1";
     std::string browsing_data_trigger_id = "browsing-data-test";
     std::string control_group_trigger_id = "control-group-test";
     std::string password_check_trigger_id = "password-check-test";
     std::string safety_check_trigger_id = "safety-check-test";
     std::string trusted_surface_trigger_id = "trusted-surface-test";
     std::string privacy_guide_trigger_id = "privacy-guide-test";
+    std::string privacy_sandbox_4_consent_accept_trigger_id =
+        "privacy-sandbox-4-consent-accept";
+    std::string privacy_sandbox_4_consent_decline_trigger_id =
+        "privacy-sandbox-4-consent-decline";
+    std::string privacy_sandbox_4_notice_ok_trigger_id =
+        "privacy-sandbox-4-notice-ok";
+    std::string privacy_sandbox_4_notice_settings_trigger_id =
+        "privacy-sandbox-4-notice-settings";
   };
 
   void SetupFeatureParametersV2(FeatureParamsV2 params) {
@@ -163,12 +203,28 @@ class TrustSafetySentimentServiceTest : public testing::Test {
             {"safety-check-probability", params.safety_check_probability},
             {"trusted-surface-probability", params.trusted_surface_probability},
             {"privacy-guide-probability", params.privacy_guide_probability},
+            {"privacy-sandbox-4-consent-accept-probability",
+             params.privacy_sandbox_4_consent_accept_probability},
+            {"privacy-sandbox-4-consent-decline-probability",
+             params.privacy_sandbox_4_consent_decline_probability},
+            {"privacy-sandbox-4-notice-ok-probability",
+             params.privacy_sandbox_4_notice_ok_probability},
+            {"privacy-sandbox-4-notice-settings-probability",
+             params.privacy_sandbox_4_notice_settings_probability},
             {"browsing-data-trigger-id", params.browsing_data_trigger_id},
             {"control-group-trigger-id", params.control_group_trigger_id},
             {"password-check-trigger-id", params.password_check_trigger_id},
             {"safety-check-trigger-id", params.safety_check_trigger_id},
             {"trusted-surface-trigger-id", params.trusted_surface_trigger_id},
             {"privacy-guide-trigger-id", params.privacy_guide_trigger_id},
+            {"privacy-sandbox-4-consent-accept-trigger-id",
+             params.privacy_sandbox_4_consent_accept_trigger_id},
+            {"privacy-sandbox-4-consent-decline-trigger-id",
+             params.privacy_sandbox_4_consent_decline_trigger_id},
+            {"privacy-sandbox-4-notice-ok-trigger-id",
+             params.privacy_sandbox_4_notice_ok_trigger_id},
+            {"privacy-sandbox-4-notice-settings-trigger-id",
+             params.privacy_sandbox_4_notice_settings_trigger_id},
         });
   }
 
@@ -819,6 +875,38 @@ TEST_F(TrustSafetySentimentServiceTest, ClosingIncognitoDelaysSurvey) {
   CheckHistograms({TrustSafetySentimentService::FeatureArea::kPrivacySettings,
                    TrustSafetySentimentService::FeatureArea::kIneligible},
                   {TrustSafetySentimentService::FeatureArea::kPrivacySettings});
+}
+
+TEST_F(TrustSafetySentimentServiceTest, AllFeatureAreasCorrectVersions) {
+  // Assert that for every feature area there is the correct version(s) and
+  // survey trigger id.
+  FeatureParams paramsv1;
+  SetupFeatureParameters(paramsv1);
+  for (int enum_value = 0;
+       enum_value <=
+       static_cast<int>(TrustSafetySentimentService::FeatureArea::kMaxValue);
+       ++enum_value) {
+    auto feature_area =
+        static_cast<TrustSafetySentimentService::FeatureArea>(enum_value);
+    if (TrustSafetySentimentService::VersionCheck(feature_area)) {
+      EXPECT_NE("", TrustSafetySentimentService::GetHatsTriggerForFeatureArea(
+                        feature_area));
+    }
+  }
+  feature_list()->Reset();
+  FeatureParamsV2 paramsv2;
+  SetupFeatureParametersV2(paramsv2);
+  for (int enum_value = 0;
+       enum_value <=
+       static_cast<int>(TrustSafetySentimentService::FeatureArea::kMaxValue);
+       ++enum_value) {
+    auto feature_area =
+        static_cast<TrustSafetySentimentService::FeatureArea>(enum_value);
+    if (TrustSafetySentimentService::VersionCheck(feature_area)) {
+      EXPECT_NE("", TrustSafetySentimentService::GetHatsTriggerForFeatureArea(
+                        feature_area));
+    }
+  }
 }
 
 TEST_F(TrustSafetySentimentServiceTest, Eligibility_V1FeatureWhileV2Enabled) {

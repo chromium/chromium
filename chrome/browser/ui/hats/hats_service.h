@@ -61,6 +61,10 @@ extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeDismiss[];
 extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeOk[];
 extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeSettings[];
 extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeLearnMore[];
+extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentAccept[];
+extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentDecline[];
+extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox4NoticeOk[];
+extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox4NoticeSettings[];
 extern const char kHatsSurveyTriggerTrustSafetyPrivacySettings[];
 extern const char kHatsSurveyTriggerTrustSafetyTrustedSurface[];
 extern const char kHatsSurveyTriggerTrustSafetyTransactions[];
@@ -70,6 +74,12 @@ extern const char kHatsSurveyTriggerTrustSafetyV2PasswordCheck[];
 extern const char kHatsSurveyTriggerTrustSafetyV2SafetyCheck[];
 extern const char kHatsSurveyTriggerTrustSafetyV2TrustedSurface[];
 extern const char kHatsSurveyTriggerTrustSafetyV2PrivacyGuide[];
+extern const char kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4ConsentAccept[];
+extern const char
+    kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4ConsentDecline[];
+extern const char kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeOk[];
+extern const char
+    kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeSettings[];
 extern const char kHatsSurveyTriggerWhatsNew[];
 
 // The Trigger ID for a test HaTS Next survey which is available for testing
