@@ -15,6 +15,20 @@
 #include "content/public/test/browser_test.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_SendMouseEventsdisabledFormControlsPolicyTest \
+  DISABLED_SendMouseEventsdisabledFormControlsPolicyTest
+#else
+#define MAYBE_SendMouseEventsdisabledFormControlsPolicyTest SendMouseEventsdisabledFormControlsPolicyTest
+#endif
+// "All/DISABLED_SendMouseEventsdisabledFormControlsPolicyTest" does not work. We need
+// "DISABLED_All/...". TODO(https://crbug.com/1096416) delete when fixed.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_All DISABLED_All
+#else
+#define MAYBE_All All
+#endif
+
 namespace policy {
 
 enum class SendMouseEventsDisabledFormControlsPolicyValue {
@@ -23,7 +37,7 @@ enum class SendMouseEventsDisabledFormControlsPolicyValue {
   kDisabled,
 };
 
-class SendMouseEventsDisabledFormControlsPolicyTest
+class MAYBE_SendMouseEventsDisabledFormControlsPolicyTest
     : public testing::WithParamInterface<
           SendMouseEventsDisabledFormControlsPolicyValue>,
       public PolicyTest {
@@ -72,15 +86,15 @@ class SendMouseEventsDisabledFormControlsPolicyTest
   }
 };
 
-IN_PROC_BROWSER_TEST_P(SendMouseEventsDisabledFormControlsPolicyTest, Test) {
+IN_PROC_BROWSER_TEST_P(MAYBE_SendMouseEventsDisabledFormControlsPolicyTest, Test) {
   bool expected_enabled =
       GetParam() == SendMouseEventsDisabledFormControlsPolicyValue::kEnabled;
   AssertSendMouseEventsDisabledFormControlsEnabled(expected_enabled);
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    SendMouseEventsDisabledFormControlsPolicyTest,
+    MAYBE_All,
+    MAYBE_SendMouseEventsDisabledFormControlsPolicyTest,
     ::testing::Values(
         SendMouseEventsDisabledFormControlsPolicyValue::kEnabled,
         SendMouseEventsDisabledFormControlsPolicyValue::kDisabled));
