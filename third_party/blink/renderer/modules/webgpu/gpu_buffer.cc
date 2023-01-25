@@ -118,6 +118,8 @@ GPUBuffer* GPUBuffer::Create(GPUDevice* device,
   std::string label;
   WGPUBufferDescriptor dawn_desc = AsDawnType(webgpu_desc, &label);
 
+  // Save the requested size of the buffer, for reflection and defaults.
+  uint64_t buffer_size = dawn_desc.size;
   // If the buffer is mappable, make sure the size stays in a size_t but still
   // guarantees that we have an OOM.
   bool is_mappable =
@@ -141,7 +143,7 @@ GPUBuffer* GPUBuffer::Create(GPUDevice* device,
   }
 
   GPUBuffer* buffer =
-      MakeGarbageCollected<GPUBuffer>(device, dawn_desc.size, wgpuBuffer);
+      MakeGarbageCollected<GPUBuffer>(device, buffer_size, wgpuBuffer);
   if (webgpu_desc->hasLabel())
     buffer->setLabel(webgpu_desc->label());
 
