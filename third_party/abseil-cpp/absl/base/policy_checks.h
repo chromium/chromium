@@ -50,11 +50,11 @@
 #error "This package requires Visual Studio 2017 (MSVC++ 15.0) or higher."
 #endif
 
-// We support gcc 5 and later.
+// We support GCC 7 and later.
 // This minimum will go up.
 #if defined(__GNUC__) && !defined(__clang__)
-#if __GNUC__ < 5
-#error "This package requires gcc 5 or higher."
+#if __GNUC__ < 7
+#error "This package requires GCC 7 or higher."
 #endif
 #endif
 

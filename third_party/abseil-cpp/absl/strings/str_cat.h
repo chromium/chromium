@@ -242,8 +242,10 @@ struct Dec {
 // -----------------------------------------------------------------------------
 //
 // The `AlphaNum` class acts as the main parameter type for `StrCat()` and
-// `StrAppend()`, providing efficient conversion of numeric, boolean, and
-// hexadecimal values (through the `Hex` type) into strings.
+// `StrAppend()`, providing efficient conversion of numeric, boolean, decimal,
+// and hexadecimal values (through the `Dec` and `Hex` types) into strings.
+// `AlphaNum` should only be used as a function parameter. Do not instantiate
+//  `AlphaNum` directly as a stack variable.
 
 class AlphaNum {
  public:

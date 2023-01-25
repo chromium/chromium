@@ -2823,7 +2823,7 @@ bool Condition::GuaranteedEqual(const Condition *a, const Condition *b) {
   // kTrue logic.
   if (a == nullptr || a->eval_ == nullptr) {
     return b == nullptr || b->eval_ == nullptr;
-  }else  if (b == nullptr || b->eval_ == nullptr) {
+  } else if (b == nullptr || b->eval_ == nullptr) {
     return false;
   }
   // Check equality of the representative fields.

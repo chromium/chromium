@@ -707,13 +707,13 @@ absl_cc_library(
     absl::endian
     absl::hash_policy_traits
     absl::hashtable_debug_hooks
+    absl::hashtablez_sampler
     absl::memory
     absl::meta
     absl::optional
     absl::prefetch
     absl::raw_logging_internal
     absl::utility
-    absl::hashtablez_sampler
   PUBLIC
 )
 
@@ -725,18 +725,18 @@ absl_cc_test(
   COPTS
     ${ABSL_TEST_COPTS}
   DEPS
+    absl::base
+    absl::config
     absl::container_memory
+    absl::core_headers
     absl::flat_hash_map
     absl::flat_hash_set
     absl::hash_function_defaults
     absl::hash_policy_testing
     absl::hashtable_debug
-    absl::raw_hash_set
-    absl::base
-    absl::config
     absl::log
-    absl::core_headers
     absl::prefetch
+    absl::raw_hash_set
     absl::raw_logging_internal
     absl::strings
     GTest::gmock_main

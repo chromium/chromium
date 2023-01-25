@@ -38,4 +38,7 @@ add_subdirectory(utility)
 
 if (${ABSL_BUILD_DLL})
   absl_make_dll()
+  if (${ABSL_BUILD_TEST_HELPERS})
+    absl_make_dll(TEST ON)
+  endif()
 endif()

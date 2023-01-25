@@ -53,6 +53,18 @@ cc_library(
     ],
 )
 
+cc_test(
+    name = "stacktrace_test",
+    srcs = ["stacktrace_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":stacktrace",
+        "//absl/base:core_headers",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
 cc_library(
     name = "symbolize",
     srcs = [

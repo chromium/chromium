@@ -22,6 +22,9 @@
 
 #include "gtest/gtest.h"
 #include "absl/base/attributes.h"
+#include "absl/base/config.h"
+#include "absl/time/clock.h"
+#include "absl/time/time.h"
 
 namespace {
 
@@ -1412,5 +1415,34 @@ TEST(TrivallyRelocatable, Sanity) {
   EXPECT_FALSE(absl::is_trivially_relocatable<NonTrivial>::value);
   EXPECT_TRUE(absl::is_trivially_relocatable<TrivialAbi>::value);
 }
+
+#ifdef ABSL_HAVE_CONSTANT_EVALUATED
+
+constexpr int64_t NegateIfConstantEvaluated(int64_t i) {
+  if (absl::is_constant_evaluated()) {
+    return -i;
+  } else {
+    return i;
+  }
+}
+
+#endif  // ABSL_HAVE_CONSTANT_EVALUATED
+
+TEST(TrivallyRelocatable, is_constant_evaluated) {
+#ifdef ABSL_HAVE_CONSTANT_EVALUATED
+  constexpr int64_t constant = NegateIfConstantEvaluated(42);
+  EXPECT_EQ(constant, -42);
+
+  int64_t now = absl::ToUnixSeconds(absl::Now());
+  int64_t not_constant = NegateIfConstantEvaluated(now);
+  EXPECT_EQ(not_constant, now);
+
+  static int64_t const_init = NegateIfConstantEvaluated(42);
+  EXPECT_EQ(const_init, -42);
+#else
+  GTEST_SKIP() << "absl::is_constant_evaluated is not defined";
+#endif  // ABSL_HAVE_CONSTANT_EVALUATED
+}
+
 
 }  // namespace

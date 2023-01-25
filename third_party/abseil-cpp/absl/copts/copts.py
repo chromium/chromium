@@ -33,6 +33,7 @@ ABSL_GCC_FLAGS = [
 ABSL_GCC_TEST_ADDITIONAL_FLAGS = [
     "-Wno-deprecated-declarations",
     "-Wno-missing-declarations",
+    "-Wno-self-move",
     "-Wno-sign-compare",
     "-Wno-unused-function",
     "-Wno-unused-parameter",

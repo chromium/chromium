@@ -928,4 +928,15 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #define ABSL_INTERNAL_HAVE_ARM_NEON 1
 #endif
 
+// ABSL_HAVE_CONSTANT_EVALUATED is used for compile-time detection of
+// constant evaluation support through `absl::is_constant_evaluated`.
+#ifdef ABSL_HAVE_CONSTANT_EVALUATED
+#error ABSL_HAVE_CONSTANT_EVALUATED cannot be directly set
+#endif
+#ifdef __cpp_lib_is_constant_evaluated
+#define ABSL_HAVE_CONSTANT_EVALUATED 1
+#elif ABSL_HAVE_BUILTIN(__builtin_is_constant_evaluated)
+#define ABSL_HAVE_CONSTANT_EVALUATED 1
+#endif
+
 #endif  // ABSL_BASE_CONFIG_H_

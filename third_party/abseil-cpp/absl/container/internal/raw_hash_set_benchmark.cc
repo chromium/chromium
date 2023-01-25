@@ -16,6 +16,7 @@
 #include <cmath>
 #include <numeric>
 #include <random>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -512,6 +513,12 @@ bool CodegenAbslRawHashSetInt64FindNeEnd(
   return table->find(key) != table->end();
 }
 
+// This is useful because the find isn't inlined but the iterator comparison is.
+bool CodegenAbslRawHashSetStringFindNeEnd(
+    absl::container_internal::StringTable* table, const std::string& key) {
+  return table->find(key) != table->end();
+}
+
 auto CodegenAbslRawHashSetInt64Insert(absl::container_internal::IntTable* table,
                                       int64_t key)
     -> decltype(table->insert(key)) {
@@ -531,6 +538,7 @@ void CodegenAbslRawHashSetInt64Iterate(
 int odr =
     (::benchmark::DoNotOptimize(std::make_tuple(
          &CodegenAbslRawHashSetInt64Find, &CodegenAbslRawHashSetInt64FindNeEnd,
+         &CodegenAbslRawHashSetStringFindNeEnd,
          &CodegenAbslRawHashSetInt64Insert, &CodegenAbslRawHashSetInt64Contains,
          &CodegenAbslRawHashSetInt64Iterate)),
      1);

@@ -198,6 +198,7 @@ if (build_with_chromium) {
         "absl/crc:crc_cord_state_test",
         "absl/crc:crc_memcpy_test",
         "absl/crc:non_temporal_memcpy_test",
+        "absl/debugging:stacktrace_test",
         "absl/functional:any_invocable_test",
         "absl/hash:hash_test",
         "absl/hash:low_level_hash_test",

@@ -73,6 +73,7 @@ ABSL_GCC_TEST_FLAGS = [
     "-DNOMINMAX",
     "-Wno-deprecated-declarations",
     "-Wno-missing-declarations",
+    "-Wno-self-move",
     "-Wno-sign-compare",
     "-Wno-unused-function",
     "-Wno-unused-parameter",

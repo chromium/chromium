@@ -45,6 +45,19 @@ absl_cc_library(
   PUBLIC
 )
 
+absl_cc_test(
+  NAME
+    stacktrace_test
+  SRCS
+    "stacktrace_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::stacktrace
+    absl::core_headers
+    GTest::gmock_main
+)
+
 absl_cc_library(
   NAME
     symbolize

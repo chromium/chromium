@@ -34,9 +34,11 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace log_internal {
 
-ABSL_CONST_INIT extern const std::array<char, 7> kCharNull;
-ABSL_CONST_INIT extern const std::array<signed char, 7> kSignedCharNull;
-ABSL_CONST_INIT extern const std::array<unsigned char, 7> kUnsignedCharNull;
+ABSL_DLL ABSL_CONST_INIT extern const std::array<char, 7> kCharNull;
+ABSL_DLL ABSL_CONST_INIT extern const std::array<signed char, 7>
+    kSignedCharNull;
+ABSL_DLL ABSL_CONST_INIT extern const std::array<unsigned char, 7>
+    kUnsignedCharNull;
 
 template <typename T>
 struct NullGuard final {

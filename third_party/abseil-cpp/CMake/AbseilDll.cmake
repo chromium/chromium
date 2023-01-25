@@ -144,6 +144,47 @@ set(ABSL_INTERNAL_DLL_FILES
   "hash/internal/spy_hash_state.h"
   "hash/internal/low_level_hash.h"
   "hash/internal/low_level_hash.cc"
+  "log/absl_check.h"
+  "log/absl_log.h"
+  "log/check.h"
+  "log/die_if_null.cc"
+  "log/die_if_null.h"
+  "log/globals.cc"
+  "log/globals.h"
+  "log/internal/append_truncated.h"
+  "log/internal/check_impl.h"
+  "log/internal/check_op.cc"
+  "log/internal/check_op.h"
+  "log/internal/conditions.cc"
+  "log/internal/conditions.h"
+  "log/internal/config.h"
+  "log/internal/globals.cc"
+  "log/internal/globals.h"
+  "log/internal/log_format.cc"
+  "log/internal/log_format.h"
+  "log/internal/log_impl.h"
+  "log/internal/log_message.cc"
+  "log/internal/log_message.h"
+  "log/internal/log_sink_set.cc"
+  "log/internal/log_sink_set.h"
+  "log/internal/nullguard.cc"
+  "log/internal/nullguard.h"
+  "log/internal/nullstream.h"
+  "log/internal/proto.h"
+  "log/internal/proto.cc"
+  "log/internal/strip.h"
+  "log/internal/structured.h"
+  "log/internal/voidify.h"
+  "log/initialize.cc"
+  "log/initialize.h"
+  "log/log.h"
+  "log/log_entry.cc"
+  "log/log_entry.h"
+  "log/log_sink.cc"
+  "log/log_sink.h"
+  "log/log_sink_registry.h"
+  "log/log_streamer.h"
+  "log/structured.h"
   "memory/memory.h"
   "meta/type_traits.h"
   "numeric/bits.h"
@@ -170,7 +211,6 @@ set(ABSL_INTERNAL_DLL_FILES
   "random/internal/fast_uniform_bits.h"
   "random/internal/generate_real.h"
   "random/internal/iostream_state_saver.h"
-  "random/internal/mock_helpers.h"
   "random/internal/nonsecure_base.h"
   "random/internal/pcg_engine.h"
   "random/internal/platform.h"
@@ -380,6 +420,8 @@ set(ABSL_INTERNAL_DLL_FILES
 )
 
 set(ABSL_INTERNAL_DLL_TARGETS
+  "absl_check"
+  "absl_log"
   "algorithm"
   "algorithm_container"
   "any"
@@ -394,6 +436,7 @@ set(ABSL_INTERNAL_DLL_TARGETS
   "bind_front"
   "bits"
   "btree"
+  "check"
   "city"
   "civil_time"
   "compare"
@@ -411,6 +454,7 @@ set(ABSL_INTERNAL_DLL_TARGETS
   "debugging"
   "debugging_internal"
   "demangle_internal"
+  "die_if_null"
   "dynamic_annotations"
   "endian"
   "examine_stack"
@@ -433,7 +477,31 @@ set(ABSL_INTERNAL_DLL_TARGETS
   "kernel_timeout_internal"
   "layout"
   "leak_check"
+  "log_internal_check_impl"
+  "log_internal_check_op"
+  "log_internal_conditions"
+  "log_internal_config"
+  "log_internal_format"
+  "log_internal_globals"
+  "log_internal_log_impl"
+  "log_internal_proto"
+  "log_internal_message"
+  "log_internal_log_sink_set"
+  "log_internal_nullguard"
+  "log_internal_nullstream"
+  "log_internal_strip"
+  "log_internal_voidify"
+  "log_internal_append_truncated"
+  "log_globals"
+  "log_initialize"
+  "log"
+  "log_entry"
+  "log_sink"
+  "log_sink_registry"
+  "log_streamer"
+  "log_internal_structured"
   "log_severity"
+  "log_structured"
   "malloc_internal"
   "memory"
   "meta"
@@ -501,6 +569,27 @@ set(ABSL_INTERNAL_DLL_TARGETS
   "variant"
 )
 
+set(ABSL_INTERNAL_TEST_DLL_FILES
+  "hash/hash_testing.h"
+  "log/scoped_mock_log.cc"
+  "log/scoped_mock_log.h"
+  "random/internal/mock_helpers.h"
+  "random/internal/mock_overload_set.h"
+  "random/mocking_bit_gen.h"
+  "random/mock_distributions.h"
+  "strings/cordz_test_helpers.h"
+  "strings/cord_test_helpers.h"
+)
+
+set(ABSL_INTERNAL_TEST_DLL_TARGETS
+  "cord_test_helpers"
+  "cordz_test_helpers"
+  "hash_testing"
+  "random_mocking_bit_gen"
+  "random_internal_mock_overload_set"
+  "scoped_mock_log"
+)
+
 function(_absl_target_compile_features_if_available TARGET TYPE FEATURE)
   if(FEATURE IN_LIST CMAKE_CXX_COMPILE_FEATURES)
     target_compile_features(${TARGET} ${TYPE} ${FEATURE})
@@ -552,6 +641,28 @@ function(absl_internal_dll_contains)
   endif()
 endfunction()
 
+function(absl_internal_test_dll_contains)
+  cmake_parse_arguments(ABSL_INTERNAL_TEST_DLL
+    ""
+    "OUTPUT;TARGET"
+    ""
+    ${ARGN}
+  )
+
+  STRING(REGEX REPLACE "^absl::" "" _target ${ABSL_INTERNAL_TEST_DLL_TARGET})
+
+  list(FIND
+    ABSL_INTERNA_TEST_DLL_TARGETS
+    "${_target}"
+    _index)
+
+  if (${_index} GREATER -1)
+    set(${ABSL_INTERNAL_TEST_DLL_OUTPUT} 1 PARENT_SCOPE)
+  else()
+    set(${ABSL_INTERNAL_TEST_DLL_OUTPUT} 0 PARENT_SCOPE)
+  endif()
+endfunction()
+
 function(absl_internal_dll_targets)
   cmake_parse_arguments(ABSL_INTERNAL_DLL
   ""
@@ -562,9 +673,12 @@ function(absl_internal_dll_targets)
 
   set(_deps "")
   foreach(dep IN LISTS ABSL_INTERNAL_DLL_DEPS)
-    absl_internal_dll_contains(TARGET ${dep} OUTPUT _contains)
-    if (_contains)
+    absl_internal_dll_contains(TARGET ${dep} OUTPUT _dll_contains)
+    absl_internal_test_dll_contains(TARGET ${dep} OUTPUT _test_dll_contains)
+    if (_dll_contains)
       list(APPEND _deps abseil_dll)
+    elseif (_test_dll_contains)
+      list(APPEND _deps abseil_test_dll)
     else()
       list(APPEND _deps ${dep})
     endif()
@@ -576,26 +690,50 @@ function(absl_internal_dll_targets)
 endfunction()
 
 function(absl_make_dll)
+  cmake_parse_arguments(ABSL_INTERNAL_MAKE_DLL
+  ""
+  "TEST"
+  ""
+  ${ARGN}
+  )
+
+  if (ABSL_INTERNAL_MAKE_DLL_TEST)
+    set(_dll "abseil_test_dll")
+    set(_dll_files ${ABSL_INTERNAL_TEST_DLL_FILES})
+    set(_dll_libs "abseil_dll" "GTest::gtest" "GTest::gmock")
+    set(_dll_compile_definiations "GTEST_LINKED_AS_SHARED_LIBRARY=1")
+    set(_dll_includes ${GMOCK_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS})
+  else()
+    set(_dll "abseil_dll")
+    set(_dll_files ${ABSL_INTERNAL_DLL_FILES})
+    set(_dll_libs "")
+    set(_dll_compile_definiations "")
+    set(_dll_includes "")
+  endif()
+
   add_library(
-    abseil_dll
+    ${_dll}
     SHARED
-      "${ABSL_INTERNAL_DLL_FILES}"
+      ${_dll_files}
   )
   target_link_libraries(
-    abseil_dll
+    ${_dll}
     PRIVATE
+      ${_dll_libs}
       ${ABSL_DEFAULT_LINKOPTS}
   )
-  set_property(TARGET abseil_dll PROPERTY LINKER_LANGUAGE "CXX")
+  set_property(TARGET ${_dll} PROPERTY LINKER_LANGUAGE "CXX")
   target_include_directories(
-    abseil_dll
+    ${_dll}
     PUBLIC
       "$<BUILD_INTERFACE:${ABSL_COMMON_INCLUDE_DIRS}>"
       $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    PRIVATE
+      ${_dll_includes}
   )
 
   target_compile_options(
-    abseil_dll
+    ${_dll}
     PRIVATE
       ${ABSL_DEFAULT_COPTS}
   )
@@ -612,23 +750,25 @@ function(absl_make_dll)
   endforeach()
   string(REPLACE ";" " " PC_LINKOPTS "${ABSL_CC_LIB_LINKOPTS}")
 
-  FILE(GENERATE OUTPUT "${CMAKE_BINARY_DIR}/lib/pkgconfig/abseil_dll.pc" CONTENT "\
+  FILE(GENERATE OUTPUT "${CMAKE_BINARY_DIR}/lib/pkgconfig/${_dll}.pc" CONTENT "\
 prefix=${CMAKE_INSTALL_PREFIX}\n\
 exec_prefix=\${prefix}\n\
 libdir=${CMAKE_INSTALL_FULL_LIBDIR}\n\
 includedir=${CMAKE_INSTALL_FULL_INCLUDEDIR}\n\
 \n\
-Name: abseil_dll\n\
+Name: ${_dll}\n\
 Description: Abseil DLL library\n\
 URL: https://abseil.io/\n\
 Version: ${absl_VERSION}\n\
 Libs: -L\${libdir} ${PC_LINKOPTS} $<$<NOT:$<BOOL:${ABSL_CC_LIB_IS_INTERFACE}>>:-labseil_dll>\n\
 Cflags: -I\${includedir}${PC_CFLAGS}\n")
-  INSTALL(FILES "${CMAKE_BINARY_DIR}/lib/pkgconfig/abseil_dll.pc"
+  INSTALL(FILES "${CMAKE_BINARY_DIR}/lib/pkgconfig/${_dll}.pc"
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 
   target_compile_definitions(
-    abseil_dll
+    ${_dll}
+    PUBLIC
+      GTEST_LINKED_AS_SHARED_LIBRARY=1
     PRIVATE
       ABSL_BUILD_DLL
       NOMINMAX
@@ -655,7 +795,7 @@ Cflags: -I\${includedir}${PC_CFLAGS}\n")
     set_property(TARGET ${_NAME} PROPERTY CXX_STANDARD_REQUIRED ON)
   endif()
 
-  install(TARGETS abseil_dll EXPORT ${PROJECT_NAME}Targets
+  install(TARGETS ${_dll} EXPORT ${PROJECT_NAME}Targets
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

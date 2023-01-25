@@ -28,6 +28,14 @@ absl_source_set("stacktrace") {
   ]
 }
 
+absl_test("stacktrace_test") {
+  sources = ["stacktrace_test.cc"]
+  deps = [
+    ":stacktrace",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+  ]
+}
+
 absl_source_set("symbolize") {
   sources = [
     "symbolize.cc",

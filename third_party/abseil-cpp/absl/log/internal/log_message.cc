@@ -163,7 +163,8 @@ LogMessage::LogMessageData::LogMessageData(const char* file, int line,
                                            absl::Time timestamp)
     : extra_sinks_only(false),
       manipulated(nullptr),
-      encoded_remaining(encoded_buf) {
+      // This `absl::MakeSpan` silences spurious -Wuninitialized from GCC:
+      encoded_remaining(absl::MakeSpan(encoded_buf)) {
   // Legacy defaults for LOG's ostream:
   manipulated.setf(std::ios_base::showbase | std::ios_base::boolalpha);
   entry.full_filename_ = file;
