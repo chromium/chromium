@@ -80,10 +80,11 @@ XdgActivation::XdgActivation(wl::Object<xdg_activation_v1> xdg_activation_v1,
 XdgActivation::~XdgActivation() = default;
 
 void XdgActivation::Activate(wl_surface* surface) const {
-  // The spec isn't clear exactly what types of surface should be used as
+  // The spec isn't clear about what types of surfaces should be used as
   // the requestor surface, but all implementations of xdg_activation_v1
   // known to date accept the currently keyboard focused surface for
-  // activation.
+  // activation. Update if needed once the upstream issue gets fixed:
+  // https://gitlab.freedesktop.org/wayland/wayland-protocols/-/issues/129
   const WaylandWindow* const keyboard_focused_window =
       connection_->window_manager()->GetCurrentKeyboardFocusedWindow();
   if (token_.get() != nullptr) {
