@@ -214,6 +214,17 @@ void DeviceActiveUseCase::SetPsmRlweClient(
   psm_rlwe_client_ = std::move(status_or_client.value());
 }
 
+void DeviceActiveUseCase::SetChurnActiveStatus(
+    ChurnActiveStatus* churn_active_status) {
+  churn_active_status_ = churn_active_status;
+}
+
+ChurnActiveStatus* DeviceActiveUseCase::GetChurnActiveStatus() {
+  DCHECK(churn_active_status_);
+
+  return churn_active_status_;
+}
+
 std::string DeviceActiveUseCase::FormatPTDateString(base::Time ts) {
   base::Time::Exploded exploded;
   ts.UTCExplode(&exploded);

@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/private_computing/private_computing_service.pb.h"
+#include "chromeos/ash/components/device_activity/churn_active_status.h"
 #include "chromeos/ash/components/device_activity/fresnel_service.pb.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
@@ -192,6 +193,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // Retrieve the ChromeOS device market segment.
   MarketSegment GetMarketSegment() const;
 
+  // Once the client has initiated churn_active_status object, then pass
+  // the reference to the churn use cases to get the churn active status.
+  void SetChurnActiveStatus(ChurnActiveStatus* churn_active_status);
+
+  // Uses the churn_active_status to get the device churn active status
+  // metadata.
+  ChurnActiveStatus* GetChurnActiveStatus();
+
   // Retrieve |psm_device_active_secret_|.
   const std::string& GetPsmDeviceActiveSecret() const;
 
@@ -250,6 +259,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // Client Generates protos used in request body of Oprf and Query requests.
   std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>
       psm_rlwe_client_;
+
+  // The churn_active_status is used for Churn Cohort and Observation use
+  // cases to calculate the churn active status metadata.
+  ChurnActiveStatus* churn_active_status_ = nullptr;
 };
 
 }  // namespace device_activity
