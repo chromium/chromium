@@ -40,14 +40,6 @@ class ShareServiceBrowserTest : public InProcessBrowserTest {
     feature_list_.InitAndEnableFeature(features::kWebShare);
   }
 
-  void SetUp() override {
-#if BUILDFLAG(IS_WIN)
-    if (!webshare::ScopedShareOperationFakeComponents::IsSupportedEnvironment())
-      GTEST_SKIP();
-#endif
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 #if BUILDFLAG(IS_CHROMEOS)

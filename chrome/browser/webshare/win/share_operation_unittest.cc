@@ -66,9 +66,6 @@ class ShareOperationUnitTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    if (!ScopedShareOperationFakeComponents::IsSupportedEnvironment())
-      GTEST_SKIP();
-
     ASSERT_NO_FATAL_FAILURE(scoped_fake_components_.SetUp());
     ShareOperation::SetMaxFileBytesForTesting(kMaxSharedFileBytesForTest);
   }
@@ -466,31 +463,6 @@ TEST_F(ShareOperationUnitTest, FilesTotallingLargerThanSizeLimit) {
   ASSERT_NO_FATAL_FAILURE(ReadFile(shared_file_2.Get(), file2_contents));
   ASSERT_LT(file1_contents.length() + file2_contents.length(),
             kMaxSharedFileBytesForTest + 1);
-}
-
-class ShareOperationInUnsupportedEnvironmentUnitTest
-    : public ShareOperationUnitTest {
- public:
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-
-    if (ScopedShareOperationFakeComponents::IsSupportedEnvironment())
-      GTEST_SKIP();
-  }
-};
-
-TEST_F(ShareOperationInUnsupportedEnvironmentUnitTest, GracefullyFails) {
-  base::RunLoop run_loop;
-  std::vector<blink::mojom::SharedFilePtr> files;
-  ShareOperation operation{"shared title", "shared text",
-                           GURL("https://www.contoso.com"), std::move(files),
-                           web_contents()};
-  operation.Run(
-      base::BindLambdaForTesting([&run_loop](blink::mojom::ShareError error) {
-        ASSERT_EQ(error, blink::mojom::ShareError::INTERNAL_ERROR);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
 }
 
 }  // namespace webshare

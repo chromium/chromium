@@ -62,9 +62,6 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
         base::BindRepeating(&ShareServiceUnitTest::AcceptShareRequest));
 #endif
 #if BUILDFLAG(IS_WIN)
-    if (!webshare::ScopedShareOperationFakeComponents::IsSupportedEnvironment())
-      GTEST_SKIP();
-
     ASSERT_NO_FATAL_FAILURE(scoped_fake_components_.SetUp());
 #endif
   }

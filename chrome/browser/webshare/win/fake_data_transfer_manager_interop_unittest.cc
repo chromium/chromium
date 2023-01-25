@@ -55,8 +55,6 @@ class DataRequestedTestCallback {
 class FakeDataTransferManagerInteropTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    if (!FakeDataTransferManagerInterop::IsSupportedEnvironment())
-      GTEST_SKIP();
     fake_data_transfer_manager_interop_ =
         Microsoft::WRL::Make<FakeDataTransferManagerInterop>();
   }

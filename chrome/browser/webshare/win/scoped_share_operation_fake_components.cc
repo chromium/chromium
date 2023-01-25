@@ -54,11 +54,6 @@ static HRESULT FakeRoGetActivationFactory(HSTRING class_id,
 
 }  // namespace
 
-// static
-bool ScopedShareOperationFakeComponents::IsSupportedEnvironment() {
-  return ScopedFakeDataTransferManagerInterop::IsSupportedEnvironment();
-}
-
 ScopedShareOperationFakeComponents::ScopedShareOperationFakeComponents() =
     default;
 
@@ -71,7 +66,6 @@ ScopedShareOperationFakeComponents::~ScopedShareOperationFakeComponents() {
 }
 
 void ScopedShareOperationFakeComponents::SetUp() {
-  ASSERT_TRUE(IsSupportedEnvironment());
   base::win::AssertComInitialized();
 
   ASSERT_NO_FATAL_FAILURE(scoped_fake_data_transfer_manager_interop_.SetUp());

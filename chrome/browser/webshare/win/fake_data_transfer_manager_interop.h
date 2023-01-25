@@ -47,8 +47,6 @@ class FakeDataTransferManagerInterop final
     SucceedWithoutAction
   };
 
-  static bool IsSupportedEnvironment();
-
   FakeDataTransferManagerInterop();
   FakeDataTransferManagerInterop(const FakeDataTransferManagerInterop&) =
       delete;

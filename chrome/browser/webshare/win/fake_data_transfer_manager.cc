@@ -12,7 +12,6 @@
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_hstring.h"
 #include "base/win/vector.h"
-#include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ABI::Windows::ApplicationModel::DataTransfer::DataPackage;
@@ -403,10 +402,6 @@ class FakeDataRequestedEventArgs final
 }  // namespace
 
 // static
-bool FakeDataTransferManager::IsSupportedEnvironment() {
-  return base::win::GetVersion() >= base::win::Version::WIN10;
-}
-
 FakeDataTransferManager::FakeDataTransferManager() {
   post_data_requested_callback_ = base::DoNothing();
 }

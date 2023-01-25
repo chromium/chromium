@@ -38,11 +38,6 @@ static HRESULT FakeRoGetActivationFactory(HSTRING class_id,
 
 }  // namespace
 
-// static
-bool ScopedFakeDataTransferManagerInterop::IsSupportedEnvironment() {
-  return FakeDataTransferManagerInterop::IsSupportedEnvironment();
-}
-
 ScopedFakeDataTransferManagerInterop::ScopedFakeDataTransferManagerInterop() =
     default;
 
@@ -56,7 +51,6 @@ ScopedFakeDataTransferManagerInterop::~ScopedFakeDataTransferManagerInterop() {
 
 void ScopedFakeDataTransferManagerInterop::SetUp() {
   ASSERT_FALSE(set_up_);
-  ASSERT_TRUE(IsSupportedEnvironment());
   base::win::AssertComInitialized();
 
   instance_ = Microsoft::WRL::Make<FakeDataTransferManagerInterop>();

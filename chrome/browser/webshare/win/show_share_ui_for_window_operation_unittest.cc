@@ -41,8 +41,6 @@ class ShowShareUIForWindowOperationTest : public ::testing::Test {
   enum TestCallbackState { NotRun = 0, RunWithoutValue, RunWithValue };
 
   void SetUp() override {
-    if (!ScopedFakeDataTransferManagerInterop::IsSupportedEnvironment())
-      GTEST_SKIP();
     ASSERT_NO_FATAL_FAILURE(scoped_interop_.SetUp());
     operation_ = std::make_unique<ShowShareUIForWindowOperation>(hwnd_);
     auto weak_ptr = weak_factory_.GetWeakPtr();

@@ -93,9 +93,6 @@ class DataRequestedTestCallback {
 class FakeDataTransferManagerTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    if (!FakeDataTransferManager::IsSupportedEnvironment())
-      GTEST_SKIP();
-
     winrt_initializer_.emplace();
     ASSERT_TRUE(winrt_initializer_->Succeeded());
     fake_data_transfer_manager_ =

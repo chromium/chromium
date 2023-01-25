@@ -48,8 +48,6 @@ class __declspec(uuid("53CA4C00-6F19-40C1-A740-F66510E2DB40"))
   using PostDataRequestedCallback =
       base::RepeatingCallback<void(const DataRequestedContent&)>;
 
-  static bool IsSupportedEnvironment();
-
   FakeDataTransferManager();
   FakeDataTransferManager(const FakeDataTransferManager&) = delete;
   FakeDataTransferManager& operator=(const FakeDataTransferManager&) = delete;

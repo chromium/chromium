@@ -21,8 +21,6 @@ class FakeUriRuntimeClassFactory;
 // ShareOperation.
 class ScopedShareOperationFakeComponents final {
  public:
-  static bool IsSupportedEnvironment();
-
   ScopedShareOperationFakeComponents();
   ScopedShareOperationFakeComponents(
       const ScopedShareOperationFakeComponents&) = delete;

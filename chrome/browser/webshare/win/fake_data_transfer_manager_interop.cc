@@ -13,11 +13,6 @@
 
 namespace webshare {
 
-// static
-bool FakeDataTransferManagerInterop::IsSupportedEnvironment() {
-  return FakeDataTransferManager::IsSupportedEnvironment();
-}
-
 FakeDataTransferManagerInterop::FakeDataTransferManagerInterop() = default;
 
 FakeDataTransferManagerInterop::~FakeDataTransferManagerInterop() {
