@@ -6,19 +6,20 @@
 # It has been adapted for use with the Web Platform Test Suite suite at
 # https://github.com/web-platform-tests/wpt/
 #
-# The original version had a number of now-removed features (multiple versions of
-# each test case of varying verbosity, Mozilla mochitests, semi-automated test
-# harness). It also had a different directory structure.
+# The original version had a number of now-removed features (multiple versions
+# of each test case of varying verbosity, Mozilla mochitests, semi-automated
+# test harness). It also had a different directory structure.
 
 # To update or add test cases:
 #
 # * Modify the tests*.yaml files.
-# 'name' is an arbitrary hierarchical name to help categorise tests.
-# 'desc' is a rough description of what behaviour the test aims to test.
-# 'code' is JavaScript code to execute, with some special commands starting with '@'
-# 'expected' is what the final canvas output should be: a string 'green' or 'clear'
-# (100x50 images in both cases), or a string 'size 100 50' (or any other size)
-# followed by Python code using Pycairo to generate the image.
+#  - 'name' is an arbitrary hierarchical name to help categorise tests.
+#  - 'desc' is a rough description of what behaviour the test aims to test.
+#  - 'code' is JavaScript code to execute, with some special commands starting
+#    with '@'.
+#  - 'expected' is what the final canvas output should be: a string 'green' or
+#    'clear' (100x50 images in both cases), or a string 'size 100 50' (or any
+#    other size) followed by Python code using Pycairo to generate the image.
 #
 # * Run "./build.sh".
 # This requires a few Python modules which might not be ubiquitous.
@@ -44,9 +45,10 @@ except ImportError:
     import cairo
 
 try:
-    import syck as yaml # compatible and lots faster
+    import syck as yaml  # compatible and lots faster
 except ImportError:
     import yaml
+
 
 def genTestUtils_union(TEMPLATEFILE, NAME2DIRFILE):
     CANVASOUTPUTDIR = '../element'
@@ -60,11 +62,13 @@ def genTestUtils_union(TEMPLATEFILE, NAME2DIRFILE):
 
     def escapeJS(str):
         str = simpleEscapeJS(str)
-        str = re.sub(r'\[(\w+)\]', r'[\\""+(\1)+"\\"]', str) # kind of an ugly hack, for nicer failure-message output
+        # Kind of an ugly hack, for nicer failure-message output.
+        str = re.sub(r'\[(\w+)\]', r'[\\""+(\1)+"\\"]', str)
         return str
 
     def escapeHTML(str):
-        return str.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
+        return str.replace('&', '&amp;').replace('<', '&lt;').replace(
+            '>', '&gt;').replace('"', '&quot;')
 
     def expand_nonfinite(method, argstr, tail):
         """
@@ -90,7 +94,7 @@ def genTestUtils_union(TEMPLATEFILE, NAME2DIRFILE):
             args.append(a.split(' '))
         calls = []
         # Start with the valid argument list
-        call = [ args[j][0] for j in range(len(args)) ]
+        call = [args[j][0] for j in range(len(args))]
         # For each argument alone, try setting it to all its invalid values:
         for i in range(len(args)):
             for a in args[i][1:]:
@@ -107,10 +111,12 @@ def genTestUtils_union(TEMPLATEFILE, NAME2DIRFILE):
                     c2 = c[:]
                     c2[i] = a
                     if depth > 0: calls.append(c2)
-                    f(c2, i+1, depth+1)
+                    f(c2, i + 1, depth + 1)
+
         f(call, 0, 0)
 
-        return '\n'.join('%s(%s)%s' % (method, ', '.join(c), tail) for c in calls)
+        return '\n'.join('%s(%s)%s' % (method, ', '.join(c), tail)
+                         for c in calls)
 
     # Run with --test argument to run unit tests
     if len(sys.argv) > 1 and sys.argv[1] == '--test':
@@ -124,13 +130,16 @@ def genTestUtils_union(TEMPLATEFILE, NAME2DIRFILE):
     tests = []
     test_yaml_directory = "yaml-new"
     TESTSFILES = [
-        os.path.join(test_yaml_directory, f) for f in os.listdir(test_yaml_directory)
-        if f.endswith(".yaml")]
-    for t in sum([ yaml.safe_load(open(f, "r").read()) for f in TESTSFILES], []):
+        os.path.join(test_yaml_directory, f)
+        for f in os.listdir(test_yaml_directory) if f.endswith(".yaml")
+    ]
+    for t in sum([yaml.safe_load(open(f, "r").read()) for f in TESTSFILES],
+                 []):
         if 'DISABLED' in t:
             continue
         if 'meta' in t:
-            eval(compile(t['meta'], '<meta test>', 'exec'), {}, {'tests':tests})
+            eval(compile(t['meta'], '<meta test>', 'exec'), {},
+                 {'tests': tests})
         else:
             tests.append(t)
 
@@ -142,19 +151,24 @@ def genTestUtils_union(TEMPLATEFILE, NAME2DIRFILE):
         backrefs = []
         c = ''
         for p in name.split('.')[:-1]:
-            c += '.'+p
+            c += '.' + p
             backrefs.append('<a href="index%s.html">%s</a>.' % (c, p))
         backrefs.append(name.split('.')[-1])
         return ''.join(backrefs)
 
     # Ensure the test output directories exist
-    testdirs = [CANVASOUTPUTDIR, OFFSCREENCANVASOUTPUTDIR, CANVASIMAGEOUTPUTDIR, OFFSCREENCANVASIMAGEOUTPUTDIR, MISCOUTPUTDIR]
+    testdirs = [
+        CANVASOUTPUTDIR, OFFSCREENCANVASOUTPUTDIR, CANVASIMAGEOUTPUTDIR,
+        OFFSCREENCANVASIMAGEOUTPUTDIR, MISCOUTPUTDIR
+    ]
     for map_dir in set(name_mapping.values()):
         testdirs.append("%s/%s" % (CANVASOUTPUTDIR, map_dir))
         testdirs.append("%s/%s" % (OFFSCREENCANVASOUTPUTDIR, map_dir))
     for d in testdirs:
-        try: os.mkdir(d)
-        except: pass # ignore if it already exists
+        try:
+            os.mkdir(d)
+        except:
+            pass  # ignore if it already exists
 
     used_images = {}
 
@@ -165,61 +179,56 @@ def genTestUtils_union(TEMPLATEFILE, NAME2DIRFILE):
                 mapped_name = "%s/%s" % (name_mapping[mn], name)
                 break
         if not mapped_name:
-            print("LIKELY ERROR: %s has no defined target directory mapping" % name)
+            print("LIKELY ERROR: %s has no defined target directory mapping" %
+                  name)
         if 'manual' in test:
             mapped_name += "-manual"
         return mapped_name
 
     def expand_test_code(code):
-        code = re.sub(r'@nonfinite ([^(]+)\(([^)]+)\)(.*)', lambda m: expand_nonfinite(m.group(1), m.group(2), m.group(3)), code) # must come before '@assert throws'
+        code = re.sub(r'@nonfinite ([^(]+)\(([^)]+)\)(.*)', lambda m:
+                      expand_nonfinite(m.group(1), m.group(2), m.group(3)),
+                      code)  # must come before '@assert throws'
 
         code = re.sub(r'@assert pixel (\d+,\d+) == (\d+,\d+,\d+,\d+);',
-                    r'_assertPixel(canvas, \1, \2);',
-                    code)
+                      r'_assertPixel(canvas, \1, \2);', code)
 
         code = re.sub(r'@assert pixel (\d+,\d+) ==~ (\d+,\d+,\d+,\d+);',
-                    r'_assertPixelApprox(canvas, \1, \2, 2);',
-                    code)
+                      r'_assertPixelApprox(canvas, \1, \2, 2);', code)
 
-        code = re.sub(r'@assert pixel (\d+,\d+) ==~ (\d+,\d+,\d+,\d+) \+/- (\d+);',
-                    r'_assertPixelApprox(canvas, \1, \2, \3);',
-                    code)
+        code = re.sub(
+            r'@assert pixel (\d+,\d+) ==~ (\d+,\d+,\d+,\d+) \+/- (\d+);',
+            r'_assertPixelApprox(canvas, \1, \2, \3);', code)
 
         code = re.sub(r'@assert throws (\S+_ERR) (.*);',
-                r'assert_throws_dom("\1", function() { \2; });',
-                code)
+                      r'assert_throws_dom("\1", function() { \2; });', code)
 
         code = re.sub(r'@assert throws (\S+Error) (.*);',
-                r'assert_throws_js(\1, function() { \2; });',
-                code)
+                      r'assert_throws_js(\1, function() { \2; });', code)
 
-        code = re.sub(r'@assert (.*) === (.*);',
-                lambda m: '_assertSame(%s, %s, "%s", "%s");'
-                    % (m.group(1), m.group(2), escapeJS(m.group(1)), escapeJS(m.group(2)))
-                , code)
+        code = re.sub(
+            r'@assert (.*) === (.*);', lambda m:
+            '_assertSame(%s, %s, "%s", "%s");' % (m.group(1), m.group(
+                2), escapeJS(m.group(1)), escapeJS(m.group(2))), code)
 
-        code = re.sub(r'@assert (.*) !== (.*);',
-                lambda m: '_assertDifferent(%s, %s, "%s", "%s");'
-                    % (m.group(1), m.group(2), escapeJS(m.group(1)), escapeJS(m.group(2)))
-                , code)
+        code = re.sub(
+            r'@assert (.*) !== (.*);', lambda m:
+            '_assertDifferent(%s, %s, "%s", "%s");' % (m.group(1), m.group(
+                2), escapeJS(m.group(1)), escapeJS(m.group(2))), code)
 
-        code = re.sub(r'@assert (.*) =~ (.*);',
-                lambda m: 'assert_regexp_match(%s, %s);'
-                    % (m.group(1), m.group(2))
-                , code)
+        code = re.sub(
+            r'@assert (.*) =~ (.*);', lambda m: 'assert_regexp_match(%s, %s);'
+            % (m.group(1), m.group(2)), code)
 
-        code = re.sub(r'@assert (.*);',
-                lambda m: '_assert(%s, "%s");'
-                    % (m.group(1), escapeJS(m.group(1)))
-                , code)
+        code = re.sub(
+            r'@assert (.*);', lambda m: '_assert(%s, "%s");' % (m.group(
+                1), escapeJS(m.group(1))), code)
 
         code = re.sub(r' @moz-todo', '', code)
 
-        code = re.sub(r'@moz-UniversalBrowserRead;',
-                ""
-                , code)
+        code = re.sub(r'@moz-UniversalBrowserRead;', "", code)
 
-        assert('@' not in code)
+        assert ('@' not in code)
 
         return code
 
@@ -238,7 +247,7 @@ def genTestUtils_union(TEMPLATEFILE, NAME2DIRFILE):
                     OffscreenCanvas_test = True
 
         name = test['name']
-        print("\r(%s)" % name, " "*32, "\t")
+        print("\r(%s)" % name, " " * 32, "\t")
 
         if name in used_tests:
             print("Test %s is defined twice" % name)
@@ -248,15 +257,16 @@ def genTestUtils_union(TEMPLATEFILE, NAME2DIRFILE):
         if not mapped_name:
             mapped_name = name
 
-
         cat_total = ''
         for cat_part in [''] + name.split('.')[:-1]:
-            cat_total += cat_part+'.'
-            if not cat_total in category_names: category_names.append(cat_total)
+            cat_total += cat_part + '.'
+            if not cat_total in category_names:
+                category_names.append(cat_total)
             category_contents_all.setdefault(cat_total, []).append(name)
         category_contents_direct.setdefault(cat_total, []).append(name)
 
-        if test.get('expected', '') == 'green' and re.search(r'@assert pixel .* 0,0,0,0;', test['code']):
+        if test.get('expected', '') == 'green' and re.search(
+                r'@assert pixel .* 0,0,0,0;', test['code']):
             print("Probable incorrect pixel test in %s" % name)
 
         code_canvas = expand_test_code(test['code']).strip()
@@ -272,43 +282,57 @@ def genTestUtils_union(TEMPLATEFILE, NAME2DIRFILE):
             else:
                 if ';' in expected:
                     print("Found semicolon in %s" % name)
-                expected = re.sub(r'^size (\d+) (\d+)',
-                    r'surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, \1, \2)\ncr = cairo.Context(surface)',
-                                  expected)
+                expected = re.sub(
+                    r'^size (\d+) (\d+)',
+                    r'surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, \1, \2)'
+                    r'\ncr = cairo.Context(surface)', expected)
 
                 if mapped_name.endswith("-manual"):
                     png_name = mapped_name[:-len("-manual")]
                 else:
                     png_name = mapped_name
-                expected_canvas = expected + "\nsurface.write_to_png('%s/%s.png')\n" % (CANVASIMAGEOUTPUTDIR, png_name)
-                eval(compile(expected_canvas, '<test %s>' % test['name'], 'exec'), {}, {'cairo':cairo})
+                expected_canvas = (expected +
+                                   "\nsurface.write_to_png('%s/%s.png')\n" %
+                                   (CANVASIMAGEOUTPUTDIR, png_name))
+                eval(
+                    compile(expected_canvas, '<test %s>' % test['name'],
+                            'exec'), {}, {'cairo': cairo})
 
-                expected_offscreencanvas = expected + "\nsurface.write_to_png('%s/%s.png')\n" % (OFFSCREENCANVASIMAGEOUTPUTDIR, png_name)
-                eval(compile(expected_offscreencanvas, '<test %s>' % test['name'], 'exec'), {}, {'cairo':cairo})
+                expected_offscreencanvas = (
+                    expected + "\nsurface.write_to_png('%s/%s.png')\n" %
+                    (OFFSCREENCANVASIMAGEOUTPUTDIR, png_name))
+                eval(
+                    compile(expected_offscreencanvas,
+                            '<test %s>' % test['name'], 'exec'), {},
+                    {'cairo': cairo})
 
                 expected_img = "%s.png" % name
 
             if expected_img:
-                expectation_html = ('<p class="output expectedtext">Expected output:' +
-                    '<p><img src="%s" class="output expected" id="expected" alt="">' % (expected_img))
+                expectation_html = (
+                    '<p class="output expectedtext">Expected output:<p>'
+                    '<img src="%s" class="output expected" id="expected" '
+                    'alt="">' % expected_img)
 
         canvas = test.get('canvas', 'width="100" height="50"')
 
-        prev = tests[i-1]['name'] if i != 0 else 'index'
-        next = tests[i+1]['name'] if i != len(tests)-1 else 'index'
+        prev = tests[i - 1]['name'] if i != 0 else 'index'
+        next = tests[i + 1]['name'] if i != len(tests) - 1 else 'index'
 
         name_wrapped = name.replace('.', '.&#8203;')
 
         notes = '<p class="notes">%s' % test['notes'] if 'notes' in test else ''
 
-        timeout = '\n<meta name="timeout" content="%s">' % test['timeout'] if 'timeout' in test else ''
+        timeout = ('\n<meta name="timeout" content="%s">' %
+                   test['timeout'] if 'timeout' in test else '')
 
         scripts = ''
         for s in test.get('scripts', []):
             scripts += '<script src="%s"></script>\n' % (s)
 
         variants = test.get('script-variants', {})
-        script_variants = [(v, '<script src="%s"></script>\n' % (s)) for (v, s) in variants.items()]
+        script_variants = [(v, '<script src="%s"></script>\n' % (s))
+                           for (v, s) in variants.items()]
         if not script_variants:
             script_variants = [('', '')]
 
@@ -318,26 +342,30 @@ def genTestUtils_union(TEMPLATEFILE, NAME2DIRFILE):
             if '/' not in i:
                 used_images[i] = 1
                 i = '../images/%s' % i
-            images += '<img src="%s" id="%s" class="resource">\n' % (i,id)
+            images += '<img src="%s" id="%s" class="resource">\n' % (i, id)
         for i in test.get('svgimages', []):
             id = i.split('/')[-1]
             if '/' not in i:
                 used_images[i] = 1
                 i = '../images/%s' % i
-            images += '<svg><image xlink:href="%s" id="%s" class="resource"></svg>\n' % (i,id)
+            images += ('<svg><image xlink:href="%s" id="%s" class="resource">'
+                       '</svg>\n' % (i, id))
         images = images.replace("../images/", "/images/")
 
         fonts = ''
         fonthack = ''
         for i in test.get('fonts', []):
-            fonts += '@font-face {\n  font-family: %s;\n  src: url("/fonts/%s.ttf");\n}\n' % (i, i)
+            fonts += ('@font-face {\n  font-family: %s;\n'
+                      '  src: url("/fonts/%s.ttf");\n}\n' % (i, i))
             # Browsers require the font to actually be used in the page
             if test.get('fonthack', 1):
-                fonthack += '<span style="font-family: %s; position: absolute; visibility: hidden">A</span>\n' % i
+                fonthack += ('<span style="font-family: %s; position: '
+                             'absolute; visibility: hidden">A</span>\n' % i)
         if fonts:
             fonts = '<style>\n%s</style>\n' % fonts
 
-        fallback = test.get('fallback', '<p class="fallback">FAIL (fallback content)</p>')
+        fallback = test.get('fallback',
+                            '<p class="fallback">FAIL (fallback content)</p>')
 
         desc = test.get('desc', '')
         escaped_desc = simpleEscapeJS(desc)
@@ -353,35 +381,58 @@ def genTestUtils_union(TEMPLATEFILE, NAME2DIRFILE):
             name_variant = '' if not variant else '.' + variant
 
             template_params = {
-                'name':name + name_variant,
-                'name_wrapped':name_wrapped, 'backrefs':backref_html(name),
-                'mapped_name':mapped_name,
-                'desc':desc, 'escaped_desc':escaped_desc,
-                'prev':prev, 'next':next, 'notes':notes, 'images':images,
-                'fonts':fonts, 'fonthack':fonthack, 'timeout': timeout,
-                'canvas':canvas, 'expected':expectation_html, 'code':code_canvas,
-                'scripts':scripts + extra_script,
-                'fallback':fallback, 'attributes':attributes,
+                'name': name + name_variant,
+                'name_wrapped': name_wrapped,
+                'backrefs': backref_html(name),
+                'mapped_name': mapped_name,
+                'desc': desc,
+                'escaped_desc': escaped_desc,
+                'prev': prev,
+                'next': next,
+                'notes': notes,
+                'images': images,
+                'fonts': fonts,
+                'fonthack': fonthack,
+                'timeout': timeout,
+                'canvas': canvas,
+                'expected': expectation_html,
+                'code': code_canvas,
+                'scripts': scripts + extra_script,
+                'fallback': fallback,
+                'attributes': attributes,
                 'context_args': context_args
             }
 
             # Create test cases for canvas and offscreencanvas.
             if HTMLCanvas_test:
-                f = codecs.open('%s/%s%s.html' % (CANVASOUTPUTDIR, mapped_name, name_variant), 'w', 'utf-8')
+                f = codecs.open(
+                    '%s/%s%s.html' %
+                    (CANVASOUTPUTDIR, mapped_name, name_variant), 'w', 'utf-8')
                 f.write(templates['w3ccanvas'] % template_params)
             if OffscreenCanvas_test:
-                f_html = codecs.open('%s/%s%s.html' % (OFFSCREENCANVASOUTPUTDIR, mapped_name, name_variant), 'w', 'utf-8')
-                f_worker = codecs.open('%s/%s%s.worker.js' % (OFFSCREENCANVASOUTPUTDIR, mapped_name, name_variant), 'w', 'utf-8')
+                f_html = codecs.open(
+                    '%s/%s%s.html' %
+                    (OFFSCREENCANVASOUTPUTDIR, mapped_name, name_variant), 'w',
+                    'utf-8')
+                f_worker = codecs.open(
+                    '%s/%s%s.worker.js' %
+                    (OFFSCREENCANVASOUTPUTDIR, mapped_name, name_variant), 'w',
+                    'utf-8')
                 if ("then(t_pass, t_fail);" in code_canvas):
-                    temp_offscreen = templates['w3coffscreencanvas'].replace("t.done();\n", "")
-                    temp_worker = templates['w3cworker'].replace("t.done();\n", "")
+                    temp_offscreen = templates['w3coffscreencanvas'].replace(
+                        "t.done();\n", "")
+                    temp_worker = templates['w3cworker'].replace(
+                        "t.done();\n", "")
                     f_html.write(temp_offscreen % template_params)
-                    timeout = '// META: timeout=%s\n' % test['timeout'] if 'timeout' in test else ''
+                    timeout = ('// META: timeout=%s\n' %
+                               test['timeout'] if 'timeout' in test else '')
                     template_params['timeout'] = timeout
                     f_worker.write(temp_worker % template_params)
                 else:
-                    f_html.write(templates['w3coffscreencanvas'] % template_params)
-                    timeout = '// META: timeout=%s\n' % test['timeout'] if 'timeout' in test else ''
+                    f_html.write(templates['w3coffscreencanvas'] %
+                                 template_params)
+                    timeout = ('// META: timeout=%s\n' %
+                               test['timeout'] if 'timeout' in test else '')
                     template_params['timeout'] = timeout
                     f_worker.write(templates['w3cworker'] % template_params)
     print()
