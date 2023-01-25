@@ -22,6 +22,7 @@ class NotificationBlocker;
 namespace ash {
 
 class ArcNotificationManagerBase;
+class AshNotificationDragController;
 class FullscreenNotificationBlocker;
 class PhoneHubNotificationController;
 class InactiveUserNotificationBlocker;
@@ -52,6 +53,10 @@ class ASH_EXPORT MessageCenterController
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
+  AshNotificationDragController* drag_controller() {
+    return drag_controller_.get();
+  }
+
   InactiveUserNotificationBlocker*
   inactive_user_notification_blocker_for_testing() {
     return inactive_user_notification_blocker_.get();
@@ -74,6 +79,9 @@ class ASH_EXPORT MessageCenterController
 
   std::unique_ptr<PhoneHubNotificationController>
       phone_hub_notification_controller_;
+
+  // Exists only if the notification drag feature is enabled.
+  std::unique_ptr<AshNotificationDragController> drag_controller_;
 
   base::ObserverList<Observer> observers_;
 };

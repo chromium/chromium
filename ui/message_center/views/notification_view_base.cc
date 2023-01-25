@@ -185,7 +185,9 @@ void CompactTitleMessageView::set_message(const std::u16string& message) {
 // LargeImageView //////////////////////////////////////////////////////////////
 
 LargeImageView::LargeImageView(const gfx::Size& max_size)
-    : max_size_(max_size), min_size_(max_size_.width(), /*height=*/0) {}
+    : max_size_(max_size), min_size_(max_size_.width(), /*height=*/0) {
+  SetID(NotificationViewBase::kLargeImageView);
+}
 
 LargeImageView::~LargeImageView() = default;
 

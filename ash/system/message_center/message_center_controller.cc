@@ -4,6 +4,7 @@
 
 #include "ash/system/message_center/message_center_controller.h"
 
+#include <memory>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -15,6 +16,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/message_center/arc_notification_manager_delegate_impl.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
+#include "ash/system/message_center/ash_notification_drag_controller.h"
 #include "ash/system/message_center/fullscreen_notification_blocker.h"
 #include "ash/system/message_center/inactive_user_notification_blocker.h"
 #include "ash/system/message_center/session_state_notification_blocker.h"
@@ -114,6 +116,10 @@ MessageCenterController::MessageCenterController() {
   // "ChromiumOS").
   message_center::MessageCenter::Get()->SetSystemNotificationAppName(
       l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME));
+
+  if (features::IsNotificationImageDragEnabled()) {
+    drag_controller_ = std::make_unique<AshNotificationDragController>();
+  }
 }
 
 MessageCenterController::~MessageCenterController() {

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -20,9 +21,11 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/system/message_center/ash_notification_control_button_factory.h"
+#include "ash/system/message_center/ash_notification_drag_controller.h"
 #include "ash/system/message_center/ash_notification_expand_button.h"
 #include "ash/system/message_center/ash_notification_input_container.h"
 #include "ash/system/message_center/message_center_constants.h"
+#include "ash/system/message_center/message_center_controller.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/message_center/metrics_utils.h"
@@ -38,6 +41,8 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/animation_throughput_reporter.h"
+#include "ui/compositor/canvas_painter.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -45,9 +50,11 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
@@ -71,6 +78,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/drag_utils.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
@@ -411,6 +419,11 @@ AshNotificationView::AshNotificationView(
       is_grouped_parent_view_(notification.group_parent()),
       is_grouped_child_view_(notification.group_child()),
       shown_in_popup_(shown_in_popup) {
+  if (features::IsNotificationImageDragEnabled()) {
+    set_drag_controller(
+        Shell::Get()->message_center_controller()->drag_controller());
+  }
+
   message_center_observer_.Observe(message_center::MessageCenter::Get());
   // TODO(crbug/1232197): fix views and layout to match spec.
   // Instantiate view instances and define layout and view hierarchy.
@@ -788,6 +801,51 @@ void AshNotificationView::ToggleExpand() {
 
 void AshNotificationView::GroupedNotificationsPreferredSizeChanged() {
   PreferredSizeChanged();
+}
+
+absl::optional<gfx::Rect> AshNotificationView::GetDragAreaBounds() const {
+  DCHECK(features::IsNotificationImageDragEnabled());
+  if (!IsDraggable()) {
+    return absl::nullopt;
+  }
+
+  const views::View* large_image_view =
+      GetViewByID(message_center::NotificationViewBase::kLargeImageView);
+  gfx::RectF larget_image_bounds(large_image_view->GetLocalBounds());
+  views::View::ConvertRectToTarget(large_image_view, /*target=*/this,
+                                   &larget_image_bounds);
+  return gfx::ToEnclosedRect(larget_image_bounds);
+}
+
+absl::optional<gfx::ImageSkia> AshNotificationView::GetDragImage() {
+  DCHECK(features::IsNotificationImageDragEnabled());
+  if (!IsDraggable()) {
+    return absl::nullopt;
+  }
+
+  // Assume that an Ash notification has at most one large image view.
+  views::View* large_image_view =
+      GetViewByID(message_center::NotificationViewBase::kLargeImageView);
+
+  // Paint `large_image_view` on a bitmap.
+  const gfx::Size& image_view_size = large_image_view->size();
+  const views::Widget* widget = GetWidget();
+  const float scale = views::ScaleFactorForDragFromWidget(widget);
+  SkBitmap bitmap;
+  large_image_view->Paint(views::PaintInfo::CreateRootPaintInfo(
+      ui::CanvasPainter(&bitmap, image_view_size, scale,
+                        /*clear_color=*/SK_ColorTRANSPARENT,
+                        widget->GetCompositor()->is_pixel_canvas())
+          .context(),
+      image_view_size));
+
+  return gfx::ImageSkia::CreateFromBitmap(bitmap, scale);
+}
+
+bool AshNotificationView::IsDraggable() const {
+  // A notification view is draggable only when it contains a large image.
+  DCHECK(features::IsNotificationImageDragEnabled());
+  return GetViewByID(message_center::NotificationViewBase::kLargeImageView);
 }
 
 base::TimeDelta AshNotificationView::GetBoundsAnimationDuration(

@@ -70,6 +70,20 @@ class ASH_EXPORT AshNotificationView
   // Called when a child notificaiton's preferred size changes.
   void GroupedNotificationsPreferredSizeChanged();
 
+  // Drag related functions ----------------------------------------------------
+
+  // Returns the bounds of the area where the drag can be initiated. The
+  // returned bounds are in `AshNotificationView` local coordinates. Returns
+  // `absl::nullopt` if the notification view is not draggable.
+  absl::optional<gfx::Rect> GetDragAreaBounds() const;
+
+  // Returns the drag image shown when the ash notification is under drag.
+  // Returns `absl::nullopt` if the notification view is not draggable.
+  absl::optional<gfx::ImageSkia> GetDragImage();
+
+  // Returns true if the notification view is draggable.
+  bool IsDraggable() const;
+
   // message_center::MessageView:
   void AddGroupNotification(
       const message_center::Notification& notification) override;
@@ -144,7 +158,7 @@ class ASH_EXPORT AshNotificationView
   END_VIEW_BUILDER
 
  private:
-  friend class AshNotificationViewTest;
+  friend class AshNotificationViewTestBase;
   friend class NotificationGroupingControllerTest;
 
   // Customized title row for this notification view with added timestamp in
@@ -177,7 +191,7 @@ class ASH_EXPORT AshNotificationView
     views::Label* title_view() { return title_view_; }
 
    private:
-    friend class AshNotificationViewTest;
+    friend class AshNotificationViewTestBase;
     // Showing notification title.
     views::Label* const title_view_;
 
