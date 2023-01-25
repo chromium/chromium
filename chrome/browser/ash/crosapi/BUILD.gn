@@ -308,6 +308,7 @@ source_set("crosapi") {
     "//chromeos/startup:constants",
     "//chromeos/ui/wm:wm",
     "//chromeos/version",
+    "//components/app_restore",
     "//components/arc",
     "//components/crash/core/app",
     "//components/exo",

@@ -4776,6 +4776,7 @@ if (is_chromeos_lacros) {
       # dlp_content_manager_lacros_browsertest.cc should become a unit test.
       "../browser/chromeos/policy/dlp/dlp_content_manager_lacros_browsertest.cc",
       "../browser/extensions/api/shared_storage/shared_storage_private_apitest.cc",
+      "../browser/lacros/desk_template_client_lacros_browsertest.cc",
       "../browser/lacros/device_attributes_lacros_browsertest.cc",
 
       # download_controller_client_lacros_browsertest.cc should become a unit

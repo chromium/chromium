@@ -31,6 +31,7 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/desk_template.mojom.h"
+#include "components/component_updater/component_updater_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler_observer.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -38,6 +39,7 @@
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/values_util.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "components/tab_groups/tab_group_info.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
@@ -208,16 +210,22 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // |x_offset| is in DIP coordinates.
   void HandleTabScrubbing(float x_offset);
 
-  // Create a browser with the restored data containing |urls|,
-  // |bounds|, |show_state|, |active_tab_index| and |app_name|. Note an
-  // non-empty |app_name| indicates that the browser window is an app type
-  // browser window.
-  void CreateBrowserWithRestoredData(const std::vector<GURL>& urls,
-                                     const gfx::Rect& bounds,
-                                     const ui::WindowShowState show_state,
-                                     int32_t active_tab_index,
-                                     const std::string& app_name,
-                                     int32_t restore_window_id);
+  // Create a browser with the restored data containing `urls`,
+  // `bounds`,`tab_group_infos`, `show_state`, `active_tab_index`,
+  // `first_non_pinned_tab_index`, and `app_name`. Note an non-empty `app_name`
+  // indicates that the browser window is an app type browser window.  Also
+  // note that` first_non_pinned_tab_indexes` with negative values are ignored
+  // type constratins for the `first_non_pinned_tab_index` and are enforced on
+  // the browser side and are dropped if they don't comply with said restraints.
+  void CreateBrowserWithRestoredData(
+      const std::vector<GURL>& urls,
+      const gfx::Rect& bounds,
+      const std::vector<tab_groups::TabGroupInfo>& tab_group_infos,
+      const ui::WindowShowState show_state,
+      int32_t active_tab_index,
+      int32_t first_non_pinned_tab_index,
+      const std::string& app_name,
+      int32_t restore_window_id);
 
   // Initialize resources and start Lacros. This class provides two approaches
   // to fulfill different requirements.

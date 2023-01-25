@@ -318,7 +318,6 @@ void ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk(
   }
 
   if (app_id == app_constants::kLacrosAppId) {
-    // TODO(avynn): Add lacros support for tab groups.
     const std::string* lacros_window_id =
         window->GetProperty(app_restore::kLacrosWindowId);
     DCHECK(lacros_window_id);
@@ -460,8 +459,10 @@ void ChromeSavedDeskDelegate::OnLacrosChromeInfoReturned(
     return;
   }
 
+  app_launch_info->tab_group_infos = state->groups;
   app_launch_info->urls = state->urls;
   app_launch_info->active_tab_index = state->active_index;
+  app_launch_info->first_non_pinned_tab_index = state->first_non_pinned_index;
 
   std::move(callback).Run(std::move(app_launch_info));
 }

@@ -33,6 +33,7 @@
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/tab_groups/tab_group_info.h"
 #include "extensions/common/extension.h"
 
 namespace {
@@ -300,17 +301,21 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchLacrosBrowsers() {
     for (const auto& [restore_window_id, app_restore_data] : iter.second) {
       if (!app_restore_data->active_tab_index.has_value() ||
           !app_restore_data->urls.has_value()) {
-        LOG(WARNING) << "Corrupted data for the Lacros window found";
         continue;
       }
 
       crosapi::BrowserManager::Get()->CreateBrowserWithRestoredData(
           app_restore_data->urls.value(),
           app_restore_data->current_bounds.value_or(gfx::Rect()),
+          app_restore_data->tab_group_infos.value_or(
+              std::vector<tab_groups::TabGroupInfo>()),
           chromeos::ToWindowShowState(
               app_restore_data->window_state_type.value_or(
                   chromeos::WindowStateType::kDefault)),
           app_restore_data->active_tab_index.value(),
+          // Values of 0 will be ignored, other type constraints are
+          // enforced on the browser side.
+          app_restore_data->first_non_pinned_tab_index.value_or(0),
           GetBrowserAppName(app_restore_data, app_id), restore_window_id);
     }
   }
