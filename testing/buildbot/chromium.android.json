@@ -2158,6 +2158,9 @@
     ]
   },
   "android-10-arm64-rel": {
+    "additional_compile_targets": [
+      "monochrome_static_initializers"
+    ],
     "gtest_tests": [
       {
         "args": [

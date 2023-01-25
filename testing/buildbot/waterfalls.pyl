@@ -670,6 +670,9 @@
             },
           ],
         },
+        'additional_compile_targets': [
+          'monochrome_static_initializers',
+        ],
         'test_suites': {
           'gtest_tests': 'android_10_rel_gtests',
         },
