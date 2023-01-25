@@ -275,15 +275,12 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
     CreateInvokerAndStartRemoteCall(
         &storage::mojom::ServiceWorkerStorageControl::
             FindRegistrationForClientUrl,
-        base::BindOnce(
-            &ServiceWorkerRegistry::DidFindRegistrationForClientUrl,
-            weak_factory_.GetWeakPtr(), client_url, key, trace_event_id,
-            base::BindOnce(
-                [](blink::ServiceWorkerStatusCode status,
-                   scoped_refptr<ServiceWorkerRegistration> registration) {
-                  NOTREACHED()
-                      << "This is a dummy function that should not be called.";
-                })),
+        base::BindOnce(&ServiceWorkerRegistry::DidFindRegistrationForClientUrl,
+                       weak_factory_.GetWeakPtr(), client_url, key,
+                       trace_event_id,
+                       // Pass a fake callback here as the proper callback will
+                       // be invoked via find_registration_callbacks_
+                       /*FindRegistrationCallback=*/base::DoNothing()),
         client_url, key);
   } else {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
