@@ -355,7 +355,7 @@
 <translation id="8409345997656833551">Få besked, når en artikel kan ses i enkel visning</translation>
 <translation id="8428213095426709021">Indstillinger</translation>
 <translation id="8441146129660941386">Spol tilbage</translation>
-<translation id="8444433999583714703">Aktivér også placering i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til din lokation.</translation>
+<translation id="8444433999583714703">Aktivér også lokation i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til din lokation.</translation>
 <translation id="8447861592752582886">Tilbagekald adgangstilladelsen til enheden</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie er i brug}one{# cookie er i brug}other{# cookies er i brug}}</translation>
 <translation id="8487700953926739672">Tilgængelig offline</translation>

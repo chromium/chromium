@@ -657,7 +657,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1610272688494140697">Lietotnes iestatījumi</translation>
 <translation id="161042844686301425">Ciānzila</translation>
 <translation id="1611432201750675208">Jūsu ierīce ir bloķēta</translation>
-<translation id="1611776894942218234">Ierīcei ir jābūt Beta kanālā.</translation>
+<translation id="1611776894942218234">Ierīcei ir jābūt Beta versijā.</translation>
 <translation id="1612019740169791082">Jūsu konteiners nav konfigurēts diska lieluma mainīšanai. Lai pielāgotu operētājsistēmai Linux rezervēto vietu diskā, izveidojiet dublējumu un pēc tam atjaunojiet to jaunā konteinerā.</translation>
 <translation id="1613019471223620622">Rādīt lietotāja <ph name="USERNAME" /> paroli domēnā <ph name="DOMAIN" /></translation>
 <translation id="1613149688105334014">Pēc 2022. gada decembra novecojušas Chrome lietotņu versijas vairs netiks atvērtas. Varat pārbaudīt, vai ir pieejama jauna versija.</translation>
@@ -8300,7 +8300,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="8785680469435073309">ChromeOS Flex tīkla informācijas lasīšana.</translation>
 <translation id="8786824282808281903">Kad bērns redzēs šo ikonu, viņš varēs izmantot pirksta nospiedumu identifikācijai vai pirkumu apstiprināšanai.</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{Grupa bez nosaukuma — 1 cilne}zero{Grupa bez nosaukuma — # ciļņu}one{Grupa bez nosaukuma — # cilne}other{Grupa bez nosaukuma — # cilnes}}</translation>
-<translation id="8791534160414513928">Sūtīt pieprasījumu “Nesekot” savā pārlūkošanas datplūsmā</translation>
+<translation id="8791534160414513928">Sūtīt pieprasījumu “Do Not Track” savā pārlūkošanas datplūsmā</translation>
 <translation id="879413103056696865">Kamēr darbosies tīklājs, ierīcē <ph name="PHONE_NAME" />:</translation>
 <translation id="8795916974678578410">Jauns logs</translation>
 <translation id="8797459392481275117">Nekad netulkot šo vietni</translation>

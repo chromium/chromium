@@ -1030,7 +1030,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1925017091976104802">Nhấn <ph name="MODIFIER_KEY_DESCRIPTION" /> để dán</translation>
 <translation id="1925021887439448749">Nhập địa chỉ web tùy chỉnh</translation>
 <translation id="1925124445985510535">Tính năng kiểm tra an toàn đã chạy vào lúc <ph name="TIME" /></translation>
-<translation id="192564025059434655">Sau tháng 12 năm 2022, các phiên bản cũ của ứng dụng Chrome sẽ không mở trên các thiết bị Windows. Bạn có thể kiểm tra xem liệu đã có phiên bản mới hay chưa theo các bước sau.</translation>
+<translation id="192564025059434655">Sau tháng 12 năm 2022, các phiên bản cũ của ứng dụng Chrome sẽ không mở trên các thiết bị Windows. Bạn có thể kiểm tra xem có phiên bản mới không.</translation>
 <translation id="1926339101652878330">Các cài đặt này chịu sự kiểm soát của chính sách doanh nghiệp. Vui lòng liên hệ với quản trị viên của bạn để biết thêm thông tin.</translation>
 <translation id="1927632033341042996">Ngón tay <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">Phương thức khóa màn hình: mã PIN</translation>
@@ -8312,7 +8312,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8785680469435073309">Đọc thông tin mạng ChromeOS Flex.</translation>
 <translation id="8786824282808281903">Khi biểu tượng này xuất hiện, con bạn có thể dùng vân tây để nhận dạng hoặc phê duyệt các giao dịch mua.</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{Nhóm chưa có tên – 1 thẻ}other{Nhóm chưa có tên – # thẻ}}</translation>
-<translation id="8791534160414513928">Gửi yêu cầu "Không theo dõi" kèm theo lưu lượng duyệt web của bạn</translation>
+<translation id="8791534160414513928">Gửi yêu cầu "Do Not Track" kèm theo lưu lượng duyệt web của bạn</translation>
 <translation id="879413103056696865">Khi điểm phát sóng bật, <ph name="PHONE_NAME" /> của bạn sẽ:</translation>
 <translation id="8795916974678578410">Cửa sổ mới</translation>
 <translation id="8797459392481275117">Không bao giờ dịch trang web này</translation>

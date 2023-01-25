@@ -8302,7 +8302,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8785680469435073309">lese ChromeOS Flex-nettverksinformasjon</translation>
 <translation id="8786824282808281903">Når barnet ser dette ikonet, kan barnet bruke fingeravtrykket sitt til å identifisere seg eller godkjenne kjøp.</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{Gruppe uten navn – 1 fane}other{Gruppe uten navn – # faner}}</translation>
-<translation id="8791534160414513928">Send en «Ingen sporing»-forespørsel med nettrafikken din</translation>
+<translation id="8791534160414513928">Send en «Do Not Track»-forespørsel med nettrafikken din</translation>
 <translation id="879413103056696865">Når Wifi-sonen er på, kommer <ph name="PHONE_NAME" /> til å</translation>
 <translation id="8795916974678578410">Nytt vindu</translation>
 <translation id="8797459392481275117">Oversett aldri dette nettstedet</translation>

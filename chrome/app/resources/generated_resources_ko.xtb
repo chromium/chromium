@@ -8312,7 +8312,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8785680469435073309">ChromeOS Flex 네트워크 정보를 읽습니다.</translation>
 <translation id="8786824282808281903">자녀에게 이 아이콘이 표시되면 자녀가 본인의 지문으로 신원을 확인하거나 구매를 승인할 수 있습니다</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{이름이 지정되지 않은 그룹 - 탭 1개}other{이름이 지정되지 않은 그룹 - 탭 #개}}</translation>
-<translation id="8791534160414513928">탐색 트래픽과 함께 ‘추적 안함’ 요청 전송</translation>
+<translation id="8791534160414513928">탐색 트래픽과 함께 'Do Not Track' 요청 전송</translation>
 <translation id="879413103056696865">핫스팟이 사용 설정되어 있는 동안 <ph name="PHONE_NAME" />이(가) 다음과 같이 작동함</translation>
 <translation id="8795916974678578410">새 창</translation>
 <translation id="8797459392481275117">이 사이트 번역 안함</translation>

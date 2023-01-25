@@ -254,7 +254,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1551884710160394169">Freeware og shareware</translation>
 <translation id="1553358976309200471">Opdater Chrome</translation>
 <translation id="1555130319947370107">Blå</translation>
-<translation id="1559447966090556585">Vil du have notifikationer?</translation>
+<translation id="1559447966090556585">Vil du få notifikationer?</translation>
 <translation id="1559528461873125649">Filen eller mappen findes ikke</translation>
 <translation id="1559572115229829303">&lt;p&gt;Der kan ikke oprettes en privat forbindelse til <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, da datoen og tiden på din enhed (<ph name="DATE_AND_TIME" />) er forkert.&lt;/p&gt;
 
@@ -2151,7 +2151,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6651270836885078973">Administreres af:</translation>
 <translation id="6652101503459149953">Brug Windows Hello</translation>
 <translation id="6657585470893396449">Adgangskode</translation>
-<translation id="6660413144148052430">placering</translation>
+<translation id="6660413144148052430">lokation</translation>
 <translation id="6662457027866368246">Første papirrulle</translation>
 <translation id="666259744093848177">(x86_64 oversat)</translation>
 <translation id="6663846344464066639">Foldede hænder</translation>

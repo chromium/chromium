@@ -4905,7 +4905,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Ook als je deze functie uitzet, is het mogelijk dat er via dit apparaat informatie wordt verstuurd die nodig is voor essentiële services (zoals systeemupdates en beveiliging).<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />De eigenaar kan deze functie beheren via Instellingen &gt; Geavanceerd &gt; Automatisch diagnostische en gebruiksgegevens sturen naar Google.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Als je de instelling Aanvullende web- en app-activiteit hebt aangezet, kunnen deze gegevens worden opgeslagen in je Google-account. Je kunt je gegevens bekijken, deze verwijderen en je accountinstellingen wijzigen op account.google.com.<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5585019845078534178">Passen</translation>
+<translation id="5585019845078534178">Kaarten</translation>
 <translation id="5585118885427931890">Kan bookmarkmap niet maken.</translation>
 <translation id="558563010977877295">Een specifieke pagina of reeks pagina's openen</translation>
 <translation id="5585898376467608182">Op je apparaat is weinig opslagruimte beschikbaar. Je hebt ten minste <ph name="MINIMUM_SPACE" /> vrije opslagruimte nodig om <ph name="APP_NAME" /> te gebruiken. Verwijder bestanden op het apparaat om opslagruimte vrij te maken.</translation>
@@ -8288,7 +8288,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8785680469435073309">ChromeOS Flex-netwerkgegevens lezen.</translation>
 <translation id="8786824282808281903">Als je kind dit icoon ziet, kan er een vingerafdruk worden gebruikt voor identificatie of om aankopen goed te keuren.</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{Naamloze groep - 1 tabblad}other{Naamloze groep - # tabbladen}}</translation>
-<translation id="8791534160414513928">Een verzoek voor 'Niet bijhouden' met je browseverkeer verzenden</translation>
+<translation id="8791534160414513928">Een verzoek voor 'Do Not Track' met je browseverkeer verzenden</translation>
 <translation id="879413103056696865">Wanneer de hotspot aanstaat, doet je <ph name="PHONE_NAME" /> het volgende:</translation>
 <translation id="8795916974678578410">Nieuw venster</translation>
 <translation id="8797459392481275117">Deze site nooit vertalen</translation>

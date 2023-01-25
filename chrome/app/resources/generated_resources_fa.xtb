@@ -3914,7 +3914,7 @@
 <translation id="4617270414136722281">گزینه‌های افزونه</translation>
 <translation id="4617880081511131945">امکان برقراری اتصال وجود ندارد</translation>
 <translation id="4618195822946934889">‏نشانی وب تنها می‌تواند شامل نویسه‌های ASCII باشد</translation>
-<translation id="4619564267100705184">تأیید هویت</translation>
+<translation id="4619564267100705184">هویتتان را به‌تأیید برسانید</translation>
 <translation id="4619615317237390068">برگه‌ها از دستگاه‌های دیگر</translation>
 <translation id="4620809267248568679">این تنظیم توسط یک برنامهٔ افزودنی به اجرا گذاشته می‌شود.</translation>
 <translation id="4622051949285931942">به‌روزرسانی‌های خودکار خاموش شود؟</translation>
@@ -8311,7 +8311,7 @@
 <translation id="8785680469435073309">‏خواندن اطلاعات شبکه ChromeOS Flex.</translation>
 <translation id="8786824282808281903">وقتی فرزندتان این نماد را ببیند، می‌تواند برای تشخیص هویت یا تأیید خرید از اثر انگشت استفاده کند.</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{گروه بدون نام - ۱ برگه}one{گروه بدون نام - # برگه}other{گروه بدون نام - # برگه}}</translation>
-<translation id="8791534160414513928">ارسال درخواست «ردیابی نشود» با ترافیک مرور</translation>
+<translation id="8791534160414513928">‏ارسال درخواست "Do Not Track" با ترافیک مرور</translation>
 <translation id="879413103056696865">وقتی نقطه اتصال روشن است، <ph name="PHONE_NAME" /> شما:</translation>
 <translation id="8795916974678578410">پنجرهٔ جدید</translation>
 <translation id="8797459392481275117">این سایت هرگز ترجمه نشود</translation>
