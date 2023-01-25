@@ -7,6 +7,8 @@
 namespace printing {
 
 // Variations of identifier used for specifying printer color model.
+// New ways of specifying a color model should include an entry in
+// `kKnownPpdColorSettings`.
 const char kCUPSColorMode[] = "ColorMode";
 const char kCUPSColorModel[] = "ColorModel";
 const char kCUPSPrintoutMode[] = "PrintoutMode";
@@ -60,5 +62,27 @@ const char kSharpCMBW[] = "CMBW";
 const char kXeroxAutomatic[] = "Automatic";
 const char kXeroxBW[] = "BW";
 const char kZero[] = "0";
+
+#if BUILDFLAG(IS_MAC)
+base::span<const PpdColorSetting> GetKnownPpdColorSettings() {
+  static const PpdColorSetting kKnownPpdColorSettings[] = {
+      {kCUPSBrotherMonoColor, kMono, kFullColor},            // Brother
+      {kCUPSBrotherPrintQuality, kBlack, kColor},            // Brother
+      {kCUPSCanonCNIJGrayScale, kOne, kZero},                // Canon
+      {kCUPSColorMode, kMonochrome, kColor},                 // Samsung
+      {kCUPSColorModel, kGray, kColor},                      // Generic
+      {kCUPSEpsonInk, kEpsonMono, kEpsonColor},              // Epson
+      {kCUPSHpColorMode, kHpGrayscalePrint, kHpColorPrint},  // HP
+      {kCUPSLexmarkBLW, kLexmarkBLWTrue, kLexmarkBLWFalse},  // Lexmark
+      {kCUPSOkiControl, kGray, kAuto},                       // Oki
+      {kCUPSPrintoutMode, kNormalGray, kNormal},             // Foomatic
+      {kCUPSSelectColor, kGrayscale, kColor},                // Konica Minolta
+      {kCUPSSharpARCMode, kSharpCMBW, kSharpCMColor},        // Sharp
+      {kCUPSXeroxXROutputColor, kPrintAsGrayscale, kPrintAsColor},  // Xerox
+      {kCUPSXeroxXRXColor, kXeroxBW, kXeroxAutomatic},              // Xerox
+  };
+  return base::make_span(kKnownPpdColorSettings);
+}
+#endif
 
 }  // namespace printing

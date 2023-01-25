@@ -414,41 +414,12 @@ bool PrintingContextMac::SetOutputColor(int color_mode) {
     return false;
   }
 
-  struct PpdColorSetting {
-    constexpr PpdColorSetting(base::StringPiece name,
-                              base::StringPiece bw,
-                              base::StringPiece color)
-        : name(name), bw(bw), color(color) {}
-    base::StringPiece name;
-    base::StringPiece bw;
-    base::StringPiece color;
-  };
-
-  // TODO(crbug.com/1210992): Move `kKnownPpdColorSettings` elsewhere so it can
-  // be used for general CUPS printing code (e.g., for parsing PPDs).
-  static const PpdColorSetting kKnownPpdColorSettings[] = {
-      {kCUPSBrotherMonoColor, kMono, kFullColor},            // Brother
-      {kCUPSBrotherPrintQuality, kBlack, kColor},            // Brother
-      {kCUPSCanonCNIJGrayScale, kOne, kZero},                // Canon
-      {kCUPSColorMode, kMonochrome, kColor},                 // Samsung
-      {kCUPSColorModel, kGray, kColor},                      // Generic
-      {kCUPSEpsonInk, kEpsonMono, kEpsonColor},              // Epson
-      {kCUPSHpColorMode, kHpGrayscalePrint, kHpColorPrint},  // HP
-      {kCUPSLexmarkBLW, kLexmarkBLWTrue, kLexmarkBLWFalse},  // Lexmark
-      {kCUPSOkiControl, kGray, kAuto},                       // Oki
-      {kCUPSPrintoutMode, kNormalGray, kNormal},             // Foomatic
-      {kCUPSSelectColor, kGrayscale, kColor},                // Konica Minolta
-      {kCUPSSharpARCMode, kSharpCMBW, kSharpCMColor},        // Sharp
-      {kCUPSXeroxXROutputColor, kPrintAsGrayscale, kPrintAsColor},  // Xerox
-      {kCUPSXeroxXRXColor, kXeroxBW, kXeroxAutomatic},              // Xerox
-  };
-
   // Even when interfacing with printer settings using CUPS IPP, the print job
   // may still expect PPD color values if the printer was added to the system
   // with a PPD. To avoid parsing PPDs (which is the point of using CUPS IPP),
   // set every single known PPD color setting and hope that one of them sticks.
   const bool is_color = IsColorModelSelected(color_model).value_or(false);
-  for (const auto& setting : kKnownPpdColorSettings) {
+  for (const auto& setting : GetKnownPpdColorSettings()) {
     const base::StringPiece& color_setting_name = setting.name;
     const base::StringPiece& color_value =
         is_color ? setting.color : setting.bw;

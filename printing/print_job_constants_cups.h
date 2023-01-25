@@ -9,6 +9,11 @@
 #include "build/build_config.h"
 #include "printing/buildflags/buildflags.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/containers/span.h"
+#include "base/strings/string_piece.h"
+#endif
+
 #if !BUILDFLAG(USE_CUPS)
 #error "CUPS must be enabled."
 #endif
@@ -69,6 +74,25 @@ COMPONENT_EXPORT(PRINTING_BASE) extern const char kSharpCMBW[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kXeroxAutomatic[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kXeroxBW[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kZero[];
+
+#if BUILDFLAG(IS_MAC)
+// Represents set identifier used to specifier to select the color model for a
+// particular printer manufacturer, and the corresponding names used with that
+// to choose either black and white or color printing.
+struct COMPONENT_EXPORT(PRINTING_BASE) PpdColorSetting {
+  constexpr PpdColorSetting(base::StringPiece name,
+                            base::StringPiece bw,
+                            base::StringPiece color)
+      : name(name), bw(bw), color(color) {}
+
+  base::StringPiece name;
+  base::StringPiece bw;
+  base::StringPiece color;
+};
+
+COMPONENT_EXPORT(PRINTING_BASE)
+base::span<const PpdColorSetting> GetKnownPpdColorSettings();
+#endif
 
 }  // namespace printing
 
