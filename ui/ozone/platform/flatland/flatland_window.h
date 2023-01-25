@@ -113,6 +113,7 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
 
   void UpdateSize();
 
+  void OnFlatlandError(fuchsia::ui::composition::FlatlandError error);
   void OnViewControllerDisconnected(zx_status_t status);
 
   FlatlandWindowManager* const manager_;

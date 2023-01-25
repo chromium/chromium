@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
+#include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -140,7 +141,9 @@ fuchsia::ui::composition::ContentId CreateImage(
 FlatlandSurface::FlatlandSurface(
     FlatlandSurfaceFactory* flatland_surface_factory,
     gfx::AcceleratedWidget window)
-    : flatland_("Chromium FlatlandSurface"),
+    : flatland_("Chromium FlatlandSurface",
+                base::BindOnce(&FlatlandSurface::OnFlatlandError,
+                               base::Unretained(this))),
       flatland_surface_factory_(flatland_surface_factory),
       window_(window) {
   // Create Flatland Allocator connection.
@@ -428,6 +431,15 @@ void FlatlandSurface::ClearScene() {
     flatland_.flatland()->RemoveChild(root_transform_id_, child.second);
   }
   child_transforms_.clear();
+}
+
+void FlatlandSurface::OnFlatlandError(
+    fuchsia::ui::composition::FlatlandError error) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  LOG(ERROR) << "Flatland error: " << static_cast<int>(error);
+  base::LogFidlErrorAndExitProcess(FROM_HERE,
+                                   "fuchsia::ui::composition::Flatland");
 }
 
 FlatlandSurface::PresentedFrame::PresentedFrame(

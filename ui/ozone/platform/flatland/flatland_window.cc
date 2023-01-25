@@ -54,7 +54,9 @@ FlatlandWindow::FlatlandWindow(FlatlandWindowManager* window_manager,
       window_id_(manager_->AddWindow(this)),
       view_ref_(std::move(properties.view_ref_pair.view_ref)),
       view_controller_(std::move(properties.view_controller)),
-      flatland_("Chromium FlatlandWindow"),
+      flatland_("Chromium FlatlandWindow",
+                base::BindOnce(&FlatlandWindow::OnFlatlandError,
+                               base::Unretained(this))),
       bounds_(
           platform_window_delegate->ConvertRectToPixels(properties.bounds)) {
   if (view_controller_) {
@@ -435,9 +437,15 @@ void FlatlandWindow::DispatchEvent(ui::Event* event) {
   platform_window_delegate_->DispatchEvent(event);
 }
 
+void FlatlandWindow::OnFlatlandError(
+    fuchsia::ui::composition::FlatlandError error) {
+  LOG(ERROR) << "Flatland error: " << static_cast<int>(error);
+  platform_window_delegate_->OnClosed();
+}
+
 void FlatlandWindow::OnViewControllerDisconnected(zx_status_t status) {
   view_controller_ = nullptr;
-  platform_window_delegate_->OnCloseRequest();
+  platform_window_delegate_->OnClosed();
 }
 
 }  // namespace ui

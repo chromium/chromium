@@ -11,6 +11,7 @@
 
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
+#include "base/strings/string_piece.h"
 
 namespace ui {
 
@@ -20,7 +21,13 @@ namespace ui {
 // should not call Flatland::Present on their own.
 class FlatlandConnection final {
  public:
-  explicit FlatlandConnection(const std::string& debug_name);
+  using OnFramePresentedCallback =
+      base::OnceCallback<void(zx_time_t actual_presentation_time)>;
+  using OnErrorCallback =
+      base::OnceCallback<void(fuchsia::ui::composition::FlatlandError error)>;
+
+  explicit FlatlandConnection(base::StringPiece debug_name,
+                              OnErrorCallback callback);
   ~FlatlandConnection();
 
   FlatlandConnection(const FlatlandConnection&) = delete;
@@ -28,24 +35,27 @@ class FlatlandConnection final {
 
   fuchsia::ui::composition::Flatland* flatland() { return flatland_.get(); }
 
+  // Returns an unused, non-zero transform identifier.
   fuchsia::ui::composition::TransformId NextTransformId() {
     return {++next_transform_id_};
   }
 
+  // Returns an unused, non-zero content identifier.
   fuchsia::ui::composition::ContentId NextContentId() {
     return {++next_content_id_};
   }
 
-  using OnFramePresentedCallback =
-      base::OnceCallback<void(zx_time_t actual_presentation_time)>;
   void Present();
   void Present(fuchsia::ui::composition::PresentArgs present_args,
                OnFramePresentedCallback callback);
 
  private:
-  void OnError(fuchsia::ui::composition::FlatlandError error);
+  // Method that is listening to Flatland's OnNextFrameBegin() callback.
+  // Returns one or more present credits.
   void OnNextFrameBegin(
       fuchsia::ui::composition::OnNextFrameBeginValues values);
+  // Method that is listening to Flatland's OnFramePresented() callback.
+  // Returns feedback on the prior frame presentation.
   void OnFramePresented(fuchsia::scenic::scheduling::FramePresentedInfo info);
 
   fuchsia::ui::composition::FlatlandPtr flatland_;
@@ -64,8 +74,17 @@ class FlatlandConnection final {
     fuchsia::ui::composition::PresentArgs present_args;
     OnFramePresentedCallback callback;
   };
+
+  // Keeps track of pending Presents that cannot be committed in the situation
+  // when we don't have enough present credits.
   base::queue<PendingPresent> pending_presents_;
+  // Keeps track of release fences for the previous frame, indicating when it is
+  // safe to reuse the resources. Ozone defines and sends release fences for
+  // the current frame, whereas Flatland expects the release fences for the
+  // previous frame resources.
   std::vector<zx::event> previous_present_release_fences_;
+  // Keeps track of Presents that are committed, but Flatland hasn't indicated
+  // that have taken effect by calling OnFramePresented().
   base::queue<OnFramePresentedCallback> presented_callbacks_;
 };
 

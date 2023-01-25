@@ -48,7 +48,9 @@ TEST_F(FlatlandConnectionTest, Initialization) {
   // Create the FlatlandConnection but don't pump the loop.  No FIDL calls are
   // completed yet.
   const std::string debug_name = GetCurrentTestName();
-  FlatlandConnection flatland_connection(debug_name);
+  FlatlandConnection flatland_connection(
+      debug_name, base::BindLambdaForTesting(
+                      [](fuchsia::ui::composition::FlatlandError) { FAIL(); }));
   EXPECT_EQ(fake_flatland_.debug_name(), "");
 
   // Ensure the debug name is set.
@@ -66,7 +68,10 @@ TEST_F(FlatlandConnectionTest, BasicPresent) {
 
   // Create the FlatlandConnection but don't pump the loop.  No FIDL calls are
   // completed yet.
-  FlatlandConnection flatland_connection(GetCurrentTestName());
+  FlatlandConnection flatland_connection(
+      GetCurrentTestName(),
+      base::BindLambdaForTesting(
+          [](fuchsia::ui::composition::FlatlandError) { FAIL(); }));
   EXPECT_EQ(presents_called, 0u);
 
   flatland_connection.Present();
@@ -84,7 +89,10 @@ TEST_F(FlatlandConnectionTest, RespectsPresentCredits) {
 
   // Create the FlatlandConnection but don't pump the loop.  No FIDL calls are
   // completed yet.
-  FlatlandConnection flatland_connection(GetCurrentTestName());
+  FlatlandConnection flatland_connection(
+      GetCurrentTestName(),
+      base::BindLambdaForTesting(
+          [](fuchsia::ui::composition::FlatlandError) { FAIL(); }));
   EXPECT_EQ(presents_called, 0u);
 
   flatland_connection.Present();
@@ -149,7 +157,10 @@ TEST_F(FlatlandConnectionTest, ReleaseFences) {
 
   // Create the FlatlandConnection but don't pump the loop.  No FIDL calls are
   // completed yet.
-  FlatlandConnection flatland_connection(GetCurrentTestName());
+  FlatlandConnection flatland_connection(
+      GetCurrentTestName(),
+      base::BindLambdaForTesting(
+          [](fuchsia::ui::composition::FlatlandError) { FAIL(); }));
   EXPECT_EQ(presents_called, 0u);
 
   zx::event first_release_fence;

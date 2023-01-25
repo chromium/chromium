@@ -15,7 +15,8 @@
 
 namespace ui {
 
-FlatlandConnection::FlatlandConnection(const std::string& debug_name) {
+FlatlandConnection::FlatlandConnection(base::StringPiece debug_name,
+                                       OnErrorCallback error_callback) {
   zx_status_t status =
       base::ComponentContextForProcess()
           ->svc()
@@ -23,9 +24,14 @@ FlatlandConnection::FlatlandConnection(const std::string& debug_name) {
   if (status != ZX_OK) {
     ZX_LOG(FATAL, status) << "Failed to connect to Flatland";
   }
-  flatland_->SetDebugName(debug_name);
+
+  flatland_->SetDebugName(static_cast<std::string>(debug_name));
+  DCHECK(error_callback);
   flatland_.events().OnError =
-      fit::bind_member(this, &FlatlandConnection::OnError);
+      [callback = std::move(error_callback)](
+          fuchsia::ui::composition::FlatlandError error) mutable {
+        std::move(callback).Run(std::move(error));
+      };
   flatland_.events().OnFramePresented =
       fit::bind_member(this, &FlatlandConnection::OnFramePresented);
   flatland_.events().OnNextFrameBegin =
@@ -61,12 +67,6 @@ void FlatlandConnection::Present(
 
   flatland_->Present(std::move(present_args));
   presented_callbacks_.push(std::move(callback));
-}
-
-void FlatlandConnection::OnError(
-    fuchsia::ui::composition::FlatlandError error) {
-  LOG(ERROR) << "Flatland error: " << static_cast<int>(error);
-  // TODO(fxbug.dev/93998): Send error signal to the owners of this class.
 }
 
 void FlatlandConnection::OnNextFrameBegin(
