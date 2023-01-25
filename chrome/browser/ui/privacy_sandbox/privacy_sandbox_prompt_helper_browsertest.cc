@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
@@ -14,6 +15,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -106,13 +108,46 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxPromptHelperTest, NoPromptRequired) {
 
 class PrivacySandboxPromptHelperTestWithParam
     : public PrivacySandboxPromptHelperTest,
-      public testing::WithParamInterface<bool> {
-  PrivacySandboxService::PromptType TestPromptType() override {
-    // Setup consent / notice based on testing parameter. Helper behavior should
-    // be identical regardless of which type of prompt is required.
-    return GetParam() ? PrivacySandboxService::PromptType::kConsent
-                      : PrivacySandboxService::PromptType::kNotice;
+      public testing::WithParamInterface<PrivacySandboxService::PromptType> {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    test_prompt_type_ = GetParam();
+    switch (test_prompt_type_) {
+      case PrivacySandboxService::PromptType::kNone:
+        [[fallthrough]];
+      case PrivacySandboxService::PromptType::kNotice:
+        [[fallthrough]];
+      case PrivacySandboxService::PromptType::kConsent: {
+        feature_list_.InitWithFeatures(
+            /*enabled_features=*/{privacy_sandbox::kPrivacySandboxSettings3},
+            /*disabled_features=*/{privacy_sandbox::kPrivacySandboxSettings4});
+        break;
+      }
+      case PrivacySandboxService::PromptType::kM1Consent:
+        [[fallthrough]];
+      case PrivacySandboxService::PromptType::kM1NoticeROW:
+        [[fallthrough]];
+      case PrivacySandboxService::PromptType::kM1NoticeEEA: {
+        feature_list_.InitWithFeatures(
+            /*enabled_features=*/{privacy_sandbox::kPrivacySandboxSettings4},
+            /*disabled_features=*/{privacy_sandbox::kPrivacySandboxSettings3});
+        break;
+      }
+    }
+
+    PrivacySandboxPromptHelperTest::SetUpInProcessBrowserTestFixture();
   }
+
+ private:
+  PrivacySandboxService::PromptType TestPromptType() override {
+    // Setup appropriate prompt type based on testing parameter. Helper
+    // behavior should be "identical" regardless of which type of prompt is
+    // required.
+    return test_prompt_type_;
+  }
+
+  PrivacySandboxService::PromptType test_prompt_type_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
@@ -296,6 +331,11 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
       static_cast<base::HistogramBase::Sample>(base::Hash("about:blank")), 1);
 }
 
-INSTANTIATE_TEST_SUITE_P(PrivacySandboxPromptHelperTestWithParamInstance,
-                         PrivacySandboxPromptHelperTestWithParam,
-                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    PrivacySandboxPromptHelperTestWithParamInstance,
+    PrivacySandboxPromptHelperTestWithParam,
+    testing::Values(PrivacySandboxService::PromptType::kM1Consent,
+                    PrivacySandboxService::PromptType::kM1NoticeEEA,
+                    PrivacySandboxService::PromptType::kM1NoticeROW,
+                    PrivacySandboxService::PromptType::kConsent,
+                    PrivacySandboxService::PromptType::kNotice));
