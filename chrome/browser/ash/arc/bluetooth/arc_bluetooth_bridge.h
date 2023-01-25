@@ -66,6 +66,12 @@ class ArcBluetoothBridge
       base::OnceCallback<void(mojom::BluetoothGattStatus)>;
   using AdapterStateCallback =
       base::OnceCallback<void(mojom::BluetoothAdapterState)>;
+  using GattReadCallback =
+      base::OnceCallback<void(arc::mojom::BluetoothGattValuePtr)>;
+  using CreateSdpRecordCallback =
+      base::OnceCallback<void(arc::mojom::BluetoothCreateSdpRecordResultPtr)>;
+  using RemoveSdpRecordCallback =
+      base::OnceCallback<void(arc::mojom::BluetoothStatus)>;
 
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
@@ -308,14 +314,6 @@ class ArcBluetoothBridge
                       const std::vector<uint8_t>& value,
                       SendIndicationCallback callback) override;
 
-  // Bluetooth Mojo host interface - Bluetooth SDP functions
-  void GetSdpRecords(mojom::BluetoothAddressPtr remote_addr,
-                     const device::BluetoothUUID& target_uuid) override;
-  void CreateSdpRecord(mojom::BluetoothSdpRecordPtr record_mojo,
-                       CreateSdpRecordCallback callback) override;
-  void RemoveSdpRecord(uint32_t service_handle,
-                       RemoveSdpRecordCallback callback) override;
-
   // Bluetooth Mojo host interface - Bluetooth socket functions
   void BluetoothSocketListen(mojom::BluetoothSocketType sock_type,
                              mojom::BluetoothSocketFlagsPtr sock_flags,
@@ -340,7 +338,9 @@ class ArcBluetoothBridge
       int32_t adv_handle,
       ReleaseAdvertisementHandleCallback callback) override;
 
- private:
+ protected:
+  bluez::BluetoothAdapterBlueZ* GetBluezAdapter() const;
+
   void ReserveAdvertisementHandleImpl(
       ReserveAdvertisementHandleCallback callback);
   void EnableAdvertisementImpl(
@@ -477,15 +477,6 @@ class ArcBluetoothBridge
   void OnSetDiscoverable(bool discoverable, bool success, uint32_t timeout);
   void SetDiscoverable(bool discoverable, uint32_t timeout);
 
-  void OnGetServiceRecordsDone(
-      mojom::BluetoothAddressPtr remote_addr,
-      const device::BluetoothUUID& target_uuid,
-      const std::vector<bluez::BluetoothServiceRecordBlueZ>& records_bluez);
-  void OnGetServiceRecordsError(
-      mojom::BluetoothAddressPtr remote_addr,
-      const device::BluetoothUUID& target_uuid,
-      bluez::BluetoothServiceRecordBlueZ::ErrorCode error_code);
-
   void OnSetAdapterProperty(mojom::BluetoothStatus success,
                             mojom::BluetoothPropertyPtr property);
 
@@ -606,7 +597,7 @@ class ArcBluetoothBridge
 
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 
-  scoped_refptr<bluez::BluetoothAdapterBlueZ> bluetooth_adapter_;
+  scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   scoped_refptr<device::BluetoothAdvertisement> advertisment_;
   // Discovery session created by StartDiscovery().
   std::unique_ptr<device::BluetoothDiscoverySession> discovery_session_;

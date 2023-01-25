@@ -19,6 +19,7 @@
 #include "base/system/sys_info.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/ash/arc/bluetooth/arc_bluez_bridge.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_adapter_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_device_client.h"
@@ -40,6 +41,7 @@ namespace arc {
 
 constexpr int kFailureAdvHandle = -1;
 
+// This unittest defaults to testing BlueZ. For Floss, use |ArcFlossBridgeTest|.
 class ArcBluetoothBridgeTest : public testing::Test {
  protected:
   void AddTestDevice() {
@@ -115,8 +117,8 @@ class ArcBluetoothBridgeTest : public testing::Test {
 
     arc_bridge_service_ = std::make_unique<ArcBridgeService>();
     // TODO(hidehiko): Use Singleton instance tied to BrowserContext.
-    arc_bluetooth_bridge_ = std::make_unique<ArcBluetoothBridge>(
-        nullptr, arc_bridge_service_.get());
+    arc_bluetooth_bridge_ =
+        std::make_unique<ArcBluezBridge>(nullptr, arc_bridge_service_.get());
     fake_bluetooth_instance_ = std::make_unique<FakeBluetoothInstance>();
     arc_bridge_service_->bluetooth()->SetInstance(
         fake_bluetooth_instance_.get(), 20);
