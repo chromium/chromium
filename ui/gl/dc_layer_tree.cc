@@ -22,6 +22,22 @@ bool SizeContains(const gfx::Size& a, const gfx::Size& b) {
   return gfx::Rect(a).Contains(gfx::Rect(b));
 }
 
+bool NeedSwapChainPresenter(const DCLayerOverlayParams* overlay) {
+  // TODO(tangm): when we have more overlays originating from
+  // SkiaOutputDeviceDComp, we should replace this with an explicit "needs swap
+  // chain presenter" flag on DCLayerOverlayParams.
+  switch (overlay->overlay_image->type()) {
+    case DCLayerOverlayType::kNV12Texture:
+    case DCLayerOverlayType::kNV12Pixmap:
+    case DCLayerOverlayType::kDCompSurfaceProxy:
+      return true;
+    case DCLayerOverlayType::kDCompVisualContent:
+      // Z-order of 0 indicates the backbuffer, which already has been presented
+      // and ready for the DComp tree.
+      return overlay->z_order != 0;
+  }
+}
+
 }  // namespace
 
 VideoProcessorWrapper::VideoProcessorWrapper() = default;
@@ -305,11 +321,53 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
                "num_pending_overlays", pending_overlays_.size());
   DCHECK(!needs_rebuild_visual_tree_ || ink_renderer_->HasBeenInitialized());
 
-  if (root_surface) {
-    if (root_surface->swap_chain() != root_swap_chain_ ||
-        root_surface->dcomp_surface() != root_dcomp_surface_) {
-      root_swap_chain_ = root_surface->swap_chain();
-      root_dcomp_surface_ = root_surface->dcomp_surface();
+  {
+    Microsoft::WRL::ComPtr<IDXGISwapChain1> root_swap_chain;
+    Microsoft::WRL::ComPtr<IDCompositionSurface> root_dcomp_surface;
+    if (root_surface) {
+      root_swap_chain = root_surface->swap_chain();
+      root_dcomp_surface = root_surface->dcomp_surface();
+
+      Microsoft::WRL::ComPtr<IUnknown> root_visual_content;
+      if (root_swap_chain) {
+        root_visual_content = root_swap_chain;
+      } else {
+        root_visual_content = root_dcomp_surface;
+      }
+
+      // Add a placeholder overlay for the root surface, at a z-order of 0.
+      auto root_params = std::make_unique<DCLayerOverlayParams>();
+      root_params->z_order = 0;
+      root_params->overlay_image = DCLayerOverlayImage(
+          root_surface->GetSize(), std::move(root_visual_content),
+          root_surface->dcomp_surface_serial());
+      ScheduleDCLayer(std::move(root_params));
+    } else {
+      auto it = std::find_if(
+          pending_overlays_.begin(), pending_overlays_.end(),
+          [](const std::unique_ptr<DCLayerOverlayParams>& overlay) {
+            return overlay->z_order == 0;
+          });
+      if (it != pending_overlays_.end()) {
+        Microsoft::WRL::ComPtr<IUnknown> root_visual_content =
+            (*it)->overlay_image->dcomp_visual_content();
+        HRESULT hr = root_visual_content.As(&root_swap_chain);
+        if (hr == E_NOINTERFACE) {
+          DCHECK_EQ(nullptr, root_swap_chain);
+          hr = root_visual_content.As(&root_dcomp_surface);
+        }
+        CHECK_EQ(S_OK, hr);
+      } else {
+        // Note: this is allowed in tests, but not expected otherwise.
+        DLOG(WARNING) << "No root surface in overlay list";
+      }
+    }
+
+    if (root_swap_chain != root_swap_chain_ ||
+        root_dcomp_surface != root_dcomp_surface_) {
+      DCHECK(!(root_swap_chain && root_dcomp_surface));
+      root_swap_chain_ = std::move(root_swap_chain);
+      root_dcomp_surface_ = std::move(root_dcomp_surface);
       needs_rebuild_visual_tree_ = true;
     }
   }
@@ -318,29 +376,16 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
   std::swap(pending_overlays_, overlays);
 
   // Grow or shrink list of swap chain presenters to match pending overlays.
-  if (video_swap_chains_.size() != overlays.size()) {
-    video_swap_chains_.resize(overlays.size());
+  const size_t num_swap_chain_presenters =
+      std::count_if(overlays.begin(), overlays.end(), [](const auto& overlay) {
+        return NeedSwapChainPresenter(overlay.get());
+      });
+  // Grow or shrink list of swap chain presenters to match pending overlays.
+  if (video_swap_chains_.size() != num_swap_chain_presenters) {
+    video_swap_chains_.resize(num_swap_chain_presenters);
     // If we need to grow or shrink swap chain presenters, we'll need to add or
     // remove visuals.
     needs_rebuild_visual_tree_ = true;
-  }
-
-  // DCompSurfaceless also uses DCLayerTree and lets its caller schedule an
-  // overlay for the root surface, instead of owning its own.
-  if (root_surface) {
-    Microsoft::WRL::ComPtr<IUnknown> root_visual_content;
-    if (root_swap_chain_) {
-      root_visual_content = root_swap_chain_;
-    } else {
-      root_visual_content = root_dcomp_surface_;
-    }
-    // Add a placeholder overlay for the root surface, at a z-order of 0.
-    auto root_params = std::make_unique<DCLayerOverlayParams>();
-    root_params->z_order = 0;
-    root_params->overlay_image = DCLayerOverlayImage(
-        root_surface->GetSize(), std::move(root_visual_content),
-        root_surface->dcomp_surface_serial());
-    overlays.emplace_back(std::move(root_params));
   }
 
   // Sort layers by z-order.
@@ -356,9 +401,9 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
 
   // Populate |overlays| with information required to build dcomp visual tree.
   for (size_t i = 0; i < overlays.size(); ++i) {
-    // Skip root surface overlay.
-    if (overlays[i]->z_order == 0)
+    if (!NeedSwapChainPresenter(overlays[i].get())) {
       continue;
+    }
     // Present to swap chain and update the overlay with transform, clip
     // and content.
     auto& video_swap_chain = *(video_swap_iter++);

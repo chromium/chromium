@@ -122,6 +122,10 @@ class DCLayerTree {
                                         gfx::Point* offset,
                                         gfx::Rect* clip_rect) const;
 
+  size_t GetSwapChainPresenterCountForTesting() const {
+    return video_swap_chains_.size();
+  }
+
   void SetFrameRate(float frame_rate);
 
   const std::unique_ptr<HDRMetadataHelperWin>& GetHDRMetadataHelper() {

@@ -18,6 +18,7 @@
 #include "components/viz/service/display/output_surface_frame.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "components/viz/service/display/skia_output_surface.h"
+#include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -50,10 +51,10 @@ namespace viz {
 
 class VulkanContextProvider;
 
-class SkiaOutputDevice {
+class VIZ_SERVICE_EXPORT SkiaOutputDevice {
  public:
   // A helper class for defining a BeginPaint() and EndPaint() scope.
-  class ScopedPaint {
+  class VIZ_SERVICE_EXPORT ScopedPaint {
    public:
     ScopedPaint(std::vector<GrBackendSemaphore> end_semaphores,
                 SkiaOutputDevice* device,

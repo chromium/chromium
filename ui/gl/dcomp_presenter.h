@@ -21,7 +21,7 @@
 #include "ui/gl/child_window_win.h"
 #include "ui/gl/direct_composition_surface_win.h"
 #include "ui/gl/gl_export.h"
-#include "ui/gl/gl_surface_egl.h"
+#include "ui/gl/presenter.h"
 #include "ui/gl/vsync_observer.h"
 
 namespace base {
@@ -41,7 +41,7 @@ class DCLayerTree;
 
 // This class owns the DComp layer tree and its presentation. It does not own
 // the root surface.
-class GL_EXPORT DCompPresenter : public SurfacelessEGL, public VSyncObserver {
+class GL_EXPORT DCompPresenter : public Presenter, public VSyncObserver {
  public:
   using VSyncCallback =
       base::RepeatingCallback<void(base::TimeTicks, base::TimeDelta)>;
@@ -57,22 +57,11 @@ class GL_EXPORT DCompPresenter : public SurfacelessEGL, public VSyncObserver {
   // GLSurfaceEGL implementation.
   bool Initialize(GLSurfaceFormat format) override;
   void Destroy() override;
-  bool IsOffscreen() override;
   bool Resize(const gfx::Size& size,
               float scale_factor,
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
-  gfx::SwapResult SwapBuffers(PresentationCallback callback,
-                              gfx::FrameData data) override;
-  gfx::SwapResult PostSubBuffer(int x,
-                                int y,
-                                int width,
-                                int height,
-                                PresentationCallback callback,
-                                gfx::FrameData data) override;
   gfx::VSyncProvider* GetVSyncProvider() override;
-  gfx::SurfaceOrigin GetOrigin() const override;
-  bool SupportsPostSubBuffer() override;
   bool SupportsDCLayers() const override;
   bool SupportsProtectedVideo() const override;
   bool SetDrawRectangle(const gfx::Rect& rect) override;
@@ -85,6 +74,10 @@ class GL_EXPORT DCompPresenter : public SurfacelessEGL, public VSyncObserver {
   // tree at z-order 0.
   bool ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params) override;
   void SetFrameRate(float frame_rate) override;
+
+  void Present(SwapCompletionCallback completion_callback,
+               PresentationCallback presentation_callback,
+               gfx::FrameData data) override;
 
   // VSyncObserver implementation.
   void OnVSync(base::TimeTicks vsync_time, base::TimeDelta interval) override;

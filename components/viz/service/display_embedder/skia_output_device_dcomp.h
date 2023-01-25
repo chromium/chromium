@@ -14,7 +14,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "ui/gfx/frame_data.h"
+#include "ui/gl/presenter.h"
 
 namespace gl {
 class DCLayerOverlayImage;
@@ -23,9 +25,9 @@ class GLSurface;
 }  // namespace gl
 
 namespace gpu {
-class MailboxManager;
 class SharedContextState;
 class SharedImageRepresentationFactory;
+class SharedImageFactory;
 
 namespace gles2 {
 class FeatureInfo;
@@ -54,7 +56,6 @@ class SkiaOutputDeviceDComp : public SkiaOutputDevice {
   class OverlayData;
 
   SkiaOutputDeviceDComp(
-      gpu::MailboxManager* mailbox_manager,
       gpu::SharedImageRepresentationFactory*
           shared_image_representation_factory,
       gpu::SharedContextState* context_state,
@@ -73,9 +74,11 @@ class SkiaOutputDeviceDComp : public SkiaOutputDevice {
 
   virtual gfx::Size GetRootSurfaceSize() const = 0;
 
-  virtual gfx::SwapResult DoPostSubBuffer(const gfx::Rect& rect,
-                                          BufferPresentedCallback feedback,
-                                          gfx::FrameData data) = 0;
+  virtual void DoPresent(
+      const gfx::Rect& rect,
+      gl::GLSurface::SwapCompletionCallback completion_callback,
+      BufferPresentedCallback feedback,
+      gfx::FrameData data) = 0;
 
   // Mailboxes of overlays scheduled in the current frame.
   base::flat_set<gpu::Mailbox> scheduled_overlay_mailboxes_;
@@ -83,22 +86,26 @@ class SkiaOutputDeviceDComp : public SkiaOutputDevice {
   // Holds references to overlay textures so they aren't destroyed while in use.
   base::flat_map<gpu::Mailbox, OverlayData> overlays_;
 
-  const raw_ptr<gpu::MailboxManager> mailbox_manager_;
-
   const raw_ptr<gpu::SharedImageRepresentationFactory>
       shared_image_representation_factory_;
 
   const raw_ptr<gpu::SharedContextState> context_state_;
 
+ private:
+  // Completion callback for |DoPresent|.
+  void OnPresentFinished(OutputSurfaceFrame frame,
+                         gfx::SwapCompletionResult result);
+
   base::WeakPtrFactory<SkiaOutputDeviceDComp> weak_ptr_factory_{this};
 };
 
 // A DComp-backed OutputDevice whose root surface is wrapped in a GLSurface.
+// It is intended to be replaced by |SkiaOutputDeviceDCompPresenter| when
+// |DirectCompositionSurfaceWin| is removed.
 class VIZ_SERVICE_EXPORT SkiaOutputDeviceDCompGLSurface final
     : public SkiaOutputDeviceDComp {
  public:
   SkiaOutputDeviceDCompGLSurface(
-      gpu::MailboxManager* mailbox_manager,
       gpu::SharedImageRepresentationFactory*
           shared_image_representation_factory,
       gpu::SharedContextState* context_state,
@@ -125,9 +132,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceDCompGLSurface final
   bool ScheduleDCLayer(
       std::unique_ptr<gl::DCLayerOverlayParams> params) override;
   gfx::Size GetRootSurfaceSize() const override;
-  gfx::SwapResult DoPostSubBuffer(const gfx::Rect& rect,
-                                  BufferPresentedCallback feedback,
-                                  gfx::FrameData data) override;
+  void DoPresent(const gfx::Rect& rect,
+                 gl::GLSurface::SwapCompletionCallback completion_callback,
+                 BufferPresentedCallback feedback,
+                 gfx::FrameData data) override;
 
  private:
   scoped_refptr<gl::GLSurface> gl_surface_;
@@ -138,6 +146,82 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceDCompGLSurface final
   sk_sp<SkSurface> sk_surface_;
 
   uint64_t backbuffer_estimated_size_ = 0;
+};
+
+// A DComp-backed OutputDevice that directly owns the root surface.
+class VIZ_SERVICE_EXPORT SkiaOutputDeviceDCompPresenter final
+    : public SkiaOutputDeviceDComp {
+ public:
+  SkiaOutputDeviceDCompPresenter(
+      gpu::SharedImageFactory* shared_image_factory,
+      gpu::SharedImageRepresentationFactory*
+          shared_image_representation_factory,
+      gpu::SharedContextState* context_state,
+      scoped_refptr<gl::Presenter> presenter,
+      scoped_refptr<gpu::gles2::FeatureInfo> feature_info,
+      gpu::MemoryTracker* memory_tracker,
+      DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
+
+  ~SkiaOutputDeviceDCompPresenter() override;
+
+  // SkiaOutputDevice implementation:
+  bool Reshape(const SkSurfaceCharacterization& characterization,
+               const gfx::ColorSpace& color_space,
+               float device_scale_factor,
+               gfx::OverlayTransform transform) override;
+  void Submit(bool sync_cpu, base::OnceClosure callback) override;
+  bool SetDrawRectangle(const gfx::Rect& draw_rectangle) override;
+  void SetEnableDCLayers(bool enable) override;
+  void SetGpuVSyncEnabled(bool enabled) override;
+  SkSurface* BeginPaint(
+      std::vector<GrBackendSemaphore>* end_semaphores) override;
+  void EndPaint() override;
+
+  bool IsRootSurfaceAllocatedForTesting() const;
+
+ protected:
+  bool ScheduleDCLayer(
+      std::unique_ptr<gl::DCLayerOverlayParams> params) override;
+  gfx::Size GetRootSurfaceSize() const override;
+  void DoPresent(const gfx::Rect& rect,
+                 gl::GLSurface::SwapCompletionCallback completion_callback,
+                 BufferPresentedCallback feedback,
+                 gfx::FrameData data) override;
+
+ private:
+  // Idempotent
+  bool EnsureRootSurfaceAllocated();
+  // Idempotent
+  void DestroyRootSurface();
+
+  // Returns true on success.
+  bool ScheduleRootSurfaceAsOverlay();
+
+  // Any implementation capable of scheduling a DComp layer. Currently only
+  // |DCompPresenter|.
+  scoped_refptr<gl::Presenter> presenter_;
+
+  const raw_ptr<gpu::SharedImageFactory> shared_image_factory_;
+
+  // Parameters from the most recent |Reshape|.
+  SkSurfaceCharacterization characterization_;
+  gfx::ColorSpace color_space_;
+  float device_scale_factor_ = 1.0;
+  gfx::OverlayTransform transform_;
+
+  // Valid from SetDrawRectangle to BeginPaint
+  absl::optional<gfx::Rect> update_rect_;
+
+  bool want_dcomp_surface_ = false;
+
+  // Valid from |EnsureRootSurfaceAllocated| to |DestroyRootSurface|.
+  gpu::Mailbox root_surface_mailbox_;
+  // Valid from |EnsureRootSurfaceAllocated| to |DestroyRootSurface|.
+  std::unique_ptr<gpu::SkiaImageRepresentation>
+      root_surface_skia_representation_;
+  // Valid from BeginPaint to EndPaint
+  std::unique_ptr<gpu::SkiaImageRepresentation::ScopedWriteAccess>
+      root_surface_write_access_;
 };
 
 }  // namespace viz

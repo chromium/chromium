@@ -563,7 +563,14 @@ viz_source_set("unit_tests") {
     sources += [
       "display/overlay_dc_unittest.cc",
       "display_embedder/output_device_backing_unittest.cc",
+      "display_embedder/skia_output_device_dcomp_unittest.cc",
       "display_embedder/software_output_device_win_unittest.cc",
+    ]
+
+    deps += [
+      "//ui/gl:test_support",
+      "//ui/platform_window",
+      "//ui/platform_window/win",
     ]
 
     # SkiaOutputDeviceBufferQueue doesn't support Windows.

@@ -45,7 +45,7 @@ DCompPresenter::DCompPresenter(
     GLDisplayEGL* display,
     VSyncCallback vsync_callback,
     const DirectCompositionSurfaceWin::Settings& settings)
-    : SurfacelessEGL(display, gfx::Size(1, 1)),
+    : Presenter(display, gfx::Size(1, 1)),
       vsync_callback_(std::move(vsync_callback)),
       vsync_thread_(VSyncThreadWin::GetInstance()),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
@@ -96,10 +96,6 @@ void DCompPresenter::Destroy() {
     dcomp_device->Commit();
 }
 
-bool DCompPresenter::IsOffscreen() {
-  return false;
-}
-
 bool DCompPresenter::Resize(const gfx::Size& size,
                             float scale_factor,
                             const gfx::ColorSpace& color_space,
@@ -115,32 +111,6 @@ bool DCompPresenter::Resize(const gfx::Size& size,
     return false;
   }
   return true;
-}
-
-gfx::SwapResult DCompPresenter::SwapBuffers(PresentationCallback callback,
-                                            gfx::FrameData data) {
-  TRACE_EVENT0("gpu", "DCompPresenter::SwapBuffers");
-
-  // Callback will be dequeued on next vsync.
-  EnqueuePendingFrame(std::move(callback),
-                      /*create_query=*/create_query_this_frame_);
-  create_query_this_frame_ = false;
-
-  if (!layer_tree_->CommitAndClearPendingOverlays(nullptr))
-    return gfx::SwapResult::SWAP_FAILED;
-
-  return gfx::SwapResult::SWAP_ACK;
-}
-
-gfx::SwapResult DCompPresenter::PostSubBuffer(int x,
-                                              int y,
-                                              int width,
-                                              int height,
-                                              PresentationCallback callback,
-                                              gfx::FrameData data) {
-  // The arguments are ignored because SetDrawRectangle specified the area to
-  // be swapped.
-  return SwapBuffers(std::move(callback), data);
 }
 
 gfx::VSyncProvider* DCompPresenter::GetVSyncProvider() {
@@ -175,12 +145,24 @@ void DCompPresenter::SetFrameRate(float frame_rate) {
   layer_tree_->SetFrameRate(frame_rate);
 }
 
-gfx::SurfaceOrigin DCompPresenter::GetOrigin() const {
-  return gfx::SurfaceOrigin::kTopLeft;
-}
+void DCompPresenter::Present(SwapCompletionCallback completion_callback,
+                             PresentationCallback presentation_callback,
+                             gfx::FrameData data) {
+  TRACE_EVENT0("gpu", "DCompPresenter::Present");
 
-bool DCompPresenter::SupportsPostSubBuffer() {
-  return true;
+  // Callback will be dequeued on next vsync.
+  EnqueuePendingFrame(std::move(presentation_callback),
+                      /*create_query=*/create_query_this_frame_);
+  create_query_this_frame_ = false;
+
+  if (!layer_tree_->CommitAndClearPendingOverlays(nullptr)) {
+    std::move(completion_callback)
+        .Run(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_FAILED));
+    return;
+  }
+
+  std::move(completion_callback)
+      .Run(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_ACK));
 }
 
 bool DCompPresenter::SupportsDCLayers() const {
