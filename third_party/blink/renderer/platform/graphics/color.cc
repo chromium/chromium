@@ -389,8 +389,10 @@ Color Color::InterpolateColors(
 
   if (color1.alpha_is_none_ && !color2.alpha_is_none_) {
     color1.alpha_ = color2.alpha_;
+    color1.alpha_is_none_ = false;
   } else if (color2.alpha_is_none_ && !color1.alpha_is_none_) {
     color2.alpha_ = color1.alpha_;
+    color2.alpha_is_none_ = false;
   }
 
   absl::optional<float> alpha1 = color1.PremultiplyColor();
@@ -444,10 +446,12 @@ Color Color::InterpolateColors(
                              hue_method.value())
           : blink::Blend(color1.param2_, color2.param2_, percentage);
 
+  if (color1.alpha_is_none_ || color2.alpha_is_none_) {
+    DCHECK_EQ(color1.alpha_is_none_, color2.alpha_is_none_);
+  }
   absl::optional<float> alpha =
-      (color1.alpha_is_none_ || color2.alpha_is_none_)
-          ? HandleNoneInterpolation(alpha1.value(), color1.alpha_is_none_,
-                                    alpha2.value(), color2.alpha_is_none_)
+      (color1.alpha_is_none_ && color2.alpha_is_none_)
+          ? absl::optional<float>(absl::nullopt)
           : blink::Blend(alpha1.value(), alpha2.value(), percentage);
 
   Color result;
