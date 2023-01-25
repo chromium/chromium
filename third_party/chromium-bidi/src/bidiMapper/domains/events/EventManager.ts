@@ -74,13 +74,14 @@ export interface IEventManager {
   ): Promise<void>;
 }
 
+/**
+ * Maps event name to a desired buffer length.
+ */
+const eventBufferLength: Readonly<Map<string, number>> = new Map([
+  ['log.entryAdded', 100],
+]);
+
 export class EventManager implements IEventManager {
-  /**
-   * Maps event name to a desired buffer length.
-   */
-  static readonly #eventBufferLength: Map<string, number> = new Map([
-    ['log.entryAdded', 100],
-  ]);
   /**
    * Maps event name to a set of contexts where this event already happened.
    * Needed for getting buffered events from all the contexts in case of
@@ -112,7 +113,7 @@ export class EventManager implements IEventManager {
   /**
    * Returns consistent key to be used to access value maps.
    */
-  static #getMapKey(
+  #getMapKey(
     eventName: string,
     browsingContext: CommonDataTypes.BrowsingContext | null,
     channel: string | null | undefined = undefined
@@ -198,20 +199,15 @@ export class EventManager implements IEventManager {
    * If the event is buffer-able, put it in the buffer.
    */
   #bufferEvent(eventWrapper: EventWrapper, eventName: string) {
-    if (!EventManager.#eventBufferLength.has(eventName)) {
+    if (!eventBufferLength.has(eventName)) {
       // Do nothing if the event is no buffer-able.
       return;
     }
-    const bufferMapKey = EventManager.#getMapKey(
-      eventName,
-      eventWrapper.contextId
-    );
+    const bufferMapKey = this.#getMapKey(eventName, eventWrapper.contextId);
     if (!this.#eventBuffers.has(bufferMapKey)) {
       this.#eventBuffers.set(
         bufferMapKey,
-        new Buffer<EventWrapper>(
-          EventManager.#eventBufferLength.get(eventName)!
-        )
+        new Buffer<EventWrapper>(eventBufferLength.get(eventName)!)
       );
     }
     this.#eventBuffers.get(bufferMapKey)!.add(eventWrapper);
@@ -230,12 +226,12 @@ export class EventManager implements IEventManager {
     channel: string | null,
     eventName: string
   ) {
-    if (!EventManager.#eventBufferLength.has(eventName)) {
+    if (!eventBufferLength.has(eventName)) {
       // Do nothing if the event is no buffer-able.
       return;
     }
 
-    const lastSentMapKey = EventManager.#getMapKey(
+    const lastSentMapKey = this.#getMapKey(
       eventName,
       eventWrapper.contextId,
       channel
@@ -254,12 +250,8 @@ export class EventManager implements IEventManager {
     contextId: CommonDataTypes.BrowsingContext | null,
     channel: string | null
   ): EventWrapper[] {
-    const bufferMapKey = EventManager.#getMapKey(eventName, contextId);
-    const lastSentMapKey = EventManager.#getMapKey(
-      eventName,
-      contextId,
-      channel
-    );
+    const bufferMapKey = this.#getMapKey(eventName, contextId);
+    const lastSentMapKey = this.#getMapKey(eventName, contextId, channel);
     const lastSentMessageId =
       this.#lastMessageSent.get(lastSentMapKey) ?? -Infinity;
 
