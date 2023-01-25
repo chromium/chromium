@@ -90,6 +90,7 @@ Matcher<FakeTransformPtr> IsImageTransform(
     fuchsia::ui::composition::BlendMode blend_mode,
     const fuchsia::math::Vec& translation = FakeTransform::kDefaultTranslation,
     Orientation orientation = FakeTransform::kDefaultOrientation,
+    const fuchsia::math::RectF& sample_region = FakeImage::kDefaultSampleRegion,
     const fuchsia::math::SizeU& destination_size =
         FakeImage::kDefaultDestinationSize,
     float image_opacity = FakeImage::kDefaultOpacity,
@@ -100,15 +101,17 @@ Matcher<FakeTransformPtr> IsImageTransform(
       Field("scale", &FakeTransform::scale, FakeTransform::kDefaultScale),
       Field("opacity", &FakeTransform::opacity, FakeTransform::kDefaultOpacity),
       Field("children", &FakeTransform::children, IsEmpty()),
-      Field("content", &FakeTransform::content,
-            Pointee(VariantWith<FakeImage>(
-                AllOf(Field("image_properties", &FakeImage::image_properties,
-                            IsImageProperties(size)),
-                      Field("destination_size", &FakeImage::destination_size,
-                            destination_size),
-                      Field("blend_mode", &FakeImage::blend_mode, blend_mode),
-                      Field("opacity", &FakeImage::opacity, image_opacity),
-                      Field("flip", &FakeImage::flip, image_flip)))))));
+      Field(
+          "content", &FakeTransform::content,
+          Pointee(VariantWith<FakeImage>(AllOf(
+              Field("image_properties", &FakeImage::image_properties,
+                    IsImageProperties(size)),
+              Field("sample_region", &FakeImage::sample_region, sample_region),
+              Field("destination_size", &FakeImage::destination_size,
+                    destination_size),
+              Field("blend_mode", &FakeImage::blend_mode, blend_mode),
+              Field("opacity", &FakeImage::opacity, image_opacity),
+              Field("flip", &FakeImage::flip, image_flip)))))));
 }
 
 scoped_refptr<FlatlandSysmemNativePixmap> CreateFlatlandSysmemNativePixmap(
@@ -368,9 +371,13 @@ TEST_P(FlatlandSurfaceOverlayPlaneTransformTest, PresentOverlayPlane) {
   const float kOverlayOpacity = .7f;
   const gfx::RectF kOverlayBounds(kOverlayX, kOverlayY, kOverlayWidth,
                                   kOverlayHeight);
+  const float kCropX = 2.2f;
+  const float kCropY = 6.6f;
+  const float kCropWidth = 14.4f;
+  const float kCropHeight = 16.6f;
   gfx::OverlayPlaneData overlay_data(
       /*z_order=*/1, input_transform, kOverlayBounds,
-      /*crop_rect=*/gfx::RectF(),
+      gfx::RectF(kCropX, kCropY, kCropWidth, kCropHeight),
       /*enable_blend=*/true,
       /*damage_rect=*/gfx::Rect(), kOverlayOpacity,
       gfx::OverlayPriorityHint::kNone,
@@ -398,11 +405,15 @@ TEST_P(FlatlandSurfaceOverlayPlaneTransformTest, PresentOverlayPlane) {
           {expected_scale, expected_scale},
           {IsImageTransform({kExpectedImageSize, kExpectedImageSize},
                             fuchsia::ui::composition::BlendMode::SRC_OVER),
-           IsImageTransform({kExpectedImageSize, kExpectedImageSize},
-                            fuchsia::ui::composition::BlendMode::SRC_OVER,
-                            expected_translation, expected_orientation,
-                            expected_image_destination_size, kOverlayOpacity,
-                            expected_image_flip)}));
+           IsImageTransform(
+               {kExpectedImageSize, kExpectedImageSize},
+               fuchsia::ui::composition::BlendMode::SRC_OVER,
+               expected_translation, expected_orientation,
+               {kCropX * kExpectedImageSize, kCropY * kExpectedImageSize,
+                kCropWidth * kExpectedImageSize,
+                kCropHeight * kExpectedImageSize},
+               expected_image_destination_size, kOverlayOpacity,
+               expected_image_flip)}));
 }
 
 }  // namespace ui
