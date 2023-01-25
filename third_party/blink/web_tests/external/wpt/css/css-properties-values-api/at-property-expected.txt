@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 62 tests; 61 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 66 tests; 65 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Attribute 'syntax' returns expected value for ["<color>"]
 PASS Attribute 'syntax' returns expected value for ["<color> | none"]
 PASS Attribute 'syntax' returns expected value for ["<color># | <image> | none"]
@@ -57,6 +57,10 @@ PASS Rule not applied [<gandalf>, grey, false]
 PASS Rule not applied [gandalf, grey, false]
 PASS Rule not applied [<color>, notacolor, false]
 PASS Rule not applied [<length>, 10em, false]
+PASS Rule not applied [<transform-function>, translateX(1em), false]
+PASS Rule not applied [<transform-function>, translateY(1lh), false]
+PASS Rule not applied [<transform-list>, rotate(10deg) translateX(1em), false]
+PASS Rule not applied [<transform-list>, rotate(10deg) translateY(1lh), false]
 PASS Non-inherited properties do not inherit
 PASS Inherited properties inherit
 PASS Initial values substituted as computed value
