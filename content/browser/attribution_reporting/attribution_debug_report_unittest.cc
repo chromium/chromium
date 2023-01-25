@@ -600,6 +600,13 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
          },
          "type": "trigger-event-report-window-passed"
        }])json"},
+      {EventLevelResult::kNotRegistered,
+       /*replaced_event_level_report=*/absl::nullopt,
+       /*new_event_level_report=*/absl::nullopt,
+       /*source=*/absl::nullopt, CreateReportResult::Limits(),
+       /*dropped_event_level_report=*/absl::nullopt,
+       /*trigger_debug_key=*/absl::nullopt,
+       /*expected_report_body=*/nullptr},
   };
 
   for (bool is_debug_cookie_set : {false, true}) {

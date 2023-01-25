@@ -169,9 +169,9 @@ void RecordStoreSourceStatus(AttributionStorage::StoreSourceResult result) {
 
 void RecordCreateReportStatus(CreateReportResult result) {
   static_assert(AttributionTrigger::EventLevelResult::kMaxValue ==
-                    AttributionTrigger::EventLevelResult::kReportWindowPassed,
-                "Bump version of Conversions.CreateReportStatus6 histogram.");
-  base::UmaHistogramEnumeration("Conversions.CreateReportStatus6",
+                    AttributionTrigger::EventLevelResult::kNotRegistered,
+                "Bump version of Conversions.CreateReportStatus7 histogram.");
+  base::UmaHistogramEnumeration("Conversions.CreateReportStatus7",
                                 result.event_level_status());
   static_assert(
       AttributionTrigger::AggregatableResult::kMaxValue ==

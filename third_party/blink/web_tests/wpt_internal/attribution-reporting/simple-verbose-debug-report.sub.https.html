@@ -16,6 +16,7 @@ attribution_reporting_promise_test(async t => {
 
   await registerAttributionSrc(t, {
     trigger: {
+      event_trigger_data: [{}],
       debug_reporting: true,
       debug_key: '456',
     },

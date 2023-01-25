@@ -23,9 +23,6 @@ attribution_reporting_promise_test(async t => {
 
   await registerAttributionSrc(t, {
     trigger : {
-      // Create event-level report to avoid verbose debug report created for
-      // event-level attribution.
-      event_trigger_data: [{}],
       aggregatable_values: {
         geoValue: 32768,
       },

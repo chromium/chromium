@@ -19377,6 +19377,7 @@ Called by update_net_error_codes.py.-->
   <int value="13" label="Excessive reports"/>
   <int value="14" label="Falsely attributed source"/>
   <int value="15" label="Report window has passed"/>
+  <int value="16" label="Not registered"/>
 </enum>
 
 <enum name="ConversionStorageSourceStatus">

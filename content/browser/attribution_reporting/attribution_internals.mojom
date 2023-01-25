@@ -170,6 +170,7 @@ struct WebUITrigger {
     kProhibitedByBrowserPolicy,
     kDeduplicated,
     kReportWindowPassed,
+    kNotRegistered,
 
     // Event-level statuses:
     kLowPriority,
@@ -180,7 +181,6 @@ struct WebUITrigger {
     // Aggregatable statuses:
     kNoHistograms,
     kInsufficientBudget,
-    kNotRegistered,
   };
 
   Status event_level_status;

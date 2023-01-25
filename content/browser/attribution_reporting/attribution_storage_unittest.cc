@@ -2814,6 +2814,14 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
 TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
   const auto origin = *SuitableOrigin::Deserialize("https://r.test");
 
+  auto event_triggers = *attribution_reporting::EventTriggerDataList::Create(
+      {attribution_reporting::EventTriggerData(
+          /*data=*/11,
+          /*priority=*/12,
+          /*dedup_key=*/13,
+          /*filters=*/AttributionFilters(),
+          /*not_filters=*/AttributionFilters())});
+
   std::vector<attribution_reporting::AggregatableTriggerData>
       aggregatable_trigger_data{
           *attribution_reporting::AggregatableTriggerData::Create(
@@ -2843,8 +2851,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           }),
           /*not_filters=*/AttributionFilters(),
           /*debug_key=*/absl::nullopt,
-          /*aggregatable_dedup_key=*/absl::nullopt,
-          /*event_triggers=*/attribution_reporting::EventTriggerDataList(),
+          /*aggregatable_dedup_key=*/absl::nullopt, event_triggers,
           *attribution_reporting::AggregatableTriggerDataList::Create(
               aggregatable_trigger_data),
           aggregatable_values,
@@ -2862,8 +2869,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           }),
           /*not_filters=*/AttributionFilters(),
           /*debug_key=*/absl::nullopt,
-          /*aggregatable_dedup_key=*/absl::nullopt,
-          /*event_triggers=*/attribution_reporting::EventTriggerDataList(),
+          /*aggregatable_dedup_key=*/absl::nullopt, event_triggers,
           *attribution_reporting::AggregatableTriggerDataList::Create(
               aggregatable_trigger_data),
           aggregatable_values,
@@ -2879,8 +2885,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           /*not_filters=*/
           AttributionFiltersForSourceType(AttributionSourceType::kNavigation),
           /*debug_key=*/absl::nullopt,
-          /*aggregatable_dedup_key=*/absl::nullopt,
-          /*event_triggers=*/attribution_reporting::EventTriggerDataList(),
+          /*aggregatable_dedup_key=*/absl::nullopt, event_triggers,
           *attribution_reporting::AggregatableTriggerDataList::Create(
               aggregatable_trigger_data),
           aggregatable_values,
@@ -2898,13 +2903,11 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
                         AttributionTrigger::AggregatableResult::
                             kNoMatchingSourceFilterData)));
 
-  EXPECT_THAT(
-      storage()->MaybeCreateAndStoreReport(trigger2),
-      AllOf(
-          CreateReportEventLevelStatusIs(
-              AttributionTrigger::EventLevelResult::kNoMatchingConfigurations),
-          CreateReportAggregatableStatusIs(
-              AttributionTrigger::AggregatableResult::kSuccess)));
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(trigger2),
+              AllOf(CreateReportEventLevelStatusIs(
+                        AttributionTrigger::EventLevelResult::kSuccess),
+                    CreateReportAggregatableStatusIs(
+                        AttributionTrigger::AggregatableResult::kSuccess)));
 
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(trigger3),
               AllOf(CreateReportEventLevelStatusIs(
@@ -3154,6 +3157,20 @@ TEST_F(AttributionStorageTest, MaxAttributions_BoundedBySourceTimeWindow) {
   task_environment_.FastForwardBy(kTimeWindow - kTriggerDelay);
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(trigger));
+}
+
+TEST_F(AttributionStorageTest, NoEventTriggerData_NotRegisteredReturned) {
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(
+          DefaultAggregatableTriggerBuilder().Build(
+              /*generate_event_trigger_data=*/false)),
+      AllOf(CreateReportEventLevelStatusIs(
+                AttributionTrigger::EventLevelResult::kNotRegistered),
+            CreateReportAggregatableStatusIs(
+                AttributionTrigger::AggregatableResult::kNoMatchingImpressions),
+            NewEventLevelReportIs(absl::nullopt),
+            NewAggregatableReportIs(absl::nullopt)));
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), IsEmpty());
 }
 
 }  // namespace content

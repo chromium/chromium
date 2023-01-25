@@ -822,9 +822,18 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   const attribution_reporting::TriggerRegistration& trigger_registration =
       trigger.registration();
 
+  if (trigger_registration.event_triggers.vec().empty()) {
+    event_level_status = EventLevelResult::kNotRegistered;
+  }
+
   if (trigger_registration.aggregatable_trigger_data.vec().empty() &&
       trigger_registration.aggregatable_values.values().empty()) {
     aggregatable_status = AggregatableResult::kNotRegistered;
+  }
+
+  if (event_level_status.has_value() && aggregatable_status.has_value()) {
+    return assemble_report_result(/*new_event_level_status=*/absl::nullopt,
+                                  /*new_aggregaable_status=*/absl::nullopt);
   }
 
   // We don't bother creating the DB here if it doesn't exist, because it's not
@@ -871,11 +880,14 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   }
 
   absl::optional<uint64_t> dedup_key;
-  if (EventLevelResult create_event_level_status = MaybeCreateEventLevelReport(
-          *attribution_info, trigger, new_event_level_report, dedup_key,
-          limits.max_event_level_reports_per_destination);
-      create_event_level_status != EventLevelResult::kSuccess) {
-    event_level_status = create_event_level_status;
+  if (!event_level_status.has_value()) {
+    if (EventLevelResult create_event_level_status =
+            MaybeCreateEventLevelReport(
+                *attribution_info, trigger, new_event_level_report, dedup_key,
+                limits.max_event_level_reports_per_destination);
+        create_event_level_status != EventLevelResult::kSuccess) {
+      event_level_status = create_event_level_status;
+    }
   }
 
   if (!aggregatable_status.has_value()) {

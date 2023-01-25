@@ -1022,6 +1022,8 @@ std::ostream& operator<<(std::ostream& out,
       return out << "falselyAttributedSource";
     case AttributionTrigger::EventLevelResult::kReportWindowPassed:
       return out << "reportWindowPassed";
+    case AttributionTrigger::EventLevelResult::kNotRegistered:
+      return out << "notRegistered";
   }
 }
 

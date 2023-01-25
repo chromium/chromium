@@ -18,6 +18,7 @@ attribution_reporting_promise_test(async t => {
 
   await registerAttributionSrc(t, {
     trigger: {
+      event_trigger_data: [{}],
       filters: {a: ['c']},
       debug_reporting: true,
     },

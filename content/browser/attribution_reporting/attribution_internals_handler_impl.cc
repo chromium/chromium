@@ -467,6 +467,8 @@ WebUITriggerStatus GetWebUITriggerStatus(EventLevelStatus status) {
       return WebUITriggerStatus::kExcessiveEventLevelReports;
     case EventLevelStatus::kReportWindowPassed:
       return WebUITriggerStatus::kReportWindowPassed;
+    case EventLevelStatus::kNotRegistered:
+      return WebUITriggerStatus::kNotRegistered;
   }
 }
 

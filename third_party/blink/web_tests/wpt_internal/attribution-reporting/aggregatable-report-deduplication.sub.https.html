@@ -25,9 +25,6 @@ attribution_reporting_promise_test(async t => {
   });
 
   const trigger = {
-    // Create event-level report to avoid verbose debug report created for
-    // event-level attribution.
-    event_trigger_data: [{}],
     aggregatable_trigger_data: [{
       key_piece: '0x400',
       source_keys: ['campaignCounts'],

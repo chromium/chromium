@@ -58,7 +58,8 @@ CreateReportResult::CreateReportResult(
       replaced_event_level_report_.has_value(),
       event_level_status_ == EventLevelResult::kSuccessDroppedLowerPriority);
 
-  if (event_level_status_ != EventLevelResult::kInternalError) {
+  if (event_level_status_ != EventLevelResult::kInternalError &&
+      event_level_status_ != EventLevelResult::kNotRegistered) {
     DCHECK_EQ(source_.has_value(),
               event_level_status_ != EventLevelResult::kNoMatchingImpressions &&
                   event_level_status_ !=
