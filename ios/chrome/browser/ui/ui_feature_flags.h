@@ -119,9 +119,6 @@ BASE_DECLARE_FEATURE(kEnableMiniMap);
 // When enabled sort tab by last usage in the TabGrid.
 BASE_DECLARE_FEATURE(kTabGridRecencySort);
 
-// Feature to enable the new bookmarks implementation.
-BASE_DECLARE_FEATURE(kEnableNewBookmarksImplementation);
-
 // Feature to enable multiline gradient support in fade truncating label.
 BASE_DECLARE_FEATURE(kMultilineFadeTruncatingLabel);
 

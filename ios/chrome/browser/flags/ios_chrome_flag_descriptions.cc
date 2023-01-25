@@ -316,11 +316,6 @@ const char kEnableFullscreenAPIName[] = "Enable Fullscreen API";
 const char kEnableFullscreenAPIDescription[] =
     "Enable the Fullscreen API for web content (iOS 16.0+).";
 
-const char kEnableNewBookmarksImplementationName[] =
-    "Enable New Bookmarks Implementation";
-const char kEnableNewBookmarksImplementationDescription[] =
-    "Enable the new bookmarks implementation with coordinators";
-
 const char kPasswordsGroupingName[] =
     "Enable password grouping for the Password Manager";
 const char kPasswordsGroupingDescription[] =
