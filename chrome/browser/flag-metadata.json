@@ -2615,6 +2615,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "enable-lens-context-menu-alt-text",
+    "owners": [ "apalanki", "schechter", "hujasonx" ],
+    "expiry_milestone": 114
+  },
+  {
     "name": "enable-lens-image-format-optimizations",
     "owners": ["mercerd@google.com", "stanfield@google.com", "lens-chrome@google.com"],
     "expiry_milestone": 112

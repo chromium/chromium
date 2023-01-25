@@ -769,6 +769,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"enable-lens-in-ntp", flag_descriptions::kEnableLensInNTPName,
      flag_descriptions::kEnableLensInNTPDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableLensInNTP)},
+    {"enable-lens-context-menu-alt-text",
+     flag_descriptions::kEnableLensContextMenuAltTextName,
+     flag_descriptions::kEnableLensContextMenuAltTextDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableLensContextMenuAltText)},
     {"enable-lens-in-omnibox-copied-image",
      flag_descriptions::kEnableLensInOmniboxCopiedImageName,
      flag_descriptions::kEnableLensInOmniboxCopiedImageDescription,
@@ -1244,8 +1248,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(commerce::kShoppingList)},
     {"ios-tabstrip-context-menu", flag_descriptions::kTabStripContextMenuName,
      flag_descriptions::kTabStripContextMenuDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kTabStripContextMenu)},
-};
+     FEATURE_VALUE_TYPE(kTabStripContextMenu)}};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

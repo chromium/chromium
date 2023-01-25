@@ -756,6 +756,11 @@ extern const char kEnableLensInKeyboardDescription[];
 extern const char kEnableLensInNTPName[];
 extern const char kEnableLensInNTPDescription[];
 
+// Title and description for the flag to enable using alternate Lens context
+// menu string.
+extern const char kEnableLensContextMenuAltTextName[];
+extern const char kEnableLensContextMenuAltTextDescription[];
+
 // Title and description for the flag to enable using Lens to search using
 // copied images in the omnibox.
 extern const char kEnableLensInOmniboxCopiedImageName[];

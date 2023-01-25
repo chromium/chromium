@@ -338,9 +338,12 @@
   UIImage* image = UseSymbols() ? CustomSymbolWithPointSize(
                                       kCameraLensSymbol, kSymbolActionPointSize)
                                 : [UIImage imageNamed:@"lens_icon"];
+  int actionTitleMessageId =
+      base::FeatureList::IsEnabled(kEnableLensContextMenuAltText)
+          ? IDS_IOS_CONTEXT_MENU_SEARCHIMAGEWITHGOOGLE_ALT_TEXT
+          : IDS_IOS_CONTEXT_MENU_SEARCHIMAGEWITHGOOGLE;
   UIAction* action =
-      [self actionWithTitle:l10n_util::GetNSString(
-                                IDS_IOS_CONTEXT_MENU_SEARCHIMAGEWITHGOOGLE)
+      [self actionWithTitle:l10n_util::GetNSString(actionTitleMessageId)
                       image:image
                        type:MenuActionType::SearchImageWithLens
                       block:block];

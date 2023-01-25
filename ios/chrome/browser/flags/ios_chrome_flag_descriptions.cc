@@ -861,6 +861,12 @@ const char kEnableLensInNTPDescription[] =
     "menu when Google is the selected search engine, accessible from the"
     "new tab page.";
 
+const char kEnableLensContextMenuAltTextName[] =
+    "Enable alternate text for Google Lens in Context Menu";
+const char kEnableLensContextMenuAltTextDescription[] =
+    "When enabled, use the alternate text for the search image with Google "
+    "Lens context menu string.";
+
 const char kEnableLensInOmniboxCopiedImageName[] =
     "Enable Google Lens in the Omnibox for Copied Images";
 const char kEnableLensInOmniboxCopiedImageDescription[] =

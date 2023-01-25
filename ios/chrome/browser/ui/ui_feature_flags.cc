@@ -83,6 +83,10 @@ BASE_FEATURE(kEnableLensInNTP,
              "EnableLensInNTP",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableLensContextMenuAltText,
+             "EnableLensContextMenuAltText",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableLensInOmniboxCopiedImage,
              "EnableLensInOmniboxCopiedImage",
              base::FEATURE_DISABLED_BY_DEFAULT);

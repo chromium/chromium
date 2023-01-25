@@ -75,6 +75,9 @@ BASE_DECLARE_FEATURE(kEnableLensInKeyboard);
 // Feature flag to enable the Lens entrypoint in the new tab page.
 BASE_DECLARE_FEATURE(kEnableLensInNTP);
 
+// Feature flag to enable the Lens context menu alternate text string.
+BASE_DECLARE_FEATURE(kEnableLensContextMenuAltText);
+
 // Feature flag to enable the Lens "Search copied image" omnibox entrypoint.
 BASE_DECLARE_FEATURE(kEnableLensInOmniboxCopiedImage);
 
