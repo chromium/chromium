@@ -160,6 +160,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
     observers_.RemoveObserver(observer);
   }
 
+  // Processes a syncing status event. Returns true if the event was useful.
+  bool OnSyncingEvent(mojom::ItemEvent& event);
+
   // drivefs::DriveFsHostObserver
   void OnSyncingStatusUpdate(const mojom::SyncingStatus& status) override;
   void OnUnmounted() override;
@@ -324,6 +327,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, Add);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, Update);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, Remove);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnSyncingEvent);
 };
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)

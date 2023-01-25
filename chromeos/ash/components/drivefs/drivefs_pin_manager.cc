@@ -697,63 +697,66 @@ void DriveFsPinManager::OnSyncingStatusUpdate(
 
   for (const mojom::ItemEventPtr& event : status.item_events) {
     DCHECK(event);
-    const StableId id = StableId(event->stable_id);
-    using State = mojom::ItemEvent::State;
-    switch (event->state) {
-      case State::kQueued:
-        // kQueued events come with a bytes_to_transfer field incorrectly set to
-        // zero (b/266462624). So we set it to -1 to ignore it.
-        event->bytes_to_transfer = -1;
-        [[fallthrough]];
-
-      case State::kInProgress:
-        if (Update(id, event->path, event->bytes_transferred,
-                   event->bytes_to_transfer)) {
-          VLOG(3) << Quote(event->state) << " " << id << " "
-                  << Quote(event->path) << ": " << Quote(*event);
-          VLOG_IF(2, !VLOG_IS_ON(3))
-              << Quote(event->state) << " " << id << " " << Quote(event->path);
-          progress_.useful_events++;
-          NotifyProgress();
-        } else {
-          VLOG(3) << "Duplicated event: " << Quote(*event);
-          progress_.duplicated_events++;
-        }
-        continue;
-
-      case State::kCompleted:
-        if (Remove(id, event->path)) {
-          VLOG(3) << "Synced " << id << " " << Quote(event->path) << ": "
-                  << Quote(*event);
-          VLOG_IF(2, !VLOG_IS_ON(3))
-              << "Synced " << id << " " << Quote(event->path);
-          progress_.useful_events++;
-          progress_.pinned_files++;
-          NotifyProgress();
-        } else {
-          VLOG(3) << "Duplicated event: " << Quote(*event);
-          progress_.duplicated_events++;
-        }
-        continue;
-
-      case State::kFailed:
-        if (Remove(id, event->path, 0)) {
-          LOG(ERROR) << Quote(event->state) << " " << id << " "
-                     << Quote(event->path) << ": " << Quote(*event);
-          progress_.failed_files++;
-          progress_.useful_events++;
-          NotifyProgress();
-        } else {
-          VLOG(3) << "Duplicated event: " << Quote(*event);
-          progress_.duplicated_events++;
-        }
-        continue;
+    if (OnSyncingEvent(*event)) {
+      progress_.useful_events++;
+      NotifyProgress();
+    } else {
+      progress_.duplicated_events++;
+      VLOG(3) << "Duplicated event: " << Quote(*event);
     }
-
-    LOG(ERROR) << "Unexpected event type: " << Quote(*event);
   }
 
   PinSomeFiles();
+}
+
+bool DriveFsPinManager::OnSyncingEvent(mojom::ItemEvent& event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const StableId id = StableId(event.stable_id);
+  using State = mojom::ItemEvent::State;
+  switch (event.state) {
+    case State::kQueued:
+      // kQueued events come with a bytes_to_transfer field incorrectly set to
+      // zero (b/266462624). So we set it to -1 to ignore it.
+      event.bytes_to_transfer = -1;
+      [[fallthrough]];
+
+    case State::kInProgress:
+      if (!Update(id, event.path, event.bytes_transferred,
+                  event.bytes_to_transfer)) {
+        return false;
+      }
+
+      VLOG(3) << Quote(event.state) << " " << id << " " << Quote(event.path)
+              << ": " << Quote(event);
+      VLOG_IF(2, !VLOG_IS_ON(3))
+          << Quote(event.state) << " " << id << " " << Quote(event.path);
+      return true;
+
+    case State::kCompleted:
+      if (!Remove(id, event.path)) {
+        return false;
+      }
+
+      VLOG(3) << "Synced " << id << " " << Quote(event.path) << ": "
+              << Quote(event);
+      VLOG_IF(2, !VLOG_IS_ON(3)) << "Synced " << id << " " << Quote(event.path);
+      progress_.pinned_files++;
+      return true;
+
+    case State::kFailed:
+      if (!Remove(id, event.path, 0)) {
+        return false;
+      }
+
+      LOG(ERROR) << Quote(event.state) << " " << id << " " << Quote(event.path)
+                 << ": " << Quote(event);
+      progress_.failed_files++;
+      return true;
+  }
+
+  LOG(ERROR) << "Unexpected event type: " << Quote(event);
+  return false;
 }
 
 void DriveFsPinManager::OnUnmounted() {
