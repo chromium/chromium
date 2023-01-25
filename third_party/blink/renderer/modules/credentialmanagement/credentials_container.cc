@@ -1220,20 +1220,22 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       if (options->publicKey()->extensions()->hasPrf()) {
         const char* error = validateGetPublicKeyCredentialPRFExtension(
             *options->publicKey()->extensions()->prf());
-        if (error == nullptr &&
-            options->publicKey()->extensions()->prf()->hasEvalByCredential() &&
+        if (error != nullptr) {
+          resolver->Reject(MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kSyntaxError, error));
+          return promise;
+        }
+
+        if (options->publicKey()->extensions()->prf()->hasEvalByCredential() &&
             options->publicKey()->allowCredentials().empty()) {
-          error =
-              "'prf' extension has 'evalByCredential' with an empty allow list";
+          resolver->Reject(MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kNotSupportedError,
+              "'prf' extension has 'evalByCredential' with an empty allow "
+              "list"));
+          return promise;
         }
         // Prohibiting uv=preferred is omitted. See
         // https://github.com/w3c/webauthn/pull/1836.
-
-        if (error != nullptr) {
-          resolver->Reject(MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kNotSupportedError, error));
-          return promise;
-        }
       }
       if (RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(context) &&
           options->publicKey()->extensions()->hasPayment()) {
