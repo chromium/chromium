@@ -130,6 +130,14 @@ class ASH_EXPORT UnifiedSystemTrayModel
 
   PaginationModel* pagination_model() { return pagination_model_.get(); }
 
+  void set_actual_display_brightness_value(float value) {
+    actual_display_brightness_value_ = value;
+  }
+
+  float actual_display_brightness_value() const {
+    return actual_display_brightness_value_;
+  }
+
  private:
   friend class UnifiedSystemTrayControllerTest;
   // Required for private destructor to be called from RefCounted<>.
@@ -172,6 +180,12 @@ class ASH_EXPORT UnifiedSystemTrayModel
 
   // The last value of the keyboard brightness slider. Between 0.0 and 1.0.
   float keyboard_brightness_ = 1.f;
+
+  // The actual value of display brightness. This variable is needed because
+  // when the brightness is below `kMinBrightnessPercent`, brightness value will
+  // remain as `kMinBrightnessPercent` but the brightness slider needs to be
+  // changed linearly.
+  float actual_display_brightness_value_ = 1.f;
 
   // Stores Manual changes to notification expanded / collapsed state in order
   // to restore on reopen.

@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_BRIGHTNESS_UNIFIED_BRIGHTNESS_SLIDER_CONTROLLER_H_
 #define ASH_SYSTEM_BRIGHTNESS_UNIFIED_BRIGHTNESS_SLIDER_CONTROLLER_H_
 
+#include <memory>
+
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/unified/unified_slider_view.h"
 #include "base/memory/scoped_refptr.h"
@@ -12,12 +14,14 @@
 namespace ash {
 
 class UnifiedSystemTrayModel;
+class UnifiedBrightnessView;
 
 // Controller of a slider that can change display brightness.
-class UnifiedBrightnessSliderController : public UnifiedSliderListener {
+class ASH_EXPORT UnifiedBrightnessSliderController
+    : public UnifiedSliderListener {
  public:
-  explicit UnifiedBrightnessSliderController(
-      scoped_refptr<UnifiedSystemTrayModel> model);
+  UnifiedBrightnessSliderController(scoped_refptr<UnifiedSystemTrayModel> model,
+                                    views::Button::PressedCallback callback);
 
   UnifiedBrightnessSliderController(const UnifiedBrightnessSliderController&) =
       delete;
@@ -25,6 +29,10 @@ class UnifiedBrightnessSliderController : public UnifiedSliderListener {
       const UnifiedBrightnessSliderController&) = delete;
 
   ~UnifiedBrightnessSliderController() override;
+
+  // For QsRevamp: Creates a slider view for the brightness slider in
+  // `DisplayDetailedView`.
+  std::unique_ptr<UnifiedBrightnessView> CreateBrightnessSlider();
 
   // UnifiedSliderListener:
   views::View* CreateView() override;
@@ -34,14 +42,9 @@ class UnifiedBrightnessSliderController : public UnifiedSliderListener {
                           float old_value,
                           views::SliderChangeReason reason) override;
 
-  // We don't let the screen brightness go lower than this when it's being
-  // adjusted via the slider.  Otherwise, if the user doesn't know about the
-  // brightness keys, they may turn the backlight off and not know how to turn
-  // it back on.
-  static constexpr double kMinBrightnessPercent = 5.0;
-
  private:
   scoped_refptr<UnifiedSystemTrayModel> model_;
+  views::Button::PressedCallback const callback_;
   UnifiedSliderView* slider_ = nullptr;
 
   // We have to store previous manually set value because |old_value| might be

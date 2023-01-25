@@ -136,6 +136,9 @@ class ASH_EXPORT UnifiedSystemTray
   // Shows main bubble with audio settings detailed view.
   void ShowAudioDetailedViewBubble();
 
+  // Shows main bubble with display settings detailed view.
+  void ShowDisplayDetailedViewBubble();
+
   // Shows main bubble with network settings detailed view.
   void ShowNetworkDetailedViewBubble();
 
@@ -245,6 +248,10 @@ class ASH_EXPORT UnifiedSystemTray
 
   ChannelIndicatorView* channel_indicator_view() {
     return channel_indicator_view_;
+  }
+
+  UnifiedSliderBubbleController* slider_bubble_controller() {
+    return slider_bubble_controller_.get();
   }
 
  private:

@@ -192,6 +192,16 @@ void UnifiedSystemTrayBubble::ShowAudioDetailedView() {
   controller_->ShowAudioDetailedView();
 }
 
+void UnifiedSystemTrayBubble::ShowDisplayDetailedView() {
+  if (!bubble_widget_) {
+    return;
+  }
+
+  DCHECK(unified_view_ || quick_settings_view_);
+  DCHECK(controller_);
+  controller_->ShowDisplayDetailedView();
+}
+
 void UnifiedSystemTrayBubble::ShowCalendarView(
     calendar_metrics::CalendarViewShowSource show_source,
     calendar_metrics::CalendarEventSource event_source) {
@@ -386,6 +396,10 @@ void UnifiedSystemTrayBubble::NotifyAccessibilityEvent(ax::mojom::Event event,
 
 bool UnifiedSystemTrayBubble::ShowingAudioDetailedView() const {
   return bubble_widget_ && controller_->showing_audio_detailed_view();
+}
+
+bool UnifiedSystemTrayBubble::ShowingDisplayDetailedView() const {
+  return bubble_widget_ && controller_->showing_display_detailed_view();
 }
 
 bool UnifiedSystemTrayBubble::ShowingCalendarView() const {

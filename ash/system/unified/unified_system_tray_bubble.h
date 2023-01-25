@@ -84,6 +84,9 @@ class ASH_EXPORT UnifiedSystemTrayBubble
   // Show audio settings detailed view.
   void ShowAudioDetailedView();
 
+  // Show display settings detailed view.
+  void ShowDisplayDetailedView();
+
   // Show calendar view.
   void ShowCalendarView(calendar_metrics::CalendarViewShowSource show_source,
                         calendar_metrics::CalendarEventSource event_source);
@@ -110,8 +113,10 @@ class ASH_EXPORT UnifiedSystemTrayBubble
   // Fire a notification that an accessibility event has occured on this object.
   void NotifyAccessibilityEvent(ax::mojom::Event event, bool send_native_event);
 
-  // Whether the bubble is currently showing audio details or calendar view.
+  // Whether the bubble is currently showing audio details or display details or
+  // calendar view.
   bool ShowingAudioDetailedView() const;
+  bool ShowingDisplayDetailedView() const;
   bool ShowingCalendarView() const;
 
   // TrayBubbleBase:

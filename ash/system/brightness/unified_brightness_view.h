@@ -7,15 +7,14 @@
 
 #include "ash/ash_export.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/system/brightness/unified_brightness_slider_controller.h"
+#include "ash/system/night_light/night_light_controller_impl.h"
 #include "ash/system/unified/unified_slider_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
-
-class UnifiedBrightnessSliderController;
-
 // View of a slider that can change display brightness. It observes current
 // brightness level from UnifiedSystemTrayModel.
 class ASH_EXPORT UnifiedBrightnessView
@@ -25,11 +24,11 @@ class ASH_EXPORT UnifiedBrightnessView
   METADATA_HEADER(UnifiedBrightnessView);
 
   UnifiedBrightnessView(UnifiedBrightnessSliderController* controller,
-                        scoped_refptr<UnifiedSystemTrayModel> model);
-
+                        scoped_refptr<UnifiedSystemTrayModel> model,
+                        absl::optional<views::Button::PressedCallback>
+                            detailed_button_callback = absl::nullopt);
   UnifiedBrightnessView(const UnifiedBrightnessView&) = delete;
   UnifiedBrightnessView& operator=(const UnifiedBrightnessView&) = delete;
-
   ~UnifiedBrightnessView() override;
 
   // UnifiedSystemTrayModel::Observer:
@@ -45,8 +44,19 @@ class ASH_EXPORT UnifiedBrightnessView
   };
 
  private:
+  // Callback called when `night_light_button_` is pressed.
+  void OnNightLightButtonPressed();
+
+  // Updates the icon and tooltip of `night_light_button_`.
+  void UpdateNightLightButton();
+
+  // UnifiedSliderView::
+  void VisibilityChanged(View* starting_from, bool is_visible) override;
+
   scoped_refptr<UnifiedSystemTrayModel> model_;
-  UnifiedBrightnessSliderController* const controller_;
+  NightLightControllerImpl* const night_light_controller_;
+  // Owned by the views hierarchy.
+  IconButton* night_light_button_ = nullptr;
 };
 
 }  // namespace ash
