@@ -78,7 +78,9 @@ void AppServerPosix::ActiveDuty(scoped_refptr<UpdateService> update_service) {
 }
 
 bool AppServerPosix::SwapInNewVersion() {
-  return PromoteCandidate(updater_scope()) == kErrorOk;
+  int result = PromoteCandidate(updater_scope());
+  VLOG_IF(1, result != kErrorOk) << __func__ << " failed: " << result;
+  return result == kErrorOk;
 }
 
 }  // namespace updater
