@@ -13,8 +13,7 @@
 
 namespace sandbox {
 
-// This class sets up intercepts for the Win32K lockdown policy which is set
-// on Windows 8 and beyond.
+// This class sets up intercepts for the Win32K lockdown policy.
 class ProcessMitigationsWin32KDispatcher : public Dispatcher {
  public:
   explicit ProcessMitigationsWin32KDispatcher(PolicyBase* policy_base);

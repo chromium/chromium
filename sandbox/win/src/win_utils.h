@@ -116,11 +116,11 @@ DWORD GetLastErrorFromNtStatus(NTSTATUS status);
 // the base address. This should only be called on new, suspended processes.
 void* GetProcessBaseAddress(HANDLE process);
 
-// Returns a map of handles open in the current process. The call will only
-// works on Windows 8+. The map is keyed by the kernel object type name. If
-// querying the handles fails an empty optional value is returned. Note that
-// unless all threads are suspended in the process the valid handles could
-// change between the return of the list and when you use them.
+// Returns a map of handles open in the current process. The map is keyed by the
+// kernel object type name. If querying the handles fails an empty optional
+// value is returned. Note that unless all threads are suspended in the process
+// the valid handles could change between the return of the list and when you
+// use them.
 absl::optional<ProcessHandleMap> GetCurrentProcessHandles();
 
 }  // namespace sandbox

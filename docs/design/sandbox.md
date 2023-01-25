@@ -53,8 +53,7 @@ found in the FAQ.
 The Windows sandbox is a user-mode only sandbox. There are no special kernel
 mode drivers, and the user does not need to be an administrator in order for the
 sandbox to operate correctly. The sandbox is designed for both 32-bit and 64-bit
-processes and has been tested on all Windows OS flavors between Windows 7 and
-Windows 10, both 32-bit and 64-bit.
+processes and has been tested on all Windows OS flavors from Windows 10.
 
 Sandbox operates at process-level granularity. Anything that needs to be
 sandboxed needs to live on a separate process. The minimal sandbox configuration
@@ -332,11 +331,11 @@ policies on the target process for enforcing security characteristics.
 
 * &gt;= Win8
 * `ProcessExtensionPointDisablePolicy`
-* The following injection vectors are blocked: 
+* The following injection vectors are blocked:
   * AppInit DLLs Winsock Layered Service Providers (LSPs)
   * Global Window Hooks (not thread-targeted hooks)
-  * Legacy Input Method Editors (IMEs) 
-  
+  * Legacy Input Method Editors (IMEs)
+
 #### Control Flow Guard (CFG):
 
 * &gt;= Win8.1 Update 3 (KB3000850)
@@ -563,6 +562,3 @@ the policy.
 Make sure any sensitive OS handles obtained with the initial token are closed
 before calling LowerToken(). Any leaked handle can be abused by malware to
 escape the sandbox.
-
-
-

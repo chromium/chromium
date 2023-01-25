@@ -147,8 +147,7 @@ bool HandleCloserAgent::CloseHandles() {
   // avoid invalid-handle exceptions.
   if (base::win::IsAppVerifierLoaded())
     return true;
-  // If the accurate handle enumeration fails then fallback to the old brute
-  // force approach. This should only happen on Windows 7 and 8.0.
+
   absl::optional<ProcessHandleMap> handle_map = GetCurrentProcessHandles();
   if (!handle_map)
     return false;
