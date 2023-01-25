@@ -2,11 +2,18 @@ Tests auto-attach to FLEDGE worklets.
 Attached to page target: about:blank
     (title: )
     (waiting: false)
-Dettached: about:blank
+Detached: about:blank
 Attached to page target: https://a.test:8443/inspector-protocol/resources/fledge_join.html
     (title: https://a.test:8443/inspector-protocol/resources/fledge_join.html)
     (waiting: false)
 Auction winner:urn:uuid:(randomized)
+Attached to page target: about:blank
+    (title: )
+    (waiting: false)
+Detached: about:blank
+Attached to page target: https://a.test:8443/inspector-protocol/resources/fledge_join.html
+    (title: https://a.test:8443/inspector-protocol/resources/fledge_join.html)
+    (waiting: false)
 Attached to page target: https://a.test:8443/inspector-protocol/resources/fledge_join.html
     (title: https://a.test:8443/inspector-protocol/resources/fledge_join.html)
     (waiting: false)
@@ -16,12 +23,12 @@ Attached to auction_worklet target: https://a.test:8443/inspector-protocol/resou
 Attached to auction_worklet target: https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
     (title: FLEDGE bidder worklet for https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php)
     (waiting: false)
-Dettached: https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
-Dettached: https://a.test:8443/inspector-protocol/resources/fledge_decision_logic.js.php
+Detached: https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
+Detached: https://a.test:8443/inspector-protocol/resources/fledge_decision_logic.js.php
 Attached to auction_worklet target: https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
     (title: FLEDGE bidder worklet for https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php)
     (waiting: false)
-Dettached: https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
+Detached: https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
 Auction winner:urn:uuid:(randomized)
 DONE
 
