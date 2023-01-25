@@ -44,6 +44,8 @@ class HashRealTimeServiceFactory : public ProfileKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
+
+  static bool IsEnhancedProtectionEnabled(Profile* profile);
 };
 
 }  // namespace safe_browsing

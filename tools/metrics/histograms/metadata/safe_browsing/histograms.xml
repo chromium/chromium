@@ -36,6 +36,30 @@ chromium-metrics-reviews@google.com.
   <variant name="Upload"/>
 </variants>
 
+<variants name="HPRTExperimentDelayedResponseMaybeRedirects">
+  <variant name="" summary=""/>
+  <variant name=".Redirects"
+      summary="Represents combined results from multiple redirects. Whether
+               it delayed the response and by how much is a slight
+               underestimate because the time taken is calculated by summing
+               up individual URL check times, which does not include the
+               client-side processing between individual check runs. The
+               underestimation is expected to be minimal since it involves
+               only local code running."/>
+</variants>
+
+<variants name="HPRTExperimentMaybeRedirects">
+  <variant name="" summary=""/>
+  <variant name=".Redirects"
+      summary="Represents combined results from multiple redirects."/>
+</variants>
+
+<variants name="HPRTExperimentMechanism">
+  <variant name="HPD" summary="the hash-prefix database mechanism"/>
+  <variant name="HPRT" summary="the hash-prefix real-time mechanism"/>
+  <variant name="URT" summary="the URL real-time mechanism"/>
+</variants>
+
 <variants name="MetricsCollectorBypassEventType">
   <variant name="CsdInterstitialBypass"
       summary="client-side detection interstitial bypass"/>
@@ -1076,6 +1100,121 @@ chromium-metrics-reviews@google.com.
     or when the request does not need to be sent because all the results are in
     the local cache.
   </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.HPRTExperiment{MaybeRedirects}.DelayedResponseResult"
+    enum="HPRTExperimentCombinedResult" expires_after="2023-07-19">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records which mechanisms delayed the page response. Logged when the HPRT
+    experiment concludes, which is once all lookup mechanisms have completed or
+    timed out, and BrowserUrlLoaderThrottle has reached WillProcessResponse or
+    has destructed CheckerOnIO before that occurred. {MaybeRedirects}
+  </summary>
+  <token key="MaybeRedirects"
+      variants="HPRTExperimentDelayedResponseMaybeRedirects"/>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRTExperiment{MaybeRedirects}.TimedOutResult"
+    enum="HPRTExperimentCombinedResult" expires_after="2023-07-19">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records which mechanisms timed out. Logged when the HPRT experiment
+    concludes, which is once all lookup mechanisms have completed or timed out,
+    and BrowserUrlLoaderThrottle has reached WillProcessResponse or has
+    destructed CheckerOnIO before that occurred. {MaybeRedirects}
+  </summary>
+  <token key="MaybeRedirects" variants="HPRTExperimentMaybeRedirects"/>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRTExperiment{MaybeRedirects}.WarningsResult"
+    enum="HPRTExperimentCombinedResult" expires_after="2023-07-19">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records which mechanisms resulted in a warning. Logged when the HPRT
+    experiment concludes, which is once all lookup mechanisms have completed or
+    timed out, and BrowserUrlLoaderThrottle has reached WillProcessResponse or
+    has destructed CheckerOnIO before that occurred. {MaybeRedirects}
+  </summary>
+  <token key="MaybeRedirects" variants="HPRTExperimentMaybeRedirects"/>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.HPRTExperiment{MaybeRedirects}.{Mechanism1}FasterThan{Mechanism2}Amount"
+    units="ms" expires_after="2023-07-19">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records by how much {Mechanism1} was faster than {Mechanism2}. Logged when
+    the HPRT experiment concludes, which is once all lookup mechanisms have
+    completed or timed out, and BrowserUrlLoaderThrottle has reached
+    WillProcessResponse or has destructed CheckerOnIO before that occurred.
+    {MaybeRedirects}
+  </summary>
+  <token key="Mechanism1" variants="HPRTExperimentMechanism"/>
+  <token key="Mechanism2" variants="HPRTExperimentMechanism"/>
+  <token key="MaybeRedirects" variants="HPRTExperimentMaybeRedirects"/>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.HPRTExperiment{MaybeRedirects}.{Mechanism}.DelayedResponse"
+    units="HPRTExperimentUnknownNoYes" expires_after="2023-07-19">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether {Mechanism} delayed the page response. Logged when the HPRT
+    experiment concludes, which is once all lookup mechanisms have completed or
+    timed out, and BrowserUrlLoaderThrottle has reached WillProcessResponse or
+    has destructed CheckerOnIO before that occurred. {MaybeRedirects}
+  </summary>
+  <token key="Mechanism" variants="HPRTExperimentMechanism"/>
+  <token key="MaybeRedirects" variants="HPRTExperimentMaybeRedirects"/>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.HPRTExperiment{MaybeRedirects}.{Mechanism}.DelayedResponseAmount"
+    units="ms" expires_after="2023-07-19">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records by how much {Mechanism} delayed the page response. Logged when all
+    lookup mechanisms in the HPRT experiment have completed or timed out, and
+    BrowserUrlLoaderThrottle has reached WillProcessResponse. If
+    BrowserUrlLoaderThrottle destructs CheckerOnIO before WillProcessResponse is
+    called, there is no log. {MaybeRedirects}
+  </summary>
+  <token key="Mechanism" variants="HPRTExperimentMechanism"/>
+  <token key="MaybeRedirects" variants="HPRTExperimentMaybeRedirects"/>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.HPRTExperiment{MaybeRedirects}.{Mechanism}.TimedOut"
+    units="BooleanSuccess" expires_after="2023-07-19">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether {Mechanism} timed out. Logged when the HPRT experiment
+    concludes. {MaybeRedirects}
+  </summary>
+  <token key="Mechanism" variants="HPRTExperimentMechanism"/>
+  <token key="MaybeRedirects" variants="HPRTExperimentMaybeRedirects"/>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.HPRTExperiment{MaybeRedirects}.{Mechanism}.TimeTaken"
+    units="ms" expires_after="2023-07-19">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records by how long {Mechanism} took. Logged when the HPRT experiment
+    concludes. {MaybeRedirects}
+  </summary>
+  <token key="Mechanism" variants="HPRTExperimentMechanism"/>
+  <token key="MaybeRedirects" variants="HPRTExperimentMaybeRedirects"/>
 </histogram>
 
 <histogram name="SafeBrowsing.LocalBinaryUploadRequest.DlpResult"

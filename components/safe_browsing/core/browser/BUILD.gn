@@ -14,6 +14,8 @@ source_set("browser") {
     "ping_manager.h",
     "safe_browsing_lookup_mechanism.cc",
     "safe_browsing_lookup_mechanism.h",
+    "safe_browsing_lookup_mechanism_experimenter.cc",
+    "safe_browsing_lookup_mechanism_experimenter.h",
     "safe_browsing_lookup_mechanism_runner.cc",
     "safe_browsing_lookup_mechanism_runner.h",
     "safe_browsing_url_checker_impl.cc",
@@ -87,6 +89,18 @@ source_set("safe_browsing_url_checker_unittest") {
     "//net/traffic_annotation:test_support",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+    "//testing/gtest",
+  ]
+}
+
+source_set("safe_browsing_lookup_mechanism_experimenter_unittest") {
+  testonly = true
+  sources = [ "safe_browsing_lookup_mechanism_experimenter_unittest.cc" ]
+
+  deps = [
+    ":browser",
+    "//base/test:test_support",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//testing/gtest",
   ]
 }

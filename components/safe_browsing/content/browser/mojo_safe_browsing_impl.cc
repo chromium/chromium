@@ -180,7 +180,8 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
       /*url_lookup_service_metric_suffix=*/".None",
       /*last_committed_url=*/GURL(), content::GetUIThreadTaskRunner({}),
       /*url_lookup_service=*/nullptr, WebUIInfoSingleton::GetInstance(),
-      /*hash_realtime_service_on_ui=*/nullptr);
+      /*hash_realtime_service_on_ui=*/nullptr,
+      /*mechanism_experimenter=*/nullptr);
 
   checker_impl->CheckUrl(
       url, method,

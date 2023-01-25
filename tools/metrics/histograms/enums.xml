@@ -49670,6 +49670,23 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Training Mode"/>
 </enum>
 
+<enum name="HPRTExperimentCombinedResult">
+  <int value="0" label="No mechanism"/>
+  <int value="1" label="URL real-time only"/>
+  <int value="2" label="Hash database only"/>
+  <int value="3" label="Hash real-time only"/>
+  <int value="4" label="URL real-time + hash database"/>
+  <int value="5" label="URL real-time + hash real-time"/>
+  <int value="6" label="Hash database + hash real-time"/>
+  <int value="7" label="All mechanisms"/>
+</enum>
+
+<enum name="HPRTExperimentUnknownNoYes">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="No"/>
+  <int value="2" label="Yes"/>
+</enum>
+
 <enum name="HpsTurnOnResult">
   <int value="0" label="Success"/>
   <int value="1" label="Version Mismatch, will cause an update"/>

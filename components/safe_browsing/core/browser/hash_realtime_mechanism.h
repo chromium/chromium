@@ -29,6 +29,12 @@ class HashRealTimeMechanism : public SafeBrowsingLookupMechanism {
   HashRealTimeMechanism& operator=(const HashRealTimeMechanism&) = delete;
   ~HashRealTimeMechanism() override;
 
+  // Returns whether the |url| is eligible for hash-prefix real-time checks.
+  // It's never eligible if the |request_destination| is not mainframe.
+  static bool CanCheckUrl(
+      const GURL& url,
+      network::mojom::RequestDestination request_destination);
+
  private:
   // SafeBrowsingLookupMechanism implementation:
   StartCheckResult StartCheckInternal() override;

@@ -10,6 +10,7 @@
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
+#include "components/safe_browsing/core/common/utils.h"
 
 namespace safe_browsing {
 
@@ -29,6 +30,14 @@ HashRealTimeMechanism::HashRealTimeMechanism(
 
 HashRealTimeMechanism::~HashRealTimeMechanism() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+// static
+bool HashRealTimeMechanism::CanCheckUrl(
+    const GURL& url,
+    network::mojom::RequestDestination request_destination) {
+  return request_destination == network::mojom::RequestDestination::kDocument &&
+         CanGetReputationOfUrl(url);
 }
 
 SafeBrowsingLookupMechanism::StartCheckResult

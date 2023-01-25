@@ -46,7 +46,8 @@ class HashRealTimeService : public KeyedService {
  public:
   explicit HashRealTimeService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      VerdictCacheManager* cache_manager);
+      VerdictCacheManager* cache_manager,
+      base::RepeatingCallback<bool()> get_is_enhanced_protection_enabled);
 
   HashRealTimeService(const HashRealTimeService&) = delete;
   HashRealTimeService& operator=(const HashRealTimeService&) = delete;
@@ -75,11 +76,10 @@ class HashRealTimeService : public KeyedService {
     kMaxValue = kNotReached,
   };
 
-  // Returns whether the |url| is eligible for hash-prefix real-time checks.
-  // It's never eligible if the |request_destination| is not mainframe.
-  static bool CanCheckUrl(
-      const GURL& url,
-      network::mojom::RequestDestination request_destination);
+  // This function is only currently used for the hash-prefix real-time lookup
+  // experiment. Once the experiment is complete, it will be deprecated.
+  // TODO(1410253): Deprecate this (including the factory populating it).
+  bool IsEnhancedProtectionEnabled();
 
   // Returns true if the lookups are currently in backoff mode due to too many
   // prior errors. If this happens, the checking falls back to hash-based
@@ -227,6 +227,9 @@ class HashRealTimeService : public KeyedService {
   // Indicates whether |Shutdown| has been called. If so, |StartLookup| returns
   // early.
   bool is_shutdown_ = false;
+
+  // Pulls whether enhanced protection is currently enabled.
+  base::RepeatingCallback<bool()> get_is_enhanced_protection_enabled_;
 
   base::WeakPtrFactory<HashRealTimeService> weak_factory_{this};
 };

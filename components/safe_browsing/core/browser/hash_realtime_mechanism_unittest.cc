@@ -31,7 +31,8 @@ class MockHashRealTimeService : public HashRealTimeService {
   MockHashRealTimeService()
       : HashRealTimeService(
             /*url_loader_factory=*/nullptr,
-            /*cache_manager=*/nullptr) {}
+            /*cache_manager=*/nullptr,
+            /*get_is_enhanced_protection_enabled=*/base::NullCallback()) {}
   base::WeakPtr<MockHashRealTimeService> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -243,6 +244,36 @@ MATCHER_P2(Matches, url, threat_type, "") {
   return arg->url.spec() == url.spec() && arg->threat_type == threat_type &&
          !arg->is_from_url_real_time_check &&
          arg->url_real_time_lookup_response == nullptr;
+}
+
+TEST_F(HashRealTimeMechanismTest, CanCheckUrl_HashRealTime) {
+  auto can_check_url =
+      [](std::string url,
+         network::mojom::RequestDestination request_destination =
+             network::mojom::RequestDestination::kDocument) {
+        EXPECT_TRUE(GURL(url).is_valid());
+        return HashRealTimeMechanism::CanCheckUrl(GURL(url),
+                                                  request_destination);
+      };
+  // Yes: HTTPS and main-frame URL.
+  EXPECT_TRUE(can_check_url("https://example.test/path"));
+  // Yes: HTTP and main-frame URL.
+  EXPECT_TRUE(can_check_url("http://example.test/path"));
+  // No: It's not a mainframe URL.
+  EXPECT_FALSE(can_check_url("https://example.test/path",
+                             network::mojom::RequestDestination::kFrame));
+  // No: The URL scheme is not HTTP/HTTPS.
+  EXPECT_FALSE(can_check_url("ftp://example.test/path"));
+  // No: It's localhost.
+  EXPECT_FALSE(can_check_url("http://localhost/path"));
+  // No: The host is an IP address, but is not publicly routable.
+  EXPECT_FALSE(can_check_url("http://0.0.0.0"));
+  // Yes: The host is an IP address and is publicly routable.
+  EXPECT_TRUE(can_check_url("http://1.0.0.0"));
+  // No: Hostname does not have at least 1 dot.
+  EXPECT_FALSE(can_check_url("https://example/path"));
+  // No: Hostname does not have at least 3 characters.
+  EXPECT_FALSE(can_check_url("https://e./path"));
 }
 
 TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_CantCheckDb) {

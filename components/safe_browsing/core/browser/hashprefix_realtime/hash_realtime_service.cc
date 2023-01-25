@@ -66,7 +66,8 @@ SBThreatType MapThreatTypeToSbThreatType(const V5::ThreatType& threat_type) {
 
 HashRealTimeService::HashRealTimeService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    VerdictCacheManager* cache_manager)
+    VerdictCacheManager* cache_manager,
+    base::RepeatingCallback<bool()> get_is_enhanced_protection_enabled)
     : url_loader_factory_(url_loader_factory),
       cache_manager_(cache_manager),
       backoff_operator_(std::make_unique<BackoffOperator>(
@@ -74,17 +75,16 @@ HashRealTimeService::HashRealTimeService(
           /*min_backoff_reset_duration_in_seconds=*/
           kMinBackOffResetDurationInSeconds,
           /*max_backoff_reset_duration_in_seconds=*/
-          kMaxBackOffResetDurationInSeconds)) {}
+          kMaxBackOffResetDurationInSeconds)),
+      get_is_enhanced_protection_enabled_(get_is_enhanced_protection_enabled) {}
 
 HashRealTimeService::~HashRealTimeService() = default;
 
-// static
-bool HashRealTimeService::CanCheckUrl(
-    const GURL& url,
-    network::mojom::RequestDestination request_destination) {
-  return request_destination == network::mojom::RequestDestination::kDocument &&
-         CanGetReputationOfUrl(url);
+bool HashRealTimeService::IsEnhancedProtectionEnabled() {
+  return get_is_enhanced_protection_enabled_.Run();
 }
+
+// static
 SBThreatType HashRealTimeService::DetermineSBThreatType(
     const GURL& url,
     const std::vector<V5::FullHash>& result_full_hashes) {

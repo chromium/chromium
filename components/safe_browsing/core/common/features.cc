@@ -172,6 +172,10 @@ BASE_FEATURE(kSafeBrowsingEnterpriseCsd,
              "SafeBrowsingEnterpriseCsd",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSafeBrowsingLookupMechanismExperiment,
+             "SafeBrowsingLookupMechanismExperiment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSafeBrowsingRemoveCookiesInAuthRequests,
              "SafeBrowsingRemoveCookiesInAuthRequests",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -253,6 +257,7 @@ constexpr struct {
     {&kSafeBrowsingCsbrrWithToken, true},
     {&kSafeBrowsingDisableConsumerCsdForEnterprise, true},
     {&kSafeBrowsingEnterpriseCsd, true},
+    {&kSafeBrowsingLookupMechanismExperiment, true},
     {&kSafeBrowsingRemoveCookiesInAuthRequests, true},
     {&kSevenZipEvaluationEnabled, true},
     {&kSimplifiedUrlDisplay, true},
@@ -281,8 +286,9 @@ void AddFeatureAndAvailability(const base::Feature* exp_feature,
 base::Value::List GetFeatureStatusList() {
   base::Value::List param_list;
   for (const auto& feature_status : kExperimentalFeatures) {
-    if (feature_status.show_state)
+    if (feature_status.show_state) {
       AddFeatureAndAvailability(feature_status.feature, &param_list);
+    }
   }
 
   // Manually add experimental features that we want param values for.

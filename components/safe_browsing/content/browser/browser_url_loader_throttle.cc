@@ -7,18 +7,22 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
+#include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism_experimenter.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/load_flags.h"
 #include "net/log/net_log_event_type.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -65,7 +69,8 @@ class BrowserURLLoaderThrottle::CheckerOnIO
       bool can_check_high_confidence_allowlist,
       std::string url_lookup_service_metric_suffix,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
-      base::WeakPtr<HashRealTimeService> hash_realtime_service)
+      base::WeakPtr<HashRealTimeService> hash_realtime_service,
+      bool is_mechanism_experiment_allowed)
       : delegate_getter_(std::move(delegate_getter)),
         frame_tree_node_id_(frame_tree_node_id),
         web_contents_getter_(web_contents_getter),
@@ -78,6 +83,7 @@ class BrowserURLLoaderThrottle::CheckerOnIO
         url_lookup_service_metric_suffix_(url_lookup_service_metric_suffix),
         url_lookup_service_(url_lookup_service),
         hash_realtime_service_(hash_realtime_service),
+        is_mechanism_experiment_allowed_(is_mechanism_experiment_allowed),
         creation_time_(base::TimeTicks::Now()) {
     content::WebContents* contents = web_contents_getter_.Run();
     if (!!contents) {
@@ -89,6 +95,10 @@ class BrowserURLLoaderThrottle::CheckerOnIO
     base::UmaHistogramMediumTimes(
         "SafeBrowsing.BrowserThrottle.CheckerOnIOLifetime",
         base::TimeTicks::Now() - creation_time_);
+    if (mechanism_experimenter_) {
+      mechanism_experimenter_
+          ->OnBrowserUrlLoaderThrottleCheckerOnIODestructed();
+    }
   }
 
   // Starts the initial safe browsing check. This check and future checks may be
@@ -117,6 +127,12 @@ class BrowserURLLoaderThrottle::CheckerOnIO
       return;
     }
 
+    if (is_mechanism_experiment_allowed_ &&
+        request_destination == network::mojom::RequestDestination::kDocument &&
+        !(load_flags & net::LOAD_PREFETCH)) {
+      mechanism_experimenter_ =
+          base::MakeRefCounted<SafeBrowsingLookupMechanismExperimenter>();
+    }
     url_checker_ = std::make_unique<SafeBrowsingUrlCheckerImpl>(
         headers, load_flags, request_destination, has_user_gesture,
         url_checker_delegate, web_contents_getter_,
@@ -126,7 +142,7 @@ class BrowserURLLoaderThrottle::CheckerOnIO
         can_check_high_confidence_allowlist_, url_lookup_service_metric_suffix_,
         last_committed_url_, content::GetUIThreadTaskRunner({}),
         url_lookup_service_, WebUIInfoSingleton::GetInstance(),
-        hash_realtime_service_);
+        hash_realtime_service_, mechanism_experimenter_);
 
     CheckUrl(url, method);
   }
@@ -146,6 +162,12 @@ class BrowserURLLoaderThrottle::CheckerOnIO
         url, method,
         base::BindOnce(&BrowserURLLoaderThrottle::CheckerOnIO::OnCheckUrlResult,
                        base::Unretained(this)));
+  }
+
+  void LogWillProcessResponseTime(base::TimeTicks reached_time) {
+    if (mechanism_experimenter_) {
+      mechanism_experimenter_->OnWillProcessResponseReached(reached_time);
+    }
   }
 
  private:
@@ -195,6 +217,8 @@ class BrowserURLLoaderThrottle::CheckerOnIO
 
   std::unique_ptr<SafeBrowsingUrlCheckerImpl> url_checker_;
   int frame_tree_node_id_;
+  scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
+      mechanism_experimenter_;
   base::RepeatingCallback<content::WebContents*()> web_contents_getter_;
   bool skip_checks_ = false;
   base::WeakPtr<BrowserURLLoaderThrottle> throttle_;
@@ -206,6 +230,7 @@ class BrowserURLLoaderThrottle::CheckerOnIO
   GURL last_committed_url_;
   base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_;
   base::WeakPtr<HashRealTimeService> hash_realtime_service_;
+  bool is_mechanism_experiment_allowed_ = false;
   base::TimeTicks creation_time_;
 };
 
@@ -238,6 +263,18 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
   bool can_rt_check_subresource_url =
       url_lookup_service && url_lookup_service->CanCheckSubresourceURL();
 
+// This BUILDFLAG check is not strictly necessary because the feature should
+// only be enabled for Desktop. This check is included only as a precaution and
+// for clarity.
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  bool is_mechanism_experiment_allowed =
+      hash_realtime_service &&
+      hash_realtime_service->IsEnhancedProtectionEnabled() &&
+      base::FeatureList::IsEnabled(kSafeBrowsingLookupMechanismExperiment);
+#else
+  bool is_mechanism_experiment_allowed = false;
+#endif
+
   // Decide whether safe browsing database can be checked.
   // If url_lookup_service is null, safe browsing database should be checked by
   // default.
@@ -257,7 +294,8 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
       weak_factory_.GetWeakPtr(), real_time_lookup_enabled_,
       can_rt_check_subresource_url, can_check_db,
       can_check_high_confidence_allowlist, url_lookup_service_metric_suffix_,
-      url_lookup_service, hash_realtime_service);
+      url_lookup_service, hash_realtime_service,
+      is_mechanism_experiment_allowed);
 }
 
 BrowserURLLoaderThrottle::~BrowserURLLoaderThrottle() {
@@ -335,6 +373,12 @@ void BrowserURLLoaderThrottle::WillProcessResponse(
   base::UmaHistogramCounts100(
       "SafeBrowsing.BrowserThrottle.WillProcessResponseCount",
       will_process_response_count_);
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &BrowserURLLoaderThrottle::CheckerOnIO::LogWillProcessResponseTime,
+          io_checker_->AsWeakPtr(), base::TimeTicks::Now()));
 
   if (blocked_) {
     // OnCheckUrlResult() has set |blocked_| to true and called
