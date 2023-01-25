@@ -111,38 +111,6 @@ def _DescribeSymbolSortOrder(syms):
   return ''.join('%r: %r\n' % (_SortKey(s), s) for s in syms)
 
 
-def LogUnsortedSymbols(raw_symbols):
-  """Logs the number of symbols that are not sorted.
-
-  Also logs the first few such symbols and their sort keys.
-
-  Returns:
-    The number of unsorted symbols.
-  """
-  logging.debug('Looking for out-of-order symbols (num_symbols=%d)',
-                len(raw_symbols))
-  sort_keys = [_SortKey(s) for s in raw_symbols]
-  count = sum(
-      int(sort_keys[i] > sort_keys[i + 1]) for i in range(len(raw_symbols) - 1))
-  logging.info('Out of %d symbols, %d were out-of-order.', len(raw_symbols),
-               count)
-
-  # Log them if > 1% are out-of-order and it's not a tiny sample.
-  if len(raw_symbols) > 1000 and count / len(raw_symbols) > .01:
-    NUM_TO_LOG = 10
-    logging.warning('Showing the first %d out-of-order symbols.', NUM_TO_LOG)
-    num_reported = 0
-    for i in range(len(raw_symbols) - 1):
-      if sort_keys[i] > sort_keys[i + 1]:
-        num_reported += 1
-        logging.warning('\n%d) %s\n%d) %s\n', i,
-                        _DescribeSymbolSortOrder(raw_symbols[i:i + 1]), i + 1,
-                        _DescribeSymbolSortOrder(raw_symbols[i + 1:i + 2]))
-        if num_reported == NUM_TO_LOG:
-          break
-  return count
-
-
 def SortSymbols(raw_symbols):
   """Sorts the given symbols in the order that they should be archived in.
 

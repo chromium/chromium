@@ -1097,8 +1097,7 @@ def CreateSizeInfo(container_specs, build_config, apk_file_manager):
   # Sorting must happen after normalization.
   logging.info('Sorting symbols')
   for raw_symbols in raw_symbols_list:
-    if file_format.LogUnsortedSymbols(raw_symbols) > 0:
-      file_format.SortSymbols(raw_symbols)
+    file_format.SortSymbols(raw_symbols)
 
   logging.debug('Accumulating symbols')
   # Containers should always have at least one symbol.
