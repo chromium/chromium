@@ -396,7 +396,6 @@ ui::mojom::blink::WindowOpenDisposition NavigationPolicyToDisposition(
     case kNavigationPolicyNewPopup:
       return ui::mojom::blink::WindowOpenDisposition::NEW_POPUP;
     case kNavigationPolicyPictureInPicture:
-      DCHECK(RuntimeEnabledFeatures::DocumentPictureInPictureAPIEnabled());
       return ui::mojom::blink::WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
   }
   NOTREACHED() << "Unexpected NavigationPolicy";

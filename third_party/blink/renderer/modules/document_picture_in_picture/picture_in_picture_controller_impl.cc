@@ -77,7 +77,8 @@ PictureInPictureControllerImpl::IsDocumentAllowed(bool report_failure) const {
 
   // Picture-in-Picture is not allowed if the window is a document
   // Picture-in-Picture window.
-  if (RuntimeEnabledFeatures::DocumentPictureInPictureAPIEnabled() &&
+  if (RuntimeEnabledFeatures::DocumentPictureInPictureAPIEnabled(
+          GetSupplementable()->GetExecutionContext()) &&
       DomWindow() && DomWindow()->IsPictureInPictureWindow()) {
     return Status::kDocumentPip;
   }

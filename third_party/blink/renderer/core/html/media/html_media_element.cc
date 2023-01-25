@@ -647,7 +647,8 @@ void HTMLMediaElement::DidMoveToNewDocument(Document& old_document) {
 
 bool HTMLMediaElement::ShouldReusePlayer(Document& old_document,
                                          Document& new_document) const {
-  if (!RuntimeEnabledFeatures::DocumentPictureInPictureAPIEnabled()) {
+  if (!RuntimeEnabledFeatures::DocumentPictureInPictureAPIEnabled(
+          GetExecutionContext())) {
     return false;
   }
 
