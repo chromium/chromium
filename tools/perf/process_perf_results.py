@@ -133,9 +133,6 @@ def _upload_perf_results(json_to_upload, name, configuration_name,
     except Exception as e:
       logging.info('Failed to upload results to staging: %s', str(e))
 
-    # upload to flask handler for linux-perf-fyi
-    args.append('--force-flask')
-
   return upload_results_to_perf_dashboard.main(args)
 
 def _is_histogram(json_file):

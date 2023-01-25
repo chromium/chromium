@@ -20,13 +20,9 @@ class ResultsDashboardTest(unittest.TestCase):
 
   def testRetryForSendResultRetryException(self):
 
-    def raise_retry_exception(url,
-                              histogramset_json,
-                              token_generator_callback,
-                              force_flask=False):
+    def raise_retry_exception(url, histogramset_json, token_generator_callback):
       del url, histogramset_json  # unused
       del token_generator_callback  # unused
-      del force_flask
       raise results_dashboard.SendResultsRetryException('Should retry')
 
     with mock.patch('core.results_dashboard.time.sleep') as sleep_mock:
@@ -87,13 +83,10 @@ class ResultsDashboardTest(unittest.TestCase):
   def testNoRetryAfterSucessfulSendResult(self):
     counter = [0]
 
-    def raise_retry_exception_first_two_times(url,
-                                              histogramset_json,
-                                              token_generator_callback,
-                                              force_flask=False):
+    def raise_retry_exception_first_two_times(url, histogramset_json,
+                                              token_generator_callback):
       del url, histogramset_json  # unused
       del token_generator_callback  # unused
-      del force_flask
       counter[0] += 1
       if counter[0] <= 2:
         raise results_dashboard.SendResultsRetryException('Please retry')

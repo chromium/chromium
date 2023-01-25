@@ -44,8 +44,6 @@ logging.basicConfig(
 # The paths in the results dashboard URLs for sending results.
 SEND_RESULTS_PATH = '/add_point'
 SEND_HISTOGRAMS_PATH = '/add_histograms'
-SEND_RESULTS_PATH_FLASK = '/add_point_flask'
-SEND_HISTOGRAMS_PATH_FLASK = '/add_histograms_flask'
 
 
 class SendResultException(Exception):
@@ -78,8 +76,7 @@ def SendResults(data,
                 url,
                 send_as_histograms=False,
                 token_generator_callback=LuciAuthTokenGeneratorCallback,
-                num_retries=4,
-                force_flask=False):
+                num_retries=4):
   """Sends results to the Chrome Performance Dashboard.
 
   This function tries to send the given data to the dashboard.
@@ -111,12 +108,10 @@ def SendResults(data,
           'Sending %s result of %s to dashboard (attempt %i out of %i).' %
           (data_type, data_label, i, num_retries))
       if send_as_histograms:
-        _SendHistogramJson(url, dashboard_data_str, token_generator_callback,
-                           force_flask)
+        _SendHistogramJson(url, dashboard_data_str, token_generator_callback)
       else:
         # TODO(eakuefner): Remove this logic once all bots use histograms.
-        _SendResultsJson(url, dashboard_data_str, token_generator_callback,
-                         force_flask)
+        _SendResultsJson(url, dashboard_data_str, token_generator_callback)
       all_data_uploaded = True
       break
     except SendResultsRetryException as e:
@@ -425,10 +420,7 @@ def _TestPath(test_name, chart_name, trace_name):
   return test_path
 
 
-def _SendResultsJson(url,
-                     results_json,
-                     token_generator_callback,
-                     force_flask=False):
+def _SendResultsJson(url, results_json, token_generator_callback):
   """Make a HTTP POST with the given JSON to the Performance Dashboard.
 
   Args:
@@ -444,10 +436,7 @@ def _SendResultsJson(url,
   data = six.moves.urllib.parse.urlencode({
       'data': results_json
   }).encode('utf-8')
-  if force_flask:
-    req = six.moves.urllib.request.Request(url + SEND_RESULTS_PATH_FLASK, data)
-  else:
-    req = six.moves.urllib.request.Request(url + SEND_RESULTS_PATH, data)
+  req = six.moves.urllib.request.Request(url + SEND_RESULTS_PATH, data)
   try:
     oauth_token = token_generator_callback()
     req.headers['Authorization'] = 'Bearer %s' % oauth_token
@@ -464,10 +453,7 @@ def _SendResultsJson(url,
     raise SendResultsRetryException(error)
 
 
-def _SendHistogramJson(url,
-                       histogramset_json,
-                       token_generator_callback,
-                       force_flask=False):
+def _SendHistogramJson(url, histogramset_json, token_generator_callback):
   """POST a HistogramSet JSON to the Performance Dashboard.
 
   Args:
@@ -492,16 +478,10 @@ def _SendHistogramJson(url,
 
     http = httplib2.Http()
 
-    if force_flask:
-      response, content = http.request(url + SEND_HISTOGRAMS_PATH_FLASK,
-                                       method='POST',
-                                       body=data,
-                                       headers=headers)
-    else:
-      response, content = http.request(url + SEND_HISTOGRAMS_PATH,
-                                       method='POST',
-                                       body=data,
-                                       headers=headers)
+    response, content = http.request(url + SEND_HISTOGRAMS_PATH,
+                                     method='POST',
+                                     body=data,
+                                     headers=headers)
 
     # A 500 is presented on an exception on the dashboard side, timeout,
     # exception, etc. The dashboard can also send back 400 and 403, we could

@@ -137,7 +137,6 @@ def _CreateParser():
   parser.add_option('--git-revision')
   parser.add_option('--output-json-dashboard-url')
   parser.add_option('--send-as-histograms', action='store_true')
-  parser.add_option('--force-flask', action='store_true')
   return parser
 
 
@@ -188,8 +187,7 @@ def main(args):
           batch,
           options.name,
           options.results_url,
-          send_as_histograms=options.send_as_histograms,
-          force_flask=options.force_flask):
+          send_as_histograms=options.send_as_histograms):
         return 1
   else:
     # The upload didn't fail since there was no data to upload.
