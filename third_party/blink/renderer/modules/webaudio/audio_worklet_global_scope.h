@@ -87,7 +87,7 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
 
   // Gets `processor_creation_params_` for the processor construction. If there
   // is no on-going processor construction, this MUST return `nullptr`.
-  ProcessorCreationParams* GetProcessorCreationParams();
+  std::unique_ptr<ProcessorCreationParams> GetProcessorCreationParams();
 
   void SetCurrentFrame(size_t current_frame);
   void SetSampleRate(float sample_rate);

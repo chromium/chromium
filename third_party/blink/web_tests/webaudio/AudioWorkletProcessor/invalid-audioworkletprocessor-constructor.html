@@ -1,0 +1,21 @@
+<!doctype html>
+<title>Test invalid usage of AudioWorkletProcessor constructor</title>
+<script src=../../resources/testharness.js></script>
+<script src=../../resources/testharnessreport.js></script>
+<script>
+  // A TypeError should be thrown when the AudioWorkletProcessor constructor is
+  // directly invoked in AudioWorkletGlobalScope without a matching
+  // AudioWorkletNode. See crbug.com/1234763 for more details.
+
+  promise_test(async () => {
+    const context = new AudioContext();
+    await context.audioWorklet.addModule('construction-new-in-process.js');
+    const node = new AudioWorkletNode(context, 'new-in-process');
+    const event = await new Promise((resolve) => {
+      node.port.onmessage = resolve;
+    });
+    assert_true(event.data.threw, `The AudioWorkletProcessor constructor should throw.`);
+    assert_equals(event.data.errorName, "TypeError");
+  }, 'Invoking the AudioWorkletProcessor constructor directly in AudioWorkletGlobalScope.');
+
+</script>

@@ -7,6 +7,6 @@
 [
     Exposed=AudioWorklet
 ] interface AudioWorkletProcessor {
-  [CallWith=ExecutionContext] constructor();
+  [CallWith=ExecutionContext, RaisesException] constructor();
   readonly attribute MessagePort port;
 };

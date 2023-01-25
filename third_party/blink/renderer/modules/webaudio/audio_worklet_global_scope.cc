@@ -251,8 +251,9 @@ AudioWorkletGlobalScope::WorkletProcessorInfoListForSynchronization() {
   return processor_info_list;
 }
 
-ProcessorCreationParams* AudioWorkletGlobalScope::GetProcessorCreationParams() {
-  return processor_creation_params_.get();
+std::unique_ptr<ProcessorCreationParams>
+AudioWorkletGlobalScope::GetProcessorCreationParams() {
+  return std::move(processor_creation_params_);
 }
 
 void AudioWorkletGlobalScope::SetCurrentFrame(size_t current_frame) {

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor_error_state.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -37,7 +38,7 @@ class MODULES_EXPORT AudioWorkletProcessor : public ScriptWrappable {
   // AudioWorkletNode gets created by user-supplied JS code in the main
   // thread. This factory must not be called by user in
   // AudioWorkletGlobalScope.
-  static AudioWorkletProcessor* Create(ExecutionContext*);
+  static AudioWorkletProcessor* Create(ExecutionContext*, ExceptionState&);
 
   AudioWorkletProcessor(AudioWorkletGlobalScope*,
                         const String& name,
