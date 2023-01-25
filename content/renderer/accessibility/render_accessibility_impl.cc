@@ -338,6 +338,10 @@ void RenderAccessibilityImpl::HitTest(
     // request. Instead, the mojo reply should be used directly.
     if (event_to_fire != ax::mojom::Event::kNone) {
       const std::vector<ui::AXEventIntent> intents;
+      if (serialize_post_lifecycle_) {
+        // Marking dirty ensures that a lifecycle update will be scheduled.
+        MarkWebAXObjectDirty(ax_object, /*subtree*/ false);
+      }
       HandleAXEvent(ui::AXEvent(
           ax_object.AxID(), event_to_fire, ax::mojom::EventFrom::kAction,
           ax::mojom::Action::kHitTest, intents, request_id));
@@ -570,13 +574,11 @@ void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
 
   DCHECK(!obj.IsDetached() || !serialize_post_lifecycle_);
 
-  if (IsImmediateProcessingRequiredForEvent(event)) {
-    if (serialize_post_lifecycle_) {
-      ScheduleImmediateAXUpdate();
-    } else {
-      legacy_event_schedule_mode_ =
-          LegacyEventScheduleMode::kProcessEventsImmediately;
-    }
+  if (serialize_post_lifecycle_) {
+    ScheduleImmediateAXUpdate();
+  } else {
+    legacy_event_schedule_mode_ =
+        LegacyEventScheduleMode::kProcessEventsImmediately;
   }
 
   if (!serialize_post_lifecycle_ || !obj.IsDetached()) {
