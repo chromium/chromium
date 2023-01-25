@@ -210,35 +210,47 @@ class NetworkResponder {
     report_map_[url_path] = response;
   }
 
-  // Registers a URL to use a "deferred" update response. For a deferred
+  // Registers a URL to use a "deferred" script response. For a deferred
   // response, the request handler returns true without a write, and writes are
-  // performed later in DoDeferredWrite() using a "stolen" Mojo pipe to the
-  // URLLoaderClient.
+  // performed later in DoDeferred[Script|Update]Write() using a "stolen" Mojo
+  // pipe to the URLLoaderClient.
   //
   // It is valid to have a "deferred" response that never completes before the
   // test exits.
-  void RegisterDeferredUpdateResponse(const std::string& url_path) {
-    base::AutoLock auto_lock(lock_);
-    CHECK(
-        deferred_update_responses_map_
-            .emplace(url_path, mojo::Remote<network::mojom::URLLoaderClient>())
-            .second);
+  void RegisterDeferredScriptResponse(const std::string& url_path) {
+    RegisterDeferredResponse(url_path, /*is_update=*/false);
   }
 
-  // Perform the deferred response for `url_path` -- the test fails if the
-  // client isn't waiting on `url_path` registered with
-  // RegisterDeferredUpdateResponse().
+  // Just like RegisterDeferredResponse(), but for deferred update responses.
+  void RegisterDeferredUpdateResponse(const std::string& url_path) {
+    RegisterDeferredResponse(url_path, /*is_update=*/true);
+  }
+
+  // Checks if there's a deferred response (of any type) for `url_path`.
+  bool HasPendingResponse(const std::string& url_path) const {
+    base::AutoLock auto_lock(lock_);
+    auto it = deferred_responses_map_.find(url_path);
+    CHECK(it != deferred_responses_map_.end());
+    return it->second.url_loader_client.is_bound() &&
+           it->second.url_loader_client.is_connected();
+  }
+
+  // Perform the deferred response for `url_path`, using response headers
+  // associated with scripts -- the test fails if the client isn't waiting on
+  // `url_path` registered with RegisterDeferredResponse().
+  void DoDeferredScriptResponse(const std::string& url_path,
+                                const std::string& response) {
+    DoDeferredResponse(url_path, response, kFledgeScriptHeaders,
+                       /*expected_is_update=*/false);
+  }
+
+  // Perform the deferred response for `url_path`, using response headers
+  // associated with updates -- the test fails if the client isn't waiting on
+  // `url_path` registered with RegisterDeferredResponse().
   void DoDeferredUpdateResponse(const std::string& url_path,
                                 const std::string& response) {
-    base::AutoLock auto_lock(lock_);
-    auto it = deferred_update_responses_map_.find(url_path);
-    CHECK(it != deferred_update_responses_map_.end());
-    mojo::Remote<network::mojom::URLLoaderClient>& url_loader_client =
-        it->second;
-    CHECK(url_loader_client.is_bound());
-    URLLoaderInterceptor::WriteResponse(kFledgeUpdateHeaders, response,
-                                        url_loader_client.get());
-    deferred_update_responses_map_.erase(it);
+    DoDeferredResponse(url_path, response, kFledgeScriptHeaders,
+                       /*expected_is_update=*/true);
   }
 
   // Registers a URL that, when seen, will have its URLLoaderClient stored in
@@ -325,6 +337,18 @@ class NetworkResponder {
   bool RequestHandler(URLLoaderInterceptor::RequestParams* params) {
     base::AutoLock auto_lock(lock_);
 
+    // Check deferred responses map first.
+    const auto deferred_it =
+        deferred_responses_map_.find(params->url_request.url.path());
+    if (deferred_it != deferred_responses_map_.end()) {
+      CHECK(!deferred_it->second.url_loader_client);
+      deferred_it->second.url_loader_client = std::move(params->client);
+      if (deferred_it->second.is_update) {
+        OnUpdateRequestReceived(params);
+      }
+      return true;
+    }
+
     // Cross-origin iframe handling is covered by integration tests, for cases
     // that request .well-known URLs.
     if (params->url_request.url.path_piece() ==
@@ -369,24 +393,12 @@ class NetworkResponder {
 
     // Not a non-update error, script request, or report request, so consider
     // this an update request.
-    update_count_++;
-    EXPECT_TRUE(params->url_request.trusted_params);
-    EXPECT_TRUE(params->url_request.trusted_params->isolation_info
-                    .network_isolation_key()
-                    .IsTransient());
+    OnUpdateRequestReceived(params);
     const auto update_it =
         json_update_map_.find(params->url_request.url.path());
     if (update_it != json_update_map_.end()) {
       URLLoaderInterceptor::WriteResponse(
           kFledgeUpdateHeaders, update_it->second, params->client.get());
-      return true;
-    }
-
-    const auto deferred_update_it =
-        deferred_update_responses_map_.find(params->url_request.url.path());
-    if (deferred_update_it != deferred_update_responses_map_.end()) {
-      CHECK(!deferred_update_it->second);
-      deferred_update_it->second = std::move(params->client);
       return true;
     }
 
@@ -413,6 +425,41 @@ class NetworkResponder {
       std::move(quit_report_wait_loop_callback_).Run();
   }
 
+  void OnUpdateRequestReceived(URLLoaderInterceptor::RequestParams* params)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+    update_count_++;
+    EXPECT_TRUE(params->url_request.trusted_params);
+    EXPECT_TRUE(params->url_request.trusted_params->isolation_info
+                    .network_isolation_key()
+                    .IsTransient());
+  }
+
+  void RegisterDeferredResponse(const std::string& url_path, bool is_update) {
+    base::AutoLock auto_lock(lock_);
+    CHECK(deferred_responses_map_
+              .emplace(url_path,
+                       DeferredResponseInfo{
+                           mojo::Remote<network::mojom::URLLoaderClient>(),
+                           is_update})
+              .second);
+  }
+
+  void DoDeferredResponse(const std::string& url_path,
+                          const std::string& response,
+                          const std::string headers,
+                          bool expected_is_update) {
+    base::AutoLock auto_lock(lock_);
+    auto it = deferred_responses_map_.find(url_path);
+    CHECK(it != deferred_responses_map_.end());
+    EXPECT_EQ(expected_is_update, it->second.is_update);
+    mojo::Remote<network::mojom::URLLoaderClient>& url_loader_client =
+        it->second.url_loader_client;
+    CHECK(url_loader_client.is_bound());
+    URLLoaderInterceptor::WriteResponse(headers, response,
+                                        url_loader_client.get());
+    deferred_responses_map_.erase(it);
+  }
+
   // Handles network requests for interest group updates and scripts.
   URLLoaderInterceptor network_interceptor_{
       base::BindRepeating(&NetworkResponder::RequestHandler,
@@ -435,9 +482,14 @@ class NetworkResponder {
   // Only saves reporting requests that auctually received responses.
   std::vector<std::string> sent_reports_ GUARDED_BY(lock_);
 
-  // Stores the set of URL paths that will receive deferred updates.
+  struct DeferredResponseInfo {
+    mojo::Remote<network::mojom::URLLoaderClient> url_loader_client;
+    bool is_update = false;
+  };
+
+  // Stores the set of URL paths that will receive a deferred response.
   //
-  // First, a URL path is registered to receive an update, but the mapped value
+  // First, a URL path is registered to defer the response, but the mapped value
   // will not be bound.
   //
   // Next, once a request is made for that URL path, the
@@ -449,8 +501,8 @@ class NetworkResponder {
   //
   // It is valid to have a "deferred" response that never completes before the
   // test exits.
-  base::flat_map<std::string, mojo::Remote<network::mojom::URLLoaderClient>>
-      deferred_update_responses_map_ GUARDED_BY(lock_);
+  base::flat_map<std::string, DeferredResponseInfo> deferred_responses_map_
+      GUARDED_BY(lock_);
 
   // Stores the last URL path that was registered with
   // RegisterStoreUrlLoaderClient().
@@ -4729,54 +4781,6 @@ TEST_F(AdAuctionServiceImplTest, SendReportsTwoAuctionsRespectsReportInterval) {
   EXPECT_EQ(base::Seconds(15), base::Time::Now() - start_time);
 }
 
-// Check that reports are sent (And there's no UAF when invoking the URN
-// callback) if the AdAuctionService is deleted before a URN is navigated to.
-//
-// This isn't a common case, but can happen if an auction runs in an iframe,
-// which is then closed, and then the URN is loaded in a fenced frame.
-//
-// It can also potentially happen when navigating away from a page that run an
-// auction is racing against loading a URN in a frame within the page.
-//
-// It can also happen if a compromised renderer closes the Mojo pipe to its
-// AdAuctionService.
-TEST_F(AdAuctionServiceImplTest, ReportsSentAfterServiceDestruction) {
-  network_responder_->RegisterScriptResponse(kBiddingUrlPath,
-                                             BasicBiddingReportScript());
-  network_responder_->RegisterScriptResponse(kDecisionUrlPath,
-                                             BasicSellerReportScript());
-  network_responder_->RegisterReportResponse("/report_bidder", /*response=*/"");
-  network_responder_->RegisterReportResponse("/report_seller", /*response=*/"");
-
-  blink::InterestGroup interest_group = CreateInterestGroup();
-  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
-  interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
-  interest_group.ads->emplace_back(std::move(ad));
-  JoinInterestGroupAndFlush(interest_group);
-  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
-
-  blink::AuctionConfig auction_config;
-  auction_config.seller = kOriginA;
-  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
-  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  ASSERT_NE(auction_result, absl::nullopt);
-
-  // Destroy the auction service Mojo pipe, and wait for the underlying service
-  // to be destroyed.
-  DestroyAdAuctionService();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(network_responder_->ReportCount(), 0u);
-
-  // Invoking the callback should not crash and should result in two reports
-  // being sent.
-  InvokeCallbackForURN(*auction_result);
-  network_responder_->WaitForNumReports(2);
-}
-
 // Similar to SendReports() above, but with one report request failed instead of
 // timed out. Following report requests should still be send after previous ones
 // failed.
@@ -4894,6 +4898,10 @@ function reportResult(auctionConfig, browserSignals) {
     absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
     ASSERT_NE(auction_result, absl::nullopt);
     InvokeCallbackForURN(*auction_result);
+    // Wait for the reporting scripts to complete and reporting URLs to be
+    // requested. Need to do this for each auction to make sure reporting
+    // scripts complete and requests are made in a consistent order.
+    task_environment()->RunUntilIdle();
   }
 
   // There should be one report sent already, since there's no delay for the
@@ -4946,6 +4954,9 @@ TEST_F(AdAuctionServiceImplTest, SendReportsMaxReportRoundDuration) {
   absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
   ASSERT_NE(auction_result, absl::nullopt);
   InvokeCallbackForURN(*auction_result);
+  // Wait for the reporting scripts to complete and all reporting URLs to be
+  // requested.
+  task_environment()->RunUntilIdle();
 
   // Wait for the seller report to be sent.
   network_responder_->WaitForNumReports(1);
@@ -4960,6 +4971,9 @@ TEST_F(AdAuctionServiceImplTest, SendReportsMaxReportRoundDuration) {
   auction_result = RunAdAuctionAndFlush(auction_config2);
   ASSERT_NE(auction_result, absl::nullopt);
   InvokeCallbackForURN(*auction_result);
+  // Wait for the reporting scripts to complete and all reporting URLs to be
+  // requested.
+  task_environment()->RunUntilIdle();
   // Two more reports are enqueued.
   EXPECT_EQ(manager_->report_queue_length_for_testing(), 3u);
 
@@ -4983,10 +4997,89 @@ TEST_F(AdAuctionServiceImplTest, SendReportsMaxReportRoundDuration) {
   auction_result = RunAdAuctionAndFlush(auction_config3);
   ASSERT_NE(auction_result, absl::nullopt);
   InvokeCallbackForURN(*auction_result);
+  // Wait for the reporting scripts to complete and all reporting URLs to be
+  // requested.
+  task_environment()->RunUntilIdle();
 
   task_environment()->FastForwardBy(base::Seconds(20));
   // Two more reports from the third auction are sent.
   EXPECT_EQ(network_responder_->ReportCount(), 3u);
+}
+
+// Check that running reporting worklets doesn't block auction completion. To do
+// this, the bidding script is set to be deferred. The auction is started, and
+// the bid script is supplied. Then the auction completes. This should trigger
+// reloading the bidding script to call reportWin(). The second time, a bidding
+// script is not supplied. The fact that the auction completes despite the
+// second stalled load verifies that running reporting scripts does not block
+// completion of an auction. The AdAuctionServiceImpl is destroyed before
+// the bidding URL is downloaded the second time, which provides some test
+// coverage of that as well.
+TEST_F(AdAuctionServiceImplTest, ReportingWorkletsDoNotBlockCompletion) {
+  network_responder_->RegisterDeferredScriptResponse(kBiddingUrlPath);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath,
+                                             BasicSellerReportScript());
+  network_responder_->RegisterReportResponse("/report_bidder", /*response=*/"");
+  network_responder_->RegisterReportResponse("/report_seller", /*response=*/"");
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+
+  AdAuctionServiceImpl::CreateMojoService(
+      main_rfh(), ad_auction_service_.BindNewPipeAndPassReceiver());
+
+  // Start the auction.
+  base::RunLoop run_loop;
+  absl::optional<blink::FencedFrame::RedactedFencedFrameConfig> maybe_config;
+  ad_auction_service_->RunAdAuction(
+      auction_config, mojo::NullReceiver(),
+      base::BindLambdaForTesting(
+          [&run_loop, &maybe_config](
+              bool manually_aborted,
+              const absl::optional<
+                  blink::FencedFrame::RedactedFencedFrameConfig>& config) {
+            EXPECT_FALSE(manually_aborted);
+            maybe_config = config;
+            run_loop.Quit();
+          }));
+
+  // Wait for the NetworkResponder to see the request for the bidding URL, and
+  // response with the bidding script.
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(run_loop.AnyQuitCalled());
+  network_responder_->DoDeferredScriptResponse(kBiddingUrlPath,
+                                               BasicBiddingReportScript());
+  // Register another deferred response for when the bidding URL is requested
+  // again to run the reporting script.
+  network_responder_->RegisterDeferredScriptResponse(kBiddingUrlPath);
+
+  // Complete the auction. It should have a winning ad.
+  run_loop.Run();
+  ASSERT_TRUE(maybe_config);
+  EXPECT_TRUE(maybe_config->urn_uuid().has_value());
+
+  // Running until idle should result in the NetworkResponder receiving a
+  // request for the bidding URL, to run the reporting script.
+  task_environment()->RunUntilIdle();
+  EXPECT_TRUE(network_responder_->HasPendingResponse(kBiddingUrlPath));
+
+  // Destroy the auction service Mojo pipe, and wait for the underlying service
+  // to be destroyed, which should not cause a crash.
+  DestroyAdAuctionService();
+  base::RunLoop().RunUntilIdle();
 }
 
 // Run several auctions, some of which have a winner, and some of which do
@@ -6005,6 +6098,9 @@ function reportResult(auctionConfig, browserSignals) {
     absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
     ASSERT_NE(auction_result, absl::nullopt);
     InvokeCallbackForURN(*auction_result);
+    // Wait for the reporting scripts to complete and reporting URLs to be
+    // requested, to ensure requests are made in a consistent order.
+    task_environment()->RunUntilIdle();
   }
 
   task_environment()->FastForwardBy(base::Seconds(3));
@@ -6362,6 +6458,9 @@ function scoreAd(
   absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
   ASSERT_NE(auction_result, absl::nullopt);
   InvokeCallbackForURN(*auction_result);
+  // Wait for reporting to complete - aggregate API usage is only logged if
+  // aggregation reports are sent.
+  task_environment()->RunUntilIdle();
 }
 
 // TODO(crbug.com/1356654): Update when use counter coverage is improved.

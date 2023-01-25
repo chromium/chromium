@@ -49,18 +49,15 @@
     events = [];
   }
 
-  let observedBids = 0;
-  let resolveWaitForTwoBidsPromise;
-  const waitForTwoBidsPromise = new Promise((resolve, reject)=>{
-    resolveWaitForTwoBidsPromise = resolve;
+  let resolveWaitForWinPromise;
+  const waitForWinPromise = new Promise((resolve, reject)=>{
+    resolveWaitForWinPromise = resolve;
   });
 
   dp.Storage.onInterestGroupAccessed((messageObject)=>{
     events.push(messageObject.params);
-    if (messageObject.params.type == 'bid') {
-      ++observedBids;
-      if (observedBids == 2)
-        resolveWaitForTwoBidsPromise();
+    if (messageObject.params.type == 'win') {
+      resolveWaitForWinPromise();
     }
   });
   await page.navigate(base + 'empty.html');
@@ -73,12 +70,12 @@
   // Need to navigate a fenced frame to the winning ad for the bids to be
   // recorded.
   await runAdAuctionAndNavigateFencedFrame();
-  // Have to wait for the bids to be received, since there's no way to wait
-  // for the fenced frame navigation to complete directly. Only do this if
-  // FLEDGE is enabled and has sent events already, to avoid waiting for events
-  // that will never occur.
+  // Have to wait for the win to be received, which happens after commit
+  // (which also can't be waited for). Only do this if FLEDGE is enabled
+  // and has sent events already, to avoid waiting for events that will
+  // never occur.
   if (events.length > 0)
-    await waitForTwoBidsPromise;
+    await waitForWinPromise;
   await logAndClearEvents();
 
   // Disable interest group logging, and run the same set of events. No new

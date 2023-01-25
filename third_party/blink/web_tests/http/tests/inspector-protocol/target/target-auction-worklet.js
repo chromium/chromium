@@ -11,6 +11,12 @@
     return input;
   }
 
+  let attachedWorklets = 0;
+  let resolveWaitForThirdWorkletPromise;
+  const waitForThirdWorkletPromise = new Promise((resolve, reject)=>{
+    resolveWaitForThirdWorkletPromise = resolve;
+  });
+
   bp.Target.onAttachedToTarget(async event => {
     const params = event.params;
     testRunner.log(`Attached to target ${params.targetInfo.url}`);
@@ -18,6 +24,9 @@
       const targetSession =
           new TestRunner.Session(testRunner, event.params.sessionId);
       if (params.targetInfo.type === 'auction_worklet') {
+        ++attachedWorklets;
+        if (attachedWorklets == 3)
+          resolveWaitForThirdWorkletPromise();
         testRunner.log('  Bidder instrumentation breakpoint set attempted');
         targetSession.protocol.Debugger.enable();
         targetSession.protocol.Runtime.enable();
@@ -53,6 +62,16 @@
       {targetId: page.targetId(), waitForDebuggerOnStart: true});
 
   const winner = await session.evaluateAsync(auctionJs);
+
+  // Have to wait for the third worklet to be attached (first the seller
+  // is attached, then the bidder is attached to bid, and then the
+  // bidder worklet is reloaded to call reportWin()), as reportWin()
+  // is invoked racily with reporting auction completion. Only do this
+  // if FLEDGE is enabled and has sent events already, to avoid waiting
+  // for events that will never occur.
+  if (attachedWorklets > 0)
+    await waitForThirdWorkletPromise;
+
   testRunner.log('Auction winner:' + handleUrn(winner));
   testRunner.log('DONE');
   testRunner.completeTest();

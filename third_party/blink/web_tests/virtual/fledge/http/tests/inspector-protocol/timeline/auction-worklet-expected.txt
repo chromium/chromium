@@ -7,5 +7,4 @@ Saw enough sellers
 Saw process assignment for bidder for host:a.test
 Saw process assignment for seller for host:a.test
 Saw process release for bidder for host:a.test
-Saw process release for seller for host:a.test
 

@@ -444,29 +444,37 @@ class InterestGroupTestObserver
       InterestGroupManagerImpl::InterestGroupObserverInterface::AccessType,
       std::string,
       std::string>;
+
   void OnInterestGroupAccessed(
       const base::Time& access_time,
       InterestGroupManagerImpl::InterestGroupObserverInterface::AccessType type,
       const std::string& owner_origin,
       const std::string& name) override {
-    accesses.emplace_back(Entry{type, owner_origin, name});
+    accesses_.emplace_back(type, owner_origin, name);
 
-    if (run_loop_.running() && accesses.size() >= expected_.size()) {
-      run_loop_.Quit();
+    if (run_loop_ && accesses_.size() >= expected_.size()) {
+      run_loop_->Quit();
     }
   }
+
   void WaitForAccesses(const std::vector<Entry>& expected) {
-    if (accesses.size() < expected.size()) {
+    DCHECK(!run_loop_);
+    if (accesses_.size() < expected.size()) {
+      run_loop_ = std::make_unique<base::RunLoop>();
       expected_ = expected;
-      run_loop_.Run();
+      run_loop_->Run();
+      run_loop_.reset();
     }
-    EXPECT_EQ(expected, accesses);
+    EXPECT_EQ(expected, accesses_);
+
+    // Clear accesses so can be reused.
+    accesses_.clear();
   }
-  std::vector<Entry> accesses;
 
  private:
+  std::vector<Entry> accesses_;
   std::vector<Entry> expected_;
-  base::RunLoop run_loop_;
+  std::unique_ptr<base::RunLoop> run_loop_;
 };
 
 class InterestGroupBrowserTest : public ContentBrowserTest {
@@ -5003,7 +5011,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
 
   AttachInterestGroupObserver();
   GURL ad_url = https_server_->GetURL(
-      "a.test", "/fenced_frames/ad_that_leaves_interest_group.html");
+      "b.test", "/set-header?Supports-Loading-Mode: fenced-frame");
   EXPECT_EQ(
       kSuccess,
       JoinInterestGroupAndVerify(
@@ -5024,7 +5032,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
           rfh1));
 
   GURL ad_url2 = https_server_->GetURL(
-      "b.test", "/fenced_frames/ad_that_leaves_interest_group.html");
+      "a.test", "/set-header?Supports-Loading-Mode: fenced-frame");
   EXPECT_EQ(
       kSuccess,
       JoinInterestGroupAndVerify(
@@ -5055,10 +5063,23 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
           https_server_->GetURL("a.test", "/interest_group/decision_logic.js")),
       rfh1));
 
-  // Wait for leave to be committed to the database.
-  while (GetJoinCount(test_origin, "cars") > 0) {
-    base::RunLoop().RunUntilIdle();
-  }
+  // InterestGroupAccessObserver should see the join and auction.
+  WaitForAccessObserved({
+      {InterestGroupTestObserver::kJoin, test_origin.Serialize(), "cars"},
+      {InterestGroupTestObserver::kJoin, test_origin.Serialize(), "trucks"},
+      {InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "trucks"},
+      {InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "cars"},
+      {InterestGroupTestObserver::kBid, test_origin.Serialize(), "cars"},
+      {InterestGroupTestObserver::kBid, test_origin.Serialize(), "trucks"},
+      {InterestGroupTestObserver::kWin, test_origin.Serialize(), "cars"},
+  });
+
+  // Try to leave the winning interest group, which should fail, since the ad is
+  // on b.test, but the IG owner is a.test. Do the failed leave case first so
+  // that subsequent WaitForAccessObserved() calls would likely catch an
+  // unexpected leave event.
+  EXPECT_EQ(nullptr, EvalJs(GetFencedFrameRenderFrameHost(rfh1),
+                            "navigator.leaveAdInterestGroup()"));
 
   ASSERT_NO_FATAL_FAILURE(RunAuctionAndNavigateFencedFrame(
       ad_url2,
@@ -5075,30 +5096,32 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
           https_server_->GetURL("a.test", "/interest_group/decision_logic.js")),
       rfh2));
 
-  // InterestGroupAccessObserver should see the join, auction, and implicit
-  // leave. Note that the implicit leave for "trucks" does not succeed because
-  // leaveAdInterestGroup is not called from the Interest Group owner's frame.
+  // For the second auction, InterestGroupAccessObserver should see the two
+  // groups loaded, but just the truck group win. Do this before the leave
+  // attempt, as updating the data is potentially racy with the navigation
+  // committing, so the leave event could appear out of order.
   WaitForAccessObserved(
-      {{InterestGroupTestObserver::kJoin, test_origin.Serialize(), "cars"},
-       {InterestGroupTestObserver::kJoin, test_origin.Serialize(), "trucks"},
-       {InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "trucks"},
+      {{InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "trucks"},
        {InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "cars"},
-       {InterestGroupTestObserver::kBid, test_origin.Serialize(), "cars"},
-       {InterestGroupTestObserver::kBid, test_origin.Serialize(), "trucks"},
-       {InterestGroupTestObserver::kWin, test_origin.Serialize(), "cars"},
-       {InterestGroupTestObserver::kLeave, test_origin.Serialize(), "cars"},
-       {InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "trucks"},
        {InterestGroupTestObserver::kBid, test_origin.Serialize(), "trucks"},
        {InterestGroupTestObserver::kWin, test_origin.Serialize(), "trucks"}});
 
-  // The ad should have left the "cars" interest group when the page was shown.
+  // Try to leave the winning interest group, which should succeed this time. Do
+  // it by calling Javascript directly instead of loading a page that does this
+  // to avoid races with logging kBin or kWin.
+  EXPECT_EQ(nullptr, EvalJs(GetFencedFrameRenderFrameHost(rfh2),
+                            "navigator.leaveAdInterestGroup()"));
+  WaitForAccessObserved(
+      {{InterestGroupTestObserver::kLeave, test_origin.Serialize(), "trucks"}});
+
+  // Only the "truck" interest group should have been left.
   auto groups = GetAllInterestGroups();
   ASSERT_EQ(1u, groups.size());
-  EXPECT_EQ("trucks", groups[0].name);
+  EXPECT_EQ("cars", groups[0].name);
 }
 
 // Runs ad auction with fenced frames enabled. The auction should succeed and
-// be loaded in a fenced frames. The displayed ad leaves the interest group
+// be loaded in a fenced frame. The displayed ad leaves the interest group
 // from a nested iframe.
 //
 // TODO(crbug.com/1320438): Re-enable the test.
@@ -5113,7 +5136,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
 
   AttachInterestGroupObserver();
   GURL inner_url = https_server_->GetURL(
-      "a.test", "/fenced_frames/ad_that_leaves_interest_group.html");
+      "a.test", "/set-header?Supports-Loading-Mode: fenced-frame");
   GURL ad_url = https_server_->GetURL(
       "b.test", "/fenced_frames/outer_inner_frame_as_param.html");
   GURL::Replacements rep;
@@ -5150,14 +5173,22 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
                   https_server_->GetURL("a.test",
                                         "/interest_group/decision_logic.js"))));
 
-  // InterestGroupAccessObserver should see the join, auction, and implicit
-  // leave.
+  // InterestGroupAccessObserver should see the join and auction.
   WaitForAccessObserved(
       {{InterestGroupTestObserver::kJoin, test_origin.Serialize(), "cars"},
        {InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "cars"},
        {InterestGroupTestObserver::kBid, test_origin.Serialize(), "cars"},
-       {InterestGroupTestObserver::kWin, test_origin.Serialize(), "cars"},
-       {InterestGroupTestObserver::kLeave, test_origin.Serialize(), "cars"}});
+       {InterestGroupTestObserver::kWin, test_origin.Serialize(), "cars"}});
+
+  // Leave the interest group and wait to observe the event. Do this after the
+  // above WaitForAccessObserved() call, as leaving is racy with recording the
+  // result of an auction.
+  EXPECT_EQ(nullptr, EvalJs(GetFencedFrameRenderFrameHost(web_contents())
+                                ->child_at(0)
+                                ->current_frame_host(),
+                            "navigator.leaveAdInterestGroup()"));
+  WaitForAccessObserved(
+      {{InterestGroupTestObserver::kLeave, test_origin.Serialize(), "cars"}});
 
   // The ad should have left the interest group when the page was shown.
   EXPECT_EQ(0u, GetAllInterestGroups().size());
@@ -5977,6 +6008,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   EXPECT_EQ(storage_interest_groups2.front().bidding_browser_signals->bid_count,
             0);
 
+  // Start observer after joins.
+  AttachInterestGroupObserver();
+
   std::string auction_config = JsReplace(
       R"({
     seller: $1,
@@ -5988,10 +6022,22 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
       origin);
   // Run an ad auction. Interest group cars of owner `test_url` wins.
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad1_url);
+  // Wait for interest groups to be updated. Interest groups are updated
+  // during/after commit, so this test is potentially racy without this.
+  WaitForAccessObserved(
+      {{InterestGroupTestObserver::kLoaded, origin2.Serialize(), "shoes"},
+       {InterestGroupTestObserver::kLoaded, origin.Serialize(), "cars"},
+       {InterestGroupTestObserver::kBid, origin.Serialize(), "cars"},
+       {InterestGroupTestObserver::kBid, origin2.Serialize(), "shoes"},
+       {InterestGroupTestObserver::kWin, origin.Serialize(), "cars"}});
 
   // `prev_wins` of `test_url`'s interest group cars is updated in storage.
   storage_interest_groups = GetInterestGroupsForOwner(origin);
   storage_interest_groups2 = GetInterestGroupsForOwner(origin2);
+  // Remove the above two loads from the observer.
+  WaitForAccessObserved(
+      {{InterestGroupTestObserver::kLoaded, origin.Serialize(), "cars"},
+       {InterestGroupTestObserver::kLoaded, origin2.Serialize(), "shoes"}});
   EXPECT_EQ(
       storage_interest_groups.front().bidding_browser_signals->prev_wins.size(),
       1u);
@@ -6010,14 +6056,22 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   EXPECT_EQ(storage_interest_groups2.front().bidding_browser_signals->bid_count,
             1);
 
-  // Start observer in the middle.
-  AttachInterestGroupObserver();
-
   // Run auction again. Interest group shoes of owner `test_url2` wins.
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad2_url);
+  // Need to wait again.
+  WaitForAccessObserved(
+      {{InterestGroupTestObserver::kLoaded, origin2.Serialize(), "shoes"},
+       {InterestGroupTestObserver::kLoaded, origin.Serialize(), "cars"},
+       {InterestGroupTestObserver::kBid, origin2.Serialize(), "shoes"},
+       {InterestGroupTestObserver::kWin, origin2.Serialize(), "shoes"}});
+
   // `test_url2`'s interest group shoes has one `prev_wins` in storage.
   storage_interest_groups = GetInterestGroupsForOwner(origin);
   storage_interest_groups2 = GetInterestGroupsForOwner(origin2);
+  // Remove the above two loads from the observer.
+  WaitForAccessObserved(
+      {{InterestGroupTestObserver::kLoaded, origin.Serialize(), "cars"},
+       {InterestGroupTestObserver::kLoaded, origin2.Serialize(), "shoes"}});
   EXPECT_EQ(
       storage_interest_groups.front().bidding_browser_signals->prev_wins.size(),
       1u);
@@ -6044,6 +6098,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
       origin2,
       https_server_->GetURL("b.test", "/interest_group/decision_logic.js"));
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad2_url);
+  // Need to wait again.
+  WaitForAccessObserved({
+      {InterestGroupTestObserver::kLoaded, origin2.Serialize(), "shoes"},
+      {InterestGroupTestObserver::kBid, origin2.Serialize(), "shoes"},
+      {InterestGroupTestObserver::kWin, origin2.Serialize(), "shoes"},
+  });
+
   // `test_url2`'s interest group shoes has two `prev_wins` in storage.
   storage_interest_groups = GetInterestGroupsForOwner(origin);
   storage_interest_groups2 = GetInterestGroupsForOwner(origin2);
@@ -6062,20 +6123,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
             1);
   EXPECT_EQ(storage_interest_groups2.front().bidding_browser_signals->bid_count,
             3);
-  // Observer was not active for joins and first auction.
-  WaitForAccessObserved({
-      {InterestGroupTestObserver::kLoaded, origin2.Serialize(), "shoes"},
-      {InterestGroupTestObserver::kLoaded, origin.Serialize(), "cars"},
-      {InterestGroupTestObserver::kBid, origin2.Serialize(), "shoes"},
-      {InterestGroupTestObserver::kWin, origin2.Serialize(), "shoes"},
-      {InterestGroupTestObserver::kLoaded, origin.Serialize(), "cars"},
-      {InterestGroupTestObserver::kLoaded, origin2.Serialize(), "shoes"},
-      {InterestGroupTestObserver::kLoaded, origin2.Serialize(), "shoes"},
-      {InterestGroupTestObserver::kBid, origin2.Serialize(), "shoes"},
-      {InterestGroupTestObserver::kWin, origin2.Serialize(), "shoes"},
-      {InterestGroupTestObserver::kLoaded, origin.Serialize(), "cars"},
-      {InterestGroupTestObserver::kLoaded, origin2.Serialize(), "shoes"},
-  });
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ReportingMultipleAuctions) {
@@ -6133,6 +6180,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ReportingMultipleAuctions) {
   // Run an ad auction. Interest group cars of owner `test_url_a` wins.
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad1_url);
 
+  // Wait for database to be updated with the win, which may happen after the
+  // auction completes.
+  WaitForInterestGroupsSatisfying(
+      origin_a,
+      base::BindLambdaForTesting(
+          [](const std::vector<StorageInterestGroup>& groups) -> bool {
+            EXPECT_EQ(1u, groups.size());
+            return groups[0].bidding_browser_signals->prev_wins.size() == 1u;
+          }));
+
   // Run auction again on the same page. Interest group shoes of owner
   // `test_url2` wins.
   auction_config = JsReplace(
@@ -6145,6 +6202,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ReportingMultipleAuctions) {
       https_server_->GetURL("b.test", "/interest_group/decision_logic.js"),
       origin_a);
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad2_url);
+
+  // Wait for database to be updated with the win, which may happen after the
+  // auction completes.
+  WaitForInterestGroupsSatisfying(
+      origin_b,
+      base::BindLambdaForTesting(
+          [](const std::vector<StorageInterestGroup>& groups) -> bool {
+            EXPECT_EQ(1u, groups.size());
+            return groups[0].bidding_browser_signals->prev_wins.size() == 1u;
+          }));
 
   // Run the third auction on another page c.test, and only interest group
   // "shoes" of c.test bids this time.

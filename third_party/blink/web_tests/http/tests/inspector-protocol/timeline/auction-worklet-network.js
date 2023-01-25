@@ -61,13 +61,22 @@
     }
   }
 
-  const sortedRequestInfo = [...requestIdToInfo.values()].sort((a, b) => {
+  let sortedRequestInfo = [...requestIdToInfo.values()].sort((a, b) => {
     if (a.url < b.url)
       return -1;
     else if (a.url === b.url)
       return 0;
     return +1;
   });
+
+  // There may racily be two bidding logic loads, depending on how far along running reportings scripts
+  // has advanced, which is done after auction completion is signalled. If there are two such loads,
+  // ignore the second one.
+  if (sortedRequestInfo.length > 2 &&
+      sortedRequestInfo[0].endsWith("fledge_bidding_logic.js.php") &&
+      sortedRequestInfo[1].endsWith("fledge_bidding_logic.js.php")) {
+    sortedRequestInfo = sortedRequestInfo.splice(1);
+  }
 
   for (let requestInfo of sortedRequestInfo) {
     testRunner.log(requestInfo.url + ':');
