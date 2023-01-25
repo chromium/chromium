@@ -361,14 +361,14 @@ BrowserWaiter::~BrowserWaiter() {
   BrowserList::RemoveObserver(this);
 }
 
-Browser* BrowserWaiter::AwaitAdded() {
-  added_run_loop_.Run();
+Browser* BrowserWaiter::AwaitAdded(const base::Location& location) {
+  added_run_loop_.Run(location);
   return added_browser_;
 }
 
-Browser* BrowserWaiter::AwaitRemoved() {
+Browser* BrowserWaiter::AwaitRemoved(const base::Location& location) {
   if (!removed_browser_)
-    removed_run_loop_.Run();
+    removed_run_loop_.Run(location);
   return removed_browser_;
 }
 
@@ -395,8 +395,8 @@ void UpdateAwaiter::OnWebAppInstallManagerDestroyed() {
 
 UpdateAwaiter::~UpdateAwaiter() = default;
 
-void UpdateAwaiter::AwaitUpdate() {
-  run_loop_.Run();
+void UpdateAwaiter::AwaitUpdate(const base::Location& location) {
+  run_loop_.Run(location);
 }
 
 void UpdateAwaiter::OnWebAppManifestUpdated(const AppId& app_id,
