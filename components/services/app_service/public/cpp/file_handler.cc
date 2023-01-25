@@ -6,6 +6,8 @@
 
 #include <tuple>
 
+#include "base/strings/string_util.h"
+
 namespace apps {
 
 FileHandler::FileHandler() = default;
@@ -84,9 +86,11 @@ std::set<std::string> GetFileExtensionsFromFileHandlers(
 std::set<std::string> GetFileExtensionsFromFileHandler(
     const FileHandler& file_handler) {
   std::set<std::string> file_extensions;
-  for (const auto& accept_entry : file_handler.accept)
-    file_extensions.insert(accept_entry.file_extensions.begin(),
-                           accept_entry.file_extensions.end());
+  for (const auto& accept_entry : file_handler.accept) {
+    for (const std::string& extension : accept_entry.file_extensions) {
+      file_extensions.insert(base::ToLowerASCII(extension));
+    }
+  }
   return file_extensions;
 }
 

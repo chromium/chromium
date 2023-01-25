@@ -287,6 +287,20 @@ TEST_F(WebAppFileHandlerManagerTest,
   EXPECT_EQ(url, std::get<GURL>(launch_infos[0]));
 }
 
+TEST_F(WebAppFileHandlerManagerTest, ExtensionCaseInsensitive) {
+  const GURL url("https://app.site/handle-foo");
+
+  file_handler_manager().InstallFileHandler(
+      app_id(), url, {{"application/foo", {".foo"}}}, absl::nullopt);
+
+  // Matches on single valid extension.
+  const base::FilePath path(FILE_PATH_LITERAL("file.FOO"));
+  WebAppFileHandlerManager::LaunchInfos launch_infos =
+      file_handler_manager().GetMatchingFileHandlerUrls(app_id(), {path});
+  ASSERT_EQ(1u, launch_infos.size());
+  EXPECT_EQ(url, std::get<GURL>(launch_infos[0]));
+}
+
 TEST_F(WebAppFileHandlerManagerTest,
        SingleInvalidExtensionSingleExtensionHandler) {
   const GURL url("https://app.site/handle-foo");

@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -179,7 +180,8 @@ WebAppFileHandlerManager::GetMatchingFileHandlerUrls(
     for (const auto& file_handler : *file_handlers) {
       std::set<std::string> supported_file_extensions =
           apps::GetFileExtensionsFromFileHandlers({file_handler});
-      if (base::Contains(supported_file_extensions, file_extension)) {
+      if (base::Contains(supported_file_extensions,
+                         base::ToLowerASCII(file_extension))) {
         launch_handlers[&file_handler].push_back(file_path);
         break;
       }
