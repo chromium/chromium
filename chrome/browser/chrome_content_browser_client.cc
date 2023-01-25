@@ -39,6 +39,7 @@
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
 #include "chrome/browser/after_startup_task_utils.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/bluetooth/chrome_bluetooth_delegate_impl_client.h"
 #include "chrome/browser/browser_about_handler.h"
 #include "chrome/browser/browser_features.h"
@@ -400,6 +401,7 @@
 #include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
 #include "chrome/browser/speech/tts_chromeos.h"
 #include "chrome/browser/ui/ash/chrome_browser_main_extra_parts_ash.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chromeos/ash/services/network_health/public/cpp/network_health_helper.h"
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"
@@ -408,6 +410,7 @@
 #include "components/user_manager/user_manager.h"
 #include "services/service_manager/public/mojom/interface_provider_spec.mojom.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "ui/display/screen.h"
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/chrome_browser_main_linux.h"
 #elif BUILDFLAG(IS_ANDROID)
@@ -7358,6 +7361,27 @@ bool ChromeContentBrowserClient::OpenExternally(
     ash::NewWindowDelegate::GetPrimary()->OpenUrl(
         url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
         ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+    return true;
+  }
+
+  // If Lacros is the only browser, we intercept any WebUI URLs that would be
+  // opened in a regular browser window. We open these with the OsUrlHandler SWA
+  // instead, which will load them in an app window.
+  Profile* profile = Profile::FromBrowserContext(opener->GetBrowserContext());
+  bool should_open_in_ash_app =
+      !crosapi::browser_util::IsAshWebBrowserEnabled() &&
+      opener->GetWebUI() != nullptr &&
+      ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url) &&
+      !ash::GetCapturingSystemAppForURL(profile, url);
+  if (should_open_in_ash_app) {
+    ash::SystemAppLaunchParams launch_params;
+    launch_params.url = url;
+    int64_t display_id =
+        display::Screen::GetScreen()->GetDisplayForNewWindows().id();
+    ash::LaunchSystemWebAppAsync(
+        ProfileManager::GetPrimaryUserProfile(),
+        ash::SystemWebAppType::OS_URL_HANDLER, launch_params,
+        std::make_unique<apps::WindowInfo>(display_id));
     return true;
   }
 #endif
