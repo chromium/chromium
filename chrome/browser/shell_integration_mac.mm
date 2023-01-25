@@ -109,7 +109,7 @@ bool SetAsDefaultClientForScheme(const std::string& scheme) {
     return false;
   }
 
-  if (GetDefaultWebClientSetPermission() != SET_DEFAULT_UNATTENDED) {
+  if (GetDefaultSchemeClientSetPermission() != SET_DEFAULT_UNATTENDED) {
     return false;
   }
 
@@ -270,8 +270,8 @@ DefaultWebClientState IsDefaultClientForScheme(const std::string& scheme) {
 
 namespace internal {
 
-DefaultWebClientSetPermission
-GetPlatformSpecificDefaultWebClientSetPermission() {
+DefaultWebClientSetPermission GetPlatformSpecificDefaultWebClientSetPermission(
+    WebClientSetMethod method) {
   // This should be `SET_DEFAULT_INTERACTIVE`, but that changes how
   // `DefaultBrowserWorker` and `DefaultSchemeClientWorker` work.
   // TODO(https://crbug.com/1393452): Migrate all callers to the new API,

@@ -75,7 +75,7 @@ bool ChromeProtocolHandlerRegistryDelegate::ShouldRemoveHandlersNotInOS() {
   // difference (http://crbug.com/88255).
   return false;
 #else
-  return shell_integration::GetDefaultWebClientSetPermission() !=
+  return shell_integration::GetDefaultSchemeClientSetPermission() !=
          shell_integration::SET_DEFAULT_NOT_ALLOWED;
 #endif
 }

@@ -783,15 +783,16 @@ DefaultWebClientState IsDefaultClientForScheme(const std::string& scheme) {
 
 namespace internal {
 
-DefaultWebClientSetPermission
-GetPlatformSpecificDefaultWebClientSetPermission() {
+DefaultWebClientSetPermission GetPlatformSpecificDefaultWebClientSetPermission(
+    WebClientSetMethod method) {
   if (!install_static::SupportsSetAsDefaultBrowser()) {
     return SET_DEFAULT_NOT_ALLOWED;
   }
   if (ShellUtil::CanMakeChromeDefaultUnattended()) {
     return SET_DEFAULT_UNATTENDED;
   }
-  if (CanSetAsDefaultDirectly()) {
+  if (method == WebClientSetMethod::kDefaultBrowser &&
+      CanSetAsDefaultDirectly()) {
     return SET_DEFAULT_UNATTENDED;
   }
   // Setting the default web client generally requires user interaction in

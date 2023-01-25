@@ -86,18 +86,29 @@ void RunCallback(DefaultWebClientWorkerCallback callback,
   }
 }
 
-}  // namespace
-
-DefaultWebClientSetPermission GetDefaultWebClientSetPermission() {
+DefaultWebClientSetPermission GetDefaultWebClientSetPermission(
+    internal::WebClientSetMethod method) {
 #if BUILDFLAG(CHROME_FOR_TESTING)
   return SET_DEFAULT_NOT_ALLOWED;
 #else
-  return internal::GetPlatformSpecificDefaultWebClientSetPermission();
+  return internal::GetPlatformSpecificDefaultWebClientSetPermission(method);
 #endif
 }
 
+}  // namespace
+
+DefaultWebClientSetPermission GetDefaultBrowserSetPermission() {
+  return GetDefaultWebClientSetPermission(
+      internal::WebClientSetMethod::kDefaultBrowser);
+}
+
+DefaultWebClientSetPermission GetDefaultSchemeClientSetPermission() {
+  return GetDefaultWebClientSetPermission(
+      internal::WebClientSetMethod::kDefaultSchemeHandler);
+}
+
 bool CanSetAsDefaultBrowser() {
-  return GetDefaultWebClientSetPermission() != SET_DEFAULT_NOT_ALLOWED;
+  return GetDefaultBrowserSetPermission() != SET_DEFAULT_NOT_ALLOWED;
 }
 
 base::CommandLine CommandLineArgsForLauncher(
@@ -262,7 +273,7 @@ DefaultWebClientState DefaultBrowserWorker::CheckIsDefaultImpl() {
 
 void DefaultBrowserWorker::SetAsDefaultImpl(
     base::OnceClosure on_finished_callback) {
-  switch (GetDefaultWebClientSetPermission()) {
+  switch (GetDefaultBrowserSetPermission()) {
     case SET_DEFAULT_NOT_ALLOWED:
       // This is a no-op on channels where set-default is not allowed, but not
       // an error.
@@ -350,7 +361,7 @@ std::u16string DefaultSchemeClientWorker::GetDefaultClientNameImpl() {
 
 void DefaultSchemeClientWorker::SetAsDefaultImpl(
     base::OnceClosure on_finished_callback) {
-  switch (GetDefaultWebClientSetPermission()) {
+  switch (GetDefaultSchemeClientSetPermission()) {
     case SET_DEFAULT_NOT_ALLOWED:
       // Not allowed, do nothing.
       break;

@@ -198,7 +198,7 @@ base::FilePath& GetInitialPrefsPathForTesting() {
 void ProcessDefaultBrowserPolicy(bool make_chrome_default_for_user) {
   // Only proceed if chrome can be made default unattended. In other cases, this
   // is handled by the first run default browser prompt (on Windows 8+).
-  if (shell_integration::GetDefaultWebClientSetPermission() ==
+  if (shell_integration::GetDefaultBrowserSetPermission() ==
       shell_integration::SET_DEFAULT_UNATTENDED) {
     // The policy has precedence over the user's choice.
     if (g_browser_process->local_state()->IsManagedPreference(

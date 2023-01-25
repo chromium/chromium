@@ -1943,7 +1943,7 @@ class OmniboxPedalSetChromeAsDefaultBrowser : public OmniboxPedal {
     // Note: shell_integration::CanSetAsDefaultBrowser() uses this call too,
     // and if permission is SET_DEFAULT_NOT_ALLOWED, this method returns false.
     const shell_integration::DefaultWebClientSetPermission permission =
-        shell_integration::GetDefaultWebClientSetPermission();
+        shell_integration::GetDefaultBrowserSetPermission();
     return (permission == shell_integration::SET_DEFAULT_INTERACTIVE &&
             OmniboxFieldTrial::kDefaultBrowserPedalInteractive.Get()) ||
            (permission == shell_integration::SET_DEFAULT_UNATTENDED &&

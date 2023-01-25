@@ -57,10 +57,12 @@ enum DefaultWebClientSetPermission {
   SET_DEFAULT_INTERACTIVE,
 };
 
-// Returns requirements for making the running browser either the default
-// browser or the default client application for specific schemes for the
-// current user.
-DefaultWebClientSetPermission GetDefaultWebClientSetPermission();
+// Returns requirements for making the running browser the default browser.
+DefaultWebClientSetPermission GetDefaultBrowserSetPermission();
+
+// Returns requirements for making the running browser the default client
+// application for specific schemes outside of the default browser.
+DefaultWebClientSetPermission GetDefaultSchemeClientSetPermission();
 
 // Returns true if the running browser can be set as the default browser,
 // whether user interaction is needed or not. Use
@@ -314,11 +316,20 @@ class DefaultSchemeClientWorker : public DefaultWebClientWorker {
 
 namespace internal {
 
+// The different ways to set the default web client.
+enum class WebClientSetMethod {
+  // Method to set the default browser.
+  kDefaultBrowser,
+
+  // Method to set a default scheme handler outside of default browser.
+  kDefaultSchemeHandler,
+};
+
 // Returns requirements for making the running browser either the default
 // browser or the default client application for specific schemes for the
 // current user, according to a specific platform.
-DefaultWebClientSetPermission
-GetPlatformSpecificDefaultWebClientSetPermission();
+DefaultWebClientSetPermission GetPlatformSpecificDefaultWebClientSetPermission(
+    WebClientSetMethod method);
 
 }  // namespace internal
 }  // namespace shell_integration

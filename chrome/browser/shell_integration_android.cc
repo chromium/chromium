@@ -39,8 +39,8 @@ DefaultWebClientState IsDefaultClientForScheme(const std::string& scheme) {
 
 namespace internal {
 
-DefaultWebClientSetPermission
-GetPlatformSpecificDefaultWebClientSetPermission() {
+DefaultWebClientSetPermission GetPlatformSpecificDefaultWebClientSetPermission(
+    WebClientSetMethod method) {
   NOTIMPLEMENTED();
   return SET_DEFAULT_NOT_ALLOWED;
 }
