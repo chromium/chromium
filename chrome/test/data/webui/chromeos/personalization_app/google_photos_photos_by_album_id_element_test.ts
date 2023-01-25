@@ -57,6 +57,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
               photoCount: 1,
               preview: {url: 'foo.com'},
               timestamp: {internalValue: BigInt('1')},
+              isShared: false,
             };
 
             // Set values returned by |wallpaperProvider|.
@@ -124,6 +125,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
       // placeholder attribute.
       preview: {url: createSvgDataUrl('svg-1')},
       timestamp: {internalValue: BigInt('1')},
+      isShared: false,
     };
 
     const otherAlbum: GooglePhotosAlbum = {
@@ -132,6 +134,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
       photoCount: 1,
       preview: {url: createSvgDataUrl('svg-2')},
       timestamp: {internalValue: BigInt('2')},
+      isShared: false,
     };
 
     const photosByAlbumId: Record<string, GooglePhotosPhoto[]> = {
@@ -276,6 +279,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
       photoCount: 2,
       preview: {url: ''},
       timestamp: {internalValue: BigInt('1')},
+      isShared: false,
     };
 
     const photo: GooglePhotosPhoto = {
@@ -448,6 +452,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
       photoCount: photosCount,
       preview: {url: ''},
       timestamp: {internalValue: BigInt('1')},
+      isShared: false,
     };
     const photos: GooglePhotosPhoto[] = Array.from(
         {length: photosCount}, (_, i) => ({
@@ -546,6 +551,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
       photoCount: photosCount,
       preview: {url: ''},
       timestamp: {internalValue: BigInt('1')},
+      isShared: false,
     };
 
     // Set albums returned by |wallpaperProvider|.
@@ -696,6 +702,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
       photoCount: 1,
       preview: {url: 'foo.com'},
       timestamp: {internalValue: BigInt('1')},
+      isShared: false,
     };
 
     const photo: GooglePhotosPhoto = {

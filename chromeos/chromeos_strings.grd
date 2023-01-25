@@ -2229,6 +2229,9 @@
         <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_TRY_AGAIN" desc="Message for the try again button shown when something goes wrong in the Google Photos page in the wallpaper app.">
           Try again
         </message>
+        <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ALBUM_SHARED" desc="Secondary text for Google Photos shared albums in the wallpaper app.">
+          Shared
+        </message>
         <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ALBUMS_TAB" desc="Label for the Albums tab in the Google Photos page in the wallpaper app.">
           Albums
         </message>

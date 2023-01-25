@@ -57,6 +57,7 @@ suite('GooglePhotosAlbumsTest', function() {
           url: createSvgDataUrl('svg-0'),
         },
         timestamp: {internalValue: BigInt(`13318040939308000`)},
+        isShared: false,
       },
       {
         id: '0ec40478-9712-42e1-b5bf-3e75870ca042',
@@ -66,6 +67,7 @@ suite('GooglePhotosAlbumsTest', function() {
           url: createSvgDataUrl('svg-1'),
         },
         timestamp: {internalValue: BigInt(`13318040939307000`)},
+        isShared: false,
       },
       {
         id: '0a268a37-877a-4936-81d4-38cc84b0f596',
@@ -75,6 +77,7 @@ suite('GooglePhotosAlbumsTest', function() {
           url: createSvgDataUrl('svg-2'),
         },
         timestamp: {internalValue: BigInt(`13318040939306000`)},
+        isShared: false,
       },
     ];
 
@@ -178,6 +181,7 @@ suite('GooglePhotosAlbumsTest', function() {
           photoCount: 1,
           preview: {url: createSvgDataUrl(`svg-${i}`)},
           timestamp: {internalValue: BigInt(`${photosCount - i}`)},
+          isShared: false,
         }));
 
     // Initialize |googlePhotosAlbumsElement|.
@@ -260,6 +264,7 @@ suite('GooglePhotosAlbumsTest', function() {
             photoCount: 1,
             preview: {url: `url-${nextAlbumId++}`},
             timestamp: {internalValue: BigInt(`${nextAlbumId}`)},
+            isShared: false,
           };
         }));
 
@@ -287,6 +292,7 @@ suite('GooglePhotosAlbumsTest', function() {
             photoCount: 1,
             preview: {url: `url-${nextAlbumId++}`},
             timestamp: {internalValue: BigInt(`${nextAlbumId}`)},
+            isShared: false,
           };
         }));
 

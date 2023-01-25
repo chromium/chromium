@@ -250,6 +250,8 @@ void AddStrings(content::WebUIDataSource* source) {
       {"googlePhotosLabel", IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS},
       {"googlePhotosError", IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ERROR},
       {"googlePhotosTryAgain", IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_TRY_AGAIN},
+      {"googlePhotosAlbumShared",
+       IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ALBUM_SHARED},
       {"googlePhotosAlbumsTabLabel",
        IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ALBUMS_TAB},
       {"googlePhotosPhotosTabLabel",

@@ -84,6 +84,7 @@ suite('GooglePhotosCollectionTest', function() {
       photoCount: 0,
       preview: {url: ''},
       timestamp: {internalValue: BigInt('1')},
+      isShared: false,
     }]);
 
     // Initialize |googlePhotosCollectionElement|.
@@ -147,6 +148,7 @@ suite('GooglePhotosCollectionTest', function() {
       photoCount: 1,
       preview: {url: 'foo.com'},
       timestamp: {internalValue: BigInt(`13318040939308000`)},
+      isShared: false,
     }];
     wallpaperProvider.setGooglePhotosAlbums(albums);
     wallpaperProvider.setGooglePhotosPhotos([{

@@ -780,7 +780,8 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   EXPECT_TRUE(
       base::Time::FromUTCString("2021-12-31T07:07:07.000Z", &timestamp));
   valid_albums_vector.push_back(GooglePhotosAlbum::New(
-      "albumId", "title", 1, GURL("https://www.google.com/"), timestamp));
+      "albumId", "title", 1, GURL("https://www.google.com/"), timestamp,
+      /*is_shared=*/false));
   auto result = FetchGooglePhotosAlbumsResponse::New(
       mojo::Clone(valid_albums_vector), kResumeToken);
   EXPECT_EQ(google_photos_albums_fetcher->ParseResponse(&response), result);

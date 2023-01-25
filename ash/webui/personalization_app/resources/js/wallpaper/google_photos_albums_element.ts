@@ -309,7 +309,8 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
 
   /** Returns the secondary text to display for the specified |album|. */
   private getSecondaryText_(album: GooglePhotosAlbum): string {
-    return getCountText(album.photoCount);
+    return album.isShared ? this.i18n('googlePhotosAlbumShared') :
+                            getCountText(album.photoCount);
   }
 
   /** Returns whether the specified |album| is a placeholder. */

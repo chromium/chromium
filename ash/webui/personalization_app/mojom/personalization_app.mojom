@@ -100,6 +100,9 @@ struct GooglePhotosAlbum {
 
     // Latest modification timestamp used to sort albums.
     mojo_base.mojom.Time timestamp;
+
+    // Whether the album is a shared album.
+    bool is_shared;
 };
 
 // Represents the server-provided response to a Google Photos albums request.

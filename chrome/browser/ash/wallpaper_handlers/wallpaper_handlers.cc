@@ -773,7 +773,7 @@ GooglePhotosAlbumsCbkArgs GooglePhotosAlbumsFetcher::ParseResponse(
     parsed_response->albums->push_back(
         ash::personalization_app::mojom::GooglePhotosAlbum::New(
             *album_id, *title, base::saturated_cast<int>(num_photos),
-            GURL(*cover_photo_url), timestamp));
+            GURL(*cover_photo_url), timestamp, /*is_shared=*/false));
   }
   return parsed_response;
 }
@@ -846,7 +846,7 @@ GooglePhotosAlbumsCbkArgs GooglePhotosSharedAlbumsFetcher::ParseResponse(
     parsed_response->albums->push_back(
         ash::personalization_app::mojom::GooglePhotosAlbum::New(
             *album_id, *title, /*num_image=*/0, GURL(*cover_photo_url),
-            timestamp));
+            timestamp, /*is_shared=*/true));
   }
   return parsed_response;
 }
