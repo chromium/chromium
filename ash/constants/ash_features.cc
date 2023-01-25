@@ -1515,6 +1515,10 @@ BASE_FEATURE(kOobeRemoveShutdownButton,
              "OobeRemoveShutdownButton",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOnlyShowNewShortcutsApp,
+             "OnlyShowNewShortcutsApp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the feedback tool new UX on ChromeOS.
 // This tool under development will be rolled out via Finch.
 // Enabling this flag will use the new feedback tool instead of the current
@@ -3247,6 +3251,10 @@ bool ShouldArcFileTasksUseAppService() {
 
 bool ShouldGuestOsFileTasksUseAppService() {
   return base::FeatureList::IsEnabled(kGuestOsFileTasksUseAppService);
+}
+
+bool ShouldOnlyShowNewShortcutApp() {
+  return base::FeatureList::IsEnabled(kOnlyShowNewShortcutsApp);
 }
 
 bool ShouldShowPlayStoreInDemoMode() {

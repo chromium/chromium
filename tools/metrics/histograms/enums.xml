@@ -59381,6 +59381,7 @@ from previous Chrome versions.
   <int value="-1032884201" label="HeavyAdPrivacyMitigations:enabled"/>
   <int value="-1032265414" label="AutocompleteExtendedSuggestions:disabled"/>
   <int value="-1031350684" label="PdfIsolation:disabled"/>
+  <int value="-1030683709" label="OnlyShowNewShortcutsApp:disabled"/>
   <int value="-1030530357" label="PwaInstallUseBottomSheet:disabled"/>
   <int value="-1030513821" label="DetectedSourceLanguageOption:disabled"/>
   <int value="-1029920490" label="IdleTimeSpellChecking:enabled"/>
@@ -64267,6 +64268,7 @@ from previous Chrome versions.
   <int value="1809940714" label="SpeculativeLaunchServiceWorker:disabled"/>
   <int value="1810258949" label="DisplayLocking:enabled"/>
   <int value="1810311887" label="WebAssemblyThreads:enabled"/>
+  <int value="1810693550" label="OnlyShowNewShortcutsApp:enabled"/>
   <int value="1811266774" label="WebUITabStripNewTabButtonInTabStrip:disabled"/>
   <int value="1811744551" label="InterestFeedV2Hearts:enabled"/>
   <int value="1812368073" label="enable-new-app-list-mixer"/>

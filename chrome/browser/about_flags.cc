@@ -6692,6 +6692,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableViewPpdDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kEnableViewPpd)},
 
+    {"enable-only-show-new-shortcut-app",
+     flag_descriptions::kOnlyShowNewShortcutsAppName,
+     flag_descriptions::kOnlyShowNewShortcutsAppDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kOnlyShowNewShortcutsApp)},
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"enable-fenced-frames", flag_descriptions::kEnableFencedFramesName,

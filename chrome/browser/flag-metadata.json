@@ -2781,6 +2781,11 @@
     "expiry_milestone": 114
   },
   {
+    "name": "enable-only-show-new-shortcut-app",
+    "owners": [ "jimmyxgong", "michaelcheco", "cros-peripherals@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-oop-print-drivers",
     "owners": [ "awscreen", "thestig" ],
     "expiry_milestone": 112

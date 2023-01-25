@@ -2230,6 +2230,12 @@ const char kOmniboxDynamicMaxAutocompleteDescription[] =
     "Configures the maximum number of autocomplete matches displayed in the "
     "Omnibox UI dynamically based on the number of URL matches.";
 
+const char kOnlyShowNewShortcutsAppName[] =
+    "Only show the new Shortcut Viewer app";
+const char kOnlyShowNewShortcutsAppDescription[] =
+    "If enabled, the existing Shortcut Viewer app will be hidden and only the "
+    "new Shortcut Customization app will be discoverable.";
+
 const char kOptimizationGuideDebugLogsName[] =
     "Enable optimization guide debug logs";
 const char kOptimizationGuideDebugLogsDescription[] =
