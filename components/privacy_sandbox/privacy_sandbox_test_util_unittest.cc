@@ -25,7 +25,6 @@ class MockPrivacySandboxServiceTestInterface
     : public PrivacySandboxServiceTestInterface {
  public:
   MOCK_METHOD(void, TopicsToggleChanged, (bool), (override, const));
-  MOCK_METHOD(void, TopicsConfirmationDecisionMade, (bool), (override, const));
   MOCK_METHOD(void,
               SetTopicAllowed,
               (privacy_sandbox::CanonicalTopic, bool),
@@ -298,15 +297,12 @@ TEST_F(PrivacySandboxTestUtilTest, InputKey_TopicsToggleNewValue) {
   }
 }
 
-TEST_F(PrivacySandboxTestUtilTest,
-       InputKey_TopicsConfirmationDecisionConfirmed) {
-  std::vector<bool> states = {true, false};
-  for (bool state : states) {
-    testing::Mock::VerifyAndClearExpectations(mock_privacy_sandbox_service());
-    EXPECT_CALL(*mock_privacy_sandbox_service(),
-                TopicsConfirmationDecisionMade(state));
-    ProvideInput(InputKey::kTopicsConfirmationDecisionConfirmed, state);
-  }
+TEST_F(PrivacySandboxTestUtilTest, InputKey_PromptActionOccurred) {
+  constexpr int kArbitraryValue = 7;
+  testing::Mock::VerifyAndClearExpectations(mock_privacy_sandbox_service());
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              PromptActionOccurred(kArbitraryValue));
+  ProvideInput(InputKey::kPromptAction, kArbitraryValue);
 }
 
 TEST_F(PrivacySandboxTestUtilTest, OutputKey_IsTopicsAllowedForContext) {

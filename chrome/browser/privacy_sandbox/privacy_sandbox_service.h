@@ -279,12 +279,6 @@ class PrivacySandboxService : public KeyedService {
   virtual bool IsPartOfManagedFirstPartySet(
       const net::SchemefulSite& site) const;
 
-  // Informs the service that a user made a decision during the confirmation
-  // moment, so that the current topics consent information can be updated.
-  // TODO (crbug.com/1378703): Determine if this should just rely on the already
-  // reported prompt actions, and be made protected, or be called separately.
-  void TopicsConfirmationDecisionMade(bool confirmed) const;
-
   // Inform the service that the user changed the Topics toggle in settings,
   // so that the current topics consent information can be updated.
   // TODO (crbug.com/1378703): Determine whether changes to the preference,

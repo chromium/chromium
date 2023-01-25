@@ -283,9 +283,9 @@ void ProvideInput(const std::pair<InputKey, TestCaseItemValue>& input,
           GetItemValue<bool>(input_value));
       return;
     }
-    case (InputKey::kTopicsConfirmationDecisionConfirmed): {
-      privacy_sandbox_service->TopicsConfirmationDecisionMade(
-          GetItemValue<bool>(input_value));
+    case (InputKey::kPromptAction): {
+      privacy_sandbox_service->PromptActionOccurred(
+          GetItemValue<int>(input_value));
       return;
     }
     default: {
@@ -594,9 +594,6 @@ void CheckOutput(
     case (OutputKey::kM1ConsentDecisionMade): {
       SCOPED_TRACE("Check Output: M1 consent decision made");
       bool expected = GetItemValue<bool>(output_value);
-      int prompt_action =
-          GetItemValueForKey<int>(InputKey::kPromptAction, input);
-      privacy_sandbox_service->PromptActionOccurred(prompt_action);
       EXPECT_EQ(expected, testing_pref_service->GetBoolean(
                               prefs::kPrivacySandboxM1ConsentDecisionMade));
       return;
@@ -604,9 +601,6 @@ void CheckOutput(
     case (OutputKey::kM1EEANoticeAcknowledged): {
       SCOPED_TRACE("Check Output: M1 eea notice acknowledged");
       bool expected = GetItemValue<bool>(output_value);
-      int prompt_action =
-          GetItemValueForKey<int>(InputKey::kPromptAction, input);
-      privacy_sandbox_service->PromptActionOccurred(prompt_action);
       EXPECT_EQ(expected, testing_pref_service->GetBoolean(
                               prefs::kPrivacySandboxM1EEANoticeAcknowledged));
       return;
@@ -614,9 +608,6 @@ void CheckOutput(
     case (OutputKey::kM1RowNoticeAcknowledged): {
       SCOPED_TRACE("Check Output: M1 row notice acknowledged");
       bool expected = GetItemValue<bool>(output_value);
-      int prompt_action =
-          GetItemValueForKey<int>(InputKey::kPromptAction, input);
-      privacy_sandbox_service->PromptActionOccurred(prompt_action);
       EXPECT_EQ(expected, testing_pref_service->GetBoolean(
                               prefs::kPrivacySandboxM1RowNoticeAcknowledged));
       return;
@@ -624,9 +615,6 @@ void CheckOutput(
     case (OutputKey::kM1TopicsEnabled): {
       SCOPED_TRACE("Check Output: M1 topics enabled");
       bool expected = GetItemValue<bool>(output_value);
-      int prompt_action =
-          GetItemValueForKey<int>(InputKey::kPromptAction, input);
-      privacy_sandbox_service->PromptActionOccurred(prompt_action);
       EXPECT_EQ(expected, testing_pref_service->GetBoolean(
                               prefs::kPrivacySandboxM1TopicsEnabled));
       return;
@@ -634,9 +622,6 @@ void CheckOutput(
     case (OutputKey::kM1FledgeEnabled): {
       SCOPED_TRACE("Check Output: M1 fledge enabled");
       bool expected = GetItemValue<bool>(output_value);
-      int prompt_action =
-          GetItemValueForKey<int>(InputKey::kPromptAction, input);
-      privacy_sandbox_service->PromptActionOccurred(prompt_action);
       EXPECT_EQ(expected, testing_pref_service->GetBoolean(
                               prefs::kPrivacySandboxM1FledgeEnabled));
       return;
@@ -644,9 +629,6 @@ void CheckOutput(
     case (OutputKey::kM1AdMeasurementEnabled): {
       SCOPED_TRACE("Check Output: M1 ad measurement enabled");
       bool expected = GetItemValue<bool>(output_value);
-      int prompt_action =
-          GetItemValueForKey<int>(InputKey::kPromptAction, input);
-      privacy_sandbox_service->PromptActionOccurred(prompt_action);
       EXPECT_EQ(expected, testing_pref_service->GetBoolean(
                               prefs::kPrivacySandboxM1AdMeasurementEnabled));
       return;

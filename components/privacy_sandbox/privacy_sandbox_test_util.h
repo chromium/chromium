@@ -29,7 +29,6 @@ namespace privacy_sandbox_test_util {
 class PrivacySandboxServiceTestInterface {
  public:
   virtual void TopicsToggleChanged(bool new_value) const = 0;
-  virtual void TopicsConfirmationDecisionMade(bool confirmed) const = 0;
   virtual void SetTopicAllowed(privacy_sandbox::CanonicalTopic topic,
                                bool allowed) = 0;
   virtual bool TopicsHasActiveConsent() const = 0;
@@ -113,9 +112,8 @@ enum class InputKey {
   kAdMeasurementDestinationOrigin = 6,
   kAccessingOrigin = 7,
   kTopicsToggleNewValue = 8,
-  kTopicsConfirmationDecisionConfirmed = 9,
-  kForceChromeBuild = 10,
-  kPromptAction = 11,
+  kForceChromeBuild = 9,
+  kPromptAction = 10,
 };
 
 // Defines the expected output of the functions under test, when the profile is

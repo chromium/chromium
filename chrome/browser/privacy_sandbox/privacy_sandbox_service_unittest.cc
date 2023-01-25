@@ -96,8 +96,6 @@ constexpr auto kActiveTopicsConsent = StateKey::kActiveTopicsConsent;
 // using enum privacy_sandbox_test_util::InputKey;
 using privacy_sandbox_test_util::InputKey;
 constexpr auto kTopicsToggleNewValue = InputKey::kTopicsToggleNewValue;
-constexpr auto kTopicsConfirmationDecisionConfirmed =
-    InputKey::kTopicsConfirmationDecisionConfirmed;
 constexpr auto kTopFrameOrigin = InputKey::kTopFrameOrigin;
 constexpr auto kAdMeasurementReportingOrigin =
     InputKey::kAdMeasurementReportingOrigin;
@@ -137,9 +135,6 @@ class TestPrivacySandboxService
   // PrivacySandboxServiceTestInterface
   void TopicsToggleChanged(bool new_value) const override {
     service_->TopicsToggleChanged(new_value);
-  }
-  void TopicsConfirmationDecisionMade(bool confirmed) const override {
-    service_->TopicsConfirmationDecisionMade(confirmed);
   }
   void SetTopicAllowed(privacy_sandbox::CanonicalTopic topic,
                        bool allowed) override {
@@ -3285,40 +3280,6 @@ TEST_F(PrivacySandboxServiceM1Test,
       });
 }
 
-TEST_F(PrivacySandboxServiceM1Test, TopicsConsentConfirmation_Accepted) {
-  RunTestCase(
-      TestState{{kActiveTopicsConsent, false},
-                {kAdvanceClockBy, base::Hours(1)}},
-      TestInput{
-          {kTopicsConfirmationDecisionConfirmed, true},
-      },
-      TestOutput{
-          {kTopicsConsentGiven, true},
-          {kTopicsConsentLastUpdateReason,
-           privacy_sandbox::TopicsConsentUpdateSource::kConfirmation},
-          {kTopicsConsentLastUpdateTime, base::Time::Now() + base::Hours(1)},
-          {kTopicsConsentStringIdentifiers,
-           GetTopicsConfirmationStringIdentifiers()},
-      });
-}
-
-TEST_F(PrivacySandboxServiceM1Test, TopicsConsentConfirmation_Declined) {
-  RunTestCase(
-      TestState{{kActiveTopicsConsent, true},
-                {kAdvanceClockBy, base::Hours(1)}},
-      TestInput{
-          {kTopicsConfirmationDecisionConfirmed, true},
-      },
-      TestOutput{
-          {kTopicsConsentGiven, true},
-          {kTopicsConsentLastUpdateReason,
-           privacy_sandbox::TopicsConsentUpdateSource::kConfirmation},
-          {kTopicsConsentLastUpdateTime, base::Time::Now() + base::Hours(1)},
-          {kTopicsConsentStringIdentifiers,
-           GetTopicsConfirmationStringIdentifiers()},
-      });
-}
-
 TEST_F(PrivacySandboxServiceM1Test,
        RecordPrivacySandbox4StartupMetrics_PromptSuppressed_Explicitly) {
   base::HistogramTester histogram_tester;
@@ -3731,21 +3692,39 @@ TEST_F(PrivacySandboxServiceM1ConsentPromptTest,
 TEST_F(PrivacySandboxServiceM1ConsentPromptTest, PromptAction_ConsentAccepted) {
   // Confirm that when the service is informed that the consent prompt was
   // accepted, it correctly adjusts the Privacy Sandbox prefs.
-  RunTestCase(TestState{},
-              TestInput{{InputKey::kPromptAction,
-                         static_cast<int>(PromptAction::kConsentAccepted)}},
-              TestOutput{{OutputKey::kM1ConsentDecisionMade, true},
-                         {OutputKey::kM1TopicsEnabled, true}});
+  RunTestCase(
+      TestState{{kActiveTopicsConsent, false},
+                {kAdvanceClockBy, base::Hours(1)}},
+      TestInput{{InputKey::kPromptAction,
+                 static_cast<int>(PromptAction::kConsentAccepted)}},
+      TestOutput{
+          {OutputKey::kM1ConsentDecisionMade, true},
+          {OutputKey::kM1TopicsEnabled, true},
+          {OutputKey::kTopicsConsentGiven, true},
+          {OutputKey::kTopicsConsentLastUpdateReason,
+           privacy_sandbox::TopicsConsentUpdateSource::kConfirmation},
+          {kTopicsConsentLastUpdateTime, base::Time::Now() + base::Hours(1)},
+          {kTopicsConsentStringIdentifiers,
+           GetTopicsConfirmationStringIdentifiers()}});
 }
 
 TEST_F(PrivacySandboxServiceM1ConsentPromptTest, PromptAction_ConsentDeclined) {
   // Confirm that when the service is informed that the consent prompt was
   // declined, it correctly adjusts the Privacy Sandbox prefs.
-  RunTestCase(TestState{},
-              TestInput{{InputKey::kPromptAction,
-                         static_cast<int>(PromptAction::kConsentDeclined)}},
-              TestOutput{{OutputKey::kM1ConsentDecisionMade, true},
-                         {OutputKey::kM1TopicsEnabled, false}});
+  RunTestCase(
+      TestState{{kActiveTopicsConsent, true},
+                {kAdvanceClockBy, base::Hours(1)}},
+      TestInput{{InputKey::kPromptAction,
+                 static_cast<int>(PromptAction::kConsentDeclined)}},
+      TestOutput{
+          {OutputKey::kM1ConsentDecisionMade, true},
+          {OutputKey::kM1TopicsEnabled, false},
+          {OutputKey::kTopicsConsentGiven, false},
+          {OutputKey::kTopicsConsentLastUpdateReason,
+           privacy_sandbox::TopicsConsentUpdateSource::kConfirmation},
+          {kTopicsConsentLastUpdateTime, base::Time::Now() + base::Hours(1)},
+          {kTopicsConsentStringIdentifiers,
+           GetTopicsConfirmationStringIdentifiers()}});
 }
 
 TEST_F(PrivacySandboxServiceM1ConsentPromptTest,
@@ -3759,13 +3738,17 @@ TEST_F(PrivacySandboxServiceM1ConsentPromptTest,
               TestOutput{{OutputKey::kM1EEANoticeAcknowledged, true},
                          {OutputKey::kM1FledgeEnabled, true},
                          {OutputKey::kM1AdMeasurementEnabled, true}});
-  RunTestCase(TestState{{StateKey::kM1ConsentDecisionMade, true},
-                        {StateKey::kM1EEANoticeAcknowledged, false}},
-              TestInput{{InputKey::kPromptAction,
-                         static_cast<int>(PromptAction::kNoticeOpenSettings)}},
-              TestOutput{{OutputKey::kM1EEANoticeAcknowledged, true},
-                         {OutputKey::kM1FledgeEnabled, true},
-                         {OutputKey::kM1AdMeasurementEnabled, true}});
+  RunTestCase(
+      TestState{{StateKey::kM1ConsentDecisionMade, true},
+                {StateKey::kM1EEANoticeAcknowledged, false}},
+      TestInput{{InputKey::kPromptAction,
+                 static_cast<int>(PromptAction::kNoticeOpenSettings)}},
+      TestOutput{{OutputKey::kM1EEANoticeAcknowledged, true},
+                 {OutputKey::kM1FledgeEnabled, true},
+                 {OutputKey::kM1AdMeasurementEnabled, true},
+                 {OutputKey::kTopicsConsentGiven, false},
+                 {OutputKey::kTopicsConsentLastUpdateReason,
+                  privacy_sandbox::TopicsConsentUpdateSource::kDefaultValue}});
 }
 
 class PrivacySandboxServiceM1NoticePromptTest
@@ -3877,7 +3860,8 @@ TEST_F(PrivacySandboxServiceM1NoticePromptTest,
               TestOutput{{OutputKey::kM1RowNoticeAcknowledged, true},
                          {OutputKey::kM1TopicsEnabled, true},
                          {OutputKey::kM1FledgeEnabled, true},
-                         {OutputKey::kM1AdMeasurementEnabled, true}});
+                         {OutputKey::kM1AdMeasurementEnabled, true},
+                         {OutputKey::kTopicsConsentGiven, false}});
 }
 
 TEST_F(PrivacySandboxServiceM1NoticePromptTest, PromptAction_OpenSettings) {
@@ -3889,7 +3873,8 @@ TEST_F(PrivacySandboxServiceM1NoticePromptTest, PromptAction_OpenSettings) {
               TestOutput{{OutputKey::kM1RowNoticeAcknowledged, true},
                          {OutputKey::kM1TopicsEnabled, true},
                          {OutputKey::kM1FledgeEnabled, true},
-                         {OutputKey::kM1AdMeasurementEnabled, true}});
+                         {OutputKey::kM1AdMeasurementEnabled, true},
+                         {OutputKey::kTopicsConsentGiven, false}});
 }
 
 TEST_F(PrivacySandboxServiceM1Test, DisablePrivacySandboxPromptPolicy) {

@@ -312,11 +312,15 @@ void PrivacySandboxService::PromptActionOccurredM1(
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1ConsentDecisionMade,
                               true);
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
+    RecordUpdatedTopicsConsent(
+        privacy_sandbox::TopicsConsentUpdateSource::kConfirmation, true);
   } else if (PromptAction::kConsentDeclined == action) {
     DCHECK(privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get());
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1ConsentDecisionMade,
                               true);
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
+    RecordUpdatedTopicsConsent(
+        privacy_sandbox::TopicsConsentUpdateSource::kConfirmation, false);
   }
 }
 
@@ -955,12 +959,6 @@ bool PrivacySandboxService::IsPartOfManagedFirstPartySet(
   }
 
   return first_party_sets_policy_service_->IsSiteInManagedSet(site);
-}
-
-void PrivacySandboxService::TopicsConfirmationDecisionMade(
-    bool confirmed) const {
-  RecordUpdatedTopicsConsent(
-      privacy_sandbox::TopicsConsentUpdateSource::kConfirmation, confirmed);
 }
 
 void PrivacySandboxService::TopicsToggleChanged(bool new_value) const {
