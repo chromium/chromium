@@ -11,7 +11,9 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -275,7 +277,6 @@ void FormEventLoggerBase::RecordFunnelAndKeyMetrics() {
 
   LOG_AF(funnel_rows) << Tr{} << "Form Type: " << form_type_name_;
   LOG_AF(key_metrics_rows) << Tr{} << "Form Type: " << form_type_name_;
-
   UmaHistogramBoolean("Autofill.Funnel.ParsedAsType." + form_type_name_,
                       has_parsed_form_);
   // Log chronological funnel.
@@ -343,6 +344,8 @@ void FormEventLoggerBase::RecordFunnelAndKeyMetrics() {
           !has_logged_edited_autofilled_field_);
       LOG_AF(key_metrics_rows) << Tr{} << "FillingCorrectness"
                                << !has_logged_edited_autofilled_field_;
+      LogFillingCorrectnessByFillingMethod(autofill_suggestion_method_,
+                                           form_type_name_);
     }
     // Whether a submitted form was filled.
     UmaHistogramBoolean(
@@ -485,6 +488,21 @@ void FormEventLoggerBase::OnTextFieldDidChange(
 
 void FormEventLoggerBase::UpdateFlowId() {
   flow_id_ = client_->GetCurrentFormInteractionsFlowId();
+}
+
+void FormEventLoggerBase::LogFillingCorrectnessByFillingMethod(
+    AutofillSuggestionMethod method,
+    const std::string& form_type) {
+  if (method == AutofillSuggestionMethod::kUnknown) {
+    return;
+  }
+
+  // Log the correctness metric by autofill suggestion method (touch to fill,
+  // keyboard accessory, etc) and the form type (credit card, address, etc.)
+  const std::string method_name = GetMetricsSuffixByAutofillMethod(method);
+  base::UmaHistogramBoolean(
+      "Autofill.FillingCorrectnessByMethod." + form_type + "." + method_name,
+      !has_logged_edited_autofilled_field_);
 }
 
 }  // namespace autofill

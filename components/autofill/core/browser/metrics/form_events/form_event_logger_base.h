@@ -38,6 +38,10 @@ class FormEventLoggerBase {
     local_record_type_count_ = local_record_type_count;
   }
 
+  inline void set_autofill_suggestion_method(AutofillSuggestionMethod method) {
+    autofill_suggestion_method_ = method;
+  }
+
   void OnDidInteractWithAutofillableForm(const FormStructure& form,
                                          AutofillSyncSigninState sync_state);
 
@@ -135,6 +139,12 @@ class FormEventLoggerBase {
 
   void UpdateFlowId();
 
+  // Records UMA metric: correctness filling in relation to the autofill
+  // suggestion method that was used (touch to fill for credit cards, keyboard
+  // accessory, etc.) and the form type (credit card, address, etc.)
+  void LogFillingCorrectnessByFillingMethod(AutofillSuggestionMethod method,
+                                            const std::string& form_type);
+
   // Constructor parameters.
   std::string form_type_name_;
   bool is_in_any_main_frame_;
@@ -158,6 +168,8 @@ class FormEventLoggerBase {
       false;
   AblationGroup ablation_group_ = AblationGroup::kDefault;
   AblationGroup conditional_ablation_group_ = AblationGroup::kDefault;
+  AutofillSuggestionMethod autofill_suggestion_method_ =
+      AutofillSuggestionMethod::kUnknown;
   absl::optional<base::TimeDelta> time_from_interaction_to_submission_;
 
   // The last field that was polled for suggestions.

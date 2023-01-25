@@ -186,6 +186,7 @@ class AutofillMetricsBaseTest : public testing::Test {
   syncer::TestSyncService sync_service_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   raw_ptr<AutofillExternalDelegate> external_delegate_;
+  raw_ptr<TouchToFillDelegateImpl> touch_to_fill_delgate_;
 
  private:
   void CreateTestAutofillProfiles();

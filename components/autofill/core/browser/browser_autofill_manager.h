@@ -313,7 +313,7 @@ class BrowserAutofillManager : public AutofillManager,
 
   // Sets where the accepted autofill suggestion came from: touch to fill,
   // keyboard accessory, etc.
-  virtual void SetSuggestionOriginMetricState(AutofillSuggestionMethod state);
+  virtual void SetAutofillSuggestionMethod(AutofillSuggestionMethod state);
 
   // Forwards call to the same-named `AutofillDriver` function.
   virtual void SetShouldSuppressKeyboard(bool suppress);

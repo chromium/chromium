@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_AUTOFILL_METRICS_UTILS_H_
 
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
 namespace autofill {
@@ -50,6 +51,11 @@ struct FormGroupFillingStats {
 // Returns the filling status of `field`.
 AutofillMetrics::FieldFillingStatus GetFieldFillingStatus(
     const AutofillField& field);
+
+// Returns the suffix for metrics histogram name depending on the autofill
+// suggestions method used to fill in the value and the form type.
+// E. g. "CreditCard.TouchToFill".
+std::string GetMetricsSuffixByAutofillMethod(AutofillSuggestionMethod method);
 
 }  // namespace autofill
 

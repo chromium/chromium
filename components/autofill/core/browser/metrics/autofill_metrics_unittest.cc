@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "base/check.h"
 
 #include <stddef.h>
 
@@ -746,80 +747,119 @@ TEST_P(AutofillPerfectFillingMetricsTest,
       BucketsAre(test_case.credit_card_buckets));
 }
 
-struct SuggestionOriginPerfectFillingTestCase {
-  std::string description;
+struct TouchToFillForCreditCardsTestCase {
   std::vector<Field> fields;
-  bool expected_metric_value;
+  std::vector<bool> fields_is_autofilled_values;
+  bool is_all_autofilled;
+  bool is_all_accepted;
 };
 
-class SuggestionOriginPerfectFillingMetricsTest
+class TouchToFillForCreditCardsTest
     : public AutofillMetricsTest,
-      public ::testing::WithParamInterface<
-          SuggestionOriginPerfectFillingTestCase> {
+      public ::testing::WithParamInterface<TouchToFillForCreditCardsTestCase> {
  public:
-  std::vector<test::FieldDescription> GetFields(std::vector<Field> fields) {
-    std::vector<test::FieldDescription> fields_to_return;
+  std::vector<FormFieldData> GetFields(std::vector<Field> fields) {
+    std::vector<FormFieldData> fields_to_return;
+    fields_to_return.reserve(fields.size());
     for (const auto& field : fields) {
-      test::FieldDescription f;
-      if (field.value) {
-        f.value = field.value;
-      } else if (field.field_type == CREDIT_CARD_NAME_FULL) {
-        f.value = u"Elvis Aaron Presley";
+      if (field.field_type == CREDIT_CARD_NAME_FULL) {
+        fields_to_return.push_back(
+            CreateField("Name on card", "cardName", "", "text"));
       } else if (field.field_type == CREDIT_CARD_NUMBER) {
-        f.value = u"01230123012399";
+        fields_to_return.push_back(
+            CreateField("Credit card number", "cardNumber", "", "text"));
+      } else if (field.field_type == CREDIT_CARD_EXP_MONTH) {
+        fields_to_return.push_back(
+            CreateField("Expiration date", "cc_exp", "", "text"));
+      } else if (field.field_type == CREDIT_CARD_VERIFICATION_CODE) {
+        fields_to_return.push_back(CreateField("CVC", "CVC", "", "text"));
       } else {
         NOTREACHED();
       }
-      f.role = field.field_type;
-      f.is_autofilled = field.is_autofilled;
-      fields_to_return.push_back(f);
     }
     return fields_to_return;
   }
+
+  void SetFieldsAutofilledValues(FormData& form,
+                                 std::vector<bool>& fields_is_autofilled_values,
+                                 std::vector<Field>& server_field_types) {
+    DCHECK(form.fields.size() == fields_is_autofilled_values.size());
+    DCHECK(form.fields.size() == server_field_types.size());
+    for (size_t i = 0; i < fields_is_autofilled_values.size(); i++) {
+      form.fields[i].is_autofilled = fields_is_autofilled_values[i];
+      CreditCard testCard = test::GetCreditCard();
+      form.fields[i].value =
+          server_field_types[i].field_type != CREDIT_CARD_VERIFICATION_CODE
+              ? testCard.GetRawInfo(server_field_types[i].field_type)
+              : u"123";
+    }
+  }
 };
 
-TEST_P(SuggestionOriginPerfectFillingMetricsTest,
-       PerfectFilling_TouchToFill_CreditCards) {
-  SuggestionOriginPerfectFillingTestCase test_case = GetParam();
-  std::vector<Field> fields{{CREDIT_CARD_NAME_FULL}, {CREDIT_CARD_NUMBER}};
-  FormData form =
-      test::GetFormData({.description_for_logging = test_case.description,
-                         .fields = GetFields(test_case.fields),
-                         .unique_renderer_id = test::MakeFormRendererId(),
-                         .main_frame_origin = url::Origin::Create(
-                             autofill_client_->form_origin())});
+TEST_P(TouchToFillForCreditCardsTest,
+       AllAutofilledAndAccepted_TouchToFill_CreditCards) {
+  RecreateCreditCards(true, false, false, false);
+  TouchToFillForCreditCardsTestCase test_case = GetParam();
+  FormData form = CreateForm(GetFields(test_case.fields));
 
-  std::vector<ServerFieldType> field_types;
-  for (const auto& f : test_case.fields) {
-    field_types.push_back(f.field_type);
-  }
-
-  autofill_manager().AddSeenForm(form, field_types);
+  SeeForm(form);
+  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0], {},
+                                              AutoselectFirstSuggestion(false),
+                                              FormElementWasClicked(true));
 
   base::HistogramTester histogram_tester;
-  autofill_manager().SetSuggestionOriginMetricState(
-      AutofillSuggestionMethod::KTouchToFillCreditCard);
+  // Simulate user selection in the payments bottom sheet
+  touch_to_fill_delgate_->SuggestionSelected(kTestLocalCardId);
+  // Simulate that fields were autofilled
+  SetFieldsAutofilledValues(form, test_case.fields_is_autofilled_values,
+                            test_case.fields);
+  // Simulate user made change to autofilled field
+  if (!test_case.is_all_accepted) {
+    SimulateUserChangedTextField(form, form.fields[0]);
+  }
+
   SubmitForm(form);
+  ResetDriverToCommitMetrics();
   EXPECT_EQ(histogram_tester.GetBucketCount(
                 "Autofill.TouchToFill.CreditCard.PerfectFilling",
-                test_case.expected_metric_value),
+                test_case.is_all_autofilled && test_case.is_all_accepted),
+            1);
+  EXPECT_EQ(histogram_tester.GetBucketCount(
+                "Autofill.FillingCorrectnessByMethod.CreditCard.TouchToFill",
+                test_case.is_all_accepted),
             1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     AutofillMetricsTest,
-    SuggestionOriginPerfectFillingMetricsTest,
+    TouchToFillForCreditCardsTest,
     testing::Values(
-        // Test that we log the perfect filling metric correctly for an address
-        // form in which every field is autofilled.
-        SuggestionOriginPerfectFillingTestCase{
-            "PerfectFillingForCreditCardForm_AutofilledFromTTF",
-            {{CREDIT_CARD_NAME_FULL}, {CREDIT_CARD_NUMBER}},
-            true},
-        SuggestionOriginPerfectFillingTestCase{
-            "PerfectFillingForCreditCardForm_NotAllAutofilledFromTTF",
-            {{CREDIT_CARD_NAME_FULL}, {CREDIT_CARD_NUMBER, false}},
-            false}));
+        // All autofilled and nothing edited manually
+        TouchToFillForCreditCardsTestCase{
+            {{CREDIT_CARD_NAME_FULL},
+             {CREDIT_CARD_NUMBER},
+             {CREDIT_CARD_EXP_MONTH}},
+            /*fields_is_autofilled_values=*/{true, true, true},
+            /*is_all_autofilled=*/true,
+            /*is_all_accepted=*/true},
+        // Not all autofilled and nothing edited manually
+        TouchToFillForCreditCardsTestCase{
+            {{CREDIT_CARD_NAME_FULL},
+             {CREDIT_CARD_NUMBER},
+             {CREDIT_CARD_EXP_MONTH},
+             {CREDIT_CARD_VERIFICATION_CODE}},
+            /*fields_is_autofilled_values=*/{true, true, true, false},
+            /*is_all_autofilled=*/false,
+            /*is_all_accepted=*/true},
+        // Not all autofilled and something edited manually
+        TouchToFillForCreditCardsTestCase{
+            {{CREDIT_CARD_NAME_FULL},
+             {CREDIT_CARD_NUMBER},
+             {CREDIT_CARD_EXP_MONTH},
+             {CREDIT_CARD_VERIFICATION_CODE}},
+            /*fields_is_autofilled_values=*/{true, true, true, false},
+            /*is_all_autofilled=*/false,
+            /*is_all_accepted=*/false}));
 
 // Test the emission of collisions between NUMERIC_QUANTITY and server
 // predictions as well as the potential false positives.

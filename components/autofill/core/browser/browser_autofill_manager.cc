@@ -3340,9 +3340,10 @@ void BrowserAutofillManager::OnSeePromoCodeOfferDetailsSelected(
   OnSingleFieldSuggestionSelected(value, frontend_id);
 }
 
-void BrowserAutofillManager::SetSuggestionOriginMetricState(
-    AutofillSuggestionMethod state) {
-  autofill_suggestion_method_ = state;
+void BrowserAutofillManager::SetAutofillSuggestionMethod(
+    AutofillSuggestionMethod method) {
+  autofill_suggestion_method_ = method;
+  credit_card_form_event_logger_->set_autofill_suggestion_method(method);
 }
 
 void BrowserAutofillManager::SetShouldSuppressKeyboard(bool suppress) {

@@ -108,7 +108,7 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                const FormFieldData& field,
                const CreditCard* credit_card));
   MOCK_METHOD(void,
-              SetSuggestionOriginMetricState,
+              SetAutofillSuggestionMethod,
               (AutofillSuggestionMethod state),
               (override));
 };
@@ -534,7 +534,7 @@ TEST_F(TouchToFillDelegateImplUnitTest, CardSelectionFillsCardForm) {
   TryToShowTouchToFill(/*expected_success=*/true);
 
   EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewCreditCardForm);
-  EXPECT_CALL(*browser_autofill_manager_, SetSuggestionOriginMetricState);
+  EXPECT_CALL(*browser_autofill_manager_, SetAutofillSuggestionMethod);
   touch_to_fill_delegate_->SuggestionSelected(credit_card.server_id());
 }
 
