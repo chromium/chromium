@@ -24,6 +24,7 @@ import '//resources/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
 
+import {startColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
@@ -163,6 +164,11 @@ export class PowerBookmarksListElement extends PolymerElement {
   private renamingParentId_: string;
   private renamingId_: string;
   private deletionDescription_: string;
+
+  constructor() {
+    super();
+    startColorChangeUpdater();
+  }
 
   override connectedCallback() {
     super.connectedCallback();

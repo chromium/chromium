@@ -39,6 +39,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 
 BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui, true) {
@@ -178,6 +179,13 @@ void BookmarksSidePanelUI::BindInterface(
         receiver) {
   shopping_list_factory_receiver_.reset();
   shopping_list_factory_receiver_.Bind(std::move(receiver));
+}
+
+void BookmarksSidePanelUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+        pending_receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(pending_receiver));
 }
 
 void BookmarksSidePanelUI::CreateBookmarksPageHandler(

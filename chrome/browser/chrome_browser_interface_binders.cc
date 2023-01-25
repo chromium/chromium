@@ -951,7 +951,7 @@ void PopulateChromeWebUIFrameBinders(
       ash::personalization_app::PersonalizationAppUI,
       ash::settings::OSSettingsUI,
 #endif
-      NewTabPageUI, OmniboxPopupUI>(map);
+      NewTabPageUI, OmniboxPopupUI, BookmarksSidePanelUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       new_tab_page::mojom::PageHandlerFactory, NewTabPageUI>(map);
