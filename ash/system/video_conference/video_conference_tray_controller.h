@@ -88,7 +88,7 @@ class ASH_EXPORT VideoConferenceTrayController
   void UpdateWithMediaState(VideoConferenceMediaState state);
 
   // Handles device usage from a VC app while the device is system disabled.
-  void HandleDeviceUsedWhileDisabled(
+  virtual void HandleDeviceUsedWhileDisabled(
       crosapi::mojom::VideoConferenceMediaDevice device,
       const std::u16string& app_name);
 

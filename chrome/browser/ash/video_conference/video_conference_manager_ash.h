@@ -50,8 +50,9 @@ class VideoConferenceManagerAsh
   void ReturnToApp(const base::UnguessableToken& id);
 
   // Sets whether |device| is disabled at the system or hardware level.
-  void SetSystemDeviceStatus(crosapi::mojom::VideoConferenceMediaDevice device,
-                             bool disabled);
+  void SetSystemMediaDeviceStatus(
+      crosapi::mojom::VideoConferenceMediaDevice device,
+      bool disabled);
 
   // Registers an ash-browser client. Non-mojo clients need to manually call
   // |UnregisterClient|, e.g. inside their destructor.

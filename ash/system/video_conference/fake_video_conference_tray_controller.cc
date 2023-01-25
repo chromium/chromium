@@ -4,9 +4,12 @@
 
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 
+#include <vector>
+
 #include "ash/system/video_conference/effects/fake_video_conference_effects.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/functional/callback.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
@@ -61,6 +64,12 @@ void FakeVideoConferenceTrayController::GetMediaApps(
 void FakeVideoConferenceTrayController::ReturnToApp(
     const base::UnguessableToken& id) {
   app_to_launch_state_[id] = true;
+}
+
+void FakeVideoConferenceTrayController::HandleDeviceUsedWhileDisabled(
+    crosapi::mojom::VideoConferenceMediaDevice device,
+    const std::u16string& app_name) {
+  device_used_while_disabled_records_.emplace_back(device, app_name);
 }
 
 void FakeVideoConferenceTrayController::AddMediaApp(

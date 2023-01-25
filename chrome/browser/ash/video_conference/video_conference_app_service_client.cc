@@ -7,6 +7,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
@@ -153,13 +154,32 @@ void VideoConferenceAppServiceClient::OnCapabilityAccessUpdate(
   }
 
   AppState& state = GetOrAddAppState(app_id);
+  const std::string app_name = GetAppName(app_id);
 
   if (update.CameraChanged()) {
     state.is_capturing_camera = is_capturing_camera;
+
+    if (is_capturing_camera && camera_system_disabled_) {
+      crosapi::CrosapiManager::Get()
+          ->crosapi_ash()
+          ->video_conference_manager_ash()
+          ->NotifyDeviceUsedWhileDisabled(
+              crosapi::mojom::VideoConferenceMediaDevice::kCamera,
+              base::UTF8ToUTF16(app_name), base::DoNothingAs<void(bool)>());
+    }
   }
 
   if (update.MicrophoneChanged()) {
     state.is_capturing_microphone = is_capturing_microphone;
+
+    if (is_capturing_microphone && microphone_system_disabled_) {
+      crosapi::CrosapiManager::Get()
+          ->crosapi_ash()
+          ->video_conference_manager_ash()
+          ->NotifyDeviceUsedWhileDisabled(
+              crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
+              base::UTF8ToUTF16(app_name), base::DoNothingAs<void(bool)>());
+    }
   }
 
   HandleMediaUsageUpdate();
