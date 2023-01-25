@@ -31,6 +31,7 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -1107,13 +1108,11 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithFloatedWindow) {
   EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
 
   // Get the floated window from newly created desk.
-  auto* float_controller = ash::Shell::Get()->float_controller();
-  auto* floated_window = float_controller->FindFloatedWindowOfDesk(
-      desks_controller->active_desk());
-  DCHECK(floated_window);
-  DCHECK(ash::WindowState::Get(floated_window)->IsFloated());
+  auto* floated_window = ash::window_util::GetFloatedWindowForActiveDesk();
+  ASSERT_TRUE(floated_window);
+  ASSERT_TRUE(ash::WindowState::Get(floated_window)->IsFloated());
   // Restored floated window to the saved bounds instead of default bounds.
-  DCHECK_EQ(floated_window->bounds(), browser_bounds);
+  EXPECT_EQ(floated_window->bounds(), browser_bounds);
 }
 
 // Tests that launching a template that contains a browser window with tab

@@ -36,7 +36,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
-#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -1020,20 +1019,15 @@ void OverviewWindowDragController::RecordDragToClose(
 }
 
 void OverviewWindowDragController::MaybeCreateFloatDragHelper() {
-  if (!chromeos::wm::features::IsFloatWindowEnabled()) {
+  auto* float_window = window_util::GetFloatedWindowForActiveDesk();
+  DCHECK(item_);
+  // If the float window is dragged, it will be on top of everything as
+  // expected.
+  if (!float_window || item_->GetWindow() == float_window) {
     return;
   }
 
-  if (auto* float_window =
-          Shell::Get()->float_controller()->FindFloatedWindowOfDesk(
-              DesksController::Get()->active_desk())) {
-    DCHECK(item_);
-    // If the float window is dragged, it will be on top of everything as
-    // expected.
-    if (item_->GetWindow() != float_window) {
-      float_drag_helper_ = std::make_unique<ScopedFloatDragHelper>(this);
-    }
-  }
+  float_drag_helper_ = std::make_unique<ScopedFloatDragHelper>(this);
 }
 
 void OverviewWindowDragController::DestroyFloatDragHelper() {

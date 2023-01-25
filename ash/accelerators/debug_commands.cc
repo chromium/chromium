@@ -36,8 +36,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/ui/wm/features.h"
-#include "chromeos/ui/wm/window_util.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/display/manager/display_manager.h"
@@ -226,17 +224,14 @@ void HandleTriggerHUDDisplay() {
 }
 
 void HandleTuckFloatedWindow(AcceleratorAction action) {
-  // Find the active floated window.
-  auto* float_controller = Shell::Get()->float_controller();
-  auto* floated_window = float_controller->FindFloatedWindowOfDesk(
-      DesksController::Get()->GetTargetActiveDesk());
-
+  auto* floated_window = window_util::GetFloatedWindowForActiveDesk();
   DCHECK(floated_window);
 
   const float velocity_x =
       action == DEBUG_TUCK_FLOATED_WINDOW_LEFT ? -500.f : 500.f;
-  float_controller->OnFlingOrSwipeForTablet(floated_window, velocity_x,
-                                            /*velocity_y=*/0.f);
+  Shell::Get()->float_controller()->OnFlingOrSwipeForTablet(floated_window,
+                                                            velocity_x,
+                                                            /*velocity_y=*/0.f);
 }
 
 }  // namespace
@@ -251,11 +246,7 @@ void PrintUIHierarchies() {
 }
 
 bool CanTuckFloatedWindow() {
-  if (!chromeos::wm::features::IsFloatWindowEnabled())
-    return false;
-
-  return Shell::Get()->float_controller()->FindFloatedWindowOfDesk(
-      DesksController::Get()->GetTargetActiveDesk());
+  return !!window_util::GetFloatedWindowForActiveDesk();
 }
 
 bool DebugAcceleratorsEnabled() {

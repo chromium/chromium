@@ -167,35 +167,32 @@ DragWindowFromShelfController::DragWindowFromShelfController(
   // Find the other window that is visible while `window_` is being dragged.
   // There will only be another window if there is a float window (splitview has
   // two visible windows but is handled separately).
-  if (auto* float_controller = Shell::Get()->float_controller()) {
-    if (auto* floated_window = float_controller->FindFloatedWindowOfDesk(
-            DesksController::Get()->GetTargetActiveDesk())) {
-      // If the floated window is the dragged window, then the other window is
-      // the top most non floated window, if it exists. Otherwise the floated
-      // window is the active window.
-      if (floated_window == window_) {
-        aura::Window* candidate_other_window =
-            window_util::GetTopNonFloatedWindow();
-        if (candidate_other_window &&
-            !WindowState::Get(candidate_other_window)->IsMinimized()) {
-          other_window_ = candidate_other_window;
-        }
-      } else {
-        other_window_ = floated_window;
+  if (auto* floated_window = window_util::GetFloatedWindowForActiveDesk()) {
+    // If the floated window is the dragged window, then the other window is
+    // the top most non floated window, if it exists. Otherwise the floated
+    // window is the active window.
+    if (floated_window == window_) {
+      aura::Window* candidate_other_window =
+          window_util::GetTopNonFloatedWindow();
+      if (candidate_other_window &&
+          !WindowState::Get(candidate_other_window)->IsMinimized()) {
+        other_window_ = candidate_other_window;
       }
+    } else {
+      other_window_ = floated_window;
+    }
 
-      // Create a copy of the other window. This will be stacked on top and
-      // faded out as we drag. The original window will be placed immediately
-      // into overview mode on a successful drag, or return to its original
-      // position on a canceled drag.
-      if (other_window_) {
-        other_window_->AddObserver(this);
-        other_window_copy_ = wm::RecreateLayers(other_window_);
-        other_window_copy_->root()->SetVisible(true);
-        other_window_copy_->root()->SetOpacity(1.f);
-        other_window_->layer()->parent()->StackAbove(other_window_copy_->root(),
-                                                     other_window_->layer());
-      }
+    // Create a copy of the other window. This will be stacked on top and
+    // faded out as we drag. The original window will be placed immediately
+    // into overview mode on a successful drag, or return to its original
+    // position on a canceled drag.
+    if (other_window_) {
+      other_window_->AddObserver(this);
+      other_window_copy_ = wm::RecreateLayers(other_window_);
+      other_window_copy_->root()->SetVisible(true);
+      other_window_copy_->root()->SetOpacity(1.f);
+      other_window_->layer()->parent()->StackAbove(other_window_copy_->root(),
+                                                   other_window_->layer());
     }
   }
 

@@ -30,7 +30,6 @@
 #include "base/i18n/rtl.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -453,12 +452,10 @@ bool BackGestureEventHandler::CanStartGoingBack(
 
   // Do not enable back gesture if `screen_location` is inside the tuck handle,
   // let `FloatController` handle the event instead.
-  if (chromeos::wm::features::IsFloatWindowEnabled()) {
+  if (aura::Window* floated_window =
+          window_util::GetFloatedWindowForActiveDesk()) {
     auto* float_controller = Shell::Get()->float_controller();
-    auto* floated_window = float_controller->FindFloatedWindowOfDesk(
-        DesksController::Get()->GetTargetActiveDesk());
-    if (floated_window &&
-        float_controller->IsFloatedWindowTuckedForTablet(floated_window)) {
+    if (float_controller->IsFloatedWindowTuckedForTablet(floated_window)) {
       auto* tuck_handle_widget =
           float_controller->GetTuckHandleWidget(floated_window);
       if (tuck_handle_widget &&

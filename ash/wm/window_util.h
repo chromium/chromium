@@ -125,6 +125,9 @@ bool IsAnyWindowDragged();
 aura::Window* GetTopWindow();
 aura::Window* GetTopNonFloatedWindow();
 
+// Returns the floated window for the active desk if it exists.
+ASH_EXPORT aura::Window* GetFloatedWindowForActiveDesk();
+
 // Returns whether the top window should be minimized on back action.
 ASH_EXPORT bool ShouldMinimizeTopWindowOnBack();
 

@@ -34,6 +34,7 @@
 #include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/frame/interior_resize_handler_targeter.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/focus_client.h"
@@ -362,6 +363,17 @@ aura::Window* GetTopNonFloatedWindow() {
       return window;
   }
   return nullptr;
+}
+
+aura::Window* GetFloatedWindowForActiveDesk() {
+  if (!chromeos::wm::features::IsFloatWindowEnabled()) {
+    return nullptr;
+  }
+
+  auto* float_controller = Shell::Get()->float_controller();
+  DCHECK(float_controller);
+  return float_controller->FindFloatedWindowOfDesk(
+      DesksController::Get()->GetTargetActiveDesk());
 }
 
 bool ShouldMinimizeTopWindowOnBack() {
