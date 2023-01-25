@@ -85,7 +85,8 @@ class DisplaySchedulerWebView : public viz::DisplaySchedulerBase,
 
   // Due to destruction order in viz::Display this might be not safe to use in
   // destructor of this class.
-  const raw_ptr<OverlaysInfoProvider> overlays_info_provider_;
+  const raw_ptr<OverlaysInfoProvider, DanglingUntriaged>
+      overlays_info_provider_;
 
   base::ScopedObservation<viz::SurfaceManager, viz::SurfaceObserver>
       surface_manager_observation_{this};

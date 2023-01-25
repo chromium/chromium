@@ -71,7 +71,7 @@ class VIEWS_EXPORT TooltipLacros : public Tooltip {
   // True if tooltip is visible.
   bool is_visible_ = false;
 
-  raw_ptr<aura::Window> parent_window_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged> parent_window_ = nullptr;
   std::u16string text_;
   gfx::Point position_;
   TooltipTrigger trigger_;

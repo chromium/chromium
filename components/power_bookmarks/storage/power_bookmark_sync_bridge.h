@@ -104,8 +104,8 @@ class PowerBookmarkSyncBridge : public syncer::ModelTypeSyncBridge {
       syncer::EntityChangeList& entity_changes,
       bool is_initial_merge);
 
-  const raw_ptr<syncer::SyncMetadataStore> meta_db_;
-  const raw_ptr<Delegate> delegate_;
+  const raw_ptr<syncer::SyncMetadataStore, DanglingUntriaged> meta_db_;
+  const raw_ptr<Delegate, DanglingUntriaged> delegate_;
 };
 
 }  // namespace power_bookmarks

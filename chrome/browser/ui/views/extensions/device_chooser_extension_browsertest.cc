@@ -133,7 +133,7 @@ class DeviceChooserExtensionBrowserTest
   }
 
  private:
-  raw_ptr<const extensions::Extension> extension_ = nullptr;
+  raw_ptr<const extensions::Extension, DanglingUntriaged> extension_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(DeviceChooserExtensionBrowserTest,

@@ -148,7 +148,8 @@ class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
 
  protected:
   base::UserActionTester user_action_tester_;
-  raw_ptr<commerce::MockShoppingService> mock_shopping_service_;
+  raw_ptr<commerce::MockShoppingService, DanglingUntriaged>
+      mock_shopping_service_;
   raw_ptr<MockShoppingListUiTabHelper, DanglingUntriaged> mock_tab_helper_;
 
  private:

@@ -70,14 +70,14 @@ class WithAppResources {
   WebAppUiManager& ui_manager() { return *ui_manager_; }
 
  private:
-  raw_ref<WebAppRegistrar> registrar_;
-  raw_ref<WebAppSyncBridge> sync_bridge_;
-  raw_ref<WebAppInstallFinalizer> install_finalizer_;
-  raw_ref<OsIntegrationManager> os_integration_manager_;
-  raw_ref<WebAppInstallManager> install_manager_;
-  raw_ref<WebAppIconManager> icon_manager_;
-  raw_ref<WebAppTranslationManager> translation_manager_;
-  raw_ref<WebAppUiManager> ui_manager_;
+  raw_ref<WebAppRegistrar, DanglingUntriaged> registrar_;
+  raw_ref<WebAppSyncBridge, DanglingUntriaged> sync_bridge_;
+  raw_ref<WebAppInstallFinalizer, DanglingUntriaged> install_finalizer_;
+  raw_ref<OsIntegrationManager, DanglingUntriaged> os_integration_manager_;
+  raw_ref<WebAppInstallManager, DanglingUntriaged> install_manager_;
+  raw_ref<WebAppIconManager, DanglingUntriaged> icon_manager_;
+  raw_ref<WebAppTranslationManager, DanglingUntriaged> translation_manager_;
+  raw_ref<WebAppUiManager, DanglingUntriaged> ui_manager_;
 };
 
 class AppLock : public Lock, public WithAppResources {

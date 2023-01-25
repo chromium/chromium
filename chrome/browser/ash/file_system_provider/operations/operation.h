@@ -56,7 +56,7 @@ class Operation : public RequestManager::HandlerInterface {
   ProvidedFileSystemInfo file_system_info_;
 
  private:
-  raw_ptr<RequestDispatcher> request_dispatcher_;
+  raw_ptr<RequestDispatcher, DanglingUntriaged> request_dispatcher_;
 };
 
 }  // namespace operations

@@ -39,7 +39,7 @@ class HidStatusIcon : public HidSystemTrayIcon,
   void RefreshIcon();
 
   // Reference to our status icon (if any) - owned by the StatusTray.
-  raw_ptr<StatusIcon> status_icon_ = nullptr;
+  raw_ptr<StatusIcon, DanglingUntriaged> status_icon_ = nullptr;
 
   // A list of profiles being tracked, each profile has an entry in the context
   // menu of the system tray icon. Each entry in |profiles_| is expected to be

@@ -34,7 +34,7 @@ class MountRequestHandler : public RequestManager::HandlerInterface {
   void OnAbort(int request_id) override;
 
  private:
-  raw_ptr<RequestDispatcher> request_dispatcher_;
+  raw_ptr<RequestDispatcher, DanglingUntriaged> request_dispatcher_;
   RequestMountCallback callback_;
 };
 

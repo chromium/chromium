@@ -39,7 +39,7 @@ class GIN_EXPORT PerContextData : public base::SupportsUserData {
   ContextHolder* context_holder() { return context_holder_; }
 
  private:
-  raw_ptr<ContextHolder> context_holder_;
+  raw_ptr<ContextHolder, DanglingUntriaged> context_holder_;
   raw_ptr<Runner> runner_;
 };
 

@@ -257,7 +257,7 @@ class AppPublisher {
   AppServiceProxy* proxy() { return proxy_; }
 
  private:
-  const raw_ptr<AppServiceProxy> proxy_;
+  const raw_ptr<AppServiceProxy, DanglingUntriaged> proxy_;
 };
 
 }  // namespace apps

@@ -216,7 +216,7 @@ class DIPSTabHelperBrowserTest : public PlatformBrowserTest,
   }
 
  private:
-  raw_ptr<WebContents> web_contents_ = nullptr;
+  raw_ptr<WebContents, DanglingUntriaged> web_contents_ = nullptr;
   base::SimpleTestClock test_clock_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

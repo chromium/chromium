@@ -260,7 +260,7 @@ class CartService : public history::HistoryServiceObserver,
   std::unique_ptr<DiscountURLLoader> discount_url_loader_;
   raw_ptr<CouponService> coupon_service_;
   PrefChangeRegistrar pref_change_registrar_;
-  raw_ptr<commerce::ShoppingService> shopping_service_;
+  raw_ptr<commerce::ShoppingService, DanglingUntriaged> shopping_service_;
   base::WeakPtrFactory<CartService> weak_ptr_factory_{this};
 };
 

@@ -68,7 +68,7 @@ class OverlaysManager::ScopedCurrentFunctorCall {
     gfx::SurfaceControl::ApplyTransaction(transaction);
   }
 
-  const raw_ref<FunctorData> functor_;
+  const raw_ref<FunctorData, DanglingUntriaged> functor_;
   raw_ptr<ANativeWindow> native_window_;
 };
 

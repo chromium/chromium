@@ -171,7 +171,7 @@ class MEDIA_EXPORT DemuxerManager {
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
 
   // This is usually just the WebMediaPlayerImpl.
-  raw_ptr<Client> client_;
+  raw_ptr<Client, DanglingUntriaged> client_;
 
   // The demuxers need access the the media task runner and media log.
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;

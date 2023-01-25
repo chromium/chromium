@@ -104,7 +104,7 @@ class PowerBookmarkBackend : public PowerBookmarkSyncBridge::Delegate {
 
   // Observer that serves the frontend of power bookmarks.
   // Needs to be called on the frontend task runner.
-  raw_ptr<PowerBookmarkObserver> service_observer_;
+  raw_ptr<PowerBookmarkObserver, DanglingUntriaged> service_observer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
