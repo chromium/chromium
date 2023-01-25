@@ -1003,13 +1003,8 @@ std::unique_ptr<OverlayImageRepresentation> D3DImageBacking::ProduceOverlay(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
   TRACE_EVENT0("gpu", "D3DImageBacking::ProduceOverlay");
-  D3D11_TEXTURE2D_DESC desc;
-  d3d11_texture_->GetDesc(&desc);
-  if (swap_chain_ || desc.Format == DXGI_FORMAT_NV12) {
-    return std::make_unique<OverlayD3DImageRepresentation>(manager, this,
-                                                           tracker);
-  }
-  return nullptr;
+  return std::make_unique<OverlayD3DImageRepresentation>(manager, this,
+                                                         tracker);
 }
 
 absl::optional<gl::DCLayerOverlayImage>
