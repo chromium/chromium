@@ -28,6 +28,8 @@
 #
 # * Test the tests, add new ones to Git, remove deleted ones from Git, etc.
 
+from typing import List
+
 import re
 import codecs
 import importlib
@@ -54,23 +56,23 @@ class InvalidTestDefinitionError(Error):
     """Raised on invalid test definition."""
 
 
-def genTestUtils_union(TEMPLATEFILE, NAME2DIRFILE):
+def genTestUtils_union(TEMPLATEFILE: str, NAME2DIRFILE: str) -> None:
     CANVASOUTPUTDIR = '../element'
     CANVASIMAGEOUTPUTDIR = '../element'
     OFFSCREENCANVASOUTPUTDIR = '../offscreen'
     OFFSCREENCANVASIMAGEOUTPUTDIR = '../offscreen'
     MISCOUTPUTDIR = './output'
 
-    def simpleEscapeJS(string):
+    def simpleEscapeJS(string: str) -> str:
         return string.replace('\\', '\\\\').replace('"', '\\"')
 
-    def escapeJS(string):
+    def escapeJS(string: str) -> str:
         string = simpleEscapeJS(string)
         # Kind of an ugly hack, for nicer failure-message output.
         string = re.sub(r'\[(\w+)\]', r'[\\""+(\1)+"\\"]', string)
         return string
 
-    def expand_nonfinite(method, argstr, tail):
+    def expand_nonfinite(method: str, argstr: str, tail: str) -> str:
         """
         >>> print expand_nonfinite('f', '<0 a>, <0 b>', ';')
         f(a, 0);
@@ -108,7 +110,7 @@ def genTestUtils_union(TEMPLATEFILE, NAME2DIRFILE):
         # For all combinations of >= 2 arguments, try setting them to their
         # first invalid values. (Don't do all invalid values, because the
         # number of combinations explodes.)
-        def f(c, start, depth):
+        def f(c: List[str], start: int, depth: int) -> None:
             for i in range(start, len(args)):
                 if len(args[i]) > 1:
                     a = args[i][1]
@@ -152,7 +154,7 @@ def genTestUtils_union(TEMPLATEFILE, NAME2DIRFILE):
     category_contents_direct = {}
     category_contents_all = {}
 
-    def backref_html(name):
+    def backref_html(name: str) -> str:
         backrefs = []
         c = ''
         for p in name.split('.')[:-1]:
@@ -177,7 +179,7 @@ def genTestUtils_union(TEMPLATEFILE, NAME2DIRFILE):
 
     used_images = {}
 
-    def map_name(name):
+    def map_name(name: str) -> str:
         mapped_name = None
         for mn in sorted(name_mapping.keys(), key=len, reverse=True):
             if name.startswith(mn):
@@ -191,7 +193,7 @@ def genTestUtils_union(TEMPLATEFILE, NAME2DIRFILE):
             mapped_name += "-manual"
         return mapped_name
 
-    def expand_test_code(code):
+    def expand_test_code(code: str) -> str:
         code = re.sub(r'@nonfinite ([^(]+)\(([^)]+)\)(.*)', lambda m:
                       expand_nonfinite(m.group(1), m.group(2), m.group(3)),
                       code)  # Must come before '@assert throws'.
