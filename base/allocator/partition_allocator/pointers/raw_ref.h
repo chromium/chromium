@@ -81,7 +81,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
                          internal::MTECheckedPtrImplPartitionAllocSupport>> ||
 #endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 #if BUILDFLAG(USE_ASAN_UNOWNED_PTR)
-      std::is_same_v<Impl, internal::AsanUnownedPtrImpl> ||
+      std::is_same_v<Impl, internal::RawPtrAsanUnownedImpl> ||
 #endif  // BUILDFLAG(USE_ASAN_UNOWNED_PTR)
       std::is_same_v<Impl, internal::RawPtrNoOpImpl>;
 

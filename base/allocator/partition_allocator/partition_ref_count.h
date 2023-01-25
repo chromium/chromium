@@ -25,7 +25,7 @@ namespace partition_alloc::internal {
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
-// Special-purpose atomic reference count class used by BackupRefPtrImpl.
+// Special-purpose atomic reference count class used by RawPtrBackupRefImpl.
 // The least significant bit of the count is reserved for tracking the liveness
 // state of an allocation: it's set when the allocation is created and cleared
 // on free(). So the count can be:

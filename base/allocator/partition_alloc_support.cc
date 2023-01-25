@@ -468,7 +468,7 @@ std::string ExtractDanglingPtrSignature(std::string stacktrace) {
   // We are looking for the callers of the function releasing the raw_ptr and
   // freeing memory:
   const StringPiece callees[] = {
-      "internal::BackupRefPtrImpl<>::ReleaseInternal()",
+      "internal::RawPtrBackupRefImpl<>::ReleaseInternal()",
       "internal::PartitionFree()",
       "base::(anonymous namespace)::FreeFn()",
   };

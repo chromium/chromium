@@ -373,7 +373,23 @@ source_set("raw_ptr") {
     "pointers/raw_ptr_exclusion.h",
     "pointers/raw_ref.h",
   ]
-  sources = [ "pointers/raw_ptr.cc" ]
+  sources = []
+  if (enable_backup_ref_ptr_support) {
+    sources += [
+      "pointers/raw_ptr_backup_ref_impl.cc",
+      "pointers/raw_ptr_backup_ref_impl.h",
+    ]
+  } else if (use_hookable_raw_ptr) {
+    sources += [
+      "pointers/raw_ptr_hookable_impl.cc",
+      "pointers/raw_ptr_hookable_impl.h",
+    ]
+  } else if (use_asan_unowned_ptr) {
+    sources += [
+      "pointers/raw_ptr_asan_unowned_impl.cc",
+      "pointers/raw_ptr_asan_unowned_impl.h",
+    ]
+  }
   if (use_partition_alloc) {
     public_deps = [ ":partition_alloc" ]
   }

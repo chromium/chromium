@@ -267,8 +267,8 @@ Some of these would result in undefined behavior (UB) even in the world without
 [Field destruction order](https://groups.google.com/a/chromium.org/g/memory-safety-dev/c/3sEmSnFc61I/m/ZtaeWGslAQAJ)),
 but you’d likely get away without any consequences. In the `raw_ptr<T>` world,
 an obscure crash may occur. Those crashes often manifest themselves as SEGV or
-`CHECK` inside `BackupRefPtrImpl::AcquireInternal()` or
-`BackupRefPtrImpl::ReleaseInternal()`, but you may also experience memory
+`CHECK` inside `RawPtrBackupRefImpl::AcquireInternal()` or
+`RawPtrBackupRefImpl::ReleaseInternal()`, but you may also experience memory
 corruption or a silent drop of UaF protection.
 
 ## Recoverable compile-time problems
