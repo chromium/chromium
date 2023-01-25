@@ -7,6 +7,7 @@ check_app_in_list_windowed,                            🌓, 🌓,  🌓,   🌓
 check_app_list_empty,                                  🌓, 🌓,  🌓,   🌓,
 check_app_not_in_list,                                 🌓, 🌓,  🌓,   🌓,
 check_custom_toolbar,                                  🌕, 🌕,  🌕,   🌕,
+check_files_loaded_in_site,                            🌕, 🌕,  🌕,   🌕,
 check_install_icon_not_shown,                          🌕, 🌕,  🌕,   🌕,
 check_install_icon_shown,                              🌕, 🌕,  🌕,   🌕,
 check_launch_icon_not_shown,                           🌕, 🌕,  🌕,   🌕,
