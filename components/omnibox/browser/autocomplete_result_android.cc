@@ -174,8 +174,6 @@ bool AutocompleteResult::VerifyCoherency(
     UMA_HISTOGRAM_ENUMERATION("Android.Omnibox.InvalidMatch",
                               MatchVerificationResult::BAD_RESULT_SIZE,
                               MatchVerificationResult::COUNT);
-    NOTREACHED() << "AutocompletResult objects are of different size: "
-                 << j_matches.size() << " (Java) vs " << size() << " (Native)";
     ReportInvalidMatchData(base::NumberToString(j_matches.size()) +
                                "!=" + base::NumberToString(size()),
                            verification_point);
@@ -186,8 +184,6 @@ bool AutocompleteResult::VerifyCoherency(
     UMA_HISTOGRAM_ENUMERATION("Android.Omnibox.InvalidMatch",
                               MatchVerificationResult::INVALID_MATCH_POSITION,
                               MatchVerificationResult::COUNT);
-    NOTREACHED() << "Requested action index is not valid: " << match_index
-                 << " outside of " << size() << " limit";
     ReportInvalidMatchData(
         base::NumberToString(match_index) + ">=" + base::NumberToString(size()),
         verification_point);
@@ -213,9 +209,6 @@ bool AutocompleteResult::VerifyCoherency(
                                       : u"<null>");
       }
 #endif
-      NOTREACHED()
-          << "AutocompleteMatch mismatch with native-sourced suggestions at "
-          << index;
 
       ReportInvalidMatchData(
           base::NumberToString(index) + "/" + base::NumberToString(size()),
