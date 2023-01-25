@@ -11,6 +11,8 @@
 #include "base/build_time.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
@@ -258,7 +260,13 @@ void UpgradeDetectorImpl::DetectOutdatedInstall() {
 
   if (network_time.is_null() || build_date_.is_null() ||
       build_date_ > network_time) {
-    NOTREACHED();
+    // TODO(crbug.com/1407664): Figure out why this is failing and either fix it
+    // and turn the conditional above into a CHECK or document how this can fail
+    // in the wild and either keep the DumpWithoutCrashing() or remove it.
+    base::Time build_date = build_date_;
+    base::debug::Alias(&network_time);
+    base::debug::Alias(&build_date);
+    base::debug::DumpWithoutCrashing();
     return;
   }
 
