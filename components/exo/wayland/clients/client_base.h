@@ -211,6 +211,7 @@ class ClientBase {
 #if defined(USE_GBM)
   base::ScopedFD drm_fd_;
   std::unique_ptr<gbm_device> device_;
+  gl::GLDisplayEGL* egl_display_ = nullptr;
 #if defined(USE_VULKAN)
   std::unique_ptr<gpu::VulkanImplementation> vk_implementation_;
   std::unique_ptr<ScopedVkInstance> vk_instance_;

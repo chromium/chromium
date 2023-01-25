@@ -478,11 +478,10 @@ bool ClientBase::Init(const InitParams& params) {
     ui::OzonePlatform::InitParams ozone_params;
     ozone_params.single_process = true;
     ui::OzonePlatform::InitializeForGPU(ozone_params);
-    gl::GLDisplayEGL* display =
-        static_cast<gl::GLDisplayEGL*>(gl::init::InitializeGLOneOff(
-            /*gpu_preference=*/gl::GpuPreference::kDefault));
-    DCHECK(display);
-    gl_surface_ = gl::init::CreateOffscreenGLSurface(display, gfx::Size());
+    egl_display_ = static_cast<gl::GLDisplayEGL*>(gl::init::InitializeGLOneOff(
+        /*gpu_preference=*/gl::GpuPreference::kDefault));
+    DCHECK(egl_display_);
+    gl_surface_ = gl::init::CreateOffscreenGLSurface(egl_display_, gfx::Size());
     gl_context_ =
         gl::init::CreateGLContext(nullptr,  // share_group
                                   gl_surface_.get(), gl::GLContextAttribs());
@@ -490,10 +489,10 @@ bool ClientBase::Init(const InitParams& params) {
     make_current_ = std::make_unique<ui::ScopedMakeCurrent>(gl_context_.get(),
                                                             gl_surface_.get());
 
-    if (display->ext->b_EGL_ARM_implicit_external_sync) {
+    if (egl_display_->ext->b_EGL_ARM_implicit_external_sync) {
       egl_sync_type_ = EGL_SYNC_FENCE_KHR;
     }
-    if (display->ext->b_EGL_ANDROID_native_fence_sync) {
+    if (egl_display_->ext->b_EGL_ANDROID_native_fence_sync) {
       egl_sync_type_ = EGL_SYNC_NATIVE_FENCE_ANDROID;
     }
 
@@ -737,7 +736,16 @@ bool ClientBase::Init(const InitParams& params) {
 
 ClientBase::ClientBase() {}
 
-ClientBase::~ClientBase() {}
+ClientBase::~ClientBase() {
+  make_current_ = nullptr;
+  gl_context_ = nullptr;
+  gl_surface_ = nullptr;
+#if defined(USE_GBM)
+  if (egl_display_) {
+    gl::init::ShutdownGL(egl_display_, false);
+  }
+#endif
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // wl_touch_listener
