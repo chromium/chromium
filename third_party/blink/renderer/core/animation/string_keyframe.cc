@@ -36,6 +36,7 @@ using PropertyResolver = StringKeyframe::PropertyResolver;
 
 StringKeyframe::StringKeyframe(const StringKeyframe& copy_from)
     : Keyframe(copy_from.offset_, copy_from.composite_, copy_from.easing_),
+      tree_scope_(copy_from.tree_scope_),
       input_properties_(copy_from.input_properties_),
       presentation_attribute_map_(
           copy_from.presentation_attribute_map_->MutableCopy()),
@@ -241,6 +242,7 @@ void StringKeyframe::AddKeyframePropertiesToV8Object(
 }
 
 void StringKeyframe::Trace(Visitor* visitor) const {
+  visitor->Trace(tree_scope_);
   visitor->Trace(input_properties_);
   visitor->Trace(css_property_map_);
   visitor->Trace(presentation_attribute_map_);

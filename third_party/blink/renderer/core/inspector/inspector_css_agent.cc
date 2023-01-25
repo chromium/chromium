@@ -1149,8 +1149,10 @@ InspectorCSSAgent::AnimationsForNode(Element* element,
     AtomicString animation_name(animation_data->NameList()[i]);
     if (animation_name == CSSAnimationData::InitialName())
       continue;
-    StyleRuleKeyframes* keyframes_rule = style_resolver.FindKeyframesRule(
-        element, animating_element, animation_name);
+    StyleRuleKeyframes* keyframes_rule =
+        style_resolver
+            .FindKeyframesRule(element, animating_element, animation_name)
+            .rule;
     if (!keyframes_rule)
       continue;
 

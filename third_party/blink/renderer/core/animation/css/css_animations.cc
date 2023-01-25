@@ -103,6 +103,7 @@ namespace {
 // properties.
 StringKeyframeVector ProcessKeyframesRule(
     const StyleRuleKeyframes* keyframes_rule,
+    const TreeScope* tree_scope,
     const Document& document,
     const ComputedStyle* parent_style,
     TimingFunction* default_timing_function,
@@ -116,7 +117,7 @@ StringKeyframeVector ProcessKeyframesRule(
 
   for (wtf_size_t i = 0; i < style_keyframes.size(); ++i) {
     const StyleRuleKeyframe* style_keyframe = style_keyframes[i].Get();
-    auto* keyframe = MakeGarbageCollected<StringKeyframe>();
+    auto* keyframe = MakeGarbageCollected<StringKeyframe>(tree_scope);
     const Vector<KeyframeOffset>& offsets = style_keyframe->Keys();
     DCHECK(!offsets.empty());
     bool drop_keyframe = false;
@@ -299,8 +300,9 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
   //    abort this procedure. In this case no animation is generated, and any
   //    existing animation matching name is canceled.
 
-  const StyleRuleKeyframes* keyframes_rule =
+  StyleResolver::FindKeyframesRuleResult find_result =
       resolver->FindKeyframesRule(&element, &animating_element, name);
+  const StyleRuleKeyframes* keyframes_rule = find_result.rule;
   DCHECK(keyframes_rule);
 
   // 4. Let keyframes be an empty sequence of keyframe objects.
@@ -322,8 +324,8 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
   //    result in reverse applying the following steps:
   bool has_named_range_keyframes = false;
   keyframes = ProcessKeyframesRule(
-      keyframes_rule, element.GetDocument(), parent_style,
-      default_timing_function, writing_direction.GetWritingMode(),
+      keyframes_rule, find_result.tree_scope, element.GetDocument(),
+      parent_style, default_timing_function, writing_direction.GetWritingMode(),
       writing_direction.Direction(), timeline, has_named_range_keyframes);
 
   double last_offset = 1;
@@ -1204,7 +1206,7 @@ void CSSAnimations::CalculateAnimationUpdate(
       timing.timing_function = Timing().timing_function;
 
       StyleRuleKeyframes* keyframes_rule =
-          resolver->FindKeyframesRule(&element, &animating_element, name);
+          resolver->FindKeyframesRule(&element, &animating_element, name).rule;
       if (!keyframes_rule)
         continue;  // Cancel the animation if there's no style rule for it.
 
