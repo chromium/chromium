@@ -59,7 +59,8 @@ ContextProviderForTest ContextProviderForTest::Create(
     const base::CommandLine& command_line) {
   auto realm_root = BuildRealm(command_line);
   ::fuchsia::web::ContextProviderPtr context_provider;
-  zx_status_t status = realm_root.Connect(context_provider.NewRequest());
+  zx_status_t status =
+      realm_root.component().Connect(context_provider.NewRequest());
   ZX_CHECK(status == ZX_OK, status) << "Connect to ContextProvider";
   return ContextProviderForTest(std::move(realm_root),
                                 std::move(context_provider));
@@ -92,8 +93,8 @@ ContextProviderForDebugTest::~ContextProviderForDebugTest() = default;
 
 void ContextProviderForDebugTest::ConnectToDebug(
     ::fidl::InterfaceRequest<::fuchsia::web::Debug> debug_request) {
-  zx_status_t status =
-      context_provider_.realm_root().Connect(std::move(debug_request));
+  zx_status_t status = context_provider_.realm_root().component().Connect(
+      std::move(debug_request));
   ZX_CHECK(status == ZX_OK, status) << "Connect to Debug";
 }
 

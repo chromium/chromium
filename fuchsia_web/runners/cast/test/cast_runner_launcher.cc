@@ -140,7 +140,8 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::StartCastRunner() {
             .targets = {ParentRef()}});
 
   realm_root_ = realm_builder.Build();
-  return std::make_unique<sys::ServiceDirectory>(realm_root_->CloneRoot());
+  return std::make_unique<sys::ServiceDirectory>(
+      realm_root_->component().CloneExposedDir());
 }
 
 }  // namespace test
