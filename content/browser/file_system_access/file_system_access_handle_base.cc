@@ -347,6 +347,15 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
     }
   }
 
+  // Disallow moves either to or from a sandboxed file system.
+  if (url().type() != dest_url.type() &&
+      (url().type() == storage::FileSystemType::kFileSystemTypeTemporary ||
+       dest_url.type() == storage::FileSystemType::kFileSystemTypeTemporary)) {
+    std::move(callback).Run(file_system_access_error::FromStatus(
+        blink::mojom::FileSystemAccessStatus::kInvalidModificationError));
+    return;
+  }
+
   if (dest_url == url()) {
     // Nothing to do here.
     std::move(callback).Run(file_system_access_error::Ok());
