@@ -6,6 +6,7 @@
 
 #include "base/json/values_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/values.h"
 #include "components/tracing/common/pref_names.h"
 #include "content/public/browser/background_tracing_config.h"
 #include "content/public/browser/browser_thread.h"
@@ -71,11 +72,13 @@ void BackgroundTracingStateManager::Initialize(PrefService* local_state) {
 
   const base::Value::List* upload_times = dict.FindList(kUploadTimesKey);
   if (upload_times) {
-    for (const auto& scenario_dict : *upload_times) {
-      DCHECK(scenario_dict.is_dict());
-      const std::string* scenario = scenario_dict.FindStringKey(kScenarioKey);
+    for (const base::Value& scenario_val : *upload_times) {
+      DCHECK(scenario_val.is_dict());
+      const base::Value::Dict& scenario_dict = scenario_val.GetDict();
+
+      const std::string* scenario = scenario_dict.FindString(kScenarioKey);
       const base::Value* timestamp_val =
-          scenario_dict.FindKey(kUploadTimestampKey);
+          scenario_dict.Find(kUploadTimestampKey);
       if (!scenario || !timestamp_val) {
         continue;
       }
