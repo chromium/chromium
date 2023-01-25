@@ -51,7 +51,7 @@ class ExtensionTelemetryFileProcessor {
   // file is unhashed.
   base::Value::Dict ProcessExtension();
 
-  void SetMaxFilesReadForTest(int64_t max_files_read);
+  void SetMaxFilesToReadForTest(int64_t max_files_to_read);
 
  protected:
   struct FileExtensionsComparator;
@@ -61,8 +61,7 @@ class ExtensionTelemetryFileProcessor {
 
   // TODO(richche): Process other types of files until |max_files_to_process_|
   // limit is reached.
-  // Retrieves installed extension files to process. Allowed
-  // files:
+  // Retrieves installed extension files to process. Applicable files:
   //   - Only JavaScript, HTML, CSS files and sorted in that file type
   //   order
   //   - Ignore empty files
@@ -74,10 +73,7 @@ class ExtensionTelemetryFileProcessor {
   base::Value::Dict ComputeHashes(const SortedFilePaths& file_paths);
 
   // Returns true if a file has JS, HTML, or CSS extension.
-  bool IsAllowedType(const base::FilePath& file_path);
-
-  // Returns true if a file is not empty and within the |max_file_size_|.
-  bool IsWithinSizeLimit(const base::FilePath& file_path);
+  bool IsApplicableType(const base::FilePath& file_path);
 
   // Max number of files processed per extension.
   size_t max_files_to_process_;
@@ -87,7 +83,7 @@ class ExtensionTelemetryFileProcessor {
 
   // Max number of files read limit enforced in case an extension has too many
   // files.
-  int64_t max_files_read_;
+  int64_t max_files_to_read_;
 
   // Root directory path where the extension files are installed.
   base::FilePath extension_root_dir_;

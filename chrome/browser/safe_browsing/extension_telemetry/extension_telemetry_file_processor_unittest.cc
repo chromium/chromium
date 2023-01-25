@@ -275,9 +275,10 @@ TEST_F(ExtensionTelemetryFileProcessorTest, IgnoresOtherFileTypes) {
   EXPECT_EQ(extensions_data_, expected_dict);
 }
 
-TEST_F(ExtensionTelemetryFileProcessorTest, EnforcesMaxFilesReadLimit) {
+TEST_F(ExtensionTelemetryFileProcessorTest, EnforcesMaxFilesToReadLimit) {
   // Set max_file_read limit to 3
-  processor_.AsyncCall(&ExtensionTelemetryFileProcessor::SetMaxFilesReadForTest)
+  processor_
+      .AsyncCall(&ExtensionTelemetryFileProcessor::SetMaxFilesToReadForTest)
       .WithArgs(3);
 
   auto callback =

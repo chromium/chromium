@@ -6,11 +6,15 @@
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "crypto/sha2.h"
 
-// Max number of files read per extension.
-constexpr int64_t kMaxFilesRead = 1000;
+namespace safe_browsing {
+
+namespace {
+// Max number of files to read per extension.
+constexpr int64_t kMaxFilesToRead = 1000;
 
 const base::FilePath::CharType kManifestFilePath[] =
     FILE_PATH_LITERAL("manifest.json");
@@ -23,7 +27,31 @@ const base::flat_map<base::FilePath::StringType, int> kFileTypePriorityMap = {
     {kHTMLFileSuffix, 2},
     {kCSSFileSuffix, 1}};
 
-namespace safe_browsing {
+void RecordLargestFileSizeObserved(size_t size) {
+  base::UmaHistogramCounts1M(
+      "SafeBrowsing.ExtensionTelemetry.FileData.LargestFileSizeObserved", size);
+}
+
+void RecordNumFilesFound(int count) {
+  base::UmaHistogramCounts1000(
+      "SafeBrowsing.ExtensionTelemetry.FileData.NumFilesFound", count);
+}
+
+void RecordNumFilesOverSizeLimit(int count) {
+  base::UmaHistogramCounts1000(
+      "SafeBrowsing.ExtensionTelemetry.FileData.NumFilesOverSizeLimit", count);
+}
+
+void RecordNumFilesProcessed(int count) {
+  base::UmaHistogramCounts1000(
+      "SafeBrowsing.ExtensionTelemetry.FileData.NumFilesProcessed", count);
+}
+
+void RecordProcessedFileSize(size_t size) {
+  base::UmaHistogramCounts1M(
+      "SafeBrowsing.ExtensionTelemetry.FileData.ProcessedFileSize", size);
+}
+}  // namespace
 
 struct ExtensionTelemetryFileProcessor::FileExtensionsComparator {
   bool operator()(const base::FilePath& a, const base::FilePath& b) const {
@@ -40,7 +68,7 @@ ExtensionTelemetryFileProcessor::ExtensionTelemetryFileProcessor(
     base::FilePath extension_root_dir)
     : max_files_to_process_(max_files_to_process),
       max_file_size_(max_file_size),
-      max_files_read_(kMaxFilesRead),
+      max_files_to_read_(kMaxFilesToRead),
       extension_root_dir_(std::move(extension_root_dir)) {}
 
 base::Value::Dict ExtensionTelemetryFileProcessor::ProcessExtension() {
@@ -62,6 +90,7 @@ base::Value::Dict ExtensionTelemetryFileProcessor::ProcessExtension() {
                        std::move(manifest_contents));
   }
 
+  RecordNumFilesProcessed(extension_data.size());
   return extension_data;
 }
 
@@ -69,32 +98,42 @@ ExtensionTelemetryFileProcessor::SortedFilePaths
 ExtensionTelemetryFileProcessor::RetrieveFilePaths() {
   base::FileEnumerator enumerator(extension_root_dir_, /*recursive=*/true,
                                   base::FileEnumerator::FILES);
-  int64_t read_counter = 0;
+  int64_t exceeded_file_size_counter = 0;
+  int64_t largest_file_size = 0;
   SortedFilePaths sorted_file_paths;
 
   // Find all file paths within extension directory and add them to a list.
-  while (read_counter < max_files_read_) {
+  for (int read_counter = 0; read_counter < max_files_to_read_;
+       read_counter++) {
     base::FilePath full_path = enumerator.Next();
     if (full_path.empty()) {
       break;
     }
 
-    // Add file only if type and size are allowed.
-    if (IsAllowedType(full_path) && IsWithinSizeLimit(full_path)) {
-      sorted_file_paths.insert(std::move(full_path));
+    int64_t file_size;
+    // Skip invalid, empty, and non-applicable type files
+    if (!base::GetFileSize(full_path, &file_size) || file_size <= 0 ||
+        !IsApplicableType(full_path)) {
+      continue;
     }
-    read_counter++;
+
+    // Record largest file size observed.
+    largest_file_size = std::max(largest_file_size, file_size);
+
+    // Add file for processing if within size limit, otherwise, skip and record.
+    if (file_size <= max_file_size_) {
+      sorted_file_paths.insert(std::move(full_path));
+    } else {
+      exceeded_file_size_counter++;
+    }
   }
 
+  RecordLargestFileSizeObserved(largest_file_size);
+  RecordNumFilesOverSizeLimit(exceeded_file_size_counter);
+  RecordNumFilesFound(sorted_file_paths.size());
   return sorted_file_paths;
 }
 
-// TODO(richche): Emit histograms for:
-// - number of files missed
-// - number of files enumerated
-// - number of files processed
-// - max file size observed
-// - max file size processed
 base::Value::Dict ExtensionTelemetryFileProcessor::ComputeHashes(
     const SortedFilePaths& file_paths) {
   base::Value::Dict extension_data;
@@ -115,29 +154,24 @@ base::Value::Dict ExtensionTelemetryFileProcessor::ComputeHashes(
       extension_data.Set(
           relative_path.NormalizePathSeparatorsTo('/').AsUTF8Unsafe(),
           std::move(hex_encode));
+
+      RecordProcessedFileSize(file_contents.size());
     }
   }
 
   return extension_data;
 }
 
-bool ExtensionTelemetryFileProcessor::IsAllowedType(
+bool ExtensionTelemetryFileProcessor::IsApplicableType(
     const base::FilePath& file_path) {
   return file_path.MatchesExtension(kJSFileSuffix) ||
          file_path.MatchesExtension(kHTMLFileSuffix) ||
          file_path.MatchesExtension(kCSSFileSuffix);
 }
 
-bool ExtensionTelemetryFileProcessor::IsWithinSizeLimit(
-    const base::FilePath& file_path) {
-  int64_t file_size;
-  return base::GetFileSize(file_path, &file_size) && 0 < file_size &&
-         file_size <= max_file_size_;
-}
-
-void ExtensionTelemetryFileProcessor::SetMaxFilesReadForTest(
-    int64_t max_files_read) {
-  max_files_read_ = max_files_read;
+void ExtensionTelemetryFileProcessor::SetMaxFilesToReadForTest(
+    int64_t max_files_to_read) {
+  max_files_to_read_ = max_files_to_read;
 }
 
 }  // namespace safe_browsing
