@@ -117,6 +117,9 @@ const char kEID[] = "EID";
 const char kICCID[] = "ICCID";
 const char kIMEI[] = "IMEI";
 const char kIMSI[] = "IMSI";
+const char kLastConnectedAttachApnProperty[] = "LastConnectedAttachApnProperty";
+const char kLastConnectedDefaultApnProperty[] =
+    "LastConnectedDefaultApnProperty";
 const char kLastGoodAPN[] = "LastGoodAPN";
 const char kManufacturer[] = "Manufacturer";
 const char kMDN[] = "MDN";

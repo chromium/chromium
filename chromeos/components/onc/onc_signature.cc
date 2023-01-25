@@ -335,6 +335,8 @@ const OncFieldSignature cellular_with_state_fields[] = {
     {::onc::cellular::kEID, &kStringSignature},
     {::onc::cellular::kIMEI, &kStringSignature},
     {::onc::cellular::kIMSI, &kStringSignature},
+    {::onc::cellular::kLastConnectedAttachApnProperty, &kCellularApnSignature},
+    {::onc::cellular::kLastConnectedDefaultApnProperty, &kCellularApnSignature},
     {::onc::cellular::kLastGoodAPN, &kCellularApnSignature},
     {::onc::cellular::kManufacturer, &kStringSignature},
     {::onc::cellular::kMDN, &kStringSignature},

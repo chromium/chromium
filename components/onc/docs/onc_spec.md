@@ -1507,6 +1507,16 @@ ONC configuration of of **Cellular** networks is not yet supported.
     * For GSM modems, the International Mobile Subscriber Identity of the SIM
       card installed in the device.
 
+* **LastConnectedAttachApnProperty**
+    * (optional, read-only) - [APN](#APN-type)
+    * The attach APN information used in the last successful connection
+    * attempt. This value is not cleared if the connection fails.
+
+* **LastConnectedDefaultApnProperty**
+    * (optional, read-only) - [APN](#APN-type)
+    * The default APN information used in the last successful connection
+    * attempt. This value is not cleared if the connection fails.
+
 * **LastGoodAPN**
     * (optional, read-only) - [APN](#APN-type)
     * The APN information used in the last successful connection attempt.

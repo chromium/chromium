@@ -514,6 +514,18 @@ void ShillToONCTranslator::TranslateCellularWithState() {
   if (dictionary) {
     TranslateAndAddNestedObject(::onc::cellular::kAPN, *dictionary);
   }
+  dictionary = shill_dictionary_->FindDictKey(
+      shill::kCellularLastConnectedAttachApnProperty);
+  if (dictionary) {
+    TranslateAndAddNestedObject(
+        ::onc::cellular::kLastConnectedAttachApnProperty, *dictionary);
+  }
+  dictionary = shill_dictionary_->FindDictKey(
+      shill::kCellularLastConnectedDefaultApnProperty);
+  if (dictionary) {
+    TranslateAndAddNestedObject(
+        ::onc::cellular::kLastConnectedDefaultApnProperty, *dictionary);
+  }
   dictionary =
       shill_dictionary_->FindDictKey(shill::kCellularLastGoodApnProperty);
   if (dictionary) {

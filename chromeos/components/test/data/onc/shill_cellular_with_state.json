@@ -25,6 +25,27 @@
     "username": "test-username",
     "password": "test-password"
   },
+  "Cellular.LastConnectedAttachApnProperty": {
+    "apn": "test-apn-2",
+    "authentication": "pap",
+    "name": "test-apn-name-2",
+    "username": "test-username-2",
+    "password": "test-password-2"
+  },
+  "Cellular.LastConnectedDefaultApnProperty": {
+    "apn": "test-apn-3",
+    "authentication": "chap",
+    "name": "test-apn-name-3",
+    "username": "test-username-3",
+    "password": "test-password-3"
+  },
+  "Cellular.LastGoodAPN": {
+    "apn": "test-apn-4",
+    "authentication": "pap",
+    "name": "test-apn-name-4",
+    "username": "test-username-4",
+    "password": "test-password-4"
+  },
   "Device": {
     // This dictionary contains Device properties and not Service properties as
     // above.

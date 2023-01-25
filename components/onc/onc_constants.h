@@ -135,6 +135,8 @@ COMPONENT_EXPORT(ONC) extern const char kEID[];
 COMPONENT_EXPORT(ONC) extern const char kICCID[];
 COMPONENT_EXPORT(ONC) extern const char kIMEI[];
 COMPONENT_EXPORT(ONC) extern const char kIMSI[];
+COMPONENT_EXPORT(ONC) extern const char kLastConnectedAttachApnProperty[];
+COMPONENT_EXPORT(ONC) extern const char kLastConnectedDefaultApnProperty[];
 COMPONENT_EXPORT(ONC) extern const char kLastGoodAPN[];
 COMPONENT_EXPORT(ONC) extern const char kManufacturer[];
 COMPONENT_EXPORT(ONC) extern const char kMDN[];
