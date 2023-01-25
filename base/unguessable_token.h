@@ -116,7 +116,9 @@ class BASE_EXPORT UnguessableToken {
 
 #if defined(UNIT_TEST)
   static UnguessableToken CreateForTesting(uint64_t high, uint64_t low) {
-    return Deserialize(high, low);
+    absl::optional<UnguessableToken> token = Deserialize2(high, low);
+    DCHECK(token.has_value());
+    return token.value();
   }
 #endif
 
