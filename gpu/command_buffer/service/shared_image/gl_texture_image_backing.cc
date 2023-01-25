@@ -269,10 +269,10 @@ void GLTextureImageBacking::InitializeGLTexture(
   for (int plane = 0; plane < num_planes; ++plane) {
     textures_.emplace_back(GetPlaneFormat(format(), plane),
                            format().GetPlaneSize(plane, size()),
-                           is_passthrough_);
+                           is_passthrough_, progress_reporter);
     textures_[plane].Initialize(format_info[plane],
                                 framebuffer_attachment_angle, pixel_data,
-                                progress_reporter, debug_label);
+                                debug_label);
   }
 
   if (!pixel_data.empty()) {

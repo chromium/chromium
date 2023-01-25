@@ -40,9 +40,15 @@ bool SupportsPackSubimage() {
 
 GLTextureHolder::GLTextureHolder(viz::ResourceFormat format,
                                  const gfx::Size& size,
-                                 bool is_passthrough)
-    : format_(format), size_(size), is_passthrough_(is_passthrough) {}
+                                 bool is_passthrough,
+                                 gl::ProgressReporter* progress_reporter)
+    : format_(format),
+      size_(size),
+      is_passthrough_(is_passthrough),
+      progress_reporter_(progress_reporter) {}
 
+// TODO(kylechar): When `texture_` is removed with validating command decoder
+// move constructor/assignment can be defaulted.
 GLTextureHolder::GLTextureHolder(GLTextureHolder&& other) {
   operator=(std::move(other));
 }
@@ -56,6 +62,7 @@ GLTextureHolder& GLTextureHolder::operator=(GLTextureHolder&& other) {
   other.texture_ = nullptr;
   passthrough_texture_ = std::move(other.passthrough_texture_);
   format_desc_ = other.format_desc_;
+  progress_reporter_ = other.progress_reporter_;
   return *this;
 }
 
@@ -84,7 +91,6 @@ void GLTextureHolder::Initialize(
     const GLCommonImageBackingFactory::FormatInfo& format_info,
     bool framebuffer_attachment_angle,
     base::span<const uint8_t> pixel_data,
-    gl::ProgressReporter* progress_reporter,
     const std::string& debug_label) {
   format_desc_.target = GL_TEXTURE_2D;
   format_desc_.data_format = format_info.gl_format;
@@ -120,7 +126,7 @@ void GLTextureHolder::Initialize(
   // if available.
   if (format_info.supports_storage) {
     {
-      gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter);
+      gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
       api->glTexStorage2DEXTFn(format_desc_.target, /*levels=*/1,
                                format_info.adjusted_storage_internal_format,
                                size_.width(), size_.height());
@@ -129,7 +135,7 @@ void GLTextureHolder::Initialize(
     if (!pixel_data.empty()) {
       ScopedUnpackState scoped_unpack_state(
           /*uploading_data=*/true);
-      gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter);
+      gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
       api->glTexSubImage2DFn(format_desc_.target, /*level=*/0, /*xoffset=*/0,
                              /*yoffset=*/0, size_.width(), size_.height(),
                              format_info.adjusted_format,
@@ -137,14 +143,14 @@ void GLTextureHolder::Initialize(
     }
   } else if (format_info.is_compressed) {
     ScopedUnpackState scoped_unpack_state(!pixel_data.empty());
-    gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter);
+    gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
     api->glCompressedTexImage2DFn(format_desc_.target, 0,
                                   format_desc_.image_internal_format,
                                   size_.width(), size_.height(), /*border=*/0,
                                   pixel_data.size(), pixel_data.data());
   } else {
     ScopedUnpackState scoped_unpack_state(!pixel_data.empty());
-    gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter);
+    gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
     api->glTexImage2DFn(
         format_desc_.target, /*level=*/0, format_desc_.image_internal_format,
         size_.width(), size_.height(), /*border=*/0,
@@ -194,9 +200,6 @@ bool GLTextureHolder::UploadFromMemory(const SkPixmap& pixmap) {
     }
   }
 
-  // TODO(kylechar): Create ScopedProgressReporter for duration of
-  // glTexSubImage2D.
-
   gl::ScopedTextureBinder scoped_texture_binder(gl_target, texture_id);
   ScopedUnpackState scoped_unpack_state(
       /*uploading_data=*/true, gl_unpack_row_length, gl_unpack_alignment);
@@ -204,8 +207,11 @@ bool GLTextureHolder::UploadFromMemory(const SkPixmap& pixmap) {
   const void* pixels =
       !repacked_data.empty() ? repacked_data.data() : pixmap.addr();
   gl::GLApi* api = gl::g_current_gl_context;
-  api->glTexSubImage2DFn(gl_target, /*level=*/0, 0, 0, size_.width(),
-                         size_.height(), gl_format, gl_type, pixels);
+  {
+    gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
+    api->glTexSubImage2DFn(gl_target, /*level=*/0, 0, 0, size_.width(),
+                           size_.height(), gl_format, gl_type, pixels);
+  }
   DCHECK_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
 
   return true;
@@ -284,15 +290,15 @@ bool GLTextureHolder::ReadbackToMemory(SkPixmap& pixmap) {
     }
   }
 
-  // TODO(kylechar): Create ScopedProgressReporter for duration of
-  // glReadPixels.
-
   ScopedPackState scoped_pack_state(gl_pack_row_length, gl_pack_alignment);
 
   void* pixels =
       !unpack_buffer.empty() ? unpack_buffer.data() : pixmap.writable_addr();
-  api->glReadPixelsFn(0, 0, size_.width(), size_.height(), gl_format, gl_type,
-                      pixels);
+  {
+    gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
+    api->glReadPixelsFn(0, 0, size_.width(), size_.height(), gl_format, gl_type,
+                        pixels);
+  }
   DCHECK_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
 
   api->glDeleteFramebuffersEXTFn(1, &framebuffer);
