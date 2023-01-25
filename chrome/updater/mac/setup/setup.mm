@@ -258,6 +258,9 @@ int PromoteCandidate(UpdaterScope scope) {
 
   // Update the launcher sym link.
   base::FilePath tmp_launcher_name = install_dir->Append("NewCurrent");
+  if (!base::DeleteFile(tmp_launcher_name)) {
+    VLOG(1) << "Failed to delete existing " << tmp_launcher_name.value();
+  }
   if (symlink(versioned_path->value().c_str(),
               tmp_launcher_name.value().c_str())) {
     return kErrorFailedToLinkLauncher;
