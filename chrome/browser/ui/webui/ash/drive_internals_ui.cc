@@ -69,7 +69,7 @@ namespace {
 
 using content::BrowserThread;
 using drive::DriveIntegrationService;
-using drivefs::pinning::DriveFsPinManager;
+using drivefs::pinning::PinManager;
 
 constexpr char kKey[] = "key";
 constexpr char kValue[] = "value";
@@ -248,11 +248,11 @@ void ZipLogs(Profile* profile,
 
 // Class to handle messages from chrome://drive-internals.
 class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
-                                   public DriveFsPinManager::Observer {
+                                   public PinManager::Observer {
  public:
   ~DriveInternalsWebUIHandler() override {
     if (pin_manager_) {
-      VLOG(1) << "DriveInternalsWebUIHandler dropped before DriveFsPinManager";
+      VLOG(1) << "DriveInternalsWebUIHandler dropped before PinManager";
       pin_manager_->RemoveObserver(this);
     }
   }
@@ -628,7 +628,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
 
   void OnDrop() override {
     if (pin_manager_) {
-      VLOG(1) << "DriveFsPinManager dropped before DriveInternalsWebUIHandler";
+      VLOG(1) << "PinManager dropped before DriveInternalsWebUIHandler";
       pin_manager_ = nullptr;
     }
   }
@@ -971,7 +971,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   }
 
   // DriveFS bulk-pinning manager.
-  base::raw_ptr<DriveFsPinManager> pin_manager_ = nullptr;
+  base::raw_ptr<PinManager> pin_manager_ = nullptr;
 
   // The last event sent to the JavaScript side.
   int last_sent_event_id_ = -1;

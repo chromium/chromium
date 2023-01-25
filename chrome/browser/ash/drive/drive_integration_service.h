@@ -178,8 +178,8 @@ class DriveIntegrationService : public KeyedService,
   // Returns the DriveFsHost if it is enabled.
   drivefs::DriveFsHost* GetDriveFsHost() const;
 
-  // Returns the `DriveFsPinManager` iff DriveFS is mounted.
-  drivefs::pinning::DriveFsPinManager* GetPinManager() const {
+  // Returns the PinManager if DriveFS is mounted and bulk-pinning is enabled.
+  drivefs::pinning::PinManager* GetPinManager() const {
     return pin_manager_.get();
   }
 
@@ -415,7 +415,7 @@ class DriveIntegrationService : public KeyedService,
 
   std::unique_ptr<DriveFsHolder> drivefs_holder_;
   std::unique_ptr<PreferenceWatcher> preference_watcher_;
-  std::unique_ptr<drivefs::pinning::DriveFsPinManager> pin_manager_;
+  std::unique_ptr<drivefs::pinning::PinManager> pin_manager_;
   int drivefs_total_failures_count_ = 0;
   int drivefs_consecutive_failures_count_ = 0;
   bool remount_when_online_ = false;
