@@ -241,3 +241,12 @@ void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
                                                              textfield);
           }));
 }
+
+void ChromeBrowserMainExtraPartsLacros::PostMainMessageLoopRun() {
+  // Must be destroyed before |chrome_kiosk_launch_controller_->profile_| is
+  // destroyed.
+  chrome_kiosk_launch_controller_.reset();
+  // Must be destroyed before |kiosk_session_service_->app_session_->profile_|
+  // is destroyed.
+  kiosk_session_service_.reset();
+}

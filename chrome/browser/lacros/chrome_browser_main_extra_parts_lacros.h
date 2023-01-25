@@ -68,6 +68,7 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
   void PreProfileInit() override;
   void PostBrowserStart() override;
   void PostProfileInit(Profile* profile, bool is_initial_profile) override;
+  void PostMainMessageLoopRun() override;
 
   // Receiver and cache of arc icon info updates.
   std::unique_ptr<ArcIconCache> arc_icon_cache_;
