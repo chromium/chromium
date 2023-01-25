@@ -54,6 +54,8 @@ cros_healthd::mojom::ProbeCategoryEnum Convert(
       return cros_healthd::mojom::ProbeCategoryEnum::kTpm;
     case crosapi::mojom::ProbeCategoryEnum::kAudio:
       return cros_healthd::mojom::ProbeCategoryEnum::kAudio;
+    case crosapi::mojom::ProbeCategoryEnum::kBus:
+      return cros_healthd::mojom::ProbeCategoryEnum::kBus;
   }
   NOTREACHED();
 }
@@ -111,6 +113,69 @@ crosapi::mojom::ProbeAudioResultPtr UncheckedConvertPtr(
           ConvertProbePtr(std::move(input->get_audio_info())));
     case cros_healthd::mojom::AudioResult::Tag::kError:
       return crosapi::mojom::ProbeAudioResult::NewError(
+          ConvertProbePtr(std::move(input->get_error())));
+  }
+}
+
+crosapi::mojom::ProbeUsbBusInterfaceInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::UsbBusInterfaceInfoPtr input) {
+  return crosapi::mojom::ProbeUsbBusInterfaceInfo::New(
+      crosapi::mojom::UInt8Value::New(input->interface_number),
+      crosapi::mojom::UInt8Value::New(input->class_id),
+      crosapi::mojom::UInt8Value::New(input->subclass_id),
+      crosapi::mojom::UInt8Value::New(input->protocol_id), input->driver);
+}
+
+crosapi::mojom::ProbeFwupdFirmwareVersionInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::FwupdFirmwareVersionInfoPtr input) {
+  return crosapi::mojom::ProbeFwupdFirmwareVersionInfo::New(
+      input->version, Convert(input->version_format));
+}
+
+crosapi::mojom::ProbeUsbBusInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::UsbBusInfoPtr input) {
+  return crosapi::mojom::ProbeUsbBusInfo::New(
+      crosapi::mojom::UInt8Value::New(input->class_id),
+      crosapi::mojom::UInt8Value::New(input->subclass_id),
+      crosapi::mojom::UInt8Value::New(input->protocol_id),
+      crosapi::mojom::UInt16Value::New(input->vendor_id),
+      crosapi::mojom::UInt16Value::New(input->product_id),
+      ConvertPtrVector<crosapi::mojom::ProbeUsbBusInterfaceInfoPtr>(
+          std::move(input->interfaces)),
+      ConvertProbePtr(std::move(input->fwupd_firmware_version_info)),
+      Convert(input->version), Convert(input->spec_speed));
+}
+
+crosapi::mojom::ProbeBusInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::BusInfoPtr input) {
+  switch (input->which()) {
+    case cros_healthd::mojom::internal::BusInfo_Data::BusInfo_Tag::kUsbBusInfo:
+      return crosapi::mojom::ProbeBusInfo::NewUsbBusInfo(
+          ConvertProbePtr(std::move(input->get_usb_bus_info())));
+    case cros_healthd::mojom::internal::BusInfo_Data::BusInfo_Tag::kPciBusInfo:
+    case cros_healthd::mojom::internal::BusInfo_Data::BusInfo_Tag::
+        kThunderboltBusInfo:
+    case cros_healthd::mojom::internal::BusInfo_Data::BusInfo_Tag::
+        kUnmappedField:
+      return nullptr;
+  }
+}
+
+crosapi::mojom::ProbeBusInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::BusDevicePtr input) {
+  return ConvertProbePtr(std::move(input->bus_info));
+}
+
+crosapi::mojom::ProbeBusResultPtr UncheckedConvertPtr(
+    cros_healthd::mojom::BusResultPtr input) {
+  switch (input->which()) {
+    case cros_healthd::mojom::internal::BusResult_Data::BusResult_Tag::
+        kBusDevices:
+      return crosapi::mojom::ProbeBusResult::NewBusDevicesInfo(
+          ConvertPtrVector<crosapi::mojom::ProbeBusInfoPtr>(
+              std::move(input->get_bus_devices())));
+    case cros_healthd::mojom::internal::BusResult_Data::BusResult_Tag::kError:
+      return crosapi::mojom::ProbeBusResult::NewError(
           ConvertProbePtr(std::move(input->get_error())));
   }
 }
@@ -474,7 +539,8 @@ crosapi::mojom::ProbeTelemetryInfoPtr UncheckedConvertPtr(
       std::move(system_result_output.second),
       ConvertProbePtr(std::move(input->network_result)),
       ConvertProbePtr(std::move(input->tpm_result)),
-      ConvertProbePtr(std::move(input->audio_result)));
+      ConvertProbePtr(std::move(input->audio_result)),
+      ConvertProbePtr(std::move(input->bus_result)));
 }
 
 }  // namespace unchecked
@@ -491,6 +557,82 @@ crosapi::mojom::ProbeErrorType Convert(cros_healthd::mojom::ErrorType input) {
       return crosapi::mojom::ProbeErrorType::kSystemUtilityError;
     case cros_healthd::mojom::ErrorType::kServiceUnavailable:
       return crosapi::mojom::ProbeErrorType::kServiceUnavailable;
+  }
+  NOTREACHED();
+}
+
+crosapi::mojom::ProbeUsbVersion Convert(cros_healthd::mojom::UsbVersion input) {
+  switch (input) {
+    case cros_healthd::mojom::UsbVersion::kUnmappedEnumField:
+      return crosapi::mojom::ProbeUsbVersion::kUnknown;
+    case cros_healthd::mojom::UsbVersion::kUnknown:
+      return crosapi::mojom::ProbeUsbVersion::kUnknown;
+    case cros_healthd::mojom::UsbVersion::kUsb1:
+      return crosapi::mojom::ProbeUsbVersion::kUsb1;
+    case cros_healthd::mojom::UsbVersion::kUsb2:
+      return crosapi::mojom::ProbeUsbVersion::kUsb2;
+    case cros_healthd::mojom::UsbVersion::kUsb3:
+      return crosapi::mojom::ProbeUsbVersion::kUsb3;
+  }
+  NOTREACHED();
+}
+
+crosapi::mojom::ProbeUsbSpecSpeed Convert(
+    cros_healthd::mojom::UsbSpecSpeed input) {
+  switch (input) {
+    case cros_healthd::mojom::UsbSpecSpeed::kUnmappedEnumField:
+      return crosapi::mojom::ProbeUsbSpecSpeed::kUnknown;
+    case cros_healthd::mojom::UsbSpecSpeed::kUnknown:
+      return crosapi::mojom::ProbeUsbSpecSpeed::kUnknown;
+    case cros_healthd::mojom::UsbSpecSpeed::k1_5Mbps:
+      return crosapi::mojom::ProbeUsbSpecSpeed::k1_5Mbps;
+    case cros_healthd::mojom::UsbSpecSpeed::k12Mbps:
+      return crosapi::mojom::ProbeUsbSpecSpeed::k12Mbps;
+    case cros_healthd::mojom::UsbSpecSpeed::kDeprecateSpeed:
+      return crosapi::mojom::ProbeUsbSpecSpeed::kUnknown;
+    case cros_healthd::mojom::UsbSpecSpeed::k480Mbps:
+      return crosapi::mojom::ProbeUsbSpecSpeed::k480Mbps;
+    case cros_healthd::mojom::UsbSpecSpeed::k5Gbps:
+      return crosapi::mojom::ProbeUsbSpecSpeed::k5Gbps;
+    case cros_healthd::mojom::UsbSpecSpeed::k10Gbps:
+      return crosapi::mojom::ProbeUsbSpecSpeed::k10Gbps;
+    case cros_healthd::mojom::UsbSpecSpeed::k20Gbps:
+      return crosapi::mojom::ProbeUsbSpecSpeed::k20Gbps;
+  }
+  NOTREACHED();
+}
+
+crosapi::mojom::ProbeFwupdVersionFormat Convert(
+    cros_healthd::mojom::FwupdVersionFormat input) {
+  switch (input) {
+    case cros_healthd::mojom::FwupdVersionFormat::kUnmappedEnumField:
+      return crosapi::mojom::ProbeFwupdVersionFormat::kUnknown;
+    case cros_healthd::mojom::FwupdVersionFormat::kUnknown:
+      return crosapi::mojom::ProbeFwupdVersionFormat::kUnknown;
+    case cros_healthd::mojom::FwupdVersionFormat::kPlain:
+      return crosapi::mojom::ProbeFwupdVersionFormat::kPlain;
+    case cros_healthd::mojom::FwupdVersionFormat::kNumber:
+      return crosapi::mojom::ProbeFwupdVersionFormat::kNumber;
+    case cros_healthd::mojom::FwupdVersionFormat::kPair:
+      return crosapi::mojom::ProbeFwupdVersionFormat::kPair;
+    case cros_healthd::mojom::FwupdVersionFormat::kTriplet:
+      return crosapi::mojom::ProbeFwupdVersionFormat::kTriplet;
+    case cros_healthd::mojom::FwupdVersionFormat::kQuad:
+      return crosapi::mojom::ProbeFwupdVersionFormat::kQuad;
+    case cros_healthd::mojom::FwupdVersionFormat::kBcd:
+      return crosapi::mojom::ProbeFwupdVersionFormat::kBcd;
+    case cros_healthd::mojom::FwupdVersionFormat::kIntelMe:
+      return crosapi::mojom::ProbeFwupdVersionFormat::kIntelMe;
+    case cros_healthd::mojom::FwupdVersionFormat::kIntelMe2:
+      return crosapi::mojom::ProbeFwupdVersionFormat::kIntelMe2;
+    case cros_healthd::mojom::FwupdVersionFormat::kSurfaceLegacy:
+      return crosapi::mojom::ProbeFwupdVersionFormat::kSurfaceLegacy;
+    case cros_healthd::mojom::FwupdVersionFormat::kSurface:
+      return crosapi::mojom::ProbeFwupdVersionFormat::kSurface;
+    case cros_healthd::mojom::FwupdVersionFormat::kDellBios:
+      return crosapi::mojom::ProbeFwupdVersionFormat::kDellBios;
+    case cros_healthd::mojom::FwupdVersionFormat::kHex:
+      return crosapi::mojom::ProbeFwupdVersionFormat::kHex;
   }
   NOTREACHED();
 }

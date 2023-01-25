@@ -37,6 +37,24 @@ crosapi::mojom::ProbeAudioInfoPtr UncheckedConvertPtr(
 crosapi::mojom::ProbeAudioResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::AudioResultPtr input);
 
+crosapi::mojom::ProbeUsbBusInterfaceInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::UsbBusInterfaceInfoPtr input);
+
+crosapi::mojom::ProbeFwupdFirmwareVersionInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::FwupdFirmwareVersionInfoPtr input);
+
+crosapi::mojom::ProbeUsbBusInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::UsbBusInfoPtr input);
+
+crosapi::mojom::ProbeBusInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::BusDevicePtr input);
+
+crosapi::mojom::ProbeBusInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::BusInfoPtr input);
+
+crosapi::mojom::ProbeBusResultPtr UncheckedConvertPtr(
+    cros_healthd::mojom::BusResultPtr input);
+
 crosapi::mojom::ProbeBatteryInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::BatteryInfoPtr input);
 
@@ -151,6 +169,14 @@ crosapi::mojom::ProbeCpuArchitectureEnum Convert(
 
 crosapi::mojom::ProbeTpmGSCVersion Convert(
     cros_healthd::mojom::TpmGSCVersion input);
+
+crosapi::mojom::ProbeUsbVersion Convert(cros_healthd::mojom::UsbVersion input);
+
+crosapi::mojom::ProbeUsbSpecSpeed Convert(
+    cros_healthd::mojom::UsbSpecSpeed input);
+
+crosapi::mojom::ProbeFwupdVersionFormat Convert(
+    cros_healthd::mojom::FwupdVersionFormat input);
 
 crosapi::mojom::BoolValuePtr Convert(bool input);
 

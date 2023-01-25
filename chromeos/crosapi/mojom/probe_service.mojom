@@ -39,6 +39,9 @@
 //           can easily be more than uint32 range.
 //   4) ProbeMemoryInfo: use uint64 to store page_faults_since_last_boot instead
 //      of uint32, it can be more than uint32 range.
+//   5) ProbeBusResult: Holds a list of ProbeBusInfo.
+//      This is a subset of DeviceInfo containing the fields that can be exposed
+//      to third party code. Note: DeviceInfo is used by cros_healthd.
 
 module crosapi.mojom;
 
@@ -71,7 +74,7 @@ interface TelemetryProbeService {
 
 // An enumeration of each category of information that cros_healthd can report.
 //
-// Next ID: 15
+// Next ID: 16
 [Stable, Extensible]
 enum ProbeCategoryEnum {
   [Default] kUnknown = 11,
@@ -89,6 +92,7 @@ enum ProbeCategoryEnum {
   kNetwork = 12,
   kTpm = 13,
   kAudio = 14,
+  kBus = 15,
 };
 
 // An enumeration of the different categories of errors that can occur when
@@ -167,6 +171,156 @@ union ProbeBatteryResult {
   // Valid BatteryInfo. Null value if a battery is not present.
   ProbeBatteryInfo? battery_info;
   // The error that occurred attempting to retrieve the BatteryInfo.
+  ProbeError error;
+};
+
+// The info related to usb interfaces.
+//
+// NextMinVersion: 1, NextIndex: 5
+[Stable]
+struct ProbeUsbBusInterfaceInfo {
+  // The zero-based number (index) of the interface.
+  UInt8Value? interface_number@0;
+  // These fields can be used to classify / identify the usb interfaces. See the
+  // usb.ids database for the values, e.g. https://github.com/gentoo/hwids.
+  UInt8Value? class_id@1;
+  UInt8Value? subclass_id@2;
+  UInt8Value? protocol_id@3;
+  // The driver used by the device. This is the name of the matched driver which
+  // is registered in the kernel. See "{kernel root}/drivers/" for the list of
+  // the built in drivers.
+  string? driver@4;
+};
+
+// An enumeration of the formats of firmware version in fwpud. See the fwupd
+// repo for the values. (https://github.com/fwupd/fwupd)
+//
+// NextMinVersion: 1, NextIndex: 14
+[Stable, Extensible]
+enum ProbeFwupdVersionFormat {
+  // Unknown version format.
+  [Default] kUnknown = 0,
+  // An unidentified format text string.
+  kPlain = 1,
+  // A single integer version number.
+  kNumber = 2,
+  // Two AABB.CCDD version numbers.
+  kPair = 3,
+  // Microsoft-style AA.BB.CCDD version numbers.
+  kTriplet = 4,
+  // UEFI-style AA.BB.CC.DD version numbers.
+  kQuad = 5,
+  // Binary coded decimal notation.
+  kBcd = 6,
+  // Intel ME-style bitshifted notation.
+  kIntelMe = 7,
+  // Intel ME-style A.B.CC.DDDD notation.
+  kIntelMe2 = 8,
+  // Legacy Microsoft Surface 10b.12b.10b.
+  kSurfaceLegacy = 9,
+  // Microsoft Surface 8b.16b.8b.
+  kSurface = 10,
+  // Dell BIOS BB.CC.DD style.
+  kDellBios = 11,
+  // Hexadecimal 0xAABCCDD style.
+  kHex = 12,
+};
+
+// The info related to a firmware version obtained from fwupd.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct ProbeFwupdFirmwareVersionInfo {
+  // The string form of the firmware version.
+  string? version@0;
+  // The format for parsing the version string.
+  ProbeFwupdVersionFormat version_format@1;
+};
+
+// An enumeration of the usb version.
+//
+// NextMinVersion: 1, NextIndex: 5
+[Stable, Extensible]
+enum ProbeUsbVersion {
+  // Can't determine the usb version.
+  [Default] kUnknown = 0,
+  // Usb 1.
+  kUsb1 = 1,
+  // Usb 2.
+  kUsb2 = 2,
+  // Usb 3.
+  kUsb3 = 3,
+};
+
+// An enumeration of the usb spec speed in Mbps.
+// Source:
+//   - https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-bus-usb
+//   - https://www.kernel.org/doc/Documentation/ABI/stable/sysfs-bus-usb
+//   - https://en.wikipedia.org/wiki/USB
+//
+// NextMinVersion: 1, NextIndex: 8
+[Stable, Extensible]
+enum ProbeUsbSpecSpeed {
+  // Unknown speed.
+  [Default] kUnknown = 0,
+  // Low speed.
+  k1_5Mbps = 1,
+  // Full speed.
+  k12Mbps = 2,
+  // High Speed.
+  k480Mbps = 3,
+  // Super Speed.
+  k5Gbps = 4,
+  // Super Speed+.
+  k10Gbps = 5,
+  // Super Speed+ Gen 2x2.
+  k20Gbps = 6,
+};
+
+// The info related to usb.
+//
+// NextMinVersion: 1, NextIndex: 9
+[Stable]
+struct ProbeUsbBusInfo {
+  // These fields can be used to classify / identify the usb devices. See the
+  // usb.ids database for the values. (https://github.com/gentoo/hwids)
+  UInt8Value? class_id@0;
+  UInt8Value? subclass_id@1;
+  UInt8Value? protocol_id@2;
+  UInt16Value? vendor_id@3;
+  UInt16Value product_id@4;
+  // The usb interfaces belonging to the device. A usb device has at least one
+  // interface. Each interface may or may not work independently, based on each
+  // device. This allows a usb device to provide multiple features.
+  // The interfaces are sorted by the |interface_number| field.
+  array<ProbeUsbBusInterfaceInfo>? interfaces@5;
+  // The firmware version obtained from fwupd.
+  ProbeFwupdFirmwareVersionInfo? fwupd_firmware_version_info@6;
+  // The recognized usb version. It may not be the highest USB version supported
+  // by the hardware.
+  ProbeUsbVersion version@7;
+  // The spec usb speed.
+  ProbeUsbSpecSpeed spec_speed@8;
+};
+
+// The info related to a specific bus type.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable, Extensible]
+union ProbeBusInfo {
+  // Do not use, exists for forwards compatibility.
+  [Default] bool unmapped_field@0;
+  // The info related to usb.
+  ProbeUsbBusInfo usb_bus_info@1;
+};
+
+// Bus probe result. Can either be populated with the ProbeBusInfo or an error
+// retrieving the information.
+[Stable]
+union ProbeBusResult {
+  // Valid ProbeBusInfo.
+  array<ProbeBusInfo> bus_devices_info;
+  // The error that occurred attempting to retrieve the ProbeBusInfo.
   ProbeError error;
 };
 
@@ -666,7 +820,8 @@ union ProbeAudioResult {
 // attempt to fetch that information, and size zero if cros_healthd did attempt
 // to fetch that information, but was unable to.
 //
-// Next ID: 14
+// Next ID: 15
+// Next MinVersion: 3
 [Stable]
 struct ProbeTelemetryInfo {
   // Information about the device's main battery. Only present when kBattery was
@@ -714,6 +869,9 @@ struct ProbeTelemetryInfo {
   // Information about the audio devices. Only present when kAudio was included
   // in the categories input to ProbeTelemetryInfo.
   [MinVersion=1] ProbeAudioResult? audio_result@13;
+  // Information about the bus devices. Only present when kBus was included
+  // in the categories input to ProbeTelemetryInfo.
+  [MinVersion=2] ProbeBusResult? bus_result@14;
 };
 
 // Result of running /usr/share/cros/oemdata.sh script.
