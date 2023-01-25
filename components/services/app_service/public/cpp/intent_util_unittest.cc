@@ -566,6 +566,31 @@ TEST_F(IntentUtilTest, FileExtensionMatch) {
   EXPECT_TRUE(intent->MatchFilter(file_filter_dot));
 }
 
+TEST_F(IntentUtilTest, FileExtensionMatchCaseInsensitive) {
+  auto lowercase_filter =
+      apps_util::MakeFileFilterForView("text/csv", "csv", "label");
+  auto uppercase_filter =
+      apps_util::MakeFileFilterForView("text/csv", "CSV", "label");
+
+  auto lowercase_intent = std::make_unique<apps::Intent>(
+      apps_util::kIntentActionView,
+      CreateIntentFiles(test_url("abc.csv"), absl::nullopt, false));
+  EXPECT_TRUE(lowercase_intent->MatchFilter(lowercase_filter));
+  EXPECT_TRUE(lowercase_intent->MatchFilter(uppercase_filter));
+
+  auto uppercase_intent = std::make_unique<apps::Intent>(
+      apps_util::kIntentActionView,
+      CreateIntentFiles(test_url("abc.CSV"), absl::nullopt, false));
+  EXPECT_TRUE(uppercase_intent->MatchFilter(lowercase_filter));
+  EXPECT_TRUE(uppercase_intent->MatchFilter(uppercase_filter));
+
+  auto mixcase_intent = std::make_unique<apps::Intent>(
+      apps_util::kIntentActionView,
+      CreateIntentFiles(test_url("abc.CsV"), absl::nullopt, false));
+  EXPECT_TRUE(mixcase_intent->MatchFilter(lowercase_filter));
+  EXPECT_TRUE(mixcase_intent->MatchFilter(uppercase_filter));
+}
+
 TEST_F(IntentUtilTest, FileURLMatch) {
   std::string mp3_url_pattern = R"(filesystem:chrome-extension://.*/.*\.mp3)";
 

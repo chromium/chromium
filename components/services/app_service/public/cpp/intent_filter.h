@@ -81,7 +81,8 @@ enum class PatternMatchType {
   // The ConditionValue is a file extension (e.g. "png") or a wildcard ("*")
   // which is matched against file names in the Intent. Common double extension
   // file types are supported: for example, a file named "file.tar.gz" matches
-  // both "gz" and "tar.gz" ConditionValues.
+  // both "gz" and "tar.gz" ConditionValues. File extension matching is
+  // case-insensitive.
   kFileExtension = 5,
   // The ConditionValue matches any files which are directories.
   kIsDirectory = 6,
