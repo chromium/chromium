@@ -6,6 +6,7 @@
 
 import importlib
 import io
+import os
 import sys
 import unittest
 
@@ -19,6 +20,10 @@ COVERED_FILES = [
 
 def main():
     """Gather coverage data, ensure included files are 100% covered."""
+
+    # Fuchsia tests not supported on Windows
+    if os.name == 'nt':
+        return 0
 
     cov = coverage.coverage(data_file=None,
                             include=COVERED_FILES,

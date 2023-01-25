@@ -14,6 +14,7 @@ import unittest.mock as mock
 import compatible_utils
 
 
+@unittest.skipIf(os.name == 'nt', 'Fuchsia tests not supported on Windows')
 class CompatibleUtilsTest(unittest.TestCase):
     """Test compatible_utils.py methods."""
 
