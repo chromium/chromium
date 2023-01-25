@@ -26,7 +26,7 @@
 #include "base/logging.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
-#import "base/mac/launch_services_util.h"
+#import "base/mac/launch_application.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
@@ -442,9 +442,8 @@ void LaunchTheFirstShimThatWorksOnFileThread(
                                    mojo::core::kMojoIpcz.name);
   }
 
-  base::mac::OpenApplication(
-      shim_path, command_line, /*url_specs=*/{},
-      /*options=*/{.activate = false},
+  base::mac::LaunchApplication(
+      shim_path, command_line, /*url_specs=*/{}, {.activate = false},
       base::BindOnce(
           [](base::FilePath shim_path,
              std::vector<base::FilePath> remaining_shim_paths,
@@ -1467,8 +1466,8 @@ void LaunchShimForTesting(const base::FilePath& shim_path,  // IN-TEST
     url_specs.push_back(url.spec());
   }
 
-  base::mac::OpenApplication(
-      shim_path, command_line, url_specs, /*options=*/{.activate = false},
+  base::mac::LaunchApplication(
+      shim_path, command_line, url_specs, {.activate = false},
       base::BindOnce(
           [](const base::FilePath& shim_path,
              ShimLaunchedCallback launched_callback,

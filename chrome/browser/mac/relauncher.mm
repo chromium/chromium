@@ -5,8 +5,7 @@
 #include "chrome/browser/mac/relauncher.h"
 
 #import <AppKit/AppKit.h>
-
-#include <AvailabilityMacros.h>
+#include <CoreFoundation/CoreFoundation.h>
 #include <crt_externs.h>
 #include <dlfcn.h>
 #include <stddef.h>
@@ -19,9 +18,12 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/mac/bundle_locations.h"
+#include "base/mac/launch_application.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/path_service.h"
@@ -42,7 +44,7 @@ namespace {
 // The "magic" file descriptor that the relauncher process' write side of the
 // pipe shows up on. Chosen to avoid conflicting with stdin, stdout, and
 // stderr.
-const int kRelauncherSyncFD = STDERR_FILENO + 1;
+constexpr int kRelauncherSyncFD = STDERR_FILENO + 1;
 
 // The argument separating arguments intended for the relauncher process from
 // those intended for the relaunched process. "---" is chosen instead of "--"
@@ -51,17 +53,19 @@ const int kRelauncherSyncFD = STDERR_FILENO + 1;
 // arguments intended for the relaunched process, to get the correct settings
 // for such things as logging and the user-data-dir in case it affects crash
 // reporting.
-const char kRelauncherArgSeparator[] = "---";
+constexpr char kRelauncherArgSeparator[] = "---";
 
 // When this argument is supplied to the relauncher process, it will launch
 // the relaunched process without bringing it to the foreground.
-const char kRelauncherBackgroundArg[] = "--background";
+constexpr char kRelauncherBackgroundArg[] = "--background";
 
 // The beginning of the "process serial number" argument that Launch Services
 // sometimes inserts into command lines. A process serial number is only valid
 // for a single process, so any PSN arguments will be stripped from command
-// lines during relaunch to avoid confusion.
-const char kPSNArg[] = "-psn_";
+// lines during relaunch to avoid confusion. When using the CommandLine
+// interface, -psn_ may have been rewritten as --psn_. Look for both.
+constexpr char kPSNArg[] = "-psn_";
+constexpr char kAltPSNArg[] = "--psn_";
 
 // Returns the "type" argument identifying a relauncher process
 // ("--type=relauncher").
@@ -94,12 +98,13 @@ bool RelaunchAppWithHelper(const std::string& helper,
                            const std::vector<std::string>& relauncher_args,
                            const std::vector<std::string>& args) {
   std::vector<std::string> relaunch_args;
+  relaunch_args.reserve(relauncher_args.size() + args.size() + 4);
   relaunch_args.push_back(helper);
   relaunch_args.push_back(RelauncherTypeArg());
 
   // If this application isn't in the foreground, the relaunched one shouldn't
   // be either.
-  if (![NSApp isActive]) {
+  if (!NSApp.active) {
     relaunch_args.push_back(kRelauncherBackgroundArg);
   }
 
@@ -108,14 +113,15 @@ bool RelaunchAppWithHelper(const std::string& helper,
 
   relaunch_args.push_back(kRelauncherArgSeparator);
 
-  // When using the CommandLine interface, -psn_ may have been rewritten as
-  // --psn_. Look for both.
-  const char alt_psn_arg[] = "--psn_";
-  for (size_t index = 0; index < args.size(); ++index) {
-    // Strip any -psn_ arguments, as they apply to a specific process.
-    if (args[index].compare(0, strlen(kPSNArg), kPSNArg) != 0 &&
-        args[index].compare(0, strlen(alt_psn_arg), alt_psn_arg) != 0) {
-      relaunch_args.push_back(args[index]);
+  // The first item of `args` is the path to the executable, but launch APIs
+  // require the path to the bundle. Rather than try to derive the bundle path
+  // from the executable path, substitute in the bundle path.
+  relaunch_args.push_back(base::mac::OuterBundlePath().value());
+  for (size_t i = 1; i < args.size(); ++i) {
+    // Strip any PSN arguments, as they apply to a specific process.
+    if (args[i].compare(0, strlen(kPSNArg), kPSNArg) != 0 &&
+        args[i].compare(0, strlen(kAltPSNArg), kAltPSNArg) != 0) {
+      relaunch_args.push_back(args[i]);
     }
   }
 
@@ -143,8 +149,7 @@ bool RelaunchAppWithHelper(const std::string& helper,
                 "kRelauncherSyncFD must not conflict with stdio fds");
 
   base::LaunchOptions options;
-  options.fds_to_remap.push_back(
-      std::make_pair(pipe_write_fd.get(), kRelauncherSyncFD));
+  options.fds_to_remap.emplace_back(pipe_write_fd.get(), kRelauncherSyncFD);
   if (!base::LaunchProcess(relaunch_args, options).IsValid()) {
     LOG(ERROR) << "base::LaunchProcess failed";
     return false;
@@ -204,7 +209,7 @@ void RelauncherSynchronizeWithParent() {
 
   struct kevent change = { 0 };
   EV_SET(&change, parent_pid, EVFILT_PROC, EV_ADD, NOTE_EXIT, 0, NULL);
-  if (kevent(kq.get(), &change, 1, NULL, 0, NULL) == -1) {
+  if (kevent(kq.get(), &change, 1, nullptr, 0, nullptr) == -1) {
     PLOG(ERROR) << "kevent (add)";
     return;
   }
@@ -219,7 +224,7 @@ void RelauncherSynchronizeWithParent() {
   // write above to complete. The parent process is now free to exit. Wait for
   // that to happen.
   struct kevent event;
-  int events = kevent(kq.get(), NULL, 0, &event, 1, NULL);
+  int events = kevent(kq.get(), nullptr, 0, &event, 1, nullptr);
   if (events != 1) {
     if (events < 0) {
       PLOG(ERROR) << "kevent (monitor)";
@@ -276,16 +281,16 @@ int RelauncherMain(content::MainFunctionParams main_parameters) {
 
     RelauncherSynchronizeWithParent();
 
-    // The capacity for relaunch_args is 4 less than argc, because it
-    // won't contain the argv[0] of the relauncher process, the
-    // RelauncherTypeArg() at argv[1], kRelauncherArgSeparator, or the
-    // executable path of the process to be launched.
-    base::scoped_nsobject<NSMutableArray> relaunch_args(
-        [[NSMutableArray alloc] initWithCapacity:argc - 4]);
+    // The capacity for relaunch_args is 4 less than argc, because it won't
+    // contain the argv[0] of the relauncher process, the RelauncherTypeArg() at
+    // argv[1], kRelauncherArgSeparator, or the executable path of the process
+    // to be launched.
+    std::vector<std::string> relaunch_args;
+    relaunch_args.reserve(argc - 4);
 
     // Figure out what to execute, what arguments to pass it, and whether to
-    // start it in the background.
-    bool background = false;
+    // start it activated.
+    bool activate = true;
     bool in_relaunch_args = false;
     std::string dmg_bsd_device_name;
     bool seen_relaunch_executable = false;
@@ -304,7 +309,7 @@ int RelauncherMain(content::MainFunctionParams main_parameters) {
         if (arg == kRelauncherArgSeparator) {
           in_relaunch_args = true;
         } else if (arg == kRelauncherBackgroundArg) {
-          background = true;
+          activate = false;
         } else if (arg.compare(0, relauncher_dmg_device_arg.size(),
                                relauncher_dmg_device_arg) == 0) {
           dmg_bsd_device_name.assign(
@@ -312,19 +317,14 @@ int RelauncherMain(content::MainFunctionParams main_parameters) {
         }
       } else {
         if (!seen_relaunch_executable) {
-          // The first argument after kRelauncherBackgroundArg is the path to
-          // the executable file or .app bundle directory. The Launch Services
-          // interface wants this separate from the rest of the arguments. In
-          // the relaunched process, this path will still be visible at argv[0].
+          // The first argument after kRelauncherArgSeparator is the path to the
+          // .app bundle directory. The Launch Services interface wants this
+          // separate from the rest of the arguments. In the relaunched process,
+          // the executable path will still be visible at argv[0].
           relaunch_executable.assign(arg);
           seen_relaunch_executable = true;
         } else {
-          NSString* arg_string = base::SysUTF8ToNSString(arg);
-          if (!arg_string) {
-            LOG(ERROR) << "base::SysUTF8ToNSString failed for " << arg;
-            return 1;
-          }
-          [relaunch_args addObject:arg_string];
+          relaunch_args.push_back(arg);
         }
       }
     }
@@ -334,28 +334,24 @@ int RelauncherMain(content::MainFunctionParams main_parameters) {
       return 1;
     }
 
-    NSString* path = base::SysUTF8ToNSString(relaunch_executable);
-    base::scoped_nsobject<NSURL> url([[NSURL alloc] initFileURLWithPath:path]);
-    NSDictionary* configuration =
-        @{NSWorkspaceLaunchConfigurationArguments : (relaunch_args.get())};
+    base::mac::LaunchApplication(
+        base::FilePath(relaunch_executable), relaunch_args, /*url_specs=*/{},
+        {.activate = activate,
+         .create_new_instance = true,
+         .prompt_user_if_needed = true},
+        base::BindOnce(
+            [](base::expected<NSRunningApplication*, NSError*> result) {
+              if (!result.has_value()) {
+                LOG(ERROR) << "Failed to relaunch: "
+                           << base::SysNSStringToUTF8(
+                                  result.error().description);
+              }
 
-    NSRunningApplication* application = [[NSWorkspace sharedWorkspace]
-        launchApplicationAtURL:url
-                       options:NSWorkspaceLaunchDefault |
-                               NSWorkspaceLaunchWithErrorPresentation |
-                               (background ? NSWorkspaceLaunchWithoutActivation
-                                           : 0) |
-                               NSWorkspaceLaunchNewInstance
-                 configuration:configuration
-                         error:nil];
-    if (!application) {
-      LOG(ERROR) << "Failed to relaunch " << relaunch_executable;
-      return 1;
-    }
+              CFRunLoopStop(CFRunLoopGetMain());
+            }));
 
-    // The application should have relaunched (or is in the process of
-    // relaunching). From this point on, only clean-up tasks should occur, and
-    // failures are tolerable.
+    // This is running the main thread.
+    CFRunLoopRun();
 
     if (!dmg_bsd_device_name.empty()) {
       EjectAndTrashDiskImage(dmg_bsd_device_name);

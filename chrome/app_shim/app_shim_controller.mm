@@ -16,7 +16,7 @@
 #include "base/hash/md5.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/launch_services_util.h"
+#include "base/mac/launch_application.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/mach_logging.h"
 #include "base/memory/raw_ptr.h"
@@ -218,9 +218,9 @@ bool AppShimController::FindOrLaunchChrome() {
         app_command_line->GetSwitchValueASCII(switches::kDisableFeatures));
   }
 
-  base::mac::OpenApplication(
+  base::mac::LaunchApplication(
       chrome_bundle_path, browser_command_line, /*url_specs=*/{},
-      /*options=*/{.create_new_instance = true},
+      {.create_new_instance = true},
       base::BindOnce(
           [](AppShimController* shim_controller,
              base::expected<NSRunningApplication*, NSError*> result) {

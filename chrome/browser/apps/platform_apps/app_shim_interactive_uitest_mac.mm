@@ -13,7 +13,7 @@
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/mac/foundation_util.h"
-#import "base/mac/launch_services_util.h"
+#import "base/mac/launch_application.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
@@ -370,8 +370,8 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_HostedAppLaunch) {
 
     base::test::TestFuture<base::expected<NSRunningApplication*, NSError*>>
         open_result;
-    base::mac::OpenApplication(shim_path_, shim_cmdline, /*url_specs=*/{},
-                               /*options=*/{}, open_result.GetCallback());
+    base::mac::LaunchApplication(shim_path_, shim_cmdline, /*url_specs=*/{},
+                                 /*options=*/{}, open_result.GetCallback());
     ASSERT_TRUE(open_result.Get<0>().has_value());
     NSRunningApplication* shim_app = open_result.Get<0>().value();
     ASSERT_TRUE(shim_app);
@@ -447,8 +447,8 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_Launch) {
 
     base::test::TestFuture<base::expected<NSRunningApplication*, NSError*>>
         open_result;
-    base::mac::OpenApplication(shim_path_, shim_cmdline, /*url_specs=*/{},
-                               /*options=*/{}, open_result.GetCallback());
+    base::mac::LaunchApplication(shim_path_, shim_cmdline, /*url_specs=*/{},
+                                 /*options=*/{}, open_result.GetCallback());
     ASSERT_TRUE(open_result.Get<0>().has_value());
     NSRunningApplication* shim_app = open_result.Get<0>().value();
     ASSERT_TRUE(shim_app);
@@ -673,8 +673,8 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_RebuildShim) {
 
   base::test::TestFuture<base::expected<NSRunningApplication*, NSError*>>
       open_result;
-  base::mac::OpenApplication(shim_path, shim_cmdline, /*url_specs=*/{},
-                             /*options=*/{}, open_result.GetCallback());
+  base::mac::LaunchApplication(shim_path, shim_cmdline, /*url_specs=*/{},
+                               /*options=*/{}, open_result.GetCallback());
   ASSERT_TRUE(open_result.Get<0>().has_value());
   NSRunningApplication* shim_app = open_result.Get<0>().value();
   ASSERT_TRUE(shim_app);

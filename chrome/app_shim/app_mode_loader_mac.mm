@@ -18,7 +18,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
-#import "base/mac/launch_services_util.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -234,9 +233,8 @@ int LoadFrameworkAndStart(int argc, char** argv) {
     cr_command_line.AppendSwitchPath(switches::kProfileDirectory, profile_dir);
     cr_command_line.AppendSwitchASCII(switches::kAppId, app_mode_id);
 
-    // Launch the executable directly since base::mac::OpenApplicationWithPath
-    // doesn't pass command line arguments if the application is already
-    // running.
+    // Launch the executable directly since base::mac::LaunchApplication doesn't
+    // pass command line arguments if the application is already running.
     if (!base::LaunchProcess(cr_command_line, base::LaunchOptions())
              .IsValid()) {
       NSLog(@"Could not launch Chrome: %s",

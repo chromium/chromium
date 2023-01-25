@@ -8,6 +8,8 @@
 #import <SafariServices/SafariServices.h>
 
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
+#include "base/mac/launch_application.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/browser_features.h"
@@ -84,22 +86,9 @@ absl::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url) {
 }
 
 void LaunchMacApp(const GURL& url, const std::string& launch_name) {
-  if (@available(macOS 10.15, *)) {
-    [[NSWorkspace sharedWorkspace]
-                    openURLs:@[ net::NSURLWithGURL(url) ]
-        withApplicationAtURL:[NSURL fileURLWithPath:base::SysUTF8ToNSString(
-                                                        launch_name)]
-               configuration:[NSWorkspaceOpenConfiguration configuration]
-           completionHandler:nil];
-  } else {
-    [[NSWorkspace sharedWorkspace]
-                    openURLs:@[ net::NSURLWithGURL(url) ]
-        withApplicationAtURL:[NSURL fileURLWithPath:base::SysUTF8ToNSString(
-                                                        launch_name)]
-                     options:0
-               configuration:@{}
-                       error:nil];
-  }
+  base::mac::LaunchApplication(base::FilePath(launch_name),
+                               /*command_line_args=*/{}, {url.spec()},
+                               /*options=*/{}, base::DoNothing());
 }
 
 void OverrideMacAppForUrlForTesting(bool fake, const std::string& app_path) {

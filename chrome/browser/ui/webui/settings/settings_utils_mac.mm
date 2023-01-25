@@ -6,7 +6,10 @@
 
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/mac/foundation_util.h"
+#include "base/mac/launch_application.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -39,11 +42,11 @@ void ShowNetworkProxySettings(content::WebContents* web_contents) {
 }
 
 void ShowManageSSLCertificates(content::WebContents* web_contents) {
-  NSString* const kKeychainBundleId = @"com.apple.keychainaccess";
-  [[NSWorkspace sharedWorkspace] launchAppWithBundleIdentifier:kKeychainBundleId
-                                                       options:0L
-                                additionalEventParamDescriptor:nil
-                                              launchIdentifier:nil];
+  NSURL* keychain_app = [NSWorkspace.sharedWorkspace
+      URLForApplicationWithBundleIdentifier:@"com.apple.keychainaccess"];
+  base::mac::LaunchApplication(base::mac::NSURLToFilePath(keychain_app),
+                               /*command_line_args=*/{}, /*url_specs=*/{},
+                               /*options=*/{}, base::DoNothing());
 }
 
 void ValidateSavedFonts(PrefService* prefs) {

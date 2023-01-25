@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "base/mac/launch_services_util.h"
+#import "base/mac/launch_application.h"
 
+#include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
@@ -14,37 +15,50 @@ namespace base::mac {
 
 namespace {
 
-NSArray* CommandLineToArgsArray(const CommandLine& command_line) {
-  const auto& argv = command_line.argv();
-  size_t argc = argv.size();
-  DCHECK_GT(argc, 0lu);
+NSArray* CommandLineArgsToArgsArray(const CommandLineArgs& command_line_args) {
+  if (const CommandLine* command_line =
+          absl::get_if<CommandLine>(&command_line_args)) {
+    const auto& argv = command_line->argv();
+    size_t argc = argv.size();
+    DCHECK_GT(argc, 0lu);
 
-  NSMutableArray* args_array = [NSMutableArray arrayWithCapacity:argc - 1];
-  // NSWorkspace automatically adds the binary path as the first argument and
-  // thus it should not be included in the list.
-  for (size_t i = 1; i < argc; ++i) {
-    [args_array addObject:base::SysUTF8ToNSString(argv[i])];
+    NSMutableArray* args_array = [NSMutableArray arrayWithCapacity:argc - 1];
+    // NSWorkspace automatically adds the binary path as the first argument and
+    // thus it should not be included in the list.
+    for (size_t i = 1; i < argc; ++i) {
+      [args_array addObject:base::SysUTF8ToNSString(argv[i])];
+    }
+
+    return args_array;
   }
 
-  return args_array;
+  if (const std::vector<std::string>* string_vector =
+          absl::get_if<std::vector<std::string>>(&command_line_args)) {
+    NSMutableArray* args_array =
+        [NSMutableArray arrayWithCapacity:string_vector->size()];
+    for (const auto& arg : *string_vector) {
+      [args_array addObject:base::SysUTF8ToNSString(arg)];
+    }
+  }
+
+  return @[];
 }
 
 NSWorkspaceOpenConfiguration* GetOpenConfiguration(
-    OpenApplicationOptions options,
-    const CommandLine& command_line) API_AVAILABLE(macos(10.15)) {
+    LaunchApplicationOptions options,
+    const CommandLineArgs& command_line_args) API_AVAILABLE(macos(10.15)) {
   NSWorkspaceOpenConfiguration* config =
       [NSWorkspaceOpenConfiguration configuration];
 
   config.activates = options.activate;
   config.createsNewApplicationInstance = options.create_new_instance;
-  config.promptsUserIfNeeded = NO;
-
-  config.arguments = CommandLineToArgsArray(command_line);
+  config.promptsUserIfNeeded = options.prompt_user_if_needed;
+  config.arguments = CommandLineArgsToArgsArray(command_line_args);
 
   return config;
 }
 
-NSWorkspaceLaunchOptions GetLaunchOptions(OpenApplicationOptions options) {
+NSWorkspaceLaunchOptions GetLaunchOptions(LaunchApplicationOptions options) {
   NSWorkspaceLaunchOptions launch_options = NSWorkspaceLaunchDefault;
 
   if (!options.activate) {
@@ -53,18 +67,21 @@ NSWorkspaceLaunchOptions GetLaunchOptions(OpenApplicationOptions options) {
   if (options.create_new_instance) {
     launch_options |= NSWorkspaceLaunchNewInstance;
   }
+  if (options.prompt_user_if_needed) {
+    launch_options |= NSWorkspaceLaunchWithErrorPresentation;
+  }
 
   return launch_options;
 }
 
 }  // namespace
 
-void OpenApplication(const base::FilePath& app_bundle_path,
-                     const CommandLine& command_line,
-                     const std::vector<std::string>& url_specs,
-                     OpenApplicationOptions options,
-                     ApplicationOpenedCallback callback) {
-  __block ApplicationOpenedCallback callback_block_access = std::move(callback);
+void LaunchApplication(const base::FilePath& app_bundle_path,
+                       const CommandLineArgs& command_line_args,
+                       const std::vector<std::string>& url_specs,
+                       LaunchApplicationOptions options,
+                       LaunchApplicationCallback callback) {
+  __block LaunchApplicationCallback callback_block_access = std::move(callback);
 
   NSURL* bundle_url = FilePathToNSURL(app_bundle_path);
   if (!bundle_url) {
@@ -100,7 +117,7 @@ void OpenApplication(const base::FilePath& app_bundle_path,
         };
 
     NSWorkspaceOpenConfiguration* configuration =
-        GetOpenConfiguration(options, command_line);
+        GetOpenConfiguration(options, command_line_args);
 
     if (ns_urls) {
       [NSWorkspace.sharedWorkspace openURLs:ns_urls
@@ -115,7 +132,7 @@ void OpenApplication(const base::FilePath& app_bundle_path,
   } else {
     NSDictionary* configuration = @{
       NSWorkspaceLaunchConfigurationArguments :
-          CommandLineToArgsArray(command_line),
+          CommandLineArgsToArgsArray(command_line_args),
     };
 
     NSWorkspaceLaunchOptions launch_options = GetLaunchOptions(options);
