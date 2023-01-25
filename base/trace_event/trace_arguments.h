@@ -175,7 +175,7 @@ class BASE_EXPORT ConvertableToTraceFormat
     // into the proto, with the given |field_id|.
     virtual size_t Finalize(uint32_t field_id) = 0;
   };
-  virtual bool AppendToProto(ProtoAppender* appender);
+  virtual bool AppendToProto(ProtoAppender* appender) const;
 
   virtual void EstimateTraceMemoryOverhead(TraceEventMemoryOverhead* overhead);
 

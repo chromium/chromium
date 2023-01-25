@@ -14,6 +14,7 @@
 
 #include "base/check_op.h"
 #include "base/json/string_escape.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -113,6 +114,31 @@ void AppendValueDebugString(const TraceArguments& args,
   args.values()[idx].AppendAsJSON(args.types()[idx], out);
   *out += ")";
 }
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+class PerfettoProtoAppender : public ConvertableToTraceFormat::ProtoAppender {
+ public:
+  explicit PerfettoProtoAppender(
+      perfetto::protos::pbzero::DebugAnnotation* proto)
+      : annotation_proto_(proto) {}
+  ~PerfettoProtoAppender() override = default;
+
+  void AddBuffer(uint8_t* begin, uint8_t* end) override {
+    ranges_.emplace_back();
+    ranges_.back().begin = begin;
+    ranges_.back().end = end;
+  }
+
+  size_t Finalize(uint32_t field_id) override {
+    return annotation_proto_->AppendScatteredBytes(field_id, ranges_.data(),
+                                                   ranges_.size());
+  }
+
+ private:
+  std::vector<protozero::ContiguousMemoryRange> ranges_;
+  raw_ptr<perfetto::protos::pbzero::DebugAnnotation> annotation_proto_;
+};
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace
 
@@ -294,6 +320,11 @@ void TraceArguments::AppendDebugString(std::string* out) {
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 void ConvertableToTraceFormat::Add(
     perfetto::protos::pbzero::DebugAnnotation* annotation) const {
+  PerfettoProtoAppender proto_appender(annotation);
+  if (AppendToProto(&proto_appender)) {
+    return;
+  }
+
   std::string json;
   AppendAsTraceFormat(&json);
   annotation->set_legacy_json_value(json);

@@ -640,7 +640,7 @@ void TracedValue::AppendAsTraceFormat(std::string* out) const {
   writer_->AppendAsTraceFormat(out);
 }
 
-bool TracedValue::AppendToProto(ProtoAppender* appender) {
+bool TracedValue::AppendToProto(ProtoAppender* appender) const {
   return writer_->AppendToProto(appender);
 }
 

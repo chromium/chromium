@@ -67,7 +67,7 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
 
   // ConvertableToTraceFormat implementation.
   void AppendAsTraceFormat(std::string* out) const override;
-  bool AppendToProto(ProtoAppender* appender) override;
+  bool AppendToProto(ProtoAppender* appender) const override;
 
   void EstimateTraceMemoryOverhead(TraceEventMemoryOverhead* overhead) override;
 
@@ -393,7 +393,7 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
   std::unique_ptr<base::Value> ToBaseValue() const;
 
  private:
-  std::unique_ptr<Writer> writer_;
+  mutable std::unique_ptr<Writer> writer_;
 
 #ifndef NDEBUG
   // In debug builds checks the pairings of {Start,End}{Dictionary,Array}

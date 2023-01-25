@@ -65,7 +65,7 @@ void WriteDebugAnnotation(protos::pbzero::DebugAnnotation* annotation,
 namespace base {
 namespace trace_event {
 
-bool ConvertableToTraceFormat::AppendToProto(ProtoAppender* appender) {
+bool ConvertableToTraceFormat::AppendToProto(ProtoAppender* appender) const {
   return false;
 }
 

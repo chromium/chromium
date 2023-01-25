@@ -26,7 +26,7 @@ class BASE_EXPORT LogMessage : public ConvertableToTraceFormat {
 
   // ConvertableToTraceFormat class implementation.
   void AppendAsTraceFormat(std::string* out) const override;
-  bool AppendToProto(ProtoAppender* appender) override;
+  bool AppendToProto(ProtoAppender* appender) const override;
 
   void EstimateTraceMemoryOverhead(TraceEventMemoryOverhead* overhead) override;
 
