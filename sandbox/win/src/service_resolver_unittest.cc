@@ -13,8 +13,8 @@
 
 #include "base/bit_cast.h"
 #include "base/memory/raw_ptr.h"
+#include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/resolver.h"
-#include "sandbox/win/src/sandbox_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

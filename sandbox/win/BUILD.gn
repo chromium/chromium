@@ -101,8 +101,6 @@ static_library("sandbox") {
     "src/sandbox_policy_diagnostic.h",
     "src/sandbox_rand.cc",
     "src/sandbox_rand.h",
-    "src/sandbox_utils.cc",
-    "src/sandbox_utils.h",
     "src/security_capabilities.cc",
     "src/security_capabilities.h",
     "src/service_resolver.cc",

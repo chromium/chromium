@@ -4,6 +4,9 @@
 
 #include "sandbox/win/src/filesystem_policy.h"
 
+#include <windows.h>
+#include <winternl.h>
+
 #include <ntstatus.h>
 #include <stdint.h>
 
@@ -11,15 +14,35 @@
 
 #include "base/notreached.h"
 #include "base/win/scoped_handle.h"
+#include "sandbox/win/src/internal_types.h"
 #include "sandbox/win/src/ipc_tags.h"
+#include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/policy_engine_opcodes.h"
 #include "sandbox/win/src/policy_params.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/sandbox_types.h"
-#include "sandbox/win/src/sandbox_utils.h"
 #include "sandbox/win/src/win_utils.h"
 
+namespace sandbox {
+
 namespace {
+
+struct ObjectAttribs : public OBJECT_ATTRIBUTES {
+  UNICODE_STRING uni_name;
+  SECURITY_QUALITY_OF_SERVICE security_qos;
+  ObjectAttribs(const std::wstring& name, ULONG attributes) {
+    ::RtlInitUnicodeString(&uni_name, name.c_str());
+    InitializeObjectAttributes(this, &uni_name, attributes, nullptr, nullptr);
+    if (IsPipe(name)) {
+      security_qos.Length = sizeof(security_qos);
+      security_qos.ImpersonationLevel = SecurityAnonymous;
+      // Set dynamic tracking to not capture the broker's token
+      security_qos.ContextTrackingMode = SECURITY_DYNAMIC_TRACKING;
+      security_qos.EffectiveOnly = TRUE;
+      SecurityQualityOfService = &security_qos;
+    }
+  }
+};
 
 NTSTATUS NtCreateFileInTarget(HANDLE* target_file_handle,
                               ACCESS_MASK desired_access,
@@ -33,7 +56,7 @@ NTSTATUS NtCreateFileInTarget(HANDLE* target_file_handle,
                               ULONG ea_length,
                               HANDLE target_process) {
   HANDLE local_handle = INVALID_HANDLE_VALUE;
-  NTSTATUS status = sandbox::GetNtExports()->CreateFile(
+  NTSTATUS status = GetNtExports()->CreateFile(
       &local_handle, desired_access, obj_attributes, io_status_block, nullptr,
       file_attributes, share_access, create_disposition, create_options,
       ea_buffer, ea_length);
@@ -41,7 +64,7 @@ NTSTATUS NtCreateFileInTarget(HANDLE* target_file_handle,
     return status;
   }
 
-  if (!sandbox::SameObject(local_handle, obj_attributes->ObjectName->Buffer)) {
+  if (!SameObject(local_handle, obj_attributes->ObjectName->Buffer)) {
     // The handle points somewhere else. Fail the operation.
     ::CloseHandle(local_handle);
     return STATUS_ACCESS_DENIED;
@@ -55,21 +78,7 @@ NTSTATUS NtCreateFileInTarget(HANDLE* target_file_handle,
   return STATUS_SUCCESS;
 }
 
-// Get an initialized anonymous level Security QOS.
-SECURITY_QUALITY_OF_SERVICE GetAnonymousQOS() {
-  SECURITY_QUALITY_OF_SERVICE security_qos = {0};
-  security_qos.Length = sizeof(security_qos);
-  security_qos.ImpersonationLevel = SecurityAnonymous;
-  // Set dynamic tracking so that a pipe doesn't capture the broker's token
-  security_qos.ContextTrackingMode = SECURITY_DYNAMIC_TRACKING;
-  security_qos.EffectiveOnly = true;
-
-  return security_qos;
-}
-
 }  // namespace.
-
-namespace sandbox {
 
 bool FileSystemPolicy::GenerateRules(const wchar_t* name,
                                      Semantics semantics,
@@ -198,12 +207,7 @@ bool FileSystemPolicy::CreateFileAction(EvalResult eval_result,
     return false;
   }
   IO_STATUS_BLOCK io_block = {};
-  UNICODE_STRING uni_name = {};
-  OBJECT_ATTRIBUTES obj_attributes = {};
-  SECURITY_QUALITY_OF_SERVICE security_qos = GetAnonymousQOS();
-
-  InitObjectAttribs(file, attributes, nullptr, &obj_attributes, &uni_name,
-                    IsPipe(file) ? &security_qos : nullptr);
+  ObjectAttribs obj_attributes(file, attributes);
   *nt_status =
       NtCreateFileInTarget(handle, desired_access, &obj_attributes, &io_block,
                            file_attributes, share_access, create_disposition,
@@ -233,12 +237,8 @@ bool FileSystemPolicy::OpenFileAction(EvalResult eval_result,
   // An NtOpen is equivalent to an NtCreate with FileAttributes = 0 and
   // CreateDisposition = FILE_OPEN.
   IO_STATUS_BLOCK io_block = {};
-  UNICODE_STRING uni_name = {};
-  OBJECT_ATTRIBUTES obj_attributes = {};
-  SECURITY_QUALITY_OF_SERVICE security_qos = GetAnonymousQOS();
+  ObjectAttribs obj_attributes(file, attributes);
 
-  InitObjectAttribs(file, attributes, nullptr, &obj_attributes, &uni_name,
-                    IsPipe(file) ? &security_qos : nullptr);
   *nt_status = NtCreateFileInTarget(
       handle, desired_access, &obj_attributes, &io_block, 0, share_access,
       FILE_OPEN, open_options, nullptr, 0, client_info.process);
@@ -261,12 +261,7 @@ bool FileSystemPolicy::QueryAttributesFileAction(
     return false;
   }
 
-  UNICODE_STRING uni_name = {0};
-  OBJECT_ATTRIBUTES obj_attributes = {0};
-  SECURITY_QUALITY_OF_SERVICE security_qos = GetAnonymousQOS();
-
-  InitObjectAttribs(file, attributes, nullptr, &obj_attributes, &uni_name,
-                    IsPipe(file) ? &security_qos : nullptr);
+  ObjectAttribs obj_attributes(file, attributes);
   *nt_status = GetNtExports()->QueryAttributesFile(&obj_attributes, file_info);
 
   return true;
@@ -285,12 +280,7 @@ bool FileSystemPolicy::QueryFullAttributesFileAction(
     *nt_status = STATUS_ACCESS_DENIED;
     return false;
   }
-  UNICODE_STRING uni_name = {0};
-  OBJECT_ATTRIBUTES obj_attributes = {0};
-  SECURITY_QUALITY_OF_SERVICE security_qos = GetAnonymousQOS();
-
-  InitObjectAttribs(file, attributes, nullptr, &obj_attributes, &uni_name,
-                    IsPipe(file) ? &security_qos : nullptr);
+  ObjectAttribs obj_attributes(file, attributes);
   *nt_status =
       GetNtExports()->QueryFullAttributesFile(&obj_attributes, file_info);
 

@@ -15,7 +15,6 @@
 #include "sandbox/win/src/acl.h"
 #include "sandbox/win/src/restricted_token.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
-#include "sandbox/win/src/sandbox_utils.h"
 #include "sandbox/win/src/security_level.h"
 #include "sandbox/win/src/win_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

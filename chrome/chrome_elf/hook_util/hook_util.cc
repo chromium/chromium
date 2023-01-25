@@ -10,7 +10,6 @@
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"  // utils
 #include "sandbox/win/src/interception_internal.h"
 #include "sandbox/win/src/internal_types.h"
-#include "sandbox/win/src/sandbox_utils.h"
 
 namespace {
 
