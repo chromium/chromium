@@ -204,43 +204,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-class PendingApprovalTelemetryExtensionTelemetryApiBrowserTest
-    : public TelemetryExtensionTelemetryApiBrowserTest {
- public:
-  PendingApprovalTelemetryExtensionTelemetryApiBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kTelemetryExtensionPendingApprovalApi);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
-                       GetAudioInfo_NoFeatureFlagEnabledError) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // If Probe interface is not available on this version of ash-chrome, this
-  // test suite will no-op.
-  if (!IsServiceAvailable()) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  // If the permission is not enabled, the method isn't defined
-  // on `chrome.os.telemetry`.
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      function getAudioInfo() {
-        chrome.test.assertThrows(() => { chrome.os.telemetry.getAudioInfo(); },
-          [], "chrome.os.telemetry.getAudioInfo is not a function");
-
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
                        GetAudioInfo_Error) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // If Probe interface is not available on this version of ash-chrome, this
@@ -272,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
   )");
 }
 
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetAudioInfo_Success) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // If Probe interface is not available on this version of ash-chrome, this
@@ -743,32 +707,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
-                       GetMarketingInfo_NoFeatureFlagEnabledError) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // If Probe interface is not available on this version of ash-chrome, this
-  // test suite will no-op.
-  if (!IsServiceAvailable()) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  // If the permission is not enabled, the method isn't defined
-  // on `chrome.os.telemetry`.
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      function getAudioInfo() {
-        chrome.test.assertThrows(() => {
-          chrome.os.telemetry.getMarketingInfo();
-        },
-        [], "chrome.os.telemetry.getMarketingInfo is not a function");
-
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
                        GetMarketingInfo_Error) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // If Probe interface is not available on this version of ash-chrome, this
@@ -800,8 +738,8 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
   )");
 }
 
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
-                       GetMarketingName_Success) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+                       GetMarketingInfo_Success) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // If Probe interface is not available on this version of ash-chrome, this
   // test suite will no-op.
