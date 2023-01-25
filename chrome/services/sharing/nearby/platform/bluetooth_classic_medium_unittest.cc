@@ -75,7 +75,8 @@ class BluetoothClassicMediumTest : public testing::Test {
  protected:
   void StartDiscovery() {
     EXPECT_FALSE(fake_adapter_->IsDiscoverySessionActive());
-    EXPECT_TRUE(bluetooth_classic_medium_->StartDiscovery(discovery_callback_));
+    EXPECT_TRUE(bluetooth_classic_medium_->StartDiscovery(
+        std::move(discovery_callback_)));
     EXPECT_TRUE(fake_adapter_->IsDiscoverySessionActive());
   }
 
@@ -137,21 +138,11 @@ class BluetoothClassicMediumTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-TEST_F(BluetoothClassicMediumTest, TestDiscovery_StartDiscoveryIsIdempotent) {
-  EXPECT_FALSE(fake_adapter_->IsDiscoverySessionActive());
-  EXPECT_TRUE(bluetooth_classic_medium_->StartDiscovery(discovery_callback_));
-  EXPECT_TRUE(fake_adapter_->IsDiscoverySessionActive());
-
-  EXPECT_TRUE(bluetooth_classic_medium_->StartDiscovery(discovery_callback_));
-  EXPECT_TRUE(fake_adapter_->IsDiscoverySessionActive());
-
-  StopDiscovery();
-}
-
 TEST_F(BluetoothClassicMediumTest, TestDiscovery_StartDiscoveryError) {
   fake_adapter_->SetShouldDiscoverySucceed(false);
   EXPECT_FALSE(fake_adapter_->IsDiscoverySessionActive());
-  EXPECT_FALSE(bluetooth_classic_medium_->StartDiscovery(discovery_callback_));
+  EXPECT_FALSE(bluetooth_classic_medium_->StartDiscovery(
+      std::move(discovery_callback_)));
   EXPECT_FALSE(fake_adapter_->IsDiscoverySessionActive());
 }
 

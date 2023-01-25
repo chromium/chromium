@@ -81,9 +81,19 @@ class BleMediumTest : public testing::Test {
     EXPECT_EQ(!scanning_service_ids_set_.empty(),
               fake_adapter_->IsDiscoverySessionActive());
     scanning_service_ids_set_.insert(service_id);
-    EXPECT_TRUE(ble_medium_->StartScanning(service_id,
-                                           fast_advertisement_service_uuid,
-                                           discovered_peripheral_callback_));
+    EXPECT_TRUE(ble_medium_->StartScanning(
+        service_id, fast_advertisement_service_uuid,
+        {.peripheral_discovered_cb =
+             [this](api::BlePeripheral& peripheral,
+                    const std::string& service_id, bool fast_advertisement) {
+               EXPECT_TRUE(fast_advertisement);
+               OnPeripheralDiscovered(peripheral, service_id);
+             },
+         .peripheral_lost_cb =
+             [this](api::BlePeripheral& peripheral,
+                    const std::string& service_id) {
+               OnPeripheralLost(peripheral, service_id);
+             }}));
     EXPECT_TRUE(fake_adapter_->IsDiscoverySessionActive());
   }
 

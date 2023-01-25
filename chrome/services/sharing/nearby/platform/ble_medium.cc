@@ -168,7 +168,7 @@ bool BleMedium::StartScanning(
   // A different DiscoveredPeripheralCallback is being passed on each call, so
   // each must be captured and associated with its service UUID.
   discovered_peripheral_callbacks_map_.insert(
-      {service_uuid, discovered_peripheral_callback});
+      {service_uuid, std::move(discovered_peripheral_callback)});
 
   discovery_service_id_to_fast_advertisement_service_uuid_map_.insert(
       {service_id, service_uuid});
