@@ -54,6 +54,10 @@ AppId GetAppIdFromApplicationName(const std::string& app_name) {
 
 AppId GenerateAppIdFromUnhashed(std::string unhashed_app_id) {
   DCHECK_EQ(GURL(unhashed_app_id).spec(), unhashed_app_id);
+  // The app ID is hashed twice: here and in GenerateId.
+  // The double-hashing is for historical reasons and it needs to stay
+  // this way for backwards compatibility. (Back then, a web app's input to the
+  // hash needed to be formatted like an extension public key.)
   return crx_file::id_util::GenerateId(
       crypto::SHA256HashString(unhashed_app_id));
 }
