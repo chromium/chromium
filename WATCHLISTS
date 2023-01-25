@@ -833,6 +833,10 @@
     'clang_update': {
       'filepath': 'tools/clang/scripts/update.py'
     },
+    'client_hints': {
+      'filepath': 'client_hints|user_agent_utils|content/common/user_agent.cc|'
+                  'content/public/common/user_agent.h',
+    },
     'clipboard': {
       'filepath': 'clipboard|dnd|drag|drop',
     },
@@ -2578,6 +2582,8 @@
                      'thakis@chromium.org',
                      'thestig@chromium.org',
                      'ukai+watch@chromium.org'],
+    'client_hints': ['victortan@chromium.org',
+                     'miketaylr@chromium.org'],
     'clipboard': ['dcheng@chromium.org'],
     'components_deps': ['droger+watchlist@chromium.org'],
     'compositor_animator': ['mdjones+watch@chromium.org'],
