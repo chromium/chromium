@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 
 source_set("named_message_port_connector") {
@@ -22,7 +21,6 @@ source_set("named_message_port_connector") {
 
 grit("resources") {
   source = "named_message_port_connector_resources.grd"
-  deps = [ ":js_type_check" ]
   outputs = [
     "grit/named_message_port_connector_resources.h",
     "named_message_port_connector_resources.pak",
@@ -30,10 +28,4 @@ grit("resources") {
 
   # Allow GRIT to assign IDs using its default set of base IDs.
   resource_ids = ""
-}
-
-js_binary("js_type_check") {
-  sources = [ "named_message_port_connector.js" ]
-  checks_only = true
-  closure_flags = strict_error_checking_closure_args
 }
