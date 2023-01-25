@@ -101,6 +101,10 @@ inline constexpr base::FeatureParam<base::TimeDelta>
         "kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling",
         base::Hours(1)};
 
+// Whether the entry point to opt in to trusted vault in settings should be
+// shown.
+BASE_DECLARE_FEATURE(kSyncTrustedVaultPassphrasePromo);
+
 // Enables logging a UMA metric that requires first communicating with the
 // trusted vault server, in order to verify that the local notion of the device
 // being registered is consistent with the server-side state.

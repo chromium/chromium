@@ -4,8 +4,10 @@
 
 #include "components/sync/driver/sync_service_utils.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -112,8 +114,11 @@ bool ShouldOfferTrustedVaultOptIn(const SyncService* service) {
       // passphrase type to trusted vault is disallowed.
       return false;
     case PassphraseType::kKeystorePassphrase:
-      // Passphrase required should be extremely rare.
-      return !service->GetUserSettings()->IsPassphraseRequired();
+      if (service->GetUserSettings()->IsPassphraseRequired()) {
+        // This should be extremely rare.
+        return false;
+      }
+      return base::FeatureList::IsEnabled(kSyncTrustedVaultPassphrasePromo);
   }
 }
 
