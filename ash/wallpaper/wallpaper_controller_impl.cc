@@ -1621,18 +1621,18 @@ void WallpaperControllerImpl::OnWallpaperResized() {
 }
 
 void WallpaperControllerImpl::OnColorCalculationComplete(
+    const WallpaperInfo& info,
     const WallpaperCalculatedColors& wallpaper_calculated_colors) {
-  const AccountId account_id = GetActiveAccountId();
+  // Since we delete `color_calculator_` in `ShowWallpaperImage()`,
+  // `current_wallpaper_` should always be the same as the wallpaper for which
+  // color computation has been completed in production.
+  DCHECK(current_wallpaper_->wallpaper_info().MatchesAsset(info));
 
   // Use |WallpaperInfo::location| as the key for storing |prominent_colors_| in
   // the |kWallpaperColors| pref.
-  // TODO(crbug.com/787134): The |prominent_colors_| of wallpapers with empty
-  // location should be cached as well.
-  // TODO(skau): This does not guarantee that the current wallpaper is the same
-  // wallpaper for which the colors were calculated.
   pref_manager_->CacheProminentColors(
-      account_id, wallpaper_calculated_colors.prominent_colors);
-  pref_manager_->CacheKMeanColor(account_id,
+      info.location, wallpaper_calculated_colors.prominent_colors);
+  pref_manager_->CacheKMeanColor(info.location,
                                  wallpaper_calculated_colors.k_mean_color);
   SetCalculatedColors(wallpaper_calculated_colors);
 
@@ -2627,9 +2627,9 @@ void WallpaperControllerImpl::CalculateWallpaperColors() {
 
   color_calculator_ = std::make_unique<WallpaperColorCalculator>(
       GetWallpaper(), color_profiles_);
-  if (!color_calculator_->StartCalculation(
-          base::BindOnce(&WallpaperControllerImpl::OnColorCalculationComplete,
-                         weak_factory_.GetWeakPtr()))) {
+  if (!color_calculator_->StartCalculation(base::BindOnce(
+          &WallpaperControllerImpl::OnColorCalculationComplete,
+          weak_factory_.GetWeakPtr(), current_wallpaper_->wallpaper_info()))) {
     ResetCalculatedColors();
   }
 }

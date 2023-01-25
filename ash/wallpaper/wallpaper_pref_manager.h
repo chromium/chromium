@@ -127,7 +127,7 @@ class ASH_EXPORT WallpaperPrefManager
   virtual absl::optional<WallpaperCalculatedColors> GetCachedWallpaperColors(
       base::StringPiece location) const = 0;
 
-  virtual void CacheProminentColors(const AccountId& account_id,
+  virtual void CacheProminentColors(base::StringPiece location,
                                     const std::vector<SkColor>& colors) = 0;
 
   virtual void RemoveProminentColors(const AccountId& account_id) = 0;
@@ -137,7 +137,7 @@ class ASH_EXPORT WallpaperPrefManager
   virtual absl::optional<std::vector<SkColor>> GetCachedProminentColors(
       const base::StringPiece location) const = 0;
 
-  virtual void CacheKMeanColor(const AccountId& account_id,
+  virtual void CacheKMeanColor(base::StringPiece location,
                                SkColor k_mean_color) = 0;
 
   // Returns the cached KMeans color value for the wallpaper at `location`.
@@ -147,7 +147,7 @@ class ASH_EXPORT WallpaperPrefManager
   virtual void RemoveKMeanColor(const AccountId& account_id) = 0;
 
   // Cache the prominent color sampled with the 'Celebi' algorithm.
-  virtual void CacheCelebiColor(const AccountId& account_id,
+  virtual void CacheCelebiColor(base::StringPiece location,
                                 SkColor celebi_color) = 0;
   // Returns the cached celebi color for the wallpaper at `location`.
   virtual absl::optional<SkColor> GetCelebiColor(

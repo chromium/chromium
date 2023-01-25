@@ -626,8 +626,11 @@ class ASH_EXPORT WallpaperControllerImpl
   // If an existing calculation is in progress it is destroyed.
   void CalculateWallpaperColors();
 
-  // Callback to handle the completed color computation.
-  void OnColorCalculationComplete(const WallpaperCalculatedColors& colors);
+  // Callback to handle the completed color computation for the wallpaper
+  // matching `info`. Caches `colors` locally and saves the result to local
+  // state.
+  void OnColorCalculationComplete(const WallpaperInfo& info,
+                                  const WallpaperCalculatedColors& colors);
 
   // Returns false when the color extraction algorithm shouldn't be run based on
   // system state (e.g. wallpaper image, SessionState, etc.).

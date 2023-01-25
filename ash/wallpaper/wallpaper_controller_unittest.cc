@@ -314,9 +314,28 @@ class TestWallpaperControllerObserver : public WallpaperControllerObserver {
     controller_->RemoveObserver(this);
   }
 
+  void SetOnResizeCallback(base::RepeatingClosure callback) {
+    resize_callback_ = callback;
+  }
+
+  void SetOnColorsCalculatedCallback(base::RepeatingClosure callback) {
+    colors_calculated_callback_ = callback;
+  }
+
   // WallpaperControllerObserver
   void OnWallpaperChanged() override { ++wallpaper_changed_count_; }
-  void OnWallpaperColorsChanged() override { ++colors_changed_count_; }
+  void OnWallpaperResized() override {
+    if (resize_callback_) {
+      resize_callback_.Run();
+    }
+  }
+  void OnWallpaperColorsChanged() override {
+    ++colors_changed_count_;
+
+    if (colors_calculated_callback_) {
+      colors_calculated_callback_.Run();
+    }
+  }
   void OnWallpaperBlurChanged() override { ++blur_changed_count_; }
   void OnFirstWallpaperShown() override { ++first_shown_count_; }
   void OnWallpaperPreviewStarted() override {
@@ -336,6 +355,10 @@ class TestWallpaperControllerObserver : public WallpaperControllerObserver {
 
  private:
   WallpaperController* controller_;
+
+  base::RepeatingClosure resize_callback_;
+  base::RepeatingClosure colors_calculated_callback_;
+
   int colors_changed_count_ = 0;
   int blur_changed_count_ = 0;
   int first_shown_count_ = 0;
@@ -1033,6 +1056,54 @@ TEST_F(WallpaperControllerTest, ShouldCalculateColorsBasedOnSessionState) {
   EXPECT_FALSE(ShouldCalculateColors());
 }
 
+TEST_F(WallpaperControllerTest, ColorsCalculatedForMostRecentWallpaper) {
+  TestWallpaperControllerObserver observer(controller_);
+  // Total size of image must be greater than 100 pixels to trigger the async
+  // codepath (and any potential cancellation).
+  const int dimension = 20;
+
+  // Activate so we calculate colors.
+  SetSessionState(SessionState::ACTIVE);
+
+  base::RunLoop run_loop;
+  observer.SetOnResizeCallback(run_loop.QuitClosure());
+  // Sets the wallpaper to magenta.
+  const gfx::ImageSkia old_image =
+      CreateImage(dimension, dimension, kWallpaperColor);
+  WallpaperInfo old_info = CreateWallpaperInfo(WALLPAPER_LAYOUT_STRETCH);
+  old_info.location = "old";
+  controller_->ShowWallpaperImage(old_image, old_info,
+                                  /*preview_mode=*/false,
+                                  /*always_on_top=*/false);
+  // Run the controller until resize completes for the first wallpaper and
+  // color calculation starts.
+  run_loop.Run();
+  observer.SetOnResizeCallback(base::NullCallback());
+
+  base::RunLoop colors_loop;
+  observer.SetOnColorsCalculatedCallback(colors_loop.QuitClosure());
+
+  // Immediately switch the wallpaper color to blue.
+  const gfx::ImageSkia image = CreateImage(dimension, dimension, SK_ColorBLUE);
+  WallpaperInfo info = CreateWallpaperInfo(WALLPAPER_LAYOUT_STRETCH);
+  // Set location to somethind different than in `old_info`.
+  info.location = "new";
+
+  controller_->ShowWallpaperImage(image, info,
+                                  /*preview_mode=*/false,
+                                  /*always_on_top=*/false);
+
+  // Run until we get a notification of colors changed.
+  colors_loop.Run();
+
+  // There should only be one color change event if we interrupted the first
+  // attempt.
+  EXPECT_EQ(observer.colors_changed_count(), 1);
+  EXPECT_EQ(controller_->calculated_colors().k_mean_color, SK_ColorBLUE);
+  EXPECT_FALSE(pref_manager_->GetCachedKMeanColor("old"));
+  EXPECT_TRUE(pref_manager_->GetCachedKMeanColor("new"));
+}
+
 TEST_F(WallpaperControllerTest, EnableShelfColoringNotifiesObservers) {
   TestWallpaperControllerObserver observer(controller_);
   EXPECT_EQ(0, observer.colors_changed_count());
@@ -1057,9 +1128,9 @@ TEST_F(WallpaperControllerTest, ProminentColor_CachedColorsAvailableAtLogin) {
   const std::vector<SkColor> prominent_colors = {SK_ColorGREEN, SK_ColorRED,
                                                  SK_ColorBLUE,  SK_ColorWHITE,
                                                  SK_ColorWHITE, SK_ColorWHITE};
-  pref_manager_->CacheProminentColors(kAccountId1, prominent_colors);
+  pref_manager_->CacheProminentColors(relative_path.value(), prominent_colors);
   const SkColor k_means_color = SK_ColorLTGRAY;
-  pref_manager_->CacheKMeanColor(kAccountId1, k_means_color);
+  pref_manager_->CacheKMeanColor(relative_path.value(), k_means_color);
 
   // Reset to login screen.
   GetSessionControllerClient()->RequestSignOut();
@@ -1094,9 +1165,9 @@ TEST_F(WallpaperControllerTest, ProminentColor_ClearedBetweenUsers) {
   const std::vector<SkColor> prominent_colors = {SK_ColorGREEN, SK_ColorRED,
                                                  SK_ColorBLUE,  SK_ColorWHITE,
                                                  SK_ColorWHITE, SK_ColorWHITE};
-  pref_manager_->CacheProminentColors(kAccountId1, prominent_colors);
+  pref_manager_->CacheProminentColors(relative_path.value(), prominent_colors);
   const SkColor k_means_color = SK_ColorLTGRAY;
-  pref_manager_->CacheKMeanColor(kAccountId1, k_means_color);
+  pref_manager_->CacheKMeanColor(relative_path.value(), k_means_color);
 
   // Set a wallpaper for account 2.
   WallpaperInfo info2 = InfoWithType(WallpaperType::kDefault);
