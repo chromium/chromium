@@ -14,9 +14,9 @@ namespace {
 
 void ForwardToHandler(mojo::Remote<mojom::NetworkHintsHandler>* handler,
                       const std::vector<std::string>& names) {
-  std::vector<GURL> urls;
+  std::vector<url::SchemeHostPort> urls;
   for (const auto& name : names) {
-    urls.emplace_back("http://" + name);
+    urls.emplace_back(url::kHttpScheme, name, 80);
   }
   handler->get()->PrefetchDNS(urls);
 }
@@ -39,17 +39,18 @@ void WebPrescientNetworkingImpl::PrefetchDNS(const blink::WebURL& url) {
   if (!gurl.is_valid() || !gurl.has_host()) {
     return;
   }
+  url::SchemeHostPort scheme_host_pair(gurl);
 
   if (base::FeatureList::IsEnabled(network::features::kPrefetchDNSWithURL)) {
-    std::vector<GURL> urls;
-    urls.push_back(std::move(gurl));
+    std::vector<url::SchemeHostPort> urls;
+    urls.push_back(std::move(scheme_host_pair));
     handler_->PrefetchDNS(urls);
     // TODO(jam): If this launches remove DnsQueue and RendererDnsPrefetch
     // which are no longer needed. They were from a feature which existed
     // at launch but not anymore that prefetched DNS for every link on a page.
   } else {
-    auto host_piece = gurl.host_piece();
-    dns_prefetch_.Resolve(host_piece.data(), host_piece.length());
+    const auto& host = scheme_host_pair.host();
+    dns_prefetch_.Resolve(host.data(), host.length());
   }
 }
 
@@ -60,7 +61,9 @@ void WebPrescientNetworkingImpl::Preconnect(
   if (!url.IsValid())
     return;
 
-  handler_->Preconnect(url, allow_credentials);
+  GURL gurl(url);
+  url::SchemeHostPort scheme_host_pair(gurl);
+  handler_->Preconnect(scheme_host_pair, allow_credentials);
 }
 
 }  // namespace network_hints

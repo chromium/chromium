@@ -43,7 +43,8 @@ void NetworkHintsHandlerImpl::Create(
       std::move(receiver));
 }
 
-void NetworkHintsHandlerImpl::PrefetchDNS(const std::vector<GURL>& urls) {
+void NetworkHintsHandlerImpl::PrefetchDNS(
+    const std::vector<url::SchemeHostPort>& urls) {
   if (!preconnect_manager_)
     return;
 
@@ -52,17 +53,20 @@ void NetworkHintsHandlerImpl::PrefetchDNS(const std::vector<GURL>& urls) {
   if (!render_frame_host)
     return;
 
+  std::vector<GURL> gurls;
+  for (const auto& url : urls) {
+    gurls.emplace_back(url.GetURL());
+  }
   preconnect_manager_->StartPreresolveHosts(
-      urls, GetPendingNetworkAnonymizationKey(render_frame_host));
+      gurls, GetPendingNetworkAnonymizationKey(render_frame_host));
 }
 
-void NetworkHintsHandlerImpl::Preconnect(const GURL& url,
+void NetworkHintsHandlerImpl::Preconnect(const url::SchemeHostPort& url,
                                          bool allow_credentials) {
   if (!preconnect_manager_)
     return;
 
-  if (!url.is_valid() || !url.has_host() || !url.has_scheme() ||
-      !url.SchemeIsHTTPOrHTTPS()) {
+  if (url.scheme() != url::kHttpScheme && url.scheme() != url::kHttpsScheme) {
     return;
   }
 
@@ -75,7 +79,7 @@ void NetworkHintsHandlerImpl::Preconnect(const GURL& url,
     return;
 
   preconnect_manager_->StartPreconnectUrl(
-      url, allow_credentials,
+      url.GetURL(), allow_credentials,
       GetPendingNetworkAnonymizationKey(render_frame_host));
 }
 

@@ -46,7 +46,9 @@ net::NetworkAnonymizationKey GetPendingNetworkAnonymizationKey(
 // has completed or mojo connection error has happened.
 class DnsLookupRequest : public network::ResolveHostClientBase {
  public:
-  DnsLookupRequest(int render_process_id, int render_frame_id, const GURL& url)
+  DnsLookupRequest(int render_process_id,
+                   int render_frame_id,
+                   const url::SchemeHostPort& url)
       : render_process_id_(render_process_id),
         render_frame_id_(render_frame_id),
         url_(url) {}
@@ -72,7 +74,6 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
     }
 
     DCHECK(!receiver_.is_bound());
-    url::SchemeHostPort scheme_host_port(url_);
     network::mojom::ResolveHostParametersPtr resolve_host_parameters =
         network::mojom::ResolveHostParameters::New();
     // Lets the host resolver know it can be de-prioritized.
@@ -87,8 +88,7 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
     render_frame_host->GetProcess()
         ->GetStoragePartition()
         ->GetNetworkContext()
-        ->ResolveHost(network::mojom::HostResolverHost::NewSchemeHostPort(
-                          std::move(scheme_host_port)),
+        ->ResolveHost(network::mojom::HostResolverHost::NewSchemeHostPort(url_),
                       GetPendingNetworkAnonymizationKey(render_frame_host),
                       std::move(resolve_host_parameters),
                       receiver_.BindNewPipeAndPassRemote());
@@ -106,7 +106,7 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
                   const absl::optional<net::AddressList>& resolved_addresses,
                   const absl::optional<net::HostResolverEndpointResults>&
                       endpoint_results_with_metadata) override {
-    VLOG(2) << __FUNCTION__ << ": " << url_.spec()
+    VLOG(2) << __FUNCTION__ << ": " << url_.Serialize()
             << ", result=" << resolve_error_info.error;
     request_.reset();
   }
@@ -114,7 +114,7 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
   mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
   const int render_process_id_;
   const int render_frame_id_;
-  const GURL url_;
+  const url::SchemeHostPort url_;
   std::unique_ptr<DnsLookupRequest> request_;
 };
 
@@ -140,8 +140,9 @@ void SimpleNetworkHintsHandlerImpl::Create(
       std::move(receiver));
 }
 
-void SimpleNetworkHintsHandlerImpl::PrefetchDNS(const std::vector<GURL>& urls) {
-  for (const GURL& url : urls) {
+void SimpleNetworkHintsHandlerImpl::PrefetchDNS(
+    const std::vector<url::SchemeHostPort>& urls) {
+  for (const url::SchemeHostPort& url : urls) {
     std::unique_ptr<DnsLookupRequest> request =
         std::make_unique<DnsLookupRequest>(render_process_id_, render_frame_id_,
                                            url);
@@ -150,10 +151,9 @@ void SimpleNetworkHintsHandlerImpl::PrefetchDNS(const std::vector<GURL>& urls) {
   }
 }
 
-void SimpleNetworkHintsHandlerImpl::Preconnect(const GURL& url,
+void SimpleNetworkHintsHandlerImpl::Preconnect(const url::SchemeHostPort& url,
                                                bool allow_credentials) {
-  if (!url.is_valid() || !url.has_host() || !url.has_scheme() ||
-      !url.SchemeIsHTTPOrHTTPS()) {
+  if (url.scheme() != url::kHttpScheme && url.scheme() != url::kHttpsScheme) {
     return;
   }
 
@@ -168,7 +168,7 @@ void SimpleNetworkHintsHandlerImpl::Preconnect(const GURL& url,
 
   render_frame_host->GetStoragePartition()
       ->GetNetworkContext()
-      ->PreconnectSockets(/*num_streams=*/1, url, allow_credentials,
+      ->PreconnectSockets(/*num_streams=*/1, url.GetURL(), allow_credentials,
                           network_anonymization_key);
 }
 
