@@ -1988,7 +1988,7 @@ chromium-metrics-reviews@google.com.
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
-    Records tab drag and drop interactions on the tab switcher. An intercation
+    Records tab drag and drop interactions on the tab switcher. An interaction
     is recorded twice (one drag and one drop).
   </summary>
 </histogram>
@@ -2002,6 +2002,17 @@ chromium-metrics-reviews@google.com.
     The UI interaction by which the user changed the visible page in the tab
     switcher. Note that drag interactions can be recorded multiple time for a
     single drag.
+  </summary>
+</histogram>
+
+<histogram name="IOS.TabSwitcher.PinnedTabs.DragDropTabs"
+    enum="IOSTabSwitcherDragDropTabs" expires_after="2023-11-16">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>pakzhygitov@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records tab drag and drop interactions in the pinned tab view. An
+    interaction is recorded twice (one drag and one drop).
   </summary>
 </histogram>
 

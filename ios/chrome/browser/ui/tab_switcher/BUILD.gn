@@ -8,6 +8,8 @@ source_set("tab_switcher") {
   sources = [
     "tab_collection_consumer.h",
     "tab_collection_drag_drop_handler.h",
+    "tab_collection_drag_drop_metrics.h",
+    "tab_collection_drag_drop_metrics.mm",
     "tab_switcher_item.h",
     "tab_switcher_item.mm",
   ]
