@@ -33,10 +33,10 @@ SaveCardBannerRequestConfig::SaveCardBannerRequestConfig(
   expiration_date_month_ = delegate->expiration_date_month();
   expiration_date_year_ = delegate->expiration_date_year();
   button_label_text_ =
-      delegate->upload()
+      delegate->is_for_upload()
           ? l10n_util::GetStringUTF16(IDS_IOS_AUTOFILL_SAVE_ELLIPSIS)
           : delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK);
-  should_upload_credentials_ = delegate->upload();
+  should_upload_credentials_ = delegate->is_for_upload();
 }
 
 SaveCardBannerRequestConfig::~SaveCardBannerRequestConfig() = default;

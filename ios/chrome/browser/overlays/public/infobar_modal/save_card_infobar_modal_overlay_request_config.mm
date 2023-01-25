@@ -33,7 +33,7 @@ SaveCardModalRequestConfig::SaveCardModalRequestConfig(InfoBarIOS* infobar)
   issuer_icon_id_ = delegate->issuer_icon_id();
   legal_message_lines_ = LegalMessagesForModal(delegate);
   current_card_saved_ = infobar->accepted();
-  should_upload_credentials_ = delegate->upload();
+  should_upload_credentials_ = delegate->is_for_upload();
   displayed_target_account_email_ = delegate->displayed_target_account_email();
   displayed_target_account_avatar_ =
       delegate->displayed_target_account_avatar();
@@ -54,7 +54,7 @@ SaveCardModalRequestConfig::LegalMessagesForModal(
       [[NSMutableArray alloc] init];
   // Only display legal Messages if the card is being uploaded and there are
   // any.
-  if (delegate->upload() && !delegate->legal_message_lines().empty()) {
+  if (delegate->is_for_upload() && !delegate->legal_message_lines().empty()) {
     for (const auto& line : delegate->legal_message_lines()) {
       SaveCardMessageWithLinks* message =
           [[SaveCardMessageWithLinks alloc] init];

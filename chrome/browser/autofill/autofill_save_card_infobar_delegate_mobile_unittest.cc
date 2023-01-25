@@ -130,31 +130,19 @@ AutofillSaveCardInfoBarDelegateMobileTest::
     LegalMessageLine::Parse(value->GetDict(), &legal_message_lines,
                             /*escape_apostrophes=*/true);
   }
-  if (is_uploading) {
-    // Upload save infobar delegate:
-    credit_card_to_save_ = credit_card;
-    std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate(
-        new AutofillSaveCardInfoBarDelegateMobile(
-            is_uploading, options, credit_card, legal_message_lines,
-            /*upload_save_card_callback=*/
-            base::BindOnce(&AutofillSaveCardInfoBarDelegateMobileTest::
-                               UploadSaveCardPromptCallback,
-                           base::Unretained(this)),
-            /*local_save_card_callback=*/{}, AccountInfo()));
-    return delegate;
-  }
-  // Local save infobar delegate:
   credit_card_to_save_ = credit_card;
-  std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate(
-      new AutofillSaveCardInfoBarDelegateMobile(
-          is_uploading, options, credit_card, legal_message_lines,
-          /*upload_save_card_callback=*/{},
-          /*local_save_card_callback=*/
-          base::BindOnce(&AutofillSaveCardInfoBarDelegateMobileTest::
-                             LocalSaveCardPromptCallback,
-                         base::Unretained(this)),
-          AccountInfo()));
-  return delegate;
+  return is_uploading
+             ? AutofillSaveCardInfoBarDelegateMobile::CreateForUploadSave(
+                   options, credit_card,
+                   base::BindOnce(&AutofillSaveCardInfoBarDelegateMobileTest::
+                                      UploadSaveCardPromptCallback,
+                                  base::Unretained(this)),
+                   legal_message_lines, AccountInfo())
+             : AutofillSaveCardInfoBarDelegateMobile::CreateForLocalSave(
+                   options, credit_card,
+                   base::BindOnce(&AutofillSaveCardInfoBarDelegateMobileTest::
+                                      LocalSaveCardPromptCallback,
+                                  base::Unretained(this)));
 }
 
 // Test that local credit card save infobar metrics are logged correctly.

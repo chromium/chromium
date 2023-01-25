@@ -21,14 +21,12 @@ class MockAutofillSaveCardInfoBarDelegateMobile
     : public autofill::AutofillSaveCardInfoBarDelegateMobile {
  public:
   MockAutofillSaveCardInfoBarDelegateMobile(
-      bool upload,
       autofill::AutofillClient::SaveCreditCardOptions options,
       const autofill::CreditCard& card,
+      absl::variant<autofill::AutofillClient::LocalSaveCardPromptCallback,
+                    autofill::AutofillClient::UploadSaveCardPromptCallback>
+          callback,
       const autofill::LegalMessageLines& legal_message_lines,
-      autofill::AutofillClient::UploadSaveCardPromptCallback
-          upload_save_card_prompt_callback,
-      autofill::AutofillClient::LocalSaveCardPromptCallback
-          local_save_card_prompt_callback,
       const AccountInfo& displayed_target_account);
   ~MockAutofillSaveCardInfoBarDelegateMobile() override;
 
