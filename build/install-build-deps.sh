@@ -244,6 +244,7 @@ common_lib_list="\
   libc6
   libcairo2
   libcap2
+  libcgi-session-perl
   libcups2
   libdrm2
   libegl1
