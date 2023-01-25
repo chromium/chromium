@@ -34,6 +34,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -5204,15 +5205,10 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
       blink::StorageKey(url::Origin::Create(ext_url)),
       area.BindNewPipeAndPassReceiver());
   {
-    bool success = false;
-    base::RunLoop run_loop;
+    base::test::TestFuture<bool> future;
     area->Put({'k', 'e', 'y'}, {'v', 'a', 'l', 'u', 'e'}, absl::nullopt,
-              "source", base::BindLambdaForTesting([&](bool success_in) {
-                success = success_in;
-                run_loop.Quit();
-              }));
-    run_loop.Run();
-    ASSERT_TRUE(success);
+              "source", future.GetCallback());
+    ASSERT_TRUE(future.Get());
   }
 
   // Create indexed db. It is enough to only simulate this by
@@ -5271,35 +5267,21 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
   task_environment()->RunUntilIdle();
 
   // Check that the localStorage data been removed.
-  std::vector<storage::mojom::StorageUsageInfoPtr> usage_infos;
   {
-    base::RunLoop run_loop;
-    local_storage_control->GetUsage(base::BindLambdaForTesting(
-        [&](std::vector<storage::mojom::StorageUsageInfoPtr> usage_infos_in) {
-          usage_infos.swap(usage_infos_in);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
+    base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoPtr>>
+        future;
+    local_storage_control->GetUsage(future.GetCallback());
+    EXPECT_TRUE(future.Get().empty());
   }
-  EXPECT_TRUE(usage_infos.empty());
 
   // Check if the indexed db has disappeared too.
   EXPECT_FALSE(base::DirectoryExists(idb_path));
 }
 
-void SetCookieSaveData(bool* result_out,
-                       base::OnceClosure callback,
-                       net::CookieAccessResult result) {
-  *result_out = result.status.IsInclude();
-  std::move(callback).Run();
-}
-
-void GetCookiesSaveData(std::vector<net::CanonicalCookie>* result_out,
-                        base::OnceClosure callback,
-                        const net::CookieAccessResultList& result,
-                        const net::CookieAccessResultList& excluded_cookies) {
-  *result_out = net::cookie_util::StripAccessResults(result);
-  std::move(callback).Run();
+std::vector<net::CanonicalCookie> IncludedCookies(
+    const net::CookieAccessResultList& result,
+    const net::CookieAccessResultList& excluded) {
+  return net::cookie_util::StripAccessResults(result);
 }
 
 // Verifies app state is removed upon uninstall.
@@ -5351,26 +5333,22 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
   ASSERT_TRUE(cc.get());
 
   {
-    bool set_result = false;
-    base::RunLoop run_loop;
+    base::test::TestFuture<bool> future;
     cookie_manager_remote->SetCanonicalCookie(
         *cc.get(), origin1, net::CookieOptions::MakeAllInclusive(),
-        base::BindOnce(&SetCookieSaveData, &set_result,
-                       run_loop.QuitClosure()));
-    run_loop.Run();
-    EXPECT_TRUE(set_result);
+        base::BindOnce([](net::CookieAccessResult result) {
+          return result.status.IsInclude();
+        }).Then(future.GetCallback()));
+    EXPECT_TRUE(future.Get());
   }
 
   {
-    base::RunLoop run_loop;
-    std::vector<net::CanonicalCookie> cookies_result;
+    base::test::TestFuture<std::vector<net::CanonicalCookie>> future;
     cookie_manager_remote->GetCookieList(
         origin1, net::CookieOptions::MakeAllInclusive(),
         net::CookiePartitionKeyCollection(),
-        base::BindOnce(&GetCookiesSaveData, &cookies_result,
-                       run_loop.QuitClosure()));
-    run_loop.Run();
-    EXPECT_EQ(1U, cookies_result.size());
+        base::BindOnce(IncludedCookies).Then(future.GetCallback()));
+    EXPECT_EQ(1U, future.Get().size());
   }
 
   // Open a database.
@@ -5389,15 +5367,10 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
       blink::StorageKey(url::Origin::Create(origin1)),
       area.BindNewPipeAndPassReceiver());
   {
-    bool success = false;
-    base::RunLoop run_loop;
+    base::test::TestFuture<bool> future;
     area->Put({'k', 'e', 'y'}, {'v', 'a', 'l', 'u', 'e'}, absl::nullopt,
-              "source", base::BindLambdaForTesting([&](bool success_in) {
-                success = success_in;
-                run_loop.Quit();
-              }));
-    run_loop.Run();
-    ASSERT_TRUE(success);
+              "source", future.GetCallback());
+    ASSERT_TRUE(future.Get());
   }
 
   // Create indexed db. It is enough to only simulate this by
@@ -5436,15 +5409,12 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
 
   {
     // Check that the cookie is still there.
-    base::RunLoop run_loop;
-    std::vector<net::CanonicalCookie> cookies_result;
+    base::test::TestFuture<std::vector<net::CanonicalCookie>> future;
     cookie_manager_remote->GetCookieList(
         origin1, net::CookieOptions::MakeAllInclusive(),
         net::CookiePartitionKeyCollection(),
-        base::BindOnce(&GetCookiesSaveData, &cookies_result,
-                       run_loop.QuitClosure()));
-    run_loop.Run();
-    EXPECT_EQ(1U, cookies_result.size());
+        base::BindOnce(IncludedCookies).Then(future.GetCallback()));
+    EXPECT_EQ(1U, future.Get().size());
   }
 
   // Now uninstall the other. Storage should be cleared for the apps.
@@ -5456,15 +5426,12 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
 
   {
     // Check that the cookie is gone.
-    base::RunLoop run_loop;
-    std::vector<net::CanonicalCookie> cookies_result;
+    base::test::TestFuture<std::vector<net::CanonicalCookie>> future;
     cookie_manager_remote->GetCookieList(
         origin1, net::CookieOptions::MakeAllInclusive(),
         net::CookiePartitionKeyCollection(),
-        base::BindOnce(&GetCookiesSaveData, &cookies_result,
-                       run_loop.QuitClosure()));
-    run_loop.Run();
-    EXPECT_EQ(0U, cookies_result.size());
+        base::BindOnce(IncludedCookies).Then(future.GetCallback()));
+    EXPECT_EQ(0U, future.Get().size());
   }
 
   // The database should have vanished as well.
@@ -5479,17 +5446,12 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
   task_environment()->RunUntilIdle();
 
   // Check that the localStorage data been removed.
-  std::vector<storage::mojom::StorageUsageInfoPtr> usage_infos;
   {
-    base::RunLoop run_loop;
-    local_storage_control->GetUsage(base::BindLambdaForTesting(
-        [&](std::vector<storage::mojom::StorageUsageInfoPtr> usage_infos_in) {
-          usage_infos.swap(usage_infos_in);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
+    base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoPtr>>
+        future;
+    local_storage_control->GetUsage(future.GetCallback());
+    EXPECT_TRUE(future.Get().empty());
   }
-  EXPECT_TRUE(usage_infos.empty());
 
   // Check if the indexed db has disappeared too.
   EXPECT_FALSE(base::DirectoryExists(idb_path));
