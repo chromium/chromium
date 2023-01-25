@@ -17,16 +17,17 @@ namespace updater {
 
 // Parses the offline manifest file and extracts the app install command line.
 //
-// The function looks for the manifest file "OfflineManifest.gup" in
-// `offline_dir`, and falls back to "<app_id>.gup" in the same directory if
+// The function looks for the manifest file "OfflineManifest.gup" inside the
+// offline directory, and falls back to "<app_id>.gup" in the same directory if
 // needed.
 //
-// The offline dir can be specified as a relative path when it is in the format
-// "/offlinedir {GUID}". In this case:
-// * the actual offline directory is `{CURRENT_PROCESS_DIR}\Offline\{GUID}`,
-// * the offline manifest is
-// `{CURRENT_PROCESS_DIR}\Offline\{GUID}\OfflineManifest.gup`, and
-// * the installer is at
+// `offline_dir_guid`: the offline directory is specified on the command line as
+// a relative path in the format "/offlinedir {GUID}", where `{GUID}` is the
+// `offline_dir_guid` parameter.
+// * The actual offline directory is at `{CURRENT_PROCESS_DIR}\Offline\{GUID}`.
+// * The offline manifest is at
+// `{CURRENT_PROCESS_DIR}\Offline\{GUID}\OfflineManifest.gup`.
+// * The installer is at
 // `{CURRENT_PROCESS_DIR}\Offline\{GUID}\{app_id}\installer.exe`.
 //   * `installer.exe` may not correspond exactly to the value of the manifest's
 //   `run` attribute, so the code picks the first file it finds in the
@@ -46,7 +47,7 @@ namespace updater {
 //                   installation, the text will be serialized to a file and
 //                   passed to the app installer.
 void ReadInstallCommandFromManifest(
-    const base::FilePath& offline_dir,
+    const std::wstring& offline_dir_guid,
     const std::string& app_id,
     const std::string& install_data_index,
     update_client::ProtocolParser::Results& results,

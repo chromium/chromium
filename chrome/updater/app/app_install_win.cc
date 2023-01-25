@@ -544,7 +544,7 @@ void AppInstallControllerImpl::InstallAppOffline(
                       std::string install_args;
                       std::string install_data;
                       ReadInstallCommandFromManifest(
-                          cmd_line.GetSwitchValuePath(kOfflineDirSwitch),
+                          cmd_line.GetSwitchValueNative(kOfflineDirSwitch),
                           app_id,
                           GetInstallDataIndexFromAppArgsForCommandLine(cmd_line,
                                                                        app_id),

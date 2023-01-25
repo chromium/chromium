@@ -18,34 +18,11 @@
 namespace updater {
 
 TEST(ManifestUtil, ReadInstallCommandFromManifest) {
-  update_client::ProtocolParser::Results results;
-  base::FilePath installer_path;
-  std::string install_args;
-  std::string install_data;
-
-  base::FilePath offline_dir;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &offline_dir));
-  offline_dir = offline_dir.Append(FILE_PATH_LITERAL("updater"));
-
-  ReadInstallCommandFromManifest(
-      offline_dir, "{CDABE316-39CD-43BA-8440-6D1E0547AEE6}", "verboselogging",
-      results, installer_path, install_args, install_data);
-  EXPECT_EQ(installer_path, offline_dir.AppendASCII("my_installer.exe"));
-  EXPECT_EQ(install_args, "-baz");
-  EXPECT_EQ(install_data,
-            "{\n"
-            "        \"distribution\": {\n"
-            "          \"verbose_logging\": true\n"
-            "        }\n"
-            "      }");
-}
-
-TEST(ManifestUtil, ReadInstallCommandFromManifest_OfflineDirRelative) {
   const std::string app_id("{CDABE316-39CD-43BA-8440-6D1E0547AEE6}");
   const std::wstring manifest_filename(L"OfflineManifest.gup");
   const std::wstring executable_name(L"my_installer.exe");
   const std::wstring executable_name_v2(L"random_named_my_installer.exe");
-  const base::FilePath offline_dir_relative(
+  const std::wstring offline_dir_guid(
       L"{7B3A5597-DDEA-409B-B900-4C3D2A94A75C}");
 
   base::FilePath exe_dir;
@@ -55,7 +32,7 @@ TEST(ManifestUtil, ReadInstallCommandFromManifest_OfflineDirRelative) {
   ASSERT_TRUE(scoped_offline_base_dir.Set(exe_dir.Append(L"Offline")));
 
   const base::FilePath offline_dir(
-      scoped_offline_base_dir.GetPath().Append(offline_dir_relative));
+      scoped_offline_base_dir.GetPath().Append(offline_dir_guid));
 
   base::FilePath test_manifest;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_manifest));
@@ -80,7 +57,7 @@ TEST(ManifestUtil, ReadInstallCommandFromManifest_OfflineDirRelative) {
   std::string install_args;
   std::string install_data;
 
-  ReadInstallCommandFromManifest(offline_dir_relative, app_id, "verboselogging",
+  ReadInstallCommandFromManifest(offline_dir_guid, app_id, "verboselogging",
                                  results, installer_path, install_args,
                                  install_data);
   EXPECT_EQ(installer_path, expected_installer_path);
@@ -96,7 +73,7 @@ TEST(ManifestUtil, ReadInstallCommandFromManifest_OfflineDirRelative) {
       offline_app_dir.Append(executable_name_v2));
   ASSERT_TRUE(base::Move(expected_installer_path, expected_installer_path_v2));
 
-  ReadInstallCommandFromManifest(offline_dir_relative, app_id, "verboselogging",
+  ReadInstallCommandFromManifest(offline_dir_guid, app_id, "verboselogging",
                                  results, installer_path, install_args,
                                  install_data);
   EXPECT_EQ(installer_path, expected_installer_path_v2);

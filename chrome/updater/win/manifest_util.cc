@@ -85,29 +85,31 @@ std::unique_ptr<ProtocolParserXML> ParseOfflineManifest(
 }  // namespace
 
 // TODO(crbug/1409111): Handle errors for offline dir or manifest errors.
-// TODO(crbug/1409111): Remove unneeded offline dir formats.
 void ReadInstallCommandFromManifest(
-    const base::FilePath& offline_dir_input,
+    const std::wstring& offline_dir_guid,
     const std::string& app_id,
     const std::string& install_data_index,
     update_client::ProtocolParser::Results& results,
     base::FilePath& installer_path,
     std::string& install_args,
     std::string& install_data) {
-  if (offline_dir_input.empty()) {
+  if (offline_dir_guid.empty()) {
     VLOG(1) << "Unexpected: offline install without an offline directory.";
     return;
   }
 
-  const bool is_offline_dir_relative = IsGuid(offline_dir_input.value());
-  const base::FilePath offline_dir =
-      is_offline_dir_relative ? [&offline_dir_input]() {
-        base::FilePath offline_dir;
-        return base::PathService::Get(base::DIR_EXE, &offline_dir)
-                   ? offline_dir.Append(L"Offline").Append(offline_dir_input)
-                   : base::FilePath();
-      }()
-                              : offline_dir_input;
+  if (!IsGuid(offline_dir_guid)) {
+    VLOG(1) << "Unexpected: offline directory needs to be a GUID: "
+            << offline_dir_guid;
+    return;
+  }
+
+  const base::FilePath offline_dir = [&offline_dir_guid]() {
+    base::FilePath offline_dir;
+    return base::PathService::Get(base::DIR_EXE, &offline_dir)
+               ? offline_dir.Append(L"Offline").Append(offline_dir_guid)
+               : base::FilePath();
+  }();
   if (offline_dir.empty()) {
     VLOG(1) << "Unexpected: offline directory empty.";
     return;
@@ -132,7 +134,7 @@ void ReadInstallCommandFromManifest(
   }
 
   installer_path =
-      is_offline_dir_relative ? [&offline_dir, &app_id, &it]() {
+      [&offline_dir, &app_id, &it]() {
         const base::FilePath app_dir(offline_dir.AppendASCII(app_id));
         const base::FilePath path(app_dir.AppendASCII(it->manifest.run));
         return base::PathExists(path)
@@ -142,8 +144,7 @@ void ReadInstallCommandFromManifest(
                          base::FileEnumerator::FolderSearchPolicy::ALL,
                          base::FileEnumerator::ErrorPolicy::IGNORE_ERRORS)
                          .Next();
-      }()
-                              : offline_dir.AppendASCII(it->manifest.run);
+      }();
   install_args = it->manifest.arguments;
 
   if (!install_data_index.empty()) {

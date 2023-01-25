@@ -376,7 +376,7 @@ base::Process LaunchOfflineInstallProcess(bool is_legacy_install,
                                           const base::FilePath& exe_path,
                                           UpdaterScope install_scope,
                                           const std::wstring& app_id,
-                                          const base::FilePath& offline_dir,
+                                          const std::wstring& offline_dir_guid,
                                           bool is_silent_install) {
   auto launch_legacy_offline_install = [&]() -> base::Process {
     auto build_legacy_switch =
@@ -404,7 +404,7 @@ base::Process LaunchOfflineInstallProcess(bool is_legacy_install,
         L"{E85204C6-6F2F-40BF-9E6C-4952208BB977}",
 
         build_legacy_switch(updater::kOfflineDirSwitch),
-        base::CommandLine::QuoteForCommandLineToArgvW(offline_dir.value()),
+        base::CommandLine::QuoteForCommandLineToArgvW(offline_dir_guid),
 
         is_silent_install ? build_legacy_switch(updater::kSilentSwitch) : L"",
     };
@@ -427,7 +427,7 @@ base::Process LaunchOfflineInstallProcess(bool is_legacy_install,
     install_cmd.AppendSwitchASCII(updater::kSessionIdSwitch,
                                   "{E85204C6-6F2F-40BF-9E6C-4952208BB977}");
     install_cmd.AppendSwitchNative(updater::kOfflineDirSwitch,
-                                   offline_dir.value());
+                                   offline_dir_guid);
     if (is_silent_install)
       install_cmd.AppendSwitch(updater::kSilentSwitch);
 
@@ -1548,18 +1548,32 @@ void RunOfflineInstall(UpdaterScope scope,
       "  </app>\n"
       "</response>\n";
 
+  const std::wstring manifest_filename(L"OfflineManifest.gup");
+  const std::wstring cmd_exe_arbitrarily_named(L"arbitrarily_named_cmd.exe");
+  const std::string script_name("test_installer.bat");
+  const std::wstring offline_dir_guid(
+      L"{7B3A5597-DDEA-409B-B900-4C3D2A94A75C}");
   const HKEY root = UpdaterScopeToHKeyRoot(scope);
   const std::wstring app_client_state_key = GetAppClientStateKey(kTestAppID);
 
   EXPECT_TRUE(DeleteRegKey(root, app_client_state_key));
 
-  base::ScopedTempDir temp_dir;
-  EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
-  const base::FilePath& offline_dir = temp_dir.GetPath();
+  const absl::optional<base::FilePath> updater_exe =
+      GetInstalledExecutablePath(scope);
+  ASSERT_TRUE(updater_exe.has_value());
+
+  const base::FilePath exe_dir(updater_exe->DirName());
+  const base::FilePath offline_dir(
+      exe_dir.Append(L"Offline").Append(offline_dir_guid));
+  const base::FilePath offline_app_dir(offline_dir.Append(kTestAppID));
+  const base::FilePath offline_app_scripts_dir(
+      offline_app_dir.Append(L"Scripts"));
+  ASSERT_TRUE(base::CreateDirectory(offline_app_scripts_dir));
 
   // Create a batch file as the installer script, which creates some registry
   // values as the installation artifacts.
-  base::FilePath installer_path = offline_dir.AppendASCII("test_installer.bat");
+  const base::FilePath batch_script_path(
+      offline_app_scripts_dir.AppendASCII(script_name));
 
   // Create a unique name for a shared event to be waited for in this process
   // and signaled in the offline installer process to confirm the installer
@@ -1567,7 +1581,7 @@ void RunOfflineInstall(UpdaterScope scope,
   test::EventHolder event_holder(test::CreateWaitableEventForTest());
 
   EXPECT_TRUE(base::WriteFile(
-      installer_path,
+      batch_script_path,
       [](UpdaterScope scope, const std::string& app_client_state_key,
          const std::wstring& event_name) -> std::string {
         const std::string reg_hive = IsSystemInstall(scope) ? "HKLM" : "HKCU";
@@ -1602,27 +1616,21 @@ void RunOfflineInstall(UpdaterScope scope,
   base::FilePath cmd_exe_path;
   ASSERT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &cmd_exe_path));
   cmd_exe_path = cmd_exe_path.Append(L"cmd.exe");
-  ASSERT_TRUE(base::CopyFile(cmd_exe_path,
-                             offline_dir.Append(cmd_exe_path.BaseName())));
+  ASSERT_TRUE(base::CopyFile(
+      cmd_exe_path, offline_app_dir.Append(cmd_exe_arbitrarily_named)));
 
-  // Create manifest file.
-  base::FilePath manifest_path =
-      offline_dir.Append(FILE_PATH_LITERAL("OfflineManifest.gup"));
+  base::FilePath manifest_path = offline_dir.Append(manifest_filename);
   int64_t exe_size = 0;
   EXPECT_TRUE(base::GetFileSize(cmd_exe_path, &exe_size));
   const std::string manifest = base::StringPrintf(
-      kManifestFormat, kTestAppID, exe_size, installer_path.value().c_str());
+      kManifestFormat, kTestAppID, exe_size, batch_script_path.value().c_str());
   EXPECT_TRUE(base::WriteFile(manifest_path, manifest));
 
   // Trigger offline install.
-  const absl::optional<base::FilePath> updater_exe =
-      GetInstalledExecutablePath(scope);
-  ASSERT_TRUE(updater_exe.has_value());
-
-  ASSERT_TRUE(
-      LaunchOfflineInstallProcess(is_legacy_install, updater_exe.value(), scope,
-                                  kTestAppID, offline_dir, is_silent_install)
-          .IsValid());
+  ASSERT_TRUE(LaunchOfflineInstallProcess(
+                  is_legacy_install, updater_exe.value(), scope, kTestAppID,
+                  offline_dir_guid, is_silent_install)
+                  .IsValid());
 
   if (is_silent_install) {
     EXPECT_TRUE(WaitForUpdaterExit(scope));
