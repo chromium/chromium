@@ -108,19 +108,26 @@ OverviewItemView::OverviewItemView(
 
 OverviewItemView::~OverviewItemView() = default;
 
-void OverviewItemView::SetHeaderVisibility(HeaderVisibility visibility) {
+void OverviewItemView::SetHeaderVisibility(HeaderVisibility visibility,
+                                           bool animate) {
   DCHECK(header_view()->layer());
-  if (visibility == current_header_visibility_)
+  if (visibility == current_header_visibility_) {
     return;
+  }
   const HeaderVisibility previous_visibility = current_header_visibility_;
   current_header_visibility_ = visibility;
 
   const bool all_invisible = visibility == HeaderVisibility::kInvisible;
-  AnimateLayerOpacity(header_view()->layer(), !all_invisible);
+  if (animate) {
+    AnimateLayerOpacity(header_view()->layer(), !all_invisible);
+  } else {
+    header_view()->layer()->SetOpacity(all_invisible ? 0.f : 1.f);
+  }
 
   // If there is not a `close_button_`, then we are done.
-  if (!close_button_)
+  if (!close_button_) {
     return;
+  }
 
   // If the whole header is fading out and there is a `close_button_`, then
   // we need to disable the close button without also fading the close button.
@@ -132,8 +139,9 @@ void OverviewItemView::SetHeaderVisibility(HeaderVisibility visibility) {
   const bool close_button_visible = visibility == HeaderVisibility::kVisible;
   // If `header_view()` was hidden and is fading in, set the opacity and enabled
   // state of `close_button_` depending on whether the close button should fade
-  // in with `header_view()` or stay hidden.
-  if (previous_visibility == HeaderVisibility::kInvisible) {
+  // in with `header_view()` or stay hidden. Or show the close button
+  // immediately if we are not animating.
+  if (previous_visibility == HeaderVisibility::kInvisible || !animate) {
     close_button_->layer()->SetOpacity(close_button_visible ? 1.f : 0.f);
     close_button_->SetEnabled(close_button_visible);
     return;

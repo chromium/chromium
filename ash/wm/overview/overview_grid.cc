@@ -647,12 +647,9 @@ void OverviewGrid::PositionWindows(
     bool should_animate_item = animate;
     // If we're in entering overview process, not all window items in the grid
     // might need animation even if the grid needs animation.
-    if (animate && transition == OverviewTransition::kEnter)
-      should_animate_item = window_item->should_animate_when_entering();
-
     if (animate && transition == OverviewTransition::kEnter) {
-      if (window_item->should_animate_when_entering() &&
-          !has_non_cover_animating) {
+      should_animate_item = window_item->should_animate_when_entering();
+      if (should_animate_item && !has_non_cover_animating) {
         has_non_cover_animating |=
             !CanCoverAvailableWorkspace(window_item->GetWindow());
         ++animate_count;
