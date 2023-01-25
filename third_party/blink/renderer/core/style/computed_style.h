@@ -1639,38 +1639,65 @@ class ComputedStyle : public ComputedStyleBase,
   // Contain utility functions.
   //
   // Containment can be enabled from a variety of sources, not just the
-  // 'contain' property itself. The return values represent whether or not
-  // we should enable containment of a given type, taking those different
-  // sources into account.
+  // 'contain' property itself. The "effective containment" represents whether
+  //  or not we should enable containment of a given type, taking those
+  //  different sources into account.
   //
-  // Note that even with a return value of |true|, containment may still not
-  // be applied if the layout object is ineligible for the given containment
-  // type. See |LayoutObject::IsEligibleForSizeContainment| and similar
-  // functions.
+  // Note that even a certain type of containment appears to be in effect from
+  // the perspective of ComputedStyle, containment may still not be applied if
+  // the LayoutObject is ineligible for the given containment type. See
+  // |LayoutObject::IsEligibleForSizeContainment| and similar functions.
 
-  bool ContainsPaint() const {
-    return (Contain() & kContainsPaint) || !IsContentVisibilityVisible();
+  static unsigned EffectiveContainment(unsigned contain,
+                                       unsigned container_type,
+                                       EContentVisibility content_visibility,
+                                       const AtomicString& toggle_visibility,
+                                       bool skips_contents) {
+    unsigned effective = contain;
+
+    if (container_type & kContainerTypeInlineSize) {
+      effective |= kContainsStyle;
+      effective |= kContainsLayout;
+      effective |= kContainsInlineSize;
+    }
+    if (container_type & kContainerTypeBlockSize) {
+      effective |= kContainsStyle;
+      effective |= kContainsLayout;
+      effective |= kContainsBlockSize;
+    }
+    if (!IsContentVisibilityVisible(content_visibility, toggle_visibility)) {
+      effective |= kContainsStyle;
+      effective |= kContainsLayout;
+      effective |= kContainsPaint;
+    }
+    if (skips_contents) {
+      effective |= kContainsSize;
+    }
+
+    return effective;
   }
-  bool ContainsStyle() const {
-    return (Contain() & kContainsStyle) || IsInlineOrBlockSizeContainer() ||
-           !IsContentVisibilityVisible();
+
+  unsigned EffectiveContainment() const {
+    return ComputedStyle::EffectiveContainment(
+        Contain(), ContainerType(), ContentVisibility(), ToggleVisibility(),
+        SkipsContents());
   }
+
+  bool ContainsStyle() const { return EffectiveContainment() & kContainsStyle; }
+  bool ContainsPaint() const { return EffectiveContainment() & kContainsPaint; }
   bool ContainsLayout() const {
-    return (Contain() & kContainsLayout) || IsInlineOrBlockSizeContainer() ||
-           !IsContentVisibilityVisible();
+    return EffectiveContainment() & kContainsLayout;
   }
   bool ContainsSize() const {
-    return ((Contain() & kContainsSize) == kContainsSize) ||
-           IsSizeContainer() || SkipsContents();
+    return (EffectiveContainment() & kContainsSize) == kContainsSize;
   }
   bool ContainsInlineSize() const {
-    return (Contain() & kContainsInlineSize) || IsInlineSizeContainer() ||
-           SkipsContents();
+    return EffectiveContainment() & kContainsInlineSize;
   }
   bool ContainsBlockSize() const {
-    return (Contain() & kContainsBlockSize) || IsBlockSizeContainer() ||
-           SkipsContents();
+    return EffectiveContainment() & kContainsBlockSize;
   }
+
   CORE_EXPORT bool ShouldApplyAnyContainment(const Element& element) const;
 
   // Return true if an element can match size container queries. In addition to
@@ -1682,9 +1709,15 @@ class ComputedStyle : public ComputedStyleBase,
     return IsInlineOrBlockSizeContainer() && StyleType() == kPseudoIdNone;
   }
 
+  static bool IsContentVisibilityVisible(
+      EContentVisibility content_visibility,
+      const AtomicString& toggle_visibility) {
+    return content_visibility == EContentVisibility::kVisible &&
+           toggle_visibility.IsNull();
+  }
+
   bool IsContentVisibilityVisible() const {
-    return ContentVisibility() == EContentVisibility::kVisible &&
-           ToggleVisibility().IsNull();
+    return IsContentVisibilityVisible(ContentVisibility(), ToggleVisibility());
   }
 
   // Interleaving roots are elements that may require layout to fully update
