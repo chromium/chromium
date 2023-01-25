@@ -29,7 +29,7 @@ class SharedURLLoaderFactory;
 namespace arc {
 
 // Exposed for testing.
-extern const char kAuthTokenExchangeEndPoint[];
+extern const char kTokenBootstrapEndPoint[];
 
 // The instance is not reusable, so for each Fetch(), the instance must be
 // re-created. Deleting the instance cancels inflight operation.
@@ -88,7 +88,7 @@ class ArcBackgroundAuthCodeFetcher : public ArcAuthCodeFetcher {
   // Account on Chrome OS.
   const bool is_primary_account_;
 
-  // Indicates if the request to `kAuthTokenExchangeEndPoint` which fetches the
+  // Indicates if the request to `kTokenBootstrapEndPoint` which fetches the
   // auth code to be used for Google Play Store sign-in should bypass the proxy.
   // Currently we only set the value to true if the network is configured to use
   // a mandatory PAC script which is broken or not reachable.

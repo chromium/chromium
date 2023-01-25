@@ -61,7 +61,6 @@ missing_new_fields,ash/webui/projector_app/projector_xhr_sender.cc
 missing_new_fields,chrome/browser/apps/app_preload_service/app_preload_server_connector.cc
 missing_new_fields,chrome/browser/ash/app_list/search/files/item_suggest_cache.cc
 missing_new_fields,chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.cc
-missing_new_fields,chrome/browser/ash/arc/auth/arc_background_auth_code_fetcher.cc
 missing_new_fields,chrome/browser/ash/bruschetta/bruschetta_installer.cc
 missing_new_fields,chrome/browser/ash/customization/customization_document.cc
 missing_new_fields,chrome/browser/ash/customization/customization_wallpaper_downloader.cc

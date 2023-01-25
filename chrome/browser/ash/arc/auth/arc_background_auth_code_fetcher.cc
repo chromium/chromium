@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
@@ -43,6 +45,10 @@ constexpr char kDeviceId[] = "device_id";
 constexpr char kDeviceType[] = "device_type";
 constexpr char kDeviceTypeArc[] = "arc_plus_plus";
 constexpr char kLoginScopedToken[] = "login_scoped_token";
+constexpr char kClientId[] = "client_id";
+constexpr char kClientIdArc[] =
+    "1070009224336-sdh77n7uot3oc99ais00jmuft6sk2fg9.apps.googleusercontent.com";
+constexpr char kRefreshToken[] = "refresh_token";
 constexpr char kGetAuthCodeKey[] = "Content-Type";
 constexpr char kGetAuthCodeValue[] = "application/json; charset=utf-8";
 constexpr char kContentTypeJSON[] = "application/json";
@@ -59,6 +65,9 @@ signin::ScopeSet GetAccessTokenScopes() {
 
 const char kAuthTokenExchangeEndPoint[] =
     "https://www.googleapis.com/oauth2/v4/ExchangeToken";
+
+const char kTokenBootstrapEndPoint[] =
+    "https://oauthtokenbootstrap.googleapis.com/v1/tokenbootstrap";
 
 ArcBackgroundAuthCodeFetcher::ArcBackgroundAuthCodeFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -119,13 +128,22 @@ void ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete(
     return;
   }
 
+  bool use_new_endpoint =
+      base::FeatureList::IsEnabled(arc::kEnableTokenBootstrapEndpoint);
+
   user_manager::KnownUser known_user(g_browser_process->local_state());
   const std::string device_id = known_user.GetDeviceId(
       multi_user_util::GetAccountIdFromProfile(profile_));
   DCHECK(!device_id.empty());
 
   base::Value::Dict request_data;
-  request_data.Set(kLoginScopedToken, token_info.token);
+  if (use_new_endpoint) {
+    request_data.Set(kRefreshToken, token_info.token);
+    request_data.Set(kClientId, kClientIdArc);
+  } else {
+    // TODO(b/264416977): Remove this code path after M112
+    request_data.Set(kLoginScopedToken, token_info.token);
+  }
   request_data.Set(kDeviceType, kDeviceTypeArc);
   request_data.Set(kDeviceId, device_id);
   std::string request_string;
@@ -142,9 +160,18 @@ void ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete(
           "account setup. This is also triggered when the Google Play Store "
           "detects that current credentials are revoked or invalid and "
           "requests extra authorization code for the account re-sign in."
-        data: "Device id and access token."
+        data: "Device id, access token, and hardcoded client id."
         destination: GOOGLE_OWNED_SERVICE
+        internal {
+          contacts {
+            email: "arc-core@google.com"
+          }
         }
+        user_data {
+          type: ACCESS_TOKEN
+        }
+        last_reviewed: "2023-01-24"
+      }
       policy {
         cookies_allowed: NO
         setting:
@@ -154,7 +181,12 @@ void ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete(
         policy_exception_justification: "Not implemented."
   })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(kAuthTokenExchangeEndPoint);
+  if (use_new_endpoint) {
+    resource_request->url = GURL(kTokenBootstrapEndPoint);
+  } else {
+    // TODO(b/264416977): Remove this code path after M112
+    resource_request->url = GURL(kAuthTokenExchangeEndPoint);
+  }
   resource_request->load_flags = net::LOAD_DISABLE_CACHE |
                                  net::LOAD_BYPASS_CACHE |
                                  (bypass_proxy_ ? net::LOAD_BYPASS_PROXY : 0);
