@@ -65,7 +65,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/drive/drive_api_util.h"
-#include "components/prefs/pref_registry_simple.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -452,9 +452,11 @@ bool ExecuteOpenInOfficeTask(Profile* profile,
 ResultingTasks::ResultingTasks() = default;
 ResultingTasks::~ResultingTasks() = default;
 
-void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(prefs::kDefaultHandlersForFileExtensions);
-  registry->RegisterBooleanPref(prefs::kOfficeSetupComplete, false);
+  registry->RegisterBooleanPref(
+      prefs::kOfficeSetupComplete, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(prefs::kOfficeFilesAlwaysMove, false);
 }
 

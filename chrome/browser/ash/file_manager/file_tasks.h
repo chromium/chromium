@@ -101,7 +101,6 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_dialog.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "url/gurl.h"
 
 using storage::FileSystemURL;
@@ -115,6 +114,10 @@ struct EntryInfo;
 
 namespace storage {
 class FileSystemURL;
+}
+
+namespace user_prefs {
+class PrefRegistrySyncable;
 }
 
 namespace file_manager::file_tasks {
@@ -278,7 +281,7 @@ struct ResultingTasks {
 };
 
 // Registers profile prefs related to file_manager.
-void RegisterProfilePrefs(PrefRegistrySimple*);
+void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable*);
 
 // Update the default file handler for the given sets of suffixes and MIME
 // types.
