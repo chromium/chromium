@@ -2187,8 +2187,8 @@
   },
   {
     "name": "enable-disco-feed-endpoint",
-    "owners": [ "adamta", "sczs" ],
-    "expiry_milestone": 106
+    "owners": [ "tinazwang", "sczs" ],
+    "expiry_milestone": 116
   },
   {
     "name": "enable-discount-consent-v2",
