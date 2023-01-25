@@ -6,10 +6,13 @@
 
 #import <UIKit/UIKit.h>
 
+#include <atomic>
+
 #include <float.h>
 #include "base/ios/ios_util.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_piece.h"
@@ -19,13 +22,48 @@
 namespace base {
 namespace ios {
 
-ScopedCriticalAction::ScopedCriticalAction(StringPiece task_name)
-    : core_(MakeRefCounted<ScopedCriticalAction::Core>()) {
-  ScopedCriticalAction::Core::StartBackgroundTask(core_, task_name);
+BASE_FEATURE(kScopedCriticalActionReuseEnabled,
+             "ScopedCriticalActionReuseEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+namespace {
+
+constexpr base::TimeDelta kMaxTaskReuseDelay = base::Seconds(3);
+
+// Used for unit-testing only.
+std::atomic<int> g_num_active_background_tasks_for_test{0};
+
+}  // namespace
+
+ScopedCriticalAction::ScopedCriticalAction(StringPiece task_name) {
+  if (base::FeatureList::IsEnabled(kScopedCriticalActionReuseEnabled)) {
+    task_handle_ = ActiveBackgroundTaskCache::GetInstance()
+                       ->EnsureBackgroundTaskExistsWithName(task_name);
+    DCHECK(!core_);
+  } else {
+    core_ = MakeRefCounted<Core>();
+    Core::StartBackgroundTask(core_, task_name);
+  }
 }
 
 ScopedCriticalAction::~ScopedCriticalAction() {
-  ScopedCriticalAction::Core::EndBackgroundTask(core_);
+  if (core_) {
+    // kScopedCriticalActionReuseEnabled was disabled upon construction.
+    Core::EndBackgroundTask(core_);
+  } else {
+    // kScopedCriticalActionReuseEnabled was enabled upon construction.
+    ActiveBackgroundTaskCache::GetInstance()->ReleaseHandle(task_handle_);
+  }
+}
+
+// static
+void ScopedCriticalAction::ClearNumActiveBackgroundTasksForTest() {
+  g_num_active_background_tasks_for_test.store(0);
+}
+
+// static
+int ScopedCriticalAction::GetNumActiveBackgroundTasksForTest() {
+  return g_num_active_background_tasks_for_test.load();
 }
 
 ScopedCriticalAction::Core::Core()
@@ -48,6 +86,11 @@ void ScopedCriticalAction::Core::StartBackgroundTask(scoped_refptr<Core> core,
   }
 
   AutoLock lock_scope(core->background_task_id_lock_);
+  if (core->background_task_id_ != UIBackgroundTaskInvalid) {
+    // Already started.
+    return;
+  }
+
   NSString* task_string =
       !task_name.empty() ? base::SysUTF8ToNSString(task_name) : nil;
   core->background_task_id_ = [application
@@ -68,6 +111,8 @@ void ScopedCriticalAction::Core::StartBackgroundTask(scoped_refptr<Core> core,
   } else {
     VLOG(3) << "Beginning background task <" << task_name << "> with id "
             << core->background_task_id_;
+    g_num_active_background_tasks_for_test.fetch_add(1,
+                                                     std::memory_order_relaxed);
   }
 }
 
@@ -77,6 +122,7 @@ void ScopedCriticalAction::Core::EndBackgroundTask(scoped_refptr<Core> core) {
   {
     AutoLock lock_scope(core->background_task_id_lock_);
     if (core->background_task_id_ == UIBackgroundTaskInvalid) {
+      // Never started successfully or already ended.
       return;
     }
     task_id =
@@ -86,6 +132,98 @@ void ScopedCriticalAction::Core::EndBackgroundTask(scoped_refptr<Core> core) {
 
   VLOG(3) << "Ending background task with id " << task_id;
   [[UIApplication sharedApplication] endBackgroundTask:task_id];
+  g_num_active_background_tasks_for_test.fetch_sub(1,
+                                                   std::memory_order_relaxed);
+}
+
+ScopedCriticalAction::ActiveBackgroundTaskCache::InternalEntry::
+    InternalEntry() = default;
+
+ScopedCriticalAction::ActiveBackgroundTaskCache::InternalEntry::
+    ~InternalEntry() = default;
+
+ScopedCriticalAction::ActiveBackgroundTaskCache::InternalEntry::InternalEntry(
+    InternalEntry&&) = default;
+
+ScopedCriticalAction::ActiveBackgroundTaskCache::InternalEntry&
+ScopedCriticalAction::ActiveBackgroundTaskCache::InternalEntry::operator=(
+    InternalEntry&&) = default;
+
+// static
+ScopedCriticalAction::ActiveBackgroundTaskCache*
+ScopedCriticalAction::ActiveBackgroundTaskCache::GetInstance() {
+  return base::Singleton<
+      ActiveBackgroundTaskCache,
+      base::LeakySingletonTraits<ActiveBackgroundTaskCache>>::get();
+}
+
+ScopedCriticalAction::ActiveBackgroundTaskCache::ActiveBackgroundTaskCache() =
+    default;
+
+ScopedCriticalAction::ActiveBackgroundTaskCache::~ActiveBackgroundTaskCache() =
+    default;
+
+ScopedCriticalAction::ActiveBackgroundTaskCache::Handle ScopedCriticalAction::
+    ActiveBackgroundTaskCache::EnsureBackgroundTaskExistsWithName(
+        StringPiece task_name) {
+  const base::TimeTicks now = base::TimeTicks::Now();
+  const base::TimeTicks min_reusable_time = now - kMaxTaskReuseDelay;
+  NameAndTime min_reusable_key{task_name, min_reusable_time};
+
+  Handle handle;
+  {
+    AutoLock lock_scope(entries_map_lock_);
+    auto lower_it = entries_map_.lower_bound(min_reusable_key);
+
+    if (lower_it != entries_map_.end() && lower_it->first.first == task_name) {
+      // A reusable Core instance exists, with the same name and created
+      // recently enough to warrant reuse.
+      DCHECK_GE(lower_it->first.second, min_reusable_time);
+      handle = lower_it;
+    } else {
+      // No reusable entry exists, so a new entry needs to be created.
+      auto it = entries_map_.emplace_hint(
+          lower_it, NameAndTime{std::move(min_reusable_key.first), now},
+          InternalEntry{});
+      DCHECK_EQ(it->first.second, now);
+      DCHECK(!it->second.core);
+      handle = it;
+      handle->second.core = MakeRefCounted<Core>();
+    }
+
+    // This guarantees a non-zero counter and hence the deletion of this map
+    // entry during this function body, even after the lock is released.
+    ++handle->second.num_active_handles;
+  }
+
+  // If this call didn't newly-create a Core instance, the call to
+  // StartBackgroundTask() is almost certainly (barring race conditions)
+  // unnecessary. It is however harmless to invoke it twice.
+  Core::StartBackgroundTask(handle->second.core, task_name);
+
+  return handle;
+}
+
+void ScopedCriticalAction::ActiveBackgroundTaskCache::ReleaseHandle(
+    Handle handle) {
+  scoped_refptr<Core> background_task_to_end;
+
+  {
+    AutoLock lock_scope(entries_map_lock_);
+    --handle->second.num_active_handles;
+    if (handle->second.num_active_handles == 0) {
+      // Move to |background_task_to_end| so the global lock is released before
+      // invoking EndBackgroundTask() which is expensive.
+      background_task_to_end = std::move(handle->second.core);
+      entries_map_.erase(handle);
+    }
+  }
+
+  // Note that at this point another, since the global lock was released,
+  // another task could have started with the same name, but this harmless.
+  if (background_task_to_end != nullptr) {
+    Core::EndBackgroundTask(std::move(background_task_to_end));
+  }
 }
 
 }  // namespace ios
