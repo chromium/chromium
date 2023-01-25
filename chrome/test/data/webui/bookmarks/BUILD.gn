@@ -11,7 +11,7 @@ build_webui_tests("build") {
     "actions_test.ts",
     "app_test.ts",
     "bookmarks_focus_test.js",
-    "command_manager_test.js",
+    "command_manager_test.ts",
     "dialog_focus_manager_test.ts",
     "dnd_manager_test.ts",
     "edit_dialog_test.ts",
@@ -46,6 +46,7 @@ build_webui_tests("build") {
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/runtime.d.ts",
     "//tools/typescript/definitions/tabs.d.ts",
+    "//tools/typescript/definitions/windows.d.ts",
   ]
   ts_deps = [ "//chrome/browser/resources/bookmarks:build_ts" ]
 }

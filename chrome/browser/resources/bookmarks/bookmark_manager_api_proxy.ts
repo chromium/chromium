@@ -12,6 +12,12 @@ export interface BookmarkManagerApiProxy {
       idList: string[], dragNodeIndex: number, isFromTouch: boolean, x: number,
       y: number): void;
   removeTrees(idList: string[]): Promise<void>;
+  canPaste(parentId: string): Promise<boolean>;
+  openInNewWindow(idList: string[], incognito: boolean): void;
+  openInNewTab(id: string, active: boolean): void;
+  cut(idList: string[]): Promise<void>;
+  paste(parentId: string, selectedIdList?: string[]): Promise<void>;
+  copy(idList: string[]): Promise<void>;
 }
 
 export class BookmarkManagerApiProxyImpl implements BookmarkManagerApiProxy {
@@ -31,6 +37,31 @@ export class BookmarkManagerApiProxyImpl implements BookmarkManagerApiProxy {
   removeTrees(idList: string[]) {
     return chrome.bookmarkManagerPrivate.removeTrees(idList);
   }
+
+  canPaste(parentId: string) {
+    return chrome.bookmarkManagerPrivate.canPaste(parentId);
+  }
+
+  openInNewWindow(idList: string[], incognito: boolean) {
+    return chrome.bookmarkManagerPrivate.openInNewWindow(idList, incognito);
+  }
+
+  openInNewTab(id: string, active: boolean) {
+    return chrome.bookmarkManagerPrivate.openInNewTab(id, active);
+  }
+
+  cut(idList: string[]) {
+    return chrome.bookmarkManagerPrivate.cut(idList);
+  }
+
+  paste(parentId: string, selectedIdList?: string[]) {
+    return chrome.bookmarkManagerPrivate.paste(parentId, selectedIdList);
+  }
+
+  copy(idList: string[]) {
+    return chrome.bookmarkManagerPrivate.copy(idList);
+  }
+
 
   static getInstance(): BookmarkManagerApiProxy {
     return instance || (instance = new BookmarkManagerApiProxyImpl());

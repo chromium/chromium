@@ -328,7 +328,7 @@ export class BookmarksCommandManagerElement extends
       }
       case Command.COPY: {
         const idList = Array.from(itemIds);
-        chrome.bookmarkManagerPrivate.copy(idList).then(() => {
+        BookmarkManagerApiProxyImpl.getInstance().copy(idList).then(() => {
           let labelPromise: Promise<string>;
           if (idList.length === 1) {
             labelPromise =
@@ -406,13 +406,13 @@ export class BookmarksCommandManagerElement extends
         }));
         break;
       case Command.CUT:
-        chrome.bookmarkManagerPrivate.cut(Array.from(itemIds));
+        BookmarkManagerApiProxyImpl.getInstance().cut(Array.from(itemIds));
         break;
       case Command.PASTE:
         const selectedFolder = state.selectedFolder;
         const selectedItems = state.selection.items;
         trackUpdatedItems();
-        chrome.bookmarkManagerPrivate
+        BookmarkManagerApiProxyImpl.getInstance()
             .paste(selectedFolder, Array.from(selectedItems))
             .then(highlightUpdatedItems);
         break;
@@ -512,14 +512,16 @@ export class BookmarksCommandManagerElement extends
     const openBookmarkIdsCallback = function() {
       const incognito = command === Command.OPEN_INCOGNITO;
       if (command === Command.OPEN_NEW_WINDOW || incognito) {
-        chrome.bookmarkManagerPrivate.openInNewWindow(ids, incognito);
+        BookmarkManagerApiProxyImpl.getInstance().openInNewWindow(
+            ids, incognito);
       } else {
         if (command === Command.OPEN) {
-          chrome.bookmarkManagerPrivate.openInNewTab(
+          BookmarkManagerApiProxyImpl.getInstance().openInNewTab(
               ids.shift()!, /*active=*/ true);
         }
         ids.forEach(function(id) {
-          chrome.bookmarkManagerPrivate.openInNewTab(id, /*active=*/ false);
+          BookmarkManagerApiProxyImpl.getInstance().openInNewTab(
+              id, /*active=*/ false);
         });
       }
     };
@@ -672,20 +674,6 @@ export class BookmarksCommandManagerElement extends
     return loadTimeData.getStringF(caseOther, ids.length);
   }
 
-  private getCommandSublabel_(command: Command): string {
-    const multipleNodes = this.menuIds_.size > 1 ||
-        this.containsMatchingNode_(this.menuIds_, function(node) {
-          return !node.url;
-        });
-    switch (command) {
-      case Command.OPEN_NEW_TAB:
-        const ids = this.expandIds_(this.menuIds_);
-        return multipleNodes && ids.length > 0 ? String(ids.length) : '';
-      default:
-        return '';
-    }
-  }
-
   private computeMenuCommands_(): Command[] {
     switch (this.menuSource_) {
       case MenuSource.ITEM:
@@ -770,9 +758,10 @@ export class BookmarksCommandManagerElement extends
   }
 
   private updateCanPaste_(targetId: string): Promise<void> {
-    return chrome.bookmarkManagerPrivate.canPaste(targetId).then(result => {
-      this.canPaste_ = result;
-    });
+    return BookmarkManagerApiProxyImpl.getInstance().canPaste(targetId).then(
+        result => {
+          this.canPaste_ = result;
+        });
   }
 
   ////////////////////////////////////////////////////////////////////////////

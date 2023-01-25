@@ -9,13 +9,24 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 export class TestBookmarkManagerApiProxy extends TestBrowserProxy implements
     BookmarkManagerApiProxy {
   onDragEnter = new FakeChromeEvent();
+  private canPaste_ = false;
 
   constructor() {
     super([
+      'canPaste',
+      'copy',
+      'cut',
       'drop',
-      'startDrag',
+      'openInNewTab',
+      'openInNewWindow',
+      'paste',
       'removeTrees',
+      'startDrag',
     ]);
+  }
+
+  setCanPaste(canPaste: boolean) {
+    this.canPaste_ = canPaste;
   }
 
   drop(parentId: string, index?: number) {
@@ -29,8 +40,36 @@ export class TestBookmarkManagerApiProxy extends TestBrowserProxy implements
     this.methodCalled('startDrag', idList);
   }
 
-  removeTrees(_idList: string[]) {
-    this.methodCalled('removeTrees');
+  removeTrees(idList: string[]) {
+    this.methodCalled('removeTrees', idList);
+    return Promise.resolve();
+  }
+
+  canPaste(_parentId: string) {
+    this.methodCalled('canPaste');
+    return Promise.resolve(this.canPaste_);
+  }
+
+  openInNewWindow(idList: string[], incognito: boolean) {
+    this.methodCalled('openInNewWindow', [idList, incognito]);
+  }
+
+  openInNewTab(id: string, active: boolean) {
+    this.methodCalled('openInNewTab', [id, active]);
+  }
+
+  cut(idList: string[]) {
+    this.methodCalled('cut', idList);
+    return Promise.resolve();
+  }
+
+  paste(parentId: string, _selectedIdList?: string[]) {
+    this.methodCalled('paste', parentId);
+    return Promise.resolve();
+  }
+
+  copy(idList: string[]) {
+    this.methodCalled('copy', idList);
     return Promise.resolve();
   }
 }
