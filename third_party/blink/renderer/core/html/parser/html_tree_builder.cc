@@ -494,10 +494,8 @@ bool IsDdOrDt(const HTMLStackItem* item) {
 template <bool shouldClose(const HTMLStackItem*)>
 void HTMLTreeBuilder::ProcessCloseWhenNestedTag(AtomicHTMLToken* token) {
   frameset_ok_ = false;
-  HTMLElementStack::ElementRecord* node_record =
-      tree_.OpenElements()->TopRecord();
+  HTMLStackItem* item = tree_.OpenElements()->TopStackItem();
   while (true) {
-    HTMLStackItem* item = node_record->StackItem();
     if (shouldClose(item)) {
       DCHECK(item->IsElementNode());
       ProcessFakeEndTag(*item);
@@ -507,7 +505,7 @@ void HTMLTreeBuilder::ProcessCloseWhenNestedTag(AtomicHTMLToken* token) {
         !item->MatchesHTMLTag(HTMLTag::kDiv) &&
         !item->MatchesHTMLTag(HTMLTag::kP))
       break;
-    node_record = node_record->Next();
+    item = item->NextItemInStack();
   }
   ProcessFakePEndTagIfPInButtonScope();
   tree_.InsertHTMLElement(token);
@@ -1062,11 +1060,9 @@ bool HTMLTreeBuilder::ProcessTemplateEndTag(AtomicHTMLToken* token) {
   if (!tree_.CurrentStackItem()->MatchesHTMLTag(HTMLTag::kTemplate))
     ParseError(token);
   tree_.OpenElements()->PopUntil(HTMLTag::kTemplate);
-  HTMLStackItem* template_stack_item =
-      tree_.OpenElements()->TopRecord()->StackItem();
+  HTMLStackItem* template_stack_item = tree_.OpenElements()->TopStackItem();
   tree_.OpenElements()->Pop();
-  HTMLStackItem* shadow_host_stack_item =
-      tree_.OpenElements()->TopRecord()->StackItem();
+  HTMLStackItem* shadow_host_stack_item = tree_.OpenElements()->TopStackItem();
   tree_.ActiveFormattingElements()->ClearToLastMarker();
   template_insertion_modes_.pop_back();
   ResetInsertionModeAppropriately();
@@ -1640,9 +1636,8 @@ bool HTMLTreeBuilder::ProcessBodyEndTagForInBody(AtomicHTMLToken* token) {
 
 void HTMLTreeBuilder::ProcessAnyOtherEndTagForInBody(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kEndTag);
-  HTMLElementStack::ElementRecord* record = tree_.OpenElements()->TopRecord();
+  HTMLStackItem* item = tree_.OpenElements()->TopStackItem();
   while (true) {
-    HTMLStackItem* item = record->StackItem();
     if (item->MatchesHTMLTag(token->GetTokenName())) {
       tree_.GenerateImpliedEndTagsWithExclusion(token->GetTokenName());
       if (!tree_.CurrentStackItem()->MatchesHTMLTag(token->GetTokenName()))
@@ -1654,7 +1649,7 @@ void HTMLTreeBuilder::ProcessAnyOtherEndTagForInBody(AtomicHTMLToken* token) {
       ParseError(token);
       return;
     }
-    record = record->Next();
+    item = item->NextItemInStack();
   }
 }
 
@@ -1698,9 +1693,9 @@ void HTMLTreeBuilder::CallTheAdoptionAgency(AtomicHTMLToken* token) {
       return;
     }
     // 4.b
-    HTMLElementStack::ElementRecord* formatting_element_record =
+    HTMLStackItem* formatting_element_item =
         tree_.OpenElements()->Find(formatting_element);
-    if (!formatting_element_record) {
+    if (!formatting_element_item) {
       ParseError(token);
       tree_.ActiveFormattingElements()->Remove(formatting_element);
       return;
@@ -1709,7 +1704,7 @@ void HTMLTreeBuilder::CallTheAdoptionAgency(AtomicHTMLToken* token) {
     if (formatting_element != tree_.CurrentElement())
       ParseError(token);
     // 5.
-    HTMLElementStack::ElementRecord* furthest_block =
+    HTMLStackItem* furthest_block =
         tree_.OpenElements()->FurthestBlockForFormattingElement(
             formatting_element);
     // 6.
@@ -1719,16 +1714,15 @@ void HTMLTreeBuilder::CallTheAdoptionAgency(AtomicHTMLToken* token) {
       return;
     }
     // 7.
-    DCHECK(furthest_block->IsAbove(formatting_element_record));
-    HTMLStackItem* common_ancestor =
-        formatting_element_record->Next()->StackItem();
+    DCHECK(furthest_block->IsAboveItemInStack(formatting_element_item));
+    HTMLStackItem* common_ancestor = formatting_element_item->NextItemInStack();
     // 8.
     HTMLFormattingElementList::Bookmark bookmark =
         tree_.ActiveFormattingElements()->BookmarkFor(formatting_element);
     // 9.
-    HTMLElementStack::ElementRecord* node = furthest_block;
-    HTMLElementStack::ElementRecord* next_node = node->Next();
-    HTMLElementStack::ElementRecord* last_node = furthest_block;
+    HTMLStackItem* node = furthest_block;
+    HTMLStackItem* next_node = node->NextItemInStack();
+    HTMLStackItem* last_node = furthest_block;
     // 9.1, 9.2, 9.3 and 9.11 are covered by the for() loop.
     for (int j = 0; j < kInnerIterationLimit; ++j) {
       // 9.4
@@ -1736,7 +1730,7 @@ void HTMLTreeBuilder::CallTheAdoptionAgency(AtomicHTMLToken* token) {
       DCHECK(node);
       // Save node->next() for the next iteration in case node is deleted in
       // 9.5.
-      next_node = node->Next();
+      next_node = node->NextItemInStack();
       // 9.5
       if (!tree_.ActiveFormattingElements()->Contains(node->GetElement())) {
         tree_.OpenElements()->Remove(node->GetElement());
@@ -1744,16 +1738,17 @@ void HTMLTreeBuilder::CallTheAdoptionAgency(AtomicHTMLToken* token) {
         continue;
       }
       // 9.6
-      if (node == formatting_element_record)
+      if (node == formatting_element_item) {
         break;
+      }
       // 9.7
-      HTMLStackItem* new_item =
-          tree_.CreateElementFromSavedToken(node->StackItem());
+      HTMLStackItem* new_item = tree_.CreateElementFromSavedToken(node);
 
       HTMLFormattingElementList::Entry* node_entry =
           tree_.ActiveFormattingElements()->Find(node->GetElement());
       node_entry->ReplaceElement(new_item);
-      node->ReplaceElement(new_item);
+      tree_.OpenElements()->Replace(node, new_item);
+      node = new_item;
 
       // 9.8
       if (last_node == furthest_block)
@@ -1766,8 +1761,8 @@ void HTMLTreeBuilder::CallTheAdoptionAgency(AtomicHTMLToken* token) {
     // 10.
     tree_.InsertAlreadyParsedChild(common_ancestor, last_node);
     // 11.
-    HTMLStackItem* new_item = tree_.CreateElementFromSavedToken(
-        formatting_element_record->StackItem());
+    HTMLStackItem* new_item =
+        tree_.CreateElementFromSavedToken(formatting_element_item);
     // 12.
     tree_.TakeAllChildren(new_item, furthest_block);
     // 13.
@@ -1784,10 +1779,8 @@ void HTMLTreeBuilder::CallTheAdoptionAgency(AtomicHTMLToken* token) {
 void HTMLTreeBuilder::ResetInsertionModeAppropriately() {
   // http://www.whatwg.org/specs/web-apps/current-work/multipage/parsing.html#reset-the-insertion-mode-appropriately
   bool last = false;
-  HTMLElementStack::ElementRecord* node_record =
-      tree_.OpenElements()->TopRecord();
+  HTMLStackItem* item = tree_.OpenElements()->TopStackItem();
   while (true) {
-    HTMLStackItem* item = node_record->StackItem();
     if (item->GetNode() == tree_.OpenElements()->RootNode()) {
       last = true;
       if (IsParsingFragment())
@@ -1802,8 +1795,7 @@ void HTMLTreeBuilder::ResetInsertionModeAppropriately() {
           if (!last) {
             while (item->GetNode() != tree_.OpenElements()->RootNode() &&
                    !item->MatchesHTMLTag(HTMLTag::kTemplate)) {
-              node_record = node_record->Next();
-              item = node_record->StackItem();
+              item = item->NextItemInStack();
               if (item->MatchesHTMLTag(HTMLTag::kTable))
                 return SetInsertionMode(kInSelectInTableMode);
             }
@@ -1847,7 +1839,7 @@ void HTMLTreeBuilder::ResetInsertionModeAppropriately() {
       DCHECK(IsParsingFragment());
       return SetInsertionMode(kInBodyMode);
     }
-    node_record = node_record->Next();
+    item = item->NextItemInStack();
   }
 }
 
@@ -3020,20 +3012,21 @@ void HTMLTreeBuilder::ProcessTokenInForeignContent(AtomicHTMLToken* token) {
       }
       if (!tree_.CurrentStackItem()->IsInHTMLNamespace()) {
         // FIXME: This code just wants an Element* iterator, instead of an
-        // ElementRecord*
-        HTMLElementStack::ElementRecord* node_record =
-            tree_.OpenElements()->TopRecord();
-        if (!node_record->StackItem()->HasLocalName(token->GetName()))
+        // HTMLStackItem*
+        HTMLStackItem* item = tree_.OpenElements()->TopStackItem();
+        if (!item->HasLocalName(token->GetName())) {
           ParseError(token);
+        }
         while (true) {
-          if (node_record->StackItem()->HasLocalName(token->GetName())) {
-            tree_.OpenElements()->PopUntilPopped(node_record->GetElement());
+          if (item->HasLocalName(token->GetName())) {
+            tree_.OpenElements()->PopUntilPopped(item->GetElement());
             return;
           }
-          node_record = node_record->Next();
+          item = item->NextItemInStack();
 
-          if (node_record->StackItem()->IsInHTMLNamespace())
+          if (item->IsInHTMLNamespace()) {
             break;
+          }
         }
       }
       // Otherwise, process the token according to the rules given in the

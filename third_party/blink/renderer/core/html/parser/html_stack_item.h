@@ -296,9 +296,38 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
     return false;
   }
 
-  void Trace(Visitor* visitor) const { visitor->Trace(node_); }
+  HTMLStackItem* NextItemInStack() { return next_item_in_stack_; }
+
+  bool IsAboveItemInStack(const HTMLStackItem* item) const {
+    DCHECK(item);
+    HTMLStackItem* below = next_item_in_stack_;
+    while (below) {
+      if (below == item) {
+        return true;
+      }
+      below = below->NextItemInStack();
+    }
+    return false;
+  }
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(node_);
+    visitor->Trace(next_item_in_stack_);
+  }
 
  private:
+  void SetNextItemInStack(HTMLStackItem* item) {
+    DCHECK(!item || (item && !next_item_in_stack_));
+    next_item_in_stack_ = item;
+  }
+
+  HTMLStackItem* ReleaseNextItemInStack() {
+    return next_item_in_stack_.Release();
+  }
+
+  // Needed for stack related functions.
+  friend class HTMLElementStack;
+
   // The attributes are stored directly after the HTMLStackItem in memory
   // (using Oilpan's AdditionalBytes system). Space for this is guaranteed
   // by Create().
@@ -312,6 +341,9 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
   }
 
   Member<ContainerNode> node_;
+
+  // This member is maintained by HTMLElementStack.
+  Member<HTMLStackItem> next_item_in_stack_{nullptr};
 
   HTMLTokenName token_name_;
   AtomicString namespace_uri_;

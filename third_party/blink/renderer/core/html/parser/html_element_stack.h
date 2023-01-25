@@ -46,34 +46,6 @@ class HTMLElementStack {
   HTMLElementStack(const HTMLElementStack&) = delete;
   HTMLElementStack& operator=(const HTMLElementStack&) = delete;
 
-  class ElementRecord final : public GarbageCollected<ElementRecord> {
-   public:
-    ElementRecord(HTMLStackItem*, ElementRecord*);
-    ElementRecord(const ElementRecord&) = delete;
-    ElementRecord& operator=(const ElementRecord&) = delete;
-
-    Element* GetElement() const { return item_->GetElement(); }
-    ContainerNode* GetNode() const { return item_->GetNode(); }
-    const AtomicString& NamespaceURI() const { return item_->NamespaceURI(); }
-    HTMLStackItem* StackItem() const { return item_; }
-    void ReplaceElement(HTMLStackItem*);
-
-    bool IsAbove(ElementRecord*) const;
-
-    ElementRecord* Next() const { return next_.Get(); }
-
-    void Trace(Visitor*) const;
-
-   private:
-    friend class HTMLElementStack;
-
-    ElementRecord* ReleaseNext() { return next_.Release(); }
-    void SetNext(ElementRecord* next) { next_ = next; }
-
-    Member<HTMLStackItem> item_;
-    Member<ElementRecord> next_;
-  };
-
   unsigned StackDepth() const { return stack_depth_; }
 
   // Inlining this function is a (small) performance win on the parsing
@@ -84,28 +56,29 @@ class HTMLElementStack {
   }
 
   ContainerNode* TopNode() const {
+    DCHECK(top_);
     DCHECK(top_->GetNode());
     return top_->GetNode();
   }
 
   HTMLStackItem* TopStackItem() const {
-    DCHECK(top_->StackItem());
-    return top_->StackItem();
+    DCHECK(top_);
+    return top_;
   }
 
   HTMLStackItem* OneBelowTop() const;
-  ElementRecord* TopRecord() const;
-  ElementRecord* Find(Element*) const;
-  ElementRecord* FurthestBlockForFormattingElement(Element*) const;
-  ElementRecord* Topmost(html_names::HTMLTag tag) const;
+  HTMLStackItem* Find(Element*) const;
+  HTMLStackItem* FurthestBlockForFormattingElement(Element*) const;
+  HTMLStackItem* Topmost(html_names::HTMLTag tag) const;
 
-  void InsertAbove(HTMLStackItem*, ElementRecord*);
+  void InsertAbove(HTMLStackItem*, HTMLStackItem*);
 
   void Push(HTMLStackItem*);
   void PushRootNode(HTMLStackItem*);
   void PushHTMLHtmlElement(HTMLStackItem*);
   void PushHTMLHeadElement(HTMLStackItem*);
   void PushHTMLBodyElement(HTMLStackItem*);
+  void Replace(HTMLStackItem* old_item, HTMLStackItem* new_item);
 
   void Pop();
   void PopUntil(html_names::HTMLTag tag);
@@ -167,10 +140,10 @@ class HTMLElementStack {
   void PopCommon();
   void RemoveNonTopCommon(Element*);
 
-  Member<ElementRecord> top_;
+  Member<HTMLStackItem> top_;
 
-  // We remember the root node, <head> and <body> as they are pushed. Their
-  // ElementRecords keep them alive. The root node is never popped.
+  // We remember the root node, <head> and <body> as they are pushed. The root
+  // node is never popped.
   // FIXME: We don't currently require type-specific information about these
   // elements so we haven't yet bothered to plumb the types all the way down
   // through createElement, etc.

@@ -831,8 +831,7 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
     // TODO(crbug.com/1063157): Add an attribute for imperative slot
     // assignment.
     auto slot_assignment_mode = SlotAssignmentMode::kNamed;
-    HTMLStackItem* shadow_host_stack_item =
-        open_elements_.TopRecord()->StackItem();
+    HTMLStackItem* shadow_host_stack_item = open_elements_.TopStackItem();
     Element* host = shadow_host_stack_item->GetElement();
     ShadowRootType type = declarative_shadow_root_type ==
                                   DeclarativeShadowRootType::kStreamingOpen
@@ -884,7 +883,7 @@ void HTMLConstructionSite::InsertFormattingElement(AtomicHTMLToken* token) {
   // Possible active formatting elements include:
   // a, b, big, code, em, font, i, nobr, s, small, strike, strong, tt, and u.
   InsertHTMLElement(token);
-  active_formatting_elements_.Append(CurrentElementRecord()->StackItem());
+  active_formatting_elements_.Append(CurrentStackItem());
 }
 
 void HTMLConstructionSite::InsertScriptElement(AtomicHTMLToken* token) {
@@ -963,15 +962,7 @@ void HTMLConstructionSite::InsertTextNode(const StringView& string,
                        whitespace_mode);
 }
 
-void HTMLConstructionSite::Reparent(HTMLElementStack::ElementRecord* new_parent,
-                                    HTMLElementStack::ElementRecord* child) {
-  HTMLConstructionSiteTask task(HTMLConstructionSiteTask::kReparent);
-  task.parent = new_parent->GetNode();
-  task.child = child->GetNode();
-  QueueTask(task, true);
-}
-
-void HTMLConstructionSite::Reparent(HTMLElementStack::ElementRecord* new_parent,
+void HTMLConstructionSite::Reparent(HTMLStackItem* new_parent,
                                     HTMLStackItem* child) {
   HTMLConstructionSiteTask task(HTMLConstructionSiteTask::kReparent);
   task.parent = new_parent->GetNode();
@@ -979,9 +970,8 @@ void HTMLConstructionSite::Reparent(HTMLElementStack::ElementRecord* new_parent,
   QueueTask(task, true);
 }
 
-void HTMLConstructionSite::InsertAlreadyParsedChild(
-    HTMLStackItem* new_parent,
-    HTMLElementStack::ElementRecord* child) {
+void HTMLConstructionSite::InsertAlreadyParsedChild(HTMLStackItem* new_parent,
+                                                    HTMLStackItem* child) {
   if (new_parent->CausesFosterParenting()) {
     FosterParent(child->GetNode());
     return;
@@ -994,9 +984,8 @@ void HTMLConstructionSite::InsertAlreadyParsedChild(
   QueueTask(task, true);
 }
 
-void HTMLConstructionSite::TakeAllChildren(
-    HTMLStackItem* new_parent,
-    HTMLElementStack::ElementRecord* old_parent) {
+void HTMLConstructionSite::TakeAllChildren(HTMLStackItem* new_parent,
+                                           HTMLStackItem* old_parent) {
   HTMLConstructionSiteTask task(HTMLConstructionSiteTask::kTakeAllChildren);
   task.parent = new_parent->GetNode();
   task.child = old_parent->GetNode();
@@ -1265,15 +1254,16 @@ bool HTMLConstructionSite::InQuirksMode() {
 // https://html.spec.whatwg.org/C/#appropriate-place-for-inserting-a-node
 void HTMLConstructionSite::FindFosterSite(HTMLConstructionSiteTask& task) {
   // 2.1
-  HTMLElementStack::ElementRecord* last_template =
+  HTMLStackItem* last_template =
       open_elements_.Topmost(html_names::HTMLTag::kTemplate);
 
   // 2.2
-  HTMLElementStack::ElementRecord* last_table =
+  HTMLStackItem* last_table =
       open_elements_.Topmost(html_names::HTMLTag::kTable);
 
   // 2.3
-  if (last_template && (!last_table || last_template->IsAbove(last_table))) {
+  if (last_template &&
+      (!last_table || last_template->IsAboveItemInStack(last_table))) {
     task.parent = last_template->GetElement();
     return;
   }
@@ -1293,7 +1283,7 @@ void HTMLConstructionSite::FindFosterSite(HTMLConstructionSiteTask& task) {
   }
 
   // 2.6, 2.7
-  task.parent = last_table->Next()->GetElement();
+  task.parent = last_table->NextItemInStack()->GetElement();
 }
 
 bool HTMLConstructionSite::ShouldFosterParent() const {

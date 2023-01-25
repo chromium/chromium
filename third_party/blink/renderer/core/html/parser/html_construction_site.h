@@ -163,18 +163,14 @@ class HTMLConstructionSite final {
   void InsertHTMLHtmlStartTagInBody(AtomicHTMLToken*);
   void InsertHTMLBodyStartTagInBody(AtomicHTMLToken*);
 
-  void Reparent(HTMLElementStack::ElementRecord* new_parent,
-                HTMLElementStack::ElementRecord* child);
-  void Reparent(HTMLElementStack::ElementRecord* new_parent,
-                HTMLStackItem* child);
+  void Reparent(HTMLStackItem* new_parent, HTMLStackItem* child);
   // insertAlreadyParsedChild assumes that |child| has already been parsed
   // (i.e., we're just moving it around in the tree rather than parsing it for
   // the first time). That means this function doesn't call beginParsingChildren
   // / finishParsingChildren.
   void InsertAlreadyParsedChild(HTMLStackItem* new_parent,
-                                HTMLElementStack::ElementRecord* child);
-  void TakeAllChildren(HTMLStackItem* new_parent,
-                       HTMLElementStack::ElementRecord* old_parent);
+                                HTMLStackItem* child);
+  void TakeAllChildren(HTMLStackItem* new_parent, HTMLStackItem* old_parent);
 
   HTMLStackItem* CreateElementFromSavedToken(HTMLStackItem*);
 
@@ -191,9 +187,6 @@ class HTMLConstructionSite final {
   bool InQuirksMode();
 
   bool IsEmpty() const { return !open_elements_.StackDepth(); }
-  HTMLElementStack::ElementRecord* CurrentElementRecord() const {
-    return open_elements_.TopRecord();
-  }
   Element* CurrentElement() const { return open_elements_.Top(); }
   ContainerNode* CurrentNode() const { return open_elements_.TopNode(); }
   HTMLStackItem* CurrentStackItem() const {
