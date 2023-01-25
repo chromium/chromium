@@ -22,9 +22,9 @@
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/partition_stats.h"
 
-#if BUILDFLAG(STARSCAN)
+#if BUILDFLAG(USE_STARSCAN)
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
-#endif  // BUILDFLAG(STARSCAN)
+#endif
 
 namespace partition_alloc {
 
@@ -105,9 +105,9 @@ void PartitionAllocGlobalUninitForTesting() {
 #if BUILDFLAG(ENABLE_PKEYS)
   internal::PartitionAddressSpace::UninitPkeyPoolForTesting();
 #endif
-#if BUILDFLAG(STARSCAN)
+#if BUILDFLAG(USE_STARSCAN)
   internal::PCScan::UninitForTesting();  // IN-TEST
-#endif                                   // BUILDFLAG(STARSCAN)
+#endif
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #if PA_CONFIG(HAS_64_BITS_POINTERS)
   internal::PartitionAddressSpace::UninitForTesting();

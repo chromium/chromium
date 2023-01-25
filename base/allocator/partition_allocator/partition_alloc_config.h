@@ -40,7 +40,7 @@ static_assert(sizeof(void*) != 8, "");
 #endif
 
 // PCScan supports 64 bits only and is disabled outside Chromium.
-#if PA_CONFIG(HAS_64_BITS_POINTERS) && BUILDFLAG(STARSCAN)
+#if PA_CONFIG(HAS_64_BITS_POINTERS) && BUILDFLAG(USE_STARSCAN)
 #define PA_CONFIG_ALLOW_PCSCAN() 1
 #else
 #define PA_CONFIG_ALLOW_PCSCAN() 0
@@ -92,7 +92,7 @@ static_assert(sizeof(void*) != 8, "");
 #endif  // PA_CONFIG(HAS_64_BITS_POINTERS) &&
         // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID))
 
-#if PA_CONFIG(HAS_64_BITS_POINTERS) && BUILDFLAG(STARSCAN)
+#if PA_CONFIG(HAS_64_BITS_POINTERS) && BUILDFLAG(USE_STARSCAN)
 // Use card table to avoid races for PCScan configuration without safepoints.
 // The card table provides the guaranteee that for a marked card the underling
 // super-page is fully initialized.
@@ -100,7 +100,7 @@ static_assert(sizeof(void*) != 8, "");
 #else
 // The card table is permanently disabled for 32-bit.
 #define PA_CONFIG_STARSCAN_USE_CARD_TABLE() 0
-#endif  // PA_CONFIG(HAS_64_BITS_POINTERS) && BUILDFLAG(STARSCAN)
+#endif  // PA_CONFIG(HAS_64_BITS_POINTERS) && BUILDFLAG(USE_STARSCAN)
 
 #if PA_CONFIG(STARSCAN_USE_CARD_TABLE) && !PA_CONFIG(ALLOW_PCSCAN)
 #error "Card table can only be used when *Scan is allowed"

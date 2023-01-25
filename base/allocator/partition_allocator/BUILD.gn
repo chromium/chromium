@@ -425,7 +425,7 @@ buildflag_header("partition_alloc_buildflags") {
     "ENABLE_POINTER_COMPRESSION=$enable_pointer_compression_support",
     "ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=$enable_shadow_metadata",
 
-    "STARSCAN=$use_starscan",
+    "USE_STARSCAN=$use_starscan",
 
     "ENABLE_PKEYS=$enable_pkeys",
   ]
