@@ -347,10 +347,6 @@ component("skia") {
     deps += [ "//third_party/wuffs" ]
   }
 
-  if (current_cpu == "arm") {
-    sources += [ "//third_party/skia/src/core/SkUtilsArm.cpp" ]
-  }
-
   # Remove unused util sources.
   sources -= [ "//third_party/skia/src/utils/SkParsePath.cpp" ]
 
