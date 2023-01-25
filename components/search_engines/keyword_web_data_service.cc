@@ -26,8 +26,9 @@ WebDatabase::State PerformKeywordOperationsImpl(
 std::unique_ptr<WDTypedResult> GetKeywordsImpl(WebDatabase* db) {
   KeywordTable* const keyword_table = KeywordTable::FromWebDatabase(db);
   WDKeywordsResult result;
-  if (!keyword_table->GetKeywords(&result.keywords))
+  if (!keyword_table || !keyword_table->GetKeywords(&result.keywords)) {
     return nullptr;
+  }
 
   result.default_search_provider_id =
       keyword_table->GetDefaultSearchProviderID();
