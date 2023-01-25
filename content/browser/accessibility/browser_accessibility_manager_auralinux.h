@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/common/content_export.h"
 
@@ -33,9 +32,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAuraLinux
   ~BrowserAccessibilityManagerAuraLinux() override;
 
   static ui::AXTreeUpdate GetEmptyDocument();
-  static BrowserAccessibility* FindCommonAncestor(
-      BrowserAccessibility* object1,
-      BrowserAccessibility* object2);
 
   // AXTreeManager overrides.
   void FireFocusEvent(ui::AXNode* node) override;
@@ -88,8 +84,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAuraLinux
  private:
   bool CanEmitChildrenChanged(BrowserAccessibility* node) const;
   void FireEvent(BrowserAccessibility* node, ax::mojom::Event event);
-
-  raw_ptr<AtkObject> parent_object_;
 
   // Give BrowserAccessibilityManager::Create access to our constructor.
   friend class BrowserAccessibilityManager;
