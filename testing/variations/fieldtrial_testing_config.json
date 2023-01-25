@@ -6984,21 +6984,6 @@
             ]
         }
     ],
-    "MediaFoundationD3D11VideoCapture": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MediaFoundationD3D11VideoCapture"
-                    ]
-                }
-            ]
-        }
-    ],
     "MediaFoundationVP9Encoding": [
         {
             "platforms": [
