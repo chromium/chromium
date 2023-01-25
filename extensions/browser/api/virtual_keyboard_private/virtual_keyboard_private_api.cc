@@ -13,10 +13,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
-#include "extensions/browser/extension_function_registry.h"
 #include "extensions/common/api/virtual_keyboard_private.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/events/event.h"
 
 namespace extensions {
 
@@ -58,8 +56,6 @@ bool VirtualKeyboardPrivateFunction::PreRunValidation(std::string* error) {
   }
   return true;
 }
-
-VirtualKeyboardPrivateFunction::~VirtualKeyboardPrivateFunction() {}
 
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateInsertTextFunction::Run() {
@@ -311,8 +307,7 @@ VirtualKeyboardAPI::VirtualKeyboardAPI(content::BrowserContext* context) {
       ExtensionsAPIClient::Get()->CreateVirtualKeyboardDelegate(context);
 }
 
-VirtualKeyboardAPI::~VirtualKeyboardAPI() {
-}
+VirtualKeyboardAPI::~VirtualKeyboardAPI() = default;
 
 static base::LazyInstance<BrowserContextKeyedAPIFactory<VirtualKeyboardAPI>>::
     DestructorAtExit g_factory = LAZY_INSTANCE_INITIALIZER;

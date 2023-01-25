@@ -5,24 +5,17 @@
 #include <memory>
 
 #include "base/auto_reset.h"
-#include "base/values.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
-#include "extensions/browser/api/test/test_api.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_private_api.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/common/features/feature_session_type.h"
-#include "extensions/common/mojom/feature_session_type.mojom.h"
+#include "extensions/common/mojom/feature_session_type.mojom-shared.h"
 #include "extensions/shell/test/shell_apitest.h"
 
 namespace extensions {
 
 class VirtualKeyboardApiTest : public ShellApiTest {
  public:
-  VirtualKeyboardApiTest() {}
+  VirtualKeyboardApiTest() = default;
 
   VirtualKeyboardApiTest(const VirtualKeyboardApiTest&) = delete;
   VirtualKeyboardApiTest& operator=(const VirtualKeyboardApiTest&) = delete;

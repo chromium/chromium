@@ -12,7 +12,7 @@ namespace extensions {
 
 class VirtualKeyboardRestrictFeaturesFunction : public ExtensionFunction {
  public:
-  VirtualKeyboardRestrictFeaturesFunction();
+  VirtualKeyboardRestrictFeaturesFunction() = default;
 
   VirtualKeyboardRestrictFeaturesFunction(
       const VirtualKeyboardRestrictFeaturesFunction&) = delete;

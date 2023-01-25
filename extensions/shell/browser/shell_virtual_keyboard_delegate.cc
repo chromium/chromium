@@ -12,8 +12,6 @@
 
 namespace extensions {
 
-ShellVirtualKeyboardDelegate::ShellVirtualKeyboardDelegate() {}
-
 void ShellVirtualKeyboardDelegate::GetKeyboardConfig(
     OnKeyboardSettingsCallback on_settings_callback) {
   base::Value::Dict settings;

@@ -14,7 +14,7 @@ namespace extensions {
 
 class ShellVirtualKeyboardDelegate : public VirtualKeyboardDelegate {
  public:
-  ShellVirtualKeyboardDelegate();
+  ShellVirtualKeyboardDelegate() = default;
 
   ShellVirtualKeyboardDelegate(const ShellVirtualKeyboardDelegate&) = delete;
   ShellVirtualKeyboardDelegate& operator=(const ShellVirtualKeyboardDelegate&) =

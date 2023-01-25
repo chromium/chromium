@@ -18,9 +18,6 @@
 
 namespace extensions {
 
-VirtualKeyboardRestrictFeaturesFunction::
-    VirtualKeyboardRestrictFeaturesFunction() {}
-
 void VirtualKeyboardRestrictFeaturesFunction::OnRestrictFeatures(
     api::virtual_keyboard::FeatureRestrictions update) {
   Respond(OneArgument(base::Value(update.ToValue())));
