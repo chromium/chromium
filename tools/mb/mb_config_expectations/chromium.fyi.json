@@ -1197,15 +1197,6 @@
       "use_remoteexec": true
     }
   },
-  "mac-arm64-on-arm64-rel-reclient": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "target_cpu": "arm64",
-      "use_remoteexec": true
-    }
-  },
   "mac-backuprefptr-x64-fyi-rel": {
     "gn_args": {
       "dcheck_always_on": true,
