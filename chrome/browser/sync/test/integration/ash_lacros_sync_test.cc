@@ -5,6 +5,7 @@
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/sync/base/features.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_impl.h"
@@ -101,6 +102,10 @@ IN_PROC_BROWSER_TEST_F(LacrosPrimaryAshSyncTest, AshSyncsAllTypes) {
     expected_active_types.Put(syncer::HISTORY);
   } else {
     expected_active_types.Put(syncer::TYPED_URLS);
+  }
+
+  if (base::FeatureList::IsEnabled(power_bookmarks::kPowerBookmarkBackend)) {
+    expected_active_types.Put(syncer::POWER_BOOKMARK);
   }
 
   // All of the model types, both browser and OS, should be active.

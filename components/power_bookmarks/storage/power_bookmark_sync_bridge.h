@@ -10,12 +10,12 @@
 
 namespace syncer {
 class ModelError;
-class SyncMetadataStore;
 }  // namespace syncer
 
 namespace power_bookmarks {
 
 class Power;
+class PowerBookmarkSyncMetadataDatabase;
 
 // Transaction wraps a database transaction. When it's out of scope the
 // underlying transaction will be cancelled if not committed.
@@ -51,7 +51,7 @@ class PowerBookmarkSyncBridge : public syncer::ModelTypeSyncBridge {
     virtual bool DeletePowerFromSync(const std::string& guid) = 0;
 
     // Get the database to store power bookmarks metadata.
-    virtual syncer::SyncMetadataStore* GetSyncMetadataDatabase() = 0;
+    virtual PowerBookmarkSyncMetadataDatabase* GetSyncMetadataDatabase() = 0;
 
     // Start a transaction. This is used to make sure power bookmark data
     // and metadata are stored atomically.
@@ -60,8 +60,9 @@ class PowerBookmarkSyncBridge : public syncer::ModelTypeSyncBridge {
     // Notify the backend if powers are changed.
     virtual void NotifyPowersChanged() {}
   };
+
   PowerBookmarkSyncBridge(
-      syncer::SyncMetadataStore* meta_db,
+      PowerBookmarkSyncMetadataDatabase* meta_db,
       Delegate* delegate,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
 
@@ -69,6 +70,8 @@ class PowerBookmarkSyncBridge : public syncer::ModelTypeSyncBridge {
   PowerBookmarkSyncBridge& operator=(const PowerBookmarkSyncBridge&) = delete;
 
   ~PowerBookmarkSyncBridge() override;
+
+  void Init();
 
   // syncer::ModelTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
@@ -104,8 +107,8 @@ class PowerBookmarkSyncBridge : public syncer::ModelTypeSyncBridge {
       syncer::EntityChangeList& entity_changes,
       bool is_initial_merge);
 
-  const raw_ptr<syncer::SyncMetadataStore, DanglingUntriaged> meta_db_;
-  const raw_ptr<Delegate, DanglingUntriaged> delegate_;
+  const raw_ptr<PowerBookmarkSyncMetadataDatabase, DanglingUntriaged> meta_db_;
+  const raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace power_bookmarks

@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/invalidation/ios_chrome_profile_invalidation_provider_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#import "ios/chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
@@ -88,7 +89,8 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
           this, ::GetChannel(), web::GetUIThreadTaskRunner({}), db_thread_,
           profile_web_data_service_, account_web_data_service_,
           profile_password_store_, account_password_store_,
-          ios::BookmarkSyncServiceFactory::GetForBrowserState(browser_state_));
+          ios::BookmarkSyncServiceFactory::GetForBrowserState(browser_state_),
+          PowerBookmarkServiceFactory::GetForBrowserState(browser_state_));
 
   trusted_vault_client_ = std::make_unique<IOSTrustedVaultClient>(
       ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state_),

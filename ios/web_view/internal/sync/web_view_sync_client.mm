@@ -105,7 +105,8 @@ WebViewSyncClient::WebViewSyncClient(
           profile_web_data_service_->GetDBTaskRunner(),
           profile_web_data_service_, account_web_data_service_,
           profile_password_store_, account_password_store_,
-          /*bookmark_sync_service=*/nullptr);
+          /*bookmark_sync_service=*/nullptr,
+          /*power_bookmark_service=*/nullptr);
   trusted_vault_client_ = std::make_unique<WebViewTrustedVaultClient>();
 }
 

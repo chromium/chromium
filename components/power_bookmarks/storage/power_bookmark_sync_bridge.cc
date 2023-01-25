@@ -32,7 +32,7 @@ void WritePowersToSyncData(const std::vector<std::unique_ptr<Power>>& powers,
 }  // namespace
 
 PowerBookmarkSyncBridge::PowerBookmarkSyncBridge(
-    syncer::SyncMetadataStore* meta_db,
+    PowerBookmarkSyncMetadataDatabase* meta_db,
     Delegate* delegate,
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
     : syncer::ModelTypeSyncBridge(std::move(change_processor)),
@@ -40,6 +40,16 @@ PowerBookmarkSyncBridge::PowerBookmarkSyncBridge(
       delegate_(delegate) {}
 
 PowerBookmarkSyncBridge::~PowerBookmarkSyncBridge() = default;
+
+void PowerBookmarkSyncBridge::Init() {
+  auto batch = std::make_unique<syncer::MetadataBatch>();
+  bool success = meta_db_->GetAllEntityMetadata(batch.get());
+  if (success) {
+    change_processor()->ModelReadyToSync(std::move(batch));
+  } else {
+    change_processor()->ReportError({FROM_HERE, "Failed to load metadata"});
+  }
+}
 
 std::unique_ptr<syncer::MetadataChangeList>
 PowerBookmarkSyncBridge::CreateMetadataChangeList() {

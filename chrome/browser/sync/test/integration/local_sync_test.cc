@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/browser_sync/browser_sync_switches.h"
+#include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -113,6 +114,10 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
 
   if (features::kTabGroupsSaveSyncIntegration.Get()) {
     expected_active_data_types.Put(syncer::SAVED_TAB_GROUP);
+  }
+
+  if (base::FeatureList::IsEnabled(power_bookmarks::kPowerBookmarkBackend)) {
+    expected_active_data_types.Put(syncer::POWER_BOOKMARK);
   }
 
   // The dictionary is currently only synced on Windows, Linux, and Lacros.

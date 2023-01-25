@@ -81,7 +81,7 @@ class MockDelegate : public PowerBookmarkSyncBridge::Delegate {
 
   MOCK_METHOD1(CreateOrMergePowerFromSync, bool(const Power& power));
   MOCK_METHOD1(DeletePowerFromSync, bool(const std::string&));
-  MOCK_METHOD0(GetSyncMetadataDatabase, syncer::SyncMetadataStore*());
+  MOCK_METHOD0(GetSyncMetadataDatabase, PowerBookmarkSyncMetadataDatabase*());
   MOCK_METHOD0(NotifyPowersChanged, void());
 
  private:

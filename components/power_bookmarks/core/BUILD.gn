@@ -32,6 +32,7 @@ static_library("core") {
     "//components/keyed_service/core:core",
     "//components/power_bookmarks/common",
     "//components/power_bookmarks/storage",
+    "//components/sync/model:model",
     "//ui/base",
     "//url",
   ]
