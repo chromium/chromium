@@ -10,6 +10,8 @@ for more details about the presubmit API built into depot_tools.
 
 USE_PYTHON3 = True
 
+PRESUBMIT_VERSION = '2.0.0'
+
 EXTRA_PATHS_COMPONENTS = [
     ('build', ),
     ('build', 'fuchsia'),
@@ -23,13 +25,17 @@ EXTRA_PATHS_COMPONENTS = [
 ]
 
 
-def CommonChecks(input_api, output_api):
-  results = []
+def _GetChromiumSrcPath(input_api):
+  """Returns the path to the Chromium src directory."""
+  return input_api.os_path.realpath(
+      input_api.os_path.join(input_api.PresubmitLocalPath(), '..', '..', '..'))
 
+
+def _GetGpuEnv(input_api):
+  """Gets the common environment for running GPU tests."""
   gpu_env = dict(input_api.environ)
   current_path = input_api.PresubmitLocalPath()
-  chromium_src_path = input_api.os_path.realpath(
-      input_api.os_path.join(current_path, '..', '..', '..'))
+  chromium_src_path = _GetChromiumSrcPath(input_api)
   testing_path = input_api.os_path.join(chromium_src_path, 'testing')
   gpu_env.update({
       'PYTHONPATH':
@@ -37,63 +43,58 @@ def CommonChecks(input_api, output_api):
       'PYTHONDONTWRITEBYTECODE':
       '1',
   })
+  return gpu_env
 
-  gpu_tests = [
-      input_api.Command(
-          name='run_content_test_gpu_unittests',
-          cmd=[input_api.python3_executable, 'run_unittests.py', 'gpu_tests'],
-          kwargs={'env': gpu_env},
-          message=output_api.PresubmitError,
-          python3=True),
-      input_api.Command(name='validate_tag_consistency',
-                        cmd=[
-                            input_api.python3_executable,
-                            'validate_tag_consistency.py', 'validate'
-                        ],
-                        kwargs={},
-                        message=output_api.PresubmitError,
-                        python3=True),
-  ]
-  results.extend(input_api.RunTests(gpu_tests))
 
-  results.extend(
-      input_api.canned_checks.RunUnitTestsInDirectory(
-          input_api,
-          output_api,
-          input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                 'unexpected_passes'), [r'^.+_unittest\.py$'],
-          env=gpu_env,
-          run_on_python2=False,
-          run_on_python3=True,
-          skip_shebang_check=True))
+def CheckGpuTestsUnittests(input_api, output_api):
+  """Runs the unittests for the gpu_tests directory."""
+  gpu_env = _GetGpuEnv(input_api)
+  command = input_api.Command(
+      name='run_content_test_gpu_unittests',
+      cmd=[input_api.python3_executable, 'run_unittests.py', 'gpu_tests'],
+      kwargs={'env': gpu_env},
+      message=output_api.PresubmitError,
+      python3=True)
+  return input_api.RunTests([command])
 
-  results.extend(
-      input_api.canned_checks.RunUnitTestsInDirectory(
-          input_api,
-          output_api,
-          input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                 'flake_suppressor'), [r'^.+_unittest\.py$'],
-          env=gpu_env,
-          run_on_python2=False,
-          run_on_python3=True,
-          skip_shebang_check=True))
 
-  pylint_extra_paths = [
-      input_api.os_path.join(chromium_src_path, *component)
-      for component in EXTRA_PATHS_COMPONENTS
-  ]
-  pylint_checks = input_api.canned_checks.GetPylint(
+def CheckUnexpectedPassesUnittests(input_api, output_api):
+  """Runs the unittests for the unexpected_passes directory."""
+  return input_api.canned_checks.RunUnitTestsInDirectory(
       input_api,
       output_api,
-      extra_paths_list=pylint_extra_paths,
-      pylintrc='pylintrc',
-      version='2.7')
-  results.extend(input_api.RunTests(pylint_checks))
+      input_api.os_path.join(input_api.PresubmitLocalPath(),
+                             'unexpected_passes'), [r'^.+_unittest\.py$'],
+      env=_GetGpuEnv(input_api),
+      run_on_python2=False,
+      run_on_python3=True,
+      skip_shebang_check=True)
 
-  results.extend(CheckForNewSkipExpectations(input_api, output_api))
-  results.extend(CheckPytypePathsInSync(input_api, output_api))
 
-  return results
+def CheckFlakeSuppressorUnittests(input_api, output_api):
+  """Runs the unittests for the flake_suppressor directory."""
+  return input_api.canned_checks.RunUnitTestsInDirectory(
+      input_api,
+      output_api,
+      input_api.os_path.join(input_api.PresubmitLocalPath(),
+                             'flake_suppressor'), [r'^.+_unittest\.py$'],
+      env=_GetGpuEnv(input_api),
+      run_on_python2=False,
+      run_on_python3=True,
+      skip_shebang_check=True)
+
+
+def CheckValidateTagConsistency(input_api, output_api):
+  """Checks that GPU expectation tags are consistent across all files."""
+  command = input_api.Command(name='validate_tag_consistency',
+                              cmd=[
+                                  input_api.python3_executable,
+                                  'validate_tag_consistency.py', 'validate'
+                              ],
+                              kwargs={},
+                              message=output_api.PresubmitError,
+                              python3=True)
+  return input_api.RunTests([command])
 
 
 def CheckForNewSkipExpectations(input_api, output_api):
@@ -122,6 +123,22 @@ def CheckForNewSkipExpectations(input_api, output_api):
   return result
 
 
+def CheckPylint(input_api, output_api):
+  """Runs pylint on all directory content and subdirectories."""
+  chromium_src_path = _GetChromiumSrcPath(input_api)
+  pylint_extra_paths = [
+      input_api.os_path.join(chromium_src_path, *component)
+      for component in EXTRA_PATHS_COMPONENTS
+  ]
+  pylint_checks = input_api.canned_checks.GetPylint(
+      input_api,
+      output_api,
+      extra_paths_list=pylint_extra_paths,
+      pylintrc='pylintrc',
+      version='2.7')
+  return input_api.RunTests(pylint_checks)
+
+
 def CheckPytypePathsInSync(input_api, output_api):
   """Checks that run_pytype.py's paths are in sync with PRESUBMIT.py's"""
   filepath = input_api.os_path.join(input_api.PresubmitLocalPath(),
@@ -148,11 +165,3 @@ def CheckPytypePathsInSync(input_api, output_api):
             'run_pytype.py, please ensure they are identical.')
     ]
   return []
-
-
-def CheckChangeOnUpload(input_api, output_api):
-  return CommonChecks(input_api, output_api)
-
-
-def CheckChangeOnCommit(input_api, output_api):
-  return CommonChecks(input_api, output_api)
