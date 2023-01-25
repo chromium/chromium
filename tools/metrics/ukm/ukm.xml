@@ -2198,6 +2198,40 @@ be describing additional metrics about the same event.
       to duplicated field signatures.
     </summary>
   </metric>
+  <metric name="ServerPredictionSource1" enum="AutofillServerPredictionSource">
+    <summary>
+      The major source of predictions from the Autofill crowdsourced server, see
+      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction::Source.
+    </summary>
+  </metric>
+  <metric name="ServerPredictionSource2" enum="AutofillServerPredictionSource">
+    <summary>
+      The additional source of predictions from the Autofill crowdsourced server
+      if there is an additional prediction, see
+      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction::Source.
+    </summary>
+  </metric>
+  <metric name="ServerType1" enum="AutofillServerFieldType">
+    <summary>
+      The type of the field predicted from the Autofill crowdsourced server from
+      majority voting (and some more complex stuff). The types are from
+      |autofill::ServerFieldType|.
+    </summary>
+  </metric>
+  <metric name="ServerType2" enum="AutofillServerFieldType">
+    <summary>
+      The additional type of the field predicted from the Autofill crowdsourced
+      server if there is an additional prediction. The types are from
+      |autofill::ServerFieldType|.
+    </summary>
+  </metric>
+  <metric name="ServerTypeIsOverride" enum="Boolean">
+    <summary>
+      This is an annotation for server predicted field types which indicates
+      that a manual override defines the server type. This allows us to assess
+      the impact of server overrides and detect possible problems with it.
+    </summary>
+  </metric>
   <metric name="SuggestionWasAccepted" enum="Boolean">
     <summary>
       Whether the suggestion was accepted. This is only set for a field where a

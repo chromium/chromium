@@ -14,6 +14,9 @@
 
 namespace autofill {
 
+using FieldPrediction =
+    AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction;
+
 // An identifier to connect the various sub-events of filling together.
 using FillEventId = base::IdTypeU32<class FillEventIdClass>;
 FillEventId GetNextFillEventId();
@@ -134,6 +137,22 @@ using AutocompleteAttributeFieldLogEvent =
 // Compare two field log events from AutocompleteAttributeFieldLogEvent type.
 bool AreCollapsible(const AutocompleteAttributeFieldLogEvent& event1,
                     const AutocompleteAttributeFieldLogEvent& event2);
+
+// Predict the field type from Autofill server.
+template <typename IsRequired = void>
+struct ServerPredictionFieldLogEventImpl {
+  ServerFieldType server_type1 = IsRequired();
+  FieldPrediction::Source prediction_source1 = IsRequired();
+  ServerFieldType server_type2 = IsRequired();
+  FieldPrediction::Source prediction_source2 = IsRequired();
+  bool server_type_prediction_is_override = IsRequired();
+  size_t rank_in_field_signature_group = IsRequired();
+};
+using ServerPredictionFieldLogEvent = ServerPredictionFieldLogEventImpl<>;
+
+// Compare two field log events from ServerPredictionFieldLogEvent type.
+bool AreCollapsible(const ServerPredictionFieldLogEvent& event1,
+                    const ServerPredictionFieldLogEvent& event2);
 
 }  // namespace autofill
 

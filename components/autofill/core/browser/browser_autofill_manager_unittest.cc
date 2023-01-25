@@ -863,12 +863,34 @@ class BrowserAutofillManagerTest : public testing::Test {
             expected.rank_in_field_signature_group)));
   }
 
+  // Matches a ServerPredictionFieldLogEvent by equality of fields.
+  auto Equal(const ServerPredictionFieldLogEvent& expected) {
+    return VariantWith<ServerPredictionFieldLogEvent>(AllOf(
+        Field("server_type1", &ServerPredictionFieldLogEvent::server_type1,
+              expected.server_type1),
+        Field("prediction_source1",
+              &ServerPredictionFieldLogEvent::prediction_source1,
+              expected.prediction_source1),
+        Field("server_type2", &ServerPredictionFieldLogEvent::server_type2,
+              expected.server_type2),
+        Field("prediction_source2",
+              &ServerPredictionFieldLogEvent::prediction_source2,
+              expected.prediction_source2),
+        Field(
+            "server_type_prediction_is_override",
+            &ServerPredictionFieldLogEvent::server_type_prediction_is_override,
+            expected.server_type_prediction_is_override),
+        Field("rank_in_field_signature_group",
+              &ServerPredictionFieldLogEvent::rank_in_field_signature_group,
+              expected.rank_in_field_signature_group)));
+  }
+
   // Matches a vector of FieldLogEventType objects by equality of fields of each
   // log event type.
   auto ArrayEquals(
       const std::vector<AutofillField::FieldLogEventType>& expected) {
     static_assert(
-        absl::variant_size<AutofillField::FieldLogEventType>() == 7,
+        absl::variant_size<AutofillField::FieldLogEventType>() == 8,
         "If you add a new field event type, you need to update this function");
     std::vector<Matcher<AutofillField::FieldLogEventType>> matchers;
     for (const auto& event : expected) {
@@ -889,6 +911,10 @@ class BrowserAutofillManagerTest : public testing::Test {
                      event)) {
         matchers.push_back(
             Equal(absl::get<AutocompleteAttributeFieldLogEvent>(event)));
+      } else if (absl::holds_alternative<ServerPredictionFieldLogEvent>(
+                     event)) {
+        matchers.push_back(
+            Equal(absl::get<ServerPredictionFieldLogEvent>(event)));
       } else {
         NOTREACHED();
       }
@@ -5940,6 +5966,120 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
                                  .rank_in_field_signature_group = 1,
                              });
     }
+    EXPECT_THAT(autofill_field_ptr->field_log_events(),
+                ArrayEquals(expected_events));
+  }
+}
+
+// Test that we record field log events correctly for autofill crowdsourced
+// server prediction.
+TEST_F(BrowserAutofillManagerWithLogEventsTest,
+       LogEventsParseQueryResponseServerPrediction) {
+  // Set up our form data.
+  FormData form;
+  form.host_frame = test::MakeLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"MyForm";
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
+  FormFieldData field;
+  test::CreateTestFormField(/*label=*/"Name", /*name=*/"name",
+                            /*value=*/"", /*type=*/"text", /*field=*/&field);
+  form.fields.push_back(field);
+  test::CreateTestFormField(/*label=*/"Street", /*name=*/"Street",
+                            /*value=*/"", /*type=*/"text", /*field=*/&field);
+  form.fields.push_back(field);
+  test::CreateTestFormField(/*label=*/"City", /*name=*/"city",
+                            /*value=*/"", /*type=*/"text", /*field=*/&field);
+  form.fields.push_back(field);
+  test::CreateTestFormField(/*label=*/"State", /*name=*/"state",
+                            /*value=*/"", /*type=*/"text", /*field=*/&field);
+  form.fields.push_back(field);
+  test::CreateTestFormField(/*label=*/"Postal Code", /*name=*/"zipcode",
+                            /*value=*/"", /*type=*/"text", /*field=*/&field);
+  form.fields.push_back(field);
+  // Simulate having seen this form on page load.
+  // |form_structure_instance| will be owned by |browser_autofill_manager_|.
+  auto form_structure_instance = std::make_unique<FormStructure>(form);
+  // This pointer is valid as long as autofill manager lives.
+  FormStructure* form_structure = form_structure_instance.get();
+  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
+  browser_autofill_manager_->AddSeenFormStructure(
+      std::move(form_structure_instance));
+
+  // Make API response with suggestions.
+  AutofillQueryResponse response;
+  AutofillQueryResponse::FormSuggestion* form_suggestion;
+  // Set suggestions for form.
+  form_suggestion = response.add_form_suggestions();
+  autofill::test::AddFieldPredictionsToForm(
+      form.fields[0],
+      {test::CreateFieldPrediction(NAME_FIRST,
+                                   FieldPrediction::SOURCE_AUTOFILL_DEFAULT),
+       test::CreateFieldPrediction(USERNAME,
+                                   FieldPrediction::SOURCE_PASSWORDS_DEFAULT)},
+      form_suggestion);
+  autofill::test::AddFieldPredictionsToForm(
+      form.fields[1],
+      {test::CreateFieldPrediction(ADDRESS_HOME_LINE1,
+                                   FieldPrediction::SOURCE_OVERRIDE)},
+      form_suggestion);
+  autofill::test::AddFieldPredictionToForm(form.fields[2], ADDRESS_HOME_CITY,
+                                           form_suggestion);
+  autofill::test::AddFieldPredictionToForm(form.fields[3], ADDRESS_HOME_STATE,
+                                           form_suggestion);
+  autofill::test::AddFieldPredictionToForm(form.fields[4], ADDRESS_HOME_ZIP,
+                                           form_suggestion);
+
+  std::string response_string;
+  ASSERT_TRUE(response.SerializeToString(&response_string));
+  std::string encoded_response_string;
+  base::Base64Encode(response_string, &encoded_response_string);
+
+  // Query autofill server for the field type prediction.
+  browser_autofill_manager_->OnLoadedServerPredictionsForTest(
+      encoded_response_string, test::GetEncodedSignatures(*form_structure));
+  EXPECT_EQ(NAME_FIRST, form_structure->field(0)->Type().GetStorableType());
+  EXPECT_EQ(ADDRESS_HOME_LINE1,
+            form_structure->field(1)->Type().GetStorableType());
+  EXPECT_EQ(ADDRESS_HOME_CITY,
+            form_structure->field(2)->Type().GetStorableType());
+  EXPECT_EQ(ADDRESS_HOME_STATE,
+            form_structure->field(3)->Type().GetStorableType());
+  EXPECT_EQ(ADDRESS_HOME_ZIP,
+            form_structure->field(4)->Type().GetStorableType());
+
+  // Simulate form submission.
+  FormSubmitted(form);
+
+  for (const auto& autofill_field_ptr : *form_structure) {
+    SCOPED_TRACE(autofill_field_ptr->parseable_label());
+    // All parsed fields share the same expected
+    // HeuristicPredictionFieldLogEvent.
+    std::vector<AutofillField::FieldLogEventType> expected_events =
+        ToHeuristicFieldTypeEvents(autofill_field_ptr->heuristic_type());
+    // The autofill server applies two predictions on the "Name" field.
+    ServerFieldType server_type2 =
+        autofill_field_ptr->parseable_label() == u"Name" ? USERNAME
+                                                         : NO_SERVER_DATA;
+    FieldPrediction::Source prediction_source2 =
+        autofill_field_ptr->parseable_label() == u"Name"
+            ? FieldPrediction::SOURCE_PASSWORDS_DEFAULT
+            : FieldPrediction::SOURCE_UNSPECIFIED;
+    // The server prediction overrides the type predicted by local heuristic on
+    // the field of label "Street".
+    bool server_type_prediction_is_override =
+        autofill_field_ptr->parseable_label() == u"Street" ? true : false;
+    expected_events.push_back(ServerPredictionFieldLogEvent{
+        .server_type1 = autofill_field_ptr->server_type(),
+        .prediction_source1 =
+            autofill_field_ptr->server_predictions()[0].source(),
+        .server_type2 = server_type2,
+        .prediction_source2 = prediction_source2,
+        .server_type_prediction_is_override =
+            server_type_prediction_is_override,
+        .rank_in_field_signature_group = 1,
+    });
     EXPECT_THAT(autofill_field_ptr->field_log_events(),
                 ArrayEquals(expected_events));
   }

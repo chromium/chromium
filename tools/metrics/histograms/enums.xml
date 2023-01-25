@@ -9402,6 +9402,15 @@ others/histograms.xml -->
   <int value="2" label="Available after session start"/>
 </enum>
 
+<enum name="AutofillServerPredictionSource">
+  <int value="0" label="SOURCE_UNSPECIFIED"/>
+  <int value="1" label="SOURCE_AUTOFILL_DEFAULT"/>
+  <int value="2" label="SOURCE_PASSWORDS_DEFAULT"/>
+  <int value="3" label="SOURCE_OVERRIDE"/>
+  <int value="4" label="SOURCE_ALL_APPROVED_EXPERIMENTS"/>
+  <int value="5" label="SOURCE_FIELD_RANKS"/>
+</enum>
+
 <enum name="AutofillSessionStates">
   <int value="0" label="Unknown"/>
   <int value="1" label="No callback from framework"/>

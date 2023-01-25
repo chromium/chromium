@@ -10590,14 +10590,20 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetrics_FieldType) {
 
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
-  // Server response will match with autocomplete.
-  AddFieldPredictionToForm(form.fields[0], NAME_LAST, form_suggestion);
-  // Server response will NOT match with autocomplete.
-  AddFieldPredictionToForm(form.fields[1], NAME_FIRST, form_suggestion);
-  // Not logged.
-  AddFieldPredictionToForm(form.fields[2], NAME_MIDDLE, form_suggestion);
-  // Server response will have no data.
-  AddFieldPredictionToForm(form.fields[3], NO_SERVER_DATA, form_suggestion);
+  // The server type of each field predicted from autofill crowdsourced server.
+  std::vector<ServerFieldType> server_types{
+      // Server response will match with autocomplete.
+      NAME_LAST,
+      // Server response will NOT match with autocomplete.
+      NAME_FIRST,
+      // No autocomplete, server predicts a type from majority voting.
+      NAME_MIDDLE,
+      // Server response will have no data.
+      NO_SERVER_DATA};
+  // Set suggestions from server for the form.
+  for (size_t i = 0; i < server_types.size(); ++i) {
+    AddFieldPredictionToForm(form.fields[i], server_types[i], form_suggestion);
+  }
 
   std::string response_string = SerializeAndEncode(response);
   autofill_manager().OnLoadedServerPredictionsForTest(
@@ -10623,6 +10629,10 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetrics_FieldType) {
     SCOPED_TRACE(testing::Message() << i);
     using UFIT = UkmFieldInfoType;
     const auto* const entry = entries[i];
+    FieldPrediction::Source prediction_source =
+        server_types[i] != NO_SERVER_DATA
+            ? FieldPrediction::SOURCE_AUTOFILL_DEFAULT
+            : FieldPrediction::SOURCE_UNSPECIFIED;
     std::map<std::string, int64_t> expected = {
         {UFIT::kFormSessionIdentifierName,
          AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
@@ -10630,6 +10640,12 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetrics_FieldType) {
          AutofillMetrics::FieldGlobalIdToHash64Bit(form.fields[i].global_id())},
         {UFIT::kFieldSignatureName,
          Collapse(CalculateFieldSignatureForField(form.fields[i])).value()},
+        {UFIT::kServerType1Name, server_types[i]},
+        {UFIT::kServerPredictionSource1Name, prediction_source},
+        {UFIT::kServerType2Name, NO_SERVER_DATA},
+        {UFIT::kServerPredictionSource2Name,
+         FieldPrediction::SOURCE_UNSPECIFIED},
+        {UFIT::kServerTypeIsOverrideName, false},
         {UFIT::kIsFocusableName, true},
         {UFIT::kRankInFieldSignatureGroupName, 1},
         {UFIT::kWasFocusedName, false},

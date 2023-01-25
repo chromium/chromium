@@ -581,6 +581,9 @@ void FormStructure::ProcessQueryResponse(
 
   // Copy the field types into the actual form.
   for (FormStructure* form : forms) {
+    // Fields can share the same field signature. This map records for each
+    // signature how many fields with the same signature have been observed.
+    std::map<FieldSignature, size_t> field_rank_map;
     for (auto& field : form->fields_) {
       // Get the field prediction for |form|'s signature and the |field|'s
       // host_form_signature. The former takes precedence over the latter.
@@ -619,6 +622,27 @@ void FormStructure::ProcessQueryResponse(
 
       if (current_field->has_password_requirements())
         field->SetPasswordRequirements(current_field->password_requirements());
+
+      ++field_rank_map[field->GetFieldSignature()];
+      // Log the field type predicted from Autofill crowdsourced server.
+      field->AppendLogEventIfNotRepeated(ServerPredictionFieldLogEvent{
+          .server_type1 = field->server_type(),
+          .prediction_source1 = field->server_predictions().empty()
+                                    ? FieldPrediction::SOURCE_UNSPECIFIED
+                                    : field->server_predictions()[0].source(),
+          .server_type2 =
+              field->server_predictions().size() >= 2
+                  ? ToSafeServerFieldType(field->server_predictions()[1].type(),
+                                          NO_SERVER_DATA)
+                  : NO_SERVER_DATA,
+          .prediction_source2 = field->server_predictions().size() >= 2
+                                    ? field->server_predictions()[1].source()
+                                    : FieldPrediction::SOURCE_UNSPECIFIED,
+          .server_type_prediction_is_override =
+              field->server_type_prediction_is_override(),
+          .rank_in_field_signature_group =
+              field_rank_map[field->GetFieldSignature()],
+      });
     }
 
     AutofillMetrics::LogServerResponseHasDataForForm(base::ranges::any_of(
@@ -1330,7 +1354,7 @@ void FormStructure::LogDetermineHeuristicTypesMetrics() {
 void FormStructure::SetFieldTypesFromAutocompleteAttribute() {
   has_author_specified_types_ = false;
   has_author_specified_upi_vpa_hint_ = false;
-  std::map<FieldSignature, size_t> field_rank_id_map;
+  std::map<FieldSignature, size_t> field_rank_map;
   for (const std::unique_ptr<AutofillField>& field : fields_) {
     if (!field->parsed_autocomplete)
       continue;
@@ -1353,12 +1377,12 @@ void FormStructure::SetFieldTypesFromAutocompleteAttribute() {
                        field->parsed_autocomplete->mode);
 
     // Log the field type predicted from autocomplete attribute.
-    ++field_rank_id_map[field->GetFieldSignature()];
+    ++field_rank_map[field->GetFieldSignature()];
     field->AppendLogEventIfNotRepeated(AutocompleteAttributeFieldLogEvent{
         .html_type = field->parsed_autocomplete->field_type,
         .html_mode = field->parsed_autocomplete->mode,
         .rank_in_field_signature_group =
-            field_rank_id_map[field->GetFieldSignature()],
+            field_rank_map[field->GetFieldSignature()],
     });
   }
 }
@@ -1396,7 +1420,7 @@ void FormStructure::ParseFieldTypesWithPatterns(PatternSource pattern_source,
 
   // Fields can share the same field signature. This map records for each
   // signature how many fields with the same signature have been observed.
-  std::map<FieldSignature, size_t> field_rank_id_map;
+  std::map<FieldSignature, size_t> field_rank_map;
   for (const auto& field : fields_) {
     auto iter = field_type_map.find(field->global_id());
     if (iter == field_type_map.end())
@@ -1404,14 +1428,14 @@ void FormStructure::ParseFieldTypesWithPatterns(PatternSource pattern_source,
     const FieldCandidates& candidates = iter->second;
     field->set_heuristic_type(pattern_source, candidates.BestHeuristicType());
 
-    ++field_rank_id_map[field->GetFieldSignature()];
+    ++field_rank_map[field->GetFieldSignature()];
     // Log the field type predicted from local heuristics.
     field->AppendLogEventIfNotRepeated(HeuristicPredictionFieldLogEvent{
         .field_type = field->heuristic_type(pattern_source),
         .pattern_source = pattern_source,
         .is_active_pattern_source = GetActivePatternSource() == pattern_source,
         .rank_in_field_signature_group =
-            field_rank_id_map[field->GetFieldSignature()],
+            field_rank_map[field->GetFieldSignature()],
     });
   }
 }

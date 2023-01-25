@@ -2508,6 +2508,11 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   // TODO(crbug.com/1325851): Add a metric in |FieldInfo| UKM event to indicate
   // whether the user had any data available for the respective field type.
 
+  // If multiple fields have the same signature, this indicates the position
+  // within this set of fields. This allows us to understand problems related
+  // to duplicated field signatures.
+  size_t rank_in_field_signature_group = 0;
+
   // Field types from local heuristics prediction.
   // The field type from the active local heuristic pattern.
   ServerFieldType heuristic_type = UNKNOWN_TYPE;
@@ -2530,16 +2535,24 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   HtmlFieldMode html_mode = HtmlFieldMode::kNone;
   HtmlFieldType html_type = HtmlFieldType::kUnrecognized;
 
-  // If multiple fields have the same signature, this indicates the position
-  // within this set of fields. This allows us to understand problems related
-  // to duplicated field signatures.
-  size_t rank_in_field_signature_group = 0;
+  // The field type predicted by the Autofill crowdsourced server from
+  // majority voting.
+  ServerFieldType server_type1 = NO_SERVER_DATA;
+  FieldPrediction::Source prediction_source1 =
+      FieldPrediction::SOURCE_UNSPECIFIED;
+  ServerFieldType server_type2 = NO_SERVER_DATA;
+  FieldPrediction::Source prediction_source2 =
+      FieldPrediction::SOURCE_UNSPECIFIED;
+  // This is an annotation for server predicted field types which indicates
+  // that a manual override defines the server type.
+  bool server_type_is_override = false;
 
   bool had_heuristic_type = false;
   bool had_html_type = false;
+  bool had_server_type = false;
 
   for (const auto& log_event : field_log_events) {
-    static_assert(absl::variant_size<AutofillField::FieldLogEventType>() == 7,
+    static_assert(absl::variant_size<AutofillField::FieldLogEventType>() == 8,
                   "When adding new variants check that this function does not "
                   "need to be updated.");
     if (auto* event =
@@ -2611,6 +2624,16 @@ void AutofillMetrics::FormInteractionsUkmLogger::
       rank_in_field_signature_group = event->rank_in_field_signature_group;
       had_html_type = true;
     }
+
+    if (auto* event = absl::get_if<ServerPredictionFieldLogEvent>(&log_event)) {
+      server_type1 = event->server_type1;
+      prediction_source1 = event->prediction_source1;
+      server_type2 = event->server_type2;
+      prediction_source2 = event->prediction_source2;
+      server_type_is_override = event->server_type_prediction_is_override;
+      rank_in_field_signature_group = event->rank_in_field_signature_group;
+      had_server_type = true;
+    }
   }
 
   if (had_value_after_filling != OptionalBoolean::kUndefined ||
@@ -2672,6 +2695,14 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   if (had_html_type) {
     builder.SetHtmlFieldType(static_cast<int>(html_type))
         .SetHtmlFieldMode(static_cast<int>(html_mode));
+  }
+
+  if (had_server_type) {
+    builder.SetServerType1(server_type1)
+        .SetServerPredictionSource1(prediction_source1)
+        .SetServerType2(server_type2)
+        .SetServerPredictionSource2(prediction_source2)
+        .SetServerTypeIsOverride(server_type_is_override);
   }
 
   if (rank_in_field_signature_group) {

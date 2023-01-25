@@ -48,7 +48,7 @@ bool AreCollapsibleLogEvents(const AutofillField::FieldLogEventType& event1,
   }
 
   static_assert(
-      absl::variant_size<AutofillField::FieldLogEventType>() == 7,
+      absl::variant_size<AutofillField::FieldLogEventType>() == 8,
       "If you add a new field event type, you need to update this function");
 
   if (absl::holds_alternative<absl::monostate>(event1)) {
@@ -83,6 +83,11 @@ bool AreCollapsibleLogEvents(const AutofillField::FieldLogEventType& event1,
 
   if (absl::holds_alternative<AutocompleteAttributeFieldLogEvent>(event1)) {
     using E = AutocompleteAttributeFieldLogEvent;
+    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
+  }
+
+  if (absl::holds_alternative<ServerPredictionFieldLogEvent>(event1)) {
+    using E = ServerPredictionFieldLogEvent;
     return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
   }
 
