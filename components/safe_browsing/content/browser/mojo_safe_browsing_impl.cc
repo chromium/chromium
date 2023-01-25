@@ -27,8 +27,9 @@ content::WebContents* GetWebContentsFromID(int render_process_id,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-  if (!render_frame_host)
+  if (!render_frame_host) {
     return nullptr;
+  }
 
   return content::WebContents::FromRenderFrameHost(render_frame_host);
 }
@@ -47,8 +48,9 @@ class CheckUrlCallbackWrapper {
   explicit CheckUrlCallbackWrapper(Callback callback)
       : callback_(std::move(callback)) {}
   ~CheckUrlCallbackWrapper() {
-    if (callback_)
+    if (callback_) {
       Run(mojo::NullReceiver(), true, false, false, false);
+    }
   }
 
   void Run(mojo::PendingReceiver<mojom::UrlCheckNotifier> slow_check_notifier,
@@ -115,8 +117,9 @@ void MojoSafeBrowsingImpl::MaybeCreate(
 
   scoped_refptr<UrlCheckerDelegate> delegate = delegate_getter.Run();
 
-  if (!resource_context || !delegate)
+  if (!resource_context || !delegate) {
     return;
+  }
 
   std::unique_ptr<MojoSafeBrowsingImpl> impl(new MojoSafeBrowsingImpl(
       std::move(delegate), render_process_id, resource_context));
@@ -161,7 +164,9 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
   // This is not called for frame resources, and real time URL checks currently
   // only support main frame resources. If we extend real time URL checks to
   // support non-main frames, we will need to provide the user preferences,
-  // url_lookup_service regarding real time lookup here.
+  // url_lookup_service regarding real time lookup here. If we extend
+  // hash-prefix real-time checks to support non-main frames, we will need to
+  // provide the hash_realtime_service_on_ui here.
   auto checker_impl = std::make_unique<SafeBrowsingUrlCheckerImpl>(
       headers, static_cast<int>(load_flags), request_destination,
       has_user_gesture, delegate_,
@@ -174,7 +179,8 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
       /*can_check_db=*/true, /*can_check_high_confidence_allowlist=*/true,
       /*url_lookup_service_metric_suffix=*/".None",
       /*last_committed_url=*/GURL(), content::GetUIThreadTaskRunner({}),
-      /*url_lookup_service=*/nullptr, WebUIInfoSingleton::GetInstance());
+      /*url_lookup_service=*/nullptr, WebUIInfoSingleton::GetInstance(),
+      /*hash_realtime_service_on_ui=*/nullptr);
 
   checker_impl->CheckUrl(
       url, method,

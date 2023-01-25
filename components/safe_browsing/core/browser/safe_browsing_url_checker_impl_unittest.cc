@@ -340,7 +340,7 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         /*last_committed_url=*/GURL(),
         base::SequencedTaskRunner::GetCurrentDefault(),
         real_time_lookup_enabled ? url_lookup_service_->GetWeakPtr() : nullptr,
-        /*webui_delegate_=*/nullptr);
+        /*webui_delegate_=*/nullptr, /*hash_realtime_service_on_ui=*/nullptr);
   }
 
   // This can be used as the CheckUrl callback in cases where it's a local check

@@ -250,6 +250,7 @@
 #include "components/safe_browsing/content/browser/browser_url_loader_throttle.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_throttle.h"
+#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
@@ -5363,6 +5364,11 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
         GetUrlLookupService(browser_context, is_enterprise_lookup_enabled,
                             is_consumer_lookup_enabled);
 
+    safe_browsing::HashRealTimeService* hash_realtime_service =
+        safe_browsing_service_
+            ? safe_browsing_service_->GetHashRealTimeService(profile)
+            : nullptr;
+
     result.push_back(safe_browsing::BrowserURLLoaderThrottle::Create(
         base::BindOnce(
             &ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
@@ -5372,7 +5378,8 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
             /*should_check_on_sb_disabled=*/is_enterprise_lookup_enabled,
             safe_browsing::GetURLAllowlistByPolicy(profile->GetPrefs())),
         wc_getter, frame_tree_node_id,
-        url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr));
+        url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
+        hash_realtime_service ? hash_realtime_service->GetWeakPtr() : nullptr));
   }
 #endif
 

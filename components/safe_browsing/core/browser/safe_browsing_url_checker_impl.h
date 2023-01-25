@@ -13,6 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism_runner.h"
 #include "components/safe_browsing/core/browser/url_realtime_mechanism.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
@@ -99,7 +100,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
       GURL last_committed_url,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
-      UrlRealTimeMechanism::WebUIDelegate* webui_delegate);
+      UrlRealTimeMechanism::WebUIDelegate* webui_delegate,
+      base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui);
 
   // Constructor that takes only a RequestDestination, a UrlCheckerDelegate, and
   // real-time lookup-related arguments, omitting other arguments that never
@@ -317,6 +319,10 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   // and in unit tests. If non-null, guaranteed to outlive this object by
   // contract.
   raw_ptr<UrlRealTimeMechanism::WebUIDelegate> webui_delegate_ = nullptr;
+
+  // This object is used to perform the hash-prefix real-time lookup. It can
+  // only be accessed on the UI thread.
+  base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui_;
 
   base::WeakPtrFactory<SafeBrowsingUrlCheckerImpl> weak_factory_{this};
 };

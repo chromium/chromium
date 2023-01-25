@@ -77,6 +77,7 @@ class SafeBrowsingDatabaseManager;
 class SafeBrowsingServiceFactory;
 class SafeBrowsingUIManager;
 class TriggerManager;
+class HashRealTimeService;
 
 // Construction needs to happen on the main thread.
 // The SafeBrowsingService owns both the UI and Database managers which do
@@ -172,6 +173,10 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
 
   // Adds |download_manager| to the set monitored by safe browsing.
   void AddDownloadManager(content::DownloadManager* download_manager);
+
+  // Gets the hash-prefix real-time lookup service associated with the profile,
+  // or creates one if one does not already exist.
+  HashRealTimeService* GetHashRealTimeService(Profile* profile);
 
   // Type for subscriptions to SafeBrowsing service state.
   typedef base::RepeatingClosureList::Subscription StateSubscription;

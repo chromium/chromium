@@ -97,6 +97,9 @@ class HashRealTimeService : public KeyedService {
   // Called before the actual deletion of the object.
   void Shutdown() override;
 
+  // Helper function to return a weak pointer.
+  base::WeakPtr<HashRealTimeService> GetWeakPtr();
+
  private:
   friend class HashRealTimeServiceTest;
   constexpr static int kLeastSeverity = std::numeric_limits<int>::max();

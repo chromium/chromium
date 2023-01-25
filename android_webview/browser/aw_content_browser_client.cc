@@ -200,8 +200,9 @@ std::string AwContentBrowserClient::GetAcceptLangsImpl() {
 
   // If accept languages do not contain en-US, add in en-US which will be
   // used with a lower q-value.
-  if (locales_string.find("en-US") == std::string::npos)
+  if (locales_string.find("en-US") == std::string::npos) {
     locales_string += ",en-US";
+  }
   return locales_string;
 }
 
@@ -331,8 +332,9 @@ bool AwContentBrowserClient::IsHandledURL(const GURL& url) {
     return !IsAndroidSpecialFileUrl(url);
   }
   for (const char* supported_protocol : kProtocolList) {
-    if (scheme == supported_protocol)
+    if (scheme == supported_protocol) {
       return true;
+    }
   }
   return false;
 }
@@ -424,8 +426,9 @@ base::OnceClosure AwContentBrowserClient::SelectClientCertificate(
     std::unique_ptr<content::ClientCertificateDelegate> delegate) {
   AwContentsClientBridge* client =
       AwContentsClientBridge::FromWebContents(web_contents);
-  if (client)
+  if (client) {
     client->SelectClientCertificate(cert_request_info, std::move(delegate));
+  }
   return base::OnceClosure();
 }
 
@@ -557,8 +560,9 @@ AwContentBrowserClient::CreateThrottlesForNavigation(
       navigation_interception::InterceptNavigationDelegate::
           MaybeCreateThrottleFor(navigation_handle,
                                  navigation_interception::SynchronyMode::kSync);
-  if (intercept_navigation_throttle)
+  if (intercept_navigation_throttle) {
     throttles.push_back(std::move(intercept_navigation_throttle));
+  }
 
   throttles.push_back(std::make_unique<PolicyBlocklistNavigationThrottle>(
       navigation_handle,
@@ -567,8 +571,9 @@ AwContentBrowserClient::CreateThrottlesForNavigation(
   std::unique_ptr<AwSafeBrowsingNavigationThrottle> safe_browsing_throttle =
       AwSafeBrowsingNavigationThrottle::MaybeCreateThrottleFor(
           navigation_handle);
-  if (safe_browsing_throttle)
+  if (safe_browsing_throttle) {
     throttles.push_back(std::move(safe_browsing_throttle));
+  }
   return throttles;
 }
 
@@ -607,7 +612,8 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
       // TODO(crbug.com/1033760): rt_lookup_service is
       // used to perform real time URL check, which is gated by UKM opted-in.
       // Since AW currently doesn't support UKM, this feature is not enabled.
-      /* rt_lookup_service */ nullptr));
+      /* rt_lookup_service */ nullptr,
+      /* hash_realtime_service */ nullptr));
 
   if (request.destination == network::mojom::RequestDestination::kDocument) {
     const bool is_load_url =
@@ -654,15 +660,17 @@ bool AwContentBrowserClient::ShouldOverrideUrlLoading(
   *ignore_navigation = false;
 
   // Only GETs can be overridden.
-  if (request_method != "GET")
+  if (request_method != "GET") {
     return true;
+  }
 
   bool application_initiated =
       browser_initiated || transition & ui::PAGE_TRANSITION_FORWARD_BACK;
 
   // Don't offer application-initiated navigations unless it's a redirect.
-  if (application_initiated && !is_redirect)
+  if (application_initiated && !is_redirect) {
     return true;
+  }
 
   // For HTTP schemes, only top-level navigations can be overridden. Similarly,
   // WebView Classic lets app override only top level about:blank navigations.
@@ -678,17 +686,20 @@ bool AwContentBrowserClient::ShouldOverrideUrlLoading(
   if (!is_outermost_main_frame &&
       (gurl.SchemeIs(url::kHttpScheme) || gurl.SchemeIs(url::kHttpsScheme) ||
        gurl.SchemeIs(url::kAboutScheme) ||
-       gurl.SchemeIs(url::kUuidInPackageScheme)))
+       gurl.SchemeIs(url::kUuidInPackageScheme))) {
     return true;
+  }
 
   WebContents* web_contents =
       WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  if (web_contents == nullptr)
+  if (web_contents == nullptr) {
     return true;
+  }
   AwContentsClientBridge* client_bridge =
       AwContentsClientBridge::FromWebContents(web_contents);
-  if (client_bridge == nullptr)
+  if (client_bridge == nullptr) {
     return true;
+  }
 
   std::u16string url = base::UTF8ToUTF16(gurl.possibly_invalid_spec());
 
@@ -1014,8 +1025,9 @@ std::string AwContentBrowserClient::GetUserAgent() {
 
 content::ContentBrowserClient::WideColorGamutHeuristic
 AwContentBrowserClient::GetWideColorGamutHeuristic() {
-  if (base::FeatureList::IsEnabled(features::kWebViewWideColorGamutSupport))
+  if (base::FeatureList::IsEnabled(features::kWebViewWideColorGamutSupport)) {
     return WideColorGamutHeuristic::kUseWindow;
+  }
 
   if (display::HasForceDisplayColorProfile() &&
       display::GetForcedDisplayColorProfile() ==

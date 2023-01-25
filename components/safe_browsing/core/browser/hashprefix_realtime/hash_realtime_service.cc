@@ -433,6 +433,10 @@ void HashRealTimeService::Shutdown() {
   cache_manager_ = nullptr;
 }
 
+base::WeakPtr<HashRealTimeService> HashRealTimeService::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void HashRealTimeService::LogOperationResult(
     OperationResult operation_result) const {
   base::UmaHistogramEnumeration("SafeBrowsing.HPRT.OperationResult",

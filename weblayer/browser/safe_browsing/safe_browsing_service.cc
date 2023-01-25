@@ -62,16 +62,18 @@ void MaybeCreateSafeBrowsing(
 
   content::RenderProcessHost* render_process_host =
       content::RenderProcessHost::FromID(rph_id);
-  if (!render_process_host)
+  if (!render_process_host) {
     return;
+  }
 
   bool is_safe_browsing_enabled = safe_browsing::IsSafeBrowsingEnabled(
       *static_cast<BrowserContextImpl*>(
            render_process_host->GetBrowserContext())
            ->pref_service());
 
-  if (!is_safe_browsing_enabled)
+  if (!is_safe_browsing_enabled) {
     return;
+  }
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -128,7 +130,8 @@ SafeBrowsingService::CreateURLLoaderThrottle(
           },
           base::Unretained(this)),
       wc_getter, frame_tree_node_id,
-      url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr);
+      url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
+      /*hash_realtime_service=*/nullptr);
 }
 
 std::unique_ptr<content::NavigationThrottle>
@@ -210,8 +213,9 @@ void SafeBrowsingService::StartSafeBrowsingDBManagerOnIOThread() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(safe_browsing_db_manager_);
 
-  if (started_db_manager_)
+  if (started_db_manager_) {
     return;
+  }
 
   started_db_manager_ = true;
 
@@ -279,15 +283,17 @@ void SafeBrowsingService::StopDBManagerOnIOThread() {
 }
 
 network::mojom::NetworkContext* SafeBrowsingService::GetNetworkContext() {
-  if (!network_context_)
+  if (!network_context_) {
     return nullptr;
+  }
   return network_context_->GetNetworkContext();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
 SafeBrowsingService::GetURLLoaderFactory() {
-  if (!network_context_)
+  if (!network_context_) {
     return nullptr;
+  }
   return network_context_->GetURLLoaderFactory();
 }
 

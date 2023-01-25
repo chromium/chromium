@@ -127,7 +127,8 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
     GURL last_committed_url,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
-    UrlRealTimeMechanism::WebUIDelegate* webui_delegate)
+    UrlRealTimeMechanism::WebUIDelegate* webui_delegate,
+    base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui)
     : headers_(headers),
       load_flags_(load_flags),
       request_destination_(request_destination),
@@ -146,7 +147,8 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
       last_committed_url_(last_committed_url),
       ui_task_runner_(ui_task_runner),
       url_lookup_service_on_ui_(url_lookup_service_on_ui),
-      webui_delegate_(webui_delegate) {
+      webui_delegate_(webui_delegate),
+      hash_realtime_service_on_ui_(hash_realtime_service_on_ui) {
   DCHECK(!web_contents_getter_.is_null());
   DCHECK(!can_rt_check_subresource_url_ || real_time_lookup_enabled_);
   DCHECK(real_time_lookup_enabled_ || can_check_db_);
@@ -347,6 +349,7 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternal(
                          std::move(rt_lookup_response));
 
   state_ = STATE_DISPLAYING_BLOCKING_PAGE;
+
   url_checker_delegate_->StartDisplayingBlockingPageHelper(
       resource, urls_[next_index_].method, headers_,
       request_destination_ == network::mojom::RequestDestination::kDocument,

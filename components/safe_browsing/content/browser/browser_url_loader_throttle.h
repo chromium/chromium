@@ -28,6 +28,7 @@ namespace safe_browsing {
 class UrlCheckerDelegate;
 
 class RealTimeUrlLookupServiceBase;
+class HashRealTimeService;
 
 // BrowserURLLoaderThrottle is used in the browser process to query
 // SafeBrowsing to determine whether a URL and also its redirect URLs are safe
@@ -48,7 +49,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter,
       int frame_tree_node_id,
-      base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service);
+      base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
+      base::WeakPtr<HashRealTimeService> hash_realtime_service);
 
   BrowserURLLoaderThrottle(const BrowserURLLoaderThrottle&) = delete;
   BrowserURLLoaderThrottle& operator=(const BrowserURLLoaderThrottle&) = delete;
@@ -91,7 +93,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter,
       int frame_tree_node_id,
-      base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service);
+      base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
+      base::WeakPtr<HashRealTimeService> hash_realtime_service);
 
   // |slow_check| indicates whether it reports the result of a slow check.
   // (Please see comments of CheckerOnIO::OnCheckUrlResult() for what slow check
