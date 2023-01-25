@@ -9,69 +9,12 @@ const swSrcUrl = './payment_handler_sw.js';
 let resultPromise;
 
 /**
- * Update the installation status in the widget called 'installationStatus'.
- */
-async function updateStatusView() {
-  const installationStatusViewId = 'installationStatus';
-  const registration = await navigator.serviceWorker.getRegistration(swSrcUrl);
-  if (registration) {
-    document.getElementById(installationStatusViewId).innerText = 'installed';
-  } else {
-    document.getElementById(installationStatusViewId).innerText = 'uninstalled';
-  }
-}
-
-/**
  * Insert a message to the widget called 'log'.
  * @param {string} text - the text that is intended to be inserted into the log.
  */
 function updateLogView(text) {
   const messageElement = document.getElementById('log');
   messageElement.innerText = text + '\n' + messageElement.innerText;
-}
-
-/**
- * Installs the payment handler.
- * @return {string} - the message about the installation result.
- */
-async function install() {
-  try {
-    let registration =
-        await navigator.serviceWorker.getRegistration(swSrcUrl);
-    if (registration) {
-      return 'The payment handler is already installed.';
-    }
-
-    await navigator.serviceWorker.register(swSrcUrl);
-    registration = await navigator.serviceWorker.ready;
-    await updateStatusView();
-
-    if (!registration.paymentManager) {
-      return 'PaymentManager API not found.';
-    }
-
-    await registration.paymentManager.instruments.set('instrument-id', {
-      name: 'Instrument Name',
-      method: methodName,
-    });
-    return 'success';
-  } catch (e) {
-    return e.message;
-  }
-}
-
-/**
- * Uninstall the payment handler.
- * @return {string} - the message about the uninstallation result.
- */
-async function uninstall() {
-  let registration = await navigator.serviceWorker.getRegistration(swSrcUrl);
-  if (!registration) {
-    return 'The Payment handler has not been installed yet.';
-  }
-  await registration.unregister();
-  await updateStatusView();
-  return 'Uninstall successfully.';
 }
 
 /**
@@ -120,5 +63,3 @@ async function getResult() {
     return e.message;
   }
 }
-
-updateStatusView();

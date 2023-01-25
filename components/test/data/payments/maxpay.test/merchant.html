@@ -30,14 +30,6 @@ found in the LICENSE file.
   </style>
   <body>
     <script>
-      async function onInstallClicked() {
-        const result = await install();
-        updateLogView(result);
-      }
-      async function onUninstallClicked() {
-        const result = await uninstall();
-        updateLogView(result);
-      }
       async function onLaunchClicked(url) {
         const result = await launchAndWaitUntilReady(url);
         updateLogView(result);
@@ -47,13 +39,10 @@ found in the LICENSE file.
     </script>
     <h1>Use Max Pay</h1>
     <div id="controllers">
-      <button onclick="onInstallClicked()">Install</button>
-      <button onclick="onUninstallClicked()">Uninstall</button>
       <button onclick="onLaunchClicked()">Launch</button>
       <button onclick="onLaunchClicked('http://info.cern.ch')">Launch http app</button>
     </div>
     <div>
-      <div>Installation Status: <span id="installationStatus"></span></div>
       <div>Messages:</div>
       <pre id="log"></pre>
     </div>

@@ -9,33 +9,6 @@ let request;
 let supportedInstruments = [];
 
 /**
- * Install a payment app.
- * @return {string} - a message indicating whether the installation is
- *  successful.
- */
-async function install() {
-  info('installing');
-
-  await navigator.serviceWorker.register('empty_app.js');
-  const registration = await navigator.serviceWorker.ready;
-  if (!registration.paymentManager) {
-    return 'No payment handler capability in this browser. Is' +
-        'chrome://flags/#service-worker-payment-apps enabled?';
-  }
-
-  if (!registration.paymentManager.instruments) {
-    return 'Payment handler is not fully implemented. ' +
-        'Cannot set the instruments.';
-  }
-  await registration.paymentManager.instruments.set('instrument-key', {
-    // Chrome uses name and icon from the web app manifest
-    name: 'MaxPay',
-    method: methodName,
-  });
-  return 'success';
-}
-
-/**
  * Add a payment method to the payment request.
  * @param {string} method - the payment method.
  * @return {string} - a message indicating whether the operation is successful.
