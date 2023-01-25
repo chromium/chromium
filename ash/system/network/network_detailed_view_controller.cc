@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
@@ -126,8 +125,6 @@ NetworkDetailedViewController::NetworkDetailedViewController(
     : model_(Shell::Get()->system_tray_model()->network_state_model()),
       detailed_view_delegate_(
           std::make_unique<DetailedViewDelegate>(tray_controller)) {
-  DCHECK(ash::features::IsQuickSettingsNetworkRevampEnabled());
-
   GetBluetoothConfigService(
       remote_cros_bluetooth_config_.BindNewPipeAndPassReceiver());
   remote_cros_bluetooth_config_->ObserveSystemProperties(

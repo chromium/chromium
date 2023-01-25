@@ -20,9 +20,7 @@ using chromeos::network_config::mojom::NetworkType;
 }  // namespace
 
 NetworkListItemView::NetworkListItemView(ViewClickListener* listener)
-    : HoverHighlightView(listener) {
-  DCHECK(ash::features::IsQuickSettingsNetworkRevampEnabled());
-}
+    : HoverHighlightView(listener) {}
 
 NetworkListItemView::~NetworkListItemView() = default;
 

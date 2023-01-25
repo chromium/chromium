@@ -37,8 +37,6 @@ NetworkDetailedView::NetworkDetailedView(
       login_(Shell::Get()->session_controller()->login_status()),
       model_(Shell::Get()->system_tray_model()->network_state_model()),
       delegate_(delegate) {
-  DCHECK(ash::features::IsQuickSettingsNetworkRevampEnabled());
-
   CreateTitleRow(list_type_ == ListType::LIST_TYPE_NETWORK
                      ? IDS_ASH_STATUS_TRAY_NETWORK
                      : IDS_ASH_STATUS_TRAY_VPN);

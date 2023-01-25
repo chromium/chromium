@@ -58,8 +58,6 @@ NetworkInfoBubble::NetworkInfoBubble(base::WeakPtr<Delegate> delegate,
                                      views::View* anchor)
     : views::BubbleDialogDelegateView(anchor, views::BubbleBorder::TOP_RIGHT),
       delegate_(delegate) {
-  DCHECK(ash::features::IsQuickSettingsNetworkRevampEnabled());
-
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_margins(gfx::Insets(kBubbleMargin));
   SetArrow(views::BubbleBorder::NONE);

@@ -44,7 +44,6 @@ NetworkDetailedNetworkViewImpl::NetworkDetailedNetworkViewImpl(
                           delegate,
                           NetworkDetailedView::ListType::LIST_TYPE_NETWORK),
       NetworkDetailedNetworkView(delegate) {
-  DCHECK(ash::features::IsQuickSettingsNetworkRevampEnabled());
   RecordDetailedViewSection(DetailedViewSection::kDetailedSection);
 }
 

@@ -852,8 +852,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsProjectorFoldShortGapIntoPreviousTranscriptEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQsRevampEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickDimEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsQuickSettingsNetworkRevampEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPerDeskZOrderEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsReleaseTrackUiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsReverseScrollGesturesEnabled();

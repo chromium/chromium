@@ -3092,10 +3092,6 @@ bool IsQuickDimEnabled() {
   return base::FeatureList::IsEnabled(kQuickDim) && switches::HasHps();
 }
 
-bool IsQuickSettingsNetworkRevampEnabled() {
-  return true;
-}
-
 bool IsPerDeskZOrderEnabled() {
   return base::FeatureList::IsEnabled(kEnablePerDeskZOrder);
 }

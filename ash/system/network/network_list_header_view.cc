@@ -26,8 +26,6 @@ const int kLineHeight = 20;
 }  // namespace
 
 NetworkListHeaderView::NetworkListHeaderView(int label_id) {
-  DCHECK(ash::features::IsQuickSettingsNetworkRevampEnabled());
-
   TrayPopupUtils::ConfigureAsStickyHeader(this);
   SetLayoutManager(std::make_unique<views::FillLayout>());
   container_ = TrayPopupUtils::CreateSubHeaderRowView(/*start_visible=*/true);

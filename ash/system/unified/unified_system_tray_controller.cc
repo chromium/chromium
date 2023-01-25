@@ -41,7 +41,6 @@
 #include "ash/system/nearby_share/nearby_share_feature_pod_controller.h"
 #include "ash/system/network/network_detailed_view_controller.h"
 #include "ash/system/network/network_feature_pod_controller.h"
-#include "ash/system/network/network_feature_pod_controller_legacy.h"
 #include "ash/system/network/unified_vpn_detailed_view_controller.h"
 #include "ash/system/network/vpn_feature_pod_controller.h"
 #include "ash/system/night_light/night_light_feature_pod_controller.h"
@@ -656,13 +655,7 @@ void UnifiedSystemTrayController::LoadIsExpandedPref() {
 }
 
 void UnifiedSystemTrayController::InitFeaturePods() {
-  if (ash::features::IsQuickSettingsNetworkRevampEnabled()) {
-    AddFeaturePodItem(std::make_unique<NetworkFeaturePodController>(this));
-  } else {
-    AddFeaturePodItem(
-        std::make_unique<NetworkFeaturePodControllerLegacy>(this));
-  }
-
+  AddFeaturePodItem(std::make_unique<NetworkFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<BluetoothFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<AccessibilityFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<QuietModeFeaturePodController>(this));

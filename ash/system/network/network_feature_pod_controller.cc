@@ -158,7 +158,6 @@ bool SetNetworkTypeEnabled(bool enabled) {
 NetworkFeaturePodController::NetworkFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
     : tray_controller_(tray_controller) {
-  DCHECK(ash::features::IsQuickSettingsNetworkRevampEnabled());
   Shell::Get()->system_tray_model()->network_state_model()->AddObserver(this);
 }
 
