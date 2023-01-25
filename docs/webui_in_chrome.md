@@ -36,7 +36,7 @@ For a sample WebUI page you could start with the following files:
   <meta charset="utf-8">
   <link rel="stylesheet" href="hello_world.css">
   <hello-world-app></hello-world-app>
-  <script type="module" src="hello_world.js"></script>
+  <script type="module" src="app.js"></script>
 </html>
 ```
 
