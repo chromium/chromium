@@ -1886,33 +1886,6 @@ const Vector<AppliedTextDecoration>& ComputedStyle::AppliedTextDecorations()
   return AppliedTextDecorationsInternal()->data;
 }
 
-bool ComputedStyle::IsAppliedTextDecorationsSame(
-    const ComputedStyle& other) const {
-  if (HasSimpleUnderlineInternal() != other.HasSimpleUnderlineInternal()) {
-    return false;
-  }
-  if (AppliedTextDecorationsInternal().get() ==
-      other.AppliedTextDecorationsInternal().get()) {
-    return true;
-  }
-
-  // Rare but sometimes two instances of |AppliedTextDecorations()| may have the
-  // same items. Check if all items are the same.
-  // e.g., tables/mozilla/bugs/bug126742.html
-  const Vector<AppliedTextDecoration>& decorations = AppliedTextDecorations();
-  const Vector<AppliedTextDecoration>& other_decorations =
-      other.AppliedTextDecorations();
-  if (decorations.size() != other_decorations.size()) {
-    return false;
-  }
-  for (wtf_size_t index = 0; index < decorations.size(); ++index) {
-    if (decorations[index] != other_decorations[index]) {
-      return false;
-    }
-  }
-  return true;
-}
-
 static bool HasInitialVariables(const StyleInitialData* initial_data) {
   return initial_data && initial_data->HasInitialVariables();
 }
