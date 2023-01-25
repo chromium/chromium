@@ -132,6 +132,14 @@ PrintBackendServiceManager::RegisterPrintDocumentClient(
   return *RegisterClient(ClientType::kPrintDocument, printer_name);
 }
 
+PrintBackendServiceManager::ClientId
+PrintBackendServiceManager::RegisterPrintDocumentClientReusingClientRemote(
+    ClientId id) {
+  DCHECK(query_with_ui_clients_.contains(id));
+  return *RegisterClient(ClientType::kPrintDocument,
+                         query_with_ui_clients_[id]);
+}
+
 void PrintBackendServiceManager::UnregisterClient(ClientId id) {
   // Determine which client type has this ID, and remove it once found.
   absl::optional<ClientType> client_type;
@@ -522,10 +530,15 @@ PrintBackendServiceManager::GetRemoteIdForPrinterName(
 }
 
 absl::optional<PrintBackendServiceManager::ClientId>
-PrintBackendServiceManager::RegisterClient(ClientType client_type,
-                                           const std::string& printer_name) {
+PrintBackendServiceManager::RegisterClient(
+    ClientType client_type,
+    absl::variant<std::string, RemoteId> destination) {
   ClientId client_id = ClientId(++last_client_id_);
-  RemoteId remote_id = GetRemoteIdForPrinterName(printer_name);
+  RemoteId remote_id =
+      absl::holds_alternative<std::string>(destination)
+          ? GetRemoteIdForPrinterName(
+                /*printer_name=*/absl::get<std::string>(destination))
+          : absl::get<RemoteId>(destination);
 
   VLOG(1) << "Registering a client with ID " << client_id
           << " for print backend service.";
@@ -538,7 +551,7 @@ PrintBackendServiceManager::RegisterClient(ClientType client_type,
       if (!query_with_ui_clients_.empty())
         return absl::nullopt;
 #endif
-      query_with_ui_clients_.insert(client_id);
+      query_with_ui_clients_.insert({client_id, remote_id});
       break;
     case ClientType::kPrintDocument:
       print_document_clients_[remote_id].insert(client_id);
@@ -568,8 +581,10 @@ PrintBackendServiceManager::RegisterClient(ClientType client_type,
   } else {
     // Service not already available, so launch it now so that it will be
     // ready by the time the client gets to point of invoking a Mojo call.
+    DCHECK(absl::holds_alternative<std::string>(destination));
     bool is_sandboxed;
-    GetService(printer_name, client_type, &is_sandboxed);
+    GetService(/*printer_name=*/absl::get<std::string>(destination),
+               client_type, &is_sandboxed);
   }
 
   return client_id;
@@ -749,6 +764,16 @@ constexpr base::TimeDelta PrintBackendServiceManager::GetClientTypeIdleTimeout(
   }
 }
 
+bool PrintBackendServiceManager::HasQueryWithUiClientForRemoteId(
+    const RemoteId& remote_id) const {
+  for (auto& item : query_with_ui_clients_) {
+    if (item.second == remote_id) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool PrintBackendServiceManager::HasPrintDocumentClientForRemoteId(
     const RemoteId& remote_id) const {
   return GetPrintDocumentClientsCountForRemoteId(remote_id) > 0;
@@ -830,7 +855,7 @@ PrintBackendServiceManager::DetermineIdleTimeoutUpdateOnUnregisteredClient(
     case ClientType::kQuery:
       // Other query types have longer timeouts, so no need to update if
       // any of them have clients.
-      if (!query_with_ui_clients_.empty() ||
+      if (HasQueryWithUiClientForRemoteId(remote_id) ||
           HasPrintDocumentClientForRemoteId(remote_id)) {
         return absl::nullopt;
       }
@@ -845,8 +870,9 @@ PrintBackendServiceManager::DetermineIdleTimeoutUpdateOnUnregisteredClient(
     case ClientType::kQueryWithUi:
 #if BUILDFLAG(IS_LINUX)
       // No need to update if there were other query with UI clients.
-      if (!query_with_ui_clients_.empty())
+      if (HasQueryWithUiClientForRemoteId(remote_id)) {
         return absl::nullopt;
+      }
 #else
       // A modal system dialog, of which there should only ever be at most one
       // of these. If one was dropped, it should now be empty.
@@ -864,16 +890,12 @@ PrintBackendServiceManager::DetermineIdleTimeoutUpdateOnUnregisteredClient(
                                     : kClientsRegisteredResetOnIdleTimeout;
 
     case ClientType::kPrintDocument:
-      // No need to update if there were other printing clients for same remote
-      // ID.
-      if (HasPrintDocumentClientForRemoteId(remote_id)) {
+      // No need to update if there were other printing clients or query with
+      // UI clients for same remote ID.
+      if (HasQueryWithUiClientForRemoteId(remote_id) ||
+          HasPrintDocumentClientForRemoteId(remote_id)) {
         return absl::nullopt;
       }
-
-      // This is the longest timeout, so no need to update if there is still a
-      // query with UI.
-      if (!query_with_ui_clients_.empty())
-        return absl::nullopt;
 
       // New timeout depends upon existence of other queries.
       return query_clients_.empty() ? kNoClientsRegisteredResetOnIdleTimeout
@@ -1275,7 +1297,7 @@ void PrintBackendServiceManager::RunSavedCallbacks(
 // static
 void PrintBackendServiceManager::SetClientsForTesting(
     const ClientsSet& query_clients,
-    const ClientsSet& query_with_ui_clients,
+    const QueryWithUiClientsMap& query_with_ui_clients,
     const PrintClientsMap& print_document_clients) {
   g_print_backend_service_manager_singleton->query_clients_ = query_clients;
   g_print_backend_service_manager_singleton->query_with_ui_clients_ =

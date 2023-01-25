@@ -18,6 +18,7 @@ namespace printing {
 using ClientId = PrintBackendServiceManager::ClientId;
 using ClientsSet = PrintBackendServiceManager::ClientsSet;
 using PrintClientsMap = PrintBackendServiceManager::PrintClientsMap;
+using QueryWithUiClientsMap = PrintBackendServiceManager::QueryWithUiClientsMap;
 using RemoteId = PrintBackendServiceManager::RemoteId;
 
 namespace {
@@ -40,11 +41,13 @@ const ClientsSet kTestQueryNoClients;
 const ClientsSet kTestQueryWithOneClient{kClientIdQuery1};
 const ClientsSet kTestQueryWithTwoClients{kClientIdQuery1, kClientIdQuery2};
 
-const ClientsSet kTestQueryWithUiNoClients;
-const ClientsSet kTestQueryWithUiOneClient{kClientIdQueryWithUi1};
+const QueryWithUiClientsMap kTestQueryWithUiNoClients;
+const QueryWithUiClientsMap kTestQueryWithUiOneClient{
+    {kClientIdQueryWithUi1, kRemoteIdEmpty}};
 #if BUILDFLAG(IS_LINUX)
-const ClientsSet kTestQueryWithUiTwoClients{kClientIdQueryWithUi1,
-                                            kClientIdQueryWithUi2};
+const QueryWithUiClientsMap kTestQueryWithUiTwoClients{
+    {kClientIdQueryWithUi1, kRemoteIdEmpty},
+    {kClientIdQueryWithUi2, kRemoteIdEmpty}};
 #endif
 
 const PrintClientsMap kTestPrintDocumentNoClients;
@@ -68,7 +71,7 @@ TEST(PrintBackendServiceManagerTest,
      IsIdleTimeoutUpdateNeededForRegisteredClient) {
   const struct TestData {
     ClientsSet query_clients;
-    ClientsSet query_with_ui_client;
+    QueryWithUiClientsMap query_with_ui_client;
     PrintClientsMap print_document_clients;
     PrintBackendServiceManager::ClientType modified_client_type;
     absl::optional<base::TimeDelta> new_timeout;
@@ -215,7 +218,7 @@ TEST(PrintBackendServiceManagerTest,
      IsIdleTimeoutUpdateNeededForUnregisteredClient) {
   const struct TestData {
     ClientsSet query_clients;
-    ClientsSet query_with_ui_client;
+    QueryWithUiClientsMap query_with_ui_client;
     PrintClientsMap print_document_clients;
     PrintBackendServiceManager::ClientType modified_client_type;
     absl::optional<base::TimeDelta> new_timeout;

@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 #include "ui/gfx/native_widget_types.h"
@@ -49,6 +50,9 @@ class PrintBackendServiceManager {
 
   // Contains set of client IDs.
   using ClientsSet = base::flat_set<ClientId>;
+
+  // Mapping of the RemoteId
+  using QueryWithUiClientsMap = base::flat_map<ClientId, RemoteId>;
 
   // Mapping of clients to each remote ID that is for printing.
   using PrintClientsMap = base::flat_map<RemoteId, ClientsSet>;
@@ -80,6 +84,12 @@ class PrintBackendServiceManager {
   // Register as a client of PrintBackendServiceManager for printing a document
   // to a specific printer.
   ClientId RegisterPrintDocumentClient(const std::string& printer_name);
+
+  // Register as a client of PrintBackendServiceManager for printing a document
+  // to a specific printer.  Use the same `RemoteId` for this new printing
+  // client as has been used by the indicated query with UI client.  This method
+  // will DCHECK if the client ID provided is not for a query with UI client.
+  ClientId RegisterPrintDocumentClientReusingClientRemote(ClientId id);
 
   // Notify the manager that this client is no longer needing print backend
   // services.  This signal might alter the manager's internal optimizations.
@@ -281,9 +291,14 @@ class PrintBackendServiceManager {
   // Determine the remote ID that is used for the specified `printer_name`.
   RemoteId GetRemoteIdForPrinterName(const std::string& printer_name);
 
-  // Common helper for registering clients.
-  absl::optional<ClientId> RegisterClient(ClientType client_type,
-                                          const std::string& printer_name);
+  // Common helper for registering clients.  The `destination` parameter can be
+  // either a `std::string` for a printer name or a `RemoteId` which was
+  // generated from a prior registration.  This method will DCHECK if the
+  // `destination` is a `RemoteId` and the registration requires launching
+  // another service instance.
+  absl::optional<ClientId> RegisterClient(
+      ClientType client_type,
+      absl::variant<std::string, RemoteId> destination);
 
   // Get the total number of clients registered.
   size_t GetClientsRegisteredCount() const;
@@ -317,6 +332,9 @@ class PrintBackendServiceManager {
   // Get the idle timeout value to user for a particular client type.
   static constexpr base::TimeDelta GetClientTypeIdleTimeout(
       ClientType client_type);
+
+  // Whether any clients are queries with UI to `remote_id`.
+  bool HasQueryWithUiClientForRemoteId(const RemoteId& remote_id) const;
 
   // Whether any clients are printing documents to `remote_id`.
   bool HasPrintDocumentClientForRemoteId(const RemoteId& remote_id) const;
@@ -454,7 +472,7 @@ class PrintBackendServiceManager {
   // Test support for client ID management.
   static void SetClientsForTesting(
       const ClientsSet& query_clients,
-      const ClientsSet& query_with_ui_clients,
+      const QueryWithUiClientsMap& query_with_ui_clients,
       const PrintClientsMap& print_document_clients);
 
 #if BUILDFLAG(IS_WIN)
@@ -479,8 +497,9 @@ class PrintBackendServiceManager {
   // Set of IDs for clients actively engaged in a printing query which requires
   // the use of a UI.  Such a UI corresponds to a modal system dialog.  For
   // Linux there can be multiple of these, but for other platforms there can be
-  // at most one such client.
-  ClientsSet query_with_ui_clients_;
+  // at most one such client.  Track the `RemoteId` which is associated with
+  // each such client.
+  QueryWithUiClientsMap query_with_ui_clients_;
 
   // Map of remote ID to the set of clients printing documents to it.
   PrintClientsMap print_document_clients_;
