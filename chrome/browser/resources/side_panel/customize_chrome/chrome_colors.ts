@@ -9,9 +9,11 @@ import './color.js';
 
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
+import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './chrome_colors.html.js';
+import {ColorElement} from './color.js';
 import {Color, ColorType, DARK_DEFAULT_COLOR, LIGHT_DEFAULT_COLOR, SelectedColor} from './color_utils.js';
 import {ChromeColor, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
@@ -21,7 +23,9 @@ export interface ChromeColorsElement {
     backButton: HTMLElement,
     colorPicker: HTMLInputElement,
     colorPickerIcon: HTMLElement,
-    defaultColor: HTMLElement,
+    defaultColor: ColorElement,
+    customColor: ColorElement,
+    customColorContainer: HTMLElement,
   };
 }
 
@@ -45,6 +49,10 @@ export class ChromeColorsElement extends PolymerElement {
       selectedColor_: {
         type: Object,
         computed: 'computeSelectedColor_(theme_, colors_)',
+      },
+      isDefaultColorSelected_: {
+        type: Object,
+        computed: 'computeIsDefaultColorSelected_(selectedColor_)',
       },
       isCustomColorSelected_: {
         type: Object,
@@ -100,6 +108,10 @@ export class ChromeColorsElement extends PolymerElement {
         this.setThemeListenerId_!);
   }
 
+  private computeIsDefaultColorSelected_(): boolean {
+    return this.selectedColor_.type === ColorType.DEFAULT;
+  }
+
   private computeIsCustomColorSelected_(): boolean {
     return this.selectedColor_.type === ColorType.CUSTOM;
   }
@@ -126,6 +138,11 @@ export class ChromeColorsElement extends PolymerElement {
   private computeDefaultColor_(): Color {
     return this.theme_.systemDarkMode ? DARK_DEFAULT_COLOR :
                                         LIGHT_DEFAULT_COLOR;
+  }
+
+  private isChromeColorSelected_(color: SkColor): boolean {
+    return this.selectedColor_.type === ColorType.CHROME &&
+        this.selectedColor_.chromeColor!.value === color.value;
   }
 
   private onBackClick_() {

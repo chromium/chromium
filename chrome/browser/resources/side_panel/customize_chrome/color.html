@@ -1,6 +1,9 @@
 <style>
   :host {
     --customize-chrome-color-border-radius: 50%;
+    --customize-chrome-color-check-mark-end: -1px;
+    --customize-chrome-color-check-mark-size: 16px;
+    --customize-chrome-color-check-mark-top: 0;
     box-sizing: border-box;
     cursor: pointer;
     display: block;
@@ -14,28 +17,25 @@
   }
 
   svg {
-    border: 1px solid var(--customize-chrome-color-border-color,
-                          var(--customize-chrome-color-foreground-color));
     border-radius: var(--customize-chrome-color-border-radius);
     box-sizing: border-box;
     display: block;
     width: 100%;
   }
 
-  :host([checked]) svg {
-    width: calc(100% - 4px);
-  }
-
-  customize-chrome-check-mark {
-    --customize-chrome-check-mark-wrapper-end: -1px;
+  customize-chrome-check-mark-wrapper {
+    --customize-chrome-check-mark-wrapper-end: var(--customize-chrome-color-check-mark-end);
+    --customize-chrome-check-mark-wrapper-size: var(--customize-chrome-color-check-mark-size);
+    --customize-chrome-check-mark-wrapper-top: var(--customize-chrome-color-check-mark-top);
   }
 
   #background {
     fill: var(--customize-chrome-color-background-color);
   }
 
-  :host([checked]) svg {
-    border: none;
+  :host(:not([checked])) svg {
+    border: 1px solid var(--customize-chrome-color-border-color,
+                          var(--customize-chrome-color-foreground-color));
   }
 
   :host([background-color-hidden]) #background {

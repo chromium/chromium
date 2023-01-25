@@ -7,17 +7,19 @@ import 'chrome://customize-chrome-side-panel.top-chrome/chrome_colors.js';
 
 import {ChromeColorsElement} from 'chrome://customize-chrome-side-panel.top-chrome/chrome_colors.js';
 import {ColorElement} from 'chrome://customize-chrome-side-panel.top-chrome/color.js';
-import {ChromeColor, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
+import {ChromeColor, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {assertDeepEquals, assertEquals, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {installMock} from './test_support.js';
+import {createTheme, installMock} from './test_support.js';
 
 suite('ChromeColorsTest', () => {
   let chromeColorsElement: ChromeColorsElement;
   let handler: TestBrowserProxy<CustomizeChromePageHandlerRemote>;
+  let callbackRouter: CustomizeChromePageRemote;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -26,6 +28,8 @@ suite('ChromeColorsTest', () => {
         (mock: CustomizeChromePageHandlerRemote) =>
             CustomizeChromeApiProxy.setInstance(
                 mock, new CustomizeChromePageCallbackRouter()));
+    callbackRouter = CustomizeChromeApiProxy.getInstance()
+                         .callbackRouter.$.bindNewPipeAndPassRemote();
   });
 
   async function setInitialSettings(numColors: number): Promise<void> {
@@ -100,5 +104,48 @@ suite('ChromeColorsTest', () => {
     const args = handler.getArgs('setSeedColor');
     assertGE(1, args.length);
     assertEquals(0xffff0000, args.at(-1).value);
+  });
+
+  test('checks selected color', async () => {
+    await setInitialSettings(2);
+    const theme = createTheme();
+
+    // Set default color.
+    theme.foregroundColor = undefined;
+    callbackRouter.setTheme(theme);
+    await callbackRouter.$.flushForTesting();
+    await waitAfterNextRender(chromeColorsElement);
+
+    // Check default color selected.
+    const defaultColorElement = chromeColorsElement.$.defaultColor;
+    let checkedColors =
+        chromeColorsElement.shadowRoot!.querySelectorAll('[checked]');
+    assertEquals(1, checkedColors.length);
+    assertEquals(defaultColorElement, checkedColors[0]);
+
+    // Set Chrome color.
+    theme.seedColor = {value: 1};
+    theme.foregroundColor = {value: 3};
+    callbackRouter.setTheme(theme);
+    await callbackRouter.$.flushForTesting();
+
+    // Check Chrome color selected.
+    checkedColors =
+        chromeColorsElement.shadowRoot!.querySelectorAll('[checked]');
+    assertEquals(1, checkedColors.length);
+    assertEquals('chrome-color tile', checkedColors[0]!.className);
+    assertEquals(3, (checkedColors[0]! as ColorElement).foregroundColor.value);
+
+    // Set custom color.
+    theme.seedColor = {value: 10};
+    theme.foregroundColor = {value: 5};
+    callbackRouter.setTheme(theme);
+    await callbackRouter.$.flushForTesting();
+
+    // Check custom color selected.
+    checkedColors =
+        chromeColorsElement.shadowRoot!.querySelectorAll('[checked]');
+    assertEquals(1, checkedColors.length);
+    assertEquals(chromeColorsElement.$.customColor, checkedColors[0]);
   });
 });

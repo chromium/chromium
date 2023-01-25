@@ -62,6 +62,9 @@
 
   customize-chrome-color {
     --customize-chrome-color-border-radius: 12px;
+    --customize-chrome-color-check-mark-end: -4px;
+    --customize-chrome-color-check-mark-size: 20px;
+    --customize-chrome-color-check-mark-top: -6px;
     padding: 0;
   }
 </style>
@@ -75,13 +78,15 @@
   <div id="customColorContainer"
       class="tile"
       title="$i18n{colorPickerLabel}"
-      aria-label="$i18n{colorPickerLabel}"
+      aria-label$="$i18n{colorPickerLabel}"
+      aria-checked$="[[isCustomColorSelected_]]"
       tabindex="0"
       on-click="onCustomColorClick_">
     <customize-chrome-color
         id="customColor"
         background-color="[[customColor_.background]]"
-        foreground-color="[[customColor_.foreground]]">
+        foreground-color="[[customColor_.foreground]]"
+        checked="[[isCustomColorSelected_]]">
     </customize-chrome-color>
     <div id="colorPickerIcon"></div>
     <input id="colorPicker" type="color" tabindex="-1" aria-hidden="true"
@@ -91,21 +96,25 @@
       id="defaultColor"
       class="tile"
       title="$i18n{defaultColorName}"
-      aria-label="$i18n{defaultColorName}"
+      aria-label$="$i18n{defaultColorName}"
+      aria-checked$="[[isDefaultColorSelected_]]"
       tabindex="0"
       on-click="onDefaultColorClick_"
       background-color="[[defaultColor_.background]]"
-      foreground-color="[[defaultColor_.foreground]]">
+      foreground-color="[[defaultColor_.foreground]]"
+      checked="[[isDefaultColorSelected_]]">
   </customize-chrome-color>
   <template is="dom-repeat" id="chromeColorsRepeat" items="[[colors_]]">
     <customize-chrome-color
         class="chrome-color tile"
         title="[[item.name]]"
         aria-label$="[[item.name]]"
+        aria-checked$="[[isChromeColorSelected_(item.seed, selectedColor_)]]"
         tabindex="0"
         on-click="onChromeColorClick_"
         background-color="[[item.background]]"
-        foreground-color="[[item.foreground]]">
+        foreground-color="[[item.foreground]]"
+        checked="[[isChromeColorSelected_(item.seed, selectedColor_)]]">
     </customize-chrome-color>
   </template>
 </cr-grid>
