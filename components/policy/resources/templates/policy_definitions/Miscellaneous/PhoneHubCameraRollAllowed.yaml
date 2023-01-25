@@ -11,8 +11,8 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:111-
 items:
 - caption: Allows users who have opted in to Phone Hub to access recent photos and
     videos taken on their phone
