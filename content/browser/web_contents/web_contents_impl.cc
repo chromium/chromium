@@ -106,7 +106,6 @@
 #include "content/browser/web_contents/java_script_dialog_commit_deferring_condition.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/browser/web_contents/web_contents_view_child_frame.h"
-#include "content/browser/web_package/save_as_web_bundle_job.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/browser/webui/web_ui_impl.h"
 #include "content/browser/xr/service/xr_runtime_manager_impl.h"
@@ -5276,15 +5275,6 @@ void WebContentsImpl::GenerateMHTMLWithResult(
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::GenerateMHTMLWithResult");
   MHTMLGenerationManager::GetInstance()->SaveMHTML(this, params,
                                                    std::move(callback));
-}
-
-void WebContentsImpl::GenerateWebBundle(
-    const base::FilePath& file_path,
-    base::OnceCallback<void(uint64_t /* file_size */,
-                            data_decoder::mojom::WebBundlerError)> callback) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::GenerateWebBundle",
-                        "file_path", file_path);
-  SaveAsWebBundleJob::Start(this, file_path, std::move(callback));
 }
 
 const std::string& WebContentsImpl::GetContentsMimeType() {
