@@ -7,6 +7,19 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "reclient", "xcode")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//project.star", "settings")
+
+# crbug/1408581 - The code coverage CI builders are expected to be triggered
+# off the same ref every 12 hours. This poller is configured with a schedule
+# to ensure this - setting schedules on the builder configuration does not
+# guarantee that they are triggered off the same ref.
+luci.gitiles_poller(
+    name = "code-coverage-gitiles-trigger",
+    bucket = "ci",
+    repo = "https://chromium.googlesource.com/chromium/src",
+    refs = [settings.ref],
+    schedule = "with 12h interval",
+)
 
 ci.defaults.set(
     builder_group = "chromium.coverage",
@@ -26,7 +39,13 @@ consoles.console_view(
     title = "Code Coverage CI Builders",
 )
 
-ci.builder(
+def coverage_builder(**kwargs):
+    return ci.builder(
+        triggered_by = ["code-coverage-gitiles-trigger"],
+        **kwargs
+    )
+
+coverage_builder(
     name = "android-code-coverage",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -58,14 +77,10 @@ ci.builder(
     generate_blame_list = True,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     schedule = "triggered",
-    # TODO: This is currently triggered by an internal coordinating builder
-    # that runs every 12 hours. This should be cleaned up s.t. all coverage
-    # builders are triggered identically.
-    triggered_by = [],
     use_java_coverage = True,
 )
 
-ci.builder(
+coverage_builder(
     name = "android-code-coverage-native",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -101,7 +116,7 @@ ci.builder(
     use_clang_coverage = True,
 )
 
-ci.builder(
+coverage_builder(
     name = "fuchsia-code-coverage",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -135,14 +150,10 @@ ci.builder(
     ],
     coverage_test_types = ["overall", "unit"],
     schedule = "triggered",
-    # TODO: This is currently triggered by an internal coordinating builder
-    # that runs every 12 hours. This should be cleaned up s.t. all coverage
-    # builders are triggered identically.
-    triggered_by = [],
     use_clang_coverage = True,
 )
 
-ci.builder(
+coverage_builder(
     name = "ios-simulator-code-coverage",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -176,7 +187,7 @@ ci.builder(
     use_clang_coverage = True,
 )
 
-ci.builder(
+coverage_builder(
     name = "linux-chromeos-code-coverage",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -195,7 +206,6 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    triggered_by = [],
     os = os.LINUX_DEFAULT,
     console_view_entry = [
         consoles.console_view_entry(
@@ -210,7 +220,7 @@ ci.builder(
     use_clang_coverage = True,
 )
 
-ci.builder(
+coverage_builder(
     name = "linux-js-code-coverage",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -227,7 +237,6 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    triggered_by = [],
     os = os.LINUX_DEFAULT,
     console_view_entry = [
         consoles.console_view_entry(
@@ -240,7 +249,7 @@ ci.builder(
     use_javascript_coverage = True,
 )
 
-ci.builder(
+coverage_builder(
     name = "linux-code-coverage",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -255,7 +264,6 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    triggered_by = [],
     os = os.LINUX_DEFAULT,
     console_view_entry = [
         consoles.console_view_entry(
@@ -268,7 +276,7 @@ ci.builder(
     use_clang_coverage = True,
 )
 
-ci.builder(
+coverage_builder(
     name = "linux-lacros-code-coverage",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -298,7 +306,7 @@ ci.builder(
     use_clang_coverage = True,
 )
 
-ci.builder(
+coverage_builder(
     name = "mac-code-coverage",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -328,7 +336,7 @@ ci.builder(
     use_clang_coverage = True,
 )
 
-ci.builder(
+coverage_builder(
     name = "win10-code-coverage",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
