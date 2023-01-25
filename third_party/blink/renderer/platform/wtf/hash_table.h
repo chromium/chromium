@@ -807,16 +807,13 @@ class HashTable final
   static ValueType* AllocateTable(unsigned size);
   static void DeleteAllBucketsAndDeallocate(ValueType* table, unsigned size);
 
-  typedef std::pair<ValueType*, bool> LookupType;
-  typedef std::pair<LookupType, unsigned> FullLookupType;
-
-  LookupType LookupForWriting(const Key& key) {
-    return LookupForWriting<IdentityTranslatorType>(key);
-  }
+  struct LookupResult {
+    ValueType* entry;
+    bool found;
+    unsigned hash;
+  };
   template <typename HashTranslator, typename T>
-  FullLookupType FullLookupForWriting(const T&);
-  template <typename HashTranslator, typename T>
-  LookupType LookupForWriting(const T&);
+  LookupResult LookupForWriting(const T&);
 
   void erase(const ValueType*);
 
@@ -858,12 +855,6 @@ class HashTable final
     if (Allocator::kIsGarbageCollected) {
       Extractor::ClearValue(bucket);
     }
-  }
-
-  FullLookupType MakeLookupResult(ValueType* position,
-                                  bool found,
-                                  unsigned hash) {
-    return FullLookupType(LookupType(position, found), hash);
   }
 
   iterator MakeIterator(ValueType* pos) {
@@ -1085,7 +1076,7 @@ template <typename Key,
           typename Allocator>
 template <typename HashTranslator, typename T>
 inline typename HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
-    LookupType
+    LookupResult
     HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
         LookupForWriting(const T& key) {
   DCHECK(!AccessForbidden());
@@ -1100,57 +1091,8 @@ inline typename HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
 
   UPDATE_ACCESS_COUNTS();
 
-  ValueType* deleted_entry = nullptr;
-
-  while (true) {
-    ValueType* entry = table + i;
-
-    if (IsEmptyBucket(*entry))
-      return LookupType(deleted_entry ? deleted_entry : entry, false);
-
-    if (KeyTraits::kSafeToCompareToEmptyOrDeleted) {
-      if (HashTranslator::Equal(Extractor::ExtractKey(*entry), key)) {
-        return LookupType(entry, true);
-      }
-
-      if (IsDeletedBucket(*entry))
-        deleted_entry = entry;
-    } else {
-      if (IsDeletedBucket(*entry)) {
-        deleted_entry = entry;
-      } else if (HashTranslator::Equal(Extractor::ExtractKey(*entry), key)) {
-        return LookupType(entry, true);
-      }
-    }
-
-    ++probe_count;
-    UPDATE_PROBE_COUNTS();
-    i = (i + probe_count) & size_mask;
-  }
-}
-
-template <typename Key,
-          typename Value,
-          typename Extractor,
-          typename Traits,
-          typename KeyTraits,
-          typename Allocator>
-template <typename HashTranslator, typename T>
-inline typename HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
-    FullLookupType
-    HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
-        FullLookupForWriting(const T& key) {
-  DCHECK(!AccessForbidden());
-  DCHECK(table_);
-  RegisterModification();
-
-  ValueType* table = table_;
-  size_t size_mask = TableSizeMask();
-  unsigned h = HashTranslator::GetHash(key);
-  size_t i = h & size_mask;
-  size_t probe_count = 0;
-
-  UPDATE_ACCESS_COUNTS();
+  bool can_reuse_deleted_entry =
+      Allocator::template CanReuseHashTableDeletedBucket<Traits>();
 
   ValueType* deleted_entry = nullptr;
 
@@ -1158,20 +1100,23 @@ inline typename HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
     ValueType* entry = table + i;
 
     if (IsEmptyBucket(*entry))
-      return MakeLookupResult(deleted_entry ? deleted_entry : entry, false, h);
+      return LookupResult{deleted_entry ? deleted_entry : entry, false, h};
 
     if (KeyTraits::kSafeToCompareToEmptyOrDeleted) {
       if (HashTranslator::Equal(Extractor::ExtractKey(*entry), key)) {
-        return MakeLookupResult(entry, true, h);
+        return LookupResult{entry, true, h};
       }
 
-      if (IsDeletedBucket(*entry))
+      if (can_reuse_deleted_entry && IsDeletedBucket(*entry)) {
         deleted_entry = entry;
+      }
     } else {
       if (IsDeletedBucket(*entry)) {
-        deleted_entry = entry;
+        if (can_reuse_deleted_entry) {
+          deleted_entry = entry;
+        }
       } else if (HashTranslator::Equal(Extractor::ExtractKey(*entry), key)) {
-        return MakeLookupResult(entry, true, h);
+        return LookupResult{entry, true, h};
       }
     }
     ++probe_count;
@@ -1194,13 +1139,7 @@ struct HashTableBucketInitializer {
     DCHECK(IsHashTraitsEmptyValue<Traits>(bucket));
   }
 
-  static void Reinitialize(Value& bucket) {
-    // Reinitialize is used when recycling a deleted bucket. For buckets for
-    // which empty value is non-zero, this is forbidden during marking. Thus if
-    // we get here, marking is not active and we can reuse Initialize.
-    DCHECK(Allocator::template CanReuseHashTableDeletedBucket<Traits>());
-    Initialize(bucket);
-  }
+  static void Reinitialize(Value& bucket) { Initialize(bucket); }
 
   template <typename HashTable>
   static Value* AllocateTable(unsigned size, size_t alloc_size) {
@@ -1287,6 +1226,9 @@ template <typename Key,
           typename Allocator>
 inline void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
     ReinitializeBucket(ValueType& bucket) {
+  // Reinitialize is used when recycling a deleted bucket.
+  DCHECK(IsDeletedBucket(bucket));
+  DCHECK(Allocator::template CanReuseHashTableDeletedBucket<Traits>());
   HashTableBucketInitializer<Traits, Allocator, Value>::Reinitialize(bucket);
 }
 
@@ -1333,11 +1275,14 @@ typename HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
         return AddResult(this, entry, false);
       }
 
-      if (IsDeletedBucket(*entry) && can_reuse_deleted_entry)
+      if (can_reuse_deleted_entry && IsDeletedBucket(*entry)) {
         deleted_entry = entry;
+      }
     } else {
-      if (IsDeletedBucket(*entry) && can_reuse_deleted_entry) {
-        deleted_entry = entry;
+      if (IsDeletedBucket(*entry)) {
+        if (can_reuse_deleted_entry) {
+          deleted_entry = entry;
+        }
       } else if (HashTranslator::Equal(Extractor::ExtractKey(*entry), key)) {
         return AddResult(this, entry, false);
       }
@@ -1404,14 +1349,11 @@ typename HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
   if (!table_)
     Expand();
 
-  FullLookupType lookup_result = FullLookupForWriting<HashTranslator>(key);
-
-  ValueType* entry = lookup_result.first.first;
-  bool found = lookup_result.first.second;
-  unsigned h = lookup_result.second;
-
-  if (found)
+  LookupResult lookup_result = LookupForWriting<HashTranslator>(key);
+  ValueType* entry = lookup_result.entry;
+  if (lookup_result.found) {
     return AddResult(this, entry, false);
+  }
 
   RegisterModification();
 
@@ -1421,7 +1363,7 @@ typename HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
   }
 
   HashTranslator::Translate(*entry, std::forward<T>(key),
-                            std::forward<Extra>(extra), h);
+                            std::forward<Extra>(extra), lookup_result.hash);
   DCHECK(!IsEmptyOrDeletedBucket(*entry));
   // Translate constructs an element so we need to notify using the trait. Avoid
   // doing that in the translator so that they can be easily customized.
@@ -1443,10 +1385,8 @@ template <typename Key,
 Value* HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::Reinsert(
     ValueType&& entry) {
   DCHECK(table_);
+  DCHECK(!AccessForbidden());
   RegisterModification();
-  DCHECK(!LookupForWriting(Extractor::ExtractKey(entry)).second);
-  DCHECK(!IsDeletedBucket(
-      *(LookupForWriting(Extractor::ExtractKey(entry)).first)));
 #if DUMP_HASHTABLE_STATS
   HashTableStats::instance().numReinserts.fetch_add(1,
                                                     std::memory_order_relaxed);
@@ -1454,7 +1394,27 @@ Value* HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::Reinsert(
 #if DUMP_HASHTABLE_STATS_PER_TABLE
   stats_->numReinserts.fetch_add(1, std::memory_order_relaxed);
 #endif
-  Value* new_entry = LookupForWriting(Extractor::ExtractKey(entry)).first;
+
+  ValueType* table = table_;
+  size_t size_mask = TableSizeMask();
+  const auto& key = Extractor::ExtractKey(entry);
+  unsigned h = KeyTraits::GetHash(key);
+  size_t i = h & size_mask;
+  size_t probe_count = 0;
+
+  UPDATE_ACCESS_COUNTS();
+
+  ValueType* new_entry = table + i;
+  while (!IsEmptyBucket(*new_entry)) {
+    DCHECK(!IsDeletedBucket(*new_entry));
+    DCHECK(!KeyTraits::Equal(Extractor::ExtractKey(*new_entry), key));
+
+    ++probe_count;
+    UPDATE_PROBE_COUNTS();
+    i = (i + probe_count) & size_mask;
+    new_entry = table + i;
+  }
+
   Mover<ValueType, Allocator, Traits,
         Traits::template NeedsToForbidGCOnMove<>::value>::Move(std::move(entry),
                                                                *new_entry);
