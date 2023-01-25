@@ -10,6 +10,7 @@
 #include "third_party/boringssl/src/include/openssl/base.h"
 
 #include "base/files/file_path.h"
+#include "net/cert/pki/trust_store.h"
 
 namespace base {
 class SupportsUserData;
@@ -33,6 +34,13 @@ struct CertInput {
   // For example, if the |source_file_path| contained multiple certificates,
   // this might indicate which part of the file |der_cert| came from.
   std::string source_details;
+};
+
+// Stores DER certificate bytes as well as a trust setting that should be
+// applied to them.
+struct CertInputWithTrustSetting {
+  CertInput cert_input;
+  net::CertificateTrust trust;
 };
 
 // Parses |file_path| as a single DER cert or a PEM certificate list.

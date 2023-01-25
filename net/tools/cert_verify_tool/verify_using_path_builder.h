@@ -20,6 +20,7 @@ class SystemTrustStore;
 }
 
 struct CertInput;
+struct CertInputWithTrustSetting;
 
 // Verifies |target_der_cert| using CertPathBuilder. Returns true if the
 // certificate verified successfully, false if it failed to verify or there was
@@ -28,7 +29,7 @@ struct CertInput;
 bool VerifyUsingPathBuilder(
     const CertInput& target_der_cert,
     const std::vector<CertInput>& intermediate_der_certs,
-    const std::vector<CertInput>& root_der_certs,
+    const std::vector<CertInputWithTrustSetting>& der_certs_with_trust_settings,
     const base::Time at_time,
     const base::FilePath& dump_prefix_path,
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,

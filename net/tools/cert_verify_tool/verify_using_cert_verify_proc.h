@@ -19,6 +19,7 @@ class CertVerifyResult;
 }
 
 struct CertInput;
+struct CertInputWithTrustSetting;
 
 void PrintCertVerifyResult(const net::CertVerifyResult& result);
 
@@ -31,7 +32,7 @@ bool VerifyUsingCertVerifyProc(
     const CertInput& target_der_cert,
     const std::string& hostname,
     const std::vector<CertInput>& intermediate_der_certs,
-    const std::vector<CertInput>& root_der_certs,
+    const std::vector<CertInputWithTrustSetting>& der_certs_with_trust_settings,
     net::CRLSet* crl_set,
     const base::FilePath& dump_path);
 

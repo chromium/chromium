@@ -149,7 +149,7 @@ std::shared_ptr<const net::ParsedCertificate> ParseCertificate(
 bool VerifyUsingPathBuilder(
     const CertInput& target_der_cert,
     const std::vector<CertInput>& intermediate_der_certs,
-    const std::vector<CertInput>& root_der_certs,
+    const std::vector<CertInputWithTrustSetting>& der_certs_with_trust_settings,
     const base::Time at_time,
     const base::FilePath& dump_prefix_path,
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
@@ -159,18 +159,20 @@ bool VerifyUsingPathBuilder(
   net::der::GeneralizedTime time = ConvertExplodedTime(exploded_time);
 
   net::TrustStoreInMemory additional_roots;
-  for (const auto& der_cert : root_der_certs) {
+  for (const auto& cert_input_with_trust : der_certs_with_trust_settings) {
     std::shared_ptr<const net::ParsedCertificate> cert =
-        ParseCertificate(der_cert);
+        ParseCertificate(cert_input_with_trust.cert_input);
     if (cert) {
-      additional_roots.AddTrustAnchor(std::move(cert));
+      additional_roots.AddCertificate(std::move(cert),
+                                      cert_input_with_trust.trust);
     }
   }
   net::TrustStoreCollection trust_store;
   trust_store.AddTrustStore(&additional_roots);
   trust_store.AddTrustStore(system_trust_store->GetTrustStore());
 
-  if (!system_trust_store->UsesSystemTrustStore() && root_der_certs.empty()) {
+  if (!system_trust_store->UsesSystemTrustStore() &&
+      der_certs_with_trust_settings.empty()) {
     std::cerr << "NOTE: CertPathBuilder does not currently use OS trust "
                  "settings (--roots must be specified).\n";
   }

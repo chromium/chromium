@@ -21,6 +21,7 @@
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/cert/crl_set.h"
 #include "net/cert/internal/system_trust_store.h"
+#include "net/cert/pki/trust_store.h"
 #include "net/cert/x509_util.h"
 #include "net/cert_net/cert_net_fetcher_url_request.h"
 #include "net/tools/cert_verify_tool/cert_verify_tool_util.h"
@@ -101,7 +102,8 @@ class CertVerifyImpl {
   virtual bool VerifyCert(const CertInput& target_der_cert,
                           const std::string& hostname,
                           const std::vector<CertInput>& intermediate_der_certs,
-                          const std::vector<CertInput>& root_der_certs,
+                          const std::vector<CertInputWithTrustSetting>&
+                              der_certs_with_trust_settings,
                           base::Time verify_time,
                           net::CRLSet* crl_set,
                           const base::FilePath& dump_prefix_path) = 0;
@@ -119,7 +121,8 @@ class CertVerifyImplUsingProc : public CertVerifyImpl {
   bool VerifyCert(const CertInput& target_der_cert,
                   const std::string& hostname,
                   const std::vector<CertInput>& intermediate_der_certs,
-                  const std::vector<CertInput>& root_der_certs,
+                  const std::vector<CertInputWithTrustSetting>&
+                      der_certs_with_trust_settings,
                   base::Time verify_time,
                   net::CRLSet* crl_set,
                   const base::FilePath& dump_prefix_path) override {
@@ -140,9 +143,9 @@ class CertVerifyImplUsingProc : public CertVerifyImpl {
                       .InsertBeforeExtensionASCII("." + GetName());
     }
 
-    return VerifyUsingCertVerifyProc(proc_.get(), target_der_cert, hostname,
-                                     intermediate_der_certs, root_der_certs,
-                                     crl_set, dump_path);
+    return VerifyUsingCertVerifyProc(
+        proc_.get(), target_der_cert, hostname, intermediate_der_certs,
+        der_certs_with_trust_settings, crl_set, dump_path);
   }
 
  private:
@@ -164,7 +167,8 @@ class CertVerifyImplUsingPathBuilder : public CertVerifyImpl {
   bool VerifyCert(const CertInput& target_der_cert,
                   const std::string& hostname,
                   const std::vector<CertInput>& intermediate_der_certs,
-                  const std::vector<CertInput>& root_der_certs,
+                  const std::vector<CertInputWithTrustSetting>&
+                      der_certs_with_trust_settings,
                   base::Time verify_time,
                   net::CRLSet* crl_set,
                   const base::FilePath& dump_prefix_path) override {
@@ -177,8 +181,9 @@ class CertVerifyImplUsingPathBuilder : public CertVerifyImpl {
     }
 
     return VerifyUsingPathBuilder(target_der_cert, intermediate_der_certs,
-                                  root_der_certs, verify_time, dump_prefix_path,
-                                  cert_net_fetcher_, system_trust_store_.get());
+                                  der_certs_with_trust_settings, verify_time,
+                                  dump_prefix_path, cert_net_fetcher_,
+                                  system_trust_store_.get());
   }
 
  private:
@@ -266,11 +271,13 @@ void PrintInputChain(const CertInput& target,
   std::cout << "\n";
 }
 
-void PrintAdditionalRoots(const std::vector<CertInput>& root_der_certs) {
+void PrintAdditionalRoots(const std::vector<CertInputWithTrustSetting>&
+                              der_certs_with_trust_settings) {
   std::cout << "Additional roots:\n";
-  for (const auto& cert : root_der_certs) {
+  for (const auto& cert : der_certs_with_trust_settings) {
+    std::cout << " " << cert.trust.ToDebugString() << ":\n ";
     PrintCertHashAndSubject(
-        net::x509_util::CreateCryptoBuffer(cert.der_cert).get());
+        net::x509_util::CreateCryptoBuffer(cert.cert_input.der_cert).get());
   }
   std::cout << "\n";
 }
@@ -413,6 +420,7 @@ int main(int argc, char** argv) {
 
   base::FilePath dump_prefix_path = command_line.GetSwitchValuePath("dump");
 
+  std::vector<CertInputWithTrustSetting> der_certs_with_trust_settings;
   std::vector<CertInput> root_der_certs;
   std::vector<CertInput> intermediate_der_certs;
   CertInput target_der_cert;
@@ -445,9 +453,19 @@ int main(int argc, char** argv) {
     intermediate_der_certs.pop_back();
   }
 
+  for (const auto& cert_input : root_der_certs) {
+    // TODO(https://crbug.com/1408473): Maybe default to the trust setting that
+    // would be used for locally added anchors on the current platform?
+    // TODO(https://crbug.com/1408473): Add flag to configure the trust setting
+    // used here.
+    der_certs_with_trust_settings.push_back(
+        {cert_input, net::CertificateTrust::ForTrustAnchor()});
+  }
+
   PrintInputChain(target_der_cert, intermediate_der_certs);
-  if (!root_der_certs.empty())
-    PrintAdditionalRoots(root_der_certs);
+  if (!der_certs_with_trust_settings.empty()) {
+    PrintAdditionalRoots(der_certs_with_trust_settings);
+  }
 
   // Create a network thread to be used for AIA fetches, and wait for a
   // CertNetFetcher to be constructed on that thread.
@@ -500,8 +518,8 @@ int main(int argc, char** argv) {
 
     std::cout << impls[i]->GetName() << ":\n";
     if (!impls[i]->VerifyCert(target_der_cert, hostname, intermediate_der_certs,
-                              root_der_certs, verify_time, crl_set.get(),
-                              dump_prefix_path)) {
+                              der_certs_with_trust_settings, verify_time,
+                              crl_set.get(), dump_prefix_path)) {
       all_impls_success = false;
     }
   }
