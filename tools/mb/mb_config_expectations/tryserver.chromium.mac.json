@@ -341,7 +341,7 @@
       "target_environment": "simulator",
       "target_os": "ios",
       "use_clang_coverage": true,
-      "use_remoteexec": true
+      "use_goma": true
     }
   },
   "ios-simulator-inverse-fieldtrials-fyi": {
@@ -535,7 +535,7 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "use_clang_coverage": true,
-      "use_remoteexec": true
+      "use_goma": true
     }
   },
   "mac-rel-inverse-fyi": {
@@ -684,7 +684,7 @@
       "is_debug": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_remoteexec": true
+      "use_goma": true
     }
   },
   "mac_chromium_compile_rel_ng": {
