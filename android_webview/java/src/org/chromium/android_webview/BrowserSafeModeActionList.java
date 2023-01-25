@@ -23,5 +23,6 @@ public final class BrowserSafeModeActionList {
             new VariationsSeedSafeModeAction(),
             new AndroidAutofillSafeModeAction(),
             new ChromeAutocompleteSafeModeAction(),
+            new NoopSafeModeAction(),
     };
 }
