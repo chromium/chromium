@@ -2432,7 +2432,7 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     // TODO(tkent): We should avoid updating style.  We'd like to check only
     // DOM-level focusability here.
     GetDocument().UpdateStyleAndLayoutTreeForNode(this);
-    if (!SupportsFocus()) {
+    if (!SupportsFocus() && !GetFocusableArea()) {
       blur();
     }
   }
