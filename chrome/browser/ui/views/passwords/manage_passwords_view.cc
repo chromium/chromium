@@ -26,8 +26,10 @@
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -53,6 +55,11 @@ constexpr int kIconSize = 16;
 constexpr int kDetailRowHeight = 44;
 constexpr int kMaxLinesVisibleFromPasswordNote = 3;
 
+void WriteToClipboard(const std::u16string& text) {
+  ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+  scw.WriteText(text);
+}
+
 std::unique_ptr<views::View> CreateIconView(
     const gfx::VectorIcon& vector_icon) {
   auto icon = std::make_unique<NonAccessibleImageView>();
@@ -62,24 +69,26 @@ std::unique_ptr<views::View> CreateIconView(
 }
 
 // Creates a view of the same height as the height of the each row in the table,
-// and vertically centers the icon inside it. This insures the icon is
-// vertically aligned with the center of the first row in the text that lives
-// inside labels in the same row even if the text spans multiple lines such as
-// password notes.
-std::unique_ptr<views::View> CreateWrappedIconView(
-    const gfx::VectorIcon& vector_icon) {
+// and vertically centers the child view inside it. This is used to wrap icons
+// and image buttons to ensure the icons are vertically aligned with the center
+// of the first row in the text that lives inside labels in the same row even if
+// the text spans multiple lines such as password notes.
+std::unique_ptr<views::View> CreateWrappedView(
+    std::unique_ptr<views::View> child_view) {
   auto wrapper = std::make_unique<views::BoxLayoutView>();
   wrapper->SetPreferredSize(
       gfx::Size(/*width=*/kIconSize, /*height=*/kDetailRowHeight));
   wrapper->SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
-  wrapper->AddChildView(CreateIconView(vector_icon));
+  wrapper->AddChildView(std::move(child_view));
   return wrapper;
 }
 
 std::unique_ptr<views::View> CreateDetailsRow(
     const gfx::VectorIcon& row_icon,
     std::unique_ptr<views::View> detail_view,
-    const gfx::VectorIcon& action_icon) {
+    const gfx::VectorIcon& action_icon,
+    const std::u16string& action_button_tooltip_text,
+    views::Button::PressedCallback action_button_callback) {
   auto row = std::make_unique<views::FlexLayoutView>();
   row->SetCollapseMargins(true);
   row->SetDefault(
@@ -88,7 +97,7 @@ std::unique_ptr<views::View> CreateDetailsRow(
                              views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
   row->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
 
-  row->AddChildView(CreateWrappedIconView(row_icon));
+  row->AddChildView(CreateWrappedView(CreateIconView(row_icon)));
 
   detail_view->SetProperty(
       views::kFlexBehaviorKey,
@@ -96,7 +105,11 @@ std::unique_ptr<views::View> CreateDetailsRow(
                                views::MaximumFlexSizeRule::kUnbounded));
   row->AddChildView(std::move(detail_view));
 
-  row->AddChildView(CreateWrappedIconView(action_icon));
+  std::unique_ptr<views::ImageButton> action_button =
+      CreateVectorImageButtonWithNativeTheme(std::move(action_button_callback),
+                                             action_icon, kIconSize);
+  action_button->SetTooltipText(action_button_tooltip_text);
+  row->AddChildView(CreateWrappedView(std::move(action_button)));
   return row;
 }
 
@@ -303,24 +316,31 @@ std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordDetailsView()
   auto container_view = std::make_unique<views::BoxLayoutView>();
   container_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
 
-  // TODO(crbug.com/1408790): Assign action to the username action button.
+  // TODO(crbug.com/1408790): Handle the empty username case.
   container_view->AddChildView(CreateDetailsRow(
       kAccountCircleIcon, CreateUsernameLabel(*currently_selected_password_),
-      vector_icons::kContentCopyIcon));
+      vector_icons::kContentCopyIcon,
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_COPY_USERNAME),
+      base::BindRepeating(&WriteToClipboard,
+                          currently_selected_password_->username_value)));
 
-  // TODO(crbug.com/1408790): Assign action to the password action button.
   // TODO(crbug.com/1408790): Add a key icon to the password field to reveal the
   // password.
   container_view->AddChildView(CreateDetailsRow(
       kKeyIcon, CreatePasswordLabel(*currently_selected_password_),
-      vector_icons::kContentCopyIcon));
+      vector_icons::kContentCopyIcon,
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_COPY_PASSWORD),
+      base::BindRepeating(&WriteToClipboard,
+                          currently_selected_password_->password_value)));
 
   // TODO(crbug.com/1408790): Use a different icon for the notes to match the
   // mocks.
   // TODO(crbug.com/1408790): Assign action to the note action button.
+  // TODO(crbug.com/1408790): use internationalized string for the note action
+  // button tooltip text.
   container_view->AddChildView(CreateDetailsRow(
       kAccountCircleIcon, CreateNoteLabel(*currently_selected_password_),
-      vector_icons::kEditIcon));
+      vector_icons::kEditIcon, u"Edit Note", views::Button::PressedCallback()));
   return container_view;
 }
 
