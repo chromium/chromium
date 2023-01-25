@@ -49,9 +49,9 @@ FUCHSIA_SDK_DIR = os.path.join(CHROMIUM_DIR, 'third_party', 'fuchsia-sdk',
                                'sdk')
 PINNED_CLANG_DIR = os.path.join(LLVM_BUILD_TOOLS_DIR, 'pinned-clang')
 
-BUG_REPORT_URL = ('https://crbug.com and run'
-                  ' tools/clang/scripts/process_crashreports.py'
-                  ' (only works inside Google) which will upload a report')
+BUG_REPORT_URL = ('https://crbug.com in the Tools>LLVM component,'
+                  ' run tools/clang/scripts/process_crashreports.py'
+                  ' (only if inside Google) to upload crash related files,')
 
 LIBXML2_VERSION = 'libxml2-v2.9.12'
 
