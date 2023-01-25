@@ -1,12 +1,12 @@
-# Dangling pointer detector.
+# Dangling Pointer Detector
 
 Dangling pointers are not a problem unless they are dereferenced and used.
 However, they are a source of UaF bugs and highly discouraged unless you are
 100% confident that they are never dereferenced after the pointed-to objects are
 freed.
 
-See also the guide: [how to fix dangling pointers.
-[docs/dangling_ptr.md](./dangling_ptr_guide.md)
+See also the [Dangling Pointers Guide](./dangling_ptr_guide.md) for how to fix
+cases where dangling pointers occur.
 
 Behind build flags, Chrome implements a dangling pointer detector. It causes
 Chrome to crash, whenever a raw_ptr becomes dangling:
@@ -23,7 +23,7 @@ code.
 raw_ptr<T, DisableDanglingPtrDetection> ptr_may_dangle;
 ```
 
-The `DanglingUntriaged` has been used to annotate pre-existing dangling
+The `DanglingUntriaged` option has been used to annotate pre-existing dangling
 pointers in Chrome:
 ```cpp
 raw_ptr<T, DanglingUntriaged> ptr_dangling_mysteriously;
