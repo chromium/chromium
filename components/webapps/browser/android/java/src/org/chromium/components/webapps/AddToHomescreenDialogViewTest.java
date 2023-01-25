@@ -78,8 +78,8 @@ public class AddToHomescreenDialogViewTest {
         AppBannerManager.InstallStringPair installPair = showAddToHomeScreen
                 ? new AppBannerManager.InstallStringPair(
                         R.string.menu_add_to_homescreen, R.string.add)
-                : new AppBannerManager.InstallStringPair(R.string.menu_add_to_homescreen_install,
-                        R.string.menu_add_to_homescreen_install);
+                : new AppBannerManager.InstallStringPair(
+                        R.string.menu_install_webapp, R.string.menu_install_webapp);
         mAddToHomescreenDialogView = new AddToHomescreenDialogView(
                 activity, mModalDialogManager, installPair, new AddToHomescreenViewDelegate() {
                     @Override

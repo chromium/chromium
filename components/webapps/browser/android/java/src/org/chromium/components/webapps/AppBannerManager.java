@@ -40,8 +40,8 @@ public class AppBannerManager {
         }
     }
 
-    public static final InstallStringPair PWA_PAIR = new InstallStringPair(
-            R.string.menu_add_to_homescreen_install, R.string.app_banner_install);
+    public static final InstallStringPair PWA_PAIR =
+            new InstallStringPair(R.string.menu_install_webapp, R.string.app_banner_install);
     public static final InstallStringPair NON_PWA_PAIR =
             new InstallStringPair(R.string.menu_add_to_homescreen, R.string.add);
 

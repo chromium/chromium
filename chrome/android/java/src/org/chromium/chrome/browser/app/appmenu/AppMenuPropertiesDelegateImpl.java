@@ -876,13 +876,20 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      */
     protected void prepareAddToHomescreenMenuItem(
             Menu menu, Tab currentTab, boolean shouldShowHomeScreenMenuItem) {
-        MenuItem homescreenItem = menu.findItem(R.id.add_to_homescreen_id);
-        MenuItem openWebApkItem = menu.findItem(R.id.open_webapk_id);
         mAddAppTitleShown = AppMenuVerbiage.APP_MENU_OPTION_UNKNOWN;
+
+        MenuItem addTohomescreenItem = menu.findItem(R.id.add_to_homescreen_id);
+        MenuItem installWebAppItem = menu.findItem(R.id.install_webapp_id);
+        MenuItem openWebApkItem = menu.findItem(R.id.open_webapk_id);
+
+        addTohomescreenItem.setVisible(false);
+        installWebAppItem.setVisible(false);
+        openWebApkItem.setVisible(false);
+
         if (currentTab != null && shouldShowHomeScreenMenuItem) {
             Context context = ContextUtils.getApplicationContext();
             long addToHomeScreenStart = SystemClock.elapsedRealtime();
-            ResolveInfo resolveInfo = queryWebApkResolvInfo(context, currentTab);
+            ResolveInfo resolveInfo = queryWebApkResolveInfo(context, currentTab);
             RecordHistogram.recordTimesHistogram("Android.PrepareMenu.OpenWebApkVisibilityCheck",
                     SystemClock.elapsedRealtime() - addToHomeScreenStart);
 
@@ -892,29 +899,25 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             if (openWebApkItemVisible) {
                 String appName = resolveInfo.loadLabel(context.getPackageManager()).toString();
                 openWebApkItem.setTitle(context.getString(R.string.menu_open_webapk, appName));
-
-                homescreenItem.setVisible(false);
                 openWebApkItem.setVisible(true);
             } else {
                 AppBannerManager.InstallStringPair installStrings =
                         getAddToHomeScreenTitle(currentTab);
-                homescreenItem.setTitle(installStrings.titleTextId);
-                homescreenItem.setVisible(true);
-                openWebApkItem.setVisible(false);
 
                 if (installStrings.titleTextId == AppBannerManager.NON_PWA_PAIR.titleTextId) {
+                    addTohomescreenItem.setTitle(installStrings.titleTextId);
+                    addTohomescreenItem.setVisible(true);
                     mAddAppTitleShown = AppMenuVerbiage.APP_MENU_OPTION_ADD_TO_HOMESCREEN;
                 } else if (installStrings.titleTextId == AppBannerManager.PWA_PAIR.titleTextId) {
+                    installWebAppItem.setTitle(installStrings.titleTextId);
+                    installWebAppItem.setVisible(true);
                     mAddAppTitleShown = AppMenuVerbiage.APP_MENU_OPTION_INSTALL;
                 }
             }
-        } else {
-            homescreenItem.setVisible(false);
-            openWebApkItem.setVisible(false);
         }
     }
 
-    private ResolveInfo queryWebApkResolvInfo(Context context, Tab currentTab) {
+    private ResolveInfo queryWebApkResolveInfo(Context context, Tab currentTab) {
         ResolveInfo resolveInfo = null;
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_APK_UNIQUE_ID)) {
             String manifestId = AppBannerManager.maybeGetManifestId(currentTab.getWebContents());

@@ -185,7 +185,7 @@
       <message name="IDS_MENU_ADD_TO_HOMESCREEN" desc="Menu item for adding a shortcut to the Home screen (default title). [CHAR_LIMIT=27]">
         Add to Home screen
       </message>
-      <message name="IDS_MENU_ADD_TO_HOMESCREEN_INSTALL" desc="Menu item for adding a shortcut to the Home screen. [CHAR_LIMIT=27]">
+      <message name="IDS_MENU_INSTALL_WEBAPP" desc="Menu item for adding a shortcut to the Home screen. [CHAR_LIMIT=27]">
         Install app
       </message>
       <message name="IDS_ADDED_TO_HOMESCREEN" desc="Text in a toast indicating that the website with the specified name was added to the user's Home screen.">

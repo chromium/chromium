@@ -2521,36 +2521,17 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         if (id == R.id.add_to_homescreen_id) {
             RecordUserAction.record("MobileMenuAddToHomescreen");
-            PwaBottomSheetController controller =
-                    PwaBottomSheetControllerProvider.from(getWindowAndroid());
-            if (controller != null
-                    && controller.requestOrExpandBottomSheetInstaller(
-                            currentTab.getWebContents(), InstallTrigger.MENU)) {
-                return true;
-            }
-            AddToHomescreenCoordinator.showForAppMenu(this, getWindowAndroid(),
-                    getModalDialogManager(), currentTab.getWebContents(), mMenuItemData);
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.ADD_TO_HOMESCREEN_IPH)) {
-                Tracker tracker = TrackerFactory.getTrackerForProfile(
-                        Profile.fromWebContents(currentTab.getWebContents()));
-                tracker.notifyEvent(EventConstants.ADD_TO_HOMESCREEN_DIALOG_SHOWN);
-            }
-            return true;
+            return doAddToHomescreenOrInstallWebApp(currentTab);
+        }
+
+        if (id == R.id.install_webapp_id) {
+            RecordUserAction.record("InstallWebAppFromMenu");
+            return doAddToHomescreenOrInstallWebApp(currentTab);
         }
 
         if (id == R.id.open_webapk_id) {
-            Context context = ContextUtils.getApplicationContext();
-            String packageName =
-                    WebApkValidator.queryFirstWebApkPackage(context, currentTab.getUrl().getSpec());
-            Intent launchIntent = WebApkNavigationClient.createLaunchWebApkIntent(
-                    packageName, currentTab.getUrl().getSpec(), false);
-            try {
-                context.startActivity(launchIntent);
-                RecordUserAction.record("MobileMenuOpenWebApk");
-            } catch (ActivityNotFoundException e) {
-                Toast.makeText(context, R.string.open_webapk_failed, Toast.LENGTH_SHORT).show();
-            }
-            return true;
+            RecordUserAction.record("MobileMenuOpenWebApk");
+            return doOpenWebApk(currentTab);
         }
 
         if (id == R.id.request_desktop_site_id || id == R.id.request_desktop_site_check_id) {
@@ -2886,5 +2867,41 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     private static PrefService getPrefService() {
         return UserPrefs.get(Profile.getLastUsedRegularProfile());
+    }
+
+    /**
+     * Returns whether the Add to Home screen or Install Web App action was successfully started.
+     */
+    private boolean doAddToHomescreenOrInstallWebApp(Tab currentTab) {
+        PwaBottomSheetController controller =
+                PwaBottomSheetControllerProvider.from(getWindowAndroid());
+        if (controller != null
+                && controller.requestOrExpandBottomSheetInstaller(
+                        currentTab.getWebContents(), InstallTrigger.MENU)) {
+            return true;
+        }
+        AddToHomescreenCoordinator.showForAppMenu(this, getWindowAndroid(), getModalDialogManager(),
+                currentTab.getWebContents(), mMenuItemData);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ADD_TO_HOMESCREEN_IPH)) {
+            Tracker tracker = TrackerFactory.getTrackerForProfile(
+                    Profile.fromWebContents(currentTab.getWebContents()));
+            tracker.notifyEvent(EventConstants.ADD_TO_HOMESCREEN_DIALOG_SHOWN);
+        }
+        return true;
+    }
+
+    /** Returns whether the Open WebAPK action was successfully started. */
+    private boolean doOpenWebApk(Tab currentTab) {
+        Context context = ContextUtils.getApplicationContext();
+        String packageName =
+                WebApkValidator.queryFirstWebApkPackage(context, currentTab.getUrl().getSpec());
+        Intent launchIntent = WebApkNavigationClient.createLaunchWebApkIntent(
+                packageName, currentTab.getUrl().getSpec(), false);
+        try {
+            context.startActivity(launchIntent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(context, R.string.open_webapk_failed, Toast.LENGTH_SHORT).show();
+        }
+        return true;
     }
 }
