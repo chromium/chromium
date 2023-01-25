@@ -33,6 +33,11 @@ avd_settings {
     key: "GLESDynamicVersion"
     value: "on"
   }
+  # crbug.com/1110997: Disable GLDMA for android-25
+  advanced_features {
+    key: "GLDMA"
+    value: "off"
+  }
   # Tests can run into low memory issue with the default ram size 1024MB
   # Incease to 2048MB, which is the same as that on Nexus 5X
   ram_size: 2048
