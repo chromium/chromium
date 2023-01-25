@@ -4164,7 +4164,7 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
   // Note that this is a no-op for pending commit RenderFrameHosts (which start
   // with owner pointing to the FrameTreeNode owning them) and prerendering
   // activations (where RenderFrameHost's owner has been updated in
-  // PrerenderPageHolder::Activate), but is necessary for RFHs restored from
+  // PrerenderHost::Activate), but is necessary for RFHs restored from
   // back/forward cache.
   if (render_frame_host_)
     render_frame_host_->SetRenderFrameHostOwner(frame_tree_node_);
