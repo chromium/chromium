@@ -590,6 +590,16 @@ foreach(_target_type,
 template("component") {
   if (is_component_build) {
     _component_mode = "shared_library"
+
+    # Generate a unique output_name for a shared library if not set by invoker.
+    if (!defined(invoker.output_name)) {
+      _output_name = get_label_info(":$target_name", "label_no_toolchain")
+      _output_name =
+          string_replace(_output_name, "$target_name:$target_name", target_name)
+      _output_name = string_replace(_output_name, "//", "")
+      _output_name = string_replace(_output_name, "/", "_")
+      _output_name = string_replace(_output_name, ":", "_")
+    }
   } else if (defined(invoker.static_component_type)) {
     assert(invoker.static_component_type == "static_library" ||
            invoker.static_component_type == "source_set")
@@ -602,6 +612,9 @@ template("component") {
     _component_mode = "static_library"
   }
   target(_component_mode, target_name) {
+    if (defined(_output_name)) {
+      output_name = _output_name
+    }
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
   }

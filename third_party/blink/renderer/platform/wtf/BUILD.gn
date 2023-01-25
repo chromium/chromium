@@ -36,6 +36,8 @@ config("wtf_config") {
 }
 
 component("wtf") {
+  output_name = "blink_platform_wtf"
+
   sources = [
     "allocator/allocator.h",
     "allocator/partition_allocator.cc",

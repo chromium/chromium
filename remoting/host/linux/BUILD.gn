@@ -41,7 +41,7 @@ if (enable_me2me_host) {
     if (is_component_build) {
       sources += [
         "$root_build_dir/libbase.so",
-        "$root_build_dir/libboringssl.so",
+        "$root_build_dir/libthird_party_boringssl.so",
       ]
       deps += [ "//base:base" ]
       if (use_custom_libcxx) {

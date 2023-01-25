@@ -173,7 +173,7 @@
   </Type>
   <!-- Component build version -->
   <Type Name="blink::WebString">
-    <DisplayString>{(wtf.dll!WTF::StringImpl*)(impl_.ptr_)}</DisplayString>
+    <DisplayString>{(blink_platform_wtf.dll!WTF::StringImpl*)(impl_.ptr_)}</DisplayString>
   </Type>
   <!-- Non-component build version -->
   <Type Name="blink::WebString" Priority="Low">
