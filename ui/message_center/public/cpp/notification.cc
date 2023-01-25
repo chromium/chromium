@@ -32,10 +32,9 @@ const gfx::ImageSkia CreateSolidColorImage(int width,
   return gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
 }
 
-// Returns an image created on the current thread that shares the same
-// underlying ImageSkia data as the original image.
-gfx::Image DuplicateImage(const gfx::Image& image) {
-  return image.IsEmpty() ? gfx::Image() : gfx::Image(image.AsImageSkia());
+gfx::Image DeepCopyImage(const gfx::Image& image) {
+  return image.IsEmpty() ? gfx::Image()
+                         : gfx::Image(image.AsImageSkia().DeepCopy());
 }
 
 }  // namespace
@@ -108,14 +107,15 @@ std::unique_ptr<Notification> Notification::DeepCopy(
   notification_copy->set_icon(ui::ImageModel::FromImageSkia(
       notification_copy->icon().Rasterize(color_provider)));
   notification_copy->set_image(include_body_image
-                                   ? DuplicateImage(notification_copy->image())
+                                   ? DeepCopyImage(notification_copy->image())
                                    : gfx::Image());
   notification_copy->set_small_image(
-      include_small_image ? notification_copy->small_image() : gfx::Image());
+      include_small_image ? DeepCopyImage(notification_copy->small_image())
+                          : gfx::Image());
   for (size_t i = 0; i < notification_copy->buttons().size(); i++) {
     notification_copy->SetButtonIcon(
         i, include_icon_images
-               ? DuplicateImage(notification_copy->buttons()[i].icon)
+               ? DeepCopyImage(notification_copy->buttons()[i].icon)
                : gfx::Image());
   }
   return notification_copy;
