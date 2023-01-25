@@ -194,7 +194,6 @@ ChromeVoxPrefs.DEFAULT_PREFS = {
   'speakTextUnderMouse': false,
   'sticky': false,
   'typingEcho': 0,
-  'useClassic': false,
   'usePitchChanges': true,
   'useVerboseMode': true,
 
