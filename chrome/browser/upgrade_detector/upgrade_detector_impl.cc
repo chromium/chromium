@@ -69,7 +69,9 @@ constexpr auto kOutdatedBuildDetectorPeriod = base::Days(1);
 constexpr auto kOutdatedBuildAge = base::Days(7) * 8;
 
 constexpr bool ShouldDetectOutdatedBuilds() {
-#if BUILDFLAG(ENABLE_UPDATE_NOTIFICATIONS)
+#if BUILDFLAG(ENABLE_UPDATE_NOTIFICATIONS) && !BUILDFLAG(IS_CHROMEOS)
+  // Outdated build detection is not relevant on ChromeOS platforms where
+  // updates are handled differently than on other desktop platforms.
   return true;
 #else
   return false;

@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/dialogs/outdated_upgrade_bubble.h"
+#include "chrome/browser/ui/views/upgrade_notification_controller.h"
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "content/public/test/browser_test.h"
 
 class OutdatedUpgradeBubbleTest : public DialogBrowserTest {
@@ -19,16 +18,19 @@ class OutdatedUpgradeBubbleTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    ToolbarView* toolbar_view =
-        BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
-    if (name == "Outdated")
-      toolbar_view->OnOutdatedInstall();
-    else if (name == "NoAutoUpdate")
-      toolbar_view->OnOutdatedInstallNoAutoUpdate();
-    else if (name == "Critical")
-      toolbar_view->OnCriticalUpgradeInstalled();
-    else
+    auto* const upgrade_notification_controller =
+        UpgradeNotificationController::FromBrowser(browser());
+    CHECK(upgrade_notification_controller);
+
+    if (name == "Outdated") {
+      upgrade_notification_controller->OnOutdatedInstall();
+    } else if (name == "NoAutoUpdate") {
+      upgrade_notification_controller->OnOutdatedInstallNoAutoUpdate();
+    } else if (name == "Critical") {
+      upgrade_notification_controller->OnCriticalUpgradeInstalled();
+    } else {
       ADD_FAILURE();
+    }
   }
 };
 

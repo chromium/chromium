@@ -73,7 +73,6 @@
 #include "chrome/browser/ui/views/toolbar/side_panel_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
@@ -116,16 +115,8 @@
 #include "chrome/browser/recovery/recovery_install_global_error_factory.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "chrome/browser/ui/views/critical_notification_bubble_view.h"
-#endif
-
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/bookmarks/bookmark_bubble_sign_in_delegate.h"
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/dialogs/outdated_upgrade_bubble.h"
 #endif
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -182,8 +173,6 @@ ToolbarView::ToolbarView(Browser* browser, BrowserView* browser_view)
       display_mode_(GetDisplayMode(browser)) {
   SetID(VIEW_ID_TOOLBAR);
 
-  UpgradeDetector::GetInstance()->AddObserver(this);
-
   if (display_mode_ == DisplayMode::NORMAL) {
     SetBackground(std::make_unique<TopContainerBackground>(browser_view));
 
@@ -195,8 +184,6 @@ ToolbarView::ToolbarView(Browser* browser, BrowserView* browser_view)
 }
 
 ToolbarView::~ToolbarView() {
-  UpgradeDetector::GetInstance()->RemoveObserver(this);
-
   if (display_mode_ != DisplayMode::NORMAL)
     return;
 
@@ -564,20 +551,6 @@ void ToolbarView::EnabledStateChangedForCommand(int id, bool enabled) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// ToolbarView, UpgradeObserver implementation:
-void ToolbarView::OnOutdatedInstall() {
-  ShowOutdatedInstallNotification(true);
-}
-
-void ToolbarView::OnOutdatedInstallNoAutoUpdate() {
-  ShowOutdatedInstallNotification(false);
-}
-
-void ToolbarView::OnCriticalUpgradeInstalled() {
-  ShowCriticalNotification();
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // ToolbarView, ui::AcceleratorProvider implementation:
 
 bool ToolbarView::GetAcceleratorForCommandId(
@@ -917,25 +890,6 @@ void ToolbarView::LoadImages() {
 
   if (extensions_container_)
     extensions_container_->UpdateAllIcons();
-}
-
-void ToolbarView::ShowCriticalNotification() {
-#if BUILDFLAG(IS_WIN)
-  views::BubbleDialogDelegateView::CreateBubble(
-      new CriticalNotificationBubbleView(app_menu_button_))
-      ->Show();
-#endif
-}
-
-void ToolbarView::ShowOutdatedInstallNotification(bool auto_update_enabled) {
-#if !BUILDFLAG(IS_CHROMEOS)
-  // The outdated upgrade notification is not relevant on ChromeOS, for either
-  // ash-chrome or lacros-chrome, as browser upgrades are managed via a
-  // different process to the rest of the desktop platforms (see
-  // crbug.com/1406873).
-  // TODO(pbos): Can this move outside ToolbarView completely?
-  ShowOutdatedUpgradeBubble(browser_, auto_update_enabled);
-#endif
 }
 
 void ToolbarView::OnShowHomeButtonChanged() {

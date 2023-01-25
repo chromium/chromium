@@ -4237,6 +4237,8 @@ static_library("ui") {
       "bubble_anchor_util.h",
       "commerce/price_tracking/shopping_list_ui_tab_helper.cc",
       "commerce/price_tracking/shopping_list_ui_tab_helper.h",
+      "dialogs/outdated_upgrade_bubble.cc",
+      "dialogs/outdated_upgrade_bubble.h",
       "qrcode_generator/qrcode_generator_bubble_controller.cc",
       "qrcode_generator/qrcode_generator_bubble_controller.h",
       "qrcode_generator/qrcode_generator_bubble_view.h",
@@ -5246,6 +5248,8 @@ static_library("ui") {
       "views/translate/translate_icon_view.h",
       "views/update_recommended_message_box.cc",
       "views/update_recommended_message_box.h",
+      "views/upgrade_notification_controller.cc",
+      "views/upgrade_notification_controller.h",
       "views/user_education/browser_feature_promo_controller.cc",
       "views/user_education/browser_feature_promo_controller.h",
       "views/user_education/browser_user_education_service.cc",
@@ -5513,8 +5517,6 @@ static_library("ui") {
 
     if (!is_chromeos) {
       sources += [
-        "dialogs/outdated_upgrade_bubble.cc",
-        "dialogs/outdated_upgrade_bubble.h",
         "idle_dialog.h",
         "sharing_hub/sharing_hub_bubble_controller_desktop_impl.cc",
         "sharing_hub/sharing_hub_bubble_controller_desktop_impl.h",
