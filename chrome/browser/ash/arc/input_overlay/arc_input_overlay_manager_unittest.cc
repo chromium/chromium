@@ -458,8 +458,6 @@ TEST_F(ArcInputOverlayManagerTest, TestFeatureAvailability) {
 
   // Test without enabling beta flag.
   int task_id = 21;
-  arc_app_test.app_instance()->SetTaskInfo(task_id, kRandomGamePackageName,
-                                           "activity");
   arc_app_test.app_instance()->set_app_category_of_pkg(
       kRandomGamePackageName, arc::mojom::AppCategory::kGame);
   task_environment()->RunUntilIdle();
@@ -494,8 +492,6 @@ TEST_F(ArcInputOverlayManagerTest, TestFeatureAvailability) {
   EXPECT_FALSE(injector);
   // Create an app with game category.
   task_id = 22;
-  arc_app_test.app_instance()->SetTaskInfo(task_id, kRandomGamePackageName,
-                                           "activity");
   arc_app_test.app_instance()->set_app_category_of_pkg(
       kRandomGamePackageName, arc::mojom::AppCategory::kGame);
   task_environment()->RunUntilIdle();

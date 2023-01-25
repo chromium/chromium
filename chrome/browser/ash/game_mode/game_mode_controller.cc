@@ -8,6 +8,7 @@
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/session/connection_holder.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -33,7 +34,7 @@ class ArcGameModeCriteria : public GameModeController::GameModeCriteria {
  public:
   // Constructs an instance using the task ID of the window it is associated
   // with.
-  explicit ArcGameModeCriteria(int task_id) {
+  explicit ArcGameModeCriteria(aura::Window* window) {
     // For ARC container boards, Game Mode optimizations are not available
     // (b/248972198).
     if (!arc::IsArcVmEnabled())
@@ -44,14 +45,28 @@ class ArcGameModeCriteria : public GameModeController::GameModeCriteria {
     DCHECK(arc::IsArcAllowedForProfile(profile));
 
     connection_ = ArcAppListPrefs::Get(profile)->app_connection_holder();
-    auto* app_instance = ARC_GET_INSTANCE_FOR_METHOD(connection_, GetTaskInfo);
-    if (!app_instance) {
+    auto* pkg_name = window->GetProperty(ash::kArcPackageNameKey);
+
+    if (!pkg_name || pkg_name->empty()) {
+      LOG(ERROR) << "Failed to find package name for the requested task";
       return;
     }
-    VLOG(2) << "Getting package name for ARC task: " << task_id;
-    app_instance->GetTaskInfo(
-        task_id, base::BindOnce(&ArcGameModeCriteria::OnReceiveTaskInfo,
-                                weak_ptr_factory_.GetWeakPtr()));
+
+    if (IsKnownGame(*pkg_name)) {
+      VLOG(2) << "ARC task package " << pkg_name << " is known game";
+      Enable();
+      return;
+    }
+
+    auto* app_instance =
+        ARC_GET_INSTANCE_FOR_METHOD(connection_, GetAppCategory);
+    if (!app_instance)
+      return;
+    VLOG(2) << "Fetch app category of package: " << pkg_name;
+
+    app_instance->GetAppCategory(
+        *pkg_name, base::BindOnce(&ArcGameModeCriteria::OnReceiveAppCategory,
+                                  weak_ptr_factory_.GetWeakPtr()));
   }
 
   // Checks if an ARC game package is in the known games list. These are apps
@@ -70,28 +85,6 @@ class ArcGameModeCriteria : public GameModeController::GameModeCriteria {
       return true;
 
     return false;
-  }
-
-  void OnReceiveTaskInfo(const std::string& pkg_name,
-                         const std::string& activity) {
-    if (pkg_name.empty()) {
-      LOG(ERROR) << "Failed to find package name for the requested task";
-      return;
-    }
-
-    if (IsKnownGame(pkg_name)) {
-      VLOG(2) << "ARC task package " << pkg_name << " is known game";
-      Enable();
-    } else if (auto* app_instance =
-                   ARC_GET_INSTANCE_FOR_METHOD(connection_, GetAppCategory);
-               app_instance) {
-      VLOG(2) << "Fetch app category of package: " << pkg_name;
-      app_instance->GetAppCategory(
-          pkg_name, base::BindOnce(&ArcGameModeCriteria::OnReceiveAppCategory,
-                                   weak_ptr_factory_.GetWeakPtr()));
-    } else {
-      LOG(ERROR) << "Failed to call GetAppCategory";
-    }
   }
 
   void OnReceiveAppCategory(arc::mojom::AppCategory category) {
@@ -228,10 +221,7 @@ void GameModeController::WindowTracker::UpdateGameModeStatus(
     game_mode_criteria_ = std::make_unique<GameModeEnabler>(
         GameMode::BOREALIS, /*signal_resourced=*/true);
   } else if (mode == GameMode::ARC) {
-    // We know GetWindowTaskId will not return absl::nullopt since ModeOfWindow
-    // already verified it.
-    game_mode_criteria_ =
-        std::make_unique<ArcGameModeCriteria>(*arc::GetWindowTaskId(window));
+    game_mode_criteria_ = std::make_unique<ArcGameModeCriteria>(window);
   } else {
     LOG(DFATAL) << "Unknown GameMode: " << static_cast<int>(mode);
   }

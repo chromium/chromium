@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/public/cpp/window_properties.h"
 #include "chrome/browser/ash/game_mode/testing/game_mode_controller_test_base.h"
 
 #include "ash/components/arc/arc_features.h"
@@ -51,13 +52,16 @@ class GameModeControllerForArcTest : public GameModeControllerTestBase {
     GameModeControllerTestBase::TearDown();
   }
 
-  std::unique_ptr<views::Widget> CreateArcTaskWidget(int task_id) {
+  std::unique_ptr<views::Widget> CreateArcTaskWidget(
+      int task_id, const std::string& package_name = "asdf") {
     ash::TestWidgetBuilder builder;
     builder.SetShow(false);
     auto widget = builder.BuildOwnsNativeWidget();
     exo::SetShellApplicationId(
         widget->GetNativeWindow(),
         base::StringPrintf("org.chromium.arc.%d", task_id));
+    widget->GetNativeWindow()->SetProperty(
+        ash::kArcPackageNameKey, package_name);
     return widget;
   }
 
@@ -68,12 +72,10 @@ class GameModeControllerForArcTest : public GameModeControllerTestBase {
 };
 
 TEST_F(GameModeControllerForArcTest, ChangingFullScreenTogglesGameMode) {
-  arc_app_test_.app_instance()->SetTaskInfo(42, "org.funstuff.client",
-                                            "activity");
   arc_app_test_.app_instance()->set_app_category_of_pkg(
       "org.funstuff.client", arc::mojom::AppCategory::kGame);
 
-  auto game_widget = CreateArcTaskWidget(42);
+  auto game_widget = CreateArcTaskWidget(42, "org.funstuff.client");
   game_widget->Show();
 
   fake_resourced_client_->set_set_game_mode_response(
@@ -92,12 +94,10 @@ TEST_F(GameModeControllerForArcTest, ChangingFullScreenTogglesGameMode) {
 }
 
 TEST_F(GameModeControllerForArcTest, SwitchToNonGameArcAppTurnsOffGameMode) {
-  arc_app_test_.app_instance()->SetTaskInfo(2424, "net.another.game",
-                                            "activity");
   arc_app_test_.app_instance()->set_app_category_of_pkg(
       "net.another.game", arc::mojom::AppCategory::kGame);
 
-  auto game_widget = CreateArcTaskWidget(2424);
+  auto game_widget = CreateArcTaskWidget(2424, "net.another.game");
   game_widget->Show();
 
   fake_resourced_client_->set_set_game_mode_response(
@@ -111,22 +111,19 @@ TEST_F(GameModeControllerForArcTest, SwitchToNonGameArcAppTurnsOffGameMode) {
 
   arc_app_test_.app_instance()->set_app_category_of_pkg(
       "net.recipes.search", arc::mojom::AppCategory::kProductivity);
-  arc_app_test_.app_instance()->SetTaskInfo(9999, "net.recipes.search",
-                                            "activity");
 
   EXPECT_EQ(0, fake_resourced_client_->get_exit_game_mode_count());
-  auto app_widget = CreateArcTaskWidget(9999);
+  auto app_widget = CreateArcTaskWidget(9999, "net.recipes.search");
   app_widget->Show();
   EXPECT_EQ(1, fake_resourced_client_->get_exit_game_mode_count());
 }
 
 TEST_F(GameModeControllerForArcTest,
        SwitchToNonArcWindowAndBackTurnsOffGameMode) {
-  arc_app_test_.app_instance()->SetTaskInfo(42, "org.some.game", "activity");
-  arc_app_test_.app_instance()->set_app_category_of_pkg(
+    arc_app_test_.app_instance()->set_app_category_of_pkg(
       "org.some.game", arc::mojom::AppCategory::kGame);
 
-  auto game_widget = CreateArcTaskWidget(42);
+  auto game_widget = CreateArcTaskWidget(42, "org.some.game");
   game_widget->Show();
 
   fake_resourced_client_->set_set_game_mode_response(
@@ -151,14 +148,13 @@ TEST_F(GameModeControllerForArcTest,
 }
 
 TEST_F(GameModeControllerForArcTest, SwitchToBorealisWindowAndBack) {
-  arc_app_test_.app_instance()->SetTaskInfo(14, "jp.foo.game", "activity");
   arc_app_test_.app_instance()->set_app_category_of_pkg(
-      "jp.foo.game", arc::mojom::AppCategory::kGame);
+    "jp.foo.game", arc::mojom::AppCategory::kGame);
 
   auto non_game_widget =
       ash::TestWidgetBuilder().SetShow(true).BuildOwnsNativeWidget();
 
-  auto game_widget = CreateArcTaskWidget(14);
+  auto game_widget = CreateArcTaskWidget(14, "jp.foo.game");
 
   std::unique_ptr<views::Widget> borealis_widget =
       borealis::CreateFakeWidget("org.chromium.borealis.foo");
@@ -188,10 +184,8 @@ TEST_F(GameModeControllerForArcTest, SwitchToBorealisWindowAndBack) {
 TEST_F(GameModeControllerForArcTest, IdentifyGameWithGetAppCategory) {
   arc_app_test_.app_instance()->set_app_category_of_pkg(
       "org.an_awesome.game", arc::mojom::AppCategory::kGame);
-  arc_app_test_.app_instance()->SetTaskInfo(9882, "org.an_awesome.game",
-                                            "activity");
 
-  auto game_widget = CreateArcTaskWidget(9882);
+  auto game_widget = CreateArcTaskWidget(9882, "org.an_awesome.game");
   game_widget->Show();
   fake_resourced_client_->set_set_game_mode_response(
       ash::ResourcedClient::GameMode::OFF);
@@ -202,10 +196,8 @@ TEST_F(GameModeControllerForArcTest, IdentifyGameWithGetAppCategory) {
 TEST_F(GameModeControllerForArcTest, IdentifyGameWithKnownGameList) {
   arc_app_test_.app_instance()->set_app_category_of_pkg(
       "org.an_awesome.game", arc::mojom::AppCategory::kUndefined);
-  arc_app_test_.app_instance()->SetTaskInfo(9882, "com.mojang.minecraftedu",
-                                            "activity");
 
-  auto game_widget = CreateArcTaskWidget(9882);
+  auto game_widget = CreateArcTaskWidget(9882, "com.mojang.minecraftedu");
   game_widget->Show();
   fake_resourced_client_->set_set_game_mode_response(
       ash::ResourcedClient::GameMode::OFF);
@@ -216,10 +208,8 @@ TEST_F(GameModeControllerForArcTest, IdentifyGameWithKnownGameList) {
 TEST_F(GameModeControllerForArcTest, RecordLengthOfGameModeHistogram) {
   arc_app_test_.app_instance()->set_app_category_of_pkg(
       "org.an_awesome.game", arc::mojom::AppCategory::kGame);
-  arc_app_test_.app_instance()->SetTaskInfo(9882, "org.an_awesome.game",
-                                            "activity");
 
-  auto game_widget = CreateArcTaskWidget(9882);
+  auto game_widget = CreateArcTaskWidget(9882, "org.an_awesome.game");
 
   histogram_tester_->ExpectBucketCount(
       TimeInGameModeHistogramName(GameMode::ARC), 5000.0, 0);
@@ -238,10 +228,8 @@ TEST_F(GameModeControllerForArcTest, RecordLengthOfGameModeHistogram) {
 TEST_F(GameModeControllerForArcTest, RecordGameModeResultHistogram) {
   arc_app_test_.app_instance()->set_app_category_of_pkg(
       "org.an_awesome.gameedu", arc::mojom::AppCategory::kGame);
-  arc_app_test_.app_instance()->SetTaskInfo(9882, "org.an_awesome.gameedu",
-                                            "activity");
 
-  auto game_widget = CreateArcTaskWidget(9882);
+  auto game_widget = CreateArcTaskWidget(9882, "org.an_awesome.gameedu");
   game_widget->SetFullscreen(true);
   histogram_tester_->ExpectBucketCount(
       GameModeResultHistogramName(GameMode::ARC), GameModeResult::kAttempted,
@@ -273,10 +261,8 @@ TEST_F(GameModeControllerForArcTest, DisabledOnContainer) {
 
   arc_app_test_.app_instance()->set_app_category_of_pkg(
       "net.another.game", arc::mojom::AppCategory::kGame);
-  arc_app_test_.app_instance()->SetTaskInfo(2424, "net.another.game",
-                                            "activity");
 
-  auto game_widget = CreateArcTaskWidget(2424);
+  auto game_widget = CreateArcTaskWidget(2424, "net.another.game");
   game_widget->Show();
 
   fake_resourced_client_->set_set_game_mode_response(
