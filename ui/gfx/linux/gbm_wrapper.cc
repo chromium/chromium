@@ -318,7 +318,16 @@ class Device final : public ui::GbmDevice {
       uint32_t format,
       const gfx::Size& size,
       gfx::NativePixmapHandle handle) override {
-    DCHECK_EQ(handle.planes[0].offset, 0u);
+    if (handle.planes.empty()) {
+      LOG(ERROR) << "Importing handle with no planes";
+      return nullptr;
+    }
+    if (handle.planes[0].offset != 0u) {
+      LOG(ERROR) << "Unsupported handle: expected an offset of 0 for the first "
+                    "plane; got "
+                 << handle.planes[0].offset;
+      return nullptr;
+    }
 
     int gbm_flags = 0;
     if ((gbm_flags = GetSupportedGbmFlags(format)) == 0) {
