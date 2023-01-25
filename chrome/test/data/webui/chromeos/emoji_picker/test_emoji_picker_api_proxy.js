@@ -103,4 +103,8 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
       });
     });
   }
+
+  copyGifToClipboard(gif) {
+    // Fake the backend operation of copying gif to clipboard by doing nothing
+  }
 }

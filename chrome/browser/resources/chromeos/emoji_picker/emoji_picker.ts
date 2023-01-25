@@ -519,11 +519,8 @@ export class EmojiPicker extends PolymerElement {
     name: string,
     visualContent: VisualContent,
   }) {
+    this.apiProxy.copyGifToClipboard(item.visualContent.url.full);
     this.insertHistoryVisualContentItem(category, item);
-
-    // TODO(b/264825662): Actually insert GIF to input field.
-    // Currently the Emoji Picker stays open and users need to
-    // close and re-open the Emoji Picker to see recently used GIFs.
   }
 
   clearRecentEmoji(event: events.EmojiClearRecentClickEvent) {

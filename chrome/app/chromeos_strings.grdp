@@ -6210,6 +6210,9 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_ACCNAME_EMOJI_PICKER" desc="The accessible name for the emoji picker.">
     Emoji Picker
   </message>
+  <message name="IDS_ASH_EMOJI_PICKER_COPY_GIF_TO_CLIPBOARD" translateable="false" desc="Message shown to users when they click a gif in emoji picker.">
+    GIF has been copied to your clipboard
+  </message>
 
   <!-- Strings for Custom Tab UI -->
   <message name="IDS_CUSTOM_TABS_ACTION_MENU_ACCESSIBLE_NAME" desc="Accessible name for the overflow menu of the Chrome Custom Tab toolbar.">

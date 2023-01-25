@@ -243,7 +243,8 @@ enum class ToastCatalogName {
   kNotificationCenterTrayNoNotifications = 39,
   kCopyToClipboardAction = 40,
   kVideoConferenceTraySpeakOnMuteDetected = 41,
-  kMaxValue = kVideoConferenceTraySpeakOnMuteDetected,
+  kCopyGifToClipboardAction = 42,
+  kMaxValue = kCopyGifToClipboardAction,
 };
 
 }  // namespace ash

@@ -1,6 +1,8 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+
 import {PageHandlerFactory, PageHandlerRemote, TenorGifResponse} from './emoji_picker.mojom-webui.js';
 import {EmojiVariants, GifSubcategoryData, VisualContent} from './types.js';
 
@@ -9,6 +11,8 @@ export interface EmojiPickerApiProxy {
   showUi(): void;
 
   insertEmoji(emoji: string, isVariant: boolean, searchLength: number): void;
+
+  copyGifToClipboard(gif: Url): void;
 
   isIncognitoTextField(): Promise<{incognito: boolean}>;
 
@@ -41,6 +45,11 @@ export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
   /** @override */
   insertEmoji(emoji: string, isVariant: boolean, searchLength: number) {
     this.handler.insertEmoji(emoji, isVariant, searchLength);
+  }
+
+  /** @override */
+  copyGifToClipboard(gif: Url) {
+    this.handler.copyGifToClipboard(gif);
   }
 
   /** @override */

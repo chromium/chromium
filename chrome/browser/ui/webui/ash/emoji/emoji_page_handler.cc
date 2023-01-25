@@ -5,19 +5,26 @@
 #include "chrome/browser/ui/webui/ash/emoji/emoji_page_handler.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/storage_partition.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/input_method_observer.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
+
+constexpr char kEmojiPickerToastId[] = "emoji_picker_toast";
 
 // Keep in sync with entry in enums.xml.
 enum class EmojiVariantType {
@@ -225,6 +232,33 @@ void EmojiPageHandler::InsertEmoji(const std::string& emoji_to_insert,
   if (embedder) {
     embedder->CloseUI();
   }
+}
+
+void EmojiPageHandler::CopyGifToClipboard(const GURL& gif) {
+  if (!gif.is_valid()) {
+    return;
+  }
+
+  // Overwrite the clipboard data with the gif url.
+  auto clipboard = std::make_unique<ui::ScopedClipboardWriter>(
+      ui::ClipboardBuffer::kCopyPaste, nullptr);
+  // Referrer-Policy is used to prevent Tenor from getting information about
+  // where the GIFs are being used.
+  clipboard->WriteHTML(
+      base::UTF8ToUTF16(base::StrCat(
+          {"<img src=\"", gif.spec(), "\" referrerpolicy=\"no-referrer\">"})),
+      "");
+
+  // By hiding the emoji picker, we restore focus to the original text field.
+  auto embedder = webui_controller_->embedder();
+  if (embedder) {
+    embedder->CloseUI();
+  }
+
+  // Show a toast that says GIF has been copied to your clipboard.
+  ToastManager::Get()->Show(ToastData(
+      kEmojiPickerToastId, ToastCatalogName::kCopyGifToClipboardAction,
+      l10n_util::GetStringUTF16(IDS_ASH_EMOJI_PICKER_COPY_GIF_TO_CLIPBOARD)));
 }
 
 }  // namespace ash
