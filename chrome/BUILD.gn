@@ -1309,6 +1309,7 @@ if (is_win) {
                rebase_path(get_label_info(dump_syms, "root_out_dir") + "/" +
                                get_label_info(dump_syms, "name"),
                            root_build_dir),
+               "-d",
                "-m",
                "-g",
                rebase_path(
