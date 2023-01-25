@@ -1908,17 +1908,6 @@ const FeatureEntry::FeatureVariation kRelatedSearchesUiVariations[] = {
     {"extreme", &kRelatedSearchesUiExtreme, 1, nullptr},
 };
 
-const FeatureEntry::FeatureParam kRelatedSearchesInBarNoShowDefaultChip = {
-    "default_query_chip", "false"};
-const FeatureEntry::FeatureParam kRelatedSearchesInBarShowDefaultChip = {
-    "default_query_chip", "true"};
-const FeatureEntry::FeatureVariation kRelatedSearchesInBarVariations[] = {
-    {"without default query chip", &kRelatedSearchesInBarNoShowDefaultChip, 1,
-     nullptr},
-    {"with default query chip", &kRelatedSearchesInBarShowDefaultChip, 1,
-     nullptr},
-};
-
 const FeatureEntry::FeatureParam kContextualSearchSuppressShortViewWith300Dp[] =
     {{"contextual_search_minimum_page_height_dp", "300"}};
 const FeatureEntry::FeatureParam kContextualSearchSuppressShortViewWith400Dp[] =
@@ -3335,9 +3324,7 @@ const FeatureEntry kFeatureEntries[] = {
                                     "RelatedSearchesUi")},
     {"related-searches-in-bar", flag_descriptions::kRelatedSearchesInBarName,
      flag_descriptions::kRelatedSearchesInBarDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kRelatedSearchesInBar,
-                                    kRelatedSearchesInBarVariations,
-                                    "RelatedSearchesInBar")},
+     FEATURE_VALUE_TYPE(chrome::android::kRelatedSearchesInBar)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"show-autofill-type-predictions",
      flag_descriptions::kShowAutofillTypePredictionsName,

@@ -113,9 +113,6 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
     public void testRelatedSearchesInBarWithDefaultQuery() throws Exception {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.setFeatureFlagsOverride(ENABLE_RELATED_SEARCHES_IN_BAR);
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.RELATED_SEARCHES_IN_BAR,
-                ContextualSearchFieldTrial.RELATED_SEARCHES_SHOW_DEFAULT_QUERY_CHIP_PARAM_NAME,
-                "true");
         FeatureList.setTestValues(testValues);
         mFakeServer.reset();
 
@@ -147,9 +144,6 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
     public void testRelatedSearchesInBarWithDefaultQuery_HighlightDefaultQuery() throws Exception {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.setFeatureFlagsOverride(ENABLE_RELATED_SEARCHES_IN_BAR);
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.RELATED_SEARCHES_IN_BAR,
-                ContextualSearchFieldTrial.RELATED_SEARCHES_SHOW_DEFAULT_QUERY_CHIP_PARAM_NAME,
-                "true");
         FeatureList.setTestValues(testValues);
         mFakeServer.reset();
 
@@ -179,9 +173,6 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
     public void testRelatedSearchesInBarWithDefaultQuery_Ellipsize() throws Exception {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.setFeatureFlagsOverride(ENABLE_RELATED_SEARCHES_IN_BAR);
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.RELATED_SEARCHES_IN_BAR,
-                ContextualSearchFieldTrial.RELATED_SEARCHES_SHOW_DEFAULT_QUERY_CHIP_PARAM_NAME,
-                "true");
         FeatureList.setTestValues(testValues);
         mFakeServer.reset();
 
@@ -224,7 +215,7 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
                 ()
                         -> mPanel.onSearchTermResolved("obscure · əbˈskyo͝or", null, null,
                                 QuickActionCategory.NONE, ResolvedSearchTerm.CardTag.CT_DEFINITION,
-                                inBarSuggestions, false /* showDefaultSearchInBar */));
+                                inBarSuggestions));
         boolean didPanelGetTaller = mPanel.getHeight() > normalHeight;
         Assert.assertTrue(
                 "Related Searches should show in a taller Bar when there's a definition card, "

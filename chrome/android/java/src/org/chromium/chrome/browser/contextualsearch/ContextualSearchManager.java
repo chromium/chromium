@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChange
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanelCoordinator;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanelInterface;
+import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.RelatedSearchesControl;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchInternalStateController.InternalState;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionController.SelectionType;
@@ -806,9 +807,7 @@ public class ContextualSearchManager
             doPreventPreload = true;
         }
 
-        boolean showDefaultSearchInBar = ContextualSearchFieldTrial.showDefaultChipInBar();
-        List<String> inBarRelatedSearches =
-                buildRelatedSearches(searchTerm, showDefaultSearchInBar);
+        List<String> inBarRelatedSearches = buildRelatedSearches(searchTerm);
 
         // Check if the searchTerm is a composite (used for Definitions for pronunciation).
         // The middle-dot character is returned by the server and marks the beginning of the
@@ -829,7 +828,7 @@ public class ContextualSearchManager
 
         mSearchPanel.onSearchTermResolved(message, pronunciation, resolvedSearchTerm.thumbnailUrl(),
                 resolvedSearchTerm.quickActionUri(), resolvedSearchTerm.quickActionCategory(),
-                resolvedSearchTerm.cardTagEnum(), inBarRelatedSearches, showDefaultSearchInBar);
+                resolvedSearchTerm.cardTagEnum(), inBarRelatedSearches);
         if (!TextUtils.isEmpty(resolvedSearchTerm.caption())) {
             setCaption(resolvedSearchTerm.caption());
         }
@@ -1301,8 +1300,9 @@ public class ContextualSearchManager
 
     @Override
     public void onRelatedSearchesSuggestionClicked(int suggestionIndex) {
-        boolean showDefaultSearch = ContextualSearchFieldTrial.showDefaultChipInBar();
-        int defaultSearchAdjustment = showDefaultSearch ? 1 : 0;
+        // The first suggestion is the default search, so the actual related searches start from
+        // index 1.
+        int defaultSearchAdjustment = RelatedSearchesControl.INDEX_OF_THE_FIRST_RELATED_SEARCHES;
         assert mRelatedSearches
                 != null : "There is no valid list of Related Searches for this click! "
                           + "Please update crbug.com/1307267 with this repro.";
@@ -1314,7 +1314,7 @@ public class ContextualSearchManager
         if (mSearchPanel.isPeeking()) {
             mSearchPanel.expandPanel(StateChangeReason.CLICK);
         }
-        if (showDefaultSearch && suggestionIndex == 0) {
+        if (suggestionIndex < RelatedSearchesControl.INDEX_OF_THE_FIRST_RELATED_SEARCHES) {
             // Click on the default query
             mSearchRequest = new ContextualSearchRequest(mResolvedSearchTerm.searchTerm(),
                     mResolvedSearchTerm.alternateTerm(), mResolvedSearchTerm.mid(),
@@ -1839,18 +1839,16 @@ public class ContextualSearchManager
     /**
      * Build the searches suggestions for the Bar or Panel.
      * @param defaultSearch The resolved search term..
-     * @param showDefaultSearch Whether the default query should been shown.
      * @return A {@code List<String>} of search suggestions in the bar or the Panel, or {@code null}
      *         if the feature for showing chips is not enabled.
      */
-    private @Nullable List<String> buildRelatedSearches(
-            String defaultSearch, boolean showDefaultSearch) {
+    private @Nullable List<String> buildRelatedSearches(String defaultSearch) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_IN_BAR)) {
             return null;
         }
 
         List<String> queries = mRelatedSearches.getQueries();
-        if (!showDefaultSearch || queries.size() == 0) {
+        if (queries.size() == 0) {
             return queries;
         }
 

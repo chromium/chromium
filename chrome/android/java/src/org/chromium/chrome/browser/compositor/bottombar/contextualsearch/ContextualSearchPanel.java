@@ -666,15 +666,14 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
      * @param cardTagEnum The {@link CardTag} that the server returned if there was a card,
      *        or {@code 0}.
      * @param relatedSearchesInBar Related Searches suggestions to be displayed in the Bar.
-     * @param showDefaultSearchInBar Whether the first query is the default query in the bar.
      */
     @VisibleForTesting
     @Override
     public void onSearchTermResolved(String searchTerm, String thumbnailUrl, String quickActionUri,
             int quickActionCategory, @CardTag int cardTagEnum,
-            @Nullable List<String> relatedSearchesInBar, boolean showDefaultSearchInBar) {
+            @Nullable List<String> relatedSearchesInBar) {
         onSearchTermResolved(searchTerm, null, thumbnailUrl, quickActionUri, quickActionCategory,
-                cardTagEnum, relatedSearchesInBar, showDefaultSearchInBar);
+                cardTagEnum, relatedSearchesInBar);
     }
 
     /**
@@ -687,16 +686,13 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
      * @param cardTagEnum The {@link CardTag} that the server returned if there was a card,
      *        or {@code 0}.
      * @param relatedSearchesInBar Related Searches suggestions to be displayed in the Bar.
-     * @param showDefaultSearchInBar Whether the first query is the default query in the bar.
      */
     @Override
     public void onSearchTermResolved(String searchTerm, @Nullable String pronunciation,
             String thumbnailUrl, String quickActionUri, int quickActionCategory,
-            @CardTag int cardTagEnum, @Nullable List<String> relatedSearchesInBar,
-            boolean showDefaultSearchInBar) {
+            @CardTag int cardTagEnum, @Nullable List<String> relatedSearchesInBar) {
         boolean hadInBarSuggestions = getRelatedSearchesInBarControl().hasReleatedSearchesToShow();
-        getRelatedSearchesInBarControl().setRelatedSearchesSuggestions(
-                relatedSearchesInBar, showDefaultSearchInBar);
+        getRelatedSearchesInBarControl().setRelatedSearchesSuggestions(relatedSearchesInBar);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_IN_BAR)) {
             if (getRelatedSearchesInBarControl().hasReleatedSearchesToShow()
                     != hadInBarSuggestions) {
