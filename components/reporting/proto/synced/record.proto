@@ -86,14 +86,23 @@ message SequenceInformation {
   // to do with that is a decision that the caller needs to make).
   optional int64 sequencing_id = 1;
 
-  // Generation ID (required). Unique per device and priority. Generated
-  // randomly anew when previous record digest is not found at startup (e.g.
-  // after powerwash).
+  // Generation ID (required). Generated randomly anew for each user + device +
+  // priority combination when previous record digest is not found at startup
+  // (e.g. after powerwash). A new `generation_id` indicates the server should
+  // expect a `sequencing_id` of 0. Not unique -- the key space of user + device
+  // + priority combinations is too large for 64 bits.
   optional int64 generation_id = 2;
 
   // Priority (required)
   // Generation IDs are per Priority.
   optional Priority priority = 3;
+
+  // Generation GUID (required for unmanaged devices). Unique per combination of
+  // user + device + priority. Behaves the same way as `generation_id` but is
+  // large enough to serve as a GUID across all user + device + priority
+  // combinations. Used as a key on the server to retrieve
+  // `SequenceInformation`.
+  optional string generation_guid = 4;
 }
 
 // Envelope for the |WrappedRecord| and associated metadata as it is stored on
