@@ -46,8 +46,6 @@ const int kMaxOvershootY = 50;
 constexpr base::TimeDelta kPieAnimationPressDuration = base::Milliseconds(150);
 constexpr base::TimeDelta kPieAnimationHoverDuration = base::Milliseconds(500);
 
-constexpr SkColor kPieColor = SkColorSetARGB(0x10, 0x00, 0x00, 0x00);
-
 // Returns true if a mouse drag while in "snap mode" at |location_in_screen|
 // would hover/press |button| or keep it hovered/pressed.
 bool HitTestButton(const views::FrameCaptionButton* button,
@@ -138,7 +136,8 @@ class FrameSizeButton::PieAnimationView : public views::View,
     path.close();
 
     cc::PaintFlags flags;
-    flags.setColor(kPieColor);
+    flags.setColor(
+        GetWidget()->GetColorProvider()->GetColor(ui::kColorSysStateHover));
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
     canvas->DrawPath(path, flags);
