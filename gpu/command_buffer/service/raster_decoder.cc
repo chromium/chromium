@@ -2493,19 +2493,18 @@ void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
 
   auto sk_image =
       source_scoped_access->CreateSkImage(shared_context_state_->gr_context());
-  if (!sk_image) {
+  if (sk_image) {
+    bool success =
+        sk_image->readPixels(dst_info, pixel_address, row_bytes, src_x, src_y);
+    if (!success) {
+      LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
+                         "Failed to read pixels from SkImage");
+    } else {
+      *result = 1;
+    }
+  } else {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
                        "Couldn't create SkImage for reading.");
-    return;
-  }
-
-  bool success =
-      sk_image->readPixels(dst_info, pixel_address, row_bytes, src_x, src_y);
-  if (!success) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
-                       "Failed to read pixels from SkImage");
-  } else {
-    *result = 1;
   }
 
   if (auto end_state = source_scoped_access->TakeEndState()) {
