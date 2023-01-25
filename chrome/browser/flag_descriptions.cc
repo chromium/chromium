@@ -687,6 +687,9 @@ const char kChromeLabsDescription[] =
     "Access Chrome Labs through the toolbar menu to see featured user-facing "
     "experimental features.";
 
+const char kChromeRefresh2023Name[] = "Chrome Refresh 2023";
+const char kChromeRefresh2023Description[] = "Refresh of Chrome Desktop UI";
+
 const char kClosedTabCacheName[] = "Closed Tab Cache";
 const char kClosedTabCacheDescription[] =
     "Enables closed tab cache to instantaneously restore recently closed tabs. "

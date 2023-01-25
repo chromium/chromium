@@ -59049,6 +59049,7 @@ from previous Chrome versions.
   <int value="-1232629319" label="ResamplingScrollEvents:disabled"/>
   <int value="-1232521924"
       label="AutofillRemoveCardExpiryFromDownstreamSuggestion:disabled"/>
+  <int value="-1231606770" label="ChromeRefresh2023:disabled"/>
   <int value="-1231507397" label="NtpZeroSuggest:enabled"/>
   <int value="-1230678816" label="PersonalizationHub:disabled"/>
   <int value="-1230610048" label="SyncWifiConfigurations:disabled"/>
@@ -61056,6 +61057,7 @@ from previous Chrome versions.
   <int value="-75418012" label="ContextualSuggestionsOptOut:disabled"/>
   <int value="-74964571" label="EcheCustomWidget:enabled"/>
   <int value="-73282711" label="EnableAppListSearchAutocomplete:enabled"/>
+  <int value="-72904030" label="ChromeRefresh2023:enabled"/>
   <int value="-72455054" label="WebVrAutopresent:disabled"/>
   <int value="-70595606" label="ash-enable-unified-desktop"/>
   <int value="-70434056" label="UseGles2ForOopR:enabled"/>

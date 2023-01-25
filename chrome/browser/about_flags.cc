@@ -7615,6 +7615,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kChromeLabsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kChromeLabs)},
 
+    {"chrome-refresh-2023", flag_descriptions::kChromeRefresh2023Name,
+     flag_descriptions::kChromeRefresh2023Description, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kChromeRefresh2023)},
+
     {"enable-first-party-sets", flag_descriptions::kEnableFirstPartySetsName,
      flag_descriptions::kEnableFirstPartySetsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFirstPartySets)},
