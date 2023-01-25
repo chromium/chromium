@@ -38,11 +38,20 @@ class HistoryClustersServiceTaskUpdateClusterTriggerability
   ~HistoryClustersServiceTaskUpdateClusterTriggerability() override;
 
  private:
+  // When there remain unclustered visits, calculate the context clusters and
+  // persist them. After unclustered visits have been exhausted, the below flows
+  // will be run to calculate triggerability on the remaining clusters.
+  //   Start() ->
+  //   OnGotAnnotatedVisitsToCluster() ->
+  //   OnGotModelContextClusters() ->
+  //   OnPersistedContextClusters() ->
+  //   Start()
+
   // When there remain clusters without their triggerability calculated,
   // calculate them and persist the new values:
   //   Start() ->
   //   OnGotPersistedClusters() ->
-  //   OnGotModelClusters() ->
+  //   OnGotModelClustersWithTriggerability() ->
   //   OnPersistedClusterTriggerability() ->
   //   Start()
 
@@ -57,20 +66,41 @@ class HistoryClustersServiceTaskUpdateClusterTriggerability
   // persisted clusters.
   void Start();
 
-  // Invoked after `Start()` asyncly fetches clusters. May syncly invoke
-  // `callback_` if no clusters were returned. If clusters are returned, this
-  // will filter for clusters that do not have their triggerability calculated
-  // yet so that triggerability metadata can be calculated. Otherwise, it
-  // invokes `Start()` to fetch more clusters.
+  // Invoked after `Start()` asyncly fetches visits. If visits are returned,
+  // this will cluster them into the basic context clusters and persist those.
+  // After all unclustered visits have been exhausted, the flow to update its
+  // triggerability metadata will be run.
+  void OnGotAnnotatedVisitsToCluster(
+      base::TimeTicks start_time,
+      std::vector<int64_t> old_clusters_unused,
+      std::vector<history::AnnotatedVisit> annotated_visits,
+      QueryClustersContinuationParams continuation_params);
+
+  // Invoked after `OnGotAnnotatedVisitsToCluster()` asyncly calculates context
+  // clusters from unclustered visits.
+  void OnGotModelContextClusters(base::TimeTicks start_time,
+                                 std::vector<history::Cluster> clusters);
+
+  // Invoked after `OnGotModelContextClusters()` asyncly persists the context
+  // clusters.
+  void OnPersistedContextClusters(base::TimeTicks start_time);
+
+  // Invoked after `Start()` asyncly fetches clusters when all unclustered
+  // visits have been exhausted. May syncly invoke `callback_` if no clusters
+  // were returned. If clusters are returned, this will filter for clusters that
+  // do not have their triggerability calculated yet so that triggerability
+  // metadata can be calculated. Otherwise, it invokes `Start()` to fetch more
+  // clusters.
   void OnGotPersistedClusters(base::TimeTicks start_time,
                               std::vector<history::Cluster> clusters);
 
   // Invoked after `OnGotPersistedClusters()` asyncly obtains clusters.
-  void OnGotModelClusters(base::TimeTicks start_time,
-                          std::vector<history::Cluster> clusters);
+  void OnGotModelClustersWithTriggerability(
+      base::TimeTicks start_time,
+      std::vector<history::Cluster> clusters);
 
-  // Invoked after `OnGotModelClusters()` asyncly persists clusters. Will syncly
-  // invoke `Start()` to initiate the next iteration.
+  // Invoked after `OnGotModelClustersWithTriggerability()` asyncly persists
+  // clusters. Will syncly invoke `Start()` to initiate the next iteration.
   void OnPersistedClusterTriggerability(base::TimeTicks start_time);
 
   // Never nullptr.
@@ -81,7 +111,7 @@ class HistoryClustersServiceTaskUpdateClusterTriggerability
   const raw_ptr<history::HistoryService> history_service_;
 
   // Used to make requests to `HistoryService`.
-  base::Time continuation_time_;
+  QueryClustersContinuationParams continuation_params_;
   base::CancelableTaskTracker task_tracker_;
 
   // Invoked after `OnGotPersistedClusters()` when all clusters have been
