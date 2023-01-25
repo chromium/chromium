@@ -48,6 +48,10 @@ BASE_DECLARE_FEATURE(kLensRegionSearchStaticPage);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensImageFormatOptimizations);
 
+// Enables the context menu in the Lens side panel.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(EnableContextMenuInLensSidePanel);
+
 // Enables UKM logging for the Lens Region Search feature.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<bool> kEnableUKMLoggingForRegionSearch;
@@ -178,6 +182,10 @@ extern bool IsJpegForRegionSearchEnabled();
 // Get the encoding quality for region search queries.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetRegionSearchEncodingQuality();
+
+// Returns whether to enable the context menu in the Lens side panel.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetEnableContextMenuInLensSidePanel();
 }  // namespace features
 }  // namespace lens
 

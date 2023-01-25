@@ -42,6 +42,10 @@ BASE_FEATURE(kLensImageFormatOptimizations,
              "LensImageFormatOptimizations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableContextMenuInLensSidePanel,
+             "EnableContextMenuInLensSidePanel",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const base::FeatureParam<bool> kEnableUKMLoggingForRegionSearch{
     &kLensStandalone, "region-search-enable-ukm-logging", true};
 
@@ -170,6 +174,10 @@ bool IsJpegForRegionSearchEnabled() {
 
 int GetRegionSearchEncodingQuality() {
   return kEncodingQualityRegionSearch.Get();
+}
+
+bool GetEnableContextMenuInLensSidePanel() {
+  return base::FeatureList::IsEnabled(kEnableContextMenuInLensSidePanel);
 }
 
 }  // namespace features

@@ -1104,6 +1104,24 @@ TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchNonImage) {
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
 }
 
+// Verify that the Lens Image Search menu item is disabled when there is the
+// Browser is NULL (b/266624865).
+TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchNoBrowser) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(lens::features::kLensStandalone);
+  SetUserSelectedDefaultSearchProvider("https://www.google.com",
+                                       /*supports_image_search=*/true);
+  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
+  params.has_image_contents = true;
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(nullptr);
+  menu.Init();
+
+  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
+  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
+}
+
 // Verify that the Lens Image Search menu item is enabled on image content
 TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchEnabled) {
   base::test::ScopedFeatureList features;

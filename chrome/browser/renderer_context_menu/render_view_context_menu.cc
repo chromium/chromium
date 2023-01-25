@@ -1703,8 +1703,12 @@ void RenderViewContextMenu::AppendImageItems() {
 }
 
 void RenderViewContextMenu::AppendSearchWebForImageItems() {
-  if (!params_.has_image_contents)
+  // TODO(b/266624865): Image Search items do not function correctly when
+  // |GetBrowser| returns nullptr, as is the case for a context menu in the
+  // side panel, so for now we do not append image items in that case.
+  if (!GetBrowser() || !params_.has_image_contents) {
     return;
+  }
 
   TemplateURLService* service =
       TemplateURLServiceFactory::GetForProfile(GetProfile());

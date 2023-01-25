@@ -221,11 +221,16 @@ bool LensUnifiedSidePanelView::IsLaunchButtonEnabledForTesting() {
   return !update_new_tab_button_callback_.is_null();
 }
 
-bool LensUnifiedSidePanelView::HandleContextMenu(
-    content::RenderFrameHost& render_frame_host,
-    const content::ContextMenuParams& params) {
-  // Disable context menu.
-  return true;
+content::WebContents* LensUnifiedSidePanelView::OpenURLFromTab(
+    content::WebContents* source,
+    const content::OpenURLParams& params) {
+  if (lens::features::GetEnableContextMenuInLensSidePanel()) {
+    // Use |OpenURL| so that we create a new tab rather than trying to open
+    // this link in the side panel.
+    return browser_view_->browser()->OpenURL(params);
+  } else {
+    return content::WebContentsDelegate::OpenURLFromTab(source, params);
+  }
 }
 
 void LensUnifiedSidePanelView::OpenUrl(const content::OpenURLParams& params) {
@@ -246,6 +251,13 @@ void LensUnifiedSidePanelView::DidOpenRequestedURL(
     bool renderer_initiated) {
   content::OpenURLParams params(url, referrer, disposition, transition,
                                 renderer_initiated);
+  if (lens::features::GetEnableContextMenuInLensSidePanel() &&
+      started_from_context_menu) {
+    // Link clicks initiated from the context menu will be handled by
+    // |OpenURLFromTab|.
+    return;
+  }
+
   // If the navigation is initiated by the renderer process, we must set an
   // initiator origin.
   if (renderer_initiated)
