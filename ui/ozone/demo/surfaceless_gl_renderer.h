@@ -12,12 +12,12 @@
 #include "ui/ozone/demo/gl_renderer.h"
 
 namespace gl {
-class GLImageNativePixmap;
 class Presenter;
 }
 
 namespace ui {
 class OverlayCandidatesOzone;
+class NativePixmapGLBinding;
 class PlatformWindowSurface;
 
 static const int kMaxLayers = 8;
@@ -59,7 +59,8 @@ class SurfacelessGlRenderer : public RendererBase {
     gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
     gfx::Size size_;
 
-    scoped_refptr<gl::GLImageNativePixmap> image_;
+    scoped_refptr<gfx::NativePixmap> pixmap_;
+    std::unique_ptr<NativePixmapGLBinding> pixmap_gl_binding_;
     unsigned int gl_fb_ = 0;
     unsigned int gl_tex_ = 0;
   };

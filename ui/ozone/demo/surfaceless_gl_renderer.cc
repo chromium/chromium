@@ -23,10 +23,10 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_fence.h"
-#include "ui/gl/gl_image_native_pixmap.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/init/gl_factory.h"
 #include "ui/gl/presenter.h"
+#include "ui/ozone/public/native_pixmap_gl_binding.h"
 #include "ui/ozone/public/overlay_candidates_ozone.h"
 #include "ui/ozone/public/overlay_manager_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -80,7 +80,7 @@ SurfacelessGlRenderer::BufferWrapper::~BufferWrapper() {
 
 scoped_refptr<gfx::NativePixmap> SurfacelessGlRenderer::BufferWrapper::image()
     const {
-  return image_->GetNativePixmap();
+  return pixmap_;
 }
 
 bool SurfacelessGlRenderer::BufferWrapper::Initialize(
@@ -90,20 +90,24 @@ bool SurfacelessGlRenderer::BufferWrapper::Initialize(
   glGenTextures(1, &gl_tex_);
 
   gfx::BufferFormat format = display::DisplaySnapshot::PrimaryFormat();
-  scoped_refptr<gfx::NativePixmap> pixmap =
-      OzonePlatform::GetInstance()
-          ->GetSurfaceFactoryOzone()
-          ->CreateNativePixmap(widget, nullptr, size, format,
-                               gfx::BufferUsage::SCANOUT);
-  image_ = gl::GLImageNativePixmap::Create(size, format, std::move(pixmap));
-  if (!image_) {
-    LOG(ERROR) << "Failed to create GLImage";
-    return false;
-  }
+  pixmap_ = OzonePlatform::GetInstance()
+                ->GetSurfaceFactoryOzone()
+                ->CreateNativePixmap(widget, nullptr, size, format,
+                                     gfx::BufferUsage::SCANOUT);
 
   glBindFramebufferEXT(GL_FRAMEBUFFER, gl_fb_);
-  glBindTexture(GL_TEXTURE_2D, gl_tex_);
-  image_->BindTexImage(GL_TEXTURE_2D);
+
+  pixmap_gl_binding_ =
+      OzonePlatform::GetInstance()
+          ->GetSurfaceFactoryOzone()
+          ->GetCurrentGLOzone()
+          ->ImportNativePixmap(pixmap_, format, gfx::BufferPlane::DEFAULT, size,
+                               gfx::ColorSpace(), GL_TEXTURE_2D, gl_tex_);
+
+  if (!pixmap_gl_binding_) {
+    LOG(ERROR) << "Failed to create NativePixmapEGLBinding";
+    return false;
+  }
 
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                             gl_tex_, 0);
