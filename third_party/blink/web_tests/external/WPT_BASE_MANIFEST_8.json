@@ -176720,7 +176720,7 @@
        ]
       ],
       "line-break-normal-015a.xht": [
-       "db3ee2a586fb90433f85b626cf05c2da5eb143cb",
+       "d2e0fe34995f43ffc1e4da10209efb9a71912ceb",
        [
         null,
         [
@@ -176915,7 +176915,7 @@
        ]
       ],
       "line-break-strict-015a.xht": [
-       "9114120bc86e2b629a555539fd97682c8bfe6d6e",
+       "ad31e4fc54d80cd815e09889ae11a6bc633d80a8",
        [
         null,
         [
@@ -183024,6 +183024,19 @@
       ],
       "break-spaces-010.html": [
        "a72dc67aff3113e4688035bbc6751372a4649cef",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-011.html": [
+       "8c40a31a35688512742727639c11091ac8163dd8",
        [
         null,
         [
@@ -263053,16 +263066,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "2af4f95ec3443b0d312fbf18dbc1d7f1ab693252",
-     []
-    ],
-    "mtime.json": [
-     "d918c619f6f5193d6201e0926072fc48d860a5c8",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -263326,18 +263329,6 @@
     ],
     "README.md": [
      "545f0bec6d9822e7862fc4010fb8d52d3dc4b768",
-     []
-    ],
-    "back-forward-cache-open-connection.window.js.ini": [
-     "e9ec6bf98544bbbf3bf03b0aca3ccbfdef063eb6",
-     []
-    ],
-    "back-forward-cache-open-transaction.window-expected.txt": [
-     "4c5a32a551ae31f506dbdaeda997e17217db4165",
-     []
-    ],
-    "back-forward-cache-open-transaction.window.js.ini": [
-     "6f0150ab787c0be71138e2a4d72992f5adb5e187",
      []
     ],
     "database-names-by-origin.html.ini": [
@@ -316920,7 +316911,7 @@
         []
        ],
        "line-break-normal-015a-ref.xht": [
-        "941e18242d9868a45dbde986a189feecaed8b05c",
+        "23cf1487b1b3c11d67787b5d4dfc422f61495254",
         []
        ],
        "line-break-normal-015b-ref.xht": [
@@ -316976,7 +316967,7 @@
         []
        ],
        "line-break-strict-015a-ref.xht": [
-        "f8a1222a3334edb8117e9141359958c9b8f51748",
+        "252818c22a0c0cce5d2844a283d447a32f4b5420",
         []
        ],
        "line-break-strict-015b-ref.xht": [
@@ -435516,6 +435507,27 @@
      ],
      "anchor-size-writing-modes-001.html": [
       "c9e061974125146b6cbe1c1deb9bbb3c53d897e7",
+      [
+       null,
+       {}
+      ]
+     ],
+     "anchor-transition-001.html": [
+      "b5849510e838b47fd5ddcf30489842e755225d5b",
+      [
+       null,
+       {}
+      ]
+     ],
+     "anchor-transition-002.html": [
+      "b6a1ff4511ac9ddfb20a531086137741b137b36b",
+      [
+       null,
+       {}
+      ]
+     ],
+     "anchor-transition-003.html": [
+      "e7441275141176078e14fc16aadf134bf9b65a37",
       [
        null,
        {}
@@ -598922,6 +598934,13 @@
        {
         "testdriver": true
        }
+      ]
+     ],
+     "delegatesFocus-tabindex-change.html": [
+      "f159c22164bb62064b62bc089faf5bd05cba555f",
+      [
+       null,
+       {}
       ]
      ],
      "focus-autofocus.html": [
