@@ -142,7 +142,7 @@ export class SettingsCollapseRadioButtonElement extends
   }
 
   getBubbleAnchor() {
-    const anchor = this.shadowRoot!.querySelector<HTMLElement>('.disc-border');
+    const anchor = this.shadowRoot!.querySelector<HTMLElement>('#button');
     assert(anchor);
     return anchor;
   }
