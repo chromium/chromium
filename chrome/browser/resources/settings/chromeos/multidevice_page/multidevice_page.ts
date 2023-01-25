@@ -17,54 +17,44 @@ import './multidevice_notification_access_setup_dialog.js';
 import './multidevice_permissions_setup_dialog.js';
 import './multidevice_subpage.js';
 
-import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {beforeNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
+import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {NearbyShareSettingsBehavior, NearbyShareSettingsBehaviorInterface} from '../../shared/nearby_share_settings_behavior.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {Constructor} from '../common/types.js';
+import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../deep_linking_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
-import {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, PhoneHubFeatureAccessStatus, PhoneHubPermissionsSetupAction, PhoneHubPermissionsSetupFlowScreens} from './multidevice_constants.js';
-import {MultiDeviceFeatureBehavior, MultiDeviceFeatureBehaviorInterface} from './multidevice_feature_behavior.js';
+import {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, PhoneHubFeatureAccessStatus} from './multidevice_constants.js';
+import {MultiDeviceFeatureMixin, MultiDeviceFeatureMixinInterface} from './multidevice_feature_mixin.js';
 import {getTemplate} from './multidevice_page.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- * @implements {MultiDeviceFeatureBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- * @implements {PrefsBehaviorInterface}
- * @implements {NearbyShareSettingsBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- */
-const SettingsMultidevicePageElementBase = mixinBehaviors(
-    [
-      DeepLinkingBehavior,
-      RouteObserverBehavior,
-      MultiDeviceFeatureBehavior,
-      WebUIListenerBehavior,
-      PrefsBehavior,
-      NearbyShareSettingsBehavior,
-      I18nBehavior,
-    ],
-    PolymerElement);
+import TokenInfo = chrome.quickUnlockPrivate.TokenInfo;
 
-/** @polymer */
+const SettingsMultidevicePageElementBase =
+    mixinBehaviors(
+        [
+          NearbyShareSettingsBehavior,
+        ],
+        MultiDeviceFeatureMixin(RouteObserverMixin(DeepLinkingMixin(
+            PrefsMixin(WebUiListenerMixin(PolymerElement)))))) as
+    Constructor<PolymerElement&WebUiListenerMixinInterface&PrefsMixinInterface&
+                DeepLinkingMixinInterface&RouteObserverMixinInterface&
+                MultiDeviceFeatureMixinInterface&
+                NearbyShareSettingsBehaviorInterface>;
+
 class SettingsMultidevicePageElement extends
     SettingsMultidevicePageElementBase {
   static get is() {
-    return 'settings-multidevice-page';
+    return 'settings-multidevice-page' as const;
   }
 
   static get template() {
@@ -73,19 +63,15 @@ class SettingsMultidevicePageElement extends
 
   static get properties() {
     return {
-      /** Preferences state. */
-      prefs: {type: Object},
-
       /**
        * A Map specifying which element should be focused when exiting a
        * subpage. The key of the map holds a Route path, and the value holds a
        * query selector that identifies the desired element.
-       * @private {!Map<string, string>}
        */
       focusConfig_: {
         type: Object,
         value() {
-          const map = new Map();
+          const map = new Map<string, string>();
           if (routes.MULTIDEVICE_FEATURES) {
             map.set(
                 routes.MULTIDEVICE_FEATURES.path,
@@ -97,7 +83,6 @@ class SettingsMultidevicePageElement extends
 
       /**
        * Authentication token provided by password-prompt-dialog.
-       * @private {!chrome.quickUnlockPrivate.TokenInfo|undefined}
        */
       authToken_: {
         type: Object,
@@ -109,20 +94,17 @@ class SettingsMultidevicePageElement extends
        * is required. This value is initialized to null, is set when the
        * password dialog is opened, and is reset to null again once the password
        * dialog is closed.
-       * @private {?MultiDeviceFeature}
        */
       featureToBeEnabledOnceAuthenticated_: {
         type: Number,
         value: null,
       },
 
-      /** @private {boolean} */
       showPasswordPromptDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       showPhonePermissionSetupDialog_: {
         type: Boolean,
         value: false,
@@ -131,7 +113,6 @@ class SettingsMultidevicePageElement extends
       /**
        * Whether or not Nearby Share is supported which controls if the Nearby
        * Share settings and subpage are accessible.
-       * @private {boolean}
        */
       isNearbyShareSupported_: {
         type: Boolean,
@@ -140,14 +121,12 @@ class SettingsMultidevicePageElement extends
         },
       },
 
-      /** @private */
       shouldEnableNearbyShareBackgroundScanningRevamp_: {
         type: Boolean,
         computed: `computeShouldEnableNearbyShareBackgroundScanningRevamp_(
             settings.isFastInitiationHardwareSupported)`,
       },
 
-      /** @private */
       isSettingsRetreived: {
         type: Boolean,
         value: false,
@@ -155,11 +134,10 @@ class SettingsMultidevicePageElement extends
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kSetUpMultiDevice,
           Setting.kVerifyMultiDeviceSetup,
           Setting.kMultiDeviceOnOff,
@@ -169,7 +147,6 @@ class SettingsMultidevicePageElement extends
 
       /**
        * Reflects the password sub-dialog property.
-       * @private
        */
       isPasswordDialogShowing_: {
         type: Boolean,
@@ -178,14 +155,12 @@ class SettingsMultidevicePageElement extends
 
       /**
        * Reflects the pin number sub-dialog property.
-       * @private
        */
       isPinNumberDialogShowing_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       isChromeosScreenLockEnabled_: {
         type: Boolean,
         value: function() {
@@ -193,7 +168,6 @@ class SettingsMultidevicePageElement extends
         },
       },
 
-      /** @private */
       isPhoneScreenLockEnabled_: {
         type: Boolean,
         value: function() {
@@ -203,38 +177,44 @@ class SettingsMultidevicePageElement extends
     };
   }
 
+  isSettingsRetreived: boolean;
+  private authToken_: TokenInfo|undefined;
+  private browserProxy_: MultiDeviceBrowserProxy;
+  private featureToBeEnabledOnceAuthenticated_: MultiDeviceFeature|null;
+  private isChromeosScreenLockEnabled_: boolean;
+  private isNearbyShareSupported_: boolean;
+  private isPasswordDialogShowing_: boolean;
+  private isPhoneScreenLockEnabled_: boolean;
+  private isPinNumberDialogShowing_: boolean;
+  private shouldEnableNearbyShareBackgroundScanningRevamp_: boolean;
+  private showPasswordPromptDialog_: boolean;
+  private showPhonePermissionSetupDialog_: boolean;
+
   constructor() {
     super();
 
-    /** @private {?MultiDeviceBrowserProxy} */
     this.browserProxy_ = MultiDeviceBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
 
     this.addEventListener('close', this.onDialogClose_);
     this.addEventListener('feature-toggle-clicked', (event) => {
-      this.onFeatureToggleClicked_(
-          /**
-           * @type {!CustomEvent<!{feature: !MultiDeviceFeature, enabled:
-           *  boolean}>}
-           */
-          (event));
+      this.onFeatureToggleClicked_(event);
     });
     this.addEventListener(
         'forget-device-requested', this.onForgetDeviceRequested_);
     this.addEventListener(
         'permission-setup-requested', this.onPermissionSetupRequested_);
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'settings.updateMultidevicePageContentData',
-        (data) => this.onPageContentDataChanged_(data));
-    this.addWebUIListener(
+        this.onPageContentDataChanged_.bind(this));
+    this.addWebUiListener(
         'settings.OnEnableScreenLockChanged',
         this.onEnableScreenLockChanged_.bind(this));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'settings.OnScreenLockStatusChanged',
         this.onScreenLockStatusChanged_.bind(this));
 
@@ -245,17 +225,14 @@ class SettingsMultidevicePageElement extends
   /**
    * Overridden from NearbyShareSettingsBehavior.
    */
-  onSettingsRetrieved() {
+  override onSettingsRetrieved(): void {
     this.isSettingsRetreived = true;
   }
 
   /**
    * Overridden from RouteObserverBehavior.
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
-   * @protected
    */
-  currentRouteChanged(route, oldRoute) {
+  override currentRouteChanged(route: Route): void {
     this.leaveNestedPageIfNoHostIsSet_();
 
     // Does not apply to this page.
@@ -266,20 +243,12 @@ class SettingsMultidevicePageElement extends
     this.attemptDeepLink();
   }
 
-  /**
-   * @return {string} Translated item label.
-   * @private
-   */
-  getLabelText_() {
+  private getLabelText_(): string {
     return this.pageContentData.hostDeviceName ||
         this.i18n('multideviceSetupItemHeading');
   }
 
-  /**
-   * @return {string} Translated sublabel with a "learn more" link.
-   * @private
-   */
-  getSubLabelInnerHtml_() {
+  private getSubLabelInnerHtml_(): TrustedHTML|string {
     if (!this.isSuiteAllowedByPolicy()) {
       return this.i18nAdvanced('multideviceSetupSummary');
     }
@@ -298,11 +267,7 @@ class SettingsMultidevicePageElement extends
     }
   }
 
-  /**
-   * @return {string} Translated button text.
-   * @private
-   */
-  getButtonText_() {
+  private getButtonText_(): string {
     switch (this.pageContentData.mode) {
       case MultiDeviceSettingsMode.NO_HOST_SET:
         return this.i18n('multideviceSetupButton');
@@ -315,11 +280,7 @@ class SettingsMultidevicePageElement extends
     }
   }
 
-  /**
-   * @return {string} Translated button a11y label.
-   * @private
-   */
-  getButtonA11yLabel_() {
+  private getButtonA11yLabel_(): string {
     switch (this.pageContentData.mode) {
       case MultiDeviceSettingsMode.NO_HOST_SET:
         return this.i18n('multideviceSetupButtonA11yLabel');
@@ -332,12 +293,7 @@ class SettingsMultidevicePageElement extends
     }
   }
 
-  /**
-   * @return {string} "true" or "false" indicating whether the text box
-   *                  should be aria-hidden or not.
-   * @private
-   */
-  getTextAriaHidden_() {
+  private getTextAriaHidden_(): string {
     // When host is set and verified, we only show subpage arrow button and
     // toggle. In this case, we avoid the navigation stops on the text to make
     // navigating easier. The arrow button is labeled and described by the text,
@@ -347,11 +303,7 @@ class SettingsMultidevicePageElement extends
         MultiDeviceSettingsMode.HOST_SET_VERIFIED);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowButton_() {
+  private shouldShowButton_(): boolean {
     return [
       MultiDeviceSettingsMode.NO_HOST_SET,
       MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_SERVER,
@@ -359,11 +311,7 @@ class SettingsMultidevicePageElement extends
     ].includes(this.pageContentData.mode);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowToggle_() {
+  private shouldShowToggle_(): boolean {
     return this.pageContentData.mode ===
         MultiDeviceSettingsMode.HOST_SET_VERIFIED;
   }
@@ -371,26 +319,19 @@ class SettingsMultidevicePageElement extends
   /**
    * Whether to show the separator bar and, if the state calls for a chevron
    * (a.k.a. subpage arrow) routing to the subpage, the chevron.
-   * @return {boolean}
-   * @private
    */
-  shouldShowSeparatorAndSubpageArrow_() {
+  private shouldShowSeparatorAndSubpageArrow_(): boolean {
     return this.pageContentData.mode !==
         MultiDeviceSettingsMode.NO_ELIGIBLE_HOSTS;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  doesClickOpenSubpage_() {
+  private doesClickOpenSubpage_(): boolean {
     return this.isHostSet();
   }
 
-  /** @private */
-  handleItemClick_(event) {
+  private handleItemClick_(event: Event): void {
     // We do not open the subpage if the click was on a link.
-    if (event.composedPath()[0].tagName === 'A') {
+    if ((event.composedPath()[0] as HTMLElement).tagName === 'A') {
       event.stopPropagation();
       return;
     }
@@ -402,8 +343,7 @@ class SettingsMultidevicePageElement extends
     Router.getInstance().navigateTo(routes.MULTIDEVICE_FEATURES);
   }
 
-  /** @private */
-  handleButtonClick_(event) {
+  private handleButtonClick_(event: Event): void {
     event.stopPropagation();
     switch (this.pageContentData.mode) {
       case MultiDeviceSettingsMode.NO_HOST_SET:
@@ -418,21 +358,20 @@ class SettingsMultidevicePageElement extends
     }
   }
 
-  /** @private */
-  openPasswordPromptDialog_() {
+  private openPasswordPromptDialog_(): void {
     this.showPasswordPromptDialog_ = true;
   }
 
-  onDialogClose_(event) {
+  private onDialogClose_(event: Event): void {
     event.stopPropagation();
     if (event.composedPath().some(
-            element => element.id === 'multidevicePasswordPrompt')) {
+            element =>
+                (element as HTMLElement).id === 'multidevicePasswordPrompt')) {
       this.onPasswordPromptDialogClose_();
     }
   }
 
-  /** @private */
-  onPasswordPromptDialogClose_() {
+  private onPasswordPromptDialogClose_(): void {
     // The password prompt should only be shown when there is a feature waiting
     // to be enabled.
     assert(this.featureToBeEnabledOnceAuthenticated_ !== null);
@@ -465,14 +404,10 @@ class SettingsMultidevicePageElement extends
    * Attempt to enable the provided feature. If not authenticated (i.e.,
    * |authToken_| is invalid), display the password prompt to begin the
    * authentication process.
-   *
-   * @param {!CustomEvent<!{
-   *     feature: !MultiDeviceFeature,
-   *     enabled: boolean
-   * }>} event
-   * @private
    */
-  onFeatureToggleClicked_(event) {
+  private onFeatureToggleClicked_(
+      event: CustomEvent<{feature: MultiDeviceFeature, enabled: boolean}>):
+      void {
     const feature = event.detail.feature;
     const enabled = event.detail.enabled;
 
@@ -491,7 +426,6 @@ class SettingsMultidevicePageElement extends
       switch (this.pageContentData.notificationAccessStatus) {
         case PhoneHubFeatureAccessStatus.PROHIBITED:
           assertNotReached('Cannot enable notification access; prohibited');
-          return;
         case PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED:
           this.showPhonePermissionSetupDialog_ = true;
           return;
@@ -507,12 +441,8 @@ class SettingsMultidevicePageElement extends
     recordSettingChange();
   }
 
-  /**
-   * @param {!MultiDeviceFeature} feature The feature to enable.
-   * @return {boolean} Whether authentication is required to enable the feature.
-   * @private
-   */
-  isAuthenticationRequiredToEnable_(feature) {
+  private isAuthenticationRequiredToEnable_(feature: MultiDeviceFeature):
+      boolean {
     // Enabling SmartLock always requires authentication.
     if (feature === MultiDeviceFeature.SMART_LOCK) {
       return true;
@@ -537,24 +467,21 @@ class SettingsMultidevicePageElement extends
         MultiDeviceFeatureState.UNAVAILABLE_INSUFFICIENT_SECURITY;
   }
 
-  /** @private */
-  onForgetDeviceRequested_() {
+  private onForgetDeviceRequested_(): void {
     this.browserProxy_.removeHostDevice();
     recordSettingChange();
     Router.getInstance().navigateTo(routes.MULTIDEVICE);
   }
 
-  /** @private */
-  onPermissionSetupRequested_() {
+  private onPermissionSetupRequested_(): void {
     this.showPhonePermissionSetupDialog_ = true;
   }
 
   /**
    * Checks if the user is in a nested page without a host set and, if so,
    * navigates them back to the main page.
-   * @private
    */
-  leaveNestedPageIfNoHostIsSet_() {
+  private leaveNestedPageIfNoHostIsSet_(): void {
     // Wait for data to arrive.
     if (!this.pageContentData) {
       return;
@@ -579,11 +506,8 @@ class SettingsMultidevicePageElement extends
     }
   }
 
-  /**
-   * @param {!MultiDevicePageContentData} newData
-   * @private
-   */
-  onInitialPageContentDataFetched_(newData) {
+  private onInitialPageContentDataFetched_(newData: MultiDevicePageContentData):
+      void {
     this.onPageContentDataChanged_(newData);
 
     // Show the notification access dialog if the url contains the correct
@@ -596,28 +520,16 @@ class SettingsMultidevicePageElement extends
     }
   }
 
-  /**
-   * @param {!MultiDevicePageContentData} newData
-   * @private
-   */
-  onPageContentDataChanged_(newData) {
+  private onPageContentDataChanged_(newData: MultiDevicePageContentData): void {
     this.pageContentData = newData;
     this.leaveNestedPageIfNoHostIsSet_();
   }
 
-  /**
-   * @param {!CustomEvent<!chrome.quickUnlockPrivate.TokenInfo>} e
-   * @private
-   */
-  onTokenObtained_(e) {
+  private onTokenObtained_(e: CustomEvent<TokenInfo>): void {
     this.authToken_ = e.detail;
   }
 
-  /**
-   * @return {boolean} Whether Nearby Share is disallowed by enterprise policy.
-   * @private
-   */
-  isNearbyShareDisallowedByPolicy_() {
+  private isNearbyShareDisallowedByPolicy_(): boolean {
     if (!this.pageContentData) {
       return false;
     }
@@ -625,58 +537,28 @@ class SettingsMultidevicePageElement extends
     return this.pageContentData.isNearbyShareDisallowedByPolicy;
   }
 
-  /**
-   * @param {boolean} state boolean state that determines which string to show
-   * @param {string} onstr string to show when state is true
-   * @param {string} offstr string to show when state is false
-   * @return {string} localized string
-   * @private
-   */
-  getOnOffString_(state, onstr, offstr) {
+  private getOnOffString_(state: boolean, onstr: string, offstr: string):
+      string {
     return state ? onstr : offstr;
   }
 
-  /**
-   * @param {boolean} isOnboardingComplete
-   * @return {boolean}
-   * @private
-   */
-  showNearbyShareToggle_(isOnboardingComplete) {
+  private showNearbyShareToggle_(isOnboardingComplete: boolean): boolean {
     return isOnboardingComplete || this.isNearbyShareDisallowedByPolicy_();
   }
 
-  /**
-   * @param {boolean} isOnboardingComplete
-   * @return {boolean}
-   * @private
-   */
-  showNearbyShareSetupButton_(isOnboardingComplete) {
+  private showNearbyShareSetupButton_(isOnboardingComplete: boolean): boolean {
     return !isOnboardingComplete && !this.isNearbyShareDisallowedByPolicy_();
   }
 
-  /**
-   * @param {boolean} isOnboardingComplete
-   * @return {boolean}
-   * @private
-   */
-  showNearbyShareOnOffString_(isOnboardingComplete) {
+  private showNearbyShareOnOffString_(isOnboardingComplete: boolean): boolean {
     return isOnboardingComplete && !this.isNearbyShareDisallowedByPolicy_();
   }
 
-  /**
-   * @param {boolean} isOnboardingComplete
-   * @return {boolean}
-   * @private
-   */
-  showNearbyShareDescription_(isOnboardingComplete) {
+  private showNearbyShareDescription_(isOnboardingComplete: boolean): boolean {
     return !isOnboardingComplete || this.isNearbyShareDisallowedByPolicy_();
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  nearbyShareClick_(event) {
+  private nearbyShareClick_(): void {
     if (this.isNearbyShareDisallowedByPolicy_()) {
       return;
     }
@@ -712,31 +594,21 @@ class SettingsMultidevicePageElement extends
     Router.getInstance().navigateTo(routes.NEARBY_SHARE, params);
   }
 
-
-  /**
-   * @return {boolean}
-   * @private
-   */
-  showPermissionsSetupDialog_() {
+  private showPermissionsSetupDialog_(): boolean {
     if (!this.showPhonePermissionSetupDialog_) {
       return false;
     }
     return !this.pageContentData.isPhoneHubPermissionsDialogSupported;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  showNewPermissionsSetupDialog_() {
+  private showNewPermissionsSetupDialog_(): boolean {
     if (!this.showPhonePermissionSetupDialog_) {
       return false;
     }
     return this.pageContentData.isPhoneHubPermissionsDialogSupported;
   }
 
-  /** @private */
-  onHidePhonePermissionsSetupDialog_() {
+  private onHidePhonePermissionsSetupDialog_(): void {
     // Don't close the main dialog if the pin number sub-dialog is open.
     if (this.isPinNumberDialogShowing_) {
       this.isPinNumberDialogShowing_ = false;
@@ -750,14 +622,13 @@ class SettingsMultidevicePageElement extends
     this.showPhonePermissionSetupDialog_ = false;
   }
 
-  /** @private */
-  onPinNumberSelected_(e) {
+  private onPinNumberSelected_(e: CustomEvent<{isPinNumberSelected: boolean}>):
+      void {
     assert(typeof e.detail.isPinNumberSelected === 'boolean');
     this.isPinNumberDialogShowing_ = e.detail.isPinNumberSelected;
   }
 
-  /** @private */
-  handleNearbySetUpClick_() {
+  private handleNearbySetUpClick_(): void {
     const params = new URLSearchParams();
     params.set('onboarding', '');
     // Set by metrics to determine entrypoint for onboarding
@@ -765,14 +636,9 @@ class SettingsMultidevicePageElement extends
     Router.getInstance().navigateTo(routes.NEARBY_SHARE, params);
   }
 
-  /**
-   * @param {boolean} isNearbySharingEnabled
-   * @param {boolean} shouldEnableNearbyShareBackgroundScanningRevamp
-   * @return {boolean}
-   * @private
-   */
-  shouldShowNearbyShareSubpageArrow_(
-      isNearbySharingEnabled, shouldEnableNearbyShareBackgroundScanningRevamp) {
+  private shouldShowNearbyShareSubpageArrow_(
+      isNearbySharingEnabled: boolean,
+      shouldEnableNearbyShareBackgroundScanningRevamp: boolean): boolean {
     // If the background scanning feature is enabled but Nearby Sharing is
     // disabled the subpage should be accessible. The subpage is also accessible
     // pre-onboarding.
@@ -781,23 +647,16 @@ class SettingsMultidevicePageElement extends
         !this.isNearbyShareDisallowedByPolicy_();
   }
 
-  /**
-   * @param {boolean} is_hardware_supported
-   * @return {boolean}
-   * @private
-   */
-  computeShouldEnableNearbyShareBackgroundScanningRevamp_(
-      is_hardware_supported) {
-    return is_hardware_supported;
+  private computeShouldEnableNearbyShareBackgroundScanningRevamp_(
+      isHardwareSupported: boolean): boolean {
+    return isHardwareSupported;
   }
 
   /**
    * Whether the combined setup for Notifications and Camera Roll is supported
    * on the connected phone.
-   * @return {boolean}
-   * @private
    */
-  isCombinedSetupSupported_() {
+  private isCombinedSetupSupported_(): boolean {
     return this.pageContentData.isPhoneHubFeatureCombinedSetupSupported;
   }
 
@@ -805,10 +664,8 @@ class SettingsMultidevicePageElement extends
    * Due to loadTimeData is not guaranteed to be consistent between page
    * refreshes, use FireWebUIListener() to update dynamic value of screen lock
    * setting.
-   * @param {boolean} enabled
-   * @private
    */
-  onEnableScreenLockChanged_(enabled) {
+  private onEnableScreenLockChanged_(enabled: boolean): void {
     this.isChromeosScreenLockEnabled_ = enabled;
   }
 
@@ -816,11 +673,15 @@ class SettingsMultidevicePageElement extends
    * Due to loadTimeData is not guaranteed to be consistent between page
    * refreshes, use FireWebUIListener() to update dynamic value of screen lock
    * status of phone.
-   * @param {boolean} enabled
-   * @private
    */
-  onScreenLockStatusChanged_(enabled) {
+  private onScreenLockStatusChanged_(enabled: boolean): void {
     this.isPhoneScreenLockEnabled_ = enabled;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsMultidevicePageElement.is]: SettingsMultidevicePageElement;
   }
 }
 

@@ -19,12 +19,14 @@ import './multidevice_screen_lock_subpage.js';
 import '../os_settings_icons.html.js';
 import '../../settings_shared.css.js';
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Constructor} from '../common/types.js';
 import {LockStateBehavior, LockStateBehaviorInterface} from '../os_people_page/lock_state_behavior.js';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
@@ -38,36 +40,34 @@ import {getTemplate} from './multidevice_permissions_setup_dialog.html.js';
  * FAILED_OR_CANCELLED, we will abort all setup processes. If
  * PermissionsSetupStatus is COMPLETED_USER_REJECTED, we will proceed to the
  * next setup process.
- * @enum {number}
  */
-export const PermissionsSetupStatus = {
-  CONNECTION_REQUESTED: 0,
-  CONNECTING: 1,
-  TIMED_OUT_CONNECTING: 2,
-  CONNECTION_DISCONNECTED: 3,
-  SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE: 4,
-  COMPLETED_SUCCESSFULLY: 5,
-  NOTIFICATION_ACCESS_PROHIBITED: 6,
-  COMPLETED_USER_REJECTED: 7,
-  FAILED_OR_CANCELLED: 8,
-  CAMERA_ROLL_GRANTED_NOTIFICATION_REJECTED: 9,
-  CAMERA_ROLL_REJECTED_NOTIFICATION_GRANTED: 10,
-  CONNECTION_ESTABLISHED: 11,
-};
+export enum PermissionsSetupStatus {
+  CONNECTION_REQUESTED = 0,
+  CONNECTING = 1,
+  TIMED_OUT_CONNECTING = 2,
+  CONNECTION_DISCONNECTED = 3,
+  SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE = 4,
+  COMPLETED_SUCCESSFULLY = 5,
+  NOTIFICATION_ACCESS_PROHIBITED = 6,
+  COMPLETED_USER_REJECTED = 7,
+  FAILED_OR_CANCELLED = 8,
+  CAMERA_ROLL_GRANTED_NOTIFICATION_REJECTED = 9,
+  CAMERA_ROLL_REJECTED_NOTIFICATION_GRANTED = 10,
+  CONNECTION_ESTABLISHED = 11,
+}
 
 /**
  * Numerical values the flow of dialog set up progress.
- * @enum {number}
  */
-export const SetupFlowStatus = {
-  INTRO: 0,
-  SET_LOCKSCREEN: 1,
-  WAIT_FOR_PHONE_NOTIFICATION: 2,
-  WAIT_FOR_PHONE_APPS: 3,
-  WAIT_FOR_PHONE_COMBINED: 4,
-  WAIT_FOR_CONNECTION: 5,
-  FINISHED: 6,
-};
+export enum SetupFlowStatus {
+  INTRO = 0,
+  SET_LOCKSCREEN = 1,
+  WAIT_FOR_PHONE_NOTIFICATION = 2,
+  WAIT_FOR_PHONE_APPS = 3,
+  WAIT_FOR_PHONE_COMBINED = 4,
+  WAIT_FOR_CONNECTION = 5,
+  FINISHED = 6,
+}
 
 /**
  * Indicates that the onboarding flow includes Phone Hub Notification feature.
@@ -84,26 +84,25 @@ export const CAMERA_ROLL_FEATURE = 1 << 1;
  */
 export const APPS_FEATURE = 1 << 2;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- * @implements {LockStateBehaviorInterface}
- */
-const SettingsMultidevicePermissionsSetupDialogElementBase = mixinBehaviors(
-    [
-      I18nBehavior,
-      WebUIListenerBehavior,
-      LockStateBehavior,
-    ],
-    PolymerElement);
+interface SettingsMultidevicePermissionsSetupDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
 
-/** @polymer */
+const SettingsMultidevicePermissionsSetupDialogElementBase =
+    mixinBehaviors(
+        [
+          LockStateBehavior,
+        ],
+        WebUiListenerMixin(I18nMixin(PolymerElement))) as
+    Constructor<PolymerElement&I18nMixinInterface&WebUiListenerMixinInterface&
+                LockStateBehaviorInterface>;
+
 class SettingsMultidevicePermissionsSetupDialogElement extends
     SettingsMultidevicePermissionsSetupDialogElementBase {
   static get is() {
-    return 'settings-multidevice-permissions-setup-dialog';
+    return 'settings-multidevice-permissions-setup-dialog' as const;
   }
 
   static get template() {
@@ -112,7 +111,6 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
 
   static get properties() {
     return {
-      /** @private {!PhoneHubPermissionsSetupFlowScreens} */
       setupScreen_: {
         type: Number,
         computed: 'getCurrentScreen_(setupState_, flowState_)',
@@ -120,75 +118,62 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
 
       /**
        * A null |setupState_| indicates that the operation has not yet started.
-       * @private {?PermissionsSetupStatus}
        */
       setupState_: {
         type: Number,
         value: null,
       },
 
-      /** @private */
       title_: {
         type: String,
         computed: 'getTitle_(setupState_, flowState_)',
       },
 
-      /** @private */
       description_: {
         type: String,
         computed: 'getDescription_(setupState_, flowState_)',
       },
 
-      /** @private */
       hasStartedSetupAttempt_: {
         type: Boolean,
         computed: 'computeHasStartedSetupAttempt_(flowState_)',
         reflectToAttribute: true,
       },
 
-      /** @private */
       isSetupAttemptInProgress_: {
         type: Boolean,
         computed: 'computeIsSetupAttemptInProgress_(setupState_)',
         reflectToAttribute: true,
       },
 
-      /** @private */
       isSetupScreenLockInProgress_: {
         type: Boolean,
         computed: 'computeIsSetupScreenLockInProgress_(flowState_)',
         reflectToAttribute: true,
       },
 
-      /** @private */
       didSetupAttemptFail_: {
         type: Boolean,
         computed: 'computeDidSetupAttemptFail_(setupState_)',
         reflectToAttribute: true,
       },
 
-      /** @private */
       hasCompletedSetup_: {
         type: Boolean,
         computed: 'computeHasCompletedSetup_(setupState_)',
         reflectToAttribute: true,
       },
 
-      /** @private */
       isNotificationAccessProhibited_: {
         type: Boolean,
         computed: 'computeIsNotificationAccessProhibited_(setupState_)',
       },
 
-      /**
-       * @private {?SetupFlowStatus}
-       */
       flowState_: {
         type: Number,
         value: SetupFlowStatus.INTRO,
       },
 
-      /** @private */
       isScreenLockEnabled_: {
         type: Boolean,
         value: false,
@@ -222,22 +207,30 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
       },
 
       /** Whether this dialog should show Camera Roll info */
-      showCameraRoll:
-          {type: Boolean, value: false, observer: 'onAccessStateChanged_'},
+      showCameraRoll: {
+        type: Boolean,
+        value: false,
+        observer: 'onAccessStateChanged_',
+      },
 
       /** Whether this dialog should show Notifications info */
-      showNotifications:
-          {type: Boolean, value: false, observer: 'onAccessStateChanged_'},
+      showNotifications: {
+        type: Boolean,
+        value: false,
+        observer: 'onAccessStateChanged_',
+      },
 
       /** Whether this dialog should show App Streaming info */
-      showAppStreaming:
-          {type: Boolean, value: false, observer: 'onAccessStateChanged_'},
+      showAppStreaming: {
+        type: Boolean,
+        value: false,
+        observer: 'onAccessStateChanged_',
+      },
 
       /**
        * Indicates that the features we want to handle during setup flow.
        * It is constructed using the bitwise _FEATURE values (ex:
        * NOTIFICATION_FEATURE) declared at the top.
-       * @private
        */
       setupMode_: {
         type: Number,
@@ -248,40 +241,34 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
        * Indicates that the features we have completed after setup flow.
        * It is constructed using the bitwise _FEATURE values (ex:
        * NOTIFICATION_FEATURE) declared at the top.
-       * @private
        */
       completedMode_: {
         type: Number,
         value: 0,
       },
 
-      /** @private */
       shouldShowLearnMoreButton_: {
         type: Boolean,
         computed: 'computeShouldShowLearnMoreButton_(setupState_, flowState_)',
         reflectToAttribute: true,
       },
 
-      /** @private */
       shouldShowDisabledDoneButton_: {
         type: Boolean,
         computed: 'computeShouldShowDisabledDoneButton_(setupState_)',
         reflectToAttribute: true,
       },
 
-      /** @private */
       isPinNumberSelected_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       isPinSet_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       showSetupPinDialog_: {
         type: Boolean,
         value: false,
@@ -296,7 +283,6 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
         value: false,
       },
 
-      /** @private */
       learnMoreButtonAriaLabel_: {
         type: String,
         computed: 'getLearnMoreButtonAriaLabel_()',
@@ -304,34 +290,60 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
     };
   }
 
+  combinedSetupSupported: boolean;
+  isChromeosScreenLockEnabled: boolean;
+  isPasswordDialogShowing: boolean;
+  isPhoneScreenLockEnabled: boolean;
+  showAppStreaming: boolean;
+  showCameraRoll: boolean;
+  showNotifications: boolean;
+  private browserProxy_: MultiDeviceBrowserProxy;
+  private completedMode_: number;
+  private description_: string;
+  private didSetupAttemptFail_: boolean;
+  private flowState_: SetupFlowStatus;
+  private hasCompletedSetup_: boolean;
+  private hasStartedSetupAttempt_: boolean;
+  private isNotificationAccessProhibited_: boolean;
+  private isPinNumberSelected_: boolean;
+  private isPinSet_: boolean;
+  private isScreenLockEnabled_: boolean;
+  private isSetupAttemptInProgress_: boolean;
+  private isSetupScreenLockInProgress_: boolean;
+  private learnMoreButtonAriaLabel_: string;
+  private setupMode_: number;
+  private setupScreen_: PhoneHubPermissionsSetupFlowScreens;
+  private setupState_: PermissionsSetupStatus|null;
+  private shouldShowDisabledDoneButton_: boolean;
+  private shouldShowLearnMoreButton_: boolean;
+  private showSetupPinDialog_: boolean;
+  private title_: string;
+
   constructor() {
     super();
 
-    /** @private {!MultiDeviceBrowserProxy} */
     this.browserProxy_ = MultiDeviceBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
 
     this.addEventListener('set-pin-done', this.onSetPinDone_);
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'settings.onNotificationAccessSetupStatusChanged',
         this.onNotificationSetupStateChanged_.bind(this));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'settings.onAppsAccessSetupStatusChanged',
         this.onAppsSetupStateChanged_.bind(this));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'settings.onCombinedAccessSetupStatusChanged',
         this.onCombinedSetupStateChanged_.bind(this));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'settings.onFeatureSetupConnectionStatusChanged',
         this.onFeatureSetupConnectionStatusChanged_.bind(this));
     this.$.dialog.showModal();
@@ -340,11 +352,8 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
         PhoneHubPermissionsSetupAction.SHOWN);
   }
 
-  /**
-   * @param {!PermissionsSetupStatus} notificationSetupState
-   * @private
-   */
-  onNotificationSetupStateChanged_(notificationSetupState) {
+  private onNotificationSetupStateChanged_(notificationSetupState:
+                                               PermissionsSetupStatus): void {
     if (this.flowState_ !== SetupFlowStatus.WAIT_FOR_PHONE_NOTIFICATION) {
       return;
     }
@@ -359,6 +368,7 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
       case PermissionsSetupStatus.CONNECTION_DISCONNECTED:
       case PermissionsSetupStatus.NOTIFICATION_ACCESS_PROHIBITED:
         this.flowState_ = SetupFlowStatus.FINISHED;
+        break;
       case PermissionsSetupStatus.CONNECTION_REQUESTED:
       case PermissionsSetupStatus.CONNECTING:
       case PermissionsSetupStatus
@@ -397,11 +407,8 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
     }
   }
 
-  /**
-   * @param {!PermissionsSetupStatus} appsSetupResult
-   * @private
-   */
-  onAppsSetupStateChanged_(appsSetupResult) {
+  private onAppsSetupStateChanged_(appsSetupResult: PermissionsSetupStatus):
+      void {
     if (this.flowState_ !== SetupFlowStatus.WAIT_FOR_PHONE_APPS) {
       return;
     }
@@ -430,11 +437,8 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
     }
   }
 
-  /**
-   * @param {!PermissionsSetupStatus} combinedSetupResult
-   * @private
-   */
-  onCombinedSetupStateChanged_(combinedSetupResult) {
+  private onCombinedSetupStateChanged_(combinedSetupResult:
+                                           PermissionsSetupStatus): void {
     if (this.flowState_ !== SetupFlowStatus.WAIT_FOR_PHONE_COMBINED) {
       return;
     }
@@ -449,10 +453,14 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
       case PermissionsSetupStatus.CAMERA_ROLL_GRANTED_NOTIFICATION_REJECTED:
       case PermissionsSetupStatus.CAMERA_ROLL_REJECTED_NOTIFICATION_GRANTED:
         break;
+      // TODO(b/266455078) Avoid Fallthrough case in switch
+      // @ts-expect-error Fallthrough case in switch
       case PermissionsSetupStatus.FAILED_OR_CANCELLED:
         this.updateCamearRollSetupResultIfNeeded_();
       case PermissionsSetupStatus.TIMED_OUT_CONNECTING:
       case PermissionsSetupStatus.CONNECTION_DISCONNECTED:
+      // TODO(b/266455078) Avoid Fallthrough case in switch
+      // @ts-expect-error Fallthrough case in switch
       case PermissionsSetupStatus.NOTIFICATION_ACCESS_PROHIBITED:
         this.flowState_ = SetupFlowStatus.FINISHED;
       case PermissionsSetupStatus.CONNECTION_REQUESTED:
@@ -497,10 +505,7 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
     }
   }
 
-  /**
-   * @private
-   */
-  logSetupModeMetrics_() {
+  private logSetupModeMetrics_(): void {
     if (this.showCameraRoll) {
       this.setupMode_ |= CAMERA_ROLL_FEATURE;
     }
@@ -514,27 +519,23 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
         this.computePhoneHubPermissionsSetupMode_(this.setupMode_));
   }
 
-  /**
-   * @private
-   */
-  logCompletedSetupModeMetrics_() {
+  private logCompletedSetupModeMetrics_(): void {
     this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
         this.setupScreen_, PhoneHubPermissionsSetupAction.SHOWN);
     this.browserProxy_.logPhoneHubPermissionOnboardingSetupResult(
         this.computePhoneHubPermissionsSetupMode_(this.completedMode_));
   }
 
-  /**
-   * @param {!PermissionsSetupStatus} connectionResult
-   * @private
-   */
-  onFeatureSetupConnectionStatusChanged_(connectionResult) {
+  private onFeatureSetupConnectionStatusChanged_(
+      connectionResult: PermissionsSetupStatus): void {
     if (this.flowState_ !== SetupFlowStatus.WAIT_FOR_CONNECTION) {
       return;
     }
 
     switch (connectionResult) {
       case PermissionsSetupStatus.TIMED_OUT_CONNECTING:
+      // TODO(b/266455078) Avoid Fallthrough case in switch
+      // @ts-expect-error Fallthrough case in switch
       case PermissionsSetupStatus.CONNECTION_DISCONNECTED:
         this.setupState_ = connectionResult;
       case PermissionsSetupStatus.COMPLETED_SUCCESSFULLY:
@@ -547,15 +548,13 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
           return;
         }
         this.startSetupProcess_();
+        return;
       default:
         return;
     }
   }
 
-  /**
-   * @private
-   */
-  updateCamearRollSetupResultIfNeeded_() {
+  private updateCamearRollSetupResultIfNeeded_(): void {
     if (this.setupMode_ & CAMERA_ROLL_FEATURE && !this.showCameraRoll) {
       this.completedMode_ |= CAMERA_ROLL_FEATURE;
       this.browserProxy_.setFeatureEnabledState(
@@ -563,10 +562,7 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
     }
   }
 
-  /**
-   * @private
-   */
-  updateNotificationsSetupResultIfNeeded_() {
+  private updateNotificationsSetupResultIfNeeded_(): void {
     if (this.setupMode_ & NOTIFICATION_FEATURE && !this.showNotifications) {
       this.completedMode_ |= NOTIFICATION_FEATURE;
       this.browserProxy_.setFeatureEnabledState(
@@ -574,38 +570,22 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
     }
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeHasStartedSetupAttempt_() {
+  private computeHasStartedSetupAttempt_(): boolean {
     return this.flowState_ !== SetupFlowStatus.INTRO;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeIsSetupAttemptInProgress_() {
+  private computeIsSetupAttemptInProgress_(): boolean {
     return this.setupState_ ===
         PermissionsSetupStatus.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE ||
         this.setupState_ === PermissionsSetupStatus.CONNECTING ||
         this.setupState_ === PermissionsSetupStatus.CONNECTION_REQUESTED;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeIsSetupScreenLockInProgress_() {
+  private computeIsSetupScreenLockInProgress_(): boolean {
     return this.flowState_ === SetupFlowStatus.SET_LOCKSCREEN;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeHasCompletedSetup_() {
+  private computeHasCompletedSetup_(): boolean {
     return this.setupState_ === PermissionsSetupStatus.COMPLETED_SUCCESSFULLY ||
         this.someFeaturesHaveBeenSetupWhenCompleted_() ||
         this.setupState_ ===
@@ -614,20 +594,12 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
         PermissionsSetupStatus.CAMERA_ROLL_REJECTED_NOTIFICATION_GRANTED;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeIsNotificationAccessProhibited_() {
+  private computeIsNotificationAccessProhibited_(): boolean {
     return this.setupState_ ===
         PermissionsSetupStatus.NOTIFICATION_ACCESS_PROHIBITED;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   * */
-  computeDidSetupAttemptFail_() {
+  private computeDidSetupAttemptFail_(): boolean {
     return this.setupState_ === PermissionsSetupStatus.TIMED_OUT_CONNECTING ||
         this.setupState_ === PermissionsSetupStatus.CONNECTION_DISCONNECTED ||
         this.setupState_ ===
@@ -635,38 +607,31 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
         this.noFeatureHasBeenSetupWhenCompleted_();
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-
-  someFeaturesHaveBeenSetupWhenCompleted_() {
+  private someFeaturesHaveBeenSetupWhenCompleted_(): boolean {
     return (this.setupState_ ===
                 PermissionsSetupStatus.COMPLETED_USER_REJECTED ||
             this.setupState_ === PermissionsSetupStatus.FAILED_OR_CANCELLED) &&
         this.completedMode_ !== 0;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  noFeatureHasBeenSetupWhenCompleted_() {
+  private noFeatureHasBeenSetupWhenCompleted_(): boolean {
     return (this.setupState_ ===
                 PermissionsSetupStatus.COMPLETED_USER_REJECTED ||
             this.setupState_ === PermissionsSetupStatus.FAILED_OR_CANCELLED) &&
         this.completedMode_ === 0;
   }
 
-
-  /** @private */
-  nextPage_() {
+  private nextPage_(): void {
     this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
         this.getCurrentScreen_(),
         PhoneHubPermissionsSetupAction.NEXT_OR_TRY_AGAIN);
     switch (this.flowState_) {
+      // TODO(b/266455078) Avoid Fallthrough case in switch
+      // @ts-expect-error Fallthrough case in switch
       case SetupFlowStatus.INTRO:
         this.logSetupModeMetrics_();
+      // TODO(b/266455078) Avoid Fallthrough case in switch
+      // @ts-expect-error Fallthrough case in switch
       case SetupFlowStatus.FINISHED:
         this.flowState_ = SetupFlowStatus.WAIT_FOR_CONNECTION;
       case SetupFlowStatus.WAIT_FOR_CONNECTION:
@@ -692,8 +657,7 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
     this.startSetupProcess_();
   }
 
-  /** @private */
-  startSetupProcess_() {
+  private startSetupProcess_(): void {
     if ((this.showCameraRoll || this.showNotifications) &&
         this.combinedSetupSupported) {
       this.browserProxy_.attemptCombinedFeatureSetup(
@@ -711,8 +675,7 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
     }
   }
 
-  /** @private */
-  onCancelClicked_() {
+  private onCancelClicked_(): void {
     if (this.flowState_ === SetupFlowStatus.WAIT_FOR_PHONE_NOTIFICATION) {
       this.browserProxy_.cancelNotificationSetup();
     } else if (this.flowState_ === SetupFlowStatus.WAIT_FOR_PHONE_APPS) {
@@ -730,37 +693,33 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
     this.$.dialog.close();
   }
 
-  /** @private */
-  onDoneOrCloseButtonClicked_() {
+  private onDoneOrCloseButtonClicked_(): void {
     this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
         this.setupScreen_, PhoneHubPermissionsSetupAction.DONE);
     this.$.dialog.close();
   }
 
-  /** @private */
-  onLearnMoreClicked_() {
+  private onLearnMoreClicked_(): void {
     this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
         this.setupScreen_, PhoneHubPermissionsSetupAction.LEARN_MORE);
     window.open(this.i18n('multidevicePhoneHubPermissionsLearnMoreURL'));
   }
 
-  /** @private */
-  onPinNumberSelected_(e) {
+  private onPinNumberSelected_(e: CustomEvent<{isPinNumberSelected: boolean}>):
+      void {
     e.stopPropagation();
     assert(typeof e.detail.isPinNumberSelected === 'boolean');
     this.isPinNumberSelected_ = e.detail.isPinNumberSelected;
   }
 
-  /** @private */
-  onSetPinDone_() {
+  private onSetPinDone_(): void {
     // Once users confirm pin number, take them to the 'finish setup on the
     // phone' step directly.
     this.isPinSet_ = true;
     this.nextPage_();
   }
 
-  /** @private */
-  propagatePinNumberSelected_(selected) {
+  private propagatePinNumberSelected_(selected: boolean): void {
     const pinNumberEvent = new CustomEvent('pin-number-selected', {
       bubbles: true,
       composed: true,
@@ -769,8 +728,7 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
     this.dispatchEvent(pinNumberEvent);
   }
 
-  /** @private */
-  getCurrentScreen_() {
+  private getCurrentScreen_(): PhoneHubPermissionsSetupFlowScreens {
     if (this.flowState_ === SetupFlowStatus.INTRO) {
       return PhoneHubPermissionsSetupFlowScreens.INTRO;
     }
@@ -801,11 +759,7 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
     }
   }
 
-  /**
-   * @return {string} The title of the dialog.
-   * @private
-   */
-  getTitle_() {
+  private getTitle_(): string {
     if (this.flowState_ === SetupFlowStatus.INTRO) {
       return this.i18n('multidevicePermissionsSetupAckTitle');
     }
@@ -841,10 +795,9 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
   }
 
   /**
-   * @return {string} A description about the connection attempt state.
-   * @private
+   * @return A description about the connection attempt state.
    */
-  getDescription_() {
+  private getDescription_(): TrustedHTML|string {
     if (this.flowState_ === SetupFlowStatus.INTRO) {
       return '';
     }
@@ -885,22 +838,14 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
     }
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShouldShowLearnMoreButton_() {
+  private computeShouldShowLearnMoreButton_(): boolean {
     return this.flowState_ === SetupFlowStatus.INTRO ||
         this.flowState_ === SetupFlowStatus.SET_LOCKSCREEN ||
         this.setupState_ ===
         PermissionsSetupStatus.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowCancelButton_() {
+  private shouldShowCancelButton_(): boolean {
     return this.setupState_ !== PermissionsSetupStatus.COMPLETED_SUCCESSFULLY &&
         this.setupState_ !==
             PermissionsSetupStatus.NOTIFICATION_ACCESS_PROHIBITED &&
@@ -913,56 +858,32 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
         this.noFeatureHasBeenSetupWhenCompleted_();
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShouldShowDisabledDoneButton_() {
+  private computeShouldShowDisabledDoneButton_(): boolean {
     return this.setupState_ ===
         PermissionsSetupStatus.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowTryAgainButton_() {
+  private shouldShowTryAgainButton_(): boolean {
     return this.setupState_ === PermissionsSetupStatus.TIMED_OUT_CONNECTING ||
         this.setupState_ === PermissionsSetupStatus.CONNECTION_DISCONNECTED ||
         this.noFeatureHasBeenSetupWhenCompleted_();
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowScreenLockInstructions_() {
+  private shouldShowScreenLockInstructions_(): boolean {
     return this.flowState_ === SetupFlowStatus.SET_LOCKSCREEN;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isScreenLockRequired_() {
+  private isScreenLockRequired_(): boolean {
     return loadTimeData.getBoolean('isEcheAppEnabled') &&
         this.isPhoneScreenLockEnabled && !this.isChromeosScreenLockEnabled &&
         this.showAppStreaming;
   }
 
-  /**
-   * @return {string} A aria label about learn more button.
-   * @private
-   */
-  getLearnMoreButtonAriaLabel_() {
+  private getLearnMoreButtonAriaLabel_(): string {
     return this.i18n('multidevicePhoneHubLearnMoreAriaLabel');
   }
 
-  /**
-   * @return {string} The finish title of the dialog.
-   * @private
-   */
-  getSetupCompleteTitle_() {
+  private getSetupCompleteTitle_(): string {
     switch (this.completedMode_) {
       case NOTIFICATION_FEATURE:
         return this.i18n(
@@ -988,11 +909,9 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
     }
   }
 
-  /**
-   * @return {!PhoneHubPermissionsSetupFeatureCombination}
-   * @private
-   */
-  computePhoneHubPermissionsSetupMode_(mode) {
+  private computePhoneHubPermissionsSetupMode_(
+      mode: PhoneHubPermissionsSetupFeatureCombination):
+      PhoneHubPermissionsSetupFeatureCombination {
     switch (mode) {
       case NOTIFICATION_FEATURE:
         return PhoneHubPermissionsSetupFeatureCombination.NOTIFICATION;
@@ -1016,12 +935,21 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
     }
   }
 
-  /** @private */
-  onAccessStateChanged_() {
+  private onAccessStateChanged_(): void {
     if (this.flowState_ === SetupFlowStatus.INTRO && !this.showCameraRoll &&
         !this.showNotifications && !this.showAppStreaming) {
       this.$.dialog.close();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsMultidevicePermissionsSetupDialogElement.is]:
+        SettingsMultidevicePermissionsSetupDialogElement;
+  }
+  interface HTMLElementEventMap {
+    'pin-number-selected': CustomEvent<{isPinNumberSelected: boolean}>;
   }
 }
 

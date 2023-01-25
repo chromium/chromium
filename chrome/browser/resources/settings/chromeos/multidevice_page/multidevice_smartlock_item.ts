@@ -12,18 +12,17 @@
 
 import './multidevice_feature_item.js';
 
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Constructor} from '../common/types';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
 import {OsSettingsRoutes} from '../os_settings_routes.js';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
 import {MultiDeviceFeature, MultiDevicePageContentData, MultiDeviceSettingsMode} from './multidevice_constants.js';
-import {MultiDeviceFeatureBehavior, MultiDeviceFeatureBehaviorInterface} from './multidevice_feature_behavior.js';
 import {SettingsMultideviceFeatureItemElement} from './multidevice_feature_item.js';
+import {MultiDeviceFeatureMixin} from './multidevice_feature_mixin.js';
 import {getTemplate} from './multidevice_smartlock_item.html.js';
 
 interface SettingsMultideviceSmartlockItemElement {
@@ -33,10 +32,7 @@ interface SettingsMultideviceSmartlockItemElement {
 }
 
 const SettingsMultideviceSmartlockItemElementBase =
-    mixinBehaviors(
-        [MultiDeviceFeatureBehavior], WebUiListenerMixin(PolymerElement)) as
-    Constructor<PolymerElement&WebUiListenerMixinInterface&
-                MultiDeviceFeatureBehaviorInterface>;
+    MultiDeviceFeatureMixin(WebUiListenerMixin(PolymerElement));
 
 class SettingsMultideviceSmartlockItemElement extends
     SettingsMultideviceSmartlockItemElementBase {
@@ -56,6 +52,7 @@ class SettingsMultideviceSmartlockItemElement extends
       routes: {
         type: Object,
         value: routes,
+        readonly: true,
       },
 
       /**

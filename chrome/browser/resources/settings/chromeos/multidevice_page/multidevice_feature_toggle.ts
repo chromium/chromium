@@ -14,12 +14,10 @@
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {Constructor} from '../common/types.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MultiDeviceFeature, MultiDeviceFeatureState} from './multidevice_constants.js';
-import {MultiDeviceFeatureBehavior, MultiDeviceFeatureBehaviorInterface} from './multidevice_feature_behavior.js';
+import {MultiDeviceFeatureMixin} from './multidevice_feature_mixin.js';
 import {getTemplate} from './multidevice_feature_toggle.html.js';
 
 export interface SettingsMultideviceFeatureToggleElement {
@@ -29,8 +27,7 @@ export interface SettingsMultideviceFeatureToggleElement {
 }
 
 const SettingsMultideviceFeatureToggleElementBase =
-    mixinBehaviors([MultiDeviceFeatureBehavior], PolymerElement) as
-    Constructor<PolymerElement&MultiDeviceFeatureBehaviorInterface>;
+    MultiDeviceFeatureMixin(PolymerElement);
 
 export class SettingsMultideviceFeatureToggleElement extends
     SettingsMultideviceFeatureToggleElementBase {

@@ -189,4 +189,6 @@ export class NearbyShareSettingsBehaviorInterface {
     /** @type {!NearbySettings} */
     this.settings;
   }
+
+  onSettingsRetrieved() {}
 }

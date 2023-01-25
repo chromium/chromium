@@ -20,20 +20,16 @@ import './multidevice_wifi_sync_disabled_link.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import '../../settings_shared.css.js';
 
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Constructor} from '../common/types';
 import {OsSyncBrowserProxy, OsSyncBrowserProxyImpl, OsSyncPrefs} from '../os_people_page/os_sync_browser_proxy.js';
 
-import {MultiDeviceFeatureBehavior, MultiDeviceFeatureBehaviorInterface} from './multidevice_feature_behavior.js';
+import {MultiDeviceFeatureMixin} from './multidevice_feature_mixin.js';
 import {getTemplate} from './multidevice_wifi_sync_item.html.js';
 
 const SettingsMultideviceWifiSyncItemElementBase =
-    mixinBehaviors(
-        [MultiDeviceFeatureBehavior], WebUiListenerMixin(PolymerElement)) as
-    Constructor<PolymerElement&WebUiListenerMixinInterface&
-                MultiDeviceFeatureBehaviorInterface>;
+    MultiDeviceFeatureMixin(WebUiListenerMixin(PolymerElement));
 
 class SettingsMultideviceWifiSyncItemElement extends
     SettingsMultideviceWifiSyncItemElementBase {

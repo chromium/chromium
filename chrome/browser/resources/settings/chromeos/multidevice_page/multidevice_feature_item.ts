@@ -19,24 +19,20 @@ import '../../settings_shared.css.js';
 import './multidevice_feature_toggle.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {Constructor} from '../common/types';
 import {routes} from '../os_route.js';
-import {RouteOriginMixin, RouteOriginMixinInterface} from '../route_origin_mixin.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {MultiDeviceFeature} from './multidevice_constants.js';
-import {MultiDeviceFeatureBehavior, MultiDeviceFeatureBehaviorInterface} from './multidevice_feature_behavior.js';
 import {getTemplate} from './multidevice_feature_item.html.js';
+import {MultiDeviceFeatureMixin} from './multidevice_feature_mixin.js';
 import {recordSmartLockToggleMetric, SmartLockToggleLocation} from './multidevice_metrics_logger.js';
 
 const SettingsMultideviceFeatureItemElementBase =
-    mixinBehaviors(
-        [MultiDeviceFeatureBehavior], RouteOriginMixin(PolymerElement)) as
-    Constructor<PolymerElement&RouteOriginMixinInterface&
-                MultiDeviceFeatureBehaviorInterface>;
+    MultiDeviceFeatureMixin(RouteOriginMixin(PolymerElement));
 
 export class SettingsMultideviceFeatureItemElement extends
     SettingsMultideviceFeatureItemElementBase {

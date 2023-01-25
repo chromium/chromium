@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
 /**
  * Location where Smart Lock was toggled on/off.
- * @enum {number}
  */
-export const SmartLockToggleLocation = {
-  MULTIDEVICE_PAGE: 0,
-  LOCK_SCREEN_SETTINGS: 1,
-};
+export enum SmartLockToggleLocation {
+  MULTIDEVICE_PAGE = 0,
+  LOCK_SCREEN_SETTINGS = 1,
+}
 
 /**
  * This enum is tied directly to a UMA enum defined in
@@ -19,29 +18,27 @@ export const SmartLockToggleLocation = {
  * change one without changing the other).
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused.
- * @enum {number}
  */
-const SmartLockToggle = {
-  ENABLED_ON_MULTIDEVICE_PAGE: 0,
-  DISABLED_ON_MULTIDEVICE_PAGE: 1,
-  ENABLED_ON_LOCK_SCREEN_SETTINGS: 2,
-  DISABLED_ON_LOCK_SCREEN_SETTINGS: 3,
-  MAX: 4,
-};
+enum SmartLockToggle {
+  ENABLED_ON_MULTIDEVICE_PAGE = 0,
+  DISABLED_ON_MULTIDEVICE_PAGE = 1,
+  ENABLED_ON_LOCK_SCREEN_SETTINGS = 2,
+  DISABLED_ON_LOCK_SCREEN_SETTINGS = 3,
+  MAX = 4,
+}
 
-const SmartLockToggleHistogramName = 'SmartLock.Toggle';
+const SMART_LOCK_TOGGLE_HISTOGRAM_NAME = 'SmartLock.Toggle';
 
 /**
  * Records a metric for when Smart Lock is enabled/disabled in Settings
  * indicating which toggle was used and whether Smart Lock was enabled or
  * disabled.
- * @param {SmartLockToggleLocation} smartLockToggleLocation
- * @param {boolean} enabled
  */
-export function recordSmartLockToggleMetric(smartLockToggleLocation, enabled) {
+export function recordSmartLockToggleMetric(
+    smartLockToggleLocation: SmartLockToggleLocation, enabled: boolean): void {
   chrome.send('metricsHandler:recordInHistogram', [
-    SmartLockToggleHistogramName,
-    getSmartLockToggleValue_(smartLockToggleLocation, enabled),
+    SMART_LOCK_TOGGLE_HISTOGRAM_NAME,
+    getSmartLockToggleValue(smartLockToggleLocation, enabled),
     SmartLockToggle.MAX,
   ]);
 }
@@ -49,12 +46,10 @@ export function recordSmartLockToggleMetric(smartLockToggleLocation, enabled) {
 /**
  * Look up the correct SmartLock.Toggle historgram value to emit when Smart
  * Lock is enabled/disabled in the given location in Settings.
- * @param {SmartLockToggleLocation} smartLockToggleLocation
- * @param {boolean} enabled
- * @return {SmartLockToggle}
- * @private
  */
-function getSmartLockToggleValue_(smartLockToggleLocation, enabled) {
+export function getSmartLockToggleValue(
+    smartLockToggleLocation: SmartLockToggleLocation,
+    enabled: boolean): SmartLockToggle {
   switch (smartLockToggleLocation) {
     case SmartLockToggleLocation.MULTIDEVICE_PAGE:
       return enabled ? SmartLockToggle.ENABLED_ON_MULTIDEVICE_PAGE :
@@ -62,8 +57,7 @@ function getSmartLockToggleValue_(smartLockToggleLocation, enabled) {
     case SmartLockToggleLocation.LOCK_SCREEN_SETTINGS:
       return enabled ? SmartLockToggle.ENABLED_ON_LOCK_SCREEN_SETTINGS :
                        SmartLockToggle.DISABLED_ON_LOCK_SCREEN_SETTINGS;
+    default:
+      assertNotReached('Invalid smartLockToggleLocation');
   }
-
-  assertNotReached('Invalid smartLockToggleLocation');
-  return SmartLockToggle.DISABLED_ON_MULTIDEVICE_PAGE;
 }

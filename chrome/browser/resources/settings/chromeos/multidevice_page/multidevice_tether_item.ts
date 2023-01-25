@@ -29,18 +29,17 @@ import {Constructor} from '../common/types';
 import {routes} from '../os_route.js';
 import {OsSettingsRoutes} from '../os_settings_routes.js';
 
-import {MultiDeviceFeatureBehavior, MultiDeviceFeatureBehaviorInterface} from './multidevice_feature_behavior.js';
+import {MultiDeviceFeatureMixin, MultiDeviceFeatureMixinInterface} from './multidevice_feature_mixin.js';
 import {getTemplate} from './multidevice_tether_item.html.js';
 
 const SettingsMultideviceTetherItemElementBase =
     mixinBehaviors(
         [
           NetworkListenerBehavior,
-          MultiDeviceFeatureBehavior,
         ],
-        PolymerElement) as
-    Constructor<PolymerElement&NetworkListenerBehaviorInterface&
-                MultiDeviceFeatureBehaviorInterface>;
+        MultiDeviceFeatureMixin(PolymerElement)) as
+    Constructor<PolymerElement&MultiDeviceFeatureMixinInterface&
+                NetworkListenerBehaviorInterface>;
 
 class SettingsMultideviceTetherItemElement extends
     SettingsMultideviceTetherItemElementBase {
@@ -72,6 +71,7 @@ class SettingsMultideviceTetherItemElement extends
       routes: {
         type: Object,
         value: routes,
+        readonly: true,
       },
 
       /**

@@ -17,9 +17,10 @@ import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import '../os_settings_icons.html.js';
 import '../../settings_shared.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
 import {MultiDeviceFeature} from './multidevice_constants.js';
@@ -29,32 +30,30 @@ import {getTemplate} from './multidevice_notification_access_setup_dialog.html.j
  * Numerical values should not be changed because they must stay in sync with
  * notification_access_setup_operation.h, with the exception of
  * CONNECTION_REQUESTED.
- * @enum {number}
  */
-export const NotificationAccessSetupOperationStatus = {
-  CONNECTION_REQUESTED: 0,
-  CONNECTING: 1,
-  TIMED_OUT_CONNECTING: 2,
-  CONNECTION_DISCONNECTED: 3,
-  SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE: 4,
-  COMPLETED_SUCCESSFULLY: 5,
-  NOTIFICATION_ACCESS_PROHIBITED: 6,
-};
+export enum NotificationAccessSetupOperationStatus {
+  CONNECTION_REQUESTED = 0,
+  CONNECTING = 1,
+  TIMED_OUT_CONNECTING = 2,
+  CONNECTION_DISCONNECTED = 3,
+  SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE = 4,
+  COMPLETED_SUCCESSFULLY = 5,
+  NOTIFICATION_ACCESS_PROHIBITED = 6,
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
+interface SettingsMultideviceNotificationAccessSetupDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
+
 const SettingsMultideviceNotificationAccessSetupDialogElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
+    WebUiListenerMixin(I18nMixin(PolymerElement));
 
-/** @polymer */
 class SettingsMultideviceNotificationAccessSetupDialogElement extends
     SettingsMultideviceNotificationAccessSetupDialogElementBase {
   static get is() {
-    return 'settings-multidevice-notification-access-setup-dialog';
+    return 'settings-multidevice-notification-access-setup-dialog' as const;
   }
 
   static get template() {
@@ -65,60 +64,51 @@ class SettingsMultideviceNotificationAccessSetupDialogElement extends
     return {
       /**
        * A null |setupState_| indicates that the operation has not yet started.
-       * @private {?NotificationAccessSetupOperationStatus}
        */
       setupState_: {
         type: Number,
         value: null,
       },
 
-      /** @private */
       title_: {
         type: String,
         computed: 'getTitle_(setupState_)',
       },
 
-      /** @private */
       description_: {
         type: String,
         computed: 'getDescription_(setupState_)',
       },
 
-      /** @private */
       hasNotStartedSetupAttempt_: {
         type: Boolean,
         computed: 'computeHasNotStartedSetupAttempt_(setupState_)',
         reflectToAttribute: true,
       },
 
-      /** @private */
       isSetupAttemptInProgress_: {
         type: Boolean,
         computed: 'computeIsSetupAttemptInProgress_(setupState_)',
         reflectToAttribute: true,
       },
 
-      /** @private */
       didSetupAttemptFail_: {
         type: Boolean,
         computed: 'computeDidSetupAttemptFail_(setupState_)',
         reflectToAttribute: true,
       },
 
-      /** @private */
       hasCompletedSetupSuccessfully_: {
         type: Boolean,
         computed: 'computeHasCompletedSetupSuccessfully_(setupState_)',
         reflectToAttribute: true,
       },
 
-      /** @private */
       isNotificationAccessProhibited_: {
         type: Boolean,
         computed: 'computeIsNotificationAccessProhibited_(setupState_)',
       },
 
-      /** @private */
       shouldShowSetupInstructionsSeparately_: {
         type: Boolean,
         computed: 'computeShouldShowSetupInstructionsSeparately_(' +
@@ -128,28 +118,34 @@ class SettingsMultideviceNotificationAccessSetupDialogElement extends
     };
   }
 
+  private browserProxy_: MultiDeviceBrowserProxy;
+  private description_: string;
+  private didSetupAttemptFail_: boolean;
+  private hasCompletedSetupSuccessfully_: boolean;
+  private hasNotStartedSetupAttempt_: boolean;
+  private isNotificationAccessProhibited_: boolean;
+  private isSetupAttemptInProgress_: boolean;
+  private setupState_: NotificationAccessSetupOperationStatus|null;
+  private shouldShowSetupInstructionsSeparately_: boolean;
+  private title_: string;
+
   constructor() {
     super();
 
-    /** @private {!MultiDeviceBrowserProxy} */
     this.browserProxy_ = MultiDeviceBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'settings.onNotificationAccessSetupStatusChanged',
         this.onSetupStateChanged_.bind(this));
     this.$.dialog.showModal();
   }
 
-  /**
-   * @param {!NotificationAccessSetupOperationStatus} setupState
-   * @private
-   */
-  onSetupStateChanged_(setupState) {
+  private onSetupStateChanged_(
+      setupState: NotificationAccessSetupOperationStatus): void {
     this.setupState_ = setupState;
     if (this.setupState_ ===
         NotificationAccessSetupOperationStatus.COMPLETED_SUCCESSFULLY) {
@@ -158,19 +154,11 @@ class SettingsMultideviceNotificationAccessSetupDialogElement extends
     }
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeHasNotStartedSetupAttempt_() {
+  private computeHasNotStartedSetupAttempt_(): boolean {
     return this.setupState_ === null;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeIsSetupAttemptInProgress_() {
+  private computeIsSetupAttemptInProgress_(): boolean {
     return this.setupState_ ===
         NotificationAccessSetupOperationStatus
             .SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE ||
@@ -180,29 +168,17 @@ class SettingsMultideviceNotificationAccessSetupDialogElement extends
         NotificationAccessSetupOperationStatus.CONNECTION_REQUESTED;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeHasCompletedSetupSuccessfully_() {
+  private computeHasCompletedSetupSuccessfully_(): boolean {
     return this.setupState_ ===
         NotificationAccessSetupOperationStatus.COMPLETED_SUCCESSFULLY;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeIsNotificationAccessProhibited_() {
+  private computeIsNotificationAccessProhibited_(): boolean {
     return this.setupState_ ===
         NotificationAccessSetupOperationStatus.NOTIFICATION_ACCESS_PROHIBITED;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   * */
-  computeDidSetupAttemptFail_() {
+  private computeDidSetupAttemptFail_(): boolean {
     return this.setupState_ ===
         NotificationAccessSetupOperationStatus.TIMED_OUT_CONNECTING ||
         this.setupState_ ===
@@ -212,10 +188,9 @@ class SettingsMultideviceNotificationAccessSetupDialogElement extends
   }
 
   /**
-   * @return {boolean} Whether to show setup instructions in its own section.
-   * @private
+   * @return Whether to show setup instructions in its own section.
    */
-  computeShouldShowSetupInstructionsSeparately_() {
+  private computeShouldShowSetupInstructionsSeparately_(): boolean {
     return this.setupState_ === null ||
         this.setupState_ ===
         NotificationAccessSetupOperationStatus.CONNECTION_REQUESTED ||
@@ -225,29 +200,22 @@ class SettingsMultideviceNotificationAccessSetupDialogElement extends
         this.setupState_ === NotificationAccessSetupOperationStatus.CONNECTING;
   }
 
-  /** @private */
-  attemptNotificationSetup_() {
+  private attemptNotificationSetup_(): void {
     this.browserProxy_.attemptNotificationSetup();
     this.setupState_ =
         NotificationAccessSetupOperationStatus.CONNECTION_REQUESTED;
   }
 
-  /** @private */
-  onCancelClicked_() {
+  private onCancelClicked_(): void {
     this.browserProxy_.cancelNotificationSetup();
     this.$.dialog.close();
   }
 
-  /** @private */
-  onDoneOrCloseButtonClicked_() {
+  private onDoneOrCloseButtonClicked_(): void {
     this.$.dialog.close();
   }
 
-  /**
-   * @return {string} The title of the dialog.
-   * @private
-   */
-  getTitle_() {
+  private getTitle_(): string {
     if (this.setupState_ === null) {
       return this.i18n('multideviceNotificationAccessSetupAckTitle');
     }
@@ -277,10 +245,9 @@ class SettingsMultideviceNotificationAccessSetupDialogElement extends
   }
 
   /**
-   * @return {string} A description about the connection attempt state.
-   * @private
+   * @return A description about the connection attempt state.
    */
-  getDescription_() {
+  private getDescription_(): TrustedHTML|string {
     if (this.setupState_ === null) {
       return this.i18n('multideviceNotificationAccessSetupAckSummary');
     }
@@ -310,26 +277,25 @@ class SettingsMultideviceNotificationAccessSetupDialogElement extends
     }
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowCancelButton_() {
+  private shouldShowCancelButton_(): boolean {
     return this.setupState_ !==
         NotificationAccessSetupOperationStatus.COMPLETED_SUCCESSFULLY &&
         this.setupState_ !==
         NotificationAccessSetupOperationStatus.NOTIFICATION_ACCESS_PROHIBITED;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowTryAgainButton_() {
+  private shouldShowTryAgainButton_(): boolean {
     return this.setupState_ ===
         NotificationAccessSetupOperationStatus.TIMED_OUT_CONNECTING ||
         this.setupState_ ===
         NotificationAccessSetupOperationStatus.CONNECTION_DISCONNECTED;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsMultideviceNotificationAccessSetupDialogElement.is]:
+        SettingsMultideviceNotificationAccessSetupDialogElement;
   }
 }
 

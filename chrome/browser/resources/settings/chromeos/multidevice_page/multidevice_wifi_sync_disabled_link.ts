@@ -14,21 +14,17 @@
 
 import '../../settings_shared.css.js';
 
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {Constructor} from '../common/types.js';
 import {routes} from '../os_route.js';
 import {Router} from '../router.js';
 
-import {MultiDeviceFeatureBehavior, MultiDeviceFeatureBehaviorInterface} from './multidevice_feature_behavior.js';
+import {MultiDeviceFeatureMixin} from './multidevice_feature_mixin.js';
 import {getTemplate} from './multidevice_wifi_sync_disabled_link.html.js';
 
 const SettingsMultideviceWifiSyncDisabledLinkElementBase =
-    mixinBehaviors([MultiDeviceFeatureBehavior], I18nMixin(PolymerElement)) as
-    Constructor<PolymerElement&I18nMixinInterface&
-                MultiDeviceFeatureBehaviorInterface>;
+    MultiDeviceFeatureMixin(PolymerElement);
 
 class SettingsMultideviceWifiSyncDisabledLinkElement extends
     SettingsMultideviceWifiSyncDisabledLinkElementBase {

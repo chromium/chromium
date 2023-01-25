@@ -11,20 +11,15 @@ import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './multidevice_feature_item.js';
 
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {Constructor} from '../common/types';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
 import {getTemplate} from './multidevice_combined_setup_item.html.js';
 import {PhoneHubPermissionsSetupFeatureCombination} from './multidevice_constants.js';
-import {MultiDeviceFeatureBehavior, MultiDeviceFeatureBehaviorInterface} from './multidevice_feature_behavior.js';
+import {MultiDeviceFeatureMixin} from './multidevice_feature_mixin.js';
 
 const SettingsMultideviceCombinedSetupItemElementBase =
-    mixinBehaviors([MultiDeviceFeatureBehavior], I18nMixin(PolymerElement)) as
-    Constructor<PolymerElement&I18nMixinInterface&
-                MultiDeviceFeatureBehaviorInterface>;
+    MultiDeviceFeatureMixin(PolymerElement);
 
 class SettingsMultideviceCombinedSetupItemElement extends
     SettingsMultideviceCombinedSetupItemElementBase {
