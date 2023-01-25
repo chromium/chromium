@@ -322,6 +322,7 @@
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -1553,6 +1554,10 @@ void ChromeContentBrowserClient::RegisterLocalStatePrefs(
       policy::policy_prefs::kPPAPISharedImagesSwapChainAllowed, true);
   registry->RegisterBooleanPref(
       policy::policy_prefs::kForceEnablePepperVideoDecoderDevAPI, false);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+  registry->RegisterBooleanPref(prefs::kOutOfProcessSystemDnsResolutionEnabled,
+                                true);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 }
 
 // static
@@ -6598,6 +6603,27 @@ bool ChromeContentBrowserClient::ShouldSandboxAudioService() {
 
 bool ChromeContentBrowserClient::ShouldSandboxNetworkService() {
   return SystemNetworkContextManager::IsNetworkSandboxEnabled();
+}
+
+bool ChromeContentBrowserClient::ShouldRunOutOfProcessSystemDnsResolution() {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+  // This is possibly called before `g_browser_process` is initialized.
+  PrefService* local_state;
+  if (g_browser_process) {
+    local_state = g_browser_process->local_state();
+  } else {
+    local_state = startup_data_.chrome_feature_list_creator()->local_state();
+  }
+  if (local_state && local_state->HasPrefPath(
+                         prefs::kOutOfProcessSystemDnsResolutionEnabled)) {
+    return local_state->GetBoolean(
+        prefs::kOutOfProcessSystemDnsResolutionEnabled);
+  }
+#endif
+
+  // If no policy is specified, then delegate to global configuration.
+  return base::FeatureList::IsEnabled(
+      network::features::kOutOfProcessSystemDnsResolution);
 }
 
 void ChromeContentBrowserClient::LogWebFeatureForCurrentPage(

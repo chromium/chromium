@@ -1793,7 +1793,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kTabDiscardingExceptions,
     performance_manager::user_tuning::prefs::kManagedTabDiscardingExceptions,
     base::Value::Type::LIST },
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
   { key::kStrictMimetypeCheckForWorkerScriptsEnabled,
     prefs::kStrictMimetypeCheckForWorkerScriptsEnabled,
     base::Value::Type::BOOLEAN},
@@ -1828,6 +1828,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     policy::policy_prefs::kForceEnablePepperVideoDecoderDevAPI,
     base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(ENABLE_PPAPI)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+  { key::kOutOfProcessSystemDnsResolutionEnabled,
+    prefs::kOutOfProcessSystemDnsResolutionEnabled,
+    base::Value::Type::BOOLEAN },
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 };
 // clang-format on
 

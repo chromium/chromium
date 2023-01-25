@@ -430,6 +430,10 @@ source_set("browser_tests") {
 
     deps += [ "//components/signin/public/identity_manager" ]
   }
+
+  if (is_linux || is_android) {
+    sources += [ "test/out_of_process_system_dns_resolution_browsertest.cc" ]
+  }
 }
 
 source_set("unit_tests") {

@@ -2024,6 +2024,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // This is called on the UI thread.
   virtual bool ShouldSandboxNetworkService();
 
+  // Returns true if system DNS resolution should be run outside of the network
+  // service.
+  virtual bool ShouldRunOutOfProcessSystemDnsResolution();
+
   // Browser-side API to log blink UseCounters for events that don't occur in
   // the renderer.
   virtual void LogWebFeatureForCurrentPage(

@@ -3742,4 +3742,18 @@ const char kThrottleNonVisibleCrossOriginIframesAllowed[] =
 const char kNewBaseUrlInheritanceBehaviorAllowed[] =
     "new_base_url_inheritance_behavior_allowed";
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+// If this exists and is true, Chrome may run system DNS resolution out of the
+// network process. If false, Chrome will run system DNS resolution in the
+// network process. If non-existent, Chrome will decide where to run system DNS
+// resolution (in the network process, out of the network process, or partially
+// inside the network process and partially out) based on system configuration
+// and feature flags.
+//
+// Only necessary on Android and Linux, where it is difficult to sandbox the
+// network process with system DNS resolution running inside it.
+const char kOutOfProcessSystemDnsResolutionEnabled[] =
+    "net.out_of_process_system_dns_resolution_enabled";
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+
 }  // namespace prefs

@@ -405,8 +405,9 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
 #endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(
-          network::features::kOutOfProcessSystemDnsResolution) &&
+  if (GetContentClient()
+          ->browser()
+          ->ShouldRunOutOfProcessSystemDnsResolution() &&
       IsOutOfProcessNetworkService() &&
       !g_force_create_network_service_directly) {
     mojo::PendingRemote<network::mojom::SystemDnsResolver> dns_remote;

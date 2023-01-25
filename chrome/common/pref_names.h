@@ -1316,6 +1316,10 @@ extern const char kDIPSTimerLastUpdate[];
 extern const char kThrottleNonVisibleCrossOriginIframesAllowed[];
 extern const char kNewBaseUrlInheritanceBehaviorAllowed[];
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+extern const char kOutOfProcessSystemDnsResolutionEnabled[];
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

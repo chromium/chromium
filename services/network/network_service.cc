@@ -503,8 +503,6 @@ void NetworkService::SetParams(mojom::NetworkServiceParamsPtr params) {
 
 void NetworkService::SetSystemDnsResolver(
     mojo::PendingRemote<mojom::SystemDnsResolver> override_remote) {
-  CHECK(
-      base::FeatureList::IsEnabled(features::kOutOfProcessSystemDnsResolution));
   CHECK(override_remote);
 
   // Using a Remote (as opposed to a SharedRemote) is fine as system host

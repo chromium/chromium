@@ -32503,6 +32503,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1067" label="DefaultWindowManagementSetting"/>
   <int value="1068" label="WindowManagementAllowedForUrls"/>
   <int value="1069" label="WindowManagementBlockedForUrls"/>
+  <int value="1070" label="OutOfProcessSystemDnsResolutionEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

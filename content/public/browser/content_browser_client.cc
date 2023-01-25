@@ -55,6 +55,7 @@
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -1148,6 +1149,11 @@ bool ContentBrowserClient::ShouldSandboxAudioService() {
 
 bool ContentBrowserClient::ShouldSandboxNetworkService() {
   return sandbox::policy::features::IsNetworkSandboxEnabled();
+}
+
+bool ContentBrowserClient::ShouldRunOutOfProcessSystemDnsResolution() {
+  return base::FeatureList::IsEnabled(
+      network::features::kOutOfProcessSystemDnsResolution);
 }
 
 std::string ContentBrowserClient::GetProduct() {

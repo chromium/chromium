@@ -1,0 +1,30 @@
+owners:
+- mpdenton@google.com
+- file://services/network/OWNERS
+caption: Enable system DNS resolution outside of the network service
+desc: |-
+  Setting this policy to true causes system DNS resolution (getaddrinfo()) to possibly run outside of the network process, depending on system configuration and feature flags.
+
+        Setting this policy to false causes system DNS resolution (getaddrinfo()) to run in the network process rather than the browser process. This may force the network service sandbox to be disabled, degrading the security of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+
+        If this policy is not set, system DNS resolution may run in the network service, outside of the network service, or partially inside and partially outside, depending on system configuration and feature flags.
+supported_on:
+  - chrome.linux:111-
+  - android:111-
+features:
+  dynamic_refresh: false
+  per_profile: false
+type: main
+schema:
+  type: boolean
+items:
+- caption: System DNS resolution may be run in or out of the network process depending on system configuration and feature flags.
+  value: true
+- caption: System DNS resolution will be run in the network process.
+  value: false
+- caption: System DNS resolution may be run in or out of the network process, or partially in and partially out of the network process, depending on system configuration and feature flags.
+  value: null
+default: null
+example_value: false
+tags:
+  - system-security

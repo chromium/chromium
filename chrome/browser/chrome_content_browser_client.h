@@ -678,6 +678,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   base::FilePath GetSandboxedStorageServiceDataDirectory() override;
   bool ShouldSandboxAudioService() override;
   bool ShouldSandboxNetworkService() override;
+  bool ShouldRunOutOfProcessSystemDnsResolution() override;
 
   void LogWebFeatureForCurrentPage(content::RenderFrameHost* render_frame_host,
                                    blink::mojom::WebFeature feature) override;
