@@ -872,6 +872,10 @@ const char kTabGridRecencySortName[] = "Change TabGrid sorting";
 const char kTabGridRecencySortDescription[] =
     "When enabled, the tabs in the Tab Grid are sorted differently.";
 
+const char kTabStripContextMenuName[] = "Tab Strip Context Menu";
+const char kTabStripContextMenuDescription[] =
+    "Add context menu to tab strip items.";
+
 const char kUseLoadSimulatedRequestForOfflinePageName[] =
     "Use loadSimulatedRequest:responseHTMLString: when displaying offline "
     "pages";

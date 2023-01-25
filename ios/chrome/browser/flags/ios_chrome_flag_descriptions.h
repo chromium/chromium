@@ -765,6 +765,10 @@ extern const char kEnableLensInOmniboxCopiedImageDescription[];
 extern const char kTabGridRecencySortName[];
 extern const char kTabGridRecencySortDescription[];
 
+// Title and description for the flag that enable tab strip context menu.
+extern const char kTabStripContextMenuName[];
+extern const char kTabStripContextMenuDescription[];
+
 // Title and description for the flag to enable using the
 // loadSimulatedRequest:responseHTMLString: API for displaying error pages in
 // CRWWKNavigationHandler.

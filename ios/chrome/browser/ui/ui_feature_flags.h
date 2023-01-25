@@ -125,6 +125,9 @@ BASE_DECLARE_FEATURE(kMultilineFadeTruncatingLabel);
 // Flag to enable accessibility identifier to omnibox leading image.
 BASE_DECLARE_FEATURE(kEnableAccessibilityIdentifierToOmniboxLeadingImage);
 
+// Flag to enable tab strip context menu.
+BASE_DECLARE_FEATURE(kTabStripContextMenu);
+
 // Whether the tab grid tabs should be sorted by recency.
 bool IsTabGridSortedByRecency();
 

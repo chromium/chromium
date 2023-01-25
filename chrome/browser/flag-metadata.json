@@ -4382,6 +4382,11 @@
     "expiry_milestone": 109
   },
   {
+    "name": "ios-tabstrip-context-menu",
+    "owners": [ "ewannpv", "gambard", "bling-flags@google.com" ],
+    "expiry_milestone": 118
+  },
+  {
     "name": "ios-webpage-intent-annotations",
     "owners": [ "djean", "bling-flags@google.com" ],
     "expiry_milestone": 112

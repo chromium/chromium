@@ -1239,9 +1239,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          kEnableAccessibilityIdentifierToOmniboxLeadingImageDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableAccessibilityIdentifierToOmniboxLeadingImage)},
-     {"shopping-list", commerce::flag_descriptions::kShoppingListName,
-     commerce::flag_descriptions::kShoppingListDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(commerce::kShoppingList)},
+    {"shopping-list", commerce::flag_descriptions::kShoppingListName,
+     commerce::flag_descriptions::kShoppingListDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(commerce::kShoppingList)},
+    {"ios-tabstrip-context-menu", flag_descriptions::kTabStripContextMenuName,
+     flag_descriptions::kTabStripContextMenuDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTabStripContextMenu)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
