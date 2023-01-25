@@ -224,7 +224,8 @@ enum GenericIssueErrorType {
   kFormLabelForNameError,
   kFormDuplicateIdForInputError,
   kFormInputWithNoLabelError,
-  kFormAutocompleteAttributeEmptyError
+  kFormAutocompleteAttributeEmptyError,
+  kFormEmptyIdAndNameAttributesForInputError,
 };
 
 struct GenericIssueDetails {

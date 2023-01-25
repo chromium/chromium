@@ -747,6 +747,7 @@ experimental domain Audits
       FormDuplicateIdForInputError
       FormInputWithNoLabelError
       FormAutocompleteAttributeEmptyError
+      FormEmptyIdAndNameAttributesForInputError
 
   # Depending on the concrete errorType, different properties are set.
   type GenericIssueDetails extends object
