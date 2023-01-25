@@ -56,6 +56,10 @@ bool ClearBackBuffer(Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain,
 // Only RGBA formats supported by CreateSharedImage.
 absl::optional<DXGI_FORMAT> GetSupportedRGBAFormat(
     viz::SharedImageFormat format) {
+  if (!format.is_single_plane()) {
+    return {};
+  }
+
   switch (format.resource_format()) {
     case viz::ResourceFormat::RGBA_F16:
       return DXGI_FORMAT_R16G16B16A16_FLOAT;

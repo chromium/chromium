@@ -90,7 +90,6 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   bool IsResourceSoftwareBacked(ResourceId id);
   // Return the format of the underlying buffer that can be used for scanout.
   gfx::BufferFormat GetBufferFormat(ResourceId id);
-  ResourceFormat GetResourceFormat(ResourceId id);
   // Returns the color space that the resource needs to be interpreted in by the
   // operating system.
   const gfx::ColorSpace& GetOverlayColorSpace(ResourceId id);

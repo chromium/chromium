@@ -161,8 +161,7 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
       SkAlphaType alpha_type,
       uint32_t usage,
       bool is_thread_safe) override {
-    size_t estimated_size =
-        ResourceSizes::CheckedSizeInBytes<size_t>(size, format);
+    size_t estimated_size = format.EstimatedSizeInBytes(size);
     auto result = std::make_unique<gpu::TestImageBacking>(
         mailbox, format, size, color_space, surface_origin, alpha_type, usage,
         estimated_size);

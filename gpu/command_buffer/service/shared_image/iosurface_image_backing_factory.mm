@@ -277,8 +277,7 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
   gfx::ScopedIOSurface io_surface;
   const uint32_t io_surface_plane = 0;
   const gfx::GenericSharedMemoryId io_surface_id;
-  const gfx::BufferFormat buffer_format =
-      viz::BufferFormat(format.resource_format());
+  const gfx::BufferFormat buffer_format = ToBufferFormat(format);
   {
     gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
     const bool should_clear = false;

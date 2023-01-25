@@ -357,10 +357,10 @@ bool GLES2ExternalFramebuffer::AttachSharedImage(const Mailbox& mailbox,
   }
 
   if (!shared_image_representation_->format().is_single_plane() ||
-      (shared_image_representation_->format().resource_format() !=
-           viz::ResourceFormat::RGBA_8888 &&
-       shared_image_representation_->format().resource_format() !=
-           viz::ResourceFormat::RGBX_8888)) {
+      (shared_image_representation_->format() !=
+           viz::SinglePlaneFormat::kRGBA_8888 &&
+       shared_image_representation_->format() !=
+           viz::SinglePlaneFormat::kRGBX_8888)) {
     LOG(ERROR) << "Unsupported format";
     return false;
   }
