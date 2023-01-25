@@ -14,7 +14,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/mock_render_process_host.h"
 #include "ipc/ipc_message.h"
 #include "net/base/request_priority.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -24,8 +23,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+const int kNonInstantRendererPID = 0;
 const char kNonInstantOrigin[] = "http://evil";
+const int kInstantRendererPID = 1;
 const char kInstantOrigin[] = "chrome-search://instant";
+const int kInvalidRendererPID = 42;
 
 class TestMostVisitedIframeSource : public MostVisitedIframeSource {
  public:
@@ -69,10 +71,6 @@ class MostVisitedIframeSourceTest : public testing::Test {
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         response_(nullptr) {}
 
-  int GetInstantRendererPID() const { return mock_host_.GetID(); }
-  int GetNonInstantRendererPID() const { return mock_host_.GetID() + 1; }
-  int GetInvalidRendererPID() const { return mock_host_.GetID() + 2; }
-
   TestMostVisitedIframeSource* source() { return source_.get(); }
 
   std::string response_string() {
@@ -104,7 +102,7 @@ class MostVisitedIframeSourceTest : public testing::Test {
     source_ = std::make_unique<TestMostVisitedIframeSource>();
     source_->set_origin(kInstantOrigin);
     auto* instant_service = InstantServiceFactory::GetForProfile(&profile_);
-    instant_service->AddInstantProcess(&mock_host_);
+    instant_service->AddInstantProcess(kInstantRendererPID);
     response_ = nullptr;
   }
 
@@ -117,30 +115,28 @@ class MostVisitedIframeSourceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   TestingProfile profile_;
-  content::MockRenderProcessHost mock_host_{&profile_};
   std::unique_ptr<TestMostVisitedIframeSource> source_;
   scoped_refptr<base::RefCountedMemory> response_;
 };
 
 TEST_F(MostVisitedIframeSourceTest, ShouldServiceRequest) {
   source()->set_origin(kNonInstantOrigin);
-  EXPECT_FALSE(
-      ShouldService("http://test/loader.js", GetNonInstantRendererPID()));
+  EXPECT_FALSE(ShouldService("http://test/loader.js", kNonInstantRendererPID));
   source()->set_origin(kInstantOrigin);
   EXPECT_FALSE(
-      ShouldService("chrome-search://bogus/valid.js", GetInstantRendererPID()));
+      ShouldService("chrome-search://bogus/valid.js", kInstantRendererPID));
   source()->set_origin(kInstantOrigin);
   EXPECT_FALSE(
-      ShouldService("chrome-search://test/bogus.js", GetInstantRendererPID()));
+      ShouldService("chrome-search://test/bogus.js", kInstantRendererPID));
   source()->set_origin(kInstantOrigin);
   EXPECT_TRUE(
-      ShouldService("chrome-search://test/valid.js", GetInstantRendererPID()));
+      ShouldService("chrome-search://test/valid.js", kInstantRendererPID));
   source()->set_origin(kNonInstantOrigin);
-  EXPECT_FALSE(ShouldService("chrome-search://test/valid.js",
-                             GetNonInstantRendererPID()));
+  EXPECT_FALSE(
+      ShouldService("chrome-search://test/valid.js", kNonInstantRendererPID));
   source()->set_origin(std::string());
   EXPECT_FALSE(
-      ShouldService("chrome-search://test/valid.js", GetInvalidRendererPID()));
+      ShouldService("chrome-search://test/valid.js", kInvalidRendererPID));
 }
 
 TEST_F(MostVisitedIframeSourceTest, GetMimeType) {
