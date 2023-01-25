@@ -1473,8 +1473,6 @@ class CORE_EXPORT Document : public ContainerNode,
   // https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element
   void DelayLoadEventUntilLayoutTreeUpdate();
 
-  const EventPath::NodePath& GetOrCalculateEventNodePath(Node& node);
-
   const DocumentTiming& GetTiming() const { return document_timing_; }
 
   bool ShouldMarkFontPerformance() const {
@@ -2473,20 +2471,6 @@ class CORE_EXPORT Document : public ContainerNode,
   // Tracks and reports metrics of attempted font match attempts (both
   // successful and not successful) by the page.
   std::unique_ptr<FontMatchingMetrics> font_matching_metrics_;
-
-  // For a given node, cache the vector of nodes that defines its EventPath so
-  // all events dispatched on this node won't get recalculated. This cache uses
-  // a LRU strategy and gets cleared when the DOM tree version changes.
-  uint64_t event_node_path_dom_tree_version_;
-  using EventNodePathCache =
-      HeapHashMap<Member<Node>, Member<EventPath::NodePath>>;
-  using EventNodePathCacheKeyList = HeapLinkedHashSet<Member<Node>>;
-  EventNodePathCache event_node_path_cache_;
-  EventNodePathCacheKeyList event_node_path_cache_key_list_;
-  // If we only want to cache one event path, we can avoid using the heap hash
-  // map and hash set.
-  Member<Node> latest_cached_event_node_;
-  Member<EventPath::NodePath> latest_cached_event_node_path_;
 
 #if DCHECK_IS_ON()
   unsigned slot_assignment_recalc_forbidden_recursion_depth_ = 0;

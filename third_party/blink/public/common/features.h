@@ -831,14 +831,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFastPathPaintPropertyUpdates);
 // If enabled, reads and decodes navigation body data off the main thread.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThreadedBodyLoader);
 
-// If enabled, will cache for each node's EventPath::NodePath in document.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDocumentEventNodePathCaching);
-
-// Parameter for tuning max entries allowed in EventNodePathCache, which will be
-// used to do LRU eviction in document.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kDocumentMaxEventNodePathCachedEntries;
-
 // Whether first-party to third-party different-bucket same-origin post messages
 // are blocked.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(

@@ -8560,10 +8560,6 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(anchor_element_interaction_tracker_);
   visitor->Trace(focused_element_change_observers_);
   visitor->Trace(pending_link_header_preloads_);
-  visitor->Trace(event_node_path_cache_);
-  visitor->Trace(event_node_path_cache_key_list_);
-  visitor->Trace(latest_cached_event_node_);
-  visitor->Trace(latest_cached_event_node_path_);
   Supplementable<Document>::Trace(visitor);
   TreeScope::Trace(visitor);
   ContainerNode::Trace(visitor);
@@ -8940,76 +8936,6 @@ Document::PendingJavascriptUrl::PendingJavascriptUrl(
     : url(input_url), world(std::move(world)) {}
 
 Document::PendingJavascriptUrl::~PendingJavascriptUrl() = default;
-
-static wtf_size_t MaxEventNodePathCachedEntriesValue() {
-  // The cache stores N entries/nodes that are receiving events simultaneously
-  // in a document. The size of this cache will be O(kN) where k is the average
-  // tree depth of the stored nodes.
-  static const wtf_size_t kMaxEventNodePathCachedEntriesValue =
-      features::kDocumentMaxEventNodePathCachedEntries.Get();
-  return kMaxEventNodePathCachedEntriesValue;
-}
-
-static bool EventNodePathCachingEnabled() {
-  // Cache the feature value since checking for each event path regresses
-  // performance.
-  static const bool kEnabled =
-      base::FeatureList::IsEnabled(features::kDocumentEventNodePathCaching);
-  return kEnabled;
-}
-
-const EventPath::NodePath& Document::GetOrCalculateEventNodePath(Node& node) {
-  DCHECK(EventNodePathCachingEnabled());
-  wtf_size_t max_entries = MaxEventNodePathCachedEntriesValue();
-  if (max_entries == 1) {
-    if (event_node_path_dom_tree_version_ == dom_tree_version_ &&
-        latest_cached_event_node_ == &node) {
-      return *latest_cached_event_node_path_;
-    } else {
-      EventPath::NodePath node_path = EventPath::CalculateNodePath(node);
-      event_node_path_dom_tree_version_ = dom_tree_version_;
-      latest_cached_event_node_ = &node;
-      latest_cached_event_node_path_ =
-          MakeGarbageCollected<EventPath::NodePath>(std::move(node_path));
-      return *latest_cached_event_node_path_;
-    }
-  }
-
-  if (event_node_path_dom_tree_version_ != dom_tree_version_) {
-    if (!event_node_path_cache_.empty()) {
-      event_node_path_cache_.clear();
-      event_node_path_cache_key_list_.clear();
-    } else {
-      DCHECK(event_node_path_cache_key_list_.empty());
-    }
-    event_node_path_dom_tree_version_ = dom_tree_version_;
-  }
-
-  EventPath::NodePath* event_node_path = nullptr;
-  {
-    // Keep `result` within own scope to avoid dangling references into cache,
-    // because it might get modified during pruning.
-    auto result = event_node_path_cache_.insert(&node, nullptr);
-    if (result.is_new_entry) {
-      EventPath::NodePath node_path = EventPath::CalculateNodePath(node);
-      result.stored_value->value =
-          MakeGarbageCollected<EventPath::NodePath>(std::move(node_path));
-    }
-    event_node_path = result.stored_value->value;
-  }
-  event_node_path_cache_key_list_.PrependOrMoveToFirst(&node);
-
-  // Prune oldest cached node if size is bigger than max.
-  if (event_node_path_cache_key_list_.size() > max_entries) {
-    DCHECK_EQ(event_node_path_cache_key_list_.size(), max_entries + 1);
-    event_node_path_cache_.erase(event_node_path_cache_key_list_.back());
-    event_node_path_cache_key_list_.pop_back();
-  }
-
-  DCHECK_EQ(event_node_path_cache_.size(),
-            event_node_path_cache_key_list_.size());
-  return *event_node_path;
-}
 
 void Document::ResetAgent(Agent& agent) {
   agent_ = agent;

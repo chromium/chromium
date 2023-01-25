@@ -315,8 +315,6 @@ public final class ProductionSupportedFlagList {
                     "Switches skia to use DMSAA instead of MSAA for tile raster"),
             Flag.baseFeature(
                     CcFeatures.AVOID_RASTER_DURING_ELASTIC_OVERSCROLL, "No effect on webview"),
-            Flag.baseFeature(BlinkFeatures.DOCUMENT_EVENT_NODE_PATH_CACHING,
-                    "Enables a performance optimization that caches event paths."),
             Flag.baseFeature(BlinkFeatures.WEB_RTC_METRONOME,
                     "Inject a metronome into webrtc to allow task coalescing, "
                             + " including synchronized decoding."),

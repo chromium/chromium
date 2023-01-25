@@ -1562,10 +1562,6 @@ BASE_FEATURE(kThreadedBodyLoader,
              "ThreadedBodyLoader",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDocumentEventNodePathCaching,
-             "DocumentEventNodePathCaching",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kNewBaseUrlInheritanceBehavior,
              "NewBaseUrlInheritanceBehavior",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1583,9 +1579,6 @@ bool IsNewBaseUrlInheritanceBehaviorEnabled() {
          !base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kDisableNewBaseUrlInheritanceBehavior);
 }
-
-const base::FeatureParam<int> kDocumentMaxEventNodePathCachedEntries{
-    &kDocumentEventNodePathCaching, "max-cache-entries", 10};
 
 BASE_FEATURE(
     kPostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlocked,
