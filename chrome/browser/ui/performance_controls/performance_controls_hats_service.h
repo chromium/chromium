@@ -7,11 +7,20 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
 
 class PerformanceControlsHatsService : public KeyedService {
  public:
   explicit PerformanceControlsHatsService(Profile* profile);
-  ~PerformanceControlsHatsService() override = default;
+  ~PerformanceControlsHatsService() override;
+
+  // Called in response to a change in the high efficiency mode pref to check
+  // whether a HaTS survey should be shown.
+  void OnHighEfficiencyModeChange();
+
+  // Called in response to a change in the battery saver mode pref to check
+  // whether a HaTS survey should be shown.
+  void OnBatterySaverModeChange();
 
   // Called when the user opens an NTP. This allows the service to check if one
   // of the performance controls surveys should be shown.
@@ -19,6 +28,7 @@ class PerformanceControlsHatsService : public KeyedService {
 
  private:
   raw_ptr<Profile> profile_;
+  PrefChangeRegistrar local_pref_registrar_;
 };
 
 #endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_CONTROLS_HATS_SERVICE_H_

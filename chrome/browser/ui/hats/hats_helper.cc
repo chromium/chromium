@@ -22,7 +22,12 @@ HatsHelper::~HatsHelper() = default;
 
 HatsHelper::HatsHelper(content::WebContents* web_contents)
     : WebContentsObserver(web_contents),
-      content::WebContentsUserData<HatsHelper>(*web_contents) {}
+      content::WebContentsUserData<HatsHelper>(*web_contents) {
+  // Construct PerformanceControlsHatsService immediately to register pref
+  // listeners.
+  performance_controls_hats_service_ =
+      PerformanceControlsHatsServiceFactory::GetForProfile(profile());
+}
 
 void HatsHelper::PrimaryPageChanged(content::Page& page) {
   // Ignore everything except NTP opens.
@@ -34,9 +39,8 @@ void HatsHelper::PrimaryPageChanged(content::Page& page) {
     sentiment_service->OpenedNewTabPage();
   }
 
-  if (auto* performance_service =
-          PerformanceControlsHatsServiceFactory::GetForProfile(profile())) {
-    performance_service->OpenedNewTabPage();
+  if (performance_controls_hats_service_) {
+    performance_controls_hats_service_->OpenedNewTabPage();
   }
 
   // If the demo HaTS feature is enabled display a test survey on every NTP

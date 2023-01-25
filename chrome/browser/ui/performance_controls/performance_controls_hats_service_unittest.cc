@@ -53,9 +53,8 @@ class PerformanceControlsHatsServiceTest : public testing::Test {
   }
 
   void TearDown() override {
-    environment_.TearDown();
-    profile_manager_.reset();
     testing::Test::TearDown();
+    environment_.TearDown();
   }
 
   void SetBatterySaverMode(
@@ -121,7 +120,7 @@ class PerformanceControlsHatsServiceHasBatteryTest
   }
 };
 
-class PerformanceControlsHatsServiceMemoryOptOutTest
+class PerformanceControlsHatsServiceHighEfficiencyOptOutTest
     : public PerformanceControlsHatsServiceTest {
  protected:
   const std::vector<base::test::FeatureRefAndParams> GetFeatures() override {
@@ -134,7 +133,7 @@ class PerformanceControlsHatsServiceMemoryOptOutTest
   }
 };
 
-class PerformanceControlsHatsServiceBatteryOptOutTest
+class PerformanceControlsHatsServiceBatterySaverOptOutTest
     : public PerformanceControlsHatsServiceTest {
  protected:
   const std::vector<base::test::FeatureRefAndParams> GetFeatures() override {
@@ -173,23 +172,21 @@ TEST_F(PerformanceControlsHatsServiceHasBatteryTest,
   performance_controls_hats_service()->OpenedNewTabPage();
 }
 
-TEST_F(PerformanceControlsHatsServiceMemoryOptOutTest,
-       LaunchesMemoryOptOutSurvey) {
+TEST_F(PerformanceControlsHatsServiceHighEfficiencyOptOutTest,
+       LaunchesHighEfficiencyOptOutSurvey) {
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchDelayedSurvey(
+                  kHatsSurveyTriggerPerformanceControlsHighEfficiencyOptOut,
+                  10000, _, _));
   SetHighEfficiencyEnabled(false);
-  EXPECT_CALL(
-      *mock_hats_service(),
-      LaunchSurvey(kHatsSurveyTriggerPerformanceControlsHighEfficiencyOptOut, _,
-                   _, _, _));
-  performance_controls_hats_service()->OpenedNewTabPage();
 }
 
-TEST_F(PerformanceControlsHatsServiceBatteryOptOutTest,
-       LaunchesBatteryOptOutSurvey) {
+TEST_F(PerformanceControlsHatsServiceBatterySaverOptOutTest,
+       LaunchesBatterySaverOptOutSurvey) {
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchDelayedSurvey(
+                  kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut,
+                  10000, _, _));
   SetBatterySaverMode(performance_manager::user_tuning::prefs::
                           BatterySaverModeState::kDisabled);
-  EXPECT_CALL(
-      *mock_hats_service(),
-      LaunchSurvey(kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut, _,
-                   _, _, _));
-  performance_controls_hats_service()->OpenedNewTabPage();
 }
