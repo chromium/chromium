@@ -21,13 +21,12 @@ Normalizer::Normalizer(bool remove_recommended_fields)
 
 Normalizer::~Normalizer() = default;
 
-base::Value Normalizer::NormalizeObject(
+base::Value::Dict Normalizer::NormalizeObject(
     const chromeos::onc::OncValueSignature* object_signature,
-    const base::Value& onc_object) {
+    const base::Value::Dict& onc_object) {
   CHECK(object_signature != nullptr);
   bool error = false;
-  base::Value result(
-      MapObject(*object_signature, onc_object.GetDict(), &error));
+  base::Value::Dict result = MapObject(*object_signature, onc_object, &error);
   DCHECK(!error);
   return result;
 }

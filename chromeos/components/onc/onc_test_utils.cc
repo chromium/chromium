@@ -99,6 +99,23 @@ base::Value ReadTestDictionaryValue(const std::string& filename) {
                                        << *actual;
 }
 
+::testing::AssertionResult Equals(const base::Value::Dict* expected,
+                                  const base::Value::Dict* actual) {
+  CHECK(expected != nullptr);
+  if (actual == nullptr) {
+    return ::testing::AssertionFailure() << "Actual value pointer is nullptr";
+  }
+
+  if (*expected == *actual) {
+    return ::testing::AssertionSuccess() << "Values are equal";
+  }
+
+  return ::testing::AssertionFailure() << "Values are unequal.\n"
+                                       << "Expected value:\n"
+                                       << *expected << "Actual value:\n"
+                                       << *actual;
+}
+
 }  // namespace test_utils
 }  // namespace onc
 }  // namespace chromeos

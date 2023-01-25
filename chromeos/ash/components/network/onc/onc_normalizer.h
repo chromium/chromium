@@ -34,9 +34,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Normalizer
   // is set, but the field "HexSSID" is not, the contents of the "SSID" field is
   // converted to UTF-8 encoding, a hex representation of the byte sequence is
   // created and stored in the field "HexSSID".
-  base::Value NormalizeObject(
+  base::Value::Dict NormalizeObject(
       const chromeos::onc::OncValueSignature* object_signature,
-      const base::Value& onc_object);
+      const base::Value::Dict& onc_object);
 
  private:
   // Dispatch to the right normalization function according to |signature|.

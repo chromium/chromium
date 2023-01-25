@@ -296,8 +296,8 @@ base::Value CreateShillConfiguration(const NetworkProfile& profile,
 
   // Remove irrelevant fields.
   onc::Normalizer normalizer(true /* remove recommended fields */);
-  effective = normalizer.NormalizeObject(
-      &chromeos::onc::kNetworkConfigurationSignature, effective);
+  effective = base::Value(normalizer.NormalizeObject(
+      &chromeos::onc::kNetworkConfigurationSignature, effective.GetDict()));
 
   base::Value shill_dictionary = onc::TranslateONCObjectToShill(
       &chromeos::onc::kNetworkConfigurationSignature, effective);

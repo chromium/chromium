@@ -31,6 +31,8 @@ base::Value ReadTestDictionaryValue(const std::string& filename);
 // EXPECT_TRUE(test_utils::Equals(expected, actual));
 ::testing::AssertionResult Equals(const base::Value* expected,
                                   const base::Value* actual);
+::testing::AssertionResult Equals(const base::Value::Dict* expected,
+                                  const base::Value::Dict* actual);
 
 }  // namespace test_utils
 }  // namespace onc

@@ -507,15 +507,17 @@ int ImportNetworksForUser(const user_manager::User* user,
   bool ethernet_not_found = false;
   int networks_created = 0;
   for (const auto& network : expanded_networks.GetList()) {
+    DCHECK(network.is_dict());
     // Remove irrelevant fields.
     onc::Normalizer normalizer(true /* remove recommended fields */);
-    base::Value normalized_network = normalizer.NormalizeObject(
-        &chromeos::onc::kNetworkConfigurationSignature, network);
+    base::Value::Dict normalized_network = normalizer.NormalizeObject(
+        &chromeos::onc::kNetworkConfigurationSignature, network.GetDict());
 
     // TODO(b/235297258): Use ONC and ManagedNetworkConfigurationHandler
     // instead.
     base::Value shill_dict = onc::TranslateONCObjectToShill(
-        &chromeos::onc::kNetworkConfigurationSignature, normalized_network);
+        &chromeos::onc::kNetworkConfigurationSignature,
+        base::Value(std::move(normalized_network)));
 
     std::unique_ptr<NetworkUIData> ui_data(
         NetworkUIData::CreateFromONC(::onc::ONC_SOURCE_USER_IMPORT));
