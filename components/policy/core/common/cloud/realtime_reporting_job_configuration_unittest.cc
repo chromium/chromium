@@ -7,6 +7,7 @@
 #include <set>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/test/task_environment.h"
@@ -34,8 +35,6 @@ using testing::_;
 using testing::StrictMock;
 
 namespace policy {
-
-std::vector<std::string> ids = {"id1", "id2", "id3"};
 
 constexpr char kAppPackage[] = "appPackage";
 constexpr char kEventType[] = "eventType";
@@ -79,8 +78,8 @@ class RealtimeReportingJobConfigurationTest : public testing::Test {
     base::Value::Dict context;
     context.SetByDottedPath("browser.userAgent", "dummyAgent");
     base::Value::List events;
-    for (size_t i = 0; i < ids.size(); ++i) {
-      base::Value::Dict event = CreateEvent(ids[i], i);
+    for (size_t i = 0; i < kIds.size(); ++i) {
+      base::Value::Dict event = CreateEvent(kIds[i], i);
       events.Append(std::move(event));
     }
 
@@ -90,7 +89,9 @@ class RealtimeReportingJobConfigurationTest : public testing::Test {
   }
 
  protected:
-  static base::Value::Dict CreateEvent(std::string& event_id, int type) {
+  const std::vector<std::string> kIds = {"id1", "id2", "id3"};
+
+  static base::Value::Dict CreateEvent(const std::string& event_id, int type) {
     base::Value::Dict event;
     event.Set(kAppPackage, kPackage);
     event.Set(kEventType, type);
@@ -209,18 +210,22 @@ TEST_F(RealtimeReportingJobConfigurationTest, ValidatePayload) {
 
   base::Value* events =
       payload->FindListKey(RealtimeReportingJobConfiguration::kEventListKey);
-  EXPECT_EQ(ids.size(), events->GetList().size());
+  EXPECT_EQ(kIds.size(), events->GetList().size());
   int i = -1;
-  for (const auto& event : events->GetList()) {
-    auto* id = event.FindStringKey(kEventId);
-    EXPECT_EQ(ids[++i], *id);
-    auto type = event.FindKey(kAppInstallEvent)->FindIntKey(kEventType);
+  for (const base::Value& event_val : events->GetList()) {
+    const base::Value::Dict& event = event_val.GetDict();
+    const std::string& id = CHECK_DEREF(event.FindString(kEventId));
+    EXPECT_EQ(kIds[++i], id);
+    const absl::optional<int> type =
+        event.FindDict(kAppInstallEvent)->FindInt(kEventType);
+    ASSERT_TRUE(type.has_value());
     EXPECT_EQ(i, *type);
   }
 }
 
 TEST_F(RealtimeReportingJobConfigurationTest, OnURLLoadComplete_Success) {
-  base::Value::Dict response = CreateResponse({ids[0], ids[1], ids[2]}, {}, {});
+  base::Value::Dict response =
+      CreateResponse({kIds[0], kIds[1], kIds[2]}, {}, {});
   EXPECT_CALL(callback_observer_,
               OnURLLoadComplete(&job_, DM_STATUS_SUCCESS,
                                 DeviceManagementService::kSuccess,
@@ -289,7 +294,7 @@ TEST_F(RealtimeReportingJobConfigurationTest, OnURLLoadComplete_UnknownError) {
 
 TEST_F(RealtimeReportingJobConfigurationTest, ShouldRetry_Success) {
   auto response_string =
-      CreateResponseString(CreateResponse({ids[0], ids[1], ids[2]}, {}, {}));
+      CreateResponseString(CreateResponse({kIds[0], kIds[1], kIds[2]}, {}, {}));
   auto should_retry = configuration_->ShouldRetry(
       DeviceManagementService::kSuccess, response_string);
   EXPECT_EQ(DeviceManagementService::Job::NO_RETRY, should_retry);
@@ -298,7 +303,7 @@ TEST_F(RealtimeReportingJobConfigurationTest, ShouldRetry_Success) {
 TEST_F(RealtimeReportingJobConfigurationTest, ShouldRetry_PartialFalure) {
   // Batch failures are retried
   auto response_string =
-      CreateResponseString(CreateResponse({ids[0], ids[1]}, {ids[2]}, {}));
+      CreateResponseString(CreateResponse({kIds[0], kIds[1]}, {kIds[2]}, {}));
   auto should_retry = configuration_->ShouldRetry(
       DeviceManagementService::kSuccess, response_string);
   EXPECT_EQ(DeviceManagementService::Job::RETRY_WITH_DELAY, should_retry);
@@ -307,7 +312,7 @@ TEST_F(RealtimeReportingJobConfigurationTest, ShouldRetry_PartialFalure) {
 TEST_F(RealtimeReportingJobConfigurationTest, ShouldRetry_PermanentFailure) {
   // Permanent failures are not retried.
   auto response_string =
-      CreateResponseString(CreateResponse({ids[0], ids[1]}, {}, {ids[2]}));
+      CreateResponseString(CreateResponse({kIds[0], kIds[1]}, {}, {kIds[2]}));
   auto should_retry = configuration_->ShouldRetry(
       DeviceManagementService::kSuccess, response_string);
   EXPECT_EQ(DeviceManagementService::Job::NO_RETRY, should_retry);
@@ -325,7 +330,7 @@ TEST_F(RealtimeReportingJobConfigurationTest, OnBeforeRetry_PartialBatch) {
   // Only those events whose ids are in failed_uploads should be in the payload
   // after the OnBeforeRetry call.
   auto response_string =
-      CreateResponseString(CreateResponse({ids[0]}, {ids[1]}, {ids[2]}));
+      CreateResponseString(CreateResponse({kIds[0]}, {kIds[1]}, {kIds[2]}));
   configuration_->OnBeforeRetry(DeviceManagementService::kSuccess,
                                 response_string);
   absl::optional<base::Value> payload =
@@ -334,7 +339,7 @@ TEST_F(RealtimeReportingJobConfigurationTest, OnBeforeRetry_PartialBatch) {
       payload->FindListKey(RealtimeReportingJobConfiguration::kEventListKey);
   EXPECT_EQ(1u, events->GetList().size());
   auto& event = events->GetList()[0];
-  EXPECT_EQ(ids[1], *event.FindStringKey(kEventId));
+  EXPECT_EQ(kIds[1], *event.FindStringKey(kEventId));
 }
 
 }  // namespace policy
