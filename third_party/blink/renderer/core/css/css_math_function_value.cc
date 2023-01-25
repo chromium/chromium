@@ -29,7 +29,9 @@ CSSMathFunctionValue::CSSMathFunctionValue(
     CSSPrimitiveValue::ValueRange range)
     : CSSPrimitiveValue(kMathFunctionClass),
       expression_(expression),
-      value_range_in_target_context_(range) {}
+      value_range_in_target_context_(range) {
+  needs_tree_scope_population_ = !expression->IsScopedValue();
+}
 
 // static
 CSSMathFunctionValue* CSSMathFunctionValue::Create(
@@ -164,6 +166,13 @@ scoped_refptr<const CalculationValue> CSSMathFunctionValue::ToCalcValue(
       length_resolver,
       CSSPrimitiveValue::ConversionToLengthValueRange(PermittedValueRange()),
       AllowsNegativePercentageReference());
+}
+
+const CSSValue& CSSMathFunctionValue::PopulateWithTreeScope(
+    const TreeScope* tree_scope) const {
+  return *MakeGarbageCollected<CSSMathFunctionValue>(
+      &expression_->PopulateWithTreeScope(tree_scope),
+      value_range_in_target_context_);
 }
 
 }  // namespace blink

@@ -87,6 +87,8 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
 
   bool HasComparisons() const { return expression_->HasComparisons(); }
 
+  const CSSValue& PopulateWithTreeScope(const TreeScope*) const;
+
   void TraceAfterDispatch(blink::Visitor* visitor) const;
 
  private:

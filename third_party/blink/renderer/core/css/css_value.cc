@@ -464,6 +464,8 @@ const CSSValue& CSSValue::PopulateWithTreeScope(
   switch (GetClassType()) {
     case kCustomIdentClass:
       return To<CSSCustomIdentValue>(this)->PopulateWithTreeScope(tree_scope);
+    case kMathFunctionClass:
+      return To<CSSMathFunctionValue>(this)->PopulateWithTreeScope(tree_scope);
     default:
       NOTREACHED();
       return *this;

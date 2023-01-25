@@ -234,7 +234,8 @@ CSSMathExpressionNumericLiteral* CSSMathExpressionNumericLiteral::Create(
 CSSMathExpressionNumericLiteral::CSSMathExpressionNumericLiteral(
     const CSSNumericLiteralValue* value)
     : CSSMathExpressionNode(UnitCategory(value->GetType()),
-                            false /* has_comparisons*/),
+                            false /* has_comparisons*/,
+                            false /* needs_tree_scope_population*/),
       value_(value) {}
 
 bool CSSMathExpressionNumericLiteral::IsZero() const {
@@ -704,7 +705,8 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
     CalculationCategory category)
     : CSSMathExpressionNode(
           category,
-          left_side->HasComparisons() || right_side->HasComparisons()),
+          left_side->HasComparisons() || right_side->HasComparisons(),
+          !left_side->IsScopedValue() || !right_side->IsScopedValue()),
       operands_({left_side, right_side}),
       operator_(op) {}
 
@@ -718,13 +720,24 @@ static bool AnyOperandHasComparisons(
   return false;
 }
 
+static bool AnyOperandNeedsTreeScopePopulation(
+    CSSMathExpressionOperation::Operands& operands) {
+  for (const CSSMathExpressionNode* operand : operands) {
+    if (!operand->IsScopedValue()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 CSSMathExpressionOperation::CSSMathExpressionOperation(
     CalculationCategory category,
     Operands&& operands,
     CSSMathOperator op)
     : CSSMathExpressionNode(
           category,
-          IsComparison(op) || AnyOperandHasComparisons(operands)),
+          IsComparison(op) || AnyOperandHasComparisons(operands),
+          AnyOperandNeedsTreeScopePopulation(operands)),
       operands_(std::move(operands)),
       operator_(op) {}
 
@@ -1196,6 +1209,16 @@ double CSSMathExpressionOperation::EvaluateOperator(
   return 0;
 }
 
+const CSSMathExpressionNode& CSSMathExpressionOperation::PopulateWithTreeScope(
+    const TreeScope* tree_scope) const {
+  Operands populated_operands;
+  for (const CSSMathExpressionNode* op : operands_) {
+    populated_operands.push_back(&op->EnsureScopedValue(tree_scope));
+  }
+  return *MakeGarbageCollected<CSSMathExpressionOperation>(
+      Category(), std::move(populated_operands), operator_);
+}
+
 #if DCHECK_IS_ON()
 bool CSSMathExpressionOperation::InvolvesPercentageComparisons() const {
   if (IsMinOrMax() && Category() == kCalcPercent && operands_.size() > 1u) {
@@ -1219,7 +1242,10 @@ CSSMathExpressionAnchorQuery::CSSMathExpressionAnchorQuery(
     const CSSCustomIdentValue* anchor_name,
     const CSSValue& value,
     const CSSPrimitiveValue* fallback)
-    : CSSMathExpressionNode(kCalcPercentLength, false /* has_comparisons */),
+    : CSSMathExpressionNode(kCalcPercentLength,
+                            false /* has_comparisons */,
+                            (anchor_name && !anchor_name->IsScopedValue()) ||
+                                (fallback && !fallback->IsScopedValue())),
       type_(type),
       anchor_name_(anchor_name),
       value_(value),
@@ -1306,9 +1332,10 @@ AnchorSizeValue CSSValueIDToAnchorSizeValueEnum(CSSValueID value) {
 scoped_refptr<const CalculationExpressionNode>
 CSSMathExpressionAnchorQuery::ToCalculationExpression(
     const CSSLengthResolver& length_resolver) const {
+  DCHECK(IsScopedValue());
   ScopedCSSName* anchor_name =
       anchor_name_ ? MakeGarbageCollected<ScopedCSSName>(
-                         anchor_name_->Value(), length_resolver.GetTreeScope())
+                         anchor_name_->Value(), anchor_name_->GetTreeScope())
                    : nullptr;
   Length fallback = fallback_ ? fallback_->ConvertToLength(length_resolver)
                               : Length::Fixed(0);
@@ -1330,6 +1357,20 @@ CSSMathExpressionAnchorQuery::ToCalculationExpression(
   return CalculationExpressionAnchorQueryNode::CreateAnchorSize(
       anchor_name, CSSValueIDToAnchorSizeValueEnum(size.GetValueID()),
       fallback);
+}
+
+const CSSMathExpressionNode&
+CSSMathExpressionAnchorQuery::PopulateWithTreeScope(
+    const TreeScope* tree_scope) const {
+  return *MakeGarbageCollected<CSSMathExpressionAnchorQuery>(
+      type_,
+      anchor_name_ ? To<CSSCustomIdentValue>(
+                         &anchor_name_->EnsureScopedValue(tree_scope))
+                   : nullptr,
+      *value_,
+      fallback_
+          ? To<CSSPrimitiveValue>(&fallback_->EnsureScopedValue(tree_scope))
+          : nullptr);
 }
 
 void CSSMathExpressionAnchorQuery::Trace(Visitor* visitor) const {
@@ -1825,10 +1866,12 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
     CSSAnchorQueryType type = anchor_query.Type() == AnchorQueryType::kAnchor
                                   ? CSSAnchorQueryType::kAnchor
                                   : CSSAnchorQueryType::kAnchorSize;
-    CSSCustomIdentValue* anchor_name =
-        anchor_query.AnchorName() ? MakeGarbageCollected<CSSCustomIdentValue>(
-                                        anchor_query.AnchorName()->GetName())
-                                  : nullptr;
+    const CSSCustomIdentValue* anchor_name = nullptr;
+    if (const ScopedCSSName* passed_name = anchor_query.AnchorName()) {
+      anchor_name = To<CSSCustomIdentValue>(
+          &MakeGarbageCollected<CSSCustomIdentValue>(passed_name->GetName())
+               ->EnsureScopedValue(passed_name->GetTreeScope()));
+    }
     CSSValue* value = AnchorQueryValueToCSSValue(anchor_query);
     CSSPrimitiveValue* fallback = CSSPrimitiveValue::CreateFromLength(
         anchor_query.GetFallback(), /* zoom */ 1);

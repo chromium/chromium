@@ -141,6 +141,17 @@ class CORE_EXPORT CSSMathExpressionNode
   void SetIsNestedCalc() { is_nested_calc_ = true; }
 
   bool HasComparisons() const { return has_comparisons_; }
+  bool IsScopedValue() const { return !needs_tree_scope_population_; }
+
+  const CSSMathExpressionNode& EnsureScopedValue(
+      const TreeScope* tree_scope) const {
+    if (!needs_tree_scope_population_) {
+      return *this;
+    }
+    return PopulateWithTreeScope(tree_scope);
+  }
+  virtual const CSSMathExpressionNode& PopulateWithTreeScope(
+      const TreeScope*) const = 0;
 
 #if DCHECK_IS_ON()
   // There's a subtle issue in comparing two percentages, e.g., min(10%, 20%).
@@ -153,14 +164,19 @@ class CORE_EXPORT CSSMathExpressionNode
   virtual void Trace(Visitor* visitor) const {}
 
  protected:
-  CSSMathExpressionNode(CalculationCategory category, bool has_comparisons)
-      : category_(category), has_comparisons_(has_comparisons) {
+  CSSMathExpressionNode(CalculationCategory category,
+                        bool has_comparisons,
+                        bool needs_tree_scope_population)
+      : category_(category),
+        has_comparisons_(has_comparisons),
+        needs_tree_scope_population_(needs_tree_scope_population) {
     DCHECK_NE(category, kCalcOther);
   }
 
   CalculationCategory category_;
   bool is_nested_calc_ = false;
   bool has_comparisons_;
+  bool needs_tree_scope_population_;
 };
 
 class CORE_EXPORT CSSMathExpressionNumericLiteral final
@@ -177,6 +193,12 @@ class CORE_EXPORT CSSMathExpressionNumericLiteral final
   const CSSNumericLiteralValue& GetValue() const { return *value_; }
 
   bool IsNumericLiteral() const final { return true; }
+
+  const CSSMathExpressionNode& PopulateWithTreeScope(
+      const TreeScope* tree_scope) const final {
+    NOTREACHED();
+    return *this;
+  }
 
   bool IsZero() const final;
   String CustomCSSText() const final;
@@ -273,6 +295,8 @@ class CORE_EXPORT CSSMathExpressionOperation final
   String CustomCSSText() const final;
   bool operator==(const CSSMathExpressionNode& exp) const final;
   CSSPrimitiveValue::UnitType ResolvedUnitType() const final;
+  const CSSMathExpressionNode& PopulateWithTreeScope(
+      const TreeScope*) const final;
   void Trace(Visitor* visitor) const final;
 
 #if DCHECK_IS_ON()
@@ -365,6 +389,8 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSLengthResolver&) const final;
   bool operator==(const CSSMathExpressionNode& other) const final;
+  const CSSMathExpressionNode& PopulateWithTreeScope(
+      const TreeScope*) const final;
   void Trace(Visitor* visitor) const final;
 
 #if DCHECK_IS_ON()

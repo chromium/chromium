@@ -100,12 +100,6 @@ class CORE_EXPORT StyleResolverState {
   CSSToLengthConversionData FontSizeConversionData();
   CSSToLengthConversionData UnzoomedLengthConversionData();
 
-  ScopedCSSToLengthConversionData GetScopedCSSToLengthConversionData(
-      const TreeScope* scope) const {
-    return ScopedCSSToLengthConversionData(css_to_length_conversion_data_,
-                                           scope);
-  }
-
   CSSToLengthConversionData::Flags TakeLengthConversionFlags() {
     CSSToLengthConversionData::Flags flags = length_conversion_flags_;
     length_conversion_flags_ = 0;
