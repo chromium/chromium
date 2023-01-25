@@ -96,6 +96,9 @@ class MetricsLogStore : public LogStore {
                     size_t uncompressed_log_size,
                     MetricsLog::LogType log_type);
 
+  // Deletes all logs, in memory and on disk.
+  void Purge();
+
   // Returns the signing key that should be used to create a signature for a
   // log of the given |log_type|. We don't "simply" return the signing key that
   // was passed during the construction of this object, because although

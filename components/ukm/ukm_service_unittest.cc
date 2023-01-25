@@ -25,11 +25,14 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "components/metrics/cloned_install_detector.h"
 #include "components/metrics/log_decoder.h"
 #include "components/metrics/metrics_log_uploader.h"
+#include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/test/test_metrics_provider.h"
 #include "components/metrics/test/test_metrics_service_client.h"
 #include "components/metrics/ukm_demographic_metrics_provider.h"
+#include "components/metrics/unsent_log_store.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/ukm/observers/ukm_consent_state_observer.h"
 #include "components/ukm/ukm_entry_filter.h"
@@ -88,6 +91,33 @@ class TestRecordingHelper {
 
  private:
   raw_ptr<UkmRecorder> recorder_;
+};
+
+class TestMetricsServiceClientWithClonedInstallDetector
+    : public metrics::TestMetricsServiceClient {
+ public:
+  TestMetricsServiceClientWithClonedInstallDetector() = default;
+
+  TestMetricsServiceClientWithClonedInstallDetector(
+      const TestMetricsServiceClientWithClonedInstallDetector&) = delete;
+  TestMetricsServiceClientWithClonedInstallDetector& operator=(
+      const TestMetricsServiceClientWithClonedInstallDetector&) = delete;
+
+  ~TestMetricsServiceClientWithClonedInstallDetector() override = default;
+
+  // metrics::MetricsServiceClient:
+  base::CallbackListSubscription AddOnClonedInstallDetectedCallback(
+      base::OnceClosure callback) override {
+    return cloned_install_detector_.AddOnClonedInstallDetectedCallback(
+        std::move(callback));
+  }
+
+  metrics::ClonedInstallDetector* cloned_install_detector() {
+    return &cloned_install_detector_;
+  }
+
+ private:
+  metrics::ClonedInstallDetector cloned_install_detector_;
 };
 
 namespace {
@@ -1842,6 +1872,45 @@ TEST_F(UkmServiceTest, UseExternalClientID) {
   service.Initialize();
   EXPECT_EQ(external_client_id, service.client_id());
   EXPECT_EQ(external_client_id, prefs_.GetUint64(prefs::kUkmClientId));
+}
+
+// Verifies that when a cloned install is detected, logs are purged.
+TEST_P(UkmServiceTest, PurgeLogsOnClonedInstallDetected) {
+  TestMetricsServiceClientWithClonedInstallDetector client;
+  UkmService service(&prefs_, &client,
+                     std::make_unique<MockDemographicMetricsProvider>());
+  service.Initialize();
+
+  // Store various logs.
+  metrics::UnsentLogStore* test_log_store =
+      service.reporting_service_for_testing().ukm_log_store();
+  test_log_store->StoreLog("dummy log data", metrics::LogMetadata());
+  test_log_store->StageNextLog();
+  test_log_store->StoreLog("more dummy log data", metrics::LogMetadata());
+  EXPECT_TRUE(test_log_store->has_staged_log());
+  EXPECT_TRUE(test_log_store->has_unsent_logs());
+
+  metrics::ClonedInstallDetector* cloned_install_detector =
+      client.cloned_install_detector();
+  cloned_install_detector->RegisterPrefs(prefs_.registry());
+
+  static constexpr char kTestRawId[] = "test";
+  // Hashed machine id for |kTestRawId|.
+  static constexpr int kTestHashedId = 2216819;
+
+  // Save a machine id that will not cause a clone to be detected.
+  prefs_.SetInteger(metrics::prefs::kMetricsMachineId, kTestHashedId);
+  cloned_install_detector->SaveMachineIdForTesting(&prefs_, kTestRawId);
+  // Verify that the logs are still present.
+  EXPECT_TRUE(test_log_store->has_staged_log());
+  EXPECT_TRUE(test_log_store->has_unsent_logs());
+
+  // Save a machine id that will cause a clone to be detected.
+  prefs_.SetInteger(metrics::prefs::kMetricsMachineId, kTestHashedId + 1);
+  cloned_install_detector->SaveMachineIdForTesting(&prefs_, kTestRawId);
+  // Verify that the logs were purged.
+  EXPECT_FALSE(test_log_store->has_staged_log());
+  EXPECT_FALSE(test_log_store->has_unsent_logs());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

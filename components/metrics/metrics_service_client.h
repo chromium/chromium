@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_log_store.h"
@@ -167,6 +168,9 @@ class MetricsServiceClient {
 
   // Checks if the cloned install detector says that client ids should be reset.
   virtual bool ShouldResetClientIdsOnClonedInstall();
+
+  virtual base::CallbackListSubscription AddOnClonedInstallDetectedCallback(
+      base::OnceClosure callback);
 
   // Specifies local log storage requirements and restrictions.
   virtual MetricsLogStore::StorageLimits GetStorageLimits() const;

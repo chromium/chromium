@@ -150,6 +150,12 @@ bool MetricsServiceClient::ShouldResetClientIdsOnClonedInstall() {
   return false;
 }
 
+base::CallbackListSubscription
+MetricsServiceClient::AddOnClonedInstallDetectedCallback(
+    base::OnceClosure callback) {
+  return base::CallbackListSubscription();
+}
+
 MetricsLogStore::StorageLimits MetricsServiceClient::GetStorageLimits() const {
   return {
       /*min_initial_log_queue_count=*/kMinInitialLogQueueCount,

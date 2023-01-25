@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -110,6 +111,9 @@ class UkmService : public UkmRecorderImpl {
   // Resets the client prefs (client_id/session_id). |reason| should be passed
   // to provide the reason of the reset - this is only used for UMA logging.
   void ResetClientState(ResetReason reason);
+
+  // Called if this install is detected as cloned.
+  void OnClonedInstallDetected();
 
   // Registers the specified |provider| to provide additional metrics into the
   // UKM log. Should be called during MetricsService initialization only.
@@ -222,6 +226,10 @@ class UkmService : public UkmRecorderImpl {
 
   // A callback invoked when initialization of the service is complete.
   base::OnceClosure initialization_complete_callback_;
+
+  // Subscription for a callback that runs if this install is detected as
+  // cloned.
+  base::CallbackListSubscription cloned_install_subscription_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

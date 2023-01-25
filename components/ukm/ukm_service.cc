@@ -208,6 +208,10 @@ UkmService::UkmService(PrefService* pref_service,
   DVLOG(1) << "UkmService::Constructor";
   reporting_service_.Initialize();
 
+  cloned_install_subscription_ = client->AddOnClonedInstallDetectedCallback(
+      base::BindOnce(&UkmService::OnClonedInstallDetected,
+                     self_ptr_factory_.GetWeakPtr()));
+
   base::RepeatingClosure rotate_callback = base::BindRepeating(
       &UkmService::RotateLog, self_ptr_factory_.GetWeakPtr());
   // MetricsServiceClient outlives UkmService, and
@@ -402,6 +406,14 @@ void UkmService::ResetClientState(ResetReason reason) {
   report_count_ = 0;
 
   metrics_providers_.OnClientStateCleared();
+}
+
+void UkmService::OnClonedInstallDetected() {
+  // Purge all logs, as they may come from a previous install. Unfortunately,
+  // since the cloned install detector works asynchronously, it is possible that
+  // this is called after logs were already sent. However, practically speaking,
+  // this should not happen, since logs are only sent late into the session.
+  reporting_service_.ukm_log_store()->Purge();
 }
 
 void UkmService::RegisterMetricsProvider(

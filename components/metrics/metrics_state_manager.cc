@@ -533,6 +533,13 @@ bool MetricsStateManager::ShouldResetClientIdsOnClonedInstall() {
   return cloned_install_detector_.ShouldResetClientIds(local_state_);
 }
 
+base::CallbackListSubscription
+MetricsStateManager::AddOnClonedInstallDetectedCallback(
+    base::OnceClosure callback) {
+  return cloned_install_detector_.AddOnClonedInstallDetectedCallback(
+      std::move(callback));
+}
+
 std::unique_ptr<const variations::EntropyProviders>
 MetricsStateManager::CreateEntropyProviders() {
   return std::make_unique<variations::EntropyProviders>(

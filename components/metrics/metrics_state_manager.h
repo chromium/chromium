@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -172,6 +173,10 @@ class MetricsStateManager final {
   // Checks if the cloned install detector says that client ids should be reset.
   bool ShouldResetClientIdsOnClonedInstall();
 
+  // Wrapper around ClonedInstallDetector::AddOnClonedInstallDetectedCallback().
+  base::CallbackListSubscription AddOnClonedInstallDetectedCallback(
+      base::OnceClosure callback);
+
   // Creates entropy providers for trial randomization.
   //
   // If this StateManager supports high entropy randomization, and there is
@@ -180,6 +185,10 @@ class MetricsStateManager final {
   // partially based on the client ID or provisional client ID. Otherwise, it
   // only returns an entropy provider that is based on a low entropy source.
   std::unique_ptr<const variations::EntropyProviders> CreateEntropyProviders();
+
+  ClonedInstallDetector* cloned_install_detector_for_testing() {
+    return &cloned_install_detector_;
+  }
 
   // Creates the MetricsStateManager, enforcing that only a single instance
   // of the class exists at a time. Returns nullptr if an instance exists

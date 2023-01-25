@@ -1332,6 +1332,13 @@ bool ChromeMetricsServiceClient::ShouldResetClientIdsOnClonedInstall() {
   return metrics_service_->ShouldResetClientIdsOnClonedInstall();
 }
 
+base::CallbackListSubscription
+ChromeMetricsServiceClient::AddOnClonedInstallDetectedCallback(
+    base::OnceClosure callback) {
+  return metrics_state_manager_->AddOnClonedInstallDetectedCallback(
+      std::move(callback));
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool ChromeMetricsServiceClient::ShouldUploadMetricsForUserId(

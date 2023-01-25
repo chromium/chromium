@@ -88,6 +88,14 @@ void MetricsLogStore::StoreLogInfo(
                                                 uncompressed_log_size);
 }
 
+void MetricsLogStore::Purge() {
+  initial_log_queue_.Purge();
+  ongoing_log_queue_.Purge();
+  if (has_alternate_ongoing_log_store()) {
+    alternate_ongoing_log_queue_->Purge();
+  }
+}
+
 const std::string& MetricsLogStore::GetSigningKeyForLogType(
     MetricsLog::LogType log_type) {
   return GetLogStoreForLogType(log_type)->signing_key();

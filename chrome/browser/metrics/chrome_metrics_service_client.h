@@ -11,6 +11,7 @@
 #include <queue>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -117,6 +118,8 @@ class ChromeMetricsServiceClient
   static void SetNotificationListenerSetupFailedForTesting(
       bool simulate_failure);
   bool ShouldResetClientIdsOnClonedInstall() override;
+  base::CallbackListSubscription AddOnClonedInstallDetectedCallback(
+      base::OnceClosure callback) override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool ShouldUploadMetricsForUserId(const uint64_t user_id) override;
   void InitPerUserMetrics() override;
