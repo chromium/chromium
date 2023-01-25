@@ -450,11 +450,6 @@ void ShellContentBrowserClient::OverrideWebkitPrefs(
     override_web_preferences_callback_.Run(prefs);
 }
 
-base::FilePath ShellContentBrowserClient::GetFontLookupTableCacheDir() {
-  return browser_context()->GetPath().Append(
-      FILE_PATH_LITERAL("FontLookupTableCache"));
-}
-
 std::unique_ptr<content::DevToolsManagerDelegate>
 ShellContentBrowserClient::CreateDevToolsManagerDelegate() {
   return std::make_unique<ShellDevToolsManagerDelegate>(browser_context());

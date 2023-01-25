@@ -397,7 +397,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void BrowserURLHandlerCreated(content::BrowserURLHandler* handler) override;
   base::FilePath GetDefaultDownloadDirectory() override;
   std::string GetDefaultDownloadName() override;
-  base::FilePath GetFontLookupTableCacheDir() override;
   base::FilePath GetShaderDiskCacheDirectory() override;
   base::FilePath GetGrShaderDiskCacheDirectory() override;
   base::FilePath GetNetLogDefaultDirectory() override;

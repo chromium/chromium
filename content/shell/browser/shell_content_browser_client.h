@@ -77,7 +77,6 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       override;
   void OverrideWebkitPrefs(WebContents* web_contents,
                            blink::web_pref::WebPreferences* prefs) override;
-  base::FilePath GetFontLookupTableCacheDir() override;
   std::unique_ptr<content::DevToolsManagerDelegate>
   CreateDevToolsManagerDelegate() override;
   void ExposeInterfacesToRenderer(
