@@ -661,7 +661,9 @@ namespace autotestPrivate {
     // Whether the frame sink is the root.
     boolean isRoot;
 
-    // Number of presented frames grouped by seconds, i.e. fps.
+    // Number of presented frames grouped using `bucketSizeInSeconds` arg in
+    // startFrameCounting call. It would be fps if the `bucketSizeInSeconds` is
+    // 1s.
     long[] presentedFrames;
   };
 

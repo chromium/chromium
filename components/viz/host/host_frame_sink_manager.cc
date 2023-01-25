@@ -432,8 +432,10 @@ void HostFrameSinkManager::UpdateDebugRendererSettings(
 }
 
 void HostFrameSinkManager::StartFrameCountingForTest(
+    base::TimeTicks start_time,
     base::TimeDelta bucket_size) {
-  frame_sink_manager_->StartFrameCountingForTest(bucket_size);  // IN-TEST
+  frame_sink_manager_->StartFrameCountingForTest(start_time,  // IN-TEST
+                                                 bucket_size);
 }
 
 void HostFrameSinkManager::StopFrameCountingForTest(

@@ -58,6 +58,10 @@ struct FrameCountingPerSinkData {
   CompositorFrameSinkType type;
   bool is_root;
 
+  // Bucket index of the first bucket in `presented_frames` based on the
+  // timestamp of the first presented frame in the bucket and start time.
+  uint16 start_bucket;
+
   // Collected number of presented frames for the specified bucket size.
   array<uint16> presented_frames;
 };
@@ -190,7 +194,8 @@ interface FrameSinkManager {
   UpdateDebugRendererSettings(DebugRendererSettings debug_settings);
 
   // Starts frame counting per frame sink on the Viz thread.
-  StartFrameCountingForTest(mojo_base.mojom.TimeDelta bucket_size);
+  StartFrameCountingForTest(mojo_base.mojom.TimeTicks start_time,
+                            mojo_base.mojom.TimeDelta bucket_size);
 
   // Stops frame counting on the Viz thread and returns all records to the
   // caller.

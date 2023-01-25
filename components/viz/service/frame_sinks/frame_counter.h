@@ -18,7 +18,7 @@ namespace viz {
 // per frame sink.
 class VIZ_SERVICE_EXPORT FrameCounter {
  public:
-  explicit FrameCounter(base::TimeDelta bucket_size);
+  FrameCounter(base::TimeTicks start_time, base::TimeDelta bucket_size);
   ~FrameCounter();
 
   // Add a record for a frame sink.

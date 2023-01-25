@@ -157,7 +157,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
                 base::TimeDelta interval) override;
   void StartThrottlingAllFrameSinks(base::TimeDelta interval) override;
   void StopThrottlingAllFrameSinks() override;
-  void StartFrameCountingForTest(base::TimeDelta bucket_size) override;
+  void StartFrameCountingForTest(base::TimeTicks start_time,
+                                 base::TimeDelta bucket_size) override;
   void StopFrameCountingForTest(
       StopFrameCountingForTestCallback callback) override;
 

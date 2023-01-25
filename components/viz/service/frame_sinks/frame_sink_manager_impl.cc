@@ -830,9 +830,10 @@ FrameSinkManagerImpl::TakeSurfaceAnimationManager(NavigationID navigation_id) {
 }
 
 void FrameSinkManagerImpl::StartFrameCountingForTest(
+    base::TimeTicks start_time,
     base::TimeDelta bucket_size) {
   DCHECK(!frame_counter_.has_value());
-  frame_counter_.emplace(bucket_size);
+  frame_counter_.emplace(start_time, bucket_size);
 
   for (auto& [sink_id, support] : support_map_) {
     DCHECK_EQ(sink_id, support->frame_sink_id());

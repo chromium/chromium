@@ -4,6 +4,7 @@
 
 #include "components/viz/service/frame_sinks/frame_counter.h"
 
+#include <limits>
 #include <utility>
 #include <vector>
 
@@ -21,8 +22,9 @@ constexpr size_t kMaxFrameRecords = 1800u;
 
 }  // namespace
 
-FrameCounter::FrameCounter(base::TimeDelta bucket_size)
-    : start_time_(base::TimeTicks::Now()), bucket_size_(bucket_size) {}
+FrameCounter::FrameCounter(base::TimeTicks start_time,
+                           base::TimeDelta bucket_size)
+    : start_time_(start_time), bucket_size_(bucket_size) {}
 
 FrameCounter::~FrameCounter() = default;
 
@@ -32,7 +34,7 @@ void FrameCounter::AddFrameSink(const FrameSinkId& frame_sink_id,
   DCHECK(!base::Contains(frame_sink_data_, frame_sink_id));
 
   auto per_sink_data = mojom::FrameCountingPerSinkData::New(
-      type, is_root, std::vector<uint16_t>());
+      type, is_root, 0, std::vector<uint16_t>());
   per_sink_data->presented_frames.reserve(kMaxFrameRecords);
 
   frame_sink_data_[frame_sink_id] = std::move(per_sink_data);
@@ -43,16 +45,28 @@ void FrameCounter::AddPresentedFrame(const FrameSinkId& frame_sink_id,
   auto& per_sink_data = frame_sink_data_[frame_sink_id];
   DCHECK(!per_sink_data.is_null());
 
-  DCHECK_LE(start_time_, present_timestamp);
+  if (start_time_ > present_timestamp) {
+    LOG(WARNING) << "Presentation timestamp is less than start time, skip.";
+    return;
+  }
+
   size_t bucket_index =
       (present_timestamp - start_time_).InSeconds() / bucket_size_.InSeconds();
   DCHECK_LT(bucket_index, kMaxFrameRecords);
 
   auto& presented_frames = per_sink_data->presented_frames;
-  if (bucket_index >= presented_frames.size())
-    presented_frames.resize(bucket_index + 1, 0u);
 
-  ++presented_frames[bucket_index];
+  if (presented_frames.empty()) {
+    CHECK_LT(bucket_index, std::numeric_limits<uint16_t>::max());
+    per_sink_data->start_bucket = bucket_index;
+  }
+
+  const size_t relative_index = bucket_index - per_sink_data->start_bucket;
+  if (relative_index >= presented_frames.size()) {
+    presented_frames.resize(relative_index + 1, 0u);
+  }
+
+  ++presented_frames[relative_index];
 }
 
 mojom::FrameCountingDataPtr FrameCounter::TakeData() {

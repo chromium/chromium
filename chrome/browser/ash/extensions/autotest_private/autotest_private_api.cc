@@ -6367,6 +6367,7 @@ AutotestPrivateStartFrameCountingFunction::Run() {
       ->context_factory()
       ->GetHostFrameSinkManager()
       ->StartFrameCountingForTest(  // IN-TEST
+          base::TimeTicks::Now(),
           base::Seconds(params->bucket_size_in_seconds));
   return RespondNow(NoArguments());
 }
@@ -6399,16 +6400,47 @@ void AutotestPrivateStopFrameCountingFunction::OnDataReceived(
     return;
   }
 
+  // The data to fill in buckets where there is no data points in collected
+  // frame data, i.e. before the frame sink's creation and after the frame
+  // sink's destruction.
+  constexpr int kNotAvailable = -1;
+
+  // Get the max size of frame sink data. The frame sink data that does not
+  // have enough data points (e.g. frame sinks destroyed before the end) will
+  // have kNotAvailable appended at the end.
+  size_t size = 0;
+  for (const auto& per_sink_data : data_ptr->per_sink_data) {
+    const size_t per_sink_data_size =
+        per_sink_data->start_bucket + per_sink_data->presented_frames.size();
+    if (per_sink_data_size > size) {
+      size = per_sink_data_size;
+    }
+  }
+
   std::vector<api::autotest_private::FrameCountingPerSinkData> result;
   for (const auto& per_sink_data : data_ptr->per_sink_data) {
+    // Skip frame sinks with no data points.
+    if (per_sink_data->presented_frames.empty()) {
+      continue;
+    }
+
     api::autotest_private::FrameCountingPerSinkData result_per_sink_data;
     result_per_sink_data.sink_type =
         CompositorFrameSinkTypeToString(per_sink_data->type);
     result_per_sink_data.is_root = per_sink_data->is_root;
 
+    if (per_sink_data->start_bucket != 0) {
+      result_per_sink_data.presented_frames.resize(per_sink_data->start_bucket,
+                                                   kNotAvailable);
+    }
+
     std::copy(per_sink_data->presented_frames.begin(),
               per_sink_data->presented_frames.end(),
               std::back_inserter(result_per_sink_data.presented_frames));
+
+    if (result_per_sink_data.presented_frames.size() < size) {
+      result_per_sink_data.presented_frames.resize(size, kNotAvailable);
+    }
 
     result.emplace_back(std::move(result_per_sink_data));
   }

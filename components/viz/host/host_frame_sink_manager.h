@@ -220,7 +220,8 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   void UpdateDebugRendererSettings(const DebugRendererSettings& debug_settings);
 
   // Starts the frame counting in Viz.
-  void StartFrameCountingForTest(base::TimeDelta bucket_size);
+  void StartFrameCountingForTest(base::TimeTicks start_time,
+                                 base::TimeDelta bucket_size);
 
   // Ends the frame counting in Viz thread and returns data to the client.
   void StopFrameCountingForTest(
