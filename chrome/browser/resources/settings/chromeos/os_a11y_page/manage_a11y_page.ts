@@ -8,70 +8,63 @@
  * settings.
  */
 
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../../controls/settings_slider.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
-import {DevicePageBrowserProxyImpl} from '../device_page/device_page_browser_proxy.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from '../device_page/device_page_browser_proxy.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
-import {RouteOriginBehavior, RouteOriginBehaviorImpl, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {getTemplate} from './manage_a11y_page.html.js';
 import {ManageA11yPageBrowserProxy, ManageA11yPageBrowserProxyImpl} from './manage_a11y_page_browser_proxy.js';
 
-/** @const {number} */
-const DEFAULT_BLACK_CURSOR_COLOR = 0;
-
-// TODO(crbug/1315757) Temporarily including this for Closure typing.
-// Avoiding migrating this file to TS since it will be obsolete once
-// the AccessibilityOSSettingsVisibility feature flag is removed
-// (crbug/1380229)
-/** @interface */
-export class DevicePageBrowserProxy {
-  /** Initializes the mouse and touchpad handler. */
-  initializePointers() {}
-
-  /** Initializes the keyboard update watcher. */
-  initializeKeyboardWatcher() {}
+interface Option {
+  name: string;
+  value: number;
 }
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- * @implements {RouteOriginBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsManageA11YPageElementBase = mixinBehaviors(
-    [
-      DeepLinkingBehavior,
-      I18nBehavior,
-      RouteObserverBehavior,
-      RouteOriginBehavior,
-      WebUIListenerBehavior,
-    ],
-    PolymerElement);
+interface LocaleInfo {
+  name: string;
+  value: string;
+  worksOffline: boolean;
+  installed: boolean;
+  recommended: boolean;
+}
 
-/** @polymer */
-class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
+const DEFAULT_BLACK_CURSOR_COLOR: number = 0;
+
+interface SettingsManageA11yPageElement {
+  $: {
+    pointerSubpageButton: CrLinkRowElement,
+    startupSoundEnabled: CrToggleElement,
+  };
+}
+
+const SettingsManageA11yPageElementBase = PrefsMixin(DeepLinkingMixin(
+    RouteOriginMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
+
+class SettingsManageA11yPageElement extends SettingsManageA11yPageElementBase {
   static get is() {
-    return 'settings-manage-a11y-page';
+    return 'settings-manage-a11y-page' as const;
   }
 
   static get template() {
@@ -81,19 +74,10 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
   static get properties() {
     return {
       /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
-      /**
        * Enum values for the
        * 'settings.a11y.screen_magnifier_mouse_following_mode' preference. These
        * values map to AccessibilityController::MagnifierMouseFollowingMode, and
        * are written to prefs and metrics, so order should not be changed.
-       * @private {!Object<string, number>}
        */
       screenMagnifierMouseFollowingModePrefValues_: {
         readOnly: true,
@@ -129,7 +113,6 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
 
       /**
        * Drop down menu options for auto click delay.
-       * @protected
        */
       autoClickDelayOptions_: {
         readOnly: true,
@@ -162,7 +145,6 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
 
       /**
        * Drop down menu options for auto click movement threshold.
-       * @protected
        */
       autoClickMovementThresholdOptions_: {
         readOnly: true,
@@ -195,7 +177,6 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
         },
       },
 
-      /** @protected {!Array<{name: string, value: number}>} */
       cursorColorOptions_: {
         readOnly: true,
         type: Array,
@@ -240,7 +221,6 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
 
       /**
        * Whether the user is in kiosk mode.
-       * @protected
        */
       isKioskModeActive_: {
         type: Boolean,
@@ -252,7 +232,6 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
       /**
        * Whether a setting for enabling shelf navigation buttons in tablet mode
        * should be displayed in the accessibility settings.
-       * @protected
        */
       showShelfNavigationButtonsSettings_: {
         type: Boolean,
@@ -262,7 +241,6 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
 
       /**
        * Whether the user is in guest mode.
-       * @protected
        */
       isGuest_: {
         type: Boolean,
@@ -271,19 +249,16 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
         },
       },
 
-      /** @protected */
       dictationLocaleSubtitleOverride_: {
         type: String,
         value: '',
       },
 
-      /** @protected */
       useDictationLocaleSubtitleOverride_: {
         type: Boolean,
         value: false,
       },
 
-      /** @protected */
       dictationLocaleMenuSubtitle_: {
         type: String,
         computed: 'computeDictationLocaleSubtitle_(' +
@@ -292,7 +267,6 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
             'dictationLocaleSubtitleOverride_)',
       },
 
-      /** @protected */
       dictationLocaleOptions_: {
         type: Array,
         value() {
@@ -300,7 +274,6 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
         },
       },
 
-      /** @protected */
       dictationLocalesList_: {
         type: Array,
         value() {
@@ -308,13 +281,11 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
         },
       },
 
-      /** @protected */
       showDictationLocaleMenu_: {
         type: Boolean,
         value: false,
       },
 
-      /** @protected */
       dictationLearnMoreUrl_: {
         type: String,
         value: 'https://support.google.com/chromebook?p=text_dictation_m100',
@@ -324,17 +295,13 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
        * |hasKeyboard_|, |hasMouse_|, |hasPointingStick_|, and |hasTouchpad_|
        * start undefined so observers don't trigger until they have been
        * populated.
-       * @protected
        */
       hasKeyboard_: Boolean,
 
-      /** @protected */
       hasMouse_: Boolean,
 
-      /** @protected */
       hasPointingStick_: Boolean,
 
-      /** @protected */
       hasTouchpad_: Boolean,
 
       /**
@@ -343,7 +310,6 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
        * enabled when spoken feedback, automatic clicks, or switch access are
        * enabled. The buttons can also be explicitly enabled by a designated
        * a11y setting.
-       * @protected
        */
       shelfNavigationButtonsImplicitlyEnabled_: {
         type: Boolean,
@@ -356,8 +322,6 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
       /**
        * The effective pref value that indicates whether shelf navigation
        * buttons are enabled in tablet mode.
-       * @type {chrome.settingsPrivate.PrefObject}
-       * @protected
        */
       shelfNavigationButtonsPref_: {
         type: Object,
@@ -368,11 +332,10 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kChromeVox,
           Setting.kSelectToSpeak,
           Setting.kHighContrastMode,
@@ -405,17 +368,40 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
     ];
   }
 
-  /** @override */
+  private autoClickDelayOptions_: Option[];
+  private autoClickMovementThresholdOptions_: Option[];
+  private cursorColorOptions_: Option[];
+  private deviceBrowserProxy_: DevicePageBrowserProxy;
+  private dictationLearnMoreUrl_: string;
+  private dictationLocalesList_: LocaleInfo[];
+  private dictationLocaleMenuSubtitle_: string;
+  private dictationLocaleOptions_: LocaleInfo[];
+  private dictationLocaleSubtitleOverride_: string;
+  private hasKeyboard_: boolean;
+  private hasMouse_: boolean;
+  private hasPointingStick_: boolean;
+  private hasTouchpad_: boolean;
+  private isGuest_: boolean;
+  private isKioskModeActive_: boolean;
+  private manageBrowserProxy_: ManageA11yPageBrowserProxy;
+  private route_: Route;
+  private screenMagnifierMouseFollowingModePrefValues_: Record<string, number>;
+  private screenMagnifierZoomOptions_: Option[];
+  private shelfNavigationButtonsImplicitlyEnabled_: boolean;
+  private shelfNavigationButtonsPref_:
+      chrome.settingsPrivate.PrefObject<boolean>;
+  private showDictationLocaleMenu_: boolean;
+  private showShelfNavigationButtonsSettings_: boolean;
+  private useDictationLocaleSubtitleOverride_: boolean;
+
   constructor() {
     super();
 
-    /** RouteOriginBehavior override */
+    /** RouteOriginMixin override */
     this.route_ = routes.MANAGE_ACCESSIBILITY;
 
-    /** @private {!ManageA11yPageBrowserProxy} */
     this.manageBrowserProxy_ = ManageA11yPageBrowserProxyImpl.getInstance();
 
-    /** @private {!DevicePageBrowserProxy} */
     this.deviceBrowserProxy_ = DevicePageBrowserProxyImpl.getInstance();
 
     if (!this.isKioskModeActive_) {
@@ -423,42 +409,42 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
     }
   }
 
-  redirectToNewA11ySettings() {
+  redirectToNewA11ySettings(): void {
     location.href = 'chrome://os-settings/osAccessibility';
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
-    this.addWebUIListener(
-        'has-mouse-changed', (exists) => this.set('hasMouse_', exists));
-    this.addWebUIListener(
+    this.addWebUiListener(
+        'has-mouse-changed',
+        (exists: boolean) => this.set('hasMouse_', exists));
+    this.addWebUiListener(
         'has-pointing-stick-changed',
-        (exists) => this.set('hasPointingStick_', exists));
-    this.addWebUIListener(
-        'has-touchpad-changed', (exists) => this.set('hasTouchpad_', exists));
+        (exists: boolean) => this.set('hasPointingStick_', exists));
+    this.addWebUiListener(
+        'has-touchpad-changed',
+        (exists: boolean) => this.set('hasTouchpad_', exists));
     this.deviceBrowserProxy_.initializePointers();
-    this.addWebUIListener(
+    this.addWebUiListener(
         'has-hardware-keyboard',
-        (hasKeyboard) => this.set('hasKeyboard_', hasKeyboard));
+        (hasKeyboard: boolean) => this.set('hasKeyboard_', hasKeyboard));
     this.deviceBrowserProxy_.initializeKeyboardWatcher();
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'initial-data-ready',
-        (startupSoundEnabled) =>
+        (startupSoundEnabled: boolean) =>
             this.onManageAllyPageReady_(startupSoundEnabled));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'dictation-locale-menu-subtitle-changed',
-        (result) => this.onDictationLocaleMenuSubtitleChanged_(result));
-    this.addWebUIListener(
+        (result: string) => this.onDictationLocaleMenuSubtitleChanged_(result));
+    this.addWebUiListener(
         'dictation-locales-set',
-        (locales) => this.onDictationLocalesSet_(locales));
+        (locales: LocaleInfo[]) => this.onDictationLocalesSet_(locales));
     this.manageBrowserProxy_.manageA11yPageReady();
 
     const r = routes;
@@ -471,40 +457,30 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
   }
 
   /**
-   * Note: Overrides RouteOriginBehavior implementation
-   * @param {!Route} newRoute
-   * @param {!Route=} prevRoute
-   * @protected
+   * Note: Overrides RouteOriginMixin implementation
    */
-  currentRouteChanged(newRoute, prevRoute) {
-    RouteOriginBehaviorImpl.currentRouteChanged.call(this, newRoute, prevRoute);
+  override currentRouteChanged(newRoute: Route, prevRoute?: Route) {
+    super.currentRouteChanged(newRoute, prevRoute);
 
     // Does not apply to this page.
-    if (newRoute !== routes.MANAGE_ACCESSIBILITY) {
+    if (newRoute !== this.route_) {
       return;
     }
 
     this.attemptDeepLink();
   }
 
-  /**
-   * @param {boolean} hasMouse
-   * @param {boolean} hasPointingStick
-   * @param {boolean} hasTouchpad
-   * @private
-   */
-  pointersChanged(hasMouse, hasTouchpad, hasPointingStick, isKioskModeActive) {
+  private pointersChanged(
+      hasMouse: boolean, hasTouchpad: boolean, hasPointingStick: boolean,
+      isKioskModeActive: boolean): void {
     this.$.pointerSubpageButton.hidden =
         (!hasMouse && !hasPointingStick && !hasTouchpad) || isKioskModeActive;
   }
 
   /**
    * Return ChromeVox description text based on whether ChromeVox is enabled.
-   * @param {boolean} enabled
-   * @return {string}
-   * @private
    */
-  getChromeVoxDescription_(enabled) {
+  private getChromeVoxDescription_(enabled: boolean): string {
     return this.i18n(
         enabled ? 'chromeVoxDescriptionOn' : 'chromeVoxDescriptionOff');
   }
@@ -512,11 +488,8 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
   /**
    * Return Fullscreen magnifier description text based on whether Fullscreen
    * magnifier is enabled.
-   * @param {boolean} enabled
-   * @return {string}
-   * @private
    */
-  getScreenMagnifierDescription_(enabled) {
+  private getScreenMagnifierDescription_(enabled: boolean): string {
     return this.i18n(
         enabled ? 'screenMagnifierDescriptionOn' :
                   'screenMagnifierDescriptionOff');
@@ -526,12 +499,9 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
    * Return Select-to-Speak description text based on:
    *    1. Whether Select-to-Speak is enabled.
    *    2. If it is enabled, whether a physical keyboard is present.
-   * @param {boolean} enabled
-   * @param {boolean} hasKeyboard
-   * @return {string}
-   * @private
    */
-  getSelectToSpeakDescription_(enabled, hasKeyboard) {
+  private getSelectToSpeakDescription_(enabled: boolean, hasKeyboard: boolean):
+      string {
     if (!enabled) {
       return this.i18n('selectToSpeakDisabledDescription');
     }
@@ -541,65 +511,49 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
     return this.i18n('selectToSpeakDescriptionWithoutKeyboard');
   }
 
-  /**
-   * @param {!CustomEvent<boolean>} e
-   * @private
-   */
-  toggleStartupSoundEnabled_(e) {
+  private toggleStartupSoundEnabled_(e: CustomEvent<boolean>): void {
     this.manageBrowserProxy_.setStartupSoundEnabled(e.detail);
   }
 
-  /** @private */
-  onManageTtsSettingsTap_() {
+  private onManageTtsSettingsTap_(): void {
     Router.getInstance().navigateTo(routes.MANAGE_TTS_SETTINGS);
   }
 
-  /** @private */
-  onChromeVoxSettingsTap_() {
+  private onChromeVoxSettingsTap_(): void {
     this.manageBrowserProxy_.showChromeVoxSettings();
   }
 
-  /** @private */
-  onChromeVoxTutorialTap_() {
+  private onChromeVoxTutorialTap_(): void {
     this.manageBrowserProxy_.showChromeVoxTutorial();
   }
 
-  /** @private */
-  onSelectToSpeakSettingsTap_() {
+  private onSelectToSpeakSettingsTap_(): void {
     this.manageBrowserProxy_.showSelectToSpeakSettings();
   }
 
-  /** @private */
-  onSwitchAccessSettingsTap_() {
+  private onSwitchAccessSettingsTap_(): void {
     Router.getInstance().navigateTo(routes.MANAGE_SWITCH_ACCESS_SETTINGS);
   }
 
-  /** @private */
-  onDisplayTap_() {
+  private onDisplayTap_(): void {
     Router.getInstance().navigateTo(
         routes.DISPLAY,
-        /* dynamicParams */ null, /* removeSearch */ true);
+        /* dynamicParams */ undefined, /* removeSearch */ true);
   }
 
-  /** @private */
-  onAppearanceTap_() {
+  private onAppearanceTap_(): void {
     // Open browser appearance section in a new browser tab.
     window.open('chrome://settings/appearance');
   }
 
-  /** @private */
-  onKeyboardTap_() {
+  private onKeyboardTap_(): void {
     Router.getInstance().navigateTo(
         routes.KEYBOARD,
-        /* dynamicParams */ null, /* removeSearch */ true);
+        /* dynamicParams */ undefined, /* removeSearch */ true);
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onA11yCaretBrowsingChange_(event) {
-    if (event.target.checked) {
+  private onA11yCaretBrowsingChange_(event: Event): void {
+    if ((event.target as SettingsToggleButtonElement).checked) {
       chrome.metricsPrivate.recordUserAction(
           'Accessibility.CaretBrowsing.EnableWithSettings');
     } else {
@@ -608,31 +562,24 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
     }
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShowShelfNavigationButtonsSettings_() {
+  private computeShowShelfNavigationButtonsSettings_(): boolean {
     return !this.isKioskModeActive_ &&
         loadTimeData.getBoolean('showTabletModeShelfNavigationButtonsSettings');
   }
 
   /**
-   * @return {boolean} Whether shelf navigation buttons should implicitly be
+   * @return Whether shelf navigation buttons should implicitly be
    *     enabled in tablet mode (due to accessibility settings different than
    *     shelf_navigation_buttons_enabled_in_tablet_mode).
-   * @private
    */
-  computeShelfNavigationButtonsImplicitlyEnabled_() {
+  private computeShelfNavigationButtonsImplicitlyEnabled_(): boolean {
     /**
      * Gets the bool pref value for the provided pref key.
-     * @param {string} key
-     * @return {boolean}
      */
-    const getBoolPrefValue = (key) => {
-      const pref = /** @type {chrome.settingsPrivate.PrefObject} */ (
-          this.get(key, this.prefs));
-      return pref && !!pref.value;
+    const getBoolPrefValue = (key: string): boolean => {
+      const pref: chrome.settingsPrivate.PrefObject<boolean>|undefined =
+          this.get(key, this.prefs);
+      return !!pref?.value;
     };
 
     return getBoolPrefValue('settings.accessibility') ||
@@ -644,24 +591,22 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
    * Calculates the effective value for "shelf navigation buttons enabled in
    * tablet mode" setting - if the setting is implicitly enabled (by other a11y
    * settings), this will return a stub pref value.
-   * @private
-   * @return {chrome.settingsPrivate.PrefObject}
    */
-  getShelfNavigationButtonsEnabledPref_() {
+  private getShelfNavigationButtonsEnabledPref_():
+      chrome.settingsPrivate.PrefObject<boolean> {
     if (this.shelfNavigationButtonsImplicitlyEnabled_) {
-      return /** @type {!chrome.settingsPrivate.PrefObject}*/ ({
+      return {
         value: true,
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         key: '',
-      });
+      };
     }
 
-    return /** @type {chrome.settingsPrivate.PrefObject} */ (this.get(
-        'settings.a11y.tablet_mode_shelf_nav_buttons_enabled', this.prefs));
+    return this.getPref<boolean>(
+        'settings.a11y.tablet_mode_shelf_nav_buttons_enabled');
   }
 
-  /** @private */
-  onShelfNavigationButtonsLearnMoreClicked_() {
+  private onShelfNavigationButtonsLearnMoreClicked_(): void {
     chrome.metricsPrivate.recordUserAction(
         'Settings_A11y_ShelfNavigationButtonsLearnMoreClicked');
   }
@@ -670,67 +615,54 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
    * Handles the <code>tablet_mode_shelf_nav_buttons_enabled</code> setting's
    * toggle changes. It updates the backing pref value, unless the setting is
    * implicitly enabled.
-   * @private
    */
-  updateShelfNavigationButtonsEnabledPref_() {
+  private updateShelfNavigationButtonsEnabledPref_(): void {
     if (this.shelfNavigationButtonsImplicitlyEnabled_) {
       return;
     }
 
-    const enabled =
-        this.shadowRoot.querySelector('#shelfNavigationButtonsEnabledControl')
-            .checked;
-    this.set(
-        'prefs.settings.a11y.tablet_mode_shelf_nav_buttons_enabled.value',
-        enabled);
+    const enabled = this.shadowRoot!
+                        .querySelector<SettingsToggleButtonElement>(
+                            '#shelfNavigationButtonsEnabledControl')!.checked;
+
+    this.setPrefValue(
+        'settings.a11y.tablet_mode_shelf_nav_buttons_enabled', enabled);
     this.manageBrowserProxy_.recordSelectedShowShelfNavigationButtonValue(
         enabled);
   }
 
-  /** @private */
-  onA11yCursorColorChange_() {
+  private onA11yCursorColorChange_(): void {
     // Custom cursor color is enabled when the color is not set to black.
     const a11yCursorColorOn =
-        this.get('prefs.settings.a11y.cursor_color.value') !==
+        this.getPref<number>('settings.a11y.cursor_color').value !==
         DEFAULT_BLACK_CURSOR_COLOR;
-    this.set(
-        'prefs.settings.a11y.cursor_color_enabled.value', a11yCursorColorOn);
+    this.setPrefValue('settings.a11y.cursor_color_enabled', a11yCursorColorOn);
   }
 
 
-  /** @private */
-  onMouseTap_() {
+  private onMouseTap_(): void {
     Router.getInstance().navigateTo(
         routes.POINTERS,
-        /* dynamicParams */ null, /* removeSearch */ true);
+        /* dynamicParams */ undefined, /* removeSearch */ true);
   }
 
   /**
    * Handles updating the visibility of the shelf navigation buttons setting
    * and updating whether startupSoundEnabled is checked.
-   * @param {boolean} startupSoundEnabled Whether startup sound is enabled.
-   * @private
    */
-  onManageAllyPageReady_(startupSoundEnabled) {
+  private onManageAllyPageReady_(startupSoundEnabled: boolean): void {
     this.$.startupSoundEnabled.checked = startupSoundEnabled;
   }
 
   /**
    * Whether additional features link should be shown.
-   * @param {boolean} isKiosk
-   * @param {boolean} isGuest
-   * @return {boolean}
-   * @private
    */
-  shouldShowAdditionalFeaturesLink_(isKiosk, isGuest) {
+  private shouldShowAdditionalFeaturesLink_(isKiosk: boolean, isGuest: boolean):
+      boolean {
     return !isKiosk && !isGuest;
   }
 
-  /**
-   * @param {string} subtitle
-   * @private
-   */
-  onDictationLocaleMenuSubtitleChanged_(subtitle) {
+  private onDictationLocaleMenuSubtitleChanged_(subtitle: string): void {
     this.useDictationLocaleSubtitleOverride_ = true;
     this.dictationLocaleSubtitleOverride_ = subtitle;
   }
@@ -738,10 +670,8 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
 
   /**
    * Saves a list of locales and updates the UI to reflect the list.
-   * @param {!Array<!Array<string>>} locales
-   * @private
    */
-  onDictationLocalesSet_(locales) {
+  private onDictationLocalesSet_(locales: LocaleInfo[]): void {
     this.dictationLocalesList_ = locales;
     this.onDictationLocalesChanged_();
   }
@@ -751,11 +681,10 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
    * an array of menu options.
    * TODO(crbug.com/1195916): Use 'offline' to indicate to the user which
    * locales work offline with an icon in the select options.
-   * @private
    */
-  onDictationLocalesChanged_() {
+  private onDictationLocalesChanged_(): void {
     const currentLocale =
-        this.get('prefs.settings.a11y.dictation_locale.value');
+        this.getPref<string>('settings.a11y.dictation_locale').value;
     this.dictationLocaleOptions_ =
         this.dictationLocalesList_.map((localeInfo) => {
           return {
@@ -772,10 +701,8 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
   /**
    * Calculates the Dictation locale subtitle based on the current
    * locale from prefs and the offline availability of that locale.
-   * @return {string}
-   * @private
    */
-  computeDictationLocaleSubtitle_() {
+  private computeDictationLocaleSubtitle_(): string {
     if (this.useDictationLocaleSubtitleOverride_) {
       // Only use the subtitle override once, since we still want the subtitle
       // to repsond to changes to the dictation locale.
@@ -784,7 +711,7 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
     }
 
     const currentLocale =
-        this.get('prefs.settings.a11y.dictation_locale.value');
+        this.getPref<string>('settings.a11y.dictation_locale').value;
     const locale = this.dictationLocaleOptions_.find(
         (element) => element.value === currentLocale);
     if (!locale) {
@@ -807,22 +734,25 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
     return this.i18n('dictationLocaleSubLabelOffline', locale.name);
   }
 
-  /** @private */
-  onChangeDictationLocaleButtonClicked_() {
+  private onChangeDictationLocaleButtonClicked_(): void {
     this.showDictationLocaleMenu_ = true;
   }
 
-  /** @private */
-  onChangeDictationLocalesDialogClosed_() {
+  private onChangeDictationLocalesDialogClosed_(): void {
     this.showDictationLocaleMenu_ = false;
   }
 
-  /** @private */
-  onAdditionalFeaturesClick_() {
+  private onAdditionalFeaturesClick_(): void {
     window.open(
         'https://chrome.google.com/webstore/category/collection/3p_accessibility_extensions');
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsManageA11yPageElement.is]: SettingsManageA11yPageElement;
+  }
+}
+
 customElements.define(
-    SettingsManageA11YPageElement.is, SettingsManageA11YPageElement);
+    SettingsManageA11yPageElement.is, SettingsManageA11yPageElement);

@@ -2,86 +2,72 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @interface */
-export class ManageA11yPageBrowserProxy {
+export interface ManageA11yPageBrowserProxy {
   /**
    * Opens the options page for Chrome Vox.
    */
-  showChromeVoxSettings() {}
+  showChromeVoxSettings(): void;
 
   /**
    * Opens the options page for select to speak.
    */
-  showSelectToSpeakSettings() {}
+  showSelectToSpeakSettings(): void;
 
   /**
    * Sets the startup sound to enabled.
-   * @param {boolean} enabled
    */
-  setStartupSoundEnabled(enabled) {}
+  setStartupSoundEnabled(enabled: boolean): void;
 
   /**
    * Records the value of the show shelf navigation button.
-   * @param {boolean} enabled
    */
-  recordSelectedShowShelfNavigationButtonValue(enabled) {}
+  recordSelectedShowShelfNavigationButtonValue(enabled: boolean): void;
 
   /**
    * Requests whether startup sound and tablet mode are enabled. Result
    * is returned by the 'initial-data-ready' WebUI listener event.
    */
-  manageA11yPageReady() {}
+  manageA11yPageReady(): void;
 
   /**
    * Opens the ChromeVox tutorial.
    */
-  showChromeVoxTutorial() {}
+  showChromeVoxTutorial(): void;
 }
 
-/** @type {?ManageA11yPageBrowserProxy} */
-let instance = null;
+let instance: ManageA11yPageBrowserProxy|null = null;
 
-/**
- * @implements {ManageA11yPageBrowserProxy}
- */
-export class ManageA11yPageBrowserProxyImpl {
-  /** @return {!ManageA11yPageBrowserProxy} */
-  static getInstance() {
+export class ManageA11yPageBrowserProxyImpl implements
+    ManageA11yPageBrowserProxy {
+  static getInstance(): ManageA11yPageBrowserProxy {
     return instance || (instance = new ManageA11yPageBrowserProxyImpl());
   }
 
-  /** @param {!ManageA11yPageBrowserProxy} obj */
-  static setInstanceForTesting(obj) {
+  static setInstanceForTesting(obj: ManageA11yPageBrowserProxy): void {
     instance = obj;
   }
 
-  /** @override */
-  showChromeVoxSettings() {
+  showChromeVoxSettings(): void {
     chrome.send('showChromeVoxSettings');
   }
 
-  /** @override */
-  showSelectToSpeakSettings() {
+  showSelectToSpeakSettings(): void {
     chrome.send('showSelectToSpeakSettings');
   }
 
-  /** @override */
-  setStartupSoundEnabled(enabled) {
+  setStartupSoundEnabled(enabled: boolean): void {
     chrome.send('setStartupSoundEnabled', [enabled]);
   }
 
-  /** @override */
-  recordSelectedShowShelfNavigationButtonValue(enabled) {
+  recordSelectedShowShelfNavigationButtonValue(enabled: boolean): void {
     chrome.send('recordSelectedShowShelfNavigationButtonValue', [enabled]);
   }
 
-  /** @override */
-  manageA11yPageReady() {
+  manageA11yPageReady(): void {
     chrome.send('manageA11yPageReady');
   }
 
-  /** @override */
-  showChromeVoxTutorial() {
+  showChromeVoxTutorial(): void {
     chrome.send('showChromeVoxTutorial');
   }
 }
