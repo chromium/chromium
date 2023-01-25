@@ -14,18 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import {Protocol} from 'devtools-protocol';
 import {CommonDataTypes, Message, Script} from '../../../protocol/protocol.js';
 import {Realm} from './realm.js';
+import {Protocol} from 'devtools-protocol';
+
+// As `script.evaluate` wraps call into serialization script, `lineNumber`
+// should be adjusted.
+const EVALUATE_STACKTRACE_LINE_OFFSET = 0;
+const CALL_FUNCTION_STACKTRACE_LINE_OFFSET = 1;
+const SHARED_ID_DIVIDER = '_element_';
 
 export class ScriptEvaluator {
-  // As `script.evaluate` wraps call into serialization script, `lineNumber`
-  // should be adjusted.
-  static readonly #EVALUATE_STACKTRACE_LINE_OFFSET = 0;
-  static readonly #CALL_FUNCTION_STACKTRACE_LINE_OFFSET = 1;
-  static readonly #SHARED_ID_DIVIDER = '_element_';
-
   // Keeps track of `handle`s and their realms sent to client.
   static readonly #knownHandlesToRealm: Map<string, string> = new Map();
 
@@ -157,7 +156,7 @@ export class ScriptEvaluator {
       return {
         exceptionDetails: await this.#serializeCdpExceptionDetails(
           cdpCallFunctionResult.exceptionDetails,
-          this.#CALL_FUNCTION_STACKTRACE_LINE_OFFSET,
+          CALL_FUNCTION_STACKTRACE_LINE_OFFSET,
           resultOwnership,
           realm
         ),
@@ -285,9 +284,7 @@ export class ScriptEvaluator {
 
     if (result.type == 'node') {
       if (bidiValue.hasOwnProperty('backendNodeId')) {
-        bidiValue.sharedId = `${realm.navigableId}${
-          ScriptEvaluator.#SHARED_ID_DIVIDER
-        }${bidiValue.backendNodeId}`;
+        bidiValue.sharedId = `${realm.navigableId}${SHARED_ID_DIVIDER}${bidiValue.backendNodeId}`;
         delete bidiValue['backendNodeId'];
       }
       if (bidiValue.hasOwnProperty('children')) {
@@ -339,7 +336,7 @@ export class ScriptEvaluator {
       return {
         exceptionDetails: await this.#serializeCdpExceptionDetails(
           cdpEvaluateResult.exceptionDetails,
-          this.#EVALUATE_STACKTRACE_LINE_OFFSET,
+          EVALUATE_STACKTRACE_LINE_OFFSET,
           resultOwnership,
           realm
         ),
@@ -364,9 +361,8 @@ export class ScriptEvaluator {
     realm: Realm
   ): Promise<Protocol.Runtime.CallArgument> {
     if ('sharedId' in argumentValue) {
-      const [navigableId, rawBackendNodeId] = argumentValue.sharedId.split(
-        ScriptEvaluator.#SHARED_ID_DIVIDER
-      );
+      const [navigableId, rawBackendNodeId] =
+        argumentValue.sharedId.split(SHARED_ID_DIVIDER);
 
       const backendNodeId = parseInt(rawBackendNodeId ?? '');
       if (
@@ -375,11 +371,7 @@ export class ScriptEvaluator {
         navigableId === undefined
       ) {
         throw new Message.InvalidArgumentException(
-          `SharedId "${
-            argumentValue.sharedId
-          }" should have format "{navigableId}${
-            ScriptEvaluator.#SHARED_ID_DIVIDER
-          }{backendNodeId}".`
+          `SharedId "${argumentValue.sharedId}" should have format "{navigableId}${SHARED_ID_DIVIDER}{backendNodeId}".`
         );
       }
 
