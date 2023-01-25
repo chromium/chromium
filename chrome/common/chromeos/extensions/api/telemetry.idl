@@ -103,6 +103,12 @@ namespace os.telemetry {
 
   callback CpuInfoCallback = void (CpuInfo cpuInfo);
 
+  dictionary MarketingInfo {
+    DOMString? marketingName;
+  };
+
+  callback MarketingInfoCallback = void (MarketingInfo marketingInfo);
+
   dictionary MemoryInfo {
     long? totalMemoryKiB;
     long? freeMemoryKiB;
@@ -261,6 +267,8 @@ namespace os.telemetry {
     [supportsPromises] static void getCpuInfo(CpuInfoCallback callback);
 
     [supportsPromises] static void getInternetConnectivityInfo(InternetConnectivityInfoCallback callback);
+
+    [supportsPromises] static void getMarketingInfo(MarketingInfoCallback callback);
 
     [supportsPromises] static void getMemoryInfo(MemoryInfoCallback callback);
 

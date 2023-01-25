@@ -204,6 +204,18 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+class PendingApprovalTelemetryExtensionTelemetryApiBrowserTest
+    : public TelemetryExtensionTelemetryApiBrowserTest {
+ public:
+  PendingApprovalTelemetryExtensionTelemetryApiBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kTelemetryExtensionPendingApprovalApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetAudioInfo_NoFeatureFlagEnabledError) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -227,18 +239,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
     ]);
   )");
 }
-
-class PendingApprovalTelemetryExtensionTelemetryApiBrowserTest
-    : public TelemetryExtensionTelemetryApiBrowserTest {
- public:
-  PendingApprovalTelemetryExtensionTelemetryApiBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kTelemetryExtensionPendingApprovalApi);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
 
 IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
                        GetAudioInfo_Error) {
@@ -736,6 +736,111 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
           }],
         }, result);
 
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+                       GetMarketingInfo_NoFeatureFlagEnabledError) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // If the permission is not enabled, the method isn't defined
+  // on `chrome.os.telemetry`.
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function getAudioInfo() {
+        chrome.test.assertThrows(() => {
+          chrome.os.telemetry.getMarketingInfo();
+        },
+        [], "chrome.os.telemetry.getMarketingInfo is not a function");
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
+                       GetMarketingInfo_Error) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // Configure FakeProbeService.
+  {
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {crosapi::mojom::ProbeCategoryEnum::kSystem});
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getMarketingInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getMarketingInfo(),
+            'Error: API internal error'
+        );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
+                       GetMarketingName_Success) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // Configure FakeProbeService.
+  {
+    auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
+    {
+      auto os_info = crosapi::mojom::ProbeOsInfo::New();
+      os_info->marketing_name = "Test Marketing Name";
+
+      auto system_info = crosapi::mojom::ProbeSystemInfo::New();
+      system_info->os_info = std::move(os_info);
+
+      telemetry_info->system_result =
+          crosapi::mojom::ProbeSystemResult::NewSystemInfo(
+              std::move(system_info));
+    }
+
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
+    fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {crosapi::mojom::ProbeCategoryEnum::kSystem});
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getMarketingInfo() {
+        const result = await chrome.os.telemetry.getMarketingInfo();
+        chrome.test.assertEq(
+          {
+            marketingName: "Test Marketing Name",
+          }, result);
         chrome.test.succeed();
       }
     ]);

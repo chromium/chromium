@@ -207,6 +207,36 @@ void OsTelemetryGetInternetConnectivityInfoFunction::OnResult(
       telemetry::GetInternetConnectivityInfo::Results::Create(result)));
 }
 
+// OsTelemetryGetMarketingInfoFunction -----------------------------------------
+
+void OsTelemetryGetMarketingInfoFunction::RunIfAllowed() {
+  auto cb =
+      base::BindOnce(&OsTelemetryGetMarketingInfoFunction::OnResult, this);
+
+  GetRemoteService()->ProbeTelemetryInfo(
+      {crosapi::mojom::ProbeCategoryEnum::kSystem}, std::move(cb));
+}
+
+void OsTelemetryGetMarketingInfoFunction::OnResult(
+    crosapi::mojom::ProbeTelemetryInfoPtr ptr) {
+  if (!ptr || !ptr->system_result || !ptr->system_result->is_system_info()) {
+    Respond(Error("API internal error"));
+    return;
+  }
+
+  auto& system_info = ptr->system_result->get_system_info();
+
+  if (!system_info->os_info) {
+    Respond(Error("API internal error"));
+    return;
+  }
+
+  telemetry::MarketingInfo result;
+  result.marketing_name = system_info->os_info->marketing_name;
+
+  Respond(ArgumentList(telemetry::GetMarketingInfo::Results::Create(result)));
+}
+
 // OsTelemetryGetMemoryInfoFunction --------------------------------------------
 
 void OsTelemetryGetMemoryInfoFunction::RunIfAllowed() {

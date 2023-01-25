@@ -35723,6 +35723,7 @@ Called by update_extension_histograms.py.-->
   <int value="1755" label="FILEMANAGERPRIVATE_RESUMEIOTASK"/>
   <int value="1756" label="PASSWORDSPRIVATE_GETCREDENTIALSWITHREUSEDPASSWORD"/>
   <int value="1757" label="OS_TELEMETRY_GETAUDIOINFO"/>
+  <int value="1758" label="OS_TELEMETRY_GETMARKETINGINFO"/>
 </enum>
 
 <enum name="ExtensionIconState">

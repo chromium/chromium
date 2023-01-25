@@ -101,6 +101,19 @@ class OsTelemetryGetInternetConnectivityInfoFunction
   void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
 };
 
+class OsTelemetryGetMarketingInfoFunction : public TelemetryApiFunctionBase {
+  DECLARE_EXTENSION_FUNCTION("os.telemetry.getMarketingInfo",
+                             OS_TELEMETRY_GETMARKETINGINFO)
+
+ private:
+  ~OsTelemetryGetMarketingInfoFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+
+  void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
+};
+
 class OsTelemetryGetMemoryInfoFunction : public TelemetryApiFunctionBase {
   DECLARE_EXTENSION_FUNCTION("os.telemetry.getMemoryInfo",
                              OS_TELEMETRY_GETMEMORYINFO)

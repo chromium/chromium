@@ -1236,19 +1236,22 @@ TEST(ProbeServiceConverters, SystemInfoPtr) {
   constexpr char kBuildNumber[] = "13544";
   constexpr char kPatchNumber[] = "59.0";
   constexpr char kReleaseChannel[] = "stable-channel";
+  constexpr char kMarketingName[] = "Test Marketing Name";
 
   auto os_version = cros_healthd::mojom::OsVersion::New(
       kReleaseMilestone, kBuildNumber, kPatchNumber, kReleaseChannel);
   auto input = cros_healthd::mojom::OsInfo::New();
   input->oem_name = kOemName;
   input->os_version = std::move(os_version);
+  input->marketing_name = kMarketingName;
 
   EXPECT_EQ(
       ConvertProbePtr(std::move(input)),
       crosapi::mojom::ProbeSystemInfo::New(crosapi::mojom::ProbeOsInfo::New(
           kOemName,
           crosapi::mojom::ProbeOsVersion::New(kReleaseMilestone, kBuildNumber,
-                                              kPatchNumber, kReleaseChannel))));
+                                              kPatchNumber, kReleaseChannel),
+          kMarketingName)));
 }
 
 TEST(ProbeServiceConverters, OsVersionPtr) {

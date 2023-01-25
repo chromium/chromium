@@ -710,12 +710,17 @@ struct ProbeOsVersion {
 };
 
 // The OS information.
+//
+// Next ID: 3
+// Next Version: 3
 [Stable]
 struct ProbeOsInfo {
   // Contents of CrosConfig in /branding/oem-name.
   string? oem_name@0;
   // OS Version information.
   [MinVersion=1] ProbeOsVersion? os_version@1;
+  // Contents of CrosConfig in /branding/marketing-name.
+  [MinVersion=2] string? marketing_name@2;
 };
 
 // System Information.

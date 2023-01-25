@@ -1818,6 +1818,7 @@ enum HistogramValue {
   FILEMANAGERPRIVATE_RESUMEIOTASK = 1755,
   PASSWORDSPRIVATE_GETCREDENTIALSWITHREUSEDPASSWORD = 1756,
   OS_TELEMETRY_GETAUDIOINFO = 1757,
+  OS_TELEMETRY_GETMARKETINGINFO = 1758,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

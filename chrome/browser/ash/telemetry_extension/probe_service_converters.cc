@@ -426,8 +426,8 @@ crosapi::mojom::ProbeBluetoothResultPtr UncheckedConvertPtr(
 crosapi::mojom::ProbeSystemInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::OsInfoPtr input) {
   return crosapi::mojom::ProbeSystemInfo::New(crosapi::mojom::ProbeOsInfo::New(
-      std::move(input->oem_name),
-      ConvertProbePtr(std::move(input->os_version))));
+      std::move(input->oem_name), ConvertProbePtr(std::move(input->os_version)),
+      std::move(input->marketing_name)));
 }
 
 crosapi::mojom::ProbeOsVersionPtr UncheckedConvertPtr(
