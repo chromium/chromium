@@ -985,9 +985,6 @@
           'pie_fleet',
           'walleye',
         ],
-        'additional_compile_targets': [
-          'monochrome_static_initializers',
-        ],
         'args': [
           '--use-persistent-shell',
         ],
