@@ -187,5 +187,13 @@
       <property name="ignoreComments" value="true"/>
       <property name="message" value="Use java.util.Optional instead of com.google.common.base.Optional unless required to interact with external libraries."/>
     </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="CollectionSubclass"/>
+      <property name="severity" value="warning"/>
+      <!-- E.g., matches "new HashSet<>() {" -->
+      <property name="format" value="new \w+(?:List|Set|Map)\b.*\{"/>
+      <property name="ignoreComments" value="true"/>
+      <property name="message" value="Subclassing collections is uncommon. If you are not doing so, please ignore. If you are subclassing in order to call add()/put(), use List.of() / Set.of() / Map.of() instead, or use multiple statements."/>
+    </module>
   </module>
 </module>
