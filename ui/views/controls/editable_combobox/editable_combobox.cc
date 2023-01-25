@@ -116,7 +116,7 @@ class Arrow : public Button {
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->role = ax::mojom::Role::kComboBoxMenuButton;
+    node_data->role = ax::mojom::Role::kButton;
     node_data->SetName(GetAccessibleName());
     node_data->SetHasPopup(ax::mojom::HasPopup::kMenu);
     if (GetEnabled())
