@@ -614,9 +614,10 @@ void FastPairGattServiceClientImpl::WritePasskeyAsync(
   DCHECK(is_initialized_);
   DCHECK(message_type == kSeekerPasskey);
 
-  // The passkey should only ever be written once; if the notify
-  // session has already been set, something has gone wrong.
-  DCHECK(!passkey_notify_session_);
+  // |passkey_notify_session| might already exist since it happens after the
+  // handshake completes, meaning a reused handshake may already have a
+  // |passkey_notify_session|. Therefore, do not DCHECK that it doesn't exist.
+
   passkey_write_response_callback_ = std::move(write_response_callback);
 
   const std::array<uint8_t, kBlockSizeBytes> data_to_write =
