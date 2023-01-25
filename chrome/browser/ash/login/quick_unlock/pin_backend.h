@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
+#include "chromeos/ash/services/auth_factor_config/chrome_browser_delegates.h"
 #include "components/prefs/pref_service.h"
 
 class AccountId;
@@ -24,7 +25,7 @@ enum class Purpose;
 
 // Provides high-level access to the user's PIN. The underlying storage can be
 // either cryptohome or prefs.
-class PinBackend {
+class PinBackend : public ash::auth::PinBackendDelegate {
  public:
   using BoolCallback = base::OnceCallback<void(bool)>;
 
@@ -45,7 +46,7 @@ class PinBackend {
   PinBackend(const PinBackend&) = delete;
   PinBackend& operator=(const PinBackend&) = delete;
 
-  ~PinBackend();
+  ~PinBackend() override;
 
   // Check to see if the PinBackend supports login. This is true when the
   // cryptohome backend is available.
@@ -61,7 +62,7 @@ class PinBackend {
   void Set(const AccountId& account_id,
            const std::string& auth_token,
            const std::string& pin,
-           BoolCallback did_set);
+           BoolCallback did_set) override;
 
   // Set the state of PIN auto submit for the given user. Called when enabling
   // auto submit through the confirmation dialog in Settings.
@@ -73,7 +74,7 @@ class PinBackend {
   // Remove the given user's PIN.
   void Remove(const AccountId& account_id,
               const std::string& auth_token,
-              BoolCallback did_remove);
+              BoolCallback did_remove) override;
 
   // Is PIN authentication available for the given account? Even if PIN is set,
   // it may not be available for authentication due to some additional

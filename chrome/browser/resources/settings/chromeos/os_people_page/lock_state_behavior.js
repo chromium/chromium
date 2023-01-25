@@ -4,7 +4,7 @@
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {AuthFactorConfig, AuthFactorConfigInterface, RecoveryFactorEditor, RecoveryFactorEditorInterface} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
+import {AuthFactorConfig, AuthFactorConfigInterface, PinFactorEditor, PinFactorEditorInterface, RecoveryFactorEditor, RecoveryFactorEditorInterface} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 
 /**
  * @fileoverview
@@ -78,6 +78,13 @@ export const LockStateBehaviorImpl = {
      */
     recoveryFactorEditor:
         {type: Object, value: RecoveryFactorEditor.getRemote()},
+
+    /**
+     * Interface for calls to the ash PinFactorEditor service.  May be
+     * overridden by tests.
+     * @type {PinFactorEditorInterface}
+     */
+    pinFactorEditor: {type: Object, value: PinFactorEditor.getRemote()},
   },
 
   /** @override */
@@ -222,6 +229,13 @@ export class LockStateBehaviorInterface {
      * @type {RecoveryFactorEditorInterface}
      */
     this.recoveryFactorEditor;
+
+    /**
+     * Interface for calls to the ash PinFactorEditor service.  May be
+     * overridden by tests.
+     * @type {PinFactorEditorInterface}
+     */
+    this.pinFactorEditor;
   }
 
   /**

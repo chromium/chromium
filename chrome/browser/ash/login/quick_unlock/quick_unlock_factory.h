@@ -7,7 +7,7 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "chromeos/ash/services/auth_factor_config/quick_unlock_storage_delegate.h"
+#include "chromeos/ash/services/auth_factor_config/chrome_browser_delegates.h"
 #include "components/account_id/account_id.h"
 
 class Profile;

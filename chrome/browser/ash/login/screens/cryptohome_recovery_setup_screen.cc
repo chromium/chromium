@@ -88,13 +88,13 @@ void CryptohomeRecoverySetupScreen::ExitScreen(
 }
 
 void CryptohomeRecoverySetupScreen::OnRecoveryConfigured(
-    auth::RecoveryFactorEditor::ConfigureResult result) {
+    auth::mojom::ConfigureResult result) {
   switch (result) {
-    case auth::RecoveryFactorEditor::ConfigureResult::kSuccess:
+    case auth::mojom::ConfigureResult::kSuccess:
       ExitScreen(*context(), Result::DONE);
       break;
-    case auth::RecoveryFactorEditor::ConfigureResult::kInvalidTokenError:
-    case auth::RecoveryFactorEditor::ConfigureResult::kClientError:
+    case auth::mojom::ConfigureResult::kInvalidTokenError:
+    case auth::mojom::ConfigureResult::kFatalError:
       LOG(ERROR) << "Failed to setup recovery factor, result "
                  << static_cast<int>(result);
       ExitScreen(*context(), Result::SKIPPED);

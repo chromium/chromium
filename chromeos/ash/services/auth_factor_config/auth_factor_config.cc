@@ -88,7 +88,21 @@ void AuthFactorConfig::GetManagementType(
               : mojom::ManagementType::kNone;
 
       std::move(callback).Run(result);
-      break;
+      return;
+    }
+    case mojom::AuthFactor::kPin: {
+      const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
+      CHECK(user);
+      const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
+      CHECK(prefs);
+
+      if (prefs->IsManagedPreference(prefs::kQuickUnlockModeAllowlist) ||
+          prefs->IsManagedPreference(prefs::kWebAuthnFactors)) {
+        std::move(callback).Run(mojom::ManagementType::kUser);
+      } else {
+        std::move(callback).Run(mojom::ManagementType::kNone);
+      }
+      return;
     }
   }
 }
@@ -106,7 +120,37 @@ void AuthFactorConfig::IsEditable(const std::string& auth_token,
 
       std::move(callback).Run(
           prefs->IsUserModifiablePreference(prefs::kRecoveryFactorBehavior));
-      break;
+      return;
+    }
+    case mojom::AuthFactor::kPin: {
+      const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
+      CHECK(user);
+      const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
+      CHECK(prefs);
+
+      // Lists of factors that are allowed for some purpose.
+      const base::Value::List* pref_lists[] = {
+          &prefs->GetList(prefs::kQuickUnlockModeAllowlist),
+          &prefs->GetList(prefs::kWebAuthnFactors),
+      };
+
+      // Values in factor lists that match PINs.
+      const base::Value pref_list_values[] = {
+          base::Value("all"),
+          base::Value("PIN"),
+      };
+
+      for (const auto* pref_list : pref_lists) {
+        for (const auto& pref_list_value : pref_list_values) {
+          if (base::Contains(*pref_list, pref_list_value)) {
+            std::move(callback).Run(true);
+            return;
+          }
+        }
+      }
+
+      std::move(callback).Run(false);
+      return;
     }
   }
 }

@@ -34,7 +34,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common
 import {LockScreenProgress, recordLockScreenProgress} from 'chrome://resources/ash/common/quick_unlock/lock_screen_constants.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {AuthFactor, FactorObserverInterface, FactorObserverReceiver, ManagementType, RecoveryFactorEditor_ConfigureResult} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
+import {AuthFactor, ConfigureResult, FactorObserverInterface, FactorObserverReceiver, ManagementType} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
@@ -642,13 +642,13 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       const {result} = await this.recoveryFactorEditor.configure(
           this.authToken.token, shouldEnable);
       switch (result) {
-        case RecoveryFactorEditor_ConfigureResult.kSuccess:
+        case ConfigureResult.kSuccess:
           break;
-        case RecoveryFactorEditor_ConfigureResult.kInvalidTokenError:
+        case ConfigureResult.kInvalidTokenError:
           // This will open the password prompt.
           this.dispatchAuthTokenInvalidEvent_();
           return;
-        case RecoveryFactorEditor_ConfigureResult.kClientError:
+        case ConfigureResult.kFatalError:
           console.error('Error configuring recovery');
           return;
       }

@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_AUTH_FACTOR_CONFIG_IN_PROCESS_INSTANCES_H_
 #define CHROMEOS_ASH_SERVICES_AUTH_FACTOR_CONFIG_IN_PROCESS_INSTANCES_H_
 
+#include "chromeos/ash/services/auth_factor_config/chrome_browser_delegates.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-forward.h"
-#include "chromeos/ash/services/auth_factor_config/quick_unlock_storage_delegate.h"
 #include "chromeos/ash/services/auth_factor_config/recovery_factor_editor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -31,6 +31,11 @@ void BindToRecoveryFactorEditor(
     QuickUnlockStorageDelegate&);
 mojom::RecoveryFactorEditor& GetRecoveryFactorEditor(
     QuickUnlockStorageDelegate&);
+
+void BindToPinFactorEditor(
+    mojo::PendingReceiver<mojom::PinFactorEditor> receiver,
+    QuickUnlockStorageDelegate&,
+    PinBackendDelegate&);
 
 }  // namespace ash::auth
 

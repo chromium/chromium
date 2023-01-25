@@ -21,9 +21,9 @@ module ash.auth.mojom;
 // An enumeration of all authentication factors.
 enum AuthFactor {
   kRecovery,
+  kPin,
   // TODO(crbug.com/1327627): Add support for other authentication factors:
   // kPassword,
-  // kPin,
   // kFingerprint,
 };
 
@@ -69,21 +69,37 @@ interface AuthFactorConfig {
   IsEditable(string auth_token, AuthFactor factor) => (bool editable);
 };
 
+// Returned from various operations that change ("configure") something about
+// an auth factor.
+enum ConfigureResult {
+  // The configuration operation was successful.
+  kSuccess,
+  // Returned if the token used to access configuration was invalid. Clients
+  // should obtain a new token before trying again.
+  kInvalidTokenError,
+  // Returned if the client uses the API incorrectly or the backend could not
+  // process the request.
+  kFatalError,
+};
+
 // Interface for methods specific to recovery authentication. Served from chrome
 // ash, intended to be consumed by the following webuis:
 // * chrome://os-settings
 // * chrome://oobe
 interface RecoveryFactorEditor {
-  // Return code of |Configure|.
-  enum ConfigureResult {
-    kSuccess,
-    kInvalidTokenError,
-    // Returned if the client uses the API incorrectly, e.g. if the client
-    // enables recovery even though it is not supported.
-    kClientError,
-  };
   // Enables or disables recovery authentication. Clients must not attempt to
   // enable recovery if recovery is not editable. Enabling recovery when it is
   // already enabled is a no-op and succeeds; similarly for disabling.
   Configure(string auth_token, bool enabled) => (ConfigureResult result);
+};
+
+// Interface for methods specific to pin authentication. Served from chrome
+// ash, intended to be consumed by the following webuis:
+// * chrome://os-settings
+// * chrome://oobe
+interface PinFactorEditor {
+  // Set the user pin to the desired value.
+  SetPin(string auth_token, string pin) => (ConfigureResult result);
+  // Remove the pin factor for the user.
+  RemovePin(string auth_token) => (ConfigureResult result);
 };

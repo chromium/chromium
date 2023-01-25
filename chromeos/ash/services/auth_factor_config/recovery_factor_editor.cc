@@ -30,7 +30,7 @@ void RecoveryFactorEditor::BindReceiver(
 void RecoveryFactorEditor::Configure(
     const std::string& auth_token,
     bool enabled,
-    base::OnceCallback<void(ConfigureResult)> callback) {
+    base::OnceCallback<void(mojom::ConfigureResult)> callback) {
   DCHECK(features::IsCryptohomeRecoverySetupEnabled());
 
   const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
@@ -38,7 +38,7 @@ void RecoveryFactorEditor::Configure(
       quick_unlock_storage_->GetUserContext(user, auth_token);
   if (user_context_ptr == nullptr) {
     LOG(ERROR) << "Invalid auth token";
-    std::move(callback).Run(ConfigureResult::kInvalidTokenError);
+    std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
     return;
   }
 
@@ -47,7 +47,7 @@ void RecoveryFactorEditor::Configure(
           cryptohome::AuthFactorType::kRecovery);
 
   if (enabled == currently_enabled) {
-    std::move(callback).Run(ConfigureResult::kSuccess);
+    std::move(callback).Run(mojom::ConfigureResult::kSuccess);
     return;
   }
 
@@ -67,20 +67,20 @@ void RecoveryFactorEditor::Configure(
 }
 
 void RecoveryFactorEditor::OnRecoveryFactorConfigured(
-    base::OnceCallback<void(ConfigureResult)> callback,
+    base::OnceCallback<void(mojom::ConfigureResult)> callback,
     std::unique_ptr<UserContext> context,
     absl::optional<AuthenticationError> error) {
   if (error.has_value()) {
     // Handle expired auth session gracefully.
     if (error->get_cryptohome_code() ==
         user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN) {
-      std::move(callback).Run(ConfigureResult::kInvalidTokenError);
+      std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
       return;
     }
 
     LOG(ERROR) << "Configuring recovery factor failed, code "
                << error->get_cryptohome_code();
-    std::move(callback).Run(ConfigureResult::kClientError);
+    std::move(callback).Run(mojom::ConfigureResult::kFatalError);
     return;
   }
 
@@ -91,13 +91,13 @@ void RecoveryFactorEditor::OnRecoveryFactorConfigured(
 }
 
 void RecoveryFactorEditor::OnGetAuthFactorsConfiguration(
-    base::OnceCallback<void(ConfigureResult)> callback,
+    base::OnceCallback<void(mojom::ConfigureResult)> callback,
     std::unique_ptr<UserContext> context,
     absl::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR) << "Refreshing list of configured auth factors failed, code "
                << error->get_cryptohome_code();
-    std::move(callback).Run(ConfigureResult::kClientError);
+    std::move(callback).Run(mojom::ConfigureResult::kFatalError);
     return;
   }
 
@@ -125,7 +125,7 @@ void RecoveryFactorEditor::OnGetAuthFactorsConfiguration(
 
   quick_unlock_storage_->SetUserContext(user, std::move(context));
 
-  std::move(callback).Run(ConfigureResult::kSuccess);
+  std::move(callback).Run(mojom::ConfigureResult::kSuccess);
   auth_factor_config_->NotifyFactorObservers(mojom::AuthFactor::kRecovery);
 }
 

@@ -47,7 +47,7 @@ class CryptohomeRecoverySetupScreen : public BaseScreen {
 
  private:
   void ExitScreen(WizardContext& wizard_context, Result result);
-  void OnRecoveryConfigured(auth::RecoveryFactorEditor::ConfigureResult result);
+  void OnRecoveryConfigured(auth::mojom::ConfigureResult result);
   base::WeakPtr<CryptohomeRecoverySetupScreenView> view_ = nullptr;
   ScreenExitCallback exit_callback_;
   base::WeakPtrFactory<CryptohomeRecoverySetupScreen> weak_ptr_factory_{this};

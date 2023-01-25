@@ -15,6 +15,7 @@
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/personalization_app/search/search_handler.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager_factory.h"
@@ -248,6 +249,15 @@ void OSSettingsUI::BindInterface(
   }
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));
+}
+
+void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<auth::mojom::PinFactorEditor> receiver) {
+  auto* pin_backend = quick_unlock::PinBackend::GetInstance();
+  CHECK(pin_backend);
+  auth::BindToPinFactorEditor(std::move(receiver),
+                              quick_unlock::QuickUnlockFactory::GetDelegate(),
+                              *pin_backend);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OSSettingsUI)

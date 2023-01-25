@@ -7,8 +7,8 @@
 
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
+#include "chromeos/ash/services/auth_factor_config/chrome_browser_delegates.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom.h"
-#include "chromeos/ash/services/auth_factor_config/quick_unlock_storage_delegate.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace ash::auth {
@@ -28,16 +28,16 @@ class RecoveryFactorEditor : public mojom::RecoveryFactorEditor {
 
   void Configure(const std::string& auth_token,
                  bool enabled,
-                 base::OnceCallback<void(ConfigureResult)>) override;
+                 base::OnceCallback<void(mojom::ConfigureResult)>) override;
 
  private:
   void OnRecoveryFactorConfigured(
-      base::OnceCallback<void(ConfigureResult)> callback,
+      base::OnceCallback<void(mojom::ConfigureResult)> callback,
       std::unique_ptr<UserContext> context,
       absl::optional<AuthenticationError> error);
 
   void OnGetAuthFactorsConfiguration(
-      base::OnceCallback<void(ConfigureResult)> callback,
+      base::OnceCallback<void(mojom::ConfigureResult)> callback,
       std::unique_ptr<UserContext> context,
       absl::optional<AuthenticationError> error);
 
