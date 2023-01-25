@@ -142,7 +142,16 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_WIN)
 
 int GetCurrentCountryID() {
-  return GeoIDToCountryID(GetUserGeoID(GEOCLASS_NATION));
+  // Calls to GetCurrentCountryID occur fairly frequently and incur a heavy
+  // registry hit within the GetUserGeoID api call. Registry hits can be
+  // impactful to perf, particularly on virtualized systems.  To mitigate this
+  // we store the result of the first call in a static. The Id is only
+  // updated by calls to SetUserGeoID or the user manually updating the
+  // language and region settings.  It is expected that if it changes the user
+  // would need to restart applications to ensure the updated value is
+  // respected.
+  static int id = GeoIDToCountryID(GetUserGeoID(GEOCLASS_NATION));
+  return id;
 }
 
 #elif BUILDFLAG(IS_APPLE)
