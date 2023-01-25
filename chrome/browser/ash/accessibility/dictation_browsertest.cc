@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/accessibility/dictation.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_pref_names.h"
@@ -76,6 +77,8 @@
 namespace ash {
 
 namespace {
+
+typedef std::pair<int, int> Selection;
 
 constexpr int kPrintErrorMessageDelayMs = 3500;
 
@@ -449,35 +452,20 @@ class DictationTestBase : public InProcessBrowserTest,
     WaitForEditableValue(value);
   }
 
-  void SendFinalResultAndWaitForSelectionChanged(const std::string& result) {
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+  void SendFinalResultAndWaitForSelection(const std::string& result,
+                                          const Selection& selection) {
     content::AccessibilityNotificationWaiter selection_waiter(
         browser()->tab_strip_model()->GetActiveWebContents(),
         ui::kAXModeComplete,
         ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
-    content::BoundingBoxUpdateWaiter bounding_box_waiter(web_contents);
     SendFinalResultAndWait(result);
-    bounding_box_waiter.Wait();
     // TODO(https://crbug.com/1333354): Investigate why this does not always
     // return true.
     ASSERT_TRUE(selection_waiter.WaitForNotification());
-  }
-
-  // TODO(b:259353252): Update this method to use testSupport JS, similar to
-  // what's done in DictationFormattedContentEditableTest::WaitForSelection.
-  void SendFinalResultAndWaitForCaretBoundsChanged(const std::string& result) {
-    content::AccessibilityNotificationWaiter selection_waiter(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        ui::kAXModeComplete,
-        ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
-    CaretBoundsChangedWaiter caret_waiter(
-        browser()->window()->GetNativeWindow()->GetHost()->GetInputMethod());
-    SendFinalResultAndWait(result);
-    caret_waiter.Wait();
-    // TODO(https://crbug.com/1333354): Investigate why this does not always
-    // return true.
-    ASSERT_TRUE(selection_waiter.WaitForNotification());
+    std::string script =
+        base::StringPrintf("testSupport.waitForSelection(%d, %d);",
+                           selection.first, selection.second);
+    ExecuteAccessibilityCommonScript(script);
   }
 
   void SendFinalResultAndWaitForClipboardChanged(const std::string& result) {
@@ -547,12 +535,6 @@ class DictationTestBase : public InProcessBrowserTest,
                   }),
                   error_message)
         .Wait();
-  }
-
-  void WaitForSelection(int start, int end) {
-    std::string script =
-        base::StringPrintf("testSupport.waitForSelection(%d, %d);", start, end);
-    ExecuteAccessibilityCommonScript(script);
   }
 
   const base::flat_map<std::string, Dictation::LocaleData>
@@ -1102,8 +1084,10 @@ IN_PROC_BROWSER_TEST_P(DictationJaTest, SmartSelectBetweenAndDictate) {
   // Dictate "I like tennis".
   SendFinalResultAndWaitForEditableValue("私はテニスが好きです。",
                                          "私はテニスが好きです。");
-  // Select the entire text using the SMART_SELECT_BETWEEN command.
-  SendFinalResultAndWaitForSelectionChanged("私はから好きですまで選択");
+  // Select the entire text (excluding the period) using the
+  // SMART_SELECT_BETWEEN command.
+  SendFinalResultAndWaitForSelection("私はから好きですまで選択",
+                                     Selection(0, 10));
   // Dictate "congratulations", which should replace the selected text.
   SendFinalResultAndWaitForEditableValue("おめでとう", "おめでとう。");
   ToggleDictationWithKeystroke();
@@ -1118,7 +1102,7 @@ IN_PROC_BROWSER_TEST_P(DictationJaTest, SmartSelectBetweenAndDelete) {
                                          "私はテニスが好きです。");
   // Select between "I" and "tennis" using the SMART_SELECT_BETWEEN command
   // (roughly the first half of the text).
-  SendFinalResultAndWaitForSelectionChanged("私はからテニスまで選択");
+  SendFinalResultAndWaitForSelection("私はからテニスまで選択", Selection(0, 5));
   // Perform the delete command.
   SendFinalResultAndWaitForEditableValue("削除", "が好きです。");
   ToggleDictationWithKeystroke();
@@ -1203,11 +1187,13 @@ IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, DeleteCharacter) {
 
 IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, MoveByCharacter) {
   SendFinalResultAndWaitForEditableValue("Lyra", "Lyra");
-  SendFinalResultAndWaitForCaretBoundsChanged("Move to the Previous character");
-  // White space is added to the text on the left of the text caret, but not
-  // to the right of the text caret.
-  SendFinalResultAndWaitForEditableValue("inserted", "Lyr inserted a");
-  SendFinalResultAndWaitForCaretBoundsChanged("move TO the next character ");
+  SendFinalResultAndWaitForSelection("Move to the Previous character",
+                                     Selection(3, 3));
+  std::string expected = "Lyr inserted a";
+  int length = expected.size();
+  SendFinalResultAndWaitForEditableValue("inserted", expected);
+  SendFinalResultAndWaitForSelection("move TO the next character ",
+                                     Selection(length, length));
   SendFinalResultAndWaitForEditableValue("is a constellation",
                                          "Lyr inserted a is a constellation");
 }
@@ -1219,9 +1205,11 @@ IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, NewLineAndMoveByLine) {
   SendFinalResultAndWaitForEditableValue("Line 1", "Line 1");
   SendFinalResultAndWaitForEditableValue("new line", "Line 1\n");
   SendFinalResultAndWaitForEditableValue("line 2", "Line 1\nline 2");
-  SendFinalResultAndWaitForCaretBoundsChanged("Move to the previous line ");
+  SendFinalResultAndWaitForSelection("Move to the previous line ",
+                                     Selection(6, 6));
   SendFinalResultAndWaitForEditableValue("up", "Line 1 up\nline 2");
-  SendFinalResultAndWaitForCaretBoundsChanged("Move to the next line");
+  SendFinalResultAndWaitForSelection("Move to the next line",
+                                     Selection(16, 16));
   SendFinalResultAndWaitForEditableValue("down", "Line 1 up\nline 2 down");
 }
 
@@ -1236,27 +1224,33 @@ IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, UndoAndRedo) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, SelectAllAndUnselect) {
-  SendFinalResultAndWaitForEditableValue("Vega is the brightest star in Lyra",
-                                         "Vega is the brightest star in Lyra");
-  SendFinalResultAndWaitForSelectionChanged("Select all");
+  std::string value = "Vega is the brightest star in Lyra";
+  int length = value.size();
+  SendFinalResultAndWaitForEditableValue(value, value);
+  SendFinalResultAndWaitForSelection("Select all", Selection(0, length));
   SendFinalResultAndWaitForEditableValue("delete", "");
-  SendFinalResultAndWaitForEditableValue(
-      "Vega is the fifth brightest star in the sky",
-      "Vega is the fifth brightest star in the sky");
-  SendFinalResultAndWaitForSelectionChanged("Select all");
-  SendFinalResultAndWaitForSelectionChanged("Unselect");
+  std::string new_value = "Vega is the fifth brightest star in the sky";
+  int new_length = new_value.size();
+  SendFinalResultAndWaitForEditableValue(new_value, new_value);
+  SendFinalResultAndWaitForSelection("Select all", Selection(0, new_length));
+  SendFinalResultAndWaitForSelection("Unselect",
+                                     Selection(new_length, new_length));
   SendFinalResultAndWaitForEditableValue(
       "!", "Vega is the fifth brightest star in the sky!");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, CutCopyPaste) {
-  SendFinalResultAndWaitForEditableValue("Star", "Star");
-  SendFinalResultAndWaitForSelectionChanged("Select all");
+  std::string value = "Star";
+  int length = value.size();
+  SendFinalResultAndWaitForEditableValue(value, value);
+  SendFinalResultAndWaitForSelection("Select all", Selection(0, length));
   SendFinalResultAndWaitForClipboardChanged("Copy");
   EXPECT_EQ("Star", GetClipboardText());
-  SendFinalResultAndWaitForSelectionChanged("unselect");
-  SendFinalResultAndWaitForEditableValue("paste", "StarStar");
-  SendFinalResultAndWaitForSelectionChanged("select ALL ");
+  SendFinalResultAndWaitForSelection("unselect", Selection(length, length));
+  std::string new_value = "StarStar";
+  int new_length = new_value.size();
+  SendFinalResultAndWaitForEditableValue("paste", new_value);
+  SendFinalResultAndWaitForSelection("select ALL ", Selection(0, new_length));
   SendFinalResultAndWaitForClipboardChanged("cut");
   EXPECT_EQ("StarStar", GetClipboardText());
   WaitForEditableValue("");
@@ -1311,10 +1305,14 @@ IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, DeletePrevWordPunctuation) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, DeletePrevWordMiddleOfWord) {
-  SendFinalResultAndWaitForEditableValue("This is a test.", "This is a test.");
+  std::string value = "This is a test.";
+  int length = value.size();
+  SendFinalResultAndWaitForEditableValue(value, value);
   // Move the text caret into the middle of the word "test".
-  SendFinalResultAndWaitForCaretBoundsChanged("Move to the Previous character");
-  SendFinalResultAndWaitForCaretBoundsChanged("Move to the Previous character");
+  SendFinalResultAndWaitForSelection("Move to the Previous character",
+                                     Selection(length - 1, length - 1));
+  SendFinalResultAndWaitForSelection("Move to the Previous character",
+                                     Selection(length - 2, length - 2));
   SendFinalResultAndWaitForEditableValue("delete the previous word",
                                          "This is a t.");
 }
@@ -1355,20 +1353,27 @@ IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, DeletePrevSentTwoSentences) {
 
 IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest,
                        DeletePrevSentMiddleOfSentence) {
-  SendFinalResultAndWaitForEditableValue("Hello, world. Goodnight, world.",
-                                         "Hello, world. Goodnight, world.");
+  std::string value = "Hello, world. Goodnight, world.";
+  int length = value.size();
+  SendFinalResultAndWaitForEditableValue(value, value);
   // Move the text caret into the middle of the second sentence.
-  SendFinalResultAndWaitForCaretBoundsChanged("Move to the Previous character");
-  SendFinalResultAndWaitForCaretBoundsChanged("Move to the Previous character");
+  SendFinalResultAndWaitForSelection("Move to the Previous character",
+                                     Selection(length - 1, length - 1));
+  SendFinalResultAndWaitForSelection("Move to the Previous character",
+                                     Selection(length - 2, length - 2));
   SendFinalResultAndWaitForEditableValue("delete the previous sentence",
                                          "Hello, world.d.");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, MoveByWord) {
   SendFinalResultAndWaitForEditableValue("This is a quiz", "This is a quiz");
-  SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
-  SendFinalResultAndWaitForEditableValue("pop ", "This is a pop quiz");
-  SendFinalResultAndWaitForCaretBoundsChanged("move to the next word");
+  SendFinalResultAndWaitForSelection("move to the previous word",
+                                     Selection(10, 10));
+  std::string new_value = "This is a pop quiz";
+  int new_length = new_value.size();
+  SendFinalResultAndWaitForEditableValue("pop ", new_value);
+  SendFinalResultAndWaitForSelection("move to the next word",
+                                     Selection(new_length, new_length));
   SendFinalResultAndWaitForEditableValue("folks!", "This is a pop quiz folks!");
 }
 
@@ -1398,9 +1403,12 @@ IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest,
                        SmartDeletePhraseDeletesLeftOfCaret) {
   SendFinalResultAndWaitForEditableValue("The cow jumped over the moon.",
                                          "The cow jumped over the moon.");
-  SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
-  SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
-  SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
+  SendFinalResultAndWaitForSelection("move to the previous word",
+                                     Selection(28, 28));
+  SendFinalResultAndWaitForSelection("move to the previous word",
+                                     Selection(24, 24));
+  SendFinalResultAndWaitForSelection("move to the previous word",
+                                     Selection(20, 20));
   SendFinalResultAndWaitForEditableValue("delete the",
                                          "cow jumped over the moon.");
 }
@@ -1430,19 +1438,24 @@ IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, SmartInsertBefore) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, SmartSelectBetween) {
-  SendFinalResultAndWaitForEditableValue("This is a test.", "This is a test.");
-  SendFinalResultAndWait("select from this to test");
-  WaitForSelection(0, 14);
+  std::string value = "This is a test.";
+  int length = value.size();
+  SendFinalResultAndWaitForEditableValue(value, value);
+  SendFinalResultAndWaitForSelection("select from this to test",
+                                     Selection(0, length - 1));
   SendFinalResultAndWaitForEditableValue("Hello world", "Hello world.");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, MoveBySentence) {
   SendFinalResultAndWaitForEditableValue("Hello world! Goodnight world?",
                                          "Hello world! Goodnight world?");
-  SendFinalResultAndWaitForCaretBoundsChanged("move to the previous sentence");
-  SendFinalResultAndWaitForEditableValue(
-      "Good evening.", "Hello world! Good evening. Goodnight world?");
-  SendFinalResultAndWaitForCaretBoundsChanged("move to the next sentence");
+  SendFinalResultAndWaitForSelection("move to the previous sentence",
+                                     Selection(12, 12));
+  std::string new_value = "Hello world! Good evening. Goodnight world?";
+  int new_length = new_value.size();
+  SendFinalResultAndWaitForEditableValue("Good evening.", new_value);
+  SendFinalResultAndWaitForSelection("move to the next sentence",
+                                     Selection(new_length, new_length));
   SendFinalResultAndWaitForEditableValue(
       "Time for a midnight snack",
       "Hello world! Good evening. Goodnight world? Time for a midnight snack");
@@ -1757,10 +1770,10 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_HintsShownAfterTextSelected) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
 
-  // Perform a select all command.
-  SendFinalResultAndWaitForEditableValue("Vega is the brightest star in Lyra",
-                                         "Vega is the brightest star in Lyra");
-  SendFinalResultAndWaitForSelectionChanged("Select all");
+  std::string value = "Vega is the brightest star in Lyra";
+  int length = value.size();
+  SendFinalResultAndWaitForEditableValue(value, value);
+  SendFinalResultAndWaitForSelection("Select all", Selection(0, length));
   WaitForProperties(/*visible=*/true,
                     /*icon=*/DictationBubbleIconType::kMacroSuccess,
                     /*text=*/u"Select all",
@@ -1855,9 +1868,9 @@ IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, DeletePrevCharacter) {
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, NavByCharacter) {
   SendFinalResultAndWaitForEditableValue("Testing", "Testing");
-  SendFinalResultAndWaitForCaretBoundsChanged("left three characters");
+  SendFinalResultAndWaitForSelection("left three characters", Selection(4, 4));
   SendFinalResultAndWaitForEditableValue("!", "Test!ing");
-  SendFinalResultAndWaitForCaretBoundsChanged("right two characters");
+  SendFinalResultAndWaitForSelection("right two characters", Selection(7, 7));
   SendFinalResultAndWaitForEditableValue("@", "Test!in@g");
 }
 
@@ -1867,22 +1880,28 @@ IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, NavByLine) {
 
   std::string text = "Line1\nLine2\nLine3\nLine4";
   SendFinalResultAndWaitForEditableValue(text, text);
-  SendFinalResultAndWaitForCaretBoundsChanged("Up two lines");
+  SendFinalResultAndWaitForSelection("Up two lines", Selection(11, 11));
   std::string expected = "Line1\nLine2 insertion\nLine3\nLine4";
   SendFinalResultAndWaitForEditableValue("insertion", expected);
-  SendFinalResultAndWaitForCaretBoundsChanged("down two lines");
+  SendFinalResultAndWaitForSelection("down two lines", Selection(33, 33));
   expected = "Line1\nLine2 insertion\nLine3\nLine4 second insertion";
   SendFinalResultAndWaitForEditableValue("second insertion", expected);
 }
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, CutCopyPasteSelectAll) {
-  SendFinalResultAndWaitForEditableValue("Star", "Star");
-  SendFinalResultAndWaitForSelectionChanged("Select everything");
+  std::string value = "Star";
+  int length = value.size();
+  SendFinalResultAndWaitForEditableValue(value, value);
+  SendFinalResultAndWaitForSelection("Select everything", Selection(0, length));
   SendFinalResultAndWaitForClipboardChanged("Copy selected text");
   EXPECT_EQ("Star", GetClipboardText());
-  SendFinalResultAndWaitForSelectionChanged("unselect selection");
-  SendFinalResultAndWaitForEditableValue("paste copied text", "StarStar");
-  SendFinalResultAndWaitForSelectionChanged("highlight everything");
+  SendFinalResultAndWaitForSelection("unselect selection",
+                                     Selection(length, length));
+  std::string new_value = "StarStar";
+  int new_length = new_value.size();
+  SendFinalResultAndWaitForEditableValue("paste copied text", new_value);
+  SendFinalResultAndWaitForSelection("highlight everything",
+                                     Selection(0, new_length));
   SendFinalResultAndWaitForClipboardChanged("cut highlighted text");
   EXPECT_EQ("StarStar", GetClipboardText());
   WaitForEditableValue("");
@@ -1911,9 +1930,12 @@ IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, DeletePrevSent) {
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, MoveByWord) {
   SendFinalResultAndWaitForEditableValue("This is a quiz", "This is a quiz");
-  SendFinalResultAndWaitForCaretBoundsChanged("back one word");
-  SendFinalResultAndWaitForEditableValue("pop", "This is a pop quiz");
-  SendFinalResultAndWaitForCaretBoundsChanged("right one word");
+  SendFinalResultAndWaitForSelection("back one word", Selection(10, 10));
+  std::string new_value = "This is a pop quiz";
+  int new_length = new_value.size();
+  SendFinalResultAndWaitForEditableValue("pop", new_value);
+  SendFinalResultAndWaitForSelection("right one word",
+                                     Selection(new_length, new_length));
   SendFinalResultAndWaitForEditableValue("folks!", "This is a pop quiz folks!");
 }
 
@@ -1940,18 +1962,20 @@ IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, SmartInsertBefore) {
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, SmartSelectBetween) {
   SendFinalResultAndWaitForEditableValue("This is a test.", "This is a test.");
-  SendFinalResultAndWait("highlight everything between is and test");
-  WaitForSelection(5, 14);
+  SendFinalResultAndWaitForSelection("highlight everything between is and test",
+                                     Selection(5, 14));
   SendFinalResultAndWaitForEditableValue("was a quiz", "This was a quiz.");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, MoveBySentence) {
   SendFinalResultAndWaitForEditableValue("Hello world! Goodnight world?",
                                          "Hello world! Goodnight world?");
-  SendFinalResultAndWaitForCaretBoundsChanged("one sentence back");
-  SendFinalResultAndWaitForEditableValue(
-      "Good evening.", "Hello world! Good evening. Goodnight world?");
-  SendFinalResultAndWaitForCaretBoundsChanged("forward one sentence");
+  SendFinalResultAndWaitForSelection("one sentence back", Selection(12, 12));
+  std::string new_value = "Hello world! Good evening. Goodnight world?";
+  int new_length = new_value.size();
+  SendFinalResultAndWaitForEditableValue("Good evening.", new_value);
+  SendFinalResultAndWaitForSelection("forward one sentence",
+                                     Selection(new_length, new_length));
   SendFinalResultAndWaitForEditableValue(
       "Time for a midnight snack",
       "Hello world! Good evening. Goodnight world? Time for a midnight snack");
@@ -1964,48 +1988,55 @@ IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, DeleteAllText) {
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, NavStartText) {
   SendFinalResultAndWaitForEditableValue("Is good", "Is good");
-  SendFinalResultAndWaitForCaretBoundsChanged("to start");
+  SendFinalResultAndWaitForSelection("to start", Selection(0, 0));
   SendFinalResultAndWaitForEditableValue("The weather outside",
                                          "The weather outside Is good");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, NavEndText) {
-  SendFinalResultAndWaitForEditableValue("The weather outside is",
-                                         "The weather outside is");
-  SendFinalResultAndWaitForCaretBoundsChanged("to start");
-  SendFinalResultAndWaitForCaretBoundsChanged("to end");
+  std::string value = "The weather outside is";
+  int length = value.size();
+  SendFinalResultAndWaitForEditableValue(value, value);
+  SendFinalResultAndWaitForSelection("to start", Selection(0, 0));
+  SendFinalResultAndWaitForSelection("to end", Selection(length, length));
   std::string expected = "The weather outside is good";
   SendFinalResultAndWaitForEditableValue("good", expected);
 }
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, SelectPrevWord) {
-  SendFinalResultAndWaitForEditableValue("The weather today is bad",
-                                         "The weather today is bad");
-  SendFinalResultAndWaitForSelectionChanged("highlight back one word");
+  std::string value = "The weather today is bad";
+  int length = value.size();
+  SendFinalResultAndWaitForEditableValue(value, value);
+  SendFinalResultAndWaitForSelection("highlight back one word",
+                                     Selection(length - 3, length));
   std::string expected = "The weather today is nice";
   SendFinalResultAndWaitForEditableValue("nice", expected);
 }
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, SelectNextWord) {
-  SendFinalResultAndWaitForEditableValue("The weather today is bad",
-                                         "The weather today is bad");
-  SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
-  SendFinalResultAndWaitForSelectionChanged("highlight right one word");
+  std::string value = "The weather today is bad";
+  int length = value.size();
+  SendFinalResultAndWaitForEditableValue(value, value);
+  SendFinalResultAndWaitForSelection("move to the previous word",
+                                     Selection(length - 3, length - 3));
+  SendFinalResultAndWaitForSelection("highlight right one word",
+                                     Selection(length - 3, length));
   std::string expected = "The weather today is nice";
   SendFinalResultAndWaitForEditableValue("nice", expected);
 }
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, SelectNextChar) {
   SendFinalResultAndWaitForEditableValue("Text", "Text");
-  SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
-  SendFinalResultAndWaitForCaretBoundsChanged("select next letter");
+  SendFinalResultAndWaitForSelection("move to the previous word",
+                                     Selection(0, 0));
+  SendFinalResultAndWaitForSelection("select next letter", Selection(0, 1));
   std::string expected = "ext";
   SendFinalResultAndWaitForEditableValue("delete", expected);
 }
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, SelectPrevChar) {
   SendFinalResultAndWaitForEditableValue("Text", "Text");
-  SendFinalResultAndWaitForCaretBoundsChanged("select previous letter");
+  SendFinalResultAndWaitForSelection("select previous letter", Selection(3, 4));
   std::string expected = "Tex";
   SendFinalResultAndWaitForEditableValue("delete", expected);
 }
@@ -2228,23 +2259,25 @@ IN_PROC_BROWSER_TEST_P(DictationFormattedContentEditableTest, InsertBefore) {
 IN_PROC_BROWSER_TEST_P(DictationFormattedContentEditableTest, MoveBySentence) {
   SendFinalResultAndWaitForEditableValue(", good luck.",
                                          "This is a test, good luck.");
-  SendFinalResultAndWait("move to the previous sentence");
-  // Wait for the selection to move to the beginning of the editable.
-  WaitForSelection(0, 0);
-  SendFinalResultAndWaitForEditableValue(
-      "Good morning. ", "Good morning. This is a test, good luck.");
-  SendFinalResultAndWait("forward one sentence");
-  // Wait for the selection to move to the end of the editable.
-  WaitForSelection(40, 40);
+  SendFinalResultAndWaitForSelection("move to the previous sentence",
+                                     Selection(0, 0));
+  std::string new_value = "Good morning. This is a test, good luck.";
+  int new_length = new_value.size();
+  SendFinalResultAndWaitForEditableValue("Good morning. ", new_value);
+  SendFinalResultAndWaitForSelection("forward one sentence",
+                                     Selection(new_length, new_length));
   SendFinalResultAndWaitForEditableValue(
       " Have fun.", "Good morning. This is a test, good luck. Have fun.");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationFormattedContentEditableTest,
                        SmartSelectBetween) {
-  SendFinalResultAndWait("highlight everything between is and a");
-  WaitForSelection(5, 9);
-  SendFinalResultAndWaitForEditableValue("was one", "This was one test");
+  SendFinalResultAndWaitForEditableValue(", good luck.",
+                                         "This is a test, good luck.");
+  SendFinalResultAndWaitForSelection("highlight everything between is and a",
+                                     Selection(5, 9));
+  SendFinalResultAndWaitForEditableValue("was one",
+                                         "This was one test, good luck.");
 }
 
 }  // namespace ash
