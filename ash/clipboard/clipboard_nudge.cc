@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -58,9 +57,10 @@ bool IsAssistantAvailable() {
 
 }  // namespace
 
-ClipboardNudge::ClipboardNudge(ClipboardNudgeType nudge_type)
+ClipboardNudge::ClipboardNudge(ClipboardNudgeType nudge_type,
+                               NudgeCatalogName catalog_name)
     : SystemNudge(kClipboardNudgeName,
-                  NudgeCatalogName::kMultipaste,
+                  catalog_name,
                   kClipboardIconSize,
                   kIconLabelSpacing,
                   kNudgePadding),

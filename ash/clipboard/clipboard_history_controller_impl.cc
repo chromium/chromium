@@ -371,8 +371,9 @@ void ClipboardHistoryControllerImpl::ShowMenu(
           },
           weak_ptr_factory_.GetWeakPtr()));
 
-  for (auto& observer : observers_)
-    observer.OnClipboardHistoryMenuShown();
+  for (auto& observer : observers_) {
+    observer.OnClipboardHistoryMenuShown(show_source);
+  }
 }
 
 gfx::Rect ClipboardHistoryControllerImpl::GetMenuBoundsInScreenForTest() const {

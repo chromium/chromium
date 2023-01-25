@@ -87,8 +87,10 @@ class ASH_EXPORT ClipboardNudgeController
   // Increment the screenshot notification shown count.
   void MarkScreenshotNotificationShown();
 
-  // ClipboardHistoryControllerImpl:
-  void OnClipboardHistoryMenuShown() override;
+  // ClipboardHistoryController::Observer:
+  void OnClipboardHistoryMenuShown(
+      crosapi::mojom::ClipboardHistoryControllerShowSource show_source)
+      override;
   void OnClipboardHistoryPasted() override;
 
   // Shows the nudge widget.

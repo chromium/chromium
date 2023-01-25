@@ -73815,11 +73815,13 @@ Called by update_net_trust_anchors.py.-->
 
   <int value="0" label="Test Catalog Name"/>
   <int value="1" label="Dictation"/>
-  <int value="2" label="Multipaste"/>
+  <int value="2" label="Multipaste (deprecated 01/2023)"/>
   <int value="3" label="Dark Light Mode"/>
   <int value="4" label="Autozoom"/>
   <int value="5" label="Adaptive Charging"/>
   <int value="6" label="Phone Hub"/>
+  <int value="7" label="Clipboard History Zero State"/>
+  <int value="8" label="Clipboard History Onboarding"/>
 </enum>
 
 <enum name="NukeProfileResult">

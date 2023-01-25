@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/clipboard/clipboard_nudge_constants.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/system/tray/system_nudge.h"
@@ -20,7 +21,7 @@ namespace ash {
 // Implements a contextual nudge for multipaste.
 class ASH_EXPORT ClipboardNudge : public SystemNudge {
  public:
-  explicit ClipboardNudge(ClipboardNudgeType nudge_type);
+  ClipboardNudge(ClipboardNudgeType nudge_type, NudgeCatalogName catalog_name);
   ClipboardNudge(const ClipboardNudge&) = delete;
   ClipboardNudge& operator=(const ClipboardNudge&) = delete;
   ~ClipboardNudge() override;

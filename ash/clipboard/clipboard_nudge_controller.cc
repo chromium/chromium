@@ -9,6 +9,7 @@
 #include "ash/clipboard/clipboard_nudge.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/json/values_util.h"
@@ -65,6 +66,19 @@ bool LogFeatureUsedTime(
                                 kMaxSeconds);
   return true;
 }
+
+NudgeCatalogName GetCatalogName(ClipboardNudgeType type) {
+  switch (type) {
+    case kOnboardingNudge:
+      return NudgeCatalogName::kClipboardHistoryOnboarding;
+    case kZeroStateNudge:
+      return NudgeCatalogName::kClipboardHistoryZeroState;
+    case kScreenshotNotificationNudge:
+      NOTREACHED();
+  }
+  return NudgeCatalogName::kTestCatalogName;
+}
+
 }  // namespace
 
 ClipboardNudgeController::ClipboardNudgeController(
@@ -218,14 +232,29 @@ void ClipboardNudgeController::HandleNudgeShown() {
   update->Set(kLastTimeShown, base::TimeToValue(GetTime()));
 }
 
-void ClipboardNudgeController::OnClipboardHistoryMenuShown() {
-  if (LogFeatureOpenTime(last_shown_time_, kOnboardingNudge_OpenTime))
+void ClipboardNudgeController::OnClipboardHistoryMenuShown(
+    crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {
+  if (LogFeatureOpenTime(last_shown_time_, kOnboardingNudge_OpenTime)) {
     last_shown_time_.set_was_logged_as_opened();
-  if (LogFeatureOpenTime(zero_state_last_shown_time_, kZeroStateNudge_OpenTime))
+  }
+  if (LogFeatureOpenTime(zero_state_last_shown_time_,
+                         kZeroStateNudge_OpenTime)) {
     zero_state_last_shown_time_.set_was_logged_as_opened();
+  }
   if (LogFeatureOpenTime(screenshot_notification_last_shown_time_,
                          kScreenshotNotification_OpenTime)) {
     screenshot_notification_last_shown_time_.set_was_logged_as_opened();
+  }
+
+  if (show_source ==
+      crosapi::mojom::ClipboardHistoryControllerShowSource::kAccelerator) {
+    // The "nudge action" is recorded only when showing the menu through the
+    // accelerator since that is the nudge's suggested action.
+    // The metric will not be recorded if the nudge hasn't been shown before.
+    SystemNudgeController::RecordNudgeAction(
+        NudgeCatalogName::kClipboardHistoryOnboarding);
+    SystemNudgeController::RecordNudgeAction(
+        NudgeCatalogName::kClipboardHistoryZeroState);
   }
 }
 
@@ -258,7 +287,8 @@ const ClipboardState& ClipboardNudgeController::GetClipboardStateForTesting() {
 }
 
 std::unique_ptr<SystemNudge> ClipboardNudgeController::CreateSystemNudge() {
-  return std::make_unique<ClipboardNudge>(current_nudge_type_);
+  return std::make_unique<ClipboardNudge>(current_nudge_type_,
+                                          GetCatalogName(current_nudge_type_));
 }
 
 int ClipboardNudgeController::GetShownCount(PrefService* prefs) {

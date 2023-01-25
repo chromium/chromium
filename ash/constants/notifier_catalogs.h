@@ -185,15 +185,19 @@ enum class NotificationCatalogName {
 // Current values should not be renumbered or removed. Please keep in sync with
 // "NudgeCatalogName" in tools/metrics/histograms/enums.xml.
 // To deprecate comment out the entry.
+// Please call `SystemNudgeController::RecordNudgeAction` when the nudge's
+// suggested action is performed by the user, if applicable.
 enum class NudgeCatalogName {
   kTestCatalogName = 0,
   kDictation = 1,
-  kMultipaste = 2,
+  // [Deprecated] kMultipaste = 2,
   kDarkLightMode = 3,
   kAutozoom = 4,
   kAdaptiveCharging = 5,
   kPhoneHub = 6,
-  kMaxValue = kPhoneHub,
+  kClipboardHistoryZeroState = 7,
+  kClipboardHistoryOnboarding = 8,
+  kMaxValue = kClipboardHistoryOnboarding,
 };
 
 // A living catalog that registers toasts.

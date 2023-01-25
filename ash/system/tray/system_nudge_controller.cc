@@ -92,7 +92,7 @@ void SystemNudgeController::RecordNudgeAction(NudgeCatalogName catalog_name) {
         return catalog_name == registry_entry.first;
       });
 
-  // Don't record "TimeToAction" metric if the nudge hasn't been shown.
+  // Don't record "TimeToAction" metric if the nudge hasn't been shown before.
   if (it == std::end(nudge_registry))
     return;
 

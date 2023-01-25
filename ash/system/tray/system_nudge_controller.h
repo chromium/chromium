@@ -30,7 +30,8 @@ class ASH_EXPORT SystemNudgeController {
   virtual ~SystemNudgeController();
 
   // Records Nudge "TimeToAction" metric, which tracks the time from when a
-  // nudge was shown to when the action the nudge informs of was performed.
+  // nudge was shown to when the nudge's suggested action was performed.
+  // The metric is not recorded if the nudge hasn't been shown before.
   static void RecordNudgeAction(NudgeCatalogName catalog_name);
 
   // Shows the nudge widget.
