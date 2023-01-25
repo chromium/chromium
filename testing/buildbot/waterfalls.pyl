@@ -2053,6 +2053,127 @@
     },
   },
   {
+    'name': 'chromium.coverage',
+    'mixins': [],
+    'machines': {
+      'android-code-coverage': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
+          'pie_fleet',
+          'walleye',
+        ],
+        'test_suites': {
+          'gtest_tests': 'android_pie_coverage_instrumentation_tests',
+          'junit_tests': 'chromium_junit_tests_no_swarming',
+        },
+        'os_type': 'android',
+      },
+      'android-code-coverage-native': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
+          'pie_fleet',
+          'walleye',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_android_gtests',
+        },
+        'os_type': 'android',
+      },
+      'fuchsia-code-coverage': {
+        'additional_compile_targets': [
+          'chrome_pkg',
+        ],
+        'test_suites': {
+          'gtest_tests': 'fuchsia_gtests',
+          'isolated_scripts': 'gpu_angle_fuchsia_unittests_isolated_scripts',
+        },
+        'mixins': [
+          'femu-additional-ram',
+          'fuchsia-code-coverage',
+          'isolate_profile_data',
+          'linux-bionic',
+        ],
+      },
+      'ios-simulator-code-coverage': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'ios_output_disabled_tests',
+          'isolate_profile_data',
+          'mac_12_x64',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_14_main',
+          'xctest',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'ios_code_coverage_tests',
+        },
+      },
+      'linux-chromeos-code-coverage': {
+        'mixins': [
+          'isolate_profile_data',
+          'linux-bionic',
+        ],
+        'additional_compile_targets': [
+          'gn_all',
+        ],
+        'test_suites': {
+          'gtest_tests': 'linux_chromeos_gtests',
+        },
+      },
+      'linux-code-coverage': {
+        'mixins': [
+          'isolate_profile_data',
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_linux_gtests',
+          'isolated_scripts': 'chromium_linux_rel_isolated_scripts',
+          'scripts': 'chromium_linux_scripts',
+        },
+      },
+      'linux-js-code-coverage': {
+        'mixins': [
+          'isolate_profile_data',
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'gtest_tests': 'js_code_coverage_browser_tests'
+        },
+      },
+      'linux-lacros-code-coverage': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+        'mixins': [
+          'isolate_profile_data',
+        ],
+        'test_suites': {
+          'gtest_tests': 'linux_lacros_gtests',
+        },
+      },
+      'mac-code-coverage': {
+        'mixins': [
+          'isolate_profile_data',
+          'mac_12_x64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_mac_gtests',
+        },
+      },
+      'win10-code-coverage': {
+        'mixins': [
+          'isolate_profile_data',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_win_gtests',
+        },
+      },
+    }
+  },
+  {
     'name': 'chromium.dawn',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -2985,31 +3106,6 @@
           '--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer',
         ],
       },
-      'android-code-coverage': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'isolate_profile_data',
-          'pie_fleet',
-          'walleye',
-        ],
-        'test_suites': {
-          'gtest_tests': 'android_pie_coverage_instrumentation_tests',
-          'junit_tests': 'chromium_junit_tests_no_swarming',
-        },
-        'os_type': 'android',
-      },
-      'android-code-coverage-native': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'isolate_profile_data',
-          'pie_fleet',
-          'walleye',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_android_gtests',
-        },
-        'os_type': 'android',
-      },
       'android-fieldtrial-rel': {
         'mixins': [
           'has_native_resultdb_integration',
@@ -3063,21 +3159,6 @@
           'gtest_tests': 'chromeos_vm_gtests',
           'isolated_scripts': 'chromeos_isolated_scripts',
         },
-      },
-      'fuchsia-code-coverage': {
-        'additional_compile_targets': [
-          'chrome_pkg',
-        ],
-        'test_suites': {
-          'gtest_tests': 'fuchsia_gtests',
-          'isolated_scripts': 'gpu_angle_fuchsia_unittests_isolated_scripts',
-        },
-        'mixins': [
-          'femu-additional-ram',
-          'fuchsia-code-coverage',
-          'isolate_profile_data',
-          'linux-bionic',
-        ],
       },
       # A temporary builder to test new Fuchsia testing scripts on arm64.
       'fuchsia-fyi-arm64-cfv2-script': {
@@ -3151,21 +3232,6 @@
         ],
         'test_suites': {
           'isolated_scripts': 'ios_simulator_cronet_tests'
-        },
-      },
-      'ios-simulator-code-coverage': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'ios_output_disabled_tests',
-          'isolate_profile_data',
-          'mac_12_x64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_14_main',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios_code_coverage_tests',
         },
       },
       'ios-simulator-cronet': {
@@ -3390,29 +3456,6 @@
           'scripts': 'test_traffic_annotation_auditor_script'
         },
       },
-      'linux-chromeos-code-coverage': {
-        'mixins': [
-          'isolate_profile_data',
-          'linux-bionic',
-        ],
-        'additional_compile_targets': [
-          'gn_all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'linux_chromeos_gtests',
-        },
-      },
-      'linux-code-coverage': {
-        'mixins': [
-          'isolate_profile_data',
-          'linux-bionic',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_linux_gtests',
-          'isolated_scripts': 'chromium_linux_rel_isolated_scripts',
-          'scripts': 'chromium_linux_scripts',
-        },
-      },
       'linux-fieldtrial-rel': {
         'mixins': [
           'linux-bionic',
@@ -3424,27 +3467,6 @@
       'linux-headless-shell-rel': {
         'test_suites': {
           'gtest_tests': 'headless_browser_gtests',
-        },
-      },
-
-      'linux-js-code-coverage': {
-        'mixins': [
-          'isolate_profile_data',
-          'linux-bionic',
-        ],
-        'test_suites': {
-          'gtest_tests': 'js_code_coverage_browser_tests'
-        },
-      },
-      'linux-lacros-code-coverage': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'mixins': [
-          'isolate_profile_data',
-        ],
-        'test_suites': {
-          'gtest_tests': 'linux_lacros_gtests',
         },
       },
       'linux-lacros-dbg-tests-fyi': {
@@ -3606,15 +3628,6 @@
           '--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer',
         ],
       },
-      'mac-code-coverage': {
-        'mixins': [
-          'isolate_profile_data',
-          'mac_12_x64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests',
-        },
-      },
       'mac-fieldtrial-tester': {
         'mixins': [
           'finch-chromium-swarming-pool',
@@ -3746,14 +3759,6 @@
           'isolated_scripts': 'upload_perfetto',
         },
         'use_swarming': False,
-      },
-      'win10-code-coverage': {
-        'mixins': [
-          'isolate_profile_data',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_win_gtests',
-        },
       },
       'win10-rel-no-external-ip': {
         'mixins': [

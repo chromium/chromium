@@ -9,9 +9,7 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
-    # TODO - to change the builder group to chromium.coverage, there needs to be
-    # some migration work in both tools/mb/mb_config.pyl and testing/buildbot/
-    builder_group = "chromium.fyi",
+    builder_group = "chromium.coverage",
     executable = ci.DEFAULT_EXECUTABLE,
     cores = 32,
     pool = ci.DEFAULT_POOL,
@@ -52,14 +50,6 @@ ci.builder(
     console_view_entry = [
         consoles.console_view_entry(
             category = "android",
-            # TODO: This should be removed once these builders are moved to
-            # chromium.coverage from chromium.fyi. The chromium.fyi console
-            # view can also be removed then.
-            console_view = "chromium.coverage",
-            short_name = "and",
-        ),
-        consoles.console_view_entry(
-            category = "code_coverage",
             short_name = "and",
         ),
     ],
@@ -102,14 +92,6 @@ ci.builder(
     console_view_entry = [
         consoles.console_view_entry(
             category = "android",
-            # TODO: This should be removed once these builders are moved to
-            # chromium.coverage from chromium.fyi. The chromium.fyi console
-            # view can also be removed then.
-            console_view = "chromium.coverage",
-            short_name = "ann",
-        ),
-        consoles.console_view_entry(
-            category = "code_coverage",
             short_name = "ann",
         ),
     ],
@@ -142,15 +124,7 @@ ci.builder(
     console_view_entry = [
         consoles.console_view_entry(
             category = "fuschia",
-            # TODO: This should be removed once these builders are moved to
-            # chromium.coverage from chromium.fyi. The chromium.fyi console
-            # view can also be removed then.
-            console_view = "chromium.coverage",
             short_name = "x64",
-        ),
-        consoles.console_view_entry(
-            category = "code_coverage",
-            short_name = "fx",
         ),
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
@@ -193,15 +167,7 @@ ci.builder(
     console_view_entry = [
         consoles.console_view_entry(
             category = "ios",
-            # TODO: This should be removed once these builders are moved to
-            # chromium.coverage from chromium.fyi. The chromium.fyi console
-            # view can also be removed then.
-            console_view = "chromium.coverage",
             short_name = "sim",
-        ),
-        consoles.console_view_entry(
-            category = "code_coverage",
-            short_name = "ios",
         ),
     ],
     coverage_exclude_sources = "ios_test_files_and_test_utils",
@@ -234,15 +200,7 @@ ci.builder(
     console_view_entry = [
         consoles.console_view_entry(
             category = "chromeos",
-            # TODO: This should be removed once these builders are moved to
-            # chromium.coverage from chromium.fyi. The chromium.fyi console
-            # view can also be removed then.
-            console_view = "chromium.coverage",
             short_name = "lnx",
-        ),
-        consoles.console_view_entry(
-            category = "code_coverage",
-            short_name = "lcr",
         ),
     ],
     coverage_test_types = ["overall", "unit"],
@@ -274,15 +232,7 @@ ci.builder(
     console_view_entry = [
         consoles.console_view_entry(
             category = "linux",
-            # TODO: This should be removed once these builders are moved to
-            # chromium.coverage from chromium.fyi. The chromium.fyi console
-            # view can also be removed then.
-            console_view = "chromium.coverage",
             short_name = "js",
-        ),
-        consoles.console_view_entry(
-            category = "code_coverage",
-            short_name = "jcr",
         ),
     ],
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
@@ -310,14 +260,6 @@ ci.builder(
     console_view_entry = [
         consoles.console_view_entry(
             category = "linux",
-            # TODO: This should be removed once these builders are moved to
-            # chromium.coverage from chromium.fyi. The chromium.fyi console
-            # view can also be removed then.
-            console_view = "chromium.coverage",
-            short_name = "lnx",
-        ),
-        consoles.console_view_entry(
-            category = "code_coverage",
             short_name = "lnx",
         ),
     ],
@@ -348,15 +290,7 @@ ci.builder(
     console_view_entry = [
         consoles.console_view_entry(
             category = "lacros",
-            # TODO: This should be removed once these builders are moved to
-            # chromium.coverage from chromium.fyi. The chromium.fyi console
-            # view can also be removed then.
-            console_view = "chromium.coverage",
             short_name = "lnx",
-        ),
-        consoles.console_view_entry(
-            category = "code_coverage",
-            short_name = "lac",
         ),
     ],
     coverage_test_types = ["overall", "unit"],
@@ -385,14 +319,6 @@ ci.builder(
     console_view_entry = [
         consoles.console_view_entry(
             category = "mac",
-            # TODO: This should be removed once these builders are moved to
-            # chromium.coverage from chromium.fyi. The chromium.fyi console
-            # view can also be removed then.
-            console_view = "chromium.coverage",
-            short_name = "mac",
-        ),
-        consoles.console_view_entry(
-            category = "code_coverage",
             short_name = "mac",
         ),
     ],
@@ -422,15 +348,7 @@ ci.builder(
     console_view_entry = [
         consoles.console_view_entry(
             category = "win",
-            # TODO: This should be removed once these builders are moved to
-            # chromium.coverage from chromium.fyi. The chromium.fyi console
-            # view can also be removed then.
-            console_view = "chromium.coverage",
             short_name = "win10",
-        ),
-        consoles.console_view_entry(
-            category = "code_coverage",
-            short_name = "win",
         ),
     ],
     coverage_test_types = ["overall", "unit"],

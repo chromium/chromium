@@ -1,0 +1,146 @@
+{
+  "android-code-coverage": {
+    "gn_args": {
+      "android_static_analysis": "off",
+      "dcheck_always_on": false,
+      "debuggable_apks": false,
+      "enable_resource_allowlist_generation": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "is_java_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "system_webview_package_name": "com.google.android.webview",
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_jacoco_coverage": true,
+      "use_remoteexec": true,
+      "use_static_angle": true
+    }
+  },
+  "android-code-coverage-native": {
+    "gn_args": {
+      "android_static_analysis": "off",
+      "dcheck_always_on": false,
+      "debuggable_apks": false,
+      "enable_resource_allowlist_generation": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "is_java_debug": true,
+      "proprietary_codecs": true,
+      "system_webview_package_name": "com.google.android.webview",
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_clang_coverage": true,
+      "use_remoteexec": true,
+      "use_static_angle": true
+    }
+  },
+  "fuchsia-code-coverage": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "fuchsia_code_coverage": true,
+      "is_clang": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 0,
+      "target_os": "fuchsia",
+      "use_clang_coverage": true,
+      "use_remoteexec": true,
+      "use_v2_script_default": false
+    }
+  },
+  "ios-simulator-code-coverage": {
+    "gn_args": {
+      "enable_run_ios_unittests_with_xctest": true,
+      "is_component_build": false,
+      "is_debug": true,
+      "symbol_level": 1,
+      "target_cpu": "x64",
+      "target_os": "ios",
+      "use_clang_coverage": true,
+      "use_remoteexec": true
+    }
+  },
+  "linux-chromeos-code-coverage": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "ChromeOS",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "target_os": "chromeos",
+      "use_clang_coverage": true,
+      "use_remoteexec": true
+    }
+  },
+  "linux-code-coverage": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_clang": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 0,
+      "use_clang_coverage": true,
+      "use_remoteexec": true
+    }
+  },
+  "linux-js-code-coverage": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "enable_webui_inline_sourcemaps": true,
+      "is_clang": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "optimize_webui": false,
+      "symbol_level": 0,
+      "use_clang_coverage": true,
+      "use_goma": true,
+      "use_javascript_coverage": true
+    }
+  },
+  "linux-lacros-code-coverage": {
+    "gn_args": {
+      "also_build_ash_chrome": true,
+      "chromeos_is_browser_only": true,
+      "dcheck_always_on": false,
+      "is_clang": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 0,
+      "target_os": "chromeos",
+      "use_clang_coverage": true,
+      "use_remoteexec": true
+    }
+  },
+  "mac-code-coverage": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_clang": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 0,
+      "use_clang_coverage": true,
+      "use_remoteexec": true
+    }
+  },
+  "win10-code-coverage": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_clang": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 0,
+      "use_clang_coverage": true,
+      "use_remoteexec": true
+    }
+  }
+}
