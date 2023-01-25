@@ -6,7 +6,7 @@ import logging
 
 from blinkpy.common.memoized import memoized
 from blinkpy.tool.commands.rebaseline import AbstractRebaseliningCommand
-from blinkpy.web_tests.models.test_expectations import TestExpectations
+from blinkpy.web_tests.models.test_expectations import TestExpectationsCache
 from blinkpy.web_tests.models.typ_types import ResultType
 
 _log = logging.getLogger(__name__)
@@ -26,6 +26,7 @@ class CopyExistingBaselines(AbstractRebaseliningCommand):
             self.flag_specific_option,
             self.results_directory_option,
         ])
+        self._exp_cache = TestExpectationsCache()
 
     def execute(self, options, args, tool):
         self._tool = tool
@@ -85,7 +86,7 @@ class CopyExistingBaselines(AbstractRebaseliningCommand):
                     self._tool.filesystem.remove(new_baseline)
                 continue
 
-            full_expectations = TestExpectations(port)
+            full_expectations = self._exp_cache.load(port)
             if ResultType.Skip in full_expectations.get_expectations(
                     test_name).results:
                 self._log_skipped_test(port, test_name)
@@ -123,7 +124,7 @@ class CopyExistingBaselines(AbstractRebaseliningCommand):
         port = self._tool.port_factory.get(port_name)
         if flag_specific:
             port.set_option_default('flag_specific', flag_specific)
-        full_expectations = TestExpectations(port)
+        full_expectations = self._exp_cache.load(port)
 
         if port.lookup_virtual_test_base(test_name):
             # Do nothing for virtual tests

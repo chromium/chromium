@@ -30,14 +30,14 @@
 import copy
 import logging
 import re
-
 from collections import defaultdict
 from collections import OrderedDict
+from functools import reduce
+from typing import Dict, Optional, Tuple
 
 from blinkpy.common.memoized import memoized
 from blinkpy.web_tests.models import typ_types
 from typ import expectations_parser
-from functools import reduce
 
 ResultType = typ_types.ResultType
 
@@ -612,3 +612,15 @@ class SystemConfigurationRemover(object):
 
     def update_expectations(self):
         self._test_expectations.commit_changes()
+
+
+class TestExpectationsCache:
+    def __init__(self):
+        self._cache: Dict[Tuple[str, Optional[str]], TestExpectations] = {}
+
+    def load(self, port: 'Port') -> TestExpectations:
+        cache_key = port.port_name, port.get_option('flag_specific')
+        expectations = self._cache.get(cache_key)
+        if not expectations:
+            self._cache[cache_key] = expectations = TestExpectations(port)
+        return expectations

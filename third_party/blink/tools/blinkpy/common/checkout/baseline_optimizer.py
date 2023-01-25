@@ -28,17 +28,22 @@
 
 import copy
 import logging
+from typing import Optional
 
 from blinkpy.common.memoized import memoized
 from blinkpy.web_tests.models.testharness_results import is_all_pass_testharness_result
-from blinkpy.web_tests.models.test_expectations import TestExpectations
+from blinkpy.web_tests.models.test_expectations import TestExpectationsCache
 from blinkpy.web_tests.models.typ_types import ResultType
 
 _log = logging.getLogger(__name__)
 
 
 class BaselineOptimizer(object):
-    def __init__(self, host, default_port, port_names):
+    def __init__(self,
+                 host,
+                 default_port,
+                 port_names,
+                 exp_cache: Optional[TestExpectationsCache] = None):
         self._filesystem = host.filesystem
         self._default_port = default_port
         self._host = host
@@ -49,6 +54,7 @@ class BaselineOptimizer(object):
             self._flag_specific_configs.update(
                 host.builders.flag_specific_options_for_port_name(port_name))
 
+        self._exp_cache = exp_cache or TestExpectationsCache()
         self._web_tests_dir = default_port.web_tests_dir()
         self._parent_of_tests = self._filesystem.dirname(self._web_tests_dir)
         self._web_tests_dir_name = self._filesystem.relpath(
@@ -415,7 +421,7 @@ class BaselineOptimizer(object):
             assert port_name in results_by_port_name
             # When the virtual test is skipped on a port, the baseline for the
             # non virtual test on the same port won't matter
-            full_expectations = TestExpectations(port)
+            full_expectations = self._exp_cache.load(port)
             if ResultType.Skip in full_expectations.get_expectations(
                     test_name).results:
                 continue

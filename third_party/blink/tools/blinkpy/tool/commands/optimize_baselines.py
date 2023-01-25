@@ -7,6 +7,7 @@ import optparse
 
 from blinkpy.common.checkout.baseline_optimizer import BaselineOptimizer
 from blinkpy.tool.commands.rebaseline import AbstractRebaseliningCommand
+from blinkpy.web_tests.models.test_expectations import TestExpectationsCache
 
 _log = logging.getLogger(__name__)
 
@@ -31,6 +32,7 @@ class OptimizeBaselines(AbstractRebaseliningCommand):
             self.port_name_option,
             self.all_option,
         ] + self.platform_options + self.wpt_options)
+        self._exp_cache = TestExpectationsCache()
 
     def _optimize_baseline(self, optimizer, test_name):
         for suffix in self._baseline_suffix_list:
@@ -48,7 +50,7 @@ class OptimizeBaselines(AbstractRebaseliningCommand):
             _log.error("No port names match '%s'", options.platform)
             return
         port = tool.port_factory.get(port_names[0], options)
-        optimizer = BaselineOptimizer(tool, port, port_names)
+        optimizer = BaselineOptimizer(tool, port, port_names, self._exp_cache)
         test_set = set(port.tests() if options.all_tests else port.tests(args))
         virtual_tests_to_exclude = set([
             test for test in test_set
