@@ -366,6 +366,12 @@ class WaylandWindow : public PlatformWindow,
   bool has_pending_configures() const { return !pending_configures_.empty(); }
 
  protected:
+  enum class KeyboardShortcutsInhibitionMode {
+    kDisabled,
+    kAlwaysEnabled,
+    kFullscreenOnly
+  };
+
   WaylandWindow(PlatformWindowDelegate* delegate,
                 WaylandConnection* connection);
 
@@ -400,6 +406,10 @@ class WaylandWindow : public PlatformWindow,
   gfx::Rect AdjustBoundsToConstraintsDIP(const gfx::Rect& bounds_dip);
 
   const gfx::Size& restored_size_dip() const { return restored_size_dip_; }
+
+  KeyboardShortcutsInhibitionMode keyboard_shortcuts_inhibition_mode() const {
+    return keyboard_shortcuts_inhibition_mode_;
+  }
 
   // Configure related:
   // Processes the pending bounds in dip.
@@ -444,6 +454,10 @@ class WaylandWindow : public PlatformWindow,
 
   // Additional initialization of derived classes.
   virtual bool OnInitialize(PlatformWindowInitProperties properties) = 0;
+
+  // Determines which keyboard shortcuts inhibition mode to be used and perform
+  // required initialization steps, if any.
+  void InitKeyboardShortcutsInhibition();
 
   // WaylandWindowDragController might need to take ownership of the wayland
   // surface whether the window that originated the DND session gets destroyed
@@ -563,6 +577,9 @@ class WaylandWindow : public PlatformWindow,
   WmDragHandler::DragFinishedCallback drag_finished_callback_;
 
   base::OnceClosure drag_loop_quit_closure_;
+
+  KeyboardShortcutsInhibitionMode keyboard_shortcuts_inhibition_mode_{
+      KeyboardShortcutsInhibitionMode::kDisabled};
 
 #if DCHECK_IS_ON()
   bool disable_null_target_dcheck_for_test_ = false;
