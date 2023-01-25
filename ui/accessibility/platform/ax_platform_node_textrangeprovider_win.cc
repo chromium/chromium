@@ -468,9 +468,6 @@ HRESULT AXPlatformNodeTextRangeProviderWin::FindText(
     BOOL backwards,
     BOOL ignore_case,
     ITextRangeProvider** result) {
-  WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_FINDTEXT);
-  WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_FINDTEXT);
-  UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_IN_1_OUT(string, result);
   // On Windows, there's a dichotomy in the definition of a text offset in a
   // text position between different APIs:
   //   - on UIA, a text offset translates to the offset in the text itself
@@ -493,6 +490,17 @@ HRESULT AXPlatformNodeTextRangeProviderWin::FindText(
   // value of the global variable to what is really expected on UIA.
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kSuppressCharacter);
+
+  WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_FINDTEXT);
+  WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_FINDTEXT);
+  // The following has to be called after setting the
+  // ax_embedded_object_behavior. This is because it can modify `this`'s `start`
+  // and `end`, and it will do so assuming
+  // `AXEmbeddedObjectBehavior::kExposeCharacter` if we do not set it to
+  // `kSuppressCharacter' above. This would lead to incorrect behavior where the
+  // `text_range` length = 1, since that is the length of the embedded object
+  // character.
+  UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_IN_1_OUT(string, result);
 
   std::u16string search_string = base::WideToUTF16(string);
   if (search_string.length() <= 0)

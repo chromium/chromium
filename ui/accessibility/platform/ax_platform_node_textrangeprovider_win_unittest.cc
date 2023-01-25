@@ -5327,6 +5327,98 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
+       TestTextRangeProviderWinFindTextInContentEditable) {
+  // Before the commit that added this test, we had incorrect behavior when
+  // finding text in the following tree scenario:
+  // ++1 kRootWebArea
+  // ++++2 kGenericContainer
+  // ++++++3 kParagraph
+  // ++++++++4 kStaticText
+  // ++++++++++5 kInlineTextBox
+  // Before, UIA FindText would modify the range's `start` and `end` before
+  // finding any text in some situations. It would do so according to
+  // `AXEmbeddedObjectBehavior::kExpose`, which meant that in this case,
+  // the `<p>` element would be represented by the embedded object character,
+  // even if inside the `<p>` element we have the text "hello", `FindText` would
+  // modify the range to just 'h' since the length of the embedded object
+  // character is 1.
+  //
+  // This is an important edge case since we can see this behavior and tree
+  // structure on comments on apps like Word for the web and Google Docs.
+  //
+  // See `AXPLatformNodeTextRangeProvider::FindText` for a more detailed
+  // explanation of the embedded object character.
+
+  ui::AXNodeData root_1;
+  ui::AXNodeData generic_container_2;
+  ui::AXNodeData paragraph_3;
+  ui::AXNodeData static_text_4;
+  ui::AXNodeData inline_box_5;
+
+  root_1.id = 1;
+  generic_container_2.id = 2;
+  paragraph_3.id = 3;
+  static_text_4.id = 4;
+  inline_box_5.id = 5;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {generic_container_2.id};
+
+  generic_container_2.role = ax::mojom::Role::kGenericContainer;
+  generic_container_2.child_ids = {paragraph_3.id};
+  generic_container_2.AddState(ax::mojom::State::kRichlyEditable);
+  generic_container_2.AddState(ax::mojom::State::kEditable);
+  generic_container_2.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
+
+  paragraph_3.role = ax::mojom::Role::kParagraph;
+  paragraph_3.child_ids = {static_text_4.id};
+
+  static_text_4.role = ax::mojom::Role::kStaticText;
+  static_text_4.SetName("foo");
+  static_text_4.child_ids = {inline_box_5.id};
+
+  inline_box_5.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_5.SetName("foo");
+
+  ui::AXTreeUpdate update;
+  ui::AXTreeData tree_data;
+  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  update.tree_data = tree_data;
+  update.has_tree_data = true;
+  update.root_id = root_1.id;
+  update.nodes = {root_1, generic_container_2, paragraph_3, static_text_4,
+                  inline_box_5};
+
+  Init(update);
+
+  AXNode* div_node = GetNodeFromTree(tree_data.tree_id, generic_container_2.id);
+
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(div_node));
+
+  // start: TextPosition, anchor_id=3, text_offset=0, annotated_text=<f>oo
+  // end  : TextPosition, anchor_id=3, text_offset=3, annotated_text=foo<>
+  ComPtr<AXPlatformNodeTextRangeProviderWin> text_range_provider;
+  {
+    ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+        AXEmbeddedObjectBehavior::kSuppressCharacter);
+    CreateTextRangeProviderWin(
+        text_range_provider, owner,
+        /*start_anchor=*/div_node, /*start_offset=*/0,
+        /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+        /*end_anchor=*/div_node, /*end_offset=*/3,
+        /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+  }
+
+  base::win::ScopedBstr find_string(L"foo");
+  Microsoft::WRL::ComPtr<ITextRangeProvider> text_range_provider_found;
+  text_range_provider->FindText(find_string.Get(), false, false,
+                                &text_range_provider_found);
+  ASSERT_TRUE(text_range_provider_found.Get());
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderFindTextBackwards) {
   Init(BuildTextDocument({"text", "some", "text"},
                          false /* build_word_boundaries_offsets */,

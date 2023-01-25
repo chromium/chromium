@@ -128,6 +128,17 @@ HRESULT AXPlatformNodeTextProviderWin::GetVisibleRanges(
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXT_GETVISIBLERANGES);
   UIA_VALIDATE_TEXTPROVIDER_CALL();
 
+  // Whether we expose embedded object characters for nodes is managed by the
+  // |g_ax_embedded_object_behavior| global variable set in ax_node_position.cc.
+  // When on Windows, this variable is always set to kExposeCharacter... which
+  // is incorrect if we run UIA-specific code relating to computing text content
+  // of nodes that themselves do not have text, such as `<p>` elements. To avoid
+  // problems caused by that, we use the following
+  // ScopedAXEmbeddedObjectBehaviorSetter to modify the value of the global
+  // variable to what is really expected on UIA.
+
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kSuppressCharacter);
   const AXPlatformNodeDelegate* delegate = owner()->GetDelegate();
 
   // Get the Clipped Frame Bounds of the current node, not from the root,
