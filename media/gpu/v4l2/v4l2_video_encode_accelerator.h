@@ -268,6 +268,8 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   static base::AtomicRefCount num_instances_;
   const bool can_use_encoder_;
 
+  std::string driver_name_;
+
   // Our original calling task runner for the child thread and its checker.
   const scoped_refptr<base::SingleThreadTaskRunner> child_task_runner_;
   SEQUENCE_CHECKER(child_sequence_checker_);

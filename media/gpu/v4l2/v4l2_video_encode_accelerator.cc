@@ -277,6 +277,8 @@ bool V4L2VideoEncodeAccelerator::Initialize(
     return false;
   }
 
+  driver_name_ = device_->GetDriverName();
+
   encoder_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&V4L2VideoEncodeAccelerator::InitializeTask,
                                 weak_this_, config));
@@ -1411,10 +1413,14 @@ bool V4L2VideoEncodeAccelerator::EnqueueInputRecord(
         return false;
       }
 
-      // Keep |gmb_handle| alive as long as |frame| is alive so that fds passed
-      // to the driver are valid during encoding.
-      frame->AddDestructionObserver(base::BindOnce(
-          [](gfx::GpuMemoryBufferHandle) {}, std::move(gmb_handle)));
+      // TODO(b/266443239): Remove this workaround once RK3399 boards reaches
+      // EOL. v4lplugin holds v4l2_buffer in QBUF without duplicating the passed
+      // fds and resumes the QBUF request later after VIDIOC_QBUF returns. It is
+      // required to keep the passed fds valid until DQBUF is complete.
+      if (driver_name_ == "hantro-vpu") {
+        frame->AddDestructionObserver(base::BindOnce(
+            [](gfx::GpuMemoryBufferHandle) {}, std::move(gmb_handle)));
+      }
       break;
     }
     default:
@@ -1423,6 +1429,8 @@ bool V4L2VideoEncodeAccelerator::EnqueueInputRecord(
       return false;
   }
 
+  // Keep |frame| in |input_record| so that a client doesn't use |frame| until
+  // a driver finishes using it, that is, VIDIOC_DQBUF is called.
   InputRecord& input_record = input_buffer_map_[buffer_id];
   input_record.frame = frame;
   input_record.ip_output_buffer_index = frame_info.ip_output_buffer_index;
