@@ -96,6 +96,9 @@ const highlightBackgroundColor = "rgba(20,111,225,0.25)";
 const decorationStyles = 'border-bottom-width: 1px; ' +
     'border-bottom-style: dotted; ' +
     'background-color: transparent';
+const decorationStylesForPhoneAndEmail = 'border-bottom-width: 1px; ' +
+    'border-bottom-style: solid; ' +
+    'background-color: transparent';
 const decorationDefaultColor = 'blue';
 
 /**
@@ -471,7 +474,13 @@ function replaceNode(
     element.setAttribute('data-data', replacement.data);
     element.setAttribute('data-annotation', replacement.annotationText);
     element.innerText = replacement.text;
-    element.style.cssText = decorationStyles;
+
+    if (replacement.type == 'PHONE_NUMBER' || replacement.type == 'EMAIL') {
+      element.style.cssText = decorationStylesForPhoneAndEmail;
+    } else {
+      element.style.cssText = decorationStyles;
+    }
+
     element.style.borderBottomColor = textColor;
     element.addEventListener('click', handleTap.bind(element), true);
     parts.push(element);

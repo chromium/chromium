@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/annotations/annotations_text_manager.h"
+#import "ios/web/annotations/annotations_utils.h"
 
 #import "base/logging.h"
 #import "base/strings/string_util.h"
@@ -22,6 +22,7 @@ static const char kAnnotationsStartKey[] = "start";
 static const char kAnnotationsEndKey[] = "end";
 static const char kAnnotationsTypeKey[] = "type";
 static const char kAnnotationsDataKey[] = "data";
+NSString* const kMailtoPrefixUrl = @"mailto:";
 
 NSString* EncodeNSTextCheckingResultData(NSTextCheckingResult* match) {
   NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
@@ -47,6 +48,11 @@ NSString* EncodeNSTextCheckingResultData(NSTextCheckingResult* match) {
     [dict setObject:@"phoneNumber" forKey:@"type"];
     if (match.phoneNumber) {
       [dict setObject:match.phoneNumber forKey:@"phoneNumber"];
+    }
+  } else if (IsNSTextCheckingResultEmail(match)) {
+    [dict setObject:@"email" forKey:@"type"];
+    if (match.URL) {
+      [dict setObject:match.URL.resourceSpecifier forKey:@"email"];
     }
   }
 
@@ -101,6 +107,9 @@ NSTextCheckingResult* DecodeNSTextCheckingResultData(NSString* base64_data) {
     return
         [NSTextCheckingResult phoneNumberCheckingResultWithRange:range
                                                      phoneNumber:phoneNumber];
+  } else if ([type isEqualToString:@"email"]) {
+    NSString* email = dict[@"email"];
+    return MakeNSTextCheckingResultEmail(email, range);
   }
   return nil;
 }
@@ -118,6 +127,18 @@ base::Value::Dict ConvertMatchToAnnotation(NSString* source,
   dict.Set(kAnnotationsTypeKey, base::Value(base::SysNSStringToUTF8(type)));
   dict.Set(kAnnotationsDataKey, base::Value(base::SysNSStringToUTF8(data)));
   return dict;
+}
+
+bool IsNSTextCheckingResultEmail(NSTextCheckingResult* result) {
+  return result.resultType == NSTextCheckingTypeLink &&
+         [result.URL.scheme isEqualToString:@"mailto"];
+}
+
+NSTextCheckingResult* MakeNSTextCheckingResultEmail(NSString* email,
+                                                    NSRange range) {
+  NSString* mailto_email = [kMailtoPrefixUrl stringByAppendingString:email];
+  NSURL* email_url = [[NSURL alloc] initWithString:mailto_email];
+  return [NSTextCheckingResult linkCheckingResultWithRange:range URL:email_url];
 }
 
 }  // namespace annotations

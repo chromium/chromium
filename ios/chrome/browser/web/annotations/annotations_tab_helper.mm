@@ -10,6 +10,8 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
+#import "ios/chrome/browser/mailto_handler/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/text_selection/text_classifier_model_service.h"
 #import "ios/chrome/browser/text_selection/text_classifier_model_service_factory.h"
 #import "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
@@ -27,10 +29,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-static NSString* kDecorationDate = @"DATE";
-static NSString* kDecorationAddress = @"ADDRESS";
-static NSString* kDecorationPhoneNumber = @"PHONE_NUMBER";
 
 AnnotationsTabHelper::AnnotationsTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
@@ -107,13 +105,28 @@ void AnnotationsTabHelper::OnClick(web::WebState* web_state,
     return;
   }
 
-  NSArray<CRWContextMenuItem*>* items =
-      ios::provider::GetContextMenuElementsToAdd(web_state, match,
-                                                 base::SysUTF8ToNSString(text),
-                                                 base_view_controller_);
-
-  if (items.count) {
-    [web_state_->GetWebViewProxy() showMenuWithItems:items rect:rect];
+  if (match.resultType == NSTextCheckingTypePhoneNumber) {
+    NSString* phone_number =
+        [match.phoneNumber stringByReplacingOccurrencesOfString:@" "
+                                                     withString:@""];
+    NSString* phone_number_call_format =
+        [NSString stringWithFormat:@"tel:%@", phone_number];
+    [[UIApplication sharedApplication]
+                  openURL:[NSURL URLWithString:phone_number_call_format]
+                  options:@{}
+        completionHandler:nil];
+  } else if (web::annotations::IsNSTextCheckingResultEmail(match)) {
+    MailtoHandlerServiceFactory::GetForBrowserState(
+        ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()))
+        ->HandleMailtoURL(match.URL);
+  } else {
+    NSArray<CRWContextMenuItem*>* items =
+        ios::provider::GetContextMenuElementsToAdd(
+            web_state, match, base::SysUTF8ToNSString(text),
+            base_view_controller_);
+    if (items.count) {
+      [web_state_->GetWebViewProxy() showMenuWithItems:items rect:rect];
+    }
   }
 }
 

@@ -11,6 +11,8 @@ source_set("annotations") {
     "//base",
     "//components/shared_highlighting/ios",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/mailto_handler",
+    "//ios/chrome/browser/mailto_handler:mailto_handler_factory",
     "//ios/chrome/browser/text_selection",
     "//ios/public/provider/chrome/browser/context_menu:context_menu_api",
     "//ios/web/annotations",
