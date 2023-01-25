@@ -173,18 +173,18 @@ if (use_thin_lto && is_debug) {
 
 # Determine whether to enable or disable frame pointers, based on the platform
 # and build arguments.
-# TODO(crbug.com/1052397): Consider changing is_chromeos_ash to is_chromeos after
-# lacros-chrome switches to target_os="chromeos".
 if (is_chromeos) {
   # ChromeOS generally prefers frame pointers, to support CWP.
   # However, Clang does not currently generate usable frame pointers in ARM
   # 32-bit builds (https://bugs.llvm.org/show_bug.cgi?id=18505) so disable them
   # there to avoid the unnecessary overhead.
   enable_frame_pointers = current_cpu != "arm"
-} else if (is_apple || is_linux || is_chromeos) {
+} else if (is_apple || is_linux) {
   enable_frame_pointers = true
 } else if (is_win) {
   # 64-bit Windows ABI doesn't support frame pointers.
+  # NOTE: This setting is actually not used in the BUILD.gn for Windows,
+  # but it still reflects correctly that we don't emit frame pointers on x64.
   if (current_cpu == "x64") {
     enable_frame_pointers = false
   } else {

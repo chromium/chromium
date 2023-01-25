@@ -2080,7 +2080,7 @@ if (is_win) {
 }
 
 config("default_stack_frames") {
-  if (is_posix || is_fuchsia) {
+  if (!is_win) {
     if (enable_frame_pointers) {
       cflags = [ "-fno-omit-frame-pointer" ]
 
