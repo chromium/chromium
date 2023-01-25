@@ -51,6 +51,7 @@
  *   through the normal event handling pipeline.
  */
 import {LocalStorage} from '../common/local_storage.js';
+import {SettingsManager} from '../chromevox/common/settings_manager.js';
 
 export class BrailleIme {
   constructor() {
@@ -155,6 +156,7 @@ export class BrailleIme {
    */
   async init() {
     await LocalStorage.init();
+    await SettingsManager.init();
     chrome.input.ime.onActivate.addListener(this.onActivate_.bind(this));
     chrome.input.ime.onDeactivated.addListener(this.onDeactivated_.bind(this));
     chrome.input.ime.onFocus.addListener(this.onFocus_.bind(this));

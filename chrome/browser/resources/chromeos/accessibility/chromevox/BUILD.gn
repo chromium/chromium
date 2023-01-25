@@ -147,6 +147,7 @@ chromevox_es6_modules = [
   "common/permission_checker.js",
   "common/role_type.js",
   "common/spannable.js",
+  "common/settings_manager.js",
   "common/tree_dumper.js",
   "common/tts_interface.js",
   "common/tts_types.js",

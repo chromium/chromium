@@ -11,6 +11,7 @@ import {BackgroundBridge} from '../common/background_bridge.js';
 import {BrailleTable} from '../common/braille/braille_table.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
+import {SettingsManager} from '../common/settings_manager.js';
 import {PunctuationEchoes, TtsSettings} from '../common/tts_types.js';
 
 import {BluetoothBrailleDisplayUI} from './bluetooth_braille_display_ui.js';
@@ -32,6 +33,7 @@ export class OptionsPage {
    */
   static async init() {
     await LocalStorage.init();
+    await SettingsManager.init();
     OptionsPage.populateVoicesSelect();
     BrailleTable.getAll(function(tables) {
       /** @type {!Array<BrailleTable.Table>} */

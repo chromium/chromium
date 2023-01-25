@@ -35,6 +35,7 @@ const char* const kPersistentPrefNames[] = {
     ash::prefs::kAccessibilityLargeCursorDipSize,
     ash::prefs::kAccessibilityStickyKeysEnabled,
     ash::prefs::kAccessibilitySpokenFeedbackEnabled,
+    ash::prefs::kAccessibilityChromeVoxAutoRead,
     ash::prefs::kAccessibilityHighContrastEnabled,
     ash::prefs::kAccessibilityScreenMagnifierCenterFocus,
     ash::prefs::kAccessibilityScreenMagnifierEnabled,

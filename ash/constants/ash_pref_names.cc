@@ -230,6 +230,10 @@ const char kAccessibilityStickyKeysEnabled[] =
     "settings.a11y.sticky_keys_enabled";
 // A boolean pref which determines whether spoken feedback is enabled.
 const char kAccessibilitySpokenFeedbackEnabled[] = "settings.accessibility";
+// A boolean pref which determines whether automatic reading for ChromeVox is
+// enabled.
+const char kAccessibilityChromeVoxAutoRead[] =
+    "settings.a11y.chromevox.auto_read";
 // A boolean pref which determines whether high contrast is enabled.
 const char kAccessibilityHighContrastEnabled[] =
     "settings.a11y.high_contrast_enabled";

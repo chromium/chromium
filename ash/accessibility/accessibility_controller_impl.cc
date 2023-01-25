@@ -169,6 +169,7 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kAccessibilityAutoclickDelayMs,
     prefs::kAccessibilityAutoclickEnabled,
     prefs::kAccessibilityCaretHighlightEnabled,
+    prefs::kAccessibilityChromeVoxAutoRead,
     prefs::kAccessibilityCursorHighlightEnabled,
     prefs::kAccessibilityCursorColorEnabled,
     prefs::kAccessibilityCursorColor,
@@ -954,6 +955,10 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
       prefs::kDisplayRotationAcceleratorDialogHasBeenAccepted2, false);
   registry->RegisterBooleanPref(prefs::kShouldAlwaysShowAccessibilityMenu,
                                 false);
+
+  // ChromeVox prefs are non-syncable so that each device can have its own
+  // settings.
+  registry->RegisterBooleanPref(prefs::kAccessibilityChromeVoxAutoRead, false);
 
   //
   // Syncable prefs.

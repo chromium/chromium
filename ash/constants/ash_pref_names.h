@@ -102,6 +102,8 @@ extern const char kAccessibilityStickyKeysEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilitySpokenFeedbackEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxAutoRead[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityHighContrastEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityScreenMagnifierCenterFocus[];

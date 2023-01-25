@@ -91,6 +91,15 @@ export class StringUtil {
     }
     return result;
   }
+
+  /**
+   * Converts a camel case string to snake case.
+   * @param {string} s A camel case string, e.g. 'brailleTable8'.
+   * @return {string} A snake case string, e.g. 'braille_table_8'.
+   */
+  static camelToSnake(s) {
+    return s.replace(/([A-Z0-9])/g, '_$1').toLowerCase();
+  }
 }
 
 /**

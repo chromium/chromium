@@ -55,11 +55,25 @@ export class Settings {
 
   /**
    * @param {string} key
-   * @return {?PrefObject}
+   * @return {*}
    */
   static get(key) {
     Settings.instance.validate_(key);
-    return Settings.instance.prefs_[key];
+    return Settings.instance.prefs_[key].value;
+  }
+
+  /**
+   * @param {string} key
+   * @param {*} value
+   */
+  static set(key, value) {
+    Settings.instance.validate_(key);
+    const oldValue = Settings.instance.prefs_[key].value;
+    chrome.settingsPrivate.setPref(key, value);
+    Settings.instance.prefs_[key].value = value;
+    if (oldValue !== value) {
+      Settings.instance.listeners_[key].forEach(listener => listener(value));
+    }
   }
 
   // ============ Private methods ============
@@ -82,7 +96,10 @@ export class Settings {
   async initialFetch_() {
     const prefs = await new Promise(
         resolve => chrome.settingsPrivate.getAllPrefs(resolve));
-    this.prefs_ = prefs.filter(pref => this.isTracked_(pref.key));
+
+    const trackedPrefs = prefs.filter(pref => this.isTracked_(pref.key));
+    this.prefs_ =
+        Object.fromEntries(trackedPrefs.map(pref => [pref.key, pref]));
   }
 
   /**
@@ -125,6 +142,9 @@ export class Settings {
     }
     if (!this.isTracked_(key)) {
       throw new Error('Prefs key "' + key + '" is not being tracked.');
+    }
+    if (!this.prefs_[key]) {
+      throw new Error('Settings missing pref with key:', key);
     }
   }
 }
