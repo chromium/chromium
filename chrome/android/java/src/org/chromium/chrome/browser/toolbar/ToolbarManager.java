@@ -641,8 +641,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 LoadUrlParams params =
                         new LoadUrlParams(url, transition | PageTransition.FROM_ADDRESS_BAR);
                 params.setInputStartTimestamp(inputStart);
-                return ReturnToChromeUtil.handleLoadUrlWithPostDataFromStartSurface(
-                        new LoadUrlParams(url, transition | PageTransition.FROM_ADDRESS_BAR),
+                return ReturnToChromeUtil.handleLoadUrlWithPostDataFromStartSurface(params,
                         postDataType, postData, incognito, startSurfaceParentTabSupplier.get());
             };
             ChromePageInfo toolbarPageInfo = new ChromePageInfo(modalDialogManagerSupplier, null,
