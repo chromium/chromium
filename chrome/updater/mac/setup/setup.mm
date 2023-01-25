@@ -273,7 +273,8 @@ int PromoteCandidate(UpdaterScope scope) {
     base::FilePath path =
         bundle_path->Append("Contents").Append("Helpers").Append("launcher");
     struct stat info;
-    if (stat(path.value().c_str(), &info) || info.st_uid ||
+    if (lstat(path.value().c_str(), &info) || info.st_uid ||
+        !(S_IFREG & info.st_mode) ||
         lchmod(path.value().c_str(),
                S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH | S_ISUID)) {
       VPLOG(1) << "Launcher lchmod failed. Cross-user on-demand will not work";
