@@ -89,20 +89,17 @@ class PLATFORM_EXPORT Font {
   void DrawText(cc::PaintCanvas*,
                 const TextRunPaintInfo&,
                 const gfx::PointF&,
-                float device_scale_factor,
                 const cc::PaintFlags&,
                 DrawType = DrawType::kGlyphsOnly) const;
   void DrawText(cc::PaintCanvas*,
                 const TextRunPaintInfo&,
                 const gfx::PointF&,
-                float device_scale_factor,
                 cc::NodeId node_id,
                 const cc::PaintFlags&,
                 DrawType = DrawType::kGlyphsOnly) const;
   void DrawText(cc::PaintCanvas*,
                 const NGTextFragmentPaintInfo&,
                 const gfx::PointF&,
-                float device_scale_factor,
                 cc::NodeId node_id,
                 const cc::PaintFlags&,
                 DrawType = DrawType::kGlyphsOnly) const;
@@ -110,20 +107,17 @@ class PLATFORM_EXPORT Font {
                     const TextRunPaintInfo&,
                     const gfx::PointF&,
                     CustomFontNotReadyAction,
-                    float device_scale_factor,
                     const cc::PaintFlags&,
                     DrawType = DrawType::kGlyphsOnly) const;
   void DrawEmphasisMarks(cc::PaintCanvas*,
                          const TextRunPaintInfo&,
                          const AtomicString& mark,
                          const gfx::PointF&,
-                         float device_scale_factor,
                          const cc::PaintFlags&) const;
   void DrawEmphasisMarks(cc::PaintCanvas*,
                          const NGTextFragmentPaintInfo&,
                          const AtomicString& mark,
                          const gfx::PointF&,
-                         float device_scale_factor,
                          const cc::PaintFlags&) const;
 
   gfx::RectF TextInkBounds(const NGTextFragmentPaintInfo&) const;
@@ -139,12 +133,10 @@ class PLATFORM_EXPORT Font {
   // a line crossing through the text, parallel to the baseline.
   // TODO(drott): crbug.com/655154 Fix this for upright in vertical.
   void GetTextIntercepts(const TextRunPaintInfo&,
-                         float device_scale_factor,
                          const cc::PaintFlags&,
                          const std::tuple<float, float>& bounds,
                          Vector<TextIntercept>&) const;
   void GetTextIntercepts(const NGTextFragmentPaintInfo&,
-                         float device_scale_factor,
                          const cc::PaintFlags&,
                          const std::tuple<float, float>& bounds,
                          Vector<TextIntercept>&) const;

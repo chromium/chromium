@@ -209,10 +209,9 @@ void TextPainter::ClipDecorationsStripe(float upper,
     return;
 
   Vector<Font::TextIntercept> text_intercepts;
-  font_.GetTextIntercepts(
-      text_run_paint_info, graphics_context_.DeviceScaleFactor(),
-      graphics_context_.FillFlags(),
-      std::make_tuple(upper, upper + stripe_width), text_intercepts);
+  font_.GetTextIntercepts(text_run_paint_info, graphics_context_.FillFlags(),
+                          std::make_tuple(upper, upper + stripe_width),
+                          text_intercepts);
 
   DecorationsStripeIntercepts(upper, stripe_width, dilation, text_intercepts);
 }

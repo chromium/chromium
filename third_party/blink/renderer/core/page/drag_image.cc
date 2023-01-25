@@ -258,8 +258,7 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
   }
   label_font.DrawBidiText(resource_provider->Canvas(),
                           TextRunPaintInfo(text_run), gfx::PointF(text_pos),
-                          Font::kDoNotPaintIfFontNotReady, device_scale_factor,
-                          text_paint);
+                          Font::kDoNotPaintIfFontNotReady, text_paint);
 
   scoped_refptr<StaticBitmapImage> image = resource_provider->Snapshot();
   return DragImage::Create(image.get(), kRespectImageOrientation);

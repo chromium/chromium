@@ -31,11 +31,8 @@ std::ostream& operator<<(std::ostream& out, const base::span<T, E>& c) {
 
 ShapeResultBloberizer::ShapeResultBloberizer(
     const FontDescription& font_description,
-    bool should_use_subpixel_antialiasing,
     Type type)
-    : font_description_(font_description),
-      should_use_subpixel_antialiasing_(should_use_subpixel_antialiasing),
-      type_(type) {}
+    : font_description_(font_description), type_(type) {}
 
 bool ShapeResultBloberizer::HasPendingVerticalOffsets() const {
   // We exclusively store either horizontal/x-only offsets -- in which case
@@ -168,8 +165,8 @@ void ShapeResultBloberizer::CommitPendingRun() {
   if (UNLIKELY(!current_character_indexes_.empty()))
     CommitText();
 
-  SkFont run_font = pending_font_data_->PlatformData().CreateSkFont(
-      should_use_subpixel_antialiasing_, &font_description_);
+  SkFont run_font =
+      pending_font_data_->PlatformData().CreateSkFont(&font_description_);
 
   const auto run_size = pending_glyphs_.size();
   const auto text_size = pending_utf8_.size();
@@ -432,13 +429,10 @@ class ClusterStarts {
 
 ShapeResultBloberizer::FillGlyphs::FillGlyphs(
     const FontDescription& font_description,
-    bool should_use_subpixel_antialiasing,
     const TextRunPaintInfo& run_info,
     const ShapeResultBuffer& result_buffer,
     const Type type)
-    : ShapeResultBloberizer(font_description,
-                            should_use_subpixel_antialiasing,
-                            type) {
+    : ShapeResultBloberizer(font_description, type) {
   if (CanUseFastPath(run_info.from, run_info.to, run_info.run.length(),
                      result_buffer.HasVerticalOffsets())) {
     DVLOG(4) << "FillGlyphs fast path";
@@ -506,15 +500,12 @@ ShapeResultBloberizer::FillGlyphs::FillGlyphs(
 
 ShapeResultBloberizer::FillGlyphsNG::FillGlyphsNG(
     const FontDescription& font_description,
-    bool should_use_subpixel_antialiasing,
     const StringView& text,
     unsigned from,
     unsigned to,
     const ShapeResultView* result,
     const Type type)
-    : ShapeResultBloberizer(font_description,
-                            should_use_subpixel_antialiasing,
-                            type) {
+    : ShapeResultBloberizer(font_description, type) {
   DCHECK(result);
   DCHECK(to <= text.length());
   float initial_advance = 0;
@@ -551,13 +542,10 @@ ShapeResultBloberizer::FillGlyphsNG::FillGlyphsNG(
 
 ShapeResultBloberizer::FillTextEmphasisGlyphs::FillTextEmphasisGlyphs(
     const FontDescription& font_description,
-    bool should_use_subpixel_antialiasing,
     const TextRunPaintInfo& run_info,
     const ShapeResultBuffer& result_buffer,
     const GlyphData& emphasis)
-    : ShapeResultBloberizer(font_description,
-                            should_use_subpixel_antialiasing,
-                            Type::kNormal) {
+    : ShapeResultBloberizer(font_description, Type::kNormal) {
   gfx::PointF glyph_center =
       emphasis.font_data->BoundsForGlyph(emphasis.glyph).CenterPoint();
 
@@ -594,15 +582,12 @@ ShapeResultBloberizer::FillTextEmphasisGlyphs::FillTextEmphasisGlyphs(
 
 ShapeResultBloberizer::FillTextEmphasisGlyphsNG::FillTextEmphasisGlyphsNG(
     const FontDescription& font_description,
-    bool should_use_subpixel_antialiasing,
     const StringView& text,
     unsigned from,
     unsigned to,
     const ShapeResultView* result,
     const GlyphData& emphasis)
-    : ShapeResultBloberizer(font_description,
-                            should_use_subpixel_antialiasing,
-                            Type::kNormal) {
+    : ShapeResultBloberizer(font_description, Type::kNormal) {
   gfx::PointF glyph_center =
       emphasis.font_data->BoundsForGlyph(emphasis.glyph).CenterPoint();
   ClusterCallbackContext context = {this, text, emphasis, glyph_center};

@@ -298,9 +298,7 @@ void ScrollableAreaPainter::PaintNativeScrollbar(GraphicsContext& context,
   if (scrollable_area_->ShouldDirectlyCompositeScrollbar(scrollbar))
     scroll_translation = properties->ScrollTranslation();
 
-  auto delegate = base::MakeRefCounted<ScrollbarLayerDelegate>(
-      scrollbar, context.DeviceScaleFactor());
-
+  auto delegate = base::MakeRefCounted<ScrollbarLayerDelegate>(scrollbar);
   ScrollbarDisplayItem::Record(context, scrollbar, type, delegate, visual_rect,
                                scroll_translation, scrollbar.GetElementId());
 }

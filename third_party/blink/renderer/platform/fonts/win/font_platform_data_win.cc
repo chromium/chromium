@@ -39,7 +39,7 @@
 
 namespace blink {
 
-SkFont FontPlatformData::CreateSkFont(bool, const FontDescription*) const {
+SkFont FontPlatformData::CreateSkFont(const FontDescription*) const {
   SkFont font;
   font.setSize(SkFloatToScalar(text_size_));
   font.setTypeface(typeface_);

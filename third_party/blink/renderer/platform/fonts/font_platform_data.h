@@ -136,8 +136,7 @@ class PLATFORM_EXPORT FontPlatformData {
   const WebFontRenderStyle& GetFontRenderStyle() const { return style_; }
 #endif
 
-  SkFont CreateSkFont(bool should_use_subpixel_positioning = false,
-                      const FontDescription* = nullptr) const;
+  SkFont CreateSkFont(const FontDescription* = nullptr) const;
 
   scoped_refptr<OpenTypeVerticalData> CreateVerticalData() const;
 

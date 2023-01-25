@@ -499,8 +499,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   static const char kOptimizeSpeedRendering[];
   static const char kOptimizeLegibilityRendering[];
   static const char kGeometricPrecisionRendering[];
-  // Canvas is device independent
-  static const double kCDeviceScaleFactor;
   virtual void DisableAcceleration() {}
 
   virtual bool IsPaint2D() const { return false; }

@@ -70,7 +70,6 @@ const char BaseRenderingContext2D::kAllPetiteVariantString[] =
     "all-petite-caps";
 const char BaseRenderingContext2D::kUnicaseVariantString[] = "unicase";
 const char BaseRenderingContext2D::kTitlingCapsVariantString[] = "titling-caps";
-const double BaseRenderingContext2D::kCDeviceScaleFactor = 1.0;
 const char BaseRenderingContext2D::kAutoRendering[] = "auto";
 const char BaseRenderingContext2D::kOptimizeSpeedRendering[] = "optimizespeed";
 const char BaseRenderingContext2D::kOptimizeLegibilityRendering[] =

@@ -74,7 +74,7 @@ struct BLINK_PLATFORM_EXPORT WebFontRenderStyle {
   // kNoPreference in |other|.
   void OverrideWith(const WebFontRenderStyle& other);
 
-  void ApplyToSkFont(SkFont*, bool should_use_subpixel_positioning) const;
+  void ApplyToSkFont(SkFont*) const;
 
   // Each of the use* members below can take one of three values:
   //   0: off

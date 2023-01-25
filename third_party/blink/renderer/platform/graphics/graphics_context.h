@@ -172,8 +172,8 @@ class PLATFORM_EXPORT GraphicsContext {
   GraphicsContext& operator=(const GraphicsContext&) = delete;
   ~GraphicsContext();
 
-  // Copy configs such as printing, dark mode, device scale factor etc. from
-  // another GraphicsContext.
+  // Copy configs such as printing, dark mode, etc. from another
+  // GraphicsContext.
   void CopyConfigFrom(GraphicsContext&);
 
   void SetPrintingMetafile(printing::MetafileSkia* metafile) {
@@ -259,11 +259,6 @@ class PLATFORM_EXPORT GraphicsContext {
         static_cast<cc::PaintFlags::FilterQuality>(
             ImageInterpolationQuality()));
   }
-
-  // Specify the device scale factor which may change the way document markers
-  // and fonts are rendered.
-  void SetDeviceScaleFactor(float factor) { device_scale_factor_ = factor; }
-  float DeviceScaleFactor() const { return device_scale_factor_; }
 
   // Set to true if context is for printing. Bitmaps won't be resampled when
   // printing to keep the best possible quality. When printing text will be
@@ -636,8 +631,6 @@ class PLATFORM_EXPORT GraphicsContext {
   int layer_count_ = 0;
   bool disable_destruction_checks_ = false;
 #endif
-
-  float device_scale_factor_ = 1.0f;
 
   std::unique_ptr<DarkModeFilter> dark_mode_filter_;
 

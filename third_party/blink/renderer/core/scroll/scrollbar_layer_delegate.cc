@@ -22,10 +22,7 @@ class ScopedScrollbarPainter {
   STACK_ALLOCATED();
 
  public:
-  ScopedScrollbarPainter(cc::PaintCanvas& canvas, float device_scale_factor)
-      : canvas_(canvas) {
-    builder_->Context().SetDeviceScaleFactor(device_scale_factor);
-  }
+  explicit ScopedScrollbarPainter(cc::PaintCanvas& canvas) : canvas_(canvas) {}
   ~ScopedScrollbarPainter() { canvas_.drawPicture(builder_->EndRecording()); }
 
   GraphicsContext& Context() { return builder_->Context(); }
@@ -37,9 +34,8 @@ class ScopedScrollbarPainter {
 
 }  // namespace
 
-ScrollbarLayerDelegate::ScrollbarLayerDelegate(blink::Scrollbar& scrollbar,
-                                               float device_scale_factor)
-    : scrollbar_(&scrollbar), device_scale_factor_(device_scale_factor) {
+ScrollbarLayerDelegate::ScrollbarLayerDelegate(blink::Scrollbar& scrollbar)
+    : scrollbar_(&scrollbar) {
   // Custom scrollbars are either non-composited or use cc::PictureLayers
   // which don't need ScrollbarLayerDelegate.
   DCHECK(!scrollbar.IsCustomScrollbar());
@@ -160,7 +156,7 @@ void ScrollbarLayerDelegate::PaintPart(cc::PaintCanvas* canvas,
     return;
 
   auto& theme = scrollbar_->GetTheme();
-  ScopedScrollbarPainter painter(*canvas, device_scale_factor_);
+  ScopedScrollbarPainter painter(*canvas);
   // The canvas coordinate space is relative to the part's origin.
   switch (part) {
     case cc::ScrollbarPart::THUMB:

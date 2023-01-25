@@ -211,17 +211,14 @@ void DrawBlobs(cc::PaintCanvas* canvas,
 void Font::DrawText(cc::PaintCanvas* canvas,
                     const TextRunPaintInfo& run_info,
                     const gfx::PointF& point,
-                    float device_scale_factor,
                     const cc::PaintFlags& flags,
                     DrawType draw_type) const {
-  DrawText(canvas, run_info, point, device_scale_factor, cc::kInvalidNodeId,
-           flags, draw_type);
+  DrawText(canvas, run_info, point, cc::kInvalidNodeId, flags, draw_type);
 }
 
 void Font::DrawText(cc::PaintCanvas* canvas,
                     const TextRunPaintInfo& run_info,
                     const gfx::PointF& point,
-                    float device_scale_factor,
                     cc::NodeId node_id,
                     const cc::PaintFlags& flags,
                     DrawType draw_type) const {
@@ -234,7 +231,7 @@ void Font::DrawText(cc::PaintCanvas* canvas,
   ShapeResultBuffer buffer;
   word_shaper.FillResultBuffer(run_info, &buffer);
   ShapeResultBloberizer::FillGlyphs bloberizer(
-      GetFontDescription(), device_scale_factor > 1.0f, run_info, buffer,
+      GetFontDescription(), run_info, buffer,
       draw_type == Font::DrawType::kGlyphsOnly
           ? ShapeResultBloberizer::Type::kNormal
           : ShapeResultBloberizer::Type::kEmitText);
@@ -244,7 +241,6 @@ void Font::DrawText(cc::PaintCanvas* canvas,
 void Font::DrawText(cc::PaintCanvas* canvas,
                     const NGTextFragmentPaintInfo& text_info,
                     const gfx::PointF& point,
-                    float device_scale_factor,
                     cc::NodeId node_id,
                     const cc::PaintFlags& flags,
                     DrawType draw_type) const {
@@ -254,8 +250,8 @@ void Font::DrawText(cc::PaintCanvas* canvas,
     return;
 
   ShapeResultBloberizer::FillGlyphsNG bloberizer(
-      GetFontDescription(), device_scale_factor > 1.0f, text_info.text,
-      text_info.from, text_info.to, text_info.shape_result,
+      GetFontDescription(), text_info.text, text_info.from, text_info.to,
+      text_info.shape_result,
       draw_type == Font::DrawType::kGlyphsOnly
           ? ShapeResultBloberizer::Type::kNormal
           : ShapeResultBloberizer::Type::kEmitText);
@@ -266,7 +262,6 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
                         const TextRunPaintInfo& run_info,
                         const gfx::PointF& point,
                         CustomFontNotReadyAction custom_font_not_ready_action,
-                        float device_scale_factor,
                         const cc::PaintFlags& flags,
                         DrawType draw_type) const {
   // Don't draw anything while we are using custom fonts that are in the process
@@ -310,7 +305,7 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
     // Fix regression with -ftrivial-auto-var-init=pattern. See
     // crbug.com/1055652.
     STACK_UNINITIALIZED ShapeResultBloberizer::FillGlyphs bloberizer(
-        GetFontDescription(), device_scale_factor > 1.0f, subrun_info, buffer,
+        GetFontDescription(), subrun_info, buffer,
         draw_type == Font::DrawType::kGlyphsOnly
             ? ShapeResultBloberizer::Type::kNormal
             : ShapeResultBloberizer::Type::kEmitText);
@@ -328,7 +323,6 @@ void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
                              const TextRunPaintInfo& run_info,
                              const AtomicString& mark,
                              const gfx::PointF& point,
-                             float device_scale_factor,
                              const cc::PaintFlags& flags) const {
   if (ShouldSkipDrawing())
     return;
@@ -343,8 +337,7 @@ void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
   ShapeResultBuffer buffer;
   word_shaper.FillResultBuffer(run_info, &buffer);
   ShapeResultBloberizer::FillTextEmphasisGlyphs bloberizer(
-      GetFontDescription(), device_scale_factor > 1.0f, run_info, buffer,
-      emphasis_glyph_data);
+      GetFontDescription(), run_info, buffer, emphasis_glyph_data);
   DrawBlobs(canvas, flags, bloberizer.Blobs(), point);
 }
 
@@ -352,7 +345,6 @@ void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
                              const NGTextFragmentPaintInfo& text_info,
                              const AtomicString& mark,
                              const gfx::PointF& point,
-                             float device_scale_factor,
                              const cc::PaintFlags& flags) const {
   if (ShouldSkipDrawing())
     return;
@@ -363,9 +355,8 @@ void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
     return;
 
   ShapeResultBloberizer::FillTextEmphasisGlyphsNG bloberizer(
-      GetFontDescription(), device_scale_factor > 1.0f, text_info.text,
-      text_info.from, text_info.to, text_info.shape_result,
-      emphasis_glyph_data);
+      GetFontDescription(), text_info.text, text_info.from, text_info.to,
+      text_info.shape_result, emphasis_glyph_data);
   DrawBlobs(canvas, flags, bloberizer.Blobs(), point);
 }
 
@@ -441,7 +432,6 @@ void GetTextInterceptsInternal(const ShapeResultBloberizer::BlobBuffer& blobs,
 }  // anonymous namespace
 
 void Font::GetTextIntercepts(const TextRunPaintInfo& run_info,
-                             float device_scale_factor,
                              const cc::PaintFlags& flags,
                              const std::tuple<float, float>& bounds,
                              Vector<TextIntercept>& intercepts) const {
@@ -452,14 +442,13 @@ void Font::GetTextIntercepts(const TextRunPaintInfo& run_info,
   ShapeResultBuffer buffer;
   word_shaper.FillResultBuffer(run_info, &buffer);
   ShapeResultBloberizer::FillGlyphs bloberizer(
-      GetFontDescription(), device_scale_factor > 1.0f, run_info, buffer,
+      GetFontDescription(), run_info, buffer,
       ShapeResultBloberizer::Type::kTextIntercepts);
 
   GetTextInterceptsInternal(bloberizer.Blobs(), flags, bounds, intercepts);
 }
 
 void Font::GetTextIntercepts(const NGTextFragmentPaintInfo& text_info,
-                             float device_scale_factor,
                              const cc::PaintFlags& flags,
                              const std::tuple<float, float>& bounds,
                              Vector<TextIntercept>& intercepts) const {
@@ -467,9 +456,8 @@ void Font::GetTextIntercepts(const NGTextFragmentPaintInfo& text_info,
     return;
 
   ShapeResultBloberizer::FillGlyphsNG bloberizer(
-      GetFontDescription(), device_scale_factor > 1.0f, text_info.text,
-      text_info.from, text_info.to, text_info.shape_result,
-      ShapeResultBloberizer::Type::kTextIntercepts);
+      GetFontDescription(), text_info.text, text_info.from, text_info.to,
+      text_info.shape_result, ShapeResultBloberizer::Type::kTextIntercepts);
 
   GetTextInterceptsInternal(bloberizer.Blobs(), flags, bounds, intercepts);
 }

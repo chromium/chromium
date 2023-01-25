@@ -350,7 +350,7 @@ void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
       canvas, TextRunPaintInfo(TextRun(text_)),
       gfx::PointF(text_x, feature_y + icon_and_text_scale_factor_ *
                                           (kTextPaddingY + kFontSize)),
-      Font::kUseFallbackIfFontNotReady, 1.0f, flags);
+      Font::kUseFallbackIfFontNotReady, flags);
 }
 
 void PlaceholderImage::DrawPattern(GraphicsContext& context,

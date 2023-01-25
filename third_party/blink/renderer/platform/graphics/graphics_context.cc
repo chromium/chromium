@@ -159,7 +159,6 @@ GraphicsContext::~GraphicsContext() {
 void GraphicsContext::CopyConfigFrom(GraphicsContext& other) {
   SetPrintingMetafile(other.printing_metafile_);
   SetPaintPreviewTracker(other.paint_preview_tracker_);
-  SetDeviceScaleFactor(other.device_scale_factor_);
   SetPrinting(other.printing_);
 }
 
@@ -601,8 +600,7 @@ void GraphicsContext::DrawTextInternal(const Font& font,
                           dark_mode_flags);
     return;
   }
-  font.DrawText(canvas_, text_info, point, device_scale_factor_, node_id,
-                dark_mode_flags,
+  font.DrawText(canvas_, text_info, point, node_id, dark_mode_flags,
                 printing_ ? Font::DrawType::kGlyphsAndClusters
                           : Font::DrawType::kGlyphsOnly);
 }
@@ -674,8 +672,7 @@ void GraphicsContext::DrawEmphasisMarksInternal(
     const AutoDarkMode& auto_dark_mode) {
   DrawTextPasses(auto_dark_mode, [&font, &text_info, &mark, &point,
                                   this](const cc::PaintFlags& flags) {
-    font.DrawEmphasisMarks(canvas_, text_info, mark, point,
-                           device_scale_factor_, flags);
+    font.DrawEmphasisMarks(canvas_, text_info, mark, point, flags);
   });
 }
 
@@ -706,8 +703,7 @@ void GraphicsContext::DrawBidiText(
       auto_dark_mode, [&font, &run_info, &point, custom_font_not_ready_action,
                        this](const cc::PaintFlags& flags) {
         if (font.DrawBidiText(canvas_, run_info, point,
-                              custom_font_not_ready_action,
-                              device_scale_factor_, flags,
+                              custom_font_not_ready_action, flags,
                               printing_ ? Font::DrawType::kGlyphsAndClusters
                                         : Font::DrawType::kGlyphsOnly)) {
           paint_controller_.SetTextPainted();

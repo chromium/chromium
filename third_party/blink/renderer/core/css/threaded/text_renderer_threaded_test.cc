@@ -93,7 +93,7 @@ TSAN_TEST(TextRendererThreadedTest, DrawText) {
     EXPECT_CALL(mpc, restoreToCount(17)).WillOnce(Return());
 
     font.DrawBidiText(&mpc, text_run_paint_info, location,
-                      Font::kUseFallbackIfFontNotReady, 1.0, flags,
+                      Font::kUseFallbackIfFontNotReady, flags,
                       Font::DrawType::kGlyphsAndClusters);
   });
 }

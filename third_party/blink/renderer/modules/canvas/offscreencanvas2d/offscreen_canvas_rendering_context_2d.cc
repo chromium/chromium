@@ -731,7 +731,7 @@ void OffscreenCanvasRenderingContext2D::DrawTextInternal(
         TextRunPaintInfo text_run_paint_info(text_run);
         this->AccessFont().DrawBidiText(
             paint_canvas, text_run_paint_info, location,
-            Font::kUseFallbackIfFontNotReady, kCDeviceScaleFactor, *flags);
+            Font::kUseFallbackIfFontNotReady, *flags);
       },
       [](const SkIRect& rect)  // overdraw test lambda
       { return false; },
