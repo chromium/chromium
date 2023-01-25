@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/loader/fetch/script_fetch_options.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -36,6 +35,7 @@ class ImportMap;
 class ReferrerScriptInfo;
 class ResourceFetcher;
 class ModuleRecordResolver;
+class ScriptFetchOptions;
 class ScriptPromiseResolver;
 class ScriptState;
 enum class ModuleType;
