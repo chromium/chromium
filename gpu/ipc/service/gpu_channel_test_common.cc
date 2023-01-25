@@ -91,7 +91,12 @@ GpuChannelTestCommon::GpuChannelTestCommon(
           new TestGpuChannelManagerDelegate(scheduler_.get())) {
   // We need GL bindings to actually initialize command buffers.
   if (use_stub_bindings) {
-    display_ = gl::GLSurfaceTestSupport::InitializeOneOffWithStubBindings();
+    if (features::UsePassthroughCommandDecoder()) {
+      display_ =
+          gl::GLSurfaceTestSupport::InitializeOneOffWithNullAngleBindings();
+    } else {
+      display_ = gl::GLSurfaceTestSupport::InitializeOneOffWithStubBindings();
+    }
   } else {
     display_ = gl::GLSurfaceTestSupport::InitializeOneOff();
   }

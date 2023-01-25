@@ -127,16 +127,22 @@ GLDisplay* GLSurfaceTestSupport::InitializeOneOffWithStubBindings() {
   params.single_process = true;
   ui::OzonePlatform::InitializeForGPU(params);
 #endif
-  if (features::UsePassthroughCommandDecoder()) {
-    auto* display = InitializeOneOffImplementation(
-        GLImplementationParts(gl::ANGLEImplementation::kNull), false);
+  return InitializeOneOffImplementation(
+      GLImplementationParts(kGLImplementationStubGL), false);
+}
 
-    DCHECK_EQ(gl::GetANGLEImplementation(), gl::ANGLEImplementation::kNull);
-    return display;
-  } else {
-    return InitializeOneOffImplementation(
-        GLImplementationParts(kGLImplementationStubGL), false);
-  }
+// static
+GLDisplay* GLSurfaceTestSupport::InitializeOneOffWithNullAngleBindings() {
+#if BUILDFLAG(IS_OZONE)
+  ui::OzonePlatform::InitParams params;
+  params.single_process = true;
+  ui::OzonePlatform::InitializeForGPU(params);
+#endif
+  auto* display = InitializeOneOffImplementation(
+      GLImplementationParts(gl::ANGLEImplementation::kNull), false);
+
+  DCHECK_EQ(gl::GetANGLEImplementation(), gl::ANGLEImplementation::kNull);
+  return display;
 }
 
 // static
