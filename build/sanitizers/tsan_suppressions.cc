@@ -122,7 +122,7 @@ char kTSanDefaultSuppressions[] =
     "race:ipcz::BlockAllocator::Allocate\n"
 
     // https://crbug.com/1405439
-    "race:perfetto::internal::g_category_state_storage\n"
+    "race:perfetto::perfetto_track_event::internal::g_category_state_storage\n"
     "race:perfetto::DataSource*::static_state_\n"
     "race:perfetto::Tracing::ResetForTesting\n"
 
