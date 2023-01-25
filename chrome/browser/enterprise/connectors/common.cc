@@ -162,15 +162,6 @@ ReportingSettings::ReportingSettings(const ReportingSettings&) = default;
 ReportingSettings& ReportingSettings::operator=(ReportingSettings&&) = default;
 ReportingSettings::~ReportingSettings() = default;
 
-FileSystemSettings::FileSystemSettings() = default;
-FileSystemSettings::FileSystemSettings(const FileSystemSettings&) = default;
-FileSystemSettings::FileSystemSettings(FileSystemSettings&&) = default;
-FileSystemSettings& FileSystemSettings::operator=(const FileSystemSettings&) =
-    default;
-FileSystemSettings& FileSystemSettings::operator=(FileSystemSettings&&) =
-    default;
-FileSystemSettings::~FileSystemSettings() = default;
-
 const char* ConnectorPref(AnalysisConnector connector) {
   switch (connector) {
     case AnalysisConnector::BULK_DATA_ENTRY:

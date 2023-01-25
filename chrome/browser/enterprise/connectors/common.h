@@ -98,29 +98,6 @@ struct ReportingSettings {
   bool per_profile = false;
 };
 
-// Struct holding the necessary data to tweak the behavior of the file system
-// Connector.
-struct FileSystemSettings {
-  FileSystemSettings();
-  FileSystemSettings(const FileSystemSettings&);
-  FileSystemSettings(FileSystemSettings&&);
-  FileSystemSettings& operator=(const FileSystemSettings&);
-  FileSystemSettings& operator=(FileSystemSettings&&);
-  ~FileSystemSettings();
-
-  std::string service_provider;
-  GURL home;
-  GURL authorization_endpoint;
-  GURL token_endpoint;
-  std::string enterprise_id;
-  std::string email_domain;
-  std::string client_id;
-  std::string client_secret;
-  std::vector<std::string> scopes;
-  size_t max_direct_size;
-  std::set<std::string> mime_types;
-};
-
 // Returns the pref path corresponding to a connector.
 const char* ConnectorPref(AnalysisConnector connector);
 const char* ConnectorPref(ReportingConnector connector);
