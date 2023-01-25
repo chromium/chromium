@@ -1008,6 +1008,12 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kInput)));
 
+INSTANTIATE_TEST_SUITE_P(
+    NetworkContentEditable,
+    DictationJaTest,
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kContentEditable)));
+
 IN_PROC_BROWSER_TEST_P(DictationJaTest, NoSmartSpacingOrCapitalization) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
