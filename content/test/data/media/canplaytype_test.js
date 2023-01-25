@@ -256,9 +256,9 @@ const BAD_OGG_CODEC_LIST = [
 
   // Codecs are case sensitive.
   'Theora',
-  'Opus',
+  'OpuS',
   'Vorbis',
-  'Theora, Opus',
+  'Theora, OpuS',
   'Theora, Vorbis',
 
   // Unknown codecs.
@@ -313,9 +313,9 @@ const BAD_WEBM_CODEC_LIST = [
 
   // Codecs are case sensitive.
   'VP8, Vorbis',
-  'VP8.0, Opus',
+  'VP8.0, OpuS',
   'VP9, Vorbis',
-  'VP9.0, Opus',
+  'VP9.0, OpuS',
 
   // Unknown codec.
   'unknown',
@@ -663,10 +663,13 @@ function testFlacVariants() {
     'probably': [
       'audio/flac',
       'audio/ogg; codecs="flac"',
+      'audio/ogg; codecs="fLaC"',
 
       // See CodecSupportTest_mp4 for more flac Variants.
       'audio/mp4; codecs="flac"',
       'video/mp4; codecs="flac"',
+      'audio/mp4; codecs="fLaC"',
+      'video/mp4; codecs="fLaC"',
     ],
     'not': [
       'video/flac',
@@ -744,10 +747,13 @@ function testMp4Variants(has_proprietary_codecs, platform_guarantees_hevc) {
   const MP4_CODEC_MAP = {
     'probably': [
       'audio/mp4; codecs="flac"',
+      'audio/mp4; codecs="fLaC"',
       'audio/mp4; codecs="mp4a.69"',
       'audio/mp4; codecs="mp4a.6B"',
       'audio/mp4; codecs="opus"',
+      'audio/mp4; codecs="Opus"',
       'video/mp4; codecs="flac"',
+      'video/mp4; codecs="fLaC"',
       'video/mp4; codecs="mp4a.69"',
       'video/mp4; codecs="mp4a.6B"',
       'video/mp4; codecs="opus"',
