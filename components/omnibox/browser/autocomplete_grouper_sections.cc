@@ -20,6 +20,10 @@ Section::~Section() = default;
 
 // static
 ACMatches Section::GroupMatches(PSections sections, ACMatches matches) {
+  for (auto& section : sections) {
+    section->InitFromMatches(matches);
+  }
+
   for (const auto& match : matches) {
     DCHECK(match.suggestion_group_id.has_value());
     for (const auto& section : sections) {
@@ -39,9 +43,7 @@ ACMatches Section::GroupMatches(PSections sections, ACMatches matches) {
   return grouped_matches;
 }
 
-Group* Section::CanAdd(const AutocompleteMatch& match) {
-  if (size_ >= limit_)
-    return nullptr;
+Group* Section::FindGroup(const AutocompleteMatch& match) {
   auto iter = base::ranges::find_if(
       groups_, [&](const auto& group) { return group->CanAdd(match); });
   if (iter == groups_.end())
@@ -50,35 +52,79 @@ Group* Section::CanAdd(const AutocompleteMatch& match) {
 }
 
 bool Section::Add(const AutocompleteMatch& match) {
-  Group* group = CanAdd(match);
+  if (count_ >= limit_) {
+    return false;
+  }
+  Group* group = FindGroup(match);
   if (group) {
     group->Add(match);
-    size_++;
+    count_++;
   }
   return group;
 }
 
-MobileZeroInputSection::MobileZeroInputSection() : Section(20) {
-  groups_.push_back(std::make_unique<Group>(
-      10, Group::GroupIdLimitsAndCounts{
-              {omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX, {1}},
-              {omnibox::GROUP_MOBILE_CLIPBOARD, {1}},
-              {omnibox::GROUP_MOBILE_MOST_VISITED, {8}},
-              {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST, {10}}}));
-  groups_.push_back(std::make_unique<Group>(5, omnibox::GROUP_TRENDS));
+ZpsSection::ZpsSection(size_t limit) : Section(limit) {}
+
+void ZpsSection::InitFromMatches(const ACMatches& matches) {
+  // Iterate over the matches to see if they can be added to any `Group` in this
+  // `Section`. If so, increment the total count for this `Section` and for the
+  // respective group.
+  for (const auto& match : matches) {
+    Group* group = FindGroup(match);
+    if (group) {
+      count_++;
+      group->Count(match);
+    }
+  }
+
+  // Adjust the `Section`'s total limit based on the number of matches in the
+  // `Section`. Ensure the limit is less than or equal to the original value.
+  // Reset the count so that matches can actually be added to this `Section`.
+  limit_ = std::min(limit_, count_);
+  count_ = 0;
+
+  size_t remaining = limit_;
+  for (const auto& group : groups_) {
+    group->AdjustLimitsAndResetCounts(remaining);
+    remaining -= group->limit();
+  }
+  DCHECK_EQ(remaining, 0U);
 }
 
-DesktopNonZpsSection::DesktopNonZpsSection(const ACMatches& matches)
-    : Section(10) {
-  // Create the 4 groups with reasonable placeholder limits. Some of the limits
-  // will be adjusted below.
-  auto default_group = std::make_unique<DefaultGroup>();
-  auto starter_pack_group =
-      std::make_unique<Group>(9, omnibox::GROUP_STARTER_PACK);
-  auto search_group = std::make_unique<Group>(
+AndroidZpsSection::AndroidZpsSection() : ZpsSection(15) {
+  groups_.push_back(
+      std::make_unique<Group>(1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX));
+  groups_.push_back(
+      std::make_unique<Group>(1, omnibox::GROUP_MOBILE_CLIPBOARD));
+  groups_.push_back(
+      std::make_unique<Group>(1, omnibox::GROUP_MOBILE_MOST_VISITED));
+  groups_.push_back(
+      std::make_unique<Group>(15, omnibox::GROUP_PREVIOUS_SEARCH_RELATED));
+  groups_.push_back(
+      std::make_unique<Group>(15, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST));
+}
+
+DesktopZpsSection::DesktopZpsSection() : ZpsSection(8) {
+  groups_.push_back(
+      std::make_unique<Group>(8, omnibox::GROUP_PREVIOUS_SEARCH_RELATED));
+  groups_.push_back(
+      std::make_unique<Group>(8, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST));
+  groups_.push_back(std::make_unique<Group>(8, omnibox::GROUP_TRENDS));
+}
+
+DesktopNonZpsSection::DesktopNonZpsSection() : Section(10) {
+  groups_.push_back(std::make_unique<DefaultGroup>());
+  groups_.push_back(std::make_unique<Group>(9, omnibox::GROUP_STARTER_PACK));
+  groups_.push_back(std::make_unique<Group>(
       9, Group::GroupIdLimitsAndCounts{{omnibox::GROUP_SEARCH, {9}},
-                                       {omnibox::GROUP_HISTORY_CLUSTER, {1}}});
-  auto nav_group = std::make_unique<Group>(7, omnibox::GROUP_OTHER_NAVS);
+                                       {omnibox::GROUP_HISTORY_CLUSTER, {1}}}));
+  groups_.push_back(std::make_unique<Group>(7, omnibox::GROUP_OTHER_NAVS));
+}
+
+void DesktopNonZpsSection::InitFromMatches(const ACMatches& matches) {
+  auto* default_group = groups_[0].get();
+  auto* search_group = groups_[2].get();
+  auto* nav_group = groups_[3].get();
 
   // Determine if `matches` contains any searches.
   bool has_search = base::ranges::any_of(
@@ -101,11 +147,8 @@ DesktopNonZpsSection::DesktopNonZpsSection(const ACMatches& matches)
   limit_ = std::clamp<size_t>(first_nav_index, 8, 10);
 
   // Show at least 1 search, either in the default group or the search group.
-  if (has_search && !default_is_search)
+  if (has_search && !default_is_search) {
+    DCHECK_GE(limit_, 2U);
     nav_group->set_limit(limit_ - 2);
-
-  groups_.push_back(std::move(default_group));
-  groups_.push_back(std::move(starter_pack_group));
-  groups_.push_back(std::move(search_group));
-  groups_.push_back(std::move(nav_group));
+  }
 }

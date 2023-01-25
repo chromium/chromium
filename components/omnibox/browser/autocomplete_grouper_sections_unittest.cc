@@ -35,6 +35,7 @@ void VerifyMatches(const ACMatches& matches,
 
 }  // namespace
 
+// Tests a section with no groups.
 TEST(AutocompleteGrouperSectionsTest, Section) {
   auto test = [](const ACMatches& matches,
                  std::vector<int> expected_relevances) {
@@ -51,42 +52,95 @@ TEST(AutocompleteGrouperSectionsTest, Section) {
   test({CreateMatch(1, omnibox::GROUP_SEARCH)}, {});
 }
 
-TEST(AutocompleteGrouperSectionsTest, MobileZeroInputSection) {
+// Tests a section with groups and limits, but no rules.
+TEST(AutocompleteGrouperSectionsTest, SectionWithGroupsAndLimitsButNoRules) {
   auto test = [](const ACMatches& matches,
                  std::vector<int> expected_relevances) {
     PSections sections;
-    sections.push_back(std::make_unique<MobileZeroInputSection>());
+    sections.push_back(std::make_unique<DesktopZpsSection>());
     auto out_matches = Section::GroupMatches(std::move(sections), matches);
     VerifyMatches(out_matches, expected_relevances);
   };
 
-  // Given no matches, should return no matches.
-  test({}, {});
+  {
+    SCOPED_TRACE("Given no matches, should return no matches.");
+    test({}, {});
+  }
 
-  // Matches not qualifying for the section should not be added.
-  ACMatches matches;
-  matches.push_back(CreateMatch(100, omnibox::GROUP_DOCUMENT));
-  // `GROUP_TRENDS` matches should be added up to their group limit (5).
-  for (size_t i = 0; i < 10; ++i)
-    matches.push_back(CreateMatch(90 - i, omnibox::GROUP_TRENDS));
-  // `GROUP_MOBILE_MOST_VISITED` matches should be added up to their group limit
-  // (8).
-  for (size_t i = 0; i < 20; ++i)
-    matches.push_back(CreateMatch(60 - i, omnibox::GROUP_MOBILE_MOST_VISITED));
-  // Matches should be ranked by group, not relevance or add order.
-  std::vector<int> expected_relevances;
-  for (size_t i = 60; i > 60 - 8; --i)
-    expected_relevances.push_back(i);
-  for (size_t i = 90; i > 90 - 5; --i)
-    expected_relevances.push_back(i);
-  test(matches, expected_relevances);
+  {
+    SCOPED_TRACE("Matches that qualify for no groups, should not be added.");
+    test(
+        {
+            CreateMatch(100, omnibox::GROUP_DOCUMENT),
+            CreateMatch(99, omnibox::GROUP_SEARCH),
+            CreateMatch(98, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+        },
+        {98});
+  }
+
+  {
+    SCOPED_TRACE(
+        "Matches should be ranked by group, not relevance or add order.");
+    ACMatches matches;
+    // `GROUP_TRENDS` matches come 3rd and should not be added.
+    for (size_t i = 0; i < 10; ++i) {
+      matches.push_back(CreateMatch(90 - i, omnibox::GROUP_TRENDS));
+    }
+    // `GROUP_PERSONALIZED_ZERO_SUGGEST` matches come 2nd and should not be
+    // added.
+    for (size_t i = 0; i < 10; ++i) {
+      matches.push_back(
+          CreateMatch(80 - i, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST));
+    }
+    // `GROUP_PREVIOUS_SEARCH_RELATED` matches come 1st and should be added.
+    for (size_t i = 0; i < 10; ++i) {
+      matches.push_back(
+          CreateMatch(70 - i, omnibox::GROUP_PREVIOUS_SEARCH_RELATED));
+    }
+    std::vector<int> expected_relevances;
+    for (size_t i = 70; i > 70 - 8; --i) {
+      expected_relevances.push_back(i);
+    }
+    test(matches, expected_relevances);
+  }
+
+  {
+    SCOPED_TRACE("Matches should be added up to their group limit.");
+    ACMatches matches;
+    for (size_t i = 0; i < 10; ++i) {
+      matches.push_back(
+          CreateMatch(80 - i, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST));
+    }
+    std::vector<int> expected_relevances;
+    for (size_t i = 80; i > 80 - 8; --i) {
+      expected_relevances.push_back(i);
+    }
+    test(matches, expected_relevances);
+  }
+
+  {
+    SCOPED_TRACE("Matches should be added up to the section limit.");
+    ACMatches matches;
+    // `GROUP_TRENDS` matches should be added up to the remaining section limit
+    // (3).
+    for (size_t i = 0; i < 10; ++i) {
+      matches.push_back(CreateMatch(90 - i, omnibox::GROUP_TRENDS));
+    }
+    // `GROUP_PERSONALIZED_ZERO_SUGGEST` matches should all be added.
+    for (size_t i = 0; i < 5; ++i) {
+      matches.push_back(
+          CreateMatch(80 - i, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST));
+    }
+    test(matches, {80, 79, 78, 77, 76, 90, 89, 88});
+  }
 }
 
+// Tests the groups, limits, and rules for the Desktop non-ZPS section.
 TEST(AutocompleteGrouperSectionsTest, DesktopNonZpsSection) {
   auto test = [](const ACMatches& matches,
                  std::vector<int> expected_relevances) {
     PSections sections;
-    sections.push_back(std::make_unique<DesktopNonZpsSection>(matches));
+    sections.push_back(std::make_unique<DesktopNonZpsSection>());
     auto out_matches = Section::GroupMatches(std::move(sections), matches);
     VerifyMatches(out_matches, expected_relevances);
   };

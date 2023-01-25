@@ -26,30 +26,57 @@ class Section {
   // Returns `matches` ranked and culled according to `sections`. All `matches`
   // should have `suggestion_group_id` set and be sorted by relevance.
   static ACMatches GroupMatches(PSections sections, ACMatches matches);
+  // Used to adjust this `Section`'s total limit and the total limits for the
+  // `Group`s in this `Section` based on the given matches.
+  virtual void InitFromMatches(const ACMatches& matches) {}
 
  protected:
-  // Return the `Group` `match` can be added to, or `nullptr` if it can't be
-  // added to any group in `groups_`.
-  virtual Group* CanAdd(const AutocompleteMatch& match);
-  // Tries to add `match` to the appropriate `groups_`. Returns if it was added
-  // to any group in `groups_`.
+  // Returns the first `Group` in this `Section` `match` can be added to or
+  // `nullptr` if none can be found. Does not take the total limit into account.
+  Group* FindGroup(const AutocompleteMatch& match);
+  // Returns whether `match` was added to a `Group` in this `Section`. Does not
+  // add a match beyond the total limit.
   bool Add(const AutocompleteMatch& match);
 
   // Max number of matches this `Section` can contain across `groups_`.
-  size_t limit_ = 0;
+  size_t limit_{0};
   // The number of matches this `Section` contains across `groups_`.
-  size_t size_ = 0;
-  // The `groups_` this `Section` contains.
-  PGroups groups_ = {};
+  size_t count_{0};
+  // The `Group`s this `Section` contains.
+  PGroups groups_{};
 };
 
-// Section containing up to 15 searches and 5 trending suggestions.
-class MobileZeroInputSection : public Section {
+// Base section for zps limits and grouping.
+// Since zero-prefix matches are seen in descending order of relevance, the
+// default implementation of `InitFromMatches()` ensures that matches with
+// higher relevance scores do not fill up the section if others with lower
+// scores are expected to be placed earlier based on their `Group`s position.
+class ZpsSection : public Section {
  public:
-  MobileZeroInputSection();
+  explicit ZpsSection(size_t limit);
+  // Section:
+  void InitFromMatches(const ACMatches& matches) override;
 };
 
-// Section expressing the desktop, non-zps limits and grouping. The rules are:
+// Section expressing the Android zps limits and grouping. The rules are:
+// - Contains up to 1 verbatim, 1 clipboard, 1 most visited, 8 related search
+//   suggestions, and 15 personalized suggestions.
+// - Allow up to 15 suggestions total.
+class AndroidZpsSection : public ZpsSection {
+ public:
+  AndroidZpsSection();
+};
+
+// Section expressing the Desktop zps limits and grouping. The rules are:
+// - Containing up to 8 related search suggestions, 8 personalized suggestions,
+//   and 8 trending search suggestions.
+// - Allow up to 8 suggestions total.
+class DesktopZpsSection : public ZpsSection {
+ public:
+  DesktopZpsSection();
+};
+
+// Section expressing the Desktop, non-zps limits and grouping. The rules are:
 // - Contains up to 1 default, 10 starer packs, 10 search, 8 nav, and 1 history
 //   cluster suggestions.
 // - Allow up to 10 suggestions total.
@@ -60,7 +87,9 @@ class MobileZeroInputSection : public Section {
 // - Group defaults 1st, then searches and history clusters, then navs.
 class DesktopNonZpsSection : public Section {
  public:
-  explicit DesktopNonZpsSection(const ACMatches& matches);
+  DesktopNonZpsSection();
+  // Section:
+  void InitFromMatches(const ACMatches& matches) override;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_GROUPER_SECTIONS_H_

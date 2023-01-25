@@ -363,7 +363,7 @@ void AutocompleteResult::SortAndCull(
   // supported, delegate to the framework.
   const bool is_zero_suggest = input.IsZeroSuggest();
   if (base::FeatureList::IsEnabled(omnibox::kGroupingFramework) &&
-      !is_zero_suggest && !is_android && !is_ios) {
+      !is_android && !is_ios) {
     // Grouping requires all matches have a group ID. To keep providers 'dumb',
     // they only assign IDs when their ID isn't obvious from the match type.
     // Most matches will instead set IDs here to keep providers 'dumb' and the
@@ -381,12 +381,13 @@ void AutocompleteResult::SortAndCull(
     base::EraseIf(matches_,
                   [&](const auto& match) { return match.relevance == 0; });
 
-    // If there's only 1 match, then grouping is a no-op.
-    if (matches_.size() > 2) {
-      PSections sections;
-      sections.push_back(std::make_unique<DesktopNonZpsSection>(matches_));
-      matches_ = Section::GroupMatches(std::move(sections), matches_);
+    PSections sections;
+    if (is_zero_suggest) {
+      sections.push_back(std::make_unique<DesktopZpsSection>());
+    } else if (matches_.size() > 2) {  // Grouping is a no-op for only 1 match.
+      sections.push_back(std::make_unique<DesktopNonZpsSection>());
     }
+    matches_ = Section::GroupMatches(std::move(sections), std::move(matches_));
 
   } else {
     // Limit history cluster suggestions to 1. This has to be done before
