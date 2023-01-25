@@ -282,9 +282,6 @@ jint PlayerCompositorDelegateAndroid::RequestBitmap(
     frame_guid =
         base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(
             env, j_frame_guid);
-    if (frame_guid->is_empty()) {
-      frame_guid = absl::nullopt;
-    }
   }
 
   // Callback can skip UI thread.
@@ -347,14 +344,14 @@ ScopedJavaLocalRef<jstring> PlayerCompositorDelegateAndroid::OnClick(
     const JavaParamRef<jobject>& j_frame_guid,
     jint j_x,
     jint j_y) {
-  auto frame_guid =
+  absl::optional<base::UnguessableToken> frame_guid =
       base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(
           env, j_frame_guid);
-  if (frame_guid.is_empty()) {
+  if (!frame_guid.has_value()) {
     return base::android::ConvertUTF8ToJavaString(env, "");
   }
   auto res = PlayerCompositorDelegate::OnClick(
-      std::move(frame_guid),
+      frame_guid.value(),
       gfx::Rect(static_cast<int>(j_x), static_cast<int>(j_y), 1U, 1U));
   if (res.empty())
     return base::android::ConvertUTF8ToJavaString(env, "");

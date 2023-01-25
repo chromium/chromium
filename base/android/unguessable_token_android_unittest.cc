@@ -18,10 +18,11 @@ TEST(UnguessableTokenAndroid, BasicCreateToken) {
       base::UnguessableToken::CreateForTesting(high, low);
   ScopedJavaLocalRef<jobject> jtoken =
       UnguessableTokenAndroid::Create(env, token);
-  base::UnguessableToken result =
+  absl::optional<base::UnguessableToken> result =
       UnguessableTokenAndroid::FromJavaUnguessableToken(env, jtoken);
 
-  EXPECT_EQ(token, result);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(token, result.value());
 }
 
 TEST(UnguessableTokenAndroid, ParcelAndUnparcel) {
@@ -34,10 +35,11 @@ TEST(UnguessableTokenAndroid, ParcelAndUnparcel) {
       UnguessableTokenAndroid::Create(env, token);
   ScopedJavaLocalRef<jobject> jtoken_clone =
       UnguessableTokenAndroid::ParcelAndUnparcelForTesting(env, jtoken);
-  base::UnguessableToken token_clone =
+  absl::optional<base::UnguessableToken> token_clone =
       UnguessableTokenAndroid::FromJavaUnguessableToken(env, jtoken_clone);
 
-  EXPECT_EQ(token, token_clone);
+  ASSERT_TRUE(token_clone.has_value());
+  EXPECT_EQ(token, token_clone.value());
 }
 
 }  // namespace android

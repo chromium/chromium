@@ -20,7 +20,7 @@ void JNI_GpuProcessCallback_CompleteScopedSurfaceRequest(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& token,
     const base::android::JavaParamRef<jobject>& surface) {
-  base::UnguessableToken requestToken =
+  absl::optional<base::UnguessableToken> requestToken =
       base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(env,
                                                                        token);
   if (!requestToken) {
@@ -33,7 +33,8 @@ void JNI_GpuProcessCallback_CompleteScopedSurfaceRequest(
   base::android::ScopedJavaGlobalRef<jobject> jsurface;
   jsurface.Reset(env, surface);
   ScopedSurfaceRequestManager::GetInstance()->FulfillScopedSurfaceRequest(
-      requestToken, gl::ScopedJavaSurface(jsurface, /*auto_release=*/true));
+      requestToken.value(),
+      gl::ScopedJavaSurface(jsurface, /*auto_release=*/true));
 }
 
 base::android::ScopedJavaLocalRef<jobject>
