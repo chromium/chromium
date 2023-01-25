@@ -652,9 +652,6 @@ ci.builder(
         category = "lacros|arm64",
         short_name = "sky",
     ),
-    # TODO(crbug.com/1406052): Enable when stable.
-    sheriff_rotations = args.ignore_default(None),
-    tree_closing = False,
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
