@@ -147,9 +147,7 @@ base::Value ProcessNodeImplDescriber::DescribeProcessNodeData(
                   base::saturated_cast<int>(impl->resident_set_kb()));
   }
 
-  constexpr RenderProcessHostId kInvalidRenderProcessHostId =
-      RenderProcessHostId(content::ChildProcessHost::kInvalidUniqueID);
-  if (impl->GetRenderProcessId() != kInvalidRenderProcessHostId) {
+  if (impl->process_type() == content::PROCESS_TYPE_RENDERER) {
     ret.SetIntKey("render_process_id", impl->GetRenderProcessId().value());
   }
 
