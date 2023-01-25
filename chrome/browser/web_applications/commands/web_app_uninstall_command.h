@@ -51,10 +51,10 @@ class WebAppUninstallCommand : public WebAppCommandTemplate<FullSystemLock> {
       Profile* profile);
   ~WebAppUninstallCommand() override;
 
+  // WebAppCommandTemplate<FullSystemLock>:
   void StartWithLock(std::unique_ptr<FullSystemLock> lock) override;
   void OnSyncSourceRemoved() override;
   void OnShutdown() override;
-
   const LockDescription& lock_description() const override;
   base::Value ToDebugValue() const override;
 

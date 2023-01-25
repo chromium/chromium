@@ -55,11 +55,13 @@ class SubAppInstallCommand
   SubAppInstallCommand(const SubAppInstallCommand&) = delete;
   SubAppInstallCommand& operator=(const SubAppInstallCommand&) = delete;
 
+  // WebAppCommandTemplate<SharedWebContentsWithAppLock>:
   const LockDescription& lock_description() const override;
   base::Value ToDebugValue() const override;
   void SetDialogNotAcceptedForTesting();
 
  protected:
+  // WebAppCommandTemplate<SharedWebContentsWithAppLock>:
   void StartWithLock(
       std::unique_ptr<SharedWebContentsWithAppLock> lock) override;
   void OnSyncSourceRemoved() override {}

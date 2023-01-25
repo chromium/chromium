@@ -75,12 +75,11 @@ class InstallFromInfoCommand : public WebAppCommandTemplate<AppLock> {
 
   ~InstallFromInfoCommand() override;
 
+  // WebAppCommandTemplate<AppLock>:
   const LockDescription& lock_description() const override;
-
   void StartWithLock(std::unique_ptr<AppLock> lock) override;
   void OnSyncSourceRemoved() override;
   void OnShutdown() override;
-
   base::Value ToDebugValue() const override;
 
  private:

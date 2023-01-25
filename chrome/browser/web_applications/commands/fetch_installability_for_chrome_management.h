@@ -53,12 +53,11 @@ class FetchInstallabilityForChromeManagement
       FetchInstallabilityForChromeManagementCallback callback);
   ~FetchInstallabilityForChromeManagement() override;
 
+  // WebAppCommandTemplate<NoopLock>:
   const LockDescription& lock_description() const override;
-
   void StartWithLock(std::unique_ptr<NoopLock>) override;
   void OnSyncSourceRemoved() override;
   void OnShutdown() override;
-
   base::Value ToDebugValue() const override;
 
  private:

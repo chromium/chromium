@@ -71,7 +71,7 @@ class InstallFromManifestCommand
 
   ~InstallFromManifestCommand() override;
 
-  // WebAppCommandTemplate:
+  // WebAppCommandTemplate<SharedWebContentsLock>:
   const LockDescription& lock_description() const override;
   void StartWithLock(std::unique_ptr<SharedWebContentsLock> lock) override;
   void OnSyncSourceRemoved() override;

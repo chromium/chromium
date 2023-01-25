@@ -31,12 +31,10 @@ class CallbackCommand : public WebAppCommandTemplate<LockType> {
 
   ~CallbackCommand() override;
 
+  // WebAppCommandTemplate<LockType>:
   void StartWithLock(std::unique_ptr<LockType> lock) override;
-
   const LockDescription& lock_description() const override;
-
   base::Value ToDebugValue() const override;
-
   void OnSyncSourceRemoved() override {}
   void OnShutdown() override {}
 

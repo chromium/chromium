@@ -46,6 +46,7 @@ class ManifestUpdateFinalizeCommand : public WebAppCommandTemplate<AppLock> {
 
   ~ManifestUpdateFinalizeCommand() override;
 
+  // WebAppCommandTemplate<AppLock>:
   const LockDescription& lock_description() const override;
   void OnSyncSourceRemoved() override {}
   void OnShutdown() override;

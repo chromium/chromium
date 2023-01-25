@@ -69,14 +69,11 @@ class InstallFromSyncCommand
       OnceInstallCallback install_callback);
   ~InstallFromSyncCommand() override;
 
+  // WebAppCommandTemplate<SharedWebContentsWithAppLock>:
   const LockDescription& lock_description() const override;
-
   base::Value ToDebugValue() const override;
-
   void OnSyncSourceRemoved() override;
-
   void OnShutdown() override;
-
   void StartWithLock(
       std::unique_ptr<SharedWebContentsWithAppLock> lock) override;
 

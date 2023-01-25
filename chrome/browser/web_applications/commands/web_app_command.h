@@ -145,11 +145,13 @@ class WebAppCommandTemplate : public WebAppCommand {
   virtual void StartWithLock(std::unique_ptr<LockType> lock) = 0;
 
  protected:
+  // WebAppCommand:
   WebAppCommandManager* command_manager() const override {
     return command_manager_;
   }
 
  private:
+  // WebAppCommand:
   void RequestLock(WebAppCommandManager* command_manager,
                    WebAppLockManager* lock_manager,
                    LockAcquiredCallback on_lock_acquired) override;

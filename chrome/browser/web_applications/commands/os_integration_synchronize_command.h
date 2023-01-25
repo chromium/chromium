@@ -26,12 +26,11 @@ class OsIntegrationSynchronizeCommand : public WebAppCommandTemplate<AppLock> {
                                   base::OnceClosure synchronize_callback);
   ~OsIntegrationSynchronizeCommand() override;
 
+  // WebAppCommandTemplate<AppLock>:
   const LockDescription& lock_description() const override;
-
   void StartWithLock(std::unique_ptr<AppLock> app_lock) override;
   void OnSyncSourceRemoved() override;
   void OnShutdown() override;
-
   base::Value ToDebugValue() const override;
 
  private:
