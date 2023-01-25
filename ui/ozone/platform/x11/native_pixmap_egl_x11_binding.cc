@@ -121,11 +121,6 @@ GLuint NativePixmapEGLX11Binding::GetInternalFormat() {
   return gl::BufferFormatToGLInternalFormat(format_);
 }
 
-GLenum NativePixmapEGLX11Binding::GetDataFormat() {
-  return NativePixmapGLBinding::GetDataFormatFromInternalFormat(
-      GetInternalFormat());
-}
-
 GLenum NativePixmapEGLX11Binding::GetDataType() {
   return GL_UNSIGNED_BYTE;
 }

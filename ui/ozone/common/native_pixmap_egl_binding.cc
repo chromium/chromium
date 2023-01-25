@@ -89,11 +89,6 @@ GLuint NativePixmapEGLBinding::GetInternalFormat() {
   return gl_image_->GetInternalFormat();
 }
 
-GLenum NativePixmapEGLBinding::GetDataFormat() {
-  return NativePixmapGLBinding::GetDataFormatFromInternalFormat(
-      GetInternalFormat());
-}
-
 GLenum NativePixmapEGLBinding::GetDataType() {
   return BufferFormatToGLDataType(format_);
 }

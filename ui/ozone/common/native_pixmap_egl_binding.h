@@ -38,7 +38,6 @@ class NativePixmapEGLBinding : public NativePixmapGLBinding {
 
   // NativePixmapGLBinding:
   GLuint GetInternalFormat() override;
-  GLenum GetDataFormat() override;
   GLenum GetDataType() override;
 
  private:
