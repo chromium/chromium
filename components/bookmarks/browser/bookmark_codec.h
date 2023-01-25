@@ -13,11 +13,8 @@
 
 #include "base/guid.h"
 #include "base/hash/md5.h"
+#include "base/values.h"
 #include "components/bookmarks/browser/bookmark_node.h"
-
-namespace base {
-class Value;
-}
 
 namespace bookmarks {
 
@@ -167,7 +164,7 @@ class BookmarkCodec {
   // Decodes the meta info from the supplied sub-node dictionary. The values
   // found will be inserted in meta_info_map with the given prefix added to the
   // start of their keys.
-  void DecodeMetaInfoHelper(const base::Value& dict,
+  void DecodeMetaInfoHelper(const base::Value::Dict& dict,
                             const std::string& prefix,
                             BookmarkNode::MetaInfoMap* meta_info_map);
 
