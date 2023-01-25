@@ -72,8 +72,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerMac
       const std::u16string& inserted_text,
       id edit_text_marker) const;
 
-  void AnnounceActiveDescendant(BrowserAccessibility* node) const;
-
   bool IsInGeneratedEventBatch(ui::AXEventGenerator::Event event_type) const;
 
   // Returns whether this page is a new tab page on Chrome.
