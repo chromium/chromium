@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/bookmarks/bookmarks_home_mediator.h"
+#import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_mediator.h"
 
 #import "base/check.h"
 #import "base/mac/foundation_util.h"
@@ -25,9 +25,9 @@
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_promo_controller.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmarks_home_consumer.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmarks_home_shared_state.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_home_node_item.h"
+#import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_consumer.h"
+#import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_shared_state.h"
 #import "ios/chrome/browser/ui/bookmarks/synced_bookmarks_bridge.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"

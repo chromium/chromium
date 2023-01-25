@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARKS_HOME_CONSUMER_H_
-#define IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARKS_HOME_CONSUMER_H_
+#ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_HOME_BOOKMARKS_HOME_CONSUMER_H_
+#define IOS_CHROME_BROWSER_UI_BOOKMARKS_HOME_BOOKMARKS_HOME_CONSUMER_H_
 
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_consumer.h"
 
@@ -51,4 +51,4 @@ typedef NS_ENUM(NSInteger, BookmarksHomeBackgroundStyle) {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARKS_HOME_CONSUMER_H_
+#endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_HOME_BOOKMARKS_HOME_CONSUMER_H_

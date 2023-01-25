@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/bookmarks/bookmarks_home_view_controller.h"
+#import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_view_controller.h"
 
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
@@ -40,14 +40,14 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmarks_home_consumer.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmarks_home_mediator.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmarks_home_shared_state.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_folder_item.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_home_node_item.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_cell_title_edit_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller.h"
+#import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_consumer.h"
+#import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_mediator.h"
+#import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_shared_state.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"

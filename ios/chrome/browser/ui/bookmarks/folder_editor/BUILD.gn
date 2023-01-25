@@ -36,6 +36,8 @@ source_set("folder_editor") {
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
+
+  # TODO(crbug.com/1409488): Remove the circular dependency.
   allow_circular_includes_from =
       [ "//ios/chrome/browser/ui/bookmarks/folder_chooser" ]
 }

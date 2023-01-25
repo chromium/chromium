@@ -1,0 +1,84 @@
+source_set("home") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "bookmarks_home_consumer.h",
+    "bookmarks_home_mediator.h",
+    "bookmarks_home_mediator.mm",
+    "bookmarks_home_shared_state.h",
+    "bookmarks_home_shared_state.mm",
+    "bookmarks_home_view_controller.h",
+    "bookmarks_home_view_controller.mm",
+  ]
+  deps = [
+    "//components/bookmarks/browser",
+    "//components/bookmarks/common",
+    "//components/bookmarks/managed",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/app:tests_hook",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/bookmarks:bookmarks_utils",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/drag_and_drop",
+    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/metrics:metrics_internal",
+    "//ios/chrome/browser/policy:policy_util",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/ui/alert_coordinator",
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication:signin_presenter",
+    "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
+    "//ios/chrome/browser/ui/bookmarks:constants",
+    "//ios/chrome/browser/ui/bookmarks:core",
+    "//ios/chrome/browser/ui/bookmarks/cells",
+    "//ios/chrome/browser/ui/bookmarks/editor",
+    "//ios/chrome/browser/ui/bookmarks/folder_chooser",
+    "//ios/chrome/browser/ui/bookmarks/resources:bookmark_empty",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/default_promo:utils",
+    "//ios/chrome/browser/ui/elements",
+    "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
+    "//ios/chrome/browser/ui/keyboard",
+    "//ios/chrome/browser/ui/list_model:list_model",
+    "//ios/chrome/browser/ui/main:scene_state_header",
+    "//ios/chrome/browser/ui/menu",
+    "//ios/chrome/browser/ui/sharing",
+    "//ios/chrome/browser/ui/sharing/activity_services",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view:constants",
+    "//ios/chrome/browser/ui/table_view:styler",
+    "//ios/chrome/browser/ui/table_view:utils",
+    "//ios/chrome/browser/ui/table_view:views",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/url_loading",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/browser/window_activities",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//ios/chrome/common/ui/util",
+    "//ios/web/public/navigation",
+    "//ios/web/public/navigation:referrer",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "bookmarks_home_view_controller_unittest.mm" ]
+  deps = [
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//ios/chrome/browser/bookmarks:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui/bookmarks/home",
+    "//ios/chrome/browser/ui/commands",
+    "//third_party/ocmock:ocmock",
+  ]
+}

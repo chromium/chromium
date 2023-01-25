@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/bookmarks/bookmarks_home_view_controller.h"
+#import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_view_controller.h"
 
 #import "base/test/metrics/user_action_tester.h"
 #import "components/bookmarks/browser/bookmark_model.h"
