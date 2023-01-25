@@ -197,11 +197,36 @@ scoped_refptr<base::SequencedTaskRunner> DIPSService::CreateTaskRunner() {
 }
 
 bool DIPSService::ShouldBlockThirdPartyCookies() const {
-  if (!cookie_settings_) {
+  if (IsShuttingDown()) {
     return cached_should_block_3pcs_.value();
   }
 
   return cookie_settings_->ShouldBlockThirdPartyCookies();
+}
+
+bool DIPSService::HasCookieException(const std::string& site) const {
+  DCHECK(!IsShuttingDown());
+  GURL url("https://" + site);
+
+  // Checks whether there is an exception allowing all third-parties embedded
+  // under |site| to use cookies.
+  if (cookie_settings_->IsFullCookieAccessAllowed(
+          GURL(), net::SiteForCookies::FromUrl(url), url::Origin::Create(url),
+          net::CookieSettingOverrides(),
+          content_settings::CookieSettingsBase::QueryReason::kCookies)) {
+    return true;
+  }
+
+  // Checks whether there is an exception allowing |site| to use cookies when
+  // embedded by any other site.
+  if (cookie_settings_->IsFullCookieAccessAllowed(
+          url, net::SiteForCookies(), absl::nullopt,
+          net::CookieSettingOverrides(),
+          content_settings::CookieSettingsBase::QueryReason::kCookies)) {
+    return true;
+  }
+
+  return false;
 }
 
 DIPSCookieMode DIPSService::GetCookieMode() const {
@@ -344,16 +369,30 @@ void DIPSService::DeleteDIPSEligibleState(
   }
 
   if (ShouldBlockThirdPartyCookies() && dips::kDeletionEnabled.Get()) {
-    // TODO: Check for site-specific third-party cookie exceptions here and
-    // exclude sites with them from 'sites_to_clear' then call
-    // 'DIPSStorage::RemoveRows' to remove the DIPS entries for the excluded
-    // sites.
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &DIPSService::RunDeletionTaskOnUIThread, weak_factory_.GetWeakPtr(),
-            std::move(sites_to_clear),
-            base::BindOnce(&UmaHistogramDeletionLatency, deletion_start)));
+    if (IsShuttingDown()) {
+      return;
+    }
+
+    std::vector<std::string> excepted_sites;
+    std::vector<std::string> non_excepted_sites;
+
+    for (const auto& site : sites_to_clear) {
+      if (HasCookieException(site)) {
+        excepted_sites.push_back(site);
+      } else {
+        non_excepted_sites.push_back(site);
+      }
+    }
+
+    if (excepted_sites.empty()) {
+      PostDeletionTaskToUIThread(deletion_start, std::move(non_excepted_sites));
+    } else {
+      storage_.AsyncCall(&DIPSStorage::RemoveRows)
+          .WithArgs(std::move(excepted_sites))
+          .Then(base::BindOnce(&DIPSService::PostDeletionTaskToUIThread,
+                               weak_factory_.GetWeakPtr(), deletion_start,
+                               std::move(non_excepted_sites)));
+    }
   } else {
     storage_.AsyncCall(&DIPSStorage::RemoveRows)
         .WithArgs(std::move(sites_to_clear))
@@ -361,16 +400,26 @@ void DIPSService::DeleteDIPSEligibleState(
   }
 }
 
-void DIPSService::RunDeletionTaskOnUIThread(std::vector<std::string> sites,
-                                            base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
+void DIPSService::PostDeletionTaskToUIThread(base::Time deletion_start,
+                                             std::vector<std::string> sites) {
   std::unique_ptr<content::BrowsingDataFilterBuilder> filter =
       content::BrowsingDataFilterBuilder::Create(
           content::BrowsingDataFilterBuilder::Mode::kDelete);
   for (const auto& site : sites) {
     filter->AddRegisterableDomain(site);
   }
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&DIPSService::RunDeletionTaskOnUIThread,
+                                weak_factory_.GetWeakPtr(), std::move(filter),
+                                base::BindOnce(&UmaHistogramDeletionLatency,
+                                               deletion_start)));
+}
+
+void DIPSService::RunDeletionTaskOnUIThread(
+    std::unique_ptr<content::BrowsingDataFilterBuilder> filter,
+    base::OnceClosure callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   StateClearer::DeleteState(browser_context_->GetBrowsingDataRemover(),
                             std::move(filter), std::move(callback));

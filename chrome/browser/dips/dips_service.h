@@ -14,6 +14,7 @@
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/browsing_data_filter_builder.h"
 
 class Profile;
 
@@ -72,6 +73,7 @@ class DIPSService : public KeyedService {
   std::unique_ptr<signin::PersistentRepeatingTimer> CreateTimer(
       Profile* profile);
   void Shutdown() override;
+  bool IsShuttingDown() const { return !cookie_settings_; }
 
   void GotState(std::vector<DIPSRedirectInfoPtr> redirects,
                 DIPSRedirectChainInfoPtr chain,
@@ -89,9 +91,14 @@ class DIPSService : public KeyedService {
   void OnTimerFired();
   void DeleteDIPSEligibleState(base::Time deletion_start,
                                std::vector<std::string> sites_to_clear);
-  void RunDeletionTaskOnUIThread(std::vector<std::string> sites_to_clear,
-                                 base::OnceClosure callback);
+  void PostDeletionTaskToUIThread(base::Time deletion_start,
+                                  std::vector<std::string> sites_to_clear);
+  void RunDeletionTaskOnUIThread(
+      std::unique_ptr<content::BrowsingDataFilterBuilder> filter,
+      base::OnceClosure callback);
+
   bool ShouldBlockThirdPartyCookies() const;
+  bool HasCookieException(const std::string& site) const;
 
   raw_ptr<content::BrowserContext> browser_context_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
