@@ -19,6 +19,7 @@
 #include "ui/ozone/platform/wayland/test/global_object.h"
 #include "ui/ozone/platform/wayland/test/mock_wayland_zcr_color_manager.h"
 #include "ui/ozone/platform/wayland/test/mock_wp_presentation.h"
+#include "ui/ozone/platform/wayland/test/mock_xdg_activation_v1.h"
 #include "ui/ozone/platform/wayland/test/mock_xdg_shell.h"
 #include "ui/ozone/platform/wayland/test/mock_zwp_linux_dmabuf.h"
 #include "ui/ozone/platform/wayland/test/test_alpha_compositing.h"
@@ -159,6 +160,8 @@ class TestWaylandServerThread : public base::Thread,
     return &zcr_color_manager_v1_;
   }
 
+  MockXdgActivationV1* xdg_activation_v1() { return &xdg_activation_v1_; }
+
   void set_output_delegate(OutputDelegate* delegate) {
     output_delegate_ = delegate;
   }
@@ -230,6 +233,7 @@ class TestWaylandServerThread : public base::Thread,
   MockZwpLinuxDmabufV1 zwp_linux_dmabuf_v1_;
   MockWpPresentation wp_presentation_;
   TestWpPointerGestures wp_pointer_gestures_;
+  MockXdgActivationV1 xdg_activation_v1_;
   std::unique_ptr<TestSelectionDeviceManager> primary_selection_device_manager_;
 
   std::vector<std::unique_ptr<GlobalObject>> globals_;

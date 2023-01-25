@@ -147,6 +147,9 @@ bool TestWaylandServerThread::Start(const ServerConfig& config) {
   if (!zcr_color_manager_v1_.Initialize(display_.get())) {
     return false;
   }
+  if (!xdg_activation_v1_.Initialize(display_.get())) {
+    return false;
+  }
 
   client_ = wl_client_create(display_.get(), server_fd.release());
   if (!client_)

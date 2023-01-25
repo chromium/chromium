@@ -80,13 +80,12 @@ XdgActivation::XdgActivation(wl::Object<xdg_activation_v1> xdg_activation_v1,
 XdgActivation::~XdgActivation() = default;
 
 void XdgActivation::Activate(wl_surface* surface) const {
-  const WaylandWindow* const active_window =
-      connection_->window_manager()->GetCurrentActiveWindow();
-  if (!active_window) {
-    LOG(WARNING) << "Cannot activate a window because no active windows found!";
-    return;
-  }
-
+  // The spec isn't clear exactly what types of surface should be used as
+  // the requestor surface, but all implementations of xdg_activation_v1
+  // known to date accept the currently keyboard focused surface for
+  // activation.
+  const WaylandWindow* const keyboard_focused_window =
+      connection_->window_manager()->GetCurrentKeyboardFocusedWindow();
   if (token_.get() != nullptr) {
     // If the earlier activation request is still being served, store the
     // incoming request and try to serve it after the current one is done.
@@ -94,12 +93,10 @@ void XdgActivation::Activate(wl_surface* surface) const {
     return;
   }
 
-  wl_surface* const active_surface = active_window->root_surface()->surface();
-  if (!active_surface) {
-    LOG(WARNING) << "Cannot activate a window because the currently active "
-                    "window has no surface!";
-    return;
-  }
+  wl_surface* const keyboard_focused_surface =
+      keyboard_focused_window
+          ? keyboard_focused_window->root_surface()->surface()
+          : nullptr;
 
   auto* const token =
       xdg_activation_v1_get_activation_token(xdg_activation_v1_.get());
@@ -109,7 +106,7 @@ void XdgActivation::Activate(wl_surface* surface) const {
   }
 
   token_ = std::make_unique<Token>(
-      wl::Object<xdg_activation_token_v1>(token), active_surface,
+      wl::Object<xdg_activation_token_v1>(token), keyboard_focused_surface,
       connection_->seat()->wl_object(),
       connection_->serial_tracker().GetSerial(
           {wl::SerialType::kTouchPress, wl::SerialType::kMousePress,
@@ -135,9 +132,12 @@ XdgActivation::Token::Token(wl::Object<xdg_activation_token_v1> token,
     : token_(std::move(token)), callback_(std::move(callback)) {
   static constexpr xdg_activation_token_v1_listener kListener = {&Done};
   xdg_activation_token_v1_add_listener(token_.get(), &kListener, this);
-  xdg_activation_token_v1_set_surface(token_.get(), surface);
-  if (serial)
+  if (surface) {
+    xdg_activation_token_v1_set_surface(token_.get(), surface);
+  }
+  if (serial) {
     xdg_activation_token_v1_set_serial(token_.get(), serial->value, seat);
+  }
   xdg_activation_token_v1_commit(token_.get());
 }
 
