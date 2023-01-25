@@ -76,7 +76,7 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   FRIEND_TEST_ALL_PREFIXES(MediaStreamVideoCapturerSourceTest, ChangeSource);
 
   // MediaStreamVideoSource overrides.
-  void SetCanDiscardAlpha(bool can_discard_alpha) override;
+  void OnSourceCanDiscardAlpha(bool can_discard_alpha) override;
   void RequestRefreshFrame() override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
   void OnLog(const std::string& message) override;

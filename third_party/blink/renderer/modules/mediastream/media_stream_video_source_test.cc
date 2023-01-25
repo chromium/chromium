@@ -53,7 +53,7 @@ class MediaStreamVideoSourceTest : public testing::Test {
         String::FromUTF8("dummy_source_id"), MediaStreamSource::kTypeVideo,
         String::FromUTF8("dummy_source_name"), false /* remote */,
         base::WrapUnique(mock_stream_video_source_));
-    ON_CALL(*mock_stream_video_source_, SetCanDiscardAlpha)
+    ON_CALL(*mock_stream_video_source_, OnSourceCanDiscardAlpha)
         .WillByDefault(Return());
     ON_CALL(*mock_stream_video_source_, SupportsEncodedOutput)
         .WillByDefault(Return(true));
@@ -1079,17 +1079,22 @@ TEST_F(MediaStreamVideoSourceTest, CanDiscardAlpha) {
   MockMediaStreamVideoSink sink_alpha;
   sink_alpha.SetUsesAlpha(MediaStreamVideoSink::UsesAlpha::kDefault);
 
-  EXPECT_CALL(*mock_source(), SetCanDiscardAlpha(true));
+  EXPECT_CALL(*mock_source(), OnSourceCanDiscardAlpha(true));
   sink_no_alpha.ConnectToTrack(track);
 
-  EXPECT_CALL(*mock_source(), SetCanDiscardAlpha(false));
+  EXPECT_CALL(*mock_source(), OnSourceCanDiscardAlpha(false));
   sink_alpha.ConnectToTrack(track);
 
-  EXPECT_CALL(*mock_source(), SetCanDiscardAlpha(false));
+  EXPECT_CALL(*mock_source(), OnSourceCanDiscardAlpha(false));
   sink_no_alpha.DisconnectFromTrack();
 
-  EXPECT_CALL(*mock_source(), SetCanDiscardAlpha(true));
+  // Called once when removing the sink from the track, again when the track is
+  // removed from the source.
+  EXPECT_CALL(*mock_source(), OnSourceCanDiscardAlpha(true));
   sink_alpha.DisconnectFromTrack();
+
+  // Extra call when destroying the track.
+  EXPECT_CALL(*mock_source(), OnSourceCanDiscardAlpha(true));
 }
 
 TEST_F(MediaStreamVideoSourceTest, CanDiscardAlphaIfOtherSinksDiscard) {
@@ -1105,29 +1110,62 @@ TEST_F(MediaStreamVideoSourceTest, CanDiscardAlphaIfOtherSinksDiscard) {
   sink_alpha.SetUsesAlpha(MediaStreamVideoSink::UsesAlpha::kDefault);
 
   // Keep alpha if the only sink is DependsOnOtherSinks.
-  EXPECT_CALL(*mock_source(), SetCanDiscardAlpha(false));
+  EXPECT_CALL(*mock_source(), OnSourceCanDiscardAlpha(false));
   sink_depends.ConnectToTrack(track);
 
   // Now alpha can be dropped since other sink drops alpha.
-  EXPECT_CALL(*mock_source(), SetCanDiscardAlpha(true));
+  EXPECT_CALL(*mock_source(), OnSourceCanDiscardAlpha(true));
   sink_no_alpha.ConnectToTrack(track);
 
   // Alpha can not longer be dropped since a sink uses it.
-  EXPECT_CALL(*mock_source(), SetCanDiscardAlpha(false));
+  EXPECT_CALL(*mock_source(), OnSourceCanDiscardAlpha(false));
   sink_alpha.ConnectToTrack(track);
 
   // Now that alpha track is removes, alpha can be discarded again.
-  EXPECT_CALL(*mock_source(), SetCanDiscardAlpha(true));
+  EXPECT_CALL(*mock_source(), OnSourceCanDiscardAlpha(true));
   sink_alpha.DisconnectFromTrack();
 
   // Now that the alpha dropping track is disconnected, we keep alpha since the
   // only sink depends on other sinks, which keeps alpha by default.
-  EXPECT_CALL(*mock_source(), SetCanDiscardAlpha(false));
+  EXPECT_CALL(*mock_source(), OnSourceCanDiscardAlpha(false));
   sink_no_alpha.DisconnectFromTrack();
 
   // Alpha is discarded if there are no sinks connected.
-  EXPECT_CALL(*mock_source(), SetCanDiscardAlpha(true));
+  EXPECT_CALL(*mock_source(), OnSourceCanDiscardAlpha(true));
   sink_depends.DisconnectFromTrack();
+
+  // Extra call when destroying the track.
+  EXPECT_CALL(*mock_source(), OnSourceCanDiscardAlpha(true));
+}
+
+TEST_F(MediaStreamVideoSourceTest, CanDiscardAlphaMultipleTracks) {
+  InSequence s;
+  WebMediaStreamTrack track_no_alpha = CreateTrack();
+  WebMediaStreamTrack track_with_alpha = CreateTrack();
+
+  MockMediaStreamVideoSink sink_no_alpha;
+  sink_no_alpha.SetUsesAlpha(MediaStreamVideoSink::UsesAlpha::kNo);
+  MockMediaStreamVideoSink sink_alpha;
+  sink_alpha.SetUsesAlpha(MediaStreamVideoSink::UsesAlpha::kDefault);
+
+  // Adding just the track with no alpha, the source can discard alpha.
+  EXPECT_CALL(*mock_source(), OnSourceCanDiscardAlpha(true));
+  sink_no_alpha.ConnectToTrack(track_no_alpha);
+
+  // Adding both tracks, the source can no longer discard.
+  EXPECT_CALL(*mock_source(), OnSourceCanDiscardAlpha(false));
+  sink_alpha.ConnectToTrack(track_with_alpha);
+
+  // Even when removing the track with no alpha, we still can't discard alpha.
+  EXPECT_CALL(*mock_source(), OnSourceCanDiscardAlpha(false));
+  sink_no_alpha.DisconnectFromTrack();
+
+  // Removing all tracks, we can now discard alpha again.
+  EXPECT_CALL(*mock_source(), OnSourceCanDiscardAlpha(true));
+  sink_alpha.DisconnectFromTrack();
+
+  // Extra call when destroying the tracks.
+  EXPECT_CALL(*mock_source(), OnSourceCanDiscardAlpha(true)).Times(2);
 }
 
 }  // namespace blink

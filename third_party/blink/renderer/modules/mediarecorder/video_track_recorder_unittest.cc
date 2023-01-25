@@ -129,7 +129,7 @@ class VideoTrackRecorderTest
     EXPECT_CALL(*mock_source_, GetCropVersion())
         .Times(testing::AnyNumber())
         .WillRepeatedly(Return(0));
-    EXPECT_CALL(*mock_source_, SetCanDiscardAlpha(_))
+    EXPECT_CALL(*mock_source_, OnSourceCanDiscardAlpha(_))
         .Times(testing::AnyNumber());
 
     auto platform_track = std::make_unique<MediaStreamVideoTrack>(

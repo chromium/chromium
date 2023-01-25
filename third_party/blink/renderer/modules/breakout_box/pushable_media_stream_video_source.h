@@ -103,7 +103,7 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
       VideoCaptureCropVersionCB crop_version_callback) override;
   void StopSourceImpl() override;
   base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() override;
-  void SetCanDiscardAlpha(bool can_discard_alpha) override;
+  void OnSourceCanDiscardAlpha(bool can_discard_alpha) override;
   // This function can be called on any thread.
   media::VideoCaptureFeedbackCB GetFeedbackCallback() const override;
 

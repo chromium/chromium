@@ -768,13 +768,21 @@ void MediaStreamVideoTrack::AddSink(
   RequestRefreshFrame();
   source_->UpdateCapturingLinkSecure(this,
                                      secure_tracker_.is_capturing_secure());
-  // Alpha can't be discarded if any sink uses alpha, or if the only sinks
-  // connected are kDependsOnOtherSinks.
-  const bool can_discard_alpha =
-      alpha_using_sinks_.empty() && !alpha_discarding_sinks_.empty();
-  source_->SetCanDiscardAlpha(can_discard_alpha);
+
+  source_->UpdateCanDiscardAlpha();
+
   if (is_screencast_)
     StartTimerForRequestingFrames();
+}
+
+bool MediaStreamVideoTrack::UsingAlpha() {
+  // Alpha can't be discarded if any sink uses alpha, or if the only sinks
+  // connected are kDependsOnOtherSinks.
+  bool only_sinks_with_alpha_depending_on_other_sinks =
+      !sinks_.empty() && alpha_using_sinks_.empty() &&
+      alpha_discarding_sinks_.empty();
+  return !alpha_using_sinks_.empty() ||
+         only_sinks_with_alpha_depending_on_other_sinks;
 }
 
 void MediaStreamVideoTrack::SetSinkNotifyFrameDroppedCallback(
@@ -807,10 +815,8 @@ void MediaStreamVideoTrack::RemoveSink(WebMediaStreamSink* sink) {
   UpdateSourceHasConsumers();
   source_->UpdateCapturingLinkSecure(this,
                                      secure_tracker_.is_capturing_secure());
-  const bool can_discard_alpha =
-      sinks_.empty() ||
-      (alpha_using_sinks_.empty() && !alpha_discarding_sinks_.empty());
-  source_->SetCanDiscardAlpha(can_discard_alpha);
+
+  source_->UpdateCanDiscardAlpha();
   // Restart the timer with existing sinks.
   if (is_screencast_)
     StartTimerForRequestingFrames();

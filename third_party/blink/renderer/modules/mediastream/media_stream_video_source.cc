@@ -132,6 +132,8 @@ void MediaStreamVideoSource::AddTrack(
       break;
     }
   }
+
+  UpdateCanDiscardAlpha();
 }
 
 void MediaStreamVideoSource::RemoveTrack(MediaStreamVideoTrack* video_track,
@@ -200,6 +202,8 @@ void MediaStreamVideoSource::RemoveTrack(MediaStreamVideoTrack* video_track,
   } else if (callback) {
     std::move(callback).Run();
   }
+
+  UpdateCanDiscardAlpha();
 }
 
 void MediaStreamVideoSource::DidStopSource(RestartResult result) {
@@ -580,6 +584,18 @@ scoped_refptr<VideoTrackAdapter> MediaStreamVideoSource::GetTrackAdapter() {
         video_task_runner(), GetWeakPtr());
   }
   return track_adapter_;
+}
+
+void MediaStreamVideoSource::UpdateCanDiscardAlpha() {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  bool using_alpha = false;
+  for (auto* track : tracks_) {
+    if (track->UsingAlpha()) {
+      using_alpha = true;
+      break;
+    }
+  }
+  OnSourceCanDiscardAlpha(!using_alpha);
 }
 
 }  // namespace blink

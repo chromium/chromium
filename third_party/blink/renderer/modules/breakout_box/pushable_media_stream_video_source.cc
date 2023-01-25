@@ -179,7 +179,7 @@ PushableMediaStreamVideoSource::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void PushableMediaStreamVideoSource::SetCanDiscardAlpha(
+void PushableMediaStreamVideoSource::OnSourceCanDiscardAlpha(
     bool can_discard_alpha) {
   broker_->SetCanDiscardAlpha(can_discard_alpha);
 }

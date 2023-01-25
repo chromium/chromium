@@ -136,8 +136,9 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
 
   void UpdateCapturingLinkSecure(MediaStreamVideoTrack* track, bool is_secure);
 
-  // Indicate that the capturer can discard its alpha channel (if it has one).
-  virtual void SetCanDiscardAlpha(bool can_discard_alpha) {}
+  // Called whenever we might need to reevaluate whether the source can discard
+  // an alpha channel, due to a change in an attached track.
+  void UpdateCanDiscardAlpha();
 
   // Request underlying source to capture a new frame.
   virtual void RequestRefreshFrame() {}
@@ -326,6 +327,10 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // Optionally override by subclasses to implement encoded source control.
   // The method is called when the last encoded sink has been removed.
   virtual void OnEncodedSinkDisabled() {}
+
+  // Optionally overridden by subclasses to be notified whether all attached
+  // tracks allow alpha to be dropped.
+  virtual void OnSourceCanDiscardAlpha(bool can_discard_alpha) {}
 
   enum State {
     NEW,
