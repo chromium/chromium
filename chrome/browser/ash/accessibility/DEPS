@@ -1,12 +1,18 @@
 specific_include_rules = {
   # Testing
-  "accessibility_manager_browsertest.cc": [
+  ".*_browsertest\.cc": [
+    "+mojo/public",
+    "+testing/gmock",
+    "+testing/gtest",
+    "+ui/events",
+    "+ui/gfx",
+    "+ui/views",
     "+ui/message_center/message_center.h"
   ],
   "speech_monitor\.(cc|h)": [
     "+content/public/browser/tts_controller.h",
   ],
-  "accessibility_manager.cc": [
+  "accessibility_manager\.cc": [
     "+services/accessibility/buildflags.h",
   ],
 }

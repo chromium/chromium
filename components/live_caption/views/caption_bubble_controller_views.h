@@ -64,6 +64,8 @@ class CaptionBubbleControllerViews : public CaptionBubbleController {
   bool IsGenericErrorMessageVisibleForTesting() override;
   std::string GetBubbleLabelTextForTesting() override;
   void CloseActiveModelForTesting() override;
+  views::Widget* GetCaptionWidgetForTesting();
+  CaptionBubble* GetCaptionBubbleForTesting();
 
  private:
   friend class CaptionBubbleControllerViewsTest;

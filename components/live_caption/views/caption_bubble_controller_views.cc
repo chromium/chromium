@@ -186,4 +186,12 @@ void CaptionBubbleControllerViews::CloseActiveModelForTesting() {
     active_model_->Close();
 }
 
+views::Widget* CaptionBubbleControllerViews::GetCaptionWidgetForTesting() {
+  return caption_widget_;
+}
+
+CaptionBubble* CaptionBubbleControllerViews::GetCaptionBubbleForTesting() {
+  return caption_bubble_;
+}
+
 }  // namespace captions

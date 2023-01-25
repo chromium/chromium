@@ -1178,6 +1178,14 @@ base::RetainingOneShotTimer* CaptionBubble::GetInactivityTimerForTesting() {
   return inactivity_timer_.get();
 }
 
+views::Button* CaptionBubble::GetCloseButtonForTesting() {
+  return close_button_.get();
+}
+
+views::Button* CaptionBubble::GetBackToTabButtonForTesting() {
+  return back_to_tab_button_.get();
+}
+
 BEGIN_METADATA(CaptionBubble, views::BubbleDialogDelegateView)
 END_METADATA
 

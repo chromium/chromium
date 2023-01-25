@@ -9818,6 +9818,7 @@ if (!is_android) {
         "//ui/display/manager",
       ]
       sources += [
+        "../browser/ash/accessibility/live_caption_ui_remote_driver_browsertest.cc",
         "../browser/ash/app_list/app_list_client_interactive_uitest.cc",
         "../browser/ash/login/login_manager_test.cc",
         "../browser/ash/login/login_manager_test.h",

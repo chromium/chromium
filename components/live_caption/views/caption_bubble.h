@@ -98,6 +98,8 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   void set_tick_clock_for_testing(const base::TickClock* tick_clock) {
     tick_clock_ = tick_clock;
   }
+  views::Button* GetCloseButtonForTesting();
+  views::Button* GetBackToTabButtonForTesting();
 
   void SetCaptionBubbleStyle();
 

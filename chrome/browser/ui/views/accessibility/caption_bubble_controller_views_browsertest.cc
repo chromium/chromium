@@ -69,7 +69,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   }
 
   CaptionBubble* GetBubble() {
-    return controller_ ? controller_->caption_bubble_.get() : nullptr;
+    return controller_ ? controller_->GetCaptionBubbleForTesting() : nullptr;
   }
 
   views::Label* GetLabel() {
@@ -143,7 +143,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   }
 
   views::Widget* GetCaptionWidget() {
-    return controller_ ? controller_->caption_widget_.get() : nullptr;
+    return controller_ ? controller_->GetCaptionWidgetForTesting() : nullptr;
   }
 
   bool IsWidgetVisible() {

@@ -53,6 +53,13 @@ if (!is_android) {
         "//ui/views",
       ]
     }  # toolkit_views
+
+    if (is_chromeos_ash) {
+      sources += [
+        "live_caption_ui_remote_driver.cc",
+        "live_caption_ui_remote_driver.h",
+      ]
+    }  # is_chromeos_ash
   }
 
   static_library("live_translate") {
