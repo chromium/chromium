@@ -8,12 +8,18 @@
     <message name="IDS_AUTOFILL_NO_THANKS_DESKTOP_UPLOAD_SAVE" desc="The label for cancel button used in autofill credit card upload save bubble on desktop.">
       No thanks
     </message>
+    <message name="IDS_AUTOFILL_SAVE_IBAN_BUBBLE_LOCAL_SAVE_NO_THANKS" desc="The text label for `No thanks` button used in autofill prompt IBAN (International Bank Account Number) local save bubble on desktop.">
+      No thanks
+    </message>
   </if>
   <if expr="use_titlecase">
     <message name="IDS_AUTOFILL_NO_THANKS_DESKTOP_LOCAL_SAVE" desc="In Title Case: The label for cancel button used in autofill credit card local save bubble on desktop.">
       No Thanks
     </message>
     <message name="IDS_AUTOFILL_NO_THANKS_DESKTOP_UPLOAD_SAVE" desc="In Title Case: The label for cancel button used in autofill credit card upload save bubble on desktop.">
+      No Thanks
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_IBAN_BUBBLE_LOCAL_SAVE_NO_THANKS" desc="The text label for `No Thanks` button used in autofill prompt IBAN (International Bank Account Number) local save bubble on desktop.">
       No Thanks
     </message>
   </if>
@@ -499,6 +505,23 @@
   </message>
   <message name="IDS_AUTOFILL_FROM_GOOGLE_ACCOUNT_LONG" desc="Text that indicates an address or credit card came from Google Pay. 'Google Pay' should not be translated as it is the product name." formatter_data="android_java">
     From Google Pay
+  </message>
+
+  <!--IBAN (International Bank Account Number) related strings - start -->
+  <message name="IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_LOCAL" desc="Title text for the Autofill save IBAN (International Bank Account Number) prompt when a user submits a form with a valid IBAN.">
+    Save IBAN to this device?
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_IBAN_LABEL" desc="Text to show for the Autofill prompt IBAN (International Bank Account Number) label where user can see the IBAN to be saved.">
+    IBAN
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_IBAN_BUBBLE_LOCAL_SAVE_ACCEPT" desc="The text label for `Save` button used in autofill prompt IBAN (International Bank Account Number) save bubble on desktop.">
+    Save
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_IBAN_PROMPT_NICKNAME" desc="Text to show for the autofill prompt IBAN (International Bank Account Number) save bubble where user can enter nickname optionally.">
+    Nickname
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_IBAN_PLACEHOLDER" desc="The placeholder/label text to show for the autofill prompt IBAN (International Bank Account Number) save bubble to indicate that user can enter nickname optionally.">
+    Optional
   </message>
 
   <!-- virtual cards related strings - start -->

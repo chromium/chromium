@@ -26,6 +26,10 @@ bool IBANSaveManager::AttemptToOfferIBANLocalSave(
       base::UTF16ToUTF8(iban_import_candidate.value()));
 
   iban_save_candidate_ = iban_import_candidate;
+  if (observer_for_testing_) {
+    observer_for_testing_->OnOfferLocalSave();
+  }
+
   // If `show_save_prompt`'s value is false, desktop builds will still offer
   // save in the omnibox without popping-up the bubble.
   client_->ConfirmSaveIBANLocally(
@@ -65,11 +69,17 @@ void IBANSaveManager::OnUserDidDecideOnLocalSave(
           base::UTF16ToUTF8(iban_save_candidate_.value()));
       client_->GetPersonalDataManager()->OnAcceptedLocalIBANSave(
           iban_save_candidate_);
+      if (observer_for_testing_) {
+        observer_for_testing_->OnAcceptSaveIbanComplete();
+      }
       break;
     case AutofillClient::SaveIBANOfferUserDecision::kIgnored:
     case AutofillClient::SaveIBANOfferUserDecision::kDeclined:
       GetIBANSaveStrikeDatabase()->AddStrike(
           base::UTF16ToUTF8(iban_save_candidate_.value()));
+      if (observer_for_testing_) {
+        observer_for_testing_->OnDeclineSaveIbanComplete();
+      }
       break;
   }
 }

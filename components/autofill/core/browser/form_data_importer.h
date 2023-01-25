@@ -130,6 +130,10 @@ class FormDataImporter : public PersonalDataManagerObserver {
     credit_card_import_type_ = credit_card_import_type;
   }
 
+  IBANSaveManager* iban_save_manager_for_testing() {
+    return iban_save_manager_.get();
+  }
+
  protected:
   void set_credit_card_save_manager_for_testing(
       std::unique_ptr<CreditCardSaveManager> credit_card_save_manager) {

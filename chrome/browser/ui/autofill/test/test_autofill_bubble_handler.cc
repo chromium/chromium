@@ -18,6 +18,16 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveCreditCardBubble(
   return save_card_bubble_view_.get();
 }
 
+AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveIbanBubble(
+    content::WebContents* web_contents,
+    SaveIbanBubbleController* controller,
+    bool is_user_gesture) {
+  if (!save_iban_bubble_view_) {
+    save_iban_bubble_view_ = std::make_unique<TestAutofillBubble>();
+  }
+  return save_iban_bubble_view_.get();
+}
+
 AutofillBubbleBase* TestAutofillBubbleHandler::ShowLocalCardMigrationBubble(
     content::WebContents* web_contents,
     LocalCardMigrationBubbleController* controller,

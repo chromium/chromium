@@ -19,6 +19,16 @@ class IBANSaveStrikeDatabase;
 // for local saves.
 class IBANSaveManager {
  public:
+  // An observer class used by browsertests that gets notified whenever
+  // particular actions occur.
+  class ObserverForTest {
+   public:
+    virtual ~ObserverForTest() = default;
+    virtual void OnOfferLocalSave() {}
+    virtual void OnAcceptSaveIbanComplete() {}
+    virtual void OnDeclineSaveIbanComplete() {}
+  };
+
   explicit IBANSaveManager(AutofillClient* client);
   IBANSaveManager(const IBANSaveManager&) = delete;
   IBANSaveManager& operator=(const IBANSaveManager&) = delete;
@@ -36,6 +46,15 @@ class IBANSaveManager {
       AutofillClient::SaveIBANOfferUserDecision user_decision,
       const absl::optional<std::u16string>& nickname = absl::nullopt) {
     OnUserDidDecideOnLocalSave(user_decision, nickname);
+  }
+
+  // Returns the IBANSaveStrikeDatabase for `client_`.
+  IBANSaveStrikeDatabase* GetIBANSaveStrikeDatabaseForTesting() {
+    return GetIBANSaveStrikeDatabase();
+  }
+
+  void SetEventObserverForTesting(ObserverForTest* observer) {
+    observer_for_testing_ = observer;
   }
 
  private:
@@ -58,6 +77,9 @@ class IBANSaveManager {
 
   // StrikeDatabase used to check whether to offer to save the IBAN or not.
   std::unique_ptr<IBANSaveStrikeDatabase> iban_save_strike_database_;
+
+  // May be null.
+  raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
 
   base::WeakPtrFactory<IBANSaveManager> weak_ptr_factory_{this};
 };

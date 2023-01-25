@@ -77190,6 +77190,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="21" label="Virtual Card Enroll"/>
   <int value="22" label="Virtual Card Manual Fallback"/>
   <int value="23" label="Zoom"/>
+  <int value="24" label="Save IBAN"/>
 </enum>
 
 <enum name="PageActionPageEvent">

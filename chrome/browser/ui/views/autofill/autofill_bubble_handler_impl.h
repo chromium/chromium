@@ -23,6 +23,7 @@ namespace autofill {
 class AutofillBubbleBase;
 class LocalCardMigrationBubbleController;
 class SaveCardBubbleController;
+class SaveIbanBubbleController;
 class SaveUPIBubble;
 
 class AutofillBubbleHandlerImpl : public AutofillBubbleHandler,
@@ -43,6 +44,9 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler,
       content::WebContents* web_contents,
       SaveCardBubbleController* controller,
       bool is_user_gesture) override;
+  AutofillBubbleBase* ShowSaveIbanBubble(content::WebContents* web_contents,
+                                         SaveIbanBubbleController* controller,
+                                         bool is_user_gesture) override;
   AutofillBubbleBase* ShowLocalCardMigrationBubble(
       content::WebContents* web_contents,
       LocalCardMigrationBubbleController* controller,

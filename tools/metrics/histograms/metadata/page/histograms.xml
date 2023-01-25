@@ -167,6 +167,7 @@ chromium-metrics-reviews@google.com.
     <variant name="ReaderMode"/>
     <variant name="SaveAutofillAddress"/>
     <variant name="SaveCard"/>
+    <variant name="SaveIban"/>
     <variant name="SendTabToSelf"/>
     <variant name="SharingHub"/>
     <variant name="SideSearch"/>

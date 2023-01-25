@@ -196,6 +196,9 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                       params.command_updater, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
         break;
+      case PageActionIconType::kSaveIban:
+        // TODO(crbug.com/1349109): Create SaveIBANIconView.
+        break;
       case PageActionIconType::kSendTabToSelf:
         add_page_action_icon(
             type, std::make_unique<send_tab_to_self::SendTabToSelfIconView>(

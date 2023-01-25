@@ -329,6 +329,7 @@ void LocationBarView::Init() {
   // Add icons only when feature is not enabled. Otherwise icons will
   // be added to the ToolbarPageActionIconContainerView.
   params.types_enabled.push_back(PageActionIconType::kSaveCard);
+  params.types_enabled.push_back(PageActionIconType::kSaveIban);
   params.types_enabled.push_back(PageActionIconType::kLocalCardMigration);
   params.types_enabled.push_back(
       PageActionIconType::kVirtualCardManualFallback);
