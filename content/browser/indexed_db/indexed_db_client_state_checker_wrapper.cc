@@ -17,29 +17,15 @@ IndexedDBClientStateCheckerWrapper::IndexedDBClientStateCheckerWrapper(
 IndexedDBClientStateCheckerWrapper::~IndexedDBClientStateCheckerWrapper() =
     default;
 
-void IndexedDBClientStateCheckerWrapper::RequireClientToBeActiveAndKeepActive(
-    storage::mojom::DisallowClientActivationReason reason,
+void IndexedDBClientStateCheckerWrapper::DisallowInactiveClient(
+    storage::mojom::DisallowInactiveClientReason reason,
     mojo::PendingReceiver<storage::mojom::IndexedDBClientKeepActive>
         keep_active,
-    storage::mojom::IndexedDBClientStateChecker::RequireClientToBeActiveCallback
+    storage::mojom::IndexedDBClientStateChecker::DisallowInactiveClientCallback
         callback) {
   if (client_state_checker_remote_.is_bound()) {
-    client_state_checker_remote_->RequireClientToBeActiveAndKeepActive(
+    client_state_checker_remote_->DisallowInactiveClient(
         reason, std::move(keep_active), std::move(callback));
-  } else {
-    // If the remote is no longer connected, we expect the client will terminate
-    // the connection soon, so marking `was_active` true here.
-    std::move(callback).Run(/*was_active=*/true);
-  }
-}
-
-void IndexedDBClientStateCheckerWrapper::RequireClientToBeActive(
-    storage::mojom::DisallowClientActivationReason reason,
-    storage::mojom::IndexedDBClientStateChecker::RequireClientToBeActiveCallback
-        callback) {
-  if (client_state_checker_remote_.is_bound()) {
-    client_state_checker_remote_->RequireClientToBeActive(reason,
-                                                          std::move(callback));
   } else {
     // If the remote is no longer connected, we expect the client will terminate
     // the connection soon, so marking `was_active` true here.

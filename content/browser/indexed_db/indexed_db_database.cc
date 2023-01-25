@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -224,9 +225,10 @@ void IndexedDBDatabase::RequireBlockingTransactionClientsToBeActive(
       }
     }
     if (should_require_connection_to_be_active) {
-      connection->RequireClientToBeActive(
-          storage::mojom::DisallowClientActivationReason::
-              kTransactionIsBlockingOthers);
+      connection->DisallowInactiveClient(
+          storage::mojom::DisallowInactiveClientReason::
+              kTransactionIsBlockingOthers,
+          base::NullCallback());
     }
   }
 }
@@ -1818,9 +1820,8 @@ void IndexedDBDatabase::SendVersionChangeToAllConnections(int64_t old_version,
     // method is executed asynchronously.
     if (base::FeatureList::IsEnabled(
             blink::features::kAllowPageWithIDBConnectionInBFCache)) {
-      connection->RequireClientToBeActiveAndKeepActive(
-          storage::mojom::DisallowClientActivationReason::
-              kClientEventIsTriggered,
+      connection->DisallowInactiveClient(
+          storage::mojom::DisallowInactiveClientReason::kClientEventIsTriggered,
           base::BindOnce(
               [](base::WeakPtr<IndexedDBConnection> connection,
                  int64_t old_version, int64_t new_version,

@@ -19,7 +19,7 @@ namespace content {
 namespace {
 
 using IndexedDBDisallowActivationReason =
-    storage::mojom::DisallowClientActivationReason;
+    storage::mojom::DisallowInactiveClientReason;
 
 DisallowActivationReasonId ConvertToDisallowActivationReasonId(
     IndexedDBDisallowActivationReason reason) {
@@ -50,16 +50,11 @@ class NoDocumentIndexedDBClientStateChecker
   // storage::mojom::IndexedDBClientStateChecker overrides:
   // Non-document clients are always active, since the inactive state such as
   // back/forward cache is not applicable to them.
-  void RequireClientToBeActiveAndKeepActive(
-      storage::mojom::DisallowClientActivationReason reason,
+  void DisallowInactiveClient(
+      storage::mojom::DisallowInactiveClientReason reason,
       mojo::PendingReceiver<storage::mojom::IndexedDBClientKeepActive>
           keep_active,
-      RequireClientToBeActiveCallback callback) override {
-    std::move(callback).Run(/*was_active=*/true);
-  }
-  void RequireClientToBeActive(
-      storage::mojom::DisallowClientActivationReason reason,
-      RequireClientToBeActiveCallback callback) override {
+      DisallowInactiveClientCallback callback) override {
     std::move(callback).Run(/*was_active=*/true);
   }
 };
@@ -82,7 +77,7 @@ class DocumentIndexedDBClientStateChecker final
   }
 
   bool CheckIfClientWasActive(
-      storage::mojom::DisallowClientActivationReason reason) {
+      storage::mojom::DisallowInactiveClientReason reason) {
     bool was_active = false;
 
     if (render_frame_host().GetLifecycleState() ==
@@ -103,16 +98,17 @@ class DocumentIndexedDBClientStateChecker final
   }
 
   // storage::mojom::IndexedDBClientStateChecker overrides:
-  void RequireClientToBeActiveAndKeepActive(
-      storage::mojom::DisallowClientActivationReason reason,
+  void DisallowInactiveClient(
+      storage::mojom::DisallowInactiveClientReason reason,
       mojo::PendingReceiver<storage::mojom::IndexedDBClientKeepActive>
           keep_active,
-      RequireClientToBeActiveCallback callback) override {
-    // This is the only reason that we need to keep the client active.
-    CHECK_EQ(reason, storage::mojom::DisallowClientActivationReason::
-                         kClientEventIsTriggered);
+      DisallowInactiveClientCallback callback) override {
     bool was_active = CheckIfClientWasActive(reason);
-    if (was_active) {
+    if (was_active && keep_active.is_valid()) {
+      // This is the only reason that we need to prevent the client from
+      // inactive state.
+      CHECK_EQ(reason, storage::mojom::DisallowInactiveClientReason::
+                           kClientEventIsTriggered);
       // If the document is active, we need to register a non sticky feature to
       // prevent putting it into BFCache until the IndexedDB connection is
       // successfully closed and the context is automatically destroyed.
@@ -128,13 +124,6 @@ class DocumentIndexedDBClientStateChecker final
                                  std::move(context));
     }
 
-    std::move(callback).Run(was_active);
-  }
-
-  void RequireClientToBeActive(
-      storage::mojom::DisallowClientActivationReason reason,
-      RequireClientToBeActiveCallback callback) override {
-    bool was_active = CheckIfClientWasActive(reason);
     std::move(callback).Run(was_active);
   }
 

@@ -17,6 +17,7 @@
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
@@ -188,19 +189,22 @@ void IndexedDBConnection::RemoveTransaction(int64_t id) {
   transactions_.erase(id);
 }
 
-void IndexedDBConnection::RequireClientToBeActiveAndKeepActive(
-    storage::mojom::DisallowClientActivationReason reason,
+void IndexedDBConnection::DisallowInactiveClient(
+    storage::mojom::DisallowInactiveClientReason reason,
     base::OnceCallback<void(bool)> callback) {
-  mojo::Remote<storage::mojom::IndexedDBClientKeepActive>
-      client_keep_active_remote;
-  client_state_checker_->RequireClientToBeActiveAndKeepActive(
-      reason, client_keep_active_remote.BindNewPipeAndPassReceiver(),
-      std::move(callback));
-  client_keep_active_remotes_.Add(std::move(client_keep_active_remote));
+  if (reason ==
+      storage::mojom::DisallowInactiveClientReason::kClientEventIsTriggered) {
+    // It's only necessary to keep the client active under this scenario.
+    mojo::Remote<storage::mojom::IndexedDBClientKeepActive>
+        client_keep_active_remote;
+    client_state_checker_->DisallowInactiveClient(
+        reason, client_keep_active_remote.BindNewPipeAndPassReceiver(),
+        std::move(callback));
+    client_keep_active_remotes_.Add(std::move(client_keep_active_remote));
+  } else {
+    client_state_checker_->DisallowInactiveClient(reason, mojo::NullReceiver(),
+                                                  std::move(callback));
+  }
 }
 
-void IndexedDBConnection::RequireClientToBeActive(
-    storage::mojom::DisallowClientActivationReason reason) {
-  client_state_checker_->RequireClientToBeActive(reason, base::NullCallback());
-}
 }  // namespace content

@@ -654,8 +654,8 @@ TEST_F(IndexedDBTransactionTest, IsTransactionBlockingOthers) {
 
   // Register a transaction with ReadWrite mode to object store 1.
   // The transaction should be started and it's not blocking any others.
-  ASSERT_EQ(transaction->state(), IndexedDBTransaction::STARTED);
-  ASSERT_FALSE(db_->IsTransactionBlockingOthers(transaction));
+  EXPECT_EQ(transaction->state(), IndexedDBTransaction::STARTED);
+  EXPECT_FALSE(db_->IsTransactionBlockingOthers(transaction));
 
   const int64_t id2 = 1;
   IndexedDBTransaction* transaction2 = connection->CreateTransaction(
@@ -666,8 +666,8 @@ TEST_F(IndexedDBTransactionTest, IsTransactionBlockingOthers) {
   // Register another transaction with ReadWrite mode to the same object store.
   // The transaction should be blocked in `CREATED` state and the previous
   // transaction is now blocking others.
-  ASSERT_EQ(transaction2->state(), IndexedDBTransaction::CREATED);
-  ASSERT_TRUE(db_->IsTransactionBlockingOthers(transaction));
+  EXPECT_EQ(transaction2->state(), IndexedDBTransaction::CREATED);
+  EXPECT_TRUE(db_->IsTransactionBlockingOthers(transaction));
 
   RunPostedTasks();
 
@@ -676,9 +676,9 @@ TEST_F(IndexedDBTransactionTest, IsTransactionBlockingOthers) {
 
   // Abort the blocked transaction, and the previous transaction should not be
   // blocking others anymore.
-  ASSERT_EQ(transaction2->state(), IndexedDBTransaction::FINISHED);
+  EXPECT_EQ(transaction2->state(), IndexedDBTransaction::FINISHED);
   RunPostedTasks();
-  ASSERT_FALSE(db_->IsTransactionBlockingOthers(transaction));
+  EXPECT_FALSE(db_->IsTransactionBlockingOthers(transaction));
 }
 
 }  // namespace indexed_db_transaction_unittest

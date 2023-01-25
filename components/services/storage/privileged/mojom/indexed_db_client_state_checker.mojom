@@ -4,7 +4,7 @@
 
 module storage.mojom;
 
-enum DisallowClientActivationReason {
+enum DisallowInactiveClientReason {
   kClientEventIsTriggered = 0,
   kTransactionIsAcquiringLocks = 1,
   kTransactionIsBlockingOthers = 2,
@@ -30,23 +30,35 @@ interface IndexedDBClientStateChecker {
   // 2. If the client is in some inactive state (e.g. BFCache), it will be
   // disallowed from being activated again in the future.
   // See `RenderFrameHost::IsInactiveAndDisallowActivation()`.
-  // `keep_active` is used to force a client to remain active. This has no
-  // effect if the client is no longer active by the time the IPC message
-  // is handled.
-  RequireClientToBeActiveAndKeepActive(
-      DisallowClientActivationReason reason,
-      pending_receiver<IndexedDBClientKeepActive> keep_active
+  // `keep_active` is used to keep an active client away from entering
+  // the inactive state if while it's valid and connected.
+  // This has no effect if the client is no longer active by the time the IPC
+  // message is handled.
+  DisallowInactiveClient(
+      DisallowInactiveClientReason reason,
+      pending_receiver<IndexedDBClientKeepActive>? keep_active
   ) => (bool was_active);
-  // Similar to `RequireClientToBeActiveAndKeepActive`, but do not force
-  // the client to remain active. This method should be used if the caller
-  // only needs to disallow the client activation from an inactive state,
-  // as it won't be affected if the active client becomes inactive.
-  RequireClientToBeActive(DisallowClientActivationReason reason)
-    => (bool was_active);
+
+  // Summary of allowed state transitions under different scenarios.
+  // There are three possible states for the IndexedDB client: active,
+  // inactive and destroyed.
+
+  // In the default case, the following transactions are allowed:
+  // - active -> inactive
+  // - active -> destroyed
+  // - inactive -> active
+  // - inactive -> destroyed
+
+  // After `DisallowInactiveClient` has been called, the following transitions
+  // are allowed:
+  // - active -> destroyed
+  // - inactive -> destroyed
+  // Additionally, if `keep_active` is not set or goes out of scope, the
+  // following transition will be allowed as well:
+  // - active -> inactive
 };
 
-// Keeping an instance of this interface alive pins the associated client
-// and forces it to remain active (e.g. not able to enter some state like
-// BFCache). Closing the other end (i.e. the remote) ends the keep active
-// scope associated with the instance.
+// Preventing an instance of this interface from entering some inactive state
+// like BFCache. Closing the other end (i.e. the remote) ends the scope
+// associated with the instance.
 interface IndexedDBClientKeepActive {};

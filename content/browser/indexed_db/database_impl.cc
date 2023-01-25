@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_math.h"
@@ -752,9 +753,10 @@ void DatabaseImpl::DidBecomeInactive() {
         // The transaction is created but not started yet, which means it may be
         // blocked by others and waiting for the lock to be acquired. We should
         // disallow the activation for the client.
-        connection_->RequireClientToBeActive(
-            storage::mojom::DisallowClientActivationReason::
-                kTransactionIsAcquiringLocks);
+        connection_->DisallowInactiveClient(
+            storage::mojom::DisallowInactiveClientReason::
+                kTransactionIsAcquiringLocks,
+            base::NullCallback());
         return;
       }
       case IndexedDBTransaction::State::STARTED: {
@@ -763,9 +765,10 @@ void DatabaseImpl::DidBecomeInactive() {
           // The transaction is holding the locks while others are waiting for
           // the acquisition. We should disallow the activation for this client
           // so the lock is immediately available.
-          connection_->RequireClientToBeActive(
-              storage::mojom::DisallowClientActivationReason::
-                  kTransactionIsBlockingOthers);
+          connection_->DisallowInactiveClient(
+              storage::mojom::DisallowInactiveClientReason::
+                  kTransactionIsBlockingOthers,
+              base::NullCallback());
           return;
         }
         break;
