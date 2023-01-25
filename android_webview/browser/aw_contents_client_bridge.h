@@ -13,7 +13,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/id_map.h"
 #include "base/functional/callback.h"
-#include "base/supports_user_data.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/javascript_dialog_manager.h"

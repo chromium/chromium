@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SESSIONS_IOS_IOS_RESTORE_LIVE_TAB_H_
 #define COMPONENTS_SESSIONS_IOS_IOS_RESTORE_LIVE_TAB_H_
 
-#include "base/supports_user_data.h"
 #include "components/sessions/ios/ios_live_tab.h"
 
 @class CRWSessionStorage;

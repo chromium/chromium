@@ -14,7 +14,6 @@
 #include "base/containers/id_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/supports_user_data.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/wifi/wifi_service.h"
