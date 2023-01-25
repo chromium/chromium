@@ -8,7 +8,7 @@
 ##
 ## Top level settings
 ##
-version_id: 57
+version_id: 58
 sampled_ping_probability: 0.01
 max_archived_binaries_to_report: 10
 default_file_type {
@@ -1783,6 +1783,26 @@ file_types {
 file_types {
   extension: "inetloc"
   uma_value: 398
+  ping_setting: FULL_PING
+  platform_settings {
+    platform: PLATFORM_TYPE_MAC
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+}
+file_types {
+  extension: "ftploc"
+  uma_value: 404
+  ping_setting: FULL_PING
+  platform_settings {
+    platform: PLATFORM_TYPE_MAC
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+}
+file_types {
+  extension: "atloc"
+  uma_value: 405
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_TYPE_MAC
