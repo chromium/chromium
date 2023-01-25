@@ -291,7 +291,6 @@ js_type_check("closure_compile_local_module") {
     ":os_settings_routes",
     ":prefs_behavior",
     ":route_observer_behavior",
-    ":route_origin_behavior",
     ":router",
   ]
 }
@@ -373,13 +372,6 @@ js_library("route_observer_behavior") {
   deps = [
     ":router",
     "//ash/webui/common/resources:assert",
-  ]
-}
-
-js_library("route_origin_behavior") {
-  deps = [
-    ":os_route",
-    "//ash/webui/common/resources:cr.m",
   ]
 }
 

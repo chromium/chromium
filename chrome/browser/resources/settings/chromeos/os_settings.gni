@@ -396,7 +396,6 @@ non_web_component_files = [
   "chromeos/prefs_behavior.js",
   "chromeos/route_observer_behavior.js",
   "chromeos/route_observer_mixin.ts",
-  "chromeos/route_origin_behavior.js",
   "chromeos/route_origin_mixin.ts",
   "chromeos/router.js",
   "chromeos/search/combined_search_handler.ts",

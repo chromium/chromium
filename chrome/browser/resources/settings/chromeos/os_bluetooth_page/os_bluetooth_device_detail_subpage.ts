@@ -118,7 +118,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
   constructor() {
     super();
 
-    /** RouteOriginBehaviorInterface override */
+    /** RouteOriginMixin override */
     this.route_ = routes.BLUETOOTH_DEVICE_DETAIL;
     this.browserProxy_ =
         OsBluetoothDevicesSubpageBrowserProxyImpl.getInstance();
