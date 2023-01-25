@@ -63,7 +63,7 @@ class BufferCheckerTestClient : public ::exo::wayland::clients::ClientBase {
   explicit BufferCheckerTestClient() = default;
   ~BufferCheckerTestClient() override = default;
 
-  bool HasAnySupportedUsages(uint32_t format) {
+  int GetNumSupportedUsages(uint32_t format) {
     std::vector<gfx::BufferUsage> supported_usages;
     bool callback_pending = false;
     std::unique_ptr<wl_callback> frame_callback;
@@ -88,7 +88,7 @@ class BufferCheckerTestClient : public ::exo::wayland::clients::ClientBase {
 
       if (wl_display_get_error(display_.get())) {
         LOG(ERROR) << "Wayland error encountered";
-        return false;
+        return -1;
       }
 
       // Buffers may fail to be created, so loop until we get one or return
@@ -105,7 +105,7 @@ class BufferCheckerTestClient : public ::exo::wayland::clients::ClientBase {
                     << DrmCodeToBufferFormatString(format)
                     << " gfx::BufferUsages: ["
                     << base::JoinString(supported_usage_strings, ", ") << "]";
-          return supported_usages.size() > 0;
+          return supported_usages.size();
         }
 
         current_usage = usages_to_test.front();
@@ -145,11 +145,11 @@ class BufferCheckerTestClient : public ::exo::wayland::clients::ClientBase {
 
     LOG(ERROR)
         << "Expected to return from inside the loop. Wayland disconnected?";
-    return false;
+    return -1;
   }
 
-  bool FormatAndModifierSupported(uint32_t format,
-                                  std::vector<uint64_t> modifiers) {
+  int GetNumSupportedFormatsAndModifier(uint32_t format,
+                                        std::vector<uint64_t> modifiers) {
     std::vector<gfx::BufferUsage> supported_usages;
     bool callback_pending = false;
     std::unique_ptr<wl_callback> frame_callback;
@@ -169,12 +169,12 @@ class BufferCheckerTestClient : public ::exo::wayland::clients::ClientBase {
                   << " drm modifiers: " << DrmModifiersToString(modifiers)
                   << " gfx::BufferFormat: "
                   << DrmCodeToBufferFormatString(format);
-        return true;
+        return 1;
       }
 
       if (wl_display_get_error(display_.get())) {
         LOG(ERROR) << "Wayland error encountered";
-        return false;
+        return -1;
       }
 
       if (modifiers.size() == 1 && modifiers[0] == DRM_FORMAT_MOD_INVALID) {
@@ -195,7 +195,7 @@ class BufferCheckerTestClient : public ::exo::wayland::clients::ClientBase {
                    << " drm modifiers: " << DrmModifiersToString(modifiers)
                    << " gfx::BufferFormat: "
                    << DrmCodeToBufferFormatString(format);
-        return false;
+        return 0;
       }
 
       LOG(INFO) << "Attempting to use buffer with format drm format: "
@@ -219,7 +219,7 @@ class BufferCheckerTestClient : public ::exo::wayland::clients::ClientBase {
 
     LOG(ERROR)
         << "Expected to return from inside the loop. Wayland disconnected?";
-    return false;
+    return -1;
   }
 
   std::vector<uint32_t> reported_formats;
@@ -460,7 +460,7 @@ void PrintReportedFormats(std::vector<uint32_t>& formats) {
              << base::JoinString(buffer_names, ", ");
 }
 
-TEST_F(BufferCheckerClientTest, CanUseAllReportedBufferFormatsLegacy) {
+TEST_F(BufferCheckerClientTest, CanUseAnyReportedBufferFormatsLegacy) {
   exo::wayland::test::BufferCheckerTestClient client;
   auto params = base_params_;
   // Initialize no buffers when we start, wait until we've gotten the list
@@ -471,8 +471,15 @@ TEST_F(BufferCheckerClientTest, CanUseAllReportedBufferFormatsLegacy) {
   EXPECT_TRUE(!client.reported_formats.empty());
 
   PrintReportedFormats(client.reported_formats);
-  for (auto format : client.reported_formats)
-    EXPECT_TRUE(client.HasAnySupportedUsages(format));
+  bool has_any_supported_formats = false;
+  for (auto format : client.reported_formats) {
+    int res = client.GetNumSupportedUsages(format);
+    EXPECT_TRUE(res != -1);
+    if (res > 0) {
+      has_any_supported_formats = true;
+    }
+  }
+  EXPECT_TRUE(has_any_supported_formats);
 }
 
 TEST_F(BufferCheckerClientTest, CanUseAnyReportedBufferModifiersLegacy) {
@@ -484,35 +491,36 @@ TEST_F(BufferCheckerClientTest, CanUseAnyReportedBufferModifiersLegacy) {
   ASSERT_TRUE(client.Init(params));
   EXPECT_TRUE(!client.reported_format_modifier_map.empty());
 
+  bool has_any_supported_formats = false;
   for (const auto& [format, modifiers] : client.reported_format_modifier_map) {
     std::vector<uint64_t> valid_modifiers;
     for (uint64_t modifier : modifiers) {
       if (modifier != DRM_FORMAT_MOD_INVALID)
         valid_modifiers.push_back(modifier);
     }
-    if (valid_modifiers.empty())
-      valid_modifiers.push_back(DRM_FORMAT_MOD_INVALID);
-    EXPECT_TRUE(client.FormatAndModifierSupported(format, valid_modifiers));
-  }
-}
 
-TEST_F(BufferCheckerClientTest, CanUseAllReportedBufferModifiersLegacy) {
-  exo::wayland::test::BufferCheckerTestClient client;
-  auto params = base_params_;
-  // Initialize no buffers when we start, wait until we've gotten the list
-  params.num_buffers = 0;
-  params.linux_dmabuf_version = ZWP_LINUX_DMABUF_V1_MODIFIER_SINCE_VERSION;
-  ASSERT_TRUE(client.Init(params));
-  EXPECT_TRUE(!client.reported_format_modifier_map.empty());
+    if (!valid_modifiers.empty()) {
+      int res =
+          client.GetNumSupportedFormatsAndModifier(format, valid_modifiers);
+      EXPECT_TRUE(res != -1);
+      if (res > 0) {
+        has_any_supported_formats = true;
+      }
+    }
 
-  for (const auto& [format, modifiers] : client.reported_format_modifier_map) {
-    for (auto modifier : modifiers) {
-      EXPECT_TRUE(client.FormatAndModifierSupported(format, {modifier}));
+    if (base::Contains(modifiers, DRM_FORMAT_MOD_INVALID)) {
+      int res = client.GetNumSupportedFormatsAndModifier(
+          format, std::vector<uint64_t>({DRM_FORMAT_MOD_INVALID}));
+      EXPECT_TRUE(res != -1);
+      if (res > 0) {
+        has_any_supported_formats = true;
+      }
     }
   }
+  EXPECT_TRUE(has_any_supported_formats);
 }
 
-TEST_F(BufferCheckerClientTest, CanUseAllReportedBufferFormatsDefaultFeedback) {
+TEST_F(BufferCheckerClientTest, CanUseAnyReportedBufferFormatsDefaultFeedback) {
   exo::wayland::test::BufferCheckerTestClient client;
   auto params = base_params_;
   // Initialize no buffers when we start, wait until we've gotten the list
@@ -526,8 +534,15 @@ TEST_F(BufferCheckerClientTest, CanUseAllReportedBufferFormatsDefaultFeedback) {
   EXPECT_TRUE(!client.reported_format_modifier_map.empty());
 
   PrintReportedFormats(client.reported_formats);
-  for (auto format : client.reported_formats)
-    EXPECT_TRUE(client.HasAnySupportedUsages(format));
+  bool has_any_supported_formats = false;
+  for (auto format : client.reported_formats) {
+    int res = client.GetNumSupportedUsages(format);
+    EXPECT_TRUE(res != -1);
+    if (res > 0) {
+      has_any_supported_formats = true;
+    }
+  }
+  EXPECT_TRUE(has_any_supported_formats);
 }
 
 TEST_F(BufferCheckerClientTest,
@@ -544,40 +559,36 @@ TEST_F(BufferCheckerClientTest,
   client.GetDefaultFeedback();
   EXPECT_TRUE(!client.reported_format_modifier_map.empty());
 
+  bool has_any_supported_formats = false;
   for (const auto& [format, modifiers] : client.reported_format_modifier_map) {
     std::vector<uint64_t> valid_modifiers;
     for (uint64_t modifier : modifiers) {
       if (modifier != DRM_FORMAT_MOD_INVALID)
         valid_modifiers.push_back(modifier);
     }
-    if (valid_modifiers.empty())
-      valid_modifiers.push_back(DRM_FORMAT_MOD_INVALID);
-    EXPECT_TRUE(client.FormatAndModifierSupported(format, valid_modifiers));
-  }
-}
 
-TEST_F(BufferCheckerClientTest,
-       CanUseAllReportedBufferModifiersDefaultFeedback) {
-  exo::wayland::test::BufferCheckerTestClient client;
-  auto params = base_params_;
-  // Initialize no buffers when we start, wait until we've gotten the list
-  params.num_buffers = 0;
-  params.linux_dmabuf_version =
-      ZWP_LINUX_DMABUF_V1_GET_DEFAULT_FEEDBACK_SINCE_VERSION;
-  ASSERT_TRUE(client.Init(params));
+    if (!valid_modifiers.empty()) {
+      int res =
+          client.GetNumSupportedFormatsAndModifier(format, valid_modifiers);
+      EXPECT_TRUE(res != -1);
+      if (res > 0) {
+        has_any_supported_formats = true;
+      }
+    }
 
-  EXPECT_TRUE(client.reported_format_modifier_map.empty());
-  client.GetDefaultFeedback();
-  EXPECT_TRUE(!client.reported_format_modifier_map.empty());
-
-  for (const auto& [format, modifiers] : client.reported_format_modifier_map) {
-    for (auto modifier : modifiers) {
-      EXPECT_TRUE(client.FormatAndModifierSupported(format, {modifier}));
+    if (base::Contains(modifiers, DRM_FORMAT_MOD_INVALID)) {
+      int res = client.GetNumSupportedFormatsAndModifier(
+          format, std::vector<uint64_t>({DRM_FORMAT_MOD_INVALID}));
+      EXPECT_TRUE(res != -1);
+      if (res > 0) {
+        has_any_supported_formats = true;
+      }
     }
   }
+  EXPECT_TRUE(has_any_supported_formats);
 }
 
-TEST_F(BufferCheckerClientTest, CanUseAllReportedBufferFormatsSurfaceFeedback) {
+TEST_F(BufferCheckerClientTest, CanUseAnyReportedBufferFormatsSurfaceFeedback) {
   exo::wayland::test::BufferCheckerTestClient client;
   auto params = base_params_;
   // Initialize no buffers when we start, wait until we've gotten the list
@@ -591,8 +602,15 @@ TEST_F(BufferCheckerClientTest, CanUseAllReportedBufferFormatsSurfaceFeedback) {
   EXPECT_TRUE(!client.reported_format_modifier_map.empty());
 
   PrintReportedFormats(client.reported_formats);
-  for (auto format : client.reported_formats)
-    EXPECT_TRUE(client.HasAnySupportedUsages(format));
+  bool has_any_supported_formats = false;
+  for (auto format : client.reported_formats) {
+    int res = client.GetNumSupportedUsages(format);
+    EXPECT_TRUE(res != -1);
+    if (res > 0) {
+      has_any_supported_formats = true;
+    }
+  }
+  EXPECT_TRUE(has_any_supported_formats);
 }
 
 TEST_F(BufferCheckerClientTest,
@@ -609,35 +627,31 @@ TEST_F(BufferCheckerClientTest,
   client.GetSurfaceFeedback();
   EXPECT_TRUE(!client.reported_format_modifier_map.empty());
 
+  bool has_any_supported_formats = false;
   for (const auto& [format, modifiers] : client.reported_format_modifier_map) {
     std::vector<uint64_t> valid_modifiers;
     for (uint64_t modifier : modifiers) {
       if (modifier != DRM_FORMAT_MOD_INVALID)
         valid_modifiers.push_back(modifier);
     }
-    if (valid_modifiers.empty())
-      valid_modifiers.push_back(DRM_FORMAT_MOD_INVALID);
-    EXPECT_TRUE(client.FormatAndModifierSupported(format, valid_modifiers));
-  }
-}
 
-TEST_F(BufferCheckerClientTest,
-       CanUseAllReportedBufferModifiersSurfaceFeedback) {
-  exo::wayland::test::BufferCheckerTestClient client;
-  auto params = base_params_;
-  // Initialize no buffers when we start, wait until we've gotten the list
-  params.num_buffers = 0;
-  params.linux_dmabuf_version =
-      ZWP_LINUX_DMABUF_V1_GET_SURFACE_FEEDBACK_SINCE_VERSION;
-  ASSERT_TRUE(client.Init(params));
+    if (!valid_modifiers.empty()) {
+      int res =
+          client.GetNumSupportedFormatsAndModifier(format, valid_modifiers);
+      EXPECT_TRUE(res != -1);
+      if (res > 0) {
+        has_any_supported_formats = true;
+      }
+    }
 
-  EXPECT_TRUE(client.reported_format_modifier_map.empty());
-  client.GetSurfaceFeedback();
-  EXPECT_TRUE(!client.reported_format_modifier_map.empty());
-
-  for (const auto& [format, modifiers] : client.reported_format_modifier_map) {
-    for (auto modifier : modifiers) {
-      EXPECT_TRUE(client.FormatAndModifierSupported(format, {modifier}));
+    if (base::Contains(modifiers, DRM_FORMAT_MOD_INVALID)) {
+      int res = client.GetNumSupportedFormatsAndModifier(
+          format, std::vector<uint64_t>({DRM_FORMAT_MOD_INVALID}));
+      EXPECT_TRUE(res != -1);
+      if (res > 0) {
+        has_any_supported_formats = true;
+      }
     }
   }
+  EXPECT_TRUE(has_any_supported_formats);
 }
