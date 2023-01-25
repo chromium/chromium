@@ -2798,9 +2798,6 @@ extern const char kCaptureModeDemoToolsDescription[];
 extern const char kDesks16Name[];
 extern const char kDesks16Description[];
 
-extern const char kDesksCloseAllName[];
-extern const char kDesksCloseAllDescription[];
-
 extern const char kDesksSaveAndRecallName[];
 extern const char kDesksSaveAndRecallDescription[];
 

@@ -102,9 +102,8 @@ class WindowFloatTest : public AshTestBase {
   }
 
   void SetUp() override {
-    // Enable float feature and desks close all feature.
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::wm::features::kFloatWindow}, {features::kDesksCloseAll});
+        {chromeos::wm::features::kFloatWindow}, {});
     AshTestBase::SetUp();
   }
 

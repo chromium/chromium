@@ -446,11 +446,6 @@ BASE_FEATURE(kCryptauthAttestationSyncing,
              "CryptauthAttestationSyncing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, replaces the `DeskMiniView` legacy desk close button and behavior
-// with a button to close desk and windows and a button to combine desks (the
-// legacy behavior).
-BASE_FEATURE(kDesksCloseAll, "DesksCloseAll", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables contextual nudges for gesture education.
 BASE_FEATURE(kContextualNudges,
              "ContextualNudges",
@@ -2427,7 +2422,9 @@ bool IsCryptauthAttestationSyncingEnabled() {
 }
 
 bool IsDesksCloseAllEnabled() {
-  return base::FeatureList::IsEnabled(kDesksCloseAll);
+  // TODO(b/263166880): Remove this function and all code paths where this is
+  // false.
+  return true;
 }
 
 bool IsDnsOverHttpsWithIdentifiersReuseOldPolicyEnabled() {

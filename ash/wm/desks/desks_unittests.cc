@@ -6862,31 +6862,6 @@ TEST_P(DesksTest, PrimaryUserHasUsedDesksRecently) {
   desks_restore_util::OverrideClockForTesting(nullptr);
 }
 
-// Tests that a desk's close button is visible in tablet mode after long
-// pressing on the desk's preview.
-TEST_P(DesksTest, CloseButtonShowsAfterLongPressInTabletMode) {
-  base::test::ScopedFeatureList desks_close_all_disabler;
-  desks_close_all_disabler.InitAndDisableFeature(features::kDesksCloseAll);
-
-  TabletModeControllerTestApi().EnterTabletMode();
-
-  NewDesk();
-  ASSERT_EQ(2u, DesksController::Get()->desks().size());
-
-  EnterOverview();
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
-
-  // Long-tapping the desk preview should show the close button for the desk.
-  const DeskMiniView* mini_view = GetPrimaryRootDesksBarView()->mini_views()[0];
-  const DeskPreviewView* desk_preview_view = mini_view->desk_preview();
-  const gfx::Point desk_preview_view_center =
-      desk_preview_view->GetBoundsInScreen().CenterPoint();
-  auto* event_generator = GetEventGenerator();
-  LongGestureTap(desk_preview_view_center, event_generator);
-
-  EXPECT_TRUE(mini_view->close_desk_button()->GetVisible());
-}
-
 // Tests that metrics are being recorded when a desk is renamed, when new desks
 // are added, and when a desk is being removed.
 TEST_P(DesksTest, TestCustomDeskNameMetricsRecording) {
@@ -8051,15 +8026,6 @@ class DesksCloseAllTest : public DesksTest {
     event_generator->MoveMouseTo(button_center);
     event_generator->ClickLeftButton();
   }
-
-  // DesksTest:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kDesksCloseAll);
-    DesksTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Runs through test cases for closing active and inactive desks with windows in
