@@ -36,6 +36,7 @@ suite('history-clusters', () => {
     };
 
     const urlVisit1: URLVisit = {
+      visitId: BigInt(1),
       normalizedUrl: {url: 'https://www.google.com'},
       urlForDisplay: 'https://www.google.com',
       pageTitle: '',
@@ -55,6 +56,7 @@ suite('history-clusters', () => {
       visits: [urlVisit1],
       labelMatchPositions: [],
       relatedSearches: [],
+      fromPersistence: false,
     };
 
     const cluster2: Cluster = {
@@ -62,6 +64,7 @@ suite('history-clusters', () => {
       visits: [],
       labelMatchPositions: [],
       relatedSearches: [],
+      fromPersistence: false,
     };
 
     const queryResult: QueryResult = {

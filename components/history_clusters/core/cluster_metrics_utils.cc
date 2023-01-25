@@ -27,10 +27,12 @@ std::string ClusterActionToString(ClusterAction action) {
 
 std::string VisitActionToString(VisitAction action) {
   switch (action) {
-    case VisitAction::kDeleted:
-      return "Deleted";
     case VisitAction::kClicked:
       return "Clicked";
+    case VisitAction::kHidden:
+      return "Hidden";
+    case VisitAction::kDeleted:
+      return "Deleted";
   }
   NOTREACHED();
   return std::string();

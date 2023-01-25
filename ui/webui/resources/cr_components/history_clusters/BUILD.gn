@@ -43,6 +43,8 @@ build_cr_component("build") {
     "shared_vars.css",
   ]
 
+  static_files = [ "thumb_down_filled_gm_grey.svg" ]
+
   mojo_files_deps = [ ":mojo_bindings_ts__generator" ]
   mojo_files = [ "$target_gen_dir/history_clusters.mojom-webui.ts" ]
 

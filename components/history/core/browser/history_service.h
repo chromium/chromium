@@ -611,6 +611,12 @@ class HistoryService : public KeyedService {
       base::OnceClosure callback,
       base::CancelableTaskTracker* tracker);
 
+  // Sets scores of cluster visits to 0 to hide them from the webUI.
+  base::CancelableTaskTracker::TaskId HideVisits(
+      const std::vector<VisitID>& visit_ids,
+      base::OnceClosure callback,
+      base::CancelableTaskTracker* tracker);
+
   // Get the most recent `Cluster`s within the constraints. The most recent
   // visit of a cluster represents the cluster's time. `max_clusters` is a hard
   // cap. `max_visits_soft_cap` is a soft cap; `GetMostRecentClusters()` will

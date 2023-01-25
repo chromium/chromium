@@ -323,6 +323,7 @@ TEST(HistoryClustersUtilTest, HideAndCullLowScoringVisits) {
 
     auto clusters = all_clusters;
     HideAndCullLowScoringVisits(clusters);
+    ASSERT_EQ(clusters.size(), 3u);
 
     EXPECT_EQ(clusters[0].cluster_id, 4);
     auto& visits = clusters[0].visits;

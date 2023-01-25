@@ -57,7 +57,8 @@
   [[placeholderText_]]
 </div>
 <iron-list id="clusters" items="[[result_.clusters]]"
-    on-remove-visits="onRemoveVisits_" hidden="[[!result_.clusters.length]]">
+           on-hide-visit="onHideVisit_" on-remove-visits="onRemoveVisits_"
+           hidden="[[!result_.clusters.length]]">
   <!-- We must have a tabindex on these history-cluster elements, because
        iron-list gets very confused handling arrow keys without them. Moreover,
        we can't allow Tab to traverse all list elements because:

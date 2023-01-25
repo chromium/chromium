@@ -77,6 +77,8 @@ class HistoryClustersHandler : public mojom::PageHandler,
   void LoadMoreClusters(const std::string& query) override;
   void RemoveVisits(std::vector<mojom::URLVisitPtr> visits,
                     RemoveVisitsCallback callback) override;
+  void HideVisits(std::vector<mojom::URLVisitPtr> visits,
+                  HideVisitsCallback callback) override;
   void OpenVisitUrlsInTabGroup(std::vector<mojom::URLVisitPtr> visits) override;
   void RecordVisitAction(mojom::VisitAction visit_action,
                          uint32_t visit_index,
@@ -106,6 +108,8 @@ class HistoryClustersHandler : public mojom::PageHandler,
                           bool can_load_more,
                           bool is_continuation);
 
+  void OnHideVisitsComplete();
+
   // Launches the Journeys survey, if user is eligible.
   void LaunchJourneysSurvey();
 
@@ -126,14 +130,23 @@ class HistoryClustersHandler : public mojom::PageHandler,
   // Encapsulates the currently loaded clusters state on the page.
   std::unique_ptr<QueryClustersState> query_clusters_state_;
 
+  // Used only for hiding History visits. It's not used for querying History,
+  // because we do our querying with HistoryClustersService.
+  base::raw_ptr<history::HistoryService> history_service_;
+
   // Used only for deleting History properly, and observing deletions that occur
   // from other tabs. It's not used for querying History, because we do our
   // querying with HistoryClustersService.
   std::unique_ptr<history::BrowsingHistoryService> browsing_history_service_;
 
-  // The following variables hold the visits requested to be deleted and the
-  // callback for the respective request. `BrowsingHistoryService` can only
-  // handle one deletion request at a time.
+  // The visits requested to be hidden and related request fields.
+  // `HistoryClustersHandler` can only handle 1 hide request at a time.
+  std::vector<mojom::URLVisitPtr> pending_hide_visits_;
+  RemoveVisitsCallback pending_hide_visits_callback_;
+  base::CancelableTaskTracker pending_hide_visits_task_tracker_;
+
+  // The visits requested to be deleted and the request's callback.
+  // `BrowsingHistoryService` can handle only 1 delete request at a time.
   std::vector<mojom::URLVisitPtr> pending_remove_visits_;
   RemoveVisitsCallback pending_remove_visits_callback_;
 

@@ -228,6 +228,13 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   }
 
   /**
+   * Called with `event` received from a visit requesting to be hidden.
+   */
+  private onHideVisit_(event: CustomEvent<URLVisit>) {
+    this.pageHandler_.hideVisits([event.detail]);
+  }
+
+  /**
    * Called with `event` received from a cluster requesting to be removed from
    * the list when all its visits have been removed. Contains the cluster index.
    */

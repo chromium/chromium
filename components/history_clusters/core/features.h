@@ -71,6 +71,10 @@ BASE_DECLARE_FEATURE(kJourneysIncludeSyncedVisits);
 // batches.
 BASE_DECLARE_FEATURE(kHistoryClustersNavigationContextClustering);
 
+// Enables either the hide visits thumbs-down or menu item on individual visits
+// of persisted clusters.
+BASE_DECLARE_FEATURE(kHideVisits);
+
 // Order consistently with config.h.
 
 }  // namespace internal

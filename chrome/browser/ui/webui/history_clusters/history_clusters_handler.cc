@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -138,6 +139,7 @@ class HistoryClustersSidePanelContextMenu
 mojom::URLVisitPtr VisitToMojom(Profile* profile,
                                 const history::ClusterVisit& visit) {
   auto visit_mojom = mojom::URLVisit::New();
+  visit_mojom->visit_id = visit.annotated_visit.visit_row.visit_id;
   visit_mojom->normalized_url = visit.normalized_url;
   visit_mojom->url_for_display = base::UTF16ToUTF8(visit.url_for_display);
   if (!visit.image_url.is_empty()) {
@@ -280,6 +282,8 @@ mojom::QueryResultPtr QueryClustersResultToMojom(
       }
     }
 
+    cluster_mojom->from_persistence = cluster.from_persistence;
+
     if (GetConfig().user_visible_debug && cluster.from_persistence) {
       cluster_mojom->debug_info =
           "persisted, id = " + base::NumberToString(cluster.cluster_id);
@@ -323,12 +327,12 @@ HistoryClustersHandler::HistoryClustersHandler(
   DCHECK(history_clusters_service);
   service_observation_.Observe(history_clusters_service);
 
-  history::HistoryService* local_history = HistoryServiceFactory::GetForProfile(
+  history_service_ = HistoryServiceFactory::GetForProfile(
       profile_, ServiceAccessType::EXPLICIT_ACCESS);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_);
   browsing_history_service_ = std::make_unique<history::BrowsingHistoryService>(
-      this, local_history, sync_service);
+      this, history_service_, sync_service);
 }
 
 HistoryClustersHandler::~HistoryClustersHandler() = default;
@@ -418,6 +422,33 @@ void HistoryClustersHandler::LoadMoreClusters(const std::string& query) {
         base::BindOnce(&HistoryClustersHandler::SendClustersToPage,
                        weak_ptr_factory_.GetWeakPtr()));
   }
+}
+
+void HistoryClustersHandler::HideVisits(std::vector<mojom::URLVisitPtr> visits,
+                                        HideVisitsCallback callback) {
+  DCHECK(!visits.empty());
+
+  // If there's a pending request, fail because `HistoryClustersHandler` only
+  // supports one hide request at a time.
+  if (!pending_hide_visits_callback_.is_null() || !history_service_) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  std::vector<history::VisitID> visit_ids;
+  base::ranges::transform(
+      visits, std::back_inserter(visit_ids),
+      [](const auto& url_visit_ptr) { return url_visit_ptr->visit_id; });
+
+  // Transfer the visits and the callback to member variables.
+  pending_hide_visits_ = std::move(visits);
+  pending_hide_visits_callback_ = std::move(callback);
+
+  history_service_->HideVisits(
+      visit_ids,
+      base::BindOnce(&HistoryClustersHandler::OnHideVisitsComplete,
+                     weak_ptr_factory_.GetWeakPtr()),
+      &pending_hide_visits_task_tracker_);
 }
 
 void HistoryClustersHandler::RemoveVisits(
@@ -543,6 +574,13 @@ void HistoryClustersHandler::SendClustersToPage(
   // The user loading their first set of clusters should start the timer for
   // launching the Journeys survey.
   LaunchJourneysSurvey();
+}
+
+void HistoryClustersHandler::OnHideVisitsComplete() {
+  DCHECK(!pending_hide_visits_callback_.is_null());
+  std::move(pending_hide_visits_callback_).Run(/*success=*/true);
+  // Notify the page of the successfully hidden visits to update the UI.
+  page_->OnVisitsHidden(std::move(pending_hide_visits_));
 }
 
 void HistoryClustersHandler::LaunchJourneysSurvey() {

@@ -971,6 +971,26 @@ VisitAnnotationsDatabase::GetClusterKeywords(int64_t cluster_id) {
   return keyword_data;
 }
 
+void VisitAnnotationsDatabase::HideVisits(
+    const std::vector<VisitID>& visit_ids) {
+  if (visit_ids.empty())
+    return;
+
+  sql::Statement statement(
+      GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                 "UPDATE clusters_and_visits "
+                                 "SET score=0 WHERE visit_id=?"));
+
+  for (auto visit_id : visit_ids) {
+    statement.Reset(true);
+    statement.BindInt64(0, visit_id);
+    if (!statement.Run()) {
+      DVLOG(0) << "Failed to execute visit hide statement:  "
+               << "visit_id = " << visit_id;
+    }
+  }
+}
+
 void VisitAnnotationsDatabase::DeleteClusters(
     const std::vector<int64_t>& cluster_ids) {
   if (cluster_ids.empty())

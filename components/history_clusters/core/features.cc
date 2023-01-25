@@ -85,6 +85,10 @@ BASE_FEATURE(kHistoryClustersNavigationContextClustering,
              "HistoryClustersNavigationContextClustering",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kHideVisits,
+             "HistoryClustersHideVisits",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace internal
 
 BASE_FEATURE(kJourneysSurveyForHistoryEntrypoint,

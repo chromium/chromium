@@ -60,6 +60,7 @@ enum RelatedSearchAction {
 // Actions that can be performed on visits.
 enum VisitAction {
   kClicked,
+  kHidden,
   kDeleted,
 };
 
@@ -81,6 +82,9 @@ struct RawVisitData {
 // However, the time of the least recent visit as well as the raw URLs of those
 // duplicative visits are preserved for deletion purposes.
 struct URLVisit {
+  // ID for this visit in the history DB.
+  int64 visit_id;
+
   // Normalized URL of the visited webpage. Only Search Results Page urls will
   // be normalized for now; This is because SRP visits for the same search terms
   // have slightly different URLs due to various query params such as the AQS.
@@ -152,6 +156,10 @@ struct Cluster {
   // The image URL associated with this cluster.
   url.mojom.Url? image_url;
 
+  // Set to true if this cluster was loaded from SQL rather than dynamically
+  // generated.
+  bool from_persistence;
+
   // Additional debug string to show. This is not visible in production, and
   // used for development only. Disabled by default, but can be enabled by the
   // 'JourneysUserVisibleDebug' flag.
@@ -167,7 +175,7 @@ struct QueryResult {
   // The Clusters in the result set in reverse chronological order. This is
   // always non-zero length, unless `continuation_end_time` is also null,
   // indicating that we have exhausted History.
-  array<history_clusters.mojom.Cluster> clusters;
+  array<Cluster> clusters;
 
   // True if there is another page of clusters that the UI can request.
   bool can_load_more;
@@ -207,6 +215,10 @@ interface PageHandler {
   // to the bottom of the page. `query` is passed through for sanity checking.
   LoadMoreClusters(string query);
 
+  // Requests to hide the visits by visit IDs. The returned Promise resolves
+  // with whether the request succeeded in the History backend layer.
+  HideVisits(array<URLVisit> visits) => (bool success);
+
   // Requests to remove all visits to the specified URLs in the specified
   // timespan in `visits`. This includes the less recent visits to the same set
   // of URLs whose information is preserved in `visits`. The returned Promise
@@ -241,6 +253,10 @@ interface Page {
 
   // Called when the browser has found a suitable image for `cluster_index`.
   OnClusterImageUpdated(int32 cluster_index, url.mojom.Url image_url);
+
+  // Called with the set of hidden visits when the last accepted call to
+  // `HideVisits()` succeeds. `hidden_visits` will be used to update the UI.
+  OnVisitsHidden(array<URLVisit> hidden_visits);
 
   // Called with the set of removed visits when the last accepted call to
   // `RemoveVisits()` succeeds. `removed_visits` will be used to update the UI.

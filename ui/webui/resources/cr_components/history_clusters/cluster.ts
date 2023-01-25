@@ -144,6 +144,7 @@ class HistoryClusterElement extends HistoryClusterElementBase {
   private expanded_: boolean;
   private hiddenVisits_: URLVisit[];
   private inSidePanel_: boolean;
+  private onVisitsHiddenListenerId_: number|null = null;
   private onVisitsRemovedListenerId_: number|null = null;
   private unusedLabel_: string;
   private visibleVisits_: URLVisit[];
@@ -165,13 +166,21 @@ class HistoryClusterElement extends HistoryClusterElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
+    this.onVisitsHiddenListenerId_ =
+        this.callbackRouter_.onVisitsHidden.addListener(
+            this.onVisitsRemovedOrHidden_.bind(this));
     this.onVisitsRemovedListenerId_ =
         this.callbackRouter_.onVisitsRemoved.addListener(
-            this.onVisitsRemoved_.bind(this));
+            this.onVisitsRemovedOrHidden_.bind(this));
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+
+    assert(this.onVisitsHiddenListenerId_);
+    this.callbackRouter_.removeListener(this.onVisitsHiddenListenerId_);
+    this.onVisitsHiddenListenerId_ = null;
+
     assert(this.onVisitsRemovedListenerId_);
     this.callbackRouter_.removeListener(this.onVisitsRemovedListenerId_);
     this.onVisitsRemovedListenerId_ = null;
@@ -230,9 +239,18 @@ class HistoryClusterElement extends HistoryClusterElementBase {
     }));
   }
 
+  private onHideVisit_(event: CustomEvent<URLVisit>) {
+    // The actual hiding is handled in clusters.ts. This is just a good place to
+    // record the metric.
+    const visit = event.detail;
+    MetricsProxyImpl.getInstance().recordVisitAction(
+        VisitAction.kHidden, this.getVisitIndex_(visit),
+        MetricsProxyImpl.getVisitType(visit));
+  }
+
   private onRemoveVisit_(event: CustomEvent<URLVisit>) {
-    // The actual removal is handled at in clusters.ts. This is just a good
-    // place to record the metric.
+    // The actual removal is handled in clusters.ts. This is just a good place
+    // to record the metric.
     const visit = event.detail;
     MetricsProxyImpl.getInstance().recordVisitAction(
         VisitAction.kDeleted, this.getVisitIndex_(visit),
@@ -287,12 +305,12 @@ class HistoryClusterElement extends HistoryClusterElementBase {
   }
 
   /**
-   * Called with the original remove params when the last accepted request to
-   * browser to remove visits succeeds. Since the same visit may appear in
-   * multiple Clusters, all Clusters receive this callback in order to get a
-   * chance to remove their matching visits.
+   * Called with the original remove or hide params when the last accepted
+   * request to browser to remove or hide visits succeeds. Since the same visit
+   * may appear in multiple Clusters, all Clusters receive this callback in
+   * order to get a chance to remove their matching visits.
    */
-  private onVisitsRemoved_(removedVisits: URLVisit[]) {
+  private onVisitsRemovedOrHidden_(removedVisits: URLVisit[]) {
     const visitHasBeenRemoved = (visit: URLVisit) => {
       return removedVisits.findIndex((removedVisit) => {
         if (visit.normalizedUrl.url !== removedVisit.normalizedUrl.url) {

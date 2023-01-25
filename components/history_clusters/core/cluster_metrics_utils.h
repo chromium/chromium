@@ -58,7 +58,8 @@ enum class RelatedSearchAction {
 // Actions that can be performed on visits.
 enum class VisitAction {
   kClicked = 0,
-  kDeleted = 1,
+  kHidden = 1,
+  kDeleted = 2,
 };
 
 // Types of visits that can be shown and acted on.

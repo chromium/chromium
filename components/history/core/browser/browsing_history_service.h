@@ -254,7 +254,7 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   // Deleting the request will cancel it.
   std::unique_ptr<WebHistoryService::Request> web_history_request_;
 
-  // True if there is a pending delete requests to the history service.
+  // True if there is a pending delete requests to the web service.
   bool has_pending_delete_request_ = false;
 
   // Tracker for delete requests to the history service.

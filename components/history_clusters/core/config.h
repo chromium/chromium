@@ -353,6 +353,15 @@ struct Config {
   // considered to be fully frozen and triggerability can be finalized.
   base::TimeDelta cluster_triggerability_cutoff_duration = base::Minutes(120);
 
+  // WebUI features and params.
+
+  // Whether show either the hide visits thumbs-down or menu item on individual
+  // visits of persisted clusters. Which is shown depends on `hide_visits_icon`.
+  bool hide_visits = false;
+
+  // Whether to the icon or menu item.
+  bool hide_visits_icon = false;
+
   // Lonely features without child params.
 
   // Enables debug info in non-user-visible surfaces, like Chrome Inspector.

@@ -378,6 +378,14 @@ Config::Config() {
             cluster_triggerability_cutoff_duration.InMinutes()));
   }
 
+  // WebUI features and params.
+  {
+    hide_visits = base::FeatureList::IsEnabled(internal::kHideVisits);
+
+    hide_visits_icon = GetFieldTrialParamByFeatureAsBool(
+        internal::kHideVisits, "hide_visits_icon", hide_visits_icon);
+  }
+
   // Lonely features without child params.
   {
     non_user_visible_debug =

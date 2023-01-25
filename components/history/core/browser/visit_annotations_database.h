@@ -133,6 +133,9 @@ class VisitAnnotationsDatabase {
   base::flat_map<std::u16string, ClusterKeywordData> GetClusterKeywords(
       int64_t cluster_id);
 
+  // Sets scores of cluster visits to 0 to hide them from the webUI.
+  void HideVisits(const std::vector<VisitID>& visit_ids);
+
   // Delete `Cluster`s from the table.
   void DeleteClusters(const std::vector<int64_t>& cluster_ids);
 
