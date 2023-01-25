@@ -171,6 +171,13 @@ try_.builder(
     goma_backend = None,
 )
 
+try_.builder(
+    name = "mac11-wpt-content-shell-fyi-rel",
+    mirrors = [
+        "ci/mac11-wpt-content-shell-fyi-rel",
+    ],
+)
+
 try_.orchestrator_builder(
     name = "mac12-arm64-rel",
     compilator = "mac12-arm64-rel-compilator",
