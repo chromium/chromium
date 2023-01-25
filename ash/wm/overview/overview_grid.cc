@@ -320,6 +320,8 @@ std::unique_ptr<views::Widget> CreateSaveDeskButtonContainerWidget(
   auto widget = std::make_unique<views::Widget>();
   widget->set_focus_on_creation(false);
   widget->Init(std::move(params));
+  // Turn off default widget animations.
+  widget->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
 
   aura::Window* window = widget->GetNativeWindow();
   window->parent()->StackChildAtBottom(window);
