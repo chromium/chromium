@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<body>
+  <button>
+    Fake user gesture
+  </button>
+</body>
+
+<script>
+  test_driver.set_test_context(parent);
+
+  window.addEventListener('message', async messageEvent => {
+    switch (messageEvent.data.type) {
+      case 'GetDevices':
+        navigator.hid.getDevices()
+            .then(devices => parent.postMessage('Success', '*'))
+            .catch(err => parent.postMessage(`FAIL: ${err}`, '*'));
+        break;
+      case 'RequestDevice':
+        await test_driver.click(document.getElementsByTagName('button')[0]);
+        navigator.hid.requestDevice({filters: []})
+            .then(device => parent.postMessage('Success', '*'))
+            .catch(err => parent.postMessage(`FAIL: ${err}`, '*'));
+        break;
+      default:
+        parent.postMessage(
+            `FAIL: Bad message type: ${messageEvent.data.type}`, '*');
+    }
+  });
+</script>

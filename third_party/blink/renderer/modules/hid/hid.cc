@@ -35,11 +35,28 @@ const char kFeaturePolicyBlocked[] =
 // requirements for them to be served are met. Returns true if any conditions
 // fail to be met, generating an appropriate exception as well. Otherwise,
 // returns false to indicate the call should be allowed.
-bool ShouldBlockHidServiceCall(ExecutionContext* context,
+bool ShouldBlockHidServiceCall(LocalDOMWindow* window,
+                               ExecutionContext* context,
                                ExceptionState& exception_state) {
   if (!context) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       kContextGone);
+    return true;
+  }
+
+  // The security origin must match the one checked by the browser process.
+  // Service Workers do not use delegated permissions so we use their security
+  // origin directly.
+  DCHECK(context->IsWindow() || context->IsServiceWorkerGlobalScope());
+  auto* security_origin =
+      window
+          ? window->GetFrame()->Top()->GetSecurityContext()->GetSecurityOrigin()
+          : context->GetSecurityOrigin();
+
+  if (security_origin->IsOpaque()) {
+    exception_state.ThrowSecurityError(
+        "Access to the WebHID API is denied from contexts where the top-level "
+        "document has an opaque origin.");
   } else if (!context->IsFeatureEnabled(
                  mojom::blink::PermissionsPolicyFeature::kHid,
                  ReportOptions::kReportOnFailure)) {
@@ -145,7 +162,8 @@ void HID::DeviceChanged(device::mojom::blink::HidDeviceInfoPtr device_info) {
 
 ScriptPromise HID::getDevices(ScriptState* script_state,
                               ExceptionState& exception_state) {
-  if (ShouldBlockHidServiceCall(GetExecutionContext(), exception_state)) {
+  if (ShouldBlockHidServiceCall(GetSupplementable()->DomWindow(),
+                                GetExecutionContext(), exception_state)) {
     return ScriptPromise();
   }
 
@@ -163,14 +181,15 @@ ScriptPromise HID::requestDevice(ScriptState* script_state,
                                  ExceptionState& exception_state) {
   // requestDevice requires a window to satisfy the user activation requirement
   // and to show a chooser dialog.
-  const auto* window = GetSupplementable()->DomWindow();
+  auto* window = GetSupplementable()->DomWindow();
   if (!window) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       kContextGone);
     return ScriptPromise();
   }
 
-  if (ShouldBlockHidServiceCall(GetExecutionContext(), exception_state)) {
+  if (ShouldBlockHidServiceCall(window, GetExecutionContext(),
+                                exception_state)) {
     return ScriptPromise();
   }
 
