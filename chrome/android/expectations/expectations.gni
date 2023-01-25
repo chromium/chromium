@@ -1,0 +1,23 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+import("//build/config/android/config.gni")
+import("//build/config/coverage/coverage.gni")
+
+# Chosen to match what CQ bots exist.
+enable_libs_and_assets_verification =
+    !enable_chrome_android_internal && !is_component_build &&
+    !use_jacoco_coverage &&
+    ((target_cpu == "arm" && android_channel == "stable") ||
+     (target_cpu == "arm64" && android_channel == "default" &&
+      !skip_secondary_abi_for_cq &&
+      # Disable checks in official arm64 builds due to unwind assets.
+      !is_official_build))
+
+# Having //clank present causes different flags because of how play services
+# is wired up.
+# The channel is required because manifest entries vary based on channel.
+enable_manifest_verification =
+    !is_java_debug && !enable_chrome_android_internal && !use_jacoco_coverage &&
+    android_channel == "stable"

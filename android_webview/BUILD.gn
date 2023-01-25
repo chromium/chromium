@@ -13,6 +13,7 @@ import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
 import("//chrome/android/chrome_common_shared_library.gni")
 import("//chrome/android/chrome_public_apk_tmpl.gni")
+import("//chrome/android/expectations/expectations.gni")
 import("//chrome/android/trichrome.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
@@ -32,13 +33,6 @@ if (enable_resource_allowlist_generation) {
   system_webview_pak_allowlist =
       "$target_gen_dir/system_webview_pak_allowlist.txt"
 }
-
-# Having //clank present causes different flags because of how play services
-# is wired up.
-# The channel is required because manifest entries vary based on channel.
-_verify_android_configuration =
-    !is_java_debug && !enable_chrome_android_internal &&
-    android_channel == "stable"
 
 template("standalone_system_webview_apk_tmpl") {
   system_webview_apk_or_module_tmpl(target_name) {
@@ -107,7 +101,7 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
       is_base_module = true
       bundle_target = ":system_webview_bundle"
 
-      if (_verify_android_configuration) {
+      if (enable_manifest_verification) {
         expected_android_manifest =
             "expectations/system_webview_bundle.AndroidManifest.expected"
       }
@@ -248,7 +242,7 @@ if (enable_webview_bundles) {
       android_manifest_dep =
           "//android_webview/nonembedded:trichrome_webview_manifest"
 
-      if (_verify_android_configuration) {
+      if (enable_manifest_verification) {
         expected_android_manifest =
             "expectations/trichrome_webview_bundle.AndroidManifest.expected"
       }
@@ -261,6 +255,10 @@ if (enable_webview_bundles) {
       uncompress_dex = true
       min_sdk_version = 29
       static_library_provider = "//chrome/android:trichrome_library_apk"
+      if (enable_libs_and_assets_verification) {
+        expected_libs_and_assets =
+            "expectations/$target_name.$target_cpu.libs_and_assets.expected"
+      }
     }
   }
 
@@ -271,6 +269,10 @@ if (enable_webview_bundles) {
       uncompress_dex = true
       min_sdk_version = 29
       static_library_provider = "//chrome/android:trichrome_library_64_apk"
+      if (enable_libs_and_assets_verification) {
+        expected_libs_and_assets =
+            "expectations/$target_name.$target_cpu.libs_and_assets.expected"
+      }
     }
 
     trichrome_webview_tmpl("trichrome_webview_64_base_bundle_module") {
@@ -337,6 +339,10 @@ if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
       uncompress_dex = true
       min_sdk_version = 29
       static_library_provider = "//chrome/android:trichrome_library_64_32_apk"
+      if (enable_libs_and_assets_verification) {
+        expected_libs_and_assets =
+            "expectations/$target_name.$target_cpu.libs_and_assets.expected"
+      }
     }
   }
 
@@ -375,6 +381,10 @@ if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
       uncompress_dex = true
       min_sdk_version = 29
       static_library_provider = "//chrome/android:trichrome_library_32_apk"
+      if (enable_libs_and_assets_verification) {
+        expected_libs_and_assets =
+            "expectations/$target_name.$target_cpu.libs_and_assets.expected"
+      }
     }
   }
 }

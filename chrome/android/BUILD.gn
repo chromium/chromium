@@ -12,6 +12,7 @@ import("//chrome/android/chrome_common_shared_library.gni")
 import("//chrome/android/chrome_java_resources.gni")
 import("//chrome/android/chrome_public_apk_tmpl.gni")
 import("//chrome/android/chrome_test_apk_tmpl.gni")
+import("//chrome/android/expectations/expectations.gni")
 import("//chrome/android/features/dev_ui/dev_ui_module.gni")
 import("//chrome/android/features/start_surface/start_surface_java_sources.gni")
 import("//chrome/android/features/tab_ui/buildflags.gni")
@@ -93,22 +94,6 @@ if (current_toolchain == default_toolchain) {
   if (!enable_vr) {
     chrome_jni_sources_exclusions += [ "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java" ]
   }
-
-  # Chosen to match what CQ bots exist.
-  _enable_libs_and_assets_verification =
-      public_android_sdk && !is_component_build &&
-      ((target_cpu == "arm" && android_channel == "stable") ||
-       (target_cpu == "arm64" && android_channel == "default" &&
-        !skip_secondary_abi_for_cq &&
-        # Disable checks in official arm64 builds due to unwind assets.
-        !is_official_build))
-
-  # Having //clank present causes different flags because of how play services
-  # is wired up.
-  # The channel is required because manifest entries vary based on channel.
-  _enable_manifest_verification =
-      !is_java_debug && !enable_chrome_android_internal &&
-      android_channel == "stable"
 
   jinja_template("chrome_public_android_manifest") {
     input = "java/AndroidManifest.xml"
@@ -2837,12 +2822,13 @@ if (current_toolchain == default_toolchain) {
         include_64_bit_webview = true
       }
 
-      if (_enable_manifest_verification) {
+      if (enable_manifest_verification) {
         expected_android_manifest =
             "expectations/trichrome_library_apk.AndroidManifest.expected"
       }
-      if (_enable_libs_and_assets_verification) {
-        expected_libs_and_assets = "expectations/trichrome_library_apk.$target_cpu.libs_and_assets.expected"
+      if (enable_libs_and_assets_verification) {
+        expected_libs_and_assets =
+            "expectations/$target_name.$target_cpu.libs_and_assets.expected"
       }
     }
 
@@ -3400,10 +3386,6 @@ if (current_toolchain == default_toolchain) {
     manifest_package = chrome_public_manifest_package
     min_sdk_version = default_min_sdk_version
     module_descs = chrome_modern_module_descs
-
-    if (_enable_libs_and_assets_verification) {
-      expected_libs_and_assets = "expectations/chrome_modern_public_bundle.$target_cpu.libs_and_assets.expected"
-    }
   }
 
   if (is_official_build) {
@@ -3527,13 +3509,14 @@ if (current_toolchain == default_toolchain) {
         is_64_bit_browser = false
         include_64_bit_webview = true
       }
-      if (_enable_manifest_verification) {
+      if (enable_manifest_verification) {
         expected_android_manifest_template = "expectations/monochrome_public_bundle__SPLIT_NAME.AndroidManifest.expected"
         expected_proguard_config =
             "expectations/monochrome_public_bundle.proguard_flags.expected"
       }
-      if (_enable_libs_and_assets_verification) {
-        expected_libs_and_assets = "expectations/monochrome_public_bundle.$target_cpu.libs_and_assets.expected"
+      if (enable_libs_and_assets_verification) {
+        expected_libs_and_assets =
+            "expectations/$target_name.$target_cpu.libs_and_assets.expected"
       }
     }
 
@@ -3562,12 +3545,13 @@ if (current_toolchain == default_toolchain) {
         include_64_bit_webview = true
       }
 
-      if (_enable_manifest_verification) {
+      if (enable_manifest_verification) {
         # Monochrome verifies all bundle modules, so only check base module here.
         expected_android_manifest = "expectations/trichrome_chrome_bundle__base.AndroidManifest.expected"
       }
-      if (_enable_libs_and_assets_verification) {
-        expected_libs_and_assets = "expectations/trichrome_chrome_bundle.$target_cpu.libs_and_assets.expected"
+      if (enable_libs_and_assets_verification) {
+        expected_libs_and_assets =
+            "expectations/$target_name.$target_cpu.libs_and_assets.expected"
       }
     }
 
@@ -3676,6 +3660,10 @@ if (current_toolchain == default_toolchain) {
       is_64_bit_browser = true
       include_32_bit_webview = false
       static_library_provider = ":trichrome_library_64_apk"
+      if (enable_libs_and_assets_verification) {
+        expected_libs_and_assets =
+            "expectations/$target_name.$target_cpu.libs_and_assets.expected"
+      }
     }
 
     if (!skip_secondary_abi_for_cq) {
@@ -3693,12 +3681,28 @@ if (current_toolchain == default_toolchain) {
         include_32_bit_webview = true
       }
 
+      monochrome_or_trichrome_public_bundle_tmpl(
+          "trichrome_chrome_64_32_bundle") {
+        is_trichrome = true
+        bundle_suffix = "6432"
+        is_64_bit_browser = true
+        include_32_bit_webview = true
+        static_library_provider = ":trichrome_library_64_32_apk"
+        if (enable_libs_and_assets_verification) {
+          expected_libs_and_assets =
+              "expectations/$target_name.$target_cpu.libs_and_assets.expected"
+        }
+      }
       monochrome_or_trichrome_public_bundle_tmpl("trichrome_chrome_32_bundle") {
         is_trichrome = true
         bundle_suffix = "32"
         is_64_bit_browser = false
         include_64_bit_webview = false
         static_library_provider = ":trichrome_library_32_apk"
+        if (enable_libs_and_assets_verification) {
+          expected_libs_and_assets =
+              "expectations/$target_name.$target_cpu.libs_and_assets.expected"
+        }
       }
     }
   }
@@ -4159,18 +4163,28 @@ if (add_unwind_tables_in_chrome_32bit_apk) {
 
 # Used by android-binary-size trybot to validate expectations.
 if (current_toolchain == default_toolchain &&
-    (_enable_libs_and_assets_verification || _enable_manifest_verification)) {
+    (enable_libs_and_assets_verification || enable_manifest_verification)) {
   group("validate_expectations") {
     deps = []
-    if (_enable_libs_and_assets_verification) {
+    if (enable_libs_and_assets_verification) {
       deps += [
-        ":chrome_modern_public_bundle_validate_libs_and_assets",
         ":monochrome_public_bundle_validate_libs_and_assets",
         ":trichrome_chrome_bundle_validate_libs_and_assets",
         ":trichrome_library_apk_validate_libs_and_assets",
+        "//android_webview:trichrome_webview_bundle_validate_libs_and_assets",
       ]
+      if (android_64bit_target_cpu) {
+        deps += [
+          ":trichrome_chrome_32_bundle_validate_libs_and_assets",
+          ":trichrome_chrome_64_32_bundle_validate_libs_and_assets",
+          ":trichrome_chrome_64_bundle_validate_libs_and_assets",
+          "//android_webview:trichrome_webview_32_bundle_validate_libs_and_assets",
+          "//android_webview:trichrome_webview_64_32_bundle_validate_libs_and_assets",
+          "//android_webview:trichrome_webview_64_bundle_validate_libs_and_assets",
+        ]
+      }
     }
-    if (_enable_manifest_verification) {
+    if (enable_manifest_verification) {
       deps += [
         ":monochrome_public_bundle_validate_manifests",
         ":monochrome_public_bundle_validate_proguard_config",

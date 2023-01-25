@@ -116,6 +116,7 @@ attention or the expected file needs updating.
 2. Run:
 
    ```
+   rm $CHROMIUM_OUTPUT_DIR/failed_expectations/*
    autoninja -C $CHROMIUM_OUTPUT_DIR validate_expectations
    ```
 
