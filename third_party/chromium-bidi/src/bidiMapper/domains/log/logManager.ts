@@ -22,6 +22,35 @@ import {Protocol} from 'devtools-protocol';
 import {Realm} from '../script/realm.js';
 import {IEventManager} from '../events/EventManager.js';
 
+/** Converts CDP StackTrace object to Bidi StackTrace object. */
+function getBidiStackTrace(
+  cdpStackTrace: Protocol.Runtime.StackTrace | undefined
+): Script.StackTrace | undefined {
+  const stackFrames = cdpStackTrace?.callFrames.map((callFrame) => {
+    return {
+      columnNumber: callFrame.columnNumber,
+      functionName: callFrame.functionName,
+      lineNumber: callFrame.lineNumber,
+      url: callFrame.url,
+    };
+  });
+
+  return stackFrames ? {callFrames: stackFrames} : undefined;
+}
+
+function getLogLevel(consoleApiType: string): Log.LogLevel {
+  if (['assert', 'error'].includes(consoleApiType)) {
+    return 'error';
+  }
+  if (['debug', 'trace'].includes(consoleApiType)) {
+    return 'debug';
+  }
+  if (['warn', 'warning'].includes(consoleApiType)) {
+    return 'warn';
+  }
+  return 'info';
+}
+
 export class LogManager {
   readonly #cdpClient: CdpClient;
   readonly #cdpSessionId: string;
@@ -49,10 +78,6 @@ export class LogManager {
   }
 
   #initialize() {
-    this.#initializeEventListeners();
-  }
-
-  #initializeEventListeners() {
     this.#initializeLogEntryAddedEventListener();
   }
 
@@ -82,14 +107,14 @@ export class LogManager {
           argsPromise.then((args) => ({
             method: Log.EventNames.LogEntryAddedEvent,
             params: {
-              level: LogManager.#getLogLevel(params.type),
+              level: getLogLevel(params.type),
               source: {
                 realm: realm?.realmId ?? 'UNKNOWN',
                 context: realm?.browsingContextId ?? 'UNKNOWN',
               },
               text: getRemoteValuesText(args, true),
               timestamp: Math.round(params.timestamp),
-              stackTrace: LogManager.#getBidiStackTrace(params.stackTrace),
+              stackTrace: getBidiStackTrace(params.stackTrace),
               type: 'console',
               // Console method is `warn`, not `warning`.
               method: params.type === 'warning' ? 'warn' : params.type,
@@ -136,9 +161,7 @@ export class LogManager {
               },
               text,
               timestamp: Math.round(params.timestamp),
-              stackTrace: LogManager.#getBidiStackTrace(
-                params.exceptionDetails.stackTrace
-              ),
+              stackTrace: getBidiStackTrace(params.exceptionDetails.stackTrace),
               type: 'javascript',
             },
           })),
@@ -147,34 +170,5 @@ export class LogManager {
         );
       }
     );
-  }
-
-  static #getLogLevel(consoleApiType: string): Log.LogLevel {
-    if (['assert', 'error'].includes(consoleApiType)) {
-      return 'error';
-    }
-    if (['debug', 'trace'].includes(consoleApiType)) {
-      return 'debug';
-    }
-    if (['warn', 'warning'].includes(consoleApiType)) {
-      return 'warn';
-    }
-    return 'info';
-  }
-
-  // convert CDP StackTrace object to Bidi StackTrace object
-  static #getBidiStackTrace(
-    cdpStackTrace: Protocol.Runtime.StackTrace | undefined
-  ): Script.StackTrace | undefined {
-    const stackFrames = cdpStackTrace?.callFrames.map((callFrame) => {
-      return {
-        columnNumber: callFrame.columnNumber,
-        functionName: callFrame.functionName,
-        lineNumber: callFrame.lineNumber,
-        url: callFrame.url,
-      };
-    });
-
-    return stackFrames ? {callFrames: stackFrames} : undefined;
   }
 }
