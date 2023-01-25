@@ -72,7 +72,6 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
         synthetic_begin_frame_source;
     UnboundMessagePipes pipes;
     bool wants_animate_only_begin_frames = false;
-    const char* client_name = nullptr;
     base::PlatformThreadId io_thread_id = base::kInvalidThreadId;
   };
 

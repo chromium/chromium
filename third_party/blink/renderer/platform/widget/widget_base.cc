@@ -80,9 +80,6 @@ const uint32_t kGpuStreamIdDefault = 0;
 
 static const int kInvalidNextPreviousFlagsValue = -1;
 
-static const char kOOPIF[] = "OOPIF";
-static const char kRenderer[] = "Renderer";
-
 void OnDidPresentForceDrawFrame(
     mojom::blink::Widget::ForceRedrawCallback callback,
     const gfx::PresentationFeedback& feedback) {
@@ -584,13 +581,6 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
   if (url.IsEmpty())
     url = KURL("chrome://gpu/WidgetBase::RequestNewLayerTreeFrameSink");
 
-  // TODO(danakj): This may not be accurate, depending on the intent. A child
-  // local root could be in the same process as the view, so if the client is
-  // meant to designate the process type, it seems kRenderer would be the
-  // correct choice. If client is meant to designate the widget type, then
-  // kOOPIF would denote that it is not for the main frame. However, kRenderer
-  // would also be used for other widgets such as popups.
-  const char* client_name = is_embedded_ ? kOOPIF : kRenderer;
   const bool for_web_tests = WebTestMode();
   // Misconfigured bots (eg. crbug.com/780757) could run web tests on a
   // machine where gpu compositing doesn't work. Don't crash in that case.
@@ -636,8 +626,6 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
   // potentially increases it for input on the other hand.)
   if (LayerTreeHost()->GetSettings().disable_frame_rate_limit)
     params->synthetic_begin_frame_source = CreateSyntheticBeginFrameSource();
-
-  params->client_name = client_name;
 
   mojo::PendingReceiver<viz::mojom::blink::CompositorFrameSink>
       compositor_frame_sink_receiver = CrossVariantMojoReceiver<

@@ -60,8 +60,6 @@ namespace {
 // child process client id.
 constexpr uint32_t kBrowserClientId = 0u;
 
-static const char* kBrowser = "Browser";
-
 scoped_refptr<viz::ContextProviderCommandBuffer> CreateContextProvider(
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
@@ -441,7 +439,6 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
       compositor->context_factory()->GetGpuMemoryBufferManager();
   params.pipes.compositor_frame_sink_associated_remote = std::move(sink_remote);
   params.pipes.client_receiver = std::move(client_receiver);
-  params.client_name = kBrowser;
   auto frame_sink =
       std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
           std::move(context_provider),

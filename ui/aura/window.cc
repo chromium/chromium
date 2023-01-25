@@ -123,7 +123,6 @@ enum BoundsCallbackIndex : int {
 
 namespace aura {
 namespace {
-static const char* kExo = "Exo";
 
 class ScopedCursorHider {
  public:
@@ -1296,7 +1295,6 @@ std::unique_ptr<cc::LayerTreeFrameSink> Window::CreateLayerTreeFrameSink() {
       Env::GetInstance()->context_factory()->GetGpuMemoryBufferManager();
   params.pipes.compositor_frame_sink_remote = std::move(sink_remote);
   params.pipes.client_receiver = std::move(client_receiver);
-  params.client_name = kExo;
   auto frame_sink =
       std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
           nullptr /* context_provider */, nullptr /* worker_context_provider */,

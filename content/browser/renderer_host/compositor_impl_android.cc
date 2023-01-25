@@ -88,8 +88,6 @@ namespace content {
 
 namespace {
 
-static const char* kBrowser = "Browser";
-
 // NOINLINE to make sure crashes use this for magic signature.
 NOINLINE void FatalSurfaceFailure() {
   LOG(FATAL) << "Fatal surface initialization failure";
@@ -955,7 +953,6 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
       BrowserGpuChannelHostFactory::instance()->GetGpuMemoryBufferManager();
   params.pipes.compositor_frame_sink_associated_remote = std::move(sink_remote);
   params.pipes.client_receiver = std::move(client_receiver);
-  params.client_name = kBrowser;
   auto layer_tree_frame_sink =
       std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
           std::move(context_provider), nullptr, &params);
