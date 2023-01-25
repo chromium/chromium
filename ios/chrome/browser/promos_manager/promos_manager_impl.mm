@@ -192,7 +192,10 @@ void PromosManagerImpl::InitializePromoImpressionLimits(
   promo_impression_limits_ = std::move(promo_impression_limits);
 }
 
-// TODO: write unit test.
+// Determines which promo to display next.
+// Candidates are from active promos and the pending promos that can become
+// active at the time this function is called. Coordinate with other internal
+// functions to rank and validate the candidates.
 absl::optional<promos_manager::Promo> PromosManagerImpl::NextPromoForDisplay() {
   // Construct a map with the promo from (1) single-display and
   // (2) continuous-display promo campaigns. (3) single-display pending promos
