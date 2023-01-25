@@ -965,10 +965,29 @@ BASE_FEATURE(kFloatingWorkspace,
              "FloatingWorkspace",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Maximum delay to wait for restoring Floating Workspace after login.
+constexpr base::FeatureParam<base::TimeDelta>
+    kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin{
+        &kFloatingWorkspace, "MaxTimeAvailableForRestoreAfterLogin",
+        base::Seconds(3)};
+
 // Enables or disables Floating Workspace V2 feature on ChromeOS
 BASE_FEATURE(kFloatingWorkspaceV2,
              "FloatingWorkspaceV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Maximum delay to wait for restoring Floating Workspace V2 after login.
+constexpr base::FeatureParam<base::TimeDelta>
+    kFloatingWorkspaceV2MaxTimeAvaliableForRestoreAfterLogin{
+        &kFloatingWorkspaceV2, "MaxTimeAvailableForRestoreAfterLoginV2",
+        base::Seconds(15)};
+
+// Time interval to capture current desk as desk template and upload template to
+// server.
+constexpr base::FeatureParam<base::TimeDelta>
+    kFloatingWorkspaceV2PeriodicJobIntervalInSeconds{
+        &kFloatingWorkspaceV2, "PeriodicJobIntervalInSeconds",
+        base::Seconds(30)};
 
 // If enabled, makes the Projector app use server side speech
 // recognition instead of on-device speech recognition.

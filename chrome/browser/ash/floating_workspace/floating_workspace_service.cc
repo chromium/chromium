@@ -32,21 +32,6 @@
 
 namespace ash {
 
-// Max time floating workspace service can wait after user login.
-// After that even a more recent foreign session change is detected
-// restore will not take place.
-// TODO(b/263417467): let the following parameters be controlled by Finch or
-// policy override.
-constexpr base::TimeDelta kMaxTimeAvaliableForRestoreAfterLogin =
-    base::Seconds(3);
-
-constexpr base::TimeDelta kMaxTimeAvaliableForRestoreAfterLoginV2 =
-    base::Seconds(15);
-
-// Time interval to capture current desk as desk template
-// and upload template to server.
-constexpr base::TimeDelta kPeriodicJobIntervalInSeconds = base::Seconds(30);
-
 // Static
 FloatingWorkspaceService* FloatingWorkspaceService::GetForProfile(
     Profile* profile) {
@@ -118,7 +103,9 @@ void FloatingWorkspaceService::
   if (!should_run_restore_)
     return;
   if (base::TimeTicks::Now() >
-      initialization_timestamp_ + kMaxTimeAvaliableForRestoreAfterLogin) {
+      initialization_timestamp_ +
+          ash::features::kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin
+              .Get()) {
     // No need to restore any remote session 3 seconds (TBD) after login.
     should_run_restore_ = false;
     return;
@@ -138,7 +125,8 @@ void FloatingWorkspaceService::
         base::BindOnce(
             &FloatingWorkspaceService::TryRestoreMostRecentlyUsedSession,
             weak_pointer_factory_.GetWeakPtr()),
-        kMaxTimeAvaliableForRestoreAfterLogin);
+        ash::features::kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin
+            .Get());
     should_run_restore_ = false;
     return;
   }
@@ -250,8 +238,10 @@ FloatingWorkspaceService::GetOpenTabsUIDelegate() {
 }
 
 void FloatingWorkspaceService::StartCaptureAndUploadActiveDesk() {
-  timer_.Start(FROM_HERE, kPeriodicJobIntervalInSeconds, this,
-               &FloatingWorkspaceService::CaptureAndUploadActiveDesk);
+  timer_.Start(
+      FROM_HERE,
+      ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds.Get(),
+      this, &FloatingWorkspaceService::CaptureAndUploadActiveDesk);
 }
 
 void FloatingWorkspaceService::StopCaptureAndUploadActiveDesk() {
@@ -274,7 +264,9 @@ void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
 
   // Check if template has been downloaded after 15 seconds (TBD).
   if (base::TimeTicks::Now() >
-      initialization_timestamp_ + kMaxTimeAvaliableForRestoreAfterLoginV2) {
+      initialization_timestamp_ +
+          ash::features::
+              kFloatingWorkspaceV2MaxTimeAvaliableForRestoreAfterLogin.Get()) {
     // No need to restore any remote session 15 seconds (TBD) after login.
     should_run_restore_ = false;
     return;

@@ -290,7 +290,16 @@ COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFilesTrash);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFirstPartyVietnameseInput);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFloatingWorkspace);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<base::TimeDelta>
+    kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFloatingWorkspaceV2);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<base::TimeDelta>
+    kFloatingWorkspaceV2MaxTimeAvaliableForRestoreAfterLogin;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<base::TimeDelta>
+    kFloatingWorkspaceV2PeriodicJobIntervalInSeconds;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEcheLauncher);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEcheLauncherListView);
 COMPONENT_EXPORT(ASH_CONSTANTS)
