@@ -83,7 +83,6 @@ source_set("first_run") {
     "//ios/chrome/browser/ui/authentication/signin",
     "//ios/chrome/browser/ui/authentication/signin/add_account_signin",
     "//ios/chrome/browser/ui/authentication/signin/user_signin/logging",
-    "//ios/chrome/browser/ui/authentication/signin_sync",
     "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser",
     "//ios/chrome/browser/ui/authentication/views",
     "//ios/chrome/browser/ui/commands",

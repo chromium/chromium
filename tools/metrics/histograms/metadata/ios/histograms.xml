@@ -688,11 +688,21 @@ chromium-metrics-reviews@google.com.
     <variant name="SyncScreenWithIdentityPicker"
         summary="The screen that asks the user to turn on sync while showing
                  an account picker. Displayed when MICe is disabled and an
-                 account is detected."/>
+                 account is detected.">
+      <obsolete>
+        This metric is obsolete as of M111 as the corresponding screen was
+        removed.
+      </obsolete>
+    </variant>
     <variant name="SyncScreenWithoutIdentityPicker"
         summary="The screen that asks the user to turn on sync while no
                  account picker is present. Displayed when MICe is enabled or
-                 when no account is detected."/>
+                 when no account is detected.">
+      <obsolete>
+        This metric is obsolete as of M111 as the corresponding screen was
+        removed.
+      </obsolete>
+    </variant>
     <variant name="TangibleSyncScreen"
         summary="The tangible sync screen that asks the user to turn on sync."/>
     <variant name="WelcomeScreenWithoutUMACheckbox"

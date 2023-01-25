@@ -16,7 +16,6 @@ typedef NS_ENUM(NSInteger, ScreenType) {
   // TODO(crbug.com/1407658) Remove the following entries and their
   // corresponding screens as they are not obsolete.
   kWelcomeAndConsent_DEPRECATED,
-  kSignInAndSync_DEPRECATED,
 
   // It isn't a screen, but a signal that no more screen should be
   // presented.

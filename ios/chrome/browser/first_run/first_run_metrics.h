@@ -84,14 +84,13 @@ enum FirstRunStage {
   // The first run experience has completed.
   kComplete = 1,
   // Sync screen is shown.
-  kSyncScreenStart = 2,
+  // kSyncScreenStart_DEPRECATED = 2,
   // Sync screen is closed with sync.
-  kSyncScreenCompletionWithSync = 3,
+  // kSyncScreenCompletionWithSync_DEPRECATED = 3,
   // Sync screen is closed without sync.
-  kSyncScreenCompletionWithoutSync = 4,
+  // kSyncScreenCompletionWithoutSync_DEPRECATED = 4,
   // Sync screen is closed when user taps on advance sync settings button.
-  // Deprecated. This is not used anymore.
-  kSyncScreenCompletionWithSyncSettings = 5,
+  // kSyncScreenCompletionWithSyncSettings_DEPRECATED = 5,
   // SignIn screen is shown.
   kSignInScreenStart = 6,
   // SignIn screen is closed with sign in.
@@ -145,12 +144,6 @@ enum FirstRunScreenType {
   // detected, but with no footer shown at the bottom. Displayed when MICe is
   // enabled with the welcome screen (3-steps MICe FRE).
   kSignInScreenWithoutFooterOrIdentityPicker,
-  // The screen that asks the user to turn on sync while no account picker is
-  // present. Displayed when MICe is enabled or when no account is detected.
-  kSyncScreenWithoutIdentityPicker,
-  // The screen that asks the user to turn on sync while showing an account
-  // picker. Displayed when MICe is disabled and an account is detected.
-  kSyncScreenWithIdentityPicker,
   // Welcome screen without UMA checkbox. Displayed when MICe is enabled.
   kWelcomeScreenWithoutUMACheckbox,
   // Welcome screen with UMA checkbox. Displayed when MICe is disabled.

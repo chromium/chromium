@@ -117,16 +117,6 @@ void RecordFirstRunScrollButtonVisibilityMetrics(
                                 "SignInScreenWithoutFooterOrIdentityPicker",
                                 scroll_button_visible);
       break;
-    case first_run::FirstRunScreenType::kSyncScreenWithoutIdentityPicker:
-      base::UmaHistogramBoolean(
-          "IOS.FirstRun.ScrollButtonVisible.SyncScreenWithoutIdentityPicker",
-          scroll_button_visible);
-      break;
-    case first_run::FirstRunScreenType::kSyncScreenWithIdentityPicker:
-      base::UmaHistogramBoolean(
-          "IOS.FirstRun.ScrollButtonVisible.SyncScreenWithIdentityPicker",
-          scroll_button_visible);
-      break;
     case first_run::FirstRunScreenType::kWelcomeScreenWithoutUMACheckbox:
       base::UmaHistogramBoolean(
           "IOS.FirstRun.ScrollButtonVisible.WelcomeScreenWithoutUMACheckbox",

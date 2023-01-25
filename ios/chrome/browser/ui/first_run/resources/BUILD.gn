@@ -24,16 +24,6 @@ imageset("signin_banner") {
   ]
 }
 
-imageset("sync_screen_banner") {
-  sources = [
-    "sync_screen_banner.imageset/Contents.json",
-    "sync_screen_banner.imageset/sync_screen_banner_dark@2x.png",
-    "sync_screen_banner.imageset/sync_screen_banner_dark@3x.png",
-    "sync_screen_banner.imageset/sync_screen_banner_light@2x.png",
-    "sync_screen_banner.imageset/sync_screen_banner_light@3x.png",
-  ]
-}
-
 imageset("read_more_arrow") {
   sources = [
     "read_more_arrow.imageset/Contents.json",

@@ -274,7 +274,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/authentication/signin/consistency_promo_signin:unit_tests",
     "//ios/chrome/browser/ui/authentication/signin/trusted_vault_reauthentication:unit_tests",
     "//ios/chrome/browser/ui/authentication/signin/user_signin:unit_tests",
-    "//ios/chrome/browser/ui/authentication/signin_sync:unit_tests",
     "//ios/chrome/browser/ui/authentication/unified_consent:unit_tests",
     "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser:unit_tests",
     "//ios/chrome/browser/ui/autofill:unit_tests",
