@@ -1166,8 +1166,9 @@ void InspectorAccessibilityAgent::ScheduleAXUpdateIfNeeded(TimerBase*,
 
   // Scheduling an AX update for the cache will schedule it for both the main
   // document, and the popup document (if present).
-  if (document->HasAXObjectCache())
-    document->ExistingAXObjectCache()->ScheduleAXUpdate();
+  if (auto* cache = document->ExistingAXObjectCache()) {
+    cache->ScheduleAXUpdate();
+  }
 }
 
 void InspectorAccessibilityAgent::ScheduleAXChangeNotification(

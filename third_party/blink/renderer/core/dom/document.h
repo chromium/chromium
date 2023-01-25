@@ -753,7 +753,6 @@ class CORE_EXPORT Document : public ContainerNode,
   // AXContext associated with this document. When all associated
   // AXContexts are deleted, the AXObjectCache will be removed.
   AXObjectCache* ExistingAXObjectCache() const;
-  bool HasAXObjectCache() const;
   Document& AXObjectCacheOwner() const;
   void ClearAXObjectCache();
 

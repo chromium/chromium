@@ -3051,7 +3051,18 @@ static ui::AXMode ComputeAXModeFromAXContexts(Vector<AXContext*> ax_contexts) {
   return ax_mode;
 }
 
+namespace {
+
+// Simple count of AXObjectCache objects that are reachable from Documents. The
+// count assumes that multiple Documents in a single process can have such
+// caches and that the caches will only ever be created from the main rendering
+// thread.
+size_t g_ax_object_cache_count = 0;
+
+}  // namespace
+
 void Document::AddAXContext(AXContext* context) {
+  DCHECK(IsMainThread());
   // The only case when |&cache_owner| is not |this| is when this is a
   // popup. We want popups to share the AXObjectCache of their parent
   // document. However, there's no valid reason to explicitly create an
@@ -3073,6 +3084,7 @@ void Document::AddAXContext(AXContext* context) {
   if (!ax_object_cache_) {
     ax_object_cache_ =
         AXObjectCache::Create(*this, ComputeAXModeFromAXContexts(ax_contexts_));
+    g_ax_object_cache_count++;
   }
 }
 
@@ -3095,13 +3107,17 @@ void Document::RemoveAXContext(AXContext* context) {
 }
 
 void Document::ClearAXObjectCache() {
+  DCHECK(IsMainThread());
   DCHECK_EQ(&AXObjectCacheOwner(), this);
 
   // Clear the cache member variable before calling delete because attempts
   // are made to access it during destruction.
-  if (ax_object_cache_)
+  if (ax_object_cache_) {
     ax_object_cache_->Dispose();
-  ax_object_cache_.Clear();
+    ax_object_cache_.Clear();
+    DCHECK_NE(g_ax_object_cache_count, 0u);
+    g_ax_object_cache_count--;
+  }
 
   // If there's at least one AXContext in scope and there's still a LayoutView
   // around, recreate an empty AXObjectCache.
@@ -3113,10 +3129,16 @@ void Document::ClearAXObjectCache() {
   if (ax_contexts_.size() > 0 && GetLayoutView()) {
     ax_object_cache_ =
         AXObjectCache::Create(*this, ComputeAXModeFromAXContexts(ax_contexts_));
+    g_ax_object_cache_count++;
   }
 }
 
 AXObjectCache* Document::ExistingAXObjectCache() const {
+  DCHECK(IsMainThread());
+  if (g_ax_object_cache_count == 0) {
+    return nullptr;
+  }
+
   auto& cache_owner = AXObjectCacheOwner();
 
   // If the LayoutView is gone then we are in the process of destruction.
@@ -3124,16 +3146,6 @@ AXObjectCache* Document::ExistingAXObjectCache() const {
     return nullptr;
 
   return cache_owner.ax_object_cache_.Get();
-}
-
-bool Document::HasAXObjectCache() const {
-  auto& cache_owner = AXObjectCacheOwner();
-
-  // If the LayoutView is gone then we are in the process of destruction.
-  if (!cache_owner.layout_view_)
-    return false;
-
-  return cache_owner.ax_object_cache_;
 }
 
 CanvasFontCache* Document::GetCanvasFontCache() {
