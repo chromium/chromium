@@ -70,6 +70,7 @@ namespace safe_browsing.flat.TfLiteModelMetadata_;
 table Threshold {
   label:string;
   threshold:float;
+  esb_threshold:float;
 }
 
 namespace safe_browsing.flat;

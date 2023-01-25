@@ -122,6 +122,9 @@ message TfLiteModelMetadata {
 
     // The threshold value
     optional float threshold = 2;
+
+    // The threshold value for ESB users
+    optional float esb_threshold = 3;
   }
 
   // The list of threshold values for each category in the TFLite model. Pages
