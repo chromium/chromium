@@ -132,7 +132,13 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
     }
 
     private void showUndoGroupSnackbar(List<TabUndoInfo> tabUndoInfo) {
-        String content = String.format(Locale.getDefault(), "%d", tabUndoInfo.size());
+        int mergedGroupSize = mTabModelSelector.getTabModelFilterProvider()
+                                      .getCurrentTabModelFilter()
+                                      .getRelatedTabIds(tabUndoInfo.get(0).tabOriginalGroupId)
+                                      .size();
+        assert mergedGroupSize > 1;
+
+        String content = String.format(Locale.getDefault(), "%d", mergedGroupSize);
         mSnackbarManager.showSnackbar(
                 Snackbar.make(content, this, Snackbar.TYPE_ACTION,
                                 Snackbar.UMA_TAB_GROUP_MANUAL_CREATION_UNDO)

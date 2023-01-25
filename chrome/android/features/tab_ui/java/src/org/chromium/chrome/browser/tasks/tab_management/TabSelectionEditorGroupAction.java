@@ -72,8 +72,6 @@ public class TabSelectionEditorGroupAction extends TabSelectionEditorAction {
 
         // Sort tabs by index prevent visual bugs when undoing.
         List<Tab> sortedTabs = new ArrayList<>(selectedTabs.size());
-        // Ensure tab count is as expected and the group doesn't get shuffled.
-        sortedTabs.addAll(relatedTabs);
         TabModel model = getTabModelSelector().getCurrentModel();
         for (int i = 0; i < model.getCount(); i++) {
             Tab tab = model.getTabAt(i);

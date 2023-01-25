@@ -586,7 +586,7 @@ public class TabUiTestHelper {
 
     /**
      * Verify that the snack bar is showing and click on the snack bar button. Right now it is only
-     * used for undoing a tab closure. This should be used with
+     * used for undoing a tab closure or undoing a tab group merge. This should be used with
      * CriteriaHelper.pollInstrumentationThread().
      * @return whether the visibility checking and the clicking have finished or not.
      */

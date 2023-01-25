@@ -309,6 +309,8 @@ public class TabGroupModelFilter extends TabModelFilter {
         int destinationGroupId = getRootId(destinationTab);
         List<Tab> tabsToMerge = getRelatedTabList(sourceTabId);
         int destinationIndexInTabModel = getTabModelDestinationIndex(destinationTab);
+        List<Integer> originalIndexes = new ArrayList<>();
+        List<Integer> originalRootIds = new ArrayList<>();
 
         if (skipUpdateTabModel || !needToUpdateTabModel(tabsToMerge, destinationIndexInTabModel)) {
             for (Observer observer : mGroupFilterObserver) {
@@ -316,7 +318,13 @@ public class TabGroupModelFilter extends TabModelFilter {
                         tabsToMerge.get(tabsToMerge.size() - 1), destinationGroupId);
             }
             for (int i = 0; i < tabsToMerge.size(); i++) {
-                setRootId(tabsToMerge.get(i), destinationGroupId);
+                Tab tab = tabsToMerge.get(i);
+                int index = TabModelUtils.getTabIndexById(getTabModel(), tab.getId());
+                assert index != TabModel.INVALID_TAB_INDEX;
+
+                originalIndexes.add(index);
+                originalRootIds.add(getRootId(tab));
+                setRootId(tab, destinationGroupId);
             }
             resetFilterState();
 
@@ -325,12 +333,11 @@ public class TabGroupModelFilter extends TabModelFilter {
             for (Observer observer : mGroupFilterObserver) {
                 observer.didMergeTabToGroup(
                         tabsToMerge.get(tabsToMerge.size() - 1), group.getLastShownTabId());
+                observer.didCreateGroup(tabsToMerge, originalIndexes, originalRootIds);
             }
         } else {
-            mergeListOfTabsToGroup(tabsToMerge, destinationTab, true, false);
+            mergeListOfTabsToGroup(tabsToMerge, destinationTab, true, true);
         }
-        // TODO(978508): Send didCreateGroup signal to activate the
-        // {@link UndoGroupSnackbarController}.
     }
 
     /**
