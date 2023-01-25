@@ -422,125 +422,130 @@ class AuditorTest(unittest.TestCase):
 
     test_no = 0
     while True:
-      try:
-        annotation = self.create_annotation_sample()
-        annotation.unique_id = "foobar_policy_fetcher{}".format(test_no)
-        test_description = ""
-        expect_error = True
-        logger.info(
-            "test_check_complete_annotations test number {}".format(test_no))
-        if test_no == 0:
-          test_description = "All fields OK."
-          expect_error = False
-        elif test_no == 1:
-          test_description = "Missing semantics::sender"
-          annotation.proto.semantics.sender = ""
-        elif test_no == 2:
-          test_description = "Missing semantics::description"
-          annotation.proto.semantics.description = ""
-        elif test_no == 3:
-          test_description = "Missing semantics::trigger"
-          annotation.proto.semantics.trigger = ""
-        elif test_no == 4:
-          test_description = "Missing semantics::data"
-          annotation.proto.semantics.data = ""
-        elif test_no == 5:
-          test_description = "Missing semantics::destination"
-          annotation.proto.semantics.destination = Destination.UNSPECIFIED
-        elif test_no == 6:
-          test_description = "Missing policy::cookies_allowed"
-          annotation.proto.policy.cookies_allowed = CookiesAllowed.UNSPECIFIED
-        elif test_no == 7:
-          test_description = \
-              "policy::cookies_allowed = NO with existing policy::cookies_store."
-          annotation.proto.policy.cookies_allowed = CookiesAllowed.NO
-          annotation.proto.policy.cookies_store = "somewhere"
-        elif test_no == 8:
-          test_description = \
-              "policy::cookies_allowed = NO and no policy::cookies_store."
-          annotation.proto.policy.cookies_allowed = CookiesAllowed.NO
-          annotation.proto.policy.cookies_store = ""
-          expect_error = False
-        elif test_no == 9:
-          test_description = \
-              "policy::cookies_allowed = YES and policy::cookies_store exists."
-          annotation.proto.policy.cookies_allowed = CookiesAllowed.YES
-          annotation.proto.policy.cookies_store = "somewhere"
-          expect_error = False
-        elif test_no == 10:
-          test_description = \
-              "policy::cookies_allowed = YES and no policy::cookies_store."
-          annotation.proto.policy.cookies_allowed = CookiesAllowed.YES
-          annotation.proto.policy.cookies_store = ""
-        elif test_no == 11:
-          test_description = "Missing policy::setting."
-          annotation.proto.policy.setting = ""
-          expect_error = False
-        elif test_no == 12:
-          test_description = \
-              "Missing policy::chrome_policy and " \
-              "policy::policy_exception_justification."
-          annotation.proto.policy.ClearField("chrome_policy")
-          annotation.proto.policy.policy_exception_justification = ""
-        elif test_no == 13:
-          test_description = \
-              "Missing policy::chrome_policy and existing " \
-              "policy::policy_exception_justification."
-          annotation.proto.policy.ClearField("chrome_policy")
-          annotation.proto.policy.policy_exception_justification = "Because!"
-          expect_error = False
-        elif test_no == 14:
-          test_description = \
-              "Existing policy::chrome_policy and no " \
-              "policy::policy_exception_justification."
-          self.assertTrue(annotation.proto.policy.chrome_policy)
-          annotation.proto.policy.policy_exception_justification = ""
-          expect_error = False
-        elif test_no == 15:
-          test_description = \
-              "Existing policy::chrome_policy and existing" \
-              "policy::policy_exception_justification."
-          self.assertTrue(annotation.proto.policy.chrome_policy)
-          annotation.proto.policy.policy_exception_justification = "Because!"
-        elif test_no == 16:
-          test_description = "Missing semantics::internal::contacts"
-          annotation.proto.semantics.internal.Clear()
-        elif test_no == 17:
-          test_description = "Missing semantics::internal::contacts::email"
-          annotation.proto.semantics.internal.ClearField("contacts")
-        elif test_no == 18:
-          test_description = "Missing semantics::internal::user_data::type"
-          annotation.proto.semantics.user_data.Clear()
-        elif test_no == 19:
-          test_description = "Empty value semantics::internal::user_data::type"
-          annotation.proto.semantics.user_data.ClearField("type")
-        elif test_no == 20:
-          test_description = "Invalid format semantics::last_reviewed"
-          annotation.proto.semantics.last_reviewed = "23-12-2023"
-        else:
-          # Done checking individual test cases.
-          break
+      annotation = self.create_annotation_sample()
+      annotation.unique_id = "foobar_policy_fetcher{}".format(test_no)
+      test_description = ""
+      expect_error = True
+      logger.info(
+          "test_check_complete_annotations test number {}".format(test_no))
+      if test_no == 0:
+        test_description = "All fields OK."
+        expect_error = False
+      elif test_no == 1:
+        test_description = "Missing semantics::sender"
+        annotation.proto.semantics.sender = ""
+      elif test_no == 2:
+        test_description = "Missing semantics::description"
+        annotation.proto.semantics.description = ""
+      elif test_no == 3:
+        test_description = "Missing semantics::trigger"
+        annotation.proto.semantics.trigger = ""
+      elif test_no == 4:
+        test_description = "Missing semantics::data"
+        annotation.proto.semantics.data = ""
+      elif test_no == 5:
+        test_description = "Missing semantics::destination"
+        annotation.proto.semantics.destination = Destination.UNSPECIFIED
+      elif test_no == 6:
+        test_description = "Missing policy::cookies_allowed"
+        annotation.proto.policy.cookies_allowed = CookiesAllowed.UNSPECIFIED
+      elif test_no == 7:
+        test_description = \
+            "policy::cookies_allowed = NO with existing policy::cookies_store."
+        annotation.proto.policy.cookies_allowed = CookiesAllowed.NO
+        annotation.proto.policy.cookies_store = "somewhere"
+      elif test_no == 8:
+        test_description = \
+            "policy::cookies_allowed = NO and no policy::cookies_store."
+        annotation.proto.policy.cookies_allowed = CookiesAllowed.NO
+        annotation.proto.policy.cookies_store = ""
+        expect_error = False
+      elif test_no == 9:
+        test_description = \
+            "policy::cookies_allowed = YES and policy::cookies_store exists."
+        annotation.proto.policy.cookies_allowed = CookiesAllowed.YES
+        annotation.proto.policy.cookies_store = "somewhere"
+        expect_error = False
+      elif test_no == 10:
+        test_description = \
+            "policy::cookies_allowed = YES and no policy::cookies_store."
+        annotation.proto.policy.cookies_allowed = CookiesAllowed.YES
+        annotation.proto.policy.cookies_store = ""
+      elif test_no == 11:
+        test_description = "Missing policy::setting."
+        annotation.proto.policy.setting = ""
+        expect_error = False
+      elif test_no == 12:
+        test_description = \
+            "Missing chrome policy and " \
+            "policy::policy_exception_justification."
+        annotation.proto.policy.ClearField("chrome_policy")
+        annotation.proto.policy.ClearField("chrome_device_policy")
+        annotation.proto.policy.policy_exception_justification = ""
+      elif test_no == 13:
+        test_description = \
+            "Missing chrome policy and existing " \
+            "policy::policy_exception_justification."
+        annotation.proto.policy.ClearField("chrome_policy")
+        annotation.proto.policy.ClearField("chrome_device_policy")
+        annotation.proto.policy.policy_exception_justification = "Because!"
+        expect_error = False
+      elif test_no == 14:
+        test_description = \
+            "Existing chrome policy and no " \
+            "policy::policy_exception_justification."
+        self.assertTrue(annotation.proto.policy.chrome_policy)
+        annotation.proto.policy.policy_exception_justification = ""
+        expect_error = False
+      elif test_no == 15:
+        test_description = \
+            "Existing chrome policy and existing " \
+            "policy::policy_exception_justification."
+        self.assertTrue(annotation.proto.policy.chrome_policy)
+        annotation.proto.policy.policy_exception_justification = "Because!"
+      elif test_no == 16:
+        test_description = "Missing semantics::internal::contacts"
+        annotation.proto.semantics.internal.Clear()
+      elif test_no == 17:
+        test_description = "Missing semantics::internal::contacts::email"
+        annotation.proto.semantics.internal.ClearField("contacts")
+      elif test_no == 18:
+        test_description = "Missing semantics::internal::user_data::type"
+        annotation.proto.semantics.user_data.Clear()
+      elif test_no == 19:
+        test_description = "Empty value semantics::internal::user_data::type"
+        annotation.proto.semantics.user_data.ClearField("type")
+      elif test_no == 20:
+        test_description = "Invalid format semantics::last_reviewed"
+        annotation.proto.semantics.last_reviewed = "23-12-2023"
+      elif test_no == 21:
+        test_description = \
+            "Existing chrome policy (device policy only) and " \
+            "missing policy::policy_exception_justification."
+        self.assertTrue(annotation.proto.policy.chrome_device_policy)
+        annotation.proto.policy.ClearField("chrome_policy")
+        annotation.proto.policy.policy_exception_justification = ""
+        expect_error = False
+      else:
+        # Done checking individual test cases.
+        break
 
-        logger.debug("Testing: {}".format(test_description))
+      logger.debug("Testing: {}".format(test_description))
 
-        self.auditor.extracted_annotations = [annotation]
-        errors = self.auditor.check_annotation_contents()
+      self.auditor.extracted_annotations = [annotation]
+      errors = self.auditor.check_annotation_contents()
 
-        if expect_error:
-          self.assertEqual(1, len(errors),
-                           "test_no={}, errors={}".format(test_no, errors))
-        else:
-          self.assertEqual([], errors,
-                           "test_no={}, errors={}".format(test_no, errors))
+      if expect_error:
+        self.assertEqual(1, len(errors),
+                         "test_no={}, errors={}".format(test_no, errors))
+      else:
+        self.assertEqual([], errors,
+                         "test_no={}, errors={}".format(test_no, errors))
 
-        annotations.append(annotation)
+      annotations.append(annotation)
 
-        if expect_error:
-          expected_errors_count += 1
-
-      except Exception as ex:
-        logger.error("Exception occurred in test_check_complete_annotations",
-                     ex)
+      if expect_error:
+        expected_errors_count += 1
 
       test_no += 1
 
@@ -576,7 +581,8 @@ class AuditorTest(unittest.TestCase):
     other = self.create_annotation_sample()
 
     instance.proto.semantics.Clear()
-    instance.proto.policy.Clear()
+    instance.proto.policy.ClearField('chrome_policy')
+    other.proto.policy.ClearField('chrome_device_policy')
 
     instance.type = Annotation.Type.PARTIAL
     other.type = Annotation.Type.COMPLETING
@@ -593,9 +599,15 @@ class AuditorTest(unittest.TestCase):
     other.type = Annotation.Type.BRANCHED_COMPLETING
     other.second_id = "SomeID"
     instance.second_id = "SomeID"
+    self.assertEqual(len(instance.proto.policy.chrome_policy), 0)
+    self.assertEqual(len(instance.proto.policy.chrome_device_policy), 1)
+    self.assertEqual(len(other.proto.policy.chrome_policy), 1)
+    self.assertEqual(len(other.proto.policy.chrome_device_policy), 0)
     combination, errors = instance.create_complete_annotation(other)
     self.assertEqual([], errors)
     self.assertEqual(combination.unique_id_hash_code, other.unique_id_hash_code)
+    self.assertEqual(len(combination.proto.policy.chrome_policy), 1)
+    self.assertEqual(len(combination.proto.policy.chrome_device_policy), 1)
 
     # Inconsistent field.
     Destination = traffic_annotation.TrafficSemantics.Destination
@@ -756,7 +768,7 @@ class AuditorTest(unittest.TestCase):
     self.assertEqual(ErrorType.INCOMPLETE_ANNOTATION, result.type)
 
     expected_missing_fields = [
-        "sender", "chrome_policy", "cookies_store",
+        "sender", "chrome_policy", "chrome_device_policy", "cookies_store",
         "policy_exception_justification"
     ]
     missing_fields = str(result).split("missing fields:",
@@ -880,7 +892,7 @@ class AuditorTest(unittest.TestCase):
     expected_contents = """Unique ID\tLast Update\tSender\tDescription\tTrigger\tData\tDestination\tCookies Allowed\tCookies Store\tSetting\tChrome Policy\tComments\tSource File
 supervised_user_refresh_token_fetcher\t\tSupervised Users\tFetches an OAuth2 refresh token scoped down to the Supervised User Sync scope and tied to the given Supervised User ID, identifying the Supervised User Profile to be created.\tCalled when creating a new Supervised User profile in Chromium to fetch OAuth credentials for using Sync with the new profile.\t"The request is authenticated with an OAuth2 access token identifying the Google account and contains the following information:
 * The Supervised User ID, a randomly generated 64-bit identifier for the profile.
-* The device name, to identify the refresh token in account management."\tGoogle\tNo\t\tUsers can disable this feature by toggling 'Let anyone add a person to Chrome' in Chromium settings, under People.\tSupervisedUserCreationEnabled: false\t\thttps://cs.chromium.org/chromium/src/?l=0
+* The device name, to identify the refresh token in account management."\tGoogle\tNo\t\tUsers can disable this feature by toggling 'Let anyone add a person to Chrome' in Chromium settings, under People.\tSupervisedUserCreationEnabled: false, external_policy: ""\t\thttps://cs.chromium.org/chromium/src/?l=0
 """
     self.assertEqual(expected_contents, tsv_contents)
 

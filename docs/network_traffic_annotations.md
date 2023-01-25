@@ -159,10 +159,18 @@ in the `NetworkTrafficAnnotation` message of
      Note that settings look different on different platforms, make sure your
      description works everywhere!
    * `chrome_policy`: Policy configuration that disables or limits this network
-     request. This would be a text serialized protobuf of any enterprise policy.
-     See policy list or
+     request. This would be a text serialized protobuf of any **non-device**
+     enterprise policy. See policy list or
      `out/Debug/gen/components/policy/proto/chrome_settings.proto` for the full
      list of policies.
+     * Note: Use `chrome_device_policy` instead for device policies.
+   * `chrome_device_policy`: Policy configuration that disables or limits this
+     network request. This would be a text serialized protobuf of any
+     **device** enterprise policy. See
+     `components/policy/proto/chrome_device_policy.proto` for the full list of
+     policies.
+     * Note: Use `chrome_policy` instead for non-device policies (e.g. user
+     policies).
    * `policy_exception_justification`: If there is no policy to disable or limit
      this request, a justification can be presented here.
    * `deprecated_policies`: Policy names disabling or limiting this network request

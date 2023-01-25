@@ -8,6 +8,7 @@ import re
 import sys
 
 from functools import reduce
+from itertools import chain
 from google.protobuf import text_format
 from google.protobuf.descriptor import FieldDescriptor
 from google.protobuf.message import Message
@@ -260,8 +261,9 @@ def write_annotations_tsv_file(file_path: Path, annotations: List["Annotation"],
     line += "\t{}".format(escape_for_tsv(policy.setting))
 
     # Chrome policies.
-    if policy.chrome_policy:
-      policies_text = policy_to_text(policy.chrome_policy)
+    if annotation.has_policy():
+      policies_text = policy_to_text(
+          chain(policy.chrome_policy, policy.chrome_device_policy))
     else:
       policies_text = policy.policy_exception_justification
     line += "\t{}".format(escape_for_tsv(policies_text))

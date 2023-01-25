@@ -77,29 +77,51 @@ if (is_win || is_linux || is_android || is_chromeos) {
   # Generate Python bindings for traffic_annotation.proto, for use with
   # auditor.py. This lets us run auditor.py after simply building the chrome
   # target.
-  proto_library("chrome_settings_full_runtime") {
+  proto_library("chrome_settings") {
+    visibility = [
+      ":traffic_annotation_proto",
+      ":traffic_annotation_proto_gen",
+    ]
+    sources =
+        [ "$root_gen_dir" + "/components/policy/proto/chrome_settings.proto" ]
+
+    # import policy_common_definitions.proto
+    import_dirs = [ "//components/policy/proto" ]
+
+    # generate chrome_settings.proto
+    proto_deps = [ "//components/policy:policy_code_generate" ]
+    proto_out_dir = "chrome/browser/privacy"
+    generate_cc = false
+    generate_library = false
+  }
+
+  proto_library("device_policy_and_policy_common_definitions") {
     visibility = [
       ":traffic_annotation_proto",
       ":traffic_annotation_proto_gen",
     ]
     sources = [
-      "$root_gen_dir" +
-          "/components/policy/proto/cloud_policy_full_runtime.proto",
-      "$root_gen_dir" +
-          "/components/policy/proto/chrome_settings_full_runtime.proto",
-      "$root_gen_dir" + "/components/policy/proto" +
-          "/policy_common_definitions_full_runtime.proto",
+      "//components/policy/proto/chrome_device_policy.proto",
+      "//components/policy/proto/policy_common_definitions.proto",
     ]
-    proto_deps = [ "//components/policy:full_runtime_code_generate" ]
-    proto_out_dir = "/chrome/browser/privacy"
+    proto_out_dir = "chrome/browser/privacy"
     generate_cc = false
     generate_library = false
   }
 
   proto_library("traffic_annotation_proto") {
     sources = [ "traffic_annotation.proto" ]
-    proto_deps = [ ":chrome_settings_full_runtime" ]
-    import_dirs = [ "$root_gen_dir" + "/components/policy/proto" ]
+    proto_deps = [
+      ":chrome_settings",
+      ":device_policy_and_policy_common_definitions",
+    ]
+    import_dirs = [
+      # chrome_settings.proto
+      "$root_gen_dir" + "/components/policy/proto",
+
+      # chrome_device_policy.proto
+      "//components/policy/proto",
+    ]
     generate_cc = false
     generate_library = false
   }

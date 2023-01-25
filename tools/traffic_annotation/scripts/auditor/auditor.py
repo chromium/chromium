@@ -286,6 +286,9 @@ class Annotation:
     combination.proto.policy.chrome_policy.extend(
         other.proto.policy.chrome_policy)
 
+    combination.proto.policy.chrome_device_policy.extend(
+        other.proto.policy.chrome_device_policy)
+
     return combination, []
 
   def needs_two_ids(self) -> bool:
@@ -424,10 +427,11 @@ class Annotation:
         and policy.cookies_allowed == CookiesAllowed.YES):
       unspecifieds.append("cookies_store")
 
-    # If either of 'chrome_policy' or 'policy_exception_justification' are
+    # If either a policy or a 'policy_exception_justification' are
     # available, ignore not having the other one.
-    if not policy.chrome_policy and not policy.policy_exception_justification:
+    if (not self.has_policy() and not policy.policy_exception_justification):
       unspecifieds.append("chrome_policy")
+      unspecifieds.append("chrome_device_policy")
       unspecifieds.append("policy_exception_justification")
 
     if unspecifieds:
@@ -452,7 +456,7 @@ class Annotation:
               self.file, self.line)
       ]
 
-    if policy.chrome_policy and policy.policy_exception_justification:
+    if self.has_policy() and policy.policy_exception_justification:
       return [
           AuditorError(
               ErrorType.INCONSISTENT_ANNOTATION,
@@ -530,6 +534,11 @@ class Annotation:
                        self.file, self.line)
       ]
     return []
+
+  def has_policy(self) -> bool:
+    """Return true if any policy field is set"""
+    return (self.proto.policy.chrome_policy
+            or self.proto.policy.chrome_device_policy)
 
   def _check_contacts(self) -> Optional[str]:
     """Checks presence of contacts fields in the annotation. All available
