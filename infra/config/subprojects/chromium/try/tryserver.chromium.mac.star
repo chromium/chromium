@@ -202,6 +202,13 @@ try_.compilator_builder(
 )
 
 try_.builder(
+    name = "mac12-arm64-wpt-content-shell-fyi-rel",
+    mirrors = [
+        "ci/mac12-arm64-wpt-content-shell-fyi-rel",
+    ],
+)
+
+try_.builder(
     name = "mac12-wpt-content-shell-fyi-rel",
     mirrors = [
         "ci/mac12-wpt-content-shell-fyi-rel",
