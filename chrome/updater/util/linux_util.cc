@@ -7,6 +7,7 @@
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
@@ -39,7 +40,7 @@ absl::optional<base::FilePath> GetApplicationDataDirectory(UpdaterScope scope) {
 }
 
 base::FilePath GetExecutableRelativePath() {
-  return base::FilePath(kExecutableName);
+  return base::FilePath(base::StrCat({kExecutableName, kExecutableSuffix}));
 }
 
 absl::optional<base::FilePath> GetBaseInstallDirectory(UpdaterScope scope) {

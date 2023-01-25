@@ -69,7 +69,8 @@ bool WaitForUpdaterExit(UpdaterScope scope) {
   return WaitFor(
       base::BindRepeating(
           [](UpdaterScope scope) {
-            return !base::NamedProcessIterator(kExecutableName, nullptr)
+            return !base::NamedProcessIterator(
+                        GetExecutableRelativePath().MaybeAsASCII(), nullptr)
                         .NextProcessEntry() &&
                    !base::NamedProcessIterator(kLauncherName, nullptr)
                         .NextProcessEntry();

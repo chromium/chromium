@@ -32,7 +32,7 @@ int Setup(UpdaterScope scope) {
   if (!dest_path) {
     return kErrorFailedToGetVersionedInstallDirectory;
   }
-  dest_path = dest_path->AppendASCII(kExecutableName);
+  dest_path = dest_path->Append(GetExecutableRelativePath());
 
   base::FilePath exe_path;
   if (!base::PathService::Get(base::FILE_EXE, &exe_path)) {
