@@ -97,7 +97,7 @@ class MockPrefetchServiceDelegate : public PrefetchServiceDelegate {
     ON_CALL(*this, DisableDecoysBasedOnUserSettings)
         .WillByDefault(testing::Return(false));
     ON_CALL(*this, IsSomePreloadingEnabled)
-        .WillByDefault(testing::Return(true));
+        .WillByDefault(testing::Return(PreloadingEligibility::kEligible));
     ON_CALL(*this, IsExtendedPreloadingEnabled)
         .WillByDefault(testing::Return(false));
     ON_CALL(*this, IsDomainInPrefetchAllowList(testing::_))
@@ -127,7 +127,7 @@ class MockPrefetchServiceDelegate : public PrefetchServiceDelegate {
   MOCK_METHOD(bool, IsOriginOutsideRetryAfterWindow, (const GURL&), (override));
   MOCK_METHOD(void, ClearData, (), (override));
   MOCK_METHOD(bool, DisableDecoysBasedOnUserSettings, (), (override));
-  MOCK_METHOD(bool, IsSomePreloadingEnabled, (), (override));
+  MOCK_METHOD(PreloadingEligibility, IsSomePreloadingEnabled, (), (override));
   MOCK_METHOD(bool, IsExtendedPreloadingEnabled, (), (override));
   MOCK_METHOD(bool, IsDomainInPrefetchAllowList, (const GURL&), (override));
   MOCK_METHOD(void, OnPrefetchLikely, (WebContents*), (override));
@@ -150,23 +150,10 @@ class ScopedPrefetchServiceContentBrowserClient
     EXPECT_EQ(this, SetBrowserClientForTesting(old_browser_client_));
   }
 
-  void SetDataSaverEnabledForTesting(bool data_saver_enabled) {
-    data_saver_enabled_ = data_saver_enabled;
-  }
-
   // ContentBrowserClient.
   std::unique_ptr<PrefetchServiceDelegate> CreatePrefetchServiceDelegate(
       BrowserContext*) override {
     return std::move(mock_prefetch_service_delegate_);
-  }
-
-  bool IsDataSaverEnabled(BrowserContext*) override {
-    return data_saver_enabled_;
-  }
-
-  void OverrideWebkitPrefs(WebContents*,
-                           blink::web_pref::WebPreferences* prefs) override {
-    prefs->data_saver_enabled = data_saver_enabled_;
   }
 
   void UseOffTheRecordContextForStoragePartition(bool use) {
@@ -193,7 +180,6 @@ class ScopedPrefetchServiceContentBrowserClient
   // `use_off_the_record_context_for_storage_paritition_` is set to true.
   std::unique_ptr<TestBrowserContext> off_the_record_context_;
   bool use_off_the_record_context_for_storage_paritition_{false};
-  bool data_saver_enabled_{false};
 };
 
 // This is only used to test the proxy lookup.
@@ -725,7 +711,7 @@ TEST_F(PrefetchServiceTest, NoPrefetchingPreloadingDisabled) {
   // prefetch at all.
   EXPECT_CALL(*mock_prefetch_service_delegate, IsSomePreloadingEnabled)
       .Times(1)
-      .WillOnce(testing::Return(false));
+      .WillOnce(testing::Return(PreloadingEligibility::kPreloadingDisabled));
 
   MakePrefetchService(std::move(mock_prefetch_service_delegate));
 
@@ -1208,9 +1194,17 @@ TEST_F(PrefetchServiceTest, NotEligibleHostnameNonUnique) {
 TEST_F(PrefetchServiceTest, NotEligibleDataSaverEnabled) {
   base::HistogramTester histogram_tester;
 
-  MakePrefetchService(
-      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
-  test_content_browser_client()->SetDataSaverEnabledForTesting(true);
+  std::unique_ptr<MockPrefetchServiceDelegate> mock_prefetch_service_delegate =
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/0);
+
+  // When data saver is enabled, then |PrefetchService| doesn't start the
+  // prefetch at all.
+  EXPECT_CALL(*mock_prefetch_service_delegate, IsSomePreloadingEnabled)
+      .Times(1)
+      .WillOnce(testing::Return(PreloadingEligibility::kDataSaverEnabled));
+
+  MakePrefetchService(std::move(mock_prefetch_service_delegate));
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),

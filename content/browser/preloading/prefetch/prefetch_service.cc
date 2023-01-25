@@ -251,12 +251,22 @@ void PrefetchService::PrefetchUrl(
   DCHECK(prefetch_container);
   auto prefetch_container_key = prefetch_container->GetPrefetchContainerKey();
 
-  // If the user has disabled pre* actions, then don't prefetch.
-  if (delegate_ && !delegate_->IsSomePreloadingEnabled()) {
-    return;
-  }
-
   if (delegate_) {
+    // If pre* actions are disabled then don't prefetch.
+    switch (delegate_->IsSomePreloadingEnabled()) {
+      case PreloadingEligibility::kEligible:
+        break;
+      case PreloadingEligibility::kDataSaverEnabled:
+        OnGotEligibilityResult(
+            prefetch_container, false,
+            PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled);
+        return;
+      default:
+        // TODO(crbug.com/1382315): determine if kPreloadingDisabled or
+        // kBatterySaverEnabled should be handled.
+        return;
+    }
+
     const auto& prefetch_type = prefetch_container->GetPrefetchType();
     if (prefetch_type.IsProxyRequired() &&
         !prefetch_type.IsProxyBypassedForTesting()) {
@@ -314,13 +324,6 @@ void PrefetchService::CheckEligibilityOfPrefetch(
     std::move(result_callback)
         .Run(prefetch_container, false,
              PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord);
-    return;
-  }
-
-  if (GetContentClient()->browser()->IsDataSaverEnabled(browser_context_)) {
-    std::move(result_callback)
-        .Run(prefetch_container, false,
-             PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled);
     return;
   }
 

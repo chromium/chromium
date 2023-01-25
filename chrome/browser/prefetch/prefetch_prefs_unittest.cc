@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/battery/battery_saver.h"
+#include "chrome/browser/data_saver/data_saver.h"
 #include "chrome/browser/prefetch/pref_names.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -227,4 +228,29 @@ TEST_F(PrefetchPrefsWithBatterySaverTest, IsSomePreloadingEnabled) {
   battery::OverrideIsBatterySaverEnabledForTesting(true);
   EXPECT_EQ(prefetch::IsSomePreloadingEnabled(prefs),
             content::PreloadingEligibility::kBatterySaverEnabled);
+}
+
+class PrefetchPrefsWithDataSaverTest : public ::testing::Test {
+ public:
+  PrefetchPrefsWithDataSaverTest() = default;
+  ~PrefetchPrefsWithDataSaverTest() override = default;
+
+  void TearDown() override { data_saver::ResetIsDataSaverEnabledForTesting(); }
+
+  // IsSomePreloadingEnabledIgnoringFinch() requires a threaded environment.
+  base::test::TaskEnvironment task_environment_;
+};
+
+TEST_F(PrefetchPrefsWithDataSaverTest, IsSomePreloadingEnabledIgnoringFinch) {
+  TestingPrefServiceSimple prefs;
+  prefs.registry()->RegisterIntegerPref(
+      prefs::kNetworkPredictionOptions,
+      static_cast<int>(prefetch::NetworkPredictionOptions::kDefault));
+  data_saver::OverrideIsDataSaverEnabledForTesting(false);
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs),
+            content::PreloadingEligibility::kEligible);
+
+  data_saver::OverrideIsDataSaverEnabledForTesting(true);
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs),
+            content::PreloadingEligibility::kDataSaverEnabled);
 }

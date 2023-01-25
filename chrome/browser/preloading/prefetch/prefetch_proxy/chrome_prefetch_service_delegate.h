@@ -41,7 +41,7 @@ class ChromePrefetchServiceDelegate : public content::PrefetchServiceDelegate {
   bool IsOriginOutsideRetryAfterWindow(const GURL& url) override;
   void ClearData() override;
   bool DisableDecoysBasedOnUserSettings() override;
-  bool IsSomePreloadingEnabled() override;
+  content::PreloadingEligibility IsSomePreloadingEnabled() override;
   bool IsExtendedPreloadingEnabled() override;
   bool IsDomainInPrefetchAllowList(const GURL& referring_url) override;
   void OnPrefetchLikely(content::WebContents* web_contents) override;
