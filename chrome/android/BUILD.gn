@@ -2857,6 +2857,10 @@ if (current_toolchain == default_toolchain) {
       android_manifest_dep = ":trichrome_library_64_android_manifest"
       is_64_bit_browser = true
       include_32_bit_webview = false
+      if (enable_libs_and_assets_verification) {
+        expected_libs_and_assets =
+            "expectations/$target_name.$target_cpu.libs_and_assets.expected"
+      }
     }
 
     if (!skip_secondary_abi_for_cq) {
@@ -2866,6 +2870,10 @@ if (current_toolchain == default_toolchain) {
         android_manifest_dep = ":trichrome_library_32_android_manifest"
         is_64_bit_browser = false
         include_64_bit_webview = false
+        if (enable_libs_and_assets_verification) {
+          expected_libs_and_assets =
+              "expectations/$target_name.$target_cpu.libs_and_assets.expected"
+        }
       }
 
       trichrome_library_apk_tmpl("trichrome_library_64_32_apk") {
@@ -2874,6 +2882,10 @@ if (current_toolchain == default_toolchain) {
         android_manifest_dep = ":trichrome_library_64_32_android_manifest"
         is_64_bit_browser = true
         include_32_bit_webview = true
+        if (enable_libs_and_assets_verification) {
+          expected_libs_and_assets =
+              "expectations/$target_name.$target_cpu.libs_and_assets.expected"
+        }
       }
     }
   }
@@ -4178,6 +4190,9 @@ if (current_toolchain == default_toolchain &&
           ":trichrome_chrome_32_bundle_validate_libs_and_assets",
           ":trichrome_chrome_64_32_bundle_validate_libs_and_assets",
           ":trichrome_chrome_64_bundle_validate_libs_and_assets",
+          ":trichrome_library_32_apk_validate_libs_and_assets",
+          ":trichrome_library_64_32_apk_validate_libs_and_assets",
+          ":trichrome_library_64_apk_validate_libs_and_assets",
           "//android_webview:trichrome_webview_32_bundle_validate_libs_and_assets",
           "//android_webview:trichrome_webview_64_32_bundle_validate_libs_and_assets",
           "//android_webview:trichrome_webview_64_bundle_validate_libs_and_assets",
