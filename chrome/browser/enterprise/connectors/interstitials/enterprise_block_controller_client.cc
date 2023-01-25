@@ -20,7 +20,7 @@ namespace {
 std::unique_ptr<security_interstitials::MetricsHelper> GetMetricsHelper(
     const GURL& url) {
   security_interstitials::MetricsHelper::ReportDetails settings;
-  settings.metric_prefix = "enterprise-block";
+  settings.metric_prefix = "enterprise_block";
 
   return std::make_unique<security_interstitials::MetricsHelper>(url, settings,
                                                                  nullptr);

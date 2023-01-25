@@ -9,6 +9,7 @@
 #include "components/grit/components_resources.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/core/common_string_util.h"
+#include "components/security_interstitials/core/metrics_helper.h"
 #include "components/security_interstitials/core/urls.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_entry.h"
@@ -32,7 +33,13 @@ EnterpriseBlockPage::EnterpriseBlockPage(
     : security_interstitials::SecurityInterstitialPage(
           web_contents,
           request_url,
-          std::move(controller_client)) {}
+          std::move(controller_client)) {
+  controller()->metrics_helper()->RecordUserDecision(MetricsHelper::SHOW);
+  controller()->metrics_helper()->RecordUserInteraction(
+      MetricsHelper::TOTAL_VISITS);
+  controller()->metrics_helper()->RecordUserDecision(
+      security_interstitials::MetricsHelper::PROCEEDING_DISABLED);
+}
 
 EnterpriseBlockPage::~EnterpriseBlockPage() = default;
 
@@ -79,9 +86,13 @@ void EnterpriseBlockPage::CommandReceived(const std::string& command) {
 
   switch (cmd) {
     case security_interstitials::CMD_DONT_PROCEED:
+      controller()->metrics_helper()->RecordUserDecision(
+          MetricsHelper::DONT_PROCEED);
       controller()->GoBack();
       break;
     case security_interstitials::CMD_OPEN_HELP_CENTER:
+      controller()->metrics_helper()->RecordUserInteraction(
+          MetricsHelper::SHOW_LEARN_MORE);
       controller()->OpenUrlInNewForegroundTab(
           GURL(security_interstitials::kEnterpriseInterstitialHelpLink));
       break;

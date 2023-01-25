@@ -37,7 +37,11 @@ EnterpriseWarnPage::EnterpriseWarnPage(
           request_url,
           std::move(controller_client)),
       ui_manager_(ui_manager),
-      unsafe_resources_(unsafe_resources) {}
+      unsafe_resources_(unsafe_resources) {
+  controller()->metrics_helper()->RecordUserDecision(MetricsHelper::SHOW);
+  controller()->metrics_helper()->RecordUserInteraction(
+      MetricsHelper::TOTAL_VISITS);
+}
 
 EnterpriseWarnPage::~EnterpriseWarnPage() = default;
 
@@ -90,6 +94,8 @@ void EnterpriseWarnPage::CommandReceived(const std::string& command) {
       controller()->GoBack();
       break;
     case security_interstitials::CMD_PROCEED: {
+      controller()->metrics_helper()->RecordUserDecision(
+          MetricsHelper::PROCEED);
       // Add to allowlist.
       ui_manager_->OnBlockingPageDone(unsafe_resources_, /*proceed=*/true,
                                       web_contents(), request_url(),
