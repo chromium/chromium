@@ -200,7 +200,7 @@ public class StartSurfaceTestUtils {
         if (ChromeFeatureList.sStartSurfaceRefactor.isEnabled()) {
             LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
         } else {
-            // TODO(1347089): Removes here when the Start surface refactoring is enabled by default.
+            // TODO(1315676): Removes here when the Start surface refactoring is enabled by default.
             onViewWaiting(withId(R.id.secondary_tasks_surface_view));
         }
     }

@@ -230,7 +230,7 @@ public class InstantStartTest {
             ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study",
             ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
-    // TODO(https://crbug.com/1347089): Removes this test once the start surface refactoring is
+    // TODO(https://crbug.com/1315676): Removes this test once the start surface refactoring is
     // done, since the secondary tasks surface will go away.
     @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,

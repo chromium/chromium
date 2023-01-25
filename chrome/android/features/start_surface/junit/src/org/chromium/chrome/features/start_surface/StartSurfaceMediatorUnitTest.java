@@ -582,7 +582,7 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
-    // TODO(crbug.com/1347089): removes this test once the Start surface refactoring is enabled.
+    // TODO(crbug.com/1315676): removes this test once the Start surface refactoring is enabled.
     // This is because the StartSurfaceMediator is no longer responsible for the transition between
     // the Start surface and the Tab switcher.
     @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
@@ -711,7 +711,7 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
-    // TODO(crbug.com/1347089): removes this test once the Start surface refactoring is enabled.
+    // TODO(crbug.com/1315676): removes this test once the Start surface refactoring is enabled.
     // This is because the StartSurfaceMediator is no longer responsible for the transition between
     // the Start surface and the Tab switcher.
     @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
@@ -1085,7 +1085,7 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
-    // TODO(crbug.com/1347089): removes this test once the Start surface refactoring is enabled.
+    // TODO(crbug.com/1315676): removes this test once the Start surface refactoring is enabled.
     // This is because the StartSurfaceMediator is no longer responsible for the transition between
     // the Start surface and the Tab switcher.
     @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
@@ -1536,7 +1536,7 @@ public class StartSurfaceMediatorUnitTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
-    // TODO(crbug.com/1347089): removes this test once the Start surface refactoring is enabled.
+    // TODO(crbug.com/1315676): removes this test once the Start surface refactoring is enabled.
     // This is because the StartSurfaceMediator is no longer responsible for the transition between
     // the Start surface and the Tab switcher.
     @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
@@ -1619,7 +1619,7 @@ public class StartSurfaceMediatorUnitTest {
      * showing and the Tab switcher has been created.
      */
     @Test
-    // TODO(crbug.com/1347089): Removes this test after the refactoring is enabled by default. This
+    // TODO(crbug.com/1315676): Removes this test after the refactoring is enabled by default. This
     // is because the SecondaryTasksSurface will go away.
     @DisableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR})
     public void testBackPressHandlerOnStartSurfaceWithTabSwitcherCreated() {

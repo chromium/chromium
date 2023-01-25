@@ -152,7 +152,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "force-fieldtrials=Study/Group"})
 @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
-// TODO(1347089): make this test suite works for testing both TabSwitcherAndStartSurfaceLayout and
+// TODO(1315676): make this test suite works for testing both TabSwitcherAndStartSurfaceLayout and
 // TabSwitcherLayout.
 @DisableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR})
 @Restriction(

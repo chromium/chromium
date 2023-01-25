@@ -74,7 +74,7 @@ import java.util.concurrent.TimeoutException;
                 + ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
         "force-fieldtrials=Study/Group"})
 @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
-// TODO(1347089): make this test suite works for both TabSwitcherAndStartSurfaceLayout and
+// TODO(1315676): make this test suite works for both TabSwitcherAndStartSurfaceLayout and
 // TabSwitcherLayout.
 @DisableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR})
 @Restriction(

@@ -816,7 +816,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     /**
      * Set whether the start surface is showing or not and notify changes.
-     * TODO(1347089): Remove {@link isShowingTabSwitcher} when the Start surface refactoring is
+     * TODO(1315676): Remove {@link isShowingTabSwitcher} when the Start surface refactoring is
      * enabled by default.
      * @param isShowingTabSwitcher Whether tab switcher layout is showing or not.
      * @param isShowingStartSurface Whether Start surface layout is showing or not.

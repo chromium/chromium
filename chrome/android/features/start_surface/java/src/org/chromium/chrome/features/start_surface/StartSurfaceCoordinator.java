@@ -119,6 +119,8 @@ public class StartSurfaceCoordinator implements StartSurface {
     @Nullable
     private PropertyModelChangeProcessor mTasksSurfacePropertyModelChangeProcessor;
 
+    // TODO(crbug.com/1315676): Remove this once the start surface refactoring is done, since the
+    // secondary tasks surface will go away.
     // Non-null in SurfaceMode.SINGLE_PANE mode to show more tabs.
     @Nullable
     private TasksSurface mSecondaryTasksSurface;
@@ -161,6 +163,8 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     // Time at which constructor started to run. Used for feed reliability logging.
     private final long mConstructedTimeNs;
+
+    private final boolean mIsStartSurfaceRefactorEnabled;
 
     @Nullable
     private AppBarLayout.OnOffsetChangedListener mOffsetChangedListenerToGenerateScrollEvents;
@@ -281,8 +285,9 @@ public class StartSurfaceCoordinator implements StartSurface {
         mTabSwitcherCustomViewManagerSupplier = new OneshotSupplierImpl<>();
         boolean excludeQueryTiles = !mIsStartSurfaceEnabled
                 || !ChromeFeatureList.sQueryTilesOnStart.isEnabled();
-        if (!mIsStartSurfaceEnabled
-                && !ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mActivity)) {
+        mIsStartSurfaceRefactorEnabled =
+                ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mActivity);
+        if (!mIsStartSurfaceEnabled && !mIsStartSurfaceRefactorEnabled) {
             // Create Tab switcher directly to save one layer in the view hierarchy.
             mTabSwitcher = TabManagementModuleProvider.getDelegate().createGridTabSwitcher(activity,
                     activityLifecycleDispatcher, tabModelSelector, tabContentManager,
@@ -310,7 +315,9 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mTasksSurface == null ? null : mTasksSurface.getBodyViewContainer();
         mStartSurfaceMediator = new StartSurfaceMediator(controller, containerView,
                 mTabModelSelector, mPropertyModel,
-                mIsStartSurfaceEnabled ? this::initializeSecondaryTasksSurface : null,
+                mIsStartSurfaceEnabled && !mIsStartSurfaceRefactorEnabled
+                        ? this::initializeSecondaryTasksSurface
+                        : null,
                 mIsStartSurfaceEnabled, mActivity, mBrowserControlsManager,
                 this::isActivityFinishingOrDestroyed, excludeQueryTiles,
                 startSurfaceOneshotSupplier, hadWarmStart, jankTracker, initializeMVTilesRunnable,
@@ -357,6 +364,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mTasksSurface.onHide();
             }
             if (mSecondaryTasksSurface != null) {
+                assert !mIsStartSurfaceRefactorEnabled;
                 mSecondaryTasksSurface.onHide();
             }
         }
@@ -411,6 +419,8 @@ public class StartSurfaceCoordinator implements StartSurface {
             mTabSwitcher.setOnTabSelectingListener(mStartSurfaceMediator);
         }
 
+        if (mIsStartSurfaceRefactorEnabled) return;
+
         // Set OnTabSelectingListener to the more tabs tasks surface as well if it has been
         // instantiated, otherwise remember it for the future instantiation.
         if (mIsStartSurfaceEnabled) {
@@ -450,6 +460,8 @@ public class StartSurfaceCoordinator implements StartSurface {
         if (mIsInitPending) {
             initialize();
         }
+
+        if (mIsStartSurfaceRefactorEnabled) return;
 
         if (mIsSecondaryTaskInitPending) {
             mIsSecondaryTaskInitPending = false;
@@ -550,6 +562,10 @@ public class StartSurfaceCoordinator implements StartSurface {
     @Override
     public TabSwitcher.TabListDelegate getGridTabListDelegate() {
         if (mIsStartSurfaceEnabled) {
+            if (mIsStartSurfaceRefactorEnabled) {
+                // Unreachable.
+                return null;
+            }
             if (mSecondaryTasksSurface == null) {
                 mStartSurfaceMediator.setSecondaryTasksSurfaceController(
                         initializeSecondaryTasksSurface());
@@ -585,6 +601,7 @@ public class StartSurfaceCoordinator implements StartSurface {
             }
             if (mSecondaryTasksSurface != null
                     && mSecondaryTasksSurface.getTabGridDialogVisibilitySupplier() != null) {
+                assert !mIsStartSurfaceRefactorEnabled;
                 if (mSecondaryTasksSurface.getTabGridDialogVisibilitySupplier().get()) return true;
             }
             return false;
@@ -737,6 +754,8 @@ public class StartSurfaceCoordinator implements StartSurface {
                         TasksSurfaceViewBinder::bind);
     }
 
+    // TODO(crbug.com/1315676): Remove this function once the start surface refactoring is done,
+    //  since the secondary tasks surface will go away.
     private TabSwitcher.Controller initializeSecondaryTasksSurface() {
         assert mIsStartSurfaceEnabled;
         assert mSecondaryTasksSurface == null;

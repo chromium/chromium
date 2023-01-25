@@ -204,7 +204,7 @@ public class StatusIndicatorTest {
     @MediumTest
     // clang-format off
     @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    // TODO(https://crbug.com/1347089): Remove this test once the Start surface refactor is done.
+    // TODO(https://crbug.com/1315676): Remove this test once the Start surface refactor is done.
     // This is because the "secondary_tasks_surface_view" will go away, and testShowAfterHide() will
     // cover the testing of grid tab switcher directly.
     @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)

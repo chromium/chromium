@@ -2039,7 +2039,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 // before notifying the start surface that is was.
                 // TODO(1292661): We should allow the start surface to be the layout that the
                 //                browser starts on to avoid logic like this.
-                // TODO(1347089): Clean up the check of LayoutType.TAB_SWITCHER once the refactoring
+                // TODO(1315676): Clean up the check of LayoutType.TAB_SWITCHER once the refactoring
                 //                is done. This is because only Start surface is allowed to shown on
                 //                startup, not the Grid Tab switcher.
                 boolean isStartSurfaceLayoutShown = false;
