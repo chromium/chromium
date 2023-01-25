@@ -39,7 +39,11 @@ public abstract class PureJavaExceptionReporter
     public static final String PRODUCT = "prod";
     public static final String ANDROID_BUILD_ID = "android_build_id";
     public static final String ANDROID_BUILD_FP = "android_build_fp";
+    // android-sdk-int and sdk are expected to have the same value.
+    // android-sdk-int is needed for compatibility with the C++ crashpad implementation.
+    // sdk should be maintained for potential custom monitoring.
     public static final String SDK = "sdk";
+    public static final String ANDROID_SDK_INT = "android-sdk-int";
     public static final String DEVICE = "device";
     public static final String GMS_CORE_VERSION = "gms_core_version";
     public static final String INSTALLER_PACKAGE_NAME = "installer_package_name";
@@ -132,7 +136,11 @@ public abstract class PureJavaExceptionReporter
         addPairedString(BRAND, Build.BRAND);
         addPairedString(BOARD, Build.BOARD);
         addPairedString(ANDROID_BUILD_FP, buildInfo.androidBuildFingerprint);
+        // ANDROID_SDK_INT and SDK are expected to have the same value.
+        // ANDROID_SDK_INT is needed for compatibility with the C++ crashpad implementation.
+        // SDK should be maintained for potential custom monitoring.
         addPairedString(SDK, String.valueOf(Build.VERSION.SDK_INT));
+        addPairedString(ANDROID_SDK_INT, String.valueOf(Build.VERSION.SDK_INT));
         addPairedString(GMS_CORE_VERSION, buildInfo.gmsVersionCode);
         addPairedString(INSTALLER_PACKAGE_NAME, buildInfo.installerPackageName);
         addPairedString(ABI_NAME, buildInfo.abiString);
