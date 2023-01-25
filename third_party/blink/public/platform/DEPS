@@ -1,5 +1,4 @@
 include_rules = [
-    "+base/atomicops.h",
     "+base/check.h",
     "+base/check_op.h",
     "+base/containers/flat_set.h",

@@ -6,7 +6,6 @@ include_rules = [
     "+third_party/blink/renderer/platform/mediastream",
 
     # Dependencies.
-    "+base/atomicops.h",
     "+media/base",
     "+media/webrtc/audio_processor_controls.h",
     "+media/webrtc/webrtc_features.h",

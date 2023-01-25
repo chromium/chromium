@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/platform/scheduler/public/thread_cpu_throttler.h"
 
+#include <atomic>
 #include <memory>
 
-#include "base/atomicops.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/synchronization/atomic_flag.h"
@@ -20,10 +20,6 @@
 #elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
-
-using base::subtle::Atomic32;
-using base::subtle::Acquire_Load;
-using base::subtle::Release_Store;
 
 namespace blink {
 namespace scheduler {
@@ -57,8 +53,8 @@ class ThreadCPUThrottler::ThrottlingThread final
   static bool signal_handler_installed_;
   static struct sigaction old_signal_handler_;
 #endif
-  static Atomic32 thread_exists_;
-  static Atomic32 throttling_rate_percent_;
+  static std::atomic<bool> thread_exists_;
+  static std::atomic<int> throttling_rate_percent_;
 
   base::PlatformThreadHandle throttled_thread_handle_;
   base::PlatformThreadHandle throttling_thread_handle_;
@@ -69,8 +65,8 @@ class ThreadCPUThrottler::ThrottlingThread final
 bool ThreadCPUThrottler::ThrottlingThread::signal_handler_installed_;
 struct sigaction ThreadCPUThrottler::ThrottlingThread::old_signal_handler_;
 #endif
-Atomic32 ThreadCPUThrottler::ThrottlingThread::throttling_rate_percent_;
-Atomic32 ThreadCPUThrottler::ThrottlingThread::thread_exists_;
+std::atomic<int> ThreadCPUThrottler::ThrottlingThread::throttling_rate_percent_;
+std::atomic<bool> ThreadCPUThrottler::ThrottlingThread::thread_exists_;
 
 ThreadCPUThrottler::ThrottlingThread::ThrottlingThread(double rate)
 #ifdef OS_WIN
@@ -80,17 +76,18 @@ ThreadCPUThrottler::ThrottlingThread::ThrottlingThread(double rate)
     : throttled_thread_handle_(base::PlatformThread::CurrentHandle()) {
 #endif
   SetThrottlingRate(rate);
-  CHECK_EQ(base::subtle::NoBarrier_AtomicExchange(&thread_exists_, 1), 0);
+  CHECK(!thread_exists_.exchange(true, std::memory_order_relaxed));
   Start();
 }  // namespace scheduler
 
 ThreadCPUThrottler::ThrottlingThread::~ThrottlingThread() {
   Stop();
-  CHECK_EQ(base::subtle::NoBarrier_AtomicExchange(&thread_exists_, 0), 1);
+  CHECK(thread_exists_.exchange(false, std::memory_order_relaxed));
 }
 
 void ThreadCPUThrottler::ThrottlingThread::SetThrottlingRate(double rate) {
-  Release_Store(&throttling_rate_percent_, static_cast<Atomic32>(rate * 100));
+  throttling_rate_percent_.store(static_cast<int>(rate * 100),
+                                 std::memory_order_release);
 }
 
 void ThreadCPUThrottler::ThrottlingThread::ThreadMain() {
@@ -132,7 +129,8 @@ void ThreadCPUThrottler::ThrottlingThread::HandleSignal(int signal) {
   static base::TimeTicks lastResumeTime;
   base::TimeTicks now = base::TimeTicks::Now();
   base::TimeDelta run_duration = now - lastResumeTime;
-  uint32_t throttling_rate_percent = Acquire_Load(&throttling_rate_percent_);
+  uint32_t throttling_rate_percent =
+      throttling_rate_percent_.load(std::memory_order_acquire);
   // Limit the observed run duration to 1000μs to deal with the first entrance
   // to the signal handler.
   uint32_t run_duration_us = static_cast<uint32_t>(
@@ -154,7 +152,7 @@ void ThreadCPUThrottler::ThrottlingThread::Throttle() {
   pthread_kill(throttled_thread_handle_.platform_handle(), SIGUSR2);
   Sleep(base::Microseconds(quant_time_us));
 #elif BUILDFLAG(IS_WIN)
-  double rate = Acquire_Load(&throttling_rate_percent_) / 100.;
+  double rate = throttling_rate_percent_.load(std::memory_order_acquire) / 100.;
   base::TimeDelta run_duration =
       base::Microseconds(static_cast<int>(quant_time_us / rate));
   base::TimeDelta sleep_duration =

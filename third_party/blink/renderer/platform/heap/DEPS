@@ -6,7 +6,6 @@ include_rules = [
     "+third_party/blink/renderer/platform/heap",
 
     # Dependencies.
-    "+base/atomicops.h",
     "+base/bits.h",
     "+base/functional/unretained_traits.h",
     "+base/sampling_heap_profiler/poisson_allocation_sampler.h",

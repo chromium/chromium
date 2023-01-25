@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/atomicops.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -116,8 +115,8 @@ class PLATFORM_EXPORT MediaStreamAudioTrack : public MediaStreamTrackPlatform {
   // Manages sinks connected to this track and the audio format and data flow.
   MediaStreamAudioDeliverer<WebMediaStreamAudioSink> deliverer_;
 
-  // While false (0), silent audio is delivered to the sinks.
-  base::subtle::Atomic32 is_enabled_;
+  // While false, silent audio is delivered to the sinks.
+  std::atomic<bool> is_enabled_;
 
   // Buffer used to deliver silent audio data while this track is disabled.
   std::unique_ptr<media::AudioBus> silent_bus_;

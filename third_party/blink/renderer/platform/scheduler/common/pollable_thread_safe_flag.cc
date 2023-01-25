@@ -4,14 +4,16 @@
 
 #include "third_party/blink/renderer/platform/scheduler/common/pollable_thread_safe_flag.h"
 
+#include <atomic>
+
 PollableThreadSafeFlag::PollableThreadSafeFlag(base::Lock* write_lock_)
     : flag_(false), write_lock_(write_lock_) {}
 
 void PollableThreadSafeFlag::SetWhileLocked(bool value) {
   write_lock_->AssertAcquired();
-  base::subtle::Release_Store(&flag_, value);
+  flag_.store(value, std::memory_order_release);
 }
 
 bool PollableThreadSafeFlag::IsSet() const {
-  return base::subtle::Acquire_Load(&flag_);
+  return flag_.load(std::memory_order_acquire);
 }

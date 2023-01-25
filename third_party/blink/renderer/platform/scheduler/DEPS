@@ -7,7 +7,6 @@ include_rules = [
 
   # Dependencies.
   "+base/atomic_sequence_num.h",
-  "+base/atomicops.h",
   "+base/barrier_closure.h",
   "+base/cancelable_callback.h",
   "+base/command_line.h",

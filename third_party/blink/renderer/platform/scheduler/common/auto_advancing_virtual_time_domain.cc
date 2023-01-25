@@ -6,7 +6,6 @@
 
 #include <atomic>
 
-#include "base/atomicops.h"
 #include "base/time/time_override.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/scheduler/common/scheduler_helper.h"
