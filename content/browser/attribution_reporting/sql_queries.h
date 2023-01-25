@@ -220,6 +220,44 @@ inline constexpr const char kUpdateFailedAggregatableReportSql[] =
 
 // clang-format on
 
+inline constexpr const char kRateLimitAttributionAllowedSql[] =
+    "SELECT COUNT(*)FROM rate_limits "
+    "WHERE scope=1 "
+    "AND destination_site=? "
+    "AND source_site=? "
+    "AND reporting_origin=? "
+    "AND time>?";
+
+inline constexpr const char kRateLimitSourceAllowedSql[] =
+    "SELECT destination_site FROM rate_limits "
+    "WHERE scope=0 "
+    "AND source_site=? "
+    "AND reporting_origin=? "
+    "AND expiry_time>?";
+
+inline constexpr const char kRateLimitSelectReportingOriginsSql[] =
+    "SELECT reporting_origin FROM rate_limits "
+    "WHERE scope=? "
+    "AND source_site=? "
+    "AND destination_site=? "
+    "AND time>?";
+
+inline constexpr const char kDeleteRateLimitRangeSql[] =
+    "DELETE FROM rate_limits "
+    "WHERE time BETWEEN ? AND ?";
+
+inline constexpr const char kSelectRateLimitsForDeletionSql[] =
+    "SELECT id,source_origin,destination_origin,reporting_origin "
+    "FROM rate_limits "
+    "WHERE time BETWEEN ? AND ?";
+
+inline constexpr const char kDeleteExpiredRateLimitsSql[] =
+    "DELETE FROM rate_limits "
+    "WHERE time<=? AND(scope=1 OR expiry_time<=?)";
+
+inline constexpr const char kDeleteRateLimitsBySourceIdSql[] =
+    "DELETE FROM rate_limits WHERE source_id=?";
+
 }  // namespace content::attribution_queries
 
 #endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_SQL_QUERIES_H_

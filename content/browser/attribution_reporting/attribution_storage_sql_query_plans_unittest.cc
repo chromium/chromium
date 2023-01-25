@@ -193,5 +193,43 @@ TEST_F(AttributionSqlQueryPlanTest, kUpdateFailedAggregatableReportSql) {
               UsesPrimaryKey());
 }
 
+TEST_F(AttributionSqlQueryPlanTest, kRateLimitAttributionAllowedSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kRateLimitAttributionAllowedSql),
+              UsesIndex("rate_limit_reporting_origin_idx",
+                        {"scope", "destination_site", "source_site"}));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kRateLimitSourceAllowedSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kRateLimitSourceAllowedSql),
+              UsesIndex("rate_limit_source_site_reporting_origin_idx",
+                        {"scope", "source_site", "reporting_origin"}));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kRateLimitSelectReportingOriginsSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kRateLimitSelectReportingOriginsSql),
+              UsesIndex("rate_limit_reporting_origin_idx",
+                        {"scope", "destination_site", "source_site"}));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kDeleteRateLimitRangeSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kDeleteRateLimitRangeSql),
+              UsesIndex("rate_limit_time_idx"));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kSelectRateLimitsForDeletionSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kSelectRateLimitsForDeletionSql),
+              UsesIndex("rate_limit_time_idx"));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kDeleteExpiredRateLimitsSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kDeleteExpiredRateLimitsSql),
+              UsesIndex("rate_limit_time_idx"));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kDeleteRateLimitsBySourceIdSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kDeleteRateLimitsBySourceIdSql),
+              UsesIndex("rate_limit_source_id_idx"));
+}
+
 }  // namespace
 }  // namespace content

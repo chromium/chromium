@@ -14,6 +14,7 @@
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
+#include "content/browser/attribution_reporting/sql_queries.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/public/browser/attribution_config.h"
@@ -179,17 +180,10 @@ RateLimitResult RateLimitTable::AttributionAllowedForAttributionLimit(
   base::Time min_timestamp = attribution_info.time - rate_limits.time_window;
 
   static_assert(static_cast<int>(Scope::kAttribution) == 1,
-                "update `scope=1` clause below");
+                "update `scope=1` in query below");
 
-  static constexpr char kAttributionAllowedSql[] =
-      "SELECT COUNT(*)FROM rate_limits "
-      "WHERE scope=1 "
-      "AND destination_site=? "
-      "AND source_site=? "
-      "AND reporting_origin=? "
-      "AND time>?";
-  sql::Statement statement(
-      db->GetCachedStatement(SQL_FROM_HERE, kAttributionAllowedSql));
+  sql::Statement statement(db->GetCachedStatement(
+      SQL_FROM_HERE, attribution_queries::kRateLimitAttributionAllowedSql));
   statement.BindString(0, common_info.DestinationSite().Serialize());
   statement.BindString(1, common_info.SourceSite().Serialize());
   statement.BindString(2, common_info.reporting_origin().Serialize());
@@ -220,18 +214,12 @@ RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   static_assert(static_cast<int>(Scope::kSource) == 0,
-                "update `scope=0` clause below");
+                "update `scope=0` query below");
 
   // Check the number of unique destinations covered by all source registrations
   // whose [source_time, expiry_time] intersect with the current source_time.
-  static constexpr char kSourceAllowedSql[] =
-      "SELECT destination_site FROM rate_limits "
-      "WHERE scope=0 "
-      "AND source_site=? "
-      "AND reporting_origin=? "
-      "AND expiry_time>?";
-  sql::Statement statement(
-      db->GetCachedStatement(SQL_FROM_HERE, kSourceAllowedSql));
+  sql::Statement statement(db->GetCachedStatement(
+      SQL_FROM_HERE, attribution_queries::kRateLimitSourceAllowedSql));
 
   const CommonSourceInfo& common_info = source.common_info();
   statement.BindString(0, common_info.SourceSite().Serialize());
@@ -302,13 +290,8 @@ RateLimitResult RateLimitTable::AllowedForReportingOriginLimit(
 
   base::Time min_timestamp = time - rate_limits.time_window;
 
-  static constexpr char kSelectSql[] =
-      "SELECT reporting_origin FROM rate_limits "
-      "WHERE scope=? "
-      "AND source_site=? "
-      "AND destination_site=? "
-      "AND time>?";
-  sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSelectSql));
+  sql::Statement statement(db->GetCachedStatement(
+      SQL_FROM_HERE, attribution_queries::kRateLimitSelectReportingOriginsSql));
   statement.BindInt(0, static_cast<int>(scope));
   statement.BindString(1, common_info.SourceSite().Serialize());
   statement.BindString(2, common_info.DestinationSite().Serialize());
@@ -340,12 +323,8 @@ bool RateLimitTable::ClearAllDataInRange(sql::Database* db,
   DCHECK(!((delete_begin.is_null() || delete_begin.is_min()) &&
            delete_end.is_max()));
 
-  static constexpr char kDeleteRateLimitRangeSql[] =
-      // clang-format off
-      "DELETE FROM rate_limits "
-      "WHERE time BETWEEN ? AND ?";  // clang-format on
-  sql::Statement statement(
-      db->GetCachedStatement(SQL_FROM_HERE, kDeleteRateLimitRangeSql));
+  sql::Statement statement(db->GetCachedStatement(
+      SQL_FROM_HERE, attribution_queries::kDeleteRateLimitRangeSql));
   statement.BindTime(0, delete_begin);
   statement.BindTime(1, delete_end);
   return statement.Run();
@@ -379,14 +358,8 @@ bool RateLimitTable::ClearDataForOriginsInRange(
     return false;
   }
 
-  static constexpr char kSelectSql[] =
-      // clang-format off
-      "SELECT id,source_origin,destination_origin,"
-      "reporting_origin "
-      "FROM rate_limits "
-      "WHERE time BETWEEN ? AND ?";  // clang-format on
-  sql::Statement select_statement(
-      db->GetCachedStatement(SQL_FROM_HERE, kSelectSql));
+  sql::Statement select_statement(db->GetCachedStatement(
+      SQL_FROM_HERE, attribution_queries::kSelectRateLimitsForDeletionSql));
   select_statement.BindTime(0, delete_begin);
   select_statement.BindTime(1, delete_end);
 
@@ -420,18 +393,14 @@ bool RateLimitTable::DeleteExpiredRateLimits(sql::Database* db) {
   base::Time timestamp = now - delegate_->GetRateLimits().time_window;
 
   static_assert(static_cast<int>(Scope::kAttribution) == 1,
-                "update `scope=1` clause below");
+                "update `scope=1` query below");
 
   // Attribution rate limit entries can be deleted as long as their time falls
   // outside the rate limit window. For source entries, if the expiry time has
   // not passed, keep entries around to ensure
   // `SourceAllowedForDestinationLimit()` is computed properly.
-  static constexpr char kDeleteExpiredRateLimits[] =
-      // clang-format off
-      "DELETE FROM rate_limits "
-      "WHERE time<=? AND(scope=1 OR expiry_time<=?)";  // clang-format on
-  sql::Statement statement(
-      db->GetCachedStatement(SQL_FROM_HERE, kDeleteExpiredRateLimits));
+  sql::Statement statement(db->GetCachedStatement(
+      SQL_FROM_HERE, attribution_queries::kDeleteExpiredRateLimitsSql));
   statement.BindTime(0, timestamp);
   statement.BindTime(1, now);
   return statement.Run();
@@ -447,10 +416,8 @@ bool RateLimitTable::ClearDataForSourceIds(
     return false;
   }
 
-  static constexpr char kDeleteRateLimitSql[] =
-      "DELETE FROM rate_limits WHERE source_id=?";
-  sql::Statement statement(
-      db->GetCachedStatement(SQL_FROM_HERE, kDeleteRateLimitSql));
+  sql::Statement statement(db->GetCachedStatement(
+      SQL_FROM_HERE, attribution_queries::kDeleteRateLimitsBySourceIdSql));
 
   for (StoredSource::Id id : source_ids) {
     statement.Reset(/*clear_bound_vars=*/true);
