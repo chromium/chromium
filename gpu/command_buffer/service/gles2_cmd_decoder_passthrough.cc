@@ -1761,6 +1761,9 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   caps.shared_image_swap_chain =
       caps.shared_image_d3d && D3DImageBackingFactory::IsSwapChainSupported();
 #endif  // BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(features::kPassthroughYuvRgbConversion)) {
+    caps.supports_yuv_rgb_conversion = true;
+  }
   caps.texture_npot = feature_info_->feature_flags().npot_ok;
   caps.supports_scanout_shared_images =
       SharedImageManager::SupportsScanoutImages();

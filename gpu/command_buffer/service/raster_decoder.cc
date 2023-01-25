@@ -1236,6 +1236,7 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   caps.shared_image_swap_chain = D3DImageBackingFactory::IsSwapChainSupported();
 #endif  // BUILDFLAG(IS_WIN)
   caps.disable_legacy_mailbox = disable_legacy_mailbox_;
+  caps.supports_yuv_rgb_conversion = true;
   return caps;
 }
 

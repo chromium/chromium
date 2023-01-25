@@ -139,7 +139,8 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-  if (!provider->GrContext()) {
+  if (!provider->GrContext() ||
+      provider->ContextCapabilities().supports_yuv_rgb_conversion) {
     SkYUVAInfo yuva_info =
         VideoFrameYUVMailboxesHolder::VideoFrameGetSkYUVAInfo(dst_video_frame);
     gpu::Mailbox yuva_mailboxes[SkYUVAInfo::kMaxPlanes];

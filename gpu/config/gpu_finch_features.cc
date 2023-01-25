@@ -363,6 +363,12 @@ BASE_FEATURE(kUseGpuSchedulerDfs,
              "UseGpuSchedulerDfs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable YUV<->RGB conversion for video clients through passthrough command
+// decoder.
+BASE_FEATURE(kPassthroughYuvRgbConversion,
+             "PassthroughYuvRgbConversion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool UseGles2ForOopR() {
 #if BUILDFLAG(IS_ANDROID)
   // GLS3 + passthrough decoder break many tests on Android.
