@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//build/config/linux/pkg_config.gni")
 import("//build/config/sysroot.gni")
 import("//build/config/ui.gni")
 import("//pdf/features.gni")
@@ -426,23 +427,29 @@ test("printing_unittests") {
 }
 
 if (use_cups) {
-  config("cups") {
-    if (is_mac) {
-      libs = [ "cups" ]
-      lib_dirs = [ "$mac_sdk_path/usr/lib" ]
-    } else {
-      # rebase_path does not accept an empty string
-      if (use_sysroot) {
-        cups_sysroot = rebase_path(sysroot)
+  if (is_chromeos_device) {
+    pkg_config("cups") {
+      packages = [ "cups" ]
+    }
+  } else {
+    config("cups") {
+      if (is_mac) {
+        libs = [ "cups" ]
+        lib_dirs = [ "$mac_sdk_path/usr/lib" ]
       } else {
-        cups_sysroot = ""
+        # rebase_path does not accept an empty string
+        if (use_sysroot) {
+          cups_sysroot = rebase_path(sysroot)
+        } else {
+          cups_sysroot = ""
+        }
+        libs = exec_script("cups_config_helper.py",
+                           [
+                             "--libs-for-gn",
+                             cups_sysroot,
+                           ],
+                           "value")
       }
-      libs = exec_script("cups_config_helper.py",
-                         [
-                           "--libs-for-gn",
-                           cups_sysroot,
-                         ],
-                         "value")
     }
   }
 }
