@@ -71,6 +71,9 @@ found in the LICENSE file.
             android:icon="@drawable/devices_black_24dp" />
         <item android:id="@id/divider_line_id"
             android:title="@null" />
+        <item android:id="@+id/page_zoom_id"
+            android:title="@string/page_zoom_title"
+            android:icon="@drawable/ic_zoom" />
         <item android:id="@+id/share_row_menu_id"
             android:title="@null">
           <menu>
@@ -136,9 +139,6 @@ found in the LICENSE file.
                 android:checkable="true" />
           </menu>
         </item>
-        <item android:id="@+id/page_zoom_id"
-            android:title="@string/page_zoom_title"
-            android:icon="@drawable/ic_zoom" />
         <item android:id="@+id/paint_preview_show_id"
             android:title="@string/menu_paint_preview_show"
             android:icon="@drawable/ic_photo_camera" />
