@@ -74,9 +74,7 @@ export class SubscriptionManager {
     }
 
     // Get all the subscription priorities.
-    let priorities: number[] = SubscriptionManager.#getRelevantContexts(
-      contextId
-    )
+    let priorities: number[] = this.#getRelevantContexts(contextId)
       .map((c) => contextToEventMap.get(c)?.get(eventMethod))
       .filter((p) => p !== undefined) as number[];
 
@@ -89,7 +87,7 @@ export class SubscriptionManager {
     return Math.min(...priorities);
   }
 
-  static #getRelevantContexts(
+  #getRelevantContexts(
     contextId: CommonDataTypes.BrowsingContext | null
   ): (CommonDataTypes.BrowsingContext | null)[] {
     // `null` covers global subscription.
