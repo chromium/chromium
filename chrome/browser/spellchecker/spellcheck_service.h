@@ -24,7 +24,8 @@
 #include "components/spellcheck/browser/platform_spell_checker.h"
 #include "components/spellcheck/common/spellcheck.mojom-forward.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
-#include "content/public/browser/render_process_host_creation_observer.h"
+#include "content/public/browser/notification_observer.h"
+#include "content/public/browser/notification_registrar.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 class SpellCheckHostMetrics;
@@ -35,6 +36,8 @@ class WaitableEvent;
 
 namespace content {
 class BrowserContext;
+class NotificationDetails;
+class NotificationSource;
 class RenderProcessHost;
 }
 
@@ -48,7 +51,7 @@ class LanguageSettingsPrivateApiTestDelayInit;
 // profile and each is created by the SpellCheckServiceFactory.  The
 // SpellcheckService maintains any per-profile information about spellcheck.
 class SpellcheckService : public KeyedService,
-                          public content::RenderProcessHostCreationObserver,
+                          public content::NotificationObserver,
                           public SpellcheckCustomDictionary::Observer,
                           public SpellcheckHunspellDictionary::Observer {
  public:
@@ -135,8 +138,10 @@ class SpellcheckService : public KeyedService,
   // dictionaries available.
   bool IsSpellcheckEnabled() const;
 
-  // content::RenderProcessHostCreationObserver implementation.
-  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
+  // NotificationProfile implementation.
+  void Observe(int type,
+               const content::NotificationSource& source,
+               const content::NotificationDetails& details) override;
 
   // SpellcheckCustomDictionary::Observer implementation.
   void OnCustomDictionaryLoaded() override;
@@ -295,6 +300,7 @@ class SpellcheckService : public KeyedService,
   std::unique_ptr<PlatformSpellChecker> platform_spell_checker_;
 
   PrefChangeRegistrar pref_change_registrar_;
+  content::NotificationRegistrar registrar_;
 
   // A pointer to the BrowserContext which this service refers to.
   raw_ptr<content::BrowserContext> context_;
