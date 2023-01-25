@@ -343,6 +343,7 @@
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"  // nogncheck
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/accessibility/live_caption_surface.h"
 #include "chromeos/crosapi/mojom/speech_recognition.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
@@ -637,15 +638,50 @@ void BindSpeechRecognitionClientBrowserInterfaceHandler(
 void BindSpeechRecognitionRecognizerClientHandler(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
-        receiver) {
+        client_receiver) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On LaCrOS, forward to Ash.
+
+  // Hold a client-browser interface just long enough to bootstrap a remote
+  // recognizer client.
+  mojo::Remote<media::mojom::SpeechRecognitionClientBrowserInterface>
+      interface_remote;
+  auto* service = chromeos::LacrosService::Get();
+  if (!service || !service->IsAvailable<crosapi::mojom::SpeechRecognition>()) {
+    return;
+  }
+  service->GetRemote<crosapi::mojom::SpeechRecognition>()
+      ->BindSpeechRecognitionClientBrowserInterface(
+          interface_remote.BindNewPipeAndPassReceiver());
+
+  // Grab the per-web-contents logic on our end to drive the remote client.
+  auto* surface = captions::LiveCaptionSurface::GetOrCreateForWebContents(
+      content::WebContents::FromRenderFrameHost(frame_host));
+  mojo::PendingRemote<media::mojom::SpeechRecognitionSurface> surface_remote;
+  mojo::PendingReceiver<media::mojom::SpeechRecognitionSurfaceClient>
+      surface_client_receiver;
+  surface->BindToSurfaceClient(
+      surface_remote.InitWithNewPipeAndPassReceiver(),
+      surface_client_receiver.InitWithNewPipeAndPassRemote());
+
+  // Populate static info to send to the client.
+  auto metadata = media::mojom::SpeechRecognitionSurfaceMetadata::New();
+  metadata->session_id = surface->session_id();
+
+  // Bootstrap the recognizer client.
+  interface_remote->BindRecognizerToRemoteClient(
+      std::move(client_receiver), std::move(surface_client_receiver),
+      std::move(surface_remote), std::move(metadata));
+#else
   Profile* profile = Profile::FromBrowserContext(
       frame_host->GetProcess()->GetBrowserContext());
   PrefService* profile_prefs = profile->GetPrefs();
   if (profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled) &&
       captions::IsLiveCaptionFeatureSupported()) {
-    captions::LiveCaptionSpeechRecognitionHost::Create(frame_host,
-                                                       std::move(receiver));
+    captions::LiveCaptionSpeechRecognitionHost::Create(
+        frame_host, std::move(client_receiver));
   }
+#endif
 }
 
 void BindMediaFoundationRendererNotifierHandler(

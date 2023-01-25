@@ -6,6 +6,7 @@
 
 #include "base/path_service.h"
 #include "base/test/bind.h"
+#include "base/unguessable_token.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -240,14 +241,12 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSurfaceTest, SessionIds) {
 
   // The session IDs of the two surfaces should be different because they
   // represent different web contents.
-  const std::string init_id_1 = surface_1->GetSessionId();
-  EXPECT_NE("", init_id_1);
-  EXPECT_NE("", surface_2->GetSessionId());
-  EXPECT_NE(init_id_1, surface_2->GetSessionId());
+  const base::UnguessableToken init_id_1 = surface_1->session_id();
+  EXPECT_NE(init_id_1, surface_2->session_id());
 
   // Navigating a tab shouldn't change its session ID.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kAboutBlankUrl));
-  EXPECT_EQ(init_id_1, surface_1->GetSessionId());
+  EXPECT_EQ(init_id_1, surface_1->session_id());
 }
 
 // Test that a surface reports the end of live caption sessions.

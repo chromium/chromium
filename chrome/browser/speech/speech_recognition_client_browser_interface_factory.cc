@@ -5,6 +5,8 @@
 #include "chrome/browser/speech/speech_recognition_client_browser_interface_factory.h"
 
 #include "base/no_destructor.h"
+#include "build/build_config.h"
+#include "chrome/browser/accessibility/live_caption_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/speech_recognition_client_browser_interface.h"
 
@@ -30,7 +32,11 @@ SpeechRecognitionClientBrowserInterfaceFactory::
           "SpeechRecognitionClientBrowserInterface",
           // Incognito profiles should use their own instance of the browser
           // context.
-          ProfileSelections::BuildForRegularAndIncognito()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  DependsOn(::captions::LiveCaptionControllerFactory::GetInstance());
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+}
 
 SpeechRecognitionClientBrowserInterfaceFactory::
     ~SpeechRecognitionClientBrowserInterfaceFactory() = default;

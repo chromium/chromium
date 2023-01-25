@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_SURFACE_H_
 #define CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_SURFACE_H_
 
-#include <memory>
-#include <string>
-
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -58,8 +55,8 @@ class LiveCaptionSurface
   void MediaEffectivelyFullscreenChanged(bool is_fullscreen) override;
   void PrimaryPageChanged(content::Page& page) override;
 
-  // Returns a unique string identifier for the current web contents.
-  std::string GetSessionId() const;
+  // Returns a unique identifier for the current web contents.
+  base::UnguessableToken session_id() const;
 
  private:
   friend content::WebContentsUserData<LiveCaptionSurface>;

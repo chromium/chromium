@@ -4,10 +4,6 @@
 
 #include "chrome/browser/accessibility/live_caption_surface.h"
 
-#include <memory>
-#include <string>
-#include <utility>
-
 #include "base/functional/callback_forward.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -113,8 +109,8 @@ void LiveCaptionSurface::PrimaryPageChanged(content::Page& /*page*/) {
   }
 }
 
-std::string LiveCaptionSurface::GetSessionId() const {
-  return session_id_.ToString();
+base::UnguessableToken LiveCaptionSurface::session_id() const {
+  return session_id_;
 }
 
 }  // namespace captions

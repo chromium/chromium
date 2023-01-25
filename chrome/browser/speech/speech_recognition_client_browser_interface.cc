@@ -7,7 +7,12 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/unguessable_token.h"
+#include "build/build_config.h"
+#include "chrome/browser/accessibility/live_caption_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/live_caption/live_caption_controller.h"
+#include "components/live_caption/live_caption_ui_remote_driver.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -22,6 +27,7 @@ SpeechRecognitionClientBrowserInterface::
     SpeechRecognitionClientBrowserInterface(content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   profile_prefs_ = profile->GetPrefs();
+  controller_ = captions::LiveCaptionControllerFactory::GetForProfile(profile);
 
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(profile_prefs_);
@@ -57,6 +63,22 @@ void SpeechRecognitionClientBrowserInterface::
             pending_remote) {
   speech_recognition_availibility_observers_.Add(std::move(pending_remote));
   OnSpeechRecognitionAvailabilityChanged();
+}
+
+void SpeechRecognitionClientBrowserInterface::BindRecognizerToRemoteClient(
+    mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
+        client_receiver,
+    mojo::PendingReceiver<media::mojom::SpeechRecognitionSurfaceClient>
+        surface_client_receiver,
+    mojo::PendingRemote<media::mojom::SpeechRecognitionSurface> surface_remote,
+    media::mojom::SpeechRecognitionSurfaceMetadataPtr metadata) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ui_drivers_.Add(
+      std::make_unique<captions::LiveCaptionUiRemoteDriver>(
+          controller_, std::move(surface_client_receiver),
+          std::move(surface_remote), metadata->session_id.ToString()),
+      std::move(client_receiver));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void SpeechRecognitionClientBrowserInterface::OnSodaInstalled(
