@@ -7,9 +7,9 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/network/network_list_header_view.h"
-#include "ash/system/network/network_row_title_view.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/view.h"
 

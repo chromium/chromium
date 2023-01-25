@@ -42,7 +42,6 @@
 #include "ash/system/network/network_detailed_view_controller.h"
 #include "ash/system/network/network_feature_pod_controller.h"
 #include "ash/system/network/network_feature_pod_controller_legacy.h"
-#include "ash/system/network/unified_network_detailed_view_controller.h"
 #include "ash/system/network/unified_vpn_detailed_view_controller.h"
 #include "ash/system/network/vpn_feature_pod_controller.h"
 #include "ash/system/night_light/night_light_feature_pod_controller.h"
@@ -451,12 +450,7 @@ void UnifiedSystemTrayController::ShowNetworkDetailedView(bool force) {
 
   base::RecordAction(base::UserMetricsAction("StatusArea_Network_Detailed"));
 
-  if (ash::features::IsQuickSettingsNetworkRevampEnabled()) {
-    ShowDetailedView(std::make_unique<NetworkDetailedViewController>(this));
-  } else {
-    ShowDetailedView(
-        std::make_unique<UnifiedNetworkDetailedViewController>(this));
-  }
+  ShowDetailedView(std::make_unique<NetworkDetailedViewController>(this));
 }
 
 void UnifiedSystemTrayController::ShowBluetoothDetailedView() {

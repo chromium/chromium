@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_NETWORK_NETWORK_LIST_ITEM_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/system/network/network_info.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

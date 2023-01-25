@@ -17,6 +17,7 @@
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"

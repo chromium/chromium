@@ -14,7 +14,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/network/fake_network_detailed_network_view.h"
 #include "ash/system/network/network_icon.h"
-#include "ash/system/network/network_info.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
