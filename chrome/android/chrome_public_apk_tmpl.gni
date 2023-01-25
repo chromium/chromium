@@ -313,10 +313,7 @@ template("monochrome_public_common_apk_or_module_tmpl") {
             "_is_bundle_module is true but the invoker does not define is_base_module!")
       }
 
-      # TODO(crbug.com/1408322): Delete use_trichrome_library reference.
-      is_trichrome = (defined(invoker.use_trichrome_library) &&
-                      invoker.use_trichrome_library) ||
-                     (defined(invoker.is_trichrome) && invoker.is_trichrome)
+      is_trichrome = defined(invoker.is_trichrome) && invoker.is_trichrome
       is_monochrome = !is_trichrome
 
       shared_libraries = []

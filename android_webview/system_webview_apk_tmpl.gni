@@ -47,7 +47,6 @@ template("system_webview_apk_or_module_tmpl") {
                                  "is_trichrome",
                                  "include_32_bit_webview",
                                  "include_64_bit_webview",
-                                 "use_trichrome_library",
                                  "weblayer_product_config_java_package",
                                  "weblayer_in_split",
                                  "webview_framework_dep",
@@ -131,10 +130,7 @@ template("system_webview_apk_or_module_tmpl") {
       deps += [ "//android_webview/nonembedded:devui_launcher_icon_resources" ]
     }
 
-    # TODO(crbug.com/1408322): Delete use_trichrome_library reference.
-    _is_trichrome = (defined(invoker.use_trichrome_library) &&
-                     invoker.use_trichrome_library) ||
-                    (defined(invoker.is_trichrome) && invoker.is_trichrome)
+    _is_trichrome = defined(invoker.is_trichrome) && invoker.is_trichrome
     assert(
         _is_trichrome == defined(static_library_provider),
         "If trichrome library is used, static_library_provider must be set " +

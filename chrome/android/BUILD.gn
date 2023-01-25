@@ -3381,7 +3381,6 @@ if (current_toolchain == default_toolchain) {
     if (android_64bit_target_cpu) {
       is_64_bit_browser = true
     }
-    is_monochrome_or_trichrome = false
     add_view_trace_events = true
     manifest_package = chrome_public_manifest_package
     min_sdk_version = default_min_sdk_version
@@ -3448,6 +3447,7 @@ if (current_toolchain == default_toolchain) {
                                "include_32_bit_webview",
                                "include_64_bit_webview",
                                "is_64_bit_browser",
+                               "is_trichrome",
                                "lint_baseline_file",
                                "lint_min_sdk_version",
                                "lint_suppressions_file",
@@ -3456,9 +3456,9 @@ if (current_toolchain == default_toolchain) {
                                "expected_libs_and_assets",
                                "expected_proguard_config",
                              ])
+      is_monochrome = !_is_trichrome
       base_module_target = ":$_base_module_target_name"
       bundle_name = _bundle_name
-      is_monochrome_or_trichrome = true
       manifest_package = chrome_public_manifest_package
       min_sdk_version = _min_sdk_version
       module_descs = _module_descs

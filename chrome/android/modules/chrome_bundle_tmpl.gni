@@ -27,14 +27,6 @@ template("chrome_bundle") {
   _is_monochrome = defined(invoker.is_monochrome) && invoker.is_monochrome
   _is_trichrome = defined(invoker.is_trichrome) && invoker.is_trichrome
 
-  # TODO(crbug.com/1408322): Delete once removed downstream.
-  if (defined(invoker.is_monochrome_or_trichrome)) {
-    not_needed(invoker, [ "is_monochrome_or_trichrome" ])
-    _is_monochrome =
-        string_replace(target_name, "monochrome", "") != target_name
-    _is_trichrome = string_replace(target_name, "trichrome", "") != target_name
-  }
-
   _enable_chrome_module = _is_monochrome || _is_trichrome
 
   # If enable_chrome_module is true, //chrome Java code and resources will be
@@ -100,8 +92,6 @@ template("chrome_bundle") {
     _is_multi_abi = (_is_64_bit_browser && _include_32_bit_webview) ||
                     (!_is_64_bit_browser && _include_64_bit_webview)
   } else {
-    # TODO(crbug.com/1408322): Delete once removed downstream.
-    not_needed(invoker, [ "include_32_bit_webview" ])
     _is_multi_abi = false
   }
 
