@@ -68,6 +68,7 @@ constexpr base::TimeDelta kConnectingTestTimeout = base::Seconds(15);
 constexpr base::TimeDelta kSimulateStackFrameHangSeconds = base::Seconds(90);
 constexpr base::TimeDelta kCoolOffPeriodBeforeGattConnectionAfterDisconnect =
     base::Seconds(2);
+constexpr base::TimeDelta kDisconnectResponseTimeout = base::Seconds(5);
 
 // 51 seconds is from 2 seconds for a cooloff period before GATT connection
 // attempts * 3 GATT attempts + 15 seconds GATT connecting timeout * 3 GATT
@@ -162,7 +163,9 @@ class FakeBluetoothDevice
                   base::OnceClosure error_callback) override {
     was_disconnect_called_ = true;
     if (has_disconnect_error_) {
-      std::move(error_callback).Run();
+      if (!no_disconnect_response_) {
+        std::move(error_callback).Run();
+      }
       return;
     }
     std::move(callback).Run();
@@ -170,6 +173,10 @@ class FakeBluetoothDevice
 
   void SetDisconnectError(bool has_disconnect_error) {
     has_disconnect_error_ = has_disconnect_error;
+  }
+
+  void SetNoDisconnectResponse(bool no_disconnect_response) {
+    no_disconnect_response_ = no_disconnect_response;
   }
 
   bool WasDisconnectCalled() { return was_disconnect_called_; }
@@ -195,6 +202,7 @@ class FakeBluetoothDevice
   bool has_gatt_connection_error_ = false;
   bool has_gatt_connection_hang_ = false;
   bool has_disconnect_error_ = false;
+  bool no_disconnect_response_ = false;
   base::test::TaskEnvironment* task_environment_ = nullptr;
   ash::quick_pair::FakeBluetoothAdapter* fake_adapter_ = nullptr;
 };
@@ -347,6 +355,21 @@ class FastPairGattServiceClientTest : public testing::Test {
     unique_fake_bt_device_ = CreateTestBluetoothDevice(
         adapter_.get(), ash::quick_pair::kFastPairBluetoothUuid);
     unique_fake_bt_device_->SetDisconnectError(true);
+    raw_fake_bt_device_ = unique_fake_bt_device_.get();
+    adapter_->AddMockDevice(std::move(unique_fake_bt_device_));
+    gatt_service_client_ = FastPairGattServiceClientImpl::Factory::Create(
+        adapter_->GetDevice(kTestBleDeviceAddress), adapter_.get(),
+        base::BindRepeating(&::ash::quick_pair::FastPairGattServiceClientTest::
+                                InitializedTestCallback,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void NoDisconectResponseGattSetup() {
+    adapter_ = base::MakeRefCounted<FakeBluetoothAdapter>();
+    unique_fake_bt_device_ = CreateTestBluetoothDevice(
+        adapter_.get(), ash::quick_pair::kFastPairBluetoothUuid);
+    unique_fake_bt_device_->SetDisconnectError(true);
+    unique_fake_bt_device_->SetNoDisconnectResponse(true);
     raw_fake_bt_device_ = unique_fake_bt_device_.get();
     adapter_->AddMockDevice(std::move(unique_fake_bt_device_));
     gatt_service_client_ = FastPairGattServiceClientImpl::Factory::Create(
@@ -532,6 +555,10 @@ class FastPairGattServiceClientTest : public testing::Test {
   void FastForwardTimeByGattDisconnectCoolOff() {
     task_environment_.FastForwardBy(
         kCoolOffPeriodBeforeGattConnectionAfterDisconnect);
+  }
+
+  void FastForwardTimeByGattDisconnectResponseTimeout() {
+    task_environment_.FastForwardBy(kDisconnectResponseTimeout);
   }
 
   void FastForwardTimeByAllGattRetries() {
@@ -976,6 +1003,16 @@ TEST_F(FastPairGattServiceClientTest, HungGattConnectionTimesOut) {
 TEST_F(FastPairGattServiceClientTest, FailedToDisconnectGattResultsInError) {
   DisconectFailGattSetup();
   FastForwardTimeByGattDisconnectCoolOff();
+  EXPECT_EQ(GetInitializedCallbackResult(),
+            PairFailure::kFailureToDisconnectGattBetweenRetries);
+  EXPECT_FALSE(ServiceIsSet());
+  EXPECT_TRUE(raw_fake_bt_device_->WasDisconnectCalled());
+}
+
+TEST_F(FastPairGattServiceClientTest,
+       FailedToRecieveDisconnectResponseAfterGattFailure) {
+  DisconectFailGattSetup();
+  FastForwardTimeByGattDisconnectResponseTimeout();
   EXPECT_EQ(GetInitializedCallbackResult(),
             PairFailure::kFailureToDisconnectGattBetweenRetries);
   EXPECT_FALSE(ServiceIsSet());

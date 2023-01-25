@@ -115,6 +115,7 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
   void AttemptGattConnection();
   void CreateGattConnection();
   void CoolOffBeforeCreateGattConnection();
+  void OnDisconnectTimeout();
   void OnGattServiceDiscoveryTimeout();
 
   // Callback from the adapter's call to create GATT connection.
@@ -170,6 +171,7 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
       device::BluetoothGattService::GattErrorCode error);
 
   base::OneShotTimer gatt_connect_after_disconnect_cool_off_timer_;
+  base::OneShotTimer gatt_disconnect_timer_;
   base::OneShotTimer gatt_service_discovery_timer_;
   base::OneShotTimer passkey_notify_session_timer_;
   base::OneShotTimer keybased_notify_session_timer_;

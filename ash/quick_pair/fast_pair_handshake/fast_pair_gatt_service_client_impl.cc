@@ -44,6 +44,7 @@ constexpr base::TimeDelta kGattOperationTimeout = base::Seconds(15);
 constexpr int kMaxNumGattConnectionAttempts = 3;
 constexpr base::TimeDelta kCoolOffPeriodBeforeGattConnectionAfterDisconnect =
     base::Seconds(2);
+constexpr base::TimeDelta kDisconnectResponseTimeout = base::Seconds(5);
 
 constexpr const char* ToString(
     device::BluetoothGattService::GattErrorCode error_code) {
@@ -197,6 +198,14 @@ void FastPairGattServiceClientImpl::AttemptGattConnection() {
   // is no connection established, we call `Disconnect` regardless.
   QP_LOG(INFO) << __func__
                << ": Disconnecting any previous connections before attempt";
+
+  // Start a timer so if we don't get a response from the disconnect call, we
+  // still proceed with GATT connection attempts.
+  gatt_disconnect_timer_.Start(
+      FROM_HERE, kDisconnectResponseTimeout,
+      base::BindOnce(&FastPairGattServiceClientImpl::OnDisconnectTimeout,
+                     weak_ptr_factory_.GetWeakPtr()));
+
   device->Disconnect(
       base::BindOnce(
           &FastPairGattServiceClientImpl::CoolOffBeforeCreateGattConnection,
@@ -209,6 +218,16 @@ void FastPairGattServiceClientImpl::AttemptGattConnection() {
 void FastPairGattServiceClientImpl::CoolOffBeforeCreateGattConnection() {
   QP_LOG(INFO) << __func__;
 
+  if (!gatt_disconnect_timer_.IsRunning()) {
+    // The disconnect has already timed out so return early here.
+    QP_LOG(INFO) << __func__
+                 << ": Returning early due to prior disconnect timeout.";
+    return;
+  }
+
+  // A response to the disconnect call was received, stop the associated timer.
+  gatt_disconnect_timer_.Stop();
+
   // In order for the Disconnect to propagate into the platform code, we need
   // a cool off period before we attempt to create a GATT connection in the case
   // we did disconnect an active GATT connection.
@@ -216,6 +235,18 @@ void FastPairGattServiceClientImpl::CoolOffBeforeCreateGattConnection() {
       FROM_HERE, kCoolOffPeriodBeforeGattConnectionAfterDisconnect,
       base::BindOnce(&FastPairGattServiceClientImpl::CreateGattConnection,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FastPairGattServiceClientImpl::OnDisconnectTimeout() {
+  // This PairFailure is not surfaced to consumers on the
+  // `on_initialized_callback_` because we retry the GATT connection. We don't
+  // want the consumers to retry a FastPairHandshake before retries are
+  // complete so we log the failure here and continue with the retry if we
+  // haven't maxed out yet.
+  QP_LOG(INFO) << __func__ << ": reattempting after GATT disconnect timeout: "
+               << PairFailure::kDisconnectResponseTimeout;
+  RecordGattRetryFailureReason(PairFailure::kDisconnectResponseTimeout);
+  AttemptGattConnection();
 }
 
 void FastPairGattServiceClientImpl::CreateGattConnection() {
@@ -297,6 +328,7 @@ void FastPairGattServiceClientImpl::ClearCurrentState() {
   key_based_characteristic_ = nullptr;
   passkey_characteristic_ = nullptr;
   gatt_service_discovery_timer_.Stop();
+  gatt_disconnect_timer_.Stop();
   passkey_notify_session_timer_.Stop();
   keybased_notify_session_timer_.Stop();
   passkey_write_request_timer_.Stop();

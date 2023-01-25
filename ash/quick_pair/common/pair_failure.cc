@@ -107,6 +107,10 @@ std::ostream& operator<<(std::ostream& stream, PairFailure failure) {
                 "connection. This is not a complete failure, and Fast Pair may "
                 "retry.]";
       break;
+    case PairFailure::kDisconnectResponseTimeout:
+      stream << "[Timed out while waiting for a response after attempt to "
+                "disconnect]";
+      break;
   }
 
   return stream;

@@ -36937,6 +36937,9 @@ Called by update_extension_permission.py.-->
   <int value="28"
       label="Failed to create a GATT connection in the Bluetoth platform
              layer. Fast Pair may retry a GATT connection following."/>
+  <int value="29"
+      label="Timed out while waiting for a response after attempt to
+             disconnect"/>
 </enum>
 
 <enum name="FastPairPairingMethod">
