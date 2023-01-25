@@ -162,6 +162,8 @@ CellularMetricsLogger::GetSimPinOperationResultForShillError(
     return SimPinOperationResult::kErrorPinRequired;
   if (shill_error_name == shill::kErrorResultNotFound)
     return SimPinOperationResult::kErrorDeviceMissing;
+  if (shill_error_name == shill::kErrorResultWrongState)
+    return SimPinOperationResult::kErrorWrongState;
   return SimPinOperationResult::kErrorUnknown;
 }
 

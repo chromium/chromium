@@ -261,7 +261,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
     kErrorPinRequired = 7,
     kErrorTimeout = 8,
     kErrorUnknown = 9,
-    kMaxValue = kErrorUnknown,
+    kErrorWrongState = 10,
+    kMaxValue = kErrorWrongState,
   };
 
   // This enum is used to track the connection results from
