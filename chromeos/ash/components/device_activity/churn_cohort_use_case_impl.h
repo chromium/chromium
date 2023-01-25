@@ -40,7 +40,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // then the Churn Cohort window identifier is `202212`
   std::string GenerateWindowIdentifier(base::Time ts) const override;
 
-  FresnelImportDataRequest GenerateImportRequestBody() override;
+  absl::optional<FresnelImportDataRequest> GenerateImportRequestBody() override;
 
   // Whether current device active use case check-in is enabled or not.
   bool IsEnabledCheckIn() override;

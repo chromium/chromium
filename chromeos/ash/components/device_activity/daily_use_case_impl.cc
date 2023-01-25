@@ -31,7 +31,8 @@ DailyUseCaseImpl::DailyUseCaseImpl(
 
 DailyUseCaseImpl::~DailyUseCaseImpl() = default;
 
-FresnelImportDataRequest DailyUseCaseImpl::GenerateImportRequestBody() {
+absl::optional<FresnelImportDataRequest>
+DailyUseCaseImpl::GenerateImportRequestBody() {
   // Generate Fresnel PSM import request body.
   FresnelImportDataRequest import_request;
 

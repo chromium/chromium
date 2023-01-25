@@ -138,7 +138,8 @@ TEST_F(TwentyEightDayActiveUseCaseImplTest, ExpectedMetadataIsSet) {
   twenty_eight_day_active_use_case_impl_->SetWindowIdentifier(new_daily_ts);
 
   FresnelImportDataRequest req =
-      twenty_eight_day_active_use_case_impl_->GenerateImportRequestBody();
+      twenty_eight_day_active_use_case_impl_->GenerateImportRequestBody()
+          .value();
   EXPECT_EQ(req.device_metadata().chromeos_channel(), Channel::CHANNEL_STABLE);
   EXPECT_FALSE(req.device_metadata().chromeos_version().empty());
 

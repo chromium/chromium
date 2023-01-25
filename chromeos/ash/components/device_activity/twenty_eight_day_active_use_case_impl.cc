@@ -39,7 +39,7 @@ TwentyEightDayActiveUseCaseImpl::TwentyEightDayActiveUseCaseImpl(
 
 TwentyEightDayActiveUseCaseImpl::~TwentyEightDayActiveUseCaseImpl() = default;
 
-FresnelImportDataRequest
+absl::optional<FresnelImportDataRequest>
 TwentyEightDayActiveUseCaseImpl::GenerateImportRequestBody() {
   // Generate Fresnel PSM import request body.
   FresnelImportDataRequest import_request;

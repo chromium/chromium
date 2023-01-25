@@ -13,6 +13,7 @@
 #include "chromeos/ash/components/dbus/private_computing/private_computing_service.pb.h"
 #include "chromeos/ash/components/device_activity/churn_active_status.h"
 #include "chromeos/ash/components/device_activity/fresnel_service.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
 class PrefService;
@@ -72,7 +73,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   //
   // Important: Each new dimension added to metadata will need to be approved by
   // privacy.
-  virtual FresnelImportDataRequest GenerateImportRequestBody() = 0;
+  virtual absl::optional<FresnelImportDataRequest>
+  GenerateImportRequestBody() = 0;
 
   // Whether current device active use case check-in is enabled or not.
   virtual bool IsEnabledCheckIn() = 0;

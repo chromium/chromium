@@ -113,7 +113,7 @@ TEST_F(DailyUseCaseImplTest, ExpectedMetadataIsSet) {
   daily_use_case_impl_->SetWindowIdentifier(new_daily_ts);
 
   FresnelImportDataRequest req =
-      daily_use_case_impl_->GenerateImportRequestBody();
+      daily_use_case_impl_->GenerateImportRequestBody().value();
   EXPECT_EQ(req.device_metadata().hardware_id(), kHardwareClassKeyNotFound);
   EXPECT_EQ(req.device_metadata().chromeos_channel(), Channel::CHANNEL_STABLE);
   EXPECT_EQ(req.device_metadata().market_segment(),

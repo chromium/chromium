@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   ~TwentyEightDayActiveUseCaseImpl() override;
 
   // DeviceActiveUseCase:
-  FresnelImportDataRequest GenerateImportRequestBody() override;
+  absl::optional<FresnelImportDataRequest> GenerateImportRequestBody() override;
   private_computing::ActiveStatus GenerateActiveStatus() override;
 
   // Whether current device active use case check-in is enabled or not.

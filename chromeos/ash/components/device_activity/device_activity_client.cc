@@ -1051,11 +1051,16 @@ void DeviceActivityClient::TransitionToCheckIn(
   RecordStateCountMetric(state_);
 
   // Generate Fresnel PSM import request body.
-  FresnelImportDataRequest import_request =
+  absl::optional<FresnelImportDataRequest> import_request =
       current_use_case->GenerateImportRequestBody();
 
+  if (!import_request.has_value()) {
+    TransitionToIdle(current_use_case);
+    return;
+  }
+
   std::string request_body;
-  import_request.SerializeToString(&request_body);
+  import_request.value().SerializeToString(&request_body);
 
   auto resource_request = GenerateResourceRequest(
       net::HttpRequestHeaders::kPostMethod, GetFresnelURL(), api_key_);

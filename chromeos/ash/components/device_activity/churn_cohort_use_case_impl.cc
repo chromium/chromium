@@ -39,7 +39,8 @@ std::string ChurnCohortUseCaseImpl::GenerateWindowIdentifier(
   return base::StringPrintf("%04d%02d", exploded.year, exploded.month);
 }
 
-FresnelImportDataRequest ChurnCohortUseCaseImpl::GenerateImportRequestBody() {
+absl::optional<FresnelImportDataRequest>
+ChurnCohortUseCaseImpl::GenerateImportRequestBody() {
   std::string psm_id_str = GetPsmIdentifier().value().sensitive_id();
   std::string window_id_str = GetWindowIdentifier().value();
 
