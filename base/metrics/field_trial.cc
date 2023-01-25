@@ -441,14 +441,10 @@ void FieldTrial::GetStateWhileLocked(PickleState* field_trial_state) {
 // static
 FieldTrialList* FieldTrialList::global_ = nullptr;
 
-// static
-bool FieldTrialList::used_without_global_ = false;
-
 FieldTrialList::Observer::~Observer() = default;
 
 FieldTrialList::FieldTrialList() {
   DCHECK(!global_);
-  DCHECK(!used_without_global_);
   global_ = this;
 }
 
@@ -1350,10 +1346,8 @@ FieldTrial* FieldTrialList::PreLockedFind(StringPiece name) {
 
 // static
 void FieldTrialList::Register(FieldTrial* trial, bool is_randomized_trial) {
-  if (!global_) {
-    used_without_global_ = true;
-    return;
-  }
+  DCHECK(global_);
+
   AutoLock auto_lock(global_->lock_);
   CHECK(!global_->PreLockedFind(trial->trial_name())) << trial->trial_name();
   trial->AddRef();
@@ -1378,8 +1372,6 @@ FieldTrialList::RegistrationMap FieldTrialList::GetRegisteredTrials() {
 bool FieldTrialList::CreateTrialsFromFieldTrialStatesInternal(
     const std::vector<FieldTrial::State>& entries) {
   DCHECK(global_);
-  if (entries.empty() || !global_)
-    return true;
 
   for (const auto& entry : entries) {
     FieldTrial* trial = CreateFieldTrial(entry.trial_name, entry.group_name);
