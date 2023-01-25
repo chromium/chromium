@@ -186,14 +186,12 @@ def main():
                                            verbose=args.verbose,
                                            built_targets=built_targets)
 
-    logging.info('Adding new lint-baseline.xml files to git.')
+    logging.info('Cleaning up new lint-baseline.xml files.')
     for git_root, repo_path in repo_file_paths:
         path = git_root / repo_path
         if path.name == 'lint-baseline.xml':
+            logging.info(f'> Removing redundant LintError: {path}')
             _remove_redundant_lint_error(path)
-            # Since we are passing -C to git, the relative path is needed
-            logging.info(f'> Adding to git: {repo_path}')
-            subprocess.run(['git', '-C', str(git_root), 'add', repo_path])
 
 
 if __name__ == '__main__':
