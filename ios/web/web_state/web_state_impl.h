@@ -106,13 +106,6 @@ class WebStateImpl final : public WebState {
   // Notifies the observers that the render process was terminated.
   void OnRenderProcessGone();
 
-  // Called when a script command is received.
-  void OnScriptCommandReceived(const std::string& command,
-                               const base::Value& value,
-                               const GURL& page_url,
-                               bool user_is_interacting,
-                               WebFrame* sender_frame);
-
   // Marks the WebState as loading/not loading.
   void SetIsLoading(bool is_loading);
 
@@ -328,9 +321,6 @@ class WebStateImpl final : public WebState {
   const GURL& GetVisibleURL() const final;
   const GURL& GetLastCommittedURL() const final;
   GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const final;
-  base::CallbackListSubscription AddScriptCommandCallback(
-      const ScriptCommandCallback& callback,
-      const std::string& command_prefix) final;
   id<CRWWebViewProxy> GetWebViewProxy() const final;
   void DidChangeVisibleSecurityState() final;
   InterfaceBinder* GetInterfaceBinderForMainFrame() final;
@@ -372,16 +362,12 @@ class WebStateImpl final : public WebState {
   class RealizedWebState;
   class SerializedData;
 
-  // Type aliases for the various ObserverList or ScriptCommandCallback map
-  // used by WebStateImpl (those are reused by the RealizedWebState class).
+  // Type aliases for the various ObserverList map used by WebStateImpl (reused
+  // by the RealizedWebState class).
   using WebStateObserverList = base::ObserverList<WebStateObserver, true>;
 
   using WebStatePolicyDeciderList =
       base::ObserverList<WebStatePolicyDecider, true>;
-
-  using ScriptCommandCallbackMap =
-      std::map<std::string,
-               base::RepeatingCallbackList<ScriptCommandCallbackSignature>>;
 
   // Force the WebState to become realized (if in "unrealized" state) and
   // then return a pointer to the RealizedWebState. Safe to call if the
@@ -403,11 +389,6 @@ class WebStateImpl final : public WebState {
   // references. This is not stored in RealizedWebState/SerializedData to
   // allow adding policy decider to an "unrealized" WebState.
   WebStatePolicyDeciderList policy_deciders_;
-
-  // Callbacks associated to command prefixes. This is not stored in
-  // RealizedWebState/SerializedData to to allow registering command
-  // callback on an "unrealized" WebState.
-  ScriptCommandCallbackMap script_command_callbacks_;
 
   // The instances of the two internal classes used to implement the
   // "unrealized" state of the WebState. One important invariant is

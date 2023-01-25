@@ -253,24 +253,6 @@ void WebStateImpl::RealizedWebState::OnRenderProcessGone() {
     observer.RenderProcessGone(owner_);
 }
 
-void WebStateImpl::RealizedWebState::OnScriptCommandReceived(
-    const std::string& command,
-    const base::Value& value,
-    const GURL& page_url,
-    bool user_is_interacting,
-    WebFrame* sender_frame) {
-  size_t dot_position = command.find_first_of('.');
-  if (dot_position == 0 || dot_position == std::string::npos)
-    return;
-
-  std::string prefix = command.substr(0, dot_position);
-  auto it = script_command_callbacks().find(prefix);
-  if (it == script_command_callbacks().end())
-    return;
-
-  it->second.Notify(value, page_url, user_is_interacting, sender_frame);
-}
-
 void WebStateImpl::RealizedWebState::SetIsLoading(bool is_loading) {
   if (is_loading == is_loading_)
     return;

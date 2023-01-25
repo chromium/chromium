@@ -15,7 +15,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
@@ -41,10 +40,6 @@ typedef id<CRWWebViewProxy> CRWWebViewProxyType;
 @class UIView;
 typedef UIView<CRWScrollableContent> CRWContentView;
 
-namespace base {
-class Value;
-}
-
 namespace gfx {
 class Image;
 class RectF;
@@ -58,7 +53,6 @@ class NavigationManager;
 enum Permission : NSUInteger;
 enum PermissionState : NSUInteger;
 class SessionCertificatePolicyCache;
-class WebFrame;
 class WebFramesManager;
 class WebStateDelegate;
 class WebStateObserver;
@@ -385,27 +379,6 @@ class WebState : public base::SupportsUserData {
   // appropriate.  Passing `null` will skip the trust check.
   // TODO(crbug.com/457679): Figure out a clean API for this.
   virtual GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const = 0;
-
-  // Callback used to handle script commands. `message` is the JS message sent
-  // from the `sender_frame` in the page, `page_url` is the URL of page's main
-  // frame, `user_is_interacting` indicates if the user is interacting with the
-  // page.
-  // TODO(crbug.com/881813): remove `page_url`.
-  using ScriptCommandCallbackSignature = void(const base::Value& message,
-                                              const GURL& page_url,
-                                              bool user_is_interacting,
-                                              web::WebFrame* sender_frame);
-  using ScriptCommandCallback =
-      base::RepeatingCallback<ScriptCommandCallbackSignature>;
-  // Registers `callback` for JS message whose 'command' matches
-  // `command_prefix`. The returned subscription should be stored by the caller.
-  // When the description object is destroyed, it will unregister `callback` if
-  // this WebState is still alive, and do nothing if this WebState is already
-  // destroyed. Therefore if the caller want to stop receiving JS messages it
-  // can just destroy the subscription.
-  [[nodiscard]] virtual base::CallbackListSubscription AddScriptCommandCallback(
-      const ScriptCommandCallback& callback,
-      const std::string& command_prefix) = 0;
 
   // Returns the current CRWWebViewProxy object.
   virtual CRWWebViewProxyType GetWebViewProxy() const = 0;

@@ -21,7 +21,6 @@
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class SessionCertificatePolicyCache;
@@ -87,9 +86,6 @@ class FakeWebState : public WebState {
   const GURL& GetVisibleURL() const override;
   const GURL& GetLastCommittedURL() const override;
   GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const override;
-  base::CallbackListSubscription AddScriptCommandCallback(
-      const ScriptCommandCallback& callback,
-      const std::string& command_prefix) override;
   CRWWebViewProxyType GetWebViewProxy() const override;
 
   void AddObserver(WebStateObserver* observer) override;
@@ -164,9 +160,6 @@ class FakeWebState : public WebState {
       NSURLResponse* response,
       WebStatePolicyDecider::ResponseInfo response_info,
       WebStatePolicyDecider::PolicyDecisionCallback callback);
-  // Returns a copy of the last added callback, if one has been added.
-  absl::optional<ScriptCommandCallback> GetLastAddedCallback() const;
-  std::string GetLastCommandPrefix() const;
   NSData* GetLastLoadedData() const;
   bool IsClosed() const;
 
@@ -207,9 +200,6 @@ class FakeWebState : public WebState {
   UIView* view_ = nil;
   CRWWebViewProxyType web_view_proxy_;
   NSData* last_loaded_data_ = nil;
-  base::RepeatingCallbackList<ScriptCommandCallbackSignature> callback_list_;
-  absl::optional<ScriptCommandCallback> last_added_callback_;
-  std::string last_command_prefix_;
   PermissionState camera_permission_state_ = PermissionStateNotAccessible;
   PermissionState microphone_permission_state_ = PermissionStateNotAccessible;
 

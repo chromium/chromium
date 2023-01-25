@@ -83,11 +83,6 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   void OnBackForwardStateChanged();
   void OnTitleChanged();
   void OnRenderProcessGone();
-  void OnScriptCommandReceived(const std::string& command,
-                               const base::Value& value,
-                               const GURL& page_url,
-                               bool user_is_interacting,
-                               WebFrame* sender_frame);
   void SetIsLoading(bool is_loading);
   void OnPageLoaded(const GURL& url, bool load_success);
   void OnFaviconUrlUpdated(const std::vector<FaviconURL>& candidates);
@@ -230,11 +225,6 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   // Returns a reference to the owning WebState WebStatePolicyDeciderList.
   WebStatePolicyDeciderList& policy_deciders() {
     return owner_->policy_deciders_;
-  }
-
-  // Returns a reference to the owning WebState ScriptCommandCallbackMap.
-  ScriptCommandCallbackMap& script_command_callbacks() {
-    return owner_->script_command_callbacks_;
   }
 
   // Returns a new callback with the same signature as `callback` which

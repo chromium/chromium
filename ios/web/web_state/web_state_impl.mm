@@ -171,15 +171,6 @@ void WebStateImpl::OnRenderProcessGone() {
   RealizedState()->OnRenderProcessGone();
 }
 
-void WebStateImpl::OnScriptCommandReceived(const std::string& command,
-                                           const base::Value& value,
-                                           const GURL& page_url,
-                                           bool user_is_interacting,
-                                           WebFrame* sender_frame) {
-  RealizedState()->OnScriptCommandReceived(command, value, page_url,
-                                           user_is_interacting, sender_frame);
-}
-
 void WebStateImpl::SetIsLoading(bool is_loading) {
   RealizedState()->SetIsLoading(is_loading);
 }
@@ -598,16 +589,6 @@ const GURL& WebStateImpl::GetLastCommittedURL() const {
 
 GURL WebStateImpl::GetCurrentURL(URLVerificationTrustLevel* trust_level) const {
   return LIKELY(pimpl_) ? pimpl_->GetCurrentURL(trust_level) : GURL();
-}
-
-base::CallbackListSubscription WebStateImpl::AddScriptCommandCallback(
-    const ScriptCommandCallback& callback,
-    const std::string& command_prefix) {
-  DCHECK(!command_prefix.empty());
-  DCHECK(command_prefix.find_first_of('.') == std::string::npos);
-  DCHECK(script_command_callbacks_.count(command_prefix) == 0 ||
-         script_command_callbacks_[command_prefix].empty());
-  return script_command_callbacks_[command_prefix].Add(callback);
 }
 
 id<CRWWebViewProxy> WebStateImpl::GetWebViewProxy() const {

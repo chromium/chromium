@@ -67,11 +67,6 @@ class WebStateImpl::SerializedData {
     return owner_->policy_deciders_;
   }
 
-  // Returns a reference to the owning WebState ScriptCommandCallbackMap.
-  ScriptCommandCallbackMap& script_command_callbacks() {
-    return owner_->script_command_callbacks_;
-  }
-
   // Returns the CRWNavigationItemStorage* corresponding to the last committed
   // navigation item from the serialized state. May return nil.
   CRWNavigationItemStorage* GetLastCommittedItem() const;

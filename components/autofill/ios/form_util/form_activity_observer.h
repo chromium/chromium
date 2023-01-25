@@ -33,8 +33,6 @@ class FormActivityObserver {
   // same-origin iframe. |params.input_missing| is indicating if there is any
   // error when parsing the form field information.
   // |sender_frame| is the WebFrame that sent the form activity message.
-  // |sender_frame| can be null if frame messaging is not enabled (see
-  // web::WebState::ScriptCommandCallback comment for details).
   virtual void FormActivityRegistered(web::WebState* web_state,
                                       web::WebFrame* sender_frame,
                                       const FormActivityParams& params) {}
@@ -48,10 +46,7 @@ class FormActivityObserver {
   // computed ('name', 'action', ...) and a 'field' element containing a list of
   // dictionaries, each representing a field of the form and containing some
   // attributes ('name', 'type', ...). |sender_frame| is the WebFrame that sent
-  // the form submission message. |sender_frame| can be null if frame messaging
-  // is not enabled (see web::WebState::ScriptCommandCallback comment for
-  // details).
-  // TODO(crbug.com/881816): Update comment once WebFrame cannot be null.
+  // the form submission message.
   virtual void DocumentSubmitted(web::WebState* web_state,
                                  web::WebFrame* sender_frame,
                                  const std::string& form_name,
@@ -62,8 +57,6 @@ class FormActivityObserver {
   // iframe. |params.input_missing| is indicating if there is any
   // error when parsing the form field information.
   // |sender_frame| is the WebFrame that sent the form activity message.
-  // |sender_frame| can be null if frame messaging is not enabled (see
-  // web::WebState::ScriptCommandCallback comment for details).
   virtual void FormRemoved(web::WebState* web_state,
                            web::WebFrame* sender_frame,
                            const FormRemovalParams& params) {}

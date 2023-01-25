@@ -31,7 +31,6 @@ An "unrealized" `WebState` supports the following features:
 
 -   registering and removing Observers
 -   registering and removing WebStatePolicyDecider
--   registering ScriptCommandCallback
 -   `const` property getters (*)
 -   retrieving saved state (**)
 -   attaching tab helpers

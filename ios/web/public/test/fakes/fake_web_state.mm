@@ -249,14 +249,6 @@ GURL FakeWebState::GetCurrentURL(URLVerificationTrustLevel* trust_level) const {
   return url_;
 }
 
-base::CallbackListSubscription FakeWebState::AddScriptCommandCallback(
-    const ScriptCommandCallback& callback,
-    const std::string& command_prefix) {
-  last_added_callback_ = callback;
-  last_command_prefix_ = command_prefix;
-  return callback_list_.Add(callback);
-}
-
 void FakeWebState::SetLastActiveTime(base::Time time) {
   last_active_time_ = time;
 }
@@ -433,15 +425,6 @@ void FakeWebState::ShouldAllowResponse(
 
   response_state_tracker_ptr->FinishedRequestingDecisions(
       num_decisions_requested);
-}
-
-absl::optional<WebState::ScriptCommandCallback>
-FakeWebState::GetLastAddedCallback() const {
-  return last_added_callback_;
-}
-
-std::string FakeWebState::GetLastCommandPrefix() const {
-  return last_command_prefix_;
 }
 
 NSData* FakeWebState::GetLastLoadedData() const {
