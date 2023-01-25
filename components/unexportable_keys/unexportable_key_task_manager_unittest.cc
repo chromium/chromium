@@ -92,7 +92,7 @@ TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync) {
 TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync_Failure) {
   base::test::TestFuture<scoped_refptr<RefCountedUnexportableSigningKey>>
       future;
-  std::vector<const uint8_t> empty_wrapped_key;
+  std::vector<uint8_t> empty_wrapped_key;
   task_manager().FromWrappedSigningKeySlowlyAsync(
       empty_wrapped_key, BackgroundTaskPriority::kBestEffort,
       future.GetCallback());
@@ -113,7 +113,7 @@ TEST_F(UnexportableKeyTaskManagerTest, SignAsync) {
 
   // Second, sign some data with the key.
   base::test::TestFuture<absl::optional<std::vector<uint8_t>>> sign_future;
-  std::vector<const uint8_t> data = {4, 8, 15, 16, 23, 42};
+  std::vector<uint8_t> data = {4, 8, 15, 16, 23, 42};
   task_manager().SignSlowlyAsync(key, data, BackgroundTaskPriority::kBestEffort,
                                  sign_future.GetCallback());
   EXPECT_FALSE(sign_future.IsReady());
@@ -132,7 +132,7 @@ TEST_F(UnexportableKeyTaskManagerTest, SignAsync) {
 
 TEST_F(UnexportableKeyTaskManagerTest, SignAsync_NullKey) {
   base::test::TestFuture<absl::optional<std::vector<uint8_t>>> sign_future;
-  std::vector<const uint8_t> data = {4, 8, 15, 16, 23, 42};
+  std::vector<uint8_t> data = {4, 8, 15, 16, 23, 42};
   task_manager().SignSlowlyAsync(nullptr, data,
                                  BackgroundTaskPriority::kBestEffort,
                                  sign_future.GetCallback());
