@@ -27,7 +27,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/bruschetta_delegate.h"
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_dialog.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -958,8 +957,8 @@ void CrostiniHandler::HandleSetVmDeviceShared(const base::Value::List& args) {
 void CrostiniHandler::HandleRequestBruschettaInstallerView(
     const base::Value::List& args) {
   AllowJavascript();
-  RunBruschettaInstaller(Profile::FromWebUI(web_ui()),
-                         bruschetta::GetBruschettaAlphaId());
+  bruschetta::RunInstaller(Profile::FromWebUI(web_ui()),
+                           bruschetta::GetBruschettaAlphaId());
 }
 
 }  // namespace ash::settings

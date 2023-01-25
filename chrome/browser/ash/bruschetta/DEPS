@@ -1,0 +1,4 @@
+include_rules = [
+  # Give bruschetta_util access to the Bruschetta Installer.
+  "+chrome/browser/ui/views",
+]

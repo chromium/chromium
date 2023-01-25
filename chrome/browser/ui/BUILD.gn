@@ -2252,8 +2252,6 @@ static_library("ui") {
       "ash/back_gesture_contextual_nudge_delegate.h",
       "ash/browser_data_migration_error_dialog.cc",
       "ash/browser_data_migration_error_dialog.h",
-      "ash/bruschetta_delegate.cc",
-      "ash/bruschetta_delegate.h",
       "ash/calendar/calendar_client_impl.cc",
       "ash/calendar/calendar_client_impl.h",
       "ash/calendar/calendar_keyed_service.cc",
