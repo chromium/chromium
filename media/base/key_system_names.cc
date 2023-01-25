@@ -3,14 +3,12 @@
 // found in the LICENSE file.
 
 #include "media/base/key_system_names.h"
+#include "media/cdm/clear_key_cdm_common.h"
 
 namespace media {
 
-const char kClearKey[] = "org.w3.clearkey";
-const char kExternalClearKey[] = "org.chromium.externalclearkey";
-
 bool IsClearKey(const std::string& key_system) {
-  return key_system == kClearKey;
+  return key_system == kClearKeyKeySystem;
 }
 
 bool IsSubKeySystemOf(const std::string& key_system, const std::string& base) {
@@ -19,8 +17,8 @@ bool IsSubKeySystemOf(const std::string& key_system, const std::string& base) {
 }
 
 bool IsExternalClearKey(const std::string& key_system) {
-  return key_system == kExternalClearKey ||
-         IsSubKeySystemOf(key_system, kExternalClearKey);
+  return key_system == kExternalClearKeyKeySystem ||
+         IsSubKeySystemOf(key_system, kExternalClearKeyKeySystem);
 }
 
 }  // namespace media

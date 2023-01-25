@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "media/cdm/api/content_decryption_module.h"
 #include "media/cdm/cdm_paths.h"
+#include "media/cdm/clear_key_cdm_common.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {

@@ -31,6 +31,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/media_switches.h"
 #include "media/base/test_data_util.h"
+#include "media/cdm/clear_key_cdm_common.h"
 #include "media/media_buildflags.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/widevine/cdm/buildflags.h"
@@ -38,7 +39,6 @@
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #include "chrome/browser/media/library_cdm_test_helper.h"
-#include "media/cdm/cdm_paths.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -47,8 +47,9 @@
 
 namespace {
 
-const char kClearKey[] = "org.w3.clearkey";
-const char kExternalClearKey[] = "org.chromium.externalclearkey";
+const char* kClearKey = media::kClearKeyKeySystem;
+const char* kExternalClearKey = media::kExternalClearKeyKeySystem;
+
 const char kWidevine[] = "com.widevine.alpha";
 const char kWidevineExperiment[] = "com.widevine.alpha.experiment";
 

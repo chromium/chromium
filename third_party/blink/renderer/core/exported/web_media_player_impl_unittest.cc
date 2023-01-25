@@ -43,6 +43,7 @@
 #include "media/base/mock_media_log.h"
 #include "media/base/test_data_util.h"
 #include "media/base/test_helpers.h"
+#include "media/cdm/clear_key_cdm_common.h"
 #include "media/filters/pipeline_controller.h"
 #include "media/mojo/services/media_metrics_provider.h"
 #include "media/mojo/services/video_decode_stats_recorder.h"
@@ -852,7 +853,8 @@ class WebMediaPlayerImplTest
 
   void CreateCdm() {
     // Must use a supported key system on a secure context.
-    media::CdmConfig cdm_config = {"org.w3.clearkey", false, false, false};
+    media::CdmConfig cdm_config = {media::kClearKeyKeySystem, false, false,
+                                   false};
     auto test_origin = WebSecurityOrigin::CreateFromString(
         WebString::FromUTF8("https://test.origin"));
 

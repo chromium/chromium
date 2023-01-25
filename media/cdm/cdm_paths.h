@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "media/cdm/cdm_type.h"
 #include "media/media_buildflags.h"
 
 #if !BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -18,21 +17,6 @@
 #endif
 
 namespace media {
-
-// Name of the ClearKey CDM library.
-extern const char kClearKeyCdmLibraryName[];
-
-extern const char kClearKeyCdmBaseDirectory[];
-
-// Display name for Clear Key CDM.
-extern const char kClearKeyCdmDisplayName[];
-
-// The default GUID for Clear Key Cdm.
-extern const CdmType kClearKeyCdmType;
-
-// A different GUID for Clear Key Cdm for testing running different types of
-// CDMs in the system.
-extern const CdmType kClearKeyCdmDifferentCdmType;
 
 // Returns the path of a CDM relative to DIR_COMPONENTS.
 // On platforms where a platform specific path is used, returns

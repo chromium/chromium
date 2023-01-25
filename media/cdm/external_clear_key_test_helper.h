@@ -5,11 +5,10 @@
 #ifndef MEDIA_CDM_EXTERNAL_CLEAR_KEY_TEST_HELPER_H_
 #define MEDIA_CDM_EXTERNAL_CLEAR_KEY_TEST_HELPER_H_
 
-#include <string>
-
 #include "base/files/file_path.h"
 #include "base/scoped_native_library.h"
 #include "media/base/cdm_config.h"
+#include "media/cdm/clear_key_cdm_common.h"
 
 namespace media {
 
@@ -26,7 +25,7 @@ class ExternalClearKeyTestHelper {
   ~ExternalClearKeyTestHelper();
 
   media::CdmConfig CdmConfig() {
-    return {"org.chromium.externalclearkey", false, false, false};
+    return {kExternalClearKeyKeySystem, false, false, false};
   }
 
   base::FilePath LibraryPath() { return library_path_; }

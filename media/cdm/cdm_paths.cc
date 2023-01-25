@@ -7,25 +7,9 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "media/cdm/cdm_type.h"
 #include "media/media_buildflags.h"
 
 namespace media {
-
-// Name of the ClearKey CDM library.
-const char kClearKeyCdmLibraryName[] = "clearkeycdm";
-
-const char kClearKeyCdmBaseDirectory[] =
-#if BUILDFLAG(IS_FUCHSIA)
-    "lib/"
-#endif
-    "ClearKeyCdm";
-
-const char kClearKeyCdmDisplayName[] = "Clear Key CDM";
-
-const CdmType kClearKeyCdmType{0x3a2e0fadde4bd1b7ull, 0xcb90df3e240d1694ull};
-const CdmType kClearKeyCdmDifferentCdmType{0xc3914773474bdb02ull,
-                                           0x8e8de4d84d3ca030ull};
 
 base::FilePath GetPlatformSpecificDirectory(
     const base::FilePath& cdm_base_path) {

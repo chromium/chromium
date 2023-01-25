@@ -10520,6 +10520,7 @@ if (!is_android) {
       "//base",
       "//base/test:test_support_perf",
       "//media:media_buildflags",
+      "//media/cdm:clear_key_cdm_common",
       "//testing/gtest",
       "//testing/perf",
       "//third_party/widevine/cdm:buildflags",

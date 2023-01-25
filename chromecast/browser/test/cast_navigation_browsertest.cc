@@ -9,6 +9,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/test_data_util.h"
+#include "media/cdm/clear_key_cdm_common.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -19,7 +20,6 @@ const char16_t kEnded[] = u"ENDED";
 const char16_t kError[] = u"ERROR";
 const char16_t kFailed[] = u"FAILED";
 
-const char kClearKeyKeySystem[] = "org.w3.clearkey";
 const char kWebMAudioOnly[] = "audio/webm; codecs=\"vorbis\"";
 }
 
@@ -108,7 +108,8 @@ IN_PROC_BROWSER_TEST_F(CastNavigationBrowserTest, DISABLED_VideoPlaybackMp4) {
 #endif
 
 IN_PROC_BROWSER_TEST_F(CastNavigationBrowserTest, ClearKeySupport) {
-  PlayEncryptedMedia(kClearKeyKeySystem, kWebMAudioOnly, "bear-a_enc-a.webm");
+  PlayEncryptedMedia(media::kClearKeyKeySystem, kWebMAudioOnly,
+                     "bear-a_enc-a.webm");
 }
 
 }  // namespace shell

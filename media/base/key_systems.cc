@@ -26,14 +26,13 @@
 #include "media/base/media_client.h"
 #include "media/base/media_switches.h"
 #include "media/base/mime_util.h"
+#include "media/cdm/clear_key_cdm_common.h"
 #include "media/media_buildflags.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 
 namespace media {
 
 namespace {
-
-const char kClearKeyKeySystem[] = "org.w3.clearkey";
 
 // These names are used by UMA. Do not change them!
 const char kClearKeyKeySystemNameForUMA[] = "ClearKey";
@@ -66,7 +65,7 @@ static const MimeTypeToCodecs kMimeTypeToCodecsMap[] = {
     {"video/mp2t", EME_CODEC_MP2T_VIDEO_ALL},
 #endif  // BUILDFLAG(ENABLE_MSE_MPEG2TS_STREAM_PARSER)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-};      // namespace media
+};
 
 EmeCodec ToAudioEmeCodec(AudioCodec codec) {
   switch (codec) {
@@ -155,13 +154,13 @@ class ClearKeyProperties : public KeySystemInfo {
   }
 
   EmeConfig::Rule GetEncryptionSchemeConfigRule(
-      media::EncryptionScheme encryption_scheme) const final {
+      EncryptionScheme encryption_scheme) const final {
     switch (encryption_scheme) {
-      case media::EncryptionScheme::kCenc:
-      case media::EncryptionScheme::kCbcs: {
+      case EncryptionScheme::kCenc:
+      case EncryptionScheme::kCbcs: {
         return EmeConfig::SupportedRule();
       }
-      case media::EncryptionScheme::kUnencrypted:
+      case EncryptionScheme::kUnencrypted:
         break;
     }
     NOTREACHED();
@@ -230,8 +229,9 @@ static bool IsPotentiallySupportedKeySystem(const std::string& key_system) {
   if (key_system == kWidevineKeySystem)
     return true;
 
-  if (key_system == kClearKeyKeySystem)
+  if (key_system == kClearKeyKeySystem) {
     return true;
+  }
 
   // External Clear Key is known and supports suffixes for testing.
   if (IsExternalClearKey(key_system))
@@ -260,10 +260,10 @@ static bool CanBlock(const KeySystemInfo& properties) {
   // For External Clear Key, it is either implemented as a library CDM (Clear
   // Key CDM), which is covered above, or by using AesDecryptor remotely, e.g.
   // via MojoCdm. In both cases, we can block. This is only used for testing.
-  if (base::FeatureList::IsEnabled(media::kExternalClearKeyForTesting) &&
-      IsExternalClearKey(properties.GetBaseKeySystemName()))
+  if (base::FeatureList::IsEnabled(kExternalClearKeyForTesting) &&
+      IsExternalClearKey(properties.GetBaseKeySystemName())) {
     return true;
-
+  }
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   // When library CDMs are enabled, we are either using AesDecryptor, or using
   // the library CDM hosted in a sandboxed process. In both cases distinctive
@@ -863,8 +863,9 @@ std::string GetKeySystemNameForUMA(const std::string& key_system,
   // For Clear Key and unknown key systems we don't to differentiate between
   // software and hardware security.
 
-  if (key_system == kClearKeyKeySystem)
+  if (key_system == kClearKeyKeySystem) {
     return kClearKeyKeySystemNameForUMA;
+  }
 
   return kUnknownKeySystemNameForUMA;
 }
@@ -873,8 +874,9 @@ int GetKeySystemIntForUKM(const std::string& key_system) {
   if (key_system == kWidevineKeySystem)
     return KeySystemForUkm::kWidevineKeySystemForUkm;
 
-  if (key_system == kClearKeyKeySystem)
+  if (key_system == kClearKeyKeySystem) {
     return KeySystemForUkm::kClearKeyKeySystemForUkm;
+  }
 
   return KeySystemForUkm::kUnknownKeySystemForUkm;
 }

@@ -17,6 +17,7 @@
 #include "media/base/cdm_config.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/mock_filters.h"
+#include "media/cdm/clear_key_cdm_common.h"
 #include "media/cdm/default_cdm_factory.h"
 #include "media/mojo/mojom/content_decryption_module.mojom.h"
 #include "media/mojo/services/mojo_cdm_service.h"
@@ -48,8 +49,6 @@ ACTION_P2(CdmCreated, cdm, error_message) {
 namespace media {
 
 namespace {
-
-const char kClearKeyKeySystem[] = "org.w3.clearkey";
 
 // Random key ID used to create a session.
 const uint8_t kKeyId[] = {
@@ -116,7 +115,7 @@ class MojoCdmTest : public ::testing::Test {
     mojo::Remote<mojom::ContentDecryptionModule> cdm_remote(
         cdm_receiver_->BindNewPipeAndPassRemote());
 
-    media::CdmConfig cdm_config = {"com.foo.bar", false, false, false};
+    CdmConfig cdm_config = {"com.foo.bar", false, false, false};
 
     mojo_cdm_ = base::MakeRefCounted<MojoCdm>(
         std::move(cdm_remote), std::move(cdm_context), cdm_config,
@@ -299,7 +298,7 @@ class MojoCdmTest : public ::testing::Test {
         break;
 
       case FAILURE:
-        promise->reject(media::CdmPromise::Exception::NOT_SUPPORTED_ERROR, 0,
+        promise->reject(CdmPromise::Exception::NOT_SUPPORTED_ERROR, 0,
                         "Promise rejected");
         break;
 
@@ -335,7 +334,7 @@ class MojoCdmTest : public ::testing::Test {
         break;
 
       case FAILURE:
-        promise->reject(media::CdmPromise::Exception::NOT_SUPPORTED_ERROR, 0,
+        promise->reject(CdmPromise::Exception::NOT_SUPPORTED_ERROR, 0,
                         "Promise rejected");
         break;
 

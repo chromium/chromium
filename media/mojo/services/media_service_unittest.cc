@@ -17,6 +17,7 @@
 #include "media/base/cdm_config.h"
 #include "media/base/mock_filters.h"
 #include "media/base/test_helpers.h"
+#include "media/cdm/clear_key_cdm_common.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/clients/mojo_decryptor.h"
@@ -54,7 +55,6 @@ MATCHER_P(MatchesResult, success, "") {
 }
 
 #if BUILDFLAG(ENABLE_MOJO_CDM) && !BUILDFLAG(IS_ANDROID)
-const char kClearKeyKeySystem[] = "org.w3.clearkey";
 const char kInvalidKeySystem[] = "invalid.key.system";
 #endif
 
@@ -80,8 +80,7 @@ class MockRendererClient : public mojom::RendererClient {
   MOCK_METHOD1(OnAudioConfigChange, void(const AudioDecoderConfig&));
   MOCK_METHOD1(OnVideoConfigChange, void(const VideoDecoderConfig&));
   MOCK_METHOD1(OnVideoNaturalSizeChange, void(const gfx::Size& size));
-  MOCK_METHOD1(OnStatisticsUpdate,
-               void(const media::PipelineStatistics& stats));
+  MOCK_METHOD1(OnStatisticsUpdate, void(const PipelineStatistics& stats));
   MOCK_METHOD1(OnWaiting, void(WaitingReason));
   MOCK_METHOD1(OnDurationChange, void(base::TimeDelta duration));
   MOCK_METHOD1(OnRemotePlayStateChange, void(MediaStatus::State state));
@@ -94,7 +93,7 @@ ACTION_P(QuitLoop, run_loop) {
 
 // Tests MediaService using TestMojoMediaClient, which supports CDM creation
 // using DefaultCdmFactory (only supports Clear Key key system), and Renderer
-// creation using RendererImplFactory that always create media::RendererImpl.
+// creation using RendererImplFactory that always create RendererImpl.
 class MediaServiceTest : public testing::Test {
  public:
   MediaServiceTest()
@@ -167,7 +166,7 @@ class MediaServiceTest : public testing::Test {
  protected:
   void OnCdmCreated(bool expected_result,
                     mojo::PendingRemote<mojom::ContentDecryptionModule> remote,
-                    media::mojom::CdmContextPtr cdm_context,
+                    mojom::CdmContextPtr cdm_context,
                     const std::string& error_message) {
     if (!expected_result) {
       EXPECT_FALSE(remote);

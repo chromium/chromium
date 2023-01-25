@@ -18,7 +18,6 @@
 #include "base/scoped_native_library.h"
 #include "build/build_config.h"
 #include "media/cdm/api/content_decryption_module_ext.h"
-#include "media/cdm/cdm_paths.h"
 
 namespace media {
 

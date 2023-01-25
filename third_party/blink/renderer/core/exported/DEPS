@@ -26,6 +26,7 @@ specific_include_rules = {
     "+components/viz/test",
     "+media/base",
     "+media/filters",
+    "+media/cdm/clear_key_cdm_common.h",
     "+media/mojo/services",
     "+media/renderers",
     "+gin/v8_initializer.h",

@@ -1,0 +1,92 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef MEDIA_CDM_CLEAR_KEY_CDM_COMMON_H_
+#define MEDIA_CDM_CLEAR_KEY_CDM_COMMON_H_
+
+#include "build/build_config.h"
+#include "media/cdm/cdm_type.h"
+#include "media/media_buildflags.h"
+
+namespace media {
+
+// Clear Key key system defined in the EME spec.
+inline constexpr char kClearKeyKeySystem[] = "org.w3.clearkey";
+
+// External Clear Key key system ("org.chromium.externalclearkey" and variants)
+// only for testing.
+inline constexpr char kExternalClearKeyKeySystem[] =
+    "org.chromium.externalclearkey";
+
+// Variants of External Clear Key key system to test different scenarios.
+// To add a new variant, make sure you also update:
+// - media/test/data/eme_player_js/globals.js
+// - media/test/data/eme_player_js/player_utils.js
+// - CreateCdmInstance() in clear_key_cdm.cc
+
+// A sub key system that is invalid for testing purpose.
+inline constexpr char kExternalClearKeyInvalidKeySystem[] =
+    "org.chromium.externalclearkey.invalid";
+
+// A sub key system that supports decrypt-only mode.
+inline constexpr char kExternalClearKeyDecryptOnlyKeySystem[] =
+    "org.chromium.externalclearkey.decryptonly";
+
+// A sub key system that triggers various types of messages.
+inline constexpr char kExternalClearKeyMessageTypeTestKeySystem[] =
+    "org.chromium.externalclearkey.messagetypetest";
+
+// A sub key system that triggers the FileIO test.
+inline constexpr char kExternalClearKeyFileIOTestKeySystem[] =
+    "org.chromium.externalclearkey.fileiotest";
+
+// A sub key system that triggers the output protection test.
+inline constexpr char kExternalClearKeyOutputProtectionTestKeySystem[] =
+    "org.chromium.externalclearkey.outputprotectiontest";
+
+// A sub key system that triggers the platform verification test.
+inline constexpr char kExternalClearKeyPlatformVerificationTestKeySystem[] =
+    "org.chromium.externalclearkey.platformverificationtest";
+
+// A sub key system that triggers a crash.
+inline constexpr char kExternalClearKeyCrashKeySystem[] =
+    "org.chromium.externalclearkey.crash";
+
+// A sub key system that triggers the verify host files test.
+inline constexpr char kExternalClearKeyVerifyCdmHostTestKeySystem[] =
+    "org.chromium.externalclearkey.verifycdmhosttest";
+
+// A sub key system that fetches the Storage ID.
+inline constexpr char kExternalClearKeyStorageIdTestKeySystem[] =
+    "org.chromium.externalclearkey.storageidtest";
+
+// A sub key system that is registered with a different CDM type.
+inline constexpr char kExternalClearKeyDifferentCdmTypeTestKeySystem[] =
+    "org.chromium.externalclearkey.differentcdmtype";
+
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+// Name of the ClearKey CDM library.
+inline constexpr char kClearKeyCdmLibraryName[] = "clearkeycdm";
+
+inline constexpr char kClearKeyCdmBaseDirectory[] =
+#if BUILDFLAG(IS_FUCHSIA)
+    "lib/"
+#endif
+    "ClearKeyCdm";
+
+// Display name for Clear Key CDM.
+inline constexpr char kClearKeyCdmDisplayName[] = "Clear Key CDM";
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+// The default GUID for Clear Key Cdm.
+const CdmType kClearKeyCdmType{0x3a2e0fadde4bd1b7ull, 0xcb90df3e240d1694ull};
+
+// A different GUID for Clear Key Cdm for testing running different types of
+// CDMs in the system.
+const CdmType kClearKeyCdmDifferentCdmType{0xc3914773474bdb02ull,
+                                           0x8e8de4d84d3ca030ull};
+
+}  // namespace media
+
+#endif  // MEDIA_CDM_CLEAR_KEY_CDM_COMMON_H_

@@ -67,7 +67,10 @@ source_set("cdm") {
     "supported_audio_codecs.h",
   ]
 
-  public_deps = [ ":cdm_type" ]
+  public_deps = [
+    ":cdm_type",
+    ":clear_key_cdm_common",
+  ]
 
   deps = [
     "//crypto",
@@ -158,8 +161,6 @@ if (enable_library_cdms) {
 
     sources = [ "cdm_paths.cc" ]
 
-    public_deps = [ ":cdm_type" ]
-
     deps = [
       "//base",
       "//media:media_buildflags",
@@ -170,6 +171,12 @@ if (enable_library_cdms) {
 source_set("cdm_type") {
   sources = [ "cdm_type.h" ]
   deps = [ "//base" ]
+}
+
+source_set("clear_key_cdm_common") {
+  sources = [ "clear_key_cdm_common.h" ]
+  public_deps = [ ":cdm_type" ]
+  deps = [ "//media:media_buildflags" ]
 }
 
 source_set("unit_tests") {

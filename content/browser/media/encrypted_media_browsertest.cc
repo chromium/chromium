@@ -17,6 +17,7 @@
 #include "media/base/media.h"
 #include "media/base/media_switches.h"
 #include "media/base/test_data_util.h"
+#include "media/cdm/clear_key_cdm_common.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 
@@ -54,13 +55,6 @@
 #endif
 
 namespace content {
-
-// Available key systems.
-const char kClearKeyKeySystem[] = "org.w3.clearkey";
-
-#if defined(SUPPORTS_EXTERNAL_CLEAR_KEY_IN_CONTENT_SHELL)
-const char kExternalClearKeyKeySystem[] = "org.chromium.externalclearkey";
-#endif
 
 // EME-specific test results and errors.
 const char16_t kEmeKeyError[] = u"KEYERROR";
@@ -193,23 +187,23 @@ using ::testing::Values;
 
 INSTANTIATE_TEST_SUITE_P(SRC_ClearKey,
                          EncryptedMediaTest,
-                         Combine(Values(kClearKeyKeySystem),
+                         Combine(Values(media::kClearKeyKeySystem),
                                  Values(SrcType::SRC)));
 
 INSTANTIATE_TEST_SUITE_P(MSE_ClearKey,
                          EncryptedMediaTest,
-                         Combine(Values(kClearKeyKeySystem),
+                         Combine(Values(media::kClearKeyKeySystem),
                                  Values(SrcType::MSE)));
 
 #if defined(SUPPORTS_EXTERNAL_CLEAR_KEY_IN_CONTENT_SHELL)
 INSTANTIATE_TEST_SUITE_P(SRC_ExternalClearKey,
                          EncryptedMediaTest,
-                         Combine(Values(kExternalClearKeyKeySystem),
+                         Combine(Values(media::kExternalClearKeyKeySystem),
                                  Values(SrcType::SRC)));
 
 INSTANTIATE_TEST_SUITE_P(MSE_ExternalClearKey,
                          EncryptedMediaTest,
-                         Combine(Values(kExternalClearKeyKeySystem),
+                         Combine(Values(media::kExternalClearKeyKeySystem),
                                  Values(SrcType::MSE)));
 #endif
 

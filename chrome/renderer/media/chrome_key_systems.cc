@@ -25,6 +25,7 @@
 #include "media/base/eme_constants.h"
 #include "media/base/key_system_info.h"
 #include "media/cdm/cdm_capability.h"
+#include "media/cdm/clear_key_cdm_common.h"
 #include "media/media_buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
@@ -403,8 +404,6 @@ bool AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
 }
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
-const char kExternalClearKeyKeySystem[] = "org.chromium.externalclearkey";
-
 void AddExternalClearKey(
     const media::mojom::KeySystemCapabilityPtr& /*capability*/,
     KeySystemInfos* key_systems) {
@@ -433,7 +432,7 @@ void OnKeySystemSupportUpdated(
     }
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
-    if (key_system == kExternalClearKeyKeySystem) {
+    if (key_system == media::kExternalClearKeyKeySystem) {
       AddExternalClearKey(capability, &key_systems);
       continue;
     }

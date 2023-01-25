@@ -12,6 +12,7 @@
 #include "base/path_service.h"
 #include "media/base/media_switches.h"
 #include "media/cdm/cdm_paths.h"
+#include "media/cdm/clear_key_cdm_common.h"
 
 void RegisterClearKeyCdm(base::CommandLine* command_line,
                          bool use_wrong_cdm_path) {

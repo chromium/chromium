@@ -15,6 +15,7 @@
 #include "media/base/key_systems.h"
 #include "media/base/media_permission.h"
 #include "media/base/mime_util.h"
+#include "media/cdm/clear_key_cdm_common.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -34,9 +35,8 @@ using MediaKeysRequirement = WebMediaKeySystemConfiguration::Requirement;
 using EncryptionScheme = WebMediaKeySystemMediaCapability::EncryptionScheme;
 
 // Key system strings. Clear Key support is hardcoded in KeySystemConfigSelector
-// so kClearKeyKeySystem is the real key system string. The rest key system
-// strings are for testing purpose only.
-const char kClearKeyKeySystem[] = "org.w3.clearkey";
+// so media::kClearKeyKeySystem is the real key system string. The rest key
+// system strings are for testing purpose only.
 const char kSupportedKeySystem[] = "keysystem.test.supported";
 const char kSupportedSubKeySystem[] = "keysystem.test.supported.sub";
 const char kUnsupportedKeySystem[] = "keysystem.test.unsupported";
@@ -213,7 +213,7 @@ class FakeKeySystems : public media::KeySystems {
 
   bool IsSupportedKeySystem(const std::string& key_system) const override {
     // Based on EME spec, Clear Key key system is always supported.
-    return key_system == kClearKeyKeySystem ||
+    return key_system == media::kClearKeyKeySystem ||
            key_system == kSupportedKeySystem ||
            key_system == kSupportedSubKeySystem;
   }
@@ -224,7 +224,7 @@ class FakeKeySystems : public media::KeySystems {
   }
 
   bool CanUseAesDecryptor(const std::string& key_system) const override {
-    return key_system == kClearKeyKeySystem;
+    return key_system == media::kClearKeyKeySystem;
   }
 
   // TODO(sandersd): Move implementation into KeySystemConfigSelector?
@@ -602,10 +602,10 @@ TEST_F(KeySystemConfigSelectorTest, KeySystem_Unsupported) {
 }
 
 TEST_F(KeySystemConfigSelectorTest, KeySystem_ClearKey) {
-  key_system_ = kClearKeyKeySystem;
+  key_system_ = media::kClearKeyKeySystem;
   configs_.push_back(UsableConfiguration());
   SelectConfigReturnsConfig();
-  DCHECK_EQ(cdm_config_.key_system, kClearKeyKeySystem);
+  DCHECK_EQ(cdm_config_.key_system, media::kClearKeyKeySystem);
 }
 
 TEST_F(KeySystemConfigSelectorTest, KeySystem_SubKeySystem) {
@@ -621,7 +621,7 @@ TEST_F(KeySystemConfigSelectorTest, EncryptedMediaDisabled_ClearKey) {
   media_permission_->is_encrypted_media_enabled = false;
 
   // Clear Key key system is always supported.
-  key_system_ = kClearKeyKeySystem;
+  key_system_ = media::kClearKeyKeySystem;
   configs_.push_back(UsableConfiguration());
   SelectConfigReturnsConfig();
 }
@@ -1046,7 +1046,7 @@ TEST_F(KeySystemConfigSelectorTest, VideoCapabilities_IncompatibleCodec) {
 
 TEST_F(KeySystemConfigSelectorTest,
        VideoCapabilities_UnsupportedByAesDecryptorCodec_ClearKey) {
-  key_system_ = kClearKeyKeySystem;
+  key_system_ = media::kClearKeyKeySystem;
 
   std::vector<WebMediaKeySystemMediaCapability> video_capabilities(1);
   video_capabilities[0].content_type = "a";

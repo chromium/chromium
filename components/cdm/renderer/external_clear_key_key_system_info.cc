@@ -7,19 +7,16 @@
 #include "base/notreached.h"
 #include "media/base/eme_constants.h"
 #include "media/base/key_system_names.h"
+#include "media/cdm/clear_key_cdm_common.h"
 
 namespace cdm {
-
-const char kExternalClearKeyKeySystem[] = "org.chromium.externalclearkey";
-const char kExternalClearKeyInvalidKeySystem[] =
-    "org.chromium.externalclearkey.invalid";
 
 ExternalClearKeySystemInfo::ExternalClearKeySystemInfo() = default;
 
 ExternalClearKeySystemInfo::~ExternalClearKeySystemInfo() = default;
 
 std::string ExternalClearKeySystemInfo::GetBaseKeySystemName() const {
-  return kExternalClearKeyKeySystem;
+  return media::kExternalClearKeyKeySystem;
 }
 
 bool ExternalClearKeySystemInfo::IsSupportedKeySystem(
@@ -27,9 +24,10 @@ bool ExternalClearKeySystemInfo::IsSupportedKeySystem(
   // Supports kExternalClearKeyKeySystem and all its sub key systems, except for
   // the explicitly "invalid" one. See the test
   // EncryptedMediaSupportedTypesExternalClearKeyTest.InvalidKeySystems.
-  return (key_system == kExternalClearKeyKeySystem ||
-          media::IsSubKeySystemOf(key_system, kExternalClearKeyKeySystem)) &&
-         key_system != kExternalClearKeyInvalidKeySystem;
+  return (key_system == media::kExternalClearKeyKeySystem ||
+          media::IsSubKeySystemOf(key_system,
+                                  media::kExternalClearKeyKeySystem)) &&
+         key_system != media::kExternalClearKeyInvalidKeySystem;
 }
 
 bool ExternalClearKeySystemInfo::IsSupportedInitDataType(

@@ -6,6 +6,7 @@
 
 #include "media/base/video_codecs.h"
 #include "media/capabilities/bucket_utility.h"
+#include "media/cdm/clear_key_cdm_common.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -32,7 +33,7 @@ TEST(VideoDecodeStatsDBTest, KeySerialization) {
   // Same as above + KeySystem. Serialize should now show KeySystem name +
   // mention of hw_secure.
   auto keyB = MakeKey(H264PROFILE_BASELINE, gfx::Size(1280, 720), 30,
-                      "org.w3.clearkey", false);
+                      kClearKeyKeySystem, false);
   ASSERT_EQ("0|1280x720|30|org.w3.clearkey|not_hw_secure", keyB.Serialize());
 
   // Different KeySystem, different hw_secure status.

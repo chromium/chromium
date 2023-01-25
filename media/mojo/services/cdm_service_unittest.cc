@@ -15,6 +15,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "media/base/mock_filters.h"
+#include "media/cdm/clear_key_cdm_common.h"
 #include "media/cdm/default_cdm_factory.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -39,7 +40,6 @@ MATCHER_P(MatchesResult, success, "") {
 
 // MockCdmFactory treats any non-empty key system as valid and the empty key
 // system as invalid.
-const char kValidKeySystem[] = "org.w3.clearkey";
 const char kInvalidKeySystem[] = "";
 
 // Needed since MockCdmServiceClient needs to return unique_ptr of CdmFactory.
@@ -64,22 +64,22 @@ class CdmFactoryWrapper : public CdmFactory {
   const raw_ptr<CdmFactory> cdm_factory_;
 };
 
-class MockCdmServiceClient : public media::CdmService::Client {
+class MockCdmServiceClient : public CdmService::Client {
  public:
   explicit MockCdmServiceClient(CdmFactory* cdm_factory)
       : cdm_factory_(cdm_factory) {}
   ~MockCdmServiceClient() override = default;
 
-  // media::CdmService::Client implementation.
+  // CdmService::Client implementation.
   MOCK_METHOD0(EnsureSandboxed, void());
 
-  std::unique_ptr<media::CdmFactory> CreateCdmFactory(
+  std::unique_ptr<CdmFactory> CreateCdmFactory(
       mojom::FrameInterfaceFactory* frame_interfaces) override {
     return std::make_unique<CdmFactoryWrapper>(cdm_factory_);
   }
 
 #if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
-  void AddCdmHostFilePaths(std::vector<media::CdmHostFilePath>*) override {}
+  void AddCdmHostFilePaths(std::vector<CdmHostFilePath>*) override {}
 #endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 
  private:
@@ -157,7 +157,7 @@ class CdmServiceTest : public testing::Test {
  private:
   void OnCdmCreated(bool expected_result,
                     mojo::PendingRemote<mojom::ContentDecryptionModule> remote,
-                    media::mojom::CdmContextPtr cdm_context,
+                    mojom::CdmContextPtr cdm_context,
                     const std::string& error_message) {
     if (!expected_result) {
       EXPECT_FALSE(remote);
@@ -179,7 +179,7 @@ class CdmServiceTest : public testing::Test {
 
 TEST_F(CdmServiceTest, InitializeCdm_Success) {
   Initialize();
-  InitializeCdm(kValidKeySystem, true);
+  InitializeCdm(kClearKeyKeySystem, true);
 }
 
 TEST_F(CdmServiceTest, InitializeCdm_InvalidKeySystem) {
@@ -189,9 +189,9 @@ TEST_F(CdmServiceTest, InitializeCdm_InvalidKeySystem) {
 
 TEST_F(CdmServiceTest, DestroyAndRecreateCdm) {
   Initialize();
-  InitializeCdm(kValidKeySystem, true);
+  InitializeCdm(kClearKeyKeySystem, true);
   cdm_remote_.reset();
-  InitializeCdm(kValidKeySystem, true);
+  InitializeCdm(kClearKeyKeySystem, true);
 }
 
 // CdmFactory disconnection will cause the service to idle.
@@ -199,7 +199,7 @@ TEST_F(CdmServiceTest, DestroyCdmFactory) {
   Initialize();
   auto* service = cdm_service();
 
-  InitializeCdm(kValidKeySystem, true);
+  InitializeCdm(kClearKeyKeySystem, true);
   EXPECT_EQ(service->BoundCdmFactorySizeForTesting(), 1u);
   EXPECT_EQ(service->UnboundCdmFactorySizeForTesting(), 0u);
 
@@ -213,7 +213,7 @@ TEST_F(CdmServiceTest, DestroyCdmFactory) {
 // Destroy service will destroy the CdmFactory and all CDMs.
 TEST_F(CdmServiceTest, DestroyCdmService_AfterCdmCreation) {
   Initialize();
-  InitializeCdm(kValidKeySystem, true);
+  InitializeCdm(kClearKeyKeySystem, true);
 
   base::RunLoop run_loop;
   // Ideally we should not care about order, and should only quit the loop when
@@ -234,7 +234,7 @@ TEST_F(CdmServiceTest, DestroyCdmService_DuringCdmCreation) {
   mock_cdm_factory_.SetBeforeCreationCB(base::BindRepeating(
       &CdmServiceTest::DestroyService, base::Unretained(this)));
   Initialize();
-  InitializeCdm(kValidKeySystem, true);
+  InitializeCdm(kClearKeyKeySystem, true);
   run_loop.Run();
 }
 

@@ -15,6 +15,7 @@
 #include "media/base/test_helpers.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/base/win/mf_mocks.h"
+#include "media/cdm/clear_key_cdm_common.h"
 #include "media/cdm/mock_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,7 +32,6 @@ using ::testing::StrictMock;
 
 namespace media {
 
-const char kClearKeyKeySystem[] = "org.w3.clearkey";
 const CdmConfig kClearKeyHardwareSecureCdmConfig = {kClearKeyKeySystem, true,
                                                     true, true};
 
