@@ -53,6 +53,7 @@ class RealtimeAudioDestinationHandler final
   void RestartRendering() override;
   uint32_t MaxChannelCount() const override;
   double SampleRate() const override;
+  void PrepareTaskRunnerForWorklet() override;
 
   // For AudioIOCallback. This is invoked by the platform audio destination to
   // get the next render quantum into `destination_bus` and update

@@ -216,10 +216,25 @@ void AudioDestination::Resume() {
   SetDeviceState(DeviceState::kRunning);
 }
 
+void AudioDestination::SetWorkletTaskRunner(
+    scoped_refptr<base::SingleThreadTaskRunner> worklet_task_runner) {
+  DCHECK(IsMainThread());
+  TRACE_EVENT0("webaudio", "AudioDestination::SetWorkletTaskRunner");
+
+  if (worklet_task_runner_) {
+    DCHECK_EQ(worklet_task_runner_, worklet_task_runner);
+    return;
+  }
+
+  // The dual-thread rendering kicks off, so update the earmark frames
+  // accordingly.
+  fifo_->SetEarmarkFrames(callback_buffer_size_);
+  worklet_task_runner_ = std::move(worklet_task_runner);
+}
+
 void AudioDestination::StartWithWorkletTaskRunner(
     scoped_refptr<base::SingleThreadTaskRunner> worklet_task_runner) {
   DCHECK(IsMainThread());
-  DCHECK_EQ(worklet_task_runner_, nullptr);
   TRACE_EVENT0("webaudio", "AudioDestination::StartWithWorkletTaskRunner");
   SendLogMessage(String::Format("%s", __func__));
 
@@ -227,11 +242,7 @@ void AudioDestination::StartWithWorkletTaskRunner(
     return;
   }
 
-  // The dual-thread rendering kicks off, so update the earmark frames
-  // accordingly.
-  fifo_->SetEarmarkFrames(callback_buffer_size_);
-
-  worklet_task_runner_ = std::move(worklet_task_runner);
+  SetWorkletTaskRunner(worklet_task_runner);
   web_audio_device_->Start();
   SetDeviceState(DeviceState::kRunning);
 }
