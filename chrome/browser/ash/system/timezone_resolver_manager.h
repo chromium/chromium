@@ -87,7 +87,12 @@ class TimeZoneResolverManager : public TimeZoneResolver::Delegate {
   static bool IfServiceShouldBeRunningForSigninScreen();
 
  private:
-  int GetTimezoneManagementSetting();
+  // Return the effective policy value for automatic time zone resolution.
+  // If static timezone policy is present returns
+  // enterprise_management::SystemTimezoneProto::DISABLED.
+  // For regular users returns
+  // enterprise_management::SystemTimezoneProto::USERS_DECIDE.
+  static int GetEffectiveAutomaticTimezoneManagementSetting();
 
   // Local State initialization observer.
   void OnLocalStateInitialized(bool initialized);

@@ -143,29 +143,83 @@ void TimeZoneResolverManager::SetPrimaryUserPrefs(PrefService* pref_service) {
 }
 
 bool TimeZoneResolverManager::ShouldSendWiFiGeolocationData() {
-  int timezone_setting = GetTimezoneManagementSetting();
-  return (
-      (timezone_setting ==
-       enterprise_management::SystemTimezoneProto::SEND_WIFI_ACCESS_POINTS) ||
-      (timezone_setting ==
-       enterprise_management::SystemTimezoneProto::SEND_ALL_LOCATION_INFO));
+  // Managed user case, check cloud policies for automatic time zone.
+  if (IsTimeZoneResolutionPolicyControlled()) {
+    switch (GetEffectiveAutomaticTimezoneManagementSetting()) {
+      case enterprise_management::SystemTimezoneProto::SEND_WIFI_ACCESS_POINTS:
+        return true;
+      case enterprise_management::SystemTimezoneProto::SEND_ALL_LOCATION_INFO:
+        return true;
+      case enterprise_management::SystemTimezoneProto::USERS_DECIDE:
+        // Same as regular user flow, continue processing below.
+        break;
+      default:
+        return false;
+    }
+  }
+
+  // Regular user case (also USERS_DECIDE case for managed).
+  // Automatic time zone setting is an user configurable option, applying
+  // the primary user's choice to the entire session.
+  // primary_user_prefs_ indicates if the user has signed in or not.
+  if (primary_user_prefs_) {
+    switch (GetEffectiveUserTimeZoneResolveMethod(primary_user_prefs_,
+                                                  /*check_policy=*/false)) {
+      case TimeZoneResolveMethod::SEND_WIFI_ACCESS_POINTS:
+        return true;
+      case TimeZoneResolveMethod::SEND_ALL_LOCATION_INFO:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  // Precise location is disabled on log-in screen.
+  return false;
 }
 
 bool TimeZoneResolverManager::ShouldSendCellularGeolocationData() {
-  return (GetTimezoneManagementSetting() ==
-          enterprise_management::SystemTimezoneProto::SEND_ALL_LOCATION_INFO);
+  // Managed user case, check cloud policies for automatic time zone.
+  if (IsTimeZoneResolutionPolicyControlled()) {
+    switch (GetEffectiveAutomaticTimezoneManagementSetting()) {
+      case enterprise_management::SystemTimezoneProto::SEND_ALL_LOCATION_INFO:
+        return true;
+      case enterprise_management::SystemTimezoneProto::USERS_DECIDE:
+        // Same as regular user flow, continue processing below.
+        break;
+      default:
+        return false;
+    }
+  }
+
+  // Regular user case (also USERS_DECIDE case for managed).
+  // Automatic time zone setting is an user configurable option, applying
+  // the primary user's choice to the entire session.
+  // primary_user_prefs_ indicates if the has user signed in or not.
+  if (primary_user_prefs_) {
+    return GetEffectiveUserTimeZoneResolveMethod(primary_user_prefs_,
+                                                 /*check_policy=*/false) ==
+           TimeZoneResolveMethod::SEND_ALL_LOCATION_INFO;
+  }
+
+  // Precise location is disabled on log-in screen.
+  return false;
 }
 
-int TimeZoneResolverManager::GetTimezoneManagementSetting() {
-  PrefService* local_state = g_browser_process->local_state();
-  const bool is_managed = local_state->IsManagedPreference(
+// static
+int TimeZoneResolverManager::GetEffectiveAutomaticTimezoneManagementSetting() {
+  // Regular users choose automatic time zone method themselves.
+  if (!IsTimeZoneResolutionPolicyControlled()) {
+    return enterprise_management::SystemTimezoneProto::USERS_DECIDE;
+  }
+
+  // Static time zone policy overrides automatic.
+  if (HasSystemTimezonePolicy()) {
+    return enterprise_management::SystemTimezoneProto::DISABLED;
+  }
+
+  int policy_value = g_browser_process->local_state()->GetInteger(
       prefs::kSystemTimezoneAutomaticDetectionPolicy);
-  if (!is_managed)
-    return false;
-
-  int policy_value =
-      local_state->GetInteger(prefs::kSystemTimezoneAutomaticDetectionPolicy);
-
   DCHECK(policy_value <= enterprise_management::SystemTimezoneProto::
                              AutomaticTimezoneDetectionType_MAX);
 
@@ -251,33 +305,22 @@ TimeZoneResolverManager::GetEffectiveUserTimeZoneResolveMethod(
     const PrefService* user_prefs,
     bool check_policy) {
   if (check_policy) {
-    if (HasSystemTimezonePolicy())
-      return TimeZoneResolveMethod::DISABLED;
-
-    PrefService* local_state = g_browser_process->local_state();
-    const bool is_managed = local_state->IsManagedPreference(
-        prefs::kSystemTimezoneAutomaticDetectionPolicy);
-    if (is_managed) {
-      int policy_value = local_state->GetInteger(
-          prefs::kSystemTimezoneAutomaticDetectionPolicy);
-
-      switch (policy_value) {
-        case enterprise_management::SystemTimezoneProto::USERS_DECIDE:
-          // Follow user preference.
-          break;
-        case enterprise_management::SystemTimezoneProto::DISABLED:
-          return TimeZoneResolveMethod::DISABLED;
-        case enterprise_management::SystemTimezoneProto::IP_ONLY:
-          return TimeZoneResolveMethod::IP_ONLY;
-        case enterprise_management::SystemTimezoneProto::
-            SEND_WIFI_ACCESS_POINTS:
-          return TimeZoneResolveMethod::SEND_WIFI_ACCESS_POINTS;
-        case enterprise_management::SystemTimezoneProto::SEND_ALL_LOCATION_INFO:
-          return TimeZoneResolveMethod::SEND_ALL_LOCATION_INFO;
-        default:
-          NOTREACHED();
-          return TimeZoneResolveMethod::DISABLED;
-      }
+    int policy_value = GetEffectiveAutomaticTimezoneManagementSetting();
+    switch (policy_value) {
+      case enterprise_management::SystemTimezoneProto::USERS_DECIDE:
+        // Follow user preference.
+        break;
+      case enterprise_management::SystemTimezoneProto::DISABLED:
+        return TimeZoneResolveMethod::DISABLED;
+      case enterprise_management::SystemTimezoneProto::IP_ONLY:
+        return TimeZoneResolveMethod::IP_ONLY;
+      case enterprise_management::SystemTimezoneProto::SEND_WIFI_ACCESS_POINTS:
+        return TimeZoneResolveMethod::SEND_WIFI_ACCESS_POINTS;
+      case enterprise_management::SystemTimezoneProto::SEND_ALL_LOCATION_INFO:
+        return TimeZoneResolveMethod::SEND_ALL_LOCATION_INFO;
+      default:
+        NOTREACHED();
+        return TimeZoneResolveMethod::DISABLED;
     }
   }
   if (user_prefs->GetBoolean(
