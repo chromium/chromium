@@ -20,39 +20,44 @@ found in the LICENSE file.
         android:text="@string/privacy_sandbox_m1_notice_row_learn_more_heading_1"
         style="@style/TextAppearance.TextMediumThick.Secondary" />
 
-    <TextView
+    <org.chromium.ui.widget.TextViewWithLeading
         android:layout_marginBottom="@dimen/promo_between_text_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/privacy_sandbox_m1_notice_row_learn_more_description_1"
+        app:leading="@dimen/text_size_medium_leading"
         style="@style/TextAppearance.TextMedium.Secondary" />
 
-    <TextView
+    <org.chromium.ui.widget.TextViewWithLeading
         android:id="@+id/privacy_sandbox_m1_notice_row_learn_more_bullet_one"
         android:layout_marginBottom="@dimen/promo_between_text_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:leading="@dimen/text_size_medium_leading"
         style="@style/TextAppearance.TextMedium.Secondary" />
 
-    <TextView
+    <org.chromium.ui.widget.TextViewWithLeading
         android:id="@+id/privacy_sandbox_m1_notice_row_learn_more_bullet_two"
         android:layout_marginBottom="@dimen/promo_between_text_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:leading="@dimen/text_size_medium_leading"
         style="@style/TextAppearance.TextMedium.Secondary" />
 
-    <TextView
+    <org.chromium.ui.widget.TextViewWithLeading
         android:layout_marginBottom="@dimen/promo_between_text_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/privacy_sandbox_m1_notice_row_learn_more_description_2"
+        app:leading="@dimen/text_size_medium_leading"
         style="@style/TextAppearance.TextMedium.Secondary" />
 
-    <TextView
+    <org.chromium.ui.widget.TextViewWithLeading
         android:layout_marginBottom="@dimen/promo_between_text_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/privacy_sandbox_m1_notice_row_learn_more_description_3"
+        app:leading="@dimen/text_size_medium_leading"
         style="@style/TextAppearance.TextMedium.Secondary" />
 
     <TextView
@@ -62,25 +67,28 @@ found in the LICENSE file.
         android:text="@string/privacy_sandbox_m1_notice_row_learn_more_heading_2"
         style="@style/TextAppearance.TextMediumThick.Secondary" />
 
-    <TextView
+    <org.chromium.ui.widget.TextViewWithLeading
         android:layout_marginBottom="@dimen/promo_between_text_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/privacy_sandbox_m1_notice_row_learn_more_description_4"
+        app:leading="@dimen/text_size_medium_leading"
         style="@style/TextAppearance.TextMedium.Secondary" />
 
-    <TextView
+    <org.chromium.ui.widget.TextViewWithLeading
         android:layout_marginBottom="@dimen/promo_between_text_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/privacy_sandbox_m1_notice_row_learn_more_description_android"
+        app:leading="@dimen/text_size_medium_leading"
         style="@style/TextAppearance.TextMedium.Secondary" />
 
-    <TextView
+    <org.chromium.ui.widget.TextViewWithLeading
         android:layout_marginBottom="@dimen/promo_between_text_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/privacy_sandbox_m1_notice_row_learn_more_description_5"
+        app:leading="@dimen/text_size_medium_leading"
         style="@style/TextAppearance.TextMedium.Secondary" />
 
 </LinearLayout>

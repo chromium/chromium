@@ -55,17 +55,19 @@ found in the LICENSE file.
                     android:gravity="center"
                     style="@style/TextAppearance.Headline.Primary" />
 
-                <TextView
+                <org.chromium.ui.widget.TextViewWithLeading
                     android:layout_marginBottom="@dimen/list_item_default_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/privacy_sandbox_m1_notice_row_description_1"
+                    app:leading="@dimen/text_size_medium_leading"
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
-                <TextView
+                <org.chromium.ui.widget.TextViewWithLeading
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/privacy_sandbox_m1_notice_row_description_2"
+                    app:leading="@dimen/text_size_medium_leading"
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
                 <ImageView
@@ -76,11 +78,12 @@ found in the LICENSE file.
                     android:adjustViewBounds="true"
                     android:importantForAccessibility="no" />
 
-                <TextView
+                <org.chromium.ui.widget.TextViewWithLeading
                     android:layout_marginBottom="@dimen/list_item_default_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/privacy_sandbox_m1_notice_row_description_3"
+                    app:leading="@dimen/text_size_medium_leading"
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
                 <LinearLayout
@@ -113,11 +116,12 @@ found in the LICENSE file.
                     android:layout_height="wrap_content"
                     android:visibility="gone" />
 
-                <TextView
+                <org.chromium.ui.widget.TextViewWithLeading
                     android:layout_marginBottom="@dimen/privacy_sandbox_notice_margin_bottom"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/privacy_sandbox_m1_notice_row_description_4"
+                    app:leading="@dimen/text_size_medium_leading"
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
             </LinearLayout>
