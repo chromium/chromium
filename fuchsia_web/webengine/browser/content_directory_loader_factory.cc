@@ -5,7 +5,7 @@
 #include "fuchsia_web/webengine/browser/content_directory_loader_factory.h"
 
 #include <lib/fdio/directory.h>
-#include <lib/fdio/fdio.h>
+#include <lib/fdio/fd.h>
 
 #include <algorithm>
 #include <memory>
@@ -121,32 +121,21 @@ class ContentDirectoryURLLoader final : public network::mojom::URLLoader {
   // Creates a read-only MemoryMappedFile view to |file|.
   bool MapFile(fidl::InterfaceHandle<fuchsia::io::Node> file,
                base::MemoryMappedFile* mmap) {
-    // Bind the file channel to a FDIO entry and then a file descriptor so that
-    // we can use it for reading.
-    fdio_t* fdio = nullptr;
-    zx_status_t status = fdio_create(file.TakeChannel().release(), &fdio);
-    if (status == ZX_ERR_PEER_CLOSED) {
+    // Bind the file channel to a file descriptor so that we can use it for
+    // reading.
+    int fd = -1;
+    zx_status_t status = fdio_fd_create(file.TakeChannel().release(), &fd);
+    if (status != ZX_OK) {
       // File-not-found errors are expected in some cases, so handle this result
       // w/o logging error text.
-      return false;
-    } else if (status != ZX_OK) {
-      ZX_DLOG_IF(WARNING, status != ZX_OK, status) << "fdio_create";
-      return false;
-    }
-
-    base::ScopedFD fd(fdio_bind_to_fd(fdio, -1, 0));
-    if (!fd.is_valid()) {
-      LOG(ERROR) << "fdio_bind_to_fd returned an invalid FD.";
+      ZX_DLOG_IF(WARNING, status != ZX_ERR_PEER_CLOSED, status)
+          << "fdio_fd_create";
       return false;
     }
 
     // Map the file into memory.
-    if (!mmap->Initialize(base::File(std::move(fd)),
-                          base::MemoryMappedFile::READ_ONLY)) {
-      return false;
-    }
-
-    return true;
+    return mmap->Initialize(base::File(base::ScopedFD(fd)),
+                            base::MemoryMappedFile::READ_ONLY);
   }
 
   // Initiates data transfer from |file_channel| to |client_remote|.
