@@ -290,11 +290,11 @@ ScriptPromise ImageCapture::getPhotoSettings(ScriptState* script_state) {
                                   WrapPersistent(this)));
 }
 
-ScriptPromise ImageCapture::setOptions(ScriptState* script_state,
-                                       const PhotoSettings* photo_settings,
-                                       bool trigger_take_photo /* = false */) {
+ScriptPromise ImageCapture::takePhoto(ScriptState* script_state,
+                                      const PhotoSettings* photo_settings) {
   TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-                       "ImageCapture::setOptions", TRACE_EVENT_SCOPE_PROCESS);
+                       "ImageCapture::takePhoto", TRACE_EVENT_SCOPE_PROCESS);
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
@@ -370,18 +370,8 @@ ScriptPromise ImageCapture::setOptions(ScriptState* script_state,
   service_->SetOptions(
       SourceId(), std::move(settings),
       WTF::BindOnce(&ImageCapture::OnMojoSetOptions, WrapPersistent(this),
-                    WrapPersistent(resolver), trigger_take_photo));
+                    WrapPersistent(resolver), /*trigger_take_photo=*/true));
   return promise;
-}
-
-ScriptPromise ImageCapture::takePhoto(ScriptState* script_state,
-                                      const PhotoSettings* photo_settings) {
-  TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-                       "ImageCapture::takePhoto (with settings)",
-                       TRACE_EVENT_SCOPE_PROCESS);
-
-  return setOptions(script_state, photo_settings,
-                    true /* trigger_take_photo */);
 }
 
 ScriptPromise ImageCapture::grabFrame(ScriptState* script_state) {
@@ -796,13 +786,14 @@ void ImageCapture::SetMediaTrackConstraints(
   service_->SetOptions(
       SourceId(), std::move(settings),
       WTF::BindOnce(&ImageCapture::OnMojoSetOptions, WrapPersistent(this),
-                    WrapPersistent(resolver), false /* trigger_take_photo */));
+                    WrapPersistent(resolver), /*trigger_take_photo=*/false));
 }
 
 void ImageCapture::SetPanTiltZoomSettingsFromTrack(
     base::OnceClosure initialized_callback,
     media::mojom::blink::PhotoStatePtr photo_state) {
-  UpdateMediaTrackCapabilities(base::DoNothing(), std::move(photo_state));
+  UpdateMediaTrackSettingsAndCapabilities(base::DoNothing(),
+                                          std::move(photo_state));
 
   auto* video_track = MediaStreamVideoTrack::From(stream_track_->Component());
   DCHECK(video_track);
@@ -862,7 +853,7 @@ void ImageCapture::OnSetPanTiltZoomSettingsFromTrack(
     bool result) {
   service_->GetPhotoState(
       SourceId(),
-      WTF::BindOnce(&ImageCapture::UpdateMediaTrackCapabilities,
+      WTF::BindOnce(&ImageCapture::UpdateMediaTrackSettingsAndCapabilities,
                     WrapPersistent(this), std::move(done_callback)));
 }
 
@@ -967,7 +958,7 @@ ScriptPromise ImageCapture::GetMojoPhotoState(
       SourceId(),
       WTF::BindOnce(&ImageCapture::OnMojoGetPhotoState, WrapPersistent(this),
                     WrapPersistent(resolver), std::move(resolver_cb),
-                    false /* trigger_take_photo */));
+                    /*trigger_take_photo=*/false));
   return promise;
 }
 
@@ -1017,7 +1008,8 @@ void ImageCapture::OnMojoGetPhotoState(
     photo_capabilities_->setFillLightMode(fill_light_mode);
 
   // Update the local track photo_state cache.
-  UpdateMediaTrackCapabilities(base::DoNothing(), std::move(photo_state));
+  UpdateMediaTrackSettingsAndCapabilities(base::DoNothing(),
+                                          std::move(photo_state));
 
   if (trigger_take_photo) {
     service_->TakePhoto(
@@ -1074,7 +1066,7 @@ void ImageCapture::OnMojoTakePhoto(ScriptPromiseResolver* resolver,
   service_requests_.erase(resolver);
 }
 
-void ImageCapture::UpdateMediaTrackCapabilities(
+void ImageCapture::UpdateMediaTrackSettingsAndCapabilities(
     base::OnceClosure initialized_callback,
     media::mojom::blink::PhotoStatePtr photo_state) {
   if (!photo_state) {

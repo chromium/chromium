@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://w3c.github.io/mediacapture-image/##photosettings-section
+// https://w3c.github.io/mediacapture-image/#photosettings-section
 
 dictionary PhotoSettings {
-    boolean redEyeReduction;
+    FillLightMode fillLightMode;
     double imageHeight;
     double imageWidth;
-    FillLightMode fillLightMode;
+    boolean redEyeReduction;
 };

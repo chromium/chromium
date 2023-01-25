@@ -30,8 +30,7 @@ This API is structured around the [ImageCapture class] _and_ a number of
     `ImageBitmap` will only have the resolution of the video track — which
     will generally be lower than the camera's still-image resolution.
 
-(_Adapted from the [Origin Trials Web Update post](
-https://developers.google.com/web/updates/2016/12/imagecapture)_)
+(_Adapted from the [blog post](https://developer.chrome.com/blog/imagecapture/)_)
 
 
 ### Photo settings and capabilities
@@ -50,9 +49,9 @@ while enabling red eye reduction, if available, is not.
 |[`PhotoSettings`]         |non-live settings    |`theImageCapturer.takePhoto(photoSettings)`|
 |[`MediaTrackSettings`]    |live settings        |`theTrack.getSettings()`                 |
 
-[`PhotoCapabilities`]: https://w3c.github.io/mediacapture-image/##photocapabilities-section
+[`PhotoCapabilities`]: https://w3c.github.io/mediacapture-image/#photocapabilities-section
 [`MediaTrackCapabilities`]: https://w3c.github.io/mediacapture-image/#mediatrackcapabilities-section
-[`PhotoSettings`]: https://w3c.github.io/mediacapture-image/##photosettings-section
+[`PhotoSettings`]: https://w3c.github.io/mediacapture-image/#photosettings-section
 [`MediaTrackSettings`]: https://w3c.github.io/mediacapture-image/#mediatracksettings-section
 
 ## Other topics
@@ -123,10 +122,7 @@ of modifying it can only be seen after taking a picture.
 
 ## Testing
 
-Image Capture web tests are located in [web_tests/imagecapture],
-[web_tests/fast/imagecapture] and [web_tests/external/mediacapture-image].
+Image Capture web tests are located in [web_tests/external/mediacapture-image].
 
-[web_tests/imagecapture]: https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/web_tests/imagecapture
-[web_tests/fast/imagecapture]: https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/web_tests/fast/imagecapture/
 [web_tests/external/mediacapture-image]: https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/web_tests/external/wpt/mediacapture-image/
 
