@@ -386,8 +386,8 @@ public class ChromeTabUtils {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             normalTabModel.addObserver(new TabModelObserver() {
                 @Override
-                public void didAddTab(
-                        Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
+                public void didAddTab(Tab tab, @TabLaunchType int type,
+                        @TabCreationState int creationState, boolean markedForSelection) {
                     createdCallback.notifyCalled();
                     normalTabModel.removeObserver(this);
                 }
@@ -434,8 +434,8 @@ public class ChromeTabUtils {
         TabModel tabModel = activity.getTabModelSelector().getModel(incognito);
         TabModelObserver observer = new TabModelObserver() {
             @Override
-            public void didAddTab(
-                    Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
+            public void didAddTab(Tab tab, @TabLaunchType int type,
+                    @TabCreationState int creationState, boolean markedForSelection) {
                 createdCallback.notifyCalled();
             }
 
@@ -750,8 +750,8 @@ public class ChromeTabUtils {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             tabModel.addObserver(new TabModelObserver() {
                 @Override
-                public void didAddTab(
-                        Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
+                public void didAddTab(Tab tab, @TabLaunchType int type,
+                        @TabCreationState int creationState, boolean markedForSelection) {
                     if (TextUtils.equals(expectedUrl, tab.getUrl().getSpec())) {
                         createdCallback.notifyCalled();
                         tabModel.removeObserver(this);
@@ -802,8 +802,8 @@ public class ChromeTabUtils {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             tabModel.addObserver(new TabModelObserver() {
                 @Override
-                public void didAddTab(
-                        Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
+                public void didAddTab(Tab tab, @TabLaunchType int type,
+                        @TabCreationState int creationState, boolean markedForSelection) {
                     if (TextUtils.equals(expectedUrl, tab.getUrl().getSpec())) {
                         createdCallback.notifyCalled();
                         tabModel.removeObserver(this);

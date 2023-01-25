@@ -310,6 +310,7 @@ public abstract class ChromeFeatureList {
     public static final String FEED_LOADING_PLACEHOLDER = "FeedLoadingPlaceholder";
     public static final String FEED_MULTI_COLUMN = "DiscoverFeedMultiColumn";
     public static final String FEED_NO_VIEW_CACHE = "FeedNoViewCache";
+    public static final String FEED_INTERACTIVE_REFRESH = "FeedInteractiveRefresh";
     public static final String FEED_PERFORMANCE_STUDY = "FeedPerformanceStudy";
     public static final String FEED_POSITION_ANDROID = "FeedPositionAndroid";
     public static final String FEED_SHOW_SIGN_IN_COMMAND = "FeedShowSignInCommand";

@@ -327,7 +327,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
         mTabModelObserver = new TabModelObserver() {
             @Override
-            public void didAddTab(Tab tab, int type, @TabCreationState int creationState) {
+            public void didAddTab(Tab tab, int type, @TabCreationState int creationState,
+                    boolean markedForSelection) {
                 // TODO(wychen): move didAddTab and didSelectTab to another observer and inject
                 //  after restoreCompleted.
                 if (!mTabModelSelector.isTabStateInitialized()) {

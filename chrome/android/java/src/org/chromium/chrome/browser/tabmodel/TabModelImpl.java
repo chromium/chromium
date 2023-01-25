@@ -250,7 +250,9 @@ public class TabModelImpl extends TabModelJniBridge {
             int newIndex = indexOf(tab);
             tabAddedToModel(tab);
 
-            for (TabModelObserver obs : mObservers) obs.didAddTab(tab, type, creationState);
+            for (TabModelObserver obs : mObservers) {
+                obs.didAddTab(tab, type, creationState, selectTab);
+            }
 
             // setIndex takes care of making sure the appropriate model is active.
             if (selectTab) setIndex(newIndex, TabSelectionType.FROM_NEW, false);

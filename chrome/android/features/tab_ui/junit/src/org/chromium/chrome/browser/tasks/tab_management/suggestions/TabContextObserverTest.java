@@ -78,7 +78,7 @@ public class TabContextObserverTest {
         TabContextObserverTestHelper tabContextObserverTestHelper =
                 new TabContextObserverTestHelper(mTabModelSelector);
         tabContextObserverTestHelper.mTabModelObserver.didAddTab(
-                null, 0, TabCreationState.LIVE_IN_FOREGROUND);
+                null, 0, TabCreationState.LIVE_IN_FOREGROUND, false);
         Assert.assertEquals(TabContextObserver.TabContextChangeReason.TAB_ADDED,
                 tabContextObserverTestHelper.getChangeReason());
     }

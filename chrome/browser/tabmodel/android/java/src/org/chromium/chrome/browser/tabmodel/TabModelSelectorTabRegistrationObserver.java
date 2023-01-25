@@ -55,8 +55,8 @@ public final class TabModelSelectorTabRegistrationObserver {
     public TabModelSelectorTabRegistrationObserver(TabModelSelector selector) {
         mTabModelObserver = new TabModelSelectorTabModelObserver(selector) {
             @Override
-            public void didAddTab(
-                    Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
+            public void didAddTab(Tab tab, @TabLaunchType int type,
+                    @TabCreationState int creationState, boolean markedForSelection) {
                 // This observer is automatically removed by tab when it is destroyed.
                 onTabRegistered(tab);
             }

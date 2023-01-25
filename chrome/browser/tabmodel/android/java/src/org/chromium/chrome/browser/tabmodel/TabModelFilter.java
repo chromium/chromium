@@ -274,10 +274,11 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
     }
 
     @Override
-    public void didAddTab(Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
+    public void didAddTab(Tab tab, @TabLaunchType int type, @TabCreationState int creationState,
+            boolean markedForSelection) {
         addTab(tab);
         for (TabModelObserver observer : mFilteredObservers) {
-            observer.didAddTab(tab, type, creationState);
+            observer.didAddTab(tab, type, creationState, markedForSelection);
         }
     }
 

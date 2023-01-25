@@ -33,7 +33,8 @@ public abstract class TabContextObserver {
 
         mTabModelObserver = new TabModelObserver() {
             @Override
-            public void didAddTab(Tab tab, int type, @TabCreationState int creationState) {
+            public void didAddTab(Tab tab, int type, @TabCreationState int creationState,
+                    boolean markedForSelection) {
                 onTabContextChanged(TabContextChangeReason.TAB_ADDED);
             }
 

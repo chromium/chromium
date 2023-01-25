@@ -144,8 +144,8 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
         TabModel incognitoTabModel = getActivity().getTabModelSelector().getModel(true);
         TabModelObserver observer = new TabModelObserver() {
             @Override
-            public void didAddTab(
-                    Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
+            public void didAddTab(Tab tab, @TabLaunchType int type,
+                    @TabCreationState int creationState, boolean markedForSelection) {
                 createdCallback.notifyCalled();
             }
 

@@ -70,7 +70,9 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
             }
         }
 
-        for (TabModelObserver observer : mObservers) observer.didAddTab(tab, type, creationState);
+        for (TabModelObserver observer : mObservers) {
+            observer.didAddTab(tab, type, creationState, false);
+        }
     }
 
     @Override

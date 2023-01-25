@@ -101,8 +101,8 @@ public class TabCountProvider {
 
         mTabModelFilterObserver = new TabModelObserver() {
             @Override
-            public void didAddTab(
-                    Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
+            public void didAddTab(Tab tab, @TabLaunchType int type,
+                    @TabCreationState int creationState, boolean markedForSelection) {
                 updateTabCount();
             }
 

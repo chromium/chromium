@@ -533,9 +533,9 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(tabs).when(mTabGroupModelFilter).getRelatedTabList(TAB4_ID);
 
         mTabModelObserverArgumentCaptor.getValue().didAddTab(
-                newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+                newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
         mTabModelObserverArgumentCaptor.getValue().didAddTab(
-                newTab, TabLaunchType.FROM_RESTORE, TabCreationState.FROZEN_ON_RESTORE);
+                newTab, TabLaunchType.FROM_RESTORE, TabCreationState.FROZEN_ON_RESTORE, false);
 
         // Strip should be not be reset when adding a single new tab.
         verifyNeverReset();
@@ -552,7 +552,8 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(tabs).when(mTabGroupModelFilter).getRelatedTabList(TAB4_ID);
 
         mTabModelObserverArgumentCaptor.getValue().didAddTab(newTab,
-                TabLaunchType.FROM_LONGPRESS_BACKGROUND, TabCreationState.LIVE_IN_FOREGROUND);
+                TabLaunchType.FROM_LONGPRESS_BACKGROUND, TabCreationState.LIVE_IN_FOREGROUND,
+                false);
 
         // Strip should be be reset when long pressing a link and add a tab into group.
         verifyResetStrip(true, tabs);
@@ -570,7 +571,7 @@ public class TabGroupUiMediatorUnitTest {
 
         mTabModelObserverArgumentCaptor.getValue().didAddTab(newTab,
                 TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
-                TabCreationState.LIVE_IN_FOREGROUND);
+                TabCreationState.LIVE_IN_FOREGROUND, false);
 
         // Strip should be be reset when long pressing a link and add a tab into group.
         verifyResetStrip(true, tabs);
@@ -589,11 +590,12 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(mTabGroup1).when(mTabGroupModelFilter).getRelatedTabList(TAB4_ID);
 
         mTabModelObserverArgumentCaptor.getValue().didAddTab(
-                newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+                newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
         mTabModelObserverArgumentCaptor.getValue().didAddTab(
-                newTab, TabLaunchType.FROM_RESTORE, TabCreationState.FROZEN_ON_RESTORE);
+                newTab, TabLaunchType.FROM_RESTORE, TabCreationState.FROZEN_ON_RESTORE, false);
         mTabModelObserverArgumentCaptor.getValue().didAddTab(newTab,
-                TabLaunchType.FROM_LONGPRESS_BACKGROUND, TabCreationState.LIVE_IN_FOREGROUND);
+                TabLaunchType.FROM_LONGPRESS_BACKGROUND, TabCreationState.LIVE_IN_FOREGROUND,
+                false);
 
         // Strip should be not be reset through these two types of launching.
         verifyNeverReset();
@@ -609,8 +611,8 @@ public class TabGroupUiMediatorUnitTest {
         mTabGroup2.add(newTab);
         doReturn(mTabGroup2).when(mTabGroupModelFilter).getRelatedTabList(TAB4_ID);
 
-        mTabModelObserverArgumentCaptor.getValue().didAddTab(
-                newTab, TabLaunchType.FROM_TAB_GROUP_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModelObserverArgumentCaptor.getValue().didAddTab(newTab,
+                TabLaunchType.FROM_TAB_GROUP_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
 
         // Strip should be not be reset through adding tab from UI.
         verifyNeverReset();

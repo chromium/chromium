@@ -83,8 +83,10 @@ public class TabUsageTrackerTest {
         // Act: Create 2 tabs, select 1 tab and call onStop.
         TabModelSelectorTabModelObserver observer =
                 mTabUsageTracker.getTabModelSelectorTabModelObserverForTests();
-        observer.didAddTab(tab1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        observer.didAddTab(tab2, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        observer.didAddTab(
+                tab1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
+        observer.didAddTab(
+                tab2, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
         observer.didSelectTab(tab1, TabLaunchType.FROM_CHROME_UI, 0);
 
         mTabUsageTracker.onStopWithNative();
@@ -110,7 +112,8 @@ public class TabUsageTrackerTest {
         // Act: Create 1 tab, select 1 tab and call onStop.
         TabModelSelectorTabModelObserver observer =
                 mTabUsageTracker.getTabModelSelectorTabModelObserverForTests();
-        observer.didAddTab(tab1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        observer.didAddTab(
+                tab1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
         observer.didSelectTab(tab1, TabLaunchType.FROM_CHROME_UI, 3);
 
         mTabUsageTracker.onStopWithNative();

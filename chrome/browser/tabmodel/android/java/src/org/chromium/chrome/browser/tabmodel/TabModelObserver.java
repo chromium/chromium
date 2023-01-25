@@ -68,8 +68,10 @@ public interface TabModelObserver {
      * @param tab The newly added tab.
      * @param type The type of tab launch.
      * @param creationState How the tab was created.
+     * @param markedForSelection Indicates whether the added tab will be selected.
      */
-    default void didAddTab(Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {}
+    default void didAddTab(Tab tab, @TabLaunchType int type, @TabCreationState int creationState,
+            boolean markedForSelection) {}
 
     /**
      * Called after a tab has been moved from one position in the {@link TabModel} to another.

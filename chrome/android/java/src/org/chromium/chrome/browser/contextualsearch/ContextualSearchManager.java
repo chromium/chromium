@@ -605,8 +605,8 @@ public class ContextualSearchManager
             }
 
             @Override
-            public void didAddTab(
-                    Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
+            public void didAddTab(Tab tab, @TabLaunchType int type,
+                    @TabCreationState int creationState, boolean markedForSelection) {
                 // If we're in the process of promoting this tab, just return and don't mess with
                 // this state.
                 if (tab.getWebContents() == getSearchPanelWebContents()) return;

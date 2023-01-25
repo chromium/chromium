@@ -119,7 +119,8 @@ class TabSelectionEditorMediator
 
         mTabModelObserver = new TabModelSelectorTabModelObserver(mTabModelSelector) {
             @Override
-            public void didAddTab(Tab tab, int type, @TabCreationState int creationState) {
+            public void didAddTab(Tab tab, int type, @TabCreationState int creationState,
+                    boolean markedForSelection) {
                 if (!mTabModelSelector.isTabStateInitialized()) return;
                 // When tab is added due to multi-window close or moving between multiple windows,
                 // force hiding the selection editor.

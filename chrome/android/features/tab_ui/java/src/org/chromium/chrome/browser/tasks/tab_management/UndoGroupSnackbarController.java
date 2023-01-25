@@ -97,8 +97,8 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
         mTabModelSelectorTabModelObserver =
                 new TabModelSelectorTabModelObserver(mTabModelSelector) {
                     @Override
-                    public void didAddTab(
-                            Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
+                    public void didAddTab(Tab tab, @TabLaunchType int type,
+                            @TabCreationState int creationState, boolean markedForSelection) {
                         mSnackbarManager.dismissSnackbars(UndoGroupSnackbarController.this);
                     }
 

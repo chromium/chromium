@@ -75,8 +75,8 @@ public class EmptyBackgroundViewWrapper {
 
         mTabModelObserver = new TabModelObserver() {
             @Override
-            public void didAddTab(
-                    Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
+            public void didAddTab(Tab tab, @TabLaunchType int type,
+                    @TabCreationState int creationState, boolean markedForSelection) {
                 updateEmptyContainerState();
             }
 

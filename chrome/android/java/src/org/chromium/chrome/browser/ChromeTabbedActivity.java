@@ -648,8 +648,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 }
 
                 @Override
-                public void didAddTab(
-                        Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
+                public void didAddTab(Tab tab, @TabLaunchType int type,
+                        @TabCreationState int creationState, boolean markedForSelection) {
                     if (type == TabLaunchType.FROM_LONGPRESS_BACKGROUND
                             || type == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
                             || type == TabLaunchType.FROM_RECENT_TABS
@@ -834,7 +834,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getTabModelSelector().getModel(false).commitAllTabClosures();
                 // This assumes that the keyboard can not be seen at the same time as the
                 // newtab button on the toolbar.
-                getCurrentTabCreator().launchNTP();
+                int tabLaunchType =
+                        (getLayoutManager().getActiveLayoutType() == LayoutType.TAB_SWITCHER)
+                        ? TabLaunchType.FROM_TAB_SWITCHER_UI
+                        : TabLaunchType.FROM_CHROME_UI;
+                getCurrentTabCreator().launchNTP(tabLaunchType);
                 mLocaleManager.showSearchEnginePromoIfNeeded(ChromeTabbedActivity.this, null);
                 if (getTabModelSelector().isIncognitoSelected()) {
                     RecordUserAction.record("MobileToolbarStackViewNewIncognitoTab");

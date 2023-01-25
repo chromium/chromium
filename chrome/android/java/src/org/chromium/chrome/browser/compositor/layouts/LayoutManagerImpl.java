@@ -207,8 +207,8 @@ public class LayoutManagerImpl
         }
 
         @Override
-        public void didAddTab(
-                Tab tab, @TabLaunchType int launchType, @TabCreationState int creationState) {
+        public void didAddTab(Tab tab, @TabLaunchType int launchType,
+                @TabCreationState int creationState, boolean markedForSelection) {
             int tabId = tab.getId();
             if (launchType == TabLaunchType.FROM_RESTORE) {
                 getActiveLayout().onTabRestored(time(), tabId);

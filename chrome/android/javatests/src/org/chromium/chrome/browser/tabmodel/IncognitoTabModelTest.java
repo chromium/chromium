@@ -120,7 +120,8 @@ public class IncognitoTabModelTest {
                 }
 
                 @Override
-                public void didAddTab(Tab tab, int type, int creationState) {
+                public void didAddTab(
+                        Tab tab, int type, int creationState, boolean markedForSelection) {
                     didAddTabCallbackHelper.notifyCalled();
                 }
             });

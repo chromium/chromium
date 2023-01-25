@@ -301,7 +301,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
             }
 
             @Override
-            public void didAddTab(Tab tab, int type, int creationState) {
+            public void didAddTab(
+                    Tab tab, int type, int creationState, boolean markedForSelection) {
                 writeTabCount(mInstanceId, selector);
             }
 

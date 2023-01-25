@@ -163,16 +163,15 @@ public final class SubresourceFilterTest {
         Tab originalTab = mActivityTestRule.getActivity().getActivityTab();
         CallbackHelper tabCreatedCallback = new CallbackHelper();
         TabModel tabModel = mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> tabModel.addObserver(new TabModelObserver() {
-                    @Override
-                    public void didAddTab(
-                            Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
-                        if (tab.getUrl().getSpec().equals(LEARN_MORE_PAGE)) {
-                            tabCreatedCallback.notifyCalled();
-                        }
-                    }
-                }));
+        TestThreadUtils.runOnUiThreadBlocking(() -> tabModel.addObserver(new TabModelObserver() {
+            @Override
+            public void didAddTab(Tab tab, @TabLaunchType int type,
+                    @TabCreationState int creationState, boolean markedForSelection) {
+                if (tab.getUrl().getSpec().equals(LEARN_MORE_PAGE)) {
+                    tabCreatedCallback.notifyCalled();
+                }
+            }
+        }));
 
         // Check that the infobar is showing.
         List<InfoBar> infoBars = mActivityTestRule.getInfoBars();
@@ -279,8 +278,8 @@ public final class SubresourceFilterTest {
         TabModel tabModel = mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
         TestThreadUtils.runOnUiThreadBlocking(() -> tabModel.addObserver(new TabModelObserver() {
             @Override
-            public void didAddTab(
-                    Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
+            public void didAddTab(Tab tab, @TabLaunchType int type,
+                    @TabCreationState int creationState, boolean markedForSelection) {
                 if (tab.getUrl().getSpec().equals(LEARN_MORE_PAGE)) {
                     tabCreatedCallback.notifyCalled();
                 }

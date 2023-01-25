@@ -620,7 +620,7 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.size(), equalTo(2));
 
         mTabModelObserverCaptor.getValue().didAddTab(
-                newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+                newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
 
         assertThat(mModel.size(), equalTo(3));
         assertThat(mModel.get(2).model.get(TabProperties.TAB_ID), equalTo(TAB3_ID));
@@ -897,7 +897,7 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.size(), equalTo(2));
 
         mTabModelObserverCaptor.getValue().didAddTab(
-                newTab, TabLaunchType.FROM_RESTORE, TabCreationState.LIVE_IN_FOREGROUND);
+                newTab, TabLaunchType.FROM_RESTORE, TabCreationState.LIVE_IN_FOREGROUND, false);
 
         // When tab restoring stage is not yet finished, this tab info should not be added to
         // property model.
@@ -925,7 +925,7 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.size(), equalTo(2));
 
         mTabModelObserverCaptor.getValue().didAddTab(
-                newTab, TabLaunchType.FROM_RESTORE, TabCreationState.LIVE_IN_FOREGROUND);
+                newTab, TabLaunchType.FROM_RESTORE, TabCreationState.LIVE_IN_FOREGROUND, false);
 
         TabListMediator.TabActionListener actionListenerAfterUpdate =
                 mModel.get(1).model.get(TabProperties.TAB_SELECTED_LISTENER);
@@ -952,11 +952,11 @@ public class TabListMediatorUnitTest {
         mModel.clear();
 
         mMediatorTabModelObserver.didAddTab(
-                mTab2, TabLaunchType.FROM_RESTORE, TabCreationState.LIVE_IN_FOREGROUND);
+                mTab2, TabLaunchType.FROM_RESTORE, TabCreationState.LIVE_IN_FOREGROUND, false);
         assertThat(mModel.size(), equalTo(0));
 
         mMediatorTabModelObserver.didAddTab(
-                mTab1, TabLaunchType.FROM_RESTORE, TabCreationState.LIVE_IN_FOREGROUND);
+                mTab1, TabLaunchType.FROM_RESTORE, TabCreationState.LIVE_IN_FOREGROUND, false);
         assertThat(mModel.size(), equalTo(1));
     }
 
@@ -975,7 +975,7 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.size(), equalTo(2));
 
         mTabModelObserverCaptor.getValue().didAddTab(
-                newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+                newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
 
         assertThat(mModel.size(), equalTo(3));
         assertThat(mModel.get(2).model.get(TabProperties.TAB_ID), equalTo(TAB3_ID));
@@ -997,7 +997,7 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.size(), equalTo(2));
 
         mTabModelObserverCaptor.getValue().didAddTab(
-                newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+                newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
 
         assertThat(mModel.size(), equalTo(2));
     }
@@ -1017,7 +1017,7 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.size(), equalTo(2));
 
         mTabModelObserverCaptor.getValue().didAddTab(
-                newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+                newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
 
         assertThat(mModel.size(), equalTo(3));
         assertThat(mModel.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB3_ID));
@@ -1037,7 +1037,7 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.size(), equalTo(2));
 
         mTabModelObserverCaptor.getValue().didAddTab(
-                newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+                newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
 
         assertThat(mModel.size(), equalTo(3));
         assertThat(mModel.get(2).model.get(TabProperties.TAB_ID), equalTo(TAB3_ID));
@@ -1057,7 +1057,7 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.size(), equalTo(2));
 
         mTabModelObserverCaptor.getValue().didAddTab(
-                newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+                newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
 
         assertThat(mModel.size(), equalTo(3));
         assertThat(mModel.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB3_ID));
@@ -1075,7 +1075,7 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.size(), equalTo(2));
 
         mTabModelObserverCaptor.getValue().didAddTab(
-                newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+                newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
 
         assertThat(mModel.size(), equalTo(2));
     }
@@ -1091,7 +1091,7 @@ public class TabListMediatorUnitTest {
         // Try to do a redundant addition by adding the PropertyModel of an existing tab to the
         // TabListModel.
         mTabModelObserverCaptor.getValue().didAddTab(
-                mTab1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+                mTab1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
 
         assertThat(mModel.size(), equalTo(2));
     }

@@ -471,7 +471,7 @@ public class TabGridDialogMediatorUnitTest {
 
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         mTabModelObserverCaptor.getValue().didAddTab(
-                newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+                newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
 
         assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
         verify(mDialogController).resetWithListOfTabs(null);

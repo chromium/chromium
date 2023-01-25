@@ -104,9 +104,16 @@ public abstract class TabCreator {
      * Creates a new tab and loads the NTP.
      */
     public final void launchNTP() {
+        launchNTP(TabLaunchType.FROM_CHROME_UI);
+    }
+
+    /**
+     * Creates a new tab and loads the NTP.
+     */
+    public final void launchNTP(@TabLaunchType int type) {
         try {
             TraceEvent.begin("TabCreator.launchNTP");
-            launchUrl(UrlConstants.NTP_URL, TabLaunchType.FROM_CHROME_UI);
+            launchUrl(UrlConstants.NTP_URL, type);
         } finally {
             TraceEvent.end("TabCreator.launchNTP");
         }

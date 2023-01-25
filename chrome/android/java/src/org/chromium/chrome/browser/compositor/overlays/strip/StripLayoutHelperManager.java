@@ -566,8 +566,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
         mTabModelObserver = new TabModelObserver() {
             @Override
-            public void didAddTab(
-                    Tab tab, @TabLaunchType int launchType, @TabCreationState int creationState) {
+            public void didAddTab(Tab tab, @TabLaunchType int launchType,
+                    @TabCreationState int creationState, boolean markedForSelection) {
                 updateTitleForTab(tab);
             }
         };
@@ -664,7 +664,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             }
 
             @Override
-            public void didAddTab(Tab tab, int type, int creationState) {
+            public void didAddTab(
+                    Tab tab, int type, int creationState, boolean markedForSelection) {
                 boolean selected = type != TabLaunchType.FROM_LONGPRESS_BACKGROUND
                         || (mTabModelSelector.isIncognitoSelected() && tab.isIncognito());
                 boolean onStartup = type == TabLaunchType.FROM_RESTORE;

@@ -801,8 +801,8 @@ public class CustomTabActivityTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             tabSelector.getModel(false).addObserver(new TabModelObserver() {
                 @Override
-                public void didAddTab(
-                        Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
+                public void didAddTab(Tab tab, @TabLaunchType int type,
+                        @TabCreationState int creationState, boolean markedForSelection) {
                     openTabHelper.notifyCalled();
                 }
             });

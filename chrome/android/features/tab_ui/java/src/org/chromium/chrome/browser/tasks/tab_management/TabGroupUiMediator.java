@@ -165,7 +165,8 @@ public class TabGroupUiMediator implements BackPressHandler {
             }
 
             @Override
-            public void didAddTab(Tab tab, int type, @TabCreationState int creationState) {
+            public void didAddTab(Tab tab, int type, @TabCreationState int creationState,
+                    boolean markedForSelection) {
                 if (type == TabLaunchType.FROM_CHROME_UI || type == TabLaunchType.FROM_RESTORE
                         || type == TabLaunchType.FROM_STARTUP) {
                     return;

@@ -1182,7 +1182,7 @@ public class ManualFillingControllerTest {
         when(mMockTabModelSelector.getCurrentTab()).thenReturn(tab);
         mActivityTabProvider.set(tab);
         mediator.getTabModelObserverForTesting().didAddTab(
-                tab, FROM_BROWSER_ACTIONS, TabCreationState.LIVE_IN_FOREGROUND);
+                tab, FROM_BROWSER_ACTIONS, TabCreationState.LIVE_IN_FOREGROUND, false);
         mediator.getTabObserverForTesting().onShown(tab, FROM_NEW);
         mediator.getTabModelObserverForTesting().didSelectTab(tab, FROM_NEW, lastId);
         setContentAreaDimensions(2.f, 300, 128);

@@ -104,7 +104,7 @@ public final class TabCountProviderUnitTest {
 
         int tabCount1 = 10;
         when(mMockTabModelFilter.getTotalTabCount()).thenReturn(tabCount1);
-        observer.didAddTab(null, 0, 0);
+        observer.didAddTab(null, 0, 0, false);
         assertEquals("Tab count from provider is not same as expected", tabCount1,
                 mProvider.getTabCount());
 

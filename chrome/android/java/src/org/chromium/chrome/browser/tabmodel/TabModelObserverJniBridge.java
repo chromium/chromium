@@ -75,8 +75,8 @@ class TabModelObserverJniBridge implements TabModelObserver {
     }
 
     @Override
-    public final void didAddTab(
-            Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
+    public final void didAddTab(Tab tab, @TabLaunchType int type,
+            @TabCreationState int creationState, boolean markedForSelection) {
         assert mNativeTabModelObserverJniBridge != 0;
         TabModelObserverJniBridgeJni.get().didAddTab(
                 mNativeTabModelObserverJniBridge, TabModelObserverJniBridge.this, tab, type);

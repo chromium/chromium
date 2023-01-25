@@ -106,6 +106,8 @@ class TabModel {
     // Opened from a Reading list. When going "back" on Android, the Reading
     // list should be reopened.
     FROM_READING_LIST,
+    // Opened from Tab Switcher UI.
+    FROM_TAB_SWITCHER_UI,
     // Must be last.
     SIZE
   };

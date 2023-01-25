@@ -120,7 +120,8 @@ public class TabUsageTracker
 
         mTabModelSelectorTabModelObserver = new TabModelSelectorTabModelObserver(mModelSelector) {
             @Override
-            public void didAddTab(Tab tab, int type, int creationState) {
+            public void didAddTab(
+                    Tab tab, int type, int creationState, boolean markedForSelection) {
                 mNewlyAddedTabCount++;
             }
 

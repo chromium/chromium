@@ -607,7 +607,7 @@ public class MultiInstanceManagerApi31UnitTest {
         } else {
             mNormalTabCount++;
         }
-        tabModelObserver.didAddTab(tab, 0, 0);
+        tabModelObserver.didAddTab(tab, 0, 0, false);
     }
 
     private void triggerOnFinishingTabClosure(TabModelObserver tabModelObserver, Tab tab) {

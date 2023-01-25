@@ -133,7 +133,8 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
     }
 
     @Override
-    public void didAddTab(Tab tab, int type, @TabCreationState int creationState) {
+    public void didAddTab(
+            Tab tab, int type, @TabCreationState int creationState, boolean markedForSelection) {
         addObserversForTab(tab);
     }
 

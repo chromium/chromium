@@ -806,8 +806,8 @@ public class OfflinePageUtils {
         }
 
         @Override
-        public void didAddTab(
-                Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
+        public void didAddTab(Tab tab, @TabLaunchType int type, @TabCreationState int creationState,
+                boolean markedForSelection) {
             tab.addObserver(sTabRestoreTracker);
         }
 

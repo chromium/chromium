@@ -132,7 +132,7 @@ public class TabSuggestionsOrchestratorTest {
         };
         tabSuggestionsOrchestrator.addObserver(tabSuggestionsObserver);
         tabSuggestionsOrchestrator.mTabContextObserver.mTabModelObserver.didAddTab(
-                null, 0, TabCreationState.LIVE_IN_FOREGROUND);
+                null, 0, TabCreationState.LIVE_IN_FOREGROUND, false);
         Assert.assertEquals(1, suggestions.size());
         Assert.assertEquals(TAB_IDS.length, suggestions.get(0).getTabsInfo().size());
         for (int idx = 0; idx < TAB_IDS.length; idx++) {
@@ -172,7 +172,7 @@ public class TabSuggestionsOrchestratorTest {
             public void onTabSuggestionInvalidated() {}
         };
         tabSuggestionsOrchestrator.mTabContextObserver.mTabModelObserver.didAddTab(
-                null, 0, TabCreationState.LIVE_IN_FOREGROUND);
+                null, 0, TabCreationState.LIVE_IN_FOREGROUND, false);
         Assert.assertEquals(0, suggestions.size());
     }
 
@@ -200,7 +200,7 @@ public class TabSuggestionsOrchestratorTest {
 
         tabSuggestionsOrchestrator.addObserver(tabSuggestionsObserver);
         tabSuggestionsOrchestrator.mTabContextObserver.mTabModelObserver.didAddTab(
-                null, 0, TabCreationState.LIVE_IN_FOREGROUND);
+                null, 0, TabCreationState.LIVE_IN_FOREGROUND, false);
         Assert.assertNotNull(tabSuggestionsOrchestrator.mTabSuggestionFeedback);
         Assert.assertEquals(tabSuggestionsOrchestrator.mTabSuggestionFeedback.tabSuggestionResponse,
                 TabSuggestionFeedback.TabSuggestionResponse.ACCEPTED);
@@ -271,11 +271,11 @@ public class TabSuggestionsOrchestratorTest {
         tabSuggestionsOrchestrator.setFetchersForTesting();
         tabSuggestionsOrchestrator.addObserver(tabSuggestionsObserver);
         tabSuggestionsOrchestrator.mTabContextObserver.mTabModelObserver.didAddTab(
-                null, 0, TabCreationState.LIVE_IN_FOREGROUND);
+                null, 0, TabCreationState.LIVE_IN_FOREGROUND, false);
         Assert.assertEquals(1, suggestions.size());
         suggestions.clear();
         tabSuggestionsOrchestrator.mTabContextObserver.mTabModelObserver.didAddTab(
-                null, 0, TabCreationState.LIVE_IN_FOREGROUND);
+                null, 0, TabCreationState.LIVE_IN_FOREGROUND, false);
         Assert.assertEquals(expectedSuggestions, suggestions.size());
         tabSuggestionsOrchestrator.restoreMinTimeBetweenPrefetchesForTesting();
     }

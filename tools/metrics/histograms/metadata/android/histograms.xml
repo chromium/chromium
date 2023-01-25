@@ -3521,6 +3521,7 @@ chromium-metrics-reviews@google.com.
     <variant name="StartSurface" summary="tabs opened from the start surface"/>
     <variant name="Startup" summary="tabs opened during the startup process"/>
     <variant name="TabGroupUI" summary="tabs opened from Tab group UI"/>
+    <variant name="TabSwitcherUI" summary="tabs opened from Tab Switcher UI"/>
     <variant name="TypeUnknown"
         summary="tabs opened from a different case than one's listed"/>
   </token>
