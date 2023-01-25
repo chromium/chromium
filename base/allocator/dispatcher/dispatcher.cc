@@ -6,7 +6,6 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/dispatcher/internal/dispatch_data.h"
-#include "base/allocator/dispatcher/reentry_guard.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim.h"
@@ -26,25 +25,23 @@ namespace {
 using allocator_shim::AllocatorDispatch;
 
 void* AllocFn(const AllocatorDispatch* self, size_t size, void* context) {
-  ReentryGuard guard;
   void* address = self->next->alloc_function(self->next, size, context);
-  if (LIKELY(guard)) {
-    PoissonAllocationSampler::RecordAlloc(
-        address, size, AllocationSubsystem::kAllocatorShim, nullptr);
-  }
+
+  PoissonAllocationSampler::RecordAlloc(
+      address, size, AllocationSubsystem::kAllocatorShim, nullptr);
+
   return address;
 }
 
 void* AllocUncheckedFn(const AllocatorDispatch* self,
                        size_t size,
                        void* context) {
-  ReentryGuard guard;
   void* address =
       self->next->alloc_unchecked_function(self->next, size, context);
-  if (LIKELY(guard)) {
-    PoissonAllocationSampler::RecordAlloc(
-        address, size, AllocationSubsystem::kAllocatorShim, nullptr);
-  }
+
+  PoissonAllocationSampler::RecordAlloc(
+      address, size, AllocationSubsystem::kAllocatorShim, nullptr);
+
   return address;
 }
 
@@ -52,13 +49,12 @@ void* AllocZeroInitializedFn(const AllocatorDispatch* self,
                              size_t n,
                              size_t size,
                              void* context) {
-  ReentryGuard guard;
   void* address =
       self->next->alloc_zero_initialized_function(self->next, n, size, context);
-  if (LIKELY(guard)) {
-    PoissonAllocationSampler::RecordAlloc(
-        address, n * size, AllocationSubsystem::kAllocatorShim, nullptr);
-  }
+
+  PoissonAllocationSampler::RecordAlloc(
+      address, n * size, AllocationSubsystem::kAllocatorShim, nullptr);
+
   return address;
 }
 
@@ -66,13 +62,12 @@ void* AllocAlignedFn(const AllocatorDispatch* self,
                      size_t alignment,
                      size_t size,
                      void* context) {
-  ReentryGuard guard;
   void* address =
       self->next->alloc_aligned_function(self->next, alignment, size, context);
-  if (LIKELY(guard)) {
-    PoissonAllocationSampler::RecordAlloc(
-        address, size, AllocationSubsystem::kAllocatorShim, nullptr);
-  }
+
+  PoissonAllocationSampler::RecordAlloc(
+      address, size, AllocationSubsystem::kAllocatorShim, nullptr);
+
   return address;
 }
 
@@ -80,14 +75,13 @@ void* ReallocFn(const AllocatorDispatch* self,
                 void* address,
                 size_t size,
                 void* context) {
-  ReentryGuard guard;
   // Note: size == 0 actually performs free.
   PoissonAllocationSampler::RecordFree(address);
   address = self->next->realloc_function(self->next, address, size, context);
-  if (LIKELY(guard)) {
-    PoissonAllocationSampler::RecordAlloc(
-        address, size, AllocationSubsystem::kAllocatorShim, nullptr);
-  }
+
+  PoissonAllocationSampler::RecordAlloc(
+      address, size, AllocationSubsystem::kAllocatorShim, nullptr);
+
   return address;
 }
 
@@ -118,15 +112,14 @@ unsigned BatchMallocFn(const AllocatorDispatch* self,
                        void** results,
                        unsigned num_requested,
                        void* context) {
-  ReentryGuard guard;
   unsigned num_allocated = self->next->batch_malloc_function(
       self->next, size, results, num_requested, context);
-  if (LIKELY(guard)) {
-    for (unsigned i = 0; i < num_allocated; ++i) {
-      PoissonAllocationSampler::RecordAlloc(
-          results[i], size, AllocationSubsystem::kAllocatorShim, nullptr);
-    }
+
+  for (unsigned i = 0; i < num_allocated; ++i) {
+    PoissonAllocationSampler::RecordAlloc(
+        results[i], size, AllocationSubsystem::kAllocatorShim, nullptr);
   }
+
   return num_allocated;
 }
 
@@ -134,8 +127,10 @@ void BatchFreeFn(const AllocatorDispatch* self,
                  void** to_be_freed,
                  unsigned num_to_be_freed,
                  void* context) {
-  for (unsigned i = 0; i < num_to_be_freed; ++i)
+  for (unsigned i = 0; i < num_to_be_freed; ++i) {
     PoissonAllocationSampler::RecordFree(to_be_freed[i]);
+  }
+
   self->next->batch_free_function(self->next, to_be_freed, num_to_be_freed,
                                   context);
 }
@@ -159,13 +154,12 @@ static void* AlignedMallocFn(const AllocatorDispatch* self,
                              size_t size,
                              size_t alignment,
                              void* context) {
-  ReentryGuard guard;
   void* address =
       self->next->aligned_malloc_function(self->next, size, alignment, context);
-  if (LIKELY(guard)) {
-    PoissonAllocationSampler::RecordAlloc(
-        address, size, AllocationSubsystem::kAllocatorShim, nullptr);
-  }
+
+  PoissonAllocationSampler::RecordAlloc(
+      address, size, AllocationSubsystem::kAllocatorShim, nullptr);
+
   return address;
 }
 
@@ -174,15 +168,14 @@ static void* AlignedReallocFn(const AllocatorDispatch* self,
                               size_t size,
                               size_t alignment,
                               void* context) {
-  ReentryGuard guard;
   // Note: size == 0 actually performs free.
   PoissonAllocationSampler::RecordFree(address);
   address = self->next->aligned_realloc_function(self->next, address, size,
                                                  alignment, context);
-  if (LIKELY(guard)) {
-    PoissonAllocationSampler::RecordAlloc(
-        address, size, AllocationSubsystem::kAllocatorShim, nullptr);
-  }
+
+  PoissonAllocationSampler::RecordAlloc(
+      address, size, AllocationSubsystem::kAllocatorShim, nullptr);
+
   return address;
 }
 

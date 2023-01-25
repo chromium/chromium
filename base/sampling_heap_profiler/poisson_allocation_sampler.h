@@ -8,6 +8,7 @@
 #include <atomic>
 #include <vector>
 
+#include "base/allocator/dispatcher/reentry_guard.h"
 #include "base/allocator/dispatcher/subsystem.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
@@ -261,6 +262,15 @@ inline void PoissonAllocationSampler::OnAllocation(
     return;
   }
 
+  // Note: ReentryGuard prevents from recursions introduced by malloc and
+  // initialization of thread local storage which happen in the allocation path
+  // only (please see docs of ReentryGuard for full details).
+  allocator::dispatcher::ReentryGuard reentry_guard;
+
+  if (UNLIKELY(!reentry_guard)) {
+    return;
+  }
+
   DoRecordAllocation(state, address, size, type, context);
 }
 
@@ -326,6 +336,11 @@ inline void PoissonAllocationSampler::OnFree(void* address) {
   if (UNLIKELY(ScopedMuteThreadSamples::IsMuted())) {
     return;
   }
+
+  // Note: ReentryGuard prevents from recursions introduced by malloc and
+  // initialization of thread local storage which happen in the allocation path
+  // only (please see docs of ReentryGuard for full details). Therefore, the
+  // DoNotifyFree doesn't need to be guarded.
 
   DoRecordFree(address);
 }
