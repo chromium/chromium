@@ -28,26 +28,30 @@
 #
 # * Test the tests, add new ones to Git, remove deleted ones from Git, etc.
 
-from __future__ import print_function
-
 import re
 import codecs
-import time
+import importlib
 import os
-import shutil
 import sys
-import xml.dom.minidom
-from xml.dom.minidom import Node
 
 try:
-    import cairocffi as cairo
+    import cairocffi as cairo  # type: ignore
 except ImportError:
     import cairo
 
 try:
-    import syck as yaml  # compatible and lots faster
+    # Compatible and lots faster.
+    import syck as yaml  # type: ignore
 except ImportError:
     import yaml
+
+
+class Error(Exception):
+    """Base class for all exceptions raised by this module"""
+
+
+class InvalidTestDefinitionError(Error):
+    """Raised on invalid test definition."""
 
 
 def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE,
@@ -55,18 +59,14 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE,
 
     MISCOUTPUTDIR = './output'
 
-    def simpleEscapeJS(str):
-        return str.replace('\\', '\\\\').replace('"', '\\"')
+    def simpleEscapeJS(string):
+        return string.replace('\\', '\\\\').replace('"', '\\"')
 
-    def escapeJS(str):
-        str = simpleEscapeJS(str)
-        # kind of an ugly hack, for nicer failure-message output
-        str = re.sub(r'\[(\w+)\]', r'[\\""+(\1)+"\\"]', str)
-        return str
-
-    def escapeHTML(str):
-        return str.replace('&', '&amp;').replace('<', '&lt;').replace(
-            '>', '&gt;').replace('"', '&quot;')
+    def escapeJS(string):
+        string = simpleEscapeJS(string)
+        # Kind of an ugly hack, for nicer failure-message output.
+        string = re.sub(r'\[(\w+)\]', r'[\\""+(\1)+"\\"]', string)
+        return string
 
     def expand_nonfinite(method, argstr, tail):
         """
@@ -85,13 +85,17 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE,
         f(0, b, d);
         """
         # argstr is "<valid-1 invalid1-1 invalid2-1 ...>, ..." (where usually
-        # 'invalid' is Infinity/-Infinity/NaN)
+        # 'invalid' is Infinity/-Infinity/NaN).
         args = []
         for arg in argstr.split(', '):
-            a = re.match('<(.*)>', arg).group(1)
+            match = re.match('<(.*)>', arg)
+            if match is None:
+                raise InvalidTestDefinitionError(
+                    f"Expected arg to match format '<(.*)>', but was: {arg}")
+            a = match.group(1)
             args.append(a.split(' '))
         calls = []
-        # Start with the valid argument list
+        # Start with the valid argument list.
         call = [args[j][0] for j in range(len(args))]
         # For each argument alone, try setting it to all its invalid values:
         for i in range(len(args)):
@@ -108,7 +112,8 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE,
                     a = args[i][1]
                     c2 = c[:]
                     c2[i] = a
-                    if depth > 0: calls.append(c2)
+                    if depth > 0:
+                        calls.append(c2)
                     f(c2, i + 1, depth + 1)
 
         f(call, 0, 0)
@@ -118,7 +123,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE,
 
     # Run with --test argument to run unit tests
     if len(sys.argv) > 1 and sys.argv[1] == '--test':
-        import doctest
+        doctest = importlib.import_module('doctest')
         doctest.testmod()
         sys.exit()
 
@@ -156,26 +161,15 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE,
         backrefs.append(name.split('.')[-1])
         return ''.join(backrefs)
 
-    def make_flat_image(filename, w, h, r, g, b, a):
-        if os.path.exists('%s/%s' % (IMAGEOUTPUTDIR, filename)):
-            return filename
-        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, w, h)
-        cr = cairo.Context(surface)
-        cr.set_source_rgba(r, g, b, a)
-        cr.rectangle(0, 0, w, h)
-        cr.fill()
-        surface.write_to_png('%s/%s' % (IMAGEOUTPUTDIR, filename))
-        return filename
-
-    # Ensure the test output directories exist
+    # Ensure the test output directories exist.
     testdirs = [TESTOUTPUTDIR, IMAGEOUTPUTDIR, MISCOUTPUTDIR]
     for map_dir in set(name_mapping.values()):
         testdirs.append("%s/%s" % (TESTOUTPUTDIR, map_dir))
     for d in testdirs:
         try:
             os.mkdir(d)
-        except:
-            pass  # ignore if it already exists
+        except FileExistsError:
+            pass  # Ignore if it already exists.
 
     used_images = {}
 
@@ -188,6 +182,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE,
         if not mapped_name:
             print("LIKELY ERROR: %s has no defined target directory mapping" %
                   name)
+            return None
         if 'manual' in test:
             mapped_name += "-manual"
         return mapped_name
@@ -195,7 +190,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE,
     def expand_test_code(code):
         code = re.sub(r'@nonfinite ([^(]+)\(([^)]+)\)(.*)', lambda m:
                       expand_nonfinite(m.group(1), m.group(2), m.group(3)),
-                      code)  # must come before '@assert throws'
+                      code)  # Must come before '@assert throws'.
 
         code = re.sub(r'@assert pixel (\d+,\d+) == (\d+,\d+,\d+,\d+);',
                       r'_assertPixel(canvas, \1, \2);', code)
@@ -254,8 +249,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE,
         if not mapped_name:
             if ISOFFSCREENCANVAS:
                 continue
-            else:
-                mapped_name = name
+            mapped_name = name
 
         cat_total = ''
         for cat_part in [''] + name.split('.')[:-1]:
@@ -305,8 +299,8 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE,
 
         canvas = test.get('canvas', 'width="100" height="50"')
 
-        prev = tests[i - 1]['name'] if i != 0 else 'index'
-        next = tests[i + 1]['name'] if i != len(tests) - 1 else 'index'
+        prev_test = tests[i - 1]['name'] if i != 0 else 'index'
+        next_test = tests[i + 1]['name'] if i != len(tests) - 1 else 'index'
 
         name_wrapped = name.replace('.', '.&#8203;')
 
@@ -326,30 +320,31 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE,
             script_variants = [('', '')]
 
         images = ''
-        for i in test.get('images', []):
-            id = i.split('/')[-1]
-            if '/' not in i:
-                used_images[i] = 1
-                i = '../images/%s' % i
-            images += '<img src="%s" id="%s" class="resource">\n' % (i, id)
-        for i in test.get('svgimages', []):
-            id = i.split('/')[-1]
-            if '/' not in i:
-                used_images[i] = 1
-                i = '../images/%s' % i
+        for src in test.get('images', []):
+            img_id = src.split('/')[-1]
+            if '/' not in src:
+                used_images[src] = 1
+                src = '../images/%s' % src
+            images += '<img src="%s" id="%s" class="resource">\n' % (src,
+                                                                     img_id)
+        for src in test.get('svgimages', []):
+            img_id = src.split('/')[-1]
+            if '/' not in src:
+                used_images[src] = 1
+                src = '../images/%s' % src
             images += ('<svg><image xlink:href="%s" id="%s" class="resource">'
-                       '</svg>\n' % (i, id))
+                       '</svg>\n' % (src, img_id))
         images = images.replace("../images/", "/images/")
 
         fonts = ''
         fonthack = ''
-        for i in test.get('fonts', []):
+        for font in test.get('fonts', []):
             fonts += ('@font-face {\n  font-family: %s;\n'
-                      '  src: url("/fonts/%s.ttf");\n}\n' % (i, i))
-            # Browsers require the font to actually be used in the page
+                      '  src: url("/fonts/%s.ttf");\n}\n' % (font, font))
+            # Browsers require the font to actually be used in the page.
             if test.get('fonthack', 1):
                 fonthack += ('<span style="font-family: %s; position: '
-                             'absolute; visibility: hidden">A</span>\n' % i)
+                             'absolute; visibility: hidden">A</span>\n' % font)
         if fonts:
             fonts = '<style>\n%s</style>\n' % fonts
 
@@ -376,8 +371,8 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE,
                 'mapped_name': mapped_name,
                 'desc': desc,
                 'escaped_desc': escaped_desc,
-                'prev': prev,
-                'next': next,
+                'prev': prev_test,
+                'next': next_test,
                 'notes': notes,
                 'images': images,
                 'fonts': fonts,
