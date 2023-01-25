@@ -30,6 +30,8 @@ void FtrlRanker::Start(const std::u16string& query,
                        CategoriesList& categories) {
   for (auto& ranker : rankers_)
     ranker->Start(query, results, categories);
+
+  ftrl_->Clear();
 }
 
 void FtrlRanker::Train(const LaunchData& launch) {

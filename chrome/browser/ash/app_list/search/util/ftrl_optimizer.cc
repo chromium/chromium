@@ -48,6 +48,10 @@ FtrlOptimizer::FtrlOptimizer(FtrlOptimizer::Proto proto, const Params& params)
 
 FtrlOptimizer::~FtrlOptimizer() {}
 
+void FtrlOptimizer::Clear() {
+  last_expert_scores_.clear();
+}
+
 std::vector<double> FtrlOptimizer::Score(
     std::vector<std::string>&& items,
     std::vector<std::vector<double>>&& expert_scores) {
@@ -62,15 +66,14 @@ std::vector<double> FtrlOptimizer::Score(
   DCHECK_EQ(expert_scores.size(), num_experts);
   DCHECK_GE(weights.size(), 0);
   DCHECK_EQ(static_cast<size_t>(weights.size()), num_experts);
-  for (size_t i = 0; i < num_experts; ++i) {
-    const auto& scores_i = expert_scores[i];
-    DCHECK_EQ(scores_i.size(), num_items);
-    for (size_t j = 0; j < num_items; ++j)
-      result[j] += weights[i] * scores_i[j];
-  }
+  for (size_t i = 0; i < num_items; ++i) {
+    last_expert_scores_[items[i]] = {};
 
-  last_expert_scores_ = std::move(expert_scores);
-  last_items_ = std::move(items);
+    for (size_t j = 0; j < num_experts; ++j) {
+      result[i] += weights[j] * expert_scores[j][i];
+      last_expert_scores_[items[i]].emplace_back(expert_scores[j][i]);
+    }
+  }
 
   return result;
 }
@@ -79,8 +82,9 @@ void FtrlOptimizer::Train(const std::string& item) {
   // If |last_items_| is empty, experts had no chance at prediction and we
   // should early exit. This could happen if |proto_| finishes initializing
   // after Score but before Train.
-  if (!proto_.initialized() || last_items_.empty())
+  if (!proto_.initialized() || last_expert_scores_.empty()) {
     return;
+  }
 
   // Compute the loss of each expert and update weights.
   auto& weights = *proto_->mutable_weights();
@@ -100,32 +104,32 @@ void FtrlOptimizer::Train(const std::string& item) {
 
 double FtrlOptimizer::Loss(size_t expert, const std::string& item) {
   size_t num_experts = params_.num_experts;
-  size_t num_items = last_items_.size();
+  size_t num_items = last_expert_scores_.size();
 
   DCHECK_GT(num_items, 0u);
-  DCHECK_EQ(last_expert_scores_.size(), num_experts);
   DCHECK_LT(expert, num_experts);
 
   // Find the score of the launched item.
-  auto& scores = last_expert_scores_[expert];
-  double score = 0.0;
-  DCHECK_EQ(scores.size(), last_items_.size());
-  for (size_t i = 0; i < scores.size(); ++i) {
-    if (last_items_[i] == item)
-      score = scores[i];
+  double score = {0.0};
+
+  if (last_expert_scores_.find(item) != last_expert_scores_.end()) {
+    DCHECK_EQ(last_expert_scores_[item].size(), num_experts);
+    score = last_expert_scores_[item][expert];
   }
 
   // Find the rank of the item, ie. the number of items with higher score.
   size_t rank = 0;
-  for (size_t i = 0; i < scores.size(); ++i) {
-    if (scores[i] > score)
+
+  for (const auto& scores : last_expert_scores_) {
+    if (scores.second[expert] > score) {
       ++rank;
+    }
   }
 
   // The loss is linear in the |rank|. A loss of 1.0 means |item| wasn't
   // included at all.
-  DCHECK(!scores.empty());
-  return static_cast<double>(rank) / scores.size();
+  DCHECK(!last_expert_scores_.empty());
+  return static_cast<double>(rank) / last_expert_scores_.size();
 }
 
 void FtrlOptimizer::OnProtoRead(ReadStatus status) {

@@ -69,6 +69,8 @@ class FtrlOptimizer {
   FtrlOptimizer(const FtrlOptimizer&) = delete;
   FtrlOptimizer& operator=(const FtrlOptimizer&) = delete;
 
+  void Clear();
+
   // Score the given |items| using the given |scores| from experts. The outer
   // vector of |scores| must be Params.num_experts long, with inner vectors the
   // same length as |items|.
@@ -84,12 +86,10 @@ class FtrlOptimizer {
 
   Params params_;
 
-  // The items most recently passed to |Score|.
-  std::vector<std::string> last_items_;
-  // For each expert (outer vector) the scores returned by that expert for the
-  // content of |last_items_|. The inner vector will be the same size as
-  // |last_items_|.
-  std::vector<std::vector<double>> last_expert_scores_;
+  // For each result id it matched a vector that contains result from
+  // different experts. The vector size will equal the number of experts,
+  // and the scores are always in the same order of experts.
+  std::map<std::string, std::vector<double>> last_expert_scores_;
 
   PersistentProto<FtrlOptimizerProto> proto_;
 
