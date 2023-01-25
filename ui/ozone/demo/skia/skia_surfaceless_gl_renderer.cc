@@ -28,9 +28,8 @@
 #include "ui/gfx/overlay_plane_data.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
-#include "ui/gl/gl_image.h"
-#include "ui/gl/gl_image_native_pixmap.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/ozone/public/native_pixmap_gl_binding.h"
 #include "ui/ozone/public/overlay_candidates_ozone.h"
 #include "ui/ozone/public/overlay_manager_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -80,9 +79,7 @@ class SurfacelessSkiaGlRenderer::BufferWrapper {
   BufferWrapper();
   ~BufferWrapper();
 
-  scoped_refptr<gfx::NativePixmap> image() const {
-    return image_->GetNativePixmap();
-  }
+  scoped_refptr<gfx::NativePixmap> image() const { return pixmap_; }
   SkSurface* sk_surface() const { return sk_surface_.get(); }
 
   bool Initialize(GrDirectContext* gr_context,
@@ -96,7 +93,8 @@ class SurfacelessSkiaGlRenderer::BufferWrapper {
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
   gfx::Size size_;
 
-  scoped_refptr<gl::GLImageNativePixmap> image_;
+  scoped_refptr<gfx::NativePixmap> pixmap_;
+  std::unique_ptr<NativePixmapGLBinding> pixmap_gl_binding_;
   unsigned int gl_tex_ = 0;
   sk_sp<SkSurface> sk_surface_;
 };
@@ -116,19 +114,23 @@ bool SurfacelessSkiaGlRenderer::BufferWrapper::Initialize(
   glGenTextures(1, &gl_tex_);
 
   gfx::BufferFormat format = display::DisplaySnapshot::PrimaryFormat();
-  scoped_refptr<gfx::NativePixmap> pixmap =
+
+  pixmap_ = OzonePlatform::GetInstance()
+                ->GetSurfaceFactoryOzone()
+                ->CreateNativePixmap(widget, nullptr, size, format,
+                                     gfx::BufferUsage::SCANOUT);
+
+  pixmap_gl_binding_ =
       OzonePlatform::GetInstance()
           ->GetSurfaceFactoryOzone()
-          ->CreateNativePixmap(widget, nullptr, size, format,
-                               gfx::BufferUsage::SCANOUT);
-  image_ = gl::GLImageNativePixmap::Create(size, format, std::move(pixmap));
-  if (!image_) {
-    LOG(ERROR) << "Failed to create GLImage";
+          ->GetCurrentGLOzone()
+          ->ImportNativePixmap(pixmap_, format, gfx::BufferPlane::DEFAULT, size,
+                               gfx::ColorSpace(), GL_TEXTURE_2D, gl_tex_);
+
+  if (!pixmap_gl_binding_) {
+    LOG(ERROR) << "Failed to create NativePixmapEGLBinding";
     return false;
   }
-
-  glBindTexture(GL_TEXTURE_2D, gl_tex_);
-  image_->BindTexImage(GL_TEXTURE_2D);
 
   widget_ = widget;
   size_ = size;
