@@ -1510,10 +1510,15 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         StripLayoutTab tab = new StripLayoutTab(
                 mContext, id, this, mTabLoadTrackerHost, mRenderHost, mUpdateHost, mIncognito);
         tab.setHeight(mHeight);
-        if (id == mModel.getTabAt(mModel.index()).getId()) {
-            tab.setContainerOpacity(TAB_OPACITY_VISIBLE_FOREGROUND);
-        }
         pushStackerPropertiesToTab(tab);
+
+        if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            Tab selectedTab = mModel.getTabAt(mModel.index());
+            if (selectedTab != null && id == selectedTab.getId()) {
+                tab.setContainerOpacity(TAB_OPACITY_VISIBLE_FOREGROUND);
+            }
+        }
+
         return tab;
     }
 
