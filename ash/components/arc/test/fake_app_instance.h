@@ -139,7 +139,8 @@ class FakeAppInstance : public mojom::AppInstance {
       const gfx::Rect& dimension,
       CanHandleResolutionDeprecatedCallback callback) override;
   void UninstallPackage(const std::string& package_name) override;
-  void GetTaskInfo(int32_t task_id, GetTaskInfoCallback callback) override;
+  void GetTaskInfoDeprecated(int32_t task_id,
+                              GetTaskInfoDeprecatedCallback callback) override;
   void SetTaskActive(int32_t task_id) override;
   void CloseTask(int32_t task_id) override;
   void ShowPackageInfoDeprecated(const std::string& package_name,

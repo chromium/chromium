@@ -310,8 +310,8 @@ void FakeAppInstance::UninstallPackage(const std::string& package_name) {
   app_host_->OnPackageRemoved(package_name);
 }
 
-void FakeAppInstance::GetTaskInfo(int32_t task_id,
-                                  GetTaskInfoCallback callback) {
+void FakeAppInstance::GetTaskInfoDeprecated(
+    int32_t task_id, GetTaskInfoDeprecatedCallback callback) {
   LOG(FATAL) << "GetTaskInfo is deprecated: b/265158447";
 }
 

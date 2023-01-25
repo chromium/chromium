@@ -386,7 +386,7 @@ interface AppHost {
 
 // TODO(lhchavez): Migrate all request/response messages to Mojo.
 // Next method ID: 42
-// Deprecated method IDs: 0, 1, 2, 3, 4, 9, 12, 13, 15, 17, 18, 19, 22, 31
+// Deprecated method IDs: 0, 1, 2, 3, 4, 6, 9, 12, 13, 15, 17, 18, 19, 22, 31
 interface AppInstance {
   // Establishes full-duplex communication with the host.
   [MinVersion=26] Init@21(pending_remote<AppHost> host_remote) => ();
@@ -398,9 +398,11 @@ interface AppInstance {
   // Closes the the given task.
   [MinVersion=4] CloseTask@8(int32 task_id);
 
-  // Requests information about task.
-  [MinVersion=3] GetTaskInfo@6(int32 task_id) => (string package_name,
-                                                  string activity);
+  // Requests information about task. Deprecated: b/265158447
+  // Use the kArcPackageNameKey window property to get the package name, and
+  // OnTaskCreated to get the activity.
+  [MinVersion=3] GetTaskInfoDeprecated@6(int32 task_id) =>
+      (string package_name, string activity);
 
   // Sends a request to ARC to install package.
   [MinVersion=8] InstallPackage@11(ArcPackageInfo arcPackageInfo);
