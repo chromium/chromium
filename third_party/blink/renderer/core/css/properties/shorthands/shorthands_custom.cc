@@ -3242,11 +3242,17 @@ static CSSValue* CSSValueForTimelineShorthand(
     const Vector<TimelineAxis>& axis_vector) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
 
-  if (name_vector.size() == axis_vector.size()) {
-    for (wtf_size_t i = 0; i < name_vector.size(); ++i) {
-      list->Append(*ComputedStyleUtils::SingleValueForTimelineShorthand(
-          name_vector[i].Get(), axis_vector[i]));
-    }
+  if (name_vector.size() != axis_vector.size()) {
+    return list;
+  }
+  if (name_vector.empty()) {
+    list->Append(*ComputedStyleUtils::SingleValueForTimelineShorthand(
+        /* name */ nullptr, TimelineAxis::kBlock));
+    return list;
+  }
+  for (wtf_size_t i = 0; i < name_vector.size(); ++i) {
+    list->Append(*ComputedStyleUtils::SingleValueForTimelineShorthand(
+        name_vector[i].Get(), axis_vector[i]));
   }
 
   return list;
