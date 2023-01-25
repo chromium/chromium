@@ -1900,9 +1900,9 @@ void V4L2JpegEncodeAccelerator::InitializeAsync(
   encoder_task_runner_ = encoder_thread_.task_runner();
 
   encoder_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&V4L2JpegEncodeAccelerator::InitializeTask, weak_ptr_,
-                     client, BindToCurrentLoop(std::move(init_cb))));
+      FROM_HERE, base::BindOnce(&V4L2JpegEncodeAccelerator::InitializeTask,
+                                base::Unretained(this), client,
+                                BindToCurrentLoop(std::move(init_cb))));
 }
 
 size_t V4L2JpegEncodeAccelerator::GetMaxCodedBufferSize(
