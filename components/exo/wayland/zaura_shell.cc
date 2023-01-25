@@ -1205,10 +1205,6 @@ class WaylandAuraShell : public ash::DesksController::Observer,
     if (wl_resource_get_version(aura_shell_resource_) <
         ZAURA_SHELL_ACTIVATED_SINCE_VERSION)
       return;
-    if (gained_active_surface == lost_active_surface &&
-        last_has_focused_client_ == has_focused_client)
-      return;
-    last_has_focused_client_ = has_focused_client;
 
     wl_resource* gained_active_surface_resource =
         gained_active_surface ? GetSurfaceResource(gained_active_surface)
@@ -1231,6 +1227,12 @@ class WaylandAuraShell : public ash::DesksController::Observer,
         wl_resource_get_client(lost_active_surface_resource) != client) {
       lost_active_surface_resource = nullptr;
     }
+
+    if (gained_active_surface_resource == lost_active_surface_resource &&
+        last_has_focused_client_ == has_focused_client) {
+      return;
+    }
+    last_has_focused_client_ = has_focused_client;
 
     zaura_shell_send_activated(aura_shell_resource_,
                                gained_active_surface_resource,

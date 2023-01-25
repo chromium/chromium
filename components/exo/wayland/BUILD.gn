@@ -280,6 +280,7 @@ source_set("unit_tests") {
     "test/wayland_server_test.h",
     "test/wayland_server_test_base.cc",
     "test/wayland_server_test_base.h",
+    "wayland_aura_shell_server_test.cc",
     "wayland_display_observer_unittest.cc",
     "wayland_display_util_unittest.cc",
     "wayland_keyboard_delegate_unittest.cc",
