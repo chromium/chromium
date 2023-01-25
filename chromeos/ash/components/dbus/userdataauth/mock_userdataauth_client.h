@@ -42,24 +42,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
                RemoveCallback callback),
               (override));
   MOCK_METHOD(void,
-              GetKeyData,
-              (const ::user_data_auth::GetKeyDataRequest& request,
-               GetKeyDataCallback callback),
-              (override));
-  MOCK_METHOD(void,
               CheckKey,
               (const ::user_data_auth::CheckKeyRequest& request,
                CheckKeyCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              AddKey,
-              (const ::user_data_auth::AddKeyRequest& request,
-               AddKeyCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              RemoveKey,
-              (const ::user_data_auth::RemoveKeyRequest& request,
-               RemoveKeyCallback callback),
               (override));
   MOCK_METHOD(
       void,

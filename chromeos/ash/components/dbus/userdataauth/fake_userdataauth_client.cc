@@ -673,60 +673,6 @@ void FakeUserDataAuthClient::Remove(
   }
 }
 
-void FakeUserDataAuthClient::GetKeyData(
-    const ::user_data_auth::GetKeyDataRequest& request,
-    GetKeyDataCallback callback) {
-  ::user_data_auth::GetKeyDataReply reply;
-  ReplyOnReturn auto_reply(&reply, std::move(callback));
-
-  // Check if user exists.
-  const auto user_it = users_.find(request.account_id());
-  if (user_it == std::end(users_)) {
-    LOG(ERROR) << "User does not exist: " << request.account_id().account_id();
-    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND);
-    return;
-  }
-  const UserCryptohomeState& user_state = user_it->second;
-
-  const std::string& requested_label =
-      request.authorization_request().key().data().label();
-
-  // Create range [factors_begin, factors_end) of factors matching
-  // `requested_label`: If the `requested_label` is empty, then every factor
-  // matches. Otherwise the factor with that precise label matches. If no such
-  // factor exists, the range is empty.
-  auto factors_begin = std::begin(user_state.auth_factors);
-  auto factors_end = std::end(user_state.auth_factors);
-  if (!requested_label.empty()) {
-    factors_begin = user_state.auth_factors.find(requested_label);
-    if (factors_begin != factors_end) {
-      factors_end = std::next(factors_begin);
-    }
-  }
-
-  // Fill `reply.key_data()` with the factors we found.
-  for (auto factors_it = factors_begin; factors_it != factors_end;
-       ++factors_it) {
-    const std::string& label = factors_it->first;
-    const FakeAuthFactor& factor = factors_it->second;
-
-    absl::optional<cryptohome::KeyData> key_data =
-        FakeAuthFactorToKeyData(label, factor);
-    if (key_data.has_value()) {
-      reply.mutable_key_data()->Add(std::move(*key_data));
-    } else {
-      LOG(WARNING) << "Ignoring auth factor incompatible with legacy API: "
-                   << label;
-    }
-  }
-
-  if (reply.key_data().empty()) {
-    // This happens if no or only unsupported factors matched the request.
-    LOG(ERROR) << "No legacy key exists for label " << requested_label;
-    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_KEY_NOT_FOUND);
-  }
-}
-
 void FakeUserDataAuthClient::CheckKey(
     const ::user_data_auth::CheckKeyRequest& request,
     CheckKeyCallback callback) {
@@ -755,57 +701,6 @@ void FakeUserDataAuthClient::CheckKey(
   }
 }
 
-void FakeUserDataAuthClient::AddKey(
-    const ::user_data_auth::AddKeyRequest& request,
-    AddKeyCallback callback) {
-  ::user_data_auth::AddKeyReply reply;
-  ReplyOnReturn auto_reply(&reply, std::move(callback));
-
-  const cryptohome::AccountIdentifier& account_id = request.account_id();
-  const bool clobber_if_exists = request.clobber_if_exists();
-  const cryptohome::Key& new_key = request.key();
-
-  auto user_it = users_.find(account_id);
-  if (user_it == std::end(users_)) {
-    // TODO(crbug.com/1334538): Cryptohome would not create a new user here,
-    // but many tests rely on it. New tests shouldn't rely on this behavior.
-    LOG(ERROR) << "Need to create new user: " << account_id.account_id();
-    user_it = users_.insert(user_it, {account_id, UserCryptohomeState()});
-  }
-  DCHECK(user_it != std::end(users_));
-  UserCryptohomeState& user_state = user_it->second;
-
-  auto [new_label, new_factor] =
-      KeyToFakeAuthFactor(new_key, enable_auth_check_);
-  CHECK(clobber_if_exists || !user_state.auth_factors.contains(new_label))
-      << "Key exists, will not clobber: " << new_label;
-  user_state.auth_factors[std::move(new_label)] = std::move(new_factor);
-}
-void FakeUserDataAuthClient::RemoveKey(
-    const ::user_data_auth::RemoveKeyRequest& request,
-    RemoveKeyCallback callback) {
-  ::user_data_auth::RemoveKeyReply reply;
-  ReplyOnReturn auto_reply(&reply, std::move(callback));
-
-  const auto user_it = users_.find(request.account_id());
-  if (user_it == std::end(users_)) {
-    // TODO(crbug.com/1334538): Cryptohome would report an error here, but many
-    // tests do not set up users before calling RemoveKey. That's why we don't
-    // report an error here. New tests shouldn't rely on this behavior.
-    LOG(ERROR) << "User does not exist: " << request.account_id().account_id();
-    return;
-  }
-  UserCryptohomeState& user_state = user_it->second;
-
-  const std::string& label = request.key().data().label();
-  if (label.empty()) {
-    // An empty request label matches all keys, so remove all.
-    LOG(WARNING) << "RemoveKey for empty label removes all keys";
-    user_state.auth_factors.clear();
-  } else {
-    user_state.auth_factors.erase(label);
-  }
-}
 void FakeUserDataAuthClient::StartFingerprintAuthSession(
     const ::user_data_auth::StartFingerprintAuthSessionRequest& request,
     StartFingerprintAuthSessionCallback callback) {

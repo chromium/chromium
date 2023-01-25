@@ -54,15 +54,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   using RemoveCallback =
       chromeos::DBusMethodCallback<::user_data_auth::RemoveReply>;
 
-  // Key-based API, still used by PIN codepath.
-  // TODO(b/260718534): Remove next group as part of UserAuthFactors cleanup.
-  using GetKeyDataCallback =
-      chromeos::DBusMethodCallback<::user_data_auth::GetKeyDataReply>;
-  using AddKeyCallback =
-      chromeos::DBusMethodCallback<::user_data_auth::AddKeyReply>;
-  using RemoveKeyCallback =
-      chromeos::DBusMethodCallback<::user_data_auth::RemoveKeyReply>;
-
   // This API is still used by old WebAuthN path.
   // TODO(b/260715686): Remove as part of UseAuthsessionForWebAuthN cleanup.
   using CheckKeyCallback =
@@ -187,18 +178,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   // Try authenticating with key in user's vault.
   virtual void CheckKey(const ::user_data_auth::CheckKeyRequest& request,
                         CheckKeyCallback callback) = 0;
-
-  // Key-based API, still used by PIN codepath.
-  // TODO(b/260718534): Remove next group as part of UserAuthFactors cleanup.
-  // Get key metadata for user's vault.
-  virtual void GetKeyData(const ::user_data_auth::GetKeyDataRequest& request,
-                          GetKeyDataCallback callback) = 0;
-  // Add a key to user's vault.
-  virtual void AddKey(const ::user_data_auth::AddKeyRequest& request,
-                      AddKeyCallback callback) = 0;
-  // Remove a key from user's vault.
-  virtual void RemoveKey(const ::user_data_auth::RemoveKeyRequest& request,
-                         RemoveKeyCallback callback) = 0;
 
   // Starts a fingerprint auth session.
   virtual void StartFingerprintAuthSession(

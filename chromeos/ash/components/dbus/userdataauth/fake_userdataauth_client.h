@@ -192,14 +192,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
                UnmountCallback callback) override;
   void Remove(const ::user_data_auth::RemoveRequest& request,
               RemoveCallback callback) override;
-  void GetKeyData(const ::user_data_auth::GetKeyDataRequest& request,
-                  GetKeyDataCallback callback) override;
   void CheckKey(const ::user_data_auth::CheckKeyRequest& request,
                 CheckKeyCallback callback) override;
-  void AddKey(const ::user_data_auth::AddKeyRequest& request,
-              AddKeyCallback callback) override;
-  void RemoveKey(const ::user_data_auth::RemoveKeyRequest& request,
-                 RemoveKeyCallback callback) override;
   void StartFingerprintAuthSession(
       const ::user_data_auth::StartFingerprintAuthSessionRequest& request,
       StartFingerprintAuthSessionCallback callback) override;

@@ -151,55 +151,47 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
   }
 
   void SetPassword(const std::string& password) const {
-    ::user_data_auth::AddKeyRequest request;
-
-    const cryptohome::KeyDefinition key_def =
-        cryptohome::KeyDefinition::CreateForPassword(
-            password, KeyLabel(kCryptohomeGaiaKeyLabel),
-            cryptohome::PRIV_MIGRATE);
-    cryptohome::KeyDefinitionToKey(key_def, request.mutable_key());
-    *request.mutable_account_id() =
-        cryptohome::CreateAccountIdentifierFromAccountId(test_account_id_);
-    // Ensure that has_authorization_request() would return true.
-    request.mutable_authorization_request();
+    ::user_data_auth::AddAuthFactorRequest request;
+    request.set_auth_session_id(user_context_->GetAuthSessionId());
+    request.mutable_auth_factor()->set_type(
+        ::user_data_auth::AUTH_FACTOR_TYPE_PASSWORD);
+    request.mutable_auth_factor()->set_label(kCryptohomeGaiaKeyLabel);
+    request.mutable_auth_factor()->mutable_password_metadata();
+    request.mutable_auth_input()->mutable_password_input()->set_secret(
+        password);
     base::RunLoop run_loop;
-    UserDataAuthClient::Get()->AddKey(
-        request, base::BindOnce(
-                     [](base::OnceClosure closure,
-                        absl::optional<::user_data_auth::AddKeyReply> reply) {
-                       std::move(closure).Run();
-                     },
-                     run_loop.QuitClosure()));
+    UserDataAuthClient::Get()->AddAuthFactor(
+        request,
+        base::BindOnce(
+            [](base::OnceClosure closure,
+               absl::optional<::user_data_auth::AddAuthFactorReply> reply) {
+              std::move(closure).Run();
+            },
+            run_loop.QuitClosure()));
     run_loop.Run();
   }
 
   // Setup a pin which has policy `auth_locked` true. That means the pin can't
   // be used for authentication because of the TPM protection.
   void SetAuthLockedPin(const std::string& pin) const {
-    ::user_data_auth::AddKeyRequest request;
-
-    const cryptohome::KeyDefinition key_def =
-        cryptohome::KeyDefinition::CreateForPassword(
-            pin, KeyLabel(kCryptohomePinLabel), cryptohome::PRIV_MIGRATE);
-    cryptohome::KeyDefinitionToKey(key_def, request.mutable_key());
-    request.mutable_key()
-        ->mutable_data()
-        ->mutable_policy()
-        ->set_low_entropy_credential(true);
-    *request.mutable_account_id() =
-        cryptohome::CreateAccountIdentifierFromAccountId(test_account_id_);
-    // Ensure that has_authorization_request() would return true.
-    request.mutable_authorization_request();
+    ::user_data_auth::AddAuthFactorRequest request;
+    request.set_auth_session_id(user_context_->GetAuthSessionId());
+    request.mutable_auth_factor()->set_type(
+        ::user_data_auth::AUTH_FACTOR_TYPE_PIN);
+    request.mutable_auth_factor()->set_label(kCryptohomePinLabel);
+    request.mutable_auth_factor()->mutable_pin_metadata();
+    request.mutable_auth_input()->mutable_pin_input()->set_secret(pin);
     base::RunLoop run_loop;
-    UserDataAuthClient::Get()->AddKey(
-        request, base::BindOnce(
-                     [](base::OnceClosure closure,
-                        absl::optional<::user_data_auth::AddKeyReply> reply) {
-                       std::move(closure).Run();
-                     },
-                     run_loop.QuitClosure()));
-
+    UserDataAuthClient::Get()->AddAuthFactor(
+        request,
+        base::BindOnce(
+            [](base::OnceClosure closure,
+               absl::optional<::user_data_auth::AddAuthFactorReply> reply) {
+              std::move(closure).Run();
+            },
+            run_loop.QuitClosure()));
     run_loop.Run();
+
     FakeUserDataAuthClient::TestApi::Get()->SetPinLocked(
         cryptohome::CreateAccountIdentifierFromAccountId(test_account_id_),
         kCryptohomePinLabel, true);
