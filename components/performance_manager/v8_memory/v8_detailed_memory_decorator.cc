@@ -761,9 +761,9 @@ base::Value V8DetailedMemoryDecorator::DescribeFrameNodeData(
   if (!frame_data)
     return base::Value();
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("v8_bytes_used", frame_data->v8_bytes_used());
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("v8_bytes_used", static_cast<int>(frame_data->v8_bytes_used()));
+  return base::Value(std::move(dict));
 }
 
 base::Value V8DetailedMemoryDecorator::DescribeProcessNodeData(
@@ -776,11 +776,12 @@ base::Value V8DetailedMemoryDecorator::DescribeProcessNodeData(
 
   DCHECK_EQ(content::PROCESS_TYPE_RENDERER, process_node->GetProcessType());
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("detached_v8_bytes_used",
-                 process_data->detached_v8_bytes_used());
-  dict.SetIntKey("shared_v8_bytes_used", process_data->shared_v8_bytes_used());
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("detached_v8_bytes_used",
+           static_cast<int>(process_data->detached_v8_bytes_used()));
+  dict.Set("shared_v8_bytes_used",
+           static_cast<int>(process_data->shared_v8_bytes_used()));
+  return base::Value(std::move(dict));
 }
 
 const V8DetailedMemoryRequest* V8DetailedMemoryDecorator::GetNextRequest()

@@ -417,9 +417,9 @@ base::Value V8ContextTracker::DescribeFrameNodeData(
   if (ec_data)
     v8_context_count = ec_data->v8_context_count();
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("v8_context_count", v8_context_count);
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("v8_context_count", static_cast<int>(v8_context_count));
+  return base::Value(std::move(dict));
 }
 
 base::Value V8ContextTracker::DescribeProcessNodeData(
@@ -439,13 +439,15 @@ base::Value V8ContextTracker::DescribeProcessNodeData(
         process_data->GetDestroyedExecutionContextDataCount();
   }
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("v8_context_count", v8_context_count);
-  dict.SetIntKey("detached_v8_context_count", detached_v8_context_count);
-  dict.SetIntKey("execution_context_count", execution_context_count);
-  dict.SetIntKey("destroyed_execution_context_count",
-                 destroyed_execution_context_count);
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("v8_context_count", static_cast<int>(v8_context_count));
+  dict.Set("detached_v8_context_count",
+           static_cast<int>(detached_v8_context_count));
+  dict.Set("execution_context_count",
+           static_cast<int>(execution_context_count));
+  dict.Set("destroyed_execution_context_count",
+           static_cast<int>(destroyed_execution_context_count));
+  return base::Value(std::move(dict));
 }
 
 base::Value V8ContextTracker::DescribeWorkerNodeData(
@@ -457,9 +459,9 @@ base::Value V8ContextTracker::DescribeWorkerNodeData(
   if (ec_data)
     v8_context_count = ec_data->v8_context_count();
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("v8_context_count", v8_context_count);
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("v8_context_count", static_cast<int>(v8_context_count));
+  return base::Value(std::move(dict));
 }
 
 void V8ContextTracker::OnBeforeProcessNodeRemoved(const ProcessNode* node) {

@@ -122,9 +122,9 @@ base::Value FreezingVoteAggregator::DescribePageNodeData(
   if (votes_for_page == vote_data_map_.end())
     return base::Value();
 
-  base::Value ret(base::Value::Type::DICTIONARY);
-  votes_for_page->second.DescribeVotes(&ret);
-  return ret;
+  base::Value::Dict ret;
+  votes_for_page->second.DescribeVotes(ret);
+  return base::Value(std::move(ret));
 }
 
 FreezingVoteAggregator::FreezingVoteData::FreezingVoteData() = default;
@@ -165,13 +165,12 @@ const FreezingVote& FreezingVoteAggregator::FreezingVoteData::GetChosenVote() {
 }
 
 void FreezingVoteAggregator::FreezingVoteData::DescribeVotes(
-    base::Value* ret) const {
+    base::Value::Dict& ret) const {
   size_t i = 0;
   for (const auto& it : votes_) {
-    ret->SetStringKey(
-        base::StringPrintf("Vote %zu (%s)", i++,
-                           FreezingVoteValueToString(it.second.value())),
-        it.second.reason());
+    ret.Set(base::StringPrintf("Vote %zu (%s)", i++,
+                               FreezingVoteValueToString(it.second.value())),
+            it.second.reason());
   }
 }
 

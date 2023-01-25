@@ -8,6 +8,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/values.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
@@ -112,7 +113,7 @@ class FreezingVoteAggregator final
     const FreezingVote& GetChosenVote();
 
     // Helper for FreezingVoteAggregator::DescribePageNodeData.
-    void DescribeVotes(base::Value* ret) const;
+    void DescribeVotes(base::Value::Dict& ret) const;
 
    private:
     friend class FreezingVoteAggregatorTestAccess;

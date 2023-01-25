@@ -206,38 +206,38 @@ class TestNodeDataDescriber : public NodeDataDescriber {
   explicit TestNodeDataDescriber(base::StringPiece name) : name_(name) {}
 
   base::Value DescribeFrameNodeData(const FrameNode* node) const override {
-    base::Value list(base::Value::Type::LIST);
+    base::Value::List list;
     list.Append(name_);
     list.Append("FrameNode");
-    return list;
+    return base::Value(std::move(list));
   }
 
   base::Value DescribePageNodeData(const PageNode* node) const override {
-    base::Value list(base::Value::Type::LIST);
+    base::Value::List list;
     list.Append(name_);
     list.Append("PageNode");
-    return list;
+    return base::Value(std::move(list));
   }
 
   base::Value DescribeProcessNodeData(const ProcessNode* node) const override {
-    base::Value list(base::Value::Type::LIST);
+    base::Value::List list;
     list.Append(name_);
     list.Append("ProcessNode");
-    return list;
+    return base::Value(std::move(list));
   }
 
   base::Value DescribeSystemNodeData(const SystemNode* node) const override {
-    base::Value list(base::Value::Type::LIST);
+    base::Value::List list;
     list.Append(name_);
     list.Append("SystemNode");
-    return list;
+    return base::Value(std::move(list));
   }
 
   base::Value DescribeWorkerNodeData(const WorkerNode* node) const override {
-    base::Value list(base::Value::Type::LIST);
+    base::Value::List list;
     list.Append(name_);
     list.Append("WorkerNode");
-    return list;
+    return base::Value(std::move(list));
   }
 
  private:

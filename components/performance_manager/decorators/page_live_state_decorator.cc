@@ -371,20 +371,19 @@ base::Value PageLiveStateDecorator::DescribePageNodeData(
   if (!data)
     return base::Value();
 
-  base::Value ret(base::Value::Type::DICTIONARY);
-  ret.SetBoolKey("IsConnectedToUSBDevice", data->IsConnectedToUSBDevice());
-  ret.SetBoolKey("IsConnectedToBluetoothDevice",
-                 data->IsConnectedToBluetoothDevice());
-  ret.SetBoolKey("IsCapturingVideo", data->IsCapturingVideo());
-  ret.SetBoolKey("IsCapturingAudio", data->IsCapturingAudio());
-  ret.SetBoolKey("IsBeingMirrored", data->IsBeingMirrored());
-  ret.SetBoolKey("IsCapturingWindow", data->IsCapturingWindow());
-  ret.SetBoolKey("IsCapturingDisplay", data->IsCapturingDisplay());
-  ret.SetBoolKey("IsAutoDiscardable", data->IsAutoDiscardable());
-  ret.SetBoolKey("WasDiscarded", data->WasDiscarded());
-  ret.SetBoolKey("IsActiveTab", data->IsActiveTab());
+  base::Value::Dict ret;
+  ret.Set("IsConnectedToUSBDevice", data->IsConnectedToUSBDevice());
+  ret.Set("IsConnectedToBluetoothDevice", data->IsConnectedToBluetoothDevice());
+  ret.Set("IsCapturingVideo", data->IsCapturingVideo());
+  ret.Set("IsCapturingAudio", data->IsCapturingAudio());
+  ret.Set("IsBeingMirrored", data->IsBeingMirrored());
+  ret.Set("IsCapturingWindow", data->IsCapturingWindow());
+  ret.Set("IsCapturingDisplay", data->IsCapturingDisplay());
+  ret.Set("IsAutoDiscardable", data->IsAutoDiscardable());
+  ret.Set("WasDiscarded", data->WasDiscarded());
+  ret.Set("IsActiveTab", data->IsActiveTab());
 
-  return ret;
+  return base::Value(std::move(ret));
 }
 
 void PageLiveStateDecorator::OnMainFrameUrlChanged(const PageNode* page_node) {
