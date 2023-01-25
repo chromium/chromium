@@ -228,6 +228,7 @@ void TestSessionControllerClient::RequestLockScreen() {
 }
 
 void TestSessionControllerClient::RequestHideLockScreen() {
+  ++request_hide_lock_screen_count_;
   SetSessionState(session_manager::SessionState::ACTIVE);
 }
 

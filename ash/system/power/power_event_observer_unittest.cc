@@ -404,6 +404,31 @@ TEST_F(PowerEventObserverTest, HibernateDismissesLockScreen) {
   EXPECT_FALSE(GetLockedState());
 }
 
+// Verifies that hibernate suspend and resume does not attempt to hide the lock
+// screen if the session does not get locked during suspend.
+TEST_F(PowerEventObserverTest, HibernateWithUnlockedScreen) {
+  SetCanLockScreen(false);
+  SetShouldLockScreenAutomatically(false);
+
+  // Suspend, and verify screen does not get locked.
+  observer_->SuspendImminent(power_manager::SuspendImminent_Reason_OTHER);
+  ASSERT_FALSE(GetLockedState());
+
+  power_manager::SuspendDone suspend_done = power_manager::SuspendDone();
+  suspend_done.set_deepest_state(
+      power_manager::SuspendDone_SuspendState_TO_DISK);
+  observer_->SuspendDoneEx(suspend_done);
+  // Verify that screen lock hide was not requested in response to session
+  // resume. Unlock animation runs in two stages - first fades the lock screen
+  // UI out, and then fades the in-session UI in. The second stage runs in
+  // response to sessions state change, which is not expected in case session is
+  // not locked in the first place. Running the first stage of unlock animation
+  // may leave UI in incorrect state - for example, shelf would remain fully
+  // transparent. See https::/b/262315987.
+  EXPECT_EQ(0, GetSessionControllerClient()->request_hide_lock_screen_count());
+  EXPECT_FALSE(GetLockedState());
+}
+
 // Tests that displays will not be considered ready to suspend until the
 // animated wallpaper change finishes (if the wallpaper is being animated to
 // another wallpaper after the screen is locked).

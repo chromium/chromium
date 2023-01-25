@@ -62,6 +62,9 @@ class TestSessionControllerClient : public SessionControllerClient {
   int attempt_restart_chrome_count() const {
     return attempt_restart_chrome_count_;
   }
+  int request_hide_lock_screen_count() const {
+    return request_hide_lock_screen_count_;
+  }
   int request_sign_out_count() const { return request_sign_out_count_; }
   int request_restart_for_update_count() const {
     return request_restart_for_update_count_;
@@ -168,6 +171,7 @@ class TestSessionControllerClient : public SessionControllerClient {
   SessionInfo session_info_;
 
   bool use_lower_case_user_id_ = true;
+  int request_hide_lock_screen_count_ = 0;
   int request_sign_out_count_ = 0;
   int request_restart_for_update_count_ = 0;
   int attempt_restart_chrome_count_ = 0;

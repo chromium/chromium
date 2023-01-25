@@ -341,7 +341,8 @@ void PowerEventObserver::SuspendDoneEx(
   // to launch the resume image. Dismiss the lock screen here to avoid making
   // them log in twice.
   if (proto.deepest_state() ==
-      power_manager::SuspendDone_SuspendState_TO_DISK) {
+          power_manager::SuspendDone_SuspendState_TO_DISK &&
+      Shell::Get()->session_controller()->IsScreenLocked()) {
     Shell::Get()->session_controller()->HideLockScreen();
   }
 }
