@@ -205,13 +205,14 @@ using PriceNotificationItems =
   int64_t amountMicro = forCurrentPrice
                             ? productInfo->amount_micros
                             : productInfo->previous_amount_micros.value();
-  float price = amountMicro / commerce::kToMicroCurrency;
-  std::unique_ptr<payments::CurrencyFormatter> formatter =
-      std::make_unique<payments::CurrencyFormatter>(productInfo->currency_code,
-                                                    productInfo->country_code);
-  formatter->SetMaxFractionalDigits(2);
+  float price = static_cast<float>(amountMicro) /
+                static_cast<float>(commerce::kToMicroCurrency);
+  payments::CurrencyFormatter formatter(productInfo->currency_code,
+                                        productInfo->country_code);
+
+  formatter.SetMaxFractionalDigits(2);
   return base::SysUTF16ToNSString(
-      formatter->Format(base::NumberToString(price)));
+      formatter.Format(base::NumberToString(price)));
 }
 
 // This function handles the response from the user attempting to subscribe to
