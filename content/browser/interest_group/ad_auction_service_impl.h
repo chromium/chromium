@@ -12,8 +12,6 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
-#include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
@@ -139,16 +137,17 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       std::vector<std::string> errors,
       std::unique_ptr<InterestGroupAuctionReporter> reporter);
 
-  void OnReporterComplete(
-      ReporterList::iterator reporter_it,
-      GURL urn_uuid,
-      blink::InterestGroupKey winning_group_key,
-      std::string winning_group_ad_metadata,
-      scoped_refptr<FencedFrameReporter> fenced_frame_reporter,
-      std::vector<GURL> debug_loss_report_urls,
-      std::vector<GURL> debug_win_report_urls,
-      blink::InterestGroupSet interest_groups_that_bid,
-      base::flat_set<std::string> k_anon_keys_to_join);
+  void OnReporterComplete(ReporterList::iterator reporter_it,
+                          RunAdAuctionCallback callback,
+                          GURL urn_uuid,
+                          blink::InterestGroupKey winning_group_key,
+                          GURL render_url,
+                          std::vector<GURL> ad_component_urls,
+                          std::string winning_group_ad_metadata,
+                          std::vector<GURL> debug_loss_report_urls,
+                          std::vector<GURL> debug_win_report_urls,
+                          blink::InterestGroupSet interest_groups_that_bid,
+                          base::flat_set<std::string> k_anon_keys_to_join);
 
   // Calls LogWebFeatureForCurrentPage() for the frame to inform it of FLEDGE
   // private aggregation API usage, if `private_aggregation_requests` is

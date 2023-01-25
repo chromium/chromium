@@ -91,13 +91,6 @@ void InterestGroupAuctionReporter::Start(base::OnceClosure callback) {
                        /*top_seller_signals=*/absl::nullopt);
 }
 
-base::RepeatingClosure
-InterestGroupAuctionReporter::OnNavigateToWinningAdCallback() {
-  return base::BindRepeating(
-      &InterestGroupAuctionReporter::OnNavigateToWinningAd,
-      weak_ptr_factory_.GetWeakPtr());
-}
-
 void InterestGroupAuctionReporter::RequestSellerWorklet(
     const SellerWinningBidInfo* seller_info,
     const absl::optional<std::string>& top_seller_signals) {
@@ -447,23 +440,7 @@ void InterestGroupAuctionReporter::OnReportingComplete(
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "auction",
                                   top_level_seller_winning_bid_info_.trace_id);
   errors_.insert(errors_.end(), errors.begin(), errors.end());
-  reporting_complete_ = true;
-  MaybeInvokeCallback();
-}
-
-void InterestGroupAuctionReporter::OnNavigateToWinningAd() {
-  if (navigated_to_winning_ad_) {
-    return;
-  }
-  navigated_to_winning_ad_ = true;
-  MaybeInvokeCallback();
-}
-
-void InterestGroupAuctionReporter::MaybeInvokeCallback() {
-  DCHECK(callback_);
-  if (reporting_complete_ && navigated_to_winning_ad_) {
-    std::move(callback_).Run();
-  }
+  std::move(callback_).Run();
 }
 
 const InterestGroupAuctionReporter::SellerWinningBidInfo&

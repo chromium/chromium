@@ -2045,8 +2045,6 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
     reporter_->Start(base::BindOnce(&AuctionRunnerTest::OnReportingComplete,
                                     base::Unretained(this)));
-    // Invoke callback immediately, so as not to block reporter completion.
-    reporter_->OnNavigateToWinningAdCallback().Run();
   }
 
   void OnReportingComplete() {

@@ -125,17 +125,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   InterestGroupAuctionReporter& operator=(const InterestGroupAuctionReporter&) =
       delete;
 
-  // Starts running reporting scripts. `callback` will be invoked once all
-  // reporting scripts have completed, and the callback returned by
-  // OnNavigateToWinningAdCallback() has been invoked, at which point reports
-  // should be sent, and the reporter can be destroyed.
   void Start(base::OnceClosure callback);
-
-  // Returns a callback that should be invoked once a fenced frame has been
-  // navigated to the winning ad. May be invoked multiple times, safe to invoke
-  // after destruction. `this` will not invoke the callback passed to Start()
-  // until the callback this method returns has been invoked at least once.
-  base::RepeatingClosure OnNavigateToWinningAdCallback();
 
   // Accessors so the owner can pass along the results of the auction.
   //
@@ -209,18 +199,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       PrivateAggregationRequests pa_requests,
       const std::vector<std::string>& errors);
 
-  // Sets `reporting_complete_` to true an invokes MaybeCompleteCallback().
+  // Invokes `callback_`.
   void OnReportingComplete(
       const std::vector<std::string>& errors = std::vector<std::string>());
-
-  // Invoked when the winning ad has been navigated to. If
-  // `navigated_to_winning_ad_` is false, sets it to true and invokes
-  // MaybeInvokeCallback(). Otherwise, does nothing.
-  void OnNavigateToWinningAd();
-
-  // Invokes callback passed in to Start() if both OnReportingComplete() and
-  // OnNavigateToWinningAd() have been invoked.
-  void MaybeInvokeCallback();
 
   // Retrieves the SellerWinningBidInfo of the auction the bidder was
   // participating in - i.e., for the component auction, if the bidder was in a
@@ -264,9 +245,6 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   ReportingMetadata ad_beacon_map_;
 
   std::vector<GURL> report_urls_;
-
-  bool reporting_complete_ = false;
-  bool navigated_to_winning_ad_ = false;
 
   base::WeakPtrFactory<InterestGroupAuctionReporter> weak_ptr_factory_{this};
 };

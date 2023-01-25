@@ -50,6 +50,7 @@
   let sawBidderRunningInProcess = 'nope';
   let sawSellerRunningInProcess = 'nope';
   let sawBidderDoneWithProcess = 'nope';
+  let sawSellerDoneWithProcess = 'nope';
   for (ev of devtoolsEvents) {
     if (ev.name === 'AuctionWorkletRunningInProcess') {
       let data = ev.args.data;
@@ -64,9 +65,9 @@
       let data = ev.args.data;
       if (data.type === 'bidder') {
         sawBidderDoneWithProcess = data.host;
+      } else if (data.type === 'seller') {
+        sawSellerDoneWithProcess = data.host;
       }
-      // Note that seller unload is not guaranteed to be observed, as it can
-      // happen after auction completion.
       verifyAuctionProcessEventData(data);
     }
     if (ev.name === 'generate_bid')
@@ -94,8 +95,8 @@
       sawSellerRunningInProcess);
   testRunner.log(
       'Saw process release for bidder for host:' + sawBidderDoneWithProcess);
-  // Note that seller unload is not guaranteed to be observed, as it can happen
-  // after auction completion.
+  testRunner.log(
+      'Saw process release for seller for host:' + sawSellerDoneWithProcess);
 
   testRunner.completeTest();
 })
