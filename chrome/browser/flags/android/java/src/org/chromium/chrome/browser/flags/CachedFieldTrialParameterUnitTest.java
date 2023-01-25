@@ -21,8 +21,6 @@ import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -91,33 +89,29 @@ public class CachedFieldTrialParameterUnitTest {
 
     private static final String FEATURE_B = "FeatureB";
 
-    private static final String[] ALL_PARAMS_NATIVE = new String[] {STRING_PARAM_NAME,
-            STRING_PARAM_NATIVE, BOOLEAN_PARAM_NAME, BOOLEAN_PARAM_NATIVE_STRING, INT_PARAM_NAME,
-            INT_PARAM_NATIVE_STRING, DOUBLE_PARAM_NAME, DOUBLE_PARAM_NATIVE_STRING};
-    private static final Map<String, String> ALL_PARAM_TEST_OVERRIDE =
-            new HashMap<String, String>() {
-                {
-                    put(STRING_PARAM_NAME, STRING_PARAM_TEST_OVERRIDE);
-                    put(BOOLEAN_PARAM_NAME, BOOLEAN_PARAM_TEST_OVERRIDE_STRING);
-                    put(INT_PARAM_NAME, INT_PARAM_TEST_OVERRIDE_STRING);
-                    put(DOUBLE_PARAM_NAME, DOUBLE_PARAM_TEST_OVERRIDE_STRING);
-                }
-            };
+    // clang-format off
+    private static final String[] ALL_PARAMS_NATIVE = new String[] {
+            STRING_PARAM_NAME,
+            STRING_PARAM_NATIVE,
+            BOOLEAN_PARAM_NAME,
+            BOOLEAN_PARAM_NATIVE_STRING,
+            INT_PARAM_NAME,
+            INT_PARAM_NATIVE_STRING,
+            DOUBLE_PARAM_NAME,
+            DOUBLE_PARAM_NATIVE_STRING,
+    };
+    private static final Map<String, String> ALL_PARAM_TEST_OVERRIDE = Map.of(
+            STRING_PARAM_NAME, STRING_PARAM_TEST_OVERRIDE,
+            BOOLEAN_PARAM_NAME, BOOLEAN_PARAM_TEST_OVERRIDE_STRING,
+            INT_PARAM_NAME, INT_PARAM_TEST_OVERRIDE_STRING,
+            DOUBLE_PARAM_NAME, DOUBLE_PARAM_TEST_OVERRIDE_STRING);
+    // clang-format on
 
     private static final AllCachedFieldTrialParameters ALL_PARAM =
             new AllCachedFieldTrialParameters(FEATURE_B);
 
     private static final List<CachedFieldTrialParameter> PARAMS_TO_CACHE =
-            new ArrayList<CachedFieldTrialParameter>() {
-                {
-                    add(STRING_PARAM);
-                    add(BOOLEAN_PARAM);
-                    add(INT_PARAM);
-                    add(DOUBLE_PARAM);
-                    add(STRING2_PARAM);
-                    add(ALL_PARAM);
-                }
-            };
+            List.of(STRING_PARAM, BOOLEAN_PARAM, INT_PARAM, DOUBLE_PARAM, STRING2_PARAM, ALL_PARAM);
 
     @Before
     public void setUp() {

@@ -23,7 +23,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -499,12 +498,7 @@ public class SharedPreferencesManagerTest {
     @Test
     @SmallTest
     public void testWriteStrings() {
-        mSubject.writeStrings(new HashMap<String, String>() {
-            {
-                put(PREFIXED_KEY_1, "first");
-                put("string_key", "second");
-            }
-        });
+        mSubject.writeStrings(Map.of(PREFIXED_KEY_1, "first", "string_key", "second"));
 
         // Verify values can be read
         assertEquals("first", mSubject.readString(PREFIXED_KEY_1, ""));
@@ -514,12 +508,7 @@ public class SharedPreferencesManagerTest {
     @Test
     @SmallTest
     public void testWriteInts() {
-        mSubject.writeInts(new HashMap<String, Integer>() {
-            {
-                put(PREFIXED_KEY_1, 1001);
-                put("int_key", 1002);
-            }
-        });
+        mSubject.writeInts(Map.of(PREFIXED_KEY_1, 1001, "int_key", 1002));
 
         // Verify values can be read
         assertEquals(1001, mSubject.readInt(PREFIXED_KEY_1));
@@ -529,12 +518,7 @@ public class SharedPreferencesManagerTest {
     @Test
     @SmallTest
     public void testWriteLongs() {
-        mSubject.writeLongs(new HashMap<String, Long>() {
-            {
-                put(PREFIXED_KEY_1, 21474836470001L);
-                put("long_key", 21474836470002L);
-            }
-        });
+        mSubject.writeLongs(Map.of(PREFIXED_KEY_1, 21474836470001L, "long_key", 21474836470002L));
 
         // Verify values can be read
         assertEquals(21474836470001L, mSubject.readLong(PREFIXED_KEY_1));
@@ -544,12 +528,7 @@ public class SharedPreferencesManagerTest {
     @Test
     @SmallTest
     public void testWriteFloats() {
-        mSubject.writeFloats(new HashMap<String, Float>() {
-            {
-                put(PREFIXED_KEY_1, 1.5f);
-                put("float_key", 2.5f);
-            }
-        });
+        mSubject.writeFloats(Map.of(PREFIXED_KEY_1, 1.5f, "float_key", 2.5f));
 
         // Verify values can be read
         assertEquals(1.5f, mSubject.readFloat(PREFIXED_KEY_1, 0f), 1e-10);
@@ -559,12 +538,7 @@ public class SharedPreferencesManagerTest {
     @Test
     @SmallTest
     public void testWriteDoubles() {
-        mSubject.writeDoubles(new HashMap<String, Double>() {
-            {
-                put(PREFIXED_KEY_1, 1.5);
-                put("double_key", 2.5);
-            }
-        });
+        mSubject.writeDoubles(Map.of(PREFIXED_KEY_1, 1.5, "double_key", 2.5));
 
         // Verify values can be read
         assertEquals(1.5, mSubject.readDouble(PREFIXED_KEY_1, 0.0), 1e-10);
@@ -574,12 +548,7 @@ public class SharedPreferencesManagerTest {
     @Test
     @SmallTest
     public void testWriteBooleans() {
-        mSubject.writeBooleans(new HashMap<String, Boolean>() {
-            {
-                put(PREFIXED_KEY_1, true);
-                put("long_key", false);
-            }
-        });
+        mSubject.writeBooleans(Map.of(PREFIXED_KEY_1, true, "long_key", false));
 
         // Verify values can be read
         assertTrue(mSubject.readBoolean(PREFIXED_KEY_1, false));

@@ -101,7 +101,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -154,12 +153,8 @@ public class WebContentsAccessibilityTest {
 
     // ContentFeatureList maps used for various tests.
     private static final Map<String, Boolean> ON_DEMAND_ON_COMPUTE_ON =
-            new HashMap<String, Boolean>() {
-                {
-                    put(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS, true);
-                    put(ContentFeatureList.COMPUTE_AX_MODE, true);
-                }
-            };
+            Map.of(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS, true,
+                    ContentFeatureList.COMPUTE_AX_MODE, true);
 
     // Constant values for unit tests
     private static final int UNSUPPRESSED_EXPECTED_COUNT = 15;

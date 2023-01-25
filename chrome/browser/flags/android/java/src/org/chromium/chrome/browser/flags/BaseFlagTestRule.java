@@ -13,7 +13,6 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.FeatureList;
 import org.chromium.base.Flag;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -43,30 +42,10 @@ public class BaseFlagTestRule implements TestRule {
     static final String FEATURE_A = "FeatureA";
     static final String FEATURE_B = "FeatureB";
 
-    static final Map<String, Boolean> A_OFF_B_ON = new HashMap<String, Boolean>() {
-        {
-            put(FEATURE_A, false);
-            put(FEATURE_B, true);
-        }
-    };
-    static final Map<String, Boolean> A_OFF_B_OFF = new HashMap<String, Boolean>() {
-        {
-            put(FEATURE_A, false);
-            put(FEATURE_B, false);
-        }
-    };
-    static final Map<String, Boolean> A_ON_B_OFF = new HashMap<String, Boolean>() {
-        {
-            put(FEATURE_A, true);
-            put(FEATURE_B, false);
-        }
-    };
-    static final Map<String, Boolean> A_ON_B_ON = new HashMap<String, Boolean>() {
-        {
-            put(FEATURE_A, true);
-            put(FEATURE_B, true);
-        }
-    };
+    static final Map<String, Boolean> A_OFF_B_ON = Map.of(FEATURE_A, false, FEATURE_B, true);
+    static final Map<String, Boolean> A_OFF_B_OFF = Map.of(FEATURE_A, false, FEATURE_B, false);
+    static final Map<String, Boolean> A_ON_B_OFF = Map.of(FEATURE_A, true, FEATURE_B, false);
+    static final Map<String, Boolean> A_ON_B_ON = Map.of(FEATURE_A, true, FEATURE_B, true);
 
     static void assertIsEnabledMatches(Map<String, Boolean> state, Flag feature1, Flag feature2) {
         assertEquals(state.get(FEATURE_A), feature1.isEnabled());

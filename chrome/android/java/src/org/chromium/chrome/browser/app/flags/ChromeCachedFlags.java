@@ -43,14 +43,10 @@ public class ChromeCachedFlags {
      * A list of field trial parameters that will be cached when starting minimal browser mode. See
      * {@link #cacheMinimalBrowserFlags()}.
      */
-    private static final List<CachedFieldTrialParameter> MINIMAL_BROWSER_FIELD_TRIALS =
-            new ArrayList<CachedFieldTrialParameter>() {
-                {
-                    // This is used by CustomTabsConnection implementation, which does not
-                    // necessarily start chrome.
-                    add(CustomTabActivity.EXPERIMENTS_FOR_AGSA_PARAMS);
-                }
-            };
+    private static final List<CachedFieldTrialParameter> MINIMAL_BROWSER_FIELD_TRIALS = List.of(
+            // This is used by CustomTabsConnection implementation, which does not
+            // necessarily start chrome.
+            CustomTabActivity.EXPERIMENTS_FOR_AGSA_PARAMS);
 
     /**
      * @return The {@link ChromeCachedFlags} singleton.
@@ -68,134 +64,126 @@ public class ChromeCachedFlags {
         if (mIsFinishedCachingNativeFlags) return;
         FirstRunUtils.cacheFirstRunPrefs();
 
-        // Workaround for crbug.com/1223545: Do not use Arrays.asList().
-        List<CachedFlag> featuresToCache = new ArrayList<CachedFlag>() {
-            {
-                add(ChromeFeatureList.sAppMenuMobileSiteOption);
-                add(ChromeFeatureList.sBackGestureRefactorAndroid);
-                add(ChromeFeatureList.sBaselineGm3SurfaceColors);
-                add(ChromeFeatureList.sCctAutoTranslate);
-                add(ChromeFeatureList.sCctBrandTransparency);
-                add(ChromeFeatureList.sCctFeatureUsage);
-                add(ChromeFeatureList.sCctIncognito);
-                add(ChromeFeatureList.sCctIncognitoAvailableToThirdParty);
-                add(ChromeFeatureList.sCctIntentFeatureOverrides);
-                add(ChromeFeatureList.sCctRemoveRemoteViewIds);
-                add(ChromeFeatureList.sCctResizable90MaximumHeight);
-                add(ChromeFeatureList.sCctResizableForThirdParties);
-                add(ChromeFeatureList.sCctResizableSideSheet);
-                add(ChromeFeatureList.sCctRetainableStateInMemory);
-                add(ChromeFeatureList.sCctToolbarCustomizations);
-                add(ChromeFeatureList.sCloseTabSuggestions);
-                add(ChromeFeatureList.sCommandLineOnNonRooted);
-                add(ChromeFeatureList.sCommerceCoupons);
-                add(ChromeFeatureList.sCriticalPersistedTabData);
-                add(ChromeFeatureList.sDiscoverMultiColumn);
-                add(ChromeFeatureList.sTabStripRedesign);
-                add(ChromeFeatureList.sDiscardOccludedBitmaps);
-                add(ChromeFeatureList.sDownloadsAutoResumptionNative);
-                add(ChromeFeatureList.sEarlyLibraryLoad);
-                add(ChromeFeatureList.sFeedLoadingPlaceholder);
-                add(ChromeFeatureList.sFoldableJankFix);
-                add(ChromeFeatureList.sGridTabSwitcherForTablets);
-                add(ChromeFeatureList.sHideNonDisplayableAccountEmail);
-                add(ChromeFeatureList.sIncognitoReauthenticationForAndroid);
-                add(ChromeFeatureList.sInstanceSwitcher);
-                add(ChromeFeatureList.sInstantStart);
-                add(ChromeFeatureList.sInterestFeedV2);
-                add(ChromeFeatureList.sOmniboxMatchToolbarAndStatusBarColor);
-                add(ChromeFeatureList.sOmniboxModernizeVisualUpdate);
-                add(ChromeFeatureList.sOmniboxMostVisitedTilesAddRecycledViewPool);
-                add(ChromeFeatureList.sOmniboxRemoveExcessiveRecycledViewClearCalls);
-                add(ChromeFeatureList.sOptimizationGuidePushNotifications);
-                add(ChromeFeatureList.sOSKResizesVisualViewportByDefault);
-                add(ChromeFeatureList.sPaintPreviewDemo);
-                add(ChromeFeatureList.sQueryTiles);
-                add(ChromeFeatureList.sQueryTilesOnStart);
-                add(ChromeFeatureList.sReadLater);
-                add(ChromeFeatureList.sStartSurfaceAndroid);
-                add(ChromeFeatureList.sStartSurfaceDisabledFeedImprovement);
-                add(ChromeFeatureList.sStartSurfaceReturnTime);
-                add(ChromeFeatureList.sStartSurfaceRefactor);
-                add(ChromeFeatureList.sStoreHoursAndroid);
-                add(ChromeFeatureList.sSwapPixelFormatToFixConvertFromTranslucent);
-                add(ChromeFeatureList.sTabGridLayoutAndroid);
-                add(ChromeFeatureList.sTabGroupsAndroid);
-                add(ChromeFeatureList.sTabGroupsContinuationAndroid);
-                add(ChromeFeatureList.sTabGroupsForTablets);
-                add(ChromeFeatureList.sTabSelectionEditorV2);
-                add(ChromeFeatureList.sTabStripImprovements);
-                add(ChromeFeatureList.sTabToGTSAnimation);
-                add(ChromeFeatureList.sToolbarUseHardwareBitmapDraw);
-                add(ChromeFeatureList.sUseChimeAndroidSdk);
-                add(ChromeFeatureList.sUseLibunwindstackNativeUnwinderAndroid);
-                add(ChromeFeatureList.sWebApkTrampolineOnInitialIntent);
-            }
-        };
+        // clang-format off
+        List<CachedFlag> featuresToCache = List.of(ChromeFeatureList.sAppMenuMobileSiteOption,
+                ChromeFeatureList.sBackGestureRefactorAndroid,
+                ChromeFeatureList.sBaselineGm3SurfaceColors,
+                ChromeFeatureList.sCctAutoTranslate,
+                ChromeFeatureList.sCctBrandTransparency,
+                ChromeFeatureList.sCctFeatureUsage,
+                ChromeFeatureList.sCctIncognito,
+                ChromeFeatureList.sCctIncognitoAvailableToThirdParty,
+                ChromeFeatureList.sCctIntentFeatureOverrides,
+                ChromeFeatureList.sCctRemoveRemoteViewIds,
+                ChromeFeatureList.sCctResizable90MaximumHeight,
+                ChromeFeatureList.sCctResizableForThirdParties,
+                ChromeFeatureList.sCctResizableSideSheet,
+                ChromeFeatureList.sCctRetainableStateInMemory,
+                ChromeFeatureList.sCctToolbarCustomizations,
+                ChromeFeatureList.sCloseTabSuggestions,
+                ChromeFeatureList.sCommandLineOnNonRooted,
+                ChromeFeatureList.sCommerceCoupons,
+                ChromeFeatureList.sCriticalPersistedTabData,
+                ChromeFeatureList.sDiscoverMultiColumn,
+                ChromeFeatureList.sTabStripRedesign,
+                ChromeFeatureList.sDiscardOccludedBitmaps,
+                ChromeFeatureList.sDownloadsAutoResumptionNative,
+                ChromeFeatureList.sEarlyLibraryLoad,
+                ChromeFeatureList.sFeedLoadingPlaceholder,
+                ChromeFeatureList.sFoldableJankFix,
+                ChromeFeatureList.sGridTabSwitcherForTablets,
+                ChromeFeatureList.sHideNonDisplayableAccountEmail,
+                ChromeFeatureList.sIncognitoReauthenticationForAndroid,
+                ChromeFeatureList.sInstanceSwitcher,
+                ChromeFeatureList.sInstantStart,
+                ChromeFeatureList.sInterestFeedV2,
+                ChromeFeatureList.sOmniboxMatchToolbarAndStatusBarColor,
+                ChromeFeatureList.sOmniboxModernizeVisualUpdate,
+                ChromeFeatureList.sOmniboxMostVisitedTilesAddRecycledViewPool,
+                ChromeFeatureList.sOmniboxRemoveExcessiveRecycledViewClearCalls,
+                ChromeFeatureList.sOptimizationGuidePushNotifications,
+                ChromeFeatureList.sOSKResizesVisualViewportByDefault,
+                ChromeFeatureList.sPaintPreviewDemo,
+                ChromeFeatureList.sQueryTiles,
+                ChromeFeatureList.sQueryTilesOnStart,
+                ChromeFeatureList.sReadLater,
+                ChromeFeatureList.sStartSurfaceAndroid,
+                ChromeFeatureList.sStartSurfaceDisabledFeedImprovement,
+                ChromeFeatureList.sStartSurfaceReturnTime,
+                ChromeFeatureList.sStartSurfaceRefactor,
+                ChromeFeatureList.sStoreHoursAndroid,
+                ChromeFeatureList.sSwapPixelFormatToFixConvertFromTranslucent,
+                ChromeFeatureList.sTabGridLayoutAndroid,
+                ChromeFeatureList.sTabGroupsAndroid,
+                ChromeFeatureList.sTabGroupsContinuationAndroid,
+                ChromeFeatureList.sTabGroupsForTablets,
+                ChromeFeatureList.sTabSelectionEditorV2,
+                ChromeFeatureList.sTabStripImprovements,
+                ChromeFeatureList.sTabToGTSAnimation,
+                ChromeFeatureList.sToolbarUseHardwareBitmapDraw,
+                ChromeFeatureList.sUseChimeAndroidSdk,
+                ChromeFeatureList.sUseLibunwindstackNativeUnwinderAndroid,
+                ChromeFeatureList.sWebApkTrampolineOnInitialIntent);
         CachedFeatureFlags.cacheNativeFlags(featuresToCache);
         CachedFeatureFlags.cacheAdditionalNativeFlags();
 
-        List<CachedFieldTrialParameter> fieldTrialsToCache =
-                new ArrayList<CachedFieldTrialParameter>() {
-                    {
-                        add(BrandingController.BRANDING_CADENCE_MS);
-                        add(BrandingController.MAX_BLANK_TOOLBAR_TIMEOUT_MS);
-                        add(BrandingController.USE_TEMPORARY_STORAGE);
-                        add(BrandingController.ANIMATE_TOOLBAR_ICON_TRANSITION);
-                        add(ChimeFeatures.ALWAYS_REGISTER);
-                        add(StartSurfaceConfiguration.BEHAVIOURAL_TARGETING);
-                        add(FeedPlaceholderLayout.ENABLE_INSTANT_START_ANIMATION);
-                        add(FilePersistedTabDataStorage.DELAY_SAVES_UNTIL_DEFERRED_STARTUP_PARAM);
-                        add(OptimizationGuidePushNotificationManager.MAX_CACHE_SIZE);
-                        add(OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET);
-                        add(OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX);
-                        add(OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN);
-                        add(PageAnnotationsServiceConfig.PAGE_ANNOTATIONS_BASE_URL);
-                        add(CustomTabIntentDataProvider.AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES);
-                        add(CustomTabIntentDataProvider.AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST);
-                        add(CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY);
-                        add(CustomTabIntentDataProvider.DENYLIST_ENTRIES);
-                        add(CustomTabIntentDataProvider.ALLOWLIST_ENTRIES);
-                        add(StartSurfaceConfiguration.IS_DOODLE_SUPPORTED);
-                        add(StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS);
-                        add(StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_USE_MODEL);
-                        add(StartSurfaceConfiguration.NUM_DAYS_KEEP_SHOW_START_AT_STARTUP);
-                        add(StartSurfaceConfiguration.NUM_DAYS_USER_CLICK_BELOW_THRESHOLD);
-                        add(StartSurfaceConfiguration.SHOW_TABS_IN_MRU_ORDER);
-                        add(StartSurfaceConfiguration.SIGNIN_PROMO_NTP_COUNT_LIMIT);
-                        add(StartSurfaceConfiguration
-                                        .SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS);
-                        add(StartSurfaceConfiguration.SIGNIN_PROMO_NTP_RESET_AFTER_HOURS);
-                        add(StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB);
-                        add(StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY);
-                        add(StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START);
-                        add(StartSurfaceConfiguration.START_SURFACE_OPEN_START_AS_HOMEPAGE);
-                        add(StartSurfaceConfiguration.START_SURFACE_VARIATION);
-                        add(StartSurfaceConfiguration.SUPPORT_ACCESSIBILITY);
-                        add(StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE);
-                        add(StartSurfaceConfiguration.USER_CLICK_THRESHOLD);
-                        add(TabContentManager.ALLOW_TO_REFETCH_TAB_THUMBNAIL_VARIATION);
-                        add(TabPersistentStore.CRITICAL_PERSISTED_TAB_DATA_SAVE_ONLY_PARAM);
-                        add(TabUiFeatureUtilities.ENABLE_LAUNCH_BUG_FIX);
-                        add(TabUiFeatureUtilities.ENABLE_LAUNCH_POLISH);
-                        add(TabUiFeatureUtilities.DELAY_GTS_CREATION);
-                        add(TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION);
-                        add(TabUiFeatureUtilities.SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST);
-                        add(TabUiFeatureUtilities.ENABLE_TAB_GROUP_SHARING);
-                        add(TabUiFeatureUtilities.ZOOMING_MIN_MEMORY);
-                        add(TabUiFeatureUtilities.SKIP_SLOW_ZOOMING);
-                        add(TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO);
-                        add(TabUiFeatureUtilities.GRID_TAB_SWITCHER_FOR_TABLETS_POLISH);
-                        add(TabUiFeatureUtilities.TAB_STRIP_TAB_WIDTH);
-                        add(TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY);
-                        add(TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_SHARE);
-                        add(TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_BOOKMARKS);
-                        add(TabUiFeatureUtilities.TAB_STRIP_REDESIGN_ENABLE_FOLIO);
-                        add(TabUiFeatureUtilities.TAB_STRIP_REDESIGN_ENABLE_DETACHED);
-                        add(VersionNumberGetter.MIN_SDK_VERSION);
-                        add(ChromeActivity.CONTENT_VIS_DELAY_MS);
-                    }
-                };
+        List<CachedFieldTrialParameter> fieldTrialsToCache = List.of(
+                BrandingController.BRANDING_CADENCE_MS,
+                BrandingController.MAX_BLANK_TOOLBAR_TIMEOUT_MS,
+                BrandingController.USE_TEMPORARY_STORAGE,
+                BrandingController.ANIMATE_TOOLBAR_ICON_TRANSITION,
+                ChimeFeatures.ALWAYS_REGISTER,
+                StartSurfaceConfiguration.BEHAVIOURAL_TARGETING,
+                FeedPlaceholderLayout.ENABLE_INSTANT_START_ANIMATION,
+                FilePersistedTabDataStorage.DELAY_SAVES_UNTIL_DEFERRED_STARTUP_PARAM,
+                OptimizationGuidePushNotificationManager.MAX_CACHE_SIZE,
+                OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET,
+                OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX,
+                OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN,
+                PageAnnotationsServiceConfig.PAGE_ANNOTATIONS_BASE_URL,
+                CustomTabIntentDataProvider.AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES,
+                CustomTabIntentDataProvider.AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST,
+                CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY,
+                CustomTabIntentDataProvider.DENYLIST_ENTRIES,
+                CustomTabIntentDataProvider.ALLOWLIST_ENTRIES,
+                StartSurfaceConfiguration.IS_DOODLE_SUPPORTED,
+                StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS,
+                StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_USE_MODEL,
+                StartSurfaceConfiguration.NUM_DAYS_KEEP_SHOW_START_AT_STARTUP,
+                StartSurfaceConfiguration.NUM_DAYS_USER_CLICK_BELOW_THRESHOLD,
+                StartSurfaceConfiguration.SHOW_TABS_IN_MRU_ORDER,
+                StartSurfaceConfiguration.SIGNIN_PROMO_NTP_COUNT_LIMIT,
+                StartSurfaceConfiguration.SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS,
+                StartSurfaceConfiguration.SIGNIN_PROMO_NTP_RESET_AFTER_HOURS,
+                StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB,
+                StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY,
+                StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START,
+                StartSurfaceConfiguration.START_SURFACE_OPEN_START_AS_HOMEPAGE,
+                StartSurfaceConfiguration.START_SURFACE_VARIATION,
+                StartSurfaceConfiguration.SUPPORT_ACCESSIBILITY,
+                StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE,
+                StartSurfaceConfiguration.USER_CLICK_THRESHOLD,
+                TabContentManager.ALLOW_TO_REFETCH_TAB_THUMBNAIL_VARIATION,
+                TabPersistentStore.CRITICAL_PERSISTED_TAB_DATA_SAVE_ONLY_PARAM,
+                TabUiFeatureUtilities.ENABLE_LAUNCH_BUG_FIX,
+                TabUiFeatureUtilities.ENABLE_LAUNCH_POLISH,
+                TabUiFeatureUtilities.DELAY_GTS_CREATION,
+                TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION,
+                TabUiFeatureUtilities.SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST,
+                TabUiFeatureUtilities.ENABLE_TAB_GROUP_SHARING,
+                TabUiFeatureUtilities.ZOOMING_MIN_MEMORY,
+                TabUiFeatureUtilities.SKIP_SLOW_ZOOMING,
+                TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO,
+                TabUiFeatureUtilities.GRID_TAB_SWITCHER_FOR_TABLETS_POLISH,
+                TabUiFeatureUtilities.TAB_STRIP_TAB_WIDTH,
+                TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY,
+                TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_SHARE,
+                TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_BOOKMARKS,
+                TabUiFeatureUtilities.TAB_STRIP_REDESIGN_ENABLE_FOLIO,
+                TabUiFeatureUtilities.TAB_STRIP_REDESIGN_ENABLE_DETACHED,
+                VersionNumberGetter.MIN_SDK_VERSION,
+                ChromeActivity.CONTENT_VIS_DELAY_MS);
+        // clang-format on
         tryToCatchMissingParameters(fieldTrialsToCache);
         CachedFeatureFlags.cacheFieldTrialParameters(fieldTrialsToCache);
 
@@ -231,9 +219,7 @@ public class ChromeCachedFlags {
         CachedFeatureFlags.cacheMinimalBrowserFlagsTimeFromNativeTime();
 
         // TODO(crbug.com/995355): Move other related flags from cacheNativeFlags() to here.
-        List<CachedFlag> featuresToCache = new ArrayList<CachedFlag>() {
-            { add(ChromeFeatureList.sExperimentsForAgsa); }
-        };
+        List<CachedFlag> featuresToCache = List.of(ChromeFeatureList.sExperimentsForAgsa);
         CachedFeatureFlags.cacheNativeFlags(featuresToCache);
 
         CachedFeatureFlags.cacheFieldTrialParameters(MINIMAL_BROWSER_FIELD_TRIALS);

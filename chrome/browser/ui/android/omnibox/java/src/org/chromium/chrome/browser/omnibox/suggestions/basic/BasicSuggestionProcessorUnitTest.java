@@ -67,41 +67,43 @@ public class BasicSuggestionProcessorUnitTest {
     private static final @DrawableRes int ICON_VOICE = R.drawable.btn_mic;
     private static final @DrawableRes int ICON_FAVICON = 0; // Favicons do not come from resources.
 
-    private static final Map<Integer, String> ICON_TYPE_NAMES = new HashMap<Integer, String>() {
-        {
-            put(ICON_BOOKMARK, "BOOKMARK");
-            put(ICON_HISTORY, "HISTORY");
-            put(ICON_GLOBE, "GLOBE");
-            put(ICON_MAGNIFIER, "MAGNIFIER");
-            put(ICON_VOICE, "VOICE");
-            put(ICON_FAVICON, "FAVICON");
-        }
-    };
+    private static final Map<Integer, String> ICON_TYPE_NAMES;
+    static {
+        Map<Integer, String> map = new HashMap<>();
+        map.put(ICON_BOOKMARK, "BOOKMARK");
+        map.put(ICON_HISTORY, "HISTORY");
+        map.put(ICON_GLOBE, "GLOBE");
+        map.put(ICON_MAGNIFIER, "MAGNIFIER");
+        map.put(ICON_VOICE, "VOICE");
+        map.put(ICON_FAVICON, "FAVICON");
+        ICON_TYPE_NAMES = map;
+    }
 
-    private static final Map<Integer, String> SUGGESTION_TYPE_NAMES = new HashMap<Integer, String>(
-            OmniboxSuggestionType.NUM_TYPES) {
-        {
-            put(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "URL_WHAT_YOU_TYPED");
-            put(OmniboxSuggestionType.HISTORY_URL, "HISTORY_URL");
-            put(OmniboxSuggestionType.HISTORY_TITLE, "HISTORY_TITLE");
-            put(OmniboxSuggestionType.HISTORY_BODY, "HISTORY_BODY");
-            put(OmniboxSuggestionType.HISTORY_KEYWORD, "HISTORY_KEYWORD");
-            put(OmniboxSuggestionType.NAVSUGGEST, "NAVSUGGEST");
-            put(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED, "SEARCH_WHAT_YOU_TYPED");
-            put(OmniboxSuggestionType.SEARCH_HISTORY, "SEARCH_HISTORY");
-            put(OmniboxSuggestionType.SEARCH_SUGGEST, "SEARCH_SUGGEST");
-            put(OmniboxSuggestionType.SEARCH_SUGGEST_ENTITY, "SEARCH_SUGGEST_ENTITY");
-            put(OmniboxSuggestionType.SEARCH_SUGGEST_TAIL, "SEARCH_SUGGEST_TAIL");
-            put(OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED, "SEARCH_SUGGEST_PERSONALIZED");
-            put(OmniboxSuggestionType.SEARCH_SUGGEST_PROFILE, "SEARCH_SUGGEST_PROFILE");
-            put(OmniboxSuggestionType.SEARCH_OTHER_ENGINE, "SEARCH_OTHER_ENGINE");
-            put(OmniboxSuggestionType.NAVSUGGEST_PERSONALIZED, "NAVSUGGEST_PERSONALIZED");
-            put(OmniboxSuggestionType.VOICE_SUGGEST, "VOICE_SUGGEST");
-            put(OmniboxSuggestionType.DOCUMENT_SUGGESTION, "DOCUMENT_SUGGESTION");
-            // Note: CALCULATOR suggestions are not handled by basic suggestion processor.
-            // These suggestions are now processed by AnswerSuggestionProcessor instead.
-        }
-    };
+    private static final Map<Integer, String> SUGGESTION_TYPE_NAMES;
+    static {
+        Map<Integer, String> map = new HashMap<>();
+        ;
+        map.put(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "URL_WHAT_YOU_TYPED");
+        map.put(OmniboxSuggestionType.HISTORY_URL, "HISTORY_URL");
+        map.put(OmniboxSuggestionType.HISTORY_TITLE, "HISTORY_TITLE");
+        map.put(OmniboxSuggestionType.HISTORY_BODY, "HISTORY_BODY");
+        map.put(OmniboxSuggestionType.HISTORY_KEYWORD, "HISTORY_KEYWORD");
+        map.put(OmniboxSuggestionType.NAVSUGGEST, "NAVSUGGEST");
+        map.put(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED, "SEARCH_WHAT_YOU_TYPED");
+        map.put(OmniboxSuggestionType.SEARCH_HISTORY, "SEARCH_HISTORY");
+        map.put(OmniboxSuggestionType.SEARCH_SUGGEST, "SEARCH_SUGGEST");
+        map.put(OmniboxSuggestionType.SEARCH_SUGGEST_ENTITY, "SEARCH_SUGGEST_ENTITY");
+        map.put(OmniboxSuggestionType.SEARCH_SUGGEST_TAIL, "SEARCH_SUGGEST_TAIL");
+        map.put(OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED, "SEARCH_SUGGEST_PERSONALIZED");
+        map.put(OmniboxSuggestionType.SEARCH_SUGGEST_PROFILE, "SEARCH_SUGGEST_PROFILE");
+        map.put(OmniboxSuggestionType.SEARCH_OTHER_ENGINE, "SEARCH_OTHER_ENGINE");
+        map.put(OmniboxSuggestionType.NAVSUGGEST_PERSONALIZED, "NAVSUGGEST_PERSONALIZED");
+        map.put(OmniboxSuggestionType.VOICE_SUGGEST, "VOICE_SUGGEST");
+        map.put(OmniboxSuggestionType.DOCUMENT_SUGGESTION, "DOCUMENT_SUGGESTION");
+        // Note: CALCULATOR suggestions are not handled by basic suggestion processor.
+        // These suggestions are now processed by AnswerSuggestionProcessor instead.
+        SUGGESTION_TYPE_NAMES = map;
+    }
 
     public @Rule TestRule mFeaturesProcessor = new Features.JUnitProcessor();
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();

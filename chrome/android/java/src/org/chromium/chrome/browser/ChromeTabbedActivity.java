@@ -220,9 +220,9 @@ import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * This is the main activity for ChromeMobile when not running in document mode.  All the tabs
@@ -260,14 +260,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     public static final SettingsLauncher SETTINGS_LAUNCHER = new SettingsLauncherImpl();
 
-    public static final HashSet<String> TABBED_MODE_COMPONENT_NAMES = new HashSet<String>() {
-        {
-            add(ChromeTabbedActivity.class.getName());
-            add(MultiInstanceChromeTabbedActivity.class.getName());
-            add(ChromeTabbedActivity2.class.getName());
-            add(MAIN_LAUNCHER_ACTIVITY_NAME);
-        }
-    };
+    public static final Set<String> TABBED_MODE_COMPONENT_NAMES = Set.of(
+            ChromeTabbedActivity.class.getName(), MultiInstanceChromeTabbedActivity.class.getName(),
+            ChromeTabbedActivity2.class.getName(), MAIN_LAUNCHER_ACTIVITY_NAME);
 
     /**
      * Identifies a histogram to use in {@link #maybeDispatchExplicitMainViewIntent(Intent, int)}.
