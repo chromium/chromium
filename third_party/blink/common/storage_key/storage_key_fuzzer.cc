@@ -22,20 +22,19 @@ IcuEnvironment* env = new IcuEnvironment();
 
 DEFINE_PROTO_FUZZER(
     const storage_key_proto::StorageKeyFuzzer& storage_key_fuzzer) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      net::features::kThirdPartyStoragePartitioning);
+  for (const bool toggle : {false, true}) {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatureState(
+        net::features::kThirdPartyStoragePartitioning, toggle);
 
-  blink::StorageKey storage_key = Convert(storage_key_fuzzer.storage_key());
+    blink::StorageKey storage_key = Convert(storage_key_fuzzer.storage_key());
+    std::string result = storage_key.Serialize();
+    absl::optional<blink::StorageKey> maybe_storage_key =
+        blink::StorageKey::Deserialize(result);
+    if (maybe_storage_key) {
+      assert(storage_key == maybe_storage_key.value());
+    }
 
-  std::string result = storage_key.Serialize();
-  absl::optional<blink::StorageKey> maybe_storage_key =
-      blink::StorageKey::Deserialize(result);
-  if (maybe_storage_key) {
-    assert(storage_key == maybe_storage_key.value());
+    blink::StorageKey::Deserialize(storage_key_fuzzer.deserialize());
   }
-
-  // TODO(crbug.com/1270350): This could be a little closer to the serialization
-  // format
-  blink::StorageKey::Deserialize(storage_key_fuzzer.deserialize());
 }
