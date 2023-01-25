@@ -1,0 +1,2 @@
+Tests window size upon start.
+Window size: 800x600
