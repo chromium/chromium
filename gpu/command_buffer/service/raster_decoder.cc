@@ -1013,6 +1013,12 @@ RasterDecoderImpl::RasterDecoderImpl(
 }
 
 RasterDecoderImpl::~RasterDecoderImpl() {
+  // Client can call BeginRasterChromium and then channel can be closed and
+  // decoder destroyed. Finish raster first.
+  if (sk_surface_ || scoped_shared_image_raster_write_) {
+    DoEndRasterCHROMIUM();
+  }
+
   shared_context_state_->RemoveContextLostObserver(this);
 }
 
