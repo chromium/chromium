@@ -111,22 +111,23 @@ class ClipboardImpl final : public Clipboard, public DataSource::Delegate {
       offered_data_ = *data;
       source_ = manager_->CreateSource(this);
       source_->Offer(GetOfferedMimeTypes());
-    }
 
-    // TODO(nickdiego): This function should just no-op if no serial is found
-    // (ie: no recent input event has been processed yet), though several unit
-    // and browser tests do not satisfy this precondition so would fail [1].
-    // Revisit this once those tests are fixed.
-    //
-    // [1] https://chromium-review.googlesource.com/c/chromium/src/+/3527605/2
-    auto& serial_tracker = connection_->serial_tracker();
-    auto serial = serial_tracker.GetSerial({wl::SerialType::kTouchPress,
-                                            wl::SerialType::kMousePress,
-                                            wl::SerialType::kKeyPress});
-    if (serial.has_value())
-      GetDevice()->SetSelectionSource(source_.get(), serial->value);
-    else
-      LOG(WARNING) << "No serial found for selection.";
+      // TODO(nickdiego): This function should just no-op if no serial is found
+      // (ie: no recent input event has been processed yet), though several unit
+      // and browser tests do not satisfy this precondition so would fail [1].
+      // Revisit this once those tests are fixed.
+      //
+      // [1] https://chromium-review.googlesource.com/c/chromium/src/+/3527605/2
+      auto& serial_tracker = connection_->serial_tracker();
+      auto serial = serial_tracker.GetSerial({wl::SerialType::kTouchPress,
+                                              wl::SerialType::kMousePress,
+                                              wl::SerialType::kKeyPress});
+      if (serial.has_value()) {
+        GetDevice()->SetSelectionSource(source_.get(), serial->value);
+      } else {
+        LOG(WARNING) << "No serial found for selection.";
+      }
+    }
 
     if (!clipboard_changed_callback_.is_null())
       clipboard_changed_callback_.Run(buffer_);
