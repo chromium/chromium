@@ -940,7 +940,7 @@ ScaledLinearHistogram::ScaledLinearHistogram(const std::string& name,
 
 ScaledLinearHistogram::~ScaledLinearHistogram() = default;
 
-void ScaledLinearHistogram::AddScaledCount(Sample value, int count) {
+void ScaledLinearHistogram::AddScaledCount(Sample value, int64_t count) {
   if (histogram_->GetHistogramType() == DUMMY_HISTOGRAM)
     return;
   if (count == 0)
@@ -955,8 +955,8 @@ void ScaledLinearHistogram::AddScaledCount(Sample value, int count) {
   const auto max_value = static_cast<Sample>(histogram->bucket_count() - 1);
   value = base::clamp(value, 0, max_value);
 
-  int scaled_count = count / scale_;
-  subtle::Atomic32 remainder = count - scaled_count * scale_;
+  int64_t scaled_count = count / scale_;
+  subtle::Atomic32 remainder = static_cast<int>(count - scaled_count * scale_);
 
   // ScaledLinearHistogram currently requires 1-to-1 mappings between value
   // and bucket which alleviates the need to do a bucket lookup here (something
@@ -975,8 +975,10 @@ void ScaledLinearHistogram::AddScaledCount(Sample value, int count) {
     }
   }
 
-  if (scaled_count > 0)
-    histogram->AddCount(value, scaled_count);
+  if (scaled_count > 0) {
+    DCHECK(scaled_count <= std::numeric_limits<int>::max());
+    histogram->AddCount(value, static_cast<int>(scaled_count));
+  }
 }
 
 //------------------------------------------------------------------------------

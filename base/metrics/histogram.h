@@ -435,7 +435,8 @@ class BASE_EXPORT ScaledLinearHistogram {
   // Like AddCount() but actually accumulates |count|/|scale| and increments
   // the accumulated remainder by |count|%|scale|. An additional increment
   // is done when the remainder has grown sufficiently large.
-  void AddScaledCount(Sample value, int count);
+  // The value after scaling must fit into 32-bit signed integer.
+  void AddScaledCount(Sample value, int64_t count);
 
   int32_t scale() const { return scale_; }
   HistogramBase* histogram() { return histogram_; }
