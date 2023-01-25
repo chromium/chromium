@@ -41,10 +41,12 @@
       'win-chrome': 'official_reclient_x86',
       'win64-chrome': 'official_reclient_x64',
     },
+
     'chrome.captured-sites': {
       'linux-autofill-captured-sites-rel': 'release_bot',
       'linux-password-manager-captured-sites-rel': 'release_bot',
     },
+
     'chrome.pgo': {
       'android-arm32-pgo': 'official_reclient_android_arm32_pgo',
       'android-arm64-pgo': 'official_reclient_android_arm64_pgo',
@@ -54,6 +56,7 @@
       'win32-pgo': 'official_reclient_x86_pgo',
       'win64-pgo': 'official_reclient_x64_pgo',
     },
+
     # Take care when changing any of these builders to ensure that you do not
     # include a configuration with 'chrome_with_codecs' since these builders
     # generate publicly advertised non-Official builds which are not allowed
@@ -847,9 +850,7 @@
     'internal.chrome.fyi': {
       'chromeos-arm-generic-cfi-thin-lto-chrome-reclient': 'chromeos_arm-generic_cfi_thin_lto_official_reclient',
       'lacros-arm-generic-chrome-fyi-reclient': 'chromeos_arm-generic_lacros_official_skylab_reclient',
-      'linux-autofill-captured-sites-rel': 'release_bot',
       'linux-finch-smoke-chrome': 'official_reclient',
-      'linux-password-manager-captured-sites-rel': 'release_bot',
       'lorenz-graph-dbg': 'android_debug_bot_reclient_external_fastbuild',
       'mac-arm64-finch-smoke-chrome': 'official_reclient_mac_arm',
       # b/248132996: for siso experiments.
