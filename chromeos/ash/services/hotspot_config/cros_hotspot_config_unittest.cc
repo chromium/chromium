@@ -59,7 +59,8 @@ class CrosHotspotConfigTest : public testing::Test {
     // Use absl::WrapUnique(new CrosHotspotConfig(...)) instead of
     // std::make_unique<CrosHotspotConfig> to access a private constructor.
     cros_hotspot_config_ = absl::WrapUnique(
-        new CrosHotspotConfig(network_handler->hotspot_state_handler(),
+        new CrosHotspotConfig(network_handler->hotspot_capabilities_provider(),
+                              network_handler->hotspot_state_handler(),
                               network_handler->hotspot_controller()));
     base::RunLoop().RunUntilIdle();
   }

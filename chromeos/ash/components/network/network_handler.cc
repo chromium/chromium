@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/network/geolocation_handler.h"
 #include "chromeos/ash/components/network/hidden_network_handler.h"
 #include "chromeos/ash/components/network/hotspot_allowed_flag_handler.h"
+#include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
 #include "chromeos/ash/components/network/hotspot_controller.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
@@ -75,8 +76,9 @@ NetworkHandler::NetworkHandler()
     hidden_network_handler_.reset(new HiddenNetworkHandler());
   }
   if (ash::features::IsHotspotEnabled()) {
-    hotspot_state_handler_.reset(new HotspotStateHandler());
+    hotspot_capabilities_provider_.reset(new HotspotCapabilitiesProvider());
     hotspot_controller_.reset(new HotspotController());
+    hotspot_state_handler_.reset(new HotspotStateHandler());
   }
   if (NetworkCertLoader::IsInitialized()) {
     network_cert_migrator_.reset(new NetworkCertMigrator());
@@ -139,8 +141,9 @@ void NetworkHandler::Init() {
   }
   hotspot_allowed_flag_handler_->Init();
   if (ash::features::IsHotspotEnabled()) {
-    hotspot_state_handler_->Init(network_state_handler_.get());
-    hotspot_controller_->Init(hotspot_state_handler_.get());
+    hotspot_capabilities_provider_->Init(network_state_handler_.get());
+    hotspot_controller_->Init(hotspot_capabilities_provider_.get());
+    hotspot_state_handler_->Init();
   }
   managed_cellular_pref_handler_->Init(network_state_handler_.get());
   esim_policy_login_metrics_logger_->Init(
@@ -276,6 +279,10 @@ CellularPolicyHandler* NetworkHandler::cellular_policy_handler() {
 HiddenNetworkHandler* NetworkHandler::hidden_network_handler() {
   DCHECK(base::FeatureList::IsEnabled(features::kHiddenNetworkMigration));
   return hidden_network_handler_.get();
+}
+
+HotspotCapabilitiesProvider* NetworkHandler::hotspot_capabilities_provider() {
+  return hotspot_capabilities_provider_.get();
 }
 
 HotspotController* NetworkHandler::hotspot_controller() {

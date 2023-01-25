@@ -5,14 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_HOTSPOT_UTIL_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_HOTSPOT_UTIL_H_
 
-#include <string>
-
 #include "base/component_export.h"
+#include "base/values.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-forward.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace ash {
 
@@ -29,7 +24,7 @@ hotspot_config::mojom::WiFiSecurityMode ShillSecurityToMojom(
 // Convert shill tethering config dictionary value to mojom::HotspotConfigPtr
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 hotspot_config::mojom::HotspotConfigPtr ShillTetheringConfigToMojomConfig(
-    const base::Value& shill_tethering_config);
+    const base::Value::Dict& shill_tethering_config);
 
 // Convert mojom::HotspotConfigPtr to the corresponding shill tethering config
 // value

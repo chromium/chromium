@@ -5,7 +5,6 @@
 #include "chromeos/ash/components/network/hotspot_util.h"
 
 #include "base/strings/string_number_conversions.h"
-#include "base/values.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -113,18 +112,18 @@ hotspot_config::mojom::WiFiSecurityMode ShillSecurityToMojom(
 }
 
 hotspot_config::mojom::HotspotConfigPtr ShillTetheringConfigToMojomConfig(
-    const base::Value& shill_tethering_config) {
+    const base::Value::Dict& shill_tethering_config) {
   using hotspot_config::mojom::HotspotConfig;
 
   auto result = HotspotConfig::New();
-  absl::optional<bool> auto_disable = shill_tethering_config.GetDict().FindBool(
-      shill::kTetheringConfAutoDisableProperty);
+  absl::optional<bool> auto_disable =
+      shill_tethering_config.FindBool(shill::kTetheringConfAutoDisableProperty);
   if (!auto_disable) {
     NET_LOG(ERROR) << "Auto_disable not found in tethering config.";
   }
   result->auto_disable = auto_disable.value_or(true);
-  const std::string* wifi_band = shill_tethering_config.GetDict().FindString(
-      shill::kTetheringConfBandProperty);
+  const std::string* wifi_band =
+      shill_tethering_config.FindString(shill::kTetheringConfBandProperty);
   if (!wifi_band) {
     NET_LOG(ERROR) << "WiFi band not found in tethering config.";
     result->band = hotspot_config::mojom::WiFiBand::kAutoChoose;
@@ -132,8 +131,8 @@ hotspot_config::mojom::HotspotConfigPtr ShillTetheringConfigToMojomConfig(
     result->band = ShillBandToMojom(*wifi_band);
   }
 
-  const std::string* security = shill_tethering_config.GetDict().FindString(
-      shill::kTetheringConfSecurityProperty);
+  const std::string* security =
+      shill_tethering_config.FindString(shill::kTetheringConfSecurityProperty);
   if (!security) {
     NET_LOG(ERROR) << "WiFi security mode not found in tethering config.";
     result->security = hotspot_config::mojom::WiFiSecurityMode::kWpa2;
@@ -141,21 +140,20 @@ hotspot_config::mojom::HotspotConfigPtr ShillTetheringConfigToMojomConfig(
     result->security = ShillSecurityToMojom(*security);
   }
 
-  const std::string* ssid = shill_tethering_config.GetDict().FindString(
-      shill::kTetheringConfSSIDProperty);
+  const std::string* ssid =
+      shill_tethering_config.FindString(shill::kTetheringConfSSIDProperty);
   if (!ssid) {
     NET_LOG(ERROR) << "SSID not found in tethering config.";
   }
   result->ssid = ssid ? HexDecode(*ssid) : std::string();
-  const std::string* passphrase = shill_tethering_config.GetDict().FindString(
+  const std::string* passphrase = shill_tethering_config.FindString(
       shill::kTetheringConfPassphraseProperty);
   if (!passphrase) {
     NET_LOG(ERROR) << "Passphrase not found in tethering config.";
   }
   result->passphrase = passphrase ? *passphrase : std::string();
   absl::optional<bool> bssid_randomization =
-      shill_tethering_config.GetDict().FindBool(
-          shill::kTetheringConfMARProperty);
+      shill_tethering_config.FindBool(shill::kTetheringConfMARProperty);
   if (!bssid_randomization) {
     NET_LOG(ERROR) << shill::kTetheringConfMARProperty
                    << " not found in tethering config.";

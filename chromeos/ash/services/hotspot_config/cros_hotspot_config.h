@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_HOTSPOT_CONFIG_CROS_HOTSPOT_CONFIG_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -20,6 +21,7 @@ class HotspotController;
 namespace hotspot_config {
 
 class CrosHotspotConfig : public mojom::CrosHotspotConfig,
+                          public HotspotCapabilitiesProvider::Observer,
                           public HotspotStateHandler::Observer {
  public:
   // Constructs an instance of CrosHotspotConfig with default network subsystem
@@ -50,12 +52,15 @@ class CrosHotspotConfig : public mojom::CrosHotspotConfig,
 
   // Constructs an instance of CrosHotspotConfig with specific network subsystem
   // dependencies. This should only be used in test.
-  CrosHotspotConfig(HotspotStateHandler* hotspot_state_handler,
+  CrosHotspotConfig(HotspotCapabilitiesProvider* hotspot_capabilities_provider,
+                    HotspotStateHandler* hotspot_state_handler,
                     HotspotController* hotspot_controller);
   // HotspotStateHandler::Observer:
   void OnHotspotStatusChanged() override;
+  // HotspotCapabilitiesProvider::Observer:
   void OnHotspotCapabilitiesChanged() override;
 
+  HotspotCapabilitiesProvider* hotspot_capabilities_provider_;
   HotspotStateHandler* hotspot_state_handler_;
   ash::HotspotController* hotspot_controller_;
 

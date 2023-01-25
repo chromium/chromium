@@ -23,8 +23,9 @@ HotspotController::HotspotController() = default;
 
 HotspotController::~HotspotController() = default;
 
-void HotspotController::Init(HotspotStateHandler* hotspot_state_handler) {
-  hotspot_state_handler_ = hotspot_state_handler;
+void HotspotController::Init(
+    HotspotCapabilitiesProvider* hotspot_capabilities_provider) {
+  hotspot_capabilities_provider_ = hotspot_capabilities_provider;
 }
 
 void HotspotController::EnableHotspot(HotspotControlCallback callback) {
@@ -62,21 +63,28 @@ void HotspotController::ProcessRequestQueue() {
 }
 
 void HotspotController::CheckTetheringReadiness() {
-  if (hotspot_state_handler_->GetHotspotCapabilities().allow_status !=
+  if (hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status !=
       hotspot_config::mojom::HotspotAllowStatus::kAllowed) {
     CompleteCurrentRequest(
         hotspot_config::mojom::HotspotControlResult::kNotAllowed);
     return;
   }
 
-  hotspot_state_handler_->CheckTetheringReadiness(
+  hotspot_capabilities_provider_->CheckTetheringReadiness(
       base::BindOnce(&HotspotController::OnCheckTetheringReadiness,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void HotspotController::OnCheckTetheringReadiness(
-    HotspotStateHandler::CheckTetheringReadinessResult result) {
-  if (result != HotspotStateHandler::CheckTetheringReadinessResult::kReady) {
+    HotspotCapabilitiesProvider::CheckTetheringReadinessResult result) {
+  if (result == HotspotCapabilitiesProvider::CheckTetheringReadinessResult::
+                    kUpstreamNetworkNotAvailable) {
+    CompleteCurrentRequest(
+        hotspot_config::mojom::HotspotControlResult::kUpstreamNotAvailable);
+    return;
+  }
+  if (result !=
+      HotspotCapabilitiesProvider::CheckTetheringReadinessResult::kReady) {
     CompleteCurrentRequest(
         hotspot_config::mojom::HotspotControlResult::kReadinessCheckFailed);
     return;
