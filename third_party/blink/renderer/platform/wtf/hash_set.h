@@ -37,6 +37,7 @@ struct IdentityExtractor;
 // undefined behavior. For pointer keys this means that null pointers are not
 // allowed; for integer keys 0 or -1 can't be used as a key. This restriction
 // can be lifted if you supply custom key traits.
+// See hash_traits.h for how to define hash traits.
 template <typename ValueArg,
           typename TraitsArg = HashTraits<ValueArg>,
           typename Allocator = PartitionAllocator>
@@ -199,10 +200,7 @@ HashSet<Value, Traits, Allocator>::HashSet(
     insert(element);
 }
 
-template <typename Value,
-
-          typename Traits,
-          typename Allocator>
+template <typename Value, typename Traits, typename Allocator>
 auto HashSet<Value, Traits, Allocator>::operator=(
     std::initializer_list<ValueType> elements) -> HashSet& {
   *this = HashSet(std::move(elements));
@@ -255,19 +253,13 @@ inline typename HashSet<T, U, V>::iterator HashSet<T, U, V>::find(
   return impl_.find(value);
 }
 
-template <typename Value,
-
-          typename Traits,
-          typename Allocator>
+template <typename Value, typename Traits, typename Allocator>
 inline bool HashSet<Value, Traits, Allocator>::Contains(
     ValuePeekInType value) const {
   return impl_.Contains(value);
 }
 
-template <typename Value,
-
-          typename Traits,
-          typename Allocator>
+template <typename Value, typename Traits, typename Allocator>
 template <typename HashTranslator, typename T>
 typename HashSet<Value, Traits, Allocator>::
     iterator inline HashSet<Value, Traits, Allocator>::Find(
@@ -275,10 +267,7 @@ typename HashSet<Value, Traits, Allocator>::
   return impl_.template Find<HashSetTranslatorAdapter<HashTranslator>>(value);
 }
 
-template <typename Value,
-
-          typename Traits,
-          typename Allocator>
+template <typename Value, typename Traits, typename Allocator>
 template <typename HashTranslator, typename T>
 inline bool HashSet<Value, Traits, Allocator>::Contains(const T& value) const {
   return impl_.template Contains<HashSetTranslatorAdapter<HashTranslator>>(
@@ -292,10 +281,7 @@ inline typename HashSet<T, U, V>::AddResult HashSet<T, U, V>::insert(
   return impl_.insert(std::forward<IncomingValueType>(value));
 }
 
-template <typename Value,
-
-          typename Traits,
-          typename Allocator>
+template <typename Value, typename Traits, typename Allocator>
 template <typename HashTranslator, typename T>
 inline typename HashSet<Value, Traits, Allocator>::AddResult
 HashSet<Value, Traits, Allocator>::AddWithTranslator(T&& value) {

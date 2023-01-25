@@ -1183,16 +1183,11 @@ inline typename HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
 template <typename Traits,
           typename Allocator,
           typename Value,
-          typename Enable = void>
-struct HashTableBucketInitializer;
-
-template <typename Traits, typename Allocator, typename Value>
-struct HashTableBucketInitializer<
-    Traits,
-    Allocator,
-    Value,
-    std::enable_if_t<!Traits::kEmptyValueIsZero>> {
+          bool = Traits::kEmptyValueIsZero>
+struct HashTableBucketInitializer {
   STATIC_ONLY(HashTableBucketInitializer);
+  static_assert(!Traits::kEmptyValueIsZero);
+
   static void Initialize(Value& bucket) {
     ConstructTraits<Value, Traits, Allocator>::ConstructAndNotifyElement(
         &bucket, Traits::EmptyValue());
@@ -1226,10 +1221,7 @@ struct HashTableBucketInitializer<
 // Specialization when the hash traits for a type have kEmptyValueIsZero = true
 // which indicate that all zero bytes represent an empty object.
 template <typename Traits, typename Allocator, typename Value>
-struct HashTableBucketInitializer<Traits,
-                                  Allocator,
-                                  Value,
-                                  std::enable_if_t<Traits::kEmptyValueIsZero>> {
+struct HashTableBucketInitializer<Traits, Allocator, Value, true> {
   STATIC_ONLY(HashTableBucketInitializer);
   static void Initialize(Value& bucket) {
     // The memset to 0 looks like a slow operation but is optimized by the
@@ -1521,7 +1513,6 @@ bool HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::Contains(
 template <typename Key,
           typename Value,
           typename Extractor,
-
           typename Traits,
           typename KeyTraits,
           typename Allocator>
@@ -1622,14 +1613,8 @@ template <typename Key,
           typename Traits,
           typename KeyTraits,
           typename Allocator>
-void HashTable<Key,
-               Value,
-               Extractor,
-
-               Traits,
-               KeyTraits,
-               Allocator>::DeleteAllBucketsAndDeallocate(ValueType* table,
-                                                         unsigned size) {
+void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
+    DeleteAllBucketsAndDeallocate(ValueType* table, unsigned size) {
   // We delete a bucket in the following cases:
   // - It is not trivially destructible.
   // - The table is weak (thus garbage collected) and we are currently marking.
@@ -1842,13 +1827,7 @@ template <typename Key,
           typename Traits,
           typename KeyTraits,
           typename Allocator>
-void HashTable<Key,
-               Value,
-               Extractor,
-
-               Traits,
-               KeyTraits,
-               Allocator>::clear() {
+void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::clear() {
   RegisterModification();
   if (!table_)
     return;
@@ -1925,13 +1904,8 @@ template <typename Key,
           typename Traits,
           typename KeyTraits,
           typename Allocator>
-void HashTable<Key,
-               Value,
-               Extractor,
-
-               Traits,
-               KeyTraits,
-               Allocator>::swap(HashTable& other) {
+void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::swap(
+    HashTable& other) {
   DCHECK(!AccessForbidden());
   // Following 3 lines swap table_ and other.table_ using atomic stores. These
   // are needed for Oilpan concurrent marking which might trace the hash table
@@ -2263,7 +2237,5 @@ inline void RemoveAll(Collection1& collection,
 }
 
 }  // namespace WTF
-
-#include "third_party/blink/renderer/platform/wtf/hash_iterators.h"
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_TABLE_H_

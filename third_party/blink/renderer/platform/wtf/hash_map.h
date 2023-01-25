@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/wtf/atomic_operations.h"
 #include "third_party/blink/renderer/platform/wtf/construct_traits.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table.h"
+#include "third_party/blink/renderer/platform/wtf/key_value_pair.h"
 
 namespace WTF {
 
@@ -67,8 +68,9 @@ struct KeyValuePairExtractor {
 
 // Note: empty or deleted key values are not allowed, using them may lead to
 // undefined behavior. For pointer keys this means that null pointers are not
-// allowed; for integer keys 0 or -1 can't be used as a key. This restriction
-// can be lifted if you supply custom key traits.
+// allowed; for integer keys 0 or -1 can't be used as a key. You can change
+// the restriction with a custom key hash traits. See hash_traits.h for how to
+// define hash traits.
 template <typename KeyArg,
           typename MappedArg,
           typename KeyTraitsArg = HashTraits<KeyArg>,
@@ -294,14 +296,20 @@ class HashMap<KeyArg, MappedArg, KeyTraitsArg, MappedTraitsArg, Allocator>::
   ~HashMapValuesProxy() = delete;
 };
 
-template <typename KeyTraits, typename MappedTraits>
-struct HashMapValueTraits : KeyValuePairHashTraits<KeyTraits, MappedTraits> {
-  STATIC_ONLY(HashMapValueTraits);
-  static bool IsEmptyValue(
-      const typename KeyValuePairHashTraits<KeyTraits, MappedTraits>::TraitType&
-          value) {
+template <typename KeyTraits, typename ValueTraits>
+struct HashMapValueTraits : KeyValuePairHashTraits<KeyTraits, ValueTraits> {
+  using P = typename KeyValuePairHashTraits<KeyTraits, ValueTraits>::TraitType;
+  static bool IsEmptyValue(const P& value) {
     return IsHashTraitsEmptyValue<KeyTraits>(value.key);
   }
+  // HashTable should never use the following functions/flags of this traits
+  // type. They make sense in the KeyTraits only.
+  static bool Equal(const P&, const P&) = delete;
+  static void ConstructDeletedValue(P&) = delete;
+  static bool IsDeletedValue(const P&) = delete;
+
+ private:
+  static const bool kSafeToCompareToEmptyOrDeleted;
 };
 
 template <typename KeyTraits, typename ValueTraits>

@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/wtf/conditional_destructor.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
+#include "third_party/blink/renderer/platform/wtf/key_value_pair.h"
 #include "third_party/blink/renderer/platform/wtf/sanitizers.h"
 #include "v8/include/cppgc/custom-space.h"
 #include "v8/include/cppgc/explicit-management.h"

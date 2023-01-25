@@ -38,6 +38,38 @@
 
 namespace WTF {
 
+// A hash traits type is required for a type when the type is used as the key
+// or value of a HashTable-based classes. See documentation in
+// GenericHashTraitsBase for the HashTraits API.
+//
+// A hash traits type can be defined as
+// - a specialization of the HashTraits template, which will be automatically
+//   used, or
+// - a standalone hash traits type, which should be passed as the *Traits
+//   template parameters of HashTable-based classes.
+// The former is preferred if the hash traits defines the default hash behavior
+// of the type. The latter is suitable when a type has multiple hash behaviors,
+// e.g. CaseFoldingHashTraits defines an alternative hash behavior of strings.
+//
+// This file contains definitions of hash traits for integral types,
+// floating-point types, enums, raw and smart pointers, std::pair, etc.
+// These types can be used as hash key or value directly.
+//
+// This file also contains hash traits types that can be used as the base class
+// of hash traits of other types.
+//
+// A simple hash traits type for a key type can be like:
+//   template <>
+//   HashTraits<KeyType> : GenericHashTraits<KeyType> {
+//     static unsigned GetHash(const KeyType& key) { ...; }
+//     static KeyType EmptyValue() { ...; }
+//     static KeyType DeletedValue() { ...; }
+//   };
+//
+// A hash traits type for a value type can be even simpler. See documentation
+// in GenericHashTraitsBase for which functions/flags are for key types only
+// (i.e. not needed for a value type).
+//
 template <typename T>
 struct HashTraits;
 
@@ -69,9 +101,11 @@ struct GenericHashTraitsBase {
   static const T& Peek(const T& value) { return value; }
 
   // Computes the hash code.
+  // This is for key types only.
   static unsigned GetHash(const T&) = delete;
 
   // Whether two values are equal. By default, operator== is used.
+  // This is for key types only.
   static bool Equal(const T& a, const T& b) { return a == b; }
 
   // When this is true, the hash table can optimize lookup operations by
@@ -83,6 +117,7 @@ struct GenericHashTraitsBase {
   // is an empty or a deleted value. When T is a pointer type, Equal(a, b) can
   // dereference a and b safely without checking if a or b is nullptr or an
   // invalid pointer that represents the deleted value.
+  // This is for key types only.
   static constexpr bool kSafeToCompareToEmptyOrDeleted = true;
 
   // Defines the empty value which is used to fill unused slots in the hash
@@ -113,17 +148,24 @@ struct GenericHashTraitsBase {
   // and ConstructDeletedValue() when the deleted value can be represented with
   // a value that can be safely and trivially compared/assigned to another
   // value.
+  // This is for key types only.
+  // NOTE: The destructor of the returned value *may not* be called, so the
+  // value should not own any dynamically allocated resources.
   static T DeletedValue() = delete;
 
   // Checks if a given value is a deleted value. If this is defined, the hash
   // table will call this function (through IsHashTraitsDeletedValue()) to check
   // if a slot is deleted. Otherwise `v == DeletedValue()` will be used.
+  // This is for key typess only.
   static bool IsDeletedValue(const T& v) = delete;
 
   // Constructs a deleted value in-place in the given memory space.
   // This must be defined if IsDeletedValue() is defined, and will be called
   // through ConstructHashTraitsDeletedValue(). Otherwise
   // `slot = DeletedValue()` will be used.
+  // This is for key types only.
+  // NOTE: The destructor of the constructed value *will not* be called, so the
+  // value should not own any dynamically allocated resources.
   static void ConstructDeletedValue(T& slot) = delete;
 
   // The starting table size. Can be overridden when we know beforehand that a
@@ -543,7 +585,7 @@ struct TwoFieldsHashTraits : OneFieldHashTraits<T, first_field, FirstTraits> {
     return T(FirstTraits::EmptyValue(), SecondTraits::EmptyValue());
   }
 
-  static bool IsEmptyValue(const TraitType& value) {
+  static bool IsEmptyValue(const T& value) {
     return IsHashTraitsEmptyValue<FirstTraits>(value.*first_field) &&
            IsHashTraitsEmptyValue<SecondTraits>(value.*second_field);
   }
@@ -591,43 +633,6 @@ struct PairHashTraits : TwoFieldsHashTraits<P,
 template <typename First, typename Second>
 struct HashTraits<std::pair<First, Second>>
     : public PairHashTraits<HashTraits<First>, HashTraits<Second>> {};
-
-template <typename KeyTypeArg, typename ValueTypeArg>
-struct KeyValuePair {
-  typedef KeyTypeArg KeyType;
-  typedef ValueTypeArg ValueType;
-
-  template <typename IncomingKeyType, typename IncomingValueType>
-  KeyValuePair(IncomingKeyType&& key, IncomingValueType&& value)
-      : key(std::forward<IncomingKeyType>(key)),
-        value(std::forward<IncomingValueType>(value)) {}
-
-  template <typename OtherKeyType, typename OtherValueType>
-  KeyValuePair(KeyValuePair<OtherKeyType, OtherValueType>&& other)
-      : key(std::move(other.key)), value(std::move(other.value)) {}
-
-  KeyTypeArg key;
-  ValueTypeArg value;
-};
-
-template <typename K, typename V>
-struct IsWeak<KeyValuePair<K, V>>
-    : std::integral_constant<bool, IsWeak<K>::value || IsWeak<V>::value> {};
-
-template <typename KeyTraitsArg,
-          typename ValueTraitsArg,
-          typename P = KeyValuePair<typename KeyTraitsArg::TraitType,
-                                    typename ValueTraitsArg::TraitType>>
-struct KeyValuePairHashTraits
-    : TwoFieldsHashTraits<P, &P::key, &P::value, KeyTraitsArg, ValueTraitsArg> {
-  using TraitType = P;
-  using KeyTraits = KeyTraitsArg;
-  using ValueTraits = ValueTraitsArg;
-};
-
-template <typename Key, typename Value>
-struct HashTraits<KeyValuePair<Key, Value>>
-    : public KeyValuePairHashTraits<HashTraits<Key>, HashTraits<Value>> {};
 
 // Shortcut of HashTraits<T>::GetHash(), which can deduct T automatically.
 template <typename T>

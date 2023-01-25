@@ -23,12 +23,51 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_ITERATORS_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_ITERATORS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_KEY_VALUE_PAIR_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_KEY_VALUE_PAIR_H_
+
+#include <utility>
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace WTF {
+
+template <typename KeyTypeArg, typename ValueTypeArg>
+struct KeyValuePair {
+  using KeyType = KeyTypeArg;
+  using ValueType = ValueTypeArg;
+
+  template <typename IncomingKeyType, typename IncomingValueType>
+  KeyValuePair(IncomingKeyType&& key, IncomingValueType&& value)
+      : key(std::forward<IncomingKeyType>(key)),
+        value(std::forward<IncomingValueType>(value)) {}
+
+  template <typename OtherKeyType, typename OtherValueType>
+  KeyValuePair(KeyValuePair<OtherKeyType, OtherValueType>&& other)
+      : key(std::move(other.key)), value(std::move(other.value)) {}
+
+  KeyTypeArg key;
+  ValueTypeArg value;
+};
+
+template <typename K, typename V>
+struct IsWeak<KeyValuePair<K, V>>
+    : std::integral_constant<bool, IsWeak<K>::value || IsWeak<V>::value> {};
+
+template <typename KeyTraitsArg,
+          typename ValueTraitsArg,
+          typename P = KeyValuePair<typename KeyTraitsArg::TraitType,
+                                    typename ValueTraitsArg::TraitType>>
+struct KeyValuePairHashTraits
+    : TwoFieldsHashTraits<P, &P::key, &P::value, KeyTraitsArg, ValueTraitsArg> {
+  using TraitType = P;
+  using KeyTraits = KeyTraitsArg;
+  using ValueTraits = ValueTraitsArg;
+};
+
+template <typename Key, typename Value>
+struct HashTraits<KeyValuePair<Key, Value>>
+    : public KeyValuePairHashTraits<HashTraits<Key>, HashTraits<Value>> {};
 
 template <typename HashTableType, typename KeyType, typename MappedType>
 struct HashTableConstKeysIterator;
@@ -399,4 +438,4 @@ inline bool operator!=(const HashTableValuesIterator<T, U, V>& a,
 
 }  // namespace WTF
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_ITERATORS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_KEY_VALUE_PAIR_H_
