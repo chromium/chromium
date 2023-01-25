@@ -560,10 +560,6 @@
         "name": "blink_perf.events/EventsDispatching.html"
     },
     {
-        "duration": "68.0",
-        "name": "blink_perf.events/EventsDispatchingDifferentEventsOnSameNode.html"
-    },
-    {
         "duration": "69.0",
         "name": "blink_perf.events/EventsDispatchingInDeeplyNestedV1ShadowTrees.html"
     },
