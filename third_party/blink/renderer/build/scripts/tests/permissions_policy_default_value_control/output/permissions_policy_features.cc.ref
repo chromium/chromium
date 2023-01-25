@@ -17,13 +17,30 @@ const PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureList() {
     PermissionsPolicyFeatureList map({        {
           mojom::PermissionsPolicyFeature::kAccelerometer,
           PermissionsPolicyFeatureDefault::EnableForAll
-        },    });        if (base::FeatureList::IsEnabled(features::kTestFlag)) {
-          map.find(mojom::PermissionsPolicyFeature::kAccelerometer)->second =
-            PermissionsPolicyFeatureDefault::EnableForSelf;
-        }
+        },    });
+
+    if (base::FeatureList::IsEnabled(features::kTestFlag)) {
+      map.find(mojom::PermissionsPolicyFeature::kAccelerometer)->second =
+        PermissionsPolicyFeatureDefault::EnableForSelf;
+    }
+
     return map;
   }());
   return *feature_list;
+}
+
+void UpdatePermissionsPolicyFeatureListForTesting() {
+  const PermissionsPolicyFeatureList& feature_list = GetPermissionsPolicyFeatureList();
+  PermissionsPolicyFeatureList& mutable_feature_list = const_cast<PermissionsPolicyFeatureList&>(feature_list);
+
+  if (base::FeatureList::IsEnabled(features::kTestFlag)) {
+    mutable_feature_list.find(mojom::PermissionsPolicyFeature::kAccelerometer)->second =
+      PermissionsPolicyFeatureDefault::EnableForSelf;
+  } else {
+    mutable_feature_list.find(mojom::PermissionsPolicyFeature::kAccelerometer)->second =
+      PermissionsPolicyFeatureDefault::EnableForAll;
+  }
+
 }
 
 } // namespace blink

@@ -50,8 +50,12 @@ def _RunTests(input_api, output_api):
         'file_name': 'make_document_policy_features_tests.py',
         'affected_list': [r'.*make_document_policy_features.*']
     }, {
-        'file_name': 'make_permissions_policy_features_tests.py',
-        'affected_list': [r'.*make_permissions_policy_features.*']
+        'file_name':
+        'make_permissions_policy_features_tests.py',
+        'affected_list': [
+            r'.*make_permissions_policy_features.*',
+            'templates/third_party/permissions_policy_features.cc.tmpl',
+        ]
     }]
     test_commands = []
     for test in tests:
