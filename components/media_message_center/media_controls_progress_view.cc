@@ -103,7 +103,11 @@ void MediaControlsProgressView::UpdateProgress(
 
   const base::TimeDelta current_position = media_position.GetPosition();
   const base::TimeDelta duration = media_position.duration();
-  SetBarProgress(is_live_ ? 1.0 : current_position / duration);
+  // Use 1.0 for live playback, correctly, or as a fallback for those cases in
+  // which the result is unfriendly.
+  SetBarProgress((is_live_ || duration.is_zero() || current_position.is_inf())
+                     ? 1.0
+                     : current_position / duration);
 
   // For durations greater than 24 hours, prefer base::DURATION_WIDTH_NARROW for
   // better readability (e.g., 27h 23m 10s rather than 27:23:10).
