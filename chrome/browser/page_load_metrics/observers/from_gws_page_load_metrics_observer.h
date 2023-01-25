@@ -21,7 +21,6 @@ extern const char kHistogramFromGWSFirstImagePaint[];
 extern const char kHistogramFromGWSFirstContentfulPaint[];
 extern const char kHistogramFromGWSLargestContentfulPaint[];
 extern const char kHistogramFromGWSParseStartToFirstContentfulPaint[];
-extern const char kHistogramFromGWSParseDuration[];
 extern const char kHistogramFromGWSParseStart[];
 extern const char kHistogramFromGWSFirstInputDelay[];
 extern const char kHistogramFromGWSAbortStopBeforePaint[];
@@ -114,9 +113,6 @@ class FromGWSPageLoadMetricsLogger {
   void OnParseStart(
       const page_load_metrics::mojom::PageLoadTiming& timing,
       const page_load_metrics::PageLoadMetricsObserverDelegate& delegate);
-  void OnParseStop(
-      const page_load_metrics::mojom::PageLoadTiming& timing,
-      const page_load_metrics::PageLoadMetricsObserverDelegate& delegate);
   void OnUserInput(
       const blink::WebInputEvent& event,
       const page_load_metrics::mojom::PageLoadTiming& timing,
@@ -200,8 +196,6 @@ class FromGWSPageLoadMetricsObserver
   void OnFirstInputInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnParseStart(
-      const page_load_metrics::mojom::PageLoadTiming& timing) override;
-  void OnParseStop(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
   void OnComplete(

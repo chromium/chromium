@@ -43,8 +43,6 @@ const char kHistogramFromGWSLargestContentfulPaint[] =
 const char kHistogramFromGWSParseStartToFirstContentfulPaint[] =
     "PageLoad.Clients.FromGoogleSearch.PaintTiming."
     "ParseStartToFirstContentfulPaint";
-const char kHistogramFromGWSParseDuration[] =
-    "PageLoad.Clients.FromGoogleSearch.ParseTiming.ParseDuration";
 const char kHistogramFromGWSParseStart[] =
     "PageLoad.Clients.FromGoogleSearch.ParseTiming.NavigationToParseStart";
 const char kHistogramFromGWSFirstInputDelay[] =
@@ -516,11 +514,6 @@ void FromGWSPageLoadMetricsObserver::OnParseStart(
   logger_.OnParseStart(timing, GetDelegate());
 }
 
-void FromGWSPageLoadMetricsObserver::OnParseStop(
-    const page_load_metrics::mojom::PageLoadTiming& timing) {
-  logger_.OnParseStop(timing, GetDelegate());
-}
-
 void FromGWSPageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   logger_.OnComplete(timing, GetDelegate());
@@ -754,17 +747,6 @@ void FromGWSPageLoadMetricsLogger::OnParseStart(
                                           delegate)) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramFromGWSParseStart,
                         timing.parse_timing->parse_start.value());
-  }
-}
-
-void FromGWSPageLoadMetricsLogger::OnParseStop(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadMetricsObserverDelegate& delegate) {
-  if (ShouldLogForegroundEventAfterCommit(timing.parse_timing->parse_stop,
-                                          delegate)) {
-    PAGE_LOAD_HISTOGRAM(internal::kHistogramFromGWSParseDuration,
-                        timing.parse_timing->parse_stop.value() -
-                            timing.parse_timing->parse_start.value());
   }
 }
 

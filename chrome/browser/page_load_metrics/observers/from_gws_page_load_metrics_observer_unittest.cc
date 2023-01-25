@@ -256,15 +256,6 @@ TEST_F(FromGWSPageLoadMetricsObserverTest, SearchPreviousCommittedUrl1) {
       timing.paint_timing->first_image_paint.value().InMilliseconds(), 1);
 
   tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramFromGWSParseDuration, 1);
-  tester()->histogram_tester().ExpectBucketCount(
-      internal::kHistogramFromGWSParseDuration,
-      (timing.parse_timing->parse_stop.value() -
-       timing.parse_timing->parse_start.value())
-          .InMilliseconds(),
-      1);
-
-  tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramFromGWSDomContentLoaded, 1);
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramFromGWSDomContentLoaded,
