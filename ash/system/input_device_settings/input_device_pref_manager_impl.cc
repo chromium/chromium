@@ -6,6 +6,7 @@
 
 #include <cstdint>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -39,6 +40,9 @@ std::string InputDevicePrefManagerImpl::BuildDeviceKey(
 // connected.
 void InputDevicePrefManagerImpl::InitializeKeyboardSettings(
     mojom::Keyboard* keyboard) {
+  if (!features::IsInputDeviceSettingsSplitEnabled()) {
+    return;
+  }
   NOTIMPLEMENTED();
 }
 
