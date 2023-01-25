@@ -198,14 +198,7 @@ export function getDefaultValue<T extends keyof typeof OPTION_DEFAULT>(
   if (!loadTimeData.getBoolean('autocorrectEnableByDefault')) {
     return OPTION_DEFAULT[optionName];
   }
-  return optionName in overrides ?
-      // This assertion is unsafe, as TypeScript's optional property types
-      // include `undefined` in properties, as
-      // https://www.typescriptlang.org/tsconfig#exactOptionalPropertyTypes is
-      // not set in our tsconfig.
-      // TODO(b/265558129): Use `overrides[optionName] !== undefined` instead.
-      overrides[optionName]! :
-      OPTION_DEFAULT[optionName];
+  return overrides[optionName] ?? OPTION_DEFAULT[optionName];
 }
 
 /**

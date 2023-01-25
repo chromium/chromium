@@ -246,19 +246,7 @@ class SettingsInputMethodOptionsPageElement extends
     // types will be stored in nacl_mozc_us. See:
     // https://crsrc.org/c/chrome/browser/ash/input_method/input_method_settings.cc;drc=5b784205e8043fb7d1c11e3d80521e80704947ca;l=25
     const engineId = this.getStorageEngineId_();
-    const currentSettings = engineId in inputMethodSpecificSettings ?
-        // Safety: We checked that `engineId` is a key above, and we ASSUME that
-        // we are the only writers to this pref. Therefore, as we never set
-        // `undefined` or `null` properties on `inputMethodSpecificSettings`,
-        // the property should always be non-null here.
-        // This could possibly be unsafe if our assumptions above are incorrect,
-        // or we mistakenly set `undefined` properties (which TypeScript allows
-        // us to do).
-        // TODO(b/265558129): Use `inputMethodSpecificSettings[engineId] !==
-        // undefined` above to guard against `undefined` properties if they do
-        // ever occur.
-        inputMethodSpecificSettings[engineId]! :
-        {};
+    const currentSettings = inputMethodSpecificSettings[engineId] ?? {};
     const defaultOverrides = this.getDefaultValueOverrides_(engineId);
 
     const makeOption = (option: {
@@ -268,16 +256,14 @@ class SettingsInputMethodOptionsPageElement extends
       const name = option.name;
       const uiType = getOptionUiType(name);
 
-      let value = name in currentSettings ?
-          // Safety: See the `currentSettings` safety comment above.
-          // TODO(b/265558129): Use `currentSettings[name] !== undefined` above
-          // to guard against `undefined` properties if they do ever occur.
-          currentSettings[name]! :
-          getDefaultValue(
-              // This cast is VERY unsafe, as `OPTION_DEFAULT` only contains
-              // a small subset of options as keys.
-              // TODO(b/263829863): Investigate and fix this type cast.
-              name as keyof typeof OPTION_DEFAULT, defaultOverrides);
+      let value = currentSettings[name];
+      if (value === undefined) {
+        value = getDefaultValue(
+            // This cast is VERY unsafe, as `OPTION_DEFAULT` only contains
+            // a small subset of options as keys.
+            // TODO(b/263829863): Investigate and fix this type cast.
+            name as keyof typeof OPTION_DEFAULT, defaultOverrides);
+      }
       if (loadTimeData.getBoolean('allowAutocorrectToggle') &&
           name in AUTOCORRECT_OPTION_MAP_OVERRIDE) {
         /// Safety: We checked that `name` is a key above.
