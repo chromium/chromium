@@ -514,6 +514,11 @@ void FrameCaptionButtonContainerView::UpdateSizeButton() {
   size_button_->SetEnabled(
       model_->IsEnabled(views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE) ||
       use_zoom_icons);
+
+  // Alpha may be not fully opaque from a previous tablet mode animation.
+  if (size_button_->GetVisible()) {
+    size_button_->SetAlpha(255);
+  }
 }
 
 void FrameCaptionButtonContainerView::UpdateSnapButtons() {
