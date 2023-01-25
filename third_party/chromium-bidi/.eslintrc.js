@@ -7,7 +7,9 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint', 'import', 'mocha'],
   extends: ['plugin:prettier/recommended'],
-  rules: {},
+  rules: {
+    '@typescript-eslint/no-extraneous-class': 'warn',
+  },
   overrides: [
     {
       files: ['*.ts'],
