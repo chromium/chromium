@@ -1051,9 +1051,9 @@ MojoResult Core::WrapPlatformSharedMemoryRegion(
   if (!handles_ok)
     return MOJO_RESULT_INVALID_ARGUMENT;
 
-  base::UnguessableToken token =
+  absl::optional<base::UnguessableToken> token =
       mojo::internal::PlatformHandleInternal::UnmarshalUnguessableToken(guid);
-  if (token.is_empty()) {
+  if (!token.has_value()) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
 
@@ -1076,7 +1076,7 @@ MojoResult Core::WrapPlatformSharedMemoryRegion(
       base::subtle::PlatformSharedMemoryRegion::Take(
           CreateSharedMemoryRegionHandleFromPlatformHandles(
               std::move(handles[0]), std::move(handles[1])),
-          mode, size, std::move(token));
+          mode, size, token.value());
   if (!region.IsValid())
     return MOJO_RESULT_UNKNOWN;
 
