@@ -594,8 +594,9 @@ bool V4L2SliceVideoDecodeAccelerator::CreateImageProcessor() {
     return false;
   }
 
-  DCHECK_EQ(gl_image_size_, image_processor_->output_config().size);
+  VLOGF(2) << "ImageProcessor is created: " << image_processor_->backend_type();
 
+  DCHECK_EQ(gl_image_size_, image_processor_->output_config().size);
   return true;
 }
 bool V4L2SliceVideoDecodeAccelerator::CreateInputBuffers() {

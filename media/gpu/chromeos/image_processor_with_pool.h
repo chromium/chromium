@@ -56,6 +56,8 @@ class ImageProcessorWithPool {
     return image_processor_ && image_processor_->SupportsIncoherentBufs();
   }
 
+  std::string backend_type() const { return image_processor_->backend_type(); }
+
  private:
   friend class VideoDecoderPipelineTest;
 

@@ -146,6 +146,10 @@ V4L2ImageProcessorBackend::V4L2ImageProcessorBackend(
   poll_weak_this_ = poll_weak_this_factory_.GetWeakPtr();
 }
 
+std::string V4L2ImageProcessorBackend::type() const {
+  return "V4L2ImageProcessor";
+}
+
 void V4L2ImageProcessorBackend::Destroy() {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);

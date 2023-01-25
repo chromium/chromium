@@ -87,6 +87,8 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
                               gfx::Size* output_size,
                               size_t* num_planes);
 
+  std::string type() const override;
+
  private:
   friend struct std::default_delete<V4L2ImageProcessorBackend>;
 

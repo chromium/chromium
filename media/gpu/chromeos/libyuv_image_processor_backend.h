@@ -62,6 +62,8 @@ class MEDIA_GPU_EXPORT LibYUVImageProcessorBackend
 
   bool supports_incoherent_buffers() const override;
 
+  std::string type() const override;
+
  private:
   LibYUVImageProcessorBackend(
       std::unique_ptr<VideoFrameMapper> input_frame_mapper,

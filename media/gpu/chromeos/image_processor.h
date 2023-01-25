@@ -79,6 +79,7 @@ class MEDIA_GPU_EXPORT ImageProcessor {
 
   OutputMode output_mode() const { return backend_->output_mode(); }
 
+  std::string backend_type() const { return backend_->type(); }
   // Called by client to process |frame|. The resulting processed frame will be
   // stored in a ImageProcessor-owned output buffer and notified via |cb|. The
   // processor will drop all its references to |frame| after it finishes

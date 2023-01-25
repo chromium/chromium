@@ -470,6 +470,7 @@ bool V4L2VideoEncodeAccelerator::CreateImageProcessor(
     VLOGF(1) << "Failed initializing image processor";
     return false;
   }
+  VLOGF(2) << "ImageProcessor is created: " << image_processor_->backend_type();
   num_frames_in_image_processor_ = 0;
 
   // The output of image processor is the input of encoder. Output coded

@@ -152,6 +152,10 @@ VaapiImageProcessorBackend::~VaapiImageProcessorBackend() {
   }
 }
 
+std::string VaapiImageProcessorBackend::type() const {
+  return "VaapiImageProcessor";
+}
+
 const VASurface* VaapiImageProcessorBackend::GetSurfaceForVideoFrame(
     scoped_refptr<VideoFrame> frame,
     bool use_protected) {

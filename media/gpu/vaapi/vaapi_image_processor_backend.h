@@ -45,6 +45,8 @@ class VaapiImageProcessorBackend : public ImageProcessorBackend {
                FrameReadyCB cb) override;
   void Reset() override;
 
+  std::string type() const override;
+
  private:
   VaapiImageProcessorBackend(const PortConfig& input_config,
                              const PortConfig& output_config,

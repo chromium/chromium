@@ -119,6 +119,10 @@ GLImageProcessorBackend::GLImageProcessorBackend(
           base::ThreadPool::CreateSingleThreadTaskRunner(
               {base::TaskPriority::USER_VISIBLE})) {}
 
+std::string GLImageProcessorBackend::type() const {
+  return "GLImageProcessor";
+}
+
 bool GLImageProcessorBackend::IsSupported(const PortConfig& input_config,
                                           const PortConfig& output_config,
                                           VideoRotation relative_rotation) {

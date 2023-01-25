@@ -120,6 +120,8 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
     return backend_task_runner_;
   }
 
+  virtual std::string type() const = 0;
+
  protected:
   friend struct std::default_delete<ImageProcessorBackend>;
 

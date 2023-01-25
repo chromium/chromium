@@ -45,6 +45,7 @@ class MEDIA_GPU_EXPORT GLImageProcessorBackend : public ImageProcessorBackend {
   static bool IsSupported(const PortConfig& input_config,
                           const PortConfig& output_config,
                           VideoRotation relative_rotation);
+  std::string type() const override;
 
  private:
   // Callback for initialization.

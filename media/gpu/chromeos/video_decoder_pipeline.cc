@@ -964,7 +964,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   }
 
   image_processor_ = std::move(status_or_image_processor).value();
-
+  VLOGF(2) << "ImageProcessor is created: " << image_processor_->backend_type();
   if (decoder_)
     decoder_->SetDmaIncoherentV4L2(image_processor_->SupportsIncoherentBufs());
 

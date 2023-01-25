@@ -346,6 +346,10 @@ LibYUVImageProcessorBackend::~LibYUVImageProcessorBackend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
 }
 
+std::string LibYUVImageProcessorBackend::type() const {
+  return "LibYUVImageProcessor";
+}
+
 void LibYUVImageProcessorBackend::Process(
     scoped_refptr<VideoFrame> input_frame,
     scoped_refptr<VideoFrame> output_frame,

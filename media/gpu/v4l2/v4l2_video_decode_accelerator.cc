@@ -2379,6 +2379,7 @@ bool V4L2VideoDecodeAccelerator::CreateImageProcessor() {
     return false;
   }
 
+  VLOGF(2) << "ImageProcessor is created: " << image_processor_->backend_type();
   return true;
 }
 
