@@ -378,7 +378,8 @@ void FakeSessionManagerClient::StartDeviceWipe() {
 }
 
 void FakeSessionManagerClient::StartRemoteDeviceWipe(
-    const enterprise_management::SignedData& signed_command) {
+    const enterprise_management::SignedData& signed_command,
+    enterprise_management::PolicyFetchRequest::SignatureType signature_type) {
   start_device_wipe_call_count_++;
   if (!on_start_device_wipe_callback_.is_null()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

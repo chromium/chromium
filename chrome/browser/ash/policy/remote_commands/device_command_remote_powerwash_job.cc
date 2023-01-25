@@ -29,7 +29,8 @@ constexpr base::TimeDelta kRemotePowerwashCommandExpirationTime =
 constexpr base::TimeDelta kFailsafeTimerTimeout = base::Seconds(10);
 
 void StartPowerwash(enterprise_management::SignedData signed_command) {
-  ash::SessionManagerClient::Get()->StartRemoteDeviceWipe(signed_command);
+  ash::SessionManagerClient::Get()->StartRemoteDeviceWipe(
+      signed_command, enterprise_management::PolicyFetchRequest::SHA1_RSA);
 }
 
 }  // namespace

@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/arc/arc.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -99,7 +100,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
       const cryptohome::AccountIdentifier& cryptohome_id) override;
   void StartDeviceWipe() override;
   void StartRemoteDeviceWipe(
-      const enterprise_management::SignedData& signed_command) override;
+      const enterprise_management::SignedData& signed_command,
+      enterprise_management::PolicyFetchRequest::SignatureType signature_type)
+      override;
   void ClearForcedReEnrollmentVpd(
       chromeos::VoidDBusMethodCallback callback) override;
   void UnblockDevModeForEnrollment(
