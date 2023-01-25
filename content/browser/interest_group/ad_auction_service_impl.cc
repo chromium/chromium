@@ -173,8 +173,14 @@ void SendSuccessfulAuctionReportsAndUpdateInterestGroups(
   SendPrivateAggregationRequests(private_aggregation_manager, main_frame_origin,
                                  std::move(*private_aggregation_requests));
   interest_group_manager->EnqueueReports(
-      report_urls, debug_win_report_urls, debug_loss_report_urls, frame_origin,
-      client_security_state.Clone(), std::move(trusted_url_loader_factory));
+      InterestGroupManagerImpl::ReportType::kSendReportTo, report_urls,
+      frame_origin, *client_security_state, trusted_url_loader_factory);
+  interest_group_manager->EnqueueReports(
+      InterestGroupManagerImpl::ReportType::kDebugWin, debug_win_report_urls,
+      frame_origin, *client_security_state, trusted_url_loader_factory);
+  interest_group_manager->EnqueueReports(
+      InterestGroupManagerImpl::ReportType::kDebugLoss, debug_loss_report_urls,
+      frame_origin, *client_security_state, trusted_url_loader_factory);
 }
 
 }  // namespace
@@ -669,8 +675,8 @@ void AdAuctionServiceImpl::OnAuctionComplete(
           AdAuctionResultMetrics::AuctionResult::kFailed);
     }
     GetInterestGroupManager().EnqueueReports(
-        std::vector<GURL>(), std::vector<GURL>(), debug_loss_report_urls,
-        origin(), GetClientSecurityState(),
+        InterestGroupManagerImpl::ReportType::kDebugLoss,
+        debug_loss_report_urls, origin(), *GetClientSecurityState(),
         GetRefCountedTrustedURLLoaderFactory());
     return;
   }

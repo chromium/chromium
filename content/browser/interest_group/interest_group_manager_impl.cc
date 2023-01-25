@@ -304,12 +304,15 @@ void InterestGroupManagerImpl::GetLastMaintenanceTimeForTesting(
 }
 
 void InterestGroupManagerImpl::EnqueueReports(
+    ReportType report_type,
     const std::vector<GURL>& report_urls,
-    const std::vector<GURL>& debug_win_report_urls,
-    const std::vector<GURL>& debug_loss_report_urls,
     const url::Origin& frame_origin,
-    network::mojom::ClientSecurityStatePtr client_security_state,
+    network::mojom::ClientSecurityState& client_security_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  if (report_urls.empty()) {
+    return;
+  }
+
   // For memory usage reasons, purge the queue if it has at least
   // `max_report_queue_length_` entries at the time we're about to add new
   // entries.
@@ -318,14 +321,28 @@ void InterestGroupManagerImpl::EnqueueReports(
     report_requests_.clear();
   }
 
-  EnqueueReportsInternal(report_urls, frame_origin, client_security_state,
-                         "SendReportToReport", url_loader_factory);
-  EnqueueReportsInternal(debug_loss_report_urls, frame_origin,
-                         client_security_state, "DebugLossReport",
-                         url_loader_factory);
-  EnqueueReportsInternal(debug_win_report_urls, frame_origin,
-                         client_security_state, "DebugWinReport",
-                         url_loader_factory);
+  const char* report_type_name;
+  switch (report_type) {
+    case ReportType::kSendReportTo:
+      report_type_name = "SendReportToReport";
+      break;
+    case ReportType::kDebugWin:
+      report_type_name = "DebugWinReport";
+      break;
+    case ReportType::kDebugLoss:
+      report_type_name = "DebugLossReport";
+      break;
+  }
+
+  for (const GURL& report_url : report_urls) {
+    auto report_request = std::make_unique<ReportRequest>();
+    report_request->simple_url_loader = BuildSimpleUrlLoader(
+        report_url, frame_origin, client_security_state.Clone());
+    report_request->name = report_type_name;
+    report_request->url_loader_factory = url_loader_factory;
+    report_request->request_url_size_bytes = report_url.spec().size();
+    report_requests_.emplace_back(std::move(report_request));
+  }
 
   while (!report_requests_.empty() &&
          num_active_ < max_active_report_requests_) {
@@ -462,23 +479,6 @@ void InterestGroupManagerImpl::NotifyInterestGroupAccessed(
   base::Time now = base::Time::Now();
   for (InterestGroupObserverInterface& observer : observers_) {
     observer.OnInterestGroupAccessed(now, type, owner_origin, name);
-  }
-}
-
-void InterestGroupManagerImpl::EnqueueReportsInternal(
-    const std::vector<GURL>& report_urls,
-    const url::Origin& frame_origin,
-    const network::mojom::ClientSecurityStatePtr& client_security_state,
-    const char* name,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  for (const GURL& report_url : report_urls) {
-    auto report_request = std::make_unique<ReportRequest>();
-    report_request->simple_url_loader = BuildSimpleUrlLoader(
-        report_url, frame_origin, client_security_state.Clone());
-    report_request->name = name;
-    report_request->url_loader_factory = url_loader_factory;
-    report_request->request_url_size_bytes = report_url.spec().size();
-    report_requests_.emplace_back(std::move(report_request));
   }
 }
 
