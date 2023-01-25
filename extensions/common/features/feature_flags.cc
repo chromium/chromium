@@ -22,6 +22,7 @@ namespace {
 const base::Feature* kFeatureFlags[] = {
     &extensions_features::kExtensionsOffscreenDocuments,
     &extensions_features::kNewWebstoreDomain,
+    &extensions_features::kTelemetryExtensionPendingApprovalApi,
 };
 
 CONSTINIT base::span<const base::Feature*> g_feature_flags_test_override;

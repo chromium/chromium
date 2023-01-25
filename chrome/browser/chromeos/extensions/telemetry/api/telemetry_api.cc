@@ -45,6 +45,29 @@ bool TelemetryApiFunctionBase::IsCrosApiAvailable() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+// OsTelemetryGetAudioInfoFunction ---------------------------------------------
+
+void OsTelemetryGetAudioInfoFunction::RunIfAllowed() {
+  auto cb = base::BindOnce(&OsTelemetryGetAudioInfoFunction::OnResult, this);
+
+  GetRemoteService()->ProbeTelemetryInfo(
+      {crosapi::mojom::ProbeCategoryEnum::kAudio}, std::move(cb));
+}
+
+void OsTelemetryGetAudioInfoFunction::OnResult(
+    crosapi::mojom::ProbeTelemetryInfoPtr ptr) {
+  if (!ptr || !ptr->audio_result || !ptr->audio_result->is_audio_info()) {
+    Respond(Error("API internal error"));
+    return;
+  }
+  auto& audio_info = ptr->audio_result->get_audio_info();
+
+  auto result =
+      converters::ConvertPtr<telemetry::AudioInfo>(std::move(audio_info));
+
+  Respond(ArgumentList(telemetry::GetAudioInfo::Results::Create(result)));
+}
+
 // OsTelemetryGetBatteryInfoFunction -------------------------------------------
 
 void OsTelemetryGetBatteryInfoFunction::RunIfAllowed() {

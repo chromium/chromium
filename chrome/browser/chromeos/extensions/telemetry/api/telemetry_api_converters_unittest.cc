@@ -30,6 +30,168 @@ namespace telemetry_service = ::crosapi::mojom;
 
 namespace converters {
 
+TEST(TelemetryApiConverters, AudioInputNodeInfo) {
+  constexpr uint64_t kId = 42;
+  constexpr char kName[] = "Internal Mic";
+  constexpr char kDeviceName[] = "HDA Intel PCH: CA0132 Analog:0,0";
+  constexpr bool kActive = true;
+  constexpr uint8_t kNodeGain = 1;
+
+  auto input = telemetry_service::ProbeAudioInputNodeInfo::New();
+  input->id = crosapi::mojom::UInt64Value::New(kId);
+  input->name = kName;
+  input->device_name = kDeviceName;
+  input->active = crosapi::mojom::BoolValue::New(kActive);
+  input->node_gain = crosapi::mojom::UInt8Value::New(kNodeGain);
+
+  auto result = ConvertPtr<telemetry_api::AudioInputNodeInfo>(std::move(input));
+
+  ASSERT_TRUE(result.id);
+  EXPECT_EQ(kId, static_cast<uint64_t>(*result.id));
+
+  ASSERT_TRUE(result.name);
+  EXPECT_EQ(kName, *result.name);
+
+  ASSERT_TRUE(result.device_name);
+  EXPECT_EQ(kDeviceName, *result.device_name);
+
+  ASSERT_TRUE(result.active);
+  EXPECT_EQ(kActive, *result.active);
+
+  ASSERT_TRUE(result.node_gain);
+  EXPECT_EQ(kNodeGain, static_cast<uint8_t>(*result.node_gain));
+}
+
+TEST(TelemetryApiConverters, AudioOutputNodeInfo) {
+  constexpr uint64_t kId = 42;
+  constexpr char kName[] = "Internal Speaker";
+  constexpr char kDeviceName[] = "HDA Intel PCH: CA0132 Analog:0,0";
+  constexpr bool kActive = true;
+  constexpr uint8_t kNodeVolume = 242;
+
+  auto input = telemetry_service::ProbeAudioOutputNodeInfo::New();
+  input->id = crosapi::mojom::UInt64Value::New(kId);
+  input->name = kName;
+  input->device_name = kDeviceName;
+  input->active = crosapi::mojom::BoolValue::New(kActive);
+  input->node_volume = crosapi::mojom::UInt8Value::New(kNodeVolume);
+
+  auto result =
+      ConvertPtr<telemetry_api::AudioOutputNodeInfo>(std::move(input));
+
+  ASSERT_TRUE(result.id);
+  EXPECT_EQ(kId, static_cast<uint64_t>(*result.id));
+
+  ASSERT_TRUE(result.name);
+  EXPECT_EQ(kName, *result.name);
+
+  ASSERT_TRUE(result.device_name);
+  EXPECT_EQ(kDeviceName, *result.device_name);
+
+  ASSERT_TRUE(result.active);
+  EXPECT_EQ(kActive, *result.active);
+
+  ASSERT_TRUE(result.node_volume);
+  EXPECT_EQ(kNodeVolume, static_cast<uint8_t>(*result.node_volume));
+}
+
+TEST(TelemetryApiConverters, AudioInfo) {
+  constexpr bool kOutputMute = true;
+  constexpr bool kInputMute = false;
+  constexpr uint32_t kUnderruns = 56;
+  constexpr uint32_t kSevereUnderruns = 3;
+
+  constexpr uint64_t kIdInput = 42;
+  constexpr char kNameInput[] = "Internal Speaker";
+  constexpr char kDeviceNameInput[] = "HDA Intel PCH: CA0132 Analog:0,0";
+  constexpr bool kActiveInput = true;
+  constexpr uint8_t kNodeGainInput = 1;
+
+  constexpr uint64_t kIdOutput = 43;
+  constexpr char kNameOutput[] = "Extenal Speaker";
+  constexpr char kDeviceNameOutput[] = "HDA Intel PCH: CA0132 Analog:1,0";
+  constexpr bool kActiveOutput = false;
+  constexpr uint8_t kNodeVolumeOutput = 212;
+
+  std::vector<telemetry_service::ProbeAudioInputNodeInfoPtr> input_node_info;
+  auto input_node = telemetry_service::ProbeAudioInputNodeInfo::New();
+  input_node->id = crosapi::mojom::UInt64Value::New(kIdInput);
+  input_node->name = kNameInput;
+  input_node->device_name = kDeviceNameInput;
+  input_node->active = crosapi::mojom::BoolValue::New(kActiveInput);
+  input_node->node_gain = crosapi::mojom::UInt8Value::New(kNodeGainInput);
+  input_node_info.push_back(std::move(input_node));
+
+  std::vector<telemetry_service::ProbeAudioOutputNodeInfoPtr> output_node_info;
+  auto output_node = telemetry_service::ProbeAudioOutputNodeInfo::New();
+  output_node->id = crosapi::mojom::UInt64Value::New(kIdOutput);
+  output_node->name = kNameOutput;
+  output_node->device_name = kDeviceNameOutput;
+  output_node->active = crosapi::mojom::BoolValue::New(kActiveOutput);
+  output_node->node_volume = crosapi::mojom::UInt8Value::New(kNodeVolumeOutput);
+  output_node_info.push_back(std::move(output_node));
+
+  auto input = telemetry_service::ProbeAudioInfo::New();
+  input->output_mute = crosapi::mojom::BoolValue::New(kOutputMute);
+  input->input_mute = crosapi::mojom::BoolValue::New(kInputMute);
+  input->underruns = crosapi::mojom::UInt32Value::New(kUnderruns);
+  input->severe_underruns = crosapi::mojom::UInt32Value::New(kSevereUnderruns);
+  input->output_nodes = std::move(output_node_info);
+  input->input_nodes = std::move(input_node_info);
+
+  auto result = ConvertPtr<telemetry_api::AudioInfo>(std::move(input));
+
+  ASSERT_TRUE(result.output_mute);
+  EXPECT_EQ(kOutputMute, *result.output_mute);
+
+  ASSERT_TRUE(result.input_mute);
+  EXPECT_EQ(kInputMute, *result.input_mute);
+
+  ASSERT_TRUE(result.underruns);
+  EXPECT_EQ(kUnderruns, static_cast<uint32_t>(*result.underruns));
+
+  ASSERT_TRUE(result.severe_underruns);
+  EXPECT_EQ(kSevereUnderruns, static_cast<uint32_t>(*result.severe_underruns));
+
+  auto result_output_nodes = std::move(result.output_nodes);
+  ASSERT_EQ(result_output_nodes.size(), 1UL);
+
+  ASSERT_TRUE(result_output_nodes[0].id);
+  EXPECT_EQ(kIdOutput, static_cast<uint64_t>(*result_output_nodes[0].id));
+
+  ASSERT_TRUE(result_output_nodes[0].name);
+  EXPECT_EQ(kNameOutput, *result_output_nodes[0].name);
+
+  ASSERT_TRUE(result_output_nodes[0].device_name);
+  EXPECT_EQ(kDeviceNameOutput, *result_output_nodes[0].device_name);
+
+  ASSERT_TRUE(result_output_nodes[0].active);
+  EXPECT_EQ(kActiveOutput, *result_output_nodes[0].active);
+
+  ASSERT_TRUE(result_output_nodes[0].node_volume);
+  EXPECT_EQ(kNodeVolumeOutput,
+            static_cast<uint8_t>(*result_output_nodes[0].node_volume));
+
+  auto result_input_nodes = std::move(result.input_nodes);
+  ASSERT_EQ(result_input_nodes.size(), 1UL);
+
+  ASSERT_TRUE(result_input_nodes[0].id);
+  EXPECT_EQ(kIdInput, static_cast<uint64_t>(*result_input_nodes[0].id));
+
+  ASSERT_TRUE(result_input_nodes[0].name);
+  EXPECT_EQ(kNameInput, *result_input_nodes[0].name);
+
+  ASSERT_TRUE(result_input_nodes[0].device_name);
+  EXPECT_EQ(kDeviceNameInput, *result_input_nodes[0].device_name);
+
+  ASSERT_TRUE(result_input_nodes[0].active);
+  EXPECT_EQ(kActiveInput, *result_input_nodes[0].active);
+
+  ASSERT_TRUE(result_input_nodes[0].node_gain);
+  EXPECT_EQ(kNodeGainInput,
+            static_cast<uint8_t>(*result_input_nodes[0].node_gain));
+}
+
 TEST(TelemetryApiConverters, CpuArchitectureEnum) {
   EXPECT_EQ(telemetry_api::CpuArchitectureEnum::CPU_ARCHITECTURE_ENUM_UNKNOWN,
             Convert(telemetry_service::ProbeCpuArchitectureEnum::kUnknown));

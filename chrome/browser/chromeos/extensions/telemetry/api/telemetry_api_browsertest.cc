@@ -5,7 +5,9 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
+#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_browser_test.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/fake_probe_service.h"
@@ -14,6 +16,7 @@
 #include "chromeos/services/network_config/public/mojom/network_types.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/common/extension_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -200,6 +203,161 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   CreateExtensionAndRunServiceWorker(service_worker);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+                       GetAudioInfo_NoFeatureFlagEnabledError) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // If the permission is not enabled, the method isn't defined
+  // on `chrome.os.telemetry`.
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function getAudioInfo() {
+        chrome.test.assertThrows(() => { chrome.os.telemetry.getAudioInfo(); },
+          [], "chrome.os.telemetry.getAudioInfo is not a function");
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+class PendingApprovalTelemetryExtensionTelemetryApiBrowserTest
+    : public TelemetryExtensionTelemetryApiBrowserTest {
+ public:
+  PendingApprovalTelemetryExtensionTelemetryApiBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kTelemetryExtensionPendingApprovalApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
+                       GetAudioInfo_Error) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // Configure FakeProbeService.
+  {
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {crosapi::mojom::ProbeCategoryEnum::kAudio});
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getAudioInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getAudioInfo(),
+            'Error: API internal error'
+        );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
+                       GetAudioInfo_Success) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // Configure FakeProbeService.
+  {
+    auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
+
+    {
+      std::vector<crosapi::mojom::ProbeAudioOutputNodeInfoPtr> output_infos;
+      auto output_node_info = crosapi::mojom::ProbeAudioOutputNodeInfo::New();
+      output_node_info->id = crosapi::mojom::UInt64Value::New(43);
+      output_node_info->name = "Internal Speaker";
+      output_node_info->device_name = "HDA Intel PCH: CA0132 Analog:0,0";
+      output_node_info->active = crosapi::mojom::BoolValue::New(false);
+      output_node_info->node_volume = crosapi::mojom::UInt8Value::New(212);
+      output_infos.push_back(std::move(output_node_info));
+
+      std::vector<crosapi::mojom::ProbeAudioInputNodeInfoPtr> input_infos;
+      auto input_node_info = crosapi::mojom::ProbeAudioInputNodeInfo::New();
+      input_node_info->id = crosapi::mojom::UInt64Value::New(42);
+      input_node_info->name = "External Mic";
+      input_node_info->device_name = "HDA Intel PCH: CA0132 Analog:1,0";
+      input_node_info->active = crosapi::mojom::BoolValue::New(true);
+      input_node_info->node_gain = crosapi::mojom::UInt8Value::New(1);
+      input_infos.push_back(std::move(input_node_info));
+
+      auto audio_info = crosapi::mojom::ProbeAudioInfo::New();
+      audio_info->output_mute = crosapi::mojom::BoolValue::New(true);
+      audio_info->input_mute = crosapi::mojom::BoolValue::New(false);
+      audio_info->underruns = crosapi::mojom::UInt32Value::New(56);
+      audio_info->severe_underruns = crosapi::mojom::UInt32Value::New(3);
+      audio_info->output_nodes = std::move(output_infos);
+      audio_info->input_nodes = std::move(input_infos);
+
+      telemetry_info->audio_result =
+          crosapi::mojom::ProbeAudioResult::NewAudioInfo(std::move(audio_info));
+    }
+
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
+    fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {crosapi::mojom::ProbeCategoryEnum::kAudio});
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getAudioInfo() {
+        const result = await chrome.os.telemetry.getAudioInfo();
+        chrome.test.assertEq(
+          // The dictionary members are ordered lexicographically by the Unicode
+          // codepoints that comprise their identifiers.
+          {
+            inputMute: false,
+            inputNodes: [{
+              active: true,
+              deviceName: 'HDA Intel PCH: CA0132 Analog:1,0',
+              id: 42,
+              name: 'External Mic',
+              nodeGain: 1,
+            }],
+            outputMute: true,
+            outputNodes: [{
+              active: false,
+              deviceName: 'HDA Intel PCH: CA0132 Analog:0,0',
+              id: 43,
+              name: 'Internal Speaker',
+              nodeVolume: 212
+            }],
+            severeUnderruns: 3,
+            underruns: 56,
+          }, result);
+
+          chrome.test.succeed();
+      }
+    ]);
+  )");
+}
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetBatteryInfo_ApiInternalError) {

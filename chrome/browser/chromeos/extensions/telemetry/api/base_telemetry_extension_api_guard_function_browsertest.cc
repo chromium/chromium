@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/api_guard_delegate.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_browser_test.h"
@@ -15,6 +16,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_mock_cert_verifier.h"
+#include "extensions/common/extension_features.h"
 #include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"
 #include "net/dns/mock_host_resolver.h"
@@ -44,6 +46,14 @@ std::string GetServiceWorkerForError(const std::string& error) {
   std::string service_worker = R"(
     const tests = [
       // Telemetry APIs.
+      async function getAudioInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getAudioInfo(),
+            'Error: Unauthorized access to ' +
+            'chrome.os.telemetry.getAudioInfo.' + ' %s'
+        );
+        chrome.test.succeed();
+      },
       async function getBatteryInfo() {
         await chrome.test.assertPromiseRejects(
             chrome.os.telemetry.getBatteryInfo(),
@@ -423,7 +433,18 @@ std::string GetServiceWorkerForError(const std::string& error) {
 
 }  // namespace
 
-using TelemetryExtensionApiGuardBrowserTest = BaseTelemetryExtensionBrowserTest;
+class TelemetryExtensionApiGuardBrowserTest
+    : public BaseTelemetryExtensionBrowserTest {
+ public:
+  TelemetryExtensionApiGuardBrowserTest() {
+    // Include unreleased APIs.
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kTelemetryExtensionPendingApprovalApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardBrowserTest,
                        CanAccessApiReturnsError) {

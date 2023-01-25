@@ -27,6 +27,15 @@ namespace unchecked {
 // nullptr, they should be called only via ConvertPtr wrapper that checks
 // whether input pointer is nullptr.
 
+chromeos::api::os_telemetry::AudioInputNodeInfo UncheckedConvertPtr(
+    crosapi::mojom::ProbeAudioInputNodeInfoPtr input);
+
+chromeos::api::os_telemetry::AudioOutputNodeInfo UncheckedConvertPtr(
+    crosapi::mojom::ProbeAudioOutputNodeInfoPtr input);
+
+chromeos::api::os_telemetry::AudioInfo UncheckedConvertPtr(
+    crosapi::mojom::ProbeAudioInfoPtr input);
+
 chromeos::api::os_telemetry::CpuCStateInfo UncheckedConvertPtr(
     crosapi::mojom::ProbeCpuCStateInfoPtr input);
 

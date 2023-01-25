@@ -37,6 +37,18 @@ class TelemetryApiFunctionBase : public BaseTelemetryExtensionApiGuardFunction {
   std::unique_ptr<RemoteProbeServiceStrategy> remote_probe_service_strategy_;
 };
 
+class OsTelemetryGetAudioInfoFunction : public TelemetryApiFunctionBase {
+  DECLARE_EXTENSION_FUNCTION("os.telemetry.getAudioInfo",
+                             OS_TELEMETRY_GETAUDIOINFO)
+  void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
+
+ private:
+  ~OsTelemetryGetAudioInfoFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 class OsTelemetryGetBatteryInfoFunction : public TelemetryApiFunctionBase {
   DECLARE_EXTENSION_FUNCTION("os.telemetry.getBatteryInfo",
                              OS_TELEMETRY_GETBATTERYINFO)

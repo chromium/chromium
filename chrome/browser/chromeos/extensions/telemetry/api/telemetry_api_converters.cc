@@ -28,6 +28,71 @@ namespace telemetry_service = ::crosapi::mojom;
 }  // namespace
 
 namespace unchecked {
+chromeos::api::os_telemetry::AudioInputNodeInfo UncheckedConvertPtr(
+    crosapi::mojom::ProbeAudioInputNodeInfoPtr input) {
+  telemetry_api::AudioInputNodeInfo result;
+
+  if (input->id) {
+    result.id = input->id->value;
+  }
+  result.name = input->name;
+  result.device_name = input->device_name;
+  if (input->active) {
+    result.active = input->active->value;
+  }
+  if (input->node_gain) {
+    result.node_gain = input->node_gain->value;
+  }
+
+  return result;
+}
+
+chromeos::api::os_telemetry::AudioOutputNodeInfo UncheckedConvertPtr(
+    crosapi::mojom::ProbeAudioOutputNodeInfoPtr input) {
+  telemetry_api::AudioOutputNodeInfo result;
+
+  if (input->id) {
+    result.id = input->id->value;
+  }
+  result.name = input->name;
+  result.device_name = input->device_name;
+  if (input->active) {
+    result.active = input->active->value;
+  }
+  if (input->node_volume) {
+    result.node_volume = input->node_volume->value;
+  }
+
+  return result;
+}
+
+telemetry_api::AudioInfo UncheckedConvertPtr(
+    telemetry_service::ProbeAudioInfoPtr input) {
+  telemetry_api::AudioInfo result;
+
+  if (input->output_mute) {
+    result.output_mute = input->output_mute->value;
+  }
+  if (input->input_mute) {
+    result.input_mute = input->input_mute->value;
+  }
+  if (input->underruns) {
+    result.underruns = input->underruns->value;
+  }
+  if (input->severe_underruns) {
+    result.severe_underruns = input->severe_underruns->value;
+  }
+  if (input->output_nodes) {
+    result.output_nodes = ConvertPtrVector<telemetry_api::AudioOutputNodeInfo>(
+        std::move(input->output_nodes.value()));
+  }
+  if (input->input_nodes) {
+    result.input_nodes = ConvertPtrVector<telemetry_api::AudioInputNodeInfo>(
+        std::move(input->input_nodes.value()));
+  }
+
+  return result;
+}
 
 telemetry_api::CpuCStateInfo UncheckedConvertPtr(
     telemetry_service::ProbeCpuCStateInfoPtr input) {
