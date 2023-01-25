@@ -3790,6 +3790,7 @@ enum WebFeature {
   kWindowManagementPermissionPolicyParsed = 4449,
   kWindowPlacementPermissionPolicyParsed = 4450,
   kContentDispositionInSvgUse = 4451,
+  kSameDocumentCrossOriginInitiator = 4452,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

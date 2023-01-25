@@ -41938,6 +41938,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4449" label="WindowManagementPermissionPolicyParsed"/>
   <int value="4450" label="WindowPlacementPermissionPolicyParsed"/>
   <int value="4451" label="ContentDispositionInSvgUse"/>
+  <int value="4452" label="SameDocumentCrossOriginInitiator"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
