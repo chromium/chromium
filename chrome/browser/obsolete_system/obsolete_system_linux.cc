@@ -19,27 +19,28 @@ const char* const kObsoleteDistros[] = {
     "Fedora 30",    "Fedora 31",    "openSUSE Leap 15.0", "openSUSE Leap 15.1",
 };
 
-// static
-bool ObsoleteSystem::IsObsoleteNowOrSoon() {
+namespace ObsoleteSystem {
+
+bool IsObsoleteNowOrSoon() {
   auto distro = base::GetLinuxDistro();
   for (const char* obsolete : kObsoleteDistros) {
-    if (base::StartsWith(distro, obsolete))
+    if (base::StartsWith(distro, obsolete)) {
       return true;
+    }
   }
   return false;
 }
 
-// static
-std::u16string ObsoleteSystem::LocalizedObsoleteString() {
+std::u16string LocalizedObsoleteString() {
   return l10n_util::GetStringUTF16(IDS_LINUX_OBSOLETE);
 }
 
-// static
-bool ObsoleteSystem::IsEndOfTheLine() {
+bool IsEndOfTheLine() {
   return false;
 }
 
-// static
-const char* ObsoleteSystem::GetLinkURL() {
+const char* GetLinkURL() {
   return kLinuxObsoleteUrl;
 }
+
+}  // namespace ObsoleteSystem

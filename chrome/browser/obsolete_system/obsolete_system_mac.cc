@@ -37,13 +37,13 @@ Obsoleteness OsObsoleteness() {
 
 }  // namespace
 
-// static
-bool ObsoleteSystem::IsObsoleteNowOrSoon() {
+namespace ObsoleteSystem {
+
+bool IsObsoleteNowOrSoon() {
   return OsObsoleteness() != Obsoleteness::NotObsolete;
 }
 
-// static
-std::u16string ObsoleteSystem::LocalizedObsoleteString() {
+std::u16string LocalizedObsoleteString() {
   switch (OsObsoleteness()) {
     case Obsoleteness::MacOS1011Obsolete:
       return l10n_util::GetStringUTF16(IDS_MAC_10_11_OBSOLETE);
@@ -54,12 +54,12 @@ std::u16string ObsoleteSystem::LocalizedObsoleteString() {
   }
 }
 
-// static
-bool ObsoleteSystem::IsEndOfTheLine() {
+bool IsEndOfTheLine() {
   return CHROME_VERSION_MAJOR >= 103;
 }
 
-// static
-const char* ObsoleteSystem::GetLinkURL() {
+const char* GetLinkURL() {
   return chrome::kMacOsObsoleteURL;
 }
+
+}  // namespace ObsoleteSystem

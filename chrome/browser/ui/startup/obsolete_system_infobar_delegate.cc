@@ -21,9 +21,7 @@ void ObsoleteSystemInfoBarDelegate::Create(
           new ObsoleteSystemInfoBarDelegate())));
 }
 
-ObsoleteSystemInfoBarDelegate::ObsoleteSystemInfoBarDelegate()
-    : ConfirmInfoBarDelegate() {
-}
+ObsoleteSystemInfoBarDelegate::ObsoleteSystemInfoBarDelegate() = default;
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 ObsoleteSystemInfoBarDelegate::GetIdentifier() const {

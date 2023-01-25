@@ -1,7 +1,11 @@
 # Use any owner for non-platform-specific issues.
+
 # Mac
 mark@chromium.org
+avi@chromium.org
+
 # Windows
 brucedawson@chromium.org
+
 # Linux
 thestig@chromium.org
