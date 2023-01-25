@@ -19,6 +19,21 @@ template("build_webui_tests") {
   preprocess_dir = "${target_gen_dir}/preprocessed"
   tsc_dir = "${target_gen_dir}/tsc"
 
+  if (defined(invoker.static_files)) {
+    static_files_filter = [ "*.html" ]
+    static_files = filter_include(invoker.static_files, static_files_filter)
+    assert(static_files == invoker.static_files,
+           "Static files must be .html files")
+    preprocess_if_expr("preprocess_static_files") {
+      visibility = [ ":build_grdp" ]
+      defines = chrome_grit_defines
+      in_folder = "."
+      out_folder = preprocess_dir
+      in_files = static_files
+      out_manifest = "${target_gen_dir}/preprocess_static_files_manifest.json"
+    }
+  }
+
   preprocess_if_expr("preprocess") {
     visibility = [ ":build_ts" ]
     defines = chrome_grit_defines
@@ -60,6 +75,11 @@ template("build_webui_tests") {
     deps = [ ":build_ts" ]
     manifest_files =
         filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+    if (defined(invoker.static_files)) {
+      deps += [ ":preprocess_static_files" ]
+      manifest_files +=
+          [ "${target_gen_dir}/preprocess_static_files_manifest.json" ]
+    }
     resource_path_prefix = invoker.resource_path_prefix
   }
 }
