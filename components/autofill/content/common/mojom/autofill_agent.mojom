@@ -78,13 +78,6 @@ interface AutofillAgent {
   // Configures whether AutofillAgent will query password field autofill suggestions. The default is false.
   SetQueryPasswordSuggestion(bool query);
 
-  // Get form element's form and field data. The form field is given by a
-  // stable devtools node identifier in the backend node id.
-  // https://chromedevtools.github.io/devtools-protocol/tot/DOM/#type-BackendNodeId
-  // The corresponding entity in the renderer is the DOMNodeIds.
-  GetElementFormAndFieldDataForDevToolsNodeId(int32 backend_node_id) => (
-      autofill.mojom.FormData form, autofill.mojom.FormFieldData field);
-
   // Allows heavy scraping of form data (e.g., button titles for
   // unowned forms).
   EnableHeavyFormDataScraping();

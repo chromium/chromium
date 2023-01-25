@@ -230,10 +230,6 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
 
   void SetQueryPasswordSuggestion(bool query) override {}
 
-  void GetElementFormAndFieldDataForDevToolsNodeId(
-      int backend_node_id,
-      GetElementFormAndFieldDataForDevToolsNodeIdCallback callback) override {}
-
   void SetFieldsEligibleForManualFilling(
       const std::vector<FieldRendererId>& fields) override {}
 

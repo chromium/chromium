@@ -165,16 +165,6 @@ class BLINK_EXPORT WebDocument : public WebNode {
       CrossVariantMojoRemote<
           network::mojom::RestrictedCookieManagerInterfaceBase> cookie_manager);
 
-  // Get an element that's a descendent of this document by the stable Devtools'
-  // node id.
-  // https://chromedevtools.github.io/devtools-protocol/tot/DOM/#type-BackendNodeId
-  // Returns a null WebElement if any of the following are true:
-  // * the `node_id` does not identify any Node
-  // * the Node identified by `node_id` is not an Element
-  // * the Element is not a descendant of this WebDocument or any shadow
-  //   document contained within it
-  WebElement GetElementByDevToolsNodeId(int node_id);
-
 #if INSIDE_BLINK
   WebDocument(Document*);
   WebDocument& operator=(Document*);

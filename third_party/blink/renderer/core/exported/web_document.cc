@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_statistics_collector.h"
 #include "third_party/blink/renderer/core/dom/document_type.h"
-#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -66,7 +65,6 @@
 #include "third_party/blink/renderer/core/html/plugin_document.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -321,15 +319,6 @@ void WebDocument::SetCookieManager(
     CrossVariantMojoRemote<network::mojom::RestrictedCookieManagerInterfaceBase>
         cookie_manager) {
   Unwrap<Document>()->SetCookieManager(std::move(cookie_manager));
-}
-
-WebElement WebDocument::GetElementByDevToolsNodeId(const int node_id) {
-  Node* node = DOMNodeIds::NodeForId(static_cast<DOMNodeId>(node_id));
-  if (!node || !node->IsElementNode() ||
-      !node->IsDescendantOrShadowDescendantOf(private_.Get())) {
-    return WebElement();
-  }
-  return WebElement(blink::To<Element>(node));
 }
 
 WebDocument::WebDocument(Document* elem) : WebNode(elem) {}

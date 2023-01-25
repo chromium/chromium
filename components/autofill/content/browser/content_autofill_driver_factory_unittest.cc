@@ -92,11 +92,6 @@ class MockAutofillAgent : public mojom::AutofillAgent {
   MOCK_METHOD(void, SetSecureContextRequired, (bool required), (override));
   MOCK_METHOD(void, SetFocusRequiresScroll, (bool require), (override));
   MOCK_METHOD(void, SetQueryPasswordSuggestion, (bool query), (override));
-  MOCK_METHOD(void,
-              GetElementFormAndFieldDataForDevToolsNodeId,
-              (int32_t backend_node_id,
-               GetElementFormAndFieldDataForDevToolsNodeIdCallback callback),
-              (override));
   MOCK_METHOD(void, EnableHeavyFormDataScraping, (), (override));
   MOCK_METHOD(void,
               SetFieldsEligibleForManualFilling,
