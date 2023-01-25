@@ -136,8 +136,7 @@ void WebAuthFlow::Start() {
   DCHECK(profile_);
   DCHECK(!profile_->IsOffTheRecord());
 
-  if (partition_ == WebAuthFlow::Partition::LAUNCH_WEB_AUTH_FLOW &&
-      base::FeatureList::IsEnabled(features::kWebAuthFlowInBrowserTab)) {
+  if (base::FeatureList::IsEnabled(features::kWebAuthFlowInBrowserTab)) {
     using_auth_with_browser_tab_ = true;
 
     content::WebContents::CreateParams params(profile_);
@@ -263,6 +262,11 @@ void WebAuthFlow::CloseInfoBar() {
   }
 }
 
+bool WebAuthFlow::IsDisplayingAuthPageInTab() const {
+  // If web_contents_ is nullptr, then the auth page tab is opened.
+  return using_auth_with_browser_tab_ && !web_contents_;
+}
+
 void WebAuthFlow::BeforeUrlLoaded(const GURL& url) {
   if (delegate_ && IsObservingProviderWebContents())
     delegate_->OnAuthFlowURLChange(url);
@@ -276,8 +280,8 @@ void WebAuthFlow::AfterUrlLoaded() {
 
   // If `web_contents_` is nullptr, this means that the interactive tab has
   // already been opened once.
-  if (delegate_ && using_auth_with_browser_tab_ &&
-      mode_ == WebAuthFlow::INTERACTIVE && web_contents_) {
+  if (delegate_ && using_auth_with_browser_tab_ && web_contents_ &&
+      mode_ == WebAuthFlow::INTERACTIVE) {
     chrome::ScopedTabbedBrowserDisplayer browser_displayer(profile_);
     NavigateParams params(browser_displayer.browser(),
                           std::move(web_contents_));
@@ -325,11 +329,10 @@ void WebAuthFlow::DidStopLoading() {
 
 void WebAuthFlow::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  // If web_contents_ is nullptr, then the auth page tab is opened.
   // If the navigation is initiated by the user, the tab will exit the auth
   // flow screen, this should result in a declined authentication and deleting
   // the flow.
-  if (using_auth_with_browser_tab_ && !web_contents_ &&
+  if (IsDisplayingAuthPageInTab() &&
       !navigation_handle->IsRendererInitiated()) {
     // Stop observing the web contents since it is not part of the flow anymore.
     WebContentsObserver::Observe(nullptr);
@@ -356,6 +359,10 @@ void WebAuthFlow::DidFinishNavigation(
   // flow if a navigation failed in a sub-frame. https://crbug.com/1049565.
   if (!navigation_handle->IsInPrimaryMainFrame())
     return;
+
+  if (delegate_) {
+    delegate_->OnNavigationFinished(navigation_handle);
+  }
 
   bool failed = false;
   if (navigation_handle->GetNetErrorCode() != net::OK) {

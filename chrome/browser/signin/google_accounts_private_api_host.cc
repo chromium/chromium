@@ -7,10 +7,15 @@
 #include "chrome/browser/signin/google_accounts_private_api_util.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 
 GoogleAccountsPrivateApiHost::GoogleAccountsPrivateApiHost(
-    content::RenderFrameHost* rfh)
-    : DocumentUserData<GoogleAccountsPrivateApiHost>(rfh), receiver_(this) {}
+    content::RenderFrameHost* rfh,
+    base::RepeatingCallback<void(const std::string&)>
+        on_consent_result_callback)
+    : DocumentUserData<GoogleAccountsPrivateApiHost>(rfh),
+      receiver_(this),
+      on_consent_result_callback_(std::move(on_consent_result_callback)) {}
 
 GoogleAccountsPrivateApiHost::~GoogleAccountsPrivateApiHost() = default;
 
@@ -24,8 +29,14 @@ void GoogleAccountsPrivateApiHost::BindReceiver(
 
 void GoogleAccountsPrivateApiHost::SetConsentResult(
     const std::string& consent_result) {
-  // To be implemented.
-  // TODO: Add a check for non-primary pages.
+#if !BUILDFLAG(IS_ANDROID)
+  if (!render_frame_host().IsInPrimaryMainFrame() ||
+      !on_consent_result_callback_) {
+    return;
+  }
+
+  on_consent_result_callback_.Run(consent_result);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 // static
@@ -44,6 +55,8 @@ void GoogleAccountsPrivateApiHost::BindHost(
 
 // static
 void GoogleAccountsPrivateApiHost::CreateReceiver(
+    base::RepeatingCallback<void(const std::string&)>
+        on_consent_result_callback,
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsSameDocument()) {
     return;
@@ -51,6 +64,7 @@ void GoogleAccountsPrivateApiHost::CreateReceiver(
 
   if (ShouldExposeGoogleAccountsPrivateApi(navigation_handle)) {
     GoogleAccountsPrivateApiHost::CreateForCurrentDocument(
-        navigation_handle->GetRenderFrameHost());
+        navigation_handle->GetRenderFrameHost(),
+        std::move(on_consent_result_callback));
   }
 }

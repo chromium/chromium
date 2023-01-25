@@ -78,6 +78,10 @@ class WebAuthFlow : public content::WebContentsObserver,
     virtual void OnAuthFlowURLChange(const GURL& redirect_url) {}
     // Called when the title of the current page changes.
     virtual void OnAuthFlowTitleChange(const std::string& title) {}
+    // Called when the web_contents associated with the flow has finished
+    // navigation.
+    virtual void OnNavigationFinished(
+        content::NavigationHandle* navigation_handle) {}
 
    protected:
     virtual ~Delegate() {}
@@ -148,6 +152,8 @@ class WebAuthFlow : public content::WebContentsObserver,
 
   void DisplayInfoBar();
   void CloseInfoBar();
+
+  bool IsDisplayingAuthPageInTab() const;
 
   raw_ptr<Delegate> delegate_ = nullptr;
   const raw_ptr<Profile> profile_;

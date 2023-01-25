@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
+#include "chrome/browser/signin/google_accounts_private_api_host.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -72,7 +73,8 @@ void GaiaRemoteConsentFlow::Start() {
         WebAuthFlow::GET_AUTH_TOKEN, extension_name_);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // `profile_` may be nullptr in tests.
-    if (profile_) {
+    if (profile_ &&
+        !base::FeatureList::IsEnabled(features::kWebAuthFlowInBrowserTab)) {
       AccountReconcilorFactory::GetForProfile(profile_)
           ->GetConsistencyCookieManager()
           ->AddExtraCookieManager(GetCookieManagerForPartition());
@@ -80,11 +82,35 @@ void GaiaRemoteConsentFlow::Start() {
 #endif
   }
 
+  if (base::FeatureList::IsEnabled(features::kWebAuthFlowInBrowserTab)) {
+    StartWebFlow();
+    return;
+  }
+
   SetAccountsInCookie();
+}
+
+void GaiaRemoteConsentFlow::StartWebFlow() {
+  network::mojom::CookieManager* cookie_manager =
+      GetCookieManagerForPartition();
+  net::CookieOptions options;
+  for (const auto& cookie : resolution_data_.cookies) {
+    cookie_manager->SetCanonicalCookie(
+        cookie,
+        net::cookie_util::SimulatedCookieSource(cookie, url::kHttpsScheme),
+        options, network::mojom::CookieManager::SetCanonicalCookieCallback());
+  }
+
+  web_flow_->Start();
+  web_flow_started_ = true;
 }
 
 void GaiaRemoteConsentFlow::OnSetAccountsComplete(
     signin::SetAccountsInCookieResult result) {
+  // No need to inject account cookies when the flow is displayed in a browser
+  // tab.
+  DCHECK(!base::FeatureList::IsEnabled(features::kWebAuthFlowInBrowserTab));
+
   set_accounts_in_cookie_task_.reset();
   if (web_flow_started_) {
     return;
@@ -96,16 +122,6 @@ void GaiaRemoteConsentFlow::OnSetAccountsComplete(
     return;
   }
 
-  network::mojom::CookieManager* cookie_manager =
-      GetCookieManagerForPartition();
-  net::CookieOptions options;
-  for (const auto& cookie : resolution_data_.cookies) {
-    cookie_manager->SetCanonicalCookie(
-        cookie,
-        net::cookie_util::SimulatedCookieSource(cookie, url::kHttpsScheme),
-        options, network::mojom::CookieManager::SetCanonicalCookieCallback());
-  }
-
   identity_api_set_consent_result_subscription_ =
       IdentityAPI::GetFactoryInstance()
           ->Get(profile_)
@@ -114,18 +130,11 @@ void GaiaRemoteConsentFlow::OnSetAccountsComplete(
                                   base::Unretained(this)));
 
   scoped_observation_.Observe(IdentityManagerFactory::GetForProfile(profile_));
-  web_flow_->Start();
-  web_flow_started_ = true;
+  StartWebFlow();
 }
 
-void GaiaRemoteConsentFlow::OnConsentResultSet(
-    const std::string& consent_result,
-    const std::string& window_id) {
-  if (!web_flow_ || window_id != web_flow_->GetAppWindowKey())
-    return;
-
-  identity_api_set_consent_result_subscription_ = {};
-
+void GaiaRemoteConsentFlow::ReactToConsentResult(
+    const std::string& consent_result) {
   bool consent_approved = false;
   std::string gaia_id;
   if (!gaia::ParseOAuth2MintTokenConsentResult(consent_result,
@@ -141,6 +150,21 @@ void GaiaRemoteConsentFlow::OnConsentResultSet(
 
   RecordResultHistogram(GaiaRemoteConsentFlow::NONE);
   delegate_->OnGaiaRemoteConsentFlowApproved(consent_result, gaia_id);
+}
+
+void GaiaRemoteConsentFlow::OnConsentResultSet(
+    const std::string& consent_result,
+    const std::string& window_id) {
+  // JS hook in a browser tab calls `ReactToConsentResult()` directly.
+  DCHECK(!base::FeatureList::IsEnabled(features::kWebAuthFlowInBrowserTab));
+
+  if (!web_flow_ || window_id != web_flow_->GetAppWindowKey()) {
+    return;
+  }
+
+  identity_api_set_consent_result_subscription_ = {};
+
+  ReactToConsentResult(consent_result);
 }
 
 void GaiaRemoteConsentFlow::OnAuthFlowFailure(WebAuthFlow::Failure failure) {
@@ -192,6 +216,9 @@ GaiaRemoteConsentFlow::GetCookieManagerForPartition() {
 }
 
 void GaiaRemoteConsentFlow::OnEndBatchOfRefreshTokenStateChanges() {
+  // No need to copy added accounts when showing the flow in a browser tab.
+  DCHECK(!base::FeatureList::IsEnabled(features::kWebAuthFlowInBrowserTab));
+
 // On ChromeOS, new accounts are added through the account manager. They need to
 // be pushed to the partition used by this flow explicitly.
 // On Desktop, sign-in happens on the Web and a new account is directly added to
@@ -226,6 +253,10 @@ WebAuthFlow* GaiaRemoteConsentFlow::GetWebAuthFlowForTesting() const {
 }
 
 void GaiaRemoteConsentFlow::SetAccountsInCookie() {
+  // No need to inject account cookies when the flow is displayed in a browser
+  // tab.
+  DCHECK(!base::FeatureList::IsEnabled(features::kWebAuthFlowInBrowserTab));
+
   // Reset a task that is already in flight because it contains stale
   // information.
   if (set_accounts_in_cookie_task_)
@@ -278,13 +309,28 @@ void GaiaRemoteConsentFlow::DetachWebAuthFlow() {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // `profile_` may be nullptr in tests.
-  if (profile_) {
+  if (profile_ &&
+      !base::FeatureList::IsEnabled(features::kWebAuthFlowInBrowserTab)) {
     AccountReconcilorFactory::GetForProfile(profile_)
         ->GetConsistencyCookieManager()
         ->RemoveExtraCookieManager(GetCookieManagerForPartition());
   }
 #endif
   web_flow_.release()->DetachDelegateAndDelete();
+}
+
+void GaiaRemoteConsentFlow::OnNavigationFinished(
+    content::NavigationHandle* navigation_handle) {
+  // No need to create the receiver if we are not displaying the auth page
+  // through a Browser Tgab.
+  if (!base::FeatureList::IsEnabled(features::kWebAuthFlowInBrowserTab)) {
+    return;
+  }
+
+  GoogleAccountsPrivateApiHost::CreateReceiver(
+      base::BindRepeating(&GaiaRemoteConsentFlow::ReactToConsentResult,
+                          weak_factory.GetWeakPtr()),
+      navigation_handle);
 }
 
 }  // namespace extensions
