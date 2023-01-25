@@ -22,6 +22,15 @@ public class WebContentsFactory {
     public WebContentsFactory() {}
 
     /**
+     * For capturing where WebContentsImpl is created.
+     */
+    private static class WebContentsCreationException extends RuntimeException {
+        WebContentsCreationException() {
+            super("vvv This is where WebContents was created. vvv");
+        }
+    }
+
+    /**
      * A factory method to build a {@link WebContents} object.
      * @param profile         The profile with which the {@link WebContents} should be built.
      * @param initiallyHidden Whether or not the {@link WebContents} should be initially hidden.
@@ -29,14 +38,15 @@ public class WebContentsFactory {
      */
     // TODO(https://crbug.com/1099138): Remove static for unit-testability.
     public static WebContents createWebContents(Profile profile, boolean initiallyHidden) {
-        return WebContentsFactoryJni.get().createWebContents(profile, initiallyHidden, false);
+        return WebContentsFactoryJni.get().createWebContents(
+                profile, initiallyHidden, false, new WebContentsCreationException());
     }
 
     // TODO(https://crbug.com/1033955): Remove after check discard error is fixed.
     private static WebContents createWebContents(
             Profile profile, boolean initiallyHidden, boolean initializeRenderer) {
         return WebContentsFactoryJni.get().createWebContents(
-                profile, initiallyHidden, initializeRenderer);
+                profile, initiallyHidden, initializeRenderer, new WebContentsCreationException());
     }
 
     /**
@@ -54,7 +64,7 @@ public class WebContentsFactory {
 
     @NativeMethods
     interface Natives {
-        WebContents createWebContents(
-                Profile profile, boolean initiallyHidden, boolean initializeRenderer);
+        WebContents createWebContents(Profile profile, boolean initiallyHidden,
+                boolean initializeRenderer, Throwable javaCreator);
     }
 }

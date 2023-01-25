@@ -21,6 +21,7 @@ import android.view.ViewStructure;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
@@ -444,6 +445,22 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     private static void addRenderFrameHostToArray(
             RenderFrameHost[] frames, int index, RenderFrameHost frame) {
         frames[index] = frame;
+    }
+
+    /**
+     * Thrown by reportDanglingPtrToBrowserContext(), indicating that WebContentsImpl is deleted
+     * after its BrowserContext.
+     */
+    private static class DanglingPointerException extends RuntimeException {
+        DanglingPointerException(String msg, Throwable causedBy) {
+            super(msg, causedBy);
+        }
+    }
+
+    @CalledByNative
+    private static void reportDanglingPtrToBrowserContext(Throwable creator) {
+        JavaExceptionReporter.reportException(new DanglingPointerException(
+                "Dangling pointer to BrowserContext in WebContents", creator));
     }
 
     @Override

@@ -25,6 +25,7 @@ struct AXTreeUpdate;
 
 namespace content {
 
+class WebContents;
 class WebContentsImpl;
 
 // Android wrapper around WebContents that provides safer passage from java and
@@ -214,6 +215,12 @@ class CONTENT_EXPORT WebContentsAndroid {
 
   void AddDestructionObserver(DestructionObserver* observer);
   void RemoveDestructionObserver(DestructionObserver* observer);
+
+  // Adds a crash report, like DumpWithoutCrashing(), including the Java stack
+  // trace from which `web_contents` was created. This is meant to help debug
+  // cases where BrowserContext is destroyed before its WebContents.
+  static void ReportDanglingPtrToBrowserContext(JNIEnv* env,
+                                                WebContents* web_contents);
 
  private:
   void OnFinishDownloadImage(const base::android::JavaRef<jobject>& obj,

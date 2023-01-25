@@ -17,7 +17,8 @@ static ScopedJavaLocalRef<jobject> JNI_WebContentsFactory_CreateWebContents(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     jboolean initially_hidden,
-    jboolean initialize_renderer) {
+    jboolean initialize_renderer,
+    const JavaParamRef<jthrowable>& j_creator_location) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   content::WebContents::CreateParams params(profile);
   params.initially_hidden = static_cast<bool>(initially_hidden);
@@ -26,6 +27,7 @@ static ScopedJavaLocalRef<jobject> JNI_WebContentsFactory_CreateWebContents(
           ? content::WebContents::CreateParams::
                 kInitializeAndWarmupRendererProcess
           : content::WebContents::CreateParams::kOkayToHaveRendererProcess;
+  params.java_creator_location = j_creator_location;
 
   // Ownership is passed into java, and then to TabAndroid::InitWebContents.
   return content::WebContents::Create(params).release()->GetJavaWebContents();

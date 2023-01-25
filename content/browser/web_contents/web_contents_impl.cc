@@ -908,6 +908,10 @@ class WebContentsOfBrowserContext : public base::SupportsUserData::Data {
     if (web_contents_set_.empty())
       return;  // Everything is okay - nothing to warn about.
 
+#if BUILDFLAG(IS_ANDROID)
+    JNIEnv* env = base::android::AttachCurrentThread();
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Any remaining WebContents contain dangling pointers to the
     // BrowserContext being destroyed.  Such WebContents (and their
     // RenderFrameHosts, SiteInstances, etc.) risk causing
@@ -919,6 +923,14 @@ class WebContentsOfBrowserContext : public base::SupportsUserData::Data {
                                 ->GetCreatorLocation()
                                 .ToString();
       SCOPED_CRASH_KEY_STRING256("shutdown", "web_contents/creator", creator);
+
+#if BUILDFLAG(IS_ANDROID)
+      // On Android, also report the Java stack trace from WebContents's
+      // creation.
+      WebContentsAndroid::ReportDanglingPtrToBrowserContext(
+          env, web_contents_with_dangling_ptr_to_browser_context);
+#endif  // BUILDFLAG(IS_ANDROID)
+
       NOTREACHED()
           << "BrowserContext is getting destroyed without first closing all "
           << "WebContents (for more info see https://crbug.com/1376879#c44); "
@@ -3123,6 +3135,9 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
   TRACE_EVENT0("content", "WebContentsImpl::Init");
 
   creator_location_ = params.creator_location;
+#if BUILDFLAG(IS_ANDROID)
+  java_creator_location_ = params.java_creator_location;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // An initial aspect ratio of 0.0 implies that the website did not set one and
   // therefore we should use a default value. We will also use a default value
@@ -8343,6 +8358,11 @@ base::android::ScopedJavaLocalRef<jobject>
 WebContentsImpl::GetJavaWebContents() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return GetWebContentsAndroid()->GetJavaObject();
+}
+
+base::android::ScopedJavaLocalRef<jthrowable>
+WebContentsImpl::GetJavaCreatorLocation() {
+  return base::android::ScopedJavaLocalRef<jthrowable>(java_creator_location_);
 }
 
 WebContentsAndroid* WebContentsImpl::GetWebContentsAndroid() {

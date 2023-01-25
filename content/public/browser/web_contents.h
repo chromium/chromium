@@ -257,6 +257,13 @@ class WebContents : public PageNavigator,
     // invariant violations to a particular flavor of WebContents).
     base::Location creator_location;
 
+#if BUILDFLAG(IS_ANDROID)
+    // Same as `creator_location`, for WebContents created via Java. This
+    // java.lang.Throwable contains the entire
+    // WebContentsCreator.createWebContents() stack trace.
+    base::android::ScopedJavaGlobalRef<jthrowable> java_creator_location;
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Enables contents to hold wake locks, for example, to keep the screen on
     // while playing video.
     bool enable_wake_locks = true;
@@ -1273,6 +1280,10 @@ class WebContents : public PageNavigator,
   CONTENT_EXPORT static WebContents* FromJavaWebContents(
       const base::android::JavaRef<jobject>& jweb_contents_android);
   virtual base::android::ScopedJavaLocalRef<jobject> GetJavaWebContents() = 0;
+
+  // Returns the value from CreateParams::java_creator_location.
+  virtual base::android::ScopedJavaLocalRef<jthrowable>
+  GetJavaCreatorLocation() = 0;
 
   // Selects and zooms to the find result nearest to the point (x,y) defined in
   // find-in-page coordinates.

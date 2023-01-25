@@ -550,6 +550,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override;
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> GetJavaWebContents() override;
+  base::android::ScopedJavaLocalRef<jthrowable> GetJavaCreatorLocation()
+      override;
   WebContentsAndroid* GetWebContentsAndroid();
   void ClearWebContentsAndroid();
   void ActivateNearestFindResult(float x, float y) override;
@@ -2326,8 +2328,13 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // TODO(1231679): Remove/reevaluate after the PCScan experiment is finished.
   std::unique_ptr<StarScanLoadObserver> star_scan_load_observer_;
 
-  // Stores WebContents::CreateParams::creator_location_.
+  // Stores WebContents::CreateParams::creator_location.
   base::Location creator_location_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Stores WebContents::CreateParams::java_creator_location.
+  base::android::ScopedJavaGlobalRef<jthrowable> java_creator_location_;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // The initial aspect ratio (only used for WebContents associated with a
   // PictureInPicture window). This value is either the parameter given in

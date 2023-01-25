@@ -260,6 +260,16 @@ void WebContentsAndroid::RemoveDestructionObserver(
   destruction_observers_.RemoveObserver(observer);
 }
 
+// static
+void WebContentsAndroid::ReportDanglingPtrToBrowserContext(
+    JNIEnv* env,
+    WebContents* web_contents) {
+  if (base::android::ScopedJavaLocalRef<jthrowable> java_creator =
+          web_contents->GetJavaCreatorLocation()) {
+    Java_WebContentsImpl_reportDanglingPtrToBrowserContext(env, java_creator);
+  }
+}
+
 base::android::ScopedJavaLocalRef<jobject>
 WebContentsAndroid::GetTopLevelNativeWindow(JNIEnv* env) {
   ui::WindowAndroid* window_android = web_contents_->GetTopLevelNativeWindow();
