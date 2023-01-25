@@ -28,7 +28,7 @@ import {parseTrashInfoFiles, startIOTask} from './api.js';
 import {isFileSystemDirectoryEntry, isFileSystemFileEntry} from './entry_utils.js';
 import {FakeEntryImpl} from './files_app_entry_types.js';
 import {metrics} from './metrics.js';
-import {util} from './util.js';
+import {str, util} from './util.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
@@ -555,7 +555,7 @@ class TrashDirectoryReader implements FileSystemDirectoryReader {
  */
 export class TrashRootEntry extends FakeEntryImpl {
   constructor() {
-    super('Trash', VolumeManagerCommon.RootType.TRASH);
+    super(str('TRASH_ROOT_LABEL'), VolumeManagerCommon.RootType.TRASH);
   }
 }
 
