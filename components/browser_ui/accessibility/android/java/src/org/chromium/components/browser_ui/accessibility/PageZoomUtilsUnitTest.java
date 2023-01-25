@@ -4,6 +4,11 @@
 
 package org.chromium.components.browser_ui.accessibility;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -16,8 +21,11 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.content.browser.ContentFeatureListImpl;
+import org.chromium.content.browser.ContentFeatureListImplJni;
 import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -38,6 +46,16 @@ public class PageZoomUtilsUnitTest {
     private static final String GET_NEXT_INDEX_INCREASE_FAILURE =
             "Failure to get next index in increasing direction.";
 
+    private static final String SET_DEFAULT_FAILURE_NO_JNI =
+            "Failure in set default zoom by seekbar value. Expected 1 JNI call but none occurred.";
+    private static final String GET_DEFAULT_FAILURE_NO_JNI =
+            "Failure in get default zoom as seekbar value. Expected 1 JNI call but none occurred.";
+    private static final String GET_DEFAULT_FAILURE =
+            "Failure to get default zoom as seekbar value.";
+
+    private static final String SHOULD_SHOW_ZOOM_MENU_ITEM_FAILURE_EXPECTED_FALSE =
+            "Failure in should show zoom menu item method. Expected false but returned true.";
+
     @Rule
     public JniMocker mJniMocker = new JniMocker();
 
@@ -47,6 +65,12 @@ public class PageZoomUtilsUnitTest {
     @Mock
     private HostZoomMapImpl.Natives mHostZoomMapMock;
 
+    @Mock
+    private ContentFeatureListImpl.Natives mContentFeatureListMock;
+
+    @Mock
+    private BrowserContextHandle mContextMock;
+
     private PropertyModel mModel;
 
     @Before
@@ -54,6 +78,7 @@ public class PageZoomUtilsUnitTest {
         MockitoAnnotations.initMocks(this);
 
         mJniMocker.mock(HostZoomMapImplJni.TEST_HOOKS, mHostZoomMapMock);
+        mJniMocker.mock(ContentFeatureListImplJni.TEST_HOOKS, mContentFeatureListMock);
     }
 
     @Test
@@ -87,6 +112,29 @@ public class PageZoomUtilsUnitTest {
         // Non-cached zoom level
         Assert.assertEquals(SEEKBAR_VALUE_TO_ZOOM_FACTOR_FAILURE, 1.51,
                 PageZoomUtils.convertSeekBarValueToZoomLevel(101), 0.0001);
+    }
+
+    @Test
+    public void testSetDefaultZoomBySeekbarValue() {
+        PageZoomUtils.setDefaultZoomBySeekBarValue(mContextMock, 110);
+        verify(mHostZoomMapMock, times(1).description(SET_DEFAULT_FAILURE_NO_JNI))
+                .setDefaultZoomLevel(mContextMock, 2.58);
+    }
+
+    @Test
+    public void testGetDefaultZoomBySeekbarValue() {
+        when(mHostZoomMapMock.getDefaultZoomLevel(mContextMock)).thenReturn(2.58);
+        Assert.assertEquals(GET_DEFAULT_FAILURE, 110,
+                PageZoomUtils.getDefaultZoomAsSeekBarValue(mContextMock), 0.0001);
+        verify(mHostZoomMapMock, times(1).description(GET_DEFAULT_FAILURE_NO_JNI))
+                .getDefaultZoomLevel(mContextMock);
+    }
+
+    @Test
+    public void testShouldAlwaysShowZoomMenuItem_featureFlagOff() {
+        when(mContentFeatureListMock.isEnabled(any())).thenReturn(false);
+        Assert.assertEquals(SHOULD_SHOW_ZOOM_MENU_ITEM_FAILURE_EXPECTED_FALSE, false,
+                PageZoomUtils.shouldAlwaysShowZoomMenuItem());
     }
 
     @Test

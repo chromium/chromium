@@ -133,7 +133,7 @@ public class PageZoomUtils {
      * This is part of the Profile and is set in Desktop through Settings > Appearance.
      * @return int
      */
-    public static int getDefaultZoomAsSeekValue(BrowserContextHandle context) {
+    public static int getDefaultZoomAsSeekBarValue(BrowserContextHandle context) {
         return convertZoomFactorToSeekBarValue(getDefaultZoomLevel(context));
     }
 
