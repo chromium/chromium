@@ -4381,6 +4381,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityNavigationTest,
   ASSERT_TRUE(link_node);
 
   // Invoke action on a link and wait for navigation to complete.
+  EXPECT_EQ(ax::mojom::DefaultActionVerb::kJump,
+            link_node->GetData().GetDefaultActionVerb());
   content::AccessibilityNotificationWaiter event_waiter(
       GetActiveWebContents(), ui::kAXModeComplete,
       ax::mojom::Event::kLoadComplete);

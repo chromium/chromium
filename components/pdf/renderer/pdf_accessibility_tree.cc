@@ -703,6 +703,7 @@ class PdfAccessibilityTreeBuilder {
     link_node->AddStringAttribute(ax::mojom::StringAttribute::kName,
                                   std::string());
     link_node->relative_bounds.bounds = link.bounds;
+    link_node->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kJump);
     node_id_to_annotation_info_->emplace(
         link_node->id,
         PdfAccessibilityTree::AnnotationInfo(page_index_, link.index_in_page));
