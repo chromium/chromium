@@ -2041,6 +2041,7 @@ enum class ToolbarKind {
   // TODO(crbug.com/1403957): Move AutofillTabHelper logic inside
   // TabLifecycleMediator.
   if (AutofillTabHelper::FromWebState(webState)) {
+    DCHECK(self.viewController);
     AutofillTabHelper::FromWebState(webState)->SetBaseViewController(
         self.viewController);
   }
@@ -2048,6 +2049,7 @@ enum class ToolbarKind {
   // TODO(crbug.com/1403959): Move PrintTabHelper logic inside
   // TabLifecycleMediator.
   if (PrintTabHelper::FromWebState(webState)) {
+    DCHECK(self.printController);
     PrintTabHelper::FromWebState(webState)->set_printer(self.printController);
   }
 
@@ -2059,6 +2061,7 @@ enum class ToolbarKind {
   // TabLifecycleMediator.
   FollowTabHelper* followTabHelper = FollowTabHelper::FromWebState(webState);
   if (followTabHelper) {
+    DCHECK(self.followIPHCoordinator);
     followTabHelper->set_follow_iph_presenter(self.followIPHCoordinator);
   }
 
@@ -2067,6 +2070,7 @@ enum class ToolbarKind {
   if (CaptivePortalTabHelper::FromWebState(webState)) {
     TabInsertionBrowserAgent* insertionAgent =
         TabInsertionBrowserAgent::FromBrowser(self.browser);
+    DCHECK(insertionAgent);
     CaptivePortalTabHelper::FromWebState(webState)->SetTabInsertionBrowserAgent(
         insertionAgent);
   }
@@ -2080,6 +2084,7 @@ enum class ToolbarKind {
   // TODO(crbug.com/1403967): Move AnnotationsTabHelper logic inside
   // TabLifecycleMediator.
   if (AnnotationsTabHelper::FromWebState(webState)) {
+    DCHECK(self.viewController);
     AnnotationsTabHelper::FromWebState(webState)->SetBaseViewController(
         self.viewController);
   }
@@ -2089,6 +2094,7 @@ enum class ToolbarKind {
   PriceNotificationsTabHelper* priceNotificationsTabHelper =
       PriceNotificationsTabHelper::FromWebState(webState);
   if (priceNotificationsTabHelper) {
+    DCHECK(self.priceNotificationsIPHCoordinator);
     priceNotificationsTabHelper->SetPriceNotificationsIPHPresenter(
         self.priceNotificationsIPHCoordinator);
   }

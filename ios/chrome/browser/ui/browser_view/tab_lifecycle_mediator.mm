@@ -89,18 +89,24 @@
   // Only realized webstates should have dependencies installed.
   DCHECK(webState->IsRealized());
 
+  DCHECK(_snapshotGeneratorDelegate);
   SnapshotTabHelper::FromWebState(webState)->SetDelegate(
       _snapshotGeneratorDelegate);
 
   if (PasswordTabHelper* passwordTabHelper =
           PasswordTabHelper::FromWebState(webState)) {
+    DCHECK(_baseViewController);
+    DCHECK(_delegate);
+    DCHECK(_commandDispatcher);
     passwordTabHelper->SetBaseViewController(_baseViewController);
     passwordTabHelper->SetPasswordControllerDelegate(_delegate);
     passwordTabHelper->SetDispatcher(_commandDispatcher);
   }
 
+  DCHECK(_delegate);
   OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(_delegate);
 
+  DCHECK(_sideSwipeController);
   web_deprecated::SetSwipeRecognizerProvider(webState, _sideSwipeController);
 
   // DownloadManagerTabHelper cannot function without its delegate.
@@ -108,10 +114,12 @@
   DownloadManagerTabHelper::FromWebState(webState)->SetDelegate(
       _downloadManagerCoordinator);
 
+  DCHECK(_tabHelperDelegate);
   NetExportTabHelper::FromWebState(webState)->SetDelegate(_tabHelperDelegate);
 
   id<WebContentCommands> webContentsHandler =
       HandlerForProtocol(_commandDispatcher, WebContentCommands);
+  DCHECK(webContentsHandler);
   ITunesUrlsHandlerTabHelper::FromWebState(webState)->SetWebContentsHandler(
       webContentsHandler);
   PassKitTabHelper::FromWebState(webState)->SetWebContentsHandler(
