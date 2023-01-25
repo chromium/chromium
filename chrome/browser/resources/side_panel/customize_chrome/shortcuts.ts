@@ -44,12 +44,17 @@ export class ShortcutsElement extends PolymerElement {
         computed: 'computeShortcutsRadioSelection_(customLinksEnabled_)',
       },
       show_: Boolean,
+      initialized_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   private customLinksEnabled_: boolean;
   private shortcutsRadioSelection_: string|undefined = undefined;
   private show_: boolean;
+  private initialized_: boolean;
 
   private setMostVisitedSettingsListenerId_: number|null = null;
 
@@ -69,6 +74,7 @@ export class ShortcutsElement extends PolymerElement {
             (customLinksEnabled: boolean, shortcutsVisible: boolean) => {
               this.customLinksEnabled_ = customLinksEnabled;
               this.show_ = shortcutsVisible;
+              this.initialized_ = true;
             });
     this.pageHandler_.updateMostVisitedSettings();
   }

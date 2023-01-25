@@ -299,4 +299,31 @@ suite('CardsTest', () => {
           1, metrics.count('NewTabPage.Modules.Disabled', 'chrome_cart'));
     });
   });
+
+  test('only animates after initialization', async () => {
+    // Arrange.
+    customizeCards = document.createElement('customize-chrome-cards');
+    document.body.appendChild(customizeCards);
+
+    // Assert (no animation before initialize).
+    assertTrue(getCollapseElement().noAnimation!);
+
+    // Act (initialize).
+    callbackRouterRemote.setModulesSettings(
+        [{id: 'foo', name: 'Foo', enabled: true}], /*modulesManaged=*/ false,
+        /*modulesVisible=*/ true);
+    await callbackRouterRemote.$.flushForTesting();
+
+    // Assert (animation after initialize).
+    assertFalse(getCollapseElement().noAnimation!);
+
+    // Act (update).
+    callbackRouterRemote.setModulesSettings(
+        [{id: 'bar', name: 'Bar', enabled: true}], /*modulesManaged=*/ false,
+        /*modulesVisible=*/ true);
+    await callbackRouterRemote.$.flushForTesting();
+
+    // Assert (still animation after update).
+    assertFalse(getCollapseElement().noAnimation!);
+  });
 });

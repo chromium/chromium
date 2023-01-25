@@ -51,7 +51,7 @@
     checked="[[show_]]" on-change="onShowShortcutsToggleChange_"></cr-toggle>
 </div>
 <div id="options">
-  <iron-collapse opened="[[show_]]">
+  <iron-collapse opened="[[show_]]" no-animation="[[!initialized_]]">
     <hr>
     <cr-radio-group id="shortcutsRadioSelection" disabled="[[!show_]]"
       selected="[[shortcutsRadioSelection_]]"

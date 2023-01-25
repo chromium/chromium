@@ -124,4 +124,31 @@ suite('ShortcutsTest', () => {
     assertFalse(customLinksEnabled);
     assertTrue(shortcutsVisible);
   });
+
+  test('only animates after initialization', async () => {
+    customizeShortcutsElement =
+        document.createElement('customize-chrome-shortcuts');
+    document.body.appendChild(customizeShortcutsElement);
+    const ironCollapse =
+        customizeShortcutsElement.shadowRoot!.querySelector('iron-collapse')!;
+
+    // No animation before initialize.
+    assertTrue(ironCollapse.noAnimation!);
+
+    // Initialize.
+    callbackRouterRemote.setMostVisitedSettings(
+        /*customLinksEnabled=*/ true, /*shortcutsVisible=*/ true);
+    await callbackRouterRemote.$.flushForTesting();
+
+    // Animation after initialize.
+    assertFalse(ironCollapse.noAnimation!);
+
+    // Update.
+    callbackRouterRemote.setMostVisitedSettings(
+        /*customLinksEnabled=*/ false, /*shortcutsVisible=*/ true);
+    await callbackRouterRemote.$.flushForTesting();
+
+    // Still animation after update.
+    assertFalse(ironCollapse.noAnimation!);
+  });
 });

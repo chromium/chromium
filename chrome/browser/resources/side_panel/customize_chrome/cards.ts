@@ -51,6 +51,11 @@ export class CardsElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
+
+      initialized_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -65,6 +70,7 @@ export class CardsElement extends PolymerElement {
   private setModulesSettingsListenerId_: number|null = null;
   private discountCheckbox_: boolean;
   private discountCheckboxEligible_: boolean;
+  private initialized_: boolean;
 
   constructor() {
     super();
@@ -81,6 +87,7 @@ export class CardsElement extends PolymerElement {
                   this.show_ = visible;
                   this.managedByPolicy_ = managed;
                   this.modules_ = modulesSettings;
+                  this.initialized_ = true;
                 });
     this.pageHandler_.updateModulesSettings();
   }
