@@ -1759,14 +1759,11 @@ extern const char kUseNAT64ForIPv4LiteralDescription[];
 extern const char kUseSearchClickForRightClickName[];
 extern const char kUseSearchClickForRightClickDescription[];
 
-extern const char kVCBackgroundBlurName[];
-extern const char kVCBackgroundBlurDescription[];
+extern const char kVideoConferenceName[];
+extern const char kVideoConferenceDescription[];
 
-extern const char kVCBackgroundReplaceName[];
-extern const char kVCBackgroundReplaceDescription[];
-
-extern const char kVCPortraitRelightingName[];
-extern const char kVCPortraitRelightingDescription[];
+extern const char kVcBackgroundReplaceName[];
+extern const char kVcBackgroundReplaceDescription[];
 
 extern const char kV8VmFutureName[];
 extern const char kV8VmFutureDescription[];
@@ -3779,9 +3776,6 @@ extern const char kPromiseIconsName[];
 extern const char kPromiseIconsDescription[];
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-extern const char kVcControlsUiName[];
-extern const char kVcControlsUiDescription[];
 
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in

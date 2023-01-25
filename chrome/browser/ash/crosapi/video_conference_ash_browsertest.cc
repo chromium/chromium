@@ -131,7 +131,7 @@ class VideoConferenceAshBrowserTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      ash::features::kVcControlsUi};
+      ash::features::kVideoConference};
 };
 
 // Tests |VideoConferenceManagerAsh| api calls don't crash. Tests calls over

@@ -281,9 +281,7 @@ bool CameraHalDispatcherImpl::Start(
     if (!base::DeleteFile(disable_file_path)) {
       LOG(WARNING) << "Could not delete " << kForceDisableEffectsPath;
     }
-    base::File file(ash::features::IsVCBackgroundBlurEnabled() ||
-                            ash::features::IsVCBackgroundReplaceEnabled() ||
-                            ash::features::IsVCPortraitRelightingEnabled()
+    base::File file(ash::features::IsVideoConferenceEnabled()
                         ? enable_file_path
                         : disable_file_path,
                     base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);

@@ -57574,6 +57574,7 @@ from previous Chrome versions.
       label="OmniboxOnDeviceHeadProviderIncognito:disabled"/>
   <int value="-2039343702"
       label="KeepAliveRendererForKeepaliveRequests:enabled"/>
+  <int value="-2038973140" label="VideoConference:enabled"/>
   <int value="-2037390759"
       label="IncognitoBrandConsistencyForAndroid:disabled"/>
   <int value="-2037280696" label="EcheSWASendStartSignaling:disabled"/>
@@ -58456,6 +58457,7 @@ from previous Chrome versions.
   <int value="-1544248549" label="ArcUseAuthEndpoint:enabled"/>
   <int value="-1543316040"
       label="DisplayPersistenceToggleInPermissionPrompts:disabled"/>
+  <int value="-1543066715" label="VideoConference:disabled"/>
   <int value="-1541362086" label="NearbySharing:disabled"/>
   <int value="-1541187160" label="UsernameFirstFlow:disabled"/>
   <int value="-1540007054" label="ArcHostVpn:disabled"/>

@@ -587,7 +587,7 @@ void InjectBrowserInitParams(
 
   params->extension_keep_list = extensions::BuildExtensionKeeplistInitParam();
 
-  params->vc_controls_ui_enabled = ash::features::IsVcControlsUiEnabled();
+  params->vc_controls_ui_enabled = ash::features::IsVideoConferenceEnabled();
 
   params->standalone_browser_app_service_blocklist =
       extensions::BuildStandaloneBrowserAppServiceBlockListInitParam();

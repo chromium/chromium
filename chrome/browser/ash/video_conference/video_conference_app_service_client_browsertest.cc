@@ -232,7 +232,7 @@ class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
   VideoConferenceAppServiceClient* client_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_{
-      ash::features::kVcControlsUi};
+      ash::features::kVideoConference};
 };
 
 IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, GetAppName) {

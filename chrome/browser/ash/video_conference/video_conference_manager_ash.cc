@@ -133,7 +133,7 @@ void VideoConferenceManagerAsh::NotifyDeviceUsedWhileDisabled(
     NotifyDeviceUsedWhileDisabledCallback callback) {
   // TODO(crbug.com/1368284): Remove this conditional check once it becomes
   // possible to enable ash features in lacros browsertests.
-  if (ash::features::IsVcControlsUiEnabled()) {
+  if (ash::features::IsVideoConferenceEnabled()) {
     GetTrayController()->HandleDeviceUsedWhileDisabled(std::move(device),
                                                        app_name);
   }
@@ -166,7 +166,7 @@ VideoConferenceMediaState VideoConferenceManagerAsh::GetAggregatedState() {
 void VideoConferenceManagerAsh::SendUpdatedState() {
   // TODO(crbug.com/1368284): Remove this conditional check once it becomes
   // possible to enable ash features in lacros browsertests.
-  if (ash::features::IsVcControlsUiEnabled()) {
+  if (ash::features::IsVideoConferenceEnabled()) {
     GetTrayController()->UpdateWithMediaState(GetAggregatedState());
   }
 }

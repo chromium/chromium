@@ -198,7 +198,7 @@ void HandleToggleTabletMode() {
 }
 
 void HandleToggleVideoConferenceCameraTrayIcon() {
-  if (!ash::features::IsVcControlsUiEnabled()) {
+  if (!ash::features::IsVideoConferenceEnabled()) {
     return;
   }
 

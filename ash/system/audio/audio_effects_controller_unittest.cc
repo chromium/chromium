@@ -29,7 +29,7 @@ class AudioEffectsControllerTest : public NoSessionAshTestBase {
 
   // NoSessionAshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kVcControlsUi}, {});
+    scoped_feature_list_.InitWithFeatures({features::kVideoConference}, {});
 
     // Here we have to create the global instance of `CrasAudioHandler` before
     // `FakeVideoConferenceTrayController`, so we do it here and not in

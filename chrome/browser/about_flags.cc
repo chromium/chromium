@@ -2762,43 +2762,6 @@ const FeatureEntry::FeatureVariation kLargeFaviconFromGoogleVariations[] = {
     {"(128dip)", kLargeFaviconFromGoogle128,
      std::size(kLargeFaviconFromGoogle128), nullptr}};
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-const FeatureEntry::FeatureParam kVCBackgroundBlurLowest[] = {
-    {"blur_level", "lowest"},
-};
-
-const FeatureEntry::FeatureParam kVCBackgroundBlurLight[] = {
-    {"blur_level", "light"},
-};
-
-const FeatureEntry::FeatureParam kVCBackgroundBlurMedium[] = {
-    {"blur_level", "medium"},
-};
-
-const FeatureEntry::FeatureParam kVCBackgroundBlurHeavy[] = {
-    {"blur_level", "heavy"},
-};
-
-const FeatureEntry::FeatureParam kVCBackgroundBlurMaximum[] = {
-    {"blur_level", "maximum"},
-};
-
-const FeatureEntry::FeatureVariation kVCBackgroundBlurVariations[] = {
-    {"Lowest Blur", kVCBackgroundBlurLowest, std::size(kVCBackgroundBlurLowest),
-     nullptr},
-    {"Light Blur", kVCBackgroundBlurLight, std::size(kVCBackgroundBlurLight),
-     nullptr},
-    {"Medium Blur", kVCBackgroundBlurMedium, std::size(kVCBackgroundBlurMedium),
-     nullptr},
-    {"Heavy Blur", kVCBackgroundBlurHeavy, std::size(kVCBackgroundBlurHeavy),
-     nullptr},
-    {"Maximum Blur", kVCBackgroundBlurMaximum,
-     std::size(kVCBackgroundBlurMaximum), nullptr},
-};
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kGridTabSwitcherForTabletsPolished[] = {
     {"enable_launch_polish", "true"}};
@@ -8429,19 +8392,13 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"vc-background-blur", flag_descriptions::kVCBackgroundBlurName,
-     flag_descriptions::kVCBackgroundBlurDescription, kOsCrOS,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kVCBackgroundBlur,
-                                    kVCBackgroundBlurVariations,
-                                    "VCBackgroundBlur")},
+    {"video-conference", flag_descriptions::kVideoConferenceName,
+     flag_descriptions::kVideoConferenceDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kVideoConference)},
 
-    {"vc-background-replace", flag_descriptions::kVCBackgroundReplaceName,
-     flag_descriptions::kVCBackgroundReplaceDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kVCBackgroundReplace)},
-
-    {"vc-portrait-relighting", flag_descriptions::kVCPortraitRelightingName,
-     flag_descriptions::kVCPortraitRelightingDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kVCPortraitRelighting)},
+    {"vc-background-replace", flag_descriptions::kVcBackgroundReplaceName,
+     flag_descriptions::kVcBackgroundReplaceDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kVcBackgroundReplace)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -9151,9 +9108,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHoldingSpaceSuggestionsName,
      flag_descriptions::kHoldingSpaceSuggestionsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kHoldingSpaceSuggestions)},
-    {"vc-controls-ui", flag_descriptions::kVcControlsUiName,
-     flag_descriptions::kVcControlsUiDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kVcControlsUi)},
     {"enable-16-desks", flag_descriptions::kDesks16Name,
      flag_descriptions::kDesks16Description, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kEnable16Desks)},

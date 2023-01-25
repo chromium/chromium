@@ -7029,30 +7029,20 @@
     "expiry_milestone": 110
   },
   {
-    "name": "vc-background-blur",
-    "owners": [ "shafron", "skyostil", "charleszhao", "jmpollock" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "vc-background-replace",
     "owners": [ "shafron", "skyostil", "charleszhao", "jmpollock" ],
-    "expiry_milestone": 115
-  },
-  {
-    "name": "vc-controls-ui",
-    "owners": [ "rtinkoff", "cros-status-area-eng@google.com" ],
-    "expiry_milestone": 117
-  },
-  {
-    "name": "vc-portrait-relighting",
-    "owners": [ "shafron", "skyostil", "charleszhao", "jmpollock" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "verbose-logging-in-nacl",
     "owners": [ "fabiansommer", "native-client-dev@googlegroups.com" ],
     // This flag is useful for debugging NaCl-related issues.
     "expiry_milestone": 128
+  },
+  {
+    "name": "video-conference",
+    "owners": [ "shafron", "newcomer", "charleszhao", "jmpollock" ],
+    "expiry_milestone": 120
   },
   {
     "name": "video-tutorials",

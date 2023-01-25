@@ -1308,7 +1308,7 @@ void Shell::Init(
     camera_effects_controller_ = std::make_unique<CameraEffectsController>();
   }
 
-  if (features::IsVcControlsUiEnabled()) {
+  if (features::IsVideoConferenceEnabled()) {
     audio_effects_controller_ = std::make_unique<AudioEffectsController>();
   }
 

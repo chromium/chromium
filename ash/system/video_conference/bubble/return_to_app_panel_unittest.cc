@@ -70,7 +70,7 @@ class ReturnToAppPanelTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kVcControlsUi);
+    scoped_feature_list_.InitAndEnableFeature(features::kVideoConference);
 
     // Here we have to create the global instance of `CrasAudioHandler` before
     // `FakeVideoConferenceTrayController`, so we do it here and not do it in

@@ -7,8 +7,10 @@
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
+#include "ash/system/camera/camera_effects_controller.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -30,7 +32,7 @@ class BubbleViewTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kVcControlsUi);
+    scoped_feature_list_.InitAndEnableFeature(features::kVideoConference);
 
     // Here we have to create the global instance of `CrasAudioHandler` before
     // `FakeVideoConferenceTrayController`, so we do it here and not do it in
@@ -55,6 +57,14 @@ class BubbleViewTest : public AshTestBase {
 
     // Make the video conference tray visible for testing.
     video_conference_tray()->SetVisiblePreferred(true);
+
+    // For historical reason, all BubbleViewTest tests are written with the
+    // assumption that CameraEffectsController is not registered to the
+    // EffectsManager by default. It is not the case anymore since we removed
+    // the old Flags. The fix for that is easy: we just need to manually
+    // unregister CameraEffectsController in these tests.
+    controller()->effects_manager().UnregisterDelegate(
+        Shell::Get()->camera_effects_controller());
   }
 
   void TearDown() override {

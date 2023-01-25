@@ -124,9 +124,10 @@ void StatusAreaWidget::Initialize() {
   virtual_keyboard_tray_ = AddTrayButton(std::make_unique<VirtualKeyboardTray>(
       shelf_, TrayBackgroundViewCatalogName::kVirtualKeyboardStatusArea));
 
-  if (features::IsVcControlsUiEnabled())
+  if (features::IsVideoConferenceEnabled()) {
     video_conference_tray_ =
         AddTrayButton(std::make_unique<VideoConferenceTray>(shelf_));
+  }
 
   stop_recording_button_tray_ =
       AddTrayButton(std::make_unique<StopRecordingButtonTray>(shelf_));

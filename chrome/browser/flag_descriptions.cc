@@ -3096,19 +3096,14 @@ const char kUseSearchClickForRightClickDescription[] =
     "webpages and apps to consume alt+click. When disabled the legacy "
     "behavior of remapping alt+click to right click will remain unchanged.";
 
-const char kVCBackgroundBlurName[] = "Enable vc background blur";
-const char kVCBackgroundBlurDescription[] =
-    "Enables background blur feature for video conferencing on chromebooks.";
+const char kVideoConferenceName[] = "Enable video conference features";
+const char kVideoConferenceDescription[] =
+    "Enables all features for ChromeOS built-in video conferencing UI.";
 
-const char kVCBackgroundReplaceName[] = "Enable vc background replacement";
-const char kVCBackgroundReplaceDescription[] =
+const char kVcBackgroundReplaceName[] = "Enable vc background replacement";
+const char kVcBackgroundReplaceDescription[] =
     "Enables background replacement feature for video conferencing on "
     "chromebooks. THIS WILL OVERRIDE BACKGROUND BLUR.";
-
-const char kVCPortraitRelightingName[] = "Enable vc portrait relighting";
-const char kVCPortraitRelightingDescription[] =
-    "Enables portrait relighting feature for video conferencing on "
-    "chromebooks. THIS WILL OVERRIDE BACKGROUND BLUR & REPLACE.";
 
 const char kV8VmFutureName[] = "Future V8 VM features";
 const char kV8VmFutureDescription[] =
@@ -6507,10 +6502,6 @@ const char kPromiseIconsName[] = "Promise Icons";
 const char kPromiseIconsDescription[] =
     "Enables promise icons in the Launcher and Shelf (if the app is pinned) "
     "for app installations.";
-
-const char kVcControlsUiName[] = "Video conferencing controls UI";
-const char kVcControlsUiDescription[] =
-    "Enables the built-in video conference controls UI";
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

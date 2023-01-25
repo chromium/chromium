@@ -1007,7 +1007,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
       crosapi::LacrosDataBackwardMigrationModePolicyObserver>();
 
   // Only creates VideoConferenceAppServiceClient if VcControlsUi is enabled.
-  if (features::IsVcControlsUiEnabled()) {
+  if (features::IsVideoConferenceEnabled()) {
     vc_app_service_client_ =
         std::make_unique<VideoConferenceAppServiceClient>();
   }
@@ -1406,7 +1406,7 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
 
   multi_capture_notification_ = std::make_unique<MultiCaptureNotification>();
 
-  if (features::IsVcControlsUiEnabled()) {
+  if (features::IsVideoConferenceEnabled()) {
     video_conference_manager_client_ =
         std::make_unique<video_conference::VideoConferenceManagerClientImpl>();
   }

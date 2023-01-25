@@ -158,7 +158,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   // constructed. The video conferencing views will observe and have their own
   // reference to this controller, and will assume it exists for as long as they
   // themselves exist.
-  if (ash::features::IsVcControlsUiEnabled()) {
+  if (ash::features::IsVideoConferenceEnabled()) {
     // `VideoConferenceTrayController` relies on audio and camera services to
     // function properly, so we will use the fake version when system bus is not
     // available so that this works on linux-chromeos and unit tests.

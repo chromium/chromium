@@ -1771,19 +1771,14 @@ BASE_FEATURE(kPromiseIcons, "PromiseIcons", base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls whether the quick dim prototype is enabled.
 BASE_FEATURE(kQuickDim, "QuickDim", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether the vc background blur is enabled.
-BASE_FEATURE(kVCBackgroundBlur,
-             "VCBackgroundBlur",
+// Controls whether the video conference feature is enabled.
+BASE_FEATURE(kVideoConference,
+             "VideoConference",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the vc background replace is enabled.
-BASE_FEATURE(kVCBackgroundReplace,
+BASE_FEATURE(kVcBackgroundReplace,
              "VCBackgroundReplace",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Controls whether the vc portrait relighting is enabled.
-BASE_FEATURE(kVCPortraitRelighting,
-             "VCPortraitRelighting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables fingerprint quick unlock.
@@ -2105,9 +2100,6 @@ BASE_FEATURE(kUseWallpaperStagingUrl,
 BASE_FEATURE(kUserActivityPrediction,
              "UserActivityPrediction",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable or disable the ChromeOS video conferencing controls UI.
-BASE_FEATURE(kVcControlsUi, "VcControlsUi", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable or disable the fake effects for ChromeOS video conferencing controls
 // UI. Only meaningful in the emulator.
@@ -3219,20 +3211,13 @@ bool IsUseStorkSmdsServerAddressEnabled() {
   return base::FeatureList::IsEnabled(kUseStorkSmdsServerAddress);
 }
 
-bool IsVCBackgroundBlurEnabled() {
-  return base::FeatureList::IsEnabled(kVCBackgroundBlur);
+bool IsVideoConferenceEnabled() {
+  return base::FeatureList::IsEnabled(kVideoConference);
 }
 
-bool IsVCBackgroundReplaceEnabled() {
-  return base::FeatureList::IsEnabled(kVCBackgroundReplace);
-}
-
-bool IsVCPortraitRelightingEnabled() {
-  return base::FeatureList::IsEnabled(kVCPortraitRelighting);
-}
-
-bool IsVcControlsUiEnabled() {
-  return base::FeatureList::IsEnabled(kVcControlsUi);
+bool IsVcBackgroundReplaceEnabled() {
+  return base::FeatureList::IsEnabled(kVcBackgroundReplace) &&
+         IsVideoConferenceEnabled();
 }
 
 bool IsVcControlsUiFakeEffectsEnabled() {
