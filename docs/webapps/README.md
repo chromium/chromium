@@ -163,6 +163,7 @@ Anything that involves talking to the operating system. Usually has to do with a
 - [/docs/webapps/os_integration.md][50]
 - [/docs/webapps/manifest_update_process.md][51]
 - [/docs/webapps/isolated_web_apps.md][52]
+- [/docs/webapps/webui_web_apps.md][54]
 
 ## How To Use
 
@@ -258,6 +259,13 @@ Sometimes classes use a dependency that either doesn't work or isn't fake-able i
     - e.g. if it's a `KeyedService`, and the authors have a fake version you can use, then use that. See how it is used elsewhere.
 1. Create a new interface for this new external dependency, put it on the `WebAppProvider`, and create a fake for it so that you can test with it faked.
 1. If all else fails, use a browser test.
+
+### Common Testing Utilities
+
+* UrlLoadObserver - Waits for given url to load anywhere.
+* AllBrowserTabAddedWaiter - Waits for a tab to be added anywhere (works for both app browser and regular browser).
+* BrowserChangeObserver - Waits for a browser to add or remove.
+* content::TestNavigationObserver - Waits for a navigation anywhere or in given WebContents. See StartWatchingNewWebContents to watch all web contents.
 
 ## Relevant Classes
 
@@ -360,3 +368,4 @@ This information is used when launching a web app (to determine what profile or 
 [51]: manifest_update_process.md
 [52]: isolated_web_apps.md
 [53]: /chrome/browser/web_applications/url_handler_prefs.h
+[54]: webui_web_apps.md
