@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/components/arc/arc_features.h"
+#include "base/feature_list.h"
 
 namespace arc {
 
@@ -153,7 +154,7 @@ BASE_FEATURE(kFilePickerExperimentFeature,
 // for a currently-active ARCVM game.
 BASE_FEATURE(kGameModeFeature,
              "ArcGameModeFeature",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the guest zram is enabled. This is only for ARCVM.
 BASE_FEATURE(kGuestZram, "ArcGuestZram", base::FEATURE_DISABLED_BY_DEFAULT);
