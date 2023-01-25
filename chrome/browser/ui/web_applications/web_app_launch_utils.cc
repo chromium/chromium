@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
@@ -16,8 +17,6 @@
 #include "base/metrics/histogram_macros_internal.h"
 #include "base/one_shot_event.h"
 #include "base/time/time.h"
-#include "base/trace_event/typed_macros.h"
-#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -77,7 +76,6 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace web_app {
@@ -468,41 +466,21 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
   Browser* browser = nav_params.browser;
   const absl::optional<ash::SystemWebAppType> capturing_system_app_type =
       ash::GetCapturingSystemAppForURL(browser->profile(), nav_params.url);
-  // TODO(crbug.com/1201820): This block creates conditions where Navigate()
-  // returns early and causes a crash. Fail gracefully instead. Further
-  // debugging state will be implemented via Chrometto UMA traces.
   if (capturing_system_app_type &&
       (!browser ||
        !IsBrowserForSystemWebApp(browser, capturing_system_app_type.value()))) {
-    auto* user_manager = user_manager::UserManager::Get();
-    bool is_kiosk = user_manager && user_manager->IsLoggedInAsAnyKioskApp();
-    AppBrowserController* app_controller = browser->app_controller();
-    WebAppProvider* web_app_provider =
-        WebAppProvider::GetForLocalAppsUnchecked(browser->profile());
-    DCHECK(web_app_provider);
-    ash::SystemWebAppManager* swa_manager =
-        ash::SystemWebAppManager::Get(browser->profile());
-    DCHECK(swa_manager);
-
-    TRACE_EVENT_INSTANT(
-        "system_apps", "BadNavigate", [&](perfetto::EventContext ctx) {
-          auto* bad_navigate =
-              ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
-                  ->set_chrome_web_app_bad_navigate();
-          bad_navigate->set_is_kiosk(is_kiosk);
-          bad_navigate->set_has_hosted_app_controller(!!app_controller);
-          bad_navigate->set_app_name(browser->app_name());
-          if (app_controller && app_controller->system_app()) {
-            bad_navigate->set_system_app_type(
-                static_cast<uint32_t>(app_controller->system_app()->GetType()));
-          }
-          bad_navigate->set_web_app_provider_registry_ready(
-              web_app_provider->on_registry_ready().is_signaled());
-          bad_navigate->set_system_web_app_manager_synchronized(
-              swa_manager->on_apps_synchronized().is_signaled());
-        });
-    UMA_HISTOGRAM_ENUMERATION("WebApp.SystemApps.BadNavigate.Type",
-                              capturing_system_app_type.value());
+    // Web app launch process should receive the correct `NavigateParams`
+    // argument from system web app launches, so that Navigate() call below
+    // succeeds (i.e. don't trigger system web app link capture).
+    //
+    // This block safe guards against misuse of APIs (that can cause
+    // GetCapturingSystemAppForURL returning the wrong value).
+    //
+    // TODO(http://crbug.com/1408946): Remove this block when we find a better
+    // way to prevent API misuse (e.g. by ensuring test coverage for new
+    // features that could trigger this code) or this code path is no longer
+    // possible.
+    base::debug::DumpWithoutCrashing();
     return nullptr;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
