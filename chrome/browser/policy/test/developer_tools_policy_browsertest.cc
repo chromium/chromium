@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -107,6 +108,40 @@ IN_PROC_BROWSER_TEST_F(PolicyTest,
                base::Value(2 /* DeveloperToolsDisallowed */), nullptr);
   content::WebContentsDestroyedWatcher close_observer(
       DevToolsWindowTesting::Get(devtools_window)->main_web_contents());
+  UpdateProviderPolicy(policies);
+  // wait for devtools close
+  close_observer.Wait();
+  // The existing devtools window should have closed.
+  EXPECT_FALSE(DevToolsWindow::GetInstanceForInspectedWebContents(contents));
+  // And it's not possible to open it again.
+  EXPECT_FALSE(chrome::ExecuteCommand(browser(), IDC_DEV_TOOLS));
+  EXPECT_FALSE(DevToolsWindow::GetInstanceForInspectedWebContents(contents));
+}
+
+// Test for https://b/263040629
+IN_PROC_BROWSER_TEST_F(PolicyTest, AvailabilityWins) {
+  // DeveloperToolsDisabled is true, but DeveloperToolsAvailability wins.
+  PolicyMap policies;
+  policies.Set(key::kDeveloperToolsAvailability, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+               base::Value(1 /* DeveloperToolsAllowed */), nullptr);
+  policies.Set(key::kDeveloperToolsDisabled, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
+               nullptr);
+  UpdateProviderPolicy(policies);
+
+  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_DEV_TOOLS));
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  DevToolsWindow* devtools_window =
+      DevToolsWindow::GetInstanceForInspectedWebContents(contents);
+  EXPECT_TRUE(devtools_window);
+
+  // Clearing DeveloperToolsAvailability leaves behind
+  // DeveloperToolsDisabled, so the DevTools window gets closed.
+  content::WebContentsDestroyedWatcher close_observer(
+      DevToolsWindowTesting::Get(devtools_window)->main_web_contents());
+  policies.Erase(key::kDeveloperToolsAvailability);
   UpdateProviderPolicy(policies);
   // wait for devtools close
   close_observer.Wait();
