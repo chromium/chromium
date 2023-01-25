@@ -88,4 +88,30 @@ std::string NumberToDecimalString(int i) {
   return out.str();
 }
 
+std::vector<std::string_view> SplitString(std::string_view str,
+                                          char split_char) {
+  std::vector<std::string_view> out;
+
+  if (str.empty()) {
+    return out;
+  }
+
+  while (true) {
+    // Find end of current token
+    size_t i = str.find(split_char);
+
+    // Add current token
+    out.push_back(str.substr(0, i));
+
+    if (i == str.npos) {
+      // That was the last token
+      break;
+    }
+    // Continue to next
+    str = str.substr(i + 1);
+  }
+
+  return out;
+}
+
 }  // namespace net::string_util

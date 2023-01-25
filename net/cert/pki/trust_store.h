@@ -9,6 +9,7 @@
 #include "net/base/net_export.h"
 #include "net/cert/pki/cert_issuer_source.h"
 #include "net/cert/pki/parsed_certificate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -97,6 +98,9 @@ struct NET_EXPORT CertificateTrust {
   bool HasUnspecifiedTrust() const;
 
   std::string ToDebugString() const;
+
+  static absl::optional<CertificateTrust> FromDebugString(
+      const std::string& trust_string);
 
   // The overall type of trust.
   CertificateTrustType type = CertificateTrustType::UNSPECIFIED;

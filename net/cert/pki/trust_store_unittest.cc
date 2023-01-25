@@ -67,6 +67,11 @@ TEST(CertificateTrustTest, ToDebugStringUniqueness) {
   std::set<std::string> strings;
   for (const auto& trust : trust_settings) {
     strings.insert(trust.ToDebugString());
+
+    absl::optional<CertificateTrust> round_tripped_trust =
+        CertificateTrust::FromDebugString(trust.ToDebugString());
+    ASSERT_TRUE(round_tripped_trust) << " for " << trust.ToDebugString();
+    EXPECT_EQ(trust.ToDebugString(), round_tripped_trust->ToDebugString());
   }
   EXPECT_EQ(strings.size(), trust_settings.size());
 }

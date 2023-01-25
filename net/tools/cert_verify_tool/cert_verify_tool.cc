@@ -325,6 +325,14 @@ const char kUsage[] =
     "      as a root. This is useful when providing a <target/chain>\n"
     "      parameter whose final certificate is a trust anchor.\n"
     "\n"
+    " --root-trust=<trust string>\n"
+    "      Roots trusted by --roots and --trust-last-cert will be trusted\n"
+    "      with the specified trust [2].\n"
+    "\n"
+    " --trust-leaf-cert=[trust string]\n"
+    "      The leaf cert will be considered trusted with the specified\n"
+    "      trust [2]. If [trust string] is omitted, defaults to TRUSTED_LEAF.\n"
+    "\n"
     " --time=<time>\n"
     "      Use <time> instead of the current system time. <time> is\n"
     "      interpreted in local time if a timezone is not specified.\n"
@@ -347,7 +355,16 @@ const char kUsage[] =
     "    either be:\n"
     "    * A binary file containing a single DER-encoded RFC 5280 Certificate\n"
     "    * A PEM file containing one or more CERTIFICATE blocks (DER-encoded\n"
-    "      RFC 5280 Certificate)\n";
+    "      RFC 5280 Certificate)\n"
+    "\n"
+    "[2] A \"trust string\" consists of a trust type and zero or more options\n"
+    "    separated by '+' characters. Note that these trust settings are only\n"
+    "    honored by the builtin & pathbuilder impls.\n"
+    "    Trust types: UNSPECIFIED, DISTRUSTED, TRUSTED_ANCHOR,\n"
+    "                 TRUSTED_ANCHOR_OR_LEAF, TRUSTED_LEAF\n"
+    "    Options: enforce_anchor_expiry, enforce_anchor_constraints,\n"
+    "             require_anchor_basic_constraints, require_leaf_selfsigned\n"
+    "    Ex: TRUSTED_ANCHOR+enforce_anchor_expiry+enforce_anchor_constraints\n";
 
 void PrintUsage(const char* argv0) {
   std::cerr << "Usage: " << argv0 << kUsage;
@@ -453,13 +470,38 @@ int main(int argc, char** argv) {
     intermediate_der_certs.pop_back();
   }
 
+  if (command_line.HasSwitch("trust-leaf-cert")) {
+    net::CertificateTrust trust = net::CertificateTrust::ForTrustedLeaf();
+    std::string trust_str = command_line.GetSwitchValueASCII("trust-leaf-cert");
+    if (!trust_str.empty()) {
+      absl::optional<net::CertificateTrust> parsed_trust =
+          net::CertificateTrust::FromDebugString(trust_str);
+      if (!parsed_trust) {
+        std::cerr << "ERROR: invalid leaf trust string " << trust_str << "\n";
+        return 1;
+      }
+      trust = *parsed_trust;
+    }
+    der_certs_with_trust_settings.push_back({target_der_cert, trust});
+  }
+
+  // TODO(https://crbug.com/1408473): Maybe default to the trust setting that
+  // would be used for locally added anchors on the current platform?
+  net::CertificateTrust root_trust = net::CertificateTrust::ForTrustAnchor();
+
+  if (command_line.HasSwitch("root-trust")) {
+    std::string trust_str = command_line.GetSwitchValueASCII("root-trust");
+    absl::optional<net::CertificateTrust> parsed_trust =
+        net::CertificateTrust::FromDebugString(trust_str);
+    if (!parsed_trust) {
+      std::cerr << "ERROR: invalid root trust string " << trust_str << "\n";
+      return 1;
+    }
+    root_trust = *parsed_trust;
+  }
+
   for (const auto& cert_input : root_der_certs) {
-    // TODO(https://crbug.com/1408473): Maybe default to the trust setting that
-    // would be used for locally added anchors on the current platform?
-    // TODO(https://crbug.com/1408473): Add flag to configure the trust setting
-    // used here.
-    der_certs_with_trust_settings.push_back(
-        {cert_input, net::CertificateTrust::ForTrustAnchor()});
+    der_certs_with_trust_settings.push_back({cert_input, root_trust});
   }
 
   PrintInputChain(target_der_cert, intermediate_der_certs);

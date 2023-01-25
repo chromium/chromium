@@ -81,24 +81,12 @@ std::string_view StripString(std::string_view str) {
 }
 
 std::vector<std::string_view> SplitString(std::string_view str) {
+  std::vector<std::string_view> split = string_util::SplitString(str, ',');
+
   std::vector<std::string_view> out;
-
-  while (!str.empty()) {
-    // Find end of current token
-    size_t i = str.find(',');
-
-    // Add current token
-    std::string_view token = str.substr(0, i);
-    out.push_back(StripString(token));
-
-    if (i == str.npos) {
-      // That was the last token
-      break;
-    }
-    // Continue to next
-    str = str.substr(i + 1);
+  for (const auto& s : split) {
+    out.push_back(StripString(s));
   }
-
   return out;
 }
 
@@ -316,6 +304,8 @@ bool ReadVerifyCertChainTestFromFile(const std::string& file_path_ascii,
         return false;
       }
     } else if (GetValue("last_cert_trust: ", line_piece, &value, &has_trust)) {
+      // TODO(mattm): convert test files to use
+      // CertificateTrust::FromDebugString strings.
       if (value == "TRUSTED_ANCHOR") {
         test->last_cert_trust = CertificateTrust::ForTrustAnchor();
       } else if (value == "TRUSTED_ANCHOR_WITH_EXPIRATION") {

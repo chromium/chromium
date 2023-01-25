@@ -4,7 +4,25 @@
 
 #include "net/cert/pki/trust_store.h"
 
+#include "net/cert/pki/string_util.h"
+
 namespace net {
+
+namespace {
+
+constexpr char kUnspecifiedStr[] = "UNSPECIFIED";
+constexpr char kDistrustedStr[] = "DISTRUSTED";
+constexpr char kTrustedAnchorStr[] = "TRUSTED_ANCHOR";
+constexpr char kTrustedAnchorOrLeafStr[] = "TRUSTED_ANCHOR_OR_LEAF";
+constexpr char kTrustedLeafStr[] = "TRUSTED_LEAF";
+
+constexpr char kEnforceAnchorExpiry[] = "enforce_anchor_expiry";
+constexpr char kEnforceAnchorConstraints[] = "enforce_anchor_constraints";
+constexpr char kRequireAnchorBasicConstraints[] =
+    "require_anchor_basic_constraints";
+constexpr char kRequireLeafSelfsigned[] = "require_leaf_selfsigned";
+
+}  // namespace
 
 bool CertificateTrust::IsTrustAnchor() const {
   switch (type) {
@@ -70,34 +88,81 @@ std::string CertificateTrust::ToDebugString() const {
   std::string result;
   switch (type) {
     case CertificateTrustType::UNSPECIFIED:
-      result = "UNSPECIFIED";
+      result = kUnspecifiedStr;
       break;
     case CertificateTrustType::DISTRUSTED:
-      result = "DISTRUSTED";
+      result = kDistrustedStr;
       break;
     case CertificateTrustType::TRUSTED_ANCHOR:
-      result = "TRUSTED_ANCHOR";
+      result = kTrustedAnchorStr;
       break;
     case CertificateTrustType::TRUSTED_ANCHOR_OR_LEAF:
-      result = "TRUSTED_ANCHOR_OR_LEAF";
+      result = kTrustedAnchorOrLeafStr;
       break;
     case CertificateTrustType::TRUSTED_LEAF:
-      result = "TRUSTED_LEAF";
+      result = kTrustedLeafStr;
       break;
   }
   if (enforce_anchor_expiry) {
-    result += "+enforce_anchor_expiry";
+    result += '+';
+    result += kEnforceAnchorExpiry;
   }
   if (enforce_anchor_constraints) {
-    result += "+enforce_anchor_constraints";
+    result += '+';
+    result += kEnforceAnchorConstraints;
   }
   if (require_anchor_basic_constraints) {
-    result += "+require_anchor_basic_constraints";
+    result += '+';
+    result += kRequireAnchorBasicConstraints;
   }
   if (require_leaf_selfsigned) {
-    result += "+require_leaf_selfsigned";
+    result += '+';
+    result += kRequireLeafSelfsigned;
   }
   return result;
+}
+
+// static
+absl::optional<CertificateTrust> CertificateTrust::FromDebugString(
+    const std::string& trust_string) {
+  std::vector<std::string_view> split =
+      string_util::SplitString(trust_string, '+');
+
+  if (split.empty()) {
+    return absl::nullopt;
+  }
+
+  CertificateTrust trust;
+
+  if (string_util::IsEqualNoCase(split[0], kUnspecifiedStr)) {
+    trust = CertificateTrust::ForUnspecified();
+  } else if (string_util::IsEqualNoCase(split[0], kDistrustedStr)) {
+    trust = CertificateTrust::ForDistrusted();
+  } else if (string_util::IsEqualNoCase(split[0], kTrustedAnchorStr)) {
+    trust = CertificateTrust::ForTrustAnchor();
+  } else if (string_util::IsEqualNoCase(split[0], kTrustedAnchorOrLeafStr)) {
+    trust = CertificateTrust::ForTrustAnchorOrLeaf();
+  } else if (string_util::IsEqualNoCase(split[0], kTrustedLeafStr)) {
+    trust = CertificateTrust::ForTrustedLeaf();
+  } else {
+    return absl::nullopt;
+  }
+
+  for (auto i = ++split.begin(); i != split.end(); ++i) {
+    if (string_util::IsEqualNoCase(*i, kEnforceAnchorExpiry)) {
+      trust = trust.WithEnforceAnchorExpiry();
+    } else if (string_util::IsEqualNoCase(*i, kEnforceAnchorConstraints)) {
+      trust = trust.WithEnforceAnchorConstraints();
+    } else if (string_util::IsEqualNoCase(*i, kRequireAnchorBasicConstraints)) {
+      trust = trust.WithRequireAnchorBasicConstraints();
+    } else if (string_util::IsEqualNoCase(*i, kRequireLeafSelfsigned)) {
+      trust = trust.WithRequireLeafSelfSigned();
+    } else {
+      return absl::nullopt;
+    }
+  }
+
+  return trust;
 }
 
 TrustStore::TrustStore() = default;

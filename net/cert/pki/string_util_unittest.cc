@@ -117,6 +117,39 @@ TEST(StringUtilTest, NumberToDecimalString) {
   EXPECT_EQ(number, "255");
 }
 
+TEST(StringUtilTest, SplitString) {
+  EXPECT_EQ(net::string_util::SplitString("", ','),
+            std::vector<std::string_view>());
+
+  EXPECT_EQ(net::string_util::SplitString("a", ','),
+            std::vector<std::string_view>({"a"}));
+  EXPECT_EQ(net::string_util::SplitString("abc", ','),
+            std::vector<std::string_view>({"abc"}));
+
+  EXPECT_EQ(net::string_util::SplitString(",", ','),
+            std::vector<std::string_view>({"", ""}));
+
+  EXPECT_EQ(net::string_util::SplitString("a,", ','),
+            std::vector<std::string_view>({"a", ""}));
+  EXPECT_EQ(net::string_util::SplitString("abc,", ','),
+            std::vector<std::string_view>({"abc", ""}));
+
+  EXPECT_EQ(net::string_util::SplitString(",a", ','),
+            std::vector<std::string_view>({"", "a"}));
+  EXPECT_EQ(net::string_util::SplitString(",abc", ','),
+            std::vector<std::string_view>({"", "abc"}));
+
+  EXPECT_EQ(net::string_util::SplitString("a,b", ','),
+            std::vector<std::string_view>({"a", "b"}));
+  EXPECT_EQ(net::string_util::SplitString("abc,def", ','),
+            std::vector<std::string_view>({"abc", "def"}));
+
+  EXPECT_EQ(net::string_util::SplitString("a,,b", ','),
+            std::vector<std::string_view>({"a", "", "b"}));
+  EXPECT_EQ(net::string_util::SplitString("abc,,def", ','),
+            std::vector<std::string_view>({"abc", "", "def"}));
+}
+
 }  // namespace
 
 }  // namespace net
