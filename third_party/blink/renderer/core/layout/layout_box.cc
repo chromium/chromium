@@ -7674,6 +7674,54 @@ LayoutUnit LayoutBox::OffsetTop(const Element* parent) const {
   return OffsetPoint(parent).top;
 }
 
+LayoutSize LayoutBox::Size() const {
+  NOT_DESTROYED();
+  if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
+    return frame_size_;
+  }
+  const auto& results = GetLayoutResults();
+  if (results.size() == 0) {
+    return LayoutSize();
+  }
+  const auto& first_fragment = results[0]->PhysicalFragment();
+  if (results.size() == 1u) {
+    return first_fragment.Size().ToLayoutSize();
+  }
+  WritingModeConverter converter(first_fragment.Style().GetWritingDirection());
+  const NGBlockBreakToken* previous_break_token = nullptr;
+  LogicalSize size;
+  for (const auto& result : results) {
+    const auto& physical_fragment =
+        To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+    LogicalSize fragment_logical_size =
+        converter.ToLogical(physical_fragment.Size());
+    if (physical_fragment.IsFirstForNode()) {
+      // Inline-size will only be set at the first fragment. Subsequent
+      // fragments may have different inline-size (either because fragmentainer
+      // inline-size is variable, or e.g. because available inline-size is
+      // affected by floats). The legacy engine doesn't handle variable
+      // inline-size (since it doesn't really understand fragmentation).  This
+      // means that things like offsetWidth won't work correctly (since that's
+      // still being handled by the legacy engine), but at least layout,
+      // painting and hit-testing will be correct.
+      size = fragment_logical_size;
+    } else {
+      DCHECK(previous_break_token);
+      size.block_size = fragment_logical_size.block_size +
+                        previous_break_token->ConsumedBlockSizeForLegacy();
+    }
+    previous_break_token = physical_fragment.BreakToken();
+    // Continue in order to update logical height, unless this fragment is
+    // past the block-end of the generating node (happens with overflow) or
+    // is a repeated one.
+    if (!previous_break_token || previous_break_token->IsRepeated() ||
+        previous_break_token->IsAtBlockEnd()) {
+      break;
+    }
+  }
+  return converter.ToPhysical(size).ToLayoutSize();
+}
+
 LayoutBox* LayoutBox::LocationContainer() const {
   NOT_DESTROYED();
   // Location of a non-root SVG object derived from LayoutBox should not be

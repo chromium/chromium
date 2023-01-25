@@ -129,4 +129,10 @@ void LayoutNGTableColumn::UpdateFromElement() {
   }
 }
 
+// TODO(crbug.com/1371882): Table columns should have physical fragments,
+// and this function should refer to the fragment sizes.
+LayoutSize LayoutNGTableColumn::Size() const {
+  return frame_size_;
+}
+
 }  // namespace blink

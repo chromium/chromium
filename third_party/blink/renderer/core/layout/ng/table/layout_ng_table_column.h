@@ -39,6 +39,8 @@ class CORE_EXPORT LayoutNGTableColumn : public LayoutBox {
   // Clears needs-layout for child columns too.
   void ClearNeedsLayoutForChildren() const;
 
+  LayoutSize Size() const override;
+
   // LayoutObject methods start.
 
   const char* GetName() const override {

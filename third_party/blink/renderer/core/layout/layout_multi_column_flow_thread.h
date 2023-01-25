@@ -336,6 +336,8 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   // "public" for |MakeGarbageCollected<T>|.
   explicit LayoutMultiColumnFlowThread(bool needs_paint_layer);
 
+  LayoutSize Size() const override;
+
  private:
   void UpdateLayout() override;
 

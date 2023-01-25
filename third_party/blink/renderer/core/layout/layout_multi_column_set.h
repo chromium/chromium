@@ -284,6 +284,7 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
 
   void InsertedIntoTree() final;
   void WillBeRemovedFromTree() final;
+  LayoutSize Size() const override;
 
   bool IsSelfCollapsingBlock() const override {
     NOT_DESTROYED();

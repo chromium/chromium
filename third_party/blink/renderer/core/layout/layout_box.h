@@ -407,10 +407,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     auto location = Location();
     return LayoutSize(location.X(), location.Y());
   }
-  virtual LayoutSize Size() const {
-    NOT_DESTROYED();
-    return frame_size_;
-  }
+  virtual LayoutSize Size() const;
 
   void SetLocation(const LayoutPoint& location) {
     NOT_DESTROYED();
@@ -2155,6 +2152,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool HasAnchorScrollTranslation() const;
   PhysicalOffset AnchorScrollTranslationOffset() const;
 
+  // This should be called when the border-box size of this box is changed.
+  void SizeChanged();
+
  protected:
   ~LayoutBox() override;
 
@@ -2347,7 +2347,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       delete;  // This will catch anyone doing an unnecessary check.
 
   void LocationChanged();
-  void SizeChanged();
 
   void UpdateBackgroundAttachmentFixedStatusAfterStyleChange();
 
@@ -2415,8 +2414,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // includes any logical top/left along with this box's margins. It doesn't
   // include transforms, relative position offsets etc.
   LayoutPoint frame_location_;
+
+ protected:
+  // TODO(crbug.com/1353190): Remove frame_size_.
   LayoutSize frame_size_;
 
+ private:
   // Previous value of frame_size_, updated after paint invalidation.
   LayoutSize previous_size_;
 

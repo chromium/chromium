@@ -622,6 +622,12 @@ void LayoutMultiColumnSet::WillBeRemovedFromTree() {
   DetachFromFlowThread();
 }
 
+LayoutSize LayoutMultiColumnSet::Size() const {
+  NOT_DESTROYED();
+  // TODO(crbug.com/1353190): Do not refer to frame_size_.
+  return frame_size_;
+}
+
 void LayoutMultiColumnSet::AttachToFlowThread() {
   NOT_DESTROYED();
   if (DocumentBeingDestroyed())
