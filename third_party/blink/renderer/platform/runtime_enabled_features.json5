@@ -122,7 +122,7 @@
     //
     // The default value of the base::Feature instance is:
     //  base::FEATURE_ENABLED_BY_DEFAULT if 'status' field is 'stable", and
-    //  base::FEATURE_DISABLED_BY_DEFAULT otheriwse.
+    //  base::FEATURE_DISABLED_BY_DEFAULT otherwise.
     // It can be overridden by 'base_feature_status' field.
     //
     // If the flag should be associated with a feature not in blink::features,
@@ -283,6 +283,13 @@
     },
     {
       name: "AllowContentInitiatedDataUrlNavigations",
+    },
+    {
+      // TODO(crbug.com/1393662): Remove this flag once Android supports
+      // creating discoverable credentials with the 'payment' extension.
+      name: "AllowDiscoverableCredentialsForSecurePaymentConfirmation",
+      base_feature: "AllowDiscoverableCredentialsForSecurePaymentConfirmation",
+      status: {"Android": "", "default": "stable"},
     },
     {
       name: "AndroidDownloadableFontsMatching",

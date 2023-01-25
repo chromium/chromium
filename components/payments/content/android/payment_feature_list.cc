@@ -24,6 +24,8 @@ namespace {
 // Android only features).
 const base::Feature* const kFeaturesExposedToJava[] = {
     &::blink::features::kAddIdentityInCanMakePaymentEvent,
+    &::blink::features::
+        kAllowDiscoverableCredentialsForSecurePaymentConfirmation,
     &::features::kSecurePaymentConfirmation,
     &::features::kServiceWorkerPaymentApps,
     &::features::kWebPayments,
