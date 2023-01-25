@@ -5908,6 +5908,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Create shortcut
       </message>
 
+      <message name="IDS_APP_HOME_INSTALL_LOCALLY" desc="Menu entry label for installing the app on this device from context menu on App Home">
+        Install on this device
+      </message>
+
       <message name="IDS_APP_HOME_UNINSTALL_APP" desc="Menu entry label for uninstalling an app from context menu on App Home">
         Uninstall
       </message>

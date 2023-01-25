@@ -43,6 +43,17 @@ export class AppItemElement extends PolymerElement {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
+
+  private getIconUrl_() {
+    const url = new URL(this.appInfo.iconUrl.url);
+    // For web app, the backend serves grayscale image when the app is not
+    // locally installed automatically and doesn't recognize this query param,
+    // but we add a query param here to force browser to refetch the image.
+    if (!this.appInfo.isLocallyInstalled) {
+      url.searchParams.append('grayscale', 'true');
+    }
+    return url;
+  }
 }
 
 declare global {

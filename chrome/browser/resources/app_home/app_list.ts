@@ -111,10 +111,10 @@ export class AppListElement extends PolymerElement {
     }
   }
 
-  private isOpenInWindowHidden_() {
+  private isLocallyInstalled_() {
     return this.selectedActionMenuModel_ ?
-        !this.selectedActionMenuModel_.appInfo.mayShowOpenInWindow :
-        true;
+        this.selectedActionMenuModel_.appInfo.isLocallyInstalled :
+        false;
   }
 
   private isLaunchOnStartupHidden_() {
@@ -168,6 +168,14 @@ export class AppListElement extends PolymerElement {
   private onCreateShortcutItemClick_() {
     if (this.selectedActionMenuModel_?.appInfo.id) {
       BrowserProxy.getInstance().handler.createAppShortcut(
+          this.selectedActionMenuModel_?.appInfo.id);
+    }
+    this.closeMenu_();
+  }
+
+  private onInstallLocallyItemClick_() {
+    if (this.selectedActionMenuModel_?.appInfo.id) {
+      BrowserProxy.getInstance().handler.installAppLocally(
           this.selectedActionMenuModel_?.appInfo.id);
     }
     this.closeMenu_();

@@ -41,7 +41,7 @@
 <cr-action-menu id="menu" hidden="{{!selectedActionMenuModel_}}">
   <div id="open-in-window" tabindex="0" class="dropdown-item"
       on-click="onOpenInWindowItemClick_"
-      hidden="[[isOpenInWindowHidden_(selectedActionMenuModel_)]]">
+      hidden="[[!isLocallyInstalled_(selectedActionMenuModel_)]]">
     <div class="dropdown-item-label">
       $i18n{appWindowOpenLabel}
     </div>
@@ -65,8 +65,14 @@
     </cr-checkbox>
   </div>
   <button id="create-shortcut" class="dropdown-item"
-      on-click="onCreateShortcutItemClick_">
+      on-click="onCreateShortcutItemClick_"
+      hidden="[[!isLocallyInstalled_(selectedActionMenuModel_)]]">
     $i18n{createShortcutForAppLabel}
+  </button>
+  <button id="install-locally" class="dropdown-item"
+      on-click="onInstallLocallyItemClick_"
+      hidden="[[isLocallyInstalled_(selectedActionMenuModel_)]]">
+    $i18n{installLocallyLabel}
   </button>
   <hr>
   <button id="uninstall" class="dropdown-item"
@@ -74,7 +80,8 @@
     $i18n{uninstallAppLabel}
   </button>
   <button id="app-settings" class="dropdown-item"
-      on-click="onAppSettingsItemClick_">
+      on-click="onAppSettingsItemClick_"
+      hidden="[[!isLocallyInstalled_(selectedActionMenuModel_)]]">
     $i18n{appSettingsLabel}
   </button>
 </cr-action-menu>

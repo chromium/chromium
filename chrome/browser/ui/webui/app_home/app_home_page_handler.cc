@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
+#include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -332,7 +333,7 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
   app_info->may_toggle_run_on_os_login_mode = login_mode.user_controllable;
   app_info->run_on_os_login_mode = login_mode.value;
 
-  app_info->may_show_open_in_window = is_locally_installed;
+  app_info->is_locally_installed = is_locally_installed;
   // Treat all other types of display mode as "open as window".
   app_info->open_in_window = registrar.GetAppEffectiveDisplayMode(app_id) !=
                              blink::mojom::DisplayMode::kBrowser;
@@ -357,7 +358,10 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromExtension(
   app_info->may_show_run_on_os_login_mode = false;
   app_info->may_toggle_run_on_os_login_mode = false;
 
-  app_info->may_show_open_in_window = false;
+  app_info->is_locally_installed =
+      !extension->is_hosted_app() ||
+      extensions::BookmarkAppIsLocallyInstalled(extension_service_->profile(),
+                                                extension);
   return app_info;
 }
 
@@ -561,6 +565,11 @@ void AppHomePageHandler::OnWebAppRunOnOsLoginModeChanged(
 void AppHomePageHandler::OnWebAppUserDisplayModeChanged(
     const web_app::AppId& app_id,
     web_app::mojom::UserDisplayMode user_display_mode) {
+  page_->AddApp(CreateAppInfoPtrFromWebApp(app_id));
+}
+
+void AppHomePageHandler::OnWebAppInstalledWithOsHooks(
+    const web_app::AppId& app_id) {
   page_->AddApp(CreateAppInfoPtrFromWebApp(app_id));
 }
 

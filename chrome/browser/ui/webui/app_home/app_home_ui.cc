@@ -28,6 +28,7 @@ void AddAppHomeLocalizedStrings(content::WebUIDataSource* ui_source) {
       {"appLaunchAtStartupCheckboxLabel",
        IDS_ACCNAME_APP_HOME_LAUNCH_AT_STARTUP_CHECKBOX},
       {"createShortcutForAppLabel", IDS_APP_HOME_CREATE_SHORTCUT},
+      {"installLocallyLabel", IDS_APP_HOME_INSTALL_LOCALLY},
       {"uninstallAppLabel", IDS_APP_HOME_UNINSTALL_APP},
       {"appSettingsLabel", IDS_APP_HOME_APP_SETTINGS},
   };

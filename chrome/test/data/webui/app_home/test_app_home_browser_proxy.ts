@@ -16,7 +16,12 @@ export class FakePageHandler extends TestBrowserProxy implements
   private callbackRouterRemote_: PageRemote;
 
   constructor(apps: AppList, callbackRouterRemote: PageRemote) {
-    super(['uninstallApp', 'showAppSettings', 'createAppShortcut']);
+    super([
+      'uninstallApp',
+      'showAppSettings',
+      'createAppShortcut',
+      'installAppLocally',
+    ]);
     this.apps_ = apps;
     this.callbackRouterRemote_ = callbackRouterRemote;
   }
@@ -52,7 +57,16 @@ export class FakePageHandler extends TestBrowserProxy implements
 
   launchDeprecatedAppDialog() {}
 
-  installAppLocally(_appId: string) {}
+  installAppLocally(appId: string) {
+    this.methodCalled('installAppLocally', appId);
+    for (const app of this.apps_.appList) {
+      if (app.id === appId) {
+        app.isLocallyInstalled = true;
+        this.callbackRouterRemote_.addApp(app);
+        break;
+      }
+    }
+  }
 
   setUserDisplayMode(appId: string, userDisplayMode: UserDisplayMode) {
     for (const app of this.apps_.appList) {

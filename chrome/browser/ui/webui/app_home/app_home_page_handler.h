@@ -60,7 +60,12 @@ class AppHomePageHandler
   ~AppHomePageHandler() override;
 
   // web_app::WebAppInstallManagerObserver:
+  // Listens to both `OnWebAppInstalled` and `OnWebAppInstalledWithOsHooks` as
+  // some type of installs, e.g. sync install only trigger `OnWebAppInstalled`.
+  // `OnWebAppInstalledWithOsHooks` also gets fired when an installed app gets
+  // locally installed.
   void OnWebAppInstalled(const web_app::AppId& app_id) override;
+  void OnWebAppInstalledWithOsHooks(const web_app::AppId& app_id) override;
   void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
