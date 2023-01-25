@@ -172,7 +172,8 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
 
         @Override
         public boolean setColumnCount(int columnCount) {
-            return false;
+            // no-op operation for LinearLayout. Consider as success.
+            return true;
         }
     }
 }

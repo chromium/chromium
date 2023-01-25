@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.feed;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -213,6 +213,6 @@ public class NativeViewListRendererTest {
         mRenderer.bind(mManager);
 
         boolean res = mRenderer.getListLayoutHelper().setColumnCount(3);
-        assertFalse("Failed to set column count.", res);
+        assertTrue("Failed to set column count.", res);
     }
 }
