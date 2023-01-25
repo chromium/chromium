@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
 
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAState;
@@ -25,6 +26,11 @@ public class LensUtils {
     private static final String DISABLE_ON_INCOGNITO_PARAM_NAME = "disableOnIncognito";
     private static final String ORDER_SHARE_IMAGE_BEFORE_LENS_PARAM_NAME =
             "orderShareImageBeforeLens";
+    private static final String USE_LENS_CONTEXT_MENU_ALTERNATE_TEXT_1_PARAM_NAME =
+            "useLensContextMenuAlternateText1";
+    private static final String USE_LENS_CONTEXT_MENU_ALTERNATE_TEXT_2_PARAM_NAME =
+            "useLensContextMenuAlternateText2";
+
     private static final String MIN_AGSA_VERSION_NAME_FOR_LENS_POSTCAPTURE = "10.65";
 
     /**
@@ -190,5 +196,24 @@ public class LensUtils {
                     featureName, LOG_UKM_PARAM_NAME, true);
         }
         return false;
+    }
+
+    /**
+     * Check if experiment to get context menu alternate name text.
+     */
+    public static int getLensContextMenuText() {
+        if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS,
+                    USE_LENS_CONTEXT_MENU_ALTERNATE_TEXT_1_PARAM_NAME, false)) {
+            return R.string.contextmenu_search_image_with_google_lens_alt_text_1;
+        }
+
+        if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS,
+                    USE_LENS_CONTEXT_MENU_ALTERNATE_TEXT_2_PARAM_NAME, false)) {
+            return R.string.contextmenu_search_image_with_google_lens_alt_text_2;
+        }
+
+        return R.string.contextmenu_search_image_with_google_lens;
     }
 }
