@@ -25,8 +25,11 @@ from markdown.extensions import Extension
 
 DOCLAVA_DIR = os.path.join(REPOSITORY_ROOT, 'buildtools', 'android', 'doclava')
 SDK_DIR = os.path.join(REPOSITORY_ROOT, 'third_party', 'android_sdk', 'public')
-JAVADOC_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'javadoc')
-JAR_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'jar')
+# TODO(b/260694901) Remove this usage of Java 11 as soon as Doclava supports it.
+# Doclava support for JDK17 was actively being worked on as of Jan 2023.
+JAVADOC_PATH = os.path.join(build_utils.JAVA_11_HOME_DEPRECATED, 'bin',
+                            'javadoc')
+JAR_PATH = os.path.join(build_utils.JAVA_11_HOME_DEPRECATED, 'bin', 'jar')
 
 JAVADOC_WARNING = """\
 javadoc: warning - The old Doclet and Taglet APIs in the packages

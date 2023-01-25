@@ -422,7 +422,7 @@ def _OnStaleMd5(changes, options, final_dex_inputs, dex_cmd):
 
 def MergeDexForIncrementalInstall(r8_jar_path, src_paths, dest_dex_jar,
                                   min_api):
-  dex_cmd = build_utils.JavaCmd(verify=False, xmx=_DEX_XMX) + [
+  dex_cmd = build_utils.JavaCmd(xmx=_DEX_XMX) + [
       '-cp',
       r8_jar_path,
       'com.android.tools.r8.D8',
@@ -460,7 +460,7 @@ def main(args):
     final_dex_inputs = list(options.class_inputs)
   final_dex_inputs += options.dex_inputs
 
-  dex_cmd = build_utils.JavaCmd(options.warnings_as_errors, xmx=_DEX_XMX)
+  dex_cmd = build_utils.JavaCmd(xmx=_DEX_XMX)
 
   if options.dump_inputs:
     dex_cmd += ['-Dcom.android.tools.r8.dumpinputtofile=d8inputs.zip']

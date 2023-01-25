@@ -94,7 +94,7 @@ public class TaskInfoTest {
     public void testOneOffNoParamsSet() {
         TaskInfo.TimingInfo timingInfo = TaskInfo.OneOffInfo.create().build();
         TaskInfo oneOffTask = TaskInfo.createTask(TaskIds.TEST, timingInfo).build();
-        CheckTimingInfoVisitor visitor = new CheckTimingInfoVisitor(null, new Long(0), false);
+        CheckTimingInfoVisitor visitor = new CheckTimingInfoVisitor(null, Long.valueOf(0), false);
         oneOffTask.getTimingInfo().accept(visitor);
     }
 
@@ -129,7 +129,7 @@ public class TaskInfoTest {
     public void testPeriodicNoParamsSet() {
         TaskInfo.TimingInfo timingInfo = TaskInfo.PeriodicInfo.create().build();
         TaskInfo periodicTask = TaskInfo.createTask(TaskIds.TEST, timingInfo).build();
-        CheckTimingInfoVisitor visitor = new CheckTimingInfoVisitor(new Long(0), null, false);
+        CheckTimingInfoVisitor visitor = new CheckTimingInfoVisitor(Long.valueOf(0), null, false);
         periodicTask.getTimingInfo().accept(visitor);
     }
 

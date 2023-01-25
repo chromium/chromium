@@ -162,7 +162,7 @@ public final class TranslateMessageTest {
                 .when(mMockJni)
                 .handlePrimaryAction(NATIVE_TRANSLATE_MESSAGE);
 
-        Assert.assertEquals(new Integer(PrimaryActionClickBehavior.DO_NOT_DISMISS),
+        Assert.assertEquals(Integer.valueOf(PrimaryActionClickBehavior.DO_NOT_DISMISS),
                 messageProperties.get(MessageBannerProperties.ON_PRIMARY_ACTION).get());
 
         verifyNoMoreInteractions(mMessageDispatcher);

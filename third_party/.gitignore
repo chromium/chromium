@@ -137,6 +137,7 @@
 /javax_inject/lib/
 /jdk/current
 /jdk/extras/java_8
+/jdk11/current
 /js_code_coverage/*.tar.gz
 /js_code_coverage/node_modules
 /jsr-305/src

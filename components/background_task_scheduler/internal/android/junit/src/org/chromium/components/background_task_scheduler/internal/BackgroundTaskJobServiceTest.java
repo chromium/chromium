@@ -70,7 +70,7 @@ public class BackgroundTaskJobServiceTest {
     @Feature({"BackgroundTaskScheduler"})
     public void testOneOffTaskDoesNotStartExactlyAtDeadline() {
         JobParameters jobParameters =
-                buildOneOffJobParameters(TaskIds.TEST, sClock.currentTimeMillis(), new Long(0));
+                buildOneOffJobParameters(TaskIds.TEST, sClock.currentTimeMillis(), Long.valueOf(0));
 
         BackgroundTaskJobService jobService = new BackgroundTaskJobService();
         jobService.setClockForTesting(sClock);
@@ -83,8 +83,8 @@ public class BackgroundTaskJobServiceTest {
     @Test
     @Feature({"BackgroundTaskScheduler"})
     public void testOneOffTaskDoesNotStartAfterDeadline() {
-        JobParameters jobParameters =
-                buildOneOffJobParameters(TaskIds.TEST, sZeroClock.currentTimeMillis(), new Long(0));
+        JobParameters jobParameters = buildOneOffJobParameters(
+                TaskIds.TEST, sZeroClock.currentTimeMillis(), Long.valueOf(0));
 
         BackgroundTaskJobService jobService = new BackgroundTaskJobService();
         jobService.setClockForTesting(sClock);

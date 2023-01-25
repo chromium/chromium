@@ -717,7 +717,8 @@ def main(argv):
 
   javac_args = [
       '-g',
-      # We currently target JDK 11 everywhere.
+      # We currently target JDK 11 everywhere, since Mockito is broken by JDK17.
+      # See crbug.com/1409661 for more details.
       '--release',
       '11',
       # Chromium only allows UTF8 source files.  Being explicit avoids
@@ -751,6 +752,22 @@ def main(argv):
           '-XepPatchLocation:IN_PLACE',
           '-XepPatchChecks:,' + ','.join(ERRORPRONE_CHECKS_TO_APPLY)
       ]
+
+    # These are required to use JDK 16, and are taken directly from
+    # https://errorprone.info/docs/installation
+    javac_args += [
+        '-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED',
+        '-J--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED',
+        '-J--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED',
+        '-J--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED',
+        '-J--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED',
+        '-J--add-exports=jdk.compiler/com.sun.tools.javac.processing='
+        'ALL-UNNAMED',
+        '-J--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
+        '-J--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED',
+        '-J--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED',
+        '-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED',
+    ]
 
     javac_args += ['-XDcompilePolicy=simple', ' '.join(errorprone_flags)]
 

@@ -1393,9 +1393,6 @@ if (enable_java_templates) {
         ]
         data += [ _jacoco_host_jar ]
       }
-      if (use_jacoco_coverage || !treat_warnings_as_errors) {
-        args += [ "--noverify" ]
-      }
       if (defined(invoker.tiered_stop_at_level_one) &&
           invoker.tiered_stop_at_level_one) {
         args += [ "--tiered-stop-at-level-one" ]
@@ -1408,6 +1405,12 @@ if (enable_java_templates) {
       }
       if (defined(invoker.wrapper_script_args)) {
         args += [ "--" ] + invoker.wrapper_script_args
+      }
+      if (defined(invoker.use_jdk_11) && invoker.use_jdk_11) {
+        args += [ "--use-jdk-11" ]
+        deps += [ "//third_party/jdk11:java_data" ]
+      } else {
+        deps += [ "//third_party/jdk:java_data" ]
       }
     }
   }
@@ -4059,10 +4062,7 @@ if (enable_java_templates) {
         if (defined(invoker.wrapper_script_name)) {
           script_name = invoker.wrapper_script_name
         }
-        deps = [
-          ":$_build_config_target_name",
-          "//third_party/jdk:java_data",
-        ]
+        deps = [ ":$_build_config_target_name" ]
         if (_is_robolectric) {
           # For robolectric tests, we also add the normal sdk jar to the
           # classpath since whenever we start using a new Android SDK,
@@ -4071,6 +4071,10 @@ if (enable_java_templates) {
           # new SDK classes, so providing our normal SDK will allow these
           # classes to resolve. For an example, see crbug.com/1350963.
           extra_classpath_jars = [ android_sdk_jar ]
+
+          # Mockito bug with JDK17 requires us to use JDK11 until we find a fix
+          # for crbug.com/1409661.
+          use_jdk_11 = true
         }
       }
     }

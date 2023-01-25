@@ -1,0 +1,14 @@
+Name: Java Development Kit
+Short Name: JDK
+URL: https://openjdk.java.net/
+Version: 11.0.15+10.cr0
+License: GPL v2
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+This is a legacy version of the JDK. Please use //third_party/jdk. This is just
+for tools which are broken on newer versions of the JDK.
+
+Local Modifications:
+None

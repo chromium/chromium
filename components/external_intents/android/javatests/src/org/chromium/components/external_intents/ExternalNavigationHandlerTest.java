@@ -1222,7 +1222,7 @@ public class ExternalNavigationHandlerTest {
 
                 // Inform the handler that the user decided not to launch the intent and verify that
                 // the appropriate URL is navigated to in the browser.
-                mDelegate.incognitoDialogUserDecisionCallback.onResult(new Boolean(false));
+                mDelegate.incognitoDialogUserDecisionCallback.onResult(Boolean.valueOf(false));
                 Assert.assertEquals(playUrl, mUrlHandler.mNewUrlAfterClobbering);
                 mUrlHandler.mNewUrlAfterClobbering = null;
                 mDelegate.incognitoDialogUserDecisionCallback = null;
@@ -1240,7 +1240,7 @@ public class ExternalNavigationHandlerTest {
 
                 // Inform the handler that the user decided to launch the intent and verify that
                 // the intent was launched.
-                mDelegate.incognitoDialogUserDecisionCallback.onResult(new Boolean(true));
+                mDelegate.incognitoDialogUserDecisionCallback.onResult(Boolean.valueOf(true));
                 Assert.assertNull(mUrlHandler.mNewUrlAfterClobbering);
                 Assert.assertEquals(1, monitor.getHits());
                 Assert.assertEquals("market://details?id=com.imdb.mobile&referrer=mypage",
@@ -1284,7 +1284,7 @@ public class ExternalNavigationHandlerTest {
 
                 // Inform the handler that the user decided not to launch the intent and verify that
                 // the appropriate URL is navigated to in the browser.
-                mDelegate.incognitoDialogUserDecisionCallback.onResult(new Boolean(false));
+                mDelegate.incognitoDialogUserDecisionCallback.onResult(Boolean.valueOf(false));
                 Assert.assertEquals("https://example.com/", mUrlHandler.mNewUrlAfterClobbering);
 
                 mUrlHandler.mNewUrlAfterClobbering = null;
@@ -1304,7 +1304,7 @@ public class ExternalNavigationHandlerTest {
 
                 // Inform the handler that the user decided not to launch the intent and verify that
                 // the appropriate URL is navigated to in the browser.
-                mDelegate.incognitoDialogUserDecisionCallback.onResult(new Boolean(false));
+                mDelegate.incognitoDialogUserDecisionCallback.onResult(Boolean.valueOf(false));
                 Assert.assertEquals("http://google.com/", mUrlHandler.mNewUrlAfterClobbering);
             });
         } finally {

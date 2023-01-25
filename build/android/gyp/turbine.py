@@ -76,7 +76,7 @@ def main(argv):
   # Turbine is run only on .java files.
   java_files = [f for f in files if f.endswith('.java')]
 
-  cmd = build_utils.JavaCmd(options.warnings_as_errors) + [
+  cmd = build_utils.JavaCmd() + [
       '-classpath', options.turbine_jar_path, 'com.google.turbine.main.Main'
   ]
   javac_cmd = [

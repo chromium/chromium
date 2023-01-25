@@ -38,7 +38,7 @@ def FinalizeApk(apksigner_path,
     else:
       signer_input_path = unsigned_apk_path
 
-    sign_cmd = build_utils.JavaCmd(warnings_as_errors) + [
+    sign_cmd = build_utils.JavaCmd() + [
         '-jar',
         apksigner_path,
         'sign',

@@ -39,6 +39,10 @@ JAVAC_PATH = os.path.join(JAVA_HOME, 'bin', 'javac')
 JAVAP_PATH = os.path.join(JAVA_HOME, 'bin', 'javap')
 KOTLIN_HOME = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'kotlinc', 'current')
 KOTLINC_PATH = os.path.join(KOTLIN_HOME, 'bin', 'kotlinc')
+# Please avoid using this. Our JAVA_HOME is using a newer and actively patched
+# JDK.
+JAVA_11_HOME_DEPRECATED = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'jdk11',
+                                       'current')
 
 try:
   string_types = basestring
@@ -46,17 +50,12 @@ except NameError:
   string_types = (str, bytes)
 
 
-def JavaCmd(verify=True, xmx='1G'):
+def JavaCmd(xmx='1G'):
   ret = [os.path.join(JAVA_HOME, 'bin', 'java')]
   # Limit heap to avoid Java not GC'ing when it should, and causing
   # bots to OOM when many java commands are runnig at the same time
   # https://crbug.com/1098333
   ret += ['-Xmx' + xmx]
-
-  # Disable bytecode verification for local builds gives a ~2% speed-up.
-  if not verify:
-    ret += ['-noverify']
-
   return ret
 
 

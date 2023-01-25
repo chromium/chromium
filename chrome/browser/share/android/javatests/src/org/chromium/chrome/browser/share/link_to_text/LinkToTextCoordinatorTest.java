@@ -232,8 +232,8 @@ public class LinkToTextCoordinatorTest {
     public void shareLinkToTextTest_GenerationError() {
         mLinkToTextCoordinator.initLinkToTextCoordinator(
                 mTab, mShareCallback, mChromeShareExtras, SHARE_START_TIME, VISIBLE_URL, "");
-        setGenerationRemoteRequestResults("", new Integer(LinkGenerationError.EMPTY_SELECTION),
-                new Integer(LinkGenerationReadyStatus.REQUESTED_AFTER_READY));
+        setGenerationRemoteRequestResults("", Integer.valueOf(LinkGenerationError.EMPTY_SELECTION),
+                Integer.valueOf(LinkGenerationReadyStatus.REQUESTED_AFTER_READY));
         mLinkToTextCoordinator.shareLinkToText();
 
         // Check that shows share sheet without link to text
@@ -261,8 +261,8 @@ public class LinkToTextCoordinatorTest {
 
         // Receiving generation result after timeout, should not trigger another sharesheet.
         mLinkToTextCoordinator.onRemoteRequestCompleted("",
-                new Integer(LinkGenerationError.EMPTY_SELECTION),
-                new Integer(LinkGenerationReadyStatus.REQUESTED_BEFORE_READY));
+                Integer.valueOf(LinkGenerationError.EMPTY_SELECTION),
+                Integer.valueOf(LinkGenerationReadyStatus.REQUESTED_BEFORE_READY));
         verify(mShareCallback, times(1)).showShareSheet(any(), any(), anyLong());
 
         // No new histogram is recorded.
@@ -275,8 +275,8 @@ public class LinkToTextCoordinatorTest {
     public void shareLinkToTextTest_Timeout_AfterRemoteRequestComplete() {
         mLinkToTextCoordinator.initLinkToTextCoordinator(
                 mTab, mShareCallback, mChromeShareExtras, SHARE_START_TIME, VISIBLE_URL, "");
-        setGenerationRemoteRequestResults("selector", new Integer(LinkGenerationError.NONE),
-                new Integer(LinkGenerationReadyStatus.REQUESTED_AFTER_READY));
+        setGenerationRemoteRequestResults("selector", Integer.valueOf(LinkGenerationError.NONE),
+                Integer.valueOf(LinkGenerationReadyStatus.REQUESTED_AFTER_READY));
         mLinkToTextCoordinator.shareLinkToText();
 
         // Check that shows share sheet without link to text
@@ -309,8 +309,8 @@ public class LinkToTextCoordinatorTest {
 
         // Receiving generation result should not trigger another sharesheet.
         mLinkToTextCoordinator.onRemoteRequestCompleted("",
-                new Integer(LinkGenerationError.EMPTY_SELECTION),
-                new Integer(LinkGenerationReadyStatus.REQUESTED_BEFORE_READY));
+                Integer.valueOf(LinkGenerationError.EMPTY_SELECTION),
+                Integer.valueOf(LinkGenerationReadyStatus.REQUESTED_BEFORE_READY));
         verify(mShareCallback, times(0)).showShareSheet(any(), any(), anyLong());
 
         // No new histogram is recorded.
