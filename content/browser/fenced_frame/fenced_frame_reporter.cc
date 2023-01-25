@@ -12,12 +12,15 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/types/pass_key.h"
+#include "components/attribution_reporting/os_registration.h"
+#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -231,6 +234,15 @@ bool FencedFrameReporter::SendReportInternal(
   request->trusted_params = network::ResourceRequest::TrustedParams();
   request->trusted_params->isolation_info =
       net::IsolationInfo::CreateTransient();
+  // TODO(xiaochenzh): The eligible header for automatic beacon should be
+  // `navigation-source`, update the code below when it is enabled.
+  request->headers.SetHeader("Attribution-Reporting-Eligible", "event-source");
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAttributionReportingCrossAppWeb)) {
+    request->headers.SetHeader("Attribution-Reporting-Support",
+                               attribution_reporting::GetSupportHeader(
+                                   AttributionManager::GetOsSupport()));
+  }
 
   // Create and configure `SimpleURLLoader` instance.
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader =

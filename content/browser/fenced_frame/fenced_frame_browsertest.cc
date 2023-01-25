@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <string>
+
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -48,6 +52,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/cors/cors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
@@ -60,6 +65,8 @@ namespace content {
 
 namespace {
 
+namespace cors = network::cors::header_names;
+
 constexpr char kAddIframeScript[] = R"({
     (()=>{
         return new Promise((resolve) => {
@@ -70,6 +77,8 @@ constexpr char kAddIframeScript[] = R"({
         });
     })();
   })";
+
+constexpr char kReportingURL[] = "/_report_event_server.html";
 
 GURL AddAndVerifyFencedFrameURL(
     FencedFrameURLMapping* fenced_frame_url_mapping,
@@ -4601,6 +4610,44 @@ class FencedFrameReportEventBrowserTest
     }
   }
 
+  std::unique_ptr<net::test_server::BasicHttpResponse>
+  GetResponseWithAccessAllowHeaders(
+      const net::test_server::HttpRequest* request) {
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+
+    response->set_code(net::HTTP_OK);
+    response->AddCustomHeader(cors::kAccessControlAllowMethods,
+                              request->method_string);
+    if (base::Contains(request->headers, "Origin")) {
+      response->AddCustomHeader(cors::kAccessControlAllowOrigin, "*");
+    }
+    if (base::Contains(request->headers, cors::kAccessControlRequestHeaders)) {
+      response->AddCustomHeader(
+          cors::kAccessControlAllowHeaders,
+          request->headers.at(cors::kAccessControlRequestHeaders));
+    }
+
+    return response;
+  }
+
+  // For cross-origin reporting destination, a preflight request is sent before
+  // the actual request.
+  void VerifyPreflightRequest(const net::test_server::HttpRequest* request) {
+    EXPECT_EQ(request->method, net::test_server::HttpMethod::METHOD_OPTIONS);
+    EXPECT_TRUE(base::Contains(request->headers, "Origin"));
+    EXPECT_TRUE(
+        base::Contains(request->headers.at(cors::kAccessControlRequestHeaders),
+                       "attribution-reporting-eligible"));
+  }
+
+  scoped_refptr<FencedFrameReporter> CreateFencedFrameReporter() {
+    return FencedFrameReporter::CreateForFledge(
+        web_contents()
+            ->GetPrimaryMainFrame()
+            ->GetStoragePartition()
+            ->GetURLLoaderFactoryForBrowserProcess());
+  }
+
   // A helper function for specifying reportEvent tests. Each step consists of a
   // series of `Step`s specified above.
   void RunTest(std::vector<Step>& steps) {
@@ -4613,17 +4660,27 @@ class FencedFrameReportEventBrowserTest
         responses;
     std::vector<std::unique_ptr<net::test_server::ControllableHttpResponse>>
         redirects;
-    for (size_t i = 0; i < steps.size() + 1; ++i) {
-      responses.emplace_back(
-          std::make_unique<net::test_server::ControllableHttpResponse>(
-              https_server(), "/_report_event_server.html"));
-    }
+
+    std::string reporting_origin = "c.test";
     // We also register interceptors for redirections that we want to perform.
     // Each redirect must be from a unique path so that messages aren't
     // unintentionally intercepted and blocked.
     {
       std::set<std::string> paths;
       for (auto& step : steps) {
+        responses.emplace_back(
+            std::make_unique<net::test_server::ControllableHttpResponse>(
+                https_server(), kReportingURL));
+        std::string final_destination_origin =
+            step.redirects.empty() ? step.destination.origin
+                                   : step.redirects.back().origin;
+        if (final_destination_origin != reporting_origin) {
+          // The reporting beacon is cross-origin. Two requests will be sent.
+          // First is the preflight request, the second is the actual request.
+          responses.emplace_back(
+              std::make_unique<net::test_server::ControllableHttpResponse>(
+                  https_server(), kReportingURL));
+        }
         if (step.is_target_nested_iframe) {
           ASSERT_FALSE(step.is_embedder_initiated);
           ASSERT_FALSE(step.is_opaque);
@@ -4648,6 +4705,11 @@ class FencedFrameReportEventBrowserTest
         }
       }
     }
+    // An additional response is used to check any spurious waiting reported
+    // events.
+    responses.emplace_back(
+        std::make_unique<net::test_server::ControllableHttpResponse>(
+            https_server(), kReportingURL));
     ASSERT_TRUE(https_server()->Start());
 
     // Set up the embedder and a fenced frame.
@@ -4668,11 +4730,7 @@ class FencedFrameReportEventBrowserTest
 
     // Create a FencedFrameReporter and pass it reporting metadata.
     scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
-        FencedFrameReporter::CreateForFledge(
-            web_contents()
-                ->GetPrimaryMainFrame()
-                ->GetStoragePartition()
-                ->GetURLLoaderFactoryForBrowserProcess());
+        CreateFencedFrameReporter();
     GURL reporting_url(
         https_server()->GetURL("c.test", "/_report_event_server.html"));
     // Set valid reporting metadata for buyer.
@@ -4790,13 +4848,40 @@ class FencedFrameReportEventBrowserTest
 
       // If relevant, check that the event report succeeded.
       if (step.report_event_result == Step::Result::kSuccess) {
+        std::string final_destination_origin =
+            step.redirects.empty() ? step.destination.origin
+                                   : step.redirects.back().origin;
+        if (final_destination_origin != reporting_origin) {
+          auto& preflight_response = *responses[response_index];
+          // Verify the preflight request contains the eligibility header under
+          // "Access-Control-Request-Headers".
+          preflight_response.WaitForRequest();
+          VerifyPreflightRequest(preflight_response.http_request());
+
+          // Send response with extra headers.
+          std::unique_ptr<net::test_server::BasicHttpResponse>
+              access_allow_response = GetResponseWithAccessAllowHeaders(
+                  preflight_response.http_request());
+          access_allow_response->AddCustomHeader("Content-Type",
+                                                 "text/plain;charset=UTF-8");
+          preflight_response.Send(access_allow_response->ToResponseString());
+          preflight_response.Done();
+          ++response_index;
+        }
         auto& response = *responses[response_index];
         response.WaitForRequest();
+        // Verify the request has the correct content.
         EXPECT_EQ(
             response.http_request()->content,
             step.event.type + " " + base::NumberToString(navigation_index));
+        // Verify the request contains the eligibility header.
+        EXPECT_EQ(response.http_request()->headers.at(
+                      "Attribution-Reporting-Eligible"),
+                  "event-source");
+        EXPECT_FALSE(base::Contains(response.http_request()->headers,
+                                    "Attribution-Reporting-Support"));
         response.Done();
-        response_index++;
+        ++response_index;
       } else {
         ASSERT_TRUE(console_observer.Wait());
         EXPECT_FALSE(console_observer.messages().empty());
@@ -4822,8 +4907,8 @@ class FencedFrameReportEventBrowserTest
 // Fenced frame not in opaque-ads mode should fail reportEvent().
 IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                        FencedFrameReportEventNonOpaqueAdsMode) {
-  net::test_server::ControllableHttpResponse response(
-      https_server(), "/_report_event_server.html");
+  net::test_server::ControllableHttpResponse response(https_server(),
+                                                      kReportingURL);
   ASSERT_TRUE(https_server()->Start());
 
   // Set up the embedder and a default mode fenced frame.
@@ -4860,7 +4945,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
           destination: ['buyer'],
         });
       )";
-  EXPECT_TRUE(ExecJs(fenced_frame_root_node, JsReplace(report_event_script)));
+  EXPECT_TRUE(ExecJs(fenced_frame_root_node, report_event_script));
 
   // Check console warning.
   ASSERT_TRUE(console_observer.Wait());
@@ -5132,8 +5217,10 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
 // Remove this test once the FLEDGE origin trial stops supporting iframes.
 IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                        IframeReportingMetadata) {
-  net::test_server::ControllableHttpResponse response(https_server(),
-                                                      "/title2.html");
+  net::test_server::ControllableHttpResponse preflight_response(https_server(),
+                                                                kReportingURL);
+  net::test_server::ControllableHttpResponse reporting_response(https_server(),
+                                                                kReportingURL);
   ASSERT_TRUE(https_server()->Start());
 
   GURL main_url = https_server()->GetURL("b.test", "/hello.html");
@@ -5151,12 +5238,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
 
   // Create a FencedFrameReporter and pass it reporting metadata.
   scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
-      FencedFrameReporter::CreateForFledge(
-          web_contents()
-              ->GetPrimaryMainFrame()
-              ->GetStoragePartition()
-              ->GetURLLoaderFactoryForBrowserProcess());
-  GURL reporting_url(https_server()->GetURL("c.test", "/title2.html"));
+      CreateFencedFrameReporter();
+  GURL reporting_url(https_server()->GetURL("c.test", kReportingURL));
   // Set valid reporting metadata for buyer.
   fenced_frame_reporter->OnUrlMappingReady(
       blink::FencedFrame::ReportingDestination::kBuyer,
@@ -5197,8 +5280,524 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                                             "  destination: ['buyer']});",
                                             event_data)));
 
+  // Verify the preflight request contains the eligibility header under
+  // "Access-Control-Request-Headers".
+  preflight_response.WaitForRequest();
+  VerifyPreflightRequest(preflight_response.http_request());
+
+  // Send response with extra headers.
+  std::unique_ptr<net::test_server::BasicHttpResponse> access_allow_response =
+      GetResponseWithAccessAllowHeaders(preflight_response.http_request());
+  access_allow_response->AddCustomHeader("Content-Type",
+                                         "text/plain;charset=UTF-8");
+  preflight_response.Send(access_allow_response->ToResponseString());
+  preflight_response.Done();
+
+  reporting_response.WaitForRequest();
+  // Verify the request has the correct content.
+  EXPECT_EQ(reporting_response.http_request()->content, event_data);
+  // Verify the request contains the eligibility header.
+  EXPECT_EQ(reporting_response.http_request()->headers.at(
+                "Attribution-Reporting-Eligible"),
+            "event-source");
+  EXPECT_FALSE(base::Contains(reporting_response.http_request()->headers,
+                              "Attribution-Reporting-Support"));
+}
+
+// The reportEvent beacon is a POST request. Upon receiving a 302 redirect
+// response, the request is changed to a GET request. In this test case, the
+// reporting url is same-origin. There is no preflight requests.
+// 1. A POST request is sent to the reporting destination.
+// 2. A response with 302 redirect is sent back to the requester.
+// 3. A GET request is sent to the redirected destination.
+IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
+                       SameOriginReportEventPost302RedirectGet) {
+  net::test_server::ControllableHttpResponse response(https_server(),
+                                                      kReportingURL);
+  net::test_server::ControllableHttpResponse redirect_response(
+      https_server(), "/redirect.html");
+  ASSERT_TRUE(https_server()->Start());
+
+  // Set up the embedder and a default mode fenced frame.
+  GURL main_url = https_server()->GetURL("a.test", "/hello.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  EXPECT_TRUE(ExecJs(root,
+                     "var f = document.createElement('fencedframe');"
+                     "f.mode = 'opaque-ads';"
+                     "document.body.appendChild(f);"));
+
+  EXPECT_EQ(1U, root->child_count());
+  FrameTreeNode* fenced_frame_root_node =
+      GetFencedFrameRootNode(root->child_at(0));
+  EXPECT_TRUE(fenced_frame_root_node->IsFencedFrameRoot());
+  EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
+
+  GURL https_url(
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+
+  // Create a FencedFrameReporter and pass it reporting metadata.
+  scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
+      CreateFencedFrameReporter();
+  GURL reporting_url(https_server()->GetURL("a.test", kReportingURL));
+  // Set valid reporting metadata for buyer.
+  fenced_frame_reporter->OnUrlMappingReady(
+      blink::FencedFrame::ReportingDestination::kBuyer,
+      {{"click", reporting_url}});
+
+  // Get the urn mapping object.
+  FencedFrameURLMapping& url_mapping =
+      root->current_frame_host()->GetPage().fenced_frame_urls_map();
+
+  // Add url and its reporting metadata to fenced frame url mapping.
+  auto urn_uuid = AddAndVerifyFencedFrameURL(&url_mapping, https_url,
+                                             fenced_frame_reporter);
+
+  TestFencedFrameURLMappingResultObserver mapping_observer;
+  url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &mapping_observer);
+  TestFrameNavigationObserver observer(
+      fenced_frame_root_node->current_frame_host());
+
+  // Navigate the fenced frame.
+  EXPECT_TRUE(ExecJs(root, JsReplace("f.src = $1;", urn_uuid)));
+
+  observer.WaitForCommit();
+  EXPECT_TRUE(mapping_observer.mapping_complete_observed());
+  EXPECT_EQ(fenced_frame_reporter, mapping_observer.fenced_frame_reporter());
+
+  // Perform the reportEvent call, with a unique body.
+  std::string event_data = "this is a click";
+  std::string report_event_script = JsReplace(R"(
+        window.fence.reportEvent({
+          eventType: 'click',
+          eventData: $1,
+          destination: ['buyer'],
+        });
+      )",
+                                              event_data);
+  EXPECT_TRUE(ExecJs(fenced_frame_root_node, report_event_script));
+
+  {
+    // Verify the reporting request.
+    response.WaitForRequest();
+    EXPECT_EQ(response.http_request()->content, event_data);
+    EXPECT_EQ(response.http_request()->method,
+              net::test_server::HttpMethod::METHOD_POST);
+    EXPECT_EQ(
+        response.http_request()->headers.at("Attribution-Reporting-Eligible"),
+        "event-source");
+    EXPECT_TRUE(
+        base::Contains(response.http_request()->headers, "Content-Length"));
+    EXPECT_TRUE(
+        base::Contains(response.http_request()->headers, "Content-Type"));
+    EXPECT_TRUE(base::Contains(response.http_request()->headers, "Origin"));
+    EXPECT_FALSE(base::Contains(response.http_request()->headers,
+                                "Attribution-Reporting-Support"));
+
+    // Send 302 redirect response.
+    GURL redirect_url = https_server()->GetURL("a.test", "/redirect.html");
+    response.Send(
+        /*http_status=*/net::HTTP_FOUND,
+        /*content_type=*/"text/plain;charset=UTF-8",
+        /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+        {base::StrCat({"Location: ", redirect_url.spec()})});
+
+    response.Done();
+  }
+
+  {
+    // Verify the redirect request is a GET request.
+    redirect_response.WaitForRequest();
+    EXPECT_EQ(redirect_response.http_request()->method,
+              net::test_server::HttpMethod::METHOD_GET);
+    // Check that POST-specific headers were stripped.
+    EXPECT_FALSE(base::Contains(redirect_response.http_request()->headers,
+                                "Content-Length"));
+    EXPECT_FALSE(base::Contains(redirect_response.http_request()->headers,
+                                "Content-Type"));
+    EXPECT_FALSE(
+        base::Contains(redirect_response.http_request()->headers, "Origin"));
+    // Check that the content body was stripped.
+    EXPECT_TRUE(redirect_response.http_request()->content.empty());
+    // These extra request headers were not stripped.
+    EXPECT_EQ(redirect_response.http_request()->headers.at(
+                  "Attribution-Reporting-Eligible"),
+              "event-source");
+    EXPECT_FALSE(base::Contains(response.http_request()->headers,
+                                "Attribution-Reporting-Support"));
+  }
+}
+
+// The reportEvent beacon is a POST request. Upon receiving a 302 redirect
+// response, the request is changed to a GET request. In this test case, the
+// reporting url is cross-origin.  There are preflight requests.
+// 1. A preflight request is sent to the reporting destination.
+// 2. A response with 302 redirect is sent back to the requester.
+// 3. A preflight request is sent to the redirected destination.
+// 4. A response with 200 OK is sent back to the requester.
+// 5. A GET request is sent to the redirected destination.
+IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
+                       CrossOriginReportEventPost302RedirectGet) {
+  net::test_server::ControllableHttpResponse preflight_response(https_server(),
+                                                                kReportingURL);
+  net::test_server::ControllableHttpResponse reporting_response(https_server(),
+                                                                kReportingURL);
+  net::test_server::ControllableHttpResponse redirect_preflight_response(
+      https_server(), "/redirect.html");
+  net::test_server::ControllableHttpResponse redirect_response(
+      https_server(), "/redirect.html");
+  ASSERT_TRUE(https_server()->Start());
+
+  // Set up the embedder and a default mode fenced frame.
+  GURL main_url = https_server()->GetURL("a.test", "/hello.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  EXPECT_TRUE(ExecJs(root,
+                     "var f = document.createElement('fencedframe');"
+                     "f.mode = 'opaque-ads';"
+                     "document.body.appendChild(f);"));
+
+  EXPECT_EQ(1U, root->child_count());
+  FrameTreeNode* fenced_frame_root_node =
+      GetFencedFrameRootNode(root->child_at(0));
+  EXPECT_TRUE(fenced_frame_root_node->IsFencedFrameRoot());
+  EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
+
+  GURL https_url(
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+
+  // Create a FencedFrameReporter and pass it reporting metadata.
+  scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
+      CreateFencedFrameReporter();
+  GURL reporting_url(https_server()->GetURL("c.test", kReportingURL));
+  // Set valid reporting metadata for buyer.
+  fenced_frame_reporter->OnUrlMappingReady(
+      blink::FencedFrame::ReportingDestination::kBuyer,
+      {{"click", reporting_url}});
+
+  // Get the urn mapping object.
+  FencedFrameURLMapping& url_mapping =
+      root->current_frame_host()->GetPage().fenced_frame_urls_map();
+
+  // Add url and its reporting metadata to fenced frame url mapping.
+  auto urn_uuid = AddAndVerifyFencedFrameURL(&url_mapping, https_url,
+                                             fenced_frame_reporter);
+
+  TestFencedFrameURLMappingResultObserver mapping_observer;
+  url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &mapping_observer);
+  TestFrameNavigationObserver observer(
+      fenced_frame_root_node->current_frame_host());
+
+  // Navigate the fenced frame.
+  EXPECT_TRUE(ExecJs(root, JsReplace("f.src = $1;", urn_uuid)));
+
+  observer.WaitForCommit();
+  EXPECT_TRUE(mapping_observer.mapping_complete_observed());
+  EXPECT_EQ(fenced_frame_reporter, mapping_observer.fenced_frame_reporter());
+
+  // Perform the reportEvent call, with a unique body.
+  std::string event_data = "this is a click";
+  std::string report_event_script = JsReplace(R"(
+        window.fence.reportEvent({
+          eventType: 'click',
+          eventData: $1,
+          destination: ['buyer'],
+        });
+      )",
+                                              event_data);
+  EXPECT_TRUE(ExecJs(fenced_frame_root_node, report_event_script));
+
+  {
+    // Verify the preflight request.
+    preflight_response.WaitForRequest();
+    VerifyPreflightRequest(preflight_response.http_request());
+
+    // Send response with extra headers.
+    std::unique_ptr<net::test_server::BasicHttpResponse> access_allow_response =
+        GetResponseWithAccessAllowHeaders(preflight_response.http_request());
+    access_allow_response->AddCustomHeader("Content-Type",
+                                           "text/plain;charset=UTF-8");
+    preflight_response.Send(access_allow_response->ToResponseString());
+
+    preflight_response.Done();
+  }
+
+  {
+    reporting_response.WaitForRequest();
+    EXPECT_EQ(reporting_response.http_request()->method,
+              net::test_server::HttpMethod::METHOD_POST);
+    EXPECT_EQ(reporting_response.http_request()->content, event_data);
+    EXPECT_TRUE(base::Contains(reporting_response.http_request()->headers,
+                               "Content-Length"));
+    EXPECT_TRUE(base::Contains(reporting_response.http_request()->headers,
+                               "Content-Type"));
+    EXPECT_TRUE(
+        base::Contains(reporting_response.http_request()->headers, "Origin"));
+    EXPECT_EQ(reporting_response.http_request()->headers.at(
+                  "Attribution-Reporting-Eligible"),
+              "event-source");
+    EXPECT_FALSE(base::Contains(reporting_response.http_request()->headers,
+                                "Attribution-Reporting-Support"));
+
+    // Send 302 redirect response, with "Access-Control-Allow-Origin" header.
+    // This header is needed to get the redirect through.
+    GURL redirect_url = https_server()->GetURL("d.test", "/redirect.html");
+    reporting_response.Send(
+        /*http_status=*/net::HTTP_FOUND,
+        /*content_type=*/"text/plain;charset=UTF-8",
+        /*content=*/{}, /*cookies=*/{}, /*extra_headers=*/
+        {base::StrCat({cors::kAccessControlAllowOrigin, ": *"}),
+         base::StrCat({"Location: ", redirect_url.spec()})});
+    reporting_response.Done();
+  }
+
+  {
+    // Verify the preflight request of the redirect.
+    redirect_preflight_response.WaitForRequest();
+    VerifyPreflightRequest(preflight_response.http_request());
+    EXPECT_EQ(redirect_preflight_response.http_request()->headers.at("Origin"),
+              "null");
+    // Check that POST-specific headers were stripped.
+    EXPECT_FALSE(base::Contains(
+        redirect_preflight_response.http_request()->headers, "Content-Length"));
+    EXPECT_FALSE(base::Contains(
+        redirect_preflight_response.http_request()->headers, "Content-Type"));
+    // Check that the content body was stripped.
+    EXPECT_TRUE(redirect_preflight_response.http_request()->content.empty());
+    // These extra request headers were not stripped.
+    EXPECT_EQ(redirect_preflight_response.http_request()->headers.at(
+                  cors::kAccessControlRequestHeaders),
+              "attribution-reporting-eligible");
+
+    // Send response with extra headers.
+    std::unique_ptr<net::test_server::BasicHttpResponse>
+        redirect_access_allow_response = GetResponseWithAccessAllowHeaders(
+            redirect_preflight_response.http_request());
+    redirect_access_allow_response->AddCustomHeader("Content-Type",
+                                                    "text/plain;charset=UTF-8");
+    redirect_preflight_response.Send(
+        redirect_access_allow_response->ToResponseString());
+
+    redirect_preflight_response.Done();
+  }
+
+  {
+    // Verify the redirect request is a GET request.
+    redirect_response.WaitForRequest();
+    EXPECT_EQ(redirect_response.http_request()->method,
+              net::test_server::HttpMethod::METHOD_GET);
+    EXPECT_EQ(redirect_response.http_request()->headers.at("Origin"), "null");
+    EXPECT_FALSE(base::Contains(redirect_response.http_request()->headers,
+                                "Content-Length"));
+    EXPECT_EQ(redirect_response.http_request()->headers.at("Content-Type"),
+              "text/plain;charset=UTF-8");
+    // Check that the content body was stripped.
+    EXPECT_TRUE(redirect_response.http_request()->content.empty());
+    // These extra request headers were not stripped.
+    EXPECT_EQ(redirect_response.http_request()->headers.at(
+                  "Attribution-Reporting-Eligible"),
+              "event-source");
+    EXPECT_FALSE(base::Contains(reporting_response.http_request()->headers,
+                                "Attribution-Reporting-Support"));
+  }
+}
+
+class FencedFrameReportEventAttributionCrossAppWebEnabledBrowserTest
+    : public FencedFrameReportEventBrowserTest {
+ public:
+  FencedFrameReportEventAttributionCrossAppWebEnabledBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kAttributionReportingCrossAppWeb);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    FencedFrameReportEventAttributionCrossAppWebEnabledBrowserTest,
+    ReportEventSameOriginSetsSupportHeader) {
+  net::test_server::ControllableHttpResponse response(https_server(),
+                                                      kReportingURL);
+  ASSERT_TRUE(https_server()->Start());
+
+  // Set up the embedder and a default mode fenced frame.
+  GURL main_url = https_server()->GetURL("a.test", "/hello.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  EXPECT_TRUE(ExecJs(root,
+                     "var f = document.createElement('fencedframe');"
+                     "f.mode = 'opaque-ads';"
+                     "document.body.appendChild(f);"));
+
+  EXPECT_EQ(1U, root->child_count());
+  FrameTreeNode* fenced_frame_root_node =
+      GetFencedFrameRootNode(root->child_at(0));
+  EXPECT_TRUE(fenced_frame_root_node->IsFencedFrameRoot());
+  EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
+
+  GURL https_url(
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+
+  // Create a FencedFrameReporter and pass it reporting metadata.
+  scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
+      CreateFencedFrameReporter();
+  GURL reporting_url(https_server()->GetURL("a.test", kReportingURL));
+  // Set valid reporting metadata for buyer.
+  fenced_frame_reporter->OnUrlMappingReady(
+      blink::FencedFrame::ReportingDestination::kBuyer,
+      {{"click", reporting_url}});
+
+  // Get the urn mapping object.
+  FencedFrameURLMapping& url_mapping =
+      root->current_frame_host()->GetPage().fenced_frame_urls_map();
+
+  // Add url and its reporting metadata to fenced frame url mapping.
+  auto urn_uuid = AddAndVerifyFencedFrameURL(&url_mapping, https_url,
+                                             fenced_frame_reporter);
+
+  TestFencedFrameURLMappingResultObserver mapping_observer;
+  url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &mapping_observer);
+  TestFrameNavigationObserver observer(
+      fenced_frame_root_node->current_frame_host());
+
+  // Navigate the fenced frame.
+  EXPECT_TRUE(ExecJs(root, JsReplace("f.src = $1;", urn_uuid)));
+
+  observer.WaitForCommit();
+  EXPECT_TRUE(mapping_observer.mapping_complete_observed());
+  EXPECT_EQ(fenced_frame_reporter, mapping_observer.fenced_frame_reporter());
+
+  // Perform the reportEvent call, with a unique body.
+  std::string event_data = "this is a click";
+  std::string report_event_script = JsReplace(R"(
+        window.fence.reportEvent({
+          eventType: 'click',
+          eventData: $1,
+          destination: ['buyer'],
+        });
+      )",
+                                              event_data);
+  EXPECT_TRUE(ExecJs(fenced_frame_root_node, report_event_script));
+
+  // Verify the request contains the eligibility header.
   response.WaitForRequest();
   EXPECT_EQ(response.http_request()->content, event_data);
+  EXPECT_EQ(
+      response.http_request()->headers.at("Attribution-Reporting-Eligible"),
+      "event-source");
+  EXPECT_EQ(
+      response.http_request()->headers.at("Attribution-Reporting-Support"),
+      "web");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    FencedFrameReportEventAttributionCrossAppWebEnabledBrowserTest,
+    ReportEventCrossOriginSetsSupportHeader) {
+  // For cross-origin reportEvent beacon, a preflight request is sent before the
+  // actual request. `preflight_response` is used to handle the preflight
+  // request. `reporting_response` is used to handle the actual request. Note
+  // ControllableHttpResponse is used in the order they are created.
+  net::test_server::ControllableHttpResponse preflight_response(https_server(),
+                                                                kReportingURL);
+  net::test_server::ControllableHttpResponse reporting_response(https_server(),
+                                                                kReportingURL);
+  ASSERT_TRUE(https_server()->Start());
+
+  // Set up the embedder and a default mode fenced frame.
+  GURL main_url = https_server()->GetURL("a.test", "/hello.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  EXPECT_TRUE(ExecJs(root,
+                     "var f = document.createElement('fencedframe');"
+                     "f.mode = 'opaque-ads';"
+                     "document.body.appendChild(f);"));
+
+  EXPECT_EQ(1U, root->child_count());
+  FrameTreeNode* fenced_frame_root_node =
+      GetFencedFrameRootNode(root->child_at(0));
+  EXPECT_TRUE(fenced_frame_root_node->IsFencedFrameRoot());
+  EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
+
+  GURL https_url(
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+
+  // Create a FencedFrameReporter and pass it reporting metadata.
+  scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
+      CreateFencedFrameReporter();
+  GURL reporting_url(https_server()->GetURL("c.test", kReportingURL));
+  // Set valid reporting metadata for buyer.
+  fenced_frame_reporter->OnUrlMappingReady(
+      blink::FencedFrame::ReportingDestination::kBuyer,
+      {{"click", reporting_url}});
+
+  // Get the urn mapping object.
+  FencedFrameURLMapping& url_mapping =
+      root->current_frame_host()->GetPage().fenced_frame_urls_map();
+
+  // Add url and its reporting metadata to fenced frame url mapping.
+  auto urn_uuid = AddAndVerifyFencedFrameURL(&url_mapping, https_url,
+                                             fenced_frame_reporter);
+
+  TestFencedFrameURLMappingResultObserver mapping_observer;
+  url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &mapping_observer);
+  TestFrameNavigationObserver observer(
+      fenced_frame_root_node->current_frame_host());
+
+  // Navigate the fenced frame.
+  EXPECT_TRUE(ExecJs(root, JsReplace("f.src = $1;", urn_uuid)));
+
+  observer.WaitForCommit();
+  EXPECT_TRUE(mapping_observer.mapping_complete_observed());
+  EXPECT_EQ(fenced_frame_reporter, mapping_observer.fenced_frame_reporter());
+
+  // Perform the reportEvent call, with a unique body.
+  std::string event_data = "this is a click";
+  std::string report_event_script = JsReplace(R"(
+        window.fence.reportEvent({
+          eventType: 'click',
+          eventData: $1,
+          destination: ['buyer'],
+        });
+      )",
+                                              event_data);
+  EXPECT_TRUE(ExecJs(fenced_frame_root_node, report_event_script));
+
+  {
+    // Verify the preflight request contains the eligibility header under
+    // "Access-Control-Request-Headers".
+    preflight_response.WaitForRequest();
+    VerifyPreflightRequest(preflight_response.http_request());
+
+    // Send response with extra headers.
+    std::unique_ptr<net::test_server::BasicHttpResponse> access_allow_response =
+        GetResponseWithAccessAllowHeaders(preflight_response.http_request());
+    access_allow_response->AddCustomHeader("Content-Type",
+                                           "text/plain;charset=UTF-8");
+    preflight_response.Send(access_allow_response->ToResponseString());
+
+    preflight_response.Done();
+  }
+
+  // Verify the request contains the eligibility header.
+  {
+    reporting_response.WaitForRequest();
+    EXPECT_EQ(reporting_response.http_request()->content, event_data);
+    EXPECT_EQ(reporting_response.http_request()->headers.at(
+                  "Attribution-Reporting-Eligible"),
+              "event-source");
+    EXPECT_EQ(reporting_response.http_request()->headers.at(
+                  "Attribution-Reporting-Support"),
+              "web");
+  }
 }
 
 // Parameterized on whether the feature is enabled or not.
