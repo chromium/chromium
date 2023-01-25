@@ -8,3 +8,5 @@ lib
 logs/
 node_modules/
 wptreport.json
+.ackrc
+.envrc

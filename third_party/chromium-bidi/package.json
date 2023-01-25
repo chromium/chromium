@@ -9,20 +9,20 @@
     "e2e-headless": "npm run server-no-build & npm run e2e-only",
     "e2e-only": "python3 -m pytest --rootdir=tests",
     "e2e": "npm run e2e-headless",
-    "lint": "npm run lint:eslint",
+    "lint": "npm run lint:eslint && npm run lint:prettier",
     "lint:eslint": "eslint --ext js --ext ts .",
     "lint:prettier": "prettier --check .",
     "prepare": "npm run clean && npm run build",
-    "prettier": "npm run format:prettier",
-    "format": "npm run format:eslint && npm run format:prettier && npm run yapf",
+    "format": "npm run format:eslint && npm run format:prettier && npm run format:yapf",
     "format:eslint": "eslint --ext js --ext ts --fix .",
     "format:prettier": "prettier --write .",
     "format:yapf": "yapf --in-place --parallel --recursive --exclude=wpt examples/ tests/",
-    "rollup": "rollup --config configs/rollup.config.js",
+    "rollup": "rollup -c",
     "server-no-build": "node lib/cjs/bidiServer/index.js",
     "server": "npm run build && npm run server-no-build --",
     "test": "npm run build && npm run unit",
-    "unit": "cross-env TS_NODE_PROJECT='src/tsconfig.json' mocha"
+    "unit": "cross-env TS_NODE_PROJECT='src/tsconfig.json' mocha",
+    "watch": "tsc -b src/tsconfig.json --watch & rollup -c --watch"
   },
   "files": [
     "lib"

@@ -1,11 +1,11 @@
 {
-  "files.associations": {
-    "**/*.es": "javascript"
-  },
   "python.formatting.provider": "yapf",
   "python.testing.nosetestsEnabled": false,
   "python.testing.pytestArgs": ["tests"],
   "python.testing.pytestEnabled": true,
   "python.testing.unittestEnabled": false,
+  "search.exclude": {
+    "wpt/": true
+  },
   "typescript.tsdk": "node_modules/typescript/lib"
 }
