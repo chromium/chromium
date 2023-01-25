@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "ash/accelerators/keyboard_code_util.h"
+#include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -739,6 +740,26 @@ TEST_F(CaptureModeDemoToolsTest, CaptureBoundsChangeTest) {
       window.get(), SplitViewController::SnapPosition::kPrimary);
   EXPECT_EQ(split_view_controller->primary_window(), window.get());
   VerifyKeyComboWidgetPosition();
+}
+
+// Tests that there is no crash when work area changed after starting a video
+// recording with demo tools enabled. Docked mananifier is used as an example to
+// trigger the work area change.
+TEST_F(CaptureModeDemoToolsTest, WorkAreaChangeTest) {
+  CaptureModeController* controller = StartCaptureSession(
+      CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  controller->EnableDemoTools(true);
+  StartVideoRecordingImmediately();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  CaptureModeDemoToolsController* demo_tools_controller =
+      GetCaptureModeDemoToolsController();
+  EXPECT_TRUE(demo_tools_controller);
+  CaptureModeDemoToolsTestApi demo_tools_test_api(demo_tools_controller);
+
+  auto* docked_magnifier_controller =
+      Shell::Get()->docked_magnifier_controller();
+  docked_magnifier_controller->SetEnabled(/*enabled=*/true);
+  controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
 }
 
 // Tests that the metrics that record if a recording starts with demo tools

@@ -164,7 +164,9 @@ void CaptureModeDemoToolsController::PerformMousePressAnimation(
 }
 
 void CaptureModeDemoToolsController::RefreshBounds() {
-  key_combo_widget_->SetBounds(CalculateKeyComboWidgetBounds());
+  if (key_combo_widget_) {
+    key_combo_widget_->SetBounds(CalculateKeyComboWidgetBounds());
+  }
 }
 
 void CaptureModeDemoToolsController::OnTouchEvent(
