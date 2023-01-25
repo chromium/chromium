@@ -74,6 +74,8 @@ component("controller") {
       "memory_usage_monitor_posix.h",
       "oom_intervention_impl.cc",
       "oom_intervention_impl.h",
+      "private_memory_footprint_provider.cc",
+      "private_memory_footprint_provider.h",
     ]
     public_deps = [ "//third_party/blink/public/mojom:memory_usage_monitor_linux_mojo_bindings_blink" ]
   }

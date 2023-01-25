@@ -70,6 +70,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "third_party/blink/renderer/controller/crash_memory_metrics_reporter_impl.h"
 #include "third_party/blink/renderer/controller/oom_intervention_impl.h"
+#include "third_party/blink/renderer/controller/private_memory_footprint_provider.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -247,6 +248,12 @@ void BlinkInitializer::RegisterMemoryWatchers() {
   // Start reporting the highest private memory footprint after the first
   // navigation.
   HighestPmfReporter::Initialize(main_thread_task_runner);
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  // Initialize PrivateMemoryFootprintProvider to start providing the value
+  // for the browser process.
+  PrivateMemoryFootprintProvider::Initialize(main_thread_task_runner);
 #endif
 }
 

@@ -1878,4 +1878,11 @@ std::unique_ptr<CodecFactory> RenderThreadImpl::CreateMediaCodecFactory(
 #endif
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void RenderThreadImpl::SetPrivateMemoryFootprint(
+    uint64_t private_memory_footprint_bytes) {
+  GetRendererHost()->SetPrivateMemoryFootprint(private_memory_footprint_bytes);
+}
+#endif
+
 }  // namespace content

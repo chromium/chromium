@@ -744,6 +744,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Notifies the renderer process of memory pressure level.
   void NotifyMemoryPressureToRenderer(
       base::MemoryPressureListener::MemoryPressureLevel level);
+
+  uint64_t GetPrivateMemoryFootprint() const {
+    return private_memory_footprint_bytes_;
+  }
 #endif
 
  protected:
@@ -826,6 +830,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
                            BrowserHistogramCallback callback) override;
   void SuddenTerminationChanged(bool enabled) override;
   void RecordUserMetricsAction(const std::string& action) override;
+#if BUILDFLAG(IS_ANDROID)
+  void SetPrivateMemoryFootprint(
+      uint64_t private_memory_footprint_bytes) override;
+#endif
 
   void CreateEmbeddedFrameSinkProvider(
       mojo::PendingReceiver<blink::mojom::EmbeddedFrameSinkProvider> receiver);
@@ -1235,6 +1243,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
 #if BUILDFLAG(ENABLE_PPAPI)
   scoped_refptr<PepperRendererConnection> pepper_renderer_connection_;
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  // The private memory footprint of the render process.
+  uint64_t private_memory_footprint_bytes_ = 0u;
 #endif
 
   // IOThreadHostImpl owns some IO-thread state associated with this

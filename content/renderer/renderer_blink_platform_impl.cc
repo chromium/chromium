@@ -1054,4 +1054,13 @@ RendererBlinkPlatformImpl::VideoFrameCompositorTaskRunner() {
   return compositor_task_runner;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void RendererBlinkPlatformImpl::SetPrivateMemoryFootprint(
+    uint64_t private_memory_footprint_bytes) {
+  auto* render_thread = RenderThreadImpl::current();
+  CHECK(render_thread);
+  render_thread->SetPrivateMemoryFootprint(private_memory_footprint_bytes);
+}
+#endif
+
 }  // namespace content

@@ -21,4 +21,22 @@ interface RendererHost {
 
   // Sends a string to be recorded by UserMetrics.
   RecordUserMetricsAction(string action);
+
+  // Provides this render process' private memory footprint to the browser.
+  // Used by the UserLevelMemoryPressureSignalGenerator.
+  //
+  // In case of compromised renderer process:
+  // - Reporting small values make it less likely for a memory pressure signal
+  //   to be sent. This isn't a big deal, it only increase the changes the OS to
+  //   start killing the renderer process.
+  // - Reporting large values makes Chrome to dispatch memory pressure
+  //   signal needlessly. There is a 10 minutes wait in between them. It is not
+  //   particularly worrying.
+  //
+  // TODO(https://crbug.com/1393283): if the
+  // UserLevelMemoryPressureSignalGenerator is approved, investigate a
+  // possibility to gather data inside the browser process, via e.g.
+  // getProcessMemoryInfo.
+  [EnableIf=is_android]
+  SetPrivateMemoryFootprint(uint64 private_memory_footprint_bytes);
 };

@@ -386,6 +386,11 @@ class CONTENT_EXPORT RenderThreadImpl
     run_loop_start_time_ = run_loop_start_time;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // Provide private memory footprint for browser process.
+  void SetPrivateMemoryFootprint(uint64_t private_memory_footprint_bytes);
+#endif
+
  private:
   friend class RenderThreadImplBrowserTest;
   friend class AgentSchedulingGroup;

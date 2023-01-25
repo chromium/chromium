@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/browser/memory_pressure/user_level_memory_pressure_signal_generator.h"
-#include "base/task/sequenced_task_runner.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include <ctype.h>
@@ -199,6 +198,13 @@ uint64_t UserLevelMemoryPressureSignalGenerator::
   add_process_private_footprint(base::Process::Current());
 
   // Measure private memory footprints of GPU process and Utility processes.
+  // Since GPU process uses the same user id as the browser process (android),
+  // the browser process can measure the GPU's private memory footprint.
+  // However, regarding the utility processes, their user ids are different.
+  // So because of the hidepid=2 mount option, the browser process cannot
+  // measure the private memory footprints of the utility processes.
+  // TODO(crbug.com/1393283): measure the private memory footprints of
+  // the utility processes correctly.
   for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
     add_process_private_footprint(iter.GetData().GetProcess());
   }
@@ -224,7 +230,14 @@ uint64_t UserLevelMemoryPressureSignalGenerator::
       continue;
     }
 
-    total_private_footprint_bytes += GetPrivateFootprint(process).value_or(0);
+    // Because of the "hidepid=2" mount option for /proc on Android,
+    // the browser process cannot open /proc/{render process pid}/maps and
+    // status, i.e. no such file or directory. So each renderer process
+    // provides its private memory footprint for the browser process and
+    // the browser process gets the (cached) value via RenderProcessHostImpl.
+    total_private_footprint_bytes +=
+        static_cast<content::RenderProcessHostImpl*>(host)
+            ->GetPrivateMemoryFootprint();
   }
   return total_private_footprint_bytes;
 }
@@ -267,7 +280,7 @@ void UserLevelMemoryPressureSignalGenerator::NotifyMemoryPressure() {
 
 namespace {
 
-// TODO(crbug.com/1393282): if this feature is approved, refactor the duplicate
+// TODO(crbug.com/1393283): if this feature is approved, refactor the duplicate
 // code under //third_party/blink/renderer/controller. If not approved,
 // remove the code as soon as possible.
 absl::optional<uint64_t> CalculateProcessMemoryFootprint(
