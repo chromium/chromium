@@ -182,9 +182,6 @@ TEST_P(CookiePartitionKeyTest, FromNetworkIsolationKey) {
         CookiePartitionKey::FromNetworkIsolationKey(
             test_case.network_isolation_key);
 
-    if (got)
-      EXPECT_FALSE(got->from_script());
-
     if (PartitionedCookiesEnabled()) {
       EXPECT_EQ(test_case.expected, got);
     } else if (test_case.allow_nonced_partition_keys) {
@@ -215,6 +212,30 @@ TEST_P(CookiePartitionKeyTest, FromWire) {
     auto got = CookiePartitionKey::FromWire(want.site(), want.nonce());
     EXPECT_EQ(want, got);
     EXPECT_FALSE(got.from_script());
+  }
+}
+
+TEST_P(CookiePartitionKeyTest, FromStorageKeyComponents) {
+  struct TestCase {
+    const GURL url;
+    const absl::optional<base::UnguessableToken> nonce = absl::nullopt;
+  } test_cases[] = {
+      {GURL("https://foo.com")},
+      {GURL()},
+      {GURL("https://foo.com"), base::UnguessableToken::Create()},
+  };
+
+  for (const auto& test_case : test_cases) {
+    auto want =
+        CookiePartitionKey::FromURLForTesting(test_case.url, test_case.nonce);
+    absl::optional<CookiePartitionKey> got =
+        CookiePartitionKey::FromStorageKeyComponents(want.site(), want.nonce());
+    if (PartitionedCookiesEnabled() ||
+        (NoncedPartitionedCookiesEnabled() && test_case.nonce)) {
+      EXPECT_EQ(got, want);
+    } else {
+      EXPECT_FALSE(got);
+    }
   }
 }
 

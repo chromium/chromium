@@ -54,7 +54,8 @@ CookiePartitionKey& CookiePartitionKey::operator=(CookiePartitionKey&& other) =
 CookiePartitionKey::~CookiePartitionKey() = default;
 
 bool CookiePartitionKey::operator==(const CookiePartitionKey& other) const {
-  return site_ == other.site_ && nonce_ == other.nonce_;
+  return site_ == other.site_ && nonce_ == other.nonce_ &&
+         from_script_ == other.from_script_;
 }
 
 bool CookiePartitionKey::operator!=(const CookiePartitionKey& other) const {

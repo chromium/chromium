@@ -76,6 +76,8 @@ TEST(CookiePartitionKeyCollectionTest, Contains) {
       CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com"));
   const CookiePartitionKey kOtherPartitionKey =
       CookiePartitionKey::FromURLForTesting(GURL("https://www.bar.com"));
+  const CookiePartitionKey kPartitionKeyNotInCollection =
+      CookiePartitionKey::FromURLForTesting(GURL("https://foobar.com"));
 
   struct TestCase {
     const CookiePartitionKeyCollection keychain;
@@ -91,6 +93,8 @@ TEST(CookiePartitionKeyCollectionTest, Contains) {
       // Multiple keys
       {CookiePartitionKeyCollection({kPartitionKey, kOtherPartitionKey}),
        kPartitionKey, true},
+      {CookiePartitionKeyCollection({kPartitionKey, kOtherPartitionKey}),
+       kPartitionKeyNotInCollection, false},
       // Contains all keys
       {CookiePartitionKeyCollection::ContainsAll(), kPartitionKey, true},
   };
