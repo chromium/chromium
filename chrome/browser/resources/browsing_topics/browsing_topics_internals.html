@@ -25,6 +25,7 @@ found in the LICENSE file.
   <div slot="tab">Topics State</div>
   <div slot="tab">Classifier</div>
   <div slot="tab">Features and Parameters</div>
+  <div slot="tab" id="consent-info">Consent Info</div>
   <div id="topics-state-slot" slot="panel" class="panel">
     <div class="refresh-state-buttons-div">
       <button type="button" id="refresh-topics-state-button" class="refresh-state-button">Refresh</button>
@@ -80,6 +81,14 @@ youtube.com
       <div id="max-number-of-api-usage-context-domains-to-store-per-page-load-div">BrowsingTopics:max_number_of_api_usage_context_domains_to_store_per_page_load: </div>
       <div id="config-version-div">BrowsingTopics:config_version: </div>
       <div id="taxonomy-version-div">BrowsingTopics:taxonomy_version: </div>
+    </div>
+  </div>
+  <div id="consent-info-slot" slot="panel" class="panel">
+    <div class="consent-info-div">
+      <div>$i18n{topicsConsentStatusLabel} $i18n{topicsConsentStatus}</div>
+      <div>$i18n{topicsConsentSourceLabel} $i18n{topicsConsentSource}</div>
+      <div>$i18n{topicsConsentTimeLabel} $i18n{topicsConsentTime}</div>
+      <div>$i18n{topicsConsentTextLabel} $i18n{topicsConsentText}</div>
     </div>
   </div>
 </cr-tab-box>

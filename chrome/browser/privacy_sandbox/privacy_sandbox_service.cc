@@ -966,9 +966,8 @@ void PrivacySandboxService::TopicsToggleChanged(bool new_value) const {
       privacy_sandbox::TopicsConsentUpdateSource::kSettings, new_value);
 }
 
-void PrivacySandboxService::TopicsConsentRequired() const {
-  // TODO(crbug.com/1332513): Implement + Test.
-  NOTIMPLEMENTED();
+bool PrivacySandboxService::TopicsConsentRequired() const {
+  return privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get();
 }
 
 bool PrivacySandboxService::TopicsHasActiveConsent() const {
