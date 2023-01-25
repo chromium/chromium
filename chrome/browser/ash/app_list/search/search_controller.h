@@ -40,6 +40,9 @@ class SearchMetricsManager;
 class SearchSessionMetricsManager;
 class SearchProvider;
 
+// Long queries will be truncated down to this length.
+constexpr int kMaxAllowedQueryLength = 500;
+
 // A controller that collects queries from the AppListClient, dispatches them to
 // search providers, then ranks and publishes the results to the AppListModel.
 // Many methods are virtual for testing.

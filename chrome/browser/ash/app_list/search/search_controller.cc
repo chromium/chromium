@@ -90,7 +90,15 @@ void SearchController::StartSearch(const std::u16string& query) {
 
   burn_in_controller_->Start();
 
+  // TODO(b/266468933): This logging is limited to a short maximum query
+  // length. Add another metric which measures the bucket count of query length,
+  // with no maximum.
   ash::RecordLauncherIssuedSearchQueryLength(query.length());
+  // Limit query length, for efficiency reasons in matching query to texts.
+  const std::u16string truncated_query =
+      query.length() > kMaxAllowedQueryLength
+          ? query.substr(0, kMaxAllowedQueryLength)
+          : query;
 
   // Clear all search results but preserve zero-state results.
   ClearNonZeroStateResults(results_);
@@ -102,14 +110,14 @@ void SearchController::StartSearch(const std::u16string& query) {
   }
 
   categories_ = CreateAllCategories();
-  ranker_manager_->Start(query, results_, categories_);
+  ranker_manager_->Start(truncated_query, results_, categories_);
 
   session_start_ = base::Time::Now();
-  last_query_ = query;
+  last_query_ = truncated_query;
 
   // Search all providers.
   for (const auto& provider : providers_) {
-    provider->Start(query);
+    provider->Start(truncated_query);
   }
 }
 
