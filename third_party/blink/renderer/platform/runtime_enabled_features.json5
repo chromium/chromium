@@ -2728,7 +2728,7 @@
     },
     {
       name: "StreamingDeclarativeShadowDOM",
-      status: "experimental",
+      status: "stable",
       base_feature: "StreamingDeclarativeShadowDOM",
     },
     {
