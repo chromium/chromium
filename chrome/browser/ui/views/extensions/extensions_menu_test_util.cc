@@ -121,10 +121,10 @@ bool ExtensionsMenuTestUtil::HasAction(const extensions::ExtensionId& id) {
 }
 
 void ExtensionsMenuTestUtil::InspectPopup(const extensions::ExtensionId& id) {
-  InstalledExtensionMenuItemView* view = GetMenuItemViewForId(id);
-  DCHECK(view);
-  static_cast<ExtensionActionViewController*>(view->view_controller())
-      ->InspectPopup();
+  auto* view_controller = static_cast<ExtensionActionViewController*>(
+      extensions_container_->GetActionForId(id));
+  DCHECK(view_controller);
+  view_controller->InspectPopup();
 }
 
 bool ExtensionsMenuTestUtil::HasIcon(const extensions::ExtensionId& id) {
