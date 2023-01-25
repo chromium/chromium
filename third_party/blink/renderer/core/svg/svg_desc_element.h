@@ -32,7 +32,7 @@ class SVGDescElement final : public SVGElement {
   explicit SVGDescElement(Document&);
 
  private:
-  bool LayoutObjectIsNeeded(const ComputedStyle&) const override {
+  bool LayoutObjectIsNeeded(const DisplayStyle&) const override {
     return false;
   }
 };

@@ -48,6 +48,9 @@
 
 namespace blink {
 
+bool PseudoElementLayoutObjectIsNeeded(const DisplayStyle& pseudo_style,
+                                       const Element* originating_element);
+
 PseudoElement* PseudoElement::Create(Element* parent,
                                      PseudoId pseudo_id,
                                      const AtomicString& view_transition_name) {
@@ -313,8 +316,8 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
   }
 }
 
-bool PseudoElement::LayoutObjectIsNeeded(const ComputedStyle& style) const {
-  return PseudoElementLayoutObjectIsNeeded(&style, parentElement());
+bool PseudoElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
+  return PseudoElementLayoutObjectIsNeeded(style, parentElement());
 }
 
 bool PseudoElement::CanGeneratePseudoElement(PseudoId pseudo_id) const {
@@ -350,9 +353,16 @@ bool PseudoElementLayoutObjectIsNeeded(const ComputedStyle* pseudo_style,
                                        const Element* originating_element) {
   if (!pseudo_style)
     return false;
-  if (pseudo_style->Display() == EDisplay::kNone)
+  return PseudoElementLayoutObjectIsNeeded(pseudo_style->GetDisplayStyle(),
+                                           originating_element);
+}
+
+bool PseudoElementLayoutObjectIsNeeded(const DisplayStyle& pseudo_style,
+                                       const Element* originating_element) {
+  if (pseudo_style.Display() == EDisplay::kNone) {
     return false;
-  switch (pseudo_style->StyleType()) {
+  }
+  switch (pseudo_style.StyleType()) {
     case kPseudoIdFirstLetter:
     case kPseudoIdBackdrop:
     case kPseudoIdViewTransition:
@@ -363,10 +373,11 @@ bool PseudoElementLayoutObjectIsNeeded(const ComputedStyle* pseudo_style,
       return true;
     case kPseudoIdBefore:
     case kPseudoIdAfter:
-      return !pseudo_style->ContentPreventsBoxGeneration();
+      return !pseudo_style.ContentPreventsBoxGeneration();
     case kPseudoIdMarker: {
-      if (!pseudo_style->ContentBehavesAsNormal())
-        return !pseudo_style->ContentPreventsBoxGeneration();
+      if (!pseudo_style.ContentBehavesAsNormal()) {
+        return !pseudo_style.ContentPreventsBoxGeneration();
+      }
       const ComputedStyle* parent_style =
           originating_element->GetComputedStyle();
       return parent_style && (parent_style->ListStyleType() ||

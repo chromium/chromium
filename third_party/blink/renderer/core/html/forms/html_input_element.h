@@ -217,7 +217,7 @@ class CORE_EXPORT HTMLInputElement
                                    unsigned end,
                                    ExceptionState&);
 
-  bool LayoutObjectIsNeeded(const ComputedStyle&) const final;
+  bool LayoutObjectIsNeeded(const DisplayStyle&) const final;
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
   void DetachLayoutTree(bool performing_reattach) final;
   void UpdateSelectionOnFocus(SelectionBehaviorOnFocus,

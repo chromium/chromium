@@ -57,7 +57,7 @@ class CORE_EXPORT PseudoElement : public Element {
   scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
       const StyleRecalcContext&) override;
   void AttachLayoutTree(AttachContext&) override;
-  bool LayoutObjectIsNeeded(const ComputedStyle&) const override;
+  bool LayoutObjectIsNeeded(const DisplayStyle&) const override;
   bool CanGeneratePseudoElement(PseudoId) const override;
 
   bool CanStartSelection() const override { return false; }

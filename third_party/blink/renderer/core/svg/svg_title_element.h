@@ -38,7 +38,7 @@ class SVGTitleElement final : public SVGElement {
   void RemovedFrom(ContainerNode&) override;
   void ChildrenChanged(const ChildrenChange&) override;
 
-  bool LayoutObjectIsNeeded(const ComputedStyle&) const override {
+  bool LayoutObjectIsNeeded(const DisplayStyle&) const override {
     return false;
   }
 

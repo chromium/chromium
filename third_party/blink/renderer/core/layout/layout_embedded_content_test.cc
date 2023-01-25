@@ -43,9 +43,7 @@ class HTMLFreezableIFrameElement : public HTMLIFrameElement {
   }
 
  private:
-  bool LayoutObjectIsNeeded(const ComputedStyle&) const override {
-    return true;
-  }
+  bool LayoutObjectIsNeeded(const DisplayStyle&) const override { return true; }
   LayoutObject* CreateLayoutObject(const ComputedStyle&,
                                    LegacyLayout) override {
     return MakeGarbageCollected<LayoutFreezableIFrame>(this);

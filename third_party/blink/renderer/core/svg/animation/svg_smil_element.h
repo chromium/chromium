@@ -181,7 +181,7 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
   void StartedActiveInterval();
   void EndedActiveInterval();
 
-  bool LayoutObjectIsNeeded(const ComputedStyle&) const override {
+  bool LayoutObjectIsNeeded(const DisplayStyle&) const override {
     return false;
   }
 

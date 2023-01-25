@@ -37,7 +37,7 @@ HTMLFrameElement::HTMLFrameElement(Document& document)
       frame_border_(true),
       frame_border_set_(false) {}
 
-bool HTMLFrameElement::LayoutObjectIsNeeded(const ComputedStyle&) const {
+bool HTMLFrameElement::LayoutObjectIsNeeded(const DisplayStyle&) const {
   // For compatibility, frames render even when display: none is set.
   return ContentFrame();
 }

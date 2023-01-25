@@ -144,7 +144,7 @@ void HTMLVideoElement::ContextDestroyed() {
   HTMLMediaElement::ContextDestroyed();
 }
 
-bool HTMLVideoElement::LayoutObjectIsNeeded(const ComputedStyle& style) const {
+bool HTMLVideoElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
   return HTMLElement::LayoutObjectIsNeeded(style);
 }
 

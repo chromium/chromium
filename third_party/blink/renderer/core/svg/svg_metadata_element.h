@@ -32,7 +32,7 @@ class SVGMetadataElement final : public SVGElement {
   explicit SVGMetadataElement(Document&);
 
  private:
-  bool LayoutObjectIsNeeded(const ComputedStyle&) const override {
+  bool LayoutObjectIsNeeded(const DisplayStyle&) const override {
     return false;
   }
 };

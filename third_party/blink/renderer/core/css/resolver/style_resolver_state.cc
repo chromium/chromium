@@ -169,7 +169,7 @@ void StyleResolverState::LoadPendingResources() {
   if (pseudo_request_type_ == StyleRequest::kForComputedStyle ||
       (ParentStyle() && ParentStyle()->IsEnsuredInDisplayNone()) ||
       (StyleBuilder().Display() == EDisplay::kNone &&
-       !GetElement().LayoutObjectIsNeeded(*style_builder_.InternalStyle())) ||
+       !GetElement().LayoutObjectIsNeeded(style_builder_.GetDisplayStyle())) ||
       StyleBuilder().IsEnsuredOutsideFlatTree()) {
     return;
   }

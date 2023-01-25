@@ -122,7 +122,7 @@ class SVGSVGElement final : public SVGGraphicsElement,
       MutableCSSPropertyValueSet*) override;
 
   void AttachLayoutTree(AttachContext&) override;
-  bool LayoutObjectIsNeeded(const ComputedStyle&) const override;
+  bool LayoutObjectIsNeeded(const DisplayStyle&) const override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;

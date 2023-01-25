@@ -497,7 +497,7 @@ AffineTransform SVGSVGElement::LocalCoordinateSpaceTransform(
   return transform;
 }
 
-bool SVGSVGElement::LayoutObjectIsNeeded(const ComputedStyle& style) const {
+bool SVGSVGElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
   // FIXME: We should respect display: none on the documentElement svg element
   // but many things in LocalFrameView and SVGImage depend on the LayoutSVGRoot
   // when they should instead depend on the LayoutView.

@@ -42,7 +42,7 @@ class HTMLNoEmbedElement final : public HTMLElement {
   explicit HTMLNoEmbedElement(Document&);
 
  private:
-  bool LayoutObjectIsNeeded(const ComputedStyle&) const override;
+  bool LayoutObjectIsNeeded(const DisplayStyle&) const override;
 };
 
 }  // namespace blink

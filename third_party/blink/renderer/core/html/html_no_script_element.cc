@@ -41,7 +41,7 @@ HTMLNoScriptElement::HTMLNoScriptElement(Document& document)
     : HTMLElement(html_names::kNoscriptTag, document) {}
 
 bool HTMLNoScriptElement::LayoutObjectIsNeeded(
-    const ComputedStyle& style) const {
+    const DisplayStyle& style) const {
   if (GetExecutionContext()->CanExecuteScripts(kNotAboutToExecuteScript))
     return false;
   return Element::LayoutObjectIsNeeded(style);

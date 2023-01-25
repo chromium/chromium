@@ -170,7 +170,7 @@ bool SVGMarkerElement::SelfHasRelativeLengths() const {
          marker_height_->CurrentValue()->IsRelative();
 }
 
-bool SVGMarkerElement::LayoutObjectIsNeeded(const ComputedStyle&) const {
+bool SVGMarkerElement::LayoutObjectIsNeeded(const DisplayStyle&) const {
   return IsValid() && HasSVGParent();
 }
 

@@ -610,7 +610,7 @@ void HTMLFencedFrameElement::AttachLayoutTree(AttachContext& context) {
 }
 
 bool HTMLFencedFrameElement::LayoutObjectIsNeeded(
-    const ComputedStyle& style) const {
+    const DisplayStyle& style) const {
   return !collapsed_by_client_ &&
          HTMLFrameOwnerElement::LayoutObjectIsNeeded(style);
 }

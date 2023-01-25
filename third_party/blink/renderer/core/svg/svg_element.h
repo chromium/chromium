@@ -167,7 +167,7 @@ class CORE_EXPORT SVGElement : public Element {
 
   scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
       const StyleRecalcContext&) final;
-  bool LayoutObjectIsNeeded(const ComputedStyle&) const override;
+  bool LayoutObjectIsNeeded(const DisplayStyle&) const override;
 
 #if DCHECK_IS_ON()
   virtual bool IsAnimatableAttribute(const QualifiedName&) const;

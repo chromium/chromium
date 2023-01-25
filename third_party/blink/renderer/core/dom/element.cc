@@ -2640,9 +2640,13 @@ const AtomicString Element::ImageSourceURL() const {
   return FastGetAttribute(html_names::kSrcAttr);
 }
 
-bool Element::LayoutObjectIsNeeded(const ComputedStyle& style) const {
+bool Element::LayoutObjectIsNeeded(const DisplayStyle& style) const {
   return style.Display() != EDisplay::kNone &&
          style.Display() != EDisplay::kContents;
+}
+
+bool Element::LayoutObjectIsNeeded(const ComputedStyle& style) const {
+  return LayoutObjectIsNeeded(style.GetDisplayStyle());
 }
 
 LayoutObject* Element::CreateLayoutObject(const ComputedStyle& style,

@@ -116,8 +116,7 @@ LayoutObject* SVGTextPathElement::CreateLayoutObject(const ComputedStyle&,
   return MakeGarbageCollected<LayoutSVGTextPath>(this);
 }
 
-bool SVGTextPathElement::LayoutObjectIsNeeded(
-    const ComputedStyle& style) const {
+bool SVGTextPathElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
   if (parentNode() &&
       (IsA<SVGAElement>(*parentNode()) || IsA<SVGTextElement>(*parentNode())))
     return SVGElement::LayoutObjectIsNeeded(style);

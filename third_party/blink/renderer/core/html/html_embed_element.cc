@@ -173,7 +173,7 @@ void HTMLEmbedElement::UpdatePluginInternal() {
   RequestObject(plugin_params);
 }
 
-bool HTMLEmbedElement::LayoutObjectIsNeeded(const ComputedStyle& style) const {
+bool HTMLEmbedElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
   if (IsImageType())
     return HTMLPlugInElement::LayoutObjectIsNeeded(style);
 

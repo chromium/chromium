@@ -41,7 +41,7 @@ class SVGFEMergeNodeElement final : public SVGElement {
  private:
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
-  bool LayoutObjectIsNeeded(const ComputedStyle&) const override {
+  bool LayoutObjectIsNeeded(const DisplayStyle&) const override {
     return false;
   }
 

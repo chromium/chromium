@@ -43,7 +43,7 @@ LayoutObject* SVGGElement::CreateLayoutObject(const ComputedStyle& style,
   return MakeGarbageCollected<LayoutSVGTransformableContainer>(this);
 }
 
-bool SVGGElement::LayoutObjectIsNeeded(const ComputedStyle&) const {
+bool SVGGElement::LayoutObjectIsNeeded(const DisplayStyle&) const {
   // Unlike SVGElement::layoutObjectIsNeeded(), we still create layoutObjects,
   // even if display is set to 'none' - which is special to SVG <g> container
   // elements.

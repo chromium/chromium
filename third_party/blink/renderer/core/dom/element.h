@@ -83,6 +83,7 @@ class DOMRectList;
 class DOMStringMap;
 class DOMTokenList;
 class DisplayLockContext;
+class DisplayStyle;
 class Document;
 class EditContext;
 class ElementAnimations;
@@ -593,7 +594,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void DetachLayoutTree(bool performing_reattach = false) override;
 
   virtual LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout);
-  virtual bool LayoutObjectIsNeeded(const ComputedStyle&) const;
+  virtual bool LayoutObjectIsNeeded(const DisplayStyle&) const;
+  bool LayoutObjectIsNeeded(const ComputedStyle&) const;
 
   const ComputedStyle* ParentComputedStyle() const;
 

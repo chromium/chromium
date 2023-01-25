@@ -49,7 +49,7 @@ class SVGUnknownElement final : public SVGElement {
   SVGUnknownElement(const QualifiedName&, Document&);
 
  private:
-  bool LayoutObjectIsNeeded(const ComputedStyle&) const override {
+  bool LayoutObjectIsNeeded(const DisplayStyle&) const override {
     return false;
   }
 };

@@ -939,7 +939,7 @@ void HTMLInputElement::FinishParsingChildren() {
   }
 }
 
-bool HTMLInputElement::LayoutObjectIsNeeded(const ComputedStyle& style) const {
+bool HTMLInputElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
   return input_type_->LayoutObjectIsNeeded() &&
          TextControlElement::LayoutObjectIsNeeded(style);
 }

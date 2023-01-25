@@ -83,7 +83,7 @@ class SVGFELightElement : public SVGElement {
   void SvgAttributeChanged(const SvgAttributeChangedParams&) final;
   void ChildrenChanged(const ChildrenChange&) final;
 
-  bool LayoutObjectIsNeeded(const ComputedStyle&) const override {
+  bool LayoutObjectIsNeeded(const DisplayStyle&) const override {
     return false;
   }
 

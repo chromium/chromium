@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/style/computed_style_initial_values.h"
 #include "third_party/blink/renderer/core/style/cursor_list.h"
 #include "third_party/blink/renderer/core/style/data_ref.h"
+#include "third_party/blink/renderer/core/style/display_style.h"
 #include "third_party/blink/renderer/core/style/style_cached_data.h"
 #include "third_party/blink/renderer/core/style/style_highlight_data.h"
 #include "third_party/blink/renderer/core/style/transform_origin.h"
@@ -1730,25 +1731,16 @@ class ComputedStyle : public ComputedStyleBase,
   // Isolation utility functions.
   bool HasIsolation() const { return Isolation() != EIsolation::kAuto; }
 
+  DisplayStyle GetDisplayStyle() const {
+    return DisplayStyle(Display(), StyleType(), GetContentData());
+  }
+
   // Content utility functions.
   bool ContentBehavesAsNormal() const {
-    switch (StyleType()) {
-      case kPseudoIdMarker:
-        return !GetContentData();
-      default:
-        return !GetContentData() || GetContentData()->IsNone();
-    }
+    return GetDisplayStyle().ContentBehavesAsNormal();
   }
   bool ContentPreventsBoxGeneration() const {
-    switch (StyleType()) {
-      case kPseudoIdBefore:
-      case kPseudoIdAfter:
-        return ContentBehavesAsNormal();
-      case kPseudoIdMarker:
-        return GetContentData() && GetContentData()->IsNone();
-      default:
-        return false;
-    }
+    return GetDisplayStyle().ContentPreventsBoxGeneration();
   }
 
   // Cursor utility functions.
@@ -2957,6 +2949,9 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
            Display() == EDisplay::kTableRowGroup ||
            Display() == EDisplay::kTableColumn ||
            Display() == EDisplay::kTableColumnGroup;
+  }
+  DisplayStyle GetDisplayStyle() const {
+    return DisplayStyle(Display(), StyleType(), GetContentData());
   }
 
   // filter

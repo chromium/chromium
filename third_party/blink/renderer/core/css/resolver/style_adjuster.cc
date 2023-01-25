@@ -685,7 +685,7 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
         IsA<HTMLImageElement>(element) || is_replaced_canvas);
   bool is_table_row_or_column = builder.IsDisplayTableRowOrColumnType();
   bool is_layout_object_needed =
-      element && element->LayoutObjectIsNeeded(*builder.InternalStyle());
+      element && element->LayoutObjectIsNeeded(builder.GetDisplayStyle());
 
   TouchAction element_touch_action = TouchAction::kAuto;
   // Touch actions are only supported by elements that support both the CSS
@@ -846,7 +846,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   auto* html_element = DynamicTo<HTMLElement>(element);
   if (html_element &&
       (builder.Display() != EDisplay::kNone ||
-       element->LayoutObjectIsNeeded(*builder.InternalStyle()))) {
+       element->LayoutObjectIsNeeded(builder.GetDisplayStyle()))) {
     AdjustStyleForHTMLElement(builder, *html_element);
   }
 

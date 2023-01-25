@@ -59,7 +59,7 @@ class SVGStyleElement final : public SVGElement, public StyleElement {
   void ChildrenChanged(const ChildrenChange&) override;
 
   void FinishParsingChildren() override;
-  bool LayoutObjectIsNeeded(const ComputedStyle&) const override {
+  bool LayoutObjectIsNeeded(const DisplayStyle&) const override {
     return false;
   }
 

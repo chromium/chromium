@@ -54,7 +54,7 @@ class SVGComponentTransferFunctionElement : public SVGElement {
 
   void SvgAttributeChanged(const SvgAttributeChangedParams&) final;
 
-  bool LayoutObjectIsNeeded(const ComputedStyle& style) const final {
+  bool LayoutObjectIsNeeded(const DisplayStyle& style) const final {
     return false;
   }
 

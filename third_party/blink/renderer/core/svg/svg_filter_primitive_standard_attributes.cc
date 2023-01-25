@@ -174,7 +174,7 @@ LayoutObject* SVGFilterPrimitiveStandardAttributes::CreateLayoutObject(
 }
 
 bool SVGFilterPrimitiveStandardAttributes::LayoutObjectIsNeeded(
-    const ComputedStyle& style) const {
+    const DisplayStyle& style) const {
   if (IsA<SVGFilterElement>(parentNode()))
     return SVGElement::LayoutObjectIsNeeded(style);
 

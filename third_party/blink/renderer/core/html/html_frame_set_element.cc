@@ -408,7 +408,7 @@ const Vector<bool>& HTMLFrameSetElement::AllowBorderColumns() const {
 }
 
 bool HTMLFrameSetElement::LayoutObjectIsNeeded(
-    const ComputedStyle& style) const {
+    const DisplayStyle& style) const {
   // For compatibility, frames layoutObject even when display: none is set.
   return true;
 }

@@ -443,7 +443,7 @@ ParsedPermissionsPolicy HTMLIFrameElement::ConstructContainerPolicy() const {
   return container_policy;
 }
 
-bool HTMLIFrameElement::LayoutObjectIsNeeded(const ComputedStyle& style) const {
+bool HTMLIFrameElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
   return ContentFrame() && !collapsed_by_client_ &&
          HTMLElement::LayoutObjectIsNeeded(style);
 }
