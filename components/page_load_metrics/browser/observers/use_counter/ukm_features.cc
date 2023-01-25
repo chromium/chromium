@@ -269,6 +269,11 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kGetDisplayMediaWithoutUserActivation,
           WebFeature::kDataUrlInSvgUse,
           WebFeature::kExecutedNonTrivialJavaScriptURL,
+          WebFeature::kV8DeprecatedStorageQuota_QueryUsageAndQuota_Method,
+          WebFeature::kV8DeprecatedStorageQuota_RequestQuota_Method,
+          WebFeature::kRequestFileSystem,
+          WebFeature::kRequestFileSystemWorker,
+          WebFeature::kRequestFileSystemSyncWorker,
       }));
   return *opt_in_features;
 }
