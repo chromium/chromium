@@ -209,7 +209,7 @@ class NavigationController {
 
     // True for renderer-initiated navigations. This is
     // important for tracking whether to display pending URLs.
-    bool is_renderer_initiated;
+    bool is_renderer_initiated = false;
 
     // Whether a navigation in a new window has the opener suppressed. False if
     // the navigation is not in a new window. Can only be true when

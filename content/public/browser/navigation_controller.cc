@@ -14,7 +14,7 @@
 namespace content {
 
 NavigationController::LoadURLParams::LoadURLParams(const GURL& url)
-    : url(url), is_renderer_initiated(false) {}
+    : url(url) {}
 
 NavigationController::LoadURLParams::LoadURLParams(
     NavigationController::LoadURLParams&&) = default;
