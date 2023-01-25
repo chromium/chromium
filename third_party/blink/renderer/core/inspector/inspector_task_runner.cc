@@ -25,7 +25,7 @@ void InspectorTaskRunner::InitIsolate(v8::Isolate* isolate) {
 }
 
 void InspectorTaskRunner::Dispose() {
-  base::AutoLock locker(lock_);
+  recordreplay::AutoLockMaybeEventsDisallowed locker(lock_);
   disposed_ = true;
   isolate_ = nullptr;
   isolate_task_runner_ = nullptr;
