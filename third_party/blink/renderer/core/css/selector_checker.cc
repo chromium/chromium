@@ -1333,7 +1333,6 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoOnlyChild: {
       if (IsTransitionPseudoElement(context.pseudo_id)) {
         DCHECK(element.IsDocumentElement());
-        DCHECK_NE(context.pseudo_id, kPseudoIdViewTransition);
         DCHECK(context.pseudo_argument);
 
         auto* transition =

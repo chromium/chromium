@@ -246,11 +246,13 @@ void ViewTransitionStyleTracker::AddTransitionElement(
 
 bool ViewTransitionStyleTracker::MatchForOnlyChild(
     PseudoId pseudo_id,
-    AtomicString view_transition_name) const {
-  DCHECK(view_transition_name);
-
+    const AtomicString& view_transition_name) const {
   switch (pseudo_id) {
+    case kPseudoIdViewTransition:
+      DCHECK(!view_transition_name);
+      return false;
     case kPseudoIdViewTransitionGroup: {
+      DCHECK(view_transition_name);
       const bool has_root = old_root_data_ || new_root_data_;
       if (has_root) {
         return element_data_map_.empty();
@@ -260,8 +262,10 @@ bool ViewTransitionStyleTracker::MatchForOnlyChild(
       }
     }
     case kPseudoIdViewTransitionImagePair:
+      DCHECK(view_transition_name);
       return true;
     case kPseudoIdViewTransitionOld: {
+      DCHECK(view_transition_name);
       if (new_root_data_ &&
           new_root_data_->names.Contains(view_transition_name)) {
         return false;
@@ -278,6 +282,7 @@ bool ViewTransitionStyleTracker::MatchForOnlyChild(
       return !element_data->new_snapshot_id.IsValid();
     }
     case kPseudoIdViewTransitionNew: {
+      DCHECK(view_transition_name);
       if (old_root_data_ &&
           old_root_data_->names.Contains(view_transition_name)) {
         return false;

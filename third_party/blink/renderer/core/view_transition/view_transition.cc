@@ -685,7 +685,7 @@ void ViewTransition::Trace(Visitor* visitor) const {
 
 bool ViewTransition::MatchForOnlyChild(
     PseudoId pseudo_id,
-    AtomicString view_transition_name) const {
+    const AtomicString& view_transition_name) const {
   if (!style_tracker_)
     return false;
   return style_tracker_->MatchForOnlyChild(pseudo_id, view_transition_name);
