@@ -56,41 +56,27 @@ gfx::AcceleratedWidget WaylandSubsurface::GetWidget() const {
 }
 
 void WaylandSubsurface::Show() {
-  if (visible_) {
-    return;
-  }
-
-  if (subsurface_) {
-    ResetSubsurface();
-  }
-
-  CreateSubsurface();
-  visible_ = true;
+  if (!subsurface_)
+    CreateSubsurface();
 }
 
 void WaylandSubsurface::Hide() {
-  if (!IsVisible() || !subsurface_) {
+  if (!subsurface_)
     return;
-  }
 
   // Remove it from the stack.
   RemoveFromList();
-  visible_ = false;
-}
 
-void WaylandSubsurface::ResetSubsurface() {
   augmented_subsurface_.reset();
   subsurface_.reset();
-  wayland_surface_.UnsetRootWindow();
 }
 
 bool WaylandSubsurface::IsVisible() const {
-  return visible_;
+  return !!subsurface_;
 }
 
 void WaylandSubsurface::CreateSubsurface() {
   DCHECK(parent_);
-  wayland_surface_.SetRootWindow(parent_);
 
   wl_subcompositor* subcompositor = connection_->subcompositor();
   DCHECK(subcompositor);
