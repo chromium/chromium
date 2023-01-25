@@ -12,6 +12,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
@@ -98,15 +99,31 @@ class SettingsInteractiveUiTest : public InProcessBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(SettingsInteractiveUiTest,
+class CookieSettingsInteractiveUiTest
+    : public SettingsInteractiveUiTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  CookieSettingsInteractiveUiTest() {
+    feature_list_.InitWithFeatureState(
+        privacy_sandbox::kPrivacySandboxSettings4, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(CookieSettingsInteractiveUiTest,
                        CheckQuestionMarkIsPresentUnderCookiesAndSiteData) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
+  const std::string cookie_row_selector =
+      GetParam() ? "cr-link-row#thirdPartyCookiesLinkRow"
+                 : "cr-link-row#cookiesLinkRow";
   const GURL cookie_setting_url("chrome://settings/privacy");
   const WebContentsInteractionTestUtil::DeepQuery cookies_link_row = {
       "settings-ui", "settings-main", "settings-basic-page",
-      "settings-privacy-page", "cr-link-row#cookiesLinkRow"};
+      "settings-privacy-page", cookie_row_selector};
   const WebContentsInteractionTestUtil::DeepQuery
       cookies_setting_page_help_icon = {
           "settings-ui",
@@ -152,6 +169,8 @@ IN_PROC_BROWSER_TEST_F(SettingsInteractiveUiTest,
 
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
 }
+
+INSTANTIATE_TEST_SUITE_P(All, CookieSettingsInteractiveUiTest, testing::Bool());
 
 class ThemeSettingsInteractiveUiTest : public SettingsInteractiveUiTest {
  public:

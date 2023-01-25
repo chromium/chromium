@@ -9264,6 +9264,26 @@
             ]
         }
     ],
+    "PrivacySandboxV4": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrivacySandboxSettings4"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProcessHtmlDataImmediately": [
         {
             "platforms": [

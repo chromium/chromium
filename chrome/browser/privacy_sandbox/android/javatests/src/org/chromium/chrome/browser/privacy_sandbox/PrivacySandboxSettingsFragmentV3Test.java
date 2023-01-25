@@ -76,6 +76,7 @@ import java.util.concurrent.ExecutionException;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
+@Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
 public final class PrivacySandboxSettingsFragmentV3Test {
     private static final String REFERRER_HISTOGRAM =
             "Settings.PrivacySandbox.PrivacySandboxReferrer";

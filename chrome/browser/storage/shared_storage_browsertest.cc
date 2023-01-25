@@ -204,11 +204,12 @@ class SharedStorageChromeBrowserTest : public PlatformBrowserTest {
   SharedStorageChromeBrowserTest() {
     base::test::TaskEnvironment task_environment;
 
+    // TODO(crbug.com/1378703): Update the tests to support Privacy Sandbox 4.
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kSharedStorageAPI,
                               privacy_sandbox::kPrivacySandboxSettings3,
                               features::kPrivacySandboxAdsAPIsOverride},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{privacy_sandbox::kPrivacySandboxSettings4});
   }
 
   void SetUpOnMainThread() override {

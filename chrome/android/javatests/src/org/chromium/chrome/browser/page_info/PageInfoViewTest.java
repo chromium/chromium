@@ -850,6 +850,7 @@ public class PageInfoViewTest {
     @MediumTest
     @Feature({"RenderTest"})
     @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
+    @Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testShowAdPersonalizationInfoSubPage() throws IOException {
         loadUrlAndOpenPageInfo(
                 mTestServerRule.getServer().getURLWithHostName("example.com", sSimpleHtml));
@@ -864,6 +865,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
+    @Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testOpenAdPersonalizationSettings() throws IOException {
         loadUrlAndOpenPageInfo(
                 mTestServerRule.getServer().getURLWithHostName("example.com", sSimpleHtml));

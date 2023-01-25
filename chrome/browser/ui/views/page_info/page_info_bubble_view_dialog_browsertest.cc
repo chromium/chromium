@@ -560,14 +560,17 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDialogBrowserTest,
 }
 
 class PageInfoBubbleViewPrivacySandboxDialogBrowserTest
-    : public DialogBrowserTest {
+    : public DialogBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   PageInfoBubbleViewPrivacySandboxDialogBrowserTest() {
     // TODO(crbug.com/1344787): Clean up when PageSpecificSiteDataDialog is
     // launched.
-    feature_list_.InitWithFeatures({privacy_sandbox::kPrivacySandboxSettings3},
-                                   {page_info::kPageSpecificSiteDataDialog,
-                                    page_info::kPageInfoCookiesSubpage});
+    feature_list_.InitWithFeatures(
+        {GetParam() ? privacy_sandbox::kPrivacySandboxSettings4
+                    : privacy_sandbox::kPrivacySandboxSettings3},
+        {page_info::kPageSpecificSiteDataDialog,
+         page_info::kPageInfoCookiesSubpage});
   }
 
   void SetUpOnMainThread() override {
@@ -579,10 +582,13 @@ class PageInfoBubbleViewPrivacySandboxDialogBrowserTest
   }
 
   // DialogBrowserTest:
-  void ShowUi(const std::string& name) override {
+  void ShowUi(const std::string& name_with_param_suffix) override {
     // Bubble dialogs' bounds may exceed the display's work area.
     // https://crbug.com/893292.
     set_should_verify_dialog_bounds(false);
+
+    const std::string& name =
+        name_with_param_suffix.substr(0, name_with_param_suffix.find("/"));
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl("a.test")));
 
@@ -628,15 +634,19 @@ class PageInfoBubbleViewPrivacySandboxDialogBrowserTest
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
-IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewPrivacySandboxDialogBrowserTest,
+IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewPrivacySandboxDialogBrowserTest,
                        InvokeUi_PrivacySandboxMain) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewPrivacySandboxDialogBrowserTest,
+IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewPrivacySandboxDialogBrowserTest,
                        InvokeUi_PrivacySandboxSubpage) {
   ShowAndVerifyUi();
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PageInfoBubbleViewPrivacySandboxDialogBrowserTest,
+                         testing::Bool());
 
 class PageInfoBubbleViewHistoryDialogBrowserTest : public DialogBrowserTest {
  public:
