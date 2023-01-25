@@ -201,12 +201,6 @@ class ChromeMetricsServiceClient
   // Called when a URL is opened from the Omnibox.
   void OnURLOpenedFromOmnibox(OmniboxLog* log);
 
-#if BUILDFLAG(IS_WIN)
-  // Counts (and removes) the browser crash dump attempt signals left behind by
-  // any previous browser processes which generated a crash dump.
-  void CountBrowserCrashDumpAttempts();
-#endif  // BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Helper function for initialization of system profile provider.
   virtual void AsyncInitSystemProfileProvider();
