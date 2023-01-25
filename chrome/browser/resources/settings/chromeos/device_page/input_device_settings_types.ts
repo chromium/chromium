@@ -100,7 +100,11 @@ export interface PointingStickObserverInterface {
 
 export interface InputDeviceSettingsProviderInterface {
   observeKeyboardSettings(observer: KeyboardObserverInterface): void;
+  getConnectedKeyboardSettings(): Promise<Keyboard[]>;
   observeTouchpadSettings(observer: TouchpadObserverInterface): void;
+  getConnectedTouchpadSettings(): Promise<Touchpad[]>;
   observeMouseSettings(observer: MouseObserverInterface): void;
+  getConnectedMouseSettings(): Promise<Mouse[]>;
   observePointingStickSettings(observer: PointingStickObserverInterface): void;
+  getConnectedPointingStickSettings(): Promise<PointingStick[]>;
 }

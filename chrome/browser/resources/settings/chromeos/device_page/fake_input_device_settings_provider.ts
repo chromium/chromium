@@ -79,7 +79,7 @@ export class FakeInputDeviceSettingsProvider implements
     this.methods.setResult('fakeKeyboards', keyboards);
   }
 
-  getFakeKeyboards(): Promise<Keyboard[]> {
+  getConnectedKeyboardSettings(): Promise<Keyboard[]> {
     return this.methods.resolveMethod('fakeKeyboards');
   }
 
@@ -87,7 +87,7 @@ export class FakeInputDeviceSettingsProvider implements
     this.methods.setResult('fakeTouchpads', touchpads);
   }
 
-  getFakeTouchpads(): Promise<Touchpad[]> {
+  getConnectedTouchpadSettings(): Promise<Touchpad[]> {
     return this.methods.resolveMethod('fakeTouchpads');
   }
 
@@ -95,7 +95,7 @@ export class FakeInputDeviceSettingsProvider implements
     this.methods.setResult('fakeMice', mice);
   }
 
-  getFakeMice(): Promise<Mouse[]> {
+  getConnectedMouseSettings(): Promise<Mouse[]> {
     return this.methods.resolveMethod('fakeMice');
   }
 
@@ -103,7 +103,7 @@ export class FakeInputDeviceSettingsProvider implements
     this.methods.setResult('fakePointingSticks', pointingSticks);
   }
 
-  getFakePointingSticks(): Promise<PointingStick[]> {
+  getConnectedPointingStickSettings(): Promise<PointingStick[]> {
     return this.methods.resolveMethod('fakePointingSticks');
   }
 

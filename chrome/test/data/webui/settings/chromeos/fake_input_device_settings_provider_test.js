@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FakeInputDeviceSettingsProvider, MetaKey} from 'chrome://os-settings/chromeos/os_settings.js';
+import {FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('FakeInputDeviceSettings', function() {
@@ -20,54 +20,26 @@ suite('FakeInputDeviceSettings', function() {
   });
 
   test('setFakeKeyboards', () => {
-    const fakeKeyboards = [{
-      id: 0,
-      name: 'fake-keyboard',
-      isExternal: false,
-      metaKey: MetaKey.COMMAND,
-      modifierKeys: [],
-      settings: {},
-    }];
-
     provider.setFakeKeyboards(fakeKeyboards);
-    return provider.getFakeKeyboards().then(
+    return provider.getConnectedKeyboardSettings().then(
         result => assertDeepEquals(fakeKeyboards, result));
   });
 
   test('setFakeTouchpads', () => {
-    const fakeTouchpads = [{
-      id: 1,
-      name: 'fake-touchpad',
-      isExternal: false,
-      isHaptic: false,
-    }];
-
     provider.setFakeTouchpads(fakeTouchpads);
-    return provider.getFakeTouchpads().then(
+    return provider.getConnectedTouchpadSettings().then(
         result => assertDeepEquals(fakeTouchpads, result));
   });
 
   test('setFakeMice', () => {
-    const fakeMice = [{
-      id: 2,
-      name: 'fake-mouse',
-      isExternal: false,
-    }];
-
     provider.setFakeMice(fakeMice);
-    return provider.getFakeMice().then(
+    return provider.getConnectedMouseSettings().then(
         result => assertDeepEquals(fakeMice, result));
   });
 
   test('setFakePointingSticks', () => {
-    const fakePointingSticks = [{
-      id: 3,
-      name: 'fake-pointing-stick',
-      isExternal: false,
-    }];
-
     provider.setFakePointingSticks(fakePointingSticks);
-    return provider.getFakePointingSticks().then(
+    return provider.getConnectedPointingStickSettings().then(
         result => assertDeepEquals(fakePointingSticks, result));
   });
 });
