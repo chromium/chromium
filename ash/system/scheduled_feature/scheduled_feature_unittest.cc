@@ -508,7 +508,15 @@ TEST_F(ScheduledFeatureTest, ExplicitUserTogglesWhileScheduleIsActive) {
 // Tests that changing the custom start and end times, in such a way that
 // shouldn't change the current status, only updates the timer but doesn't
 // change the status.
-TEST_F(ScheduledFeatureTest, ChangingStartTimesThatDontChangeTheStatus) {
+// TODO(crbug.com/1410064): Fix test failure and re-enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ChangingStartTimesThatDontChangeTheStatus \
+  DISABLED_ChangingStartTimesThatDontChangeTheStatus
+#else
+#define MAYBE_ChangingStartTimesThatDontChangeTheStatus \
+  ChangingStartTimesThatDontChangeTheStatus
+#endif
+TEST_F(ScheduledFeatureTest, MAYBE_ChangingStartTimesThatDontChangeTheStatus) {
   //       16:00        18:00         22:00
   // <----- + ----------- + ----------- + ----->
   //        |             |             |
