@@ -311,38 +311,59 @@ std::string OSInfo::processor_model_name() {
 Version OSInfo::MajorMinorBuildToVersion(uint32_t major,
                                          uint32_t minor,
                                          uint32_t build) {
-  if (major == 11)
+  if (major == 11) {
+    if (build >= 22621) {
+      return Version::WIN11_22H2;
+    }
     return Version::WIN11;
+  }
 
   if (major == 10) {
-    if (build >= 22000)
+    if (build >= 22000) {
       return Version::WIN11;
-    if (build >= 20348)
+    }
+    if (build >= 20348) {
       return Version::SERVER_2022;
-    if (build >= 19044)
+    }
+    if (build >= 19045) {
+      return Version::WIN10_22H2;
+    }
+    if (build >= 19044) {
       return Version::WIN10_21H2;
-    if (build >= 19043)
+    }
+    if (build >= 19043) {
       return Version::WIN10_21H1;
-    if (build >= 19042)
+    }
+    if (build >= 19042) {
       return Version::WIN10_20H2;
-    if (build >= 19041)
+    }
+    if (build >= 19041) {
       return Version::WIN10_20H1;
-    if (build >= 18363)
+    }
+    if (build >= 18363) {
       return Version::WIN10_19H2;
-    if (build >= 18362)
+    }
+    if (build >= 18362) {
       return Version::WIN10_19H1;
-    if (build >= 17763)
+    }
+    if (build >= 17763) {
       return Version::WIN10_RS5;
-    if (build >= 17134)
+    }
+    if (build >= 17134) {
       return Version::WIN10_RS4;
-    if (build >= 16299)
+    }
+    if (build >= 16299) {
       return Version::WIN10_RS3;
-    if (build >= 15063)
+    }
+    if (build >= 15063) {
       return Version::WIN10_RS2;
-    if (build >= 14393)
+    }
+    if (build >= 14393) {
       return Version::WIN10_RS1;
-    if (build >= 10586)
+    }
+    if (build >= 10586) {
       return Version::WIN10_TH2;
+    }
     return Version::WIN10;
   }
 
