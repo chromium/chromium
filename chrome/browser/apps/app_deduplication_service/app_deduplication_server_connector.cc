@@ -14,11 +14,9 @@
 
 namespace {
 
-// Endpoint for requesting app duplicate data. Local server link is being used
-// since endpoint is not hooked up to OnePlatform yet.
-// TODO(b/264961456): update to One Platform url when endpoint is deployed.
+// Endpoint for requesting app duplicate data on the ChromeOS Almanac API.
 constexpr char kAppDeduplicationOnePlatformEndpoint[] =
-    "http://localhost:9876/v1/deduplicate";
+    "https://chromeosalmanac-pa.googleapis.com/v1/deduplicate";
 
 // Maximum size of App Deduplication Response is 1MB, current size of file at
 // initial launch (v1 of deduplication endpoint is) ~6KB.
@@ -75,6 +73,8 @@ void AppDeduplicationServerConnector::GetDeduplicateAppsFromServer(
   // A POST request is sent with an override to GET due to server requirements.
   resource_request->method = "POST";
   resource_request->headers.SetHeader("X-HTTP-Method-Override", "GET");
+  resource_request->headers.SetHeader("X-Goog-Api-Key",
+                                      google_apis::GetAPIKey());
 
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
