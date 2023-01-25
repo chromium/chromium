@@ -22,7 +22,6 @@
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "base/win/pe_image.h"
-#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -175,13 +174,8 @@ TEST_F(DelayloadsTest, DISABLED_ChromeDllLoadSanityTestImpl) {
   HMODULE chrome_module_handle = ::LoadLibrary(dll.value().c_str());
   ASSERT_TRUE(chrome_module_handle != nullptr);
 
-  // Loading chrome.dll should not load user32.dll on Win10.
-  // On Win7, chains of system dlls and lack of apisets result in it loading.
-  if (base::win::GetVersion() >= base::win::Version::WIN10) {
-    EXPECT_EQ(nullptr, ::GetModuleHandle(L"user32.dll"));
-  } else {
-    EXPECT_NE(nullptr, ::GetModuleHandle(L"user32.dll"));
-  }
+  // Loading chrome.dll should not load user32.dll on Windows.
+  EXPECT_EQ(nullptr, ::GetModuleHandle(L"user32.dll"));
 }
 
 TEST_F(DelayloadsTest, ChromeElfDllDelayloadsCheck) {

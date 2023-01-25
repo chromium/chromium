@@ -26,11 +26,9 @@
 #include <memory>
 #include <string>
 
-#include "base/base_paths.h"
 #include "base/path_service.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
-#include "base/win/windows_version.h"
 #include "chrome/installer/util/scoped_token_privilege.h"
 #include "chrome/updater/util/win_util.h"
 
@@ -166,12 +164,6 @@ int main(int argc, char** argv) {
   MaybeIncreaseTestTimeouts(argc, argv);
 
 #if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1406309) - this can be deleted once BuildBot removes the
-  // Windows 7 testers.
-  if (base::win::GetVersion() < base::win::Version::WIN10) {
-    LOG(ERROR) << "Tests didn't run because of an unsupported Windows version.";
-    return 0;
-  }
   updater::test::MaybeExcludePathsFromWindowsDefender();
 
   VLOG(0) << "Process priority: " << base::Process::Current().GetPriority();
