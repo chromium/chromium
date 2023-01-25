@@ -35,6 +35,7 @@
 #include "chrome/updater/setup.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/launchd_util.h"
 #import "chrome/updater/util/mac_util.h"
 #import "chrome/updater/util/posix_util.h"
@@ -247,12 +248,9 @@ int PromoteCandidate(UpdaterScope scope) {
       GetUpdaterExecutablePath(scope);
   const absl::optional<base::FilePath> install_dir =
       GetBaseInstallDirectory(scope);
-  const absl::optional<base::FilePath> versioned_path =
-      GetVersionedInstallDirectory(scope);
   const absl::optional<base::FilePath> bundle_path =
       GetUpdaterAppBundlePath(scope);
-  if (!updater_executable_path || !install_dir || !versioned_path ||
-      !bundle_path) {
+  if (!updater_executable_path || !install_dir || !bundle_path) {
     return kErrorFailedToGetVersionedInstallDirectory;
   }
 
@@ -261,8 +259,7 @@ int PromoteCandidate(UpdaterScope scope) {
   if (!base::DeleteFile(tmp_launcher_name)) {
     VLOG(1) << "Failed to delete existing " << tmp_launcher_name.value();
   }
-  if (symlink(versioned_path->value().c_str(),
-              tmp_launcher_name.value().c_str())) {
+  if (symlink(kUpdaterVersion, tmp_launcher_name.value().c_str())) {
     return kErrorFailedToLinkLauncher;
   }
   if (rename(tmp_launcher_name.value().c_str(),
