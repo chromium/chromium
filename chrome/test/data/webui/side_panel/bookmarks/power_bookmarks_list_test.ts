@@ -82,6 +82,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
     powerBookmarksList = document.createElement('power-bookmarks-list');
     document.body.appendChild(powerBookmarksList);
 
+    await bookmarksApi.whenCalled('getFolders');
     await flushTasks();
   });
 
@@ -93,8 +94,6 @@ suite('SidePanelPowerBookmarksListTest', () => {
   });
 
   test('DefaultsToSortByNewest', () => {
-    flush();
-
     const bookmarkElements = getBookmarkElements(powerBookmarksList);
     // All folders should come first
     assertEquals(bookmarkElements[0]!.id, 'bookmark-5');
@@ -206,5 +205,61 @@ suite('SidePanelPowerBookmarksListTest', () => {
         powerBookmarksList.shadowRoot!.querySelector('#bookmark-1000');
     assertEquals(
         1, (newFolder as PowerBookmarkRowElement).bookmark.children!.length);
+  });
+
+  test('SetsCompactDescription', async () => {
+    const bookmarkElements = getBookmarkElements(powerBookmarksList);
+    const folderElement = bookmarkElements[0]!;
+    assertEquals(folderElement.id, 'bookmark-5');
+
+    const descriptionElement =
+        folderElement.shadowRoot!.getElementById('description');
+    const pluralString =
+        await PluralStringProxyImpl.getInstance().getPluralString('foo', 1);
+    assertEquals(descriptionElement!.textContent!.includes(pluralString), true);
+  });
+
+  test('SetsExpandedDescription', () => {
+    const menu =
+        powerBookmarksList.shadowRoot!.querySelector('cr-action-menu')!;
+    menu.showAt(powerBookmarksList);
+    const visualViewButton: HTMLElement = menu.querySelector('#visualView')!;
+    visualViewButton.click();
+
+    const bookmarkElements = getBookmarkElements(powerBookmarksList);
+    const folderElement = bookmarkElements[1]!;
+    assertEquals(folderElement.id, 'bookmark-4');
+
+    const descriptionElement =
+        folderElement.shadowRoot!.getElementById('description');
+    const expandedDescription = 'child';
+    assertEquals(
+        descriptionElement!.textContent!.includes(expandedDescription), true);
+  });
+
+  test('SetsExpandedSearchResultDescription', () => {
+    const menu =
+        powerBookmarksList.shadowRoot!.querySelector('cr-action-menu')!;
+    menu.showAt(powerBookmarksList);
+    const visualViewButton: HTMLElement = menu.querySelector('#visualView')!;
+    visualViewButton.click();
+
+    const searchField = powerBookmarksList.shadowRoot!.querySelector(
+        'cr-toolbar-search-field')!;
+    searchField.$.searchInput.value = 'child bookmark';
+    searchField.onSearchTermInput();
+    searchField.onSearchTermSearch();
+
+    flush();
+
+    const bookmarkElements = getBookmarkElements(powerBookmarksList);
+    const folderElement = bookmarkElements[0]!;
+    assertEquals(folderElement.id, 'bookmark-4');
+
+    const descriptionElement =
+        folderElement.shadowRoot!.getElementById('description');
+    const expandedDescription = 'child - All Bookmarks';
+    assertEquals(
+        descriptionElement!.textContent!.includes(expandedDescription), true);
   });
 });
