@@ -1782,6 +1782,25 @@
             ]
         }
     ],
+    "BackForwardCacheEnabledForIndexedDBTransaction": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AllowPageWithIDBTransactionInBFCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "BackForwardCacheMemoryControls": [
         {
             "platforms": [
