@@ -24,6 +24,7 @@
 #include "base/threading/scoped_thread_priority.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/threading/threading_features.h"
 #include "base/time/time_override.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
@@ -41,12 +42,18 @@ namespace base {
 BASE_FEATURE(kUseThreadPriorityLowest,
              "UseThreadPriorityLowest",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAboveNormalCompositingBrowserWin,
+             "AboveNormalCompositingBrowserWin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
 // Flag used to set thread priority to |THREAD_PRIORITY_LOWEST| for
 // |kUseThreadPriorityLowest| Feature.
 std::atomic<bool> g_use_thread_priority_lowest{false};
+// Flag used to map Compositing ThreadType |THREAD_PRIORITY_ABOVE_NORMAL| on the
+// UI thread for |kAboveNormalCompositingBrowserWin| Feature.
+std::atomic<bool> g_above_normal_compositing_browser{false};
 
 // These values are sometimes returned by ::GetThreadPriority().
 constexpr int kWinNormalPriority1 = 5;
@@ -370,7 +377,8 @@ namespace {
 void SetCurrentThreadPriority(ThreadType thread_type,
                               MessagePumpType pump_type_hint) {
   if (thread_type == ThreadType::kCompositing &&
-      pump_type_hint == MessagePumpType::UI) {
+      pump_type_hint == MessagePumpType::UI &&
+      !g_above_normal_compositing_browser) {
     // Ignore kCompositing thread type for UI thread as Windows has a
     // priority boost mechanism. See
     // https://docs.microsoft.com/en-us/windows/win32/procthread/priority-boosts
@@ -556,6 +564,9 @@ ThreadPriorityForTest PlatformThread::GetCurrentThreadPriorityForTest() {
 void InitializePlatformThreadFeatures() {
   g_use_thread_priority_lowest.store(
       FeatureList::IsEnabled(kUseThreadPriorityLowest),
+      std::memory_order_relaxed);
+  g_above_normal_compositing_browser.store(
+      FeatureList::IsEnabled(kAboveNormalCompositingBrowserWin),
       std::memory_order_relaxed);
 }
 

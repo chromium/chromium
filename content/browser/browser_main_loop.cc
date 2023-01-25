@@ -190,6 +190,7 @@
 #include <shellapi.h>
 #include <windows.h>
 
+#include "base/threading/platform_thread_win.h"
 #include "net/base/winsock_init.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/sandbox.h"
@@ -561,6 +562,12 @@ int BrowserMainLoop::EarlyInitialization() {
     if (pre_early_init_error_code != RESULT_CODE_NORMAL_EXIT)
       return pre_early_init_error_code;
   }
+
+#if BUILDFLAG(IS_WIN)
+  // This assumes FeatureList is initialized, and must happen before
+  // SetCurrentThreadType() below.
+  base::InitializePlatformThreadFeatures();
+#endif
 
   // SetCurrentThreadType relies on CurrentUIThread on some platforms. The
   // MessagePumpForUI needs to be bound to the main thread by this point.

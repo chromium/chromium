@@ -39,7 +39,7 @@ IN_PROC_BROWSER_TEST_F(BrowserThreadPostTaskBeforeInitBrowserTest,
 IN_PROC_BROWSER_TEST_F(ContentBrowserTest, ExpectedThreadPriorities) {
   base::ThreadPriorityForTest expected_priority =
       base::ThreadPriorityForTest::kNormal;
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   // In browser main loop the kCompositing thread type is set.
   // Only Windows, Android and ChromeOS will set kDisplay priority for
   // kCompositing thread type. We omit Windows here as it has a special
@@ -50,13 +50,12 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, ExpectedThreadPriorities) {
 #else
   expected_priority = base::ThreadPriorityForTest::kDisplay;
 #endif
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 
   EXPECT_EQ(base::PlatformThread::GetCurrentThreadPriorityForTest(),
             expected_priority);
 
-  // Browser IO thread is set to kCompositing except for Windows, so the
-  // `expected_priority` for browser IO is the same as browser main's.
+  // The `expected_priority` for browser IO is the same as browser main's.
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
