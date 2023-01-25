@@ -341,6 +341,7 @@ int TestNetworkDelegate::OnBeforeURLRequest(URLRequest* request,
       kStageBeforeRedirect |   // a delegate can trigger a redirection
       kStageCompletedError;    // request canceled by delegate
   created_requests_++;
+  cookie_setting_overrides_ = request->cookie_setting_overrides();
   return OK;
 }
 

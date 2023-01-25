@@ -293,6 +293,10 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
     fps_cache_filter_ = std::move(cache_filter);
   }
 
+  CookieSettingOverrides cookie_setting_overrides() const {
+    return cookie_setting_overrides_;
+  }
+
  protected:
   // NetworkDelegate:
   int OnBeforeURLRequest(URLRequest* request,
@@ -377,6 +381,8 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   int next_request_id_ = 0;
 
   FirstPartySetsCacheFilter fps_cache_filter_;
+
+  CookieSettingOverrides cookie_setting_overrides_;
 };
 
 // ----------------------------------------------------------------------------

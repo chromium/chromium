@@ -76,6 +76,7 @@ class CookieSettingsObserver : public CookieSettings::Observer {
 struct TestCase {
   std::string test_name;
   bool storage_access_api_enabled;
+  bool top_level_storage_access_grant_eligible;
   bool force_allow_third_party_cookies;
 };
 
@@ -146,12 +147,20 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
     return GetParam().storage_access_api_enabled;
   }
 
+  bool IsTopLevelStorageAccessGrantEligible() const {
+    return GetParam().top_level_storage_access_grant_eligible;
+  }
+
   bool IsForceAllowThirdPartyCookies() const {
     return GetParam().force_allow_third_party_cookies;
   }
 
   net::CookieSettingOverrides GetCookieSettingOverrides() const {
     net::CookieSettingOverrides overrides;
+    if (IsTopLevelStorageAccessGrantEligible()) {
+      overrides.Put(
+          net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
+    }
     if (IsForceAllowThirdPartyCookies()) {
       overrides.Put(net::CookieSettingOverride::kForceThirdPartyByUser);
     }
@@ -166,11 +175,25 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
                : CONTENT_SETTING_BLOCK;
   }
 
+  // A version of above that considers Top-Level Storage Access API grant
+  // instead of Storage Access API grant, and user force allow.
+  ContentSetting SettingWithEitherOverrideForTopLevel() const {
+    // TODO(crbug.com/1385156): Check TopLevelStorageAccessAPI instead after
+    // separating the feature flag.
+    return (IsStorageAccessAPIEnabled() &&
+            IsTopLevelStorageAccessGrantEligible()) ||
+                   IsForceAllowThirdPartyCookies()
+               ? CONTENT_SETTING_ALLOW
+               : CONTENT_SETTING_BLOCK;
+  }
+
   ContentSetting SettingWithForceAllowThirdPartyCookies() const {
     return IsForceAllowThirdPartyCookies() ? CONTENT_SETTING_ALLOW
                                            : CONTENT_SETTING_BLOCK;
   }
 
+  // The cookie access result would be blocked if not for a Storage Access API
+  // grant or force allow.
   net::cookie_util::StorageAccessResult
   BlockedStorageAccessResultWithEitherOverride() const {
     if (IsStorageAccessAPIEnabled()) {
@@ -183,9 +206,16 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
     return net::cookie_util::StorageAccessResult::ACCESS_BLOCKED;
   }
 
+  // A version of above that considers Top-Level Storage Access API grant
+  // instead of Storage Access API grant, and user force allow to allow cookie
+  // access.
   net::cookie_util::StorageAccessResult
   BlockedStorageAccessResultWithTopLevelOverride() const {
-    if (IsStorageAccessAPIEnabled()) {
+    // TODO(crbug.com/1385156): Check TopLevelStorageAccessAPI instead after
+    // separating the feature flag.
+    if (IsStorageAccessAPIEnabled() && IsTopLevelStorageAccessGrantEligible()) {
+      // TODO(crbug.com/1385156): Separate metrics between StorageAccessAPI
+      // and the page-level variant.
       return net::cookie_util::StorageAccessResult::
           ACCESS_ALLOWED_TOP_LEVEL_STORAGE_ACCESS_GRANT;
     }
@@ -766,9 +796,9 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAA) {
 // grants. TODO(crbug.com/1385156): as requirements for the two APIs solidify,
 // this will likely not continue to be true.
 TEST_P(CookieSettingsTest, GetCookieSettingTopLevelStorageAccess) {
-  const GURL top_level_url = GURL(kFirstPartySite);
-  const GURL url = GURL(kAllowedSite);
-  const GURL third_url = GURL(kBlockedSite);
+  const GURL top_level_url(kFirstPartySite);
+  const GURL url(kAllowedSite);
+  const GURL third_url(kBlockedSite);
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 0);
@@ -784,7 +814,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingTopLevelStorageAccess) {
   EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url,
                                                GetCookieSettingOverrides(),
                                                nullptr, QueryReason::kCookies),
-            SettingWithEitherOverride());
+            SettingWithEitherOverrideForTopLevel());
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
   histogram_tester.ExpectBucketCount(
       kAllowedRequestsHistogram,
@@ -1107,10 +1137,14 @@ INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CookieSettingsTest,
     testing::ValuesIn<TestCase>({
-        {"disable_SAA", false, false},
-        {"enable_SAA", true, false},
-        {"disable_SAA_force_3PCs", false, true},
-        {"enable_SAA_force_3PCs", true, true},
+        {"disable_all", false, false, false},
+        {"disable_SAA_disable_TopLevel_force_3PCs", false, false, true},
+        {"disable_SAA_enable_TopLevel", false, true, false},
+        {"disable_SAA_enable_TopLevel_force_3PCs", false, true, true},
+        {"enable_SAA_disable_TopLevel", true, false, false},
+        {"enable_SAA_disable_TopLevel_force_3PCs", true, false, true},
+        {"enable_SAA_enable_TopLevel", true, true, false},
+        {"enable_all", true, true, true},
     }),
     [](const testing::TestParamInfo<CookieSettingsTest::ParamType>& info) {
       return info.param.test_name;
@@ -1121,10 +1155,14 @@ INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CookieSettingsTestSandboxV4Enabled,
     testing::ValuesIn<TestCase>({
-        {"disable_SAA", false, false},
-        {"enable_SAA", true, false},
-        {"disable_SAA_force_3PCs", false, true},
-        {"enable_SAA_force_3PCs", true, true},
+        {"disable_all", false, false, false},
+        {"disable_SAA_disable_TopLevel_force_3PCs", false, false, true},
+        {"disable_SAA_enable_TopLevel", false, true, false},
+        {"disable_SAA_enable_TopLevel_force_3PCs", false, true, true},
+        {"enable_SAA_disable_TopLevel", true, false, false},
+        {"enable_SAA_disable_TopLevel_force_3PCs", true, false, true},
+        {"enable_SAA_enable_TopLevel", true, true, false},
+        {"enable_all", true, true, true},
     }),
     [](const testing::TestParamInfo<CookieSettingsTest::ParamType>& info) {
       return info.param.test_name;

@@ -46,6 +46,7 @@
 #include "net/base/upload_file_element_reader.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_inclusion_status.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
@@ -726,6 +727,11 @@ URLLoader::URLLoader(
     url_request_->net_log().AddEventReferencingSource(
         net::NetLogEventType::CREATED_BY,
         request.net_log_reference_info.value());
+  }
+
+  if (network::cors::IsCorsEnabledRequestMode(request_mode_)) {
+    url_request_->set_cookie_setting_overrides(net::CookieSettingOverrides(
+        net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible));
   }
 
 #if BUILDFLAG(IS_ANDROID)

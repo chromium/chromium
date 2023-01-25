@@ -17,12 +17,15 @@ enum class CookieSettingOverride {
   // When specified, the user has indicated to force allowing third-party
   // cookies.
   kForceThirdPartyByUser = 1,
+  // When specified, third-party cookies may be allowed based on existence of
+  // TopLevelStorageAccess grants.
+  kTopLevelStorageAccessGrantEligible = 2,
+  kMaxValue = kTopLevelStorageAccessGrantEligible,
 };
 
-using CookieSettingOverrides =
-    base::EnumSet<CookieSettingOverride,
-                  CookieSettingOverride::kNone,
-                  CookieSettingOverride::kForceThirdPartyByUser>;
+using CookieSettingOverrides = base::EnumSet<CookieSettingOverride,
+                                             CookieSettingOverride::kNone,
+                                             CookieSettingOverride::kMaxValue>;
 
 }  // namespace net
 

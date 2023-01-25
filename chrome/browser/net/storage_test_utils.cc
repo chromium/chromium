@@ -170,4 +170,16 @@ bool HasStorageAccessForFrame(content::RenderFrameHost* frame) {
       .ExtractBool();
 }
 
+std::string FetchWithCredentials(content::RenderFrameHost* frame,
+                                 const GURL& url,
+                                 const bool cors_enabled) {
+  constexpr char script[] = R"(
+      fetch($1, {mode: $2, credentials: 'include'})
+      .then((result) => result.text());
+    )";
+  const std::string mode = cors_enabled ? "cors" : "no-cors";
+  return content::EvalJs(frame, content::JsReplace(script, url, mode))
+      .ExtractString();
+}
+
 }  // namespace storage::test

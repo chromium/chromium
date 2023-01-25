@@ -56,6 +56,7 @@
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "net/cookies/cookie_inclusion_status.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_network_session.h"
@@ -4743,6 +4744,77 @@ TEST_F(URLLoaderTest, AllowAllCookies) {
 
   EXPECT_TRUE(url_loader->AllowCookies(first_party_url, site_for_cookies));
   EXPECT_TRUE(url_loader->AllowCookies(third_party_url, site_for_cookies));
+}
+
+TEST_F(URLLoaderTest, CookieSettingOverrides_NoCors) {
+  GURL url("http://www.example.com.test/");
+  base::RunLoop delete_run_loop;
+  // No-cors request should not have the `kTopLevelStorageAccessGrantEligible`
+  // override.
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  // Request mode is `no-cors` by default.
+  ASSERT_EQ(request.mode, network::mojom::RequestMode::kNoCors);
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  EXPECT_FALSE(test_network_delegate()->cookie_setting_overrides().Has(
+      net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible));
+}
+
+TEST_F(URLLoaderTest, CookieSettingOverrides_Cors) {
+  GURL url("http://www.example.com.test/");
+  base::RunLoop delete_run_loop;
+  // Cors request should have the `kTopLevelStorageAccessGrantEligible`
+  // override.
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  // Set request mode to `cors`.
+  request.mode = network::mojom::RequestMode::kCors;
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  EXPECT_TRUE(test_network_delegate()->cookie_setting_overrides().Has(
+      net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible));
+}
+
+TEST_F(URLLoaderTest, CookieSettingOverrides_Cors_UnchangedOnRedirects) {
+  GURL dest_url("http://www.example.com.test/");
+  GURL redirecting_url =
+      test_server()->GetURL("/server-redirect?" + dest_url.spec());
+
+  base::RunLoop delete_run_loop;
+  // Cors request should have the `kTopLevelStorageAccessGrantEligible`
+  // override.
+  ResourceRequest request = CreateResourceRequest("GET", redirecting_url);
+  // Set request mode to `cors`.
+  request.mode = network::mojom::RequestMode::kCors;
+  mojo::Remote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.BindNewPipeAndPassReceiver(), request, client()->CreateRemote());
+
+  client()->RunUntilRedirectReceived();
+  loader->FollowRedirect({}, {}, {}, absl::nullopt);
+
+  EXPECT_TRUE(test_network_delegate()->cookie_setting_overrides().Has(
+      net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible));
 }
 
 namespace {

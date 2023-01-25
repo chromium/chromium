@@ -7,6 +7,8 @@
 
 #include <string>
 
+class GURL;
+
 namespace content {
 class RenderFrameHost;
 }  // namespace content
@@ -44,6 +46,13 @@ bool RequestStorageAccessForOrigin(content::RenderFrameHost* frame,
 // document.hasStorageAccess(). Returns true if the promise resolves with a
 // value of true; false otherwise.
 bool HasStorageAccessForFrame(content::RenderFrameHost* frame);
+
+// Helper to see if a credentialed fetch has cookies access via top-level
+// storage access grants. Returns the content of the response if the promise
+// resolves. `cors_enabled` sets fetch RequestMode to be "cors" or "no-cors".
+std::string FetchWithCredentials(content::RenderFrameHost* frame,
+                                 const GURL& url,
+                                 const bool cors_enabled);
 
 }  // namespace test
 }  // namespace storage
