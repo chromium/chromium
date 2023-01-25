@@ -38,7 +38,7 @@ class DefaultBrowserHandler : public SettingsPageUIHandler {
   virtual void RecordSetAsDefaultUMA();
 
  private:
-  std::string check_default_callback_id_;
+  friend class TestingDefaultBrowserHandler;
 
   // Called from WebUI to request the current state.
   void RequestDefaultBrowserState(const base::Value::List& args);
@@ -46,9 +46,14 @@ class DefaultBrowserHandler : public SettingsPageUIHandler {
   // Makes this the default browser. Called from WebUI.
   void SetAsDefaultBrowser(const base::Value::List& args);
 
+  // Called when there is a change to the default browser setting pref.
+  void OnDefaultBrowserSettingChange();
+
   // Called with the default browser state when the DefaultBrowserWorker is
   // done.
+  // |js_callback_id| is specified when the state was requested from WebUI.
   void OnDefaultBrowserWorkerFinished(
+      const absl::optional<std::string>& js_callback_id,
       shell_integration::DefaultWebClientState state);
 
   // Reference to a background worker that handles default browser settings.

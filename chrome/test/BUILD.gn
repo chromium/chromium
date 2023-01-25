@@ -8852,6 +8852,7 @@ test("unit_tests") {
       sources += [
         "../browser/ui/views/profiles/profile_customization_bubble_sync_controller_unittest.cc",
         "../browser/ui/views/sync/one_click_signin_dialog_view_unittest.cc",
+        "../browser/ui/webui/settings/settings_default_browser_handler_unittest.cc",
       ]
     }
     if (!is_chromeos) {

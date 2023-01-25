@@ -49,8 +49,8 @@ void DefaultBrowserHandler::OnJavascriptAllowed() {
   local_state_pref_registrar_.Init(prefs);
   local_state_pref_registrar_.Add(
       prefs::kDefaultBrowserSettingEnabled,
-      base::BindRepeating(&DefaultBrowserHandler::RequestDefaultBrowserState,
-                          base::Unretained(this), base::Value::List()));
+      base::BindRepeating(&DefaultBrowserHandler::OnDefaultBrowserSettingChange,
+                          base::Unretained(this)));
   default_browser_worker_ = new shell_integration::DefaultBrowserWorker();
 }
 
@@ -65,11 +65,11 @@ void DefaultBrowserHandler::RequestDefaultBrowserState(
   AllowJavascript();
 
   CHECK_EQ(args.size(), 1U);
-  check_default_callback_id_ = args[0].GetString();
+  auto& callback_id = args[0].GetString();
 
   default_browser_worker_->StartCheckIsDefault(
       base::BindOnce(&DefaultBrowserHandler::OnDefaultBrowserWorkerFinished,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), callback_id));
 }
 
 void DefaultBrowserHandler::SetAsDefaultBrowser(const base::Value::List& args) {
@@ -79,11 +79,17 @@ void DefaultBrowserHandler::SetAsDefaultBrowser(const base::Value::List& args) {
 
   default_browser_worker_->StartSetAsDefault(
       base::BindOnce(&DefaultBrowserHandler::OnDefaultBrowserWorkerFinished,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), absl::nullopt));
 
   // If the user attempted to make Chrome the default browser, notify
   // them when this changes.
   ResetDefaultBrowserPrompt(Profile::FromWebUI(web_ui()));
+}
+
+void DefaultBrowserHandler::OnDefaultBrowserSettingChange() {
+  default_browser_worker_->StartCheckIsDefault(
+      base::BindOnce(&DefaultBrowserHandler::OnDefaultBrowserWorkerFinished,
+                     weak_ptr_factory_.GetWeakPtr(), absl::nullopt));
 }
 
 void DefaultBrowserHandler::RecordSetAsDefaultUMA() {
@@ -92,6 +98,7 @@ void DefaultBrowserHandler::RecordSetAsDefaultUMA() {
 }
 
 void DefaultBrowserHandler::OnDefaultBrowserWorkerFinished(
+    const absl::optional<std::string>& js_callback_id,
     shell_integration::DefaultWebClientState state) {
   if (state == shell_integration::IS_DEFAULT) {
     // Notify the user in the future if Chrome ceases to be the user's chosen
@@ -105,9 +112,8 @@ void DefaultBrowserHandler::OnDefaultBrowserWorkerFinished(
   dict.Set("isUnknownError", state == shell_integration::UNKNOWN_DEFAULT);
   dict.Set("isDisabledByPolicy", DefaultBrowserIsDisabledByPolicy());
 
-  if (!check_default_callback_id_.empty()) {
-    ResolveJavascriptCallback(base::Value(check_default_callback_id_), dict);
-    check_default_callback_id_.clear();
+  if (js_callback_id) {
+    ResolveJavascriptCallback(base::Value(*js_callback_id), dict);
   } else {
     FireWebUIListener("browser-default-state-changed", dict);
   }
