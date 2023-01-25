@@ -232,9 +232,6 @@ class BrowserWindow : public ui::BaseWindow {
   // frames may need to refresh their title bar.
   virtual void UpdateTitleBar() = 0;
 
-  // Inform the frame that its color has changed.
-  virtual void UpdateFrameColor() = 0;
-
   // Invoked when the state of the bookmark bar changes. This is only invoked if
   // the state changes for the current tab, it is not sent when switching tabs.
   virtual void BookmarkBarStateChanged(

@@ -251,11 +251,6 @@ int BrowserNonClientFrameViewChromeOS::GetThemeBackgroundXInset() const {
   return BrowserFrameHeaderChromeOS::GetThemeBackgroundXInset();
 }
 
-void BrowserNonClientFrameViewChromeOS::UpdateFrameColor() {
-  OnUpdateFrameColor();
-  BrowserNonClientFrameView::UpdateFrameColor();
-}
-
 void BrowserNonClientFrameViewChromeOS::UpdateThrobber(bool running) {
   if (window_icon_)
     window_icon_->Update();

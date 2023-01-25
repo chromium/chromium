@@ -287,11 +287,6 @@ void OpaqueBrowserFrameView::PaintAsActiveChanged() {
   BrowserNonClientFrameView::PaintAsActiveChanged();
 }
 
-void OpaqueBrowserFrameView::UpdateFrameColor() {
-  UpdateCaptionButtonPlaceholderContainerBackground();
-  BrowserNonClientFrameView::PaintAsActiveChanged();
-}
-
 void OpaqueBrowserFrameView::OnThemeChanged() {
   UpdateCaptionButtonPlaceholderContainerBackground();
   BrowserNonClientFrameView::OnThemeChanged();

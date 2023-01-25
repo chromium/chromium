@@ -305,11 +305,6 @@ void BrowserNonClientFrameViewMac::PaintAsActiveChanged() {
   BrowserNonClientFrameView::PaintAsActiveChanged();
 }
 
-void BrowserNonClientFrameViewMac::UpdateFrameColor() {
-  UpdateCaptionButtonPlaceholderContainerBackground();
-  BrowserNonClientFrameView::UpdateFrameColor();
-}
-
 void BrowserNonClientFrameViewMac::OnThemeChanged() {
   UpdateCaptionButtonPlaceholderContainerBackground();
   BrowserNonClientFrameView::OnThemeChanged();

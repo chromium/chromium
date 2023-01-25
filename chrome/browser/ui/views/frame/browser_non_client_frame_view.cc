@@ -169,10 +169,6 @@ SkColor BrowserNonClientFrameView::GetFrameColor(
                                           : ui::kColorFrameInactive);
 }
 
-void BrowserNonClientFrameView::UpdateFrameColor() {
-  SchedulePaint();
-}
-
 absl::optional<int> BrowserNonClientFrameView::GetCustomBackgroundId(
     BrowserFrameActiveState active_state) const {
   const ui::ThemeProvider* tp = GetThemeProvider();

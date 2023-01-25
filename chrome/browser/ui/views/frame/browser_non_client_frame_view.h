@@ -105,10 +105,6 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
   // tabstrip background.
   virtual SkColor GetFrameColor(BrowserFrameActiveState active_state) const;
 
-  // Called by BrowserView to signal the frame color has changed and needs
-  // to be repainted.
-  virtual void UpdateFrameColor();
-
   // For non-transparent windows, returns the background tab image resource ID
   // if the image has been customized, directly or indirectly, by the theme.
   absl::optional<int> GetCustomBackgroundId(

@@ -48,7 +48,6 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
   bool ShouldHideTopUIForFullscreen() const override;
   void UpdateThrobber(bool running) override;
   void PaintAsActiveChanged() override;
-  void UpdateFrameColor() override;
   void OnThemeChanged() override;
 
   // views::NonClientFrameView:

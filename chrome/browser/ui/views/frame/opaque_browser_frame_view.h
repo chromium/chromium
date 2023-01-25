@@ -66,7 +66,6 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   void WindowControlsOverlayEnabledChanged() override;
   gfx::Size GetMinimumSize() const override;
   void PaintAsActiveChanged() override;
-  void UpdateFrameColor() override;
   void OnThemeChanged() override;
 
   // views::NonClientFrameView:

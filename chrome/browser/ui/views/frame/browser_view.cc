@@ -1429,14 +1429,6 @@ void BrowserView::UpdateTitleBar() {
     frame_->UpdateWindowIcon();
 }
 
-void BrowserView::UpdateFrameColor() {
-  // Only web-app windows support dynamic frame colors set by HTML meta tags.
-  if (web_app_frame_toolbar()) {
-    web_app_frame_toolbar()->UpdateCaptionColors();
-  }
-  frame_->GetFrameView()->UpdateFrameColor();
-}
-
 void BrowserView::BookmarkBarStateChanged(
     BookmarkBar::AnimateChangeType change_type) {
   if (bookmark_bar_view_.get()) {
