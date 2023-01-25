@@ -1775,7 +1775,7 @@ const HTMLElement* NearestInclusiveTargetPopoverForInvoker(const Node* node) {
 // popover=auto popovers are considered.
 const HTMLElement* HTMLElement::FindTopmostPopoverAncestor(
     const HTMLElement& new_popover) {
-  DCHECK(new_popover.HasPopoverAttribute() && !new_popover.popoverOpen());
+  DCHECK(new_popover.HasPopoverAttribute());
   auto& document = new_popover.GetDocument();
   DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       document.GetExecutionContext()));
@@ -1945,6 +1945,36 @@ void HTMLElement::PopoverAnchorElementChanged() {
   if (GetLayoutObject()) {
     GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
         layout_invalidation_reason::kAnchorPositioning);
+  }
+}
+
+void HTMLElement::CheckAndPossiblyClosePopoverStack() {
+  if (LIKELY(!GetDocument().PopoverAutoShowing())) {
+    return;
+  }
+  // TODO(crbug.com/1307772): We could add more early returns by checking to see
+  // if the modified element is really a form control that contributed to the
+  // linking of the popover stack. For example, we could keep track of the set
+  // of elements which contributed to the current popover stack.
+  auto& stack = GetDocument().PopoverStack();
+  for (int i = stack.size() - 1; i > 0; i--) {
+    if (FindTopmostPopoverAncestor(*stack[i]) != stack[i - 1]) {
+      auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kOther,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "The ancestral popover relationship was changed due to a "
+          "modification to a button with a popover target attribute such as "
+          "adding the disabled attribute, adding the form attribute, or "
+          "disconnecting it from the document. All open popovers will be "
+          "closed.");
+      console_message->SetNodes(GetDocument().GetFrame(),
+                                {DOMNodeIds::IdForNode(this)});
+      GetDocument().AddConsoleMessage(console_message);
+      HTMLElement::HideAllPopoversUntil(
+          nullptr, GetDocument(), HidePopoverFocusBehavior::kNone,
+          HidePopoverForcingLevel::kHideImmediately);
+      return;
+    }
   }
 }
 

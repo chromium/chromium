@@ -158,6 +158,8 @@ void HTMLFormControlElement::DisabledAttributeChanged() {
   // Replace |CheckedStateChanged| with a generic tree changed event.
   if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
     cache->CheckedStateChanged(this);
+
+  CheckAndPossiblyClosePopoverStack();
 }
 
 void HTMLFormControlElement::RequiredAttributeChanged() {
@@ -244,6 +246,7 @@ Node::InsertionNotificationRequest HTMLFormControlElement::InsertedInto(
 void HTMLFormControlElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
   ListedElement::RemovedFrom(insertion_point);
+  CheckAndPossiblyClosePopoverStack();
 }
 
 void HTMLFormControlElement::WillChangeForm() {
@@ -256,6 +259,7 @@ void HTMLFormControlElement::DidChangeForm() {
   ListedElement::DidChangeForm();
   if (formOwner() && isConnected() && CanBeSuccessfulSubmitButton())
     formOwner()->InvalidateDefaultButtonStyle();
+  CheckAndPossiblyClosePopoverStack();
 }
 
 HTMLFormElement* HTMLFormControlElement::formOwner() const {
@@ -338,7 +342,8 @@ HTMLFormControlElement::popoverTargetElement() {
   if (!RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
           GetDocument().GetExecutionContext()) ||
       !IsInTreeScope() ||
-      SupportsPopoverTriggering() == PopoverTriggerSupport::kNone) {
+      SupportsPopoverTriggering() == PopoverTriggerSupport::kNone ||
+      IsDisabledFormControl() || (Form() && IsSuccessfulSubmitButton())) {
     return no_element;
   }
 

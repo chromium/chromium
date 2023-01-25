@@ -244,6 +244,12 @@ class CORE_EXPORT HTMLElement : public Element {
                                    Document&,
                                    HidePopoverFocusBehavior,
                                    HidePopoverForcingLevel);
+  // This function checks that the ancestor relationships are still valid for
+  // the entire popover stack. These can change in various ways, such as a
+  // triggering element changing its `disabled` attribute. If any relationships
+  // are invalid, the entire popover stack is closed, and a console warning is
+  // emitted.
+  void CheckAndPossiblyClosePopoverStack();
 
   void SetOwnerSelectMenuElement(HTMLSelectMenuElement* element);
   HTMLSelectMenuElement* ownerSelectMenuElement() const;

@@ -603,6 +603,8 @@ void HTMLInputElement::UpdateType() {
       formOwner() && isConnected())
     formOwner()->InvalidateDefaultButtonStyle();
   NotifyFormStateChanged();
+
+  CheckAndPossiblyClosePopoverStack();
 }
 
 void HTMLInputElement::SubtreeHasChanged() {
