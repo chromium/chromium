@@ -22,7 +22,7 @@ import {BidiServer} from '../bidiMapper/BidiServer.js';
 import {BidiTransport} from '../bidiMapper/bidiMapper.js';
 
 import {log, LogType} from '../utils/log.js';
-import {MapperTabPage} from './mapperTabPage.js';
+import {generatePage} from './mapperTabPage.js';
 import {OutgoingBidiMessage} from '../bidiMapper/OutgoindBidiMessage.js';
 import type {
   BrowsingContext,
@@ -62,7 +62,7 @@ declare global {
 const _waitSelfTargetIdPromise = _waitSelfTargetId();
 
 (async () => {
-  MapperTabPage.generatePage();
+  generatePage();
 
   // Needed to filter out info related to BiDi target.
   const selfTargetId = await _waitSelfTargetIdPromise;

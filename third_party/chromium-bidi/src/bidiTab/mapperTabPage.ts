@@ -56,21 +56,20 @@ function findOrCreateTypeLogContainer(logType: string): HTMLElement {
   return document.getElementById(containerId)!;
 }
 
-export class MapperTabPage {
-  static generatePage() {
-    // If run not in browser (e.g. unit test), do nothing.
-    if (!globalThis.document?.documentElement) {
-      return;
-    }
-    window.MapperTabPage = MapperTabPage;
-    window.document.documentElement.innerHTML = mapperPageSource;
-    // Create main log containers in proper order.
-    findOrCreateTypeLogContainer('System');
-    findOrCreateTypeLogContainer('BiDi Messages');
-    findOrCreateTypeLogContainer('Browsing Contexts');
-    findOrCreateTypeLogContainer('CDP');
+export function generatePage() {
+  // If run not in browser (e.g. unit test), do nothing.
+  if (!globalThis.document?.documentElement) {
+    return;
   }
+  window.document.documentElement.innerHTML = mapperPageSource;
+  // Create main log containers in proper order.
+  findOrCreateTypeLogContainer('System');
+  findOrCreateTypeLogContainer('BiDi Messages');
+  findOrCreateTypeLogContainer('Browsing Contexts');
+  findOrCreateTypeLogContainer('CDP');
+}
 
+export class MapperTabPage {
   static log(logType: LogType, ...messages: unknown[]) {
     // If run not in browser (e.g. unit test), do nothing.
     if (!globalThis.document?.documentElement) {
