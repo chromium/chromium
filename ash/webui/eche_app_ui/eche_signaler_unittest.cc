@@ -416,7 +416,10 @@ TEST_F(EcheSignalerTest, TestConnectionFailWhenSignalingHasLateResponse) {
   base::HistogramTester histograms;
   mojo::PendingRemote<mojom::SignalingMessageObserver> observer;
   FakeObserver fake_observer(&observer, &task_runner_);
-  proto::ExoMessage message = getResponseMessage("123", "network", false);
+  FakeSystemInfoProvider fake_system_info_provider;
+  proto::ExoMessage message = getResponseMessage(
+      "123", "3009be769fb8f956e8413ee9f3e0836e34968bc40457d0a10c549d2edcf00cc1",
+      false);
   SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
 
   histograms.ExpectUniqueSample(
@@ -424,6 +427,7 @@ TEST_F(EcheSignalerTest, TestConnectionFailWhenSignalingHasLateResponse) {
       EcheTray::ConnectionFailReason::kSignalingHasLateResponse, 0);
 
   signaler_->SetSignalingMessageObserver(std::move(observer));
+  signaler_->SetSystemInfoProvider(&fake_system_info_provider);
   signaler_->OnMessageReceived(message.SerializeAsString());
   task_runner_.WaitForResult();
   signaler_->RecordSignalingTimeout();

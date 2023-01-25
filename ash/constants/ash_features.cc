@@ -686,7 +686,7 @@ BASE_FEATURE(kEcheSWADisableStunServer,
 // network information to provide more context on connection errors.
 BASE_FEATURE(kEcheSWACheckAndroidNetworkInfo,
              "EcheSWACheckAndroidNetworkInfo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, allows the creation of up to 16 desks (default is 8).
 BASE_FEATURE(kEnable16Desks,
