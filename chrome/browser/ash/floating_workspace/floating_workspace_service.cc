@@ -14,6 +14,7 @@
 #include "base/check_is_test.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_metrics_util.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -68,6 +69,8 @@ FloatingWorkspaceService::~FloatingWorkspaceService() {
 void FloatingWorkspaceService::Init() {
   is_testing_ = false;
   if (floating_workspace_util::IsFloatingWorkspaceV1Enabled()) {
+    floating_workspace_metrics_util::
+        RecordFloatingWorkspaceV1InitializedHistogram();
     InitForV1();
     return;
   }
@@ -225,6 +228,10 @@ void FloatingWorkspaceService::RestoreForeignSessionWindows(
                                                 &session_windows)) {
     SessionRestore::RestoreForeignSessionWindows(
         profile_, session_windows.begin(), session_windows.end());
+    floating_workspace_metrics_util::
+        RecordFloatingWorkspaceV1RestoredSessionType(
+            floating_workspace_metrics_util::RestoredBrowserSessionType::
+                kRemote);
   }
 }
 
@@ -232,6 +239,8 @@ void FloatingWorkspaceService::RestoreLocalSessionWindows() {
   // Restore local session based on user settings in
   // chrome://settings/onStartup.
   UserSessionManager::GetInstance()->LaunchBrowser(profile_);
+  floating_workspace_metrics_util::RecordFloatingWorkspaceV1RestoredSessionType(
+      floating_workspace_metrics_util::RestoredBrowserSessionType::kLocal);
 }
 
 sync_sessions::OpenTabsUIDelegate*

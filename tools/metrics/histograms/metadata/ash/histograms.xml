@@ -2627,6 +2627,26 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
+<histogram name="Ash.FloatingWorkspace.FloatingWorkspaceV1Initialized"
+    enum="BooleanHit" expires_after="2024-01-28">
+  <owner>ligeng@google.com</owner>
+  <owner>marcuskoehler@google.com</owner>
+  <summary>
+    Recorded when floating workspace service is launched. The false bucket is
+    unused here.
+  </summary>
+</histogram>
+
+<histogram name="Ash.FloatingWorkspace.FloatingWorkspaceV1RestoredSessionType"
+    enum="FloatingWorkspaceV1RestoredSessionType" expires_after="2024-01-28">
+  <owner>ligeng@google.com</owner>
+  <owner>marcuskoehler@google.com</owner>
+  <summary>
+    Recorded the browser session type (local or remote) restored by floating
+    workspace service on current device.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Glanceables.SignoutScreenshotDuration" units="ms"
     expires_after="2023-07-02">
   <owner>jamescook@chromium.org</owner>

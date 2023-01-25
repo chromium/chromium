@@ -44351,6 +44351,12 @@ Called by update_permissions_policy_enum.py.-->
   </int>
 </enum>
 
+<enum name="FloatingWorkspaceV1RestoredSessionType">
+  <int value="0" label="Unknown browser session type"/>
+  <int value="1" label="Local browser session"/>
+  <int value="2" label="Remote browser session"/>
+</enum>
+
 <enum name="FontDisplayValue">
   <int value="0" label="auto"/>
   <int value="1" label="block"/>

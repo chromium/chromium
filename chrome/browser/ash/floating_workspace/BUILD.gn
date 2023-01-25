@@ -12,6 +12,8 @@ source_set("floating_workspace_service") {
     "//components/sync_sessions",
   ]
   sources = [
+    "floating_workspace_metrics_util.cc",
+    "floating_workspace_metrics_util.h",
     "floating_workspace_service.cc",
     "floating_workspace_service.h",
     "floating_workspace_service_factory.cc",
