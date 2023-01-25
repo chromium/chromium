@@ -53,23 +53,18 @@ static_assert(sizeof(void*) != 8, "");
 #define PA_CONFIG_STARSCAN_NEON_SUPPORTED() 0
 #endif
 
-#if PA_CONFIG(HAS_64_BITS_POINTERS) && (BUILDFLAG(IS_IOS) || BUILDFLAG(IS_WIN))
+#if PA_CONFIG(HAS_64_BITS_POINTERS) && BUILDFLAG(IS_IOS)
 // Allow PA to select an alternate pool size at run-time before initialization,
 // rather than using a single constexpr value.
 //
 // This is needed on iOS because iOS test processes can't handle large pools
 // (see crbug.com/1250788).
 //
-// This is needed on Windows, because OS versions <8.1 incur commit charge even
-// on reserved address space, thus don't handle large pools well (see
-// crbug.com/1101421 and crbug.com/1217759).
-//
 // This setting is specific to 64-bit, as 32-bit has a different implementation.
 #define PA_CONFIG_DYNAMICALLY_SELECT_POOL_SIZE() 1
 #else
 #define PA_CONFIG_DYNAMICALLY_SELECT_POOL_SIZE() 0
-#endif  // PA_CONFIG(HAS_64_BITS_POINTERS) && (BUILDFLAG(IS_IOS) ||
-        // BUILDFLAG(IS_WIN))
+#endif  // PA_CONFIG(HAS_64_BITS_POINTERS) && BUILDFLAG(IS_IOS)
 
 // Puts the regular and BRP pools right next to each other, so that we can
 // check "belongs to one of the two pools" with a single bitmask operation.
