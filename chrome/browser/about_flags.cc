@@ -1159,7 +1159,6 @@ const FeatureEntry::FeatureVariation
 };
 const FeatureEntry::FeatureParam kJourneysHiddenVisitsParams[] = {
     {"JourneysLocaleOrLanguageAllowlist", "*"},
-    {"drop_hidden_visits", "false"},
 };
 const FeatureEntry::FeatureParam kJourneysShowAllVisitsParams[] = {
     {"JourneysLocaleOrLanguageAllowlist", "*"},
@@ -1167,7 +1166,6 @@ const FeatureEntry::FeatureParam kJourneysShowAllVisitsParams[] = {
     // high number. We drop the rest above this very high number because we
     // definitely don't want to surface a Show More UI after that number.
     {"JourneysNumVisitsToAlwaysShowAboveTheFold", "200"},
-    {"drop_hidden_visits", "true"},
 };
 const FeatureEntry::FeatureParam kJourneysAllLocalesParams[] = {
     {"JourneysLocaleOrLanguageAllowlist", "*"},

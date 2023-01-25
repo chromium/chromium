@@ -4,6 +4,7 @@
 
 #include "components/history_clusters/core/history_clusters_util.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_service_test_api.h"
@@ -285,93 +286,53 @@ TEST(HistoryClustersUtilTest, SortClustersWithinBatchForQuery) {
 TEST(HistoryClustersUtilTest, HideAndCullLowScoringVisits) {
   std::vector<history::Cluster> all_clusters;
 
+  auto add_cluster = [&](int64_t cluster_id, std::vector<float> visit_scores) {
+    history::Cluster cluster;
+    cluster.cluster_id = cluster_id;
+    base::ranges::transform(visit_scores, std::back_inserter(cluster.visits),
+                            [&](const auto& visit_score) {
+                              return GetHardcodedClusterVisit(1, visit_score);
+                            });
+    cluster.keyword_to_data_map = {{u"keyword", history::ClusterKeywordData()}};
+    all_clusters.push_back(cluster);
+  };
+
   // High scoring visits should always be above the fold.
-  history::Cluster cluster1;
-  cluster1.cluster_id = 4;
-  cluster1.visits.push_back(GetHardcodedClusterVisit(1, 1));
-  cluster1.visits.push_back(GetHardcodedClusterVisit(1, .8));
-  cluster1.visits.push_back(GetHardcodedClusterVisit(1, .5));
-  cluster1.visits.push_back(GetHardcodedClusterVisit(1, .5));
-  cluster1.visits.push_back(GetHardcodedClusterVisit(1, .5));
-  cluster1.keyword_to_data_map = {{u"keyword", history::ClusterKeywordData()}};
+  add_cluster(4, {1, .8, .5, .5, .5});
 
   // Low scoring visits should be above the fold only if they're one of top 4.
-  history::Cluster cluster2;
-  cluster2.cluster_id = 6;
-  cluster2.visits.push_back(GetHardcodedClusterVisit(1, .4));
-  cluster2.visits.push_back(GetHardcodedClusterVisit(1, .4));
-  cluster2.visits.push_back(GetHardcodedClusterVisit(1, .4));
-  cluster2.visits.push_back(GetHardcodedClusterVisit(1, .4));
-  cluster2.visits.push_back(GetHardcodedClusterVisit(1, .4));
-  cluster2.keyword_to_data_map = {{u"keyword", history::ClusterKeywordData()}};
+  add_cluster(6, {.4, .4, .4, .4, .4});
 
-  // 0 scoring visits should be above the fold only if they're 1st.
-  history::Cluster cluster3;
-  cluster3.cluster_id = 8;
-  cluster3.visits.push_back(GetHardcodedClusterVisit(1, 0.0));
-  cluster3.visits.push_back(GetHardcodedClusterVisit(1, 0.0));
-  cluster3.keyword_to_data_map = {{u"keyword", history::ClusterKeywordData()}};
+  // 0 scoring visits should never be above the fold.
+  add_cluster(8, {0, 0, .8, .8});
 
-  all_clusters.push_back(cluster1);
-  all_clusters.push_back(cluster2);
-  all_clusters.push_back(cluster3);
+  // Clusters with 1 visit after filtering should be removed.
+  add_cluster(10, {.8, 0});
 
-  {
-    Config config;
-    config.drop_hidden_visits = true;
-    SetConfigForTesting(config);
+  // Clusters with 0 visits after filtering should be removed.
+  add_cluster(12, {0, 0});
 
-    auto clusters = all_clusters;
-    HideAndCullLowScoringVisits(clusters);
-    ASSERT_EQ(clusters.size(), 3u);
+  auto clusters = all_clusters;
+  // Try with `min_visits` = 2. This is how query-less state behaves.
+  HideAndCullLowScoringVisits(clusters, 2);
+  ASSERT_EQ(clusters.size(), 3u);
 
-    EXPECT_EQ(clusters[0].cluster_id, 4);
-    auto& visits = clusters[0].visits;
-    ASSERT_EQ(visits.size(), 5u);
-    EXPECT_EQ(visits[0].hidden, false);
-    EXPECT_EQ(visits[1].hidden, false);
-    EXPECT_EQ(visits[2].hidden, false);
-    EXPECT_EQ(visits[3].hidden, false);
-    EXPECT_EQ(visits[4].hidden, false);
+  EXPECT_EQ(clusters[0].cluster_id, 4);
+  EXPECT_EQ(clusters[0].visits.size(), 5u);
 
-    EXPECT_EQ(clusters[1].cluster_id, 6);
-    visits = clusters[1].visits;
-    ASSERT_EQ(visits.size(), 4u);
-    EXPECT_EQ(visits[0].hidden, false);
-    EXPECT_EQ(visits[1].hidden, false);
-    EXPECT_EQ(visits[2].hidden, false);
-    EXPECT_EQ(visits[3].hidden, false);
+  EXPECT_EQ(clusters[1].cluster_id, 6);
+  EXPECT_EQ(clusters[1].visits.size(), 4u);
 
-    EXPECT_EQ(clusters[2].cluster_id, 8);
-    ASSERT_EQ(clusters[2].visits.size(), 1u);
-    EXPECT_EQ(clusters[2].visits[0].hidden, false);
-  }
+  EXPECT_EQ(clusters[2].cluster_id, 8);
+  EXPECT_EQ(clusters[2].visits.size(), 2u);
 
-  {
-    Config config;
-    config.drop_hidden_visits = false;
-    SetConfigForTesting(config);
-
-    auto clusters = all_clusters;
-    HideAndCullLowScoringVisits(clusters);
-
-    EXPECT_EQ(clusters[0].cluster_id, 4);
-    EXPECT_EQ(clusters[0].visits.size(), 5u);
-
-    EXPECT_EQ(clusters[1].cluster_id, 6);
-    const auto& visits = clusters[1].visits;
-    ASSERT_EQ(visits.size(), 5u);
-    EXPECT_EQ(visits[0].hidden, false);
-    EXPECT_EQ(visits[1].hidden, false);
-    EXPECT_EQ(visits[2].hidden, false);
-    EXPECT_EQ(visits[3].hidden, false);
-    EXPECT_EQ(visits[4].hidden, true);
-
-    EXPECT_EQ(clusters[2].cluster_id, 8);
-    ASSERT_EQ(clusters[2].visits.size(), 2u);
-    EXPECT_EQ(clusters[2].visits[0].hidden, false);
-    EXPECT_EQ(clusters[2].visits[1].hidden, true);
-  }
+  // Try with `min_visits` = 1. This is how query state behaves.
+  clusters = all_clusters;
+  HideAndCullLowScoringVisits(clusters, 1);
+  // Cluster 10, with 1 visit after filtering should no longer be removed.
+  ASSERT_EQ(clusters.size(), 4u);
+  EXPECT_EQ(clusters[3].cluster_id, 10);
+  EXPECT_EQ(clusters[3].visits.size(), 1u);
 }
 
 TEST(HistoryClustersUtilTest, CoalesceRelatedSearches) {

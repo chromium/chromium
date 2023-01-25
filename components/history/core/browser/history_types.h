@@ -894,6 +894,9 @@ struct ClusterVisit {
   // any UI. It is still included in the cluster so that it can be queried over,
   // as well as deleted when the whole cluster is deleted. This is computed in
   // the UI code, and should not be persisted.
+  // TODO(manukh): Now always false. Clean up usages. Also clean up
+  //   `PromoteMatchingVisitsAboveNonMatchingVisits()` and anywhere else that
+  //   intentionally sets the score low enough to be hidden below.
   bool hidden = false;
 
   // The URL of the representative image, which may be empty.

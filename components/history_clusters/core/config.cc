@@ -62,9 +62,6 @@ Config::Config() {
             internal::kJourneys, "JourneysNumVisitsToAlwaysShowAboveTheFold",
             num_visits_to_always_show_above_the_fold);
 
-    drop_hidden_visits = base::GetFieldTrialParamByFeatureAsBool(
-        internal::kJourneys, "drop_hidden_visits", drop_hidden_visits);
-
     rescore_visits_within_clusters_for_query =
         base::GetFieldTrialParamByFeatureAsBool(
             internal::kJourneys, "JourneysRescoreVisitsWithinClustersForQuery",

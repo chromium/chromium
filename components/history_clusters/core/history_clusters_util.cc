@@ -55,6 +55,12 @@ float MarkMatchesAndGetScore(const query_parser::QueryNodeVector& find_nodes,
   }
 
   for (auto& visit : cluster->visits) {
+    // 0-scored visits should not be considered; they should not be shown even
+    // if the cluster matches the query; nor should they surface the cluster
+    // even if the visit matches the query.
+    if (visit.score == 0)
+      continue;
+
     bool match_found = false;
 
     // Search through the visible elements and highlight match positions.
@@ -89,7 +95,7 @@ float MarkMatchesAndGetScore(const query_parser::QueryNodeVector& find_nodes,
 
     if (match_found) {
       visit.matches_search_query = true;
-      DCHECK_GE(visit.score, 0);
+      DCHECK_GT(visit.score, 0);
       total_matching_visit_score += visit.score;
     }
   }
@@ -276,26 +282,22 @@ void CullNonProminentOrDuplicateClusters(
   }
 }
 
-void HideAndCullLowScoringVisits(std::vector<history::Cluster>& clusters) {
-  for (auto& cluster : clusters) {
-    for (size_t i = 0; i < cluster.visits.size(); ++i) {
-      auto& visit = cluster.visits[i];
-      // Even a 0.0 visit shouldn't be hidden if this is the first visit we
-      // encounter. The assumption is that the visits are always ranked by score
-      // in a descending order.
-      // TODO(crbug.com/1313631): Simplify this after removing "Show More" UI.
-      if ((visit.score == 0.0 && i != 0) ||
-          (visit.score < GetConfig().min_score_to_always_show_above_the_fold &&
-           i >= GetConfig().num_visits_to_always_show_above_the_fold)) {
-        visit.hidden = true;
-      }
-    }
-
-    if (GetConfig().drop_hidden_visits) {
-      base::EraseIf(cluster.visits,
-                    [](const auto& visit) { return visit.hidden; });
-    }
-  }
+void HideAndCullLowScoringVisits(std::vector<history::Cluster>& clusters,
+                                 size_t min_visits) {
+  DCHECK_GT(min_visits, 0u);
+  base::EraseIf(clusters, [&](auto& cluster) {
+    int index = -1;
+    base::EraseIf(cluster.visits, [&](auto& visit) {
+      index++;
+      return visit.score == 0.0 ||
+             (visit.score <
+                  GetConfig().min_score_to_always_show_above_the_fold &&
+              index >=
+                  static_cast<int>(
+                      GetConfig().num_visits_to_always_show_above_the_fold));
+    });
+    return cluster.visits.size() < min_visits;
+  });
 }
 
 void CoalesceRelatedSearches(std::vector<history::Cluster>& clusters) {
