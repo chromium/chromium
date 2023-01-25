@@ -3869,6 +3869,11 @@
     "expiry_milestone": 114
   },
   {
+    "name": "force-resync-drive",
+    "owners": [ "cassycc", "petermarshall", "simmonsjosh@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "force-show-update-menu-badge",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/omaha/OWNERS" ],
     // This is required by test teams to verify functionality on devices which

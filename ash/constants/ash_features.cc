@@ -976,6 +976,12 @@ BASE_FEATURE(kForceEnableServerSideSpeechRecognitionForDev,
              "ForceEnableServerSideSpeechRecognitionForDev",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables Drive to forcibly resync office files. Operations such as copy,
+// move, ZIP on MS Office files call on the Drive to resync the files.
+BASE_FEATURE(kForceReSyncDrive,
+             "ForceReSyncDrive",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to allow keeping full screen mode after unlock.
 BASE_FEATURE(kFullscreenAfterUnlockAllowed,
              "FullscreenAfterUnlockAllowed",
@@ -2620,6 +2626,10 @@ bool ShouldForceEnableServerSideSpeechRecognitionForDev() {
 #else
   return false;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING);
+}
+
+bool IsForceReSyncDriveEnabled() {
+  return base::FeatureList::IsEnabled(kForceReSyncDrive);
 }
 
 bool IsFullscreenAfterUnlockAllowed() {

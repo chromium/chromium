@@ -3126,6 +3126,9 @@ extern const char kFloatWindowDescription[];
 extern const char kFocusFollowsCursorName[];
 extern const char kFocusFollowsCursorDescription[];
 
+extern const char kForceReSyncDriveName[];
+extern const char kForceReSyncDriveDescription[];
+
 extern const char kFrameThrottleFpsName[];
 extern const char kFrameThrottleFpsDescription[];
 extern const char kFrameThrottleFpsDefault[];

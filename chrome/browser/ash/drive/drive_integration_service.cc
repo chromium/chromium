@@ -1498,7 +1498,8 @@ void DriveIntegrationService::PollHostedFilePinStates() {
 void DriveIntegrationService::ForceReSyncFile(const base::FilePath& local_path,
                                               base::OnceClosure callback) {
   base::FilePath drive_path;
-  if (!IsMounted() || !GetDriveFsInterface() ||
+  if (!ash::features::IsForceReSyncDriveEnabled() || !IsMounted() ||
+      !GetDriveFsInterface() ||
       !GetRelativeDrivePath(local_path, &drive_path)) {
     std::move(callback).Run();
     return;
