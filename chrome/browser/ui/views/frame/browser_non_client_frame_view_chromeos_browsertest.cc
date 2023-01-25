@@ -1277,10 +1277,39 @@ class FloatBrowserNonClientFrameViewChromeOSTest
       chromeos::wm::features::kFloatWindow};
 };
 
+IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
+                       BrowserHeaderVisibilityInTabletModeTest) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  BrowserNonClientFrameViewChromeOS* frame_view =
+      GetFrameViewChromeOS(browser_view);
+
+  ASSERT_NO_FATAL_FAILURE(
+      ash::ShellTestApi().SetTabletModeEnabledForTest(true));
+  EXPECT_FALSE(frame_view->caption_button_container_->GetVisible());
+
+  Widget* widget = browser_view->GetWidget();
+  auto* immersive_controller = chromeos::ImmersiveFullscreenController::Get(
+      views::Widget::GetWidgetForNativeView(widget->GetNativeWindow()));
+
+  // Snap a window. No immersive mode from regular browsers.
+  ash::SplitViewTestApi().SnapWindow(
+      widget->GetNativeWindow(), ash::SplitViewTestApi::SnapPosition::RIGHT);
+  EXPECT_FALSE(frame_view->caption_button_container_->GetVisible());
+  EXPECT_FALSE(immersive_controller->IsEnabled());
+
+  // Float the window; the title bar is visible.
+  ui::test::EventGenerator event_generator(
+      widget->GetNativeWindow()->GetRootWindow());
+  event_generator.PressAndReleaseKey(ui::VKEY_F,
+                                     ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(frame_view->caption_button_container_->GetVisible());
+  EXPECT_FALSE(immersive_controller->IsEnabled());
+}
+
 // Test that for a browser app window, its caption buttons may or may not hide
 // in tablet mode.
 IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
-                       AppHeaderVisibilityInTabletModeTest) {
+                       BrowserAppHeaderVisibilityInTabletModeTest) {
   // Create a browser app window.
   Browser::CreateParams params = Browser::CreateParams::CreateForApp(
       "test_browser_app", /*trusted_source=*/true, gfx::Rect(),
@@ -1296,6 +1325,7 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
       aura::client::kResizeBehaviorKey,
       aura::client::kResizeBehaviorCanMaximize |
           aura::client::kResizeBehaviorCanResize);
+
   StartOverview();
   EXPECT_FALSE(frame_view2->caption_button_container_->GetVisible());
   EndOverview();

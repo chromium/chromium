@@ -823,17 +823,31 @@ void BrowserNonClientFrameViewChromeOS::AddedToWidget() {
 }
 
 bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtons() const {
-  return GetShowCaptionButtonsWhenNotInOverview() && !GetOverviewMode() &&
-         !GetHideCaptionButtonsForFullscreen() && !UseWebUITabStrip();
+  if (GetOverviewMode()) {
+    return false;
+  }
+
+  return GetShowCaptionButtonsWhenNotInOverview();
 }
 
 bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtonsWhenNotInOverview()
     const {
-  if (UsePackagedAppHeaderStyle(browser_view()->browser()))
+  if (GetHideCaptionButtonsForFullscreen()) {
+    return false;
+  }
+
+  // Show the caption buttons for packaged apps which support immersive mode.
+  if (UsePackagedAppHeaderStyle(browser_view()->browser())) {
     return true;
-  if (!chromeos::TabletState::Get()->InTabletMode())
-    return true;
-  return IsFloated();
+  }
+
+  // Browsers in tablet mode still show their caption buttons in float state,
+  // even with the webUI tab strip.
+  if (chromeos::TabletState::Get()->InTabletMode()) {
+    return IsFloated();
+  }
+
+  return !UseWebUITabStrip();
 }
 
 int BrowserNonClientFrameViewChromeOS::GetToolbarLeftInset() const {

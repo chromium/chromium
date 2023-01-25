@@ -155,7 +155,9 @@ class BrowserNonClientFrameViewChromeOS
   FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTest,
                            RestoreMinimizedBrowserUpdatesCaption);
   FRIEND_TEST_ALL_PREFIXES(FloatBrowserNonClientFrameViewChromeOSTest,
-                           AppHeaderVisibilityInTabletModeTest);
+                           BrowserHeaderVisibilityInTabletModeTest);
+  FRIEND_TEST_ALL_PREFIXES(FloatBrowserNonClientFrameViewChromeOSTest,
+                           BrowserAppHeaderVisibilityInTabletModeTest);
   FRIEND_TEST_ALL_PREFIXES(ImmersiveModeControllerChromeosWebAppBrowserTest,
                            FrameLayoutToggleTabletMode);
   FRIEND_TEST_ALL_PREFIXES(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
@@ -174,17 +176,14 @@ class BrowserNonClientFrameViewChromeOS
 
   bool AppIsBorderlessPwa();
 
-  // Returns true if GetShowCaptionButtonsWhenNotInOverview() returns true
-  // and this browser window is not showing in overview or in fullscreen mode.
+  // Returns true if `GetShowCaptionButtonsWhenNotInOverview()` returns true
+  // and this browser window is not showing in overview.
   bool GetShowCaptionButtons() const;
 
-  // In tablet mode, to prevent accidental taps of the window controls, and to
-  // give more horizontal space for tabs and the new tab button (especially in
-  // split view), we hide the window controls even when this browser window is
-  // not showing in overview. We only do this when the Home Launcher feature is
-  // enabled, because it gives the user the ability to minimize all windows when
-  // pressing the Launcher button on the shelf. So, this function returns true
-  // if the Home Launcher feature is disabled or we are in clamshell mode.
+  // Returns whether we should show caption buttons. False for fullscreen,
+  // tablet mode and webUI tab strip in most cases. The exceptions are if this
+  // is a packaged app, as they have immersive mode enabled, and floated windows
+  // in tablet mode.
   bool GetShowCaptionButtonsWhenNotInOverview() const;
 
   // Distance between the edge of the NonClientFrameView and the web app frame
