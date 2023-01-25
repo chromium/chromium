@@ -2109,11 +2109,70 @@ TEST_F(AXPlatformNodeWinTest,
   target.Reset();
 }
 
+TEST_F(AXPlatformNodeWinTest, IAccessible2_TestRelationTargetsOfType) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.AddIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds, {2, 3});
+
+  AXNodeData child1;
+  child1.id = 2;
+  child1.role = ax::mojom::Role::kStaticText;
+
+  root.child_ids.push_back(2);
+
+  AXNodeData child2;
+  child2.id = 3;
+  child2.role = ax::mojom::Role::kStaticText;
+  std::vector<AXNodeID> labelledby_ids = {1, 4};
+  child2.AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
+                             labelledby_ids);
+
+  root.child_ids.push_back(3);
+
+  AXNodeData child3;
+  child3.id = 4;
+  child3.role = ax::mojom::Role::kStaticText;
+  child3.AddIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds, {2});
+
+  root.child_ids.push_back(4);
+
+  Init(root, child1, child2, child3);
+  ComPtr<IAccessible> root_iaccessible(GetRootIAccessible());
+  ComPtr<IAccessible2_2> root_iaccessible2 = ToIAccessible2_2(root_iaccessible);
+
+  ComPtr<IDispatch> result;
+  EXPECT_EQ(S_OK, root_iaccessible2->get_accChild(ScopedVariant(1), &result));
+  ComPtr<IAccessible2_2> ax_child1;
+  EXPECT_EQ(S_OK, result.As(&ax_child1));
+  result.Reset();
+
+  EXPECT_EQ(S_OK, root_iaccessible2->get_accChild(ScopedVariant(2), &result));
+  ComPtr<IAccessible2_2> ax_child2;
+  EXPECT_EQ(S_OK, result.As(&ax_child2));
+  result.Reset();
+
+  {
+    ScopedBstr type(L"details");
+    IUnknown** targets;
+    LONG n_targets;
+    EXPECT_EQ(S_OK, root_iaccessible2->get_relationTargetsOfType(
+                        type.Get(), 0, &targets, &n_targets));
+    ASSERT_EQ(2, n_targets);
+    CoTaskMemFree(targets);
+
+    EXPECT_EQ(S_OK, root_iaccessible2->get_relationTargetsOfType(
+                        type.Get(), 1, &targets, &n_targets));
+    ASSERT_EQ(1, n_targets);
+    CoTaskMemFree(targets);
+  }
+}
+
 TEST_F(AXPlatformNodeWinTest, DISABLED_TestRelationTargetsOfType) {
   AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
-  root.AddIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds, {2});
+  root.AddIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds, {2, 3});
 
   AXNodeData child1;
   child1.id = 2;
@@ -2162,7 +2221,7 @@ TEST_F(AXPlatformNodeWinTest, DISABLED_TestRelationTargetsOfType) {
     IUnknown** targets;
     LONG n_targets;
     EXPECT_EQ(S_OK, root_iaccessible2->get_relationTargetsOfType(
-                        type.Get(), 0, &targets, &n_targets));
+                        type.Get(), 1, &targets, &n_targets));
     ASSERT_EQ(1, n_targets);
     EXPECT_EQ(ax_child1.Get(), targets[0]);
     CoTaskMemFree(targets);

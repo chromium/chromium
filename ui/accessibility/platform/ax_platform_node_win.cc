@@ -2056,8 +2056,9 @@ IFACEMETHODIMP AXPlatformNodeWin::get_relationTargetsOfType(BSTR type_bstr,
       AXPlatformNodeWin* win_target = static_cast<AXPlatformNodeWin*>(target);
       (*targets)[index] = static_cast<IAccessible*>(win_target);
       (*targets)[index]->AddRef();
-      if (++index > count)
+      if (++index >= count) {
         break;
+      }
     }
   }
   *n_targets = index;
