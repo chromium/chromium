@@ -249,10 +249,8 @@ CookieSettings::GetCookieSettingWithMetadata(
           ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
     } else if (ShouldConsiderTopLevelStorageAccessGrants(query_reason) &&
                IsAllowedByTopLevelStorageAccessGrant(url, first_party_url)) {
-      // TODO(crbug.com/1385156): Separate metrics between StorageAccessAPI
-      // and the page-level variant.
       storage_access_result = net::cookie_util::StorageAccessResult::
-          ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
+          ACCESS_ALLOWED_TOP_LEVEL_STORAGE_ACCESS_GRANT;
     } else if (overrides.Has(
                    net::CookieSettingOverride::kForceThirdPartyByUser)) {
       storage_access_result =

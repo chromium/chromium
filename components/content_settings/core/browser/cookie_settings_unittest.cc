@@ -183,6 +183,18 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
     return net::cookie_util::StorageAccessResult::ACCESS_BLOCKED;
   }
 
+  net::cookie_util::StorageAccessResult
+  BlockedStorageAccessResultWithTopLevelOverride() const {
+    if (IsStorageAccessAPIEnabled()) {
+      return net::cookie_util::StorageAccessResult::
+          ACCESS_ALLOWED_TOP_LEVEL_STORAGE_ACCESS_GRANT;
+    }
+    if (IsForceAllowThirdPartyCookies()) {
+      return net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_FORCED;
+    }
+    return net::cookie_util::StorageAccessResult::ACCESS_BLOCKED;
+  }
+
  protected:
   bool ShouldDeleteCookieOnExit(const std::string& domain, bool is_https) {
     return cookie_settings_->ShouldDeleteCookieOnExit(
@@ -776,7 +788,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingTopLevelStorageAccess) {
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
   histogram_tester.ExpectBucketCount(
       kAllowedRequestsHistogram,
-      static_cast<int>(BlockedStorageAccessResultWithEitherOverride()), 1);
+      static_cast<int>(BlockedStorageAccessResultWithTopLevelOverride()), 1);
 
   // Invalid pair the |top_level_url| granting access to |url| is now
   // being loaded under |url| as the top level url.

@@ -94,9 +94,39 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="API.StorageAccess.RequestStorageAccessForOrigin"
     enum="RequestStorageResult" expires_after="2023-07-16">
+  <obsolete>
+    Metric collection is being separated from the standard Storage Access API.
+    See API.TopLevelStorageAccess.RequestStorageAccessForOrigin. Note that
+    future re-consolidation of these metrics may be possible.
+  </obsolete>
   <owner>cfredric@chromium.org</owner>
   <owner>mreichhoff@chromium.org</owner>
   <owner>brandm@microsoft.com</owner>
+  <summary>
+    Records invocations of document.requestStorageAccessForOrigin and reasons
+    the request was approved or rejected. Recorded for every call to the
+    function, regardless of outcome. Note that
+    API.StorageAccess.RequestStorageAccess is similar, but for the other variant
+    of this API.
+  </summary>
+</histogram>
+
+<histogram name="API.TopLevelStorageAccess.RequestOutcome"
+    enum="StorageAccessAPIRequestOutcome" expires_after="2023-08-31">
+  <owner>cfredric@chromium.org</owner>
+  <owner>mreichhoff@chromium.org</owner>
+  <summary>
+    Records the outcome of a particular Top-Level Storage Access API permission
+    request.
+
+    Recorded at the time of the request, for every request.
+  </summary>
+</histogram>
+
+<histogram name="API.TopLevelStorageAccess.RequestStorageAccessForOrigin"
+    enum="RequestStorageResult" expires_after="2023-08-31">
+  <owner>cfredric@chromium.org</owner>
+  <owner>mreichhoff@chromium.org</owner>
   <summary>
     Records invocations of document.requestStorageAccessForOrigin and reasons
     the request was approved or rejected. Recorded for every call to the

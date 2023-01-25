@@ -30,9 +30,8 @@
 
 namespace {
 
-constexpr char kGrantIsImplicitHistogram[] =
-    "API.StorageAccess.GrantIsImplicit";
-constexpr char kRequestOutcomeHistogram[] = "API.StorageAccess.RequestOutcome";
+constexpr char kRequestOutcomeHistogram[] =
+    "API.TopLevelStorageAccess.RequestOutcome";
 
 GURL GetTopLevelURL() {
   return GURL("https://embedder.example.com");
@@ -232,9 +231,6 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
                 kRequestOutcomeHistogram,
                 CookieRequestOutcome::kGrantedByFirstPartySet),
             1);
-  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 1);
-  histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
-                                       /*sample=*/true, 1);
 
   // Check the `SessionModel::NonRestorableUserSession` settings granted by FPS.
   settings_map->GetSettingsForOneType(

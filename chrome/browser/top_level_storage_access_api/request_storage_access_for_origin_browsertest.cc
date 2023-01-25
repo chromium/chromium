@@ -56,7 +56,8 @@ constexpr char kHostB[] = "b.test";
 constexpr char kHostC[] = "c.test";
 constexpr char kHostD[] = "d.test";
 
-constexpr char kRequestOutcomeHistogram[] = "API.StorageAccess.RequestOutcome";
+constexpr char kRequestOutcomeHistogram[] =
+    "API.TopLevelStorageAccess.RequestOutcome";
 
 class RequestStorageAccessForOriginBaseBrowserTest
     : public InProcessBrowserTest {

@@ -40,9 +40,9 @@ namespace {
 
 constexpr base::TimeDelta kGrantDuration = base::Hours(24);
 
-// TODO(crbug.com/1385156): Switch to non-StorageAccessAPI metrics.
 void RecordOutcomeSample(CookieRequestOutcome outcome) {
-  base::UmaHistogramEnumeration("API.StorageAccess.RequestOutcome", outcome);
+  base::UmaHistogramEnumeration("API.TopLevelStorageAccess.RequestOutcome",
+                                outcome);
 }
 
 }  // namespace
@@ -197,9 +197,6 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
     std::move(callback).Run(content_setting);
     return;
   }
-
-  // TODO(crbug.com/1385156): Switch to non-StorageAccessAPI metrics.
-  base::UmaHistogramBoolean("API.StorageAccess.GrantIsImplicit", true);
 
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser_context());

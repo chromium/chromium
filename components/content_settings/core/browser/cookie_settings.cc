@@ -228,9 +228,9 @@ ContentSetting CookieSettings::GetCookieSettingInternal(
 
     if (host_setting == CONTENT_SETTING_ALLOW) {
       block = false;
-      // TODO(crbug.com/1385156): Move to separate metric names.
-      FireStorageAccessHistogram(net::cookie_util::StorageAccessResult::
-                                     ACCESS_ALLOWED_STORAGE_ACCESS_GRANT);
+      FireStorageAccessHistogram(
+          net::cookie_util::StorageAccessResult::
+              ACCESS_ALLOWED_TOP_LEVEL_STORAGE_ACCESS_GRANT);
     }
   }
 #endif

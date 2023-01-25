@@ -393,7 +393,7 @@ void FireRequestStorageAccessHistogram(RequestStorageResult result) {
 
 void FireRequestStorageAccessForOriginHistogram(RequestStorageResult result) {
   base::UmaHistogramEnumeration(
-      "API.StorageAccess.RequestStorageAccessForOrigin", result);
+      "API.TopLevelStorageAccess.RequestStorageAccessForOrigin", result);
 }
 
 class IntrinsicSizeResizeObserverDelegate : public ResizeObserver::Delegate {

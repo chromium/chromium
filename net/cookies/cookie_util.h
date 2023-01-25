@@ -44,7 +44,8 @@ enum class StorageAccessResult {
   ACCESS_ALLOWED = 1,
   ACCESS_ALLOWED_STORAGE_ACCESS_GRANT = 2,
   ACCESS_ALLOWED_FORCED = 3,
-  kMaxValue = ACCESS_ALLOWED_FORCED,
+  ACCESS_ALLOWED_TOP_LEVEL_STORAGE_ACCESS_GRANT = 4,
+  kMaxValue = ACCESS_ALLOWED_TOP_LEVEL_STORAGE_ACCESS_GRANT,
 };
 // Helper to fire telemetry indicating if a given request for storage was
 // allowed or not by the provided |result|.
