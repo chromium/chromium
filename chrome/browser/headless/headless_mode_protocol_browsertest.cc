@@ -105,8 +105,6 @@ void HeadlessModeProtocolBrowserTest::OnLoadEventFired(
   base::Value::Dict test_params;
   test_params.Set("test", test_url.spec());
   test_params.Set("target", target_url.spec());
-  // TODO(crbug.com/1408836): Replaces this with VLOG'ed protocol output from
-  // simple devtools protocol.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDumpDevToolsProtocol)) {
     test_params.Set("dumpDevToolsProtocol", true);

@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -24,6 +25,9 @@ using content::DevToolsAgentHost;
 namespace simple_devtools_protocol_client {
 
 namespace {
+// Use --vmodule=simple_devtools_protocol_client=2 switch to log protocol
+// messages.
+constexpr int kVLogLevel = 2;
 
 const char kId[] = "id";
 const char kSessionId[] = "sessionId";
@@ -121,6 +125,8 @@ void SimpleDevToolsProtocolClient::AgentHostClosed(
 
 void SimpleDevToolsProtocolClient::DispatchProtocolMessageTask(
     base::Value::Dict message) {
+  VLOG(kVLogLevel) << "\n[CDP RECV] " << message.DebugString();
+
   // Handle response message shutting down the host if it's unexpected.
   if (absl::optional<int> id = message.FindInt(kId)) {
     auto it = pending_response_map_.find(*id);
@@ -169,6 +175,8 @@ void SimpleDevToolsProtocolClient::SendProtocolMessage(
     parent_client_->SendProtocolMessage(std::move(message));
     return;
   }
+
+  VLOG(kVLogLevel) << "\n[CDP SEND] " << message.DebugString();
 
   std::string json_message;
   base::JSONWriter::Write(base::Value(std::move(message)), &json_message);
