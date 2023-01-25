@@ -135,8 +135,6 @@ class TestTargetPolicy : public TargetPolicy {
   ResultCode SetStderrHandle(HANDLE handle) override { return SBOX_ALL_OK; }
   void AddHandleToShare(HANDLE handle) override {}
 
-  void SetEffectiveToken(HANDLE token) override {}
-
  private:
   TestTargetConfig config_;
 };

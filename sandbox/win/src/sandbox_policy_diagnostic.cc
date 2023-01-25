@@ -56,8 +56,6 @@ std::string GetTokenLevelInEnglish(TokenLevel token) {
   switch (token) {
     case USER_LOCKDOWN:
       return "Lockdown";
-    case USER_RESTRICTED:
-      return "Restricted";
     case USER_LIMITED:
       return "Limited";
     case USER_INTERACTIVE:

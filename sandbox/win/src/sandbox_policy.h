@@ -280,11 +280,6 @@ class [[clang::lto_visibility_public]] TargetPolicy {
   // Adds a handle that will be shared with the target process. Does not take
   // ownership of the handle.
   virtual void AddHandleToShare(HANDLE handle) = 0;
-
-  // Set effective token that will be used for creating the initial and
-  // lockdown tokens. The token the caller passes must remain valid for the
-  // lifetime of the policy object.
-  virtual void SetEffectiveToken(HANDLE token) = 0;
 };
 
 }  // namespace sandbox

@@ -84,8 +84,9 @@ bool GetAppContainerImpersonationToken(
   auto app_container_sid = token->AppContainerSid();
   if (!app_container_sid)
     return false;
-  return CreateLowBoxToken(initial_token, IMPERSONATION, *app_container_sid,
-                           capabilities, impersonation_token);
+  return CreateLowBoxToken(initial_token, TokenType::kImpersonation,
+                           *app_container_sid, capabilities,
+                           impersonation_token);
 }
 
 }  // namespace

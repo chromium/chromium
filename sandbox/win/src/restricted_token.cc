@@ -9,314 +9,221 @@
 #include <stddef.h>
 
 #include <memory>
-#include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/win/access_token.h"
+#include "base/win/security_util.h"
 #include "sandbox/win/src/acl.h"
-
-namespace {
-
-std::vector<SID_AND_ATTRIBUTES> ConvertToAttributes(
-    const std::vector<base::win::Sid>& sids,
-    DWORD attributes) {
-  std::vector<SID_AND_ATTRIBUTES> ret(sids.size());
-  for (size_t i = 0; i < sids.size(); ++i) {
-    ret[i].Attributes = attributes;
-    ret[i].Sid = sids[i].GetPSID();
-  }
-  return ret;
-}
-
-bool DeletePrivilege(const base::win::ScopedHandle& token,
-                     const wchar_t* name) {
-  TOKEN_PRIVILEGES privs = {};
-  privs.PrivilegeCount = 1;
-  if (!::LookupPrivilegeValue(nullptr, name, &privs.Privileges[0].Luid))
-    return false;
-  privs.Privileges[0].Attributes = SE_PRIVILEGE_REMOVED;
-  return !!::AdjustTokenPrivileges(token.Get(), FALSE, &privs, 0, nullptr,
-                                   nullptr);
-}
-
-}  // namespace
 
 namespace sandbox {
 
-RestrictedToken::RestrictedToken()
-    : integrity_level_(INTEGRITY_LEVEL_LAST),
-      init_(false),
-      lockdown_default_dacl_(false),
-      delete_all_privileges_(false),
-      remove_traversal_privilege_(false) {}
+RestrictedToken::RestrictedToken() = default;
+RestrictedToken::~RestrictedToken() = default;
 
-RestrictedToken::~RestrictedToken() {}
-
-DWORD RestrictedToken::Init(const HANDLE effective_token) {
-  if (init_)
-    return ERROR_ALREADY_INITIALIZED;
-
-  HANDLE temp_token;
-  if (effective_token) {
-    // We duplicate the handle to be able to use it even if the original handle
-    // is closed.
-    if (!::DuplicateHandle(::GetCurrentProcess(), effective_token,
-                           ::GetCurrentProcess(), &temp_token, 0, false,
-                           DUPLICATE_SAME_ACCESS)) {
-      return ::GetLastError();
-    }
-  } else {
-    if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_ALL_ACCESS,
-                            &temp_token)) {
-      return ::GetLastError();
-    }
+absl::optional<base::win::AccessToken> RestrictedToken::GetRestrictedToken()
+    const {
+  absl::optional<base::win::AccessToken> token =
+      base::win::AccessToken::FromCurrentProcess(/*impersonation=*/false,
+                                                 TOKEN_ALL_ACCESS);
+  if (!token) {
+    return absl::nullopt;
   }
-  effective_token_.Set(temp_token);
-  absl::optional<base::win::AccessToken> query_token =
-      base::win::AccessToken::FromToken(effective_token_.Get());
-  if (!query_token)
-    return ERROR_NO_TOKEN;
-  query_token_.swap(query_token);
-
-  init_ = true;
-  return ERROR_SUCCESS;
+  return CreateRestricted(*token);
 }
 
-DWORD RestrictedToken::GetRestrictedToken(
-    base::win::ScopedHandle* token) const {
-  DCHECK(init_);
-  if (!init_)
-    return ERROR_NO_TOKEN;
-
-  std::vector<SID_AND_ATTRIBUTES> deny_sids =
-      ConvertToAttributes(sids_for_deny_only_, SE_GROUP_USE_FOR_DENY_ONLY);
-  std::vector<SID_AND_ATTRIBUTES> restrict_sids =
-      ConvertToAttributes(sids_to_restrict_, 0);
-
-  bool result = true;
-  HANDLE new_token_handle = nullptr;
-  if (!deny_sids.empty() || !restrict_sids.empty() || delete_all_privileges_) {
-    result = ::CreateRestrictedToken(
-        effective_token_.Get(),
-        delete_all_privileges_ ? DISABLE_MAX_PRIVILEGE : 0,
-        static_cast<DWORD>(deny_sids.size()), deny_sids.data(), 0, nullptr,
-        static_cast<DWORD>(restrict_sids.size()), restrict_sids.data(),
-        &new_token_handle);
-  } else {
-    // Duplicate the token even if it's not modified at this point
-    // because any subsequent changes to this token would also affect the
-    // current process.
-    result = ::DuplicateTokenEx(effective_token_.Get(), TOKEN_ALL_ACCESS,
-                                nullptr, SecurityIdentification, TokenPrimary,
-                                &new_token_handle);
-  }
-
-  if (!result)
-    return ::GetLastError();
-
-  base::win::ScopedHandle new_token(new_token_handle);
-  if (delete_all_privileges_ && remove_traversal_privilege_) {
-    if (!DeletePrivilege(new_token, SE_CHANGE_NOTIFY_NAME))
-      return ::GetLastError();
-  }
-
-  if (lockdown_default_dacl_) {
-    // Don't add Restricted sid and also remove logon sid access.
-    if (!RevokeLogonSidFromDefaultDacl(new_token.Get()))
-      return ::GetLastError();
-  } else {
-    // Modify the default dacl on the token to contain Restricted.
-    if (!AddSidToDefaultDacl(
-            new_token.Get(), base::win::WellKnownSid::kRestricted,
-            base::win::SecurityAccessMode::kGrant, GENERIC_ALL)) {
-      return ::GetLastError();
-    }
-  }
-
-  for (const auto& default_dacl_sid : sids_for_default_dacl_) {
-    if (!AddSidToDefaultDacl(new_token.Get(), std::get<0>(default_dacl_sid),
-                             std::get<1>(default_dacl_sid),
-                             std::get<2>(default_dacl_sid))) {
-      return ::GetLastError();
-    }
-  }
-
-  // Add user to default dacl.
-  if (!AddUserSidToDefaultDacl(new_token.Get(), GENERIC_ALL))
-    return ::GetLastError();
-
-  DWORD error = SetTokenIntegrityLevel(new_token.Get(), integrity_level_);
-  if (ERROR_SUCCESS != error)
-    return error;
-
-  HANDLE token_handle;
-  if (!::DuplicateHandle(::GetCurrentProcess(), new_token.Get(),
-                         ::GetCurrentProcess(), &token_handle, TOKEN_ALL_ACCESS,
-                         false,  // Don't inherit.
-                         0)) {
-    return ::GetLastError();
-  }
-
-  token->Set(token_handle);
-  return ERROR_SUCCESS;
-}
-
-DWORD RestrictedToken::GetRestrictedTokenForImpersonation(
-    base::win::ScopedHandle* token) const {
-  DCHECK(init_);
-  if (!init_)
-    return ERROR_NO_TOKEN;
-
-  base::win::ScopedHandle restricted_token;
-  DWORD err_code = GetRestrictedToken(&restricted_token);
-  if (ERROR_SUCCESS != err_code)
-    return err_code;
-
-  HANDLE impersonation_token_handle;
-  if (!::DuplicateTokenEx(restricted_token.Get(), TOKEN_ALL_ACCESS, nullptr,
-                          SecurityImpersonation, TokenImpersonation,
-                          &impersonation_token_handle)) {
-    return ::GetLastError();
-  }
-  token->Set(impersonation_token_handle);
-  return ERROR_SUCCESS;
-}
-
-DWORD RestrictedToken::AddAllSidsForDenyOnly(
+void RestrictedToken::AddAllSidsForDenyOnly(
     const std::vector<base::win::Sid>& exceptions) {
-  DCHECK(init_);
-  if (!init_)
-    return ERROR_NO_TOKEN;
-
-  // Build the list of the deny only group SIDs
-  for (const base::win::AccessToken::Group& group : query_token_->Groups()) {
-    if (group.IsIntegrity() || group.IsLogonId())
-      continue;
-    bool should_ignore = false;
-    for (const base::win::Sid& sid : exceptions) {
-      if (sid == group.GetSid()) {
-        should_ignore = true;
-        break;
-      }
-    }
-    if (!should_ignore) {
-      sids_for_deny_only_.push_back(group.GetSid().Clone());
-    }
-  }
-
-  return ERROR_SUCCESS;
+  add_all_sids_for_deny_only_ = true;
+  add_all_exceptions_ = base::win::CloneSidVector(exceptions);
 }
 
-DWORD RestrictedToken::AddSidForDenyOnly(const base::win::Sid& sid) {
-  DCHECK(init_);
-  if (!init_)
-    return ERROR_NO_TOKEN;
-
+void RestrictedToken::AddSidForDenyOnly(const base::win::Sid& sid) {
   sids_for_deny_only_.push_back(sid.Clone());
-  return ERROR_SUCCESS;
 }
 
-DWORD RestrictedToken::AddSidForDenyOnly(base::win::WellKnownSid known_sid) {
-  return AddSidForDenyOnly(base::win::Sid(known_sid));
+void RestrictedToken::AddSidForDenyOnly(base::win::WellKnownSid known_sid) {
+  sids_for_deny_only_.emplace_back(known_sid);
 }
 
-DWORD RestrictedToken::AddUserSidForDenyOnly() {
-  DCHECK(init_);
-  if (!init_)
-    return ERROR_NO_TOKEN;
-
-  sids_for_deny_only_.push_back(query_token_->User());
-  return ERROR_SUCCESS;
+void RestrictedToken::AddUserSidForDenyOnly() {
+  add_user_sid_for_deny_only_ = true;
 }
 
-DWORD RestrictedToken::DeleteAllPrivileges(bool remove_traversal_privilege) {
-  DCHECK(init_);
-  if (!init_)
-    return ERROR_NO_TOKEN;
+void RestrictedToken::DeleteAllPrivileges(bool remove_traversal_privilege) {
   delete_all_privileges_ = true;
   remove_traversal_privilege_ = remove_traversal_privilege;
-  return ERROR_SUCCESS;
 }
 
-DWORD RestrictedToken::AddRestrictingSid(const base::win::Sid& sid) {
-  DCHECK(init_);
-  if (!init_)
-    return ERROR_NO_TOKEN;
-
-  sids_to_restrict_.push_back(sid.Clone());  // No attributes
-  return ERROR_SUCCESS;
+void RestrictedToken::AddRestrictingSid(const base::win::Sid& sid) {
+  sids_to_restrict_.push_back(sid.Clone());
 }
 
-DWORD RestrictedToken::AddRestrictingSid(base::win::WellKnownSid known_sid) {
-  return AddRestrictingSid(base::win::Sid(known_sid));
+void RestrictedToken::AddRestrictingSid(base::win::WellKnownSid known_sid) {
+  sids_to_restrict_.emplace_back(known_sid);
 }
 
-DWORD RestrictedToken::AddRestrictingSidLogonSession() {
-  DCHECK(init_);
-  if (!init_)
-    return ERROR_NO_TOKEN;
-
-  absl::optional<base::win::Sid> logon_sid = query_token_->LogonId();
-  if (logon_sid)
-    sids_to_restrict_.push_back(std::move(*logon_sid));
-  return ERROR_SUCCESS;
+void RestrictedToken::AddRestrictingSidLogonSession() {
+  add_restricting_sid_logon_session_ = true;
 }
 
-DWORD RestrictedToken::AddRestrictingSidCurrentUser() {
-  DCHECK(init_);
-  if (!init_)
-    return ERROR_NO_TOKEN;
-  sids_to_restrict_.push_back(query_token_->User());
-  return ERROR_SUCCESS;
+void RestrictedToken::AddRestrictingSidCurrentUser() {
+  add_restricting_sid_current_user_ = true;
 }
 
-DWORD RestrictedToken::AddRestrictingSidAllSids() {
-  DCHECK(init_);
-  if (!init_)
-    return ERROR_NO_TOKEN;
-
-  // Add the current user to the list.
-  DWORD error = AddRestrictingSidCurrentUser();
-  if (ERROR_SUCCESS != error)
-    return error;
-
-  for (const base::win::AccessToken::Group& group : query_token_->Groups()) {
-    if (group.IsIntegrity())
-      continue;
-    AddRestrictingSid(group.GetSid());
-  }
-
-  return ERROR_SUCCESS;
+void RestrictedToken::AddRestrictingSidAllSids() {
+  add_restricting_sid_all_sids_ = true;
+  AddRestrictingSidCurrentUser();
 }
 
-DWORD RestrictedToken::SetIntegrityLevel(IntegrityLevel integrity_level) {
-  integrity_level_ = integrity_level;
-  return ERROR_SUCCESS;
+void RestrictedToken::SetIntegrityLevel(IntegrityLevel integrity_level) {
+  integrity_rid_ = GetIntegrityLevelRid(integrity_level);
 }
 
 void RestrictedToken::SetLockdownDefaultDacl() {
   lockdown_default_dacl_ = true;
 }
 
-DWORD RestrictedToken::AddDefaultDaclSid(
+void RestrictedToken::AddDefaultDaclSid(
     const base::win::Sid& sid,
     base::win::SecurityAccessMode access_mode,
     ACCESS_MASK access) {
-  DCHECK(init_);
-  if (!init_)
-    return ERROR_NO_TOKEN;
-
-  sids_for_default_dacl_.push_back(
-      std::make_tuple(sid.Clone(), access_mode, access));
-  return ERROR_SUCCESS;
+  sids_for_default_dacl_.emplace_back(sid.Clone(), access_mode, access, 0);
 }
 
-DWORD RestrictedToken::AddDefaultDaclSid(
+void RestrictedToken::AddDefaultDaclSid(
     base::win::WellKnownSid known_sid,
     base::win::SecurityAccessMode access_mode,
     ACCESS_MASK access) {
-  return AddDefaultDaclSid(base::win::Sid(known_sid), access_mode, access);
+  sids_for_default_dacl_.emplace_back(known_sid, access_mode, access, 0);
+}
+
+absl::optional<base::win::AccessToken>
+RestrictedToken::GetRestrictedTokenForTesting(base::win::AccessToken& token) {
+  return CreateRestricted(token);
+}
+
+std::vector<base::win::Sid> RestrictedToken::BuildDenyOnlySids(
+    const base::win::AccessToken& token) const {
+  std::vector<base::win::Sid> sids =
+      base::win::CloneSidVector(sids_for_deny_only_);
+  if (add_user_sid_for_deny_only_) {
+    sids.push_back(token.User());
+  }
+  if (add_all_sids_for_deny_only_) {
+    // Build the list of the deny only group SIDs
+    for (const base::win::AccessToken::Group& group : token.Groups()) {
+      if (group.IsIntegrity() || group.IsLogonId()) {
+        continue;
+      }
+      if (base::ranges::find(add_all_exceptions_, group.GetSid()) ==
+          add_all_exceptions_.end()) {
+        sids.push_back(group.GetSid().Clone());
+      }
+    }
+  }
+  return sids;
+}
+
+std::vector<base::win::Sid> RestrictedToken::BuildRestrictedSids(
+    const base::win::AccessToken& token) const {
+  std::vector<base::win::Sid> sids =
+      base::win::CloneSidVector(sids_to_restrict_);
+  if (add_restricting_sid_current_user_) {
+    sids.push_back(token.User());
+  }
+  if (add_restricting_sid_all_sids_) {
+    for (const base::win::AccessToken::Group& group : token.Groups()) {
+      if (group.IsIntegrity()) {
+        continue;
+      }
+      sids.push_back(group.GetSid().Clone());
+    }
+  }
+  if (add_restricting_sid_logon_session_) {
+    absl::optional<base::win::Sid> logon_sid = token.LogonId();
+    if (logon_sid.has_value()) {
+      sids.push_back(std::move(*logon_sid));
+    }
+  }
+  return sids;
+}
+
+absl::optional<base::win::AccessToken> RestrictedToken::CreateRestricted(
+    base::win::AccessToken& token) const {
+  absl::optional<base::win::AccessToken> new_token;
+
+  std::vector<base::win::Sid> deny_sids = BuildDenyOnlySids(token);
+  std::vector<base::win::Sid> restrict_sids = BuildRestrictedSids(token);
+  if (!deny_sids.empty() || !restrict_sids.empty() || delete_all_privileges_) {
+    new_token = token.CreateRestricted(
+        delete_all_privileges_ ? DISABLE_MAX_PRIVILEGE : 0, deny_sids, {},
+        restrict_sids, TOKEN_ALL_ACCESS);
+  } else {
+    // Duplicate the token even if it's not modified at this point
+    // because any subsequent changes to this token would also affect the
+    // current process.
+    new_token = token.DuplicatePrimary(TOKEN_ALL_ACCESS);
+  }
+
+  if (!new_token) {
+    return absl::nullopt;
+  }
+
+  if (delete_all_privileges_ && remove_traversal_privilege_ &&
+      !new_token->RemovePrivilege(SE_CHANGE_NOTIFY_NAME)) {
+    return absl::nullopt;
+  }
+
+  std::vector<base::win::ExplicitAccessEntry> dacl_entries;
+
+  absl::optional<base::win::AccessControlList> dacl = new_token->DefaultDacl();
+  if (!dacl) {
+    return absl::nullopt;
+  }
+
+  if (lockdown_default_dacl_) {
+    // Don't add Restricted sid and also remove logon sid access.
+    absl::optional<base::win::Sid> logon_sid = new_token->LogonId();
+    if (logon_sid.has_value()) {
+      dacl_entries.emplace_back(*logon_sid,
+                                base::win::SecurityAccessMode::kRevoke, 0, 0);
+    } else {
+      DWORD last_error = ::GetLastError();
+      if (last_error != ERROR_NOT_FOUND) {
+        return absl::nullopt;
+      }
+    }
+  } else {
+    dacl_entries.emplace_back(base::win::WellKnownSid::kRestricted,
+                              base::win::SecurityAccessMode::kGrant,
+                              GENERIC_ALL, 0);
+  }
+
+  for (const base::win::ExplicitAccessEntry& entry : sids_for_default_dacl_) {
+    dacl_entries.push_back(entry.Clone());
+  }
+
+  dacl_entries.emplace_back(
+      new_token->User(), base::win::SecurityAccessMode::kGrant, GENERIC_ALL, 0);
+
+  if (!dacl->SetEntries(dacl_entries)) {
+    return absl::nullopt;
+  }
+
+  if (!new_token->SetDefaultDacl(*dacl)) {
+    return absl::nullopt;
+  }
+
+  if (integrity_rid_.has_value()) {
+    if (!new_token->SetIntegrityLevel(*integrity_rid_)) {
+      return absl::nullopt;
+    }
+  }
+
+  return new_token;
 }
 
 }  // namespace sandbox

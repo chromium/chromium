@@ -6,14 +6,20 @@
 
 #include "sandbox/win/src/restricted_token.h"
 
+#include <windows.h>
+
 #include <utility>
 #include <vector>
 
+#include "base/ranges/algorithm.h"
+#include "base/win/access_control_list.h"
 #include "base/win/access_token.h"
-#include "base/win/atl.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/security_descriptor.h"
+#include "base/win/security_util.h"
 #include "base/win/sid.h"
 #include "sandbox/win/src/acl.h"
+#include "sandbox/win/src/restricted_token_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -21,106 +27,69 @@ namespace sandbox {
 
 namespace {
 
-void TestDefaultDalc(bool restricted_required, bool additional_sid_required) {
-  RestrictedToken token;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
-  if (!restricted_required)
-    token.SetLockdownDefaultDacl();
-  ATL::CSid additional_sid = ATL::Sids::Guests();
-  ATL::CSid additional_sid2 = ATL::Sids::Batch();
-  if (additional_sid_required) {
-    token.AddDefaultDaclSid(
-        *base::win::Sid::FromPSID(const_cast<SID*>(additional_sid.GetPSID())),
-        base::win::SecurityAccessMode::kGrant, READ_CONTROL);
-    token.AddDefaultDaclSid(
-        *base::win::Sid::FromPSID(const_cast<SID*>(additional_sid2.GetPSID())),
-        base::win::SecurityAccessMode::kDeny, GENERIC_ALL);
-  }
-
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.AddRestrictingSid(base::win::WellKnownSid::kWorld));
-
-  base::win::ScopedHandle handle;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.GetRestrictedToken(&handle));
-
-  ATL::CAccessToken restricted_token;
-  restricted_token.Attach(handle.Take());
-
-  ATL::CDacl dacl;
-  ASSERT_TRUE(restricted_token.GetDefaultDacl(&dacl));
-
-  ATL::CSid logon_sid;
-  ASSERT_TRUE(restricted_token.GetLogonSid(&logon_sid));
-
-  bool restricted_found = false;
-  bool logon_sid_found = false;
-  bool additional_sid_found = false;
-  bool additional_sid2_found = false;
-
-  unsigned int ace_count = dacl.GetAceCount();
-  for (unsigned int i = 0; i < ace_count; ++i) {
-    ATL::CSid sid;
-    ACCESS_MASK mask = 0;
-    BYTE ace_type = 0;
-    dacl.GetAclEntry(i, &sid, &mask, &ace_type);
-    if (sid == ATL::Sids::RestrictedCode() && mask == GENERIC_ALL) {
-      restricted_found = true;
-    } else if (sid == logon_sid) {
-      logon_sid_found = true;
-    } else if (sid == additional_sid && mask == READ_CONTROL &&
-               ace_type == ACCESS_ALLOWED_ACE_TYPE) {
-      additional_sid_found = true;
-    } else if (sid == additional_sid2 && mask == GENERIC_ALL &&
-               ace_type == ACCESS_DENIED_ACE_TYPE) {
-      additional_sid2_found = true;
+bool IsSidInDacl(const base::win::AccessControlList& dacl,
+                 bool allowed,
+                 absl::optional<ACCESS_MASK> mask,
+                 const base::win::Sid& sid) {
+  DWORD ace_type = allowed ? ACCESS_ALLOWED_ACE_TYPE : ACCESS_DENIED_ACE_TYPE;
+  PACL pacl = dacl.get();
+  for (unsigned int i = 0; i < pacl->AceCount; ++i) {
+    // Allowed and deny ACEs have the same structure.
+    PACCESS_ALLOWED_ACE ace;
+    CHECK(::GetAce(pacl, i, reinterpret_cast<LPVOID*>(&ace)));
+    if (ace->Header.AceType == ace_type && sid.Equal(&ace->SidStart) &&
+        (!mask.has_value() || mask == ace->Mask)) {
+      return true;
     }
   }
+  return false;
+}
 
-  ASSERT_EQ(restricted_required, restricted_found);
-  ASSERT_EQ(additional_sid_required, additional_sid_found);
-  ASSERT_EQ(additional_sid_required, additional_sid2_found);
+void TestDefaultDacl(bool restricted_required, bool additional_sid_required) {
+  RestrictedToken token;
+
   if (!restricted_required)
-    ASSERT_FALSE(logon_sid_found);
+    token.SetLockdownDefaultDacl();
+  base::win::Sid additional_sid(base::win::WellKnownSid::kBuiltinGuests);
+  base::win::Sid additional_sid2(base::win::WellKnownSid::kBatch);
+  if (additional_sid_required) {
+    token.AddDefaultDaclSid(
+        additional_sid, base::win::SecurityAccessMode::kGrant, READ_CONTROL);
+    token.AddDefaultDaclSid(additional_sid2,
+                            base::win::SecurityAccessMode::kDeny, GENERIC_ALL);
+  }
+
+  token.AddRestrictingSid(base::win::WellKnownSid::kWorld);
+  auto restricted_token = *token.GetRestrictedToken();
+  auto dacl = *restricted_token.DefaultDacl();
+
+  EXPECT_EQ(restricted_required,
+            IsSidInDacl(dacl, true, GENERIC_ALL,
+                        base::win::Sid(base::win::WellKnownSid::kRestricted)));
+  EXPECT_EQ(additional_sid_required,
+            IsSidInDacl(dacl, true, READ_CONTROL, additional_sid));
+  EXPECT_EQ(additional_sid_required,
+            IsSidInDacl(dacl, false, GENERIC_ALL, additional_sid2));
+  auto logon_sid = restricted_token.LogonId();
+  if (logon_sid) {
+    EXPECT_EQ(restricted_required,
+              IsSidInDacl(dacl, true, absl::nullopt, *logon_sid));
+  }
 }
 
 void CheckDaclForPackageSid(const base::win::ScopedHandle& token,
                             const base::win::Sid& package_sid,
                             bool package_sid_required) {
-  DWORD length_needed = 0;
-  ::GetKernelObjectSecurity(token.Get(), DACL_SECURITY_INFORMATION, nullptr, 0,
-                            &length_needed);
-  ASSERT_EQ(::GetLastError(), DWORD{ERROR_INSUFFICIENT_BUFFER});
+  auto sd = *base::win::SecurityDescriptor::FromHandle(
+      token.get(), base::win::SecurityObjectType::kKernel,
+      DACL_SECURITY_INFORMATION);
 
-  std::vector<char> security_desc_buffer(length_needed);
-  SECURITY_DESCRIPTOR* security_desc =
-      reinterpret_cast<SECURITY_DESCRIPTOR*>(security_desc_buffer.data());
-
-  ASSERT_TRUE(::GetKernelObjectSecurity(token.Get(), DACL_SECURITY_INFORMATION,
-                                        security_desc, length_needed,
-                                        &length_needed));
-
-  ATL::CSecurityDesc token_sd(*security_desc);
-  ATL::CDacl dacl;
-  ASSERT_TRUE(token_sd.GetDacl(&dacl));
-
-  base::win::Sid all_package_sid(
-      base::win::WellKnownSid::kAllApplicationPackages);
-
-  unsigned int ace_count = dacl.GetAceCount();
-  for (unsigned int i = 0; i < ace_count; ++i) {
-    ATL::CSid sid;
-    ACCESS_MASK mask = 0;
-    BYTE type = 0;
-    dacl.GetAclEntry(i, &sid, &mask, &type);
-    if (mask != TOKEN_ALL_ACCESS || type != ACCESS_ALLOWED_ACE_TYPE)
-      continue;
-    PSID psid = const_cast<SID*>(sid.GetPSID());
-    if (package_sid.Equal(psid))
-      EXPECT_TRUE(package_sid_required);
-    else if (all_package_sid.Equal(psid))
-      EXPECT_FALSE(package_sid_required);
-  }
+  EXPECT_EQ(package_sid_required,
+            IsSidInDacl(*sd.dacl(), true, TOKEN_ALL_ACCESS, package_sid));
+  EXPECT_NE(package_sid_required,
+            IsSidInDacl(*sd.dacl(), true, TOKEN_ALL_ACCESS,
+                        base::win::Sid(
+                            base::win::WellKnownSid::kAllApplicationPackages)));
 }
 
 void CheckLowBoxToken(const base::win::ScopedHandle& lowbox_token,
@@ -142,12 +111,13 @@ void CheckLowBoxToken(const base::win::ScopedHandle& lowbox_token,
   CheckDaclForPackageSid(lowbox_token, package_sid, true);
 }
 
-// Checks if a sid is in the restricting list of the restricted token.
+// Checks if a sid is or is not in the restricting list of the restricted token.
 // Asserts if it's not the case. If count is a positive number, the number of
 // elements in the restricting sids list has to be equal.
 void CheckRestrictingSid(const base::win::AccessToken& token,
                          const base::win::Sid& sid,
-                         int count) {
+                         int count,
+                         bool check_present = true) {
   auto restricted_sids = token.RestrictedSids();
   if (count >= 0)
     ASSERT_EQ(static_cast<unsigned>(count), restricted_sids.size());
@@ -160,7 +130,7 @@ void CheckRestrictingSid(const base::win::AccessToken& token,
     }
   }
 
-  ASSERT_TRUE(present);
+  ASSERT_EQ(present, check_present);
 }
 
 void CheckRestrictingSid(const base::win::AccessToken& token,
@@ -196,137 +166,182 @@ DWORD GetMandatoryPolicy(const base::win::AccessToken& token) {
 }
 
 base::win::AccessToken GetPrimaryToken(ACCESS_MASK desired_access) {
+  return *base::win::AccessToken::FromCurrentProcess(false, TOKEN_DUPLICATE)
+              ->DuplicatePrimary(desired_access);
+}
+
+void CheckUniqueSid(TokenLevel level, bool check_present) {
+  absl::optional<base::win::Sid> random_sid =
+      base::win::Sid::GenerateRandomSid();
+  auto token = *CreateRestrictedToken(level, INTEGRITY_LEVEL_LAST,
+                                      TokenType::kPrimary, false, random_sid);
+  CheckRestrictingSid(token, *random_sid, -1, check_present);
+  auto dacl = *token.DefaultDacl();
+  EXPECT_TRUE(IsSidInDacl(dacl, true, GENERIC_ALL, *random_sid));
+  EXPECT_TRUE(IsSidInDacl(
+      dacl, true, READ_CONTROL,
+      base::win::Sid(base::win::WellKnownSid::kCreatorOwnerRights)));
+}
+
+void CheckIntegrityLevel(IntegrityLevel integrity_level) {
   absl::optional<base::win::AccessToken> token =
-      base::win::AccessToken::FromCurrentProcess(false, TOKEN_DUPLICATE);
-  CHECK(token);
-  token = token->DuplicatePrimary(desired_access);
-  CHECK(token);
-  return std::move(*token);
+      CreateRestrictedToken(USER_LOCKDOWN, integrity_level, TokenType::kPrimary,
+                            false, absl::nullopt);
+  ASSERT_TRUE(token);
+  absl::optional<DWORD> rid = GetIntegrityLevelRid(integrity_level);
+  if (rid) {
+    EXPECT_EQ(token->IntegrityLevel(), *rid);
+  } else {
+    EXPECT_EQ(token->IntegrityLevel(), GetPrimaryToken(0).IntegrityLevel());
+  }
+}
+
+void CheckPrivileges(TokenLevel level, bool delete_all, bool remove_traversal) {
+  absl::optional<base::win::AccessToken> token = CreateRestrictedToken(
+      level, INTEGRITY_LEVEL_LAST, TokenType::kPrimary, false, absl::nullopt);
+  ASSERT_TRUE(token);
+  std::vector<base::win::AccessToken::Privilege> privs = token->Privileges();
+  if (remove_traversal) {
+    EXPECT_EQ(privs.size(), 0U);
+  } else if (delete_all) {
+    EXPECT_EQ(privs.size(), 1U);
+    EXPECT_EQ(privs[0].GetName(), SE_CHANGE_NOTIFY_NAME);
+  } else {
+    std::vector<base::win::AccessToken::Privilege> primary_privs =
+        GetPrimaryToken(0).Privileges();
+    ASSERT_EQ(privs.size(), primary_privs.size());
+    for (size_t i = 0; i < privs.size(); ++i) {
+      EXPECT_EQ(privs[i].GetLuid(), primary_privs[i].GetLuid());
+    }
+  }
+}
+
+void CheckRestricted(const base::win::AccessToken& token,
+                     const std::vector<base::win::Sid>& sids) {
+  std::vector<base::win::AccessToken::Group> restricted =
+      token.RestrictedSids();
+  ASSERT_EQ(sids.size(), restricted.size());
+  for (size_t i = 0; i < sids.size(); ++i) {
+    EXPECT_EQ(sids[i], restricted[i].GetSid())
+        << *sids[i].ToSddlString() + L" != " +
+               *restricted[i].GetSid().ToSddlString();
+  }
+}
+
+void CheckRestricted(TokenLevel level,
+                     const std::vector<base::win::WellKnownSid>& known_sids,
+                     bool user,
+                     bool logon) {
+  absl::optional<base::win::AccessToken> token = CreateRestrictedToken(
+      level, INTEGRITY_LEVEL_LAST, TokenType::kPrimary, false, absl::nullopt);
+  std::vector<base::win::Sid> sids =
+      base::win::Sid::FromKnownSidVector(known_sids);
+  if (user) {
+    sids.push_back(token->User());
+  }
+  if (logon) {
+    absl::optional<base::win::Sid> logon_sid = token->LogonId();
+    if (logon_sid) {
+      sids.push_back(logon_sid->Clone());
+    }
+  }
+  CheckRestricted(*token, sids);
+}
+
+void CompareDenyOnly(
+    TokenLevel level,
+    const std::vector<base::win::WellKnownSid>& known_exceptions,
+    bool allow_all,
+    bool user) {
+  absl::optional<base::win::AccessToken> token = CreateRestrictedToken(
+      level, INTEGRITY_LEVEL_LAST, TokenType::kPrimary, false, absl::nullopt);
+  ASSERT_TRUE(token);
+  std::vector<base::win::Sid> exceptions =
+      base::win::Sid::FromKnownSidVector(known_exceptions);
+  std::vector<base::win::AccessToken::Group> groups =
+      GetPrimaryToken(0).Groups();
+  std::vector<base::win::AccessToken::Group> compare_groups = token->Groups();
+  ASSERT_EQ(groups.size(), compare_groups.size());
+  for (size_t i = 0; i < groups.size(); ++i) {
+    const base::win::Sid& group_sid = groups[i].GetSid();
+    ASSERT_EQ(group_sid, compare_groups[i].GetSid());
+    if (groups[i].IsLogonId() || groups[i].IsIntegrity() ||
+        groups[i].IsDenyOnly() || compare_groups[i].IsDenyOnly() || allow_all) {
+      continue;
+    }
+    EXPECT_NE(base::ranges::find(exceptions, group_sid), exceptions.end());
+  }
+  EXPECT_EQ(user, token->UserGroup().IsDenyOnly());
 }
 
 }  // namespace
 
-// Tests the initializatioin with an invalid token handle.
-TEST(RestrictedTokenTest, InvalidHandle) {
-  RestrictedToken token;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_INVALID_HANDLE),
-            token.Init(reinterpret_cast<HANDLE>(0x5555)));
-}
-
-// Tests the initialization with nullptr as parameter.
+// Tests default initialization of the class.
 TEST(RestrictedTokenTest, DefaultInit) {
+  RestrictedToken token_default;
+  absl::optional<base::win::AccessToken> restricted_token =
+      token_default.GetRestrictedToken();
+  ASSERT_TRUE(restricted_token);
+
   // Get the current process token.
   absl::optional<base::win::AccessToken> access_token =
       base::win::AccessToken::FromCurrentProcess();
   ASSERT_TRUE(access_token);
-
-  // Create the token using the current token.
-  RestrictedToken token_default;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token_default.Init(nullptr));
-
-  // Get the handle to the restricted token.
-  base::win::ScopedHandle restricted_token_handle;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token_default.GetRestrictedToken(&restricted_token_handle));
-
-  auto restricted_token =
-      base::win::AccessToken::FromToken(restricted_token_handle.Get());
-  ASSERT_TRUE(restricted_token);
   // Check if both token have the same owner and user.
   EXPECT_EQ(restricted_token->User(), access_token->User());
   EXPECT_EQ(restricted_token->Owner(), access_token->Owner());
+  EXPECT_FALSE(restricted_token->IsImpersonation());
+  EXPECT_FALSE(restricted_token->IsRestricted());
+  EXPECT_EQ(DWORD{TOKEN_ALL_ACCESS},
+            base::win::GetGrantedAccess(restricted_token->get()));
 }
 
-// Tests the initialization with a custom token as parameter.
-TEST(RestrictedTokenTest, CustomInit) {
-  CAccessToken access_token;
-  ASSERT_TRUE(access_token.GetProcessToken(TOKEN_ALL_ACCESS));
-  // Change the primary group.
-  access_token.SetPrimaryGroup(ATL::Sids::World());
-
-  // Create the token using the current token.
-  RestrictedToken token;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.Init(access_token.GetHandle()));
-  base::win::ScopedHandle restricted_token_handle;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.GetRestrictedToken(&restricted_token_handle));
-  auto restricted_token =
-      base::win::AccessToken::FromToken(restricted_token_handle.Get());
-  ASSERT_TRUE(restricted_token);
-
-  ATL::CSid sid_default;
-  ASSERT_TRUE(access_token.GetPrimaryGroup(&sid_default));
-  // Check if both token have the same primary grou.
-  ASSERT_TRUE(restricted_token->PrimaryGroup().Equal(
-      const_cast<SID*>(sid_default.GetPSID())));
-}
-
-// Verifies that the token created by the object are valid.
+// Verifies that the token created is valid.
 TEST(RestrictedTokenTest, ResultToken) {
   RestrictedToken token;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
+  token.AddRestrictingSid(base::win::WellKnownSid::kWorld);
 
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.AddRestrictingSid(base::win::WellKnownSid::kWorld));
-
-  base::win::ScopedHandle restricted_token;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.GetRestrictedToken(&restricted_token));
-
-  auto primary = base::win::AccessToken::FromToken(restricted_token.Get());
-  ASSERT_TRUE(primary);
-  EXPECT_TRUE(primary->IsRestricted());
-  EXPECT_FALSE(primary->IsImpersonation());
-
-  base::win::ScopedHandle impersonation_token;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.GetRestrictedTokenForImpersonation(&impersonation_token));
-  auto impersonation =
-      base::win::AccessToken::FromToken(impersonation_token.Get());
-  ASSERT_TRUE(impersonation);
-  ASSERT_TRUE(impersonation->IsRestricted());
-  ASSERT_TRUE(impersonation->IsImpersonation());
-  ASSERT_FALSE(impersonation->IsIdentification());
+  absl::optional<base::win::AccessToken> restricted_token =
+      token.GetRestrictedToken();
+  ASSERT_TRUE(restricted_token);
+  EXPECT_TRUE(restricted_token->IsRestricted());
+  EXPECT_FALSE(restricted_token->IsImpersonation());
 }
 
 // Verifies that the token created has "Restricted" in its default dacl.
 TEST(RestrictedTokenTest, DefaultDacl) {
-  TestDefaultDalc(true, false);
+  TestDefaultDacl(true, false);
 }
 
 // Verifies that the token created does not have "Restricted" in its default
 // dacl.
 TEST(RestrictedTokenTest, DefaultDaclLockdown) {
-  TestDefaultDalc(false, false);
+  TestDefaultDacl(false, false);
 }
 
 // Verifies that the token created has an additional SID in its default dacl.
 TEST(RestrictedTokenTest, DefaultDaclWithAddition) {
-  TestDefaultDalc(true, true);
+  TestDefaultDacl(true, true);
 }
 
 // Verifies that the token created does not have "Restricted" in its default
 // dacl and also has an additional SID.
 TEST(RestrictedTokenTest, DefaultDaclLockdownWithAddition) {
-  TestDefaultDalc(false, true);
+  TestDefaultDacl(false, true);
 }
 
 // Tests the method "AddSidForDenyOnly".
 TEST(RestrictedTokenTest, DenySid) {
   RestrictedToken token;
-  base::win::ScopedHandle token_handle;
 
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.AddSidForDenyOnly(base::win::WellKnownSid::kWorld));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.GetRestrictedToken(&token_handle));
-  auto restricted_token = base::win::AccessToken::FromToken(token_handle.Get());
+  token.AddSidForDenyOnly(base::win::WellKnownSid::kWorld);
+  absl::optional<base::win::AccessToken> restricted_token =
+      token.GetRestrictedToken();
   ASSERT_TRUE(restricted_token);
-  auto sid = base::win::Sid(base::win::WellKnownSid::kWorld);
+  base::win::Sid sid(base::win::WellKnownSid::kWorld);
   bool found_sid = false;
-  for (const auto& group : restricted_token->Groups()) {
+  for (const base::win::AccessToken::Group& group :
+       restricted_token->Groups()) {
     if (sid == group.GetSid()) {
       ASSERT_TRUE(group.IsDenyOnly());
       found_sid = true;
@@ -338,17 +353,14 @@ TEST(RestrictedTokenTest, DenySid) {
 // Tests the method "AddAllSidsForDenyOnly".
 TEST(RestrictedTokenTest, DenySids) {
   RestrictedToken token;
-  base::win::ScopedHandle token_handle;
 
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.AddAllSidsForDenyOnly({}));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.GetRestrictedToken(&token_handle));
-  auto restricted_token = base::win::AccessToken::FromToken(token_handle.Get());
+  token.AddAllSidsForDenyOnly({});
+  auto restricted_token = token.GetRestrictedToken();
   ASSERT_TRUE(restricted_token);
   bool found_sid = false;
   // Verify that all sids are really gone.
-  for (const auto& group : restricted_token->Groups()) {
+  for (const base::win::AccessToken::Group& group :
+       restricted_token->Groups()) {
     if (group.IsLogonId() || group.IsIntegrity())
       continue;
     ASSERT_TRUE(group.IsDenyOnly());
@@ -361,23 +373,18 @@ TEST(RestrictedTokenTest, DenySids) {
 // Tests the method "AddAllSidsForDenyOnly" using an exception list.
 TEST(RestrictedTokenTest, DenySidsException) {
   RestrictedToken token;
-  base::win::ScopedHandle token_handle;
 
   std::vector<base::win::Sid> sids_exception =
       base::win::Sid::FromKnownSidVector({base::win::WellKnownSid::kWorld});
+  token.AddAllSidsForDenyOnly(sids_exception);
 
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.AddAllSidsForDenyOnly(sids_exception));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.GetRestrictedToken(&token_handle));
-
-  auto restricted_token = base::win::AccessToken::FromToken(token_handle.Get());
+  auto restricted_token = token.GetRestrictedToken();
   ASSERT_TRUE(restricted_token);
 
   bool found_sid = false;
   // Verify that all sids are really gone.
-  for (const auto& group : restricted_token->Groups()) {
+  for (const base::win::AccessToken::Group& group :
+       restricted_token->Groups()) {
     if (group.IsLogonId() || group.IsIntegrity())
       continue;
     if (sids_exception[0] == group.GetSid()) {
@@ -394,29 +401,8 @@ TEST(RestrictedTokenTest, DenySidsException) {
 // Tests test method AddOwnerSidForDenyOnly.
 TEST(RestrictedTokenTest, DenyOwnerSid) {
   RestrictedToken token;
-  base::win::ScopedHandle token_handle;
-
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.AddUserSidForDenyOnly());
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.GetRestrictedToken(&token_handle));
-  auto restricted_token = base::win::AccessToken::FromToken(token_handle.Get());
-  ASSERT_TRUE(restricted_token);
-  EXPECT_TRUE(restricted_token->UserGroup().IsDenyOnly());
-}
-
-// Tests test method AddOwnerSidForDenyOnly with a custom effective token.
-TEST(RestrictedTokenTest, DenyOwnerSidCustom) {
-  CAccessToken access_token;
-  ASSERT_TRUE(access_token.GetProcessToken(TOKEN_ALL_ACCESS));
-  RestrictedToken token;
-  base::win::ScopedHandle token_handle;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.Init(access_token.GetHandle()));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.AddUserSidForDenyOnly());
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.GetRestrictedToken(&token_handle));
-  auto restricted_token = base::win::AccessToken::FromToken(token_handle.Get());
+  token.AddUserSidForDenyOnly();
+  auto restricted_token = token.GetRestrictedToken();
   ASSERT_TRUE(restricted_token);
   EXPECT_TRUE(restricted_token->UserGroup().IsDenyOnly());
 }
@@ -424,14 +410,8 @@ TEST(RestrictedTokenTest, DenyOwnerSidCustom) {
 // Tests the method DeleteAllPrivileges.
 TEST(RestrictedTokenTest, DeleteAllPrivileges) {
   RestrictedToken token;
-  base::win::ScopedHandle token_handle;
-
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.DeleteAllPrivileges(/*remove_traversal_privilege=*/true));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.GetRestrictedToken(&token_handle));
-  auto restricted_token = base::win::AccessToken::FromToken(token_handle.Get());
+  token.DeleteAllPrivileges(/*remove_traversal_privilege=*/true);
+  auto restricted_token = token.GetRestrictedToken();
   ASSERT_TRUE(restricted_token);
   EXPECT_TRUE(restricted_token->Privileges().empty());
 }
@@ -439,15 +419,8 @@ TEST(RestrictedTokenTest, DeleteAllPrivileges) {
 // Tests the method DeleteAllPrivileges with an exception list.
 TEST(RestrictedTokenTest, DeleteAllPrivilegesException) {
   RestrictedToken token;
-  base::win::ScopedHandle token_handle;
-
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.DeleteAllPrivileges(/*remove_traversal_privilege=*/false));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.GetRestrictedToken(&token_handle));
-
-  auto restricted_token = base::win::AccessToken::FromToken(token_handle.Get());
+  token.DeleteAllPrivileges(/*remove_traversal_privilege=*/false);
+  auto restricted_token = token.GetRestrictedToken();
   ASSERT_TRUE(restricted_token);
   auto privileges = restricted_token->Privileges();
   ASSERT_EQ(1U, privileges.size());
@@ -457,15 +430,8 @@ TEST(RestrictedTokenTest, DeleteAllPrivilegesException) {
 // Tests the method AddRestrictingSid.
 TEST(RestrictedTokenTest, AddRestrictingSid) {
   RestrictedToken token;
-  base::win::ScopedHandle token_handle;
-
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.AddRestrictingSid(base::win::WellKnownSid::kWorld));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.GetRestrictedToken(&token_handle));
-
-  auto restricted_token = base::win::AccessToken::FromToken(token_handle.Get());
+  token.AddRestrictingSid(base::win::WellKnownSid::kWorld);
+  auto restricted_token = token.GetRestrictedToken();
   ASSERT_TRUE(restricted_token);
   CheckRestrictingSid(*restricted_token, base::win::WellKnownSid::kWorld, 1);
 }
@@ -473,33 +439,9 @@ TEST(RestrictedTokenTest, AddRestrictingSid) {
 // Tests the method AddRestrictingSidCurrentUser.
 TEST(RestrictedTokenTest, AddRestrictingSidCurrentUser) {
   RestrictedToken token;
-  base::win::ScopedHandle token_handle;
 
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.AddRestrictingSidCurrentUser());
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.GetRestrictedToken(&token_handle));
-
-  auto restricted_token = base::win::AccessToken::FromToken(token_handle.Get());
-  ASSERT_TRUE(restricted_token);
-  CheckRestrictingSid(*restricted_token, restricted_token->User(), 1);
-}
-
-// Tests the method AddRestrictingSidCurrentUser with a custom effective token.
-TEST(RestrictedTokenTest, AddRestrictingSidCurrentUserCustom) {
-  CAccessToken access_token;
-  ASSERT_TRUE(access_token.GetProcessToken(TOKEN_ALL_ACCESS));
-  RestrictedToken token;
-  base::win::ScopedHandle token_handle;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.Init(access_token.GetHandle()));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.AddRestrictingSidCurrentUser());
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.GetRestrictedToken(&token_handle));
-
-  auto restricted_token = base::win::AccessToken::FromToken(token_handle.Get());
+  token.AddRestrictingSidCurrentUser();
+  auto restricted_token = token.GetRestrictedToken();
   ASSERT_TRUE(restricted_token);
   CheckRestrictingSid(*restricted_token, restricted_token->User(), 1);
 }
@@ -507,15 +449,9 @@ TEST(RestrictedTokenTest, AddRestrictingSidCurrentUserCustom) {
 // Tests the method AddRestrictingSidLogonSession.
 TEST(RestrictedTokenTest, AddRestrictingSidLogonSession) {
   RestrictedToken token;
-  base::win::ScopedHandle token_handle;
 
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.AddRestrictingSidLogonSession());
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.GetRestrictedToken(&token_handle));
-
-  auto restricted_token = base::win::AccessToken::FromToken(token_handle.Get());
+  token.AddRestrictingSidLogonSession();
+  auto restricted_token = token.GetRestrictedToken();
   ASSERT_TRUE(restricted_token);
   auto session = restricted_token->LogonId();
   if (!session) {
@@ -529,19 +465,11 @@ TEST(RestrictedTokenTest, AddRestrictingSidLogonSession) {
 // Tests adding a lot of restricting sids.
 TEST(RestrictedTokenTest, AddMultipleRestrictingSids) {
   RestrictedToken token;
-  base::win::ScopedHandle token_handle;
 
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.AddRestrictingSidCurrentUser());
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.AddRestrictingSidLogonSession());
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.AddRestrictingSid(base::win::WellKnownSid::kWorld));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.GetRestrictedToken(&token_handle));
-
-  auto restricted_token = base::win::AccessToken::FromToken(token_handle.Get());
+  token.AddRestrictingSidCurrentUser();
+  token.AddRestrictingSidLogonSession();
+  token.AddRestrictingSid(base::win::WellKnownSid::kWorld);
+  auto restricted_token = token.GetRestrictedToken();
   ASSERT_TRUE(restricted_token);
   ASSERT_EQ(3u, restricted_token->RestrictedSids().size());
 }
@@ -549,20 +477,14 @@ TEST(RestrictedTokenTest, AddMultipleRestrictingSids) {
 // Tests the method "AddRestrictingSidAllSids".
 TEST(RestrictedTokenTest, AddAllSidToRestrictingSids) {
   RestrictedToken token;
-  base::win::ScopedHandle token_handle;
 
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.AddRestrictingSidAllSids());
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.GetRestrictedToken(&token_handle));
-
-  auto restricted_token = base::win::AccessToken::FromToken(token_handle.Get());
+  token.AddRestrictingSidAllSids();
+  auto restricted_token = token.GetRestrictedToken();
   ASSERT_TRUE(restricted_token);
-  auto groups = restricted_token->Groups();
 
   // Verify that all group sids are in the restricting sid list.
-  for (const auto& group : groups) {
+  for (const base::win::AccessToken::Group& group :
+       restricted_token->Groups()) {
     if (!group.IsIntegrity())
       CheckRestrictingSid(*restricted_token, group.GetSid(), -1);
   }
@@ -570,29 +492,20 @@ TEST(RestrictedTokenTest, AddAllSidToRestrictingSids) {
   CheckRestrictingSid(*restricted_token, restricted_token->User(), -1);
 }
 
-// Checks the error code when the object is initialized twice.
-TEST(RestrictedTokenTest, DoubleInit) {
-  RestrictedToken token;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
-
-  ASSERT_EQ(static_cast<DWORD>(ERROR_ALREADY_INITIALIZED), token.Init(nullptr));
-}
-
 TEST(RestrictedTokenTest, LockdownDefaultDaclNoLogonSid) {
-  ATL::CAccessToken anonymous_token;
   ASSERT_TRUE(::ImpersonateAnonymousToken(::GetCurrentThread()));
-  ASSERT_TRUE(anonymous_token.GetThreadToken(TOKEN_ALL_ACCESS));
+  absl::optional<base::win::AccessToken> anonymous_token =
+      base::win::AccessToken::FromCurrentThread(/*open_as_self=*/true,
+                                                TOKEN_ALL_ACCESS);
   ::RevertToSelf();
-  ATL::CSid logon_sid;
+  ASSERT_TRUE(anonymous_token);
   // Verify that the anonymous token doesn't have the logon sid.
-  ASSERT_FALSE(anonymous_token.GetLogonSid(&logon_sid));
+  ASSERT_FALSE(anonymous_token->LogonId());
 
   RestrictedToken token;
-  ASSERT_EQ(DWORD{ERROR_SUCCESS}, token.Init(anonymous_token.GetHandle()));
   token.SetLockdownDefaultDacl();
 
-  base::win::ScopedHandle handle;
-  ASSERT_EQ(DWORD{ERROR_SUCCESS}, token.GetRestrictedToken(&handle));
+  ASSERT_TRUE(token.GetRestrictedTokenForTesting(*anonymous_token));
 }
 
 TEST(RestrictedTokenTest, LowBoxToken) {
@@ -600,8 +513,10 @@ TEST(RestrictedTokenTest, LowBoxToken) {
 
   auto package_sid = *base::win::Sid::FromSddlString(L"S-1-15-2-1-2-3-4-5-6-7");
 
-  ASSERT_FALSE(CreateLowBoxToken(nullptr, PRIMARY, package_sid, {}, nullptr));
-  ASSERT_TRUE(CreateLowBoxToken(nullptr, PRIMARY, package_sid, {}, &token));
+  ASSERT_FALSE(CreateLowBoxToken(nullptr, TokenType::kPrimary, package_sid, {},
+                                 nullptr));
+  ASSERT_TRUE(
+      CreateLowBoxToken(nullptr, TokenType::kPrimary, package_sid, {}, &token));
   ASSERT_TRUE(token.IsValid());
   CheckLowBoxToken(token, false, package_sid, {});
 
@@ -610,29 +525,28 @@ TEST(RestrictedTokenTest, LowBoxToken) {
                                       package_sid, TOKEN_ALL_ACCESS));
   CheckDaclForPackageSid(token, package_sid, false);
 
-  ASSERT_TRUE(
-      CreateLowBoxToken(nullptr, IMPERSONATION, package_sid, {}, &token));
+  ASSERT_TRUE(CreateLowBoxToken(nullptr, TokenType::kImpersonation, package_sid,
+                                {}, &token));
   ASSERT_TRUE(token.is_valid());
   CheckLowBoxToken(token, true, package_sid, {});
 
-  auto capabilities = base::win::Sid::FromKnownCapabilityVector(
-      {base::win::WellKnownCapability::kInternetClient,
-       base::win::WellKnownCapability::kPrivateNetworkClientServer});
-  ASSERT_TRUE(
-      CreateLowBoxToken(nullptr, PRIMARY, package_sid, capabilities, &token));
+  std::vector<base::win::Sid> capabilities =
+      base::win::Sid::FromKnownCapabilityVector(
+          {base::win::WellKnownCapability::kInternetClient,
+           base::win::WellKnownCapability::kPrivateNetworkClientServer});
+  ASSERT_TRUE(CreateLowBoxToken(nullptr, TokenType::kPrimary, package_sid,
+                                capabilities, &token));
   ASSERT_TRUE(token.is_valid());
   CheckLowBoxToken(token, false, package_sid, capabilities);
 
   RestrictedToken restricted_token;
-  base::win::ScopedHandle token_handle;
-  ASSERT_EQ(DWORD{ERROR_SUCCESS}, restricted_token.Init(nullptr));
-  ASSERT_EQ(DWORD{ERROR_SUCCESS}, restricted_token.AddRestrictingSid(
-                                      base::win::WellKnownSid::kWorld));
-  ASSERT_EQ(DWORD{ERROR_SUCCESS},
-            restricted_token.GetRestrictedToken(&token_handle));
+  restricted_token.AddRestrictingSid(base::win::WellKnownSid::kWorld);
+  absl::optional<base::win::AccessToken> base_token =
+      restricted_token.GetRestrictedToken();
+  ASSERT_TRUE(base_token);
 
-  ASSERT_TRUE(CreateLowBoxToken(token_handle.Get(), PRIMARY, package_sid,
-                                capabilities, &token));
+  ASSERT_TRUE(CreateLowBoxToken(base_token->get(), TokenType::kPrimary,
+                                package_sid, capabilities, &token));
   ASSERT_TRUE(token.is_valid());
   CheckLowBoxToken(token, false, package_sid, capabilities);
   CheckRestrictingSid(token.get(), base::win::WellKnownSid::kWorld, 1);
@@ -665,6 +579,109 @@ TEST(RestrictedTokenTest, HardenProcessIntegrityLevelPolicy) {
   EXPECT_EQ(GetMandatoryPolicy(token),
             current_policy | SYSTEM_MANDATORY_LABEL_NO_READ_UP |
                 SYSTEM_MANDATORY_LABEL_NO_EXECUTE_UP);
+}
+
+TEST(RestrictedTokenTest, TokenType) {
+  absl::optional<base::win::AccessToken> token =
+      CreateRestrictedToken(USER_LOCKDOWN, INTEGRITY_LEVEL_LAST,
+                            TokenType::kPrimary, false, absl::nullopt);
+  ASSERT_TRUE(token);
+  EXPECT_FALSE(token->IsImpersonation());
+  EXPECT_EQ(DWORD{TOKEN_ALL_ACCESS}, base::win::GetGrantedAccess(token->get()));
+  token =
+      CreateRestrictedToken(USER_LOCKDOWN, INTEGRITY_LEVEL_LAST,
+                            TokenType::kImpersonation, false, absl::nullopt);
+  ASSERT_TRUE(token);
+  EXPECT_TRUE(token->IsImpersonation());
+  EXPECT_EQ(token->ImpersonationLevel(),
+            base::win::SecurityImpersonationLevel::kImpersonation);
+  EXPECT_EQ(DWORD{TOKEN_ALL_ACCESS}, base::win::GetGrantedAccess(token->get()));
+}
+
+TEST(RestrictedTokenTest, UniqueSid) {
+  CheckUniqueSid(USER_UNPROTECTED, false);
+  CheckUniqueSid(USER_RESTRICTED_SAME_ACCESS, false);
+  CheckUniqueSid(USER_RESTRICTED_NON_ADMIN, true);
+  CheckUniqueSid(USER_INTERACTIVE, true);
+  CheckUniqueSid(USER_LIMITED, true);
+  CheckUniqueSid(USER_LOCKDOWN, true);
+}
+
+TEST(RestrictedTokenTest, IntegrityLevel) {
+  CheckIntegrityLevel(INTEGRITY_LEVEL_LAST);
+  CheckIntegrityLevel(INTEGRITY_LEVEL_MEDIUM);
+  CheckIntegrityLevel(INTEGRITY_LEVEL_MEDIUM_LOW);
+  CheckIntegrityLevel(INTEGRITY_LEVEL_LOW);
+  CheckIntegrityLevel(INTEGRITY_LEVEL_BELOW_LOW);
+  CheckIntegrityLevel(INTEGRITY_LEVEL_UNTRUSTED);
+}
+
+TEST(RestrictedTokenTest, Privileges) {
+  CheckPrivileges(USER_UNPROTECTED, false, false);
+  CheckPrivileges(USER_RESTRICTED_SAME_ACCESS, false, false);
+  CheckPrivileges(USER_RESTRICTED_NON_ADMIN, true, false);
+  CheckPrivileges(USER_INTERACTIVE, true, false);
+  CheckPrivileges(USER_LIMITED, true, false);
+  CheckPrivileges(USER_LOCKDOWN, true, true);
+}
+
+TEST(RestrictedTokenTest, Restricted) {
+  CheckRestricted(USER_UNPROTECTED, {}, false, false);
+  CheckRestricted(
+      USER_RESTRICTED_NON_ADMIN,
+      {base::win::WellKnownSid::kBuiltinUsers, base::win::WellKnownSid::kWorld,
+       base::win::WellKnownSid::kInteractive,
+       base::win::WellKnownSid::kAuthenticatedUser,
+       base::win::WellKnownSid::kRestricted},
+      true, true);
+  CheckRestricted(
+      USER_INTERACTIVE,
+      {base::win::WellKnownSid::kBuiltinUsers, base::win::WellKnownSid::kWorld,
+       base::win::WellKnownSid::kRestricted},
+      true, true);
+  CheckRestricted(
+      USER_LIMITED,
+      {base::win::WellKnownSid::kBuiltinUsers, base::win::WellKnownSid::kWorld,
+       base::win::WellKnownSid::kRestricted},
+      false, true);
+  CheckRestricted(USER_LOCKDOWN, {base::win::WellKnownSid::kNull}, false,
+                  false);
+
+  absl::optional<base::win::AccessToken> token =
+      CreateRestrictedToken(USER_RESTRICTED_SAME_ACCESS, INTEGRITY_LEVEL_LAST,
+                            TokenType::kPrimary, false, absl::nullopt);
+  ASSERT_TRUE(token);
+  std::vector<base::win::Sid> sids;
+  sids.push_back(token->User());
+  for (const base::win::AccessToken::Group& group : token->Groups()) {
+    if (!group.IsIntegrity()) {
+      sids.push_back(group.GetSid().Clone());
+    }
+  }
+  CheckRestricted(*token, sids);
+}
+
+TEST(RestrictedTokenTest, DenyOnly) {
+  CompareDenyOnly(USER_UNPROTECTED, {}, true, false);
+  CompareDenyOnly(USER_RESTRICTED_SAME_ACCESS, {}, true, false);
+  CompareDenyOnly(
+      USER_RESTRICTED_NON_ADMIN,
+      {base::win::WellKnownSid::kBuiltinUsers, base::win::WellKnownSid::kWorld,
+       base::win::WellKnownSid::kInteractive,
+       base::win::WellKnownSid::kAuthenticatedUser},
+      false, false);
+  CompareDenyOnly(
+      USER_INTERACTIVE,
+      {base::win::WellKnownSid::kBuiltinUsers, base::win::WellKnownSid::kWorld,
+       base::win::WellKnownSid::kInteractive,
+       base::win::WellKnownSid::kAuthenticatedUser},
+      false, false);
+  CompareDenyOnly(
+      USER_LIMITED,
+      {base::win::WellKnownSid::kBuiltinUsers, base::win::WellKnownSid::kWorld,
+       base::win::WellKnownSid::kInteractive},
+      false, false);
+  CompareDenyOnly(USER_LOCKDOWN, {}, false, true);
 }
 
 }  // namespace sandbox

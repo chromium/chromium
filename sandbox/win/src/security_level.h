@@ -43,8 +43,6 @@ enum IntegrityLevel {
 // ----------------------------|--------------|----------------|----------|
 // USER_LOCKDOWN               | Null Sid     | All            | None     |
 // ----------------------------|--------------|----------------|----------|
-// USER_RESTRICTED             | RESTRICTED   | All            | Traverse |
-// ----------------------------|--------------|----------------|----------|
 // USER_LIMITED                | Users        | All except:    | Traverse |
 //                             | Everyone     | Users          |          |
 //                             | RESTRICTED   | Everyone       |          |
@@ -76,14 +74,12 @@ enum IntegrityLevel {
 // applied to the target process depends both on the token level selected
 // and on the broker token itself.
 //
-//  The LOCKDOWN and RESTRICTED are designed to allow access to almost
-//  nothing that has security associated with and they are the recommended
-//  levels to run sandboxed code specially if there is a chance that the
-//  broker is process might be started by a user that belongs to the Admins
-//  or power users groups.
+// The LOCKDOWN level is designed to allow access to almost nothing that has
+// security associated with and they are the recommended levels to run sandboxed
+// code specially if there is a chance that the broker is process might be
+// started by a user that belongs to the Admins or power users groups.
 enum TokenLevel {
   USER_LOCKDOWN = 0,
-  USER_RESTRICTED,
   USER_LIMITED,
   USER_INTERACTIVE,
   USER_RESTRICTED_NON_ADMIN,

@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/win/access_token.h"
 #include "base/win/sid.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
@@ -34,6 +35,7 @@
 #include "sandbox/win/src/signed_policy.h"
 #include "sandbox/win/src/target_process.h"
 #include "sandbox/win/src/top_level_dispatcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 namespace {
@@ -419,7 +421,6 @@ PolicyBase::PolicyBase(base::StringPiece tag)
       config_ptr_(nullptr),
       stdout_handle_(INVALID_HANDLE_VALUE),
       stderr_handle_(INVALID_HANDLE_VALUE),
-      effective_token_(nullptr),
       job_() {
   dispatcher_ = std::make_unique<TopLevelDispatcher>(this);
 }
@@ -529,19 +530,20 @@ ResultCode PolicyBase::MakeTokens(base::win::ScopedHandle* initial,
   absl::optional<base::win::Sid> random_sid;
   if (config()->add_restricting_random_sid()) {
     random_sid = base::win::Sid::GenerateRandomSid();
-    if (!random_sid)
-      return SBOX_ERROR_CANNOT_CREATE_RESTRICTED_TOKEN;
   }
 
   IntegrityLevel integrity_level = config()->integrity_level();
   bool lockdown_default_dacl = config()->lockdown_default_dacl();
   // Create the 'naked' token. This will be the permanent token associated
   // with the process and therefore with any thread that is not impersonating.
-  DWORD result = CreateRestrictedToken(
-      effective_token_, config()->GetLockdownTokenLevel(), integrity_level,
-      PRIMARY, lockdown_default_dacl, random_sid, lockdown);
-  if (ERROR_SUCCESS != result)
+  absl::optional<base::win::AccessToken> primary = CreateRestrictedToken(
+      config()->GetLockdownTokenLevel(), integrity_level, TokenType::kPrimary,
+      lockdown_default_dacl, random_sid);
+  if (!primary) {
     return SBOX_ERROR_CANNOT_CREATE_RESTRICTED_TOKEN;
+  }
+
+  *lockdown = primary->release();
 
   AppContainerBase* app_container = config()->app_container();
   if (app_container &&
@@ -549,18 +551,21 @@ ResultCode PolicyBase::MakeTokens(base::win::ScopedHandle* initial,
     // Build the lowbox lockdown (primary) token. The initial token will be
     // put in the same lowbox later by GetAppContainerImpersonationToken.
     ResultCode result_code = app_container->BuildLowBoxToken(lockdown);
-    if (result_code != SBOX_ALL_OK)
+    if (result_code != SBOX_ALL_OK) {
       return result_code;
+    }
   }
 
   // Create the 'better' token. We use this token as the one that the main
   // thread uses when booting up the process. It should contain most of
   // what we need (before reaching main( ))
-  result = CreateRestrictedToken(
-      effective_token_, config()->GetInitialTokenLevel(), integrity_level,
-      IMPERSONATION, lockdown_default_dacl, random_sid, initial);
-  if (ERROR_SUCCESS != result)
+  absl::optional<base::win::AccessToken> impersonation = CreateRestrictedToken(
+      config()->GetInitialTokenLevel(), integrity_level,
+      TokenType::kImpersonation, lockdown_default_dacl, random_sid);
+  if (!impersonation) {
     return SBOX_ERROR_CANNOT_CREATE_RESTRICTED_IMP_TOKEN;
+  }
+  *initial = impersonation->release();
 
   return SBOX_ALL_OK;
 }
@@ -672,11 +677,6 @@ HANDLE PolicyBase::GetStdoutHandle() {
 
 HANDLE PolicyBase::GetStderrHandle() {
   return stderr_handle_;
-}
-
-void PolicyBase::SetEffectiveToken(HANDLE token) {
-  CHECK(token);
-  effective_token_ = token;
 }
 
 ResultCode PolicyBase::SetupAllInterceptions(TargetProcess& target) {

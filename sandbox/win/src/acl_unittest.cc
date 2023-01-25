@@ -19,10 +19,9 @@ void CheckGetIntegrityLevelSid(IntegrityLevel integrity_level,
   absl::optional<base::win::Sid> sddl_sid =
       base::win::Sid::FromSddlString(sddl);
   ASSERT_TRUE(sddl_sid);
-  absl::optional<base::win::Sid> integrity_sid =
-      GetIntegrityLevelSid(integrity_level);
-  ASSERT_TRUE(integrity_sid);
-  EXPECT_EQ(*sddl_sid, *integrity_sid);
+  absl::optional<DWORD> integrity_value = GetIntegrityLevelRid(integrity_level);
+  ASSERT_TRUE(integrity_value);
+  EXPECT_EQ(*sddl_sid, base::win::Sid::FromIntegrityLevel(*integrity_value));
 }
 
 void CheckSetObjectIntegrityLabel(DWORD mandatory_policy,
@@ -49,18 +48,17 @@ void CheckSetObjectIntegrityLabel(DWORD mandatory_policy,
   ASSERT_EQ(ace->Header.AceType, SYSTEM_MANDATORY_LABEL_ACE_TYPE);
   EXPECT_EQ(ace->Header.AceFlags, 0);
   EXPECT_EQ(ace->Mask, mandatory_policy);
-  absl::optional<base::win::Sid> integrity_sid =
-      GetIntegrityLevelSid(integrity_level);
-  ASSERT_TRUE(integrity_sid);
+  absl::optional<DWORD> rid = GetIntegrityLevelRid(integrity_level);
+  base::win::Sid sid = base::win::Sid::FromIntegrityLevel(*rid);
   ASSERT_TRUE(::IsValidSid(&ace->SidStart));
-  EXPECT_TRUE(integrity_sid->Equal(&ace->SidStart));
+  EXPECT_TRUE(sid.Equal(&ace->SidStart));
 }
 
 }  // namespace
 
-// Checks the functionality of GetIntegrityLevelSid.
-TEST(AclTest, GetIntegrityLevelSid) {
-  EXPECT_FALSE(GetIntegrityLevelSid(INTEGRITY_LEVEL_LAST));
+// Checks the functionality of GetIntegrityLevelRid.
+TEST(AclTest, GetIntegrityLevelRid) {
+  EXPECT_FALSE(GetIntegrityLevelRid(INTEGRITY_LEVEL_LAST));
   CheckGetIntegrityLevelSid(INTEGRITY_LEVEL_SYSTEM, L"S-1-16-16384");
   CheckGetIntegrityLevelSid(INTEGRITY_LEVEL_HIGH, L"S-1-16-12288");
   CheckGetIntegrityLevelSid(INTEGRITY_LEVEL_MEDIUM, L"S-1-16-8192");

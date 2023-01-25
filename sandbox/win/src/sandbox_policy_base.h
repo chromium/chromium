@@ -172,7 +172,6 @@ class PolicyBase final : public TargetPolicy {
   ResultCode SetStdoutHandle(HANDLE handle) override;
   ResultCode SetStderrHandle(HANDLE handle) override;
   void AddHandleToShare(HANDLE handle) override;
-  void SetEffectiveToken(HANDLE token) override;
 
   // Creates a Job object with the level specified in a previous call to
   // SetJobLevel().
@@ -253,7 +252,6 @@ class PolicyBase final : public TargetPolicy {
   // shared with the target at times.
   base::HandlesToInheritVector handles_to_share_;
 
-  HANDLE effective_token_;
   Job job_;
 };
 

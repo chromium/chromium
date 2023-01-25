@@ -12,6 +12,7 @@
 #include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/security_descriptor.h"
+#include "sandbox/win/src/acl.h"
 #include "sandbox/win/src/restricted_token.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/sandbox_utils.h"
@@ -30,18 +31,16 @@ void AddSidException(std::vector<base::win::Sid>& sids,
 
 }  // namespace
 
-DWORD CreateRestrictedToken(
-    HANDLE effective_token,
+absl::optional<base::win::AccessToken> CreateRestrictedToken(
     TokenLevel security_level,
     IntegrityLevel integrity_level,
     TokenType token_type,
     bool lockdown_default_dacl,
-    const absl::optional<base::win::Sid>& unique_restricted_sid,
-    base::win::ScopedHandle* token) {
+    const absl::optional<base::win::Sid>& unique_restricted_sid) {
   RestrictedToken restricted_token;
-  restricted_token.Init(effective_token);
-  if (lockdown_default_dacl)
+  if (lockdown_default_dacl) {
     restricted_token.SetLockdownDefaultDacl();
+  }
   if (unique_restricted_sid) {
     restricted_token.AddDefaultDaclSid(*unique_restricted_sid,
                                        base::win::SecurityAccessMode::kGrant,
@@ -59,22 +58,16 @@ DWORD CreateRestrictedToken(
   bool remove_traverse_privilege = false;
 
   switch (security_level) {
-    case USER_UNPROTECTED: {
+    case USER_UNPROTECTED:
       deny_sids = false;
       remove_privileges = false;
       break;
-    }
-    case USER_RESTRICTED_SAME_ACCESS: {
+    case USER_RESTRICTED_SAME_ACCESS:
       deny_sids = false;
       remove_privileges = false;
-
-      unsigned err_code = restricted_token.AddRestrictingSidAllSids();
-      if (ERROR_SUCCESS != err_code)
-        return err_code;
-
+      restricted_token.AddRestrictingSidAllSids();
       break;
-    }
-    case USER_RESTRICTED_NON_ADMIN: {
+    case USER_RESTRICTED_NON_ADMIN:
       AddSidException(sid_exceptions, base::win::WellKnownSid::kBuiltinUsers);
       AddSidException(sid_exceptions, base::win::WellKnownSid::kWorld);
       AddSidException(sid_exceptions, base::win::WellKnownSid::kInteractive);
@@ -89,11 +82,11 @@ DWORD CreateRestrictedToken(
       restricted_token.AddRestrictingSid(base::win::WellKnownSid::kRestricted);
       restricted_token.AddRestrictingSidCurrentUser();
       restricted_token.AddRestrictingSidLogonSession();
-      if (unique_restricted_sid)
+      if (unique_restricted_sid) {
         restricted_token.AddRestrictingSid(*unique_restricted_sid);
+      }
       break;
-    }
-    case USER_INTERACTIVE: {
+    case USER_INTERACTIVE:
       AddSidException(sid_exceptions, base::win::WellKnownSid::kBuiltinUsers);
       AddSidException(sid_exceptions, base::win::WellKnownSid::kWorld);
       AddSidException(sid_exceptions, base::win::WellKnownSid::kInteractive);
@@ -105,11 +98,11 @@ DWORD CreateRestrictedToken(
       restricted_token.AddRestrictingSid(base::win::WellKnownSid::kRestricted);
       restricted_token.AddRestrictingSidCurrentUser();
       restricted_token.AddRestrictingSidLogonSession();
-      if (unique_restricted_sid)
+      if (unique_restricted_sid) {
         restricted_token.AddRestrictingSid(*unique_restricted_sid);
+      }
       break;
-    }
-    case USER_LIMITED: {
+    case USER_LIMITED:
       AddSidException(sid_exceptions, base::win::WellKnownSid::kBuiltinUsers);
       AddSidException(sid_exceptions, base::win::WellKnownSid::kWorld);
       AddSidException(sid_exceptions, base::win::WellKnownSid::kInteractive);
@@ -117,101 +110,53 @@ DWORD CreateRestrictedToken(
           base::win::WellKnownSid::kBuiltinUsers);
       restricted_token.AddRestrictingSid(base::win::WellKnownSid::kWorld);
       restricted_token.AddRestrictingSid(base::win::WellKnownSid::kRestricted);
-      if (unique_restricted_sid)
+      if (unique_restricted_sid) {
         restricted_token.AddRestrictingSid(*unique_restricted_sid);
-
+      }
       // This token has to be able to create objects in BNO, it needs the
       // current logon sid in the token to achieve this. You should also set the
       // process to be low integrity level so it can't access object created by
       // other processes.
       restricted_token.AddRestrictingSidLogonSession();
       break;
-    }
-    case USER_RESTRICTED: {
-      restricted_token.AddUserSidForDenyOnly();
-      restricted_token.AddRestrictingSid(base::win::WellKnownSid::kRestricted);
-      if (unique_restricted_sid)
-        restricted_token.AddRestrictingSid(*unique_restricted_sid);
-      break;
-    }
-    case USER_LOCKDOWN: {
+    case USER_LOCKDOWN:
       remove_traverse_privilege = true;
       restricted_token.AddUserSidForDenyOnly();
       restricted_token.AddRestrictingSid(base::win::WellKnownSid::kNull);
-      if (unique_restricted_sid)
+      if (unique_restricted_sid) {
         restricted_token.AddRestrictingSid(*unique_restricted_sid);
+      }
       break;
-    }
     case USER_LAST:
-      return ERROR_BAD_ARGUMENTS;
+      return absl::nullopt;
   }
 
-  DWORD err_code = ERROR_SUCCESS;
   if (deny_sids) {
-    err_code = restricted_token.AddAllSidsForDenyOnly(sid_exceptions);
-    if (ERROR_SUCCESS != err_code)
-      return err_code;
+    restricted_token.AddAllSidsForDenyOnly(sid_exceptions);
   }
 
   if (remove_privileges) {
-    err_code = restricted_token.DeleteAllPrivileges(remove_traverse_privilege);
-    if (ERROR_SUCCESS != err_code)
-      return err_code;
+    restricted_token.DeleteAllPrivileges(remove_traverse_privilege);
   }
 
   restricted_token.SetIntegrityLevel(integrity_level);
-
-  switch (token_type) {
-    case PRIMARY: {
-      err_code = restricted_token.GetRestrictedToken(token);
-      break;
-    }
-    case IMPERSONATION: {
-      err_code = restricted_token.GetRestrictedTokenForImpersonation(token);
-      break;
-    }
-    default: {
-      err_code = ERROR_BAD_ARGUMENTS;
-      break;
-    }
+  absl::optional<base::win::AccessToken> result =
+      restricted_token.GetRestrictedToken();
+  if (!result) {
+    return absl::nullopt;
   }
 
-  return err_code;
-}
-
-DWORD SetTokenIntegrityLevel(HANDLE token, IntegrityLevel integrity_level) {
-  absl::optional<base::win::Sid> sid = GetIntegrityLevelSid(integrity_level);
-  if (!sid) {
-    // No mandatory level specified, we don't change it.
-    return ERROR_SUCCESS;
+  if (token_type == TokenType::kPrimary) {
+    return result;
   }
 
-  TOKEN_MANDATORY_LABEL label = {};
-  label.Label.Attributes = SE_GROUP_INTEGRITY;
-  label.Label.Sid = sid->GetPSID();
-
-  if (!::SetTokenInformation(token, TokenIntegrityLevel, &label, sizeof(label)))
-    return ::GetLastError();
-
-  return ERROR_SUCCESS;
-}
-
-DWORD SetProcessIntegrityLevel(IntegrityLevel integrity_level) {
-  // We don't check for an invalid level here because we'll just let it
-  // fail on the SetTokenIntegrityLevel call later on.
-  if (integrity_level == INTEGRITY_LEVEL_LAST) {
-    // No mandatory level specified, we don't change it.
-    return ERROR_SUCCESS;
+  result = result->DuplicateImpersonation(
+      base::win::SecurityImpersonationLevel::kImpersonation, TOKEN_ALL_ACCESS);
+  if (!result) {
+    return absl::nullopt;
   }
 
-  HANDLE token_handle;
-  if (!::OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_DEFAULT,
-                          &token_handle))
-    return ::GetLastError();
-
-  base::win::ScopedHandle token(token_handle);
-
-  return SetTokenIntegrityLevel(token.Get(), integrity_level);
+  return result;
 }
 
 DWORD HardenTokenIntegrityLevelPolicy(const base::win::AccessToken& token) {
@@ -252,10 +197,6 @@ bool CreateLowBoxToken(HANDLE base_token,
                        const base::win::Sid& package_sid,
                        const std::vector<base::win::Sid>& capabilities,
                        base::win::ScopedHandle* token) {
-  if (token_type != PRIMARY && token_type != IMPERSONATION) {
-    return false;
-  }
-
   if (!token) {
     return false;
   }
@@ -280,7 +221,7 @@ bool CreateLowBoxToken(HANDLE base_token,
   }
 
   // Default from CreateAppContainer is a Primary token.
-  if (token_type == PRIMARY) {
+  if (token_type == TokenType::kPrimary) {
     *token = token_lowbox->release();
     return true;
   }
