@@ -810,7 +810,9 @@ void PrivacySandboxService::ConvertInterestGroupDataKeysForDisplay(
 std::vector<privacy_sandbox::CanonicalTopic>
 PrivacySandboxService::GetCurrentTopTopics() const {
   if (privacy_sandbox::kPrivacySandboxSettings3ShowSampleDataForTesting.Get() ||
-      privacy_sandbox::kPrivacySandboxSettings4ShowSampleDataForTesting.Get()) {
+      (pref_service_->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled) &&
+       privacy_sandbox::kPrivacySandboxSettings4ShowSampleDataForTesting
+           .Get())) {
     return {fake_current_topics_.begin(), fake_current_topics_.end()};
   }
 

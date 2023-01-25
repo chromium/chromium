@@ -1680,6 +1680,27 @@ TEST_F(PrivacySandboxServiceTest, TestNoFakeTopics) {
   EXPECT_THAT(service->GetBlockedTopics(), testing::IsEmpty());
 }
 
+TEST_F(PrivacySandboxServiceTest, TestNoFakeTopicsPrefOff) {
+  // Sample data won't be returned for current topics when the pref is off, only
+  // the blocked list.
+  prefs()->SetUserPref(prefs::kPrivacySandboxM1TopicsEnabled,
+                       std::make_unique<base::Value>(false));
+
+  feature_list()->InitWithFeaturesAndParameters(
+      {{privacy_sandbox::kPrivacySandboxSettings4,
+        {{privacy_sandbox::kPrivacySandboxSettings4ShowSampleDataForTesting
+              .name,
+          "true"}}}},
+      {});
+
+  CanonicalTopic topic3(Topic(3), CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic topic4(Topic(4), CanonicalTopic::AVAILABLE_TAXONOMY);
+
+  auto* service = privacy_sandbox_service();
+  EXPECT_THAT(service->GetCurrentTopTopics(), testing::IsEmpty());
+  EXPECT_THAT(service->GetBlockedTopics(), ElementsAre(topic3, topic4));
+}
+
 TEST_F(PrivacySandboxServiceTest, TestFakeTopics) {
   std::vector<base::test::FeatureRefAndParams> test_features = {
       {privacy_sandbox::kPrivacySandboxSettings3,
@@ -1688,6 +1709,10 @@ TEST_F(PrivacySandboxServiceTest, TestFakeTopics) {
       {privacy_sandbox::kPrivacySandboxSettings4,
        {{privacy_sandbox::kPrivacySandboxSettings4ShowSampleDataForTesting.name,
          "true"}}}};
+
+  // Sample data for current topics is only returned when the pref is on.
+  prefs()->SetUserPref(prefs::kPrivacySandboxM1TopicsEnabled,
+                       std::make_unique<base::Value>(true));
 
   for (const auto& feature : test_features) {
     feature_list()->Reset();
