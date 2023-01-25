@@ -1,5 +1,5 @@
 {
-  "-- Instructions --": "See https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/enterprise/policy_pref_mapping_test.md (This file is interpreted by //chrome/browser/policy/policy_prefs_browsertest.cc)",
+  "-- Instructions --": "See https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/enterprise/policy_pref_mapping_test.md (This file is interpreted by //chrome/browser/policy/policy_prefs_browsertest.cc / browser_test --gtest_filter=*PolicyPrefsTest*)",
   "OverrideSecurityRestrictionsOnInsecureOrigin": {
     "os": [
       "win",
@@ -4082,7 +4082,7 @@
         }
       },
       {
-        "note": "DeveloperToolsAvailability overwrites DeveloperToolsDisabled if both are set",
+        "note": "DeveloperToolsAvailability (2) overwrites DeveloperToolsDisabled (false->1) if both are set",
         "policies": {
           "DeveloperToolsDisabled": false,
           "DeveloperToolsAvailability": 2
@@ -4090,6 +4090,18 @@
         "prefs": {
           "devtools.availability": {
             "value": 2
+          }
+        }
+      },
+      {
+        "note": "DeveloperToolsAvailability (1) overwrites DeveloperToolsDisabled (true->2) both are set",
+        "policies": {
+          "DeveloperToolsDisabled": true,
+          "DeveloperToolsAvailability": 1
+        },
+        "prefs": {
+          "devtools.availability": {
+            "value": 1
           }
         }
       }
