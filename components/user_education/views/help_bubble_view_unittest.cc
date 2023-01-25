@@ -203,7 +203,7 @@ TEST_F(HelpBubbleViewTest, AnchorRectUpdated) {
 
   constexpr gfx::Vector2d kAnchorOffset{9, 13};
   anchor_bounds.Offset(kAnchorOffset);
-  bubble->set_force_anchor_rect(anchor_bounds);
+  bubble->SetForceAnchorRect(anchor_bounds);
   bubble->OnAnchorBoundsChanged();
 
   gfx::Rect expected = bubble_bounds;
@@ -249,11 +249,15 @@ class HelpBubbleViewsTest : public HelpBubbleViewTest {
   }
 
  protected:
+  gfx::Rect GetHelpBubbleAnchorRect() const {
+    return help_bubble_->bubble_view()->GetAnchorRect();
+  }
+
   std::unique_ptr<ui::test::TestElement> test_element_;
   std::unique_ptr<HelpBubbleViews> help_bubble_;
 };
 
-// This duplicates the previous test, but with a HelpBubbleViews object.
+// This duplicates the HelpBubbleViewTest, but with a HelpBubbleViews object.
 TEST_F(HelpBubbleViewsTest, AnchorToRect) {
   const auto widget_bounds = GetWidgetClientBounds();
   const auto anchor_bounds = test_element_->GetScreenBounds();
@@ -270,7 +274,7 @@ TEST_F(HelpBubbleViewsTest, AnchorToRect) {
             2);
 }
 
-// This duplicates the previous test, but with a HelpBubbleViews object.
+// This duplicates the HelpBubbleViewTest, but with a HelpBubbleViews object.
 TEST_F(HelpBubbleViewsTest, AnchorRectUpdated) {
   const gfx::Rect old_bounds = help_bubble_->GetBoundsInScreen();
 
@@ -285,6 +289,105 @@ TEST_F(HelpBubbleViewsTest, AnchorRectUpdated) {
   // Verify that the help bubble has moved by a similar amount.
   gfx::Rect expected = old_bounds;
   expected.Offset(kAnchorOffset);
+  EXPECT_EQ(expected, help_bubble_->GetBoundsInScreen());
+}
+
+// This checks a case where the target anchor region scrolls partially out of
+// the host view. The anchor rect should be the intersection of the two.
+TEST_F(HelpBubbleViewsTest, AnchorRectOverlapsEdge) {
+  const gfx::Rect old_bounds = help_bubble_->GetBoundsInScreen();
+
+  // Move the anchor target so that the upper left is beyond the edge of the
+  // anchor view.
+  auto new_bounds = test_element_->GetScreenBounds();
+  new_bounds.Offset(-100, -100);
+  test_element_->SetScreenBounds(new_bounds);
+  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+      test_element_.get(), kHelpBubbleAnchorBoundsChangedEvent);
+
+  // Verify that the help bubble has moved.
+  constexpr gfx::Rect kNewAnchorBounds{kWidgetBounds.x(), kWidgetBounds.y(), 50,
+                                       50};
+  EXPECT_EQ(kNewAnchorBounds, GetHelpBubbleAnchorRect());
+  const gfx::Rect help_bubble_bounds = help_bubble_->GetBoundsInScreen();
+  EXPECT_LT(help_bubble_bounds.y(), old_bounds.y());
+  EXPECT_GT(help_bubble_bounds.CenterPoint().y(), kNewAnchorBounds.y());
+  EXPECT_LT(help_bubble_bounds.CenterPoint().y(), kNewAnchorBounds.bottom());
+
+  // Bubble may have mirrored horizontally. Check which orientation it's in and
+  // verify the position is appropriate to the new anchor region.
+  switch (help_bubble_->bubble_view()->GetBubbleFrameView()->GetArrow()) {
+    case views::BubbleBorder::RIGHT_CENTER:
+      EXPECT_LT(help_bubble_bounds.x(), old_bounds.x());
+      EXPECT_LT(help_bubble_bounds.right(), kNewAnchorBounds.x());
+      break;
+    case views::BubbleBorder::LEFT_CENTER:
+      EXPECT_GT(help_bubble_bounds.x(), old_bounds.x());
+      EXPECT_GT(help_bubble_bounds.x(), kNewAnchorBounds.right());
+      break;
+    default:
+      NOTREACHED() << "Arrow should only be right-center or left-center.";
+  }
+}
+
+// This checks a case where the target anchor region scrolls fully out of
+// the host view. The anchor rect should be a one-pixel slice on the edge
+// closest to the actual anchor.
+TEST_F(HelpBubbleViewsTest, AnchorOutsideBoundsHorizontal) {
+  const gfx::Rect old_bounds = help_bubble_->GetBoundsInScreen();
+
+  // Move the anchor target entirely off the right side of the anchor view.
+  auto new_bounds = test_element_->GetScreenBounds();
+  new_bounds.Offset(200, 0);
+  test_element_->SetScreenBounds(new_bounds);
+  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+      test_element_.get(), kHelpBubbleAnchorBoundsChangedEvent);
+
+  // Verify that the help bubble has moved. It might be mirrored, however.
+  constexpr gfx::Rect kNewAnchorBounds{kWidgetBounds.right() - 1,
+                                       kWidgetBounds.y() + 50, 1, 100};
+  EXPECT_EQ(kNewAnchorBounds, GetHelpBubbleAnchorRect());
+  const gfx::Rect help_bubble_bounds = help_bubble_->GetBoundsInScreen();
+  EXPECT_EQ(help_bubble_bounds.y(), old_bounds.y());
+  EXPECT_GT(help_bubble_bounds.x(), old_bounds.x());
+  EXPECT_LT(help_bubble_bounds.right(), kNewAnchorBounds.x());
+}
+
+// This checks a case where the target anchor region scrolls fully out of
+// the host view. The anchor rect should be a one-pixel slice on the edge
+// closest to the actual anchor.
+TEST_F(HelpBubbleViewsTest, AnchorOutsideBoundsVertical) {
+  const gfx::Rect old_bounds = help_bubble_->GetBoundsInScreen();
+
+  // Move the anchor target entirely beyond the bottom of the anchor view.
+  auto new_bounds = test_element_->GetScreenBounds();
+  new_bounds.Offset(0, 200);
+  test_element_->SetScreenBounds(new_bounds);
+  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+      test_element_.get(), kHelpBubbleAnchorBoundsChangedEvent);
+
+  // Verify that the help bubble has moved. It might be mirrored, however.
+  constexpr gfx::Rect kNewAnchorBounds{kWidgetBounds.x() + 50,
+                                       kWidgetBounds.bottom() - 1, 100, 1};
+  EXPECT_EQ(kNewAnchorBounds, GetHelpBubbleAnchorRect());
+  const gfx::Rect help_bubble_bounds = help_bubble_->GetBoundsInScreen();
+  EXPECT_EQ(help_bubble_bounds.x(), old_bounds.x());
+  EXPECT_GT(help_bubble_bounds.y(), old_bounds.y());
+  EXPECT_LT(help_bubble_bounds.y(), kNewAnchorBounds.y());
+  EXPECT_GE(help_bubble_bounds.bottom(), kNewAnchorBounds.y());
+  EXPECT_LT(help_bubble_bounds.right(), kNewAnchorBounds.x());
+}
+
+// Verifies that a bubble anchored to a region will still move with the owning
+// Widget.
+TEST_F(HelpBubbleViewsTest, MoveAnchorWidget) {
+  const auto old_bubble_bounds = help_bubble_->GetBoundsInScreen();
+  gfx::Rect widget_bounds = widget_->GetWindowBoundsInScreen();
+  constexpr gfx::Vector2d kOffset{9, 13};
+  widget_bounds.Offset(kOffset);
+  widget_->SetBounds(widget_bounds);
+  gfx::Rect expected = old_bubble_bounds;
+  expected.Offset(kOffset);
   EXPECT_EQ(expected, help_bubble_->GetBoundsInScreen());
 }
 

@@ -106,8 +106,9 @@ bool HelpBubbleViews::ToggleFocusForAccessibility() {
 }
 
 void HelpBubbleViews::OnAnchorBoundsChanged() {
-  if (help_bubble_view_)
+  if (help_bubble_view_) {
     help_bubble_view_->OnAnchorBoundsChanged();
+  }
 }
 
 gfx::Rect HelpBubbleViews::GetBoundsInScreen() const {
@@ -180,7 +181,7 @@ void HelpBubbleViews::OnElementHidden(ui::TrackedElement* element) {
 
 void HelpBubbleViews::OnElementBoundsChanged(ui::TrackedElement* element) {
   if (help_bubble_view_ && element == anchor_element_) {
-    help_bubble_view_->set_force_anchor_rect(element->GetScreenBounds());
+    help_bubble_view_->SetForceAnchorRect(element->GetScreenBounds());
     OnAnchorBoundsChanged();
   }
 }

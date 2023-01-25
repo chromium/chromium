@@ -230,7 +230,7 @@ void HelpBubbleHandlerBase::HelpBubbleAnchorVisibilityChanged(
     return;
 
   // Note: any of the following calls could destroy *this* via a callback.
-  if (!data->element->visible() && visible) {
+  if (visible) {
     data->element->SetVisible(true, rect);
   } else if (data->element->visible() && !visible) {
     // Is a help bubble currently showing?

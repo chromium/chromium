@@ -50,10 +50,10 @@ gfx::Rect TrackedElementWebUI::GetScreenBounds() const {
 void TrackedElementWebUI::SetVisible(bool visible, gfx::RectF bounds) {
   if (visible == visible_) {
     if (visible && last_known_bounds_ != bounds) {
+      last_known_bounds_ = bounds;
       // This event signals that the bounds of the element have been updated.
       ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
           this, kHelpBubbleAnchorBoundsChangedEvent);
-      last_known_bounds_ = bounds;
     }
     return;
   }

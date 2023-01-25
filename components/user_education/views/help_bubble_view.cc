@@ -39,6 +39,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -294,8 +295,10 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
     : BubbleDialogDelegateView(anchor.view,
                                TranslateArrow(params.arrow),
                                views::BubbleBorder::STANDARD_SHADOW),
-      delegate_(delegate),
-      force_anchor_rect_(anchor.rect) {
+      delegate_(delegate) {
+  if (anchor.rect.has_value()) {
+    SetForceAnchorRect(anchor.rect.value());
+  }
   // The anchor for promo bubbles should not highlight.
   set_highlight_button_when_shown(false);
   DCHECK(anchor.view)
@@ -702,7 +705,27 @@ gfx::Size HelpBubbleView::CalculatePreferredSize() const {
 }
 
 gfx::Rect HelpBubbleView::GetAnchorRect() const {
-  return force_anchor_rect_.value_or(BubbleDialogDelegateView::GetAnchorRect());
+  gfx::Rect default_anchor_rect = BubbleDialogDelegateView::GetAnchorRect();
+  if (!local_anchor_bounds_) {
+    return default_anchor_rect;
+  }
+
+  // Ensure that we are not trying to clamp the anchor bounds to a completely
+  // empty bounds.
+  gfx::Size size = default_anchor_rect.size();
+  size.SetToMax({1, 1});
+
+  // Clamp the local bounds to the size of the anchor view.
+  const int left = std::clamp(local_anchor_bounds_->x(), 0, size.width() - 1);
+  const int right = std::clamp(local_anchor_bounds_->right(), 1, size.width());
+  const int top = std::clamp(local_anchor_bounds_->y(), 0, size.height() - 1);
+  const int bottom =
+      std::clamp(local_anchor_bounds_->bottom(), 1, size.height());
+  gfx::Rect result(left, top, right - left, bottom - top);
+
+  // Translate back to screen coordinates.
+  result.Offset(default_anchor_rect.OffsetFromOrigin());
+  return result;
 }
 
 // static
@@ -734,6 +757,12 @@ views::LabelButton* HelpBubbleView::GetDefaultButtonForTesting() const {
 views::LabelButton* HelpBubbleView::GetNonDefaultButtonForTesting(
     int index) const {
   return non_default_buttons_[index];
+}
+
+void HelpBubbleView::SetForceAnchorRect(gfx::Rect force_anchor_rect) {
+  force_anchor_rect.Offset(
+      -views::BubbleDialogDelegateView::GetAnchorRect().OffsetFromOrigin());
+  local_anchor_bounds_ = force_anchor_rect;
 }
 
 BEGIN_METADATA(HelpBubbleView, views::BubbleDialogDelegateView)
