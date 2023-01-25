@@ -28,9 +28,14 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
-#if !defined(USE_SYMBOLIZE)
-#include <cxxabi.h>
+// Controls whether `dladdr(...)` is used to print the callstack. This is
+// only used on iOS Official build where `backtrace_symbols(...)` prints
+// misleading symbols (as the binary is stripped).
+#if BUILDFLAG(IS_IOS) && defined(OFFICIAL_BUILD)
+#define HAVE_DLADDR
+#include <dlfcn.h>
 #endif
+
 // Surprisingly, uClibc defines __GLIBC__ in some build configs, but
 // execinfo.h and backtrace(3) are really only present in glibc and in macOS
 // libc.
@@ -38,6 +43,15 @@
     (defined(__GLIBC__) && !defined(__UCLIBC__) && !defined(__AIX))
 #define HAVE_BACKTRACE
 #include <execinfo.h>
+#endif
+
+// Controls whether to include code to demangle C++ symbols.
+#if !defined(USE_SYMBOLIZE) && defined(HAVE_BACKTRACE) && !defined(HAVE_DLADDR)
+#define DEMANGLE_SYMBOLS
+#endif
+
+#if defined(DEMANGLE_SYMBOLS)
+#include <cxxabi.h>
 #endif
 
 #if BUILDFLAG(IS_APPLE)
@@ -82,7 +96,7 @@ volatile sig_atomic_t in_signal_handler = 0;
 bool (*try_handle_signal)(int, siginfo_t*, void*) = nullptr;
 #endif
 
-#if !defined(USE_SYMBOLIZE)
+#if defined(DEMANGLE_SYMBOLS)
 // The prefix used for mangled symbols, per the Itanium C++ ABI:
 // http://www.codesourcery.com/cxx-abi/abi.html#mangling
 const char kMangledSymbolPrefix[] = "_Z";
@@ -91,9 +105,7 @@ const char kMangledSymbolPrefix[] = "_Z";
 // (('a'..'z').to_a+('A'..'Z').to_a+('0'..'9').to_a + ['_']).join
 const char kSymbolCharacters[] =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
-#endif  // !defined(USE_SYMBOLIZE)
 
-#if !defined(USE_SYMBOLIZE)
 // Demangles C++ symbols in the given text. Example:
 //
 // "out/Debug/base_unittests(_ZN10StackTraceC1Ev+0x20) [0x817778c]"
@@ -103,7 +115,6 @@ void DemangleSymbols(std::string* text) {
   // Note: code in this function is NOT async-signal safe (std::string uses
   // malloc internally).
 
-#if defined(HAVE_BACKTRACE)
   std::string::size_type search_from = 0;
   while (search_from < text->size()) {
     // Look for the start of a mangled symbol, from search_from.
@@ -138,9 +149,8 @@ void DemangleSymbols(std::string* text) {
       search_from = mangled_start + 2;
     }
   }
-#endif  // defined(HAVE_BACKTRACE)
 }
-#endif  // !defined(USE_SYMBOLIZE)
+#endif  // defined(DEMANGLE_SYMBOLS)
 
 class BacktraceOutputHandler {
  public:
@@ -161,15 +171,21 @@ void OutputPointer(void* pointer, BacktraceOutputHandler* handler) {
   handler->HandleOutput(buf);
 }
 
-#if defined(USE_SYMBOLIZE)
-void OutputFrameId(size_t frame_id, BacktraceOutputHandler* handler) {
+#if defined(HAVE_DLADDR) || defined(USE_SYMBOLIZE)
+void OutputValue(size_t value, BacktraceOutputHandler* handler) {
   // Max unsigned 64-bit number in decimal has 20 digits (18446744073709551615).
   // Hence, 30 digits should be more than enough to represent it in decimal
   // (including the null-terminator).
   char buf[30] = { '\0' };
-  handler->HandleOutput("#");
-  internal::itoa_r(static_cast<intptr_t>(frame_id), buf, sizeof(buf), 10, 1);
+  internal::itoa_r(static_cast<intptr_t>(value), buf, sizeof(buf), 10, 1);
   handler->HandleOutput(buf);
+}
+#endif  // defined(HAVE_DLADDR) || defined(USE_SYMBOLIZE)
+
+#if defined(USE_SYMBOLIZE)
+void OutputFrameId(size_t frame_id, BacktraceOutputHandler* handler) {
+  handler->HandleOutput("#");
+  OutputValue(frame_id, handler);
 }
 #endif  // defined(USE_SYMBOLIZE)
 
@@ -225,6 +241,31 @@ void ProcessBacktrace(void* const* trace,
   // Below part is async-signal unsafe (uses malloc), so execute it only
   // when we are not executing the signal handler.
   if (in_signal_handler == 0 && IsValueInRangeForNumericType<int>(size)) {
+#if defined(HAVE_DLADDR)
+    Dl_info dl_info;
+    for (size_t i = 0; i < size; ++i) {
+      if (prefix_string) {
+        handler->HandleOutput(prefix_string);
+      }
+
+      OutputValue(i, handler);
+      handler->HandleOutput(" ");
+
+      const bool dl_info_found = dladdr(trace[i], &dl_info) != 0;
+      if (dl_info_found) {
+        const char* last_sep = strrchr(dl_info.dli_fname, '/');
+        const char* basename = last_sep ? last_sep + 1 : dl_info.dli_fname;
+        handler->HandleOutput(basename);
+      } else {
+        handler->HandleOutput("???");
+      }
+      handler->HandleOutput(" ");
+      OutputPointer(trace[i], handler);
+
+      handler->HandleOutput("\n");
+    }
+    printed = true;
+#else   // defined(HAVE_DLADDR)
     std::unique_ptr<char*, FreeDeleter> trace_symbols(
         backtrace_symbols(trace, static_cast<int>(size)));
     if (trace_symbols.get()) {
@@ -239,6 +280,7 @@ void ProcessBacktrace(void* const* trace,
 
       printed = true;
     }
+#endif  // defined(HAVE_DLADDR)
   }
 
   if (!printed) {
